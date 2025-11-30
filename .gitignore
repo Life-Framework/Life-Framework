@@ -1,0 +1,62 @@
+# Arma Reforger / Enfusion Engine
+*.log
+*.cache
+*.tmp
+*.bak
+*.old
+
+# Build artifacts
+*.gproj.user
+*.rdb.lock
+
+# Editor temporary files
+*~
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.vscode/
+.idea/
+*.sublime-*
+
+# Windows
+desktop.ini
+ehthumbs.db
+
+# Backup files
+*.backup
+*_backup
+
+# Temporary directories
+temp/
+tmp/
+cache/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Node modules (if using any build tools)
+node_modules/
+package-lock.json
+
+# Python (if using any Python tools)
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+
+# Server runtime files
+server/*.log
+server/profile/
+server/logs/
+
+# Don't ignore example configs
+!server/configs/*.example.json
+!server/scripts/*.example.bat
+!server/scripts/*.example.sh
