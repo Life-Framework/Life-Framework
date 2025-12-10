@@ -1,0 +1,29 @@
+$grp GenericEntity {
+ IronOreRock {
+  coords 100 0 130
+  {
+   GenericEntity : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+    coords 0 0.28 0
+   }
+  }
+ }
+ GoldOreRock {
+  coords 105 0.251 130
+  {
+   GenericEntity : "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et" {
+    coords 0 0 0
+   }
+  }
+ }
+ CopperOreRock {
+  coords 110 0 130
+  {
+   GenericEntity : "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et" {
+    coords 0 0.275 0
+   }
+  }
+ }
+ Furnace {
+  coords 115 0 130
+ }
+}

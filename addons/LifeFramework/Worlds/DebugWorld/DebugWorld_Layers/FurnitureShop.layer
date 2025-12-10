@@ -1,0 +1,40 @@
+GenericEntity FurnitureShop_Debug {
+ components {
+  MeshObject "{5A4B0B84C86DD843}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{5A4B0B84C86DD844}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  EL_FurnitureShopComponent "{5A4B0B84C86DD84B}" {
+  }
+  ActionsManagerComponent "{5A4B0B84C86DD845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86DD846}" {
+     ContextName "default"
+     Position PointInfo "{5A4B0B84C86DD847}" {
+      Offset 0 0.0873 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    EL_FurnitureShopAction "{5A4B0B84C86DD848}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86DD849}" {
+      Name "#EL-FurnitureShop_Open"
+      Description "Comprar muebles para tu propiedad"
+     }
+    }
+   }
+  }
+  RplComponent "{5A4B0B84C86DD84A}" {
+   Enabled 1
+  }
+ }
+ coords 150 0 160
+}

@@ -1,0 +1,76 @@
+GenericEntity {
+ ID "598F21A86EB5B491"
+ components {
+  EL_RestrictedInventoryStorageComponent "{59693C53BBA0FC9A}" {
+   Attributes SCR_ItemAttributeCollection "{59693C53B153D96C}" {
+    ItemDisplayName UIInfo "{59693C53AAB06F2E}" {
+     Name "Universal Trade"
+     Description "Trade various items and resources"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes "{59693C53A3873125}" {
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{59693C53D4D18184}" {
+      CameraOrbitAngles 330 30 0
+      CameraDistanceToItem 1
+     }
+    }
+    CommonItemType "NONE"
+    m_Size SLOT_3x3
+    m_SlotType SLOT_ANY
+   }
+   m_fMaxWeight 1000
+   m_TradablePrefabs {
+    "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et"
+    "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et"
+    "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et"
+    "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et"
+    "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+    "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
+    "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et"
+    "{9B8C7D6E5F4G3H2I}Prefabs/Resources/Mining/GoldNugget.et"
+    "{2D3E4F5G6H7I8J9K}Prefabs/Resources/Mining/CopperNugget.et"
+    "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
+    "{1C2D3E4F5G6H7I8J}Prefabs/Resources/Mining/GoldBar.et"
+    "{3E4F5G6H7I8J9K1L}Prefabs/Resources/Mining/CopperBar.et"
+   }
+  }
+  EL_TraderManagerComponent "{59693C53B6A5EFC1}" {
+   m_ItemToReceive "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+   m_ItemToGive "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+  }
+  MeshObject "{59670CE9C98E5BB0}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{59670CE9C98E5B28}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{59670CE9C98E5815}" {
+   ActionContexts {
+    UserActionContext "{59670CE9C98E582B}" {
+     ContextName "default"
+     Position PointInfo "{59670CE9C98E582C}" {
+      Offset 0 0.0873 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    EL_OpenTraderAction "{59670CE9FBF3C74A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{59670CE9F9F9794E}" {
+      Name "Sell Items"
+      Description "Trade resources, food, and mining materials"
+     }
+    }
+   }
+  }
+  RplComponent "{59670CE9C98E581F}" {
+   Enabled 1
+  }
+ }
+}

@@ -1,0 +1,41 @@
+FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialog.layout" {
+ {
+  VerticalLayoutWidgetClass "{FACTION_ROOT_LAYOUT}" {
+   {
+    TextWidgetClass "{FACTION_TITLE}" {
+     Text "Select Faction"
+     "Font Size" 24
+     Slot LayoutSlot "{FACTION_TITLE_SLOT}" {
+      HorizontalAlign 1
+      Padding 0 20 0 10
+     }
+    }
+    VerticalLayoutWidgetClass "{FACTION_LIST}" {
+     Slot LayoutSlot "{FACTION_LIST_SLOT}" {
+      Padding 20 10 20 10
+     }
+     {
+      ButtonWidgetClass "{FACTION_CIV_BTN}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+       Name "CivilianButton"
+       Slot LayoutSlot "{FACTION_CIV_SLOT}" {
+        Padding 0 5 0 5
+       }
+      }
+      ButtonWidgetClass "{FACTION_POLICE_BTN}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+       Name "PoliceButton"
+       Slot LayoutSlot "{FACTION_POLICE_SLOT}" {
+        Padding 0 5 0 5
+       }
+      }
+      ButtonWidgetClass "{FACTION_EMS_BTN}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+       Name "EMSButton"
+       Slot LayoutSlot "{FACTION_EMS_SLOT}" {
+        Padding 0 5 0 5
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

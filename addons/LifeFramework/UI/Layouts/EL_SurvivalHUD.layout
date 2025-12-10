@@ -1,0 +1,107 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{5EE8939D15063515}" {
+  Anchor 1 1 1 1
+  PositionX 20
+  OffsetLeft 20
+  PositionY 20
+  OffsetTop 20
+  SizeX 300
+  OffsetRight -300
+  SizeY 150
+  OffsetBottom -150
+  Alignment 1 1
+ }
+ {
+  VerticalLayoutWidgetClass "{5EE8939D15063516}" {
+   Name "StatsLayout"
+   Slot FrameWidgetSlot "{5EE8939D15063517}" {
+    Anchor 0 0 1 1
+    OffsetLeft 0
+    OffsetTop 0
+    OffsetRight 0
+    OffsetBottom 0
+   }
+   {
+    TextWidgetClass "{5EE8939D15063518}" {
+     Name "HungerText"
+     Text "Hunger: 100%"
+     "Font Size" 16
+     Slot LayoutSlot "{5EE8939D15063519}" {
+      Padding 0 0 0 5
+     }
+    }
+    SizeLayoutWidgetClass "{5EE8939D1506351A}" {
+     Slot LayoutSlot "{5EE8939D1506351B}" {
+      Padding 0 0 0 10
+      SizeMode Fill
+     }
+     AllowHeightOverride 1
+     HeightOverride 10
+     {
+      ProgressBarWidgetClass "{5EE8939D1506351C}" {
+       Name "HungerBar"
+       Slot AlignableSlot "{5EE8939D1506351D}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8 0.4 0 1
+      }
+     }
+    }
+    TextWidgetClass "{5EE8939D1506351E}" {
+     Name "ThirstText"
+     Text "Thirst: 100%"
+     "Font Size" 16
+     Slot LayoutSlot "{5EE8939D1506351F}" {
+      Padding 0 10 0 5
+     }
+    }
+    SizeLayoutWidgetClass "{5EE8939D15063520}" {
+     Slot LayoutSlot "{5EE8939D15063521}" {
+      Padding 0 0 0 10
+      SizeMode Fill
+     }
+     AllowHeightOverride 1
+     HeightOverride 10
+     {
+      ProgressBarWidgetClass "{5EE8939D15063522}" {
+       Name "ThirstBar"
+       Slot AlignableSlot "{5EE8939D15063523}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0 0.4 0.8 1
+      }
+     }
+    }
+    TextWidgetClass "{5EE8939D15063524}" {
+     Name "HealthText"
+     Text "Health: 100%"
+     "Font Size" 16
+     Slot LayoutSlot "{5EE8939D15063525}" {
+      Padding 0 10 0 5
+     }
+    }
+    SizeLayoutWidgetClass "{5EE8939D15063526}" {
+     Slot LayoutSlot "{5EE8939D15063527}" {
+      Padding 0 0 0 10
+      SizeMode Fill
+     }
+     AllowHeightOverride 1
+     HeightOverride 10
+     {
+      ProgressBarWidgetClass "{5EE8939D15063528}" {
+       Name "HealthBar"
+       Slot AlignableSlot "{5EE8939D15063529}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.8 0 0 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

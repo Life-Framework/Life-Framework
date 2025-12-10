@@ -1,0 +1,116 @@
+$grp GenericEntity {
+ RobberyPoint_Money {
+  components {
+   MeshObject "{5A4B0B84C86D8843}" {
+    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   }
+   RigidBody "{5A4B0B84C86D8844}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{5A4B0B84C86D8845}" {
+    ActionContexts {
+     UserActionContext "{5A4B0B84C86D8846}" {
+      ContextName "default"
+      Position PointInfo "{5A4B0B84C86D8847}" {
+       Offset 0 0.0873 0
+      }
+      Radius 3
+     }
+    }
+    additionalActions {
+     EL_RobberyAction "{5A4B0B84C86D8848}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{5A4B0B84C86D8849}" {
+       Name "Robar Dinero"
+       Description "Robar 200$ (Requiere 1+ policías de servicio)"
+      }
+     }
+    }
+   }
+   RplComponent "{5A4B0B84C86D884A}" {
+    Enabled 1
+   }
+  }
+  coords 128 0 138
+ }
+ RobberyPoint_Weapon {
+  components {
+   MeshObject "{5A4B0B84C86D9843}" {
+    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   }
+   RigidBody "{5A4B0B84C86D9844}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{5A4B0B84C86D9845}" {
+    ActionContexts {
+     UserActionContext "{5A4B0B84C86D9846}" {
+      ContextName "default"
+      Position PointInfo "{5A4B0B84C86D9847}" {
+       Offset 0 0.0873 0
+      }
+      Radius 3
+     }
+    }
+    additionalActions {
+     EL_RobberyAction "{5A4B0B84C86D9848}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{5A4B0B84C86D9849}" {
+       Name "Robar Armas"
+       Description "Robo de armería (Requiere 2+ policías de servicio)"
+      }
+     }
+    }
+   }
+   RplComponent "{5A4B0B84C86D984A}" {
+    Enabled 1
+   }
+  }
+  coords 130 0 140
+ }
+ RobberyPoint_Vehicle {
+  components {
+   MeshObject "{5A4B0B84C86DA843}" {
+    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   }
+   RigidBody "{5A4B0B84C86DA844}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{5A4B0B84C86DA845}" {
+    ActionContexts {
+     UserActionContext "{5A4B0B84C86DA846}" {
+      ContextName "default"
+      Position PointInfo "{5A4B0B84C86DA847}" {
+       Offset 0 0.0873 0
+      }
+      Radius 3
+     }
+    }
+    additionalActions {
+     EL_RobberyAction "{5A4B0B84C86DA848}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{5A4B0B84C86DA849}" {
+       Name "Robar Vehículo"
+       Description "Robo de vehículo (Requiere 3+ policías de servicio)"
+      }
+     }
+    }
+   }
+   RplComponent "{5A4B0B84C86DA84A}" {
+    Enabled 1
+   }
+  }
+  coords 132 0 142
+ }
+}

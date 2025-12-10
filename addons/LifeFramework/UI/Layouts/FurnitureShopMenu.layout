@@ -1,0 +1,102 @@
+FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialog.layout" {
+ {
+  VerticalLayoutWidgetClass "{FURNITURE_ROOT_LAYOUT}" {
+   {
+    TextWidgetClass "{FURNITURE_TITLE}" {
+     Text "#EL-FurnitureShop_Open"
+     "Font Size" 24
+     Slot LayoutSlot "{FURNITURE_TITLE_SLOT}" {
+      HorizontalAlign 1
+      Padding 0 20 0 10
+     }
+    }
+    ScrollLayoutWidgetClass "{FURNITURE_SCROLL}" {
+     Slot LayoutSlot "{FURNITURE_SCROLL_SLOT}" {
+      SizeMode Fill
+      FillWeight 1
+      Padding 20 10 20 10
+     }
+     {
+      VerticalLayoutWidgetClass "{FURNITURE_LIST}" {
+       Name "FurnitureList"
+       {
+        HorizontalLayoutWidgetClass "{CHAIR_ROW}" {
+         Slot LayoutSlot "{CHAIR_SLOT}" {
+          Padding 0 5 0 5
+         }
+         {
+          TextWidgetClass "{CHAIR_TEXT}" {
+           Text "Chair - $500"
+           "Font Size" 16
+           Slot LayoutSlot "{CHAIR_TEXT_SLOT}" {
+            SizeMode Fill
+            FillWeight 1
+            VerticalAlign 1
+           }
+          }
+          ButtonWidgetClass "{CHAIR_BUY_BTN}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+           Name "BuyChairButton"
+           Slot LayoutSlot "{CHAIR_BTN_SLOT}" {
+            Padding 10 0 0 0
+           }
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{TABLE_ROW}" {
+         Slot LayoutSlot "{TABLE_SLOT}" {
+          Padding 0 5 0 5
+         }
+         {
+          TextWidgetClass "{TABLE_TEXT}" {
+           Text "Table - $1000"
+           "Font Size" 16
+           Slot LayoutSlot "{TABLE_TEXT_SLOT}" {
+            SizeMode Fill
+            FillWeight 1
+            VerticalAlign 1
+           }
+          }
+          ButtonWidgetClass "{TABLE_BUY_BTN}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+           Name "BuyTableButton"
+           Slot LayoutSlot "{TABLE_BTN_SLOT}" {
+            Padding 10 0 0 0
+           }
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{BED_ROW}" {
+         Slot LayoutSlot "{BED_SLOT}" {
+          Padding 0 5 0 5
+         }
+         {
+          TextWidgetClass "{BED_TEXT}" {
+           Text "Bed - $2000"
+           "Font Size" 16
+           Slot LayoutSlot "{BED_TEXT_SLOT}" {
+            SizeMode Fill
+            FillWeight 1
+            VerticalAlign 1
+           }
+          }
+          ButtonWidgetClass "{BED_BUY_BTN}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+           Name "BuyBedButton"
+           Slot LayoutSlot "{BED_BTN_SLOT}" {
+            Padding 10 0 0 0
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{FURNITURE_CLOSE_BTN}" : "{0114A06AD44D49BD}UI/layouts/WidgetLibrary/Buttons/DialogButtonCancel.layout" {
+     Name "CloseButton"
+     Slot LayoutSlot "{FURNITURE_CLOSE_SLOT}" {
+      Padding 20 20 20 20
+     }
+    }
+   }
+  }
+ }
+}

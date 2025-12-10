@@ -1,0 +1,183 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Opacity 0.9
+ {
+  TextWidgetClass "{596565CFBE414D61}" {
+   Name "URL"
+   Slot FrameWidgetSlot "{596565CFBE414D45}" {
+    Anchor 0.487 1 0.487 1
+    PositionX -116.1
+    OffsetLeft -116.1
+    PositionY -71
+    OffsetTop -71
+    SizeX 0
+    OffsetRight 116.1
+    SizeY 0
+    OffsetBottom 71
+    SizeToContent 1
+   }
+   Color 0.429 0.429 0.429 1
+   Pivot 0 0
+   Text "www.everon.life"
+   "Font Size" 36
+   "Min Font Size" 36
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+  }
+  HorizontalLayoutWidgetClass "{599ADB14E240A0B6}" {
+   Name "m_playerStatsHUD"
+   Slot FrameWidgetSlot "{599ADB14E0296AE8}" {
+    Anchor 1 1 1 1
+    PositionX -801.491
+    OffsetLeft -801.491
+    PositionY -105.325
+    OffsetTop -105.325
+    SizeX 626.912
+    OffsetRight 174.579
+    SizeY 106.839
+    OffsetBottom -1.514
+   }
+   "Fill Origin" Right
+   {
+    OverlayWidgetClass "{599ADB152F1694A9}" {
+     Name "m_healthIndicator"
+     Slot LayoutSlot "{599ADB14544C3A19}" {
+      Padding 10 0 10 0
+     }
+     Opacity 0.75
+     {
+      ImageWidgetClass "{599ADB1720E2246A}" {
+       Name "m_healthOutline"
+       Slot OverlayWidgetSlot "{599ADB14CDDB52CA}" {
+       }
+       Opacity 0.75
+       Texture "{ABAB6447C4767279}Assets/UI/EL_StatsOutlines.imageset"
+       Image "Health"
+       Size 45 60
+       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
+       "Transition width" 0
+       Range 0.005
+      }
+      ImageWidgetClass "{597F65E4959A8A93}" {
+       Name "m_healthProgress"
+       Slot OverlayWidgetSlot "{599ADB14CB2F43FB}" {
+       }
+       Opacity 0.75
+       Texture "{4762CA1C4E5BCCBA}Assets/UI/EL_StatsBars.imageset"
+       Image "Health"
+       Size 45 60
+       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
+       "Transition width" 0
+       Range 0.005
+      }
+     }
+    }
+    OverlayWidgetClass "{599ADB144BDA64A4}" {
+     Name "m_staminaIndicator"
+     Slot LayoutSlot "{599ADB144BDA6495}" {
+      Padding 10 0 10 0
+      FillWeight 1
+     }
+     Opacity 0.75
+     {
+      ImageWidgetClass "{599ADB1734363228}" {
+       Name "m_staminaOutline"
+       Slot OverlayWidgetSlot "{599ADB14CDDB52CA}" {
+       }
+       Opacity 0.75
+       Texture "{ABAB6447C4767279}Assets/UI/EL_StatsOutlines.imageset"
+       Image "Stamina"
+       Size 45 60
+       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
+       "Transition width" 0
+       Range 0.005
+      }
+      ImageWidgetClass "{597F65E45416BD5A}" {
+       Name "m_staminaProgress"
+       Slot OverlayWidgetSlot "{599ADB1466E2052D}" {
+       }
+       Opacity 0.75
+       Texture "{4762CA1C4E5BCCBA}Assets/UI/EL_StatsBars.imageset"
+       Image "Stamina"
+       Size 45 60
+       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
+      }
+     }
+    }
+    OverlayWidgetClass "{599ADB1440D6120D}" {
+     Name "m_hungerIndicator"
+     Slot LayoutSlot "{599ADB1440D61213}" {
+      Padding 10 0 10 0
+     }
+     Opacity 0.75
+     {
+      ImageWidgetClass "{599ADB170EB78E70}" {
+       Name "m_hungerOutline"
+       Slot OverlayWidgetSlot "{599ADB14CDDB52CA}" {
+       }
+       Opacity 0.75
+       Texture "{ABAB6447C4767279}Assets/UI/EL_StatsOutlines.imageset"
+       Image "Hunger"
+       Size 45 60
+       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
+       "Transition width" 0
+       Range 0.005
+      }
+      ImageWidgetClass "{599ADB1CA7BCA351}" {
+       Name "m_hungerProgress"
+       Slot OverlayWidgetSlot "{599ADB1466E2052D}" {
+       }
+       Opacity 0.75
+       Texture "{4762CA1C4E5BCCBA}Assets/UI/EL_StatsBars.imageset"
+       Image "Hunger"
+       Size 45 60
+       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
+      }
+     }
+    }
+    OverlayWidgetClass "{599ADB1449235ED0}" {
+     Name "m_thirstIndicator"
+     Slot LayoutSlot "{599ADB1449235EBB}" {
+      Padding 10 0 10 0
+     }
+     Opacity 0.75
+     {
+      ImageWidgetClass "{599ADB17878342FB}" {
+       Name "m_thirstOutline"
+       Slot OverlayWidgetSlot "{599ADB14CDDB52CA}" {
+       }
+       Opacity 0.75
+       Texture "{ABAB6447C4767279}Assets/UI/EL_StatsOutlines.imageset"
+       Image "Thirst"
+       Size 45 60
+       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
+       "Transition width" 0
+       Range 0.005
+      }
+      ImageWidgetClass "{597F65E5F0519E98}" {
+       Name "m_thirstProgress"
+       Slot OverlayWidgetSlot "{599ADB1464200127}" {
+       }
+       Opacity 0.75
+       Texture "{4762CA1C4E5BCCBA}Assets/UI/EL_StatsBars.imageset"
+       Image "Thirst"
+       Size 45 60
+       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
+      }
+     }
+    }
+    TextWidgetClass "{599175DBA38071FC}" {
+     Name "m_moneyIndicator"
+     Slot LayoutSlot "{599ADB14359CFF51}" {
+      VerticalAlign 1
+      Padding 0 0 30 0
+     }
+     Opacity 0.75
+     Text "$ -"
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+    }
+   }
+  }
+ }
+}

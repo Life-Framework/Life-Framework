@@ -1,0 +1,40 @@
+EL_NpcBaseEntity : "{NpcBase}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "PoliceDutyNPC"
+ components {
+  CharacterIdentityComponent "{IdentityID}" {
+   Identity Identity "{IdentityData}" {
+    Name "Police Sergeant"
+    Surname "Duty"
+   }
+  }
+  ActionsManagerComponent "{ActionsID}" {
+   ActionContexts {
+    UserActionContext "{ContextID}" {
+     ContextName "Duty"
+     Position PointInfo "{PosID}" {
+      Offset 0 0.5 0
+     }
+     Radius 2.0
+    }
+   }
+   additionalActions {
+    EL_DutyAction "{DutyActionID}" {
+     ParentContextList {
+      "Duty"
+     }
+     UIInfo UIInfo "{UIID}" {
+      Name "Toggle Duty"
+     }
+    }
+    EL_OpenPoliceMenuAction "{MenuActionID}" {
+     ParentContextList {
+      "Duty"
+     }
+     UIInfo UIInfo "{MenuUIID}" {
+      Name "Open Police Menu"
+     }
+    }
+   }
+  }
+ }
+}

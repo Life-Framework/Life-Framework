@@ -1,0 +1,34 @@
+FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialog.layout" {
+ {
+  VerticalLayoutWidgetClass "{SHOP_ROOT_LAYOUT}" {
+   {
+    TextWidgetClass "{SHOP_TITLE}" {
+     Text "Shop"
+     "Font Size" 24
+     Slot LayoutSlot "{SHOP_TITLE_SLOT}" {
+      HorizontalAlign 1
+      Padding 0 20 0 10
+     }
+    }
+    ScrollLayoutWidgetClass "{SHOP_SCROLL}" {
+     Slot LayoutSlot "{SHOP_SCROLL_SLOT}" {
+      SizeMode Fill
+      FillWeight 1
+      Padding 20 10 20 10
+     }
+     {
+      VerticalLayoutWidgetClass "{SHOP_ITEM_LIST}" {
+       Name "ItemList"
+      }
+     }
+    }
+    ButtonWidgetClass "{SHOP_CLOSE_BTN}" : "{0114A06AD44D49BD}UI/layouts/WidgetLibrary/Buttons/DialogButtonCancel.layout" {
+     Name "CloseButton"
+     Slot LayoutSlot "{SHOP_CLOSE_SLOT}" {
+      Padding 20 20 20 20
+     }
+    }
+   }
+  }
+ }
+}

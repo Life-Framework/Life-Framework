@@ -1,0 +1,15 @@
+GenericEntity : "{B92446456ECA70AB}Prefabs/Items/Core/ConsumeableItem_Base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CommonItemType "DRINK"
+   }
+  }
+  SCR_ConsumableItemComponent "{5AD2A3AD8402632B}" {
+   m_ConsumableEffect EL_ConsumableEffectSurvival "{NEW_EFFECT_GUID}" {
+    m_fThirstRestore 25
+   }
+  }
+ }
+}

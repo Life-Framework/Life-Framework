@@ -1,0 +1,25 @@
+GenericEntity : "{61C577C0E2A178A6}Prefabs/Items/Food/Food_Base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Apple"
+     Description "Fruit from the apple tree"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.2
+     SizeSetupStrategy Volume
+     ItemVolume 113
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{5966FD8070F889C7}" {
+     HandAdditiveRotation 90 0 -90
+     HandAdditiveTranslation 0 0.02 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{D0566D3CAE967F4D}Assets/Items/Food/Apple/Apple.xob"
+  }
+ }
+}

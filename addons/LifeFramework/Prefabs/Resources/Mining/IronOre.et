@@ -1,0 +1,50 @@
+GenericEntity {
+ ID "59A73088FCD22CE8"
+ components {
+  MeshObject "{59A73088D86C4A23}" {
+   Object "{6399C4DB701BF230}Assets/Resources/Mining/MetalOre.xob"
+   Materials {
+    MaterialAssignClass "{59A73088CE0292A6}" {
+     SourceMaterial "Material"
+     AssignedMaterial "{29473C87C35726A4}Assets/Resources/Mining/Data/Iron.emat"
+    }
+   }
+  }
+  RigidBody "{59A73088D86C4A1C}" {
+   LayerPreset "RockFireView"
+   Mass 1000
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+   Static 1
+  }
+  RplComponent "{59A73088D86C4A13}" {
+  }
+  ActionsManagerComponent "{ActionsID}" {
+   ActionContexts {
+    UserActionContext "{ContextID}" {
+     ContextName "Mine"
+     Position PointInfo "{PosID}" {
+      Offset 0 0.5 0
+     }
+     Radius 1.0
+    }
+   }
+   additionalActions {
+    EL_GatherAction "{GatherID}" {
+     ParentContextList {
+      "Mine"
+     }
+     UIInfo UIInfo "{UIID}" {
+      Name "Mine Iron"
+     }
+     Duration 5
+     m_GatherItemPrefab "{IronNuggetPrefab}Prefabs/Resources/Mining/IronNugget.et"
+     m_GatherAmount 1
+     m_GatherAmountMax 5
+     m_GatherTimeout 300000  // 5 minutes respawn
+    }
+   }
+  }
+ }
+ coords 103.106 0.097 132.47
+}

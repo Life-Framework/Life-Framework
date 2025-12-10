@@ -1,0 +1,16 @@
+EL_NpcBaseEntity PoliceDutyNPC {
+ coords 125 0 135
+ {
+  EL_NpcBaseEntity TomatoNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Tomato"
+      Surname "Trader"
+     }
+    }
+   }
+   coords -19.551 -0.001 -1
+  }
+ }
+}

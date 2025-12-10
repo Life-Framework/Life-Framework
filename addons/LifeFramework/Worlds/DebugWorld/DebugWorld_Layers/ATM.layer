@@ -1,0 +1,38 @@
+EL_BankTerminal ATM_Debug {
+ components {
+  MeshObject "{5A4B0B84C86D5843}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{5A4B0B84C86D5844}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{5A4B0B84C86D5845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86D5846}" {
+     ContextName "default"
+     Position PointInfo "{5A4B0B84C86D5847}" {
+      Offset 0 0.0873 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    EL_ATMAction "{5A4B0B84C86D5848}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86D5849}" {
+      Name "#EL-ATM_Title"
+      Description "Gestionar cuenta bancaria"
+     }
+    }
+   }
+  }
+  RplComponent "{5A4B0B84C86D584A}" {
+   Enabled 1
+  }
+ }
+ coords 120 0 130
+}

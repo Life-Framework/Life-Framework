@@ -1,0 +1,60 @@
+SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base.et" {
+ ID "520EC961A090B1EE"
+ components {
+  CharacterSoundComponent "{520EA1D2F659CF84}" {
+   Filenames + {
+    "{12A94705DF2BFD25}Sounds/Items/_SharedData/PickUp/Items_PickUp_Generic.acp"
+   }
+  }
+  CharacterIdentityComponent "{5584CBC63E092DBC}" {
+   Override 1
+   Identity Identity "{5584CBC6363C648B}" {
+    Name ""
+    Alias ""
+    Surname ""
+   }
+  }
+  EL_CharacterATMComponent "{ATM_GUID}" {
+   // Add any props if needed
+  }
+  EL_CharacterSurvivalComponent "{SURVIVAL_GUID}" {
+   // Add any props if needed
+  }
+  EL_PropertyComponent "{PROPERTY_GUID}" {
+   // Add any props if needed
+  }
+  EL_GroupComponent "{GROUP_GUID}" {
+   // Add any props if needed
+  }
+  ActionsManagerComponent "{ACTIONS_GUID}" {
+   ActionContexts {
+    UserActionContext "{CONTEXT_GUID}" {
+     Position PointInfo "{POINT_GUID}" {
+      Offset 0 1.5 0
+     }
+     Actions + {
+      "{SHOWID_ACTION_GUID}" {
+       Class "EL_ShowIDAction"
+       DisplayName "#EL-ShowID_DisplayName"
+       Icon "Icons/assets/Icons/eye.edds"
+       Distance 1.5
+       ActivationDistance 1.5
+       ShowInContextMenu 1
+       ShowInQuickbar 0
+       ShowInActionsMenu 1
+      }
+      "{CONFISCATE_ACTION_GUID}" {
+       Class "EL_ConfiscateAction"
+       DisplayName "#EL-Confiscate_DisplayName"
+       Icon "Icons/assets/Icons/confiscate.edds"
+       Distance 5.0
+       ActivationDistance 5.0
+       ShowInContextMenu 1
+       ShowInQuickbar 0
+       ShowInActionsMenu 1
+      }
+     }
+    }
+   }
+ }
+}

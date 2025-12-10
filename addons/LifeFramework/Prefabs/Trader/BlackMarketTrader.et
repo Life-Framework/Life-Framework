@@ -1,0 +1,66 @@
+GenericEntity {
+ ID "598F21A86EB5B490"
+ components {
+  EL_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
+   Attributes SCR_ItemAttributeCollection "{59693C53B153D96B}" {
+    ItemDisplayName UIInfo "{59693C53AAB06F2D}" {
+     Name "Black Market Trade"
+     Description "Trade illegal items"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes "{59693C53A3873124}" {
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{59693C53D4D18183}" {
+      CameraOrbitAngles 330 30 0
+      CameraDistanceToItem 1
+     }
+    }
+    CommonItemType "NONE"
+    m_Size SLOT_3x3
+    m_SlotType SLOT_ANY
+   }
+   m_fMaxWeight 1000
+   m_TradablePrefabs {
+    "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
+    "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et"
+   }
+  }
+  EL_TraderManagerComponent "{59693C53B6A5EFC0}" {
+   m_ItemToReceive "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+   m_ItemToGive "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
+  }
+  MeshObject "{59670CE9C98E5BAF}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{59670CE9C98E5B27}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{59670CE9C98E5814}" {
+   ActionContexts {
+    UserActionContext "{59670CE9C98E5829}" {
+     ContextName "default"
+     Position PointInfo "{59670CE9C98E582A}" {
+      Offset 0 0.0873 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    EL_OpenTraderAction "{59670CE9FBF3C749}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{59670CE9F9F9794D}" {
+      Name "Black Market"
+      Description "Trade illegal items and weapons"
+     }
+    }
+   }
+  }
+  RplComponent "{59670CE9C98E581E}" {
+   Enabled 1
+  }
+ }
+}

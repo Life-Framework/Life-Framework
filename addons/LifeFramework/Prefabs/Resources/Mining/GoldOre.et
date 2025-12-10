@@ -1,0 +1,50 @@
+GenericEntity {
+ ID "59A73088C02F1385"
+ components {
+  MeshObject "{59A73088DB3D50B3}" {
+   Object "{6399C4DB701BF230}Assets/Resources/Mining/MetalOre.xob"
+   Materials {
+    MaterialAssignClass "{59A73088D2C4BAC0}" {
+     SourceMaterial "Material"
+     AssignedMaterial "{9C005A256F4C2921}Assets/Resources/Mining/Data/Gold.emat"
+    }
+   }
+  }
+  RigidBody "{59A73088DB3D50AF}" {
+   LayerPreset "RockFireView"
+   Mass 1000
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+   Static 1
+  }
+  RplComponent "{59A73088DB3D50A3}" {
+  }
+  ActionsManagerComponent "{ActionsID}" {
+   ActionContexts {
+    UserActionContext "{ContextID}" {
+     ContextName "Mine"
+     Position PointInfo "{PosID}" {
+      Offset 0 0.5 0
+     }
+     Radius 1.0
+    }
+   }
+   additionalActions {
+    EL_GatherAction "{GatherID}" {
+     ParentContextList {
+      "Mine"
+     }
+     UIInfo UIInfo "{UIID}" {
+      Name "Mine Gold"
+     }
+     Duration 5
+     m_GatherItemPrefab "{GoldNuggetPrefab}Prefabs/Resources/Mining/GoldNugget.et"
+     m_GatherAmount 1
+     m_GatherAmountMax 3
+     m_GatherTimeout 600000  // 10 minutes respawn
+    }
+   }
+  }
+ }
+ coords 105.117 0.097 132.47
+}

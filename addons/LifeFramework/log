@@ -1,0 +1,52 @@
+
+RESOURCES    : ResourceBuildTaskSerial 'Reimporting 8 resources'
+ RESOURCES    : Rebuilding @"UI/Layouts/EL_ATMMenu.layout"
+  RESOURCES    : Resource post-build load @"{8012E7D806E87F1A}UI/Layouts/EL_ATMMenu.layout"
+   RESOURCES    : GetResourceObject @"{8012E7D806E87F1A}UI/Layouts/EL_ATMMenu.layout"
+    GUI          : Layout load @"{8012E7D806E87F1A}UI/Layouts/EL_ATMMenu.layout"
+     GUI       (E): Unknown keyword/data 'Horizontal Align' at offset 255(0xff)
+     GUI       (E): Unknown keyword/data 'Horizontal Align' at offset 447(0x1bf)
+ RESOURCES    : Rebuilding @"UI/Layouts/EL_SurvivalHUD.layout"
+  RESOURCES    : Resource post-build load @"{64B1F5DD29214016}UI/Layouts/EL_SurvivalHUD.layout"
+   RESOURCES    : GetResourceObject @"{64B1F5DD29214016}UI/Layouts/EL_SurvivalHUD.layout"
+    GUI          : Layout load @"{64B1F5DD29214016}UI/Layouts/EL_SurvivalHUD.layout"
+     GUI       (E): Unexpected data '<' at offset 1(0x1)
+    RESOURCES (E): Failed to load
+ RESOURCES    : Rebuilding @"UI/Layouts/FurnitureShopMenu.layout"
+  RESOURCES    : Resource post-build load @"{21A17D11E5D2CA0B}UI/Layouts/FurnitureShopMenu.layout"
+   RESOURCES    : GetResourceObject @"{21A17D11E5D2CA0B}UI/Layouts/FurnitureShopMenu.layout"
+    GUI          : Layout load @"{21A17D11E5D2CA0B}UI/Layouts/FurnitureShopMenu.layout"
+     GUI       (E): Unknown keyword/data 'Horizontal Align' at offset 276(0x114)
+ RESOURCES    : Rebuilding @"UI/Layouts/GarageMenu.layout"
+  RESOURCES    : Resource post-build load @"{1AD7604C56079619}UI/Layouts/GarageMenu.layout"
+   RESOURCES    : GetResourceObject @"{1AD7604C56079619}UI/Layouts/GarageMenu.layout"
+    GUI          : Layout load @"{1AD7604C56079619}UI/Layouts/GarageMenu.layout"
+     GUI       (E): Unknown keyword/data 'Horizontal Align' at offset 263(0x107)
+ RESOURCES    : Rebuilding @"UI/Layouts/GroupInviteDialog.layout"
+  RESOURCES    : Resource post-build load @"{7D15F0F463C334B0}UI/Layouts/GroupInviteDialog.layout"
+   RESOURCES    : GetResourceObject @"{7D15F0F463C334B0}UI/Layouts/GroupInviteDialog.layout"
+    GUI          : Layout load @"{7D15F0F463C334B0}UI/Layouts/GroupInviteDialog.layout"
+     GUI       (E): Unknown keyword/data 'Horizontal Align' at offset 270(0x10e)
+     GUI       (E): Unknown class 'ListBoxWidgetClass' at offset 576(0x240)
+     GUI       (E): Unknown keyword/data 'Text' at offset 930(0x3a2)
+     GUI       (E): Unknown keyword/data 'Text' at offset 1233(0x4d1)
+ RESOURCES    : Rebuilding @"UI/Layouts/GroupMenu.layout"
+  RESOURCES    : Resource post-build load @"{836A28A7B45D42F4}UI/Layouts/GroupMenu.layout"
+   RESOURCES    : GetResourceObject @"{836A28A7B45D42F4}UI/Layouts/GroupMenu.layout"
+    GUI          : Layout load @"{836A28A7B45D42F4}UI/Layouts/GroupMenu.layout"
+     GUI       (E): Unknown keyword/data 'Horizontal Align' at offset 262(0x106)
+     GUI       (E): Unknown keyword/data 'Placeholder' at offset 582(0x246)
+     GUI       (E): Unknown keyword/data 'Text' at offset 875(0x36b)
+     GUI       (E): Unknown keyword/data 'Placeholder' at offset 1609(0x649)
+     GUI       (E): Unknown keyword/data 'Text' at offset 1895(0x767)
+     GUI       (E): Unknown keyword/data 'Text' at offset 2175(0x87f)
+     GUI       (E): Unknown keyword/data 'Text' at offset 2603(0xa2b)
+     GUI       (E): Unknown keyword/data 'Text' at offset 2873(0xb39)
+     GUI       (E): Unknown keyword/data 'Text' at offset 3141(0xc45)
+     GUI       (E): Unknown keyword/data 'Text' at offset 3415(0xd57)
+     GUI       (E): Unknown keyword/data 'Text' at offset 3692(0xe6c)
+ RESOURCES    : Rebuilding @"UI/Layouts/PropertyMenu.layout"
+  RESOURCES    : Resource post-build load @"{6EDC6B3C72A14911}UI/Layouts/PropertyMenu.layout"
+   RESOURCES    : GetResourceObject @"{6EDC6B3C72A14911}UI/Layouts/PropertyMenu.layout"
+    GUI          : Layout load @"{6EDC6B3C72A14911}UI/Layouts/PropertyMenu.layout"
+     GUI       (E): Unknown keyword/data 'Horizontal Align' at offset 271(0x10f)

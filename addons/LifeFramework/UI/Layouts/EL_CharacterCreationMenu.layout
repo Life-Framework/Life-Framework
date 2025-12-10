@@ -1,0 +1,444 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ {
+  ImageWidgetClass "{63D2E3F4A5B6C834}" {
+   Name "BackgroundBlur"
+   Slot FrameWidgetSlot "{63D2E3F4A5B6C845}" {
+    Anchor 0 0 1 1
+   }
+   Color 0 0 0 1
+  }
+  SizeLayoutWidgetClass "{63D2E3F4A5B6C856}" {
+   Name "ContentSize"
+   Slot FrameWidgetSlot "{63D2E3F4A5B6C801}" {
+    Anchor 0.5 0.5 0.5 0.5
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 30
+    OffsetBottom -30
+    Alignment 0.5 0.5
+    SizeToContent 1
+   }
+   "Z Order" 2
+   AllowWidthOverride 1
+   WidthOverride 1100
+   AllowHeightOverride 1
+   HeightOverride 1000
+   {
+    OverlayWidgetClass "{63D2E3F4A5B6C812}" {
+     Name "Overlay0"
+     Slot AlignableSlot "{63D2E3F4A5B6C823}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{63D2E3F4A5B6C878}" {
+       Name "Background"
+       Slot OverlayWidgetSlot "{63D2E3F4A5B6C889}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.02 0.02 0.05 1
+      }
+      VerticalLayoutWidgetClass "{63D2E3F4A5B6C890}" {
+       Name "VerticalLayout0"
+       Slot OverlayWidgetSlot "{63D2E3F4A5B6C8A1}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        Padding 30 30 30 30
+       }
+       {
+        HorizontalLayoutWidgetClass "{63D2E3F4A5B6C8B0}" {
+         Name "Title"
+         Slot LayoutSlot "{63D2E3F4A5B6C8C3}" {
+          Padding 0 0 0 50
+         }
+         {
+          SizeLayoutWidgetClass "{63D2E3F4A5B6C8B1}" {
+           Name "SizeLayout0"
+           Slot LayoutSlot "{63D2E3F4A5B6C8B2}" {
+            HorizontalAlign 0
+           }
+           {
+            TextWidgetClass "{63D2E3F4A5B6C8B3}" {
+             Name "boxTitle"
+             Slot AlignableSlot "{63D2E3F4A5B6C8B4}" {
+              HorizontalAlign 0
+              VerticalAlign 3
+             }
+             Color 0.2 0.8 1 1
+             Text "CREAR PERSONAJE"
+             "Font Size" 40
+             "Min Font Size" 40
+             FontProperties FontProperties "{63D2E3F4A5B6C8B5}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{63D2E3F4A5B6C8C0}" {
+         Name "Content"
+         Slot LayoutSlot "{63D2E3F4A5B6C8C1}" {
+          SizeMode Fill
+         }
+         {
+          VerticalLayoutWidgetClass "{63D2E3F4A5B6C867}" {
+           Name "Left"
+           Slot LayoutSlot "{63D2E3F4A5B6C878}" {
+            SizeMode Fill
+            FillWeight 0.5
+           }
+           {
+            ButtonWidgetClass "{6536AA5C55EF62B5}" : "{0022F0B45ADBC5AC}UI/layouts/WidgetLibrary/EditBox/WLib_EditBox.layout" {
+             Name "FirstNameEditBox"
+             Slot LayoutSlot "{6534C0C65630D394}" {
+              Padding 0 0 0 20
+              SizeMode Fill
+             }
+             Color 0.0078 0.0118 0.0157 0
+             components {
+              SCR_EditBoxComponent "{547290FFBD5B33E9}" {
+               m_bUseLabel 0
+               m_sLabel ""
+               m_fSizeWithLabel 100
+               m_fSizeWithoutLabel 100
+               m_BackgroundDefault 0 0 0 1
+              }
+             }
+             {
+              VerticalLayoutWidgetClass "{5AA4D27F39EB2514}" {
+               Prefab "{5AA4D27F39EB2514}"
+               {
+                SizeLayoutWidgetClass "{5538C205B27B0F5D}" {
+                 Prefab "{5538C205B27B0F5D}"
+                 Slot LayoutSlot "{5AA4D278E4FF4B3D}" {
+                 }
+                 {
+                  OverlayWidgetClass "{55367D8E531FD623}" {
+                   Prefab "{55367D8E531FD623}"
+                   Slot AlignableSlot "{55367D8E531FD640}" {
+                    Padding 0 0 0 0
+                   }
+                   {
+                    HorizontalLayoutWidgetClass "{55367D8E4592BC6E}" {
+                     Prefab "{55367D8E4592BC6E}"
+                     Slot OverlayWidgetSlot "{55367D8E4592B383}" {
+                      Padding 0 8 0 8
+                     }
+                     {
+                      OverlayWidgetClass "{5538C2059A570E94}" {
+                       Prefab "{5538C2059A570E94}"
+                       {
+                        HorizontalLayoutWidgetClass "{58D095EE846E2B93}" {
+                         Prefab "{58D095EE846E2B93}"
+                         {
+                          EditBoxWidgetClass "{5538C2058B18F877}" {
+                           Prefab "{5538C2058B18F877}"
+                           components {
+                            EditBoxFilterComponent "{5538D70DF38310BC}" {
+                             m_iCharacterLimit 28
+                             m_bPunctuation 0
+                             m_bNumbers 0
+                             m_bUTFMultibyte 0
+                            }
+                           }
+                           Color 0.2 0.8 1 1
+                           "Font Size" 25
+                           "Placeholder text" "Ingresa tu nombre..."
+                           FontProperties FontProperties "{554896CC8367BD77}" {
+                            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+            ButtonWidgetClass "{6538F3A1E54B735A}" : "{0022F0B45ADBC5AC}UI/layouts/WidgetLibrary/EditBox/WLib_EditBox.layout" {
+             Name "LastNameEditBox"
+             Slot LayoutSlot "{6534C0C65630D395}" {
+              Padding 0 10 0 20
+              SizeMode Fill
+             }
+             Color 0.0078 0.0118 0.0157 0
+             components {
+              SCR_EditBoxComponent "{547290FFBD5B33E9}" {
+               m_bUseLabel 0
+               m_sLabel ""
+               m_fSizeWithLabel 100
+               m_fSizeWithoutLabel 100
+               m_BackgroundDefault 0 0 0 1
+              }
+             }
+             {
+              VerticalLayoutWidgetClass "{5AA4D27F39EB2514}" {
+               Prefab "{5AA4D27F39EB2514}"
+               {
+                SizeLayoutWidgetClass "{5538C205B27B0F5D}" {
+                 Prefab "{5538C205B27B0F5D}"
+                 Slot LayoutSlot "{5AA4D278E4FF4B3D}" {
+                 }
+                 {
+                  OverlayWidgetClass "{55367D8E531FD623}" {
+                   Prefab "{55367D8E531FD623}"
+                   Slot AlignableSlot "{55367D8E531FD640}" {
+                    Padding 0 0 0 0
+                   }
+                   {
+                    HorizontalLayoutWidgetClass "{55367D8E4592BC6E}" {
+                     Prefab "{55367D8E4592BC6E}"
+                     Slot OverlayWidgetSlot "{55367D8E4592B383}" {
+                      Padding 0 8 0 8
+                     }
+                     {
+                      OverlayWidgetClass "{5538C2059A570E94}" {
+                       Prefab "{5538C2059A570E94}"
+                       {
+                        HorizontalLayoutWidgetClass "{58D095EE846E2B93}" {
+                         Prefab "{58D095EE846E2B93}"
+                         {
+                          EditBoxWidgetClass "{5538C2058B18F877}" {
+                           Prefab "{5538C2058B18F877}"
+                           components {
+                            EditBoxFilterComponent "{5538D70DF38310BC}" {
+                             m_iCharacterLimit 28
+                             m_bPunctuation 0
+                             m_bNumbers 0
+                             m_bUTFMultibyte 0
+                            }
+                           }
+                           Color 0.2 0.8 1 1
+                           "Font Size" 25
+                           "Placeholder text" "Ingresa tu apellido..."
+                           FontProperties FontProperties "{554896CC8367BD77}" {
+                            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+            ButtonWidgetClass "{6536AA5C16A04AE8}" : "{0022F0B45ADBC5AC}UI/layouts/WidgetLibrary/EditBox/WLib_EditBox.layout" {
+             Name "AgeEditBox"
+             Slot LayoutSlot "{6534C0C65630D396}" {
+              Padding 0 10 0 20
+              SizeMode Fill
+             }
+             Color 0.0078 0.0118 0.0157 0
+             components {
+              SCR_EditBoxComponent "{547290FFBD5B33E9}" {
+               m_bUseLabel 0
+               m_sLabel ""
+               m_fSizeWithLabel 100
+               m_fSizeWithoutLabel 100
+               m_BackgroundDefault 0 0 0 1
+              }
+             }
+             {
+              VerticalLayoutWidgetClass "{5AA4D27F39EB2514}" {
+               Prefab "{5AA4D27F39EB2514}"
+               {
+                SizeLayoutWidgetClass "{5538C205B27B0F5D}" {
+                 Prefab "{5538C205B27B0F5D}"
+                 Slot LayoutSlot "{5AA4D278E4FF4B3D}" {
+                 }
+                 {
+                  OverlayWidgetClass "{55367D8E531FD623}" {
+                   Prefab "{55367D8E531FD623}"
+                   Slot AlignableSlot "{55367D8E531FD640}" {
+                    Padding 0 0 0 0
+                   }
+                   {
+                    HorizontalLayoutWidgetClass "{55367D8E4592BC6E}" {
+                     Prefab "{55367D8E4592BC6E}"
+                     Slot OverlayWidgetSlot "{55367D8E4592B383}" {
+                      Padding 0 8 0 8
+                     }
+                     {
+                      OverlayWidgetClass "{5538C2059A570E94}" {
+                       Prefab "{5538C2059A570E94}"
+                       {
+                        HorizontalLayoutWidgetClass "{58D095EE846E2B93}" {
+                         Prefab "{58D095EE846E2B93}"
+                         {
+                          EditBoxWidgetClass "{5538C2058B18F877}" {
+                           Prefab "{5538C2058B18F877}"
+                           components {
+                            EditBoxFilterComponent "{5538D70DF38310BC}" {
+                             m_iCharacterLimit 2
+                             m_bPunctuation 0
+                             m_bASCIIchars 0
+                             m_bUTFMultibyte 0
+                            }
+                           }
+                           Color 0.2 0.8 1 1
+                           "Font Size" 25
+                           "Placeholder text" "18-99"
+                           FontProperties FontProperties "{554896CC8367BD77}" {
+                            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+            VerticalLayoutWidgetClass "{63D2E3F4A5B6CC01}" {
+             Name "RaceButtons"
+             Slot LayoutSlot "{63D2E3F4A5B6CC12}" {
+              Padding 0 0 0 0
+             }
+             {
+              ButtonWidgetClass "{63D2E3F4A5B6CC23}" {
+               Name "RaceCaucasianButton"
+               Slot LayoutSlot "{63D2E3F4A5B6CC34}" {
+                Padding 0 0 0 15
+               }
+               Color 0.3 0.5 0.7 1
+               {
+                TextWidgetClass "{63D2E3F4A5B6CC45}" {
+                 Slot LayoutSlot "{63D2E3F4A5B6CC56}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                  Padding 20 12 20 12
+                 }
+                 Color 1 1 1 1
+                 Text "CAUCÁSICO"
+                 "Font Size" 18
+                }
+               }
+              }
+              ButtonWidgetClass "{63D2E3F4A5B6CD63}" {
+               Name "RaceAfricanButton"
+               Slot LayoutSlot "{63D2E3F4A5B6CD74}" {
+                Padding 0 0 0 15
+               }
+               Color 0.3 0.5 0.7 1
+               {
+                TextWidgetClass "{63D2E3F4A5B6CD85}" {
+                 Slot LayoutSlot "{63D2E3F4A5B6CD96}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                  Padding 20 12 20 12
+                 }
+                 Color 1 1 1 1
+                 Text "AFRICANO"
+                 "Font Size" 18
+                }
+               }
+              }
+              ButtonWidgetClass "{63D2E3F4A5B6CDA7}" {
+               Name "RaceAsianButton"
+               Slot LayoutSlot "{63D2E3F4A5B6CDB8}" {
+                Padding 0 0 0 0
+               }
+               Color 0.3 0.5 0.7 1
+               {
+                TextWidgetClass "{63D2E3F4A5B6CDC9}" {
+                 Slot LayoutSlot "{63D2E3F4A5B6CDD0}" {
+                  HorizontalAlign 3
+                  VerticalAlign 3
+                  Padding 20 12 20 12
+                 }
+                 Color 1 1 1 1
+                 Text "ASIÁTICO"
+                 "Font Size" 18
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+          VerticalLayoutWidgetClass "{63031778CF45273E}" {
+           Name "Right"
+           Slot LayoutSlot "{63031778CF45273F}" {
+            SizeMode Fill
+            FillWeight 0.5
+           }
+           {
+            OverlayWidgetClass "{6303176F47F6B80F}" {
+             Name "PreviewOverlay"
+             Slot LayoutSlot "{6303176F47F6B822}" {
+              SizeMode Fill
+             }
+             {
+              ImageWidgetClass "{6303176F47F6B80E}" {
+               Name "CharacterPreview"
+               Slot OverlayWidgetSlot "{6303176F47F6B823}" {
+                HorizontalAlign 3
+                VerticalAlign 3
+               }
+               Opacity 0.8
+               Color 1 1 1 1
+               "Inherit Color" 1
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+        HorizontalLayoutWidgetClass "{63031778CF449674}" {
+         Name "BottomButtons"
+         Slot LayoutSlot "{63031778CF449675}" {
+          VerticalAlign 2
+          Padding 0 30 0 0
+          SizeMode Fill
+         }
+         {
+          ButtonWidgetClass "{63D2E3F4A5B6CE91}" : "{C42847838185932E}UI/layouts/WidgetLibrary/Buttons/WLib_InputButton.layout" {
+           Name "CreateButton"
+           Slot LayoutSlot "{63D2E3F4A5B6CEA2}" {
+            HorizontalAlign 2
+            SizeMode Fill
+           }
+           components {
+            SCR_InputButtonComponent "{5D346C3DD81D95CD}" {
+             m_sActionName "MenuSelectHold"
+             m_sLabel "CREAR PERSONAJE"
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

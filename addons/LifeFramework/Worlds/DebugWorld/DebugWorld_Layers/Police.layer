@@ -1,0 +1,38 @@
+GenericEntity PoliceStation_Debug {
+ components {
+  MeshObject "{5A4B0B84C86D7843}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{5A4B0B84C86D7844}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{5A4B0B84C86D7845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86D7846}" {
+     ContextName "default"
+     Position PointInfo "{5A4B0B84C86D7847}" {
+      Offset 0 0.0873 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    EL_DutyAction "{5A4B0B84C86D7848}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86D7849}" {
+      Name "Toggle Duty"
+      Description "Entrar/Salir de servicio policial"
+     }
+    }
+   }
+  }
+  RplComponent "{5A4B0B84C86D784A}" {
+   Enabled 1
+  }
+ }
+ coords 126 0 136
+}
