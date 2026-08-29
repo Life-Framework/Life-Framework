@@ -4,12 +4,9 @@ class EL_CharacterCreationManager : Managed
 
 	protected const int FLOW_POLL_DELAY_MS = 100;
 
-	//! Strong ref: the faction picker is a plain widget controller (not a MenuManager menu) and
+//! Strong ref: the faction picker is a plain widget controller (not a MenuManager menu) and
 	//! must survive until the player clicks a faction.
 	protected ref EL_FactionSelectionMenu m_FactionMenu;
-
-	//! Same for the name/age dialog.
-	protected ref EL_CharacterCreationMenu m_CreationMenu;
 
 	//------------------------------------------------------------------------------------------------
 	static EL_CharacterCreationManager GetInstance()
@@ -74,17 +71,31 @@ class EL_CharacterCreationManager : Managed
 		{
 			// Offer faction selection until the player made an explicit choice (CIVILIAN is both
 			// the default and a valid pick).
-			if (!account.WasFactionChosen())
+if (!account.WasFactionChosen())
 			{
 				ShowFactionSelectionMenu(playerController);
 				return;
 			}
 
-			ShowCharacterCreationMenu(playerController);
+			CreateAndSpawnDefaultCharacter(account, playerController);
 			return;
 		}
 
 		SpawnPlayer(playerId, playerController);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Faction chosen but no character yet: create a default character and spawn. The old
+	//! name/age creation menu was removed; this keeps the flow playable until a new creation
+	//! UI lands.
+	protected void CreateAndSpawnDefaultCharacter(EL_PlayerAccount account, PlayerController playerController)
+	{
+		ResourceName defaultPrefab = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
+		EL_PlayerCharacter character = EL_PlayerCharacter.Create(defaultPrefab, "Default", "Citizen", 30);
+		account.AddCharacter(character, true);
+		EL_Debug.Info("CharacterCreation", "created default character for player " + playerController.GetPlayerId());
+
+		SpawnPlayer(playerController.GetPlayerId(), playerController);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -102,19 +113,7 @@ class EL_CharacterCreationManager : Managed
 			EL_Debug.Error("CharacterCreation", "failed to open the faction selection menu");
 	}
 
-	//------------------------------------------------------------------------------------------------
-	protected void ShowCharacterCreationMenu(PlayerController playerController)
-	{
-		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
-		if (respawnSystem)
-			respawnSystem.DestroyLoadingPlaceholder();
-
-		m_CreationMenu = EL_CharacterCreationMenu.Open(playerController);
-		if (!m_CreationMenu)
-			EL_Debug.Error("CharacterCreation", "failed to open the character creation menu");
-	}
-
-	//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 	//! Called by the creation menu when the player submitted a valid name/age pair.
 	//! Creates the persistent character, spawns it through the spawn logic (which picks the faction
 	//! spawn point, hands control over and clears the splash) - the ATM/survival components init in
@@ -136,3 +135,29 @@ class EL_CharacterCreationManager : Managed
 
 		SpawnPlayer(playerController.GetPlayerId(), playerController);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawns the account's active character through the spawn logic. The spawn logic picks the
+	//! faction spawn point, hands control over and clears the splash on handover; the ATM/survival
+	//! components init in its post-spawn hook.
+	protected void SpawnPlayer(int playerId, PlayerController playerController)
+	{
+		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
+		EL_SpawnLogic spawnLogic;
+		if (respawnSystem)
+			spawnLogic = EL_SpawnLogic.Cast(respawnSystem.GetSpawnLogic());
+
+		if (!spawnLogic)
+		{
+			EL_Debug.Error("CharacterCreation", "no EL_SpawnLogic on the respawn system, cannot spawn player " + playerId);
+			return;
+		}
+
+		EL_Debug.Info("CharacterCreation", "spawning player " + playerId);
+		spawnLogic.SpawnPlayer_S(playerId);
+
+		// NOTE: the survival HUD is deliberately not opened here. Opened via OpenMenu it is a
+		// full-screen menu that captures input and traps the player; it needs to be integrated as
+		// a proper HUD element before it can come back.
+	}
+};
