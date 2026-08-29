@@ -137,4 +137,33 @@ class EL_LockComponent : ScriptComponent
 			keyComponent.GetHouseIdentifier(), m_sHouseIdentifier, matches));
 		return matches;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param user The character to search.
+	//! \return True when the user holds a matching key anywhere in their inventory or in the
+	//! left-hand gadget slot. Mirrors EL_VehicleLockComponent.UserHasValidKey so a key holder can
+	//! open a locked door.
+	bool UserHasValidKey(IEntity user)
+	{
+		if (!user)
+			return false;
+
+		CharacterControllerComponent characterController = EL_Component<CharacterControllerComponent>.Find(user);
+		if (characterController && IsValidKey(characterController.GetAttachedGadgetAtLeftHandSlot()))
+			return true;
+
+		SCR_InventoryStorageManagerComponent inventoryManager = EL_Component<SCR_InventoryStorageManagerComponent>.Find(user);
+		if (!inventoryManager)
+			return false;
+
+		array<IEntity> inventoryItems = {};
+		inventoryManager.GetAllRootItems(inventoryItems);
+		foreach (IEntity item : inventoryItems)
+		{
+			if (IsValidKey(item))
+				return true;
+		}
+
+		return false;
+	}
 }

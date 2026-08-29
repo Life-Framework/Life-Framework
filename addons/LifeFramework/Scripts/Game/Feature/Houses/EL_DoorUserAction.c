@@ -29,12 +29,28 @@ modded class SCR_DoorUserAction
 		if (!super.CanBePerformedScript(user))
 			return false;
 
-		if (m_pHouseLock && m_pHouseLock.IsLocked())
+		if (m_pHouseLock && m_pHouseLock.IsLocked() && !m_pHouseLock.UserHasValidKey(user))
 		{
 			SetCannotPerformReason("#EL-HouseLock_Reason");
 			return false;
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a valid key holder unlocks the door as they use it, matching the vehicle-lock UX.
+	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		super.PerformAction(pOwnerEntity, pUserEntity);
+
+		if (!Replication.IsServer())
+			return;
+
+		if (m_pHouseLock && m_pHouseLock.IsLocked() && m_pHouseLock.UserHasValidKey(pUserEntity))
+		{
+			m_pHouseLock.Unlock();
+			EL_Debug.Log("Houses", "door unlocked by valid key");
+		}
 	}
 };
