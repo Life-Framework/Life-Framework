@@ -1,14 +1,9 @@
 EL_GameModeRoleplay {
  ID "59751433747FB462"
  components {
-  EPF_PersistenceManagerComponent "{5D6F1C34679B4DC0}" {
-   components {
-    EPF_PersistentDoorStateManagerComponent "{5E0896B880761681}" {
-    }
-   }
-   m_pConnectionInfo EDF_JsonFileDbConnectionInfo "{5D6F1C3462E3EE02}" {
-    m_sDatabaseName "EveronLife"
-   }
+  Persistence "{2A52ABC1969D9E91}" {
+  }
+  EL_PersistenceComponent "{DD9C18EE120847A0}" {
   }
   SCR_DestructionManagerComponent "{59751432896EFC0B}" {
   }

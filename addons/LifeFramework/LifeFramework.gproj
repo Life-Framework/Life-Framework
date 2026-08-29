@@ -3,7 +3,7 @@ GameProject {
  GUID "79636E668EA37AC9"
  TITLE "LifeFramework"
  Dependencies {
-  "5D6EBC81EB1842EF" "58D0FB3206B6F859"
+  "58D0FB3206B6F859"
  }
  Configurations {
   GameProjectConfig PC {
