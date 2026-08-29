@@ -25,8 +25,9 @@ class EL_Whitelist
 	//------------------------------------------------------------------------------------------------
 	bool VerifyPlayer(string uuid)
 	{
-		PrintFormat("[%1-WHITELIST] Verifying UUID: %2 -> %3", SCR_Enum.GetEnumName(EL_WhitelistType, m_eType), uuid, m_aWhitelistUuids.Contains(uuid).ToString());
-		return m_aWhitelistUuids.Contains(uuid);
+		bool matches = m_aWhitelistUuids.Contains(uuid);
+		EL_Debug.Log("Whitelist", string.Format("verify uuid=%1 type=%2 match=%3", uuid, SCR_Enum.GetEnumName(EL_WhitelistType, m_eType), matches));
+		return matches;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -46,13 +47,10 @@ class EL_Whitelist
 
 		string uuid;
 		while (whitelistFile.ReadLine(uuid) > 0)
-		{
 			m_aWhitelistUuids.Insert(uuid);
-			PrintFormat("[%1-WHITELIST] Loaded UUID %2", SCR_Enum.GetEnumName(EL_WhitelistType, m_eType), uuid);
-		}
 
-		PrintFormat("[%1-WHITELIST] Loaded %2 UUIDs from file", SCR_Enum.GetEnumName(EL_WhitelistType, m_eType), m_aWhitelistUuids.Count());
 		whitelistFile.Close();
+		EL_Debug.Log("Whitelist", string.Format("loaded %1 uuids from %2", m_aWhitelistUuids.Count(), m_sWhitelistFilePath));
 	}
 
 	//------------------------------------------------------------------------------------------------

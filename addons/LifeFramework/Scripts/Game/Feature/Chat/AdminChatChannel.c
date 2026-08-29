@@ -24,6 +24,7 @@ class AdminChatChannel : BaseChatChannel
 				return false;
 
 			whitelistComponent.EnableWhitelistOnPlayer(uuid, type);
+			EL_Debug.Log("Chat", string.Format("admin !wadd type=%1 uuid=%2", SCR_Enum.GetEnumName(EL_WhitelistType, type), uuid));
 		}
 
 		return true;

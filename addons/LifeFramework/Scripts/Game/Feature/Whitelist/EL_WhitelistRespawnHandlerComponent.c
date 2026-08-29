@@ -25,12 +25,12 @@ class EL_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 
 		if (WhitelistExists(EL_WhitelistType.CONNECT) && !VerifyPlayer(EL_Utils.GetPlayerUID(playerId), EL_WhitelistType.CONNECT))
 		{
-			PrintFormat("[EL-WHITELIST] Blocked UUID %1 from joining (not on CONNECT whitelist)", EL_Utils.GetPlayerUID(playerId));
+			EL_Debug.Log("Whitelist", string.Format("join blocked: uuid=%1 not on CONNECT whitelist", EL_Utils.GetPlayerUID(playerId)));
 			GetGame().GetPlayerManager().KickPlayer(playerId, PlayerManagerKickReason.KICK, 10);
 			return;
 		}
 
-		PrintFormat("[EL-WHITELIST] Allowed UUID %1 to join", EL_Utils.GetPlayerUID(playerId));
+		EL_Debug.Log("Whitelist", string.Format("join allowed: uuid=%1", EL_Utils.GetPlayerUID(playerId)));
 		super.OnPlayerAuditSuccess(playerId);
 	}
 
