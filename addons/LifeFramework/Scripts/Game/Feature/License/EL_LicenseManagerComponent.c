@@ -391,7 +391,7 @@ class EL_LicenseManagerComponent : ScriptComponent
 			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(owner);
 			if (playerId <= 0) return false;
 			
-			string playerUID = GetGame().GetBackendApi().GetPlayerIdentityId(playerId);
+			string playerUID = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
 			if (!playerUID) return false;
 			
 			// Verificar whitelist para trabajos policiales

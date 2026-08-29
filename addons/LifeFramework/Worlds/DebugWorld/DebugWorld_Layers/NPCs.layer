@@ -1,5 +1,7 @@
 EL_NpcBaseEntity NPC_TestDebug {
  components {
+  EL_CharacterSurvivalComponent "{5A4B0B84C86DC84B}" {
+  }
   MeshObject "{5A4B0B84C86DC843}" {
    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
   }
@@ -7,8 +9,6 @@ EL_NpcBaseEntity NPC_TestDebug {
    Mass 10
    ModelGeometry 1
    Static 1
-  }
-  EL_CharacterSurvivalComponent "{5A4B0B84C86DC84B}" {
   }
   ActionsManagerComponent "{5A4B0B84C86DC845}" {
    ActionContexts {

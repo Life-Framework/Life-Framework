@@ -105,7 +105,7 @@ class EL_Utils : Managed
 		if (playerId > 0)
 		{
 			// Get the actual Steam UID, not just the player ID
-			string uid = GetGame().GetBackendApi().GetPlayerIdentityId(playerId);
+			string uid = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
 			if (!uid.IsEmpty())
 				return uid;
 		}
@@ -331,7 +331,7 @@ class EL_Utils : Managed
 		int playerId = playerManager.GetPlayerIdFromControlledEntity(player);
 		if (playerId > 0)
 		{
-			string uid = GetGame().GetBackendApi().GetPlayerIdentityId(playerId);
+			string uid = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
 			if (!uid.IsEmpty())
 				return uid;
 		}
@@ -346,7 +346,7 @@ class EL_Utils : Managed
 		if (playerId <= 0)
 			return "";
             
-		string uid = GetGame().GetBackendApi().GetPlayerIdentityId(playerId);
+		string uid = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
 		return uid;
 	}
 

@@ -11,11 +11,11 @@
 *.rdb.lock
 addons/LifeFramework/log
 
-# Vendored upstream reference (EveronLife upstream clone - never commit)
-addons/LifeFramework/EveronLife/
-
 # MCP server clones (managed via tools\cli.mjs - never commit)
 tools/mcp/*/
+
+# EnfusionMCP Workbench handler scripts (injected, never commit)
+addons/LifeFramework/Scripts/WorkbenchGame/
 
 # Editor temporary files
 *~

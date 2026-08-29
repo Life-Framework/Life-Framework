@@ -3,6 +3,7 @@ MetaFileClass {
  Configurations {
   TerrainResourceClass PC {
    BlocksPerTile 4
+   TerrainSurfaceBits 8
    TilesCount 4
    LayerSource SourceTextureClass "{596AB911E45293E5}" : "{A59F335F96C4442F}Configs/System/ResourceTypes/PC/TextureTerrainLayer.conf" {
    }
@@ -42,6 +43,8 @@ MetaFileClass {
    }
    SuperSource SourceTextureClass "{596AB911E4512756}" : "{5506B811545F4686}Configs/System/ResourceTypes/HEADLESS/TextureTerrainSuper.conf" {
    }
+  }
+  TerrainResourceClass PS5 : PC {
   }
  }
 }
