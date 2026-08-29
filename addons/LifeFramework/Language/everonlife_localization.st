@@ -619,6 +619,45 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
+   CustomStringTableItem "{59E16473F491A1FA}" {
+    Id "EL-ItemName_HouseKey"
+    Target_en_us "House Key"
+    Target_de_de "Hausschlüssel"
+    Target_fr_fr "Clé de maison"
+    Target_it_it "Chiave di casa"
+    Target_es_es "Llave de casa"
+    Target_pt_pt "Chave de casa"
+    Target_pt_br "Chave de casa"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{AB196A002192D0D2}" {
+    Id "EL-ItemDesc_HouseKey"
+    Target_en_us "Opens the house it is bound to."
+    Target_de_de "Öffnet das Haus, an das es gebunden ist."
+    Target_fr_fr "Ouvre la maison à laquelle elle est liée."
+    Target_it_it "Apre la casa a cui è legata."
+    Target_es_es "Abre la casa a la que está vinculada."
+    Target_pt_pt "Abre a casa à qual está vinculada."
+    Target_pt_br "Abre a casa à qual está vinculada."
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{DE354FA91223DF9C}" {
+    Id "EL-HouseLock_Reason"
+    Target_en_us "This door is locked"
+    Target_de_de "Diese Tür ist abgeschlossen"
+    Target_fr_fr "Cette porte est verrouillée"
+    Target_it_it "Questa porta è bloccata"
+    Target_es_es "Esta puerta está bloqueada"
+    Target_pt_pt "Esta porta está trancada"
+    Target_pt_br "Esta porta está trancada"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
   }
    CustomStringTableItem "{F5FDC2038BA4118F}" {
     Id "EL-Whitelist_NotAllowed"
