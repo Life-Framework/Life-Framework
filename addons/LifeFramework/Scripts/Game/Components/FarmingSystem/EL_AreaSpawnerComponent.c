@@ -23,6 +23,7 @@ class EL_AreaSpawnerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void SpawnPrefabs(IEntity parent)
 	{
+		EL_Debug.Log("Farming", string.Format("area spawner: prefab=%1 amount=%2", m_PrefabToSpawn, m_AmountToSpawn));
 		for (int i = 0; i < m_AmountToSpawn; i++)
 		{
 			EL_Utils.SpawnEntityPrefab(m_PrefabToSpawn, GetRandomInArea(), vector.Zero, true, parent);

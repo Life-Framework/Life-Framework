@@ -32,8 +32,12 @@ class EL_BuildingManagerComponent : ScriptComponent
 
 		EL_BuildingPerformerComponent performer = GetHeldBuildingPerformer(character);
 		if (!performer || performer.m_BuildingPrefab != resource)
+		{
+			EL_Debug.Log("Farming", string.Format("placement rejected: resource=%1 (performer mismatch or none)", resource));
 			return;
+		}
 
+		EL_Debug.Log("Farming", string.Format("placement accepted: resource=%1 pos=%2", resource, pos));
 		EL_Utils.SpawnEntityPrefab(resource, pos);
 	}
 

@@ -70,7 +70,7 @@ class EL_BaseCrop : EL_BaseBuilding
 	//! Change model, size etc..
 	protected void OnCropStageChanged()
 	{
-		Print(string.Format("[EL_BaseCrop] New stage %1 (%2)", m_iCropStage, this), LogLevel.NORMAL);
+		EL_Debug.Log("Farming", string.Format("crop stage -> %1", m_iCropStage));
 
 		// A base crop without authored stages never leaves stage 0
 		if (!m_aCropStages)
