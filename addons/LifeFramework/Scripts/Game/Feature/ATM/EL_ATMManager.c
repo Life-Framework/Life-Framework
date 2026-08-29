@@ -1,4 +1,4 @@
-class EL_ATMManager : ScriptedUserAction
+class EL_ATMManager : Managed
 {
 	protected static EL_ATMManager s_Instance;
 	protected ref map<string, ref EL_BankAccount> m_mAccounts = new map<string, ref EL_BankAccount>();

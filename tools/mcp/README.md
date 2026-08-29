@@ -12,10 +12,13 @@ tools\cli mcp update               # git pull --ff-only + npm ci + build
 tools\cli mcp verify               # boot each server briefly to prove it starts
 tools\cli mcp enable <name>        # enable in opencode.json (restart opencode)
 tools\cli mcp disable <name>
+tools\cli call <tool> '<json>'     # call a tool directly, no opencode restart needed
 ```
 
 After `enable`/`disable` or a fresh install, **quit and restart opencode** for
-the `opencode.json` changes to take effect.
+the `opencode.json` changes to take effect. To use the servers WITHOUT restarting
+opencode (e.g. from a subagent or a plain terminal), use `tools\cli call` -
+see `tools/README.md` and `tools/mcp-call.mjs`.
 
 ## Servers
 

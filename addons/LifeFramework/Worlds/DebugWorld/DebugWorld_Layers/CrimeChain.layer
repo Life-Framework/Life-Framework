@@ -1,10 +1,10 @@
 $grp GenericEntity {
  RobContainer {
   components {
-   ActionsManagerComponent "{ActionsID}" {
+   ActionsManagerComponent "{9BAF49D0BB2C08F7}" {
     additionalActions {
-     EL_RobAction "{RobID}" {
-      UIInfo UIInfo "{UIID}" {
+     EL_RobAction "{016359D161B34EF1}" {
+      UIInfo UIInfo "{FBCD1BC4E13F2945}" {
        Name "Rob Container"
       }
       m_iMoneyAmount 200
@@ -31,13 +31,13 @@ $grp GenericEntity {
  }
  WeaponCache {
   components {
-   ActionsManagerComponent "{ActionsID}" {
+   ActionsManagerComponent "{9BAF49D0BB2C08F7}" {
     additionalActions {
-     EL_RobWeaponAction "{RobWeaponID}" {
-      UIInfo UIInfo "{UIID}" {
+     EL_RobWeaponAction "{8236DACFB5054EE0}" {
+      UIInfo UIInfo "{FBCD1BC4E13F2945}" {
        Name "Rob Weapon Cache"
       }
-      m_WeaponPrefab "{AK74}Prefabs/Weapons/AK74.et"
+      m_WeaponPrefab "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et"
       m_fCooldown 120
       m_iMinPoliceOnDuty 2
      }
@@ -61,13 +61,13 @@ $grp GenericEntity {
  }
  MilitaryVehicle {
   components {
-   ActionsManagerComponent "{ActionsID}" {
+   ActionsManagerComponent "{9BAF49D0BB2C08F7}" {
     additionalActions {
-     EL_RobVehicleAction "{RobVehicleID}" {
-      UIInfo UIInfo "{UIID}" {
+     EL_RobVehicleAction "{12EB44E247BD1B3C}" {
+      UIInfo UIInfo "{FBCD1BC4E13F2945}" {
        Name "Steal Military Vehicle"
       }
-      m_VehiclePrefab "{BRDM2}Prefabs/Vehicles/Military/BRDM2.et"
+      m_VehiclePrefab "{254289B9C09904AB}Prefabs/Vehicles/Wheeled/BRDM2/BRDM2.et"
       m_fCooldown 600
       m_iMinPoliceOnDuty 3
      }

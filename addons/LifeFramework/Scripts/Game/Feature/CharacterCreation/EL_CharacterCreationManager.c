@@ -1,4 +1,4 @@
-class EL_CharacterCreationManager : ScriptedUserAction
+class EL_CharacterCreationManager : Managed
 {
 	protected static EL_CharacterCreationManager s_Instance;
 
@@ -79,7 +79,7 @@ class EL_CharacterCreationManager : ScriptedUserAction
 	{
 		// Create a temporary entity for the player in lobby
 		// This is a placeholder - implement possession according to your engine API
-		ResourceName tempPrefab = "{YourTempCharacterPrefab}"; // Replace with actual prefab
+		ResourceName tempPrefab = "{CE23D4366B47E9B9}Prefabs/Characters/Presets/White_Male_01.et";
 		IEntity spawnedEntity = GetGame().SpawnEntityPrefab(Resource.Load(tempPrefab));
 		if (!spawnedEntity)
 		{
@@ -122,7 +122,7 @@ class EL_CharacterCreationManager : ScriptedUserAction
 	void OnCharacterCreated(PlayerController playerController, string firstName, string lastName, int age)
 	{
 		// Create persistent character
-		ResourceName defaultPrefab = "{YourDefaultCharacterPrefab}"; // Replace with actual prefab
+		ResourceName defaultPrefab = "{CE23D4366B47E9B9}Prefabs/Characters/Presets/White_Male_01.et";
 		EL_PlayerCharacter character = EL_PlayerCharacter.Create(defaultPrefab, firstName, lastName, age);
 
 		// Add to account

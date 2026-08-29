@@ -305,6 +305,7 @@ usage: tools\\cli <command> [args]
   mcp verify [name]             boot server briefly to confirm it starts
   mcp enable <name>             enable a server in opencode.json
   mcp disable <name>            disable a server in opencode.json
+  call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   validate | lint | test        run every script in tools/{validation,lint,test}/
 
 servers: ${Object.keys(SERVERS).join(", ")}
@@ -314,7 +315,20 @@ servers: ${Object.keys(SERVERS).join(", ")}
 
 // ------------------------------------------------------------------- main
 
-const [cmd, a, b] = process.argv.slice(2);
+// tools\cli call <tool> '<json>'|@file [server]  -  delegate to tools/mcp-call.mjs
+function cmdMcpCall(rest) {
+  const entry = join(ROOT, "tools", "mcp-call.mjs");
+  if (!existsSync(entry)) {
+    console.log("tools/mcp-call.mjs not found");
+    return 1;
+  }
+  const res = sh(process.execPath, [entry, ...rest]);
+  process.stdout.write(res.stdout + res.stderr);
+  return res.status;
+}
+
+const argv = process.argv.slice(2);
+const [cmd, a, b] = argv;
 
 const cmds = {
   status: () => cmdStatus(),
@@ -326,6 +340,7 @@ const cmds = {
   validate: () => cmdRunArea("validate"),
   lint: () => cmdRunArea("lint"),
   test: () => cmdRunArea("test"),
+  call: () => cmdMcpCall(argv.slice(1)),
   help: () => cmdHelp(),
 };
 
