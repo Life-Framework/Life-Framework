@@ -49,6 +49,9 @@ class EL_Test_MiningPrefabs : EL_Test
 		ctx.EqualFloat(1.0, miningArea.m_fRespawnTime, 0.001, "mining area configures one minute respawn");
 		ctx.EqualFloat(10.0, miningArea.m_vSize[0], 0.001, "mining area configures ten metre x extent");
 		ctx.EqualFloat(10.0, miningArea.m_vSize[2], 0.001, "mining area configures ten metre z extent");
+		ctx.True(miningArea.m_PrefabsToSpawn != null && miningArea.m_PrefabsToSpawn.Count() > 0, "mining area ships with configured ore weights");
+		if (miningArea.m_PrefabsToSpawn && miningArea.m_PrefabsToSpawn.Count() > 0)
+			ctx.True(EL_MiningArea.GetTotalWeight(miningArea.m_PrefabsToSpawn) > 0, "mining area weights sum above zero");
 
 		IEntity ore = GetGame().SpawnEntityPrefab(Resource.Load(COPPER_ORE), GetGame().GetWorld(), params);
 		ctx.True(ore != null, "local copper ore spawns");
