@@ -22,7 +22,9 @@ SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base
    }
    EL_PlayerJobComponent "{A68F47E449868508}" {
    }
-  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   EL_PlayerWhitelistComponent "{5D1921149C026619}" {
+   }
+   ActionsManagerComponent "{520EA1D2F659CE02}" {
    ActionContexts + {
     UserActionContext "{8CDF2A893F14F514}" {
      ContextName "EL_ID"

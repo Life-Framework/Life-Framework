@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{4B57F6B08155F18A}Configs/Chat/GlobalOocChannel.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

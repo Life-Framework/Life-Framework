@@ -1,0 +1,82 @@
+
+FrameWidgetClass {
+ Name "Chat"
+ Slot FrameWidgetSlot "{5D4881250D202DF3}" {
+  PositionX 8
+  OffsetLeft 8
+  PositionY 0
+  OffsetTop 0
+  SizeX 1920
+  OffsetRight -1928
+  SizeY 1080
+  OffsetBottom -1080
+ }
+ "Z Order" 10
+ {
+  OverlayWidgetClass "{585F053862A9FD1C}" : "{28C54D576A8997CF}UI/layouts/HUD/Chat/ChatPanel.layout" {
+   Name "ChatPanel"
+   Slot FrameWidgetSlot "{56150B208158A9EF}" {
+    Anchor 0 0 1 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 17
+    OffsetTop 17
+    SizeX 0
+    OffsetRight 0
+    SizeY 310
+    OffsetBottom -327
+   }
+   components {
+    SCR_ChatPanel "{585F32D2A6B295EC}" {
+     m_AdminStyle SCR_ChatMessageStyle "{5CC55B49D3D54EDC}" : "{5980F59BAAC4DDDB}Configs/Chat/AdminChannel.conf" {
+     }
+    }
+   }
+   {
+    OverlayWidgetClass "{56150B2288F76A08}" {
+     Prefab "{56150B2288F76A08}"
+     {
+      VerticalLayoutWidgetClass "{00000000BC2C2020}" {
+       Prefab "{00000000BC2C2020}"
+       {
+        OverlayWidgetClass "{563296652233D952}" {
+         Prefab "{563296652233D952}"
+         {
+          OverlayWidgetClass "{0000000076CB44EF}" {
+           Prefab "{0000000076CB44EF}"
+           {
+            HorizontalLayoutWidgetClass "{00000000A1E383A5}" {
+             Prefab "{00000000A1E383A5}"
+             {
+              SizeLayoutWidgetClass "{56F9028315D8FE42}" {
+               Prefab "{56F9028315D8FE42}"
+               {
+                EditBoxWidgetClass "{000000009EEB4E0F}" {
+                 Prefab "{000000009EEB4E0F}"
+                 components {
+                  EditBoxFilterComponent "{585D2E6C9661FDE8}" {
+                   m_bUTFMultibyte 1
+                  }
+                 }
+                 FontProperties FontProperties "{3551E70745ACC309}" {
+                  ShadowSize 6
+                  ShadowOffset 0 0
+                  ShadowOpacity 0.5
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

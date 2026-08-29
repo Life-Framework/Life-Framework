@@ -18,6 +18,16 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override void OnPlayerSpawned(int playerId, IEntity controlledEntity)
+	{
+		super.OnPlayerSpawned(playerId, controlledEntity);
+
+		EL_WhitelistRespawnHandlerComponent whitelist = EL_WhitelistRespawnHandlerComponent.Cast(FindComponent(EL_WhitelistRespawnHandlerComponent));
+		if (whitelist)
+			whitelist.OnPlayerSpawned(playerId, controlledEntity);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void OnPlayerConnected(int playerId)
 	{
 		super.OnPlayerConnected(playerId);

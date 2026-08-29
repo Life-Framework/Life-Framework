@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{E67EAC45379783C0}Prefabs/MP/Modes/Roleplay/Chat_Roleplay.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

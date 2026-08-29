@@ -1,0 +1,15 @@
+ScriptedChatEntity {
+ ID "5CC4AA246F48D9FE"
+ coords 100.823 0.001 136.768
+ Channels {
+  BaseChatChannel "{5CC4AA25C3E7D008}" {
+   "Channel name" "Global"
+  }
+  LocalChatChannel "{5CC4AA25DBFF3B65}" {
+   "Channel name" "Local"
+  }
+  BaseChatChannel "{5CC4E8D769D3EA41}" {
+   "Channel name" "OOCGlobal"
+  }
+ }
+}

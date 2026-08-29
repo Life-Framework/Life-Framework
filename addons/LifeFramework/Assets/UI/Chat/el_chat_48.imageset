@@ -1,0 +1,29 @@
+ImageSetClass {
+ RefSize 146 146
+ Textures {
+  ImageSetTextureClass {
+   mpix 1
+   path "{9795DEFDB1EB2F9D}Assets/UI/Chat/chat_imageset.edds"
+  }
+ }
+ Images {
+  ImageSetDefClass twatter {
+   Name "twatter"
+   Pos 0 0
+   Size 48 48
+   Flags 0
+  }
+  ImageSetDefClass ooc {
+   Name "ooc"
+   Pos 49 0
+   Size 48 48
+   Flags 0
+  }
+  ImageSetDefClass admin {
+   Name "admin"
+   Pos 98 0
+   Size 48 48
+   Flags 0
+  }
+ }
+}

@@ -1,0 +1,26 @@
+GenericEntity : "{81206EAE6A99ACF8}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_base.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Object "{35B830BBC773DB23}Assets/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_entryforbidden.xob"
+  }
+  ActionsManagerComponent "{E30614AA5C774248}" {
+   ActionContexts + {
+    UserActionContext "{37D9456C911D4CD2}" {
+     ContextName "EL_WhitelistSign"
+    }
+   }
+   additionalActions + {
+    EL_WhitelistAction "{77527FE1EF344A89}" {
+     m_eWhitelistOnlyType POLICE
+     ParentContextList {
+      "EL_WhitelistSign"
+     }
+     UIInfo UIInfo "{15C49629D3CF3C68}" {
+      Name "#EL-Whitelist_Sign_Action"
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{973C90F6B6135A50}UI/Layouts/HUD/Chat/ChatMessageLine.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -19,6 +19,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_BankAccountMath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_BankSaveRoundtrip(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMManagerRegistry(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Data(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionSpawn(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
@@ -45,6 +46,9 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ProcessingRecipeConfig(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_VehicleLockIdMatch(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_WhitelistChatResources(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_WhitelistLogic(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_WhitelistCommandParse(), EL_TestTier.LOGIC);
 	}
 }
 

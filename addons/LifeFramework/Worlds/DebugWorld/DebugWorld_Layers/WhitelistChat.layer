@@ -1,0 +1,10 @@
+$grp GenericEntity : "{E67EAC45379783C0}Prefabs/MP/Modes/Roleplay/Chat_Roleplay.et" {
+ Chat_Roleplay_Debug {
+  coords 146 0 136
+ }
+}
+$grp GenericEntity : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
+ WhitelistSign_Info {
+  coords 152 0 136
+ }
+}
