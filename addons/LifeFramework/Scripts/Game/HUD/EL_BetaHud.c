@@ -24,8 +24,8 @@ class EL_BetaHud : SCR_InfoDisplay
 	protected OverlayWidget m_wHungerIndicator;
 	protected OverlayWidget m_wThirstIndicator;
 
-	protected ref SCR_CharacterControllerComponent m_PlayerController;
-	protected ref DamageManagerComponent m_DMC;
+	protected SCR_CharacterControllerComponent m_PlayerController;
+	protected DamageManagerComponent m_DMC;
 
 	protected bool m_bUsingProgressWidget;
 	protected bool m_bStatChange;

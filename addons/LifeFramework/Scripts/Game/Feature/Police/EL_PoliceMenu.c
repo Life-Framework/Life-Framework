@@ -1,6 +1,6 @@
 class EL_PoliceMenu : ChimeraMenuBase
 {
-	protected ref PlayerController m_PlayerController;
+	protected PlayerController m_PlayerController;
 	protected ref array<ref EL_WantedPlayerInfo> m_aWantedPlayers;
 
 	//------------------------------------------------------------------------------------------------

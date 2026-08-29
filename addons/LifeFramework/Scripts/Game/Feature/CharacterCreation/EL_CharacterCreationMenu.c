@@ -1,7 +1,7 @@
 [BaseContainerProps(configRoot: true)]
 class EL_CharacterCreationMenu : ChimeraMenuBase
 {
-	protected ref PlayerController m_PlayerController;
+	protected PlayerController m_PlayerController;
 
 	protected Widget m_wRoot;
 	protected EditBoxWidget m_wFirstName;

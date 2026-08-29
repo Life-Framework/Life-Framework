@@ -1,6 +1,6 @@
 class EL_SplitQuantityDialog : DialogUI
 {
-	protected ref EL_QuantityComponent m_pQuantitySource;
+	protected EL_QuantityComponent m_pQuantitySource;
 	protected EditBoxWidget m_wKeepAmount;
 	protected EditBoxWidget m_wSplitAmount;
 	protected ref EL_ThinSliderWidget m_wSlider;

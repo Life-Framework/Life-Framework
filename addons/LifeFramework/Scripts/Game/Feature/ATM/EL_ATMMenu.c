@@ -1,7 +1,7 @@
 [BaseContainerProps(configRoot: true)]
 class EL_ATMMenu : ChimeraMenuBase
 {
-	protected ref PlayerController m_PlayerController;
+	protected PlayerController m_PlayerController;
 	protected ref EL_BankAccount m_BankAccount;
 
 	protected Widget m_wRoot;

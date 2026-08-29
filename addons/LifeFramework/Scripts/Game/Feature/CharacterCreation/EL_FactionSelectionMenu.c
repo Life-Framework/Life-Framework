@@ -1,6 +1,6 @@
 class EL_FactionSelectionMenu : ChimeraMenuBase
 {
-	protected ref PlayerController m_PlayerController;
+	protected PlayerController m_PlayerController;
 
 	//------------------------------------------------------------------------------------------------
 	void SetPlayerController(PlayerController playerController)
