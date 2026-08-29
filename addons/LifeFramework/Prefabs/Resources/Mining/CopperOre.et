@@ -19,22 +19,22 @@ GenericEntity {
   }
   RplComponent "{59A71C4B89B19568}" {
   }
-  ActionsManagerComponent "{E15A8359C2C999D8}" {
-   ActionContexts {
-    UserActionContext "{6111F0615711AA21}" {
-     ContextName "Mine"
-     Position PointInfo "{A62A8CC35FCECCE9}" {
+ActionsManagerComponent "{7E1735A0AB21F6F6}" {
+    ActionContexts {
+     UserActionContext "{ABD649A128F4E0C8}" {
+      ContextName "Mine"
+      Position PointInfo "{CDF9ED378D7DB2A9}" {
       Offset 0 0.5 0
      }
      Radius 1.0
     }
    }
    additionalActions {
-    EL_GatherAction "{561F7510B839293E}" {
+    EL_GatherAction "{7892B435C00A9A4F}" {
      ParentContextList {
       "Mine"
      }
-     UIInfo UIInfo "{F074AECFB4834AEA}" {
+     UIInfo UIInfo "{9FE6A8CBF634E0BF}" {
       Name "Mine Copper"
      }
      Duration 4

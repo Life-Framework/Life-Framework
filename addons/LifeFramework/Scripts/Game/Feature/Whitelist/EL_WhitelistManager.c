@@ -1,4 +1,13 @@
 //------------------------------------------------------------------------------------------------
+enum EL_EFactionType
+{
+	CIVILIAN,
+	POLICE,
+	MILITARY,
+	MAFIA
+}
+
+//------------------------------------------------------------------------------------------------
 //! Manages whitelist for restricted factions and jobs
 class EL_WhitelistManager
 {

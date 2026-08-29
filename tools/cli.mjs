@@ -592,6 +592,7 @@ usage: tools\\cli <command> [args]
   test [--no-build] [--tier fast|all]
                                 build + boot server + parse ELTEST results
   ci                            validate + build + test (full gate)
+  call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   validate | lint               run every script in tools/{validation,lint}/
   run <area>                    run every script in tools/<area>/ (validate, lint, test, ...)
 
@@ -610,6 +611,18 @@ function argValue(flags, name) {
   return flags[i + 1];
 }
 
+// tools\cli call <tool> '<json>'|@file [server]  -  delegate to tools/mcp-call.mjs
+function cmdMcpCall(callArgs) {
+  const entry = join(ROOT, "tools", "mcp-call.mjs");
+  if (!existsSync(entry)) {
+    console.log("tools/mcp-call.mjs not found");
+    return 1;
+  }
+  const res = sh(process.execPath, [entry, ...callArgs]);
+  process.stdout.write(res.stdout + res.stderr);
+  return res.status;
+}
+
 const cmds = {
   status: () => cmdStatus(),
   install: (n) => cmdInstall(n),
@@ -625,10 +638,11 @@ const cmds = {
     return cmdTest(noBuild, argValue(list, "--tier") ?? "all");
   },
   ci: () => cmdCi(),
-  validate: () => cmdRunArea("validate"),
+validate: () => cmdRunArea("validate"),
   lint: () => cmdRunArea("lint"),
   run: (n) =>
-    TOOL_DIRS[n] ? cmdRunArea(n) : (console.log(`unknown area: ${n} (expected one of: ${Object.keys(TOOL_DIRS).join(", ")})`), 1),
+    TOOL_DIRS[n] ? cmdRunArea(n) : (console.log(`unknown area: ${n} (expected one of: ${Object.keys(TOOL_DIRS).join(", ")}`), 1),
+  call: () => cmdMcpCall(rest),
   help: () => cmdHelp(),
 };
 

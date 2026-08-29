@@ -1,5 +1,5 @@
-[BaseContainerProps()]
-class EL_SpawnLogic : EPF_BaseSpawnLogic
+[BaseContainerProps(category: "Respawn")]
+class EL_SpawnLogic : SCR_SpawnLogic
 {
 	[Attribute(category: "New character defaults")]
 	protected ref array<ResourceName> m_aDefaultCharacterPrefabs;
@@ -8,20 +8,113 @@ class EL_SpawnLogic : EPF_BaseSpawnLogic
 	protected ref array<ref EL_DefaultLoadoutItem> m_aDefaultCharacterItems;
 
 	//------------------------------------------------------------------------------------------------
-	/*protected --Hotfix for 1.0 DO NOT CALL THIS MANUALLY*/
-	override void HandlePlayerLoad(Managed context)
+	//! Account manager owns player data, not vanilla collections. Leaving the vanilla Player/Character
+	//! collections unresolved keeps SCR_SpawnLogic.RequestPlayerData_S on its synchronous no-persistence
+	//! path; without this, an ACTIVE persistence system reroutes player spawn through an async
+	//! RequestLoad and DoSpawn_S never runs.
+	override protected void SetupPersistenceCollections(SCR_RespawnSystemComponent owner)
 	{
-		Tuple2<int, string> characterContext = Tuple2<int, string>.Cast(context);
-		EDF_DataCallbackSingle<EL_PlayerAccount> callback(this, "OnAccountLoaded", characterContext);
-		EL_PlayerAccountManager.GetInstance().LoadAccountAsync(characterContext.param2, true, callback);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Handles the account information found for the player
-	/*protected --Hotfix for 1.0 DO NOT CALL THIS MANUALLY*/
-	void OnAccountLoaded(EL_PlayerAccount account, Managed context)
+	//! Starts the spawn sequence once the joining player has been audited.
+	//! Vanilla's implementation stops after registering the controller with persistence, so the spawn
+	//! kick-off has to be added here (the old persistence-framework base did exactly this).
+	override void OnPlayerAuditSuccess_S(int playerId)
 	{
-		Tuple2<int, string> characterContext = Tuple2<int, string>.Cast(context);
+		super.OnPlayerAuditSuccess_S(playerId);
+		ExcuteInitialLoadOrSpawn_S(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Handles failed player registration attempts by scheduling a retry.
+	protected void OnPlayerRegisterFailed(int playerId)
+	{
+		int delay = Math.RandomFloat(900, 1100);
+		GetGame().GetCallqueue().CallLater(OnPlayerAuditSuccess_S, delay, false, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Re-creates the player's character after death.
+	//! The old persistence-framework base respawned one frame after OnPlayerKilled_S; this game mode
+	//! has no respawn menu, so without this hook a dead player is stranded forever.
+	//! \param playerId The player who died.
+	//! \param playerEntity The dead body.
+	//! \param killerEntity The killer, may be null.
+	//! \param killer The instigator of the kill.
+	override void OnPlayerKilled_S(int playerId, IEntity playerEntity, IEntity killerEntity, notnull Instigator killer)
+	{
+		super.OnPlayerKilled_S(playerId, playerEntity, killerEntity, killer);
+
+		// Fresh character spawn (NOTE: We need to push this to next frame due to a bug where on the
+		// same death frame we can not hand over a new char).
+		GetGame().GetCallqueue().Call(RespawnPlayer, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Poll of the death respawn: resolves the player's account and creates their character.
+	//! \param playerId The player to respawn.
+	protected void RespawnPlayer(int playerId)
+	{
+		string playerUid = EL_Utils.GetPlayerUID(playerId);
+		if (playerUid.IsEmpty())
+			return;
+
+		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetAccount(playerUid);
+		if (!account)
+			return;
+
+		CreateCharacter(playerId, account);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Implement the actual spawn behaviour.
+	//! Resolves (or creates) the player's account synchronously, then creates their character from the
+	//! account's active character.
+	override protected void DoSpawn_S(int playerId)
+	{
+		string playerUid = EL_Utils.GetPlayerUID(playerId);
+		if (playerUid.IsEmpty())
+		{
+			Print("[LifeFramework] WARNING: Persistent UID not available yet for playerId: " + playerId + ", retrying...", LogLevel.WARNING);
+			OnPlayerRegisterFailed(playerId);
+			return;
+		}
+
+		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetOrCreate(playerUid);
+		if (!account)
+		{
+			OnPlayerRegisterFailed(playerId);
+			return;
+		}
+
+		CreateCharacter(playerId, account);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Creates the player's character from their account and hands control of it over to them.
+	//! \param playerId The player who will control the character.
+	//! \param account The player's account (already resolved synchronously).
+	protected void CreateCharacter(int playerId, notnull EL_PlayerAccount account)
+	{
+		PlayerController playerController = GetGame().GetPlayerManager().GetPlayerController(playerId);
+		if (!playerController)
+		{
+			Print("[LifeFramework] Player " + playerId + " left before their character could be created - not spawning one", LogLevel.WARNING);
+			return;
+		}
+
+		if (playerController.GetControlledEntity())
+		{
+			// A corpse does not count as a playable character - the death respawn path must proceed.
+			IEntity controlled = playerController.GetControlledEntity();
+			CharacterControllerComponent characterController = CharacterControllerComponent.Cast(controlled.FindComponent(CharacterControllerComponent));
+			if (!characterController || characterController.GetLifeState() != ECharacterLifeState.DEAD)
+			{
+				Print("[LifeFramework] Player " + playerId + " already controls a character - not spawning another", LogLevel.WARNING);
+				return;
+			}
+		}
 
 		EL_PlayerCharacter activeCharacter = account.GetActiveCharacter();
 		bool hasCharData = activeCharacter != null;
@@ -40,42 +133,67 @@ class EL_SpawnLogic : EPF_BaseSpawnLogic
 			}
 		}
 
-		characterContext.param2 = activeCharacter.GetId();
+		string characterPersistenceId = activeCharacter.GetId();
 
-		#ifndef WORKBENCH
-		// New account, skip to new character spawn
-		if	(!hasCharData)
+		ResourceName prefab = GetCreationPrefab(playerId, characterPersistenceId);
+		if (!prefab)
 		{
-			OnCharacterDataLoaded(EDF_EDbOperationStatusCode.SUCCESS, null, characterContext);
+			Print("[LifeFramework] Could not resolve a character prefab for player " + playerId, LogLevel.ERROR);
 			return;
 		}
-		#endif
 
-		super.HandlePlayerLoad(characterContext);
+		vector position, yawPitchRoll;
+		GetCreationPosition(playerId, characterPersistenceId, position, yawPitchRoll);
+
+		EntitySpawnParams spawnParams();
+		spawnParams.TransformMode = ETransformMode.WORLD;
+		Math3D.AnglesToMatrix(yawPitchRoll, spawnParams.Transform);
+		spawnParams.Transform[3] = position + "0 0.1 0"; // Anti lethal terrain clipping
+
+		IEntity character = GetGame().SpawnEntityPrefab(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);
+		if (!character)
+		{
+			Print("[LifeFramework] Failed to spawn player character from prefab: " + prefab, LogLevel.ERROR);
+			return;
+		}
+
+		OnCharacterCreated(playerId, characterPersistenceId, character);
+		HandoverToPlayer(playerId, character);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override protected void GetCreationPosition(int playerId, string characterPersistenceId, out vector position, out vector yawPitchRoll)
+	//! Picks the spawn position and orientation for a player character.
+	protected void GetCreationPosition(int playerId, string characterPersistenceId, out vector position, out vector yawPitchRoll)
 	{
-		EPF_SpawnPoint spawnPoint = EPF_SpawnPoint.GetRandomSpawnPoint();
+		SCR_SpawnPoint spawnPoint = SCR_SpawnPoint.GetRandomSpawnPointDeathmatch();
 		if (!spawnPoint)
 		{
 			Print("Could not spawn character, no spawn point on the map.", LogLevel.ERROR);
 			return;
 		}
 
-		spawnPoint.GetPosYPR(position, yawPitchRoll);
+		spawnPoint.GetPositionAndRotation(position, yawPitchRoll);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override protected ResourceName GetCreationPrefab(int playerId, string characterPersistenceId)
+	//! \return The prefab of the player's active character, or null if none can be resolved.
+	protected ResourceName GetCreationPrefab(int playerId, string characterPersistenceId)
 	{
 		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetFromCache(playerId);
-		return account.GetActiveCharacter().GetPrefab();
+		if (!account)
+			return ResourceName.Empty;
+
+		EL_PlayerCharacter activeCharacter = account.GetActiveCharacter();
+		if (!activeCharacter)
+			return ResourceName.Empty;
+
+		return activeCharacter.GetPrefab();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override protected void OnCharacterCreated(int playerId, string characterPersistenceId, IEntity character)
+	//! Called after a player character has been created and spawned into the world.
+	//! Initializes the character's inventory with the configured default loadout items.
+	protected void OnCharacterCreated(int playerId, string characterPersistenceId, IEntity character)
 	{
 		InventoryStorageManagerComponent storageManager = EL_Component<InventoryStorageManagerComponent>.Find(character);
 		foreach (EL_DefaultLoadoutItem loadoutItem : m_aDefaultCharacterItems)
@@ -93,6 +211,31 @@ class EL_SpawnLogic : EPF_BaseSpawnLogic
 			if (!storageManager.TryInsertItem(slotEntity, loadoutItem.m_ePurpose))
 				SCR_EntityHelper.DeleteEntityAndChildren(slotEntity);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hands network ownership and control of a spawned character to a player.
+	//! The old persistence-framework base's HandoverToPlayer, minus its database callback.
+	//! \param playerId The player taking control.
+	//! \param character The character to hand over.
+	protected void HandoverToPlayer(int playerId, IEntity character)
+	{
+		SCR_PlayerController playerController = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
+		if (!playerController)
+		{
+			Print("[LifeFramework] Cannot hand over character - no player controller for playerId: " + playerId, LogLevel.ERROR);
+			return;
+		}
+
+		playerController.SetInitialMainEntity(character);
+
+		SCR_BaseGameMode gamemode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
+		if (gamemode)
+			gamemode.OnPlayerEntityChanged_S(playerId, null, character);
+
+		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
+		if (respawn)
+			respawn.NotifySpawn(character);
 	}
 
 	//------------------------------------------------------------------------------------------------

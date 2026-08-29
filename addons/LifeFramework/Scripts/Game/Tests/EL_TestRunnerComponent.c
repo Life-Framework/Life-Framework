@@ -1,3 +1,8 @@
+[ComponentEditorProps(category: "EveronLife/Tests", description: "Runs the EL_Test suite on boot and closes the game")]
+class EL_TestRunnerComponentClass : ScriptComponentClass
+{
+}
+
 class EL_TestRunnerComponent : ScriptComponent
 {
 	protected static const int RUN_DELAY_MS = 3000;
@@ -33,6 +38,6 @@ class EL_TestRunnerComponent : ScriptComponent
 	protected void Close()
 	{
 		Print("[EL_Tests] closing game");
-		GetGame().RequestCloseGame();
+		GetGame().RequestClose();
 	}
 }

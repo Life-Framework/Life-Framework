@@ -257,18 +257,6 @@ class EL_PlayerJobComponent : ScriptComponent
 		// Give job equipment
 		GiveJobEquipment();
 		
-		// GUARDADO COMPLETO: Guardar todo el estado del personaje (incluye todos los progresos de trabajos)
-		IEntity owner = GetOwner();
-		if (owner)
-		{
-			EPF_PersistenceComponent persistence = EPF_Component<EPF_PersistenceComponent>.Find(owner);
-			if (persistence)
-			{
-				persistence.Save();
-				Print(string.Format("[EL_PlayerJobComponent] ✓ Character fully saved after job change to: %1 (Level: %2)", GetJobName(), m_iJobLevel), LogLevel.VERBOSE);
-			}
-		}
-		
 		return true;
 	}
 

@@ -45,23 +45,23 @@ class EL_Test_BankSaveRoundtrip : EL_Test
 
 	override void Run(EL_TestContext ctx)
 	{
-		EL_BankAccount account = EL_BankAccount.Create("test-bank-save");
+		EL_ATMManager.Reset();
+		EL_ATMManager manager = EL_ATMManager.GetInstance();
+
+		EL_BankAccount account = manager.CreateAccount("test-bank-save");
 		account.Deposit(750);
 
-		EL_BankAccountSaveData data = new EL_BankAccountSaveData();
-		data.ReadFrom(account);
+		ref array<ref EL_BankAccountRecord> records = EL_ATMManager.ExportAll();
+		EL_ATMManager.Reset();
+		EL_ATMManager.ApplyAll(records);
 
-		EL_BankAccount restored = EL_BankAccount.Create("other-id");
-		data.ApplyTo(restored);
+		EL_BankAccount restored = EL_ATMManager.GetInstance().GetAccount("test-bank-save");
+		ctx.NotNull(restored, "bank account is restored from its records");
+		if (!restored)
+			return;
 
 		ctx.Equal(750, restored.GetBalance(), "balance survives the save round trip");
 		ctx.EqualStr("test-bank-save", restored.GetPersistentId(), "persistent id survives the round trip");
-
-		EL_BankAccountSaveData same = new EL_BankAccountSaveData();
-		same.ReadFrom(account);
-		EL_BankAccountSaveData clone = new EL_BankAccountSaveData();
-		clone.ReadFrom(account);
-		ctx.True(same.Equals(clone), "equal balances compare equal in save data");
 	}
 };
 
@@ -75,7 +75,8 @@ class EL_Test_ATMManagerRegistry : EL_Test
 
 	override void Run(EL_TestContext ctx)
 	{
-		EL_ATMManager manager = new EL_ATMManager();
+		EL_ATMManager.Reset();
+		EL_ATMManager manager = EL_ATMManager.GetInstance();
 
 		EL_BankAccount created = manager.CreateAccount("test-atm-uid");
 		ctx.NotNull(created, "CreateAccount returns a new account");
@@ -89,5 +90,7 @@ class EL_Test_ATMManagerRegistry : EL_Test
 
 		ctx.False(manager.Withdraw("missing-uid", 100), "Withdraw on an unknown account fails");
 		ctx.True(manager.GetAccount("missing-uid") == null, "unknown account id returns null");
+
+		EL_ATMManager.Reset();
 	}
 };

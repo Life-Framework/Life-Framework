@@ -4,13 +4,26 @@ enum EL_Faction
 	POLICE
 }
 
-class EL_PlayerAccount : EPF_PersistentScriptedState
+class EL_PlayerAccount : Managed
 {
+	/*protected*/ string m_sPersistentId;
 	/*protected*/ ref array<ref EL_PlayerCharacter> m_aCharacters = {};
 	/*protected*/ int m_iActiveCharacterIdx;
 	/*protected*/ EL_Faction m_eFaction = EL_Faction.CIVILIAN;
 	/*protected*/ bool m_bOnDuty = false;
 	/*protected*/ int m_iWantedLevel = 0;
+
+	//------------------------------------------------------------------------------------------------
+	string GetPersistentId()
+	{
+		return m_sPersistentId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetPersistentId(string id)
+	{
+		m_sPersistentId = id;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	void SetFaction(EL_Faction faction)
@@ -125,6 +138,12 @@ class EL_PlayerCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	void SetId(string id)
+	{
+		m_sId = id;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	ResourceName GetPrefab()
 	{
 		return m_rPrefab;
@@ -158,7 +177,7 @@ class EL_PlayerCharacter
 	static EL_PlayerCharacter Create(ResourceName prefab, string firstName, string lastName, int age)
 	{
 		EL_PlayerCharacter character();
-		character.m_sId = EPF_PersistenceIdGenerator.Generate();
+		character.m_sId = PersistenceIdUtils.Generate();
 		character.m_rPrefab = prefab;
 		character.m_sFirstName = firstName;
 		character.m_sLastName = lastName;

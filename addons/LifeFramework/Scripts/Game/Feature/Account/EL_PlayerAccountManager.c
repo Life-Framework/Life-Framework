@@ -1,38 +1,120 @@
-class EL_PlayerAccountManager
+class EL_PlayerAccountManager : Managed
 {
 	protected static ref EL_PlayerAccountManager s_pInstance;
 	protected ref map<string, ref EL_PlayerAccount> m_mAccounts;
 
 	//------------------------------------------------------------------------------------------------
-	//! Async loading of a players account
-	//! \param playerUid The players Bohemia UID
-	//! \param create If true a new account will be created if none is found for the UID
-	//! \param callback Async callback to handle the result
-	void LoadAccountAsync(string playerUid, bool create, notnull EDF_DataCallbackSingle<EL_PlayerAccount> callback)
+	//! Persistence seam: export every cached account as a record for the serializer.
+	//! \return Array of account records (never null), one per cached account.
+	static array<ref EL_PlayerAccountRecord> ExportAll()
 	{
-		EL_PlayerAccount account = m_mAccounts.Get(playerUid);
-		if (account)
+		EL_PlayerAccountManager instance = GetInstance();
+		if (!instance)
+			return new array<ref EL_PlayerAccountRecord>();
+
+		array<ref EL_PlayerAccountRecord> records = new array<ref EL_PlayerAccountRecord>();
+		foreach (string playerUid, EL_PlayerAccount account : instance.m_mAccounts)
 		{
-			callback.Invoke(account);
-			return;
+			if (!account)
+				continue;
+
+			EL_PlayerAccountRecord record = EL_PlayerAccountRecord.Create(account.GetPersistentId());
+			record.m_iActiveCharacterIdx = account.m_iActiveCharacterIdx;
+			record.m_eFaction = account.m_eFaction;
+			record.m_bOnDuty = account.m_bOnDuty;
+			record.m_iWantedLevel = account.m_iWantedLevel;
+
+			record.m_aCharacters = new array<ref EL_PlayerCharacterRecord>();
+			foreach (EL_PlayerCharacter character : account.m_aCharacters)
+			{
+				if (!character)
+					continue;
+
+				record.m_aCharacters.Insert(EL_PlayerCharacterRecord.Create(
+					character.GetId(),
+					character.GetPrefab(),
+					character.GetFirstName(),
+					character.GetLastName(),
+					character.GetAge()
+				));
+			}
+
+			records.Insert(record);
 		}
 
-		auto processorCallback = EL_PlayerAccountManagerProcessorCallback.Create(playerUid, create, callback);
-		EPF_PersistentScriptedStateLoader<EL_PlayerAccount>.LoadAsync(playerUid, processorCallback);
+		return records;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Save and pending changes on the account and release it from the manager. Used primarily on disconnect of player
-	//! \param playerUid The players Bohemia UID
-	void SaveAndReleaseAccount(notnull EL_PlayerAccount account)
+	//! Persistence seam: apply records back into the cache (idempotent). Existing ids are
+	//! overwritten so a re-apply to a live session converges on the saved state.
+	//! \param records Records read from the save.
+	static void ApplyAll(notnull array<ref EL_PlayerAccountRecord> records)
 	{
-		account.PauseTracking();
-		account.Save();
-		m_mAccounts.Remove(account.GetPersistentId());
+		EL_PlayerAccountManager instance = GetInstance();
+
+		foreach (EL_PlayerAccountRecord record : records)
+		{
+			if (!record)
+				continue;
+
+			EL_PlayerAccount account = EL_PlayerAccount.Create(record.m_sPersistentId);
+			account.m_iActiveCharacterIdx = record.m_iActiveCharacterIdx;
+			account.m_eFaction = record.m_eFaction;
+			account.m_bOnDuty = record.m_bOnDuty;
+			account.m_iWantedLevel = record.m_iWantedLevel;
+
+			if (record.m_aCharacters)
+			{
+				foreach (EL_PlayerCharacterRecord characterRecord : record.m_aCharacters)
+				{
+					if (!characterRecord)
+						continue;
+
+					EL_PlayerCharacter character = EL_PlayerCharacter.Create(
+						characterRecord.m_rPrefab,
+						characterRecord.m_sFirstName,
+						characterRecord.m_sLastName,
+						characterRecord.m_iAge
+					);
+					character.SetId(characterRecord.m_sId);
+					account.AddCharacter(character, false);
+				}
+			}
+
+			instance.AddToCache(account);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Add the player accountt instance to the cache so it is returned on the next LoadAccountAsync call
+	//! Returns the cached account for a player, creating and caching a new one when absent.
+	//! \param playerUid The players Bohemia UID
+	//! \return The account for the player (never null).
+	static EL_PlayerAccount GetOrCreate(string playerUid)
+	{
+		EL_PlayerAccountManager instance = GetInstance();
+		EL_PlayerAccount account = instance.m_mAccounts.Get(playerUid);
+		if (!account)
+		{
+			account = EL_PlayerAccount.Create(playerUid);
+			instance.AddToCache(account);
+		}
+
+		return account;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Remove the account from the cache, releasing it. Persistence is now owned by the game-mode
+	//! serializer; per-release saves no longer happen, so this only drops the cached instance.
+	//! \param account Account instance to release
+	void SaveAndReleaseAccount(EL_PlayerAccount account)
+	{
+		if (account)
+			m_mAccounts.Remove(account.GetPersistentId());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Add the player account instance to the cache so it is returned on the next GetAccount call
 	//! \param account Account instance to cache
 	void AddToCache(notnull EL_PlayerAccount account)
 	{
@@ -67,7 +149,7 @@ class EL_PlayerAccountManager
 	//------------------------------------------------------------------------------------------------
 	//! Convenience synchronous getter used by various systems. Returns the
 	//! cached account if present (no blocking load). Callers should handle
-	//! a null result or explicitly call LoadAccountAsync if they need to
+	//! a null result or explicitly call GetOrCreate if they need to
 	//! ensure availability.
 	EL_PlayerAccount GetAccount(string playerUid)
 	{
@@ -105,36 +187,5 @@ class EL_PlayerAccountManager
 	protected void EL_PlayerAccountManager()
 	{
 		m_mAccounts = new map<string, ref EL_PlayerAccount>()
-	}
-};
-
-class EL_PlayerAccountManagerProcessorCallback : EDF_DataCallbackSingle<EL_PlayerAccount>
-{
-	string m_sPlayerUid
-	bool m_bCreate;
-	ref EDF_DataCallbackSingle<EL_PlayerAccount> m_pCallback;
-
-	//------------------------------------------------------------------------------------------------
-	override void OnComplete(EL_PlayerAccount data, Managed context)
-	{
-		EL_PlayerAccount result = data; //Keep explicit strong ref to it or else create on null will fail
-		if (!result && m_bCreate)
-			result = EL_PlayerAccount.Create(m_sPlayerUid);
-
-		if (result)
-			EL_PlayerAccountManager.GetInstance().AddToCache(result);
-
-		if (m_pCallback)
-			m_pCallback.Invoke(result);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static EL_PlayerAccountManagerProcessorCallback Create(string playerUid, bool create, EDF_DataCallbackSingle<EL_PlayerAccount> callback)
-	{
-		EL_PlayerAccountManagerProcessorCallback instance();
-		instance.m_sPlayerUid = playerUid;
-		instance.m_bCreate = create;
-		instance.m_pCallback = callback;
-		return instance;
 	}
 };

@@ -70,7 +70,7 @@ class EL_Test_AccountCharacterRoster : EL_Test
 };
 
 //------------------------------------------------------------------------------------------------
-//! Save-data round trip through the public DTO.
+//! Save-data round trip through the public record + manager seam.
 class EL_Test_AccountSaveRoundtrip : EL_Test
 {
 	override string GetName()
@@ -80,29 +80,31 @@ class EL_Test_AccountSaveRoundtrip : EL_Test
 
 	override void Run(EL_TestContext ctx)
 	{
+		EL_PlayerAccountManager.Reset();
+		EL_PlayerAccountManager manager = EL_PlayerAccountManager.GetInstance();
+
 		EL_PlayerAccount account = EL_PlayerAccount.Create("test-account-save");
 		account.SetFaction(EL_Faction.POLICE);
 		account.SetOnDuty(true);
 		account.SetWantedLevel(2);
 		account.AddCharacter(EL_PlayerCharacter.Create("Prefabs/Characters/Core/Character_Roleplay.et", "John", "Doe", 30), true);
+		manager.AddToCache(account);
 
-		EL_PlayerAccountSaveData data = new EL_PlayerAccountSaveData();
-		data.ReadFrom(account);
+		// Export -> rebuild a fresh manager from the records (the load path)
+		ref array<ref EL_PlayerAccountRecord> records = EL_PlayerAccountManager.ExportAll();
+		EL_PlayerAccountManager.Reset();
+		EL_PlayerAccountManager.ApplyAll(records);
 
-		EL_PlayerAccount restored = EL_PlayerAccount.Create("other-id");
-		data.ApplyTo(restored);
+		EL_PlayerAccount restored = EL_PlayerAccountManager.GetInstance().GetFromCache("test-account-save");
+		ctx.NotNull(restored, "account is restored from its records");
+		if (!restored)
+			return;
 
 		ctx.Equal(EL_Faction.POLICE, restored.GetFaction(), "faction survives the round trip");
 		ctx.True(restored.IsOnDuty(), "on-duty flag survives the round trip");
 		ctx.Equal(2, restored.GetWantedLevel(), "wanted level survives the round trip");
 		ctx.Equal(1, restored.GetCharacters().Count(), "character roster survives the round trip");
 		ctx.EqualStr("John", restored.GetActiveCharacter().GetFirstName(), "active character survives the round trip");
-
-		EL_PlayerAccountSaveData same = new EL_PlayerAccountSaveData();
-		same.ReadFrom(account);
-		EL_PlayerAccountSaveData clone = new EL_PlayerAccountSaveData();
-		clone.ReadFrom(account);
-		ctx.True(same.Equals(clone), "equal accounts compare equal in save data");
 	}
 };
 

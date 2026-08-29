@@ -1,4 +1,4 @@
-class EL_JobManager : ScriptedUserAction
+class EL_JobManager : Managed
 {
 	protected static ref EL_JobManager s_Instance;
 

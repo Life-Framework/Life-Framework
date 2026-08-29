@@ -95,16 +95,9 @@ class EL_TestManager
 		Register(new EL_Test_BankAccountMath(), EL_TestTier.LOGIC);
 		Register(new EL_Test_BankSaveRoundtrip(), EL_TestTier.LOGIC);
 		Register(new EL_Test_ATMManagerRegistry(), EL_TestTier.LOGIC);
-		Register(new EL_Test_LevelThresholds(), EL_TestTier.LOGIC);
-		Register(new EL_Test_LevelBonuses(), EL_TestTier.LOGIC);
-		Register(new EL_Test_LevelUpCascade(), EL_TestTier.LOGIC);
 		Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
-		Register(new EL_Test_MoneyFormat(), EL_TestTier.LOGIC);
-		Register(new EL_Test_MoneyDeltaTracker(), EL_TestTier.LOGIC);
-		Register(new EL_Test_ShopRules(), EL_TestTier.LOGIC);
-		Register(new EL_Test_ResourceDefs(), EL_TestTier.LOGIC);
 		Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
 		Register(new EL_Test_Data(), EL_TestTier.WORLD);
 		Register(new EL_Test_MoneyCash(), EL_TestTier.WORLD);

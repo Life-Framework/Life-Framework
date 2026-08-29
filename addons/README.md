@@ -1,21 +1,29 @@
 # Addons
 
-This directory contains the Life Framework mod and any related addon mods.
+`addons/` contains the Life Framework mod.
 
 ## Structure
 
-Each mod should be in its own subdirectory with a unique mod ID:
+There is a single mod, built as a Reforger GameProject:
 
 ```
 addons/
-├── LifeFramework/          # Main Life Framework mod
-├── LifeFramework_Jobs/     # Example: Jobs extension
-└── LifeFramework_Vehicles/ # Example: Vehicle pack extension
+└── LifeFramework/          # The mod (LifeFramework.gproj)
 ```
+
+`LifeFramework/LifeFramework.gproj` defines the project, its language
+configs, and its dependencies (the Enfusion Persistence Framework addon, see
+the root `README.md`). Everything else — Enforce Script, prefabs, worlds,
+UI layouts, localization — lives under `LifeFramework/`.
+
+Future modules (jobs packs, vehicle packs, era-specific asset packs) may be
+added later, but each one must be its own independent mod with its own mod
+ID and GUID, not a folder inside `LifeFramework`.
 
 ## Development
 
-When developing, you can symlink this directory to your Arma Reforger mods folder for easier testing:
+When developing, you can symlink the mod folder into your Arma Reforger
+mods directory for easier testing:
 
 ```powershell
 # Example: Link to Reforger's mod directory

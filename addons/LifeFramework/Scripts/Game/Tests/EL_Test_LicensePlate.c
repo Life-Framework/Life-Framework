@@ -41,8 +41,8 @@ class EL_Test_LicensePlateFormat : EL_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool IsIn(string value, string set)
+	protected bool IsIn(string value, string alphabet)
 	{
-		return set.IndexOf(value) != -1;
+		return alphabet.IndexOf(value) != -1;
 	}
 };

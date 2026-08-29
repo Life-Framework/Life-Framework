@@ -1,0 +1,98 @@
+$grp GenericEntity {
+ RobContainer {
+  components {
+   ActionsManagerComponent "{9BAF49D0BB2C08F7}" {
+    additionalActions {
+     EL_RobAction "{016359D161B34EF1}" {
+      UIInfo UIInfo "{FBCD1BC4E13F2945}" {
+       Name "Rob Container"
+      }
+      m_iMoneyAmount 200
+      m_fCooldown 60
+      m_iMinPoliceOnDuty 1
+     }
+    }
+   }
+  }
+  coords 130 0 140
+  {
+   EL_NpcBaseEntity TomatoNpc3 : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+    components {
+     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+      Identity Identity "{5A4B0B84AF44A913}" {
+       Name "Tomato"
+       Surname "Trader"
+      }
+     }
+    }
+    coords 0.405 0 -0.168
+   }
+  }
+ }
+ WeaponCache {
+  components {
+   ActionsManagerComponent "{9BAF49D0BB2C08F7}" {
+    additionalActions {
+     EL_RobWeaponAction "{8236DACFB5054EE0}" {
+      UIInfo UIInfo "{FBCD1BC4E13F2945}" {
+       Name "Rob Weapon Cache"
+      }
+      m_WeaponPrefab "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et"
+      m_fCooldown 120
+      m_iMinPoliceOnDuty 2
+     }
+    }
+   }
+  }
+  coords 135 0 140
+  {
+   EL_NpcBaseEntity TomatoNpc4 : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+    components {
+     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+      Identity Identity "{5A4B0B84AF44A913}" {
+       Name "Tomato"
+       Surname "Trader"
+      }
+     }
+    }
+    coords -0.239 0 0.43
+   }
+  }
+ }
+ MilitaryVehicle {
+  components {
+   ActionsManagerComponent "{9BAF49D0BB2C08F7}" {
+    additionalActions {
+     EL_RobVehicleAction "{12EB44E247BD1B3C}" {
+      UIInfo UIInfo "{FBCD1BC4E13F2945}" {
+       Name "Steal Military Vehicle"
+      }
+      m_VehiclePrefab "{254289B9C09904AB}Prefabs/Vehicles/Wheeled/BRDM2/BRDM2.et"
+      m_fCooldown 600
+      m_iMinPoliceOnDuty 3
+     }
+    }
+   }
+  }
+  coords 140 0 140
+  {
+   EL_NpcBaseEntity TomatoNpc2 : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+    components {
+     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+      Identity Identity "{5A4B0B84AF44A913}" {
+       Name "Tomato"
+       Surname "Trader"
+      }
+     }
+    }
+    coords -0.233 0 -0.18
+   }
+  }
+ }
+}
+GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
+ coords 105.13 -0 142.848
+}
+GenericEntity : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
+ coords 92.859 0 131.891
+}

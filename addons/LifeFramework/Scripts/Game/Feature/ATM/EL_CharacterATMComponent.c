@@ -11,7 +11,8 @@ class EL_CharacterATMComponent : ScriptComponent
 	void Init(string playerUid)
 	{
 		EL_ATMManager atmManager = EL_ATMManager.GetInstance();
-		atmManager.LoadAccountAsync(playerUid, EL_ATMInitCallback.Create(this));
+		if (atmManager)
+			m_BankAccount = atmManager.GetOrCreate(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -38,24 +39,5 @@ class EL_CharacterATMComponent : ScriptComponent
 				menu.SetPlayerController(playerController);
 			}
 		}
-	}
-};
-
-class EL_ATMInitCallback : EDF_DataCallbackSingle<EL_BankAccount>
-{
-	//------------------------------------------------------------------------------------------------
-	override void OnComplete(EL_BankAccount data, Managed context)
-	{
-		EL_CharacterATMComponent comp = EL_CharacterATMComponent.Cast(context);
-		if (comp)
-			comp.SetBankAccount(data);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static EL_ATMInitCallback Create(EL_CharacterATMComponent comp)
-	{
-		EL_ATMInitCallback instance();
-		instance.m_pContext = comp;
-		return instance;
 	}
 };

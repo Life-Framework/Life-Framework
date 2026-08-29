@@ -7,7 +7,7 @@ GenericEntity : "{B92446456ECA70AB}Prefabs/Items/Core/ConsumeableItem_Base.et" {
    }
   }
   SCR_ConsumableItemComponent "{5AD2A3AD8402632B}" {
-   m_ConsumableEffect EL_ConsumableEffectSurvival "{1B7EC38FB478AD82}" {
+   m_ConsumableEffect EL_ConsumableEffectSurvival "{5010AD4C9A6BAD5C}" {
     m_fThirstRestore 25
    }
   }

@@ -1,36 +1,36 @@
 EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
  ID "PoliceDutyNPC"
  components {
-  CharacterIdentityComponent "{0824C9685C7B36B3}" {
-   Identity Identity "{F1C3F2D29181A570}" {
+  CharacterIdentityComponent "{A115C91A8D3482F2}" {
+   Identity Identity "{9852B5151EBE160F}" {
     Name "Police Sergeant"
     Surname "Duty"
    }
   }
-  ActionsManagerComponent "{25B1E5292EBAB3E8}" {
+  ActionsManagerComponent "{8A2EA126DD778F5B}" {
    ActionContexts {
-    UserActionContext "{5CEF24AFB4783813}" {
+    UserActionContext "{44B338DEF6C1C3FB}" {
      ContextName "Duty"
-     Position PointInfo "{FAC9605AA5D7FFB1}" {
+     Position PointInfo "{DFBF0A2E09D45988}" {
       Offset 0 0.5 0
      }
      Radius 2.0
     }
    }
    additionalActions {
-    EL_DutyAction "{1FEEE6CAFE405BE4}" {
+    EL_DutyAction "{CD1CD5E606C86EFD}" {
      ParentContextList {
       "Duty"
      }
-     UIInfo UIInfo "{A024299A3C961DE3}" {
+     UIInfo UIInfo "{1FF7546E9F74563A}" {
       Name "Toggle Duty"
      }
     }
-    EL_OpenPoliceMenuAction "{25A67E87915AD4B5}" {
+    EL_OpenPoliceMenuAction "{8CC2DDEDDEB10C07}" {
      ParentContextList {
       "Duty"
      }
-     UIInfo UIInfo "{12149461790A92F2}" {
+     UIInfo UIInfo "{495F504D3F69EA28}" {
       Name "Open Police Menu"
      }
     }

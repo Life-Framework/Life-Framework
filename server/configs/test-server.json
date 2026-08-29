@@ -23,7 +23,12 @@
     "scenarioId": "{5A1E5A1E5A1E0002}Missions/EL_DebugTest.conf",
     "maxPlayers": 8,
     "visible": false,
-    "mods": []
+    "mods": [
+      {
+        "modId": "79636E668EA37AC9",
+        "name": "LifeFramework"
+      }
+    ]
   },
   "operating": {
     "lobbyPlayerSynchronise": true,

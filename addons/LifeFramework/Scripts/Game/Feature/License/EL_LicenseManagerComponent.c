@@ -368,35 +368,6 @@ class EL_LicenseManagerComponent : ScriptComponent
 		UnlockLicense(EL_ELicenseType.FARMER_TOMATO, true);
 		
 		Print("[EL_LicenseManagerComponent] Initial licenses granted", LogLevel.NORMAL);
-		
-		// ✅ CRÍTICO: Forzar guardado del componente después de dar licencias iniciales
-		// Esto asegura que las licencias se persistan en la base de datos desde el primer spawn
-		IEntity owner = GetOwner();
-		if (owner)
-		{
-			EPF_PersistenceComponent persistence = EPF_Component<EPF_PersistenceComponent>.Find(owner);
-			if (persistence)
-			{
-				// Usar un delay para asegurar que el componente esté completamente inicializado
-				GetGame().GetCallqueue().CallLater(ForceSaveAfterInitialLicenses, 500, false, owner);
-				Print("[EL_LicenseManagerComponent] Scheduled save after initial licenses", LogLevel.NORMAL);
-			}
-		}
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	// Forzar guardado después de dar licencias iniciales
-	protected void ForceSaveAfterInitialLicenses(IEntity owner)
-	{
-		if (!owner)
-			return;
-			
-		EPF_PersistenceComponent persistence = EPF_Component<EPF_PersistenceComponent>.Find(owner);
-		if (persistence)
-		{
-			persistence.Save();
-			Print("[EL_LicenseManagerComponent] ✓ Forced save after initial licenses granted", LogLevel.NORMAL);
-		}
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -582,22 +553,6 @@ class EL_LicenseManagerComponent : ScriptComponent
 		}
 		
 		Replication.BumpMe();
-		
-		// GUARDADO COMPLETO: Solo guardar si NO es licencia inicial (evitar duplicados en spawn)
-		// Las licencias iniciales se dan en EOnInit y no deben disparar guardado
-		if (!isFree)
-		{
-			IEntity owner = GetOwner();
-			if (owner)
-			{
-				EPF_PersistenceComponent persistence = EPF_Component<EPF_PersistenceComponent>.Find(owner);
-				if (persistence)
-				{
-					persistence.Save();
-					Print(string.Format("[EL_LicenseManagerComponent] ✓ Character fully saved after unlocking license: %1", config.m_sLicenseName), LogLevel.VERBOSE);
-				}
-			}
-		}
 		
 		return true;
 	}

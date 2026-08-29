@@ -58,6 +58,7 @@ class EL_Test_Survival : EL_Test
 };
 
 //------------------------------------------------------------------------------------------------
+//! Save-data round trip through the persisted record.
 class EL_Test_SurvivalSaveData : EL_Test
 {
 	override string GetName()
@@ -70,23 +71,24 @@ class EL_Test_SurvivalSaveData : EL_Test
 		EL_SurvivalStats stats = EL_SurvivalStats.Create("survival-save-source");
 		stats.Eat(-30);
 
-		EL_SurvivalStatsSaveData data = new EL_SurvivalStatsSaveData();
-		data.ReadFrom(stats);
+		// Serialize: copy the live values into the persisted record.
+		EL_SurvivalStatsRecord record = EL_SurvivalStatsRecord.Create(
+			stats.GetPersistentId(), stats.GetHunger(), stats.GetThirst(), stats.GetHealth());
 
+		// Deserialize: apply the record back through the public setters.
 		EL_SurvivalStats restored = EL_SurvivalStats.Create("other-id");
-		data.ApplyTo(restored);
+		restored.SetPersistentId(record.m_sPersistentId);
+		restored.SetHunger(record.m_fHunger);
+		restored.SetThirst(record.m_fThirst);
+		restored.SetHealth(record.m_fHealth);
+
 		ctx.True(Math.AbsFloat(restored.GetHunger() - 70) < 0.001, "hunger survives the save round trip");
 		ctx.EqualStr("survival-save-source", restored.GetPersistentId(), "persistent id survives the round trip");
 
-		data.m_fHunger = 999;
+		// Corrupt save data is re-clamped by the public setter on load.
+		EL_SurvivalStatsRecord corrupt = EL_SurvivalStatsRecord.Create("clamp-id", 999, 100, 100);
 		EL_SurvivalStats clamped = EL_SurvivalStats.Create("clamp-id");
-		data.ApplyTo(clamped);
+		clamped.SetHunger(corrupt.m_fHunger);
 		ctx.True(Math.AbsFloat(clamped.GetHunger() - 100) < 0.001, "corrupt save data is re-clamped on load");
-
-		EL_SurvivalStatsSaveData same = new EL_SurvivalStatsSaveData();
-		same.ReadFrom(stats);
-		EL_SurvivalStatsSaveData clone = new EL_SurvivalStatsSaveData();
-		clone.ReadFrom(stats);
-		ctx.True(same.Equals(clone), "equal stats compare equal in save data");
 	}
 };

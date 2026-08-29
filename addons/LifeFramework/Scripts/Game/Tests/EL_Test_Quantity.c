@@ -59,6 +59,6 @@ class EL_Test_QuantityStack : EL_Test
 		change = 0;
 		ctx.Equal(0, quantity.RemoveQuantity(1, true, change), "RemoveQuantity(1) drives quantity to 0");
 		ctx.Equal(-1, change, "removal reports -1 change");
-		ctx.True(GetGame().FindEntityByID(logId) == null, "stack at quantity 0 deletes its entity");
+		ctx.True(GetGame().GetWorld().FindEntityByID(logId) == null, "stack at quantity 0 deletes its entity");
 	}
 }

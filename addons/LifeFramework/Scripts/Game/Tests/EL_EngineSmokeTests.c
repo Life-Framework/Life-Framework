@@ -1,8 +1,3 @@
-// red-proof: invert any assertion per class (world-loaded: flip the GetGame()
-// null check; money-stack: point PREFAB_CASH at a missing path; math-string:
-// change an expected value; context-selftest: expect the wrong failure count)
-// and run `tools\cli test --tier all`. Red run pending: first boot after the
-// EPF dependency removal lands.
 class EL_Test_WorldLoaded : EL_Test
 {
 	//------------------------------------------------------------------------------------------------
