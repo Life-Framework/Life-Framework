@@ -41,11 +41,11 @@ shift the setting to any era without touching the gameplay systems.
 
 - **Arma Reforger** (base game) and **Arma Reforger Tools (Workbench)** to
   build and run.
-- **Enfusion Persistence Framework (EPF)** — a **required** third-party
-  addon (GUID `5D6EBC81EB1842EF`), declared as a dependency in
-  `LifeFramework.gproj`. The mod will fail to load without it. EPF is
-  external to this repo and maintained separately; migrating to Reforger's
-  first-party persistence is a known roadmap item.
+- **No third-party addons.** The mod uses Reforger's first-party persistence
+  system (`SCR_PersistenceSystem` + serializers bound in
+  `Configs/Systems/Persistence/LifeFramework.conf`). The EPF (Enfusion
+  Persistence Framework) dependency was removed; the gproj declares only the
+  base game.
 
 ## Getting started / Development
 
