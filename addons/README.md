@@ -4,30 +4,48 @@
 
 ## Structure
 
-There is a single mod, built as a Reforger GameProject:
+Single mod, built as a Reforger GameProject:
 
 ```
 addons/
-└── LifeFramework/          # The mod (LifeFramework.gproj)
+└── LifeFramework/          # LifeFramework.gproj — scripts, prefabs, worlds, UI
 ```
 
-`LifeFramework/LifeFramework.gproj` defines the project, its language
-configs, and its dependencies (the Enfusion Persistence Framework addon, see
-the root `README.md`). Everything else — Enforce Script, prefabs, worlds,
-UI layouts, localization — lives under `LifeFramework/`.
+`LifeFramework/LifeFramework.gproj` declares the project, language configs, and
+dependencies (base game only — no third-party addons). EnforceScript, prefabs,
+worlds, UI layouts, and localization all live under `LifeFramework/`.
 
-Future modules (jobs packs, vehicle packs, era-specific asset packs) may be
-added later, but each one must be its own independent mod with its own mod
-ID and GUID, not a folder inside `LifeFramework`.
+Future packs (jobs, vehicles, era assets) must be **separate mods** with their
+own mod ID and GUID — not folders inside `LifeFramework`.
+
+## Key paths
+
+| Path | Purpose |
+| --- | --- |
+| `Scripts/Game/` | EnforceScript (`EL_*` classes) |
+| `Scripts/Game/Tests/` | In-game `EL_Test*` suite |
+| `Prefabs/` | Entities, items, NPCs |
+| `Worlds/MainWorld` | Playable world |
+| `Worlds/DebugWorld` | Dev/test layers + autotest |
+| `Language/` | Localization (`everonlife_localization.st`) |
+| `Configs/` | Systems, persistence, game mode |
 
 ## Development
 
-When developing, you can symlink the mod folder into your Arma Reforger
-mods directory for easier testing:
+**Setup:** [docs/setup.md](../docs/setup.md) — Workbench, CLI, symlinks.
+
+**Symlink for faster iteration** (Windows example):
 
 ```powershell
-# Example: Link to Reforger's mod directory
-New-Item -ItemType SymbolicLink -Path "C:\Users\YourName\Documents\My Games\ArmaReforger\profile\addons\LifeFramework" -Target "path\to\Life-Framework\addons\LifeFramework"
+New-Item -ItemType SymbolicLink `
+  -Path "$env:USERPROFILE\Documents\My Games\ArmaReforger\profile\addons\LifeFramework" `
+  -Target "C:\path\to\Life-Framework\addons\LifeFramework"
 ```
 
-Or copy the mod folder to your Reforger installation for testing.
+Or copy `LifeFramework/` into your Reforger profile `addons/` folder.
+
+**Authoring guides** (in this directory):
+
+- [GUIDE_DEBUG_WORLD_SCRIPTS.md](LifeFramework/GUIDE_DEBUG_WORLD_SCRIPTS.md)
+- [GUIDE_COMPONENT_REFERENCE.md](LifeFramework/GUIDE_COMPONENT_REFERENCE.md)
+- [GUIDE_CREATING_DEBUG_WORLD.md](LifeFramework/GUIDE_CREATING_DEBUG_WORLD.md)

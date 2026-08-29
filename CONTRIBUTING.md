@@ -2,6 +2,8 @@
 
 First off, thank you for considering contributing to Life Framework! It's people like you that make this community-driven project possible.
 
+**New here?** Start with the [development setup guide](docs/setup.md), then read [AGENTS.md](AGENTS.md) before touching EnforceScript or prefabs.
+
 ## Our Philosophy
 
 We're a group of passionate modders who love life mods and want to bring back the vibrant community we all enjoyed. This is a **passion project** – we're here because it's fun, and we want to share that fun with everyone.
@@ -68,8 +70,8 @@ Ready to write some code? Awesome!
    ```bash
    git checkout -b feature/your-feature-name
    ```
-4. **Make your changes** following our coding standards
-5. **Test thoroughly** – make sure everything works!
+4. **Make your changes** following our coding standards ([`AGENTS.md`](AGENTS.md) for EnforceScript and data rules)
+5. **Test thoroughly** — `node tools/cli.mjs validate` and the appropriate `test` tier (see [Testing](#testing) below)
 6. **Commit your changes** with clear, descriptive messages
 7. **Push to your fork** and submit a pull request
 
@@ -157,6 +159,8 @@ Artists and designers are welcome too!
 - Improve visual consistency
 
 ## Community Guidelines
+
+This project follows the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to uphold it.
 
 ### Be Respectful
 
