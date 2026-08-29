@@ -1,0 +1,14 @@
+EL_BaseCrop : "{64DFA805B1BF7F7D}Prefabs/Vegetation/Crops/BaseCrop.et" {
+ ID "59A12C31B7EE4472"
+ components {
+  EL_AreaSpawnerComponent "{59A12C31B22C4F7D}" {
+   m_BoxSize 0.1 0.5 0.1
+   m_BoxOffset 0 0.75 0
+   m_PrefabToSpawn ""
+   m_AmountToSpawn 1
+  }
+ }
+ coords 106.074 0 134.11
+ m_eBuildingType CROP
+ m_iSpawnItemsAtStage 1
+}

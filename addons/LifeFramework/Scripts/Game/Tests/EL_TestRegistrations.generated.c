@@ -16,10 +16,13 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_AccountManagerCache(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AccountActiveIndex(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AccountCachePolicy(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_AreaSpawner(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_BankAccountMath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_BankSaveRoundtrip(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMManagerRegistry(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_CropPrefabs(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_CropStages(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Data(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_DoorLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionSpawn(), EL_TestTier.WORLD);

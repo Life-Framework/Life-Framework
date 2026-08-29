@@ -363,13 +363,15 @@ class EL_Utils : Managed
 	//! \param origin Position(origin) where to spawn the entity
 	//! \param orientation Angles(yaw, pitch, rolle in degrees) to apply to the entity
 	//! \param global If true the entity is spawned in the global (networked) space
+	//! \param parent Optional parent entity to attach the spawned entity to
 	//! \return the spawned entity or null on failure
-	static IEntity SpawnEntityPrefab(ResourceName prefab, vector origin, vector orientation = "0 0 0", bool global = true)
+	static IEntity SpawnEntityPrefab(ResourceName prefab, vector origin, vector orientation = "0 0 0", bool global = true, IEntity parent = null)
 	{
 		EntitySpawnParams spawnParams();
 		spawnParams.TransformMode = ETransformMode.WORLD;
 		Math3D.AnglesToMatrix(orientation, spawnParams.Transform);
 		spawnParams.Transform[3] = origin;
+		spawnParams.Parent = parent;
 
 		Resource resource = Resource.Load(prefab);
 		if (!resource || !resource.IsValid())
@@ -382,6 +384,66 @@ class EL_Utils : Managed
 			return GetGame().SpawnEntityPrefabLocal(resource, GetGame().GetWorld(), spawnParams);
 
 		return GetGame().SpawnEntityPrefab(resource, GetGame().GetWorld(), spawnParams);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Remaps every material on the entity's current mesh to the given material
+	//! \param entity Entity whose mesh materials are replaced
+	//! \param newMaterial ResourceName of the material to remap to
+	static void ChangeEntityMaterial(IEntity entity, ResourceName newMaterial)
+	{
+		if (!entity || !newMaterial)
+			return;
+
+		VObject mesh = entity.GetVObject();
+		if (!mesh)
+			return;
+
+		string remap;
+		string materials[256];
+		int numMats = mesh.GetMaterials(materials);
+		if (numMats == 0)
+			return;
+
+		for (int i = 0; i < numMats; i++)
+		{
+			remap += string.Format("$remap '%1' '%2';", materials[i], newMaterial);
+		}
+
+		entity.SetObject(mesh, remap);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads the MeshObject component of a prefab source (no instance needed)
+	//! \param prefab Prefab to inspect
+	//! \return the MeshObject BaseContainer or null when the prefab has none
+	static BaseContainer GetPrefabMeshComponent(ResourceName prefab)
+	{
+		BaseContainer meshComponent;
+		if (prefab.IsEmpty())
+			return null;
+
+		Resource resource = Resource.Load(prefab);
+		if (!resource || !resource.IsValid())
+			return null;
+
+		IEntitySource prefabSource = resource.GetResource().ToEntitySource();
+		if (!prefabSource)
+			return null;
+
+		int count = prefabSource.GetComponentCount();
+
+		for (int i = 0; i < count; i++)
+		{
+			IEntityComponentSource comp = prefabSource.GetComponent(i);
+
+			if (comp.GetClassName() == "MeshObject")
+			{
+				meshComponent = comp;
+				break;
+			}
+		}
+		return meshComponent;
 	}
 
 	//------------------------------------------------------------------------------------------------

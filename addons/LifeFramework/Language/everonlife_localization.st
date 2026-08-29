@@ -211,28 +211,8 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_pt "Polícia"
     Target_pt_br "Polícia"
    }
-   CustomStringTableItem "{9F9EFE65ED019BC2}" {
-    Id "EL-CC_Error_Fields"
-    Target_en_us "Enter a first and last name."
-    Target_es_es "Introduce un nombre y un apellido."
-    Target_de_de "Gib einen Vor- und Nachnamen ein."
-    Target_fr_fr "Saisissez un prénom et un nom."
-    Target_it_it "Inserisci nome e cognome."
-    Target_pt_pt "Introduz um nome próprio e um apelido."
-    Target_pt_br "Digite um nome e um sobrenome."
-   }
-   CustomStringTableItem "{22FE933006489711}" {
-    Id "EL-CC_Error_Age"
-    Target_en_us "Enter an age between 18 and 80."
-    Target_es_es "Introduce una edad entre 18 y 80."
-    Target_de_de "Gib ein Alter zwischen 18 und 80 ein."
-    Target_fr_fr "Saisissez un âge entre 18 et 80."
-    Target_it_it "Inserisci un'età tra 18 e 80."
-    Target_pt_pt "Introduz uma idade entre 18 e 80."
-    Target_pt_br "Digite uma idade entre 18 e 80."
-   }
-   CustomStringTableItem "{B3BF4076847C9C6E}" {
-    Id "EL-ATM_Title"
+  CustomStringTableItem "{B3BF4076847C9C6E}" {
+   Id "EL-ATM_Title"
    Target_en_us "ATM Machine"
    Target_es_es "Cajero Automático"
    Target_de_de "Geldautomat"
@@ -619,73 +599,18 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-   CustomStringTableItem "{59E16473F491A1FA}" {
-    Id "EL-ItemName_HouseKey"
-    Target_en_us "House Key"
-    Target_de_de "Hausschlüssel"
-    Target_fr_fr "Clé de maison"
-    Target_it_it "Chiave di casa"
-    Target_es_es "Llave de casa"
-    Target_pt_pt "Chave de casa"
-    Target_pt_br "Chave de casa"
-    Modified 1788019742
-    Author "LifeFramework"
-    LastChanged "LifeFramework"
-   }
-   CustomStringTableItem "{AB196A002192D0D2}" {
-    Id "EL-ItemDesc_HouseKey"
-    Target_en_us "Opens the house it is bound to."
-    Target_de_de "Öffnet das Haus, an das es gebunden ist."
-    Target_fr_fr "Ouvre la maison à laquelle elle est liée."
-    Target_it_it "Apre la casa a cui è legata."
-    Target_es_es "Abre la casa a la que está vinculada."
-    Target_pt_pt "Abre a casa à qual está vinculada."
-    Target_pt_br "Abre a casa à qual está vinculada."
-    Modified 1788019742
-    Author "LifeFramework"
-    LastChanged "LifeFramework"
-   }
-   CustomStringTableItem "{DE354FA91223DF9C}" {
-    Id "EL-HouseLock_Reason"
-    Target_en_us "This door is locked"
-    Target_de_de "Diese Tür ist abgeschlossen"
-    Target_fr_fr "Cette porte est verrouillée"
-    Target_it_it "Questa porta è bloccata"
-    Target_es_es "Esta puerta está bloqueada"
-    Target_pt_pt "Esta porta está trancada"
-    Target_pt_br "Esta porta está trancada"
+   CustomStringTableItem "{B8AE8B1EC379425C}" {
+    Id "EL-DeleteAction_DisplayName"
+    Target_en_us "Destroy"
+    Target_de_de "Zerst�ren"
+    Target_fr_fr "D�truire"
+    Target_it_it "Distruggi"
+    Target_es_es "Destruir"
+    Target_pt_pt "Destruir"
+    Target_pt_br "Destruir"
     Modified 1788019742
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
   }
-   CustomStringTableItem "{F5FDC2038BA4118F}" {
-    Id "EL-Whitelist_NotAllowed"
-    Comment "Shown when a user action is refused because the player lacks the required whitelist flag"
-    Target_en_us "You are not whitelisted for this"
-    Target_de_de "Du bist dafuer nicht whitelisted"
-    Target_fr_fr "Vous n'etes pas autorise pour cette action"
-    Target_it_it "Non sei autorizzato per questa azione"
-    Target_es_es "No estas autorizado para esta accion"
-    Target_pt_pt "Nao estas autorizado para esta acao"
-    Target_pt_br "Voce nao esta autorizado para esta acao"
-    Modified 1788019742
-    Author "LifeFramework"
-    LastChanged "LifeFramework"
-   }
-   CustomStringTableItem "{97CEF9804C433EE1}" {
-    Id "EL-Whitelist_Sign_Action"
-    Comment "Name of the whitelist information action on the DebugWorld whitelist sign"
-    Target_en_us "Whitelist info"
-    Target_de_de "Whitelist-Information"
-    Target_fr_fr "Informations sur la liste blanche"
-    Target_it_it "Informazioni whitelist"
-    Target_es_es "Informacion de la lista blanca"
-    Target_pt_pt "Informacao da lista branca"
-    Target_pt_br "Informacao da lista branca"
-    Modified 1788019742
-    Author "LifeFramework"
-    LastChanged "LifeFramework"
-   }
- }
 }

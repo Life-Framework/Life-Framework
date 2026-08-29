@@ -22,9 +22,11 @@ SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base
    }
    EL_PlayerJobComponent "{A68F47E449868508}" {
    }
-   EL_PlayerWhitelistComponent "{5D1921149C026619}" {
+   EL_BuildingManagerComponent "{DF8FCA7984804E51}" {
+    m_PreviewMaterial "{58F07022C12D0CF5}Assets/Editor/PlacingPreview/Preview.emat"
+    m_BasePreviewPrefab "{5626E68741FCB9DB}Prefabs/Building/BaseBuildingPreview.et"
    }
-   ActionsManagerComponent "{520EA1D2F659CE02}" {
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
    ActionContexts + {
     UserActionContext "{8CDF2A893F14F514}" {
      ContextName "EL_ID"
