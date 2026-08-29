@@ -94,12 +94,16 @@ class EL_MiningArea : GenericEntity
 	//------------------------------------------------------------------------------------------------
 	void SpawnOres(int amount)
 	{
+		int totalWeight = GetTotalWeight(m_PrefabsToSpawn);
+		if (totalWeight <= 0)
+		{
+			EL_Debug.Log("Mining", "spawn skipped: no weights configured");
+			return;
+		}
+
+		int spawned = 0;
 		for (int i = 0; i < amount; i++)
 		{
-			int totalWeight = GetTotalWeight(m_PrefabsToSpawn);
-			if (totalWeight <= 0)
-				return;
-
 			int rndWeight = Math.RandomInt(0, totalWeight);
 			int pickIndex = PickWeightedIndex(m_PrefabsToSpawn, rndWeight);
 			if (pickIndex < 0)
@@ -119,10 +123,15 @@ class EL_MiningArea : GenericEntity
 			this.AddChild(nextOre, -1, EAddChildFlags.AUTO_TRANSFORM);
 			if (!nextOre.GetParent())
 			{
-				Print(string.Format("Mining area could not parent spawned ore %1 - prefab lacks Hierarchy", weightedSpawnObj.m_Prefab.GetPath()), LogLevel.ERROR);
+				EL_Debug.Error("Mining", string.Format("spawned ore %1 could not parent (prefab lacks Hierarchy) - deleting to avoid a stray entity", weightedSpawnObj.m_Prefab.GetPath()));
 				SCR_EntityHelper.DeleteEntityAndChildren(nextOre);
+				continue;
 			}
+
+			spawned++;
 		}
+
+		EL_Debug.Log("Mining", string.Format("spawned %1/%2 ores", spawned, amount));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -136,6 +145,7 @@ class EL_MiningArea : GenericEntity
 		{
 			SpawnOres(ComputeSpawnCount(m_iAmount, SCR_EntityHelper.GetChildrenCount(this)));
 			m_NextRespawn = now.PlusMilliseconds(m_fRespawnTime * MIN_TO_MS);
+			EL_Debug.Log("Mining", string.Format("respawn scheduled in %1 ms", m_fRespawnTime * MIN_TO_MS));
 		}
 	}
 
