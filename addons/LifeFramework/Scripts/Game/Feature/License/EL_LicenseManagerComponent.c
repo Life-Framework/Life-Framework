@@ -441,15 +441,13 @@ class EL_LicenseManagerComponent : ScriptComponent
 	{
 		if (!CanUnlockLicense(licenseType))
 		{
-			Print(string.Format("[EL_LicenseManagerComponent] Cannot unlock license: %1 (requirements not met)", 
-				typename.EnumToString(EL_ELicenseType, licenseType)), LogLevel.WARNING);
+			EL_Debug.Log("License", string.Format("purchase rejected (requirements not met): %1", typename.EnumToString(EL_ELicenseType, licenseType)));
 			return false;
 		}
-		
+
 		if (!CanAffordLicense(licenseType))
 		{
-			Print(string.Format("[EL_LicenseManagerComponent] Cannot afford license: %1", 
-				typename.EnumToString(EL_ELicenseType, licenseType)), LogLevel.WARNING);
+			EL_Debug.Log("License", string.Format("purchase rejected (cannot afford): %1", typename.EnumToString(EL_ELicenseType, licenseType)));
 			return false;
 		}
 		
@@ -476,22 +474,20 @@ class EL_LicenseManagerComponent : ScriptComponent
 	//! Desbloquear una licencia
 	bool UnlockLicense(EL_ELicenseType licenseType, bool isFree = false)
 	{
-		if (!Replication.IsServer())
+if (!Replication.IsServer())
 			return false;
-		
+
 		// Ya tiene esta licencia
 		if (HasLicense(licenseType))
 		{
-			Print(string.Format("[EL_LicenseManagerComponent] Player already has license: %1", 
-				typename.EnumToString(EL_ELicenseType, licenseType)), LogLevel.WARNING);
+			EL_Debug.Log("License", string.Format("unlock rejected (already owned): %1", typename.EnumToString(EL_ELicenseType, licenseType)));
 			return false;
 		}
 		
 		EL_LicenseConfig config = m_mLicenseConfigs.Get(licenseType);
 		if (!config)
 		{
-			Print(string.Format("[EL_LicenseManagerComponent] License config not found: %1", 
-				typename.EnumToString(EL_ELicenseType, licenseType)), LogLevel.ERROR);
+			EL_Debug.Log("License", string.Format("unlock rejected (no config): %1", typename.EnumToString(EL_ELicenseType, licenseType)));
 			return false;
 		}
 		

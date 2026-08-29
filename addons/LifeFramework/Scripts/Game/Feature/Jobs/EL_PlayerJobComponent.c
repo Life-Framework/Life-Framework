@@ -227,6 +227,8 @@ class EL_PlayerJobComponent : ScriptComponent
 		
 		OnJobChanged();
 		Replication.BumpMe();
+
+		EL_Debug.Log("Jobs", string.Format("job set -> %1 (level %2)", typename.EnumToString(EL_EJobType, jobType), m_iJobLevel));
 		
 		// Show notification for job change
 		string jobName = GetJobName();
@@ -278,7 +280,7 @@ class EL_PlayerJobComponent : ScriptComponent
 			EL_LicenseManagerComponent licenseManager = EL_Component<EL_LicenseManagerComponent>.Find(GetOwner());
 			if (!licenseManager || !licenseManager.HasLicense(EL_ELicenseType.POLICE_ACCESS))
 			{
-				Print("[EL_PlayerJobComponent] Security Alert: Player tried to set POLICE job without license!", LogLevel.WARNING);
+				EL_Debug.Warn("Jobs", "security: POLICE job request denied (no POLICE_ACCESS license)");
 				return;
 			}
 		}
@@ -289,7 +291,7 @@ class EL_PlayerJobComponent : ScriptComponent
 			EL_LicenseManagerComponent licenseManager = EL_Component<EL_LicenseManagerComponent>.Find(GetOwner());
 			if (!licenseManager || !licenseManager.HasLicense(EL_ELicenseType.MEDIC_ACCESS))
 			{
-				Print("[EL_PlayerJobComponent] Security Alert: Player tried to set MEDIC job without license!", LogLevel.WARNING);
+				EL_Debug.Warn("Jobs", "security: MEDIC job request denied (no MEDIC_ACCESS license)");
 				return;
 			}
 		}

@@ -76,7 +76,10 @@ class EL_ShopComponent : ScriptComponent
 		if (!item || !IsQuantityAllowed(item.GetMaxQuantity(), quantity))
 			return false;
 		if (!IsSoldByThisShop(item))
+		{
+			EL_Debug.Log("Shop", string.Format("buy rejected (not sold here) item=%1 qty=%2", item.GetItemPrefab(), quantity));
 			return false;
+		}
 
 		int totalPrice = ComputeTotalPrice(item.GetPrice(), quantity);
 
@@ -87,6 +90,7 @@ class EL_ShopComponent : ScriptComponent
 		{
 			if (removed > 0)
 				EL_MoneyUtils.AddAmount(buyer, removed);
+			EL_Debug.Log("Shop", string.Format("buy failed (insufficient funds) item=%1 qty=%2 price=%3 removed=%4", item.GetItemPrefab(), quantity, totalPrice, removed));
 			EL_Utils.Notify("#EL-Not_Enough_Money", "#EL-Shop_PurchaseFailed", 3.0);
 			return false;
 		}
@@ -95,6 +99,7 @@ class EL_ShopComponent : ScriptComponent
 		ResourceName prefab = item.GetItemPrefab();
 		if (EL_InventoryUtils.AddAmount(buyer, prefab, quantity))
 		{
+			EL_Debug.Log("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, quantity, totalPrice));
 			EL_Utils.Notify(string.Format("#EL-Item_Bought", item.GetDisplayName(), quantity), "#EL-Shop_PurchaseSuccessful", 3.0);
 			return true;
 		}
@@ -102,6 +107,7 @@ class EL_ShopComponent : ScriptComponent
 		{
 			// Refund the full price: the full price was removed
 			EL_MoneyUtils.AddAmount(buyer, totalPrice);
+			EL_Debug.Log("Shop", string.Format("buy failed (inventory full) item=%1 - refunded %2", prefab, totalPrice));
 			EL_Utils.Notify("#EL-Inventory_Full", "#EL-Shop_PurchaseFailed", 3.0);
 			return false;
 		}

@@ -54,17 +54,16 @@ class EL_PlayerLevelComponent : ScriptComponent
 			return;
 		
 		m_fPlayerExperience += amount;
-		
-		Print(string.Format("[EL_PlayerLevelComponent] +%1 XP from '%2' (Total: %3)", 
-			amount, source, m_fPlayerExperience), LogLevel.NORMAL);
-		
+
+		EL_Debug.Log("Level", string.Format("+%1 xp from '%2' (total %3)", amount, source, m_fPlayerExperience));
+
 		// Invocar evento
 		if (m_OnExperienceGained)
 			m_OnExperienceGained.Invoke(amount, source);
-		
+
 		// Comprobar si sube de nivel
 		CheckLevelUp();
-		
+
 		Replication.BumpMe();
 	}
 	
@@ -80,9 +79,8 @@ class EL_PlayerLevelComponent : ScriptComponent
 			m_iPlayerLevel++;
 			m_iSkillPoints++;
 			m_iTotalSkillPointsEarned++;
-			
-			Print(string.Format("[EL_PlayerLevelComponent] LEVEL UP! New level: %1, SP earned: %2", 
-				m_iPlayerLevel, m_iSkillPoints), LogLevel.NORMAL);
+
+			EL_Debug.Log("Level", string.Format("LEVEL UP -> level %1 (+1 sp, total %2)", m_iPlayerLevel, m_iSkillPoints));
 			
 			// Notificar al jugador
 			OnLevelUp();

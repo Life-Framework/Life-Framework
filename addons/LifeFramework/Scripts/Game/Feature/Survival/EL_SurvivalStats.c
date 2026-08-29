@@ -57,12 +57,14 @@ class EL_SurvivalStats : Managed
 	void Eat(float amount)
 	{
 		SetHunger(m_fHunger + amount);
+		EL_Debug.Log("Survival", string.Format("eat +%1 -> hunger %2", amount, m_fHunger));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void Drink(float amount)
 	{
 		SetThirst(m_fThirst + amount);
+		EL_Debug.Log("Survival", string.Format("drink +%1 -> thirst %2", amount, m_fThirst));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -20,12 +20,14 @@ class EL_DutyAction : ScriptedUserAction
 		{
 			bool newDuty = !account.IsOnDuty();
 			account.SetOnDuty(newDuty);
-			
+
 			string status;
 			if (newDuty)
 				status = "on duty";
 			else
 				status = "off duty";
+
+			EL_Debug.Log("Police", string.Format("duty toggled -> %1 (player %2)", status, pUserEntity));
 
 			EL_Utils.Notify(string.Format("#EL-Duty_Status_Change", status), "#EL-Duty_Status", 3.0);
 			

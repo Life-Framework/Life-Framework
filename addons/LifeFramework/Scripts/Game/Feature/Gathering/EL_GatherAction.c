@@ -30,17 +30,18 @@ class EL_GatherAction : ScriptedUserAction
 	{
 		if (!EL_NetworkUtils.IsOwner(pOwnerEntity)) return;
 
-		// Server-side re-validation: the client's CanBePerformedScript is not a gate
+// Server-side re-validation: the client's CanBePerformedScript is not a gate
 		if (!EL_CanGatherServer(pUserEntity))
 		{
-			Print("[EL_GatherAction] Rejected gather: tool or cooldown check failed", LogLevel.WARNING);
+			EL_Debug.Warn("Gathering", string.Format("rejected gather (tool/cooldown) prefab=%1", m_GatherItemPrefab));
 			return;
 		}
-		
+
 		SCR_InventoryStorageManagerComponent inventoryManager = EL_Component<SCR_InventoryStorageManagerComponent>.Find(pUserEntity);
 		if (EL_InventoryUtils.AddAmount(inventoryManager, m_GatherItemPrefab, m_GatherAmount))
 		{
 			inventoryManager.RpcAsk_PlaySound(EL_NetworkUtils.GetRplId(pUserEntity), "SOUND_PICK_UP");
+			EL_Debug.Log("Gathering", string.Format("gathered %1 x%2", m_GatherItemPrefab, m_GatherAmount));
 
 			// Notify job manager for reward
 			EL_JobManager jobManager = EL_JobManager.GetInstance();

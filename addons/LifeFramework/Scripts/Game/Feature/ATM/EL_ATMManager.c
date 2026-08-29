@@ -134,8 +134,11 @@ class EL_ATMManager : Managed
 		if (account)
 		{
 			account.Deposit(amount);
+			EL_Debug.Log("ATM", string.Format("deposit account=%1 amount=%2", accountId, amount));
 			return true;
 		}
+
+		EL_Debug.Log("ATM", string.Format("deposit failed: no account %1", accountId));
 		return false;
 	}
 
@@ -145,8 +148,12 @@ class EL_ATMManager : Managed
 		EL_BankAccount account = GetAccount(accountId);
 		if (account)
 		{
-			return account.Withdraw(amount);
+			bool ok = account.Withdraw(amount);
+			EL_Debug.Log("ATM", string.Format("withdraw account=%1 amount=%2 ok=%3", accountId, amount, ok));
+			return ok;
 		}
+
+		EL_Debug.Log("ATM", string.Format("withdraw failed: no account %1", accountId));
 		return false;
 	}
 };

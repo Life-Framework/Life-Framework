@@ -66,19 +66,20 @@ class EL_BankAccountComponent : ScriptComponent
 	//! NOTE: This only adds to the balance. The caller (terminal/ATM) is responsible for taking cash from player.
 	bool Deposit(int amount, string description = "Deposit")
 	{
-		if (amount <= 0)
+if (amount <= 0)
 			return false;
-		
+
 		// Add to bank account
 		m_iAccountBalance += amount;
 		m_iTotalDeposits += amount;
-		
+
 		// Record transaction
 		RecordTransaction(EL_ETransactionType.DEPOSIT, amount, description);
-		
+
 		OnBalanceChanged();
 		NotifyReplication();
-		
+
+		EL_Debug.Log("Banking", string.Format("deposit +%1 -> balance %2 (%3)", amount, m_iAccountBalance, description));
 		return true;
 	}
 	
@@ -87,42 +88,51 @@ class EL_BankAccountComponent : ScriptComponent
 	//! NOTE: This only removes from the balance. The caller (terminal/ATM) is responsible for giving cash to player.
 	bool Withdraw(int amount, string description = "Withdrawal")
 	{
-		if (amount <= 0 || amount > m_iAccountBalance)
+if (amount <= 0 || amount > m_iAccountBalance)
+		{
+			EL_Debug.Log("Banking", string.Format("withdraw rejected: amount=%1 balance=%2", amount, m_iAccountBalance));
 			return false;
-		
+		}
+
 		// Remove from bank account
 		m_iAccountBalance -= amount;
 		m_iTotalWithdrawals += amount;
-		
+
 		// Record transaction
 		RecordTransaction(EL_ETransactionType.WITHDRAWAL, amount, description);
-		
+
 		OnBalanceChanged();
 		NotifyReplication();
-		
+
+		EL_Debug.Log("Banking", string.Format("withdraw -%1 -> balance %2 (%3)", amount, m_iAccountBalance, description));
 		return true;
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Transfer money to another player's bank account
-	bool Transfer(int amount, EL_BankAccountComponent recipient, string description = "Transfer")
+bool Transfer(int amount, EL_BankAccountComponent recipient, string description = "Transfer")
 	{
 		if (!recipient || amount <= 0 || amount > m_iAccountBalance)
+		{
+			EL_Debug.Log("Banking", string.Format("transfer rejected: amount=%1 balance=%2 recipient=%3", amount, m_iAccountBalance, recipient != null));
 			return false;
-		
+		}
+
 		// Remove from sender
 		m_iAccountBalance -= amount;
 		RecordTransaction(EL_ETransactionType.TRANSFER_OUT, amount, description);
-		
+
 		// Add to recipient
 		recipient.m_iAccountBalance += amount;
 		recipient.RecordTransaction(EL_ETransactionType.TRANSFER_IN, amount, description);
-		
+
 		OnBalanceChanged();
 		recipient.OnBalanceChanged();
-		
+
 		NotifyReplication();
 		recipient.NotifyReplication();
+
+		EL_Debug.Log("Banking", string.Format("transfer -%1 -> balance %2 (%3)", amount, m_iAccountBalance, description));
 		
 		return true;
 	}

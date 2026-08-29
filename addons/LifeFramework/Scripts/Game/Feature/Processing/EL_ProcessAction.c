@@ -43,7 +43,7 @@ class EL_ProcessAction : ScriptedUserAction
 		// A recipe must require at least one input, or outputs are free
 		if (!m_aProcessingInputs || m_aProcessingInputs.IsEmpty())
 		{
-			Print("[EL_ProcessAction] Rejected process with no input requirements", LogLevel.WARNING);
+			EL_Debug.Warn("Processing", "rejected process: no input requirements configured");
 			return;
 		}
 
@@ -54,7 +54,7 @@ class EL_ProcessAction : ScriptedUserAction
 		{
 			if (processingInput.m_iInputAmount < 1 || EL_InventoryUtils.GetAmount(inventoryManager, processingInput.m_InputPrefab) < processingInput.m_iInputAmount)
 			{
-				Print("[EL_ProcessAction] Rejected process with missing inputs", LogLevel.WARNING);
+				EL_Debug.Warn("Processing", string.Format("rejected process: missing input %1", processingInput.m_InputPrefab));
 				return;
 			}
 		}
@@ -84,6 +84,8 @@ class EL_ProcessAction : ScriptedUserAction
 			{
 				jobManager.OnProcessCompleted(pUserEntity, processingOutput.m_OutputPrefab);
 			}
+
+			EL_Debug.Log("Processing", string.Format("processed %1 x%2", processingOutput.m_OutputPrefab, processingOutput.m_iOutputAmount));
 		}
 	}
 
