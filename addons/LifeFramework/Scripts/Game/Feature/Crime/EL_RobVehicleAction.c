@@ -52,7 +52,7 @@ class EL_RobVehicleAction : ScriptedUserAction
 		IEntity vehicle = GetGame().SpawnEntityPrefab(Resource.Load(m_VehiclePrefab), null, params);
 		if (vehicle)
 		{
-			EL_Utils.Notify("#EL-Vehicle_Stolen", "Robbery Successful", 3.0);
+			EL_Utils.Notify("#EL-Vehicle_Stolen", "#EL-Robbery_Successful", 3.0);
 
 			// Increase wanted level
 			EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
@@ -62,12 +62,12 @@ class EL_RobVehicleAction : ScriptedUserAction
 				EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 
 				// Alert police
-				EL_Utils.AlertPolice("Vehicle theft alert!", pUserEntity.GetOrigin());
+				EL_Utils.AlertPolice("#EL-Police_Alert_Vehicle", pUserEntity.GetOrigin());
 			}
 		}
 		else
 		{
-			EL_Utils.Notify("#EL-Spawn_Failed", "Robbery Failed", 3.0);
+			EL_Utils.Notify("#EL-Spawn_Failed", "#EL-Robbery_Failed", 3.0);
 		}
 	}
 
@@ -107,7 +107,7 @@ class EL_RobVehicleAction : ScriptedUserAction
 						   {
 							   count++;
 							   // Send alert (global notify; per-player parameter omitted)
-							   EL_Utils.Notify("#EL-Police_Alert_Vehicle", "Police Alert", 5.0);
+							   EL_Utils.Notify("#EL-Police_Alert_Vehicle", "#EL-PoliceAlert_Title", 5.0);
 						}
 					}
 				}

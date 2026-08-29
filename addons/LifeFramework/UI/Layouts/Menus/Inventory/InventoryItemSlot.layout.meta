@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{F437ACE2BD5F11E1}UI/layouts/Menus/Inventory/InventoryItemSlot.layout"
+ Name "{F437ACE2BD5F11E1}UI/Layouts/Menus/Inventory/InventoryItemSlot.layout"
  Configurations {
   LayoutResourceClass PC {
   }

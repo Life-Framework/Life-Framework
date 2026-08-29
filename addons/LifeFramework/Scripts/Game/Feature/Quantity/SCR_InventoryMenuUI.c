@@ -1,11 +1,11 @@
 modded class SCR_InventoryMenuUI
 {
-	protected SCR_InventorySlotUI m_pELSelectedQuantitySlot;
+	protected ref SCR_InventorySlotUI m_pELSelectedQuantitySlot;
 	protected bool m_bELKeepQuantitySeperate;
 
 	protected ref set<IEntity> m_aELRefreshEntities = new set<IEntity>();
-	protected SCR_InventorySlotUI m_aELQuantityOperationSourceSlotUi;
-	protected SCR_InventorySlotUI m_aELQuantityOperationDestinationSlotUi;
+	protected ref SCR_InventorySlotUI m_aELQuantityOperationSourceSlotUi;
+	protected ref SCR_InventorySlotUI m_aELQuantityOperationDestinationSlotUi;
 	protected IEntity m_pELQuantitySplitSource;
 	protected bool m_bELQuantityRefreshBlock;
 

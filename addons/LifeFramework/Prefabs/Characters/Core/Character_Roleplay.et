@@ -14,20 +14,20 @@ SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base
     Surname ""
    }
   }
-  EL_CharacterATMComponent "{ATM_GUID}" {
+  EL_CharacterATMComponent "{183FCA6F1D871542}" {
    // Add any props if needed
   }
-  EL_CharacterSurvivalComponent "{SURVIVAL_GUID}" {
+  EL_CharacterSurvivalComponent "{F2B7B4741EA6802B}" {
    // Add any props if needed
   }
-   ActionsManagerComponent "{ACTIONS_GUID}" {
+   ActionsManagerComponent "{2DEE42CFEC850C23}" {
    ActionContexts {
-    UserActionContext "{CONTEXT_GUID}" {
-     Position PointInfo "{POINT_GUID}" {
+    UserActionContext "{88E528E7EACA3144}" {
+     Position PointInfo "{D6B6DE0D89D4D301}" {
       Offset 0 1.5 0
      }
      Actions + {
-      "{SHOWID_ACTION_GUID}" {
+      "{2A702BB5008405BC}" {
        Class "EL_ShowIDAction"
        DisplayName "#EL-ShowID_DisplayName"
        Icon "Icons/assets/Icons/eye.edds"
@@ -37,7 +37,7 @@ SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base
        ShowInQuickbar 0
        ShowInActionsMenu 1
       }
-      "{CONFISCATE_ACTION_GUID}" {
+      "{970AA80C254C406C}" {
        Class "EL_ConfiscateAction"
        DisplayName "#EL-Confiscate_DisplayName"
        Icon "Icons/assets/Icons/confiscate.edds"

@@ -45,7 +45,7 @@ modded class SCR_InventoryStorageManagerComponent
 					atmManager.Deposit(playerUid, value);
 					
 					// Show notification
-					SCR_HintManagerComponent.ShowCustomHint(string.Format("#EL-Item_Sold", value), "Trade Successful", 3.0);
+					SCR_HintManagerComponent.ShowCustomHint(string.Format("#EL-Item_Sold", value), "#EL-Trade_Successful", 3.0);
 				}
 				
 				this.SetReturnCode(EInventoryRetCode.RETCODE_OK);

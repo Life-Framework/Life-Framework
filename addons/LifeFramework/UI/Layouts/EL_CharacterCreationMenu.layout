@@ -69,7 +69,7 @@ FrameWidgetClass {
               VerticalAlign 3
              }
              Color 0.2 0.8 1 1
-             Text "CREAR PERSONAJE"
+             Text "#EL-CharacterCreation_Title"
              "Font Size" 40
              "Min Font Size" 40
              FontProperties FontProperties "{63D2E3F4A5B6C8B5}" {
@@ -148,7 +148,7 @@ FrameWidgetClass {
                            }
                            Color 0.2 0.8 1 1
                            "Font Size" 25
-                           "Placeholder text" "Ingresa tu nombre..."
+                           "Placeholder text" "#EL-CC_FirstNamePlaceholder"
                            FontProperties FontProperties "{554896CC8367BD77}" {
                             Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
                            }
@@ -184,33 +184,33 @@ FrameWidgetClass {
               }
              }
              {
-              VerticalLayoutWidgetClass "{5AA4D27F39EB2514}" {
+              VerticalLayoutWidgetClass "{9F64B7C840B21A9D}" {
                Prefab "{5AA4D27F39EB2514}"
                {
-                SizeLayoutWidgetClass "{5538C205B27B0F5D}" {
+                SizeLayoutWidgetClass "{2DB07EF4AF98F0AF}" {
                  Prefab "{5538C205B27B0F5D}"
                  Slot LayoutSlot "{5AA4D278E4FF4B3D}" {
                  }
                  {
-                  OverlayWidgetClass "{55367D8E531FD623}" {
+                  OverlayWidgetClass "{F0D4E7F67E1710F8}" {
                    Prefab "{55367D8E531FD623}"
                    Slot AlignableSlot "{55367D8E531FD640}" {
                     Padding 0 0 0 0
                    }
                    {
-                    HorizontalLayoutWidgetClass "{55367D8E4592BC6E}" {
+                    HorizontalLayoutWidgetClass "{E5CD73CA01ACD383}" {
                      Prefab "{55367D8E4592BC6E}"
                      Slot OverlayWidgetSlot "{55367D8E4592B383}" {
                       Padding 0 8 0 8
                      }
                      {
-                      OverlayWidgetClass "{5538C2059A570E94}" {
+                      OverlayWidgetClass "{6B30D4EBD588D729}" {
                        Prefab "{5538C2059A570E94}"
                        {
-                        HorizontalLayoutWidgetClass "{58D095EE846E2B93}" {
+                        HorizontalLayoutWidgetClass "{00AA4D8B424CC383}" {
                          Prefab "{58D095EE846E2B93}"
                          {
-                          EditBoxWidgetClass "{5538C2058B18F877}" {
+                          EditBoxWidgetClass "{5D16CEBA60F1A3D8}" {
                            Prefab "{5538C2058B18F877}"
                            components {
                             EditBoxFilterComponent "{5538D70DF38310BC}" {
@@ -222,7 +222,7 @@ FrameWidgetClass {
                            }
                            Color 0.2 0.8 1 1
                            "Font Size" 25
-                           "Placeholder text" "Ingresa tu apellido..."
+                           "Placeholder text" "#EL-CC_LastNamePlaceholder"
                            FontProperties FontProperties "{554896CC8367BD77}" {
                             Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
                            }
@@ -258,33 +258,33 @@ FrameWidgetClass {
               }
              }
              {
-              VerticalLayoutWidgetClass "{5AA4D27F39EB2514}" {
+              VerticalLayoutWidgetClass "{F0CD8EF927CAF1FA}" {
                Prefab "{5AA4D27F39EB2514}"
                {
-                SizeLayoutWidgetClass "{5538C205B27B0F5D}" {
+                SizeLayoutWidgetClass "{D42F6CC15033D610}" {
                  Prefab "{5538C205B27B0F5D}"
                  Slot LayoutSlot "{5AA4D278E4FF4B3D}" {
                  }
                  {
-                  OverlayWidgetClass "{55367D8E531FD623}" {
+                  OverlayWidgetClass "{5CDC7BA7D83421A4}" {
                    Prefab "{55367D8E531FD623}"
                    Slot AlignableSlot "{55367D8E531FD640}" {
                     Padding 0 0 0 0
                    }
                    {
-                    HorizontalLayoutWidgetClass "{55367D8E4592BC6E}" {
+                    HorizontalLayoutWidgetClass "{15451D134A78ACBB}" {
                      Prefab "{55367D8E4592BC6E}"
                      Slot OverlayWidgetSlot "{55367D8E4592B383}" {
                       Padding 0 8 0 8
                      }
                      {
-                      OverlayWidgetClass "{5538C2059A570E94}" {
+                      OverlayWidgetClass "{6C4243219B2D87F4}" {
                        Prefab "{5538C2059A570E94}"
                        {
-                        HorizontalLayoutWidgetClass "{58D095EE846E2B93}" {
+                        HorizontalLayoutWidgetClass "{5F272BF8AA8C32D1}" {
                          Prefab "{58D095EE846E2B93}"
                          {
-                          EditBoxWidgetClass "{5538C2058B18F877}" {
+                          EditBoxWidgetClass "{C7E6C70E32B5B4AC}" {
                            Prefab "{5538C2058B18F877}"
                            components {
                             EditBoxFilterComponent "{5538D70DF38310BC}" {
@@ -296,7 +296,7 @@ FrameWidgetClass {
                            }
                            Color 0.2 0.8 1 1
                            "Font Size" 25
-                           "Placeholder text" "18-99"
+                           "Placeholder text" "#EL-CC_AgeHint"
                            FontProperties FontProperties "{554896CC8367BD77}" {
                             Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
                            }
@@ -335,7 +335,7 @@ FrameWidgetClass {
                   Padding 20 12 20 12
                  }
                  Color 1 1 1 1
-                 Text "CAUCÁSICO"
+                 Text "#EL-CC_Race_Caucasian"
                  "Font Size" 18
                 }
                }
@@ -354,7 +354,7 @@ FrameWidgetClass {
                   Padding 20 12 20 12
                  }
                  Color 1 1 1 1
-                 Text "AFRICANO"
+                 Text "#EL-CC_Race_African"
                  "Font Size" 18
                 }
                }
@@ -373,7 +373,7 @@ FrameWidgetClass {
                   Padding 20 12 20 12
                  }
                  Color 1 1 1 1
-                 Text "ASIÁTICO"
+                 Text "#EL-CC_Race_Asian"
                  "Font Size" 18
                 }
                }
@@ -428,7 +428,7 @@ FrameWidgetClass {
            components {
             SCR_InputButtonComponent "{5D346C3DD81D95CD}" {
              m_sActionName "MenuSelectHold"
-             m_sLabel "CREAR PERSONAJE"
+             m_sLabel "#EL-CharacterCreation_Create"
             }
            }
           }

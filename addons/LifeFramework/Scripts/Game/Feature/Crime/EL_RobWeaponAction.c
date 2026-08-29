@@ -49,7 +49,7 @@ class EL_RobWeaponAction : ScriptedUserAction
 		SCR_InventoryStorageManagerComponent inventoryManager = EL_Component<SCR_InventoryStorageManagerComponent>.Find(pUserEntity);
 		if (inventoryManager && EL_InventoryUtils.AddItem(inventoryManager, m_WeaponPrefab))
 		{
-			EL_Utils.Notify("#EL-Weapon_Stolen", "Robbery Successful", 3.0);
+			EL_Utils.Notify("#EL-Weapon_Stolen", "#EL-Robbery_Successful", 3.0);
 
 			// Increase wanted level
 			EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
@@ -59,12 +59,12 @@ class EL_RobWeaponAction : ScriptedUserAction
 				EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 
 				// Alert police
-				AlertPolice("Weapon theft alert!", pUserEntity.GetOrigin());
+				AlertPolice("#EL-Police_Alert_Weapon", pUserEntity.GetOrigin());
 			}
 		}
 		else
 		{
-			EL_Utils.Notify("#EL-Inventory_Full", "Robbery Failed", 3.0);
+			EL_Utils.Notify("#EL-Inventory_Full", "#EL-Robbery_Failed", 3.0);
 		}
 	}
 
@@ -137,7 +137,7 @@ class EL_RobWeaponAction : ScriptedUserAction
 								// Send police alert notification using static method
 								EL_NotificationManagerComponent.NotifyPlayer(
 									playerId, 
-									"ALERTA POLICIAL", 
+									"#EL-PoliceAlert_Title", 
 									message, 
 									10.0, 
 									EL_ENotificationType.POLICE_ALERT

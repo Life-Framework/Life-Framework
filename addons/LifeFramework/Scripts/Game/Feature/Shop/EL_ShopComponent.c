@@ -45,13 +45,15 @@ class EL_ShopComponent : ScriptComponent
 	{
 		if (!item || quantity <= 0 || quantity > item.GetMaxQuantity())
 			return false;
+		if (!Replication.IsServer())
+			return false;
 
 		int totalPrice = item.GetPrice() * quantity;
 
 		// Check if buyer has enough money
 		if (!EL_MoneyUtils.RemoveAmount(buyer, totalPrice))
 		{
-			EL_Utils.Notify("#EL-Not_Enough_Money", "Purchase Failed", 3.0);
+			EL_Utils.Notify("#EL-Not_Enough_Money", "#EL-Shop_PurchaseFailed", 3.0);
 			return false;
 		}
 
@@ -59,14 +61,14 @@ class EL_ShopComponent : ScriptComponent
 		ResourceName prefab = item.GetItemPrefab();
 		if (EL_InventoryUtils.AddAmount(buyer, prefab, quantity))
 		{
-			EL_Utils.Notify(string.Format("#EL-Item_Bought", item.GetDisplayName(), quantity), "Purchase Successful", 3.0);
+			EL_Utils.Notify(string.Format("#EL-Item_Bought", item.GetDisplayName(), quantity), "#EL-Shop_PurchaseSuccessful", 3.0);
 			return true;
 		}
 		else
 		{
 			// Refund money if inventory full
 			EL_MoneyUtils.AddAmount(buyer, totalPrice);
-			EL_Utils.Notify("#EL-Inventory_Full", "Purchase Failed", 3.0);
+			EL_Utils.Notify("#EL-Inventory_Full", "#EL-Shop_PurchaseFailed", 3.0);
 			return false;
 		}
 	}

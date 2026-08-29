@@ -1,10 +1,13 @@
 class EL_JobManager : ScriptedUserAction
 {
-	protected static EL_JobManager s_Instance;
+	protected static ref EL_JobManager s_Instance;
 
 	//------------------------------------------------------------------------------------------------
 	static EL_JobManager GetInstance()
 	{
+		if (!s_Instance)
+			s_Instance = new EL_JobManager();
+
 		return s_Instance;
 	}
 
@@ -65,6 +68,6 @@ class EL_JobManager : ScriptedUserAction
 		atmManager.Deposit(playerUid, amount);
 
 		// Show notification
-		EL_Utils.Notify(string.Format("#EL-Job_Earned", amount), "Job Reward", 3.0);
+		EL_Utils.Notify(string.Format("#EL-Job_Earned", amount), "#EL-Job_Reward", 3.0);
 	}
 };

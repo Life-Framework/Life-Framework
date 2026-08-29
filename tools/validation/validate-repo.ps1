@@ -77,6 +77,47 @@ if ($LASTEXITCODE -eq 0) {
   foreach ($r in $refs) { Add-Warning "lowercase 'data/' path reference: $r (should be 'Data/')" }
 }
 
+# placeholder / invalid (non-16-hex) GUID tokens in text resources.
+# Resource GUIDs must be real unique 16-hex values - never `{ActionsID}`, `{NEW_*}`.
+$textRes = @()
+if ($Staged) {
+  $textRes = @($files | Where-Object { $_ -match '\.(et|layer|layout|st|conf|emat)$' })
+} else {
+  $textRes = @(git ls-files -- "*.et" "*.layer" "*.layout" "*.st" "*.conf" "*.emat")
+}
+foreach ($f in $textRes) {
+  $path = Join-Path $root $f
+  if (-not (Test-Path -LiteralPath $path)) { continue }
+  $content = Get-Content -LiteralPath $path -Raw -ErrorAction SilentlyContinue
+  if (-not $content) { continue }
+  foreach ($m in [regex]::Matches($content, '\{([0-9A-Za-z_]{1,40})\}')) {
+    if ($m.Groups[1].Value -notmatch '^[0-9A-F]{16}$') {
+      Add-Error "placeholder/invalid GUID '{$($m.Groups[1].Value)}' in $f (use a real unique 16-hex GUID)"
+    }
+  }
+}
+
+# duplicate widget-instance GUIDs within a single .layout file.
+# A widget instance GUID must be unique in its file (slot GUIDs may repeat).
+$layoutFiles = @()
+if ($Staged) {
+  $layoutFiles = @($files | Where-Object { $_ -match '\.layout$' })
+} else {
+  $layoutFiles = @(git ls-files -- "*.layout")
+}
+foreach ($f in $layoutFiles) {
+  $path = Join-Path $root $f
+  if (-not (Test-Path -LiteralPath $path)) { continue }
+  $seen = @{}
+  foreach ($line in @(Get-Content -LiteralPath $path -ErrorAction SilentlyContinue)) {
+    if ($line -match '^\s*\w+WidgetClass\s+"\{([0-9A-F]{16})\}"') {
+      $g = $Matches[1]
+      if ($seen.ContainsKey($g)) { Add-Error "duplicate widget-instance GUID {$g} in $f" }
+      else { $seen[$g] = $true }
+    }
+  }
+}
+
 # --- report -----------------------------------------------------------------
 
 foreach ($w in $script:warnings) { Write-Host "WARN  $w" -ForegroundColor Yellow }

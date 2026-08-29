@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{9165B2D1BAEA7F6A}UI/Layouts/HUD/Beta/Beta.layout"
+ Name "{41489243B750D7EC}UI/Layouts/FactionSelectionMenu.layout"
  Configurations {
   LayoutResourceClass PC {
   }
@@ -8,6 +8,8 @@ MetaFileClass {
   LayoutResourceClass XBOX_SERIES : PC {
   }
   LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass PS5 : PC {
   }
   LayoutResourceClass HEADLESS : PC {
   }

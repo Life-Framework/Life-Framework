@@ -1,7 +1,7 @@
 [BaseContainerProps(configRoot: true)]
 class EL_CharacterCreationMenu : ChimeraMenuBase
 {
-	protected PlayerController m_PlayerController;
+	protected ref PlayerController m_PlayerController;
 
 	protected Widget m_wRoot;
 	protected EditBoxWidget m_wFirstName;
@@ -14,9 +14,9 @@ class EL_CharacterCreationMenu : ChimeraMenuBase
 	{
 		m_wRoot = GetRootWidget();
 
-		m_wFirstName = EditBoxWidget.Cast(m_wRoot.FindWidget("FirstNameEdit"));
-		m_wLastName = EditBoxWidget.Cast(m_wRoot.FindWidget("LastNameEdit"));
-		m_wAge = EditBoxWidget.Cast(m_wRoot.FindWidget("AgeEdit"));
+		m_wFirstName = EditBoxWidget.Cast(m_wRoot.FindWidget("FirstNameEditBox"));
+		m_wLastName = EditBoxWidget.Cast(m_wRoot.FindWidget("LastNameEditBox"));
+		m_wAge = EditBoxWidget.Cast(m_wRoot.FindWidget("AgeEditBox"));
 		m_wCreateButton = ButtonWidget.Cast(m_wRoot.FindWidget("CreateButton"));
 
         
@@ -64,7 +64,9 @@ class EL_CharacterCreationMenu : ChimeraMenuBase
 		}
 
 		// Notify manager
-		EL_CharacterCreationManager.GetInstance().OnCharacterCreated(m_PlayerController, firstName, lastName, age);
+		EL_CharacterCreationManager manager = EL_CharacterCreationManager.GetInstance();
+		if (manager)
+			manager.OnCharacterCreated(m_PlayerController, firstName, lastName, age);
 
 		// Close menu
 		GetGame().GetMenuManager().CloseMenu(this);

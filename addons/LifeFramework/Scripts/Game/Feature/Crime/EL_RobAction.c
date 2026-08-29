@@ -52,7 +52,7 @@ class EL_RobAction : ScriptedUserAction
 			string playerUid = EL_Utils.GetPlayerUid(pUserEntity);
 			atmManager.Deposit(playerUid, m_iMoneyAmount);
 
-			EL_Utils.Notify(string.Format("#EL-Stole_Money", m_iMoneyAmount), "Robbery Successful", 3.0);
+			EL_Utils.Notify(string.Format("#EL-Stole_Money", m_iMoneyAmount), "#EL-Robbery_Successful", 3.0);
 
 			// Increase wanted level
 			EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
@@ -62,7 +62,7 @@ class EL_RobAction : ScriptedUserAction
 				EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 
 				// Alert police
-				EL_Utils.AlertPolice("A robbery has occurred!", pUserEntity.GetOrigin());
+				EL_Utils.AlertPolice("#EL-Police_Alert_Robbery", pUserEntity.GetOrigin());
 			}
 		}
 
@@ -105,7 +105,7 @@ class EL_RobAction : ScriptedUserAction
 						{
 							count++;
 							// Send alert (global notify; per-player parameter omitted)
-							EL_Utils.Notify("#EL-Police_Alert_Robbery", "Police Alert", 5.0);
+							EL_Utils.Notify("#EL-Police_Alert_Robbery", "#EL-PoliceAlert_Title", 5.0);
 						}
 					}
 				}

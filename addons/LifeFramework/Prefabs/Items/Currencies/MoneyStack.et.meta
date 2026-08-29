@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{5439738849229352}Prefabs/Items/Currencies/DollarStack.et"
+ Name "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

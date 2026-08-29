@@ -27,7 +27,7 @@ class EL_DutyAction : ScriptedUserAction
 			else
 				status = "off duty";
 
-			EL_Utils.Notify(string.Format("#EL-Duty_Status_Change", status), "Duty Status", 3.0);
+			EL_Utils.Notify(string.Format("#EL-Duty_Status_Change", status), "#EL-Duty_Status", 3.0);
 			
 			// Save account
 			EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
@@ -41,7 +41,14 @@ class EL_DutyAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		EL_PlayerAccount account = GetPlayerAccount(GetGame().GetPlayerController().GetControlledEntity());
+		PlayerController pc = GetGame().GetPlayerController();
+		if (!pc)
+			return false;
+		IEntity entity = pc.GetControlledEntity();
+		if (!entity)
+			return false;
+
+		EL_PlayerAccount account = GetPlayerAccount(entity);
 		if (account)
 		{
 			if (account.IsOnDuty())

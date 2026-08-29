@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{BF665A30A11E5FA6}UI/layouts/HUD/VON/VoNOverlay.layout"
+ Name "{BF665A30A11E5FA6}UI/Layouts/HUD/VON/VoNOverlay.layout"
  Configurations {
   LayoutResourceClass PC {
   }

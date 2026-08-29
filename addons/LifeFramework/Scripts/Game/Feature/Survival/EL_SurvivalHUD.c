@@ -1,8 +1,8 @@
 [BaseContainerProps(configRoot: true)]
 class EL_SurvivalHUD : ChimeraMenuBase
 {
-	protected PlayerController m_PlayerController;
-	protected EL_CharacterSurvivalComponent m_SurvivalComponent;
+	protected ref PlayerController m_PlayerController;
+	protected ref EL_CharacterSurvivalComponent m_SurvivalComponent;
 
 	protected ProgressBarWidget m_wHungerBar;
 	protected ProgressBarWidget m_wThirstBar;

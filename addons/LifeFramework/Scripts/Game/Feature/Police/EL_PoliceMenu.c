@@ -1,6 +1,6 @@
 class EL_PoliceMenu : ChimeraMenuBase
 {
-	protected PlayerController m_PlayerController;
+	protected ref PlayerController m_PlayerController;
 	protected ref array<ref EL_WantedPlayerInfo> m_aWantedPlayers;
 
 	//------------------------------------------------------------------------------------------------
@@ -47,6 +47,9 @@ class EL_PoliceMenu : ChimeraMenuBase
 	//------------------------------------------------------------------------------------------------
 	void ArrestPlayer(string playerUid)
 	{
+		if (!Replication.IsServer())
+			return;
+
 		// Find player and arrest
 		EL_PlayerControllerManagerCompat playerManager = EL_PlayerControllerManagerCompat.GetInstance();
 		if (playerManager)
@@ -72,7 +75,7 @@ class EL_PoliceMenu : ChimeraMenuBase
 						accountManager.SaveAndReleaseAccount(account);
 					}
 					
-					EL_Utils.Notify("#EL-Player_Arrested", "Police Action", 3.0);
+					EL_Utils.Notify("#EL-Player_Arrested", "#EL-Police_Title", 3.0);
 					break;
 				}
 			}
@@ -83,6 +86,9 @@ class EL_PoliceMenu : ChimeraMenuBase
 	//------------------------------------------------------------------------------------------------
 	void FinePlayer(string playerUid, int amount)
 	{
+		if (!Replication.IsServer())
+			return;
+
 		// Find player
 		EL_PlayerControllerManagerCompat playerManager = EL_PlayerControllerManagerCompat.GetInstance();
 		if (playerManager)
@@ -107,11 +113,11 @@ class EL_PoliceMenu : ChimeraMenuBase
 							account.IncreaseWantedLevel(-reduce);
 							accountManager.SaveAndReleaseAccount(account);
 						}
-						EL_Utils.Notify(string.Format("#EL-Fined %1!", amount), "Police Action", 3.0);
+						EL_Utils.Notify(string.Format("#EL-Fined %1!", amount), "#EL-Police_Title", 3.0);
 					}
 					else
 					{
-						EL_Utils.Notify("#EL-Fine_Failed", "Fine Failed", 3.0);
+						EL_Utils.Notify("#EL-Fine_Failed", "#EL-Fine_Title", 3.0);
 					}
 					break;
 				}

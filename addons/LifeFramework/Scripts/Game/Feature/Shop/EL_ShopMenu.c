@@ -1,7 +1,7 @@
 class EL_ShopMenu : ChimeraMenuBase
 {
-	protected EL_ShopComponent m_ShopComponent;
-	protected PlayerController m_PlayerController;
+	protected ref EL_ShopComponent m_ShopComponent;
+	protected ref PlayerController m_PlayerController;
 	protected ref array<ref EL_ShopMenuItem> m_aMenuItems;
 
 	//------------------------------------------------------------------------------------------------

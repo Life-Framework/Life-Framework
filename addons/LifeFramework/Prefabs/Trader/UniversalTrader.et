@@ -28,11 +28,11 @@ GenericEntity {
     "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
     "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
     "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et"
-    "{9B8C7D6E5F4G3H2I}Prefabs/Resources/Mining/GoldNugget.et"
-    "{2D3E4F5G6H7I8J9K}Prefabs/Resources/Mining/CopperNugget.et"
+    "{8F81BD0BF343CF49}Prefabs/Resources/Mining/GoldNugget.et"
+    "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et"
     "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
-    "{1C2D3E4F5G6H7I8J}Prefabs/Resources/Mining/GoldBar.et"
-    "{3E4F5G6H7I8J9K1L}Prefabs/Resources/Mining/CopperBar.et"
+    "{ACC9A10F0F20F5C4}Prefabs/Resources/Mining/GoldBar.et"
+    "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
    }
   }
   EL_TraderManagerComponent "{59693C53B6A5EFC1}" {

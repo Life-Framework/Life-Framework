@@ -23,7 +23,7 @@ class EL_InventoryUtils
 	//------------------------------------------------------------------------------------------------
 	static bool IsStorageHierachyRoot(IEntity item)
 	{
-		if (!item) return null;
+		if (!item) return false;
 		InventoryItemComponent itemComponent = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
 		return !itemComponent.GetParentSlot();
 	}

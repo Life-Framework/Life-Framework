@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{27E71CDE2CA7C969}Worlds/Everon/MainWorld.ent"
+ Name "{27E71CDE2CA7C969}Worlds/MainWorld/MainWorld.ent"
  Configurations {
   ENTResourceClass PC {
   }

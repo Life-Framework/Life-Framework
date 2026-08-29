@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{DEB57429CD49782D}Prefabs/Props/Construction/GravelPile_01/SandPile_01.et"
+ Name "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

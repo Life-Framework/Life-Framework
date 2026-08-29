@@ -44,7 +44,7 @@ class EL_ConfiscateAction : ScriptedUserAction
 						SCR_EntityHelper.DeleteEntityAndChildren(item);
 					}
 				}
-				EL_Utils.Notify("#EL-Police_Action", "Police Action", 3.0);
+				EL_Utils.Notify("#EL-Police_Action", "#EL-Police_Title", 3.0);
 			}
 		}
 	}

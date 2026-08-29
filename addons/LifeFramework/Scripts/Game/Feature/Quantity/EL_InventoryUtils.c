@@ -37,6 +37,7 @@ modded class EL_InventoryUtils
 	static int AddAmount(InventoryStorageManagerComponent storageManager, ResourceName prefab, int amount, bool dropOverflow = false)
 	{
 		if (!storageManager || amount <= 0) return 0;
+		if (!Replication.IsServer()) return 0;
 
 		int remainingAmount = amount;
 
@@ -94,6 +95,7 @@ modded class EL_InventoryUtils
 	static int RemoveAmount(InventoryStorageManagerComponent storageManager, ResourceName prefab, int amount)
 	{
 		if (!storageManager || amount <= 0) return 0;
+		if (!Replication.IsServer()) return 0;
 
 		int remainingAmount = amount;
 

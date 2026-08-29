@@ -44,13 +44,13 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      Duration 15
      m_aProcessingInputs {
       EL_ProcessingInput "{5A5EE2432A165321}" {
-       m_InputPrefab "{9B8C7D6E5F4G3H2I}Prefabs/Resources/Mining/GoldNugget.et"
+       m_InputPrefab "{8F81BD0BF343CF49}Prefabs/Resources/Mining/GoldNugget.et"
        m_iInputAmount 2
       }
      }
      m_aProcessingOutputs {
       EL_ProcessingOutput "{5A5EE2432BB9E050}" {
-       m_OutputPrefab "{1C2D3E4F5G6H7I8J}Prefabs/Resources/Mining/GoldBar.et"
+       m_OutputPrefab "{ACC9A10F0F20F5C4}Prefabs/Resources/Mining/GoldBar.et"
        m_iOutputAmount 1
       }
      }
@@ -68,13 +68,13 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      Duration 8
      m_aProcessingInputs {
       EL_ProcessingInput "{5A5EE2432A165322}" {
-       m_InputPrefab "{2D3E4F5G6H7I8J9K}Prefabs/Resources/Mining/CopperNugget.et"
+       m_InputPrefab "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et"
        m_iInputAmount 2
       }
      }
      m_aProcessingOutputs {
       EL_ProcessingOutput "{5A5EE2432BB9E051}" {
-       m_OutputPrefab "{3E4F5G6H7I8J9K1L}Prefabs/Resources/Mining/CopperBar.et"
+       m_OutputPrefab "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
        m_iOutputAmount 1
       }
      }

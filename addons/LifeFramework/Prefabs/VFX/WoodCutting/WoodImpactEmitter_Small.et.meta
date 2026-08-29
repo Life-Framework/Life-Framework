@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{8DB2E11855C71E31}Prefabs/VFX/Logging_Small.et"
+ Name "{8DB2E11855C71E31}Prefabs/VFX/WoodCutting/WoodImpactEmitter_Small.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

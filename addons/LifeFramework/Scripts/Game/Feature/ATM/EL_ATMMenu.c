@@ -1,8 +1,8 @@
 [BaseContainerProps(configRoot: true)]
 class EL_ATMMenu : ChimeraMenuBase
 {
-	protected PlayerController m_PlayerController;
-	protected EL_BankAccount m_BankAccount;
+	protected ref PlayerController m_PlayerController;
+	protected ref EL_BankAccount m_BankAccount;
 
 	protected Widget m_wRoot;
 	protected TextWidget m_wBalance;
@@ -56,19 +56,12 @@ class EL_ATMMenu : ChimeraMenuBase
 		}
 	}
 
-	// Simple localization helper used by widgets/menus. Returns the key if no localization
-	// system is wired up yet. Replace with real localization lookup if available.
-	protected string WidgetLocalize(string key)
-	{
-		return key;
-	}
-
 	//------------------------------------------------------------------------------------------------
 	protected void UpdateBalance()
 	{
 		if (m_wBalance && m_BankAccount)
 		{
-			string balanceText = WidgetLocalize("#EL-ATM_Balance") + m_BankAccount.GetBalance().ToString();
+			string balanceText = WidgetManager.Translate("#EL-ATM_Balance") + m_BankAccount.GetBalance().ToString();
 			m_wBalance.SetText(balanceText);
 		}
 	}
@@ -77,6 +70,8 @@ class EL_ATMMenu : ChimeraMenuBase
 	protected void Deposit()
 	{
 		if (!m_BankAccount || !m_PlayerController)
+			return;
+		if (!Replication.IsServer())
 			return;
 
 		string amountText = m_wAmount.GetText();
@@ -100,6 +95,8 @@ class EL_ATMMenu : ChimeraMenuBase
 	{
 		if (!m_BankAccount || !m_PlayerController)
 			return;
+		if (!Replication.IsServer())
+			return;
 
 		string amountText = m_wAmount.GetText();
 		if (amountText.IsEmpty())
@@ -118,7 +115,7 @@ class EL_ATMMenu : ChimeraMenuBase
 		}
 		else
 		{
-			// Show insufficient funds message
+			EL_Utils.Notify("#EL-ATM_InsufficientFunds", "#EL-ATM_Withdraw", 3.0);
 		}
 	}
 };

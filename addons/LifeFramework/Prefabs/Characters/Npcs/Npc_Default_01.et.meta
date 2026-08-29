@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{850859F356F5058E}Prefabs/Characters/Core/Npc_White_Male_01.et"
+ Name "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

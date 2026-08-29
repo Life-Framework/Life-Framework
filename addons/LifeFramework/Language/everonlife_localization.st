@@ -2,6 +2,7 @@ StringTable {
  ItemClassName "CustomStringTableItem"
  Items {
   CustomStringTableItem "{5A60AE2B8D435CE9}" {
+
    Id "EL-Keybinds_Inventory_MoveQuantity"
    Target_en_us "Move stack"
    Target_de_de "Stapel verschieben"
@@ -10,11 +11,13 @@ StringTable {
    Target_es_es "Mover pila"
    Target_pt_pt "Mover pilha"
    Target_pt_br "Mover pilha"
+   Comment "Keybindings - Inventory MoveQuantity"
    Modified 1516407434
    Author "Arkensor"
    LastChanged "Arkensor"
   }
   CustomStringTableItem "{5A5EA70E9C33566A}" {
+
    Id "EL-Keybinds_Inventory_PickUpQuantity"
    Target_en_us "Pick up stack"
    Target_de_de "Stapel aufsammeln"
@@ -23,11 +26,13 @@ StringTable {
    Target_es_es "Recoger pila"
    Target_pt_pt "Pegar pilha"
    Target_pt_br "Pegar pilha"
+   Comment "Keybindings - Inventory PickUpQuantity"
    Modified 1516407428
    Author "Arkensor"
    LastChanged "Arkensor"
   }
   CustomStringTableItem "{5A628A92C80C8905}" {
+
    Id "EL-Keybinds_Inventory_QuickSplitQuantity"
    Target_en_us "Half stack"
    Target_de_de "Stapel halbieren"
@@ -36,11 +41,13 @@ StringTable {
    Target_es_es "Mitad de pila"
    Target_pt_pt "Meia pilha"
    Target_pt_br "Meia pilha"
+   Comment "Keybindings - Inventory QuickSplitQuantity"
    Modified 1516408899
    Author "Arkensor"
    LastChanged "Arkensor"
   }
   CustomStringTableItem "{5A628A92CC3D121C}" {
+
    Id "EL-Keybinds_Inventory_SplitQuantity"
    Target_en_us "Split stack"
    Target_de_de "Stapel aufteilen"
@@ -49,11 +56,13 @@ StringTable {
    Target_es_es "Dividir pila"
    Target_pt_pt "Dividir pilha"
    Target_pt_br "Dividir pilha"
+   Comment "Keybindings - Inventory SplitQuantity"
    Modified 1516408876
    Author "Arkensor"
    LastChanged "Arkensor"
   }
   CustomStringTableItem "{5A5EA70D1ADCCA9E}" {
+
    Id "EL-Keybinds_Title"
    Target_en_us "Everon Life"
    Target_de_de "Everon Life"
@@ -62,11 +71,13 @@ StringTable {
    Target_es_es "Everon Life"
    Target_pt_pt "Everon Life"
    Target_pt_br "Everon Life"
+   Comment "Keybindings - Title"
    Modified 1516153387
    Author "Arkensor"
    LastChanged "Arkensor"
   }
   CustomStringTableItem "{5A7AC3DBDBC982B7}" {
+
    Id "EL-SplitQuantityDialog_Input_Amount"
    Target_en_us "Amount"
    Target_de_de "Anzahl"
@@ -75,11 +86,13 @@ StringTable {
    Target_es_es "Cantidad"
    Target_pt_pt "Quantidade"
    Target_pt_br "Quantidade"
+   Comment "Split quantity dialog - Input Amount"
    Modified 1517997640
    Author "Arkensor"
    LastChanged "Arkensor"
   }
   CustomStringTableItem "{5A7AC3DBD6ADFB48}" {
+
    Id "EL-SplitQuantityDialog_Input_Keep"
    Target_en_us "Keep"
    Target_de_de "Behalten"
@@ -88,11 +101,13 @@ StringTable {
    Target_es_es "Mantener"
    Target_pt_pt "Manter"
    Target_pt_br "Manter"
+   Comment "Split quantity dialog - Input Keep"
    Modified 1517997635
    Author "Arkensor"
    LastChanged "Arkensor"
   }
   CustomStringTableItem "{5A7AC3DBD51D98EF}" {
+
    Id "EL-SplitQuantityDialog_Input_SplitOff"
    Target_en_us "Split off"
    Target_de_de "Abteilen"
@@ -101,11 +116,13 @@ StringTable {
    Target_es_es "Separar"
    Target_pt_pt "Separar"
    Target_pt_br "Separar"
+   Comment "Split quantity dialog - Input SplitOff"
    Modified 1517997613
    Author "Arkensor"
    LastChanged "Arkensor"
   }
   CustomStringTableItem "{5A7AC3DBDC021AB3}" {
+
    Id "EL-SplitQuantityDialog_Message"
    Target_en_us "Choose the stack size you want to split off"
    Target_de_de "Wähle die Größe des Stapels der abgespalten werden soll"
@@ -114,11 +131,13 @@ StringTable {
    Target_es_es "Elige el tamaño de la pila que quieres separar"
    Target_pt_pt "Escolha o tamanho da pilha a separar"
    Target_pt_br "Escolha o tamanho da pilha a separar"
+   Comment "Split quantity dialog - Message"
    Modified 1517997601
    Author "Arkensor"
    LastChanged "Arkensor"
   }
   CustomStringTableItem "{5A7AC3DBA1DFD8FD}" {
+
    Id "EL-SplitQuantityDialog_Name"
    Target_en_us "Split Stack"
    Target_de_de "Stapel aufteilen"
@@ -127,11 +146,13 @@ StringTable {
    Target_es_es "Dividir Pila"
    Target_pt_pt "Dividir pilha"
    Target_pt_br "Dividir pilha"
+   Comment "Split quantity dialog - Name"
    Modified 1517997561
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{NEW_GUID_CC_TITLE}" {
+  CustomStringTableItem "{881F10868131F1D5}" {
+
    Id "EL-CharacterCreation_Title"
    Target_en_us "Create Your Character"
    Target_es_es "Crea tu Personaje"
@@ -140,8 +161,10 @@ StringTable {
    Target_it_it "Crea il tuo personaggio"
    Target_pt_pt "Cria o teu personagem"
    Target_pt_br "Crie seu personagem"
+   Comment "Character creation - Title"
   }
-  CustomStringTableItem "{NEW_GUID_CC_FIRSTNAME}" {
+  CustomStringTableItem "{4E9D090434FB4AD3}" {
+
    Id "EL-CharacterCreation_FirstName"
    Target_en_us "First Name:"
    Target_es_es "Nombre:"
@@ -150,8 +173,10 @@ StringTable {
    Target_it_it "Nome :"
    Target_pt_pt "Nome próprio:"
    Target_pt_br "Primeiro nome:"
+   Comment "Character creation - FirstName"
   }
-  CustomStringTableItem "{NEW_GUID_CC_LASTNAME}" {
+  CustomStringTableItem "{969943AB0FA6277E}" {
+
    Id "EL-CharacterCreation_LastName"
    Target_en_us "Last Name:"
    Target_es_es "Apellido:"
@@ -160,8 +185,10 @@ StringTable {
    Target_it_it "Cognome :"
    Target_pt_pt "Apelido:"
    Target_pt_br "Sobrenome:"
+   Comment "Character creation - LastName"
   }
-  CustomStringTableItem "{NEW_GUID_CC_AGE}" {
+  CustomStringTableItem "{6C4B4E3D1F3EFB79}" {
+
    Id "EL-CharacterCreation_Age"
    Target_en_us "Age:"
    Target_es_es "Edad:"
@@ -170,8 +197,10 @@ StringTable {
    Target_it_it "Età :"
    Target_pt_pt "Idade:"
    Target_pt_br "Idade:"
+   Comment "Character creation - Age"
   }
-  CustomStringTableItem "{NEW_GUID_CC_CREATE}" {
+  CustomStringTableItem "{F95801D64C7427F2}" {
+
    Id "EL-CharacterCreation_Create"
    Target_en_us "Create Character"
    Target_es_es "Crear Personaje"
@@ -180,8 +209,10 @@ StringTable {
    Target_it_it "Crea personaggio"
    Target_pt_pt "Criar personagem"
    Target_pt_br "Criar personagem"
+   Comment "Character creation - Create"
   }
-  CustomStringTableItem "{NEW_GUID_ATM_TITLE}" {
+  CustomStringTableItem "{53ADB7CC91ADFB86}" {
+
    Id "EL-ATM_Title"
    Target_en_us "ATM Machine"
    Target_es_es "Cajero Automático"
@@ -190,8 +221,10 @@ StringTable {
    Target_it_it "Bancomat"
    Target_pt_pt "Caixa automático"
    Target_pt_br "Caixa eletrônico"
+   Comment "ATM menu - Title"
   }
-  CustomStringTableItem "{NEW_GUID_ATM_BALANCE}" {
+  CustomStringTableItem "{67E3DEE6D7B01952}" {
+
    Id "EL-ATM_Balance"
    Target_en_us "Balance: $"
    Target_es_es "Saldo: $"
@@ -200,8 +233,10 @@ StringTable {
    Target_it_it "Saldo : $"
    Target_pt_pt "Saldo: $"
    Target_pt_br "Saldo: $"
+   Comment "ATM menu - Balance"
   }
-  CustomStringTableItem "{NEW_GUID_ATM_AMOUNT}" {
+  CustomStringTableItem "{FD9A0E3BC9783B34}" {
+
    Id "EL-ATM_Amount"
    Target_en_us "Amount:"
    Target_es_es "Cantidad:"
@@ -210,8 +245,10 @@ StringTable {
    Target_it_it "Importo :"
    Target_pt_pt "Quantidade:"
    Target_pt_br "Quantidade:"
+   Comment "ATM menu - Amount"
   }
-  CustomStringTableItem "{NEW_GUID_ATM_DEPOSIT}" {
+  CustomStringTableItem "{F6A69E9436275E89}" {
+
    Id "EL-ATM_Deposit"
    Target_en_us "Deposit"
    Target_es_es "Depositar"
@@ -220,8 +257,10 @@ StringTable {
    Target_it_it "Deposita"
    Target_pt_pt "Depositar"
    Target_pt_br "Depositar"
+   Comment "ATM menu - Deposit"
   }
-  CustomStringTableItem "{NEW_GUID_ATM_WITHDRAW}" {
+  CustomStringTableItem "{95E473A4F6ADC67E}" {
+
    Id "EL-ATM_Withdraw"
    Target_en_us "Withdraw"
    Target_es_es "Retirar"
@@ -230,8 +269,10 @@ StringTable {
    Target_it_it "Preleva"
    Target_pt_pt "Levantar"
    Target_pt_br "Sacar"
+   Comment "ATM menu - Withdraw"
   }
-  CustomStringTableItem "{NEW_GUID_ATM_INSUFFICIENT_FUNDS}" {
+  CustomStringTableItem "{D9AD5A5F37D5FB7C}" {
+
    Id "EL-ATM_InsufficientFunds"
    Target_en_us "Insufficient funds"
    Target_es_es "Fondos insuficientes"
@@ -240,98 +281,10 @@ StringTable {
    Target_it_it "Fondi insufficienti"
    Target_pt_pt "Fundos insuficientes"
    Target_pt_br "Fundos insuficientes"
+   Comment "ATM menu - InsufficientFunds"
   }
-  CustomStringTableItem "{NEW_GUID_PROPERTY_PURCHASED}" {
-   Id "EL-Property_Purchased"
-   Target_en_us "Property purchased successfully"
-   Target_es_es "Propiedad comprada exitosamente"
-   Target_de_de "Eigentum erfolgreich gekauft"
-   Target_fr_fr "Propriété achetée avec succès"
-   Target_it_it "Proprietà acquistata con successo"
-   Target_pt_pt "Propriedade comprada com sucesso"
-   Target_pt_br "Propriedade comprada com sucesso"
-  }
-  CustomStringTableItem "{NEW_GUID_GROUP_CREATED}" {
-   Id "EL-Group_Created"
-   Target_en_us "Group created successfully"
-   Target_es_es "Grupo creado exitosamente"
-   Target_de_de "Gruppe erfolgreich erstellt"
-   Target_fr_fr "Groupe créé avec succès"
-   Target_it_it "Gruppo creato con successo"
-   Target_pt_pt "Grupo criado com sucesso"
-   Target_pt_br "Grupo criado com sucesso"
-  }
-  CustomStringTableItem "{NEW_GUID_GROUP_INVITATION_SENT}" {
-   Id "EL-Group_InvitationSent"
-   Target_en_us "Invitation sent"
-   Target_es_es "Invitación enviada"
-   Target_de_de "Einladung gesendet"
-   Target_fr_fr "Invitation envoyée"
-   Target_it_it "Invito inviato"
-   Target_pt_pt "Convite enviado"
-   Target_pt_br "Convite enviado"
-  }
-  CustomStringTableItem "{NEW_GUID_GROUP_MEMBER_ADDED}" {
-   Id "EL-Group_MemberAdded"
-   Target_en_us "Member added to group"
-   Target_es_es "Miembro añadido al grupo"
-   Target_de_de "Mitglied zur Gruppe hinzugefügt"
-   Target_fr_fr "Membre ajouté au groupe"
-   Target_it_it "Membro aggiunto al gruppo"
-   Target_pt_pt "Membro adicionado ao grupo"
-   Target_pt_br "Membro adicionado ao grupo"
-  }
-  CustomStringTableItem "{NEW_GUID_FURNITURE_BOUGHT}" {
-   Id "EL-Furniture_Bought"
-   Target_en_us "Furniture purchased"
-   Target_es_es "Mueble comprado"
-   Target_de_de "Möbel gekauft"
-   Target_fr_fr "Meuble acheté"
-   Target_it_it "Mobile acquistato"
-   Target_pt_pt "Móvel comprado"
-   Target_pt_br "Móvel comprado"
-  }
-  CustomStringTableItem "{NEW_GUID_GARAGE_OPEN}" {
-   Id "EL-Garage_Open"
-   Target_en_us "Open Garage"
-   Target_es_es "Abrir Garaje"
-   Target_de_de "Garage öffnen"
-   Target_fr_fr "Ouvrir garage"
-   Target_it_it "Apri garage"
-   Target_pt_pt "Abrir garagem"
-   Target_pt_br "Abrir garagem"
-  }
-  CustomStringTableItem "{NEW_GUID_GARAGE_STORE}" {
-   Id "EL-Garage_Store"
-   Target_en_us "Store Vehicle"
-   Target_es_es "Guardar Vehículo"
-   Target_de_de "Fahrzeug einlagern"
-   Target_fr_fr "Ranger véhicule"
-   Target_it_it "Deposita veicolo"
-   Target_pt_pt "Guardar veículo"
-   Target_pt_br "Guardar veículo"
-  }
-  CustomStringTableItem "{NEW_GUID_GARAGE_RETRIEVE}" {
-   Id "EL-Garage_Retrieve"
-   Target_en_us "Retrieve Vehicle"
-   Target_es_es "Recuperar Vehículo"
-   Target_de_de "Fahrzeug abholen"
-   Target_fr_fr "Récupérer véhicule"
-   Target_it_it "Ritira veicolo"
-   Target_pt_pt "Recuperar veículo"
-   Target_pt_br "Recuperar veículo"
-  }
-  CustomStringTableItem "{NEW_GUID_GARAGE_FULL}" {
-   Id "EL-Garage_Full"
-   Target_en_us "Garage is full"
-   Target_es_es "Garaje lleno"
-   Target_de_de "Garage ist voll"
-   Target_fr_fr "Garage plein"
-   Target_it_it "Garage pieno"
-   Target_pt_pt "Garagem cheia"
-   Target_pt_br "Garagem cheia"
-  }
-  CustomStringTableItem "{NEW_GUID_SHOWID}" {
+  CustomStringTableItem "{5C4390BCF9FD836D}" {
+
    Id "EL-ShowID_DisplayName"
    Target_en_us "Show ID"
    Target_es_es "Mostrar ID"
@@ -340,58 +293,10 @@ StringTable {
    Target_it_it "Mostra ID"
    Target_pt_pt "Mostrar ID"
    Target_pt_br "Mostrar ID"
+   Comment "Show ID action - DisplayName"
   }
-  CustomStringTableItem "{NEW_GUID_PROPERTY_BUY}" {
-   Id "EL-Property_Buy"
-   Target_en_us "Buy Property"
-   Target_es_es "Comprar Propiedad"
-   Target_de_de "Eigentum kaufen"
-   Target_fr_fr "Acheter propriété"
-   Target_it_it "Compra proprietà"
-   Target_pt_pt "Comprar propriedade"
-   Target_pt_br "Comprar propriedade"
-  }
-  CustomStringTableItem "{NEW_GUID_PROPERTY_MANAGE}" {
-   Id "EL-Property_Manage"
-   Target_en_us "Manage Property"
-   Target_es_es "Gestionar Propiedad"
-   Target_de_de "Eigentum verwalten"
-   Target_fr_fr "Gérer propriété"
-   Target_it_it "Gestisci proprietà"
-   Target_pt_pt "Gerir propriedade"
-   Target_pt_br "Gerenciar propriedade"
-  }
-  CustomStringTableItem "{NEW_GUID_PROPERTY_LOCK}" {
-   Id "EL-Property_Lock"
-   Target_en_us "Lock Property"
-   Target_es_es "Bloquear Propiedad"
-   Target_de_de "Eigentum sperren"
-   Target_fr_fr "Verrouiller propriété"
-   Target_it_it "Blocca proprietà"
-   Target_pt_pt "Bloquear propriedade"
-   Target_pt_br "Bloquear propriedade"
-  }
-  CustomStringTableItem "{NEW_GUID_PROPERTY_UNLOCK}" {
-   Id "EL-Property_Unlock"
-   Target_en_us "Unlock Property"
-   Target_es_es "Desbloquear Propiedad"
-   Target_de_de "Eigentum entsperren"
-   Target_fr_fr "Déverrouiller propriété"
-   Target_it_it "Sblocca proprietà"
-   Target_pt_pt "Desbloquear propriedade"
-   Target_pt_br "Desbloquear propriedade"
-  }
-  CustomStringTableItem "{NEW_GUID_FURNITURE_SHOP_OPEN}" {
-   Id "EL-FurnitureShop_Open"
-   Target_en_us "Open Furniture Shop"
-   Target_es_es "Abrir Tienda de Muebles"
-   Target_de_de "Möbelgeschäft öffnen"
-   Target_fr_fr "Ouvrir magasin de meubles"
-   Target_it_it "Apri negozio mobili"
-   Target_pt_pt "Abrir loja de móveis"
-   Target_pt_br "Abrir loja de móveis"
-  }
-  CustomStringTableItem "{NEW_GUID_CONFISCATE}" {
+  CustomStringTableItem "{4F3C2D393789F5B0}" {
+
    Id "EL-Confiscate_DisplayName"
    Target_en_us "Confiscate Weapons"
    Target_es_es "Confiscar Armas"
@@ -400,8 +305,10 @@ StringTable {
    Target_it_it "Confisca Armi"
    Target_pt_pt "Confiscar Armas"
    Target_pt_br "Confiscar Armas"
+   Comment "Confiscate weapons action - DisplayName"
   }
-  CustomStringTableItem "{NEW_GUID_ROBBERY_SUCCESSFUL}" {
+  CustomStringTableItem "{9016B0747955C3D5}" {
+
    Id "EL-Robbery_Successful"
    Target_en_us "Robbery Successful"
    Target_es_es "Robo Exitoso"
@@ -410,8 +317,10 @@ StringTable {
    Target_it_it "Rapina Riuscita"
    Target_pt_pt "Roubo Bem-Sucedido"
    Target_pt_br "Roubo Bem-Sucedido"
+   Comment "Robbery - Successful"
   }
-  CustomStringTableItem "{NEW_GUID_ROBBERY_FAILED}" {
+  CustomStringTableItem "{04F67DBF86BE511B}" {
+
    Id "EL-Robbery_Failed"
    Target_en_us "Robbery Failed"
    Target_es_es "Robo Fallido"
@@ -420,8 +329,10 @@ StringTable {
    Target_it_it "Rapina Fallita"
    Target_pt_pt "Roubo Falhado"
    Target_pt_br "Roubo Falhado"
+   Comment "Robbery - Failed"
   }
-  CustomStringTableItem "{NEW_GUID_POLICE_ALERT_WEAPON}" {
+  CustomStringTableItem "{3E8C15BC89F5718E}" {
+
    Id "EL-Police_Alert_Weapon"
    Target_en_us "Crime Alert: Weapon theft!"
    Target_es_es "Alerta de Crimen: Robo de arma!"
@@ -430,8 +341,10 @@ StringTable {
    Target_it_it "Allarme Crimine: Furto di arma!"
    Target_pt_pt "Alerta de Crime: Roubo de arma!"
    Target_pt_br "Alerta de Crime: Roubo de arma!"
+   Comment "Police - Alert Weapon"
   }
-  CustomStringTableItem "{NEW_GUID_POLICE_ALERT_ROBBERY}" {
+  CustomStringTableItem "{E1372A080A4B5028}" {
+
    Id "EL-Police_Alert_Robbery"
    Target_en_us "Crime Alert: Robbery in progress!"
    Target_es_es "Alerta de Crimen: Robo en progreso!"
@@ -440,8 +353,10 @@ StringTable {
    Target_it_it "Allarme Crimine: Rapina in corso!"
    Target_pt_pt "Alerta de Crime: Roubo em andamento!"
    Target_pt_br "Alerta de Crime: Roubo em andamento!"
+   Comment "Police - Alert Robbery"
   }
-  CustomStringTableItem "{NEW_GUID_POLICE_ALERT_VEHICLE}" {
+  CustomStringTableItem "{2AEF750C1F5D47F4}" {
+
    Id "EL-Police_Alert_Vehicle"
    Target_en_us "Crime Alert: Vehicle theft!"
    Target_es_es "Alerta de Crimen: Robo de vehículo!"
@@ -450,8 +365,10 @@ StringTable {
    Target_it_it "Allarme Crimine: Furto di veicolo!"
    Target_pt_pt "Alerta de Crime: Roubo de veículo!"
    Target_pt_br "Alerta de Crime: Roubo de veículo!"
+   Comment "Police - Alert Vehicle"
   }
-  CustomStringTableItem "{NEW_GUID_POLICE_ACTION}" {
+  CustomStringTableItem "{B815C694A42143C0}" {
+
    Id "EL-Police_Action"
    Target_en_us "Weapons confiscated!"
    Target_es_es "Armas confiscadas!"
@@ -460,8 +377,10 @@ StringTable {
    Target_it_it "Armi confiscate!"
    Target_pt_pt "Armas confiscadas!"
    Target_pt_br "Armas confiscadas!"
+   Comment "Police - Action"
   }
-  CustomStringTableItem "{NEW_GUID_FINE_FAILED}" {
+  CustomStringTableItem "{DA0AF99E9E582F8D}" {
+
    Id "EL-Fine_Failed"
    Target_en_us "Player doesn't have enough money!"
    Target_es_es "El jugador no tiene suficiente dinero!"
@@ -470,8 +389,10 @@ StringTable {
    Target_it_it "Il giocatore non ha abbastanza denaro!"
    Target_pt_pt "O jogador não tem dinheiro suficiente!"
    Target_pt_br "O jogador não tem dinheiro suficiente!"
+   Comment "Police fines - Failed"
   }
-  CustomStringTableItem "{NEW_GUID_DUTY_STATUS}" {
+  CustomStringTableItem "{54CD79617DE235CA}" {
+
    Id "EL-Duty_Status"
    Target_en_us "Duty Status"
    Target_es_es "Estado de Servicio"
@@ -480,8 +401,10 @@ StringTable {
    Target_it_it "Stato di Servizio"
    Target_pt_pt "Estado de Serviço"
    Target_pt_br "Estado de Serviço"
+   Comment "Police duty - Status"
   }
-  CustomStringTableItem "{NEW_GUID_JOB_REWARD}" {
+  CustomStringTableItem "{D0E62CBA938AC383}" {
+
    Id "EL-Job_Reward"
    Target_en_us "Job Reward"
    Target_es_es "Recompensa de Trabajo"
@@ -490,8 +413,10 @@ StringTable {
    Target_it_it "Ricompensa Lavoro"
    Target_pt_pt "Recompensa de Trabalho"
    Target_pt_br "Recompensa de Trabalho"
+   Comment "Jobs - Reward"
   }
-  CustomStringTableItem "{NEW_GUID_TRADE_SUCCESSFUL}" {
+  CustomStringTableItem "{9C5FE98D2B8EFCBB}" {
+
    Id "EL-Trade_Successful"
    Target_en_us "Trade Successful"
    Target_es_es "Intercambio Exitoso"
@@ -500,8 +425,10 @@ StringTable {
    Target_it_it "Scambio Riuscito"
    Target_pt_pt "Troca Bem-Sucedida"
    Target_pt_br "Troca Bem-Sucedida"
+   Comment "Trading - Successful"
   }
-  CustomStringTableItem "{NEW_GUID_ID_INFORMATION}" {
+  CustomStringTableItem "{C38AED5A428E7ED5}" {
+
    Id "EL-ID_Information"
    Target_en_us "ID Information"
    Target_es_es "Información de ID"
@@ -510,8 +437,10 @@ StringTable {
    Target_it_it "Informazione ID"
    Target_pt_pt "Informação de ID"
    Target_pt_br "Informação de ID"
+   Comment "ID - Information"
   }
-  CustomStringTableItem "{NEW_GUID_PLAYER_ARRESTED}" {
+  CustomStringTableItem "{90A3C1BCE10ADBC4}" {
+
    Id "EL-Player_Arrested"
    Target_en_us "Player arrested!"
    Target_es_es "Jugador arrestado!"
@@ -520,8 +449,10 @@ StringTable {
    Target_it_it "Giocatore arrestato!"
    Target_pt_pt "Jogador preso!"
    Target_pt_br "Jogador preso!"
+   Comment "Player - Arrested"
   }
-  CustomStringTableItem "{NEW_GUID_FINED}" {
+  CustomStringTableItem "{D9D195DC934F928F}" {
+
    Id "EL-Fined"
    Target_en_us "Fined"
    Target_es_es "Multado"
@@ -530,8 +461,10 @@ StringTable {
    Target_it_it "Multato"
    Target_pt_pt "Multado"
    Target_pt_br "Multado"
+   Comment "Police fines"
   }
-  CustomStringTableItem "{NEW_GUID_WEAPON_STOLEN}" {
+  CustomStringTableItem "{75A0CDCBFFC1FB67}" {
+
    Id "EL-Weapon_Stolen"
    Target_en_us "Weapon stolen!"
    Target_es_es "Arma robada!"
@@ -540,8 +473,10 @@ StringTable {
    Target_it_it "Arma rubata!"
    Target_pt_pt "Arma roubada!"
    Target_pt_br "Arma roubada!"
+   Comment "Crime - Stolen"
   }
-  CustomStringTableItem "{NEW_GUID_INVENTORY_FULL}" {
+  CustomStringTableItem "{23B6B220F4CDFFD3}" {
+
    Id "EL-Inventory_Full"
    Target_en_us "Inventory full!"
    Target_es_es "Inventario lleno!"
@@ -550,8 +485,10 @@ StringTable {
    Target_it_it "Inventario pieno!"
    Target_pt_pt "Inventário cheio!"
    Target_pt_br "Inventário cheio!"
+   Comment "Inventory - Full"
   }
-  CustomStringTableItem "{NEW_GUID_STOLE_MONEY}" {
+  CustomStringTableItem "{1525DF48E632FA99}" {
+
    Id "EL-Stole_Money"
    Target_en_us "Stole $%1!"
    Target_es_es "Robó $%1!"
@@ -560,8 +497,10 @@ StringTable {
    Target_it_it "Rubato $%1!"
    Target_pt_pt "Roubou $%1!"
    Target_pt_br "Roubou $%1!"
+   Comment "Crime - Money"
   }
-  CustomStringTableItem "{NEW_GUID_VEHICLE_STOLEN}" {
+  CustomStringTableItem "{0F081D18CC7E931D}" {
+
    Id "EL-Vehicle_Stolen"
    Target_en_us "Vehicle stolen!"
    Target_es_es "Vehículo robado!"
@@ -570,8 +509,10 @@ StringTable {
    Target_it_it "Veicolo rubato!"
    Target_pt_pt "Veículo roubado!"
    Target_pt_br "Veículo roubado!"
+   Comment "Crime - Stolen"
   }
-  CustomStringTableItem "{NEW_GUID_SPAWN_FAILED}" {
+  CustomStringTableItem "{8C590A67ECACFF37}" {
+
    Id "EL-Spawn_Failed"
    Target_en_us "Failed to spawn vehicle!"
    Target_es_es "Fallo al spawnear vehículo!"
@@ -580,8 +521,10 @@ StringTable {
    Target_it_it "Fallito spawn veicolo!"
    Target_pt_pt "Falha ao spawnar veículo!"
    Target_pt_br "Falha ao spawnar veículo!"
+   Comment "Spawn - Failed"
   }
-  CustomStringTableItem "{NEW_GUID_DUTY_STATUS_CHANGE}" {
+  CustomStringTableItem "{D685C40571165C82}" {
+
    Id "EL-Duty_Status_Change"
    Target_en_us "You are now %1"
    Target_es_es "Ahora eres %1"
@@ -590,8 +533,10 @@ StringTable {
    Target_it_it "Ora sei %1"
    Target_pt_pt "Agora és %1"
    Target_pt_br "Agora você é %1"
+   Comment "Police duty - Status Change"
   }
-  CustomStringTableItem "{NEW_GUID_JOB_EARNED}" {
+  CustomStringTableItem "{A697CABEB59F8606}" {
+
    Id "EL-Job_Earned"
    Target_en_us "Earned $%1 for work!"
    Target_es_es "Ganó $%1 por trabajo!"
@@ -600,8 +545,10 @@ StringTable {
    Target_it_it "Guadagnato $%1 per lavoro!"
    Target_pt_pt "Ganhou $%1 pelo trabalho!"
    Target_pt_br "Ganhou $%1 pelo trabalho!"
+   Comment "Jobs - Earned"
   }
-  CustomStringTableItem "{NEW_GUID_ITEM_SOLD}" {
+  CustomStringTableItem "{34E377654B98619B}" {
+
    Id "EL-Item_Sold"
    Target_en_us "Sold item for $%1!"
    Target_es_es "Item vendido por $%1!"
@@ -610,8 +557,10 @@ StringTable {
    Target_it_it "Oggetto venduto per $%1!"
    Target_pt_pt "Item vendido por $%1!"
    Target_pt_br "Item vendido por $%1!"
+   Comment "Gameplay - Sold"
   }
-  CustomStringTableItem "{NEW_GUID_NOT_ENOUGH_MONEY}" {
+  CustomStringTableItem "{420AF65F16BEB98F}" {
+
    Id "EL-Not_Enough_Money"
    Target_en_us "Not enough money!"
    Target_es_es "Dinero insuficiente!"
@@ -620,8 +569,10 @@ StringTable {
    Target_it_it "Denaro insufficiente!"
    Target_pt_pt "Dinheiro insuficiente!"
    Target_pt_br "Dinheiro insuficiente!"
+   Comment "Not - Enough Money"
   }
-  CustomStringTableItem "{NEW_GUID_ITEM_BOUGHT}" {
+  CustomStringTableItem "{5289454FBBF7BC76}" {
+
    Id "EL-Item_Bought"
    Target_en_us "Bought %1 x%2!"
    Target_es_es "Compró %1 x%2!"
@@ -630,76 +581,217 @@ StringTable {
    Target_it_it "Comprato %1 x%2!"
    Target_pt_pt "Comprou %1 x%2!"
    Target_pt_br "Comprou %1 x%2!"
+   Comment "Gameplay - Bought"
   }
-  CustomStringTableItem "{5A60AE2B8D435CE9}" {
-   Id "EL-Group_Manage"
-   Target_en_us "Manage Group"
-   Target_es_es "Gestionar Grupo"
-   Target_de_de "Gruppe verwalten"
-   Target_fr_fr "Gérer le groupe"
-   Target_it_it "Gestisci gruppo"
-   Target_pt_pt "Gerir grupo"
-   Target_pt_br "Gerenciar grupo"
+  CustomStringTableItem "{136DA2099FFC756A}" {
+   Id "EL-Shop_PurchaseFailed"
+   Target_en_us "Purchase Failed"
+   Target_de_de "Purchase Failed"
+   Target_fr_fr "Purchase Failed"
+   Target_it_it "Purchase Failed"
+   Target_es_es "Purchase Failed"
+   Target_pt_pt "Purchase Failed"
+   Target_pt_br "Purchase Failed"
+   Comment "Shop menu - PurchaseFailed"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
   }
-  CustomStringTableItem "{5A60AE2B8D435CE9}" {
-   Id "EL-Group_Create"
-   Target_en_us "Create Group"
-   Target_es_es "Crear Grupo"
-   Target_de_de "Gruppe erstellen"
-   Target_fr_fr "Créer un groupe"
-   Target_it_it "Crea gruppo"
-   Target_pt_pt "Criar grupo"
-   Target_pt_br "Criar grupo"
+  CustomStringTableItem "{9B448C06D1A3BF92}" {
+   Id "EL-Shop_PurchaseSuccessful"
+   Target_en_us "Purchase Successful"
+   Target_de_de "Purchase Successful"
+   Target_fr_fr "Purchase Successful"
+   Target_it_it "Purchase Successful"
+   Target_es_es "Purchase Successful"
+   Target_pt_pt "Purchase Successful"
+   Target_pt_br "Purchase Successful"
+   Comment "Shop menu - PurchaseSuccessful"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
   }
-  CustomStringTableItem "{5A60AE2B8D435CE9}" {
-   Id "EL-Group_Invite"
-   Target_en_us "Invite Player"
-   Target_es_es "Invitar Jugador"
-   Target_de_de "Spieler einladen"
-   Target_fr_fr "Inviter un joueur"
-   Target_it_it "Invita giocatore"
-   Target_pt_pt "Convidar jogador"
-   Target_pt_br "Convidar jogador"
+  CustomStringTableItem "{1EA0A54661187E1D}" {
+   Id "EL-ATM_AmountPlaceholder"
+   Target_en_us "Enter amount"
+   Target_de_de "Enter amount"
+   Target_fr_fr "Enter amount"
+   Target_it_it "Enter amount"
+   Target_es_es "Enter amount"
+   Target_pt_pt "Enter amount"
+   Target_pt_br "Enter amount"
+   Comment "ATM menu - AmountPlaceholder"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
   }
-  CustomStringTableItem "{5A60AE2B8D435CE9}" {
-   Id "EL-Group_Kick"
-   Target_en_us "Kick Member"
-   Target_es_es "Expulsar Miembro"
-   Target_de_de "Mitglied kicken"
-   Target_fr_fr "Expulser un membre"
-   Target_it_it "Espelli membro"
-   Target_pt_pt "Expulsar membro"
-   Target_pt_br "Expulsar membro"
+  CustomStringTableItem "{BBE716C4C46C1721}" {
+   Id "EL-Survival_Hunger"
+   Target_en_us "Hunger:"
+   Target_de_de "Hunger:"
+   Target_fr_fr "Hunger:"
+   Target_it_it "Hunger:"
+   Target_es_es "Hunger:"
+   Target_pt_pt "Hunger:"
+   Target_pt_br "Hunger:"
+   Comment "Survival HUD - Hunger"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
   }
-  CustomStringTableItem "{5A60AE2B8D435CE9}" {
-   Id "EL-Group_Leave"
-   Target_en_us "Leave Group"
-   Target_es_es "Dejar Grupo"
-   Target_de_de "Gruppe verlassen"
-   Target_fr_fr "Quitter le groupe"
-   Target_it_it "Lascia gruppo"
-   Target_pt_pt "Sair do grupo"
-   Target_pt_br "Sair do grupo"
+  CustomStringTableItem "{54ED194609114232}" {
+   Id "EL-Survival_Thirst"
+   Target_en_us "Thirst:"
+   Target_de_de "Thirst:"
+   Target_fr_fr "Thirst:"
+   Target_it_it "Thirst:"
+   Target_es_es "Thirst:"
+   Target_pt_pt "Thirst:"
+   Target_pt_br "Thirst:"
+   Comment "Survival HUD - Thirst"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
   }
-  CustomStringTableItem "{5A60AE2B8D435CE9}" {
-   Id "EL-Group_Deposit"
-   Target_en_us "Deposit"
-   Target_es_es "Depositar"
-   Target_de_de "Einzahlen"
-   Target_fr_fr "Déposer"
-   Target_it_it "Deposita"
-   Target_pt_pt "Depositar"
-   Target_pt_br "Depositar"
+  CustomStringTableItem "{56BEDFC2D6B3F2A2}" {
+   Id "EL-Survival_Health"
+   Target_en_us "Health:"
+   Target_de_de "Health:"
+   Target_fr_fr "Health:"
+   Target_it_it "Health:"
+   Target_es_es "Health:"
+   Target_pt_pt "Health:"
+   Target_pt_br "Health:"
+   Comment "Survival HUD - Health"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
   }
-  CustomStringTableItem "{5A60AE2B8D435CE9}" {
-   Id "EL-Group_Withdraw"
-   Target_en_us "Withdraw"
-   Target_es_es "Retirar"
-   Target_de_de "Abheben"
-   Target_fr_fr "Retirer"
-   Target_it_it "Preleva"
-   Target_pt_pt "Levantar"
-   Target_pt_br "Sacar"
+  CustomStringTableItem "{FEC189DA0DE5D7E0}" {
+   Id "EL-CC_FirstNamePlaceholder"
+   Target_en_us "Enter your first name..."
+   Target_de_de "Enter your first name..."
+   Target_fr_fr "Enter your first name..."
+   Target_it_it "Enter your first name..."
+   Target_es_es "Enter your first name..."
+   Target_pt_pt "Enter your first name..."
+   Target_pt_br "Enter your first name..."
+   Comment "Character creation - FirstNamePlaceholder"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
+  }
+  CustomStringTableItem "{94EB61414A1D5E30}" {
+   Id "EL-CC_LastNamePlaceholder"
+   Target_en_us "Enter your last name..."
+   Target_de_de "Enter your last name..."
+   Target_fr_fr "Enter your last name..."
+   Target_it_it "Enter your last name..."
+   Target_es_es "Enter your last name..."
+   Target_pt_pt "Enter your last name..."
+   Target_pt_br "Enter your last name..."
+   Comment "Character creation - LastNamePlaceholder"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
+  }
+  CustomStringTableItem "{B543C3112E7902DF}" {
+   Id "EL-CC_Race_Caucasian"
+   Target_en_us "Caucasian"
+   Target_de_de "Caucasian"
+   Target_fr_fr "Caucasian"
+   Target_it_it "Caucasian"
+   Target_es_es "Caucasian"
+   Target_pt_pt "Caucasian"
+   Target_pt_br "Caucasian"
+   Comment "Character creation - Race Caucasian"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
+  }
+  CustomStringTableItem "{22F5A8381DCFA235}" {
+   Id "EL-CC_Race_African"
+   Target_en_us "African"
+   Target_de_de "African"
+   Target_fr_fr "African"
+   Target_it_it "African"
+   Target_es_es "African"
+   Target_pt_pt "African"
+   Target_pt_br "African"
+   Comment "Character creation - Race African"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
+  }
+  CustomStringTableItem "{7CD9EB0AD5589D1E}" {
+   Id "EL-CC_Race_Asian"
+   Target_en_us "Asian"
+   Target_de_de "Asian"
+   Target_fr_fr "Asian"
+   Target_it_it "Asian"
+   Target_es_es "Asian"
+   Target_pt_pt "Asian"
+   Target_pt_br "Asian"
+   Comment "Character creation - Race Asian"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
+  }
+  CustomStringTableItem "{AB901E5BCA15B3C9}" {
+   Id "EL-CC_AgeHint"
+   Target_en_us "18-99"
+   Target_de_de "18-99"
+   Target_fr_fr "18-99"
+   Target_it_it "18-99"
+   Target_es_es "18-99"
+   Target_pt_pt "18-99"
+   Target_pt_br "18-99"
+   Comment "Character creation - AgeHint"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
+  }
+  CustomStringTableItem "{98AF05A41AF2B806}" {
+   Id "EL-Police_Title"
+   Target_en_us "Police Action"
+   Target_de_de "Police Action"
+   Target_fr_fr "Police Action"
+   Target_it_it "Police Action"
+   Target_es_es "Police Action"
+   Target_pt_pt "Police Action"
+   Target_pt_br "Police Action"
+   Comment "Police - Title"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
+  }
+  CustomStringTableItem "{20D92770B5BE32A9}" {
+   Id "EL-Fine_Title"
+   Target_en_us "Fine Failed"
+   Target_de_de "Fine Failed"
+   Target_fr_fr "Fine Failed"
+   Target_it_it "Fine Failed"
+   Target_es_es "Fine Failed"
+   Target_pt_pt "Fine Failed"
+   Target_pt_br "Fine Failed"
+   Comment "Police fines - Title"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
+  }
+  CustomStringTableItem "{9F6AD3C0EE478D4D}" {
+   Id "EL-PoliceAlert_Title"
+   Target_en_us "Police Alert"
+   Target_de_de "Police Alert"
+   Target_fr_fr "Police Alert"
+   Target_it_it "Police Alert"
+   Target_es_es "Police Alert"
+   Target_pt_pt "Police Alert"
+   Target_pt_br "Police Alert"
+   Comment "Police alerts - Title"
+   Modified 1735689600
+   Author "LifeFramework"
+   LastChanged "LifeFramework"
   }
  }
 }

@@ -25,7 +25,7 @@ FrameWidgetClass {
    {
     TextWidgetClass "{5EE8939D15063518}" {
      Name "HungerText"
-     Text "Hunger: 100%"
+     Text "#EL-Survival_Hunger"
      "Font Size" 16
      Slot LayoutSlot "{5EE8939D15063519}" {
       Padding 0 0 0 5
@@ -51,7 +51,7 @@ FrameWidgetClass {
     }
     TextWidgetClass "{5EE8939D1506351E}" {
      Name "ThirstText"
-     Text "Thirst: 100%"
+     Text "#EL-Survival_Thirst"
      "Font Size" 16
      Slot LayoutSlot "{5EE8939D1506351F}" {
       Padding 0 10 0 5
@@ -77,7 +77,7 @@ FrameWidgetClass {
     }
     TextWidgetClass "{5EE8939D15063524}" {
      Name "HealthText"
-     Text "Health: 100%"
+     Text "#EL-Survival_Health"
      "Font Size" 16
      Slot LayoutSlot "{5EE8939D15063525}" {
       Padding 0 10 0 5

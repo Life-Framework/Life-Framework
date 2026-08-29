@@ -1,6 +1,6 @@
 class EL_FactionSelectionMenu : ChimeraMenuBase
 {
-	protected PlayerController m_PlayerController;
+	protected ref PlayerController m_PlayerController;
 
 	//------------------------------------------------------------------------------------------------
 	void SetPlayerController(PlayerController playerController)
@@ -18,9 +18,17 @@ class EL_FactionSelectionMenu : ChimeraMenuBase
 	//------------------------------------------------------------------------------------------------
 	void OnFactionSelected(EL_Faction faction)
 	{
+		if (!m_PlayerController)
+			return;
+
 		// Set faction in account
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-		string playerUid = EL_Utils.GetPlayerUID(m_PlayerController.GetControlledEntity());
+		if (!accountManager)
+			return;
+		IEntity entity = m_PlayerController.GetControlledEntity();
+		if (!entity)
+			return;
+		string playerUid = EL_Utils.GetPlayerUID(entity);
 		EL_PlayerAccount account = accountManager.GetAccount(playerUid);
 		if (account)
 		{
@@ -29,7 +37,9 @@ class EL_FactionSelectionMenu : ChimeraMenuBase
 		}
 
 		// Proceed to character creation
-		EL_CharacterCreationManager.GetInstance().OnPlayerConnected(m_PlayerController.GetPlayerId());
+		EL_CharacterCreationManager manager = EL_CharacterCreationManager.GetInstance();
+		if (manager)
+			manager.OnPlayerConnected(m_PlayerController.GetPlayerId());
 
 		// Close menu
 		GetGame().GetMenuManager().CloseMenu(this);

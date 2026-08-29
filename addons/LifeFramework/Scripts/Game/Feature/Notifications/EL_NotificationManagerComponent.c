@@ -88,7 +88,7 @@ class EL_NotificationManagerComponentClass : ScriptComponentClass
 
 class EL_NotificationManagerComponent : ScriptComponent
 {
-	protected static EL_NotificationManagerComponent s_Instance;
+	protected static ref EL_NotificationManagerComponent s_Instance;
 	
 	//------------------------------------------------------------------------------------------------
 	static EL_NotificationManagerComponent GetInstance()

@@ -19,26 +19,26 @@ GenericEntity {
   }
   RplComponent "{59A73088D86C4A13}" {
   }
-  ActionsManagerComponent "{ActionsID}" {
+  ActionsManagerComponent "{256E2D81F58A634F}" {
    ActionContexts {
-    UserActionContext "{ContextID}" {
+    UserActionContext "{8BA0B49F497197D7}" {
      ContextName "Mine"
-     Position PointInfo "{PosID}" {
+     Position PointInfo "{56FB02E63E711FE5}" {
       Offset 0 0.5 0
      }
      Radius 1.0
     }
    }
    additionalActions {
-    EL_GatherAction "{GatherID}" {
+    EL_GatherAction "{F2D9D211947F6AF0}" {
      ParentContextList {
       "Mine"
      }
-     UIInfo UIInfo "{UIID}" {
+     UIInfo UIInfo "{7322A9B34A628B91}" {
       Name "Mine Iron"
      }
      Duration 5
-     m_GatherItemPrefab "{IronNuggetPrefab}Prefabs/Resources/Mining/IronNugget.et"
+     m_GatherItemPrefab "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et"
      m_GatherAmount 1
      m_GatherAmountMax 5
      m_GatherTimeout 300000  // 5 minutes respawn
