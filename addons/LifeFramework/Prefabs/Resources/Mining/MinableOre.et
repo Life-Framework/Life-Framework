@@ -1,0 +1,73 @@
+GenericEntity {
+ ID "59F07093BF56FFC2"
+ components {
+  EL_DestructibleResourceComponent "{5A4E91862DCCD788}" {
+   "Additional hit zones" {
+    EL_DestructibleResourceHitZone UTM_MetalOre {
+     ColliderNames {
+      "UTM_MetalOre"
+     }
+     HZDefault 1
+    }
+   }
+   m_DestroySpawnObjects {
+    SCR_ParticleSpawnable "{5A84F4E25F9011CA}" {
+     m_vOffsetPosition 0 0.75 0
+     m_Particle "{4D770DEE0A5ABFED}Particles/Gather/Ore.ptc"
+     m_bDirectional 0
+    }
+   }
+   m_aDamagePhases {
+    SCR_DamagePhaseData "{5A4E91862FD91E7D}" {
+     m_fPhaseHealth 40
+     m_PhaseDestroySpawnObjects {
+      SCR_ParticleSpawnable "{5A84F4E273B3C1EB}" {
+       m_vOffsetPosition 0 0.5 0
+       m_Particle "{4D770DEE0A5ABFED}Particles/Gather/Ore.ptc"
+       m_bDirectional 0
+      }
+     }
+    }
+    SCR_DamagePhaseData "{5A4E9186265D5D98}" {
+     m_fPhaseHealth 40
+     m_PhaseDestroySpawnObjects {
+      SCR_ParticleSpawnable "{5A84F4E28AB86073}" {
+       m_vOffsetPosition 0 0.25 0
+       m_Particle "{4D770DEE0A5ABFED}Particles/Gather/Ore.ptc"
+       m_bDirectional 0
+      }
+     }
+    }
+   }
+   m_eMaterialSoundType ROCK
+   m_rHitEffect "{1FAA1339FE4492AF}Prefabs/Particles/OreHit.et"
+   m_aTools {
+    EL_ResourceDestructionTool "{2C1A16367D4B44CD}" {
+     m_rTool "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et"
+     m_fHitDamage 20
+    }
+   }
+  }
+  MeshObject "{59F0709385A10D16}" {
+   Object "{6399C4DB701BF230}Assets/Resources/Mining/MetalOre.xob"
+   Materials {
+    MaterialAssignClass "{5A84ED20391C6E7C}" {
+     SourceMaterial "Material"
+     AssignedMaterial ""
+    }
+   }
+  }
+  Hierarchy "{59F0709385A10D0D}" {
+  }
+  RigidBody "{59F0709385A10D79}" {
+   LayerPreset "RockFireView"
+   Mass 1000
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+   Static 1
+  }
+  RplComponent "{59F0709385A13E0D}" {
+  }
+ }
+ coords 114.759 0.015 145.209
+}

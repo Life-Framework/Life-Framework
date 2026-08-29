@@ -1,0 +1,45 @@
+MetaFileClass {
+ Name "{8044C9C7C55120AC}Assets/Tools/Pickaxe/Pickaxe.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{5A85141148AF49A8}" {
+     SourceMaterial "Pickaxe"
+     AssignedMaterial "{5340268D415B0F5F}Assets/Tools/Pickaxe/Data/Pickaxe.emat"
+    }
+   }
+   MeshParams {
+    MeshParam Pickaxe {
+    }
+   }
+   GeometryParams {
+    GeometryParam UTM_Pickaxe {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{D745FD8FC67DB26A}Common/Materials/Game/stone.gamemat" "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{5A85141148B8FBCA}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{5A85141148B9A672}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{5A85141148B9A6C6}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{5A85141148B9A15E}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{5A85141148B9A181}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+ }
+}

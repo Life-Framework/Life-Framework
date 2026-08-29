@@ -27,3 +27,30 @@ $grp GenericEntity {
 GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
  coords 115 0 130
 }
+$grp GenericEntity : "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et" {
+ MiningArea_Debug {
+  coords 116 0 136
+  m_vSize 10 1 10
+  m_iAmount 5
+  m_fRespawnTime 1
+  m_PrefabsToSpawn {
+   EL_WeightedSpawn "{5A7D1AB35E424547}" {
+    m_iChance 25
+    m_Prefab "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et"
+   }
+   EL_WeightedSpawn "{AB8F2EA71B954EDB}" {
+    m_iChance 50
+    m_Prefab "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
+   }
+   EL_WeightedSpawn "{3744BC775D5B4200}" {
+    m_iChance 25
+    m_Prefab "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et"
+   }
+  }
+ }
+}
+$grp GenericEntity : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
+ Pickaxe_Debug {
+  coords 122 0 136
+ }
+}

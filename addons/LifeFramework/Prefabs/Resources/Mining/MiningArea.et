@@ -1,0 +1,13 @@
+EL_MiningArea {
+ ID "59E8E1567223D103"
+ components {
+  Hierarchy "{59D4ABCF4C842DE8}" {
+  }
+  RplComponent "{59D4ABCF401A5511}" {
+  }
+ }
+ coords 85.094 1.25 157.61
+ m_vSize 10 1 10
+ m_iAmount 10
+ m_fRespawnTime 1
+}

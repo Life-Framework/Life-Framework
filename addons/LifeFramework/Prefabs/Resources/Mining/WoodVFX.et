@@ -1,0 +1,5 @@
+SCR_ParticleEmitter {
+ ID "5A153CB0B3250ADE"
+ coords 111.003 0.001 147.354
+ m_EffectPath "{7F8BF2E037ED7589}VFX/Gather/Wood.ptc"
+}

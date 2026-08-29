@@ -1,0 +1,5 @@
+SCR_ParticleEmitter {
+ ID "5A127EAA55506A8B"
+ coords 112.828 0.001 141.757
+ m_EffectPath "{4D770DEE0A5ABFED}VFX/Gather/Ore.ptc"
+}
