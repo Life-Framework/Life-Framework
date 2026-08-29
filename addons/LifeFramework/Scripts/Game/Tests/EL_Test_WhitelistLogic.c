@@ -19,7 +19,7 @@ class EL_Test_WhitelistLogic : EL_Test
 		ctx.True(SCR_Enum.HasPartialFlag(EL_WhitelistType.POLICE | EL_WhitelistType.MEDIC, EL_WhitelistType.POLICE), "partial flag match with two flags set");
 		ctx.True(SCR_Enum.HasPartialFlag(EL_WhitelistType.POLICE | EL_WhitelistType.MEDIC, EL_WhitelistType.MEDIC), "partial flag match picks the other flag");
 		ctx.False(SCR_Enum.HasPartialFlag(EL_WhitelistType.CONNECT, EL_WhitelistType.POLICE), "no match when the flag is absent");
-		ctx.False(SCR_Enum.HasPartialFlag(EL_WhitelistType.CONNECT, EL_WhitelistType.CONNECT | EL_WhitelistType.POLICE), "partial flag needs at least one shared bit");
+		ctx.True(SCR_Enum.HasPartialFlag(EL_WhitelistType.CONNECT, EL_WhitelistType.CONNECT | EL_WhitelistType.POLICE), "partial flag matches when a required flag is present in flags");
 
 		EL_Whitelist whitelist = new EL_Whitelist();
 		whitelist.m_eType = EL_WhitelistType.POLICE;

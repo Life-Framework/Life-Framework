@@ -1,6 +1,9 @@
 // red-proof: reference a resource path that does not exist (e.g. append
 // "UI/Layouts/HUD/Chat/Missing.layout" to the list), then run
 // `tools\cli test --tier all` and watch [ELTEST] FAIL whitelistchat/resources.
+// The chat_imageset.edds / el_chat_48.imageset are not loaded here: the dedicated
+// server registers no texture/image loader, so a direct load always fails headless
+// (same convention as EL_Test_MoneyRework's texture files).
 
 // tier: WORLD
 class EL_Test_WhitelistChatResources : EL_Test
@@ -21,9 +24,7 @@ class EL_Test_WhitelistChatResources : EL_Test
 			"{5980F59BAAC4DDDB}Configs/Chat/AdminChannel.conf",
 			"{A054AAB5A57BE2DD}Configs/Chat/GlobalChannel.conf",
 			"{4B57F6B08155F18A}Configs/Chat/GlobalOocChannel.conf",
-			"{A6E8FE0ABB6C67DD}Configs/Chat/LocalChannel.conf",
-			"{CD2631B39F433D0A}Assets/UI/Chat/el_chat_48.imageset",
-			"{9795DEFDB1EB2F9D}Assets/UI/Chat/chat_imageset.edds"
+			"{A6E8FE0ABB6C67DD}Configs/Chat/LocalChannel.conf"
 		};
 
 		foreach (string path : resources)
