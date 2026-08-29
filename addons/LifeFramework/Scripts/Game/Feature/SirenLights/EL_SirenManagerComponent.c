@@ -217,6 +217,11 @@ class EL_SirenManagerComponent : ScriptComponent
 		}
 
 		m_CurrentMode = mode;
+
+		string modeName = "<none>";
+		if (mode)
+			modeName = mode.GetName();
+		EL_Debug.Log("Siren", string.Format("mode -> %1 (index %2)", modeName, m_CurrentModeIndex));
 	}
 
 	//------------------------------------------------------------------------------------------------

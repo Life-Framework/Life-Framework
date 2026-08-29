@@ -69,6 +69,8 @@ class EL_VehicleLockComponent : SCR_BaseLockComponent
 				m_sVehicleIdentifier = m_sDebugIdentifier;
 			else
 				m_sVehicleIdentifier = PersistenceIdUtils.Generate();
+
+			EL_Debug.Log("VehicleLock", string.Format("identifier assigned: %1", m_sVehicleIdentifier));
 		}
 	}
 
@@ -101,6 +103,11 @@ class EL_VehicleLockComponent : SCR_BaseLockComponent
 
 		m_bELIsLocked = locked;
 		Replication.BumpMe();
+
+		string stateName = "unlocked";
+		if (locked)
+			stateName = "locked";
+		EL_Debug.Log("VehicleLock", string.Format("lock state -> %1", stateName));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -140,6 +147,7 @@ class EL_VehicleLockComponent : SCR_BaseLockComponent
 
 		m_sVehicleIdentifier = identifier;
 		Replication.BumpMe();
+		EL_Debug.Log("VehicleLock", string.Format("identifier rebound: %1", identifier));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -154,7 +162,10 @@ class EL_VehicleLockComponent : SCR_BaseLockComponent
 		if (!keyComponent)
 			return false;
 
-		return IdentifiersMatch(keyComponent.GetVehicleIdentifier(), m_sVehicleIdentifier);
+		bool matches = IdentifiersMatch(keyComponent.GetVehicleIdentifier(), m_sVehicleIdentifier);
+		EL_Debug.Log("VehicleLock", string.Format("key check: key=%1 vehicle=%2 match=%3",
+			keyComponent.GetVehicleIdentifier(), m_sVehicleIdentifier, matches));
+		return matches;
 	}
 
 	//------------------------------------------------------------------------------------------------

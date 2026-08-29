@@ -583,6 +583,17 @@ async function cmdTest(noBuild, tier = "all") {
   return res.status;
 }
 
+async function cmdDev(tier = "all") {
+  // Fast dev loop: skip the headless Workbench build (the dedicated server
+  // compiles scripts at boot from the unpacked addons), run the in-game suite,
+  // then dump the per-feature [ELDebug:*] lines from the same log.
+  console.log("=== dev: validate ===");
+  const v = await cmdRunArea("validate");
+  if (v !== 0) return v;
+  console.log("\n=== dev: test (no build) ===");
+  return cmdTest(true, tier);
+}
+
 async function cmdCi() {
   const steps = [
     ["validate", () => cmdRunArea("validate")],
@@ -614,6 +625,8 @@ usage: tools\\cli <command> [args]
   serve                         boot the headless test server (blocks)
   test [--no-build] [--tier fast|all]
                                 build + boot server + parse ELTEST results
+  dev [--tier fast|all]         fast dev loop: validate + test --no-build +
+                                dump [ELDebug:*] feature log lines
   ci                            validate + build + test (full gate)
   regen-tests                   regenerate the test registry from the test files
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
@@ -656,6 +669,10 @@ const cmds = {
   disable: (n) => cmdSetEnabled(n, false),
   build: () => cmdBuild(),
   serve: () => cmdServe(),
+  dev: (flags) => {
+    const list = flags ?? [];
+    return cmdDev(argValue(list, "--tier") ?? "all");
+  },
   test: (flags) => {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
@@ -687,7 +704,7 @@ if (cmd === "mcp") {
   const sub = cmds[a];
   code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
 } else if (cmd && cmds[cmd]) {
-  code = cmds[cmd](cmd === "test" ? rest : a);
+  code = cmds[cmd](cmd === "test" || cmd === "dev" ? rest : a);
 } else {
   if (cmd) console.log(`unknown command: ${cmd}\n`);
   code = cmdHelp();

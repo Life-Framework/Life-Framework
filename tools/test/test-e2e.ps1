@@ -122,6 +122,12 @@ if ($lastSummary) {
   $fails = @($console -split "`n" | Where-Object { $_ -match '\[ELTEST\]   - ' })
   foreach ($f in $fails) { Write-Host "  $f" }
 
+  $debugLines = @($console -split "`n" | Where-Object { $_ -match '\[ELDebug:' })
+  if ($debugLines.Count -gt 0) {
+    Write-Host "test-e2e: feature debug lines ($($debugLines.Count)):"
+    foreach ($d in $debugLines) { Write-Host "  $($d -replace '.*\[ELDebug:', '[ELDebug:')" }
+  }
+
   if ($lastSummary.Failed -eq 0) { Write-Host "test-e2e: OK"; exit 0 }
   Write-Host "test-e2e: FAILED ($($lastSummary.Failed) failing test(s))"
   exit 1
