@@ -620,4 +620,33 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     LastChanged "LifeFramework"
    }
   }
+   CustomStringTableItem "{F5FDC2038BA4118F}" {
+    Id "EL-Whitelist_NotAllowed"
+    Comment "Shown when a user action is refused because the player lacks the required whitelist flag"
+    Target_en_us "You are not whitelisted for this"
+    Target_de_de "Du bist dafuer nicht whitelisted"
+    Target_fr_fr "Vous n'etes pas autorise pour cette action"
+    Target_it_it "Non sei autorizzato per questa azione"
+    Target_es_es "No estas autorizado para esta accion"
+    Target_pt_pt "Nao estas autorizado para esta acao"
+    Target_pt_br "Voce nao esta autorizado para esta acao"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{97CEF9804C433EE1}" {
+    Id "EL-Whitelist_Sign_Action"
+    Comment "Name of the whitelist information action on the DebugWorld whitelist sign"
+    Target_en_us "Whitelist info"
+    Target_de_de "Whitelist-Information"
+    Target_fr_fr "Informations sur la liste blanche"
+    Target_it_it "Informazioni whitelist"
+    Target_es_es "Informacion de la lista blanca"
+    Target_pt_pt "Informacao da lista branca"
+    Target_pt_br "Informacao da lista branca"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+ }
 }

@@ -1,0 +1,5 @@
+$grp GenericEntity : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
+ WhitelistSign_Info {
+  coords 152 0 136
+ }
+}

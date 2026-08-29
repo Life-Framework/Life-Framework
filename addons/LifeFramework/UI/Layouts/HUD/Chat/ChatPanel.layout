@@ -1,0 +1,255 @@
+
+OverlayWidgetClass {
+ Name "ChatPanel"
+ Slot FrameWidgetSlot "{5D44BAAE04250C12}" {
+  PositionX 8
+  OffsetLeft 8
+  PositionY 17
+  OffsetTop 17
+  SizeX 1920
+  OffsetRight -1928
+  SizeY 1080
+  OffsetBottom -1097
+ }
+ Clipping True
+ components {
+  SCR_WidgetExportRuleRoot "{585D219E648B5F11}" {
+   DestinationPath "{DDF13B05E8859F8B}scripts/Game/UI/Chat"
+  }
+  SCR_ChatPanel "{585F32D2A6B295EC}" {
+   m_SystemChannelStyle SCR_ChatMessageStyle "{585F355BA59CEE0C}" : "{444173D2815A447C}Configs/Chat/SystemChannel.conf" {
+   }
+   m_RadioProtocolStyle SCR_ChatMessageStyle "{585F355BA3B220AD}" : "{D1217462F12456CF}Configs/Chat/RadioProtocolChannel.conf" {
+   }
+   m_GlobalChannelStyle SCR_ChatMessageStyle "{585F355BA102411C}" : "{A054AAB5A57BE2DD}Configs/Chat/GlobalChannel.conf" {
+   }
+   m_GroupChannelStyle SCR_ChatMessageStyle "{5872912191D6C814}" : "{26AB507626F0D083}Configs/Chat/GroupChannel.conf" {
+   }
+   m_FactionChannelStyle SCR_ChatMessageStyle "{585F355BAE63AEB1}" : "{EEE4EA0DA62D86D7}Configs/Chat/FactionChannel.conf" {
+   }
+   m_VehicleChannelStyle SCR_ChatMessageStyle "{585F355BAC4D6344}" : "{45CA286080F81EF0}Configs/Chat/VehicleChannel.conf" {
+   }
+   m_LocalChannelStyle SCR_ChatMessageStyle "{585F355BADA1334F}" : "{A6E8FE0ABB6C67DD}Configs/Chat/LocalChannel.conf" {
+   }
+   m_DirectChannelStyle SCR_ChatMessageStyle "{585F355BAB503425}" : "{5B1826FE43E755F7}Configs/Chat/DirectChannel.conf" {
+   }
+   m_OOCGlobalStyle SCR_ChatMessageStyle "{5CC4E8D720C8F69D}" : "{4B57F6B08155F18A}Configs/Chat/GlobalOocChannel.conf" {
+   }
+   m_iMessageLineCount 5
+  }
+ }
+ {
+  OverlayWidgetClass "{56150B2288F76A08}" {
+   Name "OverlayAlignTop"
+   Slot OverlayWidgetSlot "{56150B2288F76A55}" {
+    HorizontalAlign 3
+    VerticalAlign 0
+   }
+   {
+    VerticalLayoutWidgetClass "{00000000BC2C2020}" {
+     Name "m_MessageHistory"
+     Slot OverlayWidgetSlot "{56352AAC54C88745}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Fill Origin" Bottom
+     {
+      OverlayWidgetClass "{563296652233D952}" {
+       Name "m_EditOverlay"
+       Slot LayoutSlot "{563296652233D97A}" {
+        Padding 3 0 0 0
+       }
+       {
+        OverlayWidgetClass "{0000000076CB44EF}" {
+         Name "EditLayoutBar"
+         Slot OverlayWidgetSlot "{56329665220A395E}" {
+          HorizontalAlign 0
+          VerticalAlign 0
+         }
+         Color 1 1 1 1
+         {
+          ImageWidgetClass "{55DCCD27A68C5447}" {
+           Name "m_EditBackgroundImage"
+           Slot OverlayWidgetSlot "{55DCCD27A68C5460}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.761 0.386 0.078 0.549
+           Texture "{C8356C245709D063}UI/Textures/Common/gradient_transparent_white_linear_photoshop.edds"
+           Image ""
+           Size 256 27
+           "Flip Horizontally" 1
+           "Transition width" 1
+           Progress 0.5
+          }
+          BlurWidgetClass "{00000000794CF909}" {
+           Name "Blur0"
+           Slot OverlayWidgetSlot "{3551E704486EBDD3}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 1 1 1 1
+           Intensity 0.2
+          }
+          TextWidgetClass "{55E6B13D4AF7217C}" : "{3132F64DB8B4CB44}UI/layouts/WidgetLibrary/TextWidgets/Text_Body.layout" {
+           Name "m_ChannelTagOverlay"
+           Slot OverlayWidgetSlot "{55E6B13C361BAB63}" {
+            HorizontalAlign 0
+            Padding 35 0 0 0
+           }
+           Color 1 1 1 0.498
+           "Inherit Color" 1
+           Text "[Global]"
+           "Font Size" 16
+           "Min Font Size" 16
+          }
+          HorizontalLayoutWidgetClass "{00000000A1E383A5}" {
+           Name "MessageEditor"
+           Slot OverlayWidgetSlot "{3551E704486EBD8D}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+            Padding 0 2 0 1
+           }
+           Clipping Ancestor
+           Color 1 1 1 1
+           "Inherit Color" 1
+           {
+            ImageWidgetClass "{55DCCD258C886EC8}" {
+             Name "m_ChannelTypeImage"
+             Slot LayoutSlot "{55DCCD25F2AC6E8B}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+              Padding 5 0 5 0
+             }
+             Texture "{1872FFA1133724A2}UI/Textures/Chat/chat.imageset"
+             Image "global"
+             Size 20 20
+            }
+            ImageWidgetClass "{0000000034CEFF98}" {
+             Name "SelectedChannelStripe"
+             Slot LayoutSlot "{665BE77BED8408A6}" {
+              Padding 0 0 2 0
+             }
+             "Is Visible" 0
+             Color 1 1 1 0.392
+             "Inherit Color" 1
+             Size 2 0
+            }
+            TextWidgetClass "{54FEBC03B2EC44A5}" : "{3132F64DB8B4CB44}UI/layouts/WidgetLibrary/TextWidgets/Text_Body.layout" {
+             Name "Points"
+             Slot LayoutSlot "{54FEBC045BAF689A}" {
+              Padding 0 5 0 0
+             }
+             "Is Enabled" 0
+             "Is Visible" 0
+             "Inherit Color" 1
+             Text ":"
+             "Font Size" 16
+             "Min Font Size" 16
+            }
+            SizeLayoutWidgetClass "{56F9028315D8FE42}" {
+             Name "Width"
+             Slot LayoutSlot "{56F9028315D8FE7E}" {
+              Padding 2 0 0 0
+              SizeMode Fill
+             }
+             AllowWidthOverride 1
+             WidthOverride 360
+             {
+              EditBoxWidgetClass "{000000009EEB4E0F}" {
+               Name "m_MessageEditBox"
+               Slot LayoutSlot "{3551E704486EBC14}" {
+                Padding 2 0 0 0
+                SizeMode Fill
+               }
+               Clipping True
+               Color 1 1 1 1
+               "Inherit Color" 1
+               components {
+                EditBoxFilterComponent "{585D2E6C9661FDE8}" {
+                 m_iCharacterLimit 200
+                 m_bUTFMultibyte 0
+                }
+                SCR_EventHandlerComponent "{585D2E6C7D09B54B}" {
+                }
+               }
+               style blank
+               "Font Size" 16
+               "Placeholder color" 0.784 0.784 0.784 1
+               FontProperties FontProperties "{3551E70745ACC309}" {
+                Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+                DisabledColor 0.6 0.6 0.6 1
+                ShadowSize 1
+                ShadowOffset 1 1
+               }
+              }
+             }
+            }
+            HorizontalLayoutWidgetClass "{00000000528E33DF}" {
+             Name "m_WarningChannelMessage"
+             Slot LayoutSlot "{51EAAEFDF261FB62}" {
+             }
+             Clipping Ancestor
+             {
+              ImageWidgetClass "{00000000B6626F93}" {
+               Name "m_WarningImage"
+               Slot LayoutSlot "{51EAAEFDF261FA97}" {
+               }
+               Color 1 0.417 0 1
+               Texture "{2EFEA2AF1F38E7F0}UI/Textures/Icons/icons_wrapperUI-64.imageset"
+               Image "warning"
+               Size 22 16
+              }
+              TextWidgetClass "{54FEBC03E12A1386}" : "{3132F64DB8B4CB44}UI/layouts/WidgetLibrary/TextWidgets/Text_Body.layout" {
+               Name "m_WarningText"
+               Slot LayoutSlot "{54FEBC045BAF689A}" {
+               }
+               Color 1 0.417 0 1
+               Text "Warning Text"
+               "Font Size" 16
+               "Min Font Size" 16
+               "Vertical Alignment" Center
+              }
+             }
+            }
+            TextWidgetClass "{54FEBC045BAF6963}" : "{3132F64DB8B4CB44}UI/layouts/WidgetLibrary/TextWidgets/Text_Body.layout" {
+             Name "m_ChannelTagEditor"
+             Slot LayoutSlot "{54FEBC045BAF689A}" {
+              Padding 0 6 0 0
+             }
+             "Is Enabled" 0
+             "Is Visible" 0
+             "Inherit Color" 1
+             Text "[Channel tag]"
+             "Font Size" 16
+             "Min Font Size" 16
+            }
+           }
+          }
+          ImageWidgetClass "{0000000086FFCCC5}" {
+           Name "Separator"
+           Slot OverlayWidgetSlot "{26AC277A80182871}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 2 0 2 0
+           }
+           "Is Visible" 0
+           Clipping Ancestor
+           Color 1 1 1 0.392
+           Size 32 1
+           Mask "{EEEA388EB9A457E9}UI/Textures/ProgressMasks/ProgressMaskVertical_256x1.edds"
+           "Transition width" 0.2
+           Progress 0.5
+           "Mask Mode" "Include Range"
+           Range 0.5
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

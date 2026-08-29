@@ -1,0 +1,166 @@
+
+OverlayWidgetClass {
+ Name "ChatOverlay"
+ Slot LayoutSlot "{55D2800B3BCEEB11}" {
+  HorizontalAlign 0
+  Padding 0 0 0 4
+ }
+ Clipping False
+ components {
+  SCR_ChatMessageLineComponent "{585CCB310F83FBFD}" {
+  }
+  SCR_WidgetExportRuleRoot "{585CCB31C646E291}" {
+   DestinationPath "{DDF13B05E8859F8B}scripts/Game/UI/Chat"
+  }
+ }
+ {
+  SizeLayoutWidgetClass "{55E8C56F4E861ECE}" {
+   Name "SizeLayout0"
+   Slot OverlayWidgetSlot "{55E8C56F4E861E1A}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowMinDesiredWidth 1
+   MinDesiredWidth 200
+   AllowMinDesiredHeight 1
+   MinDesiredHeight 27
+   {
+    OverlayWidgetClass "{55D0E5888944A497}" {
+     Name "Overlay0"
+     Slot OverlayWidgetSlot "{55D0E58A68931060}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{55D0E584568ED866}" {
+       Name "m_BackgroundImage"
+       Slot OverlayWidgetSlot "{567CBEA9EB57B938}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        Padding 3 0 0 0
+       }
+       Color 0 0 0 0.6863
+       Image ""
+       Size 1 1
+       "Transition width" 1
+       Progress 0.5
+      }
+      HorizontalLayoutWidgetClass "{55D0E07920886076}" {
+       Name "MessageLayout"
+       Slot OverlayWidgetSlot "{3551E70F21437C0C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        Padding 3 0 2 0
+       }
+       Clipping Ancestor
+       Color 1 1 1 1
+       "Inherit Color" 1
+       {
+        ImageWidgetClass "{55D0E07920886077}" {
+         Name "m_TypeImage"
+         Slot LayoutSlot "{55D0E07B0D3D0BDA}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 5 3 5 3
+         }
+         Texture "{1872FFA1133724A2}UI/Textures/Chat/chat.imageset"
+         Image "squad"
+         Size 24 24
+        }
+        ImageWidgetClass "{615AA48350923B33}" {
+         Name "m_PlatformImage"
+         Slot LayoutSlot "{615AA48350923BE4}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 5 0 5 0
+         }
+         Texture "{3262679C50EF4F01}UI/Textures/Icons/icons_wrapperUI.imageset"
+         Image "platform-playstation"
+         Size 24 24
+        }
+        SizeLayoutWidgetClass "{56F90284F470DCD6}" {
+         Name "Width"
+         Slot LayoutSlot "{56F90284F470DC0A}" {
+          Padding 2 5 5 4
+          SizeMode Fill
+         }
+         WidthOverride 431
+         AllowMinDesiredWidth 1
+         MinDesiredWidth 150
+         AllowMaxDesiredWidth 1
+         MaxDesiredWidth 431
+         {
+          TextWidgetClass "{5A0AB3F2C9247F49}" {
+           Name "m_MessageText"
+           Slot OverlayWidgetSlot "{5A0AB3F2C9247FAC}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           "Font Size" 15
+           "Min Font Size" 15
+           Wrap 1
+           FontProperties FontProperties "{5A0AB3F2A006C649}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+            OutlineSize 2
+            ShadowSize 6
+            ShadowColor 0 0 0 0.5
+           }
+          }
+         }
+        }
+       }
+      }
+      SizeLayoutWidgetClass "{55E0DDC2C52AB768}" {
+       Name "m_Badge"
+       Slot OverlayWidgetSlot "{55E0DDC2C52AB68F}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       AllowWidthOverride 1
+       WidthOverride 3
+       {
+        VerticalLayoutWidgetClass "{55E0DDC23E005E34}" {
+         Name "VerticalLayout0"
+         Slot AlignableSlot "{55E0DDC23E005E50}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         "Inherit Color" 1
+         {
+          ImageWidgetClass "{55E0DDC3B64363F1}" {
+           Name "BadgeTopImage"
+           Slot LayoutSlot "{55E0DDC3B6436310}" {
+           }
+           "Inherit Color" 1
+           Texture "{7EDD7BD8B829EF19}UI/Textures/Chat/chat_badge.imageset"
+           Image "badge_end"
+           Size 1 3
+          }
+          ImageWidgetClass "{55E6B1358299F9CD}" {
+           Name "BadgeMiddle"
+           Slot LayoutSlot "{55E6B1358299F9EA}" {
+            SizeMode Fill
+           }
+           "Inherit Color" 1
+           Size 1 1
+          }
+          ImageWidgetClass "{55E0DDC3B45A6D05}" {
+           Name "BadgeBottom"
+           Slot LayoutSlot "{55E0DDC3B45A6D2C}" {
+           }
+           "Inherit Color" 1
+           Texture "{7EDD7BD8B829EF19}UI/Textures/Chat/chat_badge.imageset"
+           Image "badge_end"
+           Size 1 3
+           "Flip Vertically" 1
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
