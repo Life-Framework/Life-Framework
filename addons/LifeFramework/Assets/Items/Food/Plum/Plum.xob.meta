@@ -5,7 +5,7 @@ MetaFileClass {
    MaterialAssigns {
     MaterialAssignClass "{5A4ACE730CA26356}" {
      SourceMaterial "Plum"
-     AssignedMaterial "{2FE9029EE6853C72}Assets/Items/Food/Plum/data/Plum.emat"
+     AssignedMaterial "{2FE9029EE6853C72}Assets/Items/Food/Plum/Data/Plum.emat"
     }
    }
    MeshParams {

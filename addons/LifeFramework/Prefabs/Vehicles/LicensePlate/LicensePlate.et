@@ -6,7 +6,7 @@ EL_LicensePlateEntity {
    Materials {
     MaterialAssignClass "{5985183624CEA6F6}" {
      SourceMaterial "PIPMaterial"
-     AssignedMaterial "{D7550006F427D046}Assets/Vehicles/LicensePlate/data/LicensePlateMaterial.emat"
+     AssignedMaterial "{D7550006F427D046}Assets/Vehicles/LicensePlate/Data/LicensePlateMaterial.emat"
     }
    }
   }

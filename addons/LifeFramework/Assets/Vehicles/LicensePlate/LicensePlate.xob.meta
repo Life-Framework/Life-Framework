@@ -6,11 +6,11 @@ MetaFileClass {
    MaterialAssigns {
     MaterialAssignClass "{59830E88DF8D332B}" {
      SourceMaterial "Material"
-     AssignedMaterial "{E3E53DFABB0F6BBF}Assets/Vehicles/LicensePlate/data/Material.emat"
+     AssignedMaterial "{E3E53DFABB0F6BBF}Assets/Vehicles/LicensePlate/Data/Material.emat"
     }
     MaterialAssignClass "{59830E88DF8D3338}" {
      SourceMaterial "PIPMaterial"
-     AssignedMaterial "{0E3747C4C40D35A4}Assets/Vehicles/LicensePlate/data/PIPMaterial.emat"
+     AssignedMaterial "{0E3747C4C40D35A4}Assets/Vehicles/LicensePlate/Data/PIPMaterial.emat"
     }
    }
    MeshParams {

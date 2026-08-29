@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{92857569915C7B48}Assets/Props/TitlePoster/data/everon_titeliimg.edds"
+ Name "{92857569915C7B48}Assets/Props/TitlePoster/Data/everon_titeliimg.edds"
  Configurations {
   JPGResourceClass PC : "{DC555BD399D92412}Configs/System/ResourceTypes/PC/TextureUnspecified.conf" {
   }

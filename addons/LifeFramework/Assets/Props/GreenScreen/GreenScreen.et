@@ -6,7 +6,7 @@ GenericEntity {
    Materials {
     MaterialAssignClass "{596F08439090F6D6}" {
      SourceMaterial "Material"
-     AssignedMaterial "{08F74E5C4305A36A}Assets/Props/GreenScreen/data/Green.emat"
+     AssignedMaterial "{08F74E5C4305A36A}Assets/Props/GreenScreen/Data/Green.emat"
     }
    }
    CastShadow 0

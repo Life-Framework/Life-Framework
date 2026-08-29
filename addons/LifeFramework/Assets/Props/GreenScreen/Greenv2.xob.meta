@@ -5,7 +5,7 @@ MetaFileClass {
    MaterialAssigns {
     MaterialAssignClass "{596F084255EC1E67}" {
      SourceMaterial "Material"
-     AssignedMaterial "{A963A03B25C595D5}Assets/Props/GreenScreen/data/Material.emat"
+     AssignedMaterial "{A963A03B25C595D5}Assets/Props/GreenScreen/Data/Material.emat"
     }
    }
    MeshParams {

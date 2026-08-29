@@ -5,7 +5,7 @@ MetaFileClass {
    MaterialAssigns {
     MaterialAssignClass "{59675E02D4A0482E}" {
      SourceMaterial "everon_titeliimg"
-     AssignedMaterial "{F43EDB8C6EC4EA45}Assets/Props/TitlePoster/data/everon_titeliimg.emat"
+     AssignedMaterial "{F43EDB8C6EC4EA45}Assets/Props/TitlePoster/Data/everon_titeliimg.emat"
     }
    }
    MeshParams {
