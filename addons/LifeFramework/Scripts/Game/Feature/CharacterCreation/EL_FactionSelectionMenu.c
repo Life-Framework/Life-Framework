@@ -37,7 +37,18 @@ class EL_FactionSelectionMenu : ChimeraMenuBase
 			return;
 		}
 
-		Print(string.Format("[EL_FactionSelectionMenu] %1: name=%2 parent=%3 visible=%4 size=%5x%6", tag, root.GetName(), root.GetParent() != null, root.IsVisibleInHierarchy(), FrameSlot.GetSizeX(root), FrameSlot.GetSizeY(root)), LogLevel.NORMAL);
+		float sx = FrameSlot.GetSizeX(root);
+		float sy = FrameSlot.GetSizeY(root);
+		Print(string.Format("[EL_FactionSelectionMenu] %1: name=%2 parent=%3 visible=%4 size=%5x%6", tag, root.GetName(), root.GetParent() != null, root.IsVisibleInHierarchy(), sx, sy), LogLevel.NORMAL);
+
+		// The MenuManager sizes menu roots after OnMenuOpen and can collapse a late-attached one;
+		// re-assert the full-screen rect once on the follow-up tick if that happened.
+if (tag == "plus1s" && (sx < 1 || sy < 1))
+		{
+			FrameSlot.SetPos(root, 0, 0);
+			FrameSlot.SetSize(root, GetGame().GetWorkspace().GetWidth(), GetGame().GetWorkspace().GetHeight());
+			Print(string.Format("[EL_FactionSelectionMenu] re-asserted size: %1x%2", FrameSlot.GetSizeX(root), FrameSlot.GetSizeY(root)), LogLevel.NORMAL);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

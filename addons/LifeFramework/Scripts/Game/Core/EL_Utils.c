@@ -79,16 +79,19 @@ class EL_Utils : Managed
 	//! session: the widget tree exists and every FindAnyWidget lookup on it works, but an orphan
 	//! renders nothing. Overthrow's OVT_UIContext.ShowLayout avoids the whole problem by attaching
 	//! its menu layouts to the workspace the same way.
-	//! The layout's own slot only applied at creation with a parent, so the late attach also has to
-	//! re-apply the full-screen anchor - a freshly parented orphan defaults to a zero-size slot.
+	//! A late AddChild hands the orphan a default zero-size slot, and the engine only applies
+	//! Position/Size when min and max anchor match ("Position/Size works only when min and max
+	//! anchor is the same in given direction") - so pin the root to a point anchor with an explicit
+	//! full-screen rect instead of the stretch anchor the layout file asks for.
 	static void EnsureMenuRootAttached(Widget root)
 	{
 		if (root && !root.GetParent())
 		{
-			GetGame().GetWorkspace().AddChild(root);
-			FrameSlot.SetAnchorMin(root, 0, 0);
-			FrameSlot.SetAnchorMax(root, 1, 1);
-			FrameSlot.SetOffsets(root, 0, 0, 0, 0);
+			WorkspaceWidget workspace = GetGame().GetWorkspace();
+			workspace.AddChild(root);
+			FrameSlot.SetAnchor(root, 0, 0);
+			FrameSlot.SetPos(root, 0, 0);
+			FrameSlot.SetSize(root, workspace.GetWidth(), workspace.GetHeight());
 		}
 	}
 

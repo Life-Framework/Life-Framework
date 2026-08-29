@@ -1,8 +1,5 @@
 FrameWidgetClass "{7FCF78CFD05605DE}" {
  Name "FactionRoot"
- Slot FrameWidgetSlot "{0E7E6B49645EE0E2}" {
-  Anchor 0 0 1 1
- }
  Color 0 0 0 0.85
  {
   FrameWidgetClass "{9306E8397734F101}" {
