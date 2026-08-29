@@ -22,6 +22,9 @@
 //     the JSON to a temp file, pass `@path`. PowerShell mangles inline JSON.
 //   - Server command + environment are read from opencode.json, so this works
 //     from any checkout that has the server installed.
+//   - Env overrides: pass `--env <jsonfile>` before the tool to override the
+//     server's environment for this one call (e.g. point ENFUSION_PROJECT_PATH
+//     at a worktree addon to build/validate it without touching opencode.json).
 
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
@@ -72,10 +75,30 @@ async function main() {
   let toolName = first;
   let rawArgs = null;
   let wantedServer = null;
+  let envOverrides = {};
 
   if (first === "list") {
     toolName = null;
     wantedServer = args[1] ?? null;
+  } else if (first === "--env") {
+    const envFile = args[1];
+    if (!envFile) {
+      console.error("--env requires a json file path");
+      return 1;
+    }
+    try {
+      envOverrides = JSON.parse(readFileSync(envFile, "utf8"));
+    } catch (e) {
+      console.error(`bad JSON in env file ${envFile}: ${e.message}`);
+      return 1;
+    }
+    toolName = args[2] ?? null;
+    rawArgs = args[3] ?? null;
+    wantedServer = args[4] ?? null;
+    if (!toolName) {
+      console.error("--env <file> <tool> [args] [server]");
+      return 1;
+    }
   } else {
     rawArgs = args[1] ?? null;
     wantedServer = args[2] ?? null;
@@ -95,12 +118,15 @@ async function main() {
     console.error(`  run: tools\\cli mcp install ${serverName}`);
     return 1;
   }
-  const env = { ...process.env, ...(serverCfg.environment ?? {}) };
+  const env = { ...process.env, ...(serverCfg.environment ?? {}), ...envOverrides };
 
   let toolArgs = {};
   if (rawArgs) {
-    if (rawArgs.startsWith("@")) {
-      const file = rawArgs.slice(1);
+    const isFile =
+      rawArgs.startsWith("@") ||
+      (rawArgs.endsWith(".json") && existsSync(rawArgs));
+    if (isFile) {
+      const file = rawArgs.startsWith("@") ? rawArgs.slice(1) : rawArgs;
       if (!existsSync(file)) {
         console.error(`args file not found: ${file}`);
         return 1;
