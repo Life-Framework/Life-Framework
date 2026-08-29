@@ -315,71 +315,6 @@ FrameWidgetClass {
               }
              }
             }
-            VerticalLayoutWidgetClass "{63D2E3F4A5B6CC01}" {
-             Name "RaceButtons"
-             Slot LayoutSlot "{63D2E3F4A5B6CC12}" {
-              Padding 0 0 0 0
-             }
-             {
-              ButtonWidgetClass "{63D2E3F4A5B6CC23}" {
-               Name "RaceCaucasianButton"
-               Slot LayoutSlot "{63D2E3F4A5B6CC34}" {
-                Padding 0 0 0 15
-               }
-               Color 0.3 0.5 0.7 1
-               {
-                TextWidgetClass "{63D2E3F4A5B6CC45}" {
-                 Slot LayoutSlot "{63D2E3F4A5B6CC56}" {
-                  HorizontalAlign 3
-                  VerticalAlign 3
-                  Padding 20 12 20 12
-                 }
-                 Color 1 1 1 1
-                 Text "#EL-CC_Race_Caucasian"
-                 "Font Size" 18
-                }
-               }
-              }
-              ButtonWidgetClass "{63D2E3F4A5B6CD63}" {
-               Name "RaceAfricanButton"
-               Slot LayoutSlot "{63D2E3F4A5B6CD74}" {
-                Padding 0 0 0 15
-               }
-               Color 0.3 0.5 0.7 1
-               {
-                TextWidgetClass "{63D2E3F4A5B6CD85}" {
-                 Slot LayoutSlot "{63D2E3F4A5B6CD96}" {
-                  HorizontalAlign 3
-                  VerticalAlign 3
-                  Padding 20 12 20 12
-                 }
-                 Color 1 1 1 1
-                 Text "#EL-CC_Race_African"
-                 "Font Size" 18
-                }
-               }
-              }
-              ButtonWidgetClass "{63D2E3F4A5B6CDA7}" {
-               Name "RaceAsianButton"
-               Slot LayoutSlot "{63D2E3F4A5B6CDB8}" {
-                Padding 0 0 0 0
-               }
-               Color 0.3 0.5 0.7 1
-               {
-                TextWidgetClass "{63D2E3F4A5B6CDC9}" {
-                 Slot LayoutSlot "{63D2E3F4A5B6CDD0}" {
-                  HorizontalAlign 3
-                  VerticalAlign 3
-                  Padding 20 12 20 12
-                 }
-                 Color 1 1 1 1
-                 Text "#EL-CC_Race_Asian"
-                 "Font Size" 18
-                }
-               }
-              }
-             }
-            }
            }
           }
           VerticalLayoutWidgetClass "{63031778CF45273E}" {
@@ -419,16 +354,27 @@ FrameWidgetClass {
           SizeMode Fill
          }
          {
-          ButtonWidgetClass "{63D2E3F4A5B6CE91}" : "{C42847838185932E}UI/layouts/WidgetLibrary/Buttons/WLib_InputButton.layout" {
+          TextWidgetClass "{63D2E3F4A5B6CEB0}" {
+           Name "ErrorText"
+           Slot LayoutSlot "{63D2E3F4A5B6CEB1}" {
+            HorizontalAlign 0
+            VerticalAlign 3
+            Padding 20 10 20 10
+            SizeMode Fill
+           }
+           Color 1 0.35 0.35 1
+           Text ""
+           "Font Size" 20
+          }
+          ButtonWidgetClass "{63D2E3F4A5B6CE91}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
            Name "CreateButton"
            Slot LayoutSlot "{63D2E3F4A5B6CEA2}" {
             HorizontalAlign 2
             SizeMode Fill
            }
            components {
-            SCR_InputButtonComponent "{5D346C3DD81D95CD}" {
-             m_sActionName "MenuSelectHold"
-             m_sLabel "#EL-CharacterCreation_Create"
+            SCR_ButtonTextComponent "{63D2E3F4A5B6CEA3}" {
+             m_sText "#EL-CharacterCreation_Create"
             }
            }
           }

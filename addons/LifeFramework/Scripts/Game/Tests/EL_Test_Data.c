@@ -24,7 +24,7 @@ class EL_Test_Data : EL_Test
 		foreach (string layout : menus)
 		{
 			Resource res = Resource.Load(layout);
-			ctx.True(res.IsValid(), string.Format("menu layout loads: %1", layout));
+			ctx.True(res != null && res.IsValid(), string.Format("menu layout loads: %1", layout));
 		}
 
 		array<string> languages = {
@@ -40,7 +40,7 @@ class EL_Test_Data : EL_Test
 		foreach (string lang : languages)
 		{
 			Resource res = Resource.Load(lang);
-			ctx.True(res.IsValid(), string.Format("localization loads: %1", lang));
+			ctx.True(res != null && res.IsValid(), string.Format("localization loads: %1", lang));
 		}
 	}
 };

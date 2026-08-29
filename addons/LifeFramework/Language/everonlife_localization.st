@@ -211,8 +211,28 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_pt "Polícia"
     Target_pt_br "Polícia"
    }
-  CustomStringTableItem "{B3BF4076847C9C6E}" {
-   Id "EL-ATM_Title"
+   CustomStringTableItem "{9F9EFE65ED019BC2}" {
+    Id "EL-CC_Error_Fields"
+    Target_en_us "Enter a first and last name."
+    Target_es_es "Introduce un nombre y un apellido."
+    Target_de_de "Gib einen Vor- und Nachnamen ein."
+    Target_fr_fr "Saisissez un prénom et un nom."
+    Target_it_it "Inserisci nome e cognome."
+    Target_pt_pt "Introduz um nome próprio e um apelido."
+    Target_pt_br "Digite um nome e um sobrenome."
+   }
+   CustomStringTableItem "{22FE933006489711}" {
+    Id "EL-CC_Error_Age"
+    Target_en_us "Enter an age between 18 and 80."
+    Target_es_es "Introduce una edad entre 18 y 80."
+    Target_de_de "Gib ein Alter zwischen 18 und 80 ein."
+    Target_fr_fr "Saisissez un âge entre 18 et 80."
+    Target_it_it "Inserisci un'età tra 18 e 80."
+    Target_pt_pt "Introduz uma idade entre 18 e 80."
+    Target_pt_br "Digite uma idade entre 18 e 80."
+   }
+   CustomStringTableItem "{B3BF4076847C9C6E}" {
+    Id "EL-ATM_Title"
    Target_en_us "ATM Machine"
    Target_es_es "Cajero Automático"
    Target_de_de "Geldautomat"

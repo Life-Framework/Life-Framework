@@ -371,10 +371,17 @@ class EL_Utils : Managed
 		Math3D.AnglesToMatrix(orientation, spawnParams.Transform);
 		spawnParams.Transform[3] = origin;
 
-		if (!global)
-			return GetGame().SpawnEntityPrefabLocal(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);
+		Resource resource = Resource.Load(prefab);
+		if (!resource || !resource.IsValid())
+		{
+			EL_Debug.Error("Utils", string.Format("spawn failed: prefab does not resolve: %1", prefab));
+			return null;
+		}
 
-		return GetGame().SpawnEntityPrefab(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);
+		if (!global)
+			return GetGame().SpawnEntityPrefabLocal(resource, GetGame().GetWorld(), spawnParams);
+
+		return GetGame().SpawnEntityPrefab(resource, GetGame().GetWorld(), spawnParams);
 	}
 
 	//------------------------------------------------------------------------------------------------

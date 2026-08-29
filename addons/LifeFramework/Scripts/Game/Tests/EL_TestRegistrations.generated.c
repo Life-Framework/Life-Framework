@@ -33,6 +33,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityStack(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FruitCatcherRewardClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopQuantityGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopTotalPrice(), EL_TestTier.LOGIC);

@@ -24,11 +24,11 @@ class EL_Test_Prefabs : EL_Test
 		foreach (string path : prefabs)
 		{
 			Resource res = Resource.Load(path);
-			ctx.True(res.IsValid(), string.Format("prefab loads: %1", path));
+			ctx.True(res != null && res.IsValid(), string.Format("prefab loads: %1", path));
 		}
 
 		Resource appleRes = Resource.Load("{C9D661E5B0714711}Prefabs/Items/Food/Apple.et");
-		if (appleRes.IsValid())
+		if (appleRes != null && appleRes.IsValid())
 		{
 			EntitySpawnParams params();
 			params.TransformMode = ETransformMode.LOCAL;

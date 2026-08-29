@@ -108,6 +108,9 @@ modded class EL_InventoryUtils
 			array<EL_QuantityComponent> sortedQuantityComponents = EL_QuantityComponent.SortByQuantity(quantityComponents, false);
 			foreach (EL_QuantityComponent quantityComponent : sortedQuantityComponents)
 			{
+				if (remainingAmount <= 0) return amount;
+				if (!quantityComponent) continue;
+
 				int quantityChange;
 				quantityComponent.AddQuantity(-remainingAmount, true, quantityChange);
 				remainingAmount += quantityChange;

@@ -85,6 +85,20 @@ $sw = [Diagnostics.Stopwatch]::StartNew()
 $lastSummary = $null
 $crashLines = @()
 
+function Read-Crash([string]$dir) {
+  if (-not $dir) { return @() }
+  $out = @()
+  $cl = Join-Path $dir "crash.log"
+  if (Test-Path $cl) {
+    $out += Get-Content $cl -ErrorAction SilentlyContinue
+  }
+  $c = Join-Path $dir "console.log"
+  if (Test-Path $c) {
+    $out += @(Get-Content $c -ErrorAction SilentlyContinue | Where-Object { $_ -match 'Virtual Machine Exception|NULL pointer|Exception|VME|\( E \)' })
+  }
+  return $out
+}
+
 while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
   Start-Sleep -Milliseconds $PollMs
 
@@ -96,6 +110,12 @@ while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
       Tier = $matches[1]; Passed = [int]$matches[2]; Failed = [int]$matches[3]; Total = [int]$matches[4]
       LogDir = $logDir.FullName
     }
+    break
+  }
+
+  $crashes = Read-Crash $logDir.FullName
+  if ($crashes.Count -gt 0) {
+    $crashLines = $crashes | Select-Object -First 12
     break
   }
 
@@ -128,14 +148,26 @@ if ($lastSummary) {
     foreach ($d in $debugLines) { Write-Host "  $($d -replace '.*\[ELDebug:', '[ELDebug:')" }
   }
 
+  if ($lastSummary.Tier -ne $Tier) {
+    Write-Host "test-e2e: FAILED (tier mismatch: requested $Tier but suite reported $($lastSummary.Tier))"
+    exit 1
+  }
+
+  $errors = @($console -split "`n" | Where-Object { $_ -match '\( E \)' })
+  if ($errors.Count -gt 0) {
+    Write-Host "test-e2e: FAILED ($($errors.Count) engine/script error(s) during the run):"
+    foreach ($e in ($errors | Select-Object -First 10)) { Write-Host "  $($e.Trim())" }
+    exit 1
+  }
+
   if ($lastSummary.Failed -eq 0) { Write-Host "test-e2e: OK"; exit 0 }
   Write-Host "test-e2e: FAILED ($($lastSummary.Failed) failing test(s))"
   exit 1
 }
 
 if ($crashLines.Count -gt 0) {
-  Write-Host "test-e2e: server crashed with script errors:"
-  foreach ($l in $crashLines) { Write-Host "  $l" }
+  Write-Host "test-e2e: server crashed (crash.log / VM exception present):"
+  foreach ($l in $crashLines) { Write-Host "  $($l.Trim())" }
   Write-Host "test-e2e: FAILED (crash) - log $((Get-LogDir).FullName)"
   exit 1
 }

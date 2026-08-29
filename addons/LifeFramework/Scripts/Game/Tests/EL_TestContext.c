@@ -81,6 +81,10 @@ class EL_TestContext
 	//------------------------------------------------------------------------------------------------
 	array<string> GetFailures()
 	{
-		return m_aFailures;
+		array<string> copy = {};
+		foreach (string failure : m_aFailures)
+			copy.Insert(failure);
+
+		return copy;
 	}
 }

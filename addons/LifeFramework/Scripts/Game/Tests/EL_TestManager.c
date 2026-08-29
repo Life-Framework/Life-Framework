@@ -22,6 +22,8 @@ class EL_TestManager
 	//------------------------------------------------------------------------------------------------
 	//! Runs every registered test (LOGIC only when fast) and fills reportXml
 	//! with a JUnit-style report. Prints [ELTEST] markers for the CLI.
+	//! A test that throws is fatal: EnforceScript has no exception handling, so
+	//! the whole suite dies with it. Tests must not deref null.
 	//! \return the number of failed tests.
 	int RunAll(bool fast, out string reportXml)
 	{
@@ -36,10 +38,15 @@ class EL_TestManager
 		int passed = 0;
 		string cases = "";
 
+		PrintFormat("[ELTEST] SUITE START tier=%1", tierName);
+
 		foreach (EL_Test test : m_aTests)
 		{
 			if (fast && test.Tier() != EL_TestTier.LOGIC)
+			{
+				PrintFormat("[ELTEST] SKIP %1 (tier=%2, fast run)", EscapeXml(test.GetName()), TierName(test.Tier()));
 				continue;
+			}
 
 			total++;
 			string name = EscapeXml(test.GetName());
@@ -48,13 +55,7 @@ class EL_TestManager
 			EL_TestContext ctx = new EL_TestContext();
 			test.Run(ctx);
 
-			if (ctx.FailureCount() == 0)
-			{
-				passed++;
-				PrintFormat("[ELTEST] PASS %1 (%2 assertions)", name, ctx.AssertionCount());
-				cases += string.Format("<testcase name=\"%1\" time=\"0\"/>\n", name);
-			}
-			else
+			if (ctx.FailureCount() > 0)
 			{
 				failures++;
 				PrintFormat("[ELTEST] FAIL %1", name);
@@ -66,6 +67,18 @@ class EL_TestManager
 				}
 				cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"assertion failed\">%2</failure></testcase>\n", name, body);
 			}
+			else if (ctx.AssertionCount() == 0)
+			{
+				failures++;
+				PrintFormat("[ELTEST] FAIL %1 (no assertions executed)", name);
+				cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"no assertions executed\"/></testcase>\n", name);
+			}
+			else
+			{
+				passed++;
+				PrintFormat("[ELTEST] PASS %1 (%2 assertions)", name, ctx.AssertionCount());
+				cases += string.Format("<testcase name=\"%1\" time=\"0\"/>\n", name);
+			}
 		}
 
 		PrintFormat("[ELTEST] SUMMARY tier=%1 passed=%2 failed=%3 total=%4", tierName, passed, failures, total);
@@ -74,6 +87,18 @@ class EL_TestManager
 			tierName, total, failures, cases);
 
 		return failures;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string TierName(EL_TestTier tier)
+	{
+		if (tier == EL_TestTier.WORLD)
+			return "world";
+
+		if (tier == EL_TestTier.PERSISTENCE)
+			return "persistence";
+
+		return "logic";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -109,10 +134,22 @@ class EL_TestManager
 	//------------------------------------------------------------------------------------------------
 	static string EscapeXml(string value)
 	{
-		value.Replace("&", "&amp;");
-		value.Replace("<", "&lt;");
-		value.Replace(">", "&gt;");
-		value.Replace("\"", "&quot;");
-		return value;
+		string result = "";
+		for (int i = 0; i < value.Length(); i++)
+		{
+			string ch = value.Substring(i, 1);
+			if (ch == "&")
+				result += "&amp;";
+			else if (ch == "<")
+				result += "&lt;";
+			else if (ch == ">")
+				result += "&gt;";
+			else if (ch == "\"")
+				result += "&quot;";
+			else
+				result += ch;
+		}
+
+		return result;
 	}
 }

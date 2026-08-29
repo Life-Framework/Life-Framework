@@ -76,7 +76,8 @@ class EL_QuantityComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	bool SetQuantity(int quantity)
 	{
-		if (!EL_Component<RplComponent>.Find(GetOwner()).IsMaster()) return false;
+		RplComponent rpl = EL_Component<RplComponent>.Find(GetOwner());
+		if (rpl && !rpl.IsMaster()) return false;
 		if ((quantity < 0) || (quantity > GetMaxQuantity())) return false;
 
 		m_iQuantity = quantity;
@@ -125,8 +126,9 @@ class EL_QuantityComponent : ScriptComponent
 		if (CanCombine(quantitySource))
 		{
 			if (amount == -1) amount = quantitySource.GetQuantity();
+			if (amount < 0) amount = 0;
 
-			transferred = EL_Utils.MinInt(GetRemainingCapacity(), amount);
+			transferred = EL_Utils.MinInt(quantitySource.GetQuantity(), EL_Utils.MinInt(GetRemainingCapacity(), amount));
 
 			AddQuantity(transferred);
 			quantitySource.AddQuantity(-transferred);
@@ -139,22 +141,26 @@ class EL_QuantityComponent : ScriptComponent
 	void Split(int splitSize = -1)
 	{
 		if (splitSize == -1) splitSize = m_iQuantity / 2;
+		if (splitSize < 1 || splitSize >= m_iQuantity) return;
 
 		IEntity owner = GetOwner();
 		IEntity destinationEntity = EL_Utils.SpawnEntityPrefab(EL_Utils.GetPrefabName(owner), owner.GetOrigin());
 		EL_QuantityComponent quantityDestination = EL_Component<EL_QuantityComponent>.Find(destinationEntity);
-		if (!quantityDestination) return;
-
-		AddQuantity(-splitSize);
-		quantityDestination.SetQuantity(splitSize);
-
-		SetTransferIntent(destinationEntity, true);
+		if (!quantityDestination)
+		{
+			SCR_EntityHelper.DeleteEntityAndChildren(destinationEntity);
+			return;
+		}
 
 		InventoryItemComponent sourceInventoryItem = EL_Component<InventoryItemComponent>.Find(owner);
 
 		// Ground item, just move it somewhere else so it can be picked up seperatly from the source stack
-		if (!sourceInventoryItem.GetParentSlot())
+		if (!sourceInventoryItem || !sourceInventoryItem.GetParentSlot())
 		{
+			AddQuantity(-splitSize);
+			quantityDestination.SetQuantity(splitSize);
+			SetTransferIntent(destinationEntity, true);
+
 			vector maxDims;
 			owner.GetBounds(null, maxDims);
 			float minRadius = Math.Max(maxDims[0], maxDims[2]); //Bounding radius
@@ -165,9 +171,16 @@ class EL_QuantityComponent : ScriptComponent
 
 		BaseInventoryStorageComponent storage = sourceInventoryItem.GetParentSlot().GetStorage();
 		InventoryStorageManagerComponent storageManager = EL_InventoryUtils.GetResponsibleStorageManager(owner);
-		if (!storageManager)
+		if (!storageManager || !storageManager.TryInsertItemInStorage(destinationEntity, storage))
+		{
+			// Storage could not take the split item: roll the quantity back and drop the spawned entity
+			SCR_EntityHelper.DeleteEntityAndChildren(destinationEntity);
 			return;
-		storageManager.TryInsertItemInStorage(destinationEntity, storage);
+		}
+
+		AddQuantity(-splitSize);
+		quantityDestination.SetQuantity(splitSize);
+		SetTransferIntent(destinationEntity, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -239,19 +252,19 @@ class EL_QuantityComponent : ScriptComponent
 	//! Sort quantity components in descending order
 	static array<EL_QuantityComponent> SortByQuantity(notnull array<EL_QuantityComponent> components, bool descending = true)
 	{
-		array<string> sortKeys();
-		map<string, ref array<EL_QuantityComponent>> componentMap();
+		array<int> sortKeys();
+		map<int, ref array<EL_QuantityComponent>> componentMap();
 		foreach (EL_QuantityComponent quantityComponent : components)
 		{
-			string key = quantityComponent.GetQuantity().ToString(10);
+			int quantity = quantityComponent.GetQuantity();
 
-			if (!sortKeys.Contains(key)) sortKeys.Insert(key);
+			if (!sortKeys.Contains(quantity)) sortKeys.Insert(quantity);
 
-			array<EL_QuantityComponent> sameQuantity = componentMap.Get(key);
+			array<EL_QuantityComponent> sameQuantity = componentMap.Get(quantity);
 			if (!sameQuantity)
 			{
 				sameQuantity = {};
-				componentMap.Set(key, sameQuantity);
+				componentMap.Set(quantity, sameQuantity);
 			}
 
 			sameQuantity.Insert(quantityComponent);
@@ -260,7 +273,7 @@ class EL_QuantityComponent : ScriptComponent
 
 		array<EL_QuantityComponent> sorted();
 		sorted.Reserve(components.Count());
-		foreach (string sortKey : sortKeys)
+		foreach (int sortKey : sortKeys)
 		{
 			foreach (EL_QuantityComponent quantityDestination : componentMap.Get(sortKey))
 			{
