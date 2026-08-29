@@ -21,7 +21,7 @@
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { closeSync, createWriteStream, existsSync, fstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -294,6 +294,265 @@ function cmdRunArea(area) {
   return failed ? 1 : 0;
 }
 
+// ----------------------------------------------------------- build / serve / test
+
+function envOf() {
+  return readConfig().mcp?.["enfusion-mcp"]?.environment ?? {};
+}
+
+function workbenchExe() {
+  const env = envOf();
+  const wb = env.ENFUSION_WORKBENCH_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Tools";
+  return join(wb, "Workbench", "ArmaReforgerWorkbenchSteamDiag.exe");
+}
+
+function serverExe() {
+  const env = envOf();
+  return env.ENFUSION_SERVER_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server/ArmaReforgerServer.exe";
+}
+
+function serverArgs() {
+  return [
+    "-config", join(ROOT, "server", "configs", "test-server.json"),
+    "-profile", join(ROOT, "server", "profile", "test"),
+    "-addonsDir", join(ROOT, "addons"),
+    "-addons", "LifeFramework",
+    "-maxFPS", "60",
+  ];
+}
+
+function latestWorkbenchLog(profile) {
+  const logsDir = join(profile, "logs");
+  if (!existsSync(logsDir)) return null;
+  const dirs = readdirSync(logsDir)
+    .filter((d) => d.startsWith("logs_"))
+    .sort();
+  if (!dirs.length) return null;
+  const f = join(logsDir, dirs[dirs.length - 1], "console.log");
+  return existsSync(f) ? f : null;
+}
+
+function cmdBuild() {
+  const exe = workbenchExe();
+  if (!existsSync(exe)) {
+    console.log(`FAIL  workbench not found: ${exe}`);
+    console.log("      set ENFUSION_WORKBENCH_PATH (Arma Reforger Tools) in opencode.json");
+    return Promise.resolve(1);
+  }
+  const gproj = join(ROOT, "addons", "LifeFramework", "LifeFramework.gproj");
+  const out = join(ROOT, "server", "build");
+  const profile = join(ROOT, "server", "profile", "build");
+  mkdirSync(out, { recursive: true });
+  const env = envOf();
+  const gameDir = env.ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  if (!existsSync(gameDir)) {
+    console.log(`FAIL  game install not found: ${gameDir} (set ENFUSION_GAME_PATH)`);
+    return Promise.resolve(1);
+  }
+  const addonDirs = [];
+  if (env.ENFUSION_PROJECT_PATH) addonDirs.push(env.ENFUSION_PROJECT_PATH);
+  const args = [
+    "-gproj", gproj,
+    "-wbModule=ResourceManager",
+    "-buildData", "PC", out,
+    "-metaFiles",
+    "-loadBuiltData",
+    "-noSplash",
+    "-profile", profile,
+    ...addonDirs.flatMap((d) => ["-addonsDir", d]),
+  ];
+  console.log(`building addon (headless Workbench) -> ${out}`);
+  console.log(`  cwd (game dir): ${gameDir}`);
+  console.log(`  addon dirs: ${addonDirs.join(", ")}`);
+  console.log("  (streaming Workbench console.log live)");
+
+  return new Promise((resolvePromise) => {
+    const child = spawn(exe, args, { cwd: gameDir });
+    let buffer = "";
+    const onData = (d) => {
+      buffer += d.toString();
+      const lines = buffer.split(/\r?\n/);
+      buffer = lines.pop();
+      for (const l of lines) {
+        if (l.trim()) console.log(`  ${l}`);
+      }
+    };
+    child.stdout?.on("data", onData);
+    child.stderr?.on("data", onData);
+
+    let lastLog = null;
+    let offset = 0;
+    const iv = setInterval(() => {
+      const f = latestWorkbenchLog(profile);
+      if (f && f !== lastLog) {
+        lastLog = f;
+        offset = 0;
+      }
+      if (!f) return;
+      try {
+        const fd = openSync(f, "r");
+        const size = fstatSync(fd).size;
+        if (size > offset) {
+          const buf = Buffer.alloc(size - offset);
+          readSync(fd, buf, 0, buf.length, offset);
+          offset = size;
+          for (const l of buf.toString("utf8").split(/\r?\n/)) {
+            if (l && /SCRIPT|ENGINE|RESOURCES|DEFAULT|BUILD|PROFILING/.test(l)) console.log(`  ${l}`);
+          }
+        }
+        closeSync(fd);
+      } catch {}
+    }, 1000);
+
+    const buildTimeout = setTimeout(() => {
+      clearInterval(iv);
+      console.log("build TIMEOUT after 15 min - killing Workbench");
+      try {
+        child.kill();
+      } catch {}
+      resolvePromise(1);
+    }, 900000);
+
+    child.on("error", (e) => {
+      clearTimeout(buildTimeout);
+      clearInterval(iv);
+      console.log(`FAIL  spawn error: ${e.message}`);
+      resolvePromise(1);
+    });
+    child.on("exit", (code) => {
+      clearTimeout(buildTimeout);
+      clearInterval(iv);
+      if (code === 0) {
+        console.log("build OK (exit 0)");
+        resolvePromise(0);
+        return;
+      }
+      console.log(`build FAILED (exit ${code})`);
+      const f = latestWorkbenchLog(profile);
+      if (f) {
+        const lines = readFileSync(f, "utf8").split(/\r?\n/);
+        lines
+          .filter((l) => /\( E \)|\bERROR\b|Exception|Can't compile|Unable to/i.test(l))
+          .slice(-20)
+          .forEach((l) => console.log(`  ${l}`));
+      }
+      resolvePromise(1);
+    });
+  });
+}
+
+function cmdServe() {
+  const exe = serverExe();
+  if (!existsSync(exe)) {
+    console.log(`FAIL  dedicated server not found: ${exe}`);
+    console.log("      install Arma Reforger Server (Steam app 1874900) or set ENFUSION_SERVER_PATH");
+    return 1;
+  }
+  const args = serverArgs();
+  console.log(`launching: ${exe}`);
+  console.log(`  ${args.join(" ")}`);
+  return new Promise((resolvePromise) => {
+    const child = spawn(exe, args, { cwd: dirname(exe), stdio: "inherit" });
+    child.on("error", (e) => resolvePromise((console.log(`FAIL  spawn error: ${e.message}`), 1)));
+    child.on("exit", (code) => resolvePromise(code ?? 1));
+  });
+}
+
+function runServerTest(exe, args, logFile) {
+  return new Promise((resolvePromise) => {
+    const log = createWriteStream(logFile, { flags: "a" });
+    const child = spawn(exe, args, { cwd: dirname(exe), stdio: ["ignore", "pipe", "pipe"] });
+    const interesting = /\[ELTEST\]|\( E \)|\( W \)|ERROR|Unable to|scenario|mission|Initializing|Starting|loading addon|loaded addon|Game destroyed/i;
+    child.stdout?.on("data", (d) => {
+      log.write(d);
+      for (const l of d.toString().split(/\r?\n/)) {
+        if (l && interesting.test(l)) console.log(`  ${l}`);
+      }
+    });
+    child.stderr?.on("data", (d) => {
+      log.write(d);
+      for (const l of d.toString().split(/\r?\n/)) {
+        if (l && interesting.test(l)) console.log(`  ${l}`);
+      }
+    });
+    let done = false;
+    const finish = (ok, msg) => {
+      if (done) return;
+      done = true;
+      if (child.exitCode === null) child.kill();
+      log.end();
+      console.log(msg);
+      resolvePromise(ok ? 0 : 1);
+    };
+    child.on("error", (e) => finish(false, `FAIL  spawn error: ${e.message}`));
+    child.on("exit", (code) => {
+      if (!done) finish(false, `FAIL  server exited before tests completed (code ${code})`);
+    });
+    const started = Date.now();
+    const iv = setInterval(() => {
+      let tail = "";
+      try {
+        tail = readFileSync(logFile, "utf8");
+      } catch {
+        return;
+      }
+      const eltest = tail.match(/\[ELTEST\] SUMMARY passed=(\d+) failed=(\d+) total=(\d+)/);
+      const mgr = tail.match(/\[EL_Tests\] runtime tests done, failures=(\d+)/);
+      const m = eltest || mgr;
+      if (m) {
+        clearInterval(iv);
+        const passed = eltest ? +eltest[1] : null;
+        const failed = +m[1];
+        const engineErrors = (tail.match(/\( E \)/g) || []).length;
+        const ok = failed === 0 && engineErrors === 0;
+        console.log(
+          `tests: ${eltest ? `passed=${passed} failed=${failed}` : `failures=${failed} (EL_TestManager)`} engineErrors=${engineErrors} ${ok ? "OK" : "FAILED"}`,
+        );
+        finish(ok, `test result: ${ok ? "OK" : "FAILED"}`);
+        return;
+      }
+      if (Date.now() - started > 300000) {
+        clearInterval(iv);
+        finish(false, "FAIL  timeout waiting for test summary (300s)");
+      }
+    }, 2000);
+  });
+}
+
+async function cmdTest(noBuild) {
+  if (!noBuild) {
+    const b = await cmdBuild();
+    if (b !== 0) return b;
+  }
+  const exe = serverExe();
+  if (!existsSync(exe)) {
+    console.log(`FAIL  dedicated server not found: ${exe}`);
+    console.log("      install Arma Reforger Server (Steam app 1874900) or set ENFUSION_SERVER_PATH");
+    return 1;
+  }
+  const logsDir = join(ROOT, "server", "logs");
+  mkdirSync(logsDir, { recursive: true });
+  const logFile = join(logsDir, `test-${new Date().toISOString().replace(/[:.]/g, "-")}.log`);
+  console.log(`server log: ${logFile}`);
+  return runServerTest(exe, serverArgs(), logFile);
+}
+
+async function cmdCi() {
+  const steps = [
+    ["validate", () => cmdRunArea("validate")],
+    ["build", () => cmdBuild()],
+    ["test", () => cmdTest(false)],
+  ];
+  let failed = 0;
+  for (const [name, fn] of steps) {
+    console.log(`\n=== ci: ${name} ===`);
+    const code = await Promise.resolve(fn());
+    if (code !== 0) failed++;
+  }
+  console.log(failed === 0 ? "\nci: ALL PASSED" : `\nci: ${failed} step(s) failed`);
+  return failed === 0 ? 0 : 1;
+}
+
 function cmdHelp() {
   console.log(`Life Framework dev CLI
 
@@ -305,7 +564,12 @@ usage: tools\\cli <command> [args]
   mcp verify [name]             boot server briefly to confirm it starts
   mcp enable <name>             enable a server in opencode.json
   mcp disable <name>            disable a server in opencode.json
-  validate | lint | test        run every script in tools/{validation,lint,test}/
+  build                         headless Workbench build of the addon
+  serve                         boot the headless test server (blocks)
+  test [--no-build]             build + boot server + parse ELTEST results
+  ci                            validate + build + test (full gate)
+  validate | lint               run every script in tools/{validation,lint}/
+  run <area>                    run every script in tools/<area>/ (validate, lint, test, ...)
 
 servers: ${Object.keys(SERVERS).join(", ")}
 `);
@@ -323,9 +587,14 @@ const cmds = {
   verify: (n) => cmdVerify(n),
   enable: (n) => cmdSetEnabled(n, true),
   disable: (n) => cmdSetEnabled(n, false),
+  build: () => cmdBuild(),
+  serve: () => cmdServe(),
+  test: (n) => cmdTest(n === "--no-build"),
+  ci: () => cmdCi(),
   validate: () => cmdRunArea("validate"),
   lint: () => cmdRunArea("lint"),
-  test: () => cmdRunArea("test"),
+  run: (n) =>
+    TOOL_DIRS[n] ? cmdRunArea(n) : (console.log(`unknown area: ${n} (expected one of: ${Object.keys(TOOL_DIRS).join(", ")})`), 1),
   help: () => cmdHelp(),
 };
 

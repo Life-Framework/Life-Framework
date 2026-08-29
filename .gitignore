@@ -63,6 +63,7 @@ env/
 server/*.log
 server/profile/
 server/logs/
+server/build/
 
 # Don't ignore example configs
 !server/configs/*.example.json
