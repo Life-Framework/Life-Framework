@@ -71,7 +71,7 @@ class EL_Test_CropPrefabs : EL_Test
 		EL_BaseCrop baseCrop = SpawnCrop(ctx, BASE_CROP);
 		if (baseCrop)
 		{
-			ctx.True(baseCrop.GetCropStages() == null, "base crop has no stages of its own");
+			ctx.Equal(0, baseCrop.GetCropStages().Count(), "base crop has no stages of its own");
 			ctx.False(baseCrop.CanGather(), "base crop cannot gather");
 			ctx.Equal(-1, baseCrop.GetSpawnItemsAtStage(), "base crop spawns no items");
 		}
@@ -83,7 +83,7 @@ class EL_Test_CropPrefabs : EL_Test
 			AssertStageShape(ctx, tomatoCrop, 4, "Ripe", "tomato");
 			ctx.Equal(3, tomatoCrop.GetSpawnItemsAtStage(), "tomato spawns items at the ripe stage index");
 			ctx.False(tomatoCrop.GetDeleteAfterFinalStage(), "tomato stays after the final stage");
-			ctx.EqualStr("0 0 0", tomatoCrop.GetCropStages()[3].m_StageOffset.ToString(), "tomato ripe stage sits at zero offset");
+			ctx.EqualStr("<0, 0, 0>", tomatoCrop.GetCropStages()[3].m_StageOffset.ToString(), "tomato ripe stage sits at zero offset");
 		}
 
 		// CabbageCrop: 3 stages, gather-only (no area spawner)

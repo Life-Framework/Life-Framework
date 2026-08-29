@@ -17,8 +17,8 @@ class EL_BuildingManagerComponent : ScriptComponent
 	private InputManager m_InputManager;
 	private bool m_IsInit;
 	private bool m_CanBuild;
-	private ref EL_BuildingPerformerComponent m_BuildingPerformer;
-	private ref EL_BuildingPerformerComponent m_LastBuildingPerformer;
+	private EL_BuildingPerformerComponent m_BuildingPerformer;
+	private EL_BuildingPerformerComponent m_LastBuildingPerformer;
 
 	//------------------------------------------------------------------------------------------------
 	//! Client asks the server to spawn the prefab it holds as a building performer.
