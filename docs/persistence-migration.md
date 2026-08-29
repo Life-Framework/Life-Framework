@@ -1,10 +1,12 @@
-# EPF -> First-Party Persistence Migration Plan
+# EPF -> First-Party Persistence Migration
 
-Status: PLANNED. Owner: foundation-fixes worktree.
+Status: **DONE (2026-08-29).** All phases shipped on `main`. This file keeps the
+design + gotchas for maintainers; the "concrete contract" sections describe the
+shipped architecture.
 
 ## Why
 
-`LifeFramework.gproj` declares EPF (`5D6EBC81EB1842EF`) + EDF. EPF does not
+`LifeFramework.gproj` used to declare EPF (`5D6EBC81EB1842EF`) + EDF. EPF does not
 compile against Reforger 1.8.0.10 (verified: every `EPF_*SaveData.c` errors
 with "Expected attribute call"; Game module fails). The base game ships a
 first-party persistence system (SCR_PersistenceSystem + SaveGameManager +
@@ -75,11 +77,24 @@ system. Target: `Dependencies { "58D0FB3206B6F859" }` only.
 
 ## Validation tooling
 
-- `tools\cli validate` (repo hygiene + script header checks).
-- Workbench headless: `run-wb-validate.cmd` (or MCP `mod` build) with
-  `-addonsDir` = workbench addons + game addons junction
-  (`C:\Users\jaspe\Documents\Reforger\GameAddonsLink`).
-- In-game: dedicated server boot + EL_Test suite + restart round-trip.
+- `tools\cli validate` (repo hygiene + test-registration + headless compile).
+- `tools\cli build` (headless Workbench build).
+- `tools\cli test [--no-build] [--tier fast|all]` — boots the dedicated server
+  on DebugWorld, runs the EL_Test suite, parses `[ELTEST] SUMMARY`, exits 0
+  only on all-pass. Delegates to `tools/test/test-e2e.ps1`.
+- `tools\cli ci` — validate + build + test (the full gate).
+- In-game: dedicated server boot + EL_Test suite + restart round-trip (the
+  restart path is still manual; the suite covers LOGIC + WORLD seams).
+
+## Environment note (Steam data)
+
+The build/server need the base game addons at
+`Arma Reforger\addons\core` + `\data` (GUIDs `5614BBCCBB55ED1C` /
+`58D0FB3206B6F859`). If Steam empties them (verify-integrity wipe), both
+`cli build` and the server report "Game addon not found". Fix: Steam >
+Properties > Installed Files > Verify integrity of game files. `cli build` and
+`validate-scripts.ps1` resolve the base game through a junction to the game
+install addons.
 
 ## Concrete contract (fixes the interfaces before parallel work)
 
