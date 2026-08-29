@@ -599,5 +599,18 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
+   CustomStringTableItem "{B8AE8B1EC379425C}" {
+    Id "EL-DeleteAction_DisplayName"
+    Target_en_us "Destroy"
+    Target_de_de "Zerstören"
+    Target_fr_fr "Détruire"
+    Target_it_it "Distruggi"
+    Target_es_es "Destruir"
+    Target_pt_pt "Destruir"
+    Target_pt_br "Destruir"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
   }
 }

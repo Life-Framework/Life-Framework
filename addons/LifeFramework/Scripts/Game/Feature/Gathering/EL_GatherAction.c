@@ -95,6 +95,11 @@ class EL_GatherAction : ScriptedUserAction
 			return false;
 		}
 
+		// Crops need no tool: the stage decides. Past the final stage the crop cannot be gathered.
+		EL_BaseCrop baseCrop = EL_BaseCrop.Cast(GetOwner());
+		if (baseCrop)
+			return baseCrop.CanGather();
+
 		if (!EL_HasGatherTool(user))
 		{
 			if (m_CheckInventoryForToolRequirement)
@@ -114,6 +119,10 @@ class EL_GatherAction : ScriptedUserAction
 	{
 		if (m_GatherAmountMax > 0 && m_iRemainingGathers <= 0 && m_NextRestock.Greater(user.GetWorld().GetTimestamp()))
 			return false;
+
+		EL_BaseCrop baseCrop = EL_BaseCrop.Cast(GetOwner());
+		if (baseCrop)
+			return baseCrop.CanGather();
 
 		return EL_HasGatherTool(user);
 	}

@@ -1,0 +1,10 @@
+$grp GenericEntity : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" {
+ TomatoCrop_Debug {
+  coords 146 0 136
+ }
+}
+$grp GenericEntity : "{97F71E1D9830AE26}Prefabs/Items/Seeds/SeedTomato.et" {
+ SeedTomato_Debug {
+  coords 148 0.2 136
+ }
+}

@@ -1,0 +1,21 @@
+Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
+ ID "2272273384468550"
+ components {
+  InventoryItemComponent "{59A0A7C307696309}" {
+   Attributes SCR_ItemAttributeCollection "{59A0A7C3194F1A4C}" {
+    ItemDisplayName UIInfo "{59A0A7C3126220E3}" {
+     Name "Cabbage"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes "{59A0A7C31F360678}" {
+     Weight 0.01
+     DimensionScaler 0.1
+    }
+    CommonItemType "FOOD"
+    m_Size SLOT_1x1
+   }
+  }
+  RplComponent "{59A0A7C361516B65}" {
+  }
+ }
+ coords 106.179 0.001 133.048
+}

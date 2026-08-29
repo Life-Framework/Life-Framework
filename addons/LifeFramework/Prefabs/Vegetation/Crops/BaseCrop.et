@@ -1,0 +1,37 @@
+EL_BaseCrop {
+ ID "59A0BBAE928C1E0C"
+ components {
+  MeshObject "{59A0BBAE906EB9AC}" {
+  }
+  Hierarchy "{59A0BBAE906EB9A3}" {
+  }
+  RigidBody "{59A0BBAE906EB995}" {
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{59A0BBAE906EB838}" {
+   ActionContexts {
+    UserActionContext "{59A0BBAE906EB9CD}" {
+     ContextName "default"
+     Position PointInfo "{59A0BBAE906EB9D2}" {
+      Offset 0 1.0532 0
+     }
+     Radius 12.21
+    }
+   }
+   additionalActions {
+    EL_DeleteAction "{59A0BBAE906EB83F}" {
+     ParentContextList {
+      "default"
+     }
+     Duration 2
+     "Sort Priority" 100
+    }
+   }
+  }
+  RplComponent "{59A0BBAE906EB837}" {
+  }
+ }
+ coords 105.94 0.276 135.537
+ m_eBuildingType CROP
+}

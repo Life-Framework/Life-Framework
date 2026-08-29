@@ -1,0 +1,42 @@
+EL_BaseCrop : "{1B8698AD990A09F3}Prefabs/Vegetation/Crops/BaseCropArea.et" {
+ ID "59A0838C9F218F85"
+ components {
+  EL_AreaSpawnerComponent "{59A12C31B22C4F7D}" {
+   m_PrefabToSpawn "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et"
+   m_AmountToSpawn 5
+  }
+  MeshObject "{59A0BBAE906EB9AC}" {
+   Object "{B89423573D7244D4}Assets/Vegetation/Vegetables/TomatoCrop_01.xob"
+  }
+  RplComponent "{59A0BBAE906EB837}" {
+   "Self Insert" 1
+   "Rpl State Override" None
+   Streamable Enabled
+  }
+ }
+ coords 107.531 0.233 135.708
+ m_eBuildingType CROP
+ m_iSpawnItemsAtStage 3
+ m_aCropStages {
+  EL_CropStage "{59A13193B7CC82CF}" {
+   m_fStageTime 0.2
+   m_sStageName "Seed"
+   m_StageOffset 0 -1.465 0
+  }
+  EL_CropStage "{59A13193B675E0BB}" {
+   m_fStageTime 0.2
+   m_sStageName "Growing"
+   m_StageOffset 0 -1 0
+  }
+  EL_CropStage "{59A13193DE9FB1B1}" {
+   m_fStageTime 0.2
+   m_sStageName "Grown"
+   m_StageOffset 0 -0.5 0
+  }
+  EL_CropStage "{59A13193B698A315}" {
+   m_sStageName "Ripe"
+   m_StageOffset 0 0 0
+   m_bCanGather 1
+  }
+ }
+}

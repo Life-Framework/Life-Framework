@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F1F4F4FDA1E652E3}Prefabs/Vegetation/Crops/BaseCropSingle.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

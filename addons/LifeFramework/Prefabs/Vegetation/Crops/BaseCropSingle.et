@@ -1,0 +1,24 @@
+EL_BaseCrop : "{64DFA805B1BF7F7D}Prefabs/Vegetation/Crops/BaseCrop.et" {
+ ID "59A12C31CAEC6145"
+ components {
+  ActionsManagerComponent "{59A0BBAE906EB838}" {
+   ActionContexts {
+    UserActionContext "{59A0BBAE906EB9CD}" {
+     Position PointInfo "{59A0BBAE906EB9D2}" {
+      Offset 0 0 0
+     }
+    }
+   }
+   additionalActions {
+    EL_GatherAction "{59A12C3059847C59}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+ }
+ coords 106.074 0.233 136.6
+ angleY 7.378
+ m_eBuildingType CROP
+}
