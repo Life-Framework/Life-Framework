@@ -37,6 +37,7 @@ tools\cli build               # headless Workbench build of the addon (PC)
 tools\cli test                # build + boot dedicated server on DebugWorld +
                               #   run the ELTEST suite + parse results (exit code)
 tools\cli test --no-build     # skip the build, just run the server suite
+tools\cli test --tier fast    # LOGIC-tier tests only (~seconds, no world deps)
 tools\cli serve               # boot the test server and stream logs (blocks)
 tools\cli ci                  # validate + build + test — the full gate
 tools\cli validate            # repo consistency checks (also runs on commit)
@@ -44,8 +45,8 @@ tools\cli lint                # run tools/lint/* checks
 tools\cli mcp install|update|verify|enable|disable   # manage MCP servers
 ```
 
-The test flow: `Missions/EL_DebugTest.conf` loads `Worlds/DebugWorld` with
-`EL_TestGameMode`, which runs the `EL_Test*` suite on server start and prints
+The test flow: `Missions/EL_DebugTest.conf` loads `Worlds/DebugWorld`, the
+`EL_TestRunnerComponent` runs the `EL_Test*` suite on server start and prints
 machine-readable markers:
 
 ```
@@ -53,21 +54,48 @@ machine-readable markers:
 [ELTEST] PASS <name> (N assertions)
 [ELTEST] FAIL <name>
 [ELTEST]   - failure detail
-[ELTEST] SUMMARY passed=N failed=N total=N
+[ELTEST] SUMMARY tier=fast|all passed=N failed=N total=N
 ```
 
-`tools\cli test` waits for `SUMMARY`, scans for engine errors `( E )`, and
-exits nonzero on any failure — that exit code is the agent's pass/fail signal.
+`tools\cli test` waits for `SUMMARY`, asserts the reported tier matches the
+requested one, scans for engine errors `( E )`, and exits nonzero on any
+failure — that exit code is the agent's pass/fail signal. Default tier is
+`all`; use `--tier fast` while iterating on pure logic and run the full `all`
+tier before declaring a phase or fix complete.
 
 ## Adding tests / checks
 
 - **In-game tests**: create `addons/LifeFramework/Scripts/Game/Tests/EL_Test_*.c`
   extending `EL_Test` (implement `GetName()` and `Run(ctx)`), then register it
-  in `EL_TestGameMode.c::RunTestSuite`.
+  in `EL_TestManager.c::CollectTests` with a tier:
+  `Register(new EL_Test_X(), EL_TestTier.WORLD)`.
+  - **Tiers are setup cost, not subject.** `LOGIC` = pure EnforceScript, runs
+    in `--tier fast` (use for every logic change). `WORLD` = loads a resource,
+    spawns an entity, or reads the world (runs only in the full `all` tier).
+    `PERSISTENCE` = reserved for save/reload round trips (roadmap Phase 1).
+  - **Red-proof**: the test file must carry a `// red-proof:` comment recording
+    how its assertions were observed failing at least once. A test that cannot
+    go red is a defect — prove red by breaking an assertion and running the
+    suite before you trust it green. `tools\cli validate` enforces registration
+    and the red-proof comment.
+  - **Persistence tests route through public API only**: mutate via manager
+    mutators, reload, read back via accessors. Assertions that touch the
+    persistence internals pass while the player-facing contract breaks.
 - **Repo checks (pre-commit + `cli validate`)**: drop a script in
   `tools/validation/` — the CLI runs every script in the folder.
 - **Other lint/test scripts**: drop them in `tools/lint/` or `tools/test/` and
-  run `tools\cli lint` / `tools\cli test`.
+  run `tools\cli lint` / `tools\cli run test`.
+- **Manual test steps ship with the change.** The suite covers logic and world
+  seams; multiplayer/JIP, UI, and the true restart path stay manual. A change
+  touching any of those is not done until its PR description says exactly what
+  to do: host or join, actions, what to observe, whether a restart is needed.
+  In-session round trips prove nothing about restarts.
+- **Use the MCPs instead of writing code.** `wb_read_props` returns resolved
+  (inherited) prefab values — paste them into test expectations instead of
+  hand-walking ancestry. `api_search`/`game_read` tell you which vanilla class
+  already does the job; reusing it beats reimplementing it. `game_duplicate`
+  keeps test fixture prefabs on correct inheritance so tests assert only the
+  delta. `asset_search` gives the `{GUID}path` for fixture lists.
 
 ## MCP servers (AI tooling)
 
@@ -76,6 +104,24 @@ Configured in `opencode.json`; the clones live (git-ignored) under
 them. `enfusion-mcp` is enabled by default; `enfusion-workbench` is opt-in.
 Environment paths (`ENFUSION_WORKBENCH_PATH`, `ENFUSION_GAME_PATH`,
 `ENFUSION_PROJECT_PATH`, optional `ENFUSION_SERVER_PATH`) are set there.
+
+### Calling MCP tools without an opencode session
+
+`tools\cli call <tool> '<json args>'` (or `node tools/mcp-call.mjs ...`) invokes
+a server tool directly over stdio JSON-RPC, no opencode restart needed. This is
+the way to research the Enfusion/vanilla API from subagents or a plain terminal:
+
+```
+tools\cli call list
+tools\cli call api_search '{"query":"SCR_SpawnLogic","format":"tree"}'
+tools\cli call game_read @tmp/args.json     # file-based args: PowerShell mangles inline JSON
+```
+
+Tools of interest: `api_search` (classes/methods with inheritance), `game_read`
+(vanilla source from `.pak`), `game_browse`, `asset_search` (GUID-prefixed
+paths), `wiki_search`/`wiki_read`, `component_search`, `wb_*` (live Workbench).
+Never guess an Enfusion API - look it up with `tools\cli call` first. See
+`tools/mcp-call.mjs` and `tools/README.md`.
 
 ## Hard EnforceScript lessons (paid for by real bugs)
 

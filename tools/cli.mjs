@@ -312,10 +312,16 @@ function serverExe() {
 }
 
 function serverArgs() {
+  // Addon discovery: the engine scans ./addons relative to the CWD (repo root
+  // -> the unpacked LifeFramework) plus ONE -addonsDir (last one wins), which
+  // supplies the vanilla Game/core addons from the game client install.
+  // Dependency addons beyond that (EPF/EDF) must come from ./addons as well
+  // or be dropped from the gproj dependency list.
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
   return [
     "-config", join(ROOT, "server", "configs", "test-server.json"),
     "-profile", join(ROOT, "server", "profile", "test"),
-    "-addonsDir", join(ROOT, "addons"),
+    "-addonsDir", join(gameDir, "addons"),
     "-addons", "LifeFramework",
     "-maxFPS", "60",
   ];
@@ -358,6 +364,8 @@ function cmdBuild() {
     "-metaFiles",
     "-loadBuiltData",
     "-noSplash",
+    "-run",
+    "-exitAfterInit",
     "-profile", profile,
     ...addonDirs.flatMap((d) => ["-addonsDir", d]),
   ];
@@ -458,10 +466,13 @@ function cmdServe() {
   });
 }
 
-function runServerTest(exe, args, logFile) {
+function runServerTest(exe, args, logFile, tier = "all") {
   return new Promise((resolvePromise) => {
     const log = createWriteStream(logFile, { flags: "a" });
-    const child = spawn(exe, args, { cwd: dirname(exe), stdio: ["ignore", "pipe", "pipe"] });
+    // Unpacked addon discovery is CWD-relative (./addons), so the server must
+    // run from the repo root; the -addonsDir entries supply the packed
+    // dependency addons (EPF/EDF) and the vanilla Game addon.
+    const child = spawn(exe, args, { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] });
     const interesting = /\[ELTEST\]|\( E \)|\( W \)|ERROR|Unable to|scenario|mission|Initializing|Starting|loading addon|loaded addon|Game destroyed/i;
     child.stdout?.on("data", (d) => {
       log.write(d);
@@ -496,18 +507,23 @@ function runServerTest(exe, args, logFile) {
       } catch {
         return;
       }
-      const eltest = tail.match(/\[ELTEST\] SUMMARY passed=(\d+) failed=(\d+) total=(\d+)/);
+      const eltest = tail.match(/\[ELTEST\] SUMMARY (?:tier=(\w+) )?passed=(\d+) failed=(\d+) total=(\d+)/);
       const mgr = tail.match(/\[EL_Tests\] runtime tests done, failures=(\d+)/);
       const m = eltest || mgr;
       if (m) {
         clearInterval(iv);
-        const passed = eltest ? +eltest[1] : null;
-        const failed = +m[1];
+        const passed = eltest ? +eltest[2] : null;
+        const failed = eltest ? +eltest[3] : +mgr[1];
         const engineErrors = (tail.match(/\( E \)/g) || []).length;
-        const ok = failed === 0 && engineErrors === 0;
+        // A fast request answered by an all run (or vice versa) means the
+        // -scrDefine plumbing failed; that is a no-verdict, not a pass.
+        const tierSeen = eltest ? eltest[1] : null;
+        const tierOk = !eltest || !tierSeen || tierSeen === tier;
+        const ok = failed === 0 && engineErrors === 0 && tierOk;
         console.log(
-          `tests: ${eltest ? `passed=${passed} failed=${failed}` : `failures=${failed} (EL_TestManager)`} engineErrors=${engineErrors} ${ok ? "OK" : "FAILED"}`,
+          `tests: ${eltest ? `tier=${tierSeen} passed=${passed} failed=${failed}` : `failures=${failed} (EL_TestManager)`} engineErrors=${engineErrors} ${ok ? "OK" : "FAILED"}`,
         );
+        if (!tierOk) console.log(`FAIL  requested tier=${tier} but suite reported tier=${tierSeen}`);
         finish(ok, `test result: ${ok ? "OK" : "FAILED"}`);
         return;
       }
@@ -519,7 +535,11 @@ function runServerTest(exe, args, logFile) {
   });
 }
 
-async function cmdTest(noBuild) {
+async function cmdTest(noBuild, tier = "all") {
+  if (tier !== "fast" && tier !== "all") {
+    console.log(`unknown tier: ${tier} (expected fast or all)`);
+    return 2;
+  }
   if (!noBuild) {
     const b = await cmdBuild();
     if (b !== 0) return b;
@@ -534,7 +554,10 @@ async function cmdTest(noBuild) {
   mkdirSync(logsDir, { recursive: true });
   const logFile = join(logsDir, `test-${new Date().toISOString().replace(/[:.]/g, "-")}.log`);
   console.log(`server log: ${logFile}`);
-  return runServerTest(exe, serverArgs(), logFile);
+  console.log(`tier: ${tier}`);
+  const args = [...serverArgs(), "-scrDefine", "EL_AUTOTEST"];
+  if (tier === "fast") args.push("-scrDefine", "EL_TEST_TIER_FAST");
+  return runServerTest(exe, args, logFile, tier);
 }
 
 async function cmdCi() {
@@ -566,7 +589,8 @@ usage: tools\\cli <command> [args]
   mcp disable <name>            disable a server in opencode.json
   build                         headless Workbench build of the addon
   serve                         boot the headless test server (blocks)
-  test [--no-build]             build + boot server + parse ELTEST results
+  test [--no-build] [--tier fast|all]
+                                build + boot server + parse ELTEST results
   ci                            validate + build + test (full gate)
   validate | lint               run every script in tools/{validation,lint}/
   run <area>                    run every script in tools/<area>/ (validate, lint, test, ...)
@@ -578,7 +602,13 @@ servers: ${Object.keys(SERVERS).join(", ")}
 
 // ------------------------------------------------------------------- main
 
-const [cmd, a, b] = process.argv.slice(2);
+const [cmd, ...rest] = process.argv.slice(2);
+
+function argValue(flags, name) {
+  const i = flags.indexOf(name);
+  if (i === -1 || i + 1 >= flags.length) return null;
+  return flags[i + 1];
+}
 
 const cmds = {
   status: () => cmdStatus(),
@@ -589,7 +619,11 @@ const cmds = {
   disable: (n) => cmdSetEnabled(n, false),
   build: () => cmdBuild(),
   serve: () => cmdServe(),
-  test: (n) => cmdTest(n === "--no-build"),
+  test: (flags) => {
+    const list = flags ?? [];
+    const noBuild = list.includes("--no-build");
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all");
+  },
   ci: () => cmdCi(),
   validate: () => cmdRunArea("validate"),
   lint: () => cmdRunArea("lint"),
@@ -598,12 +632,14 @@ const cmds = {
   help: () => cmdHelp(),
 };
 
+const [a, b] = rest;
+
 let code;
 if (cmd === "mcp") {
   const sub = cmds[a];
   code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
 } else if (cmd && cmds[cmd]) {
-  code = cmds[cmd](a);
+  code = cmds[cmd](cmd === "test" ? rest : a);
 } else {
   if (cmd) console.log(`unknown command: ${cmd}\n`);
   code = cmdHelp();
