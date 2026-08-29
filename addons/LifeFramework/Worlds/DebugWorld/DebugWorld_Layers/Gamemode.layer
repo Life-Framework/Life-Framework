@@ -1,6 +1,11 @@
 EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay.et" {
 }
 SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
+ m_sFaction "CIVILIAN"
  coords 110 0 137.516
  angleY 180
+}
+SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
+ m_sFaction "POLICE"
+ coords 138 0 136
 }

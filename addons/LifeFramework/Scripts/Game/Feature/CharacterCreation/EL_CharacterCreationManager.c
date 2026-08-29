@@ -2,6 +2,8 @@ class EL_CharacterCreationManager : Managed
 {
 	protected static EL_CharacterCreationManager s_Instance;
 
+	protected const int FLOW_POLL_DELAY_MS = 100;
+
 	//------------------------------------------------------------------------------------------------
 	static EL_CharacterCreationManager GetInstance()
 	{
@@ -21,130 +23,98 @@ class EL_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Entry point from the game mode. The world is still loading when this fires, so the flow
+	//! starts on the first tick after the game state reaches GAME; menus opened during loading
+	//! never make it on screen. The poll self-reschedules (non-repeating): removing a call from
+	//! inside its own callback corrupts the callqueue.
 	void OnPlayerConnected(int playerId)
 	{
-		PlayerController playerController = GetGame().GetPlayerController();
+		GetGame().GetCallqueue().CallLater(ContinueFlow, FLOW_POLL_DELAY_MS, false, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ContinueFlow(int playerId)
+	{
+		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
+		if (!gameMode || gameMode.GetState() != SCR_EGameModeState.GAME)
+		{
+			GetGame().GetCallqueue().CallLater(ContinueFlow, FLOW_POLL_DELAY_MS, false, playerId);
+			return;
+		}
+
+		PlayerController playerController = GetGame().GetPlayerManager().GetPlayerController(playerId);
 		if (!playerController)
 			return;
 
-		// Check if player has account
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		if (!accountManager)
 			return;
 
-		string playerUid = EL_Utils.GetPlayerUID(playerController.GetControlledEntity());
+		// Resolved here rather than at connect: the platform identity is not guaranteed to be
+		// available yet while the world is loading, and every consumer of the account must key
+		// on the same UID the spawn logic uses.
+		string playerUid = EL_Utils.GetPlayerUID(playerId);
 		EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-
 		if (!account)
 		{
-			// No account, create and show faction selection
 			account = EL_PlayerAccount.Create(playerUid);
 			accountManager.AddAccount(account);
-			ShowFactionSelectionMenu(playerController);
 		}
-		else if (!account.HasCharacters())
+
+		Print("[EL_CharacterCreationManager] Flow start for player " + playerId, LogLevel.NORMAL);
+
+		if (!account.HasCharacters())
 		{
-			// Has account but no characters; offer faction selection until the player has made
-			// an explicit choice (CIVILIAN is both the default and a valid pick).
+			// Offer faction selection until the player made an explicit choice (CIVILIAN is both
+			// the default and a valid pick).
 			if (!account.WasFactionChosen())
 			{
 				ShowFactionSelectionMenu(playerController);
+				return;
 			}
-			else
-			{
-				StartCharacterCreationFlow(playerController);
-			}
-		}
-		else
-		{
-			// Has characters, spawn normally
-			SpawnPlayerAtDefaultLocation(playerController);
-		}
-	}
 
-	//------------------------------------------------------------------------------------------------
-	protected void StartCharacterCreationFlow(PlayerController playerController)
-	{
-		// Create temporary character
-		CreateTemporaryCharacter(playerController);
-
-		// Teleport to lobby
-		TeleportToLobby(playerController);
-
-		// Show creation menu
-		ShowCharacterCreationMenu(playerController);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void CreateTemporaryCharacter(PlayerController playerController)
-	{
-		// Spawn the real character prefab (carries the EL ATM/survival components) at a spawn
-		// point, mirroring EL_SpawnLogic.CreateCharacter's transform setup.
-		ResourceName tempPrefab = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
-		vector position, yawPitchRoll;
-		if (!ResolveSpawnPosition(position, yawPitchRoll))
+			ShowCharacterCreationMenu(playerController);
 			return;
-
-		EntitySpawnParams spawnParams();
-		spawnParams.TransformMode = ETransformMode.WORLD;
-		Math3D.AnglesToMatrix(yawPitchRoll, spawnParams.Transform);
-		spawnParams.Transform[3] = position + "0 0.1 0";
-		IEntity spawnedEntity = GetGame().SpawnEntityPrefab(Resource.Load(tempPrefab), GetGame().GetWorld(), spawnParams);
-		if (!spawnedEntity)
-		{
-			Print("Failed to spawn temporary character prefab.", LogLevel.ERROR);
 		}
-		// NOTE: possession API differs between platforms. If you have an API to
-		// set the player's controlled entity, perform it here (e.g. playerController.PossessEntity(spawnedEntity)).
-	}
 
-	//------------------------------------------------------------------------------------------------
-	protected void TeleportToLobby(PlayerController playerController)
-	{
-		// There is no dedicated lobby; park the player at a valid spawn point while the creation
-		// menu is open (same source EL_SpawnLogic.GetCreationPosition uses).
-		IEntity entity = playerController.GetControlledEntity();
-		if (!entity)
-			return;
-
-		vector position, yawPitchRoll;
-		if (!ResolveSpawnPosition(position, yawPitchRoll))
-			return;
-
-		entity.SetOrigin(position);
+		SpawnPlayer(playerId, playerController);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void ShowFactionSelectionMenu(PlayerController playerController)
 	{
-		// Open the faction selection menu
+		Print("[EL_CharacterCreationManager] Faction menu: clearing splash", LogLevel.NORMAL);
+		EnsureLoadingPlaceholderDestroyed();
+		Print("[EL_CharacterCreationManager] Faction menu: opening", LogLevel.NORMAL);
+
 		EL_FactionSelectionMenu menu = EL_FactionSelectionMenu.Cast(GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.FactionSelection));
+		Print("[EL_CharacterCreationManager] Faction menu: open call returned", LogLevel.NORMAL);
 		if (menu)
-		{
 			menu.SetPlayerController(playerController);
-		}
+		else
+			Print("[EL_CharacterCreationManager] Failed to open the faction selection menu", LogLevel.ERROR);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void ShowCharacterCreationMenu(PlayerController playerController)
 	{
+		EnsureLoadingPlaceholderDestroyed();
+
 		EL_CharacterCreationMenu menu = EL_CharacterCreationMenu.Cast(GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.CharacterCreationMenu));
 		if (menu)
-		{
 			menu.SetPlayerController(playerController);
-		}
+		else
+			Print("[EL_CharacterCreationManager] Failed to open the character creation menu", LogLevel.ERROR);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void OnCharacterCreated(PlayerController playerController, string firstName, string lastName, int age)
 	{
-		// Create persistent character
 		ResourceName defaultPrefab = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
 		EL_PlayerCharacter character = EL_PlayerCharacter.Create(defaultPrefab, firstName, lastName, age);
 
-		// Add to account
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-		string playerUid = EL_Utils.GetPlayerUID(playerController.GetControlledEntity());
+		string playerUid = EL_Utils.GetPlayerUID(playerController.GetPlayerId());
 		EL_PlayerAccount account = accountManager.GetAccount(playerUid);
 		if (!account)
 		{
@@ -153,59 +123,41 @@ class EL_CharacterCreationManager : Managed
 		}
 		account.AddCharacter(character, true);
 
-		// Initialize ATM component on the entity
-		IEntity entity = playerController.GetControlledEntity();
-		if (entity)
-		{
-			EL_CharacterATMComponent atmComponent = EL_CharacterATMComponent.Cast(entity.FindComponent(EL_CharacterATMComponent));
-			if (atmComponent)
-			{
-				atmComponent.Init(playerUid);
-			}
-
-			EL_CharacterSurvivalComponent survivalComponent = EL_CharacterSurvivalComponent.Cast(entity.FindComponent(EL_CharacterSurvivalComponent));
-			if (survivalComponent)
-			{
-				survivalComponent.Init(character.GetId());
-			}
-		}
-
-		// Spawn at default location
-		SpawnPlayerAtDefaultLocation(playerController);
+		// The spawn logic resolves the account's active character, spawns it at the faction spawn
+		// point and hands control over; the ATM/survival components init in its post-spawn hook.
+		SpawnPlayer(playerController.GetPlayerId(), playerController);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void SpawnPlayerAtDefaultLocation(PlayerController playerController)
+	//! Spawns the account's active character through the spawn logic and opens the survival HUD.
+	protected void SpawnPlayer(int playerId, PlayerController playerController)
 	{
-		// Move the player to a real spawn point (the old "0 0 0" dropped players at world origin).
-		IEntity entity = playerController.GetControlledEntity();
-		if (!entity)
-			return;
+		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
+		EL_SpawnLogic spawnLogic;
+		if (respawnSystem)
+			spawnLogic = EL_SpawnLogic.Cast(respawnSystem.GetSpawnLogic());
 
-		vector position, yawPitchRoll;
-		if (!ResolveSpawnPosition(position, yawPitchRoll))
-			return;
-
-		entity.SetOrigin(position);
-
-		// Show survival HUD
-		EL_SurvivalHUD hud = EL_SurvivalHUD.Cast(GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.SurvivalHUD));
-		if (hud)
+		if (!spawnLogic)
 		{
-			hud.SetPlayerController(playerController);
+			Print("[EL_CharacterCreationManager] No EL_SpawnLogic on the respawn system, cannot spawn player " + playerId, LogLevel.ERROR);
+			return;
 		}
+
+		Print("[EL_CharacterCreationManager] Spawning player " + playerId, LogLevel.NORMAL);
+		spawnLogic.SpawnPlayer_S(playerId);
+
+		// NOTE: the survival HUD is deliberately not opened here. Opened via OpenMenu it is a
+		// full-screen menu that captures input and traps the player; it needs to be integrated as
+		// a proper HUD element before it can come back.
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Resolves a world position from the same spawn-point source EL_SpawnLogic.GetCreationPosition
-	//! uses. \return false when the map has no spawn point.
-	protected bool ResolveSpawnPosition(out vector position, out vector yawPitchRoll)
+	//! The respawn system's splash screen covers every menu until told otherwise, and the audit
+	//! chain that normally clears it never runs for the local player of an offline session.
+	protected void EnsureLoadingPlaceholderDestroyed()
 	{
-		SCR_SpawnPoint spawnPoint = SCR_SpawnPoint.GetRandomSpawnPointDeathmatch();
-		if (!spawnPoint)
-			return false;
-
-		spawnPoint.GetPositionAndRotation(position, yawPitchRoll);
-		return true;
+		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
+		if (respawnSystem)
+			respawnSystem.DestroyLoadingPlaceholder();
 	}
 };

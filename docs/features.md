@@ -18,8 +18,12 @@
 
 ### `EL_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/EL_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `EL_PlayerAccount`, spawns the active
-  character's prefab at a random `EPF_SpawnPoint`, and applies the default
-  loadout (recursive, purpose-filtered storage fill).
+  character's prefab at a spawn point for the account's faction (falls back to
+  any point), and applies the default loadout (recursive, purpose-filtered
+  storage fill).
+- ✅ `ResolveSpawnPoint` (static) picks `SCR_SpawnPoint` by account faction key;
+  shared with the character-creation flow so both spawn paths land in the same
+  area.
 - ⚠️ `GetCreationPosition` leaves `out` params unset when no spawn point
   exists; item is silently dropped if no matching storage; loadout recursion
   has no depth guard.
@@ -38,9 +42,12 @@
 - ⚠️ Validation failure silently early-returns with no error shown.
 
 ### `EL_FactionSelectionMenu` — `Feature/CharacterCreation/EL_FactionSelectionMenu.c`
-- ✅ Sets faction on account, saves, re-enters `OnPlayerConnected`.
-- ⚠️ Re-entrant flow can loop if the faction write does not persist before the
-  re-entrant call.
+- ✅ Buttons wired (Civilian/Police) set the account faction, save, re-enter
+  `OnPlayerConnected`. `SaveAndReleaseAccount` keeps the account cached, so the
+  re-entrant flow converges instead of looping.
+- ✅ `EL_CharacterCreationManager.OnPlayerConnected` keys the account by
+  `playerId` UID (not the controlled entity), so the faction choice lands on
+  the same account the spawn logic reads.
 
 ### `EL_ShowIDAction` — `Feature/CharacterCreation/EL_ShowIDAction.c`
 - ✅ Shows `"FirstName LastName, Age: N"` via notification.

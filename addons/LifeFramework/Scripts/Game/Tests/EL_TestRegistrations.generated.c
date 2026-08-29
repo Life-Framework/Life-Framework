@@ -20,6 +20,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_BankSaveRoundtrip(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMManagerRegistry(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Data(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_FactionSpawn(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);

@@ -18,7 +18,7 @@ FrameWidgetClass {
    }
    Color 0.429 0.429 0.429 1
    Pivot 0 0
-   Text "www.everon.life"
+   Text "https://life-framework.org/"
    "Font Size" 36
    "Min Font Size" 36
    "Horizontal Alignment" Center

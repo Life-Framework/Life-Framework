@@ -117,20 +117,13 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		}
 
 		EL_PlayerCharacter activeCharacter = account.GetActiveCharacter();
-		bool hasCharData = activeCharacter != null;
-		if (!hasCharData)
+		if (!activeCharacter)
 		{
-			ResourceName prefab = m_aDefaultCharacterPrefabs.GetRandomElement();
-			if (prefab)
-			{
-				activeCharacter = EL_PlayerCharacter.Create(prefab);
-				account.AddCharacter(activeCharacter, true);
-			}
-			else
-			{
-				Print("Could not create new character, no default prefabs configured. Go to EL_GameModeRoleplay > EL_RespawnSytemComponent and add at least one.", LogLevel.ERROR);
-				return;
-			}
+			// No character yet: the character-creation flow owns first spawn (faction pick, name,
+			// age) and calls SpawnPlayer_S once the account has one. Auto-creating a default here
+			// would bypass the faction choice entirely.
+			Print("[LifeFramework] Player " + playerId + " has no character yet, waiting for the character-creation flow", LogLevel.NORMAL);
+			return;
 		}
 
 		string characterPersistenceId = activeCharacter.GetId();
@@ -165,7 +158,7 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	//! Picks the spawn position and orientation for a player character.
 	protected void GetCreationPosition(int playerId, string characterPersistenceId, out vector position, out vector yawPitchRoll)
 	{
-		SCR_SpawnPoint spawnPoint = SCR_SpawnPoint.GetRandomSpawnPointDeathmatch();
+		SCR_SpawnPoint spawnPoint = ResolveSpawnPoint(playerId);
 		if (!spawnPoint)
 		{
 			Print("Could not spawn character, no spawn point on the map.", LogLevel.ERROR);
@@ -173,6 +166,25 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		}
 
 		spawnPoint.GetPositionAndRotation(position, yawPitchRoll);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Resolves the spawn point for a player's account faction, falling back to any spawn point when
+	//! the map has none for that faction. Shared with the character-creation flow so both spawn paths
+	//! land in the same area.
+	//! \param playerId Player whose account faction drives the choice.
+	//! \return Spawn point, or null when the map has no spawn point at all.
+	static SCR_SpawnPoint ResolveSpawnPoint(int playerId)
+	{
+		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetFromCache(playerId);
+		if (account)
+		{
+			SCR_SpawnPoint factionPoint = SCR_SpawnPoint.GetRandomSpawnPointForFaction(typename.EnumToString(EL_Faction, account.GetFaction()));
+			if (factionPoint)
+				return factionPoint;
+		}
+
+		return SCR_SpawnPoint.GetRandomSpawnPointDeathmatch();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -211,6 +223,26 @@ class EL_SpawnLogic : SCR_SpawnLogic
 			if (!storageManager.TryInsertItem(slotEntity, loadoutItem.m_ePurpose))
 				SCR_EntityHelper.DeleteEntityAndChildren(slotEntity);
 		}
+
+		// The account components need their ids bound to the entity; this runs on every spawn
+		// path (first spawn, death respawn) so the bindings survive a fresh character entity.
+		EL_CharacterATMComponent atmComponent = EL_CharacterATMComponent.Cast(character.FindComponent(EL_CharacterATMComponent));
+		if (atmComponent)
+			atmComponent.Init(EL_Utils.GetPlayerUID(playerId));
+
+		EL_CharacterSurvivalComponent survivalComponent = EL_CharacterSurvivalComponent.Cast(character.FindComponent(EL_CharacterSurvivalComponent));
+		if (survivalComponent)
+			survivalComponent.Init(characterPersistenceId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawns the player's active character and hands control over. Entry point for the
+	//! character-creation flow, which cannot go through the platform-audit path: it never fires
+	//! for the local player of an offline Workbench session.
+	//! \param playerId Player to spawn.
+	void SpawnPlayer_S(int playerId)
+	{
+		DoSpawn_S(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -236,6 +268,13 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
 		if (respawn)
 			respawn.NotifySpawn(character);
+
+		// The splash placeholder stays on top until told otherwise. The audit chain that normally
+		// clears it (HandlePlayFromCamera) never runs for the local player of an offline session,
+		// so every handover path clears it here.
+		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
+		if (respawnSystem)
+			respawnSystem.DestroyLoadingPlaceholder();
 	}
 
 	//------------------------------------------------------------------------------------------------

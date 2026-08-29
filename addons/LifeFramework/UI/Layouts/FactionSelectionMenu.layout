@@ -1,36 +1,71 @@
-FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialog.layout" {
+FrameWidgetClass "{7FCF78CFD05605DE}" {
+ Name "FactionRoot"
+ Slot FrameWidgetSlot "{0E7E6B49645EE0E2}" {
+  Anchor 0 0 1 1
+ }
+ Color 0 0 0 0.85
  {
-  VerticalLayoutWidgetClass "{F41A253FC87227DA}" {
+  FrameWidgetClass "{9306E8397734F101}" {
+   Name "Panel"
+   Slot FrameWidgetSlot "{0AAFB67F44B4B298}" {
+    Anchor 0.5 0.5 0.5 0.5
+    OffsetLeft -220
+    OffsetTop -140
+    OffsetRight 220
+    OffsetBottom 140
+   }
+   Color 0.04 0.05 0.08 0.95
    {
-    TextWidgetClass "{EDB59FBBE20F56F3}" {
-     Text "Select Faction"
-     "Font Size" 24
-     Slot LayoutSlot "{E1237918FD36EB75}" {
-      HorizontalAlign 1
-      Padding 0 20 0 10
-     }
-    }
-    VerticalLayoutWidgetClass "{F8EFCC324A8A6476}" {
-     Slot LayoutSlot "{C5554AF711AA4FA5}" {
-      Padding 20 10 20 10
+    VerticalLayoutWidgetClass "{8BA15327262B0560}" {
+     Slot FrameWidgetSlot "{0DCED8BC38C657A1}" {
+      Anchor 0 0 1 1
      }
      {
-      ButtonWidgetClass "{CA6C61F7A1C7A5A6}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+      TextWidgetClass "{602A239EC00CBB9B}" {
+       Text "#EL-Faction_Title"
+       "Font Size" 30
+       Slot LayoutSlot "{4BE6182B9CC8754B}" {
+        HorizontalAlign 1
+        Padding 0 10 0 30
+       }
+       Color 1 1 1 1
+      }
+      ButtonWidgetClass "{2AF1DEC29606C20D}" {
        Name "CivilianButton"
-       Slot LayoutSlot "{6F1B0FF1A020CF22}" {
-        Padding 0 5 0 5
+       Slot LayoutSlot "{2401E01B5897FC37}" {
+        Padding 0 8 0 8
+       }
+       Color 0.25 0.45 0.7 1
+       {
+        TextWidgetClass "{C9205959996A93AE}" {
+         Text "#EL-Faction_Civilian"
+         "Font Size" 20
+         Slot LayoutSlot "{821BD42A18EC5084}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+          Padding 14 10 14 10
+         }
+         Color 1 1 1 1
+        }
        }
       }
-      ButtonWidgetClass "{38F4E9AE302A1D43}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+      ButtonWidgetClass "{F189D6C24E9F33CD}" {
        Name "PoliceButton"
-       Slot LayoutSlot "{2F42F4E27003D2C6}" {
-        Padding 0 5 0 5
+       Slot LayoutSlot "{B3B40B6EFD4B7F62}" {
+        Padding 0 8 0 8
        }
-      }
-      ButtonWidgetClass "{C9FCAFDA12C56F94}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
-       Name "EMSButton"
-       Slot LayoutSlot "{2D1CED96073E96F5}" {
-        Padding 0 5 0 5
+       Color 0.7 0.35 0.35 1
+       {
+        TextWidgetClass "{82ABDCC5E78AE5E6}" {
+         Text "#EL-Faction_Police"
+         "Font Size" 20
+         Slot LayoutSlot "{2DEBF44D0898D356}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+          Padding 14 10 14 10
+         }
+         Color 1 1 1 1
+        }
        }
       }
      }

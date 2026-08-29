@@ -54,6 +54,7 @@ $args = @(
   "-profile", $profile,
   "-maxFPS", "30",
   "-logLevel", "normal",
+  "-scrDefine", "EL_AUTOTEST",
   "-disableCrashReporter",
   "-noBackend"
 )

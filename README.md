@@ -55,8 +55,10 @@ The mod lives in `addons/LifeFramework`:
   `MainWorld`).
 - `Worlds/MainWorld` — the main playable world.
 - `Worlds/DebugWorld` — the development/test bed, with a layer per feature
-  and an in-game `EL_Test*` suite (`Scripts/Game/Tests/`) that runs under the
-  `EL_AUTOTEST` define and writes a report.
+  and an in-game `EL_Test*` suite (`Scripts/Game/Tests/`) that runs on the
+  dedicated-server harness under the `EL_AUTOTEST` define (injected by
+  `tools\cli test`/`serve`) and writes a report. Interactive Workbench play
+  does not auto-run the suite or close the game.
 
 Workflow:
 

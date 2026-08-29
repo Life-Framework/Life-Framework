@@ -12,14 +12,17 @@ class EL_CharacterCreationMenu : ChimeraMenuBase
 	//------------------------------------------------------------------------------------------------
 	override void OnMenuOpen()
 	{
+		super.OnMenuOpen();
+
 		m_wRoot = GetRootWidget();
+		EL_Utils.EnsureMenuRootAttached(m_wRoot);
 
-		m_wFirstName = EditBoxWidget.Cast(m_wRoot.FindWidget("FirstNameEditBox"));
-		m_wLastName = EditBoxWidget.Cast(m_wRoot.FindWidget("LastNameEditBox"));
-		m_wAge = EditBoxWidget.Cast(m_wRoot.FindWidget("AgeEditBox"));
-		m_wCreateButton = ButtonWidget.Cast(m_wRoot.FindWidget("CreateButton"));
-
-        
+		// The edit boxes are ButtonWidget wrappers around the actual EditBox widget (the WLib_EditBox
+		// prefab names its inner edit box "EditBox"), so each lookup scopes through the wrapper name.
+		m_wFirstName = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("FirstNameEditBox").FindAnyWidget("EditBox"));
+		m_wLastName = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("LastNameEditBox").FindAnyWidget("EditBox"));
+		m_wAge = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("AgeEditBox").FindAnyWidget("EditBox"));
+		m_wCreateButton = ButtonWidget.Cast(m_wRoot.FindAnyWidget("CreateButton"));
 	}
 
 	//------------------------------------------------------------------------------------------------

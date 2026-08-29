@@ -171,16 +171,46 @@ StringTable {
    Target_pt_pt "Idade:"
    Target_pt_br "Idade:"
   }
-  CustomStringTableItem "{54AF4AE58A1DBCF7}" {
-   Id "EL-CharacterCreation_Create"
-   Target_en_us "Create Character"
-   Target_es_es "Crear Personaje"
-   Target_de_de "Charakter erstellen"
-   Target_fr_fr "Créer le personnage"
-   Target_it_it "Crea personaggio"
-   Target_pt_pt "Criar personagem"
-   Target_pt_br "Criar personagem"
-  }
+CustomStringTableItem "{54AF4AE58A1DBCF7}" {
+    Id "EL-CharacterCreation_Create"
+    Target_en_us "Create Character"
+    Target_es_es "Crear Personaje"
+    Target_de_de "Charakter erstellen"
+    Target_fr_fr "Créer le personnage"
+    Target_it_it "Crea personaggio"
+    Target_pt_pt "Criar personagem"
+    Target_pt_br "Criar personagem"
+   }
+   CustomStringTableItem "{71BBA650CD61B241}" {
+    Id "EL-Faction_Title"
+    Target_en_us "Select Faction"
+    Target_es_es "Seleccionar facción"
+    Target_de_de "Fraktion wählen"
+    Target_fr_fr "Choisir une faction"
+    Target_it_it "Seleziona fazione"
+    Target_pt_pt "Selecionar facção"
+    Target_pt_br "Selecionar facção"
+   }
+   CustomStringTableItem "{A8730ED008B83986}" {
+    Id "EL-Faction_Civilian"
+    Target_en_us "Civilian"
+    Target_es_es "Civil"
+    Target_de_de "Zivilist"
+    Target_fr_fr "Civil"
+    Target_it_it "Civile"
+    Target_pt_pt "Civil"
+    Target_pt_br "Civil"
+   }
+   CustomStringTableItem "{8D4E3C7BBC67A1B5}" {
+    Id "EL-Faction_Police"
+    Target_en_us "Police"
+    Target_es_es "Policía"
+    Target_de_de "Polizei"
+    Target_fr_fr "Police"
+    Target_it_it "Polizia"
+    Target_pt_pt "Polícia"
+    Target_pt_br "Polícia"
+   }
   CustomStringTableItem "{B3BF4076847C9C6E}" {
    Id "EL-ATM_Title"
    Target_en_us "ATM Machine"

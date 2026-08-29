@@ -1,6 +1,8 @@
 class EL_FactionSelectionMenu : ChimeraMenuBase
 {
 	protected PlayerController m_PlayerController;
+	protected ButtonWidget m_wCivilianButton;
+	protected ButtonWidget m_wPoliceButton;
 
 	//------------------------------------------------------------------------------------------------
 	void SetPlayerController(PlayerController playerController)
@@ -11,8 +13,51 @@ class EL_FactionSelectionMenu : ChimeraMenuBase
 	//------------------------------------------------------------------------------------------------
 	override void OnMenuOpen()
 	{
-		// Show faction selection UI
-		// For now, simple buttons
+		super.OnMenuOpen();
+
+		Widget root = GetRootWidget();
+		EL_Utils.EnsureMenuRootAttached(root);
+		DumpRootState("OnMenuOpen");
+
+		m_wCivilianButton = ButtonWidget.Cast(root.FindAnyWidget("CivilianButton"));
+		m_wPoliceButton = ButtonWidget.Cast(root.FindAnyWidget("PoliceButton"));
+		Print(string.Format("[EL_FactionSelectionMenu] open: root=%1 civilianBtn=%2 policeBtn=%3", root != null, m_wCivilianButton != null, m_wPoliceButton != null), LogLevel.NORMAL);
+		GetGame().GetCallqueue().CallLater(DumpRootState, 1000, false, "plus1s");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Diagnostics: is the menu root attached to the workspace and set visible? A detached or
+	//! hidden root renders nothing while every lookup on it still works.
+	protected void DumpRootState(string tag)
+	{
+		Widget root = GetRootWidget();
+		if (!root)
+		{
+			Print("[EL_FactionSelectionMenu] " + tag + ": no root widget", LogLevel.NORMAL);
+			return;
+		}
+
+		Print(string.Format("[EL_FactionSelectionMenu] %1: name=%2 parent=%3 visible=%4 size=%5x%6", tag, root.GetName(), root.GetParent() != null, root.IsVisibleInHierarchy(), FrameSlot.GetSizeX(root), FrameSlot.GetSizeY(root)), LogLevel.NORMAL);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (w == m_wCivilianButton)
+		{
+			Print("[EL_FactionSelectionMenu] Civilian clicked", LogLevel.NORMAL);
+			OnFactionSelected(EL_Faction.CIVILIAN);
+			return true;
+		}
+
+		if (w == m_wPoliceButton)
+		{
+			Print("[EL_FactionSelectionMenu] Police clicked", LogLevel.NORMAL);
+			OnFactionSelected(EL_Faction.POLICE);
+			return true;
+		}
+
+		return super.OnClick(w, x, y, button);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -25,10 +70,9 @@ class EL_FactionSelectionMenu : ChimeraMenuBase
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		if (!accountManager)
 			return;
-		IEntity entity = m_PlayerController.GetControlledEntity();
-		if (!entity)
+		string playerUid = EL_Utils.GetPlayerUID(m_PlayerController.GetPlayerId());
+		if (playerUid.IsEmpty())
 			return;
-		string playerUid = EL_Utils.GetPlayerUID(entity);
 		EL_PlayerAccount account = accountManager.GetAccount(playerUid);
 		if (account)
 		{
