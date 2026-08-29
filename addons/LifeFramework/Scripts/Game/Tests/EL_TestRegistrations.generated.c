@@ -20,9 +20,12 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_BankSaveRoundtrip(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMManagerRegistry(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Data(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_DoorLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionSpawn(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HouseSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);

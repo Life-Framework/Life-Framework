@@ -1,0 +1,29 @@
+$grp GenericEntity : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ House_Door_Locked {
+  components {
+   EL_LockComponent "{5AC29970429B33BB}" {
+    m_sDebugIdentifier "ELDebugHouse1"
+    m_bDebugLocked 1
+   }
+  }
+  coords 124 0 136
+ }
+}
+$grp GenericEntity : "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et" {
+ HouseKey_Matching_Debug {
+  components {
+   EL_KeyComponent "{5AC2971C77FC6F17}" {
+    m_sDebugIdentifier "ELDebugHouse1"
+   }
+  }
+  coords 124.8 0 136
+ }
+ HouseKey_Wrong_Debug {
+  components {
+   EL_KeyComponent "{5AC2971C77FC6F17}" {
+    m_sDebugIdentifier "ELDebugHouseWrong"
+   }
+  }
+  coords 123.2 0 136
+ }
+}

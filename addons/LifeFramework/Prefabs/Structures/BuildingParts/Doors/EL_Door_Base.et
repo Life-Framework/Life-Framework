@@ -1,0 +1,10 @@
+GenericEntity : "{F1793FE006FDF888}Prefabs/Structures/BuildingParts/Doors/Door_Base.et" {
+ ID "0000000000000001"
+ components {
+  MeshObject "{309366462BDAFB24}" {
+   Object "{D1CF3C29963D68E2}Assets/Structures/BuildingsParts/Doors/Door_ConcretePlant_E_01/Door_ConcretePlant_E_01_LEFT_EXT_ST_B.xob"
+  }
+  EL_LockComponent "{5AC29970429B33BB}" {
+  }
+ }
+}
