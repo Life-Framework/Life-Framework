@@ -23,6 +23,13 @@ class EL_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 			return;
 		}
 
+		if (WhitelistExists(EL_WhitelistType.CONNECT) && !ConnectGateLoaded())
+		{
+			EL_Debug.Warn("Whitelist", "CONNECT whitelist configured but its file is missing/empty - join gate disabled (fail-safe)");
+			super.OnPlayerAuditSuccess(playerId);
+			return;
+		}
+
 		if (WhitelistExists(EL_WhitelistType.CONNECT) && !VerifyPlayer(EL_Utils.GetPlayerUID(playerId), EL_WhitelistType.CONNECT))
 		{
 			EL_Debug.Log("Whitelist", string.Format("join blocked: uuid=%1 not on CONNECT whitelist", EL_Utils.GetPlayerUID(playerId)));
@@ -32,6 +39,19 @@ class EL_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 
 		EL_Debug.Log("Whitelist", string.Format("join allowed: uuid=%1", EL_Utils.GetPlayerUID(playerId)));
 		super.OnPlayerAuditSuccess(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fail-safe: the CONNECT gate only enforces when its UUID file actually loaded.
+	//! A missing/empty file must not lock every player out of the server.
+	protected bool ConnectGateLoaded()
+	{
+		foreach (EL_Whitelist whitelist : m_aWhitelists)
+		{
+			if (whitelist && whitelist.m_eType == EL_WhitelistType.CONNECT)
+				return whitelist.WasLoaded();
+		}
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

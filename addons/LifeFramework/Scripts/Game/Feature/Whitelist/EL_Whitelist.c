@@ -22,6 +22,17 @@ class EL_Whitelist
 
 	ref array<string> m_aWhitelistUuids = new array<string>();
 
+	//! True once the file load ran and found the file. A whitelist whose file is missing
+	//! must not gate joins/actions (fail-safe: degrade, never lock everyone out).
+	protected bool m_bLoaded;
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when the UUID file was present and read.
+	bool WasLoaded()
+	{
+		return m_bLoaded;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	bool VerifyPlayer(string uuid)
 	{
@@ -38,7 +49,8 @@ class EL_Whitelist
 
 		if (!FileIO.FileExists(m_sWhitelistFilePath))
 		{
-			PrintFormat("[%1-WHITELIST] Whitelist file %2 does not exist", SCR_Enum.GetEnumName(EL_WhitelistType, m_eType), m_sWhitelistFilePath);
+			EL_Debug.Log("Whitelist", string.Format("no whitelist file yet: %1", m_sWhitelistFilePath));
+			m_bLoaded = false;
 			return;
 		}
 
@@ -47,9 +59,14 @@ class EL_Whitelist
 
 		string uuid;
 		while (whitelistFile.ReadLine(uuid) > 0)
-			m_aWhitelistUuids.Insert(uuid);
+		{
+			uuid.TrimInPlace();
+			if (!uuid.IsEmpty())
+				m_aWhitelistUuids.Insert(uuid);
+		}
 
 		whitelistFile.Close();
+		m_bLoaded = true;
 		EL_Debug.Log("Whitelist", string.Format("loaded %1 uuids from %2", m_aWhitelistUuids.Count(), m_sWhitelistFilePath));
 	}
 
@@ -59,14 +76,22 @@ class EL_Whitelist
 		if (!Replication.IsServer())
 			return;
 
+		// Create the file on first grant: a fresh server has no whitelist file, and
+		// silently dropping the first grant makes the whitelist unusable.
 		if (!FileIO.FileExists(m_sWhitelistFilePath))
-			return;
+			FileIO.OpenFile(m_sWhitelistFilePath, FileMode.WRITE).Close();
 
 		FileHandle whitelistFile = FileIO.OpenFile(m_sWhitelistFilePath, FileMode.APPEND);
+		if (!whitelistFile)
+		{
+			EL_Debug.Error("Whitelist", string.Format("cannot open whitelist file for append: %1", m_sWhitelistFilePath));
+			return;
+		}
+
 		whitelistFile.WriteLine(uuid);
 		whitelistFile.Close();
 
-		PrintFormat("[%1-WHITELIST] Added %2 to file", SCR_Enum.GetEnumName(EL_WhitelistType, m_eType), uuid);
+		EL_Debug.Log("Whitelist", string.Format("added uuid %1 to %2", uuid, m_sWhitelistFilePath));
 
 		m_aWhitelistUuids.Insert(uuid);
 	}
