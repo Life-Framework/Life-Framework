@@ -4,6 +4,13 @@ class EL_CharacterCreationManager : Managed
 
 	protected const int FLOW_POLL_DELAY_MS = 100;
 
+	//! Strong ref: the faction picker is a plain widget controller (not a MenuManager menu) and
+	//! must survive until the player clicks a faction.
+	protected ref EL_FactionSelectionMenu m_FactionMenu;
+
+	//! Same for the name/age dialog.
+	protected ref EL_CharacterCreationMenu m_CreationMenu;
+
 	//------------------------------------------------------------------------------------------------
 	static EL_CharacterCreationManager GetInstance()
 	{
@@ -61,7 +68,7 @@ class EL_CharacterCreationManager : Managed
 			accountManager.AddAccount(account);
 		}
 
-		Print("[EL_CharacterCreationManager] Flow start for player " + playerId, LogLevel.NORMAL);
+		EL_Debug.Info("CharacterCreation", "flow start for player " + playerId);
 
 		if (!account.HasCharacters())
 		{
@@ -83,31 +90,35 @@ class EL_CharacterCreationManager : Managed
 	//------------------------------------------------------------------------------------------------
 	protected void ShowFactionSelectionMenu(PlayerController playerController)
 	{
-		Print("[EL_CharacterCreationManager] Faction menu: clearing splash", LogLevel.NORMAL);
-		EnsureLoadingPlaceholderDestroyed();
-		Print("[EL_CharacterCreationManager] Faction menu: opening", LogLevel.NORMAL);
+		// The respawn system's splash screen covers every screen until told otherwise, and the
+		// audit chain that normally clears it never runs for the local player of an offline
+		// session.
+		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
+		if (respawnSystem)
+			respawnSystem.DestroyLoadingPlaceholder();
 
-		EL_FactionSelectionMenu menu = EL_FactionSelectionMenu.Cast(GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.FactionSelection));
-		Print("[EL_CharacterCreationManager] Faction menu: open call returned", LogLevel.NORMAL);
-		if (menu)
-			menu.SetPlayerController(playerController);
-		else
-			Print("[EL_CharacterCreationManager] Failed to open the faction selection menu", LogLevel.ERROR);
+		m_FactionMenu = EL_FactionSelectionMenu.Open(playerController);
+		if (!m_FactionMenu)
+			EL_Debug.Error("CharacterCreation", "failed to open the faction selection menu");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void ShowCharacterCreationMenu(PlayerController playerController)
 	{
-		EnsureLoadingPlaceholderDestroyed();
+		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
+		if (respawnSystem)
+			respawnSystem.DestroyLoadingPlaceholder();
 
-		EL_CharacterCreationMenu menu = EL_CharacterCreationMenu.Cast(GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.CharacterCreationMenu));
-		if (menu)
-			menu.SetPlayerController(playerController);
-		else
-			Print("[EL_CharacterCreationManager] Failed to open the character creation menu", LogLevel.ERROR);
+		m_CreationMenu = EL_CharacterCreationMenu.Open(playerController);
+		if (!m_CreationMenu)
+			EL_Debug.Error("CharacterCreation", "failed to open the character creation menu");
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Called by the creation menu when the player submitted a valid name/age pair.
+	//! Creates the persistent character, spawns it through the spawn logic (which picks the faction
+	//! spawn point, hands control over and clears the splash) - the ATM/survival components init in
+	//! its post-spawn hook.
 	void OnCharacterCreated(PlayerController playerController, string firstName, string lastName, int age)
 	{
 		ResourceName defaultPrefab = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
@@ -123,41 +134,5 @@ class EL_CharacterCreationManager : Managed
 		}
 		account.AddCharacter(character, true);
 
-		// The spawn logic resolves the account's active character, spawns it at the faction spawn
-		// point and hands control over; the ATM/survival components init in its post-spawn hook.
 		SpawnPlayer(playerController.GetPlayerId(), playerController);
 	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Spawns the account's active character through the spawn logic and opens the survival HUD.
-	protected void SpawnPlayer(int playerId, PlayerController playerController)
-	{
-		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
-		EL_SpawnLogic spawnLogic;
-		if (respawnSystem)
-			spawnLogic = EL_SpawnLogic.Cast(respawnSystem.GetSpawnLogic());
-
-		if (!spawnLogic)
-		{
-			Print("[EL_CharacterCreationManager] No EL_SpawnLogic on the respawn system, cannot spawn player " + playerId, LogLevel.ERROR);
-			return;
-		}
-
-		Print("[EL_CharacterCreationManager] Spawning player " + playerId, LogLevel.NORMAL);
-		spawnLogic.SpawnPlayer_S(playerId);
-
-		// NOTE: the survival HUD is deliberately not opened here. Opened via OpenMenu it is a
-		// full-screen menu that captures input and traps the player; it needs to be integrated as
-		// a proper HUD element before it can come back.
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The respawn system's splash screen covers every menu until told otherwise, and the audit
-	//! chain that normally clears it never runs for the local player of an offline session.
-	protected void EnsureLoadingPlaceholderDestroyed()
-	{
-		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
-		if (respawnSystem)
-			respawnSystem.DestroyLoadingPlaceholder();
-	}
-};

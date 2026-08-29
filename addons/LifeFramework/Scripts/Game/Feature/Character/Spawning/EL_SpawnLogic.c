@@ -76,7 +76,7 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		string playerUid = EL_Utils.GetPlayerUID(playerId);
 		if (playerUid.IsEmpty())
 		{
-			Print("[LifeFramework] WARNING: Persistent UID not available yet for playerId: " + playerId + ", retrying...", LogLevel.WARNING);
+			EL_Debug.Warn("Spawn", "persistent UID not available yet for playerId " + playerId + ", retrying");
 			OnPlayerRegisterFailed(playerId);
 			return;
 		}
@@ -100,7 +100,7 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		PlayerController playerController = GetGame().GetPlayerManager().GetPlayerController(playerId);
 		if (!playerController)
 		{
-			Print("[LifeFramework] Player " + playerId + " left before their character could be created - not spawning one", LogLevel.WARNING);
+			EL_Debug.Warn("Spawn", "player " + playerId + " left before their character could be created - not spawning one");
 			return;
 		}
 
@@ -111,7 +111,7 @@ class EL_SpawnLogic : SCR_SpawnLogic
 			CharacterControllerComponent characterController = CharacterControllerComponent.Cast(controlled.FindComponent(CharacterControllerComponent));
 			if (!characterController || characterController.GetLifeState() != ECharacterLifeState.DEAD)
 			{
-				Print("[LifeFramework] Player " + playerId + " already controls a character - not spawning another", LogLevel.WARNING);
+				EL_Debug.Warn("Spawn", "player " + playerId + " already controls a character - not spawning another");
 				return;
 			}
 		}
@@ -122,7 +122,7 @@ class EL_SpawnLogic : SCR_SpawnLogic
 			// No character yet: the character-creation flow owns first spawn (faction pick, name,
 			// age) and calls SpawnPlayer_S once the account has one. Auto-creating a default here
 			// would bypass the faction choice entirely.
-			Print("[LifeFramework] Player " + playerId + " has no character yet, waiting for the character-creation flow", LogLevel.NORMAL);
+			EL_Debug.Info("Spawn", "player " + playerId + " has no character yet, waiting for the character-creation flow");
 			return;
 		}
 
@@ -131,7 +131,7 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		ResourceName prefab = GetCreationPrefab(playerId, characterPersistenceId);
 		if (!prefab)
 		{
-			Print("[LifeFramework] Could not resolve a character prefab for player " + playerId, LogLevel.ERROR);
+			EL_Debug.Error("Spawn", "could not resolve a character prefab for player " + playerId);
 			return;
 		}
 
@@ -146,7 +146,7 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		IEntity character = GetGame().SpawnEntityPrefab(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);
 		if (!character)
 		{
-			Print("[LifeFramework] Failed to spawn player character from prefab: " + prefab, LogLevel.ERROR);
+			EL_Debug.Error("Spawn", "failed to spawn player character from prefab: " + prefab);
 			return;
 		}
 
@@ -161,7 +161,7 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		SCR_SpawnPoint spawnPoint = ResolveSpawnPoint(playerId);
 		if (!spawnPoint)
 		{
-			Print("Could not spawn character, no spawn point on the map.", LogLevel.ERROR);
+			EL_Debug.Error("Spawn", "could not spawn character, no spawn point on the map");
 			return;
 		}
 
@@ -255,7 +255,7 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		SCR_PlayerController playerController = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
 		if (!playerController)
 		{
-			Print("[LifeFramework] Cannot hand over character - no player controller for playerId: " + playerId, LogLevel.ERROR);
+			EL_Debug.Error("Spawn", "cannot hand over character - no player controller for playerId " + playerId);
 			return;
 		}
 

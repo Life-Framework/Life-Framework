@@ -74,28 +74,6 @@ class EL_Utils : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Attaches an orphaned menu root to the workspace so it actually renders.
-	//! MenuManager.OpenMenu can leave the menu's root widget without a parent in a Workbench play
-	//! session: the widget tree exists and every FindAnyWidget lookup on it works, but an orphan
-	//! renders nothing. Overthrow's OVT_UIContext.ShowLayout avoids the whole problem by attaching
-	//! its menu layouts to the workspace the same way.
-	//! A late AddChild hands the orphan a default zero-size slot, and the engine only applies
-	//! Position/Size when min and max anchor match ("Position/Size works only when min and max
-	//! anchor is the same in given direction") - so pin the root to a point anchor with an explicit
-	//! full-screen rect instead of the stretch anchor the layout file asks for.
-	static void EnsureMenuRootAttached(Widget root)
-	{
-		if (root && !root.GetParent())
-		{
-			WorkspaceWidget workspace = GetGame().GetWorkspace();
-			workspace.AddChild(root);
-			FrameSlot.SetAnchor(root, 0, 0);
-			FrameSlot.SetPos(root, 0, 0);
-			FrameSlot.SetSize(root, workspace.GetWidth(), workspace.GetHeight());
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
 	// Convenience: alert police (global notify for now)
 	static void AlertPolice(string message, vector pos)
 	{

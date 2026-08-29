@@ -1,89 +1,94 @@
-class EL_FactionSelectionMenu : ChimeraMenuBase
+//! Faction picker for first-time players. Deliberately NOT a MenuManager menu: in a Workbench play
+//! session OpenMenu leaves the menu root orphaned (or detached/zero-sized), so the layout is
+//! created straight on the workspace and the buttons are wired through SCR_ButtonTextComponent
+//! invokers - the same structure Overthrow's OVT_UIContext uses for every screen.
+//!
+//! Input: a plain widget tree activates no input context, so no mouse cursor would appear and the
+//! buttons could not be clicked. While open, the vanilla MenuContext (Priority 50, Flags 0x4 -
+//! cursor showing, Menu* actions for gamepad) is re-activated every frame, exactly like
+//! OVT_UIContext.EOnFrame does for its contexts.
+class EL_FactionSelectionMenu
 {
+	protected Widget m_wRoot;
 	protected PlayerController m_PlayerController;
-	protected ButtonWidget m_wCivilianButton;
-	protected ButtonWidget m_wPoliceButton;
 
 	//------------------------------------------------------------------------------------------------
-	void SetPlayerController(PlayerController playerController)
+	//! Creates the layout on the workspace and wires the two faction buttons.
+	//! \return The controller, or null when the layout failed to load.
+	static EL_FactionSelectionMenu Open(PlayerController playerController)
+	{
+		EL_FactionSelectionMenu menu = new EL_FactionSelectionMenu();
+		if (!menu.OpenInternal(playerController))
+			return null;
+
+		return menu;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool OpenInternal(PlayerController playerController)
 	{
 		m_PlayerController = playerController;
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		m_wRoot = workspace.CreateWidgets("{41489243B750D7EC}UI/Layouts/FactionSelectionMenu.layout");
+		if (!m_wRoot)
+		{
+			EL_Debug.Error("FactionMenu", "failed to create the faction selection layout");
+			return false;
+		}
+
+		SCR_ButtonTextComponent civilian = SCR_ButtonTextComponent.GetButtonText("CivilianButton", m_wRoot);
+		if (civilian)
+			civilian.m_OnClicked.Insert(OnCivilianClicked);
+
+		SCR_ButtonTextComponent police = SCR_ButtonTextComponent.GetButtonText("PoliceButton", m_wRoot);
+		if (police)
+			police.m_OnClicked.Insert(OnPoliceClicked);
+
+		// 0ms delay = every frame; removed again in Close().
+		GetGame().GetCallqueue().CallLater(ActivateMenuContext, 0, true);
+
+		EL_Debug.Info("FactionMenu", string.Format("open: root=%1 civilian=%2 police=%3", m_wRoot != null, civilian != null, police != null));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override void OnMenuOpen()
+	protected void ActivateMenuContext()
 	{
-		super.OnMenuOpen();
-
-		Widget root = GetRootWidget();
-		EL_Utils.EnsureMenuRootAttached(root);
-		DumpRootState("OnMenuOpen");
-
-		m_wCivilianButton = ButtonWidget.Cast(root.FindAnyWidget("CivilianButton"));
-		m_wPoliceButton = ButtonWidget.Cast(root.FindAnyWidget("PoliceButton"));
-		Print(string.Format("[EL_FactionSelectionMenu] open: root=%1 civilianBtn=%2 policeBtn=%3", root != null, m_wCivilianButton != null, m_wPoliceButton != null), LogLevel.NORMAL);
-		GetGame().GetCallqueue().CallLater(DumpRootState, 1000, false, "plus1s");
+		InputManager inputManager = GetGame().GetInputManager();
+		if (inputManager)
+			inputManager.ActivateContext("MenuContext");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Diagnostics: is the menu root attached to the workspace and set visible? A detached or
-	//! hidden root renders nothing while every lookup on it still works.
-	protected void DumpRootState(string tag)
+	protected void OnCivilianClicked()
 	{
-		Widget root = GetRootWidget();
-		if (!root)
-		{
-			Print("[EL_FactionSelectionMenu] " + tag + ": no root widget", LogLevel.NORMAL);
-			return;
-		}
-
-		float sx = FrameSlot.GetSizeX(root);
-		float sy = FrameSlot.GetSizeY(root);
-		Print(string.Format("[EL_FactionSelectionMenu] %1: name=%2 parent=%3 visible=%4 size=%5x%6", tag, root.GetName(), root.GetParent() != null, root.IsVisibleInHierarchy(), sx, sy), LogLevel.NORMAL);
-
-		// The MenuManager sizes menu roots after OnMenuOpen and can collapse a late-attached one;
-		// re-assert the full-screen rect once on the follow-up tick if that happened.
-if (tag == "plus1s" && (sx < 1 || sy < 1))
-		{
-			FrameSlot.SetPos(root, 0, 0);
-			FrameSlot.SetSize(root, GetGame().GetWorkspace().GetWidth(), GetGame().GetWorkspace().GetHeight());
-			Print(string.Format("[EL_FactionSelectionMenu] re-asserted size: %1x%2", FrameSlot.GetSizeX(root), FrameSlot.GetSizeY(root)), LogLevel.NORMAL);
-		}
+		Select(EL_Faction.CIVILIAN);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool OnClick(Widget w, int x, int y, int button)
+	protected void OnPoliceClicked()
 	{
-		if (w == m_wCivilianButton)
-		{
-			Print("[EL_FactionSelectionMenu] Civilian clicked", LogLevel.NORMAL);
-			OnFactionSelected(EL_Faction.CIVILIAN);
-			return true;
-		}
-
-		if (w == m_wPoliceButton)
-		{
-			Print("[EL_FactionSelectionMenu] Police clicked", LogLevel.NORMAL);
-			OnFactionSelected(EL_Faction.POLICE);
-			return true;
-		}
-
-		return super.OnClick(w, x, y, button);
+		Select(EL_Faction.POLICE);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnFactionSelected(EL_Faction faction)
+	protected void Select(EL_Faction faction)
 	{
+		EL_Debug.Info("FactionMenu", typename.EnumToString(EL_Faction, faction) + " selected");
+		Close();
+
 		if (!m_PlayerController)
 			return;
 
-		// Set faction in account
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		if (!accountManager)
 			return;
+
 		string playerUid = EL_Utils.GetPlayerUID(m_PlayerController.GetPlayerId());
 		if (playerUid.IsEmpty())
 			return;
+
 		EL_PlayerAccount account = accountManager.GetAccount(playerUid);
 		if (account)
 		{
@@ -91,12 +96,21 @@ if (tag == "plus1s" && (sx < 1 || sy < 1))
 			accountManager.SaveAndReleaseAccount(account);
 		}
 
-		// Proceed to character creation
+		// Advance the flow: the re-entrant pass sees the chosen faction and spawns the character.
 		EL_CharacterCreationManager manager = EL_CharacterCreationManager.GetInstance();
 		if (manager)
 			manager.OnPlayerConnected(m_PlayerController.GetPlayerId());
+	}
 
-		// Close menu
-		GetGame().GetMenuManager().CloseMenu(this);
+	//------------------------------------------------------------------------------------------------
+	void Close()
+	{
+		GetGame().GetCallqueue().Remove(ActivateMenuContext);
+
+		if (!m_wRoot)
+			return;
+
+		m_wRoot.RemoveFromHierarchy();
+		m_wRoot = null;
 	}
 };
