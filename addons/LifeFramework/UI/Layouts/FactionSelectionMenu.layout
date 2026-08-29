@@ -1,67 +1,73 @@
 FrameWidgetClass "{7FCF78CFD05605DE}" {
  Name "FactionRoot"
- Color 0 0 0 0.85
  {
-  FrameWidgetClass "{9306E8397734F101}" {
-   Name "Panel"
+  PanelWidgetClass "{9306E8397734F101}" {
+   Name "Panel0"
    Slot FrameWidgetSlot "{0AAFB67F44B4B298}" {
-    Anchor 0.5 0.5 0.5 0.5
-    OffsetLeft -220
-    OffsetTop -140
-    OffsetRight 220
-    OffsetBottom 140
+    Anchor 0 0 0 1
+    PositionX 200
+    OffsetLeft 200
+    PositionY 200
+    OffsetTop 200
+    SizeX 500
+    OffsetRight -700
+    SizeY 0
+    OffsetBottom -500
    }
-   Color 0.04 0.05 0.08 0.95
    {
-    VerticalLayoutWidgetClass "{8BA15327262B0560}" {
+    BlurWidgetClass "{0E7E6B49645EE0E2}" : "{352322057FD78AE1}UI/layouts/WidgetLibrary/BaseElements/WLib_Blur.layout" {
+     Name "BackgroundBlur"
      Slot FrameWidgetSlot "{0DCED8BC38C657A1}" {
       Anchor 0 0 1 1
      }
+     Color 0.127 0.127 0.127 1
+     Intensity 0.8
+    }
+    VerticalLayoutWidgetClass "{8BA15327262B0560}" {
+     Slot FrameWidgetSlot "{C9205959996A93AE}" {
+      Anchor 0 0 1 1
+      PositionX 1
+      OffsetLeft 1
+      OffsetRight -1
+      OffsetBottom -1
+     }
      {
-      TextWidgetClass "{602A239EC00CBB9B}" {
-       Text "#EL-Faction_Title"
-       "Font Size" 30
+      FrameWidgetClass "{602A239EC00CBB9B}" {
+       Name "TitleFrame"
        Slot LayoutSlot "{4BE6182B9CC8754B}" {
-        HorizontalAlign 1
-        Padding 0 10 0 30
+        Padding 0 15 0 15
        }
-       Color 1 1 1 1
-      }
-      ButtonWidgetClass "{2AF1DEC29606C20D}" {
-       Name "CivilianButton"
-       Slot LayoutSlot "{2401E01B5897FC37}" {
-        Padding 0 8 0 8
-       }
-       Color 0.25 0.45 0.7 1
        {
-        TextWidgetClass "{C9205959996A93AE}" {
-         Text "#EL-Faction_Civilian"
-         "Font Size" 20
-         Slot LayoutSlot "{821BD42A18EC5084}" {
-          HorizontalAlign 1
-          VerticalAlign 1
-          Padding 14 10 14 10
+        TextWidgetClass "{2401E01B5897FC37}" {
+         Name "Title"
+         Slot FrameWidgetSlot "{821BD42A18EC5084}" {
+          Anchor 0.5 0.5 0.5 0.5
          }
          Color 1 1 1 1
+         Text "#EL-Faction_Title"
+         "Font Size" 30
         }
        }
       }
-      ButtonWidgetClass "{F189D6C24E9F33CD}" {
-       Name "PoliceButton"
+      ButtonWidgetClass "{F189D6C24E9F33CD}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+       Name "CivilianButton"
        Slot LayoutSlot "{B3B40B6EFD4B7F62}" {
-        Padding 0 8 0 8
+        Padding 40 10 40 10
        }
-       Color 0.7 0.35 0.35 1
-       {
-        TextWidgetClass "{82ABDCC5E78AE5E6}" {
-         Text "#EL-Faction_Police"
-         "Font Size" 20
-         Slot LayoutSlot "{2DEBF44D0898D356}" {
-          HorizontalAlign 1
-          VerticalAlign 1
-          Padding 14 10 14 10
-         }
-         Color 1 1 1 1
+       components {
+        SCR_ButtonTextComponent "{82ABDCC5E78AE5E6}" {
+         m_sText "#EL-Faction_Civilian"
+        }
+       }
+      }
+      ButtonWidgetClass "{2DEBF44D0898D356}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+       Name "PoliceButton"
+       Slot LayoutSlot "{7FCF78CFD05605DC}" {
+        Padding 40 10 40 10
+       }
+       components {
+        SCR_ButtonTextComponent "{7FCF78CFD05605DD}" {
+         m_sText "#EL-Faction_Police"
         }
        }
       }
