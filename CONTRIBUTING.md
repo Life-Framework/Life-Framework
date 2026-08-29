@@ -82,11 +82,62 @@ Ready to write some code? Awesome!
 
 #### Pull Request Process
 
-1. **Describe your changes** clearly in the PR description
+GitHub pre-fills new PRs from [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md). Use it — it matches our verification checklist.
+
+1. **Describe your changes** clearly in the PR description (Summary, Verification, Manual testing)
 2. **Reference related issues** if applicable (e.g., "Fixes #123")
-3. **Be responsive** to feedback and review comments
-4. **Keep PRs focused** – one feature or fix per PR when possible
-5. **Update documentation** if your changes affect how things work
+3. **Check off verification** — `validate`, the right `test` tier, red-proof tests if applicable
+4. **Be responsive** to feedback and review comments
+5. **Keep PRs focused** — one feature or fix per PR when possible
+6. **Update documentation** if your changes affect how things work
+
+### 🤖 AI-assisted development
+
+We **encourage** AI-assisted contributions. Cursor, Claude Code, Codex, opencode, and similar tools are welcome — the repo ships a harness so humans and agents share the same workflow.
+
+#### The harness
+
+| Piece | Purpose |
+| --- | --- |
+| [`AGENTS.md`](AGENTS.md) | Portable contract: golden rules, EnforceScript traps, data rules, verification ladder. **Read this first** — every tool can use it. |
+| [`.opencode/`](.opencode/README.md) | Skills, playbooks, and agents for [opencode](https://opencode.ai) (`/life-mode`, `/prove`, `/interrogate`). Plain markdown — other assistants can read it too. |
+| [`tools/cli`](tools/README.md) | Unified CLI: `validate`, `build`, `test`, `ci`, MCP install/call. |
+| **MCP servers** | Enfusion API search, vanilla source, asset lookup, optional Workbench tools — `node tools/cli.mjs mcp install`, then `node tools/cli.mjs call …`. See [`tools/mcp/README.md`](tools/mcp/README.md). |
+| **PR template** | Checklist aligned with the verification ladder (above). |
+
+When a skill file and `AGENTS.md` disagree, **`AGENTS.md` wins**.
+
+#### Quick start
+
+```sh
+node tools/cli.mjs status              # toolchain + MCP state
+node tools/cli.mjs mcp install         # one-time: clone and build MCP servers
+node tools/cli.mjs validate            # cheap — run often
+node tools/cli.mjs test --tier fast    # logic-only changes
+node tools/cli.mjs test                # full tier before opening a PR
+```
+
+On Windows, `tools\cli` is a shim for the same commands. Point the paths in `opencode.json` at your Workbench and game install; restart opencode after changing MCP settings.
+
+Research Enfusion APIs from the terminal (no GUI required):
+
+```sh
+node tools/cli.mjs call list
+node tools/cli.mjs call api_search '{"query":"SCR_SpawnLogic","format":"tree"}'
+```
+
+Use `@path/to/args.json` instead of inline JSON if your shell mangles quotes.
+
+#### What we expect from AI-assisted PRs
+
+- **Verify, don't vibe.** Output must pass `validate` and the appropriate `test` tier. A green run beats a confident summary.
+- **Look up APIs — don't guess.** Use MCP / `tools/cli call` before inventing classes, RPC patterns, or prefab fields.
+- **Follow repo rules.** Unique resource GUIDs, `EL_` class prefix, localization keys, no generated artifacts — all in `AGENTS.md`.
+- **Add tests for behavior changes.** New `EL_Test_*` files need a `// red-proof:` comment and registration in `EL_TestManager.c`.
+- **Document manual gaps.** UI, multiplayer, JIP, and save/restart paths are not fully covered by automation — fill in the PR template's **Manual testing** section.
+- **Review the diff yourself.** You are responsible for what you submit; treat the agent as a fast junior modder, not an authority.
+
+AI assistance is welcome. Untested AI output is not.
 
 ### 📚 Documentation
 
@@ -150,10 +201,23 @@ Our development philosophy emphasizes:
 
 ### Testing
 
-- Test your changes in-game before submitting
-- Verify compatibility with the base framework
-- Check for performance impacts
-- Test edge cases and error conditions
+Automated checks (human or AI — same commands):
+
+```sh
+node tools/cli.mjs validate              # repo hygiene + pre-commit checks
+node tools/cli.mjs test --tier fast      # pure EnforceScript / LOGIC tests
+node tools/cli.mjs test                  # full suite (world, prefab, spawn)
+node tools/cli.mjs ci                    # validate + build + test
+```
+
+The in-game `EL_Test*` suite runs on DebugWorld boot and prints `[ELTEST]` markers; `tools/cli test` parses them and exits nonzero on failure. See [`AGENTS.md`](AGENTS.md) for tiers, red-proof tests, and what still needs manual proof.
+
+Also verify when relevant:
+
+- In-game behavior on DebugWorld or MainWorld
+- Compatibility with the base framework
+- Performance and edge cases
+- Multiplayer, JIP, UI, or save/restart paths (manual — document in your PR)
 
 ## Sharing Knowledge
 
