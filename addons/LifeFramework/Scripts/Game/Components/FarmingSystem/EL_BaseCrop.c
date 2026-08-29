@@ -92,7 +92,13 @@ class EL_BaseCrop : EL_BaseBuilding
 
 		// Set new model
 		if (stage.m_NewStageModel)
-			SetObject(Resource.Load(stage.m_NewStageModel).GetResource().ToVObject(), "");
+		{
+			Resource modelResource = Resource.Load(stage.m_NewStageModel);
+			if (modelResource && modelResource.IsValid())
+				SetObject(modelResource.GetResource().ToVObject(), "");
+			else
+				EL_Debug.Error("Farming", string.Format("crop stage model does not resolve: %1", stage.m_NewStageModel));
+		}
 
 		// Start area spawner on the replication master
 		if (m_iSpawnItemsAtStage == m_iCropStage)
@@ -166,7 +172,7 @@ class EL_BaseCrop : EL_BaseBuilding
 		m_IsInit = true;
 
 		// Clear frame for anything but the replication owner
-		if (!rplComponent.IsOwner())
+		if (!rplComponent || !rplComponent.IsOwner())
 		{
 			ClearEventMask(EntityEvent.FRAME);
 			ClearFlags(EntityFlags.ACTIVE, true);

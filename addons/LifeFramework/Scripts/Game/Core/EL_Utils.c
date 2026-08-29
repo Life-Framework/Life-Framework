@@ -373,10 +373,17 @@ class EL_Utils : Managed
 		spawnParams.Transform[3] = origin;
 		spawnParams.Parent = parent;
 
-		if (!global)
-			return GetGame().SpawnEntityPrefabLocal(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);
+		Resource resource = Resource.Load(prefab);
+		if (!resource || !resource.IsValid())
+		{
+			EL_Debug.Error("Utils", string.Format("spawn failed: prefab does not resolve: %1", prefab));
+			return null;
+		}
 
-		return GetGame().SpawnEntityPrefab(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);
+		if (!global)
+			return GetGame().SpawnEntityPrefabLocal(resource, GetGame().GetWorld(), spawnParams);
+
+		return GetGame().SpawnEntityPrefab(resource, GetGame().GetWorld(), spawnParams);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -413,7 +420,17 @@ class EL_Utils : Managed
 	static BaseContainer GetPrefabMeshComponent(ResourceName prefab)
 	{
 		BaseContainer meshComponent;
-		IEntitySource prefabSource = Resource.Load(prefab).GetResource().ToEntitySource();
+		if (prefab.IsEmpty())
+			return null;
+
+		Resource resource = Resource.Load(prefab);
+		if (!resource || !resource.IsValid())
+			return null;
+
+		IEntitySource prefabSource = resource.GetResource().ToEntitySource();
+		if (!prefabSource)
+			return null;
+
 		int count = prefabSource.GetComponentCount();
 
 		for (int i = 0; i < count; i++)

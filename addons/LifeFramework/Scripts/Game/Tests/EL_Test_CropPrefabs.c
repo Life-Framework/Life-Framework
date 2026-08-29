@@ -71,7 +71,8 @@ class EL_Test_CropPrefabs : EL_Test
 		EL_BaseCrop baseCrop = SpawnCrop(ctx, BASE_CROP);
 		if (baseCrop)
 		{
-			ctx.Equal(0, baseCrop.GetCropStages().Count(), "base crop has no stages of its own");
+			array<ref EL_CropStage> baseStages = baseCrop.GetCropStages();
+			ctx.True(baseStages == null || baseStages.Count() == 0, "base crop has no stages of its own");
 			ctx.False(baseCrop.CanGather(), "base crop cannot gather");
 			ctx.Equal(-1, baseCrop.GetSpawnItemsAtStage(), "base crop spawns no items");
 		}

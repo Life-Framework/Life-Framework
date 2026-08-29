@@ -44,7 +44,7 @@ class EL_BuildingManagerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void OnMouseLeftDown()
 	{
-		if (m_CanBuild)
+		if (m_CanBuild && m_BuildingPerformer)
 			Rpc(RpcAsk_SpawnEntityPrefab, m_BuildingPerformer.m_BuildingPrefab, m_PosInWorld);
 	}
 
@@ -52,7 +52,17 @@ class EL_BuildingManagerComponent : ScriptComponent
 	//! Set preview mesh to new handheld item mesh and change to preview material.
 	private void SetNewPreviewMesh()
 	{
-		m_PreviewEntity.SetObject(Resource.Load(m_BuildingPerformer.m_PreviewMesh).GetResource().ToVObject(), "");
+		if (!m_PreviewEntity || !m_BuildingPerformer)
+			return;
+
+		Resource meshResource = Resource.Load(m_BuildingPerformer.m_PreviewMesh);
+		if (!meshResource || !meshResource.IsValid())
+		{
+			EL_Debug.Warn("Farming", "preview mesh skipped: prefab does not resolve");
+			return;
+		}
+
+		m_PreviewEntity.SetObject(meshResource.GetResource().ToVObject(), "");
 		EL_Utils.ChangeEntityMaterial(m_PreviewEntity, m_PreviewMaterial);
 	}
 
@@ -72,8 +82,13 @@ class EL_BuildingManagerComponent : ScriptComponent
 	private bool UpdatePreviewOrigin()
 	{
 		IEntity cursorTarget = m_Cam.GetCursorTargetWithPosition(m_PosInWorld);
+		if (!cursorTarget)
+			return false;
 
-		if (m_BuildingPerformer.m_GroundType == EGroundType.TERRAIN && cursorTarget.Type() != GenericTerrainEntity)
+		if (m_BuildingPerformer && m_BuildingPerformer.m_GroundType == EGroundType.TERRAIN && cursorTarget.Type() != GenericTerrainEntity)
+			return false;
+
+		if (!m_PreviewEntity)
 			return false;
 
 		m_PreviewEntity.SetOrigin(m_PosInWorld);
@@ -85,6 +100,9 @@ class EL_BuildingManagerComponent : ScriptComponent
 	private bool UpdateHandBuildingPerformer(IEntity owner)
 	{
 		m_BuildingPerformer = GetHeldBuildingPerformer(owner);
+
+		if (!m_PreviewEntity)
+			return false;
 
 		bool isVisible = (m_PreviewEntity.GetFlags() & EntityFlags.VISIBLE);
 
@@ -123,6 +141,12 @@ class EL_BuildingManagerComponent : ScriptComponent
 
 		// Spawn base preview and set invisible
 		m_PreviewEntity = EL_Utils.SpawnEntityPrefab(m_BasePreviewPrefab, owner.GetOrigin());
+		if (!m_PreviewEntity)
+		{
+			EL_Debug.Error("Farming", string.Format("building preview failed to spawn: %1", m_BasePreviewPrefab));
+			return;
+		}
+
 		EL_Utils.ChangeEntityMaterial(m_PreviewEntity, m_PreviewMaterial);
 		m_PreviewEntity.ClearFlags(EntityFlags.VISIBLE, true);
 
