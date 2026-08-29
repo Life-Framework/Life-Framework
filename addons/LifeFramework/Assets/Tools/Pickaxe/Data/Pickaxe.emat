@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{81838C52E7772E41}Assets/Tools/Pickaxe/Data/T_Pickaxe_BCR.edds"
+ NMOMap "{B95B37C03E007CDF}Assets/Tools/Pickaxe/Data/T_Pickaxe_NMO.edds"
+}

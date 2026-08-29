@@ -1,0 +1,27 @@
+EL_MiningArea {
+ ID "59E8E1567223D103"
+ components {
+  Hierarchy "{59D4ABCF4C842DE8}" {
+  }
+  RplComponent "{59D4ABCF401A5511}" {
+  }
+ }
+ coords 85.094 1.25 157.61
+ m_vSize 10 1 10
+ m_iAmount 10
+ m_fRespawnTime 1
+ m_PrefabsToSpawn {
+  EL_WeightedSpawn "{D3BA6BE0C7126EB7}" {
+   m_iChance 25
+   m_Prefab "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et"
+  }
+  EL_WeightedSpawn "{82A37CF4E3D74575}" {
+   m_iChance 50
+   m_Prefab "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
+  }
+  EL_WeightedSpawn "{5ECE26AABFEF2504}" {
+   m_iChance 25
+   m_Prefab "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et"
+  }
+ }
+}

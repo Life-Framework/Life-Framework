@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{892DA2A3145C3411}Assets/Resources/Mining/Data/Stone_BCR.edds"
+ NMOMap "{756B8DFBC1F0F5EE}Assets/Resources/Mining/Data/Iron_NMO.edds"
+}

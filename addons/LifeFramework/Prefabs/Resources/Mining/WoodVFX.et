@@ -1,0 +1,4 @@
+ParticleEffectEntity {
+ ID "5A153CB0B3250ADE"
+ EffectPath "{7F8BF2E037ED7589}Particles/Gather/Wood.ptc"
+}

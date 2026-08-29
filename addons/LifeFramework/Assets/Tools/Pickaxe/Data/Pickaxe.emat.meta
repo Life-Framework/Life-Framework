@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5340268D415B0F5F}Assets/Tools/Pickaxe/Data/Pickaxe.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

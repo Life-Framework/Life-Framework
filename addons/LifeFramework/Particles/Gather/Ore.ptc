@@ -1,0 +1,32 @@
+EffectDef {
+ Emitters {
+  EmitterDef Emitter_01 {
+   ShapeType Box
+   ShapeSize 1 0 1
+   ConeAngle 360 0 120
+   MaxNum 8
+   BirthRate 100
+   Offset 0 0 0
+   ParticleType Prefab
+   Material "{00735D641EBFC529}system/wbdata/ParticleEditor/defaultMaterial.emat"
+   Prefab "{88F43FF542BB6767}Prefabs/Resources/Mining/Stone.et"
+   SizeMultiplier 0.1
+   SizeRND 0.15
+   CenterX 1
+   CenterY 0.294
+   CenterZ 1
+   RandomRotationSpace 1
+   VelAngleCatchUp 0
+   RandomAngle 1
+   Velocity 2
+   VelocityRND 1
+   GravityMultiply 1
+   Lifetime 0.5
+   Size {
+    0.023 1 1 0
+   }
+   EmittingTime 0.5
+   Repeat 0
+  }
+ }
+}

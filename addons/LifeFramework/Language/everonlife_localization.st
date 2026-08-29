@@ -602,12 +602,40 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    CustomStringTableItem "{B8AE8B1EC379425C}" {
     Id "EL-DeleteAction_DisplayName"
     Target_en_us "Destroy"
-    Target_de_de "Zerst�ren"
-    Target_fr_fr "D�truire"
+    Target_de_de "Zerstören"
+    Target_fr_fr "Détruire"
     Target_it_it "Distruggi"
     Target_es_es "Destruir"
     Target_pt_pt "Destruir"
     Target_pt_br "Destruir"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{3A70AF4FE08F42F5}" {
+    Id "EL-Item_Pickaxe_Name"
+    Target_en_us "Pickaxe"
+    Target_de_de "Spitzhacke"
+    Target_fr_fr "Pioche"
+    Target_it_it "Piccone"
+    Target_es_es "Pico"
+    Target_pt_pt "Picareta"
+    Target_pt_br "Picareta"
+    Comment "Pickaxe tool name"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{281B36AB823C412B}" {
+    Id "EL-Item_Pickaxe_Description"
+    Target_en_us "Tool for mining ore"
+    Target_de_de "Werkzeug zum Erzabbau"
+    Target_fr_fr "Outil pour miner le minerai"
+    Target_it_it "Attrezzo per estrarre minerale"
+    Target_es_es "Herramienta para extraer mineral"
+    Target_pt_pt "Ferramenta para minerar minério"
+    Target_pt_br "Ferramenta para minerar minério"
+    Comment "Pickaxe tool description"
     Modified 1788019742
     Author "LifeFramework"
     LastChanged "LifeFramework"

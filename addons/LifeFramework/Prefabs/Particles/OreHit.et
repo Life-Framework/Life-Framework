@@ -1,0 +1,4 @@
+ParticleEffectEntity {
+ ID "5A72CD2ED07F4B98"
+ EffectPath "{FCBF6633BE03CA37}Particles/Gather/OreHit.ptc"
+}

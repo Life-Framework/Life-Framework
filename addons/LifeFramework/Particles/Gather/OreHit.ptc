@@ -1,0 +1,69 @@
+EffectDef {
+ Emitters {
+  EmitterDef smoke {
+   ConeAngle 360 0 45
+   MaxNum 25
+   BirthRate 100
+   Offset 0 0 0
+   Material "{FB2FB00F02295531}Particles/_Materials/Gas/Smoke_Base_01.emat"
+   SizeMultiplier 4
+   SizeRND 3
+   ScaleX 0.5
+   ScaleY 0.5
+   RandomRotDir 1
+   Velocity 2
+   VelAffect 0
+   AirResistance 1
+   Restitution 0
+   Spring 0
+   RandomFrame 1
+   Lifetime 0.25
+   LifetimeRND 0.5
+   Alpha {
+    0 0 0.307 0.157 1 0
+   }
+   Size {
+    0 0.524 1 0.12
+   }
+   EmittingTime 0.5
+   Repeat 0
+  }
+  EmitterDef sparks {
+   ShapeType Box
+   ShapeSize 0 0 0
+   ConeAngle 360 0 25
+   MaxNum 5
+   BirthRate 100
+   BirthRateRND 0
+   Offset 0 0 0
+   Material "{D9FC42124DBB8845}Particles/_Materials/Fire/Base_Sparks_06.emat"
+   StretchMultiplier 1.1
+   StreakFullUV 1
+   SizeMultiplier 0.025
+   SizeRND 0.1
+   ScaleX 1
+   ScaleY 1
+   VelAngle 1
+   Velocity 1
+   VelocityRND 1
+   AirResistanceRND 0
+   WindInfluence 0
+   GravityMultiply 0
+   GravityMultiplyRND -0.01
+   RandomFrame 1
+   Lifetime 0.15
+   LifetimeRND 0.25
+   Color {
+    0 1 1 1 0.125 0.963 0.67 0.247 1 0.986 0.415 0.415
+   }
+   Alpha {
+    0 0 0.125 0.5 1 0
+   }
+   Size {
+    0 0 0.125 1 1 0
+   }
+   EmittingTime 0.25
+   Repeat 0
+  }
+ }
+}
