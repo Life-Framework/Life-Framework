@@ -39,11 +39,15 @@ New-Item -ItemType Directory -Force -Path $profile | Out-Null
 # the server does NOT auto-load the EPF/EDF paks that live in the server install
 # (they fail to compile on Reforger 1.8). Launch cwd = repo root (neutral) so
 # ./addons does not resolve to the server install's addons folder.
+# The junction sources core+data from the SERVER install, not the game install:
+# the server binary is only guaranteed to parse data shipped with it (a game-side
+# data hotfix newer than the server binary breaks prefab parsing).
 $gameAddons = Join-Path $root "server\profile\test\game-addons"
+$serverInstall = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger Server"
 if (-not (Test-Path (Join-Path $gameAddons "data"))) {
   New-Item -ItemType Directory -Force -Path $gameAddons | Out-Null
-  cmd /c mklink /J "$gameAddons\core" "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger\addons\core" 2>&1 | Out-Null
-  cmd /c mklink /J "$gameAddons\data" "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger\addons\data" 2>&1 | Out-Null
+  cmd /c mklink /J "$gameAddons\core" "$serverInstall\addons\core" 2>&1 | Out-Null
+  cmd /c mklink /J "$gameAddons\data" "$serverInstall\addons\data" 2>&1 | Out-Null
 }
 
 $addonsDir = (Join-Path $root "addons") + "," + $gameAddons

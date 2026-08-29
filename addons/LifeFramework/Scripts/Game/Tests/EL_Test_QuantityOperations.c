@@ -57,7 +57,7 @@ class EL_Test_QuantityOperations : EL_Test
 		int transferred;
 		destQty.Combine(sourceQty, 100, transferred);
 
-		ctx.Equal(3, transferred, "Combine transfers only the source's 5, not the requested 100");
+		ctx.Equal(5, transferred, "Combine transfers only the source's 5, not the requested 100");
 		ctx.Equal(8, destQty.GetQuantity(), "destination gained exactly 5");
 		ctx.True(GetGame().GetWorld().FindEntityByID(sourceId) == null, "fully drained source entity is deleted");
 	}
