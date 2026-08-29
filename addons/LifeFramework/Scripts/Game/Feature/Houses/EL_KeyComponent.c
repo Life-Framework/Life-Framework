@@ -36,6 +36,9 @@ class EL_KeyComponent : ScriptComponent
 		// not needed here. Same pattern as EL_VehicleKeyComponent.
 		if (!m_sDebugIdentifier.IsEmpty() && Replication.IsServer())
 			m_sHouseIdentifier = m_sDebugIdentifier;
+
+		if (Replication.IsServer())
+			EL_Debug.Log("Houses", string.Format("key bound: identifier=%1", m_sHouseIdentifier));
 	}
 
 	//------------------------------------------------------------------------------------------------

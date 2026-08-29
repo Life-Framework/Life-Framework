@@ -95,6 +95,11 @@ class EL_HouseManagerComponent : ScriptComponent
 		m_bHouseLocked = locked;
 		Replication.BumpMe();
 		SyncDoors();
+
+		string stateName = "unlocked";
+		if (locked)
+			stateName = "locked";
+		EL_Debug.Log("Houses", string.Format("house lock -> %1", stateName));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -139,9 +144,13 @@ class EL_HouseManagerComponent : ScriptComponent
 	bool ApplyLockState(EL_HouseLockRecord record)
 	{
 		if (!record || !record.IsValidFor(m_sHouseIdentifier))
+		{
+			EL_Debug.Log("Houses", "apply-lock-state rejected: record missing or identifier mismatch");
 			return false;
+		}
 
 		SetHouseLocked(record.m_bLocked);
+		EL_Debug.Log("Houses", string.Format("apply-lock-state accepted: house=%1 locked=%2", m_sHouseIdentifier, record.m_bLocked));
 		return true;
 	}
 }
