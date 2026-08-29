@@ -165,7 +165,8 @@ class EL_QuantityComponent : ScriptComponent
 
 		BaseInventoryStorageComponent storage = sourceInventoryItem.GetParentSlot().GetStorage();
 		InventoryStorageManagerComponent storageManager = EL_InventoryUtils.GetResponsibleStorageManager(owner);
-		if (!storageManager) storageManager = EPF_GlobalInventoryStorageManagerComponent.GetInstance();
+		if (!storageManager)
+			return;
 		storageManager.TryInsertItemInStorage(destinationEntity, storage);
 	}
 

@@ -1,6 +1,19 @@
-class EL_BankAccount : EPF_PersistentScriptedState
+class EL_BankAccount : Managed
 {
+	protected string m_sPersistentId;
 	protected int m_iBalance;
+
+	//------------------------------------------------------------------------------------------------
+	string GetPersistentId()
+	{
+		return m_sPersistentId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetPersistentId(string id)
+	{
+		m_sPersistentId = id;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	int GetBalance()

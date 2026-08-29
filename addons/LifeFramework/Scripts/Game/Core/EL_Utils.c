@@ -1,4 +1,4 @@
-class EL_Utils : EPF_Utils
+class EL_Utils : Managed
 {
 	//------------------------------------------------------------------------------------------------
 	static int MaxInt(int a, int b)
@@ -179,10 +179,13 @@ class EL_Utils : EPF_Utils
 		if (!characterId || characterId.IsEmpty())
 			return null;
 
-		EPF_PersistenceManager persistenceManager = EPF_PersistenceManager.GetInstance();
-		if (persistenceManager)
+		// First-party lookup: a tracked instance by persistence id.
+		SCR_PersistenceSystem persistence = SCR_PersistenceSystem.GetScriptedInstance();
+		if (persistence)
 		{
-			IEntity resultEntity = persistenceManager.FindEntityByPersistentId(characterId);
+			UUID characterUuid = characterId;
+			Managed instance = persistence.FindById(characterUuid);
+			IEntity resultEntity = IEntity.Cast(instance);
 			if (resultEntity)
 				return SCR_ChimeraCharacter.Cast(resultEntity);
 		}
@@ -264,24 +267,47 @@ class EL_Utils : EPF_Utils
 			}
 		}
 	}
+
 	//------------------------------------------------------------------------------------------------
-	//! Get player UID - returns the PERSISTENT CHARACTER ID, not the Steam UID
-	static override string GetPlayerUID(IEntity player)
+	//! Gets the platform-stable identity id of a player (the player's Steam/Bohemia UID).
+	//! \param playerId Index of the player inside player manager
+	//! \return the uid as string
+	static string GetPlayerUID(int playerId)
+	{
+		if (playerId <= 0)
+			return "";
+
+		string identity = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
+
+		// The backend can transiently answer the per-player lookup with the NULL UUID
+		// ("00000000-...") instead of an empty string - it is non-empty, so it defeats both
+		// vanilla's name-hash fallback and the empty-identity guards in every caller. Treat it
+		// as "no identity" so account lookups never key on the zero id.
+		UUID identityUuid = identity;
+		if (identity != string.Empty && identityUuid.IsNull())
+			return "";
+
+		return identity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gets the platform-stable identity id of a player.
+	//! \param player Instance of the player
+	//! \return the uid as string
+	static string GetPlayerUID(IEntity player)
 	{
 		if (!player)
 			return "";
-            
-		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(player);
-		if (!character)
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
 			return "";
-        
-		// Get the persistent ID from EPF
-		EPF_PersistenceComponent persistence = EPF_Component<EPF_PersistenceComponent>.Find(character);
-		if (persistence)
-			return persistence.GetPersistentId();
-        
-		// Fallback to Steam UID if no persistence component (shouldn't happen in normal gameplay)
-		return GetCharacterId(player);
+
+		int playerId = playerManager.GetPlayerIdFromControlledEntity(player);
+		if (playerId <= 0)
+			return "";
+
+		return GetPlayerUID(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -329,5 +355,64 @@ class EL_Utils : EPF_Utils
 	static string GetPlayerName(IEntity player)
 	{
 		return GetCharacterName(player);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawns a prefab
+	//! \param prefab ResournceName of the prefab to be spawned
+	//! \param origin Position(origin) where to spawn the entity
+	//! \param orientation Angles(yaw, pitch, rolle in degrees) to apply to the entity
+	//! \param global If true the entity is spawned in the global (networked) space
+	//! \return the spawned entity or null on failure
+	static IEntity SpawnEntityPrefab(ResourceName prefab, vector origin, vector orientation = "0 0 0", bool global = true)
+	{
+		EntitySpawnParams spawnParams();
+		spawnParams.TransformMode = ETransformMode.WORLD;
+		Math3D.AnglesToMatrix(orientation, spawnParams.Transform);
+		spawnParams.Transform[3] = origin;
+
+		if (!global)
+			return GetGame().SpawnEntityPrefabLocal(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);
+
+		return GetGame().SpawnEntityPrefab(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gets the prefab the entity uses
+	//! \param entity Instance of which to get the prefab name
+	//! \return the resource name of the prefab or empty string if no prefab was used or entity is invalid
+	static ResourceName GetPrefabName(IEntity entity)
+	{
+		if (!entity) return ResourceName.Empty;
+
+		EntityPrefabData prefabData = entity.GetPrefabData();
+		if (!prefabData) return ResourceName.Empty;
+
+		return SCR_BaseContainerTools.GetPrefabResourceName(prefabData.GetPrefab());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsAnyInherited(typename type, notnull array<typename> from)
+	{
+		if (type)
+		{
+			foreach (typename candiate : from)
+			{
+				if (type.IsInherited(candiate))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsInstanceAnyInherited(Managed instance, notnull array<typename> from)
+	{
+		if (!instance)
+			return false;
+
+		typename type = instance.Type();
+		return IsAnyInherited(type, from);
 	}
 };

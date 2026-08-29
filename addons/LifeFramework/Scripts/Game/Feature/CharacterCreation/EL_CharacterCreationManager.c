@@ -149,7 +149,7 @@ class EL_CharacterCreationManager : Managed
 			EL_CharacterSurvivalComponent survivalComponent = EL_CharacterSurvivalComponent.Cast(entity.FindComponent(EL_CharacterSurvivalComponent));
 			if (survivalComponent)
 			{
-				survivalComponent.Init(character.GetId(), EL_SurvivalInitCallback.Create(survivalComponent));
+				survivalComponent.Init(character.GetId());
 			}
 		}
 
@@ -170,26 +170,5 @@ class EL_CharacterCreationManager : Managed
 		{
 			hud.SetPlayerController(playerController);
 		}
-	}
-};
-
-class EL_SurvivalInitCallback : EDF_DataCallbackSingle<EL_SurvivalStats>
-{
-	//------------------------------------------------------------------------------------------------
-	override void OnComplete(EL_SurvivalStats data, Managed context)
-	{
-		EL_CharacterSurvivalComponent comp = EL_CharacterSurvivalComponent.Cast(context);
-		if (comp)
-		{
-			comp.SetSurvivalStats(data);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static EL_SurvivalInitCallback Create(EL_CharacterSurvivalComponent comp)
-	{
-		EL_SurvivalInitCallback instance();
-		instance.m_pContext = comp;
-		return instance;
 	}
 };

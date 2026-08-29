@@ -228,21 +228,8 @@ class EL_BankAccountComponent : ScriptComponent
 		if (m_OnBalanceChanged)
 			m_OnBalanceChanged.Invoke(m_iAccountBalance);
 
-		// Save persistence immediately when balance changes (Server only)
-		if (Replication.IsServer())
-		{
-			IEntity owner = GetOwner();
-			if (owner)
-			{
-				// Solo guardar si el jugador ya controla la entidad (evita guardado en carga/spawn)
-				int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(owner);
-				if (playerId <= 0) return;
-
-				EPF_PersistenceComponent persistence = EPF_Component<EPF_PersistenceComponent>.Find(owner);
-				if (persistence)
-					persistence.Save();
-			}
-		}
+		// Replicate the balance to clients
+		Replication.BumpMe();
 	}
 }
 

@@ -4,6 +4,65 @@ class EL_ATMManager : Managed
 	protected ref map<string, ref EL_BankAccount> m_mAccounts = new map<string, ref EL_BankAccount>();
 
 	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: export every cached bank account as a record for the serializer.
+	//! \return Array of bank account records (never null), one per cached account.
+	static array<ref EL_BankAccountRecord> ExportAll()
+	{
+		EL_ATMManager instance = GetInstance();
+		if (!instance)
+			instance = new EL_ATMManager();
+
+		array<ref EL_BankAccountRecord> records = new array<ref EL_BankAccountRecord>();
+		foreach (string accountId, EL_BankAccount account : instance.m_mAccounts)
+		{
+			if (!account)
+				continue;
+
+			records.Insert(EL_BankAccountRecord.Create(account.GetPersistentId(), account.GetBalance()));
+		}
+
+		return records;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: apply records back into the cache (idempotent). Existing ids are
+	//! overwritten so a re-apply to a live session converges on the saved state.
+	//! \param records Records read from the save.
+	static void ApplyAll(notnull array<ref EL_BankAccountRecord> records)
+	{
+		EL_ATMManager instance = GetInstance();
+		if (!instance)
+			instance = new EL_ATMManager();
+
+		foreach (EL_BankAccountRecord record : records)
+		{
+			if (!record)
+				continue;
+
+			EL_BankAccount account = EL_BankAccount.Create(record.m_sPersistentId);
+			account.SetBalance(record.m_iBalance);
+			instance.AddAccount(account);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Returns the cached account for an id, creating and caching a new one when absent.
+	//! \param accountId Account id (character persistence id).
+	//! \return The account for the id (never null).
+	static EL_BankAccount GetOrCreate(string accountId)
+	{
+		EL_ATMManager instance = GetInstance();
+		if (!instance)
+			instance = new EL_ATMManager();
+
+		EL_BankAccount account = instance.m_mAccounts.Get(accountId);
+		if (!account)
+			account = instance.CreateAccount(accountId);
+
+		return account;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static EL_ATMManager GetInstance()
 	{
 		return s_Instance;
@@ -62,48 +121,5 @@ class EL_ATMManager : Managed
 			return account.Withdraw(amount);
 		}
 		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Async loading of a bank account
-	//! \param accountId The account ID
-	//! \param callback Async callback to handle the result
-	void LoadAccountAsync(string accountId, notnull EDF_DataCallbackSingle<EL_BankAccount> callback)
-	{
-		EL_BankAccount account = m_mAccounts.Get(accountId);
-		if (account)
-		{
-			callback.Invoke(account);
-			return;
-		}
-
-		auto processorCallback = EL_ATMManagerProcessorCallback.Create(accountId, callback);
-		EPF_PersistentScriptedStateLoader<EL_BankAccount>.LoadAsync(accountId, processorCallback);
-	}
-};
-
-class EL_ATMManagerProcessorCallback : EDF_DataCallbackSingle<EL_BankAccount>
-{
-	string m_sAccountId;
-	ref EDF_DataCallbackSingle<EL_BankAccount> m_pCallback;
-
-	//------------------------------------------------------------------------------------------------
-	override void OnComplete(EL_BankAccount data, Managed context)
-	{
-		EL_BankAccount result = data;
-		if (!result)
-			result = EL_ATMManager.GetInstance().CreateAccount(m_sAccountId);
-
-		if (m_pCallback)
-			m_pCallback.Invoke(result);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static EL_ATMManagerProcessorCallback Create(string accountId, EDF_DataCallbackSingle<EL_BankAccount> callback)
-	{
-		EL_ATMManagerProcessorCallback instance();
-		instance.m_sAccountId = accountId;
-		instance.m_pCallback = callback;
-		return instance;
 	}
 };

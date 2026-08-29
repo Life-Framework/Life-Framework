@@ -1,8 +1,21 @@
-class EL_SurvivalStats : EPF_PersistentScriptedState
+class EL_SurvivalStats : Managed
 {
+	protected string m_sPersistentId;
 	protected float m_fHunger; // 0-100
 	protected float m_fThirst; // 0-100
 	protected float m_fHealth; // 0-100
+
+	//------------------------------------------------------------------------------------------------
+	string GetPersistentId()
+	{
+		return m_sPersistentId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetPersistentId(string id)
+	{
+		m_sPersistentId = id;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	float GetHunger()

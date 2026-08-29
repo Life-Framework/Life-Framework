@@ -66,22 +66,6 @@ class EL_PlayerLevelComponent : ScriptComponent
 		CheckLevelUp();
 		
 		Replication.BumpMe();
-		
-		// GUARDADO COMPLETO: Guardar todo el estado del personaje (inventario, posición, progreso, etc.)
-		IEntity owner = GetOwner();
-		if (owner)
-		{
-			// Solo guardar si el jugador ya controla la entidad (evita guardado en spawn)
-			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(owner);
-			if (playerId <= 0) return;
-
-			EPF_PersistenceComponent persistence = EPF_Component<EPF_PersistenceComponent>.Find(owner);
-			if (persistence)
-			{
-				persistence.Save();
-				Print(string.Format("[EL_PlayerLevelComponent] ✓ Character fully saved after gaining XP (Level: %1, XP: %.1f)", m_iPlayerLevel, m_fPlayerExperience), LogLevel.VERBOSE);
-			}
-		}
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -143,22 +127,6 @@ class EL_PlayerLevelComponent : ScriptComponent
 		
 		Replication.BumpMe();
 		
-		// GUARDADO COMPLETO: Guardar todo el estado del personaje
-		IEntity owner = GetOwner();
-		if (owner)
-		{
-			// Solo guardar si el jugador ya controla la entidad (evita guardado en spawn)
-			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(owner);
-			if (playerId <= 0) return true;
-
-			EPF_PersistenceComponent persistence = EPF_Component<EPF_PersistenceComponent>.Find(owner);
-			if (persistence)
-			{
-				persistence.Save();
-				Print(string.Format("[EL_PlayerLevelComponent] ✓ Character fully saved after spending SP (Remaining: %1)", m_iSkillPoints), LogLevel.VERBOSE);
-			}
-		}
-		
 		return true;
 	}
 	
@@ -178,22 +146,6 @@ class EL_PlayerLevelComponent : ScriptComponent
 			m_OnSkillPointsChanged.Invoke(m_iSkillPoints);
 		
 		Replication.BumpMe();
-		
-		// GUARDADO COMPLETO: Guardar todo el estado del personaje
-		IEntity owner = GetOwner();
-		if (owner)
-		{
-			// Solo guardar si el jugador ya controla la entidad (evita guardado en spawn)
-			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(owner);
-			if (playerId <= 0) return;
-
-			EPF_PersistenceComponent persistence = EPF_Component<EPF_PersistenceComponent>.Find(owner);
-			if (persistence)
-			{
-				persistence.Save();
-				Print(string.Format("[EL_PlayerLevelComponent] ✓ Character fully saved after adding SP (Total: %1)", m_iSkillPoints), LogLevel.VERBOSE);
-			}
-		}
 	}
 	
 	//------------------------------------------------------------------------------------------------

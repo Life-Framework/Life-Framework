@@ -6,14 +6,45 @@ class EL_CharacterSurvivalComponentClass : ScriptComponentClass
 class EL_CharacterSurvivalComponent : ScriptComponent
 {
 	protected EL_SurvivalStats m_SurvivalStats;
+	protected string m_sCharacterId;
 	protected float m_fLastUpdateTime;
 
 	//------------------------------------------------------------------------------------------------
-	void Init(string characterId, EDF_DataCallbackSingle<EL_SurvivalStats> callback)
+	//! Loads (or creates and registers) the survival stats for a character, synchronously.
+	//! \param characterId Character persistence id (PersistenceIdUtils generated UUID).
+	void Init(string characterId)
 	{
-		// Load or create survival stats
-		auto processorCallback = EL_SurvivalStatsProcessorCallback.Create(characterId, callback);
-		EPF_PersistentScriptedStateLoader<EL_SurvivalStats>.LoadAsync(characterId, processorCallback);
+		m_sCharacterId = characterId;
+
+		EL_PersistenceComponent persistence = GetPersistenceComponent();
+		if (persistence)
+		{
+			m_SurvivalStats = persistence.GetSurvivalStats(characterId);
+			if (!m_SurvivalStats)
+			{
+				m_SurvivalStats = EL_SurvivalStats.Create(characterId);
+				persistence.SetSurvivalStats(characterId, m_SurvivalStats);
+			}
+		}
+		else
+		{
+			m_SurvivalStats = EL_SurvivalStats.Create(characterId);
+		}
+
+		m_fLastUpdateTime = GetGame().GetWorld().GetWorldTime();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Resolves the game-mode persistence component (EL_PersistenceComponent) attached to the
+	//! game-mode entity.
+	//! \return The persistence component, or null when no game mode carries one.
+	protected EL_PersistenceComponent GetPersistenceComponent()
+	{
+		EL_GameModeRoleplay mode = EL_GameModeRoleplay.Cast(GetGame().GetGameMode());
+		if (!mode)
+			return null;
+
+		return EL_PersistenceComponent.Cast(mode.FindComponent(EL_PersistenceComponent));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -40,6 +71,14 @@ class EL_CharacterSurvivalComponent : ScriptComponent
 	{
 		m_SurvivalStats = stats;
 		m_fLastUpdateTime = GetGame().GetWorld().GetWorldTime();
+
+		// Keep the persistence store in sync so a save picks up the live value.
+		if (m_SurvivalStats)
+		{
+			EL_PersistenceComponent persistence = GetPersistenceComponent();
+			if (persistence)
+				persistence.SetSurvivalStats(m_sCharacterId, m_SurvivalStats);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -61,31 +100,5 @@ class EL_CharacterSurvivalComponent : ScriptComponent
 	{
 		if (m_SurvivalStats)
 			m_SurvivalStats.Heal(amount);
-	}
-};
-
-class EL_SurvivalStatsProcessorCallback : EDF_DataCallbackSingle<EL_SurvivalStats>
-{
-	string m_sCharacterId;
-	ref EDF_DataCallbackSingle<EL_SurvivalStats> m_pCallback;
-
-	//------------------------------------------------------------------------------------------------
-	override void OnComplete(EL_SurvivalStats data, Managed context)
-	{
-		EL_SurvivalStats result = data;
-		if (!result)
-			result = EL_SurvivalStats.Create(m_sCharacterId);
-
-		if (m_pCallback)
-			m_pCallback.Invoke(result);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static EL_SurvivalStatsProcessorCallback Create(string characterId, EDF_DataCallbackSingle<EL_SurvivalStats> callback)
-	{
-		EL_SurvivalStatsProcessorCallback instance();
-		instance.m_sCharacterId = characterId;
-		instance.m_pCallback = callback;
-		return instance;
 	}
 };
