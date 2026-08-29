@@ -41,7 +41,7 @@ ActionsManagerComponent "{5D6EFBCB5886F4B6}" {
      m_GatherItemPrefab "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et"
      m_GatherAmount 1
      m_GatherAmountMax 5
-     m_GatherTimeout 300000  // 5 minutes respawn
+      m_GatherTimeout 300000
     }
    }
   }

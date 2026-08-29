@@ -10,6 +10,7 @@ class EL_PlayerAccount : Managed
 	/*protected*/ ref array<ref EL_PlayerCharacter> m_aCharacters = {};
 	/*protected*/ int m_iActiveCharacterIdx;
 	/*protected*/ EL_Faction m_eFaction = EL_Faction.CIVILIAN;
+	/*protected*/ bool m_bFactionChosen = false;
 	/*protected*/ bool m_bOnDuty = false;
 	/*protected*/ int m_iWantedLevel = 0;
 
@@ -29,6 +30,16 @@ class EL_PlayerAccount : Managed
 	void SetFaction(EL_Faction faction)
 	{
 		m_eFaction = faction;
+		m_bFactionChosen = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Distinguishes "faction not picked yet" from the CIVILIAN default value, which is also a
+	//! legitimate choice. OnPlayerConnected keys off this so a CIVILIAN pick cannot re-open the
+	//! faction menu forever.
+	bool WasFactionChosen()
+	{
+		return m_bFactionChosen;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,7 +146,9 @@ class EL_PlayerAccount : Managed
 	//------------------------------------------------------------------------------------------------
 	void SetActiveCharacter(notnull EL_PlayerCharacter character)
 	{
-		m_iActiveCharacterIdx = m_aCharacters.Find(character);
+		int idx = m_aCharacters.Find(character);
+		if (idx != -1)
+			m_iActiveCharacterIdx = idx;
 	}
 
 	//------------------------------------------------------------------------------------------------

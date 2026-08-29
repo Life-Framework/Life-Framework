@@ -38,8 +38,12 @@ $grp GenericEntity {
       }
      }
      EL_TraderManagerComponent "{59693C53B6A5EFC0}" {
-      m_ItemToReceive "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
-      m_ItemToGive "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+      m_aTradableItems {
+       EL_TraderItem "{2D68390174F5ECAB}" {
+        m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+        m_ValuePerItem 5
+       }
+      }
      }
      MeshObject "{59670CE9C98E5BAF}" {
       Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"

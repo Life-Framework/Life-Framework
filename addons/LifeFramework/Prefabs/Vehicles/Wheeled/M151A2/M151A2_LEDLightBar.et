@@ -1,0 +1,27 @@
+GenericEntity {
+ ID "2A3BBDC1C2A445EC"
+ components {
+   MeshObject "{8E7BDB29084049D3}" {
+    Object "{06CF07076805437B}Assets/Vehicles/Wheeled/M151A2/M151A2_LightBarMount.xob"
+    Materials {
+     MaterialAssignClass "{59A73088CE0292B1}" {
+      SourceMaterial "M151A2_LightBarMount"
+      AssignedMaterial "{9476A9CF8190EC9D}Assets/Vehicles/Wheeled/M151A2/Data/M151A2_LightBarMount.emat"
+     }
+    }
+   }
+  Hierarchy "{EAB23E2124474ACE}" {
+  }
+ }
+ {
+  GenericEntity : "{58F192378D88478D}Prefabs/Vehicles/SirenLights/LightBarLED.et" {
+   ID "01C870B813904518"
+   components {
+    Hierarchy "{7CAC1532586F4D45}" {
+     PivotID "LightBar"
+    }
+   }
+   coords 0 -0.042 0
+  }
+ }
+}

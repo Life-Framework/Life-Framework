@@ -1,6 +1,7 @@
 // red-proof: change an expected string (e.g. 999 -> "9999") or break the
 // threshold in EL_FormatUtils.AbbreviateNumber, then run the fast tier.
 
+// tier: LOGIC
 class EL_Test_FormatAbbreviate : EL_Test
 {
 	override string GetName()
@@ -21,6 +22,7 @@ class EL_Test_FormatAbbreviate : EL_Test
 };
 
 //------------------------------------------------------------------------------------------------
+// tier: LOGIC
 class EL_Test_UtilsMinMax : EL_Test
 {
 	override string GetName()

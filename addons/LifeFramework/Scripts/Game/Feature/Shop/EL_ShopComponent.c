@@ -41,18 +41,52 @@ class EL_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether a requested quantity is within the item's buy limits.
+	static bool IsQuantityAllowed(int maxQuantity, int quantity)
+	{
+		if (quantity <= 0)
+			return false;
+		return quantity <= maxQuantity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Total price of a purchase. Zero for invalid requests.
+	static int ComputeTotalPrice(int unitPrice, int quantity)
+	{
+		if (unitPrice < 0 || quantity <= 0)
+			return 0;
+		return unitPrice * quantity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the shop actually sells this item. Only the shop's own catalog
+	//! may be bought; an arbitrary item object is a forged offer.
+	bool IsSoldByThisShop(EL_ShopItem item)
+	{
+		if (!m_aShopItems)
+			return false;
+		return m_aShopItems.Find(item) != -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool BuyItem(EL_ShopItem item, int quantity, IEntity buyer)
 	{
-		if (!item || quantity <= 0 || quantity > item.GetMaxQuantity())
-			return false;
 		if (!Replication.IsServer())
 			return false;
+		if (!item || !IsQuantityAllowed(item.GetMaxQuantity(), quantity))
+			return false;
+		if (!IsSoldByThisShop(item))
+			return false;
 
-		int totalPrice = item.GetPrice() * quantity;
+		int totalPrice = ComputeTotalPrice(item.GetPrice(), quantity);
 
-		// Check if buyer has enough money
-		if (!EL_MoneyUtils.RemoveAmount(buyer, totalPrice))
+		// RemoveAmount reports what was actually removed; a partial removal is
+		// not success and the removed part must be returned to the buyer.
+		int removed = EL_MoneyUtils.RemoveAmount(buyer, totalPrice);
+		if (removed != totalPrice)
 		{
+			if (removed > 0)
+				EL_MoneyUtils.AddAmount(buyer, removed);
 			EL_Utils.Notify("#EL-Not_Enough_Money", "#EL-Shop_PurchaseFailed", 3.0);
 			return false;
 		}
@@ -66,7 +100,7 @@ class EL_ShopComponent : ScriptComponent
 		}
 		else
 		{
-			// Refund money if inventory full
+			// Refund the full price: the full price was removed
 			EL_MoneyUtils.AddAmount(buyer, totalPrice);
 			EL_Utils.Notify("#EL-Inventory_Full", "#EL-Shop_PurchaseFailed", 3.0);
 			return false;

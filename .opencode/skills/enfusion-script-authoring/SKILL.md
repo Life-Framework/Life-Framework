@@ -74,4 +74,4 @@ This mod's persistence (`Feature/*/Persistence/EL_*Persistence`) reads and write
 
 ## Tests
 
-- Pure logic gets an `EL_Test` subclass in `Scripts/Game/Tests/`, registered in `EL_TestManager.CollectTests()`. See the **el-tdd** skill.
+- Pure logic gets an `EL_Test` subclass in `Scripts/Game/Tests/`, with a `// tier:` comment and a `// red-proof:` comment; registration is automatic via `tools\cli regen-tests`. See the **el-tdd** skill.

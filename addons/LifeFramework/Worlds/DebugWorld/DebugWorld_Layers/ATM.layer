@@ -1,7 +1,7 @@
-EL_BankTerminal ATM_Debug {
+GenericEntity ATM_Debug {
  components {
   MeshObject "{5A4B0B84C86D5843}" {
-   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   Object "{CD7B21DA4D8AE5FB}Assets/Props/Commercial/CashierShop_01/CashierShop_01.xob"
   }
   RigidBody "{5A4B0B84C86D5844}" {
    Mass 10
@@ -13,7 +13,7 @@ EL_BankTerminal ATM_Debug {
     UserActionContext "{5A4B0B84C86D5846}" {
      ContextName "default"
      Position PointInfo "{5A4B0B84C86D5847}" {
-      Offset 0 0.0873 0
+      Offset 0 0.8 0
      }
      Radius 3
     }
@@ -34,5 +34,5 @@ EL_BankTerminal ATM_Debug {
    Enabled 1
   }
  }
- coords 120 0 130
+ coords 138 0 130
 }

@@ -61,6 +61,9 @@ class EL_PlayerAccountManager : Managed
 			EL_PlayerAccount account = EL_PlayerAccount.Create(record.m_sPersistentId);
 			account.m_iActiveCharacterIdx = record.m_iActiveCharacterIdx;
 			account.m_eFaction = record.m_eFaction;
+			// A persisted non-civilian faction is proof the choice was made; a persisted civilian
+			// may just be the default, so it re-opens the faction menu on a no-character account.
+			account.m_bFactionChosen = (record.m_eFaction != EL_Faction.CIVILIAN);
 			account.m_bOnDuty = record.m_bOnDuty;
 			account.m_iWantedLevel = record.m_iWantedLevel;
 
@@ -104,13 +107,17 @@ class EL_PlayerAccountManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Remove the account from the cache, releasing it. Persistence is now owned by the game-mode
-	//! serializer; per-release saves no longer happen, so this only drops the cached instance.
-	//! \param account Account instance to release
+	//! Keeps the account cached for the rest of the session. Persistence is owned by the
+	//! game-mode serializer (EL_PersistenceComponentSerializer exports every cached account on
+	//! save), so short-lived writes must not drop the instance: evicting here made every
+	//! crime/duty/arrest/fine/faction call site lose the account until the next save, which is
+	//! why consecutive wanted bumps silently stopped stacking. Reset() drops all accounts at
+	//! game-mode teardown.
+	//! \param account Account instance to keep resident
 	void SaveAndReleaseAccount(EL_PlayerAccount account)
 	{
 		if (account)
-			m_mAccounts.Remove(account.GetPersistentId());
+			m_mAccounts.Set(account.GetPersistentId(), account);
 	}
 
 	//------------------------------------------------------------------------------------------------

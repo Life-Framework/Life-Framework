@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{A84D3A52BA774320}Assets/Vehicles/Attachments/SirenLights/Data/GlassBlue.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

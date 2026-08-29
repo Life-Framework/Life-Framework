@@ -66,9 +66,12 @@ tier before declaring a phase or fix complete.
 ## Adding tests / checks
 
 - **In-game tests**: create `addons/LifeFramework/Scripts/Game/Tests/EL_Test_*.c`
-  extending `EL_Test` (implement `GetName()` and `Run(ctx)`), then register it
-  in `EL_TestManager.c::CollectTests` with a tier:
-  `Register(new EL_Test_X(), EL_TestTier.WORLD)`.
+  extending `EL_Test` (implement `GetName()` and `Run(ctx)`), declare its tier
+  with a `// tier: LOGIC|WORLD|PERSISTENCE` comment above the class, and carry
+  a `// red-proof:` comment. Registration is automatic: `tools\cli regen-tests`
+  regenerates `EL_TestRegistrations.generated.c` from the test files, and
+  `tools\cli validate` checks it is in sync. Never hand-edit
+  `EL_TestManager.c` or the generated registry file.
   - **Tiers are setup cost, not subject.** `LOGIC` = pure EnforceScript, runs
     in `--tier fast` (use for every logic change). `WORLD` = loads a resource,
     spawns an entity, or reads the world (runs only in the full `all` tier).
@@ -76,8 +79,12 @@ tier before declaring a phase or fix complete.
   - **Red-proof**: the test file must carry a `// red-proof:` comment recording
     how its assertions were observed failing at least once. A test that cannot
     go red is a defect — prove red by breaking an assertion and running the
-    suite before you trust it green. `tools\cli validate` enforces registration
-    and the red-proof comment.
+    suite before you trust it green. `tools\cli validate` enforces the tier
+    comment, the registration sync, and the red-proof comment.
+  - **Parallel-safe**: because the registry is derived from the files, multiple
+    agents may add test files concurrently. Each agent adds its own file (with
+    `// tier:` and `// red-proof:`), runs `tools\cli regen-tests`, and never
+    touches another agent's test file or the generated registry.
   - **Persistence tests route through public API only**: mutate via manager
     mutators, reload, read back via accessors. Assertions that touch the
     persistence internals pass while the player-facing contract breaks.
@@ -98,6 +105,20 @@ tier before declaring a phase or fix complete.
   delta. `asset_search` gives the `{GUID}path` for fixture lists.
 
 ## MCP servers (AI tooling)
+
+**Default to the MCP tools first.** When a question can be answered or a
+claim validated by an MCP tool, use it instead of guessing, hand-parsing,
+hand-walking prefab ancestry, or making the user compile. Rules of thumb:
+- Before writing/reading Enfusion API or vanilla code → `api_search`,
+  `game_read`, `game_browse`, `wiki_search`.
+- Before pasting a prefab/config value into code or a test → `wb_read_props`
+  (resolved, inherited values — never hand-walk `parent` chains).
+- Before citing a resource path → `asset_search` for the `{GUID}path`.
+- Before wiring a component or checking it exists → `component_search`.
+- To validate a resource/asset → `wb_validate` (material/texture) or
+  `prefab inspect` / `config` checks; prefer the tool over eyeballing text.
+Pick the cheapest MCP tool that answers the question. If an MCP is fast and
+answers it, you do not need to ask the user or spin up a full build.
 
 Configured in `opencode.json`; the clones live (git-ignored) under
 `tools/mcp/`. `tools\cli mcp install|update|verify|enable|disable` manages

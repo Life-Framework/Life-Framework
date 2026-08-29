@@ -28,8 +28,12 @@ GenericEntity AppleTrader {
       }
      }
      EL_TraderManagerComponent "{59693C53B6A5EFC0}" {
-      m_ItemToReceive "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
-      m_ItemToGive "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+      m_aTradableItems {
+       EL_TraderItem "{58CA092EB7FD6143}" {
+        m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+        m_ValuePerItem 5
+       }
+      }
      }
      MeshObject "{59670CE9C98E5BAF}" {
       Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
@@ -123,8 +127,12 @@ GenericEntity AppleTrader {
       }
      }
      EL_TraderManagerComponent "{59693C53B6A5EFC0}" {
-      m_ItemToReceive "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
-      m_ItemToGive "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+      m_aTradableItems {
+       EL_TraderItem "{813045BD92EF6A7C}" {
+        m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+        m_ValuePerItem 15
+       }
+      }
      }
      MeshObject "{59670CE9C98E5BAF}" {
       Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"

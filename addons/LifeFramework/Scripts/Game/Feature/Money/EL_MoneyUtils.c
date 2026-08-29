@@ -4,7 +4,7 @@ class EL_MoneyUtils
 
 	//------------------------------------------------------------------------------------------------
 	//! Get the total amount of cash the target has across all storages
-	//! \return the total cash or -1 on faulty opertations.
+	//! \return the total cash, or -1 when the target has no resolvable storage
 	static int GetCash(InventoryStorageManagerComponent target)
 	{
 		return EL_InventoryUtils.GetAmount(target, PREFAB_CASH);
@@ -20,7 +20,7 @@ class EL_MoneyUtils
 	//------------------------------------------------------------------------------------------------
 	//! Add cash to the target
 	//! \param amount Cash to add
-	//! \return the amount of cash added or 0 on faulty opertations.
+	//! \return the amount of cash actually added, or 0 on faulty operations
 	static int AddCash(InventoryStorageManagerComponent target, int amount)
 	{
 		return EL_InventoryUtils.AddAmount(target, PREFAB_CASH, amount);
@@ -36,7 +36,8 @@ class EL_MoneyUtils
 	//------------------------------------------------------------------------------------------------
 	//! Remove cash from the target
 	//! \param amount Cash to remove
-	//! \return the amount of cash added or 0 on faulty opertations.
+	//! \return the amount of cash actually removed, or 0 on faulty operations.
+	//! A partial removal returns the removed part, never the full request.
 	static int RemoveCash(InventoryStorageManagerComponent target, int amount)
 	{
 		return EL_InventoryUtils.RemoveAmount(target, PREFAB_CASH, amount);
@@ -82,7 +83,12 @@ class EL_MoneyUtils
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	// Backwards-compatible aliases used across the codebase
+	//! Backwards-compatible aliases used across the codebase.
+	//!
+	//! RemoveAmount reports the amount actually removed: 0 means nothing was
+	//! removed, a non-zero value below the request means a partial removal.
+	//! Callers must compare the return against the requested amount instead of
+	//! treating any non-zero value as full success.
 	//------------------------------------------------------------------------------------------------
 	
 	static int RemoveAmount(InventoryStorageManagerComponent target, int amount)

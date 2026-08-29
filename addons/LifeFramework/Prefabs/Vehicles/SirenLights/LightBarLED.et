@@ -1,0 +1,191 @@
+GenericEntity {
+ ID "E2A074E0A35F4A4E"
+ components {
+  MeshObject "{79133D6C90E94A6E}" {
+   Object "{6EB1C94526694D02}Assets/Vehicles/Attachments/SirenLights/LightBarLED.xob"
+  }
+  Hierarchy "{7CAC1532586F4D45}" {
+  }
+ }
+ {
+  $grp GameEntity : "{788668CB3640406C}Prefabs/Vehicles/SirenLights/Base/LEDBase.et" {
+   {
+    ID "9F0AEF47A4A948C1"
+    components {
+     EL_SirenLightComponent "{6D5A381650C74E61}" {
+      m_Name "left2"
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 7
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Left2"
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "FD0B94FC0DC54CF3"
+    components {
+     EL_SirenLightComponent "{570D7BADC65B4A6B}" {
+      m_Name "left3"
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 10
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Left3"
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "8A98F64927514B58"
+    components {
+     EL_SirenLightComponent "{22447810229542C7}" {
+      m_Name "left1"
+      m_Lights {
+       EL_LightChild "{51B6220B0A784201}" {
+        m_eLightType POINT
+        m_vLightOffset -0.32 0.3 0
+        m_vLightColor 0 0.125 0.502
+        m_NearPlane 0.25
+        m_NightLVAttenuation 2
+        m_DayLV 14
+       }
+      }
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 10
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Left1"
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "0F8E1EB3C5364190"
+    components {
+     EL_SirenLightComponent "{CB1515F00D964050}" {
+      m_Name "right2"
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 10
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Right2"
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "DCF26B79C76546B2"
+    components {
+     EL_SirenLightComponent "{F63F73C3FADB49E0}" {
+      m_Name "right1"
+      m_Lights {
+       EL_LightChild "{07ECF0644167493A}" {
+        m_eLightType POINT
+        m_vLightOffset 0.32 0.3 0
+        m_vLightColor 0 0.125 0.502
+        m_NearPlane 0.25
+        m_NightLVAttenuation 2
+        m_DayLV 14
+       }
+      }
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 10
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Right1"
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "D9D17DB275474B02"
+    components {
+     EL_SirenLightComponent "{1AEE2349B3F04ECB}" {
+      m_Name "left5"
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 10
+     }
+     MeshObject "{6AB5F0C3173241D6}" {
+      Object "{5A0CDBEBFB824BEF}Assets/Vehicles/Attachments/SirenLights/EmergencyLightLEDBaseTip.xob"
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Left5"
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "B5421CA903094244"
+    components {
+     EL_SirenLightComponent "{1A67BCDDD5614256}" {
+      m_Name "left4"
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 10
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Left4"
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "2F576B53FBD640FB"
+    components {
+     EL_SirenLightComponent "{1E3076D053DC4ECE}" {
+      m_Name "right5"
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 10
+     }
+     MeshObject "{6AB5F0C3173241D6}" {
+      Object "{5A0CDBEBFB824BEF}Assets/Vehicles/Attachments/SirenLights/EmergencyLightLEDBaseTip.xob"
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Right5"
+     }
+    }
+    coords 0 0 0
+    angleY 180
+   }
+   {
+    ID "7EB9FE94036649C2"
+    components {
+     EL_SirenLightComponent "{BE1F29F072F04BFC}" {
+      m_Name "right4"
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 10
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Right4"
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "11B30299A53E40B8"
+    components {
+     EL_SirenLightComponent "{4F41BEEC625D450B}" {
+      m_Name "right3"
+      m_OverrideEmissiveColor 1
+      m_EmissiveColor 0 0.125 0.502
+      m_EmissiveMultiplier 10
+     }
+     Hierarchy "{66DA911F61854874}" {
+      PivotID "Right3"
+     }
+    }
+    coords 0 0 0
+   }
+  }
+ }
+}

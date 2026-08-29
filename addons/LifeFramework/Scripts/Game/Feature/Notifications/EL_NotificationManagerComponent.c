@@ -19,6 +19,7 @@ class EL_NotificationConfig
 {
 	string m_sTitle;
 	string m_sMessage;
+	string m_sMessageArg;
 	float m_fDuration;
 	EL_ENotificationType m_eType;
 	string m_sIconPath;
@@ -30,6 +31,7 @@ class EL_NotificationConfig
 	{
 		m_sTitle = title;
 		m_sMessage = message;
+		m_sMessageArg = "";
 		m_fDuration = duration;
 		m_eType = type;
 		m_bShowSound = true;
@@ -159,14 +161,18 @@ class EL_NotificationManagerComponent : ScriptComponent
 		
 		Print(string.Format("[EL_NotificationManagerComponent] ✅ Sending notification to player %1: '%2'", playerId, config.m_sTitle), LogLevel.NORMAL);
 		
-		Rpc(RPC_ShowNotification, config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound);
+		// Broadcast with a playerId filter: the handler drops the toast on every client that is
+		// not the target. The direct call covers the listen-server host (Broadcast skips the
+		// authority, so the host would never see its own notification otherwise).
+		Rpc(RpcDo_ShowNotification, config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound, playerId, config.m_sMessageArg);
+		RpcDo_ShowNotification(config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound, playerId, config.m_sMessageArg);
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Send notification to all players with specific job (only if they are on duty)
 	//! \param jobType Target job type
 	//! \param config Notification configuration
-	//! \param onDutyOnly If true, only send to players who are on duty (not UNEMPLOYED)
+	//! \param onDutyOnly If true, only send to players who are on duty
 	void SendToJob(EL_EJobType jobType, EL_NotificationConfig config, bool onDutyOnly = true)
 	{
 		if (!Replication.IsServer())
@@ -174,6 +180,8 @@ class EL_NotificationManagerComponent : ScriptComponent
 			
 		array<int> playerIds = {};
 		GetGame().GetPlayerManager().GetPlayers(playerIds);
+		
+		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		
 		foreach (int playerId : playerIds)
 		{
@@ -189,9 +197,15 @@ class EL_NotificationManagerComponent : ScriptComponent
 			if (jobComp.GetJob() != jobType)
 				continue;
 				
-			// If onDutyOnly is true, skip players who are UNEMPLOYED (off duty)
-			if (onDutyOnly && jobComp.GetJob() == EL_EJobType.UNEMPLOYED)
-				continue;
+			// Duty lives on the account, not the job component: a police officer can be off duty
+			// while holding the POLICE job. The old UNEMPLOYED check was a tautology (the job
+			// already matched) and let off-duty officers receive alerts.
+			if (onDutyOnly)
+			{
+				EL_PlayerAccount account = accountManager.GetAccount(EL_Utils.GetPlayerUID(playerEntity));
+				if (!account || !account.IsOnDuty())
+					continue;
+			}
 				
 			SendToPlayer(playerId, config);
 		}
@@ -205,7 +219,8 @@ class EL_NotificationManagerComponent : ScriptComponent
 		if (!Replication.IsServer())
 			return;
 			
-		Rpc(RPC_ShowNotification, config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound);
+		Rpc(RpcDo_ShowNotification, config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound, -1, config.m_sMessageArg);
+		RpcDo_ShowNotification(config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound, -1, config.m_sMessageArg);
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,7 +229,7 @@ class EL_NotificationManagerComponent : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	//! Send notification to specific player (static)
-	static void NotifyPlayer(int playerId, string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.INFO)
+	static void NotifyPlayer(int playerId, string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.INFO, string messageArg = "")
 	{
 		EL_NotificationManagerComponent manager = GetInstance();
 		if (!manager)
@@ -226,30 +241,33 @@ class EL_NotificationManagerComponent : ScriptComponent
 		Print(string.Format("[EL_NotificationManagerComponent] Sending notification to player %1: %2", playerId, title), LogLevel.NORMAL);
 		
 		EL_NotificationConfig config = new EL_NotificationConfig(title, message, duration, type);
+		config.m_sMessageArg = messageArg;
 		manager.SendToPlayer(playerId, config);
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Send notification to all players with specific job (static)
-	static void NotifyJob(EL_EJobType jobType, string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.INFO, bool onDutyOnly = true)
+	static void NotifyJob(EL_EJobType jobType, string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.INFO, bool onDutyOnly = true, string messageArg = "")
 	{
 		EL_NotificationManagerComponent manager = GetInstance();
 		if (!manager)
 			return;
 			
 		EL_NotificationConfig config = new EL_NotificationConfig(title, message, duration, type);
+		config.m_sMessageArg = messageArg;
 		manager.SendToJob(jobType, config, onDutyOnly);
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Send notification to all players (static)
-	static void NotifyAll(string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.INFO)
+	static void NotifyAll(string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.INFO, string messageArg = "")
 	{
 		EL_NotificationManagerComponent manager = GetInstance();
 		if (!manager)
 			return;
 			
 		EL_NotificationConfig config = new EL_NotificationConfig(title, message, duration, type);
+		config.m_sMessageArg = messageArg;
 		manager.SendToAll(config);
 	}
 	
@@ -258,21 +276,35 @@ class EL_NotificationManagerComponent : ScriptComponent
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	//------------------------------------------------------------------------------------------------
-	// ✅ FIX: Changed from Broadcast to Owner to send only to target player
-	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RPC_ShowNotification(string title, string message, float duration, EL_ENotificationType type, string iconPath, bool playSound)
+	//! Server->client targeted delivery. Broadcast reaches every client that has the game mode
+	//! proxy; each handler keeps the toast only when playerId matches the local player (-1 = all).
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	protected void RpcDo_ShowNotification(string title, string message, float duration, EL_ENotificationType type, string iconPath, bool playSound, int playerId, string messageArg)
 	{
-		Print(string.Format("[EL_NotificationManagerComponent] ✅ CLIENT received notification: '%1' - '%2'", title, message), LogLevel.NORMAL);
-		
+		if (RplSession.Mode() == RplMode.Dedicated)
+			return;
+
+		if (playerId > 0)
+		{
+			PlayerController playerController = GetGame().GetPlayerController();
+			if (!playerController)
+				return;
+
+			if (playerId != playerController.GetPlayerId())
+				return;
+		}
+
 		// Client-side: Show custom notification toast
-		ShowNotificationToast(title, message, duration, type);
+		ShowNotificationToast(title, message, duration, type, messageArg);
 	}
 	
 	//------------------------------------------------------------------------------------------------
 	//! Show notification toast on client
-	protected void ShowNotificationToast(string title, string message, float duration, EL_ENotificationType type)
+	protected void ShowNotificationToast(string title, string message, float duration, EL_ENotificationType type, string messageArg = "")
 	{
 		// Add prefix based on type if no custom title
+		// TODO: these fallback titles are Spanish literals; move to localization keys in the
+		// localization phase.
 		string displayTitle = title;
 		if (title.IsEmpty())
 		{
@@ -304,6 +336,14 @@ class EL_NotificationManagerComponent : ScriptComponent
 					break;
 			}
 		}
+		else if (displayTitle.StartsWith("#"))
+		{
+			displayTitle = WidgetManager.Translate(displayTitle);
+		}
+
+		string displayMessage = message;
+		if (displayMessage.StartsWith("#"))
+			displayMessage = WidgetManager.Translate(displayMessage, messageArg);
 		
 		// Create notification widget on HUD layer
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
@@ -313,7 +353,6 @@ class EL_NotificationManagerComponent : ScriptComponent
 			return;
 		}
 		
-		// ✅ FIX: Add parent widget to ensure proper rendering and Z-order
 		Widget hudParent = workspace.GetParent();
 		Widget notificationContainer = null;
 		
@@ -355,7 +394,7 @@ class EL_NotificationManagerComponent : ScriptComponent
 		if (handler)
 		{
 			Print(string.Format("[EL_NotificationManagerComponent] ✅ Handler found, showing notification: '%1'", displayTitle), LogLevel.NORMAL);
-			handler.Show(displayTitle, message, type, duration);
+			handler.Show(displayTitle, displayMessage, type, duration);
 		}
 		else
 		{

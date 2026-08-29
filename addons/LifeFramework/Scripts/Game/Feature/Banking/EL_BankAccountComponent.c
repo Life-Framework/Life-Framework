@@ -16,6 +16,9 @@ class EL_BankAccountComponent : ScriptComponent
 	[Attribute(defvalue: "600", UIWidgets.Slider, "Time between interest payments (seconds)", "60 3600 10")]
 	protected float m_fInterestInterval;
 	
+	[Attribute(defvalue: "0", UIWidgets.Auto, "Starting balance granted to a fresh account (persistence restore is authoritative)")]
+	protected int m_iStartingBalance;
+	
 	protected float m_fTimeSinceLastInterest;
 	protected int m_iTotalDeposits;
 	protected int m_iTotalWithdrawals;
@@ -38,7 +41,7 @@ class EL_BankAccountComponent : ScriptComponent
 		super.OnPostInit(owner);
 		
 		SetEventMask(owner, EntityEvent.INIT | EntityEvent.FRAME);
-		m_iAccountBalance = 20000;
+		m_iAccountBalance = m_iStartingBalance;
 		m_aTransactionHistory = new array<ref EL_BankTransaction>();
 	}
 	

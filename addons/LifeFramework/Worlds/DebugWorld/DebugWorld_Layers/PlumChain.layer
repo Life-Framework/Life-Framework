@@ -28,8 +28,12 @@ GenericEntity PlumTrader {
       }
      }
      EL_TraderManagerComponent "{59693C53B6A5EFC0}" {
-      m_ItemToReceive "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
-      m_ItemToGive "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+      m_aTradableItems {
+       EL_TraderItem "{B34AF596CDE80127}" {
+        m_ItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
+        m_ValuePerItem 5
+       }
+      }
      }
      MeshObject "{59670CE9C98E5BAF}" {
       Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"

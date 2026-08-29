@@ -28,6 +28,12 @@ GenericEntity TomatoTrader {
       }
      }
      EL_TraderManagerComponent "{59693C53B6A5EFC0}" {
+      m_aTradableItems {
+       EL_TraderItem "{DE1BF96A038524C7}" {
+        m_ItemPrefab "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et"
+        m_ValuePerItem 5
+       }
+      }
      }
      MeshObject "{59670CE9C98E5BAF}" {
       Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"

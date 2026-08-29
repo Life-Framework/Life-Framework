@@ -614,6 +614,7 @@ usage: tools\\cli <command> [args]
   test [--no-build] [--tier fast|all]
                                 build + boot server + parse ELTEST results
   ci                            validate + build + test (full gate)
+  regen-tests                   regenerate the test registry from the test files
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   validate | lint               run every script in tools/{validation,lint}/
   run <area>                    run every script in tools/<area>/ (validate, lint, test, ...)
@@ -662,6 +663,16 @@ const cmds = {
   ci: () => cmdCi(),
 validate: () => cmdRunArea("validate"),
   lint: () => cmdRunArea("lint"),
+  "regen-tests": () => {
+    const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");
+    if (!existsSync(gen)) {
+      console.log(`FAIL  generator not found: ${gen}`);
+      return 1;
+    }
+    const res = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", gen, "-Write"]);
+    process.stdout.write(res.stdout + res.stderr);
+    return res.status;
+  },
   run: (n) =>
     TOOL_DIRS[n] ? cmdRunArea(n) : (console.log(`unknown area: ${n} (expected one of: ${Object.keys(TOOL_DIRS).join(", ")}`), 1),
   call: () => cmdMcpCall(rest),

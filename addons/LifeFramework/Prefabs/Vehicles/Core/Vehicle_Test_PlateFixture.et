@@ -1,0 +1,13 @@
+Vehicle {
+ ID "2862885EC47A9A9C"
+ components {
+  EL_LicensePlateManagerComponent "{B646BF47DB21037D}" {
+   m_Plates {
+    EL_LicensePlatePointInfo "{6DC357B649BB6958}" {
+     Offset 0.3 1.2 0.5
+     Angles 0 0 0
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,47 @@
+MetaFileClass {
+ Name "{7FB5C800EC4746A9}Assets/Vehicles/Attachments/SirenLights/EmergencyLightRotaryBase.xob"
+ Configurations {
+  FBXResourceClass PC {
+   ExportSkinning 1
+   MaterialAssigns {
+    MaterialAssignClass "{7BFA0DC67BD843E3}" {
+     SourceMaterial "RotaryBase_Body"
+     AssignedMaterial "{12219BD829594BA4}Assets/Vehicles/Attachments/SirenLights/Data/RotaryBase_Body.emat"
+    }
+    MaterialAssignClass "{AF2DC9AB37224037}" {
+     SourceMaterial "LightBulb_Glass"
+     AssignedMaterial "{7AE8529F67C343E4}Assets/Vehicles/Attachments/SirenLights/Data/LightBulb_Glass.emat"
+    }
+   }
+   MeshParams {
+    MeshParam LightBulb {
+    }
+    MeshParam ReflectiveDisk {
+    }
+   }
+   Common TXOCommonClass "{FBBDEC2C826A4586}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "3.1.2"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{EBE597453DDD4376}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{CF0D40FEA4EB4DBB}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{91B9A3BBCE734CEC}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{C7E975F7F6724C67}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

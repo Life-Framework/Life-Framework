@@ -1,68 +1,108 @@
-$grp GenericEntity : "{403E2B0BE16D6CC9}Prefabs/Shops/ItemShop_Base.et" {
+$grp GenericEntity {
  Shop_GeneralStore_Debug {
   components {
-   ADM_PhysicalShopComponent "{5D775155BFB12BA4}" {
-    Enabled 0
+   MeshObject "{5A4B0B84C86E2841}" {
+    Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
    }
-   ADM_ShopComponent "{5A4B0B84C86E2843}" {
-    m_ShopName "General Store"
-    m_AdditionalMerchandise {
-     ADM_ShopMerchandise "{6398C091849BE001}" {
-      m_Merchandise ADM_MerchandiseItem "{6398C091849BE002}" {
-       m_sPrefab "Prefabs/Items/Food/Apple.et"
-      }
-      m_BuyPayment {
-       ADM_PaymentMethodCurrency "{6398C091849BE003}" {
-        m_Quantity 10
-       }
-      }
+   RigidBody "{5A4B0B84C86E2842}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   EL_ShopComponent "{5A4B0B84C86E2843}" {
+    m_sShopName "General Store"
+    m_sShopDescription "Tienda general de suministros"
+    m_aShopItems {
+     EL_ShopItem "{6398C091849BE001}" {
+      m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+      m_iPrice 10
+      m_sDisplayName "Manzana"
+      m_iMaxQuantity 10
      }
-     ADM_ShopMerchandise "{6398C091849BE004}" {
-      m_Merchandise ADM_MerchandiseItem "{6398C091849BE005}" {
-       m_sPrefab "Prefabs/Items/Clothing/Shirt.et"
+     EL_ShopItem "{6398C091849BE004}" {
+      m_ItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
+      m_iPrice 8
+      m_sDisplayName "Ciruela"
+      m_iMaxQuantity 10
+     }
+    }
+   }
+   ActionsManagerComponent "{5A4B0B84C86E2845}" {
+    ActionContexts {
+     UserActionContext "{5A4B0B84C86E2846}" {
+      ContextName "default"
+      Position PointInfo "{5A4B0B84C86E2847}" {
+       Offset 0 0.8 0
       }
-      m_BuyPayment {
-       ADM_PaymentMethodCurrency "{6398C091849BE006}" {
-        m_Quantity 50
-       }
+      Radius 3
+     }
+    }
+    additionalActions {
+     EL_ShopAction "{5A4B0B84C86E2848}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{5A4B0B84C86E2849}" {
+       Name "Abrir Tienda"
+       Description "Comprar comida y suministros"
       }
      }
     }
    }
+   RplComponent "{5A4B0B84C86E284A}" {
+    Enabled 1
+   }
   }
-  coords 122 0 132
+  coords 142 0 130
  }
  Shop_BlackMarket_Debug {
   components {
-   ADM_PhysicalShopComponent "{5D775155BFB12BA5}" {
-    Enabled 0
+   MeshObject "{5A4B0B84C86E3841}" {
+    Object "{8AEBC3FDF26E9C07}Assets/Props/Commercial/MarketStand_01/MarketStand_01.xob"
    }
-   ADM_ShopComponent "{5A4B0B84C86E3843}" {
-    m_ShopName "Black Market"
-    m_AdditionalMerchandise {
-     ADM_ShopMerchandise "{6398C091849BE007}" {
-      m_Merchandise ADM_MerchandiseItem "{6398C091849BE008}" {
-       m_sPrefab "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
-      }
-      m_BuyPayment {
-       ADM_PaymentMethodCurrency "{6398C091849BE009}" {
-        m_Quantity 500
-       }
-      }
+   RigidBody "{5A4B0B84C86E3842}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   EL_ShopComponent "{5A4B0B84C86E3843}" {
+    m_sShopName "Mercado Negro"
+    m_sShopDescription "Equipamiento especial"
+    m_aShopItems {
+     EL_ShopItem "{6398C091849BE007}" {
+      m_ItemPrefab "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
+      m_iPrice 500
+      m_sDisplayName "M9 Pistol"
+      m_iMaxQuantity 1
      }
-     ADM_ShopMerchandise "{6398C091849BE00A}" {
-      m_Merchandise ADM_MerchandiseItem "{6398C091849BE00B}" {
-       m_sPrefab "Prefabs/Items/Drugs/Weed.et"
+    }
+   }
+   ActionsManagerComponent "{5A4B0B84C86E3845}" {
+    ActionContexts {
+     UserActionContext "{5A4B0B84C86E3846}" {
+      ContextName "default"
+      Position PointInfo "{5A4B0B84C86E3847}" {
+       Offset 0 0.8 0
       }
-      m_BuyPayment {
-       ADM_PaymentMethodCurrency "{6398C091849BE00C}" {
-        m_Quantity 100
-       }
+      Radius 3
+     }
+    }
+    additionalActions {
+     EL_ShopAction "{5A4B0B84C86E3848}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{5A4B0B84C86E3849}" {
+       Name "Abrir Mercado Negro"
+       Description "Comprar equipamiento"
       }
      }
     }
    }
+   RplComponent "{5A4B0B84C86E384A}" {
+    Enabled 1
+   }
   }
-  coords 124 0 134
+  coords 146 0 130
  }
 }

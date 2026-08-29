@@ -86,6 +86,3 @@ TimeAndWeatherManagerEntity TimeAndWeatherManager_5A2F39DFADA7BC53 : "{A3BAF78F6
  "Internal subvariant 0" 0
  "Internal subvariant 1" 0
 }
-ProjectileSoundsManager ProjectileSoundsManager : "{B4DA8B0024536625}Prefabs/World/Game/ProjectileSoundsManager.et" {
- coords 94.322 -0.999 117.803
-}

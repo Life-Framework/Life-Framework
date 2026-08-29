@@ -1,7 +1,13 @@
+[BaseContainerProps()]
 class EL_ConsumableEffectSurvival : SCR_ConsumableEffectBase
 {
+	[Attribute(defvalue: "0", uiwidget: UIWidgets.Auto, desc: "Hunger restore amount")]
 	protected float m_fHungerRestore;
+
+	[Attribute(defvalue: "0", uiwidget: UIWidgets.Auto, desc: "Thirst restore amount")]
 	protected float m_fThirstRestore;
+
+	[Attribute(defvalue: "0", uiwidget: UIWidgets.Auto, desc: "Health restore amount")]
 	protected float m_fHealthRestore;
 
 	//------------------------------------------------------------------------------------------------

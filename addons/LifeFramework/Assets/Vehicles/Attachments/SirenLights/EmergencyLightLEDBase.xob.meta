@@ -1,0 +1,40 @@
+MetaFileClass {
+ Name "{FDF9C6B9147F4C74}Assets/Vehicles/Attachments/SirenLights/EmergencyLightLEDBase.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{36B79492B55D401F}" {
+     SourceMaterial "LED"
+     AssignedMaterial "{7A95BE40686845D7}Assets/Vehicles/Attachments/SirenLights/Data/LED.emat"
+    }
+   }
+   MeshParams {
+    MeshParam LED {
+    }
+   }
+   Common TXOCommonClass "{856F7B5F3A2E4514}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "3.1.2"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{0004D99EB981408C}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{E899992D825748BF}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{D1F7912D82F64ADA}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{F25727AAB5C14B3F}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

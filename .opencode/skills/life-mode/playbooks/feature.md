@@ -8,7 +8,7 @@ New or changed gameplay behavior, built from a named data shape. The Enfusion wa
 4. Subtract before you add. Is there dead weight in the path you are extending? Remove it first per **principle-subtract-before-you-add**. Does a partial feature stub already exist? Finish or delete it, do not build around it.
 5. Build the smallest working slice end to end. One feature, one commit unit. Wire the prefab component, the scripted logic, the config values, and the localization key as one verifiable unit.
 6. Verify in the running game per **enfusion-verify** and **principle-prove-it-works**. Drive the feature in the DebugWorld. Exercise the actual path: spawn the item, trigger the action, read the log or UI state. "It compiles" is not a pass.
-7. Add an `EL_Test` for any pure logic the feature introduces (calculations, formatting, state transitions) via **el-tdd**. Register it in `EL_TestManager.CollectTests()`.
+7. Add an `EL_Test` for any pure logic the feature introduces (calculations, formatting, state transitions) via **el-tdd**. Give it a `// tier:` comment and a `// red-proof:` comment, then run `tools\cli regen-tests`; registration is automatic.
 8. Check **enfusion-blast-radius** for what the new prefab or component could break (children inheriting from a base you edited, config references, replication).
 9. Keep the diff as small as the feature allows. Delete scaffolding and debug logging before declaring done.
 

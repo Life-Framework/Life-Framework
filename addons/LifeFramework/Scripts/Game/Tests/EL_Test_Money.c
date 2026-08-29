@@ -1,6 +1,7 @@
 // red-proof: change an expected value (e.g. AddCash return 200 -> 199, or
 // GetCash 50 -> 51) and run `tools\cli test --tier all`. Red run pending:
 // first boot after the EPF dependency removal lands.
+// tier: WORLD
 class EL_Test_MoneyCash : EL_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";

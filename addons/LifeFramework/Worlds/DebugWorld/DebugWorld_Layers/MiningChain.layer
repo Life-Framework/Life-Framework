@@ -23,7 +23,7 @@ $grp GenericEntity {
    }
   }
  }
- Furnace {
-  coords 115 0 130
- }
+}
+GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
+ coords 115 0 130
 }

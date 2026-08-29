@@ -2,7 +2,7 @@ $grp GenericEntity {
  RobberyPoint_Money {
   components {
    MeshObject "{5A4B0B84C86D8843}" {
-    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+    Object "{4CD9B977F230E7DF}Assets/Props/Furniture/Safe_01/Safe_01.xob"
    }
    RigidBody "{5A4B0B84C86D8844}" {
     Mass 10
@@ -14,13 +14,13 @@ $grp GenericEntity {
      UserActionContext "{5A4B0B84C86D8846}" {
       ContextName "default"
       Position PointInfo "{5A4B0B84C86D8847}" {
-       Offset 0 0.0873 0
+       Offset 0 0.5 0
       }
       Radius 3
      }
     }
     additionalActions {
-     EL_RobberyAction "{5A4B0B84C86D8848}" {
+     EL_RobAction "{5A4B0B84C86D8848}" {
       ParentContextList {
        "default"
       }
@@ -28,6 +28,9 @@ $grp GenericEntity {
        Name "Robar Dinero"
        Description "Robar 200$ (Requiere 1+ policías de servicio)"
       }
+      m_iMoneyAmount 200
+      m_fCooldown 60
+      m_iMinPoliceOnDuty 1
      }
     }
    }
@@ -35,12 +38,12 @@ $grp GenericEntity {
     Enabled 1
    }
   }
-  coords 128 0 138
+  coords 143 0 136
  }
  RobberyPoint_Weapon {
   components {
    MeshObject "{5A4B0B84C86D9843}" {
-    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+    Object "{B98BC8DC4C59B8DA}Assets/Props/Military/Camps/WeaponRackStand_01/WeaponRackStand_01.xob"
    }
    RigidBody "{5A4B0B84C86D9844}" {
     Mass 10
@@ -52,13 +55,13 @@ $grp GenericEntity {
      UserActionContext "{5A4B0B84C86D9846}" {
       ContextName "default"
       Position PointInfo "{5A4B0B84C86D9847}" {
-       Offset 0 0.0873 0
+       Offset 0 1 0
       }
       Radius 3
      }
     }
     additionalActions {
-     EL_RobberyAction "{5A4B0B84C86D9848}" {
+     EL_RobWeaponAction "{5A4B0B84C86D9848}" {
       ParentContextList {
        "default"
       }
@@ -66,6 +69,9 @@ $grp GenericEntity {
        Name "Robar Armas"
        Description "Robo de armería (Requiere 2+ policías de servicio)"
       }
+      m_WeaponPrefab "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et"
+      m_fCooldown 120
+      m_iMinPoliceOnDuty 2
      }
     }
    }
@@ -73,44 +79,36 @@ $grp GenericEntity {
     Enabled 1
    }
   }
-  coords 130 0 140
+  coords 148 0 136
  }
- RobberyPoint_Vehicle {
-  components {
-   MeshObject "{5A4B0B84C86DA843}" {
-    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
-   }
-   RigidBody "{5A4B0B84C86DA844}" {
-    Mass 10
-    ModelGeometry 1
-    Static 1
-   }
-   ActionsManagerComponent "{5A4B0B84C86DA845}" {
-    ActionContexts {
-     UserActionContext "{5A4B0B84C86DA846}" {
-      ContextName "default"
-      Position PointInfo "{5A4B0B84C86DA847}" {
-       Offset 0 0.0873 0
-      }
-      Radius 3
+}
+GenericEntity RobberyPoint_Vehicle : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ components {
+  ActionsManagerComponent "{5A4B0B84C86DA845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86DA846}" {
+     ContextName "default"
+     Position PointInfo "{5A4B0B84C86DA847}" {
+      Offset 0 0.5 0
      }
-    }
-    additionalActions {
-     EL_RobberyAction "{5A4B0B84C86DA848}" {
-      ParentContextList {
-       "default"
-      }
-      UIInfo UIInfo "{5A4B0B84C86DA849}" {
-       Name "Robar Vehículo"
-       Description "Robo de vehículo (Requiere 3+ policías de servicio)"
-      }
-     }
+     Radius 3
     }
    }
-   RplComponent "{5A4B0B84C86DA84A}" {
-    Enabled 1
+   additionalActions {
+    EL_RobVehicleAction "{5A4B0B84C86DA848}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86DA849}" {
+      Name "Robar Vehículo"
+      Description "Robo de vehículo (Requiere 3+ policías de servicio)"
+     }
+     m_VehiclePrefab "{254289B9C09904AB}Prefabs/Vehicles/Wheeled/BRDM2/BRDM2.et"
+     m_fCooldown 600
+     m_iMinPoliceOnDuty 3
+    }
    }
   }
-  coords 132 0 142
  }
+ coords 153 0 136
 }

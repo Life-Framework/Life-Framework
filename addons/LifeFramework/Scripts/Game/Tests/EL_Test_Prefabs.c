@@ -1,6 +1,7 @@
 // red-proof: append a nonexistent path (e.g. "Prefabs/Items/Food/Missing.et")
 // to the prefab list and run `tools\cli test --tier all`. Red run pending:
 // first boot after the EPF dependency removal lands.
+// tier: WORLD
 class EL_Test_Prefabs : EL_Test
 {
 	override string GetName()

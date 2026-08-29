@@ -36,8 +36,56 @@ GenericEntity {
    }
   }
   EL_TraderManagerComponent "{59693C53B6A5EFC1}" {
-   m_ItemToReceive "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
-   m_ItemToGive "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+   m_aTradableItems {
+    EL_TraderItem "{59693C53B6A5E001}" {
+     m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+     m_ValuePerItem 5
+    }
+    EL_TraderItem "{59693C53B6A5E002}" {
+     m_ItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
+     m_ValuePerItem 4
+    }
+    EL_TraderItem "{59693C53B6A5E003}" {
+     m_ItemPrefab "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et"
+     m_ValuePerItem 15
+    }
+    EL_TraderItem "{59693C53B6A5E004}" {
+     m_ItemPrefab "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et"
+     m_ValuePerItem 10
+    }
+    EL_TraderItem "{59693C53B6A5E005}" {
+     m_ItemPrefab "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et"
+     m_ValuePerItem 8
+    }
+    EL_TraderItem "{59693C53B6A5E006}" {
+     m_ItemPrefab "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et"
+     m_ValuePerItem 12
+    }
+    EL_TraderItem "{59693C53B6A5E007}" {
+     m_ItemPrefab "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et"
+     m_ValuePerItem 25
+    }
+    EL_TraderItem "{59693C53B6A5E008}" {
+     m_ItemPrefab "{8F81BD0BF343CF49}Prefabs/Resources/Mining/GoldNugget.et"
+     m_ValuePerItem 60
+    }
+    EL_TraderItem "{59693C53B6A5E009}" {
+     m_ItemPrefab "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et"
+     m_ValuePerItem 20
+    }
+    EL_TraderItem "{59693C53B6A5E00A}" {
+     m_ItemPrefab "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
+     m_ValuePerItem 50
+    }
+    EL_TraderItem "{59693C53B6A5E00B}" {
+     m_ItemPrefab "{ACC9A10F0F20F5C4}Prefabs/Resources/Mining/GoldBar.et"
+     m_ValuePerItem 120
+    }
+    EL_TraderItem "{59693C53B6A5E00C}" {
+     m_ItemPrefab "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
+     m_ValuePerItem 40
+    }
+   }
   }
   MeshObject "{59670CE9C98E5BB0}" {
    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{EA882144DF2D4BEC}Prefabs/Vehicles/Test/VehicleLockFixture.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

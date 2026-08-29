@@ -1,0 +1,95 @@
+GenericEntity {
+ ID "9A7716FA893941FF"
+ components {
+  SignalsManagerComponent "{1997CCF6BBF34D3A}" {
+  }
+  EL_SirenKnobComponent "{3CE5649FA69F4DB7}" {
+  }
+   MeshObject "{E03BFC6FF75841B7}" {
+    Object "{0D77D089490D4DD0}Assets/Vehicles/Attachments/SirenLights/Knob.xob"
+    Materials {
+     MaterialAssignClass "{59A73088CE0292A1}" {
+      SourceMaterial "Knob"
+      AssignedMaterial "{892BBE796DDB4687}Assets/Vehicles/Attachments/SirenLights/Data/Knob.emat"
+     }
+     MaterialAssignClass "{59A73088CE0292A2}" {
+      SourceMaterial "Knob_Decals"
+      AssignedMaterial "{FF4B61672C9A4540}Assets/Vehicles/Attachments/SirenLights/Data/Knob_Decals.emat"
+     }
+    }
+   }
+  Hierarchy "{94383133FA4A4102}" {
+  }
+  RigidBody "{7AD16F0716274DA4}" {
+   Active AlwaysActive
+   ModelGeometry 1
+  }
+  ProcAnimComponent "{A200496292AD4C95}" {
+   Parameters {
+    ProcAnimParams "{A8901E225F7B4AE3}" {
+     ResourceName "{F973FC36D6404FE1}Assets/Vehicles/Attachments/SirenLights/Anims/Knob.pap"
+     BoneNames {
+      "Bone"
+     }
+     SimulationDistance 5
+    }
+   }
+  }
+  ActionsManagerComponent "{03E51C04356C49B7}" {
+   ActionContexts {
+    UserActionContext "{1BA43BD84ABD4398}" {
+     ContextName "siren"
+     Position PointInfo "{595A291451304507}" {
+      Offset 0 0 -0.0476
+      Angles 0 180 0
+     }
+     Omnidirectional 0
+    }
+   }
+   additionalActions {
+    EL_SirenModeAction "{BDA146461D9643B0}" {
+     ParentContextList {
+      "siren"
+     }
+     UIInfo UIInfo "{CD9450C0257843E4}" {
+      Name "Siren: Off Duty Mode"
+     }
+     m_Mode "default"
+    }
+    EL_SirenModeAction "{C71474E318FD4980}" {
+     ParentContextList {
+      "siren"
+     }
+     UIInfo UIInfo "{77A5AC5442A847AC}" {
+      Name "Siren: Patrol Mode"
+     }
+     "Sort Priority" 1
+     m_Mode "Mode1"
+    }
+    EL_SirenModeAction "{A2B6BC9B58974199}" {
+     ParentContextList {
+      "siren"
+     }
+     UIInfo UIInfo "{BB7F69E4C92249D3}" {
+      Name "Siren: Cruise Mode"
+     }
+     "Sort Priority" 2
+     m_Mode "Mode2"
+    }
+    EL_SirenModeAction "{7D41C75C14334DF8}" {
+     ParentContextList {
+      "siren"
+     }
+     UIInfo UIInfo "{8FC1A97B01524D94}" {
+      Name "Siren: Pursuit Mode"
+     }
+     "Sort Priority" 3
+     m_Mode "Mode3"
+    }
+   }
+   AllowCrossHierarchy 1
+  }
+  RplComponent "{B4C7E2F05A3B4E19}" {
+  }
+ }
+}

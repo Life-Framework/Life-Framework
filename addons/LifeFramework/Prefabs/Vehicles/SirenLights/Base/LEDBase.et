@@ -1,0 +1,12 @@
+GameEntity {
+ ID "31306FD4145C46EC"
+ components {
+  MeshObject "{6AB5F0C3173241D6}" {
+   Object "{FDF9C6B9147F4C74}Assets/Vehicles/Attachments/SirenLights/EmergencyLightLEDBase.xob"
+  }
+  Hierarchy "{66DA911F61854874}" {
+  }
+  ParametricMaterialInstanceComponent "{E030529BCAB14709}" {
+  }
+ }
+}

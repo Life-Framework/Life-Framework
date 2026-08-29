@@ -1,6 +1,7 @@
 // red-proof: change an expected value (e.g. fresh hunger 100 -> 50) and run
 // the fast tier; the survival assertions fail.
 
+// tier: LOGIC
 class EL_Test_Survival : EL_Test
 {
 	override string GetName()
@@ -59,6 +60,7 @@ class EL_Test_Survival : EL_Test
 
 //------------------------------------------------------------------------------------------------
 //! Save-data round trip through the persisted record.
+// tier: LOGIC
 class EL_Test_SurvivalSaveData : EL_Test
 {
 	override string GetName()

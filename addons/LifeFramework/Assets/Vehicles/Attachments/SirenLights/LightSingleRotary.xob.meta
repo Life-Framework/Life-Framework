@@ -1,0 +1,63 @@
+MetaFileClass {
+ Name "{9923CA7CA8EE481A}Assets/Vehicles/Attachments/SirenLights/LightSingleRotary.xob"
+ Configurations {
+  FBXResourceClass PC {
+   ExportSkinning 1
+   MaterialAssigns {
+    MaterialAssignClass "{8E07FACBF34E4768}" {
+     SourceMaterial "LightSingleRotaryBody"
+     AssignedMaterial "{BC6A9190085A4ED4}Assets/Vehicles/Attachments/SirenLights/Data/LightSingleRotaryBody.emat"
+    }
+    MaterialAssignClass "{EE6C5955138549F1}" {
+     SourceMaterial "LightSingleRotaryGlass"
+     AssignedMaterial "{ABDB7AC048FB451E}Assets/Vehicles/Attachments/SirenLights/Data/LightSingleRotaryGlass.emat"
+    }
+   }
+   MeshParams {
+    MeshParam LightSingleRotary {
+    }
+   }
+   GeometryParams {
+    GeometryParam UTM_LightSingleRotary {
+     LayerPreset "VehicleFireView"
+     SurfaceProperties {
+      "{94B76D276C6A1DE3}Common/Materials/Game/Glass/glass_4mm_min.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+    GeometryParam "UTM_LightSingleRotary.001" {
+     LayerPreset "VehicleFireView"
+     SurfaceProperties {
+      "{EB387D1072E08951}Common/Materials/Game/Metal/metal_7mm.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{10E2BB6C1AC34CC1}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "3.1.2"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{2C804E030ABC49A6}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{375A02E1482541A1}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{E3D1F3AF24A641D9}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{D984205B66304D80}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

@@ -41,7 +41,7 @@ ActionsManagerComponent "{7E1735A0AB21F6F6}" {
      m_GatherItemPrefab "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et"
      m_GatherAmount 1
      m_GatherAmountMax 4
-     m_GatherTimeout 240000  // 4 minutes respawn
+      m_GatherTimeout 240000
     }
    }
   }

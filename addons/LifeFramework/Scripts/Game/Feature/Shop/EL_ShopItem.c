@@ -1,3 +1,4 @@
+[BaseContainerProps()]
 class EL_ShopItem
 {
 	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Prefab of the item to sell", "et")]

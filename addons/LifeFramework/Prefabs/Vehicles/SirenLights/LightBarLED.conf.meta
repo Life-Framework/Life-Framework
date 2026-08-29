@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{01051CFE4BC64945}Prefabs/Vehicles/SirenLights/LightBarLED.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

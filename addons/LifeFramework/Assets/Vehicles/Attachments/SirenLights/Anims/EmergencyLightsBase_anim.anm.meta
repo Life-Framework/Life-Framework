@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{DE32BF1C5BC74F5B}Assets/Vehicles/Attachments/SirenLights/Anims/EmergencyLightsBase_anim.anm"
+ Configurations {
+  FBXAnimResourceClass PC {
+  }
+  FBXAnimResourceClass XBOX_ONE : PC {
+  }
+  FBXAnimResourceClass XBOX_SERIES : PC {
+  }
+  FBXAnimResourceClass PS4 : PC {
+  }
+  FBXAnimResourceClass HEADLESS : PC {
+  }
+ }
+}

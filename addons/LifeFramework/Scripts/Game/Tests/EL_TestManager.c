@@ -77,31 +77,14 @@ class EL_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Register new test classes here. Tier by setup cost: LOGIC for pure
-	//! logic, WORLD for anything that loads a resource or touches the world.
+	//! Registrations live in the machine-generated EL_TestRegistrations.generated.c,
+	//! derived from each test file's `// tier:` comment. Regenerate with
+	//! `tools\cli regen-tests` after adding or re-tiering a test; never edit the
+	//! generated file by hand.
 	protected void CollectTests()
 	{
 		m_aTests.Clear();
-		Register(new EL_Test_WorldLoaded(), EL_TestTier.WORLD);
-		Register(new EL_Test_MoneyStackPrefab(), EL_TestTier.WORLD);
-		Register(new EL_Test_MathStringSanity(), EL_TestTier.LOGIC);
-		Register(new EL_Test_ContextSelfTest(), EL_TestTier.LOGIC);
-		Register(new EL_Test_Survival(), EL_TestTier.LOGIC);
-		Register(new EL_Test_SurvivalSaveData(), EL_TestTier.LOGIC);
-		Register(new EL_Test_AccountWantedClamp(), EL_TestTier.LOGIC);
-		Register(new EL_Test_AccountCharacterRoster(), EL_TestTier.LOGIC);
-		Register(new EL_Test_AccountSaveRoundtrip(), EL_TestTier.LOGIC);
-		Register(new EL_Test_AccountManagerCache(), EL_TestTier.LOGIC);
-		Register(new EL_Test_BankAccountMath(), EL_TestTier.LOGIC);
-		Register(new EL_Test_BankSaveRoundtrip(), EL_TestTier.LOGIC);
-		Register(new EL_Test_ATMManagerRegistry(), EL_TestTier.LOGIC);
-		Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
-		Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
-		Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
-		Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
-		Register(new EL_Test_Data(), EL_TestTier.WORLD);
-		Register(new EL_Test_MoneyCash(), EL_TestTier.WORLD);
-		Register(new EL_Test_QuantityStack(), EL_TestTier.WORLD);
+		EL_TestRegistrations.RegisterAll(this);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{FF4B61672C9A4540}Assets/Vehicles/Attachments/SirenLights/Data/Knob_Decals.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

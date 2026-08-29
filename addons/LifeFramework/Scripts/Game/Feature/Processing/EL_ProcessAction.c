@@ -40,7 +40,24 @@ class EL_ProcessAction : ScriptedUserAction
 	{
 		if (!EL_NetworkUtils.IsOwner(pOwnerEntity)) return;
 
+		// A recipe must require at least one input, or outputs are free
+		if (!m_aProcessingInputs || m_aProcessingInputs.IsEmpty())
+		{
+			Print("[EL_ProcessAction] Rejected process with no input requirements", LogLevel.WARNING);
+			return;
+		}
+
 		InventoryStorageManagerComponent inventoryManager = EL_Component<InventoryStorageManagerComponent>.Find(pUserEntity);
+
+		// Verify every input is fully present BEFORE consuming or producing anything
+		foreach (EL_ProcessingInput processingInput : m_aProcessingInputs)
+		{
+			if (processingInput.m_iInputAmount < 1 || EL_InventoryUtils.GetAmount(inventoryManager, processingInput.m_InputPrefab) < processingInput.m_iInputAmount)
+			{
+				Print("[EL_ProcessAction] Rejected process with missing inputs", LogLevel.WARNING);
+				return;
+			}
+		}
 
 		foreach (EL_ProcessingInput processingInput : m_aProcessingInputs)
 		{

@@ -7,6 +7,7 @@
 //! letters, space, then 3-4 digits. The known off-by-one (RandomInt(0,25)
 //! excludes Z; RandomInt(100,9999) excludes 9999) is a code-review finding in
 //! features.md, not a test here, because it cannot be observed deterministically.
+// tier: LOGIC
 class EL_Test_LicensePlateFormat : EL_Test
 {
 	override string GetName()

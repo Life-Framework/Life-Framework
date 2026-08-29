@@ -1,0 +1,12 @@
+Vehicle {
+ ID "AAEB69B737264AF8"
+ components {
+  EL_VehicleLockComponent "{81ACAF7178574338}" {
+  }
+  EL_VehicleStorageAccessControl "{FA102508AF8A4868}" {
+  }
+  RplComponent "{B6196974C9FA4BA2}" {
+   Enabled 1
+  }
+ }
+}

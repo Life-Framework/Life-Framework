@@ -1,6 +1,7 @@
 // red-proof: change an expected value (e.g. wanted clamp 5 -> 6) or break the
 // clamp in EL_PlayerAccount.SetWantedLevel, then run the fast tier.
 
+// tier: LOGIC
 class EL_Test_AccountWantedClamp : EL_Test
 {
 	override string GetName()
@@ -36,6 +37,7 @@ class EL_Test_AccountWantedClamp : EL_Test
 };
 
 //------------------------------------------------------------------------------------------------
+// tier: LOGIC
 class EL_Test_AccountCharacterRoster : EL_Test
 {
 	override string GetName()
@@ -71,6 +73,7 @@ class EL_Test_AccountCharacterRoster : EL_Test
 
 //------------------------------------------------------------------------------------------------
 //! Save-data round trip through the public record + manager seam.
+// tier: LOGIC
 class EL_Test_AccountSaveRoundtrip : EL_Test
 {
 	override string GetName()
@@ -109,6 +112,7 @@ class EL_Test_AccountSaveRoundtrip : EL_Test
 };
 
 //------------------------------------------------------------------------------------------------
+// tier: LOGIC
 class EL_Test_AccountManagerCache : EL_Test
 {
 	override string GetName()

@@ -16,9 +16,11 @@
 ### Current framework
 
 `EL_Test` (one class per test) + `EL_TestContext` (True/False/Equal/EqualStr/
-Fail) runs in DebugWorld on server start. Registered by hand in
-`EL_TestManager.CollectTests()`. Tiers: `LOGIC` (fast, no world), `WORLD`,
-`PERSISTENCE`. CLI gate: `tools\cli test`.
+Fail) runs in DebugWorld on server start. Registration is automatic: each test
+class declares its tier with a `// tier:` comment above it, and
+`tools\cli regen-tests` derives `EL_TestRegistrations.generated.c` from the
+files (`cli validate` checks it stays in sync). Tiers: `LOGIC` (fast, no
+world), `WORLD`, `PERSISTENCE`. CLI gate: `tools\cli test`.
 
 ### What it lacks (and what Overthrow showed us)
 
@@ -77,12 +79,13 @@ Overthrow hard lessons we adopt verbatim:
 
 ### File layout
 
-- `Scripts/Game/Tests/EL_Test_<Area>.c` — one class per subject area.
+- `Scripts/Game/Tests/EL_Test_<Area>.c` — one class per subject area. Registration is
+  automatic via `tools\cli regen-tests` (derives the registry from the files).
 - `Scripts/Game/Tests/Fixtures/EL_TestFixtures_<Area>.c` — hand-built subjects
   (probes that expose protected state without calling `Replication.BumpMe`).
   The validator scans only top-level `Tests/*.c`, so fixtures need no
   red-proof or registration.
-- Register once in `EL_TestManager.CollectTests()`.
+- Add the tier comment (`// tier: LOGIC|WORLD|PERSISTENCE`) above each test class.
 
 ---
 

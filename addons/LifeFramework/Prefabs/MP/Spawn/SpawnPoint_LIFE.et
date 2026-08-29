@@ -1,4 +1,4 @@
 SCR_SpawnPoint {
  ID "5D18FD9CB498EA0A"
- m_fSpawnRadius 2
+ m_fRandomSpawnRadius 2
 }

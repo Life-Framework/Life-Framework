@@ -1,4 +1,4 @@
-Tree {
+GenericEntity {
  ID "5A631817098CF41D"
  components {
   EL_DestructibleResourceComponent "{5ACCE1B70F3EF473}" {

@@ -1,0 +1,8 @@
+MatPBRBasic {
+ Emissive 1 1 1 0
+ EmissiveLV 10
+ EmissiveAbsoluteLV 0
+ EmissiveMap "{ED8C6A795B6D4451}Assets/Vehicles/Attachments/SirenLights/Data/RotaryBase_Body_EM.edds"
+ BCRMap "{9F8945D42246442A}Assets/Vehicles/Attachments/SirenLights/Data/RotaryBase_Body_BCR.edds"
+ NMOMap "{591168249E9C413D}Assets/Vehicles/Attachments/SirenLights/Data/RotaryBase_Body_NMO.edds"
+}

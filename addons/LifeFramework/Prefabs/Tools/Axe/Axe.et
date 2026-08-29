@@ -53,7 +53,10 @@ GenericEntity : "{F3919A62ADD6123A}Prefabs/Tools/Tool_Base.et" {
     Name "Axe"
     Description "Axe for wood cutting"
    }
-   WeaponSlotType "secondary"
+    WeaponSlotType "secondary"
+   }
+   RplComponent "{59908095DD42CB50}" {
+    "Parent Node From Parent Entity" 0
+   }
   }
  }
-}

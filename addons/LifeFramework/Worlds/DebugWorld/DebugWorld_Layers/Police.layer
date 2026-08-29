@@ -1,7 +1,7 @@
 GenericEntity PoliceStation_Debug {
  components {
   MeshObject "{5A4B0B84C86D7843}" {
-   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   Object "{85A1902159549DEF}Assets/Props/Services/Police/PoliceControlPanel_01.xob"
   }
   RigidBody "{5A4B0B84C86D7844}" {
    Mass 10
@@ -13,7 +13,7 @@ GenericEntity PoliceStation_Debug {
     UserActionContext "{5A4B0B84C86D7846}" {
      ContextName "default"
      Position PointInfo "{5A4B0B84C86D7847}" {
-      Offset 0 0.0873 0
+      Offset 0 1 0
      }
      Radius 3
     }
@@ -34,5 +34,5 @@ GenericEntity PoliceStation_Debug {
    Enabled 1
   }
  }
- coords 126 0 136
+ coords 138 0 136
 }

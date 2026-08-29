@@ -177,8 +177,10 @@ class EL_PlayerJobComponent : ScriptComponent
 			}
 		}
 		
-		// Check whitelist for OTHER restricted jobs (not POLICE, we check license above)
-		if (jobType != EL_EJobType.POLICE && EL_WhitelistManager.IsJobRestricted(jobType))
+		// Check whitelist for restricted jobs. POLICE is the only restricted job and
+		// requires both the whitelist and the POLICE_ACCESS license; the license
+		// grant is itself whitelist-gated, so this is defense in depth.
+		if (EL_WhitelistManager.IsJobRestricted(jobType))
 		{
 			IEntity owner = GetOwner();
 			if (!owner)
@@ -296,25 +298,6 @@ class EL_PlayerJobComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Debug RPC to grant license
-	void AskDebugGrantLicense(EL_ELicenseType licenseType)
-	{
-		Rpc(RpcAsk_DebugGrantLicense, licenseType);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_DebugGrantLicense(EL_ELicenseType licenseType)
-	{
-		EL_LicenseManagerComponent licenseManager = EL_Component<EL_LicenseManagerComponent>.Find(GetOwner());
-		if (licenseManager)
-		{
-			licenseManager.UnlockLicense(licenseType, true);
-			Print(string.Format("[EL_PlayerJobComponent] Debug granted license %1 to %2", licenseType, GetOwner()), LogLevel.NORMAL);
-		}
-	}
-	
-	//------------------------------------------------------------------------------------------------
 	//! Get current job type
 	EL_EJobType GetJob()
 	{
@@ -356,8 +339,11 @@ class EL_PlayerJobComponent : ScriptComponent
 	//! Add job experience (used when performing job actions)
 	void AddExperience(float amount)
 	{
-		// DEPRECATED: Job XP is no longer used for progression
-		// Keeping method signature for compatibility
+		// Job-level XP is deprecated by design: progression runs through
+		// EL_PlayerLevelComponent (paycheck already grants +5 player XP). The
+		// per-job level/XP maps have no SaveData pair, so wiring this would
+		// resurrect an unpersisted progression path whose level-up threshold
+		// does not exist in EL_JobConfig.
 		return;
 	}
 	
@@ -579,6 +565,22 @@ class EL_PlayerJobComponent : ScriptComponent
 		SCR_HintManagerComponent.ShowCustomHint(message, "¡SUBIDA DE NIVEL!", 6.0);
 	}
 	//------------------------------------------------------------------------------------------------
+	//! Maximum score a single Fruit Catcher round can award. The minigame screen
+	//! is not in this repo yet; this constant is the server-side round cap and
+	//! must match the minigame's round length when it lands. The server clamps,
+	//! so a mismatch shortchanges players but never mints.
+	static const int EL_FRUIT_CATCHER_MAX_SCORE = 100;
+
+	//------------------------------------------------------------------------------------------------
+	//! Clamps a claimed Fruit Catcher score to the range a single round can award.
+	static int EL_GetFruitCatcherRewardCount(int score)
+	{
+		if (score <= 0) return 0;
+		if (score > EL_FRUIT_CATCHER_MAX_SCORE) return EL_FRUIT_CATCHER_MAX_SCORE;
+		return score;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Ask server to claim fruit catcher rewards
 	void AskClaimFruitCatcherReward(int score, EHarvestJobType jobType)
 	{
@@ -589,20 +591,9 @@ class EL_PlayerJobComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_ClaimFruitCatcherReward(int score, EHarvestJobType jobType)
 	{
-		// Validation (basic)
-		if (score <= 0) return;
-		
-		// Calculate rewards
-		int rewardCount = score; // 1 fruit per point
-		
-		// Give XP (e.g. 5 XP per fruit)
-		float xpAmount = rewardCount * 5.0;
-		
-		EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(GetOwner());
-		if (levelComp)
-		{
-			levelComp.AddExperience(xpAmount, "Recolección de Frutas");
-		}
+		// Server-side clamp: a forged score can never exceed one round's max
+		int rewardCount = EL_GetFruitCatcherRewardCount(score);
+		if (rewardCount <= 0) return;
 		
 		// Spawn Items
 		ResourceName fruitPrefab;
@@ -628,50 +619,59 @@ class EL_PlayerJobComponent : ScriptComponent
 				break;
 		}
 		
-		if (fruitPrefab)
+		// Unknown fruit type gets nothing, not even XP
+		if (!fruitPrefab) return;
+
+		// Give XP (e.g. 5 XP per fruit)
+		float xpAmount = rewardCount * 5.0;
+		
+		EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(GetOwner());
+		if (levelComp)
 		{
-			IEntity owner = GetOwner();
-			SCR_InventoryStorageManagerComponent inventory = SCR_InventoryStorageManagerComponent.Cast(owner.FindComponent(SCR_InventoryStorageManagerComponent));
-			if (!inventory)
-			{
-				Print("[EL_PlayerJobComponent] ERROR: No inventory found on player", LogLevel.ERROR);
-				return;
-			}
-			
-			int actuallyAdded = 0;
-			
-			// Use EXACT same pattern as trader system (EL_InventoryStorageManagerComponent.c line 24-27)
-			EntitySpawnParams spawnParams();
-			spawnParams.Transform[3] = owner.GetOrigin();
-			
-			for (int i = 0; i < rewardCount; i++)
-			{
-				// Spawn using SpawnEntityPrefabEx (same as trader system)
-				IEntity fruitEntity = GetGame().SpawnEntityPrefabEx(fruitPrefab, false, null, spawnParams);
-				if (!fruitEntity)
-				{
-					Print(string.Format("[EL_PlayerJobComponent] ERROR: Failed to spawn fruit %1", i), LogLevel.ERROR);
-					continue;
-				}
-				
-				// Try to insert using TryInsertItem (will go to any available storage)
-				if (inventory.TryInsertItem(fruitEntity))
-				{
-					actuallyAdded++;
-				}
-				else
-				{
-					// If inventory full, item remains in world at spawn position
-					Print(string.Format("[EL_PlayerJobComponent] Inventory full, fruit %1 dropped near player", i), LogLevel.WARNING);
-				}
-			}
-			
-			Print(string.Format("[EL_PlayerJobComponent] Added %1/%2 %3 to player inventory", 
-				actuallyAdded, rewardCount, fruitName), LogLevel.NORMAL);
-			
-			// Notify
-			string message = string.Format("¡Recibiste %1 %2 y %3 XP!", actuallyAdded, fruitName, xpAmount);
-			SCR_HintManagerComponent.ShowCustomHint(message, "TRABAJO", 5.0);
+			levelComp.AddExperience(xpAmount, "Recolección de Frutas");
 		}
+		
+		IEntity owner = GetOwner();
+		SCR_InventoryStorageManagerComponent inventory = SCR_InventoryStorageManagerComponent.Cast(owner.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inventory)
+		{
+			Print("[EL_PlayerJobComponent] ERROR: No inventory found on player", LogLevel.ERROR);
+			return;
+		}
+		
+		int actuallyAdded = 0;
+		
+		// Use EXACT same pattern as trader system (EL_InventoryStorageManagerComponent.c line 24-27)
+		EntitySpawnParams spawnParams();
+		spawnParams.Transform[3] = owner.GetOrigin();
+		
+		for (int i = 0; i < rewardCount; i++)
+		{
+			// Spawn using SpawnEntityPrefabEx (same as trader system)
+			IEntity fruitEntity = GetGame().SpawnEntityPrefabEx(fruitPrefab, false, null, spawnParams);
+			if (!fruitEntity)
+			{
+				Print(string.Format("[EL_PlayerJobComponent] ERROR: Failed to spawn fruit %1", i), LogLevel.ERROR);
+				continue;
+			}
+			
+			// Try to insert using TryInsertItem (will go to any available storage)
+			if (inventory.TryInsertItem(fruitEntity))
+			{
+				actuallyAdded++;
+			}
+			else
+			{
+				// If inventory full, item remains in world at spawn position
+				Print(string.Format("[EL_PlayerJobComponent] Inventory full, fruit %1 dropped near player", i), LogLevel.WARNING);
+			}
+		}
+		
+		Print(string.Format("[EL_PlayerJobComponent] Added %1/%2 %3 to player inventory", 
+			actuallyAdded, rewardCount, fruitName), LogLevel.NORMAL);
+		
+		// Notify
+		string message = string.Format("¡Recibiste %1 %2 y %3 XP!", actuallyAdded, fruitName, xpAmount);
+		SCR_HintManagerComponent.ShowCustomHint(message, "TRABAJO", 5.0);
 	}
 }

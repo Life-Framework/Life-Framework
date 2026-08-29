@@ -1,6 +1,7 @@
 // red-proof: change an expected value (e.g. deposit 100 -> 101) or remove the
 // amount>0 guard in EL_BankAccount.Withdraw, then run the fast tier.
 
+// tier: LOGIC
 class EL_Test_BankAccountMath : EL_Test
 {
 	override string GetName()
@@ -36,6 +37,7 @@ class EL_Test_BankAccountMath : EL_Test
 };
 
 //------------------------------------------------------------------------------------------------
+// tier: LOGIC
 class EL_Test_BankSaveRoundtrip : EL_Test
 {
 	override string GetName()
@@ -66,6 +68,7 @@ class EL_Test_BankSaveRoundtrip : EL_Test
 };
 
 //------------------------------------------------------------------------------------------------
+// tier: LOGIC
 class EL_Test_ATMManagerRegistry : EL_Test
 {
 	override string GetName()

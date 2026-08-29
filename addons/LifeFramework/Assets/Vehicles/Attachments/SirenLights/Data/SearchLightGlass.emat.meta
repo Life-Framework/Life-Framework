@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{6ECFE66B7AD34E4D}Assets/Vehicles/Attachments/SirenLights/Data/SearchLightGlass.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

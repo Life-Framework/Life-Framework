@@ -1,4 +1,4 @@
-Tree : "{388228D9B7D2CCB0}Prefabs/Resources/WoodCutting/CuttableTree_Base.et" {
+GenericEntity : "{388228D9B7D2CCB0}Prefabs/Resources/WoodCutting/CuttableTree_Base.et" {
  ID "5ACE9762F521AE84"
  components {
   EL_DestructibleResourceComponent "{5ACCE1B70F3EF473}" {

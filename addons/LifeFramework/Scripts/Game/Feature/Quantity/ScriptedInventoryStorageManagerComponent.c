@@ -100,6 +100,11 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		EL_QuantityComponent quantitySource = EL_Component<EL_QuantityComponent>.Find(EL_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
 		if (!quantitySource || !EL_CanManipulate(quantitySource.GetOwner())) return;
+		if (!EL_CanManipulateOwned(quantitySource.GetOwner()))
+		{
+			Print("[ScriptedInventoryStorageManagerComponent] Quantity split rejected: source not owned", LogLevel.WARNING);
+			return;
+		}
 		quantitySource.Split(splitSize);
 	}
 
@@ -115,9 +120,19 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		EL_QuantityComponent quantitySource = EL_Component<EL_QuantityComponent>.Find(EL_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
 		if (!quantitySource || !EL_CanManipulate(quantitySource.GetOwner())) return;
+		if (!EL_CanManipulateOwned(quantitySource.GetOwner()))
+		{
+			Print("[ScriptedInventoryStorageManagerComponent] Quantity transfer rejected: source not owned", LogLevel.WARNING);
+			return;
+		}
 
 		EL_QuantityComponent quantityDestination = EL_Component<EL_QuantityComponent>.Find(EL_NetworkUtils.FindEntityByRplId(quantityDestinationRplId));
 		if (!quantityDestination || !EL_CanManipulate(quantityDestination.GetOwner())) return;
+		if (!EL_CanManipulateOwned(quantityDestination.GetOwner()))
+		{
+			Print("[ScriptedInventoryStorageManagerComponent] Quantity transfer rejected: destination not owned", LogLevel.WARNING);
+			return;
+		}
 
 		quantityDestination.Combine(quantitySource, amount);
 	}
@@ -134,6 +149,11 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		IEntity sourceEntity = EL_NetworkUtils.FindEntityByRplId(sourceRplId);
 		if (!sourceEntity || !EL_CanManipulate(sourceEntity)) return;
+		if (!EL_CanManipulateOwned(sourceEntity))
+		{
+			Print("[ScriptedInventoryStorageManagerComponent] Transfer intent rejected: source not owned", LogLevel.WARNING);
+			return;
+		}
 		EL_QuantityComponent.SetTransferIntent(sourceEntity, keepSeperate);
 	}
 
@@ -142,5 +162,58 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		const int maxManipulationRange = 10;
 		return (vector.Distance(entity.GetOrigin(), GetOwner().GetOrigin()) < maxManipulationRange);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side ownership gate. The requesting player may manipulate items in
+	//! their own storage or in storages not held by another living player (loot
+	//! containers, vehicles, ground items). Rejects another player's carried items.
+	protected bool EL_CanManipulateOwned(IEntity entity)
+	{
+		if (!entity) return false;
+
+		IEntity storageOwner = EL_GetStorageOwner(entity);
+		if (storageOwner == GetOwner()) return true;
+		if (!storageOwner) return false;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager) return false;
+
+		array<int> playerIds();
+		if (playerManager.GetPlayers(playerIds) <= 0) return false;
+		foreach (int playerId : playerIds)
+		{
+			if (playerManager.GetPlayerControlledEntity(playerId) == storageOwner)
+				return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Topmost entity owning the storage that holds the given item. Ground items
+	//! resolve to themselves.
+	protected IEntity EL_GetStorageOwner(IEntity entity)
+	{
+		InventoryItemComponent itemComp = EL_Component<InventoryItemComponent>.Find(entity);
+		if (itemComp)
+		{
+			InventoryStorageSlot parentSlot = itemComp.GetParentSlot();
+			if (parentSlot)
+			{
+				BaseInventoryStorageComponent storage = parentSlot.GetStorage();
+				if (storage && storage.GetOwner())
+					entity = storage.GetOwner();
+			}
+		}
+
+		IEntity parent = entity.GetParent();
+		while (parent)
+		{
+			entity = parent;
+			parent = entity.GetParent();
+		}
+
+		return entity;
 	}
 };

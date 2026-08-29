@@ -41,7 +41,7 @@ ActionsManagerComponent "{13F1B83A91F884BB}" {
      m_GatherItemPrefab "{8F81BD0BF343CF49}Prefabs/Resources/Mining/GoldNugget.et"
      m_GatherAmount 1
      m_GatherAmountMax 3
-     m_GatherTimeout 600000  // 10 minutes respawn
+      m_GatherTimeout 600000
     }
    }
   }

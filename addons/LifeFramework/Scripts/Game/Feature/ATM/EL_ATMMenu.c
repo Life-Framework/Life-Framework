@@ -2,13 +2,15 @@
 class EL_ATMMenu : ChimeraMenuBase
 {
 	protected PlayerController m_PlayerController;
-	protected ref EL_BankAccount m_BankAccount;
 
 	protected Widget m_wRoot;
 	protected TextWidget m_wBalance;
 	protected EditBoxWidget m_wAmount;
 	protected ButtonWidget m_wDepositButton;
 	protected ButtonWidget m_wWithdrawButton;
+
+	//! Last balance confirmed by the server. -1 until the first reply.
+	protected int m_iServerBalance = -1;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnMenuOpen()
@@ -19,9 +21,6 @@ class EL_ATMMenu : ChimeraMenuBase
 		m_wAmount = EditBoxWidget.Cast(m_wRoot.FindWidget("AmountEdit"));
 		m_wDepositButton = ButtonWidget.Cast(m_wRoot.FindWidget("DepositButton"));
 		m_wWithdrawButton = ButtonWidget.Cast(m_wRoot.FindWidget("WithdrawButton"));
-
-
-		UpdateBalance();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -46,76 +45,113 @@ class EL_ATMMenu : ChimeraMenuBase
 	void SetPlayerController(PlayerController playerController)
 	{
 		m_PlayerController = playerController;
-		IEntity entity = playerController.GetControlledEntity();
-		string playerUid = EL_Utils.GetPlayerUID(entity);
-		EL_ATMManager atmManager = EL_ATMManager.GetInstance();
-		m_BankAccount = atmManager.GetAccount(playerUid);
-		if (!m_BankAccount)
-		{
-			m_BankAccount = atmManager.CreateAccount(playerUid);
-		}
+		RequestBalance();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected EL_CharacterATMComponent GetATMComponent()
+	{
+		if (!m_PlayerController)
+			return null;
+		IEntity entity = m_PlayerController.GetControlledEntity();
+		if (!entity)
+			return null;
+		return EL_CharacterATMComponent.Cast(entity.FindComponent(EL_CharacterATMComponent));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RequestBalance()
+	{
+		EL_CharacterATMComponent atmComponent = GetATMComponent();
+		if (atmComponent)
+			atmComponent.RequestBalance();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void UpdateBalance()
 	{
-		if (m_wBalance && m_BankAccount)
+		if (m_wBalance && m_iServerBalance >= 0)
 		{
-			string balanceText = WidgetManager.Translate("#EL-ATM_Balance") + m_BankAccount.GetBalance().ToString();
+			string balanceText = WidgetManager.Translate("#EL-ATM_Balance") + m_iServerBalance.ToString();
 			m_wBalance.SetText(balanceText);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Deposit()
+	protected int ReadAmount()
 	{
-		if (!m_BankAccount || !m_PlayerController)
-			return;
-		if (!Replication.IsServer())
-			return;
-
+		if (!m_wAmount)
+			return 0;
 		string amountText = m_wAmount.GetText();
 		if (amountText.IsEmpty())
+			return 0;
+		return amountText.ToInt();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Deposit()
+	{
+		EL_CharacterATMComponent atmComponent = GetATMComponent();
+		if (!atmComponent)
 			return;
 
-		int amount = amountText.ToInt();
+		int amount = ReadAmount();
 		if (amount <= 0)
 			return;
 
-		// Assume player has money in inventory or something - placeholder
-		// For now, just deposit directly
-		EL_ATMManager atmManager = EL_ATMManager.GetInstance();
-		atmManager.Deposit(m_BankAccount.GetPersistentId(), amount);
-		UpdateBalance();
-		m_wAmount.SetText("");
+		atmComponent.RequestDeposit(amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void Withdraw()
 	{
-		if (!m_BankAccount || !m_PlayerController)
-			return;
-		if (!Replication.IsServer())
-			return;
-
-		string amountText = m_wAmount.GetText();
-		if (amountText.IsEmpty())
+		EL_CharacterATMComponent atmComponent = GetATMComponent();
+		if (!atmComponent)
 			return;
 
-		int amount = amountText.ToInt();
+		int amount = ReadAmount();
 		if (amount <= 0)
 			return;
 
-		EL_ATMManager atmManager = EL_ATMManager.GetInstance();
-		if (atmManager.Withdraw(m_BankAccount.GetPersistentId(), amount))
+		atmComponent.RequestWithdraw(amount);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnDepositResult(bool success, int newBalance)
+	{
+		m_iServerBalance = newBalance;
+		UpdateBalance();
+		if (success)
 		{
-			// Give money to player - placeholder
-			UpdateBalance();
-			m_wAmount.SetText("");
+			if (m_wAmount)
+				m_wAmount.SetText("");
+		}
+		else
+		{
+			EL_Utils.Notify("#EL-ATM_InsufficientFunds", "#EL-ATM_Deposit", 3.0);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnWithdrawResult(bool success, int newBalance)
+	{
+		m_iServerBalance = newBalance;
+		UpdateBalance();
+		if (success)
+		{
+			if (m_wAmount)
+				m_wAmount.SetText("");
 		}
 		else
 		{
 			EL_Utils.Notify("#EL-ATM_InsufficientFunds", "#EL-ATM_Withdraw", 3.0);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnBalanceReceived(int balance)
+	{
+		m_iServerBalance = balance;
+		UpdateBalance();
 	}
 };

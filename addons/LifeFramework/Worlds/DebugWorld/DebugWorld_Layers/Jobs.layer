@@ -1,7 +1,7 @@
-EL_JobCenter JobCenter_Debug {
+GenericEntity JobCenter_Debug {
  components {
   MeshObject "{5A4B0B84C86DE843}" {
-   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   Object "{62C27FEBF2823AE3}Assets/Props/Civilian/NoticeBoardCork_01/NoticeBoardCork_01.xob"
   }
   RigidBody "{5A4B0B84C86DE844}" {
    Mass 10
@@ -13,20 +13,9 @@ EL_JobCenter JobCenter_Debug {
     UserActionContext "{5A4B0B84C86DE846}" {
      ContextName "default"
      Position PointInfo "{5A4B0B84C86DE847}" {
-      Offset 0 0.0873 0
+      Offset 0 1 0
      }
      Radius 3
-    }
-   }
-   additionalActions {
-    EL_OpenJobCenterAction "{5A4B0B84C86DE848}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{5A4B0B84C86DE849}" {
-      Name "Centro de Empleo"
-      Description "Buscar trabajo disponible"
-     }
     }
    }
   }
@@ -34,7 +23,7 @@ EL_JobCenter JobCenter_Debug {
    Enabled 1
   }
  }
- coords 134 0 144
+ coords 138 0 142
 }
 GenericEntity GatherPoint_AppleTree {
  components {
@@ -63,8 +52,12 @@ GenericEntity GatherPoint_AppleTree {
      }
      UIInfo UIInfo "{5A4B0B84C86DF849}" {
       Name "Recolectar Manzanas"
-      Description "Recolectar 5 manzanas (10s cooldown)"
+      Description "Recolectar 5 manzanas"
      }
+     m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+     m_GatherAmount 5
+     m_GatherAmountMax 10
+     m_GatherTimeout 10000
     }
    }
   }

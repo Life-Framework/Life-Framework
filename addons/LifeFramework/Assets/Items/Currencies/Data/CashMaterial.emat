@@ -1,0 +1,5 @@
+MatPBRBasic {
+	BCRMap "{AC0F28922E31D1F3}Assets/Items/Currencies/Data/CashTexture_BCR.edds"
+	NMOMap "{489F46F193C662E9}Assets/Items/Currencies/Data/CashTexture_NMO.edds"
+	MetalnessScale 0
+}

@@ -1,7 +1,21 @@
 class EL_ATMManager : Managed
 {
+	//! Largest single deposit or withdrawal the server accepts. Guards the
+	//! account balance against hostile oversized RPC payloads.
+	static const int MAX_TRANSACTION_AMOUNT = 1000000;
+
 	protected static ref EL_ATMManager s_Instance;
 	protected ref map<string, ref EL_BankAccount> m_mAccounts = new map<string, ref EL_BankAccount>();
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether an amount is a valid single transaction. Rejects zero, negative
+	//! and oversized amounts at the RPC boundary.
+	static bool IsValidAmount(int amount)
+	{
+		if (amount <= 0)
+			return false;
+		return amount <= MAX_TRANSACTION_AMOUNT;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Persistence seam: export every cached bank account as a record for the serializer.

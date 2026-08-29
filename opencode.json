@@ -20,7 +20,7 @@
         "node",
         "C:/Users/jaspe/Documents/Reforger/Life-Framework/tools/mcp/enfusion-workbench-mcp/dist/index.js"
       ],
-      "enabled": false,
+      "enabled": true,
       "environment": {
         "ENFUSION_WORKBENCH_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Tools",
         "ENFUSION_GAME_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger",

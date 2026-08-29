@@ -481,15 +481,93 @@ StringTable {
    Target_pt_pt "Dinheiro insuficiente!"
    Target_pt_br "Dinheiro insuficiente!"
   }
-  CustomStringTableItem "{AA76A797BE84093A}" {
-   Id "EL-Item_Bought"
-   Target_en_us "Bought %1 x%2!"
-   Target_es_es "Compró %1 x%2!"
-   Target_de_de "%1 x%2 gekauft!"
-   Target_fr_fr "Acheté %1 x%2!"
-   Target_it_it "Comprato %1 x%2!"
-   Target_pt_pt "Comprou %1 x%2!"
-   Target_pt_br "Comprou %1 x%2!"
+CustomStringTableItem "{AA76A797BE84093A}" {
+    Id "EL-Item_Bought"
+    Target_en_us "Bought %1 x%2!"
+    Target_es_es "Compró %1 x%2!"
+    Target_de_de "%1 x%2 gekauft!"
+    Target_fr_fr "Acheté %1 x%2!"
+    Target_it_it "Comprato %1 x%2!"
+    Target_pt_pt "Comprou %1 x%2!"
+    Target_pt_br "Comprou %1 x%2!"
+   }
+   CustomStringTableItem "{AB000BA2CB254D71}" {
+    Id "EL-VehicleLocked"
+    Target_en_us "Your vehicle is now locked."
+    Target_de_de "Ihr Fahrzeug ist jetzt abgeschlossen."
+    Target_fr_fr "Votre véhicule est maintenant verrouillé."
+    Target_it_it "Il tuo veicolo è ora bloccato."
+    Target_es_es "Tu vehículo ahora está bloqueado."
+    Target_pt_pt "O seu veículo agora está trancado."
+    Target_pt_br "Seu veículo agora está trancado."
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{A20CA0D7DF1C4CED}" {
+    Id "EL-VehicleUnlocked"
+    Target_en_us "Your vehicle is now unlocked."
+    Target_de_de "Ihr Fahrzeug ist jetzt aufgeschlossen."
+    Target_fr_fr "Votre véhicule est maintenant déverrouillé."
+    Target_it_it "Il tuo veicolo è ora sbloccato."
+    Target_es_es "Tu vehículo ahora está desbloqueado."
+    Target_pt_pt "O seu veículo agora está destrancado."
+    Target_pt_br "Seu veículo agora está destrancado."
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{863E7B439E7E4BDF}" {
+    Id "EL-VehicleLock_Title"
+    Target_en_us "Vehicle Lock"
+    Target_de_de "Fahrzeugschloss"
+    Target_fr_fr "Verrou du véhicule"
+    Target_it_it "Blocco veicolo"
+    Target_es_es "Bloqueo de vehículo"
+    Target_pt_pt "Bloqueio do veículo"
+    Target_pt_br "Bloqueio do veículo"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{AEBA171181D64DD6}" {
+    Id "EL-VehicleLock_Reason"
+    Target_en_us "Vehicle is locked"
+    Target_de_de "Fahrzeug ist abgeschlossen"
+    Target_fr_fr "Véhicule verrouillé"
+    Target_it_it "Veicolo bloccato"
+    Target_es_es "Vehículo bloqueado"
+    Target_pt_pt "Veículo trancado"
+    Target_pt_br "Veículo trancado"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{3183B68A7D10419E}" {
+    Id "EL-VehicleLock_MissingKey"
+    Target_en_us "You need the key for this vehicle"
+    Target_de_de "Sie benötigen den Schlüssel für dieses Fahrzeug"
+    Target_fr_fr "Vous avez besoin de la clé de ce véhicule"
+    Target_it_it "Ti serve la chiave di questo veicolo"
+    Target_es_es "Necesitas la llave de este vehículo"
+    Target_pt_pt "Precisa da chave deste veículo"
+    Target_pt_br "Você precisa da chave deste veículo"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
+   CustomStringTableItem "{497094A09ECC498E}" {
+    Id "EL-VehicleLock_Action"
+    Target_en_us "Lock/Unlock Vehicle"
+    Target_de_de "Fahrzeug ver-/entriegeln"
+    Target_fr_fr "Verrouiller/Déverrouiller le véhicule"
+    Target_it_it "Blocca/Sblocca veicolo"
+    Target_es_es "Bloquear/Desbloquear vehículo"
+    Target_pt_pt "Trancar/Destrancar veículo"
+    Target_pt_br "Trancar/Destrancar veículo"
+    Modified 1788019742
+    Author "LifeFramework"
+    LastChanged "LifeFramework"
+   }
   }
- }
 }

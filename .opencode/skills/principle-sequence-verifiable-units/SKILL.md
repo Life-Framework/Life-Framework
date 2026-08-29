@@ -18,5 +18,5 @@ Break work into small units that each end in a verifiable state, check each befo
 **In this repo:**
 - `tools\cli validate` is the per-unit gate for script and repo hygiene.
 - `tools\cli test` (boot smoke) is the per-unit gate for world and resource health.
-- `EL_Test` classes registered in `EL_TestManager.CollectTests()` are the per-unit gate for pure logic.
+- `EL_Test` classes (registered automatically via `tools\cli regen-tests`, gated by `tools\cli validate`) are the per-unit gate for pure logic.
 - Commit units map to feature phases: one feature folder, one working slice, one commit.

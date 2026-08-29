@@ -2,19 +2,20 @@ MetaFileClass {
  Name "{773BE5E227A5A9CB}Assets/Items/Currencies/MoneyStack.xob"
  Configurations {
   FBXResourceClass PC {
+   Scale 0.03 0.03 0.03
    MaterialAssigns {
     MaterialAssignClass "{5AD6A5C28F0A196C}" {
-     SourceMaterial "MoneyStack"
-     AssignedMaterial "{F1470E3E995AE04F}Assets/Items/Currencies/Data/MoneyStack.emat"
+     SourceMaterial "material"
+     AssignedMaterial "{BE94B9963D91D4FF}Assets/Items/Currencies/Data/CashMaterial.emat"
     }
    }
    MeshParams {
-    MeshParam MoneyStack {
+    MeshParam money {
     }
    }
    GeometryParams {
-    GeometryParam UBX_box {
-     LayerPreset "ItemFireView"
+    GeometryParam UBX_Main {
+     LayerPreset "FireGeo"
      SurfaceProperties {
       "{13581C35484F3000}Common/Materials/Game/fabric.gamemat"
      }
@@ -26,7 +27,7 @@ MetaFileClass {
    }
    ApplicationVendor "Blender Foundation"
    ApplicationName "Blender (stable FBX IO)"
-   ApplicationVersion "2.93.9"
+   ApplicationVersion "3.5.0"
   }
   FBXResourceClass XBOX_ONE : PC {
    Common TXOCommonClass "{5AD6A5C28F0D3FAA}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {

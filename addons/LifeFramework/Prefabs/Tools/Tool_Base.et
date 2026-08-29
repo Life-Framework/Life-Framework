@@ -22,8 +22,6 @@ GenericEntity : "{69FC0AAC5FFE1288}Prefabs/Weapons/Core/Melee_Base.et" {
   }
   SCR_MeleeWeaponProperties "{599080951A5F84A5}" {
   }
-  SimpleSoundComponent "{59072B578A46AF84}" {
-  }
   WeaponComponent "{5990809682E12ADF}" {
   }
   ActionsManagerComponent "{A29AE67FF4D82B0F}" {

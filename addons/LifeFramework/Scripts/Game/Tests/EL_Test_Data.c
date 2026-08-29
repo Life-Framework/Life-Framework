@@ -1,6 +1,7 @@
 // red-proof: append a nonexistent path (e.g. "UI/Layouts/Missing.layout") to
 // the layout list and run `tools\cli test --tier all`. Red run pending: first
 // boot after the EPF dependency removal lands.
+// tier: WORLD
 class EL_Test_Data : EL_Test
 {
 	override string GetName()

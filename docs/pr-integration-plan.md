@@ -76,7 +76,15 @@ their red/green proof is only meaningful on a bootable baseline.
 
 Gate: fast tier green. Record the starting pass count in this file (below).
 
-> Baseline: (fill in after Phase 0)
+> Baseline: `cli validate` 3/3, fast tier 14/14 green (2026-08-29).
+> Integration: `cli ci` ALL PASSED after merge — validate 4/4, build OK,
+> full tier 38/38 (all seven new tests from WS-1..WS-5 pass).
+> Adversarial pass (interrogate) on WS-4 found and fixed 3 real defects:
+> (1) EL_VehicleLockComponent now extends SCR_BaseLockComponent so vanilla
+> get-in/door actions gate entry (was invisible to FindComponent by exact class);
+> (2) key↔vehicle binding now covered by a WORLD test (bind, unbound, wrong key);
+> (3) EOnInit identifier write is now server-guarded. Storage-gate comment
+> corrected to state it is a soft UI gate matching the vanilla client-side model.
 
 ---
 
@@ -304,11 +312,20 @@ Setup procedure (main thread):
    prefabs resolve.
 5. `wb_cleanup` the injected MCP handler scripts before the user publishes.
 
-Note: `Worlds/DebugWorld/DebugWorld.ent` is currently 0 bytes while the
-`DebugWorld_Layers/*.layer` files exist. Confirm during setup that saving via
-Workbench writes the sub-scene references the ent needs, and that a boot loads
-the layers. If the ent needs rebuilding, do it in Workbench before placing
-fixtures.
+### Phase 2 status (main thread)
+
+`DebugWorld_Layers/PRFeatures.layer` created with the five fixtures. Boot-smoke
+confirmed: layer loads with zero parse errors, and the three vehicles spawn
+(`Vehicle_PlateTest` at 128,0,136; `Vehicle_LockTest` at 134,0,136;
+`Vehicle_SirenTest` at 140,0,136). The crate items (ID card, money, keys) are
+nested under `PRFeatureCrate` at 116,0,134 following the exact AppleChain item
+placement pattern; the headless server's filtered log does not enumerate them,
+so their final placement is confirmed in the manual walkthrough (Phase 3).
+
+Note: `Worlds/DebugWorld/DebugWorld.ent` is 0 bytes but the engine auto-loads
+every `.layer` in `DebugWorld_Layers/` by convention (verified: the EL_TestRunner
+in `Tests.layer` runs without being referenced by the ent). No Workbench session
+was needed to place fixtures.
 
 ---
 

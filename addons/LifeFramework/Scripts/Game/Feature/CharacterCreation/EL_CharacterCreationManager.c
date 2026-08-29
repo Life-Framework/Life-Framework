@@ -44,8 +44,9 @@ class EL_CharacterCreationManager : Managed
 		}
 		else if (!account.HasCharacters())
 		{
-			// Has account but no characters, check faction
-			if (account.GetFaction() == EL_Faction.CIVILIAN) // Default, assume not selected
+			// Has account but no characters; offer faction selection until the player has made
+			// an explicit choice (CIVILIAN is both the default and a valid pick).
+			if (!account.WasFactionChosen())
 			{
 				ShowFactionSelectionMenu(playerController);
 			}
@@ -77,10 +78,18 @@ class EL_CharacterCreationManager : Managed
 	//------------------------------------------------------------------------------------------------
 	protected void CreateTemporaryCharacter(PlayerController playerController)
 	{
-		// Create a temporary entity for the player in lobby
-		// This is a placeholder - implement possession according to your engine API
-		ResourceName tempPrefab = "{CE23D4366B47E9B9}Prefabs/Characters/Presets/White_Male_01.et";
-		IEntity spawnedEntity = GetGame().SpawnEntityPrefab(Resource.Load(tempPrefab));
+		// Spawn the real character prefab (carries the EL ATM/survival components) at a spawn
+		// point, mirroring EL_SpawnLogic.CreateCharacter's transform setup.
+		ResourceName tempPrefab = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
+		vector position, yawPitchRoll;
+		if (!ResolveSpawnPosition(position, yawPitchRoll))
+			return;
+
+		EntitySpawnParams spawnParams();
+		spawnParams.TransformMode = ETransformMode.WORLD;
+		Math3D.AnglesToMatrix(yawPitchRoll, spawnParams.Transform);
+		spawnParams.Transform[3] = position + "0 0.1 0";
+		IEntity spawnedEntity = GetGame().SpawnEntityPrefab(Resource.Load(tempPrefab), GetGame().GetWorld(), spawnParams);
 		if (!spawnedEntity)
 		{
 			Print("Failed to spawn temporary character prefab.", LogLevel.ERROR);
@@ -92,9 +101,17 @@ class EL_CharacterCreationManager : Managed
 	//------------------------------------------------------------------------------------------------
 	protected void TeleportToLobby(PlayerController playerController)
 	{
-		// Teleport to lobby position
-		vector lobbyPos = "1000 0 1000"; // Replace with actual lobby coordinates
-		playerController.GetControlledEntity().SetOrigin(lobbyPos);
+		// There is no dedicated lobby; park the player at a valid spawn point while the creation
+		// menu is open (same source EL_SpawnLogic.GetCreationPosition uses).
+		IEntity entity = playerController.GetControlledEntity();
+		if (!entity)
+			return;
+
+		vector position, yawPitchRoll;
+		if (!ResolveSpawnPosition(position, yawPitchRoll))
+			return;
+
+		entity.SetOrigin(position);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -122,7 +139,7 @@ class EL_CharacterCreationManager : Managed
 	void OnCharacterCreated(PlayerController playerController, string firstName, string lastName, int age)
 	{
 		// Create persistent character
-		ResourceName defaultPrefab = "{CE23D4366B47E9B9}Prefabs/Characters/Presets/White_Male_01.et";
+		ResourceName defaultPrefab = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
 		EL_PlayerCharacter character = EL_PlayerCharacter.Create(defaultPrefab, firstName, lastName, age);
 
 		// Add to account
@@ -160,9 +177,16 @@ class EL_CharacterCreationManager : Managed
 	//------------------------------------------------------------------------------------------------
 	protected void SpawnPlayerAtDefaultLocation(PlayerController playerController)
 	{
-		// Teleport to default spawn
-		vector spawnPos = "0 0 0"; // Replace with actual spawn coordinates
-		playerController.GetControlledEntity().SetOrigin(spawnPos);
+		// Move the player to a real spawn point (the old "0 0 0" dropped players at world origin).
+		IEntity entity = playerController.GetControlledEntity();
+		if (!entity)
+			return;
+
+		vector position, yawPitchRoll;
+		if (!ResolveSpawnPosition(position, yawPitchRoll))
+			return;
+
+		entity.SetOrigin(position);
 
 		// Show survival HUD
 		EL_SurvivalHUD hud = EL_SurvivalHUD.Cast(GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.SurvivalHUD));
@@ -170,5 +194,18 @@ class EL_CharacterCreationManager : Managed
 		{
 			hud.SetPlayerController(playerController);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Resolves a world position from the same spawn-point source EL_SpawnLogic.GetCreationPosition
+	//! uses. \return false when the map has no spawn point.
+	protected bool ResolveSpawnPosition(out vector position, out vector yawPitchRoll)
+	{
+		SCR_SpawnPoint spawnPoint = SCR_SpawnPoint.GetRandomSpawnPointDeathmatch();
+		if (!spawnPoint)
+			return false;
+
+		spawnPoint.GetPositionAndRotation(position, yawPitchRoll);
+		return true;
 	}
 };

@@ -1,0 +1,58 @@
+$grp GenericEntity : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
+ Vehicle_PlateTest {
+  coords 128 0 136
+ }
+ Vehicle_LockTest {
+  components {
+   EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+    m_sDebugIdentifier "ELDebugKey1"
+   }
+  }
+  coords 134 0 136
+ }
+}
+$grp GenericEntity : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
+ Vehicle_SirenTest {
+  coords 140 0 136
+ }
+}
+GenericEntity PRFeatureCrate {
+ coords 116 0 134
+ {
+  $grp GenericEntity {
+   PRFeatureItems {
+    coords 0 0.9 0
+    {
+     $grp GenericEntity : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
+      IDCard_Debug {
+       coords 0 0 0
+      }
+     }
+     $grp GenericEntity : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
+      MoneyStack_Debug {
+       coords 0.2 0 0
+      }
+     }
+     $grp GenericEntity : "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et" {
+      VehicleKey_Matching_Debug {
+       components {
+        EL_VehicleKeyComponent "{DF4CAEED0C904715}" {
+         m_sDebugIdentifier "ELDebugKey1"
+        }
+       }
+       coords -0.2 0 0
+      }
+      VehicleKey_Wrong_Debug {
+       components {
+        EL_VehicleKeyComponent "{DF4CAEED0C904715}" {
+         m_sDebugIdentifier "ELDebugKeyWrong"
+        }
+       }
+       coords -0.4 0 0
+      }
+     }
+    }
+   }
+  }
+ }
+}

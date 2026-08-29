@@ -1,21 +1,19 @@
-EL_NpcBaseEntity NPC_TestDebug {
+EL_NpcBaseEntity NPC_TestDebug : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
  components {
+  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+   Identity Identity "{5A4B0B84AF44A913}" {
+    Name "Test"
+    Surname "Citizen"
+   }
+  }
   EL_CharacterSurvivalComponent "{5A4B0B84C86DC84B}" {
   }
-  MeshObject "{5A4B0B84C86DC843}" {
-   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
-  }
-  RigidBody "{5A4B0B84C86DC844}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  ActionsManagerComponent "{5A4B0B84C86DC845}" {
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
    ActionContexts {
     UserActionContext "{5A4B0B84C86DC846}" {
      ContextName "default"
      Position PointInfo "{5A4B0B84C86DC847}" {
-      Offset 0 0.0873 0
+      Offset 0 1.2 0
      }
      Radius 3
     }
@@ -32,9 +30,6 @@ EL_NpcBaseEntity NPC_TestDebug {
     }
    }
   }
-  RplComponent "{5A4B0B84C86DC84A}" {
-   Enabled 1
-  }
  }
- coords 138 0 148
+ coords 157 0 142
 }

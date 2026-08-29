@@ -5,6 +5,8 @@ EL_GameModeRoleplay {
   }
   EL_PersistenceComponent "{DD9C18EE120847A0}" {
   }
+  EL_NotificationManagerComponent "{D3CF726AEB541890}" {
+  }
   SCR_DestructionManagerComponent "{59751432896EFC0B}" {
   }
   SCR_HintManagerComponent "{59E8CC4E575D1802}" {

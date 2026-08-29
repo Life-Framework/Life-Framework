@@ -1,0 +1,36 @@
+Vehicle : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
+ ID "66E29CE82D9E4231"
+ components {
+  SCR_VehicleSoundComponent "{55C2E66AD4EF2CA6}" {
+   Filenames + {
+    "{4D8A2B25FC6C44FA}Sounds/Siren/Vehicles_Siren.acp"
+   }
+  }
+  EL_SirenManagerComponent "{4685286E8D464A64}" {
+   m_Modes EL_SirenModes "{B1F0340624EE4436}" : "{01051CFE4BC64945}Prefabs/Vehicles/SirenLights/LightBarLED.conf" {
+   }
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    EL_VehicleLockAction "{E8BD9E1428464528}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{8DB9298A56C64720}" {
+      Name "#EL-VehicleLock_Action"
+     }
+    }
+   }
+  }
+ }
+ {
+  GenericEntity : "{EFE1B93215E74E28}Prefabs/Vehicles/SirenLights/EmergencyLightsKnob.et" {
+   ID "F825ED68224A4E07"
+   coords -0.187 1.074 0.466
+  }
+  GenericEntity : "{6EB48E0CF22F4FB6}Prefabs/Vehicles/Wheeled/M151A2/M151A2_LEDLightBar.et" {
+   ID "ADE9B8558B9A4FAF"
+   coords 0 0 0
+  }
+ }
+}

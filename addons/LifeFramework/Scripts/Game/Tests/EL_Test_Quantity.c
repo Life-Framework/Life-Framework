@@ -1,6 +1,7 @@
 // red-proof: change an expected value (e.g. clamp quantity 1 -> 2, or the
 // rejection return) and run `tools\cli test --tier all`. Red run pending:
 // first boot after the EPF dependency removal lands.
+// tier: WORLD
 class EL_Test_QuantityStack : EL_Test
 {
 	protected static const ResourceName WOOD_LOG_PREFAB = "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et";

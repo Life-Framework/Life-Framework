@@ -1,0 +1,16 @@
+MatPBRMulti {
+ GlobalMCRMap "{0525BBCF639EA875}Assets/Items/Roleplay/IDCard/Data/Book_MCR.edds"
+ MaskMap "{518BFE45AE2A83E9}Assets/Items/Roleplay/IDCard/Data/Book_GLOBAL_MASK.edds"
+ GlobalNMOMap "{7809AA616E437184}Assets/Items/Roleplay/IDCard/Data/Book_NMO.edds"
+ Color_4 0.973 0.878 0.698 1
+ Enabled_3 1
+ Color_3 0.502 0.376 0 1
+ Enabled_2 1
+ Color_2 0 0.125 0.502 1
+ BCR_2 "{2C2411924177AC7B}Assets/_SharedData/Fabric/ST_Leather_01_BCR.edds"
+ NMO_2 "{D6F07D5F999E24BB}Assets/_SharedData/Fabric/ST_Leather_01_N.edds"
+ MaskOffset_2 0.102
+ Color_1 0.973 0.878 0.698 1
+ BCR_1 "{029A84113517FD09}Assets/_SharedData/Concrete/ST_Concrete_Clean_01_BCR.edds"
+ NMO_1 "{3A423F83EC60AF97}Assets/_SharedData/Concrete/ST_Concrete_Clean_01_NMO.edds"
+}
