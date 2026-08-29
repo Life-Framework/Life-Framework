@@ -34,7 +34,7 @@ class EL_Test_Survival : EL_Test
 		stats.Heal(200);
 		ctx.True(Math.AbsFloat(stats.GetHealth() - 100) < 0.001, "Heal clamps at 100");
 
-		stats.Eat(50);
+		stats.SetHunger(50);
 		stats.SetThirst(50);
 		stats.SetHealth(100);
 		stats.UpdateStats(10);

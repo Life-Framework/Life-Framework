@@ -1,6 +1,6 @@
 class EL_ATMManager : Managed
 {
-	protected static EL_ATMManager s_Instance;
+	protected static ref EL_ATMManager s_Instance;
 	protected ref map<string, ref EL_BankAccount> m_mAccounts = new map<string, ref EL_BankAccount>();
 
 	//------------------------------------------------------------------------------------------------
@@ -65,6 +65,9 @@ class EL_ATMManager : Managed
 	//------------------------------------------------------------------------------------------------
 	static EL_ATMManager GetInstance()
 	{
+		if (!s_Instance)
+			s_Instance = new EL_ATMManager();
+
 		return s_Instance;
 	}
 

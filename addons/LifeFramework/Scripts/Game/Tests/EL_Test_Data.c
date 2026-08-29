@@ -11,13 +11,13 @@ class EL_Test_Data : EL_Test
 	override void Run(EL_TestContext ctx)
 	{
 		array<string> menus = {
-			"UI/Layouts/EL_SplitQuantityDialog.layout",
-			"UI/Layouts/EL_CharacterCreationMenu.layout",
-			"UI/Layouts/EL_ATMMenu.layout",
-			"UI/Layouts/EL_SurvivalHUD.layout",
-			"UI/Layouts/FactionSelectionMenu.layout",
-			"UI/Layouts/ShopMenu.layout",
-			"UI/Layouts/PoliceMenu.layout"
+			"{CBD13209101AACEE}UI/Layouts/Menus/Inventory/SplitQuantityDialog.layout",
+			"{D9C065A9AD23B91B}UI/Layouts/EL_CharacterCreationMenu.layout",
+			"{8012E7D806E87F1A}UI/Layouts/EL_ATMMenu.layout",
+			"{64B1F5DD29214016}UI/Layouts/EL_SurvivalHUD.layout",
+			"{41489243B750D7EC}UI/Layouts/FactionSelectionMenu.layout",
+			"{CE3AB8A674B242C5}UI/Layouts/ShopMenu.layout",
+			"{41C6F92AE5EA775C}UI/Layouts/PoliceMenu.layout"
 		};
 
 		foreach (string layout : menus)
@@ -27,13 +27,13 @@ class EL_Test_Data : EL_Test
 		}
 
 		array<string> languages = {
-			"Language/everonlife_localization.en_us.conf",
-			"Language/everonlife_localization.de_de.conf",
-			"Language/everonlife_localization.es_es.conf",
-			"Language/everonlife_localization.fr_fr.conf",
-			"Language/everonlife_localization.it_it.conf",
-			"Language/everonlife_localization.pt_pt.conf",
-			"Language/everonlife_localization.pt_br.conf"
+			"{55C94506A4DE38D4}Language/everonlife_localization.en_us.conf",
+			"{22C3B3E7B5DE4F90}Language/everonlife_localization.de_de.conf",
+			"{218D5638D4114435}Language/everonlife_localization.es_es.conf",
+			"{0F28012222AD49A9}Language/everonlife_localization.fr_fr.conf",
+			"{8D37A87656314392}Language/everonlife_localization.it_it.conf",
+			"{DEFFC499E7D84576}Language/everonlife_localization.pt_pt.conf",
+			"{7D2C51510B084418}Language/everonlife_localization.pt_br.conf"
 		};
 
 		foreach (string lang : languages)

@@ -14,6 +14,11 @@ GameProject {
        "PLATFORM_WINDOWS" "ENF_WB" "WORKBENCH" "EL_AUTOTEST"
       }
      }
+     ScriptConfigurationClass pc {
+      Defines {
+       "PLATFORM_WINDOWS" "EL_AUTOTEST"
+      }
+     }
     }
    }
    WidgetManagerSettings WidgetManagerSettings "{AC4BE58770485E02}" {

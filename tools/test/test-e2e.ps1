@@ -11,14 +11,16 @@
 
 param(
   [int]$TimeoutSeconds = 90,
-  [int]$PollMs = 2000
+  [int]$PollMs = 2000,
+  [string]$Tier = "all"
 )
 
 $ErrorActionPreference = "Stop"
 
-$root = "C:\Users\jaspe\Documents\Reforger\Life-Framework-wt"
+$root = git rev-parse --show-toplevel
+if (-not $root) { Write-Host "ERROR not a git work tree"; exit 2 }
 if (-not (Test-Path (Join-Path $root "addons\LifeFramework\LifeFramework.gproj"))) {
-  Write-Host "ERROR addon not found at worktree root: $root"
+  Write-Host "ERROR addon not found at repo root: $root"
   exit 2
 }
 
@@ -56,7 +58,11 @@ $args = @(
   "-noBackend"
 )
 
-Write-Host "test-e2e: launching $exe"
+if ($Tier -eq "fast") {
+  $args += @("-scrDefine", "EL_TEST_TIER_FAST")
+}
+
+Write-Host "test-e2e: launching $exe (tier=$Tier)"
 Write-Host "test-e2e: args $($args -join ' ')"
 $p = Start-Process -FilePath $exe -ArgumentList $args -PassThru -WorkingDirectory $root `
   -RedirectStandardOutput (Join-Path $env:TEMP "lf-e2e-out.txt") `

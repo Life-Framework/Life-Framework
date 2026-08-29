@@ -78,7 +78,31 @@ class EL_PlayerAccount : Managed
 	//------------------------------------------------------------------------------------------------
 	void RemoveCharacter(notnull EL_PlayerCharacter character)
 	{
+		int removedIdx = m_aCharacters.Find(character);
+		if (removedIdx == -1)
+			return;
+
 		m_aCharacters.RemoveItemOrdered(character);
+
+		// RemoveItemOrdered reindexes the array, so the active index must be
+		// re-clamped. Removing the active character falls back to the first
+		// remaining one; removing one before it shifts it down one.
+		if (m_aCharacters.IsEmpty())
+		{
+			m_iActiveCharacterIdx = 0;
+		}
+		else if (removedIdx == m_iActiveCharacterIdx)
+		{
+			m_iActiveCharacterIdx = 0;
+		}
+		else if (removedIdx < m_iActiveCharacterIdx)
+		{
+			m_iActiveCharacterIdx--;
+		}
+		else if (m_iActiveCharacterIdx >= m_aCharacters.Count())
+		{
+			m_iActiveCharacterIdx = m_aCharacters.Count() - 1;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -11,13 +11,13 @@ class EL_Test_Prefabs : EL_Test
 	override void Run(EL_TestContext ctx)
 	{
 		array<string> prefabs = {
-			"Prefabs/Characters/Core/Character_Roleplay.et",
-			"Prefabs/Items/Food/Apple.et",
-			"Prefabs/Items/Food/Plum.et",
-			"Prefabs/Items/Drinks/WaterBottle.et",
-			"Prefabs/Items/Currencies/MoneyStack.et",
-			"Prefabs/Vehicles/LicensePlate/LicensePlate.et",
-			"Prefabs/MP/Modes/Roleplay/GameMode_Roleplay.et"
+			"{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et",
+			"{C9D661E5B0714711}Prefabs/Items/Food/Apple.et",
+			"{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et",
+			"{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et",
+			"{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et",
+			"{E95486C43308F36B}Prefabs/Vehicles/LicensePlate/LicensePlate.et",
+			"{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay.et"
 		};
 
 		foreach (string path : prefabs)
@@ -26,7 +26,7 @@ class EL_Test_Prefabs : EL_Test
 			ctx.True(res.IsValid(), string.Format("prefab loads: %1", path));
 		}
 
-		Resource appleRes = Resource.Load("Prefabs/Items/Food/Apple.et");
+		Resource appleRes = Resource.Load("{C9D661E5B0714711}Prefabs/Items/Food/Apple.et");
 		if (appleRes.IsValid())
 		{
 			EntitySpawnParams params();

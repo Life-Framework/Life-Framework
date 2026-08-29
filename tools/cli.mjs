@@ -312,18 +312,33 @@ function serverExe() {
 }
 
 function serverArgs() {
-  // Addon discovery: the engine scans ./addons relative to the CWD (repo root
-  // -> the unpacked LifeFramework) plus ONE -addonsDir (last one wins), which
-  // supplies the vanilla Game/core addons from the game client install.
-  // Dependency addons beyond that (EPF/EDF) must come from ./addons as well
-  // or be dropped from the gproj dependency list.
+  // Addon discovery: -server loads the DebugWorld directly (no -config, which
+  // conflicts with -addons). -addonsDir points at the repo addons plus a
+  // junction to the game client's core/data ONLY - the server install's own
+  // ./addons is skipped so the packed EPF/EDF paks (which fail to compile on
+  // current Reforger) never load.
   const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const profile = join(ROOT, "server", "profile", "test");
+  const junction = join(profile, "game-addons");
+  if (!existsSync(join(junction, "data"))) {
+    mkdirSync(join(junction), { recursive: true });
+    try {
+      sh("cmd", ["/c", "mklink", "/J", join(junction, "core"), join(gameDir, "addons", "core")]);
+      sh("cmd", ["/c", "mklink", "/J", join(junction, "data"), join(gameDir, "addons", "data")]);
+    } catch {
+      // junction may already exist or mklink unavailable; core/data are then resolved via gameDir below
+    }
+  }
+  const addonsDir = [join(ROOT, "addons"), junction].join(",");
   return [
-    "-config", join(ROOT, "server", "configs", "test-server.json"),
-    "-profile", join(ROOT, "server", "profile", "test"),
-    "-addonsDir", join(gameDir, "addons"),
+    "-server", "Worlds/DebugWorld/DebugWorld.ent",
+    "-addonsDir", addonsDir,
     "-addons", "LifeFramework",
-    "-maxFPS", "60",
+    "-profile", profile,
+    "-maxFPS", "30",
+    "-logLevel", "normal",
+    "-disableCrashReporter",
+    "-noBackend",
   ];
 }
 
@@ -544,20 +559,17 @@ async function cmdTest(noBuild, tier = "all") {
     const b = await cmdBuild();
     if (b !== 0) return b;
   }
-  const exe = serverExe();
-  if (!existsSync(exe)) {
-    console.log(`FAIL  dedicated server not found: ${exe}`);
-    console.log("      install Arma Reforger Server (Steam app 1874900) or set ENFUSION_SERVER_PATH");
+  // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
+  // boots the dedicated server via -server + a neutral addonsDir, polls the
+  // profile console.log every 2s for the [ELTEST] SUMMARY, self-terminates.
+  const harness = join(ROOT, "tools", "test", "test-e2e.ps1");
+  if (!existsSync(harness)) {
+    console.log(`FAIL  harness not found: ${harness}`);
     return 1;
   }
-  const logsDir = join(ROOT, "server", "logs");
-  mkdirSync(logsDir, { recursive: true });
-  const logFile = join(logsDir, `test-${new Date().toISOString().replace(/[:.]/g, "-")}.log`);
-  console.log(`server log: ${logFile}`);
-  console.log(`tier: ${tier}`);
-  const args = [...serverArgs(), "-scrDefine", "EL_AUTOTEST"];
-  if (tier === "fast") args.push("-scrDefine", "EL_TEST_TIER_FAST");
-  return runServerTest(exe, args, logFile, tier);
+  const res = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness, "-Tier", tier]);
+  process.stdout.write(res.stdout + res.stderr);
+  return res.status;
 }
 
 async function cmdCi() {

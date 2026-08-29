@@ -3,7 +3,7 @@
 // first boot after the EPF dependency removal lands.
 class EL_Test_QuantityStack : EL_Test
 {
-	protected static const ResourceName WOOD_LOG_PREFAB = "Prefabs/Resources/WoodCutting/WoodLog_01_Small.et";
+	protected static const ResourceName WOOD_LOG_PREFAB = "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()

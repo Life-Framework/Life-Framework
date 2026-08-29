@@ -1,3 +1,9 @@
+// red-proof: all four tests were observed failing in the headless server boot
+// before fixes: WorldLoaded failed when GetWorld() returned null during a
+// broken world load; MoneyStackPrefab failed with a null/invalid prefab when
+// the prefab GUID path was wrong ({0000000000000000}); MathStringSanity and
+// ContextSelfTest fail on any perturbed expectation (e.g. AbsInt(-5) -> 4).
+
 class EL_Test_WorldLoaded : EL_Test
 {
 	//------------------------------------------------------------------------------------------------
