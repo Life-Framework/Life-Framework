@@ -7,7 +7,12 @@
 
 # Build artifacts
 *.gproj.user
+*.rdb
 *.rdb.lock
+addons/LifeFramework/log
+
+# Vendored upstream reference (EveronLife upstream clone - never commit)
+addons/LifeFramework/EveronLife/
 
 # Editor temporary files
 *~

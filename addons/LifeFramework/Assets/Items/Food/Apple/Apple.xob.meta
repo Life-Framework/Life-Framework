@@ -8,6 +8,10 @@ MetaFileClass {
      AssignedMaterial "{A2DEDA91509615F3}Assets/Items/Food/Apple/Data/Apple.emat"
     }
    }
+   MeshParams {
+    MeshParam Apple {
+    }
+   }
    GeometryParams {
     GeometryParam USP_Main {
      LayerPreset "ItemFireView"
@@ -18,6 +22,9 @@ MetaFileClass {
    }
    Common TXOCommonClass "{598C2CD724E6E55C}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
    }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "2.93.9"
   }
   FBXResourceClass XBOX_ONE : PC {
    Common TXOCommonClass "{598C2CD724E6E4E4}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
@@ -34,6 +41,8 @@ MetaFileClass {
   FBXResourceClass HEADLESS : PC {
    Common TXOCommonClass "{598C2CD724E6E461}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
    }
+  }
+  FBXResourceClass PS5 : PC {
   }
  }
 }

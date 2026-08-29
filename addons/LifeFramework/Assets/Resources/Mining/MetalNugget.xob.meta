@@ -9,6 +9,10 @@ MetaFileClass {
      AssignedMaterial "{3C10D749A4E84B38}Common/Materials/Default.emat"
     }
    }
+   MeshParams {
+    MeshParam MetalNugget {
+    }
+   }
    GeometryParams {
     GeometryParam UTM_MetalNugget {
      LayerPreset "ItemFireView"
@@ -21,6 +25,9 @@ MetaFileClass {
    }
    Common TXOCommonClass "{5AD2B6DC98D3CAD4}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
    }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "3.2.0"
   }
   FBXResourceClass XBOX_ONE : PC {
    Common TXOCommonClass "{5AD2B6DC98D3CA3B}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
@@ -37,6 +44,8 @@ MetaFileClass {
   FBXResourceClass HEADLESS : PC {
    Common TXOCommonClass "{5AD2B6DC98D3CDDF}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
    }
+  }
+  FBXResourceClass PS5 : PC {
   }
  }
 }

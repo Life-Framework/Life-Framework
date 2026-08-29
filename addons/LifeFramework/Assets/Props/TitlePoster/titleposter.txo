@@ -3,6 +3,9 @@ $object "" {
  #tag MergeMeshes "1"
  #tag Coords "XZY"
  #tag Scale "1.000000"
+ #tag SrcFile_AppVendor "Blender Foundation"
+ #tag SrcFile_AppName "Blender (stable FBX IO)"
+ #tag SrcFile_AppVersion "3.1.2"
  $materials {
   $material "everon_titeliimg" {
    #UVset 0

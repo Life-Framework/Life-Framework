@@ -3,6 +3,9 @@ $object "" {
  #tag MergeMeshes "1"
  #tag Coords "XZY"
  #tag Scale "1.000000"
+ #tag SrcFile_AppVendor "Blender Foundation"
+ #tag SrcFile_AppName "Blender (stable FBX IO)"
+ #tag SrcFile_AppVersion "3.2.0"
  $materials {
   $material "Material" {
    #UVset 0
@@ -56,7 +59,7 @@ $object "" {
    }
    $verts {
      -0.082105 0.205774 -0.037323 0
-     -0.058015 0.188367 0.037602 0
+     -0.058015 0.188368 0.037602 0
      -0.081865 -0.205318 -0.037362 0
      -0.057727 -0.18882 0.037453 0
      0.081458 0.206057 -0.03752 0

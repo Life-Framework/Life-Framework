@@ -8,6 +8,10 @@ MetaFileClass {
      AssignedMaterial "{AA3F394D188976A6}Assets/Items/Food/Tomato/Data/Tomato.emat"
     }
    }
+   MeshParams {
+    MeshParam Tomato_body {
+    }
+   }
    GeometryParams {
     GeometryParam USP_sphere {
      LayerPreset "ItemFireView"
@@ -20,6 +24,9 @@ MetaFileClass {
    }
    Common TXOCommonClass "{5986B39D83420285}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
    }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "2.93.9"
   }
   FBXResourceClass XBOX_ONE : PC {
    Common TXOCommonClass "{5986B39D83420586}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
@@ -36,6 +43,8 @@ MetaFileClass {
   FBXResourceClass HEADLESS : PC {
    Common TXOCommonClass "{5986B39D83420494}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
    }
+  }
+  FBXResourceClass PS5 : PC {
   }
  }
 }

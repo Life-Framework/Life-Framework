@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{0C862423F831217B}Assets/Items/Food/Rowan Berries/Data/rowan_berries_bcr.edds"
+ Name "{0C862423F831217B}Assets/Items/Food/Rowan Berries/Data/RowanBerries_BCR.edds"
  Configurations {
   TIFFResourceClass PC : "{EAB5DE3219F9CBA8}Configs/System/ResourceTypes/PC/TextureColorMap.conf" {
   }
@@ -10,6 +10,8 @@ MetaFileClass {
   TIFFResourceClass PS4 : "{12273E1A0928F0C4}Configs/System/ResourceTypes/PS4/TextureColorMap.conf" {
   }
   TIFFResourceClass HEADLESS : "{BEAF5CD0C438676E}Configs/System/ResourceTypes/HEADLESS/TextureColorMap.conf" {
+  }
+  TIFFResourceClass PS5 : PC {
   }
  }
 }

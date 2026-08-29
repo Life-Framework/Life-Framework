@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{DEFFC499E7D84576}Language/everonlife_localization.pt_pt.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

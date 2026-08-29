@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{AA3F394D188976A6}Assets/Items/Food/Tomato/Data/DefaultGeneratedMaterial.emat"
+ Name "{AA3F394D188976A6}Assets/Items/Food/Tomato/Data/Tomato.emat"
  Configurations {
   EMATResourceClass PC {
   }
@@ -10,6 +10,8 @@ MetaFileClass {
   EMATResourceClass PS4 : PC {
   }
   EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
   }
  }
 }

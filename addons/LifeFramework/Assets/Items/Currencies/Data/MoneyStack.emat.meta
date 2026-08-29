@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{F1470E3E995AE04F}Assets/Items/Currencies/data/MoneyStack.emat"
+ Name "{F1470E3E995AE04F}Assets/Items/Currencies/Data/MoneyStack.emat"
  Configurations {
   EMATResourceClass PC {
   }
@@ -10,6 +10,8 @@ MetaFileClass {
   EMATResourceClass PS4 : PC {
   }
   EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
   }
  }
 }

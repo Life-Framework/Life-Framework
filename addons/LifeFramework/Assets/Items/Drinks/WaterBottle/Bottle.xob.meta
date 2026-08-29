@@ -8,6 +8,10 @@ MetaFileClass {
      AssignedMaterial "{A0A194FFC39525F3}Assets/Items/Drinks/WaterBottle/Data/Bottle.emat"
     }
    }
+   MeshParams {
+    MeshParam "Cercle.001" {
+    }
+   }
    GeometryParams {
     GeometryParam UCL_Main {
      LayerPreset "ItemFireView"
@@ -20,6 +24,9 @@ MetaFileClass {
    }
    Common TXOCommonClass "{598B1327FCE38026}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
    }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "2.93.9"
   }
   FBXResourceClass XBOX_ONE : PC {
    Common TXOCommonClass "{598B1327FCE38296}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
@@ -36,6 +43,8 @@ MetaFileClass {
   FBXResourceClass HEADLESS : PC {
    Common TXOCommonClass "{598B1327FCE38576}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
    }
+  }
+  FBXResourceClass PS5 : PC {
   }
  }
 }

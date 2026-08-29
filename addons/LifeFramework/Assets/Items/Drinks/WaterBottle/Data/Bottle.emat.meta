@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{A0A194FFC39525F3}Assets/Items/Drinks/WaterBottle/Data/DefaultGeneratedMaterial.emat"
+ Name "{A0A194FFC39525F3}Assets/Items/Drinks/WaterBottle/Data/Bottle.emat"
  Configurations {
   EMATResourceClass PC {
   }
@@ -10,6 +10,8 @@ MetaFileClass {
   EMATResourceClass PS4 : PC {
   }
   EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
   }
  }
 }

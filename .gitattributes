@@ -1,0 +1,17 @@
+# Reforger / Enfusion binary assets - force Git to treat them as binary
+*.anm -text
+*.bterr -text
+*.dds -text
+*.edds -text
+*.fbx -text
+*.tif -text
+*.ttile -text
+*.txo -text
+*.xob -text
+*.png -text
+*.jpg -text
+
+# NOTE: Git LFS is NOT enabled yet. Binary assets are committed as plain blobs.
+# To migrate to LFS later (recommended once the repo is stable):
+#   git lfs track "*.edds" "*.tif" "*.fbx" "*.xob" "*.dds" "*.anm" "*.ttile" "*.bterr"
+#   git lfs migrate import --include="*.edds,*.tif,*.fbx,*.xob,*.dds,*.anm,*.ttile,*.bterr"

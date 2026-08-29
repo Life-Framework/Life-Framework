@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{F5D658A836748EEA}Assets/Tools/data/None.emat"
+ Name "{F5D658A836748EEA}Assets/Tools/Axe/Data/Axe.emat"
  Configurations {
   EMATResourceClass PC {
   }
@@ -10,6 +10,8 @@ MetaFileClass {
   EMATResourceClass PS4 : PC {
   }
   EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
   }
  }
 }

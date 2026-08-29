@@ -1,6 +1,0 @@
-GenericEntity GroupsLayer_Root {
- coords 0 0 0
- {
-  // Group entities will be placed here as needed
- }
-}

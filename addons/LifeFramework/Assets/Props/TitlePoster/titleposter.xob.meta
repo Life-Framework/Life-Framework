@@ -1,15 +1,22 @@
 MetaFileClass {
- Name "{97442DB7F9595AB7}Assets/Props/EveronLife/Posters/titleposter.xob"
+ Name "{97442DB7F9595AB7}Assets/Props/TitlePoster/titleposter.xob"
  Configurations {
   FBXResourceClass PC {
    MaterialAssigns {
     MaterialAssignClass "{59675E02D4A0482E}" {
      SourceMaterial "everon_titeliimg"
-     AssignedMaterial "{F43EDB8C6EC4EA45}Assets/Props/EveronLife/Posters/data/everon_titeliimg.emat"
+     AssignedMaterial "{F43EDB8C6EC4EA45}Assets/Props/TitlePoster/data/everon_titeliimg.emat"
+    }
+   }
+   MeshParams {
+    MeshParam everon_titeliimg {
     }
    }
    Common TXOCommonClass "{59675E02D4A505A6}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
    }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "3.1.2"
   }
   FBXResourceClass XBOX_ONE : PC {
    Common TXOCommonClass "{59675E02D4A504AF}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
@@ -26,6 +33,8 @@ MetaFileClass {
   FBXResourceClass HEADLESS : PC {
    Common TXOCommonClass "{59675E02D4A507FD}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
    }
+  }
+  FBXResourceClass PS5 : PC {
   }
  }
 }

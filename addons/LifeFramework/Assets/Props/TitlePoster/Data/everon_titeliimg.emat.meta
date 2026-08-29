@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{F43EDB8C6EC4EA45}Assets/Props/TitlePoster/data/everon_titeliimg.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

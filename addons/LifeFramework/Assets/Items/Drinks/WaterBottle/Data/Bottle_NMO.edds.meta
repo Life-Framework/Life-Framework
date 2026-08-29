@@ -11,5 +11,7 @@ MetaFileClass {
   }
   TIFFResourceClass HEADLESS : "{AFD658E4D0EB5FBC}Configs/System/ResourceTypes/HEADLESS/TextureNType.conf" {
   }
+  TIFFResourceClass PS5 : PC {
+  }
  }
 }
