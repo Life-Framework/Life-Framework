@@ -372,6 +372,16 @@ function cmdBuild() {
   }
   const addonDirs = [];
   if (env.ENFUSION_PROJECT_PATH) addonDirs.push(env.ENFUSION_PROJECT_PATH);
+  // The base game (core/data, GUID 58D0FB3206B6F859) resolves reliably through
+  // a junction to the game install's addons - ./addons relative to the game dir
+  // is flaky in headless launches. Reuse the same junction the server harness
+  // builds (server/profile/test/game-addons), or the top-level one if present.
+  const junctions = [
+    join(ROOT, "server", "profile", "test", "game-addons"),
+    "C:/Users/jaspe/Documents/Reforger/GameAddonsLink",
+  ];
+  const junction = junctions.find((j) => existsSync(join(j, "data")));
+  if (junction) addonDirs.push(junction);
   const args = [
     "-gproj", gproj,
     "-wbModule=ResourceManager",

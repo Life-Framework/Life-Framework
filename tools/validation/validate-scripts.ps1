@@ -40,8 +40,15 @@ $before = @(Get-ChildItem $wbProfileLogs -Directory -ErrorAction SilentlyContinu
 
 Write-Host "validate-scripts: launching Workbench from game dir (first run may rebuild the resource database and take a while) ..."
 
+# The base game (core/data) resolves reliably through a junction to the game
+# install's addons; ./addons relative to the game dir is flaky headless.
+$gameAddonsJunction = "C:\Users\jaspe\Documents\Reforger\GameAddonsLink"
+if (-not (Test-Path (Join-Path $gameAddonsJunction "data"))) {
+  $gameAddonsJunction = Join-Path $root "server\profile\test\game-addons"
+}
 $args = @(
   '-gproj', "`"$gproj`"",
+  '-addonsDir', "`"$gameAddonsJunction`"",
   '-wbModule=ScriptEditor', '-run',
   '-validate', 'PC',
   '-exitAfterInit', '-noSplash', '-noThrow'
