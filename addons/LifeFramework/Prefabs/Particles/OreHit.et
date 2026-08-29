@@ -1,5 +1,4 @@
-SCR_ParticleEmitter {
+ParticleEffectEntity {
  ID "5A72CD2ED07F4B98"
- coords 113.678 0.001 142.496
- m_EffectPath "{FCBF6633BE03CA37}VFX/Gather/OreHit.ptc"
+ EffectPath "{FCBF6633BE03CA37}Particles/Gather/OreHit.ptc"
 }
