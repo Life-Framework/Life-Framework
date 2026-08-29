@@ -1,0 +1,12 @@
+# Bug fix
+
+You own this task. Plan, review, verify. Be scientific. Every shipped line traces to runtime evidence. Belt-and-suspenders that "might help" is a hypothesis, not a fix; it does not ship. When evidence refutes a hypothesis, revert what it motivated. The smallest change the evidence justifies ships, nothing more.
+
+1. Reproduce it yourself. Drive the DebugWorld in the Workbench (play mode) or boot the dedicated server and read the logs. Do not hand the repro to the user. Reproduce from the game's own runtime: console/script errors in `console.log` or `error.log`, the Workbench script log, or an `EL_Test` that fails. Won't reproduce directly? Force it: synthesize the trigger, tighten conditions, or instrument until it fires. A bug you cannot reproduce, you cannot prove fixed.
+2. Binary-search the cause. Form candidate hypotheses, then rule them out until one survives. Seed them with **enfusion-how** over the affected subsystem. Each pass, take the split that cuts the most remaining problem space, get runtime evidence, eliminate. When program state is unclear, add instrumentation or logging and read it as the code runs. Do not guess. Confirm the surviving mechanism with runtime evidence before planning the fix. A design grounded on a plausible-but-unconfirmed cause can be unanimously wrong while the real cause sits one subsystem over.
+3. Plan the fix. If it crosses a function or component boundary, **enfusion-architect** first. Check **enfusion-blast-radius** for what else the change could break. Delegate implementation to a `life-agent` subagent with a specific scope, or write it yourself. Review the diff.
+4. Verify on the same surface the bug was reproduced on. The original repro now passes. "Inconclusive" or wrong-surface is not a pass. Where a cheap in-game test path exists, add the failing `EL_Test` first via **el-tdd** so the fix is proven twice.
+5. Stage the commits so the failing repro lands before the fix in git history. The diff tells the story. This is the canonical **principle-sequence-verifiable-units**.
+6. Run `tools\cli validate` and `tools\cli test` if either is quick enough to matter, and confirm the pre-commit checks pass.
+
+**Reply:** what was broken, root cause, fix, how you verified. Paste the failing-then-passing log or test output verbatim.
