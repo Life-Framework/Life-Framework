@@ -1,0 +1,31 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "enfusion-mcp": {
+      "type": "local",
+      "command": [
+        "node",
+        "C:/Users/jaspe/Documents/Reforger/Life-Framework/tools/mcp/enfusion-mcp-bk/dist/index.js"
+      ],
+      "enabled": true,
+      "environment": {
+        "ENFUSION_WORKBENCH_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Tools",
+        "ENFUSION_GAME_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger",
+        "ENFUSION_PROJECT_PATH": "C:/Users/jaspe/Documents/My Games/ArmaReforgerWorkbench/addons"
+      }
+    },
+    "enfusion-workbench": {
+      "type": "local",
+      "command": [
+        "node",
+        "C:/Users/jaspe/Documents/Reforger/Life-Framework/tools/mcp/enfusion-workbench-mcp/dist/index.js"
+      ],
+      "enabled": false,
+      "environment": {
+        "ENFUSION_WORKBENCH_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Tools",
+        "ENFUSION_GAME_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger",
+        "ENFUSION_PROJECT_PATH": "C:/Users/jaspe/Documents/My Games/ArmaReforgerWorkbench/addons"
+      }
+    }
+  }
+}

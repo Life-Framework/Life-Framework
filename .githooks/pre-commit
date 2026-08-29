@@ -1,0 +1,5 @@
+#!/bin/sh
+# .githooks/pre-commit - runs the repo validator on staged changes.
+# Enabled via: git config core.hooksPath .githooks
+ROOT="$(git rev-parse --show-toplevel)"
+exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/tools/validation/validate-repo.ps1" -Staged

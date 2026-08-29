@@ -16,30 +16,30 @@ GameProject {
         Code "en_us"
         StringTableRuntime "{55C94506A4DE38D4}Language/everonlife_localization.en_us.conf"
        }
-       LanguageDefinition "{NEW_GUID_LANG_ES}" {
-        Code "es_es"
-        StringTableRuntime "{NEW_GUID_RUNTIME_ES}Language/everonlife_localization.es_es.conf"
-       }
-       LanguageDefinition "{NEW_GUID_LANG_DE}" {
-        Code "de_de"
-        StringTableRuntime "{NEW_GUID_RUNTIME_DE}Language/everonlife_localization.de_de.conf"
-       }
-       LanguageDefinition "{NEW_GUID_LANG_FR}" {
-        Code "fr_fr"
-        StringTableRuntime "{NEW_GUID_RUNTIME_FR}Language/everonlife_localization.fr_fr.conf"
-       }
-       LanguageDefinition "{NEW_GUID_LANG_IT}" {
-        Code "it_it"
-        StringTableRuntime "{NEW_GUID_RUNTIME_IT}Language/everonlife_localization.it_it.conf"
-       }
-       LanguageDefinition "{NEW_GUID_LANG_PT_PT}" {
-        Code "pt_pt"
-        StringTableRuntime "{NEW_GUID_RUNTIME_PT_PT}Language/everonlife_localization.pt_pt.conf"
-       }
-       LanguageDefinition "{NEW_GUID_LANG_PT_BR}" {
-        Code "pt_br"
-        StringTableRuntime "{NEW_GUID_RUNTIME_PT_BR}Language/everonlife_localization.pt_br.conf"
-       }
+        LanguageDefinition "{A5E5E5A1000000E1}" {
+         Code "es_es"
+         StringTableRuntime "{218D5638D4114435}Language/everonlife_localization.es_es.conf"
+        }
+        LanguageDefinition "{A5E5E5A1000000D1}" {
+         Code "de_de"
+         StringTableRuntime "{22C3B3E7B5DE4F90}Language/everonlife_localization.de_de.conf"
+        }
+        LanguageDefinition "{A5E5E5A1000000F1}" {
+         Code "fr_fr"
+         StringTableRuntime "{0F28012222AD49A9}Language/everonlife_localization.fr_fr.conf"
+        }
+        LanguageDefinition "{A5E5E5A100000011}" {
+         Code "it_it"
+         StringTableRuntime "{8D37A87656314392}Language/everonlife_localization.it_it.conf"
+        }
+        LanguageDefinition "{A5E5E5A1000000A1}" {
+         Code "pt_pt"
+         StringTableRuntime "{DEFFC499E7D84576}Language/everonlife_localization.pt_pt.conf"
+        }
+        LanguageDefinition "{A5E5E5A1000000B1}" {
+         Code "pt_br"
+         StringTableRuntime "{7D2C51510B084418}Language/everonlife_localization.pt_br.conf"
+        }
       }
      }
     }
