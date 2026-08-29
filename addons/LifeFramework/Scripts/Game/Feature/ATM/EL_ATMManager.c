@@ -69,6 +69,16 @@ class EL_ATMManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Clears the cache and drops the singleton. Used by the test suite between
+	//! cases and by the game mode teardown.
+	static void Reset()
+	{
+		if (s_Instance)
+			s_Instance.m_mAccounts.Clear();
+		s_Instance = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void EL_ATMManager()
 	{
 		s_Instance = this;

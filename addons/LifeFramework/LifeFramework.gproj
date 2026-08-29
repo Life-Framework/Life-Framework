@@ -7,6 +7,15 @@ GameProject {
  }
  Configurations {
   GameProjectConfig PC {
+   ScriptProjectManagerSettings ScriptProjectManagerSettings "{AC4BE58770485E4B}" {
+    Configurations {
+     ScriptConfigurationClass workbench {
+      Defines {
+       "PLATFORM_WINDOWS" "ENF_WB" "WORKBENCH" "EL_AUTOTEST"
+      }
+     }
+    }
+   }
    WidgetManagerSettings WidgetManagerSettings "{AC4BE58770485E02}" {
      StringTables {
      StringTableDefinition "{5A5EA10345D394A8}" {

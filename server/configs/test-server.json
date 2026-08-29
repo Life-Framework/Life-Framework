@@ -1,0 +1,38 @@
+{
+  "bindAddress": "0.0.0.0",
+  "bindPort": 2001,
+  "publicAddress": "",
+  "publicPort": 2001,
+  "a2s": {
+    "address": "0.0.0.0",
+    "port": 17777
+  },
+  "rcon": {
+    "address": "0.0.0.0",
+    "port": 19999,
+    "password": "lf-test",
+    "permission": "admin",
+    "maxClients": 4,
+    "blacklist": [],
+    "whitelist": []
+  },
+  "game": {
+    "name": "Life Framework - Test",
+    "password": "",
+    "passwordAdmin": "",
+    "scenarioId": "{5A1E5A1E5A1E0002}Missions/EL_DebugTest.conf",
+    "maxPlayers": 8,
+    "visible": false,
+    "mods": [
+      {
+        "modId": "79636E668EA37AC9",
+        "name": "LifeFramework"
+      }
+    ]
+  },
+  "operating": {
+    "lobbyPlayerSynchronise": true,
+    "playerSaveTime": 60,
+    "aiLimit": -1
+  }
+}

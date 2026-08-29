@@ -21,8 +21,13 @@ class EL_TestRunnerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void Run()
 	{
+		bool fast = false;
+#ifdef EL_TEST_TIER_FAST
+		fast = true;
+#endif
+
 		string reportXml;
-		int failures = EL_TestManager.GetInstance().RunAll(reportXml);
+		int failures = EL_TestManager.GetInstance().RunAll(fast, reportXml);
 		string reportFile = EL_TestManager.WriteReport(reportXml);
 		PrintFormat("[EL_Tests] runtime tests done, failures=%1, report=%2", failures, reportFile);
 

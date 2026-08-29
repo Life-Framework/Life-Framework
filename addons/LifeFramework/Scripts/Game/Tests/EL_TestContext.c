@@ -30,6 +30,36 @@ class EL_TestContext
 	}
 
 	//------------------------------------------------------------------------------------------------
+	void EqualFloat(float expected, float actual, float epsilon, string message)
+	{
+		m_iAssertions++;
+		if (Math.AbsFloat(expected - actual) > epsilon)
+			Fail(string.Format("%1 (expected %2, got %3)", message, expected, actual));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void NotNull(Managed obj, string message)
+	{
+		m_iAssertions++;
+		if (obj == null)
+			Fail(message);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void InRange(float value, float lo, float hi, string message)
+	{
+		m_iAssertions++;
+		if (value < lo || value > hi)
+			Fail(string.Format("%1 (%2 not in [%3, %4])", message, value, lo, hi));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Pass(string message)
+	{
+		m_iAssertions++;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Fail(string message)
 	{
 		m_iAssertions++;
