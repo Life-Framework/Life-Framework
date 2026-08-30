@@ -18,7 +18,7 @@ if (-not $root) { Write-Host "ERROR not a git work tree"; exit 1 }
 
 $gproj = Join-Path $root "addons\LifeFramework\LifeFramework.gproj"
 $wb = $env:LF_WORKBENCH_EXE
-if (-not $wb) { $wb = $env:ENFUSION_WORKBENCH_PATH }
+if (-not $wb -and $env:ENFUSION_WORKBENCH_PATH) { $wb = Join-Path $env:ENFUSION_WORKBENCH_PATH "Workbench\ArmaReforgerWorkbenchSteamDiag.exe" }
 if (-not $wb) { $wb = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger Tools\Workbench\ArmaReforgerWorkbenchSteamDiag.exe" }
 $gameDir = $env:LF_GAME_DIR
 if (-not $gameDir) { $gameDir = $env:ENFUSION_GAME_PATH }
@@ -42,36 +42,26 @@ $before = @(Get-ChildItem $wbProfileLogs -Directory -ErrorAction SilentlyContinu
 
 Write-Host "validate-scripts: launching Workbench from game dir (first run may rebuild the resource database and take a while) ..."
 
-# The base game (core/data) resolves reliably through a junction to the game
-# install's addons; ./addons relative to the game dir is flaky headless. The
-# junction is created on demand under the repo (same one the test harness uses),
-# so this works on any machine without a hardcoded path.
-$gameAddonsJunction = Join-Path $root "server\profile\test\game-addons"
-if (-not (Test-Path (Join-Path $gameAddonsJunction "data"))) {
-  New-Item -ItemType Directory -Force -Path $gameAddonsJunction | Out-Null
-  cmd /c mklink /J "$gameAddonsJunction\core" "$gameDir\addons\core" 2>$null | Out-Null
-  cmd /c mklink /J "$gameAddonsJunction\data" "$gameDir\addons\data" 2>$null | Out-Null
+# Workbench validation owns this generated addon root. Dedicated-server tests
+# use server/profile/test/game-addons with a smaller server data set; sharing
+# that directory produced a hybrid install and crashed Workbench at game init.
+$workbenchDir = Split-Path -Parent $wb
+$coreSource = Join-Path $workbenchDir "addons\core"
+$dataSource = Join-Path $gameDir "addons\data"
+if (-not (Test-Path -LiteralPath (Join-Path $coreSource "core.gproj"))) {
+  Write-Host "ERROR Workbench core project not found: $coreSource"
+  exit 2
 }
-$coreGproj = Join-Path $gameAddonsJunction "core\core.gproj"
-if (-not (Test-Path -LiteralPath (Join-Path $gameDir "addons\core\core.gproj"))) {
-  if (Test-Path -LiteralPath (Join-Path $gameAddonsJunction "core")) { Remove-Item -LiteralPath (Join-Path $gameAddonsJunction "core") -Recurse -Force }
-  $coreDir = Split-Path -Parent $coreGproj
-  New-Item -ItemType Directory -Force -Path $coreDir | Out-Null
-  Copy-Item -Path (Join-Path $gameDir "addons\core\*") -Destination $coreDir -Recurse -Force
-  @'
-GameProject {
- ID "core"
- GUID "5614BBCCBB55ED1C"
- TITLE "core"
- Configurations {
-  GameProjectConfig PC {
-  }
-  GameProjectConfig HEADLESS : PC {
-  }
- }
+if (-not (Test-Path -LiteralPath (Join-Path $dataSource "ArmaReforger.gproj"))) {
+  Write-Host "ERROR game data project not found: $dataSource"
+  exit 2
 }
-'@ | Set-Content -LiteralPath $coreGproj -Encoding ASCII
-}
+
+$gameAddonsJunction = Join-Path $root "server\profile\validate\game-addons"
+if (Test-Path -LiteralPath $gameAddonsJunction) { Remove-Item -LiteralPath $gameAddonsJunction -Recurse -Force }
+New-Item -ItemType Directory -Force -Path $gameAddonsJunction | Out-Null
+cmd /c mklink /J "$gameAddonsJunction\core" "$coreSource" 2>$null | Out-Null
+cmd /c mklink /J "$gameAddonsJunction\data" "$dataSource" 2>$null | Out-Null
 $args = @(
   '-gproj', "`"$gproj`"",
   '-addonsDir', "`"$gameAddonsJunction`"",
@@ -80,30 +70,14 @@ $args = @(
   '-exitAfterInit', '-noSplash', '-noThrow'
 )
 
-# NVIDIA driver 616.56 (installed 2026-08-30) makes headless Workbench exits
-# flaky with STATUS_ACCESS_VIOLATION (0xC0000005 / exit -1073741819) at engine
-# init ("Adapter ... failed to provide some output"), before any project work.
-# Retry that specific exit code; everything else fails immediately.
-$accessViolation = -1073741819
-$maxAttempts = 3
-$code = 1
-for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
-  $p = Start-Process -FilePath $wb -ArgumentList $args -PassThru -WorkingDirectory $gameDir
+$p = Start-Process -FilePath $wb -ArgumentList $args -PassThru -WorkingDirectory $gameDir
 
-  if (-not $p.WaitForExit(900000)) {
-    Write-Host "validate-scripts: TIMEOUT after 15 min - killing Workbench (pid $($p.Id))"
-    try { $p.Kill() } catch {}
-    exit 2
-  }
-  $code = $p.ExitCode
-
-  if ($code -eq 0) { break }
-  if ($code -eq $accessViolation -and $attempt -lt $maxAttempts) {
-    Write-Host "validate-scripts: known flaky Workbench init crash (0xC0000005, GPU/nvtt) - retry $attempt/2"
-    continue
-  }
-  break
+if (-not $p.WaitForExit(900000)) {
+  Write-Host "validate-scripts: TIMEOUT after 15 min - killing Workbench (pid $($p.Id))"
+  try { $p.Kill() } catch {}
+  exit 2
 }
+$code = $p.ExitCode
 
 # pull the run's console log for diagnostics
 $logDir = Get-ChildItem $wbProfileLogs -Directory -ErrorAction SilentlyContinue |

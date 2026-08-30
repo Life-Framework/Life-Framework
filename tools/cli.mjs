@@ -21,7 +21,7 @@
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { spawn, spawnSync } from "node:child_process";
-import { closeSync, createWriteStream, existsSync, fstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, writeFileSync } from "node:fs";
+import { closeSync, cpSync, createWriteStream, existsSync, fstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
@@ -327,7 +327,9 @@ function workbenchExe() {
 
 function serverExe() {
   const env = envOf();
-  return env.ENFUSION_SERVER_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server/ArmaReforgerServer.exe";
+  const configured = env.ENFUSION_SERVER_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server";
+  if (/\.exe$/i.test(configured)) return configured;
+  return join(configured, "ArmaReforgerServer.exe");
 }
 
 // The main checkout is the world-editor copy. Heavy commands (build/test/dev/
@@ -340,55 +342,67 @@ function guardHeavy(root, command, force) {
   throw new Error("main-checkout guard");
 }
 
-// Junction to the base game's core/data addons under <root>/server/profile/
-// test/game-addons. Self-healing: created on demand from the configured game
-// install so builds and test servers resolve the vanilla Game addon on any
-// machine. Returns the junction path if usable, else null (callers then rely
-// on the engine's own addon discovery).
-function gameAddonsJunction(root) {
+// Workbench needs its own canonical core plus the game client's complete data
+// package. Do not share this directory with dedicated-server tests: they use a
+// smaller server-specific data set, and mixing the two crashes Workbench while
+// it creates the scripted game.
+function workbenchGameAddons(root, scope) {
   const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
-  const junction = join(root, "server", "profile", "test", "game-addons");
-  if (!existsSync(join(junction, "data"))) {
-    mkdirSync(join(junction), { recursive: true });
-    try {
-      sh("cmd", ["/c", "mklink", "/J", join(junction, "core"), join(gameDir, "addons", "core")]);
-      sh("cmd", ["/c", "mklink", "/J", join(junction, "data"), join(gameDir, "addons", "data")]);
-    } catch {
-      // junction may already exist or mklink unavailable; callers fall back to engine discovery
-    }
+  const coreSource = join(dirname(workbenchExe()), "addons", "core");
+  const dataSource = join(gameDir, "addons", "data");
+  if (!existsSync(join(coreSource, "core.gproj"))) throw new Error(`Workbench core project not found: ${coreSource}`);
+  if (!existsSync(join(dataSource, "ArmaReforger.gproj"))) throw new Error(`game data project not found: ${dataSource}`);
+
+  const junction = join(root, "server", "profile", scope, "game-addons");
+  rmSync(junction, { recursive: true, force: true });
+  mkdirSync(junction, { recursive: true });
+  createJunction(join(junction, "core"), coreSource);
+  createJunction(join(junction, "data"), dataSource);
+  return junction;
+}
+
+function createJunction(target, source) {
+  const result = sh("cmd", ["/c", "mklink", "/J", target, source]);
+  if (result.status !== 0 || !existsSync(target)) {
+    throw new Error(`failed to create addon junction ${target} -> ${source}: ${result.stderr || result.stdout}`);
   }
-  const coreSource = join(gameDir, "addons", "core");
-  const coreTarget = join(junction, "core");
-  const coreSourceHasProject = existsSync(join(coreSource, "core.gproj"));
-  if (!coreSourceHasProject && existsSync(coreSource) && !existsSync(join(coreTarget, "core.gproj"))) {
-    // Some server/client installs ship core data.pak without core.gproj. Do
-    // not write through the junction into the shared install; make a local
-    // core package and add only the project metadata required by the engine.
-    try {
-      rmSync(coreTarget, { recursive: true, force: true });
-      mkdirSync(coreTarget, { recursive: true });
-      for (const file of readdirSync(coreSource)) {
-        copyFileSync(join(coreSource, file), join(coreTarget, file));
-      }
-      writeFileSync(join(coreTarget, "core.gproj"), [
-        "GameProject {",
-        " ID \"core\"",
-        " GUID \"5614BBCCBB55ED1C\"",
-        " TITLE \"core\"",
-        " Configurations {",
-        "  GameProjectConfig PC {",
-        "  }",
-        "  GameProjectConfig HEADLESS : PC {",
-        "  }",
-        " }",
-        "}",
-        "",
-      ].join("\n"));
-    } catch {
-      // The normal junction remains the fallback if local provisioning fails.
-    }
+}
+
+function serverGameAddons(root) {
+  const env = envOf();
+  const configured = env.ENFUSION_SERVER_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server";
+  const serverDir = /\.exe$/i.test(configured) ? dirname(configured) : configured;
+  const gameDir = env.ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  let source = join(serverDir, "addons");
+  if (!existsSync(join(source, "core")) || !existsSync(join(source, "data"))) source = join(gameDir, "addons");
+
+  const target = join(root, "server", "profile", "serve", "game-addons");
+  rmSync(target, { recursive: true, force: true });
+  mkdirSync(target, { recursive: true });
+  createJunction(join(target, "data"), join(source, "data"));
+
+  const coreSource = join(source, "core");
+  if (existsSync(join(coreSource, "core.gproj"))) {
+    createJunction(join(target, "core"), coreSource);
+  } else {
+    const coreTarget = join(target, "core");
+    cpSync(coreSource, coreTarget, { recursive: true });
+    writeFileSync(join(coreTarget, "core.gproj"), [
+      "GameProject {",
+      " ID \"core\"",
+      " GUID \"5614BBCCBB55ED1C\"",
+      " TITLE \"core\"",
+      " Configurations {",
+      "  GameProjectConfig PC {",
+      "  }",
+      "  GameProjectConfig HEADLESS : PC {",
+      "  }",
+      " }",
+      "}",
+      "",
+    ].join("\n"));
   }
-  return existsSync(join(junction, "data")) ? junction : null;
+  return target;
 }
 
 function serverArgs(root, ports) {
@@ -399,7 +413,7 @@ function serverArgs(root, ports) {
   // current Reforger) never load. -bindPort/-a2sPort give every worktree its
   // own port pair so parallel test runs never collide.
   const profile = join(root, "server", "profile", "test");
-  const junction = gameAddonsJunction(root) ?? "";
+  const junction = serverGameAddons(root);
   const addonsDir = [join(root, "addons"), junction].filter(Boolean).join(",");
   return [
     "-server", "Worlds/DebugWorld/DebugWorld.ent",
@@ -460,9 +474,8 @@ function cmdBuild(root = ROOT, opts = {}) {
   // The base game (core/data, GUID 58D0FB3206B6F859) resolves reliably through
   // a junction to the game install's addons - ./addons relative to the game dir
   // is flaky in headless launches. The junction is created on demand under
-  // server/profile/test/game-addons (see gameAddonsJunction).
-  const junction = gameAddonsJunction(root);
-  if (junction) addonDirs.push(junction);
+  // server/profile/build/game-addons (see workbenchGameAddons).
+  addonDirs.push(workbenchGameAddons(root, "build"));
   const args = [
     "-gproj", gproj,
     "-wbModule=ResourceManager",
@@ -480,8 +493,9 @@ function cmdBuild(root = ROOT, opts = {}) {
   console.log(`  addon dirs: ${addonDirs.join(", ")}`);
   console.log("  (streaming Workbench console.log live)");
 
-  const runOnce = () => new Promise((resolvePromise) => {
+  return new Promise((resolvePromise) => {
     const done = (code) => {
+      wt.releaseLock(root, "build");
       resolvePromise(code);
     };
     const child = spawn(exe, args, { cwd: gameDir });
@@ -557,22 +571,6 @@ function cmdBuild(root = ROOT, opts = {}) {
     });
   });
 
-  // NVIDIA driver 616.56 (installed 2026-08-30) makes Workbench's nvtt texture
-  // worker exit with STATUS_ACCESS_VIOLATION (0xC0000005) at engine init on
-  // roughly every other headless launch, usually after the log line
-  // "Adapter ... failed to provide some output". The crash happens before any
-  // project work starts, so rerunning the exact command is safe. Retry twice;
-  // a compile or data error still fails the gate on the first attempt.
-  const ACCESS_VIOLATION = 3221225477;
-  const attempt = (n) => runOnce().then((code) => {
-    if (code === ACCESS_VIOLATION && n < 3) {
-      console.log(`  known flaky Workbench init crash (0xC0000005, GPU/nvtt) - retry ${n}/2`);
-      return attempt(n + 1);
-    }
-    wt.releaseLock(root, "build");
-    return code;
-  });
-  return attempt(1);
 }
 
 function cmdServe(root = ROOT, opts = {}) {
@@ -711,7 +709,7 @@ async function cmdCi(root = ROOT, opts = {}) {
   const steps = [
     ["validate", () => cmdRunArea("validate", root)],
     ["build", () => cmdBuild(root, { wait: opts.wait })],
-    ["test", () => cmdTest(false, "all", root, opts)],
+    ["test", () => cmdTest(true, "all", root, opts)],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -933,12 +931,7 @@ async function wtTestCmd(args) {
   const flags = args.slice(1);
   try {
     const e = wt.requireWorktree(ROOT, slug);
-    return cmdTest(
-      flags.includes("--no-build"),
-      argValue(flags, "--tier") ?? "all",
-      e.path,
-      { wait: flags.includes("--wait") },
-    );
+    return runWorktreeCli(e.path, ["test", ...flags]);
   } catch (err) {
     console.log(`FAIL  ${err.message}`);
     return 1;
@@ -949,7 +942,7 @@ async function wtTestCmd(args) {
 // harness invocation inside cmdTest (same ports, same cwd/env) but exposes the
 // profile-keep and -loadSessionSave flags the two-boot save-state E2E needs.
 function runE2ePass(root, tier, opts = {}) {
-  const harness = join(ROOT, "tools", "test", "test-e2e.ps1");
+  const harness = join(root, "tools", "test", "test-e2e.ps1");
   if (!existsSync(harness)) {
     console.log(`FAIL  harness not found: ${harness}`);
     return 1;
@@ -969,6 +962,20 @@ function runE2ePass(root, tier, opts = {}) {
   const res = sh(PWSH, psArgs, { cwd: root, env: toolEnv() });
   process.stdout.write(res.stdout + res.stderr);
   return res.status;
+}
+
+function runWorktreeCli(root, args) {
+  const cli = join(root, "tools", "cli.mjs");
+  if (!existsSync(cli)) {
+    console.log(`FAIL  worktree CLI not found: ${cli}`);
+    return 1;
+  }
+  const result = spawnSync(process.execPath, [cli, ...args], {
+    cwd: root,
+    env: toolEnv(),
+    stdio: "inherit",
+  });
+  return result.status ?? 1;
 }
 
 async function wtE2eCmd(args) {
@@ -1002,7 +1009,7 @@ async function wtDevCmd(args) {
   const flags = args.slice(1);
   try {
     const e = wt.requireWorktree(ROOT, slug);
-    return cmdDev(argValue(flags, "--tier") ?? "all", e.path, { wait: flags.includes("--wait") });
+    return runWorktreeCli(e.path, ["dev", ...flags]);
   } catch (err) {
     console.log(`FAIL  ${err.message}`);
     return 1;
@@ -1015,7 +1022,7 @@ async function wtBuildCmd(args) {
   const flags = args.slice(1);
   try {
     const e = wt.requireWorktree(ROOT, slug);
-    return cmdBuild(e.path, { wait: flags.includes("--wait") });
+    return runWorktreeCli(e.path, ["build", ...flags]);
   } catch (err) {
     console.log(`FAIL  ${err.message}`);
     return 1;
@@ -1028,7 +1035,7 @@ async function wtGateCmd(args) {
   const flags = args.slice(1);
   try {
     const e = wt.requireWorktree(ROOT, slug);
-    return cmdCi(e.path, { wait: flags.includes("--wait") });
+    return runWorktreeCli(e.path, ["ci", ...flags]);
   } catch (err) {
     console.log(`FAIL  ${err.message}`);
     return 1;
@@ -1076,7 +1083,7 @@ async function wtShipCmd(args) {
   }
   if (!skipGate) {
     console.log("=== ship: gate (validate + build + test tier=all) ===");
-    const code = await cmdCi(wtRoot, { wait: true });
+    const code = runWorktreeCli(wtRoot, ["ci", "--wait"]);
     if (code !== 0) {
       console.log(`FAIL  gate failed; not shipping. Fix, commit, re-run 'cli wt ship ${slug}'.`);
       return 1;
