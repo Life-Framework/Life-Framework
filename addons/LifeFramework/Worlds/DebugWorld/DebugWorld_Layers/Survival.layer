@@ -1,105 +1,101 @@
 GenericEntity SurvivalStation {
  coords 142 0 120
  {
-  GenericEntity SurvivalPoint_Food {
-   components {
-    MeshObject "{5A4B0B84C86E4843}" {
-     Object "{FC330655F95CF82F}Assets/Props/Furniture/FridgeSmall_01/FridgeSmall_01.xob"
-    }
-    RigidBody "{5A4B0B84C86E4844}" {
-     Mass 10
-     ModelGeometry 1
-     Static 1
-    }
-    ActionsManagerComponent "{5A4B0B84C86E4845}" {
-     ActionContexts {
-      UserActionContext "{5A4B0B84C86E4846}" {
-       ContextName "default"
-       Position PointInfo "{5A4B0B84C86E4847}" {
-        Offset 0 0.8 0
+  $grp GenericEntity {
+   SurvivalPoint_Food {
+    components {
+     MeshObject "{5A4B0B84C86E4843}" {
+      Object "{FC330655F95CF82F}Assets/Props/Furniture/FridgeSmall_01/FridgeSmall_01.xob"
+     }
+     RigidBody "{5A4B0B84C86E4844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86E4845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86E4846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86E4847}" {
+         Offset 0 0.8 0
+        }
+        Radius 3
        }
-       Radius 3
+      }
+      additionalActions {
+       EL_GatherAction "{5A4B0B84C86E4848}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{5A4B0B84C86E4849}" {
+         Name "Tomar Manzana"
+         Description "Obtener manzana para restaurar hambre"
+        }
+        m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+        m_GatherAmount 1
+       }
       }
      }
-     additionalActions {
-      EL_GatherAction "{5A4B0B84C86E4848}" {
-       ParentContextList {
-        "default"
-       }
-       UIInfo UIInfo "{5A4B0B84C86E4849}" {
-        Name "Tomar Manzana"
-        Description "Obtener manzana para restaurar hambre"
-       }
-       m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
-       m_GatherAmount 1
-      }
+     RplComponent "{5A4B0B84C86E484A}" {
+      Enabled 1
      }
     }
-    RplComponent "{5A4B0B84C86E484A}" {
-     Enabled 1
-    }
+    coords 0 -0.001 0
    }
-   coords 0 0.9 0
-  }
-  GenericEntity SurvivalPoint_Water {
-   components {
-    MeshObject "{5A4B0B84C86E5843}" {
-     Object "{6A07B988B26BFD8C}Assets/Props/Military/WaterTanks/MobileWaterTankUS_01/MobileWaterTankUS_01.xob"
-    }
-    RigidBody "{5A4B0B84C86E5844}" {
-     Mass 10
-     ModelGeometry 1
-     Static 1
-    }
-    ActionsManagerComponent "{5A4B0B84C86E5845}" {
-     ActionContexts {
-      UserActionContext "{5A4B0B84C86E5846}" {
-       ContextName "default"
-       Position PointInfo "{5A4B0B84C86E5847}" {
-        Offset 0 1.0 0
+   SurvivalPoint_Water {
+    components {
+     MeshObject "{5A4B0B84C86E5843}" {
+      Object "{6A07B988B26BFD8C}Assets/Props/Military/WaterTanks/MobileWaterTankUS_01/MobileWaterTankUS_01.xob"
+     }
+     RigidBody "{5A4B0B84C86E5844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86E5845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86E5846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86E5847}" {
+         Offset 0 1 0
+        }
+        Radius 3
        }
-       Radius 3
+      }
+      additionalActions {
+       EL_GatherAction "{5A4B0B84C86E5848}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{5A4B0B84C86E5849}" {
+         Name "Tomar Ciruela"
+         Description "Obtener ciruela para restaurar sed y hambre"
+        }
+        m_GatherItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
+        m_GatherAmount 1
+       }
       }
      }
-     additionalActions {
-      EL_GatherAction "{5A4B0B84C86E5848}" {
-       ParentContextList {
-        "default"
-       }
-       UIInfo UIInfo "{5A4B0B84C86E5849}" {
-        Name "Tomar Ciruela"
-        Description "Obtener ciruela para restaurar sed y hambre"
-       }
-       m_GatherItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
-       m_GatherAmount 1
-      }
+     RplComponent "{5A4B0B84C86E584A}" {
+      Enabled 1
      }
     }
-    RplComponent "{5A4B0B84C86E584A}" {
-     Enabled 1
-    }
+    coords 4 -0.001 0
    }
-   coords 4 0.9 0
-  }
-  GenericEntity SurvivalTableItems {
-   coords -1.6 0.9 0.7
-   {
-    $grp GenericEntity : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
-     SurvivalApple_Debug {
+   SurvivalTableItems {
+    coords -1.6 0.9 0.7
+    {
+     GenericEntity SurvivalPlum_Debug : "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et" {
+      coords 0.25 0 0.05
+     }
+     GenericEntity SurvivalApple_Debug : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
       coords 0 0 0
      }
     }
-    $grp GenericEntity : "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et" {
-     SurvivalPlum_Debug {
-      coords 0.25 0 0.05
-     }
-    }
    }
   }
-  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
-   {
-    coords -1.6 0 0.7
-   }
+  GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   coords -1.6 0 0.7
   }
   EL_NpcBaseEntity SurvivalNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -112,7 +108,6 @@ GenericEntity SurvivalStation {
    }
    coords 0 0 -1.1
   }
-
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -121,7 +116,7 @@ GenericEntity SurvivalStation {
      m_eInitialLightState LIT
     }
    }
-   coords -1.6 0.9 -0.6
+   coords -1.591 0.904 0.813
   }
  }
 }

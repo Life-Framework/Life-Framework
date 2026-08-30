@@ -69,10 +69,10 @@ GenericEntity AppleTrader {
       Enabled 1
      }
     }
-coords -2.6 0.9 0.7
-     Flags 1027
-    }
-    AppleTraderTestItems {
+    Flags 0x403 0
+    coords -2.6 0.9 0.7
+   }
+   AppleTraderTestItems {
     coords -1.6 0.9 0.7
     {
      $grp GenericEntity : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
@@ -167,11 +167,11 @@ coords -2.6 0.9 0.7
       Enabled 1
      }
     }
-coords -3.6 0.9 0.7
-     Flags 1027
+    Flags 0x403 0
+    coords -3.6 0.9 0.7
    }
   }
-  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+  $grp GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {
     coords -1.6 0 0.7
    }
@@ -193,7 +193,6 @@ coords -3.6 0.9 0.7
    }
    coords 0 0 -1.1
   }
-
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -218,7 +217,7 @@ Tree AppleGatherTree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domest
  coords 94 0 145
 }
 GenericEntity AppleProcessor : "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et" {
- coords 96.2 0.9 140.4
+ coords 92.817 0.899 140.742
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
  coords 93.5 0 142
