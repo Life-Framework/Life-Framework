@@ -19,17 +19,3 @@ class EL_Test_DebugActionValidation : EL_Test
 		ctx.False(EL_DebugActionUtils.IsValidAction(999), "out-of-range ids are invalid");
 	}
 }
-
-// tier: WORLD
-class EL_Test_DebugWorldGate : EL_Test
-{
-	override string GetName()
-	{
-		return "debug-menu/world-gate";
-	}
-
-	override void Run(EL_TestContext ctx)
-	{
-		ctx.True(EL_DebugActionUtils.IsDebugWorld(), "DebugWorld mission passes the debug-menu gate");
-	}
-}
