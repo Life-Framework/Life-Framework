@@ -1,0 +1,4 @@
+EL_NpcBaseEntity : "{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et" {
+ coords 110 0 137
+ angleY 180
+}

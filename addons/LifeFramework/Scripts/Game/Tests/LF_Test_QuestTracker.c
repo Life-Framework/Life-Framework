@@ -20,6 +20,34 @@ class LF_Test_QuestTracker : EL_Test
 		TestTimedExpiry(ctx);
 		TestCooldown(ctx);
 		TestZeroObjective(ctx);
+		TestLogCodec(ctx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The quest-log wire format survives an encode/decode round trip (the menu
+	//! depends on it client-side).
+	void TestLogCodec(EL_TestContext ctx)
+	{
+		LF_QuestDefinition def = MakeKillQuest("q_log", 2, "", false, 0);
+		LF_QuestTracker tracker = new LF_QuestTracker();
+		map<string, ref LF_QuestDefinition> defs = MakeDefs(def);
+		array<string> completed = {};
+
+		tracker.Accept(def, 1, EL_EJobType.UNEMPLOYED, "", 0, completed);
+		tracker.ApplyEvent(MakeEvent(LF_EQuestEventType.KILL, "", 1), defs);
+
+		string encoded = LF_QuestLogFormat.Encode(tracker.GetStates());
+		array<ref LF_QuestLogEntry> entries;
+		ctx.True(LF_QuestLogFormat.Decode(encoded, entries), "log decodes");
+		ctx.Equal(1, entries.Count(), "log has one entry");
+		if (entries.Count() == 1)
+		{
+			ctx.EqualStr("q_log", entries[0].m_sQuestId, "log quest id round-trips");
+			ctx.Equal(1, entries[0].m_aProgress[0], "log progress round-trips");
+		}
+
+		ctx.True(LF_QuestLogFormat.Decode("", entries), "empty log decodes");
+		ctx.Equal(0, entries.Count(), "empty log has no entries");
 	}
 
 	//------------------------------------------------------------------------------------------------

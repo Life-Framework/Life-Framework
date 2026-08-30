@@ -126,6 +126,13 @@ class LF_QuestTracker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Live state map (read-only use).
+	map<string, ref LF_QuestState> GetStates()
+	{
+		return m_mStates;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	LF_EQuestStatus GetStatus(string questId)
 	{
 		LF_QuestState state = m_mStates.Get(questId);

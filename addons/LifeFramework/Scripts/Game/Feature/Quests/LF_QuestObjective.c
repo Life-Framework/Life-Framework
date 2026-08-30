@@ -18,6 +18,14 @@ class LF_QuestObjective
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Filter key (faction, resource, area id, giver id; empty = any)")]
 	string m_sFilter;
 
+	//! AREA_ENTER only: world-space center and radius the manager checks against
+	//! the player position.
+	[Attribute(defvalue: "0 0 0", UIWidgets.EditBox, "Area center (AREA_ENTER only)")]
+	vector m_vPosition;
+
+	[Attribute(defvalue: "0", UIWidgets.EditBox, "Area radius in meters (AREA_ENTER only)")]
+	float m_fRadius;
+
 	//------------------------------------------------------------------------------------------------
 	//! Whether this objective is satisfied at the given progress.
 	bool IsComplete(int progress)

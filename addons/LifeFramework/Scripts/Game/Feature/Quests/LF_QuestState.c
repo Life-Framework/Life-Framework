@@ -119,6 +119,20 @@ class LF_QuestState
 		return 0;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Numeric status value (log wire format + persistence).
+	int GetStatusValue()
+	{
+		return m_eStatus;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Live objective progress map (read-only use).
+	map<int, int> GetProgressMap()
+	{
+		return m_mObjectiveProgress;
+	}
+
 	LF_EQuestStatus GetStatus() { return m_eStatus; }
 	string GetQuestId() { return m_sQuestId; }
 	float GetDeadline() { return m_fDeadline; }

@@ -1,0 +1,58 @@
+FrameWidgetClass "{CE14CB47B66299DC}" {
+ Name "QuestMenuRow"
+ components {
+  LF_QuestMenuRowComponent "{E65EC67AF1FD0B37}" {
+  }
+ }
+ {
+  HorizontalLayoutWidgetClass "{6AF029555BD33BCE}" {
+   Slot LayoutSlot "{60F8389199DE04C9}" {
+    SizeMode Fill
+    Padding 4 2 4 2
+   }
+   {
+    TextWidgetClass "{BF8139B8E673A972}" {
+     Name "QuestTitle"
+     Slot LayoutSlot "{933E7DA841FC9862}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 2
+     }
+     "Font Size" 15
+     "Min Font Size" 15
+    }
+    TextWidgetClass "{41B37C97F9BC0571}" {
+     Name "StatusText"
+     Slot LayoutSlot "{22175BD65292EA0B}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 2
+     }
+     "Font Size" 14
+     "Min Font Size" 14
+     "Horizontal alignment" Center
+    }
+    ButtonWidgetClass "{9638FBCD7AB547BD}" {
+     Name "ActionButton"
+     Slot LayoutSlot "{D9261BCB0D805BFB}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 1
+     }
+     {
+      TextWidgetClass "{596C9413350E5DFE}" {
+       Name "ActionButtonLabel"
+       Slot LayoutSlot "{78B92201F6453000}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Text "#LF-Quest_Accept"
+       "Font Size" 13
+       "Min Font Size" 13
+      }
+     }
+    }
+   }
+  }
+ }
+}

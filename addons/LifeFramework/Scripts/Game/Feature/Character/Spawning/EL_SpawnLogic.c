@@ -54,6 +54,12 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	{
 		super.OnPlayerKilled_S(playerId, playerEntity, killerEntity, killer);
 
+		// Forward the kill to the quest system so kill objectives progress
+		// (additive seam; the quest manager no-ops when no quest is listening).
+		LF_QuestManager questManager = LF_QuestManager.GetInstance();
+		if (questManager)
+			questManager.ReportKill(playerEntity, killerEntity);
+
 		// Fresh character spawn (NOTE: We need to push this to next frame due to a bug where on the
 		// same death frame we can not hand over a new char).
 		GetGame().GetCallqueue().Call(RespawnPlayer, playerId);
