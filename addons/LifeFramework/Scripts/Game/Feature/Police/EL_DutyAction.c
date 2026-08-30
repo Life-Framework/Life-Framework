@@ -33,7 +33,7 @@ class EL_DutyAction : ScriptedUserAction
 
 		EL_Debug.Log("Police", string.Format("duty toggled -> %1 (player %2)", status, pUserEntity));
 
-		EL_Utils.Notify(string.Format("#EL-Duty_Status_Change", status), "#EL-Duty_Status", 3.0);
+		EL_Utils.Notify(WidgetManager.Translate("#EL-Duty_Status_Change", status), "#EL-Duty_Status", 3.0);
 		
 		// Save account
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
