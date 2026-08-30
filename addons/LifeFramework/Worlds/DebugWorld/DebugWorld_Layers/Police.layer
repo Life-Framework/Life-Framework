@@ -37,7 +37,7 @@ GenericEntity PoliceStation {
      Enabled 1
     }
    }
-   coords 0 0.9 0
+    coords 0 0 0
   }
   GenericEntity PoliceTableItems {
    coords -1.6 0.9 0.7

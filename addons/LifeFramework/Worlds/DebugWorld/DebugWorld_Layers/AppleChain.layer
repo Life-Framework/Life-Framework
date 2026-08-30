@@ -218,7 +218,7 @@ Tree AppleGatherTree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domest
  coords 94 0 145
 }
 GenericEntity AppleProcessor : "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et" {
- coords 96.2 0.9 140.4
+ coords 96.2 0 140.4
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
  coords 93.5 0 142

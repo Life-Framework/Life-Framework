@@ -79,12 +79,12 @@ $grp GenericEntity {
   coords 129 0 145
   {
    GenericEntity : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
-    coords 5.724 0.28 2.861
+     coords 5.724 0 2.861
    }
   }
  }
  GoldOreRock {
-  coords 130.5 0.251 145.5
+  coords 130.5 0 145.5
   {
    GenericEntity : "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et" {
     coords 4.842 0 4.976
@@ -95,7 +95,7 @@ $grp GenericEntity {
   coords 131 0 146
   {
    GenericEntity : "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et" {
-    coords 4.377 0.275 6.931
+     coords 4.377 0 6.931
    }
   }
  }
@@ -124,7 +124,7 @@ EL_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/Min
  }
 }
 GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
- coords 122.777 0.9 147.497
+ coords 122.777 0 147.497
 }
 GenericEntity EL_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
  coords 124 0 145.5
@@ -132,5 +132,5 @@ GenericEntity EL_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_Mi
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
  coords 128 0 151
- m_vSize 11 1 11
+  m_vSize 10 1 10
 }

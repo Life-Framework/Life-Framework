@@ -39,7 +39,7 @@ GenericEntity SurvivalStation {
      Enabled 1
     }
    }
-   coords 0 0.9 0
+    coords 0 0 0
   }
   GenericEntity SurvivalPoint_Water {
    components {
@@ -79,7 +79,7 @@ GenericEntity SurvivalStation {
      Enabled 1
     }
    }
-   coords 4 0.9 0
+    coords 4 0 0
   }
   GenericEntity SurvivalTableItems {
    coords -1.6 0.9 0.7

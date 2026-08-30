@@ -1,5 +1,5 @@
 GenericEntity PlumTrader {
- coords 118 0 140
+  coords 114 0 140
  {
   $grp GenericEntity {
    PlumTradeContainer {
@@ -145,9 +145,9 @@ Tree PlumGatherTree : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domest
    }
   }
  }
- coords 118 0 145
+  coords 114 0 145
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 118 0 142
+  coords 114 0 142
  m_vSize 2.5 1 3.5
 }

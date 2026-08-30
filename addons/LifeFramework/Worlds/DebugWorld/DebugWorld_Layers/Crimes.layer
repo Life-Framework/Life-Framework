@@ -153,6 +153,6 @@ GenericEntity CrimeScene {
  }
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 155 0 152
- m_vSize 4 1 2
+  coords 155 0 153
+  m_vSize 5 1 2.5
 }

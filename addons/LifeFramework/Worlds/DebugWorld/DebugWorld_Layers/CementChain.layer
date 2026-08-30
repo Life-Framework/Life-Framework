@@ -74,7 +74,7 @@ SCR_DestructibleBuildingEntity : "{A92A5F3B79FF56BE}Prefabs/Structures/Industria
    }
   }
  }
- coords 96.2 0.9 128.4
+ coords 96.2 0 128.4
 }
 StaticModelEntity : "{81CB1B2631584427}Prefabs/Props/Construction/CementPile.et" {
  coords 94 0 129
