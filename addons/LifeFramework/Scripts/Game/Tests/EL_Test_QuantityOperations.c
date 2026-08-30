@@ -125,7 +125,7 @@ class EL_Test_QuantityOperations : EL_Test
 		ctx.Equal(7, descending[1].GetQuantity(), "numeric sort descending puts 7 second");
 		ctx.Equal(2, descending[2].GetQuantity(), "numeric sort descending puts 2 last");
 
-array<EL_QuantityComponent> ascending = EL_QuantityComponent.SortByQuantity(components, false);
+		array<EL_QuantityComponent> ascending = EL_QuantityComponent.SortByQuantity(components, false);
 		ctx.Equal(2, ascending[0].GetQuantity(), "numeric sort ascending puts 2 first");
 		ctx.Equal(7, ascending[1].GetQuantity(), "numeric sort ascending puts 7 second");
 		ctx.Equal(10, ascending[2].GetQuantity(), "numeric sort ascending puts 10 last");
