@@ -85,6 +85,15 @@ GameProject {
  TITLE "core"
  Configurations {
   GameProjectConfig PC {
+   ScriptProjectManagerSettings ScriptProjectManagerSettings "{AC4BE58770485E4B}" {
+    Modules {
+     ScriptModulePathClass workbenchGameCommon {
+      Paths {
+       "scripts/WorkbenchGameCommon"
+      }
+     }
+    }
+   }
   }
   GameProjectConfig HEADLESS : PC {
   }
