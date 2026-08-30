@@ -15,6 +15,8 @@ Project documentation for the Life Framework Arma Reforger mod.
 - [Roadmap](roadmap.md) — phased development plan. Phase 0 in progress; later
   phases open for contributors.
 - [Vision](vision.md) — philosophy and goals (MIT-licensed, extensible, 1989-era base).
+- [Design principles](design-principles.md) — how we build: framework defaults,
+  period authenticity, world-as-interface, credible professions.
 
 ## Engineering
 

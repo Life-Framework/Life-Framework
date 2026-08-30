@@ -1,7 +1,7 @@
 # Philosophy & Vision
 
 > Source: https://life-framework.org/philosophy (scraped). Companion to
-> [roadmap.md](./roadmap.md).
+> [roadmap.md](./roadmap.md) and [design-principles.md](./design-principles.md).
 
 We're a group of passionate modders contributing our time because we love life
 mods and want to bring back the vibrant life server community we all enjoyed.
