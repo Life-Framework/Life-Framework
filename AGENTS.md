@@ -22,9 +22,13 @@ before making changes. This file is the portable, tool-agnostic contract; the
    folder is `Data/` is a bug — the validator warns on it.
 4. **Binary assets are committed as plain blobs** (no LFS yet). Keep them
    binary (`-text`) in `.gitattributes`; never run text conversion over them.
-5. **Enforce Script lives under `addons/LifeFramework/Scripts/Game/`**, custom
-   classes are prefixed `EL_`, and script classes referenced by prefabs/entities
-   need the matching `XxxClass: YyyClass` pair where the base declares one.
+5. **Enforce Script lives under `addons/LifeFramework/Scripts/Game/`**. New
+   custom classes are prefixed `LF_` (Life Framework); the legacy `EL_`
+   (EveronLife) prefix stays on existing classes and is not renamed — new
+   `LF_` code freely calls `EL_` infrastructure (e.g. `EL_Debug`,
+   `EL_Component`, `EL_PlayerLevelComponent`). Script classes referenced by
+   prefabs/entities need the matching `XxxClass: YyyClass` pair where the base
+   declares one.
 6. **Never run heavy commands in the main checkout.** `cli build / test / dev /
    serve / ci` refuse to run there (the CLI enforces this) — the main checkout
    is the world-editor copy and agent activity must never break it. Create a
