@@ -11,5 +11,7 @@ MetaFileClass {
   }
   TIFFResourceClass HEADLESS : "{BEAF5CD0C438676E}Configs/System/ResourceTypes/HEADLESS/TextureColorMap.conf" {
   }
+  TIFFResourceClass PS5 : PC {
+  }
  }
 }

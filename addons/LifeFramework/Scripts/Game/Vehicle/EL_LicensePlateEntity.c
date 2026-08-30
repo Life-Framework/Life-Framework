@@ -18,7 +18,7 @@ class EL_LicensePlateEntity : GenericEntity
 	protected RTTextureWidget m_wRenderTargetTextureWidget;
 	protected RenderTargetWidget m_wRenderTargetWidget;
 	
-	TextWidget m_TextWidget;
+	ref TextWidget m_TextWidget;
 	EL_LicensePlateManagerComponent m_LicensePlateManager;
 	
 	/*

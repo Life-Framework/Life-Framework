@@ -31,7 +31,11 @@ class EL_LicensePlateManagerComponent: ScriptComponent
 	{
 		Resource resource = Resource.Load(m_LicensePlatePrefab);
 		
-		if (!resource.IsValid()) return;
+		if (!resource || !resource.IsValid())
+		{
+			EL_Debug.Warn("LicensePlate", "plate prefab does not resolve: " + m_LicensePlatePrefab);
+			return;
+		}
 		
 		EntitySpawnParams params();
 		params.Parent = owner;
@@ -42,7 +46,17 @@ class EL_LicensePlateManagerComponent: ScriptComponent
 		if (GetGame().InPlayMode() && rpl && rpl.IsMaster())
 		{
 			Resource container = BaseContainerTools.LoadContainer("{B1DD7B5D4812AB19}Configs/Vehicles/VehicleSettings.conf");
+			if (!container || !container.GetResource())
+			{
+				EL_Debug.Warn("LicensePlate", "vehicle settings config does not resolve");
+				return;
+			}
 			EL_VehicleSettings vehicleSettings = EL_VehicleSettings.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
+			if (!vehicleSettings || !vehicleSettings.m_LicensePlateGenerator)
+			{
+				EL_Debug.Warn("LicensePlate", "vehicle settings carries no plate generator");
+				return;
+			}
 			m_Registration = vehicleSettings.m_LicensePlateGenerator.GenerateLicensePlate();
 		}
 		
@@ -52,6 +66,11 @@ class EL_LicensePlateManagerComponent: ScriptComponent
 			GetPositionFromPoint(i, params.Transform);
 
 			plate.m_Object = EL_LicensePlateEntity.Cast(GetGame().SpawnEntityPrefabLocal(resource, owner.GetWorld(), params));
+			if (!plate.m_Object)
+			{
+				EL_Debug.Warn("LicensePlate", "plate entity failed to spawn");
+				continue;
+			}
 			plate.m_Object.m_LicensePlateManager = this;
 		}
 	}
@@ -60,6 +79,11 @@ class EL_LicensePlateManagerComponent: ScriptComponent
 	{
 		foreach (auto plate : m_Plates)
 		{
+			if (!plate.m_Object || !plate.m_Object.m_TextWidget)
+			{
+				EL_Debug.Warn("LicensePlate", "plate entity or text widget missing, cannot render registration");
+				continue;
+			}
 			plate.m_Object.m_TextWidget.SetText(m_Registration);
 		}
 	}

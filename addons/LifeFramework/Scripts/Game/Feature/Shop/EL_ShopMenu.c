@@ -44,7 +44,6 @@ class EL_ShopMenu : ChimeraMenuBase
 			foreach (EL_ShopItem item : items)
 			{
 				EL_ShopMenuItem menuItem = new EL_ShopMenuItem();
-				menuItem.m_Item = item;
 				menuItem.m_sDisplayName = item.GetDisplayName();
 				menuItem.m_iPrice = item.GetPrice();
 				menuItem.m_iMaxQuantity = item.GetMaxQuantity();
@@ -70,7 +69,6 @@ class EL_ShopMenu : ChimeraMenuBase
 
 class EL_ShopMenuItem
 {
-	EL_ShopItem m_Item;
 	string m_sDisplayName;
 	int m_iPrice;
 	int m_iMaxQuantity;

@@ -41,13 +41,20 @@ New-Item -ItemType Directory -Force -Path $profile | Out-Null
 # ./addons does not resolve to the server install's addons folder.
 # The junction sources core+data from the SERVER install, not the game install:
 # the server binary is only guaranteed to parse data shipped with it (a game-side
-# data hotfix newer than the server binary breaks prefab parsing).
+# data hotfix newer than the server binary breaks prefab parsing). When the server
+# install is a workshop-only deployment without base game data (empty core/data),
+# fall back to the game client install where the data lives (same engine version).
 $gameAddons = Join-Path $root "server\profile\test\game-addons"
 $serverInstall = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger Server"
+$gameInstall = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger"
+$dataSource = Join-Path $serverInstall "addons"
+$serverHasData = (Get-ChildItem (Join-Path $dataSource "core") -ErrorAction SilentlyContinue).Count -gt 0 -and
+                 (Get-ChildItem (Join-Path $dataSource "data") -ErrorAction SilentlyContinue).Count -gt 0
+if (-not $serverHasData) { $dataSource = Join-Path $gameInstall "addons" }
 if (-not (Test-Path (Join-Path $gameAddons "data"))) {
   New-Item -ItemType Directory -Force -Path $gameAddons | Out-Null
-  cmd /c mklink /J "$gameAddons\core" "$serverInstall\addons\core" 2>&1 | Out-Null
-  cmd /c mklink /J "$gameAddons\data" "$serverInstall\addons\data" 2>&1 | Out-Null
+  cmd /c mklink /J "$gameAddons\core" "$dataSource\core" 2>&1 | Out-Null
+  cmd /c mklink /J "$gameAddons\data" "$dataSource\data" 2>&1 | Out-Null
 }
 
 $addonsDir = (Join-Path $root "addons") + "," + $gameAddons

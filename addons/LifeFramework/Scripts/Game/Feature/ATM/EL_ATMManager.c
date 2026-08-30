@@ -130,6 +130,18 @@ class EL_ATMManager : Managed
 	//------------------------------------------------------------------------------------------------
 	bool Deposit(string accountId, int amount)
 	{
+		if (!Replication.IsServer())
+		{
+			EL_Debug.Warn("ATM", "deposit rejected: not running on the server");
+			return false;
+		}
+
+		if (!IsValidAmount(amount))
+		{
+			EL_Debug.Warn("ATM", string.Format("deposit rejected: invalid amount %1", amount));
+			return false;
+		}
+
 		EL_BankAccount account = GetAccount(accountId);
 		if (account)
 		{
@@ -145,6 +157,18 @@ class EL_ATMManager : Managed
 	//------------------------------------------------------------------------------------------------
 	bool Withdraw(string accountId, int amount)
 	{
+		if (!Replication.IsServer())
+		{
+			EL_Debug.Warn("ATM", "withdraw rejected: not running on the server");
+			return false;
+		}
+
+		if (!IsValidAmount(amount))
+		{
+			EL_Debug.Warn("ATM", string.Format("withdraw rejected: invalid amount %1", amount));
+			return false;
+		}
+
 		EL_BankAccount account = GetAccount(accountId);
 		if (account)
 		{

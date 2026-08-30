@@ -5,7 +5,7 @@ class EL_CharacterATMComponentClass : ScriptComponentClass
 
 class EL_CharacterATMComponent : ScriptComponent
 {
-	protected EL_BankAccount m_BankAccount;
+	protected ref EL_BankAccount m_BankAccount;
 
 	//------------------------------------------------------------------------------------------------
 	void Init(string playerUid)

@@ -45,7 +45,7 @@ class EL_Debug
 	{
 		if (!IsFeatureEnabled(feature))
 			return;
-		PrintFormat("[ELDebug:%1] %2", feature, message, level);
+		Print(string.Format("[ELDebug:%1] %2", feature, message), level);
 	}
 
 	//------------------------------------------------------------------------------------------------

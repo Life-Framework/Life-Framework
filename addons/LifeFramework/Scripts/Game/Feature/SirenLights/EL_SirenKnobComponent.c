@@ -8,7 +8,7 @@ Responsible for ticking the animation. If the animation is ticked by the vehicle
 class EL_SirenKnobComponent : ScriptComponent
 {
 	// The animation being played
-	protected EL_LightAnimation m_Animation;
+	protected ref EL_LightAnimation m_Animation;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)

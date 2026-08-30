@@ -28,25 +28,31 @@ class EL_ConfiscateAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		IEntity target = GetNearestWantedPlayer(pUserEntity);
-		if (target)
+		if (!target)
 		{
-			// Confiscate all weapons
-			SCR_InventoryStorageManagerComponent targetInventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(target);
-			if (targetInventory)
+			EL_Debug.Warn("Police", "confiscate failed: no wanted player in range");
+			return;
+		}
+
+		// Confiscate all weapons
+		SCR_InventoryStorageManagerComponent targetInventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(target);
+		if (!targetInventory)
+		{
+			EL_Debug.Warn("Police", "confiscate failed: target has no inventory");
+			return;
+		}
+
+		array<IEntity> allItems();
+		targetInventory.FindItems(allItems, null); // Get all items
+		foreach (IEntity item : allItems)
+		{
+			if (EL_Component<BaseWeaponComponent>.Find(item))
 			{
-				array<IEntity> allItems();
-				targetInventory.FindItems(allItems, null); // Get all items
-				foreach (IEntity item : allItems)
-				{
-					if (EL_Component<BaseWeaponComponent>.Find(item))
-					{
-						EL_InventoryUtils.DropItem(target, item);
-						SCR_EntityHelper.DeleteEntityAndChildren(item);
-					}
-				}
-				EL_Utils.Notify("#EL-Police_Action", "#EL-Police_Title", 3.0);
+				EL_InventoryUtils.DropItem(target, item);
+				SCR_EntityHelper.DeleteEntityAndChildren(item);
 			}
 		}
+		EL_Utils.Notify("#EL-Police_Action", "#EL-Police_Title", 3.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
