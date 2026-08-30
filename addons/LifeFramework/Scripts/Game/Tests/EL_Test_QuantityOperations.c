@@ -6,6 +6,8 @@
 class EL_Test_QuantityOperations : EL_Test
 {
 	protected static const ResourceName MONEY_STACK_PREFAB = "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et";
+	protected static const ResourceName MONEY_STACK_MODEL = "{773BE5E227A5A9CB}Assets/Items/Currencies/MoneyStack.xob";
+	protected static const ResourceName MONEY_STACK_BAG_MODEL = "{582D5ED9889AB099}Assets/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack/Backpack_IIFS_FieldPack_item.xob";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -143,25 +145,15 @@ array<EL_QuantityComponent> ascending = EL_QuantityComponent.SortByQuantity(comp
 			return;
 
 		ctx.Equal(100, qty.GetQuantity(), "money stack spawns at its configured init quantity");
-
-		// Headless servers load mesh geometry for physics; when the base mesh is absent the
-		// model-swap assertions cannot hold and are skipped rather than flaked.
-		VObject baseModel = stack.GetVObject();
-		if (!baseModel)
+		ctx.True(qty.GetActiveStackModel() == MONEY_STACK_MODEL, "init quantity shows the small tier model");
+		if (ctx.FailureCount() > 0)
 			return;
 
 		qty.SetQuantity(10000);
 		ctx.Equal(10000, qty.GetQuantity(), "stack set to the top tier quantity");
-
-		VObject topModel = stack.GetVObject();
-		ctx.True(topModel != null, "top tier stack still has a mesh");
-		if (ctx.FailureCount() > 0)
-			return;
-
-		ctx.True(topModel != baseModel, "top tier quantity swaps the mesh to a different model");
+		ctx.True(qty.GetActiveStackModel() == MONEY_STACK_BAG_MODEL, "top tier quantity swaps to the bag model");
 
 		qty.SetQuantity(50);
-		VObject restoredModel = stack.GetVObject();
-		ctx.True(restoredModel == baseModel, "quantity below every tier restores the base mesh");
+		ctx.True(qty.GetActiveStackModel().IsEmpty(), "quantity below every tier restores the base model");
 	}
 };

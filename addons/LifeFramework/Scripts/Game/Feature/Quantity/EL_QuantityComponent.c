@@ -42,6 +42,9 @@ class EL_QuantityComponent : ScriptComponent
 
 	protected VObject m_InitalModel;
 
+	//! Last stack-tier model applied to the owner; empty when the base model is shown.
+	protected ResourceName m_sAppliedStackModel;
+
 	//------------------------------------------------------------------------------------------------
 	int GetMaxQuantity()
 	{
@@ -127,6 +130,14 @@ class EL_QuantityComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The stack-tier model currently applied to the owner, or an empty ResourceName when the
+	//! base model is shown. Observable so tests can assert the visual without a renderer.
+	ResourceName GetActiveStackModel()
+	{
+		return m_sAppliedStackModel;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Picks the model of the highest tier whose threshold the quantity clears. Empty when no
 	//! tier applies, so the caller falls back to the base model. Independent of list order.
 	//! \param quantity Current stack quantity.
@@ -195,6 +206,7 @@ class EL_QuantityComponent : ScriptComponent
 			}
 
 			EL_Debug.Info("Quantity", string.Format("stack visual %1 at quantity %2", stackModelName, m_iQuantity));
+			m_sAppliedStackModel = stackModelName;
 		}
 		else
 		{
@@ -204,6 +216,7 @@ class EL_QuantityComponent : ScriptComponent
 				return;
 
 			targetModel = m_InitalModel;
+			m_sAppliedStackModel = "";
 		}
 
 		owner.SetObject(targetModel, "");
