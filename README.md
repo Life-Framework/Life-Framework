@@ -1,102 +1,104 @@
 # Life Framework
 
-Open-source life/RP server framework for Arma Reforger. A single mod — built
-as the Reforger GameProject `addons/LifeFramework/LifeFramework.gproj` — with
-economy, jobs, survival, crime/police, trading, and persistence, set in 1989
-to use Reforger's native assets.
+Open-source life/RP server framework for [Arma Reforger](https://www.bohemia.net/arma-reforger).
+One mod — `addons/LifeFramework/LifeFramework.gproj` — with economy, jobs,
+survival, crime/police, trading, and persistence, set in 1989 using Reforger's
+native assets.
 
-> **Status: Pre-alpha.** A working single-player/debug skeleton exists: two
-> worlds, most core systems implemented in Enforce Script, and an in-game test
-> suite. This is **not yet a shippable server release** — expect breaking
-> changes and incomplete rough edges.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Discord](https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white)](https://discord.com/invite/MjMexJteqz)
+[![Contributing](https://img.shields.io/badge/Contributing-welcome-green)](CONTRIBUTING.md)
+
+> **Status: Pre-alpha.** A working debug skeleton exists — two worlds, core
+> systems in EnforceScript, and an in-game test suite. **Not yet a shippable
+> server release.** Expect breaking changes.
+
+## Quick links
+
+| | |
+| --- | --- |
+| **Get started** | [Development setup](docs/setup.md) |
+| **Contribute** | [CONTRIBUTING.md](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md) |
+| **Engineering** | [AGENTS.md](AGENTS.md) · [Docs index](docs/README.md) |
+| **Community** | [Discord](https://discord.com/invite/MjMexJteqz) |
+| **Roadmap** | [docs/roadmap.md](docs/roadmap.md) |
 
 ## Features
 
-What's implemented today (each backed by working code and DebugWorld prefabs):
+What's implemented today (each backed by code and DebugWorld prefabs):
 
-- **Economy & banking** — bank accounts, ATMs (deposit/withdraw), money
-  handling and cash stacks.
-- **Trading** — shops with buy/sell, trader NPCs.
-- **Jobs & levels** — a job system gated by player level and skill-point
-  licenses.
-- **Character creation & accounts** — persistent player accounts, character
-  and faction selection, ID display.
-- **Survival** — hunger and thirst with a HUD and consumable effects.
-- **Gathering & processing** — a chain of gather/process actions: mining,
-  logging/woodcutting, gravel, sand, apples, plums, tomatoes, cement, and
-  more (mining/logging resources are destructible in the world).
-- **Crime & police** — robbery (people and vehicles), police fines, duty,
-  confiscation, and whitelisted police/license roles.
-- **Vehicle license plates** — generated plates assigned to vehicles.
-- **Inventory** — quantity/stacking system with split dialog and inventory
-  UI patches.
-- **Notifications** — in-game toast/notification system.
-- **NPCs** — base NPC entity for traders, police, and shops.
-- **Era** — 1989, using only Arma Reforger's native assets and setting.
+- **Economy & banking** — accounts, ATMs, cash stacks
+- **Trading** — shops, trader NPCs, buy/sell
+- **Jobs & levels** — jobs gated by level and skill-point licenses
+- **Character creation & accounts** — persistence, faction selection, ID display
+- **Survival** — hunger/thirst HUD and consumables
+- **Gathering & processing** — mining, logging, farming chains, destructible resources
+- **Crime & police** — robbery, fines, duty, confiscation, role whitelists
+- **Vehicle license plates** — generated plates
+- **Inventory** — quantity/stacking, split dialog, UI patches
+- **Notifications** — in-game toasts
+- **NPCs** — base entity for traders, police, shops
 
-The framework is time-period agnostic at its core: additional asset mods can
-shift the setting to any era without touching the gameplay systems.
+The core is era-agnostic: asset packs can shift the setting without rewriting
+gameplay systems.
 
-## Requirements / Dependencies
+## Requirements
 
-- **Arma Reforger** (base game) and **Arma Reforger Tools (Workbench)** to
-  build and run.
-- **No third-party addons.** The mod uses Reforger's first-party persistence
-  system (`SCR_PersistenceSystem` + serializers bound in
-  `Configs/Systems/Persistence/LifeFramework.conf`). The EPF (Enfusion
-  Persistence Framework) dependency was removed; the gproj declares only the
-  base game.
+- **Arma Reforger** and **Arma Reforger Tools (Workbench)** — build and play
+- **Arma Reforger Server** (Steam app 1874900) — automated test pipeline
+- **Node.js 18+** — dev CLI and MCP tooling
+- **No third-party addons** — persistence uses Reforger's first-party
+  `SCR_PersistenceSystem` (see `Configs/Systems/Persistence/LifeFramework.conf`)
 
-## Getting started / Development
+Full install steps: **[docs/setup.md](docs/setup.md)**.
 
-The mod lives in `addons/LifeFramework`:
+## Development
 
-- `Missions/EveronLifeGameMode.conf` — the playable scenario (loads
-  `MainWorld`).
-- `Worlds/MainWorld` — the main playable world.
-- `Worlds/DebugWorld` — the development/test bed, with a layer per feature
-  and an in-game `EL_Test*` suite (`Scripts/Game/Tests/`) that runs on the
-  dedicated-server harness under the `EL_AUTOTEST` define (injected by
-  `tools\cli test`/`serve`) and writes a report. Interactive Workbench play
-  does not auto-run the suite or close the game.
+The mod lives under `addons/LifeFramework/`:
 
-Workflow:
+| Path | Purpose |
+| --- | --- |
+| `Missions/EveronLifeGameMode.conf` | Playable scenario → MainWorld |
+| `Missions/EL_DebugTest.conf` | Test scenario → DebugWorld + `EL_Test*` suite |
+| `Worlds/MainWorld` | Main playable world |
+| `Worlds/DebugWorld` | Dev/test bed — one layer per feature |
+| `Scripts/Game/Tests/` | In-game automated tests (`EL_AUTOTEST` define) |
 
-1. Open `addons/LifeFramework/LifeFramework.gproj` in Workbench.
-2. Build the project (PC).
-3. Run `EveronLifeGameMode.conf` or the DebugWorld world.
+**Workbench:** open `LifeFramework.gproj` → Build (PC) → play a scenario.
 
-The repo ships a small dev CLI (`tools\cli`, a zero-dependency Node.js
-script) for tooling and checks:
+**CLI** (cross-platform; Windows shim `tools\cli`):
 
 ```sh
-tools\cli status        # toolchain + MCP server state
-tools\cli validate      # repo consistency checks (artifacts, GUIDs, metas)
-tools\cli lint          # run tools/lint/* checks
-tools\cli test          # run tools/test/* checks
-tools\cli mcp ...       # install/update/verify/enable/disable MCP servers
+node tools/cli.mjs status              # toolchain + MCP state
+node tools/cli.mjs validate            # repo hygiene (GUIDs, metas, artifacts)
+node tools/cli.mjs build               # headless Workbench build
+node tools/cli.mjs test --tier fast    # logic-tier in-game tests
+node tools/cli.mjs test                # full test suite on DebugWorld
+node tools/cli.mjs ci                  # validate + build + test
 ```
 
-`tools\cli validate` is also wired as a git pre-commit hook.
+AI-assisted development is encouraged — MCP servers, skills, and expectations
+are documented in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Repository layout
 
 ```
-addons/               The mod (LifeFramework.gproj + scripts, prefabs, worlds, UI, language)
-server/               Placeholder for dedicated-server configs and launch scripts (see server/README.md)
-tools/                Dev CLI (cli.mjs), MCP server tooling, validation/lint/test scripts
-assets-source/        Source asset licenses/attribution (LICENSES.md)
+addons/LifeFramework/   The mod (gproj, scripts, prefabs, worlds, UI, language)
+docs/                   Roadmap, features, test plan, setup guide
+server/                 Dedicated-server configs and launch scripts
+tools/                  Dev CLI, validation, MCP tooling
+assets-source/          Source asset licenses (LICENSES.md)
+.opencode/              AI skills and playbooks (opencode)
+AGENTS.md               Engineering contract for humans and AI agents
 ```
 
-## Credits / Provenance
+## Credits
 
-Life Framework is a fork/continuation of the **Everon Life RPG Framework** by
-Arkensor (https://github.com/EveronLife/EveronLife), released under the MIT
-license. The `EL_` class prefix used throughout the code reflects that
-heritage. The upstream project and its community remain the source of much of
-this codebase's design; please respect that project and its contributors.
+Fork/continuation of the **Everon Life RPG Framework** by
+[Arkensor](https://github.com/EveronLife/EveronLife) (MIT). The `EL_` class
+prefix reflects that heritage.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). By contributing, you agree your contributions
-are licensed under the MIT License. See [CONTRIBUTING.md](CONTRIBUTING.md).
+MIT — see [LICENSE](LICENSE). Contributions are licensed under MIT;
+see [CONTRIBUTING.md](CONTRIBUTING.md).

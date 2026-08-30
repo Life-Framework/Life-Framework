@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discord — bugs, features, and help
+    url: https://discord.com/invite/MjMexJteqz
+    about: Primary community hub. Start here for discussion and triage.
+  - name: Contributing guide
+    url: https://github.com/Life-Framework/Life-Framework/blob/main/CONTRIBUTING.md
+    about: How to fork, test, use AI tooling, and open pull requests.
+  - name: Development setup
+    url: https://github.com/Life-Framework/Life-Framework/blob/main/docs/setup.md
+    about: Prerequisites, Workbench, CLI, MCP, and troubleshooting.

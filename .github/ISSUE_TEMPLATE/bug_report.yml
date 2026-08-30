@@ -1,0 +1,53 @@
+name: Bug report
+description: Something broken in Life Framework
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Prefer [Discord bug reports](https://discord.com/invite/MjMexJteqz) for quick triage.
+        Use this form when you want a tracked GitHub issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Clear description of the bug.
+      placeholder: When I withdraw from an ATM with insufficient funds, the UI shows success but balance is unchanged.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps; include world/scenario if relevant.
+      placeholder: |
+        1. Open DebugWorld
+        2. Interact with ATM prefab on Economy layer
+        3. Withdraw more than balance
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Console.log excerpts, `[ELTEST]` output, or screenshots.
+      render: shell
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "Arma Reforger 1.x, Windows 11, Workbench build PC"
+    validations:
+      required: true
