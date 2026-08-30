@@ -1,7 +1,7 @@
 GenericEntity FarmerStand {
  coords 130 0 128
  {
-  GenericEntity Farming_DisplayCrate {
+  GenericEntity FarmerDisplayCrate {
    components {
     MeshObject "{59670CE9C98E5BAF}" {
      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
@@ -72,8 +72,29 @@ $grp GenericEntity : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" 
   coords 130 0 133
  }
 }
+$grp SCR_DestructibleBuildingEntity : "{3299E6F34CE40185}Prefabs/Structures/Agriculture/Greenhouse/Greenhouse_01/Greenhouse_01.et" {
+ Greenhouse_Debug {
+  coords 133 0 141
+  angleY 180
+ }
+}
+$grp StaticModelEntity : "{4D37CF893371E83B}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_big.et" {
+ VegetableBedBig_Debug {
+  coords 130.5 0 145
+ }
+}
+$grp StaticModelEntity : "{7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et" {
+ VegetableBedSmall_Debug {
+  coords 133 0 145
+ }
+}
+$grp GenericEntity : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" {
+ TomatoCrop_Bed {
+  coords 130.5 0.35 145
+ }
+}
 $grp GenericEntity : "{97F71E1D9830AE26}Prefabs/Items/Seeds/SeedTomato.et" {
  SeedTomato_Debug {
-  coords 131.5 0.2 133.5
+  coords 133 0.25 145
  }
 }
