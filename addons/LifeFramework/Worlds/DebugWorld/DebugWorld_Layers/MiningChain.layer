@@ -1,7 +1,7 @@
 GenericEntity MinerStand {
  coords 130 0 140
  {
-  GenericEntity DisplayCrate {
+  GenericEntity MinerDisplayCrate {
    components {
     MeshObject "{59670CE9C98E5BAF}" {
      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
