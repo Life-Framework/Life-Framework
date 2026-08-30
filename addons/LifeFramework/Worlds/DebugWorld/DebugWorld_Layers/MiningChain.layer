@@ -15,7 +15,7 @@ $grp GenericEntity {
       }
      }
      Flags 0x403 0
-     coords 0 0.9 0
+     coords -2.6 0.9 0.7
     }
     MiningDisplayItems {
      coords -1.6 0.9 0.7
@@ -49,6 +49,9 @@ $grp GenericEntity {
    GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
     coords -1.6 0 0.7
    }
+   GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+    coords -2.6 0 0.7
+   }
    EL_NpcBaseEntity MinerNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
     components {
      CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
@@ -59,9 +62,6 @@ $grp GenericEntity {
      }
     }
     coords 0 0 -1.1
-   }
-   GenericEntity : "{B80655BD24D2C162}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-    coords 1.6 0 -0.9
    }
    GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
     components {
@@ -129,4 +129,8 @@ GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
 GenericEntity EL_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
  coords 124 0 145.5
  angles 0 90 0
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 128 0 151
+ m_vSize 11 1 11
 }

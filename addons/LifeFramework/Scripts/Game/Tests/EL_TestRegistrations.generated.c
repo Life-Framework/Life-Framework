@@ -27,6 +27,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_CropPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropStages(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Data(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_DebugAreaBoundary(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_DoorLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_E2E_Narrative(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_E2E_SaveStateWrite(), EL_TestTier.PERSISTENCE);

@@ -68,8 +68,8 @@ GenericEntity JobCenter {
      Enabled 1
     }
    }
-   coords 3 0.9 0
-  }
+coords -2.6 0.9 0.7
+   }
   GenericEntity JobsTableItems {
    coords -1.6 0.9 0.7
    {
@@ -89,6 +89,9 @@ GenericEntity JobCenter {
    {
     coords -1.6 0 0.7
    }
+   {
+    coords -2.6 0 0.7
+   }
   }
   EL_NpcBaseEntity JobsNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -101,9 +104,7 @@ GenericEntity JobCenter {
    }
    coords 0 0 -1.1
   }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords 1.6 0 -0.9
-  }
+
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -115,4 +116,8 @@ GenericEntity JobCenter {
    coords -1.6 0.9 -0.6
   }
  }
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 118 0 120
+ m_vSize 2.5 1 1.5
 }

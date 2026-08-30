@@ -92,3 +92,7 @@ $grp GenericEntity {
   coords 146 0 130
  }
 }
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 144 0 130
+ m_vSize 2.5 1 1.5
+}
