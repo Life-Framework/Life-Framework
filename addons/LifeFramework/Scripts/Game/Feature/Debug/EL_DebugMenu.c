@@ -189,12 +189,6 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		if (!EL_DebugActionUtils.IsDebugWorld())
-		{
-			EL_Debug.Error("DebugMenu", "debug action refused: world is not the DebugWorld");
-			return;
-		}
-
 		EL_DebugActionUtils.Apply(this, action, value);
 	}
 }
@@ -224,27 +218,6 @@ class EL_DebugActionUtils
 	static bool IsValidAction(int actionId)
 	{
 		return actionId >= 0 && actionId < EL_EDebugAction.COUNT;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! \return true when the current world is the DebugWorld (the dev/test world).
-	static bool IsDebugWorld()
-	{
-		MissionHeader header = GetGame().GetMissionHeader();
-		if (!header)
-			return false;
-
-		ResourceName world = header.GetWorldResourceName();
-		if (!world)
-		{
-			EL_Debug.Warn("DebugMenu", "DebugWorld gate failed: mission has no world resource");
-			return false;
-		}
-
-		string worldName = world.GetPath();
-		bool isDebugWorld = worldName.IndexOf("DebugWorld") >= 0;
-		EL_Debug.Info("DebugMenu", string.Format("DebugWorld gate resource=%1 path=%2 result=%3", world, worldName, isDebugWorld));
-		return isDebugWorld;
 	}
 
 	//------------------------------------------------------------------------------------------------
