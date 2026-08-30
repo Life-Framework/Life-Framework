@@ -155,6 +155,68 @@ function syncHandlerBundles() {
   return copied;
 }
 
+// ---------------------------------------------------------------- local tool patches
+//
+// The `texture_recolor` MCP tool is a local addition to the upstream
+// enfusion-workbench clone (tracked source: tools/mcp-patches/, never in the
+// ignored clone). `cli mcp install/update` pulls the upstream repo, which would
+// discard the tool — so after every clone/pull these helpers re-copy the patch
+// bundle back into the clone. Mirrors syncHandlerBundles: the patch bundle is
+// the source of truth, the clone is a build artifact.
+
+const PATCH_DIR = join(ROOT, "tools", "mcp-patches");
+
+/** Map a clone's src/ tree into the tracked patch bundle for that server. */
+function patchDirOf(server) {
+  return join(PATCH_DIR, server.dir, "src");
+}
+
+/** Copy every file in a server's tracked patch bundle back into the clone.
+ *  Returns the list of files copied (empty when the bundle is absent). */
+function syncLocalPatches() {
+  const copied = [];
+  for (const name of Object.keys(SERVERS)) {
+    const patchSrc = patchDirOf(SERVERS[name]);
+    if (!existsSync(patchSrc)) continue;
+    const cloneSrc = join(MCP_DIR, SERVERS[name].dir, "src");
+    if (!existsSync(cloneSrc)) continue;
+    for (const f of walkFiles(patchSrc)) {
+      const rel = f.slice(patchSrc.length).replace(/^[\\/]+/, "");
+      const dest = join(cloneSrc, rel);
+      mkdirSync(dirname(dest), { recursive: true });
+      copyFileSync(f, dest);
+      copied.push(`${name}: +${rel}`);
+    }
+  }
+  return copied;
+}
+
+/** Recursively list files under a directory. */
+function walkFiles(dir) {
+  const out = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkFiles(full));
+    else out.push(full);
+  }
+  return out;
+}
+
+/** True when the clone carries every file in the tracked patch bundle. */
+function localPatchesApplied() {
+  for (const name of Object.keys(SERVERS)) {
+    const patchSrc = patchDirOf(SERVERS[name]);
+    if (!existsSync(patchSrc)) continue;
+    const cloneSrc = join(MCP_DIR, SERVERS[name].dir, "src");
+    if (!existsSync(cloneSrc)) return false;
+    for (const f of walkFiles(patchSrc)) {
+      const rel = f.slice(patchSrc.length).replace(/^[\\/]+/, "");
+      if (!existsSync(join(cloneSrc, rel))) return false;
+    }
+  }
+  return true;
+}
+
 /** True when both installed bundles carry the same set of .c handlers. */
 function handlerBundlesInSync() {
   const setOf = (name) => {
@@ -199,6 +261,13 @@ function cmdStatus() {
       "        handlers, breaking calls like EMCP_WB_ReadProps/EMCP_WB_Capture. Run 'cli mcp",
     );
     console.log("        install' (or 'update') to reconcile them to a union.");
+  }
+  if (!localPatchesApplied()) {
+    console.log("");
+    console.log(
+      "  WARN  local MCP tool patches not applied to the clone (texture_recolor etc). Run",
+    );
+    console.log("        'cli mcp install' (or 'update') to re-copy tools/mcp-patches/.");
   }
   console.log("");
   console.log("environment (effective; OS env wins over opencode.json):");
@@ -277,6 +346,11 @@ function cmdInstall(name) {
     console.log(`synced handler bundles to union (${synced.length}):`);
     for (const s of synced) console.log(`  ${s}`);
   }
+  const patched = syncLocalPatches();
+  if (patched.length) {
+    console.log(`re-applied local tool patches (${patched.length}):`);
+    for (const p of patched) console.log(`  ${p}`);
+  }
   return failed ? 1 : 0;
 }
 
@@ -325,6 +399,11 @@ function cmdUpdate(name) {
   if (synced.length) {
     console.log(`synced handler bundles to union (${synced.length}):`);
     for (const s of synced) console.log(`  ${s}`);
+  }
+  const patched = syncLocalPatches();
+  if (patched.length) {
+    console.log(`re-applied local tool patches (${patched.length}):`);
+    for (const p of patched) console.log(`  ${p}`);
   }
   return failed ? 1 : 0;
 }
