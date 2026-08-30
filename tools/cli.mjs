@@ -615,8 +615,8 @@ function runServerTest(exe, args, logFile, tier = "all") {
 }
 
 async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
-  if (tier !== "fast" && tier !== "all") {
-    console.log(`unknown tier: ${tier} (expected fast or all)`);
+  if (tier !== "fast" && tier !== "all" && tier !== "persistence") {
+    console.log(`unknown tier: ${tier} (expected fast, all, or persistence)`);
     return 2;
   }
   guardHeavy(root, "test", opts.force);
@@ -691,9 +691,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   mcp disable <name>            disable a server in opencode.json
   build                         headless Workbench build of the addon (worktree only)
   serve                         boot the headless test server (blocks, worktree only)
-  test [--no-build] [--tier fast|all]
+  test [--no-build] [--tier fast|all|persistence]
                                 build + boot server + parse ELTEST results (worktree only)
-  dev [--tier fast|all]         fast dev loop: validate + test --no-build +
+  dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [ELDebug:*] feature log lines (worktree only)
   ci                            validate + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
@@ -745,11 +745,11 @@ function wtHelp() {
 
   tools\\cli wt new <slug> [--wait]    create Life-Framework-ws-<slug> at ws/<slug>, allocate ports
   tools\\cli wt list                   worktrees, ports, dirty/merged state
-  tools\\cli wt test <slug> [--tier fast|all] [--no-build] [--wait]
+  tools\\cli wt test <slug> [--tier fast|all|persistence] [--no-build] [--wait]
                                        run the ELTEST suite in that worktree (from anywhere)
-  tools\\cli wt e2e <slug> [--tier all]
-                                       two-boot save-state E2E: pass 1 fresh boot (tier=all),
-                                       pass 2 reload same profile with -loadSessionSave (latest)
+  tools\\cli wt e2e <slug>
+                                       two-boot save-state E2E: persistence save boot, then
+                                       reload same profile with -loadSessionSave (latest)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt gate <slug> [--wait]   validate + build + test (tier=all) in that worktree
@@ -896,6 +896,8 @@ function runE2ePass(root, tier, opts = {}) {
   if (opts.keepProfile) psArgs.push("-KeepProfile");
   if (opts.loadLatestSave) psArgs.push("-LoadLatestSave");
   else if (opts.loadSessionSave !== undefined) psArgs.push("-LoadSessionSave", opts.loadSessionSave);
+  if (opts.gracefulClose) psArgs.push("-GracefulClose");
+  if (opts.extraDefine) psArgs.push("-ExtraDefine", opts.extraDefine);
   const res = sh(PWSH, psArgs, { cwd: root, env: toolEnv() });
   process.stdout.write(res.stdout + res.stderr);
   return res.status;
@@ -904,8 +906,6 @@ function runE2ePass(root, tier, opts = {}) {
 async function wtE2eCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
-  const flags = args.slice(1);
-  const pass2Tier = argValue(flags, "--tier") ?? "all";
   let e;
   try {
     e = wt.requireWorktree(ROOT, slug);
@@ -914,15 +914,15 @@ async function wtE2eCmd(args) {
     return 1;
   }
   const profile = join(e.path, "server", "profile", "test");
-  console.log(`e2e: pass 1/2 - fresh boot (tier=all, profile wiped) in ${e.path}`);
-  const pass1 = runE2ePass(e.path, "all", {});
+  console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, graceful close so the shutdown save lands) in ${e.path}`);
+  const pass1 = runE2ePass(e.path, "persistence", { gracefulClose: true });
   if (pass1 !== 0) {
     console.log(`e2e: FAILED in pass 1 (no save produced); not running pass 2`);
     console.log(`e2e: profile ${profile}`);
     return pass1;
   }
-  console.log(`e2e: pass 2/2 - reload boot (tier=${pass2Tier}, KeepProfile, -loadSessionSave latest)`);
-  const pass2 = runE2ePass(e.path, pass2Tier, { keepProfile: true, loadLatestSave: true });
+  console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, -loadSessionSave latest, EL_E2E_LOAD_BOOT)`);
+  const pass2 = runE2ePass(e.path, "persistence", { keepProfile: true, loadLatestSave: true, extraDefine: "EL_E2E_LOAD_BOOT" });
   console.log(`e2e: profile ${profile}`);
   console.log(`e2e: pass1 exit=${pass1} pass2 exit=${pass2} ${pass1 === 0 && pass2 === 0 ? "OK" : "FAILED"}`);
   return pass1 === 0 && pass2 === 0 ? 0 : (pass1 === 0 ? pass2 : pass1);

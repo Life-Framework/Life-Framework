@@ -17,7 +17,10 @@ param(
   [int]$A2sPort = 17777,
   [switch]$KeepProfile,
   [switch]$LoadLatestSave,
-  [string]$LoadSessionSave
+  [string]$LoadSessionSave,
+  [switch]$GracefulClose,
+  [int]$GracefulCloseSeconds = 30,
+  [string]$ExtraDefine
 )
 
 $ErrorActionPreference = "Stop"
@@ -82,6 +85,12 @@ $args = @(
 
 if ($Tier -eq "fast") {
   $args += @("-scrDefine", "EL_TEST_TIER_FAST")
+} elseif ($Tier -eq "persistence") {
+  $args += @("-scrDefine", "EL_TEST_TIER_PERSISTENCE")
+}
+
+if (-not [string]::IsNullOrEmpty($ExtraDefine)) {
+  $args += @("-scrDefine", $ExtraDefine)
 }
 
 # PS 5.1 binds an unpassed [string] param to "" not $null, so "provided" must be
@@ -158,7 +167,17 @@ while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
 }
 
 $alive = -not $p.HasExited
-if ($alive) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+if ($alive) {
+  if ($GracefulClose) {
+    # Let the server close on its own so the blocking shutdown save (OnGameEnd)
+    # completes before process exit; fall back to a force kill on timeout.
+    $gcSw = [Diagnostics.Stopwatch]::StartNew()
+    while (-not $p.HasExited -and $gcSw.Elapsed.TotalSeconds -lt $GracefulCloseSeconds) {
+      Start-Sleep -Milliseconds 1000
+    }
+  }
+  if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+}
 
 $elapsed = [int]$sw.Elapsed.TotalSeconds
 
