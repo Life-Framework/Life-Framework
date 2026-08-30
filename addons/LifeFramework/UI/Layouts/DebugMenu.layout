@@ -1,0 +1,355 @@
+FrameWidgetClass {
+ Name "DebugMenu"
+  {
+  ImageWidgetClass "{EEA30A7502A8EAB1}" {
+   Name "Background"
+   Color 0.016 0.019 0.025 0.92
+   Slot FrameWidgetSlot "{B9C709260BE4A655}" {
+    Anchor 0 0 1 1
+   }
+  }
+  TextWidgetClass "{6CFBA74FB0687FCA}" {
+   Name "Title"
+   Text "#EL-DebugMenu_Title"
+   "Exact Font Size" 34
+   Slot FrameWidgetSlot "{6F1A50280BCF0E86}" {
+    Anchor 0 0 1 0
+    OffsetLeft 48
+    OffsetTop 36
+    OffsetRight -48
+    OffsetBottom 88
+   }
+   FontProperties FontProperties "{F9E1D875F95376F5}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+    ShadowSize 2
+   }
+  }
+  FrameWidgetClass "{652021A2151E9AC6}" {
+   Name "Content"
+   Slot FrameWidgetSlot "{823AC01361C8C6F0}" {
+    Anchor 0 0 1 1
+    OffsetLeft 48
+    OffsetTop 96
+    OffsetRight -48
+    OffsetBottom -96
+   }
+   {
+    VerticalLayoutWidgetClass "{A4C728282FA815D6}" {
+     Slot LayoutSlot "{1CF175A881C0BE13}" {
+      SizeMode Fill
+      Padding 0 0 0 20
+     }
+     {
+      HorizontalLayoutWidgetClass "{24320FB384831C3E}" {
+       Slot LayoutSlot "{A9D7DB0FBF02DF16}" {
+        SizeMode Fill
+       }
+       {
+        ButtonWidgetClass "{A9F77F25A485FEC7}" {
+         Name "GiveCashButton"
+         Slot LayoutSlot "{778A4B4A2551AE03}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 0 0 5 0
+         }
+         {
+          TextWidgetClass "{732B531666B8EB63}" {
+           Name "GiveCashButtonLabel"
+           Text "#EL-DebugMenu_GiveCash"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{AFF3DF59D57DB3DC}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+        ButtonWidgetClass "{5AA0DD2389E3BF2C}" {
+         Name "TakeCashButton"
+         Slot LayoutSlot "{CE4546BF92B2B787}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 5 0 0 0
+         }
+         {
+          TextWidgetClass "{4EFFB462B596CD17}" {
+           Name "TakeCashButtonLabel"
+           Text "#EL-DebugMenu_TakeCash"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{64E087DC5CEBF743}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+       }
+      }
+      HorizontalLayoutWidgetClass "{4004DF1972246C84}" {
+       Slot LayoutSlot "{03A7D3FE1FAF3F18}" {
+        SizeMode Fill
+       }
+       {
+        ButtonWidgetClass "{2FDA6812E81ECDD8}" {
+         Name "Wanted0Button"
+         Slot LayoutSlot "{613DCE65E42FAC21}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 0 0 5 0
+         }
+         {
+          TextWidgetClass "{7E5F1EFB69128E15}" {
+           Name "Wanted0ButtonLabel"
+           Text "#EL-DebugMenu_Wanted0"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{39187F8FF1A89F49}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+        ButtonWidgetClass "{1E10A83773FA1782}" {
+         Name "Wanted5Button"
+         Slot LayoutSlot "{DA14D411FA17C550}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 5 0 0 0
+         }
+         {
+          TextWidgetClass "{41915BA3D779ADC7}" {
+           Name "Wanted5ButtonLabel"
+           Text "#EL-DebugMenu_Wanted5"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{BA8BC87BCCF4CFDC}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+       }
+      }
+      HorizontalLayoutWidgetClass "{82F342C765537EEE}" {
+       Slot LayoutSlot "{285B2763D03856E7}" {
+        SizeMode Fill
+       }
+       {
+        ButtonWidgetClass "{83E1F3BB81C08D51}" {
+         Name "FactionPoliceButton"
+         Slot LayoutSlot "{F32F2649FB8FE64C}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 0 0 5 0
+         }
+         {
+          TextWidgetClass "{C76E242D57492CF0}" {
+           Name "FactionPoliceButtonLabel"
+           Text "#EL-DebugMenu_FactionPolice"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{9C95DCC57BFB9488}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+        ButtonWidgetClass "{9D36AE194B9419D8}" {
+         Name "FactionCivilianButton"
+         Slot LayoutSlot "{67B9D32DAD4972A3}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 5 0 0 0
+         }
+         {
+          TextWidgetClass "{6F8A2574C9FA0860}" {
+           Name "FactionCivilianButtonLabel"
+           Text "#EL-DebugMenu_FactionCivilian"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{E705775377E9456E}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+       }
+      }
+      HorizontalLayoutWidgetClass "{34E91FCC820E6421}" {
+       Slot LayoutSlot "{7AE1EE39FB85E67B}" {
+        SizeMode Fill
+       }
+       {
+        ButtonWidgetClass "{7F197C01443F1688}" {
+         Name "SurvivalFullButton"
+         Slot LayoutSlot "{00B0A0BFAF2BF079}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 0 0 5 0
+         }
+         {
+          TextWidgetClass "{8F5F55CD2FD3756F}" {
+           Name "SurvivalFullButtonLabel"
+           Text "#EL-DebugMenu_SurvivalFull"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{F6BC9C00C5B40D93}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+        ButtonWidgetClass "{3D209F7097F729CE}" {
+         Name "SurvivalEmptyButton"
+         Slot LayoutSlot "{F8F3811F7701ADA7}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 5 0 0 0
+         }
+         {
+          TextWidgetClass "{9230EBEF43C47EC3}" {
+           Name "SurvivalEmptyButtonLabel"
+           Text "#EL-DebugMenu_SurvivalEmpty"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{2A788F385109CC16}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+       }
+      }
+      HorizontalLayoutWidgetClass "{E8D4224FD1E2B94F}" {
+       Slot LayoutSlot "{01A83DC705A01FD5}" {
+        SizeMode Fill
+       }
+       {
+        ButtonWidgetClass "{3DCEC20198E5C7E0}" {
+         Name "GrantXpButton"
+         Slot LayoutSlot "{952D52E5602BE618}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 0 0 5 0
+         }
+         {
+          TextWidgetClass "{557C1BA7C478FAED}" {
+           Name "GrantXpButtonLabel"
+           Text "#EL-DebugMenu_GrantXp"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{0DEBCB8F26B97B8F}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+        ButtonWidgetClass "{EF2C9979A557BA1C}" {
+         Name "GrantSpButton"
+         Slot LayoutSlot "{F044800C21E3BF3C}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 5 0 0 0
+         }
+         {
+          TextWidgetClass "{10E33BCDFDE04FF6}" {
+           Name "GrantSpButtonLabel"
+           Text "#EL-DebugMenu_GrantSp"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{CFBB5B8D537BEFFF}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+       }
+      }
+      HorizontalLayoutWidgetClass "{50D93C321CE73A10}" {
+       Slot LayoutSlot "{51A8E5AC09C6A651}" {
+        SizeMode Fill
+       }
+       {
+        ButtonWidgetClass "{52B0FF310D5E0C62}" {
+         Name "JobFarmerButton"
+         Slot LayoutSlot "{53C12A501A7E2232}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 0 0 5 0
+         }
+         {
+          TextWidgetClass "{54D23A683B8F3343}" {
+           Name "JobFarmerButtonLabel"
+           Text "#EL-DebugMenu_JobFarmer"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{55E34A794CA04454}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+        ButtonWidgetClass "{56F45A8A5DB15565}" {
+         Name "JobUnemployedButton"
+         Slot LayoutSlot "{57A05A9B6EC26676}" {
+          SizeMode Fill
+          FillWeight 1
+          Padding 5 0 0 0
+         }
+         {
+          TextWidgetClass "{58B16AAC7FD37787}" {
+           Name "JobUnemployedButtonLabel"
+           Text "#EL-DebugMenu_JobUnemployed"
+           "Font Size" 15
+           "Min Font Size" 15
+           Slot LayoutSlot "{59C27ABD80E48898}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  HorizontalLayoutWidgetClass "{ECD279AA5456C58D}" {
+   Name "FooterHints"
+   Slot FrameWidgetSlot "{FEED98D906935449}" {
+    Anchor 0 1 1 1
+    OffsetLeft 48
+    OffsetTop -72
+    OffsetRight -48
+    OffsetBottom -20
+   }
+    {
+    ButtonWidgetClass "{7A618D5305F487B5}" : "{08CF3B69CB1ACBC4}UI/layouts/WidgetLibrary/Buttons/WLib_NavigationButton.layout" {
+     Name "HintBack"
+     Slot LayoutSlot "{52FDDFF57E1039FE}" {
+      HorizontalAlign 2
+      VerticalAlign 1
+     }
+     components {
+      SCR_InputButtonComponent "{5D346C3DD81D95CD}" {
+       m_sLabel "#EL-DebugMenu_Close"
+       m_sActionName "MenuBack"
+      }
+     }
+    }
+   }
+  }
+ }
+}
