@@ -15,6 +15,12 @@ Project documentation for the Life Framework Arma Reforger mod.
 - [Roadmap](roadmap.md) — phased development plan. Phase 0 in progress; later
   phases open for contributors.
 - [Vision](vision.md) — philosophy and goals (MIT-licensed, extensible, 1989-era base).
+- [Design philosophy](design-philosophy.md) — in-world-first interaction ladder and
+  shippable-V1 approach. The "why" behind every feature's `Feature.md`.
+
+Feature design context files live beside the code in
+`addons/LifeFramework/Scripts/Game/Feature/*/Feature.md` (indexed by
+[`Feature/README.md`](../addons/LifeFramework/Scripts/Game/Feature/README.md)).
 
 ## Engineering
 
