@@ -97,7 +97,7 @@ for ($i = 0; $i -lt $objects.Count; $i++) {
   }
 }
 
-foreach ($error in $errors) { Write-Host "ERROR $error" -ForegroundColor Red }
+foreach ($message in $errors) { Write-Host "ERROR $message" -ForegroundColor Red }
 if ($errors.Count -gt 0) { Write-Host "validate-debugworld-layout: FAILED ($($errors.Count) error(s))" -ForegroundColor Red; exit 1 }
 Write-Host "validate-debugworld-layout: OK" -ForegroundColor Green
 exit 0

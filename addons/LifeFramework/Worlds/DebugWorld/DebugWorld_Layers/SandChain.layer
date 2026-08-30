@@ -1,37 +1,39 @@
 GenericEntity SandBuilderStand {
  coords 118 0 128
  {
-  GenericEntity SandDisplayCrate {
-   components {
-    MeshObject "{59670CE9C98E5BAF}" {
-     Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
-    }
-    RigidBody "{59670CE9C98E5B27}" {
-     Mass 10
-     ModelGeometry 1
-     Static 1
-    }
-   }
-coords -2.6 0.9 0.7
-    Flags 1027
-   }
-  GenericEntity SandDisplayItems {
-   coords -1.6 0.9 0.7
-   {
-    $grp GenericEntity : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
-     Sandbag_01 {
-      coords 0 0 0
+  $grp GenericEntity {
+   SandDisplayCrate {
+    components {
+     MeshObject "{59670CE9C98E5BAF}" {
+      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
      }
-     Sandbag_02 {
-      coords 0.25 0 0.05
+     RigidBody "{59670CE9C98E5B27}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
      }
-     Sandbag_03 {
-      coords -0.15 0 0.1
+    }
+    Flags 0x403 0
+    coords -2.6 0.9 0.7
+   }
+   SandDisplayItems {
+    coords -1.6 0.9 0.7
+    {
+     $grp GenericEntity : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
+      Sandbag_01 {
+       coords 0 0 0
+      }
+      Sandbag_02 {
+       coords 0.25 0 0.05
+      }
+      Sandbag_03 {
+       coords -0.15 0 0.1
+      }
      }
     }
    }
   }
-  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+  $grp GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {
     coords -1.6 0 0.7
    }
@@ -50,7 +52,6 @@ coords -2.6 0.9 0.7
    }
    coords 0 0 -1.1
   }
-
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -63,14 +64,14 @@ coords -2.6 0.9 0.7
   }
  }
 }
-GenericEntity : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
- coords 118 0 129.5
- angleY -179.853
-}
 GenericEntity Sandbag_5A0E821DC5FD2BE3 : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
  coords 119 0 130
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
  coords 118 0 129
  m_vSize 2 1 1.7
+}
+GenericEntity : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
+ coords 112.495 0 124.797
+ angles 0 -179.853 0
 }

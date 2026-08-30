@@ -1,91 +1,89 @@
 GenericEntity JobCenter {
  coords 118 0 120
  {
-  GenericEntity JobCenter_Debug {
-   components {
-    MeshObject "{5A4B0B84C86DE843}" {
-     Object "{62C27FEBF2823AE3}Assets/Props/Civilian/NoticeBoardCork_01/NoticeBoardCork_01.xob"
-    }
-    RigidBody "{5A4B0B84C86DE844}" {
-     Mass 10
-     ModelGeometry 1
-     Static 1
-    }
-    ActionsManagerComponent "{5A4B0B84C86DE845}" {
-     ActionContexts {
-      UserActionContext "{5A4B0B84C86DE846}" {
-       ContextName "default"
-       Position PointInfo "{5A4B0B84C86DE847}" {
-        Offset 0 1 0
+  $grp GenericEntity {
+   JobCenter_Debug {
+    components {
+     MeshObject "{5A4B0B84C86DE843}" {
+      Object "{62C27FEBF2823AE3}Assets/Props/Civilian/NoticeBoardCork_01/NoticeBoardCork_01.xob"
+     }
+     RigidBody "{5A4B0B84C86DE844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86DE845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86DE846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86DE847}" {
+         Offset 0 1 0
+        }
+        Radius 3
        }
-       Radius 3
       }
      }
-    }
-    RplComponent "{5A4B0B84C86DE84A}" {
-     Enabled 1
-    }
-   }
-    coords 0 0 0
-  }
-  GenericEntity GatherPoint_AppleTree {
-   components {
-    MeshObject "{5A4B0B84C86DF843}" {
-     Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
-    }
-    RigidBody "{5A4B0B84C86DF844}" {
-     Mass 10
-     ModelGeometry 1
-     Static 1
-    }
-    ActionsManagerComponent "{5A4B0B84C86DF845}" {
-     ActionContexts {
-      UserActionContext "{5A4B0B84C86DF846}" {
-       ContextName "default"
-       Position PointInfo "{5A4B0B84C86DF847}" {
-        Offset 0 0.0873 0
-       }
-       Radius 3
-      }
-     }
-     additionalActions {
-      EL_GatherAction "{5A4B0B84C86DF848}" {
-       ParentContextList {
-        "default"
-       }
-       UIInfo UIInfo "{5A4B0B84C86DF849}" {
-        Name "Recolectar Manzanas"
-        Description "Recolectar 5 manzanas"
-       }
-       m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
-       m_GatherAmount 5
-       m_GatherAmountMax 10
-       m_GatherTimeout 10000
-      }
+     RplComponent "{5A4B0B84C86DE84A}" {
+      Enabled 1
      }
     }
-    RplComponent "{5A4B0B84C86DF84A}" {
-     Enabled 1
+    coords 0 -0.001 0
+   }
+   GatherPoint_AppleTree {
+    components {
+     MeshObject "{5A4B0B84C86DF843}" {
+      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+     }
+     RigidBody "{5A4B0B84C86DF844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86DF845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86DF846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86DF847}" {
+         Offset 0 0.0873 0
+        }
+        Radius 3
+       }
+      }
+      additionalActions {
+       EL_GatherAction "{5A4B0B84C86DF848}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{5A4B0B84C86DF849}" {
+         Name "Recolectar Manzanas"
+         Description "Recolectar 5 manzanas"
+        }
+        m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+        m_GatherAmount 5
+        m_GatherAmountMax 10
+        m_GatherTimeout 10000
+       }
+      }
+     }
+     RplComponent "{5A4B0B84C86DF84A}" {
+      Enabled 1
+     }
     }
+    coords -2.6 0.9 0.7
    }
-coords -2.6 0.9 0.7
-   }
-  GenericEntity JobsTableItems {
-   coords -1.6 0.9 0.7
-   {
-    $grp GenericEntity : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
-     JobsMoneyStack_Debug {
+   JobsTableItems {
+    coords -1.6 0.9 0.7
+    {
+     GenericEntity JobsMoneyStack_Debug : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
       coords 0 0 0
      }
-    }
-    $grp GenericEntity : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
-     JobsApple_Debug {
+     GenericEntity JobsApple_Debug : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
       coords 0.25 0 0.05
      }
     }
    }
   }
-  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+  $grp GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {
     coords -1.6 0 0.7
    }
@@ -104,7 +102,6 @@ coords -2.6 0.9 0.7
    }
    coords 0 0 -1.1
   }
-
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -113,7 +110,7 @@ coords -2.6 0.9 0.7
      m_eInitialLightState LIT
     }
    }
-   coords -1.6 0.9 -0.6
+   coords -2.1 0.789 0.432
   }
  }
 }
