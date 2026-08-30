@@ -130,7 +130,37 @@ function cmdStatus() {
     console.log(`  ${k} = ${v}`);
   }
   if (Object.keys(env).length === 0) console.log("  (defaults: standard Steam install locations)");
-  return 0;
+  console.log("");
+  console.log("base game project (the engine refuses to boot without these):");
+  let healthy = true;
+  for (const c of baseGameIntegrity(env)) {
+    const ok = existsSync(c.path);
+    if (!ok) healthy = false;
+    console.log(`  ${ok ? "OK  " : "FAIL"}  ${c.label}  ${c.path}`);
+  }
+  if (!healthy) {
+    console.log("");
+    console.log("  FIX  Steam > Arma Reforger (the GAME, app 1874880) > Properties > Installed Files >");
+    console.log("       'Verify integrity of game files'. Verifying only 'Arma Reforger Tools' does");
+    console.log("       NOT restore the game data project. Then relaunch the game once.");
+  }
+  return healthy ? 0 : 1;
+}
+
+// The identity files the engine uses to discover the vanilla Game addon
+// (58D0FB3206B6F859) and the core addon (5614BBCCBB55ED1C). When these go
+// missing (partial Steam update, moved install) both the game and Workbench
+// fail with "Game addon ... not found" / "Arma Reforger base game project not
+// found". cli status is the tripwire: it names the exact missing file and the
+// Steam-verify step that restores it.
+function baseGameIntegrity(env = envOf()) {
+  const workbench = env.ENFUSION_WORKBENCH_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Tools";
+  const game = env.ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  return [
+    { label: "game data project:", path: join(game, "addons", "data", "ArmaReforger.gproj") },
+    { label: "game core project: ", path: join(game, "addons", "core", "core.gproj") },
+    { label: "workbench core:    ", path: join(workbench, "Workbench", "addons", "core", "core.gproj") },
+  ];
 }
 
 function cmdInstall(name) {
@@ -350,8 +380,8 @@ function workbenchGameAddons(root, scope) {
   const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
   const coreSource = join(dirname(workbenchExe()), "addons", "core");
   const dataSource = join(gameDir, "addons", "data");
-  if (!existsSync(join(coreSource, "core.gproj"))) throw new Error(`Workbench core project not found: ${coreSource}`);
-  if (!existsSync(join(dataSource, "ArmaReforger.gproj"))) throw new Error(`game data project not found: ${dataSource}`);
+  if (!existsSync(join(coreSource, "core.gproj"))) throw new Error(`Workbench core project not found: ${coreSource} (fix: Steam > Arma Reforger Tools > Properties > Installed Files > Verify integrity of game files)`);
+  if (!existsSync(join(dataSource, "ArmaReforger.gproj"))) throw new Error(`game data project not found: ${dataSource} (fix: Steam > Arma Reforger (the GAME, app 1874880) > Properties > Installed Files > Verify integrity of game files; verifying only 'Arma Reforger Tools' does not restore this)`);
 
   const junction = join(root, "server", "profile", scope, "game-addons");
   rmSync(junction, { recursive: true, force: true });
