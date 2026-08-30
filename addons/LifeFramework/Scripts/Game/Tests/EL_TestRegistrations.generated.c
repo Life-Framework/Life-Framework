@@ -38,6 +38,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_LicenseWhitelist(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_LocalIdentity(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LoggingChain(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MiningAreaWeightedSpawns(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_MiningPrefabs(), EL_TestTier.WORLD);
@@ -48,6 +49,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityStack(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_QuantityVisuals(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobReward(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobRewardWantedClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);

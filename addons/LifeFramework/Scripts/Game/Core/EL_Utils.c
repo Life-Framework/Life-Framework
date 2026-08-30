@@ -281,13 +281,43 @@ class EL_Utils : Managed
 
 		// The backend can transiently answer the per-player lookup with the NULL UUID
 		// ("00000000-...") instead of an empty string - it is non-empty, so it defeats both
-		// vanilla's name-hash fallback and the empty-identity guards in every caller. Treat it
-		// as "no identity" so account lookups never key on the zero id.
+		// vanilla's name-hash fallback and the empty-identity guards in every caller.
+		// On a non-dedicated session (offline Workbench play / listen host) there is no
+		// backend to ever resolve it, so fall back to a name-derived identity like vanilla's
+		// peer-tool polyfill; without it the spawn flow retries forever. Dedicated servers
+		// keep the strict path - the backend must provide the real identity.
 		UUID identityUuid = identity;
-		if (identity != string.Empty && identityUuid.IsNull())
-			return "";
+		if (identity.IsEmpty() || identityUuid.IsNull())
+		{
+			if (RplSession.Mode() == RplMode.Dedicated)
+				return "";
+
+			return BuildLocalIdentity(playerId);
+		}
 
 		return identity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Derives a stable per-player identity from the player name when no backend identity
+	//! exists (offline sessions). Mirrors vanilla's peer-tool polyfill so the result matches
+	//! what vanilla would produce for the same name.
+	//! \param playerId Index of the player inside player manager
+	//! \return a stable identity string, never empty
+	static string BuildLocalIdentity(int playerId)
+	{
+		string playerName = GetGame().GetPlayerManager().GetPlayerName(playerId);
+		if (playerName.IsEmpty())
+			playerName = "LocalPlayer" + playerId;
+
+		const int splitLength = Math.Max(1, playerName.Length() / 3);
+		const string split1 = Math.AbsInt(playerName.Substring(0, splitLength).Hash()).ToString(8, true);
+		const string split2 = Math.AbsInt(playerName.Substring(splitLength, splitLength).Hash()).ToString(8, true);
+		const int doubleSplit = splitLength * 2;
+		const string split3 = Math.AbsInt(playerName.Substring(doubleSplit, playerName.Length() - doubleSplit).Hash()).ToString(8, true);
+
+		string uid = string.Format("00bbbddd-%1-%2-%3-%4%5", split1.Substring(0, 4), split1.Substring(4, 4), split2.Substring(0, 4), split2.Substring(4, 4), split3);
+		return uid;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -61,6 +61,10 @@ that keeps machine paths out of the repo entirely:
 {
   "mcp": {
     "enfusion-mcp": {
+      "type": "local",
+      "command": ["node", "dist/index.js"],
+      "cwd": "tools/mcp/enfusion-mcp-bk",
+      "enabled": true,
       "environment": {
         "ENFUSION_WORKBENCH_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Tools",
         "ENFUSION_GAME_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger",

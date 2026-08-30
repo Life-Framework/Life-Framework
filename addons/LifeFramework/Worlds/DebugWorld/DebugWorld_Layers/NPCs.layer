@@ -1,35 +1,68 @@
-EL_NpcBaseEntity NPC_TestDebug : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
- components {
-  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
-   Identity Identity "{5A4B0B84AF44A913}" {
-    Name "Test"
-    Surname "Citizen"
-   }
-  }
-  EL_CharacterSurvivalComponent "{5A4B0B84C86DC84B}" {
-  }
-  ActionsManagerComponent "{5A4B13A9811FB113}" {
-   ActionContexts {
-    UserActionContext "{5A4B0B84C86DC846}" {
-     ContextName "default"
-     Position PointInfo "{5A4B0B84C86DC847}" {
-      Offset 0 1.2 0
-     }
-     Radius 3
-    }
-   }
-   additionalActions {
-    EL_ShowIDAction "{5A4B0B84C86DC848}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{5A4B0B84C86DC849}" {
-      Name "#EL-ShowID_DisplayName"
-      Description "Mostrar identificación del personaje"
+GenericEntity NPCStation {
+ coords 122 0 134
+ {
+  EL_NpcBaseEntity NPC_TestDebug : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Test"
+      Surname "Citizen"
      }
     }
+    EL_CharacterSurvivalComponent "{5A4B0B84C86DC84B}" {
+    }
+    ActionsManagerComponent "{5A4B13A9811FB113}" {
+     ActionContexts {
+      UserActionContext "{5A4B0B84C86DC846}" {
+       ContextName "default"
+       Position PointInfo "{5A4B0B84C86DC847}" {
+        Offset 0 1.2 0
+       }
+       Radius 3
+      }
+     }
+     additionalActions {
+      EL_ShowIDAction "{5A4B0B84C86DC848}" {
+       ParentContextList {
+        "default"
+       }
+       UIInfo UIInfo "{5A4B0B84C86DC849}" {
+        Name "#EL-ShowID_DisplayName"
+        Description "Mostrar identificación del personaje"
+       }
+      }
+     }
+    }
    }
+   coords 0 0 -1.1
+  }
+  GenericEntity NPCTableItems {
+   coords -1.6 0.9 0.7
+   {
+    $grp GenericEntity : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
+     NPCIDCard_Debug {
+      coords 0 0 0
+     }
+    }
+   }
+  }
+  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   {
+    coords -1.6 0 0.7
+   }
+  }
+  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
+   coords 1.6 0 -0.9
+  }
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+   coords -1.6 0.9 -0.6
   }
  }
- coords 157 0 142
 }

@@ -288,7 +288,6 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		if (factionLoadout)
 		{
 			items = factionLoadout.m_aItems;
-			SpawnDirectCharacterItems(storageManager, factionLoadout.m_aDirectItems);
 			EL_Debug.Log("Spawn", "applied faction loadout for " + typename.EnumToString(EL_Faction, account.GetFaction()));
 		}
 		else
@@ -311,6 +310,12 @@ class EL_SpawnLogic : SCR_SpawnLogic
 			if (!storageManager.TryInsertItem(slotEntity, loadoutItem.m_ePurpose))
 				SCR_EntityHelper.DeleteEntityAndChildren(slotEntity);
 		}
+
+		// Direct items are inserted after the loadout slots so the freshly equipped clothing
+		// storage exists for them: food/drink land in pockets, weapons land in hands. Inserting
+		// them first leaves a bare character with no pockets, so they fail the best-slot search.
+		if (factionLoadout)
+			SpawnDirectCharacterItems(storageManager, factionLoadout.m_aDirectItems);
 
 		// The account components need their ids bound to the entity; this runs on every spawn
 		// path (first spawn, death respawn) so the bindings survive a fresh character entity.
