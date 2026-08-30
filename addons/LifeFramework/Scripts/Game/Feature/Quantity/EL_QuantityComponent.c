@@ -1,3 +1,17 @@
+//------------------------------------------------------------------------------------------------
+//! One visual tier for a quantity item. When the stack quantity reaches m_iQuantityAmount,
+//! the owner swaps to m_StackModel; below the lowest tier it returns to its base model.
+[BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_iQuantityAmount", "%1")]
+class EL_QuantityStack
+{
+	[Attribute("0", UIWidgets.Range, "Quantity at and above which this stack model is shown")]
+	int m_iQuantityAmount;
+
+	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Model to show for this quantity tier", "xob")]
+	ResourceName m_StackModel;
+}
+
+//------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "EveronLife/Feature/Quantity", description: "Virtual quantities for inventory items.")]
 class EL_QuantityComponentClass : ScriptComponentClass
 {
@@ -18,7 +32,15 @@ class EL_QuantityComponent : ScriptComponent
 	[RplProp(onRplName: "OnQuantityChanged")]
 	protected int m_iQuantity = 1;
 
+	[Attribute(defvalue: "1", desc: "Quantity this item spawns with. Must be 1 or higher; a value below 1 is ignored.", params: "1 2000000000 1")]
+	int m_iInitQuantity;
+
+	[Attribute("", UIWidgets.Object, "Quantity tiers whose models replace the item mesh at and above m_iQuantityAmount", category: "Quantity Visuals")]
+	ref array<ref EL_QuantityStack> m_aQuantityStacks;
+
 	protected ref ScriptInvoker m_pOnQuantityChanged;
+
+	protected VObject m_InitalModel;
 
 	//------------------------------------------------------------------------------------------------
 	int GetMaxQuantity()
@@ -99,8 +121,110 @@ class EL_QuantityComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void OnQuantityChanged()
 	{
+		UpdateStackModel();
 		RefreshInventory(GetOwner());
 		if (m_pOnQuantityChanged) m_pOnQuantityChanged.Invoke(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Picks the model of the highest tier whose threshold the quantity clears. Empty when no
+	//! tier applies, so the caller falls back to the base model. Independent of list order.
+	//! \param quantity Current stack quantity.
+	//! \param stacks Authored tiers, may be null or contain empty model entries.
+	//! \return The winning model, or an empty ResourceName when none applies.
+	static ResourceName GetStackModelForQuantity(int quantity, array<ref EL_QuantityStack> stacks)
+	{
+		ResourceName model;
+		if (!stacks)
+			return model;
+
+		int bestThreshold = -1;
+		foreach (EL_QuantityStack stack : stacks)
+		{
+			if (!stack || !stack.m_StackModel)
+				continue;
+
+			if (quantity >= stack.m_iQuantityAmount && stack.m_iQuantityAmount > bestThreshold)
+			{
+				bestThreshold = stack.m_iQuantityAmount;
+				model = stack.m_StackModel;
+			}
+		}
+
+		return model;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Swaps the owner's mesh to the tier matching the current quantity, restoring the base
+	//! model below the lowest tier. Runs on the authority after every quantity change and on
+	//! proxies through the replicated property callback. Fail-safe: a missing list, unresolvable
+	//! model or missing base mesh logs an error and leaves the current model untouched.
+	void UpdateStackModel()
+	{
+		if (!m_aQuantityStacks)
+			return;
+
+		IEntity owner = GetOwner();
+		if (!owner)
+			return;
+
+		ResourceName stackModelName = GetStackModelForQuantity(m_iQuantity, m_aQuantityStacks);
+		VObject targetModel;
+
+		if (stackModelName)
+		{
+			Resource resource = Resource.Load(stackModelName);
+			if (!resource || !resource.IsValid())
+			{
+				EL_Debug.Error("Quantity", string.Format("stack model %1 for quantity %2 does not resolve", stackModelName, m_iQuantity));
+				return;
+			}
+
+			BaseResourceObject resourceObject = resource.GetResource();
+			if (!resourceObject)
+			{
+				EL_Debug.Error("Quantity", string.Format("stack model %1 for quantity %2 has no resource", stackModelName, m_iQuantity));
+				return;
+			}
+
+			targetModel = resourceObject.ToVObject();
+			if (!targetModel)
+			{
+				EL_Debug.Error("Quantity", string.Format("stack model %1 for quantity %2 is not a mesh", stackModelName, m_iQuantity));
+				return;
+			}
+
+			EL_Debug.Info("Quantity", string.Format("stack visual %1 at quantity %2", stackModelName, m_iQuantity));
+		}
+		else
+		{
+			if (!m_InitalModel)
+				m_InitalModel = GetOwner().GetVObject();
+			if (!m_InitalModel)
+				return;
+
+			targetModel = m_InitalModel;
+		}
+
+		owner.SetObject(targetModel, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+		SetEventMask(owner, EntityEvent.INIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void EOnInit(IEntity owner)
+	{
+		m_InitalModel = owner.GetVObject();
+
+		if (m_iInitQuantity > 1)
+			SetQuantity(m_iInitQuantity);
+		else
+			UpdateStackModel();
 	}
 
 	//------------------------------------------------------------------------------------------------

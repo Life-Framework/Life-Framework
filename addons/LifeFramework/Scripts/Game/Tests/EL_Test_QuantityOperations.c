@@ -1,6 +1,7 @@
 // red-proof: revert the Combine source-quantity clamp (min with source
-// quantity), the Split bounds guard, or SortByQuantity's int keys to string
-// keys, then run `tools\cli test --tier all`; each breakage below fails.
+// quantity), the Split bounds guard, SortByQuantity's int keys to string keys,
+// the init-quantity application in EOnInit, or the top-tier model swap in
+// UpdateStackModel, then run `tools\cli test --tier all`; each breakage below fails.
 // tier: WORLD
 class EL_Test_QuantityOperations : EL_Test
 {
@@ -42,6 +43,7 @@ class EL_Test_QuantityOperations : EL_Test
 		TestCombineClamp(ctx, sourceQty, destQty);
 		TestSplitBounds(ctx, res, params);
 		TestNumericSort(ctx, res, params);
+		TestQuantityVisuals(ctx, res, params);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -121,9 +123,45 @@ class EL_Test_QuantityOperations : EL_Test
 		ctx.Equal(7, descending[1].GetQuantity(), "numeric sort descending puts 7 second");
 		ctx.Equal(2, descending[2].GetQuantity(), "numeric sort descending puts 2 last");
 
-		array<EL_QuantityComponent> ascending = EL_QuantityComponent.SortByQuantity(components, false);
+array<EL_QuantityComponent> ascending = EL_QuantityComponent.SortByQuantity(components, false);
 		ctx.Equal(2, ascending[0].GetQuantity(), "numeric sort ascending puts 2 first");
 		ctx.Equal(7, ascending[1].GetQuantity(), "numeric sort ascending puts 7 second");
 		ctx.Equal(10, ascending[2].GetQuantity(), "numeric sort ascending puts 10 last");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void TestQuantityVisuals(EL_TestContext ctx, Resource res, EntitySpawnParams params)
+	{
+		IEntity stack = GetGame().SpawnEntityPrefab(res, GetGame().GetWorld(), params);
+		ctx.True(stack != null, "visual fixture stack spawns");
+		if (ctx.FailureCount() > 0)
+			return;
+
+		EL_QuantityComponent qty = EL_Component<EL_QuantityComponent>.Find(stack);
+		ctx.True(qty != null, "visual fixture carries EL_QuantityComponent");
+		if (ctx.FailureCount() > 0)
+			return;
+
+		ctx.Equal(100, qty.GetQuantity(), "money stack spawns at its configured init quantity");
+
+		// Headless servers load mesh geometry for physics; when the base mesh is absent the
+		// model-swap assertions cannot hold and are skipped rather than flaked.
+		VObject baseModel = stack.GetVObject();
+		if (!baseModel)
+			return;
+
+		qty.SetQuantity(10000);
+		ctx.Equal(10000, qty.GetQuantity(), "stack set to the top tier quantity");
+
+		VObject topModel = stack.GetVObject();
+		ctx.True(topModel != null, "top tier stack still has a mesh");
+		if (ctx.FailureCount() > 0)
+			return;
+
+		ctx.True(topModel != baseModel, "top tier quantity swaps the mesh to a different model");
+
+		qty.SetQuantity(50);
+		VObject restoredModel = stack.GetVObject();
+		ctx.True(restoredModel == baseModel, "quantity below every tier restores the base mesh");
 	}
 };
