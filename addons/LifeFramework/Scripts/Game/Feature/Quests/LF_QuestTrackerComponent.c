@@ -237,13 +237,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 			return;
 
 		if (def.m_iRewardMoney > 0)
-		{
-			EL_BankAccountComponent bankAccount = EL_Component<EL_BankAccountComponent>.Find(owner);
-			if (bankAccount)
-				bankAccount.Deposit(def.m_iRewardMoney, "Quest reward");
-			else
-				EL_MoneyUtils.GiveCash(owner, def.m_iRewardMoney);
-		}
+			EL_MoneyUtils.GiveCash(owner, def.m_iRewardMoney);
 
 		if (def.m_fRewardXp > 0)
 		{

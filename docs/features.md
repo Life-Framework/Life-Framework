@@ -366,6 +366,14 @@
 
 ## UI / Layouts / Localization
 
+## Quests
+
+### `LF_QuestTrackerComponent` — `Scripts/Game/Feature/Quests/`
+- ✅ Server-authoritative quest definitions, acceptance, objective progress,
+  timed expiry, collect recounts, rewards, and client quest-log replication.
+- ✅ `QuestGiver_Start` and `DebugWorld` provide a world-facing onboarding
+  example with localized menu layouts and registered logic/world tests.
+
 ### Layouts (loaded by `EL_Test_Data`)
 - ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,
   `EL_SurvivalHUD`, `FactionSelectionMenu`, `ShopMenu`, `PoliceMenu`,
