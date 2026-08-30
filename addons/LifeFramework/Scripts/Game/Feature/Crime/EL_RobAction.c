@@ -45,27 +45,32 @@ class EL_RobAction : ScriptedUserAction
 	{
 		m_fLastRobTime = GetGame().GetWorld().GetWorldTime();
 
-		// Give money to player
-		EL_ATMManager atmManager = EL_ATMManager.GetInstance();
-		if (atmManager)
+		// Pay in cash, never into the bank: money changes hands physically and
+		// only the ATM moves cash <-> account. A short payout is logged, never minted.
+		int paid = EL_MoneyUtils.AddCash(pUserEntity, m_iMoneyAmount);
+		if (paid != m_iMoneyAmount)
 		{
-			string playerUid = EL_Utils.GetPlayerUid(pUserEntity);
-			atmManager.Deposit(playerUid, m_iMoneyAmount);
-			EL_Debug.Log("Crime", string.Format("robbery +%1 to player %2", m_iMoneyAmount, pUserEntity));
-
+			if (paid > 0)
+				EL_MoneyUtils.RemoveCash(pUserEntity, paid);
+			EL_Debug.Warn("Crime", string.Format("robbery payout short: paid %1 of %2 (player %3)", paid, m_iMoneyAmount, pUserEntity));
+		}
+		else
+		{
+			EL_Debug.Log("Crime", string.Format("robbery +%1 cash to player %2", m_iMoneyAmount, pUserEntity));
 			EL_Utils.Notify(WidgetManager.Translate("#EL-Stole_Money", m_iMoneyAmount), "#EL-Robbery_Successful", 3.0);
+		}
 
-			// Increase wanted level
-			EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
-			if (account)
-			{
-				account.IncreaseWantedLevel(1);
-				EL_Debug.Log("Crime", string.Format("wanted level increased for %1", pUserEntity));
-				EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
+		// A robbery happened either way; the wanted bump and police alert are not
+		// contingent on the payout fitting in the robber's pockets.
+		EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
+		if (account)
+		{
+			account.IncreaseWantedLevel(1);
+			EL_Debug.Log("Crime", string.Format("wanted level increased for %1", pUserEntity));
+			EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 
-				// Alert police
-				EL_Utils.AlertPolice("#EL-Police_Alert_Robbery", pUserEntity.GetOrigin());
-			}
+			// Alert police
+			EL_Utils.AlertPolice("#EL-Police_Alert_Robbery", pUserEntity.GetOrigin());
 		}
 
 		// TODO: Alert police

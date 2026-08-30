@@ -25,11 +25,17 @@ Rung 1.
 1. Hand-carry: the weapon-holster flow is client-only (the server never sees
    the transition) and `OnGadgetModeSet` lacks the `HasLocalControl` guard —
    this must converge to a server-visible state.
-2. Spawning: `GetCreationPosition` leaves `out` params unset when no spawn
-   point exists, and the loadout recursion has no depth guard — fail-safe these
-   (log + degrade, never VME).
+2. Spawning fail-safe — DONE (verified 2026-08-30): `GetCreationPosition`
+   returns `bool` and `CreateCharacter` aborts the spawn when no spawn point
+   resolves instead of dropping the player at origin.
 3. Loadout fill: an item that finds no matching storage is silently dropped —
    it should log.
+4. **Death — defined (verified 2026-08-30):** the dead body stays in the world
+   with everything it carried (only removed by a server restart or cleanup);
+   the player respawns through the death screen
+   (`EL_DeathScreen`, opened by `SCR_RespawnComponent.GetOnRespawnReadyInvoker_O`),
+   whose Respawn button re-runs the account-aware spawn via
+   `RpcAsk_EL_Respawn` → `EL_SpawnLogic.RespawnPlayer_S`.
 
 ## Iteration path
 
@@ -37,8 +43,9 @@ Rung 1.
 
 ## Current state
 
-- `Feature/Character/Spawning/` — `EL_SpawnLogic`, `EL_SpawnPointsProvider`,
-  `EL_FactionSpawnPoint`.
+- `Feature/Character/Spawning/` — `EL_SpawnLogic` (account-aware spawn, death →
+  death screen), `EL_DeathScreen` + `EL_RespawnComponent` (death-screen bridge),
+  `EL_SpawnPointsProvider`, `EL_FactionSpawnPoint`.
 - `Feature/Character/Inventory/` — `HandCarry/` state machine + modded vanilla
   inventory wiring; `Quantity`'s `ScriptedInventoryStorageManagerComponent`
   adds the RPC split/transfer endpoints.

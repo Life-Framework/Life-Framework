@@ -60,6 +60,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_AutosaveSelectionBitmask(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionNewest(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PersistenceManagerWiring(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_ScreenshotFailSafe(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FruitCatcherRewardClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopQuantityGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopTotalPrice(), EL_TestTier.LOGIC);

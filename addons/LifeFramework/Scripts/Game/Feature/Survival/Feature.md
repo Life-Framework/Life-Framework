@@ -25,8 +25,11 @@ Today: `EL_CharacterSurvivalComponent` decays stats per frame (hunger
 1. **Health never recovers** — it only ever falls. Add a recovery path
    (rest, food+drink, medical) or the player's only option is slow death.
 2. Clamp delta time — a frame hitch drops a big stat chunk in one tick.
-3. Define zero-health handling at the state level (down-but-not-dead vs.
-   death/respawn flow — decide and implement; today it's undefined).
+3. Zero-health handling — **defined** (verified 2026-08-30): death is a
+   **body + respawn** flow, not a soft state. On death the body stays in the
+   world with everything it carried, and the player respawns through the death
+   screen (see `Character`). Survival's job is to get the body to zero; the
+   consequence is the respawn, not a health-regeneration branch.
 4. `EL_SurvivalStatsSaveData.Equals` uses exact float `==` (no epsilon).
 
 ## Iteration path

@@ -1,0 +1,68 @@
+FrameWidgetClass "{39BE412466747946}" {
+ Name "DeathRoot"
+ {
+  PanelWidgetClass "{9306E8397734F101}" {
+   Name "Panel0"
+   Slot FrameWidgetSlot "{0AAFB67F44B4B298}" {
+    Anchor 0 0 0 1
+    PositionX 200
+    OffsetLeft 200
+    PositionY 200
+    OffsetTop 200
+    SizeX 500
+    OffsetRight -700
+    SizeY 0
+    OffsetBottom -500
+   }
+   {
+    BlurWidgetClass "{0E7E6B49645EE0E2}" : "{352322057FD78AE1}UI/layouts/WidgetLibrary/BaseElements/WLib_Blur.layout" {
+     Name "BackgroundBlur"
+     Slot FrameWidgetSlot "{0DCED8BC38C657A1}" {
+      Anchor 0 0 1 1
+     }
+     Color 0.127 0.127 0.127 1
+     Intensity 0.8
+    }
+    VerticalLayoutWidgetClass "{8BA15327262B0560}" {
+     Slot FrameWidgetSlot "{C9205959996A93AE}" {
+      Anchor 0 0 1 1
+      PositionX 1
+      OffsetLeft 1
+      OffsetRight -1
+      OffsetBottom -1
+     }
+     {
+      FrameWidgetClass "{602A239EC00CBB9B}" {
+       Name "TitleFrame"
+       Slot LayoutSlot "{4BE6182B9CC8754B}" {
+        Padding 0 15 0 15
+       }
+       {
+        TextWidgetClass "{2401E01B5897FC37}" {
+         Name "Title"
+         Slot FrameWidgetSlot "{821BD42A18EC5084}" {
+          Anchor 0.5 0.5 0.5 0.5
+         }
+         Color 1 1 1 1
+         Text "#EL-Death_Title"
+         "Font Size" 30
+        }
+       }
+      }
+      ButtonWidgetClass "{F189D6C24E9F33CD}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+       Name "RespawnButton"
+       Slot LayoutSlot "{B3B40B6EFD4B7F62}" {
+        Padding 40 10 40 10
+       }
+       components {
+        SCR_ButtonTextComponent "{82ABDCC5E78AE5E6}" {
+         m_sText "#EL-Death_Respawn"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
