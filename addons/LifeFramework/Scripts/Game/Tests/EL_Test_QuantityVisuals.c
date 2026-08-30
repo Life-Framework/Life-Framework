@@ -82,7 +82,7 @@ class EL_Test_QuantityVisuals : EL_Test
 		stacks.Insert(MakeStack(1000, ResourceName.Empty));
 		stacks.Insert(MakeStack(10000, MODEL_LARGE));
 
-		ResourceName model = EL_QuantityComponent.GetStackModelForQuantity(5000, stacks);
+		ResourceName model = EL_QuantityComponent.GetStackModelForQuantity(15000, stacks);
 		ctx.True(model == MODEL_LARGE, "a tier with no model is skipped, not selected");
 	}
 
