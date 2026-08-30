@@ -136,7 +136,7 @@ class EL_ShopMenu : ChimeraMenuBase
 		if (m_sSearchFilter.IsEmpty() && shown >= total)
 			m_wResultText.SetText("");
 		else
-			m_wResultText.SetText(string.Format("#EL-Shop_Results", shown, total));
+			m_wResultText.SetText(WidgetManager.Translate("#EL-Shop_Results", shown, total));
 	}
 
 	//------------------------------------------------------------------------------------------------

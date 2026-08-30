@@ -53,7 +53,7 @@ class EL_RobAction : ScriptedUserAction
 			atmManager.Deposit(playerUid, m_iMoneyAmount);
 			EL_Debug.Log("Crime", string.Format("robbery +%1 to player %2", m_iMoneyAmount, pUserEntity));
 
-			EL_Utils.Notify(string.Format("#EL-Stole_Money", m_iMoneyAmount), "#EL-Robbery_Successful", 3.0);
+			EL_Utils.Notify(WidgetManager.Translate("#EL-Stole_Money", m_iMoneyAmount), "#EL-Robbery_Successful", 3.0);
 
 			// Increase wanted level
 			EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
