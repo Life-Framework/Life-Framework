@@ -73,14 +73,22 @@ if (-not (Test-Path (Join-Path $gameAddons "data"))) {
 # engine needs when the install did not include one. This is generated under
 # the ignored test profile, never committed to the repository.
 $coreGproj = Join-Path $gameAddons "core\core.gproj"
-if (-not (Test-Path -LiteralPath $coreGproj)) {
+if (-not (Test-Path -LiteralPath (Join-Path $dataSource "core\core.gproj"))) {
+  if (Test-Path -LiteralPath (Join-Path $gameAddons "core")) { Remove-Item -LiteralPath (Join-Path $gameAddons "core") -Recurse -Force }
   $coreDir = Split-Path -Parent $coreGproj
   New-Item -ItemType Directory -Force -Path $coreDir | Out-Null
+  Copy-Item -Path (Join-Path $dataSource "core\*") -Destination $coreDir -Recurse -Force
   @'
 GameProject {
  ID "core"
  GUID "5614BBCCBB55ED1C"
  TITLE "core"
+ Configurations {
+  GameProjectConfig PC {
+  }
+  GameProjectConfig HEADLESS : PC {
+  }
+ }
 }
 '@ | Set-Content -LiteralPath $coreGproj -Encoding ASCII
 }

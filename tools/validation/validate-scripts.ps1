@@ -53,14 +53,22 @@ if (-not (Test-Path (Join-Path $gameAddonsJunction "data"))) {
   cmd /c mklink /J "$gameAddonsJunction\data" "$gameDir\addons\data" 2>$null | Out-Null
 }
 $coreGproj = Join-Path $gameAddonsJunction "core\core.gproj"
-if (-not (Test-Path -LiteralPath $coreGproj)) {
+if (-not (Test-Path -LiteralPath (Join-Path $gameDir "addons\core\core.gproj"))) {
+  if (Test-Path -LiteralPath (Join-Path $gameAddonsJunction "core")) { Remove-Item -LiteralPath (Join-Path $gameAddonsJunction "core") -Recurse -Force }
   $coreDir = Split-Path -Parent $coreGproj
   New-Item -ItemType Directory -Force -Path $coreDir | Out-Null
+  Copy-Item -Path (Join-Path $gameDir "addons\core\*") -Destination $coreDir -Recurse -Force
   @'
 GameProject {
  ID "core"
  GUID "5614BBCCBB55ED1C"
  TITLE "core"
+ Configurations {
+  GameProjectConfig PC {
+  }
+  GameProjectConfig HEADLESS : PC {
+  }
+ }
 }
 '@ | Set-Content -LiteralPath $coreGproj -Encoding ASCII
 }
