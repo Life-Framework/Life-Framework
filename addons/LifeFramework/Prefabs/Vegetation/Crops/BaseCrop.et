@@ -32,6 +32,7 @@ EL_BaseCrop {
   RplComponent "{59A0BBAE906EB837}" {
   }
  }
+ Flags 0x403 0
  coords 105.94 0.276 135.537
  m_eBuildingType CROP
 }

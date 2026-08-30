@@ -122,26 +122,39 @@ class EL_SpawnLogic : SCR_SpawnLogic
 			return;
 		}
 
-		if (playerController.GetControlledEntity())
-		{
-			// A corpse does not count as a playable character - the death respawn path must proceed.
-			IEntity controlled = playerController.GetControlledEntity();
-			CharacterControllerComponent characterController = CharacterControllerComponent.Cast(controlled.FindComponent(CharacterControllerComponent));
-			if (!characterController || characterController.GetLifeState() != ECharacterLifeState.DEAD)
-			{
-				EL_Debug.Warn("Spawn", "player " + playerId + " already controls a character - not spawning another");
-				return;
-			}
-		}
-
 		EL_PlayerCharacter activeCharacter = account.GetActiveCharacter();
 		if (!activeCharacter)
 		{
 			// No character yet: the character-creation flow owns first spawn (faction pick, name,
-			// age) and calls SpawnPlayer_S once the account has one. Auto-creating a default here
-			// would bypass the faction choice entirely.
+			// age) and calls SpawnPlayer_S once the account has one.
 			EL_Debug.Info("Spawn", "player " + playerId + " has no character yet, waiting for the character-creation flow");
 			return;
+		}
+
+		if (playerController.GetControlledEntity())
+		{
+			IEntity controlled = playerController.GetControlledEntity();
+			CharacterControllerComponent characterController = CharacterControllerComponent.Cast(controlled.FindComponent(CharacterControllerComponent));
+			if (!characterController || characterController.GetLifeState() != ECharacterLifeState.DEAD)
+			{
+				#ifdef WORKBENCH
+					// Workbench may hand the player an editor/play-from-camera entity before the
+					// account flow creates the requested character. Do not leave that entity in
+					// control, or the real character never receives ownership.
+					SCR_ChimeraCharacter existingCharacter = SCR_ChimeraCharacter.Cast(controlled);
+					ResourceName existingPrefab = EL_Utils.GetPrefabName(controlled);
+					if (!existingCharacter || existingPrefab != activeCharacter.GetPrefab())
+					{
+						EL_Debug.Warn("Spawn", "replacing Workbench controlled entity with the account character");
+						SCR_EntityHelper.DeleteEntityAndChildren(controlled);
+					}
+					else
+				#endif
+					{
+				EL_Debug.Warn("Spawn", "player " + playerId + " already controls a character - not spawning another");
+				return;
+					}
+			}
 		}
 
 		string characterPersistenceId = activeCharacter.GetId();

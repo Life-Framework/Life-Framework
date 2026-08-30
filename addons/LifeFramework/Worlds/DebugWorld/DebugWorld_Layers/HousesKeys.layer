@@ -24,7 +24,8 @@ GenericEntity HouseKeysStation {
     }
    }
   }
-  GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+  SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   Flags 0x403 0
    coords -1.6 0 0.7
   }
   EL_NpcBaseEntity RealtorNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {

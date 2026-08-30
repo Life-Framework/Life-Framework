@@ -40,7 +40,8 @@ GenericEntity SurvivalStation {
       Enabled 1
      }
     }
-    coords 0 -0.001 0
+     Flags 0x403 0
+     coords 0 -0.001 0
    }
    SurvivalPoint_Water {
     components {
@@ -80,7 +81,8 @@ GenericEntity SurvivalStation {
       Enabled 1
      }
     }
-    coords 4 -0.001 0
+     Flags 0x403 0
+     coords 4 -0.001 0
    }
    SurvivalTableItems {
     coords -1.6 0.9 0.7
@@ -94,7 +96,8 @@ GenericEntity SurvivalStation {
     }
    }
   }
-  GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+  SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   Flags 0x403 0
    coords -1.6 0 0.7
   }
   EL_NpcBaseEntity SurvivalNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
