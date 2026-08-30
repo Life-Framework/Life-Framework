@@ -9,11 +9,19 @@
 //   node tools/mcp-call.mjs list [server]
 //   node tools/mcp-call.mjs <tool> '<json args>' [server]
 //   node tools/mcp-call.mjs <tool> @path/to/args.json [server]
+//   node tools/mcp-call.mjs --batch @path/to/batch.json [server]
 //
 // Examples:
 //   node tools/mcp-call.mjs list
 //   node tools/mcp-call.mjs api_search '{"query":"SCR_SpawnLogic","format":"tree"}'
 //   node tools/mcp-call.mjs game_read @tmp/args.json
+//   node tools/mcp-call.mjs --batch @tmp/wb-session.json
+//
+// --batch runs an array of { "tool": "...", "args": {...} } calls in ONE server
+// session. Use it when later calls depend on state set by earlier ones: the
+// Workbench bridge caches the editor mode per process, so `wb_play`/`wb_capture`
+// run as separate processes always see the stale "unknown" mode and refuse. Run
+// wb_state then wb_play in the same batch and the mode is known.
 //
 // Notes:
 //   - The default server is the first ENABLED entry in opencode.json. Pass a
@@ -80,7 +88,8 @@ async function main() {
     console.log(`usage:
   node tools/mcp-call.mjs list [server]
   node tools/mcp-call.mjs <tool> '<json args>' [server]
-  node tools/mcp-call.mjs <tool> @path/to/args.json [server]`);
+  node tools/mcp-call.mjs <tool> @path/to/args.json [server]
+  node tools/mcp-call.mjs --batch @path/to/batch.json [server]`);
     return 0;
   }
 
@@ -89,10 +98,35 @@ async function main() {
   let rawArgs = null;
   let wantedServer = null;
   let envOverrides = {};
+  let batch = null;
 
   if (first === "list") {
     toolName = null;
     wantedServer = args[1] ?? null;
+  } else if (first === "--batch") {
+    const batchFile = args[1];
+    if (!batchFile) {
+      console.error("--batch requires a json file path");
+      return 1;
+    }
+    try {
+      const batchText = readFileSync(batchFile.startsWith("@") ? batchFile.slice(1) : batchFile, "utf8");
+      batch = JSON.parse(batchText);
+      if (!Array.isArray(batch)) {
+        console.error("--batch file must contain a JSON array of { tool, args }");
+        return 1;
+      }
+      for (const call of batch) {
+        if (!call || typeof call.tool !== "string") {
+          console.error("--batch entry missing tool name");
+          return 1;
+        }
+      }
+    } catch (e) {
+      console.error(`bad --batch file: ${e.message}`);
+      return 1;
+    }
+    wantedServer = args[2] ?? null;
   } else if (first === "--env") {
     const envFile = args[1];
     if (!envFile) {
@@ -228,6 +262,20 @@ async function main() {
       const res = await rpc("tools/list", {});
       for (const t of res.tools) {
         console.log(`${t.name}\t${(t.description || "").split("\n")[0].slice(0, 140)}`);
+      }
+    } else if (batch) {
+      for (const call of batch) {
+        console.log(`=== ${call.tool} ===`);
+        const res = await rpc("tools/call", { name: call.tool, arguments: call.args ?? {} });
+        for (const c of res.content || []) {
+          if (c.type === "text") console.log(c.text);
+          else console.log(JSON.stringify(c));
+        }
+        if (res.isError) {
+          process.stderr.write(`tool ${call.tool} reported an error\n`);
+          child.kill();
+          return 1;
+        }
       }
     } else {
       const res = await rpc("tools/call", { name: toolName, arguments: toolArgs });
