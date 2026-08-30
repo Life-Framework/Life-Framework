@@ -392,6 +392,14 @@
 
 ## DebugWorld coverage
 
+- ℹ️ **`Worlds/DebugWorld/DebugWorld.ent` is intentionally 0 bytes — that is
+  not a broken world.** All DebugWorld content lives in
+  `Worlds/DebugWorld/DebugWorld_Layers/*.layer` files (`Terrain.layer` holds
+  the `GenericWorldEntity world` BSP + `DebugTerrain` terrain entity; every
+  feature is its own layer). Agents must never "fix" the empty `.ent` or
+  expect to find entities inside it. `MainWorld.ent` differs: it is a
+  `SubScene` wrapper over `worlds/Eden/Eden.ent`. `validate-debugworld.ps1`
+  enforces that the required gameplay layers exist and are non-empty.
 - ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, and tests are all present

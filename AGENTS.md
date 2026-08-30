@@ -61,6 +61,13 @@ The test flow: `Missions/EL_DebugTest.conf` loads `Worlds/DebugWorld`, the
 `EL_TestRunnerComponent` runs the `EL_Test*` suite on server start and prints
 machine-readable markers:
 
+> **`Worlds/DebugWorld/DebugWorld.ent` is 0 bytes on purpose.** All world
+> content lives in `Worlds/DebugWorld/DebugWorld_Layers/*.layer` files
+> (`Terrain.layer` = world BSP + terrain; each feature is its own layer). Do
+> not "repair" the empty `.ent` — it is a valid empty world. `MainWorld.ent`
+> differs: it is a `SubScene` wrapper over `worlds/Eden/Eden.ent`. See
+> `docs/features.md` → DebugWorld coverage.
+
 ```
 [ELTEST] START <name>
 [ELTEST] PASS <name> (N assertions)
