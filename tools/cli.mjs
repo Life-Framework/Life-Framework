@@ -747,6 +747,9 @@ function wtHelp() {
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all] [--no-build] [--wait]
                                        run the ELTEST suite in that worktree (from anywhere)
+  tools\\cli wt e2e <slug> [--tier all]
+                                       two-boot save-state E2E: pass 1 fresh boot (tier=all),
+                                       pass 2 reload same profile with -loadSessionSave (latest)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt gate <slug> [--wait]   validate + build + test (tier=all) in that worktree
@@ -872,6 +875,57 @@ async function wtTestCmd(args) {
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
+}
+
+// One boot of the test-e2e.ps1 harness in the target worktree. Mirrors the
+// harness invocation inside cmdTest (same ports, same cwd/env) but exposes the
+// profile-keep and -loadSessionSave flags the two-boot save-state E2E needs.
+function runE2ePass(root, tier, opts = {}) {
+  const harness = join(ROOT, "tools", "test", "test-e2e.ps1");
+  if (!existsSync(harness)) {
+    console.log(`FAIL  harness not found: ${harness}`);
+    return 1;
+  }
+  const ports = wt.portsForRoot(root);
+  const psArgs = [
+    "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
+    "-Tier", tier,
+    "-BindPort", String(ports.gamePort),
+    "-A2sPort", String(ports.a2sPort),
+  ];
+  if (opts.keepProfile) psArgs.push("-KeepProfile");
+  if (opts.loadLatestSave) psArgs.push("-LoadLatestSave");
+  else if (opts.loadSessionSave !== undefined) psArgs.push("-LoadSessionSave", opts.loadSessionSave);
+  const res = sh(PWSH, psArgs, { cwd: root, env: toolEnv() });
+  process.stdout.write(res.stdout + res.stderr);
+  return res.status;
+}
+
+async function wtE2eCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  const flags = args.slice(1);
+  const pass2Tier = argValue(flags, "--tier") ?? "all";
+  let e;
+  try {
+    e = wt.requireWorktree(ROOT, slug);
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+  const profile = join(e.path, "server", "profile", "test");
+  console.log(`e2e: pass 1/2 - fresh boot (tier=all, profile wiped) in ${e.path}`);
+  const pass1 = runE2ePass(e.path, "all", {});
+  if (pass1 !== 0) {
+    console.log(`e2e: FAILED in pass 1 (no save produced); not running pass 2`);
+    console.log(`e2e: profile ${profile}`);
+    return pass1;
+  }
+  console.log(`e2e: pass 2/2 - reload boot (tier=${pass2Tier}, KeepProfile, -loadSessionSave latest)`);
+  const pass2 = runE2ePass(e.path, pass2Tier, { keepProfile: true, loadLatestSave: true });
+  console.log(`e2e: profile ${profile}`);
+  console.log(`e2e: pass1 exit=${pass1} pass2 exit=${pass2} ${pass1 === 0 && pass2 === 0 ? "OK" : "FAILED"}`);
+  return pass1 === 0 && pass2 === 0 ? 0 : (pass1 === 0 ? pass2 : pass1);
 }
 
 async function wtDevCmd(args) {
@@ -1022,6 +1076,7 @@ function cmdWt(rest) {
     new: () => wtNewCmd(subArgs),
     list: () => wtListCmd(),
     test: () => wtTestCmd(subArgs),
+    e2e: () => wtE2eCmd(subArgs),
     dev: () => wtDevCmd(subArgs),
     build: () => wtBuildCmd(subArgs),
     gate: () => wtGateCmd(subArgs),
