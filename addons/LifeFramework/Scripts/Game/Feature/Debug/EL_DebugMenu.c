@@ -242,7 +242,9 @@ class EL_DebugActionUtils
 		}
 
 		string worldName = world.GetPath();
-		return worldName.IndexOf("DebugWorld") >= 0;
+		bool isDebugWorld = worldName.IndexOf("DebugWorld") >= 0;
+		EL_Debug.Info("DebugMenu", string.Format("DebugWorld gate resource=%1 path=%2 result=%3", world, worldName, isDebugWorld));
+		return isDebugWorld;
 	}
 
 	//------------------------------------------------------------------------------------------------
