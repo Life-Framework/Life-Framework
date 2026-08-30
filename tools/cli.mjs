@@ -744,6 +744,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   ci                            validate + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   regen-tests                   regenerate the test registry from the test files
+  regen-localization            regenerate the runtime string tables from the .st source
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   validate | lint               run every script in tools/{validation,lint}/
   run <area>                    run every script in tools/<area>/ (validate, lint, test, ...)
@@ -1196,6 +1197,16 @@ const cmds = {
   lint: () => cmdRunArea("lint"),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");
+    if (!existsSync(gen)) {
+      console.log(`FAIL  generator not found: ${gen}`);
+      return 1;
+    }
+    const res = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", gen, "-Write"]);
+    process.stdout.write(res.stdout + res.stderr);
+    return res.status;
+  },
+  "regen-localization": () => {
+    const gen = join(ROOT, "tools", "validation", "regen-localization.ps1");
     if (!existsSync(gen)) {
       console.log(`FAIL  generator not found: ${gen}`);
       return 1;
