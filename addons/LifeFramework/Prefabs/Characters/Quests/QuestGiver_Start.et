@@ -1,0 +1,125 @@
+EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "E8989175335080B8"
+ components {
+  LF_QuestGiverComponent "{7949D44D2207BE39}" {
+   m_sGiverId "Start"
+   m_aQuests {
+    LF_QuestDefinition "{DABE7A6925B6E36E}" {
+     m_sQuestId "intro_talk"
+     m_sTitleKey "#LF-Quest_IntroTalk_Title"
+     m_sDescriptionKey "#LF-Quest_IntroTalk_Desc"
+     m_iRewardMoney 100
+     m_fRewardXp 10
+     m_aRewardItems {
+      "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+     }
+     m_aObjectives {
+      LF_QuestObjective "{031227FDDBED7643}" {
+       m_eType TALK
+       m_iTarget 1
+       m_sFilter "Start"
+      }
+     }
+    }
+    LF_QuestDefinition "{295DE9EA1EFCB988}" {
+     m_sQuestId "intro_collect"
+     m_sTitleKey "#LF-Quest_IntroCollect_Title"
+     m_sDescriptionKey "#LF-Quest_IntroCollect_Desc"
+     m_iRewardMoney 200
+     m_fRewardXp 20
+     m_aObjectives {
+      LF_QuestObjective "{A68B5D78C720C75E}" {
+       m_eType COLLECT_REPORT
+       m_eMode SET
+       m_iTarget 1
+       m_sFilter "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+      }
+     }
+    }
+    LF_QuestDefinition "{3F8248082CB709ED}" {
+     m_sQuestId "intro_gather"
+     m_sTitleKey "#LF-Quest_IntroGather_Title"
+     m_sDescriptionKey "#LF-Quest_IntroGather_Desc"
+     m_iRewardMoney 150
+     m_fRewardXp 15
+     m_aObjectives {
+      LF_QuestObjective "{DEFEFEF54ADF887F}" {
+       m_eType GATHER
+       m_iTarget 3
+       m_sFilter ""
+      }
+     }
+    }
+    LF_QuestDefinition "{50765E28E853BCF4}" {
+     m_sQuestId "intro_area"
+     m_sTitleKey "#LF-Quest_IntroArea_Title"
+     m_sDescriptionKey "#LF-Quest_IntroArea_Desc"
+     m_iRewardMoney 100
+     m_fRewardXp 10
+     m_aObjectives {
+      LF_QuestObjective "{D14D255161D50C13}" {
+       m_eType AREA_ENTER
+       m_iTarget 1
+       m_sFilter "Area_Start"
+       m_vPosition 110 0 137
+       m_fRadius 15
+      }
+     }
+    }
+    LF_QuestDefinition "{2272829234E0E1D8}" {
+     m_sQuestId "intro_kill"
+     m_sTitleKey "#LF-Quest_IntroKill_Title"
+     m_sDescriptionKey "#LF-Quest_IntroKill_Desc"
+     m_iRewardMoney 500
+     m_fRewardXp 50
+     m_aObjectives {
+      LF_QuestObjective "{79F9760A9B8849C3}" {
+       m_eType KILL
+       m_iTarget 2
+       m_sFilter ""
+      }
+     }
+    }
+    LF_QuestDefinition "{10D9A206903FBC8F}" {
+     m_sQuestId "intro_timed"
+     m_sTitleKey "#LF-Quest_IntroTimed_Title"
+     m_sDescriptionKey "#LF-Quest_IntroTimed_Desc"
+     m_bRepeatable 1
+     m_fCooldownSeconds 60
+     m_fTimeLimitSeconds 120
+     m_iRewardMoney 300
+     m_fRewardXp 30
+     m_aObjectives {
+      LF_QuestObjective "{37E75A2535C9409C}" {
+       m_eType COLLECT_REPORT
+       m_eMode SET
+       m_iTarget 2
+       m_sFilter "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+      }
+     }
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{9A10A5431D5BFE10}" {
+     ContextName "Quest"
+     Position PointInfo "{5A9CB1824EBB2DDF}" {
+      Offset 0 0.5 0
+     }
+     Radius 2.0
+    }
+   }
+   additionalActions + {
+    LF_QuestAction "{152899F0D625C648}" {
+     ParentContextList {
+      "Quest"
+     }
+     UIInfo UIInfo "{C913CF7263E886E0}" {
+      Name "#LF-Quest_Action"
+     }
+    }
+   }
+  }
+ }
+}

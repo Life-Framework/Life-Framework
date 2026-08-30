@@ -56,6 +56,12 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	{
 		super.OnPlayerKilled_S(playerId, playerEntity, killerEntity, killer);
 
+		// Forward the kill to the quest system so kill objectives progress
+		// (additive seam; the quest manager no-ops when no quest is listening).
+		LF_QuestManager questManager = LF_QuestManager.GetInstance();
+		if (questManager)
+			questManager.ReportKill(playerEntity, killerEntity);
+
 		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
 		if (respawn)
 			respawn.NotifyReadyForSpawn_S();

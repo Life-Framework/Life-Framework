@@ -28,7 +28,7 @@ if ($LASTEXITCODE -ne 0) { $failed = $true }
 $violations = @()
 Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedName } | ForEach-Object {
   $text = Get-Content $_.FullName -Raw
-  $classes = [regex]::Matches($text, 'class\s+(EL_Test_\w+)\s*:\s*EL_Test') | ForEach-Object { $_.Groups[1].Value }
+  $classes = [regex]::Matches($text, 'class\s+((?:EL_Test_|LF_Test_)\w+)\s*:\s*EL_Test') | ForEach-Object { $_.Groups[1].Value }
   if (-not $classes) { return }
 
   if ($text -notmatch '//\s*red-proof:') {
