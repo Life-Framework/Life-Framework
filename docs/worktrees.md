@@ -42,6 +42,18 @@ tools\cli wt prune <slug>       # remove a merged worktree + branch
 `wt <command> <slug>` can be run from anywhere; it always uses the latest
 tooling against the named worktree.
 
+## Workbench per worktree
+
+Each linked checkout has its own `addons/LifeFramework/LifeFramework.gproj`, so
+Workbench can be pointed at a feature branch without changing the main editor
+project. Run `tools\cli wt open <slug> --workbench`; it launches that checkout's
+project with a worktree-specific profile directory.
+
+Use one Workbench instance at a time. The project files and profile are isolated,
+but the Workbench shader cache is shared by the machine. Stop the current editor
+before opening another worktree to avoid cache contention and stale resource
+views. Do not run a headless build while an interactive Workbench is open.
+
 ## Auto-merge
 
 `wt ship` runs the full gate in the worktree (validate + build + test tier=all),

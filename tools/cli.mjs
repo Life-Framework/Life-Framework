@@ -277,9 +277,10 @@ function toolEnv() {
 }
 
 function cmdRunArea(area, root = ROOT) {
-  // Tooling always runs from the CLI's own checkout; cwd is the target worktree
-  // so content-relative checks (git rev-parse --show-toplevel) resolve there.
-  const dir = join(ROOT, "tools", TOOL_DIRS[area]);
+  // Worktree checks must use the target checkout's scripts. Using the main
+  // checkout here makes a branch's generated registries look stale when it
+  // has added a test or validator.
+  const dir = join(root, "tools", TOOL_DIRS[area]);
   if (!existsSync(dir)) {
     console.log(`tools/${TOOL_DIRS[area]}/ does not exist yet`);
     return 0;
@@ -758,6 +759,7 @@ function wtHelp() {
                                        sync -> gate -> push -> PR -> auto-merge into main
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
   tools\\cli wt open <slug>            open a terminal in the worktree
+  tools\\cli wt open <slug> --workbench launch Workbench on that worktree
   tools\\cli wt main                   print the main checkout path
 
 flags:
@@ -848,6 +850,25 @@ function wtOpenCmd(args) {
   if (!slug) return 1;
   try {
     const e = wt.requireWorktree(ROOT, slug);
+    if (args.includes("--workbench")) {
+      const gproj = join(e.path, "addons", "LifeFramework", "LifeFramework.gproj");
+      if (!existsSync(gproj)) {
+        console.log(`FAIL  LifeFramework.gproj not found in ${e.path}`);
+        return 1;
+      }
+      const profile = join(e.path, "server", "profile", "workbench");
+      mkdirSync(profile, { recursive: true });
+      const child = spawn(workbenchExe(), ["-gproj", gproj, "-profile", profile], {
+        detached: true,
+        stdio: "ignore",
+      });
+      child.unref();
+      console.log(`launched Workbench for ${slug}`);
+      console.log(`project: ${gproj}`);
+      console.log(`profile: ${profile}`);
+      console.log("open one worktree at a time; Workbench instances share a shader cache");
+      return 0;
+    }
     if (process.platform === "win32") {
       sh(PWSH, ["-NoProfile", "-Command", `Start-Process cmd -ArgumentList '/k', 'cd /d "${e.path}"'`]);
     }
@@ -1054,7 +1075,7 @@ async function wtShipCmd(args) {
   console.log("=== ship: merge ===");
   try {
     if (wt.ghAvailable()) {
-      const m = wt.mergePrGh(wtRoot, pr.number);
+      const m = wt.mergePrGh(wtRoot, pr.number, e.branch);
       if (m.already) console.log(`ship: PR already merged or no-op: ${m.output.trim()}`);
       else console.log("ship: merged into main");
     } else {

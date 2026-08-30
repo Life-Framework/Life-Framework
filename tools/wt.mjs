@@ -385,14 +385,17 @@ export function createPrGh(root, { head, title, body }) {
   return { url, number };
 }
 
-export function mergePrGh(root, number) {
+export function mergePrGh(root, number, branch) {
   const gh = ghBin();
-  const res = run(gh, ["pr", "merge", String(number), "--merge", "--delete-branch"], { cwd: root });
+  // gh attempts to check out the default branch for --delete-branch. That
+  // fails while main is occupied by the reserved world-editor worktree.
+  const res = run(gh, ["pr", "merge", String(number), "--merge"], { cwd: root });
   if (res.status !== 0) {
     const out = res.stdout + res.stderr;
     if (/already|no commits|closed|not mergeable/i.test(out)) return { already: true, output: out };
     throw new Error(`gh pr merge failed: ${out}`);
   }
+  if (branch) git(root, ["push", "origin", "--delete", branch]);
   return { already: false };
 }
 
