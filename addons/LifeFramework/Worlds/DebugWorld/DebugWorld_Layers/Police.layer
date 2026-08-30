@@ -1,38 +1,87 @@
-GenericEntity PoliceStation_Debug {
- components {
-  MeshObject "{5A4B0B84C86D7843}" {
-   Object "{85A1902159549DEF}Assets/Props/Services/Police/PoliceControlPanel_01.xob"
-  }
-  RigidBody "{5A4B0B84C86D7844}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  ActionsManagerComponent "{5A4B0B84C86D7845}" {
-   ActionContexts {
-    UserActionContext "{5A4B0B84C86D7846}" {
-     ContextName "default"
-     Position PointInfo "{5A4B0B84C86D7847}" {
-      Offset 0 1 0
+GenericEntity PoliceStation {
+ coords 94 0 120
+ {
+  GenericEntity PoliceStation_Debug {
+   components {
+    MeshObject "{5A4B0B84C86D7843}" {
+     Object "{85A1902159549DEF}Assets/Props/Services/Police/PoliceControlPanel_01.xob"
+    }
+    RigidBody "{5A4B0B84C86D7844}" {
+     Mass 10
+     ModelGeometry 1
+     Static 1
+    }
+    ActionsManagerComponent "{5A4B0B84C86D7845}" {
+     ActionContexts {
+      UserActionContext "{5A4B0B84C86D7846}" {
+       ContextName "default"
+       Position PointInfo "{5A4B0B84C86D7847}" {
+        Offset 0 1 0
+       }
+       Radius 3
+      }
      }
-     Radius 3
+     additionalActions {
+      EL_DutyAction "{5A4B0B84C86D7848}" {
+       ParentContextList {
+        "default"
+       }
+       UIInfo UIInfo "{5A4B0B84C86D7849}" {
+        Name "Toggle Duty"
+        Description "Entrar/Salir de servicio policial"
+       }
+      }
+     }
+    }
+    RplComponent "{5A4B0B84C86D784A}" {
+     Enabled 1
     }
    }
-   additionalActions {
-    EL_DutyAction "{5A4B0B84C86D7848}" {
-     ParentContextList {
-      "default"
+   coords 0 0.9 0
+  }
+  GenericEntity PoliceTableItems {
+   coords -1.6 0.9 0.7
+   {
+    $grp GenericEntity : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
+     PoliceIDCard_Debug {
+      coords 0 0 0
      }
-     UIInfo UIInfo "{5A4B0B84C86D7849}" {
-      Name "Toggle Duty"
-      Description "Entrar/Salir de servicio policial"
+    }
+    $grp GenericEntity : "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et" {
+     ConfiscatedKey_Debug {
+      coords 0.2 0 0.05
      }
     }
    }
   }
-  RplComponent "{5A4B0B84C86D784A}" {
-   Enabled 1
+  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   {
+    coords -1.6 0 0.7
+   }
+  }
+  EL_NpcBaseEntity PoliceNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Police"
+      Surname "Officer"
+     }
+    }
+   }
+   coords 0 0 -1.1
+  }
+  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
+   coords 1.6 0 -0.9
+  }
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+   coords -1.6 0.9 -0.6
   }
  }
- coords 138 0 136
 }
