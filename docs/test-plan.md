@@ -151,6 +151,9 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 
 ### Gathering, Processing & Resources
 
+> Re-audited 2026-08-30: gather and process server validation is implemented;
+> `actions/configuration-guards` covers malformed request/recipe boundaries.
+
 | Test | Tier | Asserts |
 | --- | --- | --- |
 | `actions/configuration-guards` | LOGIC ✅ | malformed gather requests and processing recipes are rejected before inventory mutation |

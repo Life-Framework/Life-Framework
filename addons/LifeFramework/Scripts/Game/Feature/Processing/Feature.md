@@ -22,10 +22,9 @@ visibly holding/expelling the product.
 
 ## V1 (shippable)
 
-1. **Fix the free-output exploit**: `PerformAction` grants all outputs even
-   when inputs are missing (`RemoveAmount` clamps to available). The server
-   must re-validate the full input set before producing anything, and an empty
-   input list must mean *no* outputs, not free outputs.
+1. **Fix the free-output exploit — DONE** (verified 2026-08-30): the server
+   validates the full input set and recipe shape before producing anything;
+   failed input/output mutations roll back.
 2. Server-side re-validation (client-evaluated `CanBePerformedScript` is not a
    gate).
 
@@ -36,9 +35,8 @@ visibly holding/expelling the product.
 
 ## Current state
 
-- `EL_ProcessAction` (`Feature/Processing/`) — recipe consume/produce.
-  ❌ **free-output exploit**, no server re-validation, empty input list =
-  free outputs.
+- `EL_ProcessAction` (`Feature/Processing/`) — recipe consume/produce with
+  server-side recipe/input validation and rollback on failed mutations.
 
 ## Dependencies
 

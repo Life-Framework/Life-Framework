@@ -39,8 +39,9 @@ or a balance becomes cash.
 
 - `EL_ATMManager` + `EL_BankAccount` (`Feature/ATM/`) — the canonical bank:
   session map registry + async loader; persistent per-player balance with
-  deposit/withdraw guards. ⚠️ `SetBalance` unclamped; `CreateAccount` silently
-  overwrites an existing account.
+  deposit/withdraw guards. ✅ `SetBalance` clamps corrupt values;
+  `CreateAccount` rejects empty IDs and preserves existing accounts on
+  duplicate creation (verified 2026-08-30).
 - `EL_ATMMenu` — deposit/withdraw UI on the cash-moving RPC bridge; amount
   guards via `EL_ATMManager.IsValidAmount`.
 - `EL_ATMAction` / `EL_CharacterATMComponent` — interaction and per-character

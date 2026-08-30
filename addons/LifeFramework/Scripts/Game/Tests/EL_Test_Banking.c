@@ -194,3 +194,27 @@ class EL_Test_ATMManagerGuards : EL_Test
 		ctx.Equal(500, account.GetBalance(), "rejected manager withdrawals leave the balance unchanged");
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+// tier: LOGIC
+class EL_Test_BankApplySnapshot : EL_Test
+{
+	override string GetName()
+	{
+		return "bank/apply-snapshot";
+	}
+
+	override void Run(EL_TestContext ctx)
+	{
+		EL_ATMManager.Reset();
+		EL_ATMManager manager = EL_ATMManager.GetInstance();
+		EL_BankAccount stale = manager.CreateAccount("stale-bank");
+		manager.Deposit("stale-bank", 900);
+
+		ref array<ref EL_BankAccountRecord> emptyRecords = new array<ref EL_BankAccountRecord>();
+		EL_ATMManager.ApplyAll(emptyRecords);
+
+		ctx.True(EL_ATMManager.GetInstance().GetAccount("stale-bank") == null, "snapshot apply removes accounts absent from the save");
+		ctx.Equal(0, EL_ATMManager.ExportAll().Count(), "empty snapshot exports no stale accounts");
+	}
+};

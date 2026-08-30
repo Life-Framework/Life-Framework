@@ -65,6 +65,12 @@ class EL_CharacterATMComponent : ScriptComponent
 		{
 			string playerUid = EL_Utils.GetPlayerUID(character);
 			account = EL_ATMManager.GetOrCreate(playerUid);
+			if (!account)
+			{
+				EL_Debug.Error("ATM", "deposit rejected: player UID is unavailable");
+				Rpc(RpcDo_DepositResult, false, 0);
+				return;
+			}
 			if (EL_ATMManager.IsValidAmount(amount))
 			{
 				int removed = EL_MoneyUtils.RemoveCash(character, amount);
@@ -114,6 +120,12 @@ class EL_CharacterATMComponent : ScriptComponent
 		{
 			string playerUid = EL_Utils.GetPlayerUID(character);
 			account = EL_ATMManager.GetOrCreate(playerUid);
+			if (!account)
+			{
+				EL_Debug.Error("ATM", "withdraw rejected: player UID is unavailable");
+				Rpc(RpcDo_WithdrawResult, false, 0);
+				return;
+			}
 			if (EL_ATMManager.IsValidAmount(amount))
 			{
 				if (account.Withdraw(amount))
@@ -163,6 +175,11 @@ class EL_CharacterATMComponent : ScriptComponent
 			return;
 
 		EL_BankAccount account = EL_ATMManager.GetOrCreate(EL_Utils.GetPlayerUID(character));
+		if (!account)
+		{
+			EL_Debug.Error("ATM", "balance request rejected: player UID is unavailable");
+			return;
+		}
 		Rpc(RpcDo_Balance, account.GetBalance());
 	}
 

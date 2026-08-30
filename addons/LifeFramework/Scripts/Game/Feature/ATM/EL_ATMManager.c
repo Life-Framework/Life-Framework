@@ -48,9 +48,13 @@ class EL_ATMManager : Managed
 		if (!instance)
 			instance = new EL_ATMManager();
 
+		// The save is a complete snapshot. Remove accounts absent from it so a
+		// reduced or empty load cannot resurrect stale balances.
+		instance.m_mAccounts.Clear();
+
 		foreach (EL_BankAccountRecord record : records)
 		{
-			if (!record)
+			if (!record || record.m_sPersistentId.IsEmpty())
 				continue;
 
 			EL_BankAccount account = EL_BankAccount.Create(record.m_sPersistentId);
