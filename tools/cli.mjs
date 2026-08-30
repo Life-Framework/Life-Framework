@@ -103,6 +103,72 @@ function targets(name) {
   return Object.keys(SERVERS);
 }
 
+// ---------------------------------------------------------------- handler bundles
+
+// Both MCP servers inject their EnforceScript NET API handlers into the same
+// addon folder (Scripts/WorkbenchGame/EnfusionMCP), and Workbench compiles
+// whatever is there. The two servers' bundled handler sets must stay a UNION:
+// if one ships a handler the other lacks (e.g. enfusion-mcp-bk ships
+// EMCP_WB_ReadProps, enfusion-workbench ships EMCP_WB_Capture), whichever
+// injected last wins and the other server's NET API calls fail with
+// "Failed to call not existing Net API function". These helpers reconcile the
+// two bundles so no server ever overwrites a handler the other provides.
+const HANDLER_SUBDIR = join("mod", "Scripts", "WorkbenchGame", "EnfusionMCP");
+
+function handlerDirOf(server) {
+  return join(MCP_DIR, server.dir, HANDLER_SUBDIR);
+}
+
+/** Copy a single .c handler from one server's bundle to the other's. */
+function copyHandler(fromName, toName, file) {
+  const from = join(handlerDirOf(SERVERS[fromName]), file);
+  const to = join(handlerDirOf(SERVERS[toName]), file);
+  mkdirSync(dirname(to), { recursive: true });
+  copyFileSync(from, to);
+}
+
+/**
+ * Reconcile both servers' bundled handler sets to the union. Copies any
+ * handler present in one bundle but missing from the other, so a later
+ * injection can never drop a Net API function the other server depends on.
+ * Returns the list of copied files (empty when already in sync).
+ */
+function syncHandlerBundles() {
+  const names = Object.keys(SERVERS);
+  const copied = [];
+  for (const name of names) {
+    const dir = handlerDirOf(SERVERS[name]);
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir)) {
+      if (!f.endsWith(".c")) continue;
+      for (const other of names) {
+        if (other === name) continue;
+        const otherFile = join(handlerDirOf(SERVERS[other]), f);
+        if (!existsSync(otherFile)) {
+          copyHandler(name, other, f);
+          copied.push(`${other}: +${f}`);
+        }
+      }
+    }
+  }
+  return copied;
+}
+
+/** True when both installed bundles carry the same set of .c handlers. */
+function handlerBundlesInSync() {
+  const setOf = (name) => {
+    const dir = handlerDirOf(SERVERS[name]);
+    if (!existsSync(dir)) return null;
+    return new Set(readdirSync(dir).filter((f) => f.endsWith(".c")));
+  };
+  const a = setOf(Object.keys(SERVERS)[0]);
+  const b = setOf(Object.keys(SERVERS)[1]);
+  if (a === null || b === null) return true; // not both installed yet
+  if (a.size !== b.size) return false;
+  for (const f of a) if (!b.has(f)) return false;
+  return true;
+}
+
 // ---------------------------------------------------------------- commands
 
 function cmdStatus() {
@@ -122,6 +188,16 @@ function cmdStatus() {
       `  ${name.padEnd(20)} installed=${installed} enabled=${String(enabled).padEnd(5)} commit=${commit}`,
     );
     console.log(`      ${s.label}`);
+  }
+  if (!handlerBundlesInSync()) {
+    console.log("");
+    console.log(
+      "  WARN  MCP handler bundles diverged — one server would overwrite the other's Net API",
+    );
+    console.log(
+      "        handlers, breaking calls like EMCP_WB_ReadProps/EMCP_WB_Capture. Run 'cli mcp",
+    );
+    console.log("        install' (or 'update') to reconcile them to a union.");
   }
   console.log("");
   console.log("environment (effective; OS env wins over opencode.json):");
@@ -195,6 +271,11 @@ function cmdInstall(name) {
     }
     console.log(`OK    ${n} installed at ${entryOf(s)}`);
   }
+  const synced = syncHandlerBundles();
+  if (synced.length) {
+    console.log(`synced handler bundles to union (${synced.length}):`);
+    for (const s of synced) console.log(`  ${s}`);
+  }
   return failed ? 1 : 0;
 }
 
@@ -238,6 +319,11 @@ function cmdUpdate(name) {
       continue;
     }
     console.log(`OK    ${n}: ${before} -> ${after}`);
+  }
+  const synced = syncHandlerBundles();
+  if (synced.length) {
+    console.log(`synced handler bundles to union (${synced.length}):`);
+    for (const s of synced) console.log(`  ${s}`);
   }
   return failed ? 1 : 0;
 }
