@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F7EE326F6B1B4101}UI/Layouts/HUD/HUDLayouts/EL_HUDManagerRoot.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

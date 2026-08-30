@@ -3,13 +3,14 @@
 //!
 //! The serializers bound in Configs/Systems/Persistence/LifeFramework.conf write the
 //! account, bank, survival and quantity data; this component makes those writes actually
-//! happen on a schedule, on shutdown, on demand, and exposes an honest save-finished
-//! signal. Attached to the game-mode entity (GameMode_Roleplay.et).
+//! happen on a schedule and on demand, observes the engine's shutdown save, and exposes
+//! an honest save-finished signal. Attached to the game-mode entity (GameMode_Roleplay.et).
 //!
 //! TWO ENGINE LAYERS SIT BEHIND THIS, do not conflate them:
 //!  1. SCR_PersistenceSystem - server-only world system that tracks instances and
 //!     serializes them. Configured by LifeFramework.conf, registered by
-//!     ChimeraSystemsConfig.conf. Has no global save; its Save() takes one instance.
+//!     LifeFrameworkSystems.conf (referenced from the mission header). Has no global
+//!     save; its Save() takes one instance.
 //!  2. SaveGameManager - the engine singleton that owns save POINTS (create / list /
 //!     load / delete). Every save request in this component goes through it.
 //!
@@ -22,10 +23,12 @@
 //! playthrough, else creates one, so a fresh campaign never scribbles over the previous
 //! one.
 //!
-//! SHUTDOWN SAVE IS ONCE-PER-SESSION. The engine raises OnGameEnd twice on a dedicated
-//! server shutdown (measured by the Overthrow mod, 2026-08-04). The once-only guard
-//! makes the second pass a no-op instead of a rejected request after saving was
-//! disabled.
+//! SHUTDOWN SAVE IS ENGINE-OWNED. The engine requests the SHUTDOWN save point
+//! itself on graceful exit (main menu / dedicated-server shutdown); the
+//! SaveGameManager rejects manual save requests made from OnGameEnd because the
+//! persistence system is already tearing down by then. This component only
+//! marks the session as ending and reports the engine's save result through
+//! OnAfterSave, plus a fail-safe error when the session ends without one.
 //!
 //! FAIL-SAFE. Every gate failure logs an EL_Debug message under the "Persistence"
 //! feature and rejects that one request. A client, a Workbench editor world, or a
@@ -60,9 +63,17 @@ class EL_PersistenceManagerComponent : ScriptComponent
 	//! session that never ran.
 	protected bool m_bGameStarted;
 
-	//! True once the shutdown save has been asked for. The engine can raise OnGameEnd
-	//! twice per session; the second pass must not ask again.
+	//! True once the session end has been processed. The engine can raise OnGameEnd
+	//! twice per session (dedicated-server shutdown); the second pass must not repeat
+	//! the once-only bookkeeping.
 	protected bool m_bShutdownSaveRequested;
+
+	//! True from OnGameEnd until a SHUTDOWN save result arrives through OnAfterSave
+	//! or the persistence system shuts down. Drives the fail-safe error.
+	protected bool m_bSessionEnding;
+
+	//! True once a SHUTDOWN save result (any outcome) was reported this session.
+	protected bool m_bShutdownSaveObserved;
 
 	//! Cached answer to "does a save point exist for this mission?". Seeded by an async
 	//! GetSaves() scan in OnPostInit and kept current by OnAfterSave, which fires for
@@ -206,22 +217,6 @@ class EL_PersistenceManagerComponent : ScriptComponent
 			return;
 		}
 
-		m_PersistenceSystem = SCR_PersistenceSystem.GetScriptedInstance();
-		if (!m_PersistenceSystem)
-		{
-			// Not fatal for the SaveGameManager half, but nothing will serialize. The
-			// Workbench editor world legitimately has no game systems; an ERROR there reads
-			// as a broken config, so it is a warning here.
-			EL_Debug.Warn("Persistence", "no SCR_PersistenceSystem for this world - check the SCR_PersistenceSystem entry in Configs/Systems/ChimeraSystemsConfig.conf");
-		}
-		else
-		{
-			m_PersistenceSystem.GetOnStateChanged().Insert(OnPersistenceStateChanged);
-			m_PersistenceSystem.GetOnBeforeSave().Insert(OnBeforeSave);
-			m_PersistenceSystem.GetOnAfterSave().Insert(OnAfterSave);
-			EL_Debug.Info("Persistence", "resolved SCR_PersistenceSystem, subscribed to save events");
-		}
-
 		m_GameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		if (m_GameMode)
 		{
@@ -229,7 +224,31 @@ class EL_PersistenceManagerComponent : ScriptComponent
 			m_GameMode.GetOnGameEnd().Insert(OnGameEnd);
 		}
 
+		// The persistence system is created from the world systems config; it may not
+		// exist yet at entity init, so the authoritative resolution happens when the
+		// game mode starts. This fast path covers worlds where it is already up.
+		TryResolvePersistenceSystem();
+
 		RefreshSaveCache();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Resolves and subscribes to the persistence system, at most once. Callable from
+	//! OnPostInit (system may not exist yet) and again from OnGameModeStart (system is
+	//! guaranteed present when the world is configured for it).
+	protected void TryResolvePersistenceSystem()
+	{
+		if (m_PersistenceSystem)
+			return;
+
+		m_PersistenceSystem = SCR_PersistenceSystem.GetScriptedInstance();
+		if (!m_PersistenceSystem)
+			return;
+
+		m_PersistenceSystem.GetOnStateChanged().Insert(OnPersistenceStateChanged);
+		m_PersistenceSystem.GetOnBeforeSave().Insert(OnBeforeSave);
+		m_PersistenceSystem.GetOnAfterSave().Insert(OnAfterSave);
+		EL_Debug.Info("Persistence", "resolved SCR_PersistenceSystem, subscribed to save events");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -257,14 +276,24 @@ class EL_PersistenceManagerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Called by the game mode's OnGameStart invoker: starts the repeating autosave timer.
-	//! Runs once per world no matter how many start paths fire.
+	//! Called by the game mode's OnGameStart invoker: resolves the persistence system
+	//! for real (the world is fully up), starts the repeating autosave timer. Runs
+	//! once per world no matter how many start paths fire.
 	protected void OnGameModeStart()
 	{
 		if (m_bGameStarted)
 			return;
 
 		m_bGameStarted = true;
+
+		TryResolvePersistenceSystem();
+		if (!m_PersistenceSystem)
+		{
+			// The world systems config lacks SCR_PersistenceSystem. Nothing will
+			// serialize; saving is broken for this server, say so loudly.
+			EL_Debug.Error("Persistence", "no SCR_PersistenceSystem at game start - the world systems config is missing the SCR_PersistenceSystem entry");
+		}
+
 		StartAutosaves();
 	}
 
@@ -375,8 +404,11 @@ class EL_PersistenceManagerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Called by the game mode's OnGameEnd invoker: requests the shutdown save, once per
-	//! session. The request is BLOCKING so it completes before session teardown.
+	//! Called by the game mode's OnGameEnd invoker, once per session. The engine writes
+	//! the SHUTDOWN save point itself on graceful exit; a manual request from here
+	//! lands after the persistence system starts tearing down and is rejected, so this
+	//! only marks the session as ending and lets OnAfterSave / the state-change
+	//! fail-safe report the engine's outcome.
 	protected void OnGameEnd()
 	{
 		if (m_bShutdownSaveRequested)
@@ -389,8 +421,8 @@ class EL_PersistenceManagerComponent : ScriptComponent
 		}
 
 		m_bShutdownSaveRequested = true;
-		EL_Debug.Info("Persistence", "session ending, requesting shutdown save");
-		RequestSavePoint(ESaveGameType.SHUTDOWN);
+		m_bSessionEnding = true;
+		EL_Debug.Info("Persistence", "session ending, engine shutdown save expected");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -626,7 +658,7 @@ class EL_PersistenceManagerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The single save path behind SaveGame() / OnGameEnd() / AutoSave().
+	//! The single save path behind SaveGame() / AutoSave().
 	//! \param saveType Which kind of save point to ask for.
 	protected void RequestSavePoint(ESaveGameType saveType)
 	{
@@ -638,11 +670,10 @@ class EL_PersistenceManagerComponent : ScriptComponent
 
 		SaveGameManager manager = GetGame().GetSaveGameManager();
 
-		// Vanilla gates a blocking save to outside a replication session, where a hitch
-		// costs nobody else. The shutdown save is the exception: the session is ending
-		// either way, and an async request would be torn down before it completes.
+		// Vanilla gates a blocking save to outside a replication session, where a
+		// hitch costs nobody else.
 		ESaveGameRequestFlags flags;
-		if (RplSession.Mode() == RplMode.None || saveType == ESaveGameType.SHUTDOWN)
+		if (RplSession.Mode() == RplMode.None)
 			flags = ESaveGameRequestFlags.BLOCKING;
 
 		m_bSaveInProgress = true;
@@ -716,6 +747,9 @@ class EL_PersistenceManagerComponent : ScriptComponent
 			typename.EnumToString(EPersistenceSystemState, oldState),
 			typename.EnumToString(EPersistenceSystemState, newState)));
 
+		if (newState == EPersistenceSystemState.SHUTDOWN && m_bSessionEnding && !m_bShutdownSaveObserved)
+			EL_Debug.Error("Persistence", "session ended without a shutdown save - the engine wrote none on this exit path");
+
 		if (newState != EPersistenceSystemState.ACTIVE)
 			return;
 
@@ -741,6 +775,9 @@ class EL_PersistenceManagerComponent : ScriptComponent
 	//! \param success Whether it succeeded.
 	protected void OnAfterSave(ESaveGameType saveType, bool success)
 	{
+		if (saveType == ESaveGameType.SHUTDOWN)
+			m_bShutdownSaveObserved = true;
+
 		if (success)
 		{
 			m_bHasSaveGame = true;

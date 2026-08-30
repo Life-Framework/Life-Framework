@@ -54,6 +54,7 @@ tools\cli serve               # boot the test server and stream logs (blocks)
 tools\cli ci                  # validate + build + test — the full gate
 tools\cli validate            # repo consistency checks (also runs on commit)
 tools\cli lint                # run tools/lint/* checks
+tools\cli regen-localization  # rebuild runtime .conf tables from Language/*.st
 tools\cli mcp install|update|verify|enable|disable   # manage MCP servers
 ```
 
@@ -116,6 +117,11 @@ worktree drifts to another branch, `cli wt test/build/ship` refuse and
 `cli wt sync` checks it back out.
 
 ## Debug logging and the fail-safe rule
+
+Before investigating any console line, check `docs/debug-log-triage.md` — it
+classifies every known DebugWorld boot message (fixed bug, benign vanilla
+noise, by-design) so a session does not re-prove what a previous one already
+ruled out. Add new messages there in the same change that explains them.
 
 Every feature logs its state transitions through `EL_Debug`
 (`Scripts/Game/Core/EL_Debug.c`) so any headless or play run is greppable by
