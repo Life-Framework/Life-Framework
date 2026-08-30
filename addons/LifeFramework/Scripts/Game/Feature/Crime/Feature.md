@@ -21,13 +21,17 @@ isn't today — see current state).
 
 ## V1 (shippable)
 
-1. Fix the wanted-bump reliability: `GetPlayerAccount` is cache-only, so after
-   the first robbery the wanted increase is skipped (account cache churn in
-   `Account`). The most repeatable crime must still escalate.
-2. Stop the police alert firing from inside the counting predicate (it spams
-   on every offer refresh) — alert once, at the decision.
-3. Fix `#EL-Stole_Money` (no `%1`, amount dropped) and the hard-coded
-   "ALERTA POLICIAL" in `EL_RobWeaponAction.AlertPolice`.
+1. Wanted-bump reliability — DONE (verified 2026-08-30): the account cache
+   churn was fixed (`SaveAndReleaseAccount` keeps the account resident), so
+   every robbery escalates wanted. Pin test `crime/rob-wanted-clamp`.
+2. Robbery payout pays **cash**, never the bank (verified 2026-08-30) — the
+   `EL_ATMManager.Deposit` in `EL_RobAction` is gone; the haul is
+   `EL_MoneyUtils.AddCash`. Pin test `crime/rob-reward` asserts the bank
+   balance stays 0.
+3. Stop the police alert firing from inside the counting predicate (it spams
+   on every offer refresh) — alert once, at the decision — pending.
+4. Fix `#EL-Stole_Money` (no `%1`, amount dropped) and the hard-coded
+   "ALERTA POLICIAL" in `EL_RobWeaponAction.AlertPolice` — pending.
 
 ## Iteration path
 
@@ -38,8 +42,9 @@ isn't today — see current state).
 ## Current state
 
 - `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction`
-  (`Feature/Crime/`) — cash/weapon/vehicle robbery. ⚠️ near-duplicated guard
-  logic across all three; alert spam; localization broken.
+  (`Feature/Crime/`) — cash/weapon/vehicle robbery. ✅ cash payout + wanted
+  bump work; ⚠️ near-duplicated guard logic across all three; alert spam;
+  localization broken.
 - Wanted state lives on `Account`.
 
 ## Dependencies

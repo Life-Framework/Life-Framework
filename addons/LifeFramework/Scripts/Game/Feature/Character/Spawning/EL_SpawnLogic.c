@@ -43,9 +43,11 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Re-creates the player's character after death.
-	//! The old persistence-framework base respawned one frame after OnPlayerKilled_S; this game mode
-	//! has no respawn menu, so without this hook a dead player is stranded forever.
+	//! Death: leave the body where it fell and let the player respawn through the death
+	//! screen. The corpse keeps everything it carried and is only removed by a server
+	//! restart or cleanup - it is never deleted here. NotifyReadyForSpawn opens the
+	//! death screen on the owning client; the player's Respawn button re-runs
+	//! RespawnPlayer_S.
 	//! \param playerId The player who died.
 	//! \param playerEntity The dead body.
 	//! \param killerEntity The killer, may be null.
@@ -54,15 +56,17 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	{
 		super.OnPlayerKilled_S(playerId, playerEntity, killerEntity, killer);
 
-		// Fresh character spawn (NOTE: We need to push this to next frame due to a bug where on the
-		// same death frame we can not hand over a new char).
-		GetGame().GetCallqueue().Call(RespawnPlayer, playerId);
+		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
+		if (respawn)
+			respawn.NotifyReadyForSpawn_S();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Poll of the death respawn: resolves the player's account and creates their character.
+	//! Server entry for the death-screen respawn: resolves the player's account and creates
+	//! their character. Called from the client's RpcAsk_EL_Respawn; the dead body is left
+	//! untouched in the world.
 	//! \param playerId The player to respawn.
-	protected void RespawnPlayer(int playerId)
+	void RespawnPlayer_S(int playerId)
 	{
 		string playerUid = EL_Utils.GetPlayerUID(playerId);
 		if (playerUid.IsEmpty())
@@ -144,7 +148,11 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		}
 
 		vector position, yawPitchRoll;
-		GetCreationPosition(playerId, characterPersistenceId, position, yawPitchRoll);
+		if (!GetCreationPosition(playerId, characterPersistenceId, position, yawPitchRoll))
+		{
+			EL_Debug.Error("Spawn", "aborting spawn for player " + playerId + ": no spawn position could be resolved");
+			return;
+		}
 
 		EntitySpawnParams spawnParams();
 		spawnParams.TransformMode = ETransformMode.WORLD;
@@ -164,16 +172,22 @@ class EL_SpawnLogic : SCR_SpawnLogic
 
 	//------------------------------------------------------------------------------------------------
 	//! Picks the spawn position and orientation for a player character.
-	protected void GetCreationPosition(int playerId, string characterPersistenceId, out vector position, out vector yawPitchRoll)
+	//! \return false when no spawn point could be resolved. The caller must abort the spawn
+	//!         rather than place the character at a default origin.
+	protected bool GetCreationPosition(int playerId, string characterPersistenceId, out vector position, out vector yawPitchRoll)
 	{
+		position = "0 0 0";
+		yawPitchRoll = "0 0 0";
+
 		SCR_SpawnPoint spawnPoint = ResolveSpawnPoint(playerId);
 		if (!spawnPoint)
 		{
 			EL_Debug.Error("Spawn", "could not spawn character, no spawn point on the map");
-			return;
+			return false;
 		}
 
 		spawnPoint.GetPositionAndRotation(position, yawPitchRoll);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

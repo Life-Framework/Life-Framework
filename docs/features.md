@@ -1,9 +1,19 @@
 # Life Framework — Implemented Features & Contracts
 
 > Ground truth of what the codebase currently contains and what each system is
-> supposed to do. Written from a read-only sweep of
-> `addons/LifeFramework/Scripts/Game/` (2026-08-29). Every claim carries a
-> file path. This is the contract test cases must prove.
+> supposed to do. First written from a read-only sweep of
+> `addons/LifeFramework/Scripts/Game/` (2026-08-29); rows marked **verified
+> 2026-08-30** were re-audited against current code during the P0 ship-blocker
+> pass. Every claim carries a file path. This is the contract test cases must
+> prove.
+>
+> **Keep this file current.** It is the doc every agent reads to know what a
+> system does. Update the affected feature's rows in the SAME change that
+> alters the system — a stale row reads as "broken" and wastes the next
+> agent's whole session (the 2026-08-29 sweep claimed several already-fixed
+> exploits were live; that gaslight is what this note prevents).
+> `tools\cli validate` runs `validate-docs-sync.ps1`, which warns when feature
+> code changes without this file changing.
 >
 > **Status legend per feature:** ✅ implemented (what "working" means), ⚠️
 > known-fragile/untested contract, ❌ known bug or broken path.
@@ -23,18 +33,21 @@
   storage fill).
 - ✅ `ResolveSpawnPoint` (static) picks `SCR_SpawnPoint` by account faction key;
   shared with the character-creation flow so both spawn paths land in the same
-  area.
-- ⚠️ `GetCreationPosition` leaves `out` params unset when no spawn point
-  exists; item is silently dropped if no matching storage; loadout recursion
-  has no depth guard.
+  area. Verified 2026-08-30.
+- ✅ **No-spawn-point fail-safe** (verified 2026-08-30): `GetCreationPosition`
+  returns `bool` and `CreateCharacter` aborts the spawn with an
+  `EL_Debug.Error` instead of dropping the player at world origin.
+- ⚠️ Item is silently dropped if no matching storage; loadout recursion has no
+  depth guard.
 
 ### `EL_CharacterCreationManager` — `Feature/CharacterCreation/EL_CharacterCreationManager.c`
-- ✅ Flow: no account → create → faction menu → character creation menu →
+- ✅ Flow: no account → create → faction menu → spawn-location picker →
   spawn. `OnCharacterCreated` persists a character, inits ATM + survival
   components, spawns.
-- ❌ Uses placeholder prefab GUID `{YourTempCharacterPrefab}` and hard-coded
-  coordinates (`"0 0 0"`, `"1000 0 1000"`). The temp-character path will fail
-  if reached.
+- ✅ Real character prefab + real coordinates (verified 2026-08-30): the old
+  `{YourTempCharacterPrefab}` placeholder and hard-coded `"0 0 0"`/
+  `"1000 0 1000"` are gone; `CreateAndSpawnDefaultCharacter` uses
+  `{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et`.
 
 ### `EL_CharacterCreationMenu` — `Feature/CharacterCreation/EL_CharacterCreationMenu.c`
 - ✅ Validates first/last name non-empty and age in `[18, 80]`, then calls
@@ -67,8 +80,8 @@
   clamped setters. `UpdateStats(dt)`: hunger `-dt*0.1`, thirst `-dt*0.15`,
   and if hunger or thirst `< 20`, health `-dt*0.05`. `Create(id)` starts all
   at 100.
-- ⚠️ No recovery (health only ever falls); negative `dt` heals; no
-  death/zero-health handling at the state level.
+- ⚠️ No recovery (health only ever falls); negative `dt` heals. Zero health
+  hands off to the death flow below (survival does not model a down-state).
 
 ### `EL_CharacterSurvivalComponent` — `Feature/Survival/EL_CharacterSurvivalComponent.c`
 - ✅ Per-frame decay driver; async-loads stats by character id; null-guards
@@ -82,6 +95,18 @@
 ### `EL_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
 - ✅ Save/apply round-trip re-clamps through setters (corrupt save sanitized).
 - ⚠️ `Equals` uses exact float `==` (no epsilon).
+
+### Death & Respawn — `Feature/Character/Spawning/`
+- ✅ **Death is defined** (verified 2026-08-30): the dead body stays in the
+  world with everything it carried — it is never deleted by the spawn flow and
+  is only removed by a server restart or world cleanup.
+- ✅ **Respawn via the death screen**: `EL_SpawnLogic.OnPlayerKilled_S` no
+  longer auto-respawns; it calls `NotifyReadyForSpawn_S`, the client opens
+  `EL_DeathScreen` (workspace widget), and its Respawn button runs
+  `SCR_RespawnComponent.RpcAsk_EL_Respawn` → `EL_SpawnLogic.RespawnPlayer_S`
+  (account-aware, re-applies the faction loadout).
+- ⚠️ Body persistence until restart is default-engine behavior (no explicit
+  corpse-cleanup control in this mod yet) — verify on a dedicated server.
 
 ## Account & Persistence
 
@@ -99,11 +124,10 @@
   generates a persistence id.
 
 ### `EL_PlayerAccountManager` — `Feature/Account/EL_PlayerAccountManager.c`
-- ✅ Async load + cache + `SaveAndReleaseAccount` (pause, save, evict).
-- ⚠️ **Cache-eviction churn**: every crime, duty toggle, arrest, and fine
-  evicts the account; the next `GetAccount` returns null until an async
-  reload, so consecutive wanted-level bumps and the police menu silently
-  degrade after the first event per player.
+- ✅ Async load + cache + `SaveAndReleaseAccount`. Verified 2026-08-30:
+  `SaveAndReleaseAccount` now keeps the account resident, so consecutive
+  wanted bumps and police-menu reads do not lose the account mid-session
+  (the old evict-on-write churn is gone).
 
 ### `EL_PlayerAccountSaveData` — `Feature/Account/Persistence/`
 - ✅ Field-for-field round trip of account state; `Equals` is
@@ -120,51 +144,54 @@
   Remove/Take.
 
 ### `EL_BankAccount` + `EL_ATMManager` — `Feature/ATM/`
-- ✅ Persistent per-player balance; `Deposit` only if `>0`, `Withdraw` only if
-  sufficient, returns success; balance never negative through these paths.
-  Manager is a session map registry + async loader.
+- ✅ **The canonical bank** (verified 2026-08-30): every payout in the game pays
+  cash; `EL_ATMManager` + `EL_BankAccount` (per-player, keyed by UID, persisted)
+  is the only bank, and the ATM is the only cash↔account boundary.
+  `Deposit` only if `>0`, `Withdraw` only if sufficient; balance never negative
+  through these paths. Manager is a session map registry + async loader.
 - ⚠️ `SetBalance` (persistence path) has no clamp. `CreateAccount` silently
-  overwrites an existing account. Manager inherits `ScriptedUserAction`
-  (misfit).
+  overwrites an existing account.
 
 ### `EL_ATMMenu` — `Feature/ATM/EL_ATMMenu.c`
-- ❌ **Money from thin air**: Deposit never deducts cash from inventory,
-  Withdraw never pays out. Explicit placeholder. No RPC path; buttons are
-  server-guarded so a client does nothing. No insufficient-funds feedback.
-  `WidgetLocalize` returns the key verbatim (not localized).
+- ✅ **Cash moves** (verified 2026-08-30): the menu forwards through
+  `EL_CharacterATMComponent.RequestDeposit/RequestWithdraw`, and the server
+  RPC handlers `RpcAsk_Deposit`/`RpcAsk_Withdraw` remove cash on deposit
+  (partial removals rolled back) and pay cash out on withdraw (all-or-nothing
+  with balance restore), guarded by `EL_ATMManager.IsValidAmount`. No money
+  from thin air.
 
-### `EL_BankAccountComponent` — `Feature/Banking/EL_BankAccountComponent.c`
-- ✅ Entity bank with replicated balance, interest, transaction history
-  (capped 100), Deposit/Withdraw/Transfer with guards, per-change EPF save.
-- ❌ **Grants $20,000 to every owner in `OnPostInit`** and races persistence
-  restore. RplProp + `BumpMe` on every change, unthrottled. `PAYMENT`/
-  `REFUND` transaction types never emitted. **This is a second, unintegrated
-  banking system alongside `EL_ATMManager`.**
+### `EL_BankAccountComponent` — `Feature/Banking/` (deleted 2026-08-30)
+- ❌ The second, unintegrated entity bank is **gone** (file deleted, no
+  references remain). The $20k grant, the persistence race, and the duplicate
+  money path died with it.
 
 ### `EL_ShopComponent` — `Feature/Shop/EL_ShopComponent.c`
-- ✅ Catalog-driven buy: `BuyItem(item, qty, buyer)` guards null/qty/max,
-  server-only, price × quantity, `EL_MoneyUtils.RemoveAmount`, refund on
+- ✅ Catalog-driven buy: `BuyItem(item, qty, buyer)` guards null/qty, server-
+  only, price × quantity, `EL_MoneyUtils.RemoveAmount`, refund on
   inventory-full.
-- ❌ **Money exploit**: insufficient-funds check treats partial `RemoveAmount`
-  as full success (buyer with $50 buys a $100 item); refund credits the full
-  price even when only part was removed. No shop stock (infinite supply).
-  No validation the item is actually sold by that shop.
+- ✅ **Money correctness** (verified 2026-08-30): the partial-funds exploit is
+  closed — `BuyItem` compares the actual removed amount against the total and
+  refunds only what was removed before failing (a $50 buyer cannot buy a $100
+  item), and a partial delivery refunds only the undelivered quantity.
+  `SellItem` pays cash only after the goods are confirmed removable and
+  claws back overpayments. `IsItemSoldHere` gates buy and sell.
+- ⚠️ No shop stock (infinite supply). Client→server bridge
+  (`EL_CharacterShopComponent.RpcAsk_Buy/Sell`) does not enforce a max
+  quantity per item.
 
 ### `EL_ShopMenu` / `EL_ShopAction` — `Feature/Shop/`
 - ✅ List UI; action opens menu within 3 m.
 - ⚠️ Menu always opens for the local player regardless of who interacted.
 
 ### `EL_TraderManagerComponent` + `EL_InventoryStorageManagerComponent` — `Components/InventorySystem/`
-- ✅ Sell-to-trader: inserting into a trader-owned storage deletes the item
-  and deposits `m_ValuePerItem` into the seller's ATM account; black-market
-  rejects non-civilian factions.
-- ❌ Unguarded `pStorageFrom.GetOwner()` (null crash); null `m_aTradableItems`
-  foreach crash; delete-then-pay not atomic; quantity stacks sell as one
-  item; `RETCODE_ITEM_TOO_BIG` used for "not tradable"; black-market check
-  likely fails open (account keyed by Steam UID here vs character ID in the
-  caller); sell payout goes to ATM bank, not cash.
-- ❌ Debug `Print("testtesttest")` in
-  `EL_RestrictedInventoryStorageComponent.CanStoreItem`.
+- ✅ Sell-to-trader pays **cash** (verified 2026-08-30): inserting into a
+  trader-owned storage pays `unitValue × stackSize` via `EL_MoneyUtils.AddCash`
+  (pay-before-delete, clawed back if the item cannot be removed); black-market
+  rejects non-civilian factions. The old "payout to ATM bank" and the
+  `Print("testtesttest")` debug line are gone.
+- ⚠️ Unguarded `pStorageFrom.GetOwner()` (null crash); null `m_aTradableItems`
+  foreach crash; delete-then-pay not atomic; `RETCODE_ITEM_TOO_BIG` used for
+  "not tradable"; black-market check fails closed but is only cache-keyed.
 
 ## Gathering / Processing / Resources
 
@@ -195,18 +222,24 @@
 - ✅ Per-player job state, paycheck clock (`salary * (1 + (playerLevel-1)*0.05)`,
   `Math.Round`), per-job level/XP maps, license gates (POLICE→POLICE_ACCESS,
   MEDIC→MEDIC_ACCESS), client→server `RpcAsk_SetJob` re-validates licenses.
-- ❌ **`RpcAsk_ClaimFruitCatcherReward` mints unbounded fruit + XP** (only
-  `score <= 0` checked). **`RpcAsk_DebugGrantLicense` is a live backdoor**
-  granting any license. Whitelist branch in `SetJob` is dead (only POLICE is
-  restricted and it is special-cased). `AddExperience` is a no-op, so
-  `OnLevelUp` can never fire. Hard-coded Spanish strings (not localized).
-  Per-job level/XP persistence is convention-only, no SaveData pair.
+- ✅ **Fruit-catcher mint closed** (verified 2026-08-30): the server clamps any
+  claimed score through `EL_GetFruitCatcherRewardCount` to
+  `EL_FRUIT_CATCHER_MAX_SCORE` (100); pin test `security/fruitcatcher-reward-clamp`.
+- ✅ **Debug-license backdoor removed** (verified 2026-08-30): `RpcAsk_DebugGrantLicense`
+  no longer exists anywhere in `Scripts/Game`.
+- ✅ **Paychecks pay cash** (verified 2026-08-30): `ProcessPaycheck` uses
+  `EL_MoneyUtils.GiveCash`; the old `EL_BankAccountComponent` deposit branch is
+  gone (that entity bank is deleted). The only cash↔account boundary is the ATM.
+- ⚠️ Whitelist branch in `SetJob` is dead (only POLICE is restricted and it is
+  special-cased). `AddExperience` is a no-op, so `OnLevelUp` can never fire.
+  Hard-coded Spanish strings (not localized). Per-job level/XP persistence is
+  convention-only, no SaveData pair.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ Singleton reward funnel; currently `GetGatherReward`/`GetProcessReward`
   return 0 (sell to traders instead). Dead-but-safe.
-- ⚠️ `GiveReward` unreachable; no null-check on `EL_ATMManager.GetInstance()`;
-  `#EL-Job_Earned` misused as a format string (no `%1`).
+- ⚠️ `GiveReward` pays cash when reached (verified 2026-08-30) but the funnel
+  is unreachable today; `#EL-Job_Earned` misused as a format string (no `%1`).
 
 ### `EL_PlayerLevelComponent` — `Feature/Level/EL_PlayerLevelComponent.c`
 - ✅ Level/XP/skill-point state; `GetExperienceForNextLevel = level * 100`;
@@ -230,29 +263,37 @@
 ### `EL_WhitelistManager` — `Feature/Whitelist/EL_WhitelistManager.c`
 - ✅ Pure static in-memory whitelists; `IsFactionRestricted` (POLICE,
   MILITARY, MAFIA), `IsJobRestricted` (POLICE only), add/remove/get.
-- ❌ **`EL_EFactionType` is referenced 16× but defined nowhere in the repo**
-  — the file cannot compile as-is unless that type lives in another addon.
-  No persistence (resets every server start). Getter returns the live
-  internal array (callers can mutate without logging).
+- ✅ **Compiles** (verified 2026-08-30): `enum EL_EFactionType` is now defined
+  in this file (CIVILIAN/POLICE/MILITARY/MAFIA).
+- ⚠️ No persistence (resets every server start). Getter returns the live
+  internal array (callers can mutate without logging). The faction-selection
+  flow does not yet consult `IsWhitelistedForFaction` — anyone can pick
+  POLICE on first join; gating it requires admin tooling first (a fresh
+  server would otherwise have no police at all).
 
 ## Crime & Police
 
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
   gates; raises wanted level (+1/+2/+3); notifies police.
+- ✅ **Cash payout + reliable wanted bump** (verified 2026-08-30): the haul is
+  `EL_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
+  asserts the bank balance stays 0), and the account cache churn is fixed so
+  every robbery escalates wanted (pin test `crime/rob-wanted-clamp`).
 - ⚠️ Near-duplicated guard logic across all three. Police-alert fires from
   *inside* the counting predicate (spam on every offer refresh). `#EL-Stole_Money`
-  has no `%1` placeholder (amount dropped). `GetPlayerAccount` is cache-only,
-  so after the first rob the wanted bump is skipped (see account cache
-  churn). `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
+  has no `%1` placeholder (amount dropped). `EL_RobWeaponAction.AlertPolice`
+  hardcodes "ALERTA POLICIAL".
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
-- ✅ Wanted list; `ArrestPlayer` (teleport to jail, wanted→0, save) and
-  `FinePlayer` (remove cash, wanted −amount/1000) are server-guarded.
-- ❌ **Arrest/Fine unreachable from a real client**: the menu runs on the
-  client but both methods early-return unless `Replication.IsServer()`, with
-  no `RpcAsk_*` bridge. `account.GetActiveCharacter()` deref is unguarded.
-  Jail position hard-coded `"0 0 0"`. `#EL-Fined %1!` builds a non-key.
+- ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
+- ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
+  through `SCR_ChimeraCharacter.EL_AskPoliceArrest/Fine`, and the server
+  handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
+  target, and fine range before acting. `EL_PoliceUtils` (pure) holds the
+  jail position, wanted-reduction and fine-range math for tests.
+- ⚠️ RPC handlers still log denials via `Print` (should be `EL_Debug`);
+  `account.GetActiveCharacter()` deref in the wanted list is unguarded.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ Toggles police on-duty flag.
@@ -269,10 +310,12 @@
 ### `EL_NotificationManagerComponent` — `Feature/Notifications/`
 - ✅ Server→client notification broadcast with toast renderer; `SendToPlayer`/
   `SendToJob`/`SendToAll` + static `NotifyPlayer`/`NotifyJob`/`NotifyAll`.
-- ❌ **RPC targeting suspect**: `RPC_ShowNotification` is `RplRcver.Owner` on
-  the game-mode entity, so delivery to the intended player is likely wrong.
-  `SendToJob` conflates "job != UNEMPLOYED" with `account.IsOnDuty()`. Hard-
-  coded Spanish prefixes, emoji in logs, `m_Color` never transmitted.
+- ✅ **Targeted delivery fixed** (verified 2026-08-30): `RpcDo_ShowNotification`
+  is `RplRcver.Broadcast` with a client-side `playerId` filter (`-1` = all),
+  plus a direct call for the listen-server host so the authority sees its own
+  toast. `SendToJob` duty semantics now read the account's `IsOnDuty()`, not a
+  `job != UNEMPLOYED` tautology.
+- ⚠️ Hard-coded Spanish prefixes, emoji in logs, `m_Color` never transmitted.
 
 ## Inventory / Quantity
 
@@ -298,8 +341,9 @@
 - ✅ RPC endpoints for split/transfer/intent (`RPC_EL_RequestQuantitySplit`,
   `RPC_EL_QuantityTransfer`, `RPC_EL_SetTransferIntent`), all server-side,
   range-gated.
-- ⚠️ **Anti-cheat is range-only**: any entity within 10 m can trigger
-  splits/transfers of another player's items. No ownership validation.
+- ✅ **Ownership gate added** (verified 2026-08-30): `EL_CanManipulateOwned`
+  rejects another living player's carried items (only your own storage or
+  unowned containers/ground loot); the old range-only anti-cheat is closed.
 
 ### Hand-Carry — `Feature/Character/Inventory/HandCarry/`
 - ✅ `EL_HandInventoryStorageComponent` state machine
@@ -324,7 +368,8 @@
 
 ### Layouts (loaded by `EL_Test_Data`)
 - ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,
-  `EL_SurvivalHUD`, `FactionSelectionMenu`, `ShopMenu`, `PoliceMenu` load.
+  `EL_SurvivalHUD`, `FactionSelectionMenu`, `ShopMenu`, `PoliceMenu`,
+  `DeathScreen` load (WORLD tier).
 - ⚠️ `EL_DebugMenu` is a DebugWorld-only menu opened with F10 (or its
   rebind), with server-routed controls for cash, wanted state, faction, jobs,
   survival, XP, and skill points. Its RPC rejects non-DebugWorld requests.
@@ -334,16 +379,25 @@
   — the player sees raw keys. Spanish literals throughout jobs/licenses/
   notifications. Violates the AGENTS.md localization contract.
 
-## Cross-cutting risk summary
+## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
-1. **Money exploits**: `EL_ShopComponent.BuyItem` partial-funds + refund
-   over-credit; `EL_ATMMenu` money-from-thin-air; `EL_BankAccountComponent`
-   $20k grant.
-2. **Security**: `RpcAsk_ClaimFruitCatcherReward` mint; `RpcAsk_DebugGrantLicense`
-   backdoor; quantity RPCs range-only; gather/process no server re-validation.
-3. **Persistence**: no version fields; `ApplyTo` wrong enum in
-   `EL_PlayerAccountSaveData`; cache-eviction churn breaks in-session wanted
-   stacking; two unintegrated bank systems.
-4. **Compile risk**: `EL_EFactionType` unresolved in `EL_WhitelistManager`.
-5. **Client/server breaks**: police menu arrest/fine unreachable; notification
-   RPC targeting suspect; hand-carry flow client-only.
+1. **Money — one canonical path, all payouts cash.** The entity bank
+   `EL_BankAccountComponent` is **deleted**; `EL_ATMManager`/`EL_BankAccount`
+   is the only bank and the ATM is the only cash↔account boundary. Paychecks,
+   trader sells, shop sells, robberies and job rewards all pay `EL_MoneyUtils`
+   cash. Shop buy/sell correctness closed (partial refunds), ATM deposit/
+   withdraw moves real cash with rollback. Remaining: no shop stock / per-item
+   max quantity; ATM `SetBalance` unclamped.
+2. **Security — mostly closed.** Fruit-catcher score is server-clamped
+   (pin test); `RpcAsk_DebugGrantLicense` removed; quantity RPCs have an
+   ownership gate. Remaining: gather/process actions have no server-side
+   re-validation in `PerformAction`.
+3. **Persistence — improved.** Cache-eviction churn fixed (account stays
+   resident). Remaining: no save version fields; `ApplyTo` returns the wrong
+   enum in `EL_PlayerAccountSaveData`.
+4. **Compile risk — resolved.** `EL_EFactionType` is defined in
+   `EL_WhitelistManager.c`.
+5. **Client/server breaks — mostly closed.** Police arrest/fine bridge and
+   notification targeting are fixed; the death screen (client) → respawn RPC
+   (server) bridge is new and needs a manual multiplay pass. Remaining:
+   hand-carry holster flow is client-only.

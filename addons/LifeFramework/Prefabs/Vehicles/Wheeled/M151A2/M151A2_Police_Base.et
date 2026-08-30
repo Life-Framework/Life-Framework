@@ -1,6 +1,16 @@
 Vehicle : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
  ID "66E29CE82D9E4231"
  components {
+  EL_LicensePlateManagerComponent "{19BDE70FC62A5348}" {
+   m_Plates {
+    EL_LicensePlatePointInfo "{9270BF3A168CD45E}" {
+     Offset 0 0.8 -1.78
+     Angles 0 180 0
+    }
+   }
+  }
+  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  }
   SCR_VehicleSoundComponent "{55C2E66AD4EF2CA6}" {
    Filenames + {
     "{4D8A2B25FC6C44FA}Sounds/Siren/Vehicles_Siren.acp"

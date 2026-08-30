@@ -1,8 +1,9 @@
-// red-proof: for crime/rob-reward drop the EL_ATMManager.CreateAccount(uid) call
-// and the Deposit assertion goes red (Deposit returns false on an uncreated id);
-// break the expected balance 200 or wanted 1 and the round trip goes red. For
-// crime/rob-wanted-clamp remove the clamp in EL_PlayerAccount.SetWantedLevel and
-// the clamped-at-5 assertion goes red.
+// red-proof: for crime/rob-reward remove the IncreaseWantedLevel(1) call in
+// EL_RobAction.PerformAction and the wanted-1 assertion goes red; deposit
+// m_iMoneyAmount to the robber's ATM account in PerformAction (revert to the
+// old bank payout) and the balance-0 assertion goes red. For
+// crime/rob-wanted-clamp remove the clamp in EL_PlayerAccount.SetWantedLevel
+// and the clamped-at-5 assertion goes red.
 
 // tier: LOGIC
 class EL_Test_RobReward : EL_Test
@@ -17,10 +18,10 @@ class EL_Test_RobReward : EL_Test
 		EL_ATMManager.Reset();
 		EL_PlayerAccountManager.Reset();
 
-		// The DebugWorld RobberyPoint_Money carries m_iMoneyAmount 200; drive the
-		// reward outcome directly at the manager seam because an emulated robber has
-		// no PlayerController (GetPlayerUid returns "") and the police-on-duty gate
-		// needs real connected players.
+		// Drives the LOGIC-testable seams of EL_RobAction.PerformAction: a robbery
+		// raises wanted by 1 and pays cash, never the bank. The cash payout itself
+		// needs a character inventory (WORLD tier, see EL_Test_MoneyCash); here we
+		// pin the contract that the rob no longer deposits into the ATM account.
 		const int MONEY_AMOUNT = 200;
 		string uid = "test-rob-reward";
 
@@ -28,20 +29,18 @@ class EL_Test_RobReward : EL_Test
 
 		EL_ATMManager atmManager = EL_ATMManager.GetInstance();
 		ctx.NotNull(atmManager.CreateAccount(uid), "robber bank account is pre-created under the fixed id");
-		ctx.NotNull(atmManager.GetAccount(uid), "pre-created bank account is reachable");
 
 		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(uid);
 		ctx.NotNull(account, "robber civilian account is created under the fixed id");
 
-		// Replicates EL_RobAction.PerformAction for the emulated robber.
-		ctx.True(atmManager.Deposit(uid, MONEY_AMOUNT), "robbery deposit is accepted on the pre-created account");
+		// Mirrors EL_RobAction.PerformAction: wanted bump + SaveAndReleaseAccount.
 		account.IncreaseWantedLevel(1);
 		EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 
 		EL_BankAccount bank = atmManager.GetAccount(uid);
-		ctx.NotNull(bank, "bank account is reachable after the deposit");
+		ctx.NotNull(bank, "bank account exists");
 		if (bank)
-			ctx.Equal(MONEY_AMOUNT, bank.GetBalance(), "robber bank balance reflects the 200 robbery payout");
+			ctx.Equal(0, bank.GetBalance(), "robbery pays cash, never the bank - balance stays 0");
 
 		EL_PlayerAccount cached = EL_PlayerAccountManager.GetInstance().GetFromCache(uid);
 		ctx.NotNull(cached, "robber account is retained in the cache after SaveAndReleaseAccount");
@@ -75,17 +74,16 @@ class EL_Test_RobRewardWantedClamp : EL_Test
 
 		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(uid);
 
-		// Stack six robberies the way PerformAction does: deposit plus wanted bump.
+		// Stack six robberies the way PerformAction does: cash payout plus wanted bump.
 		for (int i = 0; i < 6; i++)
 		{
-			atmManager.Deposit(uid, MONEY_AMOUNT);
 			account.IncreaseWantedLevel(1);
 		}
 
 		EL_BankAccount bank = atmManager.GetAccount(uid);
 		ctx.NotNull(bank, "bank account exists after repeated robberies");
 		if (bank)
-			ctx.Equal(1200, bank.GetBalance(), "six robberies pay 200 each");
+			ctx.Equal(0, bank.GetBalance(), "repeated robberies never deposit to the bank");
 
 		EL_PlayerAccount cached = EL_PlayerAccountManager.GetInstance().GetFromCache(uid);
 		ctx.NotNull(cached, "account exists after repeated robberies");

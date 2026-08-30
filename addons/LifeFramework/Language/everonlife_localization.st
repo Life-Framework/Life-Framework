@@ -954,7 +954,28 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Fechar"
     Comment "Debug menu close hint"
    }
+   CustomStringTableItem "{4CADF51C9441EA8A}" {
+    Id "EL-Death_Title"
+    Target_en_us "You are dead"
+    Target_de_de "Du bist gestorben"
+    Target_fr_fr "Vous êtes mort"
+    Target_it_it "Sei morto"
+    Target_es_es "Estás muerto"
+    Target_pt_pt "Você morreu"
+    Target_pt_br "Você morreu"
+    Comment "Death screen title"
+   }
+   CustomStringTableItem "{D5A0873EE40176C2}" {
+    Id "EL-Death_Respawn"
+    Target_en_us "Respawn"
+    Target_de_de "Neu starten"
+    Target_fr_fr "Réapparaître"
+    Target_it_it "Ricomparizione"
+    Target_es_es "Reaparecer"
+    Target_pt_pt "Reaparecer"
+    Target_pt_br "Reaparecer"
+    Comment "Death screen respawn button"
+   }
   }
-}
-  }
+ }
 }

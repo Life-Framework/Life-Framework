@@ -15,7 +15,7 @@ tools\cli mcp verify [name]             # prove a server starts
 tools\cli mcp enable|disable <name>     # toggle a server in opencode.json
 tools\cli build                         # headless Workbench build (worktree only)
 tools\cli serve                         # boot the headless test server (blocks, worktree only)
-tools\cli test [--no-build] [--tier fast|all]
+tools\cli test [--no-build] [--tier fast|all|persistence]
                                         # build + boot server + parse ELTEST results (worktree only)
 tools\cli ci                            # validate + build + test (full gate, worktree only)
 tools\cli wt new <feature>              # create worktree + branch + port allocation

@@ -1,0 +1,8 @@
+GenericEntity : "{27EDF8AFC363A7D5}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_underminedarea_pole.et" {
+ ID "50D67C36F4200F97"
+ components {
+  EL_TextLabelComponent "C22EE4C92DD05090" {
+   m_sText "MINING AREA"
+  }
+ }
+}

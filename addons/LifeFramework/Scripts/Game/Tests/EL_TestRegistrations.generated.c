@@ -27,8 +27,13 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_CropPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropStages(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Data(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_DebugAreaBoundary(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_DebugActionValidation(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_DoorLock(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_E2E_Narrative(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_E2E_SaveStateWrite(), EL_TestTier.PERSISTENCE);
+		manager.Register(new EL_Test_E2E_SaveStateVerify(), EL_TestTier.PERSISTENCE);
+		manager.Register(new EL_Test_E2EInventory(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionLoadoutConfig(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionSpawn(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
@@ -57,6 +62,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_AutosaveSelectionBitmask(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionNewest(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PersistenceManagerWiring(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_ScreenshotFailSafe(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FruitCatcherRewardClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopQuantityGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopTotalPrice(), EL_TestTier.LOGIC);
@@ -70,6 +76,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_SpawnLocation(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Survival(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalSaveData(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_TextLabel(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_TraderItemConfig(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ProcessingRecipeConfig(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);

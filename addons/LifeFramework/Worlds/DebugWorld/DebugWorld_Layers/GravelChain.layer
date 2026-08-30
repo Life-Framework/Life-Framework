@@ -1,7 +1,7 @@
-GenericEntity BuilderStand {
+GenericEntity GravelBuilderStand {
  coords 106 0 128
  {
-  GenericEntity DisplayCrate {
+  GenericEntity GravelDisplayCrate {
    components {
     MeshObject "{59670CE9C98E5BAF}" {
      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
@@ -12,9 +12,9 @@ GenericEntity BuilderStand {
      Static 1
     }
    }
-   coords 0 0.9 0
-   Flags 1027
-  }
+coords -2.6 0.9 0.7
+    Flags 1027
+   }
   GenericEntity GravelDisplayItems {
    coords -1.6 0.9 0.7
    {
@@ -27,7 +27,7 @@ GenericEntity BuilderStand {
      }
     }
     $grp GenericEntity : "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et" {
-     Brick_01 {
+     GravelBrick_01 {
       coords -0.15 0 0.15
      }
     }
@@ -37,8 +37,11 @@ GenericEntity BuilderStand {
    {
     coords -1.6 0 0.7
    }
+   {
+    coords -2.6 0 0.7
+   }
   }
-  EL_NpcBaseEntity BuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  EL_NpcBaseEntity GravelBuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {
@@ -49,9 +52,7 @@ GenericEntity BuilderStand {
    }
    coords 0 0 -1.1
   }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords 1.6 0 -0.9
-  }
+
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -75,4 +76,8 @@ GenericEntity : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01_larg
 GenericEntity GravelBag_5A0E821DC5FD2CDB : "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et" {
  coords 105 0 133.5
  angleY -0.058
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 106 0 130
+ m_vSize 2 1 3.5
 }
