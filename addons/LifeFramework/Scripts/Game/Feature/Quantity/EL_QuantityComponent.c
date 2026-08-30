@@ -128,7 +128,7 @@ class EL_QuantityComponent : ScriptComponent
 			if (amount == -1) amount = quantitySource.GetQuantity();
 			if (amount < 0) amount = 0;
 
-			transferred = EL_Utils.MinInt(GetRemainingCapacity(), amount);
+			transferred = EL_Utils.MinInt(quantitySource.GetQuantity(), EL_Utils.MinInt(GetRemainingCapacity(), amount));
 
 			AddQuantity(transferred);
 			quantitySource.AddQuantity(-transferred);

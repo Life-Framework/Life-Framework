@@ -73,7 +73,6 @@ modded class SCR_InventoryMenuUI
 	//------------------------------------------------------------------------------------------------
 	override void MoveItem(SCR_InventoryStorageBaseUI pStorageBaseUI = null)
 	{
-		bool skipMove;
 		IEntity transferEntity;
 		if (m_pSelectedSlotUI)
 		{
