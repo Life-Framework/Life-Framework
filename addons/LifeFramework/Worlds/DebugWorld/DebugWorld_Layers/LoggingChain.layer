@@ -12,9 +12,9 @@ GenericEntity LumberjackStand {
      Static 1
     }
    }
-   coords 0 0.9 0
-   Flags 1027
-  }
+coords -2.6 0.9 0.7
+    Flags 1027
+   }
   GenericEntity LoggingDisplayItems {
    coords -1.6 0.9 0.7
    {
@@ -42,6 +42,9 @@ GenericEntity LumberjackStand {
    {
     coords -1.6 0 0.7
    }
+   {
+    coords -2.6 0 0.7
+   }
   }
   EL_NpcBaseEntity LumberjackNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -54,9 +57,7 @@ GenericEntity LumberjackStand {
    }
    coords 0 0 -1.1
   }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords 1.6 0 -0.9
-  }
+
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -189,4 +190,8 @@ GenericEntity WoodLog_01_Small_5ACEABD58E8C1214 : "{32F5A906D8A573BC}Prefabs/Res
 }
 GenericEntity WoodPlank_5ACEABD590364FAA : "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et" {
  coords 141.5 0 145.5
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 142 0 142.5
+ m_vSize 3 1 4
 }

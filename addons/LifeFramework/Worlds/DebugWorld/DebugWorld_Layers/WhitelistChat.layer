@@ -1,5 +1,5 @@
 GenericEntity WhitelistStation {
- coords 118 0 146
+ coords 160 0 146
  {
   GenericEntity WhitelistSign_Info : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
    coords 0 0.9 0
@@ -30,9 +30,7 @@ GenericEntity WhitelistStation {
    }
    coords 0 0 -1.1
   }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords 1.6 0 -0.9
-  }
+
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -44,4 +42,8 @@ GenericEntity WhitelistStation {
    coords -1.6 0.9 -0.6
   }
  }
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 160 0 146
+ m_vSize 2 1 1.5
 }

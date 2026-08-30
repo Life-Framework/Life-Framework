@@ -12,9 +12,9 @@ GenericEntity MinerStand {
      Static 1
     }
    }
-   coords 0 0.9 0
-   Flags 1027
-  }
+coords -2.6 0.9 0.7
+    Flags 1027
+   }
   GenericEntity MiningDisplayItems {
    coords -1.6 0.9 0.7
    {
@@ -57,6 +57,9 @@ GenericEntity MinerStand {
    {
     coords -1.6 0 0.7
    }
+   {
+    coords -2.6 0 0.7
+   }
   }
   EL_NpcBaseEntity MinerNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -69,9 +72,7 @@ GenericEntity MinerStand {
    }
    coords 0 0 -1.1
   }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords 1.6 0 -0.9
-  }
+
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -139,4 +140,8 @@ $grp GenericEntity : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
  Pickaxe_Debug {
   coords 128 0 144
  }
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 130 0 146
+ m_vSize 7 1 6.5
 }
