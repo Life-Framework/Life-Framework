@@ -236,7 +236,10 @@ class EL_DebugActionUtils
 
 		ResourceName world = header.GetWorldResourceName();
 		if (!world)
+		{
+			EL_Debug.Warn("DebugMenu", "DebugWorld gate failed: mission has no world resource");
 			return false;
+		}
 
 		string worldName = world.GetPath();
 		return worldName.IndexOf("DebugWorld") >= 0;

@@ -11,7 +11,7 @@ FrameWidgetClass {
   TextWidgetClass "{6CFBA74FB0687FCA}" {
    Name "Title"
    Text "#EL-DebugMenu_Title"
-   "Exact Font Size" 34
+   "Font Size" 34
    Slot FrameWidgetSlot "{6F1A50280BCF0E86}" {
     Anchor 0 0 1 0
     OffsetLeft 48
