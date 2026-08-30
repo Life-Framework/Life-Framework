@@ -65,15 +65,6 @@ GameProject {
  TITLE "core"
  Configurations {
   GameProjectConfig PC {
-   ScriptProjectManagerSettings ScriptProjectManagerSettings "{AC4BE58770485E4B}" {
-    Modules {
-     ScriptModulePathClass workbenchGameCommon {
-      Paths {
-       "scripts/WorkbenchGameCommon"
-      }
-     }
-    }
-   }
   }
   GameProjectConfig HEADLESS : PC {
   }
@@ -84,7 +75,7 @@ GameProject {
 $args = @(
   '-gproj', "`"$gproj`"",
   '-addonsDir', "`"$gameAddonsJunction`"",
-  '-wbModule=ScriptEditor', '-wbsilent', '-run',
+  '-wbModule=ScriptEditor', '-run',
   '-validate', 'PC',
   '-exitAfterInit', '-noSplash', '-noThrow'
 )
