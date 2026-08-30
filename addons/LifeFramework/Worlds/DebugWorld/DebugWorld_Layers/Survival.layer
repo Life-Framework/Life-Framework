@@ -70,9 +70,9 @@ GenericEntity SurvivalStation {
         UIInfo UIInfo "{5A4B0B84C86E5849}" {
          Name "Tomar Ciruela"
          Description "Obtener ciruela para restaurar sed y hambre"
-        }
-        m_GatherItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
-        m_GatherAmount 1
+       }
+       m_GatherItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
+       m_GatherAmount 1
        }
       }
      }

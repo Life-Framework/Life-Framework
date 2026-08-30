@@ -55,7 +55,7 @@ GenericEntity WorldActionsStation {
     RplComponent "{59AA93A81C0B22D5}" {
     }
    }
-   coords 0 0.9 0
+    coords 0 0 0
   }
   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {

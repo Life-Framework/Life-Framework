@@ -21,7 +21,7 @@ GenericEntity WhitelistStation {
      }
     }
    }
-   coords -5.235 -1.016 -2.182
+    coords -5.235 0 -2.182
   }
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
@@ -36,6 +36,6 @@ GenericEntity WhitelistStation {
  }
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 116 0 145.5
- m_vSize 4 1 2.5
+  coords 159 0 146
+  m_vSize 5 1 3
 }

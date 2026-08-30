@@ -72,6 +72,6 @@ EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et"
  m_vSize 2 1 1.7
 }
 GenericEntity : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
- coords 112.495 0.321 124.797
+ coords 112.495 0 124.797
  angles 0 -179.853 0
 }

@@ -70,36 +70,36 @@ coords -2.6 0.9 0.7
 }
 $grp GenericEntity : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" {
  TomatoCrop_Debug {
-  coords 130 0 133
+  coords 130 0 134
  }
 }
 $grp SCR_DestructibleBuildingEntity : "{3299E6F34CE40185}Prefabs/Structures/Agriculture/Greenhouse/Greenhouse_01/Greenhouse_01.et" {
  Greenhouse_Debug {
-  coords 133 0 141
+   coords 133 0 134
   angleY 180
  }
 }
 $grp StaticModelEntity : "{4D37CF893371E83B}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_big.et" {
  VegetableBedBig_Debug {
-  coords 130.5 0 145
+   coords 130.5 0 135
  }
 }
 $grp StaticModelEntity : "{7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et" {
  VegetableBedSmall_Debug {
-  coords 133 0 145
+   coords 133 0 135
  }
 }
 $grp GenericEntity : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" {
  TomatoCrop_Bed {
-  coords 130.5 0.35 145
+   coords 130.5 0 135
  }
 }
 $grp GenericEntity : "{97F71E1D9830AE26}Prefabs/Items/Seeds/SeedTomato.et" {
  SeedTomato_Debug {
-  coords 133 0.25 145
+   coords 133 0 135
  }
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 130 0 130
- m_vSize 2.2 1 3.5
+  coords 130 0 131.5
+  m_vSize 3 1 4.5
 }

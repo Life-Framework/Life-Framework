@@ -67,20 +67,20 @@ GenericEntity LumberjackStand {
 }
 $grp GenericEntity : "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylvestris/CuttableTree_Pinus_Sylvestris_2f.et" {
  {
-  coords 134.314 0 165.836
+  coords 141.2 0 145
   angles 0 18.018 0
  }
  {
-  coords 131.57 0 168.71
+  coords 142.5 0 145.6
   angles 0 40 0
  }
  {
-  coords 130.705 0 166.564
+  coords 143.3 0 144.6
   angles 0 -30 0
  }
 }
 GenericEntity : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
- coords 144.2 0.9 140.4
+  coords 144.2 0 140.4
 }
 GenericEntity Axe_5ACCA165954CE408 : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et" {
  components {
@@ -202,6 +202,6 @@ GenericEntity WoodPlank_5ACEABD590364FAA : "{45D1B36F99DD2FC3}Prefabs/Resources/
  coords 141.5 0 145.5
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 138 0 154
- m_vSize 10 1 16
+  coords 142.5 0 143
+  m_vSize 4 1 4.5
 }

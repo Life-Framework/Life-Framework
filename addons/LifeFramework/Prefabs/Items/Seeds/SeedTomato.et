@@ -42,11 +42,11 @@ GenericEntity {
    }
   }
   MeshObject "{59752C6D8F32A642}" {
-   Object "{3B0F9D6E5236E09E}Assets/Items/Seeds/Tomato/tomato_seed.xob"
+   Object "{22BC72961D6E7163}Assets/Items/Food/Tomato/Tomato.xob"
    Materials {
     MaterialAssignClass "{59752C6F16C2140B}" {
-     SourceMaterial "TomatoUVTexture"
-     AssignedMaterial "{1034A71EFE71F158}Assets/Items/Seeds/Tomato/data/TomatoUVTexture.emat"
+     SourceMaterial "Tomato"
+     AssignedMaterial "{AA3F394D188976A6}Assets/Items/Food/Tomato/Data/Tomato.emat"
     }
    }
   }

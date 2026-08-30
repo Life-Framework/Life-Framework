@@ -9,7 +9,10 @@ class EL_Test_E2E_Narrative : EL_Test
 	protected static const ResourceName JACKET_PREFAB = "{9F546CCA2582D16F}Prefabs/Characters/Uniforms/Jacket_M88.et";
 	protected static const ResourceName APPLE_PREFAB = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
 	protected static const ResourceName M9_PREFAB = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
-	protected static const string ACCOUNT_UID = "e2e-uid";
+	// Distinct from EL_Test_E2E_SaveStateWrite's "e2e-uid": both run in the same
+	// all-tier boot against the EL_ATMManager singleton, and a shared uid left
+	// the save-state deposit landing on this test's balance (300 expected, 400).
+	protected static const string ACCOUNT_UID = "e2e-narrative-uid";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()

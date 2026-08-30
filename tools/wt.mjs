@@ -234,8 +234,9 @@ function pidAlive(pid) {
 
 // acquireLock: exclusive-create lock file. waitMs=0 fails fast when held;
 // waitMs>0 polls until it frees or the budget is spent. A lock whose owner
-// process is gone (or that outlives stealMs) is stolen.
-export function acquireLock(root, name, { waitMs = 0, stealMs = 600000, pollMs = 500 } = {}) {
+// process is gone is stolen. Age alone only expires malformed locks; a live
+// build may legitimately run for the full 15-minute Workbench timeout.
+export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500 } = {}) {
   const hub = ensureHub(root);
   const lockFile = join(hub, "locks", `${name}.lock`);
   const started = Date.now();
@@ -248,12 +249,12 @@ export function acquireLock(root, name, { waitMs = 0, stealMs = 600000, pollMs =
       if (e.code !== "EEXIST") throw e;
       try {
         const st = statSync(lockFile);
-        let stale = Date.now() - st.mtimeMs > stealMs;
-        if (!stale) {
-          try {
-            const info = JSON.parse(readFileSync(lockFile, "utf8"));
-            if (info.pid && !pidAlive(info.pid)) stale = true;
-          } catch {}
+        let stale = false;
+        try {
+          const info = JSON.parse(readFileSync(lockFile, "utf8"));
+          stale = !info.pid || !pidAlive(info.pid);
+        } catch {
+          stale = Date.now() - st.mtimeMs > stealMs;
         }
         if (stale) {
           try {
