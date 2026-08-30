@@ -15,8 +15,13 @@ $grp GenericEntity : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_P
  }
 }
 GenericEntity PRFeatureCrate {
- coords 116 0 134
+ coords 131 0 136
  {
+  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   {
+    coords 0 0 0
+   }
+  }
   $grp GenericEntity {
    PRFeatureItems {
     coords 0 0.9 0
@@ -53,4 +58,8 @@ GenericEntity PRFeatureCrate {
    }
   }
  }
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 134 0 136
+ m_vSize 7 1 1.5
+}
 }

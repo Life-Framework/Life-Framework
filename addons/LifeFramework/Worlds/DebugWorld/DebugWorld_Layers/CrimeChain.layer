@@ -2,5 +2,9 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
  coords 150 0 130
 }
 GenericEntity : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
- coords 92.859 0 131.891
+ coords 152 0 130
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 150 0 130
+ m_vSize 3 1 1.5
 }

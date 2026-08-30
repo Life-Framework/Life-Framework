@@ -1,0 +1,15 @@
+GenericEntity {
+ ID "305528B8998E0834"
+ components {
+  MeshObject "{6D1A365D6A5EB613}" {
+   Object "{0F9907AA8308B36F}Assets/Structures/Infrastructure/Benchmarks/SurveyMarker_E_01/SurveyMarker_E_01_pole_blue.xob"
+  }
+  RigidBody "{FB8E5F4420E57DA2}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  RplComponent "{B148F123EF9888FC}" {
+  }
+ }
+}

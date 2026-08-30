@@ -14,7 +14,13 @@ param(
   [int]$PollMs = 2000,
   [string]$Tier = "all",
   [int]$BindPort = 2001,
-  [int]$A2sPort = 17777
+  [int]$A2sPort = 17777,
+  [switch]$KeepProfile,
+  [switch]$LoadLatestSave,
+  [string]$LoadSessionSave,
+  [switch]$GracefulClose,
+  [int]$GracefulCloseSeconds = 30,
+  [string]$ExtraDefine
 )
 
 $ErrorActionPreference = "Stop"
@@ -35,7 +41,9 @@ if (-not (Test-Path -LiteralPath $exe)) {
 }
 
 $profile = Join-Path $root "server\profile\test"
-if (Test-Path $profile) { Remove-Item $profile -Recurse -Force }
+if (-not $KeepProfile) {
+  if (Test-Path $profile) { Remove-Item $profile -Recurse -Force }
+}
 New-Item -ItemType Directory -Force -Path $profile | Out-Null
 
 # addonsDir = repo addon + base game data only (core + data), via a junction so
@@ -77,6 +85,21 @@ $args = @(
 
 if ($Tier -eq "fast") {
   $args += @("-scrDefine", "EL_TEST_TIER_FAST")
+} elseif ($Tier -eq "persistence") {
+  $args += @("-scrDefine", "EL_TEST_TIER_PERSISTENCE")
+}
+
+if (-not [string]::IsNullOrEmpty($ExtraDefine)) {
+  $args += @("-scrDefine", $ExtraDefine)
+}
+
+# PS 5.1 binds an unpassed [string] param to "" not $null, so "provided" must be
+# detected via $PSBoundParameters. -LoadLatestSave appends a bare -loadSessionSave
+# (loads the latest save point); -LoadSessionSave <uuid> targets a specific one.
+if ($LoadLatestSave) {
+  $args += @("-loadSessionSave")
+} elseif ($PSBoundParameters.ContainsKey('LoadSessionSave')) {
+  $args += @("-loadSessionSave", $LoadSessionSave)
 }
 
 Write-Host "test-e2e: launching $exe (tier=$Tier)"
@@ -144,7 +167,17 @@ while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
 }
 
 $alive = -not $p.HasExited
-if ($alive) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+if ($alive) {
+  if ($GracefulClose) {
+    # Let the server close on its own so the blocking shutdown save (OnGameEnd)
+    # completes before process exit; fall back to a force kill on timeout.
+    $gcSw = [Diagnostics.Stopwatch]::StartNew()
+    while (-not $p.HasExited -and $gcSw.Elapsed.TotalSeconds -lt $GracefulCloseSeconds) {
+      Start-Sleep -Milliseconds 1000
+    }
+  }
+  if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+}
 
 $elapsed = [int]$sw.Elapsed.TotalSeconds
 

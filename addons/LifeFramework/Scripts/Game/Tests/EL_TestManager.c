@@ -1,3 +1,10 @@
+enum EL_TestSuiteMode
+{
+	ALL,
+	FAST,
+	PERSISTENCE
+}
+
 class EL_TestManager
 {
 	protected static ref EL_TestManager s_Instance;
@@ -27,11 +34,27 @@ class EL_TestManager
 	//! \return the number of failed tests.
 	int RunAll(bool fast, out string reportXml)
 	{
+		EL_TestSuiteMode mode = EL_TestSuiteMode.ALL;
+		if (fast)
+			mode = EL_TestSuiteMode.FAST;
+
+		return RunSuite(mode, reportXml);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Runs only the tests of one suite mode. FAST runs LOGIC-tier tests only,
+	//! PERSISTENCE runs PERSISTENCE-tier tests only, ALL runs every test.
+	//! Markers and XML shape match RunAll.
+	//! \return the number of failed tests.
+	int RunSuite(EL_TestSuiteMode mode, out string reportXml)
+	{
 		CollectTests();
 
 		string tierName = "all";
-		if (fast)
+		if (mode == EL_TestSuiteMode.FAST)
 			tierName = "fast";
+		else if (mode == EL_TestSuiteMode.PERSISTENCE)
+			tierName = "persistence";
 
 		int failures = 0;
 		int total = 0;
@@ -42,9 +65,15 @@ class EL_TestManager
 
 		foreach (EL_Test test : m_aTests)
 		{
-			if (fast && test.Tier() != EL_TestTier.LOGIC)
+			bool skip = false;
+			if (mode == EL_TestSuiteMode.FAST && test.Tier() != EL_TestTier.LOGIC)
+				skip = true;
+			else if (mode == EL_TestSuiteMode.PERSISTENCE && test.Tier() != EL_TestTier.PERSISTENCE)
+				skip = true;
+
+			if (skip)
 			{
-				PrintFormat("[ELTEST] SKIP %1 (tier=%2, fast run)", EscapeXml(test.GetName()), TierName(test.Tier()));
+				PrintFormat("[ELTEST] SKIP %1 (tier=%2, %3 run)", EscapeXml(test.GetName()), TierName(test.Tier()), tierName);
 				continue;
 			}
 

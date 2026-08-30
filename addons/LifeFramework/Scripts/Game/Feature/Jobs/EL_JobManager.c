@@ -62,12 +62,15 @@ class EL_JobManager : Managed
 	//------------------------------------------------------------------------------------------------
 	protected void GiveReward(IEntity user, int amount)
 	{
-		// Add to bank account
-		EL_ATMManager atmManager = EL_ATMManager.GetInstance();
-		string playerUid = EL_Utils.GetPlayerUid(user);
-		atmManager.Deposit(playerUid, amount);
+		if (amount <= 0 || !user)
+			return;
+
+		// Cash is the only payout; the bank balance moves only through the ATM.
+		int paid = EL_MoneyUtils.GiveCash(user, amount);
+		if (paid != amount)
+			EL_Debug.Warn("Jobs", string.Format("job reward payout short: paid %1 of %2 (player %3)", paid, amount, user));
 
 		// Show notification
-		EL_Utils.Notify(WidgetManager.Translate("#EL-Job_Earned", amount), "#EL-Job_Reward", 3.0);
+		EL_Utils.Notify(WidgetManager.Translate("#EL-Job_Earned", paid), "#EL-Job_Reward", 3.0);
 	}
 };

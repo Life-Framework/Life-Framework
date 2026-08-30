@@ -12,9 +12,9 @@ GenericEntity SandBuilderStand {
      Static 1
     }
    }
-   coords 0 0.9 0
-   Flags 1027
-  }
+coords -2.6 0.9 0.7
+    Flags 1027
+   }
   GenericEntity SandDisplayItems {
    coords -1.6 0.9 0.7
    {
@@ -35,6 +35,9 @@ GenericEntity SandBuilderStand {
    {
     coords -1.6 0 0.7
    }
+   {
+    coords -2.6 0 0.7
+   }
   }
   EL_NpcBaseEntity SandBuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -47,9 +50,7 @@ GenericEntity SandBuilderStand {
    }
    coords 0 0 -1.1
   }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords 1.6 0 -0.9
-  }
+
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -63,9 +64,13 @@ GenericEntity SandBuilderStand {
  }
 }
 GenericEntity : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
- coords 118 0 133
+ coords 118 0 129.5
  angleY -179.853
 }
 GenericEntity Sandbag_5A0E821DC5FD2BE3 : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
- coords 119 0 133.5
+ coords 119 0 130
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 118 0 129
+ m_vSize 2 1 1.7
 }

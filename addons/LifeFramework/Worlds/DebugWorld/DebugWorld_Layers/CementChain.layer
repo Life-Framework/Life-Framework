@@ -3,18 +3,18 @@ GenericEntity CementBuilderStand {
  {
   GenericEntity CementDisplayCrate {
    components {
-    MeshObject "{59670CE9C98E5BAF}" {
-     Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
-    }
+     MeshObject "{59670CE9C98E5BAF}" {
+      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+     }
     RigidBody "{59670CE9C98E5B27}" {
      Mass 10
      ModelGeometry 1
      Static 1
+     }
     }
+    coords -2.6 0.9 0.7
+    Flags 1027
    }
-   coords 0 0.9 0
-   Flags 1027
-  }
   GenericEntity CementDisplayItems {
    coords -1.6 0.9 0.7
    {
@@ -37,6 +37,9 @@ GenericEntity CementBuilderStand {
    {
     coords -1.6 0 0.7
    }
+   {
+    coords -2.6 0 0.7
+   }
   }
   EL_NpcBaseEntity CementBuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -49,9 +52,7 @@ GenericEntity CementBuilderStand {
    }
    coords 0 0 -1.1
   }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords 1.6 0 -0.9
-  }
+
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
@@ -76,10 +77,14 @@ SCR_DestructibleBuildingEntity : "{A92A5F3B79FF56BE}Prefabs/Structures/Industria
  coords 96.2 0.9 128.4
 }
 StaticModelEntity : "{81CB1B2631584427}Prefabs/Props/Construction/CementPile.et" {
- coords 94 0 133
+ coords 94 0 129
  angleY -179.853
 }
 GenericEntity CementBag_5A0E821DC5FD235C : "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et" {
- coords 95 0 133.5
+ coords 95 0 129.5
  angleY -0.072
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 94 0 128.5
+ m_vSize 2.6 1 1.5
 }
