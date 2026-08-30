@@ -1,7 +1,7 @@
-GenericEntity BuilderStand {
+GenericEntity GravelBuilderStand {
  coords 106 0 128
  {
-  GenericEntity DisplayCrate {
+  GenericEntity GravelDisplayCrate {
    components {
     MeshObject "{59670CE9C98E5BAF}" {
      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
@@ -27,7 +27,7 @@ coords -2.6 0.9 0.7
      }
     }
     $grp GenericEntity : "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et" {
-     Brick_01 {
+     GravelBrick_01 {
       coords -0.15 0 0.15
      }
     }
@@ -41,7 +41,7 @@ coords -2.6 0.9 0.7
     coords -2.6 0 0.7
    }
   }
-  EL_NpcBaseEntity BuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  EL_NpcBaseEntity GravelBuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {
