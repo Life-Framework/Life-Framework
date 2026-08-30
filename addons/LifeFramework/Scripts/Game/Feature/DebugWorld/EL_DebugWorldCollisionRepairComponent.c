@@ -39,8 +39,28 @@ class EL_DebugWorldCollisionRepairComponent : ScriptComponent
 			return;
 		}
 
+		#ifdef WORKBENCH
+		GenericWorldEntity worldEntity = GetGame().GetWorldEntity();
+		if (worldEntity)
+		{
+			ScanEntityTree(worldEntity.GetChildren());
+			return;
+		}
+		#endif
+
 		vector center = "256 0 256";
 		world.QueryEntitiesBySphere(center, 500, RepairEntity, null, EQueryEntitiesFlags.ALL);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void ScanEntityTree(IEntity entity)
+	{
+		while (entity)
+		{
+			RepairEntity(entity);
+			ScanEntityTree(entity.GetChildren());
+			entity = entity.GetSibling();
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
