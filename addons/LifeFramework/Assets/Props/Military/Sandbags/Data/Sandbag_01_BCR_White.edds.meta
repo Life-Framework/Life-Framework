@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{A1DB324C454FA218}Sandbag_01_BCR_White.edds"
+ Configurations {
+  EDDSResourceClass PC {
+  }
+  EDDSResourceClass XBOX_ONE : PC {
+  }
+  EDDSResourceClass XBOX_SERIES : PC {
+  }
+  EDDSResourceClass PS4 : PC {
+  }
+  EDDSResourceClass HEADLESS : PC {
+  }
+  EDDSResourceClass PS5 : PC {
+  }
+ }
+}

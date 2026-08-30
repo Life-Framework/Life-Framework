@@ -31,11 +31,11 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
    Materials {
     MaterialAssignClass "{598A687AE4725D3B}" {
      SourceMaterial "Sandbags_01_End"
-     AssignedMaterial "{2392C281DF136B3B}Assets/Props/Military/Sandbags/Data/Sandbags_01_end_Burlap.emat"
+     AssignedMaterial "{9BFC681D034A7E25}Assets/Props/Military/Sandbags/Data/Sandbags_01_end_Burlap_Sandy.emat"
     }
     MaterialAssignClass "{598A687AE4725D25}" {
      SourceMaterial "Sandbags_01_MLOD"
-     AssignedMaterial "{2169E8EB73E1C127}Assets/Props/Military/Sandbags/Data/Sandbags_01_Burlap_MLOD.emat"
+     AssignedMaterial "{5E9431F68C2ABD07}Assets/Props/Military/Sandbags/Data/Sandbags_01_Burlap_MLOD_Sandy.emat"
     }
    }
   }

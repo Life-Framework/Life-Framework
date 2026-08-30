@@ -1,0 +1,5 @@
+MatPBRBasic {
+ RoughnessScale 1.5
+ MetalnessScale 0
+ BCRMap "{6DCE3E39A1AF395C}Assets/Props/Military/Sandbags/Data/Sandbags_01_MLOD_BCR_White.edds"
+}

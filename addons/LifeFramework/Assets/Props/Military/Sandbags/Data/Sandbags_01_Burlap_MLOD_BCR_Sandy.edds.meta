@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{3020F9D24BD4E8DE}Sandbags_01_Burlap_MLOD_BCR_Sandy.edds"
+ Configurations {
+  EDDSResourceClass PC {
+  }
+  EDDSResourceClass XBOX_ONE : PC {
+  }
+  EDDSResourceClass XBOX_SERIES : PC {
+  }
+  EDDSResourceClass PS4 : PC {
+  }
+  EDDSResourceClass HEADLESS : PC {
+  }
+  EDDSResourceClass PS5 : PC {
+  }
+ }
+}

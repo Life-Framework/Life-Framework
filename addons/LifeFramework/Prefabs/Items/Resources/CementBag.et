@@ -28,6 +28,16 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
   }
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{F4A6B9CC408CD0F4}Assets/Props/Military/Sandbags/Sandbag_01_single.xob"
+   Materials {
+    MaterialAssignClass "{598A687AE4725D3B}" {
+     SourceMaterial "Sandbags_01_End"
+     AssignedMaterial "{03E9BF5D78C146A2}Assets/Props/Military/Sandbags/Data/Sandbags_01_end_White.emat"
+    }
+    MaterialAssignClass "{598A687AE4725D25}" {
+     SourceMaterial "Sandbags_01_MLOD"
+     AssignedMaterial "{E379C2A4D86105BF}Assets/Props/Military/Sandbags/Data/Sandbags_01_MLOD_White.emat"
+    }
+   }
   }
   ActionsManagerComponent "{508AB5952B584B2E}" {
    ActionContexts {
