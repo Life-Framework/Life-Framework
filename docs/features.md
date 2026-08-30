@@ -378,9 +378,10 @@
 - ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,
   `EL_SurvivalHUD`, `FactionSelectionMenu`, `ShopMenu`, `PoliceMenu`,
   `DeathScreen` load (WORLD tier).
-- ⚠️ `EL_DebugMenu` is a DebugWorld-only menu opened with F10 (or its
+- ✅ `EL_DebugMenu` is a DebugWorld-only menu opened with F10 (or its
   rebind), with server-routed controls for cash, wanted state, faction, jobs,
-  survival, XP, and skill points. Its RPC rejects non-DebugWorld requests.
+  survival, XP, and skill points. Its RPC rejects non-DebugWorld requests
+  (verified 2026-08-30).
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
