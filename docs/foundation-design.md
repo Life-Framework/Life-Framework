@@ -36,9 +36,9 @@ not the bulk.
 
 Rules that make this stay small:
 
-1. **One way to count money.** Every mutation funnels through one seam. This
-   is the fix for the current two-bank mess (`EL_ATMManager` + `EL_BankAccountComponent`)
-   and the `EL_ATMMenu` money-from-thin-air bug.
+1. **One way to count money.** Every mutation funnels through one seam. The
+   banking merge is complete: `EL_ATMManager` + `EL_BankAccount` is the sole
+   bank, payouts are physical cash, and the ATM owns the cash/account boundary.
 2. **The server recomputes price/eligibility through the same pure call the
    client used** (Overthrow's `OVT_ShopSellRules` doctrine — "four callers, one
    rule set"). Client offer and server authority cannot drift.
@@ -75,17 +75,18 @@ never accumulate. Life's inventory stacks may make this unnecessary for now.
 ### Features we want
 
 - **Cash** = `MoneyStack` inventory item (existing `EL_MoneyUtils` — keep).
-- **One bank** — persistent balance via `EL_ATMManager` + `EL_BankAccount`;
-  `EL_BankAccountComponent` demoted to a per-entity register or deleted. A
-  second, unintegrated bank is a defect, not a feature.
-- **Working ATM RPC path** — Deposit deducts *actual* cash removed; Withdraw
-  pays out *actual* cash placed; insufficient-funds feedback. Currently
-  `EL_ATMMenu` is client-side buttons with no RPC at all.
+- **One bank — DONE (verified 2026-08-30)** — persistent balance via
+  `EL_ATMManager` + `EL_BankAccount`; `EL_BankAccountComponent` is deleted.
+  A second, unintegrated bank is a defect, not a feature.
+- **Working ATM RPC path — DONE (verified 2026-08-30)** — Deposit deducts
+  *actual* cash removed; Withdraw pays out *actual* cash placed; failures roll
+  back; server validates the request.
 - **Money formatting** and the HUD delta ticker (foundation kit).
-- **One authoritative mutation seam**: `Deposit(playerId, amt)`, `Withdraw`,
-  `Transfer(from, to, amt)` returning actual amounts. Every caller (shop, sell,
-  job paycheck, police fine, real estate) goes through it — the single fix for
-  every money-exploit class in `features.md`.
+- **One authoritative account seam**: `Deposit(playerId, amt)` and
+  `Withdraw(playerId, amt)` are called only by the ATM boundary. Payout callers
+  (shop, trader, paycheck, robbery, job reward) use `EL_MoneyUtils` cash and
+  never mutate the bank directly. This is the single fix for the money-exploit
+  class in `features.md`.
 
 ### Primitives
 

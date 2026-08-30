@@ -22,17 +22,21 @@ that activity is what pays (gathering/processing already feed this funnel).
 
 ## V1 (shippable)
 
-1. **Close the security holes**: `RpcAsk_ClaimFruitCatcherReward` mints
-   unbounded fruit + XP (only `score <= 0` checked), and
-   `RpcAsk_DebugGrantLicense` is a live backdoor granting any license. Remove
-   both.
-2. Make `AddExperience` actually add — it is a no-op today, so `OnLevelUp` can
-   never fire.
-3. Fix the dead whitelist branch in `SetJob` (only POLICE is restricted and it
+1. **Security holes — DONE (verified 2026-08-30).** `RpcAsk_ClaimFruitCatcherReward`
+   is server-clamped to `EL_FRUIT_CATCHER_MAX_SCORE` (pin test
+   `security/fruitcatcher-reward-clamp`); `RpcAsk_DebugGrantLicense` is removed.
+2. **Paychecks pay cash** (verified 2026-08-30): `ProcessPaycheck` now uses
+   `EL_MoneyUtils.GiveCash` — the old `EL_BankAccountComponent` deposit branch
+   is gone, and that entity bank is deleted. The only cash↔account boundary is
+   the ATM (`Feature/ATM`). Same for `EL_JobManager.GiveReward`.
+3. Make `AddExperience` actually add — it is a no-op today, so `OnLevelUp` can
+   never fire — pending.
+4. Fix the dead whitelist branch in `SetJob` (only POLICE is restricted and it
    is special-cased) — route job gating through `Whitelist` like every other
-   restricted job.
-4. Localize the hard-coded Spanish strings.
-5. Persist per-job level/XP properly (convention-only today, no SaveData pair).
+   restricted job — pending.
+5. Localize the hard-coded Spanish strings — pending.
+6. Persist per-job level/XP properly (convention-only today, no SaveData pair) —
+   pending.
 
 ## Iteration path
 
@@ -43,15 +47,14 @@ that activity is what pays (gathering/processing already feed this funnel).
 
 ## Current state
 
-- `EL_PlayerJobComponent` — job state, paycheck clock, license gates.
-  ❌ mint + backdoor + dead whitelist + no-op XP + Spanish strings.
+- `EL_PlayerJobComponent` — job state, paycheck clock (cash), license gates.
+  ✅ mint closed, backdoor removed, paycheck pays cash; ⚠️ dead whitelist
+  branch + no-op XP + Spanish strings + per-job XP not persisted.
 - `EL_JobManager` — singleton reward funnel; `GetGatherReward`/
-  `GetProcessReward` return 0 today (dead-but-safe). ⚠️ unreachable
-  `GiveReward`, null `EL_ATMManager.GetInstance()`.
+  `GetProcessReward` return 0 today (dead-but-safe); `GiveReward` pays cash.
 - `EL_JobConfig` — job definitions.
 
 ## Dependencies
 
-- `Level` (XP/level perks), `License` (job access), `Money`/`Banking`
-  (paychecks), `Gathering`/`Processing` (job activities), `Whitelist`
-  (restricted jobs).
+- `Level` (XP/level perks), `License` (job access), `Money` (cash paychecks),
+  `Gathering`/`Processing` (job activities), `Whitelist` (restricted jobs).

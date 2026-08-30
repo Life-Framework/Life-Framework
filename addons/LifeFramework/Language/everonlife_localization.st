@@ -789,6 +789,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_pt_br "Mostrando %1 de %2 artigos"
     Comment "Shop result-count hint"
    }
+<<<<<<< HEAD
    CustomStringTableItem "{8433759EB8ED5E85}" {
     Id "LF-Quest_Title"
     Target_en_us "Quests"
@@ -1075,16 +1076,38 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_pt_br "Entrega rápida"
     Comment "Timed quest title"
    }
-   CustomStringTableItem "{1987FE8FB0973B18}" {
-    Id "LF-Quest_IntroTimed_Desc"
-    Target_en_us "Deliver 2 water bottles within 2 minutes."
+    CustomStringTableItem "{1987FE8FB0973B18}" {
+     Id "LF-Quest_IntroTimed_Desc"
+     Target_en_us "Deliver 2 water bottles within 2 minutes."
     Target_de_de "Liefere 2 Wasserflaschen innerhalb von 2 Minuten."
     Target_fr_fr "Livrez 2 bouteilles d'eau en 2 minutes."
     Target_it_it "Consegna 2 bottiglie d'acqua entro 2 minuti."
     Target_es_es "Entrega 2 botellas de agua en 2 minutos."
     Target_pt_pt "Entregue 2 garrafas de água em 2 minutos."
-    Target_pt_br "Entregue 2 garrafas de água em 2 minutos."
-    Comment "Timed quest description"
+     Target_pt_br "Entregue 2 garrafas de água em 2 minutos."
+     Comment "Timed quest description"
+    }
+    CustomStringTableItem "{4CADF51C9441EA8A}" {
+    Id "EL-Death_Title"
+    Target_en_us "You are dead"
+    Target_de_de "Du bist gestorben"
+    Target_fr_fr "Vous êtes mort"
+    Target_it_it "Sei morto"
+    Target_es_es "Estás muerto"
+    Target_pt_pt "Você morreu"
+    Target_pt_br "Você morreu"
+    Comment "Death screen title"
+   }
+   CustomStringTableItem "{D5A0873EE40176C2}" {
+    Id "EL-Death_Respawn"
+    Target_en_us "Respawn"
+    Target_de_de "Neu starten"
+    Target_fr_fr "Réapparaître"
+    Target_it_it "Ricomparizione"
+    Target_es_es "Reaparecer"
+    Target_pt_pt "Reaparecer"
+     Target_pt_br "Reaparecer"
+     Comment "Death screen respawn button"
    }
   }
 }

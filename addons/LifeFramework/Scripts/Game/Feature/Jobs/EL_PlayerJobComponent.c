@@ -392,24 +392,18 @@ class EL_PlayerJobComponent : ScriptComponent
 		int totalPay = Math.Round(salary * levelBonus);
 		
 		m_iTotalEarnings += totalPay;
-		
-		// Deposit money to player's bank account
+
+		// Cash is the only payout. The bank balance moves exclusively through the
+		// ATM (Feature/ATM): a paycheck landing straight in the bank would bypass
+		// the physical-money boundary. Inventory-full just shortchanges the
+		// payout, it never mints.
 		IEntity owner = GetOwner();
 		if (owner)
 		{
-			// FIX: BankAccount is attached to the character (owner), not the PlayerController
-			EL_BankAccountComponent bankAccount = EL_Component<EL_BankAccountComponent>.Find(owner);
-			if (bankAccount)
-			{
-				bankAccount.Deposit(totalPay, string.Format("Nómina - %1", GetJobName()));
-			}
-			else
-			{
-				// Fallback to cash if no bank account
-				Print(string.Format("[EL_PlayerJobComponent] No bank account found for player %1, giving cash instead", owner), LogLevel.WARNING);
-				EL_MoneyUtils.GiveCash(owner, totalPay);
-			}
-			
+			int paid = EL_MoneyUtils.GiveCash(owner, totalPay);
+			if (paid != totalPay)
+				EL_Debug.Warn("Jobs", string.Format("paycheck payout short: paid %1 of %2 (player %3)", paid, totalPay, owner));
+
 			// Give Paycheck XP (+5)
 			if (levelComp)
 			{
