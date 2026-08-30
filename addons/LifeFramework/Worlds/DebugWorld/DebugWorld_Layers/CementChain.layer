@@ -1,6 +1,68 @@
-StaticModelEntity : "{81CB1B2631584427}Prefabs/Props/Construction/CementPile.et" {
- coords 115.65 0.939 131.092
- angleY -179.853
+GenericEntity BuilderStand {
+ coords 94 0 128
+ {
+  GenericEntity DisplayCrate {
+   components {
+    MeshObject "{59670CE9C98E5BAF}" {
+     Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+    }
+    RigidBody "{59670CE9C98E5B27}" {
+     Mass 10
+     ModelGeometry 1
+     Static 1
+    }
+   }
+   coords 0 0.9 0
+   Flags 1027
+  }
+  GenericEntity CementDisplayItems {
+   coords -1.6 0.9 0.7
+   {
+    $grp GenericEntity : "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et" {
+     CementBag_01 {
+      coords 0 0 0
+     }
+     CementBag_02 {
+      coords 0.25 0 0.05
+     }
+    }
+    $grp GenericEntity : "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et" {
+     Brick_01 {
+      coords -0.15 0 0.15
+     }
+    }
+   }
+  }
+  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   {
+    coords -1.6 0 0.7
+   }
+  }
+  EL_NpcBaseEntity BuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Builder"
+      Surname "Worker"
+     }
+    }
+   }
+   coords 0 0 -1.1
+  }
+  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
+   coords 1.6 0 -0.9
+  }
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+   coords -1.6 0.9 -0.6
+  }
+ }
 }
 SCR_DestructibleBuildingEntity : "{A92A5F3B79FF56BE}Prefabs/Structures/Industrial/Houses/ConcretePlant_E_01.et" {
  components {
@@ -11,9 +73,13 @@ SCR_DestructibleBuildingEntity : "{A92A5F3B79FF56BE}Prefabs/Structures/Industria
    }
   }
  }
- coords 124.256 0.002 117.778
+ coords 96.2 0.9 128.4
+}
+StaticModelEntity : "{81CB1B2631584427}Prefabs/Props/Construction/CementPile.et" {
+ coords 94 0 133
+ angleY -179.853
 }
 GenericEntity CementBag_5A0E821DC5FD235C : "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et" {
- coords 120.029 0.001 135.205
+ coords 95 0 133.5
  angleY -0.072
 }

@@ -8,6 +8,12 @@ class EL_CharacterCreationManager : Managed
 	//! must survive until the player clicks a faction.
 	protected ref EL_FactionSelectionMenu m_FactionMenu;
 
+	//! Strong ref: the second-stage spawn location picker, same lifetime rules as the faction menu.
+	protected ref EL_SpawnLocationMenu m_LocationMenu;
+
+	//! Faction picked in stage one, applied to the account once the player also picked a location.
+	protected ref map<int, ref EL_Faction> m_mPendingFactions;
+
 	//------------------------------------------------------------------------------------------------
 	static EL_CharacterCreationManager GetInstance()
 	{
@@ -111,6 +117,65 @@ if (!account.WasFactionChosen())
 		m_FactionMenu = EL_FactionSelectionMenu.Open(playerController);
 		if (!m_FactionMenu)
 			EL_Debug.Error("CharacterCreation", "failed to open the faction selection menu");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stage one done: the player picked a faction. Opens the spawn location picker; the
+	//! faction is only written to the account after the location is chosen too.
+	void OnFactionSelected(PlayerController playerController, EL_Faction faction)
+	{
+		if (!m_mPendingFactions)
+			m_mPendingFactions = new map<int, ref EL_Faction>();
+
+		m_mPendingFactions.Set(playerController.GetPlayerId(), faction);
+
+		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
+		if (respawnSystem)
+			respawnSystem.DestroyLoadingPlaceholder();
+
+		m_LocationMenu = EL_SpawnLocationMenu.Open(playerController, faction);
+		if (!m_LocationMenu)
+		{
+			// Degrade to the old two-button flow: finalize the faction without a location pick.
+			EL_Debug.Error("CharacterCreation", "failed to open the spawn location menu, finalizing faction without one");
+			FinalizeFaction(playerController, faction);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stage two done: the player picked a spawn location (EL_SpawnLogic holds the choice).
+	//! Writes the pending faction to the account and advances the spawn flow.
+	void OnSpawnLocationChosen(PlayerController playerController, EL_Faction faction)
+	{
+		m_LocationMenu = null;
+		FinalizeFaction(playerController, faction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FinalizeFaction(PlayerController playerController, EL_Faction faction)
+	{
+		int playerId = playerController.GetPlayerId();
+
+		if (m_mPendingFactions)
+			m_mPendingFactions.Remove(playerId);
+
+		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		if (!accountManager)
+			return;
+
+		string playerUid = EL_Utils.GetPlayerUID(playerId);
+		if (playerUid.IsEmpty())
+			return;
+
+		EL_PlayerAccount account = accountManager.GetAccount(playerUid);
+		if (account)
+		{
+			account.SetFaction(faction);
+			accountManager.SaveAndReleaseAccount(account);
+		}
+
+		// Advance the flow: the re-entrant pass sees the chosen faction and spawns the character.
+		OnPlayerConnected(playerId);
 	}
 
 //------------------------------------------------------------------------------------------------

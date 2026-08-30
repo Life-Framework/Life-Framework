@@ -211,6 +211,56 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_pt "Polícia"
     Target_pt_br "Polícia"
    }
+   CustomStringTableItem "{41489243B750D901}" {
+    Id "EL-SpawnLoc_Title"
+    Target_en_us "Select Spawn Location"
+    Target_es_es "Seleccionar punto de aparición"
+    Target_de_de "Spawnpunkt wählen"
+    Target_fr_fr "Choisir le point d'apparition"
+    Target_it_it "Seleziona punto di comparsa"
+    Target_pt_pt "Selecionar ponto de aparição"
+    Target_pt_br "Selecionar ponto de surgimento"
+   }
+   CustomStringTableItem "{41489243B750D902}" {
+    Id "EL-SpawnLoc_Town"
+    Target_en_us "Town Square"
+    Target_es_es "Plaza del pueblo"
+    Target_de_de "Marktplatz"
+    Target_fr_fr "Place du village"
+    Target_it_it "Piazza del paese"
+    Target_pt_pt "Praça da vila"
+    Target_pt_br "Praça da vila"
+   }
+   CustomStringTableItem "{41489243B750D903}" {
+    Id "EL-SpawnLoc_Mine"
+    Target_en_us "Mining Camp"
+    Target_es_es "Campamento minero"
+    Target_de_de "Minenlager"
+    Target_fr_fr "Campement minier"
+    Target_it_it "Campo minerario"
+    Target_pt_pt "Campo mineiro"
+    Target_pt_br "Acampamento de mineração"
+   }
+   CustomStringTableItem "{41489243B750D904}" {
+    Id "EL-SpawnLoc_Station"
+    Target_en_us "Police Station"
+    Target_es_es "Comisaría"
+    Target_de_de "Polizeiwache"
+    Target_fr_fr "Poste de police"
+    Target_it_it "Stazione di polizia"
+    Target_pt_pt "Esquadra de polícia"
+    Target_pt_br "Delegacia de polícia"
+   }
+   CustomStringTableItem "{41489243B750D905}" {
+    Id "EL-SpawnLoc_Outpost"
+    Target_en_us "East Outpost"
+    Target_es_es "Puesto del este"
+    Target_de_de "Ost-Außenposten"
+    Target_fr_fr "Avant-poste est"
+    Target_it_it "Avamposto est"
+    Target_pt_pt "Posto avançado este"
+    Target_pt_br "Posto avançado leste"
+   }
   CustomStringTableItem "{B3BF4076847C9C6E}" {
    Id "EL-ATM_Title"
    Target_en_us "ATM Machine"
@@ -639,6 +689,105 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Modified 1788019742
     Author "LifeFramework"
     LastChanged "LifeFramework"
+   }
+  CustomStringTableItem "{4517233F8276C3B2}" {
+    Id "EL-Shop_Title"
+    Target_en_us "Shop"
+    Target_de_de "Laden"
+    Target_fr_fr "Magasin"
+    Target_it_it "Negozio"
+    Target_es_es "Tienda"
+    Target_pt_pt "Loja"
+    Target_pt_br "Loja"
+    Comment "Shop menu title"
+   }
+   CustomStringTableItem "{B1312D9A925343A1}" {
+    Id "EL-Shop_Cash"
+    Target_en_us "Cash"
+    Target_de_de "Bargeld"
+    Target_fr_fr "Liquide"
+    Target_it_it "Contanti"
+    Target_es_es "Efectivo"
+    Target_pt_pt "Dinheiro"
+    Target_pt_br "Dinheiro"
+    Comment "Shop menu cash label"
+   }
+   CustomStringTableItem "{57624FF39CA0C9FB}" {
+    Id "EL-Shop_Buy"
+    Target_en_us "Buy"
+    Target_de_de "Kaufen"
+    Target_fr_fr "Acheter"
+    Target_it_it "Compra"
+    Target_es_es "Comprar"
+    Target_pt_pt "Comprar"
+    Target_pt_br "Comprar"
+    Comment "Shop buy button"
+   }
+   CustomStringTableItem "{811696D359309A3D}" {
+    Id "EL-Shop_Sell"
+    Target_en_us "Sell"
+    Target_de_de "Verkaufen"
+    Target_fr_fr "Vendre"
+    Target_it_it "Vendi"
+    Target_es_es "Vender"
+    Target_pt_pt "Vender"
+    Target_pt_br "Vender"
+    Comment "Shop sell button"
+   }
+   CustomStringTableItem "{C5063E87653539D2}" {
+    Id "EL-Shop_PurchaseSuccessful"
+    Target_en_us "Purchase"
+    Target_de_de "Kauf"
+    Target_fr_fr "Achat"
+    Target_it_it "Acquisto"
+    Target_es_es "Compra"
+    Target_pt_pt "Compra"
+    Target_pt_br "Compra"
+    Comment "Shop purchase notification title"
+   }
+   CustomStringTableItem "{12501435C4030C81}" {
+    Id "EL-Shop_PurchaseFailed"
+    Target_en_us "Purchase failed"
+    Target_de_de "Kauf fehlgeschlagen"
+    Target_fr_fr "Achat échoué"
+    Target_it_it "Acquisto non riuscito"
+    Target_es_es "Compra fallida"
+    Target_pt_pt "Compra falhou"
+    Target_pt_br "Compra falhou"
+    Comment "Shop purchase failure notification title"
+   }
+   CustomStringTableItem "{1901F5D02C8E7AF1}" {
+    Id "EL-Shop_SellFailed"
+    Target_en_us "Nothing to sell"
+    Target_de_de "Nichts zu verkaufen"
+    Target_fr_fr "Rien à vendre"
+    Target_it_it "Niente da vendere"
+    Target_es_es "Nada que vender"
+    Target_pt_pt "Nada para vender"
+    Target_pt_br "Nada para vender"
+    Comment "Shop sell failure notification body"
+   }
+   CustomStringTableItem "{313F933C75272034}" {
+    Id "EL-Shop_Search"
+    Target_en_us "Search items"
+    Target_de_de "Artikel suchen"
+    Target_fr_fr "Rechercher des articles"
+    Target_it_it "Cerca articoli"
+    Target_es_es "Buscar artículos"
+    Target_pt_pt "Pesquisar artigos"
+    Target_pt_br "Pesquisar artigos"
+    Comment "Shop search box placeholder"
+   }
+   CustomStringTableItem "{44869271883D0402}" {
+    Id "EL-Shop_Results"
+    Target_en_us "Showing %1 of %2 items"
+    Target_de_de "%1 von %2 Artikeln angezeigt"
+    Target_fr_fr "%1 articles sur %2 affichés"
+    Target_it_it "Mostrati %1 di %2 articoli"
+    Target_es_es "Mostrando %1 de %2 artículos"
+    Target_pt_pt "A mostrar %1 de %2 artigos"
+    Target_pt_br "Mostrando %1 de %2 artigos"
+    Comment "Shop result-count hint"
    }
   }
 }

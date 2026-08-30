@@ -81,25 +81,12 @@ class EL_FactionSelectionMenu
 		if (!m_PlayerController)
 			return;
 
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-		if (!accountManager)
-			return;
-
-		string playerUid = EL_Utils.GetPlayerUID(m_PlayerController.GetPlayerId());
-		if (playerUid.IsEmpty())
-			return;
-
-		EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-		if (account)
-		{
-			account.SetFaction(faction);
-			accountManager.SaveAndReleaseAccount(account);
-		}
-
-		// Advance the flow: the re-entrant pass sees the chosen faction and spawns the character.
+		// Second stage: the player picks a spawn location before the account is touched.
 		EL_CharacterCreationManager manager = EL_CharacterCreationManager.GetInstance();
-		if (manager)
-			manager.OnPlayerConnected(m_PlayerController.GetPlayerId());
+		if (!manager)
+			return;
+
+		manager.OnFactionSelected(m_PlayerController, faction);
 	}
 
 	//------------------------------------------------------------------------------------------------

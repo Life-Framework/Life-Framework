@@ -1,0 +1,85 @@
+EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay.et" {
+ ID "7F729501AA82DA9A"
+ components {
+  SCR_RespawnSystemComponent "{66BD3C8588F5687E}" {
+   m_SpawnLogic EL_SpawnLogic "{66BD3ED1B2F2AD15}" {
+    m_aFactionCharacterItems {
+     EL_FactionLoadout "{B7C2A6677AF28A10}" {
+      m_eFaction CIVILIAN
+      m_aItems {
+       EL_DefaultLoadoutItem "{B062151FA784F958}" {
+        m_rPrefab "{9F546CCA2582D16F}Prefabs/Characters/Uniforms/Jacket_M88.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+        m_aStoredItems {
+         EL_DefaultLoadoutItem "{D002301D19545B23}" {
+          m_rPrefab "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et"
+         }
+         EL_DefaultLoadoutItem "{BB85F56884554B78}" {
+          m_rPrefab "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et"
+          m_aComponentDefaults {
+           EL_DefaultLoadoutItemQuantityComponent "{45FCBE14F6933AA3}" {
+            m_iQuantity 500
+           }
+          }
+         }
+        }
+       }
+       EL_DefaultLoadoutItem "{60A95B55CAD80CB8}" {
+        m_rPrefab "{DCF980831E880F6A}Prefabs/Characters/Uniforms/Pants_M88.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
+       EL_DefaultLoadoutItem "{F9E7040252246630}" {
+        m_rPrefab "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
+      }
+      m_aDirectItems {
+       "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+       "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+       "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+      }
+     }
+     EL_FactionLoadout "{496433624FE9BF32}" {
+      m_eFaction POLICE
+      m_aItems {
+       EL_DefaultLoadoutItem "{20DD18E93899FDF3}" {
+        m_rPrefab "{B02281435AED8274}Prefabs/Characters/HeadGear/Hat_M70_01/Hat_M70_01.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
+       EL_DefaultLoadoutItem "{FA6EF6E7395A8CB0}" {
+        m_rPrefab "{E44990162EBC47B7}Prefabs/Characters/Uniforms/Jacket_M88_base.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+        m_aStoredItems {
+         EL_DefaultLoadoutItem "{012AB4E598265AF8}" {
+          m_rPrefab "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et"
+         }
+         EL_DefaultLoadoutItem "{2A61AA36A93A5A02}" {
+          m_rPrefab "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et"
+          m_aComponentDefaults {
+           EL_DefaultLoadoutItemQuantityComponent "{65A22E1723FC4F01}" {
+            m_iQuantity 200
+           }
+          }
+         }
+        }
+       }
+       EL_DefaultLoadoutItem "{961052121A0C8D02}" {
+        m_rPrefab "{DCF980831E880F6A}Prefabs/Characters/Uniforms/Pants_M88.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
+       EL_DefaultLoadoutItem "{9805FF033764712B}" {
+        m_rPrefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
+      }
+      m_aDirectItems {
+       "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
+       "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+       "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+      }
+     }
+    }
+   }
+  }
+ }
+}

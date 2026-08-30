@@ -7,6 +7,14 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	[Attribute(category: "New character defaults")]
 	protected ref array<ref EL_DefaultLoadoutItem> m_aDefaultCharacterItems;
 
+	//! Per-faction starter loadouts. When a faction has one configured, it replaces
+	//! m_aDefaultCharacterItems for that faction's spawns (clothing slots cannot stack).
+	[Attribute(category: "New character defaults")]
+	protected ref array<ref EL_FactionLoadout> m_aFactionCharacterItems;
+
+	//! Player-chosen spawn locations (second stage of the faction menu), session-local.
+	protected static ref map<int, ref EL_SpawnLocation> m_mSelectedLocations;
+
 	//------------------------------------------------------------------------------------------------
 	//! Account manager owns player data, not vanilla collections. Leaving the vanilla Player/Character
 	//! collections unresolved keeps SCR_SpawnLogic.RequestPlayerData_S on its synchronous no-persistence
@@ -179,12 +187,74 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetFromCache(playerId);
 		if (account)
 		{
+			SCR_SpawnPoint locationPoint = ResolveSpawnPointForLocation(playerId, account.GetFaction());
+			if (locationPoint)
+				return locationPoint;
+
 			SCR_SpawnPoint factionPoint = SCR_SpawnPoint.GetRandomSpawnPointForFaction(typename.EnumToString(EL_Faction, account.GetFaction()));
 			if (factionPoint)
 				return factionPoint;
 		}
 
 		return SCR_SpawnPoint.GetRandomSpawnPointDeathmatch();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Picks the faction's spawn point nearest the location the player chose in the second
+	//! stage of the faction menu. No choice (or an unknown key) falls back to null so the
+	//! caller can use its own fallback.
+	static SCR_SpawnPoint ResolveSpawnPointForLocation(int playerId, EL_Faction faction)
+	{
+		EL_SpawnLocation location = GetSelectedLocation(playerId);
+		if (!location || location.m_eFaction != faction)
+			return null;
+
+		SCR_SpawnPoint nearest;
+		float nearestDistance = float.MAX;
+		foreach (SCR_SpawnPoint spawnPoint : SCR_SpawnPoint.GetSpawnPoints())
+		{
+			if (spawnPoint.GetFactionKey() != typename.EnumToString(EL_Faction, faction))
+				continue;
+			float distance = vector.DistanceSq(spawnPoint.GetOrigin(), location.m_vPosition);
+			if (distance < nearestDistance)
+			{
+				nearestDistance = distance;
+				nearest = spawnPoint;
+			}
+		}
+
+		if (nearest)
+			EL_Debug.Info("Spawn", "spawn point resolved by location '" + location.m_sKey + "'");
+		return nearest;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stores the spawn location a player picked in the second stage of the faction menu.
+	//! Session-local; the menu calls this on the same machine the spawn logic runs.
+	static void SetSelectedLocation(int playerId, string locationKey)
+	{
+		if (!m_mSelectedLocations)
+			m_mSelectedLocations = new map<int, ref EL_SpawnLocation>();
+
+		EL_SpawnLocation location = EL_SpawnLocations.GetByKey(locationKey);
+		if (!location)
+		{
+			EL_Debug.Error("Spawn", "rejected unknown spawn location key '" + locationKey + "'");
+			m_mSelectedLocations.Remove(playerId);
+			return;
+		}
+
+		m_mSelectedLocations.Set(playerId, location);
+		EL_Debug.Info("Spawn", "player " + playerId + " chose spawn location '" + location.m_sKey + "'");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static EL_SpawnLocation GetSelectedLocation(int playerId)
+	{
+		if (!m_mSelectedLocations)
+			return null;
+
+		return m_mSelectedLocations.Get(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -208,7 +278,25 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	protected void OnCharacterCreated(int playerId, string characterPersistenceId, IEntity character)
 	{
 		InventoryStorageManagerComponent storageManager = EL_Component<InventoryStorageManagerComponent>.Find(character);
-		foreach (EL_DefaultLoadoutItem loadoutItem : m_aDefaultCharacterItems)
+
+		EL_FactionLoadout factionLoadout;
+		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetFromCache(playerId);
+		if (account)
+			factionLoadout = GetFactionLoadout(account.GetFaction());
+
+		ref array<ref EL_DefaultLoadoutItem> items = m_aDefaultCharacterItems;
+		if (factionLoadout)
+		{
+			items = factionLoadout.m_aItems;
+			SpawnDirectCharacterItems(storageManager, factionLoadout.m_aDirectItems);
+			EL_Debug.Log("Spawn", "applied faction loadout for " + typename.EnumToString(EL_Faction, account.GetFaction()));
+		}
+		else
+		{
+			EL_Debug.Log("Spawn", "no faction loadout configured for player " + playerId + ", using generic default items");
+		}
+
+		foreach (EL_DefaultLoadoutItem loadoutItem : items)
 		{
 			if (loadoutItem.m_ePurpose != EStoragePurpose.PURPOSE_LOADOUT_PROXY)
 			{
@@ -326,5 +414,55 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		}
 
 		return slotEntity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param faction Faction to look up.
+	//! \return The configured loadout for the faction, or null when none is configured.
+	EL_FactionLoadout GetFactionLoadout(EL_Faction faction)
+	{
+		if (!m_aFactionCharacterItems)
+			return null;
+
+		foreach (EL_FactionLoadout factionLoadout : m_aFactionCharacterItems)
+		{
+			if (factionLoadout && factionLoadout.m_eFaction == faction)
+				return factionLoadout;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawns items that are inserted by best-slot search (weapons, magazines, food, drink) rather
+	//! than into a specific loadout slot. Items that fail to insert are deleted by the fail-safe.
+	//! \param storageManager Storage manager of the character to give the items to.
+	//! \param directItems Prefabs to spawn and insert.
+	protected void SpawnDirectCharacterItems(InventoryStorageManagerComponent storageManager, array<ResourceName> directItems)
+	{
+		if (!storageManager || !directItems)
+			return;
+
+		EntitySpawnParams spawnParams();
+		spawnParams.Transform[3] = storageManager.GetOwner().GetOrigin();
+
+		foreach (ResourceName prefab : directItems)
+		{
+			if (prefab == ResourceName.Empty)
+				continue;
+
+			IEntity item = GetGame().SpawnEntityPrefabEx(prefab, false, null, spawnParams);
+			if (!item)
+			{
+				EL_Debug.Error("Spawn", "could not spawn direct loadout item: " + prefab);
+				continue;
+			}
+
+			if (!storageManager.TryInsertItem(item))
+			{
+				EL_Debug.Warn("Spawn", "could not insert direct loadout item " + prefab + " - deleting");
+				SCR_EntityHelper.DeleteEntityAndChildren(item);
+			}
+		}
 	}
 }

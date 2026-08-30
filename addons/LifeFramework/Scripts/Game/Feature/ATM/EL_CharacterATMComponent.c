@@ -63,7 +63,8 @@ class EL_CharacterATMComponent : ScriptComponent
 
 		if (character)
 		{
-			account = EL_ATMManager.GetOrCreate(EL_Utils.GetPlayerUID(character));
+			string playerUid = EL_Utils.GetPlayerUID(character);
+			account = EL_ATMManager.GetOrCreate(playerUid);
 			if (EL_ATMManager.IsValidAmount(amount))
 			{
 				int removed = EL_MoneyUtils.RemoveCash(character, amount);
@@ -71,12 +72,26 @@ class EL_CharacterATMComponent : ScriptComponent
 				{
 					account.Deposit(amount);
 					success = true;
+					EL_Debug.Log("ATM", string.Format("deposit +%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
 				}
 				else if (removed > 0)
 				{
 					EL_MoneyUtils.AddCash(character, removed);
+					EL_Debug.Warn("ATM", string.Format("deposit rolled back: removed %1 of %2, cash restored (uid %3)", removed, amount, playerUid));
+				}
+				else
+				{
+					EL_Debug.Warn("ATM", string.Format("deposit rejected: not enough cash for %1 (uid %2)", amount, playerUid));
 				}
 			}
+			else
+			{
+				EL_Debug.Warn("ATM", string.Format("deposit rejected: invalid amount %1 (uid %2)", amount, playerUid));
+			}
+		}
+		else
+		{
+			EL_Debug.Error("ATM", string.Format("deposit rejected: no owning character (amount=%1)", amount));
 		}
 
 		if (account)
@@ -97,7 +112,8 @@ class EL_CharacterATMComponent : ScriptComponent
 
 		if (character)
 		{
-			account = EL_ATMManager.GetOrCreate(EL_Utils.GetPlayerUID(character));
+			string playerUid = EL_Utils.GetPlayerUID(character);
+			account = EL_ATMManager.GetOrCreate(playerUid);
 			if (EL_ATMManager.IsValidAmount(amount))
 			{
 				if (account.Withdraw(amount))
@@ -106,6 +122,7 @@ class EL_CharacterATMComponent : ScriptComponent
 					if (paid == amount)
 					{
 						success = true;
+						EL_Debug.Log("ATM", string.Format("withdraw -%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
 					}
 					else
 					{
@@ -113,9 +130,22 @@ class EL_CharacterATMComponent : ScriptComponent
 						// full amount to the account and take back the partial cash.
 						account.Deposit(amount);
 						EL_MoneyUtils.RemoveCash(character, paid);
+						EL_Debug.Warn("ATM", string.Format("withdraw rolled back: paid %1 of %2, balance restored (uid %3)", paid, amount, playerUid));
 					}
 				}
+				else
+				{
+					EL_Debug.Warn("ATM", string.Format("withdraw rejected: balance %1 below %2 (uid %3)", account.GetBalance(), amount, playerUid));
+				}
 			}
+			else
+			{
+				EL_Debug.Warn("ATM", string.Format("withdraw rejected: invalid amount %1 (uid %2)", amount, playerUid));
+			}
+		}
+		else
+		{
+			EL_Debug.Error("ATM", string.Format("withdraw rejected: no owning character (amount=%1)", amount));
 		}
 
 		if (account)

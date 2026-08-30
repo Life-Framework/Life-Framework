@@ -12,20 +12,6 @@ $grp GenericEntity {
    EL_ShopComponent "{5A4B0B84C86E2843}" {
     m_sShopName "General Store"
     m_sShopDescription "Tienda general de suministros"
-    m_aShopItems {
-     EL_ShopItem "{6398C091849BE001}" {
-      m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
-      m_iPrice 10
-      m_sDisplayName "Manzana"
-      m_iMaxQuantity 10
-     }
-     EL_ShopItem "{6398C091849BE004}" {
-      m_ItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
-      m_iPrice 8
-      m_sDisplayName "Ciruela"
-      m_iMaxQuantity 10
-     }
-    }
    }
    ActionsManagerComponent "{5A4B0B84C86E2845}" {
     ActionContexts {

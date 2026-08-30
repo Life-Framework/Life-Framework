@@ -1,0 +1,100 @@
+FrameWidgetClass "{3851DEDF6D111FEE}" {
+ Name "ShopMenuRow"
+ components {
+  EL_ShopMenuRowComponent "{BA0517D1E8227824}" {
+  }
+ }
+ {
+  HorizontalLayoutWidgetClass "{D6257410404CC378}" {
+   Slot LayoutSlot "{F79FD4EC4C3D58F6}" {
+    SizeMode Fill
+    Padding 4 2 4 2
+   }
+   {
+    TextWidgetClass "{820FA4A000B5F0DB}" {
+     Name "ItemName"
+     Slot LayoutSlot "{0F97D3C5196C46CB}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 2
+     }
+     "Font Size" 15
+     "Min Font Size" 15
+    }
+    TextWidgetClass "{480B4B5073056B43}" {
+     Name "OwnedText"
+     Slot LayoutSlot "{928DEAD9717D02D4}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 1
+     }
+     "Font Size" 14
+     "Min Font Size" 14
+     "Horizontal alignment" Center
+    }
+    TextWidgetClass "{3A8833C282C228FB}" {
+     Name "BuyPriceText"
+     Slot LayoutSlot "{D3D9BE0E003A70C3}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 1
+     }
+     "Font Size" 14
+     "Min Font Size" 14
+     "Horizontal alignment" Center
+    }
+    TextWidgetClass "{B9AE69323F19512C}" {
+     Name "SellPriceText"
+     Slot LayoutSlot "{5E661B63CDFE8F19}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 1
+     }
+     "Font Size" 14
+     "Min Font Size" 14
+     "Horizontal alignment" Center
+    }
+    ButtonWidgetClass "{D7DCA28487C2D8BE}" {
+     Name "BuyButton"
+     Slot LayoutSlot "{6BF5601E8C4DC36D}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 1
+     }
+     {
+      TextWidgetClass "{A52002AFECB12A90}" {
+       Name "BuyButtonLabel"
+       Slot LayoutSlot "{58EE71B6265625CB}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Text "#EL-Shop_Buy"
+       "Font Size" 13
+       "Min Font Size" 13
+      }
+     }
+    }
+    ButtonWidgetClass "{26BB73AE2FCB9B65}" {
+     Name "SellButton"
+     Slot LayoutSlot "{F48CC79A0F202FE1}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 1
+     }
+     {
+      TextWidgetClass "{95DD7B0811575FC1}" {
+       Name "SellButtonLabel"
+       Slot LayoutSlot "{0AB347F04822C591}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Text "#EL-Shop_Sell"
+       "Font Size" 13
+       "Min Font Size" 13
+      }
+     }
+    }
+   }
+  }
+ }
+}

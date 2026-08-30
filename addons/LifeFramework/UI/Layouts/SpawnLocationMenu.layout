@@ -1,0 +1,115 @@
+FrameWidgetClass "{41489243B750D7F0}" {
+ Name "SpawnLocationRoot"
+ {
+  PanelWidgetClass "{41489243B750D7F1}" {
+   Name "Panel0"
+   Slot FrameWidgetSlot "{41489243B750D7F2}" {
+    Anchor 0 0 0 1
+    PositionX 200
+    OffsetLeft 200
+    PositionY 200
+    OffsetTop 200
+    SizeX 500
+    OffsetRight -700
+    SizeY 0
+    OffsetBottom -500
+   }
+   {
+    BlurWidgetClass "{41489243B750D7F3}" : "{352322057FD78AE1}UI/layouts/WidgetLibrary/BaseElements/WLib_Blur.layout" {
+     Name "BackgroundBlur"
+     Slot FrameWidgetSlot "{41489243B750D7F4}" {
+      Anchor 0 0 1 1
+     }
+     Color 0.127 0.127 0.127 1
+     Intensity 0.8
+    }
+    VerticalLayoutWidgetClass "{41489243B750D7F5}" {
+     Slot FrameWidgetSlot "{41489243B750D7F6}" {
+      Anchor 0 0 1 1
+      PositionX 1
+      OffsetLeft 1
+      OffsetRight -1
+      OffsetBottom -1
+     }
+     {
+      FrameWidgetClass "{41489243B750D7F7}" {
+       Name "TitleFrame"
+       Slot LayoutSlot "{41489243B750D7F8}" {
+        Padding 0 15 0 15
+       }
+       {
+        TextWidgetClass "{41489243B750D7F9}" {
+         Name "Title"
+         Slot FrameWidgetSlot "{41489243B750D7FA}" {
+          Anchor 0.5 0.5 0.5 0.5
+         }
+         Color 1 1 1 1
+         Text "#EL-SpawnLoc_Title"
+         "Font Size" 30
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{41489243B750D7FB}" {
+       Name "CivilianGroup"
+       Slot LayoutSlot "{41489243B750D7FC}" {
+       }
+       {
+        ButtonWidgetClass "{41489243B750D7FD}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+         Name "TownButton"
+         Slot LayoutSlot "{41489243B750D7FE}" {
+          Padding 40 10 40 10
+         }
+         components {
+          SCR_ButtonTextComponent "{41489243B750D7FF}" {
+           m_sText "#EL-SpawnLoc_Town"
+          }
+         }
+        }
+        ButtonWidgetClass "{41489243B750D800}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+         Name "MineButton"
+         Slot LayoutSlot "{41489243B750D801}" {
+          Padding 40 10 40 10
+         }
+         components {
+          SCR_ButtonTextComponent "{41489243B750D802}" {
+           m_sText "#EL-SpawnLoc_Mine"
+          }
+         }
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{41489243B750D803}" {
+       Name "PoliceGroup"
+       Slot LayoutSlot "{41489243B750D804}" {
+       }
+       {
+        ButtonWidgetClass "{41489243B750D805}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+         Name "StationButton"
+         Slot LayoutSlot "{41489243B750D806}" {
+          Padding 40 10 40 10
+         }
+         components {
+          SCR_ButtonTextComponent "{41489243B750D807}" {
+           m_sText "#EL-SpawnLoc_Station"
+          }
+         }
+        }
+        ButtonWidgetClass "{41489243B750D808}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+         Name "OutpostButton"
+         Slot LayoutSlot "{41489243B750D809}" {
+          Padding 40 10 40 10
+         }
+         components {
+          SCR_ButtonTextComponent "{41489243B750D80A}" {
+           m_sText "#EL-SpawnLoc_Outpost"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
