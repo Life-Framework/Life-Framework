@@ -4,6 +4,23 @@ SCR_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
   SCR_HUDManagerComponent "{2FDC275D9EBCDB8B}" {
    InfoDisplays {
    }
+   m_aHandlers {
+    SCR_HUDManagerLayoutHandler "{5D6EE700E78CA1DE}" {
+     m_bCanUpdate 1
+     m_aHUDLayouts {
+      SCR_HUDLayout "{5D6EE700E4B6F22C}" {
+       m_sIdentifier "Main"
+       m_sLayout "{F7EE326F6B1B4101}UI/Layouts/HUD/HUDLayouts/EL_HUDManagerRoot.layout"
+      }
+     }
+     m_sMainLayout "Main"
+    }
+    SCR_HUDManagerEditorVisibilityHandler "{5D6EE700F4DF3FD6}" {
+     m_bCanUpdate 1
+     m_sExitingEditorLayout "Main"
+     m_sEnteringEditorLayout "Editor"
+    }
+   }
   }
  }
 }

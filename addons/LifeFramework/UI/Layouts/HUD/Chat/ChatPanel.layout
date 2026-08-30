@@ -35,6 +35,8 @@ OverlayWidgetClass {
    }
    m_OOCGlobalStyle SCR_ChatMessageStyle "{5CC4E8D720C8F69D}" : "{4B57F6B08155F18A}Configs/Chat/GlobalOocChannel.conf" {
    }
+   m_AdminStyle SCR_ChatMessageStyle "{5CC55B49D3D54EDC}" : "{5980F59BAAC4DDDB}Configs/Chat/AdminChannel.conf" {
+   }
    m_iMessageLineCount 5
   }
  }

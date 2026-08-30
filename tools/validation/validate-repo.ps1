@@ -82,6 +82,21 @@ foreach ($m in $metas) {
   }
 }
 
+# mod resources that shadow a base-game resource identity (reintroduction guard).
+# A mod file at a vanilla-owned path (or a .meta claiming a vanilla resource
+# path) makes the engine's default resource resolution ambiguous between boots -
+# the 2026-08-30 ChimeraSystemsConfig.conf bug (mod claimed vanilla GUID
+# {86E953538A28A98D} at a case-differing path, so persistence resolved one boot
+# and not the next). Extend this list when a new shadowed path is found.
+$vanillaShadowPaths = @(
+  'addons/LifeFramework/Configs/Systems/ChimeraSystemsConfig.conf'
+)
+foreach ($vp in $vanillaShadowPaths) {
+  if (Test-Path -LiteralPath (Join-Path $root $vp)) {
+    Add-Error "shadows a base-game resource: $vp (mod must not ship a file at a vanilla resource path - inherit by GUID instead, e.g. LifeFrameworkSystems.conf)"
+  }
+}
+
 # lowercase 'data/' references in text resources (reintroduction guard)
 $refs = git grep -l -E '/data/' -- "*.meta" "*.emat" "*.et" "*.conf" "*.layer" 2>$null
 if ($LASTEXITCODE -eq 0) {

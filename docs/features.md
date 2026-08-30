@@ -135,6 +135,23 @@
 - ❌ `ApplyTo` returns `EPF_EReadResult.OK` instead of `EPF_EApplyResult.OK`
   (wrong enum). No version field.
 
+### `EL_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
+- ✅ Server-side save orchestration on the game-mode entity: autosave timer
+  (one AUTO slot per playthrough via `EL_SaveSelection`), manual saves,
+  save-cache scan, load/re-apply paths, wipe. Every path passes
+  `PassesSaveGates()` (manager present, saving allowed, persistence system
+  active) and logs `EL_Debug` under `Persistence`.
+- ✅ Shutdown save is engine-owned: the engine requests the SHUTDOWN save point
+  on graceful exit; the manager observes the result via `OnAfterSave` and logs
+  an `EL_Debug.Error` if a session ends with no shutdown save. The old manual
+  `RequestSavePoint(SHUTDOWN)` from `OnGameEnd` always lost the race against
+  the persistence teardown on the Workbench (fixed 2026-08-30).
+- ✅ Persistence system resolution is stable across reloads: the systems config
+  is now `Configs/Systems/LifeFrameworkSystems.conf` (unique GUID, referenced
+  explicitly from both missions), replacing the GUID-colliding
+  `ChimeraSystemsConfig.conf` override. Resolution retries at game start and
+  logs an `EL_Debug.Error` when the entry is truly missing.
+
 ## Money & Economy
 
 ### `EL_MoneyUtils` — `Feature/Money/EL_MoneyUtils.c`
