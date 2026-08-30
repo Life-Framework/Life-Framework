@@ -12,7 +12,9 @@
 param(
   [int]$TimeoutSeconds = 90,
   [int]$PollMs = 2000,
-  [string]$Tier = "all"
+  [string]$Tier = "all",
+  [int]$BindPort = 2001,
+  [int]$A2sPort = 17777
 )
 
 $ErrorActionPreference = "Stop"
@@ -67,7 +69,9 @@ $args = @(
   "-logLevel", "normal",
   "-scrDefine", "EL_AUTOTEST",
   "-disableCrashReporter",
-  "-noBackend"
+  "-noBackend",
+  "-bindPort", $BindPort,
+  "-a2sPort", $A2sPort
 )
 
 if ($Tier -eq "fast") {

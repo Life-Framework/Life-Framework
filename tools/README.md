@@ -13,16 +13,25 @@ tools\cli mcp install [name]            # clone + build MCP servers
 tools\cli mcp update [name]             # update MCP servers from GitHub
 tools\cli mcp verify [name]             # prove a server starts
 tools\cli mcp enable|disable <name>     # toggle a server in opencode.json
-tools\cli build                         # headless Workbench build of the addon
-tools\cli serve                         # boot the headless test server (blocks)
+tools\cli build                         # headless Workbench build (worktree only)
+tools\cli serve                         # boot the headless test server (blocks, worktree only)
 tools\cli test [--no-build] [--tier fast|all]
-                                        # build + boot server + parse ELTEST results
-tools\cli ci                            # validate + build + test (full gate)
+                                        # build + boot server + parse ELTEST results (worktree only)
+tools\cli ci                            # validate + build + test (full gate, worktree only)
+tools\cli wt new <feature>              # create worktree + branch + port allocation
+tools\cli wt list                       # worktrees, ports, dirty/merged state
+tools\cli wt test|build|dev|gate <slug> # run a heavy command in a specific worktree
+tools\cli wt ship <slug>                # sync -> gate -> push -> PR -> auto-merge into main
+tools\cli wt prune <slug>               # remove a merged worktree + branch
 tools\cli call <tool> '<json>'|@file    # call an MCP tool directly (see mcp-call.mjs)
 tools\cli validate                      # run tools/validation/* checks
 tools\cli lint                          # run tools/lint/* checks
 tools\cli run test                      # run tools/test/* checks
 ```
+
+`build / test / dev / serve / ci` refuse to run in the main checkout (the
+world-editor copy). Create a worktree with `cli wt new` — see
+`docs/worktrees.md` for the full parallel-agent workflow.
 
 Adding a new check = dropping a runnable script into the matching folder.
 Runs on Windows (PowerShell), and works from any terminal.
@@ -30,6 +39,7 @@ Runs on Windows (PowerShell), and works from any terminal.
 ## Contents
 
 - `cli.mjs` / `cli.cmd` - the unified CLI (install/update/verify/toggle MCPs, build, serve, test, dispatch checks)
+- `wt.mjs` - parallel-worktree library (hub state, port allocation, locks, gh/REST PR + merge)
 - `mcp-call.mjs` - call an MCP tool from the shell (API research without opencode's MCP plumbing)
 - `mcp/` - Enfusion/Reforger MCP servers for AI assistants (git-ignored clones; see `mcp/README.md`)
 - `build/` - Build and packaging scripts

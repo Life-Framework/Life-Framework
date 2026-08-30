@@ -29,6 +29,17 @@ $script:warnings = @()
 function Add-Error($msg) { $script:errors += $msg }
 function Add-Warning($msg) { $script:warnings += $msg }
 
+# --- worktree discipline ----------------------------------------------------
+# The main checkout is the world-editor copy. Committing to `main` from a
+# linked worktree is always a mistake - the user drives main, agents ship via
+# `cli wt ship` (PR into main).
+$commonDir = git rev-parse --git-common-dir
+$branch = git branch --show-current
+$isLinkedWorktree = -not ($commonDir -eq ".git")
+if ($branch -eq "main" -and $isLinkedWorktree) {
+  Add-Error "cannot commit to main from a linked worktree (this is ws/* territory; ship via 'cli wt ship')"
+}
+
 # --- staged-file checks ---------------------------------------------------
 
 if ($Staged) {
