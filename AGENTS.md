@@ -272,6 +272,23 @@ bug for each one; they transfer here because the engine is the same.
   entity is invisible. Every new resource needs a `.meta` with a unique GUID.
   A move/rename breaks every `{GUID}path` reference, including saved worlds —
   map references before moving.
+- **Materials.** A mod item that must show a texture reliably bakes its real
+  `.emat` into the `.xob` (MoneyStack.xob bakes CashMaterial.emat; Apple.xob
+  bakes Apple.emat). Relying on a prefab `MaterialAssignClass { AssignedMaterial
+  }` override over a `.xob` that bakes the base placeholder
+  `Common/Materials/Default.emat` is the fragile path: when the override does
+  not apply the mesh renders the white placeholder. The mining bars/nuggets/ores
+  and WoodPlank shipped that shape and went white. `validate-material-chains`
+  (part of `cli validate`) verifies every `AssignedMaterial`/texture reference
+  and warns on this placeholder-bake pattern.
+- **Texture verification is visual only.** The dedicated server (and any
+  `ArmaReforgerWorkbenchSteamDiag` instance) registers no renderer or texture
+  loader, so no EL_Test can prove a texture renders and `MeshObject.GetMaterials`
+  returns empty there. Verify a texture in the rendering Workbench play mode, or
+  read resolved prefab values with `wb_read_props`. When scripting the bridge,
+  run `wb_state`+`wb_play` in one MCP session (`tools\cli call --batch
+  @session.json`) - a fresh process per call starts with a stale "unknown" mode
+  and mode-gated tools refuse.
 - **Layouts.** A widget-instance GUID must be unique within the file; an
   inherited-component GUID must equal the GUID in the base layout (a fresh one
   adds a second, unconfigured component and the widget silently does nothing).
