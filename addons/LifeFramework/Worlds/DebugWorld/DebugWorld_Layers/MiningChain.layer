@@ -140,3 +140,7 @@ $grp GenericEntity : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
   coords 128 0 144
  }
 }
+GenericEntity EL_MiningSign_Debug : "{27EDF8AFC363A7D5}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_underminedarea_pole.et" {
+ coords 126.5 0 141.5
+ angles 0 90 0
+}
