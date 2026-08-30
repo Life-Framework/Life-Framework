@@ -161,6 +161,12 @@ feature. This is a development contract, not optional polish:
     persistence internals pass while the player-facing contract breaks.
 - **Repo checks (pre-commit + `cli validate`)**: drop a script in
   `tools/validation/` — the CLI runs every script in the folder.
+- **Update `docs/features.md` in the same change that alters a feature.** It is
+  the contract doc every agent reads to know what a system does; a stale row
+  reads as a live bug and wastes the next agent's session. `cli validate`
+  warns (`validate-docs-sync.ps1`) when feature code changes without it.
+  Mark re-audited rows with a `(verified YYYY-MM-DD)` tag so future agents
+  know what was actually checked when.
 - **Other lint/test scripts**: drop them in `tools/lint/` or `tools/test/` and
   run `tools\cli lint` / `tools\cli run test`.
 - **Manual test steps ship with the change.** The suite covers logic and world

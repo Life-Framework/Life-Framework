@@ -140,14 +140,14 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 | `bank/account-math` | LOGIC ✅ | `EL_BankAccount`: Deposit(>0) raises balance; Withdraw(>balance)=false and balance unchanged; balance never < 0 via Deposit/Withdraw; Withdraw(<=0)=false |
 | `bank/save-roundtrip` | LOGIC ✅ | 🔒 `EL_BankAccountSaveData` round-trip preserves balance + id; `Equals` ignores id |
 | `atm/manager-registry` | LOGIC ✅ | `EL_ATMManager` AddAccount/CreateAccount/GetAccount; Deposit/Withdraw on known/unknown accounts |
-| `bank/component-math` | LOGIC ⏳ | `EL_BankAccountComponent` Deposit/Withdraw/Transfer guards; transfer conserves sender+recipient total; history capped at 100; interest only when balance>0 and ≥$1 |
-| `bank/component-initial` | WORLD ⏳ | 🎯 `OnPostInit` grants $20,000 (currently hard-coded) — pin this, then decide intended starting balance |
-| `shop/buy-math` | WORLD ⏳ | 🎯 **Funds exploit**: buyer with $50 buying a $100 item must FAIL (currently partial `RemoveAmount` treated as success); refund on inventory-full must equal *actually removed*, not full price |
-| `shop/quantity-gate` | WORLD ⏳ | quantity ≤ 0 or > MaxQuantity rejected; price×quantity math |
+| ~~`bank/component-math`~~ | — | `EL_BankAccountComponent` **deleted 2026-08-30** — no second bank, no entity-bank tests |
+| ~~`bank/component-initial`~~ | — | $20k `OnPostInit` grant **gone** with the deleted entity bank |
+| `shop/buy-math` | WORLD ⏳ | 🎯 **Funds exploit**: buyer with $50 buying a $100 item must FAIL — code fixed (refund + fail) and the money primitive is pinned by `EL_Test_MoneyCash`, but no direct `BuyItem` test yet |
+| `shop/quantity-gate` | LOGIC ✅ | `IsQuantityAllowed` boundaries; `ComputeTotalPrice` (see `EL_Test_Shop`) |
 | `trader/sell-value` | LOGIC ⏳ | `GetItemValue` scans configured list, 0 for unlisted |
-| `trader/sell-pays-bank` | WORLD ⏳ | Selling deletes item and deposits `m_ValuePerItem` to seller ATM; unlisted item rejected with the correct return code |
-| `trader/blackmarket-faction` | WORLD ⏳ | 🎯 Black-market rejects police account (currently likely fails open) |
-| `trader/quantity-stacks` | WORLD ⏳ | 🎯 Quantity stack (e.g. 100 rounds) sells for value × 1 (currently ignores quantity) |
+| `trader/sell-pays-cash` | WORLD ⏳ | Selling deletes item and pays `AddCash` (verified in code 2026-08-30); unlisted item rejected with the correct return code |
+| `trader/blackmarket-faction` | WORLD ⏳ | 🎯 Black-market rejects police account (currently fails closed but cache-keyed) |
+| `trader/quantity-stacks` | WORLD ⏳ | 🎯 Quantity stack (e.g. 100 rounds) sells for value × stack (code now multiplies by quantity — needs a test) |
 
 ### Gathering, Processing & Resources
 
@@ -173,10 +173,10 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 | `level/setters-unguarded` | LOGIC ⏳ | 🎯 `SetLevel(50)` with 0 XP / `SetSkillPoints > total` — inconsistent state currently possible (decide: guard or accept) |
 | `job/setjob-gating` | WORLD ⏳ | SetJob POLICE requires POLICE_ACCESS license; MEDIC requires MEDIC_ACCESS; same-job no-op |
 | `job/paycheck-math` | LOGIC ⏳ | salary × (1 + (level−1)·0.05), `Math.Round`; interval resets |
-| `job/paycheck-bank` | WORLD ⏳ | Paycheck deposits to `EL_BankAccountComponent`, falls back to cash |
+| `job/paycheck-cash` | WORLD ⏳ | Paycheck pays `GiveCash` (verified in code 2026-08-30) — no bank branch remains; short payout logged |
 | `job/per-job-progress` | LOGIC ⏳ | GetAllJobLevels/SetAllJobLevels round-trip; invariant `m_mJobLevels[GetJob()] == GetJobLevel()` |
-| `job/fruitcatcher-cap` | WORLD ⏳ | 🎯 `RpcAsk_ClaimFruitCatcherReward` must cap score (currently unbounded mint — exploit) |
-| `job/debug-license` | WORLD ⏳ | 🎯 `RpcAsk_DebugGrantLicense` backdoor must be removed or gated (currently grants any license) |
+| `job/fruitcatcher-cap` | LOGIC ✅ | `EL_GetFruitCatcherRewardCount` clamps to `EL_FRUIT_CATCHER_MAX_SCORE` (see `EL_Test_Security`) |
+| `job/debug-license` | ✅ (code) | `RpcAsk_DebugGrantLicense` **removed** 2026-08-30 — grep-verified absent from `Scripts/Game` |
 | `license/catalog` | LOGIC ⏳ | Every `EL_ELicenseType` has a config; UNEMPLOYED + FARMER_TOMATO granted initially |
 | `license/purchase-math` | LOGIC ⏳ | `CanAffordLicense` SP ≥ cost; `CanUnlockLicense` gates on owned/config/whitelist/level |
 | `license/purchase-spend` | LOGIC ⏳ | 🎯 `PurchaseLicense` must not spend SP when unlock later fails (currently double-charge risk) |
@@ -191,20 +191,21 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 | `crime/cooldown` | WORLD | ✅ rob actions blocked during cooldown; allowed after |
 | `crime/civilian-only` | WORLD | ✅ non-civilian cannot rob (null account currently passes — decide intent) |
 | `crime/min-police` | WORLD | ✅ rob requires ≥ configured on-duty police |
-| `crime/wanted-increases` | WORLD | 🎯 robbery raises wanted level (currently skipped after first crime due to account cache eviction) |
+| `crime/rob-reward` | LOGIC ✅ | rob pays cash, never the bank; wanted +1 (see `EL_Test_RobReward` — rewritten 2026-08-30) |
+| `crime/rob-wanted-clamp` | LOGIC ✅ | wanted clamps at 5 across repeated robberies (account cache churn fixed) |
 | `crime/police-count` | LOGIC | ✅ on-duty police count logic (extract to pure helper if needed) |
 | `police/duty-toggle` | WORLD | ✅ duty flag toggles; police menu requires on-duty police |
 | `police/arrest` | WORLD | 🎯 arrest teleports to jail, sets wanted 0, saves (server-side logic) |
 | `police/fine-math` | LOGIC | ✅ fine reduces wanted by amount/1000; insufficient cash → failure |
-| `police/menu-rpc` | WORLD | 🎯 **Arrest/Fine must work from a client** — currently server-guarded with no RPC bridge (unreachable for real players) |
+| `police/menu-rpc` | WORLD | ✅ **bridge exists** (verified 2026-08-30): `EL_AskPoliceArrest/Fine` → `RpcAsk_EL_PoliceArrest/Fine` — needs a manual client pass |
 
 ### Notifications
 
 | Test | Tier | Asserts |
 | --- | --- | --- |
 | `notify/config-defaults` | LOGIC | ✅ `EL_NotificationConfig` sets title/message/duration/type; color derived from type |
-| `notify/sendtojob` | WORLD | 🎯 `SendToJob` targets job == type and duty semantics (currently conflates job≠UNEMPLOYED with on-duty) |
-| `notify/rpc-targeting` | WORLD | 🎯 `RPC_ShowNotification` delivery (currently `RplRcver.Owner` on game-mode entity — likely never reaches the player) |
+| `notify/sendtojob` | WORLD | ✅ `SendToJob` targets job == type and checks account `IsOnDuty()` (fixed in code; needs client display proof) |
+| `notify/rpc-targeting` | WORLD | ✅ broadcast delivery filters by target player ID, with a listen-server host direct-call (fixed in code; needs client display proof) |
 
 ### Quantity & Inventory
 
@@ -215,7 +216,7 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 | `quantity/split` | WORLD ⏳ | 🎯 Split of a quantity-1 stack must not spawn-and-delete via `SetQuantity(0)` (currently 0-split bug) |
 | `quantity/sort` | LOGIC ⏳ | `SortByQuantity` descending non-increasing; `SortByQuantity(..., false)` ascending |
 | `quantity/amount-accounting` | WORLD ⏳ | `EL_InventoryUtils.GetAmount/AddAmount/RemoveAmount` return actual amounts; Add fills stacks; Remove drains smallest-first; shortage returns 0 |
-| `quantity/rpc-range` | WORLD ⏳ | 🎯 quantity split/transfer RPCs must validate ownership, not just 10 m range (currently range-only anti-cheat) |
+| `quantity/rpc-ownership` | WORLD ⏳ | ✅ quantity split/transfer RPCs validate range plus ownership; another player's carried items are rejected (fixed in code; needs multiplayer proof) |
 | `quantity/persist` | LOGIC ⏳ | 🔒 `EL_QuantityComponentSaveData` ReadFrom/ApplyTo; quantity 1 skipped (DEFAULT) |
 
 ### License Plates & Vehicles
@@ -242,12 +243,16 @@ These are provable only by a human in DebugWorld or a multiplayer session per
 AGENTS.md:
 
 - Every `RpcAsk_*` client→server path end to end (job set, fruit catcher,
-  quantity split, ATM deposit/withdraw).
-- UI rendering (survival HUD, ATM menu, shop menu, police menu, hand-carry
-  slot, notification toasts).
+  quantity split, ATM deposit/withdraw, death-screen respawn).
+- UI rendering (survival HUD, ATM menu, shop menu, police menu, death screen,
+  hand-carry slot, notification toasts).
 - Multiplayer / JIP state delivery.
 - True restart persistence (save → restart → load), not in-session round trips.
 - Hand-carry holster/weapon transition on a real client.
+- **Death flow:** die with a full inventory → the body stays with all items →
+  the death screen appears → Respawn re-creates the account character with the
+  faction loadout → the old body remains lootable. Verify no instant auto-
+  respawn and no corpse deletion.
 - Performance: paycheck saves on every XP gain under load.
 
 ---
