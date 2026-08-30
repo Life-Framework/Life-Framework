@@ -18,9 +18,12 @@ tools\cli serve                         # boot the headless test server (blocks,
 tools\cli test [--no-build] [--tier fast|all|persistence]
                                         # build + boot server + parse ELTEST results (worktree only)
 tools\cli ci                            # validate + build + test (full gate, worktree only)
+tools\cli logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
+                                        # grep the newest server console.log (default after=3 limit=8)
 tools\cli wt new <feature>              # create worktree + branch + port allocation
 tools\cli wt list                       # worktrees, ports, dirty/merged state
 tools\cli wt test|build|dev|gate <slug> # run a heavy command in a specific worktree
+tools\cli wt logs <slug> <pattern>      # grep a worktree's newest console.log (from anywhere)
 tools\cli wt ship <slug>                # sync -> gate -> push -> PR -> auto-merge into main
 tools\cli wt prune <slug>               # remove a merged worktree + branch
 tools\cli call <tool> '<json>'|@file    # call an MCP tool directly (see mcp-call.mjs)

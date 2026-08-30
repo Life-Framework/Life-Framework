@@ -17,11 +17,12 @@
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate | lint | test            Run every script in tools/{dir}/
+//   logs <pattern> [flags]            Grep the newest server console.log
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { spawn, spawnSync } from "node:child_process";
-import { closeSync, cpSync, createWriteStream, existsSync, fstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmSync, writeFileSync } from "node:fs";
+import { closeSync, cpSync, createWriteStream, existsSync, fstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
@@ -861,6 +862,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
+  logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
+                                grep the newest server console.log (default after=3 limit=8)
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   validate | lint               run every script in tools/{validation,lint}/
   run <area>                    run every script in tools/<area>/ (validate, lint, test, ...)
@@ -892,6 +895,91 @@ function cmdMcpCall(callArgs) {
   return res.status;
 }
 
+// ---------------------------------------------------------------- log grep
+
+// newest console.log under server/profile/<scope>/logs (the test server writes
+// one logs_<timestamp>/ dir per boot; the newest file is the last run).
+function newestConsoleLog(root, scope = "test") {
+  const logsDir = join(root, "server", "profile", scope, "logs");
+  if (!existsSync(logsDir)) return null;
+  let newest = null;
+  const walk = (dir) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (e.isFile() && e.name === "console.log") {
+        const m = statSync(p).mtimeMs;
+        if (!newest || m > newest.mtime) newest = { path: p, mtime: m };
+      }
+    }
+  };
+  walk(logsDir);
+  return newest?.path ?? null;
+}
+
+// Grep the newest test-server console.log. Mirrors the old hand-rolled
+// Select-String one-liner agents used to type: newest log, regex match with
+// after-context, capped results. Output is agent-greppable (file + line nums).
+//
+//   tools\cli logs <pattern> [--before N] [--after N] [--limit N] [--tail]
+//                            [--scope test|serve|build|workbench]
+function cmdLogs(flags, root = ROOT) {
+  const list = flags ?? [];
+  const pattern = list.find((a) => !a.startsWith("--") && !/^@/.test(a));
+  if (!pattern) {
+    console.log("usage: tools\\cli logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]");
+    console.log("       grep the newest server console.log (default after=3 limit=8), regex match");
+    return 1;
+  }
+  const scope = argValue(list, "--scope") ?? "test";
+  const before = parseInt(argValue(list, "--before") ?? "0", 10) || 0;
+  const after = parseInt(argValue(list, "--after") ?? "3", 10) || 0;
+  const limit = parseInt(argValue(list, "--limit") ?? "8", 10) || 0;
+  const tail = list.includes("--tail");
+  let re;
+  try {
+    re = new RegExp(pattern);
+  } catch (e) {
+    console.log(`invalid pattern: ${e.message}`);
+    return 1;
+  }
+  const file = newestConsoleLog(root, scope);
+  if (!file) {
+    console.log(`no console.log found under server/profile/${scope}/logs in ${root}`);
+    console.log("       run 'cli test' or 'cli serve' first, or point --scope at the profile you used");
+    return 1;
+  }
+  const lines = readFileSync(file, "utf8").split(/\r?\n/);
+  const hits = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (re.test(lines[i])) hits.push(i);
+  }
+  if (hits.length === 0) {
+    console.log(`no matches of /${pattern}/ in ${file}`);
+    return 0;
+  }
+  const shown = tail ? hits.slice(-limit) : hits.slice(0, limit);
+  console.log(`=== ${file}`);
+  console.log(`${hits.length} match(es) of /${pattern}/ (before=${before} after=${after})${hits.length > limit ? `, showing ${tail ? "last" : "first"} ${limit}` : ""}`);
+  // Merge overlapping context windows so context lines print once.
+  const blocks = [];
+  for (const i of shown) {
+    const s = Math.max(0, i - before);
+    const e = Math.min(lines.length - 1, i + after);
+    const last = blocks[blocks.length - 1];
+    if (last && s <= last.end + 1) last.end = Math.max(last.end, e);
+    else blocks.push({ start: s, end: e, hits: new Set([i]) });
+  }
+  for (const b of blocks) {
+    for (let i = b.start; i <= b.end; i++) {
+      const marker = b.hits.has(i) ? ">" : " ";
+      console.log(`${marker} ${i + 1}: ${lines[i]}`);
+    }
+    console.log("  ---");
+  }
+  return 0;
+}
+
 // ---------------------------------------------------------------- worktrees
 
 function wtSlug(args) {
@@ -915,6 +1003,8 @@ function wtHelp() {
                                        reload same profile with -loadSessionSave (latest)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
+  tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
+                                       grep that worktree's newest console.log (from anywhere)
   tools\\cli wt gate <slug> [--wait]   validate + build + test (tier=all) in that worktree
   tools\\cli wt sync <slug>            merge origin/main into the worktree branch
   tools\\cli wt ship <slug> [--pr-only] [--skip-gate] [--skip-sync]
@@ -1146,6 +1236,24 @@ async function wtBuildCmd(args) {
   }
 }
 
+// Grep the newest test-server console.log in a worktree's profile, from anywhere.
+async function wtLogsCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  const flags = args.slice(1);
+  if (!flags.length || flags[0].startsWith("--")) {
+    console.log("usage: tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]");
+    return 1;
+  }
+  try {
+    const e = wt.requireWorktree(ROOT, slug);
+    return cmdLogs(flags, e.path);
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+}
+
 async function wtGateCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
@@ -1273,6 +1381,7 @@ function cmdWt(rest) {
     build: () => wtBuildCmd(subArgs),
     gate: () => wtGateCmd(subArgs),
     ci: () => wtGateCmd(subArgs),
+    logs: () => wtLogsCmd(subArgs),
     sync: () => wtSyncCmd(subArgs),
     ship: () => wtShipCmd(subArgs),
     prune: () => wtPruneCmd(subArgs),
@@ -1333,6 +1442,7 @@ const cmds = {
   },
   run: (n) =>
     TOOL_DIRS[n] ? cmdRunArea(n) : (console.log(`unknown area: ${n} (expected one of: ${Object.keys(TOOL_DIRS).join(", ")}`), 1),
+  logs: (flags) => cmdLogs(flags),
   call: () => cmdMcpCall(rest),
   help: () => cmdHelp(),
 };
@@ -1348,7 +1458,7 @@ try {
   } else if (cmd === "wt") {
     code = cmdWt(rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

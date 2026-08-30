@@ -51,6 +51,8 @@ tools\cli test                # build + boot dedicated server on DebugWorld +
 tools\cli test --no-build     # skip the build, just run the server suite
 tools\cli test --tier fast    # LOGIC-tier tests only (~seconds, no world deps)
 tools\cli serve               # boot the test server and stream logs (blocks)
+tools\cli logs <pattern>      # grep the newest test-server console.log (after-context 3,
+                              #   capped at 8 matches; flags --before/--after/--limit/--tail/--scope)
 tools\cli ci                  # validate + build + test — the full gate
 tools\cli validate            # repo consistency checks (also runs on commit)
 tools\cli lint                # run tools/lint/* checks
@@ -103,7 +105,9 @@ always open the world editor.
   `tools\cli wt dev <feature> --tier fast` from anywhere. Every worktree boots
   the test server on its own ports (`-bindPort`/`-a2sPort`), so tests run in
   parallel across worktrees. Never run `dev`/`test`/`build`/`serve`/`ci` from
-  the main checkout — the CLI refuses.
+  the main checkout — the CLI refuses. Grep a worktree's last run with
+  `tools\cli wt logs <feature> <pattern>` (or `tools\cli logs <pattern>` inside
+  the worktree).
 - **Gate before shipping**: `tools\cli wt gate <feature>` runs validate +
   headless build + test (tier=all) in that worktree. One Workbench build runs
   at a time machine-wide (lock file); pass `--wait` to queue instead of failing
