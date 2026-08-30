@@ -65,9 +65,6 @@ GenericEntity LumberjackStand {
   }
  }
 }
-GenericEntity WoodLog_01_Small_5ACEABD58E8C1214 : "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et" {
- coords 142 0 146.5
-}
 $grp GenericEntity : "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylvestris/CuttableTree_Pinus_Sylvestris_2f.et" {
  {
   coords 134.314 0 165.836
@@ -81,9 +78,6 @@ $grp GenericEntity : "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylv
   coords 130.705 0 166.564
   angles 0 -30 0
  }
-}
-GenericEntity WoodPlank_5ACEABD590364FAA : "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et" {
- coords 141.5 0 145.5
 }
 GenericEntity : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
  coords 144.2 0.9 140.4
