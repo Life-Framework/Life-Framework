@@ -84,7 +84,7 @@ GameProject {
 $args = @(
   '-gproj', "`"$gproj`"",
   '-addonsDir', "`"$gameAddonsJunction`"",
-  '-wbModule=ScriptEditor', '-run',
+  '-wbModule=ScriptEditor', '-wbsilent', '-run',
   '-validate', 'PC',
   '-exitAfterInit', '-noSplash', '-noThrow'
 )
