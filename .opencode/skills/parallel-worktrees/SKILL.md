@@ -5,11 +5,12 @@ description: "Use before ANY build/test/dev/serve/ci command, or when starting w
 
 # Parallel worktrees
 
-Up to ~20 agents work on disparate features at once. The main checkout
-(`C:\Users\jaspe\Documents\Reforger\Life-Framework`) is reserved for the human
-and the world editor. You never touch it. You own a **linked git worktree** at
-`C:\Users\jaspe\Documents\Reforger\Life-Framework-ws-<slug>` on branch
-`ws/<slug>`, and your finished feature is PR-merged into `main` automatically.
+Up to ~20 agents work on disparate features at once. The main checkout (the
+directory you opened opencode in) is reserved for the human and the world
+editor. You never touch it. You own a **linked git worktree** in a sibling
+directory named `Life-Framework-ws-<slug>` (next to the main checkout) on
+branch `ws/<slug>`, and your finished feature is PR-merged into `main`
+automatically.
 
 Read `AGENTS.md` "Parallel worktrees" before anything else — this skill is the
 workflow on top of that contract.
@@ -40,12 +41,13 @@ tools\cli wt list
 `ws/<slug>`, allocates a port pair, and registers it. Then:
 
 ```sh
-cd C:\Users\jaspe\Documents\Reforger\Life-Framework-ws-<slug>
+cd ../Life-Framework-ws-<slug>
 ```
 
-Work there exactly as you would on main — full checkout, edit, `git add`,
-`git commit` (the pre-commit validator runs). Never create worktrees by hand;
-`wt new` is the only path that registers the ports.
+(relative to the main checkout) and work there exactly as you would on main —
+full checkout, edit, `git add`, `git commit` (the pre-commit validator runs).
+Never create worktrees by hand; `wt new` is the only path that registers the
+ports.
 
 ## Iterate (the fast loop)
 

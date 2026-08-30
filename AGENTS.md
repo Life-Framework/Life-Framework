@@ -307,6 +307,11 @@ then restart play mode.
 - Arma Reforger Server (Steam app 1874900) is required for `cli test`/`serve`.
 - Server config: `server/configs/test-server.json` (scenario + RCON).
   Launch wrapper: `server/scripts/launch-test.ps1` / `.sh`.
+- Toolchain paths resolve as: OS env var (`ENFUSION_WORKBENCH_PATH`,
+  `ENFUSION_GAME_PATH`, `ENFUSION_SERVER_PATH`, `ENFUSION_PROJECT_PATH`) →
+  `opencode.json` → standard Steam install locations. The committed
+  `opencode.json` is portable; put machine-specific paths in your environment
+  or `~/.config/opencode/opencode.json`, never in the repo (see `docs/setup.md`).
 
 ## Rigorous workflows (any tool may read these)
 

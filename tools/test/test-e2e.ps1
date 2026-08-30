@@ -26,8 +26,9 @@ if (-not (Test-Path (Join-Path $root "addons\LifeFramework\LifeFramework.gproj")
   exit 2
 }
 
-$serverDir = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger Server"
-$exe = Join-Path $serverDir "ArmaReforgerServerDiag.exe"
+$serverInstall = $env:ENFUSION_SERVER_PATH
+if (-not $serverInstall) { $serverInstall = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger Server" }
+$exe = Join-Path $serverInstall "ArmaReforgerServerDiag.exe"
 if (-not (Test-Path -LiteralPath $exe)) {
   Write-Host "ERROR dedicated server not found: $exe"
   exit 2
@@ -47,8 +48,8 @@ New-Item -ItemType Directory -Force -Path $profile | Out-Null
 # install is a workshop-only deployment without base game data (empty core/data),
 # fall back to the game client install where the data lives (same engine version).
 $gameAddons = Join-Path $root "server\profile\test\game-addons"
-$serverInstall = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger Server"
-$gameInstall = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger"
+$gameInstall = $env:ENFUSION_GAME_PATH
+if (-not $gameInstall) { $gameInstall = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger" }
 $dataSource = Join-Path $serverInstall "addons"
 $serverHasData = (Get-ChildItem (Join-Path $dataSource "core") -ErrorAction SilentlyContinue).Count -gt 0 -and
                  (Get-ChildItem (Join-Path $dataSource "data") -ErrorAction SilentlyContinue).Count -gt 0

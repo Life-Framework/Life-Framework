@@ -18,17 +18,19 @@ if (-not $root) { Write-Host "ERROR not a git work tree"; exit 1 }
 
 $gproj = Join-Path $root "addons\LifeFramework\LifeFramework.gproj"
 $wb = $env:LF_WORKBENCH_EXE
+if (-not $wb) { $wb = $env:ENFUSION_WORKBENCH_PATH }
 if (-not $wb) { $wb = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger Tools\Workbench\ArmaReforgerWorkbenchSteamDiag.exe" }
 $gameDir = $env:LF_GAME_DIR
+if (-not $gameDir) { $gameDir = $env:ENFUSION_GAME_PATH }
 if (-not $gameDir) { $gameDir = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger" }
 $wbProfileLogs = Join-Path $env:USERPROFILE "Documents\My Games\ArmaReforgerWorkbench\logs"
 
 if (-not (Test-Path -LiteralPath $wb)) {
-  Write-Host "ERROR Workbench not found at: $wb (set LF_WORKBENCH_EXE to override)"
+  Write-Host "ERROR Workbench not found at: $wb (set ENFUSION_WORKBENCH_PATH to override)"
   exit 2
 }
 if (-not (Test-Path -LiteralPath $gameDir)) {
-  Write-Host "ERROR game install not found at: $gameDir (set LF_GAME_DIR to override)"
+  Write-Host "ERROR game install not found at: $gameDir (set ENFUSION_GAME_PATH to override)"
   exit 2
 }
 if (-not (Test-Path -LiteralPath $gproj)) {
@@ -41,10 +43,14 @@ $before = @(Get-ChildItem $wbProfileLogs -Directory -ErrorAction SilentlyContinu
 Write-Host "validate-scripts: launching Workbench from game dir (first run may rebuild the resource database and take a while) ..."
 
 # The base game (core/data) resolves reliably through a junction to the game
-# install's addons; ./addons relative to the game dir is flaky headless.
-$gameAddonsJunction = "C:\Users\jaspe\Documents\Reforger\GameAddonsLink"
+# install's addons; ./addons relative to the game dir is flaky headless. The
+# junction is created on demand under the repo (same one the test harness uses),
+# so this works on any machine without a hardcoded path.
+$gameAddonsJunction = Join-Path $root "server\profile\test\game-addons"
 if (-not (Test-Path (Join-Path $gameAddonsJunction "data"))) {
-  $gameAddonsJunction = Join-Path $root "server\profile\test\game-addons"
+  New-Item -ItemType Directory -Force -Path $gameAddonsJunction | Out-Null
+  cmd /c mklink /J "$gameAddonsJunction\core" "$gameDir\addons\core" 2>$null | Out-Null
+  cmd /c mklink /J "$gameAddonsJunction\data" "$gameDir\addons\data" 2>$null | Out-Null
 }
 $args = @(
   '-gproj', "`"$gproj`"",

@@ -22,6 +22,7 @@ $root = git rev-parse --show-toplevel
 if (-not $root) { Write-Host "ERROR not a git work tree"; exit 1 }
 
 $serverExe = $env:LF_SERVER_EXE
+if (-not $serverExe) { $serverExe = $env:ENFUSION_SERVER_PATH }
 if (-not $serverExe) { $serverExe = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger Server\ArmaReforgerServer.exe" }
 $serverDir = Split-Path -Parent $serverExe
 $wbProfileAddons = Join-Path $env:USERPROFILE "Documents\My Games\ArmaReforgerWorkbench\addons"

@@ -28,18 +28,31 @@
 
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const CONFIG_PATH = join(ROOT, "opencode.json");
+const GLOBAL_CONFIG_PATH = join(homedir(), ".config", "opencode", "opencode.json");
+
+function readJson(path) {
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return {};
+  }
+}
 
 function readConfig() {
-  try {
-    return JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
-  } catch {
-    return { mcp: {} };
-  }
+  return readJson(CONFIG_PATH);
+}
+
+// Machine-specific env lives in the user's global opencode config (the repo's
+// opencode.json is portable). Mirror opencode's deep-merge so `cli call` sees
+// the same environment opencode would hand the server.
+function globalMcpEnv(name) {
+  return readJson(GLOBAL_CONFIG_PATH).mcp?.[name]?.environment ?? {};
 }
 
 function pickServer(wanted) {
@@ -112,13 +125,14 @@ async function main() {
     console.error(`server ${serverName}: command must be [node, <entry>]`);
     return 1;
   }
-  const entry = cmd[1];
+  const cwd = resolve(ROOT, serverCfg.cwd ?? ".");
+  const entry = resolve(cwd, cmd[1]);
   if (!existsSync(entry)) {
     console.error(`server ${serverName}: entry not found: ${entry}`);
     console.error(`  run: tools\\cli mcp install ${serverName}`);
     return 1;
   }
-  const env = { ...process.env, ...(serverCfg.environment ?? {}), ...envOverrides };
+  const env = { ...process.env, ...globalMcpEnv(serverName), ...(serverCfg.environment ?? {}), ...envOverrides };
 
   let toolArgs = {};
   if (rawArgs) {
@@ -149,6 +163,7 @@ async function main() {
   }
 
   const child = spawn("node", [entry], {
+    cwd,
     env,
     stdio: ["pipe", "pipe", "pipe"],
   });

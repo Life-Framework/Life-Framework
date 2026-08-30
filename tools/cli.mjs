@@ -124,11 +124,12 @@ function cmdStatus() {
     console.log(`      ${s.label}`);
   }
   console.log("");
-  console.log("environment (from opencode.json):");
-  const env = cfg.mcp?.["enfusion-mcp"]?.environment ?? {};
+  console.log("environment (effective; OS env wins over opencode.json):");
+  const env = envOf();
   for (const [k, v] of Object.entries(env)) {
     console.log(`  ${k} = ${v}`);
   }
+  if (Object.keys(env).length === 0) console.log("  (defaults: standard Steam install locations)");
   return 0;
 }
 
@@ -269,6 +270,12 @@ function invokeScript(full, opts = {}) {
   return sh(process.execPath, [full], opts); // .mjs/.js/.cjs and bare scripts
 }
 
+// Effective env for spawned tool scripts: OS env overlaid with the configured
+// ENFUSION_* values so tools/validation/* and tools/test/* agree with the CLI.
+function toolEnv() {
+  return { ...process.env, ...envOf() };
+}
+
 function cmdRunArea(area, root = ROOT) {
   // Tooling always runs from the CLI's own checkout; cwd is the target worktree
   // so content-relative checks (git rev-parse --show-toplevel) resolve there.
@@ -286,7 +293,7 @@ function cmdRunArea(area, root = ROOT) {
   }
   let failed = 0;
   for (const s of scripts) {
-    const res = invokeScript(join(dir, s), { cwd: root });
+    const res = invokeScript(join(dir, s), { cwd: root, env: toolEnv() });
     const ok = res.status === 0;
     console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${s}`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
@@ -299,8 +306,16 @@ function cmdRunArea(area, root = ROOT) {
 
 // ----------------------------------------------------------- build / serve / test
 
+// Effective ENFUSION_* environment: process.env wins over opencode.json, so
+// contributors on non-default installs can set OS env vars instead of editing
+// the (committed, portable) config.
 function envOf() {
-  return readConfig().mcp?.["enfusion-mcp"]?.environment ?? {};
+  const cfg = readConfig().mcp?.["enfusion-mcp"]?.environment ?? {};
+  const env = { ...cfg };
+  for (const k of ["ENFUSION_WORKBENCH_PATH", "ENFUSION_GAME_PATH", "ENFUSION_SERVER_PATH", "ENFUSION_PROJECT_PATH"]) {
+    if (process.env[k]) env[k] = process.env[k];
+  }
+  return env;
 }
 
 function workbenchExe() {
@@ -324,6 +339,26 @@ function guardHeavy(root, command, force) {
   throw new Error("main-checkout guard");
 }
 
+// Junction to the base game's core/data addons under <root>/server/profile/
+// test/game-addons. Self-healing: created on demand from the configured game
+// install so builds and test servers resolve the vanilla Game addon on any
+// machine. Returns the junction path if usable, else null (callers then rely
+// on the engine's own addon discovery).
+function gameAddonsJunction(root) {
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const junction = join(root, "server", "profile", "test", "game-addons");
+  if (!existsSync(join(junction, "data"))) {
+    mkdirSync(join(junction), { recursive: true });
+    try {
+      sh("cmd", ["/c", "mklink", "/J", join(junction, "core"), join(gameDir, "addons", "core")]);
+      sh("cmd", ["/c", "mklink", "/J", join(junction, "data"), join(gameDir, "addons", "data")]);
+    } catch {
+      // junction may already exist or mklink unavailable; callers fall back to engine discovery
+    }
+  }
+  return existsSync(join(junction, "data")) ? junction : null;
+}
+
 function serverArgs(root, ports) {
   // Addon discovery: -server loads the DebugWorld directly (no -config, which
   // conflicts with -addons). -addonsDir points at the repo addons plus a
@@ -331,19 +366,9 @@ function serverArgs(root, ports) {
   // ./addons is skipped so the packed EPF/EDF paks (which fail to compile on
   // current Reforger) never load. -bindPort/-a2sPort give every worktree its
   // own port pair so parallel test runs never collide.
-  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
   const profile = join(root, "server", "profile", "test");
-  const junction = join(profile, "game-addons");
-  if (!existsSync(join(junction, "data"))) {
-    mkdirSync(join(junction), { recursive: true });
-    try {
-      sh("cmd", ["/c", "mklink", "/J", join(junction, "core"), join(gameDir, "addons", "core")]);
-      sh("cmd", ["/c", "mklink", "/J", join(junction, "data"), join(gameDir, "addons", "data")]);
-    } catch {
-      // junction may already exist or mklink unavailable; core/data are then resolved via gameDir below
-    }
-  }
-  const addonsDir = [join(root, "addons"), junction].join(",");
+  const junction = gameAddonsJunction(root) ?? "";
+  const addonsDir = [join(root, "addons"), junction].filter(Boolean).join(",");
   return [
     "-server", "Worlds/DebugWorld/DebugWorld.ent",
     "-addonsDir", addonsDir,
@@ -399,17 +424,12 @@ function cmdBuild(root = ROOT, opts = {}) {
     wt.releaseLock(root, "build");
     return Promise.resolve(1);
   }
-  const addonDirs = [];
-  if (env.ENFUSION_PROJECT_PATH) addonDirs.push(env.ENFUSION_PROJECT_PATH);
+  const addonDirs = [join(root, "addons")];
   // The base game (core/data, GUID 58D0FB3206B6F859) resolves reliably through
   // a junction to the game install's addons - ./addons relative to the game dir
-  // is flaky in headless launches. Reuse the same junction the server harness
-  // builds (server/profile/test/game-addons), or the top-level one if present.
-  const junctions = [
-    join(root, "server", "profile", "test", "game-addons"),
-    "C:/Users/jaspe/Documents/Reforger/GameAddonsLink",
-  ];
-  const junction = junctions.find((j) => existsSync(join(j, "data")));
+  // is flaky in headless launches. The junction is created on demand under
+  // server/profile/test/game-addons (see gameAddonsJunction).
+  const junction = gameAddonsJunction(root);
   if (junction) addonDirs.push(junction);
   const args = [
     "-gproj", gproj,
@@ -621,7 +641,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     "-Tier", tier,
     "-BindPort", String(ports.gamePort),
     "-A2sPort", String(ports.a2sPort),
-  ], { cwd: root });
+  ], { cwd: root, env: toolEnv() });
   process.stdout.write(res.stdout + res.stderr);
   return res.status;
 }
