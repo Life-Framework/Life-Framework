@@ -4,12 +4,12 @@
 // the missing physics/traceability state in the live DebugWorld.
 class EL_Test_DebugWorldCollision : EL_Test
 {
-	protected static int s_iMeshEntities;
+	protected static int s_iEntities;
 	protected static int s_iMissingTraceable;
 	protected static ref array<string> s_aFailures = {};
 
 	//------------------------------------------------------------------------------------------------
-	static bool InspectMeshEntity(IEntity entity)
+	static bool InspectEntity(IEntity entity)
 	{
 		if (!entity)
 			return true;
@@ -18,10 +18,7 @@ class EL_Test_DebugWorldCollision : EL_Test
 		if (type.IsInherited(GenericTerrainEntity) || type.IsInherited(GenericWorldEntity) || type.IsInherited(SCR_ChimeraCharacter))
 			return true;
 
-		if (!entity.GetVObject())
-			return true;
-
-		s_iMeshEntities++;
+		s_iEntities++;
 		string label = entity.GetName();
 		if (label.IsEmpty())
 			label = type.ToString();
@@ -44,14 +41,14 @@ class EL_Test_DebugWorldCollision : EL_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(EL_TestContext ctx)
 	{
-		s_iMeshEntities = 0;
+		s_iEntities = 0;
 		s_iMissingTraceable = 0;
 		s_aFailures = new array<string>();
 
 		vector center = "256 0 256";
-		GetGame().GetWorld().QueryEntitiesBySphere(center, 500, InspectMeshEntity);
+		GetGame().GetWorld().QueryEntitiesBySphere(center, 500, InspectEntity, null, EQueryEntitiesFlags.ALL);
 
-		ctx.True(s_iMeshEntities > 0, "DebugWorld collision scan found mesh entities");
-		ctx.Equal(0, s_iMissingTraceable, "DebugWorld mesh entities are traceable: " + s_aFailures.ToString());
+		ctx.True(s_iEntities > 0, "DebugWorld collision scan found entities");
+		ctx.Equal(0, s_iMissingTraceable, "DebugWorld entities are traceable: " + s_aFailures.ToString());
 	}
 }

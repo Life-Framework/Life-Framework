@@ -32,8 +32,15 @@ class EL_DebugWorldCollisionRepairComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void RepairWorld()
 	{
+		World world = GetGame().GetWorld();
+		if (!world)
+		{
+			EL_Debug.Error("DebugWorld", "collision repair skipped: world is unavailable");
+			return;
+		}
+
 		vector center = "256 0 256";
-		GetGame().GetWorld().QueryEntitiesBySphere(center, 500, RepairEntity);
+		world.QueryEntitiesBySphere(center, 500, RepairEntity, null, EQueryEntitiesFlags.ALL);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -44,9 +51,6 @@ class EL_DebugWorldCollisionRepairComponent : ScriptComponent
 
 		typename type = entity.Type();
 		if (type.IsInherited(GenericTerrainEntity) || type.IsInherited(GenericWorldEntity) || type.IsInherited(SCR_ChimeraCharacter))
-			return true;
-
-		if (!entity.GetVObject())
 			return true;
 
 		if (!(entity.GetFlags() & EntityFlags.TRACEABLE))
