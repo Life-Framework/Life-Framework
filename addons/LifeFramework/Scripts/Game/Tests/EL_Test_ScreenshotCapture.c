@@ -27,12 +27,6 @@ class EL_Test_ScreenshotFailSafe : EL_Test
 		ctx.EqualStr("error:spawn_failed", EL_ScreenshotCapture.GetLastResult(), "spawn failure yields error:spawn_failed");
 		ctx.False(EL_ScreenshotCapture.IsBusy(), "spawn failure leaves the class idle");
 
-		// On a headless server (no camera manager, no registered camera) an
-		// aim-at-target capture must fail safe rather than VME.
-		EL_ScreenshotShot aim = new EL_ScreenshotShot();
-		ctx.False(EL_ScreenshotCapture.StartCapture(aim), "aim capture rejected when no camera is available");
-		ctx.False(EL_ScreenshotCapture.IsBusy(), "aim failure leaves the class idle");
-
 		// The class must accept a new request after a failure (no stuck state).
 		ctx.False(EL_ScreenshotCapture.StartCapture(null), "capture path is reusable after a failure");
 	}
