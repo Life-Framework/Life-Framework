@@ -80,15 +80,30 @@ $args = @(
   '-exitAfterInit', '-noSplash', '-noThrow'
 )
 
-$p = Start-Process -FilePath $wb -ArgumentList $args -PassThru -WorkingDirectory $gameDir
+# NVIDIA driver 616.56 (installed 2026-08-30) makes headless Workbench exits
+# flaky with STATUS_ACCESS_VIOLATION (0xC0000005 / exit -1073741819) at engine
+# init ("Adapter ... failed to provide some output"), before any project work.
+# Retry that specific exit code; everything else fails immediately.
+$accessViolation = -1073741819
+$maxAttempts = 3
+$code = 1
+for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+  $p = Start-Process -FilePath $wb -ArgumentList $args -PassThru -WorkingDirectory $gameDir
 
-if (-not $p.WaitForExit(900000)) {
-  Write-Host "validate-scripts: TIMEOUT after 15 min - killing Workbench (pid $($p.Id))"
-  try { $p.Kill() } catch {}
-  exit 2
+  if (-not $p.WaitForExit(900000)) {
+    Write-Host "validate-scripts: TIMEOUT after 15 min - killing Workbench (pid $($p.Id))"
+    try { $p.Kill() } catch {}
+    exit 2
+  }
+  $code = $p.ExitCode
+
+  if ($code -eq 0) { break }
+  if ($code -eq $accessViolation -and $attempt -lt $maxAttempts) {
+    Write-Host "validate-scripts: known flaky Workbench init crash (0xC0000005, GPU/nvtt) - retry $attempt/2"
+    continue
+  }
+  break
 }
-
-$code = $p.ExitCode
 
 # pull the run's console log for diagnostics
 $logDir = Get-ChildItem $wbProfileLogs -Directory -ErrorAction SilentlyContinue |

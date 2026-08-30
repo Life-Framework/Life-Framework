@@ -357,6 +357,37 @@ function gameAddonsJunction(root) {
       // junction may already exist or mklink unavailable; callers fall back to engine discovery
     }
   }
+  const coreSource = join(gameDir, "addons", "core");
+  const coreTarget = join(junction, "core");
+  const coreSourceHasProject = existsSync(join(coreSource, "core.gproj"));
+  if (!coreSourceHasProject && existsSync(coreSource) && !existsSync(join(coreTarget, "core.gproj"))) {
+    // Some server/client installs ship core data.pak without core.gproj. Do
+    // not write through the junction into the shared install; make a local
+    // core package and add only the project metadata required by the engine.
+    try {
+      rmSync(coreTarget, { recursive: true, force: true });
+      mkdirSync(coreTarget, { recursive: true });
+      for (const file of readdirSync(coreSource)) {
+        copyFileSync(join(coreSource, file), join(coreTarget, file));
+      }
+      writeFileSync(join(coreTarget, "core.gproj"), [
+        "GameProject {",
+        " ID \"core\"",
+        " GUID \"5614BBCCBB55ED1C\"",
+        " TITLE \"core\"",
+        " Configurations {",
+        "  GameProjectConfig PC {",
+        "  }",
+        "  GameProjectConfig HEADLESS : PC {",
+        "  }",
+        " }",
+        "}",
+        "",
+      ].join("\n"));
+    } catch {
+      // The normal junction remains the fallback if local provisioning fails.
+    }
+  }
   return existsSync(join(junction, "data")) ? junction : null;
 }
 
@@ -449,9 +480,8 @@ function cmdBuild(root = ROOT, opts = {}) {
   console.log(`  addon dirs: ${addonDirs.join(", ")}`);
   console.log("  (streaming Workbench console.log live)");
 
-  return new Promise((resolvePromise) => {
+  const runOnce = () => new Promise((resolvePromise) => {
     const done = (code) => {
-      wt.releaseLock(root, "build");
       resolvePromise(code);
     };
     const child = spawn(exe, args, { cwd: gameDir });
@@ -526,6 +556,23 @@ function cmdBuild(root = ROOT, opts = {}) {
       done(1);
     });
   });
+
+  // NVIDIA driver 616.56 (installed 2026-08-30) makes Workbench's nvtt texture
+  // worker exit with STATUS_ACCESS_VIOLATION (0xC0000005) at engine init on
+  // roughly every other headless launch, usually after the log line
+  // "Adapter ... failed to provide some output". The crash happens before any
+  // project work starts, so rerunning the exact command is safe. Retry twice;
+  // a compile or data error still fails the gate on the first attempt.
+  const ACCESS_VIOLATION = 3221225477;
+  const attempt = (n) => runOnce().then((code) => {
+    if (code === ACCESS_VIOLATION && n < 3) {
+      console.log(`  known flaky Workbench init crash (0xC0000005, GPU/nvtt) - retry ${n}/2`);
+      return attempt(n + 1);
+    }
+    wt.releaseLock(root, "build");
+    return code;
+  });
+  return attempt(1);
 }
 
 function cmdServe(root = ROOT, opts = {}) {
