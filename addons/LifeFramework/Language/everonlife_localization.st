@@ -778,16 +778,183 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_pt_br "Pesquisar artigos"
     Comment "Shop search box placeholder"
    }
-   CustomStringTableItem "{44869271883D0402}" {
+CustomStringTableItem "{44869271883D0402}" {
     Id "EL-Shop_Results"
     Target_en_us "Showing %1 of %2 items"
     Target_de_de "%1 von %2 Artikeln angezeigt"
-    Target_fr_fr "%1 articles sur %2 affichés"
+    Target_fr_fr "%1 articles sur %2 affichǸs"
     Target_it_it "Mostrati %1 di %2 articoli"
-    Target_es_es "Mostrando %1 de %2 artículos"
+    Target_es_es "Mostrando %1 de %2 art��culos"
     Target_pt_pt "A mostrar %1 de %2 artigos"
     Target_pt_br "Mostrando %1 de %2 artigos"
     Comment "Shop result-count hint"
    }
+   CustomStringTableItem "{40526487807838C7}" {
+    Id "EL-DebugMenu_Title"
+    Target_en_us "Debug Menu"
+    Target_de_de "Debug-Men��"
+    Target_fr_fr "Menu de d��bogage"
+    Target_it_it "Menu di debug"
+    Target_es_es "Men�� de depuraci��n"
+    Target_pt_pt "Menu de depura��o"
+    Target_pt_br "Menu de depuração"
+    Comment "Debug menu title"
+   }
+   CustomStringTableItem "{B314C31C663DB665}" {
+    Id "EL-DebugMenu_GiveCash"
+    Target_en_us "Give Cash +1000"
+    Target_de_de "Geld geben +1000"
+    Target_fr_fr "Donner argent +1000"
+    Target_it_it "Dai denaro +1000"
+    Target_es_es "Dar dinero +1000"
+    Target_pt_pt "Dar dinheiro +1000"
+    Target_pt_br "Dar dinheiro +1000"
+    Comment "Debug menu: add cash button"
+   }
+   CustomStringTableItem "{58B6B04D77AF1CCC}" {
+    Id "EL-DebugMenu_TakeCash"
+    Target_en_us "Take Cash -1000"
+    Target_de_de "Geld nehmen -1000"
+    Target_fr_fr "Retirer argent -1000"
+    Target_it_it "Togli denaro -1000"
+    Target_es_es "Quitar dinero -1000"
+    Target_pt_pt "Tirar dinheiro -1000"
+    Target_pt_br "Tirar dinheiro -1000"
+    Comment "Debug menu: remove cash button"
+   }
+   CustomStringTableItem "{2DBD1E711A1FE9C9}" {
+    Id "EL-DebugMenu_Wanted0"
+    Target_en_us "Wanted 0"
+    Target_de_de "Gesucht 0"
+    Target_fr_fr "Recherch�� 0"
+    Target_it_it "Ricercato 0"
+    Target_es_es "Buscado 0"
+    Target_pt_pt "Procurado 0"
+    Target_pt_br "Procurado 0"
+    Comment "Debug menu: clear wanted level"
+   }
+   CustomStringTableItem "{EB6A833DCB4086E3}" {
+    Id "EL-DebugMenu_Wanted5"
+    Target_en_us "Wanted 5"
+    Target_de_de "Gesucht 5"
+    Target_fr_fr "Recherch�� 5"
+    Target_it_it "Ricercato 5"
+    Target_es_es "Buscado 5"
+    Target_pt_pt "Procurado 5"
+    Target_pt_br "Procurado 5"
+    Comment "Debug menu: max wanted level"
+   }
+   CustomStringTableItem "{C72E71FF41583BB3}" {
+    Id "EL-DebugMenu_FactionPolice"
+    Target_en_us "Police Faction"
+    Target_de_de "Polizei-Fraktion"
+    Target_fr_fr "Fraction police"
+    Target_it_it "Fazione polizia"
+    Target_es_es "Facci��n policial"
+    Target_pt_pt "Facção policial"
+    Target_pt_br "Facção policial"
+    Comment "Debug menu: set police faction"
+   }
+   CustomStringTableItem "{BBED3D35CECA0BEE}" {
+    Id "EL-DebugMenu_FactionCivilian"
+    Target_en_us "Civilian Faction"
+    Target_de_de "Zivilisten-Fraktion"
+    Target_fr_fr "Fraction civile"
+    Target_it_it "Fazione civile"
+    Target_es_es "Facción civil"
+    Target_pt_pt "Facção civil"
+    Target_pt_br "Facção civil"
+    Comment "Debug menu: set civilian faction"
+   }
+   CustomStringTableItem "{836DE3CEE3A9A308}" {
+    Id "EL-DebugMenu_SurvivalFull"
+    Target_en_us "Survival Full"
+    Target_de_de "Überleben voll"
+    Target_fr_fr "Survie complète"
+    Target_it_it "Sopravvivenza piena"
+    Target_es_es "Supervivencia llena"
+    Target_pt_pt "Sobrevivência cheia"
+    Target_pt_br "Sobrevivência cheia"
+    Comment "Debug menu: max hunger/thirst/health"
+   }
+   CustomStringTableItem "{63A127949F852CC4}" {
+    Id "EL-DebugMenu_SurvivalEmpty"
+    Target_en_us "Survival Empty"
+    Target_de_de "Überleben leer"
+    Target_fr_fr "Survie vide"
+    Target_it_it "Sopravvivenza vuota"
+    Target_es_es "Supervivencia vacía"
+    Target_pt_pt "Sobrevivência vazia"
+    Target_pt_br "Sobrevivência vazia"
+    Comment "Debug menu: zero hunger/thirst/health"
+   }
+   CustomStringTableItem "{33D04535861495AB}" {
+    Id "EL-DebugMenu_GrantXp"
+    Target_en_us "Grant XP +500"
+    Target_de_de "XP geben +500"
+    Target_fr_fr "Donner XP +500"
+    Target_it_it "Dai XP +500"
+    Target_es_es "Dar XP +500"
+    Target_pt_pt "Dar XP +500"
+    Target_pt_br "Dar XP +500"
+    Comment "Debug menu: add experience"
+   }
+   CustomStringTableItem "{84BD5C1286CDFFBF}" {
+    Id "EL-DebugMenu_GrantSp"
+    Target_en_us "Grant SP +5"
+    Target_de_de "SP geben +5"
+    Target_fr_fr "Donner SP +5"
+    Target_it_it "Dai SP +5"
+    Target_es_es "Dar SP +5"
+    Target_pt_pt "Dar SP +5"
+    Target_pt_br "Dar SP +5"
+    Comment "Debug menu: add skill points"
+   }
+   CustomStringTableItem "{5F3EB174B8DF0FBB}" {
+    Id "EL-DebugMenu_JobFarmer"
+    Target_en_us "Job: Farmer"
+    Target_de_de "Job: Bauer"
+    Target_fr_fr "Métier : agriculteur"
+    Target_it_it "Lavoro: contadino"
+    Target_es_es "Trabajo: granjero"
+    Target_pt_pt "Trabalho: agricultor"
+    Target_pt_br "Trabalho: agricultor"
+    Comment "Debug menu: set farmer job"
+   }
+   CustomStringTableItem "{5D41B256D421B6E8}" {
+    Id "EL-DebugMenu_JobUnemployed"
+    Target_en_us "Job: Unemployed"
+    Target_de_de "Job: Arbeitslos"
+    Target_fr_fr "Métier : sans emploi"
+    Target_it_it "Lavoro: disoccupato"
+    Target_es_es "Trabajo: desempleado"
+    Target_pt_pt "Trabalho: desempregado"
+    Target_pt_br "Trabalho: desempregado"
+    Comment "Debug menu: set unemployed job"
+   }
+   CustomStringTableItem "{47776A7324DF510E}" {
+    Id "EL-Keybinds_OpenDebugMenu"
+    Target_en_us "Open debug menu"
+    Target_de_de "Debug-Menü öffnen"
+    Target_fr_fr "Ouvrir le menu de débogage"
+    Target_it_it "Apri il menu di debug"
+    Target_es_es "Abrir menú de depuración"
+    Target_pt_pt "Abrir menu de depuração"
+    Target_pt_br "Abrir menu de depuração"
+    Comment "Keybind: open the debug menu"
+   }
+   CustomStringTableItem "{6A52D1D87E9A31C4}" {
+    Id "EL-DebugMenu_Close"
+    Target_en_us "Close"
+    Target_de_de "Schließen"
+    Target_fr_fr "Fermer"
+    Target_it_it "Chiudi"
+    Target_es_es "Cerrar"
+    Target_pt_pt "Fechar"
+    Target_pt_br "Fechar"
+    Comment "Debug menu close hint"
+   }
+  }
+}
   }
 }
