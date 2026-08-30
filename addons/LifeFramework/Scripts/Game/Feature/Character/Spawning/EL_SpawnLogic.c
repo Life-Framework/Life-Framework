@@ -144,7 +144,11 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		}
 
 		vector position, yawPitchRoll;
-		GetCreationPosition(playerId, characterPersistenceId, position, yawPitchRoll);
+		if (!GetCreationPosition(playerId, characterPersistenceId, position, yawPitchRoll))
+		{
+			EL_Debug.Error("Spawn", "aborting spawn for player " + playerId + ": no spawn position could be resolved");
+			return;
+		}
 
 		EntitySpawnParams spawnParams();
 		spawnParams.TransformMode = ETransformMode.WORLD;
@@ -164,16 +168,22 @@ class EL_SpawnLogic : SCR_SpawnLogic
 
 	//------------------------------------------------------------------------------------------------
 	//! Picks the spawn position and orientation for a player character.
-	protected void GetCreationPosition(int playerId, string characterPersistenceId, out vector position, out vector yawPitchRoll)
+	//! \return false when no spawn point could be resolved. The caller must abort the spawn
+	//!         rather than place the character at a default origin.
+	protected bool GetCreationPosition(int playerId, string characterPersistenceId, out vector position, out vector yawPitchRoll)
 	{
+		position = "0 0 0";
+		yawPitchRoll = "0 0 0";
+
 		SCR_SpawnPoint spawnPoint = ResolveSpawnPoint(playerId);
 		if (!spawnPoint)
 		{
 			EL_Debug.Error("Spawn", "could not spawn character, no spawn point on the map");
-			return;
+			return false;
 		}
 
 		spawnPoint.GetPositionAndRotation(position, yawPitchRoll);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
