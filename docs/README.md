@@ -21,6 +21,8 @@ Project documentation for the Life Framework Arma Reforger mod.
 Feature design context files live beside the code in
 `addons/LifeFramework/Scripts/Game/Feature/*/Feature.md` (indexed by
 [`Feature/README.md`](../addons/LifeFramework/Scripts/Game/Feature/README.md)).
+- [Design principles](design-principles.md) — how we build: framework defaults,
+  period authenticity, world-as-interface, credible professions.
 
 ## Engineering
 
