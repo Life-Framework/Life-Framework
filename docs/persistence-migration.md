@@ -34,8 +34,13 @@ system. Target: `Dependencies { "58D0FB3206B6F859" }` only.
   - game-mode entity serializers (component serializers on the game-mode prefab),
   - item entity configs with `SelfSpawn 1` + quantity serializer,
   - player character config with `SelfSpawn 1`.
-- **System registration**: SCR_PersistenceSystem registered via a systems
-  config override (Overthrow's ChimeraSystemsConfig pattern), `SystemLocation Server`.
+- **System registration**: SCR_PersistenceSystem registered in
+  `Configs/Systems/LifeFrameworkSystems.conf` (unique GUID, inherits vanilla
+  `ChimeraSystemsConfig.conf` by GUID) and referenced explicitly from the
+  mission header (`SystemsConfig`). Do NOT override the base
+  `ChimeraSystemsConfig.conf` at a case-differing path: two resources claiming
+  the same GUID resolve flakily between boots (fixed 2026-08-30).
+  `SystemLocation Server`.
 - **Game-mode prefab**: native `Persistence` component replaces
   `EPF_PersistenceManagerComponent` + `EDF_JsonFileDbConnectionInfo` +
   `EPF_PersistentDoorStateManagerComponent`. A new `EL_PersistenceComponent`

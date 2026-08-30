@@ -30,19 +30,28 @@ without touching code.
 
 ## What the manager does
 
-- **Resolve and subscribe** (server only): resolve `SCR_PersistenceSystem`,
-  subscribe to its `OnStateChanged` / `OnBeforeSave` / `OnAfterSave` invokers,
-  and to the game mode's `OnGameStart` / `OnGameEnd` invokers. Seed the
-  has-save cache with an async `GetSaves()` scan.
+- **Resolve and subscribe** (server only): resolve `SCR_PersistenceSystem` at
+  entity init when it is already up, and again when the game mode starts (the
+  system is guaranteed present by then on a configured world). Subscribe to its
+  `OnStateChanged` / `OnBeforeSave` / `OnAfterSave` invokers, and to the game
+  mode's `OnGameStart` / `OnGameEnd` invokers. Seed the has-save cache with an
+  async `GetSaves()` scan.
 - **Autosave**: one repeating timer (`CallLater`). Skips a tick when a save or
   load is already in flight. Bounded to one `AUTO` slot per playthrough: finds
   the latest AUTO save for the *current* playthrough and overwrites it, else
   creates one. The selection is `EL_SaveSelection` (pure, tested).
 - **Manual save**: `SaveGame()` -> `RequestSavePoint(MANUAL)`. Honest result via
   `GetOnSaveFinished()` and `GetCompletedSaveCount()`.
-- **Shutdown save**: fires on the game mode's `OnGameEnd`, once per session
-  (the engine raises it twice on a dedicated server shutdown). Blocking request
-  so it completes before teardown.
+- **Shutdown save**: engine-owned. The engine requests the SHUTDOWN save point
+  itself on graceful exit (return to main menu / dedicated-server shutdown); a
+  manual request from the game mode's `OnGameEnd` is rejected because the
+  persistence system is already tearing down by then (the request callback
+  arrives false and nothing is serialized). The manager marks the session as
+  ending, reports the engine's outcome through `OnAfterSave` (fires for
+  engine-initiated saves too), and logs a fail-safe error when a session ends
+  without a shutdown save. This was fixed 2026-08-30; the previous
+  `RequestSavePoint(SHUTDOWN)` from `OnGameEnd` always lost the race on the
+  Workbench play mode.
 - **Save cache**: `HasSaveGame()` / `IsSaveCacheSeeded()` from the async scan,
   kept current by `OnAfterSave` (fires for engine-initiated saves too).
 - **Load / continue**: `LoadLatestSave()` (engine transition into the save) and
@@ -62,7 +71,7 @@ A misconfigured server gets a greppable line, never a VME.
 
 All state transitions log through `EL_Debug` under the `Persistence` feature:
 autosave scheduled, autosave tick skipped (busy), save point requested, save
-point created, save point failed, shutdown save requested, load requested,
+point created, save point failed, session end marked, load requested,
 re-apply accepted/rejected, wipe complete, system state change. A silent no-op
 is a bug.
 
@@ -79,9 +88,15 @@ pass per AGENTS.md: the EL_Test runner cannot survive a game-state transition.
 
 ## Fail-safes
 
-- No persistence system (client, Workbench editor world): manager degrades to a
-  no-op, `GetPersistenceSystem()` null, `EL_Debug.Warn` once.
+- No persistence system at game start (server): `EL_Debug.Error` — the world
+  systems config lacks the SCR_PersistenceSystem entry. Clients and Workbench
+  editor worlds (no game start) degrade silently to a no-op with
+  `GetPersistenceSystem()` null.
 - Save request rejected by the engine: the callback logs the failure and fires
   `GetOnSaveFinished()` with `false`; nothing throws.
 - Autosave while busy: the tick is skipped, not queued.
-- Shutdown save requested twice: the once-only guard makes the second a no-op.
+- Session end without a shutdown save: `OnPersistenceStateChanged` reaching
+  SHUTDOWN with the session-ending flag set and no SHUTDOWN result observed
+  logs an `EL_Debug.Error`, so a silently lost save is impossible.
+- `OnGameEnd` raised twice (dedicated-server shutdown): the once-only guard
+  makes the second pass a no-op.

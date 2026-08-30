@@ -96,6 +96,7 @@ GameProject {
 $addonsDir = (Join-Path $root "addons") + "," + $gameAddons
 $args = @(
   "-server", "Worlds/DebugWorld/DebugWorld.ent",
+  "-worldSystemsConfig", "{2104C177A245B6D1}Configs/Systems/LifeFrameworkSystems.conf",
   "-addonsDir", $addonsDir,
   "-addons", "LifeFramework",
   "-profile", $profile,

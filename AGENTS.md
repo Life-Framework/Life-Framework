@@ -54,12 +54,20 @@ tools\cli serve               # boot the test server and stream logs (blocks)
 tools\cli ci                  # validate + build + test — the full gate
 tools\cli validate            # repo consistency checks (also runs on commit)
 tools\cli lint                # run tools/lint/* checks
+tools\cli regen-localization  # rebuild runtime .conf tables from Language/*.st
 tools\cli mcp install|update|verify|enable|disable   # manage MCP servers
 ```
 
 The test flow: `Missions/EL_DebugTest.conf` loads `Worlds/DebugWorld`, the
 `EL_TestRunnerComponent` runs the `EL_Test*` suite on server start and prints
 machine-readable markers:
+
+> **`Worlds/DebugWorld/DebugWorld.ent` is 0 bytes on purpose.** All world
+> content lives in `Worlds/DebugWorld/DebugWorld_Layers/*.layer` files
+> (`Terrain.layer` = world BSP + terrain; each feature is its own layer). Do
+> not "repair" the empty `.ent` — it is a valid empty world. `MainWorld.ent`
+> differs: it is a `SubScene` wrapper over `worlds/Eden/Eden.ent`. See
+> `docs/features.md` → DebugWorld coverage.
 
 ```
 [ELTEST] START <name>
@@ -116,6 +124,11 @@ worktree drifts to another branch, `cli wt test/build/ship` refuse and
 `cli wt sync` checks it back out.
 
 ## Debug logging and the fail-safe rule
+
+Before investigating any console line, check `docs/debug-log-triage.md` — it
+classifies every known DebugWorld boot message (fixed bug, benign vanilla
+noise, by-design) so a session does not re-prove what a previous one already
+ruled out. Add new messages there in the same change that explains them.
 
 Every feature logs its state transitions through `EL_Debug`
 (`Scripts/Game/Core/EL_Debug.c`) so any headless or play run is greppable by
@@ -272,6 +285,23 @@ bug for each one; they transfer here because the engine is the same.
   entity is invisible. Every new resource needs a `.meta` with a unique GUID.
   A move/rename breaks every `{GUID}path` reference, including saved worlds —
   map references before moving.
+- **Materials.** A mod item that must show a texture reliably bakes its real
+  `.emat` into the `.xob` (MoneyStack.xob bakes CashMaterial.emat; Apple.xob
+  bakes Apple.emat). Relying on a prefab `MaterialAssignClass { AssignedMaterial
+  }` override over a `.xob` that bakes the base placeholder
+  `Common/Materials/Default.emat` is the fragile path: when the override does
+  not apply the mesh renders the white placeholder. The mining bars/nuggets/ores
+  and WoodPlank shipped that shape and went white. `validate-material-chains`
+  (part of `cli validate`) verifies every `AssignedMaterial`/texture reference
+  and warns on this placeholder-bake pattern.
+- **Texture verification is visual only.** The dedicated server (and any
+  `ArmaReforgerWorkbenchSteamDiag` instance) registers no renderer or texture
+  loader, so no EL_Test can prove a texture renders and `MeshObject.GetMaterials`
+  returns empty there. Verify a texture in the rendering Workbench play mode, or
+  read resolved prefab values with `wb_read_props`. When scripting the bridge,
+  run `wb_state`+`wb_play` in one MCP session (`tools\cli call --batch
+  @session.json`) - a fresh process per call starts with a stale "unknown" mode
+  and mode-gated tools refuse.
 - **Layouts.** A widget-instance GUID must be unique within the file; an
   inherited-component GUID must equal the GUID in the base layout (a fresh one
   adds a second, unconfigured component and the widget silently does nothing).
