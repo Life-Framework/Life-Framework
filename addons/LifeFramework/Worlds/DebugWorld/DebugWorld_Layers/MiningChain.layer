@@ -1,98 +1,85 @@
-GenericEntity MinerStand {
- coords 130 0 140
- {
-  GenericEntity MiningDisplayCrate {
-   components {
-    MeshObject "{59670CE9C98E5BAF}" {
-     Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
-    }
-    RigidBody "{59670CE9C98E5B27}" {
-     Mass 10
-     ModelGeometry 1
-     Static 1
-    }
-   }
-   coords 0 0.9 0
-   Flags 1027
-  }
-  GenericEntity MiningDisplayItems {
-   coords -1.6 0.9 0.7
-   {
-    $grp GenericEntity : "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et" {
-     IronNugget_01 {
-      coords 0 0 0
+$grp GenericEntity {
+ MinerStand {
+  coords 129.259 0 143.495
+  {
+   $grp GenericEntity {
+    MiningDisplayCrate {
+     components {
+      MeshObject "{59670CE9C98E5BAF}" {
+       Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+      }
+      RigidBody "{59670CE9C98E5B27}" {
+       Mass 10
+       ModelGeometry 1
+       Static 1
+      }
      }
-     IronNugget_02 {
-      coords 0.2 0 0.1
-     }
+     Flags 0x403 0
+     coords 0 0.9 0
     }
-    $grp GenericEntity : "{8F81BD0BF343CF49}Prefabs/Resources/Mining/GoldNugget.et" {
-     GoldNugget_01 {
-      coords 0.4 0 -0.1
-     }
-    }
-    $grp GenericEntity : "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et" {
-     CopperNugget_01 {
-      coords 0.1 0 0.2
-     }
-    }
-    $grp GenericEntity : "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et" {
-     IronBar_01 {
-      coords 0 0 0.2
-     }
-    }
-    $grp GenericEntity : "{ACC9A10F0F20F5C4}Prefabs/Resources/Mining/GoldBar.et" {
-     GoldBar_01 {
-      coords 0.3 0 0.15
-     }
-    }
-    $grp GenericEntity : "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et" {
-     CopperBar_01 {
-      coords -0.2 0 0.05
+    MiningDisplayItems {
+     coords -1.6 0.9 0.7
+     {
+      GenericEntity CopperNugget_01 : "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et" {
+       coords 0.1 0 0.2
+      }
+      GenericEntity CopperBar_01 : "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et" {
+       coords -0.2 0 0.05
+      }
+      $grp GenericEntity : "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et" {
+       IronNugget_01 {
+        coords 0 0 0
+       }
+       IronNugget_02 {
+        coords 0.2 0 0.1
+       }
+      }
+      GenericEntity GoldNugget_01 : "{8F81BD0BF343CF49}Prefabs/Resources/Mining/GoldNugget.et" {
+       coords 0.4 0 -0.1
+      }
+      GenericEntity GoldBar_01 : "{ACC9A10F0F20F5C4}Prefabs/Resources/Mining/GoldBar.et" {
+       coords 0.3 0 0.15
+      }
+      GenericEntity IronBar_01 : "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et" {
+       coords 0 0 0.2
+      }
      }
     }
    }
-  }
-  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
-   {
+   GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
     coords -1.6 0 0.7
    }
-  }
-  EL_NpcBaseEntity MinerNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
-   components {
-    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
-     Identity Identity "{5A4B0B84AF44A913}" {
-      Name "Miner"
-      Surname "Worker"
+   EL_NpcBaseEntity MinerNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+    components {
+     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+      Identity Identity "{5A4B0B84AF44A913}" {
+       Name "Miner"
+       Surname "Worker"
+      }
      }
     }
+    coords 0 0 -1.1
    }
-   coords 0 0 -1.1
-  }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords 1.6 0 -0.9
-  }
-  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
-   components {
-    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
-     m_bGradualLightning 0
-     m_fLV 2.6
-     m_eInitialLightState LIT
+   GenericEntity : "{B80655BD24D2C162}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
+    coords 1.6 0 -0.9
+   }
+   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+    components {
+     SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+      m_bGradualLightning 0
+      m_fLV 2.6
+      m_eInitialLightState LIT
+     }
     }
+    coords -1.6 0.9 -0.6
    }
-   coords -1.6 0.9 -0.6
   }
  }
-}
-GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
- coords 132.2 0.9 140.4
-}
-$grp GenericEntity {
  IronOreRock {
   coords 129 0 145
   {
    GenericEntity : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
-    coords 0 0.28 0
+    coords 5.724 0.28 2.861
    }
   }
  }
@@ -100,7 +87,7 @@ $grp GenericEntity {
   coords 130.5 0.251 145.5
   {
    GenericEntity : "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et" {
-    coords 0 0 0
+    coords 4.842 0 4.976
    }
   }
  }
@@ -108,39 +95,38 @@ $grp GenericEntity {
   coords 131 0 146
   {
    GenericEntity : "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et" {
-    coords 0 0.275 0
+    coords 4.377 0.275 6.931
    }
   }
  }
 }
-$grp GenericEntity : "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et" {
- MiningArea_Debug {
-  coords 130 0 147
-  m_vSize 10 1 10
-  m_iAmount 5
-  m_fRespawnTime 1
-  m_PrefabsToSpawn {
-   EL_WeightedSpawn "{5A7D1AB35E424547}" {
-    m_iChance 25
-    m_Prefab "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et"
-   }
-   EL_WeightedSpawn "{AB8F2EA71B954EDB}" {
-    m_iChance 50
-    m_Prefab "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
-   }
-   EL_WeightedSpawn "{3744BC775D5B4200}" {
-    m_iChance 25
-    m_Prefab "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et"
-   }
+GenericEntity Pickaxe_Debug : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
+ coords 135.079 0 145.373
+}
+EL_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et" {
+ coords 128.169 -0.459 151.274
+ m_vSize 10 1 10
+ m_iAmount 5
+ m_fRespawnTime 1
+ m_PrefabsToSpawn {
+  EL_WeightedSpawn "{5A7D1AB35E424547}" {
+   m_iChance 25
+   m_Prefab "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et"
+  }
+  EL_WeightedSpawn "{AB8F2EA71B954EDB}" {
+   m_iChance 50
+   m_Prefab "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
+  }
+  EL_WeightedSpawn "{3744BC775D5B4200}" {
+   m_iChance 25
+   m_Prefab "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et"
   }
  }
 }
-$grp GenericEntity : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
- Pickaxe_Debug {
-  coords 128 0 144
- }
+GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
+ coords 122.777 0.9 147.497
 }
 GenericEntity EL_MiningSign_Debug : "{27EDF8AFC363A7D5}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_underminedarea_pole.et" {
- coords 126.5 0 141.5
+ coords 124 0 145.5
  angles 0 90 0
 }
