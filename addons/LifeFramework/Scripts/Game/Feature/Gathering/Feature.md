@@ -47,8 +47,9 @@ Target: the resource is a **stateful physical object**:
 
 ## Current state
 
-- `EL_GatherAction` — interact action; **tool not re-validated server-side**.
+- `EL_GatherAction` — interact action with server-side tool and cooldown validation.
 - `EL_MiningArea` — spatial gate for mining.
+- `Tool_Base` — shared melee weapon stack now includes weapon attachment storage and a vanilla weapon animation graph; axe and pickaxe inherit the stack.
 - Prefabs: `Prefabs/Vegetation/Tree/`, `Prefabs/Vegetation/Crops/`,
   `Prefabs/Resources/Mining/`, `Prefabs/Resources/WoodCutting/`;
   `Assets/Resources/Mining/`, `Assets/Resources/WoodCutting/`;

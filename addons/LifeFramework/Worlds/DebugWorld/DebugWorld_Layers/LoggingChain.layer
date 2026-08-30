@@ -88,7 +88,7 @@ GenericEntity Axe_5ACCA165954CE408 : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et
    Filenames +{
    }
   }
-  InventoryItemComponent "{5ACCA164BC7A99A2}" {
+   SCR_WeaponAttachmentsStorageComponent "{5ACCA164BC7A99A2}" {
    Attributes SCR_ItemAttributeCollection "{51F080D5C64F12C5}" {
     ItemDisplayName UIInfo "{5990AD6EC4FAB1CD}" {
      Name "Axe"
@@ -131,6 +131,21 @@ GenericEntity Axe_5ACCA165954CE408 : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et
    m_fRange 1
   }
   WeaponComponent "{5990809682E12ADF}" {
+   WeaponAnimationComponent "{A6D3E9F14C7B2085}" {
+    AnimGraph "{6BEAF3C123F42BCC}Assets/Weapons/Handguns/workspaces/pistol_type.agr"
+    AnimInstance "{D09FB3E645475221}Assets/Weapons/Handguns/workspaces/pistol_main_beretta.asi"
+    StartNode "IdleFireSTM"
+    AnimInjection AnimationAttachmentInfo "{A6D3E9F14C7B2086}" {
+     AnimGraph "{6BEAF3C123F42BCC}Assets/Weapons/Handguns/workspaces/pistol_type.agr"
+     AnimInstance "{99EBECB3B5D9BB30}Assets/Weapons/Handguns/workspaces/player_main_m9.asi"
+     StartNode "IdleFireSTM"
+     BindingName "Weapon"
+    }
+    BindWithInjection 1
+    AnimVariablesToBind + {
+     "State"
+    }
+   }
    SignalsSourceAccess SignalsSourceAccessClass "{59927B29CCA9EA6F}" {
    }
    useAimingType None
