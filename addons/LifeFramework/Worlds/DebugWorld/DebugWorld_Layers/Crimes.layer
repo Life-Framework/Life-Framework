@@ -1,87 +1,100 @@
 GenericEntity CrimeScene {
- coords 150 0 146
+ coords 151.665 -0.001 152.082
  {
-  GenericEntity RobberyPoint_Money {
-   components {
-    MeshObject "{5A4B0B84C86D8843}" {
-     Object "{4CD9B977F230E7DF}Assets/Props/Furniture/Safe_01/Safe_01.xob"
-    }
-    RigidBody "{5A4B0B84C86D8844}" {
-     Mass 10
-     ModelGeometry 1
-     Static 1
-    }
-    ActionsManagerComponent "{5A4B0B84C86D8845}" {
-     ActionContexts {
-      UserActionContext "{5A4B0B84C86D8846}" {
-       ContextName "default"
-       Position PointInfo "{5A4B0B84C86D8847}" {
-        Offset 0 0.5 0
+  $grp GenericEntity {
+   RobberyPoint_Money {
+    components {
+     MeshObject "{5A4B0B84C86D8843}" {
+      Object "{4CD9B977F230E7DF}Assets/Props/Furniture/Safe_01/Safe_01.xob"
+     }
+     RigidBody "{5A4B0B84C86D8844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86D8845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86D8846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86D8847}" {
+         Offset 0 0.5 0
+        }
+        Radius 3
        }
-       Radius 3
+      }
+      additionalActions {
+       EL_RobAction "{5A4B0B84C86D8848}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{5A4B0B84C86D8849}" {
+         Name "Robar Dinero"
+         Description "Robar 200$ (Requiere 1+ policías de servicio)"
+        }
+        m_iMoneyAmount 200
+        m_fCooldown 60
+        m_iMinPoliceOnDuty 1
+       }
       }
      }
-     additionalActions {
-      EL_RobAction "{5A4B0B84C86D8848}" {
-       ParentContextList {
-        "default"
-       }
-       UIInfo UIInfo "{5A4B0B84C86D8849}" {
-        Name "Robar Dinero"
-        Description "Robar 200$ (Requiere 1+ policías de servicio)"
-       }
-       m_iMoneyAmount 200
-       m_fCooldown 60
-       m_iMinPoliceOnDuty 1
-      }
+     RplComponent "{5A4B0B84C86D884A}" {
+      Enabled 1
      }
     }
-    RplComponent "{5A4B0B84C86D884A}" {
-     Enabled 1
+    coords 0 0 0
+   }
+   RobberyPoint_Weapon {
+    components {
+     MeshObject "{5A4B0B84C86D9843}" {
+      Object "{B98BC8DC4C59B8DA}Assets/Props/Military/Camps/WeaponRackStand_01/WeaponRackStand_01.xob"
+     }
+     RigidBody "{5A4B0B84C86D9844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86D9845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86D9846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86D9847}" {
+         Offset 0 1 0
+        }
+        Radius 3
+       }
+      }
+      additionalActions {
+       EL_RobWeaponAction "{5A4B0B84C86D9848}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{5A4B0B84C86D9849}" {
+         Name "Robar Armas"
+         Description "Robo de armería (Requiere 2+ policías de servicio)"
+        }
+        m_WeaponPrefab "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et"
+        m_fCooldown 120
+        m_iMinPoliceOnDuty 2
+       }
+      }
+     }
+     RplComponent "{5A4B0B84C86D984A}" {
+      Enabled 1
+     }
+    }
+    coords 3.5 0 0
+   }
+   CrimesTableItems {
+    coords -1.6 0 0.7
+    {
+     GenericEntity StolenMoney_Debug : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
+      coords 0 0 0
+     }
+     GenericEntity ConfiscatedRifle_Debug : "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et" {
+      coords 0.3 0 0.1
+     }
     }
    }
-   coords 0 0.9 0
-  }
-  GenericEntity RobberyPoint_Weapon {
-   components {
-    MeshObject "{5A4B0B84C86D9843}" {
-     Object "{B98BC8DC4C59B8DA}Assets/Props/Military/Camps/WeaponRackStand_01/WeaponRackStand_01.xob"
-    }
-    RigidBody "{5A4B0B84C86D9844}" {
-     Mass 10
-     ModelGeometry 1
-     Static 1
-    }
-    ActionsManagerComponent "{5A4B0B84C86D9845}" {
-     ActionContexts {
-      UserActionContext "{5A4B0B84C86D9846}" {
-       ContextName "default"
-       Position PointInfo "{5A4B0B84C86D9847}" {
-        Offset 0 1 0
-       }
-       Radius 3
-      }
-     }
-     additionalActions {
-      EL_RobWeaponAction "{5A4B0B84C86D9848}" {
-       ParentContextList {
-        "default"
-       }
-       UIInfo UIInfo "{5A4B0B84C86D9849}" {
-        Name "Robar Armas"
-        Description "Robo de armería (Requiere 2+ policías de servicio)"
-       }
-       m_WeaponPrefab "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et"
-       m_fCooldown 120
-       m_iMinPoliceOnDuty 2
-      }
-     }
-    }
-    RplComponent "{5A4B0B84C86D984A}" {
-     Enabled 1
-    }
-   }
-   coords 3.5 0.9 0
   }
   GenericEntity RobberyPoint_Vehicle : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
    components {
@@ -111,27 +124,10 @@ GenericEntity CrimeScene {
      }
     }
    }
-   coords 7 0.9 0
+   coords 7 0 0
   }
-  GenericEntity CrimesTableItems {
-   coords -1.6 0.9 0.7
-   {
-    $grp GenericEntity : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
-     StolenMoney_Debug {
-      coords 0 0 0
-     }
-    }
-    $grp GenericEntity : "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et" {
-     ConfiscatedRifle_Debug {
-      coords 0.3 0 0.1
-     }
-    }
-   }
-  }
-  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
-   {
-    coords -1.6 0 0.7
-   }
+  GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   coords -1.6 0 0.7
   }
   EL_NpcBaseEntity WantedPoliceNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -144,8 +140,9 @@ GenericEntity CrimeScene {
    }
    coords 0 0 -1.1
   }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
+  GenericEntity : "{B80655BD24D2C162}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
    coords 1.6 0 -0.9
+   angles 0 0 0
   }
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
@@ -155,7 +152,7 @@ GenericEntity CrimeScene {
      m_eInitialLightState LIT
     }
    }
-   coords -1.6 0.9 -0.6
+   coords -1.6 0 -0.6
   }
  }
 }

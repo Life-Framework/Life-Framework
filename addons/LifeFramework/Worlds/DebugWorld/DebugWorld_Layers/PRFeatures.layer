@@ -1,4 +1,4 @@
-$grp GenericEntity : "{4E5531CDAE20F9EF}Prefabs/Vehicles/Wheeled/M151A2/M151A2_canvas_roof.et" {
+$grp GenericEntity : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
  Vehicle_PlateTest {
   coords 128 0 136
  }
@@ -10,8 +10,6 @@ $grp GenericEntity : "{4E5531CDAE20F9EF}Prefabs/Vehicles/Wheeled/M151A2/M151A2_c
   }
   coords 134 0 136
  }
-}
-$grp GenericEntity : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
  Vehicle_SirenTest {
   coords 140 0 136
  }

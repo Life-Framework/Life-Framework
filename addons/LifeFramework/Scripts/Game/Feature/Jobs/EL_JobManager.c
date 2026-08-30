@@ -68,6 +68,6 @@ class EL_JobManager : Managed
 		atmManager.Deposit(playerUid, amount);
 
 		// Show notification
-		EL_Utils.Notify(string.Format("#EL-Job_Earned", amount), "#EL-Job_Reward", 3.0);
+		EL_Utils.Notify(WidgetManager.Translate("#EL-Job_Earned", amount), "#EL-Job_Reward", 3.0);
 	}
 };
