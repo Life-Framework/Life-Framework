@@ -149,8 +149,8 @@
   is the only bank, and the ATM is the only cash↔account boundary.
   `Deposit` only if `>0`, `Withdraw` only if sufficient; balance never negative
   through these paths. Manager is a session map registry + async loader.
-- ⚠️ `SetBalance` (persistence path) has no clamp. `CreateAccount` silently
-  overwrites an existing account.
+- ✅ `SetBalance` clamps corrupt negative persistence values, and
+  `CreateAccount` is idempotent and rejects empty IDs (verified 2026-08-30).
 
 ### `EL_ATMMenu` — `Feature/ATM/EL_ATMMenu.c`
 - ✅ **Cash moves** (verified 2026-08-30): the menu forwards through
@@ -199,17 +199,17 @@
 - ✅ Interact action granting `m_GatherAmount` of `m_GatherItemPrefab` into
   the user inventory; tool requirement (right hand / left gadget / anywhere
   in inventory); per-resource gather counter + cooldown restock.
-- ❌ `PerformAction` does not re-validate the tool (client-evaluated
-  `CanBePerformedScript` is the only gate) — hostile RPC can gather without
-  the tool. `m_GatherAmountMax` 0/unset cycles oddly. Timeout attribute says
-  "ms" but is compared as seconds-compatible — fragile.
+- ✅ Server re-validates tool, crop stage, cooldown, and malformed item/amount
+  configuration in `PerformAction` (verified 2026-08-30). Remaining: timeout
+  attribute says "ms" but is compared as seconds-compatible — fragile.
 
 ### `EL_ProcessAction` — `Feature/Processing/EL_ProcessAction.c`
 - ✅ Recipe: consume all `m_aProcessingInputs`, produce all
   `m_aProcessingOutputs` (into inventory or force-dropped).
-- ❌ **Free-output exploit**: `PerformAction` grants all outputs even when
-  inputs are missing (`RemoveAmount` clamps to available). No server-side
-  re-validation. Empty input list means free outputs.
+- ✅ **Free-output exploit closed** (verified 2026-08-30): malformed recipes,
+  empty input/output lists, missing inputs, and non-positive amounts are
+  rejected before inventory mutation. Regression coverage is in
+  `EL_Test_ActionGuards`.
 
 ### `EL_DestructibleResourceComponent` + `EL_DestructibleResourceHitZone` — `Feature/Resources/`
 - ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit.
@@ -255,10 +255,12 @@
 - ✅ License catalog (26 entries), `CanUnlockLicense` (owned/config/whitelist/
   level), `CanAffordLicense` (SP cost), `PurchaseLicense` (spends SP +
   unlock), `HasLicense`, persistence restore.
-- ❌ Whitelist hard-coded to POLICE in `UnlockLicense` — a MEDIC whitelisted
-  license would wrongly require police whitelist. `PurchaseLicense` spends SP
-  even if `UnlockLicense` later rejects (double-charge). `SetUnlockedLicenses`
-  bypasses all checks. Not localized. `m_bIsInitialLicense` never read.
+- ✅ **Whitelist mapping and purchase ordering fixed** (verified 2026-08-30):
+  `GetLicenseWhitelistJob` maps MEDIC access to MEDIC and police licenses to
+  POLICE; `PurchaseLicense` validates requirements before `UnlockLicense`
+  spends skill points. `SetUnlockedLicenses` is the persistence restore seam,
+  not a player purchase path. Remaining: not localized; `m_bIsInitialLicense`
+  is used for initial grants.
 
 ### `EL_WhitelistManager` — `Feature/Whitelist/EL_WhitelistManager.c`
 - ✅ Pure static in-memory whitelists; `IsFactionRestricted` (POLICE,
@@ -378,15 +380,26 @@
 - ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,
   `EL_SurvivalHUD`, `FactionSelectionMenu`, `ShopMenu`, `PoliceMenu`,
   `DeathScreen` load (WORLD tier).
-- ✅ `EL_DebugMenu` is a DebugWorld-only menu opened with F10 (or its
-  rebind), with server-routed controls for cash, wanted state, faction, jobs,
-  survival, XP, and skill points. Its RPC rejects non-DebugWorld requests
+- ✅ `EL_DebugMenu` is a development menu opened with F10 (or its rebind),
+  with server-routed controls for cash, wanted state, faction, jobs, survival,
+  XP, and skill points. Actions affect only the requesting player's state
   (verified 2026-08-30).
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
   — the player sees raw keys. Spanish literals throughout jobs/licenses/
   notifications. Violates the AGENTS.md localization contract.
+
+## DebugWorld coverage
+
+- ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
+  Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
+  traders, jobs, police, crime, houses, survival, and tests are all present
+  as non-empty layer files. `tools\cli validate` runs
+  `validate-debugworld.ps1` to guard the layer set.
+- ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
+  trader cash payout → shop purchase → ATM deposit path. Robbery proceeds are
+  asserted as cash and are not added to the bank.
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
@@ -396,11 +409,11 @@
    trader sells, shop sells, robberies and job rewards all pay `EL_MoneyUtils`
    cash. Shop buy/sell correctness closed (partial refunds), ATM deposit/
    withdraw moves real cash with rollback. Remaining: no shop stock / per-item
-   max quantity; ATM `SetBalance` unclamped.
+   max quantity.
 2. **Security — mostly closed.** Fruit-catcher score is server-clamped
    (pin test); `RpcAsk_DebugGrantLicense` removed; quantity RPCs have an
-   ownership gate. Remaining: gather/process actions have no server-side
-   re-validation in `PerformAction`.
+   ownership gate; gather/process actions re-validate server-side and reject
+   malformed configurations. Remaining: multiplayer proof for the RPC edges.
 3. **Persistence — improved.** Cache-eviction churn fixed (account stays
    resident). Remaining: no save version fields; `ApplyTo` returns the wrong
    enum in `EL_PlayerAccountSaveData`.

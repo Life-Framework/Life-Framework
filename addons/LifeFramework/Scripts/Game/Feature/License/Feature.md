@@ -23,11 +23,12 @@ in-world document; a license is another document you carry.
 
 ## V1 (shippable)
 
-1. **Fix the double-charge**: `PurchaseLicense` spends SP even if
-   `UnlockLicense` later rejects.
-2. **Fix the hard-coded POLICE whitelist** in `UnlockLicense` — a MEDIC
-   whitelisted license wrongly requires the police whitelist.
-3. Remove the bypass: `SetUnlockedLicenses` sets licenses with no checks at all.
+1. **Fix the double-charge — DONE** (verified 2026-08-30): `PurchaseLicense`
+   validates before `UnlockLicense` spends SP.
+2. **Fix the hard-coded POLICE whitelist — DONE**: license types map to their
+   correct whitelist job, including MEDIC.
+3. Keep `SetUnlockedLicenses` as the persistence restore seam; it is not a
+   player purchase path. Duplicate restored licenses are deduplicated.
 4. Localize and honor `m_bIsInitialLicense` (never read today).
 
 ## Iteration path
@@ -38,8 +39,8 @@ in-world document; a license is another document you carry.
 ## Current state
 
 - `EL_LicenseManagerComponent` (`Feature/License/`) — catalog + gates +
-  purchase + persistence. ❌ double-charge, hard-coded POLICE whitelist,
-  unchecked bulk setter.
+  purchase + persistence. ✅ purchase ordering, whitelist mapping, and
+  persistence-list deduplication are guarded. Remaining localization work.
 
 ## Dependencies
 

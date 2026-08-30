@@ -29,8 +29,13 @@ class EL_GatherAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!EL_NetworkUtils.IsOwner(pOwnerEntity)) return;
+		if (!IsGatherRequestConfigured(m_GatherItemPrefab, m_GatherAmount))
+		{
+			EL_Debug.Error("Gathering", "rejected gather: item prefab or amount is not configured");
+			return;
+		}
 
-// Server-side re-validation: the client's CanBePerformedScript is not a gate
+		// Server-side re-validation: the client's CanBePerformedScript is not a gate.
 		if (!EL_CanGatherServer(pUserEntity))
 		{
 			EL_Debug.Warn("Gathering", string.Format("rejected gather (tool/cooldown) prefab=%1", m_GatherItemPrefab));
@@ -87,7 +92,10 @@ class EL_GatherAction : ScriptedUserAction
 	// Checks if a required item has been set in the Editor
 	// If so, check if its in the users inventory/hands depending on settings set
 	override bool CanBePerformedScript(IEntity user)
- 	{
+  	{
+		if (!IsGatherRequestConfigured(m_GatherItemPrefab, m_GatherAmount))
+			return false;
+
 		if (m_GatherAmountMax > 0 && m_iRemainingGathers <= 0 && m_NextRestock.Greater(user.GetWorld().GetTimestamp()))
 		{
 			int secondsLeft = m_NextRestock.DiffMilliseconds(user.GetWorld().GetTimestamp()) / 1000;
@@ -151,5 +159,14 @@ class EL_GatherAction : ScriptedUserAction
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reject malformed gather actions before an attempt is consumed.
+	static bool IsGatherRequestConfigured(ResourceName itemPrefab, int amount)
+	{
+		if (itemPrefab.IsEmpty())
+			return false;
+		return amount > 0;
 	}
 }

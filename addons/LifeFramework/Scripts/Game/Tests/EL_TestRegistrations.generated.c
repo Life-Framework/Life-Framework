@@ -16,6 +16,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_AccountManagerCache(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AccountActiveIndex(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AccountCachePolicy(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_ActionGuards(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AreaSpawner(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_BankAccountMath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_BankSaveRoundtrip(), EL_TestTier.LOGIC);
@@ -23,6 +24,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_BankSaveIdempotent(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_BankSaveEmpty(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMManagerGuards(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_BankApplySnapshot(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_CropPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropStages(), EL_TestTier.LOGIC);

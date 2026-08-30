@@ -48,9 +48,13 @@ class EL_ATMManager : Managed
 		if (!instance)
 			instance = new EL_ATMManager();
 
+		// The save is a complete snapshot. Remove accounts absent from it so a
+		// reduced or empty load cannot resurrect stale balances.
+		instance.m_mAccounts.Clear();
+
 		foreach (EL_BankAccountRecord record : records)
 		{
-			if (!record)
+			if (!record || record.m_sPersistentId.IsEmpty())
 				continue;
 
 			EL_BankAccount account = EL_BankAccount.Create(record.m_sPersistentId);
@@ -116,12 +120,28 @@ class EL_ATMManager : Managed
 	//------------------------------------------------------------------------------------------------
 	void AddAccount(EL_BankAccount account)
 	{
+		if (!account || account.GetPersistentId().IsEmpty())
+		{
+			EL_Debug.Error("ATM", "account registration rejected: empty account id");
+			return;
+		}
+
 		m_mAccounts.Set(account.GetPersistentId(), account);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	EL_BankAccount CreateAccount(string accountId)
 	{
+		if (accountId.IsEmpty())
+		{
+			EL_Debug.Error("ATM", "account creation rejected: empty account id");
+			return null;
+		}
+
+		EL_BankAccount existing = m_mAccounts.Get(accountId);
+		if (existing)
+			return existing;
+
 		EL_BankAccount account = EL_BankAccount.Create(accountId);
 		AddAccount(account);
 		return account;

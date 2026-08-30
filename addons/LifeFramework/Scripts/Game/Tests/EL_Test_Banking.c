@@ -85,6 +85,7 @@ class EL_Test_ATMManagerRegistry : EL_Test
 	{
 		EL_ATMManager.Reset();
 		EL_ATMManager manager = EL_ATMManager.GetInstance();
+		ctx.True(manager.CreateAccount("") == null, "CreateAccount rejects an empty account id");
 
 		EL_BankAccount created = manager.CreateAccount("test-atm-uid");
 		ctx.NotNull(created, "CreateAccount returns a new account");
@@ -92,6 +93,10 @@ class EL_Test_ATMManagerRegistry : EL_Test
 
 		ctx.True(manager.Deposit("test-atm-uid", 500), "Deposit on a known account succeeds");
 		ctx.Equal(500, created.GetBalance(), "Deposit reaches the account");
+
+		EL_BankAccount duplicate = manager.CreateAccount("test-atm-uid");
+		ctx.True(duplicate == created, "CreateAccount returns the existing account for a duplicate id");
+		ctx.Equal(500, duplicate.GetBalance(), "duplicate account creation preserves the existing balance");
 
 		ctx.True(manager.Withdraw("test-atm-uid", 100), "Withdraw on a known account succeeds");
 		ctx.Equal(400, created.GetBalance(), "Withdraw reaches the account");
@@ -187,5 +192,29 @@ class EL_Test_ATMManagerGuards : EL_Test
 		ctx.False(manager.Withdraw("test-guards", -1), "Withdraw of a negative amount through the manager fails");
 		ctx.False(manager.Withdraw("test-guards", 501), "Withdraw above the balance through the manager fails");
 		ctx.Equal(500, account.GetBalance(), "rejected manager withdrawals leave the balance unchanged");
+	}
+};
+
+//------------------------------------------------------------------------------------------------
+// tier: LOGIC
+class EL_Test_BankApplySnapshot : EL_Test
+{
+	override string GetName()
+	{
+		return "bank/apply-snapshot";
+	}
+
+	override void Run(EL_TestContext ctx)
+	{
+		EL_ATMManager.Reset();
+		EL_ATMManager manager = EL_ATMManager.GetInstance();
+		EL_BankAccount stale = manager.CreateAccount("stale-bank");
+		manager.Deposit("stale-bank", 900);
+
+		ref array<ref EL_BankAccountRecord> emptyRecords = new array<ref EL_BankAccountRecord>();
+		EL_ATMManager.ApplyAll(emptyRecords);
+
+		ctx.True(EL_ATMManager.GetInstance().GetAccount("stale-bank") == null, "snapshot apply removes accounts absent from the save");
+		ctx.Equal(0, EL_ATMManager.ExportAll().Count(), "empty snapshot exports no stale accounts");
 	}
 };
