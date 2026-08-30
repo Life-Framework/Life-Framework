@@ -63,4 +63,5 @@ GenericEntity {
    Enabled 1
   }
  }
+ Flags 0x403 0
 }

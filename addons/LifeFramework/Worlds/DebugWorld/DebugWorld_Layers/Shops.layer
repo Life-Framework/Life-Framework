@@ -39,6 +39,7 @@ $grp GenericEntity {
     Enabled 1
    }
   }
+  Flags 0x403 0
   coords 142 0 130
  }
  Shop_BlackMarket_Debug {
@@ -89,6 +90,7 @@ $grp GenericEntity {
     Enabled 1
    }
   }
+  Flags 0x403 0
   coords 146 0 130
  }
 }

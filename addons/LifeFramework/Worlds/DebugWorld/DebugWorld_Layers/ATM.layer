@@ -34,7 +34,8 @@ GenericEntity ATM_Debug {
    Enabled 1
   }
  }
- coords 138 0 130
+  Flags 0x403 0
+  coords 138 0 130
 }
 GenericEntity ATM_Debug_2 {
  components {
@@ -72,7 +73,8 @@ GenericEntity ATM_Debug_2 {
    Enabled 1
   }
  }
- coords 140 0 130
+  Flags 0x403 0
+  coords 140 0 130
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
  coords 139 0 130

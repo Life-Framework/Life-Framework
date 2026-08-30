@@ -122,4 +122,5 @@ EL_NpcBaseEntity {
    AlwaysActive 1
   }
  }
+ Flags 0x403 0
 }

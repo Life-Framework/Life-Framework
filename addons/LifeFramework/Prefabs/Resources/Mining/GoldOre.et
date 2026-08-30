@@ -19,7 +19,7 @@ GenericEntity {
   }
   RplComponent "{59A73088DB3D50A3}" {
   }
-ActionsManagerComponent "{13F1B83A91F884BB}" {
+ ActionsManagerComponent "{13F1B83A91F884BB}" {
     ActionContexts {
      UserActionContext "{8C6DB33C8DA7347A}" {
       ContextName "Mine"
@@ -42,9 +42,10 @@ ActionsManagerComponent "{13F1B83A91F884BB}" {
      m_GatherAmount 1
      m_GatherAmountMax 3
       m_GatherTimeout 600000
-    }
    }
   }
  }
+ Flags 0x403 0
+}
  coords 105.117 0.097 132.47
 }

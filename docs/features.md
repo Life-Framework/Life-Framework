@@ -392,6 +392,15 @@
 
 ## DebugWorld coverage
 
+- ℹ️ **`Worlds/DebugWorld/DebugWorld.ent` is intentionally 0 bytes.** All
+  DebugWorld content lives in `Worlds/DebugWorld/DebugWorld_Layers/*.layer`;
+  `Terrain.layer` carries the world BSP and terrain entity. Do not repair the
+  empty `.ent`.
+- ℹ️ **Direct collision fixtures need `Flags 0x403 0`.** This includes the
+  `Traceable` flag. Without it, a `MeshObject` + `RigidBody` can render while
+  character movement and projectile traces pass through it. Prefab fixtures
+  such as `EL_TestRunner` inherit the flag; hand-authored `GenericEntity`
+  fixtures must set it explicitly.
 - ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, and tests are all present

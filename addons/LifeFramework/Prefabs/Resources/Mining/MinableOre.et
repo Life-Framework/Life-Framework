@@ -69,5 +69,6 @@ GenericEntity {
   RplComponent "{59F0709385A13E0D}" {
   }
  }
+ Flags 0x403 0
  coords 114.759 0.015 145.209
 }
