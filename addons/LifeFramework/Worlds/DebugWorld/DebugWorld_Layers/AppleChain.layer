@@ -1,5 +1,5 @@
 GenericEntity AppleTrader {
- coords 111.065 0 135
+ coords 94 0 140
  {
   $grp GenericEntity {
    AppleTradeContainer {
@@ -69,12 +69,11 @@ GenericEntity AppleTrader {
       Enabled 1
      }
     }
-    coords 0.071 0.899 0.094
-    angleY -14.907
+    coords 0 0.9 0
     Flags 1027
    }
    AppleTraderTestItems {
-    coords -0.846 0.935 0.157
+    coords -1.6 0.9 0.7
     {
      $grp GenericEntity : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
       Apple_5A0E821DC5FD6433 {
@@ -168,20 +167,19 @@ GenericEntity AppleTrader {
       Enabled 1
      }
     }
-    coords -1.954 0.9 0.119
-    angleY -14.907
+    coords 1 0.9 0.4
     Flags 1027
    }
   }
   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {
-    coords 0.147 0 0
+    coords -1.6 0 0.7
    }
    {
-    coords -1.066 0 0
+    coords -2.6 0 0.7
    }
    {
-    coords -2.273 0 0
+    coords -3.6 0 0.7
    }
   }
   EL_NpcBaseEntity AppleNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
@@ -193,13 +191,10 @@ GenericEntity AppleTrader {
      }
     }
    }
-   coords 0 0 -0.957
+   coords 0 0 -1.1
   }
   SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords -2.173 0 -0.978
-   angleX 3.475
-   angleY 14.617
-   angleZ -0.846
+   coords 1.6 0 -0.9
   }
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
@@ -209,7 +204,7 @@ GenericEntity AppleTrader {
      m_eInitialLightState LIT
     }
    }
-   coords -1.326 0.902 -0.041
+   coords -1.6 0.9 -0.6
   }
  }
 }
@@ -222,9 +217,8 @@ Tree AppleGatherTree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domest
    }
   }
  }
- coords 107.432 0 134.812
- angleY -104.782
+ coords 94 0 145
 }
 GenericEntity AppleProcessor : "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et" {
- coords 108.516 0.899 135.363
+ coords 96.2 0.9 140.4
 }

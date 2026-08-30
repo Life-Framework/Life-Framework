@@ -171,7 +171,7 @@ class EL_VehicleLockComponent : SCR_BaseLockComponent
 	//------------------------------------------------------------------------------------------------
 	//! \param user The character to search.
 	//! \return True when the user holds a matching key in the left-hand gadget slot or anywhere in
-	//! the root items of their inventory. Keys inside nested containers are not found.
+	//! their inventory, including nested containers.
 	bool UserHasValidKey(IEntity user)
 	{
 		if (!user)
@@ -186,7 +186,8 @@ class EL_VehicleLockComponent : SCR_BaseLockComponent
 			return false;
 
 		array<IEntity> inventoryItems = {};
-		inventoryManager.GetAllRootItems(inventoryItems);
+		EL_VehicleKeyScanPredicate anyItemPredicate = new EL_VehicleKeyScanPredicate();
+		inventoryManager.FindItems(inventoryItems, anyItemPredicate);
 		foreach (IEntity item : inventoryItems)
 		{
 			if (IsValidKey(item))
@@ -194,5 +195,14 @@ class EL_VehicleLockComponent : SCR_BaseLockComponent
 		}
 
 		return false;
+	}
+}
+
+class EL_VehicleKeyScanPredicate : InventorySearchPredicate
+{
+	//------------------------------------------------------------------------------------------------
+	override protected bool IsMatch(BaseInventoryStorageComponent storage, IEntity item, array<GenericComponent> queriedComponents, array<BaseItemAttributeData> queriedAttributes)
+	{
+		return true;
 	}
 }

@@ -1,31 +1,63 @@
 FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialog.layout" {
  {
-  VerticalLayoutWidgetClass "{3279531DBED5EC3F}" {
+  VerticalLayoutWidgetClass "{3DECF62007794AEE}" {
    {
-    TextWidgetClass "{10D772C335F48041}" {
-     Text "Shop"
+    TextWidgetClass "{A0827EF3F3C5A7DA}" {
+     Name "ShopTitle"
+     Text "#EL-Shop_Title"
      "Font Size" 24
-     Slot LayoutSlot "{91AEDE42561FDE6C}" {
+     Slot LayoutSlot "{8485FE9B8D6CB358}" {
       HorizontalAlign 1
       Padding 0 20 0 10
      }
     }
-    ScrollLayoutWidgetClass "{8FD16C011B382FD5}" {
-     Slot LayoutSlot "{83D3197C4EF1C167}" {
+    TextWidgetClass "{EF76DBE870689894}" {
+     Name "CashText"
+     "Font Size" 18
+     Slot LayoutSlot "{9491FF7ADED41081}" {
+      HorizontalAlign 1
+      Padding 0 10 0 10
+     }
+    }
+    EditBoxWidgetClass "{5638CFE0B886BAC2}" {
+     Name "SearchBox"
+     "Use placeholder text" 1
+     "Placeholder text" "#EL-Shop_Search"
+     "Font Size" 16
+     Slot LayoutSlot "{0501A7D19E2E8A9A}" {
+      Padding 20 0 20 5
+     }
+    }
+    TextWidgetClass "{266673C9294DBA24}" {
+     Name "ResultText"
+     "Font Size" 13
+     Slot LayoutSlot "{B55A6CB10FE6B70A}" {
+      HorizontalAlign 1
+      Padding 20 0 20 5
+     }
+    }
+    ScrollLayoutWidgetClass "{844D5933298D4335}" {
+     Slot LayoutSlot "{86D3B74789F6CE3B}" {
       SizeMode Fill
       FillWeight 1
       Padding 20 10 20 10
      }
      {
-      VerticalLayoutWidgetClass "{E0561A35B61EBFCD}" {
+      VerticalLayoutWidgetClass "{F01533D6C85644B9}" {
        Name "ItemList"
       }
      }
     }
-    ButtonWidgetClass "{06449D2DCD8F6F7A}" : "{0114A06AD44D49BD}UI/layouts/WidgetLibrary/Buttons/DialogButtonCancel.layout" {
-     Name "CloseButton"
-     Slot LayoutSlot "{696F743BA9E4ADBF}" {
+    HorizontalLayoutWidgetClass "{9A49F6B6E443AFA7}" {
+     Slot LayoutSlot "{AF7A9E942D935174}" {
       Padding 20 20 20 20
+     }
+     {
+      ButtonWidgetClass "{51801DF6D98CF814}" : "{0114A06AD44D49BD}UI/layouts/WidgetLibrary/Buttons/DialogButtonCancel.layout" {
+       Name "CloseButton"
+       Slot LayoutSlot "{63E32C64CFE804A8}" {
+       }
+      }
      }
     }
    }

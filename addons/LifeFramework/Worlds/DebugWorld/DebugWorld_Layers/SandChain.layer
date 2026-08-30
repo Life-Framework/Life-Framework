@@ -1,7 +1,71 @@
-GenericEntity Sandbag_5A0E821DC5FD2BE3 : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
- coords 122.557 0.001 135.238
+GenericEntity BuilderStand {
+ coords 118 0 128
+ {
+  GenericEntity DisplayCrate {
+   components {
+    MeshObject "{59670CE9C98E5BAF}" {
+     Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+    }
+    RigidBody "{59670CE9C98E5B27}" {
+     Mass 10
+     ModelGeometry 1
+     Static 1
+    }
+   }
+   coords 0 0.9 0
+   Flags 1027
+  }
+  GenericEntity SandDisplayItems {
+   coords -1.6 0.9 0.7
+   {
+    $grp GenericEntity : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
+     Sandbag_01 {
+      coords 0 0 0
+     }
+     Sandbag_02 {
+      coords 0.25 0 0.05
+     }
+     Sandbag_03 {
+      coords -0.15 0 0.1
+     }
+    }
+   }
+  }
+  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   {
+    coords -1.6 0 0.7
+   }
+  }
+  EL_NpcBaseEntity BuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Builder"
+      Surname "Worker"
+     }
+    }
+   }
+   coords 0 0 -1.1
+  }
+  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
+   coords 1.6 0 -0.9
+  }
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+   coords -1.6 0.9 -0.6
+  }
+ }
 }
 GenericEntity : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
- coords 122.352 0.001 131.174
+ coords 118 0 133
  angleY -179.853
+}
+GenericEntity Sandbag_5A0E821DC5FD2BE3 : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
+ coords 119 0 133.5
 }

@@ -19,8 +19,8 @@ enum EFruitState
 // Clase para representar una fruta cayendo
 class EL_FallingFruit
 {
-	Widget m_wFruitWidget;
-	ImageWidget m_wFruitImage;
+	ref Widget m_wFruitWidget;
+	ref ImageWidget m_wFruitImage;
 	EFruitState m_eFruitState;
 	EHarvestJobType m_eFruitType;
 	float m_fPositionX;

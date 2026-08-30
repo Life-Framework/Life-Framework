@@ -16,6 +16,8 @@ SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base
   }
    EL_CharacterATMComponent "{1451F1A3FCD22B64}" {
    }
+   EL_CharacterShopComponent "{1A15EA02D6D8C60A}" {
+   }
    EL_CharacterSurvivalComponent "{A68F47E449868506}" {
    }
    EL_PlayerLevelComponent "{A68F47E449868507}" {

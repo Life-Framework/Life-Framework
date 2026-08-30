@@ -241,7 +241,12 @@ class EL_LightChild
 		m_LightEntity.SetConeAngle(m_fConeAngle);
 		m_LightEntity.SetNearPlane(m_NearPlane);
 		m_LightEntity.SetLensFlareType(LightLensFlareType.Disabled);
-		parent.AddChild(m_LightEntity, parent.GetBoneIndex(m_PivotPoint));
+
+		int boneIndex = -1;
+		Animation anim = parent.GetAnimation();
+		if (anim)
+			boneIndex = anim.GetBoneIndex(m_PivotPoint);
+		parent.AddChild(m_LightEntity, boneIndex);
 	}
 
 	//------------------------------------------------------------------------------------------------

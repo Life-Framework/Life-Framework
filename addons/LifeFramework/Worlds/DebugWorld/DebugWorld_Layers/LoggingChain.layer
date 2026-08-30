@@ -1,25 +1,90 @@
-GenericEntity WoodLog_01_Small_5ACEABD58E8C1214 : "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et" {
- coords 94.275 0.001 136.973
+GenericEntity LumberjackStand {
+ coords 142 0 140
+ {
+  GenericEntity DisplayCrate {
+   components {
+    MeshObject "{59670CE9C98E5BAF}" {
+     Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+    }
+    RigidBody "{59670CE9C98E5B27}" {
+     Mass 10
+     ModelGeometry 1
+     Static 1
+    }
+   }
+   coords 0 0.9 0
+   Flags 1027
+  }
+  GenericEntity LoggingDisplayItems {
+   coords -1.6 0.9 0.7
+   {
+    $grp GenericEntity : "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et" {
+     WoodLog_01 {
+      coords 0 0 0
+     }
+     WoodLog_02 {
+      coords 0.2 0 0.1
+     }
+    }
+    $grp GenericEntity : "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et" {
+     WoodPlank_01 {
+      coords 0.4 0 -0.1
+     }
+    }
+    $grp GenericEntity : "{6697C9B8CEB5234C}Prefabs/Resources/WoodCutting/WoodKindling.et" {
+     WoodKindling_01 {
+      coords 0.1 0 0.2
+     }
+    }
+   }
+  }
+  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   {
+    coords -1.6 0 0.7
+   }
+  }
+  EL_NpcBaseEntity LumberjackNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Lumberjack"
+      Surname "Worker"
+     }
+    }
+   }
+   coords 0 0 -1.1
+  }
+  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
+   coords 1.6 0 -0.9
+  }
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+   coords -1.6 0.9 -0.6
+  }
+ }
+}
+GenericEntity : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
+ coords 144.2 0.9 140.4
 }
 $grp GenericEntity : "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylvestris/CuttableTree_Pinus_Sylvestris_2f.et" {
  {
-  coords 96.112 0.001 134.961
+  coords 141.2 0 145
   angles 0 18.018 0
  }
  {
-  coords 97.6 0.001 133.2
+  coords 142.5 0 145.6
   angles 0 40 0
  }
  {
-  coords 95.3 0.001 132.4
+  coords 143.3 0 144.6
   angles 0 -30 0
  }
-}
-GenericEntity WoodPlank_5ACEABD590364FAA : "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et" {
- coords 93.96 0.001 135.004
-}
-GenericEntity : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
- coords 92.504 0.001 135.003
 }
 GenericEntity Axe_5ACCA165954CE408 : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et" {
  components {
@@ -116,6 +181,12 @@ GenericEntity Axe_5ACCA165954CE408 : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et
    }
   }
  }
- coords 94.055 0.395 135.118
+ coords 143.5 0.4 144.5
  angles -55.875 -85.813 -180
+}
+GenericEntity WoodLog_01_Small_5ACEABD58E8C1214 : "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et" {
+ coords 142 0 146.5
+}
+GenericEntity WoodPlank_5ACEABD590364FAA : "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et" {
+ coords 141.5 0 145.5
 }

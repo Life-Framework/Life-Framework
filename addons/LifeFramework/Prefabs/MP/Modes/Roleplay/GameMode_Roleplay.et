@@ -5,6 +5,8 @@ EL_GameModeRoleplay {
   }
   EL_PersistenceComponent "{DD9C18EE120847A0}" {
   }
+  EL_PersistenceManagerComponent "{018C9FF2786C4558}" {
+  }
   EL_NotificationManagerComponent "{D3CF726AEB541890}" {
   }
   EL_ChatManagerComponent "{69981C1CC6E0B7F7}" {
@@ -20,6 +22,9 @@ EL_GameModeRoleplay {
      m_sWhitelistFilePath "$profile:LifeFramework/Whitelists/Medic.txt"
     }
    }
+  }
+  EL_ShopManagerComponent "{11CD207B75F53961}" {
+   m_sConfigPath "{A547CE324ADDD178}Configs/Shop/ShopPrices.conf"
   }
   SCR_DestructionManagerComponent "{59751432896EFC0B}" {
   }

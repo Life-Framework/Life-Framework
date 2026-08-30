@@ -393,15 +393,10 @@ class EL_LicenseManagerComponent : ScriptComponent
 			
 			string playerUID = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
 			if (!playerUID) return false;
-			
-			// Verificar whitelist para trabajos policiales
-			if (licenseType == EL_ELicenseType.POLICE_ARREST || 
-			    licenseType == EL_ELicenseType.POLICE_FINE || 
-			    licenseType == EL_ELicenseType.POLICE_SEARCH)
-			{
-				if (!EL_WhitelistManager.IsWhitelistedForJob(playerUID, EL_EJobType.POLICE))
-					return false;
-			}
+
+			EL_EJobType whitelistJob = GetLicenseWhitelistJob(licenseType);
+			if (whitelistJob != EL_EJobType.UNEMPLOYED && !EL_WhitelistManager.IsWhitelistedForJob(playerUID, whitelistJob))
+				return false;
 		}
 		
 		// Verificar nivel mínimo
@@ -450,24 +445,26 @@ class EL_LicenseManagerComponent : ScriptComponent
 			EL_Debug.Log("License", string.Format("purchase rejected (cannot afford): %1", typename.EnumToString(EL_ELicenseType, licenseType)));
 			return false;
 		}
-		
-		EL_LicenseConfig config = m_mLicenseConfigs.Get(licenseType);
-		if (!config)
-			return false;
-		
-		// Descontar puntos de habilidad
-		IEntity owner = GetOwner();
-		if (owner)
-		{
-			EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(owner);
-			if (levelComp)
-			{
-				levelComp.SpendSkillPoints(config.m_iSkillPointCost);
-			}
-		}
-		
-		// Desbloquear licencia
+
+		// UnlockLicense spends the skill points itself after all checks pass;
+		// spending here as well would charge the player twice.
 		return UnlockLicense(licenseType);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Job whitelist a license requires, or UNEMPLOYED when it has none.
+	static EL_EJobType GetLicenseWhitelistJob(EL_ELicenseType licenseType)
+	{
+		if (licenseType == EL_ELicenseType.POLICE_ACCESS ||
+			licenseType == EL_ELicenseType.POLICE_ARREST ||
+			licenseType == EL_ELicenseType.POLICE_FINE ||
+			licenseType == EL_ELicenseType.POLICE_SEARCH)
+			return EL_EJobType.POLICE;
+
+		if (licenseType == EL_ELicenseType.MEDIC_ACCESS)
+			return EL_EJobType.MEDIC;
+
+		return EL_EJobType.UNEMPLOYED;
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -517,7 +514,14 @@ if (!Replication.IsServer())
 			if (config.m_bRequiresWhitelist)
 			{
 				string playerUID = EL_Utils.GetPlayerUID(owner);
-				if (!EL_WhitelistManager.IsWhitelistedForJob(playerUID, EL_EJobType.POLICE))
+				EL_EJobType whitelistJob = GetLicenseWhitelistJob(licenseType);
+				if (whitelistJob == EL_EJobType.UNEMPLOYED)
+				{
+					Print(string.Format("[EL_LicenseManagerComponent] License %1 requires a whitelist but maps to no job", typename.EnumToString(EL_ELicenseType, licenseType)), LogLevel.ERROR);
+					return false;
+				}
+
+				if (!EL_WhitelistManager.IsWhitelistedForJob(playerUID, whitelistJob))
 				{
 					Print("[EL_LicenseManagerComponent] Player not whitelisted for this license", LogLevel.WARNING);
 					return false;

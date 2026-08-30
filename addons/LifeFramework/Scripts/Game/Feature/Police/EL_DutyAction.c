@@ -16,27 +16,30 @@ class EL_DutyAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
-		if (account)
+		if (!account)
 		{
-			bool newDuty = !account.IsOnDuty();
-			account.SetOnDuty(newDuty);
+			EL_Debug.Warn("Police", string.Format("duty toggle failed: no account for %1", pUserEntity));
+			return;
+		}
 
-			string status;
-			if (newDuty)
-				status = "on duty";
-			else
-				status = "off duty";
+		bool newDuty = !account.IsOnDuty();
+		account.SetOnDuty(newDuty);
 
-			EL_Debug.Log("Police", string.Format("duty toggled -> %1 (player %2)", status, pUserEntity));
+		string status;
+		if (newDuty)
+			status = "on duty";
+		else
+			status = "off duty";
 
-			EL_Utils.Notify(string.Format("#EL-Duty_Status_Change", status), "#EL-Duty_Status", 3.0);
-			
-			// Save account
-			EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-			if (accountManager)
-			{
-				accountManager.SaveAndReleaseAccount(account);
-			}
+		EL_Debug.Log("Police", string.Format("duty toggled -> %1 (player %2)", status, pUserEntity));
+
+		EL_Utils.Notify(string.Format("#EL-Duty_Status_Change", status), "#EL-Duty_Status", 3.0);
+		
+		// Save account
+		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		if (accountManager)
+		{
+			accountManager.SaveAndReleaseAccount(account);
 		}
 	}
 

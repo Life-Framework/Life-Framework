@@ -1,4 +1,4 @@
-$grp GenericEntity : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
+$grp GenericEntity : "{4E5531CDAE20F9EF}Prefabs/Vehicles/Wheeled/M151A2/M151A2_canvas_roof.et" {
  Vehicle_PlateTest {
   coords 128 0 136
  }

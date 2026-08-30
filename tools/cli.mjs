@@ -24,6 +24,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { closeSync, createWriteStream, existsSync, fstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import * as wt from "./wt.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MCP_DIR = join(ROOT, "tools", "mcp");
@@ -123,11 +124,12 @@ function cmdStatus() {
     console.log(`      ${s.label}`);
   }
   console.log("");
-  console.log("environment (from opencode.json):");
-  const env = cfg.mcp?.["enfusion-mcp"]?.environment ?? {};
+  console.log("environment (effective; OS env wins over opencode.json):");
+  const env = envOf();
   for (const [k, v] of Object.entries(env)) {
     console.log(`  ${k} = ${v}`);
   }
+  if (Object.keys(env).length === 0) console.log("  (defaults: standard Steam install locations)");
   return 0;
 }
 
@@ -261,14 +263,22 @@ function cmdSetEnabled(name, enabled) {
   return 0;
 }
 
-function invokeScript(full) {
-  if (full.endsWith(".ps1")) return sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full]);
-  if (full.endsWith(".cmd") || full.endsWith(".bat")) return sh("cmd", ["/c", full]);
-  if (full.endsWith(".sh")) return sh("bash", [full]);
-  return sh(process.execPath, [full]); // .mjs/.js/.cjs and bare scripts
+function invokeScript(full, opts = {}) {
+  if (full.endsWith(".ps1")) return sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full], opts);
+  if (full.endsWith(".cmd") || full.endsWith(".bat")) return sh("cmd", ["/c", full], opts);
+  if (full.endsWith(".sh")) return sh("bash", [full], opts);
+  return sh(process.execPath, [full], opts); // .mjs/.js/.cjs and bare scripts
 }
 
-function cmdRunArea(area) {
+// Effective env for spawned tool scripts: OS env overlaid with the configured
+// ENFUSION_* values so tools/validation/* and tools/test/* agree with the CLI.
+function toolEnv() {
+  return { ...process.env, ...envOf() };
+}
+
+function cmdRunArea(area, root = ROOT) {
+  // Tooling always runs from the CLI's own checkout; cwd is the target worktree
+  // so content-relative checks (git rev-parse --show-toplevel) resolve there.
   const dir = join(ROOT, "tools", TOOL_DIRS[area]);
   if (!existsSync(dir)) {
     console.log(`tools/${TOOL_DIRS[area]}/ does not exist yet`);
@@ -283,7 +293,7 @@ function cmdRunArea(area) {
   }
   let failed = 0;
   for (const s of scripts) {
-    const res = invokeScript(join(dir, s));
+    const res = invokeScript(join(dir, s), { cwd: root, env: toolEnv() });
     const ok = res.status === 0;
     console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${s}`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
@@ -296,8 +306,16 @@ function cmdRunArea(area) {
 
 // ----------------------------------------------------------- build / serve / test
 
+// Effective ENFUSION_* environment: process.env wins over opencode.json, so
+// contributors on non-default installs can set OS env vars instead of editing
+// the (committed, portable) config.
 function envOf() {
-  return readConfig().mcp?.["enfusion-mcp"]?.environment ?? {};
+  const cfg = readConfig().mcp?.["enfusion-mcp"]?.environment ?? {};
+  const env = { ...cfg };
+  for (const k of ["ENFUSION_WORKBENCH_PATH", "ENFUSION_GAME_PATH", "ENFUSION_SERVER_PATH", "ENFUSION_PROJECT_PATH"]) {
+    if (process.env[k]) env[k] = process.env[k];
+  }
+  return env;
 }
 
 function workbenchExe() {
@@ -311,25 +329,46 @@ function serverExe() {
   return env.ENFUSION_SERVER_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server/ArmaReforgerServer.exe";
 }
 
-function serverArgs() {
-  // Addon discovery: -server loads the DebugWorld directly (no -config, which
-  // conflicts with -addons). -addonsDir points at the repo addons plus a
-  // junction to the game client's core/data ONLY - the server install's own
-  // ./addons is skipped so the packed EPF/EDF paks (which fail to compile on
-  // current Reforger) never load.
+// The main checkout is the world-editor copy. Heavy commands (build/test/dev/
+// serve/ci) refuse to run there so agent activity never breaks the editor.
+function guardHeavy(root, command, force) {
+  if (!wt.isMainCheckout(root) || force) return;
+  console.log(`REFUSE  '${command}' runs in the main checkout, which is the world-editor copy.`);
+  console.log("        create a worktree first:  tools\\cli wt new <feature>");
+  console.log(`        then run from the worktree, or 'cli wt ${command} <slug>', or pass --force to override.`);
+  throw new Error("main-checkout guard");
+}
+
+// Junction to the base game's core/data addons under <root>/server/profile/
+// test/game-addons. Self-healing: created on demand from the configured game
+// install so builds and test servers resolve the vanilla Game addon on any
+// machine. Returns the junction path if usable, else null (callers then rely
+// on the engine's own addon discovery).
+function gameAddonsJunction(root) {
   const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
-  const profile = join(ROOT, "server", "profile", "test");
-  const junction = join(profile, "game-addons");
+  const junction = join(root, "server", "profile", "test", "game-addons");
   if (!existsSync(join(junction, "data"))) {
     mkdirSync(join(junction), { recursive: true });
     try {
       sh("cmd", ["/c", "mklink", "/J", join(junction, "core"), join(gameDir, "addons", "core")]);
       sh("cmd", ["/c", "mklink", "/J", join(junction, "data"), join(gameDir, "addons", "data")]);
     } catch {
-      // junction may already exist or mklink unavailable; core/data are then resolved via gameDir below
+      // junction may already exist or mklink unavailable; callers fall back to engine discovery
     }
   }
-  const addonsDir = [join(ROOT, "addons"), junction].join(",");
+  return existsSync(join(junction, "data")) ? junction : null;
+}
+
+function serverArgs(root, ports) {
+  // Addon discovery: -server loads the DebugWorld directly (no -config, which
+  // conflicts with -addons). -addonsDir points at the repo addons plus a
+  // junction to the game client's core/data ONLY - the server install's own
+  // ./addons is skipped so the packed EPF/EDF paks (which fail to compile on
+  // current Reforger) never load. -bindPort/-a2sPort give every worktree its
+  // own port pair so parallel test runs never collide.
+  const profile = join(root, "server", "profile", "test");
+  const junction = gameAddonsJunction(root) ?? "";
+  const addonsDir = [join(root, "addons"), junction].filter(Boolean).join(",");
   return [
     "-server", "Worlds/DebugWorld/DebugWorld.ent",
     "-addonsDir", addonsDir,
@@ -340,6 +379,8 @@ function serverArgs() {
     "-scrDefine", "EL_AUTOTEST",
     "-disableCrashReporter",
     "-noBackend",
+    "-bindPort", String(ports.gamePort),
+    "-a2sPort", String(ports.a2sPort),
   ];
 }
 
@@ -354,34 +395,41 @@ function latestWorkbenchLog(profile) {
   return existsSync(f) ? f : null;
 }
 
-function cmdBuild() {
+function cmdBuild(root = ROOT, opts = {}) {
+  guardHeavy(root, "build", opts.force);
   const exe = workbenchExe();
   if (!existsSync(exe)) {
     console.log(`FAIL  workbench not found: ${exe}`);
     console.log("      set ENFUSION_WORKBENCH_PATH (Arma Reforger Tools) in opencode.json");
     return Promise.resolve(1);
   }
-  const gproj = join(ROOT, "addons", "LifeFramework", "LifeFramework.gproj");
-  const out = join(ROOT, "server", "build");
-  const profile = join(ROOT, "server", "profile", "build");
+  // One Workbench build at a time across ALL worktrees: concurrent instances
+  // fight over the shared shader cache and can corrupt the user's editor
+  // session. The fast dev loop (cli dev) skips the build, so this rarely blocks.
+  let lock;
+  try {
+    lock = wt.acquireLock(root, "build", { waitMs: opts.wait ? 900000 : 0 });
+  } catch (e) {
+    console.log(`FAIL  ${e.message} (a headless Workbench build is running in another worktree)`);
+    return Promise.resolve(1);
+  }
+  const gproj = join(root, "addons", "LifeFramework", "LifeFramework.gproj");
+  const out = join(root, "server", "build");
+  const profile = join(root, "server", "profile", "build");
   mkdirSync(out, { recursive: true });
   const env = envOf();
   const gameDir = env.ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
   if (!existsSync(gameDir)) {
     console.log(`FAIL  game install not found: ${gameDir} (set ENFUSION_GAME_PATH)`);
+    wt.releaseLock(root, "build");
     return Promise.resolve(1);
   }
-  const addonDirs = [];
-  if (env.ENFUSION_PROJECT_PATH) addonDirs.push(env.ENFUSION_PROJECT_PATH);
+  const addonDirs = [join(root, "addons")];
   // The base game (core/data, GUID 58D0FB3206B6F859) resolves reliably through
   // a junction to the game install's addons - ./addons relative to the game dir
-  // is flaky in headless launches. Reuse the same junction the server harness
-  // builds (server/profile/test/game-addons), or the top-level one if present.
-  const junctions = [
-    join(ROOT, "server", "profile", "test", "game-addons"),
-    "C:/Users/jaspe/Documents/Reforger/GameAddonsLink",
-  ];
-  const junction = junctions.find((j) => existsSync(join(j, "data")));
+  // is flaky in headless launches. The junction is created on demand under
+  // server/profile/test/game-addons (see gameAddonsJunction).
+  const junction = gameAddonsJunction(root);
   if (junction) addonDirs.push(junction);
   const args = [
     "-gproj", gproj,
@@ -401,6 +449,10 @@ function cmdBuild() {
   console.log("  (streaming Workbench console.log live)");
 
   return new Promise((resolvePromise) => {
+    const done = (code) => {
+      wt.releaseLock(root, "build");
+      resolvePromise(code);
+    };
     const child = spawn(exe, args, { cwd: gameDir });
     let buffer = "";
     const onData = (d) => {
@@ -444,21 +496,21 @@ function cmdBuild() {
       try {
         child.kill();
       } catch {}
-      resolvePromise(1);
+      done(1);
     }, 900000);
 
     child.on("error", (e) => {
       clearTimeout(buildTimeout);
       clearInterval(iv);
       console.log(`FAIL  spawn error: ${e.message}`);
-      resolvePromise(1);
+      done(1);
     });
     child.on("exit", (code) => {
       clearTimeout(buildTimeout);
       clearInterval(iv);
       if (code === 0) {
         console.log("build OK (exit 0)");
-        resolvePromise(0);
+        done(0);
         return;
       }
       console.log(`build FAILED (exit ${code})`);
@@ -470,19 +522,20 @@ function cmdBuild() {
           .slice(-20)
           .forEach((l) => console.log(`  ${l}`));
       }
-      resolvePromise(1);
+      done(1);
     });
   });
 }
 
-function cmdServe() {
+function cmdServe(root = ROOT, opts = {}) {
+  guardHeavy(root, "serve", opts.force);
   const exe = serverExe();
   if (!existsSync(exe)) {
     console.log(`FAIL  dedicated server not found: ${exe}`);
     console.log("      install Arma Reforger Server (Steam app 1874900) or set ENFUSION_SERVER_PATH");
     return 1;
   }
-  const args = serverArgs();
+  const args = serverArgs(root, wt.portsForRoot(root));
   console.log(`launching: ${exe}`);
   console.log(`  ${args.join(" ")}`);
   return new Promise((resolvePromise) => {
@@ -561,44 +614,56 @@ function runServerTest(exe, args, logFile, tier = "all") {
   });
 }
 
-async function cmdTest(noBuild, tier = "all") {
+async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   if (tier !== "fast" && tier !== "all") {
     console.log(`unknown tier: ${tier} (expected fast or all)`);
     return 2;
   }
+  guardHeavy(root, "test", opts.force);
   if (!noBuild) {
-    const b = await cmdBuild();
+    const b = await cmdBuild(root, { wait: opts.wait });
     if (b !== 0) return b;
   }
   // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
   // boots the dedicated server via -server + a neutral addonsDir, polls the
   // profile console.log every 2s for the [ELTEST] SUMMARY, self-terminates.
+  // The harness is loaded from the CLI's own checkout but launched with cwd in
+  // the target worktree, so it builds its profile/junction/logs there.
   const harness = join(ROOT, "tools", "test", "test-e2e.ps1");
   if (!existsSync(harness)) {
     console.log(`FAIL  harness not found: ${harness}`);
     return 1;
   }
-  const res = sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness, "-Tier", tier]);
+  const ports = wt.portsForRoot(root);
+  console.log(`test: worktree ports game=${ports.gamePort} a2s=${ports.a2sPort}`);
+  const res = sh(PWSH, [
+    "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
+    "-Tier", tier,
+    "-BindPort", String(ports.gamePort),
+    "-A2sPort", String(ports.a2sPort),
+  ], { cwd: root, env: toolEnv() });
   process.stdout.write(res.stdout + res.stderr);
   return res.status;
 }
 
-async function cmdDev(tier = "all") {
+async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   // Fast dev loop: skip the headless Workbench build (the dedicated server
   // compiles scripts at boot from the unpacked addons), run the in-game suite,
   // then dump the per-feature [ELDebug:*] lines from the same log.
+  guardHeavy(root, "dev", opts.force);
   console.log("=== dev: validate ===");
-  const v = await cmdRunArea("validate");
+  const v = await cmdRunArea("validate", root);
   if (v !== 0) return v;
   console.log("\n=== dev: test (no build) ===");
-  return cmdTest(true, tier);
+  return cmdTest(true, tier, root, opts);
 }
 
-async function cmdCi() {
+async function cmdCi(root = ROOT, opts = {}) {
+  guardHeavy(root, "ci", opts.force);
   const steps = [
-    ["validate", () => cmdRunArea("validate")],
-    ["build", () => cmdBuild()],
-    ["test", () => cmdTest(false)],
+    ["validate", () => cmdRunArea("validate", root)],
+    ["build", () => cmdBuild(root, { wait: opts.wait })],
+    ["test", () => cmdTest(false, "all", root, opts)],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -615,19 +680,23 @@ function cmdHelp() {
 
 usage: tools\\cli <command> [args]
 
+Heavy commands (build/test/dev/serve/ci) refuse to run in the main checkout -
+the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
+
   status                        toolchain + MCP server state
   mcp install [name]            clone (if missing), npm ci, build
   mcp update [name]             git pull --ff-only, npm ci, build
   mcp verify [name]             boot server briefly to confirm it starts
   mcp enable <name>             enable a server in opencode.json
   mcp disable <name>            disable a server in opencode.json
-  build                         headless Workbench build of the addon
-  serve                         boot the headless test server (blocks)
+  build                         headless Workbench build of the addon (worktree only)
+  serve                         boot the headless test server (blocks, worktree only)
   test [--no-build] [--tier fast|all]
-                                build + boot server + parse ELTEST results
+                                build + boot server + parse ELTEST results (worktree only)
   dev [--tier fast|all]         fast dev loop: validate + test --no-build +
-                                dump [ELDebug:*] feature log lines
-  ci                            validate + build + test (full gate)
+                                dump [ELDebug:*] feature log lines (worktree only)
+  ci                            validate + build + test (full gate, worktree only)
+  wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   regen-tests                   regenerate the test registry from the test files
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   validate | lint               run every script in tools/{validation,lint}/
@@ -660,6 +729,320 @@ function cmdMcpCall(callArgs) {
   return res.status;
 }
 
+// ---------------------------------------------------------------- worktrees
+
+function wtSlug(args) {
+  const slug = args[0];
+  if (!slug || slug.startsWith("-")) {
+    console.log("usage: tools\\cli wt <command> <slug> [flags]");
+    return null;
+  }
+  return slug;
+}
+
+function wtHelp() {
+  console.log(`worktree commands (parallel agent isolation)
+
+  tools\\cli wt new <slug> [--wait]    create Life-Framework-ws-<slug> at ws/<slug>, allocate ports
+  tools\\cli wt list                   worktrees, ports, dirty/merged state
+  tools\\cli wt test <slug> [--tier fast|all] [--no-build] [--wait]
+                                       run the ELTEST suite in that worktree (from anywhere)
+  tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
+  tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
+  tools\\cli wt gate <slug> [--wait]   validate + build + test (tier=all) in that worktree
+  tools\\cli wt sync <slug>            merge origin/main into the worktree branch
+  tools\\cli wt ship <slug> [--pr-only] [--skip-gate] [--skip-sync]
+                                       sync -> gate -> push -> PR -> auto-merge into main
+  tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
+  tools\\cli wt open <slug>            open a terminal in the worktree
+  tools\\cli wt main                   print the main checkout path
+
+flags:
+  --wait       queue behind the build/worktree lock instead of failing fast
+  --pr-only    open the PR but leave it for review (no auto-merge)
+  --skip-gate  / --skip-sync   skip a ship stage (debug only)
+  --force      prune without merge/dirty checks
+`);
+  return 0;
+}
+
+function wtNewCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  try {
+    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 60000 : 0 });
+    console.log(`created worktree ${r.slug}`);
+    console.log(`  path:   ${r.path}`);
+    console.log(`  branch: ${r.branch}`);
+    console.log(`  ports:  game ${r.ports.gamePort}   a2s ${r.ports.a2sPort}`);
+    console.log("");
+    console.log(`  cd ${r.path}`);
+    console.log(`  tools\\cli dev --tier fast        # iterate (no build)`);
+    console.log(`  tools\\cli wt gate ${r.slug}      # validate + build + test`);
+    console.log(`  tools\\cli wt ship ${r.slug}      # gate, PR, auto-merge`);
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
+}
+
+function wtListCmd() {
+  const state = wt.reconcileState(ROOT);
+  const rows = Object.values(state.worktrees ?? {});
+  if (rows.length === 0) {
+    console.log("no worktrees registered. create one:  tools\\cli wt new <feature>");
+    return 0;
+  }
+  console.log("worktrees  (main checkout is reserved for the world editor)");
+  console.log(`  ${"slug".padEnd(20)}${"branch".padEnd(22)}${"ports".padEnd(14)}state`);
+  for (const e of rows) {
+    if (!existsSync(e.path)) {
+      console.log(`  ${e.slug.padEnd(20)}${e.branch.padEnd(22)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}MISSING`);
+      continue;
+    }
+    const merged = wt.gitOk(ROOT, ["merge-base", "--is-ancestor", e.branch, "origin/main"]);
+    const ahead = parseInt(wt.git(ROOT, ["rev-list", "--count", "origin/main.." + e.branch]).stdout.trim() || "0", 10);
+    const behind = parseInt(wt.git(ROOT, ["rev-list", "--count", e.branch + "..origin/main"]).stdout.trim() || "0", 10);
+    const dirty = wt.git(e.path, ["status", "--porcelain"]).stdout.trim() ? "dirty" : "clean";
+    const cur = wt.currentBranch(e.path);
+    const stateText = merged && ahead === 0
+      ? (behind > 0 ? "merged (prune me)" : "fresh (no commits yet)")
+      : `${dirty}${cur !== e.branch ? ` on ${cur}` : ""}${ahead > 0 ? ` +${ahead}` : ""}`;
+    console.log(`  ${e.slug.padEnd(20)}${e.branch.padEnd(22)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}${stateText}`);
+  }
+  return 0;
+}
+
+function wtSyncCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  try {
+    const r = wt.wtSync(ROOT, slug);
+    console.log(`synced ${r.slug}: merged origin/main into ${r.branch}`);
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
+}
+
+function wtPruneCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  try {
+    const r = wt.wtPrune(ROOT, slug, { force: args.includes("--force") });
+    console.log(`pruned ${r.slug}: removed ${r.path} and branch ${r.branch}`);
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
+}
+
+function wtOpenCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  try {
+    const e = wt.requireWorktree(ROOT, slug);
+    if (process.platform === "win32") {
+      sh(PWSH, ["-NoProfile", "-Command", `Start-Process cmd -ArgumentList '/k', 'cd /d "${e.path}"'`]);
+    }
+    console.log(`opened a terminal in ${e.path}`);
+    return 0;
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+}
+
+async function wtTestCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  const flags = args.slice(1);
+  try {
+    const e = wt.requireWorktree(ROOT, slug);
+    return cmdTest(
+      flags.includes("--no-build"),
+      argValue(flags, "--tier") ?? "all",
+      e.path,
+      { wait: flags.includes("--wait") },
+    );
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+}
+
+async function wtDevCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  const flags = args.slice(1);
+  try {
+    const e = wt.requireWorktree(ROOT, slug);
+    return cmdDev(argValue(flags, "--tier") ?? "all", e.path, { wait: flags.includes("--wait") });
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+}
+
+async function wtBuildCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  const flags = args.slice(1);
+  try {
+    const e = wt.requireWorktree(ROOT, slug);
+    return cmdBuild(e.path, { wait: flags.includes("--wait") });
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+}
+
+async function wtGateCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  const flags = args.slice(1);
+  try {
+    const e = wt.requireWorktree(ROOT, slug);
+    return cmdCi(e.path, { wait: flags.includes("--wait") });
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+}
+
+async function wtShipCmd(args) {
+  const slug = wtSlug(args);
+  if (!slug) return 1;
+  const flags = args.slice(1);
+  const prOnly = flags.includes("--pr-only");
+  const skipGate = flags.includes("--skip-gate");
+  const skipSync = flags.includes("--skip-sync");
+  let e;
+  try {
+    e = wt.requireWorktree(ROOT, slug);
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 1;
+  }
+  const wtRoot = e.path;
+  const cur = wt.currentBranch(wtRoot);
+  if (cur !== e.branch) {
+    console.log(`FAIL  worktree ${slug} is on '${cur}', expected ${e.branch}`);
+    return 1;
+  }
+  const dirty = wt.git(wtRoot, ["status", "--porcelain"]).stdout.trim();
+  if (dirty) {
+    console.log(`FAIL  worktree ${slug} has uncommitted changes; commit before shipping`);
+    return 1;
+  }
+  const nCommits = parseInt(wt.git(wtRoot, ["rev-list", "--count", "origin/main..HEAD"]).stdout.trim() || "0", 10);
+  if (nCommits === 0) {
+    console.log(`FAIL  nothing to ship: ${e.branch} has no commits beyond origin/main`);
+    return 1;
+  }
+  if (!skipSync) {
+    console.log("=== ship: sync origin/main ===");
+    try {
+      wt.wtSync(ROOT, slug);
+    } catch (err) {
+      console.log(`FAIL  ${err.message}`);
+      return 1;
+    }
+  }
+  if (!skipGate) {
+    console.log("=== ship: gate (validate + build + test tier=all) ===");
+    const code = await cmdCi(wtRoot, { wait: true });
+    if (code !== 0) {
+      console.log(`FAIL  gate failed; not shipping. Fix, commit, re-run 'cli wt ship ${slug}'.`);
+      return 1;
+    }
+  }
+  console.log("=== ship: push ===");
+  const push = wt.git(wtRoot, ["push", "-u", "origin", e.branch]);
+  if (push.status !== 0) {
+    console.log(`FAIL  push: ${push.stderr || push.stdout}`);
+    return 1;
+  }
+  const subjects = wt.commitSubjects(wtRoot, "origin/main..HEAD");
+  const title = subjects[0] ?? e.branch;
+  const body = [
+    `Automated ship from worktree \`${slug}\`.`,
+    "",
+    "Gate passed locally: `validate` + headless `build` + `test` (tier=all).",
+    "",
+    "## Commits",
+    ...subjects.map((s) => `- ${s}`),
+  ].join("\n");
+  let pr;
+  try {
+    if (wt.ghAvailable()) {
+      pr = wt.createPrGh(wtRoot, { head: e.branch, title, body });
+    } else {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) {
+        console.log("FAIL  no PR path: install the GitHub CLI ('winget install GitHub.cli') or set GITHUB_TOKEN");
+        return 1;
+      }
+      pr = await wt.createPrRest(wtRoot, { head: e.branch, title, body, token });
+    }
+  } catch (err) {
+    console.log(`FAIL  PR creation: ${err.message}`);
+    return 1;
+  }
+  console.log(`PR: ${pr.url}`);
+  if (prOnly) {
+    console.log("ship: PR left open for review (--pr-only)");
+    return 0;
+  }
+  console.log("=== ship: merge ===");
+  try {
+    if (wt.ghAvailable()) {
+      const m = wt.mergePrGh(wtRoot, pr.number);
+      if (m.already) console.log(`ship: PR already merged or no-op: ${m.output.trim()}`);
+      else console.log("ship: merged into main");
+    } else {
+      const m = await wt.mergePrRest(wtRoot, pr.number, e.branch, process.env.GITHUB_TOKEN);
+      if (m.already) console.log("ship: PR already merged or no-op");
+      else console.log("ship: merged into main");
+    }
+  } catch (err) {
+    console.log(`FAIL  merge: ${err.message} (PR is at ${pr.url})`);
+    return 1;
+  }
+  console.log("ship: done. cleanup with 'cli wt prune " + slug + "'");
+  return 0;
+}
+
+function cmdWt(rest) {
+  const [sub, ...subArgs] = rest;
+  const table = {
+    new: () => wtNewCmd(subArgs),
+    list: () => wtListCmd(),
+    test: () => wtTestCmd(subArgs),
+    dev: () => wtDevCmd(subArgs),
+    build: () => wtBuildCmd(subArgs),
+    gate: () => wtGateCmd(subArgs),
+    ci: () => wtGateCmd(subArgs),
+    sync: () => wtSyncCmd(subArgs),
+    ship: () => wtShipCmd(subArgs),
+    prune: () => wtPruneCmd(subArgs),
+    open: () => wtOpenCmd(subArgs),
+    main: () => {
+      console.log(wt.mainRootOf(ROOT));
+      return 0;
+    },
+    help: () => wtHelp(),
+  };
+  if (!sub || !table[sub]) {
+    wtHelp();
+    return sub ? 1 : 0;
+  }
+  return Promise.resolve(table[sub]());
+}
+
 const cmds = {
   status: () => cmdStatus(),
   install: (n) => cmdInstall(n),
@@ -667,19 +1050,19 @@ const cmds = {
   verify: (n) => cmdVerify(n),
   enable: (n) => cmdSetEnabled(n, true),
   disable: (n) => cmdSetEnabled(n, false),
-  build: () => cmdBuild(),
-  serve: () => cmdServe(),
+  build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
+  serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
-    return cmdDev(argValue(list, "--tier") ?? "all");
+    return cmdDev(argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait") });
   },
   test: (flags) => {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all");
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait") });
   },
-  ci: () => cmdCi(),
-validate: () => cmdRunArea("validate"),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
+  validate: () => cmdRunArea("validate"),
   lint: () => cmdRunArea("lint"),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");
@@ -698,16 +1081,29 @@ validate: () => cmdRunArea("validate"),
 };
 
 const [a, b] = rest;
+const HEAVY = ["build", "serve", "dev", "test", "ci"];
 
 let code;
-if (cmd === "mcp") {
-  const sub = cmds[a];
-  code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
-} else if (cmd && cmds[cmd]) {
-  code = cmds[cmd](cmd === "test" || cmd === "dev" ? rest : a);
-} else {
-  if (cmd) console.log(`unknown command: ${cmd}\n`);
-  code = cmdHelp();
+try {
+  if (cmd === "mcp") {
+    const sub = cmds[a];
+    code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
+  } else if (cmd === "wt") {
+    code = cmdWt(rest);
+  } else if (cmd && cmds[cmd]) {
+    code = cmds[cmd](HEAVY.includes(cmd) ? rest : a);
+  } else {
+    if (cmd) console.log(`unknown command: ${cmd}\n`);
+    code = cmdHelp();
+  }
+} catch (e) {
+  code = Promise.resolve(1);
+  if (e?.message && e.message !== "main-checkout guard") console.log(`FAIL  ${e.message}`);
 }
 
-Promise.resolve(code).then((c) => process.exit(c));
+Promise.resolve(code)
+  .then((c) => process.exit(typeof c === "number" ? c : 1))
+  .catch((e) => {
+    console.log(e?.message && e.message !== "main-checkout guard" ? `FAIL  ${e.message}` : "");
+    process.exit(1);
+  });

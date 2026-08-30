@@ -1,5 +1,10 @@
 // red-proof: change an expected value (e.g. deposit 100 -> 101) or remove the
-// amount>0 guard in EL_BankAccount.Withdraw, then run the fast tier.
+// amount>0 guard in EL_BankAccount.Withdraw, then run the fast tier. For
+// bank/save-idempotent make ApplyAll Deposit onto a cached account instead of
+// replacing it and the double-apply balance assertion goes red; for
+// bank/save-empty make ExportAll return null and the non-null assertion goes
+// red; for atm/manager-guards drop the IsValidAmount guard in the manager and
+// the rejected-deposit assertions go red.
 
 // tier: LOGIC
 class EL_Test_BankAccountMath : EL_Test
@@ -95,5 +100,92 @@ class EL_Test_ATMManagerRegistry : EL_Test
 		ctx.True(manager.GetAccount("missing-uid") == null, "unknown account id returns null");
 
 		EL_ATMManager.Reset();
+	}
+};
+
+//------------------------------------------------------------------------------------------------
+// tier: LOGIC
+class EL_Test_BankSaveIdempotent : EL_Test
+{
+	override string GetName()
+	{
+		return "bank/save-idempotent";
+	}
+
+	override void Run(EL_TestContext ctx)
+	{
+		EL_ATMManager.Reset();
+		EL_ATMManager manager = EL_ATMManager.GetInstance();
+
+		EL_BankAccount account = manager.CreateAccount("test-bank-idem");
+		account.Deposit(500);
+
+		ref array<ref EL_BankAccountRecord> records = EL_ATMManager.ExportAll();
+		EL_ATMManager.Reset();
+		EL_ATMManager.ApplyAll(records);
+		EL_ATMManager.ApplyAll(records);
+
+		EL_BankAccount restored = EL_ATMManager.GetInstance().GetAccount("test-bank-idem");
+		ctx.NotNull(restored, "account survives a double apply");
+		if (!restored)
+			return;
+
+		ctx.Equal(500, restored.GetBalance(), "double apply does not compound the balance");
+		ctx.Equal(1, EL_ATMManager.ExportAll().Count(), "double apply does not duplicate the account");
+	}
+};
+
+//------------------------------------------------------------------------------------------------
+// tier: LOGIC
+class EL_Test_BankSaveEmpty : EL_Test
+{
+	override string GetName()
+	{
+		return "bank/save-empty";
+	}
+
+	override void Run(EL_TestContext ctx)
+	{
+		EL_ATMManager.Reset();
+
+		ref array<ref EL_BankAccountRecord> records = EL_ATMManager.ExportAll();
+		ctx.NotNull(records, "export with no accounts returns a non-null array");
+		if (records)
+			ctx.Equal(0, records.Count(), "export with no accounts returns an empty array");
+
+		EL_ATMManager.ApplyAll(records);
+		ctx.True(EL_ATMManager.GetInstance().GetAccount("missing-uid") == null, "applying empty records creates no accounts");
+	}
+};
+
+//------------------------------------------------------------------------------------------------
+// tier: LOGIC
+class EL_Test_ATMManagerGuards : EL_Test
+{
+	override string GetName()
+	{
+		return "atm/manager-guards";
+	}
+
+	override void Run(EL_TestContext ctx)
+	{
+		EL_ATMManager.Reset();
+		EL_ATMManager manager = EL_ATMManager.GetInstance();
+
+		ctx.False(manager.Deposit("missing-uid", 100), "Deposit on an unknown account fails");
+		ctx.False(manager.Withdraw("missing-uid", 100), "Withdraw on an unknown account fails");
+
+		EL_BankAccount account = manager.CreateAccount("test-guards");
+		account.Deposit(500);
+
+		ctx.False(manager.Deposit("test-guards", 0), "Deposit of zero through the manager fails");
+		ctx.False(manager.Deposit("test-guards", -1), "Deposit of a negative amount through the manager fails");
+		ctx.False(manager.Deposit("test-guards", EL_ATMManager.MAX_TRANSACTION_AMOUNT + 1), "Deposit above the cap through the manager fails");
+		ctx.Equal(500, account.GetBalance(), "rejected manager deposits leave the balance unchanged");
+
+		ctx.False(manager.Withdraw("test-guards", 0), "Withdraw of zero through the manager fails");
+		ctx.False(manager.Withdraw("test-guards", -1), "Withdraw of a negative amount through the manager fails");
+		ctx.False(manager.Withdraw("test-guards", 501), "Withdraw above the balance through the manager fails");
+		ctx.Equal(500, account.GetBalance(), "rejected manager withdrawals leave the balance unchanged");
 	}
 };

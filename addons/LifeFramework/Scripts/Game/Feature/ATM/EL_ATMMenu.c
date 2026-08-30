@@ -72,7 +72,7 @@ class EL_ATMMenu : ChimeraMenuBase
 	{
 		if (m_wBalance && m_iServerBalance >= 0)
 		{
-			string balanceText = WidgetManager.Translate("#EL-ATM_Balance") + m_iServerBalance.ToString();
+			string balanceText = WidgetManager.Translate("#EL-ATM_Balance") + " " + EL_MoneyFormat.FormatMoney(m_iServerBalance);
 			m_wBalance.SetText(balanceText);
 		}
 	}

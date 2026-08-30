@@ -15,7 +15,7 @@ class EL_SirenManagerComponent : ScriptComponent
 	protected ref EL_SirenModes m_Modes;
 
 	// Used for sending only the necessary signals to the sound system
-	protected EL_SirenMode m_CurrentMode;
+	protected ref EL_SirenMode m_CurrentMode;
 	// For JIPs in MP
 	protected int m_CurrentModeIndex;
 
@@ -39,7 +39,15 @@ class EL_SirenManagerComponent : ScriptComponent
 
 		m_SoundComp = SoundComponent.Cast(owner.FindComponent(SoundComponent));
 		m_SigComp = SignalsManagerComponent.Cast(owner.FindComponent(SignalsManagerComponent));
-		if (m_Modes) m_CurrentModeIndex = m_Modes.Find("default");
+		if (m_Modes)
+		{
+			m_CurrentModeIndex = m_Modes.Find("default");
+			if (m_CurrentModeIndex < 0)
+			{
+				m_CurrentModeIndex = 0;
+				EL_Debug.Warn("Siren", "no 'default' mode in config, falling back to index 0");
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -250,8 +258,13 @@ class EL_SirenManagerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override bool RplSave(ScriptBitWriter writer)
 	{
+		if (m_CurrentModeIndex < 0) m_CurrentModeIndex = 0;
+
+		writer.WriteInt(1); // version
 		writer.WriteIntRange(m_CurrentModeIndex, 0, EL_SirenMode.N_MODES);
-		EL_LightAnimation anim = m_CurrentMode.GetAnimation();
+
+		EL_LightAnimation anim = null;
+		if (m_CurrentMode) anim = m_CurrentMode.GetAnimation();
 		if (anim) writer.WriteFloat(anim.GetTimeInLoop());
 		else writer.WriteFloat(0);
 		return true;
@@ -260,12 +273,17 @@ class EL_SirenManagerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override bool RplLoad(ScriptBitReader reader)
 	{
+		int version;
+		reader.ReadInt(version);
+		if (version != 1) return false;
+
 		float timeSlice;
 		reader.ReadIntRange(m_CurrentModeIndex, 0, EL_SirenMode.N_MODES);
 		SetMode();
 		reader.ReadFloat(timeSlice);
 
-		EL_LightAnimation anim = m_CurrentMode.GetAnimation();
+		EL_LightAnimation anim = null;
+		if (m_CurrentMode) anim = m_CurrentMode.GetAnimation();
 		if (anim) anim.Tick(timeSlice + GetSyncTime());
 		return true;
 	}

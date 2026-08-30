@@ -97,23 +97,38 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		int version;
 		context.ReadValue("version", version);
 		if (version < 1)
+		{
+			EL_Debug.Warn("Persistence", "load skipped: no version header (save predates the serializer)");
 			return true;
+		}
 
 		array<ref EL_PlayerAccountRecord> accountRecords = new array<ref EL_PlayerAccountRecord>();
-		context.Read(accountRecords);
-		if (accountRecords)
+		if (context.Read(accountRecords))
+		{
 			EL_PlayerAccountManager.ApplyAll(accountRecords);
+			EL_Debug.Log("Persistence", string.Format("applied %1 account record(s)", accountRecords.Count()));
+		}
+		else
+		{
+			EL_Debug.Warn("Persistence", "account records failed to read, leaving live accounts untouched");
+		}
 
 		array<ref EL_BankAccountRecord> bankRecords = new array<ref EL_BankAccountRecord>();
-		context.Read(bankRecords);
-		if (bankRecords)
+		if (context.Read(bankRecords))
+		{
 			EL_ATMManager.ApplyAll(bankRecords);
+			EL_Debug.Log("Persistence", string.Format("applied %1 bank account record(s)", bankRecords.Count()));
+		}
+		else
+		{
+			EL_Debug.Warn("Persistence", "bank records failed to read, leaving live balances untouched");
+		}
 
 		// Survival stats are owned by the component. Clear before rebuilding so re-applying to a
-		// live session yields exactly the saved map (idempotent).
+		// live session yields exactly the saved map (idempotent). Only clear when the read
+		// succeeded, so a corrupt payload does not wipe live stats.
 		array<ref EL_SurvivalStatsRecord> survivalRecords = new array<ref EL_SurvivalStatsRecord>();
-		context.Read(survivalRecords);
-		if (survivalRecords)
+		if (context.Read(survivalRecords))
 		{
 			persistence.ClearSurvivalStats();
 			foreach (EL_SurvivalStatsRecord record : survivalRecords)
@@ -127,6 +142,11 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 				stats.SetHealth(record.m_fHealth);
 				persistence.SetSurvivalStats(record.m_sPersistentId, stats);
 			}
+			EL_Debug.Log("Persistence", string.Format("applied %1 survival record(s)", survivalRecords.Count()));
+		}
+		else
+		{
+			EL_Debug.Warn("Persistence", "survival records failed to read, leaving live stats untouched");
 		}
 
 		return true;

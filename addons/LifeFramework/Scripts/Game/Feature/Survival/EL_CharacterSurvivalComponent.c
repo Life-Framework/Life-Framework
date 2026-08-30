@@ -5,7 +5,7 @@ class EL_CharacterSurvivalComponentClass : ScriptComponentClass
 
 class EL_CharacterSurvivalComponent : ScriptComponent
 {
-	protected EL_SurvivalStats m_SurvivalStats;
+	protected ref EL_SurvivalStats m_SurvivalStats;
 	protected string m_sCharacterId;
 	protected float m_fLastUpdateTime;
 

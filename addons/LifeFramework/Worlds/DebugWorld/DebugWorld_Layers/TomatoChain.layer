@@ -1,8 +1,8 @@
 GenericEntity TomatoTrader {
- coords 105.449 -0.001 135
+ coords 106 0 140
  {
   $grp GenericEntity {
-   AppleTradeContainer2 {
+   TomatoTradeContainer {
     components {
      EL_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
       Attributes SCR_ItemAttributeCollection "{59693C53B153D96B}" {
@@ -69,12 +69,11 @@ GenericEntity TomatoTrader {
       Enabled 1
      }
     }
-    Flags 0x403 0
-    coords 0.108 0.917 0.148
-    angles 0 -14.907 0
+    coords 0 0.9 0
+    Flags 1027
    }
    TomatoTraderTestItems {
-    coords -0.774 0.899 0.18
+    coords -1.6 0.9 0.7
     {
      $grp GenericEntity : "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et" {
       Tomato_5A4C5C558992D7AF {
@@ -108,17 +107,24 @@ GenericEntity TomatoTrader {
     }
    }
   }
-  $grp GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {
-    coords 0.147 0 0
-   }
-   {
-    coords -1.065 0 0
+    coords -1.6 0 0.7
    }
   }
-  GenericEntity : "{B80655BD24D2C162}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords -1.161 0.008 -0.95
-   angles 3.011 17.106 0.926
+  EL_NpcBaseEntity TomatoNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Tomato"
+      Surname "Trader"
+     }
+    }
+   }
+   coords 0 0 -1.1
+  }
+  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
+   coords 1.6 0 -0.9
   }
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
@@ -128,7 +134,10 @@ GenericEntity TomatoTrader {
      m_eInitialLightState LIT
     }
    }
-   coords -1.23 0.902 -0.182
+   coords -1.6 0.9 -0.6
   }
  }
+}
+GenericEntity TomatoGather : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" {
+ coords 106 0 145
 }

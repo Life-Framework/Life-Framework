@@ -6,11 +6,11 @@ MetaFileClass {
    MaterialAssigns {
     MaterialAssignClass "{E59256ECA2214CBD}" {
      SourceMaterial "Knob"
-     AssignedMaterial "{892BBE796DDB4687}Assets/Vehicles/Attachments/SirenLights/data/Knob.emat"
+     AssignedMaterial "{892BBE796DDB4687}Assets/Vehicles/Attachments/SirenLights/Data/Knob.emat"
     }
     MaterialAssignClass "{56757F6E82934B55}" {
      SourceMaterial "Knob_Decals"
-     AssignedMaterial "{FF4B61672C9A4540}Assets/Vehicles/Attachments/SirenLights/data/Knob_Decals.emat"
+     AssignedMaterial "{FF4B61672C9A4540}Assets/Vehicles/Attachments/SirenLights/Data/Knob_Decals.emat"
     }
    }
    GeometryParams {

@@ -14,4 +14,11 @@ modded class SCR_InventoryMenuUI
 		super.OnMenuOpen();
 		s_pELThisMenu = this;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuClose()
+	{
+		super.OnMenuClose();
+		s_pELThisMenu = null;
+	}
 }

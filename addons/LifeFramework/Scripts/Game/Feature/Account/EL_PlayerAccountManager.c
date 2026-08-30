@@ -65,7 +65,7 @@ class EL_PlayerAccountManager : Managed
 			// may just be the default, so it re-opens the faction menu on a no-character account.
 			account.m_bFactionChosen = (record.m_eFaction != EL_Faction.CIVILIAN);
 			account.m_bOnDuty = record.m_bOnDuty;
-			account.m_iWantedLevel = record.m_iWantedLevel;
+			account.SetWantedLevel(record.m_iWantedLevel);
 
 			if (record.m_aCharacters)
 			{

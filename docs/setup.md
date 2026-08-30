@@ -20,7 +20,7 @@ Everything you need to clone Life Framework, build the mod, run checks, and
 > today. Linux/macOS contributors can edit docs, scripts, and EnforceScript, and
 > can run the headless test server via `server/scripts/launch-test.sh` once paths
 > are configured — but `node tools/cli.mjs build` and `validate` expect Windows
-> Toolchain paths unless you adapt `opencode.json`.
+> Toolchain paths unless you set the `ENFUSION_*` env vars above.
 
 ## 1. Clone the repository
 
@@ -33,22 +33,43 @@ git config core.hooksPath .githooks
 The pre-commit hook runs `tools/validation/validate-repo.ps1` on staged files.
 It blocks generated artifacts, duplicate GUIDs, and other repo hygiene issues.
 
-## 2. Configure toolchain paths
+## 2. Toolchain paths
 
-Edit [`opencode.json`](../opencode.json) at the repo root. Set paths for your
-machine:
+The committed [`opencode.json`](../opencode.json) is portable — MCP servers are
+launched by relative path from the checkout, and the CLI, test harness, and MCP
+servers all fall back to the standard Steam install locations:
 
-```json
-"environment": {
-  "ENFUSION_WORKBENCH_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Tools",
-  "ENFUSION_GAME_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger",
-  "ENFUSION_PROJECT_PATH": "C:/Users/you/Documents/My Games/ArmaReforgerWorkbench/addons",
-  "ENFUSION_SERVER_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server"
-}
+- `...\Steam\steamapps\common\Arma Reforger Tools`
+- `...\Steam\steamapps\common\Arma Reforger`
+- `...\Steam\steamapps\common\Arma Reforger Server` (only needed for `test`/`serve`)
+
+If you installed outside Steam or want custom locations, set any of these OS
+environment variables (they win over everything):
+
+```sh
+ENFUSION_WORKBENCH_PATH=C:/path/to/Arma Reforger Tools
+ENFUSION_GAME_PATH=C:/path/to/Arma Reforger
+ENFUSION_SERVER_PATH=C:/path/to/Arma Reforger Server
+ENFUSION_PROJECT_PATH=C:/path/to/your/addons/folder   # MCP authoring tools
 ```
 
-`ENFUSION_SERVER_PATH` is optional; the CLI falls back to the default Steam
-install location.
+For opencode users, machine-specific env can also live in your **global**
+config at `~/.config/opencode/opencode.json` (deep-merged over the repo's) —
+that keeps machine paths out of the repo entirely:
+
+```json
+{
+  "mcp": {
+    "enfusion-mcp": {
+      "environment": {
+        "ENFUSION_WORKBENCH_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Tools",
+        "ENFUSION_GAME_PATH": "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger",
+        "ENFUSION_PROJECT_PATH": "C:/Users/you/Documents/My Games/ArmaReforgerWorkbench/addons"
+      }
+    }
+  }
+}
+```
 
 Check that everything resolves:
 
@@ -124,9 +145,24 @@ node tools/cli.mjs call api_search '{"query":"SCR_SpawnLogic","format":"tree"}'
 
 For [opencode](https://opencode.ai) users: skills and playbooks live in
 [`.opencode/`](../.opencode/README.md). Restart opencode after changing MCP
-settings in `opencode.json`.
+settings.
 
 Full harness overview: [CONTRIBUTING.md § AI-assisted development](../CONTRIBUTING.md#-ai-assisted-development).
+
+### Parallel agents (worktrees)
+
+Heavy commands (`build`/`test`/`dev`/`serve`/`ci`) refuse to run in the main
+checkout — it is reserved for the world editor. Agents work in per-feature
+worktrees:
+
+```sh
+node tools/cli.mjs wt new <feature>     # create Life-Framework-ws-<feature> @ ws/<feature>
+node tools/cli.mjs wt list              # worktrees, ports, merged state
+node tools/cli.mjs wt ship <feature>    # gate, PR, auto-merge into main
+```
+
+`wt ship` needs the GitHub CLI authenticated once (`gh auth login`), or a
+`GITHUB_TOKEN` env var. Full detail: [worktrees.md](worktrees.md).
 
 ## 6. Before you open a PR
 
@@ -141,8 +177,9 @@ Full harness overview: [CONTRIBUTING.md § AI-assisted development](../CONTRIBUT
 | Problem | Fix |
 | --- | --- |
 | `validate` fails with `spawn powershell ENOENT` | Install PowerShell 7 (`pwsh`) or run validation on Windows |
-| Workbench not found | Set `ENFUSION_WORKBENCH_PATH` in `opencode.json`; run `status` |
+| Workbench not found | Set `ENFUSION_WORKBENCH_PATH` (OS env or global opencode config); run `status` |
 | Server not found | Install Arma Reforger Server (1874900) or set `ENFUSION_SERVER_PATH` |
+| `cli build/test/dev` refuses in the main checkout | Create a worktree: `cli wt new <feature>`, then work there |
 | Pre-commit blocks `.rdb` / `log` / `.gproj.user` | Unstage generated Workbench artifacts; never commit them |
 | Duplicate GUID error | Every resource needs a unique 16-hex GUID in its `.meta` |
 | MCP `installed=false` | Run `node tools/cli.mjs mcp install` |

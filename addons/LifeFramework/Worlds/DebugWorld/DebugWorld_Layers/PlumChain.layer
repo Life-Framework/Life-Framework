@@ -1,5 +1,5 @@
 GenericEntity PlumTrader {
- coords 115.459 -0.001 135
+ coords 118 0 140
  {
   $grp GenericEntity {
    PlumTradeContainer {
@@ -69,12 +69,11 @@ GenericEntity PlumTrader {
       Enabled 1
      }
     }
-    coords 0.141 0.899 0.131
-    angleY -14.907
+    coords 0 0.9 0
     Flags 1027
    }
    PlumTraderTestItems {
-    coords -0.627 0.899 0.343
+    coords -1.6 0.9 0.7
     {
      $grp GenericEntity : "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et" {
       Plum_5A4C5C558992D31E {
@@ -107,10 +106,7 @@ GenericEntity PlumTrader {
   }
   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {
-    coords 0.147 0 0
-   }
-   {
-    coords -1.067 0 0
+    coords -1.6 0 0.7
    }
   }
   EL_NpcBaseEntity PlumNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
@@ -122,13 +118,10 @@ GenericEntity PlumTrader {
      }
     }
    }
-   coords 0 0 -0.872
+   coords 0 0 -1.1
   }
   SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords -1.133 0.001 -1.278
-   angleX 3.575
-   angleY 26.768
-   angleZ -0.096
+   coords 1.6 0 -0.9
   }
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
@@ -138,11 +131,18 @@ GenericEntity PlumTrader {
      m_eInitialLightState LIT
     }
    }
-   coords -1.09 0.904 -0.068
+   coords -1.6 0.9 -0.6
   }
  }
 }
 Tree PlumGatherTree : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
- coords 113.025 0.003 134.831
- angleY -31.425
+ components {
+  ActionsManagerComponent "{596540948BBDD481}" {
+   additionalActions {
+    EL_GatherAction "{59654094806921B6}" {
+    }
+   }
+  }
+ }
+ coords 118 0 145
 }

@@ -25,6 +25,10 @@ before making changes. This file is the portable, tool-agnostic contract; the
 5. **Enforce Script lives under `addons/LifeFramework/Scripts/Game/`**, custom
    classes are prefixed `EL_`, and script classes referenced by prefabs/entities
    need the matching `XxxClass: YyyClass` pair where the base declares one.
+6. **Never run heavy commands in the main checkout.** `cli build / test / dev /
+   serve / ci` refuse to run there (the CLI enforces this) — the main checkout
+   is the world-editor copy and agent activity must never break it. Create a
+   worktree with `cli wt new <feature>` and work in it; ship via `cli wt ship`.
 
 ## Build & test (the whole point)
 
@@ -33,7 +37,11 @@ or the Workbench GUI:
 
 ```sh
 tools\cli status              # toolchain + MCP servers + environment
-tools\cli build               # headless Workbench build of the addon (PC)
+tools\cli wt new <feature>    # create worktree + branch + port allocation
+tools\cli dev --tier fast     # fast loop in the CURRENT worktree (no build)
+tools\cli wt gate <feature>   # validate + build + test in a worktree (anywhere)
+tools\cli wt ship <feature>   # sync -> gate -> push -> PR -> auto-merge into main
+tools\cli build               # headless Workbench build of the addon (PC, worktree)
 tools\cli test                # build + boot dedicated server on DebugWorld +
                               #   run the ELTEST suite + parse results (exit code)
 tools\cli test --no-build     # skip the build, just run the server suite
@@ -67,6 +75,41 @@ The fast dev loop is `tools\cli dev [--tier fast|all]`: validate + test
 without the headless build (the dedicated server compiles scripts at boot from
 the unpacked addons), then dumps every `[ELDebug:*]` feature log line from the
 same run. Use `dev` for iteration; reserve `ci` for the gate.
+
+### Parallel worktrees (agents never touch the world-editor copy)
+
+Up to ~20 agents work on disparate features at once. Each agent owns a git
+worktree `Life-Framework-ws-<slug>` (sibling directory) on branch `ws/<slug>`,
+branched from `origin/main`. The main checkout stays clean so the human can
+always open the world editor.
+
+- **Start**: `tools\cli wt new <feature>` — fetches origin, creates the
+  worktree + branch, allocates a unique port pair, registers it in the hub
+  (`<main-checkout>/tmp/wt/`, git-ignored). `cd` into the worktree and work
+  there. Files are a full checkout; add/edit/commit as usual.
+- **Iterate**: `tools\cli dev --tier fast` *inside the worktree*, or
+  `tools\cli wt dev <feature> --tier fast` from anywhere. Every worktree boots
+  the test server on its own ports (`-bindPort`/`-a2sPort`), so tests run in
+  parallel across worktrees. Never run `dev`/`test`/`build`/`serve`/`ci` from
+  the main checkout — the CLI refuses.
+- **Gate before shipping**: `tools\cli wt gate <feature>` runs validate +
+  headless build + test (tier=all) in that worktree. One Workbench build runs
+  at a time machine-wide (lock file); pass `--wait` to queue instead of failing
+  fast. Do not open the world editor while a headless build is running.
+- **Ship**: `tools\cli wt ship <feature>` syncs `origin/main` into the branch,
+  runs the gate, pushes, opens a PR, and auto-merges it into main — no human
+  babysitting. `--pr-only` leaves the PR open for review. Conflicts stop the
+  ship with a clear message; fix and re-run.
+- **Cleanup**: merged worktrees show as `merged (prune me)` in
+  `tools\cli wt list`; remove with `tools\cli wt prune <feature>` (verified
+  against `origin/main`; `--force` discards unmerged work).
+- **Auth**: PR creation needs the GitHub CLI authenticated once
+  (`gh auth login`), or a `GITHUB_TOKEN` env var (REST fallback).
+
+Commit discipline: never commit to `main` from a worktree (the pre-commit
+validator blocks it). Always keep the worktree on its `ws/<slug>` branch — if a
+worktree drifts to another branch, `cli wt test/build/ship` refuse and
+`cli wt sync` checks it back out.
 
 ## Debug logging and the fail-safe rule
 
@@ -241,9 +284,10 @@ A change is not done until it climbs the rungs its scope requires:
 
 1. **Repo hygiene + headless compile** — `tools\cli validate`. Cheap; run it
    constantly. Do not ask the user to compile.
-2. **In-game suite** — `tools\cli test`. Boots the DebugWorld server, runs the
-   `EL_Test*` suite, exits nonzero on failure. A scarce gate: once after a phase
-   or fix is complete, never mid-edit.
+2. **In-game suite** — `tools\cli test` (in your worktree, or `cli wt test
+   <slug>`). Boots the DebugWorld server, runs the `EL_Test*` suite, exits
+   nonzero on failure. A scarce gate: once after a phase or fix is complete,
+   never mid-edit.
 3. **DebugWorld play** — drive the actual feature path in the running game and
    read the observable result (log line, UI value, inventory change).
 4. **Logs** — `Documents/My Games/ArmaReforger/logs/<date>/console.log` and
@@ -263,6 +307,11 @@ then restart play mode.
 - Arma Reforger Server (Steam app 1874900) is required for `cli test`/`serve`.
 - Server config: `server/configs/test-server.json` (scenario + RCON).
   Launch wrapper: `server/scripts/launch-test.ps1` / `.sh`.
+- Toolchain paths resolve as: OS env var (`ENFUSION_WORKBENCH_PATH`,
+  `ENFUSION_GAME_PATH`, `ENFUSION_SERVER_PATH`, `ENFUSION_PROJECT_PATH`) →
+  `opencode.json` → standard Steam install locations. The committed
+  `opencode.json` is portable; put machine-specific paths in your environment
+  or `~/.config/opencode/opencode.json`, never in the repo (see `docs/setup.md`).
 
 ## Rigorous workflows (any tool may read these)
 
@@ -282,7 +331,9 @@ workflows this project uses:
   `enfusion-script-authoring`, `enfusion-prefab-authoring`,
   `enfusion-config-authoring`, `enfusion-verify`.
 - **Situational skills** — `el-tdd`, `enfusion-how`, `enfusion-architect`,
-  `enfusion-blast-radius`, `interrogate`, `show-me-your-work`, `unslop`.
+  `enfusion-blast-radius`, `interrogate`, `show-me-your-work`, `unslop`,
+  `parallel-worktrees` (worktree lifecycle + auto-merge; read it before
+  touching any build/test command).
 
 If a rule in AGENTS.md and a skill file ever disagree, **AGENTS.md wins** — it
 is the portable contract every tool reads.
@@ -291,4 +342,4 @@ is the portable contract every tool reads.
 
 - After editing `opencode.json`, tell the user to restart opencode.
 - Keep commits focused; run `tools\cli ci` (or at least `cli validate`) before
-  finishing a task.
+  finishing a task — in a worktree, not the main checkout.
