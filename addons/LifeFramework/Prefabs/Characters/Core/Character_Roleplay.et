@@ -22,9 +22,11 @@ SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base
    }
    EL_PlayerLevelComponent "{A68F47E449868507}" {
    }
-   EL_PlayerJobComponent "{A68F47E449868508}" {
-   }
-   EL_BuildingManagerComponent "{DF8FCA7984804E51}" {
+EL_PlayerJobComponent "{A68F47E449868508}" {
+    }
+    LF_QuestTrackerComponent "{4EDDFD87ACFEE921}" {
+    }
+    EL_BuildingManagerComponent "{DF8FCA7984804E51}" {
     m_PreviewMaterial "{58F07022C12D0CF5}Assets/Editor/PlacingPreview/Preview.emat"
     m_BasePreviewPrefab "{5626E68741FCB9DB}Prefabs/Building/BaseBuildingPreview.et"
    }

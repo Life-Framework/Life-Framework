@@ -8,6 +8,8 @@ modded enum ChimeraMenuPreset
 	Shop,
 	PoliceMenu,
 	EL_SplitQuantityDialog,
+	// Quest menu
+	QuestMenu,
 	// Debug menu
 	DebugMenu
 }

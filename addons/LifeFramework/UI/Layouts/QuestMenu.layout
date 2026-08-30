@@ -1,0 +1,41 @@
+FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialog.layout" {
+ {
+  VerticalLayoutWidgetClass "{EF80F39505C292D5}" {
+   {
+    TextWidgetClass "{969A3F302C343756}" {
+     Name "GiverTitle"
+     Text "#LF-Quest_Title"
+     "Font Size" 24
+     Slot LayoutSlot "{B47E8B708BFBBFFD}" {
+      HorizontalAlign 1
+      Padding 0 20 0 10
+     }
+    }
+    ScrollLayoutWidgetClass "{0CFEE528122948DF}" {
+     Slot LayoutSlot "{6C7AF217FE27FA7D}" {
+      SizeMode Fill
+      FillWeight 1
+      Padding 20 10 20 10
+     }
+     {
+      VerticalLayoutWidgetClass "{BAFE7D1D9036270C}" {
+       Name "QuestList"
+      }
+     }
+    }
+    HorizontalLayoutWidgetClass "{D4E27499AEE5F703}" {
+     Slot LayoutSlot "{62D108363DA108FE}" {
+      Padding 20 20 20 20
+     }
+     {
+      ButtonWidgetClass "{A3530023AB5EA1F8}" : "{0114A06AD44D49BD}UI/layouts/WidgetLibrary/Buttons/DialogButtonCancel.layout" {
+       Name "CloseButton"
+       Slot LayoutSlot "{BB96D0DAE4C2C38C}" {
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
