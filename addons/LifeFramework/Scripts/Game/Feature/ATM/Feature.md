@@ -16,16 +16,19 @@ Rung 2 target: the player walks to the ATM machine, interacts with it, and does
 a cash-in / cash-out transaction. The machine is the gate — there is no
 "withdraw from anywhere" path.
 
-Today the code is rung 4 (a menu you can open) and it is a **money exploit**:
-Deposit never deducts cash, Withdraw never pays out — money from thin air.
+The ATM is the **only** cash↔account boundary (verified 2026-08-30): every
+payout in the game pays cash, and this machine is where cash becomes a balance
+or a balance becomes cash.
 
 ## V1 (shippable)
 
-1. **Make the money flow honest** — Deposit takes real cash out of the
-   player's inventory, Withdraw pays real cash in. This is the #1 blocker.
+1. **Money flow is honest — DONE (verified 2026-08-30).** Deposit takes real
+   cash out of the player's inventory (partial removals rolled back), Withdraw
+   pays real cash in (all-or-nothing with balance restore). Server-guarded via
+   `EL_CharacterATMComponent.RpcAsk_Deposit` / `RpcAsk_Withdraw`.
 2. Server-guarded transaction path (RPC ask → server validates balance and
-   cash → result). The current menu has no RPC path at all.
-3. A physical ATM prefab at the bank branch as the interaction point.
+   cash → result) — DONE.
+3. A physical ATM prefab at the bank branch as the interaction point — pending.
 
 ## Iteration path
 
@@ -34,19 +37,18 @@ Deposit never deducts cash, Withdraw never pays out — money from thin air.
 
 ## Current state
 
-- `EL_ATMManager` + `EL_BankAccount` (`Feature/ATM/`) — session map registry +
-  async loader; persistent per-player balance with deposit/withdraw guards.
-  ⚠️ `SetBalance` unclamped; `CreateAccount` silently overwrites an existing
-  account; the manager inherits `ScriptedUserAction` (misfit).
-- `EL_ATMMenu` — ❌ **money from thin air**, no RPC path, buttons server-guarded
-  so a real client does nothing, no insufficient-funds feedback, keys not
-  localized.
+- `EL_ATMManager` + `EL_BankAccount` (`Feature/ATM/`) — the canonical bank:
+  session map registry + async loader; persistent per-player balance with
+  deposit/withdraw guards. ⚠️ `SetBalance` unclamped; `CreateAccount` silently
+  overwrites an existing account.
+- `EL_ATMMenu` — deposit/withdraw UI on the cash-moving RPC bridge; amount
+  guards via `EL_ATMManager.IsValidAmount`.
 - `EL_ATMAction` / `EL_CharacterATMComponent` — interaction and per-character
   wiring.
 - Persistence: `Feature/ATM/Persistence/`.
 
 ## Dependencies
 
-- `Banking` (the account system — must be unified with it).
+- `Banking` (the account system — unified; this is it).
 - `Money` (physical cash).
 - `Quantity` (stack-aware cash handling via `MoneyStack`).
