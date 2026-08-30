@@ -1,23 +1,16 @@
 GenericEntity WhitelistStation {
  coords 118 0 146
  {
-  GenericEntity WhitelistSign_Info : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
-   coords 0 0.9 0
-  }
   GenericEntity WhitelistTableItems {
    coords -1.6 0.9 0.7
    {
-    $grp GenericEntity : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
-     WhitelistIDCard_Debug {
-      coords 0 0 0
-     }
+    GenericEntity WhitelistIDCard_Debug : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
+     coords 0 0 0
     }
    }
   }
-  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
-   {
-    coords -1.6 0 0.7
-   }
+  GenericEntity : "{622F9989DDC4865B}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   coords -1.6 0 0.7
   }
   EL_NpcBaseEntity WhitelistNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -28,10 +21,13 @@ GenericEntity WhitelistStation {
      }
     }
    }
-   coords 0 0 -1.1
+   coords -5.235 -1.016 -2.182
   }
-  SCR_DestructibleEntity : "{B80655BD24D2C162}PrefabLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
-   coords 1.6 0 -0.9
+  GenericEntity : "{B80655BD24D2C162}PrefabLibrary/DefaultLibrary/Props/Civilian/Recreation/ChairRecreation_01/ChairRecreation_01_white.et" {
+   coords -3.072 0 -1.428
+  }
+  GenericEntity WhitelistSign_Info : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
+   coords -3.07 0.9 -2.09
   }
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
