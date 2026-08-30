@@ -196,7 +196,7 @@ class EL_ShopComponent : ScriptComponent
 		if (added == quantity)
 		{
 			EL_Debug.Log("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, quantity, totalPrice));
-			EL_Utils.Notify(string.Format("#EL-Item_Bought", GetItemDisplayName(prefab), quantity), "#EL-Shop_PurchaseSuccessful", 3.0);
+			EL_Utils.Notify(WidgetManager.Translate("#EL-Item_Bought", GetItemDisplayName(prefab), quantity), "#EL-Shop_PurchaseSuccessful", 3.0);
 			return true;
 		}
 
@@ -257,7 +257,7 @@ class EL_ShopComponent : ScriptComponent
 
 		int earned = ComputeTotalPrice(unitPrice, removed);
 		EL_Debug.Log("Shop", string.Format("sold item=%1 qty=%2 price=%3", prefab, removed, earned));
-		EL_Utils.Notify(string.Format("#EL-Item_Sold", earned), "#EL-Trade_Successful", 3.0);
+		EL_Utils.Notify(WidgetManager.Translate("#EL-Item_Sold", earned), "#EL-Trade_Successful", 3.0);
 		return true;
 	}
 
