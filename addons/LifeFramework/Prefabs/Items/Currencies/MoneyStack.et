@@ -1,6 +1,23 @@
 GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" {
  ID "0000000000000001"
  components {
+  EL_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iInitQuantity 100
+   m_aQuantityStacks {
+    EL_QuantityStack "{D5EBC1FB08B68D4D}" {
+     m_iQuantityAmount 100
+     m_StackModel "{773BE5E227A5A9CB}Assets/Items/Currencies/MoneyStack.xob"
+    }
+    EL_QuantityStack "{D2EDF43CBD0C089C}" {
+     m_iQuantityAmount 1000
+     m_StackModel "{AD560ADB3B8B102E}Assets/Items/Equipment/Backpacks/Backpack_ALICE_Medium/Backpack_ALICE_Medium.xob"
+    }
+    EL_QuantityStack "{6B14932512EE06EB}" {
+     m_iQuantityAmount 10000
+     m_StackModel "{582D5ED9889AB099}Assets/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack/Backpack_IIFS_FieldPack_item.xob"
+    }
+   }
+  }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
     ItemDisplayName UIInfo "{5222EB4D07D865FA}" {

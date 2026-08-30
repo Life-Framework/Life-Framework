@@ -49,6 +49,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityStack(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_QuantityVisuals(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobReward(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobRewardWantedClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);

@@ -66,12 +66,30 @@ modded class EL_InventoryUtils
 				break;
 			}
 
-			if (isQuantityPrefab && remainingAmount > 1)
+			if (isQuantityPrefab)
 			{
 				EL_QuantityComponent quantityComponent = EL_Component<EL_QuantityComponent>.Find(item);
-				int added;
-				quantityComponent.AddQuantity(remainingAmount - 1, true, added); // One quantity added through existence of the new item
-				remainingAmount -= added + 1;
+				if (!quantityComponent)
+				{
+					remainingAmount--;
+				}
+				else
+				{
+					// A fresh item already holds its configured init quantity, not 1, so its
+					// spawn counts towards the total before anything is added on top.
+					int spawnedQuantity = quantityComponent.GetQuantity();
+					if (remainingAmount > spawnedQuantity)
+					{
+						int added;
+						quantityComponent.AddQuantity(remainingAmount - spawnedQuantity, true, added);
+						remainingAmount -= added + spawnedQuantity;
+					}
+					else
+					{
+						quantityComponent.SetQuantity(remainingAmount);
+						remainingAmount = 0;
+					}
+				}
 			}
 			else
 			{
