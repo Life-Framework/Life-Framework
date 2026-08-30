@@ -63,6 +63,34 @@ failure — that exit code is the agent's pass/fail signal. Default tier is
 `all`; use `--tier fast` while iterating on pure logic and run the full `all`
 tier before declaring a phase or fix complete.
 
+The fast dev loop is `tools\cli dev [--tier fast|all]`: validate + test
+without the headless build (the dedicated server compiles scripts at boot from
+the unpacked addons), then dumps every `[ELDebug:*]` feature log line from the
+same run. Use `dev` for iteration; reserve `ci` for the gate.
+
+## Debug logging and the fail-safe rule
+
+Every feature logs its state transitions through `EL_Debug`
+(`Scripts/Game/Core/EL_Debug.c`) so any headless or play run is greppable by
+feature. This is a development contract, not optional polish:
+
+- `EL_Debug.Log("<Feature>", "<message>")` prints `[ELDebug:<Feature>] <message>`
+  to the console log (server and client). The prefix is the contract the harness
+  and agents grep on. There are `Info`, `Warn`, and `Error` variants; use
+  `Error` for a failure the feature degrades past.
+- Instrument the **state transitions that matter to a player**: a lock state
+  change, a key match/mismatch, a purchase accepted or rejected, a crop stage
+  advance, an ore batch spawn, a job set, a level-up, a survival stat change.
+  Rejections are logged too (`rejected`, `failed`, `skipped`) — a silent no-op is
+  a bug.
+- **Fail-safe is a hard rule**: a misconfigured or broken input (missing prefab,
+  null entity, bad GUID, empty list, missing file) must log an `EL_Debug.Error`
+  and degrade that one feature. It must never VME, crash the world, or abort the
+  game mode. The `EL_Utils.SpawnEntityPrefab` prefab-resolve guard and the
+  whitelist CONNECT-gate file-missing degradation are the reference patterns.
+- Never log with a bare `Print("[EL_X] ...")` when a feature has an `EL_Debug`
+  call site — one logging path per feature, the greppable one.
+
 ## Adding tests / checks
 
 - **In-game tests**: create `addons/LifeFramework/Scripts/Game/Tests/EL_Test_*.c`
