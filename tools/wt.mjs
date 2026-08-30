@@ -18,7 +18,7 @@
 // stable no matter where a command is invoked.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, openSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, openSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, normalize, resolve } from "node:path";
 
 const IS_WIN = process.platform === "win32";
@@ -341,22 +341,43 @@ export function wtSync(root, slug) {
 }
 
 export function wtPrune(root, slug, { force = false } = {}) {
-  const e = requireWorktree(root, slug);
-  if (!force) {
-    git(root, ["fetch", "origin", "--prune"]);
-    if (!gitOk(root, ["merge-base", "--is-ancestor", e.branch, "origin/main"])) {
-      throw new Error(`branch ${e.branch} is not merged into origin/main; use --force to discard unmerged work`);
+  const lock = acquireLock(root, "wt", { waitMs: 600000 });
+  try {
+    const state = readState(root);
+    const e = state.worktrees?.[slug];
+    if (!e) throw new Error(`unknown worktree '${slug}' (see: cli wt list)`);
+
+    if (!existsSync(e.path)) {
+      if (!force) throw new Error(`worktree dir missing: ${e.path} (use --force to remove stale state)`);
+      git(root, ["branch", "-D", e.branch]);
+      delete state.worktrees[slug];
+      writeState(root, state);
+      return { slug, path: e.path, branch: e.branch };
     }
-    const dirty = git(e.path, ["status", "--porcelain"]).stdout.trim();
-    if (dirty) throw new Error(`worktree ${slug} has uncommitted changes; use --force to discard`);
+
+    if (!force) {
+      git(root, ["fetch", "origin", "--prune"]);
+      if (!gitOk(root, ["merge-base", "--is-ancestor", e.branch, "origin/main"])) {
+        throw new Error(`branch ${e.branch} is not merged into origin/main; use --force to discard unmerged work`);
+      }
+      const dirty = git(e.path, ["status", "--porcelain"]).stdout.trim();
+      if (dirty) throw new Error(`worktree ${slug} has uncommitted changes; use --force to discard`);
+    }
+    const rm = git(mainRootOf(root), ["worktree", "remove", e.path, ...(force ? ["--force"] : [])]);
+    if (rm.status !== 0) {
+      const known = listWorktrees(root).some((w) => normalize(w.path) === normalize(e.path));
+      if (!force || known) throw new Error(`git worktree remove failed: ${rm.stderr || rm.stdout}`);
+      // Git can unregister a worktree before failing to remove its ignored
+      // Workbench caches. Complete the explicit --force cleanup in that case.
+      rmSync(e.path, { recursive: true, force: true });
+    }
+    git(root, ["branch", "-D", e.branch]);
+    delete state.worktrees[slug];
+    writeState(root, state);
+    return { slug, path: e.path, branch: e.branch };
+  } finally {
+    releaseLock(root, "wt");
   }
-  const rm = git(mainRootOf(root), ["worktree", "remove", e.path, ...(force ? ["--force"] : [])]);
-  if (rm.status !== 0) throw new Error(`git worktree remove failed: ${rm.stderr || rm.stdout}`);
-  git(root, ["branch", "-D", e.branch]);
-  const state = readState(root);
-  delete state.worktrees[slug];
-  writeState(root, state);
-  return { slug, path: e.path, branch: e.branch };
 }
 
 // ---------------------------------------------------------------- PR + merge
