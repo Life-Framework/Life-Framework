@@ -139,7 +139,7 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 | --- | --- | --- |
 | `bank/account-math` | LOGIC ✅ | `EL_BankAccount`: Deposit(>0) raises balance; Withdraw(>balance)=false and balance unchanged; balance never < 0 via Deposit/Withdraw; Withdraw(<=0)=false |
 | `bank/save-roundtrip` | LOGIC ✅ | 🔒 `EL_BankAccountSaveData` round-trip preserves balance + id; `Equals` ignores id |
-| `atm/manager-registry` | LOGIC ✅ | `EL_ATMManager` AddAccount/CreateAccount/GetAccount; Deposit/Withdraw on known/unknown accounts |
+| `atm/manager-registry` | LOGIC ✅ | `EL_ATMManager` AddAccount/CreateAccount/GetAccount; duplicate and empty IDs rejected; Deposit/Withdraw on known/unknown accounts |
 | ~~`bank/component-math`~~ | — | `EL_BankAccountComponent` **deleted 2026-08-30** — no second bank, no entity-bank tests |
 | ~~`bank/component-initial`~~ | — | $20k `OnPostInit` grant **gone** with the deleted entity bank |
 | `shop/buy-math` | WORLD ⏳ | 🎯 **Funds exploit**: buyer with $50 buying a $100 item must FAIL — code fixed (refund + fail) and the money primitive is pinned by `EL_Test_MoneyCash`, but no direct `BuyItem` test yet |
@@ -153,6 +153,7 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 
 | Test | Tier | Asserts |
 | --- | --- | --- |
+| `actions/configuration-guards` | LOGIC ✅ | malformed gather requests and processing recipes are rejected before inventory mutation |
 | `gather/tool-requirement` | WORLD | ✅ Gather requires the configured tool (right hand / left gadget / inventory) else cannot be performed |
 | `gather/counter-restock` | WORLD | 🎯 Remaining gathers decrements to 0, restocks after timeout; boundary `>` semantics on restock deadline (off-by-one) |
 | `gather/perform-revalidates` | WORLD | 🎯 `PerformAction` must re-check the tool on the server (currently only client-evaluated) — hostile RPC can gather without it |
@@ -179,8 +180,8 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 | `job/debug-license` | ✅ (code) | `RpcAsk_DebugGrantLicense` **removed** 2026-08-30 — grep-verified absent from `Scripts/Game` |
 | `license/catalog` | LOGIC ⏳ | Every `EL_ELicenseType` has a config; UNEMPLOYED + FARMER_TOMATO granted initially |
 | `license/purchase-math` | LOGIC ⏳ | `CanAffordLicense` SP ≥ cost; `CanUnlockLicense` gates on owned/config/whitelist/level |
-| `license/purchase-spend` | LOGIC ⏳ | 🎯 `PurchaseLicense` must not spend SP when unlock later fails (currently double-charge risk) |
-| `license/whitelist-job` | LOGIC ⏳ | 🎯 Whitelisted license gates must check the RIGHT job (currently hard-coded POLICE for every whitelisted license incl. MEDIC) |
+| `license/purchase-spend` | LOGIC ✅ | `PurchaseLicense` validates requirements before `UnlockLicense` spends SP |
+| `license/whitelist-job` | LOGIC ✅ | police licenses map to POLICE; `MEDIC_ACCESS` maps to MEDIC (`EL_Test_LicenseWhitelist`) |
 | `whitelist/basic` | LOGIC ⏳ | IsFactionRestricted (POLICE/MILITARY/MAFIA), IsJobRestricted (POLICE), add/remove/get idempotent. **Blocked: `EL_EFactionType` unresolved — the file cannot compile yet** |
 | `whitelist/persistence` | LOGIC ⏳ | (documented) resets every start — decision to persist is a TODO, not a bug; assert the current in-memory contract only |
 

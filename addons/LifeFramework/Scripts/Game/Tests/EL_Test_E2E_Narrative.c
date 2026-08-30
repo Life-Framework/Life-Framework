@@ -1,9 +1,7 @@
 // red-proof: break an expectation and run `tools\cli test --tier all`; the
-// loop goes red. Observed red: expected the final bank balance 301 with the
-// real 300 (a one-number break of the robbery payout assertion), FAIL
-// e2e/narrative-loop on "bank balance 300 after the robbery payout (expected
-// 301, got 300)", then reverted. Dropping the apple tradable value below 5 in
-// AppleChain.layer sends the same cash assertion red.
+// loop goes red. Observed red: expected GetCash 201 after AddCash(200), then
+// reverted. Dropping the apple tradable value below 5 in AppleChain.layer sends
+// the same cash assertion red.
 // tier: WORLD
 class EL_Test_E2E_Narrative : EL_Test
 {
@@ -224,10 +222,10 @@ class EL_Test_E2E_Narrative : EL_Test
 		if (bank)
 			ctx.Equal(100, bank.GetBalance(), "bank balance 100 after the deposit");
 
-		// Mirrors EL_RobAction.PerformAction's reward outcome: an emulated robber
-		// has no PlayerController, so the deposit and the wanted bump are driven at
-		// the manager seam (same reasoning as EL_Test_RobReward).
-		ctx.True(EL_ATMManager.GetInstance().Deposit(ACCOUNT_UID, 200), "robbery payout 200 deposited into the e2e bank account");
+		// Mirrors EL_RobAction.PerformAction's reward outcome: robbery proceeds
+		// are physical cash and must not change the bank balance.
+		ctx.Equal(200, EL_MoneyUtils.AddCash(character, 200), "robbery payout adds 200 cash");
+		ctx.Equal(210, EL_MoneyUtils.GetCash(character), "robbery payout leaves 210 cash");
 
 		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(ACCOUNT_UID);
 		ctx.NotNull(account, "civilian account resolves for the wanted bump");
@@ -238,9 +236,9 @@ class EL_Test_E2E_Narrative : EL_Test
 		EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 
 		bank = EL_ATMManager.GetInstance().GetAccount(ACCOUNT_UID);
-		ctx.NotNull(bank, "bank account reachable after the robbery payout");
+		ctx.NotNull(bank, "bank account remains reachable after the robbery payout");
 		if (bank)
-			ctx.Equal(300, bank.GetBalance(), "bank balance 300 after the robbery payout");
+			ctx.Equal(100, bank.GetBalance(), "bank balance stays 100 after the robbery payout");
 
 		EL_PlayerAccount cached = EL_PlayerAccountManager.GetInstance().GetFromCache(ACCOUNT_UID);
 		ctx.NotNull(cached, "account retained in the cache after SaveAndReleaseAccount");

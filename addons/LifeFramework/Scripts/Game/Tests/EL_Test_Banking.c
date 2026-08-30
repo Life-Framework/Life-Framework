@@ -85,6 +85,7 @@ class EL_Test_ATMManagerRegistry : EL_Test
 	{
 		EL_ATMManager.Reset();
 		EL_ATMManager manager = EL_ATMManager.GetInstance();
+		ctx.True(manager.CreateAccount("") == null, "CreateAccount rejects an empty account id");
 
 		EL_BankAccount created = manager.CreateAccount("test-atm-uid");
 		ctx.NotNull(created, "CreateAccount returns a new account");
@@ -92,6 +93,10 @@ class EL_Test_ATMManagerRegistry : EL_Test
 
 		ctx.True(manager.Deposit("test-atm-uid", 500), "Deposit on a known account succeeds");
 		ctx.Equal(500, created.GetBalance(), "Deposit reaches the account");
+
+		EL_BankAccount duplicate = manager.CreateAccount("test-atm-uid");
+		ctx.True(duplicate == created, "CreateAccount returns the existing account for a duplicate id");
+		ctx.Equal(500, duplicate.GetBalance(), "duplicate account creation preserves the existing balance");
 
 		ctx.True(manager.Withdraw("test-atm-uid", 100), "Withdraw on a known account succeeds");
 		ctx.Equal(400, created.GetBalance(), "Withdraw reaches the account");

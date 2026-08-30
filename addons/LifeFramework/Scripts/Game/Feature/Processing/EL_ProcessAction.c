@@ -40,10 +40,10 @@ class EL_ProcessAction : ScriptedUserAction
 	{
 		if (!EL_NetworkUtils.IsOwner(pOwnerEntity)) return;
 
-		// A recipe must require at least one input, or outputs are free
-		if (!m_aProcessingInputs || m_aProcessingInputs.IsEmpty())
+		// A malformed recipe must be rejected before any inventory mutation.
+		if (!IsRecipeConfigured(m_aProcessingInputs, m_aProcessingOutputs))
 		{
-			EL_Debug.Warn("Processing", "rejected process: no input requirements configured");
+			EL_Debug.Error("Processing", "rejected process: recipe is not configured");
 			return;
 		}
 
@@ -59,9 +59,23 @@ class EL_ProcessAction : ScriptedUserAction
 			}
 		}
 
-		foreach (EL_ProcessingInput processingInput : m_aProcessingInputs)
+		array<int> removedAmounts = {};
+		for (int inputIndex = 0; inputIndex < m_aProcessingInputs.Count(); inputIndex++)
 		{
-			EL_InventoryUtils.RemoveAmount(inventoryManager, processingInput.m_InputPrefab, processingInput.m_iInputAmount);
+			EL_ProcessingInput processingInput = m_aProcessingInputs[inputIndex];
+			int removed = EL_InventoryUtils.RemoveAmount(inventoryManager, processingInput.m_InputPrefab, processingInput.m_iInputAmount);
+			removedAmounts.Insert(removed);
+			if (removed == processingInput.m_iInputAmount)
+				continue;
+
+			for (int rollbackIndex = 0; rollbackIndex <= inputIndex; rollbackIndex++)
+			{
+				if (removedAmounts[rollbackIndex] > 0)
+					EL_InventoryUtils.AddAmount(inventoryManager, m_aProcessingInputs[rollbackIndex].m_InputPrefab, removedAmounts[rollbackIndex]);
+			}
+
+			EL_Debug.Error("Processing", string.Format("rejected process: input removal changed during validation (%1/%2)", removed, processingInput.m_iInputAmount));
+			return;
 		}
 
 		foreach (EL_ProcessingOutput processingOutput : m_aProcessingOutputs)
@@ -91,12 +105,37 @@ class EL_ProcessAction : ScriptedUserAction
 
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
- 	{
+  	{
+		if (!IsRecipeConfigured(m_aProcessingInputs, m_aProcessingOutputs))
+			return false;
+
 		InventoryStorageManagerComponent inventoryManager = EL_Component<InventoryStorageManagerComponent>.Find(user);
 		foreach (EL_ProcessingInput processingInput : m_aProcessingInputs)
 		{
 			int inputPrefabsInInv = EL_InventoryUtils.GetAmount(inventoryManager, processingInput.m_InputPrefab);
 			if (inputPrefabsInInv < processingInput.m_iInputAmount) return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Validates recipe shape before the server touches inventory.
+	static bool IsRecipeConfigured(array<ref EL_ProcessingInput> inputs, array<ref EL_ProcessingOutput> outputs)
+	{
+		if (!inputs || inputs.IsEmpty() || !outputs || outputs.IsEmpty())
+			return false;
+
+		foreach (EL_ProcessingInput input : inputs)
+		{
+			if (!input || input.m_InputPrefab.IsEmpty() || input.m_iInputAmount < 1)
+				return false;
+		}
+
+		foreach (EL_ProcessingOutput output : outputs)
+		{
+			if (!output || output.m_OutputPrefab.IsEmpty() || output.m_iOutputAmount < 1)
+				return false;
 		}
 
 		return true;
