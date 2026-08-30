@@ -29,6 +29,7 @@ class EL_ScreenshotShot
 class EL_ScreenshotCapture : Managed
 {
 	protected static const string FEATURE = "Screenshot";
+	protected static const ResourceName CAMERA_PREFAB = "Prefabs/Editor/Camera/ManualCameraBase.et";
 
 	protected static ref EL_ScreenshotShot s_ActiveShot;
 	protected static bool s_bBusy;
@@ -37,6 +38,7 @@ class EL_ScreenshotCapture : Managed
 	protected static vector s_vOriginalPos;
 	protected static bool s_bCameraMoved;
 	protected static EntityID s_SpawnedEntityId = EntityID.INVALID;
+	protected static EntityID s_SpawnedCameraId = EntityID.INVALID;
 	protected static int s_iCaptureCounter;
 
 	//------------------------------------------------------------------------------------------------
@@ -85,6 +87,7 @@ class EL_ScreenshotCapture : Managed
 		s_sLastPath = "";
 		s_bCameraMoved = false;
 		s_SpawnedEntityId = EntityID.INVALID;
+		s_SpawnedCameraId = EntityID.INVALID;
 
 		if (!shot)
 		{
@@ -102,15 +105,17 @@ class EL_ScreenshotCapture : Managed
 		}
 
 		BaseWorld world = game.GetWorld();
-		if (!world)
+		if (!world && (shot.AimAtTarget || shot.SpawnPrefab || shot.TimeOfDay24h >= 0 || !shot.WeatherStateName.IsEmpty()))
 		{
-			EL_Debug.Error(FEATURE, "capture rejected: no world");
+			EL_Debug.Error(FEATURE, "capture rejected: no world for target/environment request");
 			s_sResult = "error:no_world";
 			return false;
 		}
 
 		if (shot.OutPath.IsEmpty())
 			shot.OutPath = BuildAutoPath(shot.CaptureName);
+		else
+			shot.OutPath = FilePath.StripExtension(shot.OutPath);
 
 		// Create the output directory (best effort - failure is non-fatal).
 		FileIO.MakeDirectory(FilePath.StripFileName(shot.OutPath));
@@ -130,7 +135,8 @@ class EL_ScreenshotCapture : Managed
 			EL_Debug.Log(FEATURE, string.Format("spawned fixture %1 at %2 %3 %4", shot.SpawnPrefab, shot.TargetPosition[0], shot.TargetPosition[1], shot.TargetPosition[2]));
 		}
 
-		SetEnvironment(world, shot);
+		if (world)
+			SetEnvironment(world, shot);
 
 		if (shot.AimAtTarget)
 		{
@@ -171,7 +177,7 @@ class EL_ScreenshotCapture : Managed
 		}
 
 		s_iCaptureCounter++;
-		return string.Format("$logs:el-captures/%1_%2.bmp", cleaned, s_iCaptureCounter);
+		return string.Format("$logs:el-captures/%1_%2", cleaned, s_iCaptureCounter);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -196,7 +202,7 @@ class EL_ScreenshotCapture : Managed
 		if (!s_ActiveShot)
 			return;
 
-		string path = s_ActiveShot.OutPath;
+		string path = s_ActiveShot.OutPath + ".png";
 		string result;
 		if (FileIO.FileExists(path))
 		{
@@ -221,8 +227,15 @@ class EL_ScreenshotCapture : Managed
 		{
 			IEntity spawned = GetGame().GetWorld().FindEntityByID(s_SpawnedEntityId);
 			if (spawned)
-				SCR_EntityHelper.DeleteEntityAndChildren(spawned);
+			SCR_EntityHelper.DeleteEntityAndChildren(spawned);
 			s_SpawnedEntityId = EntityID.INVALID;
+		}
+		if (s_SpawnedCameraId != EntityID.INVALID)
+		{
+			IEntity spawnedCamera = GetGame().GetWorld().FindEntityByID(s_SpawnedCameraId);
+			if (spawnedCamera)
+				SCR_EntityHelper.DeleteEntityAndChildren(spawnedCamera);
+			s_SpawnedCameraId = EntityID.INVALID;
 		}
 
 		s_sResult = result;
@@ -234,21 +247,42 @@ class EL_ScreenshotCapture : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Reuse a camera already registered with the CameraManager (the proven
-	//! Screenshot_Autotest approach) - place it at target + offset, aimed at
-	//! target. Returns false when no camera is available (headless server).
+	//! Reuse the active rendering camera (the proven Screenshot_Autotest
+	//! approach) - place it at target + offset, aimed at target. Prefers
+	//! CameraManager.CurrentCamera(); falls back to the first registered camera.
+	//! Returns false when no camera is available (headless server).
 	protected static bool AimCamera(vector target, vector offset)
 	{
 		CameraManager cameraManager = GetGame().GetCameraManager();
 		if (!cameraManager)
 			return false;
 
-		array<CameraBase> cameras = {};
-		cameraManager.GetCamerasList(cameras);
-		if (cameras.IsEmpty())
-			return false;
-
-		CameraBase camera = cameras[0];
+		CameraBase camera = cameraManager.CurrentCamera();
+		if (!camera)
+		{
+			array<CameraBase> cameras = {};
+			cameraManager.GetCamerasList(cameras);
+			if (!cameras.IsEmpty())
+				camera = cameras[0];
+		}
+		if (!camera)
+		{
+			vector cameraPos = target + offset;
+			if (vector.DistanceSq(target, cameraPos) < 0.01)
+				cameraPos = target + "10 3 10";
+			Resource cameraResource = Resource.Load(CAMERA_PREFAB);
+			if (cameraResource && cameraResource.IsValid())
+			{
+				EntitySpawnParams spawnParams();
+				spawnParams.TransformMode = ETransformMode.WORLD;
+				Math3D.DirectionAndUpMatrix(vector.Direction(cameraPos, target).Normalized(), vector.Up, spawnParams.Transform);
+				spawnParams.Transform[3] = cameraPos;
+				IEntity spawnedCamera = GetGame().SpawnEntityPrefab(cameraResource, GetGame().GetWorld(), spawnParams);
+				camera = CameraBase.Cast(spawnedCamera);
+				if (camera)
+					s_SpawnedCameraId = spawnedCamera.GetID();
+			}
+		}
 		if (!camera)
 			return false;
 
@@ -265,6 +299,7 @@ class EL_ScreenshotCapture : Managed
 		Math3D.DirectionAndUpMatrix(vector.Direction(cameraPos, target).Normalized(), vector.Up, mat);
 		mat[3] = cameraPos;
 		camera.SetTransform(mat);
+		cameraManager.SetCamera(camera);
 
 		return true;
 	}
