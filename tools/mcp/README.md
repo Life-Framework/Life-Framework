@@ -48,6 +48,16 @@ Recorded here so a fresh checkout can reproduce the exact builds used.
 `tools\cli mcp update` moves these forward; re-run `tools\cli status` and update
 this table when you bump them.
 
+## Local additions (not upstream)
+
+The `enfusion-workbench-mcp` clone carries a local-only `texture_recolor` tool
+(not in the upstream repo): it decodes `.edds` BC7 pixels with the engine's own
+`Compressonator_MD_DLL.dll` (via `koffi` FFI), applies color ops (hue /
+saturation / lightness / tint / whiten), re-encodes, and writes a new `.edds` +
+`.meta` with a fresh GUID into the addon. Source: `src/textures/` +
+`src/tools/texture-recolor.ts`. A `tools\cli mcp update` (which does a git pull)
+will revert this — re-apply from the working copy if that happens.
+
 ## Reinstalling on a fresh clone
 
 ```sh
