@@ -182,6 +182,7 @@ node tools/cli.mjs wt ship <feature>    # gate, PR, auto-merge into main
 | --- | --- |
 | `validate` fails with `spawn powershell ENOENT` | Install PowerShell 7 (`pwsh`) or run validation on Windows |
 | Workbench not found | Set `ENFUSION_WORKBENCH_PATH` (OS env or global opencode config); run `status` |
+| Workbench: *Arma Reforger base game project not found* / game: *Unable to initialize Enfusion* | The game install is missing `addons\data\ArmaReforger.gproj` + `addons\core\*` (partial Steam update). Run `tools\cli status` for the exact missing file, then Steam → **Arma Reforger (the GAME, app 1874880)** → Properties → Installed Files → **Verify integrity of game files**. Verifying only *Arma Reforger Tools* does not restore these. Relaunch the game once afterward. |
 | Server not found | Install Arma Reforger Server (1874900) or set `ENFUSION_SERVER_PATH` |
 | `cli build/test/dev` refuses in the main checkout | Create a worktree: `cli wt new <feature>`, then work there |
 | Pre-commit blocks `.rdb` / `log` / `.gproj.user` | Unstage generated Workbench artifacts; never commit them |

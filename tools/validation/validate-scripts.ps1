@@ -50,10 +50,13 @@ $coreSource = Join-Path $workbenchDir "addons\core"
 $dataSource = Join-Path $gameDir "addons\data"
 if (-not (Test-Path -LiteralPath (Join-Path $coreSource "core.gproj"))) {
   Write-Host "ERROR Workbench core project not found: $coreSource"
+  Write-Host "FIX  Steam > Arma Reforger Tools > Properties > Installed Files > Verify integrity of game files"
   exit 2
 }
 if (-not (Test-Path -LiteralPath (Join-Path $dataSource "ArmaReforger.gproj"))) {
   Write-Host "ERROR game data project not found: $dataSource"
+  Write-Host "FIX  Steam > Arma Reforger (the GAME, app 1874880) > Properties > Installed Files > Verify integrity of game files"
+  Write-Host "     Verifying only 'Arma Reforger Tools' does NOT restore the game data project."
   exit 2
 }
 
