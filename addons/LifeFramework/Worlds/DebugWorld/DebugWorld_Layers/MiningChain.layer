@@ -126,3 +126,7 @@ EL_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/Min
 GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
  coords 122.777 0.9 147.497
 }
+GenericEntity EL_MiningSign_Debug : "{27EDF8AFC363A7D5}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_underminedarea_pole.et" {
+ coords 124 0 145.5
+ angles 0 90 0
+}
