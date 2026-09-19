@@ -411,8 +411,11 @@
 
  - ℹ️ **`Worlds/DebugWorld/DebugWorld.ent` is intentionally 0 bytes.** All
   DebugWorld content lives in `Worlds/DebugWorld/DebugWorld_Layers/*.layer`;
-  `Terrain.layer` carries the `GenericWorldEntity world` BSP and terrain
-  entity. Do not repair the empty `.ent`. `MainWorld.ent` differs because it
+  `default.layer` carries the `GenericWorldEntity world` BSP and terrain
+  entity. This layer loads before gameplay layers. Placing the world entity in
+  `Terrain.layer` left earlier props without physics bodies even when they had
+  `RigidBody` and `TRACEABLE` configured. Do not repair the empty `.ent`.
+  `MainWorld.ent` differs because it
   is a `SubScene` wrapper over `worlds/Eden/Eden.ent`.
 - ℹ️ **Direct collision fixtures need `Flags 0x403 0`.** This includes the
   `Traceable` flag. Without it, a `MeshObject` + `RigidBody` can render while
@@ -427,6 +430,15 @@
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
   trader cash payout → shop purchase → ATM deposit path. Robbery proceeds are
   asserted as cash and are not added to the bank.
+- ✅ `debugworld/entity-collision` checks live physics bodies, geometry, and
+  sphere sweeps through both apple trade crates and all three trader tables.
+  Flags alone cannot prove collision. World initialization runs first in
+  `default.layer` (verified 2026-09-19).
+- Manual collision smoke after integrating the change: reopen DebugWorld,
+  start a fresh play session, spawn as Civilian, and walk into each of the
+  three apple trader tables from both sides. The character must stop at the
+  tables, and the apple trade actions must remain usable. Repeat on a client
+  joining a running dedicated server. These client checks are not automated.
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
