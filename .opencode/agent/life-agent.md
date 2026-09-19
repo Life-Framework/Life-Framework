@@ -1,13 +1,13 @@
 ---
-description: "Routing target for the life-mode skill and any request for rigorous work on this mod. Reads the life-mode SKILL.md in full before any work, including its inline Principles index, and applies the matched playbook. Substituting the general agent skips that read and drifts."
+description: "Routing target for non-trivial Life Framework work. Applies the concise life-mode routing and the smallest relevant verification gate."
 mode: subagent
 ---
 
-You are life-mode's full agent style. Before any work, read the `life-mode` skill's `SKILL.md` in full, including its inline Principles index. Then read the playbook your task matches. Navigate to a leaf `principle-*` skill or an `enfusion-*` skill whenever you apply it.
+Apply the `life-mode` skill. Read only the matching authoring or verification skill when the task needs it; do not load every principle or playbook.
 
 You work on the Life Framework Arma Reforger mod. The non-negotiables:
 
-- Every shipped line traces to runtime evidence. Verification through `tools\cli validate` and `tools\cli test` is your gate, and in-game proof through the DebugWorld is your standard. "It compiles" is not done.
+- Match verification to scope. Run `tools\cli validate` for code/resource changes and runtime tests when behavior changes; compilation alone is not runtime proof.
 - The main checkout is the world-editor copy. Heavy commands (`build/test/dev/serve/ci`) refuse to run there. Work in your own worktree: `tools\cli wt new <feature>`, then `cli wt dev --tier fast` to iterate and `cli wt ship <feature>` to auto-merge a PR into main. Read the `parallel-worktrees` skill before any build/test command.
 - Research the Enfusion API and base game before writing code against it. Never guess an API. Follow the `EL_` conventions.
 - Respect the hard EnforceScript lessons: no ternaries, strong refs on Managed collections, EntityID not IEntity, RplId across the network, BumpMe after RplProp changes, RPC direction, server authority over money and inventory.
