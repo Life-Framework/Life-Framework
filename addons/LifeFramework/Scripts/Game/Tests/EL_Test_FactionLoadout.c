@@ -1,5 +1,5 @@
 // red-proof: change an expected value below (e.g. CIVILIAN cash 500 -> 501, or
-// remove one faction's EL_FactionLoadout from GameMode_Roleplay_Debug.et), then
+// remove one faction's backpack from GameMode_Roleplay_Debug.et), then
 // run `tools\cli test --tier all`; the config assertions go red.
 // Observed red: expected 501 cash for CIVILIAN (config gives 500), then reverted.
 
@@ -9,6 +9,7 @@ class EL_Test_FactionLoadoutConfig : EL_Test
 	protected static const ResourceName MONEY_PREFAB = "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et";
 	protected static const ResourceName APPLE_PREFAB = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
 	protected static const ResourceName M9_PREFAB = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
+	protected static const ResourceName BACKPACK_PREFAB = "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -42,6 +43,8 @@ class EL_Test_FactionLoadoutConfig : EL_Test
 		CheckLoadoutPrefabs(ctx, civilian, "civilian");
 		CheckLoadoutPrefabs(ctx, police, "police");
 
+		ctx.True(HasLoadoutItem(civilian, BACKPACK_PREFAB), "CIVILIAN spawns with a backpack");
+		ctx.True(HasLoadoutItem(police, BACKPACK_PREFAB), "POLICE spawns with a backpack");
 		ctx.True(LoadoutStoresMoney(civilian, 500), "CIVILIAN starts with 500 cash");
 		ctx.True(LoadoutStoresMoney(police, 200), "POLICE starts with 200 cash");
 		ctx.True(HasDirectItem(civilian, APPLE_PREFAB), "CIVILIAN spawns apples for survival testing");
@@ -112,6 +115,19 @@ class EL_Test_FactionLoadoutConfig : EL_Test
 		{
 			if (direct == prefab)
 				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool HasLoadoutItem(EL_FactionLoadout loadout, ResourceName prefab)
+	{
+		foreach (EL_DefaultLoadoutItem item : loadout.m_aItems)
+		{
+			if (item && item.m_rPrefab == prefab)
+				return true;
+
 		}
 
 		return false;

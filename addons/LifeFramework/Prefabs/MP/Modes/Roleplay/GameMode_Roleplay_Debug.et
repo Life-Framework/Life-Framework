@@ -24,6 +24,10 @@ EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
          }
         }
        }
+       EL_DefaultLoadoutItem "{842CED42F5B1445D}" {
+        m_rPrefab "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
        EL_DefaultLoadoutItem "{60A95B55CAD80CB8}" {
         m_rPrefab "{DCF980831E880F6A}Prefabs/Characters/Uniforms/Pants_M88.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
@@ -62,6 +66,10 @@ EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
           }
          }
         }
+       }
+       EL_DefaultLoadoutItem "{C846FE0A482B4099}" {
+        m_rPrefab "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
        }
        EL_DefaultLoadoutItem "{961052121A0C8D02}" {
         m_rPrefab "{DCF980831E880F6A}Prefabs/Characters/Uniforms/Pants_M88.et"
