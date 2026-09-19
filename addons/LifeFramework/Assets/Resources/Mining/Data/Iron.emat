@@ -1,4 +1,7 @@
 MatPBRBasic {
- BCRMap "{4DB336691887A770}Assets/Resources/Mining/Data/Iron_BCR.edds"
- NMOMap "{756B8DFBC1F0F5EE}Assets/Resources/Mining/Data/Iron_NMO.edds"
+ Color 0.42 0.45 0.48 1
+ BCRMap "{8EADB31D864DD0FC}Assets/_SharedData/Metal/ST_MetalBare_01_BCR.edds"
+ NMOMap "{0470164F98BC8DD2}Assets/_SharedData/Metal/ST_MetalBare_01_NMO.edds"
+ MetalnessScale 1
+ RoughnessScale 0.35
 }

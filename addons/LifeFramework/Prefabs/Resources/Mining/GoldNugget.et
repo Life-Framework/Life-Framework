@@ -34,13 +34,14 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{6E7678CE6CD95DFD}Assets/Resources/Mining/MetalNugget.xob"
+    Object "{6399C4DB701BF230}Assets/Resources/Mining/MetalOre.xob"
    Materials {
     MaterialAssignClass "{59A73088024D4BEA}" {
      SourceMaterial "Material"
-     AssignedMaterial "{9C005A256F4C2921}Assets/Resources/Mining/Data/Gold.emat"
+      AssignedMaterial "{9C005A256F4C2921}Assets/Resources/Mining/Data/Gold.emat"
+     }
     }
    }
   }
- }
+  scale 0.2
 }
