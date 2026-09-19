@@ -54,6 +54,8 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:CharacterCreation] ...` / `[ELDebug:Spawn] ...` / `[ELDebug:FactionMenu] ...` | INFO | Spawn/character-creation flow state. |
 | `[EL_NotificationManagerComponent] ✓ ... / ... shut down` | INFO | Notification manager lifecycle. |
 | `[ELDebug:TextSign] label ready:` | INFO | Text sign init. |
+| `[ELTEST] ... AppleTradeContainer ... has physics` / `blocks a sphere sweep` | FIXED | The world entity lived in `Terrain.layer`, after earlier gameplay layers had initialized. Their meshes rendered but their physics bodies were absent. Moving world setup to first-loaded `default.layer` restored automatic body creation. The regression test checks both apple crates and three tables. `TRACEABLE` alone did not fix this. |
+| `[ELDebug:CollisionTest] ... sweep fraction=...` | INFO | Collision regression probe. A fraction strictly between 0 and 1 with the expected hit entity proves the obstacle blocks the sweep. Fraction 1 means no hit. |
 | `[ELDebug:Persistence] ...` (state transitions, autosave schedule, save scan) | INFO | Persistence lifecycle logging. |
 | `[ELDebug:Persistence] save point created` | INFO | A manual/autosave completed (expected on normal saves). |
 | `[ELDebug:Persistence] system state ... -> SHUTDOWN` | INFO | Persistence session teardown. |
