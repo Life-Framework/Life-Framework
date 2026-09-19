@@ -176,10 +176,10 @@ class EL_ShopMenu : ChimeraMenuBase
 		if (!storageManager)
 			return counts;
 
-		array<IEntity> rootItems();
-		storageManager.GetAllRootItems(rootItems);
+		array<IEntity> items();
+		storageManager.GetItems(items);
 
-		foreach (IEntity item : rootItems)
+		foreach (IEntity item : items)
 		{
 			if (!item)
 				continue;

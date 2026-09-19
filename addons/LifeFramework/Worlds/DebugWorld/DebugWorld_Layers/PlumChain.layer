@@ -136,17 +136,9 @@ coords -2.6 0.9 0.7
   }
  }
 }
-Tree PlumGatherTree : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
- components {
-  ActionsManagerComponent "{596540948BBDD481}" {
-   additionalActions {
-    EL_GatherAction "{59654094806921B6}" {
-    }
-   }
-  }
- }
+ Tree PlumGatherTree : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
   coords 114 0 145
-}
+ }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
   coords 114 0 142
  m_vSize 2.5 1 3.5

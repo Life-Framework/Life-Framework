@@ -213,7 +213,7 @@ class EL_CharacterATMComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void OpenATMMenu()
 	{
-		PlayerController playerController = PlayerController.Cast(GetGame().GetPlayerController());
+		PlayerController playerController = GetGame().GetPlayerController();
 		if (playerController)
 		{
 			EL_ATMMenu menu = EL_ATMMenu.Cast(GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.ATM));
