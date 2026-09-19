@@ -44,6 +44,7 @@ GenericEntity : "{F3919A62ADD6123A}Prefabs/Tools/Tool_Base.et" {
    m_fRange 1
   }
   WeaponComponent "{5990809682E12ADF}" {
+   components {
    WeaponAnimationComponent "{A6D3E9F14C7B2085}" {
     AnimGraph "{6BEAF3C123F42BCC}Assets/Weapons/Handguns/workspaces/pistol_type.agr"
     AnimInstance "{D09FB3E645475221}Assets/Weapons/Handguns/workspaces/pistol_main_beretta.asi"
@@ -57,6 +58,7 @@ GenericEntity : "{F3919A62ADD6123A}Prefabs/Tools/Tool_Base.et" {
     BindWithInjection 1
     AnimVariablesToBind + {
      "State"
+    }
     }
    }
    SignalsSourceAccess SignalsSourceAccessClass "{59927B29CCA9EA6F}" {

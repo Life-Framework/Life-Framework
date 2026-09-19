@@ -23,6 +23,7 @@ GenericEntity : "{69FC0AAC5FFE1288}Prefabs/Weapons/Core/Melee_Base.et" {
   SCR_MeleeWeaponProperties "{599080951A5F84A5}" {
   }
   WeaponComponent "{5990809682E12ADF}" {
+   components {
    WeaponAnimationComponent "{A6D3E9F14C7B2085}" {
     AnimGraph "{6BEAF3C123F42BCC}Assets/Weapons/Handguns/workspaces/pistol_type.agr"
     AnimInstance "{D09FB3E645475221}Assets/Weapons/Handguns/workspaces/pistol_main_beretta.asi"
@@ -37,6 +38,7 @@ GenericEntity : "{69FC0AAC5FFE1288}Prefabs/Weapons/Core/Melee_Base.et" {
     AnimVariablesToBind + {
      "State"
     }
+   }
    }
   }
   ActionsManagerComponent "{A29AE67FF4D82B0F}" {

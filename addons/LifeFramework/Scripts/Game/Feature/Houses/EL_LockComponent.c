@@ -157,7 +157,7 @@ class EL_LockComponent : ScriptComponent
 			return false;
 
 		array<IEntity> inventoryItems = {};
-		inventoryManager.GetAllRootItems(inventoryItems);
+		inventoryManager.GetItems(inventoryItems);
 		foreach (IEntity item : inventoryItems)
 		{
 			if (IsValidKey(item))

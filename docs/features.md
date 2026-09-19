@@ -197,7 +197,7 @@
   quantity per item.
 
 ### `EL_ShopMenu` / `EL_ShopAction` — `Feature/Shop/`
-- ✅ List UI; action opens menu within 3 m.
+- ✅ List UI; action opens menu within 3 m and counts items across managed nested storage.
 - ⚠️ Menu always opens for the local player regardless of who interacted.
 
 ### `EL_TraderManagerComponent` + `EL_InventoryStorageManagerComponent` — `Components/InventorySystem/`
@@ -389,7 +389,8 @@
 
 ### `LF_QuestTrackerComponent` — `Scripts/Game/Feature/Quests/`
 - ✅ Server-authoritative quest definitions, acceptance, objective progress,
-  timed expiry, collect recounts, rewards, and client quest-log replication.
+  timed expiry, collect recounts across managed nested storage, rewards, and
+  client quest-log replication.
 - ✅ `QuestGiver_Start` and `DebugWorld` provide a world-facing onboarding
   example with localized menu layouts and registered logic/world tests.
 

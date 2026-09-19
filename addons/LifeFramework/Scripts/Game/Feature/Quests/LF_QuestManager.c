@@ -157,7 +157,7 @@ class LF_QuestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How many of a prefab the player holds (root items + stack quantities).
+//! How many of a prefab the player holds (including managed nested storage + stack quantities).
 	int CountItem(IEntity user, string prefab)
 	{
 		if (!user || prefab.IsEmpty())
@@ -167,11 +167,11 @@ class LF_QuestManager
 		if (!storage)
 			return 0;
 
-		array<IEntity> rootItems();
-		storage.GetAllRootItems(rootItems);
+		array<IEntity> items();
+		storage.GetItems(items);
 
 		int total = 0;
-		foreach (IEntity item : rootItems)
+		foreach (IEntity item : items)
 		{
 			if (!item || EL_Utils.GetPrefabName(item) != prefab)
 				continue;
