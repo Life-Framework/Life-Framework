@@ -85,7 +85,7 @@ GenericEntity SurvivalStation {
      coords 4 -0.001 0
    }
    SurvivalTableItems {
-    coords -1.6 0.9 0.7
+     coords 0 0.9 0.7
     {
      GenericEntity SurvivalPlum_Debug : "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et" {
       coords 0.25 0 0.05
@@ -98,7 +98,7 @@ GenericEntity SurvivalStation {
   }
   SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    Flags 0x403 0
-   coords -1.6 0 0.7
+    coords 0 0 0.7
   }
   EL_NpcBaseEntity SurvivalNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -119,7 +119,7 @@ GenericEntity SurvivalStation {
      m_eInitialLightState LIT
     }
    }
-   coords -1.591 0.904 0.813
+   coords 0 0.9 0.7
   }
  }
 }

@@ -17,7 +17,7 @@ GenericEntity LumberjackStand {
      coords -2.6 0.9 0.7
    }
     LoggingDisplayItems {
-    coords -1.6 0.9 0.7
+     coords 0 0.9 0.7
     {
      $grp GenericEntity : "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et" {
       WoodLog_01 {
@@ -38,7 +38,7 @@ GenericEntity LumberjackStand {
   }
    SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
     Flags 0x403 0
-    coords -1.6 0 0.7
+    coords 0 0 0.7
   }
    SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
     Flags 0x403 0
@@ -63,7 +63,7 @@ GenericEntity LumberjackStand {
      m_eInitialLightState LIT
     }
    }
-   coords -1.6 0.9 -0.6
+   coords 0 0.9 0.7
   }
  }
 }

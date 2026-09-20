@@ -2,7 +2,7 @@ GenericEntity WhitelistStation {
  coords 160 0 146
  {
   GenericEntity WhitelistTableItems {
-   coords -1.6 0.9 0.7
+    coords 0 0.9 0.7
    {
     GenericEntity WhitelistIDCard_Debug : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
      coords 0 0 0
@@ -11,7 +11,7 @@ GenericEntity WhitelistStation {
   }
    SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    Flags 0x403 0
-   coords -1.6 0 0.7
+    coords 0 0 0.7
   }
   EL_NpcBaseEntity WhitelistNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -22,7 +22,7 @@ GenericEntity WhitelistStation {
      }
     }
    }
-    coords -5.235 0 -2.182
+     coords 0 0 -1.1
   }
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
@@ -32,7 +32,7 @@ GenericEntity WhitelistStation {
      m_eInitialLightState LIT
     }
    }
-   coords -1.6 0.9 -0.6
+    coords 0 0.9 0.7
   }
  }
 }

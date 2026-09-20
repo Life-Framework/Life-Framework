@@ -74,7 +74,7 @@ GenericEntity JobCenter {
      coords -2.6 0.9 0.7
    }
    JobsTableItems {
-    coords -1.6 0.9 0.7
+     coords 0 0.9 0.7
     {
      GenericEntity JobsMoneyStack_Debug : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
       coords 0 0 0
@@ -87,7 +87,7 @@ GenericEntity JobCenter {
   }
    $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
     {
-     coords -1.6 0 0.7
+      coords 0 0 0.7
    }
    {
     coords -2.6 0 0.7
@@ -112,7 +112,7 @@ GenericEntity JobCenter {
      m_eInitialLightState LIT
     }
    }
-   coords -2.1 0.789 0.432
+    coords 0 0.9 0.7
   }
  }
 }

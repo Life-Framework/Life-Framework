@@ -17,7 +17,7 @@ GenericEntity SandBuilderStand {
     coords -2.6 0.9 0.7
    }
    SandDisplayItems {
-    coords -1.6 0.9 0.7
+     coords 0 0.9 0.7
     {
      $grp GenericEntity : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
       Sandbag_01 {
@@ -35,7 +35,7 @@ GenericEntity SandBuilderStand {
   }
   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {
-    coords -1.6 0 0.7
+    coords 0 0 0.7
    }
    {
     coords -2.6 0 0.7
@@ -60,7 +60,7 @@ GenericEntity SandBuilderStand {
      m_eInitialLightState LIT
     }
    }
-   coords -1.6 0.9 -0.6
+   coords 0 0.9 0.7
   }
  }
 }

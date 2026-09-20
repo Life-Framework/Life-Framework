@@ -73,7 +73,7 @@ GenericEntity AppleTrader {
     coords -2.6 0.9 0.7
    }
    AppleTraderTestItems {
-    coords -1.6 0.9 0.7
+     coords 0 0.9 0.7
     {
      $grp GenericEntity : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
       Apple_5A0E821DC5FD6433 {
@@ -173,7 +173,7 @@ GenericEntity AppleTrader {
   }
    SCR_DestructibleEntity TableRecreation_01_1 : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
     Flags 0x403 0
-    coords -1.6 0 0.7
+     coords 0 0 0.7
    }
    SCR_DestructibleEntity TableRecreation_01_2 : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
     Flags 0x403 0
@@ -202,7 +202,7 @@ GenericEntity AppleTrader {
      m_eInitialLightState LIT
     }
    }
-   coords -1.6 0.9 -0.6
+   coords 0 0.9 0.7
   }
  }
 }
