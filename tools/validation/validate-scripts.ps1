@@ -42,6 +42,21 @@ $before = @(Get-ChildItem $wbProfileLogs -Directory -ErrorAction SilentlyContinu
 
 Write-Host "validate-scripts: launching Workbench from game dir (first run may rebuild the resource database and take a while) ..."
 
+function Remove-GeneratedAddonRoot([string]$path) {
+  if (-not (Test-Path -LiteralPath $path)) { return }
+  foreach ($name in @("core", "data")) {
+    $child = Join-Path $path $name
+    if (-not (Test-Path -LiteralPath $child)) { continue }
+    $item = Get-Item -LiteralPath $child -Force
+    if ($item.LinkType -eq "Junction" -or $item.LinkType -eq "SymbolicLink") {
+      cmd /c rmdir "$child" 2>$null | Out-Null
+    } else {
+      Remove-Item -LiteralPath $child -Recurse -Force
+    }
+  }
+  Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+}
+
 # Workbench validation owns this generated addon root. Dedicated-server tests
 # use server/profile/test/game-addons with a smaller server data set; sharing
 # that directory produced a hybrid install and crashed Workbench at game init.
@@ -61,7 +76,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $dataSource "ArmaReforger.gproj"))) 
 }
 
 $gameAddonsJunction = Join-Path $root "server\profile\validate\game-addons"
-if (Test-Path -LiteralPath $gameAddonsJunction) { Remove-Item -LiteralPath $gameAddonsJunction -Recurse -Force }
+Remove-GeneratedAddonRoot $gameAddonsJunction
 New-Item -ItemType Directory -Force -Path $gameAddonsJunction | Out-Null
 cmd /c mklink /J "$gameAddonsJunction\core" "$coreSource" 2>$null | Out-Null
 cmd /c mklink /J "$gameAddonsJunction\data" "$dataSource" 2>$null | Out-Null

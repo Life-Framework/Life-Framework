@@ -62,11 +62,24 @@ $dataSource = Join-Path $serverInstall "addons"
 $serverHasData = (Get-ChildItem (Join-Path $dataSource "core") -ErrorAction SilentlyContinue).Count -gt 0 -and
                  (Get-ChildItem (Join-Path $dataSource "data") -ErrorAction SilentlyContinue).Count -gt 0
 if (-not $serverHasData) { $dataSource = Join-Path $gameInstall "addons" }
-if (-not (Test-Path (Join-Path $gameAddons "data"))) {
-  New-Item -ItemType Directory -Force -Path $gameAddons | Out-Null
-  cmd /c mklink /J "$gameAddons\core" "$dataSource\core" 2>&1 | Out-Null
-  cmd /c mklink /J "$gameAddons\data" "$dataSource\data" 2>&1 | Out-Null
+function Remove-GeneratedAddonRoot([string]$path) {
+  if (-not (Test-Path -LiteralPath $path)) { return }
+  foreach ($name in @("core", "data")) {
+    $child = Join-Path $path $name
+    if (-not (Test-Path -LiteralPath $child)) { continue }
+    $item = Get-Item -LiteralPath $child -Force
+    if ($item.LinkType -eq "Junction" -or $item.LinkType -eq "SymbolicLink") {
+      cmd /c rmdir "$child" 2>$null | Out-Null
+    } else {
+      Remove-Item -LiteralPath $child -Recurse -Force
+    }
+  }
+  Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
 }
+Remove-GeneratedAddonRoot $gameAddons
+New-Item -ItemType Directory -Force -Path $gameAddons | Out-Null
+cmd /c mklink /J "$gameAddons\core" "$dataSource\core" 2>&1 | Out-Null
+cmd /c mklink /J "$gameAddons\data" "$dataSource\data" 2>&1 | Out-Null
 
 # Some current installs ship core as data.pak without a core.gproj. The data
 # project depends on core's GUID, so provide the minimal project manifest the
@@ -74,7 +87,15 @@ if (-not (Test-Path (Join-Path $gameAddons "data"))) {
 # the ignored test profile, never committed to the repository.
 $coreGproj = Join-Path $gameAddons "core\core.gproj"
 if (-not (Test-Path -LiteralPath (Join-Path $dataSource "core\core.gproj"))) {
-  if (Test-Path -LiteralPath (Join-Path $gameAddons "core")) { Remove-Item -LiteralPath (Join-Path $gameAddons "core") -Recurse -Force }
+  $coreLink = Join-Path $gameAddons "core"
+  if (Test-Path -LiteralPath $coreLink) {
+    $coreItem = Get-Item -LiteralPath $coreLink -Force
+    if ($coreItem.LinkType -eq "Junction" -or $coreItem.LinkType -eq "SymbolicLink") {
+      cmd /c rmdir "$coreLink" 2>$null | Out-Null
+    } else {
+      Remove-Item -LiteralPath $coreLink -Recurse -Force
+    }
+  }
   $coreDir = Split-Path -Parent $coreGproj
   New-Item -ItemType Directory -Force -Path $coreDir | Out-Null
   Copy-Item -Path (Join-Path $dataSource "core\*") -Destination $coreDir -Recurse -Force

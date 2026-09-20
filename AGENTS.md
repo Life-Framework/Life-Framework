@@ -361,6 +361,9 @@ then restart play mode.
   `powershell -ExecutionPolicy Bypass -File tools\utilities\repair-base-addons.ps1`.
   The repair restores only a missing loose `ArmaReforger.gproj` from the
   installed Server package; it never overwrites a manifest with the wrong GUID.
+- Generated `server\profile\*\game-addons` directories contain junctions into
+  Steam installs. Never recursively delete those roots; unlink `core` and
+  `data` first so cleanup cannot follow a junction into the base game.
 
 ## Rigorous workflows (any tool may read these)
 

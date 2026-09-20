@@ -22,8 +22,8 @@
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { spawn, spawnSync } from "node:child_process";
-import { closeSync, cpSync, createWriteStream, existsSync, fstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { closeSync, cpSync, createWriteStream, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 
@@ -550,7 +550,7 @@ function workbenchGameAddons(root, scope) {
   if (!existsSync(join(dataSource, "ArmaReforger.gproj"))) throw new Error(`game data project not found: ${dataSource} (fix: Steam > Arma Reforger (the GAME, app 1874880) > Properties > Installed Files > Verify integrity of game files; verifying only 'Arma Reforger Tools' does not restore this)`);
 
   const junction = join(root, "server", "profile", scope, "game-addons");
-  rmSync(junction, { recursive: true, force: true });
+  removeGeneratedAddonRoot(root, junction);
   mkdirSync(junction, { recursive: true });
   createJunction(join(junction, "core"), coreSource);
   createJunction(join(junction, "data"), dataSource);
@@ -564,6 +564,28 @@ function createJunction(target, source) {
   }
 }
 
+// Never recursively remove a generated addon root. Its core/data children are
+// junctions into Steam installs, and recursive removal can follow those links
+// on Windows and delete the real base-game files.
+function removeGeneratedAddonRoot(repoRoot, target) {
+  const targetPath = resolve(target);
+  const allowedRoot = resolve(repoRoot, "server", "profile");
+  if (targetPath !== allowedRoot && !targetPath.startsWith(`${allowedRoot}${sep}`)) {
+    throw new Error(`refusing to remove addon root outside repository profile: ${targetPath}`);
+  }
+  if (!existsSync(targetPath)) return;
+
+  for (const entry of readdirSync(targetPath, { withFileTypes: true })) {
+    if (entry.name !== "core" && entry.name !== "data") {
+      throw new Error(`refusing to remove unexpected generated addon entry: ${join(targetPath, entry.name)}`);
+    }
+    const child = join(targetPath, entry.name);
+    const link = lstatSync(child);
+    rmSync(child, { recursive: !link.isSymbolicLink(), force: true });
+  }
+  rmSync(targetPath, { recursive: false, force: true });
+}
+
 function serverGameAddons(root) {
   const env = envOf();
   const configured = env.ENFUSION_SERVER_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server";
@@ -573,7 +595,7 @@ function serverGameAddons(root) {
   if (!existsSync(join(source, "core")) || !existsSync(join(source, "data"))) source = join(gameDir, "addons");
 
   const target = join(root, "server", "profile", "serve", "game-addons");
-  rmSync(target, { recursive: true, force: true });
+  removeGeneratedAddonRoot(root, target);
   mkdirSync(target, { recursive: true });
   createJunction(join(target, "data"), join(source, "data"));
 
