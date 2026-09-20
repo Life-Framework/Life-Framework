@@ -357,6 +357,10 @@ then restart play mode.
   `opencode.json` → standard Steam install locations. The committed
   `opencode.json` is portable; put machine-specific paths in your environment
   or `~/.config/opencode/opencode.json`, never in the repo (see `docs/setup.md`).
+- If Workbench reports `Missing Addon` for game GUID `58D0FB3206B6F859`, run
+  `powershell -ExecutionPolicy Bypass -File tools\utilities\repair-base-addons.ps1`.
+  The repair restores only a missing loose `ArmaReforger.gproj` from the
+  installed Server package; it never overwrites a manifest with the wrong GUID.
 
 ## Rigorous workflows (any tool may read these)
 
