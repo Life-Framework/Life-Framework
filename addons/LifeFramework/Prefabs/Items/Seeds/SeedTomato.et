@@ -74,10 +74,11 @@ GenericEntity {
      }
     }
    }
+   }
+   RplComponent "{59752C6FE489D4C5}" {
+    "Parent Node From Parent Entity" 0
+   }
   }
-  RplComponent "{59752C6FE489D4C5}" {
-  }
- }
  coords 9593.622 25.027 1634.316
  scale 1.15
 }
