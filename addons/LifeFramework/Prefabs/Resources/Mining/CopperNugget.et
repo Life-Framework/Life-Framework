@@ -33,10 +33,10 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
     }
    }
   }
-   MeshObject "{59A71C4B89B195A5}" {
+   MeshObject "{5A4ACD10B8DA304F}" {
     Object "{6399C4DB701BF230}Assets/Resources/Mining/MetalOre.xob"
    Materials {
-    MaterialAssignClass "{59A71C4BA45231D4}" {
+    MaterialAssignClass "{59A72BDA7611711E}" {
      SourceMaterial "Material"
       AssignedMaterial "{C20061C6145643B8}Assets/Resources/Mining/Data/Copper.emat"
      }

@@ -42,11 +42,11 @@ GenericEntity {
      m_GatherAmount 1
      m_GatherAmountMax 3
       m_GatherTimeout 600000
+    }
+    }
    }
-   }
-  }
   }
   Flags 0x403 0
-}
- coords 105.117 0.097 132.47
+ }
+  coords 105.117 0.097 132.47
 }

@@ -32,10 +32,10 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
     m_Size SLOT_2x1
    }
   }
-   MeshObject "{59A73088DB3D50B3}" {
+   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{75ABFBE70F78E212}Assets/Resources/Mining/MetalBar.xob"
    Materials {
-    MaterialAssignClass "{59A73088D2C4BAC0}" {
+    MaterialAssignClass "{59A7308807FEF850}" {
      SourceMaterial "Material"
      AssignedMaterial "{9C005A256F4C2921}Assets/Resources/Mining/Data/Gold.emat"
     }
