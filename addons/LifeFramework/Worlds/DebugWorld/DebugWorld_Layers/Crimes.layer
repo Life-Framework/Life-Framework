@@ -1,5 +1,5 @@
 GenericEntity CrimeScene {
- coords 151.665 -0.001 152.082
+ coords 170 -0.001 145
  {
   $grp GenericEntity {
    RobberyPoint_Money {
@@ -156,6 +156,6 @@ GenericEntity CrimeScene {
  }
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
-  coords 155 0 153
+  coords 173.335 0 145.918
   m_vSize 5 1 2.5
 }

@@ -1,5 +1,5 @@
 GenericEntity PoliceStation {
- coords 94 0 120
+ coords 170 0 120
  {
   GenericEntity PoliceStation_Debug {
    components {
@@ -85,6 +85,6 @@ GenericEntity PoliceStation {
  }
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 94 0 120
+  coords 170 0 120
  m_vSize 2 1 1.5
 }
