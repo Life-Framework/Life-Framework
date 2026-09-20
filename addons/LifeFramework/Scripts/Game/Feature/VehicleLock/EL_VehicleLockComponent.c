@@ -61,8 +61,7 @@ class EL_VehicleLockComponent : SCR_BaseLockComponent
 	{
 		super.EOnInit(owner);
 
-		// Direct field writes: the initial RplProp value broadcasts on registration, so BumpMe
-		// (which marks a CHANGE) is not needed here. Same pattern as EL_LicensePlateManagerComponent.
+		// The initial identifier is assigned during initialization, so explicitly mark the RplProp dirty.
 		if (Replication.IsServer() && m_sVehicleIdentifier.IsEmpty())
 		{
 			if (!m_sDebugIdentifier.IsEmpty())
@@ -70,6 +69,7 @@ class EL_VehicleLockComponent : SCR_BaseLockComponent
 			else
 				m_sVehicleIdentifier = PersistenceIdUtils.Generate();
 
+			Replication.BumpMe();
 			EL_Debug.Log("VehicleLock", string.Format("identifier assigned: %1", m_sVehicleIdentifier));
 		}
 	}

@@ -375,6 +375,9 @@
 
 ## Vehicles & License Plates
 
+### `EL_VehicleLockComponent` / `EL_VehicleKeyComponent` — `Feature/VehicleLock/`
+- ✅ Server-assigned vehicle and debug-key identifiers explicitly bump their replicated state during initialization, so clients receive the identifier after picking up a key.
+
 ### `EL_LicensePlateManager` + generators — `Feature/LicensePlate/`
 - ✅ `EL_LicensePlateGeneratorGeneric.GenerateLicensePlate()` is pure:
   `"AA BB NNNN"`.

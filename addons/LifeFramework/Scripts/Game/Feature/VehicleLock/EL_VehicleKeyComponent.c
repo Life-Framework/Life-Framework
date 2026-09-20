@@ -34,10 +34,12 @@ class EL_VehicleKeyComponent : ScriptComponent
 	{
 		super.EOnInit(owner);
 
-		// Direct field write: the initial RplProp value broadcasts on registration, so BumpMe is
-		// not needed here. Same pattern as EL_LicensePlateManagerComponent.
-		if (!m_sDebugIdentifier.IsEmpty() && Replication.IsServer())
+		// The debug binding is assigned during initialization, so explicitly mark the RplProp dirty.
+		if (!m_sDebugIdentifier.IsEmpty() && Replication.IsServer() && m_sVehicleIdentifier.IsEmpty())
+		{
 			m_sVehicleIdentifier = m_sDebugIdentifier;
+			Replication.BumpMe();
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
