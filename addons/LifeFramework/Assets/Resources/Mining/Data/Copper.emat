@@ -1,7 +1,6 @@
 MatPBRBasic {
- Color 0.78 0.32 0.12 1
- BCRMap "{8EADB31D864DD0FC}Assets/_SharedData/Metal/ST_MetalBare_01_BCR.edds"
- NMOMap "{0470164F98BC8DD2}Assets/_SharedData/Metal/ST_MetalBare_01_NMO.edds"
+ BCRMap "{3CAE11A406D2E3E3}Assets/Resources/Mining/Data/Copper_BCR.edds"
+ NMOMap "{0476AA36DFA5B17D}Assets/Resources/Mining/Data/Copper_NMO.edds"
  MetalnessScale 1
- RoughnessScale 0.3
+ RoughnessScale 0.25
 }
