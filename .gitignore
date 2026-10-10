@@ -27,6 +27,10 @@ Thumbs.db
 .idea/
 *.sublime-*
 
+# Machine-local Cursor MCP config. agent-box/setup.ps1 rewrites this with
+# absolute paths for the clone. Do not commit it.
+.cursor/mcp.json
+
 # Windows
 desktop.ini
 ehthumbs.db
@@ -69,3 +73,4 @@ server/build/
 !server/configs/*.example.json
 !server/scripts/*.example.bat
 !server/scripts/*.example.sh
+

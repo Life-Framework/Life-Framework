@@ -168,7 +168,24 @@ node tools/cli.mjs wt ship <feature>    # gate, PR, auto-merge into main
 `wt ship` needs the GitHub CLI authenticated once (`gh auth login`), or a
 `GITHUB_TOKEN` env var. Full detail: [worktrees.md](worktrees.md).
 
-## 6. Before you open a PR
+## 6. Agent box (GPU or remote machine)
+
+Clone, then install the Workbench MCP servers and the player harness:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File agent-box\setup.ps1
+node agent-box/harness.mjs selftest
+```
+
+That writes `.cursor/mcp.json` for this checkout (gitignored; it contains
+absolute paths). Restart the agent session so the servers load. The three
+pillars and the player-key hooks are in [agent-box/README.md](../agent-box/README.md).
+
+On a T3 server, register the clone as a project and use the scripts in
+`agent-box/t3-project.json`. Threads should use worktrees so the main checkout
+stays the world-editor copy.
+
+## 7. Before you open a PR
 
 1. Run `validate` and the appropriate `test` tier.
 2. Fill in [`.github/PULL_REQUEST_TEMPLATE.md`](../.github/PULL_REQUEST_TEMPLATE.md).

@@ -7,6 +7,7 @@ Project documentation for the Life Framework Arma Reforger mod.
 | Doc | Audience |
 | --- | --- |
 | [Setup guide](setup.md) | New contributors — install, Workbench, CLI, MCP, troubleshooting |
+| [Agent box](agent-box.md) | GPU or remote box — clone, setup script, player-equivalent checks |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | How to contribute, PR checklist, AI harness |
 | [AGENTS.md](../AGENTS.md) | Engineering contract — GUID rules, EnforceScript traps, verification ladder |
 

@@ -1,0 +1,56 @@
+{
+  "title": "Life Framework",
+  "defaultThreadEnvMode": "worktree",
+  "scripts": [
+    {
+      "id": "status",
+      "name": "Toolchain status",
+      "command": "node tools/cli.mjs status",
+      "icon": "debug",
+      "runOnWorktreeCreate": false
+    },
+    {
+      "id": "agent-box-setup",
+      "name": "Agent box setup",
+      "command": "node agent-box/harness.mjs setup",
+      "icon": "configure",
+      "runOnWorktreeCreate": false
+    },
+    {
+      "id": "selftest",
+      "name": "Harness selftest",
+      "command": "node agent-box/harness.mjs selftest",
+      "icon": "test",
+      "runOnWorktreeCreate": true
+    },
+    {
+      "id": "layers",
+      "name": "DebugWorld layers",
+      "command": "node agent-box/harness.mjs layers",
+      "icon": "debug",
+      "runOnWorktreeCreate": false
+    },
+    {
+      "id": "play",
+      "name": "Play DebugWorld",
+      "command": "node agent-box/harness.mjs play",
+      "icon": "play",
+      "runOnWorktreeCreate": false,
+      "async": true
+    },
+    {
+      "id": "validate",
+      "name": "Validate repo",
+      "command": "node tools/cli.mjs validate",
+      "icon": "lint",
+      "runOnWorktreeCreate": false
+    },
+    {
+      "id": "harness-status",
+      "name": "Harness status",
+      "command": "node agent-box/harness.mjs status",
+      "icon": "test",
+      "runOnWorktreeCreate": false
+    }
+  ]
+}

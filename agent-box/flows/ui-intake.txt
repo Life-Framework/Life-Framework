@@ -1,0 +1,9 @@
+# UI pillar: the two buttons a new player clicks, then the screen they land on.
+# Requires the faction menu. A profile that already has a character returns widget_not_found.
+ui
+click CivilianButton
+wait 800
+ui
+click TownButton
+wait 4000
+shot ui intake_town
