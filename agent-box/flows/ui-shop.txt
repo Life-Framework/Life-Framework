@@ -1,0 +1,2 @@
+# UI pillar: stand at the general store, perform its shop action, shoot the menu.
+layer Shop_GeneralStore_Debug

@@ -1,0 +1,2 @@
+# 3D pillar: aim at the ATM pad from the layer catalog and shoot the world.
+shot world ATM_Debug

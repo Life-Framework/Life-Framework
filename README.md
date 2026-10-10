@@ -78,7 +78,10 @@ node tools/cli.mjs ci                  # validate + build + test
 ```
 
 AI-assisted development is encouraged — MCP servers, skills, and expectations
-are documented in [CONTRIBUTING.md](CONTRIBUTING.md).
+are documented in [CONTRIBUTING.md](CONTRIBUTING.md). A GPU box that should
+play the game the way a player does starts with
+[agent-box/README.md](agent-box/README.md): one setup script, then script,
+world, and UI checks.
 
 ## Repository layout
 
@@ -87,6 +90,7 @@ addons/LifeFramework/   The mod (gproj, scripts, prefabs, worlds, UI, language)
 docs/                   Roadmap, features, test plan, setup guide
 server/                 Dedicated-server configs and launch scripts
 tools/                  Dev CLI, validation, MCP tooling
+agent-box/              GPU-box setup, player-equivalent hooks, pillar flows
 assets-source/          Source asset licenses (LICENSES.md)
 .opencode/              AI skills and playbooks (opencode)
 AGENTS.md               Engineering contract for humans and AI agents

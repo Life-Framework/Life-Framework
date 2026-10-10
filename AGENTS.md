@@ -86,6 +86,13 @@ failure — that exit code is the agent's pass/fail signal. Default tier is
 `all`; use `--tier fast` while iterating on pure logic and run the full `all`
 tier before declaring a phase or fix complete.
 
+Player-equivalent checks on a rendering box live in `agent-box/`. `press F`
+calls `SCR_InteractionHandlerComponent.ActionPerform`. Menu keys go through
+`input`. World and UI shots go through `EL_ScreenshotCapture`. Run
+`node agent-box/harness.mjs selftest` with no game, and
+`node agent-box/harness.mjs flow <name>` once Workbench is in play mode.
+Details: `agent-box/README.md`.
+
 The fast dev loop is `tools\cli dev [--tier fast|all]`: validate + test
 without the headless build (the dedicated server compiles scripts at boot from
 the unpacked addons), then dumps every `[ELDebug:*]` feature log line from the
