@@ -42,6 +42,15 @@ class EL_Test_AgentHarness : EL_Test
 		ctx.True(EL_AgentCommand.Parse("10 stand ATM_Debug", cmd), "stand parses");
 		ctx.EqualStr("ATM_Debug", cmd.Arg1, "stand entity");
 
+		ctx.True(EL_AgentCommand.Parse("14 ui", cmd), "ui list parses");
+		ctx.True(EL_AgentCommand.Parse("12 click CivilianButton", cmd), "click parses");
+		ctx.EqualStr("CivilianButton", cmd.Arg1, "click widget");
+		ctx.EqualStr("0", cmd.Arg2, "click default index");
+		ctx.True(EL_AgentCommand.Parse("13 click BuyButton 1", cmd), "indexed click parses");
+		ctx.EqualStr("1", cmd.Arg2, "click index");
+		ctx.False(EL_AgentCommand.Parse("13 click BuyButton next", cmd), "click index must be digits");
+		ctx.EqualStr("bad_index", cmd.Error, "bad click index error");
+
 		ctx.False(EL_AgentCommand.Parse("", cmd), "empty line is rejected");
 	}
 }

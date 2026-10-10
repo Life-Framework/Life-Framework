@@ -30,6 +30,8 @@ class EL_AgentCommand
 	//!   <id> open <MenuName> [show|hide|toggle]
 	//!   <id> stand <EntityName>
 	//!   <id> look
+	//!   <id> ui
+	//!   <id> click <WidgetName> [index]
 	//!   <id> capture ui <Name>
 	//!   <id> capture world <Name> <x> <y> <z>
 	static bool Parse(string line, out EL_AgentCommand cmd)
@@ -70,6 +72,10 @@ class EL_AgentCommand
 			return ParseStand(parts, cmd);
 		if (cmd.Verb == "look")
 			return true;
+		if (cmd.Verb == "ui")
+			return true;
+		if (cmd.Verb == "click")
+			return ParseClick(parts, cmd);
 		if (cmd.Verb == "capture")
 			return ParseCapture(parts, cmd);
 
@@ -120,6 +126,52 @@ class EL_AgentCommand
 		{
 			cmd.Error = "bad_interact";
 			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool ParseClick(array<string> parts, EL_AgentCommand cmd)
+	{
+		if (parts.Count() < 3)
+		{
+			cmd.Error = "need_widget";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		if (!IsClassToken(cmd.Arg1))
+		{
+			cmd.Error = "bad_widget";
+			return false;
+		}
+
+		cmd.Arg2 = "0";
+		if (parts.Count() >= 4)
+		{
+			cmd.Arg2 = parts[3];
+			if (!IsIndex(cmd.Arg2))
+			{
+				cmd.Error = "bad_index";
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsIndex(string token)
+	{
+		if (!token || token.IsEmpty())
+			return false;
+
+		for (int i = 0; i < token.Length(); i++)
+		{
+			string ch = token.Substring(i, 1);
+			if (ch < "0" || ch > "9")
+				return false;
 		}
 
 		return true;
@@ -288,6 +340,12 @@ class EL_AgentHarness
 	protected static vector s_vOrigin;
 	protected static string s_sLookJoined;
 	protected static int s_iLookCount;
+	protected static string s_sUiJoined;
+	protected static int s_iUiCount;
+	protected static string s_sClickName;
+	protected static int s_iClickIndex;
+	protected static int s_iClickSeen;
+	protected static Widget s_wClickTarget;
 
 	//------------------------------------------------------------------------------------------------
 	static void EnsureLoop()
@@ -295,8 +353,7 @@ class EL_AgentHarness
 		if (s_bLoop)
 			return;
 
-		Game game = GetGame();
-		if (!game)
+		if (!GetGame())
 			return;
 
 		// A headless dedicated server never has a local controller. Do not
@@ -304,7 +361,7 @@ class EL_AgentHarness
 		if (RplSession.Mode() == RplMode.Dedicated)
 			return;
 
-		PlayerController local = game.GetPlayerController();
+		PlayerController local = GetGame().GetPlayerController();
 		if (!local)
 		{
 			// Faction and spawn menus exist before the pawn. Keep trying until
@@ -317,12 +374,12 @@ class EL_AgentHarness
 				return;
 			}
 
-			game.GetCallqueue().CallLater(EnsureLoop, 500, false);
+			GetGame().GetCallqueue().CallLater(EnsureLoop, 500, false);
 			return;
 		}
 
 		s_bLoop = true;
-		game.GetCallqueue().CallLater(Poll, 400, true);
+		GetGame().GetCallqueue().CallLater(Poll, 400, true);
 		EL_Debug.Log(FEATURE, "poll started");
 	}
 
@@ -402,6 +459,16 @@ class EL_AgentHarness
 		if (cmd.Verb == "look")
 		{
 			DoLook(cmd);
+			return;
+		}
+		if (cmd.Verb == "ui")
+		{
+			DoUi(cmd);
+			return;
+		}
+		if (cmd.Verb == "click")
+		{
+			DoClick(cmd);
 			return;
 		}
 		if (cmd.Verb == "input")
@@ -544,6 +611,178 @@ class EL_AgentHarness
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Visible buttons. SCR_ButtonTextComponent names are the faction and spawn
+	//! buttons. Other ButtonWidgets (shop buy/sell, ATM) are listed by widget name.
+	//! A repeated name is the next visible match; click uses that index.
+	protected static void DoUi(EL_AgentCommand cmd)
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+		{
+			WriteResult(cmd.Id, "error", "no_workspace");
+			return;
+		}
+
+		s_sUiJoined = "";
+		s_iUiCount = 0;
+		CollectUi(workspace);
+
+		if (s_sUiJoined.IsEmpty())
+			WriteResult(cmd.Id, "ok", "none");
+		else
+			WriteResult(cmd.Id, "ok", s_sUiJoined);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void CollectUi(Widget widget)
+	{
+		if (!widget || s_iUiCount >= 40)
+			return;
+
+		if (Shown(widget))
+		{
+			if (Clickable(widget))
+			{
+				string name = widget.GetName();
+				if (!s_sUiJoined.IsEmpty())
+					s_sUiJoined = s_sUiJoined + ",";
+				s_sUiJoined = s_sUiJoined + name;
+				s_iUiCount++;
+			}
+		}
+
+		Widget child = widget.GetChildren();
+		while (child)
+		{
+			CollectUi(child);
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Local visibility. A hidden parent hides its children even when the child flag is set.
+	protected static bool Shown(Widget widget)
+	{
+		Widget cursor = widget;
+		while (cursor && cursor.GetParent())
+		{
+			if (!cursor.IsVisible())
+				return false;
+			cursor = cursor.GetParent();
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Same path as a mouse click. Text buttons fire m_OnClicked, which is what
+	//! the faction and spawn menus insert. Other buttons bubble OnClick to the
+	//! widget handler the engine would call (shop row, ATM menu).
+	protected static void DoClick(EL_AgentCommand cmd)
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+		{
+			WriteResult(cmd.Id, "error", "no_workspace");
+			return;
+		}
+
+		s_sClickName = cmd.Arg1;
+		s_iClickIndex = cmd.Arg2.ToInt();
+		s_iClickSeen = 0;
+		s_wClickTarget = null;
+		FindClickTarget(workspace);
+
+		if (!s_wClickTarget)
+		{
+			WriteResult(cmd.Id, "error", "widget_not_found");
+			return;
+		}
+
+		SCR_ButtonTextComponent textButton = SCR_ButtonTextComponent.Cast(s_wClickTarget.FindHandler(SCR_ButtonTextComponent));
+		if (!textButton)
+			textButton = SCR_ButtonTextComponent.GetButtonText(s_sClickName, s_wClickTarget);
+		if (textButton)
+		{
+			textButton.m_OnClicked.Invoke();
+			EL_Debug.Log(FEATURE, string.Format("click %1", s_sClickName));
+			WriteResult(cmd.Id, "ok", s_sClickName);
+			return;
+		}
+
+		Widget cursor = s_wClickTarget;
+		while (cursor)
+		{
+			ScriptedWidgetComponent handler = ScriptedWidgetComponent.Cast(cursor.FindHandler(ScriptedWidgetComponent));
+			if (handler && handler.OnClick(s_wClickTarget, 0, 0, 0))
+			{
+				EL_Debug.Log(FEATURE, string.Format("click %1", s_sClickName));
+				WriteResult(cmd.Id, "ok", s_sClickName);
+				return;
+			}
+
+			cursor = cursor.GetParent();
+		}
+
+		WriteResult(cmd.Id, "error", "click_unhandled");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void FindClickTarget(Widget widget)
+	{
+		if (!widget || s_wClickTarget)
+			return;
+
+		if (Shown(widget) && widget.GetName() == s_sClickName && Clickable(widget))
+		{
+			if (s_iClickSeen == s_iClickIndex)
+				s_wClickTarget = widget;
+			s_iClickSeen++;
+		}
+
+		Widget child = widget.GetChildren();
+		while (child)
+		{
+			FindClickTarget(child);
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Faction and spawn buttons carry SCR_ButtonTextComponent. Shop and ATM
+	//! buttons are ButtonWidgets whose name ends in Button and whose handler
+	//! is one of our menu classes, so the vanilla HUD does not flood the list.
+	protected static bool Clickable(Widget widget)
+	{
+		string name = widget.GetName();
+		if (!EL_AgentCommand.IsClassToken(name))
+			return false;
+		if (name.Length() < 6 || name.Substring(name.Length() - 6, 6) != "Button")
+			return false;
+
+		if (SCR_ButtonTextComponent.Cast(widget.FindHandler(SCR_ButtonTextComponent)))
+			return true;
+
+		if (!ButtonWidget.Cast(widget))
+			return false;
+
+		Widget cursor = widget;
+		while (cursor)
+		{
+			ScriptedWidgetComponent handler = ScriptedWidgetComponent.Cast(cursor.FindHandler(ScriptedWidgetComponent));
+			if (handler)
+			{
+				string typeName = handler.Type().ToString();
+				if (typeName.IndexOf("EL_") == 0 || typeName.IndexOf("LF_") == 0)
+					return true;
+			}
+			cursor = cursor.GetParent();
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

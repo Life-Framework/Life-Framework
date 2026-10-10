@@ -44,19 +44,20 @@ node agent-box/harness.mjs shot world ATM_Debug
 
 `layers` reads `Worlds/DebugWorld/DebugWorld_Layers`. `layer <EntityName>` stands beside that entity, waits until `look` shows that action (the same list the F key would offer), performs it, and screenshots the UI. `shot world <EntityName>` uses the entity coordinates when you omit x y z. `shot ui debug_menu` opens the debug menu first.
 
-`play` calls Workbench `wb_state` then `wb_play` in one MCP session.
+`play` stops play mode if it is up, opens `Worlds/DebugWorld/DebugWorld.ent`, then enters play mode. It passes this machine's toolchain paths so the Workbench bridge compiles into the open mod.
 
 Named flows are the short version of a pillar. Each file in `agent-box/flows/`
 is the sequence a player would take:
 
 ```powershell
+node agent-box/harness.mjs flow ui-intake
 node agent-box/harness.mjs flow ui-debug-menu
 node agent-box/harness.mjs flow ui-debug-menu-nav
 node agent-box/harness.mjs flow ui-shop
 node agent-box/harness.mjs flow world-atm
 ```
 
-Steps: `stand`, `look`, `press F|WheelUp|WheelDown|F10`, `use`, `input`,
+Steps: `stand`, `look`, `ui`, `click`, `press F|WheelUp|WheelDown|F10`, `use`, `input`,
 `open`, `layer`, `shot ui`, `shot world`, and `wait <ms>`. A shot line prints
 `image: <absolute png>` when the capture file is on disk. If the engine wrote
 a BMP and the `.png` sibling is missing, the harness converts it.
@@ -72,6 +73,13 @@ the game profile). Hooks:
   debug menu.
 - `look` lists `ScriptedUserAction`s within 4m whose `CanBeShownScript` is
   true. That is the list the interact key would offer.
+- `ui` lists visible buttons whose names end in `Button`. Faction and spawn
+  buttons are included because they carry `SCR_ButtonTextComponent`. Shop and
+  ATM buttons are included when a Life Framework menu owns them.
+- `click <WidgetName> [index]` fires that button. Text buttons call
+  `m_OnClicked`, the invoker the menu inserted. Other buttons call `OnClick`
+  on the menu handler, the same call the engine makes for a mouse click.
+  `index` picks a later visible widget when several share a name (`BuyButton`).
 - `use` finds a `ScriptedUserAction`, checks `CanBeShownScript` and
   `CanBePerformedScript`, then calls `PerformAction`. Named confirm, same
   checks, no dependence on which row is highlighted.
@@ -94,8 +102,9 @@ leave the camera where it is. World shots aim at the position, at noon, in
 Clear weather.
 
 MCP tools on the `life-agent-box` server match these commands: `box_status`,
-`layer_list`, `layer_play`, `player_press`, `player_look`, `player_stand`,
-`player_use`, `player_input`, `player_open`, `pillar_shot`, `pillar_script`.
+`layer_list`, `layer_play`, `player_press`, `player_look`, `player_ui`,
+`player_click`, `player_stand`, `player_use`, `player_input`, `player_open`,
+`pillar_shot`, `pillar_script`, `player_flow`.
 
 The two Enfusion servers stay the source for API search, prefabs, and live
 Workbench editing (`wb_entity_create`, layers, and the rest). This folder does

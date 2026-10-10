@@ -63,6 +63,16 @@ export function buildLine(id, spec) {
   if (spec.verb === "look") {
     return `${id} look`;
   }
+  if (spec.verb === "ui") {
+    return `${id} ui`;
+  }
+  if (spec.verb === "click") {
+    const widget = token(spec.widget, "widget");
+    const index = spec.index === undefined ? 0 : Number(spec.index);
+    if (!Number.isInteger(index) || index < 0) throw new Error(`click index must be a non-negative integer: ${spec.index}`);
+    if (index === 0) return `${id} click ${widget}`;
+    return `${id} click ${widget} ${index}`;
+  }
   if (spec.verb === "input") {
     if (!MENU_ACTIONS.has(spec.action)) {
       throw new Error(`action not allowed: ${spec.action}. Menu actions only.`);
@@ -193,8 +203,12 @@ function mergeMcp(path, config) {
   return path;
 }
 
-function runNode(args) {
-  const res = spawnSync("node", args, { cwd: ROOT, encoding: "utf8" });
+function runNode(args, extraEnv) {
+  const res = spawnSync("node", args, {
+    cwd: ROOT,
+    encoding: "utf8",
+    env: extraEnv ? { ...process.env, ...extraEnv } : process.env,
+  });
   if (res.stdout) process.stdout.write(res.stdout);
   if (res.stderr) process.stderr.write(res.stderr);
   return res.status ?? 1;
@@ -264,17 +278,31 @@ export function logRoots() {
   return [join(docs, "ArmaReforgerWorkbench", "logs"), join(docs, "ArmaReforger", "logs")];
 }
 
+function captureFile(full) {
+  if (existsSync(full)) return full;
+  if (full.toLowerCase().endsWith(".png")) {
+    const bmp = full.slice(0, -4) + ".bmp";
+    if (existsSync(bmp)) return bmpFileToPng(bmp, full);
+  }
+  return "";
+}
+
 export function resolveCapture(detail) {
   if (!detail || !detail.includes("$logs:")) return "";
   const alias = detail.split(" ").find((part) => part.startsWith("$logs:"));
   if (!alias) return "";
   const rel = alias.slice("$logs:".length).replaceAll("/", "\\");
   for (const root of logRoots()) {
-    const full = join(root, rel);
-    if (existsSync(full)) return full;
-    if (full.toLowerCase().endsWith(".png")) {
-      const bmp = full.slice(0, -4) + ".bmp";
-      if (existsSync(bmp)) return bmpFileToPng(bmp, full);
+    const direct = captureFile(join(root, rel));
+    if (direct) return direct;
+    if (!existsSync(root)) continue;
+    const sessions = readdirSync(root)
+      .filter((name) => name.startsWith("logs_"))
+      .sort()
+      .reverse();
+    for (const session of sessions) {
+      const hit = captureFile(join(root, session, rel));
+      if (hit) return hit;
     }
   }
   return "";
@@ -314,6 +342,8 @@ export function runFlow(lines) {
     }
     if (verb === "stand") result = sendCommand({ verb: "stand", entityName: rest[0] });
     else if (verb === "look") result = sendCommand({ verb: "look" });
+    else if (verb === "ui") result = sendCommand({ verb: "ui" });
+    else if (verb === "click") result = sendCommand({ verb: "click", widget: rest[0], index: rest[1] });
     else if (verb === "press") {
       const spec = PRESS[rest[0]];
       if (!spec) throw new Error(`press one of F, WheelUp, WheelDown, F10: ${line}`);
@@ -425,6 +455,8 @@ function printResult(result) {
 }
 
 function selftest() {
+  const check = spawnSync(process.execPath, ["--check", join(ROOT, "agent-box", "mcp-server.mjs")], { encoding: "utf8" });
+  if ((check.status ?? 1) !== 0) throw new Error(check.stderr || "life-agent-box MCP server failed to parse");
   const use = buildLine(4, { verb: "use", className: "EL_ShopAction", entityName: "Trader_01" });
   if (use !== "4 use EL_ShopAction Trader_01") throw new Error(use);
   const input = buildLine(5, { verb: "input", action: "MenuSelect" });
@@ -457,8 +489,14 @@ function selftest() {
   if (bmp.pixels[0] !== 255 || bmp.pixels[1] !== 0 || bmp.pixels[2] !== 0) throw new Error("bmp top pixel");
   const shown = buildLine(11, { verb: "open", menu: "DebugMenu", mode: "show" });
   if (shown !== "11 open DebugMenu show") throw new Error(shown);
+  const click = buildLine(12, { verb: "click", widget: "CivilianButton" });
+  if (click !== "12 click CivilianButton") throw new Error(click);
+  const indexed = buildLine(13, { verb: "click", widget: "BuyButton", index: 1 });
+  if (indexed !== "13 click BuyButton 1") throw new Error(indexed);
   const flow = readFlow("ui-debug-menu").filter((line) => line.trim() && !line.trim().startsWith("#"));
   if (!flow.includes("open DebugMenu show") || !flow.includes("shot ui debug_menu")) throw new Error(flow.join("|"));
+  const intake = readFlow("ui-intake").filter((line) => line.trim() && !line.trim().startsWith("#"));
+  if (!intake.includes("click CivilianButton") || !intake.includes("click TownButton")) throw new Error(intake.join("|"));
   console.log("selftest ok");
   return 0;
 }
@@ -474,6 +512,8 @@ function usage() {
   node agent-box/harness.mjs layer <EntityName> [ActionClass]
   node agent-box/harness.mjs stand <EntityName>
   node agent-box/harness.mjs look
+  node agent-box/harness.mjs ui
+  node agent-box/harness.mjs click <WidgetName> [index]
   node agent-box/harness.mjs press F|WheelUp|WheelDown|F10
   node agent-box/harness.mjs use <ClassName> [EntityName]
   node agent-box/harness.mjs input <MenuAction>
@@ -502,16 +542,28 @@ function main(argv) {
     }
     if (cmd === "selftest") return selftest();
     if (cmd === "play") {
-      const batch = join(ROOT, "tmp", "agent-box-play.json");
-      mkdirSync(join(ROOT, "tmp"), { recursive: true });
+      const dir = join(ROOT, "tmp");
+      mkdirSync(dir, { recursive: true });
+      const paths = toolchainPaths();
+      const env = {
+        ENFUSION_WORKBENCH_PATH: paths.workbench,
+        ENFUSION_GAME_PATH: paths.game,
+        ENFUSION_SERVER_PATH: paths.server,
+        ENFUSION_PROJECT_PATH: paths.project,
+      };
+      const stop = join(dir, "agent-box-stop.json");
+      const play = join(dir, "agent-box-play.json");
+      writeFileSync(stop, JSON.stringify([{ tool: "wb_stop", args: {} }]));
       writeFileSync(
-        batch,
+        play,
         JSON.stringify([
-          { tool: "wb_state", args: {} },
+          { tool: "wb_open_resource", args: { path: "Worlds/DebugWorld/DebugWorld.ent" } },
           { tool: "wb_play", args: { debugMode: false, fullScreen: false } },
         ]),
       );
-      return runNode(["tools/mcp-call.mjs", "--batch", `@${batch}`, "enfusion-workbench"]);
+      // Already-edit sessions reject stop. Opening the world is what matters.
+      runNode(["tools/mcp-call.mjs", "--batch", `@${stop}`, "enfusion-workbench"], env);
+      return runNode(["tools/mcp-call.mjs", "--batch", `@${play}`, "enfusion-workbench"], env);
     }
     if (cmd === "layers") {
       console.log(formatPads());
@@ -528,6 +580,12 @@ function main(argv) {
     if (cmd === "look") {
       return printResult(sendCommand({ verb: "look" }));
     }
+    if (cmd === "ui") {
+      return printResult(sendCommand({ verb: "ui" }));
+    }
+    if (cmd === "click") {
+      return printResult(sendCommand({ verb: "click", widget: rest[0], index: rest[1] }));
+    }
     if (cmd === "press") {
       const spec = PRESS[rest[0]];
       if (!spec) throw new Error("press one of F, WheelUp, WheelDown, F10");
@@ -540,7 +598,7 @@ function main(argv) {
       return printResult(sendCommand({ verb: "input", action: rest[0] }));
     }
     if (cmd === "open") {
-      return printResult(sendCommand({ verb: "open", menu: rest[0] }));
+      return printResult(sendCommand({ verb: "open", menu: rest[0], mode: rest[1] }));
     }
     if (cmd === "shot" && rest[0] === "ui") {
       if (rest[1] === "debug_menu") {

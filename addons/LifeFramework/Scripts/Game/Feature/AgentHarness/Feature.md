@@ -6,7 +6,8 @@ ship as player content.
 
 The client polls `$profile:agent-box/command.txt`. `press F` calls
 `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll calls
-`ActionScroll`. Named `use` still runs `CanBeShownScript` and
+`ActionScroll`. `click` invokes the same button the mouse would: `m_OnClicked`
+for text buttons, `OnClick` for shop and ATM buttons. Named `use` still runs `CanBeShownScript` and
 `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
 (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
 `EL_OpenDebugMenu`). Movement actions are refused.

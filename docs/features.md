@@ -448,15 +448,19 @@
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
-  `interact confirm` calls `SCR_InteractionHandlerComponent.ActionPerform`.
-  `next`/`prev` call `ActionScroll`. `use` still checks `CanBeShownScript` and
-  `CanBePerformedScript` before `PerformAction`. Menu actions are an allowlist;
-  movement actions are refused.
+  `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
+  calls `ActionScroll`. `click` invokes the same button invoker or `OnClick` a
+  mouse click does. `use` still checks `CanBeShownScript` and
+  `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
+  (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
+  `EL_OpenDebugMenu`); movement actions are refused.
 - ✅ `stand` is the placement exception: the server moves the local character
   beside a named entity. The poll does not start on a dedicated server
-  (`RplMode.Dedicated`). On a client it retries until a local controller exists.
-- ✅ Screenshots go through `EL_ScreenshotCapture`. The Node harness, MCP tools,
-  and named flows live in `agent-box/`.
+  (`RplMode.Dedicated`). On a client it retries until a local controller exists,
+  including while faction and spawn menus are up.
+- ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
+  alone. The Node harness, MCP tools, layers, and named flows live in
+  `agent-box/`. See `docs/agent-box.md`.
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 

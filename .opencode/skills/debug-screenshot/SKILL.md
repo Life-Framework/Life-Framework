@@ -9,15 +9,19 @@ Prefer the agent box for anything a player does inside the game. It calls the
 same interaction and menu code the keys call, and it returns a file path:
 
 ```
+node agent-box/harness.mjs flow ui-intake
 node agent-box/harness.mjs flow ui-debug-menu
 node agent-box/harness.mjs flow ui-shop
+node agent-box/harness.mjs ui
+node agent-box/harness.mjs click CivilianButton
 node agent-box/harness.mjs press F
 node agent-box/harness.mjs shot ui <name>
 node agent-box/harness.mjs shot world <EntityName>
 ```
 
-`press F` is `SCR_InteractionHandlerComponent.ActionPerform`. `input MenuDown`
-and `input MenuSelect` are the menu keys. See `agent-box/README.md`.
+`press F` is `SCR_InteractionHandlerComponent.ActionPerform`. `click` invokes
+the same button the mouse uses. `input MenuDown` and `input MenuSelect` are
+the menu keys. See `agent-box/README.md`.
 
 `wb_capture` aims a free camera and does not log a player in. Use it for the
 3D pillar when you do not need the player pawn. A desktop shot of Workbench,

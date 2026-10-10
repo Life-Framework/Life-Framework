@@ -51,6 +51,25 @@ const tools = [
       required: ["key"],
     },
   },
+    {
+      name: "player_ui",
+      description:
+        "List visible buttons whose names end in Button: faction and spawn text buttons, plus shop and ATM buttons owned by a Life Framework menu. Repeated names are click indexes.",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "player_click",
+      description:
+        "Click a button the way the mouse does. Text buttons invoke m_OnClicked (faction, spawn). Other buttons call OnClick on the menu handler (shop buy/sell, ATM). index selects a later visible widget with the same name. Default index is 0.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          widget: { type: "string" },
+          index: { type: "integer" },
+        },
+        required: ["widget"],
+      },
+    },
   {
     name: "player_look",
     description:
@@ -178,6 +197,12 @@ function callTool(name, args) {
   }
   if (name === "player_look") {
     return commandText(sendCommand({ verb: "look" }));
+  }
+  if (name === "player_ui") {
+    return commandText(sendCommand({ verb: "ui" }));
+  }
+  if (name === "player_click") {
+    return commandText(sendCommand({ verb: "click", widget: a.widget, index: a.index }));
   }
   if (name === "player_stand") {
     return commandText(sendCommand({ verb: "stand", entityName: a.entityName }));
