@@ -444,6 +444,20 @@
   tables, and the apple trade actions must remain usable. Repeat on a client
   joining a running dedicated server. These client checks are not automated.
 
+## Agent box
+
+### `EL_AgentHarness` — `Feature/AgentHarness/`
+- ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
+  `interact confirm` calls `SCR_InteractionHandlerComponent.ActionPerform`.
+  `next`/`prev` call `ActionScroll`. `use` still checks `CanBeShownScript` and
+  `CanBePerformedScript` before `PerformAction`. Menu actions are an allowlist;
+  movement actions are refused.
+- ✅ `stand` is the placement exception: the server moves the local character
+  beside a named entity. The poll does not start on a dedicated server
+  (`RplMode.Dedicated`). On a client it retries until a local controller exists.
+- ✅ Screenshots go through `EL_ScreenshotCapture`. The Node harness, MCP tools,
+  and named flows live in `agent-box/`.
+
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
 1. **Money — one canonical path, all payouts cash.** The entity bank

@@ -71,7 +71,12 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "open") {
     if (spec.menu !== "DebugMenu") throw new Error("only DebugMenu can be opened by name");
-    return `${id} open DebugMenu`;
+    const mode = spec.mode || "toggle";
+    if (mode !== "show" && mode !== "hide" && mode !== "toggle") {
+      throw new Error(`open mode must be show, hide, or toggle: ${mode}`);
+    }
+    if (mode === "toggle") return `${id} open DebugMenu`;
+    return `${id} open DebugMenu ${mode}`;
   }
   if (spec.verb === "capture") {
     const name = token(spec.name, "capture name");
@@ -195,6 +200,23 @@ function runNode(args) {
   return res.status ?? 1;
 }
 
+export function runScriptPillar(shouldRun) {
+  if (!shouldRun) {
+    return {
+      code: 0,
+      text: "script pillar: node tools/cli.mjs test --tier fast\nPass --run from a worktree. The main checkout refuses the suite.\n",
+    };
+  }
+  if (isMainCheckout()) {
+    return {
+      code: 1,
+      text: "refusing script pillar on the main checkout. Use a worktree: tools\\cli wt new <feature>\n",
+    };
+  }
+  const res = spawnSync("node", ["tools/cli.mjs", "test", "--tier", "fast"], { cwd: ROOT, encoding: "utf8" });
+  return { code: res.status ?? 1, text: `${res.stdout || ""}${res.stderr || ""}` };
+}
+
 export function isMainCheckout() {
   const res = spawnSync("git", ["rev-parse", "--git-dir"], { cwd: ROOT, encoding: "utf8" });
   const dir = (res.stdout || "").trim().replaceAll("/", "\\");
@@ -298,7 +320,7 @@ export function runFlow(lines) {
       result = sendCommand(spec);
     } else if (verb === "use") result = sendCommand({ verb: "use", className: rest[0], entityName: rest[1] });
     else if (verb === "input") result = sendCommand({ verb: "input", action: rest[0] });
-    else if (verb === "open") result = sendCommand({ verb: "open", menu: rest[0] });
+    else if (verb === "open") result = sendCommand({ verb: "open", menu: rest[0], mode: rest[1] });
     else if (verb === "layer") {
       const played = playLayer(rest[0], rest[1]);
       out.push(...played.lines);
@@ -353,6 +375,19 @@ const PRESS = {
   F10: { verb: "open", menu: "DebugMenu" },
 };
 
+function waitForAction(className, entityName, timeoutMs = 5000) {
+  const deadline = Date.now() + timeoutMs;
+  let last = null;
+  while (Date.now() < deadline) {
+    last = sendCommand({ verb: "look" }, 2500);
+    if (last.status !== "ok") return last;
+    const hit = last.detail.includes(`${className}@${entityName}`) || last.detail.split(",").includes(className);
+    if (hit) return last;
+    pause(300);
+  }
+  return last;
+}
+
 export function playLayer(name, actionName) {
   const pad = findPad(pads(), name);
   if (!pad) {
@@ -365,8 +400,10 @@ export function playLayer(name, actionName) {
   const stood = sendCommand({ verb: "stand", entityName: pad.name });
   lines.push(stood.raw || `${stood.id} ${stood.status} ${stood.detail}`);
   if (stood.status !== "ok") return { code: 1, lines, pad };
-  pause(700);
   if (action) {
+    const seen = waitForAction(action, pad.name);
+    lines.push(seen.raw || `${seen.id} ${seen.status} ${seen.detail}`);
+    if (seen.status !== "ok" || !seen.detail.includes(action)) return { code: 1, lines, pad };
     const used = sendCommand({ verb: "use", className: action, entityName: pad.name });
     lines.push(used.raw || `${used.id} ${used.status} ${used.detail}`);
     if (used.status !== "ok") return { code: 1, lines, pad };
@@ -418,8 +455,10 @@ function selftest() {
   const bmp = decodeBmp(syntheticBmp());
   if (bmp.width !== 2 || bmp.height !== 2) throw new Error("bmp size");
   if (bmp.pixels[0] !== 255 || bmp.pixels[1] !== 0 || bmp.pixels[2] !== 0) throw new Error("bmp top pixel");
+  const shown = buildLine(11, { verb: "open", menu: "DebugMenu", mode: "show" });
+  if (shown !== "11 open DebugMenu show") throw new Error(shown);
   const flow = readFlow("ui-debug-menu").filter((line) => line.trim() && !line.trim().startsWith("#"));
-  if (!flow.includes("open DebugMenu") || !flow.includes("shot ui debug_menu")) throw new Error(flow.join("|"));
+  if (!flow.includes("open DebugMenu show") || !flow.includes("shot ui debug_menu")) throw new Error(flow.join("|"));
   console.log("selftest ok");
   return 0;
 }
@@ -505,7 +544,7 @@ function main(argv) {
     }
     if (cmd === "shot" && rest[0] === "ui") {
       if (rest[1] === "debug_menu") {
-        const opened = sendCommand({ verb: "open", menu: "DebugMenu" });
+        const opened = sendCommand({ verb: "open", menu: "DebugMenu", mode: "show" });
         if (opened.status !== "ok") return printResult(opened);
         pause(500);
       }
@@ -528,16 +567,9 @@ function main(argv) {
       return played.code;
     }
     if (cmd === "pillar" && rest[0] === "script") {
-      if (!rest.includes("--run")) {
-        console.log("script pillar: node tools/cli.mjs test --tier fast");
-        console.log("Pass --run from a worktree. The main checkout refuses the suite.");
-        return 0;
-      }
-      if (isMainCheckout()) {
-        console.error("refusing script pillar on the main checkout. Use a worktree: tools\\cli wt new <feature>");
-        return 1;
-      }
-      return runNode(["tools/cli.mjs", "test", "--tier", "fast"]);
+      const result = runScriptPillar(rest.includes("--run"));
+      if (result.text) process.stdout.write(result.text.endsWith("\n") ? result.text : result.text + "\n");
+      return result.code;
     }
     usage();
     return cmd ? 1 : 0;

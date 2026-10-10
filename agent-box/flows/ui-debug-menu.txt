@@ -1,4 +1,4 @@
 # UI pillar: open the debug menu the way the debug key does, then shoot the screen.
-open DebugMenu
+open DebugMenu show
 wait 500
 shot ui debug_menu

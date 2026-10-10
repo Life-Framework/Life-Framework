@@ -23,11 +23,11 @@ class EL_AgentCommand
 
 	//------------------------------------------------------------------------------------------------
 	//! Parse one command line. Returns false and sets Error on a bad line.
-	//! The line is lowercase tokens separated by single spaces:
+	//! The line is space-separated tokens:
 	//!   <id> use <ClassName> [EntityName]
 	//!   <id> interact confirm|next|prev
 	//!   <id> input <ActionName>
-	//!   <id> open <MenuName>
+	//!   <id> open <MenuName> [show|hide|toggle]
 	//!   <id> stand <EntityName>
 	//!   <id> look
 	//!   <id> capture ui <Name>
@@ -179,6 +179,17 @@ class EL_AgentCommand
 			return false;
 		}
 
+		cmd.Arg2 = "toggle";
+		if (parts.Count() >= 4)
+		{
+			cmd.Arg2 = parts[3];
+			if (cmd.Arg2 != "show" && cmd.Arg2 != "hide" && cmd.Arg2 != "toggle")
+			{
+				cmd.Error = "bad_open_mode";
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -267,6 +278,7 @@ class EL_AgentHarness
 	protected static const string RESULT_PATH = "$profile:agent-box/result.txt";
 
 	protected static bool s_bLoop;
+	protected static int s_iEnsureTries;
 	protected static int s_iCaptureId;
 	protected static string s_sHeldAction;
 	protected static string s_sWantedClass;
@@ -287,11 +299,27 @@ class EL_AgentHarness
 		if (!game)
 			return;
 
-		// Dedicated servers have no local controller. Workbench play and a
-		// listen client do. The poll stays off the headless test server.
+		// A headless dedicated server never has a local controller. Do not
+		// schedule retries there: the logic suite must not grow a poll.
+		if (RplSession.Mode() == RplMode.Dedicated)
+			return;
+
 		PlayerController local = game.GetPlayerController();
 		if (!local)
+		{
+			// Faction and spawn menus exist before the pawn. Keep trying until
+			// the local controller appears, then the same poll serves menus
+			// and world actions.
+			s_iEnsureTries++;
+			if (s_iEnsureTries > 60)
+			{
+				EL_Debug.Warn(FEATURE, "no local controller after 30s; poll not started");
+				return;
+			}
+
+			game.GetCallqueue().CallLater(EnsureLoop, 500, false);
 			return;
+		}
 
 		s_bLoop = true;
 		game.GetCallqueue().CallLater(Poll, 400, true);
@@ -599,7 +627,38 @@ class EL_AgentHarness
 			return;
 		}
 
+		bool open = false;
 		if (menuManager.FindMenuByPreset(ChimeraMenuPreset.DebugMenu))
+			open = true;
+		// show/hide are for screenshots: repeating a shot must not close the menu.
+		// toggle is the debug key (F10).
+		if (cmd.Arg2 == "show")
+		{
+			if (open)
+			{
+				WriteResult(cmd.Id, "ok", "already_open");
+				return;
+			}
+
+			menuManager.OpenMenu(ChimeraMenuPreset.DebugMenu);
+			WriteResult(cmd.Id, "ok", "opened");
+			return;
+		}
+
+		if (cmd.Arg2 == "hide")
+		{
+			if (!open)
+			{
+				WriteResult(cmd.Id, "ok", "already_closed");
+				return;
+			}
+
+			menuManager.CloseMenuByPreset(ChimeraMenuPreset.DebugMenu);
+			WriteResult(cmd.Id, "ok", "closed");
+			return;
+		}
+
+		if (open)
 		{
 			menuManager.CloseMenuByPreset(ChimeraMenuPreset.DebugMenu);
 			WriteResult(cmd.Id, "ok", "closed");

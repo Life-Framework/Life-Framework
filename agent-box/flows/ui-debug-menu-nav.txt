@@ -1,0 +1,6 @@
+# UI pillar: open the debug menu, move the highlight the way MenuDown does, then shoot.
+open DebugMenu show
+wait 400
+input MenuDown
+wait 200
+shot ui debug_menu_nav

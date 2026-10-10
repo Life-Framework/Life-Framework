@@ -34,6 +34,11 @@ class EL_Test_AgentHarness : EL_Test
 		ctx.EqualFloat(1, cmd.PosY, 0.01, "capture y");
 		ctx.EqualFloat(133, cmd.PosZ, 0.01, "capture z");
 
+		ctx.True(EL_AgentCommand.Parse("6 open DebugMenu show", cmd), "force-open parses");
+		ctx.EqualStr("show", cmd.Arg2, "open mode");
+		ctx.False(EL_AgentCommand.Parse("6 open DebugMenu poke", cmd), "unknown open mode is rejected");
+		ctx.EqualStr("bad_open_mode", cmd.Error, "bad open mode error");
+
 		ctx.True(EL_AgentCommand.Parse("10 stand ATM_Debug", cmd), "stand parses");
 		ctx.EqualStr("ATM_Debug", cmd.Arg1, "stand entity");
 

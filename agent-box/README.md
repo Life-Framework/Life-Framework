@@ -16,13 +16,8 @@ boot, and writes Cursor MCP config:
 
 Restart the agent session after setup. MCP servers load at session start.
 
-`.cursor/mcp.json` contains absolute paths for this machine. It must stay
-untracked. Add this to `.gitignore` if it is not already there:
-
-```
-# Machine-local Cursor MCP config. agent-box/setup.ps1 rewrites it.
-.cursor/mcp.json
-```
+`.cursor/mcp.json` contains absolute paths for this machine. `.cursor/.gitignore`
+keeps that file untracked. Do not commit it.
 
 ## Three pillars
 
@@ -47,7 +42,7 @@ node agent-box/harness.mjs shot ui debug_menu
 node agent-box/harness.mjs shot world ATM_Debug
 ```
 
-`layers` reads `Worlds/DebugWorld/DebugWorld_Layers`. `layer <EntityName>` stands beside that entity, performs its action, and screenshots the UI. `shot world <EntityName>` uses the entity coordinates when you omit x y z. `shot ui debug_menu` opens the debug menu first.
+`layers` reads `Worlds/DebugWorld/DebugWorld_Layers`. `layer <EntityName>` stands beside that entity, waits until `look` shows that action (the same list the F key would offer), performs it, and screenshots the UI. `shot world <EntityName>` uses the entity coordinates when you omit x y z. `shot ui debug_menu` opens the debug menu first.
 
 `play` calls Workbench `wb_state` then `wb_play` in one MCP session.
 
@@ -56,6 +51,7 @@ is the sequence a player would take:
 
 ```powershell
 node agent-box/harness.mjs flow ui-debug-menu
+node agent-box/harness.mjs flow ui-debug-menu-nav
 node agent-box/harness.mjs flow ui-shop
 node agent-box/harness.mjs flow world-atm
 ```
@@ -85,7 +81,9 @@ the game profile). Hooks:
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
   `MenuRight`, `MenuSelect`, `MenuBack`, `EL_OpenDebugMenu`) for about 80ms.
   Movement actions are refused.
-- `open DebugMenu` uses the same open/close calls as the debug key.
+- `open DebugMenu` toggles, the same as the debug key. `open DebugMenu show`
+  opens it and leaves it open, which is what a UI screenshot uses. `hide` closes
+  it only when it is up.
 
 Results come back on `result.txt` as `<id> ok ...` or `<id> error <reason>`.
 `error no_session` means play mode is not running, or this build does not

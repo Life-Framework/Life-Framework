@@ -6,12 +6,12 @@ import {
   buildLine,
   cursorMcpConfig,
   formatPads,
-  isMainCheckout,
   pads,
   playLayer,
   readFlow,
   resolveCapture,
   runFlow,
+  runScriptPillar,
   sendCommand,
   statusText,
 } from "./harness.mjs";
@@ -92,10 +92,14 @@ const tools = [
   },
   {
     name: "player_open",
-    description: "Toggle the debug menu with the same MenuManager calls as the debug key.",
+    description:
+      "Debug menu. mode toggle is the debug key. mode show opens it and leaves it open (use this before a UI screenshot). mode hide closes it only when it is up. Default is toggle.",
     inputSchema: {
       type: "object",
-      properties: { menu: { type: "string", enum: ["DebugMenu"] } },
+      properties: {
+        menu: { type: "string", enum: ["DebugMenu"] },
+        mode: { type: "string", enum: ["toggle", "show", "hide"] },
+      },
       required: ["menu"],
     },
   },
@@ -118,7 +122,7 @@ const tools = [
   {
     name: "player_flow",
     description:
-      "Run a named flow from agent-box/flows. A flow is the same steps a player takes: press F, scroll the action list, menu keys, then a UI or world screenshot. Known names include ui-debug-menu, ui-shop, and world-atm.",
+      "Run a named flow from agent-box/flows. A flow is the same steps a player takes: press F, scroll the action list, menu keys, then a UI or world screenshot. Known names include ui-debug-menu, ui-debug-menu-nav, ui-shop, and world-atm.",
     inputSchema: {
       type: "object",
       properties: { name: { type: "string" } },
@@ -185,7 +189,7 @@ function callTool(name, args) {
     return commandText(sendCommand({ verb: "input", action: a.action }));
   }
   if (name === "player_open") {
-    return commandText(sendCommand({ verb: "open", menu: a.menu }));
+    return commandText(sendCommand({ verb: "open", menu: a.menu, mode: a.mode }));
   }
   if (name === "player_flow") {
     const played = runFlow(readFlow(a.name));
@@ -199,7 +203,7 @@ function callTool(name, args) {
       spec = { verb: "capture", mode: "world", name: pad.name, x: pad.x, y: pad.y, z: pad.z };
     }
     if (a.pillar === "ui" && a.name === "debug_menu") {
-      const opened = sendCommand({ verb: "open", menu: "DebugMenu" });
+      const opened = sendCommand({ verb: "open", menu: "DebugMenu", mode: "show" });
       if (opened.status !== "ok") return textResult(`${opened.status} ${opened.detail}\n${opened.line}`);
     }
     buildLine(1, spec);
@@ -207,15 +211,8 @@ function callTool(name, args) {
     return commandText(result);
   }
   if (name === "pillar_script") {
-    if (!a.run) {
-      return textResult(
-        "node tools/cli.mjs test --tier fast\nPass run=true from a worktree. The main checkout is the world-editor copy and refuses the suite.",
-      );
-    }
-    if (isMainCheckout()) {
-      return textResult("error refused on the main checkout. Create a worktree with tools\\cli wt new <feature>.");
-    }
-    return textResult("run the suite from the shell: node tools/cli.mjs test --tier fast");
+    const result = runScriptPillar(a.run === true);
+    return textResult(result.text.trim());
   }
   throw new Error(`unknown tool ${name}`);
 }

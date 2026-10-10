@@ -12,6 +12,25 @@ scans `Worlds/DebugWorld/DebugWorld_Layers` for entities that own an action.
 screenshots the UI. Named sequences live in `agent-box/flows/` and run with
 `node agent-box/harness.mjs flow <name>` (or the `player_flow` MCP tool).
 
-On a T3 server, register the clone as a project titled **Life Framework** and
-use the scripts in `agent-box/t3-project.json`. This GPU box already has that
-project, bound to `C:\src\Life-Framework`, with worktree threads as the default.
+## Fresh machine
+
+```powershell
+powershell -ExecutionPolicy Bypass -File agent-box\setup.ps1
+node agent-box/harness.mjs selftest
+```
+
+Open `addons/LifeFramework/LifeFramework.gproj`, build, and play DebugWorld once
+so the harness script is in the running session. `node agent-box/harness.mjs status`
+prints which installs resolved.
+
+`.cursor/mcp.json` is machine-local. `.cursor/.gitignore` keeps it out of git.
+
+## T3 project
+
+Register the clone as a project titled **Life Framework**. The saved scripts
+are in `agent-box/t3-project.json`: toolchain status, agent-box setup, harness
+selftest (on new worktrees), DebugWorld layers, play, validate, and harness
+status. New threads should use a worktree so the script pillar can run. The
+main checkout stays the world editor.
+
+This server already has that project, with worktree threads as the default.
