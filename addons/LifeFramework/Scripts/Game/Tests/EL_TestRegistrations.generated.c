@@ -73,6 +73,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_Hideout(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_HideoutWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_HideoutPersistence(), EL_TestTier.PERSISTENCE);
+		manager.Register(new EL_Test_Roadmap_Hospital(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_HospitalWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_Jailbreak(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_JailbreakWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_Jailing(), EL_TestTier.LOGIC);
