@@ -45,6 +45,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_LicenseWhitelist(), EL_TestTier.LOGIC);

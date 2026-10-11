@@ -690,6 +690,20 @@
   tables, and the apple trade actions must remain usable. Repeat on a client
   joining a running dedicated server. These client checks are not automated.
 
+## Toys
+
+### `LF_JumpPad` — `Feature/Toys/LF_JumpPad.c`
+- ✅ A trigger sets the entering player's velocity upward once for that enter.
+  A second callback before they leave applies the zero vector. Leaving clears
+  the enter, so the next entry launches again. A disabled pad applies the zero
+  vector and does not call `SetVelocity`. Ported from EveronLife
+  `EL_JumpTrigger` (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+
+### `LF_SpikeStrip` — `Feature/Toys/LF_SpikeStrip.c`
+- ✅ A trigger. A wheeled vehicle that enters has each wheel inside the strip
+  box set to zero health. Ported from EveronLife `EL_SpikeTriggerComponent`
+  (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+
 ## Agent box
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
