@@ -454,15 +454,8 @@ class LF_UIScreen
 		box.SetColor(LF_UITheme.Ink());
 		box.SetPlaceholderText(part.GetText());
 		box.SetText("");
-
-		TextWidget asText = TextWidget.Cast(box);
-		if (asText)
-		{
-			asText.SetExactFontSize(LF_UITheme.FONT_FIELD);
-			asText.SetFont(LF_UITheme.FONT);
-			asText.SetOutline(0);
-			asText.SetShadow(0);
-		}
+		box.SetTextOutline(0);
+		box.SetTextShadow(0);
 
 		m_aFocus.Insert(box);
 	}

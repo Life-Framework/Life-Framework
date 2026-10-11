@@ -64,6 +64,15 @@ class EL_Test_AgentHarness : EL_Test
 		ctx.False(EL_AgentCommand.Parse("25 kit line Balance", cmd), "a line needs text");
 		ctx.EqualStr("need_line", cmd.Error, "short kit line error");
 
+		vector stand;
+		vector angles;
+		EL_AgentCommand.CameraStand("100 0 100", "0 40 90", stand, angles);
+		ctx.EqualFloat(100, stand[0], 0.01, "world shot stands on the offset x");
+		ctx.EqualFloat(40, stand[1], 0.01, "world shot stands on the offset y");
+		ctx.EqualFloat(190, stand[2], 0.01, "world shot stands on the offset z");
+		ctx.EqualFloat(180, angles[0], 1, "world shot yaws toward the target");
+		ctx.True(angles[1] < -20 && angles[1] > -28, "world shot pitches down toward the target");
+
 		ctx.True(EL_AgentCommand.Parse("10 stand ATM_Debug", cmd), "stand parses");
 		ctx.EqualStr("ATM_Debug", cmd.Arg1, "stand entity");
 

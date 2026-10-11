@@ -10,14 +10,14 @@
 // same menu the debug key opens.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { homedir, tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { bmpFileToPng, classifyMesh, classifyMeshFile, decodeBmp, decodePng, encodePng, syntheticBmp } from "./bmp.mjs";
 import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads, loadPlaced } from "./layers.mjs";
-import { judgeRoadmapRow, judgeStreet, menuActionFromLook, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport } from "./report.mjs";
+import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, selectRoadmapSites } from "./report.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -526,12 +526,16 @@ function waitForSession(timeoutMs = 120000) {
 }
 
 export function runKit() {
-  const entered = enterPlay();
-  if (entered !== 0) return { code: entered, lines: ["play failed"] };
-  const ready = waitForSession();
-  if (!ready || ready.status !== "ok") {
-    const line = ready && ready.raw ? ready.raw : "no_session";
-    return { code: 1, lines: [line] };
+  const state = mcpBatch([{ tool: "wb_state", args: {} }]);
+  if (state.code !== 0) return { code: state.code, lines: ["play failed"] };
+  if (workbenchMode(state.text) !== "play") {
+    const entered = enterPlay();
+    if (entered !== 0) return { code: entered, lines: ["play failed"] };
+    const ready = waitForSession();
+    if (!ready || ready.status !== "ok") {
+      const line = ready && ready.raw ? ready.raw : "no_session";
+      return { code: 1, lines: [line] };
+    }
   }
   const played = runFlow(readFlow("ui-kit"));
   const images = played.lines.filter((line) => line.startsWith("image:"));
@@ -723,7 +727,7 @@ function selftest() {
   const placed = loadPlaced(ROOT).filter((site) => site.name.startsWith("Roadmap_"));
   if (!placed.some((site) => site.name === "Roadmap_Breach_Charge")) throw new Error("charge is part of the walk");
   const cash = placed.find((site) => site.name === "Roadmap_Bank_Bag_Cash");
-  if (!cash || cash.x !== 246 || cash.z !== 122) throw new Error("bag cash world position");
+  if (!cash || cash.x !== 189 || cash.z !== 122) throw new Error("bag cash world position");
   if (roadmapSites(ROOT).length < 12) throw new Error("roadmap walk is short");
   const page = renderRoadmapReport({
     wide: { src: "shots/roadmap-row.png", mesh: "ok" },
@@ -740,6 +744,137 @@ function selftest() {
   }
   if (!emptyArticle || !emptyArticle.includes("shots/Roadmap_B.png") || !emptyArticle.includes("look offers no interaction")) {
     throw new Error("empty look picture must sit beside its failure");
+  }
+  const painted = presentedMesh("Roadmap_Jail_Door", "white", "LF_BreachArmAction@Roadmap_Jail_Door");
+  if (painted !== "painted-light") throw new Error("prison door with an action is painted-light");
+  const paintedCell = presentedMesh("Roadmap_Jail_Cell", "white", "LF_JailArrestAction@Roadmap_Jail_Cell");
+  if (paintedCell !== "painted-light") throw new Error("prison cell with an action is painted-light");
+  if (presentedMesh("Roadmap_Jail_Door", "white", "none") !== "white") throw new Error("a white door with no action stays white");
+  if (presentedMesh("Roadmap_Garage", "white", "EL_VehicleStoreAction@Roadmap_Garage") !== "white") {
+    throw new Error("a white mesh on any other site stays a failure");
+  }
+  const paintedRow = judgeRoadmapRow({
+    name: "Roadmap_Jail_Door",
+    look: "LF_BreachArmAction@Roadmap_Jail_Door",
+    mesh: painted,
+    distanceM: 3,
+    menu: null,
+  });
+  if (!paintedRow.ok) throw new Error("painted-light prison door must pass");
+  const whiteMenu = judgeRoadmapRow({
+    look: "EL_OrganizationDeskAction@Roadmap_Org_Desk",
+    mesh: "ok",
+    distanceM: 3,
+    menu: "CloseButton",
+    menuMesh: "white",
+  });
+  if (whiteMenu.ok || !whiteMenu.failures.includes("menu is blank")) throw new Error("a white menu shot is blank");
+  const listedMenu = judgeRoadmapRow({
+    look: "EL_OrganizationDeskAction@Roadmap_Org_Desk",
+    mesh: "ok",
+    distanceM: 3,
+    menu: "CloseButton",
+    menuMesh: "ok",
+  });
+  if (!listedMenu.ok) throw new Error("a menu with widgets and a picture passes");
+  const picked = selectRoadmapSites(
+    [
+      { name: "Roadmap_Garage" },
+      { name: "Roadmap_Jail_Door" },
+      { name: "Roadmap_Escort_Car" },
+    ],
+    ["Roadmap_Garage", "Roadmap_Escort_Car"],
+  );
+  if (picked.length !== 2 || picked.some((site) => site.name === "Roadmap_Jail_Door")) {
+    throw new Error("name filter must keep only the named row");
+  }
+  if (missingRoadmapNames(picked, ["Roadmap_Garage", "Roadmap_Missing"]).join(",") !== "Roadmap_Missing") {
+    throw new Error("a missing name must be reported");
+  }
+  const scratch = mkdtempSync(join(tmpdir(), "roadmap-"));
+  const samePng = join(scratch, "same.png");
+  writeFileSync(samePng, encodePng(2, 2, Buffer.alloc(2 * 2 * 3, 40)));
+  const stuckLogs = [];
+  let stuckShots = 0;
+  const stuckCode = runRoadmapReport({
+    root: scratch,
+    names: ["Roadmap_Garage", "Roadmap_Escort_Car"],
+    sites: () => [
+      { name: "Roadmap_Garage", layer: "Roadmap.layer", x: 186, y: 0, z: 108 },
+      { name: "Roadmap_Escort_Car", layer: "Roadmap.layer", x: 204, y: 0, z: 108 },
+      { name: "Roadmap_Jail_Door", layer: "Roadmap.layer", x: 192, y: 0, z: 120 },
+    ],
+    stand: () => ({ status: "ok", detail: "stood" }),
+    look: () => ({ status: "ok", detail: "EL_VehicleStoreAction@Roadmap_Garage" }),
+    ui: () => ({ status: "ok", detail: "CloseButton" }),
+    use: () => ({ status: "ok" }),
+    input: () => ({ status: "ok" }),
+    captureWorld: () => {
+      stuckShots++;
+      return { status: "ok", detail: "$logs:el-captures/same.png" };
+    },
+    captureUi: () => ({ status: "ok", detail: "" }),
+    resolve: () => samePng,
+    pause: () => {},
+    log: (line) => stuckLogs.push(line),
+  });
+  if (stuckShots !== 2) throw new Error(`camera_stuck must stop after the repeated shot, saw ${stuckShots}`);
+  if (stuckLogs.filter((line) => line === "camera_stuck").length !== 1) throw new Error(stuckLogs.join(" | "));
+  if (stuckCode !== 1) throw new Error("camera_stuck must fail the report");
+  if (stuckLogs.some((line) => line.startsWith("pass Roadmap_Escort_Car") || line.startsWith("fail Roadmap_Escort_Car"))) {
+    throw new Error("camera_stuck must not walk the next site");
+  }
+  const filterLogs = [];
+  const filterSeen = [];
+  runRoadmapReport({
+    root: join(scratch, "filter"),
+    names: ["Roadmap_Garage"],
+    sites: () => [
+      { name: "Roadmap_Garage", layer: "Roadmap.layer", x: 186, y: 0, z: 108 },
+      { name: "Roadmap_Jail_Door", layer: "Roadmap.layer", x: 192, y: 0, z: 120 },
+    ],
+    stand: () => ({ status: "ok", detail: "stood" }),
+    look: () => ({ status: "ok", detail: "EL_VehicleStoreAction@Roadmap_Garage" }),
+    ui: () => ({ status: "ok", detail: "none" }),
+    use: () => ({ status: "ok" }),
+    input: () => ({ status: "ok" }),
+    captureWorld: (spec) => {
+      filterSeen.push(spec.name);
+      return { status: "error", detail: "skipped" };
+    },
+    captureUi: () => ({ status: "ok", detail: "" }),
+    resolve: () => "",
+    pause: () => {},
+    log: (line) => filterLogs.push(line),
+  });
+  if (filterSeen.includes("Roadmap_Jail_Door") || !filterSeen.includes("Roadmap_Garage") || !filterSeen.includes("roadmap_row")) {
+    throw new Error(`filter walked ${filterSeen.join(",")}`);
+  }
+  const wide108 = rowCamera(
+    [
+      { name: "Roadmap_Garage", x: 186, y: 0, z: 108 },
+      { name: "Roadmap_Escort_Car", x: 204, y: 0, z: 108 },
+    ],
+    [
+      { name: "Roadmap_Garage", x: 186, y: 0, z: 108 },
+      { name: "Roadmap_Escort_Car", x: 204, y: 0, z: 108 },
+      { name: "Roadmap_Breach_Door", x: 186, y: 0, z: 120 },
+    ],
+  );
+  if (wide108.z + wide108.oz >= 108) throw new Error("Z=108 wide shot must stand on the open side of that row");
+  const wideStreet = rowCamera([
+    { name: "Roadmap_Breach_Door", x: 186, y: 0, z: 120 },
+    { name: "Roadmap_Vehicle_Lot", x: 243, y: 0, z: 120 },
+  ]);
+  if (wideStreet.oz <= 0) throw new Error("the release street wide shot stays on +Z");
+  const placedGarage = loadPlaced(ROOT).find((site) => site.name === "Roadmap_Garage");
+  const placedCar = loadPlaced(ROOT).find((site) => site.name === "Roadmap_Escort_Car");
+  if (!placedGarage || placedGarage.z !== 108 || placedGarage.x !== 186) throw new Error("garage row is at 186 0 108");
+  if (!placedCar || placedCar.z !== 108 || placedCar.x !== 204) throw new Error("escort car is at 204 0 108");
+  const release = loadPlaced(ROOT).filter((site) => site.name.startsWith("Roadmap_") && site.z === 120);
+  const releaseX = release.map((site) => site.x);
+  if (Math.min(...releaseX) !== 186 || Math.max(...releaseX) !== 243) {
+    throw new Error("release street stays on Z=120 from x=186 to x=243");
   }
   console.log("selftest ok");
   return 0;
@@ -767,17 +902,17 @@ function usage() {
   node agent-box/harness.mjs shot world <name> [x y z]
   node agent-box/harness.mjs flow <name>
   node agent-box/harness.mjs chains [--run]
-  node agent-box/harness.mjs report roadmap
+  node agent-box/harness.mjs report roadmap [EntityName...]
   node agent-box/harness.mjs pillar script [--run]
 
 Pillars
   script  Logic suite. --run refuses the main checkout (world-editor copy).
-  world   Aim the play-mode camera and screenshot that spot.
+  world   Teleport the character to the camera offset and screenshot the player view.
   ui      Screenshot whatever menu is on screen. Open and navigate it first.
-  kit     Enter play, open the kit sample, and screenshot every state.
+  kit     Photograph every UI kit state. Reuse a play session that is already up.
 
 Play mode has to be running. Start it with: node agent-box/harness.mjs play
-kit starts play itself.
+kit enters play only when a session is not already up.
 `);
 }
 
@@ -875,8 +1010,18 @@ function main(argv) {
     }
     if (cmd === "report") {
       if (rest[0] !== "roadmap") throw new Error("report roadmap");
+      const names = [];
+      for (let i = 1; i < rest.length; i++) {
+        if (rest[i] === "--name") {
+          i++;
+          if (rest[i]) names.push(rest[i]);
+        } else if (!rest[i].startsWith("--")) {
+          names.push(rest[i]);
+        }
+      }
       return runRoadmapReport({
         root: ROOT,
+        names,
         sites: () => roadmapSites(ROOT),
         stand: (entityName) => sendCommand({ verb: "stand", entityName }),
         look: () => sendCommand({ verb: "look" }),

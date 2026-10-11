@@ -771,3 +771,60 @@ GenericEntity Roadmap_Vehicle_Lot {
  Flags 0x403 0
  coords 243 0 120
 }
+GenericEntity Roadmap_Garage : "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et" {
+ components {
+  EL_VehicleGarageComponent "{A1C1080A00000001}" {
+  }
+  ActionsManagerComponent "{A1C1080A00000002}" {
+   ActionContexts {
+    UserActionContext "{A1C1080A00000003}" {
+     ContextName "default"
+     Position PointInfo "{A1C1080A00000004}" {
+      Offset 0 1.2 0
+     }
+     Radius 4
+     Height 3
+    }
+   }
+   additionalActions {
+    EL_VehicleStoreAction "{A1C1080A00000005}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A1C1080A00000006}" {
+      Name "#EL-Vehicle_Store"
+     }
+    }
+    EL_VehicleRetrieveAction "{A1C1080A00000007}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A1C1080A00000008}" {
+      Name "#EL-Vehicle_Retrieve"
+     }
+    }
+   }
+  }
+  RplComponent "{A1C1080A00000009}" {
+   Enabled 1
+  }
+ }
+ coords 186 0 108
+}
+GenericEntity Roadmap_Escort_Car : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
+ components {
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_JailPutInVehicleAction "{B2E1080B00000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{B2E1080B00000002}" {
+      Name "#EL-Escort_PutIn"
+     }
+    }
+   }
+  }
+ }
+ coords 204 0 108
+}

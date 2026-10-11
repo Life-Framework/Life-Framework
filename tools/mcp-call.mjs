@@ -63,6 +63,15 @@ function globalMcpEnv(name) {
   return readJson(GLOBAL_CONFIG_PATH).mcp?.[name]?.environment ?? {};
 }
 
+// This worktree's play bridge is the absolute entry in .cursor/mcp.json.
+// The opencode.json path is relative to a checkout that may not have the clone.
+function cursorServer(name) {
+  const server = readJson(join(ROOT, ".cursor", "mcp.json")).mcpServers?.[name];
+  if (!server || server.command !== "node" || !Array.isArray(server.args) || !server.args[0]) return null;
+  if (!existsSync(server.args[0])) return null;
+  return server;
+}
+
 function pickServer(wanted) {
   const servers = readConfig().mcp ?? {};
   const names = Object.keys(servers);
@@ -159,14 +168,21 @@ async function main() {
     console.error(`server ${serverName}: command must be [node, <entry>]`);
     return 1;
   }
-  const cwd = resolve(ROOT, serverCfg.cwd ?? ".");
-  const entry = resolve(cwd, cmd[1]);
+  let cwd = resolve(ROOT, serverCfg.cwd ?? ".");
+  let entry = resolve(cwd, cmd[1]);
+  let serverEnv = serverCfg.environment ?? {};
   if (!existsSync(entry)) {
-    console.error(`server ${serverName}: entry not found: ${entry}`);
-    console.error(`  run: tools\\cli mcp install ${serverName}`);
-    return 1;
+    const bridged = cursorServer(serverName);
+    if (!bridged) {
+      console.error(`server ${serverName}: entry not found: ${entry}`);
+      console.error(`  run: tools\\cli mcp install ${serverName}`);
+      return 1;
+    }
+    entry = bridged.args[0];
+    cwd = dirname(entry);
+    serverEnv = { ...(bridged.env ?? {}), ...serverEnv };
   }
-  const env = { ...process.env, ...globalMcpEnv(serverName), ...(serverCfg.environment ?? {}), ...envOverrides };
+  const env = { ...process.env, ...globalMcpEnv(serverName), ...serverEnv, ...envOverrides };
 
   let toolArgs = {};
   if (rawArgs) {
@@ -196,7 +212,7 @@ async function main() {
     }
   }
 
-  const child = spawn("node", [entry], {
+  const child = spawn(process.execPath, [entry], {
     cwd,
     env,
     stdio: ["pipe", "pipe", "pipe"],

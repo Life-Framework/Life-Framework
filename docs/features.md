@@ -438,7 +438,9 @@
   free non-driver seat of a base-game vehicle. The sentence starts when they
   arrive at the cell, not when they enter the car. A player who is not wanted
   is refused and logged. Early release stays refused. A reconnect keeps the
-  remaining sentence through `Export` / `Apply`. No world entity is placed.
+  remaining sentence through `Export` / `Apply`. DebugWorld places
+  `Roadmap_Escort_Car` at `204 0 108` on `Roadmap.layer`, the police M151 with
+  `LF_JailPutInVehicleAction`. The release street stays at Z=120. (verified 2026-10-11)
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
@@ -607,14 +609,14 @@
 - ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing.
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
-- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell for a capture. It is not placed in the DebugWorld row. The placed pad is `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`.
-- ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, then stops the engine and ejects before store. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
+- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places it as `Roadmap_Garage` at `186 0 108` on `Roadmap.layer`, with store and retrieve. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
+- ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
 
 ## UI / Layouts / Localization
 
 ### UI kit — `Scripts/Game/Feature/UIKit/`
-- Post-release polish. `LF_UITheme` holds the 1989 type, padding, and paper/metal colors. `LF_UIScreen` assembles a frame, title, body line, WLib edit box, list row, status row, quantity slider, and pause-menu button with `WorkspaceWidget.CreateWidgets`, wires `SCR_ButtonTextComponent`, and activates `MenuContext` every frame (`MenuTextEditContext` while an edit box is focused, `MenuWithEditorContext` so a pad can move). Close removes the widgets and that call. It does not use MenuManager.
-- A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` enters play and screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. Faction, character creation, death, shop, ATM, quest, police, and spawn menus were not migrated.
+- Post-release polish. `LF_UITheme` holds the 1989 type, padding, and paper/metal colors. `LF_UIScreen` assembles a frame, title, body line, WLib edit box (ink, no text outline or shadow; the box is not a `TextWidget`), list row, status row, quantity slider, and pause-menu button with `WorkspaceWidget.CreateWidgets`, wires `SCR_ButtonTextComponent`, and activates `MenuContext` every frame (`MenuTextEditContext` while an edit box is focused, `MenuWithEditorContext` so a pad can move). Close removes the widgets and that call. It does not use MenuManager.
+- A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. It reuses a play session that is already up. Faction, character creation, death, shop, ATM, quest, police, and spawn menus were not migrated.
 
 ## Quests
 
@@ -670,6 +672,8 @@
   `222 0 120`, the convoy drop at `225 0 120`, the job depot at `228 0 120`,
   the job drop at `231 0 120`, the taxi pad at `234 0 120`, the fuel can at
   `237 0 120`, the S105 at `240 0 124`, and the vehicle lot at `243 0 120`.
+  The Z=108 row is `Roadmap_Garage` at `186 0 108` and `Roadmap_Escort_Car`
+  at `204 0 108`. The Z=120 street is not moved.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
@@ -700,13 +704,20 @@
   (`RplMode.Dedicated`). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
 - ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
-  alone. A world shot stays at camera offset `10 3 10` unless the command
-  passes `ox oy oz`, which is how the roadmap row shot steps back. `node
-  agent-box/harness.mjs kit` is the one capture of the UI kit sample: it
-  enters play, opens that sheet, and writes a PNG for each state. `node
-  agent-box/harness.mjs report roadmap` writes `agent-box/reports/roadmap.html`
-  from a play session. The Node harness, MCP tools, layers, and named flows
-  live in `agent-box/`. See `docs/agent-box.md`.
+  alone. A world shot teleports the character to the camera offset (default
+  `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
+  player view. `SetCamera` does not move that view. A filtered row's wide shot
+  stands on the side away from the rest of the street. If the new PNG matches the
+  previous PNG, `report roadmap` records `camera_stuck` once and stops.
+  `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look
+  returns an action. Any other white mesh fails. Menu shots use `shot ui`; the
+  report judges `classify` and the widget list. Names after `roadmap` walk
+  only that row. `node agent-box/harness.mjs kit` photographs the UI kit
+  sample in the current play session when play is already up, and enters play
+  only when it is not. `node agent-box/harness.mjs report roadmap` writes
+  `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
+  tools, layers, and named flows live in `agent-box/`. See `docs/agent-box.md`.
+  (verified 2026-10-11)
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 

@@ -433,6 +433,24 @@ class EL_AgentCommand
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where the character stands for a world shot, and the yaw/pitch that faces
+	//! the target. The screenshot is the player view after this pose.
+	static void CameraStand(vector target, vector offset, out vector stand, out vector angles)
+	{
+		stand = target + offset;
+		if (vector.DistanceSq(target, stand) < 0.01)
+			stand = target + "10 3 10";
+
+		vector dir = target - stand;
+		float horiz = Math.Sqrt((dir[0] * dir[0]) + (dir[2] * dir[2]));
+		float yaw = Math.Atan2(dir[0], dir[2]) * Math.RAD2DEG;
+		float pitch = 0;
+		if (horiz > 0.001)
+			pitch = Math.Atan2(dir[1], horiz) * Math.RAD2DEG;
+		angles = Vector(yaw, pitch, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Menu navigation plus the debug-menu key. Movement keys are refused:
 	//! the harness must not drive the character by injecting WASD.
 	static bool IsMenuAction(string actionName)
@@ -464,6 +482,9 @@ class EL_AgentHarness
 	protected static bool s_bLoop;
 	protected static int s_iEnsureTries;
 	protected static int s_iCaptureId;
+	protected static vector s_vShotStand;
+	protected static vector s_vShotAngles;
+	protected static bool s_bShotPose;
 	protected static string s_sHeldAction;
 	protected static string s_sWantedClass;
 	protected static string s_sWantedName;
@@ -1184,24 +1205,66 @@ class EL_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Player view for a world shot. Called once when the shot is asked, and
+	//! again just before the screenshot so the body is still on the offset.
+	protected static void ReapplyWorldPose()
+	{
+		if (!s_bShotPose)
+			return;
+
+		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			EL_Debug.Error(FEATURE, "world shot has no character to pose");
+			return;
+		}
+
+		character.EL_AskHarnessPose(s_vShotStand[0], s_vShotStand[1], s_vShotStand[2], s_vShotAngles[0], s_vShotAngles[1]);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void DoCapture(EL_AgentCommand cmd)
 	{
 		EL_ScreenshotShot shot = new EL_ScreenshotShot();
 		shot.CaptureName = cmd.Arg2;
 		shot.SettleTime = 0.4;
 
+		s_bShotPose = false;
 		if (cmd.Arg1 == "ui")
 		{
 			shot.AimAtTarget = false;
 		}
 		else
 		{
-			shot.AimAtTarget = true;
+			// The character camera ignores CameraManager.SetCamera. Stand the
+			// player at the offset, face the target, and shoot that view.
+			shot.AimAtTarget = false;
 			shot.TargetPosition = Vector(cmd.PosX, cmd.PosY, cmd.PosZ);
+			vector offset = "10 3 10";
 			if (cmd.HasCameraOffset)
-				shot.CameraOffset = Vector(cmd.CamX, cmd.CamY, cmd.CamZ);
+				offset = Vector(cmd.CamX, cmd.CamY, cmd.CamZ);
+			vector stand;
+			vector angles;
+			EL_AgentCommand.CameraStand(shot.TargetPosition, offset, stand, angles);
+			s_vShotStand = stand;
+			s_vShotAngles = angles;
+			s_bShotPose = true;
+			ReapplyWorldPose();
+			Game game = GetGame();
+			if (!game)
+			{
+				EL_Debug.Error(FEATURE, "world shot has no game");
+			}
 			else
-				shot.CameraOffset = "10 3 10";
+			{
+				if (game.GetWorld())
+					game.BeginPreload(game.GetWorld(), shot.TargetPosition, 200);
+				// Gravity drops an elevated body during the settle. Put it back
+				// on the offset, then leave time for that pose to replicate
+				// before MakeScreenshot.
+				game.GetCallqueue().CallLater(ReapplyWorldPose, 700, false);
+			}
+			shot.SettleTime = 1.2;
 			shot.TimeOfDay24h = 12;
 			shot.WeatherStateName = "Clear";
 		}

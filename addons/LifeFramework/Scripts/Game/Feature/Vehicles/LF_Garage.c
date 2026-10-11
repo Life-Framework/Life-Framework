@@ -513,7 +513,8 @@ class LF_Garage
 			if (!access)
 				continue;
 
-			access.EjectOutOfVehicle();
+			if (!access.GetOutVehicle(EGetOutType.TELEPORT, 0, ECloseDoorAfterActions.CLOSE_DOOR, false))
+				EL_Debug.Error("Garage", "park eject failed");
 		}
 	}
 
