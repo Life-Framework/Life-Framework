@@ -174,7 +174,7 @@ class EL_Test_Roadmap_RanksWorld : EL_Test
 			return;
 
 		vector origin = armory.GetOrigin();
-		ctx.EqualFloat(354, origin[0], 0.1, "armory is at X 354");
+		ctx.EqualFloat(207, origin[0], 0.1, "armory is at X 207");
 		ctx.EqualFloat(0, origin[1], 0.1, "armory is on the ground");
 		ctx.EqualFloat(120, origin[2], 0.1, "armory is at Z 120");
 

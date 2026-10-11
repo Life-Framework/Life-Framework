@@ -82,11 +82,11 @@ class EL_Test_Roadmap_ContrabandWorld : EL_Test
 			return;
 
 		vector startOrigin = start.GetOrigin();
-		ctx.EqualFloat(444, startOrigin[0], 0.1, "the start marker is at X 444");
+		ctx.EqualFloat(222, startOrigin[0], 0.1, "the start marker is at X 222");
 		ctx.EqualFloat(0, startOrigin[1], 0.1, "the start marker is at Y 0");
 		ctx.EqualFloat(120, startOrigin[2], 0.1, "the start marker is at Z 120");
 		vector dropOrigin = drop.GetOrigin();
-		ctx.EqualFloat(462, dropOrigin[0], 0.1, "the drop marker is at X 462");
+		ctx.EqualFloat(225, dropOrigin[0], 0.1, "the drop marker is at X 225");
 		ctx.EqualFloat(0, dropOrigin[1], 0.1, "the drop marker is at Y 0");
 		ctx.EqualFloat(120, dropOrigin[2], 0.1, "the drop marker is at Z 120");
 

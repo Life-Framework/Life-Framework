@@ -1,173 +1,169 @@
-FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialog.layout" {
+FrameWidgetClass "{A11F0A01B0010001}" {
+ Name "OrganizationRoot"
  {
-  VerticalLayoutWidgetClass "{FC57B0F278ACA31F}" {
+  PanelWidgetClass "{A11F0A01B0010002}" {
+   Name "Panel0"
+   Slot FrameWidgetSlot "{A11F0A01B0010003}" {
+    Anchor 0 0 0 0
+    PositionX 160
+    OffsetLeft 160
+    PositionY 28
+    OffsetTop 28
+    SizeX 700
+    OffsetRight -860
+    SizeY 900
+    OffsetBottom -928
+   }
    {
-    TextWidgetClass "{D8F9CBCEF2A4C3AA}" {
-     Name "TitleText"
-     Text "#EL-Org_Title"
-     "Font Size" 24
-     Slot LayoutSlot "{027D7122B7126D72}" {
-      HorizontalAlign 1
-      Padding 0 20 0 10
+    BlurWidgetClass "{A11F0A01B0010004}" : "{352322057FD78AE1}UI/layouts/WidgetLibrary/BaseElements/WLib_Blur.layout" {
+     Name "BackgroundBlur"
+     Slot FrameWidgetSlot "{A11F0A01B0010005}" {
+      Anchor 0 0 1 1
      }
+     Color 0.127 0.127 0.127 1
+     Intensity 0.8
     }
-    TextWidgetClass "{7B6CF9A36A0A5751}" {
-     Name "NameText"
-     Text "#EL-Org_Empty"
-     "Font Size" 18
-     Slot LayoutSlot "{B48B1988826AE5AB}" {
-      Padding 20 8 20 4
-     }
-    }
-    TextWidgetClass "{273143E2B3C6BDD7}" {
-     Name "FundText"
-     "Font Size" 18
-     Slot LayoutSlot "{6C35262DA2E32E69}" {
-      Padding 20 4 20 4
-     }
-    }
-    TextWidgetClass "{69FE9C276E2C0787}" {
-     Name "UpgradeText"
-     "Font Size" 18
-     Slot LayoutSlot "{E64462D2E46BC523}" {
-      Padding 20 4 20 10
-     }
-    }
-    HorizontalLayoutWidgetClass "{043D3B10BA8AF2AF}" {
-     Slot LayoutSlot "{E2DBF01705199FB1}" {
-      Padding 20 8 20 8
+    VerticalLayoutWidgetClass "{A11F0A01B0010006}" {
+     Slot FrameWidgetSlot "{A11F0A01B0010007}" {
+      Anchor 0 0 1 1
+      PositionX 1
+      OffsetLeft 1
+      OffsetRight -1
+      OffsetBottom -1
      }
      {
-      EditBoxWidgetClass "{58FBD36A97708817}" {
+      FrameWidgetClass "{A11F0A01B0010008}" {
+       Name "TitleFrame"
+       Slot LayoutSlot "{A11F0A01B0010009}" {
+        Padding 0 15 0 8
+       }
+       {
+        TextWidgetClass "{A11F0A01B001000A}" {
+         Name "Title"
+         Slot FrameWidgetSlot "{A11F0A01B001000B}" {
+          Anchor 0.5 0.5 0.5 0.5
+         }
+         Color 1 1 1 1
+         Text "#EL-Org_Title"
+         "Font Size" 30
+        }
+       }
+      }
+      TextWidgetClass "{A11F0A01B0010010}" {
+       Name "NameText"
+       Text "#EL-Org_Empty"
+       Color 1 1 1 1
+       "Font Size" 18
+       Slot LayoutSlot "{A11F0A01B0010011}" {
+        Padding 40 4 40 4
+       }
+      }
+      TextWidgetClass "{A11F0A01B0010012}" {
+       Name "FundText"
+       Color 1 1 1 1
+       "Font Size" 18
+       Slot LayoutSlot "{A11F0A01B0010013}" {
+        Padding 40 4 40 4
+       }
+      }
+      TextWidgetClass "{A11F0A01B0010014}" {
+       Name "UpgradeText"
+       Color 1 1 1 1
+       "Font Size" 18
+       Slot LayoutSlot "{A11F0A01B0010015}" {
+        Padding 40 4 40 8
+       }
+      }
+      ButtonWidgetClass "{A11F0A01B0010020}" : "{0022F0B45ADBC5AC}UI/layouts/WidgetLibrary/EditBox/WLib_EditBox.layout" {
        Name "NameEdit"
-       "Placeholder text" "#EL-Org_NamePlaceholder"
-       Slot LayoutSlot "{90DA7C3185F5F1F6}" {
-        SizeMode Fill
-        FillWeight 1
+       Slot LayoutSlot "{A11F0A01B0010021}" {
+        Padding 40 8 40 8
+       }
+       components {
+        SCR_EditBoxComponent "{547290FFBD5B33E9}" {
+         m_bUseLabel 0
+         m_sLabel ""
+         m_fSizeWithLabel 56
+         m_fSizeWithoutLabel 56
+        }
        }
       }
-     }
-    }
-    HorizontalLayoutWidgetClass "{C581A57459E08758}" {
-     Slot LayoutSlot "{7025708EF3310DAB}" {
-      Padding 20 8 20 8
-     }
-     {
-      TextWidgetClass "{072F6BF725920A62}" {
+      TextWidgetClass "{A11F0A01B0010030}" {
+       Name "AmountLabel"
        Text "#EL-Org_Amount"
+       Color 1 1 1 1
        "Font Size" 16
-       Slot LayoutSlot "{8F2CB7B47C5E1BA9}" {
-        VerticalAlign 1
-        Padding 0 8 8 0
+       Slot LayoutSlot "{A11F0A01B0010031}" {
+        Padding 40 8 40 0
        }
       }
-      EditBoxWidgetClass "{8AA08F0727F0A5D0}" {
+      ButtonWidgetClass "{A11F0A01B0010032}" : "{0022F0B45ADBC5AC}UI/layouts/WidgetLibrary/EditBox/WLib_EditBox.layout" {
        Name "AmountEdit"
-       Slot LayoutSlot "{92504830CE95C8ED}" {
-        SizeMode Fill
-        FillWeight 1
+       Slot LayoutSlot "{A11F0A01B0010033}" {
+        Padding 40 4 40 8
+       }
+       components {
+        SCR_EditBoxComponent "{547290FFBD5B33E9}" {
+         m_bUseLabel 0
+         m_sLabel ""
+         m_fSizeWithLabel 56
+         m_fSizeWithoutLabel 56
+        }
        }
       }
-     }
-    }
-    HorizontalLayoutWidgetClass "{8C4F2812BDB91059}" {
-     Slot LayoutSlot "{0C6EC9640A6DB0DB}" {
-      Padding 20 8 20 8
-     }
-     {
-      ButtonWidgetClass "{F10CF55A68344588}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+      ButtonWidgetClass "{A11F0A01B0010040}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
        Name "CreateButton"
-       Slot LayoutSlot "{94096371297CD937}" {
-        SizeMode Fill
-        FillWeight 1
-        Padding 0 4 8 4
+       Slot LayoutSlot "{A11F0A01B0010041}" {
+        Padding 40 6 40 6
        }
-       {
-        TextWidgetClass "{9A1F3C93C53260A3}" {
-         Name "CreateLabel"
-         Text "#EL-Org_Create"
-         Slot LayoutSlot "{C86B61F75485B5AD}" {
-          HorizontalAlign 3
-          VerticalAlign 3
-         }
+       components {
+        SCR_ButtonTextComponent "{A11F0A01B0010042}" {
+         m_sText "#EL-Org_Create"
         }
        }
       }
-      ButtonWidgetClass "{FD7FA4F91D388895}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+      ButtonWidgetClass "{A11F0A01B0010043}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
        Name "DepositButton"
-       Slot LayoutSlot "{D470078F113640F1}" {
-        SizeMode Fill
-        FillWeight 1
-        Padding 8 4 0 4
+       Slot LayoutSlot "{A11F0A01B0010044}" {
+        Padding 40 6 40 6
        }
-       {
-        TextWidgetClass "{7014A3CD3215F062}" {
-         Name "DepositLabel"
-         Text "#EL-Org_Deposit"
-         Slot LayoutSlot "{03EABDB6179AA8F1}" {
-          HorizontalAlign 3
-          VerticalAlign 3
-         }
+       components {
+        SCR_ButtonTextComponent "{A11F0A01B0010045}" {
+         m_sText "#EL-Org_Deposit"
         }
        }
       }
-     }
-    }
-    HorizontalLayoutWidgetClass "{609469E3116FA033}" {
-     Slot LayoutSlot "{E06CB8EA46C3B847}" {
-      Padding 20 8 20 8
-     }
-     {
-      ButtonWidgetClass "{A6F63E7D3A778E63}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+      ButtonWidgetClass "{A11F0A01B0010046}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
        Name "WithdrawButton"
-       Slot LayoutSlot "{F67BEC2D987FBC02}" {
-        SizeMode Fill
-        FillWeight 1
-        Padding 0 4 8 4
+       Slot LayoutSlot "{A11F0A01B0010047}" {
+        Padding 40 6 40 6
        }
-       {
-        TextWidgetClass "{2A5B11A41C20769F}" {
-         Name "WithdrawLabel"
-         Text "#EL-Org_Withdraw"
-         Slot LayoutSlot "{6963D69DC936F6C9}" {
-          HorizontalAlign 3
-          VerticalAlign 3
-         }
+       components {
+        SCR_ButtonTextComponent "{A11F0A01B0010048}" {
+         m_sText "#EL-Org_Withdraw"
         }
        }
       }
-      ButtonWidgetClass "{A9F91FFB91A22080}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+      ButtonWidgetClass "{A11F0A01B0010049}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
        Name "BuyButton"
-       Slot LayoutSlot "{F5EDE9712DC3FB45}" {
-        SizeMode Fill
-        FillWeight 1
-        Padding 8 4 0 4
+       Slot LayoutSlot "{A11F0A01B001004A}" {
+        Padding 40 6 40 6
        }
-       {
-        TextWidgetClass "{ACE8DB095CF687F6}" {
-         Name "BuyLabel"
-         Text "#EL-Org_BuyProcessing"
-         Slot LayoutSlot "{0988BB657333FADC}" {
-          HorizontalAlign 3
-          VerticalAlign 3
-         }
+       components {
+        SCR_ButtonTextComponent "{A11F0A01B001004B}" {
+         m_sText "#EL-Org_BuyProcessing"
         }
        }
       }
-     }
-    }
-    ButtonWidgetClass "{1640FE5B778AF2B5}" : "{0114A06AD44D49BD}UI/layouts/WidgetLibrary/Buttons/DialogButtonCancel.layout" {
-     Name "CloseButton"
-     Slot LayoutSlot "{24EEA45DCF33BA39}" {
-      Padding 20 16 20 20
-     }
-     {
-      TextWidgetClass "{4BCBBEFA8BAF693D}" {
-       Name "CloseLabel"
-       Text "#EL-Org_Close"
-       Slot LayoutSlot "{C661AEFD0369C7BC}" {
-        HorizontalAlign 3
-        VerticalAlign 3
+      ButtonWidgetClass "{A11F0A01B001004C}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+       Name "CloseButton"
+       Slot LayoutSlot "{A11F0A01B001004D}" {
+        Padding 40 6 40 16
+       }
+       components {
+        SCR_ButtonTextComponent "{A11F0A01B001004E}" {
+         m_sText "#EL-Org_Close"
+        }
        }
       }
      }

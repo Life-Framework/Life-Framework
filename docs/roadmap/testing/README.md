@@ -26,8 +26,9 @@ Add `Worlds/DebugWorld/DebugWorld_Layers/Roadmap.layer`. Existing layers stay th
 
 Placement, clear of the current area boxes (the easternmost box is `PRFeatures.layer` near x=182):
 
-- Root entity `RoadmapStreet` at `210 0 120`.
-- Sites every 18 m along +X. Ground props at Y=0. `Flags 0x403` on any new traceable mesh.
+- Root entity `RoadmapStreet` at `186 0 120`.
+- Sites every 3 m along +X, from the breach door at `186 0 120` to the vehicle lot at `243 0 120`. Ground props at Y=0. `Flags 0x403` on any new traceable mesh.
+- Debug terrain is 256 m on X and Z (world 0..256). The row stays on that ground, clear of the police box that ends at x=172. Do not shrink the pitch.
 - One `EL_DebugAreaBoundary` (`{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`) around the row. `validate-debugworld-layout.ps1` must report no overlap and no raised ground prop.
 - The world entity stays in `default.layer`. Do not add `GenericWorldEntity world` here.
 - Add `Roadmap.layer` to the required list in `tools/validation/validate-debugworld.ps1`. An empty file fails that check.
@@ -216,7 +217,7 @@ Persistence: owner id and key id match after apply-save. Garage store/retrieve, 
 
 ## After release
 
-Same three gates. Add the entities to `Roadmap.layer` when the setup starts, inside the same boundary, further along +X. Do not open a second layer.
+Same three gates. Add the entities to `Roadmap.layer` when the setup starts, inside the same boundary, further along +X at the 3 m pitch. Extend the boundary with the row. Stop before the terrain edge at 256. Do not open a second layer.
 
 | Setup | Layer entities | Headless | E2E | Visual |
 | --- | --- | --- | --- | --- |

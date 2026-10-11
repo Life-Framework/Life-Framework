@@ -2,6 +2,8 @@
 // on 2026-10-11. The suite reported
 // `[ELTEST] - deposit of 100 reaches the fund (expected 0, got 100)`.
 // Restored the expected value to 100.
+// The same command on 2026-10-11 with OpensThroughMenuManager forced true reported
+// `[ELTEST] - organization menu opens on the workspace` and `failed=1`. Restored it to false.
 
 // tier: LOGIC
 class EL_Test_Roadmap_Organizations : EL_Test
@@ -105,6 +107,8 @@ class EL_Test_Roadmap_Organizations : EL_Test
 		ctx.False(org.IsMember(member), "kicked character is gone");
 		ctx.False(EL_OrganizationManager.Kick(org.GetId(), founder, founder), "founder cannot be kicked");
 		ctx.True(org.IsMember(founder), "founder remains in the organization");
+		ctx.EqualStr("{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout", EL_OrganizationMenu.LayoutResource(), "organization menu keeps its layout guid");
+		ctx.False(EL_OrganizationMenu.OpensThroughMenuManager(), "organization menu opens on the workspace");
 
 		EL_OrganizationManager.Reset();
 	}

@@ -295,7 +295,7 @@
   `Roadmap_Job_Depot` (post counter
   `{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et`),
   `Roadmap_Job_Drop`, `Roadmap_Job_TaxiPad`, and `Roadmap_Job_FuelCan` on
-  `Roadmap_Jobs.layer`.
+  `Roadmap.layer`.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -348,7 +348,7 @@
   on an open target refuses. Police can always repair; the owning organization
   can repair its own door. `Export` / `Apply` put the open lock back. The
   vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
-  `Roadmap_Breach_Charge` on `Roadmap_Breach.layer`. The charge prefab is
+  `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
   `EL_Door_Base` inherits
   `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
@@ -361,8 +361,8 @@
   spawns nothing. Over-capacity requests are cut to the configured bag count.
   Carry leaves the cash on the bag; dropping it leaves that cash in the world.
   `Export` / `Apply` restore the ground bags and do not write a bank balance.
-  DebugWorld places `Roadmap_Bank_Vault` at 246 0 120 and `Roadmap_Bank_Bag`
-  at 246 0 122 on `Roadmap_Bank.layer`. The bag is
+  DebugWorld places `Roadmap_Bank_Vault` at 189 0 120 and `Roadmap_Bank_Bag`
+  at 189 0 122 on `Roadmap.layer`. The bag is
   `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
   mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
   `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
@@ -376,13 +376,13 @@
   to the bank (verified 2026-10-11). The placed action is `EL_RobAction` on the
   till's single `ActionsManagerComponent`. Wanted rises by 1. One police alert per
   successful rob; an offer refresh does not alert. DebugWorld places
-  `Roadmap_Hospital_Till` at `282 0 120` on `Roadmap_Hospital.layer`.
+  `Roadmap_Hospital_Till` at `195 0 120` on `Roadmap.layer`.
 - ✅ The cabinet is a forced-entry container. `BreachCabinet` calls
   `LF_Breach.Arm`. When that lock opens it spawns the configured medicine
   prefabs: field dressing, morphine, saline, and tourniquet. A missing prefab
   logs and that line is skipped. A second breach while the cabinet is open
   spawns nothing and does not alert again. `Roadmap_Hospital_Cabinet` is at
-  `300 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
+  `198 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
   to the contraband scope.
 
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
@@ -395,7 +395,7 @@
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted (pin test `crime/rob-wanted-clamp`).
 - ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
-  `Roadmap_Fuel.layer` at `318 0 120` is
+  `Roadmap.layer` at `201 0 120` is
   `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits
   `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`,
   with `EL_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
@@ -422,7 +422,7 @@
   `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
   stays. `Export` / `Apply` put the remaining seconds back. DebugWorld places
   `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
-  `Roadmap_Jail.layer`. The placed door is
+  `Roadmap.layer`. The placed door is
   `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
   inherits
   `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
@@ -465,16 +465,16 @@
   lower officer. 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
   is the self-promotion RPC body and always refuses. Rank does not change
   faction and does not write the police whitelist. Lower ranks still open the
-  wanted list. DebugWorld places `Roadmap_Police_Armory` at `354 0 120` on
-  `Roadmap_Ranks.layer`.
+  wanted list. DebugWorld places `Roadmap_Police_Armory` at `207 0 120` on
+  `Roadmap.layer`.
 - ⚠️ Rank and on-duty seconds live on the account object and are not in
   `EL_PlayerAccountRecord`, so a restart returns the officer to patrol.
 
 ### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
 - ✅ One convoy. A member of the organization that owns the hideout hauls
   `{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et` from
-  `Roadmap_Convoy_Start` at `444 0 120` to `Roadmap_Convoy_Drop` at `462 0 120`
-  on `Roadmap_Hideout.layer`. Delivery pays 200 MoneyStack cash once. A second
+  `Roadmap_Convoy_Start` at `222 0 120` to `Roadmap_Convoy_Drop` at `225 0 120`
+  on `Roadmap.layer`. Delivery pays 200 MoneyStack cash once. A second
   delivery on that run pays nothing. Leaving the vehicle or dying fails the
   run and logs it; a failed run pays nothing. A non-member is refused and the
   refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
@@ -500,10 +500,13 @@
 - ✅ Cash moves only as MoneyStack through `EL_OrganizationPlayer`. A short
   removal is returned to the character. A short payout puts the fund back. The
   personal ATM balance is not read or written. The desk is
-  `Roadmap_Org_Desk` on `Roadmap_Organizations.layer` at `372 0 120`, using
-  `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`. The menu lists
-  the name, the fund, and the processing-slot upgrade, and shows an empty state
-  before create.
+  `Roadmap_Org_Desk` on `Roadmap.layer` at `210 0 120`, using
+  `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`. The menu is a
+  workspace widget on `{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout`.
+  It lists the name, the fund, and the processing-slot upgrade, and shows an
+  empty state before create. Create, deposit, withdraw, buy-processing, and
+  close stay on the character RPCs. Cash and membership still go through the
+  server.
 - ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
   compound the fund. The game-mode serializer writes these records at version 2,
   after survival. A version 1 save has no organization payload and does not
@@ -512,17 +515,17 @@
 
 ### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
 - ✅ One building owned by one organization. Members unlock
-  `Roadmap_Hideout_Door` at `390 0 120`. A non-member is refused and the
+  `Roadmap_Hideout_Door` at `213 0 120`. A non-member is refused and the
   refusal is logged. The door is `EL_Door_Base` with the inherited
   `EL_LockComponent`. The organization id is written onto that lock. The door
   does not call `LF_Breach` and does not add a second `ActionsManagerComponent`.
-- ✅ `Roadmap_Hideout_Machine` at `408 0 120` uses the existing
+- ✅ `Roadmap_Hideout_Machine` at `216 0 120` uses the existing
   `EL_ProcessAction` on `ItemProcessor_Base`. It runs only when the player's
   organization owns the hideout and has the processing upgrade. Otherwise it
   refuses and logs. The recipe turns one cabbage into one RowanBerries stack,
   the configured contraband prefab. A chain machine with no hideout component
   still reads `ResourceChains.conf`.
-- ✅ `Roadmap_Hideout_Stash` at `426 0 120` is the base-game crate mesh
+- ✅ `Roadmap_Hideout_Stash` at `219 0 120` is the base-game crate mesh
   `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`.
 - ✅ `ExportAll` / `ApplyAll` put the organization id and the lock flag back,
   and a second apply does not change them. The game-mode serializer writes
@@ -640,14 +643,19 @@
 - ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, tests, and the release
-  `Roadmap.layer` street, `Roadmap_Bank.layer`, `Roadmap_Fuel.layer`,
-  `Roadmap_Jail.layer`, `Roadmap_Organizations.layer`, `Roadmap_Hospital.layer`, `Roadmap_Jobs.layer`, and `Roadmap_Hideout.layer`
-  are all present as non-empty layer files.
-  `Roadmap_Fuel.layer` places `Roadmap_Fuel_Till` at `318 0 120`.
-  `Roadmap_Organizations.layer` places `Roadmap_Org_Desk` at `372 0 120`.
-  `Roadmap_Hideout.layer` places the door at `390 0 120`, the machine at
-  `408 0 120`, the stash at `426 0 120`, the convoy start at `444 0 120`, and
-  the convoy drop at `462 0 120`.
+  street on `Roadmap.layer`. Sites sit 3 m apart on +X, from the breach door
+  at `186 0 120` through the vehicle lot at `243 0 120`. The debug terrain is
+  the 256 m square (world 0..256). The row stays on that ground. That
+  one layer holds the breach door at `186 0 120`
+  and the charge at `186 0 122`, the bank vault at `189 0 120` and the bag at
+  `189 0 122`, the jail door at `192 0 120` and the cell at `192 0 122`, the
+  hospital till at `195 0 120` and the cabinet at `198 0 120`, the fuel till at
+  `201 0 120`, the police desk at `204 0 120`, the armory at `207 0 120`, the
+  organization desk at `210 0 120`, the hideout door at `213 0 120`, the
+  machine at `216 0 120`, the stash at `219 0 120`, the convoy start at
+  `222 0 120`, the convoy drop at `225 0 120`, the job depot at `228 0 120`,
+  the job drop at `231 0 120`, the taxi pad at `234 0 120`, the fuel can at
+  `237 0 120`, the S105 at `240 0 124`, and the vehicle lot at `243 0 120`.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →

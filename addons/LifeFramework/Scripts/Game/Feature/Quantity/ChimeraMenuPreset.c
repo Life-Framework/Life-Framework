@@ -10,8 +10,6 @@ modded enum ChimeraMenuPreset
 	EL_SplitQuantityDialog,
 	// Quest menu
 	QuestMenu,
-	// Organization desk
-	OrganizationMenu,
 	// Debug menu
 	DebugMenu
 }
