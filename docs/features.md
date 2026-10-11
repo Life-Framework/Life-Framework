@@ -332,11 +332,16 @@
   MILITARY, MAFIA), `IsJobRestricted` (POLICE only), add/remove/get.
 - ✅ **Compiles** (verified 2026-08-30): `enum EL_EFactionType` is now defined
   in this file (CIVILIAN/POLICE/MILITARY/MAFIA).
-- ⚠️ No persistence (resets every server start). Getter returns the live
-  internal array (callers can mutate without logging). The faction-selection
-  flow does not yet consult `IsWhitelistedForFaction` — anyone can pick
-  POLICE on first join; gating it requires admin tooling first (a fresh
-  server would otherwise have no police at all).
+- ✅ **Restart save and police gate** (verified 2026-10-11): the manager
+  writes `$profile:LifeFramework/whitelist.txt` itself, version first, and
+  `Load` replaces the cache. A second load does not duplicate entries. A
+  missing file logs `EL_Debug.Error` and leaves the police faction closed.
+  Civilian stays open. `MayJoinFaction` refuses a uid that is not on the
+  police list and logs that refusal. The police button in
+  `EL_FactionSelectionMenu` calls it before the faction is selected. A uid
+  that was not in the file is still refused after load. This file is not
+  `EL_PersistenceComponentSerializer`.
+- ⚠️ Getter returns the live internal array (callers can mutate without logging).
 
 ## Crime & Police
 
