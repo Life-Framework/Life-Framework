@@ -1548,6 +1548,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not enough police on duty"
      Comment "Cash robbery refused because too few police are on duty"
     }
+    CustomStringTableItem "{F1030FBC0E45B177}" {
+     Id "EL-Jail_Arrest"
+     Target_en_us "Send to jail"
+     Comment "Officer action on a wanted suspect"
+    }
+    CustomStringTableItem "{8AEA48F56B9C5F59}" {
+     Id "EL-Jail_NotOfficer"
+     Target_en_us "Only on-duty police can send someone to jail"
+     Comment "Jail action refused because the user is not an on-duty officer"
+    }
+    CustomStringTableItem "{C1D59E0ED7B03055}" {
+     Id "EL-Jail_NotWanted"
+     Target_en_us "This person is not wanted"
+     Comment "Jail action refused because the suspect is not wanted or is out of range"
+    }
+    CustomStringTableItem "{70C09B02D265C0E8}" {
+     Id "EL-Jail_NoCell"
+     Target_en_us "No jail cell is placed"
+     Comment "Jail action refused because the world has no cell marker"
+    }
+    CustomStringTableItem "{D588BDC3746521B7}" {
+     Id "EL-Jail_Released"
+     Target_en_us "Sentence served"
+     Comment "Notification when a jail sentence ends"
+    }
+    CustomStringTableItem "{80654DEEF27895C6}" {
+     Id "EL-Jail_EarlyRelease"
+     Target_en_us "The sentence is not over"
+     Comment "Early release refused while time remains"
+    }
   }
  }
 }
