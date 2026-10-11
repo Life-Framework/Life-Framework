@@ -1262,7 +1262,7 @@ class EL_AgentHarness
 				// Gravity drops an elevated body during the settle. Put it back
 				// on the offset, then leave time for that pose to replicate
 				// before MakeScreenshot.
-				game.GetCallqueue().CallLater(ReapplyWorldPose, 700, false);
+				GetGame().GetCallqueue().CallLater(ReapplyWorldPose, 700, false);
 			}
 			shot.SettleTime = 1.2;
 			shot.TimeOfDay24h = 12;

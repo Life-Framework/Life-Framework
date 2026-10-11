@@ -60,6 +60,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_QuantityStack(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityVisuals(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_RecipeChains(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_Bank(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_BankWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_BankPersistence(), EL_TestTier.PERSISTENCE);
