@@ -24,6 +24,7 @@ class EL_DutyAction : ScriptedUserAction
 
 		bool newDuty = !account.IsOnDuty();
 		account.SetOnDuty(newDuty);
+		LF_PoliceRanks.OnDutyChanged(account, newDuty);
 
 		string status;
 		if (newDuty)
