@@ -66,8 +66,13 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_Breach(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_BreachWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_BreachPersistence(), EL_TestTier.PERSISTENCE);
+		manager.Register(new EL_Test_Roadmap_Contraband(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_ContrabandWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_Fuel(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_FuelWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_Hideout(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_HideoutWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_HideoutPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_Roadmap_Hospital(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_HospitalWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_Jailbreak(), EL_TestTier.LOGIC);
@@ -80,6 +85,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_OrganizationsPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_Roadmap_Ranks(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_RanksWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_Resources(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_ResourcesWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_RobReward(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobRewardWantedClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);

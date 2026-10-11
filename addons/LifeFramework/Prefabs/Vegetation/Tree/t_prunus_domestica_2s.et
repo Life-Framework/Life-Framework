@@ -20,6 +20,7 @@ Tree : "{388AE316D09D0680}Prefabs/Vegetation/Core/Tree_Base.et" {
       "Gather"
      }
      Duration 1
+     m_sNodeId "plum"
      m_GatherItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
     }
    }

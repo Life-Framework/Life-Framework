@@ -1753,6 +1753,86 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Crime Alert: Hospital till robbed"
      Comment "Police notification when the hospital till is robbed"
     }
+    CustomStringTableItem "{045DF984ED294440}" {
+     Id "EL-Resource_TradeJuice"
+     Target_en_us "Trade apple juice"
+     Comment "Action name on the St Philippe juice trader"
+    }
+    CustomStringTableItem "{0C8AA12FDD414BE0}" {
+     Id "EL-Resource_TradeJuice_Desc"
+     Target_en_us "Sell apple juice for cash"
+     Comment "Action description on the St Philippe juice trader"
+    }
+    CustomStringTableItem "{9C72272DB847457E}" {
+     Id "EL-Resource_JuiceTrade_Name"
+     Target_en_us "Apple juice trade"
+     Comment "Storage name for the St Philippe juice crate"
+    }
+    CustomStringTableItem "{EF39A7AF0980446C}" {
+     Id "EL-Resource_JuiceTrade_Desc"
+     Target_en_us "Sell juice for cash"
+     Comment "Storage description for the St Philippe juice crate"
+    }
+    CustomStringTableItem "{11202505DD474762}" {
+     Id "EL-Resource_TradeIron"
+     Target_en_us "Trade iron bars"
+     Comment "Action name on the St Philippe iron-bar trader"
+    }
+    CustomStringTableItem "{8D04BB7153344934}" {
+     Id "EL-Resource_TradeIron_Desc"
+     Target_en_us "Sell iron bars for cash"
+     Comment "Action description on the St Philippe iron-bar trader"
+    }
+    CustomStringTableItem "{154EF8AA34D04940}" {
+     Id "EL-Resource_IronTrade_Name"
+     Target_en_us "Iron bar trade"
+     Comment "Storage name for the St Philippe iron-bar crate"
+    }
+    CustomStringTableItem "{C9C467388DE54730}" {
+     Id "EL-Resource_IronTrade_Desc"
+     Target_en_us "Sell smelted iron for cash"
+     Comment "Storage description for the St Philippe iron-bar crate"
+    }
+    CustomStringTableItem "{6F1A8C2D4B9E7031}" {
+     Id "EL-Hideout_NotMember"
+     Target_en_us "Only organization members can use this door"
+     Comment "Door action reason when the player is not in the hideout organization"
+    }
+    CustomStringTableItem "{8C3E1A7F5D2B9046}" {
+     Id "EL-Hideout_NoUpgrade"
+     Target_en_us "The hideout needs the processing upgrade"
+     Comment "Process action reason when the hideout organization lacks the processing slot"
+    }
+    CustomStringTableItem "{A4D70E2C9B15F683}" {
+     Id "EL-Hideout_Process"
+     Target_en_us "Process contraband"
+     Comment "Hideout machine process action name"
+    }
+    CustomStringTableItem "{B19C4E8A0D6F2753}" {
+     Id "EL-Contraband_Start"
+     Target_en_us "Start convoy"
+     Comment "Convoy start action name"
+    }
+    CustomStringTableItem "{C27D5F9B1E804A64}" {
+     Id "EL-Contraband_Deliver"
+     Target_en_us "Deliver contraband"
+     Comment "Convoy delivery action name and notification title"
+    }
+    CustomStringTableItem "{D38E60AC2F915B75}" {
+     Id "EL-Contraband_NotMember"
+     Target_en_us "Only organization members can run this convoy"
+     Comment "Convoy start reason when the player is not a member of the hideout organization"
+    }
+    CustomStringTableItem "{E49F71BD3A026C86}" {
+     Id "EL-Contraband_Paid"
+     Target_en_us "Cash paid for the delivery"
+     Comment "Notification when a convoy delivery pays cash"
+    }
+    CustomStringTableItem "{F5A082CE4B137D97}" {
+     Id "EL-Contraband_Failed"
+     Target_en_us "The convoy failed"
+     Comment "Notification when a convoy run fails"
+    }
   }
  }
 }

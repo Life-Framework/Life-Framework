@@ -187,4 +187,162 @@ $grp GenericEntity {
    }
   }
  }
+ Tree StPhilippe_AppleTree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+  coords 4434 19.418 10576
+ }
+ Tree StPhilippe_AppleTree_2 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+  coords 4438 19.418 10580
+ }
+ GenericEntity StPhilippe_Juicer : "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et" {
+  coords 4448 19.418 10576
+ }
+ GenericEntity StPhilippe_JuiceTrade {
+  components {
+   EL_RestrictedInventoryStorageComponent "{BE9E2ECD05F54957}" {
+    Attributes SCR_ItemAttributeCollection "{CFE02511CF3E4176}" {
+     ItemDisplayName UIInfo "{03BB79B5C8404C66}" {
+      Name "#EL-Resource_JuiceTrade_Name"
+      Description "#EL-Resource_JuiceTrade_Desc"
+     }
+     ItemPhysAttributes ItemPhysicalAttributes "{88ADADEFEB984D77}" {
+     }
+     CustomAttributes {
+      PreviewRenderAttributes "{D5443515172F41DA}" {
+       CameraOrbitAngles 330 30 0
+       CameraDistanceToItem 1
+      }
+     }
+     CommonItemType "NONE"
+     m_Size SLOT_3x3
+     m_SlotType SLOT_ANY
+    }
+    m_fMaxWeight 1000
+    m_TradablePrefabs {
+     "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+    }
+   }
+   EL_TraderManagerComponent "{1931CEFBD4FA4CCF}" {
+    m_aTradableItems {
+     EL_TraderItem "{375F22C737C14796}" {
+      m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+      m_ValuePerItem 15
+     }
+    }
+   }
+   MeshObject "{4A43C0767CFB496B}" {
+    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   }
+   RigidBody "{89E5FA553EB64D79}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{3832B139FFE24237}" {
+    ActionContexts {
+     UserActionContext "{F282FAEC0A9244A2}" {
+      ContextName "default"
+      Position PointInfo "{5471FAC296C648BB}" {
+       Offset 0 0.0873 0
+      }
+      Radius 1.5
+     }
+    }
+    additionalActions {
+     EL_OpenTraderAction "{CBBDC9BE0207420A}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{6F4841EF1F1D452D}" {
+       Name "#EL-Resource_TradeJuice"
+       Description "#EL-Resource_TradeJuice_Desc"
+      }
+     }
+    }
+   }
+   RplComponent "{41666352B1804BBA}" {
+    Enabled 1
+   }
+  }
+  coords 4446 19.418 10564
+  Flags 0x403 0
+ }
+ GenericEntity StPhilippe_IronOre : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+  coords 4472 19.418 10580
+ }
+ GenericEntity StPhilippe_Pickaxe : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
+  coords 4474 19.418 10578
+ }
+ GenericEntity StPhilippe_Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
+  coords 4468 19.418 10574
+ }
+ GenericEntity StPhilippe_IronTrade {
+  components {
+   EL_RestrictedInventoryStorageComponent "{6EA28F52BA8740A5}" {
+    Attributes SCR_ItemAttributeCollection "{2627D9EB0C6947EA}" {
+     ItemDisplayName UIInfo "{3EF8E2756C104538}" {
+      Name "#EL-Resource_IronTrade_Name"
+      Description "#EL-Resource_IronTrade_Desc"
+     }
+     ItemPhysAttributes ItemPhysicalAttributes "{9BD528C09FF3408D}" {
+     }
+     CustomAttributes {
+      PreviewRenderAttributes "{39A017A429274B66}" {
+       CameraOrbitAngles 330 30 0
+       CameraDistanceToItem 1
+      }
+     }
+     CommonItemType "NONE"
+     m_Size SLOT_3x3
+     m_SlotType SLOT_ANY
+    }
+    m_fMaxWeight 1000
+    m_TradablePrefabs {
+     "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
+    }
+   }
+   EL_TraderManagerComponent "{0B7B478984244732}" {
+    m_aTradableItems {
+     EL_TraderItem "{1DA81BA249224809}" {
+      m_ItemPrefab "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
+      m_ValuePerItem 45
+     }
+    }
+   }
+   MeshObject "{B8ABE61382FC4650}" {
+    Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   }
+   RigidBody "{8B3D7AEB0B244398}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   ActionsManagerComponent "{342C7DB6302B4EF8}" {
+    ActionContexts {
+     UserActionContext "{8557A1C729474AB1}" {
+      ContextName "default"
+      Position PointInfo "{C40A4DAD6C3F484C}" {
+       Offset 0 0.0873 0
+      }
+      Radius 1.5
+     }
+    }
+    additionalActions {
+     EL_OpenTraderAction "{9256EEBD411C487B}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{4B4FD86F56C3468F}" {
+       Name "#EL-Resource_TradeIron"
+       Description "#EL-Resource_TradeIron_Desc"
+      }
+     }
+    }
+   }
+   RplComponent "{657B9608669B4A5E}" {
+    Enabled 1
+   }
+  }
+  coords 4468 19.418 10568
+  Flags 0x403 0
+ }
 }
