@@ -7,6 +7,7 @@ EL_BaseCrop : "{F1F4F4FDA1E652E3}Prefabs/Vegetation/Crops/BaseCropSingle.et" {
   ActionsManagerComponent "{59A0BBAE906EB838}" {
    additionalActions {
     EL_GatherAction "{59A12C3059847C59}" {
+     m_sNodeId "cabbage"
      m_GatherItemPrefab "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et"
     }
    }

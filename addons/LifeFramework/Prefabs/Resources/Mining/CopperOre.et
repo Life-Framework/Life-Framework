@@ -38,6 +38,7 @@ GenericEntity {
       Name "Mine Copper"
      }
      Duration 4
+     m_sNodeId "copper"
      m_GatherItemPrefab "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et"
      m_GatherAmount 1
      m_GatherAmountMax 4

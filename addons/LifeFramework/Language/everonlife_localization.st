@@ -1673,6 +1673,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Close"
      Comment "Organization menu close button"
     }
+    CustomStringTableItem "{045DF984ED294440}" {
+     Id "EL-Resource_TradeJuice"
+     Target_en_us "Trade apple juice"
+     Comment "Action name on the St Philippe juice trader"
+    }
+    CustomStringTableItem "{0C8AA12FDD414BE0}" {
+     Id "EL-Resource_TradeJuice_Desc"
+     Target_en_us "Sell apple juice for cash"
+     Comment "Action description on the St Philippe juice trader"
+    }
+    CustomStringTableItem "{9C72272DB847457E}" {
+     Id "EL-Resource_JuiceTrade_Name"
+     Target_en_us "Apple juice trade"
+     Comment "Storage name for the St Philippe juice crate"
+    }
+    CustomStringTableItem "{EF39A7AF0980446C}" {
+     Id "EL-Resource_JuiceTrade_Desc"
+     Target_en_us "Sell juice for cash"
+     Comment "Storage description for the St Philippe juice crate"
+    }
+    CustomStringTableItem "{11202505DD474762}" {
+     Id "EL-Resource_TradeIron"
+     Target_en_us "Trade iron bars"
+     Comment "Action name on the St Philippe iron-bar trader"
+    }
+    CustomStringTableItem "{8D04BB7153344934}" {
+     Id "EL-Resource_TradeIron_Desc"
+     Target_en_us "Sell iron bars for cash"
+     Comment "Action description on the St Philippe iron-bar trader"
+    }
+    CustomStringTableItem "{154EF8AA34D04940}" {
+     Id "EL-Resource_IronTrade_Name"
+     Target_en_us "Iron bar trade"
+     Comment "Storage name for the St Philippe iron-bar crate"
+    }
+    CustomStringTableItem "{C9C467388DE54730}" {
+     Id "EL-Resource_IronTrade_Desc"
+     Target_en_us "Sell smelted iron for cash"
+     Comment "Storage description for the St Philippe iron-bar crate"
+    }
   }
  }
 }
