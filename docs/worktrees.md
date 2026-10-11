@@ -18,7 +18,13 @@ harmless to your editor because the worktree is a separate directory.
 
 - **Ports** — every worktree gets a unique `(gamePort, a2sPort)` pair,
   allocated at creation (2001+N·10 / 17777+N·10). `wt test` boots the dedicated
-  server with `-bindPort`/`-a2sPort`, so many test runs happen at once.
+  server with `-bindPort`/`-a2sPort`. A log line that mentions 2001 is the
+  engine default text; it does not mean `-bindPort` was ignored. The full
+  suite (`tier=all` and `tier=persistence`) runs one worktree at a time.
+  Tier `fast` does not take that lock.
+- **Resource database** — `resourceDatabase.rdb` is gitignored. `wt list` and
+  `test` copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into
+  the worktree when that copy is missing or smaller. Do not commit it.
 - **Build** — the headless Workbench build is the one truly shared resource
   (shader cache, resource DB). It is serialized by a machine-wide lock file:
   one build at a time, everyone else `--wait`s. `cli dev` skips the build
@@ -31,7 +37,7 @@ harmless to your editor because the worktree is a separate directory.
 
 ```sh
 tools\cli wt new <feature>      # create worktree + branch + ports
-tools\cli wt list               # who's working, ports, dirty/merged state
+tools\cli wt list               # who's working, ports, dirty/merged state; copies resourceDatabase.rdb
 tools\cli wt test <slug>        # run the ELTEST suite in that worktree
 tools\cli wt dev <slug>         # fast loop in that worktree (no build)
 tools\cli wt gate <slug>        # validate + build + test (tier=all)
@@ -87,7 +93,7 @@ to prune and about any registry inconsistency.
 
 ## Under the hood (files)
 
-- `tools/wt.mjs` — hub, locks, ports, git helpers, gh/REST PR + merge.
+- `tools/wt.mjs` — hub, locks, ports, resource-database copy, git helpers, gh/REST PR + merge.
 - `tools/cli.mjs` — `wt` command group, main-checkout guard, worktree-aware
   build/test/dev/serve/ci.
 - `tools/validation/validate-worktrees.ps1` — registry consistency (port
