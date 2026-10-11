@@ -38,6 +38,14 @@ Buildings that are larger than a debug pad (the hospital, the fuel station, the 
 
 ## How a shot is taken
 
+The street pass is one command. Play mode has to be running. It does not boot the test server.
+
+```
+node agent-box/harness.mjs report roadmap
+```
+
+It walks every `Roadmap_` entity, stands where a player would stand, runs `look`, and takes a world shot. `agent-box/reports/roadmap.html` places each picture beside that text. One wide shot of the row is at the top. A row fails when the mesh is white or missing, look offers no interaction, a menu is blank, or the site is more than 30 m from the rest of the street. `node agent-box/harness.mjs selftest` marks an empty look and a site 80 m away as failures, with no game.
+
 Asset, no menu:
 
 ```

@@ -19,6 +19,10 @@ class EL_AgentCommand
 	float PosX;
 	float PosY;
 	float PosZ;
+	float CamX;
+	float CamY;
+	float CamZ;
+	bool HasCameraOffset;
 	string Error;
 
 	//------------------------------------------------------------------------------------------------
@@ -33,7 +37,7 @@ class EL_AgentCommand
 	//!   <id> ui
 	//!   <id> click <WidgetName> [index]
 	//!   <id> capture ui <Name>
-	//!   <id> capture world <Name> <x> <y> <z>
+	//!   <id> capture world <Name> <x> <y> <z> [ox oy oz]
 	static bool Parse(string line, out EL_AgentCommand cmd)
 	{
 		cmd = new EL_AgentCommand();
@@ -280,6 +284,21 @@ class EL_AgentCommand
 		cmd.PosX = parts[4].ToFloat();
 		cmd.PosY = parts[5].ToFloat();
 		cmd.PosZ = parts[6].ToFloat();
+		cmd.HasCameraOffset = false;
+		if (parts.Count() > 7)
+		{
+			if (parts.Count() < 10)
+			{
+				cmd.Error = "need_offset";
+				return false;
+			}
+
+			cmd.CamX = parts[7].ToFloat();
+			cmd.CamY = parts[8].ToFloat();
+			cmd.CamZ = parts[9].ToFloat();
+			cmd.HasCameraOffset = true;
+		}
+
 		return true;
 	}
 
@@ -985,7 +1004,10 @@ class EL_AgentHarness
 		{
 			shot.AimAtTarget = true;
 			shot.TargetPosition = Vector(cmd.PosX, cmd.PosY, cmd.PosZ);
-			shot.CameraOffset = "10 3 10";
+			if (cmd.HasCameraOffset)
+				shot.CameraOffset = Vector(cmd.CamX, cmd.CamY, cmd.CamZ);
+			else
+				shot.CameraOffset = "10 3 10";
 			shot.TimeOfDay24h = 12;
 			shot.WeatherStateName = "Clear";
 		}

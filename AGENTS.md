@@ -1,5 +1,7 @@
 # AGENTS.md — Life Framework development contract
 
+`node agent-box/harness.mjs report roadmap` is the street visual pass. In a rendering play session it stands at every `Roadmap_` entity, runs `look`, takes a world shot, and writes `agent-box/reports/roadmap.html` with each picture beside that text, plus one wide shot of the row. A row fails when the mesh is white or missing, look offers no interaction, a menu is blank, or the site is more than 30 m from the rest of the street. `node agent-box/harness.mjs selftest` marks an empty look and a site 80 m away as failures. Do not boot the test server for this report.
+
 ## Context — stop here
 
 This section is the context. Write the assigned files. Do not open sibling features, validation scripts, MCP sources, or the server executable to learn the shape.

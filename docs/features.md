@@ -570,8 +570,11 @@
   (`RplMode.Dedicated`). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
 - ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
-  alone. The Node harness, MCP tools, layers, and named flows live in
-  `agent-box/`. See `docs/agent-box.md`.
+  alone. A world shot stays at camera offset `10 3 10` unless the command
+  passes `ox oy oz`, which is how the roadmap row shot steps back. `node
+  agent-box/harness.mjs report roadmap` writes `agent-box/reports/roadmap.html`
+  from a play session. The Node harness, MCP tools, layers, and named flows
+  live in `agent-box/`. See `docs/agent-box.md`.
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 

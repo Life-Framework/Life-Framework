@@ -14,9 +14,10 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { bmpFileToPng, decodeBmp, syntheticBmp } from "./bmp.mjs";
+import { bmpFileToPng, classifyMesh, classifyMeshFile, decodeBmp, decodePng, encodePng, syntheticBmp } from "./bmp.mjs";
 import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
-import { findPad, loadPads } from "./layers.mjs";
+import { findPad, loadPads, loadPlaced } from "./layers.mjs";
+import { judgeRoadmapRow, judgeStreet, menuActionFromLook, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport } from "./report.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -95,9 +96,17 @@ export function buildLine(id, spec) {
     if (spec.mode !== "world") throw new Error("capture mode must be ui or world");
     const coords = [spec.x, spec.y, spec.z].map((n) => Number(n));
     if (coords.some((n) => Number.isNaN(n))) throw new Error("world capture needs x y z");
-    return `${id} capture world ${name} ${coords.join(" ")}`;
+    const line = `${id} capture world ${name} ${coords.map(trimNum).join(" ")}`;
+    if (spec.ox === undefined && spec.oy === undefined && spec.oz === undefined) return line;
+    const offset = [spec.ox, spec.oy, spec.oz].map((n) => Number(n));
+    if (offset.some((n) => Number.isNaN(n))) throw new Error("camera offset needs ox oy oz");
+    return `${line} ${offset.map(trimNum).join(" ")}`;
   }
   throw new Error(`unknown verb: ${spec.verb}`);
+}
+
+function trimNum(n) {
+  return String(Math.round(Number(n) * 1000) / 1000);
 }
 
 function nextId() {
@@ -575,6 +584,70 @@ function selftest() {
   if (editPlay.length !== 1 || editPlay[0][0].tool !== "wb_state" || editPlay[0].at(-1).tool !== "wb_play") {
     throw new Error("edit play batch must read state before play");
   }
+  const wideLine = buildLine(15, { verb: "capture", mode: "world", name: "roadmap_row", x: 300, y: 1, z: 121, ox: 0, oy: 40, oz: 90 });
+  if (wideLine !== "15 capture world roadmap_row 300 1 121 0 40 90") throw new Error(wideLine);
+  const street = judgeStreet([
+    { name: "Roadmap_A", x: 210, y: 0, z: 120, look: "LF_BreachArmAction@Roadmap_A", mesh: "ok", menu: null, src: "shots/Roadmap_A.png" },
+    { name: "Roadmap_B", x: 228, y: 0, z: 120, look: "none", mesh: "ok", menu: null, src: "shots/Roadmap_B.png" },
+    { name: "Roadmap_Far", x: 228, y: 0, z: 200, look: "EL_RobAction@Roadmap_Far", mesh: "ok", menu: null, src: "shots/Roadmap_Far.png" },
+  ]);
+  const byName = Object.fromEntries(street.map((row) => [row.name, row]));
+  if (byName.Roadmap_B.ok || !byName.Roadmap_B.failures.includes("look offers no interaction")) {
+    throw new Error("empty look must fail");
+  }
+  if (byName.Roadmap_Far.ok || byName.Roadmap_Far.distanceM !== 80 || !byName.Roadmap_Far.failures.includes("more than 30 m from the rest of the street")) {
+    throw new Error("entity 80 m away must fail");
+  }
+  if (!byName.Roadmap_A.ok) throw new Error("a close site with an interaction must pass");
+  if (!judgeRoadmapRow({ look: "EL_RobAction@X", mesh: "ok", distanceM: 30, menu: null }).ok) {
+    throw new Error("30 m is still with the street");
+  }
+  const whiteRow = judgeRoadmapRow({ look: "EL_RobAction@X", mesh: "white", distanceM: 18, menu: null });
+  if (whiteRow.ok || !whiteRow.failures.includes("mesh is white or missing")) throw new Error("white mesh must fail");
+  const blankMenu = judgeRoadmapRow({
+    look: "EL_OrganizationDeskAction@Roadmap_Org_Desk",
+    mesh: "ok",
+    distanceM: 18,
+    menu: "none",
+  });
+  if (blankMenu.ok || !blankMenu.failures.includes("menu is blank")) throw new Error("blank menu must fail");
+  if (menuActionFromLook("none") || menuActionFromLook("LF_BreachArmAction@Roadmap_Breach_Door")) {
+    throw new Error("world actions are not menus");
+  }
+  if (menuActionFromLook("EL_OrganizationDeskAction@Roadmap_Org_Desk") !== "EL_OrganizationDeskAction@Roadmap_Org_Desk") {
+    throw new Error("desk action opens a menu");
+  }
+  const whitePixels = Buffer.alloc(2 * 2 * 3, 255);
+  if (classifyMesh({ width: 2, height: 2, pixels: whitePixels }) !== "white") throw new Error("white pixels");
+  if (classifyMesh(decodePng(encodePng(2, 2, whitePixels))) !== "white") throw new Error("white png");
+  if (classifyMesh(decodeBmp(syntheticBmp())) !== "ok") throw new Error("colored bmp must not be white");
+  if (classifyMeshFile("") !== "missing") throw new Error("missing shot");
+  const camera = rowCamera([
+    { x: 228, y: 0, z: 120 },
+    { x: 372, y: 0, z: 122 },
+  ]);
+  if (camera.oz < 40 || camera.oy < 18) throw new Error("row camera must step back and up");
+  const placed = loadPlaced(ROOT).filter((site) => site.name.startsWith("Roadmap_"));
+  if (!placed.some((site) => site.name === "Roadmap_Breach_Charge")) throw new Error("charge is part of the walk");
+  const cash = placed.find((site) => site.name === "Roadmap_Bank_Bag_Cash");
+  if (!cash || cash.x !== 246 || cash.z !== 122) throw new Error("bag cash world position");
+  if (roadmapSites(ROOT).length < 12) throw new Error("roadmap walk is short");
+  const page = renderRoadmapReport({
+    wide: { src: "shots/roadmap-row.png", mesh: "ok" },
+    rows: street,
+    note: "selftest",
+  });
+  if (!page.includes("shots/roadmap-row.png") || !page.includes("Roadmap_Far") || !page.includes("look offers no interaction")) {
+    throw new Error("report page must put the picture beside the text");
+  }
+  const farArticle = page.split("<article").find((part) => part.includes("Roadmap_Far"));
+  const emptyArticle = page.split("<article").find((part) => part.includes("Roadmap_B"));
+  if (!farArticle || !farArticle.includes("shots/Roadmap_Far.png") || !farArticle.includes("more than 30 m from the rest of the street")) {
+    throw new Error("80 m picture must sit beside its failure");
+  }
+  if (!emptyArticle || !emptyArticle.includes("shots/Roadmap_B.png") || !emptyArticle.includes("look offers no interaction")) {
+    throw new Error("empty look picture must sit beside its failure");
+  }
   console.log("selftest ok");
   return 0;
 }
@@ -600,6 +673,7 @@ function usage() {
   node agent-box/harness.mjs shot world <name> [x y z]
   node agent-box/harness.mjs flow <name>
   node agent-box/harness.mjs chains [--run]
+  node agent-box/harness.mjs report roadmap
   node agent-box/harness.mjs pillar script [--run]
 
 Pillars
@@ -697,6 +771,23 @@ function main(argv) {
       const played = runFlow(readFlow(rest[0]));
       for (const line of played.lines) console.log(line);
       return played.code;
+    }
+    if (cmd === "report") {
+      if (rest[0] !== "roadmap") throw new Error("report roadmap");
+      return runRoadmapReport({
+        root: ROOT,
+        sites: () => roadmapSites(ROOT),
+        stand: (entityName) => sendCommand({ verb: "stand", entityName }),
+        look: () => sendCommand({ verb: "look" }),
+        ui: () => sendCommand({ verb: "ui" }),
+        use: (className, entityName) => sendCommand({ verb: "use", className, entityName }),
+        input: (action) => sendCommand({ verb: "input", action }),
+        captureWorld: (spec) => sendCommand({ verb: "capture", mode: "world", ...spec }, 25000),
+        captureUi: (name) => sendCommand({ verb: "capture", mode: "ui", name }, 25000),
+        resolve: (result) => resolveCapture(result.detail),
+        pause,
+        log: (line) => console.log(line),
+      });
     }
     if (cmd === "pillar" && rest[0] === "script") {
       const result = runScriptPillar(rest.includes("--run"));

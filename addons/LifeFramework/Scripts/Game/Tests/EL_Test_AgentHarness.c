@@ -34,6 +34,15 @@ class EL_Test_AgentHarness : EL_Test
 		ctx.EqualFloat(128, cmd.PosX, 0.01, "capture x");
 		ctx.EqualFloat(1, cmd.PosY, 0.01, "capture y");
 		ctx.EqualFloat(133, cmd.PosZ, 0.01, "capture z");
+		ctx.False(cmd.HasCameraOffset, "close shot keeps the default camera");
+
+		ctx.False(EL_AgentCommand.Parse("15 capture world roadmap_row 300 1 121 0 40", cmd), "offset needs three numbers");
+		ctx.EqualStr("need_offset", cmd.Error, "short offset error");
+		ctx.True(EL_AgentCommand.Parse("15 capture world roadmap_row 300 1 121 0 40 90", cmd), "wide capture parses");
+		ctx.True(cmd.HasCameraOffset, "wide offset is set");
+		ctx.EqualFloat(0, cmd.CamX, 0.01, "offset x");
+		ctx.EqualFloat(40, cmd.CamY, 0.01, "offset y");
+		ctx.EqualFloat(90, cmd.CamZ, 0.01, "offset z");
 
 		ctx.True(EL_AgentCommand.Parse("6 open DebugMenu show", cmd), "force-open parses");
 		ctx.EqualStr("show", cmd.Arg2, "open mode");
