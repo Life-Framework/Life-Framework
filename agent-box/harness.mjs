@@ -17,7 +17,7 @@ import { fileURLToPath } from "node:url";
 import { bmpFileToPng, classifyMesh, classifyMeshFile, decodeBmp, decodePng, encodePng, syntheticBmp } from "./bmp.mjs";
 import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads, loadPlaced } from "./layers.mjs";
-import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, selectRoadmapSites } from "./report.mjs";
+import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, selectRoadmapSites, siteLook, siteShotOffset } from "./report.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -696,6 +696,24 @@ function selftest() {
     throw new Error("entity 80 m away must fail");
   }
   if (!byName.Roadmap_A.ok) throw new Error("a close site with an interaction must pass");
+  const selfActions = judgeRoadmapRow({
+    name: "Roadmap_Garage",
+    look: "SCR_LootDeadBodyAction,EL_ConfiscateAction",
+    mesh: "ok",
+    distanceM: 18,
+    menu: null,
+  });
+  if (selfActions.ok || !selfActions.failures.includes("look offers no interaction")) {
+    throw new Error("the character's own actions are not the site");
+  }
+  if (siteLook("Roadmap_Garage", "EL_VehicleStoreAction@Roadmap_Garage,SCR_LootDeadBodyAction") !== "EL_VehicleStoreAction@Roadmap_Garage") {
+    throw new Error("a named site keeps only its own action");
+  }
+  const garageShot = siteShotOffset("Roadmap_Garage");
+  const carShot = siteShotOffset("Roadmap_Escort_Car");
+  if (!garageShot || garageShot.oz >= 0 || !carShot || carShot.oz >= 0) {
+    throw new Error("the new row is photographed from the open side");
+  }
   if (!judgeRoadmapRow({ look: "EL_RobAction@X", mesh: "ok", distanceM: 30, menu: null }).ok) {
     throw new Error("30 m is still with the street");
   }
@@ -869,7 +887,7 @@ function selftest() {
   if (wideStreet.oz <= 0) throw new Error("the release street wide shot stays on +Z");
   const placedGarage = loadPlaced(ROOT).find((site) => site.name === "Roadmap_Garage");
   const placedCar = loadPlaced(ROOT).find((site) => site.name === "Roadmap_Escort_Car");
-  if (!placedGarage || placedGarage.z !== 108 || placedGarage.x !== 186) throw new Error("garage row is at 186 0 108");
+  if (!placedGarage || placedGarage.z !== 102.1 || placedGarage.x !== 186) throw new Error("garage use point is at 186 0 102.1");
   if (!placedCar || placedCar.z !== 108 || placedCar.x !== 204) throw new Error("escort car is at 204 0 108");
   const release = loadPlaced(ROOT).filter((site) => site.name.startsWith("Roadmap_") && site.z === 120);
   const releaseX = release.map((site) => site.x);

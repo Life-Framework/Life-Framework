@@ -440,7 +440,8 @@
   is refused and logged. Early release stays refused. A reconnect keeps the
   remaining sentence through `Export` / `Apply`. DebugWorld places
   `Roadmap_Escort_Car` at `204 0 108` on `Roadmap.layer`, the police M151 with
-  `LF_JailPutInVehicleAction`. The release street stays at Z=120. (verified 2026-10-11)
+  `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
+  still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
@@ -609,7 +610,7 @@
 - ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing.
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
-- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places it as `Roadmap_Garage` at `186 0 108` on `Roadmap.layer`, with store and retrieve. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
+- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `186 0 102.1` on `Roadmap.layer`, with store and retrieve. The shell sits 5.9 m north of that point, so the player stands outside the wall. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
 - ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
 
 ## UI / Layouts / Localization
@@ -672,8 +673,8 @@
   `222 0 120`, the convoy drop at `225 0 120`, the job depot at `228 0 120`,
   the job drop at `231 0 120`, the taxi pad at `234 0 120`, the fuel can at
   `237 0 120`, the S105 at `240 0 124`, and the vehicle lot at `243 0 120`.
-  The Z=108 row is `Roadmap_Garage` at `186 0 108` and `Roadmap_Escort_Car`
-  at `204 0 108`. The Z=120 street is not moved.
+  The second row is `Roadmap_Garage` at `186 0 102.1` and `Roadmap_Escort_Car`
+  at `204 0 108`. The garage shell is north of its use point. The Z=120 street is not moved.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →

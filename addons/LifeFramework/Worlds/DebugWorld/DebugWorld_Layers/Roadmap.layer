@@ -771,7 +771,7 @@ GenericEntity Roadmap_Vehicle_Lot {
  Flags 0x403 0
  coords 243 0 120
 }
-GenericEntity Roadmap_Garage : "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et" {
+GenericEntity Roadmap_Garage {
  components {
   EL_VehicleGarageComponent "{A1C1080A00000001}" {
   }
@@ -782,8 +782,7 @@ GenericEntity Roadmap_Garage : "{A548C1C5370D0734}Prefabs/Structures/Houses/Gara
      Position PointInfo "{A1C1080A00000004}" {
       Offset 0 1.2 0
      }
-     Radius 4
-     Height 3
+     Radius 2.5
     }
    }
    additionalActions {
@@ -809,7 +808,12 @@ GenericEntity Roadmap_Garage : "{A548C1C5370D0734}Prefabs/Structures/Houses/Gara
    Enabled 1
   }
  }
- coords 186 0 108
+ coords 186 0 102.1
+ {
+  GenericEntity : "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et" {
+   coords 0 0 5.9
+  }
+ }
 }
 GenericEntity Roadmap_Escort_Car : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
  components {

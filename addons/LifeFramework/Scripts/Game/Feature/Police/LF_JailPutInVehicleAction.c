@@ -33,13 +33,16 @@ class LF_JailPutInVehicleAction : ScriptedUserAction
 		if (!GetOwner() || !user)
 			return false;
 
-		return EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(user));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
 		if (!CanBeShownScript(user))
+			return false;
+
+		if (!EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(user)))
 		{
 			SetCannotPerformReason("#EL-Jail_NotOfficer");
 			return false;

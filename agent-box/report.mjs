@@ -64,9 +64,32 @@ export function menuActionFromLook(detail) {
   return "";
 }
 
+// The character's own loot and confiscate actions have no site name. A site
+// passes only when look names that site.
+export function siteLook(name, look) {
+  const text = (look ?? "").trim();
+  if (!text || text === "none") return "";
+  if (!name) return text;
+  const hits = [];
+  for (const part of text.split(",")) {
+    const hit = part.trim();
+    const at = hit.lastIndexOf("@");
+    if (at >= 0 && hit.slice(at + 1) === name) hits.push(hit);
+  }
+  return hits.join(",");
+}
+
+// Close pictures stand on the open side of the Z=108 row. The garage shell
+// sits north of its use point, and the escort car is photographed from behind.
+export function siteShotOffset(name) {
+  if (name === "Roadmap_Garage") return { ox: 0, oy: 1.6, oz: -4 };
+  if (name === "Roadmap_Escort_Car") return { ox: 0, oy: 1.4, oz: -4 };
+  return null;
+}
+
 export function judgeRoadmapRow(row) {
   const failures = [];
-  const look = (row.look ?? "").trim();
+  const look = siteLook(row.name, row.look);
   if (!look || look === "none") failures.push("look offers no interaction");
   if (row.menu != null) {
     const menu = String(row.menu).trim();
@@ -321,7 +344,14 @@ export function runRoadmapReport(deps) {
           look = deps.look();
         }
         row.look = lookText(look);
-        const shot = deps.captureWorld({ name: site.name, x: site.x, y: site.y, z: site.z });
+        const shotSpec = { name: site.name, x: site.x, y: site.y, z: site.z };
+        const offset = siteShotOffset(site.name);
+        if (offset) {
+          shotSpec.ox = offset.ox;
+          shotSpec.oy = offset.oy;
+          shotSpec.oz = offset.oz;
+        }
+        const shot = deps.captureWorld(shotSpec);
         if (sessionDown(shot)) {
           playDown = true;
           row.note = "no_session";
