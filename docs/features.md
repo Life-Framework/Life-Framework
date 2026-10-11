@@ -707,8 +707,10 @@
 - ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
   alone. A world shot teleports the character to the camera offset (default
   `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
-  player view. `SetCamera` does not move that view. A filtered row's wide shot
-  stands on the side away from the rest of the street. If the new PNG matches the
+  player view. That view faces -Z, so a picture stands on the +Z side of
+  its target. The pose is applied again 700 ms later so gravity does not drop
+  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
+  stands just north of that row when the street is further north. If the new PNG matches the
   previous PNG, `report roadmap` records `camera_stuck` once and stops.
   `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look
   returns an action. Any other white mesh fails. Menu shots use `shot ui`; the

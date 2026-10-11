@@ -711,8 +711,8 @@ function selftest() {
   }
   const garageShot = siteShotOffset("Roadmap_Garage");
   const carShot = siteShotOffset("Roadmap_Escort_Car");
-  if (!garageShot || garageShot.oz >= 0 || !carShot || carShot.oz >= 0) {
-    throw new Error("the new row is photographed from the open side");
+  if (!garageShot || garageShot.oz <= 0 || !carShot || carShot.oz <= 0) {
+    throw new Error("the player camera faces -Z, so the row is photographed from the north");
   }
   if (!judgeRoadmapRow({ look: "EL_RobAction@X", mesh: "ok", distanceM: 30, menu: null }).ok) {
     throw new Error("30 m is still with the street");
@@ -816,7 +816,7 @@ function selftest() {
   let stuckShots = 0;
   const stuckCode = runRoadmapReport({
     root: scratch,
-    names: ["Roadmap_Garage", "Roadmap_Escort_Car"],
+    names: ["Roadmap_Garage", "Roadmap_Escort_Car", "Roadmap_Jail_Door"],
     sites: () => [
       { name: "Roadmap_Garage", layer: "Roadmap.layer", x: 186, y: 0, z: 108 },
       { name: "Roadmap_Escort_Car", layer: "Roadmap.layer", x: 204, y: 0, z: 108 },
@@ -839,7 +839,7 @@ function selftest() {
   if (stuckShots !== 2) throw new Error(`camera_stuck must stop after the repeated shot, saw ${stuckShots}`);
   if (stuckLogs.filter((line) => line === "camera_stuck").length !== 1) throw new Error(stuckLogs.join(" | "));
   if (stuckCode !== 1) throw new Error("camera_stuck must fail the report");
-  if (stuckLogs.some((line) => line.startsWith("pass Roadmap_Escort_Car") || line.startsWith("fail Roadmap_Escort_Car"))) {
+  if (stuckLogs.some((line) => line.startsWith("pass Roadmap_Jail_Door") || line.startsWith("fail Roadmap_Jail_Door"))) {
     throw new Error("camera_stuck must not walk the next site");
   }
   const filterLogs = [];
@@ -879,7 +879,9 @@ function selftest() {
       { name: "Roadmap_Breach_Door", x: 186, y: 0, z: 120 },
     ],
   );
-  if (wide108.z + wide108.oz >= 108) throw new Error("Z=108 wide shot must stand on the open side of that row");
+  if (wide108.oz <= 0 || wide108.z + wide108.oz <= 108) {
+    throw new Error("Z=108 wide shot stands north of that row, the way the player camera faces");
+  }
   const wideStreet = rowCamera([
     { name: "Roadmap_Breach_Door", x: 186, y: 0, z: 120 },
     { name: "Roadmap_Vehicle_Lot", x: 243, y: 0, z: 120 },

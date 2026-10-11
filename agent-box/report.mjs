@@ -79,11 +79,11 @@ export function siteLook(name, look) {
   return hits.join(",");
 }
 
-// Close pictures stand on the open side of the Z=108 row. The garage shell
-// sits north of its use point, and the escort car is photographed from behind.
+// The player camera faces -Z. Close pictures stand on the +Z side of the
+// Z=108 row so that view looks south at the shell and the car.
 export function siteShotOffset(name) {
-  if (name === "Roadmap_Garage") return { ox: 0, oy: 1.6, oz: -4 };
-  if (name === "Roadmap_Escort_Car") return { ox: 0, oy: 1.4, oz: -4 };
+  if (name === "Roadmap_Garage") return { ox: 8, oy: 1.6, oz: 14 };
+  if (name === "Roadmap_Escort_Car") return { ox: 0, oy: 1.6, oz: 8 };
   return null;
 }
 
@@ -131,9 +131,10 @@ export function rowCamera(sites, crowd) {
   const up = Math.max(18, span * 0.35);
   const alongX = spanX >= spanZ;
   let ox = alongX ? 0 : back;
+  let oy = up;
   let oz = alongX ? back : 0;
-  // A filtered row stands on the open side, so the rest of the street is not
-  // between the player and the sites being photographed.
+  // The player camera faces -Z. A row south of the street is photographed
+  // from the north, just short of that street, so the street stays behind the camera.
   if (crowd && crowd.length) {
     const names = new Set(sites.map((site) => site.name));
     let sum = 0;
@@ -146,8 +147,9 @@ export function rowCamera(sites, crowd) {
     if (count) {
       const row = alongX ? (minZ + maxZ) / 2 : (minX + maxX) / 2;
       if (sum / count > row + 1) {
-        if (alongX) oz = -back;
-        else ox = -back;
+        if (alongX) oz = Math.min(back, 12);
+        else ox = Math.min(back, 12);
+        oy = Math.min(up, 3);
       }
     }
   }
@@ -156,7 +158,7 @@ export function rowCamera(sites, crowd) {
     y: y / sites.length,
     z: (minZ + maxZ) / 2,
     ox,
-    oy: up,
+    oy,
     oz,
   };
 }
@@ -281,7 +283,9 @@ export function runRoadmapReport(deps) {
   }
 
   const wide = { src: "", mesh: "missing", detail: "" };
-  if (sites.length) {
+  const rows = [];
+  function takeWide() {
+    if (!sites.length || cameraStuck || playDown) return;
     const camera = rowCamera(sites, catalog);
     try {
       const shot = deps.captureWorld({
@@ -307,7 +311,6 @@ export function runRoadmapReport(deps) {
     }
   }
 
-  const rows = [];
   if (!playDown && !cameraStuck) {
     for (const site of sites) {
       const row = {
@@ -339,9 +342,27 @@ export function runRoadmapReport(deps) {
           rows.push(row);
           break;
         }
-        if (stood.status === "ok" && look.status === "ok" && (look.detail || "").trim() === "none") {
+        // Stand replicates after the wide shot. The character's own actions
+        // show up first; wait until this site is in the list.
+        let waits = 0;
+        while (
+          stood.status === "ok" &&
+          look.status === "ok" &&
+          !siteLook(site.name, look.detail) &&
+          waits < 4
+        ) {
           deps.pause(700);
           look = deps.look();
+          if (sessionDown(look)) {
+            playDown = true;
+            break;
+          }
+          waits++;
+        }
+        if (playDown) {
+          row.note = "no_session";
+          rows.push(row);
+          break;
         }
         row.look = lookText(look);
         const shotSpec = { name: site.name, x: site.x, y: site.y, z: site.z };
@@ -399,6 +420,8 @@ export function runRoadmapReport(deps) {
       if (row.note) deps.log(`${site.name}: ${row.note}`);
     }
   }
+
+  takeWide();
 
   const judged = judgeStreet(rows);
   const html = renderRoadmapReport({
