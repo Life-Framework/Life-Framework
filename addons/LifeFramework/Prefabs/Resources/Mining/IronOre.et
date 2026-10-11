@@ -38,6 +38,7 @@ GenericEntity {
       Name "Mine Iron"
      }
      Duration 5
+     m_sNodeId "iron"
      m_GatherItemPrefab "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et"
      m_GatherAmount 1
      m_GatherAmountMax 5

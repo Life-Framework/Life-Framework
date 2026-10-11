@@ -81,6 +81,7 @@ $grp GenericEntity : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" 
        Name "Gather Tomatoes"
        Description "Pick ripe tomatoes"
       }
+      m_sNodeId "tomato"
       m_GatherItemPrefab "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et"
       m_GatherAmount 1
      }

@@ -1,6 +1,8 @@
 class EL_JobManager : Managed
 {
 	protected static ref EL_JobManager s_Instance;
+	protected ref map<string, int> m_mScopeGatherRewards;
+	protected ref map<string, int> m_mScopeProcessRewards;
 
 	//------------------------------------------------------------------------------------------------
 	static EL_JobManager GetInstance()
@@ -15,6 +17,8 @@ class EL_JobManager : Managed
 	void EL_JobManager()
 	{
 		s_Instance = this;
+		m_mScopeGatherRewards = new map<string, int>();
+		m_mScopeProcessRewards = new map<string, int>();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -46,17 +50,64 @@ class EL_JobManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected int GetGatherReward(ResourceName item)
+	//! A job scope may pay for one prefab. Until it does, gather and process
+	//! mint nothing and the player sells the product to a trader.
+	void SetScopeReward(ResourceName item, int gatherReward, int processReward)
 	{
-		// No direct rewards for gathering - sell to traders instead
-		return 0;
+		if (!item || item.IsEmpty())
+			return;
+
+		if (!m_mScopeGatherRewards)
+			m_mScopeGatherRewards = new map<string, int>();
+		if (!m_mScopeProcessRewards)
+			m_mScopeProcessRewards = new map<string, int>();
+
+		string key = item;
+		if (gatherReward > 0)
+			m_mScopeGatherRewards.Set(key, gatherReward);
+		else if (m_mScopeGatherRewards.Contains(key))
+			m_mScopeGatherRewards.Remove(key);
+
+		if (processReward > 0)
+			m_mScopeProcessRewards.Set(key, processReward);
+		else if (m_mScopeProcessRewards.Contains(key))
+			m_mScopeProcessRewards.Remove(key);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected int GetProcessReward(ResourceName item)
+	void ClearScopeRewards()
 	{
-		// No direct rewards for processing - sell to traders instead
-		return 0;
+		m_mScopeGatherRewards = new map<string, int>();
+		m_mScopeProcessRewards = new map<string, int>();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetGatherReward(ResourceName item)
+	{
+		return ScopeReward(m_mScopeGatherRewards, item);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetProcessReward(ResourceName item)
+	{
+		return ScopeReward(m_mScopeProcessRewards, item);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int ScopeReward(map<string, int> rewards, ResourceName item)
+	{
+		if (!rewards || !item || item.IsEmpty())
+			return 0;
+
+		string key = item;
+		int reward;
+		if (!rewards.Find(key, reward))
+			return 0;
+
+		if (reward < 0)
+			return 0;
+
+		return reward;
 	}
 
 	//------------------------------------------------------------------------------------------------

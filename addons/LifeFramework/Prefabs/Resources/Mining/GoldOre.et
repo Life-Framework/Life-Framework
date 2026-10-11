@@ -38,6 +38,7 @@ GenericEntity {
       Name "Mine Gold"
      }
      Duration 5
+     m_sNodeId "gold"
      m_GatherItemPrefab "{8F81BD0BF343CF49}Prefabs/Resources/Mining/GoldNugget.et"
      m_GatherAmount 1
      m_GatherAmountMax 3

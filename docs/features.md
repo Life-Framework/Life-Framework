@@ -222,6 +222,9 @@
 - ✅ The server applies a gather when no peer owns the prop, and a grant that
   adds nothing is an error log (verified 2026-10-10). A sandbag the inventory
   rejects, or a nugget with no usable slot, used to look like a successful use.
+- ✅ A node id copies tool, yield, and cooldown from `ResourceChains.conf`.
+  A missing row or a prefab that does not resolve logs `EL_Debug.Error` and
+  grants nothing (verified 2026-10-11). The action stays on the node.
 
 ### `EL_ProcessAction` — `Feature/Processing/EL_ProcessAction.c`
 - ✅ Recipe: consume all `m_aProcessingInputs`, produce all
@@ -230,6 +233,26 @@
   empty input/output lists, missing inputs, and non-positive amounts are
   rejected before inventory mutation. Regression coverage is in
   `EL_Test_ActionGuards`.
+- ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
+  empty recipe or a prefab that does not resolve logs `EL_Debug.Error` and
+  returns before inventory changes (verified 2026-10-11).
+
+### `EL_ResourceChainCatalog` — `Feature/Resources/EL_ResourceChainCatalog.c`
+- ✅ `Configs/Resources/ResourceChains.conf` names each gather node's tool,
+  yield, and cooldown, and each machine's inputs and outputs (verified
+  2026-10-11). Yields are item prefabs. Gather and process do not mint cash.
+  The playable iron, copper, and gold rows name the pickaxe. The log row does
+  not: the axe stays on `CuttableTree_Base`, and `LogPile_Debug` grants a log
+  with no held tool so the sawmill still runs before the axe pickup.
+- ✅ MainWorld's St Philippe farm (`Area_StPhillipe_AppleFarm.layer`) places
+  the apple trees, the juicer, and a juice trader (15 cash, matching the
+  DebugWorld juice crate), plus iron ore, a pickaxe, the furnace, and an
+  iron-bar trader (45 cash, the ShopPrices iron-bar sell price). That iron
+  node requires the pickaxe in hand. DebugWorld keeps Apple, Plum, Tomato,
+  Logging, Mining, Cement, Gravel, and Sand. `IronOre_Debug` uses
+  `iron-debug` (4 nuggets, no held tool) so one gather still feeds both
+  furnaces. `GoldOre_Debug` and `CopperOre_Debug` use the tool-free debug
+  rows with the prefab yields.
 
 ### `EL_DestructibleResourceComponent` + `EL_DestructibleResourceHitZone` — `Feature/Resources/`
 - ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit.
@@ -256,10 +279,13 @@
   convention-only, no SaveData pair.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
-- ✅ Singleton reward funnel; currently `GetGatherReward`/`GetProcessReward`
-  return 0 (sell to traders instead). Dead-but-safe.
-- ⚠️ `GiveReward` pays cash when reached (verified 2026-08-30) but the funnel
-  is unreachable today; `#EL-Job_Earned` misused as a format string (no `%1`).
+- ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
+  `SetScopeReward` for that prefab (verified 2026-10-11). Gather and process
+  mint nothing on their own. The player sells the product to a trader. A
+  scope payout, when one exists, is cash via `EL_MoneyUtils.GiveCash`. The
+  ATM stays the only cash-to-account boundary.
+- ✅ `#EL-Job_Earned` is `Earned $%1 for work!` and `GiveReward` passes the
+  paid amount through `WidgetManager.Translate` (verified 2026-10-11).
 
 ### `EL_PlayerLevelComponent` — `Feature/Level/EL_PlayerLevelComponent.c`
 - ✅ Level/XP/skill-point state; `GetExperienceForNextLevel = level * 100`;

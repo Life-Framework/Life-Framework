@@ -1,5 +1,8 @@
 class EL_GatherAction : ScriptedUserAction
 {
+	[Attribute("", UIWidgets.EditBox, "Chain node id. When set, tool, yield, and cooldown come from ResourceChains.conf", category: "General")]
+	protected string m_sNodeId;
+
 	[Attribute(desc: "Prefab what item is gathered", category: "General")]
 	protected ResourceName m_GatherItemPrefab;
 
@@ -31,6 +34,8 @@ class EL_GatherAction : ScriptedUserAction
 		if (!pOwnerEntity || !EL_NetworkUtils.ShouldApplyAction(pOwnerEntity)) return;
 		if (!EL_NetworkUtils.IsOwner(pOwnerEntity))
 			EL_Debug.Warn("Gathering", string.Format("gather applied without replication owner on %1", pOwnerEntity.GetName()));
+		if (!ApplyNodeFromCatalog())
+			return;
 		if (!IsGatherRequestConfigured(m_GatherItemPrefab, m_GatherAmount))
 		{
 			EL_Debug.Error("Gathering", "rejected gather: item prefab or amount is not configured");
@@ -100,6 +105,9 @@ class EL_GatherAction : ScriptedUserAction
 	// If so, check if its in the users inventory/hands depending on settings set
 	override bool CanBePerformedScript(IEntity user)
   	{
+		if (!ApplyNodeFromCatalog())
+			return false;
+
 		if (!IsGatherRequestConfigured(m_GatherItemPrefab, m_GatherAmount))
 			return false;
 
@@ -166,6 +174,33 @@ class EL_GatherAction : ScriptedUserAction
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! Copies tool, yield, and cooldown from the chain config when this action
+	//! names a node. A missing or broken row logs and leaves the action unable
+	//! to grant anything. An empty id keeps the prefab attributes.
+	protected bool ApplyNodeFromCatalog()
+	{
+		if (m_sNodeId.IsEmpty())
+			return true;
+
+		EL_ResourceNodeDef node = EL_ResourceChainCatalog.FindNode(m_sNodeId);
+		if (!EL_ResourceChainCatalog.IsNodeUsable(node))
+		{
+			EL_Debug.Error("Gathering", string.Format("rejected gather: node %1 is missing or its item prefab does not resolve", m_sNodeId));
+			m_GatherItemPrefab = ResourceName.Empty;
+			m_GatherAmount = 0;
+			return false;
+		}
+
+		m_GatherItemPrefab = node.m_ItemPrefab;
+		m_GatherAmount = node.m_iYield;
+		m_GatherToolRequirement = node.m_ToolPrefab;
+		m_GatherAmountMax = node.m_iMaxGathers;
+		m_GatherTimeout = node.m_fCooldownMs;
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

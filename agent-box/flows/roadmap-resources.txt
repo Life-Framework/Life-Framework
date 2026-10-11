@@ -1,0 +1,4 @@
+# Release resource machines already placed on the chain layers.
+shot world AppleProcessor
+shot world Furnace
+shot world Sawmill_Debug
