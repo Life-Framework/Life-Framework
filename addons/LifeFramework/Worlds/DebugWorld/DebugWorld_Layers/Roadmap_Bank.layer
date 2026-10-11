@@ -1,0 +1,55 @@
+GenericEntity Roadmap_Bank_Vault : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  EL_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   additionalActions {
+    LF_BankRobAction "{7C31A9E04B18D6A1}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{7C31A9E04B18D6A2}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_BreachTargetComponent "{7C31A9E04B18D6A3}" {
+   m_sTargetId "Roadmap_Bank_Vault"
+   m_fFuseSeconds 0
+  }
+  LF_BankVaultComponent "{7C31A9E04B18D6A4}" {
+   m_sVaultId "Roadmap_Bank_Vault"
+   m_sBagEntity "Roadmap_Bank_Bag"
+   m_iBagCount 1
+   m_iCashPerBag 500
+   m_fCooldownSeconds 60
+   m_iMinPoliceOnDuty 0
+   m_fFuseSeconds 0
+  }
+ }
+ coords 246 0 120
+}
+GenericEntity Roadmap_Bank_Bag : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
+ components {
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    SCR_PickUpItemAction "{7C31A9E04B18D6A5}" {
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 246 0 122
+ {
+  GenericEntity Roadmap_Bank_Bag_Cash : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
+   coords 0 0.15 0
+  }
+ }
+}

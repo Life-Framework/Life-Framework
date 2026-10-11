@@ -306,6 +306,20 @@
   `Roadmap_Breach_Charge` on `Roadmap_Breach.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
 
+### `LF_Bank` — `Feature/Crime/LF_Bank.c`
+- ✅ A vault calls `LF_Breach.Arm`, then spills a config number of bags of
+  MoneyStack cash (verified 2026-10-11). The haul never deposits or withdraws
+  `EL_BankAccount`. Civilian-only, cooldown, and minimum police on duty use
+  the same comparisons as `EL_RobAction`. A second breach inside the cooldown
+  spawns nothing. Over-capacity requests are cut to the configured bag count.
+  Carry leaves the cash on the bag; dropping it leaves that cash in the world.
+  `Export` / `Apply` restore the ground bags and do not write a bank balance.
+  DebugWorld places `Roadmap_Bank_Vault` at 246 0 120 and `Roadmap_Bank_Bag`
+  at 246 0 122 on `Roadmap_Bank.layer`. The bag is
+  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
+  mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
+  `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`.
+
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
   gates; raises wanted level (+1/+2/+3); notifies police. DebugWorld's three
