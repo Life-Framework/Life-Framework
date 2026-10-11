@@ -90,6 +90,23 @@ export function buildLine(id, spec) {
     if (mode === "toggle") return `${id} open DebugMenu`;
     return `${id} open DebugMenu ${mode}`;
   }
+  if (spec.verb === "kit") {
+    const step = token(spec.step, "kit step");
+    if (step === "show" || step === "hide") return `${id} kit ${step}`;
+    if (step === "line") return `${id} kit line ${token(spec.part, "part")} ${token(spec.text, "text")}`;
+    if (step === "status") {
+      return `${id} kit status ${token(spec.part, "part")} ${token(spec.label, "label")} ${token(spec.statusText, "status")} ${token(spec.action, "action")}`;
+    }
+    if (step === "quantity") {
+      const total = Number(spec.total);
+      const take = Number(spec.take);
+      if (!Number.isInteger(total) || !Number.isInteger(take)) {
+        throw new Error("quantity needs integer total and take");
+      }
+      return `${id} kit quantity ${token(spec.part, "part")} ${total} ${take}`;
+    }
+    throw new Error(`kit step must be show, hide, line, status, or quantity: ${step}`);
+  }
   if (spec.verb === "capture") {
     const name = token(spec.name, "capture name");
     if (spec.mode === "ui") return `${id} capture ui ${name}`;
@@ -420,6 +437,7 @@ export function runFlow(lines) {
     } else if (verb === "use") result = sendCommand({ verb: "use", className: rest[0], entityName: rest[1] });
     else if (verb === "input") result = sendCommand({ verb: "input", action: rest[0] });
     else if (verb === "open") result = sendCommand({ verb: "open", menu: rest[0], mode: rest[1] });
+    else if (verb === "kit") result = sendKit(rest);
     else if (verb === "layer") {
       const played = playLayer(rest[0], rest[1]);
       out.push(...played.lines);
@@ -473,6 +491,63 @@ const PRESS = {
   WheelDown: { verb: "interact", step: "prev" },
   F10: { verb: "open", menu: "DebugMenu" },
 };
+
+function sendKit(rest) {
+  const step = rest[0];
+  if (step === "show" || step === "hide") return sendCommand({ verb: "kit", step });
+  if (step === "line") return sendCommand({ verb: "kit", step, part: rest[1], text: rest[2] });
+  if (step === "status") {
+    return sendCommand({
+      verb: "kit",
+      step,
+      part: rest[1],
+      label: rest[2],
+      statusText: rest[3],
+      action: rest[4],
+    });
+  }
+  if (step === "quantity") {
+    return sendCommand({ verb: "kit", step, part: rest[1], total: rest[2], take: rest[3] });
+  }
+  throw new Error(`kit step must be show, hide, line, status, or quantity: ${step}`);
+}
+
+const KIT_SHOTS = ["kit-sheet", "kit-balance", "kit-status", "kit-keep", "kit-take", "kit-focus"];
+
+function waitForSession(timeoutMs = 120000) {
+  const deadline = Date.now() + timeoutMs;
+  let last = null;
+  while (Date.now() < deadline) {
+    last = sendCommand({ verb: "ui" }, 3000);
+    if (last.status === "ok") return last;
+    pause(1000);
+  }
+  return last;
+}
+
+export function runKit() {
+  const entered = enterPlay();
+  if (entered !== 0) return { code: entered, lines: ["play failed"] };
+  const ready = waitForSession();
+  if (!ready || ready.status !== "ok") {
+    const line = ready && ready.raw ? ready.raw : "no_session";
+    return { code: 1, lines: [line] };
+  }
+  const played = runFlow(readFlow("ui-kit"));
+  const images = played.lines.filter((line) => line.startsWith("image:"));
+  for (const name of KIT_SHOTS) {
+    if (!images.some((line) => line.includes(name))) {
+      played.lines.push(`missing image: ${name}`);
+      played.code = 1;
+    }
+  }
+  const listed = played.lines.some((line) => line.split(" ").slice(2).join(" ").split(",").includes("Button"));
+  if (!listed) {
+    played.lines.push("missing widget: Button");
+    played.code = 1;
+  }
+  return played;
+}
 
 function waitForAction(className, entityName, timeoutMs = 5000) {
   const deadline = Date.now() + timeoutMs;
@@ -572,6 +647,24 @@ function selftest() {
   if (indexed !== "13 click BuyButton 1") throw new Error(indexed);
   const flow = readFlow("ui-debug-menu").filter((line) => line.trim() && !line.trim().startsWith("#"));
   if (!flow.includes("open DebugMenu show") || !flow.includes("shot ui debug_menu")) throw new Error(flow.join("|"));
+  const kitLine = buildLine(21, { verb: "kit", step: "line", part: "Balance", text: "400" });
+  if (kitLine !== "21 kit line Balance 400") throw new Error(kitLine);
+  const kitStatus = buildLine(22, {
+    verb: "kit",
+    step: "status",
+    part: "Status",
+    label: "Warrant",
+    statusText: "Closed",
+    action: "none",
+  });
+  if (kitStatus !== "22 kit status Status Warrant Closed none") throw new Error(kitStatus);
+  const kitTake = buildLine(23, { verb: "kit", step: "quantity", part: "Quantity", total: 5, take: 4 });
+  if (kitTake !== "23 kit quantity Quantity 5 4") throw new Error(kitTake);
+  const kitFlow = readFlow("ui-kit").filter((line) => line.trim() && !line.trim().startsWith("#"));
+  for (const name of ["kit-sheet", "kit-balance", "kit-status", "kit-keep", "kit-take", "kit-focus"]) {
+    if (!kitFlow.some((line) => line.includes(name))) throw new Error(`ui-kit flow missing ${name}`);
+  }
+  if (!kitFlow.includes("kit show") || !kitFlow.includes("kit hide")) throw new Error(kitFlow.join("|"));
   const intake = readFlow("ui-intake").filter((line) => line.trim() && !line.trim().startsWith("#"));
   if (!intake.includes("click CivilianButton") || !intake.includes("click TownButton")) throw new Error(intake.join("|"));
   const chain = checkChains(ROOT);
@@ -669,6 +762,7 @@ function usage() {
   node agent-box/harness.mjs use <ClassName> [EntityName]
   node agent-box/harness.mjs input <MenuAction>
   node agent-box/harness.mjs open DebugMenu
+  node agent-box/harness.mjs kit
   node agent-box/harness.mjs shot ui <name>
   node agent-box/harness.mjs shot world <name> [x y z]
   node agent-box/harness.mjs flow <name>
@@ -680,8 +774,10 @@ Pillars
   script  Logic suite. --run refuses the main checkout (world-editor copy).
   world   Aim the play-mode camera and screenshot that spot.
   ui      Screenshot whatever menu is on screen. Open and navigate it first.
+  kit     Enter play, open the kit sample, and screenshot every state.
 
 Play mode has to be running. Start it with: node agent-box/harness.mjs play
+kit starts play itself.
 `);
 }
 
@@ -695,6 +791,11 @@ function main(argv) {
     }
     if (cmd === "selftest") return selftest();
     if (cmd === "play") return enterPlay();
+    if (cmd === "kit") {
+      const played = runKit();
+      for (const line of played.lines) console.log(line);
+      return played.code;
+    }
     if (cmd === "chains") {
       if (!rest.includes("--run")) {
         const check = checkChains(ROOT);

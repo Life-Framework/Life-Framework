@@ -46,6 +46,8 @@ node agent-box/harness.mjs shot world ATM_Debug
 
 `node agent-box/harness.mjs report roadmap` walks every `Roadmap_` entity, stands where a player would stand, runs `look`, takes a world shot, and writes `agent-box/reports/roadmap.html` with each picture beside that text, plus one wide shot of the row.
 
+`node agent-box/harness.mjs kit` enters play and photographs the UI kit sample: the full sheet, a rewritten balance, a status row with the action hidden, keep and take, and focus on the field. Nothing in the world opens that screen. The flow is `agent-box/flows/ui-kit.txt`.
+
 `play` stops play mode if it is up, opens `Worlds/DebugWorld/DebugWorld.ent`, then enters play mode. It passes this machine's toolchain paths so the Workbench bridge compiles into the open mod.
 
 Named flows are the short version of a pillar. Each file in `agent-box/flows/`
@@ -56,6 +58,7 @@ node agent-box/harness.mjs flow ui-intake
 node agent-box/harness.mjs flow ui-debug-menu
 node agent-box/harness.mjs flow ui-debug-menu-nav
 node agent-box/harness.mjs flow ui-shop
+node agent-box/harness.mjs kit
 node agent-box/harness.mjs flow world-atm
 node agent-box/harness.mjs flow chain-apple
 node agent-box/harness.mjs chains

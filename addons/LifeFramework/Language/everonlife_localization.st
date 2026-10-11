@@ -1983,6 +1983,71 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The convoy failed"
      Comment "Notification when a convoy run fails"
     }
+    CustomStringTableItem "{9E06D8383590F6C7}" {
+     Id "LF-UIKit_SampleTitle"
+     Target_en_us "Field office"
+     Comment "UI kit sample screen title. A 1989 counter, not a desktop app."
+    }
+    CustomStringTableItem "{68605FDBA4C10460}" {
+     Id "LF-UIKit_SampleLine"
+     Target_en_us "Write the name, then file the form at the counter."
+     Comment "UI kit sample body line."
+    }
+    CustomStringTableItem "{F75004C4210A4AB1}" {
+     Id "LF-UIKit_SampleField"
+     Target_en_us "Name"
+     Comment "UI kit sample edit box placeholder."
+    }
+    CustomStringTableItem "{7AEB1C53F8FECFAD}" {
+     Id "LF-UIKit_SampleRow"
+     Target_en_us "Duty roster"
+     Comment "UI kit sample list row."
+    }
+    CustomStringTableItem "{54D943A7D936E1D0}" {
+     Id "LF-UIKit_SampleButton"
+     Target_en_us "File the form"
+     Comment "UI kit sample button."
+    }
+    CustomStringTableItem "{950DC138F92AF1A2}" {
+     Id "LF-UIKit_SampleClose"
+     Target_en_us "Close"
+     Comment "UI kit sample close button."
+    }
+    CustomStringTableItem "{E9907671573AFD76}" {
+     Id "LF-UIKit_SampleBalance"
+     Target_en_us "Balance"
+     Comment "UI kit sample line that a later caller rewrites with a server figure."
+    }
+    CustomStringTableItem "{3332B12FDA94C221}" {
+     Id "LF-UIKit_SampleStatusLabel"
+     Target_en_us "Warrant"
+     Comment "UI kit sample status-row label."
+    }
+    CustomStringTableItem "{81CFDCDC3F645AEA}" {
+     Id "LF-UIKit_SampleStatus"
+     Target_en_us "Open"
+     Comment "UI kit sample status-row status."
+    }
+    CustomStringTableItem "{AE54ADB762D0B6FC}" {
+     Id "LF-UIKit_SampleAction"
+     Target_en_us "Take"
+     Comment "UI kit sample status-row action. The server decides whether it stays."
+    }
+    CustomStringTableItem "{55960B5ABA019A5E}" {
+     Id "LF-UIKit_SampleQuantity"
+     Target_en_us "Split the stack"
+     Comment "UI kit sample quantity label."
+    }
+    CustomStringTableItem "{D820B2BCD7FC410A}" {
+     Id "LF-UIKit_Keep"
+     Target_en_us "Keep %1"
+     Comment "UI kit quantity face for the amount that stays. %1 is the count."
+    }
+    CustomStringTableItem "{7C0A925F60789085}" {
+     Id "LF-UIKit_Take"
+     Target_en_us "Take %1"
+     Comment "UI kit quantity face for the amount that leaves. %1 is the count."
+    }
   }
  }
 }

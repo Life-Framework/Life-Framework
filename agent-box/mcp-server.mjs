@@ -141,7 +141,7 @@ const tools = [
   {
     name: "player_flow",
     description:
-      "Run a named flow from agent-box/flows. A flow is the same steps a player takes: press F, scroll the action list, menu keys, then a UI or world screenshot. Known names include ui-debug-menu, ui-debug-menu-nav, ui-shop, and world-atm.",
+      "Run a named flow from agent-box/flows. A flow is the same steps a player takes: press F, scroll the action list, menu keys, then a UI or world screenshot. Known names include ui-debug-menu, ui-debug-menu-nav, ui-shop, ui-kit, and world-atm. ui-kit photographs the kit sample; node agent-box/harness.mjs kit enters play and runs it.",
     inputSchema: {
       type: "object",
       properties: { name: { type: "string" } },
