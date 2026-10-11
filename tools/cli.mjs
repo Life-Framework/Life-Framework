@@ -900,14 +900,30 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   }
   const ports = wt.portsForRoot(root);
   console.log(`test: worktree ports game=${ports.gamePort} a2s=${ports.a2sPort}`);
-  const res = sh(PWSH, [
-    "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
-    "-Tier", tier,
-    "-BindPort", String(ports.gamePort),
-    "-A2sPort", String(ports.a2sPort),
-  ], { cwd: root, env: toolEnv() });
-  process.stdout.write(res.stdout + res.stderr);
-  return res.status;
+  console.log(`test: the server was started with -bindPort ${ports.gamePort}; a console line that mentions port 2001 is the engine default text; if the boot says Unable to initialize the game, run the same command once more; do not investigate the port`);
+  wt.copyResourceDatabase(root);
+  // Full suites boot one worktree at a time. Tier fast does not take this lock.
+  const lockSuite = tier === "all" || tier === "persistence";
+  if (lockSuite) {
+    try {
+      wt.acquireLock(root, "test", { waitMs: 900000 });
+    } catch (e) {
+      console.log(`FAIL  ${e.message}`);
+      return 1;
+    }
+  }
+  try {
+    const res = sh(PWSH, [
+      "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
+      "-Tier", tier,
+      "-BindPort", String(ports.gamePort),
+      "-A2sPort", String(ports.a2sPort),
+    ], { cwd: root, env: toolEnv() });
+    process.stdout.write(res.stdout + res.stderr);
+    return res.status;
+  } finally {
+    if (lockSuite) wt.releaseLock(root, "test");
+  }
 }
 
 async function cmdDev(tier = "all", root = ROOT, opts = {}) {

@@ -160,15 +160,26 @@ function Get-LogDir {
     Sort-Object Name | Select-Object -Last 1
 }
 
+function ConvertTo-ConsoleText($value) {
+  if ($null -eq $value) { return "" }
+  # Get-Content -Raw returns an array while the log is still open. -join on a
+  # string walks characters, so only join a real array.
+  if ($value -is [System.Array]) { return [string]::Join("`n", $value) }
+  return [string]$value
+}
+
 function Read-Console([string]$dir) {
   if (-not $dir) { return "" }
   $c = Join-Path $dir "console.log"
-  if (Test-Path $c) { return (Get-Content $c -Raw -ErrorAction SilentlyContinue) }
+  if (Test-Path $c) {
+    return (ConvertTo-ConsoleText (Get-Content $c -Raw -ErrorAction SilentlyContinue))
+  }
   return ""
 }
 
 $sw = [Diagnostics.Stopwatch]::StartNew()
 $lastSummary = $null
+$summaryIndexError = $false
 $crashLines = @()
 
 function Read-Crash([string]$dir) {
@@ -191,12 +202,35 @@ while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
   $logDir = Get-LogDir
   $console = Read-Console $logDir.FullName
 
-  if ($console -match '\[ELTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)') {
-    $lastSummary = [pscustomobject]@{
-      Tier = $matches[1]; Passed = [int]$matches[2]; Failed = [int]$matches[3]; Total = [int]$matches[4]
-      LogDir = $logDir.FullName
+  try {
+    $text = ConvertTo-ConsoleText $console
+    $summaryMatch = [regex]::Match($text, '\[ELTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)')
+    if ($summaryMatch.Success) {
+      $at = $summaryMatch.Index
+      $lineStart = 0
+      if ($at -gt 0) {
+        $nl = $text.LastIndexOf("`n", $at - 1)
+        if ($nl -ge 0) { $lineStart = $nl + 1 }
+      }
+      $lineEnd = $text.IndexOf("`n", $at)
+      if ($lineEnd -lt 0) { $lineEnd = $text.Length }
+      $summaryLine = $text.Substring($lineStart, $lineEnd - $lineStart).TrimEnd("`r")
+      Write-Host $summaryLine
+      $lastSummary = [pscustomobject]@{
+        Tier = $summaryMatch.Groups[1].Value
+        Passed = [int]$summaryMatch.Groups[2].Value
+        Failed = [int]$summaryMatch.Groups[3].Value
+        Total = [int]$summaryMatch.Groups[4].Value
+        LogDir = $logDir.FullName
+      }
+      break
     }
-    break
+  } catch {
+    if ($_.Exception.Message -match 'Cannot index into a null array') {
+      $summaryIndexError = $true
+      break
+    }
+    throw
   }
 
   $crashes = Read-Crash $logDir.FullName
@@ -227,6 +261,15 @@ if ($alive) {
 }
 
 $elapsed = [int]$sw.Elapsed.TotalSeconds
+
+if ($summaryIndexError) {
+  $logFile = "(no console.log yet)"
+  if ($logDir -and $logDir.FullName) { $logFile = Join-Path $logDir.FullName "console.log" }
+  Write-Host "test-e2e: Cannot index into a null array"
+  Write-Host "test-e2e: log $logFile"
+  Write-Host "test-e2e: grep console.log for [ELTEST] SUMMARY. Do not read cli.mjs or the server executable."
+  exit 2
+}
 
 # ---- verdict ---------------------------------------------------------------
 
@@ -270,8 +313,10 @@ if ($crashLines.Count -gt 0) {
 
 if (-not $alive) {
   Write-Host "test-e2e: server exited early without a SUMMARY verdict"
+  Write-Host "test-e2e: grep console.log for [ELTEST] SUMMARY. Do not read cli.mjs or the server executable."
   exit 2
 }
 
 Write-Host "test-e2e: NO VERDICT - timed out after ${TimeoutSeconds}s without an ELTEST SUMMARY (log $((Get-LogDir).FullName))"
+Write-Host "test-e2e: grep console.log for [ELTEST] SUMMARY. Do not read cli.mjs or the server executable."
 exit 2

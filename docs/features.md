@@ -306,6 +306,20 @@
   `Roadmap_Breach_Charge` on `Roadmap_Breach.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
 
+### `LF_Bank` — `Feature/Crime/LF_Bank.c`
+- ✅ A vault calls `LF_Breach.Arm`, then spills a config number of bags of
+  MoneyStack cash (verified 2026-10-11). The haul never deposits or withdraws
+  `EL_BankAccount`. Civilian-only, cooldown, and minimum police on duty use
+  the same comparisons as `EL_RobAction`. A second breach inside the cooldown
+  spawns nothing. Over-capacity requests are cut to the configured bag count.
+  Carry leaves the cash on the bag; dropping it leaves that cash in the world.
+  `Export` / `Apply` restore the ground bags and do not write a bank balance.
+  DebugWorld places `Roadmap_Bank_Vault` at 246 0 120 and `Roadmap_Bank_Bag`
+  at 246 0 122 on `Roadmap_Bank.layer`. The bag is
+  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
+  mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
+  `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`.
+
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
   gates; raises wanted level (+1/+2/+3); notifies police. DebugWorld's three
@@ -315,10 +329,40 @@
   `EL_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted (pin test `crime/rob-wanted-clamp`).
-- ⚠️ Near-duplicated guard logic across all three. Police-alert fires from
-  *inside* the counting predicate (spam on every offer refresh). `#EL-Stole_Money`
-  has no `%1` placeholder (amount dropped). `EL_RobWeaponAction.AlertPolice`
-  hardcodes "ALERTA POLICIAL".
+- ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
+  `Roadmap_Fuel.layer` at `318 0 120` is the shop counter
+  `{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob`
+  with `EL_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
+  the server rolls it, and min equal to max pays that fixed amount. The debug
+  till pays 150 MoneyStack cash. The bank balance stays 0. Wanted rises by
+  `m_iWantedIncrease` (default 1) and still clamps at 5. A second attempt
+  inside the cooldown is refused and logged with `EL_Debug.Error`. The police
+  alert fires once, inside `CommitRobbery`, not while counting on-duty police
+  and not when the offer refreshes. The fuel station building
+  `{9269BD1B6BF3A441}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/FuelStation_E_01_V1.et`
+  is the capture prefab and is not placed in the row. Player strings:
+  `#EL-Fuel_Till_Rob`, `#EL-Rob_Cooldown`, `#EL-Rob_CiviliansOnly`,
+  `#EL-Rob_NeedPolice`.
+- ⚠️ Near-duplicated guard logic across all three. `EL_RobWeaponAction` and
+  `EL_RobVehicleAction` still notify from inside their own on-duty counts.
+  `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
+
+### `LF_Jail` — `Feature/Police/LF_Jail.c`
+- ✅ Placed cell and timed sentence (verified 2026-10-11). `GetJailPosition()`
+  reads the cell origin. Sentence length is wanted level times the config
+  step, clamped to the config max. Arrest of a clean player refuses. Expiry
+  reduces wanted by the configured amount. Early release refuses. A locked
+  jail door returns a prisoner who leaves the volume; an open door (the shared
+  `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
+  stays. `Export` / `Apply` put the remaining seconds back. DebugWorld places
+  `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
+  `Roadmap_Jail.layer`. The placed door is `EL_Door_Base` with the prison-cell
+  mesh `{609698033DD2B55D}Assets/Structures/BuildingsParts/Doors/Door_PrisonCell_E/Door_PrisonCell_E_A_Left_INT_ST_B.xob`,
+  so it carries `EL_LockComponent` and the shared breach actions. The vanilla door
+  `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
+  is the prefab the world test loads.
+  The officer action `LF_JailArrestAction` is on the suspect. Vehicle escort
+  is not in this slice.
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
@@ -327,9 +371,12 @@
   handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
   target, and fine range before acting. Arrest also requires senior rank, and
   the fine must sit inside that rank's cap. `EL_PoliceUtils` (pure) holds the
-  jail position, wanted-reduction and fine-range math for tests.
+  sentence-length math, wanted-reduction and fine-range checks for tests.
   `EL_AskPoliceSelfPromote` always refuses.
-- ⚠️ RPC handlers still log denials via `Print` (should be `EL_Debug`);
+- ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
+  `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
+  to `"127 1 137"`.
+- ⚠️ The fine RPC still logs denials via `Print` (should be `EL_Debug`);
   `account.GetActiveCharacter()` deref in the wanted list is unguarded.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
@@ -467,6 +514,7 @@
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, tests, and the release
   `Roadmap.layer` street are all present as non-empty layer files.
+  `Roadmap_Fuel.layer` places `Roadmap_Fuel_Till` at `318 0 120`.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →

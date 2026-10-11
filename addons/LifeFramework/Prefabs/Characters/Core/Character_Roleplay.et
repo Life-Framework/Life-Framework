@@ -57,6 +57,14 @@ EL_PlayerJobComponent "{A68F47E449868508}" {
       Name "#EL-Confiscate_DisplayName"
      }
     }
+    LF_JailArrestAction "{C9DDD5F29280B309}" {
+     ParentContextList {
+      "EL_ID"
+     }
+     UIInfo UIInfo "{56C5730E07320FFE}" {
+      Name "#EL-Jail_Arrest"
+     }
+    }
    }
   }
  }

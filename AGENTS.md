@@ -1,5 +1,31 @@
 # AGENTS.md — Life Framework development contract
 
+## Context — stop here
+
+This section is the context. Write the assigned files. Do not open sibling features, validation scripts, MCP sources, or the server executable to learn the shape.
+
+Worktree ports come from `tools\cli wt list`. The test command prints them. Port 2001 in a server log is not a bug to chase. Retry a failed boot once.
+
+The resource database is copied by `wt list` and by `test`. Do not commit it. Wrong GUID, invalid prefab, and `GetCash` returning 0 mean the copy is missing. These four tests fail only for that reason: `e2e/narrative-loop`, `e2e/inventory-storage`, `money/cash-roundtrip`, `vehiclelock/lock-key-access`.
+
+If the harness throws `Cannot index into a null array`, grep `console.log` for `[ELTEST] SUMMARY` and for the assigned test name.
+
+A locked door calls `LF_Breach.Arm(targetId, playerUid)`. A cash till uses `EL_RobAction`. Cash is MoneyStack `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The ATM is the only cash-to-account boundary. A robbery leaves `EL_BankAccount` at 0.
+
+Door actions override the inherited `ActionsManagerComponent {F32B667C3C823800}` on `{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et`. A second ActionsManager drops the lock. The charge prefab is `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`. The shop-counter mesh used for a till is `{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob`. The debug boundary prefab is `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
+
+One layer file per scope, copied from the shape of `Roadmap_Breach.layer`. Do not edit `Roadmap.layer` or `tools/validation/validate-debugworld.ps1` unless the task names them.
+
+Tests go in `Scripts/Game/Tests/EL_Test_*.c` with a tier comment and a red-proof comment. Break one assertion, watch it fail, restore it, record the observed line. Run `tools\cli regen-tests`. On a registry conflict, regenerate. Do not hand-merge it.
+
+Append localization keys. Do not rewrite the table. Run `tools\cli regen-localization`. Update `docs/features.md` in the same change. A rebase onto a branch that also touched those files keeps both sides.
+
+Fast suite: `tools\cli test --no-build --tier fast`. Full suite: `tools\cli test --no-build --tier all`. Do not run `cli build`, `cli ci`, or `cli test` without `--no-build` unless the task says so. Do not run those from the main checkout.
+
+EnforceScript has no ternary and no null-coalescing. `ref` goes on Managed fields and on the collections that hold them. Store `EntityID`, not `IEntity`. Failures log `EL_Debug.Error` and degrade that feature.
+
+A launch prompt that names the files, the function, the coordinates, and the prefab is the assignment. Start with the red test.
+
 Instructions for AI coding agents working in this repository (opencode, Codex,
 Cursor, Claude Code, and any tool that reads `AGENTS.md`). Read this file
 before making changes. This file is the portable, tool-agnostic contract; the
