@@ -1983,6 +1983,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The convoy failed"
      Comment "Notification when a convoy run fails"
     }
+    CustomStringTableItem "{9E06D8383590F6C7}" {
+     Id "LF-UIKit_SampleTitle"
+     Target_en_us "Field office"
+     Comment "UI kit sample screen title. A 1989 counter, not a desktop app."
+    }
+    CustomStringTableItem "{68605FDBA4C10460}" {
+     Id "LF-UIKit_SampleLine"
+     Target_en_us "Write the name, then file the form at the counter."
+     Comment "UI kit sample body line."
+    }
+    CustomStringTableItem "{F75004C4210A4AB1}" {
+     Id "LF-UIKit_SampleField"
+     Target_en_us "Name"
+     Comment "UI kit sample edit box placeholder."
+    }
+    CustomStringTableItem "{7AEB1C53F8FECFAD}" {
+     Id "LF-UIKit_SampleRow"
+     Target_en_us "Duty roster"
+     Comment "UI kit sample list row."
+    }
+    CustomStringTableItem "{54D943A7D936E1D0}" {
+     Id "LF-UIKit_SampleButton"
+     Target_en_us "File the form"
+     Comment "UI kit sample button."
+    }
+    CustomStringTableItem "{950DC138F92AF1A2}" {
+     Id "LF-UIKit_SampleClose"
+     Target_en_us "Close"
+     Comment "UI kit sample close button."
+    }
   }
  }
 }

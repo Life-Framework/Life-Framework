@@ -1,0 +1,66 @@
+FrameWidgetClass "{5505902907F29D93}" {
+ Name "LF_UIFrame"
+ {
+  PanelWidgetClass "{BB27BE4A73A3CF69}" {
+   Name "Metal"
+   Slot FrameWidgetSlot "{91B286CB7D5D87C1}" {
+    Anchor 0 0 0 0
+    PositionX 240
+    OffsetLeft 240
+    PositionY 120
+    OffsetTop 120
+    SizeX 560
+    OffsetRight -800
+    SizeY 640
+    OffsetBottom -760
+   }
+   Color 0.243 0.251 0.227 1
+   {
+    BlurWidgetClass "{6F332E144812B74F}" : "{352322057FD78AE1}UI/layouts/WidgetLibrary/BaseElements/WLib_Blur.layout" {
+     Name "BackgroundBlur"
+     Slot FrameWidgetSlot "{F97AFDF36EA5A562}" {
+      Anchor 0 0 1 1
+     }
+     Color 0.188 0.173 0.141 1
+     Intensity 0.8
+    }
+    PanelWidgetClass "{3CAFEBB278965DF2}" {
+     Name "Paper"
+     Slot FrameWidgetSlot "{3E57A746A42524F8}" {
+      Anchor 0 0 1 1
+      OffsetLeft 12
+      OffsetTop 12
+      OffsetRight -12
+      OffsetBottom -12
+     }
+     Color 0.839 0.776 0.659 0.949
+     {
+      PanelWidgetClass "{7ECEB9D3C3884AA8}" {
+       Name "Rule"
+       Slot FrameWidgetSlot "{6F6E50F8A6DCFBEB}" {
+        Anchor 0 0 1 0
+        OffsetLeft 24
+        OffsetRight -24
+        OffsetTop 56
+        PositionY 56
+        SizeY 2
+        OffsetBottom -58
+       }
+       Color 0.478 0.4 0.251 1
+      }
+      VerticalLayoutWidgetClass "{0C238FCD71D549D8}" {
+       Name "Content"
+       Slot FrameWidgetSlot "{D63CD6F06B71ABD3}" {
+        Anchor 0 0 1 1
+        OffsetLeft 8
+        OffsetTop 68
+        OffsetRight -8
+        OffsetBottom -12
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

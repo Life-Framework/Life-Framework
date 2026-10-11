@@ -599,6 +599,10 @@
 
 ## UI / Layouts / Localization
 
+### UI kit — `Scripts/Game/Feature/UIKit/`
+- Post-release polish. `LF_UITheme` holds the 1989 type, padding, and paper/metal colors. `LF_UIScreen` assembles a frame, title, body line, WLib edit box, list row, and pause-menu button with `WorkspaceWidget.CreateWidgets`, wires `SCR_ButtonTextComponent`, and activates `MenuContext` every frame (`MenuTextEditContext` while an edit box is focused). Close removes the widgets and that call. It does not use MenuManager.
+- `LF_UISampleScreen` shows every part. Nothing in the world opens it. Faction, character creation, death, shop, ATM, quest, police, and spawn menus were not migrated.
+
 ## Quests
 
 ### `LF_QuestTrackerComponent` — `Scripts/Game/Feature/Quests/`
