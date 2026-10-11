@@ -2048,6 +2048,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take %1"
      Comment "UI kit quantity face for the amount that leaves. %1 is the count."
     }
+    CustomStringTableItem "{5635430D41DA4AF6}" {
+     Id "LF-Garage_Title"
+     Target_en_us "Garage"
+     Comment "Garage catalog title."
+    }
+    CustomStringTableItem "{0DD2FE2B33C34AAC}" {
+     Id "LF-Garage_Exit"
+     Target_en_us "Exit"
+     Comment "Garage catalog close button."
+    }
+    CustomStringTableItem "{01D3310E68104252}" {
+     Id "LF-Garage_Previous"
+     Target_en_us "Previous"
+     Comment "Garage catalog action that moves to the previous vehicle."
+    }
+    CustomStringTableItem "{9E09C42DCA344AD1}" {
+     Id "LF-Garage_Next"
+     Target_en_us "Next"
+     Comment "Garage catalog action that moves to the next vehicle."
+    }
+    CustomStringTableItem "{D33C625BF93B46A7}" {
+     Id "LF-Garage_Price"
+     Target_en_us "Cash price"
+     Comment "Garage catalog price field. The row shows the amount."
+    }
+    CustomStringTableItem "{7DACF581EBBB4514}" {
+     Id "LF-Garage_Engine"
+     Target_en_us "Engine"
+     Comment "Garage catalog engine field."
+    }
+    CustomStringTableItem "{B78D82A085EA485D}" {
+     Id "LF-Garage_Handling"
+     Target_en_us "Handling"
+     Comment "Garage catalog handling field."
+    }
+    CustomStringTableItem "{F35E37BAE85B4ACA}" {
+     Id "LF-Garage_Braking"
+     Target_en_us "Braking"
+     Comment "Garage catalog braking field."
+    }
+    CustomStringTableItem "{693771B3C5A1420C}" {
+     Id "LF-Garage_Storage"
+     Target_en_us "Storage"
+     Comment "Garage catalog storage field."
+    }
+    CustomStringTableItem "{8CF0A65794DC448C}" {
+     Id "LF-Garage_Red"
+     Target_en_us "Red"
+     Comment "Garage catalog red color field."
+    }
+    CustomStringTableItem "{974806D9A0704F4D}" {
+     Id "LF-Garage_Green"
+     Target_en_us "Green"
+     Comment "Garage catalog green color field."
+    }
+    CustomStringTableItem "{3CEA2232FA244C93}" {
+     Id "LF-Garage_Blue"
+     Target_en_us "Blue"
+     Comment "Garage catalog blue color field."
+    }
   }
  }
 }

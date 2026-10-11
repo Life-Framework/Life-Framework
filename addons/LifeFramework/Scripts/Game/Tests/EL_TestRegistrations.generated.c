@@ -70,6 +70,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_ContrabandWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_Fuel(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_FuelWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_Garage(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_Hideout(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_HideoutWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_HideoutPersistence(), EL_TestTier.PERSISTENCE);
