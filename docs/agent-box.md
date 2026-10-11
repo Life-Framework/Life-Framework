@@ -12,6 +12,7 @@ scans `Worlds/DebugWorld/DebugWorld_Layers` for entities that own an action.
 `layer <EntityName>` stands beside that entity, performs the action, and
 screenshots the UI. Named sequences live in `agent-box/flows/` and run with
 `node agent-box/harness.mjs flow <name>` (or the `player_flow` MCP tool).
+`node agent-box/harness.mjs kit` photographs every UI kit state. It reuses a play session that is already up.
 Chain probes and the gaps they cannot reach are in
 [`agent-box-chains.md`](agent-box-chains.md). `node agent-box/harness.mjs chains`
 checks them without booting the game. `chains --run` stands, looks, and uses

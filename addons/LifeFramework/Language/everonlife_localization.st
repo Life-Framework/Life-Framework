@@ -1983,6 +1983,161 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The convoy failed"
      Comment "Notification when a convoy run fails"
     }
+    CustomStringTableItem "{9E06D8383590F6C7}" {
+     Id "LF-UIKit_SampleTitle"
+     Target_en_us "Field office"
+     Comment "UI kit sample screen title. A 1989 counter, not a desktop app."
+    }
+    CustomStringTableItem "{68605FDBA4C10460}" {
+     Id "LF-UIKit_SampleLine"
+     Target_en_us "Write the name, then file the form at the counter."
+     Comment "UI kit sample body line."
+    }
+    CustomStringTableItem "{F75004C4210A4AB1}" {
+     Id "LF-UIKit_SampleField"
+     Target_en_us "Name"
+     Comment "UI kit sample edit box placeholder."
+    }
+    CustomStringTableItem "{7AEB1C53F8FECFAD}" {
+     Id "LF-UIKit_SampleRow"
+     Target_en_us "Duty roster"
+     Comment "UI kit sample list row."
+    }
+    CustomStringTableItem "{54D943A7D936E1D0}" {
+     Id "LF-UIKit_SampleButton"
+     Target_en_us "File the form"
+     Comment "UI kit sample button."
+    }
+    CustomStringTableItem "{950DC138F92AF1A2}" {
+     Id "LF-UIKit_SampleClose"
+     Target_en_us "Close"
+     Comment "UI kit sample close button."
+    }
+    CustomStringTableItem "{E9907671573AFD76}" {
+     Id "LF-UIKit_SampleBalance"
+     Target_en_us "Balance"
+     Comment "UI kit sample line that a later caller rewrites with a server figure."
+    }
+    CustomStringTableItem "{3332B12FDA94C221}" {
+     Id "LF-UIKit_SampleStatusLabel"
+     Target_en_us "Warrant"
+     Comment "UI kit sample status-row label."
+    }
+    CustomStringTableItem "{81CFDCDC3F645AEA}" {
+     Id "LF-UIKit_SampleStatus"
+     Target_en_us "Open"
+     Comment "UI kit sample status-row status."
+    }
+    CustomStringTableItem "{AE54ADB762D0B6FC}" {
+     Id "LF-UIKit_SampleAction"
+     Target_en_us "Take"
+     Comment "UI kit sample status-row action. The server decides whether it stays."
+    }
+    CustomStringTableItem "{55960B5ABA019A5E}" {
+     Id "LF-UIKit_SampleQuantity"
+     Target_en_us "Split the stack"
+     Comment "UI kit sample quantity label."
+    }
+    CustomStringTableItem "{D820B2BCD7FC410A}" {
+     Id "LF-UIKit_Keep"
+     Target_en_us "Keep %1"
+     Comment "UI kit quantity face for the amount that stays. %1 is the count."
+    }
+    CustomStringTableItem "{7C0A925F60789085}" {
+     Id "LF-UIKit_Take"
+     Target_en_us "Take %1"
+     Comment "UI kit quantity face for the amount that leaves. %1 is the count."
+    }
+    CustomStringTableItem "{5635430D41DA4AF6}" {
+     Id "LF-Garage_Title"
+     Target_en_us "Garage"
+     Comment "Garage catalog title."
+    }
+    CustomStringTableItem "{0DD2FE2B33C34AAC}" {
+     Id "LF-Garage_Exit"
+     Target_en_us "Exit"
+     Comment "Garage catalog close button."
+    }
+    CustomStringTableItem "{01D3310E68104252}" {
+     Id "LF-Garage_Previous"
+     Target_en_us "Previous"
+     Comment "Garage catalog action that moves to the previous vehicle."
+    }
+    CustomStringTableItem "{9E09C42DCA344AD1}" {
+     Id "LF-Garage_Next"
+     Target_en_us "Next"
+     Comment "Garage catalog action that moves to the next vehicle."
+    }
+    CustomStringTableItem "{D33C625BF93B46A7}" {
+     Id "LF-Garage_Price"
+     Target_en_us "Cash price"
+     Comment "Garage catalog price field. The row shows the amount."
+    }
+    CustomStringTableItem "{7DACF581EBBB4514}" {
+     Id "LF-Garage_Engine"
+     Target_en_us "Engine"
+     Comment "Garage catalog engine field."
+    }
+    CustomStringTableItem "{B78D82A085EA485D}" {
+     Id "LF-Garage_Handling"
+     Target_en_us "Handling"
+     Comment "Garage catalog handling field."
+    }
+    CustomStringTableItem "{F35E37BAE85B4ACA}" {
+     Id "LF-Garage_Braking"
+     Target_en_us "Braking"
+     Comment "Garage catalog braking field."
+    }
+    CustomStringTableItem "{693771B3C5A1420C}" {
+     Id "LF-Garage_Storage"
+     Target_en_us "Storage"
+     Comment "Garage catalog storage field."
+    }
+    CustomStringTableItem "{8CF0A65794DC448C}" {
+     Id "LF-Garage_Red"
+     Target_en_us "Red"
+     Comment "Garage catalog red color field."
+    }
+    CustomStringTableItem "{974806D9A0704F4D}" {
+     Id "LF-Garage_Green"
+     Target_en_us "Green"
+     Comment "Garage catalog green color field."
+    }
+    CustomStringTableItem "{3CEA2232FA244C93}" {
+     Id "LF-Garage_Blue"
+     Target_en_us "Blue"
+     Comment "Garage catalog blue color field."
+    }
+    CustomStringTableItem "{4F8C2A91D6B74E11}" {
+     Id "EL-Escort_Grab"
+     Target_en_us "Escort"
+     Comment "Officer walks a wanted suspect toward a vehicle. The sentence has not started."
+    }
+    CustomStringTableItem "{4F8C2A91D6B74E12}" {
+     Id "EL-Escort_Arrest"
+     Target_en_us "Detain for escort"
+     Comment "Officer detains a wanted suspect for vehicle escort. This does not start the jail sentence."
+    }
+    CustomStringTableItem "{4F8C2A91D6B74E13}" {
+     Id "EL-Escort_PutIn"
+     Target_en_us "Put in vehicle"
+     Comment "Officer seats the escorted prisoner in the nearest free passenger seat"
+    }
+    CustomStringTableItem "{4F8C2A91D6B74E14}" {
+     Id "EL-Escort_TakeOut"
+     Target_en_us "Take out of vehicle"
+     Comment "Officer removes the prisoner from the vehicle. The sentence starts only at the cell."
+    }
+    CustomStringTableItem "{4F8C2A91D6B74E15}" {
+     Id "EL-Escort_NoPrisoner"
+     Target_en_us "No prisoner to escort"
+     Comment "Vehicle escort action refused because the officer has no prisoner on foot or in a seat"
+    }
+    CustomStringTableItem "{A1C4E87B62D94F05}" {
+     Id "LF-Garage_StepOut"
+     Target_en_us "Step out of the vehicle first"
+     Comment "Garage store refused because the player is still seated."
+    }
   }
  }
 }

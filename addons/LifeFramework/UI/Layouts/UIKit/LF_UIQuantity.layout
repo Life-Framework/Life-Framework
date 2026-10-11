@@ -1,0 +1,76 @@
+VerticalLayoutWidgetClass "{595E5AA0CAB41E1E}" {
+ Name "Quantity"
+ Slot LayoutSlot "{4B453375775142F6}" {
+  Padding 28 10 28 10
+ }
+ components {
+  LF_UIQuantityRelay "{9E3F2B142F3C55D0}" {
+  }
+ }
+ {
+  TextWidgetClass "{A744343727A6ECED}" {
+   Name "QuantityLabel"
+   Slot LayoutSlot "{ED4E1DA1AB03F64B}" {
+    Padding 0 0 0 6
+   }
+   Color 0.110 0.102 0.086 1
+   Text ""
+   "Font Size" 18
+   "Min Font Size" 18
+   FontProperties FontProperties "{94ABDC5EEABA6D49}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  SizeLayoutWidgetClass "{85197C28D22E94FC}" {
+   Slot LayoutSlot "{D71004EFD68D4FB3}" {
+   }
+   AllowHeightOverride 1
+   HeightOverride 36
+   {
+    OverlayWidgetClass "{716CB27B967C7248}" : "{B7DC3B0D9D536470}UI/Layouts/WidgetLibrary/ThinSliderWidget.layout" {
+     Name "QuantitySlider"
+     Slot AlignableSlot "{4FE8E1CC75E30BEC}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+    }
+   }
+  }
+  HorizontalLayoutWidgetClass "{B920CA9BFE067406}" {
+   Slot LayoutSlot "{5C28EC7D07F1B208}" {
+    Padding 0 6 0 0
+   }
+   {
+    TextWidgetClass "{A734D9EA4CC787F4}" {
+     Name "FaceKeep"
+     Slot LayoutSlot "{041818EBDA4089AD}" {
+      SizeMode Fill
+      FillWeight 1
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{51F3C175B2D64A48}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{73DA704CF78EE4E6}" {
+     Name "FaceTake"
+     Slot LayoutSlot "{39AA66F5EA3072F2}" {
+      SizeMode Fill
+      FillWeight 1
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     "Horizontal alignment" Right
+     FontProperties FontProperties "{99D596E6EE892C1B}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

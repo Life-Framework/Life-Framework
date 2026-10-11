@@ -20,6 +20,8 @@
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved ELTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
+//   scope <name> <dir>                Write the test stub, features row, keys, and street row
+//   scope --selftest                  Check those four outputs in a temp directory
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
@@ -29,6 +31,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
+import { runScopeCli } from "./scope/scaffold.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MCP_DIR = join(ROOT, "tools", "mcp");
@@ -988,6 +991,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   suite-valid <sha>             exit 0 when every file since <sha> is localization, the generated
                                 test registry, or docs/features.md; exit 1 for gameplay, a
                                 persistence serializer, a prefab, or a world layer
+  scope <name> <dir>            write a test stub, a features-row snippet, localization keys
+                                to append, and one street-manifest row into <dir>
+  scope --selftest              run that write in a temp directory and check the four outputs
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   validate | lint               run every script in tools/{validation,lint}/
   run <area>                    run every script in tools/<area>/ (validate, lint, test, ...)
@@ -1569,6 +1575,7 @@ const cmds = {
   logs: (flags) => cmdLogs(flags),
   "suite-stamp": (flags) => cmdSuiteStamp(flags),
   "suite-valid": (flags) => cmdSuiteValid(flags),
+  scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
   help: () => cmdHelp(),
 };
@@ -1654,7 +1661,7 @@ try {
   } else if (cmd === "wt") {
     code = cmdWt(rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "suite-stamp" || cmd === "suite-valid" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

@@ -35,6 +35,35 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Move this character to a world shot. The player camera follows the body,
+	//! which SetCamera on a CameraBase does not.
+	void EL_AskHarnessPose(float x, float y, float z, float yaw, float pitch)
+	{
+		if (Replication.IsServer())
+		{
+			EL_ApplyHarnessPose(x, y, z, yaw, pitch);
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessPose, x, y, z, yaw, pitch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_HarnessPose(float x, float y, float z, float yaw, float pitch)
+	{
+		EL_ApplyHarnessPose(x, y, z, yaw, pitch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void EL_ApplyHarnessPose(float x, float y, float z, float yaw, float pitch)
+	{
+		SetOrigin(Vector(x, y, z));
+		SetYawPitchRoll(Vector(yaw, pitch, 0));
+		EL_Debug.Log("AgentHarness", string.Format("posed %1 %2 %3 facing %4 %5", x, y, z, yaw, pitch));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Perform a named action on the server. Client-side PerformAction no-ops
 	//! when this peer does not own the prop, which dropped gathers on the floor.
 	//! \param commandId Result id the harness is waiting on.

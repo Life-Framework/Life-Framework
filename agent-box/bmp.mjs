@@ -236,3 +236,21 @@ export function classifyMeshFile(file) {
     return "missing";
   }
 }
+
+// Pixel bytes of a capture, copied at the moment the file is read. A later
+// shot must not be compared by path: the engine can reuse a file name.
+export function capturePixels(file) {
+  if (!file || !existsSync(file)) return null;
+  try {
+    const buf = readFileSync(file);
+    if (buf.length >= 2 && buf.toString("ascii", 0, 2) === "BM") return decodeBmp(buf).pixels;
+    return decodePng(buf).pixels;
+  } catch {
+    return null;
+  }
+}
+
+export function samePixels(left, right) {
+  if (!left || !right || left.length !== right.length) return false;
+  return left.equals(right);
+}

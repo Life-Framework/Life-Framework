@@ -44,7 +44,9 @@ node agent-box/harness.mjs shot world ATM_Debug
 
 `layers` reads `Worlds/DebugWorld/DebugWorld_Layers`. `layer <EntityName>` stands beside that entity, waits until `look` shows that action (the same list the F key would offer), performs it, and screenshots the UI. `shot world <EntityName>` uses the entity coordinates when you omit x y z. `shot ui debug_menu` opens the debug menu first.
 
-`node agent-box/harness.mjs report roadmap` walks every `Roadmap_` entity, stands where a player would stand, runs `look`, takes a world shot, and writes `agent-box/reports/roadmap.html` with each picture beside that text, plus one wide shot of the row.
+`node agent-box/harness.mjs report roadmap [EntityName...]` walks every `Roadmap_` entity, or only the named ones. It stands where a player would stand, runs `look`, takes a world shot, and writes `agent-box/reports/roadmap.html` with each picture beside that text, plus one wide shot of that row. A world shot teleports the character to the camera offset, faces the target, and screenshots the player view. A filtered row's wide shot stands just north of that row when the street is further north, because the player camera faces -Z. If that PNG matches the previous PNG, the report records `camera_stuck` once and stops. `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look returns an action. Menus use `shot ui`; the report judges the widget list and the picture.
+
+`node agent-box/harness.mjs kit` enters play and photographs the UI kit sample: the full sheet, a rewritten balance, a status row with the action hidden, keep and take, and focus on the field. Nothing in the world opens that screen. The flow is `agent-box/flows/ui-kit.txt`.
 
 `play` stops play mode if it is up, opens `Worlds/DebugWorld/DebugWorld.ent`, then enters play mode. It passes this machine's toolchain paths so the Workbench bridge compiles into the open mod.
 
@@ -56,6 +58,7 @@ node agent-box/harness.mjs flow ui-intake
 node agent-box/harness.mjs flow ui-debug-menu
 node agent-box/harness.mjs flow ui-debug-menu-nav
 node agent-box/harness.mjs flow ui-shop
+node agent-box/harness.mjs kit
 node agent-box/harness.mjs flow world-atm
 node agent-box/harness.mjs flow chain-apple
 node agent-box/harness.mjs chains
@@ -107,8 +110,9 @@ Results come back on `result.txt` as `<id> ok ...` or `<id> error <reason>`.
 contain `EL_AgentHarness` yet.
 
 Screenshots go through `EL_ScreenshotCapture` (`$logs:el-captures/`). UI shots
-leave the camera where it is. World shots aim at the position, at noon, in
-Clear weather.
+leave the camera where it is. World shots teleport the character to the camera
+offset, face the target, and screenshot the player view, at noon, in Clear
+weather. `SetCamera` does not override that view.
 
 MCP tools on the `life-agent-box` server match these commands: `box_status`,
 `layer_list`, `layer_play`, `player_press`, `player_look`, `player_ui`,
