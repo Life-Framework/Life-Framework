@@ -84,13 +84,13 @@ Persistence class, same file: save while the door is open, apply the save, `IsLo
 
 ### Bank robbery
 
-Layer: `Roadmap_Bank_Vault` (locked door), `Roadmap_Bank_Bag` (hand-carry container). The shop-house shell is a capture-only prefab, not placed in the row.
+Layer: `Roadmap_Bank_Vault` (locked door), `Roadmap_Bank_Bag` (hand-carry container). The municipal-office shell is a capture-only prefab, not placed in the row.
 
 | Gate | Case |
 | --- | --- |
 | Headless | Payout is cash. `EL_BankAccount` balance stays 0. Bag count and cash per bag match config. A second breach inside the cooldown spawns nothing. Civilian and minimum-police gates match `EL_RobAction` |
 | E2E | Zero-fuse vault opens, one bag exists, its MoneyStack quantity is the config value, bank balance unchanged. Same uid discipline as `e2e/narrative-loop` (do not reuse `e2e-narrative-uid`) |
-| Visual | `shot world Roadmap_Bank_Bag` shows the crate mesh and, after the action, the stack. `wb_capture` of `ShopHouse_E_2l01` for the shell |
+| Visual | `shot world Roadmap_Bank_Bag` shows the crate mesh and, after the action, the stack. `wb_capture` of `EL_Bank.et` (`MunicipalOffice_E_01`) for the shell |
 
 ### Jailbreak
 
