@@ -68,6 +68,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_BreachPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_Roadmap_Fuel(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_FuelWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_Hospital(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_HospitalWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_Jailbreak(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_JailbreakWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_Jailing(), EL_TestTier.LOGIC);

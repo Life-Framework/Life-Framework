@@ -1718,6 +1718,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Close"
      Comment "Organization menu close button"
     }
+    CustomStringTableItem "{B7E2C14A90F35D68}" {
+     Id "EL-Hospital_RobTill"
+     Target_en_us "Rob the till"
+     Comment "Hospital till robbery action name"
+    }
+    CustomStringTableItem "{C8F3D25B01A46E79}" {
+     Id "EL-Hospital_TillNotConfigured"
+     Target_en_us "This till is not set up"
+     Comment "Hospital till action refused because the till is not configured"
+    }
+    CustomStringTableItem "{D904E36C12B57F8A}" {
+     Id "EL-Hospital_TillCooldown"
+     Target_en_us "The till was just robbed"
+     Comment "Hospital till action refused because the cooldown is still running"
+    }
+    CustomStringTableItem "{EA15F47D23C6809B}" {
+     Id "EL-Hospital_TillCivilianOnly"
+     Target_en_us "Only civilians can rob the till"
+     Comment "Hospital till action refused for a non-civilian"
+    }
+    CustomStringTableItem "{FB26058E34D791AC}" {
+     Id "EL-Hospital_TillNeedPolice"
+     Target_en_us "Not enough police are on duty"
+     Comment "Hospital till action refused below the minimum police count"
+    }
+    CustomStringTableItem "{0C37169F45E8A2BD}" {
+     Id "EL-Hospital_BreachCabinet"
+     Target_en_us "Breach the cabinet"
+     Comment "Hospital cabinet breach action name"
+    }
+    CustomStringTableItem "{1D4827A056F9B3CE}" {
+     Id "EL-Police_Alert_Hospital"
+     Target_en_us "Crime Alert: Hospital till robbed"
+     Comment "Police notification when the hospital till is robbed"
+    }
   }
  }
 }
