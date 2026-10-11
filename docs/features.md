@@ -395,19 +395,39 @@
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
   through `SCR_ChimeraCharacter.EL_AskPoliceArrest/Fine`, and the server
   handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
-  target, and fine range before acting. `EL_PoliceUtils` (pure) holds the
+  target, and fine range before acting. Arrest also requires senior rank, and
+  the fine must sit inside that rank's cap. `EL_PoliceUtils` (pure) holds the
   sentence-length math, wanted-reduction and fine-range checks for tests.
+  `EL_AskPoliceSelfPromote` always refuses.
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
-  `LF_Jail.Arrest` and no longer clears wanted or teleports to `"127 1 137"`.
+  `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
+  to `"127 1 137"`.
 - ⚠️ The fine RPC still logs denials via `Print` (should be `EL_Debug`);
   `account.GetActiveCharacter()` deref in the wanted list is unguarded.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ Toggles police on-duty flag. Civilians are refused. The debug menu's
   police faction button sets faction and duty, which is how a solo session
-  reaches the toggle (verified 2026-10-10).
+  reaches the toggle (verified 2026-10-10). Going on duty starts the rank
+  clock; going off duty settles it.
 - ⚠️ Toggling evicts the account from the cache, so the officer cannot reopen
   the police menu or re-toggle until the account reloads.
+
+### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
+- ✅ Two ranks (verified 2026-10-11). Patrol officer draws
+  `{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et`, fines up to
+  1000, and cannot arrest. Senior officer draws
+  `{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et`, fines up to
+  the existing 5000 cap, and can arrest. The resolved kit is the intersection
+  of that rank's list and the station catalog; a prefab that does not load is
+  logged and skipped, and the rank stays usable. An on-duty senior promotes a
+  lower officer. 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
+  is the self-promotion RPC body and always refuses. Rank does not change
+  faction and does not write the police whitelist. Lower ranks still open the
+  wanted list. DebugWorld places `Roadmap_Police_Armory` at `354 0 120` on
+  `Roadmap_Ranks.layer`.
+- ⚠️ Rank and on-duty seconds live on the account object and are not in
+  `EL_PlayerAccountRecord`, so a restart returns the officer to patrol.
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
 - ✅ On-duty police delete weapons from the nearest wanted player within 5 m.

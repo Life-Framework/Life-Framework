@@ -23,6 +23,16 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Ask the server to promote this officer. The server always refuses: rank is not a client field.
+	void EL_AskPoliceSelfPromote()
+	{
+		if (Replication.IsServer())
+			LF_PoliceRanks.RequestSelfPromotion(EL_Utils.GetPlayerUid(this));
+		else
+			Rpc(RpcAsk_EL_PoliceSelfPromote);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_PoliceArrest(string targetPlayerUid)
 	{
@@ -31,9 +41,17 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		int officerPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
-		if (!EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(officer)))
+		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(officer);
+		if (!EL_PoliceUtils.IsOnDutyOfficer(officerAccount))
 		{
 			EL_Debug.Error("Jail", string.Format("arrest refused: %1 is not an on-duty officer", officerPlayerId));
+			return;
+		}
+
+		if (!LF_PoliceRanks.AuthorizeArrest(officerAccount))
+		{
+			if (officerPlayerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Rank_ArrestDenied", 3.0, EL_ENotificationType.WARNING);
 			return;
 		}
 
@@ -63,9 +81,17 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		int officerPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
-		if (!EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(officer)))
+		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(officer);
+		if (!EL_PoliceUtils.IsOnDutyOfficer(officerAccount))
 		{
 			Print(string.Format("[EL_PoliceMenu] Fine denied: %1 is not an on-duty officer", officerPlayerId), LogLevel.WARNING);
+			return;
+		}
+
+		if (!LF_PoliceRanks.AuthorizeFine(officerAccount, amount))
+		{
+			if (officerPlayerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Rank_FineDenied", 3.0, EL_ENotificationType.WARNING);
 			return;
 		}
 
@@ -102,6 +128,13 @@ modded class SCR_ChimeraCharacter
 		EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Fined", 3.0, EL_ENotificationType.SUCCESS, amountText);
 		if (targetPlayerId > 0)
 			EL_NotificationManagerComponent.NotifyPlayer(targetPlayerId, "#EL-Police_Title", "#EL-Fined", 3.0, EL_ENotificationType.WARNING, amountText);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_PoliceSelfPromote()
+	{
+		LF_PoliceRanks.RequestSelfPromotion(EL_Utils.GetPlayerUid(this));
 	}
 };
 

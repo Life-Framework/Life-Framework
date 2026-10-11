@@ -57,6 +57,8 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:VehicleLock] identifier assigned:` | INFO | Vehicle lock registration. |
 | `[ELDebug:LicensePlate] generated plate ...` | INFO | License plate generation. |
 | `[ELDebug:Quests] registered quest '<id>' from giver '<name>'` | INFO | Quest registry population. |
+| `[ELDebug:Ranks] ... refused` / `kit line skipped` | BY DESIGN | Rank gates log the refusal and leave the rank usable. A kit prefab that does not load drops that line only. `RequestSelfPromotion` always refuses and does not change rank. |
+| `[ELDebug:Ranks] promoted` / `kit drawn` / `duty clock started` | INFO | Rank promotion, armory draw, and the on-duty clock. |
 | `[ELDebug:CharacterCreation] ...` / `[ELDebug:Spawn] ...` / `[ELDebug:FactionMenu] ...` | INFO | Spawn/character-creation flow state. |
 | `[EL_NotificationManagerComponent] ✓ ... / ... shut down` | INFO | Notification manager lifecycle. |
 | `[ELDebug:TextSign] label ready:` | INFO | Text sign init. |

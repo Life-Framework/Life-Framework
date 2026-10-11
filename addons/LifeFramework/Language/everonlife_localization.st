@@ -1523,6 +1523,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Crime Alert: Explosive charge placed"
      Comment "Police notification when a breach charge is armed"
     }
+    CustomStringTableItem "{C91A4E7700B10011}" {
+     Id "EL-Rank_Patrol"
+     Target_en_us "Patrol Officer"
+     Comment "Starting police rank title"
+    }
+    CustomStringTableItem "{C91A4E7700B10012}" {
+     Id "EL-Rank_Senior"
+     Target_en_us "Senior Officer"
+     Comment "Senior police rank title"
+    }
+    CustomStringTableItem "{C91A4E7700B10013}" {
+     Id "EL-Rank_Draw"
+     Target_en_us "Draw kit"
+     Comment "Station armory action that issues the officer's rank kit"
+    }
+    CustomStringTableItem "{C91A4E7700B10014}" {
+     Id "EL-Rank_DrawDenied"
+     Target_en_us "Only on-duty police can draw a kit"
+     Comment "Armory draw refused"
+    }
+    CustomStringTableItem "{C91A4E7700B10015}" {
+     Id "EL-Rank_Promote"
+     Target_en_us "Promote officer"
+     Comment "Higher-rank action that promotes a nearby lower-rank officer"
+    }
+    CustomStringTableItem "{C91A4E7700B10016}" {
+     Id "EL-Rank_PromoteDenied"
+     Target_en_us "A higher rank has to authorize that"
+     Comment "Promotion refused"
+    }
+    CustomStringTableItem "{C91A4E7700B10017}" {
+     Id "EL-Rank_ArrestDenied"
+     Target_en_us "Your rank cannot arrest"
+     Comment "Arrest refused because the officer's rank cannot arrest"
+    }
+    CustomStringTableItem "{C91A4E7700B10018}" {
+     Id "EL-Rank_FineDenied"
+     Target_en_us "That fine is above your rank"
+     Comment "Fine refused because it is above the officer's rank cap"
+    }
+    CustomStringTableItem "{C91A4E7700B10019}" {
+     Id "EL-Rank_WantedListDenied"
+     Target_en_us "Only on-duty police can view the wanted list"
+     Comment "Wanted list refused for someone who is not on-duty police"
+    }
     CustomStringTableItem "{685890AF28A71E11}" {
      Id "EL-Fuel_Till_Rob"
      Target_en_us "Rob the till"
