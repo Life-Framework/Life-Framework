@@ -333,14 +333,33 @@
   `EL_RobVehicleAction` still notify from inside their own on-duty counts.
   `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
 
+### `LF_Jail` — `Feature/Police/LF_Jail.c`
+- ✅ Placed cell and timed sentence (verified 2026-10-11). `GetJailPosition()`
+  reads the cell origin. Sentence length is wanted level times the config
+  step, clamped to the config max. Arrest of a clean player refuses. Expiry
+  reduces wanted by the configured amount. Early release refuses. A locked
+  jail door returns a prisoner who leaves the volume; an open door (the shared
+  `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
+  stays. `Export` / `Apply` put the remaining seconds back. DebugWorld places
+  `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
+  `Roadmap_Jail.layer`. The placed door is `EL_Door_Base` with the prison-cell
+  mesh `{609698033DD2B55D}Assets/Structures/BuildingsParts/Doors/Door_PrisonCell_E/Door_PrisonCell_E_A_Left_INT_ST_B.xob`,
+  so it carries `EL_LockComponent` and the shared breach actions. The vanilla door
+  `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
+  is the prefab the world test loads.
+  The officer action `LF_JailArrestAction` is on the suspect. Vehicle escort
+  is not in this slice.
+
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
   through `SCR_ChimeraCharacter.EL_AskPoliceArrest/Fine`, and the server
   handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
   target, and fine range before acting. `EL_PoliceUtils` (pure) holds the
-  jail position, wanted-reduction and fine-range math for tests.
-- ⚠️ RPC handlers still log denials via `Print` (should be `EL_Debug`);
+  sentence-length math, wanted-reduction and fine-range checks for tests.
+- ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
+  `LF_Jail.Arrest` and no longer clears wanted or teleports to `"127 1 137"`.
+- ⚠️ The fine RPC still logs denials via `Print` (should be `EL_Debug`);
   `account.GetActiveCharacter()` deref in the wanted list is unguarded.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`

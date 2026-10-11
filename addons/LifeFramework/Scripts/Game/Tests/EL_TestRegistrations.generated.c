@@ -65,6 +65,11 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_BreachPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_Roadmap_Fuel(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_FuelWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_Jailbreak(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_JailbreakWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_Jailing(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_JailingWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_JailingPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_RobReward(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobRewardWantedClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);
