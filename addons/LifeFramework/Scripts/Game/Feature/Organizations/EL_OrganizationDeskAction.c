@@ -31,12 +31,7 @@ class EL_OrganizationDeskAction : ScriptedUserAction
 			return;
 		}
 
-		MenuManager menuManager = GetGame().GetMenuManager();
-		PlayerController playerController = GetGame().GetPlayerController();
-		if (!menuManager || !playerController)
-			return;
-
-		EL_OrganizationMenu menu = EL_OrganizationMenu.Cast(menuManager.OpenMenu(ChimeraMenuPreset.OrganizationMenu));
+		EL_OrganizationMenu menu = EL_OrganizationMenu.Open();
 		if (!menu)
 		{
 			EL_Debug.Error("Organizations", "organization menu failed to open");

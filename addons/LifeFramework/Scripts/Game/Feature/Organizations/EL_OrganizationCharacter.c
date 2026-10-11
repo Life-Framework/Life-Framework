@@ -121,11 +121,7 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_EL_OrganizationView(bool hasOrg, string name, int fund, bool processing, bool extraStorage, bool parkedVehicle)
 	{
-		MenuManager menuManager = GetGame().GetMenuManager();
-		if (!menuManager)
-			return;
-
-		EL_OrganizationMenu menu = EL_OrganizationMenu.Cast(menuManager.FindMenuByPreset(ChimeraMenuPreset.OrganizationMenu));
+		EL_OrganizationMenu menu = EL_OrganizationMenu.GetInstance();
 		if (!menu)
 			return;
 

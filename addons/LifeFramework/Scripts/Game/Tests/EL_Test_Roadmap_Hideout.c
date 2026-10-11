@@ -78,15 +78,15 @@ class EL_Test_Roadmap_HideoutWorld : EL_Test
 			return;
 
 		vector doorOrigin = door.GetOrigin();
-		ctx.EqualFloat(390, doorOrigin[0], 0.1, "the door is at X 390");
+		ctx.EqualFloat(213, doorOrigin[0], 0.1, "the door is at X 213");
 		ctx.EqualFloat(0, doorOrigin[1], 0.1, "the door is at Y 0");
 		ctx.EqualFloat(120, doorOrigin[2], 0.1, "the door is at Z 120");
 		vector machineOrigin = machine.GetOrigin();
-		ctx.EqualFloat(408, machineOrigin[0], 0.1, "the machine is at X 408");
+		ctx.EqualFloat(216, machineOrigin[0], 0.1, "the machine is at X 216");
 		ctx.EqualFloat(0, machineOrigin[1], 0.1, "the machine is at Y 0");
 		ctx.EqualFloat(120, machineOrigin[2], 0.1, "the machine is at Z 120");
 		vector stashOrigin = stash.GetOrigin();
-		ctx.EqualFloat(426, stashOrigin[0], 0.1, "the stash is at X 426");
+		ctx.EqualFloat(219, stashOrigin[0], 0.1, "the stash is at X 219");
 		ctx.EqualFloat(0, stashOrigin[1], 0.1, "the stash is at Y 0");
 		ctx.EqualFloat(120, stashOrigin[2], 0.1, "the stash is at Z 120");
 
