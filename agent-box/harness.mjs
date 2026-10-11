@@ -15,6 +15,7 @@ import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { bmpFileToPng, decodeBmp, syntheticBmp } from "./bmp.mjs";
+import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads } from "./layers.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -212,6 +213,65 @@ function runNode(args, extraEnv) {
   if (res.stdout) process.stdout.write(res.stdout);
   if (res.stderr) process.stderr.write(res.stderr);
   return res.status ?? 1;
+}
+
+const DEBUG_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
+
+// The Workbench bridge caches editor mode per process and starts it as unknown.
+// wb_play and wb_stop refuse until wb_state has run in that same process.
+export function playSteps(mode) {
+  const state = { tool: "wb_state", args: {} };
+  const enter = [
+    state,
+    { tool: "wb_open_resource", args: { path: DEBUG_WORLD } },
+    state,
+    { tool: "wb_play", args: { debugMode: false, fullScreen: false } },
+  ];
+  if (mode === "play") return [[state, { tool: "wb_stop", args: {} }], enter];
+  return [enter];
+}
+
+function workbenchEnv() {
+  const paths = toolchainPaths();
+  return {
+    ENFUSION_WORKBENCH_PATH: paths.workbench,
+    ENFUSION_GAME_PATH: paths.game,
+    ENFUSION_SERVER_PATH: paths.server,
+    ENFUSION_PROJECT_PATH: paths.project,
+  };
+}
+
+function mcpBatch(steps) {
+  const dir = join(ROOT, "tmp");
+  mkdirSync(dir, { recursive: true });
+  const file = join(dir, "agent-box-batch.json");
+  writeFileSync(file, JSON.stringify(steps));
+  const res = spawnSync("node", ["tools/mcp-call.mjs", "--batch", `@${file}`, "enfusion-workbench"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    env: { ...process.env, ...workbenchEnv() },
+  });
+  const text = `${res.stdout || ""}${res.stderr || ""}`;
+  if (res.stdout) process.stdout.write(res.stdout);
+  if (res.stderr) process.stderr.write(res.stderr);
+  return { code: res.status ?? 1, text };
+}
+
+function workbenchMode(text) {
+  const match = text.match(/\*\*Mode:\*\*\s*(\w+)/);
+  return match ? match[1] : "";
+}
+
+export function enterPlay() {
+  const state = mcpBatch([{ tool: "wb_state", args: {} }]);
+  if (state.code !== 0) return state.code;
+  const mode = workbenchMode(state.text);
+  const batches = playSteps(mode);
+  for (const steps of batches) {
+    const result = mcpBatch(steps);
+    if (result.code !== 0) return result.code;
+  }
+  return 0;
 }
 
 export function runScriptPillar(shouldRun) {
@@ -477,6 +537,14 @@ function selftest() {
   if (!apple || apple.x !== 91.4 || apple.z !== 140.7) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
   const police = findPad(list, "PoliceStation_Debug");
   if (!police || police.x !== 170 || police.z !== 120) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
+  const pile = findPad(list, "CementPile_Debug");
+  if (!pile || !pile.actions.includes("EL_GatherAction")) throw new Error("CementPile_Debug gather missing");
+  const ore = findPad(list, "IronOre_Debug");
+  if (!ore || !ore.actions.includes("EL_GatherAction")) throw new Error("IronOre_Debug gather missing");
+  const counter = findPad(list, "TraderChainCounter");
+  if (!counter || !counter.actions.includes("EL_OpenTraderAction")) throw new Error("TraderChainCounter missing");
+  const saw = findPad(list, "Sawmill_Debug");
+  if (!saw || !saw.actions.includes("EL_ProcessAction")) throw new Error("Sawmill_Debug process missing");
   let rejected = false;
   try {
     buildLine(1, { verb: "input", action: "MoveForward" });
@@ -497,6 +565,16 @@ function selftest() {
   if (!flow.includes("open DebugMenu show") || !flow.includes("shot ui debug_menu")) throw new Error(flow.join("|"));
   const intake = readFlow("ui-intake").filter((line) => line.trim() && !line.trim().startsWith("#"));
   if (!intake.includes("click CivilianButton") || !intake.includes("click TownButton")) throw new Error(intake.join("|"));
+  const chain = checkChains(ROOT);
+  if (!chain.ok) throw new Error(chain.errors.join("; "));
+  const appleFlow = readFlow("chain-apple").filter((line) => line.trim() && !line.trim().startsWith("#"));
+  if (!appleFlow.includes("use EL_GatherAction AppleGatherTree") || !appleFlow.includes("use EL_OpenTraderAction AppleTradeContainer")) {
+    throw new Error(appleFlow.join("|"));
+  }
+  const editPlay = playSteps("edit");
+  if (editPlay.length !== 1 || editPlay[0][0].tool !== "wb_state" || editPlay[0].at(-1).tool !== "wb_play") {
+    throw new Error("edit play batch must read state before play");
+  }
   console.log("selftest ok");
   return 0;
 }
@@ -521,6 +599,7 @@ function usage() {
   node agent-box/harness.mjs shot ui <name>
   node agent-box/harness.mjs shot world <name> [x y z]
   node agent-box/harness.mjs flow <name>
+  node agent-box/harness.mjs chains [--run]
   node agent-box/harness.mjs pillar script [--run]
 
 Pillars
@@ -541,29 +620,24 @@ function main(argv) {
       return 0;
     }
     if (cmd === "selftest") return selftest();
-    if (cmd === "play") {
-      const dir = join(ROOT, "tmp");
-      mkdirSync(dir, { recursive: true });
-      const paths = toolchainPaths();
-      const env = {
-        ENFUSION_WORKBENCH_PATH: paths.workbench,
-        ENFUSION_GAME_PATH: paths.game,
-        ENFUSION_SERVER_PATH: paths.server,
-        ENFUSION_PROJECT_PATH: paths.project,
-      };
-      const stop = join(dir, "agent-box-stop.json");
-      const play = join(dir, "agent-box-play.json");
-      writeFileSync(stop, JSON.stringify([{ tool: "wb_stop", args: {} }]));
-      writeFileSync(
-        play,
-        JSON.stringify([
-          { tool: "wb_open_resource", args: { path: "Worlds/DebugWorld/DebugWorld.ent" } },
-          { tool: "wb_play", args: { debugMode: false, fullScreen: false } },
-        ]),
-      );
-      // Already-edit sessions reject stop. Opening the world is what matters.
-      runNode(["tools/mcp-call.mjs", "--batch", `@${stop}`, "enfusion-workbench"], env);
-      return runNode(["tools/mcp-call.mjs", "--batch", `@${play}`, "enfusion-workbench"], env);
+    if (cmd === "play") return enterPlay();
+    if (cmd === "chains") {
+      if (!rest.includes("--run")) {
+        const check = checkChains(ROOT);
+        console.log(formatPlan());
+        if (!check.ok) {
+          for (const error of check.errors) console.error(error);
+          return 1;
+        }
+        console.log("chains ok (static). Pass --run in a play session to stand, look, and use.");
+        return 0;
+      }
+      const played = runChainProbes({
+        send: (spec) => sendCommand(spec),
+        pause,
+        onLine: (line) => console.log(line),
+      });
+      return played.code;
     }
     if (cmd === "layers") {
       console.log(formatPads());

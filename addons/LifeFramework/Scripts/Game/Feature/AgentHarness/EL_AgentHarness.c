@@ -713,6 +713,20 @@ class EL_AgentHarness
 			return;
 		}
 
+		// Debug menu buttons are plain ButtonWidgets. The menu class is not a
+		// widget handler on them, so the parent walk never reaches OnClick.
+		MenuManager menuManager = GetGame().GetMenuManager();
+		if (menuManager)
+		{
+			EL_DebugMenu debugMenu = EL_DebugMenu.Cast(menuManager.FindMenuByPreset(ChimeraMenuPreset.DebugMenu));
+			if (debugMenu && debugMenu.OnClick(s_wClickTarget, 0, 0, 0))
+			{
+				EL_Debug.Log(FEATURE, string.Format("click %1", s_sClickName));
+				WriteResult(cmd.Id, "ok", s_sClickName);
+				return;
+			}
+		}
+
 		Widget cursor = s_wClickTarget;
 		while (cursor)
 		{
@@ -769,6 +783,9 @@ class EL_AgentHarness
 		if (!ButtonWidget.Cast(widget))
 			return false;
 
+		if (DebugMenuContains(widget))
+			return true;
+
 		Widget cursor = widget;
 		while (cursor)
 		{
@@ -786,44 +803,89 @@ class EL_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when the widget sits inside the open debug menu. That menu's buttons
+	//! have no SCR_ButtonTextComponent and the menu itself is not a widget handler.
+	protected static bool DebugMenuContains(Widget widget)
+	{
+		MenuManager menuManager = GetGame().GetMenuManager();
+		if (!menuManager)
+			return false;
+
+		EL_DebugMenu menu = EL_DebugMenu.Cast(menuManager.FindMenuByPreset(ChimeraMenuPreset.DebugMenu));
+		if (!menu)
+			return false;
+
+		Widget root = menu.GetRootWidget();
+		if (!root)
+			return false;
+
+		Widget cursor = widget;
+		while (cursor)
+		{
+			if (cursor == root)
+				return true;
+			cursor = cursor.GetParent();
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void DoUse(EL_AgentCommand cmd)
 	{
-		IEntity user = EL_Utils.GetLocalCharacter();
-		if (!user)
+		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		if (!character)
 		{
 			WriteResult(cmd.Id, "error", "no_character");
 			return;
 		}
 
-		IEntity target = FindTarget(user, cmd.Arg1, cmd.Arg2);
-		if (!target)
+		character.EL_AskHarnessUse(cmd.Id, cmd.Arg1, cmd.Arg2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side use. Checks and PerformAction run where inventory changes stick.
+	//! \param user The character that asked. On a listen host this is not GetLocalCharacter.
+	//! \param commandId Result id the harness is waiting on.
+	//! \param className Action class.
+	//! \param entityName Named host, or empty for the nearest match.
+	static void ApplyUse(IEntity user, int commandId, string className, string entityName)
+	{
+		if (!user)
 		{
-			WriteResult(cmd.Id, "error", "action_not_found");
+			WriteResult(commandId, "error", "no_character");
 			return;
 		}
 
-		ScriptedUserAction action = FindOnEntity(target, cmd.Arg1);
+		IEntity target = FindTarget(user, className, entityName);
+		if (!target)
+		{
+			WriteResult(commandId, "error", "action_not_found");
+			return;
+		}
+
+		ScriptedUserAction action = FindOnEntity(target, className);
 		if (!action)
 		{
-			WriteResult(cmd.Id, "error", "action_not_found");
+			WriteResult(commandId, "error", "action_not_found");
 			return;
 		}
 
 		if (!action.CanBeShownScript(user))
 		{
-			WriteResult(cmd.Id, "error", "cannot_show");
+			WriteResult(commandId, "error", "cannot_show");
 			return;
 		}
 
 		if (!action.CanBePerformedScript(user))
 		{
-			WriteResult(cmd.Id, "error", "cannot_perform");
+			WriteResult(commandId, "error", "cannot_perform");
 			return;
 		}
 
 		action.PerformAction(target, user);
-		EL_Debug.Log(FEATURE, string.Format("performed %1", cmd.Arg1));
-		WriteResult(cmd.Id, "ok", cmd.Arg1);
+		EL_Debug.Log(FEATURE, string.Format("performed %1", className));
+		WriteResult(commandId, "ok", className);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 // red-proof: make IsMenuAction accept MoveForward, then "movement input is refused" fails.
+// DecideApplyAction(false, false) asserted true fails "a non-owner client does not apply".
 // tier: LOGIC
 class EL_Test_AgentHarness : EL_Test
 {
@@ -52,5 +53,9 @@ class EL_Test_AgentHarness : EL_Test
 		ctx.EqualStr("bad_index", cmd.Error, "bad click index error");
 
 		ctx.False(EL_AgentCommand.Parse("", cmd), "empty line is rejected");
+
+		ctx.True(EL_NetworkUtils.DecideApplyAction(true, false), "the owner applies the action");
+		ctx.False(EL_NetworkUtils.DecideApplyAction(false, false), "a non-owner client does not apply");
+		ctx.True(EL_NetworkUtils.DecideApplyAction(false, true), "the server applies when no peer owns the prop");
 	}
 }

@@ -23,7 +23,7 @@ GenericEntity {
    m_TradablePrefabs {
     "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et"
     "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et"
-    "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et"
+    "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et"
     "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et"
     "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
     "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
@@ -54,7 +54,7 @@ GenericEntity {
      m_ValuePerItem 10
     }
     EL_TraderItem "{59693C53B6A5E005}" {
-     m_ItemPrefab "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et"
+     m_ItemPrefab "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et"
      m_ValuePerItem 8
     }
     EL_TraderItem "{59693C53B6A5E006}" {

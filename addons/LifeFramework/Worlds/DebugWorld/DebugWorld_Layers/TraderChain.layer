@@ -10,7 +10,10 @@ EL_NpcBaseEntity PoliceDutyNPC {
      }
     }
    }
-   coords -19.551 -0.001 -1
+   coords 1.2 0 0
   }
  }
+}
+GenericEntity TraderChainCounter : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
+ coords 127 0 135
 }

@@ -65,11 +65,11 @@ coords -2.6 0.9 0.7
   }
  }
 }
-GenericEntity : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01_medium.et" {
+GenericEntity GravelPile_Medium_Debug : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01_medium.et" {
  coords 106 0 133
  angleY -179.853
 }
-GenericEntity : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01_large.et" {
+GenericEntity GravelPile_Large_Debug : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01_large.et" {
  coords 107.5 0 133.5
  angleY -179.853
 }

@@ -140,6 +140,38 @@ coords -2.6 0.9 0.7
  }
 }
 GenericEntity TomatoGather : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" {
+ components {
+  ActionsManagerComponent "{59A0BBAE906EB838}" {
+   additionalActions {
+    EL_GatherAction "{5B10C0DE7A11E001}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5B10C0DE7A11E002}" {
+      Name "Gather Tomatoes"
+      Description "Pick ripe tomatoes"
+     }
+     m_GatherItemPrefab "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et"
+     m_GatherAmount 1
+    }
+   }
+  }
+ }
+ m_aCropStages {
+  EL_CropStage "{59A13193B7CC82CF}" {
+   m_fStageTime 0
+  }
+  EL_CropStage "{59A13193B675E0BB}" {
+   m_fStageTime 0
+  }
+  EL_CropStage "{59A13193DE9FB1B1}" {
+   m_fStageTime 0
+  }
+  EL_CropStage "{59A13193B698A315}" {
+   m_fStageTime 30
+   m_bCanGather 1
+  }
+ }
  coords 106 0 145
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {

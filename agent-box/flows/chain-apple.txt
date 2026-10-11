@@ -1,0 +1,9 @@
+# Player path for the apple chain: gather, then open the trader.
+# The juicer (AppleProcessor) is a separate probe in `chains --run`.
+stand AppleGatherTree
+look
+use EL_GatherAction AppleGatherTree
+stand AppleTradeContainer
+look
+use EL_OpenTraderAction AppleTradeContainer
+shot ui apple_trade

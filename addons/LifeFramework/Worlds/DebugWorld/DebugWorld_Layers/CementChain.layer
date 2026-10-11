@@ -65,7 +65,7 @@ GenericEntity CementBuilderStand {
   }
  }
 }
-SCR_DestructibleBuildingEntity : "{A92A5F3B79FF56BE}Prefabs/Structures/Industrial/Houses/ConcretePlant_E_01.et" {
+SCR_DestructibleBuildingEntity CementPlant_Debug : "{A92A5F3B79FF56BE}Prefabs/Structures/Industrial/Houses/ConcretePlant_E_01.et" {
  components {
   ActionsManagerComponent "{59BCA07275D1833B}" {
    additionalActions {
@@ -76,7 +76,7 @@ SCR_DestructibleBuildingEntity : "{A92A5F3B79FF56BE}Prefabs/Structures/Industria
  }
  coords 96.2 0 128.4
 }
-StaticModelEntity : "{81CB1B2631584427}Prefabs/Props/Construction/CementPile.et" {
+StaticModelEntity CementPile_Debug : "{81CB1B2631584427}Prefabs/Props/Construction/CementPile.et" {
  coords 94 0 129
  angleY -179.853
 }

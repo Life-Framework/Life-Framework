@@ -55,7 +55,14 @@ node agent-box/harness.mjs flow ui-debug-menu
 node agent-box/harness.mjs flow ui-debug-menu-nav
 node agent-box/harness.mjs flow ui-shop
 node agent-box/harness.mjs flow world-atm
+node agent-box/harness.mjs flow chain-apple
+node agent-box/harness.mjs chains
+node agent-box/harness.mjs chains --run
 ```
+
+`chains` checks that every required DebugWorld layer has a named stand target
+or a recorded gap. `chains --run` is the play-mode e2e: stand, look, and use.
+See `docs/agent-box-chains.md`.
 
 Steps: `stand`, `look`, `ui`, `click`, `press F|WheelUp|WheelDown|F10`, `use`, `input`,
 `open`, `layer`, `shot ui`, `shot world`, and `wait <ms>`. A shot line prints
