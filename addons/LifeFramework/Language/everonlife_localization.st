@@ -1648,6 +1648,86 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This vault cannot be robbed"
      Comment "Bank vault robbery refused because the vault or the player is not ready"
     }
+    CustomStringTableItem "{A11C0B01E4A10001}" {
+     Id "EL-Job_SignUp_Courier"
+     Target_en_us "Take courier work"
+     Comment "Workplace action to sign up for parcel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A10002}" {
+     Id "EL-Job_SignUp_Fuel"
+     Target_en_us "Take fuel delivery"
+     Comment "Workplace action to sign up for fuel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A10003}" {
+     Id "EL-Job_SignUp_Taxi"
+     Target_en_us "Take taxi work"
+     Comment "Workplace action to sign up for taxi work"
+    }
+    CustomStringTableItem "{A11C0B01E4A10004}" {
+     Id "EL-Job_Pickup_Parcel"
+     Target_en_us "Pick up parcel"
+     Comment "Depot action that starts a parcel run"
+    }
+    CustomStringTableItem "{A11C0B01E4A10005}" {
+     Id "EL-Job_Pickup_Fuel"
+     Target_en_us "Take fuel can"
+     Comment "Fuel depot action that starts a fuel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A10006}" {
+     Id "EL-Job_Start_Taxi"
+     Target_en_us "Start fare"
+     Comment "Taxi rank action that starts a marker fare"
+    }
+    CustomStringTableItem "{A11C0B01E4A10007}" {
+     Id "EL-Job_Dropoff"
+     Target_en_us "Complete the run"
+     Comment "Drop marker action that pays a delivery run"
+    }
+    CustomStringTableItem "{A11C0B01E4A10008}" {
+     Id "EL-Job_Abandon"
+     Target_en_us "Abandon the run"
+     Comment "Workplace action that drops the active run with no pay"
+    }
+    CustomStringTableItem "{A11C0B01E4A10009}" {
+     Id "EL-Job_LevelRequired"
+     Target_en_us "Your work level is too low"
+     Comment "Signup refused because the civilian career level is too low"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000A}" {
+     Id "EL-Job_NotSignedUp"
+     Target_en_us "Sign up at the workplace first"
+     Comment "Run refused because the player has not taken this job"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000B}" {
+     Id "EL-Job_NoActiveRun"
+     Target_en_us "You have no run to finish"
+     Comment "Drop or abandon refused because no run is active"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000C}" {
+     Id "EL-Job_Name_Courier"
+     Target_en_us "Courier"
+     Comment "Job name for parcel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000D}" {
+     Id "EL-Job_Name_Fuel"
+     Target_en_us "Fuel delivery"
+     Comment "Job name for fuel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000E}" {
+     Id "EL-Job_Name_Taxi"
+     Target_en_us "Taxi driver"
+     Comment "Job name for taxi work"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000F}" {
+     Id "EL-Job_Paid"
+     Target_en_us "Run paid: $%1"
+     Comment "Cash notice after a completed delivery run"
+    }
+    CustomStringTableItem "{A11C0B01E4A10010}" {
+     Id "EL-Job_Abandoned"
+     Target_en_us "Run abandoned. No pay."
+     Comment "Notice when a delivery run is abandoned"
+    }
     CustomStringTableItem "{232AC988385CE40A}" {
      Id "EL-Org_Open"
      Target_en_us "Organization desk"
@@ -1787,6 +1867,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "EL-Vehicle_NotSold"
      Target_en_us "This lot does not sell that vehicle"
      Comment "Vehicle purchase refused because the prefab is not in the catalog"
+    }
+    CustomStringTableItem "{B7E2C14A90F35D68}" {
+     Id "EL-Hospital_RobTill"
+     Target_en_us "Rob the till"
+     Comment "Hospital till robbery action name"
+    }
+    CustomStringTableItem "{C8F3D25B01A46E79}" {
+     Id "EL-Hospital_TillNotConfigured"
+     Target_en_us "This till is not set up"
+     Comment "Hospital till action refused because the till is not configured"
+    }
+    CustomStringTableItem "{D904E36C12B57F8A}" {
+     Id "EL-Hospital_TillCooldown"
+     Target_en_us "The till was just robbed"
+     Comment "Hospital till action refused because the cooldown is still running"
+    }
+    CustomStringTableItem "{EA15F47D23C6809B}" {
+     Id "EL-Hospital_TillCivilianOnly"
+     Target_en_us "Only civilians can rob the till"
+     Comment "Hospital till action refused for a non-civilian"
+    }
+    CustomStringTableItem "{FB26058E34D791AC}" {
+     Id "EL-Hospital_TillNeedPolice"
+     Target_en_us "Not enough police are on duty"
+     Comment "Hospital till action refused below the minimum police count"
+    }
+    CustomStringTableItem "{0C37169F45E8A2BD}" {
+     Id "EL-Hospital_BreachCabinet"
+     Target_en_us "Breach the cabinet"
+     Comment "Hospital cabinet breach action name"
+    }
+    CustomStringTableItem "{1D4827A056F9B3CE}" {
+     Id "EL-Police_Alert_Hospital"
+     Target_en_us "Crime Alert: Hospital till robbed"
+     Comment "Police notification when the hospital till is robbed"
     }
     CustomStringTableItem "{045DF984ED294440}" {
      Id "EL-Resource_TradeJuice"
