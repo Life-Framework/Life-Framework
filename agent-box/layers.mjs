@@ -3,7 +3,7 @@
 // its own `coords` or an ancestor's. The scan is the catalog: no second list
 // to keep in sync.
 
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const STRUCTURAL = new Set([
@@ -19,13 +19,20 @@ const STRUCTURAL = new Set([
 
 function classify(line) {
   const action = line.match(/^([A-Za-z_][A-Za-z0-9_]*Action)\s+"\{/);
-  if (action) return { entity: false, name: action[1], actionName: action[1] };
+  if (action) return { entity: false, name: action[1], actionName: action[1], prefab: "" };
 
-  const prefab = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"/);
-  if (prefab) return { entity: true, name: prefab[2], actionName: "" };
+  const namedPrefab = line.match(
+    /^(?:\$grp\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"/,
+  );
+  if (namedPrefab && !line.startsWith("$grp")) {
+    return { entity: true, name: namedPrefab[2], actionName: "", prefab: namedPrefab[3] };
+  }
+
+  const groupPrefab = line.match(/^\$grp\s+[A-Za-z_][A-Za-z0-9_]*\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"/);
+  if (groupPrefab) return { entity: false, name: "", actionName: "", prefab: groupPrefab[1] };
 
   const generic = line.match(/^GenericEntity\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{/);
-  if (generic) return { entity: true, name: generic[1], actionName: "" };
+  if (generic) return { entity: true, name: generic[1], actionName: "", prefab: "" };
 
   const simple = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*\{$/);
   if (
@@ -34,13 +41,31 @@ function classify(line) {
     !simple[1].endsWith("Component") &&
     !simple[1].endsWith("Info")
   ) {
-    return { entity: true, name: simple[1], actionName: "" };
+    return { entity: true, name: simple[1], actionName: "", prefab: "" };
   }
 
-  return { entity: false, name: "", actionName: "" };
+  return { entity: false, name: "", actionName: "", prefab: "" };
 }
 
-export function parseLayer(text, layerFile) {
+function prefabActions(root, prefabPath, seen = new Set()) {
+  if (!prefabPath || seen.has(prefabPath)) return [];
+  seen.add(prefabPath);
+  const rel = prefabPath.replaceAll("\\", "/");
+  if (rel.includes("..")) return [];
+  const full = join(root, "addons", "LifeFramework", rel);
+  if (!existsSync(full)) return [];
+  const text = readFileSync(full, "utf8");
+  const actions = [];
+  for (const raw of text.split(/\r?\n/)) {
+    const action = raw.trim().match(/^([A-Za-z_][A-Za-z0-9_]*Action)\s+"\{/);
+    if (action) actions.push(action[1]);
+  }
+  const parent = text.match(/:\s*"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/);
+  if (parent) actions.push(...prefabActions(root, parent[1], seen));
+  return [...new Set(actions)];
+}
+
+export function parseLayer(text, layerFile, root) {
   const pads = [];
   const stack = [];
 
@@ -73,6 +98,18 @@ export function parseLayer(text, layerFile) {
 
     if (closes) {
       const frame = stack.pop();
+      if (frame?.entity && frame.name && root) {
+        let prefab = frame.prefab;
+        if (!prefab) {
+          for (let i = stack.length - 1; i >= 0; i--) {
+            if (stack[i].prefab) {
+              prefab = stack[i].prefab;
+              break;
+            }
+          }
+        }
+        if (prefab) frame.actions.push(...prefabActions(root, prefab));
+      }
       if (frame?.entity && frame.actions.length) {
         // Nested `coords` are local to the parent. World position is the sum.
         let x = 0;
@@ -109,7 +146,7 @@ export function loadPads(root) {
   for (const file of readdirSync(dir)) {
     if (!file.endsWith(".layer")) continue;
     const text = readFileSync(join(dir, file), "utf8");
-    pads.push(...parseLayer(text, file));
+    pads.push(...parseLayer(text, file, root));
   }
   pads.sort((a, b) => a.name.localeCompare(b.name) || a.layer.localeCompare(b.layer));
   return pads;

@@ -19,7 +19,7 @@ GenericEntity SandBuilderStand {
    SandDisplayItems {
      coords 0 0.9 0.7
     {
-     $grp GenericEntity : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
+     $grp GenericEntity : "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et" {
       Sandbag_01 {
        coords 0 0 0
       }
@@ -64,14 +64,14 @@ GenericEntity SandBuilderStand {
   }
  }
 }
-GenericEntity Sandbag_5A0E821DC5FD2BE3 : "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et" {
+GenericEntity Sandbag_5A0E821DC5FD2BE3 : "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et" {
  coords 119 0 130
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
  coords 118 0 129
  m_vSize 2 1 1.7
 }
-GenericEntity : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
+GenericEntity SandPile_Debug : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
  coords 112.495 0 124.797
  angles 0 -179.853 0
 }

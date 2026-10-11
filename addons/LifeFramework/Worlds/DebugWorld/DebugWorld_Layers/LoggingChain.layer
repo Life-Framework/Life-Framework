@@ -68,20 +68,51 @@ GenericEntity LumberjackStand {
  }
 }
 $grp GenericEntity : "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylvestris/CuttableTree_Pinus_Sylvestris_2f.et" {
- {
+ CuttableTree_1 {
   coords 141.2 0 145
   angles 0 18.018 0
  }
- {
+ CuttableTree_2 {
   coords 142.5 0 145.6
   angles 0 40 0
  }
- {
+ CuttableTree_3 {
   coords 143.3 0 144.6
   angles 0 -30 0
  }
 }
-GenericEntity : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
+GenericEntity LogPile_Debug {
+ components {
+  ActionsManagerComponent "{5B10C0DE7A11E011}" {
+   ActionContexts {
+    UserActionContext "{5B10C0DE7A11E012}" {
+     ContextName "Gather"
+     Position PointInfo "{5B10C0DE7A11E013}" {
+      Offset 0 0.5 0
+     }
+     Radius 2
+    }
+   }
+   additionalActions {
+    EL_GatherAction "{5B10C0DE7A11E014}" {
+     ParentContextList {
+      "Gather"
+     }
+     UIInfo UIInfo "{5B10C0DE7A11E015}" {
+      Name "Gather Log"
+     }
+     m_GatherItemPrefab "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et"
+     m_GatherAmount 1
+    }
+   }
+  }
+  RplComponent "{5B10C0DE7A11E016}" {
+   Enabled 1
+  }
+ }
+ coords 143.2 0 141.2
+}
+GenericEntity Sawmill_Debug : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
   coords 144.2 0 140.4
 }
 GenericEntity Axe_5ACCA165954CE408 : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et" {

@@ -29,11 +29,11 @@ GenericEntity CrimeScene {
         }
         UIInfo UIInfo "{5A4B0B84C86D8849}" {
          Name "Robar Dinero"
-         Description "Robar 200$ (Requiere 1+ policías de servicio)"
+         Description "Robar 200$"
         }
         m_iMoneyAmount 200
         m_fCooldown 60
-        m_iMinPoliceOnDuty 1
+        m_iMinPoliceOnDuty 0
        }
       }
      }
@@ -71,11 +71,11 @@ GenericEntity CrimeScene {
         }
         UIInfo UIInfo "{5A4B0B84C86D9849}" {
          Name "Robar Armas"
-         Description "Robo de armería (Requiere 2+ policías de servicio)"
+         Description "Robo de armería"
         }
         m_WeaponPrefab "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et"
         m_fCooldown 120
-        m_iMinPoliceOnDuty 2
+        m_iMinPoliceOnDuty 0
        }
       }
      }
@@ -117,11 +117,11 @@ GenericEntity CrimeScene {
        }
        UIInfo UIInfo "{5A4B0B84C86DA849}" {
         Name "Robar Vehículo"
-        Description "Robo de vehículo (Requiere 3+ policías de servicio)"
+        Description "Robo de vehículo"
        }
        m_VehiclePrefab "{254289B9C09904AB}Prefabs/Vehicles/Wheeled/BRDM2/BRDM2.et"
        m_fCooldown 600
-       m_iMinPoliceOnDuty 3
+       m_iMinPoliceOnDuty 0
       }
      }
     }

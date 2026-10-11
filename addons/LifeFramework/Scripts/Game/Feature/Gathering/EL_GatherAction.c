@@ -28,7 +28,9 @@ class EL_GatherAction : ScriptedUserAction
 	// play a pickup sound and then add the correct amount to the users inventory
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!EL_NetworkUtils.IsOwner(pOwnerEntity)) return;
+		if (!pOwnerEntity || !EL_NetworkUtils.ShouldApplyAction(pOwnerEntity)) return;
+		if (!EL_NetworkUtils.IsOwner(pOwnerEntity))
+			EL_Debug.Warn("Gathering", string.Format("gather applied without replication owner on %1", pOwnerEntity.GetName()));
 		if (!IsGatherRequestConfigured(m_GatherItemPrefab, m_GatherAmount))
 		{
 			EL_Debug.Error("Gathering", "rejected gather: item prefab or amount is not configured");
@@ -43,10 +45,11 @@ class EL_GatherAction : ScriptedUserAction
 		}
 
 		SCR_InventoryStorageManagerComponent inventoryManager = EL_Component<SCR_InventoryStorageManagerComponent>.Find(pUserEntity);
-		if (EL_InventoryUtils.AddAmount(inventoryManager, m_GatherItemPrefab, m_GatherAmount))
+		int added = EL_InventoryUtils.AddAmount(inventoryManager, m_GatherItemPrefab, m_GatherAmount);
+		if (added > 0)
 		{
 			inventoryManager.RpcAsk_PlaySound(EL_NetworkUtils.GetRplId(pUserEntity), "SOUND_PICK_UP");
-			EL_Debug.Log("Gathering", string.Format("gathered %1 x%2", m_GatherItemPrefab, m_GatherAmount));
+			EL_Debug.Log("Gathering", string.Format("gathered %1 x%2", m_GatherItemPrefab, added));
 
 			// Notify job manager for reward
 			EL_JobManager jobManager = EL_JobManager.GetInstance();
@@ -54,6 +57,10 @@ class EL_GatherAction : ScriptedUserAction
 			{
 				jobManager.OnGatherCompleted(pUserEntity, m_GatherItemPrefab);
 			}
+		}
+		else
+		{
+			EL_Debug.Error("Gathering", string.Format("gather grant failed prefab=%1 requested=%2", m_GatherItemPrefab, m_GatherAmount));
 		}
 
 		// No limit configured: nothing to consume

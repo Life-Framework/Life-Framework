@@ -38,7 +38,9 @@ class EL_ProcessAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!EL_NetworkUtils.IsOwner(pOwnerEntity)) return;
+		if (!pOwnerEntity || !EL_NetworkUtils.ShouldApplyAction(pOwnerEntity)) return;
+		if (!EL_NetworkUtils.IsOwner(pOwnerEntity))
+			EL_Debug.Warn("Processing", string.Format("process applied without replication owner on %1", pOwnerEntity.GetName()));
 
 		// A malformed recipe must be rejected before any inventory mutation.
 		if (!IsRecipeConfigured(m_aProcessingInputs, m_aProcessingOutputs))

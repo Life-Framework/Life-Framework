@@ -1,7 +1,7 @@
-GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
+GenericEntity CrimeTrader_Debug : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
  coords 150 0 130
 }
-GenericEntity : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
+GenericEntity CrimeFurnace_Debug : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
  coords 152 0 130
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {

@@ -14,9 +14,8 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
     }
     ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
      Weight 0.8
-     SizeSetupStrategy Scaler
-     ItemDimensions 0.01 0.01 0.01
-     ItemVolume 0.01
+     SizeSetupStrategy Volume
+     ItemVolume 100
     }
     ItemAnimationAttributes ItemAnimationAttributes "{59A730880E261EBB}" {
      HandAdditiveRotation 0 90 180
@@ -31,6 +30,7 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
       ItemRenderRotation 0 0 0
      }
     }
+    m_Size SLOT_1x1
    }
   }
    MeshObject "{5A4ACD10B8DA304F}" {

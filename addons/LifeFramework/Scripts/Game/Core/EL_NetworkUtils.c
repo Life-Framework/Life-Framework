@@ -45,4 +45,27 @@ class EL_NetworkUtils : Managed
 
 		return replication.IsOwner();
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner applies. When no peer owns the prop, the server still applies.
+	//! A replication component that never becomes authoritative used to make
+	//! gather and process return with no log and no items.
+	//! \param isOwner This peer owns the entity.
+	//! \param isServer This peer is the server.
+	//! \return True when this peer should mutate inventory for the action.
+	static bool DecideApplyAction(bool isOwner, bool isServer)
+	{
+		if (isOwner)
+			return true;
+
+		return isServer;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param entity Prop the action is performed on.
+	//! \return True when this peer should apply the action.
+	static bool ShouldApplyAction(IEntity entity)
+	{
+		return DecideApplyAction(IsOwner(entity), Replication.IsServer());
+	}
 };

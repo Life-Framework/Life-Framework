@@ -21,7 +21,7 @@ SCR_DestructibleBuildingEntity : "{67BB04E9136D6A3E}Prefabs/Structures/Industria
      Duration 10
      m_aProcessingInputs {
       EL_ProcessingInput "{59BCA07251625E0D}" {
-       m_InputPrefab "{ADFEF306D1C22E5F}Prefabs/Items/Resources/Sandbag.et"
+       m_InputPrefab "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et"
       }
       EL_ProcessingInput "{59BCA072572E8F38}" {
        m_InputPrefab "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et"

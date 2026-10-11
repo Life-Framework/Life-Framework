@@ -33,4 +33,28 @@ modded class SCR_ChimeraCharacter
 		SetOrigin(target.GetOrigin() + Vector(1.2, 0, 0));
 		EL_Debug.Log("AgentHarness", string.Format("stood beside %1", entityName));
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Perform a named action on the server. Client-side PerformAction no-ops
+	//! when this peer does not own the prop, which dropped gathers on the floor.
+	//! \param commandId Result id the harness is waiting on.
+	//! \param className Action class, for example EL_GatherAction.
+	//! \param entityName World entity that hosts the action. Empty searches nearby.
+	void EL_AskHarnessUse(int commandId, string className, string entityName)
+	{
+		if (Replication.IsServer())
+		{
+			EL_AgentHarness.ApplyUse(this, commandId, className, entityName);
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessUse, commandId, className, entityName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_HarnessUse(int commandId, string className, string entityName)
+	{
+		EL_AgentHarness.ApplyUse(this, commandId, className, entityName);
+	}
 }

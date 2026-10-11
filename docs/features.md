@@ -219,6 +219,9 @@
 - ✅ Server re-validates tool, crop stage, cooldown, and malformed item/amount
   configuration in `PerformAction` (verified 2026-08-30). Remaining: timeout
   attribute says "ms" but is compared as seconds-compatible — fragile.
+- ✅ The server applies a gather when no peer owns the prop, and a grant that
+  adds nothing is an error log (verified 2026-10-10). A sandbag the inventory
+  rejects, or a nugget with no usable slot, used to look like a successful use.
 
 ### `EL_ProcessAction` — `Feature/Processing/EL_ProcessAction.c`
 - ✅ Recipe: consume all `m_aProcessingInputs`, produce all
@@ -294,7 +297,9 @@
 
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
-  gates; raises wanted level (+1/+2/+3); notifies police.
+  gates; raises wanted level (+1/+2/+3); notifies police. DebugWorld's three
+  points set the minimum to 0 so one civilian can run them (verified 2026-10-10).
+  The action classes still default to 2 / 1 / 3.
 - ✅ **Cash payout + reliable wanted bump** (verified 2026-08-30): the haul is
   `EL_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
   asserts the bank balance stays 0), and the account cache churn is fixed so
@@ -315,7 +320,9 @@
   `account.GetActiveCharacter()` deref in the wanted list is unguarded.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
-- ✅ Toggles police on-duty flag.
+- ✅ Toggles police on-duty flag. Civilians are refused. The debug menu's
+  police faction button sets faction and duty, which is how a solo session
+  reaches the toggle (verified 2026-10-10).
 - ⚠️ Toggling evicts the account from the cache, so the officer cannot reopen
   the police menu or re-toggle until the account reloads.
 

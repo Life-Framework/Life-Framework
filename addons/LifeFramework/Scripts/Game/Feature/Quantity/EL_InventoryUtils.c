@@ -9,11 +9,12 @@ modded class EL_InventoryUtils
 		// No quantity used, so default engine count function
 		if (!SCR_BaseContainerTools.FindComponentSource(Resource.Load(prefab), EL_QuantityComponent))
 		{
-			return target.GetDepositItemCountByResource(target.GetOwner(), prefab);
+			return target.GetDepositItemCountByResource(target.GetOwner(), prefab) + CarriedAmount(target, prefab, null);
 		}
 
+		array<IEntity> foundItems = FindItemsByPrefab(target, prefab);
 		int totalAmount;
-		foreach (IEntity item : FindItemsByPrefab(target, prefab))
+		foreach (IEntity item : foundItems)
 		{
 			int amount = 1;
 			EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(item);
@@ -21,7 +22,11 @@ modded class EL_InventoryUtils
 			totalAmount += amount;
 		}
 
-		return totalAmount;
+		// FindItems misses a carried stack. The deposit count still sees it.
+		if (totalAmount == 0 && target.GetOwner())
+			totalAmount = target.GetDepositItemCountByResource(target.GetOwner(), prefab);
+
+		return totalAmount + CarriedAmount(target, prefab, foundItems);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -60,8 +65,15 @@ modded class EL_InventoryUtils
 		while (remainingAmount > 0)
 		{
 			IEntity item = EL_Utils.SpawnEntityPrefab(prefab, storageManager.GetOwner().GetOrigin());
-			if (!item || (!storageManager.TryInsertItem(item) && !dropOverflow))
+			if (!item)
 			{
+				EL_Debug.Error("Quantity", string.Format("add failed: spawn returned nothing for %1", prefab));
+				break;
+			}
+
+			if (!storageManager.TryInsertItem(item) && !dropOverflow)
+			{
+				EL_Debug.Error("Quantity", string.Format("add failed: inventory rejected %1", prefab));
 				SCR_EntityHelper.DeleteEntityAndChildren(item);
 				break;
 			}
@@ -144,6 +156,9 @@ modded class EL_InventoryUtils
 			}
 		}
 
+		if (remainingAmount > 0)
+			remainingAmount = ConsumeCarried(storageManager, prefab, remainingAmount);
+
 		return amount - remainingAmount;
 	}
 	
@@ -153,5 +168,124 @@ modded class EL_InventoryUtils
 	{
 		InventoryStorageManagerComponent invManager = EL_InventoryUtils.GetResponsibleStorageManager(target);
 		return RemoveAmount(invManager, prefab, amount);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Items in the hands are not always in the storage FindItems walks. A log
+	//! the player is carrying still counts as an input for a processor.
+	static int CarriedAmount(InventoryStorageManagerComponent storageManager, ResourceName prefab, array<IEntity> alreadyFound)
+	{
+		if (!storageManager || prefab.IsEmpty())
+			return 0;
+
+		IEntity owner = storageManager.GetOwner();
+		if (!owner)
+			return 0;
+
+		CharacterControllerComponent controller = EL_Component<CharacterControllerComponent>.Find(owner);
+		if (!controller)
+			return 0;
+
+		int total = AmountOfCarried(controller.GetRightHandItem(), prefab, alreadyFound);
+		IEntity left = controller.GetAttachedGadgetAtLeftHandSlot();
+		if (left != controller.GetRightHandItem())
+			total += AmountOfCarried(left, prefab, alreadyFound);
+
+		EL_HandInventoryStorageComponent hands = EL_Component<EL_HandInventoryStorageComponent>.Find(owner);
+		if (hands)
+		{
+			array<IEntity> stored();
+			hands.GetAll(stored);
+			foreach (IEntity storedItem : stored)
+				total += AmountOfCarried(storedItem, prefab, alreadyFound);
+		}
+
+		return total;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int AmountOfCarried(IEntity item, ResourceName prefab, array<IEntity> alreadyFound)
+	{
+		if (!item || EL_Utils.GetPrefabName(item) != prefab)
+			return 0;
+
+		if (alreadyFound)
+		{
+			foreach (IEntity found : alreadyFound)
+			{
+				if (found == item)
+					return 0;
+			}
+		}
+
+		EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(item);
+		if (quantity)
+			return quantity.GetQuantity();
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int ConsumeCarried(InventoryStorageManagerComponent storageManager, ResourceName prefab, int remainingAmount)
+	{
+		if (!storageManager || remainingAmount <= 0)
+			return remainingAmount;
+
+		IEntity owner = storageManager.GetOwner();
+		if (!owner)
+			return remainingAmount;
+
+		CharacterControllerComponent controller = EL_Component<CharacterControllerComponent>.Find(owner);
+		if (!controller)
+			return remainingAmount;
+
+		remainingAmount = ConsumeOneCarried(controller, controller.GetRightHandItem(), prefab, remainingAmount);
+		if (remainingAmount <= 0)
+			return 0;
+
+		IEntity left = controller.GetAttachedGadgetAtLeftHandSlot();
+		if (left != controller.GetRightHandItem())
+			remainingAmount = ConsumeOneCarried(controller, left, prefab, remainingAmount);
+		if (remainingAmount <= 0)
+			return 0;
+
+		EL_HandInventoryStorageComponent hands = EL_Component<EL_HandInventoryStorageComponent>.Find(owner);
+		if (!hands)
+			return remainingAmount;
+
+		array<IEntity> stored();
+		hands.GetAll(stored);
+		foreach (IEntity storedItem : stored)
+		{
+			if (storedItem == controller.GetRightHandItem() || storedItem == left)
+				continue;
+			remainingAmount = ConsumeOneCarried(controller, storedItem, prefab, remainingAmount);
+			if (remainingAmount <= 0)
+				return 0;
+		}
+
+		return remainingAmount;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int ConsumeOneCarried(CharacterControllerComponent controller, IEntity item, ResourceName prefab, int remainingAmount)
+	{
+		if (!item || remainingAmount <= 0 || EL_Utils.GetPrefabName(item) != prefab)
+			return remainingAmount;
+
+		EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(item);
+		if (quantity)
+		{
+			int quantityChange;
+			quantity.AddQuantity(-remainingAmount, true, quantityChange);
+			remainingAmount += quantityChange;
+			return remainingAmount;
+		}
+
+		if (controller.GetAttachedGadgetAtLeftHandSlot() == item)
+			controller.RemoveGadgetFromHand(true);
+
+		SCR_EntityHelper.DeleteEntityAndChildren(item);
+		remainingAmount--;
+		return remainingAmount;
 	}
 }
