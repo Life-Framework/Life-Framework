@@ -1,14 +1,14 @@
 //------------------------------------------------------------------------------------------------
 //! Persists the game-mode persistence store (EL_PersistenceComponent): player accounts, bank
-//! accounts and survival stats.
+//! accounts, survival stats, and organizations.
 //!
 //! BINDING. Listed in the ComponentSerializers block of Configs/Systems/Persistence/LifeFramework.conf,
 //! matching the game-mode entity that carries EL_PersistenceComponent.
 //!
-//! WHERE THE DATA LIVES. Account and bank records are pulled from and applied to the manager
-//! singletons directly - EL_PlayerAccountManager / EL_ATMManager own those caches, not this
-//! component. Only survival stats are read from and written into the component's own map
-//! (keyed by character persistence id).
+//! WHERE THE DATA LIVES. Account, bank, and organization records are pulled from and applied to
+//! the manager singletons directly - EL_PlayerAccountManager / EL_ATMManager /
+//! EL_OrganizationManager own those caches, not this component. Only survival stats are read
+//! from and written into the component's own map (keyed by character persistence id).
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version first,
 //! hand-rolled, as in every vanilla serializer. A missing version means this component has no
@@ -41,7 +41,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (!persistence)
 			return ESerializeResult.ERROR;
 
-		context.WriteValue("version", 1);
+		context.WriteValue("version", 2);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -76,6 +76,12 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 		}
 		context.Write(survivalRecords);
+
+		// Version 2 appends organizations. A version 1 save has nothing after survival.
+		array<ref EL_OrganizationRecord> orgRecords = EL_OrganizationManager.ExportAll();
+		if (!orgRecords)
+			orgRecords = new array<ref EL_OrganizationRecord>();
+		context.Write(orgRecords);
 
 		return ESerializeResult.OK;
 	}
@@ -147,6 +153,22 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		else
 		{
 			EL_Debug.Warn("Persistence", "survival records failed to read, leaving live stats untouched");
+		}
+
+		// Version 1 saves end at survival. Leave live organizations alone so an older
+		// payload cannot wipe a fund that the save never knew about.
+		if (version >= 2)
+		{
+			array<ref EL_OrganizationRecord> orgRecords = new array<ref EL_OrganizationRecord>();
+			if (context.Read(orgRecords))
+			{
+				EL_OrganizationManager.ApplyAll(orgRecords);
+				EL_Debug.Log("Persistence", string.Format("applied %1 organization record(s)", orgRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "organization records failed to read, leaving live organizations untouched");
+			}
 		}
 
 		return true;

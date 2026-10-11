@@ -1523,6 +1523,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Crime Alert: Explosive charge placed"
      Comment "Police notification when a breach charge is armed"
     }
+    CustomStringTableItem "{232AC988385CE40A}" {
+     Id "EL-Org_Open"
+     Target_en_us "Organization desk"
+     Comment "Organization desk action name"
+    }
+    CustomStringTableItem "{5EC419CBC808514E}" {
+     Id "EL-Org_Title"
+     Target_en_us "Organization"
+     Comment "Organization menu title"
+    }
+    CustomStringTableItem "{7415A5742F78A08C}" {
+     Id "EL-Org_Empty"
+     Target_en_us "No organization yet"
+     Comment "Organization menu empty state before create"
+    }
+    CustomStringTableItem "{BCD86E4C6B473ACD}" {
+     Id "EL-Org_Name"
+     Target_en_us "Name"
+     Comment "Organization name row"
+    }
+    CustomStringTableItem "{8286DFFBEFD2CF59}" {
+     Id "EL-Org_Fund"
+     Target_en_us "Fund"
+     Comment "Organization shared fund row"
+    }
+    CustomStringTableItem "{40AA137751D95438}" {
+     Id "EL-Org_UpgradeOwned"
+     Target_en_us "Processing slot: owned"
+     Comment "Organization processing-slot upgrade when bought"
+    }
+    CustomStringTableItem "{72E88124F3AF33E9}" {
+     Id "EL-Org_UpgradeNone"
+     Target_en_us "Processing slot: not owned"
+     Comment "Organization processing-slot upgrade when not bought"
+    }
+    CustomStringTableItem "{10658CE04572E9FD}" {
+     Id "EL-Org_Create"
+     Target_en_us "Found organization"
+     Comment "Organization create button"
+    }
+    CustomStringTableItem "{BCA58FF32AF18A97}" {
+     Id "EL-Org_Deposit"
+     Target_en_us "Deposit cash"
+     Comment "Organization fund deposit button"
+    }
+    CustomStringTableItem "{4550F13909B7A733}" {
+     Id "EL-Org_Withdraw"
+     Target_en_us "Withdraw cash"
+     Comment "Organization fund withdraw button"
+    }
+    CustomStringTableItem "{7B882168E8E2EA56}" {
+     Id "EL-Org_BuyProcessing"
+     Target_en_us "Buy processing slot"
+     Comment "Organization processing-slot purchase button"
+    }
+    CustomStringTableItem "{BD58B67D6B3A0F31}" {
+     Id "EL-Org_Amount"
+     Target_en_us "Amount"
+     Comment "Organization cash amount field"
+    }
+    CustomStringTableItem "{1A7D101AF53FF056}" {
+     Id "EL-Org_NamePlaceholder"
+     Target_en_us "Organization name"
+     Comment "Organization name field placeholder"
+    }
+    CustomStringTableItem "{32C8D2BD6064F36A}" {
+     Id "EL-Org_Close"
+     Target_en_us "Close"
+     Comment "Organization menu close button"
+    }
   }
  }
 }
