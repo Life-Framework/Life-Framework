@@ -63,6 +63,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_Breach(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_BreachWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_BreachPersistence(), EL_TestTier.PERSISTENCE);
+		manager.Register(new EL_Test_Roadmap_Ranks(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_RanksWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_RobReward(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobRewardWantedClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);

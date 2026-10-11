@@ -1,0 +1,40 @@
+GenericEntity Roadmap_Police_Armory {
+ components {
+  MeshObject "{A7C31A9B04D25011}" {
+   Object "{B98BC8DC4C59B8DA}Assets/Props/Military/Camps/WeaponRackStand_01/WeaponRackStand_01.xob"
+  }
+  RigidBody "{A7C31A9B04D25012}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{A7C31A9B04D25013}" {
+   ActionContexts {
+    UserActionContext "{A7C31A9B04D25014}" {
+     ContextName "default"
+     Position PointInfo "{A7C31A9B04D25015}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ArmoryDrawAction "{A7C31A9B04D25016}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RankPromoteAction "{A7C31A9B04D25017}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{A7C31A9B04D25018}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 354 0 120
+}
