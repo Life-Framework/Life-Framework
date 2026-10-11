@@ -370,6 +370,21 @@
   `{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`.
   That building is capture-only and is not placed in the debug row.
 
+### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
+- ✅ Hospital till pays `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`
+  through the civilian, cooldown, and minimum-police gates and does not deposit
+  to the bank (verified 2026-10-11). The placed action is `EL_RobAction` on the
+  till's single `ActionsManagerComponent`. Wanted rises by 1. One police alert per
+  successful rob; an offer refresh does not alert. DebugWorld places
+  `Roadmap_Hospital_Till` at `282 0 120` on `Roadmap_Hospital.layer`.
+- ✅ The cabinet is a forced-entry container. `BreachCabinet` calls
+  `LF_Breach.Arm`. When that lock opens it spawns the configured medicine
+  prefabs: field dressing, morphine, saline, and tourniquet. A missing prefab
+  logs and that line is skipped. A second breach while the cabinet is open
+  spawns nothing and does not alert again. `Roadmap_Hospital_Cabinet` is at
+  `300 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
+  to the contraband scope.
+
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
   gates; raises wanted level (+1/+2/+3); notifies police. DebugWorld's three
@@ -620,7 +635,8 @@
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, tests, and the release
   `Roadmap.layer` street, `Roadmap_Bank.layer`, `Roadmap_Fuel.layer`,
-  `Roadmap_Jail.layer`, `Roadmap_Organizations.layer`, `Roadmap_Jobs.layer`, and `Roadmap_Hideout.layer` are all present as non-empty layer files.
+  `Roadmap_Jail.layer`, `Roadmap_Organizations.layer`, `Roadmap_Hospital.layer`, `Roadmap_Jobs.layer`, and `Roadmap_Hideout.layer`
+  are all present as non-empty layer files.
   `Roadmap_Fuel.layer` places `Roadmap_Fuel_Till` at `318 0 120`.
   `Roadmap_Organizations.layer` places `Roadmap_Org_Desk` at `372 0 120`.
   `Roadmap_Hideout.layer` places the door at `390 0 120`, the machine at

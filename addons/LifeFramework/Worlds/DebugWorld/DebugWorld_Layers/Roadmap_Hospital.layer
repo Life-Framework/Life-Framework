@@ -1,0 +1,106 @@
+GenericEntity Roadmap_Hospital_Till {
+ components {
+  MeshObject "{8F3A1C2D4B5E6071}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{8F3A1C2D4B5E6072}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{8F3A1C2D4B5E6073}" {
+   ActionContexts {
+    UserActionContext "{8F3A1C2D4B5E6074}" {
+     ContextName "default"
+     Position PointInfo "{8F3A1C2D4B5E6075}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    EL_RobAction "{8F3A1C2D4B5E6076}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8F3A1C2D4B5E6077}" {
+      Name "#EL-Hospital_RobTill"
+     }
+     m_iMoneyAmount 200
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+  RplComponent "{8F3A1C2D4B5E6078}" {
+   Enabled 1
+  }
+  LF_HospitalTillComponent "{8F3A1C2D4B5E6079}" {
+   m_sTargetId "Roadmap_Hospital_Till"
+   m_iPayout 200
+   m_fCooldown 60
+   m_iMinPolice 0
+  }
+ }
+ Flags 0x403 0
+ coords 282 0 120
+}
+GenericEntity Roadmap_Hospital_Cabinet {
+ components {
+  MeshObject "{91C4E0A7B2D34819}" {
+   Object "{639E1EC29FD13DF2}Assets/Props/Furniture/FirstAidBox_01/FirstAidBox_01.xob"
+  }
+  RigidBody "{91C4E0A7B2D3481A}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  EL_LockComponent "{91C4E0A7B2D34810}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{91C4E0A7B2D34811}" {
+   ActionContexts {
+    UserActionContext "{91C4E0A7B2D34812}" {
+     ContextName "default"
+     Position PointInfo "{91C4E0A7B2D34813}" {
+      Offset 0 0.4 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_HospitalCabinetAction "{91C4E0A7B2D34814}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{91C4E0A7B2D34815}" {
+      Name "#EL-Hospital_BreachCabinet"
+     }
+    }
+    LF_BreachRepairAction "{91C4E0A7B2D34816}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{91C4E0A7B2D3481B}" {
+   Enabled 1
+  }
+  LF_BreachTargetComponent "{91C4E0A7B2D34817}" {
+   m_sTargetId "Roadmap_Hospital_Cabinet"
+   m_fFuseSeconds 0
+  }
+  LF_HospitalCabinetComponent "{91C4E0A7B2D34818}" {
+   m_sTargetId "Roadmap_Hospital_Cabinet"
+   m_aLootPrefabs {
+    "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+    "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
+    "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et"
+    "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 300 0 120
+}
