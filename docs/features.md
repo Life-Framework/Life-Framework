@@ -295,6 +295,17 @@
 
 ## Crime & Police
 
+### `LF_Breach` — `Feature/Crime/LF_Breach.c`
+- ✅ Configured charge opens an `EL_LockComponent` after the fuse and leaves it
+  open until repair (verified 2026-10-11). `Arm(targetId, playerUid)` is the
+  call later robberies use. Fuse 0 opens in that call. Wanted and the police
+  notify fire once, at arm time, not when the offer refreshes. A second charge
+  on an open target refuses. Police can always repair; the owning organization
+  can repair its own door. `Export` / `Apply` put the open lock back. The
+  vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
+  `Roadmap_Breach_Charge` on `Roadmap_Breach.layer`. The charge prefab is
+  `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
+
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
   gates; raises wanted level (+1/+2/+3); notifies police. DebugWorld's three
@@ -435,8 +446,9 @@
   fixtures must set it explicitly.
 - ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
-  traders, jobs, police, crime, houses, survival, and tests are all present
-  as non-empty layer files. `tools\cli validate` runs
+  traders, jobs, police, crime, houses, survival, tests, and the release
+  `Roadmap.layer` street are all present as non-empty layer files.
+  `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
   trader cash payout → shop purchase → ATM deposit path. Robbery proceeds are
