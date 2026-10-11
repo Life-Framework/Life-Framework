@@ -52,7 +52,12 @@ class EL_ShopMenuRowComponent : ScriptedWidgetComponent
 			m_wBuyPrice.SetText(EL_MoneyFormat.FormatMoney(item.m_iBuyPrice));
 
 		if (m_wSellPrice)
-			m_wSellPrice.SetText(EL_MoneyFormat.FormatMoney(item.m_iSellPrice));
+		{
+			int sellShown = item.m_iSellPrice;
+			if (ownedCount > 0)
+				sellShown = EL_ShopRules.StackTradeTotal(item.m_iSellPrice, ownedCount);
+			m_wSellPrice.SetText(EL_MoneyFormat.FormatMoney(sellShown));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

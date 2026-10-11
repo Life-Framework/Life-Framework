@@ -27,6 +27,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ATMManagerGuards(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_BankApplySnapshot(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_CraftingAssets(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_CropPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropStages(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Data(), EL_TestTier.WORLD);
@@ -45,12 +46,14 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_LicenseWhitelist(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LocalIdentity(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LoggingChain(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MiningAreaWeightedSpawns(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_MiningPhases(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_MiningPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyCash(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyRework(), EL_TestTier.WORLD);
@@ -60,6 +63,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_QuantityStack(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityVisuals(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_RecipeChains(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_Bank(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_BankWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_BankPersistence(), EL_TestTier.PERSISTENCE);
@@ -112,6 +116,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Siren(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SirenMode(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SpawnLocation(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_StackTrade(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Survival(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_TextLabel(), EL_TestTier.WORLD);

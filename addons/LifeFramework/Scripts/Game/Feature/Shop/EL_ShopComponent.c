@@ -150,12 +150,10 @@ class EL_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Total price of a purchase. Zero for invalid requests.
+	//! Total price of a purchase. A stack pays or costs one unit per quantity.
 	static int ComputeTotalPrice(int unitPrice, int quantity)
 	{
-		if (unitPrice < 0 || quantity <= 0)
-			return 0;
-		return unitPrice * quantity;
+		return EL_ShopRules.StackTradeTotal(unitPrice, quantity);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -180,7 +178,8 @@ class EL_ShopComponent : ScriptComponent
 			return false;
 		}
 
-		int totalPrice = ComputeTotalPrice(unitPrice, quantity);
+		int units = EL_ShopRules.StackTradeOutputCount(quantity);
+		int totalPrice = EL_ShopRules.StackTradeTotal(unitPrice, units);
 
 		int removed = EL_MoneyUtils.RemoveAmount(buyer, totalPrice);
 		if (removed != totalPrice)
@@ -192,17 +191,17 @@ class EL_ShopComponent : ScriptComponent
 			return false;
 		}
 
-		int added = EL_InventoryUtils.AddAmount(buyer, prefab, quantity);
-		if (added == quantity)
+		int added = EL_InventoryUtils.AddAmount(buyer, prefab, units);
+		if (added == units)
 		{
-			EL_Debug.Log("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, quantity, totalPrice));
-			EL_Utils.Notify(WidgetManager.Translate("#EL-Item_Bought", GetItemDisplayName(prefab), quantity), "#EL-Shop_PurchaseSuccessful", 3.0);
+			EL_Debug.Log("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
+			EL_Utils.Notify(WidgetManager.Translate("#EL-Item_Bought", GetItemDisplayName(prefab), units), "#EL-Shop_PurchaseSuccessful", 3.0);
 			return true;
 		}
 
-		int notDelivered = quantity - added;
+		int notDelivered = units - added;
 		if (notDelivered > 0)
-			EL_MoneyUtils.AddAmount(buyer, ComputeTotalPrice(unitPrice, notDelivered));
+			EL_MoneyUtils.AddAmount(buyer, EL_ShopRules.StackTradeTotal(unitPrice, notDelivered));
 		EL_Debug.Log("Shop", string.Format("buy failed (inventory full) item=%1 qty=%2 delivered=%3 - refunded %4", prefab, quantity, added, notDelivered));
 		EL_Utils.Notify("#EL-Inventory_Full", "#EL-Shop_PurchaseFailed", 3.0);
 		return false;
@@ -230,7 +229,8 @@ class EL_ShopComponent : ScriptComponent
 			return false;
 		}
 
-		int totalPrice = ComputeTotalPrice(unitPrice, quantity);
+		int units = EL_ShopRules.StackTradeOutputCount(quantity);
+		int totalPrice = EL_ShopRules.StackTradeTotal(unitPrice, units);
 
 		int paid = EL_MoneyUtils.AddCash(seller, totalPrice);
 		if (paid != totalPrice)
@@ -242,20 +242,20 @@ class EL_ShopComponent : ScriptComponent
 			return false;
 		}
 
-		int removed = EL_InventoryUtils.RemoveAmount(seller, prefab, quantity);
+		int removed = EL_InventoryUtils.RemoveAmount(seller, prefab, units);
 		if (removed <= 0)
 		{
 			EL_MoneyUtils.RemoveCash(seller, paid);
-			EL_Debug.Log("Shop", string.Format("sell failed (nothing to sell) item=%1 qty=%2", prefab, quantity));
+			EL_Debug.Log("Shop", string.Format("sell failed (nothing to sell) item=%1 qty=%2", prefab, units));
 			EL_Utils.Notify("#EL-Shop_SellFailed", "#EL-Shop_PurchaseFailed", 3.0);
 			return false;
 		}
 
-		int overpaid = ComputeTotalPrice(unitPrice, quantity - removed);
+		int overpaid = EL_ShopRules.StackTradeTotal(unitPrice, units - removed);
 		if (overpaid > 0)
 			EL_MoneyUtils.RemoveCash(seller, overpaid);
 
-		int earned = ComputeTotalPrice(unitPrice, removed);
+		int earned = EL_ShopRules.StackTradeTotal(unitPrice, removed);
 		EL_Debug.Log("Shop", string.Format("sold item=%1 qty=%2 price=%3", prefab, removed, earned));
 		EL_Utils.Notify(WidgetManager.Translate("#EL-Item_Sold", earned), "#EL-Trade_Successful", 3.0);
 		return true;

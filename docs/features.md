@@ -185,7 +185,8 @@
 ### `EL_ShopComponent` — `Feature/Shop/EL_ShopComponent.c`
 - ✅ Catalog-driven buy: `BuyItem(item, qty, buyer)` guards null/qty, server-
   only, price × quantity, `EL_MoneyUtils.RemoveAmount`, refund on
-  inventory-full.
+  inventory-full. A sell or buy of a stack pays or gives one unit per
+  quantity through `EL_ShopRules.StackTradeTotal` (verified 2026-10-11).
 - ✅ **Money correctness** (verified 2026-08-30): the partial-funds exploit is
   closed — `BuyItem` compares the actual removed amount against the total and
   refunds only what was removed before failing (a $50 buyer cannot buy a $100
@@ -201,8 +202,9 @@
 - ⚠️ Menu always opens for the local player regardless of who interacted.
 
 ### `EL_TraderManagerComponent` + `EL_InventoryStorageManagerComponent` — `Components/InventorySystem/`
-- ✅ Sell-to-trader pays **cash** (verified 2026-08-30): inserting into a
-  trader-owned storage pays `unitValue × stackSize` via `EL_MoneyUtils.AddCash`
+- ✅ Sell-to-trader pays **cash** (verified 2026-10-11): inserting into a
+  trader-owned storage pays one cash unit per stack quantity
+  (`EL_ShopRules.StackTradeTotal`) via `EL_MoneyUtils.AddCash`
   (pay-before-delete, clawed back if the item cannot be removed); black-market
   rejects non-civilian factions. The old "payout to ATM bank" and the
   `Print("testtesttest")` debug line are gone.
@@ -236,6 +238,12 @@
 - ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
   empty recipe or a prefab that does not resolve logs `EL_Debug.Error` and
   returns before inventory changes (verified 2026-10-11).
+- ✅ Cocaine, jam, and beer are one-input, one-output recipe prefabs under
+  `Prefabs/Processing/Chains/`, each parented to `ItemProcessor_Base`
+  (verified 2026-10-11). Cocaine consumes coca leaves and produces a cocaine
+  pouch. Jam consumes rowan berries and produces berry jam. Beer consumes an
+  empty beer bottle and produces a beer bottle. `EL_Test_RecipeChains` checks
+  that each input prefab and output prefab is set and distinct.
 
 ### `EL_ResourceChainCatalog` — `Feature/Resources/EL_ResourceChainCatalog.c`
 - ✅ `Configs/Resources/ResourceChains.conf` names each gather node's tool,
@@ -258,6 +266,25 @@
 - ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit.
 - ⚠️ Non-tool or unmapped damage source deals **0 damage silently** (no
   feedback); damage-source prefab string comparison is fragile on casing.
+
+### `LF_MiningPhases` + `LF_MiningSpawn` + `LF_MiningForge` — `Feature/Mining/`
+- ✅ Ore health phases (verified 2026-10-11). A strike counts only when its
+  damage equals the tool damage. Non-negative damage walks phase budgets in
+  order; a budget of zero stops the walk. Passing the last phase destroys the
+  ore when delete-after-final is set. Applying a phase sets health to that
+  phase's budget and swaps the mesh when the phase names one. An empty mesh
+  keeps the current mesh. No phase data restores the original health and the
+  original mesh. Ported from EveronLife `EL_DestructionMultiPhaseSingleComponent`
+  and `EL_ToolHitZone`. Logic test `mining/phases`.
+- ✅ Weighted ore spawn. A roll in `[0, total)` maps onto the first bin, including
+  a roll of 0. The spawn count is the shortfall to the configured amount, and
+  an over-full area spawns nothing. An empty list logs `EL_Debug.Error`.
+- ✅ Timed forge. One iron nugget
+  (`{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et`) becomes one iron
+  bar (`{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et`) after 5 seconds
+  (5000 ms). The nugget stays until the delay elapses. A missing nugget, a
+  second start, or a nugget removed before the end logs `EL_Debug.Error` and
+  yields no bar. A zero delay finishes inside the start.
 
 ## Jobs / Level / Licenses / Whitelist
 
@@ -563,7 +590,9 @@
 - ✅ Virtual stack system: `AddQuantity`/`RemoveQuantity` clamp to
   `[0, max]` (0 = unlimited), `SetQuantity(0)` deletes the entity,
   `CanCombine`/`Combine` (conservation: source decrease == dest increase ==
-  transferred), `Split`, `SortByQuantity` (descending), `GetRemainingCapacity`.
+  transferred), `CombineQuantities` (2 and 3 yield 5), `Split`,
+  `QuantityRemainingAfterSplit` (5 into 2 leaves 3), `SortByQuantity`
+  (descending), `GetRemainingCapacity` (verified 2026-10-11).
 - ⚠️ `Split` with `splitSize` 0 spawns an item then deletes it via
   `SetQuantity(0)`; `ExtractQuantityComponents` inserts null components with
   no check; `HandleOnItemAdded` may refresh UI on a just-deleted entity.
@@ -744,3 +773,17 @@
    notification targeting are fixed; the death screen (client) → respawn RPC
    (server) bridge is new and needs a manual multiplay pass. Remaining:
    hand-carry holster flow is client-only.
+
+## Toys
+
+### `LF_JumpPad` — `Feature/Toys/LF_JumpPad.c`
+- ✅ A trigger sets the entering player's velocity upward once for that enter.
+  A second callback before they leave applies the zero vector. Leaving clears
+  the enter, so the next entry launches again. A disabled pad applies the zero
+  vector and does not call `SetVelocity`. Ported from EveronLife
+  `EL_JumpTrigger` (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+
+### `LF_SpikeStrip` — `Feature/Toys/LF_SpikeStrip.c`
+- ✅ A trigger. A wheeled vehicle that enters has each wheel inside the strip
+  box set to zero health. Ported from EveronLife `EL_SpikeTriggerComponent`
+  (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)

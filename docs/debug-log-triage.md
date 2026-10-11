@@ -53,6 +53,8 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:Siren] mode -> default (index 0)` | INFO | Siren state machine initializing. |
 | `[ELDebug:DebugWorld] boundary spawned 4/4 corner poles` | INFO | Debug boundary poles placed. |
 | `[ELDebug:Mining] spawned 5/5 ores` / `respawn scheduled in 60000 ms` | INFO | Mining feature state. |
+| `[ELDebug:Mining] ore phase` / `ore destroyed` / `forge started` / `forge finished` | INFO | Phased ore mesh and the timed nugget-to-bar forge. |
+| `[ELDebug:Mining] strike ignored` / `forge rejected` / `forge failed` / `ore spawn skipped` | BY DESIGN | A mismatched tool, a forge with no nugget, or a spawn list with no weight logs and that step does nothing. |
 | `[ELDebug:Quantity] stack visual {GUID} at quantity N` | INFO | Stack quantity visual applied. |
 | `[ELDebug:VehicleLock] identifier assigned:` | INFO | Vehicle lock registration. |
 | `[ELDebug:LicensePlate] generated plate ...` | INFO | License plate generation. |

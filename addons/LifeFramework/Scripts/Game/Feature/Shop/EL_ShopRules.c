@@ -71,6 +71,36 @@ class EL_ShopRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Ported from rekterakathom/EveronLife (MIT), commit 482b74a5a7e39e999d129b0657253696b9b8be15
+	//! ("Trader gives equivalent amount of items back"). A stacked trade input is one output unit
+	//! per EL_QuantityComponent quantity. Zero or less is not a trade.
+	//! \param[in] stackQuantity EL_QuantityComponent quantity of the traded stack.
+	//! \return How many units the trade pays or gives.
+	static int StackTradeOutputCount(int stackQuantity)
+	{
+		if (stackQuantity <= 0)
+			return 0;
+
+		return stackQuantity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ported from rekterakathom/EveronLife (MIT), commit 482b74a5a7e39e999d129b0657253696b9b8be15.
+	//! A shop sell or buy of a stack pays or charges one unit price per quantity. A stack of 5
+	//! sells for 5 times one unit.
+	//! \param[in] unitPrice Price of one unit. Negative is not a price.
+	//! \param[in] stackQuantity How many units are in the trade.
+	//! \return The total paid or charged, or 0 when the trade is not priced.
+	static int StackTradeTotal(int unitPrice, int stackQuantity)
+	{
+		int units = StackTradeOutputCount(stackQuantity);
+		if (unitPrice <= 0 || units <= 0)
+			return 0;
+
+		return unitPrice * units;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Whether one specific item may be sold.
 	//!
 	//! Takes the equipped classification as a boolean so this stays a pure decision: producing that

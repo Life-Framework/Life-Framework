@@ -1,0 +1,29 @@
+// MIT. Item-prefab recipe adapted from thebonbon/EveronLife branch enhancement/Main_World.
+// One input item and one output item, the same shape as the apple processor. This file uses a new GUID.
+GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
+ ID "598F21A86EB5B48E"
+ components {
+  ActionsManagerComponent "{598F21A8710B89C1}" {
+   additionalActions {
+    EL_ProcessAction "{598F21A877BE6DEE}" {
+     UIInfo UIInfo "{7F7D4CDBCF6CEE45}" {
+      Name "Make 1 berry jam with 1 rowan berries"
+     }
+     Duration 1
+     m_aProcessingInputs {
+      EL_ProcessingInput "{149178F11A232CBE}" {
+       m_InputPrefab "{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et"
+       m_iInputAmount 1
+      }
+     }
+     m_aProcessingOutputs {
+      EL_ProcessingOutput "{0B754CA8128DE6D4}" {
+       m_OutputPrefab "{CD44DE4529F22D17}Prefabs/Items/Food/BerryJam.et"
+       m_iOutputAmount 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

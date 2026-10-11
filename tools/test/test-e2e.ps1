@@ -73,6 +73,14 @@ if (-not $KeepProfile) {
 }
 New-Item -ItemType Directory -Force -Path $profile | Out-Null
 
+# Dedicated-server FileIO only reads $profile. Mirror the crafting prefabs so
+# the LOGIC asset test can read the README and check prefab files without
+# loading meshes.
+# -profile <dir> stores script files in <dir>\profile. That inner folder is $profile:.
+$craftingMirror = Join-Path $profile "profile\crafting-addon\Prefabs\Crafting"
+New-Item -ItemType Directory -Force -Path $craftingMirror | Out-Null
+Copy-Item -Path (Join-Path $root "addons\LifeFramework\Prefabs\Crafting\*") -Destination $craftingMirror -Recurse -Force
+
 # addonsDir = repo addon + base game data only (core + data), via a junction so
 # the server does NOT auto-load the EPF/EDF paks that live in the server install
 # (they fail to compile on Reforger 1.8). Launch cwd = repo root (neutral) so

@@ -1,0 +1,5 @@
+MatPBRBasic {
+ RoughnessScale 5
+ BCRMap "{A9C1DB66CFFA4D2C}Assets/Crafting/Sulfur/Sulfur_BCP.edds"
+ NMOMap "{4870ECA04B866E6A}Assets/Crafting/Sulfur/Sulfur_NMO.edds"
+}
