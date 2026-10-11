@@ -1,0 +1,134 @@
+GenericEntity Roadmap_Hideout_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  EL_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
+   m_sHideoutId "Roadmap_Hideout"
+  }
+ }
+ coords 390 0 120
+}
+GenericEntity Roadmap_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
+ components {
+  MeshObject "{598F21A867C4015C}" {
+   Object "{8CCFA9079E967BB2}Assets/Props/Commercial/CoffeeGrinderShop_01/CoffeeGrinderShop_01.xob"
+  }
+  LF_HideoutMachineComponent "{724A0A6E41985D0F}" {
+   m_sHideoutId "Roadmap_Hideout"
+  }
+  ActionsManagerComponent "{598F21A8710B89C1}" {
+   ActionContexts {
+    UserActionContext "{598F21A871DA7304}" {
+     ContextName "default"
+     Position PointInfo "{598F21A875320722}" {
+      Offset 0 0.3718 0.1281
+     }
+     Radius 1
+    }
+   }
+   additionalActions {
+    EL_ProcessAction "{598F21A877BE6DEE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A5AA4F6D4DB83652}" {
+      Name "#EL-Hideout_Process"
+     }
+     m_aProcessingInputs {
+      EL_ProcessingInput "{53E2575C89C0AF7C}" {
+       m_InputPrefab "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et"
+       m_iInputAmount 1
+      }
+     }
+     m_aProcessingOutputs {
+      EL_ProcessingOutput "{D5F5BDAE187E0DD3}" {
+       m_OutputPrefab "{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et"
+       m_iOutputAmount 1
+      }
+     }
+    }
+   }
+  }
+ }
+ coords 408 0 120
+}
+GenericEntity Roadmap_Hideout_Stash {
+ components {
+  MeshObject "{59670CE9C98E5BAF}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{59670CE9C98E5B27}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  RplComponent "{B7E4C1A9038F562D}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 426 0 120
+}
+EL_DebugAreaBoundary Roadmap_Convoy_Start : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ components {
+  LF_ConvoyMarkerComponent "{25C2D7236C4A29B1}" {
+   m_sMarkerId "Roadmap_Convoy_Start"
+   m_bDrop 0
+  }
+  ActionsManagerComponent "{9B8D994BDBAEF726}" {
+   ActionContexts {
+    UserActionContext "{9D7C3F60241AD015}" {
+     ContextName "default"
+     Position PointInfo "{94355C47E2CDDF70}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ConvoyStartAction "{42568856A7E966E3}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C3E27FF4A4014650}" {
+      Name "#EL-Contraband_Start"
+     }
+    }
+   }
+  }
+ }
+ coords 444 0 120
+ m_vSize 2 1 2
+}
+EL_DebugAreaBoundary Roadmap_Convoy_Drop : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ components {
+  LF_ConvoyMarkerComponent "{4BB744212552420B}" {
+   m_sMarkerId "Roadmap_Convoy_Drop"
+   m_bDrop 1
+  }
+  ActionsManagerComponent "{F1C18E37EDE2CFCE}" {
+   ActionContexts {
+    UserActionContext "{AE28098525A07FB3}" {
+     ContextName "default"
+     Position PointInfo "{165C9C429ADC7093}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ConvoyDeliverAction "{EF0CFB2B88BD4BF0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{137D64E55A2FF5E1}" {
+      Name "#EL-Contraband_Deliver"
+     }
+    }
+   }
+  }
+ }
+ coords 462 0 120
+ m_vSize 2 1 2
+}

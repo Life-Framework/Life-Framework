@@ -79,6 +79,7 @@ class LF_Bank
 {
 	static const ResourceName BAG_PREFAB = "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et";
 	static const ResourceName DOOR_PREFAB = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";
+	static const ResourceName SHELL_PREFAB = "{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et";
 	static const ResourceName CRATE_MESH = "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob";
 
 	protected static ref map<string, ref LF_BankVaultState> s_mVaults;

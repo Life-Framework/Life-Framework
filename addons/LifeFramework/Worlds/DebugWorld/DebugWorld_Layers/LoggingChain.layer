@@ -101,6 +101,7 @@ GenericEntity LogPile_Debug {
      UIInfo UIInfo "{5B10C0DE7A11E015}" {
       Name "Gather Log"
      }
+     m_sNodeId "log"
      m_GatherItemPrefab "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et"
      m_GatherAmount 1
     }

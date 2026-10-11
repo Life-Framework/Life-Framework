@@ -14,6 +14,7 @@
 modded class SCR_DoorUserAction
 {
 	protected EL_LockComponent m_pHouseLock;
+	protected LF_HideoutDoorComponent m_pHideoutDoor;
 
 	//------------------------------------------------------------------------------------------------
 	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
@@ -21,6 +22,7 @@ modded class SCR_DoorUserAction
 		super.Init(pOwnerEntity, pManagerComponent);
 
 		m_pHouseLock = EL_Component<EL_LockComponent>.Find(pOwnerEntity);
+		m_pHideoutDoor = EL_Component<LF_HideoutDoorComponent>.Find(pOwnerEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -29,7 +31,25 @@ modded class SCR_DoorUserAction
 		if (!super.CanBePerformedScript(user))
 			return false;
 
-		if (m_pHouseLock && m_pHouseLock.IsLocked() && !m_pHouseLock.UserHasValidKey(user))
+		if (!m_pHouseLock || !m_pHouseLock.IsLocked())
+			return true;
+
+		if (m_pHideoutDoor)
+		{
+			if (!Replication.IsServer())
+				return true;
+
+			string characterId = LF_Hideout.CharacterIdOf(user);
+			if (!LF_Hideout.AllowsUnlock(characterId, m_pHideoutDoor.GetHideoutId(), true))
+			{
+				SetCannotPerformReason("#EL-Hideout_NotMember");
+				return false;
+			}
+
+			return true;
+		}
+
+		if (!m_pHouseLock.UserHasValidKey(user))
 		{
 			SetCannotPerformReason("#EL-HouseLock_Reason");
 			return false;
@@ -39,12 +59,19 @@ modded class SCR_DoorUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a valid key holder unlocks the door as they use it, matching the vehicle-lock UX.
+	//! Server: a member unlocks a hideout door. A valid key still unlocks a house door.
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (m_pHideoutDoor && Replication.IsServer())
+		{
+			string characterId = LF_Hideout.CharacterIdOf(pUserEntity);
+			if (!LF_Hideout.TryUnlock(characterId, m_pHideoutDoor.GetHideoutId()))
+				return;
+		}
+
 		super.PerformAction(pOwnerEntity, pUserEntity);
 
-		if (!Replication.IsServer())
+		if (!Replication.IsServer() || m_pHideoutDoor)
 			return;
 
 		if (m_pHouseLock && m_pHouseLock.IsLocked() && m_pHouseLock.UserHasValidKey(pUserEntity))

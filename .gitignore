@@ -63,6 +63,9 @@ __pycache__/
 venv/
 env/
 
+# Play-mode visual report. `node agent-box/harness.mjs report roadmap` writes it.
+agent-box/reports/
+
 # Server runtime files
 server/*.log
 server/profile/

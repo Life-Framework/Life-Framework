@@ -139,6 +139,8 @@ class EL_Test_Roadmap_BankWorld : EL_Test
 	{
 		Resource door = Resource.Load(LF_Bank.DOOR_PREFAB);
 		ctx.True(door.IsValid(), "EL_Door_Base.et loads");
+		Resource shell = Resource.Load(LF_Bank.SHELL_PREFAB);
+		ctx.True(shell.IsValid(), "EL_Bank.et loads");
 		Resource bagPrefab = Resource.Load(LF_Bank.BAG_PREFAB);
 		ctx.True(bagPrefab.IsValid(), "HandCarryItem_Base.et loads");
 		Resource money = Resource.Load(EL_MoneyUtils.PREFAB_CASH);

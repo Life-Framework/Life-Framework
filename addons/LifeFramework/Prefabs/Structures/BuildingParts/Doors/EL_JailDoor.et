@@ -1,0 +1,7 @@
+GenericEntity : "{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et" {
+ ID "787617D5B683FE41"
+ components {
+  EL_LockComponent "{5AC29970429B33BB}" {
+  }
+ }
+}
