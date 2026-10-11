@@ -408,6 +408,29 @@
 - ⚠️ Deletes items while iterating a live `FindItems` array (mutation-during-
   iteration risk); no compensation or wanted reduction.
 
+## Ownership
+
+### `EL_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11)
+- ✅ A character founds one organization. The id comes from `PersistenceIdUtils`,
+  never an entity id. The founder invites and kicks. A member can leave. The
+  founder cannot leave or be kicked. A second membership is refused.
+- ✅ The shared fund is a balance keyed by organization id, the same shape as
+  `EL_BankAccount`. Deposit credits it. Withdraw requires the withdraw rank and
+  takes the whole amount or nothing. Buying an upgrade (extra storage,
+  processing slot, parked vehicle) debits the configured price in one step or
+  leaves the fund and the flag untouched. The price and the new flag are logged.
+- ✅ Cash moves only as MoneyStack through `EL_OrganizationPlayer`. A short
+  removal is returned to the character. A short payout puts the fund back. The
+  personal ATM balance is not read or written. The desk is
+  `Roadmap_Org_Desk` on `Roadmap_Organizations.layer` at `372 0 120`, using
+  `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`. The menu lists
+  the name, the fund, and the processing-slot upgrade, and shows an empty state
+  before create.
+- ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
+  compound the fund. The game-mode serializer writes these records at version 2,
+  after survival. A version 1 save has no organization payload and does not
+  clear a live fund.
+
 ## Notifications
 
 ### `EL_NotificationManagerComponent` — `Feature/Notifications/`
@@ -513,8 +536,10 @@
 - ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, tests, and the release
-  `Roadmap.layer` street are all present as non-empty layer files.
+  `Roadmap.layer` street, `Roadmap_Bank.layer`, `Roadmap_Fuel.layer`,
+  `Roadmap_Jail.layer`, and `Roadmap_Organizations.layer` are all present as non-empty layer files.
   `Roadmap_Fuel.layer` places `Roadmap_Fuel_Till` at `318 0 120`.
+  `Roadmap_Organizations.layer` places `Roadmap_Org_Desk` at `372 0 120`.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
