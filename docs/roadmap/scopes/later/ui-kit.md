@@ -13,7 +13,7 @@ A menu is a last resort, and only while the player is at the place that opened i
 - One 1989 theme. Type, padding, and colors are declared in `LF_UITheme`: Roboto Condensed Bold, carbon ink, aged paper, blued steel, a dull brass rule. Not neon. The part layouts are stamped with those same values. `LF_UIScreen` applies the theme again when it builds a screen.
 - `LF_UIScreen` builds a screen from those parts with `WorkspaceWidget.CreateWidgets`. It does not use MenuManager. While it is open it activates `MenuContext` every frame, `MenuTextEditContext` while an edit box is focused, and `MenuWithEditorContext` so MenuUp and MenuDown can move focus. Close removes the widgets and that call.
 - A title or body line can be rewritten after open. A status row's action hides when the text is empty. A quantity clamps take to 1 .. total-1. The caller can arm close-on-death, close-when-uncontrolled, and close-beyond a distance from an anchor.
-- `LF_UISampleScreen` lists every part. No action, menu preset, or world entity calls it.
+- `LF_UISampleScreen` lists every part. No action, menu preset, or world entity calls it. `node agent-box/harness.mjs kit` is the play-mode capture: it opens the sample and screenshots the sheet, a rewritten line, a hidden action, both split faces, and field focus.
 
 ## Out of scope
 
@@ -38,4 +38,4 @@ The workspace-widget pattern. Not on any row in the after-release table.
 
 - `ui-kit/parts` builds the sample part list and checks names, order, and that a line's text can change.
 - `ui-kit/quantity` clamps a split. `ui-kit/close` decides death, lost character, a missing anchor, and range. `ui-kit/focus` steps and wraps. None of them spawn a widget.
-- Play mode is unchanged: nothing in the world opens the sample.
+- Play mode is unchanged for a player: nothing in the world opens the sample. `node agent-box/harness.mjs kit` is the one command that photographs it.

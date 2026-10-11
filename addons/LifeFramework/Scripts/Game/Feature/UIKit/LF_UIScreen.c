@@ -105,45 +105,43 @@ class LF_UIScreen
 
 	//------------------------------------------------------------------------------------------------
 	//! Rewrites a title or body line after the screen is open.
-	void SetLine(string name, string text)
+	bool SetLine(string name, string text)
 	{
 		LF_UIPart part = FindPart(name);
 		if (!part)
 		{
 			EL_Debug.Error("UIKit", "no part named " + name);
-			return;
+			return false;
 		}
 
 		if (part.GetKind() != LF_EUIPartKind.LINE && part.GetKind() != LF_EUIPartKind.TITLE)
 		{
 			EL_Debug.Error("UIKit", name + " is not a line");
-			return;
+			return false;
 		}
 
 		part.SetText(text);
 		Widget widget = WidgetNamed(name);
-		if (!widget)
-			return;
-
 		TextWidget line = TextWidget.Cast(widget);
 		if (!line)
 		{
 			EL_Debug.Error("UIKit", name + " has no text");
-			return;
+			return false;
 		}
 
 		line.SetText(text);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Rewrites a status row. An empty action hides its button.
-	void SetStatusRow(string name, string label, string status, string action)
+	bool SetStatusRow(string name, string label, string status, string action)
 	{
 		LF_UIPart part = FindPart(name);
 		if (!part || part.GetKind() != LF_EUIPartKind.STATUS)
 		{
 			EL_Debug.Error("UIKit", name + " is not a status row");
-			return;
+			return false;
 		}
 
 		part.SetText(label);
@@ -152,7 +150,7 @@ class LF_UIScreen
 
 		Widget row = WidgetNamed(name);
 		if (!row)
-			return;
+			return false;
 
 		TextWidget labelWidget = TextWidget.Cast(row.FindAnyWidget("RowLabel"));
 		if (labelWidget)
@@ -164,30 +162,32 @@ class LF_UIScreen
 
 		Widget button = WidgetNamed(name + "_Action");
 		if (!button)
-			return;
+			return false;
 
 		bool show = !action.IsEmpty();
 		button.SetVisible(show);
 		if (!show)
-			return;
+			return true;
 
 		SCR_ButtonTextComponent textButton = SCR_ButtonTextComponent.Cast(button.FindHandler(SCR_ButtonTextComponent));
 		if (textButton)
 			textButton.SetText(action);
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Sets the stack a quantity part splits. Take is clamped; keep is the rest.
-	void SetQuantity(string name, int total, int requestedTake)
+	bool SetQuantity(string name, int total, int requestedTake)
 	{
 		if (m_bApplyingQuantity)
-			return;
+			return false;
 
 		LF_UIPart part = FindPart(name);
 		if (!part || part.GetKind() != LF_EUIPartKind.QUANTITY)
 		{
 			EL_Debug.Error("UIKit", name + " is not a quantity");
-			return;
+			return false;
 		}
 
 		m_bApplyingQuantity = true;
@@ -220,6 +220,10 @@ class LF_UIScreen
 			EL_Debug.Info("UIKit", name + " has nothing to split");
 
 		m_bApplyingQuantity = false;
+		if (!row)
+			return false;
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

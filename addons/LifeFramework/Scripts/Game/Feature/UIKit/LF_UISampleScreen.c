@@ -1,7 +1,9 @@
 // LF_UISampleScreen.c — one screen that lists every kit part.
 // Nothing in the world, no action, and no menu preset calls Open.
+// The agent-box `kit` command is the only opener, and only in a play session.
 class LF_UISampleScreen
 {
+	protected static ref LF_UIScreen s_Screen;
 	//------------------------------------------------------------------------------------------------
 	static array<ref LF_UIPart> GetParts()
 	{
@@ -19,8 +21,26 @@ class LF_UISampleScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	static LF_UIScreen Current()
+	{
+		return s_Screen;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Open()
 	{
-		return LF_UIScreen.Open(GetParts());
+		Hide();
+		s_Screen = LF_UIScreen.Open(GetParts());
+		return s_Screen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void Hide()
+	{
+		if (!s_Screen)
+			return;
+
+		s_Screen.Close();
+		s_Screen = null;
 	}
 }
