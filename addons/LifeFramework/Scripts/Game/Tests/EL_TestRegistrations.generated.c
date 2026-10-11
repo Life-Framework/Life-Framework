@@ -116,6 +116,9 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_TraderItemConfig(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ProcessingRecipeConfig(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitParts(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UIKitQuantity(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UIKitClose(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UIKitFocus(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_VehicleLockIdMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistChatResources(), EL_TestTier.WORLD);

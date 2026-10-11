@@ -60,4 +60,10 @@ class LF_UIButtonRelay : ScriptedWidgetComponent
 
 		m_Screen.Notify(m_sName);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	void Activate()
+	{
+		HandleClick();
+	}
 }

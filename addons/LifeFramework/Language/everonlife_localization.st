@@ -2013,6 +2013,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Close"
      Comment "UI kit sample close button."
     }
+    CustomStringTableItem "{E9907671573AFD76}" {
+     Id "LF-UIKit_SampleBalance"
+     Target_en_us "Balance"
+     Comment "UI kit sample line that a later caller rewrites with a server figure."
+    }
+    CustomStringTableItem "{3332B12FDA94C221}" {
+     Id "LF-UIKit_SampleStatusLabel"
+     Target_en_us "Warrant"
+     Comment "UI kit sample status-row label."
+    }
+    CustomStringTableItem "{81CFDCDC3F645AEA}" {
+     Id "LF-UIKit_SampleStatus"
+     Target_en_us "Open"
+     Comment "UI kit sample status-row status."
+    }
+    CustomStringTableItem "{AE54ADB762D0B6FC}" {
+     Id "LF-UIKit_SampleAction"
+     Target_en_us "Take"
+     Comment "UI kit sample status-row action. The server decides whether it stays."
+    }
+    CustomStringTableItem "{55960B5ABA019A5E}" {
+     Id "LF-UIKit_SampleQuantity"
+     Target_en_us "Split the stack"
+     Comment "UI kit sample quantity label."
+    }
+    CustomStringTableItem "{D820B2BCD7FC410A}" {
+     Id "LF-UIKit_Keep"
+     Target_en_us "Keep %1"
+     Comment "UI kit quantity face for the amount that stays. %1 is the count."
+    }
+    CustomStringTableItem "{7C0A925F60789085}" {
+     Id "LF-UIKit_Take"
+     Target_en_us "Take %1"
+     Comment "UI kit quantity face for the amount that leaves. %1 is the count."
+    }
   }
  }
 }

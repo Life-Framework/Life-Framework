@@ -7,12 +7,12 @@ FrameWidgetClass "{5505902907F29D93}" {
     Anchor 0 0 0 0
     PositionX 240
     OffsetLeft 240
-    PositionY 120
-    OffsetTop 120
+    PositionY 80
+    OffsetTop 80
     SizeX 560
     OffsetRight -800
-    SizeY 640
-    OffsetBottom -760
+    SizeY 780
+    OffsetBottom -860
    }
    Color 0.243 0.251 0.227 1
    {
