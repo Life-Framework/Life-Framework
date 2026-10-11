@@ -1523,6 +1523,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Crime Alert: Explosive charge placed"
      Comment "Police notification when a breach charge is armed"
     }
+    CustomStringTableItem "{685890AF28A71E11}" {
+     Id "EL-Fuel_Till_Rob"
+     Target_en_us "Rob the till"
+     Comment "Fuel station till robbery action name"
+    }
+    CustomStringTableItem "{6CB2BEC3153A8FC2}" {
+     Id "EL-Fuel_Till_Rob_Desc"
+     Target_en_us "Take the cash from the till"
+     Comment "Fuel station till robbery action description"
+    }
+    CustomStringTableItem "{F3C1408EE1332399}" {
+     Id "EL-Rob_Cooldown"
+     Target_en_us "The till was just robbed"
+     Comment "Cash robbery refused because the cooldown is still running"
+    }
+    CustomStringTableItem "{ACB4C4BD8DAAAA84}" {
+     Id "EL-Rob_CiviliansOnly"
+     Target_en_us "Only civilians can rob"
+     Comment "Cash robbery refused because the player is not a civilian"
+    }
+    CustomStringTableItem "{B706E8A6FFF1E84A}" {
+     Id "EL-Rob_NeedPolice"
+     Target_en_us "Not enough police on duty"
+     Comment "Cash robbery refused because too few police are on duty"
+    }
   }
  }
 }

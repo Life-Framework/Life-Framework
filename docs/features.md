@@ -315,10 +315,23 @@
   `EL_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted (pin test `crime/rob-wanted-clamp`).
-- ⚠️ Near-duplicated guard logic across all three. Police-alert fires from
-  *inside* the counting predicate (spam on every offer refresh). `#EL-Stole_Money`
-  has no `%1` placeholder (amount dropped). `EL_RobWeaponAction.AlertPolice`
-  hardcodes "ALERTA POLICIAL".
+- ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
+  `Roadmap_Fuel.layer` at `318 0 120` is the shop counter
+  `{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob`
+  with `EL_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
+  the server rolls it, and min equal to max pays that fixed amount. The debug
+  till pays 150 MoneyStack cash. The bank balance stays 0. Wanted rises by
+  `m_iWantedIncrease` (default 1) and still clamps at 5. A second attempt
+  inside the cooldown is refused and logged with `EL_Debug.Error`. The police
+  alert fires once, inside `CommitRobbery`, not while counting on-duty police
+  and not when the offer refreshes. The fuel station building
+  `{9269BD1B6BF3A441}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/FuelStation_E_01_V1.et`
+  is the capture prefab and is not placed in the row. Player strings:
+  `#EL-Fuel_Till_Rob`, `#EL-Rob_Cooldown`, `#EL-Rob_CiviliansOnly`,
+  `#EL-Rob_NeedPolice`.
+- ⚠️ Near-duplicated guard logic across all three. `EL_RobWeaponAction` and
+  `EL_RobVehicleAction` still notify from inside their own on-duty counts.
+  `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
@@ -448,6 +461,7 @@
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, tests, and the release
   `Roadmap.layer` street are all present as non-empty layer files.
+  `Roadmap_Fuel.layer` places `Roadmap_Fuel_Till` at `318 0 120`.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
