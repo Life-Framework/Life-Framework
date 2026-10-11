@@ -22,5 +22,6 @@ GenericEntity Roadmap_Org_Desk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk
    }
   }
  }
+ Flags 0x403 0
  coords 372 0 120
 }

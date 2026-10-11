@@ -1,0 +1,45 @@
+GenericEntity Roadmap_Fuel_Till {
+ components {
+  MeshObject "{48DDA12B0BA57739}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{691C0466572754D1}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{D97D7ED02B9C4E1A}" {
+   ActionContexts {
+    UserActionContext "{85653734FAE04F9E}" {
+     ContextName "default"
+     Position PointInfo "{2514C1ACD78CF71D}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    EL_RobAction "{4F8CAEB46DCDC14A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B715433AF152941C}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_iWantedIncrease 1
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+  RplComponent "{334B3C30A79B809E}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 318 0 120
+}

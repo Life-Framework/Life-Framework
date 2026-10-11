@@ -1523,6 +1523,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Crime Alert: Explosive charge placed"
      Comment "Police notification when a breach charge is armed"
     }
+    CustomStringTableItem "{685890AF28A71E11}" {
+     Id "EL-Fuel_Till_Rob"
+     Target_en_us "Rob the till"
+     Comment "Fuel station till robbery action name"
+    }
+    CustomStringTableItem "{6CB2BEC3153A8FC2}" {
+     Id "EL-Fuel_Till_Rob_Desc"
+     Target_en_us "Take the cash from the till"
+     Comment "Fuel station till robbery action description"
+    }
+    CustomStringTableItem "{F3C1408EE1332399}" {
+     Id "EL-Rob_Cooldown"
+     Target_en_us "The till was just robbed"
+     Comment "Cash robbery refused because the cooldown is still running"
+    }
+    CustomStringTableItem "{ACB4C4BD8DAAAA84}" {
+     Id "EL-Rob_CiviliansOnly"
+     Target_en_us "Only civilians can rob"
+     Comment "Cash robbery refused because the player is not a civilian"
+    }
+    CustomStringTableItem "{B706E8A6FFF1E84A}" {
+     Id "EL-Rob_NeedPolice"
+     Target_en_us "Not enough police on duty"
+     Comment "Cash robbery refused because too few police are on duty"
+    }
+    CustomStringTableItem "{F1030FBC0E45B177}" {
+     Id "EL-Jail_Arrest"
+     Target_en_us "Send to jail"
+     Comment "Officer action on a wanted suspect"
+    }
+    CustomStringTableItem "{8AEA48F56B9C5F59}" {
+     Id "EL-Jail_NotOfficer"
+     Target_en_us "Only on-duty police can send someone to jail"
+     Comment "Jail action refused because the user is not an on-duty officer"
+    }
+    CustomStringTableItem "{C1D59E0ED7B03055}" {
+     Id "EL-Jail_NotWanted"
+     Target_en_us "This person is not wanted"
+     Comment "Jail action refused because the suspect is not wanted or is out of range"
+    }
+    CustomStringTableItem "{70C09B02D265C0E8}" {
+     Id "EL-Jail_NoCell"
+     Target_en_us "No jail cell is placed"
+     Comment "Jail action refused because the world has no cell marker"
+    }
+    CustomStringTableItem "{D588BDC3746521B7}" {
+     Id "EL-Jail_Released"
+     Target_en_us "Sentence served"
+     Comment "Notification when a jail sentence ends"
+    }
+    CustomStringTableItem "{80654DEEF27895C6}" {
+     Id "EL-Jail_EarlyRelease"
+     Target_en_us "The sentence is not over"
+     Comment "Early release refused while time remains"
+    }
     CustomStringTableItem "{232AC988385CE40A}" {
      Id "EL-Org_Open"
      Target_en_us "Organization desk"
