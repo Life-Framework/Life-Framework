@@ -238,6 +238,12 @@
 - ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
   empty recipe or a prefab that does not resolve logs `EL_Debug.Error` and
   returns before inventory changes (verified 2026-10-11).
+- ✅ Cocaine, jam, and beer are one-input, one-output recipe prefabs under
+  `Prefabs/Processing/Chains/`, each parented to `ItemProcessor_Base`
+  (verified 2026-10-11). Cocaine consumes coca leaves and produces a cocaine
+  pouch. Jam consumes rowan berries and produces berry jam. Beer consumes an
+  empty beer bottle and produces a beer bottle. `EL_Test_RecipeChains` checks
+  that each input prefab and output prefab is set and distinct.
 
 ### `EL_ResourceChainCatalog` — `Feature/Resources/EL_ResourceChainCatalog.c`
 - ✅ `Configs/Resources/ResourceChains.conf` names each gather node's tool,
