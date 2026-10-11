@@ -1,5 +1,7 @@
 # AGENTS.md — Life Framework development contract
 
+A new world interactable runs `node tools\actions\place-action-contexts.mjs` so its UserActionContext Offset, Radius, and Height come from the mesh. The point sits on the part the player uses. A mesh taller than about 1.5 m gets a Height. Handheld pickups stay as they are.
+
 `node agent-box/harness.mjs report roadmap` is the street visual pass. In a rendering play session it stands at every `Roadmap_` entity, runs `look`, takes a world shot, and writes `agent-box/reports/roadmap.html` with each picture beside that text, plus one wide shot of the row. A row fails when the mesh is white or missing, look offers no interaction, a menu is blank, or the site is more than 30 m from the rest of the street. `node agent-box/harness.mjs selftest` marks an empty look and a site 80 m away as failures. Do not boot the test server for this report.
 
 ## Context — stop here
