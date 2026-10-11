@@ -267,6 +267,25 @@
 - ⚠️ Non-tool or unmapped damage source deals **0 damage silently** (no
   feedback); damage-source prefab string comparison is fragile on casing.
 
+### `LF_MiningPhases` + `LF_MiningSpawn` + `LF_MiningForge` — `Feature/Mining/`
+- ✅ Ore health phases (verified 2026-10-11). A strike counts only when its
+  damage equals the tool damage. Non-negative damage walks phase budgets in
+  order; a budget of zero stops the walk. Passing the last phase destroys the
+  ore when delete-after-final is set. Applying a phase sets health to that
+  phase's budget and swaps the mesh when the phase names one. An empty mesh
+  keeps the current mesh. No phase data restores the original health and the
+  original mesh. Ported from EveronLife `EL_DestructionMultiPhaseSingleComponent`
+  and `EL_ToolHitZone`. Logic test `mining/phases`.
+- ✅ Weighted ore spawn. A roll in `[0, total)` maps onto the first bin, including
+  a roll of 0. The spawn count is the shortfall to the configured amount, and
+  an over-full area spawns nothing. An empty list logs `EL_Debug.Error`.
+- ✅ Timed forge. One iron nugget
+  (`{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et`) becomes one iron
+  bar (`{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et`) after 5 seconds
+  (5000 ms). The nugget stays until the delay elapses. A missing nugget, a
+  second start, or a nugget removed before the end logs `EL_Debug.Error` and
+  yields no bar. A zero delay finishes inside the start.
+
 ## Jobs / Level / Licenses / Whitelist
 
 ### `EL_PlayerJobComponent` — `Feature/Jobs/EL_PlayerJobComponent.c`
