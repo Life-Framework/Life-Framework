@@ -436,6 +436,17 @@
 - ⚠️ Rank and on-duty seconds live on the account object and are not in
   `EL_PlayerAccountRecord`, so a restart returns the officer to patrol.
 
+### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
+- ✅ One convoy. A member of the organization that owns the hideout hauls
+  `{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et` from
+  `Roadmap_Convoy_Start` at `444 0 120` to `Roadmap_Convoy_Drop` at `462 0 120`
+  on `Roadmap_Hideout.layer`. Delivery pays 200 MoneyStack cash once. A second
+  delivery on that run pays nothing. Leaving the vehicle or dying fails the
+  run and logs it; a failed run pays nothing. A non-member is refused and the
+  refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
+  Player strings: `#EL-Contraband_Start`, `#EL-Contraband_Deliver`,
+  `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`.
+
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
 - ✅ On-duty police delete weapons from the nearest wanted player within 5 m.
 - ⚠️ Deletes items while iterating a live `FindItems` array (mutation-during-
@@ -462,7 +473,28 @@
 - ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
   compound the fund. The game-mode serializer writes these records at version 2,
   after survival. A version 1 save has no organization payload and does not
-  clear a live fund.
+  clear a live fund. Version 3 appends hideout ownership after these records.
+  Version 4 appends owned vehicles after the hideout records.
+
+### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
+- ✅ One building owned by one organization. Members unlock
+  `Roadmap_Hideout_Door` at `390 0 120`. A non-member is refused and the
+  refusal is logged. The door is `EL_Door_Base` with the inherited
+  `EL_LockComponent`. The organization id is written onto that lock. The door
+  does not call `LF_Breach` and does not add a second `ActionsManagerComponent`.
+- ✅ `Roadmap_Hideout_Machine` at `408 0 120` uses the existing
+  `EL_ProcessAction` on `ItemProcessor_Base`. It runs only when the player's
+  organization owns the hideout and has the processing upgrade. Otherwise it
+  refuses and logs. The recipe turns one cabbage into one RowanBerries stack,
+  the configured contraband prefab. A chain machine with no hideout component
+  still reads `ResourceChains.conf`.
+- ✅ `Roadmap_Hideout_Stash` at `426 0 120` is the base-game crate mesh
+  `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`.
+- ✅ `ExportAll` / `ApplyAll` put the organization id and the lock flag back,
+  and a second apply does not change them. The game-mode serializer writes
+  these records at version 3. A version 2 save has no hideout payload and does
+  not clear a live hideout. Player strings: `#EL-Hideout_NotMember`,
+  `#EL-Hideout_NoUpgrade`, `#EL-Hideout_Process`.
 
 ## Notifications
 
@@ -528,7 +560,7 @@
 - ✅ `Roadmap_Vehicle_Lot` sells vanilla S105, UAZ469, S1203, UAZ452, and M923. Each spawn is a thin child of that vanilla prefab with `EL_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. (verified 2026-10-11)
 - ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing.
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
-- ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 3 writes those records after the organization records; a version 2 save has organizations and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
+- ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
 - ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell for a capture. It is not placed in the DebugWorld row. The placed pad is `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`.
 
 ## UI / Layouts / Localization
@@ -575,9 +607,13 @@
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, tests, and the release
   `Roadmap.layer` street, `Roadmap_Bank.layer`, `Roadmap_Fuel.layer`,
-  `Roadmap_Jail.layer`, and `Roadmap_Organizations.layer` are all present as non-empty layer files.
+  `Roadmap_Jail.layer`, `Roadmap_Organizations.layer`, and `Roadmap_Hideout.layer`
+  are all present as non-empty layer files.
   `Roadmap_Fuel.layer` places `Roadmap_Fuel_Till` at `318 0 120`.
   `Roadmap_Organizations.layer` places `Roadmap_Org_Desk` at `372 0 120`.
+  `Roadmap_Hideout.layer` places the door at `390 0 120`, the machine at
+  `408 0 120`, the stash at `426 0 120`, the convoy start at `444 0 120`, and
+  the convoy drop at `462 0 120`.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
