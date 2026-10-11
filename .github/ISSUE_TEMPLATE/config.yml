@@ -9,3 +9,6 @@ contact_links:
   - name: Development setup
     url: https://github.com/Life-Framework/Life-Framework/blob/main/docs/setup.md
     about: Prerequisites, Workbench, CLI, MCP, and troubleshooting.
+  - name: DebugWorld playtest
+    url: https://github.com/Life-Framework/Life-Framework/blob/release/roadmap/docs/playtest.md
+    about: Play the release street in DebugWorld and send feedback.
