@@ -68,6 +68,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_BreachPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_Roadmap_Contraband(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_ContrabandWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_Escort(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_Fuel(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_FuelWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_Garage(), EL_TestTier.LOGIC);

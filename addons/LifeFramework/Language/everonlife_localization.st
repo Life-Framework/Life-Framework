@@ -2108,6 +2108,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Blue"
      Comment "Garage catalog blue color field."
     }
+    CustomStringTableItem "{4F8C2A91D6B74E11}" {
+     Id "EL-Escort_Grab"
+     Target_en_us "Escort"
+     Comment "Officer walks a wanted suspect toward a vehicle. The sentence has not started."
+    }
+    CustomStringTableItem "{4F8C2A91D6B74E12}" {
+     Id "EL-Escort_Arrest"
+     Target_en_us "Detain for escort"
+     Comment "Officer detains a wanted suspect for vehicle escort. This does not start the jail sentence."
+    }
+    CustomStringTableItem "{4F8C2A91D6B74E13}" {
+     Id "EL-Escort_PutIn"
+     Target_en_us "Put in vehicle"
+     Comment "Officer seats the escorted prisoner in the nearest free passenger seat"
+    }
+    CustomStringTableItem "{4F8C2A91D6B74E14}" {
+     Id "EL-Escort_TakeOut"
+     Target_en_us "Take out of vehicle"
+     Comment "Officer removes the prisoner from the vehicle. The sentence starts only at the cell."
+    }
+    CustomStringTableItem "{4F8C2A91D6B74E15}" {
+     Id "EL-Escort_NoPrisoner"
+     Target_en_us "No prisoner to escort"
+     Comment "Vehicle escort action refused because the officer has no prisoner on foot or in a seat"
+    }
   }
  }
 }
