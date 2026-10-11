@@ -1,13 +1,5 @@
-GenericEntity Roadmap_Fuel_Till {
+GenericEntity Roadmap_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
  components {
-  MeshObject "{48DDA12B0BA57739}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
-  }
-  RigidBody "{691C0466572754D1}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
   ActionsManagerComponent "{D97D7ED02B9C4E1A}" {
    ActionContexts {
     UserActionContext "{85653734FAE04F9E}" {
@@ -35,9 +27,6 @@ GenericEntity Roadmap_Fuel_Till {
      m_iMinPoliceOnDuty 0
     }
    }
-  }
-  RplComponent "{334B3C30A79B809E}" {
-   Enabled 1
   }
  }
  Flags 0x403 0
