@@ -2133,6 +2133,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "No prisoner to escort"
      Comment "Vehicle escort action refused because the officer has no prisoner on foot or in a seat"
     }
+    CustomStringTableItem "{A1C4E87B62D94F05}" {
+     Id "LF-Garage_StepOut"
+     Target_en_us "Step out of the vehicle first"
+     Comment "Garage store refused because the player is still seated."
+    }
   }
  }
 }
