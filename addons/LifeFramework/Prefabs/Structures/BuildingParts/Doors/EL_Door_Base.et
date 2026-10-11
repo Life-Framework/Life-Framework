@@ -6,5 +6,16 @@ GenericEntity : "{F1793FE006FDF888}Prefabs/Structures/BuildingParts/Doors/Door_B
   }
   EL_LockComponent "{5AC29970429B33BB}" {
   }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   ActionContexts {
+    UserActionContext "{50888D37F529F720}" {
+     Position PointInfo "{50888D37F0EB77E0}" {
+      Offset 1.5403 1.0042 -0.0133
+     }
+     Radius 0.8632
+     Height 1.8048
+    }
+   }
+  }
  }
 }

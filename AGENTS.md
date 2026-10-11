@@ -1,5 +1,7 @@
 # AGENTS.md — Life Framework development contract
 
+A new world interactable runs `node tools\actions\place-action-contexts.mjs` so its UserActionContext Offset, Radius, and Height come from the mesh. The point sits on the part the player uses. A mesh taller than about 1.5 m gets a Height. Handheld pickups stay as they are.
+
 ## Context — stop here
 
 This section is the context. Write the assigned files. Do not open sibling features, validation scripts, MCP sources, or the server executable to learn the shape.
