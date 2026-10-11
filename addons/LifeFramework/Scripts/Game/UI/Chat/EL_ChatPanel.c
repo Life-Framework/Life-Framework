@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: MIT
+// Ported from https://github.com/thebonbon/EveronLife branch dedicated_server.
 //------------------------------------------------------------------------------------------------
-//! Adds the roleplay channel styles (OOC global, admin) to the vanilla chat panel
-//! and routes channel styles by channel name for the custom roleplay channels.
+//! Adds the roleplay channel styles (OOC global, admin) to the vanilla chat panel.
+//! Style choice lives in LF_RoleplayChat so admin and OOC stay on the same path.
 modded class SCR_ChatPanel
 {
 	[Attribute()]
@@ -51,38 +53,42 @@ modded class SCR_ChatPanel
 		if (channel == null)
 			return m_SystemChannelStyle;
 
-		SCR_ChatMessageStyle style;
-		switch (channel.Type())
-		{
-			case BaseChatChannel:
-			{
-				if (channel.GetName() == "Global")
-					style = m_GlobalChannelStyle;
-				if (channel.GetName() == "OOCGlobal")
-					style = m_OOCGlobalStyle;
-				break;
-			}
-
-			case GroupChatChannel:
-				style = m_GroupChannelStyle;
-				break;
-			case FactionChatChannel:
-				style = m_FactionChannelStyle;
-				break;
-			case SCR_VehicleChatChannel:
-				style = m_VehicleChannelStyle;
-				break;
-			case LocalChatChannel:
-				style = m_LocalChannelStyle;
-				break;
-			case PrivateMessageChannel:
-				style = m_DirectChannelStyle;
-				break;
-		}
+		LF_ERoleplayChatStyle kind = LF_RoleplayChat.ResolveStyle(channel.Type(), channel.GetName());
+		SCR_ChatMessageStyle style = StyleFor(kind);
 
 		if (!style)
 			return m_SystemChannelStyle;
 
 		return style;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected SCR_ChatMessageStyle StyleFor(LF_ERoleplayChatStyle kind)
+	{
+		if (kind == LF_ERoleplayChatStyle.GLOBAL)
+			return m_GlobalChannelStyle;
+
+		if (kind == LF_ERoleplayChatStyle.OOC_GLOBAL)
+			return m_OOCGlobalStyle;
+
+		if (kind == LF_ERoleplayChatStyle.LOCAL)
+			return m_LocalChannelStyle;
+
+		if (kind == LF_ERoleplayChatStyle.ADMIN)
+			return m_AdminStyle;
+
+		if (kind == LF_ERoleplayChatStyle.GROUP)
+			return m_GroupChannelStyle;
+
+		if (kind == LF_ERoleplayChatStyle.FACTION)
+			return m_FactionChannelStyle;
+
+		if (kind == LF_ERoleplayChatStyle.VEHICLE)
+			return m_VehicleChannelStyle;
+
+		if (kind == LF_ERoleplayChatStyle.DIRECT)
+			return m_DirectChannelStyle;
+
+		return m_SystemChannelStyle;
 	}
 }
