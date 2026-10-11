@@ -40,8 +40,35 @@ if (-not (Test-Path -LiteralPath $exe)) {
   exit 2
 }
 
+function Save-SuiteStamp([string]$ProfileDir, [string]$RepoRoot) {
+  $logs = Join-Path $ProfileDir "logs"
+  if (-not (Test-Path -LiteralPath $logs)) { return }
+  $logDir = Get-ChildItem -LiteralPath $logs -Directory -ErrorAction SilentlyContinue |
+    Sort-Object Name | Select-Object -Last 1
+  if (-not $logDir) { return }
+  $consoleLog = Join-Path $logDir.FullName "console.log"
+  if (-not (Test-Path -LiteralPath $consoleLog)) { return }
+  $raw = [System.IO.File]::ReadAllText($consoleLog)
+  $found = [regex]::Matches($raw, '\[ELTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)')
+  if ($found.Count -eq 0) { return }
+  $match = $found[$found.Count - 1]
+  $sha = (& git -C $RepoRoot rev-parse HEAD 2>$null)
+  if (-not $sha) { return }
+  $sha = "$sha".Trim()
+  $outDir = Join-Path $RepoRoot "tmp\test-results"
+  New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+  $outFile = Join-Path $outDir "summaries.jsonl"
+  $jsonPath = $consoleLog.Replace('\', '\\').Replace('"', '\"')
+  $line = '{"sha":"' + $sha + '","tier":"' + $match.Groups[1].Value + '","passed":' + $match.Groups[2].Value + ',"failed":' + $match.Groups[3].Value + ',"total":' + $match.Groups[4].Value + ',"consoleLog":"' + $jsonPath + '"}'
+  $utf8 = New-Object System.Text.UTF8Encoding $false
+  [System.IO.File]::AppendAllText($outFile, $line + "`n", $utf8)
+}
+
 $profile = Join-Path $root "server\profile\test"
 if (-not $KeepProfile) {
+  # The next boot deletes this profile, including the previous tier's console.log.
+  # Record that summary first so suite-stamp can still read it.
+  Save-SuiteStamp -ProfileDir $profile -RepoRoot $root
   if (Test-Path $profile) { Remove-Item $profile -Recurse -Force }
 }
 New-Item -ItemType Directory -Force -Path $profile | Out-Null

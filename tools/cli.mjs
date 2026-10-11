@@ -18,6 +18,8 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate | lint | test            Run every script in tools/{dir}/
 //   logs <pattern> [flags]            Grep the newest server console.log
+//   suite-stamp <tier>                Newest saved ELTEST summary for a tier
+//   suite-valid <sha>                 Whether changes since <sha> still ride that summary
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
@@ -26,6 +28,7 @@ import { closeSync, cpSync, createWriteStream, existsSync, fstatSync, lstatSync,
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
+import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MCP_DIR = join(ROOT, "tools", "mcp");
@@ -981,6 +984,10 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   regen-localization            regenerate the runtime string tables from the .st source
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                 grep the newest server console.log (default after=3 limit=8)
+  suite-stamp <tier>            print the newest tmp/test-results/summaries.jsonl line for a tier
+  suite-valid <sha>             exit 0 when every file since <sha> is localization, the generated
+                                test registry, or docs/features.md; exit 1 for gameplay, a
+                                persistence serializer, a prefab, or a world layer
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   validate | lint               run every script in tools/{validation,lint}/
   run <area>                    run every script in tools/<area>/ (validate, lint, test, ...)
@@ -1560,9 +1567,81 @@ const cmds = {
   run: (n) =>
     TOOL_DIRS[n] ? cmdRunArea(n) : (console.log(`unknown area: ${n} (expected one of: ${Object.keys(TOOL_DIRS).join(", ")}`), 1),
   logs: (flags) => cmdLogs(flags),
+  "suite-stamp": (flags) => cmdSuiteStamp(flags),
+  "suite-valid": (flags) => cmdSuiteValid(flags),
   call: () => cmdMcpCall(rest),
   help: () => cmdHelp(),
 };
+
+function cmdSuiteStamp(flags) {
+  const list = flags ?? [];
+  if (list.includes("--selftest")) {
+    const failures = selftestSuiteStamp();
+    if (failures.length) {
+      console.log("suite-stamp: FAIL");
+      for (const failure of failures) console.log(`  ${failure}`);
+      return 1;
+    }
+    console.log("suite-stamp: OK");
+    return 0;
+  }
+  const tier = argValue(list, "--tier") ?? list.find((arg) => !arg.startsWith("--"));
+  if (!tier) {
+    console.log("usage: tools\\cli suite-stamp <tier>");
+    return 1;
+  }
+  const file = join(ROOT, "tmp", "test-results", "summaries.jsonl");
+  if (!existsSync(file)) {
+    console.log(`suite-stamp: no summary for tier ${tier}`);
+    return 1;
+  }
+  const line = newestSummaryLine(readFileSync(file, "utf8"), tier);
+  if (!line) {
+    console.log(`suite-stamp: no summary for tier ${tier}`);
+    return 1;
+  }
+  console.log(line);
+  return 0;
+}
+
+function cmdSuiteValid(flags) {
+  const list = flags ?? [];
+  if (list.includes("--selftest")) {
+    const failures = selftestSuiteStamp();
+    if (failures.length) {
+      console.log("suite-valid: FAIL");
+      for (const failure of failures) console.log(`  ${failure}`);
+      return 1;
+    }
+    console.log("suite-valid: OK");
+    return 0;
+  }
+  const sha = list.find((arg) => !arg.startsWith("--"));
+  if (!sha) {
+    console.log("usage: tools\\cli suite-valid <sha>");
+    return 1;
+  }
+  const diff = sh("git", ["diff", "--name-only", sha], { cwd: ROOT });
+  if (diff.status !== 0) {
+    const detail = (diff.stderr || diff.stdout || "unknown revision").trim();
+    console.log(`suite-valid: FAIL ${detail}`);
+    return 1;
+  }
+  const untracked = sh("git", ["ls-files", "--others", "--exclude-standard"], { cwd: ROOT });
+  const names = `${diff.stdout}\n${untracked.stdout}`
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (suiteValidCode(names) === 0) {
+    console.log(`suite-valid: OK (${names.length} path(s) since ${sha})`);
+    return 0;
+  }
+  console.log("suite-valid: FAIL");
+  for (const name of names) {
+    if (!isSuiteSafePath(name)) console.log(`  ${name}`);
+  }
+  return 1;
+}
 
 const [a, b] = rest;
 const HEAVY = ["build", "serve", "dev", "test", "ci"];
@@ -1575,7 +1654,7 @@ try {
   } else if (cmd === "wt") {
     code = cmdWt(rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "suite-stamp" || cmd === "suite-valid" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

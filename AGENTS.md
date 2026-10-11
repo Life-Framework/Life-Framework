@@ -6,6 +6,8 @@ A new world interactable runs `node tools\actions\place-action-contexts.mjs` so 
 
 ## Context — stop here
 
+If the named commit is already an ancestor and the worktree is clean, print the SHA and stop. Do not regenerate, do not re-run a suite, and do not open another pull request. A later commit that suite-valid accepts does not require a new suite. A commit that changes gameplay or the persistence version does.
+
 This section is the context. Write the assigned files. Do not open sibling features, validation scripts, MCP sources, or the server executable to learn the shape.
 
 Worktree ports come from `tools\cli wt list`. The test command prints them. Port 2001 in a server log is not a bug to chase. Retry a failed boot once.

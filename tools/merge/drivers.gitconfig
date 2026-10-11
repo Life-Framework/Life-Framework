@@ -1,0 +1,20 @@
+# Merge drivers selected by .gitattributes.
+# Register once per clone (the pre-commit hook does this):
+#   git config --local --add include.path <repo>/tools/merge/drivers.gitconfig
+# The driver commands run with the worktree as the current directory.
+
+[merge "lf-string-table"]
+	name = Union localization string ids
+	driver = node tools/merge/union-string-table.mjs %O %A %B %P
+
+[merge "lf-regen-localization"]
+	name = Regenerate language confs
+	driver = node tools/merge/regen-generated.mjs %O %A %B %P
+
+[merge "lf-regen-tests"]
+	name = Regenerate the test registry
+	driver = node tools/merge/regen-generated.mjs %O %A %B %P
+
+[merge "lf-features"]
+	name = Keep both sides feature rows
+	driver = node tools/merge/union-features.mjs %O %A %B %P

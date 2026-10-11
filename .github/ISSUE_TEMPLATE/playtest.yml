@@ -1,0 +1,58 @@
+name: Playtest
+description: What you tried in DebugWorld, and what to build next
+title: "[Playtest]: "
+labels: ["playtest"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Play DebugWorld from the release branch. Read docs/playtest.md in your checkout first.
+        One issue per problem or idea. This text is pasted to an agent as the next build prompt.
+  - type: dropdown
+    id: role
+    attributes:
+      label: Who were you
+      options:
+        - Civilian
+        - Police
+        - Both, in separate passes
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: DebugWorld entity name, such as Roadmap_Org_Desk.
+      placeholder: Roadmap_Org_Desk
+    validations:
+      required: true
+  - type: textarea
+    id: did
+    attributes:
+      label: What you did
+      placeholder: |
+        1. Walked up to the organization desk
+        2. Used the interact key
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+      description: Blank menu, missing action, white mesh, wrong payout, or a site you could not reach.
+    validations:
+      required: true
+  - type: textarea
+    id: next
+    attributes:
+      label: Build next
+      description: The change an agent should make. Name the entity. Leave empty if you only want the problem recorded.
+      placeholder: At Roadmap_Org_Desk the menu never appears. Open it as a visible screen with the organization name, fund, and the processing purchase.
+    validations:
+      required: false
