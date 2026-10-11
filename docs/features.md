@@ -222,6 +222,9 @@
 - ✅ The server applies a gather when no peer owns the prop, and a grant that
   adds nothing is an error log (verified 2026-10-10). A sandbag the inventory
   rejects, or a nugget with no usable slot, used to look like a successful use.
+- ✅ A node id copies tool, yield, and cooldown from `ResourceChains.conf`.
+  A missing row or a prefab that does not resolve logs `EL_Debug.Error` and
+  grants nothing (verified 2026-10-11). The action stays on the node.
 
 ### `EL_ProcessAction` — `Feature/Processing/EL_ProcessAction.c`
 - ✅ Recipe: consume all `m_aProcessingInputs`, produce all
@@ -230,6 +233,26 @@
   empty input/output lists, missing inputs, and non-positive amounts are
   rejected before inventory mutation. Regression coverage is in
   `EL_Test_ActionGuards`.
+- ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
+  empty recipe or a prefab that does not resolve logs `EL_Debug.Error` and
+  returns before inventory changes (verified 2026-10-11).
+
+### `EL_ResourceChainCatalog` — `Feature/Resources/EL_ResourceChainCatalog.c`
+- ✅ `Configs/Resources/ResourceChains.conf` names each gather node's tool,
+  yield, and cooldown, and each machine's inputs and outputs (verified
+  2026-10-11). Yields are item prefabs. Gather and process do not mint cash.
+  The playable iron, copper, and gold rows name the pickaxe. The log row does
+  not: the axe stays on `CuttableTree_Base`, and `LogPile_Debug` grants a log
+  with no held tool so the sawmill still runs before the axe pickup.
+- ✅ MainWorld's St Philippe farm (`Area_StPhillipe_AppleFarm.layer`) places
+  the apple trees, the juicer, and a juice trader (15 cash, matching the
+  DebugWorld juice crate), plus iron ore, a pickaxe, the furnace, and an
+  iron-bar trader (45 cash, the ShopPrices iron-bar sell price). That iron
+  node requires the pickaxe in hand. DebugWorld keeps Apple, Plum, Tomato,
+  Logging, Mining, Cement, Gravel, and Sand. `IronOre_Debug` uses
+  `iron-debug` (4 nuggets, no held tool) so one gather still feeds both
+  furnaces. `GoldOre_Debug` and `CopperOre_Debug` use the tool-free debug
+  rows with the prefab yields.
 
 ### `EL_DestructibleResourceComponent` + `EL_DestructibleResourceHitZone` — `Feature/Resources/`
 - ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit.
@@ -250,16 +273,38 @@
 - ✅ **Paychecks pay cash** (verified 2026-08-30): `ProcessPaycheck` uses
   `EL_MoneyUtils.GiveCash`; the old `EL_BankAccountComponent` deposit branch is
   gone (that entity bank is deleted). The only cash↔account boundary is the ATM.
+- ✅ **Civilian run XP** (verified 2026-10-11): `AddExperience` forwards to
+  `LF_CivilianJob`. A completed courier, fuel, or taxi run adds 100 XP.
+  100 XP levels that career and `PullCareer` copies the level onto this
+  component, so `OnLevelUp` fires. Level 1 may take courier work, level 2
+  opens fuel delivery, level 3 opens taxi. Under-level signup refuses and is
+  logged. Paychecks stay cash on the existing clock.
 - ⚠️ Whitelist branch in `SetJob` is dead (only POLICE is restricted and it is
-  special-cased). `AddExperience` is a no-op, so `OnLevelUp` can never fire.
-  Hard-coded Spanish strings (not localized). Per-job level/XP persistence is
-  convention-only, no SaveData pair.
+  special-cased). Hard-coded Spanish strings (not localized). Per-job level/XP
+  persistence is convention-only, no SaveData pair.
+
+### `LF_CivilianJob` — `Feature/Jobs/LF_CivilianJob.c`
+- ✅ Workplace signup, one active run, cash once, abandon pays nothing
+  (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
+  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et`. Fuel cargo is
+  `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
+  the drop consumes it. The taxi fare uses the rank vehicle
+  `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
+  not need a second client. A missing cargo prefab or a full inventory logs
+  `EL_Debug.Error` and that run does not pay. DebugWorld places
+  `Roadmap_Job_Depot` (post counter
+  `{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et`),
+  `Roadmap_Job_Drop`, `Roadmap_Job_TaxiPad`, and `Roadmap_Job_FuelCan` on
+  `Roadmap.layer`.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
-- ✅ Singleton reward funnel; currently `GetGatherReward`/`GetProcessReward`
-  return 0 (sell to traders instead). Dead-but-safe.
-- ⚠️ `GiveReward` pays cash when reached (verified 2026-08-30) but the funnel
-  is unreachable today; `#EL-Job_Earned` misused as a format string (no `%1`).
+- ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
+  `SetScopeReward` for that prefab (verified 2026-10-11). Gather and process
+  mint nothing on their own. The player sells the product to a trader. A
+  scope payout, when one exists, is cash via `EL_MoneyUtils.GiveCash`. The
+  ATM stays the only cash-to-account boundary.
+- ✅ `#EL-Job_Earned` is `Earned $%1 for work!` and `GiveReward` passes the
+  paid amount through `WidgetManager.Translate` (verified 2026-10-11).
 
 ### `EL_PlayerLevelComponent` — `Feature/Level/EL_PlayerLevelComponent.c`
 - ✅ Level/XP/skill-point state; `GetExperienceForNextLevel = level * 100`;
@@ -295,6 +340,51 @@
 
 ## Crime & Police
 
+### `LF_Breach` — `Feature/Crime/LF_Breach.c`
+- ✅ Configured charge opens an `EL_LockComponent` after the fuse and leaves it
+  open until repair (verified 2026-10-11). `Arm(targetId, playerUid)` is the
+  call later robberies use. Fuse 0 opens in that call. Wanted and the police
+  notify fire once, at arm time, not when the offer refreshes. A second charge
+  on an open target refuses. Police can always repair; the owning organization
+  can repair its own door. `Export` / `Apply` put the open lock back. The
+  vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
+  `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
+  `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
+  `EL_Door_Base` inherits
+  `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
+
+### `LF_Bank` — `Feature/Crime/LF_Bank.c`
+- ✅ A vault calls `LF_Breach.Arm`, then spills a config number of bags of
+  MoneyStack cash (verified 2026-10-11). The haul never deposits or withdraws
+  `EL_BankAccount`. Civilian-only, cooldown, and minimum police on duty use
+  the same comparisons as `EL_RobAction`. A second breach inside the cooldown
+  spawns nothing. Over-capacity requests are cut to the configured bag count.
+  Carry leaves the cash on the bag; dropping it leaves that cash in the world.
+  `Export` / `Apply` restore the ground bags and do not write a bank balance.
+  DebugWorld places `Roadmap_Bank_Vault` at 189 0 120 and `Roadmap_Bank_Bag`
+  at 189 0 122 on `Roadmap.layer`. The bag is
+  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
+  mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
+  `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
+  `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits
+  `{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`.
+  That building is capture-only and is not placed in the debug row.
+
+### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
+- ✅ Hospital till pays `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`
+  through the civilian, cooldown, and minimum-police gates and does not deposit
+  to the bank (verified 2026-10-11). The placed action is `EL_RobAction` on the
+  till's single `ActionsManagerComponent`. Wanted rises by 1. One police alert per
+  successful rob; an offer refresh does not alert. DebugWorld places
+  `Roadmap_Hospital_Till` at `195 0 120` on `Roadmap.layer`.
+- ✅ The cabinet is a forced-entry container. `BreachCabinet` calls
+  `LF_Breach.Arm`. When that lock opens it spawns the configured medicine
+  prefabs: field dressing, morphine, saline, and tourniquet. A missing prefab
+  logs and that line is skipped. A second breach while the cabinet is open
+  spawns nothing and does not alert again. `Roadmap_Hospital_Cabinet` is at
+  `198 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
+  to the contraband scope.
+
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
   gates; raises wanted level (+1/+2/+3); notifies police. DebugWorld's three
@@ -304,32 +394,144 @@
   `EL_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted (pin test `crime/rob-wanted-clamp`).
-- ⚠️ Near-duplicated guard logic across all three. Police-alert fires from
-  *inside* the counting predicate (spam on every offer refresh). `#EL-Stole_Money`
-  has no `%1` placeholder (amount dropped). `EL_RobWeaponAction.AlertPolice`
-  hardcodes "ALERTA POLICIAL".
+- ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
+  `Roadmap.layer` at `201 0 120` is
+  `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits
+  `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`,
+  with `EL_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
+  the server rolls it, and min equal to max pays that fixed amount. The debug
+  till pays 150 MoneyStack cash. The bank balance stays 0. Wanted rises by
+  `m_iWantedIncrease` (default 1) and still clamps at 5. A second attempt
+  inside the cooldown is refused and logged with `EL_Debug.Error`. The police
+  alert fires once, inside `CommitRobbery`, not while counting on-duty police
+  and not when the offer refreshes. The fuel station building
+  `{9269BD1B6BF3A441}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/FuelStation_E_01_V1.et`
+  is the capture prefab and is not placed in the row. Player strings:
+  `#EL-Fuel_Till_Rob`, `#EL-Rob_Cooldown`, `#EL-Rob_CiviliansOnly`,
+  `#EL-Rob_NeedPolice`.
+- ⚠️ Near-duplicated guard logic across all three. `EL_RobWeaponAction` and
+  `EL_RobVehicleAction` still notify from inside their own on-duty counts.
+  `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
+
+### `LF_Jail` — `Feature/Police/LF_Jail.c`
+- ✅ Placed cell and timed sentence (verified 2026-10-11). `GetJailPosition()`
+  reads the cell origin. Sentence length is wanted level times the config
+  step, clamped to the config max. Arrest of a clean player refuses. Expiry
+  reduces wanted by the configured amount. Early release refuses. A locked
+  jail door returns a prisoner who leaves the volume; an open door (the shared
+  `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
+  stays. `Export` / `Apply` put the remaining seconds back. DebugWorld places
+  `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
+  `Roadmap.layer`. The placed door is
+  `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
+  inherits
+  `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
+  and adds `EL_LockComponent`, so the prison mesh and the shared breach actions
+  stay together. That vanilla door is the prefab the world test loads.
+  The officer action `LF_JailArrestAction` is on the suspect. Vehicle escort
+  is not in this slice.
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
   through `SCR_ChimeraCharacter.EL_AskPoliceArrest/Fine`, and the server
   handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
-  target, and fine range before acting. `EL_PoliceUtils` (pure) holds the
-  jail position, wanted-reduction and fine-range math for tests.
-- ⚠️ RPC handlers still log denials via `Print` (should be `EL_Debug`);
+  target, and fine range before acting. Arrest also requires senior rank, and
+  the fine must sit inside that rank's cap. `EL_PoliceUtils` (pure) holds the
+  sentence-length math, wanted-reduction and fine-range checks for tests.
+  `EL_AskPoliceSelfPromote` always refuses.
+- ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
+  `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
+  to `"127 1 137"`.
+- ⚠️ The fine RPC still logs denials via `Print` (should be `EL_Debug`);
   `account.GetActiveCharacter()` deref in the wanted list is unguarded.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ Toggles police on-duty flag. Civilians are refused. The debug menu's
   police faction button sets faction and duty, which is how a solo session
-  reaches the toggle (verified 2026-10-10).
+  reaches the toggle (verified 2026-10-10). Going on duty starts the rank
+  clock; going off duty settles it.
 - ⚠️ Toggling evicts the account from the cache, so the officer cannot reopen
   the police menu or re-toggle until the account reloads.
+
+### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
+- ✅ Two ranks (verified 2026-10-11). Patrol officer draws
+  `{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et`, fines up to
+  1000, and cannot arrest. Senior officer draws
+  `{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et`, fines up to
+  the existing 5000 cap, and can arrest. The resolved kit is the intersection
+  of that rank's list and the station catalog; a prefab that does not load is
+  logged and skipped, and the rank stays usable. An on-duty senior promotes a
+  lower officer. 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
+  is the self-promotion RPC body and always refuses. Rank does not change
+  faction and does not write the police whitelist. Lower ranks still open the
+  wanted list. DebugWorld places `Roadmap_Police_Armory` at `207 0 120` on
+  `Roadmap.layer`.
+- ⚠️ Rank and on-duty seconds live on the account object and are not in
+  `EL_PlayerAccountRecord`, so a restart returns the officer to patrol.
+
+### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
+- ✅ One convoy. A member of the organization that owns the hideout hauls
+  `{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et` from
+  `Roadmap_Convoy_Start` at `222 0 120` to `Roadmap_Convoy_Drop` at `225 0 120`
+  on `Roadmap.layer`. Delivery pays 200 MoneyStack cash once. A second
+  delivery on that run pays nothing. Leaving the vehicle or dying fails the
+  run and logs it; a failed run pays nothing. A non-member is refused and the
+  refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
+  Player strings: `#EL-Contraband_Start`, `#EL-Contraband_Deliver`,
+  `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`.
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
 - ✅ On-duty police delete weapons from the nearest wanted player within 5 m.
 - ⚠️ Deletes items while iterating a live `FindItems` array (mutation-during-
   iteration risk); no compensation or wanted reduction.
+
+## Ownership
+
+### `EL_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11)
+- ✅ A character founds one organization. The id comes from `PersistenceIdUtils`,
+  never an entity id. The founder invites and kicks. A member can leave. The
+  founder cannot leave or be kicked. A second membership is refused.
+- ✅ The shared fund is a balance keyed by organization id, the same shape as
+  `EL_BankAccount`. Deposit credits it. Withdraw requires the withdraw rank and
+  takes the whole amount or nothing. Buying an upgrade (extra storage,
+  processing slot, parked vehicle) debits the configured price in one step or
+  leaves the fund and the flag untouched. The price and the new flag are logged.
+- ✅ Cash moves only as MoneyStack through `EL_OrganizationPlayer`. A short
+  removal is returned to the character. A short payout puts the fund back. The
+  personal ATM balance is not read or written. The desk is
+  `Roadmap_Org_Desk` on `Roadmap.layer` at `210 0 120`, using
+  `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`. The menu is a
+  workspace widget on `{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout`.
+  It lists the name, the fund, and the processing-slot upgrade, and shows an
+  empty state before create. Create, deposit, withdraw, buy-processing, and
+  close stay on the character RPCs. Cash and membership still go through the
+  server.
+- ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
+  compound the fund. The game-mode serializer writes these records at version 2,
+  after survival. A version 1 save has no organization payload and does not
+  clear a live fund. Version 3 appends hideout ownership after these records.
+  Version 4 appends owned vehicles after the hideout records.
+
+### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
+- ✅ One building owned by one organization. Members unlock
+  `Roadmap_Hideout_Door` at `213 0 120`. A non-member is refused and the
+  refusal is logged. The door is `EL_Door_Base` with the inherited
+  `EL_LockComponent`. The organization id is written onto that lock. The door
+  does not call `LF_Breach` and does not add a second `ActionsManagerComponent`.
+- ✅ `Roadmap_Hideout_Machine` at `216 0 120` uses the existing
+  `EL_ProcessAction` on `ItemProcessor_Base`. It runs only when the player's
+  organization owns the hideout and has the processing upgrade. Otherwise it
+  refuses and logs. The recipe turns one cabbage into one RowanBerries stack,
+  the configured contraband prefab. A chain machine with no hideout component
+  still reads `ResourceChains.conf`.
+- ✅ `Roadmap_Hideout_Stash` at `219 0 120` is the base-game crate mesh
+  `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`.
+- ✅ `ExportAll` / `ApplyAll` put the organization id and the lock flag back,
+  and a second apply does not change them. The game-mode serializer writes
+  these records at version 3. A version 2 save has no hideout payload and does
+  not clear a live hideout. Player strings: `#EL-Hideout_NotMember`,
+  `#EL-Hideout_NoUpgrade`, `#EL-Hideout_Process`.
 
 ## Notifications
 
@@ -384,14 +586,19 @@
 
 ### `EL_VehicleLockComponent` / `EL_VehicleKeyComponent` — `Feature/VehicleLock/`
 - ✅ Server-assigned vehicle and debug-key identifiers explicitly bump their replicated state during initialization, so clients receive the identifier after picking up a key.
+- ✅ The lock identifier, key id, owner, and lock flag are stored by `EL_VehicleOwnership`. A restart writes that identifier back with `SetVehicleIdentifier`, so the key still matches. Purchased vehicles replace the vanilla `SCR_BaseLockComponent` slot `{54D6FBC0EA806FE5}`, so get-in reads this lock. (verified 2026-10-11)
 
 ### `EL_LicensePlateManager` + generators — `Feature/LicensePlate/`
-- ✅ `EL_LicensePlateGeneratorGeneric.GenerateLicensePlate()` is pure:
-  `"AA BB NNNN"`.
-- ❌ **Off-by-one bugs**: `Math.RandomInt(0, 25)` excludes `Z`;
-  `Math.RandomInt(100, 9999)` excludes `9999`. No uniqueness guarantee and
-  no registry of issued plates. `EL_LicensePlateManager` has no destructor to
-  clear `s_Instance`.
+- ✅ `EL_LicensePlateGeneratorGeneric.GenerateLicensePlate()` is `"AA BB NNNN"`.
+- ✅ The alphabet includes `Z` (`LetterAt(25)`) and the number range includes `9999`. `Math.RandomInt` is exclusive at the top, so the generator rolls 26 letters and a number end of 10000. (verified 2026-10-11)
+- ✅ `EL_LicensePlateRegistry` keeps live plates. A second issue of a live plate is refused, so two vehicles do not share one by construction. (verified 2026-10-11)
+
+### Vehicle lot and garage — `Feature/Vehicles/`
+- ✅ `Roadmap_Vehicle_Lot` sells vanilla S105, UAZ469, S1203, UAZ452, and M923. Each spawn is a thin child of that vanilla prefab with `EL_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. (verified 2026-10-11)
+- ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing.
+- ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
+- ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
+- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell for a capture. It is not placed in the DebugWorld row. The placed pad is `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`.
 
 ## UI / Layouts / Localization
 
@@ -435,8 +642,21 @@
   fixtures must set it explicitly.
 - ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
-  traders, jobs, police, crime, houses, survival, and tests are all present
-  as non-empty layer files. `tools\cli validate` runs
+  traders, jobs, police, crime, houses, survival, tests, and the release
+  street on `Roadmap.layer`. Sites sit 3 m apart on +X, from the breach door
+  at `186 0 120` through the vehicle lot at `243 0 120`. The debug terrain is
+  the 256 m square (world 0..256). The row stays on that ground. That
+  one layer holds the breach door at `186 0 120`
+  and the charge at `186 0 122`, the bank vault at `189 0 120` and the bag at
+  `189 0 122`, the jail door at `192 0 120` and the cell at `192 0 122`, the
+  hospital till at `195 0 120` and the cabinet at `198 0 120`, the fuel till at
+  `201 0 120`, the police desk at `204 0 120`, the armory at `207 0 120`, the
+  organization desk at `210 0 120`, the hideout door at `213 0 120`, the
+  machine at `216 0 120`, the stash at `219 0 120`, the convoy start at
+  `222 0 120`, the convoy drop at `225 0 120`, the job depot at `228 0 120`,
+  the job drop at `231 0 120`, the taxi pad at `234 0 120`, the fuel can at
+  `237 0 120`, the S105 at `240 0 124`, and the vehicle lot at `243 0 120`.
+  `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
   trader cash payout → shop purchase → ATM deposit path. Robbery proceeds are
@@ -466,8 +686,11 @@
   (`RplMode.Dedicated`). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
 - ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
-  alone. The Node harness, MCP tools, layers, and named flows live in
-  `agent-box/`. See `docs/agent-box.md`.
+  alone. A world shot stays at camera offset `10 3 10` unless the command
+  passes `ox oy oz`, which is how the roadmap row shot steps back. `node
+  agent-box/harness.mjs report roadmap` writes `agent-box/reports/roadmap.html`
+  from a play session. The Node harness, MCP tools, layers, and named flows
+  live in `agent-box/`. See `docs/agent-box.md`.
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 

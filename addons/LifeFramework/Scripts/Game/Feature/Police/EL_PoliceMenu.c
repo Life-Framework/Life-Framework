@@ -23,6 +23,16 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Ask the server to promote this officer. The server always refuses: rank is not a client field.
+	void EL_AskPoliceSelfPromote()
+	{
+		if (Replication.IsServer())
+			LF_PoliceRanks.RequestSelfPromotion(EL_Utils.GetPlayerUid(this));
+		else
+			Rpc(RpcAsk_EL_PoliceSelfPromote);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_PoliceArrest(string targetPlayerUid)
 	{
@@ -31,26 +41,32 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		int officerPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
-		if (!EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(officer)))
+		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(officer);
+		if (!EL_PoliceUtils.IsOnDutyOfficer(officerAccount))
 		{
-			Print(string.Format("[EL_PoliceMenu] Arrest denied: %1 is not an on-duty officer", officerPlayerId), LogLevel.WARNING);
+			EL_Debug.Error("Jail", string.Format("arrest refused: %1 is not an on-duty officer", officerPlayerId));
 			return;
 		}
 
+		if (!LF_PoliceRanks.AuthorizeArrest(officerAccount))
+		{
+			if (officerPlayerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Rank_ArrestDenied", 3.0, EL_ENotificationType.WARNING);
+			return;
+		}
+
+		string officerUid = EL_Utils.GetPlayerUID(officer);
 		EL_PlayerAccount targetAccount;
 		IEntity target = EL_PoliceUtils.FindPlayerEntityByUid(targetPlayerUid, targetAccount);
-		if (!target || !targetAccount || targetAccount.GetWantedLevel() <= 0)
-		{
-			Print(string.Format("[EL_PoliceMenu] Arrest denied: target %1 is not wanted", targetPlayerUid), LogLevel.WARNING);
+		if (!target && targetAccount)
+			EL_Debug.Log("Jail", string.Format("arrest has an account but no body for %1", targetPlayerUid));
+
+		if (!LF_Jail.Arrest(officerUid, targetPlayerUid, target))
 			return;
-		}
 
-		target.SetOrigin(EL_PoliceUtils.GetJailPosition());
-
-		targetAccount.SetWantedLevel(0);
-		EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(targetAccount);
-
-		int targetPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(target);
+		int targetPlayerId = 0;
+		if (target)
+			targetPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(target);
 		EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Player_Arrested", 3.0, EL_ENotificationType.POLICE_ALERT);
 		if (targetPlayerId > 0)
 			EL_NotificationManagerComponent.NotifyPlayer(targetPlayerId, "#EL-Police_Title", "#EL-Player_Arrested", 3.0, EL_ENotificationType.WARNING);
@@ -65,9 +81,17 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		int officerPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
-		if (!EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(officer)))
+		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(officer);
+		if (!EL_PoliceUtils.IsOnDutyOfficer(officerAccount))
 		{
 			Print(string.Format("[EL_PoliceMenu] Fine denied: %1 is not an on-duty officer", officerPlayerId), LogLevel.WARNING);
+			return;
+		}
+
+		if (!LF_PoliceRanks.AuthorizeFine(officerAccount, amount))
+		{
+			if (officerPlayerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Rank_FineDenied", 3.0, EL_ENotificationType.WARNING);
 			return;
 		}
 
@@ -105,6 +129,13 @@ modded class SCR_ChimeraCharacter
 		if (targetPlayerId > 0)
 			EL_NotificationManagerComponent.NotifyPlayer(targetPlayerId, "#EL-Police_Title", "#EL-Fined", 3.0, EL_ENotificationType.WARNING, amountText);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_PoliceSelfPromote()
+	{
+		LF_PoliceRanks.RequestSelfPromotion(EL_Utils.GetPlayerUid(this));
+	}
 };
 
 //------------------------------------------------------------------------------------------------
@@ -115,10 +146,37 @@ class EL_PoliceUtils
 	static const int MAX_FINE = 5000;
 
 	//------------------------------------------------------------------------------------------------
-	//! \return Position arrested players are teleported to (near the DebugWorld police desk).
+	//! \return Sentence length in seconds. Wanted level times secondsPerWanted, clamped to maxSeconds.
+	//! A non-positive wanted level or step is zero. A max of zero is the zero-duration test config.
+	static int SentenceSeconds(int wantedLevel, int secondsPerWanted, int maxSeconds)
+	{
+		if (wantedLevel <= 0)
+			return 0;
+
+		if (secondsPerWanted <= 0)
+			return 0;
+
+		if (maxSeconds < 0)
+			maxSeconds = 0;
+
+		int raw = wantedLevel * secondsPerWanted;
+		if (raw > maxSeconds)
+			return maxSeconds;
+
+		return raw;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Origin of the placed jail cell. A missing cell logs and returns the zero vector.
 	static vector GetJailPosition()
 	{
-		return "127 1 137";
+		if (!LF_Jail.HasCell())
+		{
+			EL_Debug.Error("Jail", "jail position missing: no cell is placed");
+			return "0 0 0";
+		}
+
+		return LF_Jail.GetCellOrigin();
 	}
 
 	//------------------------------------------------------------------------------------------------

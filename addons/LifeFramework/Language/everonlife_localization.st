@@ -1493,6 +1493,496 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "Placa de lista de permissões"
      Comment "Whitelist sign interactive action name"
     }
+    CustomStringTableItem "{6CA7861D9153E199}" {
+     Id "EL-Breach_Arm"
+     Target_en_us "Place charge"
+     Comment "Breach arm action name"
+    }
+    CustomStringTableItem "{A274291AAA4D0128}" {
+     Id "EL-Breach_Repair"
+     Target_en_us "Repair breach"
+     Comment "Breach repair action name"
+    }
+    CustomStringTableItem "{D399AB029024C8FF}" {
+     Id "EL-Breach_AlreadyOpen"
+     Target_en_us "A charge is already on this"
+     Comment "Breach arm refused because the target is open or already armed"
+    }
+    CustomStringTableItem "{E5160A26BE539A4D}" {
+     Id "EL-Breach_NotConfigured"
+     Target_en_us "This cannot be breached"
+     Comment "Breach action refused because the target is not configured"
+    }
+    CustomStringTableItem "{A3FCAC46DE2FB463}" {
+     Id "EL-Breach_RepairDenied"
+     Target_en_us "Only police or the owner can repair this"
+     Comment "Breach repair refused for this player"
+    }
+    CustomStringTableItem "{C4E8A17B2D9056F3}" {
+     Id "EL-Police_Alert_Breach"
+     Target_en_us "Crime Alert: Explosive charge placed"
+     Comment "Police notification when a breach charge is armed"
+    }
+    CustomStringTableItem "{C91A4E7700B10011}" {
+     Id "EL-Rank_Patrol"
+     Target_en_us "Patrol Officer"
+     Comment "Starting police rank title"
+    }
+    CustomStringTableItem "{C91A4E7700B10012}" {
+     Id "EL-Rank_Senior"
+     Target_en_us "Senior Officer"
+     Comment "Senior police rank title"
+    }
+    CustomStringTableItem "{C91A4E7700B10013}" {
+     Id "EL-Rank_Draw"
+     Target_en_us "Draw kit"
+     Comment "Station armory action that issues the officer's rank kit"
+    }
+    CustomStringTableItem "{C91A4E7700B10014}" {
+     Id "EL-Rank_DrawDenied"
+     Target_en_us "Only on-duty police can draw a kit"
+     Comment "Armory draw refused"
+    }
+    CustomStringTableItem "{C91A4E7700B10015}" {
+     Id "EL-Rank_Promote"
+     Target_en_us "Promote officer"
+     Comment "Higher-rank action that promotes a nearby lower-rank officer"
+    }
+    CustomStringTableItem "{C91A4E7700B10016}" {
+     Id "EL-Rank_PromoteDenied"
+     Target_en_us "A higher rank has to authorize that"
+     Comment "Promotion refused"
+    }
+    CustomStringTableItem "{C91A4E7700B10017}" {
+     Id "EL-Rank_ArrestDenied"
+     Target_en_us "Your rank cannot arrest"
+     Comment "Arrest refused because the officer's rank cannot arrest"
+    }
+    CustomStringTableItem "{C91A4E7700B10018}" {
+     Id "EL-Rank_FineDenied"
+     Target_en_us "That fine is above your rank"
+     Comment "Fine refused because it is above the officer's rank cap"
+    }
+    CustomStringTableItem "{C91A4E7700B10019}" {
+     Id "EL-Rank_WantedListDenied"
+     Target_en_us "Only on-duty police can view the wanted list"
+     Comment "Wanted list refused for someone who is not on-duty police"
+    }
+    CustomStringTableItem "{685890AF28A71E11}" {
+     Id "EL-Fuel_Till_Rob"
+     Target_en_us "Rob the till"
+     Comment "Fuel station till robbery action name"
+    }
+    CustomStringTableItem "{6CB2BEC3153A8FC2}" {
+     Id "EL-Fuel_Till_Rob_Desc"
+     Target_en_us "Take the cash from the till"
+     Comment "Fuel station till robbery action description"
+    }
+    CustomStringTableItem "{F3C1408EE1332399}" {
+     Id "EL-Rob_Cooldown"
+     Target_en_us "The till was just robbed"
+     Comment "Cash robbery refused because the cooldown is still running"
+    }
+    CustomStringTableItem "{ACB4C4BD8DAAAA84}" {
+     Id "EL-Rob_CiviliansOnly"
+     Target_en_us "Only civilians can rob"
+     Comment "Cash robbery refused because the player is not a civilian"
+    }
+    CustomStringTableItem "{B706E8A6FFF1E84A}" {
+     Id "EL-Rob_NeedPolice"
+     Target_en_us "Not enough police on duty"
+     Comment "Cash robbery refused because too few police are on duty"
+    }
+    CustomStringTableItem "{F1030FBC0E45B177}" {
+     Id "EL-Jail_Arrest"
+     Target_en_us "Send to jail"
+     Comment "Officer action on a wanted suspect"
+    }
+    CustomStringTableItem "{8AEA48F56B9C5F59}" {
+     Id "EL-Jail_NotOfficer"
+     Target_en_us "Only on-duty police can send someone to jail"
+     Comment "Jail action refused because the user is not an on-duty officer"
+    }
+    CustomStringTableItem "{C1D59E0ED7B03055}" {
+     Id "EL-Jail_NotWanted"
+     Target_en_us "This person is not wanted"
+     Comment "Jail action refused because the suspect is not wanted or is out of range"
+    }
+    CustomStringTableItem "{70C09B02D265C0E8}" {
+     Id "EL-Jail_NoCell"
+     Target_en_us "No jail cell is placed"
+     Comment "Jail action refused because the world has no cell marker"
+    }
+    CustomStringTableItem "{D588BDC3746521B7}" {
+     Id "EL-Jail_Released"
+     Target_en_us "Sentence served"
+     Comment "Notification when a jail sentence ends"
+    }
+    CustomStringTableItem "{80654DEEF27895C6}" {
+     Id "EL-Jail_EarlyRelease"
+     Target_en_us "The sentence is not over"
+     Comment "Early release refused while time remains"
+    }
+    CustomStringTableItem "{B7E41C90A2D64F11}" {
+     Id "EL-Bank_Rob"
+     Target_en_us "Breach the vault"
+     Comment "Bank vault robbery action name"
+    }
+    CustomStringTableItem "{B7E41C90A2D64F12}" {
+     Id "EL-Bank_Cooldown"
+     Target_en_us "The vault is empty"
+     Comment "Bank vault robbery refused because the cooldown has not elapsed"
+    }
+    CustomStringTableItem "{B7E41C90A2D64F13}" {
+     Id "EL-Bank_CiviliansOnly"
+     Target_en_us "Only civilians can rob the vault"
+     Comment "Bank vault robbery refused for a non-civilian"
+    }
+    CustomStringTableItem "{B7E41C90A2D64F14}" {
+     Id "EL-Bank_NeedPolice"
+     Target_en_us "Not enough police on duty"
+     Comment "Bank vault robbery refused below the minimum police count"
+    }
+    CustomStringTableItem "{B7E41C90A2D64F15}" {
+     Id "EL-Bank_NotReady"
+     Target_en_us "This vault cannot be robbed"
+     Comment "Bank vault robbery refused because the vault or the player is not ready"
+    }
+    CustomStringTableItem "{A11C0B01E4A10001}" {
+     Id "EL-Job_SignUp_Courier"
+     Target_en_us "Take courier work"
+     Comment "Workplace action to sign up for parcel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A10002}" {
+     Id "EL-Job_SignUp_Fuel"
+     Target_en_us "Take fuel delivery"
+     Comment "Workplace action to sign up for fuel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A10003}" {
+     Id "EL-Job_SignUp_Taxi"
+     Target_en_us "Take taxi work"
+     Comment "Workplace action to sign up for taxi work"
+    }
+    CustomStringTableItem "{A11C0B01E4A10004}" {
+     Id "EL-Job_Pickup_Parcel"
+     Target_en_us "Pick up parcel"
+     Comment "Depot action that starts a parcel run"
+    }
+    CustomStringTableItem "{A11C0B01E4A10005}" {
+     Id "EL-Job_Pickup_Fuel"
+     Target_en_us "Take fuel can"
+     Comment "Fuel depot action that starts a fuel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A10006}" {
+     Id "EL-Job_Start_Taxi"
+     Target_en_us "Start fare"
+     Comment "Taxi rank action that starts a marker fare"
+    }
+    CustomStringTableItem "{A11C0B01E4A10007}" {
+     Id "EL-Job_Dropoff"
+     Target_en_us "Complete the run"
+     Comment "Drop marker action that pays a delivery run"
+    }
+    CustomStringTableItem "{A11C0B01E4A10008}" {
+     Id "EL-Job_Abandon"
+     Target_en_us "Abandon the run"
+     Comment "Workplace action that drops the active run with no pay"
+    }
+    CustomStringTableItem "{A11C0B01E4A10009}" {
+     Id "EL-Job_LevelRequired"
+     Target_en_us "Your work level is too low"
+     Comment "Signup refused because the civilian career level is too low"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000A}" {
+     Id "EL-Job_NotSignedUp"
+     Target_en_us "Sign up at the workplace first"
+     Comment "Run refused because the player has not taken this job"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000B}" {
+     Id "EL-Job_NoActiveRun"
+     Target_en_us "You have no run to finish"
+     Comment "Drop or abandon refused because no run is active"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000C}" {
+     Id "EL-Job_Name_Courier"
+     Target_en_us "Courier"
+     Comment "Job name for parcel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000D}" {
+     Id "EL-Job_Name_Fuel"
+     Target_en_us "Fuel delivery"
+     Comment "Job name for fuel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000E}" {
+     Id "EL-Job_Name_Taxi"
+     Target_en_us "Taxi driver"
+     Comment "Job name for taxi work"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000F}" {
+     Id "EL-Job_Paid"
+     Target_en_us "Run paid: $%1"
+     Comment "Cash notice after a completed delivery run"
+    }
+    CustomStringTableItem "{A11C0B01E4A10010}" {
+     Id "EL-Job_Abandoned"
+     Target_en_us "Run abandoned. No pay."
+     Comment "Notice when a delivery run is abandoned"
+    }
+    CustomStringTableItem "{232AC988385CE40A}" {
+     Id "EL-Org_Open"
+     Target_en_us "Organization desk"
+     Comment "Organization desk action name"
+    }
+    CustomStringTableItem "{5EC419CBC808514E}" {
+     Id "EL-Org_Title"
+     Target_en_us "Organization"
+     Comment "Organization menu title"
+    }
+    CustomStringTableItem "{7415A5742F78A08C}" {
+     Id "EL-Org_Empty"
+     Target_en_us "No organization yet"
+     Comment "Organization menu empty state before create"
+    }
+    CustomStringTableItem "{BCD86E4C6B473ACD}" {
+     Id "EL-Org_Name"
+     Target_en_us "Name"
+     Comment "Organization name row"
+    }
+    CustomStringTableItem "{8286DFFBEFD2CF59}" {
+     Id "EL-Org_Fund"
+     Target_en_us "Fund"
+     Comment "Organization shared fund row"
+    }
+    CustomStringTableItem "{40AA137751D95438}" {
+     Id "EL-Org_UpgradeOwned"
+     Target_en_us "Processing slot: owned"
+     Comment "Organization processing-slot upgrade when bought"
+    }
+    CustomStringTableItem "{72E88124F3AF33E9}" {
+     Id "EL-Org_UpgradeNone"
+     Target_en_us "Processing slot: not owned"
+     Comment "Organization processing-slot upgrade when not bought"
+    }
+    CustomStringTableItem "{10658CE04572E9FD}" {
+     Id "EL-Org_Create"
+     Target_en_us "Found organization"
+     Comment "Organization create button"
+    }
+    CustomStringTableItem "{BCA58FF32AF18A97}" {
+     Id "EL-Org_Deposit"
+     Target_en_us "Deposit cash"
+     Comment "Organization fund deposit button"
+    }
+    CustomStringTableItem "{4550F13909B7A733}" {
+     Id "EL-Org_Withdraw"
+     Target_en_us "Withdraw cash"
+     Comment "Organization fund withdraw button"
+    }
+    CustomStringTableItem "{7B882168E8E2EA56}" {
+     Id "EL-Org_BuyProcessing"
+     Target_en_us "Buy processing slot"
+     Comment "Organization processing-slot purchase button"
+    }
+    CustomStringTableItem "{BD58B67D6B3A0F31}" {
+     Id "EL-Org_Amount"
+     Target_en_us "Amount"
+     Comment "Organization cash amount field"
+    }
+    CustomStringTableItem "{1A7D101AF53FF056}" {
+     Id "EL-Org_NamePlaceholder"
+     Target_en_us "Organization name"
+     Comment "Organization name field placeholder"
+    }
+    CustomStringTableItem "{32C8D2BD6064F36A}" {
+     Id "EL-Org_Close"
+     Target_en_us "Close"
+     Comment "Organization menu close button"
+    }
+    CustomStringTableItem "{E1C0E00100000001}" {
+     Id "EL-Vehicle_Buy"
+     Target_en_us "Buy vehicle"
+     Comment "Vehicle lot buy action"
+    }
+    CustomStringTableItem "{E1C0E00100000002}" {
+     Id "EL-Vehicle_ExtraKey"
+     Target_en_us "Cut an extra key"
+     Comment "Owner action that cuts another key for an owned vehicle"
+    }
+    CustomStringTableItem "{E1C0E00100000003}" {
+     Id "EL-Vehicle_Store"
+     Target_en_us "Store vehicle"
+     Comment "Garage action that stores the owner's vehicle"
+    }
+    CustomStringTableItem "{E1C0E00100000004}" {
+     Id "EL-Vehicle_Retrieve"
+     Target_en_us "Retrieve vehicle"
+     Comment "Garage action that spawns a stored vehicle"
+    }
+    CustomStringTableItem "{E1C0E00100000005}" {
+     Id "EL-Vehicle_NotOwner"
+     Target_en_us "You do not own this vehicle"
+     Comment "Vehicle action refused because the player is not the owner"
+    }
+    CustomStringTableItem "{E1C0E00100000006}" {
+     Id "EL-Vehicle_CannotAfford"
+     Target_en_us "You cannot afford this vehicle"
+     Comment "Vehicle purchase refused because cash or the ATM balance is short"
+    }
+    CustomStringTableItem "{E1C0E00100000007}" {
+     Id "EL-Vehicle_S105"
+     Target_en_us "S105"
+     Comment "Lot catalog row for the beige S105"
+    }
+    CustomStringTableItem "{E1C0E00100000008}" {
+     Id "EL-Vehicle_UAZ469"
+     Target_en_us "UAZ"
+     Comment "Lot catalog row for the covered civilian UAZ"
+    }
+    CustomStringTableItem "{E1C0E00100000009}" {
+     Id "EL-Vehicle_S1203"
+     Target_en_us "Van"
+     Comment "Lot catalog row for the beige S1203"
+    }
+    CustomStringTableItem "{E1C0E0010000000A}" {
+     Id "EL-Vehicle_UAZ452"
+     Target_en_us "UAZ 452"
+     Comment "Lot catalog row for the UAZ452"
+    }
+    CustomStringTableItem "{E1C0E0010000000B}" {
+     Id "EL-Vehicle_M923"
+     Target_en_us "Cargo truck"
+     Comment "Lot catalog row for the M923 cargo truck"
+    }
+    CustomStringTableItem "{E1C0E0010000000C}" {
+     Id "EL-Vehicle_Bought"
+     Target_en_us "Vehicle purchased"
+     Comment "Vehicle lot purchase succeeded"
+    }
+    CustomStringTableItem "{E1C0E0010000000D}" {
+     Id "EL-Vehicle_NoSpawn"
+     Target_en_us "The lot has nowhere to put that vehicle"
+     Comment "Vehicle spawn refused because every pad is occupied"
+    }
+    CustomStringTableItem "{E1C0E0010000000E}" {
+     Id "EL-Vehicle_NotSold"
+     Target_en_us "This lot does not sell that vehicle"
+     Comment "Vehicle purchase refused because the prefab is not in the catalog"
+    }
+    CustomStringTableItem "{B7E2C14A90F35D68}" {
+     Id "EL-Hospital_RobTill"
+     Target_en_us "Rob the till"
+     Comment "Hospital till robbery action name"
+    }
+    CustomStringTableItem "{C8F3D25B01A46E79}" {
+     Id "EL-Hospital_TillNotConfigured"
+     Target_en_us "This till is not set up"
+     Comment "Hospital till action refused because the till is not configured"
+    }
+    CustomStringTableItem "{D904E36C12B57F8A}" {
+     Id "EL-Hospital_TillCooldown"
+     Target_en_us "The till was just robbed"
+     Comment "Hospital till action refused because the cooldown is still running"
+    }
+    CustomStringTableItem "{EA15F47D23C6809B}" {
+     Id "EL-Hospital_TillCivilianOnly"
+     Target_en_us "Only civilians can rob the till"
+     Comment "Hospital till action refused for a non-civilian"
+    }
+    CustomStringTableItem "{FB26058E34D791AC}" {
+     Id "EL-Hospital_TillNeedPolice"
+     Target_en_us "Not enough police are on duty"
+     Comment "Hospital till action refused below the minimum police count"
+    }
+    CustomStringTableItem "{0C37169F45E8A2BD}" {
+     Id "EL-Hospital_BreachCabinet"
+     Target_en_us "Breach the cabinet"
+     Comment "Hospital cabinet breach action name"
+    }
+    CustomStringTableItem "{1D4827A056F9B3CE}" {
+     Id "EL-Police_Alert_Hospital"
+     Target_en_us "Crime Alert: Hospital till robbed"
+     Comment "Police notification when the hospital till is robbed"
+    }
+    CustomStringTableItem "{045DF984ED294440}" {
+     Id "EL-Resource_TradeJuice"
+     Target_en_us "Trade apple juice"
+     Comment "Action name on the St Philippe juice trader"
+    }
+    CustomStringTableItem "{0C8AA12FDD414BE0}" {
+     Id "EL-Resource_TradeJuice_Desc"
+     Target_en_us "Sell apple juice for cash"
+     Comment "Action description on the St Philippe juice trader"
+    }
+    CustomStringTableItem "{9C72272DB847457E}" {
+     Id "EL-Resource_JuiceTrade_Name"
+     Target_en_us "Apple juice trade"
+     Comment "Storage name for the St Philippe juice crate"
+    }
+    CustomStringTableItem "{EF39A7AF0980446C}" {
+     Id "EL-Resource_JuiceTrade_Desc"
+     Target_en_us "Sell juice for cash"
+     Comment "Storage description for the St Philippe juice crate"
+    }
+    CustomStringTableItem "{11202505DD474762}" {
+     Id "EL-Resource_TradeIron"
+     Target_en_us "Trade iron bars"
+     Comment "Action name on the St Philippe iron-bar trader"
+    }
+    CustomStringTableItem "{8D04BB7153344934}" {
+     Id "EL-Resource_TradeIron_Desc"
+     Target_en_us "Sell iron bars for cash"
+     Comment "Action description on the St Philippe iron-bar trader"
+    }
+    CustomStringTableItem "{154EF8AA34D04940}" {
+     Id "EL-Resource_IronTrade_Name"
+     Target_en_us "Iron bar trade"
+     Comment "Storage name for the St Philippe iron-bar crate"
+    }
+    CustomStringTableItem "{C9C467388DE54730}" {
+     Id "EL-Resource_IronTrade_Desc"
+     Target_en_us "Sell smelted iron for cash"
+     Comment "Storage description for the St Philippe iron-bar crate"
+    }
+    CustomStringTableItem "{6F1A8C2D4B9E7031}" {
+     Id "EL-Hideout_NotMember"
+     Target_en_us "Only organization members can use this door"
+     Comment "Door action reason when the player is not in the hideout organization"
+    }
+    CustomStringTableItem "{8C3E1A7F5D2B9046}" {
+     Id "EL-Hideout_NoUpgrade"
+     Target_en_us "The hideout needs the processing upgrade"
+     Comment "Process action reason when the hideout organization lacks the processing slot"
+    }
+    CustomStringTableItem "{A4D70E2C9B15F683}" {
+     Id "EL-Hideout_Process"
+     Target_en_us "Process contraband"
+     Comment "Hideout machine process action name"
+    }
+    CustomStringTableItem "{B19C4E8A0D6F2753}" {
+     Id "EL-Contraband_Start"
+     Target_en_us "Start convoy"
+     Comment "Convoy start action name"
+    }
+    CustomStringTableItem "{C27D5F9B1E804A64}" {
+     Id "EL-Contraband_Deliver"
+     Target_en_us "Deliver contraband"
+     Comment "Convoy delivery action name and notification title"
+    }
+    CustomStringTableItem "{D38E60AC2F915B75}" {
+     Id "EL-Contraband_NotMember"
+     Target_en_us "Only organization members can run this convoy"
+     Comment "Convoy start reason when the player is not a member of the hideout organization"
+    }
+    CustomStringTableItem "{E49F71BD3A026C86}" {
+     Id "EL-Contraband_Paid"
+     Target_en_us "Cash paid for the delivery"
+     Comment "Notification when a convoy delivery pays cash"
+    }
+    CustomStringTableItem "{F5A082CE4B137D97}" {
+     Id "EL-Contraband_Failed"
+     Target_en_us "The convoy failed"
+     Comment "Notification when a convoy run fails"
+    }
   }
  }
 }

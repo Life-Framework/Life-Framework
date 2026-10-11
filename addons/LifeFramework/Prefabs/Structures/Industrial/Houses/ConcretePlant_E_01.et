@@ -18,6 +18,7 @@ SCR_DestructibleBuildingEntity : "{67BB04E9136D6A3E}Prefabs/Structures/Industria
      UIInfo UIInfo "{59BCB28C1421079B}" {
       Name "Create Concrete Bricks"
      }
+     m_sMachineId "cement-plant"
      Duration 10
      m_aProcessingInputs {
       EL_ProcessingInput "{59BCA07251625E0D}" {

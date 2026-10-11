@@ -26,8 +26,9 @@ Add `Worlds/DebugWorld/DebugWorld_Layers/Roadmap.layer`. Existing layers stay th
 
 Placement, clear of the current area boxes (the easternmost box is `PRFeatures.layer` near x=182):
 
-- Root entity `RoadmapStreet` at `210 0 120`.
-- Sites every 18 m along +X. Ground props at Y=0. `Flags 0x403` on any new traceable mesh.
+- Root entity `RoadmapStreet` at `186 0 120`.
+- Sites every 3 m along +X, from the breach door at `186 0 120` to the vehicle lot at `243 0 120`. Ground props at Y=0. `Flags 0x403` on any new traceable mesh.
+- Debug terrain is 256 m on X and Z (world 0..256). The row stays on that ground, clear of the police box that ends at x=172. Do not shrink the pitch.
 - One `EL_DebugAreaBoundary` (`{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`) around the row. `validate-debugworld-layout.ps1` must report no overlap and no raised ground prop.
 - The world entity stays in `default.layer`. Do not add `GenericWorldEntity world` here.
 - Add `Roadmap.layer` to the required list in `tools/validation/validate-debugworld.ps1`. An empty file fails that check.
@@ -37,6 +38,14 @@ Entity names are the contract. Tests find them by name. Shots use the same name.
 Buildings that are larger than a debug pad (the hospital, the fuel station, the villa) are not dropped into this row. The layer gets the till, door, or cabinet. The whole building is a `wb_capture` spawn that is deleted after the shot.
 
 ## How a shot is taken
+
+The street pass is one command. Play mode has to be running. It does not boot the test server.
+
+```
+node agent-box/harness.mjs report roadmap
+```
+
+It walks every `Roadmap_` entity, stands where a player would stand, runs `look`, and takes a world shot. `agent-box/reports/roadmap.html` places each picture beside that text. One wide shot of the row is at the top. A row fails when the mesh is white or missing, look offers no interaction, a menu is blank, or the site is more than 30 m from the rest of the street. `node agent-box/harness.mjs selftest` marks an empty look and a site 80 m away as failures, with no game.
 
 Asset, no menu:
 
@@ -76,13 +85,13 @@ Persistence class, same file: save while the door is open, apply the save, `IsLo
 
 ### Bank robbery
 
-Layer: `Roadmap_Bank_Vault` (locked door), `Roadmap_Bank_Bag` (hand-carry container). The shop-house shell is a capture-only prefab, not placed in the row.
+Layer: `Roadmap_Bank_Vault` (locked door), `Roadmap_Bank_Bag` (hand-carry container). The municipal-office shell is a capture-only prefab, not placed in the row.
 
 | Gate | Case |
 | --- | --- |
 | Headless | Payout is cash. `EL_BankAccount` balance stays 0. Bag count and cash per bag match config. A second breach inside the cooldown spawns nothing. Civilian and minimum-police gates match `EL_RobAction` |
 | E2E | Zero-fuse vault opens, one bag exists, its MoneyStack quantity is the config value, bank balance unchanged. Same uid discipline as `e2e/narrative-loop` (do not reuse `e2e-narrative-uid`) |
-| Visual | `shot world Roadmap_Bank_Bag` shows the crate mesh and, after the action, the stack. `wb_capture` of `ShopHouse_E_2l01` for the shell |
+| Visual | `shot world Roadmap_Bank_Bag` shows the crate mesh and, after the action, the stack. `wb_capture` of `EL_Bank.et` (`MunicipalOffice_E_01`) for the shell |
 
 ### Jailbreak
 
@@ -208,7 +217,7 @@ Persistence: owner id and key id match after apply-save. Garage store/retrieve, 
 
 ## After release
 
-Same three gates. Add the entities to `Roadmap.layer` when the setup starts, inside the same boundary, further along +X. Do not open a second layer.
+Same three gates. Add the entities to `Roadmap.layer` when the setup starts, inside the same boundary, further along +X at the 3 m pitch. Extend the boundary with the row. Stop before the terrain edge at 256. Do not open a second layer.
 
 | Setup | Layer entities | Headless | E2E | Visual |
 | --- | --- | --- | --- | --- |

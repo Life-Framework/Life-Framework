@@ -57,6 +57,8 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:VehicleLock] identifier assigned:` | INFO | Vehicle lock registration. |
 | `[ELDebug:LicensePlate] generated plate ...` | INFO | License plate generation. |
 | `[ELDebug:Quests] registered quest '<id>' from giver '<name>'` | INFO | Quest registry population. |
+| `[ELDebug:Ranks] ... refused` / `kit line skipped` | BY DESIGN | Rank gates log the refusal and leave the rank usable. A kit prefab that does not load drops that line only. `RequestSelfPromotion` always refuses and does not change rank. |
+| `[ELDebug:Ranks] promoted` / `kit drawn` / `duty clock started` | INFO | Rank promotion, armory draw, and the on-duty clock. |
 | `[ELDebug:CharacterCreation] ...` / `[ELDebug:Spawn] ...` / `[ELDebug:FactionMenu] ...` | INFO | Spawn/character-creation flow state. |
 | `[EL_NotificationManagerComponent] ✓ ... / ... shut down` | INFO | Notification manager lifecycle. |
 | `[ELDebug:TextSign] label ready:` | INFO | Text sign init. |
@@ -65,6 +67,12 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:Persistence] ...` (state transitions, autosave schedule, save scan) | INFO | Persistence lifecycle logging. |
 | `[ELDebug:Persistence] save point created` | INFO | A manual/autosave completed (expected on normal saves). |
 | `[ELDebug:Persistence] system state ... -> SHUTDOWN` | INFO | Persistence session teardown. |
+| a console line that mentions port `2001` | not a feature bug | Engine default bind text. `tools\cli test` already started the server with `-bindPort` of the worktree game port from `tools\cli wt list`. Do not investigate the port. |
+| `Unable to initialize the game` after a bind collision | not a feature bug | Retry the same test command once. Do not investigate the port. |
+| `Wrong GUID` on localization | not a feature bug | The gitignored `resourceDatabase.rdb` copy is missing. `tools\cli wt list` and `tools\cli test` copy it from the main checkout. Do not commit it. |
+| RPL invalid prefab GUID | not a feature bug | Same missing resource database. Copy it. Wrong GUID and invalid prefab are this, not a feature defect. |
+| inventory `not found in replication` together with a cash read of 0 | not a feature bug | The resource database copy is missing. `GetCash` returning 0 is the same gap. These four tests fail only for that reason: `e2e/narrative-loop`, `e2e/inventory-storage`, `money/cash-roundtrip`, `vehiclelock/lock-key-access`. |
+| harness `Cannot index into a null array` | not a feature bug | `Get-Content -Raw` returned an array because the log was still open, and the old parser indexed `$matches`. Grep `console.log` for `[ELTEST] SUMMARY` and the assigned test name. Do not read `cli.mjs` or the server executable. |
 
 ## How to add a row
 

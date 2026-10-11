@@ -62,6 +62,8 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		if (questManager)
 			questManager.ReportKill(playerEntity, killerEntity);
 
+		LF_Contraband.FailDiedFromEntity(playerEntity);
+
 		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
 		if (respawn)
 			respawn.NotifyReadyForSpawn_S();

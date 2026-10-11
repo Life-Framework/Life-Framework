@@ -18,6 +18,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      UIInfo UIInfo "{59947AF4A11A18DC}" {
       Name "Make 1 apple juice with 3 apples"
      }
+     m_sMachineId "juicer"
      Duration 1
      m_aProcessingInputs {
       EL_ProcessingInput "{59B2AD116757D53C}" {

@@ -102,6 +102,8 @@ addons/LifeFramework/LifeFramework.gproj
 2. Build (PC).
 3. Play DebugWorld or MainWorld from the scenario picker.
 
+Playtesters start at [Playtest](playtest.md). That session is Workbench play of DebugWorld, not the automated suite.
+
 **Optional — symlink for faster iteration**
 
 Link the mod into your Reforger profile instead of copying:
