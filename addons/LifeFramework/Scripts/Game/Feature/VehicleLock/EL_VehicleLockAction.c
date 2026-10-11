@@ -39,6 +39,7 @@ class EL_VehicleLockAction : ScriptedUserAction
 			return;
 
 		vehicleLock.ToggleLocked();
+		EL_VehicleOwnership.NoteLockState(vehicleLock.GetVehicleIdentifier(), vehicleLock.IsVehicleLocked());
 
 		PlayerManager playerManager = GetGame().GetPlayerManager();
 		int playerId = playerManager.GetPlayerIdFromControlledEntity(pUserEntity);

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! Persists the game-mode persistence store (EL_PersistenceComponent): player accounts, bank
-//! accounts, survival stats, organizations, and hideout ownership.
+//! accounts, survival stats, organizations, hideout ownership, and owned vehicle records.
 //!
 //! BINDING. Listed in the ComponentSerializers block of Configs/Systems/Persistence/LifeFramework.conf,
 //! matching the game-mode entity that carries EL_PersistenceComponent.
@@ -9,6 +9,13 @@
 //! the manager singletons directly - EL_PlayerAccountManager / EL_ATMManager /
 //! EL_OrganizationManager own those caches, not this component. Only survival stats are read
 //! from and written into the component's own map (keyed by character persistence id).
+//! Hideout records live in LF_Hideout. Vehicle records live in EL_VehicleOwnership, keyed by
+//! the lock identifier.
+//! Version 2 appends organizations. Version 3 appends hideout ownership after that array.
+//! Version 4 appends vehicles after the hideout array. release/roadmap already writes hideouts
+//! at version 3, so a roadmap save still loads and vehicles are the next payload.
+//! A version 1 save has neither payload. A version 2 save has organizations and no hideout
+//! or vehicle payload. A version 3 save has hideouts and no vehicles.
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version first,
 //! hand-rolled, as in every vanilla serializer. A missing version means this component has no
@@ -41,7 +48,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (!persistence)
 			return ESerializeResult.ERROR;
 
-		context.WriteValue("version", 3);
+		context.WriteValue("version", 4);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -88,6 +95,12 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (!hideoutRecords)
 			hideoutRecords = new array<ref LF_HideoutRecord>();
 		context.Write(hideoutRecords);
+
+		// Version 4 appends vehicles after hideouts.
+		array<ref EL_VehicleRecord> vehicleRecords = EL_VehicleOwnership.ExportAll();
+		if (!vehicleRecords)
+			vehicleRecords = new array<ref EL_VehicleRecord>();
+		context.Write(vehicleRecords);
 
 		return ESerializeResult.OK;
 	}
@@ -189,6 +202,23 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				EL_Debug.Warn("Persistence", "hideout records failed to read, leaving live hideouts untouched");
+			}
+		}
+
+		// Version 3 saves end at hideouts. Leave live vehicles alone so that
+		// payload cannot wipe a vehicle the save never knew about.
+		if (version >= 4)
+		{
+			array<ref EL_VehicleRecord> vehicleRecords = new array<ref EL_VehicleRecord>();
+			if (context.Read(vehicleRecords))
+			{
+				EL_VehicleOwnership.ApplyAll(vehicleRecords);
+				EL_VehicleOwnership.RestoreWorld();
+				EL_Debug.Log("Persistence", string.Format("applied %1 vehicle record(s)", vehicleRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "vehicle records failed to read, leaving live vehicles untouched");
 			}
 		}
 

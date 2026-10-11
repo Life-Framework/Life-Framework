@@ -57,7 +57,17 @@ class EL_LicensePlateManagerComponent: ScriptComponent
 				EL_Debug.Warn("LicensePlate", "vehicle settings carries no plate generator");
 				return;
 			}
-			m_Registration = vehicleSettings.m_LicensePlateGenerator.GenerateLicensePlate();
+			string vehicleId = "";
+			EL_VehicleLockComponent vehicleLock = EL_Component<EL_VehicleLockComponent>.Find(owner);
+			if (vehicleLock)
+				vehicleId = vehicleLock.GetVehicleIdentifier();
+
+			m_Registration = EL_LicensePlateRegistry.Issue(vehicleSettings.m_LicensePlateGenerator, vehicleId);
+			if (m_Registration.IsEmpty())
+			{
+				EL_Debug.Error("LicensePlate", "registration skipped: no unique plate");
+				return;
+			}
 		}
 		
 		for (int i = 0; i < m_Plates.Count(); i++)
@@ -75,6 +85,17 @@ class EL_LicensePlateManagerComponent: ScriptComponent
 		}
 	}
 	
+	void SetRegistration(string plate)
+	{
+		if (m_Registration == plate)
+			return;
+
+		m_Registration = plate;
+		Replication.BumpMe();
+		OnRegistrationUpdated();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void OnRegistrationUpdated()
 	{
 		foreach (auto plate : m_Plates)

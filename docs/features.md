@@ -508,6 +508,7 @@
   compound the fund. The game-mode serializer writes these records at version 2,
   after survival. A version 1 save has no organization payload and does not
   clear a live fund. Version 3 appends hideout ownership after these records.
+  Version 4 appends owned vehicles after the hideout records.
 
 ### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
 - ✅ One building owned by one organization. Members unlock
@@ -582,14 +583,19 @@
 
 ### `EL_VehicleLockComponent` / `EL_VehicleKeyComponent` — `Feature/VehicleLock/`
 - ✅ Server-assigned vehicle and debug-key identifiers explicitly bump their replicated state during initialization, so clients receive the identifier after picking up a key.
+- ✅ The lock identifier, key id, owner, and lock flag are stored by `EL_VehicleOwnership`. A restart writes that identifier back with `SetVehicleIdentifier`, so the key still matches. Purchased vehicles replace the vanilla `SCR_BaseLockComponent` slot `{54D6FBC0EA806FE5}`, so get-in reads this lock. (verified 2026-10-11)
 
 ### `EL_LicensePlateManager` + generators — `Feature/LicensePlate/`
-- ✅ `EL_LicensePlateGeneratorGeneric.GenerateLicensePlate()` is pure:
-  `"AA BB NNNN"`.
-- ❌ **Off-by-one bugs**: `Math.RandomInt(0, 25)` excludes `Z`;
-  `Math.RandomInt(100, 9999)` excludes `9999`. No uniqueness guarantee and
-  no registry of issued plates. `EL_LicensePlateManager` has no destructor to
-  clear `s_Instance`.
+- ✅ `EL_LicensePlateGeneratorGeneric.GenerateLicensePlate()` is `"AA BB NNNN"`.
+- ✅ The alphabet includes `Z` (`LetterAt(25)`) and the number range includes `9999`. `Math.RandomInt` is exclusive at the top, so the generator rolls 26 letters and a number end of 10000. (verified 2026-10-11)
+- ✅ `EL_LicensePlateRegistry` keeps live plates. A second issue of a live plate is refused, so two vehicles do not share one by construction. (verified 2026-10-11)
+
+### Vehicle lot and garage — `Feature/Vehicles/`
+- ✅ `Roadmap_Vehicle_Lot` sells vanilla S105, UAZ469, S1203, UAZ452, and M923. Each spawn is a thin child of that vanilla prefab with `EL_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. (verified 2026-10-11)
+- ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing.
+- ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
+- ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
+- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell for a capture. It is not placed in the DebugWorld row. The placed pad is `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`.
 
 ## UI / Layouts / Localization
 
