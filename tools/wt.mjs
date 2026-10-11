@@ -18,7 +18,7 @@
 // stable no matter where a command is invoked.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, openSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, normalize, resolve } from "node:path";
 
 const IS_WIN = process.platform === "win32";
@@ -135,7 +135,9 @@ export function writeState(root, state) {
 // worktrees that predate the hub; drift is repaired by writing markers).
 export function reconcileState(root) {
   const state = readState(root);
+  const main = mainRootOf(root);
   for (const e of listWorktrees(root)) {
+    if (e.path && existsSync(e.path)) copyResourceDatabase(e.path, main);
     if (!e.branch || e.branch === "main" || !existsSync(e.path)) continue;
     const slug = e.branch.startsWith("ws/") ? e.branch.slice(3) : e.branch;
     if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) continue;
@@ -193,6 +195,21 @@ export function slugOfRoot(root) {
 
 export function defaultPorts() {
   return { index: 0, gamePort: 2001, a2sPort: 17777 };
+}
+
+// resourceDatabase.rdb is gitignored and required for --no-build world tests.
+// Copy it from the main checkout when the worktree copy is missing or smaller.
+// Never commit the destination.
+export function copyResourceDatabase(wtRoot, mainRoot = mainRootOf(wtRoot)) {
+  const src = join(mainRoot, "addons", "LifeFramework", "resourceDatabase.rdb");
+  const dest = join(wtRoot, "addons", "LifeFramework", "resourceDatabase.rdb");
+  if (resolve(src) === resolve(dest)) return false;
+  if (!existsSync(src)) return false;
+  const srcSize = statSync(src).size;
+  if (existsSync(dest) && statSync(dest).size >= srcSize) return false;
+  mkdirSync(dirname(dest), { recursive: true });
+  copyFileSync(src, dest);
+  return true;
 }
 
 export function allocatePorts(state) {
@@ -318,6 +335,7 @@ export function wtNew(root, slug, { waitMs = 0 } = {}) {
     };
     writeState(root, state);
     writeMarker(dir, slug);
+    copyResourceDatabase(dir, main);
     return { slug, path: dir, branch, ports };
   } finally {
     releaseLock(root, "wt");
