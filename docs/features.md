@@ -428,8 +428,12 @@
   `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
   and adds `EL_LockComponent`, so the prison mesh and the shared breach actions
   stay together. That vanilla door is the prefab the world test loads.
-  The officer action `LF_JailArrestAction` is on the suspect. Vehicle escort
-  is not in this slice.
+  The officer action `LF_JailArrestAction` is on the suspect. `LF_JailEscort`
+  is the vehicle path: an on-duty officer loads a wanted player into the nearest
+  free non-driver seat of a base-game vehicle. The sentence starts when they
+  arrive at the cell, not when they enter the car. A player who is not wanted
+  is refused and logged. Early release stays refused. A reconnect keeps the
+  remaining sentence through `Export` / `Apply`. No world entity is placed.
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
