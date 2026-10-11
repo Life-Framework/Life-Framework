@@ -11,6 +11,12 @@
 *.png -text
 *.jpg -text
 
+# Rebase additions of keys, tests, and feature rows. Drivers live in tools/merge/.
+addons/LifeFramework/Language/everonlife_localization.st merge=lf-string-table
+addons/LifeFramework/Language/everonlife_localization.*.conf merge=lf-regen-localization
+addons/LifeFramework/Scripts/Game/Tests/EL_TestRegistrations.generated.c merge=lf-regen-tests
+docs/features.md merge=lf-features
+
 # NOTE: Git LFS is NOT enabled yet. Binary assets are committed as plain blobs.
 # To migrate to LFS later (recommended once the repo is stable):
 #   git lfs track "*.edds" "*.tif" "*.fbx" "*.xob" "*.dds" "*.anm" "*.ttile" "*.bterr"

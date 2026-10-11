@@ -2,4 +2,10 @@
 # .githooks/pre-commit - runs the repo validator on staged changes.
 # Enabled via: git config core.hooksPath .githooks
 ROOT="$(git rev-parse --show-toplevel)"
+DRIVERS="$ROOT/tools/merge/drivers.gitconfig"
+if [ -f "$DRIVERS" ]; then
+  if ! git config --local --get-all include.path 2>/dev/null | grep -F -x "$DRIVERS" >/dev/null 2>&1; then
+    git config --local --add include.path "$DRIVERS"
+  fi
+fi
 exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/tools/validation/validate-repo.ps1" -Staged
