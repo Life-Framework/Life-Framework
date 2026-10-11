@@ -1,0 +1,29 @@
+GenericEntity Roadmap_Breach_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  EL_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   additionalActions {
+    LF_BreachArmAction "{9FC39D1FD2D5C563}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{34F9DEEE60EE9A85}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_BreachTargetComponent "{15EB1954E0E42179}" {
+   m_sTargetId "Roadmap_Breach_Door"
+   m_fFuseSeconds 0
+  }
+ }
+ coords 228 0 120
+}
+GenericEntity Roadmap_Breach_Charge : "{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et" {
+ coords 228 0 122
+}

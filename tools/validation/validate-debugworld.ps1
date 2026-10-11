@@ -14,7 +14,7 @@ $requiredLayers = @(
   "FarmingChain.layer", "GravelChain.layer", "HousesKeys.layer", "Jobs.layer",
   "LoggingChain.layer", "MiningChain.layer", "PlumChain.layer", "Police.layer",
   "SandChain.layer", "Shops.layer", "Survival.layer", "TomatoChain.layer",
-  "TraderChain.layer"
+  "TraderChain.layer", "Roadmap.layer"
 )
 
 $missing = @()

@@ -60,6 +60,9 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_QuantityStack(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityVisuals(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_Breach(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_BreachWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_BreachPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_RobReward(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobRewardWantedClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);

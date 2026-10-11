@@ -1,0 +1,7 @@
+GenericEntity RoadmapStreet {
+ coords 210 0 120
+}
+EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 400 0 125
+ m_vSize 200 1 25
+}

@@ -1493,6 +1493,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "Placa de lista de permissões"
      Comment "Whitelist sign interactive action name"
     }
+    CustomStringTableItem "{6CA7861D9153E199}" {
+     Id "EL-Breach_Arm"
+     Target_en_us "Place charge"
+     Comment "Breach arm action name"
+    }
+    CustomStringTableItem "{A274291AAA4D0128}" {
+     Id "EL-Breach_Repair"
+     Target_en_us "Repair breach"
+     Comment "Breach repair action name"
+    }
+    CustomStringTableItem "{D399AB029024C8FF}" {
+     Id "EL-Breach_AlreadyOpen"
+     Target_en_us "A charge is already on this"
+     Comment "Breach arm refused because the target is open or already armed"
+    }
+    CustomStringTableItem "{E5160A26BE539A4D}" {
+     Id "EL-Breach_NotConfigured"
+     Target_en_us "This cannot be breached"
+     Comment "Breach action refused because the target is not configured"
+    }
+    CustomStringTableItem "{A3FCAC46DE2FB463}" {
+     Id "EL-Breach_RepairDenied"
+     Target_en_us "Only police or the owner can repair this"
+     Comment "Breach repair refused for this player"
+    }
+    CustomStringTableItem "{C4E8A17B2D9056F3}" {
+     Id "EL-Police_Alert_Breach"
+     Target_en_us "Crime Alert: Explosive charge placed"
+     Comment "Police notification when a breach charge is armed"
+    }
   }
  }
 }
