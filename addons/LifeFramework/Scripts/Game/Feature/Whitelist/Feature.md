@@ -35,8 +35,11 @@ No player-facing rung. It is a gate that other features call.
 - `EL_WhitelistManager`, `EL_Whitelist`, `EL_WhitelistAction`,
   `EL_WhitelistComponent`, `EL_WhitelistManagerComponent`,
   `EL_WhitelistRestrictionComponent` (`Feature/Whitelist/`).
-- ❌ unresolved `EL_EFactionType` (compile risk), no persistence, live-array
-  getter.
+- `EL_EFactionType` is defined on the manager. The faction and job lists are
+  the manager's own versioned file (`Load` replaces the cache; a missing file
+  logs `EL_Debug.Error` and leaves police closed). The police button calls
+  `MayJoinFaction` and logs a refusal for an unlisted uid. Civilian stays
+  open. The live-array getter remains.
 
 ## Dependencies
 
