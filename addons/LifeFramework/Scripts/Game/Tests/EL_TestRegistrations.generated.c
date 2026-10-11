@@ -76,6 +76,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_Organizations(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_OrganizationsWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_OrganizationsPersistence(), EL_TestTier.PERSISTENCE);
+		manager.Register(new EL_Test_Roadmap_Ranks(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_RanksWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_RobReward(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobRewardWantedClamp(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);

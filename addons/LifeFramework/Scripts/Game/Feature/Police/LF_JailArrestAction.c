@@ -68,6 +68,13 @@ class LF_JailArrestAction : ScriptedUserAction
 			return false;
 		}
 
+		EL_PlayerAccount officer = EL_PoliceUtils.GetAccountForEntity(user);
+		if (!officer || !LF_PoliceRanks.CanArrestRank(officer.GetPoliceRank()))
+		{
+			SetCannotPerformReason("#EL-Rank_ArrestDenied");
+			return false;
+		}
+
 		return true;
 	}
 
@@ -75,6 +82,10 @@ class LF_JailArrestAction : ScriptedUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
+			return;
+
+		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(pUserEntity);
+		if (!LF_PoliceRanks.AuthorizeArrest(officerAccount))
 			return;
 
 		string officerUid = EL_Utils.GetPlayerUid(pUserEntity);

@@ -4,9 +4,9 @@ class EL_OpenPoliceMenuAction : ScriptedUserAction
 	override bool CanBePerformedScript(IEntity user)
 	{
 		EL_PlayerAccount account = GetPlayerAccount(user);
-		if (!account || account.GetFaction() != EL_Faction.POLICE || !account.IsOnDuty())
+		if (!LF_PoliceRanks.CanViewWantedList(account))
 		{
-			SetCannotPerformReason("Only on-duty police can access police menu");
+			SetCannotPerformReason("#EL-Rank_WantedListDenied");
 			return false;
 		}
 		return true;

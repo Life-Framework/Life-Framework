@@ -12,6 +12,10 @@ class EL_PlayerAccount : Managed
 	/*protected*/ EL_Faction m_eFaction = EL_Faction.CIVILIAN;
 	/*protected*/ bool m_bFactionChosen = false;
 	/*protected*/ bool m_bOnDuty = false;
+	/*protected*/ int m_iPoliceRank = 0;
+	/*protected*/ int m_iOnDutySeconds = 0;
+	/*protected*/ bool m_bDutyClockRunning = false;
+	/*protected*/ int m_iDutyStartedAtMs = 0;
 	/*protected*/ int m_iWantedLevel = 0;
 
 	//------------------------------------------------------------------------------------------------
@@ -58,6 +62,61 @@ class EL_PlayerAccount : Managed
 	bool IsOnDuty()
 	{
 		return m_bOnDuty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Police rank index. 0 is the starting rank. This is live session state; the account
+	//! save record does not carry it yet, so a restart returns the officer to the starting rank.
+	int GetPoliceRank()
+	{
+		return m_iPoliceRank;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetPoliceRank(int rank)
+	{
+		m_iPoliceRank = rank;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetOnDutySeconds()
+	{
+		return m_iOnDutySeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void AddOnDutySeconds(int seconds)
+	{
+		if (seconds <= 0)
+			return;
+
+		m_iOnDutySeconds = m_iOnDutySeconds + seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDutyClockRunning()
+	{
+		return m_bDutyClockRunning;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void StartDutyClock(int nowMs)
+	{
+		m_bDutyClockRunning = true;
+		m_iDutyStartedAtMs = nowMs;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void StopDutyClock()
+	{
+		m_bDutyClockRunning = false;
+		m_iDutyStartedAtMs = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetDutyStartedAtMs()
+	{
+		return m_iDutyStartedAtMs;
 	}
 
 	//------------------------------------------------------------------------------------------------
