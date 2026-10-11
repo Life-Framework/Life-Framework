@@ -2,6 +2,8 @@
 
 A new world interactable runs `node tools\actions\place-action-contexts.mjs` so its UserActionContext Offset, Radius, and Height come from the mesh. The point sits on the part the player uses. A mesh taller than about 1.5 m gets a Height. Handheld pickups stay as they are.
 
+`node agent-box/harness.mjs report roadmap` is the street visual pass. In a rendering play session it stands at every `Roadmap_` entity, runs `look`, takes a world shot, and writes `agent-box/reports/roadmap.html` with each picture beside that text, plus one wide shot of the row. A row fails when the mesh is white or missing, look offers no interaction, a menu is blank, or the site is more than 30 m from the rest of the street. `node agent-box/harness.mjs selftest` marks an empty look and a site 80 m away as failures. Do not boot the test server for this report.
+
 ## Context — stop here
 
 This section is the context. Write the assigned files. Do not open sibling features, validation scripts, MCP sources, or the server executable to learn the shape.
@@ -14,7 +16,7 @@ If the harness throws `Cannot index into a null array`, grep `console.log` for `
 
 A locked door calls `LF_Breach.Arm(targetId, playerUid)`. A cash till uses `EL_RobAction`. Cash is MoneyStack `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The ATM is the only cash-to-account boundary. A robbery leaves `EL_BankAccount` at 0.
 
-Door actions override the inherited `ActionsManagerComponent {F32B667C3C823800}` on `{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et`. A second ActionsManager drops the lock. The charge prefab is `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`. The shop-counter mesh used for a till is `{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob`. The debug boundary prefab is `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
+Door actions override the inherited `ActionsManagerComponent {F32B667C3C823800}` on `{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et`. A second ActionsManager drops the lock. That door inherits `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`. The charge prefab is `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`. The fuel till is `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, parent `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`. The debug boundary prefab is `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
 
 One layer file per scope, copied from the shape of `Roadmap_Breach.layer`. Do not edit `Roadmap.layer` or `tools/validation/validate-debugworld.ps1` unless the task names them.
 

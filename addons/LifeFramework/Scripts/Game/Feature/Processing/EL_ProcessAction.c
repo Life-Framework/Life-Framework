@@ -38,12 +38,18 @@ class EL_ProcessAction : ScriptedUserAction
 	[Attribute("0 0 0", UIWidgets.EditBox, "Drop Rotation")]
 	vector m_vRotation;
 
+	protected LF_HideoutMachineComponent m_pHideoutMachine;
+
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!pOwnerEntity || !EL_NetworkUtils.ShouldApplyAction(pOwnerEntity)) return;
 		if (!EL_NetworkUtils.IsOwner(pOwnerEntity))
 			EL_Debug.Warn("Processing", string.Format("process applied without replication owner on %1", pOwnerEntity.GetName()));
+
+		if (m_pHideoutMachine && !LF_Hideout.CanProcessUser(pUserEntity, m_pHideoutMachine.GetHideoutId()))
+			return;
+
 		if (!ApplyMachineFromCatalog())
 			return;
 
@@ -146,6 +152,12 @@ class EL_ProcessAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
   	{
+		if (m_pHideoutMachine && Replication.IsServer() && !LF_Hideout.CanProcessUser(user, m_pHideoutMachine.GetHideoutId()))
+		{
+			SetCannotPerformReason("#EL-Hideout_NoUpgrade");
+			return false;
+		}
+
 		if (!ApplyMachineFromCatalog())
 			return false;
 
@@ -233,6 +245,7 @@ class EL_ProcessAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
 	{
+		m_pHideoutMachine = EL_Component<LF_HideoutMachineComponent>.Find(pOwnerEntity);
 		SetCannotPerformReason("Can't find items");
 	}
 }

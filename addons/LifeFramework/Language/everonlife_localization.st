@@ -1648,6 +1648,86 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This vault cannot be robbed"
      Comment "Bank vault robbery refused because the vault or the player is not ready"
     }
+    CustomStringTableItem "{A11C0B01E4A10001}" {
+     Id "EL-Job_SignUp_Courier"
+     Target_en_us "Take courier work"
+     Comment "Workplace action to sign up for parcel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A10002}" {
+     Id "EL-Job_SignUp_Fuel"
+     Target_en_us "Take fuel delivery"
+     Comment "Workplace action to sign up for fuel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A10003}" {
+     Id "EL-Job_SignUp_Taxi"
+     Target_en_us "Take taxi work"
+     Comment "Workplace action to sign up for taxi work"
+    }
+    CustomStringTableItem "{A11C0B01E4A10004}" {
+     Id "EL-Job_Pickup_Parcel"
+     Target_en_us "Pick up parcel"
+     Comment "Depot action that starts a parcel run"
+    }
+    CustomStringTableItem "{A11C0B01E4A10005}" {
+     Id "EL-Job_Pickup_Fuel"
+     Target_en_us "Take fuel can"
+     Comment "Fuel depot action that starts a fuel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A10006}" {
+     Id "EL-Job_Start_Taxi"
+     Target_en_us "Start fare"
+     Comment "Taxi rank action that starts a marker fare"
+    }
+    CustomStringTableItem "{A11C0B01E4A10007}" {
+     Id "EL-Job_Dropoff"
+     Target_en_us "Complete the run"
+     Comment "Drop marker action that pays a delivery run"
+    }
+    CustomStringTableItem "{A11C0B01E4A10008}" {
+     Id "EL-Job_Abandon"
+     Target_en_us "Abandon the run"
+     Comment "Workplace action that drops the active run with no pay"
+    }
+    CustomStringTableItem "{A11C0B01E4A10009}" {
+     Id "EL-Job_LevelRequired"
+     Target_en_us "Your work level is too low"
+     Comment "Signup refused because the civilian career level is too low"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000A}" {
+     Id "EL-Job_NotSignedUp"
+     Target_en_us "Sign up at the workplace first"
+     Comment "Run refused because the player has not taken this job"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000B}" {
+     Id "EL-Job_NoActiveRun"
+     Target_en_us "You have no run to finish"
+     Comment "Drop or abandon refused because no run is active"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000C}" {
+     Id "EL-Job_Name_Courier"
+     Target_en_us "Courier"
+     Comment "Job name for parcel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000D}" {
+     Id "EL-Job_Name_Fuel"
+     Target_en_us "Fuel delivery"
+     Comment "Job name for fuel delivery"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000E}" {
+     Id "EL-Job_Name_Taxi"
+     Target_en_us "Taxi driver"
+     Comment "Job name for taxi work"
+    }
+    CustomStringTableItem "{A11C0B01E4A1000F}" {
+     Id "EL-Job_Paid"
+     Target_en_us "Run paid: $%1"
+     Comment "Cash notice after a completed delivery run"
+    }
+    CustomStringTableItem "{A11C0B01E4A10010}" {
+     Id "EL-Job_Abandoned"
+     Target_en_us "Run abandoned. No pay."
+     Comment "Notice when a delivery run is abandoned"
+    }
     CustomStringTableItem "{232AC988385CE40A}" {
      Id "EL-Org_Open"
      Target_en_us "Organization desk"
@@ -1757,6 +1837,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "EL-Resource_IronTrade_Desc"
      Target_en_us "Sell smelted iron for cash"
      Comment "Storage description for the St Philippe iron-bar crate"
+    }
+    CustomStringTableItem "{6F1A8C2D4B9E7031}" {
+     Id "EL-Hideout_NotMember"
+     Target_en_us "Only organization members can use this door"
+     Comment "Door action reason when the player is not in the hideout organization"
+    }
+    CustomStringTableItem "{8C3E1A7F5D2B9046}" {
+     Id "EL-Hideout_NoUpgrade"
+     Target_en_us "The hideout needs the processing upgrade"
+     Comment "Process action reason when the hideout organization lacks the processing slot"
+    }
+    CustomStringTableItem "{A4D70E2C9B15F683}" {
+     Id "EL-Hideout_Process"
+     Target_en_us "Process contraband"
+     Comment "Hideout machine process action name"
+    }
+    CustomStringTableItem "{B19C4E8A0D6F2753}" {
+     Id "EL-Contraband_Start"
+     Target_en_us "Start convoy"
+     Comment "Convoy start action name"
+    }
+    CustomStringTableItem "{C27D5F9B1E804A64}" {
+     Id "EL-Contraband_Deliver"
+     Target_en_us "Deliver contraband"
+     Comment "Convoy delivery action name and notification title"
+    }
+    CustomStringTableItem "{D38E60AC2F915B75}" {
+     Id "EL-Contraband_NotMember"
+     Target_en_us "Only organization members can run this convoy"
+     Comment "Convoy start reason when the player is not a member of the hideout organization"
+    }
+    CustomStringTableItem "{E49F71BD3A026C86}" {
+     Id "EL-Contraband_Paid"
+     Target_en_us "Cash paid for the delivery"
+     Comment "Notification when a convoy delivery pays cash"
+    }
+    CustomStringTableItem "{F5A082CE4B137D97}" {
+     Id "EL-Contraband_Failed"
+     Target_en_us "The convoy failed"
+     Comment "Notification when a convoy run fails"
     }
   }
  }

@@ -1,8 +1,5 @@
-GenericEntity Roadmap_Jail_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+GenericEntity Roadmap_Jail_Door : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
  components {
-  MeshObject "{309366462BDAFB24}" {
-   Object "{609698033DD2B55D}Assets/Structures/BuildingsParts/Doors/Door_PrisonCell_E/Door_PrisonCell_E_A_Left_INT_ST_B.xob"
-  }
   EL_LockComponent "{5AC29970429B33BB}" {
    m_bDebugLocked 1
   }
