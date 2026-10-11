@@ -4,6 +4,15 @@ GenericEntity Roadmap_Jail_Door : "{787617D5B683FE41}Prefabs/Structures/Building
    m_bDebugLocked 1
   }
   ActionsManagerComponent "{F32B667C3C823800}" {
+   ActionContexts {
+    UserActionContext "{50888D37F529F720}" {
+     Position PointInfo "{50888D37F0EB77E0}" {
+      Offset 1.1594 1.205 0.0196
+     }
+     Radius 0.6528
+     Height 2.41
+    }
+   }
    additionalActions {
     LF_BreachArmAction "{30DA080036F318AA}" {
      ParentContextList {
