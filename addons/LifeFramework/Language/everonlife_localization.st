@@ -1578,6 +1578,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The sentence is not over"
      Comment "Early release refused while time remains"
     }
+    CustomStringTableItem "{B7E41C90A2D64F11}" {
+     Id "EL-Bank_Rob"
+     Target_en_us "Breach the vault"
+     Comment "Bank vault robbery action name"
+    }
+    CustomStringTableItem "{B7E41C90A2D64F12}" {
+     Id "EL-Bank_Cooldown"
+     Target_en_us "The vault is empty"
+     Comment "Bank vault robbery refused because the cooldown has not elapsed"
+    }
+    CustomStringTableItem "{B7E41C90A2D64F13}" {
+     Id "EL-Bank_CiviliansOnly"
+     Target_en_us "Only civilians can rob the vault"
+     Comment "Bank vault robbery refused for a non-civilian"
+    }
+    CustomStringTableItem "{B7E41C90A2D64F14}" {
+     Id "EL-Bank_NeedPolice"
+     Target_en_us "Not enough police on duty"
+     Comment "Bank vault robbery refused below the minimum police count"
+    }
+    CustomStringTableItem "{B7E41C90A2D64F15}" {
+     Id "EL-Bank_NotReady"
+     Target_en_us "This vault cannot be robbed"
+     Comment "Bank vault robbery refused because the vault or the player is not ready"
+    }
   }
  }
 }
