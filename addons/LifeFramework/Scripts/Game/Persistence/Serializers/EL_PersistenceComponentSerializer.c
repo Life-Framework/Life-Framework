@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! Persists the game-mode persistence store (EL_PersistenceComponent): player accounts, bank
-//! accounts, survival stats, and organizations.
+//! accounts, survival stats, organizations, and hideout ownership.
 //!
 //! BINDING. Listed in the ComponentSerializers block of Configs/Systems/Persistence/LifeFramework.conf,
 //! matching the game-mode entity that carries EL_PersistenceComponent.
@@ -41,7 +41,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (!persistence)
 			return ESerializeResult.ERROR;
 
-		context.WriteValue("version", 2);
+		context.WriteValue("version", 3);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -82,6 +82,12 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (!orgRecords)
 			orgRecords = new array<ref EL_OrganizationRecord>();
 		context.Write(orgRecords);
+
+		// Version 3 appends hideout ownership and the lock flag. Version 2 ends at organizations.
+		array<ref LF_HideoutRecord> hideoutRecords = LF_Hideout.ExportAll();
+		if (!hideoutRecords)
+			hideoutRecords = new array<ref LF_HideoutRecord>();
+		context.Write(hideoutRecords);
 
 		return ESerializeResult.OK;
 	}
@@ -168,6 +174,21 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				EL_Debug.Warn("Persistence", "organization records failed to read, leaving live organizations untouched");
+			}
+		}
+
+		// Version 2 saves end at organizations. Leave a live hideout alone.
+		if (version >= 3)
+		{
+			array<ref LF_HideoutRecord> hideoutRecords = new array<ref LF_HideoutRecord>();
+			if (context.Read(hideoutRecords))
+			{
+				LF_Hideout.ApplyAll(hideoutRecords);
+				EL_Debug.Log("Persistence", string.Format("applied %1 hideout record(s)", hideoutRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "hideout records failed to read, leaving live hideouts untouched");
 			}
 		}
 

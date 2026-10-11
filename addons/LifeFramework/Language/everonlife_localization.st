@@ -1758,6 +1758,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sell smelted iron for cash"
      Comment "Storage description for the St Philippe iron-bar crate"
     }
+    CustomStringTableItem "{6F1A8C2D4B9E7031}" {
+     Id "EL-Hideout_NotMember"
+     Target_en_us "Only organization members can use this door"
+     Comment "Door action reason when the player is not in the hideout organization"
+    }
+    CustomStringTableItem "{8C3E1A7F5D2B9046}" {
+     Id "EL-Hideout_NoUpgrade"
+     Target_en_us "The hideout needs the processing upgrade"
+     Comment "Process action reason when the hideout organization lacks the processing slot"
+    }
+    CustomStringTableItem "{A4D70E2C9B15F683}" {
+     Id "EL-Hideout_Process"
+     Target_en_us "Process contraband"
+     Comment "Hideout machine process action name"
+    }
+    CustomStringTableItem "{B19C4E8A0D6F2753}" {
+     Id "EL-Contraband_Start"
+     Target_en_us "Start convoy"
+     Comment "Convoy start action name"
+    }
+    CustomStringTableItem "{C27D5F9B1E804A64}" {
+     Id "EL-Contraband_Deliver"
+     Target_en_us "Deliver contraband"
+     Comment "Convoy delivery action name and notification title"
+    }
+    CustomStringTableItem "{D38E60AC2F915B75}" {
+     Id "EL-Contraband_NotMember"
+     Target_en_us "Only organization members can run this convoy"
+     Comment "Convoy start reason when the player is not a member of the hideout organization"
+    }
+    CustomStringTableItem "{E49F71BD3A026C86}" {
+     Id "EL-Contraband_Paid"
+     Target_en_us "Cash paid for the delivery"
+     Comment "Notification when a convoy delivery pays cash"
+    }
+    CustomStringTableItem "{F5A082CE4B137D97}" {
+     Id "EL-Contraband_Failed"
+     Target_en_us "The convoy failed"
+     Comment "Notification when a convoy run fails"
+    }
   }
  }
 }
