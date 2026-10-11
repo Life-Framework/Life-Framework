@@ -173,9 +173,19 @@ class EL_VehicleStoreAction : ScriptedUserAction
 		if (!user)
 			return false;
 
-		if (!EL_VehicleGarageComponent.IsPositionNearAnyGarage(user.GetOrigin()))
+		bool near = EL_VehicleGarageComponent.IsPositionNearAnyGarage(user.GetOrigin());
+		bool inVehicle = false;
+		ChimeraCharacter character = ChimeraCharacter.Cast(user);
+		if (character && character.IsInVehicle())
+			inVehicle = true;
+
+		if (!LF_Garage.ParkAllowed(true, inVehicle, near))
 		{
-			SetCannotPerformReason("#EL-Vehicle_NoSpawn");
+			if (inVehicle)
+				SetCannotPerformReason("#LF-Garage_StepOut");
+			else
+				SetCannotPerformReason("#EL-Vehicle_NoSpawn");
+
 			return false;
 		}
 
@@ -196,7 +206,26 @@ class EL_VehicleStoreAction : ScriptedUserAction
 		}
 
 		string vehicleId = EL_VehicleOwnership.LatestInWorld(uid);
-		if (vehicleId.IsEmpty() || !EL_VehicleOwnership.Store(vehicleId, uid))
+		if (vehicleId.IsEmpty() || EL_VehicleOwnership.GetOwner(vehicleId) != uid)
+		{
+			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#EL-Vehicle_NotOwner");
+			return;
+		}
+
+		bool inVehicle = false;
+		ChimeraCharacter character = ChimeraCharacter.Cast(pUserEntity);
+		if (character && character.IsInVehicle())
+			inVehicle = true;
+
+		bool near = EL_VehicleGarageComponent.IsPositionNearAnyGarage(pUserEntity.GetOrigin());
+		if (!LF_Garage.CanPark(true, inVehicle, near))
+		{
+			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_StepOut");
+			return;
+		}
+
+		LF_Garage.StopAndEject(EL_VehicleOwnership.GetVehicle(vehicleId));
+		if (!EL_VehicleOwnership.Store(vehicleId, uid))
 		{
 			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#EL-Vehicle_NotOwner");
 			return;

@@ -2108,6 +2108,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Blue"
      Comment "Garage catalog blue color field."
     }
+    CustomStringTableItem "{A1C4E87B62D94F05}" {
+     Id "LF-Garage_StepOut"
+     Target_en_us "Step out of the vehicle first"
+     Comment "Garage store refused because the player is still seated."
+    }
   }
  }
 }
