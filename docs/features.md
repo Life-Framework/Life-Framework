@@ -599,6 +599,10 @@
 
 ## UI / Layouts / Localization
 
+### UI kit — `Scripts/Game/Feature/UIKit/`
+- Post-release polish. `LF_UITheme` holds the 1989 type, padding, and paper/metal colors. `LF_UIScreen` assembles a frame, title, body line, WLib edit box, list row, status row, quantity slider, and pause-menu button with `WorkspaceWidget.CreateWidgets`, wires `SCR_ButtonTextComponent`, and activates `MenuContext` every frame (`MenuTextEditContext` while an edit box is focused, `MenuWithEditorContext` so a pad can move). Close removes the widgets and that call. It does not use MenuManager.
+- A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` enters play and screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. Faction, character creation, death, shop, ATM, quest, police, and spawn menus were not migrated.
+
 ## Quests
 
 ### `LF_QuestTrackerComponent` — `Scripts/Game/Feature/Quests/`
@@ -680,6 +684,8 @@
 - ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
   alone. A world shot stays at camera offset `10 3 10` unless the command
   passes `ox oy oz`, which is how the roadmap row shot steps back. `node
+  agent-box/harness.mjs kit` is the one capture of the UI kit sample: it
+  enters play, opens that sheet, and writes a PNG for each state. `node
   agent-box/harness.mjs report roadmap` writes `agent-box/reports/roadmap.html`
   from a play session. The Node harness, MCP tools, layers, and named flows
   live in `agent-box/`. See `docs/agent-box.md`.

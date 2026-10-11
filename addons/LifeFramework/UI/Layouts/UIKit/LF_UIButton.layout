@@ -1,0 +1,13 @@
+ButtonWidgetClass "{C27CA2A1675BFE3A}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+ Name "Button"
+ Slot LayoutSlot "{84DB682E92409271}" {
+  Padding 28 10 28 10
+ }
+ components {
+  SCR_ButtonTextComponent "{F07494AF372B3DFF}" {
+   m_sText ""
+  }
+  LF_UIButtonRelay "{7ECB1B0BD418010A}" {
+  }
+ }
+}

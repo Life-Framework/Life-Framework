@@ -1,0 +1,13 @@
+TextWidgetClass "{5CBC3980965686A9}" {
+ Name "Line"
+ Slot LayoutSlot "{84E0FD86B25A3DFE}" {
+  Padding 28 10 28 10
+ }
+ Color 0.110 0.102 0.086 1
+ Text ""
+ "Font Size" 18
+ "Min Font Size" 18
+ FontProperties FontProperties "{90FCE76A351EE815}" {
+  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+ }
+}

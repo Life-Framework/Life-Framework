@@ -16,6 +16,9 @@ class EL_AgentCommand
 	string Verb;
 	string Arg1;
 	string Arg2;
+	string Arg3;
+	string Arg4;
+	string Arg5;
 	float PosX;
 	float PosY;
 	float PosZ;
@@ -32,6 +35,10 @@ class EL_AgentCommand
 	//!   <id> interact confirm|next|prev
 	//!   <id> input <ActionName>
 	//!   <id> open <MenuName> [show|hide|toggle]
+	//!   <id> kit show|hide
+	//!   <id> kit line <Part> <Text>
+	//!   <id> kit status <Part> <Label> <Status> <Action|none>
+	//!   <id> kit quantity <Part> <Total> <Take>
 	//!   <id> stand <EntityName>
 	//!   <id> look
 	//!   <id> ui
@@ -72,6 +79,8 @@ class EL_AgentCommand
 			return ParseInput(parts, cmd);
 		if (cmd.Verb == "open")
 			return ParseOpen(parts, cmd);
+		if (cmd.Verb == "kit")
+			return ParseKit(parts, cmd);
 		if (cmd.Verb == "stand")
 			return ParseStand(parts, cmd);
 		if (cmd.Verb == "look")
@@ -172,6 +181,110 @@ class EL_AgentCommand
 			return false;
 
 		for (int i = 0; i < token.Length(); i++)
+		{
+			string ch = token.Substring(i, 1);
+			if (ch < "0" || ch > "9")
+				return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool ParseKit(array<string> parts, EL_AgentCommand cmd)
+	{
+		if (parts.Count() < 3)
+		{
+			cmd.Error = "need_step";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		if (cmd.Arg1 == "show" || cmd.Arg1 == "hide")
+			return true;
+
+		if (cmd.Arg1 == "line")
+		{
+			if (parts.Count() < 5)
+			{
+				cmd.Error = "need_line";
+				return false;
+			}
+
+			cmd.Arg2 = parts[3];
+			cmd.Arg3 = parts[4];
+			if (!IsClassToken(cmd.Arg2) || !IsClassToken(cmd.Arg3))
+			{
+				cmd.Error = "bad_kit";
+				return false;
+			}
+
+			return true;
+		}
+
+		if (cmd.Arg1 == "status")
+		{
+			if (parts.Count() < 7)
+			{
+				cmd.Error = "need_status";
+				return false;
+			}
+
+			cmd.Arg2 = parts[3];
+			cmd.Arg3 = parts[4];
+			cmd.Arg4 = parts[5];
+			cmd.Arg5 = parts[6];
+			if (!IsClassToken(cmd.Arg2) || !IsClassToken(cmd.Arg3) || !IsClassToken(cmd.Arg4) || !IsClassToken(cmd.Arg5))
+			{
+				cmd.Error = "bad_kit";
+				return false;
+			}
+
+			if (cmd.Arg5 == "none")
+				cmd.Arg5 = "";
+
+			return true;
+		}
+
+		if (cmd.Arg1 == "quantity")
+		{
+			if (parts.Count() < 6)
+			{
+				cmd.Error = "need_quantity";
+				return false;
+			}
+
+			cmd.Arg2 = parts[3];
+			cmd.Arg3 = parts[4];
+			cmd.Arg4 = parts[5];
+			if (!IsClassToken(cmd.Arg2) || !IsIntToken(cmd.Arg3) || !IsIntToken(cmd.Arg4))
+			{
+				cmd.Error = "bad_kit";
+				return false;
+			}
+
+			return true;
+		}
+
+		cmd.Error = "bad_kit_step";
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsIntToken(string token)
+	{
+		if (!token || token.IsEmpty())
+			return false;
+
+		int start = 0;
+		if (token.Substring(0, 1) == "-")
+		{
+			if (token.Length() < 2)
+				return false;
+			start = 1;
+		}
+
+		for (int i = start; i < token.Length(); i++)
 		{
 			string ch = token.Substring(i, 1);
 			if (ch < "0" || ch > "9")
@@ -498,6 +611,11 @@ class EL_AgentHarness
 		if (cmd.Verb == "open")
 		{
 			DoOpen(cmd);
+			return;
+		}
+		if (cmd.Verb == "kit")
+		{
+			DoKit(cmd);
 			return;
 		}
 		if (cmd.Verb == "capture")
@@ -934,6 +1052,82 @@ class EL_AgentHarness
 		if (input)
 			input.SetActionValue(s_sHeldAction, 0);
 		s_sHeldAction = "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Opens the unwired kit sample and drives the states a later screen can show.
+	//! Nothing in the world calls this. The play-session command is the only opener.
+	protected static void DoKit(EL_AgentCommand cmd)
+	{
+		if (cmd.Arg1 == "show")
+		{
+			LF_UIScreen screen = LF_UISampleScreen.Open();
+			if (!screen)
+			{
+				WriteResult(cmd.Id, "error", "open_failed");
+				return;
+			}
+
+			EL_Debug.Log(FEATURE, "kit show");
+			WriteResult(cmd.Id, "ok", "opened");
+			return;
+		}
+
+		if (cmd.Arg1 == "hide")
+		{
+			LF_UISampleScreen.Hide();
+			EL_Debug.Log(FEATURE, "kit hide");
+			WriteResult(cmd.Id, "ok", "closed");
+			return;
+		}
+
+		LF_UIScreen screen = LF_UISampleScreen.Current();
+		if (!screen)
+		{
+			WriteResult(cmd.Id, "error", "not_open");
+			return;
+		}
+
+		if (cmd.Arg1 == "line")
+		{
+			if (!screen.SetLine(cmd.Arg2, cmd.Arg3))
+			{
+				WriteResult(cmd.Id, "error", "no_part");
+				return;
+			}
+
+			EL_Debug.Log(FEATURE, "kit line " + cmd.Arg2);
+			WriteResult(cmd.Id, "ok", cmd.Arg2);
+			return;
+		}
+
+		if (cmd.Arg1 == "status")
+		{
+			if (!screen.SetStatusRow(cmd.Arg2, cmd.Arg3, cmd.Arg4, cmd.Arg5))
+			{
+				WriteResult(cmd.Id, "error", "no_part");
+				return;
+			}
+
+			EL_Debug.Log(FEATURE, "kit status " + cmd.Arg2);
+			WriteResult(cmd.Id, "ok", cmd.Arg2);
+			return;
+		}
+
+		if (cmd.Arg1 == "quantity")
+		{
+			if (!screen.SetQuantity(cmd.Arg2, cmd.Arg3.ToInt(), cmd.Arg4.ToInt()))
+			{
+				WriteResult(cmd.Id, "error", "no_part");
+				return;
+			}
+
+			EL_Debug.Log(FEATURE, "kit quantity " + cmd.Arg2);
+			WriteResult(cmd.Id, "ok", cmd.Arg2);
+			return;
+		}
+
+		WriteResult(cmd.Id, "error", "bad_kit_step");
 	}
 
 	//------------------------------------------------------------------------------------------------

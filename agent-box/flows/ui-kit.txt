@@ -1,0 +1,21 @@
+# One capture of the kit sheet. Nothing in the world opens it.
+kit show
+wait 800
+ui
+shot ui kit-sheet
+kit line Balance 400
+wait 300
+shot ui kit-balance
+kit status Status Warrant Closed none
+wait 300
+shot ui kit-status
+kit quantity Quantity 5 1
+wait 400
+shot ui kit-keep
+kit quantity Quantity 5 4
+wait 400
+shot ui kit-take
+input MenuDown
+wait 300
+shot ui kit-focus
+kit hide
