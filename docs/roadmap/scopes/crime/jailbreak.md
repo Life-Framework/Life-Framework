@@ -23,7 +23,7 @@ Someone outside (or a prisoner who still has a charge) blows the jail door. The 
 
 ## Assets
 
-Door: vanilla `Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`, with `EL_LockComponent` added the same way as `EL_Door_Base`. Cell volume: port `LNGC_JailCellComponent` (`Prefabs/LNGC_JailCell.et`) and skip confinement while this door is open. Charge is the forced-entry default, `DemoBlock_M112.et`. See [sources](../../sources.md).
+Door: `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et` inherits vanilla `Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et` and adds `EL_LockComponent` the same way as `EL_Door_Base`. Cell volume: port `LNGC_JailCellComponent` (`Prefabs/LNGC_JailCell.et`) and skip confinement while this door is open. Charge is the forced-entry default, `DemoBlock_M112.et`. See [sources](../../sources.md).
 
 ## First slice
 

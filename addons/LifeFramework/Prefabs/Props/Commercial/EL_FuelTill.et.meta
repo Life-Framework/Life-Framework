@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

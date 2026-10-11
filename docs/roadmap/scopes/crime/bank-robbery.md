@@ -24,7 +24,7 @@ Civilians enter a bank, breach the vault, and carry cash out in bags. The haul i
 
 ## Assets
 
-There is no bank building in the base game. The shell is `Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/` or `ShopModern_E_01/`, with `EL_Door_Base` as the vault. Cash is `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The bag is `Prefabs/Items/Core/HandCarryItem_Base.et` (`EL_HandCarryComponent`) filled with those stacks. The black-market crate mesh `Assets/Props/Crates/Crate_01.xob` is the world prop if the bag is dropped as a container.
+There is no bank building in the base game. The shell is `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits `Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`. It is capture-only and is not placed in the debug row. The vault is `EL_Door_Base`. Cash is `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The bag is `Prefabs/Items/Core/HandCarryItem_Base.et` (`EL_HandCarryComponent`) filled with those stacks. The black-market crate mesh `Assets/Props/Crates/Crate_01.xob` is the world prop if the bag is dropped as a container.
 
 Payout still goes through `EL_MoneyUtils`, under `EL_RobAction` gates. LNGC has no vault robbery. See [sources](../../sources.md).
 

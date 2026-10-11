@@ -20,6 +20,9 @@ class EL_ProcessingOutput
 
 class EL_ProcessAction : ScriptedUserAction
 {
+	[Attribute("", UIWidgets.EditBox, "Chain machine id. When set, inputs and outputs come from ResourceChains.conf")]
+	string m_sMachineId;
+
 	[Attribute("", UIWidgets.Object, "List of inputs")]
 	ref array<ref EL_ProcessingInput> m_aProcessingInputs;
 
@@ -41,6 +44,8 @@ class EL_ProcessAction : ScriptedUserAction
 		if (!pOwnerEntity || !EL_NetworkUtils.ShouldApplyAction(pOwnerEntity)) return;
 		if (!EL_NetworkUtils.IsOwner(pOwnerEntity))
 			EL_Debug.Warn("Processing", string.Format("process applied without replication owner on %1", pOwnerEntity.GetName()));
+		if (!ApplyMachineFromCatalog())
+			return;
 
 		// A malformed recipe must be rejected before any inventory mutation.
 		if (!IsRecipeConfigured(m_aProcessingInputs, m_aProcessingOutputs))
@@ -141,6 +146,9 @@ class EL_ProcessAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
   	{
+		if (!ApplyMachineFromCatalog())
+			return false;
+
 		if (!IsRecipeConfigured(m_aProcessingInputs, m_aProcessingOutputs))
 			return false;
 
@@ -151,6 +159,30 @@ class EL_ProcessAction : ScriptedUserAction
 			if (inputPrefabsInInv < processingInput.m_iInputAmount) return false;
 		}
 
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! Copies inputs and outputs from the chain config when this action names a
+	//! machine. An empty or unresolved recipe logs and returns before the
+	//! caller is allowed to touch inventory. An empty id keeps the prefab arrays.
+	protected bool ApplyMachineFromCatalog()
+	{
+		if (m_sMachineId.IsEmpty())
+			return true;
+
+		EL_ResourceMachineDef machine = EL_ResourceChainCatalog.FindMachine(m_sMachineId);
+		if (!EL_ResourceChainCatalog.IsMachineUsable(machine))
+		{
+			EL_Debug.Error("Processing", string.Format("rejected process: machine %1 recipe is empty or a prefab does not resolve", m_sMachineId));
+			m_aProcessingInputs = new array<ref EL_ProcessingInput>();
+			m_aProcessingOutputs = new array<ref EL_ProcessingOutput>();
+			return false;
+		}
+
+		m_aProcessingInputs = machine.m_aInputs;
+		m_aProcessingOutputs = machine.m_aOutputs;
 		return true;
 	}
 

@@ -17,6 +17,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      UIInfo UIInfo "{59947AF4A11A18DC}" {
       Name "Smelt Iron Nuggets"
      }
+     m_sMachineId "furnace-iron"
      Duration 10
      m_aProcessingInputs {
       EL_ProcessingInput "{59B2AD116757D53C}" {
@@ -41,6 +42,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      UIInfo UIInfo "{5A5EE24316053905}" {
       Name "Smelt Gold Nuggets"
      }
+     m_sMachineId "furnace-gold"
      Duration 15
      m_aProcessingInputs {
       EL_ProcessingInput "{5A5EE2432A165321}" {
@@ -65,6 +67,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      UIInfo UIInfo "{5A5EE24316053907}" {
       Name "Smelt Copper Nuggets"
      }
+     m_sMachineId "furnace-copper"
      Duration 8
      m_aProcessingInputs {
       EL_ProcessingInput "{5A5EE2432A165322}" {

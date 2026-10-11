@@ -78,6 +78,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_OrganizationsPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_Roadmap_Ranks(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_RanksWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Roadmap_Resources(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Roadmap_ResourcesWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_Vehicles(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_VehiclesWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_VehiclesPersistence(), EL_TestTier.PERSISTENCE);

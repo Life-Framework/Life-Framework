@@ -222,6 +222,9 @@
 - ✅ The server applies a gather when no peer owns the prop, and a grant that
   adds nothing is an error log (verified 2026-10-10). A sandbag the inventory
   rejects, or a nugget with no usable slot, used to look like a successful use.
+- ✅ A node id copies tool, yield, and cooldown from `ResourceChains.conf`.
+  A missing row or a prefab that does not resolve logs `EL_Debug.Error` and
+  grants nothing (verified 2026-10-11). The action stays on the node.
 
 ### `EL_ProcessAction` — `Feature/Processing/EL_ProcessAction.c`
 - ✅ Recipe: consume all `m_aProcessingInputs`, produce all
@@ -230,6 +233,26 @@
   empty input/output lists, missing inputs, and non-positive amounts are
   rejected before inventory mutation. Regression coverage is in
   `EL_Test_ActionGuards`.
+- ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
+  empty recipe or a prefab that does not resolve logs `EL_Debug.Error` and
+  returns before inventory changes (verified 2026-10-11).
+
+### `EL_ResourceChainCatalog` — `Feature/Resources/EL_ResourceChainCatalog.c`
+- ✅ `Configs/Resources/ResourceChains.conf` names each gather node's tool,
+  yield, and cooldown, and each machine's inputs and outputs (verified
+  2026-10-11). Yields are item prefabs. Gather and process do not mint cash.
+  The playable iron, copper, and gold rows name the pickaxe. The log row does
+  not: the axe stays on `CuttableTree_Base`, and `LogPile_Debug` grants a log
+  with no held tool so the sawmill still runs before the axe pickup.
+- ✅ MainWorld's St Philippe farm (`Area_StPhillipe_AppleFarm.layer`) places
+  the apple trees, the juicer, and a juice trader (15 cash, matching the
+  DebugWorld juice crate), plus iron ore, a pickaxe, the furnace, and an
+  iron-bar trader (45 cash, the ShopPrices iron-bar sell price). That iron
+  node requires the pickaxe in hand. DebugWorld keeps Apple, Plum, Tomato,
+  Logging, Mining, Cement, Gravel, and Sand. `IronOre_Debug` uses
+  `iron-debug` (4 nuggets, no held tool) so one gather still feeds both
+  furnaces. `GoldOre_Debug` and `CopperOre_Debug` use the tool-free debug
+  rows with the prefab yields.
 
 ### `EL_DestructibleResourceComponent` + `EL_DestructibleResourceHitZone` — `Feature/Resources/`
 - ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit.
@@ -256,10 +279,13 @@
   convention-only, no SaveData pair.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
-- ✅ Singleton reward funnel; currently `GetGatherReward`/`GetProcessReward`
-  return 0 (sell to traders instead). Dead-but-safe.
-- ⚠️ `GiveReward` pays cash when reached (verified 2026-08-30) but the funnel
-  is unreachable today; `#EL-Job_Earned` misused as a format string (no `%1`).
+- ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
+  `SetScopeReward` for that prefab (verified 2026-10-11). Gather and process
+  mint nothing on their own. The player sells the product to a trader. A
+  scope payout, when one exists, is cash via `EL_MoneyUtils.GiveCash`. The
+  ATM stays the only cash-to-account boundary.
+- ✅ `#EL-Job_Earned` is `Earned $%1 for work!` and `GiveReward` passes the
+  paid amount through `WidgetManager.Translate` (verified 2026-10-11).
 
 ### `EL_PlayerLevelComponent` — `Feature/Level/EL_PlayerLevelComponent.c`
 - ✅ Level/XP/skill-point state; `GetExperienceForNextLevel = level * 100`;
@@ -305,6 +331,8 @@
   vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
   `Roadmap_Breach_Charge` on `Roadmap_Breach.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
+  `EL_Door_Base` inherits
+  `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
 
 ### `LF_Bank` — `Feature/Crime/LF_Bank.c`
 - ✅ A vault calls `LF_Breach.Arm`, then spills a config number of bags of
@@ -318,7 +346,10 @@
   at 246 0 122 on `Roadmap_Bank.layer`. The bag is
   `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
   mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
-  `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`.
+  `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
+  `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits
+  `{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`.
+  That building is capture-only and is not placed in the debug row.
 
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
@@ -330,8 +361,9 @@
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted (pin test `crime/rob-wanted-clamp`).
 - ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
-  `Roadmap_Fuel.layer` at `318 0 120` is the shop counter
-  `{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob`
+  `Roadmap_Fuel.layer` at `318 0 120` is
+  `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits
+  `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`,
   with `EL_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
   the server rolls it, and min equal to max pays that fixed amount. The debug
   till pays 150 MoneyStack cash. The bank balance stays 0. Wanted rises by
@@ -356,11 +388,12 @@
   `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
   stays. `Export` / `Apply` put the remaining seconds back. DebugWorld places
   `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
-  `Roadmap_Jail.layer`. The placed door is `EL_Door_Base` with the prison-cell
-  mesh `{609698033DD2B55D}Assets/Structures/BuildingsParts/Doors/Door_PrisonCell_E/Door_PrisonCell_E_A_Left_INT_ST_B.xob`,
-  so it carries `EL_LockComponent` and the shared breach actions. The vanilla door
+  `Roadmap_Jail.layer`. The placed door is
+  `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
+  inherits
   `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
-  is the prefab the world test loads.
+  and adds `EL_LockComponent`, so the prison mesh and the shared breach actions
+  stay together. That vanilla door is the prefab the world test loads.
   The officer action `LF_JailArrestAction` is on the suspect. Vehicle escort
   is not in this slice.
 
@@ -575,8 +608,11 @@
   (`RplMode.Dedicated`). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
 - ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
-  alone. The Node harness, MCP tools, layers, and named flows live in
-  `agent-box/`. See `docs/agent-box.md`.
+  alone. A world shot stays at camera offset `10 3 10` unless the command
+  passes `ox oy oz`, which is how the roadmap row shot steps back. `node
+  agent-box/harness.mjs report roadmap` writes `agent-box/reports/roadmap.html`
+  from a play session. The Node harness, MCP tools, layers, and named flows
+  live in `agent-box/`. See `docs/agent-box.md`.
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 

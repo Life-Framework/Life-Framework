@@ -44,6 +44,8 @@ node agent-box/harness.mjs shot world ATM_Debug
 
 `layers` reads `Worlds/DebugWorld/DebugWorld_Layers`. `layer <EntityName>` stands beside that entity, waits until `look` shows that action (the same list the F key would offer), performs it, and screenshots the UI. `shot world <EntityName>` uses the entity coordinates when you omit x y z. `shot ui debug_menu` opens the debug menu first.
 
+`node agent-box/harness.mjs report roadmap` walks every `Roadmap_` entity, stands where a player would stand, runs `look`, takes a world shot, and writes `agent-box/reports/roadmap.html` with each picture beside that text, plus one wide shot of the row.
+
 `play` stops play mode if it is up, opens `Worlds/DebugWorld/DebugWorld.ent`, then enters play mode. It passes this machine's toolchain paths so the Workbench bridge compiles into the open mod.
 
 Named flows are the short version of a pillar. Each file in `agent-box/flows/`

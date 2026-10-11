@@ -65,8 +65,29 @@ function prefabActions(root, prefabPath, seen = new Set()) {
   return [...new Set(actions)];
 }
 
-export function parseLayer(text, layerFile, root) {
+function worldPosition(stack, frame) {
+  let x = 0;
+  let y = 0;
+  let z = 0;
+  let any = false;
+  for (const item of [...stack, frame]) {
+    if (!item.coords) continue;
+    any = true;
+    x += item.coords[0];
+    y += item.coords[1];
+    z += item.coords[2];
+  }
+  if (!any) return null;
+  return {
+    x: Math.round(x * 1000) / 1000,
+    y: Math.round(y * 1000) / 1000,
+    z: Math.round(z * 1000) / 1000,
+  };
+}
+
+function walkLayer(text, layerFile, root) {
   const pads = [];
+  const placed = [];
   const stack = [];
 
   for (const raw of text.split(/\r?\n/)) {
@@ -110,34 +131,33 @@ export function parseLayer(text, layerFile, root) {
         }
         if (prefab) frame.actions.push(...prefabActions(root, prefab));
       }
-      if (frame?.entity && frame.actions.length) {
-        // Nested `coords` are local to the parent. World position is the sum.
-        let x = 0;
-        let y = 0;
-        let z = 0;
-        let any = false;
-        for (const item of [...stack, frame]) {
-          if (!item.coords) continue;
-          any = true;
-          x += item.coords[0];
-          y += item.coords[1];
-          z += item.coords[2];
-        }
-        if (any) {
-          pads.push({
+      if (frame?.entity && frame.name) {
+        const world = worldPosition(stack, frame);
+        if (world) {
+          const record = {
             name: frame.name,
             layer: layerFile,
             actions: [...new Set(frame.actions)],
-            x: Math.round(x * 1000) / 1000,
-            y: Math.round(y * 1000) / 1000,
-            z: Math.round(z * 1000) / 1000,
-          });
+            x: world.x,
+            y: world.y,
+            z: world.z,
+          };
+          placed.push(record);
+          if (frame.actions.length) pads.push(record);
         }
       }
     }
   }
 
-  return pads;
+  return { pads, placed };
+}
+
+export function parseLayer(text, layerFile, root) {
+  return walkLayer(text, layerFile, root).pads;
+}
+
+export function parsePlaced(text, layerFile, root) {
+  return walkLayer(text, layerFile, root).placed;
 }
 
 export function loadPads(root) {
@@ -150,6 +170,18 @@ export function loadPads(root) {
   }
   pads.sort((a, b) => a.name.localeCompare(b.name) || a.layer.localeCompare(b.layer));
   return pads;
+}
+
+export function loadPlaced(root) {
+  const dir = join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
+  const placed = [];
+  for (const file of readdirSync(dir)) {
+    if (!file.endsWith(".layer")) continue;
+    const text = readFileSync(join(dir, file), "utf8");
+    placed.push(...parsePlaced(text, file, root));
+  }
+  placed.sort((a, b) => a.x - b.x || a.z - b.z || a.name.localeCompare(b.name));
+  return placed;
 }
 
 export function findPad(pads, name) {

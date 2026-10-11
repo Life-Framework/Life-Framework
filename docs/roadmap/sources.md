@@ -27,7 +27,7 @@ Paths below were read from this tree or from `asset_search` / `game_browse` agai
 | Police sentence math | `EL_PoliceUtils` in `EL_PoliceMenu.c`. Fine cap 5000. Jail teleport is the literal `"127 1 137"` (DebugWorld desk), not a placed cell |
 | Arrest / fine RPC | `RpcAsk_EL_PoliceArrest`, `RpcAsk_EL_PoliceFine` |
 | Confiscate | `EL_ConfiscateAction` (weapons only today) |
-| Door lock | `EL_LockComponent`, `EL_DoorUserAction`, `EL_KeyComponent`, `EL_HouseManagerComponent`. Door prefab `{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et` (parent vanilla `Door_Base.et`). Key `{3735389521255DBE}Prefabs/Items/HouseKeyItem.et`. Lock state is not in the save serializer yet (`EL_LockComponent.c` says so) |
+| Door lock | `EL_LockComponent`, `EL_DoorUserAction`, `EL_KeyComponent`, `EL_HouseManagerComponent`. Door prefab `{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et` (parent vanilla `Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`). Jail door `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et` inherits the prison-cell door. Key `{3735389521255DBE}Prefabs/Items/HouseKeyItem.et`. Lock state is not in the save serializer yet (`EL_LockComponent.c` says so) |
 | Vehicle lock and key | `EL_VehicleLockComponent`, `EL_VehicleKeyComponent`, `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. Plates: `EL_LicensePlateManager` |
 | Police vehicle | `{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et`, parent `{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et` |
 | Hand carry | `EL_HandCarryComponent` on `Prefabs/Items/Core/HandCarryItem_Base.et` |
@@ -59,7 +59,9 @@ Paths below were read from this tree or from `asset_search` / `game_browse` agai
 | Fuel station | `Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/` |
 | Hospital | `Prefabs/Structures/Military/Houses/HospitalMilitary_E_01/` |
 | Police building | `Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et` |
-| Shop shell (also the bank stand-in; there is no bank building) | `Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/`, `ShopModern_E_01/` |
+| Shop | `Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/`, `ShopModern_E_01/` |
+| Bank shell | `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et` inherits `Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`. Capture only; not placed in the debug row |
+| Fuel till | `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et` inherits `Prefabs/Props/Commercial/CashierShop_01.et`. The fuel-station building stays off the debug row |
 | Prison door | `Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et` |
 | Garage shell | `Prefabs/Structures/Houses/Garage/Garage_E_01/` |
 | Post counter (parcel depot) | `Prefabs/Props/Services/Post/CounterPostOffice_01.et` |
