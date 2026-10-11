@@ -212,11 +212,19 @@ class EL_ShopMenu : ChimeraMenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Sell one unit of an item through the owning player's transaction bridge.
+	//! Sell the held stack. One unit of price is paid per quantity.
 	void SellItem(EL_ShopCatalogItem item)
 	{
-		if (m_CharacterShop && m_ShopRplId.IsValid() && item)
-			m_CharacterShop.RequestSell(m_ShopRplId, item.m_ItemPrefab, 1);
+		if (!m_CharacterShop || !m_ShopRplId.IsValid() || !item)
+			return;
+
+		int quantity = 1;
+		map<ResourceName, int> heldCounts = BuildOwnedCounts();
+		int held = 0;
+		if (heldCounts.Find(item.m_ItemPrefab, held) && held > 0)
+			quantity = held;
+
+		m_CharacterShop.RequestSell(m_ShopRplId, item.m_ItemPrefab, quantity);
 	}
 
 	//------------------------------------------------------------------------------------------------

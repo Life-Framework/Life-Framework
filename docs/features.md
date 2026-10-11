@@ -185,7 +185,8 @@
 ### `EL_ShopComponent` — `Feature/Shop/EL_ShopComponent.c`
 - ✅ Catalog-driven buy: `BuyItem(item, qty, buyer)` guards null/qty, server-
   only, price × quantity, `EL_MoneyUtils.RemoveAmount`, refund on
-  inventory-full.
+  inventory-full. A sell or buy of a stack pays or gives one unit per
+  quantity through `EL_ShopRules.StackTradeTotal` (verified 2026-10-11).
 - ✅ **Money correctness** (verified 2026-08-30): the partial-funds exploit is
   closed — `BuyItem` compares the actual removed amount against the total and
   refunds only what was removed before failing (a $50 buyer cannot buy a $100
@@ -201,8 +202,9 @@
 - ⚠️ Menu always opens for the local player regardless of who interacted.
 
 ### `EL_TraderManagerComponent` + `EL_InventoryStorageManagerComponent` — `Components/InventorySystem/`
-- ✅ Sell-to-trader pays **cash** (verified 2026-08-30): inserting into a
-  trader-owned storage pays `unitValue × stackSize` via `EL_MoneyUtils.AddCash`
+- ✅ Sell-to-trader pays **cash** (verified 2026-10-11): inserting into a
+  trader-owned storage pays one cash unit per stack quantity
+  (`EL_ShopRules.StackTradeTotal`) via `EL_MoneyUtils.AddCash`
   (pay-before-delete, clawed back if the item cannot be removed); black-market
   rejects non-civilian factions. The old "payout to ATM bank" and the
   `Print("testtesttest")` debug line are gone.
@@ -563,7 +565,9 @@
 - ✅ Virtual stack system: `AddQuantity`/`RemoveQuantity` clamp to
   `[0, max]` (0 = unlimited), `SetQuantity(0)` deletes the entity,
   `CanCombine`/`Combine` (conservation: source decrease == dest increase ==
-  transferred), `Split`, `SortByQuantity` (descending), `GetRemainingCapacity`.
+  transferred), `CombineQuantities` (2 and 3 yield 5), `Split`,
+  `QuantityRemainingAfterSplit` (5 into 2 leaves 3), `SortByQuantity`
+  (descending), `GetRemainingCapacity` (verified 2026-10-11).
 - ⚠️ `Split` with `splitSize` 0 spawns an item then deletes it via
   `SetQuantity(0)`; `ExtractQuantityComponents` inserts null components with
   no check; `HandleOnItemAdded` may refresh UI on a just-deleted entity.
