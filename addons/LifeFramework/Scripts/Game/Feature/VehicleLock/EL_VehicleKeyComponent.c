@@ -7,10 +7,9 @@
 //! to a whole prefab lineage). The item display name is rewritten to "Vehicle Key [<id>]" so
 //! players can tell keys apart.
 //!
-//! PERSISTENCE GAP. The bound identifier is in-session state on the item. The item itself only
-//! survives a restart when it is a persisted entity (SelfSpawn), which vehicles and their keys
-//! are not. A key from before a restart is gone; the respawned vehicle carries a fresh
-//! identifier anyway, so old keys could not match it regardless.
+//! PERSISTENCE. The item's own identifier is session state. EL_VehicleOwnership stores the key
+//! id on the vehicle record and, when the item is gone after a restart, spawns a key bound to
+//! that same id. A key that is still in the world is rebound instead of replaced.
 //!
 //! STACKING. The key prefab sets EL_QuantityComponent.m_iMaxQuantity to 1, so keys never combine:
 //! CanCombine is prefab-based and would merge keys bound to different vehicles into one stack.

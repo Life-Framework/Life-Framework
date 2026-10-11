@@ -1,0 +1,21 @@
+Vehicle : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
+ ID "E1A105BE1A000002"
+ components {
+  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  }
+  EL_VehicleStorageAccessControl "{E1A105BE1A000004}" {
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    EL_VehicleLockAction "{E1A105BE1A000006}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A105BE1A000007}" {
+      Name "#EL-VehicleLock_Action"
+     }
+    }
+   }
+  }
+ }
+}

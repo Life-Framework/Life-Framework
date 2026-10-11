@@ -7,13 +7,11 @@
 //! key. An editor-set m_sDebugIdentifier overrides generation and binds a whole prefab lineage to
 //! one identifier.
 //!
-//! PERSISTENCE GAP. The identifier and the locked flag are in-session state. Vehicles are not
-//! persisted entities in Configs/Systems/Persistence/LifeFramework.conf (no vehicle
-//! EntityPersistenceConfig, no SelfSpawn), so after a server restart every vehicle spawns fresh:
-//! a new identifier is generated and the lock resets to unlocked. A key from before the restart
-//! will not match the respawned vehicle. Wiring lock state into persistence requires a vehicle
-//! entity persistence config plus a ScriptedComponentSerializer for this component; that is
-//! deferred until vehicle ownership/persistence exists.
+//! PERSISTENCE. This component's fields are still session state. EL_VehicleOwnership stores the
+//! identifier, the key id, the owner, and the lock flag by that stable id. A restart spawns the
+//! prefab at the lot spawn point (the same rule as a character spawn point) and SetVehicleIdentifier
+//! writes the saved id back, so the key from the record matches. The vehicle entity itself is not
+//! a SelfSpawn persistence config.
 //!
 //! REPLICATION. Both RplProps are written on the server only (identifier generation and the
 //! action path), so a client never generates a conflicting identifier. BumpMe is throttled: only

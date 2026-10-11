@@ -1718,6 +1718,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Close"
      Comment "Organization menu close button"
     }
+    CustomStringTableItem "{E1C0E00100000001}" {
+     Id "EL-Vehicle_Buy"
+     Target_en_us "Buy vehicle"
+     Comment "Vehicle lot buy action"
+    }
+    CustomStringTableItem "{E1C0E00100000002}" {
+     Id "EL-Vehicle_ExtraKey"
+     Target_en_us "Cut an extra key"
+     Comment "Owner action that cuts another key for an owned vehicle"
+    }
+    CustomStringTableItem "{E1C0E00100000003}" {
+     Id "EL-Vehicle_Store"
+     Target_en_us "Store vehicle"
+     Comment "Garage action that stores the owner's vehicle"
+    }
+    CustomStringTableItem "{E1C0E00100000004}" {
+     Id "EL-Vehicle_Retrieve"
+     Target_en_us "Retrieve vehicle"
+     Comment "Garage action that spawns a stored vehicle"
+    }
+    CustomStringTableItem "{E1C0E00100000005}" {
+     Id "EL-Vehicle_NotOwner"
+     Target_en_us "You do not own this vehicle"
+     Comment "Vehicle action refused because the player is not the owner"
+    }
+    CustomStringTableItem "{E1C0E00100000006}" {
+     Id "EL-Vehicle_CannotAfford"
+     Target_en_us "You cannot afford this vehicle"
+     Comment "Vehicle purchase refused because cash or the ATM balance is short"
+    }
+    CustomStringTableItem "{E1C0E00100000007}" {
+     Id "EL-Vehicle_S105"
+     Target_en_us "S105"
+     Comment "Lot catalog row for the beige S105"
+    }
+    CustomStringTableItem "{E1C0E00100000008}" {
+     Id "EL-Vehicle_UAZ469"
+     Target_en_us "UAZ"
+     Comment "Lot catalog row for the covered civilian UAZ"
+    }
+    CustomStringTableItem "{E1C0E00100000009}" {
+     Id "EL-Vehicle_S1203"
+     Target_en_us "Van"
+     Comment "Lot catalog row for the beige S1203"
+    }
+    CustomStringTableItem "{E1C0E0010000000A}" {
+     Id "EL-Vehicle_UAZ452"
+     Target_en_us "UAZ 452"
+     Comment "Lot catalog row for the UAZ452"
+    }
+    CustomStringTableItem "{E1C0E0010000000B}" {
+     Id "EL-Vehicle_M923"
+     Target_en_us "Cargo truck"
+     Comment "Lot catalog row for the M923 cargo truck"
+    }
+    CustomStringTableItem "{E1C0E0010000000C}" {
+     Id "EL-Vehicle_Bought"
+     Target_en_us "Vehicle purchased"
+     Comment "Vehicle lot purchase succeeded"
+    }
+    CustomStringTableItem "{E1C0E0010000000D}" {
+     Id "EL-Vehicle_NoSpawn"
+     Target_en_us "The lot has nowhere to put that vehicle"
+     Comment "Vehicle spawn refused because every pad is occupied"
+    }
+    CustomStringTableItem "{E1C0E0010000000E}" {
+     Id "EL-Vehicle_NotSold"
+     Target_en_us "This lot does not sell that vehicle"
+     Comment "Vehicle purchase refused because the prefab is not in the catalog"
+    }
   }
  }
 }

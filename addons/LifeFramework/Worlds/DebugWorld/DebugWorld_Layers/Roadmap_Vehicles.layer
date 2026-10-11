@@ -1,0 +1,109 @@
+GenericEntity Roadmap_Vehicle_S105 : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ coords 552 0 120
+}
+GenericEntity Roadmap_Vehicle_Lot {
+ components {
+  MeshObject "{E1B0E70100000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{E1B0E70100000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  EL_VehicleLotComponent "{E1B0E70100000003}" {
+   m_sShopId "roadmap-lot"
+   m_iCashCeiling 500
+   m_iExtraKeyPrice 25
+   m_aOffers {
+    EL_VehicleOffer "{E1B0E70100000011}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     m_sSpawnPrefab "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et"
+     m_iPrice 1000
+     m_sNameKey "#EL-Vehicle_S105"
+    }
+    EL_VehicleOffer "{E1B0E70100000012}" {
+     m_sPrefab "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
+     m_sSpawnPrefab "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et"
+     m_iPrice 2500
+     m_sNameKey "#EL-Vehicle_UAZ469"
+    }
+    EL_VehicleOffer "{E1B0E70100000013}" {
+     m_sPrefab "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
+     m_sSpawnPrefab "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et"
+     m_iPrice 4000
+     m_sNameKey "#EL-Vehicle_S1203"
+    }
+    EL_VehicleOffer "{E1B0E70100000014}" {
+     m_sPrefab "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
+     m_sSpawnPrefab "{E1A452BE1A000001}Prefabs/Vehicles/Wheeled/UAZ452/EL_UAZ452_base.et"
+     m_iPrice 3500
+     m_sNameKey "#EL-Vehicle_UAZ452"
+    }
+    EL_VehicleOffer "{E1B0E70100000015}" {
+     m_sPrefab "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et"
+     m_sSpawnPrefab "{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/M923A1/EL_M923A1_transport.et"
+     m_iPrice 8000
+     m_sNameKey "#EL-Vehicle_M923"
+    }
+   }
+  }
+  EL_VehicleGarageComponent "{E1B0E70100000004}" {
+  }
+  EL_VehicleSpawnPointComponent "{E1B0E70100000005}" {
+   m_sShopId "roadmap-lot"
+   m_vOffset 0 0 8
+  }
+  ActionsManagerComponent "{E1B0E70100000006}" {
+   ActionContexts {
+    UserActionContext "{E1B0E70100000007}" {
+     ContextName "default"
+     Position PointInfo "{E1B0E70100000008}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    EL_VehicleBuyAction "{E1B0E70100000021}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+    }
+    EL_VehicleExtraKeyAction "{E1B0E70100000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+    EL_VehicleStoreAction "{E1B0E70100000025}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000026}" {
+      Name "#EL-Vehicle_Store"
+     }
+    }
+    EL_VehicleRetrieveAction "{E1B0E70100000027}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000028}" {
+      Name "#EL-Vehicle_Retrieve"
+     }
+    }
+   }
+  }
+  RplComponent "{E1B0E70100000009}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 570 0 120
+}

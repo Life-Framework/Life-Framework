@@ -1,0 +1,21 @@
+Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et" {
+ ID "E1A1203BE1A00002"
+ components {
+  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  }
+  EL_VehicleStorageAccessControl "{E1A1203BE1A00004}" {
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    EL_VehicleLockAction "{E1A1203BE1A00006}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A1203BE1A00007}" {
+      Name "#EL-VehicleLock_Action"
+     }
+    }
+   }
+  }
+ }
+}

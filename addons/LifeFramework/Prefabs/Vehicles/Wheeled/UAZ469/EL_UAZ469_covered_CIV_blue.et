@@ -1,0 +1,21 @@
+Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et" {
+ ID "E1A469BE1A000002"
+ components {
+  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  }
+  EL_VehicleStorageAccessControl "{E1A469BE1A000004}" {
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    EL_VehicleLockAction "{E1A469BE1A000006}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A469BE1A000007}" {
+      Name "#EL-VehicleLock_Action"
+     }
+    }
+   }
+  }
+ }
+}
