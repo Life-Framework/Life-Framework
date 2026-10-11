@@ -273,10 +273,29 @@
 - ✅ **Paychecks pay cash** (verified 2026-08-30): `ProcessPaycheck` uses
   `EL_MoneyUtils.GiveCash`; the old `EL_BankAccountComponent` deposit branch is
   gone (that entity bank is deleted). The only cash↔account boundary is the ATM.
+- ✅ **Civilian run XP** (verified 2026-10-11): `AddExperience` forwards to
+  `LF_CivilianJob`. A completed courier, fuel, or taxi run adds 100 XP.
+  100 XP levels that career and `PullCareer` copies the level onto this
+  component, so `OnLevelUp` fires. Level 1 may take courier work, level 2
+  opens fuel delivery, level 3 opens taxi. Under-level signup refuses and is
+  logged. Paychecks stay cash on the existing clock.
 - ⚠️ Whitelist branch in `SetJob` is dead (only POLICE is restricted and it is
-  special-cased). `AddExperience` is a no-op, so `OnLevelUp` can never fire.
-  Hard-coded Spanish strings (not localized). Per-job level/XP persistence is
-  convention-only, no SaveData pair.
+  special-cased). Hard-coded Spanish strings (not localized). Per-job level/XP
+  persistence is convention-only, no SaveData pair.
+
+### `LF_CivilianJob` — `Feature/Jobs/LF_CivilianJob.c`
+- ✅ Workplace signup, one active run, cash once, abandon pays nothing
+  (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
+  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et`. Fuel cargo is
+  `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
+  the drop consumes it. The taxi fare uses the rank vehicle
+  `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
+  not need a second client. A missing cargo prefab or a full inventory logs
+  `EL_Debug.Error` and that run does not pay. DebugWorld places
+  `Roadmap_Job_Depot` (post counter
+  `{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et`),
+  `Roadmap_Job_Drop`, `Roadmap_Job_TaxiPad`, and `Roadmap_Job_FuelCan` on
+  `Roadmap_Jobs.layer`.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -616,7 +635,7 @@
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, tests, and the release
   `Roadmap.layer` street, `Roadmap_Bank.layer`, `Roadmap_Fuel.layer`,
-  `Roadmap_Jail.layer`, `Roadmap_Organizations.layer`, `Roadmap_Hospital.layer`, and `Roadmap_Hideout.layer`
+  `Roadmap_Jail.layer`, `Roadmap_Organizations.layer`, `Roadmap_Hospital.layer`, `Roadmap_Jobs.layer`, and `Roadmap_Hideout.layer`
   are all present as non-empty layer files.
   `Roadmap_Fuel.layer` places `Roadmap_Fuel_Till` at `318 0 120`.
   `Roadmap_Organizations.layer` places `Roadmap_Org_Desk` at `372 0 120`.

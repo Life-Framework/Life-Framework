@@ -116,6 +116,33 @@ class EL_PlayerJobComponent : ScriptComponent
 		policeConfig.m_bCanGatherResources = false;
 		policeConfig.m_sIcon = "{6E1B308726CC6EF8}Images/recolector.edds"; // TODO: Update icon
 		m_mJobConfigs.Set(EL_EJobType.POLICE, policeConfig);
+
+		EL_JobConfig courierConfig = new EL_JobConfig();
+		courierConfig.m_eJobType = EL_EJobType.PARCEL;
+		courierConfig.m_sJobName = "#EL-Job_Name_Courier";
+		courierConfig.m_sDescription = "#EL-Job_SignUp_Courier";
+		courierConfig.m_iBaseSalary = 700;
+		courierConfig.m_fPaycheckInterval = 300;
+		courierConfig.m_bCanGatherResources = false;
+		m_mJobConfigs.Set(EL_EJobType.PARCEL, courierConfig);
+
+		EL_JobConfig fuelConfig = new EL_JobConfig();
+		fuelConfig.m_eJobType = EL_EJobType.FUEL_DELIVERY;
+		fuelConfig.m_sJobName = "#EL-Job_Name_Fuel";
+		fuelConfig.m_sDescription = "#EL-Job_SignUp_Fuel";
+		fuelConfig.m_iBaseSalary = 700;
+		fuelConfig.m_fPaycheckInterval = 300;
+		fuelConfig.m_bCanGatherResources = false;
+		m_mJobConfigs.Set(EL_EJobType.FUEL_DELIVERY, fuelConfig);
+
+		EL_JobConfig taxiConfig = new EL_JobConfig();
+		taxiConfig.m_eJobType = EL_EJobType.TAXI;
+		taxiConfig.m_sJobName = "#EL-Job_Name_Taxi";
+		taxiConfig.m_sDescription = "#EL-Job_SignUp_Taxi";
+		taxiConfig.m_iBaseSalary = 700;
+		taxiConfig.m_fPaycheckInterval = 300;
+		taxiConfig.m_bCanGatherResources = false;
+		m_mJobConfigs.Set(EL_EJobType.TAXI, taxiConfig);
 		
 		m_CurrentJobConfig = m_mJobConfigs.Get(m_eCurrentJob);
 	}
@@ -173,6 +200,29 @@ class EL_PlayerJobComponent : ScriptComponent
 					"Acceso Denegado",
 					5.0
 				);
+				return false;
+			}
+		}
+
+		// Courier, fuel delivery, and taxi are taken at the workplace. The
+		// civilian career level is the gate, the same way a license gates
+		// police and medic. An empty account id is a broken caller.
+		if (LF_CivilianJob.IsDeliveryJob(jobType))
+		{
+			IEntity careerOwner = GetOwner();
+			string careerUid = "";
+			if (careerOwner)
+				careerUid = EL_Utils.GetPlayerUID(careerOwner);
+
+			if (careerUid.IsEmpty())
+			{
+				EL_Debug.Error("Jobs", "signup refused: player has no account id");
+				return false;
+			}
+
+			if (!LF_CivilianJob.CanSignUp(careerUid, jobType))
+			{
+				EL_Debug.Log("Jobs", string.Format("signup rejected: %1 is below the level for %2", careerUid, typename.EnumToString(EL_EJobType, jobType)));
 				return false;
 			}
 		}
@@ -260,6 +310,9 @@ class EL_PlayerJobComponent : ScriptComponent
 		
 		// Give job equipment
 		GiveJobEquipment();
+
+		if (LF_CivilianJob.IsDeliveryJob(jobType))
+			PullCareer();
 		
 		return true;
 	}
@@ -338,15 +391,66 @@ class EL_PlayerJobComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Add job experience (used when performing job actions)
+	//! Add job experience. A completed delivery run calls this. The civilian
+	//! career (courier, fuel, taxi) levels on LF_CivilianJob; this copies that
+	//! result onto the player so the workplace gate and the HUD agree.
 	void AddExperience(float amount)
 	{
-		// Job-level XP is deprecated by design: progression runs through
-		// EL_PlayerLevelComponent (paycheck already grants +5 player XP). The
-		// per-job level/XP maps have no SaveData pair, so wiring this would
-		// resurrect an unpersisted progression path whose level-up threshold
-		// does not exist in EL_JobConfig.
-		return;
+		if (!Replication.IsServer() && Replication.IsRunning())
+			return;
+
+		IEntity owner = GetOwner();
+		if (!owner)
+		{
+			EL_Debug.Error("Jobs", "AddExperience refused: no owner");
+			return;
+		}
+
+		string uid = EL_Utils.GetPlayerUID(owner);
+		if (uid.IsEmpty())
+		{
+			EL_Debug.Error("Jobs", "AddExperience refused: player has no account id");
+			return;
+		}
+
+		LF_CivilianJob.AddExperience(uid, amount);
+		PullCareer();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Copy the civilian career level and XP onto this component.
+	void PullCareer()
+	{
+		IEntity owner = GetOwner();
+		if (!owner)
+			return;
+
+		string uid = EL_Utils.GetPlayerUID(owner);
+		if (uid.IsEmpty())
+			return;
+
+		if (!m_mJobLevels)
+			m_mJobLevels = new map<EL_EJobType, int>();
+		if (!m_mJobExperience)
+			m_mJobExperience = new map<EL_EJobType, float>();
+
+		int levelBefore = m_iJobLevel;
+		m_iJobLevel = LF_CivilianJob.GetLevel(uid);
+		m_fJobExperience = LF_CivilianJob.GetExperience(uid);
+
+		if (m_eCurrentJob != EL_EJobType.UNEMPLOYED)
+		{
+			m_mJobLevels.Set(m_eCurrentJob, m_iJobLevel);
+			m_mJobExperience.Set(m_eCurrentJob, m_fJobExperience);
+		}
+
+		if (m_iJobLevel > levelBefore)
+			OnLevelUp();
+
+		if (m_OnJobExperienceGained)
+			m_OnJobExperienceGained.Invoke(m_fJobExperience);
+
+		Replication.BumpMe();
 	}
 	
 	//------------------------------------------------------------------------------------------------

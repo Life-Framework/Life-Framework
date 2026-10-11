@@ -7,6 +7,9 @@ enum EL_EJobType
 	MINER = 2,       // Minero - Pico y minerales
 	LUMBERJACK = 3,  // Leñador - Hacha y madera
 	MEDIC = 4,       // EMS - Paramédico
+	PARCEL = 5,      // Courier - parcel run
+	FUEL_DELIVERY = 6, // Fuel delivery - jerrycan run
+	TAXI = 7,        // Taxi driver - marker fare
 	// Whitelist-only jobs
 	POLICE = 100     // Policía - Requiere whitelist
 }
