@@ -1,7 +1,7 @@
 # ATM — Design Requirements
 
 > Context file for the self-service cash machine. Written against
-> `docs/design-philosophy.md` (in-world first).
+> `docs/design.md` (in-world first).
 
 ## Intent
 

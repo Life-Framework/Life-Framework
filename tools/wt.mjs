@@ -134,11 +134,11 @@ export function writeState(root, state) {
 
 // Bring the registry in line with `git worktree list` (first run imports the
 // worktrees that predate the hub; drift is repaired by writing markers).
+// No addon file I/O here: `wt list` calls this. The resource database is
+// copied by `wt new` and before a server boot (cli test/dev/serve, wt e2e).
 export function reconcileState(root) {
   const state = readState(root);
-  const main = mainRootOf(root);
   for (const e of listWorktrees(root)) {
-    if (e.path && existsSync(e.path)) copyResourceDatabase(e.path, main);
     if (!e.branch || e.branch === "main" || !existsSync(e.path)) continue;
     const slug = e.branch.startsWith("ws/") ? e.branch.slice(3) : e.branch;
     if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) continue;
@@ -200,6 +200,7 @@ export function defaultPorts() {
 
 // resourceDatabase.rdb is gitignored and required for --no-build world tests.
 // Copy it from the main checkout when the worktree copy is missing or smaller.
+// Called by `wt new` and before a server boot (cli test/dev/serve, wt e2e).
 // Never commit the destination.
 export function copyResourceDatabase(wtRoot, mainRoot = mainRootOf(wtRoot)) {
   const src = join(mainRoot, "addons", "LifeFramework", "resourceDatabase.rdb");

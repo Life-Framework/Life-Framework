@@ -1,7 +1,7 @@
 # Trader — Design Requirements
 
 > Context file for the sell-side of the economy. Written against
-> `docs/design-philosophy.md` (in-world first).
+> `docs/design.md` (in-world first).
 
 ## Intent
 

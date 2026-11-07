@@ -6,7 +6,7 @@ requirements* — the intended player experience, the interaction pattern, the
 V1 slice, and the iteration path.
 
 **Read first:** the shared design philosophy is
-[`docs/design-philosophy.md`](../../../../../docs/design-philosophy.md). Every
+[`docs/design.md`](../../../../../docs/design.md). Every
 feature's `Feature.md` is written against it.
 
 ## Feature map

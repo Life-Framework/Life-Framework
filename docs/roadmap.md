@@ -1,5 +1,10 @@
 # Development Roadmap
 
+> **Note:** this file is a scrape of the community roadmap on the public site,
+> life-framework.org (https://life-framework.org/roadmap). It is kept for
+> reference only. The live plan for the playable mod is
+> [roadmap/README.md](./roadmap/README.md).
+
 > Source: https://life-framework.org/roadmap (scraped). This is the project's
 > living roadmap for building "the most comprehensive framework for Arma
 > Reforger". It keeps the team organized and ensures contributions don't get

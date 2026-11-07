@@ -71,10 +71,10 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:Persistence] system state ... -> SHUTDOWN` | INFO | Persistence session teardown. |
 | a console line that mentions port `2001` | not a feature bug | Engine default bind text. `tools\cli test` already started the server with `-bindPort` of the worktree game port from `tools\cli wt list`. Do not investigate the port. |
 | `Unable to initialize the game` after a bind collision | not a feature bug | Retry the same test command once. Do not investigate the port. |
-| `Wrong GUID` on localization | not a feature bug | The gitignored `resourceDatabase.rdb` copy is missing. `tools\cli wt list` and `tools\cli test` copy it from the main checkout. Do not commit it. |
+| `Wrong GUID` on localization | not a feature bug | The gitignored `resourceDatabase.rdb` copy is missing. `tools\cli wt new`, `test`, `dev`, `serve`, and `wt e2e` copy it from the main checkout; the `all` and `persistence` tiers stop with `ERROR resourceDatabase.rdb missing` when it is absent. Do not commit it. |
 | RPL invalid prefab GUID | not a feature bug | Same missing resource database. Copy it. Wrong GUID and invalid prefab are this, not a feature defect. |
 | inventory `not found in replication` together with a cash read of 0 | not a feature bug | The resource database copy is missing. `GetCash` returning 0 is the same gap. These four tests fail only for that reason: `e2e/narrative-loop`, `e2e/inventory-storage`, `money/cash-roundtrip`, `vehiclelock/lock-key-access`. |
-| harness `Cannot index into a null array` | not a feature bug | `Get-Content -Raw` returned an array because the log was still open, and the old parser indexed `$matches`. Grep `console.log` for `[ELTEST] SUMMARY` and the assigned test name. Do not read `cli.mjs` or the server executable. |
+| harness `Cannot index into a null array` | fixed bug | The old parser indexed `$matches` while the log was still open. The harness now prints its own `SUMMARY`/`FAIL` on a harness error, so this line should not appear any more. |
 | `[ELDebug:DebugMenu] debug action refused: player <id> ...`, `[ELDebug:DebugMenu] open refused: ...`, `[ELDebug:AgentHarness] stand/pose/use refused: player <id> ...` | BY DESIGN | `EL_DevGate` refused a dev-tool request. Dev tools run only when the game mode sets `m_bDevToolsEnabled` (`GameMode_Roleplay_Debug.et`, DebugWorld) or the sender is an administrator. A non-admin on a production server sees this. In the DebugWorld it means the mode prefab lost the flag. |
 
 ## How to add a row
