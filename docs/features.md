@@ -129,11 +129,12 @@
   wanted bumps and police-menu reads do not lose the account mid-session
   (the old evict-on-write churn is gone).
 
-### `EL_PlayerAccountSaveData` — `Feature/Account/Persistence/`
-- ✅ Field-for-field round trip of account state; `Equals` is
-  order-insensitive over characters.
-- ❌ `ApplyTo` returns `EPF_EReadResult.OK` instead of `EPF_EApplyResult.OK`
-  (wrong enum). No version field.
+### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
+- ✅ Explicit persisted form of an account and its characters (faction,
+  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
+  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
+  its `version` field. `account/save-roundtrip` covers the
+  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
 ### `EL_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
@@ -706,8 +707,8 @@
    ownership gate; gather/process actions re-validate server-side and reject
    malformed configurations. Remaining: multiplayer proof for the RPC edges.
 3. **Persistence — improved.** Cache-eviction churn fixed (account stays
-   resident). Remaining: no save version fields; `ApplyTo` returns the wrong
-   enum in `EL_PlayerAccountSaveData`.
+   resident). The serializer writes a `version` first; the EPF
+   `ApplyTo` enum bug left with EPF.
 4. **Compile risk — resolved.** `EL_EFactionType` is defined in
    `EL_WhitelistManager.c`.
 5. **Client/server breaks — mostly closed.** Police arrest/fine bridge and

@@ -126,12 +126,12 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 | `account/character-crud` | LOGIC ✅ | AddCharacter sets active when flagged; GetActiveCharacter returns it; HasCharacters; RemoveCharacter keeps a different active char |
 | `account/active-index` | LOGIC ✅ | 🎯 RemoveCharacter of the active char leaves a stale index (returns a different char); roster/shift pin |
 | `account/wanted-clamp` | LOGIC ✅ | SetWantedLevel clamps [0,5]; IncreaseWantedLevel(±) clamps |
-| `account/save-roundtrip` | LOGIC ✅ | 🔒 `EL_PlayerAccountSaveData` ReadFrom→ApplyTo round-trips faction/duty/wanted/characters; `Equals` order-insensitive |
+| `account/save-roundtrip` | LOGIC ✅ | 🔒 `EL_PlayerAccountManager.ExportAll` → `Reset` → `ApplyAll` round-trips faction/duty/wanted/characters through `EL_PlayerAccountRecord` |
 | `account/manager-cache` | LOGIC ✅ | `EL_PlayerAccountManager` AddToCache/GetFromCache/Reset; unknown uid returns null |
 | `spawn/getcreationprefab` | WORLD ⏳ | `EL_SpawnLogic` picks active character's prefab; spawns with default loadout items into matching purpose storages |
 | `spawn/nop-spawnpoint` | WORLD ⏳ | 🎯 `GetCreationPosition` with no spawn point does not leave uninitialized output garbage |
 | `creation/age-validation` | LOGIC ⏳ | Age [18,80] accepted, outside rejected; empty name rejected |
-| `creation/temp-character` | WORLD ⏳ | 🎯 `CreateTemporaryCharacter` uses placeholder `{YourTempCharacterPrefab}` — the flow cannot complete |
+| `creation/default-character` | WORLD ⏳ | `CreateAndSpawnDefaultCharacter` spawns `{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et` (the placeholder prefab and fixed coordinates are gone) |
 
 ### Money, ATM & Banking
 

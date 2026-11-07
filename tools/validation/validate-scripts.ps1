@@ -6,8 +6,8 @@
 #
 # Workbench must be launched from the game install dir so that ./addons
 # resolves to the game's own packed addons - the vanilla Game addon
-# (58D0FB3206B6F859) that our dependency chain (EPF -> EDF -> Game) resolves
-# against. Logs land in Documents\My Games\ArmaReforgerWorkbench\logs.
+# (58D0FB3206B6F859), the only dependency in LifeFramework.gproj. Logs land
+# in Documents\My Games\ArmaReforgerWorkbench\logs.
 #
 # Run via: tools\cli validate   (or directly for verbose output)
 
