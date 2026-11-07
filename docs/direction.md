@@ -1,7 +1,8 @@
 # Direction
 
 The north star for Life Framework. Read this before choosing what to build.
-`docs/roadmap/` holds the scoped plan; `docs/features.md` holds what exists.
+`docs/roadmap/` holds the scoped plan; `docs/features.md` holds what exists;
+`docs/decisions.md` holds the design calls that set the taste.
 
 ## What we are building
 
