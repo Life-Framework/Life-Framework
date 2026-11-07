@@ -482,41 +482,8 @@
   reduces wanted by the configured amount. Early release refuses. A locked
   jail door returns a prisoner who leaves the volume; an open door (the shared
   `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
-  stays. `Export` / `Apply` put the remaining seconds back. DebugWorld places
-  `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
-  `Roadmap_Jail.layer`. The placed door is
-  `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
-  inherits
-  `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
-  and adds `EL_LockComponent`, so the prison mesh and the shared breach actions
-  stay together. That vanilla door is the prefab the world test loads.
-  The officer action `LF_JailArrestAction` is on the suspect. `LF_JailEscort`
-  is the vehicle path: an on-duty officer loads a wanted player into the nearest
-  free non-driver seat of a base-game vehicle. The sentence starts when they
-  arrive at the cell, not when they enter the car. A player who is not wanted
-  is refused and logged. Early release stays refused. A reconnect keeps the
-  remaining sentence through `Export` / `Apply`. DebugWorld places
-  `Roadmap_Escort_Car` at `204 0 108` on `Roadmap.layer`, the police M151 with
-  `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
-  still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
-- ✅ **Sentences survive a restart** (2026-11-07, tests
-  `restart/jail-serializer-roundtrip` and `e2e/pass2-verify-load`, red-proof
-  pending): `LF_Jail.ExportAll` / `ApplyAll` are the `jail` payload of
-  `EL_PersistenceComponentSerializer`, appended at version 5. Only serving
-  sentences with time left are saved; `ApplyAll` replaces the live set, so a
-  second apply converges. A version 1-4 save stops before the payload and leaves
-  live sentences alone.
-
-### `LF_Jail` — `Feature/Police/LF_Jail.c`
-- ✅ Placed cell and timed sentence (verified 2026-10-11). `GetJailPosition()`
-  reads the cell origin. Sentence length is wanted level times the config
-  step, clamped to the config max. Arrest of a clean player refuses. Expiry
-  reduces wanted by the configured amount. Early release refuses. A locked
-  jail door returns a prisoner who leaves the volume; an open door (the shared
-  `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
-  stays. `Export` / `Apply` round-trip the remaining seconds in memory but are
-  not wired into `EL_PersistenceComponentSerializer`, so a server restart
-  loses the sentence. DebugWorld places
+  stays. `Export` / `Apply` put the remaining seconds back, and `ExportAll` /
+  `ApplyAll` carry every serving sentence through the save. DebugWorld places
   `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
   `Roadmap.layer`. The placed door is
   `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
@@ -528,12 +495,19 @@
   is the vehicle path: an on-duty officer loads a wanted player into the nearest
   free non-driver seat of a base-game vehicle. The sentence starts when they
   arrive at the cell, not when they enter the car. A player who is not wanted
-  is refused and logged. Early release stays refused. The remaining sentence
-  lives only in server memory; the save serializer does not call `Export` /
-  `Apply`, so a restart loses it. DebugWorld places
+  is refused and logged. Early release stays refused. A reconnect or a
+  restart keeps the remaining sentence. DebugWorld places
   `Roadmap_Escort_Car` at `204 0 108` on `Roadmap.layer`, the police M151 with
   `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
   still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
+- ✅ **Sentences survive a restart** (2026-11-07, tests
+  `restart/jail-serializer-roundtrip` and `e2e/pass2-verify-load`, red-proof
+  pending): `LF_Jail.ExportAll` / `ApplyAll` are the `jail` payload of
+  `EL_PersistenceComponentSerializer`, appended at version 5. Only serving
+  sentences with time left are saved; `ApplyAll` replaces the live set, so a
+  second apply converges. A version 1-4 save stops before the payload and leaves
+  live sentences alone.
+
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
