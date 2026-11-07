@@ -1183,10 +1183,13 @@ function wtListCmd() {
     return 0;
   }
   console.log("worktrees  (main checkout is reserved for the world editor)");
-  console.log(`  ${"slug".padEnd(20)}${"branch".padEnd(22)}${"ports".padEnd(14)}state`);
+  const slugW = Math.max(4, ...rows.map((e) => e.slug.length)) + 2;
+  const branchW = Math.max(6, ...rows.map((e) => e.branch.length)) + 2;
+  const line = (e, text) => `  ${e.slug.padEnd(slugW)}${e.branch.padEnd(branchW)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}${text}`;
+  console.log(`  ${"slug".padEnd(slugW)}${"branch".padEnd(branchW)}${"ports".padEnd(14)}state`);
   for (const e of rows) {
     if (!existsSync(e.path)) {
-      console.log(`  ${e.slug.padEnd(20)}${e.branch.padEnd(22)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}MISSING`);
+      console.log(line(e, "MISSING"));
       continue;
     }
     const merged = wt.gitOk(ROOT, ["merge-base", "--is-ancestor", e.branch, "origin/main"]);
@@ -1194,10 +1197,11 @@ function wtListCmd() {
     const behind = parseInt(wt.git(ROOT, ["rev-list", "--count", e.branch + "..origin/main"]).stdout.trim() || "0", 10);
     const dirty = wt.git(e.path, ["status", "--porcelain"]).stdout.trim() ? "dirty" : "clean";
     const cur = wt.currentBranch(e.path);
-    const stateText = merged && ahead === 0
-      ? (behind > 0 ? "merged (prune me)" : "fresh (no commits yet)")
-      : `${dirty}${cur !== e.branch ? ` on ${cur}` : ""}${ahead > 0 ? ` +${ahead}` : ""}`;
-    console.log(`  ${e.slug.padEnd(20)}${e.branch.padEnd(22)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}${stateText}`);
+    // Uncommitted edits are never "prune me": they exist nowhere else.
+    let stateText = `${dirty}${cur !== e.branch ? ` on ${cur}` : ""}${ahead > 0 ? ` +${ahead}` : ""}`;
+    if (merged && ahead === 0 && dirty === "clean") stateText = behind > 0 ? "merged (prune me)" : "fresh (no commits yet)";
+    else if (merged && ahead === 0) stateText = "dirty, uncommitted work (commit or discard before prune)";
+    console.log(line(e, stateText));
   }
   return 0;
 }
