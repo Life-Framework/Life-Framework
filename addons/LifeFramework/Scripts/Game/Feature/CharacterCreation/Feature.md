@@ -1,7 +1,7 @@
 # CharacterCreation — Design Requirements
 
 > Context file for the first-join / intake flow. Written against
-> `docs/design-philosophy.md`.
+> `docs/design.md`.
 
 ## Intent
 

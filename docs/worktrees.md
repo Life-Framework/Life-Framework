@@ -100,4 +100,4 @@ to prune and about any registry inconsistency.
   uniqueness, missing dirs, stale merged worktrees).
 - `.githooks/pre-commit` → `validate-repo.ps1` — blocks `main` commits from
   linked worktrees.
-- `.opencode/skills/parallel-worktrees/SKILL.md` — the agent-facing workflow.
+- `AGENTS.md` (Worktrees section) — the agent-facing rules, including the junction-safe removal rule.
