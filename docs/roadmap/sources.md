@@ -23,7 +23,7 @@ Paths below were read from this tree or from `asset_search` / `game_browse` agai
 | --- | --- |
 | Cash | `EL_MoneyUtils`, MoneyStack prefab above |
 | Bank | `EL_ATMManager`, `EL_BankAccount`, `Feature/ATM/` |
-| Robbery gates | `EL_RobAction`, `EL_RobWeaponAction`, `EL_RobVehicleAction`. Tests: `EL_Test_RobReward`, `EL_Test_RobRewardWantedClamp` |
+| Robbery gates | `EL_RobAction`, `EL_RobWeaponAction`, `EL_RobVehicleAction`. Tests: `EL_Test_RobReward` (`crime/rob-reward`, `crime/rob-weapon-vehicle`), `EL_Test_Roadmap_Fuel` |
 | Police sentence math | `EL_PoliceUtils` in `EL_PoliceMenu.c`. Fine cap 5000. Jail teleport is the literal `"127 1 137"` (DebugWorld desk), not a placed cell |
 | Arrest / fine RPC | `RpcAsk_EL_PoliceArrest`, `RpcAsk_EL_PoliceFine` |
 | Confiscate | `EL_ConfiscateAction` (weapons only today) |

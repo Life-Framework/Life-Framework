@@ -50,119 +50,121 @@ class EL_CharacterATMComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: deposit cash from the player's inventory into their account.
-	//! Removes exactly the requested amount; a partial removal is rolled back
-	//! so a failed deposit never consumes cash. Always replies so the menu
-	//! never hangs.
+	//! Always replies so the menu never hangs.
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Deposit(int amount)
 	{
 		IEntity character = GetOwner();
-		bool success = false;
-		int newBalance = 0;
-		EL_BankAccount account;
-
-		if (character)
-		{
-			string playerUid = EL_Utils.GetPlayerUID(character);
-			account = EL_ATMManager.GetOrCreate(playerUid);
-			if (!account)
-			{
-				EL_Debug.Error("ATM", "deposit rejected: player UID is unavailable");
-				Rpc(RpcDo_DepositResult, false, 0);
-				return;
-			}
-			if (EL_ATMManager.IsValidAmount(amount))
-			{
-				int removed = EL_MoneyUtils.RemoveCash(character, amount);
-				if (removed == amount)
-				{
-					account.Deposit(amount);
-					success = true;
-					EL_Debug.Log("ATM", string.Format("deposit +%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
-				}
-				else if (removed > 0)
-				{
-					EL_MoneyUtils.AddCash(character, removed);
-					EL_Debug.Warn("ATM", string.Format("deposit rolled back: removed %1 of %2, cash restored (uid %3)", removed, amount, playerUid));
-				}
-				else
-				{
-					EL_Debug.Warn("ATM", string.Format("deposit rejected: not enough cash for %1 (uid %2)", amount, playerUid));
-				}
-			}
-			else
-			{
-				EL_Debug.Warn("ATM", string.Format("deposit rejected: invalid amount %1 (uid %2)", amount, playerUid));
-			}
-		}
-		else
+		if (!character)
 		{
 			EL_Debug.Error("ATM", string.Format("deposit rejected: no owning character (amount=%1)", amount));
+			Rpc(RpcDo_DepositResult, false, 0);
+			return;
 		}
 
-		if (account)
-			newBalance = account.GetBalance();
-		Rpc(RpcDo_DepositResult, success, newBalance);
+		string playerUid = EL_Utils.GetPlayerUID(character);
+		EL_BankAccount account = EL_ATMManager.GetOrCreate(playerUid);
+		if (!account)
+		{
+			EL_Debug.Error("ATM", "deposit rejected: player UID is unavailable");
+			Rpc(RpcDo_DepositResult, false, 0);
+			return;
+		}
+
+		bool success = ServeDeposit(character, account, amount, playerUid);
+		Rpc(RpcDo_DepositResult, success, account.GetBalance());
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: withdraw from the account and pay out cash. Refuses when the
-	//! inventory cannot hold the payout, leaving the account untouched.
+	//! Server seam of RpcAsk_Deposit, the cash-to-account boundary. Removes exactly the requested
+	//! amount of MoneyStack and credits it. A partial removal is rolled back so a failed deposit
+	//! never consumes cash and never credits the account.
+	//! \return True when the full amount moved from cash to the account.
+	static bool ServeDeposit(IEntity character, notnull EL_BankAccount account, int amount, string playerUid)
+	{
+		if (!EL_ATMManager.IsValidAmount(amount))
+		{
+			EL_Debug.Warn("ATM", string.Format("deposit rejected: invalid amount %1 (uid %2)", amount, playerUid));
+			return false;
+		}
+
+		int removed = EL_MoneyUtils.RemoveCash(character, amount);
+		if (removed == amount)
+		{
+			account.Deposit(amount);
+			EL_Debug.Log("ATM", string.Format("deposit +%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
+			return true;
+		}
+
+		if (removed > 0)
+		{
+			EL_MoneyUtils.AddCash(character, removed);
+			EL_Debug.Warn("ATM", string.Format("deposit rolled back: removed %1 of %2, cash restored (uid %3)", removed, amount, playerUid));
+		}
+		else
+		{
+			EL_Debug.Warn("ATM", string.Format("deposit rejected: not enough cash for %1 (uid %2)", amount, playerUid));
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: withdraw from the account and pay out cash. Always replies so the menu never hangs.
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Withdraw(int amount)
 	{
 		IEntity character = GetOwner();
-		bool success = false;
-		int newBalance = 0;
-		EL_BankAccount account;
-
-		if (character)
-		{
-			string playerUid = EL_Utils.GetPlayerUID(character);
-			account = EL_ATMManager.GetOrCreate(playerUid);
-			if (!account)
-			{
-				EL_Debug.Error("ATM", "withdraw rejected: player UID is unavailable");
-				Rpc(RpcDo_WithdrawResult, false, 0);
-				return;
-			}
-			if (EL_ATMManager.IsValidAmount(amount))
-			{
-				if (account.Withdraw(amount))
-				{
-					int paid = EL_MoneyUtils.AddCash(character, amount);
-					if (paid == amount)
-					{
-						success = true;
-						EL_Debug.Log("ATM", string.Format("withdraw -%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
-					}
-					else
-					{
-						// All-or-nothing: the payout could not be made, return the
-						// full amount to the account and take back the partial cash.
-						account.Deposit(amount);
-						EL_MoneyUtils.RemoveCash(character, paid);
-						EL_Debug.Warn("ATM", string.Format("withdraw rolled back: paid %1 of %2, balance restored (uid %3)", paid, amount, playerUid));
-					}
-				}
-				else
-				{
-					EL_Debug.Warn("ATM", string.Format("withdraw rejected: balance %1 below %2 (uid %3)", account.GetBalance(), amount, playerUid));
-				}
-			}
-			else
-			{
-				EL_Debug.Warn("ATM", string.Format("withdraw rejected: invalid amount %1 (uid %2)", amount, playerUid));
-			}
-		}
-		else
+		if (!character)
 		{
 			EL_Debug.Error("ATM", string.Format("withdraw rejected: no owning character (amount=%1)", amount));
+			Rpc(RpcDo_WithdrawResult, false, 0);
+			return;
 		}
 
-		if (account)
-			newBalance = account.GetBalance();
-		Rpc(RpcDo_WithdrawResult, success, newBalance);
+		string playerUid = EL_Utils.GetPlayerUID(character);
+		EL_BankAccount account = EL_ATMManager.GetOrCreate(playerUid);
+		if (!account)
+		{
+			EL_Debug.Error("ATM", "withdraw rejected: player UID is unavailable");
+			Rpc(RpcDo_WithdrawResult, false, 0);
+			return;
+		}
+
+		bool success = ServeWithdraw(character, account, amount, playerUid);
+		Rpc(RpcDo_WithdrawResult, success, account.GetBalance());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server seam of RpcAsk_Withdraw, the account-to-cash boundary. All-or-nothing: refuses when
+	//! the balance is short (the balance never goes negative), and when the inventory cannot hold
+	//! the full payout it returns the amount to the account and takes back the partial cash.
+	//! \return True when the full amount moved from the account to cash.
+	static bool ServeWithdraw(IEntity character, notnull EL_BankAccount account, int amount, string playerUid)
+	{
+		if (!EL_ATMManager.IsValidAmount(amount))
+		{
+			EL_Debug.Warn("ATM", string.Format("withdraw rejected: invalid amount %1 (uid %2)", amount, playerUid));
+			return false;
+		}
+
+		if (!account.Withdraw(amount))
+		{
+			EL_Debug.Warn("ATM", string.Format("withdraw rejected: balance %1 below %2 (uid %3)", account.GetBalance(), amount, playerUid));
+			return false;
+		}
+
+		int paid = EL_MoneyUtils.AddCash(character, amount);
+		if (paid == amount)
+		{
+			EL_Debug.Log("ATM", string.Format("withdraw -%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
+			return true;
+		}
+
+		account.Deposit(amount);
+		EL_MoneyUtils.RemoveCash(character, paid);
+		EL_Debug.Warn("ATM", string.Format("withdraw rolled back: paid %1 of %2, balance restored (uid %3)", paid, amount, playerUid));
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

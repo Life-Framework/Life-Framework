@@ -1,4 +1,9 @@
-// red-proof: the server was not booted. tools\cli test was not run.
+// red-proof: PENDING - not yet observed. The server was not booted for this test, before or after
+// this revision (the Arma Reforger Server install was being restored). Planned perturbation:
+// drop the empty-spawn-prefab fallback in LF_Garage.AppendRow, or make the screen skip the
+// first catalog row, and run `tools\cli test --no-build --tier fast`; the fallback or
+// screen-matches-catalog assertion goes red. The per-row restatement of the hard-coded
+// catalog constants was replaced with invariants the garage relies on.
 // tier: LOGIC
 class EL_Test_Roadmap_Garage : EL_Test
 {
@@ -9,38 +14,37 @@ class EL_Test_Roadmap_Garage : EL_Test
 
 	override void Run(EL_TestContext ctx)
 	{
-		array<ref LF_GarageCatalogRow> rows = LF_Garage.Catalog();
-		ctx.Equal(5, rows.Count(), "the catalog lists the civilian vehicles");
-		if (rows.Count() < 5)
+		ref array<ref LF_GarageCatalogRow> rows = LF_Garage.Catalog();
+		ctx.True(rows.Count() > 1, "the catalog lists more than one vehicle");
+		if (rows.Count() < 2)
 			return;
 
-		ctx.EqualStr("s105", rows.Get(0).m_sId, "the catalog opens with the S105");
-		ctx.EqualStr("#EL-Vehicle_S105", rows.Get(0).m_sNameKey, "the S105 row shows its name");
-		ctx.Equal(1000, rows.Get(0).m_iPrice, "the S105 cash price is the lot price");
-		ctx.EqualStr(EL_VehicleCatalog.S105, rows.Get(0).m_sPrefab, "the S105 preview slot names that prefab");
-		ctx.EqualStr(EL_VehicleCatalog.S105_LOCKED, rows.Get(0).m_sSpawnPrefab, "the S105 spawns the locked child");
-		ctx.EqualStr("", rows.Get(0).m_sTexture, "the S105 preview texture is empty");
+		// Invariants the purchase, preview and spawn paths depend on, not the price list itself.
+		array<string> ids = {};
+		foreach (LF_GarageCatalogRow row : rows)
+		{
+			ctx.NotNull(row, "every catalog row is present");
+			if (!row)
+				continue;
 
-		ctx.EqualStr("uaz469", rows.Get(1).m_sId, "the covered UAZ follows the S105");
-		ctx.EqualStr(EL_VehicleCatalog.UAZ469, rows.Get(1).m_sPrefab, "the UAZ preview slot names that prefab");
-		ctx.Equal(2500, rows.Get(1).m_iPrice, "the UAZ cash price is the lot price");
-
-		ctx.EqualStr("s1203", rows.Get(2).m_sId, "the S1203 follows the UAZ");
-		ctx.EqualStr(EL_VehicleCatalog.S1203, rows.Get(2).m_sPrefab, "the S1203 preview slot names that prefab");
-		ctx.Equal(4000, rows.Get(2).m_iPrice, "the S1203 cash price is the lot price");
-
-		ctx.EqualStr("uaz452", rows.Get(3).m_sId, "the UAZ452 follows the S1203");
-		ctx.EqualStr(EL_VehicleCatalog.UAZ452, rows.Get(3).m_sPrefab, "the UAZ452 preview slot names that prefab");
-		ctx.Equal(3500, rows.Get(3).m_iPrice, "the UAZ452 cash price is the lot price");
-
-		ctx.EqualStr("m923", rows.Get(4).m_sId, "the catalog ends with the M923 transport");
-		ctx.EqualStr(EL_VehicleCatalog.M923, rows.Get(4).m_sPrefab, "the M923 preview slot names that prefab");
-		ctx.Equal(8000, rows.Get(4).m_iPrice, "the M923 cash price is the lot price");
-		ctx.EqualStr("", rows.Get(4).m_sTexture, "the M923 preview texture is empty");
+			ctx.False(row.m_sId.IsEmpty(), "every catalog row has an id");
+			ctx.False(ids.Contains(row.m_sId), "catalog id " + row.m_sId + " is unique");
+			ids.Insert(row.m_sId);
+			ctx.True(row.m_sNameKey.IndexOf("#") == 0, "catalog row " + row.m_sId + " names itself with a localization key");
+			ctx.True(row.m_iPrice > 0, "catalog row " + row.m_sId + " has a positive price");
+			ctx.False(row.m_sPrefab.IsEmpty(), "catalog row " + row.m_sId + " has a preview prefab");
+			ctx.False(row.m_sSpawnPrefab.IsEmpty(), "catalog row " + row.m_sId + " has a spawn prefab");
+		}
 
 		ref array<ref LF_GarageCatalogRow> skipped = {};
 		LF_Garage.AppendRow(skipped, "missing", "#EL-Vehicle_S105", 1, "", "");
 		ctx.Equal(0, skipped.Count(), "a missing prefab is skipped");
+
+		ref array<ref LF_GarageCatalogRow> fallback = {};
+		LF_Garage.AppendRow(fallback, "plain", "#EL-Vehicle_S105", 1, EL_VehicleCatalog.S105, "");
+		ctx.Equal(1, fallback.Count(), "a row with only a preview prefab is kept");
+		if (fallback.Count() == 1)
+			ctx.EqualStr(EL_VehicleCatalog.S105, fallback.Get(0).m_sSpawnPrefab, "an empty spawn prefab falls back to the preview prefab");
 
 		array<ref LF_UIPart> parts = LF_GarageScreen.GetParts();
 		ctx.True(parts.Count() > 0, "the garage screen has parts");
@@ -50,23 +54,25 @@ class EL_Test_Roadmap_Garage : EL_Test
 		ctx.EqualStr("VehicleTitle", parts.Get(0).GetName(), "the screen opens with the garage title");
 		ctx.EqualStr("#LF-Garage_Title", parts.Get(0).GetText(), "the title is the garage title");
 
+		// The screen lists the catalog rows in order with their names and prices.
 		int seen = 0;
 		foreach (LF_UIPart part : parts)
 		{
 			if (!part || part.GetKind() != LF_EUIPartKind.STATUS)
 				continue;
 
-			if (seen == 0)
+			if (seen < rows.Count())
 			{
-				ctx.EqualStr("s105", part.GetName(), "the first screen row is the S105");
-				ctx.EqualStr("#EL-Vehicle_S105", part.GetText(), "the first screen row shows the S105 name");
-				ctx.EqualStr("1000", part.GetStatus(), "the first screen row shows the cash price");
+				LF_GarageCatalogRow expected = rows.Get(seen);
+				ctx.EqualStr(expected.m_sId, part.GetName(), "screen row " + seen.ToString() + " is catalog row " + expected.m_sId);
+				ctx.EqualStr(expected.m_sNameKey, part.GetText(), "screen row " + seen.ToString() + " shows the catalog name");
+				ctx.EqualStr(expected.m_iPrice.ToString(), part.GetStatus(), "screen row " + seen.ToString() + " shows the catalog price");
 			}
 
 			seen++;
 		}
 
-		ctx.Equal(5, seen, "the screen lists every catalog row");
+		ctx.Equal(rows.Count(), seen, "the screen lists every catalog row");
 
 		string vehicleId = "garage-logic-1";
 		string owner = "garage-owner";
@@ -142,12 +148,10 @@ class EL_Test_Roadmap_Garage : EL_Test
 		shop.Select(-1);
 		ctx.Equal(0, shop.GetIndex(), "previous stops on the first vehicle");
 		shop.Select(1);
-		ctx.Equal(1, shop.GetIndex(), "next moves to the UAZ");
-		ctx.EqualStr("2500", shop.PriceLine(), "the price follows the selected vehicle");
-		shop.Select(1);
-		shop.Select(1);
-		shop.Select(1);
-		shop.Select(1);
-		ctx.Equal(4, shop.GetIndex(), "next stops on the last vehicle");
+		ctx.Equal(1, shop.GetIndex(), "next moves to the second vehicle");
+		ctx.EqualStr(rows.Get(1).m_iPrice.ToString(), shop.PriceLine(), "the price follows the selected vehicle");
+		for (int step = 0; step < rows.Count() + 1; step++)
+			shop.Select(1);
+		ctx.Equal(rows.Count() - 1, shop.GetIndex(), "next stops on the last vehicle");
 	}
 }

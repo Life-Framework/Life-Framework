@@ -1,7 +1,10 @@
-// red-proof: with the README still opened only through $profile: and a cwd-relative
-// path, `tools\cli test --no-build --tier fast` printed
-// `[ELTEST]   - crafting README can be read` (tier=fast passed=74 failed=1).
-// tier: LOGIC
+// red-proof: PENDING - not yet observed. The Arma Reforger Server install was being restored, so
+// `tools\cli test --no-build --tier all` could not boot. Planned perturbation: change one GUID
+// below to a GUID no resource has; Resource.Load returns an invalid resource and that prefab's
+// assertion goes red. The README and file-existence checks this test used to do by reading
+// repo files through a cwd-dependent $profile path moved to
+// tools/validation/validate-crafting-assets.mjs, which runs in `tools\cli validate`.
+// tier: WORLD
 class EL_Test_CraftingAssets : EL_Test
 {
 	override string GetName()
@@ -9,151 +12,25 @@ class EL_Test_CraftingAssets : EL_Test
 		return "crafting/assets";
 	}
 
-	protected bool ReadTextFile(string path, out string text)
-	{
-		text = "";
-		if (!FileIO.FileExists(path))
-			return false;
-
-		FileHandle handle = FileIO.OpenFile(path, FileMode.READ);
-		if (!handle)
-			return false;
-
-		// ReadLine returns 0 on a blank line and a negative value at EOF.
-		// Stopping on (> 0) drops every line after the first blank line.
-		string line;
-		for (int i = 0; i < 400; i++)
-		{
-			int got = handle.ReadLine(line);
-			if (got < 0)
-				break;
-			text = text + line + "\n";
-		}
-
-		handle.Close();
-		return true;
-	}
-
-	protected string RepoRootFromProfile(string profile)
-	{
-		string back = "server\\profile\\test";
-		int at = profile.IndexOf(back);
-		if (at <= 0)
-		{
-			string fwd = "server/profile/test";
-			at = profile.IndexOf(fwd);
-		}
-		if (at <= 0)
-			return "";
-
-		return profile.Substring(0, at);
-	}
-
-	protected bool LoadReadme(out string text, out string rootPrefix)
-	{
-		text = "";
-		rootPrefix = "";
-
-		array<string> candidates = {
-			"$profile:crafting-addon/Prefabs/Crafting/README.md"
-		};
-		string profile;
-		if (System.GetCLIParam("profile", profile))
-		{
-			string root = RepoRootFromProfile(profile);
-			if (root.Length() > 0)
-			{
-				candidates.Insert(root + "addons\\LifeFramework\\Prefabs\\Crafting\\README.md");
-				candidates.Insert(root + "addons/LifeFramework/Prefabs/Crafting/README.md");
-			}
-		}
-
-		candidates.Insert("$profile:../../../addons/LifeFramework/Prefabs/Crafting/README.md");
-		candidates.Insert("addons/LifeFramework/Prefabs/Crafting/README.md");
-
-		foreach (string path : candidates)
-		{
-			if (!ReadTextFile(path, text))
-				continue;
-
-			int marker = path.IndexOf("Prefabs/Crafting/README.md");
-			if (marker < 0)
-				marker = path.IndexOf("Prefabs\\Crafting\\README.md");
-			if (marker < 0)
-				continue;
-
-			rootPrefix = path.Substring(0, marker);
-			return true;
-		}
-
-		return false;
-	}
-
-	protected string JoinAddon(string rootPrefix, string prefab)
-	{
-		if (rootPrefix.IndexOf("\\") < 0)
-			return rootPrefix + prefab;
-
-		string back = "";
-		for (int i = 0; i < prefab.Length(); i++)
-		{
-			string ch = prefab.Substring(i, 1);
-			if (ch == "/")
-				back = back + "\\";
-			else
-				back = back + ch;
-		}
-		return rootPrefix + back;
-	}
-
-	protected void CollectPrefabPaths(string readme, array<string> paths)
-	{
-		array<string> lines = {};
-		readme.Split("\n", lines, true);
-		foreach (string raw : lines)
-		{
-			string line = raw;
-			line.TrimInPlace();
-			int start = line.IndexOf("Prefabs/Crafting/");
-			if (start < 0)
-				continue;
-
-			string path = line.Substring(start, line.Length() - start);
-			int et = path.IndexOf(".et");
-			if (et < 0)
-				continue;
-
-			paths.Insert(path.Substring(0, et + 3));
-		}
-	}
-
 	override void Run(EL_TestContext ctx)
 	{
-		string readme;
-		string rootPrefix;
-		bool loaded = LoadReadme(readme, rootPrefix);
-		ctx.True(loaded && readme.Length() > 0, "crafting README can be read");
-		if (!loaded)
-			return;
-
-		array<string> names = {
-			"lathe",
-			"sewing machine",
-			"boiler",
-			"fireplace",
-			"vice",
-			"charcoal",
-			"sulfur",
-			"gunpowder",
-			"linen"
+		// The engine resolves every ported crafting prefab by its {GUID}path.
+		array<ResourceName> prefabs = {
+			"{9FB8E1E473BF6503}Prefabs/Crafting/Lathe.et",
+			"{9A539E857A434978}Prefabs/Crafting/SewingMachine.et",
+			"{675FA53A080F67E0}Prefabs/Crafting/Boiler.et",
+			"{0FB935C50541B694}Prefabs/Crafting/Fireplace.et",
+			"{B2CB0DCEE184B35A}Prefabs/Crafting/Vice.et",
+			"{6985A7CDF8ABF19F}Prefabs/Crafting/Charcoal.et",
+			"{1B5FAD55637B9BC2}Prefabs/Crafting/Sulfur.et",
+			"{9CB52FAF71DA568F}Prefabs/Crafting/Gunpowder.et",
+			"{F0F6577FD74790D2}Prefabs/Crafting/Linen.et"
 		};
-		foreach (string name : names)
-			ctx.True(readme.IndexOf(name) >= 0, "README names " + name);
 
-		array<string> paths = {};
-		CollectPrefabPaths(readme, paths);
-		ctx.True(paths.Count() > 0, "README lists prefab paths");
-		foreach (string prefab : paths)
-			ctx.True(FileIO.FileExists(JoinAddon(rootPrefix, prefab)), "prefab path exists: " + prefab);
+		foreach (ResourceName prefab : prefabs)
+		{
+			Resource res = Resource.Load(prefab);
+			ctx.True(res && res.IsValid(), "crafting prefab loads: " + prefab);
+		}
 	}
 }

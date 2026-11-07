@@ -1,5 +1,8 @@
 class EL_RobWeaponAction : ScriptedUserAction
 {
+	//! Wanted levels an accepted weapon robbery adds. Higher than cash, lower than a vehicle.
+	static const int WANTED_INCREASE = 2;
+
 	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Weapon prefab to steal", "et")]
 	protected ResourceName m_WeaponPrefab;
 
@@ -22,8 +25,7 @@ class EL_RobWeaponAction : ScriptedUserAction
 		}
 
 		// Only civilians can rob
-		EL_PlayerAccount account = GetPlayerAccount(user);
-		if (account && account.GetFaction() != EL_Faction.CIVILIAN)
+		if (!EL_RobAction.IsFactionAllowedToRob(EL_Utils.GetPlayerUid(user)))
 		{
 			SetCannotPerformReason("Only civilians can rob");
 			return false;
@@ -45,39 +47,32 @@ class EL_RobWeaponAction : ScriptedUserAction
 	{
 		m_fLastRobTime = GetGame().GetWorld().GetWorldTime();
 
-		// Spawn weapon in inventory
-		SCR_InventoryStorageManagerComponent inventoryManager = EL_Component<SCR_InventoryStorageManagerComponent>.Find(pUserEntity);
-		if (inventoryManager && EL_InventoryUtils.AddItem(inventoryManager, m_WeaponPrefab))
-		{
+		if (CommitWeaponRobbery(EL_Utils.GetPlayerUid(pUserEntity), pUserEntity, m_WeaponPrefab))
 			EL_Utils.Notify("#EL-Weapon_Stolen", "#EL-Robbery_Successful", 3.0);
-
-			// Increase wanted level
-			EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
-			if (account)
-			{
-				account.IncreaseWantedLevel(2); // Higher for weapons
-				EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
-
-				// Alert police
-				AlertPolice("#EL-Police_Alert_Weapon", pUserEntity.GetOrigin());
-			}
-		}
 		else
-		{
 			EL_Utils.Notify("#EL-Inventory_Full", "#EL-Robbery_Failed", 3.0);
-		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected EL_PlayerAccount GetPlayerAccount(IEntity user)
+	//! Server seam of PerformAction. Puts the weapon in the user's inventory. When that works and
+	//! an account resolves for playerUid, raises wanted by WANTED_INCREASE and alerts police.
+	//! Nothing is paid as cash and the bank is never touched.
+	//! \return True when the weapon was delivered.
+	static bool CommitWeaponRobbery(string playerUid, IEntity user, ResourceName weaponPrefab)
 	{
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-		if (accountManager)
+		SCR_InventoryStorageManagerComponent inventoryManager = EL_Component<SCR_InventoryStorageManagerComponent>.Find(user);
+		if (!inventoryManager || !EL_InventoryUtils.AddItem(inventoryManager, weaponPrefab))
+			return false;
+
+		EL_PlayerAccount account = EL_RobAction.FindAccount(playerUid);
+		if (account)
 		{
-			string playerUid = EL_Utils.GetPlayerUid(user);
-			return accountManager.GetAccount(playerUid);
+			account.IncreaseWantedLevel(WANTED_INCREASE);
+			EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
+			AlertPolice("#EL-Police_Alert_Weapon", user.GetOrigin());
 		}
-		return null;
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -111,7 +106,7 @@ class EL_RobWeaponAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void AlertPolice(string message, vector position)
+	protected static void AlertPolice(string message, vector position)
 	{
 		// Send notification to all on-duty police
 		EL_PlayerControllerManagerCompat playerManager = EL_PlayerControllerManagerCompat.GetInstance();

@@ -1,5 +1,8 @@
 class EL_RobVehicleAction : ScriptedUserAction
 {
+	//! Wanted levels an accepted vehicle robbery adds. The highest of the three rob actions.
+	static const int WANTED_INCREASE = 3;
+
 	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Vehicle prefab to steal", "et")]
 	protected ResourceName m_VehiclePrefab;
 
@@ -22,8 +25,7 @@ class EL_RobVehicleAction : ScriptedUserAction
 		}
 
 		// Only civilians can rob
-		EL_PlayerAccount account = GetPlayerAccount(user);
-		if (account && account.GetFaction() != EL_Faction.CIVILIAN)
+		if (!EL_RobAction.IsFactionAllowedToRob(EL_Utils.GetPlayerUid(user)))
 		{
 			SetCannotPerformReason("Only civilians can rob");
 			return false;
@@ -45,42 +47,41 @@ class EL_RobVehicleAction : ScriptedUserAction
 	{
 		m_fLastRobTime = GetGame().GetWorld().GetWorldTime();
 
-		// Spawn vehicle near player
-		vector spawnPos = pUserEntity.GetOrigin() + Vector(5, 0, 0);
-		EntitySpawnParams params = EntitySpawnParams();
-		params.Transform[3] = spawnPos;
-		IEntity vehicle = GetGame().SpawnEntityPrefab(Resource.Load(m_VehiclePrefab), null, params);
-		if (vehicle)
-		{
+		if (CommitVehicleRobbery(EL_Utils.GetPlayerUid(pUserEntity), pUserEntity, m_VehiclePrefab))
 			EL_Utils.Notify("#EL-Vehicle_Stolen", "#EL-Robbery_Successful", 3.0);
-
-			// Increase wanted level
-			EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
-			if (account)
-			{
-				account.IncreaseWantedLevel(3); // Highest for vehicles
-				EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
-
-				// Alert police
-				EL_Utils.AlertPolice("#EL-Police_Alert_Vehicle", pUserEntity.GetOrigin());
-			}
-		}
 		else
-		{
 			EL_Utils.Notify("#EL-Spawn_Failed", "#EL-Robbery_Failed", 3.0);
-		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected EL_PlayerAccount GetPlayerAccount(IEntity user)
+	//! Server seam of PerformAction. Spawns the vehicle 5 m from the user. When that works and an
+	//! account resolves for playerUid, raises wanted by WANTED_INCREASE and alerts police.
+	//! Nothing is paid as cash and the bank is never touched.
+	//! \return The spawned vehicle, or null when nothing spawned.
+	static IEntity CommitVehicleRobbery(string playerUid, IEntity user, ResourceName vehiclePrefab)
 	{
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-		if (accountManager)
+		if (!user)
 		{
-			string playerUid = EL_Utils.GetPlayerUid(user);
-			return accountManager.GetAccount(playerUid);
+			EL_Debug.Error("Crime", "vehicle robbery skipped: no user entity");
+			return null;
 		}
-		return null;
+
+		vector spawnPos = user.GetOrigin() + Vector(5, 0, 0);
+		EntitySpawnParams params = EntitySpawnParams();
+		params.Transform[3] = spawnPos;
+		IEntity vehicle = GetGame().SpawnEntityPrefab(Resource.Load(vehiclePrefab), null, params);
+		if (!vehicle)
+			return null;
+
+		EL_PlayerAccount account = EL_RobAction.FindAccount(playerUid);
+		if (account)
+		{
+			account.IncreaseWantedLevel(WANTED_INCREASE);
+			EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
+			EL_Utils.AlertPolice("#EL-Police_Alert_Vehicle", user.GetOrigin());
+		}
+
+		return vehicle;
 	}
 
 	//------------------------------------------------------------------------------------------------

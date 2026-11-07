@@ -23,4 +23,32 @@ class EL_TraderManagerComponent : GameComponent
 
 	[Attribute(defvalue: "false", uiwidget: UIWidgets.CheckBox, desc: "Is this a black market trader?")]
 	bool m_bBlackMarket;
+
+	//------------------------------------------------------------------------------------------------
+	//! Sell seam: the unit value a trader pays for one prefab. An unlisted prefab, a missing list,
+	//! or a null row is worth 0, which the sell path refuses.
+	static int GetUnitValue(array<ref EL_TraderItem> tradableItems, ResourceName itemPrefab)
+	{
+		if (!tradableItems)
+			return 0;
+
+		foreach (EL_TraderItem tradableItem : tradableItems)
+		{
+			if (tradableItem && tradableItem.m_ItemPrefab == itemPrefab)
+				return tradableItem.m_ValuePerItem;
+		}
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sell seam: black market access. Fails closed: an account that cannot be verified as
+	//! civilian is not admitted.
+	static bool CanAccessBlackMarket(EL_PlayerAccount account)
+	{
+		if (!account)
+			return false;
+
+		return account.GetFaction() == EL_Faction.CIVILIAN;
+	}
 }

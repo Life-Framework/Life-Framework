@@ -1,4 +1,8 @@
-// red-proof: 2026-10-11 fast boot logs_2026-10-11_05-19-01 printed [ELTEST] FAIL roadmap/contraband / [ELTEST]   - delivery pays the configured cash once (expected 0, got 200)
+// red-proof: PENDING - not yet observed for roadmap/hideout, e2e/roadmap-hideout or
+// roadmap/hideout-save. The line here before was copied from the contraband test and recorded
+// that test's failure, not this file's. The server install was being restored, so no suite ran.
+// Planned perturbation: make LF_Hideout.Assign return true without recording the owner and run
+// `tools\cli test --no-build --tier all`; "ownership is the organization id" goes red.
 
 // tier: LOGIC
 class EL_Test_Roadmap_Hideout : EL_Test

@@ -1,56 +1,52 @@
-// red-proof: flip an expected value in Run (e.g. assert item.m_ValuePerItem == 999
-// or output.m_iOutputAmount == 0). The test runner prints FAIL trader/item-config
-// or FAIL trader/processing-config and exits nonzero.
+// red-proof: PENDING - not yet observed. The Arma Reforger Server install was being restored
+// when this test was rewritten, so `tools\cli test --no-build --tier fast` could not boot.
+// Planned perturbation: make EL_TraderManagerComponent.CanAccessBlackMarket return true for a
+// missing account (the police/no-account assertions go red), or return the first row's value
+// from GetUnitValue (the unlisted-item assertion goes red).
+// The previous trader/item-config and trader/processing-config tests only read back struct
+// fields they had just set; they were deleted. Recipe validation is covered by
+// actions/guards (EL_ProcessAction.IsRecipeConfigured).
 
 // tier: LOGIC
-class EL_Test_TraderItemConfig : EL_Test
+class EL_Test_TraderSellRules : EL_Test
 {
+	protected static const ResourceName APPLE_PREFAB = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
+	protected static const ResourceName IRON_NUGGET_PREFAB = "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et";
+
 	override string GetName()
 	{
-		return "trader/item-config";
+		return "trader/sell-rules";
 	}
 
 	override void Run(EL_TestContext ctx)
 	{
-		ref EL_TraderItem item = new EL_TraderItem();
-		item.m_ItemPrefab = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
-		item.m_ValuePerItem = 5;
-		item.m_bIllegal = false;
+		EL_PlayerAccountManager.Reset();
 
-		ctx.EqualStr("{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", item.m_ItemPrefab, "item prefab matches");
-		ctx.Equal(5, item.m_ValuePerItem, "item value is 5");
-		ctx.False(item.m_bIllegal, "apple is legal item");
+		// The sell path (modded SCR_InventoryStorageManagerComponent.InsertItem) refuses a
+		// value of 0, so these are the accept/refuse decisions a player sees at the trader.
+		ref array<ref EL_TraderItem> listed = {};
+		EL_TraderItem apple = new EL_TraderItem();
+		apple.m_ItemPrefab = APPLE_PREFAB;
+		apple.m_ValuePerItem = 5;
+		listed.Insert(apple);
+		listed.Insert(null);
 
-		ref EL_TraderItem illegalItem = new EL_TraderItem();
-		illegalItem.m_ValuePerItem = 500;
-		illegalItem.m_bIllegal = true;
-		ctx.True(illegalItem.m_bIllegal, "contraband is marked illegal");
-		ctx.Equal(500, illegalItem.m_ValuePerItem, "contraband has higher value");
-	}
-};
+		ctx.Equal(5, EL_TraderManagerComponent.GetUnitValue(listed, APPLE_PREFAB), "a listed item sells at its configured value");
+		ctx.Equal(0, EL_TraderManagerComponent.GetUnitValue(listed, IRON_NUGGET_PREFAB), "an unlisted item is refused (value 0)");
+		ctx.Equal(0, EL_TraderManagerComponent.GetUnitValue(listed, ResourceName.Empty), "an empty prefab is refused");
+		ctx.Equal(0, EL_TraderManagerComponent.GetUnitValue(null, APPLE_PREFAB), "a trader with no list buys nothing");
 
-//------------------------------------------------------------------------------------------------
-// tier: LOGIC
-class EL_Test_ProcessingRecipeConfig : EL_Test
-{
-	override string GetName()
-	{
-		return "trader/processing-config";
-	}
+		EL_PlayerAccount civilian = EL_PlayerAccountManager.GetOrCreate("test-trader-civilian");
+		EL_PlayerAccount police = EL_PlayerAccountManager.GetOrCreate("test-trader-police");
+		ctx.NotNull(civilian, "civilian account exists");
+		ctx.NotNull(police, "police account exists");
+		if (ctx.FailureCount() > 0)
+			return;
 
-	override void Run(EL_TestContext ctx)
-	{
-		ref EL_ProcessingInput input = new EL_ProcessingInput();
-		input.m_InputPrefab = "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et";
-		input.m_iInputAmount = 2;
+		police.SetFaction(EL_Faction.POLICE);
 
-		ref EL_ProcessingOutput output = new EL_ProcessingOutput();
-		output.m_OutputPrefab = "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et";
-		output.m_iOutputAmount = 1;
-
-		ctx.Equal(2, input.m_iInputAmount, "2 nuggets required per smelt");
-		ctx.Equal(1, output.m_iOutputAmount, "1 bar produced per smelt");
-		ctx.True(!input.m_InputPrefab.IsEmpty(), "input prefab is set");
-		ctx.True(!output.m_OutputPrefab.IsEmpty(), "output prefab is set");
+		ctx.True(EL_TraderManagerComponent.CanAccessBlackMarket(civilian), "the black market admits a civilian");
+		ctx.False(EL_TraderManagerComponent.CanAccessBlackMarket(police), "the black market refuses a police officer");
+		ctx.False(EL_TraderManagerComponent.CanAccessBlackMarket(null), "the black market refuses an unverified seller");
 	}
 };

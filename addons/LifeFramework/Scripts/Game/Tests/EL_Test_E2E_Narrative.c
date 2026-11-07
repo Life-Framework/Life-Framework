@@ -2,6 +2,10 @@
 // loop goes red. Observed red: expected GetCash 201 after AddCash(200), then
 // reverted. Dropping the apple tradable value below 5 in AppleChain.layer sends
 // the same cash assertion red.
+// red-proof (robbery step, now EL_RobAction.CommitRobbery instead of a hand-written
+// AddCash + IncreaseWantedLevel mirror): PENDING - not yet observed; the server install was
+// being restored. Planned: deposit the payout to the bank in CommitRobbery and the
+// "bank balance stays 100" assertion goes red.
 // tier: WORLD
 class EL_Test_E2E_Narrative : EL_Test
 {
@@ -225,18 +229,21 @@ class EL_Test_E2E_Narrative : EL_Test
 		if (bank)
 			ctx.Equal(100, bank.GetBalance(), "bank balance 100 after the deposit");
 
-		// Mirrors EL_RobAction.PerformAction's reward outcome: robbery proceeds
-		// are physical cash and must not change the bank balance.
-		ctx.Equal(200, EL_MoneyUtils.AddCash(character, 200), "robbery payout adds 200 cash");
-		ctx.Equal(210, EL_MoneyUtils.GetCash(character), "robbery payout leaves 210 cash");
-
 		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(ACCOUNT_UID);
-		ctx.NotNull(account, "civilian account resolves for the wanted bump");
+		ctx.NotNull(account, "civilian account resolves for the robbery");
 		if (ctx.FailureCount() > 0)
 			return;
 
-		account.IncreaseWantedLevel(1);
-		EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
+		// The production robbery path: EL_RobAction.PerformAction hands this to
+		// CommitRobbery with the player's uid. It pays MoneyStack into the
+		// character's pockets and raises wanted; it must not touch the bank.
+		// A fresh till (last rob 0) with no police minimum is not gated.
+		float robNowMs = GetGame().GetWorld().GetWorldTime();
+		float robLast = 0;
+		float robNext = 0;
+		int robbed = EL_RobAction.CommitRobbery(ACCOUNT_UID, character, 200, 1, 0, 0, 60, robLast, robNowMs, robNext);
+		ctx.Equal(200, robbed, "EL_RobAction.CommitRobbery pays the 200 robbery cash");
+		ctx.Equal(210, EL_MoneyUtils.GetCash(character), "robbery payout lands as MoneyStack: cash 210");
 
 		bank = EL_ATMManager.GetInstance().GetAccount(ACCOUNT_UID);
 		ctx.NotNull(bank, "bank account remains reachable after the robbery payout");

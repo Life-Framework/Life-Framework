@@ -81,10 +81,11 @@ Overthrow hard lessons we adopt verbatim:
 
 - `Scripts/Game/Tests/EL_Test_<Area>.c` — one class per subject area. Registration is
   automatic via `tools\cli regen-tests` (derives the registry from the files).
-- `Scripts/Game/Tests/Fixtures/EL_TestFixtures_<Area>.c` — hand-built subjects
-  (probes that expose protected state without calling `Replication.BumpMe`).
-  The validator scans only top-level `Tests/*.c`, so fixtures need no
-  red-proof or registration.
+- `Scripts/Game/Tests/EL_TestCharacterFixture.c` — the one shared fixture today
+  (audited 2026-11-07; there is no `Tests/Fixtures/` folder). It spawns a
+  character at a spawn point, optionally wearing a jacket so MoneyStack has a
+  pocket, and records a FAIL with its reason when any step does not resolve.
+  It declares no `EL_Test` class, so it needs no red-proof or registration.
 - Add the tier comment (`// tier: LOGIC|WORLD|PERSISTENCE`) above each test class.
 
 ---
@@ -99,6 +100,12 @@ Overthrow hard lessons we adopt verbatim:
 > landed as WORLD-tier (`EL_Test_QuantityStack`), because `AddQuantity` routes
 > through `SetQuantity`, which requires an owner with a master `RplComponent`.
 > Remaining ⏳ rows are not yet written.
+>
+> Re-audited 2026-11-07 against the `GetName()` ids in `Scripts/Game/Tests`:
+> rows marked ✅ whose test did not exist were moved back to ⏳, and rows whose
+> test exists under another id now name that id. ✅ means a registered test
+> with that id exists; it does not mean its red-proof was observed (see
+> `validate-tests` placeholder warnings).
 
 Legend: 🎯 = pin test for a known bug (red first), ✅ = contract test (should
 pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
@@ -116,15 +123,15 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 
 | Test | Tier | Asserts |
 | --- | --- | --- |
-| `survival/stats-fresh` | LOGIC ✅ | fresh `EL_SurvivalStats` = 100/100/100 |
-| `survival/stats-clamp` | LOGIC ✅ | Eat/Drink/Heal clamp to [0,100] both directions; `Eat(-50)`→50; `SetHealth(-10)`→0 |
-| `survival/stats-decay` | LOGIC ✅ | `UpdateStats(dt)`: hunger −0.1·dt, thirst −0.15·dt; health −0.05·dt when hunger<20 or thirst<20; health unchanged above 20 |
-| `survival/stats-decay-zero` | LOGIC ✅ | `UpdateStats(0)` no-op; negative dt keeps stats in range |
+| `survival/stats-fresh` | LOGIC ⏳ (no test; was marked ✅) | fresh `EL_SurvivalStats` = 100/100/100 |
+| `survival/stats-clamp` | LOGIC ⏳ (no test; was marked ✅) | Eat/Drink/Heal clamp to [0,100] both directions; `Eat(-50)`→50; `SetHealth(-10)`→0 |
+| `survival/stats-decay` | LOGIC ⏳ (no test; was marked ✅) | `UpdateStats(dt)`: hunger −0.1·dt, thirst −0.15·dt; health −0.05·dt when hunger<20 or thirst<20; health unchanged above 20 |
+| `survival/stats-decay-zero` | LOGIC ⏳ (no test; was marked ✅) | `UpdateStats(0)` no-op; negative dt keeps stats in range |
 | `survival/save-roundtrip` | LOGIC ✅ | 🔒 `EL_SurvivalStatsSaveData` ReadFrom→ApplyTo preserves values and re-clamps corrupt data (hunger=999→100) |
-| `survival/save-equals` | LOGIC ✅ | `Equals` true for identical stats |
-| `account/create` | LOGIC ✅ | `EL_PlayerAccount.Create(uid)` sets persistent id, default faction CIVILIAN, empty characters |
-| `account/character-crud` | LOGIC ✅ | AddCharacter sets active when flagged; GetActiveCharacter returns it; HasCharacters; RemoveCharacter keeps a different active char |
-| `account/active-index` | LOGIC ✅ | 🎯 RemoveCharacter of the active char leaves a stale index (returns a different char); roster/shift pin |
+| `survival/save-equals` | LOGIC ⏳ (no test; was marked ✅) | `Equals` true for identical stats |
+| `account/create` | LOGIC ⏳ | `EL_PlayerAccount.Create(uid)` sets persistent id, default faction CIVILIAN, empty characters (only the default faction and wanted 0 are pinned, inside `account/wanted-clamp`) |
+| `account/character-roster` | LOGIC ✅ | AddCharacter sets active when flagged; GetActiveCharacter returns it; HasCharacters; RemoveCharacter keeps a different active char |
+| `account/active-index-security` | LOGIC ✅ | 🎯 RemoveCharacter of the active char leaves a stale index (returns a different char); roster/shift pin |
 | `account/wanted-clamp` | LOGIC ✅ | SetWantedLevel clamps [0,5]; IncreaseWantedLevel(±) clamps |
 | `account/save-roundtrip` | LOGIC ✅ | 🔒 `EL_PlayerAccountSaveData` ReadFrom→ApplyTo round-trips faction/duty/wanted/characters; `Equals` order-insensitive |
 | `account/manager-cache` | LOGIC ✅ | `EL_PlayerAccountManager` AddToCache/GetFromCache/Reset; unknown uid returns null |
@@ -140,13 +147,14 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 | `bank/account-math` | LOGIC ✅ | `EL_BankAccount`: Deposit(>0) raises balance; Withdraw(>balance)=false and balance unchanged; balance never < 0 via Deposit/Withdraw; Withdraw(<=0)=false |
 | `bank/save-roundtrip` | LOGIC ✅ | 🔒 `EL_BankAccountSaveData` round-trip preserves balance + id; `Equals` ignores id |
 | `atm/manager-registry` | LOGIC ✅ | `EL_ATMManager` AddAccount/CreateAccount/GetAccount; duplicate and empty IDs rejected; Deposit/Withdraw on known/unknown accounts |
+| `atm/request-cash-boundary` | WORLD ✅ | The server seams `RpcAsk_Deposit/Withdraw` run (`EL_CharacterATMComponent.ServeDeposit/ServeWithdraw`) with a real character: depositing 100 with 50 cash is refused and rolled back (cash 50, balance 0); zero/negative/oversized amounts refused; withdraw over the balance refused, balance never negative; a payout the inventory cannot hold is returned to the account. Red-proof PENDING |
 | ~~`bank/component-math`~~ | — | `EL_BankAccountComponent` **deleted 2026-08-30** — no second bank, no entity-bank tests |
 | ~~`bank/component-initial`~~ | — | $20k `OnPostInit` grant **gone** with the deleted entity bank |
-| `shop/buy-math` | WORLD ⏳ | 🎯 **Funds exploit**: buyer with $50 buying a $100 item must FAIL — code fixed (refund + fail) and the money primitive is pinned by `EL_Test_MoneyCash`, but no direct `BuyItem` test yet |
+| `shop/buy-partial-funds` | WORLD ✅ | 🎯 **Funds exploit**: `EL_ShopComponent.BuyItem` on the DebugWorld black market with a buyer holding half the M9 price is refused; cash unchanged; no M9 delivered. Red-proof PENDING (planned: remove the `removed != totalPrice` refusal) |
 | `shop/quantity-gate` | LOGIC ✅ | `IsQuantityAllowed` boundaries; `ComputeTotalPrice` (see `EL_Test_Shop`) |
-| `trader/sell-value` | LOGIC ⏳ | `GetItemValue` scans configured list, 0 for unlisted |
+| `trader/sell-rules` | LOGIC ✅ | `EL_TraderManagerComponent.GetUnitValue`: listed item pays its value, unlisted/empty/no list pays 0 (the sell path refuses 0); `CanAccessBlackMarket`: civilian admitted, police and unverified refused. Replaces `trader/item-config` and `trader/processing-config`, which only read back fields they had set |
 | `trader/sell-pays-cash` | WORLD ⏳ | Selling deletes item and pays `AddCash` (verified in code 2026-08-30); unlisted item rejected with the correct return code |
-| `trader/blackmarket-faction` | WORLD ⏳ | 🎯 Black-market rejects police account (currently fails closed but cache-keyed) |
+| `trader/blackmarket-faction` | WORLD ⏳ | 🎯 Black-market rejects a police seller end to end through `InsertItem` (the decision itself is pinned by `trader/sell-rules`) |
 | `trader/quantity-stacks` | WORLD ⏳ | 🎯 Quantity stack (e.g. 100 rounds) sells for value × stack (code now multiplies by quantity — needs a test) |
 
 ### Gathering, Processing & Resources
@@ -170,21 +178,21 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 
 | Test | Tier | Asserts |
 | --- | --- | --- |
-| `level/threshold-math` | LOGIC ✅ | `GetExperienceForNextLevel` = level×100 |
-| `level/bonus-formulas` | LOGIC ✅ | bonus formulas (1+(level−1)·0.1 / ·0.05) |
-| `level/levelup-cascade` | LOGIC ✅ | CheckLevelUp +250 from level 1 → level 3, XP drained, +2 SP, +2 total SP; `0 ≤ xp < next` invariant |
+| `level/threshold-math` | LOGIC ⏳ (no test; was marked ✅) | `GetExperienceForNextLevel` = level×100 |
+| `level/bonus-formulas` | LOGIC ⏳ (no test; was marked ✅) | bonus formulas (1+(level−1)·0.1 / ·0.05) |
+| `level/levelup-cascade` | LOGIC ⏳ (no test; was marked ✅) | CheckLevelUp +250 from level 1 → level 3, XP drained, +2 SP, +2 total SP; `0 ≤ xp < next` invariant |
 | `level/spend-skillpoints` | LOGIC ⏳ | SpendSkillPoints rejects when SP < amount; deducts exactly; total ≥ spent invariant |
 | `level/setters-unguarded` | LOGIC ⏳ | 🎯 `SetLevel(50)` with 0 XP / `SetSkillPoints > total` — inconsistent state currently possible (decide: guard or accept) |
 | `job/setjob-gating` | WORLD ⏳ | SetJob POLICE requires POLICE_ACCESS license; MEDIC requires MEDIC_ACCESS; same-job no-op |
 | `job/paycheck-math` | LOGIC ⏳ | salary × (1 + (level−1)·0.05), `Math.Round`; interval resets |
 | `job/paycheck-cash` | WORLD ⏳ | Paycheck pays `GiveCash` (verified in code 2026-08-30) — no bank branch remains; short payout logged |
 | `job/per-job-progress` | LOGIC ⏳ | GetAllJobLevels/SetAllJobLevels round-trip; invariant `m_mJobLevels[GetJob()] == GetJobLevel()` |
-| `job/fruitcatcher-cap` | LOGIC ✅ | `EL_GetFruitCatcherRewardCount` clamps to `EL_FRUIT_CATCHER_MAX_SCORE` (see `EL_Test_Security`) |
+| `security/fruitcatcher-reward-clamp` | LOGIC ✅ | `EL_GetFruitCatcherRewardCount` clamps to `EL_FRUIT_CATCHER_MAX_SCORE` (see `EL_Test_Security`) |
 | `job/debug-license` | ✅ (code) | `RpcAsk_DebugGrantLicense` **removed** 2026-08-30 — grep-verified absent from `Scripts/Game` |
 | `license/catalog` | LOGIC ⏳ | Every `EL_ELicenseType` has a config; UNEMPLOYED + FARMER_TOMATO granted initially |
 | `license/purchase-math` | LOGIC ⏳ | `CanAffordLicense` SP ≥ cost; `CanUnlockLicense` gates on owned/config/whitelist/level |
-| `license/purchase-spend` | LOGIC ✅ | `PurchaseLicense` validates requirements before `UnlockLicense` spends SP |
-| `license/whitelist-job` | LOGIC ✅ | police licenses map to POLICE; `MEDIC_ACCESS` maps to MEDIC (`EL_Test_LicenseWhitelist`) |
+| `license/purchase-spend` | LOGIC ⏳ (no test; was marked ✅) | `PurchaseLicense` validates requirements before `UnlockLicense` spends SP |
+| `license/whitelist-job-mapping` | LOGIC ✅ | police licenses map to POLICE; `MEDIC_ACCESS` maps to MEDIC (`EL_Test_LicenseWhitelist`) |
 | `whitelist/basic` | LOGIC ⏳ | IsFactionRestricted (POLICE/MILITARY/MAFIA), IsJobRestricted (POLICE), add/remove/get idempotent. **Blocked: `EL_EFactionType` unresolved — the file cannot compile yet** |
 | `whitelist/persistence` | LOGIC ⏳ | (documented) resets every start — decision to persist is a TODO, not a bug; assert the current in-memory contract only |
 
@@ -192,11 +200,10 @@ pass once framework works), 🔒 = persistence round trip, 👤 = manual only,
 
 | Test | Tier | Asserts |
 | --- | --- | --- |
-| `crime/cooldown` | WORLD | ✅ rob actions blocked during cooldown; allowed after |
-| `crime/civilian-only` | WORLD | ✅ non-civilian cannot rob (null account currently passes — decide intent) |
-| `crime/min-police` | WORLD | ✅ rob requires ≥ configured on-duty police |
-| `crime/rob-reward` | LOGIC ✅ | rob pays cash, never the bank; wanted +1 (see `EL_Test_RobReward` — rewritten 2026-08-30) |
-| `crime/rob-wanted-clamp` | LOGIC ✅ | wanted clamps at 5 across repeated robberies (account cache churn fixed) |
+| `roadmap/fuel` | LOGIC ✅ | Cash till through `EL_RobAction.CommitRobbery` with no character: cooldown refuses and keeps state, civilian-only, minimum police, unconfigured payout refused, wanted clamps at 5 over six robberies, one police alert per accepted robbery |
+| `crime/rob-reward` | WORLD ✅ | `EL_RobAction.CommitRobbery` with a real character: payout lands as MoneyStack, `EL_BankAccount` stays 0, wanted +1, cooldown refuses then clears, a police account is refused with no cash. Rewritten 2026-11-07: the earlier version never called the action. Red-proof PENDING |
+| `crime/rob-weapon-vehicle` | WORLD ✅ | `EL_RobWeaponAction.CommitWeaponRobbery` delivers the weapon and adds wanted 2; `EL_RobVehicleAction.CommitVehicleRobbery` spawns the vehicle and adds wanted 3; stacking clamps at 5; no cash, bank 0; `EL_RobAction.IsFactionAllowedToRob` refuses police and admits a player with no account. Red-proof PENDING |
+| `crime/rob-cooldown-units` | — | 🎯 Not written. `EL_RobWeaponAction` / `EL_RobVehicleAction.CanBePerformedScript` compare world time in **ms** against `m_fCooldown` in **seconds**, so a 120 s cooldown blocks for 120 ms. `EL_RobAction.IsCooldownActive` converts correctly. Fix and pin together |
 | `crime/police-count` | LOGIC | ✅ on-duty police count logic (extract to pure helper if needed) |
 | `police/duty-toggle` | WORLD | ✅ duty flag toggles; police menu requires on-duty police |
 | `police/arrest` | WORLD | 🎯 arrest teleports to jail, sets wanted 0, saves (server-side logic) |
@@ -280,11 +287,12 @@ AGENTS.md:
    removed).
 2. Framework extensions: `ctx.EqualFloat/NotNull/InRange/Pass` — **done**.
    Multi-tick `Tick()` deferred (no async LOGIC cases yet).
-3. `Fixtures/` folder with one fixture file per area — **done**
-   (`EL_TestFixtures_Level.c`); probes expose protected state without
-   `Replication.BumpMe`.
-4. LOGIC-tier pin + contract tests — **done** (survival, account, bank, level,
-   format, licenseplate), all registered, `cli validate` green (compile
+3. `Fixtures/` folder with one fixture file per area — **not done**
+   (audited 2026-11-07: no `Fixtures/` folder and no `EL_TestFixtures_Level.c`
+   exist). The one shared fixture is `Tests/EL_TestCharacterFixture.c`.
+4. LOGIC-tier pin + contract tests — **partly done** (account, bank, format,
+   licenseplate; survival stats and level tests do not exist, only
+   `survival/save-roundtrip`), all registered, `cli validate` green (compile
    check included). See status markers in the tables above.
 5. Prove each can go red (perturb, run, observe, revert) — **pending the
    build baseline**. Every file carries a `// red-proof:` comment describing

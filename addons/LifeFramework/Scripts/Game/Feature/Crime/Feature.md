@@ -23,7 +23,8 @@ isn't today — see current state).
 
 1. Wanted-bump reliability — DONE (verified 2026-08-30): the account cache
    churn was fixed (`SaveAndReleaseAccount` keeps the account resident), so
-   every robbery escalates wanted. Pin test `crime/rob-wanted-clamp`.
+   every robbery escalates wanted. Pin tests `roadmap/fuel` (clamp at 5) and
+   `crime/rob-weapon-vehicle` (mixed robberies clamp at 5).
 2. Robbery payout pays **cash**, never the bank (verified 2026-08-30) — the
    `EL_ATMManager.Deposit` in `EL_RobAction` is gone; the haul is
    `EL_MoneyUtils.AddCash`. Pin test `crime/rob-reward` asserts the bank

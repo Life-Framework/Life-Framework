@@ -1,11 +1,11 @@
-// red-proof: change an expected value (e.g. AddCash return 200 -> 199, or
-// GetCash 50 -> 51) and run `tools\cli test --tier all`. Red run pending:
-// first boot after the EPF dependency removal lands.
+// red-proof: PENDING - not yet observed. The Arma Reforger Server install was being restored
+// when the silent skip was removed, so `tools\cli test --no-build --tier all` could not boot.
+// Planned perturbation: expect GetCash 51 after TakeCash(150). Before this change an unresolved
+// storage manager returned ctx.Pass and skipped every cash assertion while the test read green;
+// the fixture now records a FAIL with its reason instead.
 // tier: WORLD
 class EL_Test_MoneyCash : EL_Test
 {
-	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
-
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
 	{
@@ -15,31 +15,15 @@ class EL_Test_MoneyCash : EL_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(EL_TestContext ctx)
 	{
-		Resource res = Resource.Load(CHARACTER_PREFAB);
-		ctx.True(res.IsValid(), "character prefab loads: " + CHARACTER_PREFAB);
-		if (ctx.FailureCount() > 0)
+		// An unresolved character, storage manager, or jacket is a FAIL with its reason
+		// (EL_TestCharacterFixture), never a pass that skips the cash assertions.
+		IEntity character = EL_TestCharacterFixture.Spawn(ctx, true);
+		if (!character)
 			return;
 
-		EntitySpawnParams params();
-		params.TransformMode = ETransformMode.LOCAL;
+		ctx.Equal(0, EL_MoneyUtils.GetCash(character), "a fresh character carries no cash");
 
-		IEntity character = GetGame().SpawnEntityPrefab(res, GetGame().GetWorld(), params);
-		ctx.True(character != null, "character spawns an entity");
-		if (ctx.FailureCount() > 0)
-			return;
-
-		// The bare character prefab carries SCR_CharacterInventoryStorageComponent,
-		// but a storage manager only resolves once the character's inventory is
-		// wired (spawn/loadout path). Without it GetCash reports -1, which is an
-		// environment gap in the headless boot, not a money-logic regression.
-		InventoryStorageManagerComponent storage = EL_InventoryUtils.GetResponsibleStorageManager(character);
-		if (!storage)
-		{
-			ctx.Pass("character inventory storage not resolvable in headless boot - skipping cash assertions");
-			return;
-		}
-
-		ctx.True(EL_MoneyUtils.AddCash(character, 200) == 200, "AddCash(200) reports 200 added");
+		ctx.Equal(200, EL_MoneyUtils.AddCash(character, 200), "AddCash(200) reports 200 added");
 		ctx.Equal(200, EL_MoneyUtils.GetCash(character), "GetCash reads 200 after AddCash");
 
 		ctx.Equal(150, EL_MoneyUtils.TakeCash(character, 150), "TakeCash(150) reports 150 taken");
@@ -51,5 +35,7 @@ class EL_Test_MoneyCash : EL_Test
 		ctx.Equal(0, EL_MoneyUtils.AddCash(character, -5), "negative AddCash is rejected");
 		ctx.Equal(0, EL_MoneyUtils.AddCash(character, 0), "zero AddCash is rejected");
 		ctx.Equal(0, EL_MoneyUtils.GetCash(character), "GetCash unaffected by rejected AddCash");
+
+		EL_TestCharacterFixture.Delete(character);
 	}
 }

@@ -19,6 +19,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ActionGuards(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AgentHarness(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AreaSpawner(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_ATMBoundary(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_BankAccountMath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_BankSaveRoundtrip(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMManagerRegistry(), EL_TestTier.LOGIC);
@@ -27,7 +28,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ATMManagerGuards(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_BankApplySnapshot(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
-		manager.Register(new EL_Test_CraftingAssets(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_CraftingAssets(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropStages(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Data(), EL_TestTier.WORLD);
@@ -98,8 +99,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_Vehicles(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_VehiclesWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_VehiclesPersistence(), EL_TestTier.PERSISTENCE);
-		manager.Register(new EL_Test_RobReward(), EL_TestTier.LOGIC);
-		manager.Register(new EL_Test_RobRewardWantedClamp(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_RobReward(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_RobWeaponVehicle(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionBitmask(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionNewest(), EL_TestTier.LOGIC);
@@ -109,6 +110,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ShopQuantityGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopTotalPrice(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMAmountGuard(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_ShopBuyPartialFunds(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ShopPriceRuleMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopPriceResolve(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopPriceHidden(), EL_TestTier.LOGIC);
@@ -120,8 +122,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Survival(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_TextLabel(), EL_TestTier.WORLD);
-		manager.Register(new EL_Test_TraderItemConfig(), EL_TestTier.LOGIC);
-		manager.Register(new EL_Test_ProcessingRecipeConfig(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_TraderSellRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitParts(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitQuantity(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitClose(), EL_TestTier.LOGIC);
