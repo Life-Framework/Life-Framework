@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Persists the game-mode persistence store (EL_PersistenceComponent): player accounts, bank
-//! accounts, survival stats, organizations, hideout ownership, and owned vehicle records.
+//! accounts, survival stats, organizations, hideout ownership, owned vehicle records, and serving
+//! jail sentences.
 //!
 //! BINDING. Listed in the ComponentSerializers block of Configs/Systems/Persistence/LifeFramework.conf,
 //! matching the game-mode entity that carries EL_PersistenceComponent.
@@ -10,15 +11,16 @@
 //! EL_OrganizationManager own those caches, not this component. Only survival stats are read
 //! from and written into the component's own map (keyed by character persistence id).
 //! Hideout records live in LF_Hideout. Vehicle records live in EL_VehicleOwnership, keyed by
-//! the lock identifier.
+//! the lock identifier. Jail sentences live in LF_Jail, keyed by the player uid.
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles. The written version is that list's length (4). Serialize walks the whole
-//! list. Deserialize walks the same list and stops at the version stored in the save.
+//! hideout, vehicles, jail. The written version is that list's length (5). Serialize walks the
+//! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
+//! A version 4 save includes vehicles and has no jail sentences.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -46,6 +48,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("organizations");
 		order.Insert("hideout");
 		order.Insert("vehicles");
+		order.Insert("jail");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -60,9 +63,19 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (!persistence)
 			return ESerializeResult.ERROR;
 
+		return SerializeStore(persistence, context);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The whole store write. Public so a test drives the real write path into its own context.
+	//! \param[in] persistence The game-mode persistence component.
+	//! \param[in] context Save context to write into.
+	//! \return OK once every payload is written.
+	static ESerializeResult SerializeStore(notnull EL_PersistenceComponent persistence, notnull BaseSerializationSaveContext context)
+	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 4);
+		context.WriteValue("version", 5);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -97,6 +110,16 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (!persistence)
 			return false;
 
+		return DeserializeStore(persistence, context);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The whole store read. Public so a test drives the real read path from its own context.
+	//! \param[in] persistence The game-mode persistence component.
+	//! \param[in] context Load context to read from.
+	//! \return True when the payload was consumed.
+	static bool DeserializeStore(notnull EL_PersistenceComponent persistence, notnull BaseSerializationLoadContext context)
+	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
 
@@ -148,7 +171,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \param[in] persistence Persistence component that owns survival stats.
 	//! \param[in] context Save context to write into.
 	//! \param[in] payload Name from RegisterPersistencePayloads.
-	protected static void WritePersistencePayload(notnull EL_PersistenceComponent persistence, notnull SaveContext context, string payload)
+	static void WritePersistencePayload(notnull EL_PersistenceComponent persistence, notnull BaseSerializationSaveContext context, string payload)
 	{
 		if (payload == "survival")
 		{
@@ -193,6 +216,13 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 				vehicleRecords = new array<ref EL_VehicleRecord>();
 			context.Write(vehicleRecords);
 		}
+		else if (payload == "jail")
+		{
+			array<ref LF_JailRecord> jailRecords = LF_Jail.ExportAll();
+			if (!jailRecords)
+				jailRecords = new array<ref LF_JailRecord>();
+			context.Write(jailRecords);
+		}
 		else
 		{
 			EL_Debug.Error("Persistence", string.Format("save skipped unknown payload '%1'", payload));
@@ -204,7 +234,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \param[in] persistence Persistence component that owns survival stats.
 	//! \param[in] context Load context to read from.
 	//! \param[in] payload Name from RegisterPersistencePayloads.
-	protected static void ReadPersistencePayload(notnull EL_PersistenceComponent persistence, notnull LoadContext context, string payload)
+	static void ReadPersistencePayload(notnull EL_PersistenceComponent persistence, notnull BaseSerializationLoadContext context, string payload)
 	{
 		if (payload == "survival")
 		{
@@ -273,6 +303,20 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				EL_Debug.Warn("Persistence", "vehicle records failed to read, leaving live vehicles untouched");
+			}
+		}
+		else if (payload == "jail")
+		{
+			// A version 1-4 save never reaches this payload, so live sentences are left alone.
+			array<ref LF_JailRecord> jailRecords = new array<ref LF_JailRecord>();
+			if (context.Read(jailRecords))
+			{
+				LF_Jail.ApplyAll(jailRecords);
+				EL_Debug.Log("Persistence", string.Format("applied %1 jail record(s)", jailRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "jail records failed to read, leaving live sentences untouched");
 			}
 		}
 		else

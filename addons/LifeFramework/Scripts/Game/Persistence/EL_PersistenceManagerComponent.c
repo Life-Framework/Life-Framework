@@ -295,6 +295,60 @@ class EL_PersistenceManagerComponent : ScriptComponent
 		}
 
 		StartAutosaves();
+		CheckSessionContinued();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A dedicated server continues its saved world only when launched with -loadSessionSave:
+	//! the engine then loads the latest save point (or the UUID given) at launch, before the
+	//! game starts. Without the flag the engine starts a NEW playthrough even when save points
+	//! exist, which players see as a full wipe, and the next autosave makes the fresh session
+	//! the latest save. Script does not auto-load here: LoadLatestSave() is a game-state
+	//! transition that boots the world a second time and drops everyone already connected, and
+	//! it would also hijack Workbench play and the test server. This reports the missing flag
+	//! loudly instead. A missing or unreadable save under the flag is engine-handled: the
+	//! session starts fresh and each EL payload that fails to read logs and is left untouched.
+	protected void CheckSessionContinued()
+	{
+		if (RplSession.Mode() != RplMode.Dedicated)
+			return;
+
+		if (IsPlayingLoadedSave())
+		{
+			EL_Debug.Info("Persistence", "session continued from a save point (-loadSessionSave)");
+			return;
+		}
+
+		SaveGameManager manager = GetGame().GetSaveGameManager();
+		if (!manager)
+		{
+			EL_Debug.Error("Persistence", "session start check skipped: no SaveGameManager on the dedicated server");
+			return;
+		}
+
+		manager.GetSaves(manager.GetCurrentMissionResource(), new SaveGameObtainCallback(OnSessionStartSavesObtained));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! SaveGameObtainCallback delegate for CheckSessionContinued().
+	//! \param success Whether the save-list query itself succeeded.
+	//! \param saves Save points found for the current mission, oldest first.
+	protected void OnSessionStartSavesObtained(bool success, array<SaveGame> saves)
+	{
+		int count = 0;
+		if (success && saves)
+			count = saves.Count();
+
+		m_bHasSaveGame = count > 0;
+		m_bSaveCacheSeeded = true;
+
+		if (count == 0)
+		{
+			EL_Debug.Info("Persistence", "fresh session: no save point exists for this mission");
+			return;
+		}
+
+		EL_Debug.Error("Persistence", string.Format("started a NEW session while %1 save point(s) exist: the saved world was not loaded. Launch the dedicated server with -loadSessionSave to continue it (docs/save-system.md)", count));
 	}
 
 	//------------------------------------------------------------------------------------------------

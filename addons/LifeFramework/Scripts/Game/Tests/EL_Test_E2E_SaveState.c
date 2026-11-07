@@ -9,6 +9,9 @@
 // which makes pass 2's loaded-account assertions fail.
 // Red run pending: the two-boot persistence gate is serial-only this session;
 // the mutations above fail on the next persistence-boot run.
+// Jail (added with save version 5), PENDING: dropping order.Insert("jail") from
+// EL_PersistenceComponentSerializer must fail "e2e prisoner is still serving after
+// the save load" in pass 2. Not yet observed: the game data was missing that day.
 
 // tier: PERSISTENCE
 class EL_Test_E2E_SaveStateWrite : EL_Test
@@ -63,6 +66,12 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 			playerAccounts.SaveAndReleaseAccount(account);
 		}
 
+		// A serving sentence rides the "jail" payload (save version 5) across the restart.
+		array<ref LF_JailRecord> sentences = LF_Jail.ExportAll();
+		sentences.Insert(LF_JailRecord.Create(ACCOUNT_UID, 3600, true));
+		LF_Jail.ApplyAll(sentences);
+		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is serving before the save");
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -103,6 +112,9 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 			ctx.Equal(1, cached.GetWantedLevel(), "wanted level 1 after the save load");
 			ctx.Equal(EL_Faction.CIVILIAN, cached.GetFaction(), "account faction CIVILIAN after the save load");
 		}
+
+		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is still serving after the save load");
+		ctx.True(LF_Jail.GetRemaining(ACCOUNT_UID) > 0, "e2e sentence has time left after the save load");
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");

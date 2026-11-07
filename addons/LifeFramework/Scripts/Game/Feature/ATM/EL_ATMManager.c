@@ -23,9 +23,6 @@ class EL_ATMManager : Managed
 	static array<ref EL_BankAccountRecord> ExportAll()
 	{
 		EL_ATMManager instance = GetInstance();
-		if (!instance)
-			instance = new EL_ATMManager();
-
 		array<ref EL_BankAccountRecord> records = new array<ref EL_BankAccountRecord>();
 		foreach (string accountId, EL_BankAccount account : instance.m_mAccounts)
 		{
@@ -45,8 +42,6 @@ class EL_ATMManager : Managed
 	static void ApplyAll(notnull array<ref EL_BankAccountRecord> records)
 	{
 		EL_ATMManager instance = GetInstance();
-		if (!instance)
-			instance = new EL_ATMManager();
 
 		// The save is a complete snapshot. Remove accounts absent from it so a
 		// reduced or empty load cannot resurrect stale balances.
@@ -70,9 +65,6 @@ class EL_ATMManager : Managed
 	static EL_BankAccount GetOrCreate(string accountId)
 	{
 		EL_ATMManager instance = GetInstance();
-		if (!instance)
-			instance = new EL_ATMManager();
-
 		EL_BankAccount account = instance.m_mAccounts.Get(accountId);
 		if (!account)
 			account = instance.CreateAccount(accountId);
@@ -81,6 +73,8 @@ class EL_ATMManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The one bank cache. Created on first use and never replaced: the save load fills this
+	//! instance before any player connects, so a second instance would hide the loaded balances.
 	static EL_ATMManager GetInstance()
 	{
 		if (!s_Instance)
@@ -100,15 +94,19 @@ class EL_ATMManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Does not register itself. Only GetInstance() sets the singleton, so a stray `new`
+	//! cannot replace the cache the save load filled.
 	void EL_ATMManager()
 	{
-		s_Instance = this;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Only the registered instance clears the singleton. Releasing a stray instance must
+	//! not drop the live cache.
 	void ~EL_ATMManager()
 	{
-		s_Instance = null;
+		if (s_Instance == this)
+			s_Instance = null;
 	}
 
 	//------------------------------------------------------------------------------------------------

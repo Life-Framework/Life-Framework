@@ -5,16 +5,10 @@ class EL_GameModeRoleplayClass: SCR_BaseGameModeClass
 
 class EL_GameModeRoleplay: SCR_BaseGameMode
 {
-	protected ref EL_CharacterCreationManager m_CharacterCreationManager;
-	protected ref EL_ATMManager m_ATMManager;
-	protected ref EL_JobManager m_JobManager;
-
 	//! The DebugWorld open-key listener is registered once per local player spawn so the menu
 	//! is reachable in a dev session without a dedicated UI component on the prefab.
 	protected bool m_bDebugMenuListenerRegistered;
 
-	//------------------------------------------------------------------------------------------------
-	// Initialization moved to OnPlayerConnected (lazy init) to avoid constructor overloads
 	//------------------------------------------------------------------------------------------------
 	void ~EL_GameModeRoleplay()
 	{
@@ -90,14 +84,20 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	{
 		super.OnPlayerConnected(playerId);
 
-		// Lazy initialization of managers (create on first use)
-		if (!m_CharacterCreationManager)
-			m_CharacterCreationManager = new EL_CharacterCreationManager();
-		if (!m_ATMManager)
-			m_ATMManager = new EL_ATMManager();
-		if (!m_JobManager)
-			m_JobManager = new EL_JobManager();
+		EL_CharacterCreationManager creation = ResolveConnectManagers();
+		creation.OnPlayerConnected(playerId);
+	}
 
-		m_CharacterCreationManager.OnPlayerConnected(playerId);
+	//------------------------------------------------------------------------------------------------
+	//! The manager half of OnPlayerConnected. Every manager here is a self-owned singleton, so
+	//! this only resolves them through GetInstance() and never constructs one. A `new` here
+	//! replaced the bank cache the save load had already filled, which wiped every balance on
+	//! the first connect after a restart. Public and static so a LOGIC test drives the same path.
+	//! \return The character creation manager the connecting player's flow runs on.
+	static EL_CharacterCreationManager ResolveConnectManagers()
+	{
+		EL_ATMManager.GetInstance();
+		EL_JobManager.GetInstance();
+		return EL_CharacterCreationManager.GetInstance();
 	}
 }

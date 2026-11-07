@@ -59,6 +59,63 @@ without touching code.
   tracked instance's record, idempotent). Diagnostics via
   `GetLastLoadDiagnostic()` / `GetLastReapplyDiagnostic()`.
 - **Wipe**: `WipeSave()` purges every save point of the mission.
+- **Session-start check** (dedicated only): if the session was not launched from
+  a save point and the mission has saves, logs `EL_Debug.Error` ("started a NEW
+  session while N save point(s) exist"). See "Continuing after a restart".
+
+## Continuing after a restart (production launch)
+
+A dedicated server continues its saved world only when it is launched with
+`-loadSessionSave` (bare = the latest save point of the scenario, or a save UUID
+from that save's `meta-info.json`). This is the vanilla engine mechanism: the save
+is loaded at launch, before the game starts, with no extra world transition.
+
+```
+ArmaReforgerServer.exe -config <server.json> -loadSessionSave
+```
+
+Without the flag the engine starts a new playthrough even when saves exist; to
+players that is a full wipe, and the next autosave makes the fresh session the
+latest save. Script deliberately does not auto-load at game start:
+`LoadLatestSave()` is a game-state transition that boots the world a second time,
+drops connected players, and would also hijack Workbench play and the test
+server. Instead `CheckSessionContinued()` reports the missing flag loudly.
+
+Fail-safe: a missing save under the flag is engine-handled and the session starts
+fresh. A save whose EL payload cannot be read logs a `Persistence` warning per
+payload and leaves that feature's live state untouched (`... failed to read,
+leaving live ... untouched`).
+
+## Save payload versions
+
+`EL_PersistenceComponentSerializer` writes `version`, then accounts and bank, then
+the append-only payload list. `tools/validation/validate-persistence-version.ps1`
+enforces that the written version equals the list length and that read and write
+walk the same list (`SerializeStore` / `DeserializeStore`).
+
+| Version | Adds |
+|---|---|
+| 1 | survival |
+| 2 | organizations |
+| 3 | hideout ownership |
+| 4 | owned vehicles |
+| 5 | serving jail sentences (`LF_Jail.ExportAll` / `ApplyAll`) |
+
+An older save stops at its stored version; payloads it does not contain leave the
+live state untouched.
+
+## Restart rules for session state
+
+- Manager singletons (`EL_ATMManager`, `EL_JobManager`,
+  `EL_CharacterCreationManager`) are created only by `GetInstance()`. A
+  constructor never registers itself and a destructor only clears its own
+  registration, so nothing can replace the cache a load filled. (The first
+  connect after a restart used to replace the bank cache and wipe balances.)
+- A restored out-in-world vehicle spawns without a key. The owner re-keys with
+  garage store then retrieve, or buys an extra key.
+- Saved plates are re-reserved in `EL_LicensePlateRegistry` on load.
+- The whitelist file is outside this serializer; an unreadable file blocks
+  `EL_WhitelistManager.Save()` so it is never overwritten.
 
 ## Gates (boundary discipline)
 
@@ -82,6 +139,12 @@ is a bug.
   AUTO wins, manual-only list).
 - `save/manager-wiring` (WORLD): on the DebugWorld test server, the manager
   component is on the game-mode entity and resolved the persistence system.
+- `restart/*` (`EL_Test_RestartSafety.c`): bank cache survives the connect path
+  (LOGIC), jail payload through the real serializer write and read (WORLD),
+  restored vehicle has no ground key (WORLD), plates re-reserved on load (LOGIC),
+  unreadable whitelist file is kept (LOGIC).
+- `e2e/pass1-write-save` / `e2e/pass2-verify-load` (PERSISTENCE, two boots): also
+  carry a jail sentence across the real restart.
 
 The true restart proof (save -> shutdown -> boot -> load) stays a manual server
 pass per AGENTS.md: the EL_Test runner cannot survive a game-state transition.

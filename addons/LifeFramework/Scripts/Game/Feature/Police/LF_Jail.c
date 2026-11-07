@@ -27,7 +27,9 @@
 //! by the configured amount. Early release is refused.
 //!
 //! PERSISTENCE. Export copies the remaining seconds. Apply writes them back.
-//! The key is the player uid, never an EntityID.
+//! The key is the player uid, never an EntityID. ExportAll / ApplyAll are the
+//! "jail" payload of EL_PersistenceComponentSerializer (save version 5+), so a
+//! sentence survives a server restart.
 //------------------------------------------------------------------------------------------------
 class LF_JailRecord : Managed
 {
@@ -426,6 +428,45 @@ class LF_Jail
 
 		EL_Debug.Log("Jail", string.Format("apply-save %1 remaining=%2 serving=%3", record.m_sPlayerUid, record.m_fRemaining, serving));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: every sentence that still has time left, for the game-mode serializer.
+	//! Finished sentences are not saved; a restart must not re-jail a released prisoner.
+	//! \return Records (never null), one per serving prisoner.
+	static array<ref LF_JailRecord> ExportAll()
+	{
+		array<ref LF_JailRecord> records = new array<ref LF_JailRecord>();
+		foreach (string playerUid, LF_JailSentence sentence : Sentences())
+		{
+			if (!sentence || playerUid.IsEmpty())
+				continue;
+
+			if (!sentence.m_bServing || sentence.m_fRemaining <= 0)
+				continue;
+
+			records.Insert(LF_JailRecord.Create(playerUid, sentence.m_fRemaining, sentence.m_bServing));
+		}
+
+		return records;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: the save is a complete snapshot of serving sentences. Live sentences
+	//! absent from it are dropped and every record is applied, so a second pass ends on the
+	//! same state (idempotent on a live session). A bad record is skipped and logged.
+	static void ApplyAll(notnull array<ref LF_JailRecord> records)
+	{
+		Sentences().Clear();
+
+		int applied = 0;
+		foreach (LF_JailRecord record : records)
+		{
+			if (Apply(record))
+				applied++;
+		}
+
+		EL_Debug.Log("Jail", string.Format("apply-save restored %1 sentence(s)", applied));
 	}
 
 	//------------------------------------------------------------------------------------------------

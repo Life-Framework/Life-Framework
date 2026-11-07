@@ -1,6 +1,7 @@
 class EL_CharacterCreationManager : Managed
 {
-	protected static EL_CharacterCreationManager s_Instance;
+	//! Strong ref: the singleton owns itself (the game mode keeps no field for it).
+	protected static ref EL_CharacterCreationManager s_Instance;
 
 	protected const int FLOW_POLL_DELAY_MS = 100;
 
@@ -17,19 +18,23 @@ class EL_CharacterCreationManager : Managed
 	//------------------------------------------------------------------------------------------------
 	static EL_CharacterCreationManager GetInstance()
 	{
+		if (!s_Instance)
+			s_Instance = new EL_CharacterCreationManager();
+
 		return s_Instance;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Does not register itself; only GetInstance() sets the singleton.
 	void EL_CharacterCreationManager()
 	{
-		s_Instance = this;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void ~EL_CharacterCreationManager()
 	{
-		s_Instance = null;
+		if (s_Instance == this)
+			s_Instance = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
