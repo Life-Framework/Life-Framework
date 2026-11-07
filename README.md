@@ -17,6 +17,7 @@ native assets.
 
 | | |
 | --- | --- |
+| **Direction** | [Where we are going and why](docs/direction.md) |
 | **Get started** | [Development setup](docs/setup.md) |
 | **Contribute** | [CONTRIBUTING.md](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md) |
 | **Engineering** | [AGENTS.md](AGENTS.md) · [Docs index](docs/README.md) |
