@@ -16,7 +16,8 @@ class EL_CharacterShopComponent : ScriptComponent
 
 	//! Upper bound on one buy or sell request. Every bought unit is spawned and every sold unit is
 	//! deleted, so an unbounded quantity is an unbounded entity loop on the server.
-	protected const int MAX_TRANSACTION_QUANTITY = 99;
+	//! The shop menu clamps a held-stack sale to it, so it is public.
+	static const int MAX_TRANSACTION_QUANTITY = 99;
 
 	//------------------------------------------------------------------------------------------------
 	//! Buy items from a shop for the owning player.
@@ -61,7 +62,10 @@ class EL_CharacterShopComponent : ScriptComponent
 		if (!Replication.IsServer())
 			return;
 		if (quantity < 1 || quantity > MAX_TRANSACTION_QUANTITY)
+		{
+			EL_Debug.Log("Shop", string.Format("buy rejected (quantity %1 outside 1..%2) item=%3", quantity, MAX_TRANSACTION_QUANTITY, prefab));
 			return;
+		}
 
 		IEntity player = GetOwner();
 		if (!player)
@@ -96,7 +100,10 @@ class EL_CharacterShopComponent : ScriptComponent
 		if (!Replication.IsServer())
 			return;
 		if (quantity < 1 || quantity > MAX_TRANSACTION_QUANTITY)
+		{
+			EL_Debug.Log("Shop", string.Format("sell rejected (quantity %1 outside 1..%2) item=%3", quantity, MAX_TRANSACTION_QUANTITY, prefab));
 			return;
+		}
 
 		IEntity player = GetOwner();
 		if (!player)

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Ported from https://github.com/thebonbon/EveronLife branch dedicated_server.
-// OOC channel, admin channel styling, VoN display-name suppression, and
-// ArmaVision limited to administrators. The commented-out kill log, item log,
-// and map icons on that branch are not ported.
+// OOC channel and admin channel styling. The commented-out kill log, item log,
+// map icons, VoN display-name hiding, and ArmaVision gating on that branch are
+// not ported.
 
 enum LF_ERoleplayChatStyle
 {
@@ -27,20 +27,6 @@ class LF_RoleplayChatStyle
 
 class LF_RoleplayChat
 {
-	//------------------------------------------------------------------------------------------------
-	//! VoN overlay keeps the incoming-name widget hidden.
-	static bool ShowsVonDisplayName()
-	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! ArmaVision (editor PHOTO mode) is limited to administrators.
-	static bool ArmaVisionAllowed(bool isAdministrator)
-	{
-		return isAdministrator;
-	}
-
 	//------------------------------------------------------------------------------------------------
 	//! Channel class and name decide the roleplay style. OOC is the BaseChatChannel
 	//! named OOCGlobal. Admin styling follows AdminChatChannel.

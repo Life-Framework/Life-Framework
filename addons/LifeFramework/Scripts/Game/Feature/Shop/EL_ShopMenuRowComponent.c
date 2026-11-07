@@ -54,8 +54,11 @@ class EL_ShopMenuRowComponent : ScriptedWidgetComponent
 		if (m_wSellPrice)
 		{
 			int sellShown = item.m_iSellPrice;
-			if (ownedCount > 0)
-				sellShown = EL_ShopRules.StackTradeTotal(item.m_iSellPrice, ownedCount);
+			int sellCount = ownedCount;
+			if (sellCount > EL_CharacterShopComponent.MAX_TRANSACTION_QUANTITY)
+				sellCount = EL_CharacterShopComponent.MAX_TRANSACTION_QUANTITY;
+			if (sellCount > 0)
+				sellShown = EL_ShopRules.StackTradeTotal(item.m_iSellPrice, sellCount);
 			m_wSellPrice.SetText(EL_MoneyFormat.FormatMoney(sellShown));
 		}
 	}

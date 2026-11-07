@@ -30,8 +30,8 @@ Rung 4, accepted. Channels exist for roleplay and admin
 - `EL_ChatManager` (`Feature/Chat/`) — hides chat until a player opens it.
 - `AdminChatChannel` — admin-only channel, including `!wadd`.
 - `LF_RoleplayChat` — OOC (`OOCGlobal`, prefix `/ooc`), OOC Local (`/oocl`),
-  Twatter global, and admin styling (`/admin`). VoN display names stay hidden.
-  ArmaVision (editor photo mode) is administrator-only.
+  Twatter global, and admin styling (`/admin`). VoN display-name hiding and
+  ArmaVision admin gating were not ported.
 - UI: `Assets/UI/Chat/`, `Configs/Chat/`, `UI/Chat/EL_ChatPanel`.
 
 ## Dependencies

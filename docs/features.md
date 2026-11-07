@@ -187,6 +187,9 @@
   only, price × quantity, `EL_MoneyUtils.RemoveAmount`, refund on
   inventory-full. A sell or buy of a stack pays or gives one unit per
   quantity through `EL_ShopRules.StackTradeTotal` (verified 2026-10-11).
+  The menu sells at most 99 of a held stack per click, the server cap
+  `EL_CharacterShopComponent.MAX_TRANSACTION_QUANTITY`; a request outside
+  1..99 is refused and logged. (2026-11-07)
 - ✅ **Money correctness** (verified 2026-08-30): the partial-funds exploit is
   closed — `BuyItem` compares the actual removed amount against the total and
   refunds only what was removed before failing (a $50 buyer cannot buy a $100
@@ -731,7 +734,9 @@
   `EL_OpenDebugMenu`); movement actions are refused.
 - ✅ `stand` is the placement exception: the server moves the local character
   beside a named entity. The poll does not start on a dedicated server
-  (`RplMode.Dedicated`). On a client it retries until a local controller exists,
+  (`RplMode.Dedicated`), and on a dedicated server the `stand`, `pose`, and
+  `use` RPCs are refused and logged, so a client cannot teleport or reach past
+  action range there (2026-11-07). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
 - ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
   alone. A world shot teleports the character to the camera offset (default

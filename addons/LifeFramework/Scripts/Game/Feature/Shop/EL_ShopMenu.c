@@ -224,6 +224,10 @@ class EL_ShopMenu : ChimeraMenuBase
 		if (heldCounts.Find(item.m_ItemPrefab, held) && held > 0)
 			quantity = held;
 
+		// The server refuses a request above its cap, so a larger stack sells in capped parts.
+		if (quantity > EL_CharacterShopComponent.MAX_TRANSACTION_QUANTITY)
+			quantity = EL_CharacterShopComponent.MAX_TRANSACTION_QUANTITY;
+
 		m_CharacterShop.RequestSell(m_ShopRplId, item.m_ItemPrefab, quantity);
 	}
 

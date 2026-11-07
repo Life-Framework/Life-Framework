@@ -37,9 +37,5 @@ class EL_Test_ChatChannels : EL_Test
 
 		ctx.True(LF_RoleplayChat.ResolveStyle(BaseChatChannel, "OOC") == LF_ERoleplayChatStyle.SYSTEM, "ooc requires the OOCGlobal channel name");
 		ctx.True(LF_RoleplayChat.ResolveStyle(AdminChatChannel, "Global") == LF_ERoleplayChatStyle.ADMIN, "admin styling follows the channel class");
-
-		ctx.False(LF_RoleplayChat.ShowsVonDisplayName(), "VoN does not show display names");
-		ctx.False(LF_RoleplayChat.ArmaVisionAllowed(false), "ArmaVision is closed to non-admins");
-		ctx.True(LF_RoleplayChat.ArmaVisionAllowed(true), "ArmaVision is open to admins");
 	}
 }

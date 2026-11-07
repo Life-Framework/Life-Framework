@@ -7,6 +7,19 @@
 modded class SCR_ChimeraCharacter
 {
 	//------------------------------------------------------------------------------------------------
+	//! The harness drives a rendering play session only. On a dedicated server
+	//! a client could otherwise teleport itself or fire an action out of reach,
+	//! so the server refuses every harness request there.
+	protected bool EL_HarnessRefused(string request)
+	{
+		if (RplSession.Mode() != RplMode.Dedicated)
+			return false;
+
+		EL_Debug.Warn("AgentHarness", string.Format("%1 refused: harness requests are not served on a dedicated server", request));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \param entityName World entity to stand beside. Resolved on the server.
 	void EL_AskHarnessStand(string entityName)
 	{
@@ -17,6 +30,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_HarnessStand(string entityName)
 	{
+		if (EL_HarnessRefused("stand"))
+			return;
+
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return;
@@ -52,6 +68,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_HarnessPose(float x, float y, float z, float yaw, float pitch)
 	{
+		if (EL_HarnessRefused("pose"))
+			return;
+
 		EL_ApplyHarnessPose(x, y, z, yaw, pitch);
 	}
 
@@ -84,6 +103,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_HarnessUse(int commandId, string className, string entityName)
 	{
+		if (EL_HarnessRefused("use"))
+			return;
+
 		EL_AgentHarness.ApplyUse(this, commandId, className, entityName);
 	}
 }

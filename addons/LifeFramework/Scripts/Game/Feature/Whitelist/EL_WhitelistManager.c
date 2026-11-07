@@ -135,7 +135,7 @@ class EL_WhitelistManager
 			return false; // Already whitelisted
 		
 		playerFactions.Insert(factionType);
-		Print(string.Format("[EL_WhitelistManager] Added faction whitelist: %1 -> %2", playerUID, factionType), LogLevel.NORMAL);
+		EL_Debug.Log("Whitelist", string.Format("Added faction whitelist: %1 -> %2", playerUID, factionType));
 		Save();
 		return true;
 	}
@@ -158,7 +158,7 @@ class EL_WhitelistManager
 			return false; // Already whitelisted
 		
 		playerJobs.Insert(jobType);
-		Print(string.Format("[EL_WhitelistManager] Added job whitelist: %1 -> %2", playerUID, jobType), LogLevel.NORMAL);
+		EL_Debug.Log("Whitelist", string.Format("Added job whitelist: %1 -> %2", playerUID, jobType));
 		Save();
 		return true;
 	}
@@ -179,7 +179,7 @@ class EL_WhitelistManager
 			return false;
 		
 		playerFactions.Remove(index);
-		Print(string.Format("[EL_WhitelistManager] Removed faction whitelist: %1 -> %2", playerUID, factionType), LogLevel.NORMAL);
+		EL_Debug.Log("Whitelist", string.Format("Removed faction whitelist: %1 -> %2", playerUID, factionType));
 		Save();
 		return true;
 	}
@@ -200,7 +200,7 @@ class EL_WhitelistManager
 			return false;
 		
 		playerJobs.Remove(index);
-		Print(string.Format("[EL_WhitelistManager] Removed job whitelist: %1 -> %2", playerUID, jobType), LogLevel.NORMAL);
+		EL_Debug.Log("Whitelist", string.Format("Removed job whitelist: %1 -> %2", playerUID, jobType));
 		Save();
 		return true;
 	}
