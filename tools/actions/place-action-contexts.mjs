@@ -15,10 +15,23 @@
 
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { PakVirtualFS } from "../mcp/enfusion-mcp-bk/dist/pak/vfs.js";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+
+// tools/mcp/ is git-ignored and only installed in the main checkout. A worktree
+// borrows the main checkout's build of the pak reader.
+function mcpVfsPath() {
+  const rel = join("tools", "mcp", "enfusion-mcp-bk", "dist", "pak", "vfs.js");
+  const local = join(ROOT, rel);
+  if (existsSync(local)) return local;
+  const res = spawnSync("git", ["-C", ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir"], { encoding: "utf8" });
+  const main = res.status === 0 ? join(dirname(res.stdout.trim()), rel) : "";
+  if (main && existsSync(main)) return main;
+  throw new Error(`enfusion-mcp is not built (${local}); run tools\cli mcp install in the main checkout`);
+}
+const { PakVirtualFS } = await import(pathToFileURL(mcpVfsPath()).href);
 const DOOR_RADIUS = 0.65;
 const TALL_METERS = 1.5;
 const FALLBACK_CONTEXT = "50888D37F529F720";
