@@ -143,7 +143,10 @@ class LF_Breach
 	//! leaves it open until Repair. Wanted and the police notify fire once, here, including
 	//! when the fuse is still running. Returns false when the target is not configured, a
 	//! charge is already on it, the player id is empty, or the charge prefab does not load.
-	static bool Arm(string targetId, string playerUid)
+	//! \param chargeCarrier The player entity placing the charge. Every player-facing action
+	//! passes it: one DemoBlock charge is taken from that inventory before anything happens,
+	//! and Arm refuses when there is none. Null is the server-scripted arm (tests, events).
+	static bool Arm(string targetId, string playerUid, IEntity chargeCarrier = null)
 	{
 		if (targetId.IsEmpty() || playerUid.IsEmpty())
 		{
@@ -173,6 +176,9 @@ class LF_Breach
 			EL_Debug.Error("Breach", string.Format("arm refused: no account for %1", playerUid));
 			return false;
 		}
+
+		if (chargeCarrier && !TakeCharge(chargeCarrier, targetId))
+			return false;
 
 		account.IncreaseWantedLevel(1);
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
@@ -351,6 +357,37 @@ class LF_Breach
 		target.m_bChargeArmed = false;
 		WriteLock(target.m_sTargetId, false);
 		EL_Debug.Log("Breach", string.Format("lock opened: %1", target.m_sTargetId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when user carries at least one breach charge.
+	static bool HasCharge(IEntity user)
+	{
+		if (!user)
+			return false;
+
+		return EL_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes one breach charge from user. Logs and refuses when there is none.
+	protected static bool TakeCharge(IEntity user, string targetId)
+	{
+		if (!HasCharge(user))
+		{
+			EL_Debug.Warn("Breach", string.Format("arm refused: %1 carries no breach charge", targetId));
+			return false;
+		}
+
+		int removed = EL_InventoryUtils.RemoveAmount(user, CHARGE_PREFAB, 1);
+		if (removed != 1)
+		{
+			EL_Debug.Error("Breach", string.Format("arm refused: %1 charge could not be taken (removed %2)", targetId, removed));
+			return false;
+		}
+
+		EL_Debug.Log("Breach", string.Format("charge used on %1", targetId));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

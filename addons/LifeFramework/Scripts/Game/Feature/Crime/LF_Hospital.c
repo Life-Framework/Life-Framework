@@ -308,7 +308,7 @@ class LF_Hospital
 
 	//------------------------------------------------------------------------------------------------
 	//! Arms the shared breach. When the lock is open afterwards, spawns the loot once.
-	static bool BreachCabinet(string targetId, string playerUid)
+	static bool BreachCabinet(string targetId, string playerUid, IEntity user = null)
 	{
 		if (targetId.IsEmpty() || playerUid.IsEmpty())
 		{
@@ -323,7 +323,7 @@ class LF_Hospital
 			return false;
 		}
 
-		if (!LF_Breach.Arm(targetId, playerUid))
+		if (!LF_Breach.Arm(targetId, playerUid, user))
 			return false;
 
 		if (LF_Breach.IsOpen(targetId))

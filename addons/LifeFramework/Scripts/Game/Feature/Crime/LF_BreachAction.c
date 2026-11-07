@@ -26,6 +26,12 @@ class LF_BreachArmAction : ScriptedUserAction
 			return false;
 		}
 
+		if (!LF_Breach.HasCharge(user))
+		{
+			SetCannotPerformReason("#EL-Breach_NeedCharge");
+			return false;
+		}
+
 		return true;
 	}
 
@@ -49,7 +55,7 @@ class LF_BreachArmAction : ScriptedUserAction
 			return;
 		}
 
-		LF_Breach.Arm(target.GetTargetId(), playerUid);
+		LF_Breach.Arm(target.GetTargetId(), playerUid, pUserEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------

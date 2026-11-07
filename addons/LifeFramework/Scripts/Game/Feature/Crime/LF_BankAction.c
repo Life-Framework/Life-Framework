@@ -50,7 +50,7 @@ class LF_BankRobAction : ScriptedUserAction
 			return;
 		}
 
-		LF_Bank.Rob(vault.GetVaultId(), playerUid);
+		LF_Bank.Rob(vault.GetVaultId(), playerUid, pUserEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------
