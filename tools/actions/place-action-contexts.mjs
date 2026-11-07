@@ -29,7 +29,7 @@ function mcpVfsPath() {
   const res = spawnSync("git", ["-C", ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir"], { encoding: "utf8" });
   const main = res.status === 0 ? join(dirname(res.stdout.trim()), rel) : "";
   if (main && existsSync(main)) return main;
-  throw new Error(`enfusion-mcp is not built (${local}); run tools\cli mcp install in the main checkout`);
+  throw new Error(`enfusion-mcp is not built (${local}); run tools/cli mcp install in the main checkout`);
 }
 const { PakVirtualFS } = await import(pathToFileURL(mcpVfsPath()).href);
 const DOOR_RADIUS = 0.65;
