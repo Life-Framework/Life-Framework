@@ -6,7 +6,7 @@ class EL_DutyAction : ScriptedUserAction
 		EL_PlayerAccount account = GetPlayerAccount(user);
 		if (!account || account.GetFaction() != EL_Faction.POLICE)
 		{
-			SetCannotPerformReason("Only police can toggle duty");
+			SetCannotPerformReason("#LF-Duty_PoliceOnly");
 			return false;
 		}
 		return true;
@@ -27,14 +27,21 @@ class EL_DutyAction : ScriptedUserAction
 		LF_PoliceRanks.OnDutyChanged(account, newDuty);
 
 		string status;
+		string statusKey;
 		if (newDuty)
+		{
 			status = "on duty";
+			statusKey = "#LF-Duty_OnDuty";
+		}
 		else
+		{
 			status = "off duty";
+			statusKey = "#LF-Duty_OffDuty";
+		}
 
 		EL_Debug.Log("Police", string.Format("duty toggled -> %1 (player %2)", status, pUserEntity));
 
-		EL_Utils.Notify(WidgetManager.Translate("#EL-Duty_Status_Change", status), "#EL-Duty_Status", 3.0);
+		EL_Utils.Notify(WidgetManager.Translate("#EL-Duty_Status_Change", WidgetManager.Translate(statusKey)), "#EL-Duty_Status", 3.0);
 		
 		// Save account
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
@@ -58,9 +65,9 @@ class EL_DutyAction : ScriptedUserAction
 		if (account)
 		{
 			if (account.IsOnDuty())
-				outName = "Go Off Duty";
+				outName = "#LF-Duty_SignOff";
 			else
-				outName = "Go On Duty";
+				outName = "#LF-Duty_SignOn";
 			return true;
 		}
 		return false;

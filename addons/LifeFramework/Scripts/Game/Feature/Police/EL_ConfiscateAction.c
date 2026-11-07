@@ -9,7 +9,7 @@ class EL_ConfiscateAction : ScriptedUserAction
 		EL_PlayerAccount account = GetPlayerAccount(user);
 		if (!account || account.GetFaction() != EL_Faction.POLICE || !account.IsOnDuty())
 		{
-			SetCannotPerformReason("Only on-duty police can confiscate");
+			SetCannotPerformReason("#LF-Confiscate_PoliceOnly");
 			return false;
 		}
 
@@ -17,7 +17,7 @@ class EL_ConfiscateAction : ScriptedUserAction
 		IEntity target = GetNearestWantedPlayer(user);
 		if (!target)
 		{
-			SetCannotPerformReason("No wanted player nearby");
+			SetCannotPerformReason("#LF-Confiscate_NoWanted");
 			return false;
 		}
 

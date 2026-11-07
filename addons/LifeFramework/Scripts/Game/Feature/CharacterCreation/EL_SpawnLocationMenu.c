@@ -7,6 +7,7 @@ class EL_SpawnLocationMenu
 	protected Widget m_wRoot;
 	protected PlayerController m_PlayerController;
 	protected EL_Faction m_eFaction;
+	protected ref LF_UIMenuInput m_Input = new LF_UIMenuInput();
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The controller, or null when the layout failed to load.
@@ -61,6 +62,20 @@ class EL_SpawnLocationMenu
 		else
 			EL_Debug.Error("SpawnMenu", "button not found in layout: OutpostButton");
 
+		// Pad: focus starts on the first visible location; hidden pairs are skipped by the ring.
+		array<Widget> focus = {};
+		if (civilian)
+		{
+			focus.Insert(m_wRoot.FindAnyWidget("TownButton"));
+			focus.Insert(m_wRoot.FindAnyWidget("MineButton"));
+		}
+		else
+		{
+			focus.Insert(m_wRoot.FindAnyWidget("StationButton"));
+			focus.Insert(m_wRoot.FindAnyWidget("OutpostButton"));
+		}
+		m_Input.SetFocusOrder(focus);
+
 		GetGame().GetCallqueue().CallLater(ActivateMenuContext, 0, true);
 
 		EL_Debug.Info("SpawnMenu", "open for faction " + typename.EnumToString(EL_Faction, faction));
@@ -78,9 +93,31 @@ class EL_SpawnLocationMenu
 	//------------------------------------------------------------------------------------------------
 	protected void ActivateMenuContext()
 	{
-		InputManager inputManager = GetGame().GetInputManager();
-		if (inputManager)
-			inputManager.ActivateContext("MenuContext");
+		// Tick activates MenuContext (+ MenuWithEditorContext for MenuUp/MenuDown) and moves focus.
+		// MenuBack is ignored: this choice is mandatory.
+		if (m_Input.Tick() != LF_EUIMenuInput.SELECT)
+			return;
+
+		// Pressing can Close, which removes this repeating call; never do that from inside it.
+		GetGame().GetCallqueue().CallLater(PressWidget, 0, false, m_Input.GetSelected());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PressWidget(Widget pressed)
+	{
+		// Already closed by a click on the same press.
+		if (!m_wRoot || !pressed)
+			return;
+
+		string name = pressed.GetName();
+		if (name == "TownButton")
+			OnTownClicked();
+		else if (name == "MineButton")
+			OnMineClicked();
+		else if (name == "StationButton")
+			OnStationClicked();
+		else if (name == "OutpostButton")
+			OnOutpostClicked();
 	}
 
 	//------------------------------------------------------------------------------------------------

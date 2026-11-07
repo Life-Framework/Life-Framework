@@ -14,6 +14,7 @@ class EL_DeathScreen
 
 	protected Widget m_wRoot;
 	protected PlayerController m_PlayerController;
+	protected ref LF_UIMenuInput m_Input = new LF_UIMenuInput();
 
 	//------------------------------------------------------------------------------------------------
 	static EL_DeathScreen GetInstance()
@@ -58,6 +59,11 @@ class EL_DeathScreen
 		else
 			EL_Debug.Error("Death", "death screen loaded but the RespawnButton is missing");
 
+		// Pad: Respawn has focus at once, so MenuSelect respawns.
+		array<Widget> focus = {};
+		focus.Insert(m_wRoot.FindAnyWidget("RespawnButton"));
+		m_Input.SetFocusOrder(focus);
+
 		// 0ms delay = every frame; removed again in Close().
 		GetGame().GetCallqueue().CallLater(ActivateMenuContext, 0, true);
 
@@ -68,9 +74,24 @@ class EL_DeathScreen
 	//------------------------------------------------------------------------------------------------
 	protected void ActivateMenuContext()
 	{
-		InputManager inputManager = GetGame().GetInputManager();
-		if (inputManager)
-			inputManager.ActivateContext("MenuContext");
+		// Tick activates MenuContext (+ MenuWithEditorContext for MenuUp/MenuDown) and moves focus.
+		// MenuBack is ignored: this choice is mandatory.
+		if (m_Input.Tick() != LF_EUIMenuInput.SELECT)
+			return;
+
+		// Pressing can Close, which removes this repeating call; never do that from inside it.
+		GetGame().GetCallqueue().CallLater(PressWidget, 0, false, m_Input.GetSelected());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PressWidget(Widget pressed)
+	{
+		// Already closed by a click on the same press.
+		if (!m_wRoot || !pressed)
+			return;
+
+		if (pressed.GetName() == "RespawnButton")
+			OnRespawnClicked();
 	}
 
 	//------------------------------------------------------------------------------------------------

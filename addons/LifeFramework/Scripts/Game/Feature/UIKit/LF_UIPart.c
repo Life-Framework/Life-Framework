@@ -9,7 +9,8 @@ enum LF_EUIPartKind
 	BUTTON,
 	CLOSE,
 	STATUS,
-	QUANTITY
+	QUANTITY,
+	LIST
 }
 
 class LF_UIPart
@@ -21,6 +22,9 @@ class LF_UIPart
 	protected string m_sAction;
 	protected int m_iTotal;
 	protected int m_iTake;
+	//! LIST: owning list of a row part, or the row names of a list part, in display order.
+	protected string m_sList;
+	protected ref array<string> m_aRows = {};
 
 	//------------------------------------------------------------------------------------------------
 	static LF_UIPart Create(LF_EUIPartKind kind, string name, string text)
@@ -48,6 +52,31 @@ class LF_UIPart
 		part.m_iTotal = total;
 		part.m_iTake = take;
 		return part;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A scrolling list. Rows are added after Open with LF_UIScreen.AddListRow.
+	static LF_UIPart CreateList(string name)
+	{
+		return Create(LF_EUIPartKind.LIST, name, string.Empty);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetList()
+	{
+		return m_sList;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetList(string list)
+	{
+		m_sList = list;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<string> GetRows()
+	{
+		return m_aRows;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -148,6 +177,9 @@ class LF_UIPart
 
 		if (kind == LF_EUIPartKind.QUANTITY)
 			return LF_UITheme.QUANTITY_LAYOUT;
+
+		if (kind == LF_EUIPartKind.LIST)
+			return LF_UITheme.LIST_LAYOUT;
 
 		return string.Empty;
 	}

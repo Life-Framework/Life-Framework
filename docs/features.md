@@ -580,6 +580,16 @@
 ### `EL_NotificationManagerComponent` — `Feature/Notifications/`
 - ✅ Server→client notification broadcast with toast renderer; `SendToPlayer`/
   `SendToJob`/`SendToAll` + static `NotifyPlayer`/`NotifyJob`/`NotifyAll`.
+  Before 2026-11-07 the toast layout
+  `{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout` did not
+  exist, so every toast (fines, arrests, rank denials, lot, lock, jail) failed silently. It
+  now exists: a paper slip in the UI kit palette with a stamp-ink type strip (`Background`,
+  `ColorStrip`, `Icon`, `Title`, `Message`, `EL_NotificationToastUI` on the root).
+  Slips that overlap in time stack downwards. Timing reads the real clock
+  (`System.GetTickCount`), not an assumed 16 ms frame. `notifications/toast-layout` (WORLD)
+  instantiates the layout on the dedicated server and checks every named widget;
+  `notifications/toast-timing` (LOGIC) checks show/fade/remove. On-screen look is
+  visual-only: manual check pending (verified 2026-11-07)
 - ✅ **Targeted delivery fixed** (verified 2026-08-30): `RpcDo_ShowNotification`
   is `RplRcver.Broadcast` with a client-side `playerId` filter (`-1` = all),
   plus a direct call for the listen-server host so the authority sees its own
@@ -649,6 +659,8 @@
 
 ### UI kit — `Scripts/Game/Feature/UIKit/`
 - Post-release polish. `LF_UITheme` holds the 1989 type, padding, and paper/metal colors. `LF_UIScreen` assembles a frame, title, body line, WLib edit box (ink, no text outline or shadow; the box is not a `TextWidget`), list row, status row, quantity slider, and pause-menu button with `WorkspaceWidget.CreateWidgets`, wires `SCR_ButtonTextComponent`, and activates `MenuContext` every frame (`MenuTextEditContext` while an edit box is focused, `MenuWithEditorContext` so a pad can move). Close removes the widgets and that call. It does not use MenuManager.
+- Input (verified 2026-11-07): focus lands on the first non-field control at open, so MenuSelect works without MenuDown first. MenuBack closes. `GetOnButton()` hands the feature the part name of a pressed BUTTON, STATUS action, or list row action. `GetOnClosed()` fires once for any close. A LIST part (`LF_UIList.layout`, `AddListRow`/`ClearList`) scrolls to the focused row. Close defers the removal of its per-frame call by one tick, because it can run inside that call. `ui-kit/initial-focus` and `ui-kit/button-invoker` (LOGIC) cover the pure parts; the on-screen focus ring is visual-only.
+- `LF_UIMenuInput` gives the remaining MenuManager menus (ATM, shop, quest, police) and the workspace pickers (faction, spawn location, death, organization) the same input: MenuContext plus MenuWithEditorContext every frame, MenuUp/MenuDown focus ring, MenuSelect on the focused button, MenuBack closes (not on the mandatory faction, spawn and death pickers), and a 150 ms debounce so a click and the poll do not double-fire. The ATM has a Close button and labelled Deposit/Withdraw buttons, tells the player when the amount is blank or zero, and names deposit and withdraw refusals separately. The shop and quest Close buttons work. Shop and ATM were not migrated onto the kit: `EL_CharacterATMComponent`, `EL_ShopComponent` and `EL_CharacterShopComponent` find these menus by MenuManager preset, and moving them would rewrite that lookup in files other work owns. The shop, quest, organization desk, and police menu actions are `HasLocalEffectOnlyScript`, so the menu opens only on the acting client.
 - A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. It reuses a play session that is already up. Faction, character creation, death, shop, ATM, quest, police, and spawn menus were not migrated.
 
 ## Quests
@@ -663,7 +675,11 @@
 ### Layouts (loaded by `EL_Test_Data`)
 - ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,
   `EL_SurvivalHUD`, `FactionSelectionMenu`, `ShopMenu`, `PoliceMenu`,
-  `DeathScreen` load (WORLD tier).
+  `DeathScreen` load (WORLD tier). The `SurvivalHUD` menu preset and its
+  `EL_SurvivalHUD` class were never opened and are removed (2026-11-07); `EL_BetaHud`
+  draws the gauges. The layout stays only as this load fixture. The unused
+  falling-fruit widget (`EL_FallingFruit`, which loaded a layout that never existed) is
+  removed; `EHarvestJobType` moved to `Feature/Jobs/EL_HarvestJobType.c`.
 - ✅ `EL_DebugMenu` is a development menu opened with F10 (or its rebind),
   with server-routed controls for cash, wanted state, faction, jobs, survival,
   XP, and skill points. Actions affect only the requesting player's state
@@ -671,8 +687,11 @@
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
-  — the player sees raw keys. Spanish literals throughout jobs/licenses/
-  notifications. Violates the AGENTS.md localization contract.
+  — the player sees raw keys. Spanish literals in notifications remain. The job,
+  level and licence texts, the duty, robbery, confiscate, gather and process action
+  texts, and the DebugWorld shop names moved to `#LF-*` keys on 2026-11-07, worded as
+  employment rather than XP. Violates the AGENTS.md localization contract until the
+  notification prefixes move too.
 
 ## DebugWorld coverage
 

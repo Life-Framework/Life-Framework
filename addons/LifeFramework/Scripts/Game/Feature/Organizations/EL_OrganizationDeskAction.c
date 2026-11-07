@@ -23,6 +23,15 @@ class EL_OrganizationDeskAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The menu is local UI: run PerformAction only on the acting client. Without this a listen
+	//! host also runs it for every other player and opens the menu on the host screen. Server
+	//! work goes through the menu RPCs, which the server validates.
+	override bool HasLocalEffectOnlyScript()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!pUserEntity)

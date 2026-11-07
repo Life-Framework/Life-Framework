@@ -13,6 +13,10 @@ class LF_QuestGiverComponent : ScriptComponent
 	[Attribute(defvalue: "", uiwidget: UIWidgets.EditBox, desc: "Unique giver id")]
 	string m_sGiverId;
 
+	//! Name shown on the quest menu title. A localization key (#...). Empty falls back to the id.
+	[Attribute(defvalue: "", uiwidget: UIWidgets.EditBox, desc: "Display name shown on the quest menu (a localization key). Empty shows the giver id.")]
+	string m_sDisplayName;
+
 	//! Quests this giver offers.
 	[Attribute("", UIWidgets.Object, "Quests offered by this giver")]
 	ref array<ref LF_QuestDefinition> m_aQuests;
@@ -31,6 +35,16 @@ class LF_QuestGiverComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	string GetGiverId()
 	{
+		return m_sGiverId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Title for the quest menu: the display name key when set, else the giver id.
+	string GetDisplayName()
+	{
+		if (!m_sDisplayName.IsEmpty())
+			return m_sDisplayName;
+
 		return m_sGiverId;
 	}
 

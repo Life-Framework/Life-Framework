@@ -17,7 +17,7 @@ readout (accepted — a body-state gauge has no world object).
 
 Today: `EL_CharacterSurvivalComponent` decays stats per frame (hunger
 `-dt*0.1`, thirst `-dt*0.15`, health falls when hunger or thirst < 20);
-`EL_ConsumableEffectSurvival` restores on item use; `EL_SurvivalHUD` renders;
+`EL_ConsumableEffectSurvival` restores on item use; `EL_BetaHud` renders the gauges;
 `EL_SurvivalStats` holds the clamped [0,100] state.
 
 ## V1 (shippable)
@@ -44,7 +44,9 @@ Today: `EL_CharacterSurvivalComponent` decays stats per frame (hunger
   ⚠️ no recovery, no zero-health handling.
 - `EL_CharacterSurvivalComponent` — per-frame decay; ⚠️ no dt clamp.
 - `EL_ConsumableEffectSurvival` — restore on use; only values > 0 applied.
-- `EL_SurvivalHUD` — readout; `Persistence/` save data.
+- `EL_BetaHud` — the hunger/thirst readout. The old `EL_SurvivalHUD` menu preset was never
+  opened and is removed; its layout stays only as an `EL_Test_Data` load fixture.
+- `Persistence/` save data.
 
 ## Dependencies
 
