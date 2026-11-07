@@ -77,6 +77,17 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | harness `Cannot index into a null array` | fixed bug | The old parser indexed `$matches` while the log was still open. The harness now prints its own `SUMMARY`/`FAIL` on a harness error, so this line should not appear any more. |
 | `[ELDebug:DebugMenu] debug action refused: player <id> ...`, `[ELDebug:DebugMenu] open refused: ...`, `[ELDebug:AgentHarness] stand/pose/use refused: player <id> ...` | BY DESIGN | `EL_DevGate` refused a dev-tool request. Dev tools run only when the game mode sets `m_bDevToolsEnabled` (`GameMode_Roleplay_Debug.et`, DebugWorld) or the sender is an administrator. A non-admin on a production server sees this. In the DebugWorld it means the mode prefab lost the flag. |
 
+| `[ELDebug:Crime] robbery refused: no account` | BY DESIGN | A robbery with no server account is refused (no civilian gate or wanted bump could apply, so it must not pay). In a test it is a spawned body that is not a player. On a live server it means the robber's account was not created: check the `[ELDebug:CharacterCreation] flow start` line for that player. |
+| `[ELDebug:Notify] notify player <id>: <message>` / `police alert sent to <n> officer(s)` | INFO | Server-side record of a targeted toast or police alert. `0 officer(s)` is normal when no police are on duty. |
+| `[ELDebug:Notify] notify skipped: <entity> is not a player` | BY DESIGN | A server feature (shop, robbery, duty) toasted an entity no player controls, e.g. a test-spawned body. Nothing to show. |
+| `[ELDebug:Notify] notify to player <id> failed: no player controller` | OPEN if seen live | The target disconnected between the action and the toast, or the id is wrong. Benign once; repeated lines for a connected player are a bug. |
+| `[ELDebug:Notify] toast dropped: no EL_NotificationManagerComponent on this client` | OPEN | The game mode prefab lost its `EL_NotificationManagerComponent`. Re-add it to the game mode prefab. |
+| `[ELDebug:CharacterCreation] faction <n> refused for player <id>: #EL-CC_Error_FactionDenied` | BY DESIGN | The server whitelist refused a police pick (or an unknown faction value). The player gets a toast and the faction menu again. `#EL-CC_Error_FactionLocked` means the faction was already chosen. |
+| `[ELDebug:CharacterCreation] spawn location '<key>' refused ...` / `character refused ...` | BY DESIGN | Server re-validation of a creation RPC failed (location of another faction, unknown key, no accepted faction, bad name/age, second character). The reason key is the toast. |
+| `[ELDebug:CharacterCreation] faction menu not opened: no workspace on this machine` | OPEN | The owner RPC landed on a machine without UI (a dedicated server owning a controller should never happen). |
+| `[ELDebug:Police] wanted list refused: ...` / `wanted list sent: <n> entries` / `wanted list received: <n> entries` | INFO | Server and client halves of the police menu wanted-list RPC. A refusal means the requester was not an on-duty officer. |
+| `[ELDebug:License] license <type> has no replication bit` | OPEN | A new `EL_ELicenseType` was not appended to `EL_LicenseBits.Order()`; clients will not see it. Append it. |
+
 ## How to add a row
 
 When a new message appears:

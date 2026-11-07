@@ -44,18 +44,32 @@
 - ✅ Flow: no account → create → faction menu → spawn-location picker →
   spawn. `OnCharacterCreated` persists a character, inits ATM + survival
   components, spawns.
+- ✅ **Server-owned on a dedicated server** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the flow runs on the server
+  only. Menus open on the joining client through owner RPCs on its
+  `SCR_PlayerController` (`EL_ShowFactionMenu`, `EL_ShowSpawnLocationMenu`,
+  `EL_CharacterCreationController.c`); picks come back as
+  `RpcAsk_EL_SelectFaction` / `RpcAsk_EL_SpawnLocation` /
+  `RpcAsk_EL_CreateCharacter` and land in `ServerSelectFaction` /
+  `ServerSelectSpawnLocation` / `ServerCreateCharacter`. The player is the
+  controller's id, never a client value. `EL_CharacterCreationRules` re-checks
+  every pick: the police whitelist (`MayJoinFaction`, now enforced server-side),
+  faction already chosen, spawn location belongs to the faction, one character
+  per account, names 1..32 characters, age 18..80. A refusal toasts the reason
+  key (`#EL-CC_Error_*`) and re-opens the menu. A listen host's joiners now get
+  their own menus instead of the host.
 - ✅ Real character prefab + real coordinates (verified 2026-08-30): the old
   `{YourTempCharacterPrefab}` placeholder and hard-coded `"0 0 0"`/
   `"1000 0 1000"` are gone; `CreateAndSpawnDefaultCharacter` uses
   `{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et`.
 
 ### `EL_CharacterCreationMenu` — `Feature/CharacterCreation/EL_CharacterCreationMenu.c`
-- ✅ Validates first/last name non-empty and age in `[18, 80]`, then calls
-  `OnCharacterCreated`.
+- ✅ Validates first/last name non-empty and age in `[18, 80]` for its error
+  text, then sends `EL_AskCreateCharacter`; the server re-validates.
 - ⚠️ Validation failure silently early-returns with no error shown.
 
 ### `EL_FactionSelectionMenu` — `Feature/CharacterCreation/EL_FactionSelectionMenu.c`
-- ✅ Buttons wired (Civilian/Police) set the account faction, save, re-enter
+- ✅ Buttons wired (Civilian/Police) send `EL_AskSelectFaction`; the server
+  validates, then sets the account faction, saves, re-enters
   `OnPlayerConnected`. `SaveAndReleaseAccount` keeps the account cached, so the
   re-entrant flow converges instead of looping.
 - ✅ `EL_CharacterCreationManager.OnPlayerConnected` keys the account by
@@ -152,6 +166,24 @@
   `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
   its `version` field. `account/save-roundtrip` covers the
   export → reset → apply path. EPF is gone; there is no `ApplyTo`.
+
+### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
+- ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
+  server-only, so client-side offers read a replicated copy. Faction, duty,
+  wanted, and police rank pack into one int (`EL_AccountStateBits`) carried by
+  an `[RplProp]` on the player's `SCR_ChimeraCharacter`; the on-duty police
+  count is an `[RplProp]` on `EL_GameModeRoleplay`. The server writes both
+  from the account setters (`SetFaction`/`SetOnDuty`/`SetWantedLevel`/
+  `SetPoliceRank`), on `OnPlayerSpawned`, and on a 10 s self-healing pass;
+  `BumpMe` only on change. Late joiners get the values with the snapshot.
+  `GetState(entity)` answers from the account on the server and from the
+  replica on a client. Consumers: `EL_RobAction`, `EL_DutyAction`,
+  `EL_ConfiscateAction`, `EL_OpenPoliceMenuAction`, `LF_ArmoryDrawAction`,
+  `LF_RankPromoteAction`, `LF_BreachRepairAction`. Every server path still
+  re-checks the real account.
+- ⚠️ `EL_RobWeaponAction`, `EL_RobVehicleAction`, and `LF_Bank` still count
+  police and read accounts directly in their offers; move them to
+  `EL_AccountReplication` next.
 
 ## Money & Economy
 
@@ -357,6 +389,11 @@
   spends skill points. `SetUnlockedLicenses` is the persistence restore seam,
   not a player purchase path. Remaining: not localized; `m_bIsInitialLicense`
   is used for initial grants.
+- ✅ **Replicates as a bitmask** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the old `[RplProp] ref array` broke the
+  simple-types rule. The server list stays local; `m_iUnlockedBits` (an int
+  `RplProp`, `EL_LicenseBits`) is written on every change. On a client
+  `HasLicense` and `GetUnlockedLicenses` decode the mask. Bit order is
+  `EL_LicenseBits.Order()`: append new types, never reorder.
 
 ### `EL_WhitelistManager` — `Feature/Whitelist/EL_WhitelistManager.c`
 - ✅ Pure static in-memory whitelists; `IsFactionRestricted` (POLICE,
@@ -368,8 +405,9 @@
   `Load` replaces the cache. A second load does not duplicate entries. A
   missing file logs `EL_Debug.Error` and leaves the police faction closed.
   Civilian stays open. `MayJoinFaction` refuses a uid that is not on the
-  police list and logs that refusal. The police button in
-  `EL_FactionSelectionMenu` calls it before the faction is selected. A uid
+  police list and logs that refusal. The server calls it in
+  `EL_CharacterCreationRules.RefuseFaction` when the faction RPC arrives; the
+  client menu no longer checks it (a client has no whitelist). A uid
   that was not in the file is still refused after load. This file is not
   `EL_PersistenceComponentSerializer`.
 - ⚠️ Getter returns the live internal array (callers can mutate without logging).
@@ -389,6 +427,12 @@
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
   `EL_Door_Base` inherits
   `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
+- ✅ **Client offers** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the target table is server-only, so
+  `LF_BreachTargetComponent` mirrors open/armed as `RplProp`s
+  (`SetReplicatedState`, written from `Open`/`Repair`/`Apply` and the fuse
+  schedule). `CanArmForOffer` / `CanRepairForOffer` ask `LF_Breach` on the
+  server and the mirror on a client. A client offers repair to police and, on an
+  organization door, to anyone; the server decides membership.
 
 ### `LF_Bank` — `Feature/Crime/LF_Bank.c`
 - ✅ A vault calls `LF_Breach.Arm`, then spills a config number of bags of
@@ -447,6 +491,12 @@
   is the capture prefab and is not placed in the row. Player strings:
   `#EL-Fuel_Till_Rob`, `#EL-Rob_Cooldown`, `#EL-Rob_CiviliansOnly`,
   `#EL-Rob_NeedPolice`.
+- ✅ **No account, no robbery** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `CommitRobbery` refuses and logs
+  `robbery refused: no account` instead of paying without the civilian gate and
+  wanted bump. `PerformAction` runs on the server only; offers read
+  `EL_AccountReplication`, so the till is offered on a dedicated client and the
+  min-police gate uses the replicated count. The success toast goes to the robber
+  only (`EL_Utils.NotifyEntity`), the alert to on-duty police only.
 - ⚠️ Near-duplicated guard logic across all three. `EL_RobWeaponAction` and
   `EL_RobVehicleAction` still notify from inside their own on-duty counts.
   `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
@@ -491,8 +541,13 @@
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
-- ⚠️ The fine RPC still logs denials via `Print` (should be `EL_Debug`);
-  `account.GetActiveCharacter()` deref in the wanted list is unguarded.
+- ✅ **Wanted list over RPC** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the menu asks the server
+  (`EL_AskPoliceWantedList` → `RpcAsk_EL_PoliceWantedList`, which re-checks
+  `CanViewWantedList`); the server answers the officer's client with parallel
+  uid/name/level arrays (`RpcDo_EL_PoliceWantedList`, `SetWantedList`). The
+  open action's offer reads `EL_AccountReplication`.
+- ⚠️ The fine RPC still logs denials via `Print` (should be `EL_Debug`).
+  The menu layout does not render `GetWantedPlayers()` yet.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ Toggles police on-duty flag. Civilians are refused. The debug menu's
@@ -502,6 +557,9 @@
 - ✅ Toggling keeps the account resident: `SaveAndReleaseAccount` re-caches
   the account instead of evicting it, so the officer can reopen the police
   menu and re-toggle at once.
+- ✅ **Dedicated client** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the toggle
+  runs on the server only; the offer and the name (`#EL-Duty_GoOn` /
+  `#EL-Duty_GoOff`) read `EL_AccountReplication`.
 
 ### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
 - ✅ Two ranks (verified 2026-10-11). Patrol officer draws
@@ -532,6 +590,8 @@
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
 - ✅ On-duty police delete weapons from the nearest wanted player within 5 m.
+  The offer reads replicated officer and target state; the deletion runs on the
+  server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
 - ⚠️ Deletes items while iterating a live `FindItems` array (mutation-during-
   iteration risk); no compensation or wanted reduction.
 
@@ -592,6 +652,14 @@
   plus a direct call for the listen-server host so the authority sees its own
   toast. `SendToJob` duty semantics now read the account's `IsOnDuty()`, not a
   `job != UNEMPLOYED` tautology.
+- ✅ **Private targeted delivery** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `SendToPlayer` sends an Owner RPC on
+  the target's `SCR_PlayerController` (`EL_DeliverNotification`), so only that
+  client receives it; the listen host's own controller calls the handler
+  directly. Broadcast is left for `SendToAll` only. `SendToPolice` /
+  `NotifyPolice` reach connected on-duty police by account faction.
+  `EL_Utils.AlertPolice` and `EL_Utils.NotifyEntity` (shop, robbery, duty,
+  confiscate toasts) route through it; `EL_Utils.Notify` still shows a hint on
+  the calling machine only.
 - ⚠️ Hard-coded Spanish prefixes, emoji in logs, `m_Color` never transmitted.
 
 ## Inventory / Quantity

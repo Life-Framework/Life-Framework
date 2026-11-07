@@ -3,8 +3,9 @@ class EL_OpenPoliceMenuAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		EL_PlayerAccount account = GetPlayerAccount(user);
-		if (!LF_PoliceRanks.CanViewWantedList(account))
+		// Same rule as LF_PoliceRanks.CanViewWantedList, read from the replicated account state so
+		// a dedicated-server client can open it. The server re-checks on the list request.
+		if (!EL_AccountStateBits.IsOnDutyPolice(EL_AccountReplication.GetState(user)))
 		{
 			SetCannotPerformReason("#EL-Rank_WantedListDenied");
 			return false;
@@ -21,17 +22,5 @@ class EL_OpenPoliceMenuAction : ScriptedUserAction
 			PlayerController pc = GetGame().GetPlayerController();
 			menu.SetPlayerController(pc);
 		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected EL_PlayerAccount GetPlayerAccount(IEntity user)
-	{
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-		if (accountManager)
-		{
-			string playerUid = EL_Utils.GetPlayerUid(user);
-			return accountManager.GetAccount(playerUid);
-		}
-		return null;
 	}
 };

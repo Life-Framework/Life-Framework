@@ -35,6 +35,11 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_DebugActionValidation(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_DebugMenuGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_DebugWorldCollision(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_AccountStateBits(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_LicenseBits(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_CharacterCreationRules(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_RobNoAccount(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_AccountReplicationWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_DoorLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_E2E_Narrative(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_E2E_SaveStateWrite(), EL_TestTier.PERSISTENCE);
