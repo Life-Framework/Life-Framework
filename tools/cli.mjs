@@ -492,8 +492,15 @@ function cmdRunArea(area, root = ROOT) {
     console.log(`No ${area} checks defined. Add scripts to tools/${TOOL_DIRS[area]}/ and they run automatically.`);
     return 0;
   }
+  // LF_VALIDATE_SKIP=a.ps1,b.mjs skips checks a machine cannot run (CI has no
+  // base game or MCP build). Each skip is printed so a run never hides one.
+  const skip = new Set((process.env.LF_VALIDATE_SKIP || "").split(",").map((s) => s.trim()).filter(Boolean));
   let failed = 0;
   for (const s of scripts) {
+    if (skip.has(s)) {
+      console.log(`SKIP  ${area}/${s} (LF_VALIDATE_SKIP)`);
+      continue;
+    }
     const res = invokeScript(join(dir, s), { cwd: root, env: toolEnv() });
     const ok = res.status === 0;
     console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${s}`);
