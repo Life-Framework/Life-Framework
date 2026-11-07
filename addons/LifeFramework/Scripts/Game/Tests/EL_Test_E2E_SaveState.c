@@ -9,9 +9,12 @@
 // which makes pass 2's loaded-account assertions fail.
 // Red run pending: the two-boot persistence gate is serial-only this session;
 // the mutations above fail on the next persistence-boot run.
-// Jail (added with save version 5), PENDING: dropping order.Insert("jail") from
-// EL_PersistenceComponentSerializer must fail "e2e prisoner is still serving after
-// the save load" in pass 2. Not yet observed: the game data was missing that day.
+// Jail (save version 5), observed 2026-11-07 with `tools\cli wt e2e restart-safety`:
+// dropping order.Insert("jail") and writing version 4 left pass 1 green and failed
+// pass 2 with `SUMMARY tier=persistence passed=7 failed=1 total=8`,
+// `[ELTEST] FAIL e2e/pass2-verify-load`,
+// `[ELTEST]   - e2e prisoner is still serving after the save load`. Restored; both
+// passes green again.
 
 // tier: PERSISTENCE
 class EL_Test_E2E_SaveStateWrite : EL_Test

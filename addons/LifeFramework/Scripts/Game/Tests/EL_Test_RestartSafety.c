@@ -1,22 +1,27 @@
-// red-proof: PENDING. The suite could not boot when these tests were written: the
-// Arma Reforger game data project (addons/data/ArmaReforger.gproj) was missing while
-// the install was being restored, so no [ELTEST] FAIL line has been observed yet.
-// The planned mutation per test, to run once the suite boots:
-//   restart/bank-survives-connect - put `new EL_ATMManager();` back in
-//     EL_GameModeRoleplay.ResolveConnectManagers and `s_Instance = this;` back in the
-//     EL_ATMManager constructor; "the loaded bank account survives the first connect"
-//     must fail. Restoring only the unconditional `s_Instance = null;` destructor must
-//     fail "a released stray manager does not drop the loaded balances".
-//   restart/jail-serializer-roundtrip - drop order.Insert("jail") (and the version back
-//     to 4); "the save carries the jail payload" and "the sentence is served again
-//     after the load" must fail.
-//   restart/vehicle-restore-no-ground-key - pass true instead of false to SpawnOwned in
-//     RestoreVehicle; "restore drops no key beside the pad" must fail.
-//   restart/vehicle-plates-reserved - remove the Remember call from
-//     EL_VehicleOwnership.ApplyAll; "a loaded plate is reserved again" must fail.
-//   restart/whitelist-unreadable-file-kept - remove the s_bLoadFailed guard from
-//     EL_WhitelistManager.Save; "an admin edit is not saved over the unreadable file"
-//     and "the unreadable file keeps its first line" must fail.
+// red-proof: observed 2026-11-07 with `tools\cli test --no-build`, then each mutation
+// restored and the suite rerun green.
+// Run A, tier all, five mutations at once (one per test): `new EL_ATMManager();` back in
+// EL_GameModeRoleplay.ResolveConnectManagers plus `s_Instance = this;` back in the
+// EL_ATMManager constructor; order.Insert("jail") dropped and the version back to 4;
+// SpawnOwned(record, origin, true) in RestoreVehicle; the Remember call removed from
+// EL_VehicleOwnership.ApplyAll; the s_bLoadFailed guard in EL_WhitelistManager.Save
+// replaced by `if (false)`. Observed:
+//   SUMMARY tier=all passed=128 failed=5 total=133
+//   [ELTEST] FAIL restart/bank-survives-connect
+//   [ELTEST]   - the loaded bank account survives the first connect
+//   [ELTEST] FAIL restart/jail-serializer-roundtrip
+//   [ELTEST]   - the save is written at version 5 (expected 5, got 4)
+//   [ELTEST]   - the sentence is served again after the load
+//   [ELTEST] FAIL restart/vehicle-restore-no-ground-key
+//   [ELTEST]   - restore drops no key beside the pad
+//   [ELTEST] FAIL restart/vehicle-plates-reserved
+//   [ELTEST]   - a purchase after the load cannot take the saved plate (expected '', got 'RS PL 7001')
+//   [ELTEST] FAIL restart/whitelist-unreadable-file-kept
+//   [ELTEST]   - the unreadable file keeps its first line (expected '99', got '1')
+// Run B, tier fast, only the unconditional `s_Instance = null;` in ~EL_ATMManager:
+//   SUMMARY tier=fast passed=81 failed=1 total=82
+//   [ELTEST] FAIL restart/bank-survives-connect
+//   [ELTEST]   - a released stray manager does not drop the loaded balances
 
 //------------------------------------------------------------------------------------------------
 // tier: LOGIC
