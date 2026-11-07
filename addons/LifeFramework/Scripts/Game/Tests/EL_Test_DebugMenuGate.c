@@ -1,6 +1,9 @@
-// red-proof: PENDING - suite not runnable until the base game is restored (game data project
-// missing). To prove: make EL_DevGate.IsAllowed return true, run the fast tier, expect the
-// "refused when not debug and not admin" assertion to FAIL; restore and record the line here.
+// red-proof: made EL_DevGate.IsAllowed return true and ran `tools\cli test --no-build --tier fast`
+// (2026-11-07). Observed:
+//   [ELTEST] FAIL debug-menu/gate
+//   [ELTEST]   - refused when not debug and not admin
+//   [ELTEST] SUMMARY tier=fast passed=79 failed=1 total=80
+// Restored `return devToolsEnabled || isAdmin;` and the suite went green.
 
 // tier: LOGIC
 class EL_Test_DebugMenuGate : EL_Test
