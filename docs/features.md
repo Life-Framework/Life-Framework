@@ -299,7 +299,7 @@
 - ✅ **Fruit-catcher mint closed** (verified 2026-08-30): the server clamps any
   claimed score through `EL_GetFruitCatcherRewardCount` to
   `EL_FRUIT_CATCHER_MAX_SCORE` (100); pin test `security/fruitcatcher-reward-clamp`.
-- ✅ **Fruit-catcher claim loop closed** (2026-11-07, suite run pending): a claim
+- ✅ **Fruit-catcher claim loop closed** (verified 2026-11-07): a claim
   pays only a server-opened round. The minigame calls `AskStartFruitCatcherRound`
   when a round starts; the server records the round id and start time
   (`LF_FruitCatcherRound`) and `AskClaimFruitCatcherReward` sends that id back.
@@ -307,7 +307,7 @@
   (30 s) after the start, and the caller must hold FARMER. The minigame screen
   is not in this repo; when it lands it must call the start ask. Pin tests
   `security/fruitcatcher-rounds`, `security/job-workplace-and-seed`.
-- ✅ **Job switch and kit gates** (2026-11-07, suite run pending): a
+- ✅ **Job switch and kit gates** (verified 2026-11-07): a
   client-requested switch (`RequestJobFromClient`, behind `RpcAsk_SetJob`) needs
   an `LF_JobSignUpAction` for that job within `LF_JobGuards.WORKPLACE_RADIUS`
   (5 m) and `SWITCH_COOLDOWN_SECONDS` (30 s) since the last switch; going
@@ -391,14 +391,14 @@
 - ⚠️ Getter returns the live internal array (callers can mutate without logging).
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
-- ✅ **Server re-checks the admin role** (2026-11-07, suite run pending):
+- ✅ **Server re-checks the admin role** (verified 2026-11-07):
   `ProcessMessage` on the authority refuses any sender without
   `EPlayerRole.ADMINISTRATOR` (`IsAdminSender`) before parsing `!wadd`, so a
   modded client cannot whitelist itself for POLICE. Pin test
   `security/admin-chat-role`.
 
 ### `EL_BuildingManagerComponent` — `Components/BuildingSystem/EL_BuildingManagerComponent.c`
-- ✅ **Placement gated and paid** (2026-11-07, suite run pending): the server
+- ✅ **Placement gated and paid** (verified 2026-11-07): the server
   (`PlaceHeldBuilding`, behind `RpcAsk_SpawnEntityPrefab`) requires the held
   performer for that prefab, a position within `MAX_PLACEMENT_DISTANCE` (5 m)
   of the character, and consumes the held item (`ConsumeBuildingItem`: one off
@@ -419,7 +419,7 @@
   vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
   `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
-  **Charge consumed** (2026-11-07, suite run pending): `Arm(targetId, playerUid,
+  **Charge consumed** (verified 2026-11-07): `Arm(targetId, playerUid,
   chargeCarrier)` takes one charge from `chargeCarrier` before the wanted bump and
   refuses (`arm refused: ... carries no breach charge`) when there is none. The
   door, bank vault, and hospital cabinet actions pass the acting player; the
@@ -641,7 +641,7 @@
   transferred), `CombineQuantities` (2 and 3 yield 5), `Split`,
   `QuantityRemainingAfterSplit` (5 into 2 leaves 3), `SortByQuantity`
   (descending), `GetRemainingCapacity` (verified 2026-10-11).
-- ✅ **In-inventory split mint closed** (2026-11-07, suite run pending): the
+- ✅ **In-inventory split mint closed** (verified 2026-11-07): the
   split stack is sized and marked keep-separate before `TryInsertItemInStorage`,
   so `HandleOnItemAdded` no longer merges the spawned init quantity (100 for
   MoneyStack) into the source. Split 1 used to add 99. Pin test
@@ -666,7 +666,7 @@
 - ✅ **Ownership gate added** (verified 2026-08-30): `EL_CanManipulateOwned`
   rejects another living player's carried items (only your own storage or
   unowned containers/ground loot); the old range-only anti-cheat is closed.
-- ✅ **Locked owners refused** (2026-11-07, suite run pending):
+- ✅ **Locked owners refused** (verified 2026-11-07):
   `EL_CanManipulateOwned` also refuses a storage whose owner has a locked
   `EL_VehicleLockComponent` or `EL_LockComponent` (`EL_IsStorageOwnerLocked`).
   Pin test `security/locked-storage-refused`.
@@ -713,7 +713,7 @@
   client quest-log replication.
 - ✅ `QuestGiver_Start` and `DebugWorld` provide a world-facing onboarding
   example with localized menu layouts and registered logic/world tests.
-- ✅ **Turn-in loop closed** (2026-11-07, suite run pending): turn-in removes each
+- ✅ **Turn-in loop closed** (verified 2026-11-07): turn-in removes each
   `COLLECT_REPORT` objective's target amount through `EL_InventoryUtils` before
   the reward, all or nothing (a short removal puts the items back and refuses).
   Client open/accept/turn-in (`RequestOpenGiver`/`RequestAccept`/`RequestTurnIn`)
