@@ -1,7 +1,7 @@
 # Chat — Design Requirements
 
 > Context file for communication. Written against
-> `docs/design-philosophy.md`.
+> `docs/design.md`.
 
 ## Intent
 
