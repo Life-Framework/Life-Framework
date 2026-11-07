@@ -4,10 +4,14 @@
 
 import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { classifyMeshFile } from "./bmp.mjs";
+import { capturePixels, classifyMeshFile, samePixels } from "./bmp.mjs";
 import { loadPlaced } from "./layers.mjs";
 
 export const STREET_GAP_M = 30;
+
+// Vanilla prison doors are near-white. The interaction is real, so a white
+// center on these two sites is painted-light when look offers an action.
+export const PAINTED_LIGHT = ["Roadmap_Jail_Door", "Roadmap_Jail_Cell"];
 
 const MENU_ACTION = /Menu|Dialog|Shop|Catalog|Board|Desk/;
 
@@ -30,6 +34,24 @@ export function nearestStreetDistance(index, sites) {
   return Math.round(best * 1000) / 1000;
 }
 
+export function selectRoadmapSites(sites, names) {
+  if (!names || !names.length) return sites;
+  const want = new Set(names);
+  return sites.filter((site) => want.has(site.name));
+}
+
+export function missingRoadmapNames(sites, names) {
+  if (!names || !names.length) return [];
+  return names.filter((name) => !sites.some((site) => site.name === name));
+}
+
+export function presentedMesh(name, mesh, look) {
+  const text = (look ?? "").trim();
+  const hasAction = Boolean(text) && text !== "none";
+  if (mesh === "white" && hasAction && PAINTED_LIGHT.includes(name)) return "painted-light";
+  return mesh || "missing";
+}
+
 export function menuActionFromLook(detail) {
   const text = (detail ?? "").trim();
   if (!text || text === "none") return "";
@@ -42,13 +64,38 @@ export function menuActionFromLook(detail) {
   return "";
 }
 
+// The character's own loot and confiscate actions have no site name. A site
+// passes only when look names that site.
+export function siteLook(name, look) {
+  const text = (look ?? "").trim();
+  if (!text || text === "none") return "";
+  if (!name) return text;
+  const hits = [];
+  for (const part of text.split(",")) {
+    const hit = part.trim();
+    const at = hit.lastIndexOf("@");
+    if (at >= 0 && hit.slice(at + 1) === name) hits.push(hit);
+  }
+  return hits.join(",");
+}
+
+// The player camera faces -Z. Close pictures stand on the +Z side of the
+// Z=108 row so that view looks south at the shell and the car.
+export function siteShotOffset(name) {
+  if (name === "Roadmap_Garage") return { ox: 8, oy: 1.6, oz: 14 };
+  if (name === "Roadmap_Escort_Car") return { ox: 0, oy: 1.6, oz: 8 };
+  return null;
+}
+
 export function judgeRoadmapRow(row) {
   const failures = [];
-  const look = (row.look ?? "").trim();
+  const look = siteLook(row.name, row.look);
   if (!look || look === "none") failures.push("look offers no interaction");
   if (row.menu != null) {
     const menu = String(row.menu).trim();
-    if (!menu || menu === "none" || menu === "blank") failures.push("menu is blank");
+    const widgets = Boolean(menu) && menu !== "none" && menu !== "blank";
+    const shot = row.menuMesh == null || row.menuMesh === "ok" || row.menuMesh === "painted-light";
+    if (!widgets || !shot) failures.push("menu is blank");
   }
   if (row.mesh === "white" || row.mesh === "missing") failures.push("mesh is white or missing");
   if (Number(row.distanceM) > STREET_GAP_M) failures.push("more than 30 m from the rest of the street");
@@ -63,7 +110,7 @@ export function judgeStreet(rows) {
   });
 }
 
-export function rowCamera(sites) {
+export function rowCamera(sites, crowd) {
   if (!sites.length) return { x: 0, y: 1, z: 0, ox: 0, oy: 40, oz: 90 };
   let minX = Infinity;
   let maxX = -Infinity;
@@ -83,13 +130,36 @@ export function rowCamera(sites) {
   const back = Math.max(40, span * 0.85);
   const up = Math.max(18, span * 0.35);
   const alongX = spanX >= spanZ;
+  let ox = alongX ? 0 : back;
+  let oy = up;
+  let oz = alongX ? back : 0;
+  // The player camera faces -Z. A row south of the street is photographed
+  // from the north, just short of that street, so the street stays behind the camera.
+  if (crowd && crowd.length) {
+    const names = new Set(sites.map((site) => site.name));
+    let sum = 0;
+    let count = 0;
+    for (const other of crowd) {
+      if (names.has(other.name)) continue;
+      sum += alongX ? other.z : other.x;
+      count++;
+    }
+    if (count) {
+      const row = alongX ? (minZ + maxZ) / 2 : (minX + maxX) / 2;
+      if (sum / count > row + 1) {
+        if (alongX) oz = Math.min(back, 12);
+        else ox = Math.min(back, 12);
+        oy = Math.min(up, 3);
+      }
+    }
+  }
   return {
     x: (minX + maxX) / 2,
     y: y / sites.length,
     z: (minZ + maxZ) / 2,
-    ox: alongX ? 0 : back,
-    oy: up,
-    oz: alongX ? back : 0,
+    ox,
+    oy,
+    oz,
   };
 }
 
@@ -106,7 +176,7 @@ function picture(src, alt) {
   return `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}">`;
 }
 
-export function renderRoadmapReport({ wide, rows, note }) {
+export function renderRoadmapReport({ wide, rows, note, cameraStuck }) {
   const failed = rows.filter((row) => !row.ok).length;
   const body = rows
     .map((row) => {
@@ -151,6 +221,7 @@ export function renderRoadmapReport({ wide, rows, note }) {
 <h1>Roadmap street</h1>
 <p>${rows.length - failed} passed, ${failed} failed, ${rows.length} sites.</p>
 <p>${escapeHtml(note || "")}</p>
+${cameraStuck ? `<p class="fail">camera_stuck</p>` : ""}
 <figure class="wide">
   ${picture(wide?.src, "Roadmap row")}
   <figcaption>The row.</figcaption>
@@ -174,15 +245,48 @@ function lookText(result) {
   return result.detail || "";
 }
 
+function sessionDown(result) {
+  return Boolean(result) && result.detail === "no_session";
+}
+
+function publishAndRead(src, shotDir, fileName) {
+  if (!src) return { src: "", pixels: null };
+  const rel = publishShot(src, shotDir, fileName);
+  return { src: rel, pixels: capturePixels(join(shotDir, fileName)) };
+}
+
 export function runRoadmapReport(deps) {
-  const sites = deps.sites();
+  const catalog = deps.sites();
+  const names = deps.names || [];
+  const missing = missingRoadmapNames(catalog, names);
+  if (missing.length) {
+    deps.log(`missing site: ${missing.join(", ")}`);
+    return 1;
+  }
+  const sites = selectRoadmapSites(catalog, names);
   const outDir = join(deps.root, "agent-box", "reports");
   const shotDir = join(outDir, "shots");
   mkdirSync(shotDir, { recursive: true });
 
+  let previousPixels = null;
+  let cameraStuck = false;
+  let playDown = false;
+
+  function remember(pixels) {
+    if (!pixels) return false;
+    if (previousPixels && samePixels(previousPixels, pixels)) {
+      cameraStuck = true;
+      return true;
+    }
+    previousPixels = pixels;
+    return false;
+  }
+
   const wide = { src: "", mesh: "missing", detail: "" };
-  if (sites.length) {
-    const camera = rowCamera(sites);
+  const rows = [];
+  function takeWide() {
+    if (!sites.length || cameraStuck || playDown) return;
+    const camera = rowCamera(sites, catalog);
     try {
       const shot = deps.captureWorld({
         name: "roadmap_row",
@@ -194,84 +298,151 @@ export function runRoadmapReport(deps) {
         oz: camera.oz,
       });
       wide.detail = `${shot.status} ${shot.detail || ""}`.trim();
+      if (sessionDown(shot)) playDown = true;
       const image = shot.status === "ok" ? deps.resolve(shot) : "";
       if (image) {
         wide.mesh = classifyMeshFile(image);
-        wide.src = publishShot(image, shotDir, "roadmap-row.png");
+        const saved = publishAndRead(image, shotDir, "roadmap-row.png");
+        wide.src = saved.src;
+        remember(saved.pixels);
       }
     } catch (err) {
       wide.detail = err.message;
     }
   }
 
-  const rows = [];
-  for (const site of sites) {
-    const row = {
-      name: site.name,
-      layer: site.layer,
-      x: site.x,
-      y: site.y,
-      z: site.z,
-      look: "",
-      menu: null,
-      menuSrc: "",
-      src: "",
-      mesh: "missing",
-    };
-    try {
-      const stood = deps.stand(site.name);
-      if (stood.status === "ok") deps.pause(800);
-      let look = deps.look();
-      if (stood.status === "ok" && look.status === "ok" && (look.detail || "").trim() === "none") {
-        deps.pause(700);
-        look = deps.look();
+  if (!playDown && !cameraStuck) {
+    for (const site of sites) {
+      const row = {
+        name: site.name,
+        layer: site.layer,
+        x: site.x,
+        y: site.y,
+        z: site.z,
+        look: "",
+        menu: null,
+        menuMesh: null,
+        menuSrc: "",
+        src: "",
+        mesh: "missing",
+      };
+      try {
+        const stood = deps.stand(site.name);
+        if (sessionDown(stood)) {
+          playDown = true;
+          row.note = "no_session";
+          rows.push(row);
+          break;
+        }
+        if (stood.status === "ok") deps.pause(800);
+        let look = deps.look();
+        if (sessionDown(look)) {
+          playDown = true;
+          row.note = "no_session";
+          rows.push(row);
+          break;
+        }
+        // Stand replicates after the wide shot. The character's own actions
+        // show up first; wait until this site is in the list.
+        let waits = 0;
+        while (
+          stood.status === "ok" &&
+          look.status === "ok" &&
+          !siteLook(site.name, look.detail) &&
+          waits < 4
+        ) {
+          deps.pause(700);
+          look = deps.look();
+          if (sessionDown(look)) {
+            playDown = true;
+            break;
+          }
+          waits++;
+        }
+        if (playDown) {
+          row.note = "no_session";
+          rows.push(row);
+          break;
+        }
+        row.look = lookText(look);
+        const shotSpec = { name: site.name, x: site.x, y: site.y, z: site.z };
+        const offset = siteShotOffset(site.name);
+        if (offset) {
+          shotSpec.ox = offset.ox;
+          shotSpec.oy = offset.oy;
+          shotSpec.oz = offset.oz;
+        }
+        const shot = deps.captureWorld(shotSpec);
+        if (sessionDown(shot)) {
+          playDown = true;
+          row.note = "no_session";
+          rows.push(row);
+          break;
+        }
+        const image = shot.status === "ok" ? deps.resolve(shot) : "";
+        let stuck = false;
+        if (image) {
+          row.mesh = classifyMeshFile(image);
+          const saved = publishAndRead(image, shotDir, `${site.name}.png`);
+          row.src = saved.src;
+          stuck = remember(saved.pixels);
+        }
+        row.mesh = presentedMesh(row.name, row.mesh, row.look);
+        if (!stuck) {
+          const menuHit = menuActionFromLook(row.look);
+          if (menuHit) {
+            const className = menuHit.split("@")[0];
+            const entityName = menuHit.split("@")[1] || site.name;
+            deps.use(className, entityName);
+            deps.pause(500);
+            const ui = deps.ui();
+            row.menu = ui.status === "ok" ? ui.detail || "none" : "none";
+            const menuShot = deps.captureUi(`${site.name}_menu`);
+            const menuImage = menuShot.status === "ok" ? deps.resolve(menuShot) : "";
+            if (menuImage) {
+              row.menuMesh = classifyMeshFile(menuImage);
+              row.menuSrc = publishShot(menuImage, shotDir, `${site.name}-menu.png`);
+            } else {
+              row.menuMesh = "missing";
+            }
+            deps.input("MenuBack");
+            deps.pause(300);
+          }
+        }
+        rows.push(row);
+        if (stuck) break;
+      } catch (err) {
+        row.look = row.look || "";
+        row.note = err.message;
+        row.mesh = presentedMesh(row.name, row.mesh, row.look);
+        rows.push(row);
       }
-      row.look = lookText(look);
-      const shot = deps.captureWorld({ name: site.name, x: site.x, y: site.y, z: site.z });
-      const image = shot.status === "ok" ? deps.resolve(shot) : "";
-      if (image) {
-        row.mesh = classifyMeshFile(image);
-        row.src = publishShot(image, shotDir, `${site.name}.png`);
-      }
-      const menuHit = menuActionFromLook(row.look);
-      if (menuHit) {
-        const className = menuHit.split("@")[0];
-        const entityName = menuHit.split("@")[1] || site.name;
-        deps.use(className, entityName);
-        deps.pause(500);
-        const ui = deps.ui();
-        row.menu = ui.status === "ok" ? ui.detail || "none" : "none";
-        const menuShot = deps.captureUi(`${site.name}_menu`);
-        const menuImage = menuShot.status === "ok" ? deps.resolve(menuShot) : "";
-        if (menuImage) row.menuSrc = publishShot(menuImage, shotDir, `${site.name}-menu.png`);
-        deps.input("MenuBack");
-        deps.pause(300);
-      }
-    } catch (err) {
-      row.look = row.look || "";
-      row.note = err.message;
+      if (row.note) deps.log(`${site.name}: ${row.note}`);
     }
-    rows.push(row);
-    if (row.note) deps.log(`${site.name}: ${row.note}`);
   }
+
+  takeWide();
 
   const judged = judgeStreet(rows);
   const html = renderRoadmapReport({
     wide,
     rows: judged,
+    cameraStuck,
     note: "Play-mode street pass. Pictures sit beside the look text. The test server stays down.",
   });
   const htmlPath = join(outDir, "roadmap.html");
   writeFileSync(htmlPath, html, "utf8");
   const failedRows = judged.filter((row) => !row.ok).length;
-  const wideFailed = wide.mesh !== "ok";
-  const failed = failedRows + (wideFailed ? 1 : 0);
+  const wideFailed = sites.length > 0 && wide.mesh !== "ok";
+  const failed = failedRows + (wideFailed ? 1 : 0) + (cameraStuck ? 1 : 0) + (playDown ? 1 : 0);
   deps.log(`report: ${htmlPath}`);
   for (const row of judged) {
     const mark = row.ok ? "pass" : "fail";
-    deps.log(`${mark} ${row.name}: ${row.ok ? "ok" : row.failures.join("; ")}`);
+    deps.log(`${mark} ${row.name}: ${row.ok ? row.mesh : row.failures.join("; ")}`);
   }
   if (wideFailed) deps.log(`fail roadmap_row: mesh is ${wide.mesh}`);
+  if (cameraStuck) deps.log("camera_stuck");
+  if (playDown) deps.log("no_session");
   deps.log(`roadmap report: passed=${judged.length - failedRows} failed=${failed} total=${judged.length}`);
   return failed > 0 || sites.length === 0 ? 1 : 0;
 }

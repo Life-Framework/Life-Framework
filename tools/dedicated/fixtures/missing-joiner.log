@@ -1,0 +1,15 @@
+08:00:00.000 DEFAULT      : Starting server on port 2001
+08:00:01.000 SCRIPT       : [ELDebug:Persistence] resolved SCR_PersistenceSystem, subscribed to save events
+08:00:10.000 SCRIPT       : [ELDebug:CharacterCreation] flow start for player 1
+08:00:20.000 SCRIPT       : [ELDebug:CharacterCreation] spawning player 1
+08:02:00.000 SCRIPT       : [ELDebug:Persistence] save point created
+08:02:01.000 SCRIPT       : [ELDebug:Persistence] save completed (MANUAL)
+08:02:02.000 SCRIPT       : [ELDebug:Persistence] session ending, engine shutdown save expected
+08:03:00.000 DEFAULT      : 2001
+08:03:01.000 SCRIPT       : [ELDebug:Persistence] resolved SCR_PersistenceSystem, subscribed to save events
+08:03:02.000 SCRIPT       : [ELDebug:Persistence] loading the latest save point
+08:03:03.000 SCRIPT       : [ELDebug:Persistence] applied 1 account record(s)
+08:03:03.100 SCRIPT       : [ELDebug:Persistence] applied 1 bank account record(s)
+08:03:03.200 SCRIPT       : [ELDebug:Persistence] applied 1 organization record(s)
+08:03:03.300 SCRIPT       : [ELDebug:VehicleLock] lock state -> locked
+08:03:03.400 SCRIPT       : [ELDebug:Persistence] applied 1 vehicle record(s)

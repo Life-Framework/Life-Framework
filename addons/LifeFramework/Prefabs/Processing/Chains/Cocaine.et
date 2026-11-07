@@ -1,0 +1,29 @@
+// MIT. Item-prefab recipe adapted from thebonbon/EveronLife branch enhancement/Main_World.
+// One input item and one output item, the same shape as the apple processor. This file uses a new GUID.
+GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
+ ID "598F21A86EB5B48E"
+ components {
+  ActionsManagerComponent "{598F21A8710B89C1}" {
+   additionalActions {
+    EL_ProcessAction "{598F21A877BE6DEE}" {
+     UIInfo UIInfo "{BC716CCE6060BF1F}" {
+      Name "Make 1 cocaine with 1 coca leaves"
+     }
+     Duration 1
+     m_aProcessingInputs {
+      EL_ProcessingInput "{F9F0848A9C05CA6F}" {
+       m_InputPrefab "{DD593D31D4F3DFBF}Prefabs/Items/Drugs/Coca_leaves.et"
+       m_iInputAmount 1
+      }
+     }
+     m_aProcessingOutputs {
+      EL_ProcessingOutput "{5A86AF556D343ACD}" {
+       m_OutputPrefab "{B854F08E28254CB8}Prefabs/Items/Drugs/Cocaine.et"
+       m_iOutputAmount 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

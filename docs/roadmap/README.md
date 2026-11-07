@@ -13,7 +13,7 @@ The public site still hosts the November 2025 community checklist (website, Disc
 - **Base-game assets.** Doors, vehicles, weapons, medical supplies, fuel cans, and buildings come from Arma Reforger. A scope configures those prefabs. It does not add a weapon pack, a vehicle pack, or aircraft.
 - **Framework, then one example.** Ship the hook and one vanilla setup. Server owners retune items and places in config.
 - **Money stays physical.** Cash is the MoneyStack. The ATM is the only cash-to-account boundary. Stolen money leaves as cash.
-- **In the world.** The place is the interface: a bank vault, a jail door, a till, a hideout machine. See [design philosophy](../design-philosophy.md).
+- **In the world.** The place is the interface: a bank vault, a jail door, a till, a hideout machine. See [design](../design.md).
 - **Reuse before writing.** [sources.md](sources.md) names the script or prefab to extend: this repo first, then Arma Reforger, then [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) (MIT).
 - **Three gates.** [testing/README.md](testing/README.md) is the headless case, the DebugWorld entity, and the screenshot for each setup.
 

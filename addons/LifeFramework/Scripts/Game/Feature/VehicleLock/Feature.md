@@ -1,7 +1,7 @@
 # VehicleLock — Design Requirements
 
 > Context file for vehicle ownership and locking. Written against
-> `docs/design-philosophy.md` (in-world first).
+> `docs/design.md` (in-world first).
 
 ## Intent
 

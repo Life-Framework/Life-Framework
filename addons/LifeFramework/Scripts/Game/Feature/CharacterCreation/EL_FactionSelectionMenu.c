@@ -69,6 +69,13 @@ class EL_FactionSelectionMenu
 	//------------------------------------------------------------------------------------------------
 	protected void OnPoliceClicked()
 	{
+		string playerUid = "";
+		if (m_PlayerController)
+			playerUid = EL_Utils.GetPlayerUID(m_PlayerController.GetPlayerId());
+
+		if (!EL_WhitelistManager.MayJoinFaction(playerUid, EL_EFactionType.POLICE))
+			return;
+
 		Select(EL_Faction.POLICE);
 	}
 

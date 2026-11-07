@@ -129,13 +129,6 @@
   wanted bumps and police-menu reads do not lose the account mid-session
   (the old evict-on-write churn is gone).
 
-### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
-- ✅ Explicit persisted form of an account and its characters (faction,
-  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
-  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
-  its `version` field. `account/save-roundtrip` covers the
-  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
-
 ### `EL_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
   (one AUTO slot per playthrough via `EL_SaveSelection`), manual saves,
@@ -152,6 +145,13 @@
   explicitly from both missions), replacing the GUID-colliding
   `ChimeraSystemsConfig.conf` override. Resolution retries at game start and
   logs an `EL_Debug.Error` when the entry is truly missing.
+
+### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
+- ✅ Explicit persisted form of an account and its characters (faction,
+  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
+  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
+  its `version` field. `account/save-roundtrip` covers the
+  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
 ## Money & Economy
 
@@ -186,7 +186,11 @@
 ### `EL_ShopComponent` — `Feature/Shop/EL_ShopComponent.c`
 - ✅ Catalog-driven buy: `BuyItem(item, qty, buyer)` guards null/qty, server-
   only, price × quantity, `EL_MoneyUtils.RemoveAmount`, refund on
-  inventory-full.
+  inventory-full. A sell or buy of a stack pays or gives one unit per
+  quantity through `EL_ShopRules.StackTradeTotal` (verified 2026-10-11).
+  The menu sells at most 99 of a held stack per click, the server cap
+  `EL_CharacterShopComponent.MAX_TRANSACTION_QUANTITY`; a request outside
+  1..99 is refused and logged. (2026-11-07)
 - ✅ **Money correctness** (verified 2026-08-30): the partial-funds exploit is
   closed — `BuyItem` compares the actual removed amount against the total and
   refunds only what was removed before failing (a $50 buyer cannot buy a $100
@@ -202,8 +206,9 @@
 - ⚠️ Menu always opens for the local player regardless of who interacted.
 
 ### `EL_TraderManagerComponent` + `EL_InventoryStorageManagerComponent` — `Components/InventorySystem/`
-- ✅ Sell-to-trader pays **cash** (verified 2026-08-30): inserting into a
-  trader-owned storage pays `unitValue × stackSize` via `EL_MoneyUtils.AddCash`
+- ✅ Sell-to-trader pays **cash** (verified 2026-10-11): inserting into a
+  trader-owned storage pays one cash unit per stack quantity
+  (`EL_ShopRules.StackTradeTotal`) via `EL_MoneyUtils.AddCash`
   (pay-before-delete, clawed back if the item cannot be removed); black-market
   rejects non-civilian factions. The old "payout to ATM bank" and the
   `Print("testtesttest")` debug line are gone.
@@ -237,6 +242,12 @@
 - ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
   empty recipe or a prefab that does not resolve logs `EL_Debug.Error` and
   returns before inventory changes (verified 2026-10-11).
+- ✅ Cocaine, jam, and beer are one-input, one-output recipe prefabs under
+  `Prefabs/Processing/Chains/`, each parented to `ItemProcessor_Base`
+  (verified 2026-10-11). Cocaine consumes coca leaves and produces a cocaine
+  pouch. Jam consumes rowan berries and produces berry jam. Beer consumes an
+  empty beer bottle and produces a beer bottle. `EL_Test_RecipeChains` checks
+  that each input prefab and output prefab is set and distinct.
 
 ### `EL_ResourceChainCatalog` — `Feature/Resources/EL_ResourceChainCatalog.c`
 - ✅ `Configs/Resources/ResourceChains.conf` names each gather node's tool,
@@ -259,6 +270,25 @@
 - ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit.
 - ⚠️ Non-tool or unmapped damage source deals **0 damage silently** (no
   feedback); damage-source prefab string comparison is fragile on casing.
+
+### `LF_MiningPhases` + `LF_MiningSpawn` + `LF_MiningForge` — `Feature/Mining/`
+- ✅ Ore health phases (verified 2026-10-11). A strike counts only when its
+  damage equals the tool damage. Non-negative damage walks phase budgets in
+  order; a budget of zero stops the walk. Passing the last phase destroys the
+  ore when delete-after-final is set. Applying a phase sets health to that
+  phase's budget and swaps the mesh when the phase names one. An empty mesh
+  keeps the current mesh. No phase data restores the original health and the
+  original mesh. Ported from EveronLife `EL_DestructionMultiPhaseSingleComponent`
+  and `EL_ToolHitZone`. Logic test `mining/phases`.
+- ✅ Weighted ore spawn. A roll in `[0, total)` maps onto the first bin, including
+  a roll of 0. The spawn count is the shortfall to the configured amount, and
+  an over-full area spawns nothing. An empty list logs `EL_Debug.Error`.
+- ✅ Timed forge. One iron nugget
+  (`{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et`) becomes one iron
+  bar (`{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et`) after 5 seconds
+  (5000 ms). The nugget stays until the delay elapses. A missing nugget, a
+  second start, or a nugget removed before the end logs `EL_Debug.Error` and
+  yields no bar. A zero delay finishes inside the start.
 
 ## Jobs / Level / Licenses / Whitelist
 
@@ -333,11 +363,16 @@
   MILITARY, MAFIA), `IsJobRestricted` (POLICE only), add/remove/get.
 - ✅ **Compiles** (verified 2026-08-30): `enum EL_EFactionType` is now defined
   in this file (CIVILIAN/POLICE/MILITARY/MAFIA).
-- ⚠️ No persistence (resets every server start). Getter returns the live
-  internal array (callers can mutate without logging). The faction-selection
-  flow does not yet consult `IsWhitelistedForFaction` — anyone can pick
-  POLICE on first join; gating it requires admin tooling first (a fresh
-  server would otherwise have no police at all).
+- ✅ **Restart save and police gate** (verified 2026-10-11): the manager
+  writes `$profile:LifeFramework/whitelist.txt` itself, version first, and
+  `Load` replaces the cache. A second load does not duplicate entries. A
+  missing file logs `EL_Debug.Error` and leaves the police faction closed.
+  Civilian stays open. `MayJoinFaction` refuses a uid that is not on the
+  police list and logs that refusal. The police button in
+  `EL_FactionSelectionMenu` calls it before the faction is selected. A uid
+  that was not in the file is still refused after load. This file is not
+  `EL_PersistenceComponentSerializer`.
+- ⚠️ Getter returns the live internal array (callers can mutate without logging).
 
 ## Crime & Police
 
@@ -347,7 +382,8 @@
   call later robberies use. Fuse 0 opens in that call. Wanted and the police
   notify fire once, at arm time, not when the offer refreshes. A second charge
   on an open target refuses. Police can always repair; the owning organization
-  can repair its own door. `Export` / `Apply` put the open lock back. The
+  can repair its own door. `Export` / `Apply` put the open lock back in memory
+  but are not wired into the save serializer, so a restart loses it. The
   vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
   `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
@@ -361,7 +397,8 @@
   the same comparisons as `EL_RobAction`. A second breach inside the cooldown
   spawns nothing. Over-capacity requests are cut to the configured bag count.
   Carry leaves the cash on the bag; dropping it leaves that cash in the world.
-  `Export` / `Apply` restore the ground bags and do not write a bank balance.
+  `Export` / `Apply` restore the ground bags and do not write a bank balance;
+  they are not wired into the save serializer, so a restart loses the bags.
   DebugWorld places `Roadmap_Bank_Vault` at 189 0 120 and `Roadmap_Bank_Bag`
   at 189 0 122 on `Roadmap.layer`. The bag is
   `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
@@ -421,7 +458,9 @@
   reduces wanted by the configured amount. Early release refuses. A locked
   jail door returns a prisoner who leaves the volume; an open door (the shared
   `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
-  stays. `Export` / `Apply` put the remaining seconds back. DebugWorld places
+  stays. `Export` / `Apply` round-trip the remaining seconds in memory but are
+  not wired into `EL_PersistenceComponentSerializer`, so a server restart
+  loses the sentence. DebugWorld places
   `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
   `Roadmap.layer`. The placed door is
   `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
@@ -429,8 +468,16 @@
   `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
   and adds `EL_LockComponent`, so the prison mesh and the shared breach actions
   stay together. That vanilla door is the prefab the world test loads.
-  The officer action `LF_JailArrestAction` is on the suspect. Vehicle escort
-  is not in this slice.
+  The officer action `LF_JailArrestAction` is on the suspect. `LF_JailEscort`
+  is the vehicle path: an on-duty officer loads a wanted player into the nearest
+  free non-driver seat of a base-game vehicle. The sentence starts when they
+  arrive at the cell, not when they enter the car. A player who is not wanted
+  is refused and logged. Early release stays refused. The remaining sentence
+  lives only in server memory; the save serializer does not call `Export` /
+  `Apply`, so a restart loses it. DebugWorld places
+  `Roadmap_Escort_Car` at `204 0 108` on `Roadmap.layer`, the police M151 with
+  `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
+  still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
@@ -452,8 +499,9 @@
   police faction button sets faction and duty, which is how a solo session
   reaches the toggle (verified 2026-10-10). Going on duty starts the rank
   clock; going off duty settles it.
-- ⚠️ Toggling evicts the account from the cache, so the officer cannot reopen
-  the police menu or re-toggle until the account reloads.
+- ✅ Toggling keeps the account resident: `SaveAndReleaseAccount` re-caches
+  the account instead of evicting it, so the officer can reopen the police
+  menu and re-toggle at once.
 
 ### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
 - ✅ Two ranks (verified 2026-10-11). Patrol officer draws
@@ -552,7 +600,9 @@
 - ✅ Virtual stack system: `AddQuantity`/`RemoveQuantity` clamp to
   `[0, max]` (0 = unlimited), `SetQuantity(0)` deletes the entity,
   `CanCombine`/`Combine` (conservation: source decrease == dest increase ==
-  transferred), `Split`, `SortByQuantity` (descending), `GetRemainingCapacity`.
+  transferred), `CombineQuantities` (2 and 3 yield 5), `Split`,
+  `QuantityRemainingAfterSplit` (5 into 2 leaves 3), `SortByQuantity`
+  (descending), `GetRemainingCapacity` (verified 2026-10-11).
 - ⚠️ `Split` with `splitSize` 0 spawns an item then deletes it via
   `SetQuantity(0)`; `ExtractQuantityComponents` inserts null components with
   no check; `HandleOnItemAdded` may refresh UI on a just-deleted entity.
@@ -599,9 +649,14 @@
 - ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing.
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
-- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell for a capture. It is not placed in the DebugWorld row. The placed pad is `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`.
+- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `186 0 102.1` on `Roadmap.layer`, with store and retrieve. The shell sits 5.9 m north of that point, so the player stands outside the wall. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
+- ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
 
 ## UI / Layouts / Localization
+
+### UI kit — `Scripts/Game/Feature/UIKit/`
+- Post-release polish. `LF_UITheme` holds the 1989 type, padding, and paper/metal colors. `LF_UIScreen` assembles a frame, title, body line, WLib edit box (ink, no text outline or shadow; the box is not a `TextWidget`), list row, status row, quantity slider, and pause-menu button with `WorkspaceWidget.CreateWidgets`, wires `SCR_ButtonTextComponent`, and activates `MenuContext` every frame (`MenuTextEditContext` while an edit box is focused, `MenuWithEditorContext` so a pad can move). Close removes the widgets and that call. It does not use MenuManager.
+- A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. It reuses a play session that is already up. Faction, character creation, death, shop, ATM, quest, police, and spawn menus were not migrated.
 
 ## Quests
 
@@ -646,7 +701,8 @@
   traders, jobs, police, crime, houses, survival, tests, and the release
   street on `Roadmap.layer`. Sites sit 3 m apart on +X, from the breach door
   at `186 0 120` through the vehicle lot at `243 0 120`. The debug terrain is
-  the 256 m square (world 0..256). The row stays on that ground. That
+  the 512 m square (world 0..512, `TERRAIN_MAX` in `tools/street/manifest.mjs`).
+  The row stays on that ground. That
   one layer holds the breach door at `186 0 120`
   and the charge at `186 0 122`, the bank vault at `189 0 120` and the bag at
   `189 0 122`, the jail door at `192 0 120` and the cell at `192 0 122`, the
@@ -657,6 +713,8 @@
   `222 0 120`, the convoy drop at `225 0 120`, the job depot at `228 0 120`,
   the job drop at `231 0 120`, the taxi pad at `234 0 120`, the fuel can at
   `237 0 120`, the S105 at `240 0 124`, and the vehicle lot at `243 0 120`.
+  The second row is `Roadmap_Garage` at `186 0 102.1` and `Roadmap_Escort_Car`
+  at `204 0 108`. The garage shell is north of its use point. The Z=120 street is not moved.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
@@ -684,14 +742,27 @@
   `EL_OpenDebugMenu`); movement actions are refused.
 - ✅ `stand` is the placement exception: the server moves the local character
   beside a named entity. The poll does not start on a dedicated server
-  (`RplMode.Dedicated`). On a client it retries until a local controller exists,
+  (`RplMode.Dedicated`), and on a dedicated server the `stand`, `pose`, and
+  `use` RPCs are refused and logged, so a client cannot teleport or reach past
+  action range there (2026-11-07). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
 - ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
-  alone. A world shot stays at camera offset `10 3 10` unless the command
-  passes `ox oy oz`, which is how the roadmap row shot steps back. `node
-  agent-box/harness.mjs report roadmap` writes `agent-box/reports/roadmap.html`
-  from a play session. The Node harness, MCP tools, layers, and named flows
-  live in `agent-box/`. See `docs/agent-box.md`.
+  alone. A world shot teleports the character to the camera offset (default
+  `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
+  player view. That view faces -Z, so a picture stands on the +Z side of
+  its target. The pose is applied again 700 ms later so gravity does not drop
+  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
+  stands just north of that row when the street is further north. If the new PNG matches the
+  previous PNG, `report roadmap` records `camera_stuck` once and stops.
+  `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look
+  returns an action. Any other white mesh fails. Menu shots use `shot ui`; the
+  report judges `classify` and the widget list. Names after `roadmap` walk
+  only that row. `node agent-box/harness.mjs kit` photographs the UI kit
+  sample in the current play session when play is already up, and enters play
+  only when it is not. `node agent-box/harness.mjs report roadmap` writes
+  `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
+  tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
+  (verified 2026-10-11)
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
@@ -707,11 +778,28 @@
    ownership gate; gather/process actions re-validate server-side and reject
    malformed configurations. Remaining: multiplayer proof for the RPC edges.
 3. **Persistence — improved.** Cache-eviction churn fixed (account stays
-   resident). The serializer writes a `version` first; the EPF
-   `ApplyTo` enum bug left with EPF.
+   resident). The serializer writes a `version` header
+   first (4) and `validate-persistence-version.ps1` checks it against the
+   payload order. Remaining: jail, breach, and bank-vault state has
+   `Export` / `Apply` but is not in the save serializer, so it is lost on
+   restart.
 4. **Compile risk — resolved.** `EL_EFactionType` is defined in
    `EL_WhitelistManager.c`.
 5. **Client/server breaks — mostly closed.** Police arrest/fine bridge and
    notification targeting are fixed; the death screen (client) → respawn RPC
    (server) bridge is new and needs a manual multiplay pass. Remaining:
    hand-carry holster flow is client-only.
+
+## Toys
+
+### `LF_JumpPad` — `Feature/Toys/LF_JumpPad.c`
+- ✅ A trigger sets the entering player's velocity upward once for that enter.
+  A second callback before they leave applies the zero vector. Leaving clears
+  the enter, so the next entry launches again. A disabled pad applies the zero
+  vector and does not call `SetVelocity`. Ported from EveronLife
+  `EL_JumpTrigger` (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+
+### `LF_SpikeStrip` — `Feature/Toys/LF_SpikeStrip.c`
+- ✅ A trigger. A wheeled vehicle that enters has each wheel inside the strip
+  box set to zero health. Ported from EveronLife `EL_SpikeTriggerComponent`
+  (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)

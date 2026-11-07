@@ -1,0 +1,15 @@
+ButtonWidgetClass "{054447CAC1AAFA00}" : "{0022F0B45ADBC5AC}UI/layouts/WidgetLibrary/EditBox/WLib_EditBox.layout" {
+ Name "Field"
+ Slot LayoutSlot "{BDFEFCBBED571744}" {
+  Padding 28 10 28 10
+ }
+ components {
+  SCR_EditBoxComponent "{4E8B963DC68EC697}" {
+   m_bUseLabel 0
+   m_sLabel ""
+   m_fSizeWithLabel 48
+   m_fSizeWithoutLabel 48
+   m_BackgroundDefault 0.910 0.863 0.769 1
+  }
+ }
+}

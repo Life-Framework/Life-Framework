@@ -7,6 +7,19 @@
 modded class SCR_ChimeraCharacter
 {
 	//------------------------------------------------------------------------------------------------
+	//! The harness drives a rendering play session only. On a dedicated server
+	//! a client could otherwise teleport itself or fire an action out of reach,
+	//! so the server refuses every harness request there.
+	protected bool EL_HarnessRefused(string request)
+	{
+		if (RplSession.Mode() != RplMode.Dedicated)
+			return false;
+
+		EL_Debug.Warn("AgentHarness", string.Format("%1 refused: harness requests are not served on a dedicated server", request));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \param entityName World entity to stand beside. Resolved on the server.
 	void EL_AskHarnessStand(string entityName)
 	{
@@ -17,6 +30,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_HarnessStand(string entityName)
 	{
+		if (EL_HarnessRefused("stand"))
+			return;
+
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return;
@@ -32,6 +48,38 @@ modded class SCR_ChimeraCharacter
 		// without planting them inside the prop.
 		SetOrigin(target.GetOrigin() + Vector(1.2, 0, 0));
 		EL_Debug.Log("AgentHarness", string.Format("stood beside %1", entityName));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Move this character to a world shot. The player camera follows the body,
+	//! which SetCamera on a CameraBase does not.
+	void EL_AskHarnessPose(float x, float y, float z, float yaw, float pitch)
+	{
+		if (Replication.IsServer())
+		{
+			EL_ApplyHarnessPose(x, y, z, yaw, pitch);
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessPose, x, y, z, yaw, pitch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_HarnessPose(float x, float y, float z, float yaw, float pitch)
+	{
+		if (EL_HarnessRefused("pose"))
+			return;
+
+		EL_ApplyHarnessPose(x, y, z, yaw, pitch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void EL_ApplyHarnessPose(float x, float y, float z, float yaw, float pitch)
+	{
+		SetOrigin(Vector(x, y, z));
+		SetYawPitchRoll(Vector(yaw, pitch, 0));
+		EL_Debug.Log("AgentHarness", string.Format("posed %1 %2 %3 facing %4 %5", x, y, z, yaw, pitch));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -55,6 +103,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_HarnessUse(int commandId, string className, string entityName)
 	{
+		if (EL_HarnessRefused("use"))
+			return;
+
 		EL_AgentHarness.ApplyUse(this, commandId, className, entityName);
 	}
 }

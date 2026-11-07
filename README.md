@@ -26,7 +26,8 @@ native assets.
 
 ## Features
 
-What's implemented today (each backed by code and DebugWorld prefabs):
+What's implemented today (each backed by code and DebugWorld prefabs; most
+systems are placed only in DebugWorld so far):
 
 - **Economy & banking** — accounts, ATMs, cash stacks
 - **Trading** — shops, trader NPCs, buy/sell
@@ -34,7 +35,15 @@ What's implemented today (each backed by code and DebugWorld prefabs):
 - **Character creation & accounts** — persistence, faction selection, ID display
 - **Survival** — hunger/thirst HUD and consumables
 - **Gathering & processing** — mining, logging, farming chains, destructible resources
-- **Crime & police** — robbery, fines, duty, confiscation, role whitelists
+- **Crime & police** — robbery, door breach, bank vault, fines, duty,
+  confiscation, role whitelists
+- **Jail & police ranks** — placed jail cell with timed sentences, vehicle
+  escort to jail, patrol/senior ranks with rank-gated kit, fines, and arrest
+- **Organizations & hideouts** — create an organization, shared fund,
+  upgrades, members-only hideout door and processing machine
+- **Vehicles & garage** — vehicle lot purchase, lock and key ownership,
+  garage store/retrieve
+- **Quests** — quest givers, objectives, rewards, and a quest log
 - **Vehicle license plates** — generated plates
 - **Inventory** — quantity/stacking, split dialog, UI patches
 - **Notifications** — in-game toasts
@@ -59,9 +68,9 @@ The mod lives under `addons/LifeFramework/`:
 
 | Path | Purpose |
 | --- | --- |
-| `Missions/EveronLifeGameMode.conf` | Playable scenario → MainWorld |
+| `Missions/EveronLifeGameMode.conf` | Scenario → MainWorld |
 | `Missions/EL_DebugTest.conf` | Test scenario → DebugWorld + `EL_Test*` suite |
-| `Worlds/MainWorld` | Main playable world |
+| `Worlds/MainWorld` | Everon (`Eden`) sub-scene with the game mode, a spawn point, and one apple-farm area; the other systems are not placed here yet |
 | `Worlds/DebugWorld` | Dev/test bed — one layer per feature |
 | `Scripts/Game/Tests/` | In-game automated tests (`EL_AUTOTEST` define) |
 
@@ -88,7 +97,7 @@ world, and UI checks.
 
 ```
 addons/LifeFramework/   The mod (gproj, scripts, prefabs, worlds, UI, language)
-docs/                   Roadmap, features, test plan, setup guide
+docs/                   Roadmap, features, testing plan, setup guide
 server/                 Dedicated-server configs and launch scripts
 tools/                  Dev CLI, validation, MCP tooling
 agent-box/              GPU-box setup, player-equivalent hooks, pillar flows

@@ -49,6 +49,30 @@ class EL_Test_AgentHarness : EL_Test
 		ctx.False(EL_AgentCommand.Parse("6 open DebugMenu poke", cmd), "unknown open mode is rejected");
 		ctx.EqualStr("bad_open_mode", cmd.Error, "bad open mode error");
 
+		ctx.True(EL_AgentCommand.Parse("20 kit show", cmd), "kit show parses");
+		ctx.EqualStr("show", cmd.Arg1, "kit step");
+		ctx.True(EL_AgentCommand.Parse("21 kit line Balance 400", cmd), "kit line parses");
+		ctx.EqualStr("Balance", cmd.Arg2, "kit line part");
+		ctx.EqualStr("400", cmd.Arg3, "kit line text");
+		ctx.True(EL_AgentCommand.Parse("22 kit status Status Warrant Closed none", cmd), "kit status parses");
+		ctx.EqualStr("", cmd.Arg5, "none clears the action");
+		ctx.True(EL_AgentCommand.Parse("23 kit quantity Quantity 5 4", cmd), "kit quantity parses");
+		ctx.EqualStr("5", cmd.Arg3, "kit total");
+		ctx.EqualStr("4", cmd.Arg4, "kit take");
+		ctx.False(EL_AgentCommand.Parse("24 kit poke", cmd), "unknown kit step is rejected");
+		ctx.EqualStr("bad_kit_step", cmd.Error, "bad kit step error");
+		ctx.False(EL_AgentCommand.Parse("25 kit line Balance", cmd), "a line needs text");
+		ctx.EqualStr("need_line", cmd.Error, "short kit line error");
+
+		vector stand;
+		vector angles;
+		EL_AgentCommand.CameraStand("100 0 100", "0 40 90", stand, angles);
+		ctx.EqualFloat(100, stand[0], 0.01, "world shot stands on the offset x");
+		ctx.EqualFloat(40, stand[1], 0.01, "world shot stands on the offset y");
+		ctx.EqualFloat(190, stand[2], 0.01, "world shot stands on the offset z");
+		ctx.EqualFloat(180, angles[0], 1, "world shot yaws toward the target");
+		ctx.True(angles[1] < -20 && angles[1] > -28, "world shot pitches down toward the target");
+
 		ctx.True(EL_AgentCommand.Parse("10 stand ATM_Debug", cmd), "stand parses");
 		ctx.EqualStr("ATM_Debug", cmd.Arg1, "stand entity");
 

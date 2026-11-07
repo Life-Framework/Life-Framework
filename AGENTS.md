@@ -1,286 +1,93 @@
-# AGENTS.md — Life Framework development contract
+# AGENTS.md - Life Framework development contract
 
-A new world interactable runs `node tools\actions\place-action-contexts.mjs` so its UserActionContext Offset, Radius, and Height come from the mesh. The point sits on the part the player uses. A mesh taller than about 1.5 m gets a Height. Handheld pickups stay as they are.
+The portable contract for any coding agent (Claude Code via `CLAUDE.md`,
+opencode, Codex, Cursor). Read it before changing anything. Skills in
+`.claude/skills/` add workflows (`life-mode` routes a task to a playbook); when
+a skill and this file disagree, this file wins. Setup: `docs/setup.md`. Design
+intent: `docs/design.md`.
 
-`node agent-box/harness.mjs report roadmap` is the street visual pass. In a rendering play session it stands at every `Roadmap_` entity, runs `look`, takes a world shot, and writes `agent-box/reports/roadmap.html` with each picture beside that text, plus one wide shot of the row. A row fails when the mesh is white or missing, look offers no interaction, a menu is blank, or the site is more than 30 m from the rest of the street. `node agent-box/harness.mjs selftest` marks an empty look and a site 80 m away as failures. Do not boot the test server for this report.
+## Repo map
 
-## Context — stop here
-
-If the named commit is already an ancestor and the worktree is clean, print the SHA and stop. Do not regenerate, do not re-run a suite, and do not open another pull request. A later commit that suite-valid accepts does not require a new suite. A commit that changes gameplay or the persistence version does.
-
-This section is the context. Write the assigned files. Do not open sibling features, validation scripts, MCP sources, or the server executable to learn the shape.
-
-Worktree ports come from `tools\cli wt list`. The test command prints them. Port 2001 in a server log is not a bug to chase. Retry a failed boot once.
-
-The resource database is copied by `wt list` and by `test`. Do not commit it. Wrong GUID, invalid prefab, and `GetCash` returning 0 mean the copy is missing. These four tests fail only for that reason: `e2e/narrative-loop`, `e2e/inventory-storage`, `money/cash-roundtrip`, `vehiclelock/lock-key-access`.
-
-If the harness throws `Cannot index into a null array`, grep `console.log` for `[ELTEST] SUMMARY` and for the assigned test name.
-
-A locked door calls `LF_Breach.Arm(targetId, playerUid)`. A cash till uses `EL_RobAction`. Cash is MoneyStack `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The ATM is the only cash-to-account boundary. A robbery leaves `EL_BankAccount` at 0.
-
-Door actions override the inherited `ActionsManagerComponent {F32B667C3C823800}` on `{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et`. A second ActionsManager drops the lock. That door inherits `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`. The charge prefab is `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`. The fuel till is `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, parent `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`. The debug boundary prefab is `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
-
-One layer file per scope, copied from the shape of `Roadmap_Breach.layer`. Do not edit `Roadmap.layer` or `tools/validation/validate-debugworld.ps1` unless the task names them.
-
-Tests go in `Scripts/Game/Tests/EL_Test_*.c` with a tier comment and a red-proof comment. Break one assertion, watch it fail, restore it, record the observed line. Run `tools\cli regen-tests`. On a registry conflict, regenerate. Do not hand-merge it.
-
-Append localization keys. Do not rewrite the table. Run `tools\cli regen-localization`. Update `docs/features.md` in the same change. A rebase onto a branch that also touched those files keeps both sides.
-
-Fast suite: `tools\cli test --no-build --tier fast`. Full suite: `tools\cli test --no-build --tier all`. Do not run `cli build`, `cli ci`, or `cli test` without `--no-build` unless the task says so. Do not run those from the main checkout.
-
-EnforceScript has no ternary and no null-coalescing. `ref` goes on Managed fields and on the collections that hold them. Store `EntityID`, not `IEntity`. Failures log `EL_Debug.Error` and degrade that feature.
-
-A launch prompt that names the files, the function, the coordinates, and the prefab is the assignment. Start with the red test.
-
-Instructions for AI coding agents working in this repository (opencode, Codex,
-Cursor, Claude Code, and any tool that reads `AGENTS.md`). Read this file
-before making changes. This file is the portable, tool-agnostic contract; the
-`.opencode/skills/` folder holds opencode's deeper workflow layer (see
-"Rigorous workflows" below).
+| Path | What lives there |
+|---|---|
+| `addons/LifeFramework/Scripts/Game/` | Enforce Script: `Core/`, `Feature/<Area>/` (each with a `Feature.md`), `Persistence/`, `UI/`, `Tests/`, ... |
+| `addons/LifeFramework/{Prefabs,Configs,UI,Language,Missions}/` | Resources (`.et`, `.conf`, `.layout`, `.st`) |
+| `addons/LifeFramework/Worlds/DebugWorld/` | Test world. `DebugWorld.ent` is 0 bytes on purpose; content is in `DebugWorld_Layers/*.layer` |
+| `tools/` | `cli` (one entry point), `validation/`, `test/`, `merge/`, `actions/`, `street/` |
+| `agent-box/` | Player-equivalent checks on a rendering Workbench (`agent-box/README.md`) |
+| `docs/` | `features.md` (what each system does), `debug-log-triage.md`, `worktrees.md`, `setup.md`, `persistence.md`, `roadmap/` |
 
 ## Golden rules
 
-1. **Never commit generated/artifact files**: `resourceDatabase.rdb`,
-   `*.rdb.lock`, the addon `log` file, `*.gproj.user`, `node_modules/`, and the
-   MCP clones under `tools/mcp/*/`. A pre-commit hook
-   (`.githooks/pre-commit`, wired via `core.hooksPath`) enforces this — fix
-   anything it flags rather than bypassing it.
-2. **Resource GUIDs are unique and immutable.** Every resource has a `.meta`
-   with a unique 16-hex GUID. Never reuse, shuffle, or hand-duplicate GUIDs
-   across files. `tools\cli validate` detects duplicates and orphan `.meta`
-   files.
-3. **Reference resources by `{GUID}path`.** Path hints must match the real
-   location (folder casing included). A lowercase `data/` in a path where the
-   folder is `Data/` is a bug — the validator warns on it.
-4. **Binary assets are committed as plain blobs** (no LFS yet). Keep them
-   binary (`-text`) in `.gitattributes`; never run text conversion over them.
-5. **Enforce Script lives under `addons/LifeFramework/Scripts/Game/`**. New
-   custom classes are prefixed `LF_` (Life Framework); the legacy `EL_`
-   (EveronLife) prefix stays on existing classes and is not renamed — new
-   `LF_` code freely calls `EL_` infrastructure (e.g. `EL_Debug`,
-   `EL_Component`, `EL_PlayerLevelComponent`). Script classes referenced by
-   prefabs/entities need the matching `XxxClass: YyyClass` pair where the base
-   declares one.
-6. **Never run heavy commands in the main checkout.** `cli build / test / dev /
-   serve / ci` refuse to run there (the CLI enforces this) — the main checkout
-   is the world-editor copy and agent activity must never break it. Create a
-   worktree with `cli wt new <feature>` and work in it; ship via `cli wt ship`.
+1. **Never commit generated files**: `resourceDatabase.rdb`, `*.rdb.lock`, the
+   addon `log`, `*.gproj.user`, `node_modules/`, `tools/mcp/*/`. The pre-commit
+   hook (`.githooks/pre-commit`) enforces this; fix what it flags.
+2. **Resource GUIDs are unique and immutable.** Never reuse, shuffle, or
+   hand-duplicate a `.meta` GUID. `tools\cli validate` catches duplicates and
+   orphan metas.
+3. **Reference resources by `{GUID}path`** with the real folder casing.
+4. **Binary assets are plain blobs** marked `-text` in `.gitattributes`.
+5. **New classes are `LF_`.** Existing `EL_` classes keep their names. The real
+   EveronLife mod (`EL_`) can load on the same server, so new `EL_` names can
+   collide. `LF_` code calls `EL_` infrastructure freely. Tests keep the
+   `EL_Test_*` naming for now.
+6. **Heavy commands run only in a worktree.** `build`, `test`, `dev`, `serve`,
+   `ci` refuse to run in the main checkout, which is the human's world-editor
+   copy.
+7. **User-facing strings are localization keys** in
+   `Language/everonlife_localization.st` (append, never rewrite; then
+   `tools\cli regen-localization`). Layouts reference `#Key`.
+8. **Update `docs/features.md` in the same change** that alters a feature.
+   Append or edit only your rows; a merge driver keeps both sides.
 
-## Build & test (the whole point)
+## Commands
 
-Everything is driven through the unified CLI — agents should never need a human
-or the Workbench GUI:
+`tools\cli help` and `tools\cli wt help` list everything; these are the daily ones.
 
-```sh
-tools\cli status              # toolchain + MCP servers + environment
-tools\cli wt new <feature>    # create worktree + branch + port allocation
-tools\cli dev --tier fast     # fast loop in the CURRENT worktree (no build)
-tools\cli wt gate <feature>   # validate + build + test in a worktree (anywhere)
-tools\cli wt ship <feature>   # sync -> gate -> push -> PR -> auto-merge into main
-tools\cli build               # headless Workbench build of the addon (PC, worktree)
-tools\cli test                # build + boot dedicated server on DebugWorld +
-                              #   run the ELTEST suite + parse results (exit code)
-tools\cli test --no-build     # skip the build, just run the server suite
-tools\cli test --tier fast    # LOGIC-tier tests only (~seconds, no world deps)
-tools\cli serve               # boot the test server and stream logs (blocks)
-tools\cli logs <pattern>      # grep the newest test-server console.log (after-context 3,
-                              #   capped at 8 matches; flags --before/--after/--limit/--tail/--scope)
-tools\cli ci                  # validate + build + test — the full gate
-tools\cli validate            # repo consistency checks (also runs on commit)
-tools\cli lint                # run tools/lint/* checks
-tools\cli regen-localization  # rebuild runtime .conf tables from Language/*.st
-tools\cli mcp install|update|verify|enable|disable   # manage MCP servers
-```
+| Command | Does |
+|---|---|
+| `tools\cli status` | Toolchain and MCP state |
+| `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports |
+| `tools\cli validate` | Every repo check in `tools/validation/` (also the pre-commit hook) |
+| `tools\cli test --no-build --tier fast\|all\|persistence` | Boot DebugWorld, run the `EL_Test` suite; exit code is pass/fail |
+| `tools\cli dev --tier fast` | validate + test without a build, then dump `[ELDebug:*]` lines |
+| `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
+| `tools\cli logs <pattern>` | Grep the newest server `console.log` |
+| `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
+| `tools\cli wt gate <slug>` / `wt ship <slug> [--pr-only]` | validate + build + full suite / sync, gate, push, PR |
+| `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
 
-The test flow: `Missions/EL_DebugTest.conf` loads `Worlds/DebugWorld`, the
-`EL_TestRunnerComponent` runs the `EL_Test*` suite on server start and prints
-machine-readable markers:
+## Worktrees
 
-> **`Worlds/DebugWorld/DebugWorld.ent` is 0 bytes on purpose.** All world
-> content lives in `Worlds/DebugWorld/DebugWorld_Layers/*.layer` files
-> (`default.layer` = world BSP + terrain; each feature is its own layer). The
-> world entity must load first, before gameplay props initialize their physics. Do
-> not "repair" the empty `.ent` — it is a valid empty world. `MainWorld.ent`
-> differs: it is a `SubScene` wrapper over `worlds/Eden/Eden.ent`. See
-> `docs/features.md` → DebugWorld coverage.
+Start with `tools\cli wt new <slug>` and work inside it on `ws/<slug>`; never
+commit to `main`. `docs/worktrees.md` covers ports, locks, shipping, and pruning.
+**Never run `git worktree remove --force`, `rm -rf`, or `Remove-Item -Recurse`
+on a worktree or on `server/profile`.** Their `game-addons` folders are
+junctions into the Steam installs; on 2026-11-07 `git worktree remove --force`
+(Git for Windows 2.47) followed them and emptied the base game. Remove a
+worktree with `tools\cli wt prune <slug>`; delete any other tree with
+`node tools/safe-rm.mjs <dir>` (`link-safety-selftest` proves both).
 
-```
-[ELTEST] START <name>
-[ELTEST] PASS <name> (N assertions)
-[ELTEST] FAIL <name>
-[ELTEST]   - failure detail
-[ELTEST] SUMMARY tier=fast|all passed=N failed=N total=N
-```
+## Tests
 
-`tools\cli test` waits for `SUMMARY`, asserts the reported tier matches the
-requested one, scans for engine errors `( E )`, and exits nonzero on any
-failure — that exit code is the agent's pass/fail signal. Default tier is
-`all`; use `--tier fast` while iterating on pure logic and run the full `all`
-tier before declaring a phase or fix complete.
+- One file per test: `Scripts/Game/Tests/EL_Test_*.c` extending `EL_Test`, with
+  `// tier: LOGIC|WORLD|PERSISTENCE` above the class and a `// red-proof:` line.
+- Tiers are setup cost, not subject: `LOGIC` is pure script (`--tier fast`);
+  `WORLD` loads a resource or touches the world; `PERSISTENCE` is a save round trip.
+- Prove red once: break one assertion, watch it fail, restore it, record the line.
+- The registry is generated by `tools\cli regen-tests`; never hand-edit it or `EL_TestManager.c`.
+- Persistence tests go through public mutators and accessors only. In-session
+  round trips prove nothing about restarts; use `wt e2e` or a real restart.
+- A rule that keeps getting broken becomes a check: `tools\cli validate` runs every script in `tools/validation/`.
 
-Player-equivalent checks on a rendering box live in `agent-box/`. `press F`
-calls `SCR_InteractionHandlerComponent.ActionPerform`. Menu keys go through
-`input`. World and UI shots go through `EL_ScreenshotCapture`. Run
-`node agent-box/harness.mjs selftest` with no game, and
-`node agent-box/harness.mjs flow <name>` once Workbench is in play mode.
-Details: `agent-box/README.md`.
+## Logging and fail-safe
 
-The fast dev loop is `tools\cli dev [--tier fast|all]`: validate + test
-without the headless build (the dedicated server compiles scripts at boot from
-the unpacked addons), then dumps every `[ELDebug:*]` feature log line from the
-same run. Use `dev` for iteration; reserve `ci` for the gate.
-
-### Parallel worktrees (agents never touch the world-editor copy)
-
-Up to ~20 agents work on disparate features at once. Each agent owns a git
-worktree `Life-Framework-ws-<slug>` (sibling directory) on branch `ws/<slug>`,
-branched from `origin/main`. The main checkout stays clean so the human can
-always open the world editor.
-
-- **Start**: `tools\cli wt new <feature>` — fetches origin, creates the
-  worktree + branch, allocates a unique port pair, registers it in the hub
-  (`<main-checkout>/tmp/wt/`, git-ignored). `cd` into the worktree and work
-  there. Files are a full checkout; add/edit/commit as usual.
-- **Iterate**: `tools\cli dev --tier fast` *inside the worktree*, or
-  `tools\cli wt dev <feature> --tier fast` from anywhere. Every worktree boots
-  the test server on its own ports (`-bindPort`/`-a2sPort`), so tests run in
-  parallel across worktrees. Never run `dev`/`test`/`build`/`serve`/`ci` from
-  the main checkout — the CLI refuses. Grep a worktree's last run with
-  `tools\cli wt logs <feature> <pattern>` (or `tools\cli logs <pattern>` inside
-  the worktree).
-- **Gate before shipping**: `tools\cli wt gate <feature>` runs validate +
-  headless build + test (tier=all) in that worktree. One Workbench build runs
-  at a time machine-wide (lock file); pass `--wait` to queue instead of failing
-  fast. Do not open the world editor while a headless build is running.
-- **Ship**: `tools\cli wt ship <feature>` syncs `origin/main` into the branch,
-  runs the gate, pushes, opens a PR, and auto-merges it into main — no human
-  babysitting. `--pr-only` leaves the PR open for review. Conflicts stop the
-  ship with a clear message; fix and re-run.
-- **Cleanup**: merged worktrees show as `merged (prune me)` in
-  `tools\cli wt list`; remove with `tools\cli wt prune <feature>` (verified
-  against `origin/main`; `--force` discards unmerged work).
-- **Auth**: PR creation needs the GitHub CLI authenticated once
-  (`gh auth login`), or a `GITHUB_TOKEN` env var (REST fallback).
-
-Commit discipline: never commit to `main` from a worktree (the pre-commit
-validator blocks it). Always keep the worktree on its `ws/<slug>` branch — if a
-worktree drifts to another branch, `cli wt test/build/ship` refuse and
-`cli wt sync` checks it back out.
-
-## Debug logging and the fail-safe rule
-
-Before investigating any console line, check `docs/debug-log-triage.md` — it
-classifies every known DebugWorld boot message (fixed bug, benign vanilla
-noise, by-design) so a session does not re-prove what a previous one already
-ruled out. Add new messages there in the same change that explains them.
-
-Every feature logs its state transitions through `EL_Debug`
-(`Scripts/Game/Core/EL_Debug.c`) so any headless or play run is greppable by
-feature. This is a development contract, not optional polish:
-
-- `EL_Debug.Log("<Feature>", "<message>")` prints `[ELDebug:<Feature>] <message>`
-  to the console log (server and client). The prefix is the contract the harness
-  and agents grep on. There are `Info`, `Warn`, and `Error` variants; use
-  `Error` for a failure the feature degrades past.
-- Instrument the **state transitions that matter to a player**: a lock state
-  change, a key match/mismatch, a purchase accepted or rejected, a crop stage
-  advance, an ore batch spawn, a job set, a level-up, a survival stat change.
-  Rejections are logged too (`rejected`, `failed`, `skipped`) — a silent no-op is
-  a bug.
-- **Fail-safe is a hard rule**: a misconfigured or broken input (missing prefab,
-  null entity, bad GUID, empty list, missing file) must log an `EL_Debug.Error`
-  and degrade that one feature. It must never VME, crash the world, or abort the
-  game mode. The `EL_Utils.SpawnEntityPrefab` prefab-resolve guard and the
-  whitelist CONNECT-gate file-missing degradation are the reference patterns.
-- Never log with a bare `Print("[EL_X] ...")` when a feature has an `EL_Debug`
-  call site — one logging path per feature, the greppable one.
-
-## Adding tests / checks
-
-- **In-game tests**: create `addons/LifeFramework/Scripts/Game/Tests/EL_Test_*.c`
-  extending `EL_Test` (implement `GetName()` and `Run(ctx)`), declare its tier
-  with a `// tier: LOGIC|WORLD|PERSISTENCE` comment above the class, and carry
-  a `// red-proof:` comment. Registration is automatic: `tools\cli regen-tests`
-  regenerates `EL_TestRegistrations.generated.c` from the test files, and
-  `tools\cli validate` checks it is in sync. Never hand-edit
-  `EL_TestManager.c` or the generated registry file.
-  - **Tiers are setup cost, not subject.** `LOGIC` = pure EnforceScript, runs
-    in `--tier fast` (use for every logic change). `WORLD` = loads a resource,
-    spawns an entity, or reads the world (runs only in the full `all` tier).
-    `PERSISTENCE` = reserved for save/reload round trips (roadmap Phase 1).
-  - **Red-proof**: the test file must carry a `// red-proof:` comment recording
-    how its assertions were observed failing at least once. A test that cannot
-    go red is a defect — prove red by breaking an assertion and running the
-    suite before you trust it green. `tools\cli validate` enforces the tier
-    comment, the registration sync, and the red-proof comment.
-  - **Parallel-safe**: because the registry is derived from the files, multiple
-    agents may add test files concurrently. Each agent adds its own file (with
-    `// tier:` and `// red-proof:`), runs `tools\cli regen-tests`, and never
-    touches another agent's test file or the generated registry.
-  - **Persistence tests route through public API only**: mutate via manager
-    mutators, reload, read back via accessors. Assertions that touch the
-    persistence internals pass while the player-facing contract breaks.
-- **Repo checks (pre-commit + `cli validate`)**: drop a script in
-  `tools/validation/` — the CLI runs every script in the folder.
-- **Update `docs/features.md` in the same change that alters a feature.** It is
-  the contract doc every agent reads to know what a system does; a stale row
-  reads as a live bug and wastes the next agent's session. `cli validate`
-  warns (`validate-docs-sync.ps1`) when feature code changes without it.
-  Mark re-audited rows with a `(verified YYYY-MM-DD)` tag so future agents
-  know what was actually checked when.
-- **Other lint/test scripts**: drop them in `tools/lint/` or `tools/test/` and
-  run `tools\cli lint` / `tools\cli run test`.
-- **Manual test steps ship with the change.** The suite covers logic and world
-  seams; multiplayer/JIP, UI, and the true restart path stay manual. A change
-  touching any of those is not done until its PR description says exactly what
-  to do: host or join, actions, what to observe, whether a restart is needed.
-  In-session round trips prove nothing about restarts.
-- **Use the MCPs instead of writing code.** `wb_read_props` returns resolved
-  (inherited) prefab values — paste them into test expectations instead of
-  hand-walking ancestry. `api_search`/`game_read` tell you which vanilla class
-  already does the job; reusing it beats reimplementing it. `game_duplicate`
-  keeps test fixture prefabs on correct inheritance so tests assert only the
-  delta. `asset_search` gives the `{GUID}path` for fixture lists.
-
-## MCP servers (AI tooling)
-
-**Default to the MCP tools first.** When a question can be answered or a
-claim validated by an MCP tool, use it instead of guessing, hand-parsing,
-hand-walking prefab ancestry, or making the user compile. Rules of thumb:
-- Before writing/reading Enfusion API or vanilla code → `api_search`,
-  `game_read`, `game_browse`, `wiki_search`.
-- Before pasting a prefab/config value into code or a test → `wb_read_props`
-  (resolved, inherited values — never hand-walk `parent` chains).
-- Before citing a resource path → `asset_search` for the `{GUID}path`.
-- Before wiring a component or checking it exists → `component_search`.
-- To validate a resource/asset → `wb_validate` (material/texture) or
-  `prefab inspect` / `config` checks; prefer the tool over eyeballing text.
-Pick the cheapest MCP tool that answers the question. If an MCP is fast and
-answers it, you do not need to ask the user or spin up a full build.
-
-Configured in `opencode.json`; the clones live (git-ignored) under
-`tools/mcp/`. `tools\cli mcp install|update|verify|enable|disable` manages
-them. `enfusion-mcp` is enabled by default; `enfusion-workbench` is opt-in.
-Environment paths (`ENFUSION_WORKBENCH_PATH`, `ENFUSION_GAME_PATH`,
-`ENFUSION_PROJECT_PATH`, optional `ENFUSION_SERVER_PATH`) are set there.
-
-### Calling MCP tools without an opencode session
-
-`tools\cli call <tool> '<json args>'` (or `node tools/mcp-call.mjs ...`) invokes
-a server tool directly over stdio JSON-RPC, no opencode restart needed. This is
-the way to research the Enfusion/vanilla API from subagents or a plain terminal:
-
-```
-tools\cli call list
-tools\cli call api_search '{"query":"SCR_SpawnLogic","format":"tree"}'
-tools\cli call game_read @tmp/args.json     # file-based args: PowerShell mangles inline JSON
-```
-
-Tools of interest: `api_search` (classes/methods with inheritance), `game_read`
-(vanilla source from `.pak`), `game_browse`, `asset_search` (GUID-prefixed
-paths), `wiki_search`/`wiki_read`, `component_search`, `wb_*` (live Workbench).
-Never guess an Enfusion API - look it up with `tools\cli call` first. See
-`tools/mcp-call.mjs` and `tools/README.md`.
+- Feature state changes and rejections log through `EL_Debug.Info/Warn/Error("<Feature>", msg)`,
+  which prints the greppable `[ELDebug:<Feature>]` prefix. A silent no-op is a bug.
+- A broken input (missing prefab, null entity, bad GUID, missing file) logs
+  `EL_Debug.Error` and degrades that one feature. It never VMEs or aborts the game mode.
+- One logging path per feature; no bare `Print("[EL_X] ...")` beside `EL_Debug`.
+- Before chasing a console line, check `docs/debug-log-triage.md`; add new lines there when you explain them.
 
 ## Hard EnforceScript lessons (paid for by real bugs)
 
@@ -308,7 +115,7 @@ bug for each one; they transfer here because the engine is the same.
   `if (Replication.IsServer())` call the handler directly, else `Rpc(...)`.
 - **A client can only RPC on entities it owns.** Inter-player communication
   goes through the server. Validate client requests on the server (money,
-  inventory, RPC payloads) — never trust the client.
+  inventory, RPC payloads); never trust the client.
 - **`Init()` is not called automatically.** Initialize collections in the
   declaration or call `Init()` yourself from the game mode / owning manager.
 - **Null-check singletons and UI.** `GetInstance()` returns null until the game
@@ -317,123 +124,51 @@ bug for each one; they transfer here because the engine is the same.
   persist a stable key and re-resolve on load, tolerating "not there". Write a
   `version` first; binary save contexts are positional (write order = read
   order). Load must be idempotent (runs on fresh load AND when re-applying to a
-  live session). No console guards — consoles are handled internally.
+  live session). No console guards; consoles are handled internally.
   **In-session round trips prove nothing about restarts**; the restart path is
   ground truth.
 
 ## Enfusion data rules
 
-- **Prefabs.** Prefer inheritance over duplication; `prefab inspect` reads the
-  full ancestor chain. Duplicate base-game prefabs with the MCP `game_duplicate`
-  tool so GUIDs stay unique. A `MeshObject` needs a real `.xob` model or the
-  entity is invisible. Every new resource needs a `.meta` with a unique GUID.
-  A move/rename breaks every `{GUID}path` reference, including saved worlds —
-  map references before moving.
-- **Materials.** A mod item that must show a texture reliably bakes its real
-  `.emat` into the `.xob` (MoneyStack.xob bakes CashMaterial.emat; Apple.xob
-  bakes Apple.emat). Relying on a prefab `MaterialAssignClass { AssignedMaterial
-  }` override over a `.xob` that bakes the base placeholder
-  `Common/Materials/Default.emat` is the fragile path: when the override does
-  not apply the mesh renders the white placeholder. The mining bars/nuggets/ores
-  and WoodPlank shipped that shape and went white. `validate-material-chains`
-  (part of `cli validate`) verifies every `AssignedMaterial`/texture reference
-  and warns on this placeholder-bake pattern.
-- **Texture verification is visual only.** The dedicated server (and any
-  `ArmaReforgerWorkbenchSteamDiag` instance) registers no renderer or texture
-  loader, so no EL_Test can prove a texture renders and `MeshObject.GetMaterials`
-  returns empty there. Verify a texture in the rendering Workbench play mode, or
-  read resolved prefab values with `wb_read_props`. When scripting the bridge,
-  run `wb_state`+`wb_play` in one MCP session (`tools\cli call --batch
-  @session.json`) - a fresh process per call starts with a stale "unknown" mode
-  and mode-gated tools refuse.
-- **Layouts.** A widget-instance GUID must be unique within the file; an
-  inherited-component GUID must equal the GUID in the base layout (a fresh one
-  adds a second, unconfigured component and the widget silently does nothing).
-  Every new `.layout` needs a sibling `.layout.meta` with the
-  PC/XBOX/PS4/HEADLESS configs. `m_sActionName` must match an `Action` AND be
-  listed in the screen's `ActionContext`, or the key never fires.
-- **Input.** A menu's input context must be activated every frame while open.
-  List `MenuBack` plus `MenuUp/Down/Left/Right` and `MenuSelect` or a pad cannot
-  drive the menu. Never bind a verb to `W/A/S/D` (menu nav), `a` (`MenuSelect`
-  double-fire), the d-pad, `T`, or `shoulder_left` (VON owns it at priority
-  110). Bind a `gamepad0:` source alongside every keyboard source.
-- **Localization.** User-facing strings are keys in
-  `Language/everonlife_localization.st`, never literals. A key missing from a
-  language renders as the key at runtime. Fill in the `Comment` field for
-  translators. Layouts reference the key (`#Key`), not the string.
+Detail lives in `.claude/skills/enfusion-resource-authoring` and `enfusion-blast-radius`.
 
-## Verification (the ladder)
+- Prefer prefab inheritance over duplication; duplicate vanilla prefabs with `game_duplicate`.
+- Override an inherited component by its GUID; a second component of the same class shadows it.
+- A `MeshObject` needs a real `.xob` or the entity is invisible.
+- A textured mod item bakes its real `.emat` into the `.xob`; a prefab material override over a placeholder bake renders white.
+- Textures are verified visually only; the dedicated server has no renderer.
+- A new world interactable runs `node tools/actions/place-action-contexts.mjs`.
+- Moving or renaming a resource breaks every `{GUID}path` reference, saved worlds included.
+- Layouts: unique widget GUIDs per file, inherited-component GUIDs equal the base, a sibling `.layout.meta`.
+- Input: bind keyboard plus `gamepad0:`; never `W/A/S/D`, `a`, the d-pad, `T`, or `shoulder_left`.
+- A persisted payload is appended to `RegisterPersistencePayloads` with a version bump (`validate-persistence-version`).
 
-A change is not done until it climbs the rungs its scope requires:
+## Research before code
 
-1. **Repo hygiene + headless compile** — `tools\cli validate`. Cheap; run it
-   constantly. Do not ask the user to compile.
-2. **In-game suite** — `tools\cli test` (in your worktree, or `cli wt test
-   <slug>`). Boots the DebugWorld server, runs the `EL_Test*` suite, exits
-   nonzero on failure. A scarce gate: once after a phase or fix is complete,
-   never mid-edit.
-3. **DebugWorld play** — drive the actual feature path in the running game and
-   read the observable result (log line, UI value, inventory change).
-4. **Logs** — `Documents/My Games/ArmaReforger/logs/<date>/console.log` and
-   `error.log`; script errors match `SCRIPT (E)` / `VME:` / `Unable to find`.
-   Judge by specific patterns, never by total error counts.
+Never guess an Enfusion API. Look it up from any terminal:
+`tools\cli call api_search|game_read|wb_read_props|asset_search '<json>'`
+(use `@args.json` from PowerShell). `wb_read_props` gives resolved inherited
+prefab values; `asset_search` gives `{GUID}path`. Reading sibling features and
+existing code to learn the shape is encouraged. See `enfusion-api-research`.
 
-**Proof classes that survive the ladder.** Restart (a real save → restart →
-load; in-session round trips prove nothing). Dedicated server (a green host run
-proves nothing; UI without a server-side guard breaks). Late joiner (JIP state
-that was never written is invisible to players who were there from the start).
-There is no interactive debugger and no hot reload: debug with `Print()` + logs,
-then restart play mode.
+## Verification ladder
 
-## Environment
+1. `tools\cli validate`: cheap, run it constantly.
+2. The `EL_Test` suite in your worktree: `--tier fast` while iterating, `--tier all` before calling work done.
+3. Drive the real path: DebugWorld play mode or `node agent-box/harness.mjs flow <name>`.
+4. Read the specific log line (`SCRIPT (E)`, `VME:`, `Unable to find`), never an error count.
 
-- Arma Reforger Tools (Workbench) and the game are required for `cli build`.
-- Arma Reforger Server (Steam app 1874900) is required for `cli test`/`serve`.
-- Server config: `server/configs/test-server.json` (scenario + RCON).
-  Launch wrapper: `server/scripts/launch-test.ps1` / `.sh`.
-- Toolchain paths resolve as: OS env var (`ENFUSION_WORKBENCH_PATH`,
-  `ENFUSION_GAME_PATH`, `ENFUSION_SERVER_PATH`, `ENFUSION_PROJECT_PATH`) →
-  `opencode.json` → standard Steam install locations. The committed
-  `opencode.json` is portable; put machine-specific paths in your environment
-  or `~/.config/opencode/opencode.json`, never in the repo (see `docs/setup.md`).
-- If Workbench reports `Missing Addon` for game GUID `58D0FB3206B6F859`, run
-  `powershell -ExecutionPolicy Bypass -File tools\utilities\repair-base-addons.ps1`.
-  The repair restores only a missing loose `ArmaReforger.gproj` from the
-  installed Server package; it never overwrites a manifest with the wrong GUID.
-- Generated `server\profile\*\game-addons` directories contain junctions into
-  Steam installs. `git worktree remove --force`, `rm -rf`, and
-  `Remove-Item -Recurse` follow them and empty the base game (it happened on
-  2026-11-07). Remove a worktree only with `tools\cli wt prune`; delete any
-  other tree with `node tools/safe-rm.mjs <dir>`. `link-safety-selftest`
-  proves both.
+Proof classes that survive the ladder: restart (a real save, restart, load),
+dedicated server (a green host run proves nothing), late joiner (JIP state that
+was never written). There is no debugger or hot reload; debug with logs.
 
-## Rigorous workflows (any tool may read these)
+**Manual steps ship in the PR.** Multiplayer/JIP, UI, and the true restart path
+stay manual; the PR says exactly what to do: host or join, actions, what to
+observe, whether a restart is needed.
 
-The `.opencode/skills/` folder is opencode's skill loader, but the files are
-plain markdown any agent can read directly for the rigorous engineering
-workflows this project uses:
+## CI
 
-- **Routing mode + playbooks** — `.opencode/skills/life-mode/SKILL.md` and
-  `playbooks/*.md` (investigation, bug-fix, feature, refactoring, prototype,
-  runtime-forensics, multi-phase-plan, session-pickup). Match the task to a
-  playbook, copy its steps, apply the principles.
-- **Principles** — `.opencode/skills/principle-*/SKILL.md`. The load-bearing
-  ones: prove-it-works, fix-root-causes, sequence-verifiable-units,
-  laziness-protocol, foundational-thinking, boundary-discipline,
-  guard-the-context-window.
-- **Domain authoring guides** — `.opencode/skills/enfusion-api-research`,
-  `enfusion-script-authoring`, `enfusion-prefab-authoring`,
-  `enfusion-config-authoring`, `enfusion-verify`.
-- **Situational skills** — `el-tdd`, `enfusion-how`, `enfusion-architect`,
-  `enfusion-blast-radius`, `interrogate`, `show-me-your-work`, `unslop`,
-  `parallel-worktrees` (worktree lifecycle + auto-merge; read it before
-  touching any build/test command).
-
-If a rule in AGENTS.md and a skill file ever disagree, **AGENTS.md wins** — it
-is the portable contract every tool reads.
-
-## Reminders
-
-- After editing `opencode.json`, tell the user to restart opencode.
-- Keep commits focused; run `tools\cli ci` (or at least `cli validate`) before
-  finishing a task — in a worktree, not the main checkout.
+GitHub Actions `validate` runs `tools\cli validate` on every PR and is a
+required check on `main`. CI sets `LF_VALIDATE_SKIP=validate-scripts.ps1,validate-action-contexts.mjs`
+because the runner has no Reforger install or MCP build. Script compilation
+and the in-game suite stay local (`tools\cli test --no-build` in a worktree).
