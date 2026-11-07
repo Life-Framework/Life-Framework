@@ -6,8 +6,8 @@
 #
 # Workbench must be launched from the game install dir so that ./addons
 # resolves to the game's own packed addons - the vanilla Game addon
-# (58D0FB3206B6F859) that our dependency chain (EPF -> EDF -> Game) resolves
-# against. Logs land in Documents\My Games\ArmaReforgerWorkbench\logs.
+# (58D0FB3206B6F859), the only dependency in LifeFramework.gproj. Logs land
+# in Documents\My Games\ArmaReforgerWorkbench\logs.
 #
 # Run via: tools\cli validate   (or directly for verbose output)
 
@@ -42,19 +42,11 @@ $before = @(Get-ChildItem $wbProfileLogs -Directory -ErrorAction SilentlyContinu
 
 Write-Host "validate-scripts: launching Workbench from game dir (first run may rebuild the resource database and take a while) ..."
 
+# game-addons holds junctions into the Steam installs. safe-rm unlinks every
+# link without following it, then deletes, and exits nonzero when a link stays.
 function Remove-GeneratedAddonRoot([string]$path) {
-  if (-not (Test-Path -LiteralPath $path)) { return }
-  foreach ($name in @("core", "data")) {
-    $child = Join-Path $path $name
-    if (-not (Test-Path -LiteralPath $child)) { continue }
-    $item = Get-Item -LiteralPath $child -Force
-    if ($item.LinkType -eq "Junction" -or $item.LinkType -eq "SymbolicLink") {
-      cmd /c rmdir "$child" 2>$null | Out-Null
-    } else {
-      Remove-Item -LiteralPath $child -Recurse -Force
-    }
-  }
-  Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+  & node (Join-Path $root "tools\safe-rm.mjs") $path
+  if ($LASTEXITCODE -ne 0) { Write-Host "ERROR could not safely remove $path"; exit 2 }
 }
 
 # Workbench validation owns this generated addon root. Dedicated-server tests

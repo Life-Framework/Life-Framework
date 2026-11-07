@@ -1,7 +1,7 @@
 # Crime — Design Requirements
 
 > Context file for the criminal / wanted system. Written against
-> `docs/design-philosophy.md` (in-world first).
+> `docs/design.md` (in-world first).
 
 ## Intent
 
@@ -51,3 +51,20 @@ isn't today — see current state).
 
 - `Account` (wanted), `Police` (response/arrest), `Money` (stolen cash),
   `Weapon`s (rob-with and rob-of).
+## Wiring facts (moved from AGENTS.md, verified 2026-11-07)
+
+- Breach: `LF_BreachArmAction` (`LF_BreachAction.c`), `LF_Bank`, and
+  `LF_Hospital` all call `LF_Breach.Arm(targetId, playerUid)`. Wanted and the
+  police notify live inside `Arm`, so a refreshed action offer cannot fire them.
+- Cash till: `Roadmap_Fuel_Till` in `Roadmap.layer` is
+  `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et` (parent
+  `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`) and carries
+  `EL_RobAction` as an additional action.
+- The haul is MoneyStack cash
+  (`{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`). The ATM is the
+  only cash-to-account boundary, so a robbery leaves `EL_BankAccount` at 0
+  (pinned by `crime/rob-reward`).
+- Doors: `{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et`
+  inherits `Door_HouseWooden_E_A_LEFT_EXT_COV_B.et` and overrides the inherited
+  `ActionsManagerComponent "{F32B667C3C823800}"`. Add door actions to that
+  override. A second ActionsManagerComponent drops the lock actions.
