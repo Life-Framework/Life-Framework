@@ -20,6 +20,7 @@
 import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, normalize, resolve } from "node:path";
+import { removeWorktree, safeRemoveTree } from "./link-safety.mjs";
 
 const IS_WIN = process.platform === "win32";
 const GH_ON_PATH = IS_WIN ? "gh.cmd" : "gh";
@@ -382,13 +383,15 @@ export function wtPrune(root, slug, { force = false } = {}) {
       const dirty = git(e.path, ["status", "--porcelain"]).stdout.trim();
       if (dirty) throw new Error(`worktree ${slug} has uncommitted changes; use --force to discard`);
     }
-    const rm = git(mainRootOf(root), ["worktree", "remove", e.path, ...(force ? ["--force"] : [])]);
+    // Never call git worktree remove directly: with --force it follows the
+    // game-addons junctions and empties the Steam installs.
+    const rm = removeWorktree(mainRootOf(root), e.path, { force });
     if (rm.status !== 0) {
       const known = listWorktrees(root).some((w) => normalize(w.path) === normalize(e.path));
       if (!force || known) throw new Error(`git worktree remove failed: ${rm.stderr || rm.stdout}`);
       // Git can unregister a worktree before failing to remove its ignored
       // Workbench caches. Complete the explicit --force cleanup in that case.
-      rmSync(e.path, { recursive: true, force: true });
+      safeRemoveTree(e.path);
     }
     git(root, ["branch", "-D", e.branch]);
     delete state.worktrees[slug];
