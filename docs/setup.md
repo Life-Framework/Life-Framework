@@ -18,7 +18,7 @@ Everything you need to clone Life Framework, build the mod, run checks, and
 
 > **Platform note:** Workbench build and the validation scripts are Windows-first
 > today. Linux/macOS contributors can edit docs, scripts, and EnforceScript, and
-> can run the headless test server via `server/scripts/launch-test.sh` once paths
+> can point `ENFUSION_SERVER_PATH` at a Linux server build once paths
 > are configured — but `node tools/cli.mjs build` and `validate` expect Windows
 > Toolchain paths unless you set the `ENFUSION_*` env vars above.
 
@@ -140,7 +140,6 @@ suite, parses `[ELTEST] SUMMARY`, and exits nonzero on failure. Details:
 - `build` needs Arma Reforger Tools (Workbench) and the game installed.
 - `test` and `serve` need Arma Reforger Server (Steam app 1874900).
 - Server config (scenario + RCON): `server/configs/test-server.json`.
-- Launch wrapper: `server/scripts/launch-test.ps1` / `launch-test.sh`.
 
 ## 5. AI tooling (optional)
 

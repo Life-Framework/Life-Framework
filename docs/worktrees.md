@@ -22,8 +22,8 @@ harmless to your editor because the worktree is a separate directory.
   engine default text; it does not mean `-bindPort` was ignored. The full
   suite (`tier=all` and `tier=persistence`) runs one worktree at a time.
   Tier `fast` does not take that lock.
-- **Resource database** — `resourceDatabase.rdb` is gitignored. `wt list` and
-  `test` copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into
+- **Resource database** — `resourceDatabase.rdb` is gitignored. `wt new`, `test`,
+  `dev`, `serve`, and `wt e2e` copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into
   the worktree when that copy is missing or smaller. Do not commit it.
 - **Build** — the headless Workbench build is the one truly shared resource
   (shader cache, resource DB). It is serialized by a machine-wide lock file:
@@ -37,7 +37,7 @@ harmless to your editor because the worktree is a separate directory.
 
 ```sh
 tools\cli wt new <feature>      # create worktree + branch + ports
-tools\cli wt list               # who's working, ports, dirty/merged state; copies resourceDatabase.rdb
+tools\cli wt list               # who's working, ports, dirty/merged state
 tools\cli wt test <slug>        # run the ELTEST suite in that worktree
 tools\cli wt dev <slug>         # fast loop in that worktree (no build)
 tools\cli wt gate <slug>        # validate + build + test (tier=all)

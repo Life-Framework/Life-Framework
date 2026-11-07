@@ -13,7 +13,7 @@ intent: `docs/design.md`.
 | `addons/LifeFramework/Scripts/Game/` | Enforce Script: `Core/`, `Feature/<Area>/` (each with a `Feature.md`), `Persistence/`, `UI/`, `Tests/`, ... |
 | `addons/LifeFramework/{Prefabs,Configs,UI,Language,Missions}/` | Resources (`.et`, `.conf`, `.layout`, `.st`) |
 | `addons/LifeFramework/Worlds/DebugWorld/` | Test world. `DebugWorld.ent` is 0 bytes on purpose; content is in `DebugWorld_Layers/*.layer` |
-| `tools/` | `cli` (one entry point), `validation/`, `lint/`, `test/`, `merge/`, `actions/` |
+| `tools/` | `cli` (one entry point), `validation/`, `test/`, `merge/`, `actions/`, `street/` |
 | `agent-box/` | Player-equivalent checks on a rendering Workbench (`agent-box/README.md`) |
 | `docs/` | `features.md` (what each system does), `debug-log-triage.md`, `worktrees.md`, `setup.md`, `persistence.md`, `roadmap/` |
 
