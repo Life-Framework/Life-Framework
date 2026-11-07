@@ -40,6 +40,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_E2EInventory(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionLoadoutConfig(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionSpawn(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_FilmCameraPath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);

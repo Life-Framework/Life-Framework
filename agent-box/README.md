@@ -119,6 +119,25 @@ The two Enfusion servers stay the source for API search, prefabs, and live
 Workbench editing (`wb_entity_create`, layers, and the rest). This folder does
 not replace them.
 
+## Filming
+
+`tools/film/film.mjs` records the game window while a flow plays. It does not
+talk to the engine; the harness drives the player and ffmpeg records the
+screen (desktop duplication `ddagrab`, NVENC when the GPU has it).
+
+```powershell
+node tools/film/film.mjs fetch          # portable ffmpeg into tools/film/.bin (git-ignored)
+node tools/film/film.mjs probe          # which encoders actually open on this box
+node tools/film/film.mjs flow world-atm --window "Arma Reforger"
+node tools/film/film.mjs publish agent-box/reports/film/<clip>.mp4 --pr <N>   # dry run; --yes uploads
+```
+
+A clip lands in `agent-box/reports/film/` with a `.preview.gif` and a `.json`
+of the flow steps. `publish` uploads both to the rolling `film-evidence`
+prerelease and comments on the PR with the GIF inline. `flow film-smoke` is a
+capture-only smoke flow that needs no game. Showcase camera passes use
+`LF_FilmCameraRunner` (`Scripts/Game/Feature/Film/`), not yet wired to a verb.
+
 ## Fresh machine
 
 1. Install Git, Node 18+, and the Reforger game, tools, and dedicated server.

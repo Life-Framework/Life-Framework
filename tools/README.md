@@ -50,6 +50,7 @@ Runs on Windows (PowerShell), and works from any terminal.
 - `lint/` - Lint checks (drop a script, `tools\cli lint` runs it)
 - `test/` - Test scripts (drop a script, `tools\cli run test` runs it)
 - `utilities/` - Helper scripts for common tasks
+- `film/` - Filming harness: record the game window to mp4 + GIF preview, film an agent-box flow, publish PR evidence (`node tools/film/film.mjs`)
 
 ## MCP tool calls without opencode
 

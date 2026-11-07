@@ -693,6 +693,20 @@
   from a play session. The Node harness, MCP tools, layers, and named flows
   live in `agent-box/`. See `docs/agent-box.md`.
 
+### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
+- ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera
+  keys (position, look-at, FOV); `Sample(t)` eases between keys with
+  smoothstep and clamps at both ends. Out-of-order keys are rejected and
+  logged (`[ELDebug:Film]`). Covered by `film/camera-path` (LOGIC).
+- ⚠️ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
+  hides the HUD, moves the camera each frame, then restores the previous
+  camera and HUD. It compiles but has not run in a rendering session and no
+  agent-box verb calls it yet.
+- ✅ `tools/film/film.mjs` records a window or region to mp4 (ddagrab +
+  NVENC, gdigrab/libx264 fallback), makes a GIF preview, films an agent-box
+  flow, and publishes a clip to the `film-evidence` prerelease for a PR
+  comment. Proven on a desktop window; the in-game clip is still to do.
+
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
 1. **Money — one canonical path, all payouts cash.** The entity bank
