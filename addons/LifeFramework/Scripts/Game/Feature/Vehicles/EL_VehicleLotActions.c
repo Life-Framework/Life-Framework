@@ -224,7 +224,15 @@ class EL_VehicleStoreAction : ScriptedUserAction
 			return;
 		}
 
-		LF_Garage.StopAndEject(EL_VehicleOwnership.GetVehicle(vehicleId));
+		IEntity vehicle = EL_VehicleOwnership.GetVehicle(vehicleId);
+		if (!vehicle || !EL_VehicleGarageComponent.IsVehicleAtPlayersGarage(pUserEntity.GetOrigin(), vehicle.GetOrigin()))
+		{
+			EL_Debug.Warn("Vehicle", string.Format("store refused: vehicle %1 is not at the garage the player %2 is using", vehicleId, uid));
+			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_VehicleTooFar");
+			return;
+		}
+
+		LF_Garage.StopAndEject(vehicle);
 		if (!EL_VehicleOwnership.Store(vehicleId, uid))
 		{
 			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#EL-Vehicle_NotOwner");

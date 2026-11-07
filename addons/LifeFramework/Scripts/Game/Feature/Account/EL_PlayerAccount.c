@@ -16,6 +16,7 @@ class EL_PlayerAccount : Managed
 	/*protected*/ int m_iOnDutySeconds = 0;
 	/*protected*/ bool m_bDutyClockRunning = false;
 	/*protected*/ int m_iDutyStartedAtMs = 0;
+	protected bool m_bArmoryDrawnThisShift = false;
 	/*protected*/ int m_iWantedLevel = 0;
 
 	//------------------------------------------------------------------------------------------------
@@ -117,6 +118,20 @@ class EL_PlayerAccount : Managed
 	int GetDutyStartedAtMs()
 	{
 		return m_iDutyStartedAtMs;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True once the officer drew the armory kit this duty shift. Session state only: the account
+	//! save record does not carry it, so a restart allows one more draw.
+	bool HasDrawnArmoryThisShift()
+	{
+		return m_bArmoryDrawnThisShift;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetArmoryDrawnThisShift(bool drawn)
+	{
+		m_bArmoryDrawnThisShift = drawn;
 	}
 
 	//------------------------------------------------------------------------------------------------

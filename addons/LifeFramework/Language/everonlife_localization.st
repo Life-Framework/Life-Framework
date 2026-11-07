@@ -2138,6 +2138,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Step out of the vehicle first"
      Comment "Garage store refused because the player is still seated."
     }
+    CustomStringTableItem "{200D9FF1811EAA61}" {
+     Id "EL-Police_TooFar"
+     Target_en_us "The suspect is too far away"
+     Comment "Police menu arrest or fine refused because the target is not within 5 m of the officer or is not connected"
+    }
+    CustomStringTableItem "{DEBD888942A8B233}" {
+     Id "EL-Fine_TooSmall"
+     Target_en_us "A fine must be at least 1000 to lower the wanted level"
+     Comment "Police fine refused because the amount is below one wanted level (1000 cash per level)"
+    }
+    CustomStringTableItem "{9D15B91990A1723B}" {
+     Id "EL-Rank_AlreadyDrawn"
+     Target_en_us "You already drew your kit this shift"
+     Comment "Police armory refused because the officer drew a kit this duty shift. Going off duty resets it."
+    }
+    CustomStringTableItem "{B0D42569EC54BD93}" {
+     Id "EL-ATM_TooFar"
+     Target_en_us "Stand at an ATM to do that"
+     Comment "ATM deposit or withdraw refused because the player walked away from the ATM"
+    }
+    CustomStringTableItem "{9922728E793CD0D8}" {
+     Id "EL-Org_TooFar"
+     Target_en_us "Stand at the organization desk to do that"
+     Comment "Organization fund deposit or withdraw refused because the player walked away from the desk"
+    }
+    CustomStringTableItem "{2D4F8FB9A33C7F28}" {
+     Id "LF-Garage_VehicleTooFar"
+     Target_en_us "Bring the vehicle to the garage first"
+     Comment "Garage store refused because the owned vehicle is not parked at the garage the player is using"
+    }
   }
  }
 }

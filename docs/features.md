@@ -176,6 +176,13 @@
   (partial removals rolled back) and pay cash out on withdraw (all-or-nothing
   with balance restore), guarded by `EL_ATMManager.IsValidAmount`. No money
   from thin air.
+- ✅ **At the ATM only** (2026-11-07, suite not run): the server refuses a
+  deposit or withdraw unless an entity carrying `EL_ATMAction` stands within
+  `EL_CharacterATMComponent.ATM_RANGE` (5 m) of the character
+  (`EL_ActionSite`, server-side search; the client names no site). A refusal
+  logs `deposit refused: not at an ATM` / `withdraw refused: ...` and shows
+  `#EL-ATM_TooFar`. On a listen host the requests and the replies call their
+  handlers directly, like the shop bridge. Test: `security/service-range`.
 
 ### `EL_BankAccountComponent` — `Feature/Banking/` (deleted 2026-08-30)
 - ❌ The second, unintegrated entity bank is **gone** (file deleted, no
@@ -472,6 +479,11 @@
   `Roadmap_Escort_Car` at `204 0 108` on `Roadmap.layer`, the police M151 with
   `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
   still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
+- ⚠️ Moving a connected prisoner to the cell, or pulling them back into it,
+  goes through `SCR_Global.TeleportPlayer` (the vanilla server-side player
+  teleport) instead of a server-only `SetOrigin` that the owning client can
+  overwrite; a stand-in with no player is still set directly (2026-11-07). Not
+  yet checked on a dedicated server with a remote client.
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
@@ -485,8 +497,15 @@
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
-- ⚠️ The fine RPC still logs denials via `Print` (should be `EL_Debug`);
-  `account.GetActiveCharacter()` deref in the wanted list is unguarded.
+- ✅ **Hands-on only** (2026-11-07, suite not run): arrest and fine refuse a
+  target that is not connected or stands beyond `EL_PoliceUtils.POLICE_REACH`
+  (5 m, the in-world arrest range) and show `#EL-Police_TooFar`. Neither the
+  framework nor vanilla has a restraint state, so reach is the requirement. A
+  fine that clears no wanted level (below `WANTED_STEP`, 1000) is refused with
+  `#EL-Fine_TooSmall`, so repeated small fines cannot drain a wanted player.
+  The fine RPC logs through `EL_Debug.Warn("Police", "fine refused: ...")`.
+  Test: `security/police-abuse`.
+- ⚠️ `account.GetActiveCharacter()` deref in the wanted list is unguarded.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ Toggles police on-duty flag. Civilians are refused. The debug menu's
@@ -509,8 +528,14 @@
   faction and does not write the police whitelist. Lower ranks still open the
   wanted list. DebugWorld places `Roadmap_Police_Armory` at `207 0 120` on
   `Roadmap.layer`.
-- ⚠️ Rank and on-duty seconds live on the account object and are not in
-  `EL_PlayerAccountRecord`, so a restart returns the officer to patrol.
+- ✅ **One armory draw per duty shift** (2026-11-07, suite not run): a draw
+  that hands out any kit line marks the account; a second draw logs
+  `draw refused: <uid> already drew a kit this shift` and shows
+  `#EL-Rank_AlreadyDrawn`. `OnDutyChanged` clears the mark. Test:
+  `security/police-abuse`.
+- ⚠️ Rank, on-duty seconds, and the shift draw mark live on the account object
+  and are not in `EL_PlayerAccountRecord`, so a restart returns the officer to
+  patrol and allows one more draw.
 
 ### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
 - ✅ One convoy. A member of the organization that owns the hideout hauls
@@ -547,7 +572,11 @@
   workspace widget on `{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout`.
   It lists the name, the fund, and the processing-slot upgrade, and shows an
   empty state before create. Create, deposit, withdraw, buy-processing, and
-  close stay on the character RPCs. Cash and membership still go through the
+  close stay on the character RPCs. Fund deposit and withdraw are refused
+  unless an entity carrying `EL_OrganizationDeskAction` stands within
+  `EL_OrganizationPlayer.DESK_RANGE` (5 m) of the character
+  (`#EL-Org_TooFar`; test `security/service-range`, 2026-11-07, suite not
+  run). Cash and membership still go through the
   server.
 - ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
   compound the fund. The game-mode serializer writes these records at version 2,
@@ -643,7 +672,7 @@
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
 - ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `186 0 102.1` on `Roadmap.layer`, with store and retrieve. The shell sits 5.9 m north of that point, so the player stands outside the wall. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
-- ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
+- ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, and refuses a vehicle that is not within the same garage's radius as the player (`EL_VehicleGarageComponent.IsVehicleAtPlayersGarage`, `#LF-Garage_VehicleTooFar`, test `security/garage-store-range`, 2026-11-07, suite not run), then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
 
 ## UI / Layouts / Localization
 

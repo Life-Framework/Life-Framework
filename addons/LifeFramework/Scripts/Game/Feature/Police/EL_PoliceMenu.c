@@ -58,8 +58,15 @@ modded class SCR_ChimeraCharacter
 		string officerUid = EL_Utils.GetPlayerUID(officer);
 		EL_PlayerAccount targetAccount;
 		IEntity target = EL_PoliceUtils.FindPlayerEntityByUid(targetPlayerUid, targetAccount);
-		if (!target && targetAccount)
-			EL_Debug.Log("Jail", string.Format("arrest has an account but no body for %1", targetPlayerUid));
+		if (!EL_PoliceUtils.IsTargetInReach(officer, target))
+		{
+			// The menu lists every wanted player on the server. The arrest is a hands-on act:
+			// no connected body, or a body beyond reach, is not arrestable from the menu.
+			EL_Debug.Warn("Jail", string.Format("arrest refused: %1 is not within %2 m of officer %3", targetPlayerUid, EL_PoliceUtils.POLICE_REACH, officerUid));
+			if (officerPlayerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Police_TooFar", 3.0, EL_ENotificationType.WARNING);
+			return;
+		}
 
 		if (!LF_Jail.Arrest(officerUid, targetPlayerUid, target))
 			return;
@@ -84,7 +91,7 @@ modded class SCR_ChimeraCharacter
 		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(officer);
 		if (!EL_PoliceUtils.IsOnDutyOfficer(officerAccount))
 		{
-			Print(string.Format("[EL_PoliceMenu] Fine denied: %1 is not an on-duty officer", officerPlayerId), LogLevel.WARNING);
+			EL_Debug.Warn("Police", string.Format("fine refused: %1 is not an on-duty officer", officerPlayerId));
 			return;
 		}
 
@@ -97,7 +104,17 @@ modded class SCR_ChimeraCharacter
 
 		if (!EL_PoliceUtils.IsSaneFineAmount(amount))
 		{
-			Print(string.Format("[EL_PoliceMenu] Fine denied: amount %1 out of range", amount), LogLevel.WARNING);
+			EL_Debug.Warn("Police", string.Format("fine refused: amount %1 out of range", amount));
+			return;
+		}
+
+		if (!EL_PoliceUtils.FineClearsWanted(amount))
+		{
+			// A fine that clears no wanted level only drains cash, and the target stays wanted,
+			// so it could be repeated until the target is broke.
+			EL_Debug.Warn("Police", string.Format("fine refused: amount %1 clears no wanted level (minimum %2)", amount, EL_PoliceUtils.WANTED_STEP));
+			if (officerPlayerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Fine_Title", "#EL-Fine_TooSmall", 3.0, EL_ENotificationType.WARNING);
 			return;
 		}
 
@@ -105,7 +122,15 @@ modded class SCR_ChimeraCharacter
 		IEntity target = EL_PoliceUtils.FindPlayerEntityByUid(targetPlayerUid, targetAccount);
 		if (!target || !targetAccount || targetAccount.GetWantedLevel() <= 0)
 		{
-			Print(string.Format("[EL_PoliceMenu] Fine denied: target %1 is not wanted", targetPlayerUid), LogLevel.WARNING);
+			EL_Debug.Warn("Police", string.Format("fine refused: target %1 is not wanted", targetPlayerUid));
+			return;
+		}
+
+		if (!EL_PoliceUtils.IsTargetInReach(officer, target))
+		{
+			EL_Debug.Warn("Police", string.Format("fine refused: %1 is not within %2 m of the officer", targetPlayerUid, EL_PoliceUtils.POLICE_REACH));
+			if (officerPlayerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Fine_Title", "#EL-Police_TooFar", 3.0, EL_ENotificationType.WARNING);
 			return;
 		}
 
@@ -144,6 +169,41 @@ modded class SCR_ChimeraCharacter
 class EL_PoliceUtils
 {
 	static const int MAX_FINE = 5000;
+
+	//! Cash per wanted level a fine clears. A fine below this clears nothing and is refused.
+	static const int WANTED_STEP = 1000;
+
+	//! How close the officer must stand to arrest or fine from the police menu. Matches the
+	//! in-world arrest action's range. There is no restraint state in the framework or in
+	//! vanilla Reforger, so reach is the hands-on requirement.
+	static const float POLICE_REACH = 5.0;
+
+	//------------------------------------------------------------------------------------------------
+	//! \param officerPos Officer's world position.
+	//! \param targetPos Target's world position.
+	//! \return true when the two are within POLICE_REACH.
+	static bool IsWithinReach(vector officerPos, vector targetPos)
+	{
+		return vector.Distance(officerPos, targetPos) <= POLICE_REACH;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when both bodies exist and stand within POLICE_REACH. A missing body is out of reach.
+	static bool IsTargetInReach(IEntity officer, IEntity target)
+	{
+		if (!officer || !target)
+			return false;
+
+		return IsWithinReach(officer.GetOrigin(), target.GetOrigin());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param amount Fine amount in cash.
+	//! \return true when the fine clears at least one wanted level.
+	static bool FineClearsWanted(int amount)
+	{
+		return GetWantedReduction(amount) > 0;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! \return Sentence length in seconds. Wanted level times secondsPerWanted, clamped to maxSeconds.
@@ -196,7 +256,7 @@ class EL_PoliceUtils
 	//! \return Wanted levels the fine removes (1 per 1000 cash).
 	static int GetWantedReduction(int amount)
 	{
-		return amount / 1000;
+		return amount / WANTED_STEP;
 	}
 
 	//------------------------------------------------------------------------------------------------
