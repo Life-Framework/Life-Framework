@@ -5,21 +5,61 @@ class EL_GameModeRoleplayClass: SCR_BaseGameModeClass
 
 class EL_GameModeRoleplay: SCR_BaseGameMode
 {
+	//! Server opt-in for dev tools (debug menu, agent-harness RPCs). Off on the production prefab;
+	//! on in GameMode_Roleplay_Debug.et (DebugWorld). Administrators pass regardless - see EL_DevGate.
+	[Attribute("0", desc: "Let every player use dev tools (debug menu, agent harness). Development worlds only; administrators are always allowed.")]
+	protected bool m_bDevToolsEnabled;
+
 	//! The DebugWorld open-key listener is registered once per local player spawn so the menu
 	//! is reachable in a dev session without a dedicated UI component on the prefab.
 	protected bool m_bDebugMenuListenerRegistered;
+
+	//! Connected on-duty police, written by the server (EL_AccountReplication) so client-side
+	//! robbery offers can apply the minimum-police gate. The game mode is always replicated.
+	[RplProp()]
+	protected int m_iEL_PoliceOnDuty;
+
+	protected bool m_bEL_AccountRefreshRunning;
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when this game mode opts every player into dev tools.
+	bool AreDevToolsEnabled()
+	{
+		return m_bDevToolsEnabled;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	void ~EL_GameModeRoleplay()
 	{
 		EL_PlayerAccountManager.Reset();
 		UnregisterDebugMenuListener();
+		if (m_bEL_AccountRefreshRunning && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(EL_RefreshAccountReplication);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: bumps only when the count changes.
+	void EL_SetPoliceOnDuty(int count)
+	{
+		if (!Replication.IsServer() || count == m_iEL_PoliceOnDuty)
+			return;
+
+		m_iEL_PoliceOnDuty = count;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int EL_GetPoliceOnDuty()
+	{
+		return m_iEL_PoliceOnDuty;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPlayerSpawned(int playerId, IEntity controlledEntity)
 	{
 		super.OnPlayerSpawned(playerId, controlledEntity);
+
+		EL_AccountReplication.PublishForPlayer(playerId, controlledEntity);
 
 		EL_WhitelistRespawnHandlerComponent whitelist = EL_WhitelistRespawnHandlerComponent.Cast(FindComponent(EL_WhitelistRespawnHandlerComponent));
 		if (whitelist)
@@ -31,8 +71,9 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	//------------------------------------------------------------------------------------------------
 	//! Client-side debug menu open. Registered once per local player spawn (the listener is
 	//! process-global, so a second spawn must not double-register). On a dedicated server there
-	//! is no local input, so the listener never fires there; the RPC gate on the server is the
-	//! real authority anyway.
+	//! is no local input, so the listener never fires there. The key itself is gated at press time
+	//! (OnOpenDebugMenu) because a player's admin role can change mid-session; the server-side
+	//! EL_DevGate check in RpcAsk_EL_DebugAction is the real authority.
 	protected void RegisterDebugMenuListener(int playerId)
 	{
 		if (m_bDebugMenuListenerRegistered)
@@ -76,6 +117,17 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 			return;
 		}
 
+		// Cosmetic client gate on the key: the server refuses the actions anyway.
+		PlayerController local = GetGame().GetPlayerController();
+		int localPlayerId = 0;
+		if (local)
+			localPlayerId = local.GetPlayerId();
+		if (!EL_DevGate.IsAllowedForPlayer(localPlayerId))
+		{
+			EL_Debug.Warn("DebugMenu", "open refused: dev tools are disabled in this game mode and the player is not an administrator");
+			return;
+		}
+
 		menuManager.OpenMenu(ChimeraMenuPreset.DebugMenu);
 	}
 
@@ -86,6 +138,19 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 
 		EL_CharacterCreationManager creation = ResolveConnectManagers();
 		creation.OnPlayerConnected(playerId);
+
+		// Self-healing account replication pass (server only, started once).
+		if (Replication.IsServer() && !m_bEL_AccountRefreshRunning)
+		{
+			GetGame().GetCallqueue().CallLater(EL_RefreshAccountReplication, EL_AccountReplication.REFRESH_INTERVAL_MS, true);
+			m_bEL_AccountRefreshRunning = true;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void EL_RefreshAccountReplication()
+	{
+		EL_AccountReplication.RefreshAll();
 	}
 
 	//------------------------------------------------------------------------------------------------

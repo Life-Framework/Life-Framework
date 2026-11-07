@@ -338,18 +338,24 @@ class EL_QuantityComponent : ScriptComponent
 			return;
 		}
 
+		// The fresh entity spawned holding its init quantity (100 for MoneyStack). Size it and
+		// mark it keep-separate BEFORE the insert: OnItemAdded runs inside the insert, and
+		// without the intent it merges the whole spawned stack into the source (split 1 => +99).
+		quantityDestination.SetQuantity(splitSize);
+		SetTransferIntent(destinationEntity, true);
+
 		BaseInventoryStorageComponent storage = sourceInventoryItem.GetParentSlot().GetStorage();
 		InventoryStorageManagerComponent storageManager = EL_InventoryUtils.GetResponsibleStorageManager(owner);
 		if (!storageManager || !storageManager.TryInsertItemInStorage(destinationEntity, storage))
 		{
-			// Storage could not take the split item: roll the quantity back and drop the spawned entity
+			// Storage could not take the split item: the source was never touched, drop the spawned entity
+			EL_Debug.Warn("Quantity", string.Format("split refused: storage did not take a %1 stack", splitSize));
+			RemoveTransferIntent(destinationEntity);
 			SCR_EntityHelper.DeleteEntityAndChildren(destinationEntity);
 			return;
 		}
 
 		AddQuantity(-splitSize);
-		quantityDestination.SetQuantity(splitSize);
-		SetTransferIntent(destinationEntity, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
