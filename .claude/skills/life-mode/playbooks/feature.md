@@ -1,0 +1,15 @@
+# Feature
+
+New or changed gameplay behavior, built from a named data shape. The Enfusion way is data first: the prefab, component, and config define the shape; the script implements the behavior.
+
+1. Name the consumer, the data shape, and the boundaries before any code. Who calls this, from which side (server or client), on which entity? What owns the behavior (a prefab, a component on an existing prefab, a manager singleton)? What config or settings table drives it? What base does it extend (a base-game class, an existing `EL_`/`LF_` prefab)? Then mark each boundary: replication (what the server owns, what the client sees), config (what is data), persistence (what survives a restart, and which serializer payload carries it), UI (client-only, calls the server). Write it down in one paragraph; that paragraph is the spec. If you cannot name a concrete caller, the design is a library without a user. Enfusion punishes a guessed shape: a component on the wrong entity, an RPC with the wrong receiver, a prefab on a base it does not match.
+2. Research the base game. Use **enfusion-api-research**: `component_search` for the script component to attach, `api_search` for the methods to override, `game_read` on the vanilla class you are extending. Confirm your base class exists and what it already provides. Reuse the base game's systems before building your own. The base game already handles inventory, damage, vehicles, and most of what a Life mod touches. Do not reinvent a vanilla system.
+3. Research the mod conventions. Read a sibling feature under `Scripts/Game/Feature/<area>/` for structure, the matching base prefab under `Prefabs/`, and any localization keys it needs. Follow **enfusion-script-authoring** and **enfusion-resource-authoring**.
+4. Subtract before you add. Is there dead weight in the path you are extending? Remove it first (*subtract before you add*, **principles**). Does a partial feature stub already exist? Finish or delete it, do not build around it.
+5. Build the smallest working slice end to end (one prefab, one component, one config, one test proves the shape cheaper than a wide design). One feature, one commit unit. Wire the prefab component, the scripted logic, the config values, and the localization key as one verifiable unit.
+6. Verify in the running game per **enfusion-verify**. Drive the feature in the DebugWorld. Exercise the actual path: spawn the item, trigger the action, read the log or UI state. "It compiles" is not a pass.
+7. Add an `EL_Test` for any pure logic the feature introduces (calculations, formatting, state transitions) via **el-tdd**. Give it a `// tier:` comment and a `// red-proof:` comment, then run `tools\cli regen-tests`; registration is automatic.
+8. Check **enfusion-blast-radius** for what the new prefab or component could break (children inheriting from a base you edited, config references, replication).
+9. Keep the diff as small as the feature allows. Delete scaffolding and debug logging before declaring done.
+
+**Reply:** the data shape, the base-game research that justified it, what you built, how you verified it in-game, and what a maintainer inherits.

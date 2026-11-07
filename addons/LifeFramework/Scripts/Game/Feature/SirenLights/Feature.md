@@ -1,7 +1,7 @@
 # SirenLights — Design Requirements
 
 > Context file for vehicle emergency lighting. Written against
-> `docs/design-philosophy.md` (in-world first).
+> `docs/design.md` (in-world first).
 
 ## Intent
 

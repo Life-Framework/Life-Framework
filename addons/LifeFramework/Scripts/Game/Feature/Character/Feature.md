@@ -1,7 +1,7 @@
 # Character — Design Requirements
 
 > Context file for the player character — spawning, inventory, hand-carry.
-> Written against `docs/design-philosophy.md`.
+> Written against `docs/design.md`.
 
 ## Intent
 

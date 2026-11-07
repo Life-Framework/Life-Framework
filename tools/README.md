@@ -27,9 +27,7 @@ tools\cli wt logs <slug> <pattern>      # grep a worktree's newest console.log (
 tools\cli wt ship <slug>                # sync -> gate -> push -> PR -> auto-merge into main
 tools\cli wt prune <slug>               # remove a merged worktree + branch
 tools\cli call <tool> '<json>'|@file    # call an MCP tool directly (see mcp-call.mjs)
-tools\cli validate                      # run tools/validation/* checks
-tools\cli lint                          # run tools/lint/* checks
-tools\cli run test                      # run tools/test/* checks
+tools\cli validate                      # run tools/validation/* checks (also in CI)
 ```
 
 `build / test / dev / serve / ci` refuse to run in the main checkout (the
@@ -45,10 +43,8 @@ Runs on Windows (PowerShell), and works from any terminal.
 - `wt.mjs` - parallel-worktree library (hub state, port allocation, locks, gh/REST PR + merge)
 - `mcp-call.mjs` - call an MCP tool from the shell (API research without opencode's MCP plumbing)
 - `mcp/` - Enfusion/Reforger MCP servers for AI assistants (git-ignored clones; see `mcp/README.md`)
-- `build/` - Build and packaging scripts
 - `validation/` - Repo validator (also wired in as a git pre-commit hook; see below)
-- `lint/` - Lint checks (drop a script, `tools\cli lint` runs it)
-- `test/` - Test scripts (drop a script, `tools\cli run test` runs it)
+- `test/` - `test-e2e.ps1`, the server-suite harness `cli test` drives
 - `utilities/` - Helper scripts for common tasks
 
 ## MCP tool calls without opencode
@@ -79,7 +75,7 @@ tools\cli ci       # validate + build + test
 ```
 
 - Test scenario: `addons/LifeFramework/Missions/EL_DebugTest.conf` (DebugWorld + `EL_TestGameMode`)
-- Server config: `server/configs/test-server.json`; wrappers: `server/scripts/launch-test.{ps1,sh}`
+- Server config: `server/configs/test-server.json`
 - Logs land in `server/logs/`; build output and profile are git-ignored.
 
 ## Pre-commit hook
@@ -97,6 +93,10 @@ and warns on lowercase `data/` path references.
 
 ### Validation Tools
 - `validation/validate-repo.ps1` - artifact/GUID/meta consistency checks (pre-commit + manual)
+- `validation/validate-enforce-lint.mjs` - structural Enforce Script lint (rules L1-L7 in
+  `enforce-lint.mjs`). Known hits live in `validation/enforce-lint-baseline.json` and print as
+  `WARN`; a hit not in the baseline fails. After fixing debt, shrink the baseline with
+  `node tools/validation/validate-enforce-lint.mjs --update-baseline`.
 
 ### Utilities
 *Coming soon - helper scripts for development tasks*

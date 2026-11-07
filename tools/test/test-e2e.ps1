@@ -32,6 +32,21 @@ if (-not (Test-Path (Join-Path $root "addons\LifeFramework\LifeFramework.gproj")
   exit 2
 }
 
+# resourceDatabase.rdb is gitignored; cli test/dev/serve copy it from the main
+# checkout. Without it world tests fail as "wrong GUID", "invalid prefab" or
+# GetCash returning 0, so a world tier stops here with that named cause.
+$rdb = Join-Path $root "addons\LifeFramework\resourceDatabase.rdb"
+if (-not (Test-Path -LiteralPath $rdb)) {
+  if ($Tier -eq "fast") {
+    Write-Host "WARN  resourceDatabase.rdb missing: $rdb (LOGIC tier only; world tiers refuse to run without it)"
+  } else {
+    Write-Host "ERROR resourceDatabase.rdb missing: $rdb"
+    Write-Host "      world tests would fail with wrong GUID / invalid prefab. Run through tools\cli test (it copies the"
+    Write-Host "      main checkout's copy); if the main checkout has none, open the project in Workbench once to build it."
+    exit 2
+  }
+}
+
 $serverInstall = $env:ENFUSION_SERVER_PATH
 if (-not $serverInstall) { $serverInstall = "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger Server" }
 $exe = Join-Path $serverInstall "ArmaReforgerServerDiag.exe"
@@ -88,8 +103,9 @@ New-Item -ItemType Directory -Force -Path $craftingMirror | Out-Null
 Copy-Item -Path (Join-Path $root "addons\LifeFramework\Prefabs\Crafting\*") -Destination $craftingMirror -Recurse -Force
 
 # addonsDir = repo addon + base game data only (core + data), via a junction so
-# the server does NOT auto-load the EPF/EDF paks that live in the server install
-# (they fail to compile on Reforger 1.8). Launch cwd = repo root (neutral) so
+# the server does NOT auto-load other addons that live in the server install
+# (LifeFramework.gproj depends only on the vanilla Game addon 58D0FB3206B6F859).
+# Launch cwd = repo root (neutral) so
 # ./addons does not resolve to the server install's addons folder.
 # The junction sources core+data from the SERVER install, not the game install:
 # the server binary is only guaranteed to parse data shipped with it (a game-side
@@ -103,19 +119,11 @@ $dataSource = Join-Path $serverInstall "addons"
 $serverHasData = (Get-ChildItem (Join-Path $dataSource "core") -ErrorAction SilentlyContinue).Count -gt 0 -and
                  (Get-ChildItem (Join-Path $dataSource "data") -ErrorAction SilentlyContinue).Count -gt 0
 if (-not $serverHasData) { $dataSource = Join-Path $gameInstall "addons" }
+# game-addons holds junctions into the Steam installs. safe-rm unlinks every
+# link without following it, then deletes, and exits nonzero when a link stays.
 function Remove-GeneratedAddonRoot([string]$path) {
-  if (-not (Test-Path -LiteralPath $path)) { return }
-  foreach ($name in @("core", "data")) {
-    $child = Join-Path $path $name
-    if (-not (Test-Path -LiteralPath $child)) { continue }
-    $item = Get-Item -LiteralPath $child -Force
-    if ($item.LinkType -eq "Junction" -or $item.LinkType -eq "SymbolicLink") {
-      cmd /c rmdir "$child" 2>$null | Out-Null
-    } else {
-      Remove-Item -LiteralPath $child -Recurse -Force
-    }
-  }
-  Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+  & node (Join-Path $root "tools\safe-rm.mjs") $path
+  if ($LASTEXITCODE -ne 0) { Write-Host "FAIL  could not safely remove $path"; exit 2 }
 }
 Remove-GeneratedAddonRoot $gameAddons
 New-Item -ItemType Directory -Force -Path $gameAddons | Out-Null
@@ -128,15 +136,7 @@ cmd /c mklink /J "$gameAddons\data" "$dataSource\data" 2>&1 | Out-Null
 # the ignored test profile, never committed to the repository.
 $coreGproj = Join-Path $gameAddons "core\core.gproj"
 if (-not (Test-Path -LiteralPath (Join-Path $dataSource "core\core.gproj"))) {
-  $coreLink = Join-Path $gameAddons "core"
-  if (Test-Path -LiteralPath $coreLink) {
-    $coreItem = Get-Item -LiteralPath $coreLink -Force
-    if ($coreItem.LinkType -eq "Junction" -or $coreItem.LinkType -eq "SymbolicLink") {
-      cmd /c rmdir "$coreLink" 2>$null | Out-Null
-    } else {
-      Remove-Item -LiteralPath $coreLink -Recurse -Force
-    }
-  }
+  Remove-GeneratedAddonRoot (Join-Path $gameAddons "core")
   $coreDir = Split-Path -Parent $coreGproj
   New-Item -ItemType Directory -Force -Path $coreDir | Out-Null
   Copy-Item -Path (Join-Path $dataSource "core\*") -Destination $coreDir -Recurse -Force
@@ -220,8 +220,20 @@ function Read-Console([string]$dir) {
 
 $sw = [Diagnostics.Stopwatch]::StartNew()
 $lastSummary = $null
-$summaryIndexError = $false
+$harnessError = $null
 $crashLines = @()
+
+# Print the suite lines from a console.log so a no-verdict exit still shows
+# them without anyone grepping the log by hand.
+function Write-SuiteLines([string]$dir) {
+  if (-not $dir) { Write-Host "test-e2e: no console.log yet"; return }
+  $c = Join-Path $dir "console.log"
+  Write-Host "test-e2e: log $c"
+  if (-not (Test-Path -LiteralPath $c)) { return }
+  $hits = @(Select-String -LiteralPath $c -Pattern '\[ELTEST\] (SUMMARY|FAIL|  - )' -ErrorAction SilentlyContinue)
+  if ($hits.Count -eq 0) { Write-Host "test-e2e: console.log has no [ELTEST] SUMMARY or FAIL line"; return }
+  foreach ($h in ($hits | Select-Object -First 40)) { Write-Host "  $($h.Line.Trim())" }
+}
 
 function Read-Crash([string]$dir) {
   if (-not $dir) { return @() }
@@ -267,11 +279,11 @@ while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
       break
     }
   } catch {
-    if ($_.Exception.Message -match 'Cannot index into a null array') {
-      $summaryIndexError = $true
-      break
-    }
-    throw
+    # The old "Cannot index into a null array" came from indexing $matches
+    # after -match ran on an array; [regex]::Match above removed that source.
+    # Any parse error left is a harness bug: name it and stop polling.
+    $harnessError = "line $($_.InvocationInfo.ScriptLineNumber): $($_.Exception.Message)"
+    break
   }
 
   $crashes = Read-Crash $logDir.FullName
@@ -303,12 +315,9 @@ if ($alive) {
 
 $elapsed = [int]$sw.Elapsed.TotalSeconds
 
-if ($summaryIndexError) {
-  $logFile = "(no console.log yet)"
-  if ($logDir -and $logDir.FullName) { $logFile = Join-Path $logDir.FullName "console.log" }
-  Write-Host "test-e2e: Cannot index into a null array"
-  Write-Host "test-e2e: log $logFile"
-  Write-Host "test-e2e: grep console.log for [ELTEST] SUMMARY. Do not read cli.mjs or the server executable."
+if ($harnessError) {
+  Write-Host "test-e2e: HARNESS ERROR (no verdict) at $harnessError"
+  Write-SuiteLines $logDir.FullName
   exit 2
 }
 
@@ -354,10 +363,10 @@ if ($crashLines.Count -gt 0) {
 
 if (-not $alive) {
   Write-Host "test-e2e: server exited early without a SUMMARY verdict"
-  Write-Host "test-e2e: grep console.log for [ELTEST] SUMMARY. Do not read cli.mjs or the server executable."
+  Write-SuiteLines (Get-LogDir).FullName
   exit 2
 }
 
-Write-Host "test-e2e: NO VERDICT - timed out after ${TimeoutSeconds}s without an ELTEST SUMMARY (log $((Get-LogDir).FullName))"
-Write-Host "test-e2e: grep console.log for [ELTEST] SUMMARY. Do not read cli.mjs or the server executable."
+Write-Host "test-e2e: NO VERDICT - timed out after ${TimeoutSeconds}s without an ELTEST SUMMARY"
+Write-SuiteLines (Get-LogDir).FullName
 exit 2

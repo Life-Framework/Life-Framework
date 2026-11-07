@@ -348,7 +348,7 @@ class EL_PersistenceManagerComponent : ScriptComponent
 			return;
 		}
 
-		EL_Debug.Error("Persistence", string.Format("started a NEW session while %1 save point(s) exist: the saved world was not loaded. Launch the dedicated server with -loadSessionSave to continue it (docs/save-system.md)", count));
+		EL_Debug.Error("Persistence", string.Format("started a NEW session while %1 save point(s) exist: the saved world was not loaded. Launch the dedicated server with -loadSessionSave to continue it (docs/persistence.md)", count));
 	}
 
 	//------------------------------------------------------------------------------------------------

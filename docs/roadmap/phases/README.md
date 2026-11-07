@@ -15,7 +15,7 @@ Phases are playable cuts, in order. A later phase does not start by skipping the
 3. **Release** is the public cut: the [release scopes](release.md), still on native assets.
 4. **After release** keeps fixing what players hit, then adds the [later scopes](after-release.md).
 
-In-session checks do not prove a restart. A host-only run does not prove a dedicated server. See [design principles](../../design-principles.md) on proof classes.
+In-session checks do not prove a restart. A host-only run does not prove a dedicated server. See [design](../../design.md) on proof classes.
 
 ## What a phase is not
 
