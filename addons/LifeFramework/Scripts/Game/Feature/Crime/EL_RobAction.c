@@ -118,8 +118,15 @@ class EL_RobAction : ScriptedUserAction
 			return 0;
 		}
 
+		// No account means no civilian gate and no wanted bump, so it must not pay either.
 		EL_PlayerAccount account = FindAccount(playerUid);
-		if (account && account.GetFaction() != EL_Faction.CIVILIAN)
+		if (!account)
+		{
+			NoteRefusal("robbery refused: no account");
+			return 0;
+		}
+
+		if (account.GetFaction() != EL_Faction.CIVILIAN)
 		{
 			NoteRefusal("robbery refused: only civilians can rob");
 			return 0;
@@ -148,25 +155,18 @@ class EL_RobAction : ScriptedUserAction
 			bump = 1;
 		}
 
-		if (account)
-		{
-			account.IncreaseWantedLevel(bump);
-			EL_Debug.Log("Crime", string.Format("wanted level increased for %1", playerUid));
-			EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-			if (accountManager)
-				accountManager.SaveAndReleaseAccount(account);
+		account.IncreaseWantedLevel(bump);
+		EL_Debug.Log("Crime", string.Format("wanted level increased for %1", playerUid));
+		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		if (accountManager)
+			accountManager.SaveAndReleaseAccount(account);
 
-			s_iAlertCount = s_iAlertCount + 1;
-			vector origin = "0 0 0";
-			if (user)
-				origin = user.GetOrigin();
+		s_iAlertCount = s_iAlertCount + 1;
+		vector origin = "0 0 0";
+		if (user)
+			origin = user.GetOrigin();
 
-			EL_Utils.AlertPolice("#EL-Police_Alert_Robbery", origin);
-		}
-		else if (!playerUid.IsEmpty())
-		{
-			EL_Debug.Error("Crime", string.Format("robbery wanted skipped: no account for %1", playerUid));
-		}
+		EL_Utils.AlertPolice("#EL-Police_Alert_Robbery", origin);
 
 		if (paid > 0)
 		{
@@ -210,15 +210,15 @@ class EL_RobAction : ScriptedUserAction
 			return false;
 		}
 
-		// Only civilians can rob. Offer checks do not log and do not alert.
-		EL_PlayerAccount account = GetPlayerAccount(user);
-		if (account && account.GetFaction() != EL_Faction.CIVILIAN)
+		// Only civilians can rob. Offer checks do not log and do not alert. On a client the
+		// account and the police count are the replicated copies (EL_AccountReplication).
+		if (!EL_AccountStateBits.IsCivilian(EL_AccountReplication.GetState(user)))
 		{
 			SetCannotPerformReason("#EL-Rob_CiviliansOnly");
 			return false;
 		}
 
-		int policeOnDuty = GetPoliceOnDutyCount();
+		int policeOnDuty = EL_AccountReplication.GetPoliceOnDutyCount();
 		if (policeOnDuty < m_iMinPoliceOnDuty)
 		{
 			SetCannotPerformReason("#EL-Rob_NeedPolice");
@@ -231,19 +231,23 @@ class EL_RobAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		// The server pays, raises wanted, and alerts. A client copy of the action does nothing.
+		if (!Replication.IsServer())
+			return;
+
 		float nowMs = 0;
 		if (GetGame().GetWorld())
 			nowMs = GetGame().GetWorld().GetWorldTime();
 
 		int payout = ResolvePayout(m_iMoneyAmount, m_iMinPayout, m_iMaxPayout, -1);
 		string playerUid = EL_Utils.GetPlayerUid(pUserEntity);
-		int policeOnDuty = GetPoliceOnDutyCount();
+		int policeOnDuty = EL_AccountReplication.CountPoliceOnDuty();
 		float nextLast = m_fLastRobTime;
 		int paid = CommitRobbery(playerUid, pUserEntity, payout, m_iWantedIncrease, policeOnDuty, m_iMinPoliceOnDuty, m_fCooldown, m_fLastRobTime, nowMs, nextLast);
 		m_fLastRobTime = nextLast;
 
 		if (paid > 0)
-			EL_Utils.Notify(WidgetManager.Translate("#EL-Stole_Money", paid), "#EL-Robbery_Successful", 3.0);
+			EL_Utils.NotifyEntity(pUserEntity, "#EL-Stole_Money", "#EL-Robbery_Successful", 3.0, paid.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -283,40 +287,5 @@ class EL_RobAction : ScriptedUserAction
 		}
 
 		return paid;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected EL_PlayerAccount GetPlayerAccount(IEntity user)
-	{
-		return FindAccount(EL_Utils.GetPlayerUid(user));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected int GetPoliceOnDutyCount()
-	{
-		int count = 0;
-		EL_PlayerControllerManagerCompat playerManager = EL_PlayerControllerManagerCompat.GetInstance();
-		if (playerManager)
-		{
-			array<int> playerIds = {};
-			playerManager.GetAllPlayerIds(playerIds);
-
-			EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-			if (accountManager)
-			{
-				foreach (int playerId : playerIds)
-				{
-					PlayerController pc = playerManager.GetPlayerController(playerId);
-					if (pc)
-					{
-						string playerUid = EL_Utils.GetPlayerUID(pc.GetControlledEntity());
-						EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-						if (account && account.GetFaction() == EL_Faction.POLICE && account.IsOnDuty())
-							count++;
-					}
-				}
-			}
-		}
-		return count;
 	}
 };

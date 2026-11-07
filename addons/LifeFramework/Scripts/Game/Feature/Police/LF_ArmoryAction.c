@@ -13,7 +13,7 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		if (!LF_PoliceRanks.CanDraw(LF_PoliceRanks.ResolveUid(user)))
+		if (!OfferDraw(user))
 		{
 			SetCannotPerformReason("#EL-Rank_DrawDenied");
 			return false;
@@ -44,6 +44,17 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 		outName = "#EL-Rank_Draw";
 		return true;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the account rule. Client: the same rule on the replicated account state.
+	protected bool OfferDraw(IEntity user)
+	{
+		if (Replication.IsServer())
+			return LF_PoliceRanks.CanDraw(LF_PoliceRanks.ResolveUid(user));
+
+		int state = EL_AccountReplication.GetState(user);
+		return EL_AccountStateBits.IsOnDutyPolice(state) && LF_PoliceRanks.IsRankUsable(EL_AccountStateBits.GetPoliceRank(state));
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -58,7 +69,7 @@ class LF_RankPromoteAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		if (!LF_PoliceRanks.CanPromote(LF_PoliceRanks.ResolveUid(user)))
+		if (!OfferPromote(user))
 		{
 			SetCannotPerformReason("#EL-Rank_PromoteDenied");
 			return false;
@@ -95,5 +106,16 @@ class LF_RankPromoteAction : ScriptedUserAction
 	{
 		outName = "#EL-Rank_Promote";
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the account rule. Client: the same rule on the replicated account state.
+	protected bool OfferPromote(IEntity user)
+	{
+		if (Replication.IsServer())
+			return LF_PoliceRanks.CanPromote(LF_PoliceRanks.ResolveUid(user));
+
+		int state = EL_AccountReplication.GetState(user);
+		return EL_AccountStateBits.IsOnDutyPolice(state) && EL_AccountStateBits.GetPoliceRank(state) > LF_PoliceRanks.PATROL;
 	}
 }

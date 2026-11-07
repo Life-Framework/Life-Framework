@@ -20,7 +20,7 @@ class LF_BreachArmAction : ScriptedUserAction
 			return false;
 		}
 
-		if (!LF_Breach.CanArm(target.GetTargetId()))
+		if (!target.CanArmForOffer())
 		{
 			SetCannotPerformReason("#EL-Breach_AlreadyOpen");
 			return false;
@@ -94,8 +94,7 @@ class LF_BreachRepairAction : ScriptedUserAction
 			return false;
 		}
 
-		string playerUid = EL_Utils.GetPlayerUid(user);
-		if (!LF_Breach.CanRepair(target.GetTargetId(), playerUid))
+		if (!target.CanRepairForOffer(user))
 		{
 			SetCannotPerformReason("#EL-Breach_RepairDenied");
 			return false;
