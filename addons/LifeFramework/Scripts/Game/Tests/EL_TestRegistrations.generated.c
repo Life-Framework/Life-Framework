@@ -33,6 +33,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Data(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_DebugAreaBoundary(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_DebugActionValidation(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_DebugMenuGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_DebugWorldCollision(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_AccountStateBits(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicenseBits(), EL_TestTier.LOGIC);

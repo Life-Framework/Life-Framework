@@ -5,8 +5,10 @@
 //! lives in the shared modded enum (Feature/Quantity/ChimeraMenuPreset.c); that constant, this
 //! preset's name, and the Class it names must match exactly or the menu silently never opens.
 //!
-//! Every action routes client->server through the requesting player's owned character, is
-//! validated there, and is refused outside the DebugWorld. Never trust the client.
+//! Every action routes client->server through the requesting player's owned character and is
+//! gated there by EL_DevGate: allowed only when the game mode opts in (m_bDevToolsEnabled, set on
+//! GameMode_Roleplay_Debug.et) or the sender is an administrator. The client-side check on the
+//! open key is cosmetic. Never trust the client.
 //------------------------------------------------------------------------------------------------
 class EL_DebugMenu : ChimeraMenuBase
 {
@@ -166,8 +168,8 @@ class EL_DebugMenu : ChimeraMenuBase
 //------------------------------------------------------------------------------------------------
 //! Client->server bridge for debug menu actions. Hosted on the owned character: a client can
 //! only RPC on entities it owns, and the character is the one entity the player owns. The server
-//! validates the action and the world (DebugWorld only) before applying; replies are not needed
-//! — each action logs through EL_Debug.
+//! checks EL_DevGate (game-mode opt-in or administrator) and the action id before applying;
+//! replies are not needed — each action logs through EL_Debug.
 modded class SCR_ChimeraCharacter
 {
 	//------------------------------------------------------------------------------------------------
@@ -183,6 +185,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_DebugAction(EL_EDebugAction action, int value)
 	{
+		if (!EL_DevGate.CheckCharacterRequest(this, "DebugMenu", "debug action"))
+			return;
+
 		if (!EL_DebugActionUtils.IsValidAction(action))
 		{
 			EL_Debug.Error("DebugMenu", string.Format("debug action refused: %1 is not a known action", typename.EnumToString(EL_EDebugAction, action)));
