@@ -366,7 +366,30 @@ class LF_Breach
 		if (!user)
 			return false;
 
-		return EL_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1;
+		if (EL_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
+			return true;
+
+		return FindEquippedCharge(user) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The M112 is a weapon: picked up, it lands in the equipped-weapon storage, which the
+	//! deposit-count GetAmount/RemoveAmount do not cover. Finds a charge there.
+	protected static IEntity FindEquippedCharge(IEntity user)
+	{
+		EquipedWeaponStorageComponent weaponStorage = EL_Component<EquipedWeaponStorageComponent>.Find(user);
+		if (!weaponStorage)
+			return null;
+
+		array<IEntity> weapons = {};
+		weaponStorage.GetAll(weapons);
+		foreach (IEntity weapon : weapons)
+		{
+			if (weapon && EL_Utils.GetPrefabName(weapon) == CHARGE_PREFAB)
+				return weapon;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -379,7 +402,18 @@ class LF_Breach
 			return false;
 		}
 
-		int removed = EL_InventoryUtils.RemoveAmount(user, CHARGE_PREFAB, 1);
+		int removed = 0;
+		if (EL_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
+			removed = EL_InventoryUtils.RemoveAmount(user, CHARGE_PREFAB, 1);
+
+		if (removed != 1)
+		{
+			IEntity equipped = FindEquippedCharge(user);
+			InventoryStorageManagerComponent storage = EL_InventoryUtils.GetResponsibleStorageManager(user);
+			if (equipped && storage && storage.TryDeleteItem(equipped))
+				removed = 1;
+		}
+
 		if (removed != 1)
 		{
 			EL_Debug.Error("Breach", string.Format("arm refused: %1 charge could not be taken (removed %2)", targetId, removed));

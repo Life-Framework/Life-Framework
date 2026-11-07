@@ -414,7 +414,8 @@
   call later robberies use. Fuse 0 opens in that call. Wanted and the police
   notify fire once, at arm time, not when the offer refreshes. A second charge
   on an open target refuses. Police can always repair; the owning organization
-  can repair its own door. `Export` / `Apply` put the open lock back. The
+  can repair its own door. `Export` / `Apply` put the open lock back in memory
+  but are not wired into the save serializer, so a restart loses it. The
   vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
   `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
@@ -424,20 +425,6 @@
   door, bank vault, and hospital cabinet actions pass the acting player; the
   door action shows `#EL-Breach_NeedCharge`. A null carrier is the
   server-scripted arm used by tests. Pin test `security/breach-needs-charge`.
-  `EL_Door_Base` inherits
-  `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
-
-### `LF_Breach` — `Feature/Crime/LF_Breach.c`
-- ✅ Configured charge opens an `EL_LockComponent` after the fuse and leaves it
-  open until repair (verified 2026-10-11). `Arm(targetId, playerUid)` is the
-  call later robberies use. Fuse 0 opens in that call. Wanted and the police
-  notify fire once, at arm time, not when the offer refreshes. A second charge
-  on an open target refuses. Police can always repair; the owning organization
-  can repair its own door. `Export` / `Apply` put the open lock back in memory
-  but are not wired into the save serializer, so a restart loses it. The
-  vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
-  `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
-  `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
   `EL_Door_Base` inherits
   `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
 
