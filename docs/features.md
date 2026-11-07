@@ -44,7 +44,7 @@
 - ✅ Flow: no account → create → faction menu → spawn-location picker →
   spawn. `OnCharacterCreated` persists a character, inits ATM + survival
   components, spawns.
-- ✅ **Server-owned on a dedicated server** (verified 2026-11-07, code only: suite not run, see dedicated/* tests): the flow runs on the server
+- ✅ **Server-owned on a dedicated server** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the flow runs on the server
   only. Menus open on the joining client through owner RPCs on its
   `SCR_PlayerController` (`EL_ShowFactionMenu`, `EL_ShowSpawnLocationMenu`,
   `EL_CharacterCreationController.c`); picks come back as
@@ -161,7 +161,7 @@
   logs an `EL_Debug.Error` when the entry is truly missing.
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
-- ✅ **Client copy of the account** (verified 2026-11-07, code only: suite not run, see dedicated/* tests): `EL_PlayerAccountManager` is
+- ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
   server-only, so client-side offers read a replicated copy. Faction, duty,
   wanted, and police rank pack into one int (`EL_AccountStateBits`) carried by
   an `[RplProp]` on the player's `SCR_ChimeraCharacter`; the on-duty police
@@ -389,7 +389,7 @@
   spends skill points. `SetUnlockedLicenses` is the persistence restore seam,
   not a player purchase path. Remaining: not localized; `m_bIsInitialLicense`
   is used for initial grants.
-- ✅ **Replicates as a bitmask** (verified 2026-11-07, code only: suite not run, see dedicated/* tests): the old `[RplProp] ref array` broke the
+- ✅ **Replicates as a bitmask** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the old `[RplProp] ref array` broke the
   simple-types rule. The server list stays local; `m_iUnlockedBits` (an int
   `RplProp`, `EL_LicenseBits`) is written on every change. On a client
   `HasLicense` and `GetUnlockedLicenses` decode the mask. Bit order is
@@ -420,25 +420,6 @@
   call later robberies use. Fuse 0 opens in that call. Wanted and the police
   notify fire once, at arm time, not when the offer refreshes. A second charge
   on an open target refuses. Police can always repair; the owning organization
-  can repair its own door. `Export` / `Apply` put the open lock back. The
-  vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
-  `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
-  `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
-  `EL_Door_Base` inherits
-  `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
-- ✅ **Client offers** (verified 2026-11-07, code only: suite not run, see dedicated/* tests): the target table is server-only, so
-  `LF_BreachTargetComponent` mirrors open/armed as `RplProp`s
-  (`SetReplicatedState`, written from `Open`/`Repair`/`Apply` and the fuse
-  schedule). `CanArmForOffer` / `CanRepairForOffer` ask `LF_Breach` on the
-  server and the mirror on a client. A client offers repair to police and, on an
-  organization door, to anyone; the server decides membership.
-
-### `LF_Breach` — `Feature/Crime/LF_Breach.c`
-- ✅ Configured charge opens an `EL_LockComponent` after the fuse and leaves it
-  open until repair (verified 2026-10-11). `Arm(targetId, playerUid)` is the
-  call later robberies use. Fuse 0 opens in that call. Wanted and the police
-  notify fire once, at arm time, not when the offer refreshes. A second charge
-  on an open target refuses. Police can always repair; the owning organization
   can repair its own door. `Export` / `Apply` put the open lock back in memory
   but are not wired into the save serializer, so a restart loses it. The
   vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
@@ -446,6 +427,12 @@
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
   `EL_Door_Base` inherits
   `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
+- ✅ **Client offers** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the target table is server-only, so
+  `LF_BreachTargetComponent` mirrors open/armed as `RplProp`s
+  (`SetReplicatedState`, written from `Open`/`Repair`/`Apply` and the fuse
+  schedule). `CanArmForOffer` / `CanRepairForOffer` ask `LF_Breach` on the
+  server and the mirror on a client. A client offers repair to police and, on an
+  organization door, to anyone; the server decides membership.
 
 ### `LF_Bank` — `Feature/Crime/LF_Bank.c`
 - ✅ A vault calls `LF_Breach.Arm`, then spills a config number of bags of
@@ -504,7 +491,7 @@
   is the capture prefab and is not placed in the row. Player strings:
   `#EL-Fuel_Till_Rob`, `#EL-Rob_Cooldown`, `#EL-Rob_CiviliansOnly`,
   `#EL-Rob_NeedPolice`.
-- ✅ **No account, no robbery** (verified 2026-11-07, code only: suite not run, see dedicated/* tests): `CommitRobbery` refuses and logs
+- ✅ **No account, no robbery** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `CommitRobbery` refuses and logs
   `robbery refused: no account` instead of paying without the civilian gate and
   wanted bump. `PerformAction` runs on the server only; offers read
   `EL_AccountReplication`, so the till is offered on a dedicated client and the
@@ -554,23 +541,13 @@
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
-- ✅ **Wanted list over RPC** (verified 2026-11-07, code only: suite not run, see dedicated/* tests): the menu asks the server
+- ✅ **Wanted list over RPC** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the menu asks the server
   (`EL_AskPoliceWantedList` → `RpcAsk_EL_PoliceWantedList`, which re-checks
   `CanViewWantedList`); the server answers the officer's client with parallel
   uid/name/level arrays (`RpcDo_EL_PoliceWantedList`, `SetWantedList`). The
   open action's offer reads `EL_AccountReplication`.
 - ⚠️ The fine RPC still logs denials via `Print` (should be `EL_Debug`).
   The menu layout does not render `GetWantedPlayers()` yet.
-
-### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
-- ✅ Toggles police on-duty flag. Civilians are refused. The toggle runs on the
-  server only; the offer and the name (`#EL-Duty_GoOn` / `#EL-Duty_GoOff`) read
-  `EL_AccountReplication`, so a dedicated client sees the action (verified 2026-11-07, code only: suite not run, see dedicated/* tests). The debug menu's
-  police faction button sets faction and duty, which is how a solo session
-  reaches the toggle (verified 2026-10-10). Going on duty starts the rank
-  clock; going off duty settles it.
-- ⚠️ Toggling evicts the account from the cache, so the officer cannot reopen
-  the police menu or re-toggle until the account reloads.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ Toggles police on-duty flag. Civilians are refused. The debug menu's
@@ -580,6 +557,9 @@
 - ✅ Toggling keeps the account resident: `SaveAndReleaseAccount` re-caches
   the account instead of evicting it, so the officer can reopen the police
   menu and re-toggle at once.
+- ✅ **Dedicated client** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the toggle
+  runs on the server only; the offer and the name (`#EL-Duty_GoOn` /
+  `#EL-Duty_GoOff`) read `EL_AccountReplication`.
 
 ### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
 - ✅ Two ranks (verified 2026-10-11). Patrol officer draws
@@ -611,7 +591,7 @@
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
 - ✅ On-duty police delete weapons from the nearest wanted player within 5 m.
   The offer reads replicated officer and target state; the deletion runs on the
-  server only and re-checks the officer's account (verified 2026-11-07, code only: suite not run, see dedicated/* tests).
+  server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
 - ⚠️ Deletes items while iterating a live `FindItems` array (mutation-during-
   iteration risk); no compensation or wanted reduction.
 
@@ -672,7 +652,7 @@
   plus a direct call for the listen-server host so the authority sees its own
   toast. `SendToJob` duty semantics now read the account's `IsOnDuty()`, not a
   `job != UNEMPLOYED` tautology.
-- ✅ **Private targeted delivery** (verified 2026-11-07, code only: suite not run, see dedicated/* tests): `SendToPlayer` sends an Owner RPC on
+- ✅ **Private targeted delivery** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `SendToPlayer` sends an Owner RPC on
   the target's `SCR_PlayerController` (`EL_DeliverNotification`), so only that
   client receives it; the listen host's own controller calls the handler
   directly. Broadcast is left for `SendToAll` only. `SendToPolice` /

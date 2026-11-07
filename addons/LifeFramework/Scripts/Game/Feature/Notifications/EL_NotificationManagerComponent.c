@@ -116,11 +116,11 @@ class EL_NotificationManagerComponent : ScriptComponent
 		if (GetGame().GetGameMode() == owner)
 		{
 			s_Instance = this;
-			Print("[EL_NotificationManagerComponent] ✓ Notification manager initialized successfully", LogLevel.NORMAL);
+			EL_Debug.Log("Notify", "notification manager initialized");
 		}
 		else
 		{
-			Print(string.Format("[EL_NotificationManagerComponent] WARNING: Component attached to %1 instead of GameMode", owner), LogLevel.WARNING);
+			EL_Debug.Warn("Notify", string.Format("notification manager attached to %1 instead of the game mode", owner));
 		}
 	}
 	
@@ -130,7 +130,7 @@ class EL_NotificationManagerComponent : ScriptComponent
 		if (s_Instance == this)
 		{
 			s_Instance = null;
-			Print("[EL_NotificationManagerComponent] Notification manager shut down", LogLevel.NORMAL);
+			EL_Debug.Log("Notify", "notification manager shut down");
 		}
 			
 		super.OnDelete(owner);
@@ -148,7 +148,7 @@ class EL_NotificationManagerComponent : ScriptComponent
 	{
 		if (!Replication.IsServer())
 		{
-			Print("[EL_NotificationManagerComponent] ERROR: SendToPlayer called on client! Only server can send notifications.", LogLevel.ERROR);
+			EL_Debug.Error("Notify", "SendToPlayer refused: called on a client");
 			return;
 		}
 			
@@ -262,11 +262,10 @@ class EL_NotificationManagerComponent : ScriptComponent
 		EL_NotificationManagerComponent manager = GetInstance();
 		if (!manager)
 		{
-			Print(string.Format("[EL_NotificationManagerComponent] ERROR: Instance not found! Cannot send notification to player %1", playerId), LogLevel.ERROR);
+			EL_Debug.Error("Notify", string.Format("notify to player %1 dropped: no EL_NotificationManagerComponent on the game mode", playerId));
 			return;
 		}
 		
-		Print(string.Format("[EL_NotificationManagerComponent] Sending notification to player %1: %2", playerId, title), LogLevel.NORMAL);
 		
 		EL_NotificationConfig config = new EL_NotificationConfig(title, message, duration, type);
 		config.m_sMessageArg = messageArg;
@@ -393,7 +392,7 @@ class EL_NotificationManagerComponent : ScriptComponent
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
 		{
-			Print("[EL_NotificationManagerComponent] ERROR: No workspace found", LogLevel.ERROR);
+			EL_Debug.Error("Notify", "toast dropped: no workspace");
 			return;
 		}
 		
@@ -421,28 +420,26 @@ class EL_NotificationManagerComponent : ScriptComponent
 			else
 				parent = workspace;
 				
-			Print("[EL_NotificationManagerComponent] WARNING: NotificationContainer not found, using fallback parent", LogLevel.WARNING);
+			EL_Debug.Warn("Notify", "NotificationContainer not found, using fallback parent");
 		}
 		
 		Widget toastWidget = workspace.CreateWidgets("{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout", parent);
 		if (!toastWidget)
 		{
-			Print("[EL_NotificationManagerComponent] ❌ ERROR: Failed to create notification widget", LogLevel.ERROR);
+			EL_Debug.Error("Notify", "toast dropped: failed to create the notification widget");
 			return;
 		}
 		
-		Print(string.Format("[EL_NotificationManagerComponent] ✅ Widget created successfully for: '%1'", displayTitle), LogLevel.NORMAL);
 		
 		// Get handler and show
 		EL_NotificationToastUI handler = EL_NotificationToastUI.Cast(toastWidget.FindHandler(EL_NotificationToastUI));
 		if (handler)
 		{
-			Print(string.Format("[EL_NotificationManagerComponent] ✅ Handler found, showing notification: '%1'", displayTitle), LogLevel.NORMAL);
 			handler.Show(displayTitle, displayMessage, type, duration);
 		}
 		else
 		{
-			Print("[EL_NotificationManagerComponent] ❌ ERROR: No handler found on notification widget", LogLevel.ERROR);
+			EL_Debug.Error("Notify", "toast dropped: no EL_NotificationToastUI handler on the widget");
 		}
 	}
 }
