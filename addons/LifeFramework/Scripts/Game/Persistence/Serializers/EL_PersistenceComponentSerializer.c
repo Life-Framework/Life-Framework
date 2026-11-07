@@ -71,7 +71,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \param[in] persistence The game-mode persistence component.
 	//! \param[in] context Save context to write into.
 	//! \return OK once every payload is written.
-	static ESerializeResult SerializeStore(notnull EL_PersistenceComponent persistence, notnull BaseSerializationSaveContext context)
+	static ESerializeResult SerializeStore(notnull EL_PersistenceComponent persistence, notnull SaveContext context)
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
@@ -118,7 +118,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \param[in] persistence The game-mode persistence component.
 	//! \param[in] context Load context to read from.
 	//! \return True when the payload was consumed.
-	static bool DeserializeStore(notnull EL_PersistenceComponent persistence, notnull BaseSerializationLoadContext context)
+	static bool DeserializeStore(notnull EL_PersistenceComponent persistence, notnull LoadContext context)
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
@@ -171,7 +171,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \param[in] persistence Persistence component that owns survival stats.
 	//! \param[in] context Save context to write into.
 	//! \param[in] payload Name from RegisterPersistencePayloads.
-	static void WritePersistencePayload(notnull EL_PersistenceComponent persistence, notnull BaseSerializationSaveContext context, string payload)
+	static void WritePersistencePayload(notnull EL_PersistenceComponent persistence, notnull SaveContext context, string payload)
 	{
 		if (payload == "survival")
 		{
@@ -234,7 +234,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \param[in] persistence Persistence component that owns survival stats.
 	//! \param[in] context Load context to read from.
 	//! \param[in] payload Name from RegisterPersistencePayloads.
-	static void ReadPersistencePayload(notnull EL_PersistenceComponent persistence, notnull BaseSerializationLoadContext context, string payload)
+	static void ReadPersistencePayload(notnull EL_PersistenceComponent persistence, notnull LoadContext context, string payload)
 	{
 		if (payload == "survival")
 		{

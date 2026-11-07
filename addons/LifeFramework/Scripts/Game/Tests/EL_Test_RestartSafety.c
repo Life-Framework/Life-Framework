@@ -107,9 +107,9 @@ class EL_Test_RestartJailSerializerRoundtrip : EL_Test
 		ctx.True(LF_Jail.IsServing(PRISONER_UID), "the prisoner is serving before the save");
 
 		// Save through the real serializer write path.
-		SCR_JsonSaveContext saveContext = new SCR_JsonSaveContext(false);
+		JsonSaveContext saveContext = new JsonSaveContext(false);
 		ctx.True(EL_PersistenceComponentSerializer.SerializeStore(persistence, saveContext) == ESerializeResult.OK, "the store serializes");
-		string saved = saveContext.ExportToString();
+		string saved = saveContext.SaveToString();
 		ctx.True(saved.Contains(PRISONER_UID), "the save carries the jail payload");
 
 		// Restart: the session cache no longer has the sentence.
@@ -117,8 +117,8 @@ class EL_Test_RestartJailSerializerRoundtrip : EL_Test
 		ctx.False(LF_Jail.IsServing(PRISONER_UID), "the restarted session starts without the sentence");
 
 		// Load through the real serializer read path.
-		SCR_JsonLoadContext loadContext = new SCR_JsonLoadContext(false);
-		ctx.True(loadContext.ImportFromString(saved), "the save parses");
+		JsonLoadContext loadContext = new JsonLoadContext(false);
+		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
 		ctx.Equal(5, version, "the save is written at version 5");
@@ -127,8 +127,8 @@ class EL_Test_RestartJailSerializerRoundtrip : EL_Test
 		ctx.EqualFloat(240, LF_Jail.GetRemaining(PRISONER_UID), 0.01, "the remaining time survives the load");
 
 		// Re-applying the same save converges on the same state.
-		SCR_JsonLoadContext again = new SCR_JsonLoadContext(false);
-		again.ImportFromString(saved);
+		JsonLoadContext again = new JsonLoadContext(false);
+		again.LoadFromString(saved);
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, again, "jail");
 		ctx.True(LF_Jail.IsServing(PRISONER_UID), "a second load keeps the sentence");
 		ctx.EqualFloat(240, LF_Jail.GetRemaining(PRISONER_UID), 0.01, "a second load does not change the remaining time");
