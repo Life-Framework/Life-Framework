@@ -23,6 +23,18 @@
 ### `EL_GameModeRoleplay` — `Scripts/Game/Core/EL_GameModeRoleplay.c`
 - ✅ Lazy-creates `EL_CharacterCreationManager`, `EL_ATMManager`,
   `EL_JobManager` on first player connect and drives character creation.
+- ✅ **World-end static reset** (2026-11-07, suite not run): the game-mode
+  destructor calls `LF_StaticReset.ResetAll`, which drops `LF_Breach`, `LF_Jail`,
+  `LF_JailEscort`, `LF_Contraband`, `LF_PoliceRanks`, the jail cell/arrestable
+  tick owners, the garage and spawn-point registries, and the quantity transfer
+  intents. It is not called at game start: placed components register in
+  `OnPostInit`, before the game mode starts.
+- ✅ **Disconnect cleanup** (2026-11-07, suite not run): server
+  `OnPlayerDisconnected` releases escort holds where the player is officer or
+  prisoner (`LF_JailEscort.ReleasePlayer`) and fails a running convoy, dropping
+  its vehicle watch (`LF_Contraband.ReleasePlayer`). Jail sentences stay (they
+  resume on reconnect). `EL_CharacterCreationManager.m_mPendingFactions` is not
+  released yet (that manager has no disconnect entry point).
 - ⚠️ Managers are only created on first connect; a server-side call before any
   player connects gets null.
 
@@ -37,6 +49,9 @@
 - ✅ **No-spawn-point fail-safe** (verified 2026-08-30): `GetCreationPosition`
   returns `bool` and `CreateCharacter` aborts the spawn with an
   `EL_Debug.Error` instead of dropping the player at world origin.
+- ✅ **Registration retry cap** (2026-11-07, suite not run): a UID or account that
+  does not resolve retries about once a second up to `MAX_REGISTER_RETRIES` (60),
+  then logs `EL_Debug.Error` and stops. A success clears the counter.
 - ⚠️ Item is silently dropped if no matching storage; loadout recursion has no
   depth guard.
 
@@ -72,6 +87,20 @@
   1e6→`M`, 1e9→`B`), typed component finders.
 - ⚠️ `EL_ComponentData.Get` strips the last 5 chars of the class name
   (`XxxClass`→`Xxx`); breaks for any data class not ending in `Class`.
+
+### `EL_InventoryUtils` (Core) / `EL_BuildingManagerComponent` / `EL_ChatManagerComponent`
+- ✅ (2026-11-07, suite not run) `EL_InventoryUtils.AddItem` spawns through
+  `EL_Utils.SpawnEntityPrefab` (unresolved prefab logs and returns false);
+  `IsStorageHierachyRoot`, `GetStorageOwner`, and `DropItem` tolerate an
+  entity without `InventoryItemComponent` / a character without an inventory
+  manager.
+- ✅ The building preview is a local (non-replicated) entity on the owning
+  client and is deleted in `OnDelete` and the destructor, so a life no longer
+  leaves an orphan preview on every client. A null camera manager retries next
+  frame; a preview that fails to spawn logs once and stops the frame loop.
+- ✅ `EL_ChatManagerComponent` registers only `EntityEvent.INIT`; it has no
+  frame handler.
+- ✅ Vehicle garage and spawn-point registries remove themselves in `OnDelete`.
 
 ## Character & Survival
 
@@ -309,6 +338,12 @@
   component, so `OnLevelUp` fires. Level 1 may take courier work, level 2
   opens fuel delivery, level 3 opens taxi. Under-level signup refuses and is
   logged. Paychecks stay cash on the existing clock.
+- ✅ **Job tool grant** (2026-11-07, suite not run): miner gets
+  `{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et` (the old `Prefabs/Tools/Axe/Pico.et`
+  never existed), lumberjack gets `{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et`
+  (the old GUID was wrong). Spawn goes through `EL_Utils.SpawnEntityPrefab`; a
+  tool that does not fit is logged and left at the player's feet. Fruit-reward
+  logs go through `EL_Debug` ("Jobs").
 - ⚠️ Whitelist branch in `SetJob` is dead (only POLICE is restricted and it is
   special-cased). Hard-coded Spanish strings (not localized). Per-job level/XP
   persistence is convention-only, no SaveData pair.
@@ -387,6 +422,14 @@
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
   `EL_Door_Base` inherits
   `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
+- ✅ **Charge lifetime** (2026-11-07, suite not run): a charge whose fuse cannot
+  fire is dropped with `EL_Debug.Error` (`CancelCharge`) instead of leaving the
+  target armed forever: no world, a placed door without
+  `LF_BreachTargetComponent`, a timer that could not be scheduled, or the door
+  deleted before the fuse fired (`LF_BreachTargetComponent.OnDelete` also
+  removes the callqueue entry). An unplaced, script-driven target keeps its
+  charge and opens through `Advance`. `Configure` clears the armed flag and
+  elapsed time; the open flag is kept.
 
 ### `LF_Bank` — `Feature/Crime/LF_Bank.c`
 - ✅ A vault calls `LF_Breach.Arm`, then spills a config number of bags of
@@ -444,8 +487,14 @@
   is the capture prefab and is not placed in the row. Player strings:
   `#EL-Fuel_Till_Rob`, `#EL-Rob_Cooldown`, `#EL-Rob_CiviliansOnly`,
   `#EL-Rob_NeedPolice`.
-- ⚠️ Near-duplicated guard logic across all three. `EL_RobWeaponAction` and
-  `EL_RobVehicleAction` still notify from inside their own on-duty counts.
+- ✅ **Weapon/vehicle cooldown in seconds** (2026-11-07, suite not run): both
+  compare through `LF_RobCooldown.IsActive`, which converts the seconds attribute
+  to world-time milliseconds (before, 300 s was 0.3 s). A never-robbed action
+  has no cooldown. `PerformAction` grants/spawns, raises wanted, and alerts on
+  the server only. `EL_RobVehicleAction` no longer notifies from its on-duty
+  count (that ran every offer refresh) and refuses an empty vehicle prefab with
+  `EL_Debug.Error`; the spawn goes through `EL_Utils.SpawnEntityPrefab`.
+- ⚠️ Near-duplicated guard logic across all three.
   `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
 
 ### `LF_Jail` — `Feature/Police/LF_Jail.c`
@@ -472,6 +521,12 @@
   `Roadmap_Escort_Car` at `204 0 108` on `Roadmap.layer`, the police M151 with
   `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
   still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
+- ✅ **One jail tick** (2026-11-07, suite not run): the first placed
+  `LF_JailCellComponent` owns the jail config and the repeating `LF_Jail.Tick`;
+  a second cell logs `EL_Debug.Error` and neither reconfigures nor ticks (two
+  cells used to run sentences at double speed). `OnDelete` removes the tick.
+  `LF_JailArrestableComponent` hosts `LF_JailEscort.Tick` on one live instance
+  and hands it to the next registered one when that host is deleted.
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
 - ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
@@ -485,8 +540,8 @@
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
-- ⚠️ The fine RPC still logs denials via `Print` (should be `EL_Debug`);
-  `account.GetActiveCharacter()` deref in the wanted list is unguarded.
+- ✅ Fine denials log through `EL_Debug.Warn("Police", ...)` (2026-11-07).
+- ⚠️ `account.GetActiveCharacter()` deref in the wanted list is unguarded.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ Toggles police on-duty flag. Civilians are refused. The debug menu's
@@ -522,6 +577,10 @@
   refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
   Player strings: `#EL-Contraband_Start`, `#EL-Contraband_Deliver`,
   `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`.
+- ✅ **Vehicle watch lifetime** (2026-11-07, suite not run): payment, failure, and
+  `Reset` unregister the `OnCompartmentLeft` handler; a restarted run drops the
+  old watch and watches the vehicle the player is in now. A disconnect fails the
+  running convoy.
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
 - ✅ On-duty police delete weapons from the nearest wanted player within 5 m.
@@ -596,6 +655,11 @@
   transferred), `CombineQuantities` (2 and 3 yield 5), `Split`,
   `QuantityRemainingAfterSplit` (5 into 2 leaves 3), `SortByQuantity`
   (descending), `GetRemainingCapacity` (verified 2026-10-11).
+- ✅ **Transfer intent lifetime** (2026-11-07, suite not run): `OnDelete` removes
+  the entity's intent (no dead keys); an intent older than `INTENT_TTL_MS` (5 s)
+  belonged to a failed move and is ignored by the next add.
+  `EL_DefaultLoadoutItemQuantityComponent` logs `EL_Debug.Error` instead of
+  crashing on a prefab without `EL_QuantityComponent`.
 - ⚠️ `Split` with `splitSize` 0 spawns an item then deletes it via
   `SetQuantity(0)`; `ExtractQuantityComponents` inserts null components with
   no check; `HandleOnItemAdded` may refresh UI on a just-deleted entity.
@@ -621,6 +685,9 @@
 - ✅ `EL_HandInventoryStorageComponent` state machine
   (`NONE→READY→AWAIT_HOLSTER→ACTIVE→AWAIT_SWAP→NONE`), hands-only storage,
   modded vanilla SCR inventory/gadget wiring.
+- ✅ Missing `CharacterControllerComponent`, weapon manager, or inventory
+  manager logs `EL_Debug.Error("HandCarry", ...)` and skips that step instead of
+  a null dereference (2026-11-07).
 - ⚠️ Weapon-holster flow is client-only (server never sees the transition);
   `OnGadgetModeSet` lacks the `HasLocalControl` guard its siblings have;
   `SCR_CharacterControllerComponent` destructor touches `GetOwner()` at

@@ -75,6 +75,15 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | RPL invalid prefab GUID | not a feature bug | Same missing resource database. Copy it. Wrong GUID and invalid prefab are this, not a feature defect. |
 | inventory `not found in replication` together with a cash read of 0 | not a feature bug | The resource database copy is missing. `GetCash` returning 0 is the same gap. These four tests fail only for that reason: `e2e/narrative-loop`, `e2e/inventory-storage`, `money/cash-roundtrip`, `vehiclelock/lock-key-access`. |
 | harness `Cannot index into a null array` | not a feature bug | `Get-Content -Raw` returned an array because the log was still open, and the old parser indexed `$matches`. Grep `console.log` for `[ELTEST] SUMMARY` and the assigned test name. Do not read `cli.mjs` or the server executable. |
+| `[ELDebug:StaticReset] feature statics reset (run N)` | BY DESIGN | `LF_StaticReset.ResetAll` from the `EL_GameModeRoleplay` destructor at world teardown. The reset is idempotent. |
+| `[ELDebug:Session] disconnect cleanup player=N escorts=M` | BY DESIGN | `EL_GameModeRoleplay.OnPlayerDisconnected` released that player's escort holds and convoy run. `disconnect cleanup skipped: player N has no uid and no entity` (Warn) means the identity was already gone; nothing to release. |
+| `[ELDebug:Jail] second jail cell ignored at <pos>` | BY DESIGN | Only the first placed `LF_JailCellComponent` owns the jail config and `LF_Jail.Tick`. A second cell is a world-authoring error; remove it. The `robustness/single-jail-tick` WORLD test spawns one on purpose, so one such line in a full-suite log is expected. |
+| `[ELDebug:Jail] cell tick removed` | INFO | The tick-owning jail cell was deleted (world teardown or test). |
+| `[ELDebug:Breach] charge cancelled on <id>: <reason>` | BY DESIGN | A charge whose fuse can no longer fire (no world, no `LF_BreachTargetComponent` on the door, timer not scheduled, or the door was deleted before the fuse fired) is dropped so the target is not armed forever. The `robustness/lifetime` LOGIC test emits one with reason `robustness test`. |
+| `[ELDebug:Breach] fuse timer not scheduled: <id> is not a placed entity; Advance drives it` | BY DESIGN | Script-driven (unplaced) breach targets, e.g. the LOGIC tests' `logic-breach-fuse`, advance only through `LF_Breach.Advance`. |
+| `[ELDebug:Spawn] spawn abandoned for playerId N: UID/account did not resolve after 60 retries` | OPEN if seen | The ~1 s registration retry is capped (`EL_SpawnLogic.MAX_REGISTER_RETRIES`). Seeing it means the backend never returned an identity or the account never loaded: check the persistence/identity lines above it. |
+| `[ELDebug:Quantity] stale transfer intent ignored for <entity>` | INFO | A keep-separate/merge intent older than `EL_QuantityComponent.INTENT_TTL_MS` (5 s) belonged to a move that failed; the later add ignores it. |
+| `[ELDebug:Jobs] job equipment ... did not fit the inventory; left at the player's feet` | BY DESIGN | Job tool grant (pickaxe/axe) found no room. The tool stays on the ground at the player. |
 
 ## How to add a row
 
