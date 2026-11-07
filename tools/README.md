@@ -97,6 +97,10 @@ and warns on lowercase `data/` path references.
 
 ### Validation Tools
 - `validation/validate-repo.ps1` - artifact/GUID/meta consistency checks (pre-commit + manual)
+- `validation/validate-enforce-lint.mjs` - structural Enforce Script lint (rules L1-L7 in
+  `enforce-lint.mjs`). Known hits live in `validation/enforce-lint-baseline.json` and print as
+  `WARN`; a hit not in the baseline fails. After fixing debt, shrink the baseline with
+  `node tools/validation/validate-enforce-lint.mjs --update-baseline`.
 
 ### Utilities
 *Coming soon - helper scripts for development tasks*
