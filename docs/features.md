@@ -129,13 +129,6 @@
   wanted bumps and police-menu reads do not lose the account mid-session
   (the old evict-on-write churn is gone).
 
-### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/EL_PlayerAccountRecord.c`
-- ✅ Dedicated persisted record (characters, active index, faction, on-duty,
-  wanted), separate from the live `EL_PlayerAccount`. EPF and
-  `EL_PlayerAccountSaveData` are gone. `EL_PlayerAccountManager.ExportAll` /
-  `ApplyAll` feed `EL_PersistenceComponentSerializer`, which writes `version`
-  first (currently 4) and the account records as the first payload.
-
 ### `EL_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
   (one AUTO slot per playthrough via `EL_SaveSelection`), manual saves,
@@ -152,6 +145,13 @@
   explicitly from both missions), replacing the GUID-colliding
   `ChimeraSystemsConfig.conf` override. Resolution retries at game start and
   logs an `EL_Debug.Error` when the entry is truly missing.
+
+### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
+- ✅ Explicit persisted form of an account and its characters (faction,
+  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
+  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
+  its `version` field. `account/save-roundtrip` covers the
+  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
 ## Money & Economy
 
