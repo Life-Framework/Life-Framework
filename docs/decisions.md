@@ -82,6 +82,29 @@ which recovers over time). Why: stops grind exploits, creates trade routes.
 Framework: curves and recovery are config; a fixed-price mode is a curve of 0.
 Scheduled after M1 unless an exploit forces it earlier.
 
+**2026-11-07 — Garage it to keep it.** A vehicle persists across restarts only
+when parked in a garage or an owned spot. Anything left on the street at
+restart goes to the impound lot, collected for a fee. Why: mostly in-world,
+controls clutter and car-camping. Framework: impound fee and owned spots are
+config.
+
+**2026-11-07 — One player interaction menu.** Walking up to another player
+offers a short, simple list of person-to-person actions: introduce yourself,
+show ID, give cash or an item, and role actions (search, cuff, fine) when the
+role allows. Names: strangers show nothing; after someone introduces
+themselves, their name shows for you. The ID card is a real item police can
+ask for. Keep it simple: one menu, few options, every option one press.
+
+**2026-11-07 — Radios, payphones, and pagers.** Period comms: handheld and
+vehicle radios on frequencies (reuse Reforger's radio system), payphones at
+fixed spots (anonymous tips, calling a service), and a pager item that receives
+short dispatch messages for jobs and police. No phone UI.
+
+**2026-11-07 — Buy and furnish property.** Selected real buildings are for
+sale (for-sale sign out front, real keys); owners place furniture and storage
+inside, and stored items exist physically in the building. Big system: after
+M1, built on the existing house lock and key code.
+
 ## Delivery
 
 **2026-11-07 — Milestone 1 is a signposted DebugWorld playtest town.** Every
