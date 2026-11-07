@@ -101,12 +101,12 @@ modded class ScriptedInventoryStorageManagerComponent
 		EL_QuantityComponent quantitySource = EL_Component<EL_QuantityComponent>.Find(EL_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
 		if (!quantitySource || !EL_CanManipulate(quantitySource.GetOwner()))
 		{
-			Print("[ScriptedInventoryStorageManagerComponent] Quantity split rejected: source not found or out of range", LogLevel.WARNING);
+			EL_Debug.Warn("Quantity", "Quantity split rejected: source not found or out of range");
 			return;
 		}
 		if (!EL_CanManipulateOwned(quantitySource.GetOwner()))
 		{
-			Print("[ScriptedInventoryStorageManagerComponent] Quantity split rejected: source not owned", LogLevel.WARNING);
+			EL_Debug.Warn("Quantity", "Quantity split rejected: source not owned");
 			return;
 		}
 
@@ -114,7 +114,7 @@ modded class ScriptedInventoryStorageManagerComponent
 		if (splitSize == -1) splitSize = sourceQuantity / 2;
 		if (splitSize < 1 || splitSize >= sourceQuantity)
 		{
-			Print(string.Format("[ScriptedInventoryStorageManagerComponent] Quantity split rejected: splitSize %1 out of range for quantity %2", splitSize, sourceQuantity), LogLevel.WARNING);
+			EL_Debug.Warn("Quantity", string.Format("Quantity split rejected: splitSize %1 out of range for quantity %2", splitSize, sourceQuantity));
 			return;
 		}
 
@@ -134,24 +134,24 @@ modded class ScriptedInventoryStorageManagerComponent
 		EL_QuantityComponent quantitySource = EL_Component<EL_QuantityComponent>.Find(EL_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
 		if (!quantitySource || !EL_CanManipulate(quantitySource.GetOwner()))
 		{
-			Print("[ScriptedInventoryStorageManagerComponent] Quantity transfer rejected: source not found or out of range", LogLevel.WARNING);
+			EL_Debug.Warn("Quantity", "Quantity transfer rejected: source not found or out of range");
 			return;
 		}
 		if (!EL_CanManipulateOwned(quantitySource.GetOwner()))
 		{
-			Print("[ScriptedInventoryStorageManagerComponent] Quantity transfer rejected: source not owned", LogLevel.WARNING);
+			EL_Debug.Warn("Quantity", "Quantity transfer rejected: source not owned");
 			return;
 		}
 
 		EL_QuantityComponent quantityDestination = EL_Component<EL_QuantityComponent>.Find(EL_NetworkUtils.FindEntityByRplId(quantityDestinationRplId));
 		if (!quantityDestination || !EL_CanManipulate(quantityDestination.GetOwner()))
 		{
-			Print("[ScriptedInventoryStorageManagerComponent] Quantity transfer rejected: destination not found or out of range", LogLevel.WARNING);
+			EL_Debug.Warn("Quantity", "Quantity transfer rejected: destination not found or out of range");
 			return;
 		}
 		if (!EL_CanManipulateOwned(quantityDestination.GetOwner()))
 		{
-			Print("[ScriptedInventoryStorageManagerComponent] Quantity transfer rejected: destination not owned", LogLevel.WARNING);
+			EL_Debug.Warn("Quantity", "Quantity transfer rejected: destination not owned");
 			return;
 		}
 
@@ -159,7 +159,7 @@ modded class ScriptedInventoryStorageManagerComponent
 		if (amount == -1) amount = sourceQuantity;
 		if (amount < 1 || amount > sourceQuantity)
 		{
-			Print(string.Format("[ScriptedInventoryStorageManagerComponent] Quantity transfer rejected: amount %1 out of range for quantity %2", amount, sourceQuantity), LogLevel.WARNING);
+			EL_Debug.Warn("Quantity", string.Format("Quantity transfer rejected: amount %1 out of range for quantity %2", amount, sourceQuantity));
 			return;
 		}
 
@@ -180,7 +180,7 @@ modded class ScriptedInventoryStorageManagerComponent
 		if (!sourceEntity || !EL_CanManipulate(sourceEntity)) return;
 		if (!EL_CanManipulateOwned(sourceEntity))
 		{
-			Print("[ScriptedInventoryStorageManagerComponent] Transfer intent rejected: source not owned", LogLevel.WARNING);
+			EL_Debug.Warn("Quantity", "Transfer intent rejected: source not owned");
 			return;
 		}
 		EL_QuantityComponent.SetTransferIntent(sourceEntity, keepSeperate);

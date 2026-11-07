@@ -84,7 +84,7 @@ modded class SCR_ChimeraCharacter
 		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(officer);
 		if (!EL_PoliceUtils.IsOnDutyOfficer(officerAccount))
 		{
-			Print(string.Format("[EL_PoliceMenu] Fine denied: %1 is not an on-duty officer", officerPlayerId), LogLevel.WARNING);
+			EL_Debug.Warn("Police", string.Format("Fine denied: %1 is not an on-duty officer", officerPlayerId));
 			return;
 		}
 
@@ -97,7 +97,7 @@ modded class SCR_ChimeraCharacter
 
 		if (!EL_PoliceUtils.IsSaneFineAmount(amount))
 		{
-			Print(string.Format("[EL_PoliceMenu] Fine denied: amount %1 out of range", amount), LogLevel.WARNING);
+			EL_Debug.Warn("Police", string.Format("Fine denied: amount %1 out of range", amount));
 			return;
 		}
 
@@ -105,7 +105,7 @@ modded class SCR_ChimeraCharacter
 		IEntity target = EL_PoliceUtils.FindPlayerEntityByUid(targetPlayerUid, targetAccount);
 		if (!target || !targetAccount || targetAccount.GetWantedLevel() <= 0)
 		{
-			Print(string.Format("[EL_PoliceMenu] Fine denied: target %1 is not wanted", targetPlayerUid), LogLevel.WARNING);
+			EL_Debug.Warn("Police", string.Format("Fine denied: target %1 is not wanted", targetPlayerUid));
 			return;
 		}
 

@@ -7,7 +7,12 @@ class EL_InventoryUtils
 		if (!storageManager || prefab == ResourceName.Empty)
 			return false;
 
-		IEntity item = GetGame().SpawnEntityPrefab(Resource.Load(prefab));
+		// The helper logs EL_Debug.Error and returns null when the prefab does not resolve.
+		vector origin = "0 0 0";
+		if (storageManager.GetOwner())
+			origin = storageManager.GetOwner().GetOrigin();
+
+		IEntity item = EL_Utils.SpawnEntityPrefab(prefab, origin);
 		if (!item)
 			return false;
 
@@ -25,6 +30,9 @@ class EL_InventoryUtils
 	{
 		if (!item) return false;
 		InventoryItemComponent itemComponent = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
+		if (!itemComponent)
+			return true; // Not an inventory item, so it cannot sit inside a storage.
+
 		return !itemComponent.GetParentSlot();
 	}
 
@@ -61,6 +69,8 @@ class EL_InventoryUtils
 	static IEntity GetStorageOwner(notnull IEntity item)
 	{
 		InventoryItemComponent itemComponent = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
+		if (!itemComponent) return null;
+
 		InventoryStorageSlot slot = itemComponent.GetParentSlot();
 		if (!slot) return null;
 
@@ -68,7 +78,7 @@ class EL_InventoryUtils
 		if (!itemParentStorage) return null;
 
 		InventoryStorageSlot parentSlot = itemParentStorage.GetParentSlot();
-		if (!parentSlot) return null;
+		if (!parentSlot || !parentSlot.GetStorage()) return null;
 
 		return parentSlot.GetStorage().GetOwner();
 	}
@@ -83,6 +93,12 @@ class EL_InventoryUtils
 		if (!parentSlot) return false;
 
 		InventoryStorageManagerComponent inventoryManager = EL_Component<InventoryStorageManagerComponent>.Find(character);
+		if (!inventoryManager)
+		{
+			EL_Debug.Error("Inventory", "drop refused: character has no InventoryStorageManagerComponent");
+			return false;
+		}
+
 		BaseInventoryStorageComponent storage = parentSlot.GetStorage();
 		if (!storage || storage.GetOwner() != character) return false;
 		return inventoryManager.TryRemoveItemFromStorage(item, storage);

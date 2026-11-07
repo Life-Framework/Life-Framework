@@ -81,7 +81,7 @@ class EL_PlayerJobComponent : ScriptComponent
 		minerConfig.m_fPaycheckInterval = 300;
 		minerConfig.m_bCanGatherResources = true;
 		minerConfig.m_fGatheringSpeedMultiplier = 1.0;
-		minerConfig.m_aEquipmentPrefabs = {"{E2A803C6E2B7B3E6}Prefabs/Tools/Axe/Pico.et"};
+		minerConfig.m_aEquipmentPrefabs = {"{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et"};
 		minerConfig.m_sIcon = "{49C8B8FB3D34F654}Images/minero.edds";
 		m_mJobConfigs.Set(EL_EJobType.MINER, minerConfig);
 		
@@ -92,7 +92,7 @@ class EL_PlayerJobComponent : ScriptComponent
 		lumberjackConfig.m_fPaycheckInterval = 300;
 		lumberjackConfig.m_bCanGatherResources = true;
 		lumberjackConfig.m_fGatheringSpeedMultiplier = 1.0;
-		lumberjackConfig.m_aEquipmentPrefabs = {"{92FAC15304387B6F}Prefabs/Tools/Axe/Axe.et"};
+		lumberjackConfig.m_aEquipmentPrefabs = {"{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et"};
 		lumberjackConfig.m_sIcon = "{49C8B8FB3D34F654}Images/minero.edds"; // TODO: Update icon
 		m_mJobConfigs.Set(EL_EJobType.LUMBERJACK, lumberjackConfig);
 		
@@ -539,15 +539,16 @@ class EL_PlayerJobComponent : ScriptComponent
 			if (prefab.IsEmpty())
 				continue;
 			
-			EntitySpawnParams spawnParams = new EntitySpawnParams();
-			spawnParams.TransformMode = ETransformMode.WORLD;
-			owner.GetWorldTransform(spawnParams.Transform);
-			
-			IEntity equipment = GetGame().SpawnEntityPrefab(Resource.Load(prefab), null, spawnParams);
-			if (equipment)
+			// The helper logs EL_Debug.Error and returns null when the prefab does not resolve.
+			IEntity equipment = EL_Utils.SpawnEntityPrefab(prefab, owner.GetOrigin());
+			if (!equipment)
 			{
-				inventory.TryInsertItem(equipment);
+				EL_Debug.Error("Jobs", string.Format("job equipment skipped: %1 did not spawn", prefab));
+				continue;
 			}
+
+			if (!inventory.TryInsertItem(equipment))
+				EL_Debug.Warn("Jobs", string.Format("job equipment %1 did not fit the inventory; left at the player's feet", prefab));
 		}
 	}
 	
@@ -735,7 +736,7 @@ class EL_PlayerJobComponent : ScriptComponent
 		SCR_InventoryStorageManagerComponent inventory = SCR_InventoryStorageManagerComponent.Cast(owner.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (!inventory)
 		{
-			Print("[EL_PlayerJobComponent] ERROR: No inventory found on player", LogLevel.ERROR);
+			EL_Debug.Error("Jobs", "fruit reward skipped: no inventory found on player");
 			return;
 		}
 		
@@ -751,7 +752,7 @@ class EL_PlayerJobComponent : ScriptComponent
 			IEntity fruitEntity = GetGame().SpawnEntityPrefabEx(fruitPrefab, false, null, spawnParams);
 			if (!fruitEntity)
 			{
-				Print(string.Format("[EL_PlayerJobComponent] ERROR: Failed to spawn fruit %1", i), LogLevel.ERROR);
+				EL_Debug.Error("Jobs", string.Format("fruit reward: failed to spawn fruit %1", i));
 				continue;
 			}
 			
@@ -763,12 +764,12 @@ class EL_PlayerJobComponent : ScriptComponent
 			else
 			{
 				// If inventory full, item remains in world at spawn position
-				Print(string.Format("[EL_PlayerJobComponent] Inventory full, fruit %1 dropped near player", i), LogLevel.WARNING);
+				EL_Debug.Warn("Jobs", string.Format("fruit reward: inventory full, fruit %1 dropped near player", i));
 			}
 		}
 		
-		Print(string.Format("[EL_PlayerJobComponent] Added %1/%2 %3 to player inventory", 
-			actuallyAdded, rewardCount, fruitName), LogLevel.NORMAL);
+		EL_Debug.Log("Jobs", string.Format("fruit reward: added %1/%2 %3 to player inventory", 
+			actuallyAdded, rewardCount, fruitName));
 		
 		// Notify
 		string message = string.Format("¡Recibiste %1 %2 y %3 XP!", actuallyAdded, fruitName, xpAmount);
