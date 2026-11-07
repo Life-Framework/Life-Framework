@@ -69,7 +69,13 @@ if (-not $KeepProfile) {
   # The next boot deletes this profile, including the previous tier's console.log.
   # Record that summary first so suite-stamp can still read it.
   Save-SuiteStamp -ProfileDir $profile -RepoRoot $root
-  if (Test-Path $profile) { Remove-Item $profile -Recurse -Force }
+  # The profile holds game-addons junctions into Steam. Remove-Item -Recurse in
+  # Windows PowerShell follows them and empties the installs; safe-rm unlinks
+  # every link first.
+  if (Test-Path $profile) {
+    & node (Join-Path $root "tools\safe-rm.mjs") $profile
+    if ($LASTEXITCODE -ne 0) { Write-Host "FAIL  could not safely remove $profile"; exit 2 }
+  }
 }
 New-Item -ItemType Directory -Force -Path $profile | Out-Null
 

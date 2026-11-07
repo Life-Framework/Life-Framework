@@ -28,6 +28,7 @@ import { closeSync, cpSync, createWriteStream, existsSync, fstatSync, lstatSync,
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
+import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -583,8 +584,7 @@ function removeGeneratedAddonRoot(repoRoot, target) {
       throw new Error(`refusing to remove unexpected generated addon entry: ${join(targetPath, entry.name)}`);
     }
     const child = join(targetPath, entry.name);
-    const link = lstatSync(child);
-    rmSync(child, { recursive: !link.isSymbolicLink(), force: true });
+    safeRemoveTree(child);
   }
   rmSync(targetPath, { recursive: false, force: true });
 }
