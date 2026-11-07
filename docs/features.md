@@ -382,7 +382,8 @@
   call later robberies use. Fuse 0 opens in that call. Wanted and the police
   notify fire once, at arm time, not when the offer refreshes. A second charge
   on an open target refuses. Police can always repair; the owning organization
-  can repair its own door. `Export` / `Apply` put the open lock back. The
+  can repair its own door. `Export` / `Apply` put the open lock back in memory
+  but are not wired into the save serializer, so a restart loses it. The
   vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
   `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
@@ -396,7 +397,8 @@
   the same comparisons as `EL_RobAction`. A second breach inside the cooldown
   spawns nothing. Over-capacity requests are cut to the configured bag count.
   Carry leaves the cash on the bag; dropping it leaves that cash in the world.
-  `Export` / `Apply` restore the ground bags and do not write a bank balance.
+  `Export` / `Apply` restore the ground bags and do not write a bank balance;
+  they are not wired into the save serializer, so a restart loses the bags.
   DebugWorld places `Roadmap_Bank_Vault` at 189 0 120 and `Roadmap_Bank_Bag`
   at 189 0 122 on `Roadmap.layer`. The bag is
   `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
@@ -456,9 +458,11 @@
   reduces wanted by the configured amount. Early release refuses. A locked
   jail door returns a prisoner who leaves the volume; an open door (the shared
   `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
-  stays. `Export` / `Apply` put the remaining seconds back. DebugWorld places
+  stays. `Export` / `Apply` round-trip the remaining seconds in memory but are
+  not wired into `EL_PersistenceComponentSerializer`, so a server restart
+  loses the sentence. DebugWorld places
   `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
-  `Roadmap_Jail.layer`. The placed door is
+  `Roadmap.layer`. The placed door is
   `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
   inherits
   `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
@@ -468,8 +472,9 @@
   is the vehicle path: an on-duty officer loads a wanted player into the nearest
   free non-driver seat of a base-game vehicle. The sentence starts when they
   arrive at the cell, not when they enter the car. A player who is not wanted
-  is refused and logged. Early release stays refused. A reconnect keeps the
-  remaining sentence through `Export` / `Apply`. DebugWorld places
+  is refused and logged. Early release stays refused. The remaining sentence
+  lives only in server memory; the save serializer does not call `Export` /
+  `Apply`, so a restart loses it. DebugWorld places
   `Roadmap_Escort_Car` at `204 0 108` on `Roadmap.layer`, the police M151 with
   `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
   still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
@@ -494,8 +499,9 @@
   police faction button sets faction and duty, which is how a solo session
   reaches the toggle (verified 2026-10-10). Going on duty starts the rank
   clock; going off duty settles it.
-- ⚠️ Toggling evicts the account from the cache, so the officer cannot reopen
-  the police menu or re-toggle until the account reloads.
+- ✅ Toggling keeps the account resident: `SaveAndReleaseAccount` re-caches
+  the account instead of evicting it, so the officer can reopen the police
+  menu and re-toggle at once.
 
 ### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
 - ✅ Two ranks (verified 2026-10-11). Patrol officer draws
@@ -695,7 +701,8 @@
   traders, jobs, police, crime, houses, survival, tests, and the release
   street on `Roadmap.layer`. Sites sit 3 m apart on +X, from the breach door
   at `186 0 120` through the vehicle lot at `243 0 120`. The debug terrain is
-  the 256 m square (world 0..256). The row stays on that ground. That
+  the 512 m square (world 0..512, `TERRAIN_MAX` in `tools/street/manifest.mjs`).
+  The row stays on that ground. That
   one layer holds the breach door at `186 0 120`
   and the charge at `186 0 122`, the bank vault at `189 0 120` and the bag at
   `189 0 122`, the jail door at `192 0 120` and the cell at `192 0 122`, the
@@ -754,7 +761,7 @@
   sample in the current play session when play is already up, and enters play
   only when it is not. `node agent-box/harness.mjs report roadmap` writes
   `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
-  tools, layers, and named flows live in `agent-box/`. See `docs/agent-box.md`.
+  tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
   (verified 2026-10-11)
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
@@ -771,8 +778,11 @@
    ownership gate; gather/process actions re-validate server-side and reject
    malformed configurations. Remaining: multiplayer proof for the RPC edges.
 3. **Persistence — improved.** Cache-eviction churn fixed (account stays
-   resident). The serializer writes a `version` first; the EPF
-   `ApplyTo` enum bug left with EPF.
+   resident). The serializer writes a `version` header
+   first (4) and `validate-persistence-version.ps1` checks it against the
+   payload order. Remaining: jail, breach, and bank-vault state has
+   `Export` / `Apply` but is not in the save serializer, so it is lost on
+   restart.
 4. **Compile risk — resolved.** `EL_EFactionType` is defined in
    `EL_WhitelistManager.c`.
 5. **Client/server breaks — mostly closed.** Police arrest/fine bridge and

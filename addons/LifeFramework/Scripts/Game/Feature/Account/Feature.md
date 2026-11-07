@@ -1,7 +1,7 @@
 # Account — Design Requirements
 
 > Context file for the per-player persistent identity. Written against
-> `docs/design-philosophy.md`.
+> `docs/design.md`.
 
 ## Intent
 
@@ -21,12 +21,10 @@ Background (rung 4, accepted). Other features read/write it:
 Keep the account stable and correct — it is the keystone every feature keys
 off:
 
-1. Fix the cache-eviction churn in `EL_PlayerAccountManager` — every crime,
-   duty toggle, arrest, and fine evicts the account, so the next read returns
-   null until an async reload, silently degrading consecutive events per
-   player.
-2. Guard `RemoveCharacter` (stale `m_iActiveCharacterIdx` is an out-of-bounds
-   read) and `SetActiveCharacter` with a non-member.
+1. Done: the cache-eviction churn in `EL_PlayerAccountManager` is fixed;
+   `SaveAndReleaseAccount` keeps the account cached.
+2. Done: `RemoveCharacter` re-clamps `m_iActiveCharacterIdx` and
+   `SetActiveCharacter` ignores a non-member.
 
 ## Iteration path
 
@@ -36,14 +34,15 @@ off:
 ## Current state
 
 - `EL_PlayerAccount` / `EL_PlayerCharacter` (`Feature/Account/`) — faction,
-  duty flag, wanted (clamped [0,5]), character roster. ⚠️ stale-index and
-  unguarded-set bugs; fields effectively public (BIS ticket T174113
-  workaround).
-- `EL_PlayerAccountManager` — async load + cache + save/release. ⚠️ eviction
-  churn.
-- Persistence: `Feature/Account/Persistence/EL_PlayerAccountRecord.c` — ✅
-  explicit record, written by `EL_PersistenceComponentSerializer` after its
-  `version` field. No EPF.
+  duty flag, wanted (clamped [0,5]), character roster. `RemoveCharacter`
+  re-clamps the active index and `SetActiveCharacter` ignores a non-member.
+  Fields effectively public (BIS ticket T174113 workaround).
+- `EL_PlayerAccountManager` — load + cache + save/release.
+  `SaveAndReleaseAccount` keeps the account resident (no eviction churn).
+- Persistence: `Feature/Account/Persistence/EL_PlayerAccountRecord.c` — a
+  dedicated record (no EPF). `EL_PlayerAccountManager.ExportAll` / `ApplyAll`
+  feed `EL_PersistenceComponentSerializer`, which writes a `version` header
+  first.
 
 ## Dependencies
 
