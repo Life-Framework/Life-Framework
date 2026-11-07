@@ -771,38 +771,6 @@
   sample in the current play session when play is already up, and enters play
   only when it is not. `node agent-box/harness.mjs report roadmap` writes
   `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
-  tools, layers, and named flows live in `agent-box/`. See `docs/agent-box.md`.
-  (verified 2026-10-11)
-
-### `EL_AgentHarness` — `Feature/AgentHarness/`
-- ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
-  `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
-  calls `ActionScroll`. `click` invokes the same button invoker or `OnClick` a
-  mouse click does. `use` still checks `CanBeShownScript` and
-  `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
-  (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
-  `EL_OpenDebugMenu`); movement actions are refused.
-- ✅ `stand` is the placement exception: the server moves the local character
-  beside a named entity. The poll does not start on a dedicated server
-  (`RplMode.Dedicated`), and on a dedicated server the `stand`, `pose`, and
-  `use` RPCs are refused and logged, so a client cannot teleport or reach past
-  action range there (2026-11-07). On a client it retries until a local controller exists,
-  including while faction and spawn menus are up.
-- ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
-  alone. A world shot teleports the character to the camera offset (default
-  `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
-  player view. That view faces -Z, so a picture stands on the +Z side of
-  its target. The pose is applied again 700 ms later so gravity does not drop
-  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
-  stands just north of that row when the street is further north. If the new PNG matches the
-  previous PNG, `report roadmap` records `camera_stuck` once and stops.
-  `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look
-  returns an action. Any other white mesh fails. Menu shots use `shot ui`; the
-  report judges `classify` and the widget list. Names after `roadmap` walk
-  only that row. `node agent-box/harness.mjs kit` photographs the UI kit
-  sample in the current play session when play is already up, and enters play
-  only when it is not. `node agent-box/harness.mjs report roadmap` writes
-  `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
   tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
   (verified 2026-10-11)
 
