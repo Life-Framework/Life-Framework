@@ -1,10 +1,10 @@
-# tools/lint/check-no-ternaries.ps1 - reject ternary operators in Enforce scripts.
+# tools/validation/check-no-ternaries.ps1 - reject ternary operators in Enforce scripts.
 #
 # EnforceScript has no ternary (`cond ? a : b` is a compile error - AGENTS.md
 # "Hard EnforceScript lessons"). This greps for the space-?-space signature,
 # which avoids question marks ending string literals or doc comments.
 #
-# Run via: tools\cli lint
+# Run via: tools\cli validate
 
 $ErrorActionPreference = "Stop"
 
