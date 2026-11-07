@@ -4,7 +4,7 @@
 > [Overthrow.Arma4](https://github.com/ArmaOverthrow/Overthrow.Arma4) (v1.41)
 > reference implementations. Every feature is a small, testable, config-driven
 > primitive — the low-LOC philosophy — so the four areas share one stack and one
-> set of tests. Contract: `docs/features.md`. Test cases: `docs/test-plan.md`.
+> set of tests. Contract: `docs/features.md`. Tests: `Scripts/Game/Tests/`.
 >
 > **Borrow modes:** **Port** = lift the Overthrow file, re-prefix `OVT_`→`EL_`,
 > drop Overthrow-only coupling. **Adapt** = take the architecture, write the
@@ -115,7 +115,7 @@ seams `GetPrice`/`GetBuyPrice`/`GetSellPrice` — pattern only).
   `map<resourceId, amount>`; buy decrements, sell (or restock) increments.
 - **Server-authoritative buy** — check full funds **before** `RemoveAmount`;
   refund exactly what was removed; reject a shop that does not sell the item.
-  This is the `shop/buy-math` pin test target in `test-plan.md`.
+  This is the `shop/buy-math` pin test target.
 - **Sell path with reasons** — shop-buys rules with a reason key per blocked
   case (`EL_ShopRules`), quantity-aware credit (fixes stack-sells-as-one in
   `EL_TraderManagerComponent`), atomic delete-then-pay.
@@ -211,7 +211,7 @@ warehouse migration).
 
 ## Build order
 
-Each step ends verifiable (per `principle-sequence-verifiable-units`):
+Each step ends verifiable (per *sequence verifiable units* in `.claude/skills/principles`):
 
 1. **Foundation kit** — `EL_MoneyFormat`, `EL_MoneyDeltaTracker`, `EL_ShopRules`,
    `EL_ResourceDefs` + config-load idiom. ~250 LOC, pure LOGIC-tier tests.
@@ -232,7 +232,7 @@ Each step ends verifiable (per `principle-sequence-verifiable-units`):
 
 ## Test mapping (LOGIC tier where possible)
 
-| Area | New pure tests (from `test-plan.md` format) |
+| Area | New pure tests |
 | --- | --- |
 | Foundation | `core/money-format` (thousands, negatives), `core/delta-tracker` (seed, accumulate, reset), `shop/rules` (buy/sell eligibility, reason keys) |
 | Economy | `bank/account-math` (existing), `atm/rpc-roundtrip` |
