@@ -1,0 +1,227 @@
+[
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Core/EL_InventoryUtils.c",
+  "text": "IEntity item = GetGame().SpawnEntityPrefab(Resource.Load(prefab));"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Feature/Character/Spawning/EL_SpawnLogic.c",
+  "text": "IEntity character = GetGame().SpawnEntityPrefab(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Feature/Crime/EL_RobVehicleAction.c",
+  "text": "IEntity vehicle = GetGame().SpawnEntityPrefab(Resource.Load(m_VehiclePrefab), null, params);"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Feature/Jobs/EL_PlayerJobComponent.c",
+  "text": "IEntity equipment = GetGame().SpawnEntityPrefab(Resource.Load(prefab), null, spawnParams);"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Tests/EL_Test_LoggingChain.c",
+  "text": "IEntity sawmill = GetGame().SpawnEntityPrefab(Resource.Load(SAWMILL), GetGame().GetWorld(), params);"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Tests/EL_Test_LoggingChain.c",
+  "text": "IEntity tree = GetGame().SpawnEntityPrefab(Resource.Load(TREE), GetGame().GetWorld(), params);"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Tests/EL_Test_MiningPrefabs.c",
+  "text": "IEntity area = GetGame().SpawnEntityPrefab(Resource.Load(MINING_AREA), GetGame().GetWorld(), params);"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Tests/EL_Test_MiningPrefabs.c",
+  "text": "IEntity minable = GetGame().SpawnEntityPrefab(Resource.Load(MINABLE_ORE), GetGame().GetWorld(), params);"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Tests/EL_Test_MiningPrefabs.c",
+  "text": "IEntity ore = GetGame().SpawnEntityPrefab(Resource.Load(COPPER_ORE), GetGame().GetWorld(), params);"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Tests/EL_Test_MiningPrefabs.c",
+  "text": "IEntity pickaxe = GetGame().SpawnEntityPrefab(Resource.Load(PICKAXE), GetGame().GetWorld(), params);"
+ },
+ {
+  "rule": "L1",
+  "file": "Scripts/Game/Tests/EL_Test_TextLabel.c",
+  "text": "IEntity sign = GetGame().SpawnEntityPrefab(Resource.Load(SIGN), GetGame().GetWorld(), params);"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Components/BuildingSystem/EL_BuildingManagerComponent.c",
+  "text": "m_Cam = GetGame().GetCameraManager().CurrentCamera();"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/Character/Spawning/EL_DeathScreen.c",
+  "text": "m_wRoot = GetGame().GetWorkspace().CreateWidgets(\"{1CBC0B1329A8762C}UI/Layouts/DeathScreen.layout\");"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/CharacterCreation/EL_CharacterCreationMenu.c",
+  "text": "m_wAge = EditBoxWidget.Cast(m_wRoot.FindAnyWidget(\"AgeEditBox\").FindAnyWidget(\"EditBox\"));"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/CharacterCreation/EL_CharacterCreationMenu.c",
+  "text": "m_wFirstName = EditBoxWidget.Cast(m_wRoot.FindAnyWidget(\"FirstNameEditBox\").FindAnyWidget(\"EditBox\"));"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/CharacterCreation/EL_CharacterCreationMenu.c",
+  "text": "m_wLastName = EditBoxWidget.Cast(m_wRoot.FindAnyWidget(\"LastNameEditBox\").FindAnyWidget(\"EditBox\"));"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/CharacterCreation/EL_CharacterCreationMenu.c",
+  "text": "Widget focused = GetGame().GetWorkspace().GetFocusedWidget();"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/Chat/AdminChatChannel.c",
+  "text": "EL_WhitelistRespawnHandlerComponent whitelistComponent = EL_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(EL_WhitelistRespawnHandlerComponent));"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/Quantity/EL_DefaultLoadoutItemQuantityComponent.c",
+  "text": "EL_Component<EL_QuantityComponent>.Find(item).SetQuantity(m_iQuantity);"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/Quantity/EL_SplitQuantityDialog.c",
+  "text": "m_wSlider = EL_ThinSliderWidget.Cast(w.FindAnyWidget(\"AmountSlider\").FindHandler(EL_ThinSliderWidget));"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/Quantity/SCR_InventoryMenuUI.c",
+  "text": "GetGame().GetWorkspace().SetFocusedWidget(slot.GetButtonWidget());"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/Quests/LF_QuestMenu.c",
+  "text": "Widget rowWidget = GetGame().GetWorkspace().CreateWidgets(\"{CE14CB47B66299DC}UI/Layouts/QuestMenuRow.layout\", m_wQuestList);"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/Shop/EL_ShopMenu.c",
+  "text": "Widget rowWidget = GetGame().GetWorkspace().CreateWidgets(\"{3851DEDF6D111FEE}UI/Layouts/ShopMenuRow.layout\", m_wItemList);"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/Whitelist/EL_WhitelistContextAction.c",
+  "text": "EL_WhitelistRespawnHandlerComponent whitelistComponent = EL_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(EL_WhitelistRespawnHandlerComponent));"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/Feature/Whitelist/EL_WhitelistContextAction.c",
+  "text": "EL_WhitelistRespawnHandlerComponent whitelistComponent = EL_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(EL_WhitelistRespawnHandlerComponent));"
+ },
+ {
+  "rule": "L2",
+  "file": "Scripts/Game/UI/Minigames/EL_FallingFruit.c",
+  "text": "m_wFruitWidget = GetGame().GetWorkspace().CreateWidgets(\"{EC56C6F70AE2FEDE}UI/Layouts/Minigames/EL_FruitWidget.layout\", parent);"
+ },
+ {
+  "rule": "L3",
+  "file": "Scripts/Game/Feature/AgentHarness/EL_AgentHarness.c",
+  "text": "GetGame().GetCallqueue().CallLater(Poll, 400, true);"
+ },
+ {
+  "rule": "L3",
+  "file": "Scripts/Game/Feature/Crime/LF_Contraband.c",
+  "text": "class LF_ConvoyVehicleWatch : Managed"
+ },
+ {
+  "rule": "L3",
+  "file": "Scripts/Game/Feature/Police/LF_JailCellComponent.c",
+  "text": "GetGame().GetCallqueue().CallLater(OnTick, m_iTickIntervalMs, true);"
+ },
+ {
+  "rule": "L3",
+  "file": "Scripts/Game/Feature/Quantity/EL_SplitQuantityDialog.c",
+  "text": "class EL_SplitQuantityDialog : DialogUI"
+ },
+ {
+  "rule": "L3",
+  "file": "Scripts/Game/Feature/SirenLights/EL_SirenManagerComponent.c",
+  "text": "class EL_SirenManagerComponent : ScriptComponent"
+ },
+ {
+  "rule": "L4",
+  "file": "Scripts/Game/Core/EL_Utils.c",
+  "text": "protected static ref array<IEntity> s_aNearbyEntities = {};"
+ },
+ {
+  "rule": "L4",
+  "file": "Scripts/Game/Feature/Quantity/EL_QuantityComponent.c",
+  "text": "protected static ref map<IEntity, bool> s_mQuantityTransferIntents;"
+ },
+ {
+  "rule": "L4",
+  "file": "Scripts/Game/Feature/Vehicles/EL_VehicleGarageComponent.c",
+  "text": "protected static ref array<EL_VehicleGarageComponent> s_aAll = {};"
+ },
+ {
+  "rule": "L4",
+  "file": "Scripts/Game/Feature/Vehicles/EL_VehicleSpawnPointComponent.c",
+  "text": "protected static ref array<EL_VehicleSpawnPointComponent> s_aAll = {};"
+ },
+ {
+  "rule": "L4",
+  "file": "Scripts/Game/Tests/EL_Test_AreaSpawner.c",
+  "text": "protected static ref array<IEntity> s_aFound = {};"
+ },
+ {
+  "rule": "L4",
+  "file": "Scripts/Game/Tests/EL_Test_Roadmap_Resources.c",
+  "text": "protected static ref array<IEntity> s_aBars = {};"
+ },
+ {
+  "rule": "L5",
+  "file": "Scripts/Game/Feature/Jobs/EL_PlayerJobComponent.c",
+  "text": "Print(\"[EL_PlayerJobComponent] ERROR: No inventory found on player\", LogLevel.ERROR);"
+ },
+ {
+  "rule": "L5",
+  "file": "Scripts/Game/Feature/License/EL_LicenseManagerComponent.c",
+  "text": "Print(\"[EL_LicenseManagerComponent] Initial licenses granted\", LogLevel.NORMAL);"
+ },
+ {
+  "rule": "L5",
+  "file": "Scripts/Game/Feature/License/EL_LicenseManagerComponent.c",
+  "text": "Print(\"[EL_LicenseManagerComponent] Player level component not found!\", LogLevel.ERROR);"
+ },
+ {
+  "rule": "L5",
+  "file": "Scripts/Game/Feature/License/EL_LicenseManagerComponent.c",
+  "text": "Print(\"[EL_LicenseManagerComponent] Player not whitelisted for this license\", LogLevel.WARNING);"
+ },
+ {
+  "rule": "L6",
+  "file": "Prefabs/Items/Food/RowanBerries.et",
+  "text": "Object \"{B09DB5A4E4B8AD7B}Assets/Items/Food/Rowan Berries/rowan_berries.xob\""
+ },
+ {
+  "rule": "L6",
+  "file": "Scripts/Game/Feature/Jobs/EL_PlayerJobComponent.c",
+  "text": "lumberjackConfig.m_aEquipmentPrefabs = {\"{92FAC15304387B6F}Prefabs/Tools/Axe/Axe.et\"};"
+ },
+ {
+  "rule": "L6",
+  "file": "Scripts/Game/Feature/Notifications/EL_NotificationManagerComponent.c",
+  "text": "Widget toastWidget = workspace.CreateWidgets(\"{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout\", parent);"
+ },
+ {
+  "rule": "L6",
+  "file": "Scripts/Game/UI/Minigames/EL_FallingFruit.c",
+  "text": "m_wFruitWidget = GetGame().GetWorkspace().CreateWidgets(\"{EC56C6F70AE2FEDE}UI/Layouts/Minigames/EL_FruitWidget.layout\", parent);"
+ }
+]
