@@ -95,19 +95,11 @@ $dataSource = Join-Path $serverInstall "addons"
 $serverHasData = (Get-ChildItem (Join-Path $dataSource "core") -ErrorAction SilentlyContinue).Count -gt 0 -and
                  (Get-ChildItem (Join-Path $dataSource "data") -ErrorAction SilentlyContinue).Count -gt 0
 if (-not $serverHasData) { $dataSource = Join-Path $gameInstall "addons" }
+# game-addons holds junctions into the Steam installs. safe-rm unlinks every
+# link without following it, then deletes, and exits nonzero when a link stays.
 function Remove-GeneratedAddonRoot([string]$path) {
-  if (-not (Test-Path -LiteralPath $path)) { return }
-  foreach ($name in @("core", "data")) {
-    $child = Join-Path $path $name
-    if (-not (Test-Path -LiteralPath $child)) { continue }
-    $item = Get-Item -LiteralPath $child -Force
-    if ($item.LinkType -eq "Junction" -or $item.LinkType -eq "SymbolicLink") {
-      cmd /c rmdir "$child" 2>$null | Out-Null
-    } else {
-      Remove-Item -LiteralPath $child -Recurse -Force
-    }
-  }
-  Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+  & node (Join-Path $root "tools\safe-rm.mjs") $path
+  if ($LASTEXITCODE -ne 0) { Write-Host "FAIL  could not safely remove $path"; exit 2 }
 }
 Remove-GeneratedAddonRoot $gameAddons
 New-Item -ItemType Directory -Force -Path $gameAddons | Out-Null
@@ -120,15 +112,7 @@ cmd /c mklink /J "$gameAddons\data" "$dataSource\data" 2>&1 | Out-Null
 # the ignored test profile, never committed to the repository.
 $coreGproj = Join-Path $gameAddons "core\core.gproj"
 if (-not (Test-Path -LiteralPath (Join-Path $dataSource "core\core.gproj"))) {
-  $coreLink = Join-Path $gameAddons "core"
-  if (Test-Path -LiteralPath $coreLink) {
-    $coreItem = Get-Item -LiteralPath $coreLink -Force
-    if ($coreItem.LinkType -eq "Junction" -or $coreItem.LinkType -eq "SymbolicLink") {
-      cmd /c rmdir "$coreLink" 2>$null | Out-Null
-    } else {
-      Remove-Item -LiteralPath $coreLink -Recurse -Force
-    }
-  }
+  Remove-GeneratedAddonRoot (Join-Path $gameAddons "core")
   $coreDir = Split-Path -Parent $coreGproj
   New-Item -ItemType Directory -Force -Path $coreDir | Out-Null
   Copy-Item -Path (Join-Path $dataSource "core\*") -Destination $coreDir -Recurse -Force
