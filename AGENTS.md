@@ -401,8 +401,11 @@ then restart play mode.
   The repair restores only a missing loose `ArmaReforger.gproj` from the
   installed Server package; it never overwrites a manifest with the wrong GUID.
 - Generated `server\profile\*\game-addons` directories contain junctions into
-  Steam installs. Never recursively delete those roots; unlink `core` and
-  `data` first so cleanup cannot follow a junction into the base game.
+  Steam installs. `git worktree remove --force`, `rm -rf`, and
+  `Remove-Item -Recurse` follow them and empty the base game (it happened on
+  2026-11-07). Remove a worktree only with `tools\cli wt prune`; delete any
+  other tree with `node tools/safe-rm.mjs <dir>`. `link-safety-selftest`
+  proves both.
 
 ## Rigorous workflows (any tool may read these)
 
