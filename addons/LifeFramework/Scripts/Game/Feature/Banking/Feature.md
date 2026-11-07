@@ -1,7 +1,7 @@
 # Banking — Design Requirements
 
 > Context file for the bank branch and account system. Written against
-> `docs/design-philosophy.md` (in-world first).
+> `docs/design.md` (in-world first).
 
 ## Intent
 

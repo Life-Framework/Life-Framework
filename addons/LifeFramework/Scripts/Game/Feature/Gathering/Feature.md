@@ -1,7 +1,7 @@
 # Gathering — Design Requirements
 
 > Context file for in-world resource gathering. Written against
-> `docs/design-philosophy.md` (in-world first).
+> `docs/design.md` (in-world first).
 
 ## Intent
 
