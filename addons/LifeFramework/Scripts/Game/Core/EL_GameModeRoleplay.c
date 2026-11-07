@@ -19,7 +19,51 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	void ~EL_GameModeRoleplay()
 	{
 		EL_PlayerAccountManager.Reset();
+		// World end: drop process-global feature state so a reload starts clean (see LF_StaticReset).
+		LF_StaticReset.ResetAll();
 		UnregisterDebugMenuListener();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Releases per-player server state the player can no longer act on: escort holds where they
+	//! are officer or prisoner, and a running convoy (fails it and drops the vehicle watch).
+	//! Jail sentences are kept on purpose: they persist and resume on reconnect.
+	override void OnPlayerDisconnected(int playerId, KickCauseCode cause, int timeout)
+	{
+		if (Replication.IsServer())
+			ReleaseDisconnectedPlayer(playerId);
+
+		super.OnPlayerDisconnected(playerId, cause, timeout);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReleaseDisconnectedPlayer(int playerId)
+	{
+		string uid = EL_Utils.GetPlayerUID(playerId);
+		IEntity controlled;
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (playerManager)
+			controlled = playerManager.GetPlayerControlledEntity(playerId);
+
+		if (uid.IsEmpty() && !controlled)
+		{
+			EL_Debug.Warn("Session", string.Format("disconnect cleanup skipped: player %1 has no uid and no entity", playerId));
+			return;
+		}
+
+		int escorts = LF_JailEscort.ReleasePlayer(uid);
+
+		string characterId;
+		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		if (accounts && !uid.IsEmpty())
+		{
+			EL_PlayerAccount account = accounts.GetAccount(uid);
+			if (account && account.GetActiveCharacter())
+				characterId = account.GetActiveCharacter().GetId();
+		}
+
+		LF_Contraband.ReleasePlayer(characterId, controlled);
+		EL_Debug.Log("Session", string.Format("disconnect cleanup player=%1 escorts=%2", playerId, escorts));
 	}
 
 	//------------------------------------------------------------------------------------------------

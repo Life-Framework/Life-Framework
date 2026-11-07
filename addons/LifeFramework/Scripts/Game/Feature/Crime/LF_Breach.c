@@ -98,6 +98,10 @@ class LF_Breach
 
 		target.m_fFuseSeconds = fuseSeconds;
 		target.m_sOwnerOrganization = ownerOrganization;
+		// A re-configure (world reload, door re-streamed) drops any charge whose fuse timer died
+		// with the old entity. The open flag is kept; Apply/Repair own it.
+		target.m_bChargeArmed = false;
+		target.m_fElapsed = 0;
 		EL_Debug.Log("Breach", string.Format("configured %1 fuse=%2", targetId, fuseSeconds));
 	}
 
@@ -211,6 +215,29 @@ class LF_Breach
 			Open(target);
 
 		return target.m_bOpen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops a charge whose fuse can no longer fire (timer could not be scheduled, or the door was
+	//! deleted before it fired) so the target does not stay armed forever. The lock is unchanged.
+	static void CancelCharge(string targetId, string reason)
+	{
+		LF_BreachTarget target = Targets().Get(targetId);
+		if (!target || !target.m_bChargeArmed)
+			return;
+
+		target.m_bChargeArmed = false;
+		target.m_fElapsed = 0;
+		EL_Debug.Error("Breach", string.Format("charge cancelled on %1: %2", targetId, reason));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops every registered target and organization member. Called on game-mode start/end
+	//! so a world reload in the same process does not inherit the previous world's state.
+	static void ResetStatics()
+	{
+		s_mTargets = null;
+		s_mOrganizationMembers = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -417,19 +444,27 @@ class LF_Breach
 			return;
 
 		if (!GetGame() || !GetGame().GetWorld())
+		{
+			CancelCharge(targetId, "fuse timer skipped: no world");
 			return;
+		}
 
+		// An unplaced target is script-driven: its fuse advances only through Advance.
 		IEntity entity = GetGame().GetWorld().FindEntityByName(targetId);
 		if (!entity)
+		{
+			EL_Debug.Log("Breach", string.Format("fuse timer not scheduled: %1 is not a placed entity; Advance drives it", targetId));
 			return;
+		}
 
 		LF_BreachTargetComponent component = EL_Component<LF_BreachTargetComponent>.Find(entity);
 		if (!component)
 		{
-			EL_Debug.Error("Breach", string.Format("fuse timer skipped: %1 has no LF_BreachTargetComponent", targetId));
+			CancelCharge(targetId, "fuse timer skipped: entity has no LF_BreachTargetComponent");
 			return;
 		}
 
-		component.ScheduleFuse(fuseSeconds);
+		if (!component.ScheduleFuse(fuseSeconds))
+			CancelCharge(targetId, "fuse timer could not be scheduled");
 	}
 }

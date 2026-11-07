@@ -33,6 +33,21 @@ class LF_JailArrestableComponent : ScriptComponent
 {
 	protected static const int TICK_MS = 1000;
 
+	//! LF_JailEscort.Tick is process-global: one live arrestable hosts it. When the host is
+	//! deleted the next registered arrestable takes the tick over, so N characters never
+	//! run N ticks.
+	protected static ref array<LF_JailArrestableComponent> s_aAll;
+	protected static LF_JailArrestableComponent s_TickOwner;
+	protected bool m_bTicking;
+
+	//------------------------------------------------------------------------------------------------
+	//! Game-mode start/end reset (LF_StaticReset).
+	static void ResetStatics()
+	{
+		s_aAll = null;
+		s_TickOwner = null;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -47,6 +62,17 @@ class LF_JailArrestableComponent : ScriptComponent
 			return;
 		}
 
+		if (!s_aAll)
+			s_aAll = {};
+
+		s_aAll.Insert(this);
+		if (!s_TickOwner)
+			StartTick();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void StartTick()
+	{
 		if (!GetGame() || !GetGame().GetCallqueue())
 		{
 			EL_Debug.Error("Jail", "escort tick skipped: no callqueue");
@@ -54,7 +80,32 @@ class LF_JailArrestableComponent : ScriptComponent
 		}
 
 		GetGame().GetCallqueue().CallLater(OnTick, TICK_MS, true);
+		m_bTicking = true;
+		s_TickOwner = this;
 		EL_Debug.Log("Jail", "escort tick scheduled");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		if (s_aAll)
+			s_aAll.RemoveItem(this);
+
+		if (m_bTicking)
+		{
+			m_bTicking = false;
+			if (GetGame() && GetGame().GetCallqueue())
+				GetGame().GetCallqueue().Remove(OnTick);
+		}
+
+		if (s_TickOwner == this)
+		{
+			s_TickOwner = null;
+			if (s_aAll && !s_aAll.IsEmpty() && s_aAll[0])
+				s_aAll[0].StartTick();
+		}
+
+		super.OnDelete(owner);
 	}
 
 	//------------------------------------------------------------------------------------------------

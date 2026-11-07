@@ -168,6 +168,21 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Drops sentences, the cell, the door, and the sentence config. Called on game-mode start/end
+	//! (LF_StaticReset) so a world reload does not inherit the previous world's jail.
+	static void ResetStatics()
+	{
+		s_mSentences = null;
+		s_bCellPlaced = false;
+		s_vCellOrigin = "0 0 0";
+		s_sDoorId = "";
+		s_iSecondsPerWanted = 0;
+		s_iMaxSeconds = 0;
+		s_iWantedReduction = 0;
+		s_fZoneRadius = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool HasCell()
 	{
 		return s_bCellPlaced;

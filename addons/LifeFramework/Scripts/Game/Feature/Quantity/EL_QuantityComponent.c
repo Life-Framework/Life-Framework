@@ -28,6 +28,10 @@ class EL_QuantityComponentClass : ScriptComponentClass
 class EL_QuantityComponent : ScriptComponent
 {
 	protected static ref map<IEntity, bool> s_mQuantityTransferIntents;
+	//! World time (ms) each intent was set. An intent whose move never produced an OnItemAdded
+	//! (the transfer failed) goes stale after INTENT_TTL_MS instead of steering a later, unrelated add.
+	protected static ref map<IEntity, float> s_mQuantityTransferIntentTimes;
+	static const float INTENT_TTL_MS = 5000;
 
 	[RplProp(onRplName: "OnQuantityChanged")]
 	protected int m_iQuantity = 1;
@@ -230,6 +234,16 @@ class EL_QuantityComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A deleted item must not leave a dead key (and its intent) in the static intent map.
+	override void OnDelete(IEntity owner)
+	{
+		if (owner && s_mQuantityTransferIntents && s_mQuantityTransferIntents.Contains(owner))
+			RemoveTransferIntent(owner);
+
+		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void EOnInit(IEntity owner)
 	{
 		m_InitalModel = owner.GetVObject();
@@ -356,13 +370,41 @@ class EL_QuantityComponent : ScriptComponent
 	static void SetTransferIntent(notnull IEntity sourceEntity, bool keepSeperate)
 	{
 		if (!s_mQuantityTransferIntents) s_mQuantityTransferIntents = new map<IEntity, bool>();
+		if (!s_mQuantityTransferIntentTimes) s_mQuantityTransferIntentTimes = new map<IEntity, float>();
 		s_mQuantityTransferIntents.Set(sourceEntity, keepSeperate);
+		s_mQuantityTransferIntentTimes.Set(sourceEntity, NowMs());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void RemoveTransferIntent(notnull IEntity sourceEntity)
 	{
 		if (s_mQuantityTransferIntents) s_mQuantityTransferIntents.Remove(sourceEntity);
+		if (s_mQuantityTransferIntentTimes) s_mQuantityTransferIntentTimes.Remove(sourceEntity);
+	}
+
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when an intent set at setMs is too old to belong to the add happening at nowMs.
+	static bool IsIntentStale(float setMs, float nowMs)
+	{
+		return (nowMs - setMs) > INTENT_TTL_MS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Game-mode start/end reset (LF_StaticReset).
+	static void ResetStatics()
+	{
+		s_mQuantityTransferIntents = null;
+		s_mQuantityTransferIntentTimes = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float NowMs()
+	{
+		if (!GetGame() || !GetGame().GetWorld())
+			return 0;
+
+		return GetGame().GetWorld().GetWorldTime();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -379,7 +421,19 @@ class EL_QuantityComponent : ScriptComponent
 			if (s_mQuantityTransferIntents)
 			{
 				intentSet = s_mQuantityTransferIntents.Find(item, keepSeperate);
-				if (intentSet) RemoveTransferIntent(item);
+				if (intentSet)
+				{
+					float setMs;
+					if (s_mQuantityTransferIntentTimes && s_mQuantityTransferIntentTimes.Find(item, setMs) && IsIntentStale(setMs, NowMs()))
+					{
+						// The move this intent was set for failed; this add is a different one.
+						EL_Debug.Warn("Quantity", string.Format("stale transfer intent ignored for %1", item));
+						intentSet = false;
+						keepSeperate = false;
+					}
+
+					RemoveTransferIntent(item);
+				}
 			}
 
 			if (!keepSeperate)

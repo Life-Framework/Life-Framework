@@ -29,6 +29,19 @@ class LF_PoliceRanks
 	protected static ref array<string> s_aBoundUids;
 
 	//------------------------------------------------------------------------------------------------
+	//! Game-mode start/end reset (LF_StaticReset). EntityIDs bound in one world mean nothing in the next.
+	static void ResetStatics()
+	{
+		s_iArrestRefusals = 0;
+		s_iFineRefusals = 0;
+		s_iSelfPromotionRefusals = 0;
+		s_iMissingPrefabSkips = 0;
+		s_sLastError = "";
+		s_aBoundIds = null;
+		s_aBoundUids = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int GetArrestRefusalCount()
 	{
 		return s_iArrestRefusals;
