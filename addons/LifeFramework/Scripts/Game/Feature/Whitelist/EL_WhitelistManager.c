@@ -22,6 +22,10 @@ class EL_WhitelistManager
 	protected static int s_iMissingFileReports;
 	protected static int s_iFactionRefusals;
 
+	//! True after Load found a whitelist file it could not read. Save refuses while set, so
+	//! the next admin edit cannot overwrite the unread file with only the new entry.
+	protected static bool s_bLoadFailed;
+
 	//------------------------------------------------------------------------------------------------
 	//! Load the save the first time the cache is touched. A later call keeps the
 	//! cache that Load already built.
@@ -43,6 +47,14 @@ class EL_WhitelistManager
 	static int GetFactionRefusalCount()
 	{
 		return s_iFactionRefusals;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when the last Load found a file it could not read. Saving is refused until a
+	//!         Load succeeds (fix or remove the file, then restart).
+	static bool IsLoadFailed()
+	{
+		return s_bLoadFailed;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -251,13 +263,16 @@ class EL_WhitelistManager
 	//------------------------------------------------------------------------------------------------
 	//! Replace the cache from the versioned file. A second call ends on the same list.
 	//! A missing file logs EL_Debug.Error and leaves restricted factions closed.
+	//! A present file that cannot be read sets the load-failed flag, which blocks Save().
 	static void Load()
 	{
 		CloseLists();
+		s_bLoadFailed = false;
 
 		string path = GetSavePath();
 		if (!FileIO.FileExists(path))
 		{
+			// No file is a first run, not a failure: there is nothing on disk to protect.
 			s_iMissingFileReports++;
 			EL_Debug.Error("Whitelist", string.Format("whitelist file missing, police faction closed: %1", path));
 			return;
@@ -266,7 +281,8 @@ class EL_WhitelistManager
 		FileHandle handle = FileIO.OpenFile(path, FileMode.READ);
 		if (!handle)
 		{
-			EL_Debug.Error("Whitelist", string.Format("cannot open whitelist file, police faction closed: %1", path));
+			s_bLoadFailed = true;
+			EL_Debug.Error("Whitelist", string.Format("cannot open whitelist file, police faction closed, saving disabled: %1", path));
 			return;
 		}
 
@@ -274,7 +290,8 @@ class EL_WhitelistManager
 		if (handle.ReadLine(versionLine) <= 0)
 		{
 			handle.Close();
-			EL_Debug.Error("Whitelist", string.Format("whitelist file has no version, police faction closed: %1", path));
+			s_bLoadFailed = true;
+			EL_Debug.Error("Whitelist", string.Format("whitelist file has no version, police faction closed, saving disabled: %1", path));
 			return;
 		}
 
@@ -282,7 +299,8 @@ class EL_WhitelistManager
 		if (versionLine.ToInt() != VERSION)
 		{
 			handle.Close();
-			EL_Debug.Error("Whitelist", string.Format("whitelist file version %1 rejected, police faction closed: %2", versionLine, path));
+			s_bLoadFailed = true;
+			EL_Debug.Error("Whitelist", string.Format("whitelist file version %1 rejected, police faction closed, saving disabled: %2", versionLine, path));
 			return;
 		}
 
@@ -291,7 +309,8 @@ class EL_WhitelistManager
 		if (!ReadFactionBlock(handle, loadedFactions) || !ReadJobBlock(handle, loadedJobs))
 		{
 			handle.Close();
-			EL_Debug.Error("Whitelist", string.Format("whitelist file is unreadable, police faction closed: %1", path));
+			s_bLoadFailed = true;
+			EL_Debug.Error("Whitelist", string.Format("whitelist file is unreadable, police faction closed, saving disabled: %1", path));
 			return;
 		}
 
@@ -303,8 +322,17 @@ class EL_WhitelistManager
 
 	//------------------------------------------------------------------------------------------------
 	//! Write version, then the faction entries, then the job entries.
-	static void Save()
+	//! Refused while the last Load could not read the file: the in-memory list is then only
+	//! this session's edits, and writing it would replace every entry the file still holds.
+	//! \return True when the file was written.
+	static bool Save()
 	{
+		if (s_bLoadFailed)
+		{
+			EL_Debug.Error("Whitelist", string.Format("save refused: the whitelist file could not be read at load, it is kept as is: %1", GetSavePath()));
+			return false;
+		}
+
 		if (!s_mFactionWhitelist)
 			s_mFactionWhitelist = new map<string, ref array<EL_EFactionType>>();
 
@@ -320,7 +348,7 @@ class EL_WhitelistManager
 		if (!handle)
 		{
 			EL_Debug.Error("Whitelist", string.Format("cannot open whitelist file for save: %1", path));
-			return;
+			return false;
 		}
 
 		handle.WriteLine(VERSION.ToString());
@@ -328,6 +356,7 @@ class EL_WhitelistManager
 		WriteJobBlock(handle);
 		handle.Close();
 		EL_Debug.Log("Whitelist", string.Format("saved whitelist version=%1 path=%2", VERSION, path));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

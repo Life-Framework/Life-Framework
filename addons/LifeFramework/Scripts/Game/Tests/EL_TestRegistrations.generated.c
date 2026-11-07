@@ -79,6 +79,11 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityVisuals(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RecipeChains(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_RestartBankSurvivesConnect(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_RestartJailSerializerRoundtrip(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_RestartVehicleNoGroundKey(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_RestartVehiclePlatesReserved(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_RestartWhitelistUnreadableFileKept(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_Bank(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Roadmap_BankWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Roadmap_BankPersistence(), EL_TestTier.PERSISTENCE);

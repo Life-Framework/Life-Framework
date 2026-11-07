@@ -231,6 +231,11 @@ class EL_VehicleOwnership
 				Records().Set(copy.m_sVehicleId, copy);
 				Order().Insert(copy.m_sVehicleId);
 
+				// The plate registry is session memory. Re-reserve every saved plate so a
+				// purchase after a restart cannot be issued a plate that is already on the road.
+				if (!copy.m_sPlate.IsEmpty())
+					EL_LicensePlateRegistry.Remember(copy.m_sPlate, copy.m_sVehicleId);
+
 				EL_VehicleSession session = previous.Get(copy.m_sVehicleId);
 				if (session)
 				{
@@ -257,22 +262,37 @@ class EL_VehicleOwnership
 	{
 		foreach (string vehicleId : Order())
 		{
-			EL_VehicleRecord record = Records().Get(vehicleId);
-			if (!record || record.m_bStored)
-				continue;
-
-			if (GetVehicle(vehicleId))
-			{
-				Rebind(record);
-				continue;
-			}
-
-			vector origin;
-			if (!EL_VehicleSpawnPointComponent.FindFreeOrigin(record.m_sShopId, origin))
-				continue;
-
-			SpawnOwned(record, origin);
+			RestoreVehicle(vehicleId);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts one owned, not-stored vehicle back in the world after a load. No key is spawned:
+	//! a ground key beside the pad on every restart let anyone take the car and piled keys up.
+	//! The owner gets a fresh key through the existing owner-only flow (garage store, then
+	//! retrieve), or buys an extra key at the lot.
+	//! \return True when the vehicle is live afterwards.
+	static bool RestoreVehicle(string vehicleId)
+	{
+		EL_VehicleRecord record = Records().Get(vehicleId);
+		if (!record || record.m_bStored)
+			return false;
+
+		if (GetVehicle(vehicleId))
+		{
+			Rebind(record);
+			return true;
+		}
+
+		vector origin;
+		if (!EL_VehicleSpawnPointComponent.FindFreeOrigin(record.m_sShopId, origin))
+			return false;
+
+		if (!SpawnOwned(record, origin, false))
+			return false;
+
+		EL_Debug.Log("Vehicle", string.Format("restored %1 owner=%2 without a ground key", vehicleId, record.m_sOwnerUid));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -677,7 +697,7 @@ class EL_VehicleOwnership
 		if (!EL_VehicleSpawnPointComponent.FindFreeOrigin(record.m_sShopId, origin))
 			return false;
 
-		if (!SpawnOwned(record, origin))
+		if (!SpawnOwned(record, origin, true))
 			return false;
 
 		record.m_bStored = false;
@@ -822,7 +842,9 @@ class EL_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool SpawnOwned(EL_VehicleRecord record, vector origin)
+	//! \param issueKey True only on the owner's garage retrieve, where the owner stands at the pad.
+	//!        A restart restore passes false and never drops a key.
+	protected static bool SpawnOwned(EL_VehicleRecord record, vector origin, bool issueKey)
 	{
 		string spawnName = record.m_sSpawnPrefab;
 		if (spawnName.IsEmpty())
@@ -851,7 +873,7 @@ class EL_VehicleOwnership
 		}
 
 		IEntity key = FindLive(session.m_Key);
-		if (!key)
+		if (!key && issueKey)
 		{
 			key = SpawnKey(record.m_sKeyId, origin);
 			if (!key)
@@ -862,7 +884,7 @@ class EL_VehicleOwnership
 
 			session.m_Key = key.GetID();
 		}
-		else
+		else if (key)
 		{
 			EL_VehicleKeyComponent keyComponent = EL_Component<EL_VehicleKeyComponent>.Find(key);
 			if (keyComponent)
