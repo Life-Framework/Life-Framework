@@ -41,8 +41,9 @@ off:
   workaround).
 - `EL_PlayerAccountManager` — async load + cache + save/release. ⚠️ eviction
   churn.
-- Persistence: `Feature/Account/Persistence/` — ❌ `ApplyTo` returns the wrong
-  enum (`EPF_EReadResult.OK`), no version field.
+- Persistence: `Feature/Account/Persistence/EL_PlayerAccountRecord.c` — ✅
+  explicit record, written by `EL_PersistenceComponentSerializer` after its
+  `version` field. No EPF.
 
 ## Dependencies
 

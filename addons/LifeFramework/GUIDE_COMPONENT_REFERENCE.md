@@ -11,7 +11,7 @@ This document serves as a technical reference for the key components in the Life
 *   **Configuration**: None visually exposed. Logic is internal.
 
 ### `EL_SpawnLogic`
-*   **Type**: Spawn Logic (inherits `EPF_BaseSpawnLogic`).
+*   **Type**: Spawn Logic (inherits `SCR_SpawnLogic`).
 *   **Location**: Inside `SCR_RespawnSystemComponent` on the GameMode.
 *   **Purpose**: Handles player account loading and character spawning.
 *   **Crucial Settings**:
@@ -60,7 +60,7 @@ These are not attached to objects but run globally.
 
 *   **`EL_ATMManager`**: Handles transactions.
 *   **`EL_JobManager`**: Handles rewards for gathering/processing (passive).
-*   **`EL_PlayerAccountManager`**: Handles loading/saving via EPF.
+*   **`EL_PlayerAccountManager`**: Caches accounts; `EL_PersistenceComponentSerializer` saves them through the native persistence system.
 
 ## UI Menus (IDs)
 

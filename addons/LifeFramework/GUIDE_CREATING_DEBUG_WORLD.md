@@ -6,7 +6,7 @@ This guide provides step-by-step instructions on how to set up a debug world in 
 
 *   **Workbench**: Open the Arma Reforger Tools.
 *   **Project**: Ensure `LifeFramework.gproj` is loaded.
-*   **Dependencies**: Ensure **Enfusion Persistence Framework (EPF)** is loaded in the project.
+*   **Dependencies**: Only the base game (`58D0FB3206B6F859`). Persistence is native; there is no EPF addon.
 
 ## 2. World Setup
 
@@ -31,7 +31,7 @@ This guide provides step-by-step instructions on how to set up a debug world in 
 To allow players to spawn, you need to configure the specialized Roleplay spawning system.
 
 1.  **Add Spawn Points**:
-    *   In Resource Browser, find `EPF_SpawnPoint.et` (from EPF addon) or `SCR_SpawnPoint.et`.
+    *   In Resource Browser, find `{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et` (an `SCR_SpawnPoint`).
     *   Drag and drop one or more into the world at your desired start location.
     *   give them a faction if necessary (though Roleplay modes often handle this dynamically).
 
@@ -113,4 +113,4 @@ Processing points convert raw resources (Inputs) into processed goods (Outputs).
 
 *   **"No Default Prefabs Configured"**: You forgot step 3.2. Go back to GameMode > EL_SpawnLogic and add a character prefab.
 *   **"Menu preset not found"**: Ensure `Configs/System/chimeraMenus.conf` is properly assigned in the Project Settings or that the GameMode is loading the correct config.
-*   **"EPF Error"**: You are missing the EPF dependency. Add it to `LifeFramework.gproj`.
+*   **"game data project not found"**: The base game addons are missing. Run `tools\cli status` and follow its FIX line.
