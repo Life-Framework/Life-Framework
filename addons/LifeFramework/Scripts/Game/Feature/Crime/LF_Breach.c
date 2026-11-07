@@ -254,6 +254,7 @@ class LF_Breach
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
 		WriteLock(targetId, true);
+		SyncTarget(target);
 		EL_Debug.Log("Breach", string.Format("repaired %1 by %2", targetId, playerUid));
 		return true;
 	}
@@ -324,6 +325,7 @@ class LF_Breach
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
 		WriteLock(target.m_sTargetId, !record.m_bOpen);
+		SyncTarget(target);
 		EL_Debug.Log("Breach", string.Format("apply-save %1 open=%2", target.m_sTargetId, record.m_bOpen));
 		return true;
 	}
@@ -350,7 +352,25 @@ class LF_Breach
 		target.m_bOpen = true;
 		target.m_bChargeArmed = false;
 		WriteLock(target.m_sTargetId, false);
+		SyncTarget(target);
 		EL_Debug.Log("Breach", string.Format("lock opened: %1", target.m_sTargetId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mirrors the open/armed flags onto the placed door so client offers can read them.
+	//! A target without a placed entity (logic tests) has nothing to mirror.
+	protected static void SyncTarget(LF_BreachTarget target)
+	{
+		if (!target || !GetGame() || !GetGame().GetWorld())
+			return;
+
+		IEntity entity = GetGame().GetWorld().FindEntityByName(target.m_sTargetId);
+		if (!entity)
+			return;
+
+		LF_BreachTargetComponent component = EL_Component<LF_BreachTargetComponent>.Find(entity);
+		if (component)
+			component.SetReplicatedState(target.m_bOpen, target.m_bChargeArmed);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -431,5 +451,6 @@ class LF_Breach
 		}
 
 		component.ScheduleFuse(fuseSeconds);
+		component.SetReplicatedState(false, true);
 	}
 }

@@ -35,6 +35,7 @@ class EL_PlayerAccount : Managed
 	{
 		m_eFaction = faction;
 		m_bFactionChosen = true;
+		EL_AccountReplication.Publish(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ class EL_PlayerAccount : Managed
 	void SetOnDuty(bool onDuty)
 	{
 		m_bOnDuty = onDuty;
+		EL_AccountReplication.Publish(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -76,6 +78,7 @@ class EL_PlayerAccount : Managed
 	void SetPoliceRank(int rank)
 	{
 		m_iPoliceRank = rank;
+		EL_AccountReplication.Publish(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -123,6 +126,7 @@ class EL_PlayerAccount : Managed
 	void SetWantedLevel(int level)
 	{
 		m_iWantedLevel = Math.Clamp(level, 0, 5); // Max 5
+		EL_AccountReplication.Publish(this);
 	}
 
 	//------------------------------------------------------------------------------------------------

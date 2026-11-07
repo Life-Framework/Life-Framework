@@ -113,14 +113,15 @@ class EL_SpawnLocationMenu
 		EL_Debug.Info("SpawnMenu", "location '" + locationKey + "' chosen for faction " + typename.EnumToString(EL_Faction, m_eFaction));
 		Close();
 
-		if (!m_PlayerController)
+		// The server checks the location against the accepted faction and stores it there.
+		SCR_PlayerController controller = SCR_PlayerController.Cast(m_PlayerController);
+		if (!controller)
+		{
+			EL_Debug.Error("SpawnMenu", "location pick not sent: no SCR_PlayerController");
 			return;
+		}
 
-		EL_SpawnLogic.SetSelectedLocation(m_PlayerController.GetPlayerId(), locationKey);
-
-		EL_CharacterCreationManager manager = EL_CharacterCreationManager.GetInstance();
-		if (manager)
-			manager.OnSpawnLocationChosen(m_PlayerController, m_eFaction);
+		controller.EL_AskSpawnLocation(locationKey);
 	}
 
 	//------------------------------------------------------------------------------------------------
