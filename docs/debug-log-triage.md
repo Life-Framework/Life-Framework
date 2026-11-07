@@ -75,6 +75,7 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | RPL invalid prefab GUID | not a feature bug | Same missing resource database. Copy it. Wrong GUID and invalid prefab are this, not a feature defect. |
 | inventory `not found in replication` together with a cash read of 0 | not a feature bug | The resource database copy is missing. `GetCash` returning 0 is the same gap. These four tests fail only for that reason: `e2e/narrative-loop`, `e2e/inventory-storage`, `money/cash-roundtrip`, `vehiclelock/lock-key-access`. |
 | harness `Cannot index into a null array` | not a feature bug | `Get-Content -Raw` returned an array because the log was still open, and the old parser indexed `$matches`. Grep `console.log` for `[ELTEST] SUMMARY` and the assigned test name. Do not read `cli.mjs` or the server executable. |
+| `[ELDebug:DebugMenu] debug action refused: player <id> ...`, `[ELDebug:DebugMenu] open refused: ...`, `[ELDebug:AgentHarness] stand/pose/use refused: player <id> ...` | BY DESIGN | `EL_DevGate` refused a dev-tool request. Dev tools run only when the game mode sets `m_bDevToolsEnabled` (`GameMode_Roleplay_Debug.et`, DebugWorld) or the sender is an administrator. A non-admin on a production server sees this. In the DebugWorld it means the mode prefab lost the flag. |
 
 ## How to add a row
 

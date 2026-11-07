@@ -667,7 +667,14 @@
 - ✅ `EL_DebugMenu` is a development menu opened with F10 (or its rebind),
   with server-routed controls for cash, wanted state, faction, jobs, survival,
   XP, and skill points. Actions affect only the requesting player's state
-  (verified 2026-08-30).
+  (verified 2026-08-30). `EL_DevGate` (`Core/EL_DevGate.c`) checks every
+  action on the server. It logs `[ELDebug:DebugMenu] debug action refused: ...`
+  and refuses unless the game mode sets `m_bDevToolsEnabled` or the sender
+  holds `EPlayerRole.ADMINISTRATOR`. Only `GameMode_Roleplay_Debug.et`
+  (DebugWorld) sets the flag. The production `GameMode_Roleplay.et` leaves it
+  off. The open key runs the same check on the client and logs
+  `open refused` instead of opening. `EL_DevGate.IsAllowed` has the LOGIC test
+  `debug-menu/gate` (2026-11-07).
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
@@ -734,9 +741,12 @@
   `EL_OpenDebugMenu`); movement actions are refused.
 - ✅ `stand` is the placement exception: the server moves the local character
   beside a named entity. The poll does not start on a dedicated server
-  (`RplMode.Dedicated`), and on a dedicated server the `stand`, `pose`, and
-  `use` RPCs are refused and logged, so a client cannot teleport or reach past
-  action range there (2026-11-07). On a client it retries until a local controller exists,
+  (`RplMode.Dedicated`). The server checks the `stand`, `pose`, and `use` RPCs
+  with `EL_DevGate`, the same gate as the debug menu. It refuses and logs
+  (`[ELDebug:AgentHarness] <request> refused: ...`) unless the game mode sets
+  `m_bDevToolsEnabled` or the sender is an administrator. On a production or
+  listen-hosted server a client cannot teleport or reach past action range
+  (2026-11-07). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
 - ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
   alone. A world shot teleports the character to the camera offset (default
