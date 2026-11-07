@@ -13,6 +13,13 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	//! is reachable in a dev session without a dedicated UI component on the prefab.
 	protected bool m_bDebugMenuListenerRegistered;
 
+	//! Connected on-duty police, written by the server (EL_AccountReplication) so client-side
+	//! robbery offers can apply the minimum-police gate. The game mode is always replicated.
+	[RplProp()]
+	protected int m_iEL_PoliceOnDuty;
+
+	protected bool m_bEL_AccountRefreshRunning;
+
 	//------------------------------------------------------------------------------------------------
 	// Initialization moved to OnPlayerConnected (lazy init) to avoid constructor overloads
 	//------------------------------------------------------------------------------------------------
@@ -20,12 +27,33 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	{
 		EL_PlayerAccountManager.Reset();
 		UnregisterDebugMenuListener();
+		if (m_bEL_AccountRefreshRunning && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(EL_RefreshAccountReplication);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: bumps only when the count changes.
+	void EL_SetPoliceOnDuty(int count)
+	{
+		if (!Replication.IsServer() || count == m_iEL_PoliceOnDuty)
+			return;
+
+		m_iEL_PoliceOnDuty = count;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int EL_GetPoliceOnDuty()
+	{
+		return m_iEL_PoliceOnDuty;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPlayerSpawned(int playerId, IEntity controlledEntity)
 	{
 		super.OnPlayerSpawned(playerId, controlledEntity);
+
+		EL_AccountReplication.PublishForPlayer(playerId, controlledEntity);
 
 		EL_WhitelistRespawnHandlerComponent whitelist = EL_WhitelistRespawnHandlerComponent.Cast(FindComponent(EL_WhitelistRespawnHandlerComponent));
 		if (whitelist)
@@ -99,5 +127,18 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 			m_JobManager = new EL_JobManager();
 
 		m_CharacterCreationManager.OnPlayerConnected(playerId);
+
+		// Self-healing account replication pass (server only, started once).
+		if (Replication.IsServer() && !m_bEL_AccountRefreshRunning)
+		{
+			GetGame().GetCallqueue().CallLater(EL_RefreshAccountReplication, EL_AccountReplication.REFRESH_INTERVAL_MS, true);
+			m_bEL_AccountRefreshRunning = true;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void EL_RefreshAccountReplication()
+	{
+		EL_AccountReplication.RefreshAll();
 	}
 }

@@ -152,20 +152,48 @@ class EL_NotificationManagerComponent : ScriptComponent
 			return;
 		}
 			
-		PlayerController controller = GetGame().GetPlayerManager().GetPlayerController(playerId);
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
 		if (!controller)
 		{
-			Print(string.Format("[EL_NotificationManagerComponent] ERROR: PlayerController not found for player %1", playerId), LogLevel.ERROR);
+			EL_Debug.Error("Notify", string.Format("notify to player %1 failed: no player controller", playerId));
 			return;
 		}
-		
-		Print(string.Format("[EL_NotificationManagerComponent] ✅ Sending notification to player %1: '%2'", playerId, config.m_sTitle), LogLevel.NORMAL);
-		
-		// Broadcast with a playerId filter: the handler drops the toast on every client that is
-		// not the target. The direct call covers the listen-server host (Broadcast skips the
-		// authority, so the host would never see its own notification otherwise).
-		Rpc(RpcDo_ShowNotification, config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound, playerId, config.m_sMessageArg);
-		RpcDo_ShowNotification(config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound, playerId, config.m_sMessageArg);
+
+		// Owner RPC on the target's own controller: only that client receives the payload.
+		// The old Broadcast-and-filter sent every player's private toast to every client.
+		EL_Debug.Log("Notify", string.Format("notify player %1: %2", playerId, config.m_sMessage));
+		controller.EL_DeliverNotification(config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sMessageArg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Send notification to every connected on-duty police officer. Police is the account faction
+	//! (EL_PlayerAccount), the same definition the robbery minimum-police gate counts.
+	//! \return Officers notified.
+	int SendToPolice(EL_NotificationConfig config)
+	{
+		if (!Replication.IsServer())
+			return 0;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		if (!playerManager || !accountManager)
+			return 0;
+
+		int sent = 0;
+		array<int> playerIds = {};
+		playerManager.GetPlayers(playerIds);
+		foreach (int playerId : playerIds)
+		{
+			EL_PlayerAccount account = accountManager.GetAccount(EL_Utils.GetPlayerUID(playerId));
+			if (!EL_AccountStateBits.IsOnDutyPolice(EL_AccountStateBits.FromAccount(account)))
+				continue;
+
+			SendToPlayer(playerId, config);
+			sent++;
+		}
+
+		EL_Debug.Log("Notify", string.Format("police alert sent to %1 officer(s): %2", sent, config.m_sMessage));
+		return sent;
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -259,6 +287,22 @@ class EL_NotificationManagerComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
+	//! Send notification to every connected on-duty police officer (static, server).
+	static void NotifyPolice(string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.POLICE_ALERT, string messageArg = "")
+	{
+		EL_NotificationManagerComponent manager = GetInstance();
+		if (!manager)
+		{
+			EL_Debug.Error("Notify", "police alert dropped: no EL_NotificationManagerComponent on the game mode");
+			return;
+		}
+
+		EL_NotificationConfig config = new EL_NotificationConfig(title, message, duration, type);
+		config.m_sMessageArg = messageArg;
+		manager.SendToPolice(config);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Send notification to all players (static)
 	static void NotifyAll(string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.INFO, string messageArg = "")
 	{
@@ -276,8 +320,8 @@ class EL_NotificationManagerComponent : ScriptComponent
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	//------------------------------------------------------------------------------------------------
-	//! Server->client targeted delivery. Broadcast reaches every client that has the game mode
-	//! proxy; each handler keeps the toast only when playerId matches the local player (-1 = all).
+	//! Server->all clients (SendToAll only, playerId -1). Player-targeted toasts never use this:
+	//! they go through the target's controller (SCR_PlayerController.EL_DeliverNotification).
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	protected void RpcDo_ShowNotification(string title, string message, float duration, EL_ENotificationType type, string iconPath, bool playSound, int playerId, string messageArg)
 	{
@@ -299,8 +343,8 @@ class EL_NotificationManagerComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Show notification toast on client
-	protected void ShowNotificationToast(string title, string message, float duration, EL_ENotificationType type, string messageArg = "")
+	//! Show notification toast on this machine. Called by the owner-RPC on the local controller.
+	void ShowNotificationToast(string title, string message, float duration, EL_ENotificationType type, string messageArg = "")
 	{
 		// Add prefix based on type if no custom title
 		// TODO: these fallback titles are Spanish literals; move to localization keys in the

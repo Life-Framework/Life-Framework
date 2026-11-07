@@ -2138,6 +2138,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Step out of the vehicle first"
      Comment "Garage store refused because the player is still seated."
     }
+    CustomStringTableItem "{BDFF965656B478E0}" {
+     Id "EL-Duty_GoOn"
+     Target_en_us "Go on duty"
+     Comment "Police duty toggle action name while the officer is off duty"
+    }
+    CustomStringTableItem "{D302B585166A8EAE}" {
+     Id "EL-Duty_GoOff"
+     Target_en_us "Go off duty"
+     Comment "Police duty toggle action name while the officer is on duty"
+    }
+    CustomStringTableItem "{C63996AB2CF2559D}" {
+     Id "EL-Duty_PoliceOnly"
+     Target_en_us "Only police can change duty"
+     Comment "Duty toggle refused because the player is not in the police faction"
+    }
+    CustomStringTableItem "{92FBA59A53BA6764}" {
+     Id "EL-Confiscate_OnDutyOnly"
+     Target_en_us "Only on-duty police can confiscate"
+     Comment "Confiscate action refused because the player is not an on-duty officer"
+    }
+    CustomStringTableItem "{4D0E7310AF59E5DA}" {
+     Id "EL-Confiscate_NoTarget"
+     Target_en_us "No wanted player nearby"
+     Comment "Confiscate action refused because no wanted player is within range"
+    }
+    CustomStringTableItem "{65A21AB01575E40D}" {
+     Id "EL-CC_Error_FactionDenied"
+     Target_en_us "You are not cleared for that faction."
+     Comment "Faction pick refused by the server whitelist. The faction menu opens again."
+    }
+    CustomStringTableItem "{9EFAFBA759167819}" {
+     Id "EL-CC_Error_FactionLocked"
+     Target_en_us "Your faction is already set."
+     Comment "Faction or character request refused because the account already chose a faction, or has not chosen one yet for a character"
+    }
+    CustomStringTableItem "{C84EED35CC0A568B}" {
+     Id "EL-CC_Error_NoAccount"
+     Target_en_us "Your account is still loading. Try again."
+     Comment "Creation request refused because the server has no account for the player yet"
+    }
+    CustomStringTableItem "{654A62843AE6EBC8}" {
+     Id "EL-CC_Error_Location"
+     Target_en_us "That spawn location is not available."
+     Comment "Spawn location refused because it does not belong to the chosen faction. The location menu opens again."
+    }
+    CustomStringTableItem "{584BFA3C9B4E7978}" {
+     Id "EL-CC_Error_NameLength"
+     Target_en_us "Names can be at most 32 characters."
+     Comment "Character creation refused because a name is longer than 32 characters"
+    }
+    CustomStringTableItem "{1D9FBDE69C69275F}" {
+     Id "EL-CC_Error_Exists"
+     Target_en_us "This account already has a character."
+     Comment "Character creation refused because the account already has a character"
+    }
   }
  }
 }
