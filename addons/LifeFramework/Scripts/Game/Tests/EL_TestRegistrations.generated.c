@@ -39,6 +39,15 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_E2E_SaveStateWrite(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_E2E_SaveStateVerify(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_E2EInventory(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_FruitCatcherRounds(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JobSwitchGuards(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_BuildingPlacementRange(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_AdminChatRole(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_QuestTurnInExploit(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_InventorySplitExploit(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_BreachChargeExploit(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_LockedStorageExploit(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_JobAndBuildingExploit(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionLoadoutConfig(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionSpawn(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
