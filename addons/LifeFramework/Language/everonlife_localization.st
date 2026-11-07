@@ -2138,6 +2138,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Step out of the vehicle first"
      Comment "Garage store refused because the player is still seated."
     }
+    CustomStringTableItem "{6717E4FCF46F11F2}" {
+     Id "EL-Breach_NeedCharge"
+     Target_en_us "You need a demolition charge"
+     Comment "Breach arm refused because the player carries no M112 demolition charge"
+    }
     CustomStringTableItem "{BDFF965656B478E0}" {
      Id "EL-Duty_GoOn"
      Target_en_us "Go on duty"

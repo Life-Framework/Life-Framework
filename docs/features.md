@@ -160,13 +160,6 @@
   `ChimeraSystemsConfig.conf` override. Resolution retries at game start and
   logs an `EL_Debug.Error` when the entry is truly missing.
 
-### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
-- ✅ Explicit persisted form of an account and its characters (faction,
-  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
-  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
-  its `version` field. `account/save-roundtrip` covers the
-  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
-
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
   server-only, so client-side offers read a replicated copy. Faction, duty,
@@ -184,6 +177,13 @@
 - ⚠️ `EL_RobWeaponAction`, `EL_RobVehicleAction`, and `LF_Bank` still count
   police and read accounts directly in their offers; move them to
   `EL_AccountReplication` next.
+
+### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
+- ✅ Explicit persisted form of an account and its characters (faction,
+  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
+  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
+  its `version` field. `account/save-roundtrip` covers the
+  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
 ## Money & Economy
 
@@ -331,6 +331,22 @@
 - ✅ **Fruit-catcher mint closed** (verified 2026-08-30): the server clamps any
   claimed score through `EL_GetFruitCatcherRewardCount` to
   `EL_FRUIT_CATCHER_MAX_SCORE` (100); pin test `security/fruitcatcher-reward-clamp`.
+- ✅ **Fruit-catcher claim loop closed** (verified 2026-11-07): a claim
+  pays only a server-opened round. The minigame calls `AskStartFruitCatcherRound`
+  when a round starts; the server records the round id and start time
+  (`LF_FruitCatcherRound`) and `AskClaimFruitCatcherReward` sends that id back.
+  One claim per round, same fruit, at least `LF_FruitCatcherRound.MIN_ROUND_SECONDS`
+  (30 s) after the start, and the caller must hold FARMER. The minigame screen
+  is not in this repo; when it lands it must call the start ask. Pin tests
+  `security/fruitcatcher-rounds`, `security/job-workplace-and-seed`.
+- ✅ **Job switch and kit gates** (verified 2026-11-07): a
+  client-requested switch (`RequestJobFromClient`, behind `RpcAsk_SetJob`) needs
+  an `LF_JobSignUpAction` for that job within `LF_JobGuards.WORKPLACE_RADIUS`
+  (5 m) and `SWITCH_COOLDOWN_SECONDS` (30 s) since the last switch; going
+  UNEMPLOYED needs no workplace. Only delivery jobs have a placed workplace today,
+  so a client cannot switch itself to MINER/LUMBERJACK/FARMER/MEDIC/POLICE by RPC.
+  `GiveJobEquipment` hands each job's kit once per account per server session
+  (`LF_JobGuards.ClaimEquipmentGrant`). Pin test `security/job-switch-guards`.
 - ✅ **Debug-license backdoor removed** (verified 2026-08-30): `RpcAsk_DebugGrantLicense`
   no longer exists anywhere in `Scripts/Game`.
 - ✅ **Paychecks pay cash** (verified 2026-08-30): `ProcessPaycheck` uses
@@ -412,6 +428,22 @@
   `EL_PersistenceComponentSerializer`.
 - ⚠️ Getter returns the live internal array (callers can mutate without logging).
 
+### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
+- ✅ **Server re-checks the admin role** (verified 2026-11-07):
+  `ProcessMessage` on the authority refuses any sender without
+  `EPlayerRole.ADMINISTRATOR` (`IsAdminSender`) before parsing `!wadd`, so a
+  modded client cannot whitelist itself for POLICE. Pin test
+  `security/admin-chat-role`.
+
+### `EL_BuildingManagerComponent` — `Components/BuildingSystem/EL_BuildingManagerComponent.c`
+- ✅ **Placement gated and paid** (verified 2026-11-07): the server
+  (`PlaceHeldBuilding`, behind `RpcAsk_SpawnEntityPrefab`) requires the held
+  performer for that prefab, a position within `MAX_PLACEMENT_DISTANCE` (5 m)
+  of the character, and consumes the held item (`ConsumeBuildingItem`: one off
+  a quantity stack, else the item is deleted) before spawning. The client
+  preview stops offering placements past that range. Pin tests
+  `security/building-placement-range`, `security/job-workplace-and-seed`.
+
 ## Crime & Police
 
 ### `LF_Breach` — `Feature/Crime/LF_Breach.c`
@@ -425,6 +457,12 @@
   vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
   `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
+  **Charge consumed** (verified 2026-11-07): `Arm(targetId, playerUid,
+  chargeCarrier)` takes one charge from `chargeCarrier` before the wanted bump and
+  refuses (`arm refused: ... carries no breach charge`) when there is none. The
+  door, bank vault, and hospital cabinet actions pass the acting player; the
+  door action shows `#EL-Breach_NeedCharge`. A null carrier is the
+  server-scripted arm used by tests. Pin test `security/breach-needs-charge`.
   `EL_Door_Base` inherits
   `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
 - ✅ **Client offers** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the target table is server-only, so
@@ -671,6 +709,11 @@
   transferred), `CombineQuantities` (2 and 3 yield 5), `Split`,
   `QuantityRemainingAfterSplit` (5 into 2 leaves 3), `SortByQuantity`
   (descending), `GetRemainingCapacity` (verified 2026-10-11).
+- ✅ **In-inventory split mint closed** (verified 2026-11-07): the
+  split stack is sized and marked keep-separate before `TryInsertItemInStorage`,
+  so `HandleOnItemAdded` no longer merges the spawned init quantity (100 for
+  MoneyStack) into the source. Split 1 used to add 99. Pin test
+  `security/inventory-split-no-mint`.
 - ⚠️ `Split` with `splitSize` 0 spawns an item then deletes it via
   `SetQuantity(0)`; `ExtractQuantityComponents` inserts null components with
   no check; `HandleOnItemAdded` may refresh UI on a just-deleted entity.
@@ -691,6 +734,10 @@
 - ✅ **Ownership gate added** (verified 2026-08-30): `EL_CanManipulateOwned`
   rejects another living player's carried items (only your own storage or
   unowned containers/ground loot); the old range-only anti-cheat is closed.
+- ✅ **Locked owners refused** (verified 2026-11-07):
+  `EL_CanManipulateOwned` also refuses a storage whose owner has a locked
+  `EL_VehicleLockComponent` or `EL_LockComponent` (`EL_IsStorageOwnerLocked`).
+  Pin test `security/locked-storage-refused`.
 
 ### Hand-Carry — `Feature/Character/Inventory/HandCarry/`
 - ✅ `EL_HandInventoryStorageComponent` state machine
@@ -734,6 +781,14 @@
   client quest-log replication.
 - ✅ `QuestGiver_Start` and `DebugWorld` provide a world-facing onboarding
   example with localized menu layouts and registered logic/world tests.
+- ✅ **Turn-in loop closed** (verified 2026-11-07): turn-in removes each
+  `COLLECT_REPORT` objective's target amount through `EL_InventoryUtils` before
+  the reward, all or nothing (a short removal puts the items back and refuses).
+  Client open/accept/turn-in (`RequestOpenGiver`/`RequestAccept`/`RequestTurnIn`)
+  require the registered giver that offers the quest within
+  `LF_QuestManager.GIVER_RADIUS` (5 m); an unknown giver id is refused. Server
+  scripts may still call `AcceptQuest`/`TurnInQuest` directly. Pin test
+  `security/quest-turnin-takes-items`.
 
 ### Layouts (loaded by `EL_Test_Data`)
 - ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,

@@ -171,7 +171,7 @@ class LF_HospitalCabinetAction : ScriptedUserAction
 			return;
 		}
 
-		LF_Hospital.BreachCabinet(cabinet.GetTargetId(), playerUid);
+		LF_Hospital.BreachCabinet(cabinet.GetTargetId(), playerUid, pUserEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------
