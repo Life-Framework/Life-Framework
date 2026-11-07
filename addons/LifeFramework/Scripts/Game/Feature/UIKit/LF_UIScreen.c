@@ -728,13 +728,17 @@ class LF_UIScreen
 		if (listWidget)
 			content = listWidget.FindAnyWidget("ListContent");
 
-		if (!content || !GetGame() || !GetGame().GetWorkspace())
+		WorkspaceWidget workspace;
+		if (GetGame())
+			workspace = GetGame().GetWorkspace();
+
+		if (!content || !workspace)
 		{
 			EL_Debug.Error("UIKit", "list " + listName + " cannot take rows");
 			return false;
 		}
 
-		Widget row = GetGame().GetWorkspace().CreateWidgets(LF_UITheme.STATUS_LAYOUT, content);
+		Widget row = workspace.CreateWidgets(LF_UITheme.STATUS_LAYOUT, content);
 		if (!row)
 		{
 			EL_Debug.Error("UIKit", "failed to create list row " + rowName);
