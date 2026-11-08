@@ -76,6 +76,14 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_IdCardGrant(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_IdCardRules(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_IdentityFallback(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_InteractionGiveCash(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_InteractionIntroductions(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_InteractionOffers(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_IntroductionsSerializer(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_JailOnlineTime(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JailSlip(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_JailVehicleArrest(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);
@@ -182,6 +190,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_UIKitClose(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitFocus(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UnemploymentBenefit(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_VehicleBankRefusal(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_VehicleLockIdMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistChatResources(), EL_TestTier.WORLD);

@@ -31,10 +31,10 @@ class EL_SpawnLocations
 		if (!s_aLocations)
 		{
 			s_aLocations = new array<ref EL_SpawnLocation>();
-			s_aLocations.Insert(new EL_SpawnLocation("town", "EL-SpawnLoc_Town", EL_Faction.CIVILIAN, "110 0 137.516"));
-			s_aLocations.Insert(new EL_SpawnLocation("mine", "EL-SpawnLoc_Mine", EL_Faction.CIVILIAN, "100 0 130"));
-			s_aLocations.Insert(new EL_SpawnLocation("station", "EL-SpawnLoc_Station", EL_Faction.POLICE, "138 0 136"));
-			s_aLocations.Insert(new EL_SpawnLocation("outpost", "EL-SpawnLoc_Outpost", EL_Faction.POLICE, "150 0 130"));
+			s_aLocations.Insert(new EL_SpawnLocation("town", "EL-SpawnLoc_Town", EL_Faction.CIVILIAN, "126 0 246"));
+			s_aLocations.Insert(new EL_SpawnLocation("mine", "EL-SpawnLoc_Mine", EL_Faction.CIVILIAN, "170 0 199"));
+			s_aLocations.Insert(new EL_SpawnLocation("station", "EL-SpawnLoc_Station", EL_Faction.POLICE, "232.4 0 245.5"));
+			s_aLocations.Insert(new EL_SpawnLocation("outpost", "EL-SpawnLoc_Outpost", EL_Faction.POLICE, "234 0 245.5"));
 		}
 		return s_aLocations;
 	}

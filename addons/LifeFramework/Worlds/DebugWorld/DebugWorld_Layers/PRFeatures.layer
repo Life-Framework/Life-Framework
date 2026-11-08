@@ -1,6 +1,6 @@
 $grp GenericEntity : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
  Vehicle_PlateTest {
-   coords 170 0 130
+  coords 37 0 33
  }
  Vehicle_LockTest {
   components {
@@ -8,14 +8,14 @@ $grp GenericEntity : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_P
     m_sDebugIdentifier "ELDebugKey1"
    }
   }
-   coords 176 0 130
+  coords 43 0 33
  }
  Vehicle_SirenTest {
-  coords 182 0 130
+  coords 49 0 33
  }
 }
 GenericEntity PRFeatureCrate {
- coords 176 0 130
+ coords 43 0 33
  {
   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {
@@ -59,8 +59,4 @@ GenericEntity PRFeatureCrate {
    }
   }
  }
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
-  coords 176 0 130
- m_vSize 6.5 1 1.5
-}
 }

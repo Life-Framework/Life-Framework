@@ -32,19 +32,20 @@ GenericEntity Roadmap_Jail_Door : "{787617D5B683FE41}Prefabs/Structures/Building
   }
  }
  Flags 0x403 0
- coords 192 0 120
+ coords 232.35 0 226
 }
 GenericEntity Roadmap_Jail_Cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.et" {
  components {
   LF_JailCellComponent "{540EBBB989D3A80A}" {
    m_fZoneRadius 8
-   m_iSecondsPerWanted 0
-   m_iMaxSeconds 0
+   m_iSecondsPerWanted 60
+   m_iMaxSeconds 300
    m_iWantedReduction 1
    m_sDoorTargetId "Roadmap_Jail_Door"
+   m_vReleaseOffset 0.15 0 10
   }
  }
- coords 192 0 122
+ coords 232.2 0 219
  {
   GenericEntity Roadmap_Jail_CellMarker {
    components {
@@ -77,5 +78,6 @@ GenericEntity Roadmap_Escort_Car : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M
    }
   }
  }
- coords 204 0 108
+ coords 247.5 0 238
+ angleY 0
 }

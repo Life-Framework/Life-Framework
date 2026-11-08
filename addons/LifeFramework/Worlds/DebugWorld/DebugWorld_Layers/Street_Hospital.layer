@@ -43,7 +43,7 @@ GenericEntity Roadmap_Hospital_Till {
   }
  }
  Flags 0x403 0
- coords 195 0 120
+ coords 257 0 256.4
 }
 GenericEntity Roadmap_Hospital_Cabinet {
  components {
@@ -102,5 +102,6 @@ GenericEntity Roadmap_Hospital_Cabinet {
   }
  }
  Flags 0x403 0
- coords 198 0 120
+ coords 266.5 1.04 256.9
+ angleY 180
 }

@@ -47,6 +47,9 @@ class LF_JailCellComponent : ScriptComponent
 	[Attribute("Roadmap_Jail_Door", UIWidgets.EditBox, desc: "Breach target id of the jail door. Confinement pauses while that door is open.")]
 	protected string m_sDoorTargetId;
 
+	[Attribute("0 0 -5", UIWidgets.EditBox, desc: "Where a released prisoner stands, in this entity's local frame (outside the cell door).")]
+	protected vector m_vReleaseOffset;
+
 	[Attribute("1000", UIWidgets.EditBox, desc: "Milliseconds between confine and release checks.")]
 	protected int m_iTickIntervalMs;
 
@@ -94,6 +97,7 @@ class LF_JailCellComponent : ScriptComponent
 		LF_Jail.Configure(m_iSecondsPerWanted, m_iMaxSeconds, m_iWantedReduction, m_fZoneRadius);
 		LF_Jail.SetDoorTarget(m_sDoorTargetId);
 		LF_Jail.SetCellOrigin(owner.GetOrigin());
+		LF_Jail.SetReleaseOffset(owner.CoordToParent(m_vReleaseOffset) - owner.GetOrigin());
 
 		if (m_iTickIntervalMs <= 0)
 		{

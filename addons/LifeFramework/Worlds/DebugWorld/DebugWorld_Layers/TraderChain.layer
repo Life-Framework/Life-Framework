@@ -1,5 +1,5 @@
 EL_NpcBaseEntity PoliceDutyNPC {
- coords 125 0 135
+ coords 188.8 0 239.2
  {
   EL_NpcBaseEntity TraderChainTomatoNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -15,5 +15,5 @@ EL_NpcBaseEntity PoliceDutyNPC {
  }
 }
 GenericEntity TraderChainCounter : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
- coords 127 0 135
+ coords 190.5 0 240.6
 }

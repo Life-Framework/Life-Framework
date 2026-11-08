@@ -3,5 +3,5 @@ SCR_DestructibleEntity EL_TestRunner : "{467951CEFC8F345B}PrefabLibrary/Props/Ci
   EL_TestRunnerComponent "{A5E5E5A1B17E0001}" {
   }
  }
- coords 109.995 0.001 136.617
+ coords 59.995 0.001 103.617
 }
