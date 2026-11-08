@@ -1,265 +1,94 @@
 # Contributing to Life Framework
 
-First off, thank you for considering contributing to Life Framework! It's people like you that make this community-driven project possible.
+Welcome. Join the community, choose a piece of work, build it with the team,
+then raise a pull request. You can contribute code, playtest reports, world
+building, UI, 3D art, sound, or documentation.
 
-**New here?** Start with the [development setup guide](docs/setup.md), then read [AGENTS.md](AGENTS.md) before touching EnforceScript or prefabs.
+## 1. Join the Discord
 
-## Our Philosophy
+[Join the Life Framework Discord](https://discord.gg/MjMexJteqz). Say hello in
+`#general`, ask questions, and tell us what you would like to work on. The team
+can help match your interests to an issue.
 
-We're a group of passionate modders who love life mods and want to bring back the vibrant community we all enjoyed. This is a **passion project** – we're here because it's fun, and we want to share that fun with everyone.
+## 2. Pick an issue
 
-### We Welcome Everyone
+Start with a [good first issue](https://github.com/Life-Framework/Life-Framework/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22)
+or an open branch on the [Tree of Life](https://life-framework.org/roadmap), the
+roadmap map of every issue (the #roadmap forum on Discord mirrors it). Issues
+are the source of truth for the files, boundaries, and proof expected.
 
-Whether you're an experienced developer or just getting started, we want your input, your ideas, and your code. Everyone has something valuable to contribute, and we're committed to making this a welcoming space for all skill levels.
+Comment `/claim` on the issue to take it; a bot adds you as an assignee. Others
+can `/claim` the same issue to join you (up to ten), and `/unclaim` steps you
+back. The website and Discord update from the assignee list. Then coordinate
+with the team on Discord.
 
-## Community & Communication
+## 3. Build and playtest
 
-### 💬 Discord is Our Home
+Read [AGENTS.md](AGENTS.md), the [setup guide](docs/setup.md), and the
+[playtest guide](docs/playtest.md). The guides cover the toolchain, local paths,
+and how to open the M1 town.
 
-Use **Discord** for discussion and GitHub for roadmap issues, code, and pull requests.
+Keep code changes in a worktree, not `main`:
 
-**[Join our Discord server](https://discord.com/invite/MjMexJteqz)** to:
-- **Discuss bugs and ideas** in #feedback
-- **Find work** in the #roadmap forum
-- **Get help** from the community and maintainers
-- **Share your work** in #showcases
-
-Our Discord is organized with:
-- **Forums** for structured discussions (bug reports, feature requests, development topics)
-- **Text chats** for casual conversation, quick questions, and community hangouts
-- **Voice channels** for collaborative sessions and community events
-
-The #roadmap forum and the Tree of Life on life-framework.org/roadmap both mirror GitHub issues. GitHub is the source of truth for each item's status and contributors.
-
-## How Can I Contribute?
-
-### Claiming a Roadmap Issue
-
-Open an issue from the Tree of Life (life-framework.org/roadmap) or the #roadmap forum, then comment `/claim` on GitHub. The
-repository bot adds you as an assignee. Other contributors can comment `/claim`
-on the same issue to join; `/unclaim` removes only the person who used it. The
-website and Discord board update from the GitHub assignee list. An assigned
-issue remains open to more collaborators.
-
-### 🐛 Reporting Bugs
-
-Found a bug? Help us squash it!
-
-1. **[Join our Discord server](https://discord.com/invite/MjMexJteqz)** and check the bug reports forum
-2. **Search existing reports** to see if it's already been reported
-3. **Post in the bug reports forum** with a clear title and description
-4. **Include details:**
-   - Steps to reproduce the bug
-   - Expected vs. actual behavior
-   - Your environment (Arma Reforger version, OS, etc.)
-   - Screenshots or logs if applicable
-
-### 💡 Suggesting Features
-
-Have an idea for a new feature or improvement?
-
-1. **[Join our Discord server](https://discord.com/invite/MjMexJteqz)** and check the feature suggestions forum
-2. **Search existing suggestions** to see if it's already been proposed
-3. **Post your idea** in the feature suggestions forum
-4. **Explain the use case** – how would this benefit the community?
-5. **Be open to feedback** – we'll discuss and refine ideas together in the thread
-
-### 🔧 Code Contributions
-
-Ready to write some code? Awesome!
-
-#### Getting Started
-
-1. **Fork the repository** to your GitHub account
-2. **Clone your fork** locally
-3. **Create a branch** for your feature or fix:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-4. **Make your changes** following our coding standards ([`AGENTS.md`](AGENTS.md) for EnforceScript and data rules)
-5. **Test thoroughly** — `node tools/cli.mjs validate` and the appropriate `test` tier (see [Testing](#testing) below)
-6. **Commit your changes** with clear, descriptive messages
-7. **Push to your fork** and submit a pull request
-
-#### Coding Standards
-
-- **Write clean, readable code** – others will be reading and maintaining it
-- **Comment complex logic** – help future contributors understand your thinking
-- **Follow existing patterns** – consistency makes the codebase easier to navigate
-- **Test your changes** – ensure they work in-game before submitting
-
-#### Pull Request Process
-
-GitHub pre-fills new PRs from [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md). Use it — it matches our verification checklist.
-
-1. **Describe your changes** clearly in the PR description (Summary, Verification, Manual testing)
-2. **Reference related issues** if applicable (e.g., "Fixes #123")
-3. **Check off verification** — `validate`, the right `test` tier, red-proof tests if applicable
-4. **Be responsive** to feedback and review comments
-5. **Keep PRs focused** — one feature or fix per PR when possible
-6. **Update documentation** if your changes affect how things work
-
-### 🤖 AI-assisted development
-
-We **encourage** AI-assisted contributions. Cursor, Claude Code, Codex, opencode, and similar tools are welcome — the repo ships a harness so humans and agents share the same workflow.
-
-#### The harness
-
-| Piece | Purpose |
-| --- | --- |
-| [`AGENTS.md`](AGENTS.md) | Portable contract: golden rules, EnforceScript traps, data rules, verification ladder. **Read this first** — every tool can use it. |
-| [`.opencode/`](.opencode/README.md) | Skills, playbooks, and agents for [opencode](https://opencode.ai) (`/life-mode`, `/prove`, `/interrogate`). Plain markdown — other assistants can read it too. |
-| [`tools/cli`](tools/README.md) | Unified CLI: `validate`, `build`, `test`, `ci`, MCP install/call. |
-| **MCP servers** | Enfusion API search, vanilla source, asset lookup, optional Workbench tools — `node tools/cli.mjs mcp install`, then `node tools/cli.mjs call …`. See [`tools/mcp/README.md`](tools/mcp/README.md). |
-| **PR template** | Checklist aligned with the verification ladder (above). |
-
-When a skill file and `AGENTS.md` disagree, **`AGENTS.md` wins**.
-
-#### Quick start
-
-```sh
-node tools/cli.mjs status              # toolchain + MCP state
-node tools/cli.mjs mcp install         # one-time: clone and build MCP servers
-node tools/cli.mjs validate            # cheap — run often
-node tools/cli.mjs test --tier fast    # logic-only changes
-node tools/cli.mjs test                # full tier before opening a PR
+```powershell
+tools\cli wt new <short-name>
+cd ..\Life-Framework-ws-<short-name>
+tools\cli status
+tools\cli validate
 ```
 
-On Windows, `tools\cli` is a shim for the same commands. Point the paths in `opencode.json` at your Workbench and game install; restart opencode after changing MCP settings.
+Follow the issue's proof requirements. For script behavior, write a regression
+test and prove it fails before the fix. Run the focused test while iterating,
+then verify the player path in DebugWorld or the playtest town when the issue
+touches in-game behavior.
 
-Research Enfusion APIs from the terminal (no GUI required):
+To open the local M1 playtest, check whether it is already running, then launch
+it if needed:
 
-```sh
-node tools/cli.mjs call list
-node tools/cli.mjs call api_search '{"query":"SCR_SpawnLogic","format":"tree"}'
+```powershell
+tools\cli playtest status
+tools\cli playtest
 ```
 
-Use `@path/to/args.json` instead of inline JSON if your shell mangles quotes.
+Stop it with `tools\cli playtest stop` when you are done. Do not change or
+commit machine-specific paths or generated files.
 
-#### What we expect from AI-assisted PRs
+## 4. Raise a pull request
 
-- **Verify, don't vibe.** Output must pass `validate` and the appropriate `test` tier. A green run beats a confident summary.
-- **Look up APIs — don't guess.** Use MCP / `tools/cli call` before inventing classes, RPC patterns, or prefab fields.
-- **Follow repo rules.** Unique resource GUIDs, `EL_` class prefix, localization keys, no generated artifacts — all in `AGENTS.md`.
-- **Add tests for behavior changes.** New `EL_Test_*` files need a `// red-proof:` comment and registration in `EL_TestManager.c`.
-- **Document manual gaps.** UI, multiplayer, JIP, and save/restart paths are not fully covered by automation — fill in the PR template's **Manual testing** section.
-- **Review the diff yourself.** You are responsible for what you submit; treat the agent as a fast junior modder, not an authority.
+Use `tools\cli wt ship <short-name> --closes <issue-number>` when the worktree
+is ready. It runs the project's checks and opens a pull request. In the PR,
+describe the change, list the test and in-game proof, and name anything that
+still needs a manual check.
 
-AI assistance is welcome. Untested AI output is not.
+The team reviews the PR with you, helps resolve feedback, and merges it when it
+is ready. Stay in the conversation until the checks are green and it lands.
 
-### 📚 Documentation
+## 5. Grow into an approver
 
-Documentation is just as important as code!
+We want contributors to take on review responsibility quickly. After a few
+solid PRs have landed and the team has seen your reviews, maintainers can grant
+approval and merge access. Trusted approvers review other contributors' work
+and help good changes ship without a long wait. Your own PR still gets an
+independent review.
 
-- Fix typos or unclear explanations
-- Add examples and tutorials
-- Improve setup instructions
-- Document new features or systems
+## Working with coding agents
 
-### 🎨 Asset Contributions
+Coding agents are welcome. Start at the repository root and ask the agent to
+read [AGENTS.md](AGENTS.md), [CONTRIBUTING.md](CONTRIBUTING.md),
+[docs/setup.md](docs/setup.md), and [docs/playtest.md](docs/playtest.md). The
+[contribution page](https://life-framework.org/contribute) has a ready-to-paste
+prompt that checks local setup and opens the playtest before you choose an
+issue.
 
-Artists and designers are welcome too!
+Agents must follow the issue scope, research Enfusion APIs before using them,
+work in a named worktree, verify their changes, and leave the PR ready for team
+review. The human contributor remains responsible for the result.
 
-- Create textures, models, or UI elements
-- Design logos or promotional materials
-- Improve visual consistency
+## More ways to help
 
-## Community Guidelines
+- Play a session and send a clear report through the Discord `#feedback` forum.
+- Help with mapping, world building, UI, 3D models, sound, testing, or docs.
+- Share an idea or ask for a first issue on Discord.
 
-This project follows the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to uphold it.
-
-### Be Respectful
-
-- Treat everyone with respect and kindness
-- Welcome newcomers and help them get started
-- Provide constructive feedback
-- Assume good intentions
-
-### Be Collaborative
-
-- Share knowledge and learnings
-- Help others solve problems
-- Celebrate contributions from all community members
-- Work together to make the framework better
-
-### Move Fast, But Thoughtfully
-
-We value rapid iteration, but not at the expense of quality:
-
-- Ship features quickly, but test them first
-- Iterate based on feedback
-- Don't be afraid to experiment
-- Learn from mistakes and share those learnings
-
-## Development Workflow
-
-### We Ship Fast
-
-Our development philosophy emphasizes:
-
-- **Rapid iteration** – get features out quickly and improve them
-- **Community feedback** – listen to what users need
-- **Continuous improvement** – always refining and enhancing
-- **No bureaucracy** – minimal process, maximum productivity
-
-### Branching Strategy
-
-- `main` – stable, production-ready code
-- `develop` – integration branch for features
-- `feature/*` – individual feature branches
-- `fix/*` – bug fix branches
-
-### Testing
-
-Automated checks (human or AI — same commands):
-
-```sh
-node tools/cli.mjs validate              # repo hygiene + pre-commit checks
-node tools/cli.mjs test --tier fast      # pure EnforceScript / LOGIC tests
-node tools/cli.mjs test                  # full suite (world, prefab, spawn)
-node tools/cli.mjs ci                    # validate + build + test
-```
-
-The in-game `EL_Test*` suite runs on DebugWorld boot and prints `[ELTEST]` markers; `tools/cli test` parses them and exits nonzero on failure. See [`AGENTS.md`](AGENTS.md) for tiers, red-proof tests, and what still needs manual proof.
-
-Also verify when relevant:
-
-- In-game behavior on DebugWorld or MainWorld
-- Compatibility with the base framework
-- Performance and edge cases
-- Multiplayer, JIP, UI, or save/restart paths (manual — document in your PR)
-
-## Sharing Knowledge
-
-Our commitment goes beyond just this mod. When you solve problems or discover better approaches:
-
-- **Document your solutions** in the wiki or discussions
-- **Share code patterns** that worked well
-- **Write tutorials** for common tasks
-- **Help others** who encounter similar challenges
-
-## Recognition
-
-All contributors will be recognized for their work:
-
-- Contributors are listed in our documentation
-- Significant contributions are highlighted in release notes
-- We celebrate community achievements together
-
-## Questions?
-
-Don't hesitate to ask questions!
-
-- **[Join our Discord](https://discord.com/invite/MjMexJteqz)** and ask in the general chat or help channels
-- **Use Discord forums** for more in-depth technical discussions
-- **Reach out to maintainers** on Discord if you need guidance
-
-## License
-
-By contributing to Life Framework, you agree that your contributions will be licensed under the MIT License, ensuring they remain free and open for everyone.
-
----
-
-**Thank you for being part of the Life Framework community!** 🎉
-
-Your contributions, no matter how big or small, help make this project better for everyone. We're excited to see what we'll build together!
+All contributions follow the [Code of Conduct](CODE_OF_CONDUCT.md). Source code
+contributions are licensed under the repository's MIT licence.

@@ -86,14 +86,11 @@ export type Clip = {
   src: string | null;
 };
 
-export type ArchiveItem = { title: string; description: string | null; status: "planned" | "in-progress" | "completed" };
-
 export type SiteData = {
   ambition: string;
   loop: string[];
   inWorldFirst: string;
   features: { name: string; what: string }[];
-  archive: { exported: string; phases: { number: number; name: string; description: string; items: ArchiveItem[] }[] };
   decisionCount: number;
   latestDecisions: { date: string; title: string; id: string; summary: string }[];
   media: { stills: Still[]; clips: Clip[] };
@@ -175,7 +172,7 @@ export function splitTitle(title: string): { code: string | null; title: string 
 export const formatDate = (iso: string, opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" }) =>
   new Date(iso.length === 10 ? `${iso}T12:00:00Z` : iso).toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
 
-export const DOC_GROUPS = ["Project", "Roadmap", "Community guides (2025)"];
+export const DOC_GROUPS = ["Start here", "Direction & decisions", "Current plan", "Engineering reference", "Research & community"];
 export function groupDocs(list: DocMeta[]): [string, DocMeta[]][] {
   const groups = new Map<string, DocMeta[]>(DOC_GROUPS.map((g) => [g, []]));
   for (const d of list) {

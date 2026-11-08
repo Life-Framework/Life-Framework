@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { GoLink, IssueLedger, PageHeader, Section, Stamp } from "@/components/ui";
 import { CURRENT_MILESTONE, DISCORD_URL, REPO_URL, blob, githubData, issuesUrl, milestone } from "@/lib/content";
@@ -5,52 +6,84 @@ import { CURRENT_MILESTONE, DISCORD_URL, REPO_URL, blob, githubData, issuesUrl, 
 const steps = [
   {
     n: "1",
-    title: "Read the contract",
+    title: "Join the Discord",
     body: (
       <>
-        <a href={blob("AGENTS.md")} className="link">
-          AGENTS.md
+        <a href={DISCORD_URL} className="link">
+          Join our Discord
         </a>{" "}
-        is the one rulebook, for people and agents alike: the repo map, the golden rules, the commands, and the engine lessons each
-        paid for with a real bug. Set up the toolchain with{" "}
-        <a href={blob("docs/setup.md")} className="link">
-          docs/setup.md
-        </a>
-        .
+        and say hello. Tell us what you would like to help with and we will find a first issue together. You do not need to be a
+        programmer to join in.
       </>
     ),
   },
   {
     n: "2",
-    title: "Take a scope",
+    title: "Pick something",
     body: (
       <>
-        Work is a GitHub issue written as a scope: the files it touches, how to prove it, and no hidden context. Take an unassigned
-        one from the list below and comment that you are on it.
+        Choose a good first issue or an unclaimed M1 scope below. Each issue says what to change and how to prove it. Comment that you
+        are taking it so we can coordinate.
       </>
     ),
   },
   {
     n: "3",
-    title: "Prove it in the game",
+    title: "Build and playtest",
     body: (
       <>
-        Work in your own worktree (<code>tools\cli wt new &lt;slug&gt;</code>). Write a test that fails first, make it pass, then drive
-        the real path in the world. A test that cannot go red proves nothing.
+        Follow the issue, work in your own worktree, and test the change in the game. The repo has a playtest town and a prompt below
+        to get a coding agent set up.
       </>
     ),
   },
   {
     n: "4",
-    title: "Ship a pull request",
+    title: "Raise a PR; ship it together",
     body: (
       <>
-        <code>tools\cli wt ship</code> validates, builds, runs the full suite, and opens the pull request. Say what changed, how it
-        stays in the world, the red and green evidence, and any steps a person has to check by hand.
+        Open a pull request with the evidence. The team reviews it with you, helps resolve feedback, and merges it when it is ready.
       </>
     ),
   },
 ];
+
+const playtestPrompt = `I want to help with Life Framework. Prepare this checkout so I can open the current M1 playtest town. Do not make code changes yet.
+
+1. Read AGENTS.md, CONTRIBUTING.md, docs/setup.md, and docs/playtest.md.
+2. Run tools\\cli status and check the local Reforger and Workbench setup. Follow docs/setup.md for local paths; do not commit machine-specific settings.
+3. Check tools\\cli playtest status. If the playtest is stopped, run tools\\cli playtest and wait until the server is ready and the game is connected. Do not start a second instance.
+4. Tell me how to register and suggest a few things to try in the town. Keep the checkout unchanged and wait for me to choose an issue.
+5. Once I choose an issue, help me coordinate in Discord, use a named worktree, follow the issue's proof requirements, and open a PR for the team to review and merge.`;
+
+function CopyPromptButton({ text }: { text: string }) {
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+
+  const copy = async () => {
+    if (!navigator.clipboard) {
+      setState("failed");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setState("copied");
+    } catch {
+      setState("failed");
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-3">
+      <button type="button" className="btn btn-primary" onClick={copy}>
+        {state === "copied" ? "Prompt copied" : "Copy prompt"}
+      </button>
+      <span className="text-sm muted" role="status" aria-live="polite">
+        {state === "failed" ? "Select the prompt and copy it." : ""}
+      </span>
+    </div>
+  );
+}
 
 const Contribute = () => {
   const m1 = milestone(CURRENT_MILESTONE);
@@ -62,9 +95,8 @@ const Contribute = () => {
     <>
       <PageHeader kicker="Contribute" title="Pick a scope. Prove it in the game.">
         <p>
-          The mod, the docs, and this site live in one repository, and every change is a pull request. The repo assumes the
-          contributor is an AI agent working beside other agents, and that a person can read and reason about all of it. Both are
-          welcome.
+          Join us on Discord, choose a piece of work, and build it with the team. People and coding agents are both welcome. We will
+          help you get the game open, review your pull request, and get your first change merged.
         </p>
       </PageHeader>
 
@@ -82,21 +114,41 @@ const Contribute = () => {
         </ol>
       </div>
 
-      <Section id="agents" kicker="AI-first" title="Bring your agent">
+      <Section id="reviewers" kicker="Grow with the team" title="From contributor to approver">
+        <p className="lede muted max-w-3xl">
+          After a few solid pull requests have landed and the team has seen your reviews, we can grant approval and merge access.
+          We want that step to happen quickly: trusted contributors help review and merge the next changes, so good work keeps moving.
+        </p>
+      </Section>
+
+      <Section id="playtest-prompt" kicker="Open the town" title="Bring a coding agent to the playtest">
+        <p className="lede muted max-w-3xl mb-6">
+          Paste this into your coding agent from the repository root. It will check the local setup, open the playtest, and leave the
+          checkout ready for you to choose an issue.
+        </p>
+        <div className="terminal p-5 md:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <p className="font-mono text-[0.75rem] uppercase tracking-[0.08em] opacity-70">Setup and open the playtest</p>
+            <CopyPromptButton text={playtestPrompt} />
+          </div>
+          <pre className="font-mono text-[0.8125rem] leading-relaxed whitespace-pre-wrap">{playtestPrompt}</pre>
+        </div>
+      </Section>
+
+      <Section id="agents" kicker="AI-first" title="Build with your agent">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr]">
           <div className="space-y-4 muted">
             <p>
               Claude Code reads <code>CLAUDE.md</code>, which points at <code>AGENTS.md</code>. opencode, Codex, and Cursor read{" "}
-              <code>AGENTS.md</code> directly. Skills in <code>.claude/skills/</code> add the workflows. Give an agent an issue number
-              and the{" "}
+              <code>AGENTS.md</code> directly. Skills in <code>.claude/skills/</code> add the workflows. Once you have picked an issue,
+              give your agent its number and the{" "}
               <a href={blob(".claude/skills/agent-scope/SKILL.md")} className="link">
                 agent-scope
               </a>{" "}
-              skill, and it has the whole path from worktree to merged pull request.
+              skill. It covers the path from a fresh worktree through a reviewed pull request.
             </p>
             <p>
-              Agents improve their own tools. When a session is slowed by a missing validator, a gap in the harness, or a wrong doc,
-              fixing that is part of the work. Each pull request names the friction it hit.
+              A pull request is not the finish line. Stay in the conversation, fix review notes, and learn the team's review standards.
             </p>
             <p>
               Never guess an Enfusion API. Look it up through the MCP tools (<code>tools\cli call api_search</code>) before writing
@@ -124,7 +176,7 @@ tools\\cli wt ship m1-19-paper-fine --closes 104`}
       >
         {pick.length === 0 ? (
           <p className="muted">
-            Nothing is unclaimed right now. Check the <Link to="/roadmap" className="link">roadmap</Link> or ask on{" "}
+            Nothing is unclaimed right now. Check the <Link to="/roadmap" className="link">current plan</Link> or ask on{" "}
             <a href={DISCORD_URL} className="link">
               Discord
             </a>{" "}

@@ -396,6 +396,42 @@
     box-shadow: 4px 4px 0 var(--shadow);
   }
 
+  /* A night band: the duty office after dark, in both themes. The home page opens and closes
+     with one. It takes the night tokens locally, on the emblem's near-black ground, so every
+     component inside keeps its contrast. */
+  .band {
+    --paper: #0b0e12;
+    --card: #161a17;
+    --inset: #23271f;
+    --ink: #ebe5d7;
+    --ink-2: #aaa696;
+    --rule: #3a3f33;
+    --green: #a3c596;
+    --on-green: #0b0e12;
+    --stamp: #ee7a6b;
+    --on-sign: #0b0e12;
+    --shadow: rgba(0, 0, 0, 0.6);
+    background: var(--paper);
+    color: var(--ink);
+    color-scheme: dark;
+  }
+
+  /* The second call to action on a band: a road-sign plate you can press. */
+  .btn-sign {
+    background: var(--sign);
+    color: var(--on-sign);
+    border-color: var(--sign);
+    box-shadow: 3px 3px 0 var(--ink-2);
+  }
+  .btn-sign:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--ink-2);
+  }
+  .btn-sign:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink-2);
+  }
+
   .skip {
     position: absolute;
     left: 0.5rem;

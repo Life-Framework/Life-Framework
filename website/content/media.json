@@ -117,6 +117,58 @@
       "widths": [640],
       "width": 640,
       "height": 360
+    },
+    {
+      "id": "spawn-square",
+      "alt": "The cobbled square where a new player spawns: a stone fountain, a yellow church tower between two big lime trees, benches, flower boxes, and the village pub with a HOSTINEC sign.",
+      "caption": "The spawn square after the street was dressed: church, fountain, pub, lime trees. This is where everyone starts.",
+      "where": "Playtest village",
+      "date": "2026-11-08",
+      "source": "PR #196",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/196",
+      "wip": true,
+      "widths": [640, 1280],
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "id": "arrival-clerk",
+      "alt": "A player in a field jacket stands on the cobbled square facing the church. Paper notes on the right say he is new in town and that the clerk writes his name in the register and hands him an ID card. A prompt reads Talk to the clerk.",
+      "caption": "Arrival: the clerk on the square writes your name in the register and hands you an ID card you carry from then on.",
+      "where": "Playtest village",
+      "date": "2026-11-08",
+      "source": "PR #191",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/191",
+      "wip": true,
+      "widths": [640, 1280],
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "id": "atm-terminal",
+      "alt": "The ATM screen: a green-on-black terminal headed First Bank of Everon showing balance and cash in hand, a keypad, and Deposit and Withdraw keys.",
+      "caption": "The ATM is a terminal, not a menu. The cash it pays out is an item in your pocket that can be lost or taken.",
+      "where": "Playtest village",
+      "date": "2026-11-08",
+      "source": "PR #170",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/170",
+      "wip": true,
+      "widths": [640],
+      "width": 640,
+      "height": 360
+    },
+    {
+      "id": "registry-form",
+      "alt": "A cream paper form titled Civil Registry of Everon, Form R-89, with fields for given name, surname, and age, and a Sign the form button.",
+      "caption": "Registering is a paper form you sign at the clerk's desk: Form R-89 of the Civil Registry of Everon.",
+      "where": "Game client",
+      "date": "2026-11-08",
+      "source": "PR #170",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/170",
+      "wip": true,
+      "widths": [640],
+      "width": 640,
+      "height": 360
     }
   ],
   "clips": [
