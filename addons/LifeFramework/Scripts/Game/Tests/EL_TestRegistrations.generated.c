@@ -214,6 +214,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_SurvivalLight(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalRealHealth(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SurvivalSync(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_TestCarsGrant(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_TraderSellRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitInitialFocus(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitButtonInvoker(), EL_TestTier.LOGIC);

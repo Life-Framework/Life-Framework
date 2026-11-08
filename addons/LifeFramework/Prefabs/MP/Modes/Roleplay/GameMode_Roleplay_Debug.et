@@ -3,6 +3,7 @@ EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
  components {
   SCR_RespawnSystemComponent "{66BD3C8588F5687E}" {
    m_SpawnLogic EL_SpawnLogic "{66BD3ED1B2F2AD15}" {
+    m_bGrantTestCars 1
     m_aFactionCharacterItems {
      EL_FactionLoadout "{B7C2A6677AF28A10}" {
       m_eFaction CIVILIAN

@@ -165,6 +165,36 @@ class EL_CharacterCreationManager : Managed
 		OpenStartingBank(playerUid);
 
 		SpawnPlayer(playerId, controller);
+		GrantTestCars(playerId, playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Playtest (EL_SpawnLogic.m_bGrantTestCars): a new character owns a garaged and an impounded car.
+	protected void GrantTestCars(int playerId, string playerUid)
+	{
+		EL_SpawnLogic spawnLogic = EL_SpawnLogic.GetInstance();
+		if (!spawnLogic || !spawnLogic.GrantsTestCars())
+			return;
+
+		IEntity body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		IEntity lotEntity = GetGame().GetWorld().FindEntityByName(spawnLogic.GetTestCarLot());
+		EL_VehicleLotComponent lot;
+		if (lotEntity)
+			lot = EL_Component<EL_VehicleLotComponent>.Find(lotEntity);
+
+		if (!body || !lot)
+		{
+			EL_Debug.Error("CharacterCreation", string.Format("test cars not granted to player %1: no body or no lot named %2", playerId, spawnLogic.GetTestCarLot()));
+			return;
+		}
+
+		array<EL_VehicleOffer> offers = {};
+		for (int i = 0; i < lot.GetOfferCount(); i++)
+		{
+			offers.Insert(lot.GetOfferAt(i));
+		}
+
+		EL_VehicleOwnership.GrantTestCars(playerUid, body, offers, lot.GetShopId());
 	}
 
 	//------------------------------------------------------------------------------------------------
