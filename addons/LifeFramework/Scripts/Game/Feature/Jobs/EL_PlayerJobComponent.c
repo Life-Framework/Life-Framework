@@ -265,7 +265,7 @@ class EL_PlayerJobComponent : ScriptComponent
 		}
 		else
 		{
-			message = WidgetManager.Translate("#LF-Job_Hired", jobName, m_iJobLevel);
+			message = WidgetManager.Translate("#LF-Job_HiredHidden", jobName);
 			title = WidgetManager.Translate("#LF-Job_Hired_Title");
 		}
 		
@@ -609,15 +609,10 @@ class EL_PlayerJobComponent : ScriptComponent
 	{
 		if (m_OnLevelUp)
 			m_OnLevelUp.Invoke(m_iJobLevel);
-		
-		// Calcular bonus de recolección
-		float gatherBonus = (m_iJobLevel - 1) * 10.0; // 10% por nivel
-		
-		// Show notification con información del bonus
-		string jobName = WidgetManager.Translate(GetJobName());
-		int bonusPercent = Math.Round(gatherBonus);
-		string message = WidgetManager.Translate("#LF-Job_Promoted", jobName, m_iJobLevel, bonusPercent);
-		SCR_HintManagerComponent.ShowCustomHint(message, WidgetManager.Translate("#LF-Job_Promoted_Title"), 6.0);
+
+		// Hidden progression (docs/decisions.md "Progression is pluggable"): no level or percent
+		// text. The dropoff tells the player when new work opens (LF_CivilianJob.NewlyOpened).
+		EL_Debug.Log("Jobs", string.Format("job level %1 pulled onto the player component", m_iJobLevel));
 	}
 	//------------------------------------------------------------------------------------------------
 	//! Maximum score a single Fruit Catcher round can award. The minigame screen
