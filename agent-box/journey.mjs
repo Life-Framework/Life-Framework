@@ -10,6 +10,8 @@
 //   node agent-box/journey.mjs atm shop        only those step ids (arrive runs when a client has no character)
 //   node agent-box/journey.mjs --list          the steps
 //   node agent-box/journey.mjs selftest        judges and the report, no game
+//   node agent-box/journey.mjs atm shop --film [--film-client 1] [--film-fps 12]
+//                                              one in-engine clip per step, joined into one mp4
 //
 // This is the harness M1-23 (#108) proves the journey with; it is not that
 // proof. Steps marked `debug` use the debug menu as a fixture (cash, police) and
@@ -334,6 +336,7 @@ export function runJourney(steps, driver) {
     for (const n of step.clients) before[n] = parseState(driver.state(n));
     h.states = before;
     driver.log(`step ${step.id}: ${step.title}`);
+    driver.beginStep?.(step);
     try {
       ACTIONS[step.id](h);
     } catch (err) {
@@ -343,6 +346,8 @@ export function runJourney(steps, driver) {
     // Every step ends with a picture from each client it touched, so the report shows the whole
     // playthrough, refusals and toasts included, not only the screens a step opens.
     for (const n of step.clients) h.shot(n, `journey-${step.id}-end-${n}`);
+    const clip = driver.endStep?.(step) || null;
+    if (clip) log.push(clip.ok ? `film client ${clip.client}: ${clip.line}` : `film: ${clip.error}`);
     const after = {};
     for (const n of step.clients) after[n] = parseState(driver.state(n));
     const failures = step.judge({ before, after, ctx });
@@ -350,7 +355,7 @@ export function runJourney(steps, driver) {
     if (ctx.restartFailed) failures.unshift("session restart failed");
     for (const line of log) driver.log(`  ${line}`);
     driver.log(`${failures.length ? "FAIL" : "pass"} ${step.id}${failures.length ? `: ${failures.join("; ")}` : ""}`);
-    rows.push({ id: step.id, title: step.title, clients: step.clients, before, after, failures, shots, log, screen: ctx.screen || "" });
+    rows.push({ id: step.id, title: step.title, clients: step.clients, before, after, failures, shots, log, screen: ctx.screen || "", clip: clip?.ok ? clip : null });
   }
   return rows;
 }
@@ -388,11 +393,13 @@ export function renderJourney(rows, { mission, when, clip = null }) {
       const pictures = row.shots.length
         ? row.shots.map((s) => `<figure><img src="${escapeHtml(s.src)}" alt="${escapeHtml(s.name)}"><figcaption>${escapeHtml(s.name)}</figcaption></figure>`).join("")
         : '<p class="missing">No picture.</p>';
+      const video = row.clip?.href ? `<p>Video (client ${escapeHtml(row.clip.client)}): <a href="${escapeHtml(row.clip.href)}">${escapeHtml(row.clip.href)}</a></p>` : "";
       return `<article class="${row.failures.length ? "fail-row" : "pass-row"}">
   <div class="pictures">${pictures}</div>
   <div class="text">
     <h2>${escapeHtml(row.id)}: ${escapeHtml(row.title)}</h2>
     ${verdict}
+    ${video}
     ${stateTable(row)}
     <details><summary>Commands</summary><pre>${escapeHtml(row.log.join("\n"))}</pre></details>
   </div>
@@ -443,6 +450,7 @@ export function writeJourney(rows, root, meta) {
     }
   }
   const path = join(outDir, "journey.html");
+  for (const row of rows) if (row.clip?.out) row.clip.href = relative(outDir, row.clip.out).replaceAll("\\", "/");
   // The clip lives in reports/film/; link it relative to the report.
   const clip = meta.clip ? { href: relative(outDir, meta.clip.out).replaceAll("\\", "/"), previewHref: meta.clip.preview ? relative(outDir, meta.clip.preview).replaceAll("\\", "/") : "" } : null;
   writeFileSync(path, renderJourney(rows, { ...meta, clip }), "utf8");
@@ -503,6 +511,21 @@ export function selftestJourney() {
   const page = readFileSync(writeJourney(rows, scratch, { mission: "debug", when: "now" }), "utf8");
   if (!rows[0].shots.some((x) => x.name === "journey-atm-end-1")) failures.push("a step must end with a picture from each client it touched");
   if (!page.includes("shots/journey-atm.png") || !page.includes("1700 → 500") || !page.includes("Key1Button")) failures.push("journey.html lacks the picture, the state change, or the commands");
+
+  // --film: a step filmed in-engine links its clip from its row.
+  const filmed = [];
+  const filmDriver = {
+    ...driver,
+    beginStep: (s) => filmed.push(`begin ${s.id}`),
+    endStep: (s) => {
+      filmed.push(`end ${s.id}`);
+      return { ok: true, client: 1, out: join(scratch, "agent-box", "reports", "film", "j-atm.mp4"), line: "j-atm.mp4 (15 fps)" };
+    },
+  };
+  const filmRows = runJourney([step("atm")], filmDriver);
+  const filmPage = readFileSync(writeJourney(filmRows, scratch, { mission: "debug", when: "now" }), "utf8");
+  if (filmed.join() !== "begin atm,end atm") failures.push(`film hooks ran ${filmed.join()}`);
+  if (!filmPage.includes('Video (client 1): <a href="film/j-atm.mp4">')) failures.push("a filmed step does not link its clip");
   return failures;
 }
 
@@ -550,24 +573,49 @@ async function main(argv) {
     },
     log: (line) => console.log(line),
   };
-  // --film records client 1's window with tools/film for the whole run. Screen
-  // capture cannot see the hidden LF-Agents desktop (desktop duplication and
-  // GDI only read the input desktop), so this needs `session.mjs up --visible`.
-  let film = null;
+  // --film records each step inside the game client (tools/film/engine.mjs,
+  // LF_FilmRecorder): the client screenshots itself, so it works on the hidden
+  // LF-Agents desktop. The filmed client is --film-client (default 1) when the
+  // step touches it, else the step's first client. restart closes the clients
+  // and is not filmed. The step clips are joined into one mp4 at the end.
+  const filmClips = [];
+  let filmRun = "";
   if (argv.includes("--film")) {
-    if (!current.visible) {
-      console.log("journey: --film needs a session started with --visible (screen capture cannot read the hidden LF-Agents desktop)");
-      return 1;
-    }
-    const { startRecording } = await import("../tools/film/film.mjs");
-    film = startRecording({ window: "Arma Reforger", pid: current.clients?.[0]?.pid, label: "journey", fps: 30 });
-    console.log(`journey: filming client 1 (${film.plan.method}, ${film.plan.encoder}) -> ${film.out}`);
+    const eng = await import("../tools/film/engine.mjs");
+    const { stampName } = await import("../tools/film/film.mjs");
+    const flag = (name, dflt) => {
+      const i = argv.indexOf(name);
+      return i === -1 ? dflt : Number(argv[i + 1]);
+    };
+    const prefer = flag("--film-client", 1);
+    const fps = flag("--film-fps", eng.ENGINE_FPS);
+    filmRun = stampName("journey");
+    let filming = null;
+    driver.beginStep = (step) => {
+      filming = null;
+      if (step.id === "restart") return;
+      const client = step.clients.includes(prefer) ? prefer : step.clients[0];
+      const name = `journey_${step.id}_${Date.now() % 100000000}`;
+      const r = eng.engineStart((spec, t) => driver.send(client, spec, t), name, { fps });
+      if (r.ok) filming = { client, name };
+      else console.log(`journey: film start on client ${client} failed: ${r.error}`);
+    };
+    driver.endStep = (step) => {
+      if (!filming) return null;
+      const { client } = filming;
+      filming = null;
+      const out = join(ROOT, "agent-box", "reports", "film", `${filmRun}-${step.id}.mp4`);
+      const clip = eng.engineStop((spec, t) => driver.send(client, spec, t), (alias) => h.resolveCapture(alias), { out, label: `journey-${step.id}`, fps });
+      if (clip.ok) filmClips.push(clip.out);
+      return { ...clip, client, line: eng.describe(clip) };
+    };
   }
   const rows = runJourney(steps, driver);
   let clip = null;
-  if (film) {
-    clip = await film.stop();
-    console.log(clip.ok ? `journey: clip ${clip.out}` : `journey: film failed (ffmpeg ${clip.code}); see ${clip.out.replace(/\.mp4$/i, ".ffmpeg.log")}`);
+  if (filmClips.length) {
+    const { joinClips } = await import("../tools/film/engine.mjs");
+    clip = joinClips(filmClips, join(ROOT, "agent-box", "reports", "film", `${filmRun}.mp4`));
+    console.log(clip.ok ? `journey: clip ${clip.out} (${filmClips.length} step clips)` : `journey: joining step clips failed: ${clip.error}`);
   }
   const path = writeJourney(rows, ROOT, { mission, when: new Date().toISOString(), clip: clip?.ok ? clip : null });
   const failed = rows.filter((r) => r.failures.length).length;

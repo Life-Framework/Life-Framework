@@ -9,8 +9,16 @@
 //        [--out <file.mp4>] [--no-preview]
 //   node tools/film/film.mjs flow <agent-box flow> (--window <title> | --region ...)
 //        [--pre 1.5] [--post 2] [--out <file.mp4>]
+//   node tools/film/film.mjs flow <agent-box flow> --engine [--client N] [--fps 15]
 //   node tools/film/film.mjs publish <clip.mp4> --pr <N> [--title text] [--yes]
+//   node tools/film/film.mjs engine <seconds> [--client N] [--fps 12] [--name x] [--out f.mp4] [--keep]
+//   node tools/film/film.mjs engine start|stop [--client N] [--name x] [--fps 12]
+//   node tools/film/film.mjs encode <el-film dir> [--fps 12] [--out f.mp4] [--keep]
 //   node tools/film/film.mjs selftest
+//
+// engine records inside the game client (tools/film/engine.mjs,
+// LF_FilmRecorder): it works on the hidden LF-Agents desktop and on an
+// unfocused window, where the screen capture below records a frozen frame.
 //
 // Capture is desktop duplication (ddagrab, GPU) of the game window's rectangle,
 // encoded on the GPU (h264_nvenc / qsv / amf, libx264 fallback). gdigrab is
@@ -415,6 +423,7 @@ async function filmFlow(flags) {
   if (!name) throw new Error("flow <name> required");
   const harness = await import("../../agent-box/harness.mjs");
   const lines = harness.readFlow(name);
+  if (flags.engine) return filmFlowEngine(flags, name, lines, harness);
   const ff = ffmpegOrThrow();
   const plan = planCapture(ff.path, flags);
   mkdirSync(OUT_DIR, { recursive: true });
@@ -453,6 +462,35 @@ async function filmFlow(flags) {
   const preview = makePreview(ff.path, out);
   console.log(`preview: ${sizeLine(preview, BUDGET.previewBytes)}`);
   console.log(`steps: ${sidecar}`);
+  return played.code;
+}
+
+// The same flow, recorded inside the game client (no window, no focus needed).
+async function filmFlowEngine(flags, name, lines, harness) {
+  const eng = await import("./engine.mjs");
+  if (flags.client !== undefined) {
+    const ses = await import("../../agent-box/session.mjs");
+    harness.setBoxes([ses.clientBox(ses.sessionDir(), Number(flags.client))]);
+  }
+  const send = (spec, t) => harness.sendCommand(spec, t);
+  const fps = Number(flags.fps || eng.ENGINE_FPS);
+  const start = eng.engineStart(send, `flow_${name.replace(/[^A-Za-z0-9]/g, "_")}_${Date.now() % 100000000}`, { fps });
+  if (!start.ok) {
+    console.error(`film start failed: ${start.error}`);
+    return 1;
+  }
+  await sleep(Number(flags.pre || 1.5) * 1000);
+  const started = Date.now();
+  const played = harness.runFlow(lines);
+  const flowMs = Date.now() - started;
+  await sleep(Number(flags.post || 2) * 1000);
+  const out = flags.out ? resolve(String(flags.out)) : join(OUT_DIR, stampName(`flow-${name}`) + ".mp4");
+  const clip = eng.engineStop(send, (alias) => harness.resolveCapture(alias), { out, label: `flow-${name}`, fps });
+  for (const line of played.lines) console.log(line);
+  console.log(eng.describe(clip));
+  if (!clip.ok) return 1;
+  writeFileSync(out.replace(/\.mp4$/i, ".steps.json"), JSON.stringify({ flow: name, flowCode: played.code, flowMs, steps: played.lines }, null, 2) + "\n");
+  if (clip.preview) console.log(`preview: ${sizeLine(clip.preview, BUDGET.previewBytes)}`);
   return played.code;
 }
 
@@ -670,15 +708,65 @@ function selftest() {
   return 0;
 }
 
+// In-engine recording of a session client (or the Workbench/default profile
+// when no session is running and no --client is given).
+async function engine(flags) {
+  const eng = await import("./engine.mjs");
+  const h = await import("../../agent-box/harness.mjs");
+  if (flags.client !== undefined) {
+    const ses = await import("../../agent-box/session.mjs");
+    h.setBoxes([ses.clientBox(ses.sessionDir(), Number(flags.client))]);
+  }
+  const send = (spec, t) => h.sendCommand(spec, t);
+  const fps = Number(flags.fps || eng.ENGINE_FPS);
+  const name = String(flags.name || `film_${Date.now() % 100000000}`);
+  const mode = flags._[1];
+  const start = () => {
+    const r = eng.engineStart(send, name, { fps, seconds: Number(flags.max || eng.ENGINE_MAX_SECONDS) });
+    console.log(r.ok ? `recording ${r.alias} at ${fps} fps` : `film start failed: ${r.error}`);
+    return r.ok;
+  };
+  const stop = () => {
+    const clip = eng.engineStop(send, (alias) => h.resolveCapture(alias), { out: flags.out, label: flags.label || name, keep: !!flags.keep, fps });
+    console.log(eng.describe(clip));
+    if (clip.ok && clip.preview) console.log(`preview: ${clip.preview}`);
+    return clip.ok ? 0 : 1;
+  };
+  if (mode === "start") return start() ? 0 : 1;
+  if (mode === "stop") return stop();
+  const seconds = Number(mode);
+  if (!(seconds > 0 && seconds <= eng.ENGINE_MAX_SECONDS)) throw new Error(`engine <seconds 1-${eng.ENGINE_MAX_SECONDS}> | start | stop`);
+  if (!start()) return 1;
+  await sleep(seconds * 1000);
+  return stop();
+}
+
+async function encode(flags) {
+  const eng = await import("./engine.mjs");
+  const dir = flags._[1] ? resolve(flags._[1]) : "";
+  if (!dir || !existsSync(join(dir, "index.txt"))) throw new Error("encode <dir holding index.txt and f<n>.bmp>");
+  const clip = eng.encodeFrames({ dir, out: flags.out, fps: flags.fps, keep: !!flags.keep, label: flags.label || "engine" });
+  console.log(eng.describe(clip));
+  return clip.ok ? 0 : 1;
+}
+
 function usage() {
-  console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 13).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
+  console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 20).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
 }
 
 export async function main(argv) {
   const flags = parseFlags(argv);
   const cmd = flags._[0];
   try {
-    if (cmd === "selftest") return selftest();
+    if (cmd === "selftest") {
+      const code = selftest();
+      const fails = (await import("./engine.mjs")).selftestEngine();
+      for (const f of fails) console.error(`  ${f}`);
+      console.log(fails.length ? "engine selftest: FAIL" : "engine selftest ok");
+      return code || (fails.length ? 1 : 0);
+    }
+    if (cmd === "engine") return await engine(flags);
+    if (cmd === "encode") return await encode(flags);
     if (cmd === "probe") return probe();
     if (cmd === "fetch") return fetchFfmpeg(flags);
     if (cmd === "record") return record(flags);
