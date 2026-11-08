@@ -15,6 +15,6 @@
 	name = Regenerate the test registry
 	driver = node tools/merge/regen-generated.mjs %O %A %B %P
 
-[merge "lf-features"]
-	name = Keep both sides feature rows
-	driver = node tools/merge/union-features.mjs %O %A %B %P
+[merge "lf-markdown"]
+	name = Line merge that keeps both sides appended rows
+	driver = node tools/merge/merge-markdown.mjs %O %A %B %P
