@@ -22,14 +22,21 @@ class EL_VehicleSpawnPointComponentClass : ScriptComponentClass
 class EL_VehicleSpawnPointComponent : ScriptComponent
 {
 	protected static const float OCCUPIED_RADIUS = 3.0;
-	protected static const int SLOT_COUNT = 3;
-	protected static const float SLOT_STEP = 8.0;
 
-	[Attribute("", UIWidgets.EditBox, desc: "Shop id. Must match the lot.")]
+	[Attribute("", UIWidgets.EditBox, desc: "Pad id. The lot, a garage, or an impound desk names the pads it spawns on.")]
 	protected string m_sShopId;
 
 	[Attribute("0 0 8", UIWidgets.Auto, desc: "Offset from this marker to the first pad.")]
 	protected vector m_vOffset;
+
+	[Attribute("3", UIWidgets.Auto, desc: "Number of pads along the step.")]
+	protected int m_iSlots;
+
+	[Attribute("0 0 8", UIWidgets.Auto, desc: "World offset from one pad to the next.")]
+	protected vector m_vSlotStep;
+
+	[Attribute("0 0 0", UIWidgets.Auto, desc: "Angles (yaw pitch roll, degrees) of a vehicle placed on these pads.")]
+	protected vector m_vAngles;
 
 	protected static ref array<EL_VehicleSpawnPointComponent> s_aAll = {};
 	protected bool m_bRegistered;
@@ -94,7 +101,16 @@ class EL_VehicleSpawnPointComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	static bool FindFreeOrigin(string shopId, out vector origin)
 	{
+		vector angles;
+		return FindFreePad(shopId, origin, angles);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[out] angles Yaw pitch roll for a vehicle placed on the free pad.
+	static bool FindFreePad(string shopId, out vector origin, out vector angles)
+	{
 		origin = "0 0 0";
+		angles = "0 0 0";
 		if (shopId.IsEmpty())
 		{
 			EL_Debug.Error("Vehicle", "spawn refused: shop id is empty");
@@ -107,7 +123,10 @@ class EL_VehicleSpawnPointComponent : ScriptComponent
 				continue;
 
 			if (point.TryNextOrigin(origin))
+			{
+				angles = point.m_vAngles;
 				return true;
+			}
 		}
 
 		EL_Debug.Error("Vehicle", string.Format("spawn refused: no free pad for %1", shopId));
@@ -126,15 +145,18 @@ class EL_VehicleSpawnPointComponent : ScriptComponent
 		}
 
 		vector base = owner.GetOrigin() + m_vOffset;
-		for (int i = 0; i < SLOT_COUNT; i++)
+		for (int i = 0; i < m_iSlots; i++)
 		{
-			vector slot = base + Vector(0, 0, i * SLOT_STEP);
+			float steps = i;
+			vector slot = base + m_vSlotStep * steps;
 			array<IEntity> nearby = EL_Utils.GetNearbyVehicles(slot, OCCUPIED_RADIUS);
 			if (!nearby || nearby.Count() == 0)
 			{
 				origin = slot;
 				return true;
 			}
+
+			EL_Debug.Log("Vehicle", string.Format("pad %1 slot %2 at %3 is taken by %4 at %5", m_sShopId, i, slot, EL_Utils.GetPrefabName(nearby.Get(0)), nearby.Get(0).GetOrigin()));
 		}
 
 		return false;

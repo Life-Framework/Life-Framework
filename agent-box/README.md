@@ -227,7 +227,23 @@ screen (desktop duplication `ddagrab`, NVENC when the GPU has it). Screen
 capture records whatever is on top, but film never takes focus: on a second
 monitor it lifts the game window without activating it, on the primary monitor
 it records the rectangle as it is. Screen capture cannot see the hidden
-`LF-Agents` desktop, so film a client you started on a visible monitor.
+`LF-Agents` desktop: `ddagrab` (DXGI desktop duplication) and `gdigrab` (GDI
+BitBlt of the screen) both read only the input desktop the user sees, and a
+window on another desktop is never composited into it. Film a client started
+on the visible desktop (`session.mjs up --visible`, then
+`journey.mjs --film`). `record --window "Arma Reforger" --pid <n>` picks one
+client when several share the title.
+
+Not solved yet (2026-11-08): `journey.mjs job earn atm shop --film` on a
+`--visible` 1280x720 session wrote a 68 s h264_nvenc clip of a 3-minute run
+that holds one frame (the spawn square) throughout, while the harness
+screenshots of the same client show every screen. The unfocused game window
+stops presenting to the desktop (or desktop duplication sees no change), so
+screen capture has nothing new to record. What would fix it: keep the filmed
+client in front on a secondary monitor (film lifts it there without taking
+focus), or record inside the engine (a timed `System.MakeScreenshot` sequence
+encoded by ffmpeg), which also works on the hidden desktop. Until then the
+journey report's per-step screenshots are the visual record.
 Screenshots (below) work on `LF-Agents`.
 If `ddagrab` delivers no frame within 5 s (seen on a box with a virtual
 display adapter), it falls back to `gdigrab` of the same rectangle.
@@ -456,13 +472,23 @@ relaunch. Last full run (2026-10-10): 36 probes, `stand_fail=0`,
 
 One dedicated server and up to three game clients run side by side on one PC
 (verified 2026-11-08 on an RTX 3080, 16 GB, Windows 11). Steam starts a second
-`ArmaReforgerSteam.exe`; each client gets its own `-profile`, a 640x360 window
-along the top of the screen, and joins `127.0.0.1:2001` with `-client`.
+`ArmaReforgerSteam.exe`; each client gets its own `-profile`, a window in a row
+along the top, and joins `127.0.0.1:2001` with `-client`.
+
+Client size is `--res WxH`, 1280x720 by default; use `--res 1920x1080` for
+final evidence. `System.MakeScreenshot` writes the window's backbuffer, so a
+`shot ui` is the size of the client and includes every menu, sheet, and toast.
+Clients run on the hidden `LF-Agents` desktop: a 1920x1080 window never covers
+the user's screen or takes focus, and screenshots still work there.
+`--visible` starts the clients on the user's desktop instead (with `-noFocus`),
+which is what `tools/film` needs.
 
 ```powershell
 node agent-box/session.mjs roster 2             # put player id 2 on the police roster (before up)
 node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms
 node agent-box/session.mjs up --clients 2 --mission playtest   # LF_PlaytestTown, harness build
+node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop
+node agent-box/session.mjs up --clients 2 --visible            # on the user's desktop, for film
 node agent-box/session.mjs restart            # playtest: shutdown save, load, same clients rejoin
 node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client
 node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
@@ -513,3 +539,57 @@ node agent-box/session.mjs down               # closes every process the session
   pose alone is overwritten by a remote client), so `--client <n> shot world`
   photographs from the hidden `LF-Agents` desktop. M1-25 took its village
   evidence this way (2026-11-08).
+
+## Journey (multi-client)
+
+`node agent-box/journey.mjs` (or `harness.mjs journey`, `harness.mjs report
+journey`) plays the M1 journey on a running `session.mjs up --clients 2` and
+writes `agent-box/reports/journey.html`. Each step is driven from a game client
+the way a player does it: `stand` (facing the site), `use`, then the screen's
+own buttons and fields (`click`, `type`, `wait-text`). It reads `state` on
+the clients it touches before and after, judges the change, and takes
+`ui-shot`s: the screens a step opens (form, ATM terminal, price list, cash
+sheet, ledger) and one picture from each client it touched at the end of every
+step, refusals and toasts included. The report puts the pictures beside the verdict, the state table
+(changed cells marked), and every command with its result.
+
+```powershell
+node agent-box/session.mjs up --clients 2          # bare DebugWorld
+node agent-box/journey.mjs                         # every step that fits the session
+node agent-box/journey.mjs atm shop                # only those (arrive runs first when needed)
+node agent-box/journey.mjs --list
+node agent-box/session.mjs down
+
+node agent-box/session.mjs up --clients 2 --visible
+node agent-box/journey.mjs job earn atm shop --film   # mp4 + GIF of client 1 in reports/film/, linked from the report
+node agent-box/session.mjs down
+
+node agent-box/session.mjs up --clients 2 --mission playtest
+node agent-box/journey.mjs job earn atm restart    # restart: save, stop, load, rejoin, compare
+node agent-box/session.mjs down
+```
+
+| Step | Client | Done by | Passes when |
+| --- | --- | --- | --- |
+| `arrive` | 1, 2 | faction Civilian, Town, R-89 form typed and signed | both are CIVILIAN |
+| `job` | 1 | `LF_JobSignUpAction` at `Roadmap_Job_Depot` | `job` is not UNEMPLOYED |
+| `earn` | 1 | start run, stand at `Roadmap_Job_Drop`, drop off | cash rises |
+| `fund` | 1 | debug menu `GiveCashButton` (fixture; bare DebugWorld only) | cash +1000 |
+| `atm` | 1 | ATM terminal: key the amount, `DepositButton`, `wait-text DEPOSITED` | bank +amount, cash -amount (1200, or 100 when less is carried) |
+| `shop` | 1 | price list `Item0Row_Action`, `PayButton` | cash falls |
+| `vehicle` | 1 | `EL_VehicleBuyAction` at `Roadmap_Vehicle_Lot` (S105, 1000 from the bank) | bank -1000; "blocked" when the bank holds less |
+| `give` | 1, 2 | stand at `Player<id>`, `LF_GiveCashAction`, type 50, hand over | -50 / +50 |
+| `police` | 2 | debug menu `FactionPoliceButton` (fixture; bare DebugWorld only) | POLICE on duty |
+| `rob` | 1, 2 | `EL_RobAction` at `Roadmap_Fuel_Till` | wanted and cash rise; an on-duty officer's last toast is the robbery alert |
+| `org` | 1 | org desk: type the name in the ledger's field, Sign | `org` is the new name |
+| `garage` | 1 | stand at `Roadmap_Garage`, `look` | store or retrieve offered |
+| `restart` | 1, 2 | `session.mjs restart` (playtest mission only) | cash, bank, org, job unchanged |
+
+This is the harness M1-23 (#108) proves the journey with, not that proof:
+police clock-in at the desk, dispatch, tickets, jail, hideout, stash, and
+contraband are M1-23's to add as their scopes land. Debug-menu fixtures make
+the bare DebugWorld run reach the car in one pass; the playtest run has no
+fixtures, so a step that needs more money than a courier run pays reports
+"blocked". First runs (2026-11-08): bare DebugWorld 10 of 12 (org: the desk was
+still the old menu, #168), playtest restart kept cash, bank, and org but lost
+the signed-up job.

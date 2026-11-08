@@ -15,7 +15,7 @@
 // The server runs the bare DebugWorld (no mission header, no test define), so
 // the world's game mode keeps dev tools open and the harness RPCs pass
 // EL_DevGate. The playtest mission (LF_PlaytestTown.conf) closes that gate.
-// `up --mission playtest` runs that mission the way `toolscli host start` does,
+// `up --mission playtest` runs that mission the way `tools\cli host start` does,
 // with -scrDefine LF_HARNESS on the server and every client: the harness
 // (stand, pose, use) passes its own gate in that build only, the debug menu
 // stays closed, and a client without the define is refused at the door.
@@ -41,20 +41,36 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 export const SERVER_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
 export const MAX_CLIENTS = 3;
-// LF_SESSION_WINDOW=1280x720 makes every client window that size (evidence screenshots).
-export function windowSize(env = process.env) {
-  const m = /^(\d{3,4})x(\d{3,4})$/.exec(env.LF_SESSION_WINDOW ?? "");
+// LF_SESSION_WINDOW=1280x720 sets the window when no --res is given.
+export function parseWindow(text) {
+  const m = /^(\d{3,4})x(\d{3,4})$/.exec(String(text || ""));
   if (!m) return { width: 640, height: 360, gap: 8 };
   return { width: Number(m[1]), height: Number(m[2]), gap: 8 };
 }
-export const WINDOW = windowSize();
+export const WINDOW = parseWindow(process.env.LF_SESSION_WINDOW);
+// Client render size. Screenshots are taken at this size (System.MakeScreenshot
+// writes the window's backbuffer), so evidence needs a playable one: 1280x720
+// by default, --res 1920x1080 for final evidence. Clients render on the hidden
+// LF-Agents desktop, so a large window never covers the user's screen or takes
+// focus; --visible puts them on the user's desktop so tools/film can record.
+export const DEFAULT_RES = process.env.LF_SESSION_WINDOW || "1280x720";
+
+export function parseRes(args) {
+  const i = args.indexOf("--res");
+  const text = i === -1 ? DEFAULT_RES : String(args[i + 1] ?? "");
+  const m = /^(\d{3,4})x(\d{3,4})$/.exec(text);
+  if (!m) throw new Error(`--res must be WIDTHxHEIGHT (for example 1920x1080): ${text}`);
+  const res = { width: Number(m[1]), height: Number(m[2]) };
+  if (res.width < 640 || res.height < 360) throw new Error("--res is at least 640x360");
+  return res;
+}
 export const SERVER_READY = "Entered online game state.";
 // The server refuses a client whose script checksum differs
 // ("remote script source code checksum does not match"), so clients compile
 // with the same define as the server.
 export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
 // Opens the harness gate on the playtest mission (EL_DevGate.HarnessBuild).
-// Only a session passes it; toolscli host start never does.
+// Only a session passes it; tools\cli host start never does.
 export const HARNESS_DEFINE = "LF_HARNESS";
 export const MISSIONS = ["debug", "playtest"];
 
@@ -138,12 +154,12 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
 
 // Small windows in a row along the top of the screen, so the user's desk
 // stays usable. -screenWidth/-screenHeight/-posX/-posY need -window.
-export function windowFor(n) {
-  return { x: (n - 1) * (WINDOW.width + WINDOW.gap), y: 0, width: WINDOW.width, height: WINDOW.height };
+export function windowFor(n, res = WINDOW) {
+  return { x: (n - 1) * (res.width + WINDOW.gap), y: 0, width: res.width, height: res.height };
 }
 
-export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "" }) {
-  const w = windowFor(n);
+export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "", res = WINDOW }) {
+  const w = windowFor(n, res);
   return [
     "-client", address,
     "-addonsDir", addonsDir,
@@ -218,6 +234,16 @@ export function selftestSession() {
   if (!a1.includes("-window")) failures.push("client is not windowed");
   if (a1[a1.indexOf("-profile") + 1] !== "P1") failures.push("client 1 does not use its own profile");
   if (a1[a1.indexOf("-posX") + 1] === a2[a2.indexOf("-posX") + 1]) failures.push("two clients share a window position");
+  const hd = parseRes(["--res", "1920x1080"]);
+  const big = clientArgs({ n: 2, addonsDir: "A", profile: "P2", res: hd });
+  if (big[big.indexOf("-screenWidth") + 1] !== "1920" || big[big.indexOf("-screenHeight") + 1] !== "1080") failures.push("--res 1920x1080 does not size the client");
+  if (Number(big[big.indexOf("-posX") + 1]) < 1920) failures.push("client 2 overlaps client 1 at 1920x1080");
+  const def = parseRes([]);
+  if (def.width < 1280 || def.height < 720) failures.push("the default client is smaller than 1280x720");
+  try {
+    parseRes(["--res", "big"]);
+    failures.push("--res big was accepted");
+  } catch {}
   const s = serverArgs({ addonsDir: "A", profile: "SP" });
   if (s[0] !== "-server" || s[1] !== SERVER_WORLD) failures.push("server does not run the bare DebugWorld");
   if (s.some((x) => /EL_AUTOTEST|LF_PlaytestTown|-config/.test(x))) failures.push("server args carry a test define, the playtest mission, or -config");

@@ -356,8 +356,8 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			if (context.Read(vehicleRecords))
 			{
 				EL_VehicleOwnership.ApplyAll(vehicleRecords);
-				EL_VehicleOwnership.RestoreWorld();
-				EL_Debug.Log("Persistence", string.Format("applied %1 vehicle record(s)", vehicleRecords.Count()));
+				int impounded = EL_VehicleOwnership.ImpoundStreetVehicles();
+				EL_Debug.Log("Persistence", string.Format("applied %1 vehicle record(s), %2 at the impound lot", vehicleRecords.Count(), impounded));
 			}
 			else
 			{

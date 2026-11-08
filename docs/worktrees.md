@@ -85,6 +85,55 @@ conflicts, the ship stops with a message; fix, commit, and re-run the same
 command. Do not merge `origin/main` by hand unless GitHub reports the PR
 `CONFLICTING` or you need code from main.
 
+## Keeping PRs moving (`prs`)
+
+Auto-merge stalls in two ways. Main moves after the agent has left, the PR
+goes `CONFLICTING` (`mergeStateStatus` `DIRTY`) or `BEHIND`, and GitHub never
+merges it. Or the checks are green and auto-merge is on, but the PR sits open
+with `UNKNOWN` until someone merges it by hand.
+
+```sh
+tools\cli prs status                     # read-only: every open ws/* PR
+tools\cli prs heal --dry-run [<n>...]    # what heal would do, nothing touched
+tools\cli prs heal [<n>...]              # do it (maintainer/lead)
+```
+
+`prs status` lists number, state, auto-merge on/off, checks, age, and the
+worktree: `LIVE` when any file in it changed in the last 15 minutes
+(modified or untracked files, the worktree's git index/HEAD/reflog, `tmp/`,
+server logs), `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
+API, which makes GitHub compute it.
+
+`prs heal`, per PR:
+
+- **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
+  detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,
+  removed afterwards with the junction-safe helper) it merges `origin/main` with
+  the `tools/merge/` drivers. Conflicts only in the test registry, the language
+  confs, the string table, `features.md`, `debug-log-triage.md`, or the
+  enforce-lint baseline are resolved: the registry and confs by `regen-tests` /
+  `regen-localization`, the others by the drivers' merge logic on the index
+  stages. Any other conflicted path aborts the merge; the PR, the worktree, and
+  the branch stay as they were, and the PR is reported "needs a human/agent"
+  with the paths. A clean merge runs `validate` and
+  `test --no-build --tier fast` (`--tier all` when the PR touches
+  `Scripts/`), pushes without force, and re-queues auto-merge. A failed gate
+  drops the merge commit (`git reset --keep`) and reports the PR.
+- **Skipped**: a LIVE worktree, a worktree with uncommitted changes, or one
+  whose branch has commits the PR does not (unpushed agent work). The last two
+  are reported.
+- **Green, auto-merge on, mergeable (`CLEAN`/`UNKNOWN`/`UNSTABLE`), and still
+  open 10 minutes after auto-merge was queued or the last check finished**:
+  `gh pr merge <n> --merge`.
+
+It prints one line per PR and exits 1 when any PR needs a human or its agent.
+Agents run `prs status` after their PR is up; the maintainer or lead runs
+`prs heal`. One heal runs at a time (hub lock `prs-heal`).
+`tools/validation/pr-keeper-selftest.mjs` proves the merge logic on a
+throwaway repo: a registry-only conflict is healed and pushed, a real code
+conflict (alone or beside the registry) is aborted with HEAD and origin
+untouched.
+
 ## Scratch files
 
 Each worktree has a gitignored `tmp/` (created by `wt new`, also home of the
@@ -119,6 +168,7 @@ to prune and about any registry inconsistency.
 ## Under the hood (files)
 
 - `tools/wt.mjs` — hub, locks, ports, resource-database copy, git helpers, gh/REST PR + merge.
+- `tools/prs.mjs` — `prs status|heal`: open ws/* PRs, liveness, heal merge, stuck-merge.
 - `tools/cli.mjs` — `wt` command group, main-checkout guard, worktree-aware
   build/test/dev/serve/ci.
 - `tools/validation/validate-worktrees.ps1` — registry consistency (port
