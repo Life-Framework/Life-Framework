@@ -73,8 +73,9 @@ const Roadmap = () => {
             ["Roadmap index", "/docs/roadmap"],
             ["M1 plan", "/docs/roadmap-m1-playtest-town"],
             ["M2 outline", "/docs/roadmap-m2-outline"],
-            ["Phases", "/docs/roadmap-phases"],
-            ["Release scopes", "/docs/roadmap-scopes"],
+            ["M3 outline", "/docs/roadmap-m3-outline"],
+            ["M4 outline", "/docs/roadmap-m4-outline"],
+            ["Scope cards", "/docs/roadmap-scopes"],
             ["Testing plan", "/docs/roadmap-testing"],
           ].map(([label, to]) => (
             <li key={to}>

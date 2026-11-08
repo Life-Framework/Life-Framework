@@ -1,6 +1,6 @@
 # Tasks
 
-Phase: After release
+Milestone: M5
 Extends: `Quests` (`LF_QuestTrackerComponent`)
 
 ## Player loop

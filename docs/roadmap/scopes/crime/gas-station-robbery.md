@@ -1,6 +1,6 @@
 # Gas station robbery
 
-Phase: Release
+Milestone: M2
 Extends: `Crime`, `Money`
 
 ## Player loop

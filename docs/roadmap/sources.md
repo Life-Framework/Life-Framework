@@ -88,7 +88,7 @@ Repo root: `https://github.com/SouLGenetic/LNGCLifeRP_Public` (`master`). Gamepl
 | [Civilian jobs](scopes/work/civilian-jobs.md) | Nothing. LNGC lists job-specific income as not built. The paycheck there is an unemployed stipend | |
 | [Organizations](scopes/ownership/organizations.md), [hideouts](scopes/ownership/hideouts.md) | Stash prop only (`ShineStash.et`) | No gang, firm, or shared-fund scripts |
 | [Crafting](scopes/later/crafting.md) | `LNGC_CraftingRecipeDef` fields: inputs, counts, seconds, license, hidden, bulk. `Prefabs/Compositions/Misc/SubCompositions/CraftingBench.et` and `ProcessBench.et` | Virtual output item ids. Outputs stay prefabs, as `EL_ProcessAction` already does |
-| [Revive](scopes/later/revive.md) | `LNGC_ReviveAction`, the downed state and force-respawn wait on the player-data manager (`m_iForceRespawnWaitSeconds` default 75) | The map-softlock path. Revive here may use a medical item; LNGC restricts the action to the MEDIC faction |
+| Revive ([M2 medic](m2-outline.md), #146) | `LNGC_ReviveAction`, the downed state and force-respawn wait on the player-data manager (`m_iForceRespawnWaitSeconds` default 75) | The map-softlock path. Revive here may use a medical item; LNGC restricts the action to the MEDIC faction |
 | [Police missions](scopes/later/police-missions.md) | `LNGC_DispatchCallsDialog`, `LNGC_IssueFineAction`, `LNGC_FineReasonsCatalog`, `LNGC_MarkWantedAction` | The phone as the way a civilian opens a call |
 | [Housing](scopes/later/housing.md) | A home-ownership license id exists in their license shop. No door or key scripts | Use our house lock, not a license flag alone |
 | [Tasks](scopes/later/tasks.md), [events](scopes/later/events.md) | Dispatch markers are the closest callout. No event scheduler | |

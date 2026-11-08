@@ -7,7 +7,7 @@ A scope is one plan a contributor can finish without boiling the framework. It n
 ```
 # Name
 
-Phase: Alpha | Release | After release
+Milestone: M1 | M2 | M3 | M4 | M5 | Parked | In the tree (M1)
 Extends: the systems already in the tree this builds on
 
 ## Player loop
@@ -37,4 +37,4 @@ Prefab and script names for each scope are in [sources.md](../sources.md). The h
 | [police/](police/jailing.md) | Sentence and ranks |
 | [work/](work/resources.md) | Legal resources and civilian jobs |
 | [ownership/](ownership/organizations.md) | Groups, hideouts, vehicles |
-| [later/](later/housing.md) | After the release cut |
+| [later/](later/housing.md) | Scopes for M4, M5, or parked |

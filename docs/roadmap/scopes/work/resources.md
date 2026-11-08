@@ -1,6 +1,6 @@
 # Resources
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: `Gathering`, `Processing`, `Resources`, `Trader`
 
 ## Player loop

@@ -1,6 +1,6 @@
 # Forced entry
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: door locks (`Houses`), crime alerts, police
 
 ## Player loop

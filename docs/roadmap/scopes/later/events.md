@@ -1,6 +1,6 @@
 # Events
 
-Phase: After release
+Milestone: Parked
 Extends: notifications, the world markers used by jobs and missions
 
 ## Player loop

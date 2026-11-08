@@ -1,6 +1,6 @@
 # Private housing
 
-Phase: After release
+Milestone: M5
 Extends: `Houses` doors and keys, `Money`, persistence
 
 ## Player loop
@@ -15,7 +15,7 @@ A player buys a house at a real-estate office, receives a key, and stores items 
 
 ## Out of scope
 
-- Organization hideouts, which ship at [release](../../phases/release.md).
+- Organization hideouts, which are already in the tree.
 - Furniture placement, instanced interiors, and police raids. Raids reuse [forced entry](../crime/forced-entry.md) later, on a house the player owns.
 
 ## Assets
