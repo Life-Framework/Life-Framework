@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
-//! Starts the hideout convoy. A member who is seated is watched; leaving that
-//! vehicle fails the run.
+//! Starts the hideout convoy at the barn and hands the member a crate of spirits.
+//! The vehicle the member is in, or the first one they get into, is watched;
+//! leaving it away from the drop fails the run.
 //------------------------------------------------------------------------------------------------
 class LF_ConvoyStartAction : ScriptedUserAction
 {
@@ -27,8 +28,14 @@ class LF_ConvoyStartAction : ScriptedUserAction
 		// The offer cannot see organizations on the client, so the refusal has to reach the
 		// player from here, or they press the crate and nothing happens (#157).
 		string refusal = LF_Contraband.StartRefusalKey(characterId);
-		if (!LF_Contraband.Start(characterId, pUserEntity) && !refusal.IsEmpty())
-			EL_Utils.NotifyEntity(pUserEntity, refusal, "#LF-Contraband_Title", 5.0);
+		if (!LF_Contraband.Start(characterId, pUserEntity))
+		{
+			if (!refusal.IsEmpty())
+				EL_Utils.NotifyEntity(pUserEntity, refusal, "#LF-Contraband_Title", 5.0);
+			return;
+		}
+
+		LF_Contraband.GiveCrate(pUserEntity);
 	}
 }
 

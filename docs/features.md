@@ -1002,27 +1002,57 @@
 
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
-- ✅ `ArrestPlayer`/`FinePlayer` are client-side entry points. The wanted list
-  left the menu in M1-11: wanted people are on the station wanted board.
+- ✅ `ArrestPlayer` is the client-side entry point. The wanted list
+  left the menu in M1-11: wanted people are on the station wanted board. The
+  remote fine (`RpcAsk_EL_PoliceFine`, `FinePlayer`, the Fine button) is gone
+  (M1-19): a fine is a paper ticket written face to face (`LF_FineTicket*`).
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
-  through `SCR_ChimeraCharacter.EL_AskPoliceArrest/Fine`, and the server
-  handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
-  target, and fine range before acting. Arrest also requires the configured
-  arrest rank (patrol on the flagship, #165), and the fine must sit inside
-  that rank's cap. `EL_PoliceUtils` (pure) holds the
-  sentence-length math, wanted-reduction and fine-range checks for tests.
+  through `SCR_ChimeraCharacter.EL_AskPoliceArrest`, and the server
+  handler `RpcAsk_EL_PoliceArrest` validates on-duty officer and wanted
+  target before acting. Arrest also requires the configured
+  arrest rank (patrol on the flagship, #165). `EL_PoliceUtils` (pure) holds the
+  sentence-length math and the reach check for tests; `MAX_FINE` is the
+  senior ticket cap.
   `EL_AskPoliceSelfPromote` always refuses.
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
-- ✅ **Hands-on only** (2026-11-07): arrest and fine refuse a
+- ✅ **Hands-on only** (2026-11-07): arrest refuses a
   target that is not connected or stands beyond `EL_PoliceUtils.POLICE_REACH`
-  (5 m, the in-world arrest range) and show `#EL-Police_TooFar`. Neither the
-  framework nor vanilla has a restraint state, so reach is the requirement. A
-  fine that clears no wanted level (below `WANTED_STEP`, 1000) is refused with
-  `#EL-Fine_TooSmall`, so repeated small fines cannot drain a wanted player.
-  The fine RPC logs through `EL_Debug.Warn("Police", "fine refused: ...")`.
+  (5 m, the in-world arrest range) and shows `#EL-Police_TooFar`. Neither the
+  framework nor vanilla has a restraint state, so reach is the requirement.
   Test: `security/police-abuse`.
+
+### `LF_FineTickets` — `Feature/Police/LF_FineTicket*.c`
+- ✅ **A fine is a paper ticket paid at the police desk** (M1-19, #104;
+  decision 2026-11-08). An on-duty officer facing a player picks **Write ticket**
+  (the `fine` slot of the player interaction menu, `LF_FineTicketRole`, no
+  prefab edit). The server opens the ticket pad (`LF_FineTicketPad`, paper
+  `LF_UIScreen`) on the officer's machine: one "Write: <offence>, <amount>" button per offence from
+  `LF_Police.conf` `m_aTicketOffences` at its fixed amount; offences above the
+  officer's rank cap (`LF_PoliceRanks.FineCap`: patrol 1000, senior 5000) print
+  as a plain "senior officers only" line. The server re-checks duty,
+  reach (2 m), the cap, and at most 3 unpaid tickets per holder, then hands
+  over `Prefabs/Items/Roleplay/FineTicket.et`: number, date, holder, offence,
+  amount, deadline, what it rises to, where to pay, officer rank and name. Cues:
+  the officer's point gesture, the paper sound from the ticket, the holder's
+  pick-up gesture, and the ticket card on the holder's screen. Inventory hover
+  and Read (on the ground) show the same text.
+- ✅ **Pay ticket** on the punch clock of `LF_PoliceDutyDesk.et`: carried cash
+  only (`LF_EntityCashWallet`), never the bank, all or nothing, oldest unpaid
+  first. The clock's punch sound stamps it for everyone nearby; the carried
+  paper turns into a receipt ("PAID <date>").
+- ✅ **Deadlines in online time** (like the jail sentence): unpaid after
+  `m_iTicketFirstDeadline` (1800 s) the amount is multiplied once by
+  `m_fTicketLateMultiplier` (x2) and the paper updates; after a further
+  `m_iTicketSecondDeadline` (1800 s) the holder gets `m_iTicketLateWanted` (+1)
+  wanted and a named "Unpaid fine" poster on the wanted board. Still payable
+  after; paying does not lift the warrant. Logs: `[ELDebug:Ticket]`.
+- ✅ **Persisted** (save version 12, payload `tickets`). A restart's blank
+  copy is reprinted on spawn; a respawn hands an unpaid ticket back. Up to 3
+  paid receipts per holder are kept for reprinting. Tests:
+  `police/fine-ticket-rules`, `police/fine-ticket`,
+  `police/fine-ticket-serializer`.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ **Clock in / Clock out at the duty desk** (M1-11, 2026-11-08; WORLD
@@ -1109,18 +1139,36 @@
   minimum. A file that does not resolve logs once and uses the same defaults.
   Test: `police/rank-permissions`.
 
-### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
-- ✅ One convoy. A member of the organization that owns the hideout hauls
-  `{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et` from
-  `Roadmap_Convoy_Start` at the barn out of town (`466 0 331`) to
-  `Roadmap_Convoy_Drop` in the hideout yard (`299 0 293`) on
-  `Street_Contraband.layer`. Both markers are pallet boxes carrying the marker
-  component, not debug boundaries. Delivery pays 200 MoneyStack cash once. A second
-  delivery on that run pays nothing. Leaving the vehicle or dying fails the
-  run and logs it; a failed run pays nothing. A non-member is refused and the
-  refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
+### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-11-08, M1-14)
+- ✅ One convoy. A member of the organization that owns the hideout performs
+  `Start convoy` at `Roadmap_Convoy_Start`, a pallet of wooden crates by the barn
+  out of town (`466 0 331`), and is handed a crate of spirits:
+  `{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et`, a
+  hand-carried item on `HandCarryItem_Base.et` with the vanilla
+  `BoxWooden_01.xob` mesh (carry pose `player_carry`, `SOUND_PICK_UP`). A member
+  already holding one keeps it; full hands log `pickup refused: hands full` and
+  toast `#LF-Contraband_HandsFull`. `Deliver contraband` at `Roadmap_Convoy_Drop`,
+  an empty crate cage behind the pub on the square (`131.5 0 284`, off the farm lane), takes
+  the crate and pays 200 MoneyStack cash in hand once (`SOUND_PICK_UP`). A second
+  delivery on that run pays nothing. A non-member is refused and the refusal is
+  logged. The hideout machine also outputs the crate. Dressing on
+  `Street_Contraband.layer`: crates and a kerosene lamp on the pallet, a parked
+  vanilla `S1203_cargo_brown` van (`Convoy_Barn_Van`) at the barn; beer kegs,
+  empty crates, bottles, and a lamp at the pub's back door. Signs
+  `Sign_ConvoyPickup` (barn front wall) and `Sign_ConvoyDrop` (pub east wall) on
+  `Signs.layer` explain both ends. Both action contexts sit 0.6 m up, on the cage.
   Player strings: `#EL-Contraband_Start`, `#EL-Contraband_Deliver`,
-  `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`.
+  `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`,
+  `#LF-Contraband_Loaded`, `#LF-Contraband_HandsFull`, `#LF-Contraband_Crate_Name`.
+- ✅ The vehicle the member is in at `Start convoy`, or the first one they get
+  into afterwards (`SCR_CompartmentAccessComponent.GetOnCompartmentEntered`), is
+  watched. Getting out of it within `LF_Contraband.DROP_RADIUS_M` (25 m) of the
+  drop ends the drive and keeps the run for the delivery (`convoy reached the
+  drop`); getting out anywhere else, or dying, fails the run and logs it; a
+  failed run pays nothing. WORLD `e2e/roadmap-contraband` covers the crate
+  (mesh, hand-carry, flagged) and both outcomes of getting out.
+- ⚠️ Not driven end to end by automation: whether a player can board with the
+  crate in hand or must stow it in the vehicle's cargo is a manual check.
 - ✅ **Vehicle watch lifetime** (2026-11-08): payment, failure, and
   `Reset` unregister the `OnCompartmentLeft` handler; a restarted run drops the
   old watch and watches the vehicle the player is in now. A disconnect fails the

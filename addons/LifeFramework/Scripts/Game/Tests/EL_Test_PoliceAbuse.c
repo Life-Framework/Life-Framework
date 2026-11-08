@@ -4,7 +4,7 @@
 // Restored, it passes (13 assertions).
 
 // tier: LOGIC
-//! Police menu reach, the minimum useful fine, and one armory draw per duty shift.
+//! Police menu reach and one armory draw per duty shift. Fines are paper tickets (EL_Test_FineTicket*).
 class EL_Test_PoliceAbuse : EL_Test
 {
 	override string GetName()
@@ -22,11 +22,6 @@ class EL_Test_PoliceAbuse : EL_Test
 		ctx.False(EL_PoliceUtils.IsWithinReach(officer, justOut), "a suspect 5.1 m away is out of reach");
 		ctx.False(EL_PoliceUtils.IsWithinReach(officer, acrossMap), "a suspect across the map is out of reach");
 		ctx.False(EL_PoliceUtils.IsTargetInReach(null, null), "a suspect with no body is out of reach");
-
-		ctx.False(EL_PoliceUtils.FineClearsWanted(999), "a 999 fine clears no wanted level and is refused");
-		ctx.False(EL_PoliceUtils.FineClearsWanted(1), "a 1 fine is refused");
-		ctx.True(EL_PoliceUtils.FineClearsWanted(1000), "a 1000 fine clears one wanted level");
-		ctx.True(EL_PoliceUtils.FineClearsWanted(EL_PoliceUtils.MAX_FINE), "the max fine clears wanted levels");
 
 		string uid = "security-police-armory";
 		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(uid);

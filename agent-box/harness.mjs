@@ -494,6 +494,18 @@ function captureFile(full) {
   return "";
 }
 
+// A session client at 1280x720 or larger answers warn:file_not_found because the
+// engine is still writing the BMP when it checks. Wait for the file before a
+// report judges the shot as missing.
+function settleCapture(result) {
+  if (!result || result.status !== "warn:file_not_found") return result;
+  for (let i = 0; i < 20; i++) {
+    if (resolveCapture(result.detail)) return { ...result, status: "ok" };
+    pause(250);
+  }
+  return result;
+}
+
 export function resolveCapture(detail) {
   if (!detail || !detail.includes("$logs:")) return "";
   const alias = detail.split(" ").find((part) => part.startsWith("$logs:"));
@@ -1415,8 +1427,8 @@ function main(argv) {
         ui: () => sendCommand({ verb: "ui" }),
         use: (className, entityName) => sendCommand({ verb: "use", className, entityName }),
         input: (action) => sendCommand({ verb: "input", action }),
-        captureWorld: (spec) => sendCommand({ verb: "capture", mode: "world", ...spec }, 25000),
-        captureUi: (name) => sendCommand({ verb: "capture", mode: "ui", name }, 25000),
+        captureWorld: (spec) => settleCapture(sendCommand({ verb: "capture", mode: "world", ...spec }, 25000)),
+        captureUi: (name) => settleCapture(sendCommand({ verb: "capture", mode: "ui", name }, 25000)),
         resolve: (result) => resolveCapture(result.detail),
         pause,
         log: (line) => console.log(line),
@@ -1442,8 +1454,8 @@ function main(argv) {
         ui: () => sendCommand({ verb: "ui" }),
         use: (className, entityName) => sendCommand({ verb: "use", className, entityName }),
         input: (action) => sendCommand({ verb: "input", action }),
-        captureWorld: (spec) => sendCommand({ verb: "capture", mode: "world", ...spec }, 25000),
-        captureUi: (name) => sendCommand({ verb: "capture", mode: "ui", name }, 25000),
+        captureWorld: (spec) => settleCapture(sendCommand({ verb: "capture", mode: "world", ...spec }, 25000)),
+        captureUi: (name) => settleCapture(sendCommand({ verb: "capture", mode: "ui", name }, 25000)),
         resolve: (result) => resolveCapture(result.detail),
         pause,
         log: (line) => console.log(line),

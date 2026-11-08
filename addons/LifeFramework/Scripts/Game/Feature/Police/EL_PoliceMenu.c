@@ -14,15 +14,6 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Ask the server to fine the player with the given UID.
-	//! \param targetPlayerUid Platform-stable UID of the wanted player.
-	//! \param amount Fine amount in cash.
-	void EL_AskPoliceFine(string targetPlayerUid, int amount)
-	{
-		Rpc(RpcAsk_EL_PoliceFine, targetPlayerUid, amount);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Ask the server to promote this officer. The server always refuses: rank is not a client field.
 	void EL_AskPoliceSelfPromote()
 	{
@@ -81,82 +72,6 @@ modded class SCR_ChimeraCharacter
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_EL_PoliceFine(string targetPlayerUid, int amount)
-	{
-		IEntity officer = this;
-		if (!officer)
-			return;
-
-		int officerPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
-		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(officer);
-		if (!EL_PoliceUtils.IsOnDutyOfficer(officerAccount))
-		{
-			EL_Debug.Warn("Police", string.Format("fine refused: %1 is not an on-duty officer", officerPlayerId));
-			return;
-		}
-
-		if (!LF_PoliceRanks.AuthorizeFine(officerAccount, amount))
-		{
-			if (officerPlayerId > 0)
-				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Rank_FineDenied", 3.0, EL_ENotificationType.WARNING);
-			return;
-		}
-
-		if (!EL_PoliceUtils.IsSaneFineAmount(amount))
-		{
-			EL_Debug.Warn("Police", string.Format("fine refused: amount %1 out of range", amount));
-			return;
-		}
-
-		if (!EL_PoliceUtils.FineClearsWanted(amount))
-		{
-			// A fine that clears no wanted level only drains cash, and the target stays wanted,
-			// so it could be repeated until the target is broke.
-			EL_Debug.Warn("Police", string.Format("fine refused: amount %1 clears no wanted level (minimum %2)", amount, EL_PoliceUtils.WANTED_STEP));
-			if (officerPlayerId > 0)
-				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Fine_Title", "#EL-Fine_TooSmall", 3.0, EL_ENotificationType.WARNING);
-			return;
-		}
-
-		EL_PlayerAccount targetAccount;
-		IEntity target = EL_PoliceUtils.FindPlayerEntityByUid(targetPlayerUid, targetAccount);
-		if (!target || !targetAccount || targetAccount.GetWantedLevel() <= 0)
-		{
-			EL_Debug.Warn("Police", string.Format("fine refused: target %1 is not wanted", targetPlayerUid));
-			return;
-		}
-
-		if (!EL_PoliceUtils.IsTargetInReach(officer, target))
-		{
-			EL_Debug.Warn("Police", string.Format("fine refused: %1 is not within %2 m of the officer", targetPlayerUid, EL_PoliceUtils.POLICE_REACH));
-			if (officerPlayerId > 0)
-				EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Fine_Title", "#EL-Police_TooFar", 3.0, EL_ENotificationType.WARNING);
-			return;
-		}
-
-		int targetPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(target);
-		string amountText = amount.ToString();
-
-		int removed = EL_MoneyUtils.RemoveAmount(target, amount);
-		if (removed != amount)
-		{
-			// Partial removals are not a fine: return the removed part and fail.
-			if (removed > 0)
-				EL_MoneyUtils.AddAmount(target, removed);
-			EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Fine_Title", "#EL-Fine_Failed", 3.0, EL_ENotificationType.WARNING);
-			return;
-		}
-
-		targetAccount.IncreaseWantedLevel(-EL_PoliceUtils.GetWantedReduction(amount));
-		EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(targetAccount);
-
-		EL_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Fined", 3.0, EL_ENotificationType.SUCCESS, amountText);
-		if (targetPlayerId > 0)
-			EL_NotificationManagerComponent.NotifyPlayer(targetPlayerId, "#EL-Police_Title", "#EL-Fined", 3.0, EL_ENotificationType.WARNING, amountText);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_PoliceSelfPromote()
 	{
 		LF_PoliceRanks.RequestSelfPromotion(EL_Utils.GetPlayerUid(this));
@@ -164,14 +79,12 @@ modded class SCR_ChimeraCharacter
 };
 
 //------------------------------------------------------------------------------------------------
-//! Pure police-domain helpers. Server-side validation and fine math live here so the EL_Test
+//! Pure police-domain helpers. Server-side validation lives here so the EL_Test
 //! suite can exercise them without a world.
 class EL_PoliceUtils
 {
+	//! The largest fine a senior officer may write on a ticket (LF_PoliceRanks.FineCap).
 	static const int MAX_FINE = 5000;
-
-	//! Cash per wanted level a fine clears. A fine below this clears nothing and is refused.
-	static const int WANTED_STEP = 1000;
 
 	//! How close the officer must stand to arrest or fine from the police menu. Matches the
 	//! in-world arrest action's range. There is no restraint state in the framework or in
@@ -195,14 +108,6 @@ class EL_PoliceUtils
 			return false;
 
 		return IsWithinReach(officer.GetOrigin(), target.GetOrigin());
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! \param amount Fine amount in cash.
-	//! \return true when the fine clears at least one wanted level.
-	static bool FineClearsWanted(int amount)
-	{
-		return GetWantedReduction(amount) > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -249,24 +154,6 @@ class EL_PoliceUtils
 		if (account.GetFaction() != EL_Faction.POLICE)
 			return false;
 		return account.IsOnDuty();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! \param amount Fine amount in cash.
-	//! \return Wanted levels the fine removes (1 per 1000 cash).
-	static int GetWantedReduction(int amount)
-	{
-		return amount / WANTED_STEP;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! \param amount Fine amount in cash.
-	//! \return true when the amount is above zero and within the maximum fine.
-	static bool IsSaneFineAmount(int amount)
-	{
-		if (amount <= 0)
-			return false;
-		return amount <= MAX_FINE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -348,7 +235,6 @@ class EL_PoliceMenu : ChimeraMenuBase
 			EL_Debug.Error("Police", "police menu close button missing or not a button; Esc still closes");
 
 		array<Widget> focus = {};
-		focus.Insert(root.FindAnyWidget("FineButton"));
 		focus.Insert(root.FindAnyWidget("SearchButton"));
 		focus.Insert(root.FindAnyWidget("ArrestButton"));
 		focus.Insert(m_wCloseButton);
@@ -403,15 +289,6 @@ class EL_PoliceMenu : ChimeraMenuBase
 		SCR_ChimeraCharacter officer = GetOfficerCharacter();
 		if (officer)
 			officer.EL_AskPoliceArrest(playerUid);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Client-side entry: routes the fine request to the server via the officer's character.
-	void FinePlayer(string playerUid, int amount)
-	{
-		SCR_ChimeraCharacter officer = GetOfficerCharacter();
-		if (officer)
-			officer.EL_AskPoliceFine(playerUid, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------

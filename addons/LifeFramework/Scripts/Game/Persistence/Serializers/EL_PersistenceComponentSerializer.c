@@ -21,11 +21,12 @@
 //! Per-item state of a snapshot (magazine ammo) lives beside its snapshot in LF_StorageSnapshot.
 //! Wanted reports (the description recorded at each crime and its identified flag) live in
 //! LF_WantedReports. Delivery-job sign-ups live in LF_CivilianJob, keyed by the player uid.
+//! Police tickets (amount, deadline clock, paid flag) live in LF_FineTickets.
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups. The written version is that list's length (11). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets. The written version is that list's length (12). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -36,6 +37,7 @@
 //! A version 8 save includes introductions and has no per-item state (magazine ammo).
 //! A version 9 save includes per-item state and has no wanted reports.
 //! A version 10 save includes wanted reports and has no job sign-ups.
+//! A version 11 save includes job sign-ups and has no police tickets.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -70,6 +72,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("itemstate");
 		order.Insert("wanted");
 		order.Insert("jobsignups");
+		order.Insert("tickets");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -96,7 +99,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 11);
+		context.WriteValue("version", 12);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -296,6 +299,14 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			context.Write(signUpRecords);
 			EL_Debug.Log("Persistence", string.Format("saved %1 job sign-up(s)", signUpRecords.Count()));
 		}
+		else if (payload == "tickets")
+		{
+			array<ref LF_FineTicketRecord> ticketRecords = LF_FineTickets.ExportAll();
+			if (!ticketRecords)
+				ticketRecords = new array<ref LF_FineTicketRecord>();
+			context.Write(ticketRecords);
+			EL_Debug.Log("Persistence", string.Format("saved %1 police ticket(s)", ticketRecords.Count()));
+		}
 		else
 		{
 			EL_Debug.Error("Persistence", string.Format("save skipped unknown payload '%1'", payload));
@@ -473,6 +484,20 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				EL_Debug.Warn("Persistence", "job sign-up records failed to read, leaving live sign-ups untouched");
+			}
+		}
+		else if (payload == "tickets")
+		{
+			// A version 1-11 save never reaches this payload, so live tickets are left alone.
+			array<ref LF_FineTicketRecord> ticketRecords = new array<ref LF_FineTicketRecord>();
+			if (context.Read(ticketRecords))
+			{
+				LF_FineTickets.ApplyAll(ticketRecords);
+				EL_Debug.Log("Persistence", string.Format("applied %1 police ticket(s)", ticketRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "police tickets failed to read, leaving live tickets untouched");
 			}
 		}
 		else

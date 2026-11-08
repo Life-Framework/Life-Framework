@@ -3824,7 +3824,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{216CC8B9B69FEA9E}" {
      Id "LF-Sign_PoliceStation_Rules"
-     Target_en_us "Duty pays $30 a minute, in cash when you go off duty. One kit per shift. After an hour on duty a patrol officer becomes a senior officer."
+     Target_en_us "Duty pays $30 a minute, in cash when you go off duty. One kit per shift. After an hour on duty a patrol officer becomes a senior officer. Got a police ticket? Pay it in cash at the punch clock: Pay ticket."
      Comment "Sign card for the police station duty desk, Rules section."
     }
     CustomStringTableItem "{38FC55C049D7A2DA}" {
@@ -3979,12 +3979,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F1237DCB347A4604}" {
      Id "LF-Sign_ConvoyPickup_What"
-     Target_en_us "Contraband waiting for a driver."
+     Target_en_us "Crates of untaxed spirits, waiting for a driver."
      Comment "Sign card for the convoy pickup at the barn out of town, What section."
     }
     CustomStringTableItem "{BDE5BBC474B685BE}" {
      Id "LF-Sign_ConvoyPickup_How"
-     Target_en_us "Start convoy here, drive to the hideout yard in the village, and Deliver contraband."
+     Target_en_us "Start convoy at the crates to take one, load it into a vehicle, drive to the back of the pub on the square, and Deliver contraband at the empty crate cage there."
      Comment "Sign card for the convoy pickup at the barn out of town, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{1AD1E7DE6B2D2E35}" {
@@ -3994,7 +3994,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D9132B47493CAD58}" {
      Id "LF-Sign_ConvoyPickup_Rules"
-     Target_en_us "Pays $200 cash on delivery. Leave the vehicle or die on the way and the run fails."
+     Target_en_us "Pays "00 cash in hand on delivery. Once you are in a vehicle, getting out before the pub or dying fails the run."
      Comment "Sign card for the convoy pickup at the barn out of town, Rules section."
     }
     CustomStringTableItem "{AE84DE1019124F89}" {
@@ -4004,18 +4004,18 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{22360C2BF0D6346C}" {
      Id "LF-Sign_ConvoyDrop_What"
-     Target_en_us "Where convoys from the barn unload."
-     Comment "Sign card for the convoy drop in the hideout yard, What section."
+     Target_en_us "The publican buys untaxed spirits at his back door."
+     Comment "Sign card for the convoy drop behind the pub on the square, What section."
     }
     CustomStringTableItem "{155AD337C15BEB65}" {
      Id "LF-Sign_ConvoyDrop_How"
-     Target_en_us "Drive in and Deliver contraband."
-     Comment "Sign card for the convoy drop in the hideout yard, How section. Capitalized phrases are the exact action names the player sees."
+     Target_en_us "Park here, carry the crate to the empty crate cage, and Deliver contraband."
+     Comment "Sign card for the convoy drop behind the pub on the square, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{D786787F97399612}" {
      Id "LF-Sign_ConvoyDrop_Needs"
-     Target_en_us "A convoy started at the barn."
-     Comment "Sign card for the convoy drop in the hideout yard, Needs section."
+     Target_en_us "A crate of spirits from the barn out of town, taken with Start convoy."
+     Comment "Sign card for the convoy drop behind the pub on the square, Needs section."
     }
     CustomStringTableItem "{04B65C3DAC7EE49E}" {
      Id "LF-Sign_ConvoyDrop_Rules"
@@ -4811,6 +4811,241 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_SafeZone_Next"
      Target_en_us "Read the town map board beside this one, then talk to the town hall clerk a few steps east."
      Comment "Safe zone sign card, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{4E677F2199216C44}" {
+     Id "LF-Ticket_Write"
+     Target_en_us "Write ticket"
+     Comment "Player interaction entry for an on-duty officer facing a player: opens the ticket pad."
+    }
+    CustomStringTableItem "{0C17FD1924B2AF02}" {
+     Id "LF-Ticket_Title"
+     Target_en_us "Police ticket"
+     Comment "Toast title for every ticket message."
+    }
+    CustomStringTableItem "{D3D038CBB83F2177}" {
+     Id "LF-Ticket_Name"
+     Target_en_us "Police ticket"
+     Comment "Inventory name of the ticket item."
+    }
+    CustomStringTableItem "{60A12CD943F5CFC3}" {
+     Id "LF-Ticket_Blank"
+     Target_en_us "A blank police ticket. Nothing is written on it."
+     Comment "Ticket item text before it is printed."
+    }
+    CustomStringTableItem "{9A1C0620A84F75B1}" {
+     Id "LF-Ticket_Read"
+     Target_en_us "Read ticket"
+     Comment "Action on a printed ticket lying in the world."
+    }
+    CustomStringTableItem "{81F80B9BFCEBBE61}" {
+     Id "LF-Ticket_CardTitle"
+     Target_en_us "POLICE TICKET"
+     Comment "Title printed on the ticket card."
+    }
+    CustomStringTableItem "{7033F4EADCC25C6B}" {
+     Id "LF-Ticket_Number"
+     Target_en_us "No. %1, written %2"
+     Comment "Ticket line. %1 is the ticket number, %2 the in-game date and time it was written."
+    }
+    CustomStringTableItem "{A3922704BA30BE5B}" {
+     Id "LF-Ticket_IssuedTo"
+     Target_en_us "Issued to: %1"
+     Comment "Ticket line. %1 is the holder's name."
+    }
+    CustomStringTableItem "{3113A99FF057AF65}" {
+     Id "LF-Ticket_Offence"
+     Target_en_us "Offence: %1"
+     Comment "Ticket line. %1 is the offence name."
+    }
+    CustomStringTableItem "{A904CA1B8DB84484}" {
+     Id "LF-Ticket_Amount"
+     Target_en_us "Fine: %1"
+     Comment "Ticket line. %1 is the amount owed now."
+    }
+    CustomStringTableItem "{E43A03504CE37DC5}" {
+     Id "LF-Ticket_DueOpen"
+     Target_en_us "Pay within %1 min of your time in town. After that the fine rises to %2."
+     Comment "Ticket line before the first deadline. %1 is online minutes left, %2 the raised amount. Time only counts while the holder is online."
+    }
+    CustomStringTableItem "{F8790EF1AB943842}" {
+     Id "LF-Ticket_DueLate"
+     Target_en_us "OVERDUE: the fine went up. Pay within %1 min of your time in town or the police will want you."
+     Comment "Ticket line after the first deadline. %1 is online minutes left before the holder becomes wanted."
+    }
+    CustomStringTableItem "{8758643952766548}" {
+     Id "LF-Ticket_DueWanted"
+     Target_en_us "UNPAID: the police want you for this fine. It can still be paid."
+     Comment "Ticket line after the second deadline."
+    }
+    CustomStringTableItem "{2AED2A45EFDE680C}" {
+     Id "LF-Ticket_HowToPay"
+     Target_en_us "Pay in cash at the punch clock on the police station desk: Pay ticket. Not from the bank."
+     Comment "Ticket line: where and how to pay. Pay ticket is the exact action name."
+    }
+    CustomStringTableItem "{46A53FAB3C5D54F3}" {
+     Id "LF-Ticket_PaidLine"
+     Target_en_us "PAID %1. Stamped at the police desk. Keep this as your receipt."
+     Comment "Ticket line once paid. %1 is the in-game date and time of payment."
+    }
+    CustomStringTableItem "{329E1C0F66D568D4}" {
+     Id "LF-Ticket_Officer"
+     Target_en_us "Officer: %1 %2"
+     Comment "Ticket line. %1 is the officer's rank, %2 the officer's name."
+    }
+    CustomStringTableItem "{18CE97A1737CC737}" {
+     Id "LF-Ticket_CardClose"
+     Target_en_us "Fold it away"
+     Comment "Close button of the ticket card."
+    }
+    CustomStringTableItem "{97E5443DC92B1C10}" {
+     Id "LF-Ticket_PayGeneric"
+     Target_en_us "Pay ticket"
+     Comment "Fallback name of the desk payment action."
+    }
+    CustomStringTableItem "{035F5F834128D1CA}" {
+     Id "LF-Ticket_Pay"
+     Target_en_us "Pay ticket No. %1 (%2)"
+     Comment "Desk payment action. %1 is the ticket number, %2 the amount owed now."
+    }
+    CustomStringTableItem "{E42E60D056AAD09F}" {
+     Id "LF-Ticket_PayDesc"
+     Target_en_us "Pay a police ticket in carried cash. The clock stamps it as your receipt."
+     Comment "Description of the desk payment action."
+    }
+    CustomStringTableItem "{10B81E05A9DBDA87}" {
+     Id "LF-Ticket_NeedCash"
+     Target_en_us "You need %1 in cash"
+     Comment "Why Pay ticket cannot be done. %1 is the amount owed."
+    }
+    CustomStringTableItem "{F537077C4B4DF892}" {
+     Id "LF-Ticket_Written"
+     Target_en_us "Ticket handed over: %1"
+     Comment "Toast to the officer. %1 is the amount."
+    }
+    CustomStringTableItem "{C80206F362C570EC}" {
+     Id "LF-Ticket_Received"
+     Target_en_us "An officer gave you a ticket. Read it in your inventory; pay it at the police desk."
+     Comment "Toast to the person who got a ticket."
+    }
+    CustomStringTableItem "{A85CDAFEB439AA39}" {
+     Id "LF-Ticket_PaidToast"
+     Target_en_us "Ticket paid: %1. Keep the stamped receipt."
+     Comment "Toast after paying at the desk. %1 is the amount."
+    }
+    CustomStringTableItem "{5C73DBF2463CCCB8}" {
+     Id "LF-Ticket_NotEnoughCash"
+     Target_en_us "You need %1 in cash to pay this ticket."
+     Comment "Toast when the payer carries too little cash. %1 is the amount."
+    }
+    CustomStringTableItem "{BC9C33F03DC472F7}" {
+     Id "LF-Ticket_NoneOpen"
+     Target_en_us "You have no unpaid ticket."
+     Comment "Toast when paying with no unpaid ticket."
+    }
+    CustomStringTableItem "{D88B2F96BB0FB203}" {
+     Id "LF-Ticket_Overdue"
+     Target_en_us "Your ticket is overdue. The fine is now %1."
+     Comment "Toast at the first deadline. %1 is the raised amount."
+    }
+    CustomStringTableItem "{DBEBFF247E50B272}" {
+     Id "LF-Ticket_NowWanted"
+     Target_en_us "You did not pay your ticket. The police want you."
+     Comment "Toast at the second deadline."
+    }
+    CustomStringTableItem "{5EDD1F09C108B2CB}" {
+     Id "LF-Ticket_TooMany"
+     Target_en_us "This person already holds %1 unpaid tickets."
+     Comment "Toast to the officer. %1 is the limit."
+    }
+    CustomStringTableItem "{6BD98468BB91818B}" {
+     Id "LF-Ticket_Refused"
+     Target_en_us "You cannot write this ticket."
+     Comment "Toast to the officer for any other refusal."
+    }
+    CustomStringTableItem "{DC2428C790D45A2D}" {
+     Id "LF-Ticket_PadTitle"
+     Target_en_us "POLICE TICKET"
+     Comment "Title of the officer's ticket pad."
+    }
+    CustomStringTableItem "{BBEF205C1F2CB38F}" {
+     Id "LF-Ticket_PadTo"
+     Target_en_us "To: the person in front of you"
+     Comment "Ticket pad line: who gets the ticket."
+    }
+    CustomStringTableItem "{8E6D57F980FC5B64}" {
+     Id "LF-Ticket_PadPick"
+     Target_en_us "Tick one offence. Each has a fixed fine."
+     Comment "Ticket pad instruction."
+    }
+    CustomStringTableItem "{461AFE9329D0D247}" {
+     Id "LF-Ticket_PadWrite"
+     Target_en_us "Write: %1, %2"
+     Comment "Ticket pad button for one offence. %1 is the offence, %2 its fixed fine."
+    }
+    CustomStringTableItem "{2AF7CEA623158FD6}" {
+     Id "LF-Ticket_PadAboveRank"
+     Target_en_us "%1, %2: senior officers only"
+     Comment "Ticket pad line for an offence above the officer's rank cap. %1 is the offence, %2 its fixed fine."
+    }
+    CustomStringTableItem "{406456BDD3AE8B75}" {
+     Id "LF-Ticket_PadNote"
+     Target_en_us "They pay in cash at the police desk within %1 min of their time in town. Unpaid, it rises once, then they are wanted."
+     Comment "Ticket pad footer. %1 is the first deadline in online minutes."
+    }
+    CustomStringTableItem "{99C269ABF65CD6EC}" {
+     Id "LF-Ticket_PadClose"
+     Target_en_us "Put the pad away"
+     Comment "Close button of the ticket pad."
+    }
+    CustomStringTableItem "{7323EEE3F63F8704}" {
+     Id "LF-Ticket_OffenceSpeeding"
+     Target_en_us "Speeding"
+     Comment "Ticket offence."
+    }
+    CustomStringTableItem "{F12F553D6113B682}" {
+     Id "LF-Ticket_OffenceDisturbance"
+     Target_en_us "Disturbing the peace"
+     Comment "Ticket offence."
+    }
+    CustomStringTableItem "{0ED00662F4C50149}" {
+     Id "LF-Ticket_OffenceRecklessDriving"
+     Target_en_us "Reckless driving"
+     Comment "Ticket offence."
+    }
+    CustomStringTableItem "{C5F76D31210D2903}" {
+     Id "LF-Ticket_OffenceBrandishing"
+     Target_en_us "Waving a weapon in public"
+     Comment "Ticket offence."
+    }
+    CustomStringTableItem "{BB95BEB713FF0585}" {
+     Id "LF-Ticket_OffenceCrash"
+     Target_en_us "Causing a crash"
+     Comment "Ticket offence. Above the patrol fine cap in the flagship config."
+    }
+    CustomStringTableItem "{1FEDD190A93DC8BE}" {
+     Id "LF-Offence_UnpaidFine"
+     Target_en_us "Unpaid fine"
+     Comment "Wanted board offence when a police ticket goes unpaid past its second deadline."
+    }
+    CustomStringTableItem "{AC8D0A406C890A6E}" {
+     Id "LF-Contraband_Crate_Name"
+     Target_en_us "Crate of spirits"
+     Comment "Item name of the contraband cargo: a wooden crate of untaxed spirits carried in both hands"
+    }
+    CustomStringTableItem "{1D5E4503B79F1A6F}" {
+     Id "LF-Contraband_Crate_Desc"
+     Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
+     Comment "Item description of the contraband crate"
+    }
+    CustomStringTableItem "{8269943001D9EADB}" {
+     Id "LF-Contraband_Loaded"
+     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
+     Comment "Toast when the convoy start hands the player a contraband crate at the barn"
+    }
+    CustomStringTableItem "{DEDBE2A372F43FF6}" {
+     Id "LF-Contraband_HandsFull"
+     Target_en_us "Your hands are full. Put down what you carry, then take a crate."
+     Comment "Toast when the convoy start cannot hand over the crate because the player already carries something"
     }
   }
  }
