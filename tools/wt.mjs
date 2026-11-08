@@ -207,8 +207,14 @@ export function copyResourceDatabase(wtRoot, mainRoot = mainRootOf(wtRoot)) {
   const dest = join(wtRoot, "addons", "LifeFramework", "resourceDatabase.rdb");
   if (resolve(src) === resolve(dest)) return false;
   if (!existsSync(src)) return false;
-  const srcSize = statSync(src).size;
-  if (existsSync(dest) && statSync(dest).size >= srcSize) return false;
+  const srcStat = statSync(src);
+  if (existsSync(dest)) {
+    const destStat = statSync(dest);
+    if (destStat.size >= srcStat.size) return false;
+    // A Workbench opened on this worktree rewrote its copy (it registers the
+    // worktree's new resources and can come out smaller). Keep it.
+    if (destStat.mtimeMs > srcStat.mtimeMs) return false;
+  }
   mkdirSync(dirname(dest), { recursive: true });
   copyFileSync(src, dest);
   return true;

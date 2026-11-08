@@ -207,6 +207,33 @@
   (account-aware, re-applies the faction loadout).
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
+- ✅ **You wake up in hospital** (M1-26, #121; tests `respawn/bill-once`,
+  `respawn/bill-debt`, `respawn/bed-pick`, `respawn/ward`). A death marks the
+  player's uid with a pending wake (`LF_HospitalRespawn.MarkDied`). The next
+  spawn of that player (death-screen Respawn, or a reconnect while dead) takes
+  it once: the body spawns at a free `LF_HospitalBedComponent` bed (rotating,
+  occupied beds skipped), the bill is charged to the bank, a printed paper
+  `HospitalBill.et` (amount, balance after, in-game date) goes in the pockets,
+  and a toast names the amount. The owner plays the base game's
+  bed wake loiter (the tutorial intro's, type 7) with the spawn sound, gets up
+  after 4 s and steps down to the bed's stand point on the floor,
+  then reads the bill: the note "You don't remember how you got here." and the
+  New Life Rule window (a printed server rule, nothing enforces it). A bill
+  lying in the world has Read. Server-decided; the client never sends an
+  amount or a bed. Every charge and debt logs `[ELDebug:Respawn]`.
+- ✅ Debt: `EL_BankAccount.Charge` may go below zero when debt is allowed; a
+  negative balance is kept through save and load, deposits pay it off first,
+  withdrawals are refused while in debt.
+- ✅ Config `Configs/Spawning/LF_Respawn.conf` (`LF_RespawnConfig`): wake in
+  hospital (off, or no bed placed: the spawn plaza), bill amount (flagship
+  150), debt allowed, New Life Rule minutes (15), wake animation. The beds are
+  the respawn point list: put `LF_HospitalBedComponent` on any bed (wake offset
+  and yaw are attributes). DebugWorld: three `BedMedical_01` in the front west
+  room of the hospital (`Street_Hospital.layer`); the hospital building is now
+  the unfurnished `House_Town_E_2I03_Base`.
+- ⚠️ The pending wake is session state: a restart between death and respawn
+  forgets it (plaza, no bill). A carried bill comes back blank after a restart
+  and hides Read.
 
 ### Carried inventory — `Feature/Character/Persistence/LF_StorageSnapshot.c`
 - ✅ **Carried cash and items survive a restart** (2026-11-08, M1-04, tests

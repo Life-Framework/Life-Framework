@@ -79,6 +79,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "state") {
     return `${id} state`;
   }
+  if (spec.verb === "die") {
+    return `${id} die`;
+  }
   if (spec.verb === "ui") {
     return `${id} ui`;
   }
@@ -1209,6 +1212,9 @@ function main(argv) {
     }
     if (cmd === "state") {
       return printResult(sendCommand({ verb: "state" }, 10000));
+    }
+    if (cmd === "die") {
+      return printResult(sendCommand({ verb: "die" }, 10000));
     }
     if (cmd === "ui") {
       return printResult(sendCommand({ verb: "ui" }));
