@@ -64,6 +64,8 @@ class EL_AgentCommand
 	//!   <id> type <PartName> <Text>
 	//!   <id> capture ui <Name>
 	//!   <id> capture world <Name> <x> <y> <z> [ox oy oz]
+	//!   <id> film start <Name> <fps> [maxSeconds]
+	//!   <id> film stop|status
 	static bool Parse(string line, out EL_AgentCommand cmd)
 	{
 		cmd = new EL_AgentCommand();
@@ -130,6 +132,8 @@ class EL_AgentCommand
 			return ParseType(parts, cmd);
 		if (cmd.Verb == "capture")
 			return ParseCapture(parts, cmd);
+		if (cmd.Verb == "film")
+			return ParseFilm(parts, cmd);
 
 		cmd.Error = "unknown_verb";
 		return false;
@@ -518,6 +522,57 @@ class EL_AgentCommand
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! film start <Name> <fps> [maxSeconds] | film stop | film status (LF_FilmRecorder).
+	protected static bool ParseFilm(array<string> parts, EL_AgentCommand cmd)
+	{
+		if (parts.Count() < 3)
+		{
+			cmd.Error = "need_film_mode";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		if (cmd.Arg1 == "stop" || cmd.Arg1 == "status")
+			return true;
+		if (cmd.Arg1 != "start")
+		{
+			cmd.Error = "bad_film_mode";
+			return false;
+		}
+
+		if (parts.Count() < 5)
+		{
+			cmd.Error = "need_film_name_fps";
+			return false;
+		}
+
+		cmd.Arg2 = parts[3];
+		cmd.Arg3 = parts[4];
+		if (!IsClassToken(cmd.Arg2))
+		{
+			cmd.Error = "bad_film_name";
+			return false;
+		}
+		if (!IsIntToken(cmd.Arg3))
+		{
+			cmd.Error = "bad_film_fps";
+			return false;
+		}
+
+		if (parts.Count() >= 6)
+		{
+			cmd.Arg4 = parts[5];
+			if (!IsIntToken(cmd.Arg4))
+			{
+				cmd.Error = "bad_film_seconds";
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsClassToken(string token)
 	{
 		if (!token || token.IsEmpty())
@@ -819,6 +874,11 @@ class EL_AgentHarness
 		if (cmd.Verb == "capture")
 		{
 			DoCapture(cmd);
+			return;
+		}
+		if (cmd.Verb == "film")
+		{
+			DoFilm(cmd);
 			return;
 		}
 
@@ -1852,6 +1912,32 @@ class EL_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! In-engine recording (LF_FilmRecorder). It runs beside every other verb,
+	//! so a journey keeps playing while the client films itself.
+	protected static void DoFilm(EL_AgentCommand cmd)
+	{
+		string result;
+		if (cmd.Arg1 == "start")
+			result = LF_FilmRecorder.Start(cmd.Arg2, cmd.Arg3.ToInt(), cmd.Arg4.ToInt());
+		else if (cmd.Arg1 == "stop")
+			result = LF_FilmRecorder.Stop();
+		else
+			result = "ok " + LF_FilmRecorder.Status();
+
+		if (result.StartsWith("ok "))
+		{
+			WriteResult(cmd.Id, "ok", result.Substring(3, result.Length() - 3));
+			return;
+		}
+		if (result.StartsWith("error:"))
+		{
+			WriteResult(cmd.Id, "error", result.Substring(6, result.Length() - 6));
+			return;
+		}
+		WriteResult(cmd.Id, "error", result);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A named world entity, or Player<id> for the character that player controls.
 	static IEntity ResolveNamed(string entityName)
 	{
@@ -2006,6 +2092,14 @@ class EL_AgentHarness
 			string toast = SCR_PlayerController.EL_GetLastToast();
 			text = text + " toast=" + Token(toast);
 			text = text + " known=" + LF_KnownNames.KnownCount().ToString() + " name=" + Token(LF_KnownNames.GetShown());
+			// M1-20: radio dispatches this client heard, the newest, and the site alarm it can hear.
+			text = text + " dispatch=" + SCR_PlayerController.LF_GetDispatchCount().ToString() + " lastdispatch=" + Token(SCR_PlayerController.LF_GetLastDispatch());
+			string alarm = "none";
+			IEntity listener = EL_Utils.GetLocalCharacter();
+			if (listener)
+				alarm = LF_SiteAlarmComponent.HeardAt(listener.GetOrigin());
+
+			text = text + " alarm=" + alarm;
 		}
 
 		WriteResult(id, status, text);

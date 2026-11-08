@@ -1,5 +1,5 @@
 GenericEntity WhitelistStation {
- coords 223.5 0 244.3
+ coords 100 0 52
  {
   GenericEntity WhitelistTableItems {
     coords 0 0.9 0.7

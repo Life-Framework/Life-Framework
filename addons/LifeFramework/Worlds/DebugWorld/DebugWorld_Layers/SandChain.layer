@@ -52,16 +52,6 @@ GenericEntity SandBuilderStand {
    }
    coords 0 0 -1.1
   }
-  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
-   components {
-    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
-     m_bGradualLightning 0
-     m_fLV 2.6
-     m_eInitialLightState LIT
-    }
-   }
-   coords 0 0.9 0.7
-  }
  }
 }
 GenericEntity Sandbag_5A0E821DC5FD2BE3 : "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et" {

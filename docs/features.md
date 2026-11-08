@@ -395,6 +395,13 @@
   `EL_Utils.ChooseIdentityFallback` now keys a player by Steam name on a
   `-noBackend` dedicated server: stable across restarts, one character per name
   (`spawn/identity-fallback`; join, restart, rejoin seen live).
+- ✅ **One-command playtest** (`tools\cli playtest [stop|status|shortcut]`,
+  `Play Life Framework.cmd`, `tools/host/playtest.mjs`): fast-forwards the detached
+  checkout `..\Life-Framework-playtest` to `origin/main` (only while no host runs),
+  runs its `host start --wait`, then opens `ArmaReforgerSteam.exe` visibly with the
+  persistent profile `%LOCALAPPDATA%\LifeFramework\player` (`LF_PLAYER_DIR`), waits
+  for the host's `join allowed` line, and prints friend join lines. A running host
+  is reused and joined with its own addon. `stop` closes the game, then `host stop`.
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
@@ -868,8 +875,8 @@
   reaches `EL_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
   player who kills another player or an NPC gets wanted +`m_iMurderWanted`
   (`LF_Police.conf`, default 3), one `LF_WantedReports` report with the
-  `#LF-Offence_Murder` offence and their description (no name), an alert to
-  every on-duty officer, and a toast. Not murder: a death with no player behind
+  `#LF-Offence_Murder` offence and their description (no name), a radio
+  dispatch to every on-duty officer (`LF_Dispatch.Report`, no site alarm), and a toast. Not murder: a death with no player behind
   it, a self-kill, a destroyed vehicle, and (config
   `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
   wanted suspect. Each decision logs `[ELDebug:Murder]`. No automatic ban.
@@ -936,7 +943,7 @@
   count (that ran every offer refresh) and refuses an empty vehicle prefab with
   `EL_Debug.Error`; the spawn goes through `EL_Utils.SpawnEntityPrefab`.
 - ⚠️ Near-duplicated guard logic across all three.
-  `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
+  Police alerts go through `LF_Dispatch.Report` (M1-20).
 
 ### `LF_Jail` — `Feature/Police/LF_Jail.c`
 - ✅ Placed cell and timed sentence (verified 2026-10-11). `GetJailPosition()`
@@ -1091,7 +1098,7 @@
 ### `LF_WantedReports` / `LF_WantedBoard` — `Feature/Police/`
 - ✅ **Crime reports** (M1-11, LOGIC `police/wanted-board`): each crime that
   raises wanted (till, vehicle and weapon robbery, breach, hospital till) calls
-  `LF_WantedReports.Report`, which records the offence and a description of the
+  `LF_Dispatch.Report` (M1-20), which calls `LF_WantedReports.Report`. It records the offence and a description of the
   suspect at that moment: clothing display names, the vehicle they sit in, and
   the nearest sign title within `m_fPlaceRadius` (else a 100 m grid square).
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
@@ -1106,6 +1113,38 @@
   everyone else gets the public poster without the place. A name appears only
   on identified reports. The card is an `LF_UIScreen` paper sheet that closes
   4 m from the board; reading plays the map pick-up sound and gesture.
+  On-duty police also see the dispatch log under the posters (M1-20).
+
+### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
+- ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`
+  is what every crime calls (till, vehicle and weapon robbery, breach and bank
+  vault, hospital cabinet, murder with no site alarm). It records the crime report, sounds the site alarm,
+  radios on-duty officers, and appends a line to the dispatch log. A refused
+  crime reports nothing; no crime refuses for lack of police (the per-crime
+  minimum stays a framework attribute, 0 on the flagship). `EL_Utils.AlertPolice`
+  is gone.
+- ✅ **Site alarm** (WORLD `dispatch/site-alarm`): a replicated
+  `Prefabs/Police/LF_SiteAlarm.et` spawns at the site, so only players the
+  site streams to get it. It loops the vanilla siren
+  (`Structures_Siren.acp`, `SOUND_SIREN_LP`) and flashes an orange light for
+  `m_fAlarmSeconds` (30). With nobody on duty when the crime starts it is
+  `LF_SiteAlarm_Loud.et`: the vanilla loud siren (`Structures_Siren_Loud.acp`,
+  600 m), a brighter, faster flash, `m_fLoudAlarmSeconds` (60). A newer alarm
+  at the same site replaces the old one. Durations, prefabs, and the radio
+  sound are in `Configs/Police/LF_Police.conf`; the sound, hear range, and
+  light are attributes on the prefabs.
+- ✅ **Radio dispatch**: each on-duty officer's own client (Owner RPC on the
+  controller) hears a vanilla radio chirp from their body
+  (`Props_Radios_Signals.acp`, `SOUND_RADIO_SIGNAL_2`), then a toast
+  "All units: <offence> at <place>. Suspect: <clothing>; on foot/driving ...".
+  The line is built from the report's description snapshot; it has no name field.
+- ✅ **Dispatch log on the wanted board**: the newest `m_iDispatchLogLines` (5)
+  calls, "HH:MM <offence> at <place>: N on duty, radioed" or "nobody on duty,
+  loud alarm". Session-local (the posters are the persisted record).
+- Harness: `state` adds `dispatch=<n> lastdispatch=<offence@place> alarm=none|normal|loud`;
+  `node agent-box/session.mjs dispatch-proof` drives the two-client run.
+- Manual: listening check (the siren loop and the radio chirp) and the light at
+  night; payphones, pagers, and AI police are later.
 
 ### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
 - ✅ Two ranks (verified 2026-10-11). Patrol officer draws
@@ -1318,7 +1357,7 @@
   client receives it; the listen host's own controller calls the handler
   directly. Broadcast is left for `SendToAll` only. `SendToPolice` /
   `NotifyPolice` reach connected on-duty police by account faction.
-  `EL_Utils.AlertPolice` and `EL_Utils.NotifyEntity` (shop, robbery, duty,
+  `EL_Utils.NotifyEntity` (shop, robbery, duty,
   confiscate toasts) route through it; `EL_Utils.Notify` still shows a hint on
   the calling machine only. Since 2026-11-08 the courier job (sign-up, paid,
   abandoned), gather/process rewards, weapon and vehicle robbery, and the
@@ -1525,6 +1564,18 @@
   roads and floors.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
+- ✅ Town tidy (M1-22, 2026-11-08): the street carries no debug artefacts. The
+  old police duty table (`PoliceStation`, `PoliceStation_Debug`) and the
+  whitelist table (`WhitelistStation`) moved into the annex (100 0 40 and
+  100 0 52, names kept). The daylight blue kerosene lamps left the market,
+  quarry, forest, and pub tables. The pub's survival points are a crate
+  (`SurvivalPoint_Food`) and a hand pump (`SurvivalPoint_Water`) instead of a
+  fridge and a US water trailer. `Village_Dressing` adds 98 vanilla props:
+  bins, planters and flower boxes, a poster column and notice boards, the bus
+  stop sign, hydrants, benches, shop crates, a garbage container, yards with a
+  clothesline, firewood and a dog house, a fenced cabbage plot, trees behind
+  both rows, and four parked cars. The cars are the mod's lockable S105, S1203
+  and UAZ-469 with the vanilla `m_bIsLocked` set, so no key opens them.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
   trader cash payout → shop purchase → ATM deposit path. The robbery step calls
   `EL_RobAction.CommitRobbery` (2026-11-07; it used to hand-write the payout);
@@ -1604,7 +1655,7 @@
   writes `agent-box/reports/journey.html` with the client screenshots.
   `tools/validation/agent-box-selftest.mjs` runs the harness, session, and
   journey selftests in `validate`.
-  Every step ends with a picture from each client it touched. Clients default to 1280x720 (`session.mjs up --res 1920x1080` for evidence) on the hidden desktop; `--visible` plus `journey.mjs --film` records client 1, but the first clip held one frame (README, Filming).
+  Every step ends with a picture from each client it touched. Clients default to 1280x720 (`session.mjs up --res 1920x1080` for evidence) on the hidden desktop. `journey.mjs --film` records each step inside the game client (`LF_FilmRecorder`), one mp4 per step plus the joined run, linked from the report; it works on the hidden desktop.
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
@@ -1667,6 +1718,22 @@
   films an agent-box flow, and publishes a clip to the `film-evidence`
   prerelease for a PR comment. Proven in game 2026-11-08: a game client on
   DebugWorld, flow `film-debugworld`, 20.7 s at 1280x720, 2.8 MB (PR #111).
+  Screen capture records a frozen frame when the window is unfocused and
+  cannot see the hidden `LF-Agents` desktop (#91).
+- ✅ `LF_FilmRecorder` records inside the game client: a per-frame callqueue
+  tick calls `System.MakeScreenshot` at a fixed rate (default 15 fps) into
+  `$logs:el-film/<name>/`, with HUD and menus, and writes `index.txt` with
+  each shot's real time and frame-time stats (`[ELDebug:Film]`). Harness verb
+  `film start <name> <fps> [max s]` / `film stop`; a dedicated server refuses
+  (`error no_renderer`). `tools/film/engine.mjs` encodes the BMPs at true speed
+  (concat with per-frame durations, NVENC) and deletes them. Wired as
+  `film.mjs engine|encode`, `film.mjs flow <flow> --engine`,
+  `journey.mjs --film`, and `session.mjs film` / `proof --film`. Covered by
+  `film/recorder` (LOGIC). Proven 2026-11-08 on the hidden desktop, 1280x720,
+  client capped at 30 fps: a 64.5 s journey clip (arrive, job, earn, fund, atm,
+  shop) and a 27.9 s `world-atm` clip, capture 14.7-15.1 fps, game 29.5-30
+  fps, frame after a shot 33.3-33.5 ms vs 33.2-34.5 ms otherwise, one 243 ms
+  stall in 64 s (shop menu, not a shot frame).
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 

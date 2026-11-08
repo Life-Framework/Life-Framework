@@ -22,6 +22,9 @@ import { loadWorld } from "./layers.mjs";
 //            layer (or its addon prefab) must carry them too
 //   sign     LF_Signs.conf id of the sign that explains the site, or null
 //   step     player-journey step in docs/roadmap/m1-playtest-town.md section a
+//   when     the player state the actions need ("an on-duty officer"). The
+//            report walks as a civilian, so play mode reports a missing
+//            action there as a warning ("needs <when>"), not a failure
 //   outskirts true for a site that stands off the street by design (farm,
 //            quarry, the contraband barn out of town): the neighbour rule skips
 //            it (docs/roadmap/m1-25-village.md)
@@ -51,8 +54,8 @@ export const TOWN = {
     // The duty desk (Clock in / Clock out) and the wanted board stand in front of the station (M1-11).
     { id: "police_station", entity: "Roadmap_Police_Desk", actions: ["EL_DutyAction"], sign: "police_station", step: 15 },
     { id: "wanted_board", entity: "Roadmap_Police_WantedBoard", actions: ["LF_WantedBoardReadAction"], sign: null, step: 17 },
-    { id: "police_armory", entity: "Roadmap_Police_Armory", actions: ["LF_ArmoryDrawAction"], sign: null, step: 15 },
-    { id: "escort_car", entity: "Roadmap_Escort_Car", actions: ["LF_JailPutInVehicleAction"], sign: null, step: 18 },
+    { id: "police_armory", entity: "Roadmap_Police_Armory", actions: ["LF_ArmoryDrawAction"], sign: null, step: 15, when: "an on-duty officer" },
+    { id: "escort_car", entity: "Roadmap_Escort_Car", actions: ["LF_JailPutInVehicleAction"], sign: null, step: 18, when: "an officer escorting a restrained suspect" },
     // Arrest is a character action; the cell itself offers nothing to press.
     { id: "jail", entity: "Roadmap_Jail_Cell", actions: [], sign: "jail", step: 20 },
     { id: "org_registry", entity: "Roadmap_Org_Desk", actions: ["EL_OrganizationDeskAction"], sign: "org_registry", step: 21 },
@@ -87,6 +90,7 @@ export function manifestErrors(manifest) {
     if (!Array.isArray(site?.actions)) errors.push(`${label}: actions must be a list`);
     if (site?.sign !== null && (typeof site?.sign !== "string" || !site.sign)) errors.push(`${label}: sign is an LF_Signs.conf id or null`);
     if (!Number.isInteger(site?.step)) errors.push(`${label}: step must be a journey step number`);
+    if ("when" in (site || {}) && (typeof site.when !== "string" || !site.when)) errors.push(`${label}: when names the player state its actions need`);
     if ("x" in (site || {}) || "z" in (site || {}) || "coords" in (site || {})) {
       errors.push(`${label}: positions come from the layers, not the manifest`);
     }
@@ -269,7 +273,9 @@ export function formatTownCheck(result) {
   return lines.join("\n");
 }
 
-// Which expected actions look did not offer on this entity.
+// Which expected actions look did not offer on this entity. An unnamed hit
+// counts: an action on a prefab child (the duty desk's punch clock) has no
+// layer name. A hit named after another entity does not.
 export function missingActions(expected, entityName, look) {
   const text = (look ?? "").trim();
   const offered = new Set();
@@ -277,7 +283,10 @@ export function missingActions(expected, entityName, look) {
     for (const part of text.split(",")) {
       const hit = part.trim();
       const at = hit.lastIndexOf("@");
-      if (at < 0) continue;
+      if (at < 0) {
+        if (hit) offered.add(hit);
+        continue;
+      }
       if (entityName && hit.slice(at + 1) !== entityName) continue;
       offered.add(hit.slice(0, at));
     }
@@ -291,11 +300,10 @@ export function judgeTownRow(row, { requireSigns = TOWN.requireSigns, neighbourM
   const failures = [...(row.resolveErrors || [])];
   const warnings = [];
   if (row.entity && row.actions?.length) {
-    if (!(row.look ?? "").trim() || row.look === "none") failures.push("look offers no interaction");
-    else {
-      const missing = missingActions(row.actions, row.entity, row.look);
-      if (missing.length) failures.push(`look lacks ${missing.join(", ")}`);
-    }
+    const missing = missingActions(row.actions, row.entity, row.look);
+    if (missing.length && row.when) warnings.push(`look: ${missing.join(", ")} needs ${row.when}`);
+    else if (!(row.look ?? "").trim() || row.look === "none") failures.push("look offers no interaction");
+    else if (missing.length) failures.push(`look lacks ${missing.join(", ")}`);
   }
   if (row.menu != null) {
     const menu = String(row.menu).trim();

@@ -468,6 +468,11 @@ export function runRoadmapReport(deps) {
 // each named site, waits for its expected actions, shoots it, opens its menu,
 // then stands at its sign and opens Read. Positions come from deps.world(), the
 // layer scan; the manifest only names what must exist.
+function menuShown(ui) {
+  const text = ui && ui.status === "ok" ? String(ui.detail || "").trim() : "";
+  return Boolean(text) && text !== "none" && text !== "blank";
+}
+
 export function runTownReport(deps) {
   const manifest = deps.manifest;
   const world = deps.world();
@@ -510,6 +515,7 @@ export function runTownReport(deps) {
       name: site.entity ? `${site.id} (${site.entity})` : `${site.id} (${place.count || 0} x ${site.prefab})`,
       entity: site.entity || "",
       actions: site.actions,
+      when: site.when || "",
       outskirts: Boolean(site.outskirts),
       layer: place.layer || "",
       x: place.x ?? "",
@@ -555,9 +561,20 @@ export function runTownReport(deps) {
       if (cameraStuck) break;
       const menuHit = site.entity ? menuActionFromLook(siteLook(site.entity, row.look)) : "";
       if (menuHit) {
+        // The world shot moved the character to the camera; stand at the site
+        // again, or a ranged action (a shop) refuses and no menu opens.
+        const back = deps.stand(site.entity);
+        if (down(back)) break;
+        if (back.status === "ok") deps.pause(800);
         deps.use(menuHit.split("@")[0], site.entity);
         deps.pause(500);
-        const ui = deps.ui();
+        // A shop, the wanted board, and the org desk fill their sheet from a
+        // server reply; on a dedicated client that takes longer than 500 ms.
+        let ui = deps.ui();
+        for (let waits = 0; waits < 8 && !menuShown(ui); waits++) {
+          deps.pause(500);
+          ui = deps.ui();
+        }
         row.menu = ui.status === "ok" ? ui.detail || "none" : "none";
         const menuShot = deps.captureUi(`town_${site.id}_menu`);
         const menuImage = menuShot.status === "ok" ? deps.resolve(menuShot) : "";

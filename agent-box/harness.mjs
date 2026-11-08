@@ -173,6 +173,18 @@ export function buildLine(id, spec) {
     if (offset.some((n) => Number.isNaN(n))) throw new Error("camera offset needs ox oy oz");
     return `${line} ${offset.map(trimNum).join(" ")}`;
   }
+  if (spec.verb === "film") {
+    // In-engine recording (LF_FilmRecorder, tools/film/engine.mjs).
+    if (spec.mode === "stop" || spec.mode === "status") return `${id} film ${spec.mode}`;
+    if (spec.mode !== "start") throw new Error("film mode must be start, stop, or status");
+    const fps = Number(spec.fps);
+    if (!Number.isInteger(fps) || fps < 0 || fps > 30) throw new Error(`film fps must be 0-30: ${spec.fps}`);
+    const line = `${id} film start ${token(spec.name, "film name")} ${fps}`;
+    if (spec.seconds === undefined) return line;
+    const seconds = Number(spec.seconds);
+    if (!Number.isInteger(seconds) || seconds <= 0) throw new Error(`film seconds must be a positive integer: ${spec.seconds}`);
+    return `${line} ${seconds}`;
+  }
   throw new Error(`unknown verb: ${spec.verb}`);
 }
 
@@ -1173,6 +1185,10 @@ function townSelftest() {
     throw new Error("requireSigns true fails a sign issue");
   }
   if (judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "LF_A@Site_A", mesh: "white", neighbourM: 3 }, manifest).ok) throw new Error("a white site fails");
+  if (!judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "LF_A", mesh: "ok", neighbourM: 3 }, manifest).ok) throw new Error("an action on an unnamed prefab child of the site counts");
+  const stateful = judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "none", mesh: "ok", neighbourM: 3, when: "an on-duty officer" }, manifest);
+  if (!stateful.ok || stateful.warnings[0] !== "look: LF_A needs an on-duty officer") throw new Error("a site whose actions need a player state warns instead of failing");
+  if (!manifestErrors({ ...manifest, sites: [{ ...manifest.sites[0], when: "" }] }).some((e) => e.includes("when"))) throw new Error("an empty when is a manifest error");
   const liveBlank = signIssues(manifest.sites[0], world[0], world, catalog, strings, 8, { read: true, card: "blank" });
   if (!liveBlank.issues.some((issue) => issue.includes("shows blank in play"))) throw new Error("a card blank in play is a sign issue");
 

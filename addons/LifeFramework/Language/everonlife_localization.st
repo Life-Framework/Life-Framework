@@ -4437,6 +4437,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
      Comment "Wanted board sign card: what to do next."
     }
+    CustomStringTableItem "{AC8D0A406C890A6E}" {
+     Id "LF-Contraband_Crate_Name"
+     Target_en_us "Crate of spirits"
+     Comment "Item name of the contraband cargo: a wooden crate of untaxed spirits carried in both hands"
+    }
+    CustomStringTableItem "{1D5E4503B79F1A6F}" {
+     Id "LF-Contraband_Crate_Desc"
+     Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
+     Comment "Item description of the contraband crate"
+    }
+    CustomStringTableItem "{8269943001D9EADB}" {
+     Id "LF-Contraband_Loaded"
+     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
+     Comment "Toast when the convoy start hands the player a contraband crate at the barn"
+    }
+    CustomStringTableItem "{DEDBE2A372F43FF6}" {
+     Id "LF-Contraband_HandsFull"
+     Target_en_us "Your hands are full. Put down what you carry, then take a crate."
+     Comment "Toast when the convoy start cannot hand over the crate because the player already carries something"
+    }
     CustomStringTableItem "{E69F55595D3DEC33}" {
      Id "LF-Org_Title"
      Target_en_us "Organization register"
@@ -4812,6 +4832,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Read the town map board beside this one, then talk to the town hall clerk a few steps east."
      Comment "Safe zone sign card, Next section: where the player goes after this place."
     }
+    CustomStringTableItem "{69BB0FD8421E7F07}" {
+     Id "LF-Dispatch_Title"
+     Target_en_us "Radio - dispatch"
+     Comment "Title of the radio dispatch an on-duty officer gets when a crime is reported (M1-20)."
+    }
+    CustomStringTableItem "{F03D5F8438D95A26}" {
+     Id "LF-Dispatch_Radio"
+     Target_en_us "All units: %1 at %2. Suspect: %3."
+     Comment "Radio dispatch line. %1 = offence, %2 = place, %3 = description (what they wore, on foot or driving). Never a name."
+    }
+    CustomStringTableItem "{F069A4CD98ADF898}" {
+     Id "LF-Dispatch_UnknownPlace"
+     Target_en_us "an unknown place"
+     Comment "Dispatch place when the crime report has no place."
+    }
+    CustomStringTableItem "{123EFB6232FAF7F2}" {
+     Id "LF-Dispatch_BoardHeading"
+     Target_en_us "DISPATCH LOG - newest first"
+     Comment "Wanted board, police view: heading above the recent dispatch calls."
+    }
+    CustomStringTableItem "{19D578215BBBA07B}" {
+     Id "LF-Dispatch_BoardLine"
+     Target_en_us "%1  %2 at %3: %4"
+     Comment "Wanted board dispatch line. %1 = clock time HH:MM, %2 = offence, %3 = place, %4 = what happened to the call."
+    }
+    CustomStringTableItem "{5D059C7A2F962F91}" {
+     Id "LF-Dispatch_BoardRadioed"
+     Target_en_us "%1 on duty, radioed"
+     Comment "Dispatch outcome: %1 = number of officers on duty who got the radio call."
+    }
+    CustomStringTableItem "{3C88CC2A8BE5A6A5}" {
+     Id "LF-Dispatch_BoardLoud"
+     Target_en_us "nobody on duty, loud alarm"
+     Comment "Dispatch outcome when no officer was on duty: the loud alarm sounded at the site instead."
+    }
     CustomStringTableItem "{4E677F2199216C44}" {
      Id "LF-Ticket_Write"
      Target_en_us "Write ticket"
@@ -5026,26 +5081,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Offence_UnpaidFine"
      Target_en_us "Unpaid fine"
      Comment "Wanted board offence when a police ticket goes unpaid past its second deadline."
-    }
-    CustomStringTableItem "{AC8D0A406C890A6E}" {
-     Id "LF-Contraband_Crate_Name"
-     Target_en_us "Crate of spirits"
-     Comment "Item name of the contraband cargo: a wooden crate of untaxed spirits carried in both hands"
-    }
-    CustomStringTableItem "{1D5E4503B79F1A6F}" {
-     Id "LF-Contraband_Crate_Desc"
-     Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
-     Comment "Item description of the contraband crate"
-    }
-    CustomStringTableItem "{8269943001D9EADB}" {
-     Id "LF-Contraband_Loaded"
-     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
-     Comment "Toast when the convoy start hands the player a contraband crate at the barn"
-    }
-    CustomStringTableItem "{DEDBE2A372F43FF6}" {
-     Id "LF-Contraband_HandsFull"
-     Target_en_us "Your hands are full. Put down what you carry, then take a crate."
-     Comment "Toast when the convoy start cannot hand over the crate because the player already carries something"
     }
   }
  }

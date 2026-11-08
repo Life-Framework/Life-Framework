@@ -120,16 +120,12 @@ class LF_Murder
 
 		int amount = WantedAmount();
 		account.IncreaseWantedLevel(amount);
-		LF_WantedReports.Report(killerUid, killer, LF_WantedReports.OFFENCE_MURDER);
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		if (accountManager)
 			accountManager.SaveAndReleaseAccount(account);
 
-		vector origin = "0 0 0";
-		if (killer)
-			origin = killer.GetOrigin();
-
-		EL_Utils.AlertPolice("#LF-Police_Alert_Murder", origin);
+		// A street has no alarm bell: the report and the radio call only (no site, LF_Dispatch).
+		LF_Dispatch.Report(killerUid, killer, LF_WantedReports.OFFENCE_MURDER, vector.Zero);
 		if (killer)
 			EL_Utils.NotifyEntity(killer, "#LF-Murder_Wanted", "#LF-Murder_Title", 6.0);
 
