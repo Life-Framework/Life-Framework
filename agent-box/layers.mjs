@@ -31,6 +31,11 @@ function classify(line) {
   const groupPrefab = line.match(/^\$grp\s+[A-Za-z_][A-Za-z0-9_]*\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"/);
   if (groupPrefab) return { entity: false, name: "", actionName: "", prefab: groupPrefab[1] };
 
+  // An unnamed placement (`SCR_SpawnPoint : "{GUID}path" {`). The town manifest
+  // can match it by prefab; `stand` cannot address it.
+  const anonPrefab = line.match(/^[A-Za-z_][A-Za-z0-9_]*\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"\s*\{$/);
+  if (anonPrefab) return { entity: true, name: "", actionName: "", prefab: "", anonPrefab: anonPrefab[1] };
+
   const generic = line.match(/^GenericEntity\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{/);
   if (generic) return { entity: true, name: generic[1], actionName: "", prefab: "" };
 
@@ -65,6 +70,21 @@ function prefabActions(root, prefabPath, seen = new Set()) {
   return [...new Set(actions)];
 }
 
+// The sign id a prefab chain sets on LF_SignComponent (EL_MiningSign sets "mining").
+function prefabSignId(root, prefabPath, seen = new Set()) {
+  if (!root || !prefabPath || seen.has(prefabPath)) return "";
+  seen.add(prefabPath);
+  const rel = prefabPath.replaceAll("\\", "/");
+  if (rel.includes("..")) return "";
+  const full = join(root, "addons", "LifeFramework", rel);
+  if (!existsSync(full)) return "";
+  const text = readFileSync(full, "utf8");
+  const own = text.match(/^\s*m_sSignId\s+"([^"]*)"/m);
+  if (own) return own[1];
+  const parent = text.match(/:\s*"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/);
+  return parent ? prefabSignId(root, parent[1], seen) : "";
+}
+
 function worldPosition(stack, frame) {
   let x = 0;
   let y = 0;
@@ -88,6 +108,7 @@ function worldPosition(stack, frame) {
 function walkLayer(text, layerFile, root) {
   const pads = [];
   const placed = [];
+  const anonymous = [];
   const stack = [];
 
   for (const raw of text.split(/\r?\n/)) {
@@ -101,12 +122,14 @@ function walkLayer(text, layerFile, root) {
       const frame = classify(line);
       frame.actions = [];
       frame.coords = null;
+      frame.signId = null;
+      // The nearest named entity owns the action, as before unnamed placements
+      // were entities. An unnamed child in between records it too.
       if (frame.actionName) {
         for (let i = stack.length - 1; i >= 0; i--) {
-          if (stack[i].entity) {
-            stack[i].actions.push(frame.actionName);
-            break;
-          }
+          if (!stack[i].entity) continue;
+          stack[i].actions.push(frame.actionName);
+          if (stack[i].name) break;
         }
       }
       stack.push(frame);
@@ -115,6 +138,16 @@ function walkLayer(text, layerFile, root) {
     const coords = line.match(/^coords\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)$/);
     if (coords && stack.length) {
       stack[stack.length - 1].coords = [Number(coords[1]), Number(coords[2]), Number(coords[3])];
+    }
+
+    const signId = line.match(/^m_sSignId\s+"([^"]*)"$/);
+    if (signId) {
+      for (let i = stack.length - 1; i >= 0; i--) {
+        if (stack[i].entity) {
+          stack[i].signId = signId[1];
+          break;
+        }
+      }
     }
 
     if (closes) {
@@ -131,8 +164,19 @@ function walkLayer(text, layerFile, root) {
         }
         if (prefab) frame.actions.push(...prefabActions(root, prefab));
       }
-      if (frame?.entity && frame.name) {
+      if (frame?.entity) {
         const world = worldPosition(stack, frame);
+        let prefab = frame.prefab || frame.anonPrefab || "";
+        if (!prefab) {
+          for (let i = stack.length - 1; i >= 0; i--) {
+            if (stack[i].prefab) {
+              prefab = stack[i].prefab;
+              break;
+            }
+          }
+        }
+        if (!frame.name && root && prefab) frame.actions.push(...prefabActions(root, prefab));
+        const signId = frame.signId ?? prefabSignId(root, prefab);
         if (world) {
           const record = {
             name: frame.name,
@@ -141,15 +185,21 @@ function walkLayer(text, layerFile, root) {
             x: world.x,
             y: world.y,
             z: world.z,
+            prefab,
           };
-          placed.push(record);
-          if (frame.actions.length) pads.push(record);
+          if (signId) record.signId = signId;
+          if (frame.name) {
+            placed.push(record);
+            if (frame.actions.length) pads.push(record);
+          } else {
+            anonymous.push(record);
+          }
         }
       }
     }
   }
 
-  return { pads, placed };
+  return { pads, placed, anonymous };
 }
 
 export function parseLayer(text, layerFile, root) {
@@ -182,6 +232,21 @@ export function loadPlaced(root) {
   }
   placed.sort((a, b) => a.x - b.x || a.z - b.z || a.name.localeCompare(b.name));
   return placed;
+}
+
+// Every placed entity, named or not. The town manifest resolves sites and
+// signs against this, so positions live only in the layers.
+export function loadWorld(root) {
+  const dir = join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
+  const entities = [];
+  for (const file of readdirSync(dir)) {
+    if (!file.endsWith(".layer")) continue;
+    const text = readFileSync(join(dir, file), "utf8");
+    const walked = walkLayer(text, file, root);
+    entities.push(...walked.placed, ...walked.anonymous);
+  }
+  entities.sort((a, b) => a.layer.localeCompare(b.layer) || a.x - b.x || a.z - b.z || a.name.localeCompare(b.name));
+  return entities;
 }
 
 export function findPad(pads, name) {

@@ -266,6 +266,44 @@ are judged from the widget list and `classify` of the `shot ui` picture.
 as failures. Do not boot the test server for this report. Do not restart
 Workbench between sites.
 
+## Town manifest
+
+`agent-box/town.mjs` (`TOWN`) is the one list of M1 sites: spawn, post office,
+traders, ATM, shops, vehicle lot, the robbery and breach sites, police
+station, jail, org registry, hideout, garage, mining, and farm. Each site names
+an entity (`entity`) or, for unnamed placements like the spawn points, a
+prefab (`prefab`, every placement counts and the site sits at their centre).
+It also lists the actions `look` must offer there, the `LF_Signs.conf` id of
+its sign (or `null`), and its journey step. It holds no positions. Sites and
+signs resolve against the layer scan (`loadWorld` in `layers.mjs`), so moving
+a site to another layer or street needs no manifest edit. A sign is any
+placed entity whose `LF_SignComponent.m_sSignId` (inline or from its prefab)
+matches.
+
+```powershell
+node agent-box/harness.mjs town                 # offline: resolve every site against the layers
+node agent-box/harness.mjs report town          # play mode: writes agent-box/reports/town.html
+node agent-box/harness.mjs report town atm bank # only those site ids
+```
+
+Offline (`town`, `tools\cli validate` via `validate-town-manifest.mjs`), a
+site fails when its entity is missing or placed more than once, the layer (or
+its addon prefab) lacks an expected action, or it is more than 30 m from
+its nearest neighbour. In play mode, `report town` stands at each named site,
+waits for the expected actions in `look`, takes a world shot, and opens a menu
+action the way `report roadmap` does. It then stands at the sign, checks that
+`look` offers `LF_SignReadAction` there, opens Read, and judges the card from
+the widget list and a `shot ui`. A row fails when the site is white or
+missing, `look` lacks an expected action, or a menu is blank.
+
+Sign checks: no sign with that id within 8 m, a card with no title or no
+section text (keys resolved through the string table), Read not offered, or a
+card blank in play. While `TOWN.requireSigns` is `false` these print as
+`sign: pending (...)` warnings and do not fail. M1-09 places the signs and
+sets it to `true`, after which the same checks fail the row, offline and in
+play. `selftest` covers a missing sign, a blank card, a sign 9 m away, an 80 m
+outlier, an empty look, an action on another entity, and the flag.
+
 ## DebugWorld chains
 
 `node agent-box/harness.mjs chains` checks the probe list against the layer
