@@ -1,23 +1,33 @@
-// Builds the site's content from the repo, so the site and the mod never drift.
+// Builds the site's content from the repo and GitHub, so the site and the mod never drift.
 //
-//   docs/direction.md, docs/decisions.md, docs/ecosystem.md (if present),
-//   docs/roadmap/**/*.md, website/content/docs/*.md  -> src/generated/docs.json
-//   parts of direction.md and decisions.md            -> src/generated/site.json
-//   GitHub milestone M1 + its issues, good first issues -> src/generated/github.json
+//   docs/*.md, docs/roadmap/**, website/content/docs/  -> src/generated/docs-index.json
+//                                                         src/generated/data/doc-<slug>.json (HTML)
+//   docs/decisions.md                                   -> src/generated/data/decisions.json
+//   parts of docs/direction.md, content/                -> src/generated/site.json
+//   GitHub milestones, issues, merged PRs, contributors -> src/generated/github.json
+//                                                         src/generated/data/devlog.json
+//   content/media.json (film-evidence release assets)   -> public/media/clips/ (downloaded, git-ignored)
 //
-// GitHub is read through the public REST API (GITHUB_TOKEN is used when set, to
-// lift the rate limit). If the API cannot be reached, the build falls back to
-// content/github-snapshot.json and says so. `npm run snapshot` refreshes that file.
+// GitHub is read through the public REST API (GITHUB_TOKEN lifts the rate limit).
+// If the API cannot be reached, the build falls back to content/github-snapshot.json
+// and the pages say so. `npm run snapshot` refreshes that file.
 
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import GithubSlugger from "github-slugger";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkRehype from "remark-rehype";
+import rehypeSlug from "rehype-slug";
+import rehypeStringify from "rehype-stringify";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const site = path.resolve(here, "..");
 const repo = path.resolve(site, "..");
 const outDir = path.join(site, "src", "generated");
+const dataDir = path.join(outDir, "data");
 const snapshotPath = path.join(site, "content", "github-snapshot.json");
 const updateSnapshot = process.argv.includes("--update-snapshot");
 
@@ -26,6 +36,36 @@ const BLOB = `https://github.com/${GITHUB_REPO}/blob/main/`;
 
 const toPosix = (p) => p.split(path.sep).join("/");
 const read = (p) => fs.readFileSync(p, "utf8").replace(/\r\n/g, "\n");
+
+const md = unified().use(remarkParse).use(remarkGfm).use(remarkRehype).use(rehypeSlug).use(rehypeStringify);
+const toHtml = (text) => String(md.processSync(text));
+
+// One line of plain text from markdown: links keep their text, code and emphasis lose their marks.
+const plain = (s) =>
+  s
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/<[^>]+>/g, "")
+    .replace(/[`*]/g, "")
+    .replace(/(^|\s)_([^_]+)_(?=[\s.,;:)]|$)/g, "$1$2")
+    .replace(/\s+/g, " ")
+    .trim();
+
+// Cut at a sentence end before `max` characters when there is one, else at a word.
+// A last sentence that ends in ":" introduced a list that is not shown; drop it.
+function clip(text, max) {
+  let t = text.trim();
+  if (t.length > max) {
+    const cut = t.slice(0, max);
+    const end = cut.lastIndexOf(". ");
+    t = end > max * 0.4 ? cut.slice(0, end + 1) : cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:]$/, "") + "...";
+  }
+  if (t.endsWith(":")) {
+    const end = t.lastIndexOf(". ");
+    t = end > 0 ? t.slice(0, end + 1) : t.slice(0, -1) + ".";
+  }
+  return t;
+}
 
 // ---------------------------------------------------------------- frontmatter
 
@@ -56,39 +96,29 @@ function walk(dir) {
   });
 }
 
-function firstHeading(md) {
-  const m = /^#\s+(.+)$/m.exec(md);
-  return m ? m[1].trim() : null;
-}
+const firstHeading = (text) => (/^#\s+(.+)$/m.exec(text) || [])[1]?.trim() || null;
+const stripFirstHeading = (text) => text.replace(/^\s*#\s+.+\n+/, "");
 
-function stripFirstHeading(md) {
-  return md.replace(/^\s*#\s+.+\n+/, "");
-}
-
-function describe(md) {
-  for (const block of md.split(/\n{2,}/)) {
+function describe(text) {
+  for (const block of text.split(/\n{2,}/)) {
     const t = block.trim();
-    if (!t || /^(#|\||```|- |\* |\d+\.|>|<)/.test(t)) continue;
-    const plain = t
-      .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-      .replace(/[`*]/g, "")
-      .replace(/\s+/g, " ");
-    return plain.length > 220 ? plain.slice(0, 217).trimEnd() + "..." : plain;
+    if (!t || /^(#|\||```|- |\* |\d+\.|>|<|---)/.test(t)) continue;
+    return clip(plain(t), 200);
   }
   return "";
 }
 
-function headings(md) {
+function headings(text) {
   const slugger = new GithubSlugger();
   const out = [];
   let fence = false;
-  for (const line of md.split("\n")) {
+  for (const line of text.split("\n")) {
     if (/^\s*```/.test(line)) fence = !fence;
     if (fence) continue;
     const m = /^(#{1,3})\s+(.+?)\s*#*\s*$/.exec(line);
     if (!m) continue;
-    const text = m[2].replace(/\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/[`*]/g, "");
-    out.push({ level: m[1].length, text, id: slugger.slug(text) });
+    const t = plain(m[2]);
+    out.push({ level: m[1].length, text: t, id: slugger.slug(t) });
   }
   return out;
 }
@@ -99,55 +129,44 @@ function addRepoDoc(rel, { slug, group, order, title }) {
   const abs = path.join(repo, rel);
   if (!fs.existsSync(abs)) return;
   const raw = read(abs);
-  docs.push({
-    slug,
-    group,
-    order,
-    title: title || firstHeading(raw) || slug,
-    repoPath: rel,
-    source: "repo",
-    body: stripFirstHeading(raw),
-  });
+  docs.push({ slug, group, order, title: title || firstHeading(raw) || slug, repoPath: rel, body: stripFirstHeading(raw) });
 }
 
 addRepoDoc("docs/direction.md", { slug: "direction", group: "Project", order: 0 });
 addRepoDoc("docs/decisions.md", { slug: "decisions", group: "Project", order: 1 });
 addRepoDoc("docs/ecosystem.md", { slug: "ecosystem", group: "Project", order: 2 });
+addRepoDoc("docs/research/life-rp-benchmark.md", { slug: "life-rp-benchmark", group: "Project", order: 3 });
 
-const roadmapRoot = path.join(repo, "docs", "roadmap");
-const roadmapFiles = walk(roadmapRoot)
+const roadmapFiles = walk(path.join(repo, "docs", "roadmap"))
   .map((p) => toPosix(path.relative(repo, p)))
   .sort((a, b) => {
-    const rank = (p) => (p === "docs/roadmap/README.md" ? 0 : p === "docs/roadmap/m1-playtest-town.md" ? 1 : 2);
-    // A folder's README sorts before the files in it.
-    const key = (p) => p.replace(/README\.md$/, "");
+    const order = ["docs/roadmap/README.md", "docs/roadmap/m1-playtest-town.md", "docs/roadmap/m2-outline.md"];
+    const rank = (p) => (order.includes(p) ? order.indexOf(p) : order.length);
+    const key = (p) => p.replace(/README\.md$/, ""); // a folder's README sorts before its files
     return rank(a) - rank(b) || key(a).localeCompare(key(b));
   });
 roadmapFiles.forEach((rel, i) => {
-  const inner = rel.slice("docs/roadmap/".length).replace(/\.md$/, "");
-  const parts = inner.split("/");
+  const parts = rel.slice("docs/roadmap/".length).replace(/\.md$/, "").split("/");
   if (parts[parts.length - 1] === "README") parts.pop();
-  const slug = ["roadmap", ...parts].join("-").toLowerCase();
-  addRepoDoc(rel, { slug, group: "Roadmap", order: i });
+  addRepoDoc(rel, { slug: ["roadmap", ...parts].join("-").toLowerCase(), group: "Roadmap", order: i });
 });
 
 for (const abs of walk(path.join(site, "content", "docs"))) {
   const { data, body } = parseFrontmatter(read(abs));
-  const slug = data.slug || path.basename(abs, ".md");
   docs.push({
-    slug,
-    group: "Community guides",
+    slug: data.slug || path.basename(abs, ".md"),
+    group: "Community guides (2025)",
     order: Number(data.order || 0),
-    title: data.title || firstHeading(body) || slug,
+    title: data.title || firstHeading(body) || data.slug,
     repoPath: toPosix(path.relative(repo, abs)),
-    source: data.source || "site",
-    updated: data.updated || null,
     body: stripFirstHeading(body),
   });
 }
 
-// Rewrite relative links: to /docs/<slug> when the target is on the site,
-// otherwise to the file on GitHub.
+// Pages with their own route instead of /docs/<slug>.
+const ownRoute = { decisions: "/decisions" };
+const docHref = (d) => ownRoute[d.slug] || `/docs/${d.slug}`;
+
 const bySlug = new Map();
 const byPath = new Map();
 for (const d of docs) {
@@ -156,6 +175,7 @@ for (const d of docs) {
   byPath.set(d.repoPath, d);
 }
 
+// Relative links: to the doc's page when the target is on the site, otherwise to the file on GitHub.
 function rewriteTarget(fromRel, target) {
   if (/^([a-z][a-z0-9+.-]*:|#|\/)/i.test(target)) return target;
   const [p, hash] = target.split("#");
@@ -164,45 +184,112 @@ function rewriteTarget(fromRel, target) {
   if (resolved.startsWith("..")) return target;
   const doc = byPath.get(resolved) || byPath.get(resolved.replace(/\/$/, "") + "/README.md");
   const anchor = hash ? `#${hash}` : "";
-  if (doc) return `/docs/${doc.slug}${anchor}`;
+  if (doc) return docHref(doc) + anchor;
   return `${BLOB}${resolved}${anchor}`;
 }
 
-function rewriteLinks(d) {
+function rewriteLinks(text, fromRel) {
   let fence = false;
-  return d.body
+  return text
     .split("\n")
     .map((line) => {
       if (/^\s*```/.test(line)) fence = !fence;
       if (fence) return line;
       return line
-        .replace(/(\]\()([^)\s]+)((?:\s+"[^"]*")?\))/g, (_, a, t, b) => a + rewriteTarget(d.repoPath, t) + b)
-        .replace(/^(\[[^\]]+\]:\s*)(\S+)/, (_, a, t) => a + rewriteTarget(d.repoPath, t));
+        .replace(/(\]\()([^)\s]+)((?:\s+"[^"]*")?\))/g, (_, a, t, b) => a + rewriteTarget(fromRel, t) + b)
+        .replace(/^(\[[^\]]+\]:\s*)(\S+)/, (_, a, t) => a + rewriteTarget(fromRel, t));
     })
     .join("\n");
 }
 
-const docsOut = docs.map((d) => {
-  const markdown = rewriteLinks(d);
-  return {
+// Wrap tables so a wide one scrolls inside its box instead of widening the page.
+const wrapTables = (html) => html.replace(/<table>/g, '<div class="table-wrap"><table>').replace(/<\/table>/g, "</table></div>");
+
+const docsIndex = [];
+fs.rmSync(dataDir, { recursive: true, force: true });
+fs.mkdirSync(dataDir, { recursive: true });
+for (const d of docs) {
+  const markdown = rewriteLinks(d.body, d.repoPath);
+  const meta = {
     slug: d.slug,
+    href: docHref(d),
     group: d.group,
     order: d.order,
     title: d.title,
     repoPath: d.repoPath,
+    sourceUrl: `${BLOB}${d.repoPath}`,
     editUrl: `https://github.com/${GITHUB_REPO}/edit/main/${d.repoPath}`,
-    source: d.source,
-    updated: d.updated || null,
     description: describe(markdown),
-    headings: headings(markdown),
-    markdown,
   };
-});
+  docsIndex.push(meta);
+  fs.writeFileSync(
+    path.join(dataDir, `doc-${d.slug}.json`),
+    JSON.stringify({ ...meta, headings: headings(markdown).filter((h) => h.level === 2), html: wrapTables(toHtml(markdown)) }),
+  );
+}
+
+// ---------------------------------------------------------------- decisions
+
+// "## Section" blocks hold entries that open with "**YYYY-MM-DD — Title.**".
+function parseDecisions(text) {
+  const [intro, ...rest] = text.split(/^---\s*$/m);
+  const body = rest.join("---");
+  const slugger = new GithubSlugger();
+  const sections = [];
+  let section = null;
+  let entry = null;
+  for (const block of body.split(/\n{2,}/)) {
+    const b = block.trim();
+    if (!b) continue;
+    const h = /^##\s+(.+)$/.exec(b);
+    if (h) {
+      section = { title: h[1].trim(), id: slugger.slug(h[1].trim()), entries: [] };
+      sections.push(section);
+      entry = null;
+      continue;
+    }
+    const e = /^\*\*(\d{4}-\d{2}-\d{2})\s+[—–-]+\s+([\s\S]+?)\*\*\s*([\s\S]*)$/.exec(b);
+    if (e && section) {
+      const title = e[2].replace(/\s+/g, " ").replace(/\.$/, "");
+      entry = { date: e[1], title, id: slugger.slug(title), parts: [e[3]] };
+      section.entries.push(entry);
+    } else if (entry) {
+      entry.parts.push(b);
+    }
+  }
+  const out = sections.map((s) => ({
+    title: s.title,
+    id: s.id,
+    entries: s.entries.map((en) => {
+      const raw = en.parts.join("\n\n");
+      const sup = /Superseded (\d{4}-\d{2}-\d{2}) by "([^"]+)"/.exec(raw);
+      const amended = /Amended (\d{4}-\d{2}-\d{2})/.exec(raw);
+      return {
+        date: en.date,
+        title: en.title,
+        id: en.id,
+        superseded: sup ? { date: sup[1], by: sup[2] } : null,
+        amended: amended ? amended[1] : null,
+        summary: clip(plain(en.parts[0]).split(/\s+Why:/)[0], 220),
+        html: toHtml(rewriteLinks(raw, "docs/decisions.md")),
+      };
+    }),
+  }));
+  // The intro opens with the paragraph the page header already says; keep the rest.
+  const introRest = stripFirstHeading(intro).trim().split(/\n{2,}/).slice(1).join("\n\n");
+  return { introHtml: toHtml(rewriteLinks(introRest, "docs/decisions.md")), sections: out };
+}
+
+const decisionsDoc = bySlug.get("decisions");
+const decisions = parseDecisions(decisionsDoc.body);
+const decisionCount = decisions.sections.reduce((n, s) => n + s.entries.length, 0);
+if (decisionCount < 5) throw new Error(`decisions.json: only ${decisionCount} entries parsed from docs/decisions.md; check the entry format`);
+fs.writeFileSync(path.join(dataDir, "decisions.json"), JSON.stringify(decisions));
 
 // ---------------------------------------------------------------- site.json
 
-function section(md, title) {
-  const lines = md.split("\n");
+function section(text, title) {
+  const lines = text.split("\n");
   const start = lines.findIndex((l) => new RegExp(`^##\\s+${title}\\s*$`, "i").test(l));
   if (start < 0) return "";
   let end = lines.findIndex((l, i) => i > start && /^##\s/.test(l));
@@ -210,49 +297,68 @@ function section(md, title) {
   return lines.slice(start + 1, end).join("\n").trim();
 }
 
-function decisionEntry(md, needle) {
-  const blocks = md.split(/\n{2,}/);
-  const i = blocks.findIndex((b) => b.includes(needle));
-  return i < 0 ? "" : blocks[i].trim();
-}
-
-function milestones(md) {
-  const table = section(md, "Milestones");
-  return table
+function milestones(text) {
+  return section(text, "Milestones")
     .split("\n")
     .filter((l) => /^\|\s*M\d/.test(l))
     .map((l) => {
       const cells = l.split("|").slice(1, -1).map((c) => c.trim());
-      return { id: cells[0], name: cells[1].replace(/\*\*/g, ""), doneWhen: cells[2] };
+      return { id: cells[0], name: plain(cells[1]), doneWhen: plain(cells[2]).replace(/\s*Outline: [^.]*\.?$/, "") };
     });
 }
 
-const direction = docs.find((d) => d.slug === "direction")?.body || "";
-const decisions = docs.find((d) => d.slug === "decisions")?.body || "";
-const siteJson = {
-  building: section(direction, "What we are building"),
-  playable: section(direction, "What \"playable\" means"),
-  aiFirst: section(direction, "How we build: AI-first"),
-  proof: section(direction, "Proof in the 3D world"),
-  notNow: section(direction, "Not now"),
-  inWorldFirst: decisionEntry(decisions, "In-world first.").replace(/^\*\*[^*]+\*\*\s*/, ""),
-  milestones: milestones(direction),
-  archive: JSON.parse(read(path.join(site, "content", "archive", "roadmap-2025.json"))),
-  team: JSON.parse(read(path.join(site, "content", "team.json"))),
-};
-for (const k of ["building", "playable", "inWorldFirst"]) {
-  if (!siteJson[k]) throw new Error(`site.json: could not extract "${k}" from docs/direction.md or docs/decisions.md; update build-content.mjs`);
+// The numbered loop under "What playable means".
+function loop(text) {
+  return text
+    .split("\n")
+    .filter((l) => /^\d+\.\s/.test(l))
+    .map((l) => plain(l.replace(/^\d+\.\s+/, "")));
 }
+
+// "- **Name** — what it does" bullets under "## Features" in the README.
+function readmeFeatures() {
+  const readme = read(path.join(repo, "README.md"));
+  return section(readme, "Features")
+    .replace(/\n[ \t]+/g, " ")
+    .split("\n")
+    .map((l) => /^- \*\*(.+?)\*\*\s*[—–-]+\s*(.+)$/.exec(l))
+    .filter(Boolean)
+    .map((m) => ({ name: m[1], what: plain(m[2]) }));
+}
+
+const direction = bySlug.get("direction").body;
+const playable = section(direction, 'What "playable" means');
+const siteJson = {
+  ambition: plain(/The ambition is[\s\S]*?in that order\./.exec(direction)?.[0] || "").replace(/\s*—\s*/g, ", "),
+  loop: loop(playable),
+  inWorldFirst: plain(
+    decisions.sections.flatMap((s) => s.entries).find((e) => e.title === "In-world first")?.html.replace(/<[^>]+>/g, " ") || "",
+  ),
+  milestones: milestones(direction),
+  features: readmeFeatures(),
+  archive: JSON.parse(read(path.join(site, "content", "archive", "roadmap-2025.json"))),
+  decisionCount,
+  latestDecisions: decisions.sections
+    .flatMap((s) => s.entries.map((e) => ({ ...e, section: s.title })))
+    .filter((e) => !e.superseded)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 4)
+    .map(({ date, title, id, summary }) => ({ date, title, id, summary })),
+};
+if (!siteJson.ambition) throw new Error('site.json: "The ambition is ... in that order." is gone from docs/direction.md; update build-content.mjs');
+if (siteJson.loop.length < 5) throw new Error('site.json: the numbered loop under "What playable means" in docs/direction.md is missing');
+if (!siteJson.inWorldFirst) throw new Error('site.json: the "In-world first" entry is missing from docs/decisions.md');
+if (siteJson.features.length < 5) throw new Error('site.json: the "- **Name** — what" bullets under "## Features" in README.md are missing');
 if (siteJson.milestones.length === 0) throw new Error("site.json: no milestone rows in docs/direction.md");
 
 // ---------------------------------------------------------------- GitHub
 
-async function gh(pathAndQuery) {
+async function gh(pathAndQuery, { maxPages = 10 } = {}) {
   const headers = { Accept: "application/vnd.github+json", "User-Agent": "life-framework-website" };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   const out = [];
   let url = `https://api.github.com${pathAndQuery}`;
-  while (url) {
+  for (let page = 0; url && page < maxPages; page++) {
     const res = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
     if (!res.ok) throw new Error(`GitHub ${res.status} for ${url}`);
     const body = await res.json();
@@ -264,21 +370,47 @@ async function gh(pathAndQuery) {
   return out;
 }
 
-function excerpt(body) {
+// What an issue is for: the "## Why" section of a scope issue, else the first prose.
+function issueExcerpt(body) {
   if (!body) return "";
-  // Scope issues open with a "Part of ..." line; the "## Why" section says what it is.
-  const why = /^##\s+Why\s*\n([\s\S]*?)(?=\n##\s|$(?![\s\S]))/m.exec(body.replace(/\r\n/g, "\n"));
-  const text = (why ? why[1] : body)
+  const text = body.replace(/\r\n/g, "\n");
+  const why = /^##\s+Why\s*\n([\s\S]*?)(?=\n##\s|$(?![\s\S]))/m.exec(text);
+  return clip(
+    plain(
+      (why ? why[1] : text)
+        .replace(/```[\s\S]*?```/g, "")
+        .replace(/<!--[\s\S]*?-->/g, "")
+        .split("\n")
+        .filter((l) => l.trim() && !/^\s*(#|\||- \[|>|Part of\b)/.test(l))
+        .join(" "),
+    ),
+    240,
+  );
+}
+
+// One line for the devlog: the first prose paragraph of the PR body, skipping
+// headings, "Closes #n", images, tables, and code.
+function prSummary(body) {
+  if (!body) return "";
+  const blocks = body
+    .replace(/\r\n/g, "\n")
     .replace(/```[\s\S]*?```/g, "")
     .replace(/<!--[\s\S]*?-->/g, "")
-    .split("\n")
-    .filter((l) => l.trim() && !/^\s*(#|\||- \[|>)/.test(l))
-    .join(" ")
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/[`*]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-  return text.length > 240 ? text.slice(0, 237).trimEnd() + "..." : text;
+    .split(/\n{2,}/)
+    .map((b) => b.trim())
+    .filter(Boolean);
+  for (const b of blocks) {
+    if (/^(#|\||!\[|>|(closes|fixes|resolves|part of|refs?)\b)/i.test(b) || /Generated with/.test(b)) continue;
+    // Prose up to the first list item; a block that opens with a list gives its first item.
+    const lines = b.split("\n").filter((l) => !/^#/.test(l));
+    const isItem = (l) => /^\s*([-*]|\d+\.)\s+/.test(l);
+    const firstItem = lines.findIndex(isItem);
+    const prose = firstItem === 0 ? [lines[0]] : firstItem > 0 ? lines.slice(0, firstItem) : lines;
+    const t = plain(prose.join(" ").replace(/^\s*([-*]|\d+\.)\s+/, ""));
+    if (t.length < 25) continue;
+    return clip(t, 200);
+  }
+  return "";
 }
 
 const issueOut = (i) => ({
@@ -288,36 +420,44 @@ const issueOut = (i) => ({
   url: i.html_url,
   labels: i.labels.map((l) => l.name),
   assignees: i.assignees.map((a) => a.login),
-  updatedAt: i.updated_at,
   closedAt: i.closed_at,
-  excerpt: excerpt(i.body),
+  excerpt: issueExcerpt(i.body),
   wave: Number((/\bWave (\d+)\b/.exec(i.body || "") || [])[1]) || null,
 });
 
 async function fetchGithub() {
-  const ms = await gh(`/repos/${GITHUB_REPO}/milestones?state=all&per_page=100`);
-  const m1 = ms.find((m) => /^M1\b/.test(m.title));
-  let milestone = null;
-  let issues = [];
-  if (m1) {
-    milestone = {
-      number: m1.number,
-      title: m1.title,
-      description: m1.description || "",
-      url: m1.html_url,
-      state: m1.state,
-      open: m1.open_issues,
-      closed: m1.closed_issues,
-      dueOn: m1.due_on,
-    };
-    issues = (await gh(`/repos/${GITHUB_REPO}/issues?milestone=${m1.number}&state=all&per_page=100`))
+  // LF_SITE_OFFLINE=1 builds from the snapshot, to test the fallback.
+  if (process.env.LF_SITE_OFFLINE) throw new Error("LF_SITE_OFFLINE is set");
+  const ms = (await gh(`/repos/${GITHUB_REPO}/milestones?state=all&per_page=100`))
+    .filter((m) => /^M\d+\b/.test(m.title))
+    .sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true }));
+  const milestonesOut = [];
+  for (const m of ms) {
+    const issues = (await gh(`/repos/${GITHUB_REPO}/issues?milestone=${m.number}&state=all&per_page=100`))
       .filter((i) => !i.pull_request)
       .map(issueOut);
+    milestonesOut.push({
+      id: /^M\d+/.exec(m.title)[0],
+      number: m.number,
+      title: m.title,
+      description: m.description || "",
+      url: m.html_url,
+      state: m.state,
+      issues,
+    });
   }
   const goodFirst = (await gh(`/repos/${GITHUB_REPO}/issues?labels=${encodeURIComponent("good first issue")}&state=open&per_page=100`))
     .filter((i) => !i.pull_request)
     .map(issueOut);
-  return { fetchedAt: new Date().toISOString(), milestone, issues, goodFirst };
+  const pulls = (await gh(`/repos/${GITHUB_REPO}/pulls?state=closed&sort=updated&direction=desc&per_page=100`, { maxPages: 3 }))
+    .filter((p) => p.merged_at && p.base.ref === "main")
+    .sort((a, b) => b.merged_at.localeCompare(a.merged_at))
+    .slice(0, 150)
+    .map((p) => ({ number: p.number, title: p.title, url: p.html_url, mergedAt: p.merged_at, author: p.user?.login || null, summary: prSummary(p.body) }));
+  const contributors = (await gh(`/repos/${GITHUB_REPO}/contributors?per_page=100`, { maxPages: 2 }))
+    .filter((c) => c.type === "User" && !/\[bot\]$/.test(c.login))
+    .map((c) => ({ login: c.login, url: c.html_url, contributions: c.contributions }));
+  return { fetchedAt: new Date().toISOString(), milestones: milestonesOut, goodFirst, pulls, contributors };
 }
 
 let github;
@@ -335,13 +475,60 @@ try {
   github = { ...JSON.parse(read(snapshotPath)), source: "snapshot" };
 }
 
+// ---------------------------------------------------------------- devlog
+
+// Merged PRs and recorded decisions, newest first.
+const devlog = [
+  ...github.pulls.map((p) => ({ kind: "pr", date: p.mergedAt, title: p.title, summary: p.summary, href: p.url, number: p.number })),
+  ...decisions.sections.flatMap((s) =>
+    s.entries.map((e) => ({ kind: "decision", date: e.date, title: e.title, summary: e.summary, href: `/decisions#${e.id}`, number: null })),
+  ),
+].sort((a, b) => b.date.slice(0, 10).localeCompare(a.date.slice(0, 10)) || (a.kind === b.kind ? b.date.localeCompare(a.date) : a.kind === "decision" ? -1 : 1));
+fs.writeFileSync(path.join(dataDir, "devlog.json"), JSON.stringify({ source: github.source, fetchedAt: github.fetchedAt, entries: devlog }));
+
+// ---------------------------------------------------------------- media
+
+// Clips are release assets (film-evidence); the build downloads them so the page serves them itself.
+// The API asset endpoint is used because the browser download URL answers 504 to scripts at times.
+async function releaseAsset(downloadUrl) {
+  const m = /\/releases\/download\/([^/]+)\/([^/]+)$/.exec(downloadUrl);
+  if (!m) throw new Error("not a release download URL");
+  const rel = await gh(`/repos/${GITHUB_REPO}/releases/tags/${m[1]}`);
+  const asset = rel.assets.find((a) => a.name === decodeURIComponent(m[2]));
+  if (!asset) throw new Error(`no asset ${m[2]} on release ${m[1]}`);
+  const headers = { Accept: "application/octet-stream", "User-Agent": "life-framework-website" };
+  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  return fetch(asset.url, { headers, redirect: "follow", signal: AbortSignal.timeout(60000) });
+}
+
+const media = JSON.parse(read(path.join(site, "content", "media.json")));
+const clipDir = path.join(site, "public", "media", "clips");
+fs.mkdirSync(clipDir, { recursive: true });
+for (const c of media.clips) {
+  const file = path.join(clipDir, path.basename(c.release));
+  c.local = fs.existsSync(file);
+  if (!c.local) {
+    try {
+      const res = await releaseAsset(c.release);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+      c.local = true;
+    } catch (err) {
+      console.warn(`[content] clip ${c.release} not downloaded (${err.message}); the page links to the release instead`);
+    }
+  }
+  c.src = c.local ? `/media/clips/${path.basename(c.release)}` : null;
+}
+
 // ---------------------------------------------------------------- write
 
-fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(path.join(outDir, "docs.json"), JSON.stringify(docsOut));
-fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify(siteJson));
-fs.writeFileSync(path.join(outDir, "github.json"), JSON.stringify(github));
+const { pulls, ...githubRest } = github;
+const githubOut = { ...githubRest, latestPulls: pulls.slice(0, 5) };
+fs.writeFileSync(path.join(outDir, "docs-index.json"), JSON.stringify(docsIndex));
+fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, media }));
+fs.writeFileSync(path.join(outDir, "github.json"), JSON.stringify(githubOut));
 console.log(
-  `[content] ${docsOut.length} docs, ${siteJson.milestones.length} milestones, ` +
-    `${github.issues.length} M1 issues, ${github.goodFirst.length} good first issues (${github.source})`,
+  `[content] ${docsIndex.length} docs, ${decisionCount} decisions, ${siteJson.milestones.length} milestones, ` +
+    `${github.milestones.map((m) => `${m.id} ${m.issues.length} issues`).join(", ")}, ${pulls.length} merged PRs, ` +
+    `${github.contributors.length} contributors (${github.source})`,
 );
