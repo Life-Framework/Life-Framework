@@ -231,6 +231,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_WhitelistCommandParse(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistPersist(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WoodcuttingDamage(), EL_TestTier.WORLD);
+		manager.Register(new LF_Test_ArrivalChain(), EL_TestTier.WORLD);
+		manager.Register(new LF_Test_QuestSignal(), EL_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestTracker(), EL_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestWorld(), EL_TestTier.WORLD);
 	}

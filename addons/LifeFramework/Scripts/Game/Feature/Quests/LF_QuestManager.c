@@ -57,7 +57,14 @@ class LF_QuestManager
 
 		IEntity giverEntity = giver.GetOwner();
 		if (giverEntity && !giver.GetGiverId().IsEmpty())
-			m_mGiverEntities.Set(giver.GetGiverId(), giverEntity.GetID());
+		{
+			// A second NPC with the same giver id (a test spawn, a copy) must not take over the
+			// placed giver while it lives: players talk to the one standing in town.
+			if (GetGiver(giver.GetGiverId()) && GetGiver(giver.GetGiverId()) != giver)
+				EL_Debug.Warn("Quests", string.Format("giver '%1' is already placed; the copy at %2 is not reachable", giver.GetGiverId(), giverEntity.GetOrigin()));
+			else
+				m_mGiverEntities.Set(giver.GetGiverId(), giverEntity.GetID());
+		}
 		else
 			EL_Debug.Error("Quests", string.Format("giver '%1' has no entity or id; its quests cannot be reached", giver.GetGiverId()));
 
@@ -70,6 +77,24 @@ class LF_QuestManager
 				m_mQuestGivers.Set(def.m_sQuestId, giver.GetGiverId());
 			EL_Debug.Log("Quests", string.Format("registered quest '%1' from giver '%2'", def.m_sQuestId, giver.GetGiverId()));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live giver component registered as giverId, or null (unknown id or deleted entity).
+	LF_QuestGiverComponent GetGiver(string giverId)
+	{
+		EntityID giverEntityId;
+		if (giverId.IsEmpty() || !m_mGiverEntities.Find(giverId, giverEntityId))
+			return null;
+
+		if (!GetGame() || !GetGame().GetWorld())
+			return null;
+
+		IEntity giverEntity = GetGame().GetWorld().FindEntityByID(giverEntityId);
+		if (!giverEntity)
+			return null;
+
+		return LF_QuestGiverComponent.Cast(giverEntity.FindComponent(LF_QuestGiverComponent));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -154,6 +179,37 @@ class LF_QuestManager
 	void ReportArea(IEntity user, string areaId)
 	{
 		Route(user, MakeEvent(LF_EQuestEventType.AREA_ENTER, areaId, 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A named world signal (LF_QuestSignals keys) for the user's SIGNAL objectives.
+	//! \return True when any of the user's quests moved.
+	bool ReportSignal(IEntity user, string key)
+	{
+		if (key.IsEmpty())
+		{
+			EL_Debug.Warn("Quests", "signal skipped: empty key");
+			return false;
+		}
+
+		return Route(user, MakeEvent(LF_EQuestEventType.SIGNAL, key, 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the player turned in a quest that hands over the ID card (m_bRewardIdCard).
+	//! EL_SpawnLogic then prints them a card on every spawn, as it did for everyone before.
+	bool HasEarnedIdCard(string playerUid)
+	{
+		if (playerUid.IsEmpty())
+			return false;
+
+		foreach (string questId, LF_QuestDefinition def : m_mDefinitions)
+		{
+			if (def && def.m_bRewardIdCard && LF_Progression.HasTurnedIn(playerUid, questId))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -243,6 +299,7 @@ class LF_QuestManager
 		{
 			tracker.PushLog();
 			LogEvent(ev);
+			tracker.SettleChain();
 		}
 		return changed;
 	}

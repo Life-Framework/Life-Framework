@@ -7,7 +7,7 @@ class LF_QuestEvent
 	LF_EQuestEventType m_eType;
 
 	//! Filter key depending on type: faction key (KILL), resource name (GATHER/PROCESS),
-	//! giver id (TALK), area id (AREA_ENTER). Empty string matches any.
+	//! giver id (TALK), area id (AREA_ENTER), signal key (SIGNAL). Empty string matches any.
 	string m_sFilter;
 
 	//! Value depending on type: count reported for COLLECT_REPORT, 1 for the rest.

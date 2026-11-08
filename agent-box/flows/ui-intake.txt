@@ -1,7 +1,7 @@
 # UI pillar: what a new player clicks and types, then the screen they land on.
 # Requires a fresh profile (no character); a returning one returns widget_not_found.
 # Form R-89 (registration) is the first screen (no faction screen, M1-11); signing it spawns
-# the character as a civilian with an ID card.
+# the character as a civilian (the town clerk hands over the ID card, M1-18).
 ui
 shot ui intake_form
 type RegFirstName Ada
