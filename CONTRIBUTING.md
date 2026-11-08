@@ -93,3 +93,9 @@ review. The human contributor remains responsible for the result.
 
 All contributions follow the [Code of Conduct](CODE_OF_CONDUCT.md). Source code
 contributions are licensed under the repository's MIT licence.
+
+The flagship pack (`addons/LF_Everon1989/`) is MIT today, but the project may
+license future versions of the pack differently. By contributing to the pack you
+agree that the project may relicense your contribution for those future
+versions. Releases already published stay MIT. The core (`addons/LifeFramework/`)
+stays MIT.

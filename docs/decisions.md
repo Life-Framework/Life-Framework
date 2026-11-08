@@ -583,3 +583,33 @@ characters. The flagship ships one per account with an in-world "start a new
 life" form. Bans and whitelists attach to the account; reputation and records
 attach to the character. Why: the New Life Rule, whitelists and save keys all
 depend on it, and changing it after live data is a migration. Scope #331.
+
+**2026-11-08 — Sites are prefabs.** Shops, jobs, desks and other sites exist
+as placed prefabs in a world. There is no config-driven spawn at coordinates.
+An owner on another map places the core's site prefabs in their own world and
+tunes them through config. Why: placement is world authoring, Workbench does it
+well, and a second placement path would double the surface to test.
+
+**2026-11-08 — Every `EL_` class becomes `LF_`.** One scripted rename in a short
+freeze right after M1 sign-off, before M2 features fan out (#334). Any type name
+written into a save gets a load-time alias. Afterwards a validator rejects new
+`EL_` declarations. Why: `EL_` collides with the real EveronLife mod, mixed
+prefixes confuse contributors, and the M3 public API must start with final names.
+
+**2026-11-08 — Saves stay compatible within a major version.** Any 1.x save
+loads in every later 1.x. A test loads saves recorded from older versions, and
+`wt e2e` proves each persistence change. Before M4 runs 24/7, writes are atomic
+with rolling backups, so a crash mid-save loses nothing. Why: owners and the
+flagship keep player progress across updates; a broken save is a lost community.
+
+**2026-11-08 — Build for 128 players.** Systems are designed and benchmarked for
+128 players on a dedicated server: replication, server frame cost, save size and
+time, UI fan-out. Budget and gate in #335. Why: the target sets every
+replication and persistence choice, and raising it later means rework.
+
+**2026-11-08 — Both addons are MIT; only the pack may change later.** The core
+and the flagship pack ship under MIT. The project keeps the option to license
+future versions of the pack differently; the core stays MIT for good.
+CONTRIBUTING.md asks pack contributors to agree to that relicensing, since
+without it the option would need every contributor's consent. Published
+releases stay MIT. Assets pulled in under CC-BY or similar keep their own terms.
