@@ -3784,12 +3784,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9ACF7398922B3B42}" {
      Id "LF-Sign_Garage_What"
-     Target_en_us "Park your vehicle off the street."
+     Target_en_us "Keep your vehicle across server restarts."
      Comment "Sign card for the garage where owners park vehicles, What section."
     }
     CustomStringTableItem "{C253431484CC5293}" {
      Id "LF-Sign_Garage_How"
-     Target_en_us "Drive up to the doors, get out, and Store vehicle. Retrieve vehicle puts it back on the lot."
+     Target_en_us "Park by the doors, get out, and Store vehicle. Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
      Comment "Sign card for the garage where owners park vehicles, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{4666CFF92E358BA1}" {
@@ -3799,7 +3799,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3F33FAFA82115227}" {
      Id "LF-Sign_Garage_Rules"
-     Target_en_us "Only the owner can take it out."
+     Target_en_us "Only the owner can store it or take it out. A car left on the street at a restart is towed to the impound lot behind the garage."
      Comment "Sign card for the garage where owners park vehicles, Rules section."
     }
     CustomStringTableItem "{1B0E51209D175B75}" {
@@ -4106,6 +4106,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"
      Comment "Escort refused because the officer's rank is below the configured escort rank"
+    }
+    CustomStringTableItem "{576A5D52994C158C}" {
+     Id "LF-Sign_Impound_Title"
+     Target_en_us "Impound Lot"
+     Comment "Sign card for the impound desk behind the garage, title."
+    }
+    CustomStringTableItem "{D1E213563FB92C8D}" {
+     Id "LF-Sign_Impound_What"
+     Target_en_us "Cars left on the street at a server restart are towed here."
+     Comment "Sign card for the impound desk, What section."
+    }
+    CustomStringTableItem "{F209D5D9A5D3E58D}" {
+     Id "LF-Sign_Impound_How"
+     Target_en_us "Pay the fee and collect your vehicle at this desk. It waits in the yard, and you get a key."
+     Comment "Sign card for the impound desk, How section."
+    }
+    CustomStringTableItem "{12D5DBFBC8D59765}" {
+     Id "LF-Sign_Impound_Needs"
+     Target_en_us "The release fee in cash. Read the ledger at the desk for the amount."
+     Comment "Sign card for the impound desk, Needs section."
+    }
+    CustomStringTableItem "{C8EC4BFEE00D94E9}" {
+     Id "LF-Sign_Impound_Rules"
+     Target_en_us "Only the owner can collect. Store your car in the garage to never pay this."
+     Comment "Sign card for the impound desk, Rules section."
     }
   }
  }
