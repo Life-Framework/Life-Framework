@@ -5209,12 +5209,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3A23ABBFC38B6FC4}" {
      Id "LF-Lot_NeedsBank"
-     Target_en_us "needs %1 in the bank"
+     Target_en_us "needs %1"
      Comment "Car lot row for a car the reader cannot afford from the bank. %1 is the price."
     }
     CustomStringTableItem "{3E8956543B8EFAAA}" {
      Id "LF-Lot_NeedsCash"
-     Target_en_us "needs %1 cash"
+     Target_en_us "needs %1"
      Comment "Car lot row for a cheap car the reader cannot afford in cash. %1 is the price."
     }
     CustomStringTableItem "{7C18C714BFDC5DBE}" {
