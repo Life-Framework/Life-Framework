@@ -8,7 +8,7 @@ GenericEntity {
    m_fHearRange 150
    m_bFlash 1
    m_fLightRadius 10
-   m_fLightLV 6
+   m_fLightLV 15
    m_iFlashMs 600
   }
   RplComponent "{A2D9C9BB0D0839D7}" {
