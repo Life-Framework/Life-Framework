@@ -3107,501 +3107,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You hold up your ID card."
      Comment "Show ID performed: the other player now sees the card."
     }
-    CustomStringTableItem "{7EFC20EBB3D29E7E}" {
-     Id "LF-Sign_TownMap_Title"
-     Target_en_us "Welcome to Everon"
-     Comment "Title of the sign at the town map board at the spawn square. Printed on the board and shown in the prompt as Read: Welcome to Everon."
-    }
-    CustomStringTableItem "{122DE6C8A5EACE1E}" {
-     Id "LF-Sign_TownMap_What"
-     Target_en_us "Find work at the post office, deliver, take your pay to the ATM, then spend it in town. One street runs east from this square, and every place in town stands on it."
-     Comment "Sign card for the town map board at the spawn square, What section."
-    }
-    CustomStringTableItem "{E2E6939EC03F1D07}" {
-     Id "LF-Sign_TownMap_How"
-     Target_en_us "Walking east, on your left: post office, bank and ATM, vehicle lot, garage, hospital, organization office, then an alley north to the back room and a walled yard. On your right: general store, market stalls, police station with the jail behind it, fuel station. The farm is north of this square, the quarry south of the street, the barn at the end of the dirt track east."
-     Comment "Sign card for the town map board at the spawn square, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{D2080755156ACB5D}" {
-     Id "LF-Sign_TownMap_Needs"
-     Target_en_us "Start with the town hall clerk on this square: Talk to Quest Giver. Your first wage is at the post office counter: Take courier work."
-     Comment "Sign card for the town map board at the spawn square, Needs section."
-    }
-    CustomStringTableItem "{9894F8E301871E9A}" {
-     Id "LF-Sign_TownMap_Rules"
-     Target_en_us "Cash you carry stays on your body if you die. Money in the bank is safe. A crime makes you wanted."
-     Comment "Sign card for the town map board at the spawn square, Rules section."
-    }
-    CustomStringTableItem "{23CA0097B30B955A}" {
-     Id "LF-Sign_PostOffice_Title"
-     Target_en_us "Post office"
-     Comment "Title of the sign at the post office (delivery jobs). Printed on the board and shown in the prompt as Read: Post office."
-    }
-    CustomStringTableItem "{A2D7BA29DCFEA120}" {
-     Id "LF-Sign_PostOffice_What"
-     Target_en_us "Delivery work for cash. Everyone starts as a courier."
-     Comment "Sign card for the post office (delivery jobs), What section."
-    }
-    CustomStringTableItem "{C312A6892E225185}" {
-     Id "LF-Sign_PostOffice_How"
-     Target_en_us "At the counter: Take courier work, then Pick up parcel. Carry it to the drop on the porch past the lock-up, east end of the street on the right, and Complete the run. Out of work? Collect benefit."
-     Comment "Sign card for the post office (delivery jobs), How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{6DB7091FD56820C9}" {
-     Id "LF-Sign_PostOffice_Needs"
-     Target_en_us "Courier work is open to all. Fuel delivery needs work level 2, taxi work level 3. Every paid run counts toward your level."
-     Comment "Sign card for the post office (delivery jobs), Needs section."
-    }
-    CustomStringTableItem "{C6D2A8327ECCBEBB}" {
-     Id "LF-Sign_PostOffice_Rules"
-     Target_en_us "A courier run pays $40, fuel $60, a taxi fare $80, in cash. Abandon the run and you get nothing. The benefit is $100 when your bank balance is under $500, once every 20 minutes."
-     Comment "Sign card for the post office (delivery jobs), Rules section."
-    }
-    CustomStringTableItem "{363F3934916EA0EA}" {
-     Id "LF-Sign_Atm_Title"
-     Target_en_us "ATM"
-     Comment "Title of the sign at the ATM on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
-    }
-    CustomStringTableItem "{CCA971294A309363}" {
-     Id "LF-Sign_Atm_What"
-     Target_en_us "Your bank account. Jobs and sales pay cash; this is where cash goes in and out."
-     Comment "Sign card for the ATM on the bank's front, What section."
-    }
-    CustomStringTableItem "{4C78A1A01E9D8559}" {
-     Id "LF-Sign_Atm_How"
-     Target_en_us "ATM Machine, then Deposit or Withdraw."
-     Comment "Sign card for the ATM on the bank's front, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{0CD84D83AF49CFAA}" {
-     Id "LF-Sign_Atm_Needs"
-     Target_en_us "Cash in your pockets to deposit."
-     Comment "Sign card for the ATM on the bank's front, Needs section."
-    }
-    CustomStringTableItem "{F5D101F492324776}" {
-     Id "LF-Sign_Atm_Rules"
-     Target_en_us "Banked money stays yours when you die. A vehicle over $500 is paid from the account."
-     Comment "Sign card for the ATM on the bank's front, Rules section."
-    }
-    CustomStringTableItem "{ABDD494D21BA7CB0}" {
-     Id "LF-Sign_Bank_Title"
-     Target_en_us "Bank"
-     Comment "Title of the sign at the bank vault door (a robbery site). Printed on the board and shown in the prompt as Read: Bank."
-    }
-    CustomStringTableItem "{7E18FAC6664FCCE1}" {
-     Id "LF-Sign_Bank_What"
-     Target_en_us "The vault door on the bank's east wall. Behind it, a bag of cash."
-     Comment "Sign card for the bank vault door (a robbery site), What section."
-    }
-    CustomStringTableItem "{DAF800340D8F2049}" {
-     Id "LF-Sign_Bank_How"
-     Target_en_us "Breach the vault, then carry off the bag that comes out."
-     Comment "Sign card for the bank vault door (a robbery site), How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{4707A9003ACDE131}" {
-     Id "LF-Sign_Bank_Needs"
-     Target_en_us "A demolition charge. Civilians only."
-     Comment "Sign card for the bank vault door (a robbery site), Needs section."
-    }
-    CustomStringTableItem "{B06E96D5F9CA75EC}" {
-     Id "LF-Sign_Bank_Rules"
-     Target_en_us "Raises your wanted level and alerts the police. After a break-in the vault stays empty for a while."
-     Comment "Sign card for the bank vault door (a robbery site), Rules section."
-    }
-    CustomStringTableItem "{10B8F417BFC331B0}" {
-     Id "LF-Sign_GeneralStore_Title"
-     Target_en_us "General store"
-     Comment "Title of the sign at the general store counter. Printed on the board and shown in the prompt as Read: General store."
-    }
-    CustomStringTableItem "{63A7D98D49544F07}" {
-     Id "LF-Sign_GeneralStore_What"
-     Target_en_us "Food and supplies."
-     Comment "Sign card for the general store counter, What section."
-    }
-    CustomStringTableItem "{9A2459E811183285}" {
-     Id "LF-Sign_GeneralStore_How"
-     Target_en_us "Browse the store at the counter, then Buy or Sell."
-     Comment "Sign card for the general store counter, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{E011AD948E4F1AAC}" {
-     Id "LF-Sign_GeneralStore_Needs"
-     Target_en_us "Cash."
-     Comment "Sign card for the general store counter, Needs section."
-    }
-    CustomStringTableItem "{83FF557EE9B09C57}" {
-     Id "LF-Sign_Traders_Title"
-     Target_en_us "Market"
-     Comment "Title of the sign at the market stalls that buy produce. Printed on the board and shown in the prompt as Read: Market."
-    }
-    CustomStringTableItem "{3318761CC910FA50}" {
-     Id "LF-Sign_Traders_What"
-     Target_en_us "Stalls that buy fruit, vegetables, and other goods for cash."
-     Comment "Sign card for the market stalls that buy produce, What section."
-    }
-    CustomStringTableItem "{4DC16C48957F13C8}" {
-     Id "LF-Sign_Traders_How"
-     Target_en_us "Sell Items at a stall, then move your goods into its storage. Each stall buys its own goods."
-     Comment "Sign card for the market stalls that buy produce, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{09F089CE1EB6773B}" {
-     Id "LF-Sign_Traders_Needs"
-     Target_en_us "Something to sell: apples and plums from the farm orchard, tomatoes from the field."
-     Comment "Sign card for the market stalls that buy produce, Needs section."
-    }
-    CustomStringTableItem "{EDCB37501399B86B}" {
-     Id "LF-Sign_Traders_Rules"
-     Target_en_us "Paid in cash, a fixed price per item."
-     Comment "Sign card for the market stalls that buy produce, Rules section."
-    }
-    CustomStringTableItem "{0527979BA1E07881}" {
-     Id "LF-Sign_VehicleLot_Title"
-     Target_en_us "Vehicle lot"
-     Comment "Title of the sign at the vehicle lot counter. Printed on the board and shown in the prompt as Read: Vehicle lot."
-    }
-    CustomStringTableItem "{E3EEBD40E7193CE1}" {
-     Id "LF-Sign_VehicleLot_What"
-     Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
-     Comment "Sign card for the vehicle lot counter, What section."
-    }
-    CustomStringTableItem "{54D0C3DA3D5B0349}" {
-     Id "LF-Sign_VehicleLot_How"
-     Target_en_us "Buy vehicle at the counter. It waits for you on the lot. Cut an extra key for $25."
-     Comment "Sign card for the vehicle lot counter, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{6E5F48464D10A0E0}" {
-     Id "LF-Sign_VehicleLot_Needs"
-     Target_en_us "S105 $1000, UAZ $2500, UAZ 452 $3500, van $4000, cargo truck $8000. Anything over $500 is paid from your bank account."
-     Comment "Sign card for the vehicle lot counter, Needs section."
-    }
-    CustomStringTableItem "{019C5F1257180BB3}" {
-     Id "LF-Sign_VehicleLot_Rules"
-     Target_en_us "Whoever holds the key can drive it away."
-     Comment "Sign card for the vehicle lot counter, Rules section."
-    }
-    CustomStringTableItem "{F0E9F88EC79F845D}" {
-     Id "LF-Sign_Garage_Title"
-     Target_en_us "Garage"
-     Comment "Title of the sign at the garage where owners park vehicles. Printed on the board and shown in the prompt as Read: Garage."
-    }
-    CustomStringTableItem "{9ACF7398922B3B42}" {
-     Id "LF-Sign_Garage_What"
-     Target_en_us "Keep your vehicle across server restarts."
-     Comment "Sign card for the garage where owners park vehicles, What section."
-    }
-    CustomStringTableItem "{C253431484CC5293}" {
-     Id "LF-Sign_Garage_How"
-     Target_en_us "Park by the doors, get out, and Store vehicle. Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
-     Comment "Sign card for the garage where owners park vehicles, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{4666CFF92E358BA1}" {
-     Id "LF-Sign_Garage_Needs"
-     Target_en_us "A vehicle you own, standing by the doors."
-     Comment "Sign card for the garage where owners park vehicles, Needs section."
-    }
-    CustomStringTableItem "{3F33FAFA82115227}" {
-     Id "LF-Sign_Garage_Rules"
-     Target_en_us "Only the owner can store it or take it out. A car left on the street at a restart is towed to the impound lot behind the garage."
-     Comment "Sign card for the garage where owners park vehicles, Rules section."
-    }
-    CustomStringTableItem "{1B0E51209D175B75}" {
-     Id "LF-Sign_PoliceStation_Title"
-     Target_en_us "Police station"
-     Comment "Title of the sign at the police station duty desk. Printed on the board and shown in the prompt as Read: Police station."
-    }
-    CustomStringTableItem "{728122BE2EE80D4F}" {
-     Id "LF-Sign_PoliceStation_What"
-     Target_en_us "Duty desk, wanted board, and armory of the Everon police."
-     Comment "Sign card for the police station duty desk, What section."
-    }
-    CustomStringTableItem "{1A20ADB3E49DD4E0}" {
-     Id "LF-Sign_PoliceStation_How"
-     Target_en_us "Punch the clock on the duty desk: Clock in puts your own clothes and pockets in the locker and hands you the police uniform; Clock out gives them back. Read the wanted board beside the desk. At the armory: Draw kit."
-     Comment "Sign card for the police station duty desk, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{E8967D4A9BC98A92}" {
-     Id "LF-Sign_PoliceStation_Needs"
-     Target_en_us "A place on the police roster. Ask an admin to join the police."
-     Comment "Sign card for the police station duty desk, Needs section."
-    }
-    CustomStringTableItem "{216CC8B9B69FEA9E}" {
-     Id "LF-Sign_PoliceStation_Rules"
-     Target_en_us "Duty pays $30 a minute, in cash when you go off duty. One kit per shift. After an hour on duty a patrol officer becomes a senior officer. Got a police ticket? Pay it in cash at the punch clock: Pay ticket."
-     Comment "Sign card for the police station duty desk, Rules section."
-    }
-    CustomStringTableItem "{38FC55C049D7A2DA}" {
-     Id "LF-Sign_Jail_Title"
-     Target_en_us "Jail"
-     Comment "Title of the sign at the jail yard behind the police station. Printed on the board and shown in the prompt as Read: Jail."
-    }
-    CustomStringTableItem "{4482FE22F8278C1D}" {
-     Id "LF-Sign_Jail_What"
-     Target_en_us "The cell yard for wanted people brought in by the police."
-     Comment "Sign card for the jail yard behind the police station, What section."
-    }
-    CustomStringTableItem "{8D07E91EFB59E777}" {
-     Id "LF-Sign_Jail_How"
-     Target_en_us "Police: Send to jail on a wanted person within reach, or Put in vehicle and drive them here. The sentence starts at the cell."
-     Comment "Sign card for the jail yard behind the police station, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{4FE9201DE6EE3FE2}" {
-     Id "LF-Sign_Jail_Needs"
-     Target_en_us "An officer on duty."
-     Comment "Sign card for the jail yard behind the police station, Needs section."
-    }
-    CustomStringTableItem "{1AE6C2B9F6377BD1}" {
-     Id "LF-Sign_Jail_Rules"
-     Target_en_us "The more wanted you are, the longer you stay. Walk out and you are brought back. A served sentence lowers your wanted level by one."
-     Comment "Sign card for the jail yard behind the police station, Rules section."
-    }
-    CustomStringTableItem "{D5C6466A81AE625C}" {
-     Id "LF-Sign_FuelStation_Title"
-     Target_en_us "Fuel station"
-     Comment "Title of the sign at the fuel station till. Printed on the board and shown in the prompt as Read: Fuel station."
-    }
-    CustomStringTableItem "{D5F9931CD14B062E}" {
-     Id "LF-Sign_FuelStation_What"
-     Target_en_us "Fuel cans for delivery work, and a till."
-     Comment "Sign card for the fuel station till, What section."
-    }
-    CustomStringTableItem "{D47AD7112B2DF884}" {
-     Id "LF-Sign_FuelStation_How"
-     Target_en_us "Take fuel can for a fuel delivery run. Rob the till takes the cash in it."
-     Comment "Sign card for the fuel station till, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{E04687F7CC776E5A}" {
-     Id "LF-Sign_FuelStation_Needs"
-     Target_en_us "Fuel delivery work from the post office."
-     Comment "Sign card for the fuel station till, Needs section."
-    }
-    CustomStringTableItem "{D554E096DD531BD8}" {
-     Id "LF-Sign_FuelStation_Rules"
-     Target_en_us "The till pays $150 to civilians, raises your wanted level, and alerts the police. It takes a minute to fill again."
-     Comment "Sign card for the fuel station till, Rules section."
-    }
-    CustomStringTableItem "{713DA3DCCF8014E2}" {
-     Id "LF-Sign_Hospital_Title"
-     Target_en_us "Hospital"
-     Comment "Title of the sign at the hospital (medicine cabinet and till). Printed on the board and shown in the prompt as Read: Hospital."
-    }
-    CustomStringTableItem "{319C15ECA15769F7}" {
-     Id "LF-Sign_Hospital_What"
-     Target_en_us "A medicine cabinet and a till."
-     Comment "Sign card for the hospital (medicine cabinet and till), What section."
-    }
-    CustomStringTableItem "{C04CAF44C41DD0AA}" {
-     Id "LF-Sign_Hospital_How"
-     Target_en_us "Breach the cabinet for dressings, morphine, saline, and tourniquets. Rob the till on the porch."
-     Comment "Sign card for the hospital (medicine cabinet and till), How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{F8E9B3F57A5331A5}" {
-     Id "LF-Sign_Hospital_Needs"
-     Target_en_us "A demolition charge for the cabinet."
-     Comment "Sign card for the hospital (medicine cabinet and till), Needs section."
-    }
-    CustomStringTableItem "{69A04E647A57E62B}" {
-     Id "LF-Sign_Hospital_Rules"
-     Target_en_us "Both raise your wanted level and alert the police."
-     Comment "Sign card for the hospital (medicine cabinet and till), Rules section."
-    }
-    CustomStringTableItem "{09352ADEB51C6AED}" {
-     Id "LF-Sign_OrgRegistry_Title"
-     Target_en_us "Organization office"
-     Comment "Title of the sign at the organization registry desk. Printed on the board and shown in the prompt as Read: Organization office."
-    }
-    CustomStringTableItem "{C10BBED232D40D39}" {
-     Id "LF-Sign_OrgRegistry_What"
-     Target_en_us "Register a crew, keep a shared fund, buy upgrades."
-     Comment "Sign card for the organization registry desk, What section."
-    }
-    CustomStringTableItem "{DD5F159B6A7D8B1F}" {
-     Id "LF-Sign_OrgRegistry_How"
-     Target_en_us "Organization desk, then Found organization, Deposit cash, Withdraw cash, or Buy processing slot."
-     Comment "Sign card for the organization registry desk, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{97B7CFECF9E9C9FB}" {
-     Id "LF-Sign_OrgRegistry_Needs"
-     Target_en_us "Cash. A processing slot costs $250 from the fund."
-     Comment "Sign card for the organization registry desk, Needs section."
-    }
-    CustomStringTableItem "{433837F9F31FF274}" {
-     Id "LF-Sign_OrgRegistry_Rules"
-     Target_en_us "One organization per person. The founder invites and removes members."
-     Comment "Sign card for the organization registry desk, Rules section."
-    }
-    CustomStringTableItem "{AB2778F22A96A23A}" {
-     Id "LF-Sign_BlackMarket_Title"
-     Target_en_us "Back room"
-     Comment "Title of the sign at the back room shop in the alley (no printed title). Printed on the board and shown in the prompt as Read: Back room."
-    }
-    CustomStringTableItem "{D858EE00CCD15F29}" {
-     Id "LF-Sign_BlackMarket_What"
-     Target_en_us "Equipment the general store does not sell."
-     Comment "Sign card for the back room shop in the alley (no printed title), What section."
-    }
-    CustomStringTableItem "{5065DFD658DCD5F6}" {
-     Id "LF-Sign_BlackMarket_How"
-     Target_en_us "Knock on the back door."
-     Comment "Sign card for the back room shop in the alley (no printed title), How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{62B0D34EDFA21A7A}" {
-     Id "LF-Sign_BlackMarket_Needs"
-     Target_en_us "Cash."
-     Comment "Sign card for the back room shop in the alley (no printed title), Needs section."
-    }
-    CustomStringTableItem "{6F09655B2F839902}" {
-     Id "LF-Sign_Hideout_Title"
-     Target_en_us "Hideout"
-     Comment "Title of the sign at the organization hideout yard. Printed on the board and shown in the prompt as Read: Hideout."
-    }
-    CustomStringTableItem "{1D64D076E9EF7188}" {
-     Id "LF-Sign_Hideout_What"
-     Target_en_us "A walled yard owned by one organization."
-     Comment "Sign card for the organization hideout yard, What section."
-    }
-    CustomStringTableItem "{1314EC1ABCC618D6}" {
-     Id "LF-Sign_Hideout_How"
-     Target_en_us "Members open the gate. Inside, Process contraband at the machine, and keep the crew's goods in the chest: Open hideout stash."
-     Comment "Sign card for the organization hideout yard, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{CCE875EFC2A291AB}" {
-     Id "LF-Sign_Hideout_Needs"
-     Target_en_us "Membership of the owning organization, its processing slot from the organization office, and cabbages."
-     Comment "Sign card for the organization hideout yard, Needs section."
-    }
-    CustomStringTableItem "{D93B25598500E634}" {
-     Id "LF-Sign_Hideout_Rules"
-     Target_en_us "Outsiders cannot open the gate or the stash, even when the gate stands open."
-     Comment "Sign card for the organization hideout yard, Rules section."
-    }
-    CustomStringTableItem "{29B7EE9B299AEAF2}" {
-     Id "LF-Sign_ConvoyPickup_Title"
-     Target_en_us "Convoy pickup"
-     Comment "Title of the sign at the convoy pickup at the barn out of town. Printed on the board and shown in the prompt as Read: Convoy pickup."
-    }
-    CustomStringTableItem "{F1237DCB347A4604}" {
-     Id "LF-Sign_ConvoyPickup_What"
-     Target_en_us "Contraband waiting for a driver."
-     Comment "Sign card for the convoy pickup at the barn out of town, What section."
-    }
-    CustomStringTableItem "{BDE5BBC474B685BE}" {
-     Id "LF-Sign_ConvoyPickup_How"
-     Target_en_us "Start convoy here, drive to the hideout yard in the village, and Deliver contraband."
-     Comment "Sign card for the convoy pickup at the barn out of town, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{1AD1E7DE6B2D2E35}" {
-     Id "LF-Sign_ConvoyPickup_Needs"
-     Target_en_us "Membership of the organization that owns the hideout, and a vehicle."
-     Comment "Sign card for the convoy pickup at the barn out of town, Needs section."
-    }
-    CustomStringTableItem "{D9132B47493CAD58}" {
-     Id "LF-Sign_ConvoyPickup_Rules"
-     Target_en_us "Pays $200 cash on delivery. Leave the vehicle or die on the way and the run fails."
-     Comment "Sign card for the convoy pickup at the barn out of town, Rules section."
-    }
-    CustomStringTableItem "{AE84DE1019124F89}" {
-     Id "LF-Sign_ConvoyDrop_Title"
-     Target_en_us "Convoy drop"
-     Comment "Title of the sign at the convoy drop in the hideout yard. Printed on the board and shown in the prompt as Read: Convoy drop."
-    }
-    CustomStringTableItem "{22360C2BF0D6346C}" {
-     Id "LF-Sign_ConvoyDrop_What"
-     Target_en_us "Where convoys from the barn unload."
-     Comment "Sign card for the convoy drop in the hideout yard, What section."
-    }
-    CustomStringTableItem "{155AD337C15BEB65}" {
-     Id "LF-Sign_ConvoyDrop_How"
-     Target_en_us "Drive in and Deliver contraband."
-     Comment "Sign card for the convoy drop in the hideout yard, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{D786787F97399612}" {
-     Id "LF-Sign_ConvoyDrop_Needs"
-     Target_en_us "A convoy started at the barn."
-     Comment "Sign card for the convoy drop in the hideout yard, Needs section."
-    }
-    CustomStringTableItem "{04B65C3DAC7EE49E}" {
-     Id "LF-Sign_ConvoyDrop_Rules"
-     Target_en_us "One payment per run."
-     Comment "Sign card for the convoy drop in the hideout yard, Rules section."
-    }
-    CustomStringTableItem "{216366F2B6AA2C9F}" {
-     Id "LF-Sign_Farm_Title"
-     Target_en_us "Farm"
-     Comment "Title of the sign at the farm north of the square. Printed on the board and shown in the prompt as Read: Farm."
-    }
-    CustomStringTableItem "{03708C7686BF4E63}" {
-     Id "LF-Sign_Farm_What"
-     Target_en_us "Tomato beds, a greenhouse, and an orchard."
-     Comment "Sign card for the farm north of the square, What section."
-    }
-    CustomStringTableItem "{905E4015631C43F6}" {
-     Id "LF-Sign_Farm_How"
-     Target_en_us "Gather Tomato from a ripe plant in the beds, Gather Apple or Gather Plum from the orchard trees."
-     Comment "Sign card for the farm north of the square, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{33EBA210B27B7F63}" {
-     Id "LF-Sign_Farm_Rules"
-     Target_en_us "A picked plant needs time to ripen again."
-     Comment "Sign card for the farm north of the square, Rules section."
-    }
-    CustomStringTableItem "{682DF358EBADD27A}" {
-     Id "LF-Hospital_Title"
-     Target_en_us "Hospital"
-     Comment "Toast title when a player wakes up in hospital."
-    }
-    CustomStringTableItem "{BE26E458ADA922A8}" {
-     Id "LF-Hospital_BillToast"
-     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
-     Comment "Toast on waking in hospital after a death. %1 is the bill amount."
-    }
-    CustomStringTableItem "{25C8757AA18DD8A8}" {
-     Id "LF-Hospital_BillTitle"
-     Target_en_us "Hospital bill"
-     Comment "Title of the paper hospital bill."
-    }
-    CustomStringTableItem "{DB6C9E5F09D39D13}" {
-     Id "LF-Hospital_BillAmount"
-     Target_en_us "Treatment: %1, charged to your bank account"
-     Comment "Hospital bill line. %1 is the amount charged."
-    }
-    CustomStringTableItem "{4F2335135A4FF34F}" {
-     Id "LF-Hospital_BillBalance"
-     Target_en_us "Bank balance after payment: %1"
-     Comment "Hospital bill line. %1 is the bank balance after the bill."
-    }
-    CustomStringTableItem "{1CE638BD33BB8722}" {
-     Id "LF-Hospital_BillDebt"
-     Target_en_us "You owe the bank. Your next deposits pay the debt first."
-     Comment "Hospital bill line shown when the bill put the player into debt."
-    }
-    CustomStringTableItem "{94693CF4600BC9D5}" {
-     Id "LF-Hospital_BillNote"
-     Target_en_us "You don't remember how you got here."
-     Comment "Hospital bill note: the New Life Rule cue. The player forgets the fight that killed them."
-    }
-    CustomStringTableItem "{FFEA0B7D7B19622C}" {
-     Id "LF-Hospital_BillNewLife"
-     Target_en_us "New Life Rule: stay away from where you died for %1 minutes."
-     Comment "Hospital bill line: the server rule. %1 is the number of minutes."
-    }
-    CustomStringTableItem "{D66A5204D011B83B}" {
-     Id "LF-Hospital_BillClose"
-     Target_en_us "Put the bill away"
-     Comment "Closes the hospital bill card."
-    }
-    CustomStringTableItem "{8AA134FCD11961A4}" {
-     Id "LF-Hospital_BillRead"
-     Target_en_us "Read hospital bill"
-     Comment "Action on a hospital bill lying in the world."
-    }
-    CustomStringTableItem "{BF9E5680A14113DA}" {
-     Id "LF-Hospital_BillItem"
-     Target_en_us "Hospital bill"
-     Comment "Inventory name of the paper hospital bill."
-    }
-    CustomStringTableItem "{B496BB68DF603A03}" {
-     Id "LF-Hospital_BillItemDesc"
-     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
-     Comment "Inventory description of the paper hospital bill."
-    }
     CustomStringTableItem "{E5BDB7CD47972752}" {
      Id "LF-ATM_Header"
      Target_en_us "FIRST BANK OF EVERON"
@@ -3997,21 +3502,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
-    CustomStringTableItem "{5985DB962913E1DE}" {
-     Id "LF-Rank_EscortDenied"
-     Target_en_us "Your rank cannot escort"
-     Comment "Escort refused because the officer's rank is below the configured escort rank"
-    }
-    CustomStringTableItem "{F51D6FC3BD1F68DC}" {
-     Id "LF-Job_NewWork"
-     Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
-     Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
-    }
-    CustomStringTableItem "{196A4BD9FFC674C5}" {
-     Id "LF-Job_HiredHidden"
-     Target_en_us "You now work as %1."
-     Comment "Hint when hired; %1 = job name. Hidden progression: no grade or level."
-    }
     CustomStringTableItem "{7EC51FB11D0B1C50}" {
      Id "LF-Garage_ReadLedger"
      Target_en_us "Read the garage ledger"
@@ -4116,6 +3606,506 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Garage_BuyHint"
      Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
      Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
+    }
+    CustomStringTableItem "{7EFC20EBB3D29E7E}" {
+     Id "LF-Sign_TownMap_Title"
+     Target_en_us "Welcome to Everon"
+     Comment "Title of the sign at the town map board at the spawn square. Printed on the board and shown in the prompt as Read: Welcome to Everon."
+    }
+    CustomStringTableItem "{122DE6C8A5EACE1E}" {
+     Id "LF-Sign_TownMap_What"
+     Target_en_us "Find work at the post office, deliver, take your pay to the ATM, then spend it in town. One street runs east from this square, and every place in town stands on it."
+     Comment "Sign card for the town map board at the spawn square, What section."
+    }
+    CustomStringTableItem "{E2E6939EC03F1D07}" {
+     Id "LF-Sign_TownMap_How"
+     Target_en_us "Walking east, on your left: post office, bank and ATM, vehicle lot, garage, hospital, organization office, then an alley north to the back room and a walled yard. On your right: general store, market stalls, police station with the jail behind it, fuel station. The farm is north of this square, the quarry south of the street, the barn at the end of the dirt track east."
+     Comment "Sign card for the town map board at the spawn square, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{D2080755156ACB5D}" {
+     Id "LF-Sign_TownMap_Needs"
+     Target_en_us "Start with the town hall clerk on this square: Talk to Quest Giver. Your first wage is at the post office counter: Take courier work."
+     Comment "Sign card for the town map board at the spawn square, Needs section."
+    }
+    CustomStringTableItem "{9894F8E301871E9A}" {
+     Id "LF-Sign_TownMap_Rules"
+     Target_en_us "Cash you carry stays on your body if you die. Money in the bank is safe. A crime makes you wanted."
+     Comment "Sign card for the town map board at the spawn square, Rules section."
+    }
+    CustomStringTableItem "{23CA0097B30B955A}" {
+     Id "LF-Sign_PostOffice_Title"
+     Target_en_us "Post office"
+     Comment "Title of the sign at the post office (delivery jobs). Printed on the board and shown in the prompt as Read: Post office."
+    }
+    CustomStringTableItem "{A2D7BA29DCFEA120}" {
+     Id "LF-Sign_PostOffice_What"
+     Target_en_us "Delivery work for cash. Everyone starts as a courier."
+     Comment "Sign card for the post office (delivery jobs), What section."
+    }
+    CustomStringTableItem "{C312A6892E225185}" {
+     Id "LF-Sign_PostOffice_How"
+     Target_en_us "At the counter: Take courier work, then Pick up parcel. Carry it to the drop on the porch past the lock-up, east end of the street on the right, and Complete the run. Out of work? Collect benefit."
+     Comment "Sign card for the post office (delivery jobs), How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{6DB7091FD56820C9}" {
+     Id "LF-Sign_PostOffice_Needs"
+     Target_en_us "Courier work is open to all. Fuel delivery needs work level 2, taxi work level 3. Every paid run counts toward your level."
+     Comment "Sign card for the post office (delivery jobs), Needs section."
+    }
+    CustomStringTableItem "{C6D2A8327ECCBEBB}" {
+     Id "LF-Sign_PostOffice_Rules"
+     Target_en_us "A courier run pays $40, fuel $60, a taxi fare $80, in cash. Abandon the run and you get nothing. The benefit is $100 when your bank balance is under $500, once every 20 minutes."
+     Comment "Sign card for the post office (delivery jobs), Rules section."
+    }
+    CustomStringTableItem "{363F3934916EA0EA}" {
+     Id "LF-Sign_Atm_Title"
+     Target_en_us "ATM"
+     Comment "Title of the sign at the ATM on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
+    }
+    CustomStringTableItem "{CCA971294A309363}" {
+     Id "LF-Sign_Atm_What"
+     Target_en_us "Your bank account. Jobs and sales pay cash; this is where cash goes in and out."
+     Comment "Sign card for the ATM on the bank's front, What section."
+    }
+    CustomStringTableItem "{4C78A1A01E9D8559}" {
+     Id "LF-Sign_Atm_How"
+     Target_en_us "ATM Machine, then Deposit or Withdraw."
+     Comment "Sign card for the ATM on the bank's front, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{0CD84D83AF49CFAA}" {
+     Id "LF-Sign_Atm_Needs"
+     Target_en_us "Cash in your pockets to deposit."
+     Comment "Sign card for the ATM on the bank's front, Needs section."
+    }
+    CustomStringTableItem "{F5D101F492324776}" {
+     Id "LF-Sign_Atm_Rules"
+     Target_en_us "Banked money stays yours when you die. A vehicle over $500 is paid from the account."
+     Comment "Sign card for the ATM on the bank's front, Rules section."
+    }
+    CustomStringTableItem "{ABDD494D21BA7CB0}" {
+     Id "LF-Sign_Bank_Title"
+     Target_en_us "Bank"
+     Comment "Title of the sign at the bank vault door (a robbery site). Printed on the board and shown in the prompt as Read: Bank."
+    }
+    CustomStringTableItem "{7E18FAC6664FCCE1}" {
+     Id "LF-Sign_Bank_What"
+     Target_en_us "The vault door on the bank's east wall. Behind it, a bag of cash."
+     Comment "Sign card for the bank vault door (a robbery site), What section."
+    }
+    CustomStringTableItem "{DAF800340D8F2049}" {
+     Id "LF-Sign_Bank_How"
+     Target_en_us "Breach the vault, then carry off the bag that comes out."
+     Comment "Sign card for the bank vault door (a robbery site), How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{4707A9003ACDE131}" {
+     Id "LF-Sign_Bank_Needs"
+     Target_en_us "A demolition charge. Civilians only."
+     Comment "Sign card for the bank vault door (a robbery site), Needs section."
+    }
+    CustomStringTableItem "{B06E96D5F9CA75EC}" {
+     Id "LF-Sign_Bank_Rules"
+     Target_en_us "Raises your wanted level and alerts the police. After a break-in the vault stays empty for a while."
+     Comment "Sign card for the bank vault door (a robbery site), Rules section."
+    }
+    CustomStringTableItem "{10B8F417BFC331B0}" {
+     Id "LF-Sign_GeneralStore_Title"
+     Target_en_us "General store"
+     Comment "Title of the sign at the general store counter. Printed on the board and shown in the prompt as Read: General store."
+    }
+    CustomStringTableItem "{63A7D98D49544F07}" {
+     Id "LF-Sign_GeneralStore_What"
+     Target_en_us "Food and supplies."
+     Comment "Sign card for the general store counter, What section."
+    }
+    CustomStringTableItem "{9A2459E811183285}" {
+     Id "LF-Sign_GeneralStore_How"
+     Target_en_us "Browse the store at the counter, then Buy or Sell."
+     Comment "Sign card for the general store counter, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{E011AD948E4F1AAC}" {
+     Id "LF-Sign_GeneralStore_Needs"
+     Target_en_us "Cash."
+     Comment "Sign card for the general store counter, Needs section."
+    }
+    CustomStringTableItem "{83FF557EE9B09C57}" {
+     Id "LF-Sign_Traders_Title"
+     Target_en_us "Market"
+     Comment "Title of the sign at the market stalls that buy produce. Printed on the board and shown in the prompt as Read: Market."
+    }
+    CustomStringTableItem "{3318761CC910FA50}" {
+     Id "LF-Sign_Traders_What"
+     Target_en_us "Stalls that buy fruit, vegetables, and other goods for cash."
+     Comment "Sign card for the market stalls that buy produce, What section."
+    }
+    CustomStringTableItem "{4DC16C48957F13C8}" {
+     Id "LF-Sign_Traders_How"
+     Target_en_us "Sell Items at a stall, then move your goods into its storage. Each stall buys its own goods."
+     Comment "Sign card for the market stalls that buy produce, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{09F089CE1EB6773B}" {
+     Id "LF-Sign_Traders_Needs"
+     Target_en_us "Something to sell: apples and plums from the farm orchard, tomatoes from the field."
+     Comment "Sign card for the market stalls that buy produce, Needs section."
+    }
+    CustomStringTableItem "{EDCB37501399B86B}" {
+     Id "LF-Sign_Traders_Rules"
+     Target_en_us "Paid in cash, a fixed price per item."
+     Comment "Sign card for the market stalls that buy produce, Rules section."
+    }
+    CustomStringTableItem "{0527979BA1E07881}" {
+     Id "LF-Sign_VehicleLot_Title"
+     Target_en_us "Vehicle lot"
+     Comment "Title of the sign at the vehicle lot counter. Printed on the board and shown in the prompt as Read: Vehicle lot."
+    }
+    CustomStringTableItem "{E3EEBD40E7193CE1}" {
+     Id "LF-Sign_VehicleLot_What"
+     Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
+     Comment "Sign card for the vehicle lot counter, What section."
+    }
+    CustomStringTableItem "{54D0C3DA3D5B0349}" {
+     Id "LF-Sign_VehicleLot_How"
+     Target_en_us "Buy vehicle at the counter. It waits for you on the lot. Cut an extra key for $25."
+     Comment "Sign card for the vehicle lot counter, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{6E5F48464D10A0E0}" {
+     Id "LF-Sign_VehicleLot_Needs"
+     Target_en_us "S105 $1000, UAZ $2500, UAZ 452 $3500, van $4000, cargo truck $8000. Anything over $500 is paid from your bank account."
+     Comment "Sign card for the vehicle lot counter, Needs section."
+    }
+    CustomStringTableItem "{019C5F1257180BB3}" {
+     Id "LF-Sign_VehicleLot_Rules"
+     Target_en_us "Whoever holds the key can drive it away."
+     Comment "Sign card for the vehicle lot counter, Rules section."
+    }
+    CustomStringTableItem "{F0E9F88EC79F845D}" {
+     Id "LF-Sign_Garage_Title"
+     Target_en_us "Garage"
+     Comment "Title of the sign at the garage where owners park vehicles. Printed on the board and shown in the prompt as Read: Garage."
+    }
+    CustomStringTableItem "{9ACF7398922B3B42}" {
+     Id "LF-Sign_Garage_What"
+     Target_en_us "Keep your vehicle across server restarts."
+     Comment "Sign card for the garage where owners park vehicles, What section."
+    }
+    CustomStringTableItem "{C253431484CC5293}" {
+     Id "LF-Sign_Garage_How"
+     Target_en_us "Park by the doors, get out, and Store vehicle. Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
+     Comment "Sign card for the garage where owners park vehicles, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{4666CFF92E358BA1}" {
+     Id "LF-Sign_Garage_Needs"
+     Target_en_us "A vehicle you own, standing by the doors."
+     Comment "Sign card for the garage where owners park vehicles, Needs section."
+    }
+    CustomStringTableItem "{3F33FAFA82115227}" {
+     Id "LF-Sign_Garage_Rules"
+     Target_en_us "Only the owner can store it or take it out. A car left on the street at a restart is towed to the impound lot behind the garage."
+     Comment "Sign card for the garage where owners park vehicles, Rules section."
+    }
+    CustomStringTableItem "{1B0E51209D175B75}" {
+     Id "LF-Sign_PoliceStation_Title"
+     Target_en_us "Police station"
+     Comment "Title of the sign at the police station duty desk. Printed on the board and shown in the prompt as Read: Police station."
+    }
+    CustomStringTableItem "{728122BE2EE80D4F}" {
+     Id "LF-Sign_PoliceStation_What"
+     Target_en_us "Duty desk, wanted board, and armory of the Everon police."
+     Comment "Sign card for the police station duty desk, What section."
+    }
+    CustomStringTableItem "{1A20ADB3E49DD4E0}" {
+     Id "LF-Sign_PoliceStation_How"
+     Target_en_us "Punch the clock on the duty desk: Clock in puts your own clothes and pockets in the locker and hands you the police uniform; Clock out gives them back. Read the wanted board beside the desk. At the armory: Draw kit."
+     Comment "Sign card for the police station duty desk, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{E8967D4A9BC98A92}" {
+     Id "LF-Sign_PoliceStation_Needs"
+     Target_en_us "A place on the police roster. Ask an admin to join the police."
+     Comment "Sign card for the police station duty desk, Needs section."
+    }
+    CustomStringTableItem "{216CC8B9B69FEA9E}" {
+     Id "LF-Sign_PoliceStation_Rules"
+     Target_en_us "Duty pays $30 a minute, in cash when you go off duty. One kit per shift. After an hour on duty a patrol officer becomes a senior officer. Got a police ticket? Pay it in cash at the punch clock: Pay ticket."
+     Comment "Sign card for the police station duty desk, Rules section."
+    }
+    CustomStringTableItem "{38FC55C049D7A2DA}" {
+     Id "LF-Sign_Jail_Title"
+     Target_en_us "Jail"
+     Comment "Title of the sign at the jail yard behind the police station. Printed on the board and shown in the prompt as Read: Jail."
+    }
+    CustomStringTableItem "{4482FE22F8278C1D}" {
+     Id "LF-Sign_Jail_What"
+     Target_en_us "The cell yard for wanted people brought in by the police."
+     Comment "Sign card for the jail yard behind the police station, What section."
+    }
+    CustomStringTableItem "{8D07E91EFB59E777}" {
+     Id "LF-Sign_Jail_How"
+     Target_en_us "Police: Send to jail on a wanted person within reach, or Put in vehicle and drive them here. The sentence starts at the cell."
+     Comment "Sign card for the jail yard behind the police station, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{4FE9201DE6EE3FE2}" {
+     Id "LF-Sign_Jail_Needs"
+     Target_en_us "An officer on duty."
+     Comment "Sign card for the jail yard behind the police station, Needs section."
+    }
+    CustomStringTableItem "{1AE6C2B9F6377BD1}" {
+     Id "LF-Sign_Jail_Rules"
+     Target_en_us "The more wanted you are, the longer you stay. Walk out and you are brought back. A served sentence lowers your wanted level by one."
+     Comment "Sign card for the jail yard behind the police station, Rules section."
+    }
+    CustomStringTableItem "{D5C6466A81AE625C}" {
+     Id "LF-Sign_FuelStation_Title"
+     Target_en_us "Fuel station"
+     Comment "Title of the sign at the fuel station till. Printed on the board and shown in the prompt as Read: Fuel station."
+    }
+    CustomStringTableItem "{D5F9931CD14B062E}" {
+     Id "LF-Sign_FuelStation_What"
+     Target_en_us "Fuel cans for delivery work, and a till."
+     Comment "Sign card for the fuel station till, What section."
+    }
+    CustomStringTableItem "{D47AD7112B2DF884}" {
+     Id "LF-Sign_FuelStation_How"
+     Target_en_us "Take fuel can for a fuel delivery run. Rob the till takes the cash in it."
+     Comment "Sign card for the fuel station till, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{E04687F7CC776E5A}" {
+     Id "LF-Sign_FuelStation_Needs"
+     Target_en_us "Fuel delivery work from the post office."
+     Comment "Sign card for the fuel station till, Needs section."
+    }
+    CustomStringTableItem "{D554E096DD531BD8}" {
+     Id "LF-Sign_FuelStation_Rules"
+     Target_en_us "The till pays $150 to civilians, raises your wanted level, and alerts the police. It takes a minute to fill again."
+     Comment "Sign card for the fuel station till, Rules section."
+    }
+    CustomStringTableItem "{713DA3DCCF8014E2}" {
+     Id "LF-Sign_Hospital_Title"
+     Target_en_us "Hospital"
+     Comment "Title of the sign at the hospital (medicine cabinet and till). Printed on the board and shown in the prompt as Read: Hospital."
+    }
+    CustomStringTableItem "{319C15ECA15769F7}" {
+     Id "LF-Sign_Hospital_What"
+     Target_en_us "A medicine cabinet and a till."
+     Comment "Sign card for the hospital (medicine cabinet and till), What section."
+    }
+    CustomStringTableItem "{C04CAF44C41DD0AA}" {
+     Id "LF-Sign_Hospital_How"
+     Target_en_us "Breach the cabinet for dressings, morphine, saline, and tourniquets. Rob the till on the porch."
+     Comment "Sign card for the hospital (medicine cabinet and till), How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{F8E9B3F57A5331A5}" {
+     Id "LF-Sign_Hospital_Needs"
+     Target_en_us "A demolition charge for the cabinet."
+     Comment "Sign card for the hospital (medicine cabinet and till), Needs section."
+    }
+    CustomStringTableItem "{69A04E647A57E62B}" {
+     Id "LF-Sign_Hospital_Rules"
+     Target_en_us "Both raise your wanted level and alert the police."
+     Comment "Sign card for the hospital (medicine cabinet and till), Rules section."
+    }
+    CustomStringTableItem "{09352ADEB51C6AED}" {
+     Id "LF-Sign_OrgRegistry_Title"
+     Target_en_us "Organization office"
+     Comment "Title of the sign at the organization registry desk. Printed on the board and shown in the prompt as Read: Organization office."
+    }
+    CustomStringTableItem "{C10BBED232D40D39}" {
+     Id "LF-Sign_OrgRegistry_What"
+     Target_en_us "Register a crew, keep a shared fund, buy upgrades."
+     Comment "Sign card for the organization registry desk, What section."
+    }
+    CustomStringTableItem "{DD5F159B6A7D8B1F}" {
+     Id "LF-Sign_OrgRegistry_How"
+     Target_en_us "Organization desk, then Found organization, Deposit cash, Withdraw cash, or Buy processing slot."
+     Comment "Sign card for the organization registry desk, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{97B7CFECF9E9C9FB}" {
+     Id "LF-Sign_OrgRegistry_Needs"
+     Target_en_us "Cash. A processing slot costs $250 from the fund."
+     Comment "Sign card for the organization registry desk, Needs section."
+    }
+    CustomStringTableItem "{433837F9F31FF274}" {
+     Id "LF-Sign_OrgRegistry_Rules"
+     Target_en_us "One organization per person. The founder invites and removes members."
+     Comment "Sign card for the organization registry desk, Rules section."
+    }
+    CustomStringTableItem "{AB2778F22A96A23A}" {
+     Id "LF-Sign_BlackMarket_Title"
+     Target_en_us "Back room"
+     Comment "Title of the sign at the back room shop in the alley (no printed title). Printed on the board and shown in the prompt as Read: Back room."
+    }
+    CustomStringTableItem "{D858EE00CCD15F29}" {
+     Id "LF-Sign_BlackMarket_What"
+     Target_en_us "Equipment the general store does not sell."
+     Comment "Sign card for the back room shop in the alley (no printed title), What section."
+    }
+    CustomStringTableItem "{5065DFD658DCD5F6}" {
+     Id "LF-Sign_BlackMarket_How"
+     Target_en_us "Knock on the back door."
+     Comment "Sign card for the back room shop in the alley (no printed title), How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{62B0D34EDFA21A7A}" {
+     Id "LF-Sign_BlackMarket_Needs"
+     Target_en_us "Cash."
+     Comment "Sign card for the back room shop in the alley (no printed title), Needs section."
+    }
+    CustomStringTableItem "{6F09655B2F839902}" {
+     Id "LF-Sign_Hideout_Title"
+     Target_en_us "Hideout"
+     Comment "Title of the sign at the organization hideout yard. Printed on the board and shown in the prompt as Read: Hideout."
+    }
+    CustomStringTableItem "{1D64D076E9EF7188}" {
+     Id "LF-Sign_Hideout_What"
+     Target_en_us "A walled yard owned by one organization."
+     Comment "Sign card for the organization hideout yard, What section."
+    }
+    CustomStringTableItem "{1314EC1ABCC618D6}" {
+     Id "LF-Sign_Hideout_How"
+     Target_en_us "Members open the gate. Inside, Process contraband at the machine, and keep the crew's goods in the chest: Open hideout stash."
+     Comment "Sign card for the organization hideout yard, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{CCE875EFC2A291AB}" {
+     Id "LF-Sign_Hideout_Needs"
+     Target_en_us "Membership of the owning organization, its processing slot from the organization office, and cabbages."
+     Comment "Sign card for the organization hideout yard, Needs section."
+    }
+    CustomStringTableItem "{D93B25598500E634}" {
+     Id "LF-Sign_Hideout_Rules"
+     Target_en_us "Outsiders cannot open the gate or the stash, even when the gate stands open."
+     Comment "Sign card for the organization hideout yard, Rules section."
+    }
+    CustomStringTableItem "{29B7EE9B299AEAF2}" {
+     Id "LF-Sign_ConvoyPickup_Title"
+     Target_en_us "Convoy pickup"
+     Comment "Title of the sign at the convoy pickup at the barn out of town. Printed on the board and shown in the prompt as Read: Convoy pickup."
+    }
+    CustomStringTableItem "{F1237DCB347A4604}" {
+     Id "LF-Sign_ConvoyPickup_What"
+     Target_en_us "Crates of untaxed spirits, waiting for a driver."
+     Comment "Sign card for the convoy pickup at the barn out of town, What section."
+    }
+    CustomStringTableItem "{BDE5BBC474B685BE}" {
+     Id "LF-Sign_ConvoyPickup_How"
+     Target_en_us "Start convoy at the crates to take one, load it into a vehicle, drive to the back of the pub on the square, and Deliver contraband at the empty crate cage there."
+     Comment "Sign card for the convoy pickup at the barn out of town, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{1AD1E7DE6B2D2E35}" {
+     Id "LF-Sign_ConvoyPickup_Needs"
+     Target_en_us "Membership of the organization that owns the hideout, and a vehicle."
+     Comment "Sign card for the convoy pickup at the barn out of town, Needs section."
+    }
+    CustomStringTableItem "{D9132B47493CAD58}" {
+     Id "LF-Sign_ConvoyPickup_Rules"
+     Target_en_us "Pays "00 cash in hand on delivery. Once you are in a vehicle, getting out before the pub or dying fails the run."
+     Comment "Sign card for the convoy pickup at the barn out of town, Rules section."
+    }
+    CustomStringTableItem "{AE84DE1019124F89}" {
+     Id "LF-Sign_ConvoyDrop_Title"
+     Target_en_us "Convoy drop"
+     Comment "Title of the sign at the convoy drop in the hideout yard. Printed on the board and shown in the prompt as Read: Convoy drop."
+    }
+    CustomStringTableItem "{22360C2BF0D6346C}" {
+     Id "LF-Sign_ConvoyDrop_What"
+     Target_en_us "The publican buys untaxed spirits at his back door."
+     Comment "Sign card for the convoy drop behind the pub on the square, What section."
+    }
+    CustomStringTableItem "{155AD337C15BEB65}" {
+     Id "LF-Sign_ConvoyDrop_How"
+     Target_en_us "Park here, carry the crate to the empty crate cage, and Deliver contraband."
+     Comment "Sign card for the convoy drop behind the pub on the square, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{D786787F97399612}" {
+     Id "LF-Sign_ConvoyDrop_Needs"
+     Target_en_us "A crate of spirits from the barn out of town, taken with Start convoy."
+     Comment "Sign card for the convoy drop behind the pub on the square, Needs section."
+    }
+    CustomStringTableItem "{04B65C3DAC7EE49E}" {
+     Id "LF-Sign_ConvoyDrop_Rules"
+     Target_en_us "One payment per run."
+     Comment "Sign card for the convoy drop in the hideout yard, Rules section."
+    }
+    CustomStringTableItem "{216366F2B6AA2C9F}" {
+     Id "LF-Sign_Farm_Title"
+     Target_en_us "Farm"
+     Comment "Title of the sign at the farm north of the square. Printed on the board and shown in the prompt as Read: Farm."
+    }
+    CustomStringTableItem "{03708C7686BF4E63}" {
+     Id "LF-Sign_Farm_What"
+     Target_en_us "Tomato beds, a greenhouse, and an orchard."
+     Comment "Sign card for the farm north of the square, What section."
+    }
+    CustomStringTableItem "{905E4015631C43F6}" {
+     Id "LF-Sign_Farm_How"
+     Target_en_us "Gather Tomato from a ripe plant in the beds, Gather Apple or Gather Plum from the orchard trees."
+     Comment "Sign card for the farm north of the square, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{33EBA210B27B7F63}" {
+     Id "LF-Sign_Farm_Rules"
+     Target_en_us "A picked plant needs time to ripen again."
+     Comment "Sign card for the farm north of the square, Rules section."
+    }
+    CustomStringTableItem "{682DF358EBADD27A}" {
+     Id "LF-Hospital_Title"
+     Target_en_us "Hospital"
+     Comment "Toast title when a player wakes up in hospital."
+    }
+    CustomStringTableItem "{BE26E458ADA922A8}" {
+     Id "LF-Hospital_BillToast"
+     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
+     Comment "Toast on waking in hospital after a death. %1 is the bill amount."
+    }
+    CustomStringTableItem "{25C8757AA18DD8A8}" {
+     Id "LF-Hospital_BillTitle"
+     Target_en_us "Hospital bill"
+     Comment "Title of the paper hospital bill."
+    }
+    CustomStringTableItem "{DB6C9E5F09D39D13}" {
+     Id "LF-Hospital_BillAmount"
+     Target_en_us "Treatment: %1, charged to your bank account"
+     Comment "Hospital bill line. %1 is the amount charged."
+    }
+    CustomStringTableItem "{4F2335135A4FF34F}" {
+     Id "LF-Hospital_BillBalance"
+     Target_en_us "Bank balance after payment: %1"
+     Comment "Hospital bill line. %1 is the bank balance after the bill."
+    }
+    CustomStringTableItem "{1CE638BD33BB8722}" {
+     Id "LF-Hospital_BillDebt"
+     Target_en_us "You owe the bank. Your next deposits pay the debt first."
+     Comment "Hospital bill line shown when the bill put the player into debt."
+    }
+    CustomStringTableItem "{94693CF4600BC9D5}" {
+     Id "LF-Hospital_BillNote"
+     Target_en_us "You don't remember how you got here."
+     Comment "Hospital bill note: the New Life Rule cue. The player forgets the fight that killed them."
+    }
+    CustomStringTableItem "{FFEA0B7D7B19622C}" {
+     Id "LF-Hospital_BillNewLife"
+     Target_en_us "New Life Rule: stay away from where you died for %1 minutes."
+     Comment "Hospital bill line: the server rule. %1 is the number of minutes."
+    }
+    CustomStringTableItem "{D66A5204D011B83B}" {
+     Id "LF-Hospital_BillClose"
+     Target_en_us "Put the bill away"
+     Comment "Closes the hospital bill card."
+    }
+    CustomStringTableItem "{8AA134FCD11961A4}" {
+     Id "LF-Hospital_BillRead"
+     Target_en_us "Read hospital bill"
+     Comment "Action on a hospital bill lying in the world."
+    }
+    CustomStringTableItem "{BF9E5680A14113DA}" {
+     Id "LF-Hospital_BillItem"
+     Target_en_us "Hospital bill"
+     Comment "Inventory name of the paper hospital bill."
+    }
+    CustomStringTableItem "{B496BB68DF603A03}" {
+     Id "LF-Hospital_BillItemDesc"
+     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
+     Comment "Inventory description of the paper hospital bill."
+    }
+    CustomStringTableItem "{5985DB962913E1DE}" {
+     Id "LF-Rank_EscortDenied"
+     Target_en_us "Your rank cannot escort"
+     Comment "Escort refused because the officer's rank is below the configured escort rank"
     }
     CustomStringTableItem "{576A5D52994C158C}" {
      Id "LF-Sign_Impound_Title"
@@ -4282,26 +4272,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Park it in the garage next door, to the west, and it will not be towed again."
      Comment "Sign card for the impound lot, Next section: where the player goes after this place."
     }
-    CustomStringTableItem "{867133165FC03CB2}" {
-     Id "LF-Item_Parcel"
-     Target_en_us "Parcel"
-     Comment "Courier parcel item name"
-    }
-    CustomStringTableItem "{836BCE9515B5DC47}" {
-     Id "LF-Item_Parcel_Desc"
-     Target_en_us "A taped cardboard parcel for the drop-off address."
-     Comment "Courier parcel item description"
-    }
-    CustomStringTableItem "{315A7D38264FAED4}" {
-     Id "LF-Item_MoneyBag"
-     Target_en_us "Cash case"
-     Comment "Bank vault money bag item name"
-    }
-    CustomStringTableItem "{44F201EB4501CD73}" {
-     Id "LF-Item_MoneyBag_Desc"
-     Target_en_us "A heavy case of banknotes from the vault."
-     Comment "Bank money bag item description"
-    }
     CustomStringTableItem "{0A0AF64EEE5BACBB}" {
      Id "LF-Duty_ClockIn"
      Target_en_us "Clock in"
@@ -4452,10 +4422,320 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "wanted level %1 of 5"
      Comment "Wanted poster headline: how wanted the suspect is now. %1 is 1 to 5."
     }
+    CustomStringTableItem "{F51D6FC3BD1F68DC}" {
+     Id "LF-Job_NewWork"
+     Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
+     Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
+    }
+    CustomStringTableItem "{196A4BD9FFC674C5}" {
+     Id "LF-Job_HiredHidden"
+     Target_en_us "You now work as %1."
+     Comment "Hint when hired; %1 = job name. Hidden progression: no grade or level."
+    }
     CustomStringTableItem "{94B78288ADF3D767}" {
      Id "LF-Sign_PoliceWanted_Next"
      Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
      Comment "Wanted board sign card: what to do next."
+    }
+    CustomStringTableItem "{E69F55595D3DEC33}" {
+     Id "LF-Org_Title"
+     Target_en_us "Organization register"
+     Comment "Toast title for organization registry messages."
+    }
+    CustomStringTableItem "{D4B253C21B4066E6}" {
+     Id "LF-Org_LedgerTitle"
+     Target_en_us "Organization Register - 1989 ledger"
+     Comment "Registry ledger page title."
+    }
+    CustomStringTableItem "{D45EFB759CEED8F8}" {
+     Id "LF-Org_FoundIntro"
+     Target_en_us "Register a new organization here. Write its name once; the clerk takes a $%1 fee in cash."
+     Comment "Ledger founding line. %1 is the fee."
+    }
+    CustomStringTableItem "{A74957BC3D56482F}" {
+     Id "LF-Org_NameField"
+     Target_en_us "Organization name"
+     Comment "Ledger founding field placeholder."
+    }
+    CustomStringTableItem "{C7FD7A0ABE2999FE}" {
+     Id "LF-Org_FoundButton"
+     Target_en_us "Sign and pay $%1"
+     Comment "Ledger founding button. %1 is the fee."
+    }
+    CustomStringTableItem "{155A971B5EE37AD7}" {
+     Id "LF-Org_CloseLedger"
+     Target_en_us "Close the ledger"
+     Comment "Ledger close button."
+    }
+    CustomStringTableItem "{CF00BD73AD496C88}" {
+     Id "LF-Org_NameEmpty"
+     Target_en_us "Write a name first."
+     Comment "Founding refusal: empty name."
+    }
+    CustomStringTableItem "{966C8BD11E837E8E}" {
+     Id "LF-Org_NameShort"
+     Target_en_us "The name needs at least 3 letters."
+     Comment "Founding refusal: name too short."
+    }
+    CustomStringTableItem "{164B713160BF19CB}" {
+     Id "LF-Org_NameLong"
+     Target_en_us "The name fits 32 letters at most."
+     Comment "Founding refusal: name too long."
+    }
+    CustomStringTableItem "{A8AB0A602B627AEA}" {
+     Id "LF-Org_NameChars"
+     Target_en_us "Use letters, digits, spaces, - ' & and . only."
+     Comment "Founding refusal: characters not allowed."
+    }
+    CustomStringTableItem "{1C9D32A034633228}" {
+     Id "LF-Org_NameTaken"
+     Target_en_us "That name is already in the register."
+     Comment "Founding refusal: duplicate name."
+    }
+    CustomStringTableItem "{AF38925B41949B01}" {
+     Id "LF-Org_AlreadyMember"
+     Target_en_us "You already belong to an organization."
+     Comment "Founding refusal: already a member."
+    }
+    CustomStringTableItem "{BFB5F121CB45359D}" {
+     Id "LF-Org_NoFee"
+     Target_en_us "You do not carry the fee in cash."
+     Comment "Founding refusal: not enough carried cash."
+    }
+    CustomStringTableItem "{1536EF0E4145400E}" {
+     Id "LF-Org_NoCharacter"
+     Target_en_us "Register your character at the town hall first."
+     Comment "Ledger refusal: no character."
+    }
+    CustomStringTableItem "{6FEEAF6F48E6E38E}" {
+     Id "LF-Org_FoundFailed"
+     Target_en_us "The clerk could not register it. Your fee was returned."
+     Comment "Founding failed after the fee; fee returned."
+    }
+    CustomStringTableItem "{E8FFE477BDEE452B}" {
+     Id "LF-Org_Founded"
+     Target_en_us "%1 is in the register."
+     Comment "Toast after founding. %1 is the organization name."
+    }
+    CustomStringTableItem "{50EDA5787944C496}" {
+     Id "LF-Org_FoundedLine"
+     Target_en_us "Signed. The page is yours."
+     Comment "Ledger notice line after founding."
+    }
+    CustomStringTableItem "{7F43F0ADE5BC0F97}" {
+     Id "LF-Org_NameLine"
+     Target_en_us "Organization: %1"
+     Comment "Ledger line. %1 is the organization name."
+    }
+    CustomStringTableItem "{D52956E69B9B3735}" {
+     Id "LF-Org_RankLine"
+     Target_en_us "Your rank: %1"
+     Comment "Ledger line. %1 is the translated rank."
+    }
+    CustomStringTableItem "{2B01C1DAA65E369C}" {
+     Id "LF-Org_RankFounder"
+     Target_en_us "Founder"
+     Comment "Rank name: founder."
+    }
+    CustomStringTableItem "{B9419ACE4881130A}" {
+     Id "LF-Org_RankMember"
+     Target_en_us "Member"
+     Comment "Rank name: member."
+    }
+    CustomStringTableItem "{9051423983A8FD93}" {
+     Id "LF-Org_Processing"
+     Target_en_us "Processing upgrade"
+     Comment "Ledger row label."
+    }
+    CustomStringTableItem "{8FB7D90A7A0A7386}" {
+     Id "LF-Org_Owned"
+     Target_en_us "Owned"
+     Comment "Ledger row status: upgrade owned."
+    }
+    CustomStringTableItem "{BDDBD2D70EDA029F}" {
+     Id "LF-Org_NotOwned"
+     Target_en_us "Not owned"
+     Comment "Ledger row status: upgrade not owned."
+    }
+    CustomStringTableItem "{F0174EC746BF1252}" {
+     Id "LF-Org_BuyFor"
+     Target_en_us "Buy (%1)"
+     Comment "Ledger row action. %1 is the price."
+    }
+    CustomStringTableItem "{6D53E58AC9FADED3}" {
+     Id "LF-Org_Hideout"
+     Target_en_us "Alley yard lease"
+     Comment "Ledger row label: the hideout yard off the registry alley."
+    }
+    CustomStringTableItem "{624F7970B1B5A487}" {
+     Id "LF-Org_LeaseFree"
+     Target_en_us "Free"
+     Comment "Hideout lease status: nobody holds it."
+    }
+    CustomStringTableItem "{22205B2B89D3D298}" {
+     Id "LF-Org_LeaseOurs"
+     Target_en_us "Yours - members open the gate"
+     Comment "Hideout lease status: this organization holds it."
+    }
+    CustomStringTableItem "{717EDA57B8114856}" {
+     Id "LF-Org_LeaseTaken"
+     Target_en_us "Leased to another organization"
+     Comment "Hideout lease status: another organization holds it."
+    }
+    CustomStringTableItem "{CC1FC9A0CFEB04C1}" {
+     Id "LF-Org_TakeLease"
+     Target_en_us "Take the lease"
+     Comment "Ledger row action: lease the hideout yard."
+    }
+    CustomStringTableItem "{BD09FA58337E3B9B}" {
+     Id "LF-Org_Leased"
+     Target_en_us "The alley yard is yours. Members open its gate."
+     Comment "Ledger notice after the lease."
+    }
+    CustomStringTableItem "{376956E573282A68}" {
+     Id "LF-Org_LeaseRefused"
+     Target_en_us "The lease was refused."
+     Comment "Ledger notice: lease refused."
+    }
+    CustomStringTableItem "{22BBDF48A1B92971}" {
+     Id "LF-Org_MembersLine"
+     Target_en_us "Members (%1)"
+     Comment "Ledger line above the member list. %1 is the count."
+    }
+    CustomStringTableItem "{E12E744484FC2C12}" {
+     Id "LF-Org_InviteHint"
+     Target_en_us "To invite someone, face them and choose Invite."
+     Comment "Ledger hint for leaders: invites are face to face."
+    }
+    CustomStringTableItem "{EDD9EFE11266F42F}" {
+     Id "LF-Org_Membership"
+     Target_en_us "Your membership"
+     Comment "Ledger row label."
+    }
+    CustomStringTableItem "{7B6C0A4DF16E499F}" {
+     Id "LF-Org_Leave"
+     Target_en_us "Leave"
+     Comment "Ledger row action: leave the organization."
+    }
+    CustomStringTableItem "{A26182C89E316E79}" {
+     Id "LF-Org_Left"
+     Target_en_us "You left the organization."
+     Comment "Ledger notice after leaving."
+    }
+    CustomStringTableItem "{5057D088D80BAF22}" {
+     Id "LF-Org_LeaveRefused"
+     Target_en_us "You cannot leave here."
+     Comment "Ledger notice: leave refused."
+    }
+    CustomStringTableItem "{D2F38ED8270CB008}" {
+     Id "LF-Org_Deposited"
+     Target_en_us "Deposited into the fund."
+     Comment "Ledger notice after a deposit."
+    }
+    CustomStringTableItem "{F4D49F45A1FDC774}" {
+     Id "LF-Org_Withdrawn"
+     Target_en_us "Withdrawn from the fund."
+     Comment "Ledger notice after a withdrawal."
+    }
+    CustomStringTableItem "{896B3C564891420F}" {
+     Id "LF-Org_CashRefused"
+     Target_en_us "The clerk refused that amount."
+     Comment "Ledger notice: deposit or withdrawal refused."
+    }
+    CustomStringTableItem "{ACCC2C27C1D1B7A8}" {
+     Id "LF-Org_Bought"
+     Target_en_us "Upgrade bought from the fund."
+     Comment "Ledger notice after an upgrade."
+    }
+    CustomStringTableItem "{461C2E397686A4EA}" {
+     Id "LF-Org_BuyRefused"
+     Target_en_us "The upgrade was refused."
+     Comment "Ledger notice: upgrade refused."
+    }
+    CustomStringTableItem "{CF1AB48D810C8C66}" {
+     Id "LF-Org_InviteGeneric"
+     Target_en_us "Organization"
+     Comment "Interaction entry fallback name for the org_invite slot."
+    }
+    CustomStringTableItem "{99CE77E7DA096BC0}" {
+     Id "LF-Org_InviteTo"
+     Target_en_us "Invite to %1"
+     Comment "Interaction entry: a leader invites the person faced. %1 is the organization."
+    }
+    CustomStringTableItem "{BCB1B5591518BDCE}" {
+     Id "LF-Org_RemoveFrom"
+     Target_en_us "Remove from %1"
+     Comment "Interaction entry: a leader removes a member faced. %1 is the organization."
+    }
+    CustomStringTableItem "{20AD09A604FD14B1}" {
+     Id "LF-Org_Join"
+     Target_en_us "Join %1"
+     Comment "Interaction entry: accept the offer of the person faced. %1 is the organization."
+    }
+    CustomStringTableItem "{3E111C0C61E4B594}" {
+     Id "LF-Org_OfferMade"
+     Target_en_us "Offer made. They join by facing you and choosing Join."
+     Comment "Toast to the inviter."
+    }
+    CustomStringTableItem "{7FCF2CD0A3A7C858}" {
+     Id "LF-Org_OfferReceived"
+     Target_en_us "You are offered a place in %1. Face them and choose Join."
+     Comment "Toast to the invitee. %1 is the organization."
+    }
+    CustomStringTableItem "{BC1CC53C1A3EE577}" {
+     Id "LF-Org_OfferRefused"
+     Target_en_us "They cannot be invited."
+     Comment "Toast to the inviter: offer refused."
+    }
+    CustomStringTableItem "{0703409DF8667523}" {
+     Id "LF-Org_Joined"
+     Target_en_us "You joined %1."
+     Comment "Toast to the new member. %1 is the organization."
+    }
+    CustomStringTableItem "{10964C3EA631B4CE}" {
+     Id "LF-Org_NewMember"
+     Target_en_us "A new member joined %1."
+     Comment "Toast to the inviter. %1 is the organization."
+    }
+    CustomStringTableItem "{571CB642933950D6}" {
+     Id "LF-Org_JoinRefused"
+     Target_en_us "The offer is gone. Ask again."
+     Comment "Toast to the invitee: join refused."
+    }
+    CustomStringTableItem "{724D689AC7D42CE4}" {
+     Id "LF-Org_Removed"
+     Target_en_us "Member removed."
+     Comment "Toast to the leader after a removal."
+    }
+    CustomStringTableItem "{774D14CCF0672CF3}" {
+     Id "LF-Org_RemoveRefused"
+     Target_en_us "You cannot remove them."
+     Comment "Toast to the leader: removal refused."
+    }
+    CustomStringTableItem "{B97AC9C36C0F3C52}" {
+     Id "LF-Org_YouWereRemoved"
+     Target_en_us "You were removed from %1."
+     Comment "Toast to the removed member. %1 is the organization."
+    }
+    CustomStringTableItem "{867133165FC03CB2}" {
+     Id "LF-Item_Parcel"
+     Target_en_us "Parcel"
+     Comment "Courier parcel item name"
+    }
+    CustomStringTableItem "{836BCE9515B5DC47}" {
+     Id "LF-Item_Parcel_Desc"
+     Target_en_us "A taped cardboard parcel for the drop-off address."
+     Comment "Courier parcel item description"
+    }
+    CustomStringTableItem "{315A7D38264FAED4}" {
+     Id "LF-Item_MoneyBag"
+     Target_en_us "Cash case"
+     Comment "Bank vault money bag item name"
+    }
+    CustomStringTableItem "{44F201EB4501CD73}" {
+     Id "LF-Item_MoneyBag_Desc"
+     Target_en_us "A heavy case of banknotes from the vault."
+     Comment "Bank money bag item description"
     }
     CustomStringTableItem "{C6C3575A8274C731}" {
      Id "LF-Contraband_NotHideoutOwner"
@@ -4747,285 +5027,25 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Unpaid fine"
      Comment "Wanted board offence when a police ticket goes unpaid past its second deadline."
     }
-    CustomStringTableItem "{E69F55595D3DEC33}" {
-     Id "LF-Org_Title"
-     Target_en_us "Organization register"
-     Comment "Toast title for organization registry messages."
+    CustomStringTableItem "{AC8D0A406C890A6E}" {
+     Id "LF-Contraband_Crate_Name"
+     Target_en_us "Crate of spirits"
+     Comment "Item name of the contraband cargo: a wooden crate of untaxed spirits carried in both hands"
     }
-    CustomStringTableItem "{D4B253C21B4066E6}" {
-     Id "LF-Org_LedgerTitle"
-     Target_en_us "Organization Register - 1989 ledger"
-     Comment "Registry ledger page title."
+    CustomStringTableItem "{1D5E4503B79F1A6F}" {
+     Id "LF-Contraband_Crate_Desc"
+     Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
+     Comment "Item description of the contraband crate"
     }
-    CustomStringTableItem "{D45EFB759CEED8F8}" {
-     Id "LF-Org_FoundIntro"
-     Target_en_us "Register a new organization here. Write its name once; the clerk takes a $%1 fee in cash."
-     Comment "Ledger founding line. %1 is the fee."
+    CustomStringTableItem "{8269943001D9EADB}" {
+     Id "LF-Contraband_Loaded"
+     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
+     Comment "Toast when the convoy start hands the player a contraband crate at the barn"
     }
-    CustomStringTableItem "{A74957BC3D56482F}" {
-     Id "LF-Org_NameField"
-     Target_en_us "Organization name"
-     Comment "Ledger founding field placeholder."
-    }
-    CustomStringTableItem "{C7FD7A0ABE2999FE}" {
-     Id "LF-Org_FoundButton"
-     Target_en_us "Sign and pay $%1"
-     Comment "Ledger founding button. %1 is the fee."
-    }
-    CustomStringTableItem "{155A971B5EE37AD7}" {
-     Id "LF-Org_CloseLedger"
-     Target_en_us "Close the ledger"
-     Comment "Ledger close button."
-    }
-    CustomStringTableItem "{CF00BD73AD496C88}" {
-     Id "LF-Org_NameEmpty"
-     Target_en_us "Write a name first."
-     Comment "Founding refusal: empty name."
-    }
-    CustomStringTableItem "{966C8BD11E837E8E}" {
-     Id "LF-Org_NameShort"
-     Target_en_us "The name needs at least 3 letters."
-     Comment "Founding refusal: name too short."
-    }
-    CustomStringTableItem "{164B713160BF19CB}" {
-     Id "LF-Org_NameLong"
-     Target_en_us "The name fits 32 letters at most."
-     Comment "Founding refusal: name too long."
-    }
-    CustomStringTableItem "{A8AB0A602B627AEA}" {
-     Id "LF-Org_NameChars"
-     Target_en_us "Use letters, digits, spaces, - ' & and . only."
-     Comment "Founding refusal: characters not allowed."
-    }
-    CustomStringTableItem "{1C9D32A034633228}" {
-     Id "LF-Org_NameTaken"
-     Target_en_us "That name is already in the register."
-     Comment "Founding refusal: duplicate name."
-    }
-    CustomStringTableItem "{AF38925B41949B01}" {
-     Id "LF-Org_AlreadyMember"
-     Target_en_us "You already belong to an organization."
-     Comment "Founding refusal: already a member."
-    }
-    CustomStringTableItem "{BFB5F121CB45359D}" {
-     Id "LF-Org_NoFee"
-     Target_en_us "You do not carry the fee in cash."
-     Comment "Founding refusal: not enough carried cash."
-    }
-    CustomStringTableItem "{1536EF0E4145400E}" {
-     Id "LF-Org_NoCharacter"
-     Target_en_us "Register your character at the town hall first."
-     Comment "Ledger refusal: no character."
-    }
-    CustomStringTableItem "{6FEEAF6F48E6E38E}" {
-     Id "LF-Org_FoundFailed"
-     Target_en_us "The clerk could not register it. Your fee was returned."
-     Comment "Founding failed after the fee; fee returned."
-    }
-    CustomStringTableItem "{E8FFE477BDEE452B}" {
-     Id "LF-Org_Founded"
-     Target_en_us "%1 is in the register."
-     Comment "Toast after founding. %1 is the organization name."
-    }
-    CustomStringTableItem "{50EDA5787944C496}" {
-     Id "LF-Org_FoundedLine"
-     Target_en_us "Signed. The page is yours."
-     Comment "Ledger notice line after founding."
-    }
-    CustomStringTableItem "{7F43F0ADE5BC0F97}" {
-     Id "LF-Org_NameLine"
-     Target_en_us "Organization: %1"
-     Comment "Ledger line. %1 is the organization name."
-    }
-    CustomStringTableItem "{D52956E69B9B3735}" {
-     Id "LF-Org_RankLine"
-     Target_en_us "Your rank: %1"
-     Comment "Ledger line. %1 is the translated rank."
-    }
-    CustomStringTableItem "{2B01C1DAA65E369C}" {
-     Id "LF-Org_RankFounder"
-     Target_en_us "Founder"
-     Comment "Rank name: founder."
-    }
-    CustomStringTableItem "{B9419ACE4881130A}" {
-     Id "LF-Org_RankMember"
-     Target_en_us "Member"
-     Comment "Rank name: member."
-    }
-    CustomStringTableItem "{9051423983A8FD93}" {
-     Id "LF-Org_Processing"
-     Target_en_us "Processing upgrade"
-     Comment "Ledger row label."
-    }
-    CustomStringTableItem "{8FB7D90A7A0A7386}" {
-     Id "LF-Org_Owned"
-     Target_en_us "Owned"
-     Comment "Ledger row status: upgrade owned."
-    }
-    CustomStringTableItem "{BDDBD2D70EDA029F}" {
-     Id "LF-Org_NotOwned"
-     Target_en_us "Not owned"
-     Comment "Ledger row status: upgrade not owned."
-    }
-    CustomStringTableItem "{F0174EC746BF1252}" {
-     Id "LF-Org_BuyFor"
-     Target_en_us "Buy (%1)"
-     Comment "Ledger row action. %1 is the price."
-    }
-    CustomStringTableItem "{6D53E58AC9FADED3}" {
-     Id "LF-Org_Hideout"
-     Target_en_us "Alley yard lease"
-     Comment "Ledger row label: the hideout yard off the registry alley."
-    }
-    CustomStringTableItem "{624F7970B1B5A487}" {
-     Id "LF-Org_LeaseFree"
-     Target_en_us "Free"
-     Comment "Hideout lease status: nobody holds it."
-    }
-    CustomStringTableItem "{22205B2B89D3D298}" {
-     Id "LF-Org_LeaseOurs"
-     Target_en_us "Yours - members open the gate"
-     Comment "Hideout lease status: this organization holds it."
-    }
-    CustomStringTableItem "{717EDA57B8114856}" {
-     Id "LF-Org_LeaseTaken"
-     Target_en_us "Leased to another organization"
-     Comment "Hideout lease status: another organization holds it."
-    }
-    CustomStringTableItem "{CC1FC9A0CFEB04C1}" {
-     Id "LF-Org_TakeLease"
-     Target_en_us "Take the lease"
-     Comment "Ledger row action: lease the hideout yard."
-    }
-    CustomStringTableItem "{BD09FA58337E3B9B}" {
-     Id "LF-Org_Leased"
-     Target_en_us "The alley yard is yours. Members open its gate."
-     Comment "Ledger notice after the lease."
-    }
-    CustomStringTableItem "{376956E573282A68}" {
-     Id "LF-Org_LeaseRefused"
-     Target_en_us "The lease was refused."
-     Comment "Ledger notice: lease refused."
-    }
-    CustomStringTableItem "{22BBDF48A1B92971}" {
-     Id "LF-Org_MembersLine"
-     Target_en_us "Members (%1)"
-     Comment "Ledger line above the member list. %1 is the count."
-    }
-    CustomStringTableItem "{E12E744484FC2C12}" {
-     Id "LF-Org_InviteHint"
-     Target_en_us "To invite someone, face them and choose Invite."
-     Comment "Ledger hint for leaders: invites are face to face."
-    }
-    CustomStringTableItem "{EDD9EFE11266F42F}" {
-     Id "LF-Org_Membership"
-     Target_en_us "Your membership"
-     Comment "Ledger row label."
-    }
-    CustomStringTableItem "{7B6C0A4DF16E499F}" {
-     Id "LF-Org_Leave"
-     Target_en_us "Leave"
-     Comment "Ledger row action: leave the organization."
-    }
-    CustomStringTableItem "{A26182C89E316E79}" {
-     Id "LF-Org_Left"
-     Target_en_us "You left the organization."
-     Comment "Ledger notice after leaving."
-    }
-    CustomStringTableItem "{5057D088D80BAF22}" {
-     Id "LF-Org_LeaveRefused"
-     Target_en_us "You cannot leave here."
-     Comment "Ledger notice: leave refused."
-    }
-    CustomStringTableItem "{D2F38ED8270CB008}" {
-     Id "LF-Org_Deposited"
-     Target_en_us "Deposited into the fund."
-     Comment "Ledger notice after a deposit."
-    }
-    CustomStringTableItem "{F4D49F45A1FDC774}" {
-     Id "LF-Org_Withdrawn"
-     Target_en_us "Withdrawn from the fund."
-     Comment "Ledger notice after a withdrawal."
-    }
-    CustomStringTableItem "{896B3C564891420F}" {
-     Id "LF-Org_CashRefused"
-     Target_en_us "The clerk refused that amount."
-     Comment "Ledger notice: deposit or withdrawal refused."
-    }
-    CustomStringTableItem "{ACCC2C27C1D1B7A8}" {
-     Id "LF-Org_Bought"
-     Target_en_us "Upgrade bought from the fund."
-     Comment "Ledger notice after an upgrade."
-    }
-    CustomStringTableItem "{461C2E397686A4EA}" {
-     Id "LF-Org_BuyRefused"
-     Target_en_us "The upgrade was refused."
-     Comment "Ledger notice: upgrade refused."
-    }
-    CustomStringTableItem "{CF1AB48D810C8C66}" {
-     Id "LF-Org_InviteGeneric"
-     Target_en_us "Organization"
-     Comment "Interaction entry fallback name for the org_invite slot."
-    }
-    CustomStringTableItem "{99CE77E7DA096BC0}" {
-     Id "LF-Org_InviteTo"
-     Target_en_us "Invite to %1"
-     Comment "Interaction entry: a leader invites the person faced. %1 is the organization."
-    }
-    CustomStringTableItem "{BCB1B5591518BDCE}" {
-     Id "LF-Org_RemoveFrom"
-     Target_en_us "Remove from %1"
-     Comment "Interaction entry: a leader removes a member faced. %1 is the organization."
-    }
-    CustomStringTableItem "{20AD09A604FD14B1}" {
-     Id "LF-Org_Join"
-     Target_en_us "Join %1"
-     Comment "Interaction entry: accept the offer of the person faced. %1 is the organization."
-    }
-    CustomStringTableItem "{3E111C0C61E4B594}" {
-     Id "LF-Org_OfferMade"
-     Target_en_us "Offer made. They join by facing you and choosing Join."
-     Comment "Toast to the inviter."
-    }
-    CustomStringTableItem "{7FCF2CD0A3A7C858}" {
-     Id "LF-Org_OfferReceived"
-     Target_en_us "You are offered a place in %1. Face them and choose Join."
-     Comment "Toast to the invitee. %1 is the organization."
-    }
-    CustomStringTableItem "{BC1CC53C1A3EE577}" {
-     Id "LF-Org_OfferRefused"
-     Target_en_us "They cannot be invited."
-     Comment "Toast to the inviter: offer refused."
-    }
-    CustomStringTableItem "{0703409DF8667523}" {
-     Id "LF-Org_Joined"
-     Target_en_us "You joined %1."
-     Comment "Toast to the new member. %1 is the organization."
-    }
-    CustomStringTableItem "{10964C3EA631B4CE}" {
-     Id "LF-Org_NewMember"
-     Target_en_us "A new member joined %1."
-     Comment "Toast to the inviter. %1 is the organization."
-    }
-    CustomStringTableItem "{571CB642933950D6}" {
-     Id "LF-Org_JoinRefused"
-     Target_en_us "The offer is gone. Ask again."
-     Comment "Toast to the invitee: join refused."
-    }
-    CustomStringTableItem "{724D689AC7D42CE4}" {
-     Id "LF-Org_Removed"
-     Target_en_us "Member removed."
-     Comment "Toast to the leader after a removal."
-    }
-    CustomStringTableItem "{774D14CCF0672CF3}" {
-     Id "LF-Org_RemoveRefused"
-     Target_en_us "You cannot remove them."
-     Comment "Toast to the leader: removal refused."
-    }
-    CustomStringTableItem "{B97AC9C36C0F3C52}" {
-     Id "LF-Org_YouWereRemoved"
-     Target_en_us "You were removed from %1."
-     Comment "Toast to the removed member. %1 is the organization."
+    CustomStringTableItem "{DEDBE2A372F43FF6}" {
+     Id "LF-Contraband_HandsFull"
+     Target_en_us "Your hands are full. Put down what you carry, then take a crate."
+     Comment "Toast when the convoy start cannot hand over the crate because the player already carries something"
     }
   }
  }

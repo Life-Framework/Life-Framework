@@ -115,7 +115,7 @@ Create an organization, deposit cash, and buy the processing upgrade. The fund i
 
 `Roadmap_Hideout_Door` opens for a member and refuses everyone else. `Roadmap_Hideout_Machine` works only after the processing upgrade. `Roadmap_Hideout_Stash` is a real container: members open it and store items, everyone else is refused with a sound and a toast, and its contents survive a restart.
 
-Run the contraband convoy from `Roadmap_Convoy_Start` to `Roadmap_Convoy_Drop`. Delivery pays cash once. Leaving the vehicle or dying should fail the run. An on-duty officer can confiscate the flagged goods.
+Run the contraband convoy: `Start convoy` at the crates by the barn (`Roadmap_Convoy_Start`) hands you a crate of spirits; drive it to the back of the pub on the square and `Deliver contraband` at the pallet (`Roadmap_Convoy_Drop`). Delivery pays cash in hand once. Leaving the vehicle or dying should fail the run. An on-duty officer can confiscate the flagged goods.
 
 ### Restart
 
