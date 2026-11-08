@@ -74,6 +74,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_HarnessDevGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HarnessScreenText(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HarnessSessionScope(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HideoutStash(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_HideoutStashPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_HospitalBillOnce(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HospitalBillDebt(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HospitalBedPick(), EL_TestTier.LOGIC);
@@ -91,6 +93,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_JailOnlineTime(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JailSlip(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_JailVehicleArrest(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JobPacing(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);
@@ -176,9 +179,12 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ShopPriceHidden(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopCatalog(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SignCatalog(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SignCoverage(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_SignFaceClient(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignFaceFit(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignLocalization(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignMissingId(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SignNext(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Siren(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SirenMode(), EL_TestTier.LOGIC);
@@ -201,6 +207,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_UIPaperSheet(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_UnemploymentBenefit(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleBankRefusal(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_GarageLedger(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_VehicleImpound(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_VehicleLockIdMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistChatResources(), EL_TestTier.WORLD);

@@ -4,7 +4,9 @@
 //! here; EL_PlayerJobComponent.AddExperience copies it onto the player.
 //!
 //! Level 1 may take courier work. Level 2 opens fuel delivery. Level 3 opens
-//! taxi. One completed run is 100 XP, and 100 XP levels the job.
+//! taxi. Experience per run and per level come from LF_JobsConfig (flagship: 100 XP
+//! a run, 500 XP to level 2, each later level twice the one before: 5 runs to fuel
+//! delivery, 15 to the taxi). Progression is hidden: no level text reaches the player.
 //------------------------------------------------------------------------------------------------
 class LF_JobWorker : Managed
 {
@@ -24,8 +26,10 @@ class LF_CivilianJob
 	static const int PAY_PARCEL = 40;
 	static const int PAY_FUEL = 60;
 	static const int PAY_TAXI = 80;
-	static const int XP_PER_RUN = 100;
-	static const int XP_PER_LEVEL = 100;
+	// Defaults when Configs/Jobs/LF_Jobs.conf does not resolve. Same values as the file.
+	static const int DEFAULT_XP_PER_RUN = 100;
+	static const int DEFAULT_XP_FIRST_LEVEL = 500;
+	static const float DEFAULT_XP_LEVEL_GROWTH = 2;
 
 	static const ResourceName PARCEL_PREFAB = "{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et";
 	static const ResourceName FUEL_PREFAB = "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et";
@@ -329,7 +333,7 @@ class LF_CivilianJob
 		worker.m_eActiveJob = EL_EJobType.UNEMPLOYED;
 		worker.m_iPaidTotal = worker.m_iPaidTotal + amount;
 
-		AddExperience(playerUid, XP_PER_RUN);
+		AddExperience(playerUid, XpPerRun());
 		EL_Debug.Log("Jobs", string.Format("run paid %1 to %2", amount, playerUid));
 		return amount;
 	}
@@ -429,7 +433,7 @@ class LF_CivilianJob
 
 	//------------------------------------------------------------------------------------------------
 	//! Job XP for the civilian career. EL_PlayerJobComponent.AddExperience
-	//! forwards here. 100 XP levels the job and the remainder stays.
+	//! forwards here. Each level needs XpForLevel(level); the remainder stays.
 	static void AddExperience(string playerUid, float amount)
 	{
 		if (playerUid.IsEmpty())
@@ -448,16 +452,79 @@ class LF_CivilianJob
 		int levelBefore = worker.m_iLevel;
 		worker.m_fExperience = worker.m_fExperience + amount;
 
-		float step = XP_PER_LEVEL;
+		float step = XpForLevel(worker.m_iLevel);
 		while (worker.m_fExperience >= step)
 		{
 			worker.m_fExperience = worker.m_fExperience - step;
 			worker.m_iLevel = worker.m_iLevel + 1;
+			step = XpForLevel(worker.m_iLevel);
 		}
 
 		EL_Debug.Log("Jobs", string.Format("job xp +%1 -> level %2 xp %3 (%4)", amount, worker.m_iLevel, worker.m_fExperience, playerUid));
 		if (worker.m_iLevel > levelBefore)
 			EL_Debug.Log("Jobs", string.Format("job level -> %1 (%2)", worker.m_iLevel, playerUid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The delivery job that a rise from levelBefore to levelAfter opens, or UNEMPLOYED.
+	//! The clerk mentions new work; the level itself is never shown.
+	static EL_EJobType NewlyOpened(int levelBefore, int levelAfter)
+	{
+		if (levelAfter <= levelBefore)
+			return EL_EJobType.UNEMPLOYED;
+
+		if (levelBefore < RequiredLevel(EL_EJobType.TAXI) && levelAfter >= RequiredLevel(EL_EJobType.TAXI))
+			return EL_EJobType.TAXI;
+
+		if (levelBefore < RequiredLevel(EL_EJobType.FUEL_DELIVERY) && levelAfter >= RequiredLevel(EL_EJobType.FUEL_DELIVERY))
+			return EL_EJobType.FUEL_DELIVERY;
+
+		return EL_EJobType.UNEMPLOYED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Job experience one completed run grants (config, at least 1).
+	static int XpPerRun()
+	{
+		int xp = DEFAULT_XP_PER_RUN;
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (config)
+			xp = config.m_iJobXpPerRun;
+
+		return Math.Max(1, xp);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Experience needed to go from level to level + 1: the first level's cost times the
+	//! growth factor once per level above 1. Never below 1, so the level loop always ends.
+	static float XpForLevel(int level)
+	{
+		float first = DEFAULT_XP_FIRST_LEVEL;
+		float growth = DEFAULT_XP_LEVEL_GROWTH;
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (config)
+		{
+			first = config.m_iJobXpFirstLevel;
+			growth = config.m_fJobXpLevelGrowth;
+		}
+
+		growth = Math.Max(1, growth);
+		float cost = Math.Max(1, first);
+		for (int i = 1; i < level; i++)
+			cost = cost * growth;
+
+		return cost;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Completed runs a new worker needs to reach level (pacing, tests, docs).
+	static int RunsToReach(int level)
+	{
+		float needed = 0;
+		for (int i = 1; i < level; i++)
+			needed = needed + XpForLevel(i);
+
+		return Math.Ceil(needed / XpPerRun());
 	}
 
 	//------------------------------------------------------------------------------------------------

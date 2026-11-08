@@ -1,0 +1,65 @@
+GenericEntity : "{10C26F96EF7A8CF5}Prefabs/Props/Core/Props_Base.et" {
+ ID "CB50823A1DC04EF8"
+ components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Object "{98CD0A123E772237}Assets/Props/Furniture/Chest_01/Chest_01.xob"
+  }
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  SCR_SoundDataComponent "{C9164D4438450FB6}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{3912E5C77204CB05}" {
+     m_sSoundProject "{A73D28179B395F19}Sounds/Props/Military/AmmoBoxes/AmmoBox_Big_Wooden/Props_AmmoBox_Big_Wooden.acp"
+     m_sSoundEventName "SOUND_CONTAINER_OPEN"
+    }
+    SCR_AudioSourceConfiguration "{4FD1AECE05FD0494}" {
+     m_sSoundProject "{A73D28179B395F19}Sounds/Props/Military/AmmoBoxes/AmmoBox_Big_Wooden/Props_AmmoBox_Big_Wooden.acp"
+     m_sSoundEventName "SOUND_CONTAINER_CLOSE"
+    }
+   }
+  }
+  LF_HideoutStashStorageManagerComponent "{E7B14A09000C5EB1}" {
+  }
+  LF_HideoutStashStorageComponent "{9AA8183526744DAE}" {
+   Attributes SCR_ItemAttributeCollection "{C51AE9034D02440B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{D0ECA2B60E3C6F69}" {
+     Name "#LF-HideoutStash_Name"
+     Description "#LF-HideoutStash_Desc"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 100000
+   MaxItemSize 100 200 100
+   m_fMaxWeight 200
+  }
+  LF_PersistentStorageComponent "{DFF89A3BB63551AE}" {
+  }
+  ActionsManagerComponent "{D0C9E03DD0687212}" {
+   ActionContexts {
+    UserActionContext "{FDF41235464C72D5}" {
+     ContextName "default"
+     Position PointInfo "{3FD7B062BBC9935E}" {
+      Offset 0 0.35 0
+     }
+     Radius 0.7
+    }
+   }
+   additionalActions {
+    LF_HideoutStashOpenAction "{DEC618BD1B536715}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{8FE227ADC4CF5ABA}" {
+      Name "#LF-HideoutStash_Open"
+     }
+    }
+   }
+  }
+  RplComponent "{D3866204F91E4E93}" {
+   Enabled 1
+  }
+ }
+}

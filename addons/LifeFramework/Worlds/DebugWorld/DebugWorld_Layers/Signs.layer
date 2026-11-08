@@ -1,0 +1,170 @@
+GenericEntity Sign_TownMap : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "town_map"
+  }
+ }
+ coords 130.5 0 246.5
+ angleY -90
+}
+GenericEntity Sign_PostOffice : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "post_office"
+  }
+ }
+ coords 158.5 0 254.5
+ angleY 180
+}
+GenericEntity Sign_Atm : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "atm"
+  }
+ }
+ coords 181.5 0 254.5
+ angleY 180
+}
+GenericEntity Sign_Bank : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "bank"
+  }
+ }
+ coords 196.5 0 260
+ angleY 180
+}
+GenericEntity Sign_GeneralStore : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "general_store"
+  }
+ }
+ coords 174.5 0 245.5
+}
+GenericEntity Sign_Market : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "traders"
+  }
+ }
+ coords 193.5 0 245.3
+}
+GenericEntity Sign_VehicleLot : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "vehicle_lot"
+  }
+ }
+ coords 216 0 258
+ angleY 180
+}
+GenericEntity Sign_Garage : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "garage"
+  }
+ }
+ coords 242.5 0 254.5
+ angleY 180
+}
+GenericEntity Sign_Impound : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "impound"
+  }
+ }
+ coords 243 0 268.5
+ angleY 180
+}
+GenericEntity Sign_PoliceStation : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "police_station"
+  }
+ }
+ coords 226.3 0 246.5
+}
+GenericEntity Sign_PoliceWhitelist : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
+ coords 220.5 0 246.5
+}
+GenericEntity Sign_Jail : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "jail"
+  }
+ }
+ coords 229.5 0 224.5
+ angleY 180
+}
+GenericEntity Sign_FuelStation : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "fuel_station"
+  }
+ }
+ coords 255 0 245.5
+}
+GenericEntity Sign_Hospital : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "hospital"
+  }
+ }
+ coords 262 0 254.5
+ angleY 180
+}
+GenericEntity Sign_OrgRegistry : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "org_registry"
+  }
+ }
+ coords 284.5 0 254.5
+ angleY 180
+}
+GenericEntity Sign_BackRoom : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "black_market"
+  }
+ }
+ coords 305 0 282
+ angleY -90
+}
+GenericEntity Sign_Hideout : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "hideout"
+  }
+ }
+ coords 296.5 0 299
+ angleY 90
+}
+GenericEntity Sign_ConvoyDrop : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "convoy_drop"
+  }
+ }
+ coords 296.5 0 293.5
+ angleY 90
+}
+GenericEntity Sign_ConvoyPickup : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "convoy_pickup"
+  }
+ }
+ coords 462.5 0 328.5
+ angleY -90
+}
+GenericEntity Sign_Farm : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "farm"
+  }
+ }
+ coords 144.5 0 292.5
+ angleY 180
+}

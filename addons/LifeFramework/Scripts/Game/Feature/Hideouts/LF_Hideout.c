@@ -45,10 +45,15 @@ class LF_Hideout
 	protected static ref map<string, ref LF_HideoutState> s_mHideouts;
 	protected static string s_sLastRefusal;
 
+	//! Character id of an entity no player controls (a test fixture). A player always resolves
+	//! through the account, never through this map.
+	protected static ref map<EntityID, string> s_mBoundCharacters;
+
 	//------------------------------------------------------------------------------------------------
 	static void Reset()
 	{
 		s_sLastRefusal = "";
+		s_mBoundCharacters = null;
 		if (!s_mHideouts)
 			return;
 
@@ -70,6 +75,19 @@ class LF_Hideout
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Binds a character id to an entity no player controls, so a fixture can stand in for a member.
+	static void BindCharacter(IEntity entity, string characterId)
+	{
+		if (!entity)
+			return;
+
+		if (!s_mBoundCharacters)
+			s_mBoundCharacters = new map<EntityID, string>();
+
+		s_mBoundCharacters.Set(entity.GetID(), characterId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string CharacterIdOf(IEntity user)
 	{
 		if (!user)
@@ -77,7 +95,12 @@ class LF_Hideout
 
 		string uid = EL_Utils.GetPlayerUid(user);
 		if (uid.IsEmpty())
+		{
+			if (s_mBoundCharacters && s_mBoundCharacters.Contains(user.GetID()))
+				return s_mBoundCharacters.Get(user.GetID());
+
 			return "";
+		}
 
 		EL_PlayerAccountManager manager = EL_PlayerAccountManager.GetInstance();
 		if (!manager)
@@ -244,6 +267,33 @@ class LF_Hideout
 		{
 			if (report)
 				Refuse("door refused: not a member");
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: whether the character may use the hideout stash. Membership of the owning
+	//! organization is the only key: the door's lock state (breached or open) does not matter.
+	static bool AllowsStash(string characterId, string hideoutId, bool report)
+	{
+		if (!Server())
+			return false;
+
+		LF_HideoutState state = Find(hideoutId);
+		if (!state || state.m_sOrganizationId.IsEmpty())
+		{
+			if (report)
+				Refuse(string.Format("stash refused: hideout %1 has no owner", hideoutId));
+			return false;
+		}
+
+		EL_Organization org = EL_OrganizationManager.Get(state.m_sOrganizationId);
+		if (characterId.IsEmpty() || !org || !org.IsMember(characterId))
+		{
+			if (report)
+				Refuse("stash refused: not a member");
 			return false;
 		}
 

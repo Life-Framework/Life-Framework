@@ -297,6 +297,17 @@
   longer self-spawns the player character, so a pocket `MoneyStack` does not
   come back loose on the ground next to the restored one (the two-boot e2e
   counts it).
+- ✅ **Placed storage** (2026-11-08, M1-15): `LF_PersistentStorageComponent`
+  (`Scripts/Game/Persistence/`) saves a placed container's tree in the same store
+  under its `m_sStorageKey` and slot `placed`, so it rides the `carried` payload
+  with no new save version. Captured on every item added or removed and at every
+  save point; restored a frame after the entity initializes and a frame after a
+  load. Restore reconciles, so a second restore spawns nothing. The prefab carries
+  no native `Persistence` component, so the engine does not save the contents a
+  second time (the two-boot e2e finds the 151 cash in the stash and no loose
+  copy in the world).
+- ⚠️ Ammo count and weapon state are not in the snapshot. Attachments and
+  magazines are kept as items.
 
 ### Progression — `Feature/Account/LF_Progression.c`
 - ✅ **Progression survives a restart** (2026-11-08, M1-10, tests
@@ -318,8 +329,6 @@
 - ⚠️ Sign-ups, an active run, and the open duty clock are session state; after a
   restart the courier signs up again. `EL_LicenseManagerComponent` is not on
   `Character_Roleplay.et`, so licences persist only once a prefab carries it.
-- ⚠️ Ammo count, weapon state, and placed storage (hideout stash, M1-15) are not
-  in the snapshot. Attachments and magazines are kept as items.
 
 ## Account & Persistence
 
@@ -638,11 +647,20 @@
   from completed runs, trader sales, police duty pay (`LF_DutyPay`), and the
   unemployment benefit (`LF_UnemploymentBenefit`). Pin test `jobs/no-passive-paycheck`.
 - ✅ **Civilian run XP** (verified 2026-10-11): `AddExperience` forwards to
-  `LF_CivilianJob`. A completed courier, fuel, or taxi run adds 100 XP.
-  100 XP levels that career and `PullCareer` copies the level onto this
-  component, so `OnLevelUp` fires. Level 1 may take courier work, level 2
-  opens fuel delivery, level 3 opens taxi. Under-level signup refuses and is
-  logged.
+  `LF_CivilianJob`. A completed courier, fuel, or taxi run adds
+  `m_iJobXpPerRun` XP and `PullCareer` copies the level onto this component,
+  so `OnLevelUp` fires. Level 1 may take courier work, level 2 opens fuel
+  delivery, level 3 opens taxi. Under-level signup refuses and is logged.
+- ✅ **Job pacing is config and hidden** (2026-11-08, #156): `LF_Jobs.conf`
+  sets `m_iJobXpPerRun` (100), `m_iJobXpFirstLevel` (500), and
+  `m_fJobXpLevelGrowth` (2): 5 runs open fuel delivery, 15 open the taxi
+  (`LF_CivilianJob.RunsToReach`). No level text reaches the player: the
+  level-up hint ("grade N, +N%") and the grade in the hire hint are gone
+  (`#LF-Job_HiredHidden`). When a run opens new work the drop-off shows
+  `#LF-Job_NewWork` titled with the job name (`LF_CivilianJob.NewlyOpened`).
+  Pay per run is unchanged (40/60/80): 5 parcels then 5 fuel runs is about
+  500 cash, so a new player can buy the S105 (1000, from the bank) after about
+  10 runs. Test: `jobs/pacing`.
 - ✅ **Job tool grant** (2026-11-08): miner gets
   `{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et` (the old `Prefabs/Tools/Axe/Pico.et`
   never existed), lumberjack gets `{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et`
@@ -1092,13 +1110,29 @@
   refuses and logs. The recipe turns one cabbage into one RowanBerries stack,
   the configured contraband prefab. A chain machine with no hideout component
   still reads `ResourceChains.conf`.
-- ✅ `Roadmap_Hideout_Stash` at `219 0 120` is the base-game crate mesh
-  `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`.
+- ✅ **Hideout stash holds items** (2026-11-08, M1-15, tests `hideout/stash`,
+  `hideout/stash-save`, and `e2e/pass2-verify-load` across a real two-boot
+  restart). `Roadmap_Hideout_Stash` (now at `312 0 296` in the village) is an instance of the reusable
+  prefab `Prefabs/Props/Hideouts/LF_HideoutStash.et` (the base-game
+  `Chest_01.xob` chest, a crate was too small to notice): a real container (`LF_HideoutStashStorageComponent`,
+  200 kg) whose items are entities. Open storage asks the server
+  (`SCR_PlayerController.LF_RequestOpenStash`); a member of the organization that
+  owns the hideout (`m_sHideoutId` on `LF_HideoutStashStorageManagerComponent`)
+  gets the inventory, anyone else hears a refusal sound and gets the
+  `#LF-HideoutStash_NotMember` toast, and the refusal is logged
+  (`stash refused: not a member`). The server also refuses a non-member moving an
+  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership is the
+  only key: an open or breached door does not open the stash.
+- ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
+  keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its
+  items wherever the layer places it. See the placed-storage row under Carried
+  inventory.
 - ✅ `ExportAll` / `ApplyAll` put the organization id and the lock flag back,
   and a second apply does not change them. The game-mode serializer writes
   these records at version 3. A version 2 save has no hideout payload and does
   not clear a live hideout. Player strings: `#EL-Hideout_NotMember`,
-  `#EL-Hideout_NoUpgrade`, `#EL-Hideout_Process`.
+  `#EL-Hideout_NoUpgrade`, `#EL-Hideout_Process`, `#LF-HideoutStash_Name`,
+  `#LF-HideoutStash_Desc`, `#LF-HideoutStash_Title`, `#LF-HideoutStash_NotMember`.
 
 ## Notifications
 
@@ -1208,10 +1242,10 @@
 - ✅ `Roadmap_Vehicle_Lot` sells vanilla S105, UAZ469, S1203, UAZ452, and M923. Each spawn is a thin child of that vanilla prefab with `EL_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. (verified 2026-10-11)
 - ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing. Above the ceiling the refusal reads `#LF-Vehicle_BankShort` (pay from the bank; deposit at an ATM), so a buyer holding enough cash knows why (`vehicles/bank-refusal`).
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
-- ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
-- ✅ **A restart drops no ground key** (2026-11-07, test `restart/vehicle-restore-no-ground-key`, verified 2026-11-07): `RestoreWorld` / `RestoreVehicle` put each out-in-world vehicle back on the pad, locked as saved, without spawning a key. Before, every restart left a fresh key beside the pad for every such vehicle (anyone could take the car, and keys piled up). The owner re-keys through the existing owner-only flow: garage store, then retrieve (retrieve spawns a key when the session has none), or an extra key at the lot.
-- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `238 0 256.6` on `Street_Vehicles.layer`, with store and retrieve. The shell is its child 5.9 m north, turned so its doors face the street; the player stands in front of the doors. The lot counter is `Roadmap_Vehicle_Lot`: bought cars land on a pad 5 m west and 5 m south of it, then 8 m steps north across the concrete lot. The showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11; moved with M1-25)
-- ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, and refuses a vehicle that is not within the same garage's radius as the player (`EL_VehicleGarageComponent.IsVehicleAtPlayersGarage`, `#LF-Garage_VehicleTooFar`, test `security/garage-store-range`, 2026-11-07), then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
+- ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns on the garage's own pad (`EL_VehicleGarageComponent.m_sPadId` names an `EL_VehicleSpawnPointComponent`), not at the last world coordinates.
+- ✅ **Garage it to keep it** (M1-16, #101, decision 2026-11-07; tests `vehicles/impound`, `restart/vehicle-street-impounded`, `garage/ledger-card`): a vehicle survives a restart only when it is stored in a garage. After a load, `EL_VehicleOwnership.ImpoundStreetVehicles` leaves every owned vehicle that was not stored unspawned: it is at the impound lot (`IsImpounded` = owned, not stored, no live entity; derived, so no save field and no version bump). No key is spawned at load. `Roadmap_Impound_Desk` (`246 0 269`, at the gate of the net-fenced yard behind the garage, x 236..256, z 271..283) releases the owner's latest impounded vehicle for `LF_GarageConfig.m_iImpoundFee` (`Configs/Vehicles/LF_Garage.conf`, 250) in carried cash onto a yard pad, once; short cash, a stranger, a full yard, or a second collect is refused and charges nothing. A collect or retrieve hands the owner a key bound to the car when they hold no live one (a restart unbinds carried keys). A purchase is followed by a toast that teaches the rule (`#LF-Garage_BuyHint`); the garage sign and a new `Sign_Impound` board at the desk explain store, retrieve, the ledger, and the fee.
+- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `238 0 256.6` on `Street_Vehicles.layer`, with store, retrieve, and read the ledger. A retrieved car is parked along the kerb in front of the doors (`254.6`, then 7 m west). Store takes the owner's car parked within 15 m of that garage; the lot is no longer a garage. The shell is its child 5.9 m north, turned so its doors face the street; the player stands in front of the doors. The lot counter is `Roadmap_Vehicle_Lot`: bought cars land on a pad 5 m west and 5 m south of it, then 8 m steps north across the concrete lot. The showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11; moved with M1-25)
+- ✅ `LF_Garage` holds the park rules and the ledger. Park refuses a seated player or a missing garage, and a vehicle that is not within the same garage's radius as the player (`EL_VehicleGarageComponent.SharesGarage`, `#LF-Garage_VehicleTooFar`, test `security/garage-store-range`), then stops the engine and teleports occupants out before store. Reading the garage or the impound desk sends the reader's rows from the server (`SCR_PlayerController.LF_ShowGarageLedger`) and opens `LF_GarageLedger`, a read-only paper card: model, plate, and where each vehicle is (in the garage, at the impound lot), plus the release fee when one is impounded. The old catalog screen (buy, paint, preview, stats), unreachable from the world and a duplicate of the lot's buy path, is deleted with `UI/Layouts/Garage/LF_GarageVehicleRow.layout`. (2026-11-08)
 
 ## UI / Layouts / Localization
 
@@ -1224,9 +1258,24 @@
 - ✅ (2026-11-08) Opaque paper. The frame's `Metal`, `Paper`, `Rule` and the row plates were `PanelWidget`s, which draw the engine default style's panel image under their colour, so the sheet read dark and see-through. They are untextured `ImageWidget`s now (the vanilla solid-fill pattern, `DialogBackground.layout`), the paper is opaque warm off-white (238, 230, 212), and a full-screen `BackgroundBlur` behind the `Sheet` dims and softens the world. Paper skins paint button labels in ink with a red focus. A field gets an ink caption above it (`<Part>Caption`) because the vanilla placeholder draws light grey. `LF_UIEditBox.layout` now overrides the base `SCR_EditBoxComponent` by its GUID, which removes the stray "Editbox" label and applies the paper-coloured well. The sheet is 900 tall so the price list's Leave and the ATM's EXIT fit. Seen on a session client (WORLD `ui-kit/paper-sheet`, flow `ui-paper`).
 
 ### Signs — `Scripts/Game/Feature/Signs/`
-- ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
+- ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules, next). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules, Next; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
 - ✅ Prefabs `Prefabs/Props/Signs/LF_Sign_Board` (cork board), `LF_Sign_Pub` (shop sign), `LF_Sign_Notice` (A4 notice), `LF_Sign_Chalkboard` (standing chalkboard; the vanilla `CardboardSign_01` lives in the Rally addon and does not resolve for this mod) inherit the vanilla props (no new meshes) and add the component, an `LF_Sign` action context on the face, and the Read action. A placed instance sets the id. The title is also printed on the prop on rendering clients: `LF_SignComponent` draws `UI/Layouts/Signs/LF_SignFace.layout` into an `RTTextureWidget` bound (`SetRenderTarget`) to a mesh whose material `Assets/Signs/Data/LF_SignFace.emat` samples `$rendertarget`. `LF_Sign_Board` spawns a local `LF_SignFace` sheet (vanilla A4 poster mesh) on its face; `LF_Sign_Notice` retargets its own poster material. A dedicated server skips the face. `LF_Sign_Pub` and `LF_Sign_Chalkboard` ship with the face off until their sheet placement is checked in a rendering client.
 - ✅ The printed title fits the shown part of the render target at any window size. The target is the layout size times the screen DPI scale, but the widgets inside lay out one reference unit per pixel, so a 720p Workbench viewport printed "MINI / ARE". `LF_SignComponent.FaceTitleRect` places the title box and font by `DPIScale(1)`. Board and notice photographed reading MINING AREA, not mirrored, in a Workbench play session (2026-11-08). LOGIC `signs/face-fit`.
+- ✅ **Game client face size** (M1-09, 2026-11-08). On a 640x360 dedicated-server client the DPI-scaled title printed tiny in the sheet's top-left third. Without the DPI scaling, the full 432-unit box at font 96 cut WELCOME to WELCO at 640x360 and at 1920x1080 alike: only about 328 of the 512 units across reach the paper. The DPI compensation is now Workbench only (`#ifdef WORKBENCH`); a game client uses `LF_SignComponent.ClientTitleRect` (box x 20..310, font 96 or smaller so the longest word fits). All 18 board titles photographed whole and unmirrored at 1920x1080 on a dedicated-server client. LOGIC `signs/face-client`.
+- ✅ **Placed in DebugWorld** (M1-09, 2026-11-08). `DebugWorld_Layers/Signs.layer`
+  holds one sign per town manifest site, within 8 m of it, facing the street:
+  `Sign_TownMap` at the spawn square (`town_map`, "Welcome to Everon": the
+  loop in order and where each place stands, left and right walking east),
+  then post office, ATM, bank, general store, market, vehicle lot, garage,
+  police station, jail (inside the yard), fuel station, hospital, organization
+  office, hideout and convoy drop (in the yard), convoy pickup at the barn, and
+  farm, all `LF_Sign_Board`. The back room is an `LF_Sign_Chalkboard` with no
+  printed title. `Sign_PoliceWhitelist` places `EL_WhitelistSign` beside the
+  whitelist station. Cards are `#LF-Sign_<Site>_<Field>` keys: what, how with
+  the exact action names, needs, rules, next (where to go after this place,
+  so a stranger can follow the loop from sign to sign; LOGIC `signs/next`), with the DebugWorld numbers (prices,
+  pay, cooldowns). WORLD `signs/coverage`: every placed sign resolves a titled
+  catalog row, every catalog row is placed, and each title and What resolves.
 - ✅ `EL_MiningSign` reads `mining` (`Read: Mining area`) and `EL_WhitelistSign` reads `police_whitelist` beside its whitelist action. `EL_TextLabelComponent` (floating debug text) is deleted.
 - ⚠️ MenuBack closes the card through the UI kit. The printed face, the card render, the prompt, and the walk-away close are not yet seen in a rendering client (manual steps in the M1-01 PR).
 
@@ -1389,6 +1438,14 @@
   closed, a client without the define is refused by the script checksum, and
   `host start` never passes it. `session.mjs restart` (playtest) stops with the
   host stop file (SHUTDOWN save), loads, and rejoins the same profiles.
+- (2026-11-08, #108) `node agent-box/journey.mjs` plays the M1 journey on a
+  two-client session from the player's view (job, parcel run, ATM keypad, price
+  list, car, give cash, till robbery and alert, org desk, garage, and on the
+  playtest mission a restart), judges `state` before and after each step, and
+  writes `agent-box/reports/journey.html` with the client screenshots.
+  `tools/validation/agent-box-selftest.mjs` runs the harness, session, and
+  journey selftests in `validate`.
+  Every step ends with a picture from each client it touched. Clients default to 1280x720 (`session.mjs up --res 1920x1080` for evidence) on the hidden desktop; `--visible` plus `journey.mjs --film` records client 1, but the first clip held one frame (README, Filming).
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
@@ -1431,7 +1488,10 @@
   `node agent-box/harness.mjs town` and `validate-town-manifest.mjs` check it
   offline; `report town [site-id...]` walks it in play mode and writes
   `agent-box/reports/town.html`. Sign problems (none within 8 m, blank Read
-  card) are `sign: pending` warnings until `requireSigns` is true (M1-09).
+  card) fail the row: `requireSigns` is true since M1-09 placed the signs.
+  The spawn site is the named civilian town spawn `Spawn_Town`; the clerk
+  (`QuestGiver_Start`, prefab mode) is a site so the square meets the 30 m
+  neighbour rule.
   Play-mode run not yet recorded.
 
 ### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
