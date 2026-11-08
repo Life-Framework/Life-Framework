@@ -20,6 +20,37 @@ class EL_DevGate
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The agent harness opens its own gate (stand, pose, use; never the debug menu) in a build
+	//! compiled with -scrDefine LF_HARNESS (agent-box/session.mjs up --mission playtest). The define
+	//! changes the script checksum, so only clients started with the same define can join such a
+	//! server: a real player's client is refused at the door ("remote script source code checksum
+	//! does not match"). tools\cli host start never passes it, so the hosted gate stays closed.
+	//! \return true only in a build compiled with -scrDefine LF_HARNESS.
+	static bool HarnessBuild()
+	{
+#ifdef LF_HARNESS
+		return true;
+#else
+		return false;
+#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side check for a harness RPC on the sender's own character (stand, pose, use).
+	//! \param character The character the RPC arrived on.
+	//! \param request Short request name for the log line.
+	static bool CheckHarnessRequest(IEntity character, string request)
+	{
+		if (HarnessBuild())
+		{
+			EL_Debug.Info("AgentHarness", request + " allowed: LF_HARNESS build");
+			return true;
+		}
+
+		return CheckCharacterRequest(character, "AgentHarness", request);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Looks up the gate inputs for a player.
 	//! \param playerId The requesting player; 0 (unknown) is never an administrator.
 	static bool IsAllowedForPlayer(int playerId)

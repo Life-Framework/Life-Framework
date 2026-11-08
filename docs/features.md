@@ -1376,6 +1376,17 @@
   Workbench no longer answers `no_session`. The command file is shared by
   every default-profile session on the machine; the `agent-box-play` lock
   ties it to one checkout's Workbench or game process.
+- (2026-11-08, #108) Screens: `click` accepts every UI kit button by the name
+  the screen gave it (`LF_UIButtonRelay`: ATM keys, `IdClose`, the sign card's
+  `Close`, the garage's `Buy`). `ui text` reads a sheet as `kind:name=text`
+  (button labels, typed fields, printed lines, `#keys` translated);
+  `wait-text` polls it; `ui-shot` is `shot ui`. `stand` turns the character to
+  face the entity. `session.mjs up --mission playtest` runs `LF_PlaytestTown`
+  with `-scrDefine LF_HARNESS` on server and clients: harness RPCs pass
+  `EL_DevGate.CheckHarnessRequest` in that build only, the debug menu stays
+  closed, a client without the define is refused by the script checksum, and
+  `host start` never passes it. `session.mjs restart` (playtest) stops with the
+  host stop file (SHUTDOWN save), loads, and rejoins the same profiles.
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
