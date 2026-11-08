@@ -6,6 +6,7 @@ import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { capturePixels, classifyMeshFile, samePixels } from "./bmp.mjs";
 import { loadPlaced } from "./layers.mjs";
+import { judgeTownRow, missingActions, nearestNeighbour, resolveSite, signIssues } from "./town.mjs";
 
 export const STREET_GAP_M = 30;
 
@@ -185,12 +186,14 @@ function picture(src, alt) {
   return `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}">`;
 }
 
-export function renderRoadmapReport({ wide, rows, note, cameraStuck }) {
+export function renderRoadmapReport({ wide, rows, note, cameraStuck, title = "Roadmap street" }) {
   const failed = rows.filter((row) => !row.ok).length;
   const body = rows
     .map((row) => {
       const reasons = row.ok ? "<p class=\"pass\">Pass.</p>" : `<ul class="fail">${row.failures.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
       const menu = row.menu == null ? "" : `<p>Menu: ${escapeHtml(row.menu)}</p>`;
+      const warn = row.warnings?.length ? `<ul class="warn">${row.warnings.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : "";
+      const extra = (row.details || []).map((item) => `<p>${escapeHtml(item)}</p>`).join("");
       const menuShot = row.menuSrc ? picture(row.menuSrc, `${row.name} menu`) : "";
       return `<article class="${row.ok ? "pass-row" : "fail-row"}">
   <div class="pictures">
@@ -202,8 +205,10 @@ export function renderRoadmapReport({ wide, rows, note, cameraStuck }) {
     <p>${escapeHtml(row.layer || "")} at ${escapeHtml(row.x)} ${escapeHtml(row.y)} ${escapeHtml(row.z)}</p>
     <p>Look: ${escapeHtml(row.look || "none")}</p>
     ${menu}
+    ${extra}
     <p>${escapeHtml(row.distanceM)} m from the nearest other site. Mesh: ${escapeHtml(row.mesh || "missing")}.</p>
     ${reasons}
+    ${warn}
   </div>
 </article>`;
     })
@@ -214,7 +219,7 @@ export function renderRoadmapReport({ wide, rows, note, cameraStuck }) {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Roadmap street</title>
+<title>${escapeHtml(title)}</title>
 <style>
   body { margin: 24px; font: 16px/1.45 Georgia, serif; background: #f4f1ea; color: #1c1915; }
   h1 { font-size: 1.6rem; margin-bottom: 0.2rem; }
@@ -222,18 +227,19 @@ export function renderRoadmapReport({ wide, rows, note, cameraStuck }) {
   article { display: grid; grid-template-columns: minmax(240px, 420px) 1fr; gap: 20px; align-items: start; margin: 28px 0; padding-top: 20px; border-top: 1px solid #d5cfc3; }
   .fail { color: #8c1d1d; }
   .pass { color: #1d5c32; }
+  .warn { color: #7a5500; }
   .fail-row { background: #f8e8e4; }
   .missing { color: #8c1d1d; }
 </style>
 </head>
 <body>
-<h1>Roadmap street</h1>
+<h1>${escapeHtml(title)}</h1>
 <p>${rows.length - failed} passed, ${failed} failed, ${rows.length} sites.</p>
 <p>${escapeHtml(note || "")}</p>
 ${cameraStuck ? `<p class="fail">camera_stuck</p>` : ""}
 <figure class="wide">
   ${picture(wide?.src, "Roadmap row")}
-  <figcaption>The row.</figcaption>
+  <figcaption>${title === "Roadmap street" ? "The row." : "The town."}</figcaption>
 </figure>
 ${wideNote}
 ${body}
@@ -455,4 +461,165 @@ export function runRoadmapReport(deps) {
   if (playDown) deps.log("no_session");
   deps.log(`roadmap report: passed=${judged.length - failedRows} failed=${failed} total=${judged.length}`);
   return failed > 0 || sites.length === 0 ? 1 : 0;
+}
+
+// Town pass: report roadmap over the manifest (agent-box/town.mjs). Stands at
+// each named site, waits for its expected actions, shoots it, opens its menu,
+// then stands at its sign and opens Read. Positions come from deps.world(), the
+// layer scan; the manifest only names what must exist.
+export function runTownReport(deps) {
+  const manifest = deps.manifest;
+  const world = deps.world();
+  const ids = deps.ids || [];
+  const unknown = ids.filter((id) => !manifest.sites.some((site) => site.id === id));
+  if (unknown.length) {
+    deps.log(`unknown site id: ${unknown.join(", ")}`);
+    return 1;
+  }
+  const all = manifest.sites.map((site) => ({ site, place: resolveSite(site, world) }));
+  const resolved = all.filter((item) => item.place.x != null);
+  const walk = ids.length ? all.filter((item) => ids.includes(item.site.id)) : all;
+  const outDir = join(deps.root, "agent-box", "reports");
+  const shotDir = join(outDir, "shots");
+  mkdirSync(shotDir, { recursive: true });
+
+  let previousPixels = null;
+  let cameraStuck = false;
+  let playDown = false;
+  const rows = [];
+
+  function down(result) {
+    if (sessionDown(result)) playDown = true;
+    return playDown;
+  }
+
+  function lookFor(entityName, expected) {
+    let look = deps.look();
+    for (let waits = 0; !down(look) && look.status === "ok" && missingActions(expected, entityName, look.detail).length && waits < 4; waits++) {
+      deps.pause(700);
+      look = deps.look();
+    }
+    return look;
+  }
+
+  for (const { site, place } of walk) {
+    if (playDown || cameraStuck) break;
+    const row = {
+      id: site.id,
+      name: site.entity ? `${site.id} (${site.entity})` : `${site.id} (${place.count || 0} x ${site.prefab})`,
+      entity: site.entity || "",
+      actions: site.actions,
+      outskirts: Boolean(site.outskirts),
+      layer: place.layer || "",
+      x: place.x ?? "",
+      y: place.y ?? "",
+      z: place.z ?? "",
+      look: "",
+      menu: null,
+      menuMesh: null,
+      menuSrc: "",
+      src: "",
+      mesh: "missing",
+      resolveErrors: place.errors,
+      details: [`Journey step ${site.step}. Expects: ${site.actions.join(", ") || "nothing to press"}.`],
+    };
+    rows.push(row);
+    if (place.x == null) continue;
+    const index = resolved.findIndex((item) => item.site.id === site.id);
+    row.distanceM = nearestNeighbour(index, resolved.map((item) => item.place));
+    row.neighbourM = row.distanceM;
+    try {
+      if (site.entity) {
+        const stood = deps.stand(site.entity);
+        if (down(stood)) break;
+        if (stood.status === "ok") deps.pause(800);
+        const look = lookFor(site.entity, site.actions);
+        if (playDown) break;
+        row.look = lookText(look);
+      }
+      const shotSpec = { name: `town_${site.id}`, x: place.x, y: place.y, z: place.z };
+      const offset = site.entity ? siteShotOffset(site.entity) : null;
+      if (offset) Object.assign(shotSpec, offset);
+      const shot = deps.captureWorld(shotSpec);
+      if (down(shot)) break;
+      const image = shot.status === "ok" ? deps.resolve(shot) : "";
+      if (image) {
+        row.mesh = classifyMeshFile(image);
+        const saved = publishAndRead(image, shotDir, `town-${site.id}.png`);
+        row.src = saved.src;
+        if (saved.pixels && previousPixels && samePixels(previousPixels, saved.pixels)) cameraStuck = true;
+        if (saved.pixels) previousPixels = saved.pixels;
+      }
+      row.mesh = presentedMesh(site.entity, row.mesh, row.look);
+      if (cameraStuck) break;
+      const menuHit = site.entity ? menuActionFromLook(siteLook(site.entity, row.look)) : "";
+      if (menuHit) {
+        deps.use(menuHit.split("@")[0], site.entity);
+        deps.pause(500);
+        const ui = deps.ui();
+        row.menu = ui.status === "ok" ? ui.detail || "none" : "none";
+        const menuShot = deps.captureUi(`town_${site.id}_menu`);
+        const menuImage = menuShot.status === "ok" ? deps.resolve(menuShot) : "";
+        row.menuMesh = menuImage ? classifyMeshFile(menuImage) : "missing";
+        if (menuImage) row.menuSrc = publishShot(menuImage, shotDir, `town-${site.id}-menu.png`);
+        deps.input("MenuBack");
+        deps.pause(300);
+      }
+      const live = {};
+      const offline = signIssues(site, place, world, deps.catalog, deps.strings, manifest.signRadiusM);
+      if (offline.sign && offline.sign.name && offline.sign.distanceM <= manifest.signRadiusM) {
+        const stood = deps.stand(offline.sign.name);
+        if (down(stood)) break;
+        if (stood.status === "ok") deps.pause(800);
+        const look = lookFor(offline.sign.name, ["LF_SignReadAction"]);
+        if (playDown) break;
+        live.read = missingActions(["LF_SignReadAction"], offline.sign.name, lookText(look)).length === 0;
+        if (live.read) {
+          deps.use("LF_SignReadAction", offline.sign.name);
+          deps.pause(500);
+          const ui = deps.ui();
+          const card = deps.captureUi(`town_${site.id}_sign`);
+          const cardImage = card.status === "ok" ? deps.resolve(card) : "";
+          const cardMesh = cardImage ? classifyMeshFile(cardImage) : "missing";
+          if (cardImage) row.signSrc = publishShot(cardImage, shotDir, `town-${site.id}-sign.png`);
+          const widgets = ui.status === "ok" && (ui.detail || "").trim() && ui.detail !== "none";
+          live.card = widgets && cardMesh === "ok" ? "ok" : "blank";
+          deps.input("MenuBack");
+          deps.pause(300);
+        }
+      }
+      const signed = signIssues(site, place, world, deps.catalog, deps.strings, manifest.signRadiusM, live);
+      row.signIssues = signed.issues;
+      if (signed.sign) row.details.push(`Sign ${site.sign}: ${signed.sign.name || "(unnamed)"} ${signed.sign.distanceM} m away.`);
+      else if (site.sign) row.details.push(`Sign ${site.sign}: none placed.`);
+    } catch (err) {
+      row.note = err.message;
+      deps.log(`${site.id}: ${err.message}`);
+    }
+  }
+
+  const judged = rows.map((row) => {
+    const verdict = judgeTownRow(row, manifest);
+    return { ...row, ok: verdict.ok, failures: verdict.failures, warnings: verdict.warnings };
+  });
+  const html = renderRoadmapReport({
+    wide: {},
+    rows: judged.map((row) => ({ ...row, menuSrc: row.menuSrc || row.signSrc || "" })),
+    cameraStuck,
+    title: "Town",
+    note: `Play-mode town pass over agent-box/town.mjs. requireSigns=${manifest.requireSigns}: sign problems are ${manifest.requireSigns ? "failures" : "warnings (sign: pending)"}.`,
+  });
+  const htmlPath = join(outDir, "town.html");
+  writeFileSync(htmlPath, html, "utf8");
+  const failedRows = judged.filter((row) => !row.ok).length;
+  const failed = failedRows + (cameraStuck ? 1 : 0) + (playDown ? 1 : 0);
+  deps.log(`report: ${htmlPath}`);
+  for (const row of judged) {
+    deps.log(`${row.ok ? "pass" : "fail"} ${row.id}: ${row.ok ? row.mesh : row.failures.join("; ")}`);
+    for (const warning of row.warnings) deps.log(`warn ${row.id}: ${warning}`);
+  }
+  if (cameraStuck) deps.log("camera_stuck");
+  if (playDown) deps.log("no_session");
+  deps.log(`town report: passed=${judged.length - failedRows} failed=${failed} total=${judged.length}`);
+  return failed > 0 || judged.length === 0 ? 1 : 0;
 }

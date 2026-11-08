@@ -9,6 +9,7 @@ class EL_TestManager
 {
 	protected static ref EL_TestManager s_Instance;
 	protected ref array<ref EL_Test> m_aTests = {};
+	protected ref array<string> m_aOnly = {};
 
 	//------------------------------------------------------------------------------------------------
 	static EL_TestManager GetInstance()
@@ -24,6 +25,40 @@ class EL_TestManager
 	{
 		test.SetTier(tier);
 		m_aTests.Insert(test);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Restricts the next run to these tests, matched by class name or GetName().
+	//! Set by EL_TestRunnerComponent for `tools\cli test --only`. The run then
+	//! ignores tiers, reports tier=only, and fails every name that matched nothing.
+	void SetOnly(array<string> names)
+	{
+		m_aOnly.Clear();
+		foreach (string raw : names)
+		{
+			string name = raw.Trim();
+			if (!name.IsEmpty() && m_aOnly.Find(name) == -1)
+				m_aOnly.Insert(name);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool MatchesOnly(EL_Test test, array<string> matched)
+	{
+		string className = test.ClassName();
+		string testName = test.GetName();
+		bool hit = false;
+		foreach (string want : m_aOnly)
+		{
+			if (want != className && want != testName)
+				continue;
+
+			hit = true;
+			if (matched.Find(want) == -1)
+				matched.Insert(want);
+		}
+
+		return hit;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -56,6 +91,11 @@ class EL_TestManager
 		else if (mode == EL_TestSuiteMode.PERSISTENCE)
 			tierName = "persistence";
 
+		bool filtered = m_aOnly.Count() > 0;
+		array<string> matched = {};
+		if (filtered)
+			tierName = "only";
+
 		int failures = 0;
 		int total = 0;
 		int passed = 0;
@@ -65,16 +105,24 @@ class EL_TestManager
 
 		foreach (EL_Test test : m_aTests)
 		{
-			bool skip = false;
-			if (mode == EL_TestSuiteMode.FAST && test.Tier() != EL_TestTier.LOGIC)
-				skip = true;
-			else if (mode == EL_TestSuiteMode.PERSISTENCE && test.Tier() != EL_TestTier.PERSISTENCE)
-				skip = true;
-
-			if (skip)
+			if (filtered)
 			{
-				PrintFormat("[ELTEST] SKIP %1 (tier=%2, %3 run)", EscapeXml(test.GetName()), TierName(test.Tier()), tierName);
-				continue;
+				if (!MatchesOnly(test, matched))
+					continue;
+			}
+			else
+			{
+				bool skip = false;
+				if (mode == EL_TestSuiteMode.FAST && test.Tier() != EL_TestTier.LOGIC)
+					skip = true;
+				else if (mode == EL_TestSuiteMode.PERSISTENCE && test.Tier() != EL_TestTier.PERSISTENCE)
+					skip = true;
+
+				if (skip)
+				{
+					PrintFormat("[ELTEST] SKIP %1 (tier=%2, %3 run)", EscapeXml(test.GetName()), TierName(test.Tier()), tierName);
+					continue;
+				}
 			}
 
 			total++;
@@ -108,6 +156,19 @@ class EL_TestManager
 				PrintFormat("[ELTEST] PASS %1 (%2 assertions)", name, ctx.AssertionCount());
 				cases += string.Format("<testcase name=\"%1\" time=\"0\"/>\n", name);
 			}
+		}
+
+		foreach (string want : m_aOnly)
+		{
+			if (matched.Find(want) != -1)
+				continue;
+
+			total++;
+			failures++;
+			string missing = EscapeXml(want);
+			PrintFormat("[ELTEST] FAIL %1 (no test matches --only)", missing);
+			PrintFormat("[ELTEST]   - no registered test has class or name '%1'", missing);
+			cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"no test matches --only\"/></testcase>\n", missing);
 		}
 
 		PrintFormat("[ELTEST] SUMMARY tier=%1 passed=%2 failed=%3 total=%4", tierName, passed, failures, total);

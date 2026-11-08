@@ -74,16 +74,54 @@ class EL_SurvivalStats : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void UpdateStats(float deltaTime)
+	//! \param config Survival tuning; null uses LF_SurvivalConfig.Get().
+	//! \return True when hunger or thirst is below the config's low-needs threshold.
+	bool AreNeedsLow(LF_SurvivalConfig config = null)
 	{
-		// Decrease hunger and thirst over time
-		SetHunger(m_fHunger - deltaTime * 0.1); // Adjust rate as needed
-		SetThirst(m_fThirst - deltaTime * 0.15);
+		if (!config)
+			config = LF_SurvivalConfig.Get();
 
-		// Health decreases if hunger or thirst is low
-		if (m_fHunger < 20 || m_fThirst < 20)
+		return m_fHunger < config.m_fLowNeedThreshold || m_fThirst < config.m_fLowNeedThreshold;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The stamina drain multiplier needs impose: the config value while needs are low, else 1.
+	float GetStaminaDrainMultiplier(LF_SurvivalConfig config = null)
+	{
+		if (!config)
+			config = LF_SurvivalConfig.Get();
+
+		if (!AreNeedsLow(config))
+			return 1;
+
+		return Math.Max(config.m_fStaminaDrainMultiplier, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drains hunger and thirst by deltaTime seconds. Low needs pull health down to the config cap
+	//! and never below it, so needs never kill; met needs regenerate health up to 100.
+	//! \param deltaTime Seconds elapsed; zero or negative is a no-op.
+	//! \param config Survival tuning; null uses LF_SurvivalConfig.Get().
+	void UpdateStats(float deltaTime, LF_SurvivalConfig config = null)
+	{
+		if (deltaTime <= 0)
+			return;
+
+		if (!config)
+			config = LF_SurvivalConfig.Get();
+
+		SetHunger(m_fHunger - deltaTime * config.m_fHungerDrainPerSecond);
+		SetThirst(m_fThirst - deltaTime * config.m_fThirstDrainPerSecond);
+
+		if (AreNeedsLow(config))
 		{
-			SetHealth(m_fHealth - deltaTime * 0.05);
+			// Only health above the cap is pulled down; an injury below the cap is not worsened.
+			if (m_fHealth > config.m_fHealthCap)
+				SetHealth(Math.Max(m_fHealth - deltaTime * config.m_fHealthDrainPerSecond, config.m_fHealthCap));
+		}
+		else if (config.m_fHealthRegenPerSecond > 0)
+		{
+			SetHealth(m_fHealth + deltaTime * config.m_fHealthRegenPerSecond);
 		}
 	}
 

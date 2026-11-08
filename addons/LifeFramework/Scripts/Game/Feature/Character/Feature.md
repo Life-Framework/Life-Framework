@@ -46,6 +46,9 @@ Rung 1.
 - `Feature/Character/Spawning/` — `EL_SpawnLogic` (account-aware spawn, death →
   death screen), `EL_DeathScreen` + `EL_RespawnComponent` (death-screen bridge),
   `EL_SpawnPointsProvider`, `EL_FactionSpawnPoint`.
+- `Feature/Character/Persistence/` — `LF_StorageSnapshot`: the carried inventory
+  survives a restart (captured at save points and disconnect, applied on spawn
+  instead of the starter kit, dropped at death). Named snapshots per owner.
 - `Feature/Character/Inventory/` — `HandCarry/` state machine + modded vanilla
   inventory wiring; `Quantity`'s `ScriptedInventoryStorageManagerComponent`
   adds the RPC split/transfer endpoints.

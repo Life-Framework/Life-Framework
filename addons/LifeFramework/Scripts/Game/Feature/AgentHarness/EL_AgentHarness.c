@@ -41,8 +41,10 @@ class EL_AgentCommand
 	//!   <id> kit quantity <Part> <Total> <Take>
 	//!   <id> stand <EntityName>
 	//!   <id> look
+	//!   <id> state
 	//!   <id> ui
 	//!   <id> click <WidgetName> [index]
+	//!   <id> type <PartName> <Text>
 	//!   <id> capture ui <Name>
 	//!   <id> capture world <Name> <x> <y> <z> [ox oy oz]
 	static bool Parse(string line, out EL_AgentCommand cmd)
@@ -85,10 +87,14 @@ class EL_AgentCommand
 			return ParseStand(parts, cmd);
 		if (cmd.Verb == "look")
 			return true;
+		if (cmd.Verb == "state")
+			return true;
 		if (cmd.Verb == "ui")
 			return true;
 		if (cmd.Verb == "click")
 			return ParseClick(parts, cmd);
+		if (cmd.Verb == "type")
+			return ParseType(parts, cmd);
 		if (cmd.Verb == "capture")
 			return ParseCapture(parts, cmd);
 
@@ -169,6 +175,27 @@ class EL_AgentCommand
 				cmd.Error = "bad_index";
 				return false;
 			}
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! type <PartName> <Text>: both tokens are letters, digits, or underscore.
+	protected static bool ParseType(array<string> parts, EL_AgentCommand cmd)
+	{
+		if (parts.Count() < 4)
+		{
+			cmd.Error = "need_field_and_text";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		cmd.Arg2 = parts[3];
+		if (!IsClassToken(cmd.Arg1) || !IsClassToken(cmd.Arg2))
+		{
+			cmd.Error = "bad_field_or_text";
+			return false;
 		}
 
 		return true;
@@ -476,10 +503,13 @@ class EL_AgentCommand
 class EL_AgentHarness
 {
 	protected static const string FEATURE = "AgentHarness";
+	//! Result token when EL_DevGate refuses a harness RPC (playtest mission, non-admin).
+	static const string REFUSED_DEV_GATE = "dev_gate_closed";
 	protected static const string COMMAND_PATH = "$profile:agent-box/command.txt";
 	protected static const string RESULT_PATH = "$profile:agent-box/result.txt";
 
 	protected static bool s_bLoop;
+	protected static IEntity s_pLoopMode;
 	protected static int s_iEnsureTries;
 	protected static int s_iCaptureId;
 	protected static vector s_vShotStand;
@@ -503,11 +533,25 @@ class EL_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	static void EnsureLoop()
 	{
-		if (s_bLoop)
-			return;
-
 		if (!GetGame())
 			return;
+
+		// Workbench keeps script statics between play sessions when nothing
+		// recompiles. The old poll died with the old game, so a second Play
+		// answered every command with no_session. A new game mode entity marks
+		// a new session.
+		IEntity mode = GetGame().GetGameMode();
+		if (s_bLoop && s_pLoopMode == mode)
+			return;
+
+		if (s_bLoop)
+		{
+			s_bLoop = false;
+			s_iEnsureTries = 0;
+			s_iCaptureId = 0;
+			s_bShotPose = false;
+			EL_Debug.Log(FEATURE, "new play session; restarting poll");
+		}
 
 		// A headless dedicated server never has a local controller. Do not
 		// schedule retries there: the logic suite must not grow a poll.
@@ -532,6 +576,7 @@ class EL_AgentHarness
 		}
 
 		s_bLoop = true;
+		s_pLoopMode = mode;
 		GetGame().GetCallqueue().CallLater(Poll, 400, true);
 		EL_Debug.Log(FEATURE, "poll started");
 	}
@@ -614,6 +659,11 @@ class EL_AgentHarness
 			DoLook(cmd);
 			return;
 		}
+		if (cmd.Verb == "state")
+		{
+			DoState(cmd);
+			return;
+		}
 		if (cmd.Verb == "ui")
 		{
 			DoUi(cmd);
@@ -622,6 +672,11 @@ class EL_AgentHarness
 		if (cmd.Verb == "click")
 		{
 			DoClick(cmd);
+			return;
+		}
+		if (cmd.Verb == "type")
+		{
+			DoType(cmd);
 			return;
 		}
 		if (cmd.Verb == "input")
@@ -702,8 +757,108 @@ class EL_AgentHarness
 			return;
 		}
 
-		character.EL_AskHarnessStand(cmd.Arg1);
-		WriteResult(cmd.Id, "ok", cmd.Arg1);
+		// The server answers: ok once it moved the character, or the refusal.
+		character.EL_AskHarnessStand(cmd.Id, cmd.Arg1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: where the character should stand beside a named entity. The dev gate is checked
+	//! first, so a closed gate refuses before anything about the character or the world is read.
+	//! The move itself happens on the character's owner (SCR_ChimeraCharacter.EL_AskHarnessStand).
+	//! \param character The requesting player's character.
+	//! \param entityName World entity to stand beside.
+	//! \param gateOpen EL_DevGate allowed this player.
+	//! \param[out] destination Where to put the character.
+	//! \return empty on success, else the refusal token sent back to the harness.
+	static string ServerStand(IEntity character, string entityName, bool gateOpen, out vector destination)
+	{
+		if (!gateOpen)
+			return REFUSED_DEV_GATE;
+
+		if (!character)
+			return "no_character";
+
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return "no_world";
+
+		IEntity target = world.FindEntityByName(entityName);
+		if (!target)
+		{
+			EL_Debug.Error(FEATURE, string.Format("stand refused: %1 is not in the world", entityName));
+			return "entity_not_found";
+		}
+
+		// One metre to the side keeps the character inside a 3m action radius
+		// without planting them inside the prop.
+		destination = target.GetOrigin() + Vector(1.2, 0, 0);
+		EL_Debug.Log(FEATURE, string.Format("stand beside %1 at %2", entityName, destination));
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The server reads the state; the reply arrives through Reply.
+	protected static void DoState(EL_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.EL_AskHarnessState(cmd.Id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one line of key=value tokens for the harness `state` verb:
+	//! faction, duty, wanted, rank, cash carried, bank balance, job, organization.
+	static string StateLine(IEntity character)
+	{
+		if (!character)
+			return "no_character";
+
+		string uid = EL_Utils.GetPlayerUID(character);
+		EL_PlayerAccount account;
+		EL_PlayerAccountManager manager = EL_PlayerAccountManager.GetInstance();
+		if (manager && !uid.IsEmpty())
+			account = manager.GetAccount(uid);
+
+		string faction = "none";
+		int duty = 0;
+		int wanted = 0;
+		int rank = 0;
+		if (account)
+		{
+			faction = typename.EnumToString(EL_Faction, account.GetFaction());
+			if (account.IsOnDuty())
+				duty = 1;
+			wanted = account.GetWantedLevel();
+			rank = account.GetPoliceRank();
+		}
+
+		int bank = 0;
+		if (!uid.IsEmpty())
+			bank = EL_ATMManager.GetOrCreate(uid).GetBalance();
+
+		string job = typename.EnumToString(EL_EJobType, LF_CivilianJob.GetActiveJob(uid));
+		string org = "none";
+		EL_Organization organization = EL_OrganizationManager.GetByCharacter(LF_Hideout.CharacterIdOf(character));
+		if (organization)
+			org = Token(organization.GetName());
+
+		return string.Format("faction=%1 duty=%2 wanted=%3 rank=%4 cash=%5 bank=%6 job=%7 org=%8", faction, duty, wanted, rank, EL_MoneyUtils.GetCash(character), bank, job, org);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One space-free token for a key=value result.
+	protected static string Token(string text)
+	{
+		string token = text;
+		token.Replace(" ", "_");
+		if (token.IsEmpty())
+			return "none";
+		return token;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -903,6 +1058,39 @@ class EL_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Writes text into the edit box of a visible field (a UI kit FIELD part or any widget that
+	//! wraps an EditBox), the way a player would type it.
+	protected static void DoType(EL_AgentCommand cmd)
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+		{
+			WriteResult(cmd.Id, "error", "no_workspace");
+			return;
+		}
+
+		Widget field = workspace.FindAnyWidget(cmd.Arg1);
+		if (!field || !Shown(field))
+		{
+			WriteResult(cmd.Id, "error", "widget_not_found");
+			return;
+		}
+
+		EditBoxWidget box = EditBoxWidget.Cast(field);
+		if (!box)
+			box = EditBoxWidget.Cast(field.FindAnyWidget("EditBox"));
+		if (!box)
+		{
+			WriteResult(cmd.Id, "error", "not_a_field");
+			return;
+		}
+
+		box.SetText(cmd.Arg2);
+		EL_Debug.Log(FEATURE, string.Format("type %1", cmd.Arg1));
+		WriteResult(cmd.Id, "ok", cmd.Arg1);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void FindClickTarget(Widget widget)
 	{
 		if (!widget || s_wClickTarget)
@@ -1011,39 +1199,39 @@ class EL_AgentHarness
 	{
 		if (!user)
 		{
-			WriteResult(commandId, "error", "no_character");
+			UseReply(user, commandId, "error", "no_character");
 			return;
 		}
 
 		IEntity target = FindTarget(user, className, entityName);
 		if (!target)
 		{
-			WriteResult(commandId, "error", "action_not_found");
+			UseReply(user, commandId, "error", "action_not_found");
 			return;
 		}
 
 		ScriptedUserAction action = FindOnEntity(target, className);
 		if (!action)
 		{
-			WriteResult(commandId, "error", "action_not_found");
+			UseReply(user, commandId, "error", "action_not_found");
 			return;
 		}
 
 		if (!action.CanBeShownScript(user))
 		{
-			WriteResult(commandId, "error", "cannot_show");
+			UseReply(user, commandId, "error", "cannot_show");
 			return;
 		}
 
 		if (!action.CanBePerformedScript(user))
 		{
-			WriteResult(commandId, "error", "cannot_perform");
+			UseReply(user, commandId, "error", "cannot_perform");
 			return;
 		}
 
 		action.PerformAction(target, user);
 		EL_Debug.Log(FEATURE, string.Format("performed %1", className));
-		WriteResult(commandId, "ok", className);
+		UseReply(user, commandId, "ok", className);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1342,6 +1530,31 @@ class EL_AgentHarness
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void UseReply(IEntity user, int commandId, string status, string detail)
+	{
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(user);
+		if (character)
+			character.EL_HarnessReply(commandId, status, detail);
+		else
+			WriteResult(commandId, status, detail);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: a result the server sent back for a stand, use, or state request. A state reply
+	//! also carries the last toast this client showed, which is how an alert is seen.
+	static void Reply(int id, string status, string detail)
+	{
+		string text = detail;
+		if (status == "ok" && text.StartsWith("faction="))
+		{
+			string toast = SCR_PlayerController.EL_GetLastToast();
+			text = text + " toast=" + Token(toast);
+		}
+
+		WriteResult(id, status, text);
 	}
 
 	//------------------------------------------------------------------------------------------------

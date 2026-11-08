@@ -16,6 +16,7 @@ description: "Use for a Life Framework bug or logic change with a cheap EL_Test 
 - Never edit `EL_TestManager.c` or `EL_TestRegistrations.generated.c`. Prefer
   deterministic LOGIC tests; use WORLD/PERSISTENCE only when the world or save
   path matters. Persistence tests go through public mutators and accessors.
-- In a worktree, use `tools\cli test --no-build --tier fast` for logic and
-  `--tier all` for world/runtime coverage. A prefab-only fix usually needs
+- In a worktree, loop on `tools\cli test --no-build --only <EL_Test_Class>`
+  (one test, any tier, ~10 s) for the red and green runs. Then run
+  `--tier fast` for logic and `--tier all` once for world/runtime coverage. A prefab-only fix usually needs
   runtime proof, not a new test.

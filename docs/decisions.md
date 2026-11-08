@@ -27,6 +27,29 @@ reputation, never monetization.
 agent; humans can read and reason about everything. Agents improve the tooling
 (MCP, harness, filming, validators) as they work.
 
+**2026-11-08 — We take leverage from community open source, within its
+licence.** Permissive work (MIT, BSD, Apache, CC0, CC-BY, OFL for fonts) may be
+copied and modified. We keep its notices and credit it in the README and in
+`THIRD_PARTY.md` or `assets-source/LICENSES.md`. Share-alike work (APL-SA,
+CC-BY-SA, GPL) and Workshop mods with no licence are never copied into our MIT
+code. We use them as a Workshop dependency, take them as inspiration for a
+clean reimplementation, or ask the author. Base-game content is referenced and
+inherited freely. Why: other people have solved problems we would otherwise
+solve again, and the project stays MIT. What it means for code: every copied
+file or asset arrives with its notice and a credit line in the same PR.
+`docs/ecosystem.md` lists the candidates and their licences.
+
+**2026-11-08 — A very small number of Workshop dependencies is acceptable.** A
+dependency must be maintained, widely used, on terms that allow depending on
+it, and carry something we cannot reasonably build (for example thebonbon's
+animations, under evaluation in `docs/ecosystem.md`). The framework core works
+without it where practical; the flagship content pack may depend on it. Each
+dependency is its own entry in this file. Why: polish we cannot build alone
+(see "Animation and sound are part of done") is worth a small dependency cost.
+What it means for code: core systems check for the dependency and degrade
+instead of failing, and the addon's dependency list changes only with a
+decision entry.
+
 ## Gameplay
 
 **2026-11-07 — In-world first.** Systems live in the environment, not behind a
@@ -186,6 +209,72 @@ sale (for-sale sign out front, real keys); owners place furniture and storage
 inside, and stored items exist physically in the building. Big system: after
 M1, built on the existing house lock and key code.
 
+**2026-11-08 — Wanted is automatic; police get a description, not a name.**
+Committing a crime makes you wanted at once, with no officer needed. The police
+learn only a vague description: clothing, vehicle, and place. They learn the
+name when they identify the suspect, by an ID check or by catching them in the
+act. Why: police work becomes finding and identifying someone, and a criminal
+who changes clothes or cars has a real way out. What it means for code: crimes
+already raise wanted on the server (`EL_RobAction`, `LF_Breach`, `LF_Hospital`).
+Each crime report also records a description snapshot, and the account keeps
+an "identified" flag per wanted entry that an ID check or an arrest in the act
+sets. The wanted board (M1-11, #96) and dispatch (M1-20, #105) show the
+description until the suspect is identified.
+
+**2026-11-08 — Killing anyone makes you wanted for murder; the spawn is a safe
+zone.** A kill of a player or a civilian is murder, reported with the same vague
+description as other crimes. The spawn plaza is a safe zone where players
+cannot hurt each other. Admins handle repeat offenders; there is no automatic
+punishment. Why: killing has a cost in the world, and a new arrival is never
+shot before they can play. What it means for code: M1-27 (#125) adds the kill
+hook and the zone. Framework: the murder wanted amount, the on-duty officer
+exemption, and the zone radius are config.
+
+**2026-11-08 — Survival needs are light.** Hunger and thirst drain slowly. At
+worst they cap health at about 75% and reduce stamina. They never kill. Why:
+eating is a reason to visit the shop, not a chore that ends a session. What it
+means for code: today `EL_SurvivalStats` drains health to zero below 20 hunger
+or thirst, and the rates are hard-coded. M1-28 (#126) moves them to config and
+adds the cap. Framework: drain rates, the health cap, and the stamina penalty
+are config. Flagship: slow drain, about a 75% cap.
+
+**2026-11-08 — Jail time is online time, and work shortens it.** A sentence
+counts down only while the prisoner is connected. In-jail activities (cleaning,
+labour) take time off. Why: logging off does not serve a sentence, and a
+prisoner has something to do. What it means for code: `LF_Jail.Tick` advances
+every serving sentence today without checking the connection; M1-21 (#106)
+pauses offline prisoners. In-jail activities are after M1 (#127): each needs
+its own interaction with animation and sound, and M1's loop is proven by a
+prisoner who serves visible online time and walks out. Framework: activities,
+seconds per task, and cooldown are config.
+
+**2026-11-08 — Money leaves through fuel, repairs, food, medicine, property,
+and the law.** The economy direction: money drains through fuel and vehicle
+repairs; food, medical supplies, and hospital bills; property upkeep, rent, and
+taxes; licences, fines, and impound fees. Why: income from jobs and crime needs
+places to go, or prices lose meaning. What it means for code: every sink is a
+config price, never a literal in a system. In M1: food and medicine at the
+general store (`EL_ShopComponent`, exists), the hospital bill (M1-26, #121),
+paper fines (M1-19, #104), and impound fees (M1-16, #101). After M1: paying for
+fuel at the pump, vehicle repairs, property upkeep, rent, and taxes (with
+property), and licences as paid cards (with the gun shop). Licences cost skill
+points today, not money.
+
+**2026-11-08 — Apply to the police at the station desk.** A player applies with
+a paper application form at the police station desk. Admins or police chiefs
+approve it, in game at the desk or by editing the whitelist file. Why: joining
+the police is part of the world, and admins keep control. What it means for
+code: approval writes through `EL_WhitelistManager`, so the file stays the
+source of truth. Framework: approvers, open or closed applications, and the
+rejection cooldown are config. After M1 (#128); M1 playtests use the file.
+
+**2026-11-08 — Accelerated day and night by default.** The flagship runs a
+faster day and night cycle. Server owners can switch to real time instead.
+Why: players who join in the evening still see daylight, and night play comes
+round often. What it means for code: prefer vanilla `TimeAndWeatherManager`
+settings over a script loop. Framework: day length, night speed, and the
+real-time mode are config. After M1 (#129).
+
 ## Delivery
 
 **2026-11-07 — Milestone 1 is a signposted DebugWorld playtest town.** Every
@@ -211,6 +300,24 @@ annex instead of deleting them, keeping names so tests still find them.
 
 **2026-11-07 — Playtests are hosted from the maintainer's PC.** No rented
 hosting yet.
+
+**2026-11-08 — Private playtests first, then a public Workshop release with a
+showcase.** The first public Workshop release comes after two or three private
+M1 playtests with friends and the fixes they turn up. It ships with a showcase
+video. Why: a stranger's first impression should be of a town that friends have
+already broken and we have fixed. What it means for code: M1-24 (#109) runs the
+private rounds first (an unlisted or private Workshop item, or a direct
+install), then the public publish and the video.
+
+**2026-11-08 — Animation and sound are part of done.** Where the player does
+something physical, the interaction has a fitting animation and sound. A
+flagship feature with a placeholder or missing animation or sound effect is not
+done. Why: world feedback comes first (decision "In-world first"), and in a
+life game the feel of an action is the content. What it means for code: every
+feature PR names the animation and sound each physical interaction uses
+(vanilla, a recorded dependency, or our own) and shows them in its clip. A
+framework system exposes the animation and sound as config so a server can
+swap them.
 
 **2026-11-07 — 3D proof and filming are part of the dev loop.** The visual
 harness and a filming harness run on any machine with the game; clips are PR

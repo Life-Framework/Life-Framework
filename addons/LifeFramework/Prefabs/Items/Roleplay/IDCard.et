@@ -1,10 +1,15 @@
 GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
  ID "508AB2013EEE1E00"
  components {
+  LF_IdCardComponent "{4FCD32A707AEB66A}" {
+  }
   SoundComponent "{5A4ADB24952425BA}" {
    Filenames {
     "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
    }
+  }
+  EL_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
   }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
