@@ -3,6 +3,7 @@ import { Arrow, DiscordIcon } from "@/components/icons";
 import { ClipPlayer, Figure, GoLink, RouteMap, ScopeMeter, Section, Stamp } from "@/components/ui";
 import {
   CURRENT_MILESTONE,
+  CURRENT_MILESTONE_NAME,
   DISCORD_URL,
   blob,
   formatDate,
@@ -52,9 +53,8 @@ const reasons = [
 ];
 
 const Home = () => {
-  const m1 = milestone(CURRENT_MILESTONE);
+  const current = milestone(CURRENT_MILESTONE);
   const { done, total } = milestoneProgress(CURRENT_MILESTONE);
-  const m1Name = siteData.milestones.find((m) => m.id === CURRENT_MILESTONE)?.name ?? "Playtest Town";
   const clip = siteData.media.clips[0];
 
   return (
@@ -75,8 +75,7 @@ const Home = () => {
               be taken off your body. Your car key is an item someone can steal. A police fine is a ticket you carry to the station desk.
             </p>
             <p className="muted">
-              We prove it on a 1989 Everon server we run ourselves. It is not out yet. We are building the M1 playtest town now; private
-              playtests with friends come next, then the public Workshop release.
+              We prove it on a 1989 Everon server we run ourselves. It is not out yet. Work is on {CURRENT_MILESTONE} {CURRENT_MILESTONE_NAME}.
             </p>
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -106,12 +105,10 @@ const Home = () => {
           <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
             <div>
               <h2 className="display-3">
-                {CURRENT_MILESTONE} {m1Name}
+                {CURRENT_MILESTONE} {CURRENT_MILESTONE_NAME}
               </h2>
               <p className="mt-3 text-[0.9375rem] muted">
-                A signposted test town where a stranger can play the whole loop on a dedicated server with nobody helping. Then two or
-                three private playtests with friends, the fixes they turn up, and the first public Workshop release with a showcase
-                video.
+                {current?.description || "The current milestone is tracked on GitHub."}
               </p>
             </div>
             <div>
@@ -119,9 +116,9 @@ const Home = () => {
                 <span className="font-display font-bold text-4xl leading-none">
                   {done} <span className="text-ink-2 text-2xl">of {total}</span>
                 </span>
-                <span className="kicker">scopes done</span>
+                <span className="kicker">issues done</span>
               </p>
-              {m1 && <ScopeMeter issues={m1.issues} label={`${CURRENT_MILESTONE} ${m1Name}`} />}
+              {current && <ScopeMeter issues={current.issues} label={`${CURRENT_MILESTONE} ${CURRENT_MILESTONE_NAME}`} />}
               <p className="mt-4">
                 <GoLink to="/roadmap">See every scope</GoLink>
               </p>

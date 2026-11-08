@@ -36,6 +36,7 @@ export type Issue = {
   closedAt: string | null;
   excerpt: string;
   wave: number | null;
+  parent: string | null;
 };
 
 export type Milestone = {
@@ -91,7 +92,6 @@ export type SiteData = {
   ambition: string;
   loop: string[];
   inWorldFirst: string;
-  milestones: { id: string; name: string; doneWhen: string }[];
   features: { name: string; what: string }[];
   archive: { exported: string; phases: { number: number; name: string; description: string; items: ArchiveItem[] }[] };
   decisionCount: number;
@@ -137,8 +137,24 @@ export const supportOpen = support.enabled && (support.card !== null || support.
 export const githubData = github as GithubData;
 export const docs = docsIndex as DocMeta[];
 
-export const CURRENT_MILESTONE = "M1";
 export const milestone = (id: string) => githubData.milestones.find((m) => m.id === id) ?? null;
+export function issueTopic(issue: Issue): string {
+  const topics = issue.labels.filter((label) => label.startsWith("topic:")).map((label) => label.slice(6).trim()).filter(Boolean);
+  if (topics.length === 0) return "Unsorted";
+  if (topics.length > 1) return "Multiple topics";
+  return topics[0];
+}
+
+export function milestoneName(m: Milestone): string {
+  const fromTitle = m.title.replace(new RegExp(`^${m.id}\\b\\s*(?:[:—–-]\\s*)?`), "").trim();
+  if (fromTitle) return fromTitle;
+  const fromDescription = m.description.split(/[:.]\s/, 1)[0].trim();
+  return fromDescription || m.id;
+}
+
+const currentMilestone = githubData.milestones.find((m) => m.state === "open") ?? githubData.milestones[0];
+export const CURRENT_MILESTONE = currentMilestone?.id ?? "M1";
+export const CURRENT_MILESTONE_NAME = currentMilestone ? milestoneName(currentMilestone) : "Current milestone";
 export const still = (id: string) => siteData.media.stills.find((s) => s.id === id)!;
 export const stillSrc = (s: Still) => `/media/${s.id}-${Math.max(...s.widths)}.webp`;
 export const stillSrcSet = (s: Still) => s.widths.map((w) => `/media/${s.id}-${w}.webp ${w}w`).join(", ");

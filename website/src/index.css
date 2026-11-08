@@ -528,3 +528,534 @@
 .prose-lf input[type="checkbox"] {
   margin-right: 0.4rem;
 }
+
+/* ------------------------------------------------------------------ tree of life
+   The roadmap map (RoadmapTree.tsx). A terminal-dark canvas in both themes with sign-amber
+   wires. Done is solid amber, in progress is an amber ring, needs a hand is a dashed light ring that pulses. */
+.tree-pick {
+  margin-bottom: 1rem;
+}
+.tree-pick ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+.tree-pick__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.7rem;
+  border: 2px dashed var(--ink);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 0.875rem;
+  text-align: left;
+}
+.tree-pick__chip span {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  background: var(--sign);
+  color: var(--on-sign);
+  border-radius: 3px;
+  padding: 0 0.3rem;
+}
+.tree-pick__chip:hover {
+  border-style: solid;
+  background: var(--inset);
+}
+.tree-pick__more {
+  min-height: 2.25rem;
+  padding: 0.3rem 0.7rem;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tree-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.tree-bar__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.tree-bar__filter,
+.tree-bar__zoom button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.7rem;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tree-bar__filter:hover,
+.tree-bar__zoom button:hover:not(:disabled) {
+  background: var(--inset);
+}
+.tree-bar__filter[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.tree-bar__count {
+  opacity: 0.7;
+}
+.tree-bar__zoom {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+.tree-bar__zoom > span {
+  min-width: 3.2rem;
+  text-align: center;
+}
+.tree-bar__zoom button {
+  justify-content: center;
+  min-width: 2.25rem;
+}
+.tree-bar__zoom button:disabled {
+  opacity: 0.4;
+}
+
+.tree-key {
+  display: inline-grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+.tree-key svg {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+.tree-key--open {
+  border-style: dashed;
+}
+.tree-key--done {
+  background: var(--sign);
+  border-color: var(--sign);
+  color: var(--on-sign);
+}
+
+.tree-frame {
+  --tree-bg: #1b1d19;
+  --tree-ink: #e4dfcf;
+  --tree-amber: #e3b23c;
+  --tree-faint: #9a9483;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--tree-bg);
+}
+.tree-viewport {
+  height: min(74vh, 760px);
+  min-height: 420px;
+  overflow: auto;
+  cursor: grab;
+  overscroll-behavior: contain;
+  background-image: radial-gradient(rgba(228, 223, 207, 0.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.tree-viewport--dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+.tree {
+  position: relative;
+  transform-origin: 0 0;
+}
+.tree__wires {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+.tree__wire {
+  stroke: var(--tree-amber);
+  stroke-width: 2;
+  opacity: 0.75;
+  transition: opacity 160ms;
+}
+.tree__wire--future {
+  stroke-dasharray: 3 6;
+  opacity: 0.45;
+}
+.tree__wire--lit {
+  stroke-width: 3.5;
+  opacity: 1;
+}
+.tree--focused .tree__wire:not(.tree__wire--lit) {
+  opacity: 0.4;
+}
+.tree__wire--dim,
+.tree--focused .tree__wire--dim:not(.tree__wire--lit) {
+  opacity: 0.15;
+}
+.tree__dim > .tree-node,
+.tree__dim > div > .tree-node,
+g.tree__dim {
+  opacity: 0.3;
+}
+
+.tree-node {
+  --dot: 2.5rem;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transform: translate(calc(-1 * var(--dot) / 2), -50%);
+  color: var(--tree-amber);
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  text-align: left;
+  transition: opacity 160ms;
+}
+.tree-node--root {
+  --dot: 3.75rem;
+}
+.tree-node--pillar {
+  --dot: 3.25rem;
+}
+.tree-node--issue {
+  --dot: 2.125rem;
+}
+.tree-node--issue,
+.tree-node--system {
+  flex-direction: column;
+  gap: 0.35rem;
+  transform: translate(-50%, calc(-1 * var(--dot) / 2));
+}
+.tree-node__dot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--dot);
+  height: var(--dot);
+  border: 2px solid var(--tree-amber);
+  border-radius: 50%;
+  background: var(--tree-bg);
+  color: var(--tree-amber);
+  transition: transform 140ms, box-shadow 140ms;
+}
+.tree-node__dot svg {
+  width: 52%;
+  height: 52%;
+}
+button.tree-node {
+  cursor: pointer;
+}
+button.tree-node:hover .tree-node__dot {
+  transform: scale(1.1);
+}
+.tree-node:focus-visible {
+  outline: none;
+}
+.tree-node:focus-visible .tree-node__dot,
+.tree-node--selected .tree-node__dot {
+  box-shadow: 0 0 0 4px var(--tree-bg), 0 0 0 6px var(--tree-ink);
+}
+.tree-node--root .tree-node__dot {
+  background: var(--tree-amber);
+  color: var(--tree-bg);
+}
+.tree-node--pillar .tree-node__dot {
+  border-width: 2.5px;
+}
+.tree-node__side {
+  display: grid;
+  gap: 0.2rem;
+  white-space: nowrap;
+}
+.tree-node__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.375rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--tree-ink);
+}
+.tree-node__meta {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tree-faint);
+}
+.tree-node__meta strong {
+  color: var(--tree-amber);
+  font-weight: 400;
+}
+.tree-node__under {
+  max-width: 10rem;
+  padding: 0 0.3rem;
+  background: var(--tree-bg);
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tree-node--system .tree-node__under {
+  color: var(--tree-amber);
+  font-weight: 600;
+}
+.tree-node--issue .tree-node__under {
+  color: var(--tree-faint);
+}
+.tree-node--done .tree-node__dot {
+  background: var(--tree-amber);
+  color: var(--tree-bg);
+}
+.tree-node--open .tree-node__dot {
+  border-style: dashed;
+  border-color: var(--tree-ink);
+  color: var(--tree-ink);
+  animation: tree-pulse 2.4s ease-out infinite;
+}
+.tree-node--open .tree-node__under,
+.tree-node--selected .tree-node__under {
+  color: var(--tree-ink);
+}
+.tree-node--dim {
+  opacity: 0.2;
+}
+.tree-node--dim .tree-node__dot {
+  animation: none;
+}
+.tree-node__badge {
+  position: absolute;
+  top: -0.45rem;
+  right: -0.9rem;
+  padding: 0 0.25rem;
+  border-radius: 3px;
+  background: var(--tree-ink);
+  color: var(--tree-bg);
+  font-size: 0.5625rem;
+  line-height: 1.4;
+}
+@keyframes tree-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(228, 223, 207, 0.45);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 12px rgba(228, 223, 207, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tree-node--open .tree-node__dot {
+    animation: none;
+  }
+}
+
+.tree-menu {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  max-height: calc(100% - 1.5rem);
+  width: min(23rem, calc(100% - 1.5rem));
+  overflow: auto;
+  padding: 1.1rem 1.1rem 1.25rem;
+  background: var(--card);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.tree-menu__close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--ink);
+  background: none;
+  border: 0;
+}
+.tree-menu__crumbs {
+  padding-right: 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+.tree-menu__title {
+  margin-top: 0.35rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.tree-menu__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+}
+.tree-menu__tags span {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+.tree-menu__tags .tree-menu__state--open {
+  background: var(--sign);
+  color: var(--on-sign);
+  border-color: var(--sign);
+}
+.tree-menu__tags .tree-menu__state--done {
+  background: var(--green);
+  color: var(--on-green);
+  border-color: var(--green);
+}
+.tree-menu__copy {
+  margin-top: 0.8rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.tree-menu__steps {
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.8rem 0.7rem 2rem;
+  list-style: decimal;
+  background: var(--inset);
+  border-radius: 3px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.tree-menu__action {
+  width: 100%;
+  margin-top: 1rem;
+}
+.tree-menu__progress {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tree-menu__progress strong {
+  color: var(--stamp);
+  font-weight: 600;
+}
+.tree-menu__bar {
+  height: 0.4rem;
+  margin-bottom: 0.4rem;
+  background: var(--inset);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.tree-menu__bar span {
+  display: block;
+  height: 100%;
+  background: var(--sign);
+}
+.tree-menu__list {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: 0.9rem;
+}
+.tree-menu__row {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.3rem 0.4rem;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 3px;
+  color: var(--ink);
+  font-size: 0.875rem;
+}
+.tree-menu__row:hover {
+  background: var(--inset);
+}
+.tree-menu__row-dot {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+.tree-menu__row-dot svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+.tree-menu__row--open .tree-menu__row-dot {
+  border-style: dashed;
+}
+.tree-menu__row--done .tree-menu__row-dot {
+  background: var(--sign);
+  border-color: var(--sign);
+  color: var(--on-sign);
+}
+.tree-menu__row-ms {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.tree-menu__row-ms--open {
+  color: var(--stamp);
+}
+.tree-hint {
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+
+@media (max-width: 720px) {
+  .tree-viewport {
+    height: 68vh;
+  }
+  .tree-menu {
+    top: auto;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    width: auto;
+    max-height: 62%;
+  }
+}

@@ -16,24 +16,30 @@ Whether you're an experienced developer or just getting started, we want your in
 
 ### 💬 Discord is Our Home
 
-We primarily use **Discord** for all community communication and collaboration. This is where the magic happens!
+Use **Discord** for discussion and GitHub for roadmap issues, code, and pull requests.
 
 **[Join our Discord server](https://discord.com/invite/MjMexJteqz)** to:
-- **Report bugs** in dedicated forums
-- **Suggest features** and discuss ideas
+- **Discuss bugs and ideas** in #feedback
+- **Find work** in the #roadmap forum
 - **Get help** from the community and maintainers
-- **Share your work** and show off what you've built
-- **Chat with other modders** in real-time
-- **Stay updated** on the latest developments
+- **Share your work** in #showcases
 
 Our Discord is organized with:
 - **Forums** for structured discussions (bug reports, feature requests, development topics)
 - **Text chats** for casual conversation, quick questions, and community hangouts
 - **Voice channels** for collaborative sessions and community events
 
-While we use GitHub for code and pull requests, Discord is where we build relationships, share knowledge, and collaborate as a community.
+The #roadmap forum and the Tree of Life on life-framework.org/roadmap both mirror GitHub issues. GitHub is the source of truth for each item's status and contributors.
 
 ## How Can I Contribute?
+
+### Claiming a Roadmap Issue
+
+Open an issue from the Tree of Life (life-framework.org/roadmap) or the #roadmap forum, then comment `/claim` on GitHub. The
+repository bot adds you as an assignee. Other contributors can comment `/claim`
+on the same issue to join; `/unclaim` removes only the person who used it. The
+website and Discord board update from the GitHub assignee list. An assigned
+issue remains open to more collaborators.
 
 ### 🐛 Reporting Bugs
 

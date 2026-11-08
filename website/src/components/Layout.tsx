@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { DiscordIcon, GitHubIcon, Mark } from "@/components/icons";
-import { DISCORD_URL, REPO_URL, githubData, milestoneProgress, CURRENT_MILESTONE, formatDate, supportOpen } from "@/lib/content";
+import { DISCORD_URL, REPO_URL, githubData, milestoneProgress, CURRENT_MILESTONE, CURRENT_MILESTONE_NAME, formatDate, supportOpen } from "@/lib/content";
 
 const NAV = [
   { to: "/roadmap", label: "Roadmap" },
@@ -61,7 +61,7 @@ function Header() {
             Everon, 1989 · <span className="hidden sm:inline">open-source </span>life/RP for Arma Reforger
           </span>
           <Link to="/roadmap" className="hidden sm:inline whitespace-nowrap hover:underline">
-            {CURRENT_MILESTONE} playtest town: {done}/{total} scopes done
+            {CURRENT_MILESTONE} {CURRENT_MILESTONE_NAME}: {done}/{total} issues done
           </Link>
         </div>
       </div>

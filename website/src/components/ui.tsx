@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Arrow, External } from "@/components/icons";
-import { formatDate, issueStatus, splitTitle, stillSrc, stillSrcSet, type Clip, type Issue, type Still, siteData, still as stillById } from "@/lib/content";
+import { formatDate, githubData, issueStatus, milestoneName, splitTitle, stillSrc, stillSrcSet, type Clip, type Issue, type Still, siteData, still as stillById } from "@/lib/content";
 
 export const Stamp = ({ children, tone = "red", tilt = false }: { children: ReactNode; tone?: "red" | "green" | "ink"; tilt?: boolean }) => (
   <span className={`stamp ${tone === "green" ? "stamp-green" : tone === "ink" ? "stamp-ink" : ""} ${tilt ? "stamp-tilt" : ""}`}>{children}</span>
@@ -139,12 +139,12 @@ export function ScopeMeter({ issues, label }: { issues: Issue[]; label: string }
 
 // The milestones as stops on a route; the current one is "you are here".
 export function RouteMap({ current, compact = false }: { current: string; compact?: boolean }) {
-  const ms = siteData.milestones;
+  const ms = githubData.milestones;
   const idx = ms.findIndex((m) => m.id === current);
   return (
     <ol className="relative grid gap-0 md:grid-cols-5">
       {ms.map((m, i) => {
-        const state = i < idx ? "done" : i === idx ? "here" : "next";
+        const state = m.state === "closed" || (idx >= 0 && i < idx) ? "done" : i === idx ? "here" : "next";
         return (
           <li key={m.id} className="relative pl-10 md:pl-0 md:pt-10 pb-6 md:pb-0 md:pr-4">
             {i < ms.length - 1 && (
@@ -164,8 +164,8 @@ export function RouteMap({ current, compact = false }: { current: string; compac
               {state === "here" && <span className="text-stamp"> · you are here</span>}
               {state === "done" && <span> · done</span>}
             </span>
-            <span className="display-3 block mt-1">{m.name}</span>
-            {!compact && <span className="block mt-2 text-[0.9375rem] muted leading-snug">{m.doneWhen}</span>}
+            <span className="display-3 block mt-1">{milestoneName(m)}</span>
+            {!compact && <span className="block mt-2 text-[0.9375rem] muted leading-snug">{m.description}</span>}
           </li>
         );
       })}

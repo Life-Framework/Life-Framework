@@ -1,0 +1,83 @@
+# Let contributors claim or release roadmap issues without repository write access.
+# The workflow only reads the comment and updates assignees; it never checks out PR code.
+name: claim-issue
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  actions: write
+
+jobs:
+  claim:
+    if: >-
+      !github.event.issue.pull_request &&
+      (startsWith(github.event.comment.body, '/claim') || startsWith(github.event.comment.body, '/unclaim'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Apply the issue claim
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const command = context.payload.comment.body.trim();
+            if (command !== "/claim" && command !== "/unclaim") {
+              core.info("Ignoring comment; use /claim or /unclaim as the entire comment.");
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const login = context.payload.comment.user.login;
+            const ref = context.payload.repository.default_branch;
+            const comment = async (body) => github.rest.issues.createComment({ owner, repo, issue_number, body });
+
+            const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number });
+            if (!issue.milestone || !/^M\d+\b/.test(issue.milestone.title)) {
+              await comment(`@${login} only issues in an M roadmap milestone can be claimed with this command.`);
+              return;
+            }
+            if (issue.state !== "open") {
+              await comment(`@${login} this issue is closed, so its claim cannot be changed.`);
+              return;
+            }
+
+            const assignees = issue.assignees.map((assignee) => assignee.login);
+            let confirmation;
+            if (command === "/claim") {
+              if (assignees.includes(login)) {
+                await comment(`@${login} is already listed on this issue.`);
+                return;
+              }
+              if (assignees.length >= 10) {
+                await comment("This issue already has 10 assignees, GitHub's limit. Ask in Discord before joining another way.");
+                return;
+              }
+              const { data: updated } = await github.rest.issues.addAssignees({ owner, repo, issue_number, assignees: [login] });
+              if (!updated.assignees.some((assignee) => assignee.login === login)) {
+                await comment(`@${login} GitHub did not accept this account as an assignee. Ask a maintainer to add you.`);
+                return;
+              }
+              confirmation = `@${login} is now on this issue. Other contributors can comment /claim too; use /unclaim to step back.`;
+            } else {
+              if (!assignees.includes(login)) {
+                await comment(`@${login} is not assigned to this issue, so there is nothing to release.`);
+                return;
+              }
+              await github.rest.issues.removeAssignees({ owner, repo, issue_number, assignees: [login] });
+              confirmation = `@${login} has been removed from this issue.`;
+            }
+
+            // Updates made with GITHUB_TOKEN do not emit issue events to other workflows.
+            const workflowIds = ["website.yml", "discord-roadmap-sync.yml"];
+            const results = await Promise.allSettled(workflowIds.map((workflow_id) =>
+              github.rest.actions.createWorkflowDispatch({ owner, repo, workflow_id, ref })
+            ));
+            const failed = results.flatMap((result, index) => result.status === "rejected" ? [workflowIds[index]] : []);
+            if (failed.length) {
+              await comment(`@${login} your assignment is saved, but the roadmap refresh could not be queued for ${failed.join(" and ")}. Please ping a maintainer if the board does not update.`);
+              throw new Error(`Failed to dispatch roadmap refresh workflow(s): ${failed.join(", ")}`);
+            }
+            await comment(confirmation);
