@@ -202,7 +202,11 @@ class EL_ScreenshotCapture : Managed
 		if (!s_ActiveShot)
 			return;
 
+		// A game client writes .bmp, Workbench play writes .png: accept either.
 		string path = s_ActiveShot.OutPath + ".png";
+		if (!FileIO.FileExists(path) && FileIO.FileExists(s_ActiveShot.OutPath + ".bmp"))
+			path = s_ActiveShot.OutPath + ".bmp";
+
 		string result;
 		if (FileIO.FileExists(path))
 		{

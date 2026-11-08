@@ -7,9 +7,9 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
   PositionY 140
   OffsetTop 140
   SizeX 420
-  OffsetRight -420
-  SizeY 92
-  OffsetBottom -92
+  OffsetRight -396
+  SizeY 120
+  OffsetBottom -260
   Alignment 1 0
  }
  "Z Order" 50
@@ -29,23 +29,22 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
    Name "Background"
    Slot FrameWidgetSlot "{D91698E60BF10DF6}" {
     Anchor 0 0 1 1
-    OffsetLeft 3
-    OffsetTop 3
-    OffsetRight 3
-    OffsetBottom 3
+    OffsetLeft 4
+    OffsetTop 4
+    OffsetRight 4
+    OffsetBottom 4
    }
-   Color 0.933 0.902 0.839 1
+   Color 0.839 0.776 0.659 0.949
   }
   ImageWidgetClass "{FB11D60E95462439}" {
    Name "ColorStrip"
    Slot FrameWidgetSlot "{4DE037A5421F8592}" {
     Anchor 0 0 0 1
-    PositionX 3
-    OffsetLeft 3
-    OffsetTop 3
+    OffsetLeft 4
+    OffsetTop 4
     SizeX 8
-    OffsetRight -11
-    OffsetBottom 3
+    OffsetRight -12
+    OffsetBottom 4
    }
    Color 0.584 0.647 0.651 1
   }
@@ -67,10 +66,10 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
    Name "TextColumn"
    Slot FrameWidgetSlot "{2CAAF4CB8FC4C462}" {
     Anchor 0 0 1 1
-    OffsetLeft 22
+    OffsetLeft 24
     OffsetTop 10
     OffsetRight 14
-    OffsetBottom 8
+    OffsetBottom 10
    }
    {
     TextWidgetClass "{598D633F202909E7}" {
@@ -95,6 +94,7 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
      Text ""
      "Font Size" 17
      "Min Font Size" 14
+     Wrap 1
      FontProperties FontProperties "{CAA881DD629DC115}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }

@@ -418,6 +418,11 @@
   are checked on the server only. `tools/validation/validate-offer-checks.mjs`
   fails a `CanBeShownScript` / `CanBePerformedScript` that reads
   `EL_PoliceUtils.GetAccountForEntity` or `EL_PlayerAccountManager`.
+- ✅ **Armory actions hidden from non-police** (2026-11-08, #157): Draw and
+  Promote at `Roadmap_Police_Armory` are shown only to on-duty police
+  (`LF_ArmoryDrawAction.ShownTo`, replicated state); a civilian no longer sees
+  them greyed. The server still refuses in `PerformAction`. Test:
+  `playtest/offers`.
 - ⚠️ `EL_RobWeaponAction`, `EL_RobVehicleAction`, and `LF_Bank` still count
   police and read accounts directly in their offers; move them to
   `EL_AccountReplication` next.
@@ -553,6 +558,14 @@
   adds nothing is an error log (verified 2026-10-10). A sandbag the inventory
   rejects, or a nugget with no usable slot, used to look like a successful use.
 - ✅ A node id copies tool, yield, and cooldown from `ResourceChains.conf`.
+- ✅ **Crop growth runs on the server only** (2026-11-08, #157): `EL_BaseCrop`
+  starts its growth clock only on the server (`Replication.IsServer()` and
+  `RplSession.Mode()` is not `Client`), not on
+  `RplComponent.IsOwner()`, which is still true on a client while the world
+  loads. Every stage read goes through `EL_BaseCrop.StageAt`, which returns
+  null for an index outside the list. Before this each game client logged a
+  `NULL pointer to instance` VME in `EL_BaseCrop.EOnFrame` for every crop.
+  Each crop logs `crop <name> init: grows here <bool> (rpl mode <mode>)` once.
   A missing row or a prefab that does not resolve logs `EL_Debug.Error` and
   grants nothing (verified 2026-10-11). The action stays on the node.
 
@@ -686,6 +699,11 @@
   `Street_Jobs.layer`: the counter on the post office porch, the drop on a
   house porch at the east end, the taxi pad at the bus stop by the square, the
   fuel can at the fuel station.
+
+- ✅ **Sign-up offers on a dedicated client** (2026-11-08, #157): the greyed reason reads
+  `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
+  A client reads the level replicated on `EL_PlayerJobComponent` (the career map is
+  server-only), so fuel and taxi open on the client once the server levels the career.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -1109,6 +1127,15 @@
   `Reset` unregister the `OnCompartmentLeft` handler; a restarted run drops the
   old watch and watches the vehicle the player is in now. A disconnect fails the
   running convoy.
+- ✅ **The refusal reaches the player** (2026-11-08, #157): a start refused for
+  membership shows a toast with the reason, `#LF-Contraband_JoinOrg` (no
+  organization: join or found one at the organization desk) or
+  `#LF-Contraband_NotHideoutOwner` (your organization does not hold the
+  hideout). `LF_Contraband.StartRefusalKey` picks it. Before this the server
+  logged `convoy refused: not a member` and the player saw nothing.
+- ⚠️ The crate still offers "Start convoy" to everyone: a client cannot see
+  organization membership, so the reason arrives after the press, not on the
+  offer.
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
 - ✅ (2026-11-08, M1-12) Search in the player interaction menu: shown to on-duty
@@ -1202,6 +1229,15 @@
   instantiates the layout on the dedicated server and checks every named widget;
   `notifications/toast-timing` (LOGIC) checks show/fade/remove. On-screen look is
   visual-only: manual check pending (verified 2026-11-07)
+- ✅ **Toasts are visible on a game client** (2026-11-08, #157): until now no toast
+  was ever drawn. The slip's frame slot had a height of -48 (`OffsetBottom -92` under
+  `OffsetTop 140`), the fills were `PanelWidget`s (near-transparent) nested inside
+  an `ImageWidget` (which draws no children), and the text column's negative
+  stretch offsets ran the message past the slip. Now: 420x120 slip, sibling image
+  fills, wrapped message, fade driven from `Tick` (`EL_NotificationToastUI.OpacityAt`).
+  Seen at 1280x720 on a dedicated client (contraband refusal). New
+  `tools/validation/validate-layout-slots.mjs` fails a point-anchored slot whose
+  `Offset*` and `Size*` disagree (it also fixed `EL_SurvivalHUD.layout`).
 - ✅ **Targeted delivery fixed** (verified 2026-08-30): `RpcDo_ShowNotification`
   is `RplRcver.Broadcast` with a client-side `playerId` filter (`-1` = all),
   plus a direct call for the listen-server host so the authority sees its own
@@ -1219,13 +1255,6 @@
   contraband payout toast through `NotifyEntity`; on a dedicated server they
   had reached nobody. enforce-lint L8 fails an `EL_Utils.Notify` after an
   `if (!Replication.IsServer()) return;` guard.
-- ✅ **Slips show on a game client** (M1-18, verified 2026-11-08 on a dedicated client at 1280x720):
-  no slip had ever been visible. With no HUD `NotificationContainer` the slip was parented to
-  `workspace.GetParent()`, where nothing renders; it now goes into a full-screen
-  `EL_NotificationContainer.layout` frame created once on the workspace, placed top right in
-  screen units (`PlaceToast`), as tall as its message, below the slips still up. Its panels are
-  untextured ImageWidgets (a PanelWidget draws see-through) with stretched-anchor insets, and
-  the tick sets the opacity from the real clock (no `AnimateWidget`).
 - ⚠️ Hard-coded Spanish prefixes, emoji in logs, `m_Color` never transmitted.
 
 ## Inventory / Quantity

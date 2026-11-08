@@ -9,7 +9,7 @@ class EL_NotificationToastUI : ScriptedWidgetComponent
 	static const float FADE_SECONDS = 0.3;
 	static const int TICK_MS = 50;
 	//! Vertical step between stacked slips, in pixels (slip height + gap).
-	static const float STACK_STEP = 100;
+	static const float STACK_STEP = 128;
 	static const float STACK_TOP = 140;
 
 	protected Widget m_wRoot;
@@ -100,9 +100,9 @@ class EL_NotificationToastUI : ScriptedWidgetComponent
 			m_wColorStrip.SetColor(GetColorForType(type));
 		}
 
-		// The tick drives the opacity from the real clock; nothing else has to animate the slip.
-		m_wRoot.SetOpacity(1);
-
+		// The fade is driven from Tick on the real clock. AnimateWidget left the slip at
+		// opacity 0 on a dedicated game client, so no toast was ever seen there (#157).
+		m_wRoot.SetOpacity(OpacityAt(0, m_fDisplayTime));
 		StartTicking();
 	}
 
@@ -124,6 +124,20 @@ class EL_NotificationToastUI : ScriptedWidgetComponent
 			return 1;
 
 		return 2;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure fade rule: 0 -> 1 over FADE_SECONDS, held, then 1 -> 0 over FADE_SECONDS. Never fully
+	//! transparent at the moment it is shown, so a slip is visible from its first frame.
+	static float OpacityAt(float elapsedSeconds, float displaySeconds)
+	{
+		if (elapsedSeconds < FADE_SECONDS)
+			return Math.Clamp(0.25 + 0.75 * elapsedSeconds / FADE_SECONDS, 0, 1);
+
+		if (elapsedSeconds < displaySeconds)
+			return 1;
+
+		return Math.Clamp(1 - (elapsedSeconds - displaySeconds) / FADE_SECONDS, 0, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -153,10 +167,9 @@ class EL_NotificationToastUI : ScriptedWidgetComponent
 		float elapsed = GetElapsedSeconds();
 		int phase = Phase(elapsed, m_fDisplayTime);
 		if (phase == 1)
-		{
 			m_bFadingOut = true;
-			m_wRoot.SetOpacity(Math.Clamp(1 - (elapsed - m_fDisplayTime) / FADE_SECONDS, 0, 1));
-		}
+
+		m_wRoot.SetOpacity(OpacityAt(elapsed, m_fDisplayTime));
 
 		if (phase == 2)
 		{

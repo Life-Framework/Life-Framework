@@ -19,6 +19,22 @@ class LF_JobSignUpAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The career lives on the server. A client reads the level replicated on the player's
+	//! EL_PlayerJobComponent, or fuel and taxi stay greyed on a dedicated client forever.
+	protected bool OfferOpen(IEntity user, string uid)
+	{
+		if (Replication.IsServer())
+			return LF_CivilianJob.CanSignUp(uid, m_eJob);
+
+		int level = 1;
+		EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(user);
+		if (jobs)
+			level = Math.Max(1, jobs.GetJobLevel());
+
+		return LF_CivilianJob.IsDeliveryJob(m_eJob) && level >= LF_CivilianJob.RequiredLevel(m_eJob);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
 		string uid = EL_Utils.GetPlayerUid(user);
@@ -28,9 +44,9 @@ class LF_JobSignUpAction : ScriptedUserAction
 			return false;
 		}
 
-		if (!LF_CivilianJob.CanSignUp(uid, m_eJob))
+		if (!OfferOpen(user, uid))
 		{
-			SetCannotPerformReason("#EL-Job_LevelRequired");
+			SetCannotPerformReason("#LF-Job_MoreRunsFirst");
 			return false;
 		}
 
