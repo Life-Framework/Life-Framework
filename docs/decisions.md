@@ -383,6 +383,19 @@ court needs players we do not have yet. What it means for code: the paper
 ticket (M1-19, #104) and jailing (M1-21, #106) read the amount from a config
 table keyed by crime. Framework: the table is config.
 
+**2026-11-08 — Every on-duty officer can arrest and escort; rank gates the
+extras.** Arrest and escort are the core police loop, and a new officer can do
+both from the first minute on duty. Rank gates the fine cap, the armory tier,
+and later supervisory actions (promotion, and what M2 adds), not the loop.
+Why: on a fresh server nobody is senior, and senior took an hour on duty, so
+the first hour of police play had no arrests (#165). What it means for code:
+`LF_PoliceConfig` (`Configs/Police/LF_Police.conf`) holds the lowest rank that
+may arrest and the lowest that may escort, and the patrol fine cap. Every
+arrest and escort path re-checks it on the server (`LF_Jail.Arrest`,
+`LF_JailEscort`); the offers read the same rule from the replicated rank.
+Framework: per-rank permissions are config. Flagship: arrest and escort at
+rank 0 (patrol), patrol fine cap 1000.
+
 **2026-11-08 — Gamepad-friendly, PC-first.** Every interaction works on a
 gamepad: amounts come from presets, lists stay short, and typing is rare.
 Crossplay is on. Design and testing happen on PC first. Why: Workshop mods

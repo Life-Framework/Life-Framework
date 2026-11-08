@@ -3562,6 +3562,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{5985DB962913E1DE}" {
+     Id "LF-Rank_EscortDenied"
+     Target_en_us "Your rank cannot escort"
+     Comment "Escort refused because the officer's rank is below the configured escort rank"
+    }
   }
  }
 }

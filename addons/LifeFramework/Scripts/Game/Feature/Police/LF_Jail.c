@@ -309,6 +309,13 @@ class LF_Jail
 			return false;
 		}
 
+		// One server gate for every arrest path (action, menu, escort to the cell).
+		if (!LF_PoliceRanks.CanArrestRank(officer.GetPoliceRank()))
+		{
+			EL_Debug.Warn("Jail", string.Format("arrest refused: rank %1 is below the arrest rank %2", officer.GetPoliceRank(), LF_PoliceConfig.ArrestMinRank()));
+			return false;
+		}
+
 		EL_PlayerAccount prisoner = accounts.GetAccount(prisonerUid);
 		if (!prisoner)
 		{

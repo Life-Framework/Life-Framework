@@ -945,8 +945,9 @@
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
   through `SCR_ChimeraCharacter.EL_AskPoliceArrest/Fine`, and the server
   handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
-  target, and fine range before acting. Arrest also requires senior rank, and
-  the fine must sit inside that rank's cap. `EL_PoliceUtils` (pure) holds the
+  target, and fine range before acting. Arrest also requires the configured
+  arrest rank (patrol on the flagship, #165), and the fine must sit inside
+  that rank's cap. `EL_PoliceUtils` (pure) holds the
   sentence-length math, wanted-reduction and fine-range checks for tests.
   `EL_AskPoliceSelfPromote` always refuses.
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
@@ -990,9 +991,9 @@
 ### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
 - ✅ Two ranks (verified 2026-10-11). Patrol officer draws
   `{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et`, fines up to
-  1000, and cannot arrest. Senior officer draws
-  `{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et`, fines up to
-  the existing 5000 cap, and can arrest. The resolved kit is the intersection
+  1000 (`LF_PoliceConfig.PatrolFineCap`). Senior officer draws
+  `{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et` and fines up
+  to the existing 5000 cap. The resolved kit is the intersection
   of that rank's list and the station catalog; a prefab that does not load is
   logged and skipped, and the rank stays usable. An on-duty senior promotes a
   lower officer. 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
@@ -1008,6 +1009,16 @@
 - ✅ Rank, on-duty seconds, and unpaid duty seconds survive a restart (M1-10,
   `progression` payload, save version 7).
 - ⚠️ The shift draw mark is session state, so a restart allows one more draw.
+- ✅ **Arrest and escort are config, open to every officer** (2026-11-08, #165):
+  `LF_PoliceConfig` (`{916BDC092C01B7D1}Configs/Police/LF_Police.conf`) sets the
+  lowest rank that may arrest (`m_iArrestMinRank`) and escort
+  (`m_iEscortMinRank`), and the patrol fine cap. Flagship: 0, 0, 1000, so a
+  patrol officer arrests on a fresh server. `LF_Jail.Arrest` and
+  `LF_JailEscort` re-check the rank on the server for every path (action,
+  menu, escort to the cell); the offers read the replicated rank and show
+  `#EL-Rank_ArrestDenied` / `#LF-Rank_EscortDenied` when a server raises the
+  minimum. A file that does not resolve logs once and uses the same defaults.
+  Test: `police/rank-permissions`.
 
 ### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
 - ✅ One convoy. A member of the organization that owns the hideout hauls
