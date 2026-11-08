@@ -385,6 +385,18 @@ class EL_AgentCommand
 			return false;
 		}
 
+		// Optional side: e (default), w, n, s. Stand on that side of the entity, facing it.
+		cmd.Arg2 = "e";
+		if (parts.Count() > 3)
+		{
+			cmd.Arg2 = parts[3];
+			if (cmd.Arg2 != "e" && cmd.Arg2 != "w" && cmd.Arg2 != "n" && cmd.Arg2 != "s")
+			{
+				cmd.Error = "bad_side";
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -846,7 +858,7 @@ class EL_AgentHarness
 		}
 
 		// The server answers: ok once it moved the character, or the refusal.
-		character.EL_AskHarnessStand(cmd.Id, cmd.Arg1);
+		character.EL_AskHarnessStand(cmd.Id, cmd.Arg1, cmd.Arg2);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -858,7 +870,7 @@ class EL_AgentHarness
 	//! \param gateOpen EL_DevGate allowed this player.
 	//! \param[out] destination Where to put the character.
 	//! \return empty on success, else the refusal token sent back to the harness.
-	static string ServerStand(IEntity character, string entityName, bool gateOpen, out vector destination)
+	static string ServerStand(IEntity character, string entityName, bool gateOpen, out vector destination, string side = "e")
 	{
 		if (!gateOpen)
 			return REFUSED_DEV_GATE;
@@ -879,7 +891,7 @@ class EL_AgentHarness
 
 		// One metre to the side keeps the character inside a 3m action radius
 		// without planting them inside the prop.
-		destination = target.GetOrigin() + Vector(STAND_SIDE, 0, 0);
+		destination = target.GetOrigin() + StandOffset(side);
 		EL_Debug.Log(FEATURE, string.Format("stand beside %1 at %2", entityName, destination));
 		return "";
 	}
@@ -887,12 +899,27 @@ class EL_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	//! Yaw in degrees that faces the stand target from where stand puts the character, so the
 	//! interaction key (which aims along the view) reaches the entity after a stand.
-	static float StandYaw()
+	static float StandYaw(string side = "e")
 	{
 		vector stand;
 		vector angles;
-		EL_AgentCommand.CameraStand(vector.Zero, Vector(STAND_SIDE, 0, 0), stand, angles);
+		EL_AgentCommand.CameraStand(vector.Zero, StandOffset(side), stand, angles);
 		return angles[0];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where stand puts the character relative to the entity: STAND_SIDE metres east (+X, the
+	//! default), west, north (+Z), or south.
+	static vector StandOffset(string side)
+	{
+		if (side == "w")
+			return Vector(-STAND_SIDE, 0, 0);
+		if (side == "n")
+			return Vector(0, 0, STAND_SIDE);
+		if (side == "s")
+			return Vector(0, 0, -STAND_SIDE);
+
+		return Vector(STAND_SIDE, 0, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1840,7 +1867,10 @@ class EL_AgentHarness
 		if (!entity)
 			return true;
 
-		if (s_sWantedName != "" && entity.GetName() != s_sWantedName)
+		// A named prop's actions can sit on a child part (the duty desk's punch clock).
+		IEntity parent = entity.GetParent();
+		bool parentNamed = parent && parent.GetName() == s_sWantedName;
+		if (s_sWantedName != "" && entity.GetName() != s_sWantedName && !parentNamed)
 			return true;
 
 		if (!FindOnEntity(entity, s_sWantedClass))
