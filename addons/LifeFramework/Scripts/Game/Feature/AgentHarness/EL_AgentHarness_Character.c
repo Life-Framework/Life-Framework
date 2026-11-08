@@ -1,42 +1,77 @@
-// Server-side stand for the agent harness. The client names an entity that
-// already exists in the loaded world; the server moves only the requesting
-// player's character to just beside it. That is how a play session reaches a
-// DebugWorld layer without injecting movement keys. The interaction that
-// follows still goes through the normal action checks. Every RPC here passes
-// EL_DevGate first: the debug game mode opts in, otherwise administrators only.
+// Server-side stand, use, and state for the agent harness. The client names an
+// entity that already exists in the loaded world; the server moves only the
+// requesting player's character to just beside it. That is how a play session
+// reaches a DebugWorld layer without injecting movement keys. The interaction
+// that follows still goes through the normal action checks. Every RPC here
+// passes EL_DevGate first: the debug game mode opts in, otherwise
+// administrators only. On a dedicated server the result goes back to the
+// asking client over an owner RPC, so a refusal is never a silent timeout.
 
 modded class SCR_ChimeraCharacter
 {
 	//------------------------------------------------------------------------------------------------
+	//! \param commandId Result id the harness is waiting on.
 	//! \param entityName World entity to stand beside. Resolved on the server.
-	void EL_AskHarnessStand(string entityName)
+	void EL_AskHarnessStand(int commandId, string entityName)
 	{
-		Rpc(RpcAsk_EL_HarnessStand, entityName);
+		if (Replication.IsServer())
+		{
+			EL_ApplyHarnessStand(commandId, entityName, true);
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessStand, commandId, entityName);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_EL_HarnessStand(string entityName)
+	protected void RpcAsk_EL_HarnessStand(int commandId, string entityName)
 	{
 		// A client could otherwise teleport itself or fire an action out of reach.
-		if (!EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "stand"))
-			return;
+		bool gateOpen = EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "stand");
+		EL_ApplyHarnessStand(commandId, entityName, gateOpen);
+	}
 
-		BaseWorld world = GetGame().GetWorld();
-		if (!world)
-			return;
-
-		IEntity target = world.FindEntityByName(entityName);
-		if (!target)
+	//------------------------------------------------------------------------------------------------
+	protected void EL_ApplyHarnessStand(int commandId, string entityName, bool gateOpen)
+	{
+		vector destination;
+		string error = EL_AgentHarness.ServerStand(this, entityName, gateOpen, destination);
+		if (!error.IsEmpty())
 		{
-			EL_Debug.Error("AgentHarness", string.Format("stand refused: %1 is not in the world", entityName));
+			EL_HarnessReply(commandId, "error", error);
 			return;
 		}
 
-		// One metre to the side keeps the character inside a 3m action radius
-		// without planting them inside the prop.
-		SetOrigin(target.GetOrigin() + Vector(1.2, 0, 0));
-		EL_Debug.Log("AgentHarness", string.Format("stood beside %1", entityName));
+		// A remote client owns its character's movement and overwrites a server-side move on
+		// its next update, so the owner moves (vanilla SCR_PlayersManagerEditorComponent does
+		// the same). The listen host's own character is local.
+		if (EL_Utils.GetLocalCharacter() == this)
+		{
+			EL_MoveHarnessBody(destination);
+			EL_HarnessReply(commandId, "ok", entityName);
+			return;
+		}
+
+		Rpc(RpcDo_EL_HarnessStand, commandId, entityName, destination);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_EL_HarnessStand(int commandId, string entityName, vector destination)
+	{
+		EL_MoveHarnessBody(destination);
+		EL_AgentHarness.Reply(commandId, "ok", entityName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void EL_MoveHarnessBody(vector destination)
+	{
+		vector transform[4];
+		GetWorldTransform(transform);
+		transform[3] = destination;
+		Teleport(transform);
+		EL_Debug.Log("AgentHarness", string.Format("stood at %1", destination));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -95,8 +130,57 @@ modded class SCR_ChimeraCharacter
 	{
 		// A client could otherwise teleport itself or fire an action out of reach.
 		if (!EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "use"))
+		{
+			EL_HarnessReply(commandId, "error", EL_AgentHarness.REFUSED_DEV_GATE);
 			return;
+		}
 
 		EL_AgentHarness.ApplyUse(this, commandId, className, entityName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Read this character's account, money, job, and organization on the server.
+	//! Read-only, so it does not pass the dev gate: it reports what the player
+	//! could already see in their own menus.
+	void EL_AskHarnessState(int commandId)
+	{
+		if (Replication.IsServer())
+		{
+			EL_HarnessReply(commandId, "ok", EL_AgentHarness.StateLine(this));
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessState, commandId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_HarnessState(int commandId)
+	{
+		EL_HarnessReply(commandId, "ok", EL_AgentHarness.StateLine(this));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: hand a harness result to the client that asked. The listen host's
+	//! own character writes it directly (an RPC never runs on the sender).
+	void EL_HarnessReply(int commandId, string status, string detail)
+	{
+		if (commandId <= 0)
+			return;
+
+		if (EL_Utils.GetLocalCharacter() == this)
+		{
+			EL_AgentHarness.Reply(commandId, status, detail);
+			return;
+		}
+
+		Rpc(RpcDo_EL_HarnessResult, commandId, status, detail);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_EL_HarnessResult(int commandId, string status, string detail)
+	{
+		EL_AgentHarness.Reply(commandId, status, detail);
 	}
 }

@@ -1155,6 +1155,53 @@
   `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
   tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
   (verified 2026-10-11)
+- ✅ Multi-client on a dedicated server (M1-05): `node agent-box/session.mjs up --clients 2`
+  boots the bare DebugWorld server plus two windowed game clients on this PC, each with its
+  own `-profile`; `harness.mjs --client <n>` drives one. `stand`, `use`, and the new `state`
+  answer from the server over an owner RPC, so a refusal arrives as `error dev_gate_closed`
+  instead of a timeout. A client's `stand` moves the body on the owning client, because a
+  server-side move is overwritten by the owner's movement. `state` reads faction, duty,
+  wanted, rank, cash carried, bank balance, job, and organization on the server and adds the
+  client's last toast. A client starts its poll from `OnPlayerRegistered`, because
+  `OnPlayerConnected` runs only on the server. `session.mjs proof`: client 1 robs
+  `Roadmap_Fuel_Till`, client 2 (on-duty police) gets `#EL-Police_Alert_Robbery`
+  (verified 2026-11-08). LOGIC test `harness/dev-gate-dedicated` pins the stand refusal on the
+  playtest mission.
+
+### `EL_AgentHarness` — `Feature/AgentHarness/`
+- ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
+  `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
+  calls `ActionScroll`. `click` invokes the same button invoker or `OnClick` a
+  mouse click does. `use` still checks `CanBeShownScript` and
+  `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
+  (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
+  `EL_OpenDebugMenu`); movement actions are refused.
+- ✅ `stand` is the placement exception: the server moves the local character
+  beside a named entity. The poll does not start on a dedicated server
+  (`RplMode.Dedicated`). The server checks the `stand`, `pose`, and `use` RPCs
+  with `EL_DevGate`, the same gate as the debug menu. It refuses and logs
+  (`[ELDebug:AgentHarness] <request> refused: ...`) unless the game mode sets
+  `m_bDevToolsEnabled` or the sender is an administrator. On a production or
+  listen-hosted server a client cannot teleport or reach past action range
+  (2026-11-07). On a client it retries until a local controller exists,
+  including while faction and spawn menus are up.
+- ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
+  alone. A world shot teleports the character to the camera offset (default
+  `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
+  player view. That view faces -Z, so a picture stands on the +Z side of
+  its target. The pose is applied again 700 ms later so gravity does not drop
+  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
+  stands just north of that row when the street is further north. If the new PNG matches the
+  previous PNG, `report roadmap` records `camera_stuck` once and stops.
+  `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look
+  returns an action. Any other white mesh fails. Menu shots use `shot ui`; the
+  report judges `classify` and the widget list. Names after `roadmap` walk
+  only that row. `node agent-box/harness.mjs kit` photographs the UI kit
+  sample in the current play session when play is already up, and enters play
+  only when it is not. `node agent-box/harness.mjs report roadmap` writes
+  `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
+  tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
+  (verified 2026-10-11)
 - ✅ Town manifest (`agent-box/town.mjs`): every M1 site by entity name (or
   prefab, for the unnamed spawn points), the actions look must offer, its sign
   id, and its journey step. No positions: sites and signs resolve against the

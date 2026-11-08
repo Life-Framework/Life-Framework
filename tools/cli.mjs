@@ -18,6 +18,7 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate                          Run every script in tools/validation/
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the ELTEST suite
+//   session up [--clients N]|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved ELTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
@@ -32,6 +33,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
+import * as session from "../agent-box/session.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -1036,6 +1038,159 @@ function cmdHost(args) {
   return sub ? 1 : 0;
 }
 
+// ------------------------------------------------------------ multi-client session
+// `session up|down|status` (agent-box/session.mjs): one dedicated server on the
+// bare DebugWorld plus N windowed game clients, each with its own -profile,
+// joined over 127.0.0.1:2001. The server owns the server-2001 lock while it
+// lives; `down` kills every process the session started and frees the lock.
+
+function gameClientExe() {
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  return join(gameDir, "ArmaReforgerSteam.exe");
+}
+
+function killTree(pid) {
+  if (!pid || !host.pidAlive(pid)) return false;
+  sh("taskkill", ["/PID", String(pid), "/T", "/F"]);
+  return true;
+}
+
+function cmdSessionDown(dir) {
+  const s = session.readSession(dir);
+  if (!s) {
+    console.log("session: none recorded");
+    return 0;
+  }
+  for (const c of s.clients ?? []) {
+    console.log(`session: client ${c.n} pid ${c.pid} ${killTree(c.pid) ? "closed" : "already gone"}`);
+  }
+  console.log(`session: server pid ${s.serverPid} ${killTree(s.serverPid) ? "closed" : "already gone"}`);
+  for (let i = 0; i < 20 && host.pidAlive(s.serverPid); i++) sleepMs(500);
+  wt.releaseLock(ROOT, SERVER_SLOT, s.serverPid);
+  session.writeSession(dir, { ...s, stoppedAt: new Date().toISOString() });
+  return 0;
+}
+
+function cmdSessionStatus(dir) {
+  const s = session.readSession(dir);
+  if (!s) {
+    console.log("session: none recorded");
+    return 0;
+  }
+  const up = (pid) => (host.pidAlive(pid) ? "up" : "gone");
+  console.log(`session dir: ${dir}`);
+  console.log(`  server   pid ${s.serverPid} ${up(s.serverPid)}  log ${session.newestLog(join(s.serverProfile, "logs")) ?? "-"}`);
+  for (const c of s.clients ?? []) {
+    console.log(`  client ${c.n} pid ${c.pid} ${up(c.pid)}  box ${c.box}  log ${session.newestLog(c.logs) ?? "-"}`);
+  }
+  return 0;
+}
+
+function cmdSessionUp(root, dir, flags) {
+  guardHeavy(root, "session up", flags.includes("--force"));
+  const clients = session.parseClients(flags);
+  const prev = session.readSession(dir);
+  if (prev && !prev.stoppedAt && (host.pidAlive(prev.serverPid) || (prev.clients ?? []).some((c) => host.pidAlive(c.pid)))) {
+    console.log("session: one is already running; 'node agent-box/session.mjs down' first");
+    return 1;
+  }
+  const exe = serverExe();
+  const game = gameClientExe();
+  for (const f of [exe, game]) {
+    if (!existsSync(f)) {
+      console.log(`FAIL  not found: ${f}`);
+      return 1;
+    }
+  }
+  try {
+    wt.acquireLock(root, SERVER_SLOT, { waitMs: flags.includes("--wait") ? 1800000 : 0 });
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    console.log("      a test, host, or session server holds port 2001; retry when it ends, or pass --wait");
+    return 1;
+  }
+  const paths = session.sessionPaths(dir, clients);
+  const state = { root, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
+  const fail = (msg) => {
+    console.log(`FAIL  ${msg}`);
+    session.writeSession(dir, state);
+    cmdSessionDown(dir);
+    wt.releaseLock(root, SERVER_SLOT);
+    return 1;
+  };
+  try {
+    wt.copyResourceDatabase(root);
+    const junction = serverGameAddons(root);
+    mkdirSync(paths.server, { recursive: true });
+    const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server });
+    console.log(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
+    const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
+    const srv = spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
+    srv.unref();
+    if (!srv.pid) return fail("server did not start");
+    state.serverPid = srv.pid;
+    wt.transferLock(root, SERVER_SLOT, srv.pid);
+    session.writeSession(dir, state);
+
+    let log = null;
+    const deadline = Date.now() + 300000;
+    while (Date.now() < deadline && host.pidAlive(srv.pid)) {
+      sleepMs(2000);
+      const f = session.newestLog(join(paths.server, "logs"));
+      if (f && !before.has(basenameOfLogDir(f))) log = f;
+      if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) break;
+    }
+    if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
+    console.log(`session: server up (pid ${srv.pid}); log ${log}`);
+
+    for (const c of paths.clients) {
+      mkdirSync(c.box, { recursive: true });
+      const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile });
+      console.log(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
+      const child = spawn(game, cArgs, { cwd: dirname(game), detached: true, stdio: "ignore" });
+      child.unref();
+      if (!child.pid) return fail(`client ${c.n} did not start`);
+      state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
+      session.writeSession(dir, state);
+      // Stagger so two clients do not load the same data at the same instant.
+      sleepMs(15000);
+      if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
+    }
+    // Joined means the server created the player and opened the faction menu.
+    const joinDeadline = Date.now() + 240000;
+    let joined = 0;
+    while (Date.now() < joinDeadline) {
+      const text = readFileSync(log, "utf8");
+      const refused = text.split(/\r?\n/).find((l) => /ValidationError|Disconnecting identity/.test(l));
+      if (refused) return fail(`a client was refused: ${refused.trim()}`);
+      joined = (text.match(/faction menu sent to player \d+/g) ?? []).length;
+      if (joined >= clients) break;
+      sleepMs(2000);
+    }
+    if (joined < clients) return fail(`${joined}/${clients} client(s) reached the faction menu within 240s (server log ${log})`);
+    console.log(`session: ${joined} client(s) joined and reached the faction menu`);
+    console.log("drive with:");
+    console.log("  node agent-box/harness.mjs --client <n> <verb>   and   node agent-box/session.mjs state <n>");
+    console.log("close everything with: node agent-box/session.mjs down");
+    return 0;
+  } catch (e) {
+    return fail(e.message);
+  } finally {
+    // Before the transfer this process owns the lock; after it the server does.
+    wt.releaseLock(root, SERVER_SLOT);
+  }
+}
+
+function cmdSession(args) {
+  const list = args ?? [];
+  const dir = session.sessionDir();
+  if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
+  if (list[0] === "down") return cmdSessionDown(dir);
+  if (list[0] === "status") return cmdSessionStatus(dir);
+  console.log("usage: tools\\cli session up [--clients N] [--wait] | down | status");
+  return list[0] ? 1 : 0;
+}
+
 async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   if (tier !== "fast" && tier !== "all" && tier !== "persistence") {
     console.log(`unknown tier: ${tier} (expected fast, all, or persistence)`);
@@ -1708,6 +1863,7 @@ const cmds = {
   disable: (n) => cmdSetEnabled(n, false),
   build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
   host: (flags) => cmdHost(flags),
+  session: (flags) => cmdSession(flags),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
@@ -1829,7 +1985,7 @@ try {
   } else if (cmd === "wt") {
     code = cmdWt(rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "host" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();
