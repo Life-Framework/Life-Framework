@@ -262,14 +262,14 @@ function pidAlive(pid) {
 // waitMs>0 polls until it frees or the budget is spent. A lock whose owner
 // process is gone is stolen. Age alone only expires malformed locks; a live
 // build may legitimately run for the full 15-minute Workbench timeout.
-export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500 } = {}) {
+export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500, meta = {} } = {}) {
   const hub = ensureHub(root);
   const lockFile = join(hub, "locks", `${name}.lock`);
   const started = Date.now();
   for (;;) {
     try {
       openSync(lockFile, "wx");
-      writeFileSync(lockFile, JSON.stringify({ pid: process.pid, at: new Date().toISOString(), name }));
+      writeFileSync(lockFile, JSON.stringify({ ...meta, pid: process.pid, at: new Date().toISOString(), name }));
       return { name, file: lockFile };
     } catch (e) {
       if (e.code !== "EEXIST") throw e;
