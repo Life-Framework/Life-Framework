@@ -133,6 +133,21 @@
   printed instead of adding one. Turn the flag off when the arrival clerk
   (M1-18) hands the card over.
 
+### `EL_NpcBaseEntity` station NPCs — `Prefabs/Characters/Core/Npc_Base.et`
+- ✅ **Dressed on every machine** (2026-11-08, #150): `BaseLoadoutManagerComponent`
+  spawns the slot clothing (jacket, pants, boots) on the server, and that
+  clothing is replicated. `Npc_Base.et` carries an `RplComponent`
+  (`"Rpl State Override" Runtime`, `"Parent Node From Parent Entity" 0`) and a
+  `Hierarchy`, as vanilla `Character_Base.et` does: the server streams each
+  placed NPC with its worn clothes as children. Before this fix, a dedicated client saw
+  the NPCs in underwear. Test: `npc/clothes-replicate` (WORLD).
+- ⚠️ A client builds a placed NPC from its prefab, not from the layer. A
+  layer may override only `CharacterIdentityComponent` on an NPC. An added
+  component kicks every client (`RplCreationError: Number of items mismatch`),
+  and other overrides never reach clients. `validate-npc-layer-overrides.mjs`
+  enforces this. Names set in the layer do not reach clients either
+  (`FindEntityByName` works only on the server).
+
 ## Character & Survival
 
 ### `EL_SurvivalStats` — `Feature/Survival/EL_SurvivalStats.c`

@@ -121,6 +121,12 @@ EL_NpcBaseEntity {
    StartNode "Idle"
    AlwaysActive 1
   }
+  RplComponent "{5F317FB3CF9D38AD}" {
+   "Rpl State Override" Runtime
+   "Parent Node From Parent Entity" 0
+  }
+  Hierarchy "{BFCB66ECAEB890AA}" {
+  }
  }
  Flags 0x403 0
 }
