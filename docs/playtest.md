@@ -52,7 +52,7 @@ Do not spend the evening on these; they are filed.
 - Everyone, players and NPCs, renders in underwear on a game client (#150).
 - The registration form, ATM, and org screens are dark and hard to read; the form's labels read "Editbox" (#110, M1-13 is rebuilding these screens).
 - The parcel and bank bags are invisible in your hands (#155).
-- One delivery is one job level; the first car takes about 13 runs (#156).
+- Fuel delivery opens after five parcel runs and the taxi after fifteen runs in all (#156). The game never shows a level; the drop-off tells you when new work opens.
 - The police duty desk and wanted board are not on the street yet (M1-11); duty is the panel in front of the station.
 - A contraband run without an organization is refused with no message (#157).
 - Toasts are the only alert: no alarm at the site, no dispatch board (M1-20).
@@ -115,7 +115,7 @@ At `Roadmap_Org_Desk`, the screen should show an empty organization, a name fiel
 
 Create an organization, deposit cash, and buy the processing upgrade. The fund is not your personal bank balance.
 
-`Roadmap_Hideout_Door` opens for a member and refuses everyone else. `Roadmap_Hideout_Machine` works only after the processing upgrade. `Roadmap_Hideout_Stash` is a crate mesh with no storage yet, so it cannot hold items.
+`Roadmap_Hideout_Door` opens for a member and refuses everyone else. `Roadmap_Hideout_Machine` works only after the processing upgrade. `Roadmap_Hideout_Stash` is a real container: members open it and store items, everyone else is refused with a sound and a toast, and its contents survive a restart.
 
 Run the contraband convoy from `Roadmap_Convoy_Start` to `Roadmap_Convoy_Drop`. Delivery pays cash once. Leaving the vehicle or dying should fail the run. An on-duty officer can confiscate the flagged goods.
 

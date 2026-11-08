@@ -8,7 +8,7 @@
 A sign is a 1989 board, pub sign, notice, or chalkboard that belongs in the
 scene. The title is printed on the prop (a paper sheet pinned to the cork
 board, or the A4 notice itself), and looking at it shows `Read: <title>` in
-the interaction prompt. Read opens a short paper card: What, How, Needs, Rules.
+the interaction prompt. Read opens a short paper card: What, How, Needs, Rules, Next.
 
 ## Shape
 

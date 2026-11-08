@@ -24,6 +24,7 @@
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
 //   scope <name> <dir>                Write the test stub, features row, keys, and street row
 //   scope --selftest                  Check those four outputs in a temp directory
+//   prs status|heal                   Open ws/* PRs; heal conflicting or stuck ones (tools/prs.mjs)
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
@@ -37,6 +38,7 @@ import * as session from "../agent-box/session.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
+import { cmdPrs } from "./prs.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached } from "./lib/quiet-launch.mjs";
 
 function mcpDirFor(root) {
@@ -1229,6 +1231,8 @@ function cmdSessionUp(root, dir, flags) {
   guardHeavy(root, "session up", flags.includes("--force"));
   const clients = session.parseClients(flags);
   const mission = session.parseMission(flags);
+  const res = session.parseRes(flags);
+  const visible = flags.includes("--visible");
   const prev = session.readSession(dir);
   if (prev && !prev.stoppedAt && (host.pidAlive(prev.serverPid) || (prev.clients ?? []).some((c) => host.pidAlive(c.pid)))) {
     console.log("session: one is already running; 'node agent-box/session.mjs down' first");
@@ -1251,7 +1255,7 @@ function cmdSessionUp(root, dir, flags) {
   }
   const paths = session.sessionPaths(dir, clients);
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), root, mission, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
+  const state = { id: session.newSessionId(), root, mission, res, visible, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
     session.writeSession(dir, state);
@@ -1262,7 +1266,7 @@ function cmdSessionUp(root, dir, flags) {
   try {
     wt.copyResourceDatabase(root);
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, loadSave: false, fail });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail });
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
     // one. There is no faction menu (M1-11).
@@ -1285,7 +1289,7 @@ function cmdSessionUp(root, dir, flags) {
 // Boots the server (fresh, or with -loadSessionSave), then each client in
 // order with its own profile. Returns the server console.log path, or the exit
 // code fail() returned.
-function sessionLaunch(root, dir, state, paths, { exe, game, mission, loadSave, fail }) {
+function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail }) {
   const junction = serverGameAddons(root);
   mkdirSync(paths.server, { recursive: true });
   const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave });
@@ -1311,10 +1315,18 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, loadSave, 
 
   for (const c of paths.clients) {
     mkdirSync(c.box, { recursive: true });
-    const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id });
+    const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id, res });
     console.log(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
     // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
-    const child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
+    // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
+    let child = { pid: 0 };
+    if (visible) {
+      const p = spawn(game, cArgs, { cwd: dirname(game), detached: true, stdio: "ignore" });
+      p.unref();
+      child = { pid: p.pid };
+    } else {
+      child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
+    }
     if (!child.pid) return fail(`client ${c.n} did not start`);
     state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
     session.writeSession(dir, state);
@@ -1396,7 +1408,7 @@ function cmdSessionRestart(root, dir, flags) {
     return 1;
   };
   try {
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission: prev.mission, loadSave: true, fail });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission: prev.mission, res: prev.res, visible: prev.visible, loadSave: true, fail });
     if (typeof log === "number") return log;
     const joined = sessionAwaitJoin(log, clients, /flow start for player \d+/g, fail);
     if (joined < 0) return 1;
@@ -1427,7 +1439,7 @@ function cmdSession(args) {
   if (list[0] === "restart") return cmdSessionRestart(ROOT, dir, list.slice(1));
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
-  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--wait] | restart | down | status");
+  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--wait] | restart | down | status");
   return list[0] ? 1 : 0;
 }
 
@@ -1552,6 +1564,10 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 dump [ELDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
+  prs status|heal [--dry-run] [<n>...]
+                                open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
+                                (generated conflicts only), gates, pushes, re-queues auto-merge,
+                                and merges green PRs stuck open (see: cli prs help)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
@@ -2299,6 +2315,8 @@ try {
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
   } else if (cmd === "wt") {
     code = cmdWt(rest);
+  } else if (cmd === "prs") {
+    code = cmdPrs(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {

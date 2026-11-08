@@ -19,6 +19,15 @@ class LF_JobsConfig
 	[Attribute("1200", UIWidgets.Auto, "Unemployment benefit: seconds between collections for one account")]
 	float m_fBenefitCooldownSeconds;
 
+	[Attribute("100", UIWidgets.Auto, "Job experience for one completed delivery run (parcel, fuel, taxi)")]
+	int m_iJobXpPerRun;
+
+	[Attribute("500", UIWidgets.Auto, "Job experience from level 1 to level 2. Level 2 opens fuel delivery, level 3 the taxi")]
+	int m_iJobXpFirstLevel;
+
+	[Attribute("2", UIWidgets.Auto, "Each further job level needs this many times the experience of the one before (1 keeps every level the same)")]
+	float m_fJobXpLevelGrowth;
+
 	protected static ref LF_JobsConfig s_Config;
 	protected static bool s_bLoadAttempted;
 

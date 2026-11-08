@@ -32,6 +32,8 @@ Each of these must survive a server restart:
    rounds in every stored magazine (`itemstate` payload).
 10. Wanted reports: offence, the description recorded at the crime, and the
    identified flag, keyed by player uid.
+11. The contents of placed storage (the hideout stash), keyed by a stable
+   storage key such as `hideout:Roadmap_Hideout`, never an entity id.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character
@@ -93,7 +95,7 @@ Identity:
   | 3 | hideout ownership |
   | 4 | owned vehicles |
   | 5 | serving jail sentences (`LF_Jail.ExportAll` / `ApplyAll`) |
-  | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`) |
+  | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`); placed storage rides the same records (slot `placed`, no new version) |
   | 7 | progression (`LF_Progression.ExportAll` / `ApplyAll`; `ApplyToCharacter` on each spawn) |
   | 8 | introductions (`LF_Introductions.ExportAll` / `ApplyAll`) |
   | 9 | per-item state of every snapshot: magazine ammo by item index (`LF_StorageSnapshot.ExportItemState` / `ApplyItemState`) |
@@ -222,9 +224,11 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   record format did not change.
 - Session-only registries must be rebuilt on load: saved plates are
   re-reserved in `EL_LicensePlateRegistry` by `EL_VehicleOwnership.ApplyAll`.
-- A restored out-in-world vehicle spawns without a key (a ground key per
-  restart let anyone take the car). The owner re-keys with garage store then
-  retrieve, or buys an extra key.
+- Garage it to keep it: after a load, an owned vehicle that was not stored is
+  not spawned; it is at the impound lot (`EL_VehicleOwnership.IsImpounded`,
+  derived from "not stored and no live entity", so the save has no impound
+  field). No key is spawned at load. The impound desk releases it for the
+  configured cash fee and hands the owner a key bound to it.
 - The whitelist file is outside this serializer; an unreadable file blocks
   `EL_WhitelistManager.Save()` so it is never overwritten.
 
@@ -236,7 +240,7 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   and resolved the persistence system.
 - `restart/*` (`EL_Test_RestartSafety.c`): bank cache survives the connect
   path (LOGIC), jail payload through the real serializer write and read
-  (WORLD), restored vehicle has no ground key (WORLD), plates re-reserved on
+  (WORLD), street vehicle impounded at load with no key (WORLD), plates re-reserved on
   load (LOGIC), unreadable whitelist file is kept (LOGIC).
 - `e2e/pass1-write-save` / `e2e/pass2-verify-load` (PERSISTENCE, two boots)
   also carry a jail sentence and a carried inventory (237 cash, 3 apples, a
