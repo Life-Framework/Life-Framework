@@ -64,6 +64,10 @@ node agent-box/harness.mjs shot ui debug_menu
 node agent-box/harness.mjs shot world ATM_Debug
 ```
 
+`launch` starts Workbench on this checkout's project with DebugWorld open
+(`wb_launch`; a no-op when a Workbench already answers on the bridge port). It
+is the one place the harness launches Workbench.
+
 `play` stops play mode if it is up, opens `Worlds/DebugWorld/DebugWorld.ent`,
 then enters play mode. It passes this machine's toolchain paths so the
 Workbench bridge compiles into the open mod. It reads the mode, stops only
@@ -109,6 +113,20 @@ prints `image: <absolute png>` when the capture file is on disk. If the engine
 wrote a BMP and the `.png` sibling is missing, the harness converts it.
 
 ## Same actions a player gets
+
+### One checkout per command channel
+
+Every Workbench and every game client on the default profile reads the same
+`Documents/My Games/.../profile/agent-box/command.txt`, so two worktrees
+driving play sessions at once would move each other's character. The first
+command from a checkout takes the machine-wide `agent-box-play` lock
+(`tmp/wt/locks/` in the main checkout) and hands it to the Workbench or game
+process whose command line names that checkout's `addons`. Another
+checkout's command then returns `error play_owned_by_other_checkout <root>`.
+The lock frees itself when that process exits. A Workbench opened from the
+launcher has no project on its command line and runs unclaimed. Clients with
+their own `-profile` (the multi-client session) have their own channel.
+
 
 The play session polls `$profile:agent-box/command.txt` (Workbench profile and
 the game profile). Hooks:
@@ -215,9 +233,18 @@ The engine writes BMP at native window resolution. The harness and the
 `wb_capture` tool convert it to a PNG beside it (pure Node + `zlib`, BI_RGB
 24/32 bpp; an exotic variant falls back to the raw BMP path).
 
+**Workbench play captures no UI.** `System.MakeScreenshot` in a Workbench
+play session writes the 3D view only: a `shot ui` with the debug menu or the
+sign card open shows the world behind it (2026-11-08). Judge a Workbench menu
+from `ui` (the widget list) and the `[ELDebug:UIKit]` lines; photograph menus
+in a game client.
+
 Harness shots: UI shots leave the camera where it is. World shots teleport the
 character to the camera offset, face the target, and screenshot the player
-view, at noon, in Clear weather. The character camera ignores
+view, at noon, in Clear weather. `shot world <name> x y z ox oy oz` sets the
+offset; `0 0 2` reads printed text on a prop whose face points +Z. The posed
+character takes no damage for 8 s, so the drop from a high offset does not
+kill it. The character camera ignores
 `CameraManager.SetCamera`, so `EL_ScreenshotCapture.SetCamera` does not move
 that view.
 
@@ -373,3 +400,40 @@ addon and the profile EnfusionMCP addon on port 5775. Calling `wb_play` on a
 world already open in edit mode can hang the bridge; kill that process and
 relaunch. Last full run (2026-10-10): 36 probes, `stand_fail=0`,
 `missing_action=0`, `use_fail=0`.
+
+## Multi-client session (dedicated server)
+
+One dedicated server and up to three game clients run side by side on one PC
+(verified 2026-11-08 on an RTX 3080, 16 GB, Windows 11). Steam starts a second
+`ArmaReforgerSteam.exe`; each client gets its own `-profile`, a 640x360 window
+along the top of the screen, and joins `127.0.0.1:2001` with `-client`.
+
+```powershell
+node agent-box/session.mjs up --clients 2     # server, then clients; waits for both faction menus
+node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client
+node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
+node agent-box/session.mjs proof              # client 1 robs Roadmap_Fuel_Till, client 2 (police) gets the alert
+node agent-box/session.mjs down               # closes every process the session started
+```
+
+- `up` runs from a worktree and holds the machine-wide `server-2001` lock while
+  the server lives (`--wait` queues behind a test or host run). `down` frees it.
+- The server runs the bare DebugWorld, not `LF_PlaytestTown.conf`, so the world's
+  game mode keeps dev tools open and the harness passes `EL_DevGate`. On the
+  playtest mission a non-admin's `stand` and `use` come back as
+  `error dev_gate_closed` (LOGIC test `harness/dev-gate-dedicated`).
+- Server and clients pass `-noBackend` and `-scrDefine LF_SESSION_IDENTITY`.
+  Without the backend every client has the NULL identity and the same Steam
+  name, so the define gives each player id its own identity. The define must be
+  on both sides; a mismatch is refused with `remote script source code checksum
+  does not match`.
+- The session dir is `%LOCALAPPDATA%\LifeFramework\session` (`LF_SESSION_DIR`),
+  outside every worktree, with no junctions. Client logs are written when the
+  client exits; read them after `down`.
+- Memory: each client takes about 2.1 GB private, the server about 0.8 GB. With
+  Workbench also open the server logged `Out of memory. Free system ~300 MB`
+  during client load and kept running.
+- Police comes from the debug menu (`FactionPoliceButton`): the session has no
+  whitelist file, so the faction menu refuses police.
+- `shot world` still poses the body on the server, which a dedicated server's
+  client overwrites. `stand` moves the body on the owning client.

@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { mergeStringTables, parseStringTable } from "../merge/union-string-table.mjs";
 import { mergeLines } from "../merge/merge-markdown.mjs";
 import { regenPlan } from "../merge/regen-generated.mjs";
+import { mergeLintBaselines } from "../merge/union-lint-baseline.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const failures = [];
@@ -120,6 +121,10 @@ for (const doc of ["features.md", "debug-log-triage.md"]) {
   if (!round.ok || round.text !== docText) fail(`${doc} does not round-trip`);
 }
 
+const lintText = readFileSync(join(ROOT, "tools", "validation", "enforce-lint-baseline.json"), "utf8");
+const lintRound = mergeLintBaselines(lintText, lintText, lintText);
+if (!lintRound.ok || lintRound.text !== lintText) fail("enforce-lint-baseline.json does not round-trip");
+
 const locPlan = regenPlan("addons/LifeFramework/Language/everonlife_localization.en_us.conf");
 const testPlan = regenPlan("addons/LifeFramework/Scripts/Game/Tests/EL_TestRegistrations.generated.c");
 if (!locPlan || !locPlan.script.endsWith("regen-localization.ps1") || !locPlan.args.includes("-Write")) {
@@ -137,6 +142,7 @@ for (const [path, driver] of [
   ["addons/LifeFramework/Scripts/Game/Tests/EL_TestRegistrations.generated.c", "lf-regen-tests"],
   ["docs/features.md", "lf-markdown"],
   ["docs/debug-log-triage.md", "lf-markdown"],
+  ["tools/validation/enforce-lint-baseline.json", "lf-lint-baseline"],
 ]) {
   if (!attributes.includes(`${path} merge=${driver}`)) fail(`.gitattributes missing ${path} merge=${driver}`);
   if (!driverConfig.includes(`[merge "${driver}"]`)) fail(`drivers.gitconfig missing ${driver}`);
@@ -238,6 +244,36 @@ try {
   }
   git(featureRepo, ["merge", "--abort"]);
 
+  // Lint baseline: two branches each fix different debt, so each deletes a
+  // different adjacent entry. A line merge conflicts on the shared hunk; the
+  // driver must keep both removals and the entry theirs accepted.
+  const lintRepo = join(temp, "lint");
+  initRepo(lintRepo);
+  configureDriver(lintRepo, "lf-lint-baseline", "union-lint-baseline.mjs");
+  writeFileSync(join(lintRepo, ".gitattributes"), "enforce-lint-baseline.json merge=lf-lint-baseline\n");
+  const entry = (rule, file, text) => ({ rule, file, text });
+  const lintA = entry("L1", "A.c", "a();");
+  const lintB = entry("L1", "B.c", "b();");
+  const lintC = entry("L1", "C.c", "c();");
+  const lintD = entry("L2", "D.c", "d();");
+  const lintE = entry("L1", "E.c", "e();");
+  const lintJson = (entries) => JSON.stringify(entries, null, 1) + "\n";
+  const lintPath = join(lintRepo, "enforce-lint-baseline.json");
+  writeFileSync(lintPath, lintJson([lintA, lintB, lintC, lintD]));
+  commitAll(lintRepo, "base");
+  git(lintRepo, ["checkout", "-q", "-b", "theirs"]);
+  writeFileSync(lintPath, lintJson([lintA, lintB, lintD, lintE]));
+  commitAll(lintRepo, "theirs fixes C, accepts E");
+  git(lintRepo, ["checkout", "-q", "master"]);
+  writeFileSync(lintPath, lintJson([lintA, lintC, lintD]));
+  commitAll(lintRepo, "ours fixes B");
+  const lintMerge = git(lintRepo, ["merge", "theirs", "--no-edit"]);
+  if (lintMerge.status !== 0) fail(`lint-baseline merge should be clean:\n${lintMerge.stdout}\n${lintMerge.stderr}`);
+  else {
+    const merged = readFileSync(lintPath, "utf8");
+    if (merged !== lintJson([lintA, lintE, lintD])) fail(`lint-baseline merge wrote ${JSON.stringify(merged)}`);
+  }
+
   const regenRepo = join(temp, "regen");
   initRepo(regenRepo);
   configureDriver(regenRepo, "lf-regen-localization", "regen-generated.mjs");
@@ -275,4 +311,4 @@ if (failures.length) {
   for (const failure of failures) console.log(`  - ${failure}`);
   process.exit(1);
 }
-console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, generated files call regen)");
+console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, generated files call regen, lint baseline keeps both sides' fixes)");

@@ -317,12 +317,32 @@ class EL_Utils : Managed
 		if (identity.IsEmpty() || identityUuid.IsNull())
 		{
 			if (RplSession.Mode() == RplMode.Dedicated)
+			{
+#ifdef LF_SESSION_IDENTITY
+				// agent-box/session.mjs boots a -noBackend dedicated server with this define.
+				// Its clients all carry the NULL UUID and the same Steam name, so the
+				// identity is per player id. Never defined on a hosted server.
+				return BuildSessionIdentity(playerId);
+#else
 				return "";
+#endif
+			}
 
 			return BuildLocalIdentity(playerId);
 		}
 
 		return identity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Identity for a multi-client harness session (LF_SESSION_IDENTITY): unique per player id,
+	//! stable only within one server run.
+	//! \param playerId Index of the player inside player manager
+	//! \return a UUID-shaped identity, never empty
+	static string BuildSessionIdentity(int playerId)
+	{
+		string digits = playerId.ToString(12, true);
+		return "00bbbddd-5e55-0000-0000-" + digits;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -21,3 +21,8 @@ alone. World shots aim at a position.
 
 The Node side, MCP tools, and the three pillars (script, 3D world, UI) live
 in `agent-box/`. See `agent-box/README.md`.
+
+On a dedicated server (`agent-box/session.mjs`) the server answers `stand`,
+`use`, and `state` over an owner RPC, so a client's harness gets the result or
+the refusal (`dev_gate_closed`). `state` reads the account, money, job, and
+organization on the server and adds the client's last toast.

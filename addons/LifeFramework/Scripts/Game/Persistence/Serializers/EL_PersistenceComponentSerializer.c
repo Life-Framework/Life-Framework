@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Persists the game-mode persistence store (EL_PersistenceComponent): player accounts, bank
 //! accounts, survival stats, organizations, hideout ownership, owned vehicle records, and serving
-//! jail sentences.
+//! jail sentences, and carried inventories.
 //!
 //! BINDING. Listed in the ComponentSerializers block of Configs/Systems/Persistence/LifeFramework.conf,
 //! matching the game-mode entity that carries EL_PersistenceComponent.
@@ -11,16 +11,18 @@
 //! EL_OrganizationManager own those caches, not this component. Only survival stats are read
 //! from and written into the component's own map (keyed by character persistence id).
 //! Hideout records live in LF_Hideout. Vehicle records live in EL_VehicleOwnership, keyed by
-//! the lock identifier. Jail sentences live in LF_Jail, keyed by the player uid.
+//! the lock identifier. Jail sentences live in LF_Jail, keyed by the player uid. Carried
+//! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name.
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail. The written version is that list's length (5). Serialize walks the
+//! hideout, vehicles, jail, carried. The written version is that list's length (6). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
 //! A version 4 save includes vehicles and has no jail sentences.
+//! A version 5 save includes jail sentences and has no carried inventories.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -49,6 +51,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("hideout");
 		order.Insert("vehicles");
 		order.Insert("jail");
+		order.Insert("carried");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -75,7 +78,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 5);
+		context.WriteValue("version", 6);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -223,6 +226,16 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 				jailRecords = new array<ref LF_JailRecord>();
 			context.Write(jailRecords);
 		}
+		else if (payload == "carried")
+		{
+			// Every save point (autosave, manual, shutdown) refreshes living players first.
+			int captured = LF_StorageSnapshot.CaptureAllPlayers();
+			array<ref LF_StorageSnapshotRecord> carriedRecords = LF_StorageSnapshot.ExportAll();
+			if (!carriedRecords)
+				carriedRecords = new array<ref LF_StorageSnapshotRecord>();
+			context.Write(carriedRecords);
+			EL_Debug.Log("Persistence", string.Format("saved %1 carried snapshot(s), %2 captured from live players", carriedRecords.Count(), captured));
+		}
 		else
 		{
 			EL_Debug.Error("Persistence", string.Format("save skipped unknown payload '%1'", payload));
@@ -317,6 +330,20 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				EL_Debug.Warn("Persistence", "jail records failed to read, leaving live sentences untouched");
+			}
+		}
+		else if (payload == "carried")
+		{
+			// A version 1-5 save never reaches this payload, so live snapshots are left alone.
+			array<ref LF_StorageSnapshotRecord> carriedRecords = new array<ref LF_StorageSnapshotRecord>();
+			if (context.Read(carriedRecords))
+			{
+				LF_StorageSnapshot.ApplyAll(carriedRecords);
+				EL_Debug.Log("Persistence", string.Format("applied %1 carried snapshot(s)", carriedRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "carried snapshots failed to read, leaving live snapshots untouched");
 			}
 		}
 		else

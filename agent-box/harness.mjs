@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 import { bmpFileToPng, classifyMesh, classifyMeshFile, decodeBmp, decodePng, encodePng, syntheticBmp } from "./bmp.mjs";
 import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads, loadPlaced, loadWorld } from "./layers.mjs";
+import { claimPlay, decideClaim, rendererFor } from "./play-claim.mjs";
 import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, runTownReport, selectRoadmapSites, siteLook, siteShotOffset } from "./report.mjs";
 import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadStrings, manifestErrors, parseSignConfig, resolveSite, signCard, signIssues } from "./town.mjs";
 
@@ -32,7 +33,16 @@ const MENU_ACTIONS = new Set([
   "EL_OpenDebugMenu",
 ]);
 
+// --client <n> (or setBoxes) points every command at one session client's
+// profile instead of the Workbench and default game profiles.
+let boxOverride = null;
+
+export function setBoxes(dirs) {
+  boxOverride = dirs && dirs.length ? dirs : null;
+}
+
 export function profileBoxes() {
+  if (boxOverride) return boxOverride;
   const docs = join(homedir(), "Documents", "My Games");
   return [
     join(docs, "ArmaReforgerWorkbench", "profile", "agent-box"),
@@ -65,6 +75,9 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "look") {
     return `${id} look`;
+  }
+  if (spec.verb === "state") {
+    return `${id} state`;
   }
   if (spec.verb === "ui") {
     return `${id} ui`;
@@ -134,9 +147,13 @@ function nextId() {
   return (Date.now() % 2000000000) || 1;
 }
 
+let playClaim = null;
+
 export function sendCommand(spec, timeoutMs = 8000) {
   const id = nextId();
   const line = buildLine(id, spec);
+  playClaim = playClaim ?? claimPlay(ROOT);
+  if (!playClaim.ok) return { id, status: "error", detail: playClaim.reason, line, raw: `${id} error ${playClaim.reason}` };
   for (const dir of profileBoxes()) {
     mkdirSync(dir, { recursive: true });
     rmSync(join(dir, "result.txt"), { force: true });
@@ -292,6 +309,14 @@ function workbenchMode(text) {
   return match ? match[1] : "";
 }
 
+// The one place the harness starts Workbench, on this checkout's project with
+// DebugWorld open. wb_launch is a no-op when a Workbench already answers on
+// the bridge port. Swap the launcher here, nowhere else.
+export function launchWorkbench() {
+  const gprojPath = join(ROOT, "addons", "LifeFramework", "LifeFramework.gproj").replaceAll("\\", "/");
+  return mcpBatch([{ tool: "wb_launch", args: { gprojPath, world: DEBUG_WORLD } }]).code;
+}
+
 export function enterPlay() {
   const state = mcpBatch([{ tool: "wb_state", args: {} }]);
   if (state.code !== 0) return state.code;
@@ -364,6 +389,8 @@ function pause(ms) {
 }
 
 export function logRoots() {
+  // A session client's box is <profile>\profile\agent-box; its logs are <profile>\logs.
+  if (boxOverride) return boxOverride.map((box) => join(dirname(dirname(box)), "logs"));
   const docs = join(homedir(), "Documents", "My Games");
   return [join(docs, "ArmaReforgerWorkbench", "logs"), join(docs, "ArmaReforger", "logs")];
 }
@@ -432,6 +459,7 @@ export function runFlow(lines) {
     }
     if (verb === "stand") result = sendCommand({ verb: "stand", entityName: rest[0] });
     else if (verb === "look") result = sendCommand({ verb: "look" });
+    else if (verb === "state") result = sendCommand({ verb: "state" }, 10000);
     else if (verb === "ui") result = sendCommand({ verb: "ui" });
     else if (verb === "click") result = sendCommand({ verb: "click", widget: rest[0], index: rest[1] });
     else if (verb === "type") result = sendCommand({ verb: "type", widget: rest[0], text: rest[1] });
@@ -452,10 +480,7 @@ export function runFlow(lines) {
       result = sendCommand({ verb: "capture", mode: "ui", name: rest[1] }, 25000);
     } else if (verb === "shot" && rest[0] === "world") {
       const target = resolveWorldTarget(rest[1], rest[2], rest[3], rest[4]);
-      result = sendCommand(
-        { verb: "capture", mode: "world", name: target.name, x: target.x, y: target.y, z: target.z },
-        25000,
-      );
+      result = sendCommand(worldCapture(target, rest.slice(5, 8)), 25000);
     } else {
       throw new Error(`unknown flow step: ${line}`);
     }
@@ -477,6 +502,16 @@ export function formatPads(list = pads()) {
   return list
     .map((pad) => `${pad.name}  layer=${pad.layer}  actions=${pad.actions.join(",")}  at ${pad.x} ${pad.y} ${pad.z}`)
     .join("\n");
+}
+
+// `shot world <name> x y z [ox oy oz]`: the optional camera offset is where
+// the character stands relative to the target (default 10 3 10). A close
+// offset reads printed text, such as a sign face.
+function worldCapture(target, offset) {
+  const spec = { verb: "capture", mode: "world", name: target.name, x: target.x, y: target.y, z: target.z };
+  if (offset.length === 0) return spec;
+  if (offset.length !== 3) throw new Error("camera offset needs ox oy oz");
+  return { ...spec, ox: offset[0], oy: offset[1], oz: offset[2] };
 }
 
 function resolveWorldTarget(name, x, y, z) {
@@ -608,6 +643,17 @@ function printResult(result) {
 }
 
 function selftest() {
+  const yes = () => true;
+  if (decideClaim(null, "C:/a", yes).claim !== true) throw new Error("free channel is claimed");
+  if (decideClaim({ pid: 7, root: "C:/a" }, "C:\\a", yes).ok !== true) throw new Error("own claim drives");
+  if (decideClaim({ pid: 7, root: "C:/b" }, "C:/a", yes).ok !== false) throw new Error("other checkout refuses");
+  if (decideClaim({ pid: 7, root: "C:/b" }, "C:/a", () => false).claim !== true) throw new Error("dead owner is stale");
+  const procs = [
+    { pid: 1, cmd: "Workbench.exe -gproj C:/x/Life-Framework/addons/LifeFramework/LifeFramework.gproj" },
+    { pid: 2, cmd: "Game.exe -addonsDir C:\\x\\Life-Framework-ws-a\\addons -addons LifeFramework" },
+  ];
+  if (rendererFor("C:/x/Life-Framework-ws-a", procs) !== 2) throw new Error("renderer by addonsDir");
+  if (rendererFor("C:/x/Life-Framework", procs) !== 1) throw new Error("renderer by gproj");
   const check = spawnSync(process.execPath, ["--check", join(ROOT, "agent-box", "mcp-server.mjs")], { encoding: "utf8" });
   if ((check.status ?? 1) !== 0) throw new Error(check.stderr || "life-agent-box MCP server failed to parse");
   const use = buildLine(4, { verb: "use", className: "EL_ShopAction", entityName: "Trader_01" });
@@ -620,6 +666,13 @@ function selftest() {
   if (interact !== "9 interact confirm") throw new Error(interact);
   const stand = buildLine(10, { verb: "stand", entityName: "ATM_Debug" });
   if (stand !== "10 stand ATM_Debug") throw new Error(stand);
+  const state = buildLine(11, { verb: "state" });
+  if (state !== "11 state") throw new Error(state);
+  setBoxes(["X"]);
+  const boxes = profileBoxes();
+  setBoxes(null);
+  if (boxes.length !== 1 || boxes[0] !== "X") throw new Error("setBoxes did not target one client box");
+  if (profileBoxes().length !== 2) throw new Error("setBoxes(null) did not restore the default boxes");
   const list = pads();
   const atm = findPad(list, "ATM_Debug");
   if (!atm || !atm.actions.includes("EL_ATMAction")) throw new Error("ATM_Debug missing from layer catalog");
@@ -1043,6 +1096,7 @@ function usage() {
   node agent-box/harness.mjs setup
   node agent-box/harness.mjs status
   node agent-box/harness.mjs selftest
+  node agent-box/harness.mjs launch
   node agent-box/harness.mjs play
   node agent-box/harness.mjs layers
   node agent-box/harness.mjs layer <EntityName> [ActionClass]
@@ -1075,6 +1129,18 @@ kit enters play only when a session is not already up.
 `);
 }
 
+// Pulls --client <n> out of argv and points the command files at that
+// session client (agent-box/session.mjs).
+export async function applyClientFlag(argv) {
+  const i = argv.indexOf("--client");
+  if (i === -1) return argv;
+  const n = Number(argv[i + 1]);
+  if (!Number.isInteger(n) || n < 1) throw new Error("--client needs a client number");
+  const { clientBox, sessionDir } = await import("./session.mjs");
+  setBoxes([clientBox(sessionDir(), n)]);
+  return [...argv.slice(0, i), ...argv.slice(i + 2)];
+}
+
 function main(argv) {
   const [cmd, ...rest] = argv;
   try {
@@ -1084,6 +1150,7 @@ function main(argv) {
       return 0;
     }
     if (cmd === "selftest") return selftest();
+    if (cmd === "launch") return launchWorkbench();
     if (cmd === "play") return enterPlay();
     if (cmd === "kit") {
       const played = runKit();
@@ -1123,6 +1190,9 @@ function main(argv) {
     if (cmd === "look") {
       return printResult(sendCommand({ verb: "look" }));
     }
+    if (cmd === "state") {
+      return printResult(sendCommand({ verb: "state" }, 10000));
+    }
     if (cmd === "ui") {
       return printResult(sendCommand({ verb: "ui" }));
     }
@@ -1155,12 +1225,7 @@ function main(argv) {
     }
     if (cmd === "shot" && rest[0] === "world") {
       const target = resolveWorldTarget(rest[1], rest[2], rest[3], rest[4]);
-      return printResult(
-        sendCommand(
-          { verb: "capture", mode: "world", name: target.name, x: target.x, y: target.y, z: target.z },
-          25000,
-        ),
-      );
+      return printResult(sendCommand(worldCapture(target, rest.slice(5, 8)), 25000));
     }
     if (cmd === "flow") {
       const played = runFlow(readFlow(rest[0]));
@@ -1234,5 +1299,11 @@ function main(argv) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  process.exit(main(process.argv.slice(2)));
+  applyClientFlag(process.argv.slice(2)).then(
+    (argv) => process.exit(main(argv)),
+    (err) => {
+      console.error(err.message);
+      process.exit(1);
+    },
+  );
 }

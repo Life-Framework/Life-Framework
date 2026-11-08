@@ -137,16 +137,25 @@
 
 ### `EL_SurvivalStats` — `Feature/Survival/EL_SurvivalStats.c`
 - ✅ All stats clamped `[0,100]`. `Eat`/`Drink`/`Heal` are additive through
-  clamped setters. `UpdateStats(dt)`: hunger `-dt*0.1`, thirst `-dt*0.15`,
-  and if hunger or thirst `< 20`, health `-dt*0.05`. `Create(id)` starts all
-  at 100.
-- ⚠️ No recovery (health only ever falls); negative `dt` heals. Zero health
-  hands off to the death flow below (survival does not model a down-state).
+  clamped setters. `Create(id)` starts all at 100.
+- ✅ (2026-11-08, M1-28) **Needs are light and never kill.** `UpdateStats(dt,
+  config)` takes every rate from `LF_SurvivalConfig`
+  (`Configs/Survival/LF_Survival.conf`). Flagship: hunger `0.01/s` (about
+  2.8 h from full), thirst `0.0125/s` (about 2.2 h). Below 20 hunger or thirst,
+  health falls at `0.05/s` to the 75 cap and stops; health already below the
+  cap is not touched. With needs met, health regains `0.02/s` up to 100.
+  `dt <= 0` is a no-op. Tests: `survival/light`.
 
 ### `EL_CharacterSurvivalComponent` — `Feature/Survival/EL_CharacterSurvivalComponent.c`
-- ✅ Per-frame decay driver; async-loads stats by character id; null-guards
-  until loaded.
-- ⚠️ No clamp on delta time (a hitch drops a big stat chunk in one frame).
+- ✅ (2026-11-08) Server-authoritative: stats tick on the server only, on a
+  1 s call-queue timer. The delta is clamped to 5 s so a hitch does not drop a
+  chunk. The owner gets whole-point hunger and thirst and the low-needs flag as
+  owner-only RplProps; `BumpMe` fires only when one of them changes (about
+  once per 100 s at flagship rates), and right after eating or drinking. The
+  low-needs flip logs `[ELDebug:Survival] <id> needs low=...`. Tests:
+  `survival/sync`.
+- ✅ The old per-frame `EOnFrame` driver is gone. It had no event mask and
+  treated world-time milliseconds as seconds.
 
 ### `EL_ConsumableEffectSurvival` — `Feature/Survival/EL_ConsumableEffectSurvival.c`
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
@@ -167,6 +176,49 @@
   (account-aware, re-applies the faction loadout).
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
+
+### `LF_SurvivalConfig` — `Feature/Survival/LF_SurvivalConfig.c`
+- ✅ (2026-11-08) Framework knobs: hunger and thirst drain, low-needs
+  threshold, health cap, health drain and regen, stamina drain multiplier,
+  tick interval, max tick delta. A missing `.conf` logs
+  `[ELDebug:Survival]` once and uses the same built-in defaults.
+
+### `LF_SurvivalStaminaPenalty` — `Feature/Survival/LF_SurvivalStaminaPenalty.c`
+- ✅ (2026-11-08) Modded `SCR_CharacterStaminaComponent.OnStaminaDrain`: with
+  low needs, exertion drains stamina `1.5x` (config), so a hungry player
+  sprints for less time and breathes hard sooner. It lifts on the next sync
+  after eating and drinking. Same reentrancy pattern as the base hydration
+  penalty.
+- ⚠️ Not yet felt in game: set survival to 10 in the DebugMenu and sprint.
+
+### `EL_BetaHud` survival gauges — `HUD/EL_BetaHud.c`
+- ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
+  The HUD stays second to the body cue.
+
+### Carried inventory — `Feature/Character/Persistence/LF_StorageSnapshot.c`
+- ✅ **Carried cash and items survive a restart** (2026-11-08, M1-04, tests
+  `persist/carried-roundtrip`, `persist/carried-death-no-dupe`, and
+  `e2e/pass2-verify-load` across a real two-boot restart): the whole storage
+  tree (prefab, stack quantity, storage index, slot id) is the `carried` payload
+  of `EL_PersistenceComponentSerializer`, appended at version 6. Keyed by
+  character persistence id plus a slot name, so one owner can hold several named
+  snapshots (`carried` now; police duty / civilian stash later, M1-11).
+- ✅ Captured at every save point (autosave, manual, shutdown) for each living
+  player and on disconnect before the character is deleted. On spawn a snapshot
+  replaces the starter kit; without one the starter kit is granted.
+- ✅ Apply reconciles instead of adding: a matching occupant is kept, an occupant
+  no record claims is deleted, a missing record is spawned. A second apply
+  spawns nothing. A prefab that no longer loads logs `EL_Debug.Error` and is
+  skipped with its contents.
+- ✅ Death drops what you carry: `OnPlayerKilled_S` drops the snapshot and a dead
+  body is never captured, so the body keeps the items and a restart grants the
+  starter kit.
+- ✅ No ground copy: `LifeFramework.conf` saves a stack with its parent and no
+  longer self-spawns the player character, so a pocket `MoneyStack` does not
+  come back loose on the ground next to the restored one (the two-boot e2e
+  counts it).
+- ⚠️ Ammo count, weapon state, and placed storage (hideout stash, M1-15) are not
+  in the snapshot. Attachments and magazines are kept as items.
 
 ## Account & Persistence
 
@@ -989,6 +1041,7 @@
 ### Signs — `Scripts/Game/Feature/Signs/`
 - ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
 - ✅ Prefabs `Prefabs/Props/Signs/LF_Sign_Board` (cork board), `LF_Sign_Pub` (shop sign), `LF_Sign_Notice` (A4 notice), `LF_Sign_Chalkboard` (standing chalkboard; the vanilla `CardboardSign_01` lives in the Rally addon and does not resolve for this mod) inherit the vanilla props (no new meshes) and add the component, an `LF_Sign` action context on the face, and the Read action. A placed instance sets the id. The title is also printed on the prop on rendering clients: `LF_SignComponent` draws `UI/Layouts/Signs/LF_SignFace.layout` into an `RTTextureWidget` bound (`SetRenderTarget`) to a mesh whose material `Assets/Signs/Data/LF_SignFace.emat` samples `$rendertarget`. `LF_Sign_Board` spawns a local `LF_SignFace` sheet (vanilla A4 poster mesh) on its face; `LF_Sign_Notice` retargets its own poster material. A dedicated server skips the face. `LF_Sign_Pub` and `LF_Sign_Chalkboard` ship with the face off until their sheet placement is checked in a rendering client.
+- ✅ The printed title fits the shown part of the render target at any window size. The target is the layout size times the screen DPI scale, but the widgets inside lay out one reference unit per pixel, so a 720p Workbench viewport printed "MINI / ARE". `LF_SignComponent.FaceTitleRect` places the title box and font by `DPIScale(1)`. Board and notice photographed reading MINING AREA, not mirrored, in a Workbench play session (2026-11-08). LOGIC `signs/face-fit`.
 - ✅ `EL_MiningSign` reads `mining` (`Read: Mining area`) and `EL_WhitelistSign` reads `police_whitelist` beside its whitelist action. `EL_TextLabelComponent` (floating debug text) is deleted.
 - ⚠️ MenuBack closes the card through the UI kit. The printed face, the card render, the prompt, and the walk-away close are not yet seen in a rendering client (manual steps in the M1-01 PR).
 
@@ -1095,6 +1148,49 @@
   joining a running dedicated server. These client checks are not automated.
 
 ## Agent box
+
+### `EL_AgentHarness` — `Feature/AgentHarness/`
+- ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
+  `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
+  calls `ActionScroll`. `click` invokes the same button invoker or `OnClick` a
+  mouse click does. `use` still checks `CanBeShownScript` and
+  `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
+  (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
+  `EL_OpenDebugMenu`); movement actions are refused.
+- ✅ `stand` is the placement exception: the server moves the local character
+  beside a named entity. The poll does not start on a dedicated server
+  (`RplMode.Dedicated`). The server checks the `stand`, `pose`, and `use` RPCs
+  with `EL_DevGate`, the same gate as the debug menu. It refuses and logs
+  (`[ELDebug:AgentHarness] <request> refused: ...`) unless the game mode sets
+  `m_bDevToolsEnabled` or the sender is an administrator. On a production or
+  listen-hosted server a client cannot teleport or reach past action range
+  (2026-11-07). On a client it retries until a local controller exists,
+  including while faction and spawn menus are up.
+- ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
+  alone. A world shot teleports the character to the camera offset (default
+  `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
+  player view. That view faces -Z, so a picture stands on the +Z side of
+  its target. The pose is applied again 700 ms later so gravity does not drop
+  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
+  stands just north of that row when the street is further north. If the new PNG matches the
+  previous PNG, `report roadmap` records `camera_stuck` once and stops.
+  `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look
+  returns an action. Any other white mesh fails. Menu shots use `shot ui`; the
+  report judges `classify` and the widget list. Names after `roadmap` walk
+  only that row. `node agent-box/harness.mjs kit` photographs the UI kit
+  sample in the current play session when play is already up, and enters play
+  only when it is not. `node agent-box/harness.mjs report roadmap` writes
+  `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
+  tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
+  (verified 2026-10-11)
+- ✅ A world-shot pose turns off damage handling on the posed character for
+  8 s, so the fall from the camera height no longer kills it (a 4.5 m pose
+  ended on the death screen; verified 2026-11-08 with an 18 m row shot).
+  `shot world <name> x y z ox oy oz` takes a close camera offset. The poll
+  restarts when a new game mode appears, so a second Play in the same
+  Workbench no longer answers `no_session`. The command file is shared by
+  every default-profile session on the machine; the `agent-box-play` lock
+  ties it to one checkout's Workbench or game process.
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.

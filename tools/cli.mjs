@@ -16,8 +16,9 @@
 //   mcp verify [name]                 Boot the server briefly to prove it starts
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
-//   validate                          Run every script in tools/validation/
+//   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the ELTEST suite
+//   session up [--clients N]|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved ELTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
@@ -27,17 +28,27 @@
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { spawn, spawnSync } from "node:child_process";
-import { closeSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
+import * as session from "../agent-box/session.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
 
+function mcpDirFor(root) {
+  const own = join(root, "tools", "mcp");
+  if (existsSync(join(own, "enfusion-mcp-bk")) || existsSync(join(own, "enfusion-workbench-mcp"))) return own;
+  const shared = join(wt.mainRootOf(root), "tools", "mcp");
+  return existsSync(shared) ? shared : own;
+}
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const MCP_DIR = join(ROOT, "tools", "mcp");
+// tools/mcp/ is git-ignored, so a new worktree has no clones. It shares the
+// main checkout's clones until it installs its own.
+const MCP_DIR = mcpDirFor(ROOT);
 const CONFIG_PATH = join(ROOT, "opencode.json");
 const TOOL_DIRS = { validate: "validation" };
 
@@ -241,6 +252,54 @@ function handlerBundlesInSync() {
   return true;
 }
 
+// ---------------------------------------------------------------- native addons
+
+// A package with a binding.gyp (better-sqlite3 in enfusion-workbench) compiles
+// a .node binary against one Node ABI. Upgrading Node leaves the old binary in
+// place, and the server dies at startup with ERR_DLOPEN_FAILED "was compiled
+// against a different Node.js version". Loading each binary in a child process
+// with this Node finds that before a tool call does.
+function nativeAddons(dir) {
+  const nm = join(dir, "node_modules");
+  if (!existsSync(nm)) return [];
+  const names = [];
+  for (const top of readdirSync(nm)) {
+    if (top.startsWith(".")) continue;
+    const scoped = top.startsWith("@") ? readdirSync(join(nm, top)).map((n) => `${top}/${n}`) : [top];
+    for (const name of scoped) if (existsSync(join(nm, name, "binding.gyp"))) names.push(name);
+  }
+  return names.map((name) => {
+    const release = join(nm, name, "build", "Release");
+    const binaries = existsSync(release) ? readdirSync(release).filter((f) => f.endsWith(".node")) : [];
+    if (binaries.length === 0) return { name, ok: false, reason: "not built (no build/Release/*.node)" };
+    for (const bin of binaries) {
+      const res = spawnSync(process.execPath, ["-e", `require(${JSON.stringify(join(release, bin))})`], { encoding: "utf8" });
+      if (res.status !== 0) {
+        const text = `${res.stderr || ""}${res.stdout || ""}`;
+        const abi = text.match(/using\s+NODE_MODULE_VERSION (\d+)[\s\S]*?requires\s+NODE_MODULE_VERSION (\d+)/);
+        const reason = abi
+          ? `built for Node ABI ${abi[1]}, this Node (${process.version}) needs ABI ${abi[2]}`
+          : (text.split(/\r?\n/).find((l) => /Error/.test(l)) || `load failed (exit ${res.status})`).trim();
+        return { name, ok: false, reason };
+      }
+    }
+    return { name, ok: true, reason: "" };
+  });
+}
+
+/** Rebuild stale native addons with this Node. Returns the names still broken. */
+function rebuildNativeAddons(n, dir) {
+  const stale = nativeAddons(dir).filter((a) => !a.ok);
+  if (stale.length === 0) return [];
+  const names = stale.map((a) => a.name);
+  console.log(`${n}: rebuilding native addons for ${process.version}: ${names.join(", ")}`);
+  const res = sh(NPM, ["rebuild", ...names], { cwd: dir });
+  if (res.status !== 0) console.log(`FAIL  npm rebuild ${n}: ${res.stderr || res.stdout}`);
+  const still = nativeAddons(dir).filter((a) => !a.ok);
+  for (const a of still) console.log(`FAIL  ${n}: ${a.name} ${a.reason}`);
+  return still.map((a) => a.name);
+}
+
 // ---------------------------------------------------------------- commands
 
 function cmdStatus() {
@@ -251,6 +310,7 @@ function cmdStatus() {
   console.log(`  npm  ${npmv}`);
   console.log("");
   console.log("mcp servers (tools/mcp/):");
+  let nativeBroken = false;
   for (const name of Object.keys(SERVERS)) {
     const s = SERVERS[name];
     const installed = existsSync(entryOf(s));
@@ -260,6 +320,13 @@ function cmdStatus() {
       `  ${name.padEnd(20)} installed=${installed} enabled=${String(enabled).padEnd(5)} commit=${commit}`,
     );
     console.log(`      ${s.label}`);
+    if (installed) {
+      for (const a of nativeAddons(join(MCP_DIR, s.dir)).filter((x) => !x.ok)) {
+        nativeBroken = true;
+        console.log(`      FAIL  native addon ${a.name}: ${a.reason}`);
+        console.log(`            the server cannot start. FIX: tools\\cli mcp install ${name}  (runs npm rebuild)`);
+      }
+    }
   }
   if (!handlerBundlesInSync()) {
     console.log("");
@@ -299,7 +366,7 @@ function cmdStatus() {
     console.log("       'Verify integrity of game files'. Verifying only 'Arma Reforger Tools' does");
     console.log("       NOT restore the game data project. Then relaunch the game once.");
   }
-  return healthy ? 0 : 1;
+  return healthy && !nativeBroken ? 0 : 1;
 }
 
 // The identity files the engine uses to discover the vanilla Game addon
@@ -345,6 +412,10 @@ function cmdInstall(name) {
     const b = sh(NPM, ["run", "build"], { cwd: dir });
     if (b.status !== 0) {
       console.log(`FAIL  build ${n}: ${b.stderr || b.stdout}`);
+      failed++;
+      continue;
+    }
+    if (rebuildNativeAddons(n, dir).length) {
       failed++;
       continue;
     }
@@ -402,6 +473,10 @@ function cmdUpdate(name) {
       failed++;
       continue;
     }
+    if (rebuildNativeAddons(n, dir).length) {
+      failed++;
+      continue;
+    }
     console.log(`OK    ${n}: ${before} -> ${after}`);
   }
   const synced = syncHandlerBundles();
@@ -436,7 +511,8 @@ function verifyOne(name) {
       stdio: ["pipe", "pipe", "pipe"],
     });
     child.stdout?.on("data", () => {});
-    child.stderr?.on("data", () => {});
+    let stderr = "";
+    child.stderr?.on("data", (d) => { stderr += d; });
     let settled = false;
     const done = (ok, msg) => {
       if (settled) return;
@@ -446,7 +522,10 @@ function verifyOne(name) {
       resolvePromise(ok ? 0 : 1);
     };
     child.on("error", (e) => done(false, `spawn error: ${e.message}`));
-    child.on("exit", (code) => done(code === 0, `exited unexpectedly (code ${code})`));
+    child.on("exit", (code) => {
+      const why = stderr.split(/\r?\n/).find((l) => /Error|NODE_MODULE_VERSION/.test(l));
+      done(code === 0, `exited unexpectedly (code ${code})${why ? `: ${why.trim()}` : ""}`);
+    });
     setTimeout(() => done(true, "server started and stayed alive (killed after 4s)"), 4000);
   });
 }
@@ -468,20 +547,40 @@ function cmdSetEnabled(name, enabled) {
   return 0;
 }
 
-function invokeScript(full, opts = {}) {
-  if (full.endsWith(".ps1")) return sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full], opts);
-  if (full.endsWith(".cmd") || full.endsWith(".bat")) return sh("cmd", ["/c", full], opts);
-  if (full.endsWith(".sh")) return sh("bash", [full], opts);
-  return sh(process.execPath, [full], opts); // .mjs/.js/.cjs and bare scripts
-}
-
 // Effective env for spawned tool scripts: OS env overlaid with the configured
 // ENFUSION_* values so tools/validation/* and tools/test/test-e2e.ps1 agree with the CLI.
 function toolEnv() {
   return { ...process.env, ...envOf() };
 }
 
-function cmdRunArea(area, root = ROOT) {
+// Checks that launch Workbench (~20-40 s and a window). The default `validate`
+// skips them because agents run it constantly and the test server compiles
+// every script at boot anyway (test-e2e fails on `Can't compile`). They run in
+// `validate --full`, `ci`, `wt gate`, and `wt ship`.
+const FULL_ONLY = new Set(["validate-scripts.ps1"]);
+
+// Checks are independent read-only scripts, so they run concurrently (most of
+// their time is PowerShell start-up). Output is printed in file order.
+const AREA_CONCURRENCY = 8;
+
+function invokeScriptAsync(full, opts = {}) {
+  let cmd = process.execPath;
+  let args = [full]; // .mjs/.js/.cjs and bare scripts
+  if (full.endsWith(".ps1")) [cmd, args] = [PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full]];
+  else if (full.endsWith(".cmd") || full.endsWith(".bat")) [cmd, args] = ["cmd", ["/c", full]];
+  else if (full.endsWith(".sh")) [cmd, args] = ["bash", [full]];
+  return new Promise((done) => {
+    let stdout = "";
+    let stderr = "";
+    const child = spawn(cmd, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], ...opts });
+    child.stdout.on("data", (d) => { stdout += d; });
+    child.stderr.on("data", (d) => { stderr += d; });
+    child.on("error", (e) => done({ status: 1, stdout, stderr: stderr + `failed to spawn ${cmd}: ${e.message}` }));
+    child.on("close", (code) => done({ status: code ?? 1, stdout, stderr }));
+  });
+}
+
+async function cmdRunArea(area, root = ROOT, opts = {}) {
   // Worktree checks must use the target checkout's scripts. Using the main
   // checkout here makes a branch's generated registries look stale when it
   // has added a test or validator.
@@ -500,20 +599,38 @@ function cmdRunArea(area, root = ROOT) {
   // LF_VALIDATE_SKIP=a.ps1,b.mjs skips checks a machine cannot run (CI has no
   // base game or MCP build). Each skip is printed so a run never hides one.
   const skip = new Set((process.env.LF_VALIDATE_SKIP || "").split(",").map((s) => s.trim()).filter(Boolean));
+  const areaStarted = Date.now();
+  const jobs = scripts.map((s) => {
+    if (skip.has(s)) return { s, skipped: "LF_VALIDATE_SKIP" };
+    if (area === "validate" && !opts.full && FULL_ONLY.has(s)) {
+      return { s, skipped: "Workbench compile: runs in 'validate --full', ci, wt gate, wt ship" };
+    }
+    return { s };
+  });
+  const queue = jobs.filter((j) => !j.skipped);
+  const env = toolEnv();
+  const worker = async () => {
+    for (let job = queue.shift(); job; job = queue.shift()) {
+      const started = Date.now();
+      job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env });
+      job.secs = (Date.now() - started) / 1000;
+    }
+  };
+  await Promise.all(Array.from({ length: AREA_CONCURRENCY }, worker));
   let failed = 0;
-  for (const s of scripts) {
-    if (skip.has(s)) {
-      console.log(`SKIP  ${area}/${s} (LF_VALIDATE_SKIP)`);
+  for (const job of jobs) {
+    if (job.skipped) {
+      console.log(`SKIP  ${area}/${job.s} (${job.skipped})`);
       continue;
     }
-    const res = invokeScript(join(dir, s), { cwd: root, env: toolEnv() });
+    const { res } = job;
     const ok = res.status === 0;
-    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${s}`);
+    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s)`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok) failed++;
   }
-  console.log(`${area}: ${scripts.length} check(s), ${failed} failed`);
+  console.log(`${area}: ${scripts.length} check(s), ${failed} failed (${((Date.now() - areaStarted) / 1000).toFixed(1)} s)`);
   return failed ? 1 : 0;
 }
 
@@ -1036,10 +1153,192 @@ function cmdHost(args) {
   return sub ? 1 : 0;
 }
 
+// --only names: a test class (EL_Test_X), a GetName() string, or a test file
+// name (EL_Test_Money or EL_Test_Money.c), which expands to every test class
+// declared in that file. Names the suite cannot match fail the run there.
+function resolveOnlyNames(root, spec) {
+  const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
+  const names = [];
+  for (const raw of String(spec).split(",").map((x) => x.trim()).filter(Boolean)) {
+    const file = join(testsDir, raw.endsWith(".c") ? raw : `${raw}.c`);
+    if (/^(EL|LF)_Test_\w+(\.c)?$/.test(raw) && existsSync(file)) {
+      const classes = [...readFileSync(file, "utf8").matchAll(/class\s+((?:EL_Test_|LF_Test_)\w+)\s*:\s*EL_Test\b/g)].map((m) => m[1]);
+      if (classes.length) {
+        names.push(...classes);
+        continue;
+      }
+    }
+    names.push(raw.replace(/\.c$/, ""));
+  }
+  return [...new Set(names)];
+}
+
+// ------------------------------------------------------------ multi-client session
+// `session up|down|status` (agent-box/session.mjs): one dedicated server on the
+// bare DebugWorld plus N windowed game clients, each with its own -profile,
+// joined over 127.0.0.1:2001. The server owns the server-2001 lock while it
+// lives; `down` kills every process the session started and frees the lock.
+
+function gameClientExe() {
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  return join(gameDir, "ArmaReforgerSteam.exe");
+}
+
+function killTree(pid) {
+  if (!pid || !host.pidAlive(pid)) return false;
+  sh("taskkill", ["/PID", String(pid), "/T", "/F"]);
+  return true;
+}
+
+function cmdSessionDown(dir) {
+  const s = session.readSession(dir);
+  if (!s) {
+    console.log("session: none recorded");
+    return 0;
+  }
+  for (const c of s.clients ?? []) {
+    console.log(`session: client ${c.n} pid ${c.pid} ${killTree(c.pid) ? "closed" : "already gone"}`);
+  }
+  console.log(`session: server pid ${s.serverPid} ${killTree(s.serverPid) ? "closed" : "already gone"}`);
+  for (let i = 0; i < 20 && host.pidAlive(s.serverPid); i++) sleepMs(500);
+  wt.releaseLock(ROOT, SERVER_SLOT, s.serverPid);
+  session.writeSession(dir, { ...s, stoppedAt: new Date().toISOString() });
+  return 0;
+}
+
+function cmdSessionStatus(dir) {
+  const s = session.readSession(dir);
+  if (!s) {
+    console.log("session: none recorded");
+    return 0;
+  }
+  const up = (pid) => (host.pidAlive(pid) ? "up" : "gone");
+  console.log(`session dir: ${dir}`);
+  console.log(`  server   pid ${s.serverPid} ${up(s.serverPid)}  log ${session.newestLog(join(s.serverProfile, "logs")) ?? "-"}`);
+  for (const c of s.clients ?? []) {
+    console.log(`  client ${c.n} pid ${c.pid} ${up(c.pid)}  box ${c.box}  log ${session.newestLog(c.logs) ?? "-"}`);
+  }
+  return 0;
+}
+
+function cmdSessionUp(root, dir, flags) {
+  guardHeavy(root, "session up", flags.includes("--force"));
+  const clients = session.parseClients(flags);
+  const prev = session.readSession(dir);
+  if (prev && !prev.stoppedAt && (host.pidAlive(prev.serverPid) || (prev.clients ?? []).some((c) => host.pidAlive(c.pid)))) {
+    console.log("session: one is already running; 'node agent-box/session.mjs down' first");
+    return 1;
+  }
+  const exe = serverExe();
+  const game = gameClientExe();
+  for (const f of [exe, game]) {
+    if (!existsSync(f)) {
+      console.log(`FAIL  not found: ${f}`);
+      return 1;
+    }
+  }
+  try {
+    wt.acquireLock(root, SERVER_SLOT, { waitMs: flags.includes("--wait") ? 1800000 : 0 });
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    console.log("      a test, host, or session server holds port 2001; retry when it ends, or pass --wait");
+    return 1;
+  }
+  const paths = session.sessionPaths(dir, clients);
+  const state = { root, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
+  const fail = (msg) => {
+    console.log(`FAIL  ${msg}`);
+    session.writeSession(dir, state);
+    cmdSessionDown(dir);
+    wt.releaseLock(root, SERVER_SLOT);
+    return 1;
+  };
+  try {
+    wt.copyResourceDatabase(root);
+    const junction = serverGameAddons(root);
+    mkdirSync(paths.server, { recursive: true });
+    const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server });
+    console.log(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
+    const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
+    const srv = spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
+    srv.unref();
+    if (!srv.pid) return fail("server did not start");
+    state.serverPid = srv.pid;
+    wt.transferLock(root, SERVER_SLOT, srv.pid);
+    session.writeSession(dir, state);
+
+    let log = null;
+    const deadline = Date.now() + 300000;
+    while (Date.now() < deadline && host.pidAlive(srv.pid)) {
+      sleepMs(2000);
+      const f = session.newestLog(join(paths.server, "logs"));
+      if (f && !before.has(basenameOfLogDir(f))) log = f;
+      if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) break;
+    }
+    if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
+    console.log(`session: server up (pid ${srv.pid}); log ${log}`);
+
+    for (const c of paths.clients) {
+      mkdirSync(c.box, { recursive: true });
+      const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile });
+      console.log(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
+      const child = spawn(game, cArgs, { cwd: dirname(game), detached: true, stdio: "ignore" });
+      child.unref();
+      if (!child.pid) return fail(`client ${c.n} did not start`);
+      state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
+      session.writeSession(dir, state);
+      // Stagger so two clients do not load the same data at the same instant.
+      sleepMs(15000);
+      if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
+    }
+    // Joined means the server created the player and opened the faction menu.
+    const joinDeadline = Date.now() + 240000;
+    let joined = 0;
+    while (Date.now() < joinDeadline) {
+      const text = readFileSync(log, "utf8");
+      const refused = text.split(/\r?\n/).find((l) => /ValidationError|Disconnecting identity/.test(l));
+      if (refused) return fail(`a client was refused: ${refused.trim()}`);
+      joined = (text.match(/faction menu sent to player \d+/g) ?? []).length;
+      if (joined >= clients) break;
+      sleepMs(2000);
+    }
+    if (joined < clients) return fail(`${joined}/${clients} client(s) reached the faction menu within 240s (server log ${log})`);
+    console.log(`session: ${joined} client(s) joined and reached the faction menu`);
+    console.log("drive with:");
+    console.log("  node agent-box/harness.mjs --client <n> <verb>   and   node agent-box/session.mjs state <n>");
+    console.log("close everything with: node agent-box/session.mjs down");
+    return 0;
+  } catch (e) {
+    return fail(e.message);
+  } finally {
+    // Before the transfer this process owns the lock; after it the server does.
+    wt.releaseLock(root, SERVER_SLOT);
+  }
+}
+
+function cmdSession(args) {
+  const list = args ?? [];
+  const dir = session.sessionDir();
+  if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
+  if (list[0] === "down") return cmdSessionDown(dir);
+  if (list[0] === "status") return cmdSessionStatus(dir);
+  console.log("usage: tools\\cli session up [--clients N] [--wait] | down | status");
+  return list[0] ? 1 : 0;
+}
+
 async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   if (tier !== "fast" && tier !== "all" && tier !== "persistence") {
     console.log(`unknown tier: ${tier} (expected fast, all, or persistence)`);
     return 2;
+  }
+  let only = [];
+  if (opts.only !== undefined) {
+    only = resolveOnlyNames(root, opts.only);
+    if (only.length === 0) {
+      console.log("usage: tools\\cli test --no-build --only <EL_Test_Class|test-name|EL_Test_File>[,...]");
+      return 2;
+    }
+    console.log(`test: --only ${only.join(",")}`);
   }
   guardHeavy(root, "test", opts.force);
   if (!noBuild) {
@@ -1065,6 +1364,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
       "-Tier", tier,
       "-BindPort", String(ports.gamePort),
       "-A2sPort", String(ports.a2sPort),
+      ...(only.length ? ["-Only", only.join(",")] : []),
     ], { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
     return res.status;
@@ -1086,7 +1386,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
 async function cmdCi(root = ROOT, opts = {}) {
   guardHeavy(root, "ci", opts.force);
   const steps = [
-    ["validate", () => cmdRunArea("validate", root)],
+    ["validate --full", () => cmdRunArea("validate", root, { full: true })],
     ["build", () => cmdBuild(root, { wait: opts.wait })],
     ["test", () => cmdTest(true, "all", root, opts)],
   ];
@@ -1119,11 +1419,13 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout)
-  test [--no-build] [--tier fast|all|persistence]
-                                build + boot server + parse ELTEST results (worktree only)
+  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]]
+                                build + boot server + parse ELTEST results (worktree only).
+                                --only runs just those tests (class, GetName(), or test file
+                                name like EL_Test_Money); SUMMARY tier=only, any tier allowed
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [ELDebug:*] feature log lines (worktree only)
-  ci                            validate + build + test (full gate, worktree only)
+  ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
@@ -1137,7 +1439,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 to append, and one street-manifest row into <dir>
   scope --selftest              run that write in a temp directory and check the four outputs
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
-  validate                      run every script in tools/validation/
+  validate [--full]             run the checks in tools/validation/; --full adds the
+                                Workbench compile (validate-scripts.ps1), which ci/gate/ship run
 
 servers: ${Object.keys(SERVERS).join(", ")}
 `);
@@ -1267,7 +1570,7 @@ function wtHelp() {
 
   tools\\cli wt new <slug> [--wait]    create Life-Framework-ws-<slug> at ws/<slug>, allocate ports
   tools\\cli wt list                   worktrees, ports, dirty/merged state
-  tools\\cli wt test <slug> [--tier fast|all|persistence] [--no-build] [--wait]
+  tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the ELTEST suite in that worktree (from anywhere)
   tools\\cli wt e2e <slug>
                                        two-boot save-state E2E: persistence save boot, then
@@ -1276,10 +1579,11 @@ function wtHelp() {
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
                                        grep that worktree's newest console.log (from anywhere)
-  tools\\cli wt gate <slug> [--wait]   validate + build + test (tier=all) in that worktree
+  tools\\cli wt gate <slug> [--wait]   validate --full + build + test (tier=all) in that worktree
   tools\\cli wt sync <slug>            merge origin/main into the worktree branch
-  tools\\cli wt ship <slug> [--pr-only] [--skip-gate] [--skip-sync]
-                                       sync -> gate -> push -> PR -> auto-merge into main
+  tools\\cli wt ship <slug> [--closes N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync]
+                                       clean-tree check -> merge origin/main only if it conflicts ->
+                                       gate -> push -> PR (or reuse the open one) -> gh auto-merge
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
   tools\\cli wt open <slug>            open a terminal in the worktree
   tools\\cli wt open <slug> --workbench launch Workbench on that worktree
@@ -1288,6 +1592,8 @@ function wtHelp() {
 flags:
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
+  --closes N   start the PR body with 'Closes #N'
+  --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
   --skip-gate  / --skip-sync   skip a ship stage (debug only)
   --force      prune without merge/dirty checks
 `);
@@ -1574,6 +1880,8 @@ async function wtShipCmd(args) {
   const prOnly = flags.includes("--pr-only");
   const skipGate = flags.includes("--skip-gate");
   const skipSync = flags.includes("--skip-sync");
+  const closes = argValue(flags, "--closes");
+  const bodyFile = argValue(flags, "--body-file");
   let e;
   try {
     e = wt.requireWorktree(ROOT, slug);
@@ -1592,22 +1900,49 @@ async function wtShipCmd(args) {
     console.log(`FAIL  worktree ${slug} has uncommitted changes; commit before shipping`);
     return 1;
   }
+  if (closes && !/^\d+$/.test(closes)) {
+    console.log(`FAIL  --closes takes an issue number, got '${closes}'`);
+    return 1;
+  }
+  let customBody = null;
+  if (bodyFile) {
+    const p = resolve(wtRoot, bodyFile);
+    if (!existsSync(p)) {
+      console.log(`FAIL  --body-file not found: ${p}`);
+      return 1;
+    }
+    customBody = readFileSync(p, "utf8").replace(/\r\n/g, "\n").trim();
+  }
+  wt.git(wtRoot, ["fetch", "origin", "--prune"]);
   const nCommits = parseInt(wt.git(wtRoot, ["rev-list", "--count", "origin/main..HEAD"]).stdout.trim() || "0", 10);
   if (nCommits === 0) {
     console.log(`FAIL  nothing to ship: ${e.branch} has no commits beyond origin/main`);
     return 1;
   }
+  // Merge main only when it conflicts. A clean branch goes up as is: the PR's
+  // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
-    console.log("=== ship: sync origin/main ===");
+    let conflicting;
     try {
-      wt.wtSync(ROOT, slug);
+      conflicting = wt.mergeWouldConflict(wtRoot, "origin/main");
     } catch (err) {
       console.log(`FAIL  ${err.message}`);
       return 1;
     }
+    if (conflicting) {
+      console.log("=== ship: origin/main conflicts; merging it ===");
+      try {
+        wt.wtSync(ROOT, slug);
+      } catch (err) {
+        console.log(`FAIL  ${err.message}`);
+        return 1;
+      }
+    } else {
+      console.log("=== ship: origin/main merges clean; no sync ===");
+    }
   }
   if (!skipGate) {
-    console.log("=== ship: gate (validate + build + test tier=all) ===");
+    console.log("=== ship: gate (validate --full + build + test tier=all) ===");
     const code = runWorktreeCli(wtRoot, ["ci", "--wait"]);
     if (code !== 0) {
       console.log(`FAIL  gate failed; not shipping. Fix, commit, re-run 'cli wt ship ${slug}'.`);
@@ -1620,20 +1955,24 @@ async function wtShipCmd(args) {
     console.log(`FAIL  push: ${push.stderr || push.stdout}`);
     return 1;
   }
+  const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
   const subjects = wt.commitSubjects(wtRoot, "origin/main..HEAD");
   const title = subjects[0] ?? e.branch;
-  const body = [
+  let body = customBody ?? [
     `Automated ship from worktree \`${slug}\`.`,
     "",
-    "Gate passed locally: `validate` + headless `build` + `test` (tier=all).",
+    "Gate passed locally: `validate --full` + headless `build` + `test` (tier=all).",
     "",
     "## Commits",
     ...subjects.map((s) => `- ${s}`),
   ].join("\n");
+  if (closes && !new RegExp(`\\b(closes|fixes|resolves) #${closes}\\b`, "i").test(body)) body = `Closes #${closes}\n\n${body}`;
   let pr;
   try {
     if (wt.ghAvailable()) {
-      pr = wt.createPrGh(wtRoot, { head: e.branch, title, body });
+      pr = wt.findOpenPrGh(wtRoot, e.branch);
+      if (pr) console.log(`ship: PR already open, pushed ${head.slice(0, 7)} to it`);
+      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body });
     } else {
       const token = process.env.GITHUB_TOKEN;
       if (!token) {
@@ -1649,24 +1988,25 @@ async function wtShipCmd(args) {
   console.log(`PR: ${pr.url}`);
   if (prOnly) {
     console.log("ship: PR left open for review (--pr-only)");
+    console.log(`PR ${pr.url}, head ${head}`);
     return 0;
   }
-  console.log("=== ship: merge ===");
+  console.log("=== ship: auto-merge ===");
   try {
     if (wt.ghAvailable()) {
-      const m = wt.mergePrGh(wtRoot, pr.number, e.branch);
-      if (m.already) console.log(`ship: PR already merged or no-op: ${m.output.trim()}`);
-      else console.log("ship: merged into main");
+      const out = wt.autoMergePrGh(wtRoot, pr.number);
+      console.log(`ship: auto-merge queued; GitHub merges once checks and reviews pass${out ? ` (${out})` : ""}`);
     } else {
+      // The REST API has no auto-merge; this merges now.
       const m = await wt.mergePrRest(wtRoot, pr.number, e.branch, process.env.GITHUB_TOKEN);
-      if (m.already) console.log("ship: PR already merged or no-op");
-      else console.log("ship: merged into main");
+      console.log(m.already ? "ship: PR already merged or no-op" : "ship: merged into main");
     }
   } catch (err) {
     console.log(`FAIL  merge: ${err.message} (PR is at ${pr.url})`);
     return 1;
   }
-  console.log("ship: done. cleanup with 'cli wt prune " + slug + "'");
+  console.log(`ship: done. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
+  console.log(`PR ${pr.url}, head ${head}`);
   return 0;
 }
 
@@ -1708,6 +2048,7 @@ const cmds = {
   disable: (n) => cmdSetEnabled(n, false),
   build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
   host: (flags) => cmdHost(flags),
+  session: (flags) => cmdSession(flags),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
@@ -1716,10 +2057,11 @@ const cmds = {
   test: (flags) => {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait") });
+    const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only });
   },
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
-  validate: () => cmdRunArea("validate"),
+  validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");
     if (!existsSync(gen)) {
@@ -1829,7 +2171,7 @@ try {
   } else if (cmd === "wt") {
     code = cmdWt(rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "host" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();
