@@ -68,6 +68,9 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_FactionLoadoutConfig(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionSpawn(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FilmCameraPath(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_FineTicket(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_FineTicketRules(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_FineTicketSerializer(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_GarageStoreRange(), EL_TestTier.LOGIC);
@@ -113,7 +116,6 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_OrgRegistry(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PlaytestMission(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PlaytestOffers(), EL_TestTier.LOGIC);
-		manager.Register(new EL_Test_PoliceFineMath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceAbuse(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceRankPermissions(), EL_TestTier.LOGIC);

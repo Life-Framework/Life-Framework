@@ -1051,7 +1051,22 @@ class EL_AgentHarness
 
 		string line = string.Format("faction=%1 duty=%2 wanted=%3 rank=%4 cash=%5 bank=%6 job=%7 org=%8", faction, duty, wanted, rank, EL_MoneyUtils.GetCash(character), bank, job, org);
 		line += " player=" + LF_PlayerInteraction.PlayerIdOf(character).ToString();
-		return line + string.Format(" pos=%1 bills=%2", pos, bills);
+		// Police tickets carried: unpaid count, and the amount owed on the oldest unpaid one.
+		int unpaidTickets = 0;
+		array<LF_FineTicketComponent> tickets = {};
+		LF_FineTicketItem.FindCarried(character, tickets);
+		foreach (LF_FineTicketComponent ticket : tickets)
+		{
+			if (ticket.IsPrinted() && !ticket.IsPaid())
+				unpaidTickets++;
+		}
+
+		int owed = 0;
+		LF_FineTicketComponent firstUnpaid = LF_FineTicketItem.FirstUnpaid(character);
+		if (firstUnpaid)
+			owed = firstUnpaid.GetAmount();
+
+		return line + string.Format(" pos=%1 bills=%2 tickets=%3 owed=%4", pos, bills, unpaidTickets, owed);
 	}
 
 	//------------------------------------------------------------------------------------------------

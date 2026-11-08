@@ -56,7 +56,7 @@ class EL_Test_JobSignUpPersist : EL_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(11, version, "the save is written at version 11 (job sign-ups are payload 11)");
+		ctx.Equal(12, version, "the save is written at version 12 (job sign-ups are payload 11)");
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "progression");
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "introductions");
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "jobsignups");
