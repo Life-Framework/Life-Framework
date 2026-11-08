@@ -22,13 +22,19 @@
 //   pool              object, not a string: { "machines": [ { "name", ... } ] }
 //                     merged by name over tools/pool.json (tools/remote/pool.mjs)
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
 export const LOCAL_CONFIG_NAME = "lf.local.json";
 
+const mainRoots = new Map();
 function mainRoot(root) {
+  if (!mainRoots.has(root)) mainRoots.set(root, mainRootUncached(root));
+  return mainRoots.get(root);
+}
+
+function mainRootUncached(root) {
   const res = spawnSync("git", ["-C", root, "rev-parse", "--git-common-dir"], { windowsHide: true, encoding: "utf8" });
   if (res.status !== 0) return root;
   return dirname(resolve(root, res.stdout.trim()));
@@ -38,11 +44,24 @@ export function localConfigPath(root) {
   return join(mainRoot(root), LOCAL_CONFIG_NAME);
 }
 
+// Cached per path and keyed by mtime + size, so a long-lived process (a pool
+// ticket waiting in the queue) sees an edit to lf.local.json on its next read.
 const cache = new Map();
+
+function stamp(p) {
+  try {
+    const st = statSync(p);
+    return `${st.mtimeMs}:${st.size}`;
+  } catch {
+    return "none";
+  }
+}
 
 export function localConfig(root) {
   const p = localConfigPath(root);
-  if (cache.has(p)) return cache.get(p);
+  const key = stamp(p);
+  const hit = cache.get(p);
+  if (hit && hit.key === key) return hit.cfg;
   let cfg = {};
   if (existsSync(p)) {
     try {
@@ -52,7 +71,7 @@ export function localConfig(root) {
       console.log(`WARN  ${p} is not valid JSON (${e.message}); ignoring it`);
     }
   }
-  cache.set(p, cfg);
+  cache.set(p, { key, cfg });
   return cfg;
 }
 

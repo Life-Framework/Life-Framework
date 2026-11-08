@@ -189,6 +189,25 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   the run folder and deletes the lock. A remote lock whose pid is dead is
   reclaimed by the next acquirer there. The remote CLI runs under the held
   slot (`LF_SERVER_SLOT_HELD` names the lock and a token it must still carry).
+- **Stale and hung slots.** A holder can outlive its owner (observed
+  2026-11-08: the local ssh was gone, the remote PowerShell holder and its lock
+  stayed). Each queued run that finds a remote slot busy checks the lock: when
+  its `origin` is this PC and its `originPid` is dead, the run kills that
+  holder by its recorded pid (only if the lock still carries that pid and token
+  and the pid is a PowerShell), stops what runs out of its run folder (by
+  command line; nothing is deleted), removes the lock, and retries. The hang
+  guard takes any pool slot, local or remote, held longer than max(5 min, 10x
+  the median run of that purpose) while no `ArmaReforgerServer` runs for it;
+  `serve`/`host`/`session` locks name no purpose and are never taken. A
+  reclaim prints `pool: reclaimed <machine> <lock> from <slug>: <reason>`, the
+  owner prints `WARN  pool: the scheduler reclaimed this run's slot ...` when
+  it releases or loses it, and `pool stats` counts reclaims per machine.
+  `pool status` marks a remote lock whose owner is dead here as `STALE`.
+- **Config changes while queued.** Every poll re-reads `tools/pool.json` and
+  `lf.local.json`: a machine enabled while a ticket waits counts at once, and
+  the ticket's "wants" follow (same file, same place in the queue). Only
+  `--machine <name>` / `--remote <name>` pin a ticket to one machine;
+  `--local` and `--remote` stay within their kind.
 - **Health.** An unreachable machine (ssh connect timeout 4 s) is skipped for
   a minute (`<main>/tmp/wt/pool/health.json`); the holder attempt itself is the
   probe. A machine whose server Steam build differs from this PC's is skipped
