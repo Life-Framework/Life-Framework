@@ -1,6 +1,6 @@
 # Contraband
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: `Gathering`, `Processing`, `Trader`, [hideouts](../ownership/hideouts.md), `Police` confiscation
 
 ## Player loop

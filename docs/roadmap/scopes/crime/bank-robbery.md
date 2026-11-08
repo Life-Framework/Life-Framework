@@ -1,6 +1,6 @@
 # Bank robbery
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: [forced entry](forced-entry.md), `Money`, `Crime`, hand-carry
 
 ## Player loop

@@ -1,6 +1,6 @@
 # Hospital robbery
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: [forced entry](forced-entry.md), `Crime`, `Money`
 
 ## Player loop

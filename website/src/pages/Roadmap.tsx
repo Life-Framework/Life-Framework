@@ -4,7 +4,12 @@ import { CURRENT_MILESTONE, DISCORD_URL, githubData, milestone, siteData, splitT
 const byCode = (a: Issue, b: Issue) =>
   (splitTitle(a.title).code ?? "").localeCompare(splitTitle(b.title).code ?? "", undefined, { numeric: true }) || a.number - b.number;
 
-const PLAN_DOCS: Record<string, string> = { M1: "/docs/roadmap-m1-playtest-town", M2: "/docs/roadmap-m2-outline" };
+const PLAN_DOCS: Record<string, string> = {
+  M1: "/docs/roadmap-m1-playtest-town",
+  M2: "/docs/roadmap-m2-outline",
+  M3: "/docs/roadmap-m3-outline",
+  M4: "/docs/roadmap-m4-outline",
+};
 
 function MilestoneBlock({ id }: { id: string }) {
   const ms = milestone(id);
@@ -173,8 +178,7 @@ const Roadmap = () => {
         <ul className="flex flex-wrap gap-x-6 gap-y-3">
           {[
             ["Roadmap index", "/docs/roadmap"],
-            ["Phases", "/docs/roadmap-phases"],
-            ["Release scopes", "/docs/roadmap-scopes"],
+            ["Scope cards", "/docs/roadmap-scopes"],
             ["Testing plan", "/docs/roadmap-testing"],
             ["What the scopes reuse", "/docs/roadmap-sources"],
           ].map(([label, to]) => (

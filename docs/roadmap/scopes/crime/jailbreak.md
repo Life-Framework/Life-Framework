@@ -1,6 +1,6 @@
 # Jailbreak
 
-Phase: Release
+Milestone: M2
 Extends: [forced entry](forced-entry.md), [jailing](../police/jailing.md)
 
 ## Player loop

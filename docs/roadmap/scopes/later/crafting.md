@@ -1,6 +1,6 @@
 # Crafting
 
-Phase: After release
+Milestone: M5
 Extends: `Processing`
 
 ## Player loop

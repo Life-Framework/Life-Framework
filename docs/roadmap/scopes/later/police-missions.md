@@ -1,6 +1,6 @@
 # Police missions
 
-Phase: After release
+Milestone: M4
 Extends: [ranks](../police/ranks.md), [tasks](tasks.md), `Police`
 
 ## Player loop

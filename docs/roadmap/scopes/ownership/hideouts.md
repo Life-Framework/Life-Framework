@@ -1,6 +1,6 @@
 # Hideouts
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: `Houses` locks, [organizations](organizations.md)
 
 ## Player loop

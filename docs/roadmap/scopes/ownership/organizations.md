@@ -1,6 +1,6 @@
 # Organizations
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: `Account`, `Banking` rules, persistence
 
 ## Player loop
