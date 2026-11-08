@@ -26,11 +26,13 @@ Each of these must survive a server restart:
    and paid total; police rank, on-duty and unpaid duty seconds; seconds since
    the last benefit collection; player level, XP and skill points; licences (by
    enum name); turned-in quest ids. Death keeps it.
-9. Both duty inventories (M1-11): the police inventory stored at the desk
+9. The contents of placed storage (the hideout stash), keyed by a stable
+   storage key such as `hideout:Roadmap_Hideout`, never an entity id.
+10. Both duty inventories (M1-11): the police inventory stored at the desk
    (`police_duty`) or the civilian one (`civilian_stash`), whichever is not
    worn, keyed by character persistence id in the carried payload, and the
    rounds in every stored magazine (`itemstate` payload).
-10. Wanted reports: offence, the description recorded at the crime, and the
+11. Wanted reports: offence, the description recorded at the crime, and the
    identified flag, keyed by player uid.
 
 On connect the player spawns at a spawn point with the active character's
@@ -93,7 +95,7 @@ Identity:
   | 3 | hideout ownership |
   | 4 | owned vehicles |
   | 5 | serving jail sentences (`LF_Jail.ExportAll` / `ApplyAll`) |
-  | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`) |
+  | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`); placed storage rides the same records (slot `placed`, no new version) |
   | 7 | progression (`LF_Progression.ExportAll` / `ApplyAll`; `ApplyToCharacter` on each spawn) |
   | 8 | introductions (`LF_Introductions.ExportAll` / `ApplyAll`) |
   | 9 | per-item state of every snapshot: magazine ammo by item index (`LF_StorageSnapshot.ExportItemState` / `ApplyItemState`) |

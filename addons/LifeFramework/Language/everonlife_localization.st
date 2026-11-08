@@ -3459,7 +3459,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
-     Target_en_us "Members open the gate. Inside, Process contraband at the machine."
+     Target_en_us "Members open the gate. Inside, Process contraband at the machine, and keep the crew's goods in the chest: Open hideout stash."
      Comment "Sign card for the organization hideout yard, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{CCE875EFC2A291AB}" {
@@ -3469,7 +3469,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D93B25598500E634}" {
      Id "LF-Sign_Hideout_Rules"
-     Target_en_us "Outsiders cannot open the gate."
+     Target_en_us "Outsiders cannot open the gate or the stash, even when the gate stands open."
      Comment "Sign card for the organization hideout yard, Rules section."
     }
     CustomStringTableItem "{29B7EE9B299AEAF2}" {
@@ -4002,156 +4002,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank cannot escort"
      Comment "Escort refused because the officer's rank is below the configured escort rank"
     }
-    CustomStringTableItem "{0A0AF64EEE5BACBB}" {
-     Id "LF-Duty_ClockIn"
-     Target_en_us "Clock in"
-     Comment "Duty desk action: punch the card and go on duty as police. Swaps to the police inventory."
-    }
-    CustomStringTableItem "{E4D4E1EE39E260F2}" {
-     Id "LF-Duty_ClockOut"
-     Target_en_us "Clock out"
-     Comment "Duty desk action: punch the card, go off duty, collect duty pay, get the civilian inventory back."
-    }
-    CustomStringTableItem "{073A8C6E2A477B10}" {
-     Id "LF-Duty_ClockDesc"
-     Target_en_us "Punch your card at the station duty desk."
-     Comment "Description of the duty desk action."
-    }
-    CustomStringTableItem "{AB08E8AF6A8954AD}" {
-     Id "LF-Duty_NoAccount"
-     Target_en_us "Register your character first."
-     Comment "Duty desk refusal: the player has no registered character."
-    }
-    CustomStringTableItem "{F8D832E3CE9C3E7A}" {
-     Id "LF-Duty_NotOnRoster"
-     Target_en_us "Only officers on the police roster can clock in. Ask an admin to join the police."
-     Comment "Duty desk refusal: the player is not whitelisted for police."
-    }
-    CustomStringTableItem "{B20154B0D085697C}" {
-     Id "LF-Duty_AlreadyOn"
-     Target_en_us "You are already on duty."
-     Comment "Duty desk refusal: a second clock-in."
-    }
-    CustomStringTableItem "{F9746F64FC7DF70C}" {
-     Id "LF-Duty_NotOn"
-     Target_en_us "You are not on duty."
-     Comment "Duty desk refusal: clock-out while off duty."
-    }
-    CustomStringTableItem "{75DBEF394E6BF363}" {
-     Id "LF-Offence_Robbery"
-     Target_en_us "Armed robbery"
-     Comment "Offence on a wanted poster: a till or safe was robbed."
-    }
-    CustomStringTableItem "{9B5C5EBC51647BBD}" {
-     Id "LF-Offence_VehicleTheft"
-     Target_en_us "Vehicle theft"
-     Comment "Offence on a wanted poster."
-    }
-    CustomStringTableItem "{E2A9C867DDFB5021}" {
-     Id "LF-Offence_WeaponTheft"
-     Target_en_us "Weapon theft"
-     Comment "Offence on a wanted poster."
-    }
-    CustomStringTableItem "{A1B41FC05FD138B7}" {
-     Id "LF-Offence_BreakIn"
-     Target_en_us "Breaking and entering"
-     Comment "Offence on a wanted poster: a door was breached."
-    }
-    CustomStringTableItem "{6E4CC71CE2AF3D51}" {
-     Id "LF-Offence_HospitalRobbery"
-     Target_en_us "Hospital robbery"
-     Comment "Offence on a wanted poster."
-    }
-    CustomStringTableItem "{35F30778D3B26361}" {
-     Id "LF-Wanted_PlaceGrid"
-     Target_en_us "grid %1"
-     Comment "Place on a wanted poster when no sign is near. %1 is the map grid square, e.g. 002-002."
-    }
-    CustomStringTableItem "{8C5D85EC61903BF8}" {
-     Id "LF-Wanted_VehicleUnknown"
-     Target_en_us "a vehicle"
-     Comment "Wanted poster: the suspect drove a vehicle with no display name."
-    }
-    CustomStringTableItem "{0C509872EDE3C2C8}" {
-     Id "LF-Wanted_Read"
-     Target_en_us "Read the wanted posters"
-     Comment "Action on the station wanted board."
-    }
-    CustomStringTableItem "{BD4E87FFF2BC3717}" {
-     Id "LF-Wanted_Title"
-     Target_en_us "WANTED"
-     Comment "Title of the public wanted poster card."
-    }
-    CustomStringTableItem "{9E5C42E17A717873}" {
-     Id "LF-Wanted_TitlePolice"
-     Target_en_us "WANTED - police notices"
-     Comment "Title of the wanted board card an on-duty officer reads."
-    }
-    CustomStringTableItem "{208346B2A0835221}" {
-     Id "LF-Wanted_None"
-     Target_en_us "No one is wanted right now."
-     Comment "Wanted board card when the board is empty."
-    }
-    CustomStringTableItem "{E067EA2BE746BA32}" {
-     Id "LF-Wanted_PublicTip"
-     Target_en_us "Seen them? Tell an officer."
-     Comment "Line on the public wanted poster card."
-    }
-    CustomStringTableItem "{9A51FA9C497B307F}" {
-     Id "LF-Wanted_Unknown"
-     Target_en_us "Unknown person"
-     Comment "Wanted poster headline before the suspect is identified."
-    }
-    CustomStringTableItem "{D733E65634209297}" {
-     Id "LF-Wanted_NoDescription"
-     Target_en_us "no description"
-     Comment "Wanted poster: nothing was seen of the clothing."
-    }
-    CustomStringTableItem "{9DFCE698AEB990D9}" {
-     Id "LF-Wanted_Wearing"
-     Target_en_us "Wearing %1"
-     Comment "Wanted poster description. %1 is a list of clothing names."
-    }
-    CustomStringTableItem "{66B7B59C6D36A297}" {
-     Id "LF-Wanted_OnFoot"
-     Target_en_us "on foot"
-     Comment "Wanted poster: the suspect was not in a vehicle."
-    }
-    CustomStringTableItem "{DA0581F22B573242}" {
-     Id "LF-Wanted_Driving"
-     Target_en_us "driving %1"
-     Comment "Wanted poster: %1 is the vehicle name."
-    }
-    CustomStringTableItem "{92CC57DB2785885E}" {
-     Id "LF-Wanted_SeenAt"
-     Target_en_us "last seen at %1"
-     Comment "Wanted poster, police only: %1 is the place of the crime."
-    }
-    CustomStringTableItem "{41F96CA57255836D}" {
-     Id "LF-Sign_PoliceWanted_Title"
-     Target_en_us "Wanted"
-     Comment "Title printed on the station wanted board."
-    }
-    CustomStringTableItem "{167EC6A64DF46E04}" {
-     Id "LF-Sign_PoliceWanted_What"
-     Target_en_us "Posters of people the police are looking for, one per crime."
-     Comment "Wanted board sign card: what it is."
-    }
-    CustomStringTableItem "{BFD2376670AE25CD}" {
-     Id "LF-Sign_PoliceWanted_How"
-     Target_en_us "A poster describes what the suspect wore and drove. The name goes up once the police identify them."
-     Comment "Wanted board sign card: how it works."
-    }
-    CustomStringTableItem "{4C129F5AB03484F6}" {
-     Id "LF-Sign_PoliceWanted_Rules"
-     Target_en_us "Officers on duty see where each crime happened."
-     Comment "Wanted board sign card: rules."
-    }
-    CustomStringTableItem "{2AE926B35D391FDA}" {
-     Id "LF-Wanted_Level"
-     Target_en_us "wanted level %1 of 5"
-     Comment "Wanted poster headline: how wanted the suspect is now. %1 is 1 to 5."
-    }
     CustomStringTableItem "{B19428DE73DCD0A7}" {
      Id "LF-Sign_Next"
      Target_en_us "Next"
@@ -4391,6 +4241,186 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_Impound_Next"
      Target_en_us "Park it in the garage next door, to the west, and it will not be towed again."
      Comment "Sign card for the impound lot, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{0A0AF64EEE5BACBB}" {
+     Id "LF-Duty_ClockIn"
+     Target_en_us "Clock in"
+     Comment "Duty desk action: punch the card and go on duty as police. Swaps to the police inventory."
+    }
+    CustomStringTableItem "{E4D4E1EE39E260F2}" {
+     Id "LF-Duty_ClockOut"
+     Target_en_us "Clock out"
+     Comment "Duty desk action: punch the card, go off duty, collect duty pay, get the civilian inventory back."
+    }
+    CustomStringTableItem "{073A8C6E2A477B10}" {
+     Id "LF-Duty_ClockDesc"
+     Target_en_us "Punch your card at the station duty desk."
+     Comment "Description of the duty desk action."
+    }
+    CustomStringTableItem "{AB08E8AF6A8954AD}" {
+     Id "LF-Duty_NoAccount"
+     Target_en_us "Register your character first."
+     Comment "Duty desk refusal: the player has no registered character."
+    }
+    CustomStringTableItem "{F8D832E3CE9C3E7A}" {
+     Id "LF-Duty_NotOnRoster"
+     Target_en_us "Only officers on the police roster can clock in. Ask an admin to join the police."
+     Comment "Duty desk refusal: the player is not whitelisted for police."
+    }
+    CustomStringTableItem "{B20154B0D085697C}" {
+     Id "LF-Duty_AlreadyOn"
+     Target_en_us "You are already on duty."
+     Comment "Duty desk refusal: a second clock-in."
+    }
+    CustomStringTableItem "{F9746F64FC7DF70C}" {
+     Id "LF-Duty_NotOn"
+     Target_en_us "You are not on duty."
+     Comment "Duty desk refusal: clock-out while off duty."
+    }
+    CustomStringTableItem "{75DBEF394E6BF363}" {
+     Id "LF-Offence_Robbery"
+     Target_en_us "Armed robbery"
+     Comment "Offence on a wanted poster: a till or safe was robbed."
+    }
+    CustomStringTableItem "{9B5C5EBC51647BBD}" {
+     Id "LF-Offence_VehicleTheft"
+     Target_en_us "Vehicle theft"
+     Comment "Offence on a wanted poster."
+    }
+    CustomStringTableItem "{E2A9C867DDFB5021}" {
+     Id "LF-Offence_WeaponTheft"
+     Target_en_us "Weapon theft"
+     Comment "Offence on a wanted poster."
+    }
+    CustomStringTableItem "{A1B41FC05FD138B7}" {
+     Id "LF-Offence_BreakIn"
+     Target_en_us "Breaking and entering"
+     Comment "Offence on a wanted poster: a door was breached."
+    }
+    CustomStringTableItem "{6E4CC71CE2AF3D51}" {
+     Id "LF-Offence_HospitalRobbery"
+     Target_en_us "Hospital robbery"
+     Comment "Offence on a wanted poster."
+    }
+    CustomStringTableItem "{35F30778D3B26361}" {
+     Id "LF-Wanted_PlaceGrid"
+     Target_en_us "grid %1"
+     Comment "Place on a wanted poster when no sign is near. %1 is the map grid square, e.g. 002-002."
+    }
+    CustomStringTableItem "{8C5D85EC61903BF8}" {
+     Id "LF-Wanted_VehicleUnknown"
+     Target_en_us "a vehicle"
+     Comment "Wanted poster: the suspect drove a vehicle with no display name."
+    }
+    CustomStringTableItem "{0C509872EDE3C2C8}" {
+     Id "LF-Wanted_Read"
+     Target_en_us "Read the wanted posters"
+     Comment "Action on the station wanted board."
+    }
+    CustomStringTableItem "{BD4E87FFF2BC3717}" {
+     Id "LF-Wanted_Title"
+     Target_en_us "WANTED"
+     Comment "Title of the public wanted poster card."
+    }
+    CustomStringTableItem "{9E5C42E17A717873}" {
+     Id "LF-Wanted_TitlePolice"
+     Target_en_us "WANTED - police notices"
+     Comment "Title of the wanted board card an on-duty officer reads."
+    }
+    CustomStringTableItem "{208346B2A0835221}" {
+     Id "LF-Wanted_None"
+     Target_en_us "No one is wanted right now."
+     Comment "Wanted board card when the board is empty."
+    }
+    CustomStringTableItem "{E067EA2BE746BA32}" {
+     Id "LF-Wanted_PublicTip"
+     Target_en_us "Seen them? Tell an officer."
+     Comment "Line on the public wanted poster card."
+    }
+    CustomStringTableItem "{9A51FA9C497B307F}" {
+     Id "LF-Wanted_Unknown"
+     Target_en_us "Unknown person"
+     Comment "Wanted poster headline before the suspect is identified."
+    }
+    CustomStringTableItem "{D733E65634209297}" {
+     Id "LF-Wanted_NoDescription"
+     Target_en_us "no description"
+     Comment "Wanted poster: nothing was seen of the clothing."
+    }
+    CustomStringTableItem "{9DFCE698AEB990D9}" {
+     Id "LF-Wanted_Wearing"
+     Target_en_us "Wearing %1"
+     Comment "Wanted poster description. %1 is a list of clothing names."
+    }
+    CustomStringTableItem "{66B7B59C6D36A297}" {
+     Id "LF-Wanted_OnFoot"
+     Target_en_us "on foot"
+     Comment "Wanted poster: the suspect was not in a vehicle."
+    }
+    CustomStringTableItem "{DA0581F22B573242}" {
+     Id "LF-Wanted_Driving"
+     Target_en_us "driving %1"
+     Comment "Wanted poster: %1 is the vehicle name."
+    }
+    CustomStringTableItem "{92CC57DB2785885E}" {
+     Id "LF-Wanted_SeenAt"
+     Target_en_us "last seen at %1"
+     Comment "Wanted poster, police only: %1 is the place of the crime."
+    }
+    CustomStringTableItem "{41F96CA57255836D}" {
+     Id "LF-Sign_PoliceWanted_Title"
+     Target_en_us "Wanted"
+     Comment "Title printed on the station wanted board."
+    }
+    CustomStringTableItem "{167EC6A64DF46E04}" {
+     Id "LF-Sign_PoliceWanted_What"
+     Target_en_us "Posters of people the police are looking for, one per crime."
+     Comment "Wanted board sign card: what it is."
+    }
+    CustomStringTableItem "{BFD2376670AE25CD}" {
+     Id "LF-Sign_PoliceWanted_How"
+     Target_en_us "A poster describes what the suspect wore and drove. The name goes up once the police identify them."
+     Comment "Wanted board sign card: how it works."
+    }
+    CustomStringTableItem "{4C129F5AB03484F6}" {
+     Id "LF-Sign_PoliceWanted_Rules"
+     Target_en_us "Officers on duty see where each crime happened."
+     Comment "Wanted board sign card: rules."
+    }
+    CustomStringTableItem "{2AE926B35D391FDA}" {
+     Id "LF-Wanted_Level"
+     Target_en_us "wanted level %1 of 5"
+     Comment "Wanted poster headline: how wanted the suspect is now. %1 is 1 to 5."
+    }
+    CustomStringTableItem "{003DBD3771195E72}" {
+     Id "LF-HideoutStash_Name"
+     Target_en_us "Hideout stash"
+     Comment "Inventory title of the organization hideout stash crate."
+    }
+    CustomStringTableItem "{E33FDD3D631C2068}" {
+     Id "LF-HideoutStash_Desc"
+     Target_en_us "Shared storage of the organization that owns this hideout."
+     Comment "Inventory description of the organization hideout stash crate."
+    }
+    CustomStringTableItem "{38490B8B4615127D}" {
+     Id "LF-HideoutStash_Title"
+     Target_en_us "Hideout stash"
+     Comment "Toast title when the hideout stash refuses a player."
+    }
+    CustomStringTableItem "{6544A393A6C50DA4}" {
+     Id "LF-HideoutStash_NoOwner"
+     Target_en_us "The stash is padlocked. No organization owns this hideout yet."
+     Comment "Toast when a player tries to open the stash of a hideout no organization owns."
+    }
+    CustomStringTableItem "{71BCA78110E0B841}" {
+     Id "LF-HideoutStash_Open"
+     Target_en_us "Open hideout stash (members only)"
+     Comment "Action on the hideout stash crate. Tells a stranger who may open it."
+    }
+    CustomStringTableItem "{0F3071065A46DE99}" {
+     Id "LF-HideoutStash_NotMember"
+     Target_en_us "The stash is padlocked. Only members of the organization that owns this hideout can open it. Ask a member to invite you at the organization registry."
+     Comment "Toast when a player who is not in the hideout's organization tries to open its stash."
     }
   }
  }

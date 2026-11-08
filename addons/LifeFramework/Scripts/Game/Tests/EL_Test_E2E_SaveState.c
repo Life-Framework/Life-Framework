@@ -103,6 +103,12 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 		// An introduction rides the "introductions" payload (save version 8): Bea still knows Ada.
 		LF_Introductions.Introduce(INTRO_KNOWER_UID, ACCOUNT_UID);
 		ctx.True(LF_Introductions.Knows(INTRO_KNOWER_UID, ACCOUNT_UID), "e2e introduction known before the save");
+		// The hideout stash rides the same payload under hideout:<id>. Its three items stay in the
+		// placed crate through the shutdown save; the reload boot counts them there.
+		IEntity stash = EL_TestHideoutStashKit.FindStash();
+		ctx.NotNull(stash, "e2e hideout stash is placed");
+		if (stash)
+			EL_TestHideoutStashKit.SeedThree(ctx, stash);
 		// Garage it to keep it (vehicles payload, save version 4): one car garaged, one left on the street.
 		EL_VehicleOwnership.Register(GARAGED_ID, GARAGE_OWNER_UID, GARAGED_ID, EL_VehicleCatalog.S105, EL_VehicleCatalog.S105_LOCKED, "roadmap-lot", "EE GA 1601", "#EL-Vehicle_S105", true);
 		EL_VehicleOwnership.Register(STREET_ID, GARAGE_OWNER_UID, STREET_ID, EL_VehicleCatalog.S105, EL_VehicleCatalog.S105_LOCKED, "roadmap-lot", "EE ST 1602", "#EL-Vehicle_S105", true);
@@ -221,6 +227,19 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 		}
 		ctx.True(LF_Introductions.Knows(INTRO_KNOWER_UID, ACCOUNT_UID), "e2e introduction still known after the save load");
 		ctx.False(LF_Introductions.Knows(ACCOUNT_UID, INTRO_KNOWER_UID), "e2e introduction stays one way after the save load");
+
+		IEntity stash = EL_TestHideoutStashKit.FindStash();
+		ctx.NotNull(stash, "e2e hideout stash is placed in the reload boot");
+		ctx.NotNull(LF_StorageSnapshot.Get(EL_TestHideoutStashKit.STASH_KEY, LF_PersistentStorageComponent.SLOT_PLACED), "e2e stash snapshot present after the save load");
+		if (stash)
+		{
+			ctx.Equal(3, EL_TestHideoutStashKit.ItemCount(stash), "e2e the stash holds its 3 items after the restart");
+			ctx.Equal(EL_TestHideoutStashKit.SEEDED_CASH, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.MONEY_PREFAB), "e2e 151 cash in the stash after the restart");
+			ctx.Equal(1, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.APPLE_PREFAB), "e2e the apple is in the stash after the restart");
+			ctx.Equal(1, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.WATER_PREFAB), "e2e the water bottle is in the stash after the restart");
+			ctx.Equal(0, EL_TestLooseStackCount.Count(EL_TestHideoutStashKit.MONEY_PREFAB, EL_TestHideoutStashKit.SEEDED_CASH), "no 151 cash stack came back loose in the world (no dupe)");
+			ctx.Equal(0, LF_PersistentStorageComponent.RestoreAllPlaced(), "e2e restoring the stash again spawns nothing");
+		}
 
 		ctx.True(EL_VehicleOwnership.IsStored(GARAGED_ID), "e2e garaged car is still in the garage after the restart");
 		ctx.False(EL_VehicleOwnership.IsImpounded(GARAGED_ID), "e2e garaged car is not impounded");
