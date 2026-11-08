@@ -318,7 +318,62 @@ cannot see). From the box's desktop, in its clone: `node tools/film/film.mjs
 fetch` once (downloads ffmpeg to `tools/film/.bin`), then
 `node tools/film/film.mjs record --window "Arma Reforger" --seconds 20`;
 the clip lands in `agent-box/reports/film/`. Over ssh capture gets no frames:
-ssh has no desktop.
+ssh has no desktop; use the `testbox` commands below, which capture in the
+signed-in session.
+
+### Desktop on the box (virtual display, recording, clients from ssh)
+
+ssh runs in session 0. The box's signed-in desktop is session 1, so
+`tools/remote/desktop/run-interactive.ps1` runs a program there through a
+one-shot scheduled task (LogonType Interactive, the ssh user) and removes the
+task afterwards. The scripts in `tools/remote/desktop/` are copied to
+`C:\LF\desktop` on every call; output comes back to `tmp/testbox/`.
+
+```sh
+tools\cli testbox screenshot                 # png of every active display; prints each screen's bounds
+tools\cli testbox record 10 [--gdigrab]      # 10 s mp4, screen + system audio, plus its audio levels
+tools\cli testbox start "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger\ArmaReforgerSteam.exe" -window -screenWidth 1920 -screenHeight 1080
+tools\cli testbox vdd                        # (re)install the virtual display driver, no reboot
+```
+
+- **Virtual display.** With the lid closed the box has no active display, so
+  nothing renders and there is nothing to capture. The Virtual Display Driver
+  (github.com/VirtualDrivers/Virtual-Display-Driver, MIT, 25.7.23; the
+  catalog is signed by SignPath Foundation) was installed on 2026-11-08 by
+  `install-vdd.ps1`: a `Root\MttVDD` display adapter with one monitor,
+  "Generic Monitor (VDD by MTT)", whose modes come from
+  `C:\VirtualDisplayDriver\vdd_settings.xml` (1920x1080 and 1280x720 at
+  60 Hz). The install added the SignPath certificate to the machine's
+  TrustedPublisher store so it runs without a prompt; it needed no reboot.
+  With the lid open the internal panel stays the only desktop (the virtual
+  monitor is enumerated but not extended onto); with the lid closed it is the
+  only display, so Windows makes it the desktop. The lid action on AC is "do
+  nothing", so the box stays awake. Remove it with Device Manager, "Virtual
+  Display Driver", Uninstall device (tick delete driver).
+- **Audio.** `lf-loopback.ps1` is a WASAPI loopback of the default output,
+  written to stdout as raw PCM with silence padded in so it stays aligned with
+  the video; `record.ps1` pipes it into ffmpeg next to `ddagrab` (DXGI output
+  0, `-Output N` for another) or `gdigrab`. It compiles its C# in memory with
+  `Add-Type`, because Smart App Control blocks unsigned exes on the box (a
+  `csc`-built exe ran once and was blocked after the next rebuild). Loopback
+  records after the endpoint's volume and mute: the laptop speakers were muted
+  at 0 %, so every clip was silent (-91 dB). The default output is now
+  "Steam Streaming Speakers" at 100 % (`lf-loopback.ps1 --use <endpoint id>`),
+  which plays to no speaker, so the room stays quiet and the loopback hears the
+  game. `lf-loopback.ps1 --diag` prints the default endpoint, volume, and mute.
+  ffmpeg is `Gyan.FFmpeg` 9.0.2 from winget (GPL-3.0, full build: `ddagrab`,
+  `libx264`).
+- **Clients.** Start the game with its working directory set to the game
+  folder (`run-interactive.ps1` uses the exe's folder); from `C:\Windows\System32`
+  the client fails with `Game addon '58D0FB3206B6F859' not found`. Close it
+  with `run-interactive.ps1 -Exe taskkill.exe -Arguments "/IM ArmaReforgerSteam.exe"`
+  (a window close, so it shuts down cleanly).
+- **Proof, 2026-11-08 (lid open, internal panel 2560x1440 at 150 %).** The
+  release client drew its menu background in a 1920x1080 window 50 s after
+  `start`; a 10 s `record` of it was 2560x1440 at 28 fps with mean audio
+  -25.9 dB, max -12.9 dB (the menu music). A Windows chime looped through the
+  loopback alone measured -30.9 dB mean. Not yet measured: a capture with the
+  lid closed, on the virtual display.
 
 ## Scratch files
 

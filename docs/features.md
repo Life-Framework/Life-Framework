@@ -721,6 +721,13 @@
   title and the next step as the body (`LF_CivilianJob.SignedUpKey`: "Pick up a parcel at this
   counter"), not the job name twice. Picking up a parcel toasts where the drop is
   (`RunStartedKey`, `#LF-Job_RunStarted_Courier`, 8 s).
+- ✅ **Pick up, Complete, and Abandon work on a dedicated client** (2026-11-08, LOGIC
+  `jobs/client-offers`): the offers read the server-only sign-up and run maps, so on a hosted
+  server "Pick up parcel" stayed greyed ("Sign up at the workplace first") after a good sign-up.
+  A client now reads the job replicated on `EL_PlayerJobComponent` (set at sign-up and when a
+  restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
+  inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
+  re-checks everything when the action runs.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls

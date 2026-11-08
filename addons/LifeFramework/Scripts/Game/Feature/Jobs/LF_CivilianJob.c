@@ -402,6 +402,52 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether "Complete the run" and "Abandon" are offered. The server reads its run map. The
+	//! runs live on the server only, so a dedicated client decides from what it can see: the job
+	//! replicated on its EL_PlayerJobComponent and the cargo in its own inventory (ClientRunOpen).
+	//! Reading the server map on the client greyed both actions for every hosted player.
+	static bool RunOfferOpen(IEntity user)
+	{
+		if (!user)
+			return false;
+
+		if (Replication.IsServer())
+		{
+			string uid = EL_Utils.GetPlayerUid(user);
+			return !uid.IsEmpty() && HasActiveRun(uid);
+		}
+
+		EL_EJobType bodyJob = EL_EJobType.UNEMPLOYED;
+		EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(user);
+		if (jobs)
+			bodyJob = jobs.GetJob();
+
+		bool carrying = false;
+		if (HasCargo(bodyJob))
+		{
+			InventoryStorageManagerComponent storage = InventoryStorageManagerComponent.Cast(user.FindComponent(InventoryStorageManagerComponent));
+			if (storage)
+				carrying = !EL_InventoryUtils.FindItemsByPrefab(storage, PrefabFor(bodyJob)).IsEmpty();
+		}
+
+		return ClientRunOpen(bodyJob, carrying);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client rule for an active run: a delivery job on the body, and its cargo in hand when the
+	//! job has one (a taxi fare has none; the server refuses a fare that is not running).
+	static bool ClientRunOpen(EL_EJobType bodyJob, bool carryingCargo)
+	{
+		if (!IsDeliveryJob(bodyJob))
+			return false;
+
+		if (!HasCargo(bodyJob))
+			return true;
+
+		return carryingCargo;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool CanSignUp(string playerUid, EL_EJobType job)
 	{
 		if (playerUid.IsEmpty() || !IsDeliveryJob(job))
