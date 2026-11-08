@@ -21,6 +21,8 @@ Each of these must survive a server restart:
 6. Serving jail sentences (player uid, remaining seconds).
 7. Each living player's carried inventory: the storage tree under the character
    (prefab, stack quantity, nesting). Death drops it.
+8. The contents of placed storage (the hideout stash), keyed by a stable
+   storage key such as `hideout:Roadmap_Hideout`, never an entity id.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character
@@ -82,7 +84,7 @@ Identity:
   | 3 | hideout ownership |
   | 4 | owned vehicles |
   | 5 | serving jail sentences (`LF_Jail.ExportAll` / `ApplyAll`) |
-  | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`) |
+  | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`); placed storage rides the same records (slot `placed`, no new version) |
 - Managers expose `ExportAll()` / `ApplyAll(records)` / `GetOrCreate(id)`.
   Record classes are plain Managed: `EL_PlayerAccountRecord`,
   `EL_BankAccountRecord`, `EL_SurvivalStatsRecord` (each under the feature's

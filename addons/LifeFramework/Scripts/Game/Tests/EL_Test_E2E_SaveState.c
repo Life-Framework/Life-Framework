@@ -81,6 +81,13 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 		if (carrier)
 			ctx.True(LF_StorageSnapshot.CaptureCarried(CARRIED_CHARACTER_ID, carrier), "e2e carried inventory captured before the save");
 
+		// The hideout stash rides the same payload under hideout:<id>. Its three items stay in the
+		// placed crate through the shutdown save; the reload boot counts them there.
+		IEntity stash = EL_TestHideoutStashKit.FindStash();
+		ctx.NotNull(stash, "e2e hideout stash is placed");
+		if (stash)
+			EL_TestHideoutStashKit.SeedThree(ctx, stash);
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -142,6 +149,19 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 				ctx.Equal(237, EL_MoneyUtils.GetCash(restored), "e2e cash unchanged by the second apply");
 				EL_TestCharacterFixture.Delete(restored);
 			}
+		}
+
+		IEntity stash = EL_TestHideoutStashKit.FindStash();
+		ctx.NotNull(stash, "e2e hideout stash is placed in the reload boot");
+		ctx.NotNull(LF_StorageSnapshot.Get(EL_TestHideoutStashKit.STASH_KEY, LF_PersistentStorageComponent.SLOT_PLACED), "e2e stash snapshot present after the save load");
+		if (stash)
+		{
+			ctx.Equal(3, EL_TestHideoutStashKit.ItemCount(stash), "e2e the stash holds its 3 items after the restart");
+			ctx.Equal(EL_TestHideoutStashKit.SEEDED_CASH, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.MONEY_PREFAB), "e2e 151 cash in the stash after the restart");
+			ctx.Equal(1, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.APPLE_PREFAB), "e2e the apple is in the stash after the restart");
+			ctx.Equal(1, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.WATER_PREFAB), "e2e the water bottle is in the stash after the restart");
+			ctx.Equal(0, EL_TestLooseStackCount.Count(EL_TestHideoutStashKit.MONEY_PREFAB, EL_TestHideoutStashKit.SEEDED_CASH), "no 151 cash stack came back loose in the world (no dupe)");
+			ctx.Equal(0, LF_PersistentStorageComponent.RestoreAllPlaced(), "e2e restoring the stash again spawns nothing");
 		}
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());

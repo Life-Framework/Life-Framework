@@ -3107,6 +3107,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You hold up your ID card."
      Comment "Show ID performed: the other player now sees the card."
     }
+    CustomStringTableItem "{003DBD3771195E72}" {
+     Id "LF-HideoutStash_Name"
+     Target_en_us "Hideout stash"
+     Comment "Inventory title of the organization hideout stash crate."
+    }
+    CustomStringTableItem "{E33FDD3D631C2068}" {
+     Id "LF-HideoutStash_Desc"
+     Target_en_us "Shared storage of the organization that owns this hideout."
+     Comment "Inventory description of the organization hideout stash crate."
+    }
+    CustomStringTableItem "{38490B8B4615127D}" {
+     Id "LF-HideoutStash_Title"
+     Target_en_us "Hideout stash"
+     Comment "Toast title when the hideout stash refuses a player."
+    }
+    CustomStringTableItem "{6544A393A6C50DA4}" {
+     Id "LF-HideoutStash_NotMember"
+     Target_en_us "The stash is padlocked. Only members of the organization that owns this hideout can open it."
+     Comment "Toast when a player who is not in the hideout's organization tries to open its stash."
+    }
   }
  }
 }

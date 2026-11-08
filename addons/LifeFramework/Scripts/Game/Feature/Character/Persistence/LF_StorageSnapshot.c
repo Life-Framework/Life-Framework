@@ -194,6 +194,9 @@ class LF_StorageSnapshot
 
 			Snapshots().Set(MakeKey(record.m_sOwnerKey, record.m_sSlot), record);
 		}
+
+		// Placed storage (a hideout stash) reads its record from this store; put it back a frame later.
+		LF_PersistentStorageComponent.ScheduleRestoreAllPlaced();
 	}
 
 	//------------------------------------------------------------------------------------------------

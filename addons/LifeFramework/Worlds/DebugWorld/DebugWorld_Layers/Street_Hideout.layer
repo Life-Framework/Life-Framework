@@ -53,20 +53,14 @@ GenericEntity Roadmap_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/Ite
  }
  coords 216 0 120
 }
-GenericEntity Roadmap_Hideout_Stash {
+GenericEntity Roadmap_Hideout_Stash : "{FD1CCD705B12BBCB}Prefabs/Props/Hideouts/LF_HideoutStash.et" {
  components {
-  MeshObject "{59670CE9C98E5BAF}" {
-   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  LF_HideoutStashStorageManagerComponent "{E7B14A09000C5EB1}" {
+   m_sHideoutId "Roadmap_Hideout"
   }
-  RigidBody "{59670CE9C98E5B27}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  RplComponent "{B7E4C1A9038F562D}" {
-   Enabled 1
+  LF_PersistentStorageComponent "{DFF89A3BB63551AE}" {
+   m_sStorageKey "hideout:Roadmap_Hideout"
   }
  }
- Flags 0x403 0
  coords 219 0 120
 }

@@ -27,7 +27,11 @@ harmless to your editor because the worktree is a separate directory.
   and is what a2s uses.
 - **Resource database** — `resourceDatabase.rdb` is gitignored. `wt new`, `test`,
   `dev`, `serve`, and `wt e2e` copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into
-  the worktree when that copy is missing or smaller. Do not commit it.
+  the worktree when that copy is missing, or smaller and older. A worktree copy newer than main's
+  came from this worktree's build and is the only one listing the resources the branch adds; a
+  new prefab missing from it logs `Wrong GUID/name` and replication refuses the entity, so its
+  inventory operations never complete. After adding a resource, run one `test` with the build.
+  Do not commit it.
 - **Build** — the headless Workbench build is the one truly shared resource
   (shader cache, resource DB). It is serialized by a machine-wide lock file:
   one build at a time, everyone else `--wait`s. `cli dev` skips the build

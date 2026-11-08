@@ -199,7 +199,11 @@ export function defaultPorts() {
 }
 
 // resourceDatabase.rdb is gitignored and required for --no-build world tests.
-// Copy it from the main checkout when the worktree copy is missing or smaller.
+// Copy it from the main checkout when the worktree copy is missing, or smaller
+// and older. A worktree copy newer than main's was written by this worktree's own
+// build and is the only one that lists the resources this branch adds; replacing
+// it leaves a new prefab unregistered ("Wrong GUID/name", and replication refuses
+// to insert the entity).
 // Called by `wt new` and before a server boot (cli test/dev/serve, wt e2e).
 // Never commit the destination.
 export function copyResourceDatabase(wtRoot, mainRoot = mainRootOf(wtRoot)) {
@@ -208,7 +212,10 @@ export function copyResourceDatabase(wtRoot, mainRoot = mainRootOf(wtRoot)) {
   if (resolve(src) === resolve(dest)) return false;
   if (!existsSync(src)) return false;
   const srcSize = statSync(src).size;
-  if (existsSync(dest) && statSync(dest).size >= srcSize) return false;
+  if (existsSync(dest)) {
+    const destStat = statSync(dest);
+    if (destStat.size >= srcSize || destStat.mtimeMs > statSync(src).mtimeMs) return false;
+  }
   mkdirSync(dirname(dest), { recursive: true });
   copyFileSync(src, dest);
   return true;
