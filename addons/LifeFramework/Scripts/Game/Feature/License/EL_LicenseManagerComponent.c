@@ -214,8 +214,8 @@ class EL_LicenseManagerComponent : ScriptComponent
 		// ============= LICENCIAS INICIALES (GRATUITAS) =============
 		EL_LicenseConfig unemployed = new EL_LicenseConfig();
 		unemployed.m_eLicenseType = EL_ELicenseType.UNEMPLOYED;
-		unemployed.m_sLicenseName = "Desempleado";
-		unemployed.m_sDescription = "Sin trabajo activo";
+		unemployed.m_sLicenseName = "#LF-License_Unemployed_Name";
+		unemployed.m_sDescription = "#LF-License_Unemployed_Desc";
 		unemployed.m_iSkillPointCost = 0;
 		unemployed.m_iMinLevelRequired = 1;
 		unemployed.m_bIsInitialLicense = true;
@@ -224,8 +224,8 @@ class EL_LicenseManagerComponent : ScriptComponent
 		// ============= TRABAJO: RECOLECTOR (FARMER) =============
 		EL_LicenseConfig farmerTomato = new EL_LicenseConfig();
 		farmerTomato.m_eLicenseType = EL_ELicenseType.FARMER_TOMATO;
-		farmerTomato.m_sLicenseName = "Recolector de Tomates";
-		farmerTomato.m_sDescription = "Licencia inicial para RECOLECTOR. Permite recolectar tomates.";
+		farmerTomato.m_sLicenseName = "#LF-License_FarmerTomato_Name";
+		farmerTomato.m_sDescription = "#LF-License_FarmerTomato_Desc";
 		farmerTomato.m_iSkillPointCost = 0;
 		farmerTomato.m_iMinLevelRequired = 1;
 		farmerTomato.m_bIsInitialLicense = true;
@@ -233,32 +233,32 @@ class EL_LicenseManagerComponent : ScriptComponent
 		
 		EL_LicenseConfig farmerApple = new EL_LicenseConfig();
 		farmerApple.m_eLicenseType = EL_ELicenseType.FARMER_APPLE;
-		farmerApple.m_sLicenseName = "Hortelano Junior";
-		farmerApple.m_sDescription = "Permite recolectar manzanas de huertos. Requiere trabajo RECOLECTOR.";
+		farmerApple.m_sLicenseName = "#LF-License_FarmerApple_Name";
+		farmerApple.m_sDescription = "#LF-License_FarmerApple_Desc";
 		farmerApple.m_iSkillPointCost = 1;
 		farmerApple.m_iMinLevelRequired = 2;
 		m_mLicenseConfigs.Set(EL_ELicenseType.FARMER_APPLE, farmerApple);
 		
 		EL_LicenseConfig farmerPlum = new EL_LicenseConfig();
 		farmerPlum.m_eLicenseType = EL_ELicenseType.FARMER_PLUM;
-		farmerPlum.m_sLicenseName = "Recolector de Ciruelas";
-		farmerPlum.m_sDescription = "Permite recolectar ciruelas de árboles. Requiere trabajo RECOLECTOR.";
+		farmerPlum.m_sLicenseName = "#LF-License_FarmerPlum_Name";
+		farmerPlum.m_sDescription = "#LF-License_FarmerPlum_Desc";
 		farmerPlum.m_iSkillPointCost = 2;
 		farmerPlum.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(EL_ELicenseType.FARMER_PLUM, farmerPlum);
 		
 		EL_LicenseConfig farmerWater = new EL_LicenseConfig();
 		farmerWater.m_eLicenseType = EL_ELicenseType.FARMER_WATER;
-		farmerWater.m_sLicenseName = "Recolector de Agua";
-		farmerWater.m_sDescription = "Permite recolectar agua purificada. Requiere trabajo RECOLECTOR.";
+		farmerWater.m_sLicenseName = "#LF-License_FarmerWater_Name";
+		farmerWater.m_sDescription = "#LF-License_FarmerWater_Desc";
 		farmerWater.m_iSkillPointCost = 1;
 		farmerWater.m_iMinLevelRequired = 2;
 		m_mLicenseConfigs.Set(EL_ELicenseType.FARMER_WATER, farmerWater);
 		
 		EL_LicenseConfig farmerSpeed = new EL_LicenseConfig();
 		farmerSpeed.m_eLicenseType = EL_ELicenseType.FARMER_SPEED;
-		farmerSpeed.m_sLicenseName = "Manos Ágiles";
-		farmerSpeed.m_sDescription = "x2 velocidad al recolectar frutas y agua. Requiere trabajo RECOLECTOR.";
+		farmerSpeed.m_sLicenseName = "#LF-License_FarmerSpeed_Name";
+		farmerSpeed.m_sDescription = "#LF-License_FarmerSpeed_Desc";
 		farmerSpeed.m_iSkillPointCost = 3;
 		farmerSpeed.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(EL_ELicenseType.FARMER_SPEED, farmerSpeed);
@@ -266,40 +266,40 @@ class EL_LicenseManagerComponent : ScriptComponent
 		// ============= TRABAJO: MINERO (MINER) =============
 		EL_LicenseConfig minerCoal = new EL_LicenseConfig();
 		minerCoal.m_eLicenseType = EL_ELicenseType.MINER_COAL;
-		minerCoal.m_sLicenseName = "Minero de Carbón";
-		minerCoal.m_sDescription = "Permite extraer carbón con pico. Requiere trabajo MINERO.";
+		minerCoal.m_sLicenseName = "#LF-License_MinerCoal_Name";
+		minerCoal.m_sDescription = "#LF-License_MinerCoal_Desc";
 		minerCoal.m_iSkillPointCost = 1;
 		minerCoal.m_iMinLevelRequired = 2;
 		m_mLicenseConfigs.Set(EL_ELicenseType.MINER_COAL, minerCoal);
 		
 		EL_LicenseConfig minerCopper = new EL_LicenseConfig();
 		minerCopper.m_eLicenseType = EL_ELicenseType.MINER_COPPER;
-		minerCopper.m_sLicenseName = "Minero de Cobre";
-		minerCopper.m_sDescription = "Permite extraer cobre con pico. Se puede fundir en lingotes. Requiere trabajo MINERO.";
+		minerCopper.m_sLicenseName = "#LF-License_MinerCopper_Name";
+		minerCopper.m_sDescription = "#LF-License_MinerCopper_Desc";
 		minerCopper.m_iSkillPointCost = 2;
 		minerCopper.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(EL_ELicenseType.MINER_COPPER, minerCopper);
 		
 		EL_LicenseConfig minerIron = new EL_LicenseConfig();
 		minerIron.m_eLicenseType = EL_ELicenseType.MINER_IRON;
-		minerIron.m_sLicenseName = "Minero de Hierro";
-		minerIron.m_sDescription = "Permite extraer hierro con pico. Metal industrial. Requiere trabajo MINERO.";
+		minerIron.m_sLicenseName = "#LF-License_MinerIron_Name";
+		minerIron.m_sDescription = "#LF-License_MinerIron_Desc";
 		minerIron.m_iSkillPointCost = 2;
 		minerIron.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(EL_ELicenseType.MINER_IRON, minerIron);
 		
 		EL_LicenseConfig minerGold = new EL_LicenseConfig();
 		minerGold.m_eLicenseType = EL_ELicenseType.MINER_GOLD;
-		minerGold.m_sLicenseName = "Minero de Oro";
-		minerGold.m_sDescription = "Permite extraer oro con pico. Se puede fundir en lingotes de alto valor. Requiere trabajo MINERO.";
+		minerGold.m_sLicenseName = "#LF-License_MinerGold_Name";
+		minerGold.m_sDescription = "#LF-License_MinerGold_Desc";
 		minerGold.m_iSkillPointCost = 3;
 		minerGold.m_iMinLevelRequired = 6;
 		m_mLicenseConfigs.Set(EL_ELicenseType.MINER_GOLD, minerGold);
 		
 		EL_LicenseConfig minerSpeed = new EL_LicenseConfig();
 		minerSpeed.m_eLicenseType = EL_ELicenseType.MINER_SPEED;
-		minerSpeed.m_sLicenseName = "Pico Veloz";
-		minerSpeed.m_sDescription = "x2 velocidad al minar cualquier recurso. Requiere trabajo MINERO.";
+		minerSpeed.m_sLicenseName = "#LF-License_MinerSpeed_Name";
+		minerSpeed.m_sDescription = "#LF-License_MinerSpeed_Desc";
 		minerSpeed.m_iSkillPointCost = 3;
 		minerSpeed.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(EL_ELicenseType.MINER_SPEED, minerSpeed);
@@ -307,24 +307,24 @@ class EL_LicenseManagerComponent : ScriptComponent
 		// ============= TRABAJO: LEÑADOR (LUMBERJACK) =============
 		EL_LicenseConfig lumberjackBasic = new EL_LicenseConfig();
 		lumberjackBasic.m_eLicenseType = EL_ELicenseType.LUMBERJACK_BASIC;
-		lumberjackBasic.m_sLicenseName = "Leñador Básico";
-		lumberjackBasic.m_sDescription = "Permite cortar árboles con hacha. Requiere trabajo LEÑADOR.";
+		lumberjackBasic.m_sLicenseName = "#LF-License_LumberjackBasic_Name";
+		lumberjackBasic.m_sDescription = "#LF-License_LumberjackBasic_Desc";
 		lumberjackBasic.m_iSkillPointCost = 1;
 		lumberjackBasic.m_iMinLevelRequired = 2;
 		m_mLicenseConfigs.Set(EL_ELicenseType.LUMBERJACK_BASIC, lumberjackBasic);
 		
 		EL_LicenseConfig lumberjackProcess = new EL_LicenseConfig();
 		lumberjackProcess.m_eLicenseType = EL_ELicenseType.LUMBERJACK_PROCESS;
-		lumberjackProcess.m_sLicenseName = "Procesador de Madera";
-		lumberjackProcess.m_sDescription = "Permite procesar troncos en tablones en aserradero. Requiere trabajo LEÑADOR.";
+		lumberjackProcess.m_sLicenseName = "#LF-License_LumberjackProcess_Name";
+		lumberjackProcess.m_sDescription = "#LF-License_LumberjackProcess_Desc";
 		lumberjackProcess.m_iSkillPointCost = 2;
 		lumberjackProcess.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(EL_ELicenseType.LUMBERJACK_PROCESS, lumberjackProcess);
 		
 		EL_LicenseConfig lumberjackSpeed = new EL_LicenseConfig();
 		lumberjackSpeed.m_eLicenseType = EL_ELicenseType.LUMBERJACK_SPEED;
-		lumberjackSpeed.m_sLicenseName = "Hacha Veloz";
-		lumberjackSpeed.m_sDescription = "x2 velocidad al cortar árboles. Requiere trabajo LEÑADOR.";
+		lumberjackSpeed.m_sLicenseName = "#LF-License_LumberjackSpeed_Name";
+		lumberjackSpeed.m_sDescription = "#LF-License_LumberjackSpeed_Desc";
 		lumberjackSpeed.m_iSkillPointCost = 3;
 		lumberjackSpeed.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(EL_ELicenseType.LUMBERJACK_SPEED, lumberjackSpeed);
@@ -332,8 +332,8 @@ class EL_LicenseManagerComponent : ScriptComponent
 		// ============= TRABAJO: EMS (MEDIC) =============
 		EL_LicenseConfig medicAccess = new EL_LicenseConfig();
 		medicAccess.m_eLicenseType = EL_ELicenseType.MEDIC_ACCESS;
-		medicAccess.m_sLicenseName = "Credencial EMS";
-		medicAccess.m_sDescription = "Acreditación oficial de EMS. Permite entrar de servicio.";
+		medicAccess.m_sLicenseName = "#LF-License_MedicAccess_Name";
+		medicAccess.m_sDescription = "#LF-License_MedicAccess_Desc";
 		medicAccess.m_iSkillPointCost = 0;
 		medicAccess.m_iMinLevelRequired = 1;
 		medicAccess.m_bRequiresWhitelist = true; // Assuming EMS also needs whitelist or at least license
@@ -341,24 +341,24 @@ class EL_LicenseManagerComponent : ScriptComponent
 
 		EL_LicenseConfig medicBasic = new EL_LicenseConfig();
 		medicBasic.m_eLicenseType = EL_ELicenseType.MEDIC_BASIC;
-		medicBasic.m_sLicenseName = "Paramédico Básico";
-		medicBasic.m_sDescription = "Permite curar jugadores heridos (+50 HP). Requiere trabajo EMS.";
+		medicBasic.m_sLicenseName = "#LF-License_MedicBasic_Name";
+		medicBasic.m_sDescription = "#LF-License_MedicBasic_Desc";
 		medicBasic.m_iSkillPointCost = 2;
 		medicBasic.m_iMinLevelRequired = 3;
 		m_mLicenseConfigs.Set(EL_ELicenseType.MEDIC_BASIC, medicBasic);
 		
 		EL_LicenseConfig medicAdvanced = new EL_LicenseConfig();
 		medicAdvanced.m_eLicenseType = EL_ELicenseType.MEDIC_ADVANCED;
-		medicAdvanced.m_sLicenseName = "Paramédico Avanzado";
-		medicAdvanced.m_sDescription = "Curación mejorada (+100 HP). Requiere trabajo EMS.";
+		medicAdvanced.m_sLicenseName = "#LF-License_MedicAdvanced_Name";
+		medicAdvanced.m_sDescription = "#LF-License_MedicAdvanced_Desc";
 		medicAdvanced.m_iSkillPointCost = 3;
 		medicAdvanced.m_iMinLevelRequired = 6;
 		m_mLicenseConfigs.Set(EL_ELicenseType.MEDIC_ADVANCED, medicAdvanced);
 		
 		EL_LicenseConfig medicRevive = new EL_LicenseConfig();
 		medicRevive.m_eLicenseType = EL_ELicenseType.MEDIC_REVIVE;
-		medicRevive.m_sLicenseName = "Especialista en Reanimación";
-		medicRevive.m_sDescription = "Permite revivir jugadores inconscientes. Requiere trabajo EMS.";
+		medicRevive.m_sLicenseName = "#LF-License_MedicRevive_Name";
+		medicRevive.m_sDescription = "#LF-License_MedicRevive_Desc";
 		medicRevive.m_iSkillPointCost = 4;
 		medicRevive.m_iMinLevelRequired = 8;
 		m_mLicenseConfigs.Set(EL_ELicenseType.MEDIC_REVIVE, medicRevive);
@@ -366,8 +366,8 @@ class EL_LicenseManagerComponent : ScriptComponent
 		// ============= TRABAJO: POLICÍA (POLICE) - Requiere Whitelist =============
 		EL_LicenseConfig policeAccess = new EL_LicenseConfig();
 		policeAccess.m_eLicenseType = EL_ELicenseType.POLICE_ACCESS;
-		policeAccess.m_sLicenseName = "Placa Policial";
-		policeAccess.m_sDescription = "Acreditación oficial de policía. Permite entrar de servicio.";
+		policeAccess.m_sLicenseName = "#LF-License_PoliceAccess_Name";
+		policeAccess.m_sDescription = "#LF-License_PoliceAccess_Desc";
 		policeAccess.m_iSkillPointCost = 0;
 		policeAccess.m_iMinLevelRequired = 1;
 		policeAccess.m_bRequiresWhitelist = true;
@@ -375,8 +375,8 @@ class EL_LicenseManagerComponent : ScriptComponent
 
 		EL_LicenseConfig policeArrest = new EL_LicenseConfig();
 		policeArrest.m_eLicenseType = EL_ELicenseType.POLICE_ARREST;
-		policeArrest.m_sLicenseName = "Oficial de Arresto";
-		policeArrest.m_sDescription = "Permite arrestar criminales. Requiere trabajo POLICÍA y whitelist.";
+		policeArrest.m_sLicenseName = "#LF-License_PoliceArrest_Name";
+		policeArrest.m_sDescription = "#LF-License_PoliceArrest_Desc";
 		policeArrest.m_iSkillPointCost = 2;
 		policeArrest.m_iMinLevelRequired = 5;
 		policeArrest.m_bRequiresWhitelist = true;
@@ -384,8 +384,8 @@ class EL_LicenseManagerComponent : ScriptComponent
 		
 		EL_LicenseConfig policeFine = new EL_LicenseConfig();
 		policeFine.m_eLicenseType = EL_ELicenseType.POLICE_FINE;
-		policeFine.m_sLicenseName = "Oficial de Multas";
-		policeFine.m_sDescription = "Permite multar infractores. Requiere trabajo POLICÍA y whitelist.";
+		policeFine.m_sLicenseName = "#LF-License_PoliceFine_Name";
+		policeFine.m_sDescription = "#LF-License_PoliceFine_Desc";
 		policeFine.m_iSkillPointCost = 2;
 		policeFine.m_iMinLevelRequired = 5;
 		policeFine.m_bRequiresWhitelist = true;
@@ -393,8 +393,8 @@ class EL_LicenseManagerComponent : ScriptComponent
 		
 		EL_LicenseConfig policeSearch = new EL_LicenseConfig();
 		policeSearch.m_eLicenseType = EL_ELicenseType.POLICE_SEARCH;
-		policeSearch.m_sLicenseName = "Oficial de Registro";
-		policeSearch.m_sDescription = "Permite registrar jugadores sospechosos. Requiere trabajo POLICÍA y whitelist.";
+		policeSearch.m_sLicenseName = "#LF-License_PoliceSearch_Name";
+		policeSearch.m_sDescription = "#LF-License_PoliceSearch_Desc";
 		policeSearch.m_iSkillPointCost = 3;
 		policeSearch.m_iMinLevelRequired = 7;
 		policeSearch.m_bRequiresWhitelist = true;
@@ -403,48 +403,48 @@ class EL_LicenseManagerComponent : ScriptComponent
 		// ============= RAMA CRIMINAL - Actividades Ilegales =============
 		EL_LicenseConfig criminalWeed = new EL_LicenseConfig();
 		criminalWeed.m_eLicenseType = EL_ELicenseType.CRIMINAL_WEED;
-		criminalWeed.m_sLicenseName = "Cultivador de Marihuana";
-		criminalWeed.m_sDescription = "Permite cultivar y cosechar marihuana. Alto riesgo, alta recompensa. Ilegal.";
+		criminalWeed.m_sLicenseName = "#LF-License_CriminalWeed_Name";
+		criminalWeed.m_sDescription = "#LF-License_CriminalWeed_Desc";
 		criminalWeed.m_iSkillPointCost = 3;
 		criminalWeed.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(EL_ELicenseType.CRIMINAL_WEED, criminalWeed);
 		
 		EL_LicenseConfig criminalRobbery = new EL_LicenseConfig();
 		criminalRobbery.m_eLicenseType = EL_ELicenseType.CRIMINAL_ROBBERY;
-		criminalRobbery.m_sLicenseName = "Ladrón Profesional";
-		criminalRobbery.m_sDescription = "Permite robar tiendas, bancos y otras locaciones. Policía puede arrestar.";
+		criminalRobbery.m_sLicenseName = "#LF-License_CriminalRobbery_Name";
+		criminalRobbery.m_sDescription = "#LF-License_CriminalRobbery_Desc";
 		criminalRobbery.m_iSkillPointCost = 3;
 		criminalRobbery.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(EL_ELicenseType.CRIMINAL_ROBBERY, criminalRobbery);
 		
 		EL_LicenseConfig criminalBlackmarket = new EL_LicenseConfig();
 		criminalBlackmarket.m_eLicenseType = EL_ELicenseType.CRIMINAL_BLACKMARKET;
-		criminalBlackmarket.m_sLicenseName = "Contacto del Mercado Negro";
-		criminalBlackmarket.m_sDescription = "Acceso al mercado negro. Permite comprar armas, vehículos y ropa ilegal.";
+		criminalBlackmarket.m_sLicenseName = "#LF-License_CriminalBlackmarket_Name";
+		criminalBlackmarket.m_sDescription = "#LF-License_CriminalBlackmarket_Desc";
 		criminalBlackmarket.m_iSkillPointCost = 2;
 		criminalBlackmarket.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(EL_ELicenseType.CRIMINAL_BLACKMARKET, criminalBlackmarket);
 		
 		EL_LicenseConfig criminalWeapons = new EL_LicenseConfig();
 		criminalWeapons.m_eLicenseType = EL_ELicenseType.CRIMINAL_WEAPONS;
-		criminalWeapons.m_sLicenseName = "Traficante de Armas";
-		criminalWeapons.m_sDescription = "Permite comprar armas ilegales en el mercado negro. Requiere Contacto del Mercado Negro.";
+		criminalWeapons.m_sLicenseName = "#LF-License_CriminalWeapons_Name";
+		criminalWeapons.m_sDescription = "#LF-License_CriminalWeapons_Desc";
 		criminalWeapons.m_iSkillPointCost = 4;
 		criminalWeapons.m_iMinLevelRequired = 6;
 		m_mLicenseConfigs.Set(EL_ELicenseType.CRIMINAL_WEAPONS, criminalWeapons);
 		
 		EL_LicenseConfig criminalVehicles = new EL_LicenseConfig();
 		criminalVehicles.m_eLicenseType = EL_ELicenseType.CRIMINAL_VEHICLES;
-		criminalVehicles.m_sLicenseName = "Contrabandista de Vehículos";
-		criminalVehicles.m_sDescription = "Permite comprar vehículos modificados/robados. Requiere Contacto del Mercado Negro.";
+		criminalVehicles.m_sLicenseName = "#LF-License_CriminalVehicles_Name";
+		criminalVehicles.m_sDescription = "#LF-License_CriminalVehicles_Desc";
 		criminalVehicles.m_iSkillPointCost = 3;
 		criminalVehicles.m_iMinLevelRequired = 5;
 		m_mLicenseConfigs.Set(EL_ELicenseType.CRIMINAL_VEHICLES, criminalVehicles);
 		
 		EL_LicenseConfig criminalClothes = new EL_LicenseConfig();
 		criminalClothes.m_eLicenseType = EL_ELicenseType.CRIMINAL_CLOTHES;
-		criminalClothes.m_sLicenseName = "Cliente VIP Textil";
-		criminalClothes.m_sDescription = "Permite comprar ropa exclusiva del mercado negro. Requiere Contacto del Mercado Negro.";
+		criminalClothes.m_sLicenseName = "#LF-License_CriminalClothes_Name";
+		criminalClothes.m_sDescription = "#LF-License_CriminalClothes_Desc";
 		criminalClothes.m_iSkillPointCost = 2;
 		criminalClothes.m_iMinLevelRequired = 4;
 		m_mLicenseConfigs.Set(EL_ELicenseType.CRIMINAL_CLOTHES, criminalClothes);
@@ -638,9 +638,9 @@ if (!Replication.IsServer())
 		// Mostrar notificación al jugador
 		if (!isFree)
 		{
-			string message = string.Format("¡Licencia desbloqueada!\n%1\n\n%2", 
-				config.m_sLicenseName, config.m_sDescription);
-			SCR_HintManagerComponent.ShowCustomHint(message, "NUEVA PROFESIÓN", 5.0);
+			string message = WidgetManager.Translate("#LF-License_Granted", 
+				WidgetManager.Translate(config.m_sLicenseName), WidgetManager.Translate(config.m_sDescription));
+			SCR_HintManagerComponent.ShowCustomHint(message, WidgetManager.Translate("#LF-License_Granted_Title"), 5.0);
 		}
 		
 		Replication.BumpMe();

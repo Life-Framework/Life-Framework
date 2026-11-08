@@ -77,3 +77,6 @@ server/build/
 !server/scripts/*.example.bat
 !server/scripts/*.example.sh
 
+
+# Portable ffmpeg for the filming harness. `node tools/film/film.mjs fetch` writes it.
+tools/film/.bin/

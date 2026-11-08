@@ -1,8 +1,6 @@
-// red-proof: PENDING. The base game data project was missing (Steam restoring it), so the
-// dedicated server could not boot and `tools\cli test` was not run. No failing line observed yet.
-// To prove red: remove the `s_TickOwner && s_TickOwner != this` early return in
-// LF_JailCellComponent.OnPostInit and run `tools\cli test --no-build --tier all`;
-// "a second cell does not start its own jail tick" must fail.
+// red-proof: observed 2026-11-08. With the `s_TickOwner && s_TickOwner != this` early return in
+// LF_JailCellComponent.OnPostInit disabled, `tools\cli test --no-build --tier all` failed
+// robustness/single-jail-tick with "a second cell does not start its own jail tick". Restored, it passes.
 
 // tier: WORLD
 class EL_Test_RobustnessWorld : EL_Test

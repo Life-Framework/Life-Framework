@@ -51,7 +51,9 @@ class EL_ShopComponent : ScriptComponent
 				EL_ShopCatalogItem item = BuildCatalogItem(curated.GetItemPrefab());
 				if (item)
 				{
-					item.m_sDisplayName = curated.GetDisplayName();
+					// An unset curated name keeps the catalog's UIInfo name instead of a blank row.
+					if (!curated.GetDisplayName().IsEmpty())
+						item.m_sDisplayName = curated.GetDisplayName();
 					result.Insert(item);
 				}
 			}
@@ -196,7 +198,7 @@ class EL_ShopComponent : ScriptComponent
 		{
 			EL_Debug.Log("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
 			// Two arguments: formatted on the server, shown as-is on the client.
-			EL_Utils.NotifyEntity(buyer, WidgetManager.Translate("#EL-Item_Bought", GetItemDisplayName(prefab), units), "#EL-Shop_PurchaseSuccessful", 3.0);
+			EL_Utils.NotifyEntity(buyer, WidgetManager.Translate("#EL-Item_Bought", WidgetManager.Translate(GetItemDisplayName(prefab)), units), "#EL-Shop_PurchaseSuccessful", 3.0);
 			return true;
 		}
 
@@ -239,7 +241,7 @@ class EL_ShopComponent : ScriptComponent
 			if (paid > 0)
 				EL_MoneyUtils.RemoveCash(seller, paid);
 			EL_Debug.Log("Shop", string.Format("sell failed (cannot pay out) item=%1 qty=%2 price=%3 paid=%4", prefab, quantity, totalPrice, paid));
-			EL_Utils.NotifyEntity(seller, "#EL-Inventory_Full", "#EL-Shop_PurchaseFailed", 3.0);
+			EL_Utils.NotifyEntity(seller, "#EL-Inventory_Full", "#LF-Shop_SaleFailed_Title", 3.0);
 			return false;
 		}
 
@@ -248,7 +250,7 @@ class EL_ShopComponent : ScriptComponent
 		{
 			EL_MoneyUtils.RemoveCash(seller, paid);
 			EL_Debug.Log("Shop", string.Format("sell failed (nothing to sell) item=%1 qty=%2", prefab, units));
-			EL_Utils.NotifyEntity(seller, "#EL-Shop_SellFailed", "#EL-Shop_PurchaseFailed", 3.0);
+			EL_Utils.NotifyEntity(seller, "#EL-Shop_SellFailed", "#LF-Shop_SaleFailed_Title", 3.0);
 			return false;
 		}
 
@@ -274,8 +276,7 @@ class EL_ShopComponent : ScriptComponent
 		if (curated && !curated.GetDisplayName().IsEmpty())
 			return curated.GetDisplayName();
 
-		string prefabPath = prefab;
-		return prefabPath;
+		return EL_ShopManagerComponent.ResolveDisplayName(prefab);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -292,8 +293,7 @@ class EL_ShopComponent : ScriptComponent
 
 		EL_ShopCatalogItem item = new EL_ShopCatalogItem();
 		item.m_ItemPrefab = prefab;
-		string prefabPath = prefab;
-		item.m_sDisplayName = prefabPath;
+		item.m_sDisplayName = EL_ShopManagerComponent.ResolveDisplayName(prefab);
 
 		int buyPrice;
 		int sellPrice;

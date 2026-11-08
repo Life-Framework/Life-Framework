@@ -1,7 +1,6 @@
-// red-proof: PENDING. The base game data project was missing (Steam restoring it), so the
-// dedicated server could not boot and `tools\cli test` was not run. No failing line observed yet.
-// To prove red: change LF_RobCooldown.IsActive back to `(nowMs - lastMs) < cooldownSec` and run
-// `tools\cli test --no-build --tier fast`; "299 s into a 300 s cooldown is still active" must fail.
+// red-proof: observed 2026-11-08. With LF_RobCooldown.IsActive reverted to `(nowMs - lastMs) < cooldownSec`,
+// `tools\cli test --no-build --tier all` failed robustness/lifetime with "299 s into a 300 s cooldown is still active"
+// and "half a second after a robbery is still active". Restored, it passes.
 
 // tier: LOGIC
 class EL_Test_Robustness : EL_Test
