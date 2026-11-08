@@ -1,5 +1,5 @@
 GenericEntity SurvivalStation {
- coords 142 0 120
+ coords 112 0 262.5
  {
   $grp GenericEntity {
    SurvivalPoint_Food {
@@ -122,8 +122,4 @@ GenericEntity SurvivalStation {
    coords 0 0.9 0.7
   }
  }
-}
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 143 0 120
- m_vSize 3 1 1.5
 }

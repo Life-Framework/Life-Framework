@@ -23,7 +23,8 @@ on:
 
 concurrency:
   group: website-${{ github.ref }}
-  cancel-in-progress: true
+  # PR runs cancel each other; main runs queue, so a busy merge day still deploys.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:

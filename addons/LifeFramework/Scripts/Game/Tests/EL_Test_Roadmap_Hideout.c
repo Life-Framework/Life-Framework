@@ -83,17 +83,17 @@ class EL_Test_Roadmap_HideoutWorld : EL_Test
 			return;
 
 		vector doorOrigin = door.GetOrigin();
-		ctx.EqualFloat(213, doorOrigin[0], 0.1, "the door is at X 213");
+		ctx.EqualFloat(302.4, doorOrigin[0], 0.1, "the door is at X 302.4 (the yard gate on the alley)");
 		ctx.EqualFloat(0, doorOrigin[1], 0.1, "the door is at Y 0");
-		ctx.EqualFloat(120, doorOrigin[2], 0.1, "the door is at Z 120");
+		ctx.EqualFloat(288, doorOrigin[2], 0.1, "the door is at Z 288");
 		vector machineOrigin = machine.GetOrigin();
-		ctx.EqualFloat(216, machineOrigin[0], 0.1, "the machine is at X 216");
+		ctx.EqualFloat(298, machineOrigin[0], 0.1, "the machine is at X 298");
 		ctx.EqualFloat(0, machineOrigin[1], 0.1, "the machine is at Y 0");
-		ctx.EqualFloat(120, machineOrigin[2], 0.1, "the machine is at Z 120");
+		ctx.EqualFloat(302, machineOrigin[2], 0.1, "the machine is at Z 302");
 		vector stashOrigin = stash.GetOrigin();
-		ctx.EqualFloat(219, stashOrigin[0], 0.1, "the stash is at X 219");
+		ctx.EqualFloat(312, stashOrigin[0], 0.1, "the stash is at X 312");
 		ctx.EqualFloat(0, stashOrigin[1], 0.1, "the stash is at Y 0");
-		ctx.EqualFloat(120, stashOrigin[2], 0.1, "the stash is at Z 120");
+		ctx.EqualFloat(296, stashOrigin[2], 0.1, "the stash is at Z 296");
 
 		ctx.True(EL_Component<LF_BreachTargetComponent>.Find(door) == null, "the hideout door is not a breach target");
 		EL_LockComponent doorLock = EL_Component<EL_LockComponent>.Find(door);

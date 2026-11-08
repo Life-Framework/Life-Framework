@@ -1,5 +1,5 @@
 GenericEntity TomatoTrader {
- coords 106 0 140
+ coords 212.5 0 240.6
  {
   $grp GenericEntity {
    TomatoTradeContainer {
@@ -173,9 +173,5 @@ GenericEntity TomatoGather : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoC
    m_bCanGather 1
   }
  }
- coords 106 0 145
-}
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 106 0 142
- m_vSize 2.5 1 3.5
+ coords 154.5 0 296.5
 }

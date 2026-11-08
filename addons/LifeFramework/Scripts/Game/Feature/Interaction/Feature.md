@@ -31,7 +31,7 @@ under the crosshair, never a tag over heads.
 - `LF_CashHandover` / `LF_CashWallet` — the hand-over rule; what the receiver
   cannot take goes back to the giver.
 - `LF_Introductions` — who knows whom by player uid; the `introductions`
-  persistence payload (save version 7).
+  persistence payload (save version 8).
 - `LF_KnownNames` — client cache of names this player was told and the 200 ms
   look check (`NAME_RANGE` 4 m, 15 degree cone) that shows one name.
 - `LF_GiveCashSheet` — the amount sheet (`GiveCashAmount`, `GiveCashButton`).

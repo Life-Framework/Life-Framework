@@ -98,6 +98,19 @@ class LF_QuestState
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: a quest turned in before a restart. World time starts over after a
+	//! restart, so the old turn-in time means nothing; no cooldown carries over.
+	void RestoreTurnedIn(string questId)
+	{
+		m_sQuestId = questId;
+		m_eStatus = LF_EQuestStatus.TURNED_IN;
+		m_mObjectiveProgress.Clear();
+		m_fAcceptedAt = 0;
+		m_fDeadline = -1;
+		m_fLastTurnedInAt = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Whether this state allows re-accepting the quest right now.
 	bool CanReaccept(bool repeatable, float cooldownSeconds, float now)
 	{

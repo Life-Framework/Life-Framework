@@ -1,5 +1,5 @@
 GenericEntity AppleTrader {
- coords 94 0 140
+ coords 197 0 240.6
  {
   $grp GenericEntity {
    AppleTradeContainer {
@@ -215,12 +215,8 @@ Tree AppleGatherTree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domest
    }
   }
  }
- coords 94 0 145
+ coords 130 0 310
 }
 GenericEntity AppleProcessor : "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et" {
- coords 96.2 0 140.4
-}
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 93.5 0 142
- m_vSize 3.2 1 3.5
+ coords 182 0 311.5
 }
