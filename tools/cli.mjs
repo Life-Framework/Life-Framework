@@ -1907,7 +1907,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   e2e [--local|--remote [name]]   two-boot save, restart, and reload proof in this worktree
   pool status|stats|prune       test pool: machines, slots and holders, queue, last runs;
                                 prune removes remote run folders of gone worktrees
-  testbox provision|status|prune  set up / inspect / clean the second test machine
+  testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [ELDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
