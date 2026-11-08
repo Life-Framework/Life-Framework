@@ -16,12 +16,15 @@ harmless to your editor because the worktree is a separate directory.
 
 ## Per-worktree isolation
 
-- **Ports** — every worktree gets a unique `(gamePort, a2sPort)` pair,
-  allocated at creation (2001+N·10 / 17777+N·10). `wt test` boots the dedicated
-  server with `-bindPort`/`-a2sPort`. A log line that mentions 2001 is the
-  engine default text; it does not mean `-bindPort` was ignored. The full
-  suite (`tier=all` and `tier=persistence`) runs one worktree at a time.
-  Tier `fast` does not take that lock.
+- **Server port** — every server boot on this machine listens on 2001. In
+  `-server <world>` mode the engine ignores `-bindPort` (it only overrides a
+  `-config` JSON, and `-config` cannot be combined with `-addons`; checked
+  on 1.9.0.37, log line `Starting RPL server, listening on address 0.0.0.0:2001`).
+  So `test` (every tier), `dev`, `wt e2e`, and `serve` take one machine-wide
+  `server-2001` lock: suites queue instead of colliding with
+  `Unable to start replication`. `serve` fails fast when the lock is held.
+  The per-worktree `(gamePort, a2sPort)` pair from `wt list` is still passed
+  and is what a2s uses.
 - **Resource database** — `resourceDatabase.rdb` is gitignored. `wt new`, `test`,
   `dev`, `serve`, and `wt e2e` copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into
   the worktree when that copy is missing or smaller. Do not commit it.
