@@ -53,7 +53,7 @@ GenericEntity : "{10C26F96EF7A8CF5}Prefabs/Props/Core/Props_Base.et" {
       "default"
      }
      UIInfo SCR_ActionUIInfo "{8FE227ADC4CF5ABA}" {
-      Name "#AR-Inventory_OpenStorage"
+      Name "#LF-HideoutStash_Open"
      }
     }
    }

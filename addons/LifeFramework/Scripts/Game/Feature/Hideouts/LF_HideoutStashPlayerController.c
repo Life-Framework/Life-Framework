@@ -58,7 +58,11 @@ modded class SCR_PlayerController
 		if (!manager.AllowsUser(user, true))
 		{
 			EL_Debug.Info("Hideout", string.Format("stash %1 refused player %2: not a member", manager.GetHideoutId(), GetPlayerId()));
-			EL_NotificationManagerComponent.NotifyPlayer(GetPlayerId(), "#LF-HideoutStash_Title", "#LF-HideoutStash_NotMember", 4.0, EL_ENotificationType.WARNING);
+			string reason = "#LF-HideoutStash_NotMember";
+			if (LF_Hideout.GetOwner(manager.GetHideoutId()).IsEmpty())
+				reason = "#LF-HideoutStash_NoOwner";
+
+			EL_NotificationManagerComponent.NotifyPlayer(GetPlayerId(), "#LF-HideoutStash_Title", reason, 6.0, EL_ENotificationType.WARNING);
 			if (GetGame().GetPlayerController() == this)
 				RpcDo_LF_StashRefused();
 			else

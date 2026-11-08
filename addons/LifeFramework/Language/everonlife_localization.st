@@ -3123,8 +3123,18 @@ CustomStringTableItem "{44869271883D0402}" {
      Comment "Toast title when the hideout stash refuses a player."
     }
     CustomStringTableItem "{6544A393A6C50DA4}" {
+     Id "LF-HideoutStash_NoOwner"
+     Target_en_us "The stash is padlocked. No organization owns this hideout yet."
+     Comment "Toast when a player tries to open the stash of a hideout no organization owns."
+    }
+    CustomStringTableItem "{71BCA78110E0B841}" {
+     Id "LF-HideoutStash_Open"
+     Target_en_us "Open hideout stash (members only)"
+     Comment "Action on the hideout stash crate. Tells a stranger who may open it."
+    }
+    CustomStringTableItem "{0F3071065A46DE99}" {
      Id "LF-HideoutStash_NotMember"
-     Target_en_us "The stash is padlocked. Only members of the organization that owns this hideout can open it."
+     Target_en_us "The stash is padlocked. Only members of the organization that owns this hideout can open it. Ask a member to invite you at the organization registry."
      Comment "Toast when a player who is not in the hideout's organization tries to open its stash."
     }
     CustomStringTableItem "{682DF358EBADD27A}" {
