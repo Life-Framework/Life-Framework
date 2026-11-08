@@ -62,7 +62,7 @@ A locked target is a breach. Plant the charge at `Roadmap_Breach_Door`, `Roadmap
 
 ### Police
 
-Use a police character. At `Roadmap_Police_Desk`, go on duty. At `Roadmap_Police_Armory`, take the kit.
+Use a police character. Go on duty at `PoliceStation_Debug` (x 170, z 120, west of the street): `Roadmap_Police_Desk` has no actions yet (M1-11 moves duty there). At `Roadmap_Police_Armory`, take the kit.
 
 A new officer is patrol: a pistol, fines up to 1000, and no arrest. Senior is a rifle, fines up to 5000, and can arrest. An hour on duty promotes. Promoting yourself should be refused.
 
