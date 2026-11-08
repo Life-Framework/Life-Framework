@@ -961,6 +961,61 @@ class EL_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Playtest grant (EL_SpawnLogic.m_bGrantTestCars): the owner gets two cars from the lot's first
+	//! offers as records, with their keys in hand: the first stored in the garage, the second at the
+	//! impound lot (owned, not stored, no entity: IsImpounded). Nothing spawns in the world. Only for
+	//! an owner with no vehicle yet, so a respawn or a second call grants nothing.
+	//! \return How many cars were granted.
+	static int GrantTestCars(string ownerUid, IEntity holder, notnull array<EL_VehicleOffer> offers, string shopId)
+	{
+		if (ownerUid.IsEmpty() || !holder)
+		{
+			EL_Debug.Error("Vehicle", "test cars not granted: no owner or no body for the keys");
+			return 0;
+		}
+
+		foreach (string knownId : Order())
+		{
+			EL_VehicleRecord known = Records().Get(knownId);
+			if (known && known.m_sOwnerUid == ownerUid)
+				return 0;
+		}
+
+		int granted = 0;
+		for (int i = 0; i < offers.Count() && granted < 2; i++)
+		{
+			EL_VehicleOffer offer = offers[i];
+			if (!offer)
+				continue;
+
+			string id = PersistenceIdUtils.Generate();
+			IEntity key = SpawnKey(id, holder.GetOrigin());
+			if (!key)
+				continue;
+
+			string plate = EL_LicensePlateRegistry.Issue(new EL_LicensePlateGeneratorGeneric(), id);
+			if (!Register(id, ownerUid, id, offer.GetPrefab(), offer.GetSpawnPrefab(), shopId, plate, offer.GetNameKey(), true))
+			{
+				SCR_EntityHelper.DeleteEntityAndChildren(key);
+				continue;
+			}
+
+			GiveKey(holder, key);
+			string place = "impounded";
+			if (granted == 0)
+			{
+				Records().Get(id).m_bStored = true;
+				place = "stored in the garage";
+			}
+
+			granted++;
+			EL_Debug.Info("Vehicle", string.Format("test car %1 plate=%2 for %3: %4", offer.GetNameKey(), plate, ownerUid, place));
+		}
+
+		return granted;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void GiveKey(IEntity buyer, IEntity key)
 	{
 		if (!buyer || !key)
