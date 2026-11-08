@@ -31,7 +31,16 @@ const MENU_ACTIONS = new Set([
   "EL_OpenDebugMenu",
 ]);
 
+// --client <n> (or setBoxes) points every command at one session client's
+// profile instead of the Workbench and default game profiles.
+let boxOverride = null;
+
+export function setBoxes(dirs) {
+  boxOverride = dirs && dirs.length ? dirs : null;
+}
+
 export function profileBoxes() {
+  if (boxOverride) return boxOverride;
   const docs = join(homedir(), "Documents", "My Games");
   return [
     join(docs, "ArmaReforgerWorkbench", "profile", "agent-box"),
@@ -64,6 +73,9 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "look") {
     return `${id} look`;
+  }
+  if (spec.verb === "state") {
+    return `${id} state`;
   }
   if (spec.verb === "ui") {
     return `${id} ui`;
@@ -360,6 +372,8 @@ function pause(ms) {
 }
 
 export function logRoots() {
+  // A session client's box is <profile>\profile\agent-box; its logs are <profile>\logs.
+  if (boxOverride) return boxOverride.map((box) => join(dirname(dirname(box)), "logs"));
   const docs = join(homedir(), "Documents", "My Games");
   return [join(docs, "ArmaReforgerWorkbench", "logs"), join(docs, "ArmaReforger", "logs")];
 }
@@ -428,6 +442,7 @@ export function runFlow(lines) {
     }
     if (verb === "stand") result = sendCommand({ verb: "stand", entityName: rest[0] });
     else if (verb === "look") result = sendCommand({ verb: "look" });
+    else if (verb === "state") result = sendCommand({ verb: "state" }, 10000);
     else if (verb === "ui") result = sendCommand({ verb: "ui" });
     else if (verb === "click") result = sendCommand({ verb: "click", widget: rest[0], index: rest[1] });
     else if (verb === "press") {
@@ -615,6 +630,13 @@ function selftest() {
   if (interact !== "9 interact confirm") throw new Error(interact);
   const stand = buildLine(10, { verb: "stand", entityName: "ATM_Debug" });
   if (stand !== "10 stand ATM_Debug") throw new Error(stand);
+  const state = buildLine(11, { verb: "state" });
+  if (state !== "11 state") throw new Error(state);
+  setBoxes(["X"]);
+  const boxes = profileBoxes();
+  setBoxes(null);
+  if (boxes.length !== 1 || boxes[0] !== "X") throw new Error("setBoxes did not target one client box");
+  if (profileBoxes().length !== 2) throw new Error("setBoxes(null) did not restore the default boxes");
   const list = pads();
   const atm = findPad(list, "ATM_Debug");
   if (!atm || !atm.actions.includes("EL_ATMAction")) throw new Error("ATM_Debug missing from layer catalog");
@@ -936,6 +958,18 @@ kit enters play only when a session is not already up.
 `);
 }
 
+// Pulls --client <n> out of argv and points the command files at that
+// session client (agent-box/session.mjs).
+export async function applyClientFlag(argv) {
+  const i = argv.indexOf("--client");
+  if (i === -1) return argv;
+  const n = Number(argv[i + 1]);
+  if (!Number.isInteger(n) || n < 1) throw new Error("--client needs a client number");
+  const { clientBox, sessionDir } = await import("./session.mjs");
+  setBoxes([clientBox(sessionDir(), n)]);
+  return [...argv.slice(0, i), ...argv.slice(i + 2)];
+}
+
 function main(argv) {
   const [cmd, ...rest] = argv;
   try {
@@ -983,6 +1017,9 @@ function main(argv) {
     }
     if (cmd === "look") {
       return printResult(sendCommand({ verb: "look" }));
+    }
+    if (cmd === "state") {
+      return printResult(sendCommand({ verb: "state" }, 10000));
     }
     if (cmd === "ui") {
       return printResult(sendCommand({ verb: "ui" }));
@@ -1069,5 +1106,11 @@ function main(argv) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  process.exit(main(process.argv.slice(2)));
+  applyClientFlag(process.argv.slice(2)).then(
+    (argv) => process.exit(main(argv)),
+    (err) => {
+      console.error(err.message);
+      process.exit(1);
+    },
+  );
 }

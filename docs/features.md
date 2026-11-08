@@ -1113,6 +1113,18 @@
   `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
   tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
   (verified 2026-10-11)
+- ✅ Multi-client on a dedicated server (M1-05): `node agent-box/session.mjs up --clients 2`
+  boots the bare DebugWorld server plus two windowed game clients on this PC, each with its
+  own `-profile`; `harness.mjs --client <n>` drives one. `stand`, `use`, and the new `state`
+  answer from the server over an owner RPC, so a refusal arrives as `error dev_gate_closed`
+  instead of a timeout. A client's `stand` moves the body on the owning client, because a
+  server-side move is overwritten by the owner's movement. `state` reads faction, duty,
+  wanted, rank, cash carried, bank balance, job, and organization on the server and adds the
+  client's last toast. A client starts its poll from `OnPlayerRegistered`, because
+  `OnPlayerConnected` runs only on the server. `session.mjs proof`: client 1 robs
+  `Roadmap_Fuel_Till`, client 2 (on-duty police) gets `#EL-Police_Alert_Robbery`
+  (verified 2026-11-08). LOGIC test `harness/dev-gate-dedicated` pins the stand refusal on the
+  playtest mission.
 
 ### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
 - ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera
