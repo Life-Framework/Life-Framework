@@ -1,0 +1,28 @@
+FrameWidgetClass "{6C1E5A3F9B2D4E72}" {
+ Name "KnownNameRoot"
+ Slot FrameWidgetSlot "{6C1E5A3F9B2D4E73}" {
+  Anchor 0 0 1 1
+ }
+ Visible 0
+ {
+  TextWidgetClass "{6C1E5A3F9B2D4E74}" {
+   Name "Name"
+   Slot FrameWidgetSlot "{6C1E5A3F9B2D4E75}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionY 48
+    OffsetTop 48
+    SizeToContent 1
+   }
+   Pivot 0.5 0
+   Color 0.937 0.925 0.882 0.9
+   Text ""
+   "Font Size" 20
+   "Min Font Size" 20
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6C1E5A3F9B2D4E76}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+ }
+}

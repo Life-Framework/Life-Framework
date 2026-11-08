@@ -35,18 +35,42 @@ EL_PlayerJobComponent "{A68F47E449868508}" {
     UserActionContext "{8CDF2A893F14F514}" {
      ContextName "EL_ID"
      Position PointInfo "{03D908438AC9336D}" {
-      Offset 0 1.5 0
+      Offset 0 1.3 0
      }
-     Radius 0.4
+     Radius 0.6
     }
    }
    additionalActions + {
+    LF_IntroduceAction "{9A4FE806F7DEBA95}" {
+     ParentContextList {
+      "EL_ID"
+     }
+     UIInfo UIInfo "{12E668436A1DEDF7}" {
+      Name "#LF-Interact_Introduce"
+     }
+    }
     EL_ShowIDAction "{40BA040D8FCC6416}" {
      ParentContextList {
       "EL_ID"
      }
      UIInfo UIInfo "{40BA040D8FCC6421}" {
       Name "#EL-ShowID_DisplayName"
+     }
+    }
+    LF_GiveCashAction "{31C13BCEB47B5A51}" {
+     ParentContextList {
+      "EL_ID"
+     }
+     UIInfo UIInfo "{D3E2FE9CB8DA5B9B}" {
+      Name "#LF-Interact_GiveCash"
+     }
+    }
+    LF_GiveItemAction "{614AABB009589D58}" {
+     ParentContextList {
+      "EL_ID"
+     }
+     UIInfo UIInfo "{19F99F43F9A775C7}" {
+      Name "#LF-Interact_GiveItem"
      }
     }
     EL_ConfiscateAction "{5D4BEB8233CF0FEC}" {
@@ -64,6 +88,24 @@ EL_PlayerJobComponent "{A68F47E449868508}" {
      UIInfo UIInfo "{56C5730E07320FFE}" {
       Name "#EL-Jail_Arrest"
      }
+    }
+    LF_PlayerRoleAction "{2B55172B79B0124D}" {
+     ParentContextList {
+      "EL_ID"
+     }
+     UIInfo UIInfo "{335E6219F4ABD75B}" {
+      Name "#LF-Interact_RoleSlot"
+     }
+     m_sSlot "fine"
+    }
+    LF_PlayerRoleAction "{E8381F5D59305253}" {
+     ParentContextList {
+      "EL_ID"
+     }
+     UIInfo UIInfo "{AA37217A304B9C5C}" {
+      Name "#LF-Interact_RoleSlot"
+     }
+     m_sSlot "org_invite"
     }
    }
   }
