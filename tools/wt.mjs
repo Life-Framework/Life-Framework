@@ -292,11 +292,20 @@ export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs 
   }
 }
 
-export function releaseLock(root, name) {
+// transferLock: hand a held lock to another process (a detached server), so
+// the lock stays held while that process lives and goes stale when it exits.
+export function transferLock(root, name, pid) {
+  const file = join(ensureHub(root), "locks", `${name}.lock`);
+  const info = JSON.parse(readFileSync(file, "utf8"));
+  if (info.pid !== process.pid) throw new Error(`lock '${name}' is not held by this process`);
+  writeFileSync(file, JSON.stringify({ ...info, pid, at: new Date().toISOString() }));
+}
+
+export function releaseLock(root, name, owner = process.pid) {
   const file = join(ensureHub(root), "locks", `${name}.lock`);
   try {
     const info = JSON.parse(readFileSync(file, "utf8"));
-    if (info.pid !== process.pid) return;
+    if (info.pid !== owner) return;
   } catch {
     return;
   }

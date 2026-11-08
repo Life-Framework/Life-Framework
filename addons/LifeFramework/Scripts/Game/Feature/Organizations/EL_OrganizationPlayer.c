@@ -6,6 +6,18 @@
 //------------------------------------------------------------------------------------------------
 class EL_OrganizationPlayer
 {
+	//! How far the player may stand from the desk's origin when the server moves fund cash.
+	//! The desk action shows at 3 m; the extra 2 m absorbs movement and latency.
+	static const float DESK_RANGE = 5.0;
+
+	//------------------------------------------------------------------------------------------------
+	//! \param origin World position of the player.
+	//! \return true when an organization desk stands within DESK_RANGE of origin.
+	static bool IsAtDesk(vector origin)
+	{
+		return EL_ActionSite.IsNear(origin, DESK_RANGE, "EL_OrganizationDeskAction");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	static string CharacterId(IEntity user)
 	{
