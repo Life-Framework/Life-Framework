@@ -37,6 +37,14 @@ export type Issue = {
   excerpt: string;
   wave: number | null;
   parent: string | null;
+  // From the body's sections (build-content.mjs issueBrief); empty when a body has none.
+  why?: string;
+  work?: string[];
+  proof?: string[];
+  dependsOn?: number[];
+  comments?: number;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type Milestone = {

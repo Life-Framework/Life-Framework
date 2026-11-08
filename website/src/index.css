@@ -994,10 +994,6 @@ button.tree-node:hover .tree-node__dot {
   font-size: 0.875rem;
   line-height: 1.6;
 }
-.tree-menu__action {
-  width: 100%;
-  margin-top: 1rem;
-}
 .tree-menu__progress {
   margin-top: 0.75rem;
   font-family: var(--font-mono);
@@ -1094,4 +1090,99 @@ button.tree-node:hover .tree-node__dot {
     width: auto;
     max-height: 62%;
   }
+}
+
+/* Roadmap card sections: why, what to build, done when, dependencies, people. */
+.tree-menu {
+  width: min(26rem, calc(100% - 1.5rem));
+}
+.tree-menu__section {
+  margin-top: 1rem;
+}
+.tree-menu__label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+.tree-menu__section .tree-menu__copy {
+  margin-top: 0.3rem;
+}
+.tree-menu__bullets {
+  margin-top: 0.35rem;
+  padding-left: 1.1rem;
+  list-style: square;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.tree-menu__bullets li + li {
+  margin-top: 0.3rem;
+}
+.tree-menu__note {
+  margin-top: 0.8rem;
+  padding: 0.5rem 0.7rem;
+  border-left: 3px solid var(--stamp);
+  background: var(--inset);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+.tree-menu__list--tight {
+  margin-top: 0.35rem;
+}
+.tree-menu__people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  margin-top: 0.4rem;
+  font-size: 0.875rem;
+}
+.tree-menu__people a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink);
+}
+.tree-menu__people img {
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+}
+.tree-menu__activity {
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-2);
+}
+.tree-menu__actions {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.tree-menu__start {
+  display: grid;
+  gap: 0.2rem;
+  width: 100%;
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  background: var(--inset);
+  border: 2px dashed var(--ink);
+  border-radius: 3px;
+  color: var(--ink);
+}
+.tree-menu__start:hover {
+  border-style: solid;
+}
+.tree-menu__start-title {
+  font-weight: 600;
+  line-height: 1.3;
+}
+.tree-menu__start-meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-2);
 }

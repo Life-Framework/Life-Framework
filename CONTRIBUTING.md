@@ -14,7 +14,8 @@ can help match your interests to an issue.
 
 Start with a [good first issue](https://github.com/Life-Framework/Life-Framework/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22)
 or an open branch on the [Tree of Life](https://life-framework.org/roadmap), the
-roadmap map of every issue (the #roadmap forum on Discord mirrors it). Issues
+roadmap map of every issue. Each open issue also has a discussion thread in the
+#roadmap forum on Discord. Issues
 are the source of truth for the files, boundaries, and proof expected.
 
 Comment `/claim` on the issue to take it; a bot adds you as an assignee. Others

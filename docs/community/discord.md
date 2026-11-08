@@ -22,8 +22,8 @@ how-to-contribute texts; nothing else is announced from it.
 | COMMUNITY | #general | Everyone | 5 s slowmode. Links and uploads only for Trusted, Contributor, staff |
 | COMMUNITY | #feedback | Everyone | Forum. Tags Bug, Idea, Question, Playtest (one required). 10 min between new posts |
 | COMMUNITY | #showcases | Trusted, Contributor, staff open posts | Forum. Everyone can reply |
-| PROJECT | #github | GitHub Actions merged-PR feed (setup pending) | Read only for people |
-| PROJECT | #roadmap | New GitHub-synced Forum (setup pending) | One read-only post per roadmap pillar, mirroring the website's Tree of Life; click an issue and comment `/claim` on GitHub to join |
+| PROJECT | #github | GitHub Actions merged-PR feed (webhook) | Read only for people |
+| PROJECT | #roadmap | Forum synced from GitHub by the bot | One thread per roadmap issue; everyone can reply, only the bot opens threads. Tags: the seven pillars, Needs a hand, In progress, Done |
 | CONTRIBUTORS | #contributor-signups | Staff | Visible to everyone. How to contribute through GitHub |
 | CONTRIBUTORS | #contributors | Contributor, Advisor, staff | Hidden from everyone else |
 | CONTRIBUTORS | #code-review | Contributor, Advisor, staff | Hidden from everyone else |
@@ -65,39 +65,51 @@ The `discord-merged-pr` workflow posts only when a pull request is merged. It
 includes the PR description and displays up to nine GitHub-hosted images from
 that description inline. Mentions in PR descriptions are suppressed.
 
-To connect it, create an incoming webhook for #github and save its URL as the
-repository Actions secret `DISCORD_WEBHOOK_URL`. Disable the old GitHub feed in
-the channel to avoid duplicate or unfiltered notifications.
+It posts through the #github webhook "Merged pull requests", stored as the
+repository Actions secret `DISCORD_WEBHOOK_URL`. The repository webhook that
+sent every GitHub event to #github is turned off. Without the secret the
+workflow passes with a notice.
 
 ## Roadmap board
 
 GitHub issues in M milestones are the source of truth. Each issue sits in the
-Tree of Life by two fields: its `topic:` label is the pillar, and a
-`Parent: <System>` line at the top of its body is the system. The website reads
-them from GitHub when it builds; `website.yml` also rebuilds immediately when a
-milestone or one of its issues changes. `discord-roadmap-sync` creates or updates
-one Forum post per pillar, grouped by system, with open issues first and a link
-to the full tree on life-framework.org. Every issue links to GitHub. Click an
-issue and comment `/claim` on GitHub to join, or comment `/unclaim` to step back.
-Each collaborator can comment `/claim` to add themselves as an assignee (up to
-GitHub's limit of ten). An assigned issue stays open to more helpers. Assignment
-shows who signed up, not whether they are currently active. The website and
-forum show everyone assigned; `/claim` and `/unclaim` trigger an immediate sync.
-The workflow also refreshes every five days to keep Discord's auto-archived
-forum posts visible. The sync manages only the bot's own posts; a post whose
-pillar disappears is renamed `[ARCHIVED]`, archived, and locked, never deleted.
-Preview the posts without Discord:
-`GITHUB_REPOSITORY=Life-Framework/Life-Framework node tools/discord-mcp/sync-roadmap.mjs --dry-run`.
-Until the secret and variable below exist, the workflow passes with a notice.
+Tree of Life (life-framework.org/roadmap) by two fields: its `topic:` label is
+the pillar, and a `Parent: <System>` line at the top of its body is the system.
+The website reads them when it builds; `website.yml` rebuilds when a milestone
+or one of its issues changes.
 
-Create a public Forum channel named #roadmap under PROJECT. Let @everyone view
-it but deny them `Send Messages`; allow the Life Framework bot to view, send,
-read history, and manage threads. Add the forum's channel ID as the repository
-Actions variable `DISCORD_ROADMAP_FORUM_ID`, and the bot token as the Actions
-secret `DISCORD_BOT_TOKEN`. Run `discord-roadmap-sync` once with **Run workflow**
-to seed the board. The bot token needs access to the channel and `Manage Threads`
-to update archived posts. The workflow does not create or delete Discord
-channels.
+`discord-roadmap-sync` mirrors the same issues into the #roadmap forum, one
+thread per issue, so each piece of work has its own place to discuss:
+
+- An open issue gets a thread named `#<number> <title>`. The bot's first
+  message is the issue card: status, milestone, pillar and system, why, what
+  to build, done when, what it waits on, who is on it, and how to join. Every
+  sync edits it in place.
+- Tags follow the issue: its pillar plus Needs a hand, In progress, or Done.
+  Tags are moderated, so only the bot and staff change them.
+- Everyone can reply in a thread; only the bot opens threads.
+- A closed issue's thread is tagged Done and archived. A reply reopens it.
+- An issue that leaves the roadmap has its thread archived and locked, never
+  deleted. The sync touches only threads the bot opened.
+
+To take an issue, comment `/claim` on it on GitHub (`claim-issue` workflow). A
+bot assigns you, and up to ten people can claim one issue; `/unclaim` steps
+back. Assignment shows who signed up, not whether they are active. `/claim` and
+`/unclaim` trigger an immediate website and forum sync. The sync also runs on
+every issue or milestone change and every five days.
+
+Setup, done 2026-11-08: the forum is #roadmap under PROJECT (channel
+1569083962628767784). @everyone can view, read history, react, and send in
+threads, but cannot open posts. The bot can view, send, manage threads, and
+manage the channel (for the tags). The repository has the Actions variable
+`DISCORD_ROADMAP_FORUM_ID` and the secret `DISCORD_BOT_TOKEN`. Without them the
+workflow passes with a notice.
+
+Preview the cards without Discord:
+`GITHUB_REPOSITORY=Life-Framework/Life-Framework node tools/discord-mcp/sync-roadmap.mjs --dry-run`.
+For a real run, set `DISCORD_BOT_TOKEN`, `GITHUB_TOKEN`, and
+`DISCORD_ROADMAP_FORUM_ID` in a terminal, or use **Run workflow** on
+`discord-roadmap-sync`.
 
 ## Removed on 2026-11-08
 

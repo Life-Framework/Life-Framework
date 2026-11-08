@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
-import { githubData, issueStatus, issueTopic, splitTitle, type Issue, type Milestone } from "@/lib/content";
+import { DISCORD_URL, REPO_URL, formatDate, githubData, issueStatus, issueTopic, splitTitle, type Issue, type Milestone } from "@/lib/content";
 
 // Milestone and epic markers are shown as badges, so drop them from the display title.
 function titleOf(issue: Issue) {
   const { code, title } = splitTitle(issue.title);
-  return { code, title: title.replace(/^M\d+\s+(?:epic|flagship):\s*/i, "").replace(/\s*\(M\d+\)$/, "") };
+  const t = title.replace(/^M\d+\s+(?:epic|flagship):\s*/i, "").replace(/\s*\(M\d+\)$/, "");
+  return { code, title: t.charAt(0).toUpperCase() + t.slice(1) };
 }
 
 /*
@@ -200,11 +201,59 @@ function IssueRow({ item, onPick }: { item: Item; onPick: (item: Item) => void }
   );
 }
 
+// An open issue whose dependencies are all done (or outside the roadmap) can start today.
+function ready(item: Item, byNumber: Map<number, Item>) {
+  return (item.issue.dependsOn ?? []).every((n) => byNumber.get(n)?.issue.state !== "open");
+}
+
+function StartHere({ items, byNumber, onPick }: { items: Item[]; byNumber: Map<number, Item>; onPick: (item: Item) => void }) {
+  const open = items.filter((i) => stateOf(i.issue) === "open");
+  const pick = open.find((i) => ready(i, byNumber)) ?? open[0];
+  if (!pick) return null;
+  const { title } = titleOf(pick.issue);
+  return (
+    <button type="button" className="tree-menu__start" onClick={() => onPick(pick)}>
+      <span className="tree-menu__label">Start here</span>
+      <span className="tree-menu__start-title">{title}</span>
+      <span className="tree-menu__start-meta">
+        {pick.milestone.id} · {ready(pick, byNumber) ? "nothing blocking it" : "waits on other work"} →
+      </span>
+    </button>
+  );
+}
+
+function Related({ label, numbers, byNumber, onPick }: { label: string; numbers: number[]; byNumber: Map<number, Item>; onPick: (item: Item) => void }) {
+  if (!numbers.length) return null;
+  return (
+    <div className="tree-menu__section">
+      <p className="tree-menu__label">{label}</p>
+      <ul className="tree-menu__list tree-menu__list--tight">
+        {numbers.map((n) => {
+          const dep = byNumber.get(n);
+          if (dep) return <IssueRow item={dep} key={n} onPick={onPick} />;
+          return (
+            <li key={n}>
+              <a className="tree-menu__row" href={`${REPO_URL}/issues/${n}`} target="_blank" rel="noreferrer">
+                <span className="tree-menu__row-dot" aria-hidden="true">
+                  #
+                </span>
+                <span className="tree-menu__row-title">Issue #{n} (outside the roadmap)</span>
+                <span className="tree-menu__row-ms">↗</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 function Menu({
   pillar,
   system,
   item,
   filter,
+  byNumber,
   onPick,
   onPickSystem,
   onClose,
@@ -213,6 +262,7 @@ function Menu({
   system: System | undefined;
   item: Item | undefined;
   filter: Filter;
+  byNumber: Map<number, Item>;
   onPick: (item: Item) => void;
   onPickSystem: (system: System) => void;
   onClose: () => void;
@@ -224,9 +274,15 @@ function Menu({
   );
 
   if (item) {
-    const state = stateOf(item.issue);
-    const status = issueStatus(item.issue);
-    const { code, title } = titleOf(item.issue);
+    const issue = item.issue;
+    const state = stateOf(issue);
+    const status = issueStatus(issue);
+    const { code, title } = titleOf(issue);
+    const deps = issue.dependsOn ?? [];
+    const blocking = deps.filter((n) => byNumber.get(n)?.issue.state === "open");
+    const unlocks = [...byNumber.values()].filter((other) => (other.issue.dependsOn ?? []).includes(issue.number)).map((other) => other.issue.number);
+    const why = issue.why || issue.excerpt;
+    const labels = issue.labels.filter((l) => !l.startsWith("topic:") && !/^m\d+$/i.test(l));
     return (
       <aside className="tree-menu" aria-label="Issue details">
         {close}
@@ -237,29 +293,97 @@ function Menu({
         <p className="tree-menu__tags">
           <span className={`tree-menu__state tree-menu__state--${state}`}>{status.label}</span>
           <span>{item.milestone.id}</span>
-          <span>{code ?? `#${item.issue.number}`}</span>
+          <span>{code ?? `#${issue.number}`}</span>
+          {issue.wave && <span>Wave {issue.wave}</span>}
+          {labels.slice(0, 3).map((l) => (
+            <span key={l}>{l}</span>
+          ))}
         </p>
-        {item.issue.excerpt && <p className="tree-menu__copy">{item.issue.excerpt}</p>}
+
+        {state === "open" && blocking.length > 0 && (
+          <p className="tree-menu__note">
+            Waits on {plural(blocking.length, "open issue")} below. You can still claim it and start on the parts that do not depend on them.
+          </p>
+        )}
+
+        {why && (
+          <div className="tree-menu__section">
+            <p className="tree-menu__label">Why</p>
+            <p className="tree-menu__copy">{why}</p>
+          </div>
+        )}
+        {(issue.work?.length ?? 0) > 0 && (
+          <div className="tree-menu__section">
+            <p className="tree-menu__label">{state === "done" ? "What was built" : "What to build"}</p>
+            <ul className="tree-menu__bullets">
+              {issue.work!.map((w) => (
+                <li key={w}>{w}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {(issue.proof?.length ?? 0) > 0 && (
+          <div className="tree-menu__section">
+            <p className="tree-menu__label">Done when</p>
+            <ul className="tree-menu__bullets">
+              {issue.proof!.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <Related label="Waits on" numbers={deps} byNumber={byNumber} onPick={onPick} />
+        <Related label="Unlocks" numbers={unlocks} byNumber={byNumber} onPick={onPick} />
+
+        {issue.assignees.length > 0 && (
+          <div className="tree-menu__section">
+            <p className="tree-menu__label">{state === "done" ? "Built by" : "On it"}</p>
+            <ul className="tree-menu__people">
+              {issue.assignees.map((login) => (
+                <li key={login}>
+                  <a href={`https://github.com/${login}`} target="_blank" rel="noreferrer">
+                    <img src={`https://github.com/${login}.png?size=48`} alt="" width={24} height={24} loading="lazy" />
+                    {login}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <p className="tree-menu__activity">
+          {state === "done" && issue.closedAt
+            ? `Closed ${formatDate(issue.closedAt)}`
+            : issue.updatedAt
+              ? `Updated ${formatDate(issue.updatedAt)}`
+              : null}
+          {issue.comments ? ` · ${plural(issue.comments, "comment")}` : ""}
+        </p>
+
         {state === "open" && (
           <ol className="tree-menu__steps">
-            <li>Read the issue on GitHub.</li>
+            <li>Read the full issue on GitHub: files, scope, and how to start.</li>
             <li>
-              Comment <code>/claim</code>. A bot assigns you.
+              Comment <code>/claim</code>. A bot assigns you, and the tree updates.
             </li>
-            <li>
-              Changed your mind? Comment <code>/unclaim</code>.
-            </li>
+            <li>Ask questions in the issue's thread in the Discord #roadmap forum.</li>
           </ol>
         )}
         {state === "in-progress" && (
           <p className="tree-menu__copy">
-            <strong>{item.issue.assignees.join(", ")}</strong> {item.issue.assignees.length === 1 ? "is" : "are"} on this. Up to
-            ten people can work together: comment <code>/claim</code> to join.
+            Up to ten people can work on one issue. Comment <code>/claim</code> to join, and talk it through in the Discord #roadmap forum.
           </p>
         )}
-        <a className="btn btn-primary tree-menu__action" href={item.issue.url} target="_blank" rel="noreferrer">
-          {state === "done" ? "See what shipped" : state === "open" ? "Pick this up" : "Join the team"} ↗
-        </a>
+        <div className="tree-menu__actions">
+          <a className="btn btn-primary" href={issue.url} target="_blank" rel="noreferrer">
+            {state === "done" ? "See what shipped" : state === "open" ? "Pick this up" : "Join the team"} ↗
+          </a>
+          {state !== "done" && (
+            <a className="btn" href={DISCORD_URL} target="_blank" rel="noreferrer">
+              Discuss on Discord ↗
+            </a>
+          )}
+        </div>
       </aside>
     );
   }
@@ -272,6 +396,7 @@ function Menu({
         <p className="tree-menu__crumbs">{pillar.name}</p>
         <h3 className="tree-menu__title">{system.name}</h3>
         <Progress items={system.items} />
+        <StartHere items={system.items} byNumber={byNumber} onPick={onPick} />
         <ul className="tree-menu__list">
           {(shown.length ? shown : system.items).map((i) => (
             <IssueRow item={i} key={i.issue.number} onPick={onPick} />
@@ -281,13 +406,26 @@ function Menu({
     );
   }
 
+  const milestones = [...new Set(pillar.items.map((i) => i.milestone.id))].sort();
   return (
     <aside className="tree-menu" aria-label="Pillar details">
       {close}
       <p className="tree-menu__crumbs">Pillar</p>
       <h3 className="tree-menu__title">{pillar.name}</h3>
       <Progress items={pillar.items} />
-      <ul className="tree-menu__list">
+      <p className="tree-menu__tags">
+        {milestones.map((id) => {
+          const inMs = pillar.items.filter((i) => i.milestone.id === id);
+          return (
+            <span key={id}>
+              {id}: {inMs.filter((i) => i.issue.state === "closed").length}/{inMs.length}
+            </span>
+          );
+        })}
+      </p>
+      <StartHere items={pillar.items} byNumber={byNumber} onPick={onPick} />
+      <p className="tree-menu__label tree-menu__section">Systems</p>
+      <ul className="tree-menu__list tree-menu__list--tight">
         {pillar.systems.map((s) => {
           const open = s.items.filter((i) => stateOf(i.issue) === "open").length;
           return (
@@ -298,7 +436,7 @@ function Menu({
                 </span>
                 <span className="tree-menu__row-title">{s.name}</span>
                 <span className={`tree-menu__row-ms ${open ? "tree-menu__row-ms--open" : ""}`}>
-                  {open ? `${open} open` : plural(s.items.length, "item")}
+                  {open ? `${open} open` : `${s.items.filter((i) => i.issue.state === "closed").length}/${s.items.length} done`}
                 </span>
               </button>
             </li>
@@ -313,6 +451,7 @@ export function RoadmapTree() {
   const pillars = collectPillars();
   const { placed, width, height, rootX } = layout(pillars);
   const allItems = pillars.flatMap((p) => p.items);
+  const byNumber = new Map(allItems.map((i) => [i.issue.number, i]));
   const counts: Record<Filter, number> = {
     all: allItems.length,
     open: allItems.filter((i) => stateOf(i.issue) === "open").length,
@@ -698,6 +837,7 @@ export function RoadmapTree() {
               system={selSystem}
               item={selItem}
               filter={filter}
+              byNumber={byNumber}
               onPick={(item) => pickIssue(item)}
               onPickSystem={(s) => setSelection({ pillar: selPillar.name, system: s.name, issue: null })}
               onClose={() => setSelection(null)}

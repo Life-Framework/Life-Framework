@@ -1,81 +1,106 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { archivedThreadName, buildPillars, issuePillar, issueSystem, renderPillarPost } from "./sync-roadmap.mjs";
+import {
+  displayTitle,
+  issuePillar,
+  issueState,
+  issueSystem,
+  renderIssueCard,
+  threadIssueNumber,
+  threadName,
+  wantedTags,
+} from "./sync-roadmap.mjs";
 
 const m1 = { number: 1, title: "M1: Playtest Town" };
-const m2 = { number: 2, title: "M2" };
-const issue = (number, title, { state = "open", topic = "Law & Order", parent = "Police & Response", assignees = [] } = {}) => ({
-  number,
-  title,
-  state,
-  labels: topic ? [{ name: `topic:${topic}` }, { name: "enhancement" }] : [],
-  body: parent ? `Parent: ${parent}\n\nPart of **M1 Playtest Town**.` : "No parent line.",
-  assignees: assignees.map((login) => ({ login })),
-  html_url: `https://github.com/Life-Framework/Life-Framework/issues/${number}`,
+const body = `Parent: Police & Response
+
+Part of **M1 Playtest Town**. Wave 2.
+
+## Why
+The duty desk has no components, so nobody can go on duty.
+
+## Work
+- Clock in / clock out at the desk.
+- Wanted board shows posters.
+  - nested detail that is skipped
+
+## Depends on
+- M1-00 (#85)
+- #83 (wanted list RPC)
+
+## Acceptance proof
+- **Suite:** WORLD police/station. Red-proof.
+- **Clip:** Clock in ÔåÆ board.
+`;
+const issue = (overrides = {}) => ({
+  number: 96,
+  title: "M1-11 Police station on the street: duty desk and wanted board",
+  state: "open",
+  labels: [{ name: "topic:Law & Order" }, { name: "scope" }],
+  body,
+  assignees: [],
+  html_url: "https://github.com/Life-Framework/Life-Framework/issues/96",
+  ...overrides,
 });
 
-test("pillar and system come from the topic label and the Parent line, like the website", () => {
-  assert.equal(issuePillar(issue(1, "x")), "Law & Order");
-  assert.equal(issuePillar(issue(1, "x", { topic: null })), "Unsorted");
-  assert.equal(issuePillar({ labels: [{ name: "topic:A" }, { name: "topic:B" }] }), "Multiple topics");
-  assert.equal(issueSystem(issue(1, "x")), "Police & Response");
-  assert.equal(issueSystem({ body: "  parent: **Town Foundation**" }), "Town Foundation");
-  assert.equal(issueSystem(issue(1, "x", { parent: null })), "General");
+test("pillar, system, and state come from the topic label, Parent line, and assignees", () => {
+  assert.equal(issuePillar(issue()), "Law & Order");
+  assert.equal(issuePillar(issue({ labels: [] })), null);
+  assert.equal(issueSystem(issue()), "Police & Response");
+  assert.equal(issueSystem(issue({ body: "" })), "General");
+  assert.equal(issueState(issue()), "open");
+  assert.equal(issueState(issue({ assignees: [{ login: "alex" }] })), "in-progress");
+  assert.equal(issueState(issue({ state: "closed" })), "done");
 });
 
-test("pillars follow the website order and systems follow their earliest issue", () => {
-  const pillars = buildPillars([
-    { milestone: m1, issue: issue(30, "World item", { topic: "World & Travel", parent: "Travel" }) },
-    { milestone: m2, issue: issue(5, "Later law", { parent: "Moderation" }) },
-    { milestone: m1, issue: issue(9, "Early law") },
+test("thread names carry the issue number as their key and fit Discord's limit", () => {
+  assert.equal(threadName(issue()), "#96 Police station on the street: duty desk and wanted board");
+  assert.equal(threadIssueNumber(threadName(issue())), 96);
+  assert.equal(threadIssueNumber("Somebody's own post"), null);
+  assert.ok(threadName(issue({ title: "x".repeat(200) })).length <= 100);
+  assert.equal(displayTitle("M2 epic: Medic (downed state) (M2)"), "Medic (downed state)");
+});
+
+test("an open issue's card explains the work, the proof, what it waits on, and how to join", () => {
+  const dep = issue({ number: 85, title: "M1-00 Split the street into site layers", state: "closed", html_url: "https://github.com/x/y/issues/85" });
+  const card = renderIssueCard(issue(), m1, new Map([[85, dep]]), "2026-11-08T05:17:00.000Z");
+  const d = card.embed.description;
+
+  assert.equal(card.state, "open");
+  assert.equal(card.pillar, "Law & Order");
+  assert.equal(card.embed.title, "Police station on the street: duty desk and wanted board");
+  assert.match(d, /🙋 \*\*Needs a hand\*\* · M1 · Law & Order \/ Police & Response/);
+  assert.match(d, /\*\*Why\*\*\nThe duty desk has no components/);
+  assert.match(d, /• Clock in \/ clock out at the desk\./);
+  assert.match(d, /Roadmap_Police_Desk|duty desk has no components/);
+  assert.doesNotMatch(d, /nested detail/);
+  assert.match(d, /\*\*Done when\*\*\n• Suite: WORLD police\/station/);
+  assert.match(d, /Clock in → board/, "mis-encoded arrows are repaired");
+  assert.match(d, /✅ \[#85 Split the street into site layers\]\(https:\/\/github\.com\/x\/y\/issues\/85\)/);
+  assert.match(d, /• #83/);
+  assert.match(d, /Comment `\/claim` on the GitHub issue/);
+  assert.match(d, /talk it through here in this thread/);
+  assert.ok(d.length <= 4096);
+  assert.equal(card.embed.footer.text, "GitHub #96 · synced 2026-11-08");
+});
+
+test("a claimed issue names its people and a done issue drops the call to join", () => {
+  const claimed = renderIssueCard(issue({ assignees: [{ login: "alex" }, { login: "sam" }] }), m1);
+  assert.match(claimed.embed.description, /\*\*On it\*\*\n\[alex\]\(https:\/\/github\.com\/alex\), \[sam\]/);
+  const done = renderIssueCard(issue({ state: "closed", assignees: [{ login: "alex" }] }), m1);
+  assert.match(done.embed.description, /\*\*Built by\*\*/);
+  assert.match(done.embed.description, /What was built/);
+  assert.doesNotMatch(done.embed.description, /\/claim/);
+});
+
+test("forum tags: pillars then statuses, existing IDs kept, hand-made tags preserved", () => {
+  const tags = wantedTags([
+    { id: "1", name: "Law & Order", emoji_name: "🛡️" },
+    { id: "9", name: "Question" },
   ]);
-  assert.deepEqual(
-    pillars.map((p) => p.name),
-    ["Law & Order", "World & Travel"],
-  );
-  assert.deepEqual(
-    pillars[0].systems.map((s) => s.name),
-    ["Police & Response", "Moderation"],
-  );
-});
-
-test("a pillar post leads with open work, names who is on an issue, and explains /claim", () => {
-  const [pillar] = buildPillars([
-    { milestone: m1, issue: issue(10, "M1-01 Done thing", { state: "closed" }) },
-    { milestone: m1, issue: issue(11, "M1-02 Taken thing", { assignees: ["alex", "sam"] }) },
-    { milestone: m2, issue: issue(12, "M2 epic: Free thing (M2)") },
-  ]);
-  const post = renderPillarPost(pillar, "2026-11-08T05:17:00.000Z");
-
-  assert.equal(post.name, "Law & Order");
-  assert.equal(post.embed.title, "🛡️ Law & Order");
-  assert.equal(post.embed.url, "https://life-framework.org/roadmap");
-  const d = post.embed.description;
-  assert.match(d, /1\/3 done \(33%\)/);
-  assert.match(d, /1 needs a hand/);
-  assert.match(d, /\*\*Police & Response\*\* · 1\/3/);
-  assert.ok(d.indexOf("Free thing") < d.indexOf("Taken thing"), "open issues come first");
-  assert.ok(d.indexOf("Taken thing") < d.indexOf("Done thing"), "done issues come last");
-  assert.doesNotMatch(d, /epic:|\(M2\)/, "milestone markers are stripped from titles");
-  assert.match(d, /🙋 `M2` \[Free thing\]/);
-  assert.match(d, /\[alex\]\(https:\/\/github\.com\/alex\), \[sam\]\(https:\/\/github\.com\/sam\)/);
-  assert.match(d, /comment `\/claim`/);
-  assert.equal(post.embed.footer.text, "Synced from GitHub · 2026-11-08");
-});
-
-test("a huge pillar stays inside Discord's embed limit and links to the full tree", () => {
-  const entries = Array.from({ length: 120 }, (_, i) => ({
-    milestone: m1,
-    issue: issue(i + 1, `M1-${i + 1} A long issue title that takes up a fair amount of the Discord card budget`, { parent: `System ${i % 12}` }),
-  }));
-  const post = renderPillarPost(buildPillars(entries)[0]);
-  assert.ok(post.embed.description.length <= 4096);
-  assert.match(post.embed.description, /more issue\(s\) not shown/);
-  assert.match(post.embed.description, /\[See the whole tree\]\(https:\/\/life-framework\.org\/roadmap\)$/);
-});
-
-test("retired posts are marked once and stay within Discord's title limit", () => {
-  assert.equal(archivedThreadName("Law & Order"), "[ARCHIVED] Law & Order");
-  assert.equal(archivedThreadName("[ARCHIVED] Law & Order"), "[ARCHIVED] Law & Order");
-  assert.ok(archivedThreadName("x".repeat(120)).length <= 100);
+  assert.equal(tags[0].id, "1");
+  assert.equal(tags[0].name, "Law & Order");
+  assert.ok(tags.some((t) => t.name === "Needs a hand" && !t.id));
+  assert.ok(tags.some((t) => t.name === "Question" && t.id === "9"));
+  assert.ok(tags.length <= 20);
 });

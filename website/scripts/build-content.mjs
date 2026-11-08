@@ -45,6 +45,8 @@ const toHtml = (text) => String(md.processSync(text));
 // One line of plain text from markdown: links keep their text, code and emphasis lose their marks.
 const plain = (s) =>
   s
+    // Some issue bodies carry a UTF-8 arrow that was read as Windows-1252.
+    .replace(/ÔåÆ/g, "→")
     .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
     .replace(/<[^>]+>/g, "")
@@ -403,6 +405,36 @@ function issueParent(body) {
   return match ? plain(match[1]).trim() || null : null;
 }
 
+// The body's "## Heading" sections, keyed by lowercased heading.
+function issueSections(body) {
+  const out = {};
+  const text = (body || "").replace(/\r\n/g, "\n").replace(/```[\s\S]*?```/g, "").replace(/<!--[\s\S]*?-->/g, "");
+  const parts = text.split(/^##\s+(.+)$/m);
+  for (let k = 1; k < parts.length; k += 2) out[parts[k].trim().toLowerCase()] = parts[k + 1] || "";
+  return out;
+}
+
+// Top-level list items of a section as short plain lines; nested items are skipped.
+const bullets = (section, max, len) =>
+  (section || "")
+    .split("\n")
+    .filter((l) => /^[-*]\s+/.test(l))
+    .map((l) => clip(plain(l.replace(/^[-*]\s+/, "")), len))
+    .filter(Boolean)
+    .slice(0, max);
+
+// What a contributor needs on the roadmap card: the work, the proof, what it waits on.
+function issueBrief(body) {
+  const s = issueSections(body);
+  const deps = [...(s["depends on"] || "").matchAll(/#(\d+)/g)].map((m) => Number(m[1]));
+  return {
+    why: s.why ? clip(plain(s.why.split(/\n\s*[-*]\s/)[0]), 420) : "",
+    work: bullets(s.work ?? s["candidate scopes (not cards yet)"], 5, 160),
+    proof: bullets(s["acceptance proof"], 4, 140),
+    dependsOn: [...new Set(deps)],
+  };
+}
+
 const issueOut = (i) => ({
   number: i.number,
   title: i.title,
@@ -414,6 +446,10 @@ const issueOut = (i) => ({
   excerpt: issueExcerpt(i.body),
   wave: Number((/\bWave (\d+)\b/.exec(i.body || "") || [])[1]) || null,
   parent: issueParent(i.body),
+  ...issueBrief(i.body),
+  comments: i.comments ?? 0,
+  createdAt: i.created_at,
+  updatedAt: i.updated_at,
 });
 
 async function fetchGithub() {

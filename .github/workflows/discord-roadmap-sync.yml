@@ -1,5 +1,5 @@
 # GitHub issues are the source of truth. Mirror the website's Tree of Life into
-# the Discord #roadmap forum (one post per pillar) on every relevant issue or
+# the Discord #roadmap forum (one discussion thread per issue) on every issue or
 # milestone change, with a periodic refresh to keep posts visible in Discord's
 # auto-archiving forum. Passes with a notice until the bot secret and forum
 # variable are set.
