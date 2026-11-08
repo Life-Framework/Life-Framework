@@ -3502,6 +3502,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{C6C3575A8274C731}" {
+     Id "LF-Contraband_NotHideoutOwner"
+     Target_en_us "Your organization has to hold the hideout before it can run this convoy."
+     Comment "Convoy start refused: the player's organization does not hold the hideout"
+    }
+    CustomStringTableItem "{ADBB1F127BBEB201}" {
+     Id "LF-Contraband_Title"
+     Target_en_us "Contraband"
+     Comment "Toast title for contraband convoy messages"
+    }
+    CustomStringTableItem "{07C181E87F83A891}" {
+     Id "LF-Contraband_JoinOrg"
+     Target_en_us "Contraband runs are for organization members. Join one or found your own at the organization desk."
+     Comment "Convoy start refused: the player has no organization"
+    }
   }
  }
 }

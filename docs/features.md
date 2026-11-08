@@ -383,6 +383,11 @@
   are checked on the server only. `tools/validation/validate-offer-checks.mjs`
   fails a `CanBeShownScript` / `CanBePerformedScript` that reads
   `EL_PoliceUtils.GetAccountForEntity` or `EL_PlayerAccountManager`.
+- ✅ **Armory actions hidden from non-police** (2026-11-08, #157): Draw and
+  Promote at `Roadmap_Police_Armory` are shown only to on-duty police
+  (`LF_ArmoryDrawAction.ShownTo`, replicated state); a civilian no longer sees
+  them greyed. The server still refuses in `PerformAction`. Test:
+  `playtest/offers`.
 - ⚠️ `EL_RobWeaponAction`, `EL_RobVehicleAction`, and `LF_Bank` still count
   police and read accounts directly in their offers; move them to
   `EL_AccountReplication` next.
@@ -518,6 +523,12 @@
   adds nothing is an error log (verified 2026-10-10). A sandbag the inventory
   rejects, or a nugget with no usable slot, used to look like a successful use.
 - ✅ A node id copies tool, yield, and cooldown from `ResourceChains.conf`.
+- ✅ **Crop growth runs on the server only** (2026-11-08, #157): `EL_BaseCrop`
+  starts its growth clock when `Replication.IsServer()`, not on
+  `RplComponent.IsOwner()`, which is still true on a client while the world
+  loads. Every stage read goes through `EL_BaseCrop.StageAt`, which returns
+  null for an index outside the list. Before this each game client logged a
+  `NULL pointer to instance` VME in `EL_BaseCrop.EOnFrame` for every crop.
   A missing row or a prefab that does not resolve logs `EL_Debug.Error` and
   grants nothing (verified 2026-10-11). The action stays on the node.
 
@@ -998,6 +1009,15 @@
   `Reset` unregister the `OnCompartmentLeft` handler; a restarted run drops the
   old watch and watches the vehicle the player is in now. A disconnect fails the
   running convoy.
+- ✅ **The refusal reaches the player** (2026-11-08, #157): a start refused for
+  membership shows a toast with the reason, `#LF-Contraband_JoinOrg` (no
+  organization: join or found one at the organization desk) or
+  `#LF-Contraband_NotHideoutOwner` (your organization does not hold the
+  hideout). `LF_Contraband.StartRefusalKey` picks it. Before this the server
+  logged `convoy refused: not a member` and the player saw nothing.
+- ⚠️ The crate still offers "Start convoy" to everyone: a client cannot see
+  organization membership, so the reason arrives after the press, not on the
+  offer.
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
 - ✅ (2026-11-08, M1-12) Search in the player interaction menu: shown to on-duty

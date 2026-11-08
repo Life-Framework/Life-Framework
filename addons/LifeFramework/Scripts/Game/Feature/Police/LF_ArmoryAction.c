@@ -7,7 +7,10 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return GetOwner() != null;
+		if (!GetOwner())
+			return false;
+
+		return LF_ArmoryDrawAction.ShownTo(EL_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -46,6 +49,15 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Station armory actions are shown to on-duty police only; a civilian never sees them.
+	//! Reads the replicated account state, so the client and the server agree. The server
+	//! still refuses a draw or promote in PerformAction.
+	static bool ShownTo(int accountState)
+	{
+		return EL_AccountStateBits.IsOnDutyPolice(accountState);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the account rule. Client: the same rule on the replicated account state.
 	protected bool OfferDraw(IEntity user)
 	{
@@ -63,7 +75,10 @@ class LF_RankPromoteAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return GetOwner() != null;
+		if (!GetOwner())
+			return false;
+
+		return LF_ArmoryDrawAction.ShownTo(EL_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------

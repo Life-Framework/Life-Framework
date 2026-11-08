@@ -85,8 +85,11 @@ class EL_BaseCrop : EL_BaseBuilding
 			return;
 		}
 
-		// New stage
-		EL_CropStage stage = m_aCropStages[m_iCropStage];
+		// New stage. A client can hear about the crop before its first stage (-1).
+		EL_CropStage stage = StageAt(m_aCropStages, m_iCropStage);
+		if (!stage)
+			return;
+
 		SetOrigin(m_vStartPos + stage.m_StageOffset);
 		SetScale(stage.m_fStageScale);
 
@@ -118,6 +121,24 @@ class EL_BaseCrop : EL_BaseBuilding
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The authored stage at stageIndex, or null when the index is outside the list or the
+	//! entry is empty. Every stage read goes through here, so a bad index never VMEs.
+	static EL_CropStage StageAt(array<ref EL_CropStage> stages, int stageIndex)
+	{
+		if (!stages || stageIndex < 0 || stageIndex >= stages.Count())
+			return null;
+
+		return stages[stageIndex];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Growth runs on the server only. A client only shows the replicated stage.
+	static bool RunsGrowth(bool isServer, bool hasRplComponent)
+	{
+		return isServer && hasRplComponent;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True when the elapsed world time since the stage start has crossed the stage duration
 	static bool IsStageDue(float stageStartMs, float stageDurationMs, float nowMs)
 	{
@@ -129,10 +150,11 @@ class EL_BaseCrop : EL_BaseBuilding
 	//! past the final stage it cannot
 	static bool CanGatherAtStage(array<ref EL_CropStage> stages, int stageIndex)
 	{
-		if (!stages || stageIndex < 0 || IsFinalStageReached(stageIndex, stages.Count()))
+		EL_CropStage stage = StageAt(stages, stageIndex);
+		if (!stage)
 			return false;
 
-		return stages[stageIndex].m_bCanGather;
+		return stage.m_bCanGather;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -171,8 +193,10 @@ class EL_BaseCrop : EL_BaseBuilding
 		RplComponent rplComponent = RplComponent.Cast(FindComponent(RplComponent));
 		m_IsInit = true;
 
-		// Clear frame for anything but the replication owner
-		if (!rplComponent || !rplComponent.IsOwner())
+		// Growth runs on the server only. RplComponent.IsOwner() is still true on a client while
+		// the world loads, so the client used to start its own growth clock and index a stage it
+		// never set (VME in EOnFrame on every client, #157).
+		if (!RunsGrowth(Replication.IsServer(), rplComponent != null))
 		{
 			ClearEventMask(EntityEvent.FRAME);
 			ClearFlags(EntityFlags.ACTIVE, true);
@@ -202,7 +226,14 @@ class EL_BaseCrop : EL_BaseBuilding
 		if (IsFinalStageReached(m_iCropStage, m_aCropStages.Count()))
 			return;
 
-		EL_CropStage stage = m_aCropStages[m_iCropStage];
+		EL_CropStage stage = StageAt(m_aCropStages, m_iCropStage);
+		if (!stage)
+		{
+			EL_Debug.Error("Farming", string.Format("crop %1 has no stage %2; growth stopped", GetName(), m_iCropStage));
+			ClearEventMask(EntityEvent.FRAME);
+			return;
+		}
+
 		if (IsStageDue(m_fStageStartTime, stage.GetDurationMs(), GetGame().GetWorld().GetWorldTime()))
 		{
 			m_iCropStage++;

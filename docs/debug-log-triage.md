@@ -117,6 +117,9 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:Spawn] persistent UID not available yet for playerId N, retrying` repeating on a `-noBackend` dedicated server | BY DESIGN | Without the backend every client has the NULL identity, and a dedicated server keeps the strict identity path. The multi-client session sets `LF_SESSION_IDENTITY` so each player id gets its own identity. A hosted server needs the backend. |
 | `NETWORK (E): Trying to register connection of possibly unauthorized client.` on a `-noBackend` join | INFO | The client has no backend identity. The join continues. Seen on every multi-client session client (2026-11-08). |
 | `RESOURCES : Out of memory. Free system <N> MB` on the session server | INFO | The OS had little free RAM while two game clients loaded (16 GB PC, about 2.1 GB private each plus the server and Workbench). The session kept running. Close Workbench before `session.mjs up` if it repeats. |
+| `Virtual Machine Exception ... Class: 'EL_BaseCrop' ... EL_BaseCrop.c:206 Function EOnFrame` (NULL pointer) on a game client | FIXED | The client ran crop growth during load (`IsOwner()` is true before replication binds). Growth is server-only since #157. |
+| `RESOURCES (E): Wrong GUID/name for resource @"{GUID}path"` on `host start` or a worktree test | INFO | The `resourceDatabase.rdb` was built before that resource existed. `host start` now prints `WARN N resource(s) are not in resourceDatabase.rdb` with an example; run `tools\cli wt build <slug>` (or a Workbench build in main). |
+| `[ELDebug:Contraband] convoy refused: not a member` | BY DESIGN | A player with no organization, or one that does not hold the hideout, pressed Start convoy. They get a toast with the reason (#157). |
 
 ## How to add a row
 

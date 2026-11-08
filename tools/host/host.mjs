@@ -151,6 +151,32 @@ export function lanAddresses() {
   return out;
 }
 
+// Resources whose .meta GUID is not in resourceDatabase.rdb. The server resolves a
+// {GUID}path through the rdb, so a resource added after the last Workbench build
+// does not load ("Wrong GUID/name for resource", #157). The rdb stores each GUID as
+// 8 little-endian bytes. Returns [{ guid, path }]; an rdb that does not exist returns [].
+export function missingFromRdb(addonDir) {
+  const rdbPath = join(addonDir, "resourceDatabase.rdb");
+  if (!existsSync(rdbPath)) return [];
+  const rdb = readFileSync(rdbPath);
+  const missing = [];
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isSymbolicLink()) continue;
+      const full = join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith(".meta")) {
+        const m = /Name\s+"\{([0-9A-Fa-f]{16})\}([^"]+)"/.exec(readFileSync(full, "utf8"));
+        if (!m) continue;
+        const le = Buffer.from(m[1], "hex").reverse();
+        if (rdb.indexOf(le) === -1) missing.push({ guid: m[1].toUpperCase(), path: m[2] });
+      }
+    }
+  };
+  walk(addonDir);
+  return missing;
+}
+
 // Pure checks for the validate selftest.
 export function selftestHost() {
   const failures = [];
@@ -172,6 +198,17 @@ export function selftestHost() {
   if (stamp(new Date(2026, 10, 8, 9, 5, 7)) !== "2026-11-08_09-05-07") failures.push("backup stamp format changed");
   const lines = hostLines("a\n12:00 DEFAULT : Entered online game state.\nb\n12:01 SCRIPT : [ELDebug:Persistence] session continued from a save point (-loadSessionSave)\n");
   if (lines.length !== 2) failures.push(`hostLines kept ${lines.length} lines, expected 2`);
+  // A .meta whose GUID is not in the rdb is reported; one that is, is not.
+  const rdbFixture = mkdtempSync(join(tmpdir(), "lf-rdb-"));
+  try {
+    writeFileSync(join(rdbFixture, "resourceDatabase.rdb"), Buffer.concat([Buffer.from("head"), Buffer.from("1122334455667788", "hex").reverse()]));
+    writeFileSync(join(rdbFixture, "Known.conf.meta"), 'MetaFileClass {\n Name "{1122334455667788}Configs/Known.conf"\n}\n');
+    writeFileSync(join(rdbFixture, "New.conf.meta"), 'MetaFileClass {\n Name "{AABBCCDDEEFF0011}Configs/New.conf"\n}\n');
+    const miss = missingFromRdb(rdbFixture);
+    if (miss.length !== 1 || miss[0].path !== "Configs/New.conf") failures.push(`missingFromRdb returned ${JSON.stringify(miss)}`);
+  } finally {
+    safeRemoveTree(rdbFixture);
+  }
   // Backup round trip on a fixture host dir.
   const fixture = mkdtempSync(join(tmpdir(), "lf-host-"));
   try {

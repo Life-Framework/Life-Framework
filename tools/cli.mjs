@@ -1049,6 +1049,11 @@ function cmdHostStart(root, dir, opts) {
   let pid = 0;
   try {
     wt.copyResourceDatabase(root);
+    const stale = host.missingFromRdb(join(root, "addons", "LifeFramework"));
+    if (stale.length > 0) {
+      console.log(`WARN  ${stale.length} resource(s) are not in resourceDatabase.rdb and will not load on this server, e.g. ${stale[0].path}`);
+      console.log("      the rdb predates them: run 'tools\\cli wt build <slug>' (or a Workbench build in main), then host start again");
+    }
     const junction = serverGameAddons(root);
     mkdirSync(p.profile, { recursive: true });
     const saves = host.findSavePoints(p.profile);
