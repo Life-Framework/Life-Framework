@@ -163,6 +163,12 @@
   and other overrides never reach clients. `validate-npc-layer-overrides.mjs`
   enforces this. Names set in the layer do not reach clients either
   (`FindEntityByName` works only on the server).
+- ✅ (2026-11-08) An NPC's talk context (clerk, quest giver, police duty) sits on
+  its chest: `PivotID "Spine5"`, `Radius 0.6`, as vanilla `Character_Base` does
+  for "Chest". It was `Offset 0 0.5 0`, `Radius 2.0`, at the hips. The town
+  trader's counter crate (`TraderChainCounter`) stands on a table in front of
+  the trader instead of on the ground at his feet. Test:
+  `npc/interaction-height` (WORLD).
 
 ## Character & Survival
 
