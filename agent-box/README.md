@@ -149,7 +149,10 @@ the game profile). Hooks:
   `RegFirstName`, `RegLastName`, `RegAge`. `click SignButton` then signs it.
 - `use` finds a `ScriptedUserAction`, checks `CanBeShownScript` and
   `CanBePerformedScript`, then calls `PerformAction`. Named confirm, same
-  checks, no dependence on which row is highlighted.
+  checks, no dependence on which row is highlighted. It runs on the server,
+  except a local-effect action (`HasLocalEffectOnlyScript`, such as a sign's
+  Read), which runs on the acting client so its card opens where `shot ui`
+  can see it.
 - `stand <EntityName>` asks the server to move the local character beside
   that entity so a 3m action radius can succeed. It does not inject movement
   keys.

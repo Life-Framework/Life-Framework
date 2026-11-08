@@ -1,6 +1,6 @@
-// red-proof: with FaceLayoutScale returning the DPI scale for a game client,
-// `tools\cli test --no-build --only EL_Test_SignFaceClient` (2026-11-08) failed
-// signs/face-client with "a small game window keeps the layout font size (expected 96, got 32)".
+// red-proof: with ClientTitleRect always returning font 96, `tools\cli test --no-build
+// --only EL_Test_SignFaceClient` (2026-11-08) failed signs/face-client with
+// "the longest word sets the font (expected 66, got 96)".
 
 // tier: LOGIC
 class EL_Test_SignFaceClient : EL_Test
@@ -12,17 +12,21 @@ class EL_Test_SignFaceClient : EL_Test
 
 	override void Run(EL_TestContext ctx)
 	{
-		// A 640x360 game client: DPIScale is 1/3, and the title must still fill the sheet.
-		float scale = LF_SignComponent.FaceLayoutScale(1.0 / 3.0, false);
-		ctx.EqualFloat(1, scale, 0.001, "a game client lays the title out at the layout size");
-
+		// A game client shows about 328 of the target's 512 units across the
+		// paper (seen at 640x360 and 1920x1080): the box must sit inside that.
 		vector pos;
 		vector size;
-		int font = LF_SignComponent.FaceTitleRect(scale, pos, size);
-		ctx.Equal(96, font, "a small game window keeps the layout font size");
-		ctx.EqualFloat(432, size[0], 0.01, "a small game window keeps the full title width");
+		int font = LF_SignComponent.ClientTitleRect("ATM", pos, size);
+		ctx.True(pos[0] + size[0] <= 328, "the client title box ends inside the shown part of the sheet");
+		ctx.Equal(96, font, "a short word keeps the layout font");
 
-		// A Workbench viewport still compensates (signs/face-fit).
-		ctx.EqualFloat(0.5, LF_SignComponent.FaceLayoutScale(0.5, true), 0.001, "Workbench keeps the DPI scale");
+		// "WELCOME" at 96 measured 406 units, wider than the paper: the font shrinks.
+		font = LF_SignComponent.ClientTitleRect("WELCOME TO EVERON", pos, size);
+		ctx.Equal(66, font, "the longest word sets the font");
+		ctx.True(406.0 * font / 96.0 <= size[0], "WELCOME fits the title box at that font");
+
+		font = LF_SignComponent.ClientTitleRect("ORGANIZATION OFFICE", pos, size);
+		ctx.Equal(38, font, "a twelve-letter word fits at 38");
+		ctx.Equal(96, LF_SignComponent.ClientTitleRect("", pos, size), "an empty title keeps the layout font");
 	}
 }

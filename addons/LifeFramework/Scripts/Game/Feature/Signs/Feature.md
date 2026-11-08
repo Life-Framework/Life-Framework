@@ -34,10 +34,13 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules.
   skips it. The render target is the layout size times the screen DPI
   scale while its widgets lay out one unit per pixel, so in Workbench
   `FaceTitleRect` sizes the title by `DPIScale(1)`; anchored to the full
-  sheet it was cut off in a small window. A game client scales the target
-  and the widgets alike, so it lays the title out at the layout size
-  (`FaceLayoutScale`); the DPI-scaled title printed in the sheet's top-left
-  third of a 640x360 client. Pub signs and chalkboards keep `m_bShowFace 0` until a rendering
+  sheet it was cut off in a small window. That branch is Workbench only
+  (`#ifdef WORKBENCH`). A game client uses `ClientTitleRect`: at 640x360 and
+  at 1920x1080 alike only about 328 of the 512 units across reach the paper
+  (full height shows), so the title box is x 20..310, and the font is 96 or
+  smaller so the longest word fits (0.62 em per capital; a word does not
+  wrap). The DPI-scaled box printed in the sheet's top-left third; the full
+  box at 96 cut WELCOME to WELCO. Pub signs and chalkboards keep `m_bShowFace 0` until a rendering
   pass places their sheet; the mining and whitelist plates keep their painted
   vanilla text.
 - An unknown or empty id, or a sign with no title, logs

@@ -1186,6 +1186,27 @@ class EL_AgentHarness
 			return;
 		}
 
+		// A local-effect action (a sign's Read) does its work on the acting
+		// client. Performed on the server it opened nothing a player could see.
+		IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
+		ScriptedUserAction action;
+		if (target)
+			action = FindOnEntity(target, cmd.Arg1);
+
+		if (action && action.HasLocalEffectOnlyScript())
+		{
+			if (!action.CanBeShownScript(character) || !action.CanBePerformedScript(character))
+			{
+				WriteResult(cmd.Id, "error", "cannot_perform");
+				return;
+			}
+
+			action.PerformAction(target, character);
+			EL_Debug.Log(FEATURE, string.Format("performed %1 locally", cmd.Arg1));
+			WriteResult(cmd.Id, "ok", cmd.Arg1);
+			return;
+		}
+
 		character.EL_AskHarnessUse(cmd.Id, cmd.Arg1, cmd.Arg2);
 	}
 
