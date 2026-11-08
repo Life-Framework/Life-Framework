@@ -1124,6 +1124,15 @@
   instantiates the layout on the dedicated server and checks every named widget;
   `notifications/toast-timing` (LOGIC) checks show/fade/remove. On-screen look is
   visual-only: manual check pending (verified 2026-11-07)
+- ✅ **Toasts are visible on a game client** (2026-11-08, #157): until now no toast
+  was ever drawn. The slip's frame slot had a height of -48 (`OffsetBottom -92` under
+  `OffsetTop 140`), the fills were `PanelWidget`s (near-transparent) nested inside
+  an `ImageWidget` (which draws no children), and the text column's negative
+  stretch offsets ran the message past the slip. Now: 420x120 slip, sibling image
+  fills, wrapped message, fade driven from `Tick` (`EL_NotificationToastUI.OpacityAt`).
+  Seen at 1280x720 on a dedicated client (contraband refusal). New
+  `tools/validation/validate-layout-slots.mjs` fails a point-anchored slot whose
+  `Offset*` and `Size*` disagree (it also fixed `EL_SurvivalHUD.layout`).
 - ✅ **Targeted delivery fixed** (verified 2026-08-30): `RpcDo_ShowNotification`
   is `RplRcver.Broadcast` with a client-side `playerId` filter (`-1` = all),
   plus a direct call for the listen-server host so the authority sees its own
