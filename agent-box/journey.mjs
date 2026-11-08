@@ -182,14 +182,7 @@ export function selectSteps(ids, mission) {
 // name) photographs client n's view, pause(ms), state(n), restart().
 export const ACTIONS = {
   arrive(h) {
-    for (const n of [1, 2]) {
-      const ui = h.on(n, { verb: "ui" });
-      if (ui.status === "ok" && ui.detail.includes("CivilianButton")) {
-        h.on(n, { verb: "click", widget: "CivilianButton" });
-        h.pause(1500);
-        h.on(n, { verb: "click", widget: "TownButton" });
-      }
-    }
+    // The registration form is the first screen (no faction screen, M1-11).
     for (const n of [1, 2]) {
       if (!h.text(n, "SignButton", 15000).found) continue;
       h.on(n, { verb: "type", widget: "RegFirstName", text: NAMES[n][0] });

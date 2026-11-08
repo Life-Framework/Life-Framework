@@ -1,63 +1,13 @@
 //------------------------------------------------------------------------------------------------
-//! Server-side checks for the creation RPCs. A client menu only collects the choice; these
-//! decide it. Each returns "" to accept or the localization key shown to the refused player.
+//! Server-side checks for the creation RPC. The registration form only collects the answer; this
+//! decides it. Returns "" to accept or the localization key shown to the refused player.
+//! There is no faction pick: everyone registers as a civilian, and a whitelisted player becomes
+//! police by clocking in at the station duty desk (EL_DutyAction).
 //------------------------------------------------------------------------------------------------
 class EL_CharacterCreationRules
 {
 	//------------------------------------------------------------------------------------------------
-	//! \return True when value is a faction the creation flow offers.
-	static bool IsOfferedFaction(int value)
-	{
-		return value == EL_Faction.CIVILIAN || value == EL_Faction.POLICE;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static EL_EFactionType ToWhitelistFaction(EL_Faction faction)
-	{
-		if (faction == EL_Faction.POLICE)
-			return EL_EFactionType.POLICE;
-
-		return EL_EFactionType.CIVILIAN;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Faction pick. The faction is fixed once chosen or once a character exists, and a
-	//! restricted faction needs the server whitelist (the client menu cannot see it).
-	static string RefuseFaction(EL_PlayerAccount account, int factionValue, string playerUid)
-	{
-		if (!account || playerUid.IsEmpty())
-			return "#EL-CC_Error_NoAccount";
-
-		if (account.HasCharacters() || account.WasFactionChosen())
-			return "#EL-CC_Error_FactionLocked";
-
-		if (!IsOfferedFaction(factionValue))
-			return "#EL-CC_Error_FactionDenied";
-
-		if (!EL_WhitelistManager.MayJoinFaction(playerUid, ToWhitelistFaction(factionValue)))
-			return "#EL-CC_Error_FactionDenied";
-
-		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Spawn location pick for a faction. An empty key is the degrade path (no location menu):
-	//! the spawn logic falls back to any spawn point of the faction.
-	static string RefuseSpawnLocation(EL_Faction faction, string locationKey)
-	{
-		if (locationKey.IsEmpty())
-			return "";
-
-		EL_SpawnLocation location = EL_SpawnLocations.GetByKey(locationKey);
-		if (!location || location.m_eFaction != faction)
-			return "#EL-CC_Error_Location";
-
-		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Name/age submission (form R-89, LF_RegistrationRules). One character per account, after
-	//! the faction is chosen.
+	//! Name/age submission (form R-89, LF_RegistrationRules). One character per account.
 	static string RefuseCharacter(EL_PlayerAccount account, string firstName, string lastName, int age)
 	{
 		if (!account)
@@ -65,9 +15,6 @@ class EL_CharacterCreationRules
 
 		if (account.HasCharacters())
 			return "#EL-CC_Error_Exists";
-
-		if (!account.WasFactionChosen())
-			return "#EL-CC_Error_FactionLocked";
 
 		string first = firstName.Trim();
 		string last = lastName.Trim();
@@ -87,10 +34,10 @@ class EL_CharacterCreationRules
 }
 
 //------------------------------------------------------------------------------------------------
-//! First-join flow. Runs on the server only. Menus open on the owning client through
-//! SCR_PlayerController owner RPCs (EL_CharacterCreationController.c) and their choices come
-//! back as RpcAsk_EL_* calls, which land in the Server* methods below and are re-validated by
-//! EL_CharacterCreationRules before the account is touched.
+//! First-join flow. Runs on the server only. The registration form opens on the owning client
+//! through an SCR_PlayerController owner RPC (EL_CharacterCreationController.c) and its answer
+//! comes back as RpcAsk_EL_CreateCharacter, which lands in ServerCreateCharacter and is
+//! re-validated by EL_CharacterCreationRules before the account is touched.
 class EL_CharacterCreationManager : Managed
 {
 	//! Strong ref: the singleton owns itself (the game mode keeps no field for it).
@@ -98,9 +45,6 @@ class EL_CharacterCreationManager : Managed
 
 	protected const int FLOW_POLL_DELAY_MS = 100;
 	protected static const ResourceName DEFAULT_CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
-
-	//! Faction accepted in stage one, applied to the account once the location is accepted too.
-	protected ref map<int, EL_Faction> m_mPendingFactions;
 
 	//------------------------------------------------------------------------------------------------
 	static EL_CharacterCreationManager GetInstance()
@@ -112,31 +56,10 @@ class EL_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Does not register itself; only GetInstance() sets the singleton.
-	void EL_CharacterCreationManager()
-	{
-		m_mPendingFactions = new map<int, EL_Faction>();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	void ~EL_CharacterCreationManager()
 	{
 		if (s_Instance == this)
 			s_Instance = null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Disconnect: drops a faction accepted in stage one whose location never came. Does not
-	//! create the manager.
-	//! \return True when a pending faction was dropped.
-	static bool ReleasePlayer(int playerId)
-	{
-		if (!s_Instance || !s_Instance.m_mPendingFactions || !s_Instance.m_mPendingFactions.Contains(playerId))
-			return false;
-
-		s_Instance.m_mPendingFactions.Remove(playerId);
-		EL_Debug.Info("CharacterCreation", string.Format("pending faction dropped for player %1: disconnected", playerId));
-		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -183,16 +106,10 @@ class EL_CharacterCreationManager : Managed
 
 		EL_Debug.Info("CharacterCreation", "flow start for player " + playerId);
 
+		// Nothing stands between joining and playing: no character means the registration form,
+		// then a civilian spawn.
 		if (!account.HasCharacters())
 		{
-			// Offer faction selection until the player made an explicit choice (CIVILIAN is both
-			// the default and a valid pick).
-			if (!account.WasFactionChosen())
-			{
-				ShowFactionSelectionMenu(playerController);
-				return;
-			}
-
 			ShowRegistrationForm(playerController, "");
 			return;
 		}
@@ -201,8 +118,8 @@ class EL_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Faction chosen but no character yet: the registration form (R-89) opens on the player's
-	//! machine. Its answer comes back as RpcAsk_EL_CreateCharacter. The form never picks a faction.
+	//! No character yet: the registration form (R-89) opens on the player's machine. Its answer
+	//! comes back as RpcAsk_EL_CreateCharacter.
 	//! \param refusal Localization key written on the form when the last answer was refused.
 	protected void ShowRegistrationForm(PlayerController playerController, string refusal)
 	{
@@ -215,80 +132,6 @@ class EL_CharacterCreationManager : Managed
 
 		EL_Debug.Info("CharacterCreation", "registration form sent to player " + controller.GetPlayerId());
 		controller.LF_ShowRegistrationForm(refusal);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Opens the faction menu on the player's own machine (owner RPC; direct for a listen host).
-	protected void ShowFactionSelectionMenu(PlayerController playerController)
-	{
-		SCR_PlayerController controller = SCR_PlayerController.Cast(playerController);
-		if (!controller)
-		{
-			EL_Debug.Error("CharacterCreation", "faction menu not sent: controller is not an SCR_PlayerController");
-			return;
-		}
-
-		EL_Debug.Info("CharacterCreation", "faction menu sent to player " + controller.GetPlayerId());
-		controller.EL_ShowFactionMenu();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server body of RpcAsk_EL_SelectFaction. Stage one: validate and remember the faction,
-	//! then open the location picker on the client. A refusal notifies and re-opens the faction
-	//! menu, so a non-whitelisted police pick never reaches the account.
-	void ServerSelectFaction(int playerId, int factionValue)
-	{
-		SCR_PlayerController controller = FindController(playerId);
-		if (!controller)
-			return;
-
-		string playerUid = EL_Utils.GetPlayerUID(playerId);
-		EL_PlayerAccount account = FindAccount(playerUid);
-		string refusal = EL_CharacterCreationRules.RefuseFaction(account, factionValue, playerUid);
-		if (!refusal.IsEmpty())
-		{
-			EL_Debug.Warn("CharacterCreation", string.Format("faction %1 refused for player %2: %3", factionValue, playerId, refusal));
-			EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Faction_Title", refusal, 5.0, EL_ENotificationType.WARNING);
-			if (account && !account.HasCharacters() && !account.WasFactionChosen())
-				controller.EL_ShowFactionMenu();
-			return;
-		}
-
-		EL_Faction faction = factionValue;
-		m_mPendingFactions.Set(playerId, faction);
-		EL_Debug.Info("CharacterCreation", string.Format("faction %1 accepted for player %2, awaiting location", typename.EnumToString(EL_Faction, faction), playerId));
-		controller.EL_ShowSpawnLocationMenu(faction);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server body of RpcAsk_EL_SpawnLocation. Stage two: the location must belong to the
-	//! pending faction. Then the faction is written and the spawn flow continues.
-	void ServerSelectSpawnLocation(int playerId, string locationKey)
-	{
-		SCR_PlayerController controller = FindController(playerId);
-		if (!controller)
-			return;
-
-		if (!m_mPendingFactions.Contains(playerId))
-		{
-			EL_Debug.Warn("CharacterCreation", string.Format("spawn location '%1' refused for player %2: no accepted faction", locationKey, playerId));
-			return;
-		}
-
-		EL_Faction faction = m_mPendingFactions.Get(playerId);
-		string refusal = EL_CharacterCreationRules.RefuseSpawnLocation(faction, locationKey);
-		if (!refusal.IsEmpty())
-		{
-			EL_Debug.Warn("CharacterCreation", string.Format("spawn location '%1' refused for player %2: %3", locationKey, playerId, refusal));
-			EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-SpawnLoc_Title", refusal, 5.0, EL_ENotificationType.WARNING);
-			controller.EL_ShowSpawnLocationMenu(faction);
-			return;
-		}
-
-		if (!locationKey.IsEmpty())
-			EL_SpawnLogic.SetSelectedLocation(playerId, locationKey);
-
-		FinalizeFaction(playerId, faction);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -308,7 +151,7 @@ class EL_CharacterCreationManager : Managed
 			EL_Debug.Warn("CharacterCreation", string.Format("character refused for player %1: %2", playerId, refusal));
 			// The form comes back with the reason written on it, unless the account already has a
 			// character (a double submit) or none is loaded yet.
-			if (account && !account.HasCharacters() && account.WasFactionChosen())
+			if (account && !account.HasCharacters())
 				ShowRegistrationForm(controller, refusal);
 			else
 				EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ID_Information", refusal, 5.0, EL_ENotificationType.WARNING);
@@ -321,27 +164,6 @@ class EL_CharacterCreationManager : Managed
 		EL_Debug.Info("CharacterCreation", string.Format("character registered for player %1, age %2", playerId, age));
 
 		SpawnPlayer(playerId, controller);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void FinalizeFaction(int playerId, EL_Faction faction)
-	{
-		m_mPendingFactions.Remove(playerId);
-
-		string playerUid = EL_Utils.GetPlayerUID(playerId);
-		EL_PlayerAccount account = FindAccount(playerUid);
-		if (!account)
-		{
-			EL_Debug.Error("CharacterCreation", "faction not saved: no account for player " + playerId);
-			return;
-		}
-
-		account.SetFaction(faction);
-		EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
-		EL_Debug.Info("CharacterCreation", string.Format("faction %1 saved for player %2", typename.EnumToString(EL_Faction, faction), playerId));
-
-		// Advance the flow: the re-entrant pass sees the chosen faction and spawns the character.
-		OnPlayerConnected(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -369,7 +191,7 @@ class EL_CharacterCreationManager : Managed
 
 	//------------------------------------------------------------------------------------------------
 	//! Spawns the account's active character through the spawn logic. The spawn logic picks the
-	//! faction spawn point, hands control over and clears the splash on handover; the ATM/survival
+	//! spawn point, hands control over and clears the splash on handover; the ATM/survival
 	//! components init in its post-spawn hook.
 	protected void SpawnPlayer(int playerId, PlayerController playerController)
 	{

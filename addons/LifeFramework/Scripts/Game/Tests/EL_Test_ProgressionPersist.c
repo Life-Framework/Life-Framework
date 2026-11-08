@@ -131,7 +131,7 @@ class EL_Test_ProgressionRoundtrip : EL_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(8, version, "the save is written at version 8 (progression is payload 7)");
+		ctx.Equal(10, version, "the save is written at version 10 (progression is payload 7)");
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "progression");
 
 		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER), "courier level 2 after the load");
@@ -224,6 +224,9 @@ class EL_Test_ProgressionOldSave : EL_Test
 		if (!persistence)
 			return;
 
+		// The old save replaces the carried store; keep the live snapshots (and their per-item
+		// state, which a version 6 save does not carry) for the tests after this one.
+		array<ref LF_StorageSnapshotRecord> liveSnapshots = LF_StorageSnapshot.ExportAll();
 		LF_Progression.Forget(OFFICER);
 		LF_Progression.Forget(NEWCOMER);
 		EL_PlayerAccount officer = EL_TestProgressionKit.SeedSeniorOfficer(ctx, OFFICER);
@@ -266,5 +269,6 @@ class EL_Test_ProgressionOldSave : EL_Test
 		EL_TestProgressionKit.ResetAccount(OFFICER);
 		LF_Progression.Forget(OFFICER);
 		LF_Progression.Forget(NEWCOMER);
+		LF_StorageSnapshot.ApplyAll(liveSnapshots);
 	}
 }

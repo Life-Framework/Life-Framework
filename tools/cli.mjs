@@ -1268,10 +1268,11 @@ function cmdSessionUp(root, dir, flags) {
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
     const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail });
     if (typeof log === "number") return log;
-    // Joined means the server created the player and opened the faction menu.
-    const joined = sessionAwaitJoin(log, clients, /faction menu sent to player \d+/g, fail);
+    // Joined means the server sent a new account the registration form or spawned a returning
+    // one. There is no faction menu (M1-11).
+    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail);
     if (joined < 0) return 1;
-    console.log(`session: ${joined} client(s) joined and reached the faction menu`);
+    console.log(`session: ${joined} client(s) joined and reached the registration form or spawned`);
     if (mission === "playtest") console.log("session: LF_PlaytestTown, LF_HARNESS build (harness gate open, debug menu closed)");
     console.log("drive with:");
     console.log("  node agent-box/harness.mjs --client <n> <verb>   and   node agent-box/session.mjs state <n>");
