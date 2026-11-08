@@ -1121,7 +1121,9 @@ class EL_AgentHarness
 		string name = widget.GetName();
 		if (!EL_AgentCommand.IsClassToken(name))
 			return false;
-		if (name.Length() < 6 || name.Substring(name.Length() - 6, 6) != "Button")
+		// UI kit status rows name their button <Row>_Action.
+		bool kitAction = name.Length() > 7 && name.Substring(name.Length() - 7, 7) == "_Action";
+		if (!kitAction && (name.Length() < 6 || name.Substring(name.Length() - 6, 6) != "Button"))
 			return false;
 
 		if (SCR_ButtonTextComponent.Cast(widget.FindHandler(SCR_ButtonTextComponent)))
@@ -1189,10 +1191,13 @@ class EL_AgentHarness
 
 		// A local-effect action (a desk that opens a page) runs on the acting client only, as the
 		// interact key would run it; the server would open nothing.
-		IEntity localTarget = FindTarget(character, cmd.Arg1, cmd.Arg2);
+		// Only this mod's actions: a vanilla door is local-effect too but its perform asks the server.
+		IEntity localTarget;
 		ScriptedUserAction localAction;
+		if (cmd.Arg1.StartsWith("EL_") || cmd.Arg1.StartsWith("LF_"))
+			localTarget = FindTarget(character, cmd.Arg1, cmd.Arg2);
 		if (localTarget)
-			localAction = FindOnEntity(localTarget, cmd.Arg1);
+			localAction = FindShownOnEntity(localTarget, cmd.Arg1, character);
 
 		if (localAction && localAction.HasLocalEffectOnlyScript())
 		{
@@ -1238,7 +1243,7 @@ class EL_AgentHarness
 			return;
 		}
 
-		ScriptedUserAction action = FindOnEntity(target, className);
+		ScriptedUserAction action = FindShownOnEntity(target, className, user);
 		if (!action)
 		{
 			UseReply(user, commandId, "error", "action_not_found");
@@ -1580,6 +1585,27 @@ class EL_AgentHarness
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Several entries of one class on an entity (the interaction menu's role slots): the first one
+	//! the user is offered, else the first of that class.
+	protected static ScriptedUserAction FindShownOnEntity(IEntity entity, string className, IEntity user)
+	{
+		BaseActionsManagerComponent mgr = BaseActionsManagerComponent.Cast(entity.FindComponent(BaseActionsManagerComponent));
+		if (!mgr)
+			return null;
+
+		array<BaseUserAction> actions = {};
+		mgr.GetActionsList(actions);
+		foreach (BaseUserAction action : actions)
+		{
+			ScriptedUserAction scripted = ScriptedUserAction.Cast(action);
+			if (scripted && action.Type().ToString() == className && scripted.CanBeShownScript(user))
+				return scripted;
+		}
+
+		return FindOnEntity(entity, className);
 	}
 
 	//------------------------------------------------------------------------------------------------

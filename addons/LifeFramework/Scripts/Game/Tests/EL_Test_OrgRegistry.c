@@ -86,6 +86,7 @@ class EL_Test_OrgRegistry : EL_Test
 		ctx.False(LF_OrgHideoutLease.Lease(member, LF_Hideout.HIDEOUT_ID), "a member cannot take the lease");
 		ctx.True(LF_OrgHideoutLease.Lease(founder, LF_Hideout.HIDEOUT_ID), "the founder takes the lease");
 		ctx.Equal(LF_EOrgLease.OURS, LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.HIDEOUT_ID), "the yard is ours");
+		ctx.True(LF_Hideout.IsLocked(LF_Hideout.HIDEOUT_ID), "a new lease shuts the gate");
 		if (other)
 		{
 			ctx.Equal(LF_EOrgLease.TAKEN, LF_OrgHideoutLease.StateFor(other.GetId(), LF_Hideout.HIDEOUT_ID), "the rival sees it taken");

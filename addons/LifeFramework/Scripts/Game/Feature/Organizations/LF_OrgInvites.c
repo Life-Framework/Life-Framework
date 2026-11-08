@@ -131,7 +131,8 @@ class LF_OrgInvites
 
 //------------------------------------------------------------------------------------------------
 //! The hideout yard off the registry alley is leased at the ledger. One organization holds it;
-//! its members open the gate (LF_Hideout.AllowsUnlock). The lease costs nothing in M1.
+//! its members open the gate (LF_Hideout.AllowsUnlock). Taking the lease locks the gate. The lease
+//! costs nothing in M1.
 enum LF_EOrgLease
 {
 	FREE,
@@ -180,6 +181,9 @@ class LF_OrgHideoutLease
 
 		if (!LF_Hideout.Assign(hideoutId, org.GetId()))
 			return false;
+
+		// A new lease starts with the gate shut: only members open it from here on.
+		LF_Hideout.LockDoor(characterId, hideoutId);
 
 		EL_Debug.Info("Organizations", string.Format("lease org=%1 hideout=%2", org.GetId(), hideoutId));
 		return true;

@@ -993,7 +993,7 @@
   `EL_LockComponent`. The organization id is written onto that lock. The door
   does not call `LF_Breach` and does not add a second `ActionsManagerComponent`.
 - ✅ (2026-11-08, M1-17) An organization takes the yard (`LF_Hideout.HIDEOUT_ID`,
-  gate `302.4 0 288` since M1-25) with "Take the lease" on the registry ledger.
+  gate `302.4 0 288` since M1-25) with "Take the lease" on the registry ledger; taking it locks the gate.
   The gate prompt on a client compares the organization replicated on the
   character with the owner on the lock and shows `#EL-Hideout_NotMember` to a
   non-member; the server still decides from the registry.

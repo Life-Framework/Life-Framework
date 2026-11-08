@@ -279,9 +279,9 @@ async function runInteraction() {
   return fails.length ? 1 : 0;
 }
 
-// The M1-17 organization proof on a running `up --clients 2` session: client 2 is
-// refused at the hideout gate; client 1 opens the registry ledger, founds ORG_NAME
-// (fee in carried cash), takes the alley yard lease, walks to client 2 and
+// The M1-17 organization proof on a running `up --clients 2` session: client 1
+// opens the registry ledger, founds ORG_NAME (fee in carried cash), and takes the
+// alley yard lease; client 2 is refused at the gate; client 1 walks to client 2 and
 // chooses "Invite to"; client 2 faces client 1 and chooses "Join"; client 2 opens
 // the hideout gate. `--shot` photographs the ledger page on client 1.
 export const ORG_NAME = "AlleyKings";
@@ -320,11 +320,6 @@ async function runOrg(args) {
   const one = `Player${parseState(before1).player}`;
   const two = `Player${parseState(before2).player}`;
 
-  // Client 2 is not a member yet: the gate refuses.
-  on(2, { verb: "stand", entityName: ORG_GATE });
-  wait(2500);
-  const gateBefore = on(2, { verb: "use", className: "SCR_DoorUserAction", entityName: ORG_GATE }, 10000).detail;
-
   // Client 1 founds the organization at the registry desk and takes the yard lease.
   const steps = [];
   on(1, { verb: "stand", entityName: "Roadmap_Org_Desk" });
@@ -341,8 +336,15 @@ async function runOrg(args) {
     h.setBoxes([clientBox(dir, 1)]);
     const shot = h.sendCommand({ verb: "capture", mode: "ui", name: "org_ledger" }, 25000);
     console.log(`client 1: shot ui org_ledger -> ${shot.status} ${shot.detail}`);
+    wait(3000);
+    console.log(`client 1: ledger shot ${h.resolveCapture(shot.detail) || "not written"}`);
   }
   steps.push(on(1, { verb: "click", widget: "CloseButton" }));
+
+  // The lease shut the gate. Client 2 is not a member yet: the gate refuses.
+  on(2, { verb: "stand", entityName: ORG_GATE });
+  wait(2500);
+  const gateBefore = on(2, { verb: "use", className: "SCR_DoorUserAction", entityName: ORG_GATE }, 10000).detail;
 
   // Face to face: client 1 invites, client 2 joins.
   on(1, { verb: "stand", entityName: two });
