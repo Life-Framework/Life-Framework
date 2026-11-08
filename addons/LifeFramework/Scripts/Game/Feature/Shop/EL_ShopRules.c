@@ -1,4 +1,5 @@
-// Ported from Overthrow.Arma4 (MIT): Scripts/Game/Data/OVT_ShopSellRules.c
+// Derived from Overthrow (https://github.com/ArmaOverthrow/Overthrow.Arma4), used with the author's permission, relicensed MIT.
+// Source: Scripts/Game/Data/OVT_ShopSellRules.c
 //------------------------------------------------------------------------------------------------
 //! Whether a shop buys from players, at what rate, and why an individual row cannot be sold.
 //!

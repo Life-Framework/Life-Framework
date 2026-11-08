@@ -43,6 +43,7 @@ Feature design context files live beside the code in
 - [Overthrow survey](overthrow-survey.md) — what Overthrow.Arma4 offers and its license terms.
 - [EveronLife forks](everonlife-forks.md) — what the EveronLife forks hold and what was already ported.
 - [Life/RP benchmark](research/life-rp-benchmark.md) — Altis Life, GTA RP, and Elan Life against ours: feature matrix, what kept and lost players, top 10 M2+ candidates, open taste questions.
+- [Ecosystem leverage map](ecosystem.md) — community repos, Workshop dependencies, free asset sources, licenses, and the import policy.
 
 ## Agent guidance
 
