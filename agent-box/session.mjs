@@ -28,14 +28,14 @@
 //
 // `up` and `down` run through `tools\cli session` because the server boot
 // shares the CLI's machine-wide server-2001 lock and addon junction helper.
-// The session dir lives outside every worktree (default
-// %LOCALAPPDATA%\LifeFramework\session, override LF_SESSION_DIR) and holds no
-// junctions.
+// The session dir lives outside every worktree, one per checkout (default
+// %LOCALAPPDATA%\LifeFramework\session\<checkout folder>, override
+// LF_SESSION_DIR), and holds no junctions.
 
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
 
@@ -92,10 +92,37 @@ export function defineArgs(mission = "debug") {
   return args;
 }
 
-export function sessionDir(env = process.env) {
-  if (env.LF_SESSION_DIR) return env.LF_SESSION_DIR;
+// One dir per checkout (named after the checkout folder) holds its session.json,
+// client profiles, and server saves. A shared dir let one worktree's `up`
+// overwrite another's record, profiles, and save between its runs. The server
+// port is still one per machine (the server-2001 lock); liveSessionsElsewhere
+// finds clients another checkout left running.
+export function sessionBase(env = process.env) {
   const base = env.LOCALAPPDATA || join(env.USERPROFILE || ".", "AppData", "Local");
   return join(base, "LifeFramework", "session");
+}
+
+export function sessionDir(env = process.env, root = ROOT) {
+  if (env.LF_SESSION_DIR) return env.LF_SESSION_DIR;
+  return join(sessionBase(env), basename(resolve(root)));
+}
+
+// Recorded, not stopped sessions in other checkouts' dirs; alive(pid) decides.
+export function liveSessionsElsewhere(dir, alive, base = sessionBase()) {
+  let names = [];
+  try {
+    names = readdirSync(base, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
+  } catch {
+    return [];
+  }
+  const out = [];
+  // base itself: a session started before the dirs were split.
+  for (const other of [base, ...names.map((n) => join(base, n))]) {
+    if (resolve(other).toLowerCase() === resolve(dir).toLowerCase()) continue;
+    const s = readSession(other);
+    if (s && !s.stoppedAt && (alive(s.serverPid) || (s.clients ?? []).some((c) => alive(c.pid)))) out.push({ dir: other, root: s.root });
+  }
+  return out;
 }
 
 // -profile <dir> puts $profile: in <dir>\profile and logs in <dir>\logs.
@@ -277,7 +304,8 @@ export function selftestSession() {
     failures.push("--mission prod was accepted");
   } catch {}
   if (sessionDir({ LF_SESSION_DIR: "X" }) !== "X") failures.push("LF_SESSION_DIR does not override");
-  if (sessionDir({ LOCALAPPDATA: "L" }) !== join("L", "LifeFramework", "session")) failures.push("default session dir changed");
+  if (sessionDir({ LOCALAPPDATA: "L" }, "C:/x/wt-a") !== join("L", "LifeFramework", "session", "wt-a")) failures.push("the session dir is not per checkout");
+  if (sessionDir({ LOCALAPPDATA: "L" }, "C:/x/wt-a") === sessionDir({ LOCALAPPDATA: "L" }, "C:/x/wt-b")) failures.push("two checkouts share a session dir");
   const st = parseState("faction=police duty=1 wanted=0 cash=250 bank=1000 job=none org=none");
   if (st.faction !== "police" || st.cash !== "250" || st.org !== "none") failures.push("parseState lost a field");
   try {
