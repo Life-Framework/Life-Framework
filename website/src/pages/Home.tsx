@@ -3,6 +3,7 @@ import { Arrow, DiscordIcon, GitHubIcon } from "@/components/icons";
 import { Figure, GoLink, RouteMap, ScopeMeter, Section, Stamp } from "@/components/ui";
 import {
   CURRENT_MILESTONE,
+  CURRENT_MILESTONE_NAME,
   DISCORD_URL,
   REPO_URL,
   blob,
@@ -58,7 +59,7 @@ const skills = ["Enforce Script", "Mapping and world building", "UI", "3D models
 const Home = () => {
   const m1 = milestone(CURRENT_MILESTONE);
   const { done, total } = milestoneProgress(CURRENT_MILESTONE);
-  const m1Name = siteData.milestones.find((m) => m.id === CURRENT_MILESTONE)?.name ?? "Playtest Town";
+  const m1Name = CURRENT_MILESTONE_NAME;
   const left = total - done;
   const unassigned = (m1?.issues ?? []).filter((i) => i.state === "open" && i.assignees.length === 0).length;
   const goodFirst = githubData.goodFirst.length;

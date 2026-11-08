@@ -13,9 +13,15 @@ can help match your interests to an issue.
 ## 2. Pick an issue
 
 Start with a [good first issue](https://github.com/Life-Framework/Life-Framework/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22)
-or an unclaimed scope on the [current roadmap](docs/roadmap/README.md). Issues
-are the source of truth for the files, boundaries, and proof expected. Comment
-that you are taking an issue, then coordinate with the team on Discord.
+or an open branch on the [Tree of Life](https://life-framework.org/roadmap), the
+roadmap map of every issue. Each open issue also has a discussion thread in the
+#roadmap forum on Discord. Issues
+are the source of truth for the files, boundaries, and proof expected.
+
+Comment `/claim` on the issue to take it; a bot adds you as an assignee. Others
+can `/claim` the same issue to join you (up to ten), and `/unclaim` steps you
+back. The website and Discord update from the assignee list. Then coordinate
+with the team on Discord.
 
 ## 3. Build and playtest
 

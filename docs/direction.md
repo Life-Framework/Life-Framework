@@ -47,7 +47,9 @@ Every step works on a **dedicated server with several clients**, gives
 
 ## Milestones
 
-Each milestone ends with a public build and a filmed showcase.
+Each milestone ends with a public build and a filmed showcase. M0 is completed
+history. GitHub's M1+ milestones, descriptions, and issue assignments are the
+live roadmap data that the website and Discord board render.
 
 | # | Milestone | Done when |
 |---|---|---|
@@ -56,6 +58,7 @@ Each milestone ends with a public build and a filmed showcase.
 | M2 | **Living town** | Four themes work on a dedicated server in the playtest village: moderation (an incident log and Game Master tools), medic (downed state, EMS, ambulance), comms (payphones, pagers, a dispatch board), and investigation (witnesses and evidence behind the vague-description wanted system). M2 closes by placing the loops in one Everon town from reusable site prefabs, on MainWorld, with a filmed tour. Outline: [m2-outline](roadmap/m2-outline.md). |
 | M3 | **Framework release** | A server owner can install from the Workshop, configure from documented files, add a job or shop without writing script, and host on their own box. |
 | M4 | **Flagship live** | A recurring public 1989 Everon server with its own community. |
+| M5 | **Flagship story** | After the flagship server goes live: the flagship's own story and content, relocated from Chernobyl and starting life again on Everon in 1989. |
 
 Until 2026-11-08 M2 was "Flagship town": Everon placement, reusable site
 prefabs, and MainWorld. That work is now the closing step of M2, after the four

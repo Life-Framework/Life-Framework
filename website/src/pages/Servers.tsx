@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Figure, GoLink, PageHeader, Section, Stamp } from "@/components/ui";
-import { DISCORD_URL, blob, milestone, siteData, still } from "@/lib/content";
+import { DISCORD_URL, blob, milestone, milestoneName, siteData, still } from "@/lib/content";
 
 const flagship: { rule: string; id: string }[] = [
   { rule: "Death drops what you carry. Bank, vehicles, and property are safe.", id: "death-drops-what-you-carry" },
@@ -21,8 +21,7 @@ const configs = [
 ];
 
 const Servers = () => {
-  const m3 = siteData.milestones.find((m) => m.id === "M3");
-  const m3Issues = milestone("M3");
+  const m3 = milestone("M3");
   return (
     <>
       <PageHeader kicker="For server owners" title="Host it, tune it, build on it">
@@ -38,12 +37,12 @@ const Servers = () => {
           <Stamp tilt>Not released</Stamp>
           <div>
             <p className="heading">
-              {m3?.id} {m3?.name}
+              {m3 && `${m3.id} ${milestoneName(m3)}`}
             </p>
-            <p className="muted text-[0.9375rem] mt-1">{m3?.doneWhen}</p>
+            <p className="muted text-[0.9375rem] mt-1">{m3?.description}</p>
             <p className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
               <GoLink to="/roadmap">Where we are now</GoLink>
-              {m3Issues && <GoLink to={m3Issues.url}>M3 on GitHub</GoLink>}
+              {m3 && <GoLink to={m3.url}>M3 on GitHub</GoLink>}
               <GoLink to={DISCORD_URL}>Ask on Discord</GoLink>
             </p>
           </div>
