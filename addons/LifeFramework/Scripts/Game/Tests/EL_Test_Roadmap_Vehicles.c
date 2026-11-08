@@ -341,5 +341,8 @@ class EL_Test_Roadmap_VehiclesPersistence : EL_Test
 		ctx.False(restoredLock.IsVehicleLocked(), "the retrieved lock flag is still unlocked");
 		ctx.EqualStr(saved.m_sKeyId, restoredLock.GetVehicleIdentifier(), "the retrieved lock uses the saved key id");
 		ctx.True(restoredLock.IsValidKey(EL_VehicleOwnership.GetKey(vehicleId)), "the original key matches after retrieve");
+
+		// Leave the garage pad free for the next retrieve.
+		EL_VehicleOwnership.Store(vehicleId, uid);
 	}
 }

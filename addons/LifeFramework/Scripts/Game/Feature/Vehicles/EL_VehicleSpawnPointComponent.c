@@ -155,6 +155,8 @@ class EL_VehicleSpawnPointComponent : ScriptComponent
 				origin = slot;
 				return true;
 			}
+
+			EL_Debug.Log("Vehicle", string.Format("pad %1 slot %2 at %3 is taken by %4 at %5", m_sShopId, i, slot, EL_Utils.GetPrefabName(nearby.Get(0)), nearby.Get(0).GetOrigin()));
 		}
 
 		return false;

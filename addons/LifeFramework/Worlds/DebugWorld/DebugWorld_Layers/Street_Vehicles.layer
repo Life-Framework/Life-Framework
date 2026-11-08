@@ -98,7 +98,7 @@ GenericEntity Roadmap_Garage {
   EL_VehicleSpawnPointComponent "{C3E2E6F2E56F3E66}" {
    m_sShopId "roadmap-garage"
    m_vOffset 0 0 -2
-   m_iSlots 2
+   m_iSlots 3
    m_vSlotStep -7 0 0
    m_vAngles 90 0 0
   }
