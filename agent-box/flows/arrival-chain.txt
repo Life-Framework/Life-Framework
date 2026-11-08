@@ -1,0 +1,64 @@
+# Arrival chain (M1-18): a fresh player registers at the clerk, gets the ID card, reads the town
+# board, runs one parcel, banks the cash, and returns to the clerk for the welcome.
+# Requires the faction menu (a fresh profile); signs form R-89 so the character spawns.
+# Dedicated session: LF_SESSION_WINDOW=1280x720 node agent-box/session.mjs up --clients 1
+#                    node agent-box/harness.mjs --client 1 flow arrival-chain
+ui
+click CivilianButton
+wait 800
+click TownButton
+wait 1500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 7000
+shot ui arrival_0_spawn_hint
+state
+shot world Quest_Clerk
+layer Quest_Clerk LF_QuestAction
+wait 1200
+shot ui arrival_1_clerk_menu
+click ActionButton
+wait 1500
+shot ui arrival_1_accepted
+click ActionButton
+wait 2000
+shot ui arrival_1_card_handed
+click CloseButton
+wait 800
+shot ui arrival_2_errand
+state
+layer Sign_TownMap LF_SignReadAction
+wait 1000
+shot ui arrival_2_town_board
+input MenuBack
+wait 1500
+shot ui arrival_3_errand
+layer Roadmap_Job_Depot LF_JobSignUpAction
+wait 1000
+layer Roadmap_Job_Depot LF_JobStartRunAction
+wait 1000
+layer Roadmap_Job_Drop LF_JobDropoffAction
+wait 1500
+shot ui arrival_3_paid
+state
+layer ATM_Debug
+wait 1000
+click Key2Button
+click Key0Button
+click DepositButton
+wait 1500
+shot ui arrival_4_deposited
+input MenuBack
+wait 1500
+shot ui arrival_5_errand
+layer Quest_Clerk LF_QuestAction
+wait 1200
+shot ui arrival_5_clerk_menu
+click ActionButton
+wait 2000
+shot ui arrival_5_welcome
+click CloseButton
+wait 800
+state

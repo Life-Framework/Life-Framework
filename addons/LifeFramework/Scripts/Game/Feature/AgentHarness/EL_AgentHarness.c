@@ -986,7 +986,43 @@ class EL_AgentHarness
 
 		string line = string.Format("faction=%1 duty=%2 wanted=%3 rank=%4 cash=%5 bank=%6 job=%7 org=%8", faction, duty, wanted, rank, EL_MoneyUtils.GetCash(character), bank, job, org);
 		line += " player=" + LF_PlayerInteraction.PlayerIdOf(character).ToString();
-		return line + string.Format(" pos=%1 bills=%2", pos, bills);
+		line += string.Format(" pos=%1 bills=%2", pos, bills);
+		return line + string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Name_Surname" of the card the character would show, else "none".
+	protected static string IdCardToken(IEntity character, EL_PlayerAccount account)
+	{
+		string holderId;
+		if (account && account.GetActiveCharacter())
+			holderId = account.GetActiveCharacter().GetId();
+
+		LF_IdCardComponent card = LF_IdCard.FindShown(character, holderId);
+		if (!card)
+			return "none";
+
+		return Token(card.GetFirstName() + "_" + card.GetLastName());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Turned-in quest ids joined with "," (the arrival chain progress), else "none".
+	protected static string QuestToken(IEntity character)
+	{
+		LF_QuestTrackerComponent tracker = LF_QuestTrackerComponent.Cast(character.FindComponent(LF_QuestTrackerComponent));
+		if (!tracker)
+			return "none";
+
+		array<string> ids = tracker.GetTurnedInQuestIds();
+		string joined;
+		foreach (string questId : ids)
+		{
+			if (!joined.IsEmpty())
+				joined += ",";
+			joined += questId;
+		}
+
+		return Token(joined);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,4 +1,6 @@
-// red-proof: pending
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_ArrivalChain`: made
+// LF_QuestManager.ReportSignal route a TALK event; got `[ELTEST] FAIL quests/arrival-chain`,
+// `- step 2 turns in on its own`, `- step 3 starts on its own`, `- a deposit moves step 4`. Restored; green.
 // tier: WORLD
 //! The town clerk in Quests.layer runs the arrival chain end to end through the public quest
 //! API: talk and register, read the town board, deliver a parcel, bank cash, return. Each
@@ -52,14 +54,16 @@ class LF_Test_ArrivalChain : EL_Test
 		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.ACTIVE, "step 2 starts on its own");
 		ctx.True(Status(tracker, "arrival_work") == LF_EQuestStatus.AVAILABLE, "step 3 waits for step 2");
 
-		// The town board is far from the newcomer, and other signals do not count for it.
-		ctx.False(tracker.RequestSignRead("town_map_nowhere"), "a sign that is not beside the reader does not count");
+		// Another sign, a sign that is not there, and other signals do not count for step 2.
+		ctx.False(tracker.RequestSignRead("no_such_sign"), "a sign id with no sign beside the reader does not count");
+		ctx.False(tracker.RequestSignRead("post_office"), "the post office sign is not beside the clerk, so its read does not count");
 		ctx.False(manager.ReportSignal(player, LF_QuestSignals.SignRead("post_office")), "reading the post office sign does not move step 2");
 		ctx.False(manager.ReportSignal(player, LF_QuestSignals.ATM_DEPOSIT), "an early deposit does not move step 2");
 		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.ACTIVE, "step 2 still runs");
 
 		// Step 2 -> 3 -> 4 -> 5, each on its own signal, in order, with no trip back to the clerk.
-		ctx.True(manager.ReportSignal(player, LF_QuestSignals.SignRead("town_map")), "reading the town board moves step 2");
+		// Signs.layer: Sign_TownMap stands at 130.5 0 246.5, about 5 m from the clerk.
+		ctx.True(tracker.RequestSignRead("town_map"), "reading the town board beside the clerk counts");
 		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.TURNED_IN, "step 2 turns in on its own");
 		ctx.True(Status(tracker, "arrival_work") == LF_EQuestStatus.ACTIVE, "step 3 starts on its own");
 

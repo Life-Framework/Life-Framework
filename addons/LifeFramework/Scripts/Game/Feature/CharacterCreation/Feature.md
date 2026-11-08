@@ -45,7 +45,8 @@ office). Low priority; the menu flow is fine for V1 as long as it is honest.
   requires a chosen faction; M1-11 drops that gate with the menu.
 - `LF_RegistrationForm` / `LF_RegistrationRules` — form R-89 and its checks.
 - `LF_IdCardComponent` / `LF_IdCard` — the card's printed identity and the
-  grant (`EL_SpawnLogic.m_bGrantIdAtSpawn` until M1-18 hands it over).
+  grant: the town clerk hands it over (M1-18, `LF_QuestRewards.HandIdCard`), then
+  `EL_SpawnLogic` reprints it on every spawn.
 - `EL_ShowIDAction` / `LF_IdCardView` — hold the card up; the viewer sees it.
 
 ## Dependencies

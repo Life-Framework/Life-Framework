@@ -1,4 +1,7 @@
-// red-proof: pending
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_QuestSignal,LF_Test_ArrivalChain`:
+// dropped the previous-quest check in LF_QuestTracker.CollectAutoAccepts; got
+// `[ELTEST] FAIL quests/signal-event`, `- nothing starts on its own before the clerk is met (expected 0, got 3)`,
+// `- exactly one step opens after step 1 (expected 1, got 3)`. Restored; green.
 // tier: LOGIC
 //! SIGNAL objectives advance only on their own key, chain steps open one at a time, and a
 //! returning player (turn-ins restored) is offered none of the chain again. Pure tracker logic.

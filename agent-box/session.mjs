@@ -41,7 +41,14 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 export const SERVER_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
 export const MAX_CLIENTS = 3;
-export const WINDOW = { width: 640, height: 360, gap: 8 };
+// LF_SESSION_WINDOW=1280x720 opens larger client windows for screenshots a person reads.
+export const WINDOW = windowSize(process.env.LF_SESSION_WINDOW);
+
+export function windowSize(spec) {
+  const m = /^(\d{3,4})x(\d{3,4})$/.exec(spec || "");
+  if (!m) return { width: 640, height: 360, gap: 8 };
+  return { width: Number(m[1]), height: Number(m[2]), gap: 8 };
+}
 export const SERVER_READY = "Entered online game state.";
 // The server refuses a client whose script checksum differs
 // ("remote script source code checksum does not match"), so clients compile
