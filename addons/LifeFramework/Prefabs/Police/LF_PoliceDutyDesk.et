@@ -17,9 +17,9 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
     UserActionContext "{22A17EEEA2399F2D}" {
      ContextName "LF_DutyClock"
      Position PointInfo "{B046DE7E017B07C6}" {
-      Offset 0 0.95 0.1
+      Offset 0 1 0.15
      }
-     Radius 1.2
+     Radius 1.6
     }
    }
    additionalActions {
@@ -38,7 +38,7 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
  {
   GenericEntity DutyClock : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {
    ID "281D3BD880CE964E"
-   coords 0 0.76 0.15
+   coords 0 0.63 0.15
   }
  }
 }

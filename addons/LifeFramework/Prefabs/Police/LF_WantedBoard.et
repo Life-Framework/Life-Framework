@@ -13,6 +13,11 @@ GenericEntity : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
    }
   }
   ActionsManagerComponent "{6E065C9694DC3BE5}" {
+   ActionContexts {
+    UserActionContext "{360C30155120CB67}" {
+     Radius 1.5
+    }
+   }
    additionalActions + {
     LF_WantedBoardReadAction "{F60E16CD45D0A0FE}" {
      ParentContextList {

@@ -361,9 +361,9 @@ class EL_Test_PoliceItemState : EL_Test
 	{
 		LF_StorageItemRecord item = LF_StorageItemRecord.Create("{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et", 1, -1, 0, 0);
 		item.m_iAmmo = 11;
-		SCR_JsonSaveContext json = new SCR_JsonSaveContext();
+		JsonSaveContext json = new JsonSaveContext(false);
 		json.WriteValue("item", item);
-		string text = json.ExportToString();
+		string text = json.SaveToString();
 		ctx.True(text.Contains("m_sPrefab"), "the record serializes its fields");
 		ctx.False(text.Contains("m_iAmmo"), "the ammo field stays out of the carried record format");
 
