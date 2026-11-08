@@ -18,7 +18,7 @@ Everything you need to clone Life Framework, build the mod, run checks, and
 
 > **Platform note:** Workbench build and the validation scripts are Windows-first
 > today. Linux/macOS contributors can edit docs, scripts, and EnforceScript, and
-> can run the headless test server via `server/scripts/launch-test.sh` once paths
+> can point `ENFUSION_SERVER_PATH` at a Linux server build once paths
 > are configured — but `node tools/cli.mjs build` and `validate` expect Windows
 > Toolchain paths unless you set the `ENFUSION_*` env vars above.
 
@@ -42,6 +42,10 @@ servers all fall back to the standard Steam install locations:
 - `...\Steam\steamapps\common\Arma Reforger Tools`
 - `...\Steam\steamapps\common\Arma Reforger`
 - `...\Steam\steamapps\common\Arma Reforger Server` (only needed for `test`/`serve`)
+
+Resolution order for every tool path: **OS environment variable →
+`opencode.json` → standard Steam install locations.** Machine-specific paths
+go in your environment or your global opencode config, never in the repo.
 
 If you installed outside Steam or want custom locations, set any of these OS
 environment variables (they win over everything):
@@ -133,21 +137,42 @@ The test pipeline boots a dedicated server on DebugWorld, runs the `EL_Test*`
 suite, parses `[ELTEST] SUMMARY`, and exits nonzero on failure. Details:
 [server/README.md](../server/README.md) and [AGENTS.md](../AGENTS.md).
 
+- `build` needs Arma Reforger Tools (Workbench) and the game installed.
+- `test` and `serve` need Arma Reforger Server (Steam app 1874900).
+- Server config (scenario + RCON): `server/configs/test-server.json`.
+
 ## 5. AI tooling (optional)
 
-We encourage AI-assisted contributions. Install MCP servers once:
+We encourage AI-assisted contributions. MCP servers are configured in
+[`opencode.json`](../opencode.json); their clones live git-ignored under
+`tools/mcp/`. `enfusion-mcp` (API search, vanilla source, assets, prefabs) is
+enabled; `enfusion-workbench` (live Workbench bridge, `wb_*` tools) is also
+enabled in the committed `opencode.json` and only works while Workbench is
+open. Manage them with:
 
 ```sh
-node tools/cli.mjs mcp install
-node tools/cli.mjs mcp verify
+node tools/cli.mjs mcp install [name]   # clone if missing, npm ci, build
+node tools/cli.mjs mcp update [name]    # git pull --ff-only, npm ci, build
+node tools/cli.mjs mcp verify [name]    # boot briefly to prove it starts
+node tools/cli.mjs mcp enable <name>    # enabled=true in opencode.json
+node tools/cli.mjs mcp disable <name>   # enabled=false in opencode.json
 ```
 
-Research Enfusion APIs from any terminal (no Workbench GUI):
+`[name]` is `enfusion-mcp` or `enfusion-workbench`; omitted means all.
+
+Call any server tool from a plain terminal, no opencode session or restart
+needed (see `tools/mcp-call.mjs`):
 
 ```sh
 node tools/cli.mjs call list
 node tools/cli.mjs call api_search '{"query":"SCR_SpawnLogic","format":"tree"}'
+node tools/cli.mjs call game_read @tmp/args.json     # file args: PowerShell mangles inline JSON
+node tools/cli.mjs call --batch @tmp/wb-session.json # several calls in ONE server process
 ```
+
+The Workbench bridge caches the editor mode per process, so a fresh process
+starts in an "unknown" mode and mode-gated tools refuse. Run `wb_state` and
+`wb_play` in one `--batch` session.
 
 For [opencode](https://opencode.ai) users: skills and playbooks live in
 [`.opencode/`](../.opencode/README.md). Restart opencode after changing MCP
@@ -202,6 +227,7 @@ stays the world-editor copy.
 | `validate` fails with `spawn powershell ENOENT` | Install PowerShell 7 (`pwsh`) or run validation on Windows |
 | Workbench not found | Set `ENFUSION_WORKBENCH_PATH` (OS env or global opencode config); run `status` |
 | Workbench: *Arma Reforger base game project not found* / game: *Unable to initialize Enfusion* | The game install is missing `addons\data\ArmaReforger.gproj` + `addons\core\*` (partial Steam update). Run `tools\cli status` for the exact missing file, then Steam → **Arma Reforger (the GAME, app 1874880)** → Properties → Installed Files → **Verify integrity of game files**. Verifying only *Arma Reforger Tools* does not restore these. Relaunch the game once afterward. |
+| Workbench: *Missing Addon* for game GUID `58D0FB3206B6F859` | `powershell -ExecutionPolicy Bypass -File tools\utilities\repair-base-addons.ps1`. It restores only a missing loose `ArmaReforger.gproj` from the installed Server package; it never overwrites a manifest with the wrong GUID. |
 | Server not found | Install Arma Reforger Server (1874900) or set `ENFUSION_SERVER_PATH` |
 | `cli build/test/dev` refuses in the main checkout | Create a worktree: `cli wt new <feature>`, then work there |
 | Pre-commit blocks `.rdb` / `log` / `.gproj.user` | Unstage generated Workbench artifacts; never commit them |
@@ -213,7 +239,7 @@ Logs: `server/logs/` (test server), Workbench console under
 
 ## Next steps
 
-- [Roadmap](roadmap.md) — what to build next
+- [Roadmap](roadmap/README.md) — the live plan
 - [Features](features.md) — implemented behavior contracts
-- [Test plan](test-plan.md) — how we prove features
-- [Debug World scripts guide](../addons/LifeFramework/GUIDE_DEBUG_WORLD_SCRIPTS.md) — attaching test prefabs
+- [Testing plan](roadmap/testing/README.md) — how we prove features
+- [Feature design files](../addons/LifeFramework/Scripts/Game/Feature/README.md) — per-feature `Feature.md` index

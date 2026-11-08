@@ -1,7 +1,7 @@
 # Shop — Design Requirements
 
 > Context file for the commerce engine and its physical storefronts. Written
-> against `docs/design-philosophy.md` (in-world first). Covers the generic
+> against `docs/design.md` (in-world first). Covers the generic
 > purchase engine and every store type built on it.
 
 ## Intent
@@ -57,7 +57,7 @@ sizing, layered clothing.
 Each store type is a drop-in prefab built on a Reforger building (shop, market
 hall, supermarket, garage). Replacing the building on the map populates the
 location with working purchase points and its price data. One prefab per store
-type; no per-map scripting. See `docs/design-philosophy.md` §4.
+type; no per-map scripting. See `docs/design.md` §4.
 
 ## V1 (shippable)
 

@@ -1,7 +1,7 @@
 # Houses — Design Requirements
 
 > Context file for owned property. Written against
-> `docs/design-philosophy.md` (in-world first).
+> `docs/design.md` (in-world first).
 
 ## Intent
 

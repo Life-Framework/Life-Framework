@@ -1,0 +1,56 @@
+FrameWidgetClass "{CF8FA5269C694494}" {
+ Name "GarageVehicleRow"
+ Slot LayoutSlot "{F2E4E5936B88463A}" {
+  Padding 20 5 20 5
+ }
+ {
+  HorizontalLayoutWidgetClass "{0665535E7B814C1C}" {
+   Name "Row"
+   Slot FrameWidgetSlot "{3B5D2BC2ADAB4D36}" {
+    HorizontalAlign 3
+    VerticalAlign 1
+   }
+   {
+    ImageWidgetClass "{1D5D2778BAC248FB}" {
+     Name "VehicleImage"
+     Slot LayoutSlot "{191A2A965B284E22}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 1
+     }
+     Color 0.729 0.667 0.549 1
+     Image ""
+     Size 128 128
+    }
+    TextWidgetClass "{8769AFF9BCA54080}" {
+     Name "VehicleTitle"
+     Slot LayoutSlot "{90230D2C00BC493A}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 2
+     }
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{D63E8645537E4167}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{35CD2B50CCE345B6}" {
+     Name "VehiclePrice"
+     Slot LayoutSlot "{E5358BE9B9FB498F}" {
+      VerticalAlign 1
+      SizeMode Fill
+      FillWeight 1
+     }
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{28DC56798D1C46FA}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

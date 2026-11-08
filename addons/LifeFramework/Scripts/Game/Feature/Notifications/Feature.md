@@ -1,7 +1,7 @@
 # Notifications — Design Requirements
 
 > Context file for player-facing signals. Written against
-> `docs/design-philosophy.md`.
+> `docs/design.md`.
 
 ## Intent
 

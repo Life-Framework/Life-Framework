@@ -1,0 +1,41 @@
+SizeLayoutWidgetClass "{3FA2229C40F2666B}" {
+ Name "Row"
+ Slot LayoutSlot "{D95E294DF8C8B045}" {
+  Padding 28 10 28 10
+ }
+ AllowHeightOverride 1
+ HeightOverride 40
+ {
+  OverlayWidgetClass "{D327A09E9F82F8EA}" {
+   Slot AlignableSlot "{8A376C310012DAEF}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    PanelWidgetClass "{7A93F1382F811226}" {
+     Name "RowPlate"
+     Slot OverlayWidgetSlot "{47CD8E8B76569579}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.729 0.667 0.549 1
+    }
+    TextWidgetClass "{7DAF8A1E885EC0CA}" {
+     Name "RowLabel"
+     Slot OverlayWidgetSlot "{A7CB767BF902484A}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 12 8 12 8
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{19B2D0493D91BD1B}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

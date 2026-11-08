@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Roadmap street</title>
+<style>
+  body { margin: 24px; font: 16px/1.45 Georgia, serif; background: #f4f1ea; color: #1c1915; }
+  h1 { font-size: 1.6rem; margin-bottom: 0.2rem; }
+  .wide img, .pictures img { width: 100%; height: auto; background: #ddd; }
+  article { display: grid; grid-template-columns: minmax(240px, 420px) 1fr; gap: 20px; align-items: start; margin: 28px 0; padding-top: 20px; border-top: 1px solid #d5cfc3; }
+  .fail { color: #8c1d1d; }
+  .pass { color: #1d5c32; }
+  .fail-row { background: #f8e8e4; }
+  .missing { color: #8c1d1d; }
+</style>
+</head>
+<body>
+<h1>Roadmap street</h1>
+<p>2 passed, 0 failed, 2 sites.</p>
+<p>Play-mode street pass. Pictures sit beside the look text. The test server stays down.</p>
+
+<figure class="wide">
+  <img src="shots/roadmap-row.png" alt="Roadmap row">
+  <figcaption>The row.</figcaption>
+</figure>
+
+<article class="pass-row">
+  <div class="pictures">
+    <img src="shots/Roadmap_Garage.png" alt="Roadmap_Garage">
+    
+  </div>
+  <div class="text">
+    <h2>Roadmap_Garage</h2>
+    <p>Roadmap.layer at 186 0 102.1</p>
+    <p>Look: EL_ConfiscateAction,EL_VehicleStoreAction@Roadmap_Garage,EL_VehicleRetrieveAction@Roadmap_Garage</p>
+    
+    <p>18.942 m from the nearest other site. Mesh: ok.</p>
+    <p class="pass">Pass.</p>
+  </div>
+</article>
+<article class="pass-row">
+  <div class="pictures">
+    <img src="shots/Roadmap_Escort_Car.png" alt="Roadmap_Escort_Car">
+    
+  </div>
+  <div class="text">
+    <h2>Roadmap_Escort_Car</h2>
+    <p>Roadmap.layer at 204 0 108</p>
+    <p>Look: EL_ConfiscateAction,SCR_GetInUserAction@Roadmap_Escort_Car,SCR_GetInUserAction@Roadmap_Escort_Car,SCR_RefuelAtSupportStationAction@Roadmap_Escort_Car,SCR_PushVehicleAction@Roadmap_Escort_Car,SCR_ToggleHandbrakeAction@Roadmap_Escort_Car,SCR_ResourceContainerVehicleLoadAction@Roadmap_Escort_Car,SCR_ResourceContainerVehicleUnloadAction@Roadmap_Escort_Car,SCR_OpenVehicleStorageAction@Roadmap_Escort_Car,EL_VehicleLockAction@Roadmap_Escort_Car,LF_JailPutInVehicleAction@Roadmap_Escort_Car,SCR_GetInUserAction@Roadmap_Escort_Car</p>
+    
+    <p>18.942 m from the nearest other site. Mesh: ok.</p>
+    <p class="pass">Pass.</p>
+  </div>
+</article>
+</body>
+</html>

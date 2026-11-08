@@ -27,9 +27,7 @@ tools\cli wt logs <slug> <pattern>      # grep a worktree's newest console.log (
 tools\cli wt ship <slug>                # sync -> gate -> push -> PR -> auto-merge into main
 tools\cli wt prune <slug>               # remove a merged worktree + branch
 tools\cli call <tool> '<json>'|@file    # call an MCP tool directly (see mcp-call.mjs)
-tools\cli validate                      # run tools/validation/* checks
-tools\cli lint                          # run tools/lint/* checks
-tools\cli run test                      # run tools/test/* checks
+tools\cli validate                      # run tools/validation/* checks (also in CI)
 ```
 
 `build / test / dev / serve / ci` refuse to run in the main checkout (the
@@ -45,10 +43,8 @@ Runs on Windows (PowerShell), and works from any terminal.
 - `wt.mjs` - parallel-worktree library (hub state, port allocation, locks, gh/REST PR + merge)
 - `mcp-call.mjs` - call an MCP tool from the shell (API research without opencode's MCP plumbing)
 - `mcp/` - Enfusion/Reforger MCP servers for AI assistants (git-ignored clones; see `mcp/README.md`)
-- `build/` - Build and packaging scripts
 - `validation/` - Repo validator (also wired in as a git pre-commit hook; see below)
-- `lint/` - Lint checks (drop a script, `tools\cli lint` runs it)
-- `test/` - Test scripts (drop a script, `tools\cli run test` runs it)
+- `test/` - `test-e2e.ps1`, the server-suite harness `cli test` drives
 - `utilities/` - Helper scripts for common tasks
 - `film/` - Filming harness: record the game window to mp4 + GIF preview, film an agent-box flow, publish PR evidence (`node tools/film/film.mjs`)
 
@@ -80,7 +76,7 @@ tools\cli ci       # validate + build + test
 ```
 
 - Test scenario: `addons/LifeFramework/Missions/EL_DebugTest.conf` (DebugWorld + `EL_TestGameMode`)
-- Server config: `server/configs/test-server.json`; wrappers: `server/scripts/launch-test.{ps1,sh}`
+- Server config: `server/configs/test-server.json`
 - Logs land in `server/logs/`; build output and profile are git-ignored.
 
 ## Pre-commit hook

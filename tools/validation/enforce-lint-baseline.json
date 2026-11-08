@@ -141,6 +141,11 @@
  },
  {
   "rule": "L3",
+  "file": "Scripts/Game/Feature/Police/LF_JailArrestableComponent.c",
+  "text": "GetGame().GetCallqueue().CallLater(OnTick, TICK_MS, true);"
+ },
+ {
+  "rule": "L3",
   "file": "Scripts/Game/Feature/Police/LF_JailCellComponent.c",
   "text": "GetGame().GetCallqueue().CallLater(OnTick, m_iTickIntervalMs, true);"
  },
@@ -153,6 +158,11 @@
   "rule": "L3",
   "file": "Scripts/Game/Feature/SirenLights/EL_SirenManagerComponent.c",
   "text": "class EL_SirenManagerComponent : ScriptComponent"
+ },
+ {
+  "rule": "L3",
+  "file": "Scripts/Game/Feature/UIKit/LF_UIQuantityRelay.c",
+  "text": "class LF_UIQuantityRelay : ScriptedWidgetComponent"
  },
  {
   "rule": "L4",

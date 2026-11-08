@@ -1,0 +1,14 @@
+TextWidgetClass "{5605749FECD19FB3}" {
+ Name "Title"
+ Slot LayoutSlot "{6542420946644C61}" {
+  Padding 28 10 28 10
+ }
+ Color 0.110 0.102 0.086 1
+ Text ""
+ "Font Size" 28
+ "Min Font Size" 28
+ "Horizontal alignment" Center
+ FontProperties FontProperties "{DB50C3329C8E68BD}" {
+  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+ }
+}

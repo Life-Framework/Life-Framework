@@ -2,7 +2,8 @@
 // already exists in the loaded world; the server moves only the requesting
 // player's character to just beside it. That is how a play session reaches a
 // DebugWorld layer without injecting movement keys. The interaction that
-// follows still goes through the normal action checks.
+// follows still goes through the normal action checks. Every RPC here passes
+// EL_DevGate first: the debug game mode opts in, otherwise administrators only.
 
 modded class SCR_ChimeraCharacter
 {
@@ -17,6 +18,10 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_HarnessStand(string entityName)
 	{
+		// A client could otherwise teleport itself or fire an action out of reach.
+		if (!EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "stand"))
+			return;
+
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return;
@@ -32,6 +37,39 @@ modded class SCR_ChimeraCharacter
 		// without planting them inside the prop.
 		SetOrigin(target.GetOrigin() + Vector(1.2, 0, 0));
 		EL_Debug.Log("AgentHarness", string.Format("stood beside %1", entityName));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Move this character to a world shot. The player camera follows the body,
+	//! which SetCamera on a CameraBase does not.
+	void EL_AskHarnessPose(float x, float y, float z, float yaw, float pitch)
+	{
+		if (Replication.IsServer())
+		{
+			EL_ApplyHarnessPose(x, y, z, yaw, pitch);
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessPose, x, y, z, yaw, pitch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_HarnessPose(float x, float y, float z, float yaw, float pitch)
+	{
+		// A client could otherwise teleport itself or fire an action out of reach.
+		if (!EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "pose"))
+			return;
+
+		EL_ApplyHarnessPose(x, y, z, yaw, pitch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void EL_ApplyHarnessPose(float x, float y, float z, float yaw, float pitch)
+	{
+		SetOrigin(Vector(x, y, z));
+		SetYawPitchRoll(Vector(yaw, pitch, 0));
+		EL_Debug.Log("AgentHarness", string.Format("posed %1 %2 %3 facing %4 %5", x, y, z, yaw, pitch));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -55,6 +93,10 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_HarnessUse(int commandId, string className, string entityName)
 	{
+		// A client could otherwise teleport itself or fire an action out of reach.
+		if (!EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "use"))
+			return;
+
 		EL_AgentHarness.ApplyUse(this, commandId, className, entityName);
 	}
 }

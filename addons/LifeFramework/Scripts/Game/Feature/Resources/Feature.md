@@ -1,7 +1,7 @@
 # Resources — Design Requirements
 
 > Context file for the physical gather nodes. The backing for `Gathering`.
-> Written against `docs/design-philosophy.md` (in-world first).
+> Written against `docs/design.md` (in-world first).
 
 ## Intent
 

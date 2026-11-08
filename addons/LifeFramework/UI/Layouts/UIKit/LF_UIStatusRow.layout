@@ -1,0 +1,81 @@
+SizeLayoutWidgetClass "{4C5C38403A9D6402}" {
+ Name "StatusRow"
+ Slot LayoutSlot "{9B6221F537F56267}" {
+  Padding 28 10 28 10
+ }
+ AllowHeightOverride 1
+ HeightOverride 56
+ {
+  OverlayWidgetClass "{C1827E30CD1B26B2}" {
+   Slot AlignableSlot "{3B395B8D0E3C888C}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    PanelWidgetClass "{FB3EF8EED4352561}" {
+     Name "RowPlate"
+     Slot OverlayWidgetSlot "{B1C4594920C89385}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.729 0.667 0.549 1
+    }
+    HorizontalLayoutWidgetClass "{73CD8ED84E5A6830}" {
+     Slot OverlayWidgetSlot "{3686040141D6F35E}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 12 4 8 4
+     }
+     {
+      TextWidgetClass "{DA95F9F8FD74928C}" {
+       Name "RowLabel"
+       Slot LayoutSlot "{5C1C7F08C2DC9173}" {
+        VerticalAlign 1
+        SizeMode Fill
+        FillWeight 2
+       }
+       Color 0.110 0.102 0.086 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{A6D61941AEB03DA0}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{D6C7B74E31241FDB}" {
+       Name "RowStatus"
+       Slot LayoutSlot "{D0FA6F8BCF9A87FF}" {
+        VerticalAlign 1
+        SizeMode Fill
+        FillWeight 1
+       }
+       Color 0.110 0.102 0.086 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal alignment" Center
+       FontProperties FontProperties "{3A027C32DB5F6D59}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      ButtonWidgetClass "{F4915A6BBCB2AF2A}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+       Name "ActionButton"
+       Slot LayoutSlot "{57592236BC445A37}" {
+        VerticalAlign 1
+        SizeMode Fill
+        FillWeight 1
+       }
+       components {
+        SCR_ButtonTextComponent "{FDA337C76D06A40C}" {
+         m_sText ""
+        }
+        LF_UIButtonRelay "{4E1A06AC340BC576}" {
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

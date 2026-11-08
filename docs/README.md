@@ -6,46 +6,47 @@ Project documentation for the Life Framework Arma Reforger mod.
 
 | Doc | Audience |
 | --- | --- |
-| [Setup guide](setup.md) | New contributors — install, Workbench, CLI, MCP, troubleshooting |
+| [Setup guide](setup.md) | New contributors — install, toolchain paths, Workbench, CLI, MCP, troubleshooting |
 | [Playtest](playtest.md) | Play DebugWorld on your own machine and send feedback |
-| [Agent box](agent-box.md) | GPU or remote box — clone, setup script, player-equivalent checks |
-| [Agent box chains](agent-box-chains.md) | DebugWorld chain probes, harness gaps, live findings |
+| [Agent box](../agent-box/README.md) | GPU or remote box — setup script, player-equivalent checks, screenshots, roadmap street pass, DebugWorld chains |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | How to contribute, PR checklist, AI harness |
 | [AGENTS.md](../AGENTS.md) | Engineering contract — GUID rules, EnforceScript traps, verification ladder |
 
-## Project plan
+## Product and plan
 
-- [Roadmap](roadmap.md) — phased development plan. Phase 0 in progress; later
-  phases open for contributors.
-- [Vision](vision.md) — philosophy and goals (MIT-licensed, extensible, 1989-era base).
-- [Design philosophy](design-philosophy.md) — in-world-first interaction ladder and
-  shippable-V1 approach. The "why" behind every feature's `Feature.md`.
+- [Design](design.md) — vision, values, MIT commitment, in-world-first
+  interaction ladder, economy/profession/ownership principles, base mod vs
+  extension, feature checklist. The "why" behind every feature's `Feature.md`.
+- [Roadmap](roadmap/README.md) — the live plan: phases and scopes for the
+  playable mod. Testing gates in [roadmap/testing](roadmap/testing/README.md).
+- [Community roadmap scrape](roadmap.md) — copy of the life-framework.org
+  roadmap, kept for reference.
 
 Feature design context files live beside the code in
 `addons/LifeFramework/Scripts/Game/Feature/*/Feature.md` (indexed by
 [`Feature/README.md`](../addons/LifeFramework/Scripts/Game/Feature/README.md)).
-- [Design principles](design-principles.md) — how we build: framework defaults,
-  period authenticity, world-as-interface, credible professions.
 
 ## Engineering
 
 - [Features](features.md) — implemented features, behavior contracts, fragile paths.
-- [Test plan](test-plan.md) — test format and per-feature cases.
+- [Testing plan](roadmap/testing/README.md) — test gates, file rules, and per-setup cases.
+- [Persistence](persistence.md) — save data, serializers, autosave/shutdown orchestration, rules.
 - [Foundation design](foundation-design.md) — Economy, Trade, Processing, Real Estate primitives.
+- [Worktrees](worktrees.md) — parallel agent worktrees, ports, gate, ship.
+- [Debug log triage](debug-log-triage.md) — what every known DebugWorld boot line means. Read before chasing a log message.
+- [Dedicated server session](dedicated-session.md) — the dedicated-server proof pass.
+- [Street manifest](street-manifest.md) — DebugWorld street layout tool.
 
-## Mod authoring guides
+## Surveys
 
-In `addons/LifeFramework/`:
-
-- [Debug World scripts](GUIDE_DEBUG_WORLD_SCRIPTS.md) — attach and configure test prefabs.
-- [Component reference](GUIDE_COMPONENT_REFERENCE.md) — component inventory.
-- [Creating Debug World](GUIDE_CREATING_DEBUG_WORLD.md) — build a debug layer.
+- [Overthrow survey](overthrow-survey.md) — what Overthrow.Arma4 offers and its license terms.
+- [EveronLife forks](everonlife-forks.md) — what the EveronLife forks hold and what was already ported.
 
 ## Agent guidance
 
-When picking up roadmap work, prefer in-progress Phase 0 items, then Phase 1
-core systems. Coordinate on [Discord](https://discord.com/invite/MjMexJteqz)
-before large efforts.
+When picking up roadmap work, start from [roadmap/README.md](roadmap/README.md).
+Coordinate on [Discord](https://discord.com/invite/MjMexJteqz) before large
+efforts.
 
-All factual engineering rules live in [AGENTS.md](../AGENTS.md). Workflow
-skills for opencode live in [`.opencode/`](../.opencode/README.md).
+All factual engineering rules live in [AGENTS.md](../AGENTS.md); agent
+workflows (playbooks, authoring guides) live in `.claude/skills/`.

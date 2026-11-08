@@ -10,6 +10,14 @@ class AdminChatChannel : BaseChatChannel
 		if (!isAuthority)
 			return true;
 
+		// The authority re-checks the sender's role. IsAvailable only gates the UI; a modded
+		// client can still send on this channel, and !wadd grants police whitelist.
+		if (!IsAdminSender(sender))
+		{
+			EL_Debug.Warn("Chat", "admin message refused: sender is not an administrator");
+			return false;
+		}
+
 		//!wadd TYPE UID
 		//eg. "!wadd POLICE 544-242-544-242"
 		if (message.StartsWith("!wadd"))
@@ -57,7 +65,38 @@ class AdminChatChannel : BaseChatChannel
 	//------------------------------------------------------------------------------------------------
 	override bool IsAvailable(BaseChatComponent sender)
 	{
+		return IsAdminSender(sender);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the chat component belongs to a player controller whose player holds the
+	//! ADMINISTRATOR role. Null-safe.
+	static bool IsAdminSender(BaseChatComponent sender)
+	{
+		if (!sender)
+			return false;
+
 		SCR_PlayerController senderPC = SCR_PlayerController.Cast(sender.GetOwner());
-		return senderPC && GetGame().GetPlayerManager().HasPlayerRole(senderPC.GetPlayerId(), EPlayerRole.ADMINISTRATOR);
+		if (!senderPC)
+			return false;
+
+		return IsAdminPlayer(senderPC.GetPlayerId());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when playerId holds the ADMINISTRATOR role. An unknown or invalid id is not an admin.
+	static bool IsAdminPlayer(int playerId)
+	{
+		if (playerId <= 0)
+			return false;
+
+		if (!GetGame())
+			return false;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
+			return false;
+
+		return playerManager.HasPlayerRole(playerId, EPlayerRole.ADMINISTRATOR);
 	}
 }
