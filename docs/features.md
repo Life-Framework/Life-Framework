@@ -1029,14 +1029,15 @@
   `BoxWooden_01.xob` mesh (carry pose `player_carry`, `SOUND_PICK_UP`). A member
   already holding one keeps it; full hands log `pickup refused: hands full` and
   toast `#LF-Contraband_HandsFull`. `Deliver contraband` at `Roadmap_Convoy_Drop`,
-  a pallet behind the pub on the square (`131.5 0 284`, off the farm lane), takes
+  an empty crate cage behind the pub on the square (`131.5 0 284`, off the farm lane), takes
   the crate and pays 200 MoneyStack cash in hand once (`SOUND_PICK_UP`). A second
   delivery on that run pays nothing. A non-member is refused and the refusal is
   logged. The hideout machine also outputs the crate. Dressing on
   `Street_Contraband.layer`: crates and a kerosene lamp on the pallet, a parked
   vanilla `S1203_cargo_brown` van (`Convoy_Barn_Van`) at the barn; beer kegs,
   empty crates, bottles, and a lamp at the pub's back door. Signs
-  `Sign_ConvoyPickup` and `Sign_ConvoyDrop` (`Signs.layer`) explain both ends.
+  `Sign_ConvoyPickup` (barn front wall) and `Sign_ConvoyDrop` (pub east wall) on
+  `Signs.layer` explain both ends. Both action contexts sit 0.6 m up, on the cage.
   Player strings: `#EL-Contraband_Start`, `#EL-Contraband_Deliver`,
   `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`,
   `#LF-Contraband_Loaded`, `#LF-Contraband_HandsFull`, `#LF-Contraband_Crate_Name`.

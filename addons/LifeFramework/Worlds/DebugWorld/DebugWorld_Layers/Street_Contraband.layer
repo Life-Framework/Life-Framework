@@ -20,7 +20,7 @@ GenericEntity Roadmap_Convoy_Start {
     UserActionContext "{9D7C3F60241AD015}" {
      ContextName "default"
      Position PointInfo "{94355C47E2CDDF70}" {
-      Offset 0 1 0
+      Offset 0 0.6 0
      }
      Radius 3
     }
@@ -43,7 +43,7 @@ GenericEntity Roadmap_Convoy_Start {
 GenericEntity Roadmap_Convoy_Drop {
  components {
   MeshObject "{8568209C50142DBA}" {
-   Object "{A37F3027FD5051FD}Assets/Props/Industrial/Pallets/Pallet_01.xob"
+   Object "{0CE0D7F17F50BAB7}Assets/Props/Industrial/Pallets/WoodenPalletBox_01.xob"
   }
   RigidBody "{2D9E62AD556D891C}" {
    Mass 10
@@ -62,7 +62,7 @@ GenericEntity Roadmap_Convoy_Drop {
     UserActionContext "{AE28098525A07FB3}" {
      ContextName "default"
      Position PointInfo "{165C9C429ADC7093}" {
-      Offset 0 1 0
+      Offset 0 0.6 0
      }
      Radius 3
     }
@@ -93,15 +93,15 @@ GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
  angleY 15
 }
 GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 467.3 0 331.5
+ coords 464.7 0 331.6
  angleY 90
 }
 GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 467.3 0.28 331.5
+ coords 464.7 0.28 331.6
  angleY 80
 }
 GenericEntity : "{1CE762D0A53A395A}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_base.et" {
- coords 467.3 0.56 331.5
+ coords 464.7 0.56 331.6
 }
 GenericEntity Convoy_Barn_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
  coords 474 0 324.5
@@ -124,5 +124,5 @@ GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et
  coords 133.2 0.56 285.4
 }
 GenericEntity : "{1CE762D0A53A395A}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_base.et" {
- coords 131.9 0.14 283.6
+ coords 130.3 0 285.1
 }
