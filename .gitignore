@@ -53,6 +53,8 @@ cache/
 # Node modules (if using any build tools)
 node_modules/
 package-lock.json
+# ...except the website, which pins its dependencies (npm ci in CI).
+!website/package-lock.json
 
 # Python (if using any Python tools)
 __pycache__/
@@ -80,3 +82,8 @@ server/build/
 
 # Portable ffmpeg for the filming harness. `node tools/film/film.mjs fetch` writes it.
 tools/film/.bin/
+
+# Website build output and generated content (website/README.md)
+website/dist/
+website/src/generated/
+website/.wrangler/

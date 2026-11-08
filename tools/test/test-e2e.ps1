@@ -42,6 +42,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "..\lib\quiet-launch.ps1")
 
 $root = git rev-parse --show-toplevel
 if (-not $root) { Write-Host "ERROR not a git work tree"; exit 2 }
@@ -221,7 +222,10 @@ if ($LoadLatestSave) {
 
 Write-Host "test-e2e: launching $exe (tier=$Tier)"
 Write-Host "test-e2e: args $($args -join ' ')"
-$p = Start-Process -FilePath $exe -ArgumentList $args -PassThru -WorkingDirectory $root `
+# The server runs on the private LF-Agents desktop with no console window, so a
+# test boot never opens a terminal on the user's screen
+# (tools/lib/quiet-launch.ps1, dot-sourced at the top; LF_SHOW_WINDOWS=1 shows it).
+$p = Start-LfQuietProcess -FilePath $exe -ArgumentList $args -WorkingDirectory $root -KillOnClose `
   -RedirectStandardOutput (Join-Path $env:TEMP "lf-e2e-out.txt") `
   -RedirectStandardError  (Join-Path $env:TEMP "lf-e2e-err.txt")
 

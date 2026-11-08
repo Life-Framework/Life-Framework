@@ -17,6 +17,7 @@ intent: `docs/design.md`. An agent handed a scope, issue, or PR starts with the
 | `tools/` | `cli` (one entry point), `validation/`, `test/`, `merge/`, `actions/`, `street/` |
 | `agent-box/` | Player-equivalent checks on a rendering Workbench (`agent-box/README.md`) |
 | `docs/` | `features.md` (what each system does), `debug-log-triage.md`, `worktrees.md`, `setup.md`, `persistence.md`, `roadmap/` |
+| `website/` | life-framework.org: Vite + React site built from `docs/` and GitHub issues; own `package.json`; deploys from `main` to Cloudflare Pages (`website/README.md`) |
 
 ## Golden rules
 
@@ -59,6 +60,8 @@ intent: `docs/design.md`. An agent handed a scope, issue, or PR starts with the
 | `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
 | `tools\cli wt gate <slug>` / `wt ship <slug> [--closes N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
+
+Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desktop; node spawns get `windowsHide: true`), never in front of the user; `tools\cli hidden [--close]` lists them, `LF_SHOW_WINDOWS=1` shows them (`docs/setup.md`).
 
 ## Worktrees
 

@@ -1,0 +1,12 @@
+{
+  "note": "Edit this file in a PR to change the Team page. members lists people with a public credit; roles lists the open founding-team roles carried over from the 2025 site.",
+  "members": [],
+  "roles": [
+    { "name": "Lead Developer", "role": "Enfusion Script Expert", "bio": "Lead the development of core framework systems and mentor other developers.", "skills": ["Enfusion", "Game Logic", "Architecture"] },
+    { "name": "Community Manager", "role": "Community Lead", "bio": "Build and nurture our community, manage Discord, and coordinate contributors.", "skills": ["Community", "Communication", "Discord"] },
+    { "name": "Systems Designer", "role": "Gameplay Architect", "bio": "Design and balance economy, progression, and gameplay systems.", "skills": ["Game Design", "Balance", "Documentation"] },
+    { "name": "UI/UX Developer", "role": "Interface Specialist", "bio": "Create intuitive in-game interfaces and player interaction systems.", "skills": ["UI Design", "Enfusion UI", "UX"] },
+    { "name": "Content Creator", "role": "Media & Marketing", "bio": "Create videos, tutorials, and promotional content for the framework.", "skills": ["Video", "Marketing", "Social Media"] },
+    { "name": "Documentation Lead", "role": "Technical Writer", "bio": "Write comprehensive guides, API docs, and tutorials for developers.", "skills": ["Writing", "Documentation", "Examples"] }
+  ]
+}

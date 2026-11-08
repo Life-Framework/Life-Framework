@@ -101,7 +101,7 @@ function assertNoLinks(root) {
 export function removeWorktree(mainRoot, path, { force = false } = {}) {
   unlinkReparsePoints(path);
   assertNoLinks(path);
-  return spawnSync("git", ["-C", mainRoot, "worktree", "remove", path, ...(force ? ["--force"] : [])], { encoding: "utf8" });
+  return spawnSync("git", ["-C", mainRoot, "worktree", "remove", path, ...(force ? ["--force"] : [])], { windowsHide: true, encoding: "utf8" });
 }
 
 // Builds a fake Steam install with a sentinel, a git worktree that junctions
@@ -110,7 +110,7 @@ export function removeWorktree(mainRoot, path, { force = false } = {}) {
 export function selftestLinkSafety() {
   const failures = [];
   const base = mkdtempSync(join(tmpdir(), "lf-link-safety-"));
-  const git = (args) => spawnSync("git", args, { cwd: base, encoding: "utf8" });
+  const git = (args) => spawnSync("git", args, { windowsHide: true, cwd: base, encoding: "utf8" });
   try {
     const install = join(base, "steam", "addons", "core");
     mkdirSync(install, { recursive: true });

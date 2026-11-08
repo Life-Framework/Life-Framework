@@ -46,6 +46,7 @@ Runs on Windows (PowerShell), and works from any terminal.
 - `validation/` - Repo validator (also wired in as a git pre-commit hook; see below)
 - `test/` - `test-e2e.ps1`, the server-suite harness `cli test` drives
 - `utilities/` - Helper scripts for common tasks
+- `lib/` - `quiet-launch` (start a tool on the hidden `LF-Agents` desktop; `LF_SHOW_WINDOWS=1` opts out) and `quiet-workbench` (a hidden rendering Workbench before any `wb_*` MCP call)
 - `film/` - Filming harness: record the game window to mp4 + GIF preview, film an agent-box flow, publish PR evidence (`node tools/film/film.mjs`)
 
 ## MCP tool calls without opencode

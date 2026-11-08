@@ -177,8 +177,12 @@ not replace them.
 
 `tools/film/film.mjs` records the game window while a flow plays. It does not
 talk to the engine; the harness drives the player and ffmpeg records the
-screen (desktop duplication `ddagrab`, NVENC when the GPU has it). The window
-is raised before recording because screen capture records whatever is on top.
+screen (desktop duplication `ddagrab`, NVENC when the GPU has it). Screen
+capture records whatever is on top, but film never takes focus: on a second
+monitor it lifts the game window without activating it, on the primary monitor
+it records the rectangle as it is. Screen capture cannot see the hidden
+`LF-Agents` desktop, so film a client you started on a visible monitor.
+Screenshots (below) work on `LF-Agents`.
 If `ddagrab` delivers no frame within 5 s (seen on a box with a virtual
 display adapter), it falls back to `gdigrab` of the same rectangle.
 

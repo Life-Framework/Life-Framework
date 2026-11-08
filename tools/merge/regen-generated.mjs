@@ -15,7 +15,7 @@ const TESTS_PREFIX = "addons/LifeFramework/Scripts/Game/Tests";
 const REGISTRY_NAME = "EL_TestRegistrations.generated.c";
 
 function git(args) {
-  return spawnSync("git", args, { encoding: "utf8" });
+  return spawnSync("git", args, { windowsHide: true, encoding: "utf8" });
 }
 
 function gitPath(rel) {
@@ -134,7 +134,7 @@ function runPowershell(root, script, args) {
   return spawnSync(
     powershell,
     ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(root, script), ...args],
-    { cwd: root, encoding: "utf8" },
+    { windowsHide: true, cwd: root, encoding: "utf8" },
   );
 }
 
