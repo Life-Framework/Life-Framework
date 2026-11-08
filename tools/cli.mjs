@@ -18,7 +18,7 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the ELTEST suite
-//   session up [--clients N]|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   session up [--clients N] [--mission debug|playtest]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved ELTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
@@ -1228,6 +1228,7 @@ function cmdSessionStatus(dir) {
 function cmdSessionUp(root, dir, flags) {
   guardHeavy(root, "session up", flags.includes("--force"));
   const clients = session.parseClients(flags);
+  const mission = session.parseMission(flags);
   const prev = session.readSession(dir);
   if (prev && !prev.stoppedAt && (host.pidAlive(prev.serverPid) || (prev.clients ?? []).some((c) => host.pidAlive(c.pid)))) {
     console.log("session: one is already running; 'node agent-box/session.mjs down' first");
@@ -1249,7 +1250,8 @@ function cmdSessionUp(root, dir, flags) {
     return 1;
   }
   const paths = session.sessionPaths(dir, clients);
-  const state = { root, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
+  // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
+  const state = { id: session.newSessionId(), root, mission, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
     session.writeSession(dir, state);
@@ -1259,55 +1261,14 @@ function cmdSessionUp(root, dir, flags) {
   };
   try {
     wt.copyResourceDatabase(root);
-    const junction = serverGameAddons(root);
-    mkdirSync(paths.server, { recursive: true });
-    const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server });
-    console.log(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
-    const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
-    const srv = spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
-    srv.unref();
-    if (!srv.pid) return fail("server did not start");
-    state.serverPid = srv.pid;
-    wt.transferLock(root, SERVER_SLOT, srv.pid);
-    session.writeSession(dir, state);
-
-    let log = null;
-    const deadline = Date.now() + 300000;
-    while (Date.now() < deadline && host.pidAlive(srv.pid)) {
-      sleepMs(2000);
-      const f = session.newestLog(join(paths.server, "logs"));
-      if (f && !before.has(basenameOfLogDir(f))) log = f;
-      if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) break;
-    }
-    if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
-    console.log(`session: server up (pid ${srv.pid}); log ${log}`);
-
-    for (const c of paths.clients) {
-      mkdirSync(c.box, { recursive: true });
-      const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile });
-      console.log(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
-      // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
-      const child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
-      if (!child.pid) return fail(`client ${c.n} did not start`);
-      state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
-      session.writeSession(dir, state);
-      // Stagger so two clients do not load the same data at the same instant.
-      sleepMs(15000);
-      if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
-    }
+    // A fresh session starts from no save: an old playtest save would be loaded by restart.
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, loadSave: false, fail });
+    if (typeof log === "number") return log;
     // Joined means the server created the player and opened the faction menu.
-    const joinDeadline = Date.now() + 240000;
-    let joined = 0;
-    while (Date.now() < joinDeadline) {
-      const text = readFileSync(log, "utf8");
-      const refused = text.split(/\r?\n/).find((l) => /ValidationError|Disconnecting identity/.test(l));
-      if (refused) return fail(`a client was refused: ${refused.trim()}`);
-      joined = (text.match(/faction menu sent to player \d+/g) ?? []).length;
-      if (joined >= clients) break;
-      sleepMs(2000);
-    }
-    if (joined < clients) return fail(`${joined}/${clients} client(s) reached the faction menu within 240s (server log ${log})`);
+    const joined = sessionAwaitJoin(log, clients, /faction menu sent to player \d+/g, fail);
+    if (joined < 0) return 1;
     console.log(`session: ${joined} client(s) joined and reached the faction menu`);
+    if (mission === "playtest") console.log("session: LF_PlaytestTown, LF_HARNESS build (harness gate open, debug menu closed)");
     console.log("drive with:");
     console.log("  node agent-box/harness.mjs --client <n> <verb>   and   node agent-box/session.mjs state <n>");
     console.log("close everything with: node agent-box/session.mjs down");
@@ -1320,13 +1281,150 @@ function cmdSessionUp(root, dir, flags) {
   }
 }
 
+// Boots the server (fresh, or with -loadSessionSave), then each client in
+// order with its own profile. Returns the server console.log path, or the exit
+// code fail() returned.
+function sessionLaunch(root, dir, state, paths, { exe, game, mission, loadSave, fail }) {
+  const junction = serverGameAddons(root);
+  mkdirSync(paths.server, { recursive: true });
+  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave });
+  console.log(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
+  const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
+  const srv = spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
+  srv.unref();
+  if (!srv.pid) return fail("server did not start");
+  state.serverPid = srv.pid;
+  wt.transferLock(root, SERVER_SLOT, srv.pid);
+  session.writeSession(dir, state);
+
+  let log = null;
+  const deadline = Date.now() + 300000;
+  while (Date.now() < deadline && host.pidAlive(srv.pid)) {
+    sleepMs(2000);
+    const f = session.newestLog(join(paths.server, "logs"));
+    if (f && !before.has(basenameOfLogDir(f))) log = f;
+    if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) break;
+  }
+  if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
+  console.log(`session: server up (pid ${srv.pid}); log ${log}`);
+
+  for (const c of paths.clients) {
+    mkdirSync(c.box, { recursive: true });
+    const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id });
+    console.log(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
+    // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
+    const child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
+    if (!child.pid) return fail(`client ${c.n} did not start`);
+    state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
+    session.writeSession(dir, state);
+    // Stagger so two clients do not load the same data at the same instant, and
+    // so player ids follow client numbers (the same accounts after a restart).
+    sleepMs(15000);
+    if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
+  }
+  return log;
+}
+
+// Waits until marker matches the server log once per client. Returns the
+// count, or -1 after fail().
+function sessionAwaitJoin(log, clients, marker, fail) {
+  const joinDeadline = Date.now() + 240000;
+  let joined = 0;
+  while (Date.now() < joinDeadline) {
+    const text = readFileSync(log, "utf8");
+    const refused = text.split(/\r?\n/).find((l) => /ValidationError|Disconnecting identity/.test(l));
+    if (refused) {
+      fail(`a client was refused: ${refused.trim()}`);
+      return -1;
+    }
+    joined = (text.match(marker) ?? []).length;
+    if (joined >= clients) return joined;
+    sleepMs(2000);
+  }
+  fail(`${joined}/${clients} client(s) joined within 240s (server log ${log})`);
+  return -1;
+}
+
+// Playtest only: the host stop file closes the server gracefully (the engine
+// writes its SHUTDOWN save), then the same client profiles rejoin, in the same
+// order, a server that loaded that save.
+function cmdSessionRestart(root, dir, flags) {
+  guardHeavy(root, "session restart", flags.includes("--force"));
+  const prev = session.readSession(dir);
+  if (!prev || prev.stoppedAt || !host.pidAlive(prev.serverPid)) {
+    console.log("session: no running session to restart; 'node agent-box/session.mjs up --mission playtest' first");
+    return 1;
+  }
+  if (prev.mission !== "playtest") {
+    console.log("session: restart needs --mission playtest (the bare DebugWorld has no stop file, so no shutdown save)");
+    return 1;
+  }
+  const exe = serverExe();
+  const game = gameClientExe();
+  const oldLog = session.newestLog(join(prev.serverProfile, "logs"));
+  const stopFile = join(prev.serverProfile, ...host.STOP_FILE);
+  mkdirSync(dirname(stopFile), { recursive: true });
+  writeFileSync(stopFile, new Date().toISOString());
+  console.log(`session: stop requested (server pid ${prev.serverPid}); waiting for the shutdown save`);
+  const deadline = Date.now() + 180000;
+  while (Date.now() < deadline && host.pidAlive(prev.serverPid)) sleepMs(1000);
+  if (host.pidAlive(prev.serverPid)) {
+    console.log("FAIL  the server did not close within 180s; close it with 'node agent-box/session.mjs down'");
+    return 1;
+  }
+  const saved = !!oldLog && /\(SHUTDOWN\)/.test(readFileSync(oldLog, "utf8"));
+  console.log(`session: server closed${saved ? " after the SHUTDOWN save" : "; WARN no SHUTDOWN save line in its log"}`);
+  for (const c of prev.clients ?? []) console.log(`session: client ${c.n} pid ${c.pid} ${killTree(c.pid) ? "closed" : "already gone"}`);
+  wt.releaseLock(root, SERVER_SLOT, prev.serverPid);
+  try {
+    wt.acquireLock(root, SERVER_SLOT, { waitMs: 0 });
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
+  const clients = (prev.clients ?? []).length;
+  const paths = session.sessionPaths(dir, clients);
+  const state = { ...prev, restartedAt: new Date().toISOString(), serverPid: 0, clients: [] };
+  const fail = (msg) => {
+    console.log(`FAIL  ${msg}`);
+    session.writeSession(dir, state);
+    cmdSessionDown(dir);
+    wt.releaseLock(root, SERVER_SLOT);
+    return 1;
+  };
+  try {
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission: prev.mission, loadSave: true, fail });
+    if (typeof log === "number") return log;
+    const joined = sessionAwaitJoin(log, clients, /flow start for player \d+/g, fail);
+    if (joined < 0) return 1;
+    const loaded = /session continued from a save point|loading the latest save point/.test(readFileSync(log, "utf8"));
+    console.log(`session: restarted${loaded ? " from the save" : "; WARN the server log does not say it loaded a save"}; ${joined} client(s) rejoined`);
+    return 0;
+  } catch (e) {
+    return fail(e.message);
+  } finally {
+    wt.releaseLock(root, SERVER_SLOT);
+  }
+}
+
 function cmdSession(args) {
   const list = args ?? [];
   const dir = session.sessionDir();
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
+  // The session dir is shared by every checkout: only the one that started a
+  // live session may restart or close it (--force overrides).
+  if ((list[0] === "restart" || list[0] === "down") && !list.includes("--force")) {
+    const s = session.readSession(dir);
+    const live = s && !s.stoppedAt && (host.pidAlive(s.serverPid) || (s.clients ?? []).some((c) => host.pidAlive(c.pid)));
+    if (live && s.root && resolve(s.root).toLowerCase() !== resolve(ROOT).toLowerCase()) {
+      console.log(`session: the live session belongs to ${s.root}; refusing ${list[0]} from ${ROOT} (pass --force to override)`);
+      return 1;
+    }
+  }
+  if (list[0] === "restart") return cmdSessionRestart(ROOT, dir, list.slice(1));
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
-  console.log("usage: tools\\cli session up [--clients N] [--wait] | down | status");
+  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--wait] | restart | down | status");
   return list[0] ? 1 : 0;
 }
 

@@ -1,4 +1,4 @@
-// EL_AgentHarness — player-equivalent controls for an agent on a rendering instance.
+// EL_AgentHarness â€” player-equivalent controls for an agent on a rendering instance.
 //
 // A play session (Workbench or game client) polls $profile:agent-box/command.txt.
 // Each line is one action a player could take: press the interaction key
@@ -27,6 +27,23 @@ class EL_AgentCommand
 	float CamZ;
 	bool HasCameraOffset;
 	string Error;
+	//! The session a command is addressed to; empty when the sender named none.
+	string Session;
+
+	static const string SESSION_PREFIX = "s:";
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a client accepts a command. A session client (started with -lfSession <id>) runs
+	//! only commands addressed to that id, so a command written for another worktree's session
+	//! (the profiles live in one shared session dir) is refused instead of clicking through
+	//! someone else's game. A client with no session (Workbench, default profile) runs only
+	//! commands that name none.
+	//! \param own This client's -lfSession value, or empty.
+	//! \param addressed The command's s:<id>, or empty.
+	static bool SessionAccepts(string own, string addressed)
+	{
+		return own == addressed;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Parse one command line. Returns false and sets Error on a bad line.
@@ -42,7 +59,7 @@ class EL_AgentCommand
 	//!   <id> stand <EntityName>
 	//!   <id> look
 	//!   <id> state
-	//!   <id> ui
+	//!   <id> ui [text]
 	//!   <id> click <WidgetName> [index]
 	//!   <id> type <PartName> <Text>
 	//!   <id> capture ui <Name>
@@ -72,6 +89,18 @@ class EL_AgentCommand
 			return false;
 		}
 
+		// <id> s:<session> <verb> ...: the session the sender addressed (agent-box/session.mjs).
+		if (parts[1].StartsWith(SESSION_PREFIX))
+		{
+			cmd.Session = parts[1].Substring(SESSION_PREFIX.Length(), parts[1].Length() - SESSION_PREFIX.Length());
+			parts.RemoveOrdered(1);
+			if (parts.Count() < 2 || !IsClassToken(cmd.Session))
+			{
+				cmd.Error = "bad_session";
+				return false;
+			}
+		}
+
 		cmd.Verb = parts[1];
 		if (cmd.Verb == "use")
 			return ParseUse(parts, cmd);
@@ -90,7 +119,7 @@ class EL_AgentCommand
 		if (cmd.Verb == "state")
 			return true;
 		if (cmd.Verb == "ui")
-			return true;
+			return ParseUi(parts, cmd);
 		if (cmd.Verb == "click")
 			return ParseClick(parts, cmd);
 		if (cmd.Verb == "type")
@@ -126,6 +155,23 @@ class EL_AgentCommand
 				cmd.Error = "bad_entity";
 				return false;
 			}
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ui lists clickable names; ui text also lists every field and line of an open UI kit sheet.
+	protected static bool ParseUi(array<string> parts, EL_AgentCommand cmd)
+	{
+		if (parts.Count() < 3)
+			return true;
+
+		cmd.Arg1 = parts[2];
+		if (cmd.Arg1 != "text")
+		{
+			cmd.Error = "bad_ui_mode";
+			return false;
 		}
 
 		return true;
@@ -460,6 +506,18 @@ class EL_AgentCommand
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One `ui text` entry, kind:name=text. The entries are joined with " | " on one result line, so
+	//! a bar in the text becomes a slash and line breaks become spaces.
+	static string UiEntry(string kind, string name, string text)
+	{
+		string clean = text;
+		clean.Replace("|", "/");
+		clean.Replace("\r", "");
+		clean.Replace("\n", " ");
+		return kind + ":" + name + "=" + clean;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Where the character stands for a world shot, and the yaw/pitch that faces
 	//! the target. The screenshot is the player view after this pose.
 	static void CameraStand(vector target, vector offset, out vector stand, out vector angles)
@@ -507,6 +565,11 @@ class EL_AgentHarness
 	static const string REFUSED_DEV_GATE = "dev_gate_closed";
 	protected static const string COMMAND_PATH = "$profile:agent-box/command.txt";
 	protected static const string RESULT_PATH = "$profile:agent-box/result.txt";
+	//! Root widget name of LF_UITheme.FRAME_LAYOUT: everything a UI kit sheet draws sits under it.
+	protected static const string KIT_FRAME = "LF_UIFrame";
+	protected static const int UI_TEXT_MAX = 80;
+	//! stand puts the character this far along +X from the entity, facing it.
+	static const float STAND_SIDE = 1.2;
 
 	protected static bool s_bLoop;
 	protected static IEntity s_pLoopMode;
@@ -615,6 +678,14 @@ class EL_AgentHarness
 			return;
 		}
 
+		string own = OwnSession();
+		if (!EL_AgentCommand.SessionAccepts(own, cmd.Session))
+		{
+			EL_Debug.Warn(FEATURE, string.Format("refused command %1 for session '%2'; this client is session '%3'", cmd.Id, cmd.Session, own));
+			WriteResult(cmd.Id, "error", "wrong_session");
+			return;
+		}
+
 		if (s_iCaptureId > 0)
 		{
 			WriteResult(cmd.Id, "error", "capture_busy");
@@ -622,6 +693,16 @@ class EL_AgentHarness
 		}
 
 		Dispatch(cmd);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This client's session id from -lfSession (agent-box/session.mjs up), or empty.
+	protected static string OwnSession()
+	{
+		string value;
+		if (!System.GetCLIParam("lfSession", value))
+			return "";
+		return value;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -791,9 +872,20 @@ class EL_AgentHarness
 
 		// One metre to the side keeps the character inside a 3m action radius
 		// without planting them inside the prop.
-		destination = target.GetOrigin() + Vector(1.2, 0, 0);
+		destination = target.GetOrigin() + Vector(STAND_SIDE, 0, 0);
 		EL_Debug.Log(FEATURE, string.Format("stand beside %1 at %2", entityName, destination));
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Yaw in degrees that faces the stand target from where stand puts the character, so the
+	//! interaction key (which aims along the view) reaches the entity after a stand.
+	static float StandYaw()
+	{
+		vector stand;
+		vector angles;
+		EL_AgentCommand.CameraStand(vector.Zero, Vector(STAND_SIDE, 0, 0), stand, angles);
+		return angles[0];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -942,7 +1034,10 @@ class EL_AgentHarness
 
 		s_sUiJoined = "";
 		s_iUiCount = 0;
-		CollectUi(workspace);
+		if (cmd.Arg1 == "text")
+			CollectUiText(workspace, false);
+		else
+			CollectUi(workspace);
 
 		if (s_sUiJoined.IsEmpty())
 			WriteResult(cmd.Id, "ok", "none");
@@ -974,6 +1069,93 @@ class EL_AgentHarness
 			CollectUi(child);
 			child = child.GetSibling();
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ui text: every clickable with its label, and every field and printed line of an open UI kit
+	//! sheet, named by the part a screen gave it (the name click and type take).
+	protected static void CollectUiText(Widget widget, bool inButton)
+	{
+		if (!widget || s_iUiCount >= UI_TEXT_MAX)
+			return;
+
+		if (!Shown(widget))
+			return;
+
+		bool button = false;
+		if (!inButton && Clickable(widget))
+		{
+			button = true;
+			string label = "";
+			SCR_ButtonTextComponent textButton = SCR_ButtonTextComponent.Cast(widget.FindHandler(SCR_ButtonTextComponent));
+			if (textButton)
+				label = textButton.GetText();
+			AddUiText(EL_AgentCommand.UiEntry("button", widget.GetName(), Translated(label)));
+		}
+		else if (!inButton && InKitSheet(widget))
+		{
+			EditBoxWidget box = EditBoxWidget.Cast(widget);
+			TextWidget text = TextWidget.Cast(widget);
+			if (box)
+				AddUiText(EL_AgentCommand.UiEntry("field", KitPartName(widget), box.GetText()));
+			else if (text && !text.GetText().IsEmpty())
+				AddUiText(EL_AgentCommand.UiEntry("line", KitPartName(widget), Translated(text.GetText())));
+		}
+
+		Widget child = widget.GetChildren();
+		while (child)
+		{
+			CollectUiText(child, inButton || button);
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void AddUiText(string entry)
+	{
+		if (!s_sUiJoined.IsEmpty())
+			s_sUiJoined = s_sUiJoined + " | ";
+		s_sUiJoined = s_sUiJoined + entry;
+		s_iUiCount++;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string Translated(string text)
+	{
+		if (text.StartsWith("#"))
+			return WidgetManager.Translate(text);
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True inside a sheet built by LF_UIScreen (its frame layout root is LF_UIFrame).
+	protected static bool InKitSheet(Widget widget)
+	{
+		Widget cursor = widget;
+		while (cursor)
+		{
+			if (cursor.GetName() == KIT_FRAME)
+				return true;
+			cursor = cursor.GetParent();
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The kit part a widget belongs to: the ancestor that sits directly in Content or ListContent.
+	protected static string KitPartName(Widget widget)
+	{
+		Widget cursor = widget;
+		while (cursor && cursor.GetParent())
+		{
+			string parentName = cursor.GetParent().GetName();
+			if (parentName == "Content" || parentName == "ListContent")
+				return cursor.GetName();
+			cursor = cursor.GetParent();
+		}
+
+		return widget.GetName();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1121,6 +1303,10 @@ class EL_AgentHarness
 		string name = widget.GetName();
 		if (!EL_AgentCommand.IsClassToken(name))
 			return false;
+		// Every UI kit button (BUTTON, CLOSE, KEYS, a status or list row action) carries the kit's
+		// click relay, whatever the screen named it (IdClose, Exit, Buy, Key1Button).
+		if (LF_UIButtonRelay.Cast(widget.FindHandler(LF_UIButtonRelay)))
+			return true;
 		// A UI kit list row's action button is <row>_Action (the shop's Order buttons).
 		bool kitRowAction = name.Length() > 7 && name.Substring(name.Length() - 7, 7) == "_Action";
 		if (kitRowAction)

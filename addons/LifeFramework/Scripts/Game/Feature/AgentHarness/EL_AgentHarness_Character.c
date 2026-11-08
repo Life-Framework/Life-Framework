@@ -32,7 +32,7 @@ modded class SCR_ChimeraCharacter
 	protected void RpcAsk_EL_HarnessStand(int commandId, string entityName)
 	{
 		// A client could otherwise teleport itself or fire an action out of reach.
-		bool gateOpen = EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "stand");
+		bool gateOpen = EL_DevGate.CheckHarnessRequest(this, "stand");
 		EL_ApplyHarnessStand(commandId, entityName, gateOpen);
 	}
 
@@ -69,13 +69,16 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Stand at destination facing the entity (EL_AgentHarness.StandYaw), the way a player walks up
+	//! to a counter, so the interaction key aims at it.
 	protected void EL_MoveHarnessBody(vector destination)
 	{
+		float yaw = EL_AgentHarness.StandYaw();
 		vector transform[4];
-		GetWorldTransform(transform);
+		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), transform);
 		transform[3] = destination;
 		Teleport(transform);
-		EL_Debug.Log("AgentHarness", string.Format("stood at %1", destination));
+		EL_Debug.Log("AgentHarness", string.Format("stood at %1 facing %2", destination, yaw));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -97,7 +100,7 @@ modded class SCR_ChimeraCharacter
 	protected void RpcAsk_EL_HarnessPose(float x, float y, float z, float yaw, float pitch)
 	{
 		// A client could otherwise teleport itself or fire an action out of reach.
-		if (!EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "pose"))
+		if (!EL_DevGate.CheckHarnessRequest(this, "pose"))
 			return;
 
 		EL_ApplyHarnessPose(x, y, z, yaw, pitch);
@@ -172,7 +175,7 @@ modded class SCR_ChimeraCharacter
 	protected void RpcAsk_EL_HarnessUse(int commandId, string className, string entityName)
 	{
 		// A client could otherwise teleport itself or fire an action out of reach.
-		if (!EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "use"))
+		if (!EL_DevGate.CheckHarnessRequest(this, "use"))
 		{
 			EL_HarnessReply(commandId, "error", EL_AgentHarness.REFUSED_DEV_GATE);
 			return;

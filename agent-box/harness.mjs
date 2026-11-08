@@ -18,6 +18,7 @@ import { bmpFileToPng, classifyMesh, classifyMeshFile, decodeBmp, decodePng, enc
 import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads, loadPlaced, loadWorld } from "./layers.mjs";
 import { claimPlay, decideClaim, rendererFor } from "./play-claim.mjs";
+import { sessionForBox } from "./session.mjs";
 import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, runTownReport, selectRoadmapSites, siteLook, siteShotOffset, STREET_Z } from "./report.mjs";
 import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadStrings, manifestErrors, parseSignConfig, resolveSite, signCard, signIssues } from "./town.mjs";
 
@@ -34,11 +35,28 @@ const MENU_ACTIONS = new Set([
 ]);
 
 // --client <n> (or setBoxes) points every command at one session client's
-// profile instead of the Workbench and default game profiles.
+// profile instead of the Workbench and default game profiles. Commands to a
+// session client carry that session's id (s:<id>); the client refuses any
+// other id, and sendCommand refuses a session another checkout started.
 let boxOverride = null;
+let sessionOverride;
 
-export function setBoxes(dirs) {
+export function setBoxes(dirs, sessionId) {
   boxOverride = dirs && dirs.length ? dirs : null;
+  sessionOverride = sessionId;
+}
+
+// The session a command to these boxes is addressed to: { id } (empty id for
+// Workbench and default profiles), or { error } when the live session in the
+// shared session dir belongs to another checkout or is not running.
+export function addressFor(boxes, root = ROOT, lookup = sessionForBox) {
+  if (!boxes) return { id: "" };
+  if (sessionOverride !== undefined) return { id: sessionOverride || "" };
+  for (const box of boxes) {
+    const hit = lookup(box, root);
+    if (hit) return hit;
+  }
+  return { id: "" };
 }
 
 export function profileBoxes() {
@@ -59,6 +77,10 @@ function token(value, label) {
 
 export function buildLine(id, spec) {
   if (!Number.isInteger(id) || id <= 0) throw new Error("id must be a positive integer");
+  if (spec.session) {
+    const rest = buildLine(id, { ...spec, session: "" });
+    return rest.replace(/^(\d+) /, `$1 s:${token(spec.session, "session")} `);
+  }
   if (spec.verb === "use") {
     const cls = token(spec.className, "class");
     if (spec.entityName) return `${id} use ${cls} ${token(spec.entityName, "entity")}`;
@@ -80,6 +102,8 @@ export function buildLine(id, spec) {
     return `${id} state`;
   }
   if (spec.verb === "ui") {
+    if (spec.mode === "text") return `${id} ui text`;
+    if (spec.mode) throw new Error(`ui mode must be text: ${spec.mode}`);
     return `${id} ui`;
   }
   if (spec.verb === "click") {
@@ -151,7 +175,9 @@ let playClaim = null;
 
 export function sendCommand(spec, timeoutMs = 8000) {
   const id = nextId();
-  const line = buildLine(id, spec);
+  const address = addressFor(boxOverride);
+  if (address.error) return { id, status: "error", detail: address.error, line: "", raw: `${id} error ${address.error}` };
+  const line = buildLine(id, { ...spec, session: address.id });
   playClaim = playClaim ?? claimPlay(ROOT);
   if (!playClaim.ok) return { id, status: "error", detail: playClaim.reason, line, raw: `${id} error ${playClaim.reason}` };
   for (const dir of profileBoxes()) {
@@ -182,6 +208,43 @@ export function sendCommand(spec, timeoutMs = 8000) {
     line,
     raw: "",
   };
+}
+
+// `ui text` detail: "button:SignButton=Sign | field:RegAge=30 | line:Balance=Balance: $400".
+export function parseUiText(detail) {
+  const text = String(detail ?? "").trim();
+  if (!text || text === "none") return [];
+  return text.split(" | ").map((entry) => {
+    const colon = entry.indexOf(":");
+    const eq = entry.indexOf("=", colon + 1);
+    if (colon <= 0 || eq < 0) return { kind: "?", name: entry, text: "" };
+    return { kind: entry.slice(0, colon), name: entry.slice(colon + 1, eq), text: entry.slice(eq + 1) };
+  });
+}
+
+export function formatUiText(entries) {
+  if (!entries.length) return "(no screen: nothing clickable and no UI kit sheet open)";
+  return entries.map((e) => `${e.kind.padEnd(6)} ${e.name.padEnd(22)} ${e.text}`).join("\n");
+}
+
+// True when any listed name or text contains want (case-insensitive).
+export function uiHasText(entries, want) {
+  const needle = String(want).toLowerCase();
+  return entries.some((e) => e.text.toLowerCase().includes(needle) || e.name.toLowerCase() === needle);
+}
+
+// Polls `ui text` until some widget shows want. A menu opened by a server reply
+// or a replicated value (ATM balance) appears a few frames after the action.
+export function waitForText(want, timeoutMs = 8000, send = sendCommand, sleep = pause) {
+  const deadline = Date.now() + timeoutMs;
+  let last = null;
+  do {
+    last = send({ verb: "ui", mode: "text" }, 3000);
+    if (last.status === "ok" && uiHasText(parseUiText(last.detail), want)) return { ...last, found: true };
+    if (last.status !== "ok" && last.detail === "no_session") return { ...last, found: false };
+    sleep(300);
+  } while (Date.now() < deadline);
+  return { ...last, raw: "", found: false, status: "error", detail: `text_not_found ${want}` };
 }
 
 export function toolchainPaths() {
@@ -462,7 +525,10 @@ export function runFlow(lines) {
     if (verb === "stand") result = sendCommand({ verb: "stand", entityName: rest[0] });
     else if (verb === "look") result = sendCommand({ verb: "look" });
     else if (verb === "state") result = sendCommand({ verb: "state" }, 10000);
+    else if (verb === "ui" && rest[0] === "text") result = sendCommand({ verb: "ui", mode: "text" });
     else if (verb === "ui") result = sendCommand({ verb: "ui" });
+    else if (verb === "wait-text") result = waitForText(rest.join(" "));
+    else if (verb === "ui-shot") result = sendCommand({ verb: "capture", mode: "ui", name: rest[0] }, 25000);
     else if (verb === "click") result = sendCommand({ verb: "click", widget: rest[0], index: rest[1] });
     else if (verb === "type") result = sendCommand({ verb: "type", widget: rest[0], text: rest[1] });
     else if (verb === "press") {
@@ -675,6 +741,13 @@ function selftest() {
   setBoxes(null);
   if (boxes.length !== 1 || boxes[0] !== "X") throw new Error("setBoxes did not target one client box");
   if (profileBoxes().length !== 2) throw new Error("setBoxes(null) did not restore the default boxes");
+  if (buildLine(30, { verb: "click", widget: "SignButton", session: "ab12" }) !== "30 s:ab12 click SignButton") throw new Error("session token goes after the id");
+  if (buildLine(31, { verb: "look", session: "" }) !== "31 look") throw new Error("no session, no token");
+  const mine = (box) => (box === "B1" ? { id: "ab12" } : null);
+  const theirs = () => ({ error: "session_owned_by_other_checkout C:/other" });
+  if (addressFor(["B1"], "R", mine).id !== "ab12") throw new Error("a box in the caller's session is addressed to it");
+  if (!addressFor(["B1"], "R", theirs).error) throw new Error("another checkout's session must refuse");
+  if (addressFor(null, "R", theirs).id !== "") throw new Error("Workbench boxes carry no session");
   const list = pads();
   const atm = findPad(list, "ATM_Debug");
   if (!atm || !atm.actions.includes("EL_ATMAction")) throw new Error("ATM_Debug missing from layer catalog");
@@ -712,6 +785,17 @@ function selftest() {
   if (click !== "12 click CivilianButton") throw new Error(click);
   const typed = buildLine(13, { verb: "type", widget: "RegFirstName", text: "Ada" });
   if (typed !== "13 type RegFirstName Ada") throw new Error(typed);
+  if (buildLine(14, { verb: "ui", mode: "text" }) !== "14 ui text") throw new Error("ui text line");
+  const sheet = parseUiText("button:SignButton=Sign here | field:RegAge=30 | line:Balance=Balance: $400 / cash | button:IdClose=");
+  if (sheet.length !== 4 || sheet[1].kind !== "field" || sheet[1].name !== "RegAge" || sheet[1].text !== "30") throw new Error(`parseUiText: ${JSON.stringify(sheet)}`);
+  if (sheet[2].text !== "Balance: $400 / cash" || sheet[3].name !== "IdClose" || sheet[3].text !== "") throw new Error(`parseUiText text: ${JSON.stringify(sheet)}`);
+  if (!uiHasText(sheet, "balance: $400") || !uiHasText(sheet, "IdClose") || uiHasText(sheet, "Withdraw")) throw new Error("uiHasText");
+  if (parseUiText("none").length !== 0) throw new Error("ui text none is no entries");
+  let polls = 0;
+  const late = waitForText("Deposited", 5000, () => ({ status: "ok", detail: ++polls < 3 ? "line:Status=Enter an amount" : "line:Status=Deposited $50" }), () => {});
+  if (!late.found || polls !== 3) throw new Error(`waitForText polls until the text shows: ${polls}`);
+  const never = waitForText("Deposited", 1, () => ({ status: "ok", detail: "line:Status=Enter an amount" }), () => {});
+  if (never.found || !never.detail.startsWith("text_not_found")) throw new Error("waitForText times out with text_not_found");
   const indexed = buildLine(13, { verb: "click", widget: "BuyButton", index: 1 });
   if (indexed !== "13 click BuyButton 1") throw new Error(indexed);
   const flow = readFlow("ui-debug-menu").filter((line) => line.trim() && !line.trim().startsWith("#"));
@@ -1119,7 +1203,9 @@ function usage() {
   node agent-box/harness.mjs layer <EntityName> [ActionClass]
   node agent-box/harness.mjs stand <EntityName>
   node agent-box/harness.mjs look
-  node agent-box/harness.mjs ui
+  node agent-box/harness.mjs ui [text]
+  node agent-box/harness.mjs wait-text <text> [--timeout ms]
+  node agent-box/harness.mjs ui-shot <name>
   node agent-box/harness.mjs click <WidgetName> [index]
   node agent-box/harness.mjs type <FieldName> <Text>
   node agent-box/harness.mjs press F|WheelUp|WheelDown|F10
@@ -1155,6 +1241,7 @@ export async function applyClientFlag(argv) {
   const n = Number(argv[i + 1]);
   if (!Number.isInteger(n) || n < 1) throw new Error("--client needs a client number");
   const { clientBox, sessionDir } = await import("./session.mjs");
+  // The session id comes from session.json at send time (addressFor).
   setBoxes([clientBox(sessionDir(), n)]);
   return [...argv.slice(0, i), ...argv.slice(i + 2)];
 }
@@ -1212,7 +1299,24 @@ function main(argv) {
       return printResult(sendCommand({ verb: "state" }, 10000));
     }
     if (cmd === "ui") {
-      return printResult(sendCommand({ verb: "ui" }));
+      if (rest[0] !== "text" && rest[0] !== "--text") return printResult(sendCommand({ verb: "ui" }));
+      const result = sendCommand({ verb: "ui", mode: "text" });
+      if (result.status !== "ok") return printResult(result);
+      console.log(formatUiText(parseUiText(result.detail)));
+      return 0;
+    }
+    if (cmd === "wait-text") {
+      const ti = rest.indexOf("--timeout");
+      const timeout = ti === -1 ? 8000 : Number(rest[ti + 1]);
+      const words = ti === -1 ? rest : [...rest.slice(0, ti), ...rest.slice(ti + 2)];
+      if (!words.length) throw new Error("wait-text <text> [--timeout ms]");
+      const result = waitForText(words.join(" "), timeout);
+      console.log(result.found ? `found: ${words.join(" ")}` : `${result.status} ${result.detail}`);
+      return result.found ? 0 : 1;
+    }
+    if (cmd === "ui-shot") {
+      if (!rest[0]) throw new Error("ui-shot <name>");
+      return printResult(sendCommand({ verb: "capture", mode: "ui", name: rest[0] }, 25000));
     }
     if (cmd === "click") {
       return printResult(sendCommand({ verb: "click", widget: rest[0], index: rest[1] }));
