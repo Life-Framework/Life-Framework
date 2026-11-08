@@ -11,63 +11,26 @@ class EL_VehicleBuyAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Opens the lot sheet: every car, its price, and Buy or what is missing (LF_VehicleLotSheet.c).
+	//! The purchase itself happens when the player presses Buy on a row.
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer() || !pUserEntity)
 			return;
 
-		EL_VehicleLotComponent lot = EL_Component<EL_VehicleLotComponent>.Find(pOwnerEntity);
-		if (!lot)
-		{
-			EL_Debug.Error("Vehicle", "buy action has no lot component");
-			return;
-		}
-
 		if (!LF_Garage.WithinReach(pUserEntity, pOwnerEntity))
 		{
-			EL_Debug.Warn("Vehicle", "buy refused: the player is not at the lot counter");
+			EL_Debug.Warn("Vehicle", "lot sheet refused: the player is not at the lot counter");
 			return;
 		}
 
-		string uid = EL_Utils.GetPlayerUID(pUserEntity);
-		if (uid.IsEmpty())
-		{
-			EL_Debug.Error("Vehicle", "buy rejected: player UID is unavailable");
-			return;
-		}
-
-		ResourceName prefab = m_sPrefab;
-		if (prefab.IsEmpty())
-		{
-			EL_VehicleOffer first = lot.GetOfferAt(0);
-			if (!first)
-			{
-				EL_Debug.Error("Vehicle", "buy rejected: the lot catalog is empty");
-				return;
-			}
-
-			prefab = first.GetPrefab();
-		}
-
-		string vehicleId;
-		int cashCharged;
-		string reasonKey;
-		bool bought = lot.Buy(uid, prefab, pUserEntity, vehicleId, cashCharged, reasonKey);
-		Notify(pUserEntity, "#EL-Vehicle_Buy", reasonKey);
-		if (!bought)
-		{
-			EL_Debug.Log("Vehicle", string.Format("buy action rejected uid=%1", uid));
-			return;
-		}
-
-		// Garage it to keep it: the buyer learns the rule at the moment it starts to matter.
-		Notify(pUserEntity, "#LF-Garage_Title", "#LF-Garage_BuyHint");
+		LF_VehicleLot.Show(pUserEntity, pOwnerEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		outName = "#EL-Vehicle_Buy";
+		outName = "#LF-Lot_Browse";
 		return true;
 	}
 

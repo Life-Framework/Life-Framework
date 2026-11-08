@@ -12,7 +12,7 @@ class LF_ShopPriceList
 	static const float CLOSE_DISTANCE = 3.5;
 	//! Lines drawn at once; typing narrows a larger catalog to its matches.
 	static const int MAX_ROWS = 40;
-	static const float LIST_HEIGHT = 230;
+	static const float LIST_HEIGHT = 400;
 	static const int SEARCH_POLL_MS = 250;
 	static const int REPLY_TIMEOUT_MS = 5000;
 

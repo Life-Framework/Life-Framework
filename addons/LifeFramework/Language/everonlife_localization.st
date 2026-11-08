@@ -4437,6 +4437,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
      Comment "Wanted board sign card: what to do next."
     }
+    CustomStringTableItem "{AC8D0A406C890A6E}" {
+     Id "LF-Contraband_Crate_Name"
+     Target_en_us "Crate of spirits"
+     Comment "Item name of the contraband cargo: a wooden crate of untaxed spirits carried in both hands"
+    }
+    CustomStringTableItem "{1D5E4503B79F1A6F}" {
+     Id "LF-Contraband_Crate_Desc"
+     Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
+     Comment "Item description of the contraband crate"
+    }
+    CustomStringTableItem "{8269943001D9EADB}" {
+     Id "LF-Contraband_Loaded"
+     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
+     Comment "Toast when the convoy start hands the player a contraband crate at the barn"
+    }
+    CustomStringTableItem "{DEDBE2A372F43FF6}" {
+     Id "LF-Contraband_HandsFull"
+     Target_en_us "Your hands are full. Put down what you carry, then take a crate."
+     Comment "Toast when the convoy start cannot hand over the crate because the player already carries something"
+    }
     CustomStringTableItem "{E69F55595D3DEC33}" {
      Id "LF-Org_Title"
      Target_en_us "Organization register"
@@ -4812,111 +4832,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Read the town map board beside this one, then talk to the town hall clerk a few steps east."
      Comment "Safe zone sign card, Next section: where the player goes after this place."
     }
-    CustomStringTableItem "{9823FC0642192065}" {
-     Id "LF-Quest_Giver_Clerk"
-     Target_en_us "Town clerk"
-     Comment "Quest menu title for the town clerk on the square (arrival chain)."
-    }
-    CustomStringTableItem "{945AA58155A88BAC}" {
-     Id "LF-Quest_Giver_Tester"
-     Target_en_us "Test quest board"
-     Comment "Quest menu title for the test quest giver in the test annex."
-    }
-    CustomStringTableItem "{DD20CCA577AB2B68}" {
-     Id "LF-Quest_Action_Clerk"
-     Target_en_us "Talk to the clerk"
-     Comment "Interaction on the town clerk NPC."
-    }
-    CustomStringTableItem "{002662BFCD8D20B3}" {
-     Id "LF-Quest_ArrivalRegister_Title"
-     Target_en_us "New in town"
-     Comment "Arrival chain step 1 title."
-    }
-    CustomStringTableItem "{8D29DF46F50BC183}" {
-     Id "LF-Quest_ArrivalRegister_Desc"
-     Target_en_us "You are new in town and carry no papers. The clerk on the square keeps the register: talk to him and he hands you your ID card."
-     Comment "Arrival chain step 1: talk to the clerk, receive the ID card."
-    }
-    CustomStringTableItem "{D6DBC19947C15B40}" {
-     Id "LF-Quest_ArrivalBoard_Title"
-     Target_en_us "The town board"
-     Comment "Arrival chain step 2 title."
-    }
-    CustomStringTableItem "{B58FFAF3FDBE501F}" {
-     Id "LF-Quest_ArrivalBoard_Desc"
-     Target_en_us "Read the town board on the square, next to the clerk: it shows where everything in town is."
-     Comment "Arrival chain step 2: shown when the clerk hands the card over. Read the town map sign."
-    }
-    CustomStringTableItem "{E9005E06D70F9493}" {
-     Id "LF-Quest_ArrivalWork_Title"
-     Target_en_us "First wages"
-     Comment "Arrival chain step 3 title."
-    }
-    CustomStringTableItem "{172E338F853864B0}" {
-     Id "LF-Quest_ArrivalWork_Desc"
-     Target_en_us "Now earn your first wages. The post office is down the street: at the counter, Take courier work and Pick up parcel, carry it to the drop at the east end of the street, and Complete the run. Its sign tells you more."
-     Comment "Arrival chain step 3: sign up at the post office and deliver one parcel."
-    }
-    CustomStringTableItem "{94FCA4937AA67918}" {
-     Id "LF-Quest_ArrivalBank_Title"
-     Target_en_us "Bank it"
-     Comment "Arrival chain step 4 title."
-    }
-    CustomStringTableItem "{D85E266C2ACFBDC1}" {
-     Id "LF-Quest_ArrivalBank_Desc"
-     Target_en_us "Paid in cash. Cash in a pocket is lost if you die, money in the bank is not. Deposit some at the ATM on the bank wall, next to the post office."
-     Comment "Arrival chain step 4: deposit any amount at the ATM."
-    }
-    CustomStringTableItem "{69E9027CB344A15B}" {
-     Id "LF-Quest_ArrivalDone_Title"
-     Target_en_us "Settled in"
-     Comment "Arrival chain step 5 title."
-    }
-    CustomStringTableItem "{FACD3C7B2CC8836C}" {
-     Id "LF-Quest_ArrivalDone_Desc"
-     Target_en_us "Paid and banked. Go back to the clerk on the square."
-     Comment "Arrival chain step 5: return to the clerk."
-    }
-    CustomStringTableItem "{B01582B10F8D629D}" {
-     Id "LF-Quest_ArrivalDone_TurnIn"
-     Target_en_us "Welcome to Everon, here is something to start with. The town is yours now: the shops, the car lot, the police station and the organization office are all on the town board."
-     Comment "The clerk at the end of the arrival chain, with the welcome cash."
-    }
-    CustomStringTableItem "{419B451194328DF6}" {
-     Id "LF-Quest_ArrivalRegister_TurnIn"
-     Target_en_us "The clerk writes your name in the register and hands you your ID card. Keep it on you: the police may ask to see it."
-     Comment "Arrival chain step 1: the clerk hands over the ID card."
-    }
-    CustomStringTableItem "{1A709CDB196EBDDA}" {
-     Id "LF-Quest_Clerk_Idle"
-     Target_en_us "You are settled in. The town board on the square shows the rest: shops, the car lot, the police station, the organization office."
-     Comment "The town clerk after the arrival chain, when there is nothing left to hand out."
-    }
-    CustomStringTableItem "{958D10C1086B7C3E}" {
-     Id "LF-Job_SignedUp"
-     Target_en_us "You are signed up. Start a run at the counter when you are ready."
-     Comment "Toast after a delivery-job sign-up at the post office counter."
-    }
-    CustomStringTableItem "{AC8D0A406C890A6E}" {
-     Id "LF-Contraband_Crate_Name"
-     Target_en_us "Crate of spirits"
-     Comment "Item name of the contraband cargo: a wooden crate of untaxed spirits carried in both hands"
-    }
-    CustomStringTableItem "{1D5E4503B79F1A6F}" {
-     Id "LF-Contraband_Crate_Desc"
-     Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
-     Comment "Item description of the contraband crate"
-    }
-    CustomStringTableItem "{8269943001D9EADB}" {
-     Id "LF-Contraband_Loaded"
-     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
-     Comment "Toast when the convoy start hands the player a contraband crate at the barn"
-    }
-    CustomStringTableItem "{DEDBE2A372F43FF6}" {
-     Id "LF-Contraband_HandsFull"
-     Target_en_us "Your hands are full. Put down what you carry, then take a crate."
-     Comment "Toast when the convoy start cannot hand over the crate because the player already carries something"
-    }
     CustomStringTableItem "{69BB0FD8421E7F07}" {
      Id "LF-Dispatch_Title"
      Target_en_us "Radio - dispatch"
@@ -5166,6 +5081,151 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Offence_UnpaidFine"
      Target_en_us "Unpaid fine"
      Comment "Wanted board offence when a police ticket goes unpaid past its second deadline."
+    }
+    CustomStringTableItem "{618A5B0E5F6A7C85}" {
+     Id "LF-Job_SignedUp_Courier"
+     Target_en_us "You are a courier now. Pick up a parcel at this counter."
+     Comment "Toast after signing up for courier work: the next step."
+    }
+    CustomStringTableItem "{CF7F0BA17E3A08CD}" {
+     Id "LF-Job_SignedUp_Fuel"
+     Target_en_us "You deliver fuel now. Take a fuel can at this counter."
+     Comment "Toast after signing up for fuel delivery: the next step."
+    }
+    CustomStringTableItem "{368CBF7BF68CC9AE}" {
+     Id "LF-Job_SignedUp_Taxi"
+     Target_en_us "You drive a taxi now. Start a fare at this counter."
+     Comment "Toast after signing up for taxi work: the next step."
+    }
+    CustomStringTableItem "{B72D78719E88C276}" {
+     Id "LF-Job_RunStarted_Courier"
+     Target_en_us "Carry the parcel east along the street to the porch past the brick-walled lock-up, then Complete the run."
+     Comment "Toast when a courier picks up a parcel: where the drop is. Capitalized phrase is the drop-off action name."
+    }
+    CustomStringTableItem "{9823FC0642192065}" {
+     Id "LF-Quest_Giver_Clerk"
+     Target_en_us "Town clerk"
+     Comment "Quest menu title for the town clerk on the square (arrival chain)."
+    }
+    CustomStringTableItem "{945AA58155A88BAC}" {
+     Id "LF-Quest_Giver_Tester"
+     Target_en_us "Test quest board"
+     Comment "Quest menu title for the test quest giver in the test annex."
+    }
+    CustomStringTableItem "{DD20CCA577AB2B68}" {
+     Id "LF-Quest_Action_Clerk"
+     Target_en_us "Talk to the clerk"
+     Comment "Interaction on the town clerk NPC."
+    }
+    CustomStringTableItem "{002662BFCD8D20B3}" {
+     Id "LF-Quest_ArrivalRegister_Title"
+     Target_en_us "New in town"
+     Comment "Arrival chain step 1 title."
+    }
+    CustomStringTableItem "{8D29DF46F50BC183}" {
+     Id "LF-Quest_ArrivalRegister_Desc"
+     Target_en_us "You are new in town and carry no papers. The clerk on the square keeps the register: talk to him and he hands you your ID card."
+     Comment "Arrival chain step 1: talk to the clerk, receive the ID card."
+    }
+    CustomStringTableItem "{D6DBC19947C15B40}" {
+     Id "LF-Quest_ArrivalBoard_Title"
+     Target_en_us "The town board"
+     Comment "Arrival chain step 2 title."
+    }
+    CustomStringTableItem "{B58FFAF3FDBE501F}" {
+     Id "LF-Quest_ArrivalBoard_Desc"
+     Target_en_us "Read the town board on the square, next to the clerk: it shows where everything in town is."
+     Comment "Arrival chain step 2: shown when the clerk hands the card over. Read the town map sign."
+    }
+    CustomStringTableItem "{E9005E06D70F9493}" {
+     Id "LF-Quest_ArrivalWork_Title"
+     Target_en_us "First wages"
+     Comment "Arrival chain step 3 title."
+    }
+    CustomStringTableItem "{172E338F853864B0}" {
+     Id "LF-Quest_ArrivalWork_Desc"
+     Target_en_us "Now earn your first wages. The post office is down the street: at the counter, Take courier work and Pick up parcel, carry it to the drop at the east end of the street, and Complete the run. Its sign tells you more."
+     Comment "Arrival chain step 3: sign up at the post office and deliver one parcel."
+    }
+    CustomStringTableItem "{94FCA4937AA67918}" {
+     Id "LF-Quest_ArrivalBank_Title"
+     Target_en_us "Bank it"
+     Comment "Arrival chain step 4 title."
+    }
+    CustomStringTableItem "{D85E266C2ACFBDC1}" {
+     Id "LF-Quest_ArrivalBank_Desc"
+     Target_en_us "Paid in cash. Cash in a pocket is lost if you die, money in the bank is not. Deposit some at the ATM on the bank wall, next to the post office."
+     Comment "Arrival chain step 4: deposit any amount at the ATM."
+    }
+    CustomStringTableItem "{69E9027CB344A15B}" {
+     Id "LF-Quest_ArrivalDone_Title"
+     Target_en_us "Settled in"
+     Comment "Arrival chain step 5 title."
+    }
+    CustomStringTableItem "{FACD3C7B2CC8836C}" {
+     Id "LF-Quest_ArrivalDone_Desc"
+     Target_en_us "Paid and banked. Go back to the clerk on the square."
+     Comment "Arrival chain step 5: return to the clerk."
+    }
+    CustomStringTableItem "{B01582B10F8D629D}" {
+     Id "LF-Quest_ArrivalDone_TurnIn"
+     Target_en_us "Welcome to Everon, here is something to start with. The town is yours now: the shops, the car lot, the police station and the organization office are all on the town board."
+     Comment "The clerk at the end of the arrival chain, with the welcome cash."
+    }
+    CustomStringTableItem "{419B451194328DF6}" {
+     Id "LF-Quest_ArrivalRegister_TurnIn"
+     Target_en_us "The clerk writes your name in the register and hands you your ID card. Keep it on you: the police may ask to see it."
+     Comment "Arrival chain step 1: the clerk hands over the ID card."
+    }
+    CustomStringTableItem "{1A709CDB196EBDDA}" {
+     Id "LF-Quest_Clerk_Idle"
+     Target_en_us "You are settled in. The town board on the square shows the rest: shops, the car lot, the police station, the organization office."
+     Comment "The town clerk after the arrival chain, when there is nothing left to hand out."
+    }
+    CustomStringTableItem "{958D10C1086B7C3E}" {
+     Id "LF-Job_SignedUp"
+     Target_en_us "You are signed up. Start a run at the counter when you are ready."
+     Comment "Toast after a delivery-job sign-up at the post office counter."
+    }
+    CustomStringTableItem "{EBA0820132F44791}" {
+     Id "LF-Lot_Browse"
+     Target_en_us "Look at the cars"
+     Comment "Car lot interaction: opens the lot price sheet."
+    }
+    CustomStringTableItem "{2099A882EC6B2C01}" {
+     Id "LF-Lot_Title"
+     Target_en_us "Car lot - price list"
+     Comment "Car lot sheet title."
+    }
+    CustomStringTableItem "{3E2EC9B19D88B571}" {
+     Id "LF-Lot_Money"
+     Target_en_us "In the bank: %1    Cash in hand: %2"
+     Comment "Car lot sheet: the money the reader can pay with. %1 bank, %2 cash."
+    }
+    CustomStringTableItem "{B58D71B1650E8EBB}" {
+     Id "LF-Lot_Rule"
+     Target_en_us "Cars up to %1 are paid in cash. Dearer cars are paid from your bank: deposit cash at the ATM first."
+     Comment "Car lot sheet: the payment rule. %1 is the cash ceiling."
+    }
+    CustomStringTableItem "{3A23ABBFC38B6FC4}" {
+     Id "LF-Lot_NeedsBank"
+     Target_en_us "needs %1 in the bank"
+     Comment "Car lot row for a car the reader cannot afford from the bank. %1 is the price."
+    }
+    CustomStringTableItem "{3E8956543B8EFAAA}" {
+     Id "LF-Lot_NeedsCash"
+     Target_en_us "needs %1 cash"
+     Comment "Car lot row for a cheap car the reader cannot afford in cash. %1 is the price."
+    }
+    CustomStringTableItem "{7C18C714BFDC5DBE}" {
+     Id "LF-Lot_Buy"
+     Target_en_us "Buy"
+     Comment "Car lot row button."
+    }
+    CustomStringTableItem "{EEBDBD6504C8B4FF}" {
+     Id "LF-Lot_Leave"
+     Target_en_us "Leave"
+     Comment "Car lot sheet close button."
     }
   }
  }

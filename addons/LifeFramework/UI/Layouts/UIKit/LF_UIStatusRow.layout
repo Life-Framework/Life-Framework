@@ -32,7 +32,7 @@ SizeLayoutWidgetClass "{4C5C38403A9D6402}" {
        Slot LayoutSlot "{5C1C7F08C2DC9173}" {
         VerticalAlign 1
         SizeMode Fill
-        FillWeight 2
+        FillWeight 1.5
        }
        Color 0.110 0.102 0.086 1
        Text ""
@@ -63,7 +63,7 @@ SizeLayoutWidgetClass "{4C5C38403A9D6402}" {
        Slot LayoutSlot "{57592236BC445A37}" {
         VerticalAlign 1
         SizeMode Fill
-        FillWeight 1
+        FillWeight 1.5
        }
        components {
         SCR_ButtonTextComponent "{FDA337C76D06A40C}" {

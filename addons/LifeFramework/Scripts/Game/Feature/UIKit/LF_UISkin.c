@@ -25,6 +25,8 @@ class LF_UISkin
 	string m_sName = "paper";
 	//! Sheet width in reference pixels (LF_UIFrame.layout is 560).
 	float m_fWidth = 560;
+	//! Multiplies every font size on the sheet (1 is LF_UITheme). A shop list is read at arm's length.
+	float m_fTypeScale = 1;
 	//! Dim and soften the world behind the sheet (the full-screen blur in LF_UIFrame.layout).
 	bool m_bBlur = true;
 
@@ -72,7 +74,9 @@ class LF_UISkin
 		LF_UISkin skin = Paper();
 		skin.m_sName = "price-list";
 		skin.m_Font = FONT_MONO;
-		skin.m_fWidth = 640;
+		// Maintainer playtest 2026-11-08: the store list was too small to read at 1920x1080.
+		skin.m_fWidth = 900;
+		skin.m_fTypeScale = 1.35;
 		return skin;
 	}
 

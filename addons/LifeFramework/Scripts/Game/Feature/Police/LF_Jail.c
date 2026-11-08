@@ -711,13 +711,46 @@ class LF_Jail
 
 		if (how == LF_EJailMove.TELEPORT_PLAYER)
 		{
-			if (SCR_Global.TeleportPlayer(playerId, position))
+			bool teleported = SCR_Global.TeleportPlayer(playerId, position);
+			// On a dedicated server TeleportPlayer alone moved the body on the server only: the
+			// owning client's next movement update put the prisoner back where they were arrested
+			// (M1 RC QA: "moved ... to the cell" logged, the client never left the garage). The
+			// owner has to make the move itself.
+			if (AskOwnerToMove(body, position))
+				return;
+
+			if (teleported)
 				return;
 
 			EL_Debug.Warn("Jail", string.Format("player teleport refused for player %1; setting the origin on the server", playerId));
 		}
 
 		body.SetOrigin(position);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A body a remote client owns is moved by that client, through the vanilla Game Master path
+	//! (SCR_EditableCharacterComponent.SetTransform asks the owner). False for a body this machine
+	//! owns (a listen host, a test stand-in): the caller's server move is enough there.
+	protected static bool AskOwnerToMove(IEntity body, vector position)
+	{
+		RplComponent rpl = RplComponent.Cast(body.FindComponent(RplComponent));
+		if (!rpl || rpl.IsOwner())
+			return false;
+
+		SCR_EditableCharacterComponent editable = SCR_EditableCharacterComponent.Cast(body.FindComponent(SCR_EditableCharacterComponent));
+		if (!editable)
+		{
+			EL_Debug.Error("Jail", "prisoner not moved on their client: no SCR_EditableCharacterComponent to ask the owner");
+			return false;
+		}
+
+		vector transform[4];
+		body.GetWorldTransform(transform);
+		transform[3] = position;
+		editable.SetTransform(transform);
+		EL_Debug.Info("Jail", string.Format("asked the owning client to move the prisoner to %1", position));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
