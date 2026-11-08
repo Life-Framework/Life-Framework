@@ -3284,12 +3284,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9ACF7398922B3B42}" {
      Id "LF-Sign_Garage_What"
-     Target_en_us "Park your vehicle off the street."
+     Target_en_us "Keep your vehicle across server restarts."
      Comment "Sign card for the garage where owners park vehicles, What section."
     }
     CustomStringTableItem "{C253431484CC5293}" {
      Id "LF-Sign_Garage_How"
-     Target_en_us "Drive up to the doors, get out, and Store vehicle. Retrieve vehicle puts it back on the lot."
+     Target_en_us "Park by the doors, get out, and Store vehicle. Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
      Comment "Sign card for the garage where owners park vehicles, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{4666CFF92E358BA1}" {
@@ -3299,7 +3299,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3F33FAFA82115227}" {
      Id "LF-Sign_Garage_Rules"
-     Target_en_us "Only the owner can take it out."
+     Target_en_us "Only the owner can store it or take it out. A car left on the street at a restart is towed to the impound lot behind the garage."
      Comment "Sign card for the garage where owners park vehicles, Rules section."
     }
     CustomStringTableItem "{1B0E51209D175B75}" {
@@ -4106,6 +4106,136 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_Farm_Next"
      Target_en_us "Sell the harvest at the market stalls on the main street, south of here."
      Comment "Sign card for the farm, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{7EC51FB11D0B1C50}" {
+     Id "LF-Garage_ReadLedger"
+     Target_en_us "Read the garage ledger"
+     Comment "Action at the garage and the impound desk that opens the ledger card of your vehicles"
+    }
+    CustomStringTableItem "{B91E50924997458C}" {
+     Id "LF-Garage_LedgerTitle"
+     Target_en_us "Garage Ledger"
+     Comment "Title of the garage ledger card"
+    }
+    CustomStringTableItem "{F48BC16138BA72D1}" {
+     Id "LF-Garage_LedgerRow"
+     Target_en_us "%1, plate %2: %3"
+     Comment "Ledger row. %1 is the model, %2 the plate, %3 where the vehicle is (in the garage, at the impound lot)"
+    }
+    CustomStringTableItem "{B2FF1D7EF35A27D7}" {
+     Id "LF-Garage_LedgerStored"
+     Target_en_us "in the garage"
+     Comment "Ledger row place: the vehicle is stored and survives restarts"
+    }
+    CustomStringTableItem "{A95D5C7E27177491}" {
+     Id "LF-Garage_LedgerImpounded"
+     Target_en_us "at the impound lot"
+     Comment "Ledger row place: the vehicle was left on the street at a restart"
+    }
+    CustomStringTableItem "{03E3D61F9E999AD2}" {
+     Id "LF-Garage_LedgerEmpty"
+     Target_en_us "No vehicles are registered to you."
+     Comment "Ledger card line when the reader owns no stored or impounded vehicle"
+    }
+    CustomStringTableItem "{5CDA9148049FE180}" {
+     Id "LF-Garage_LedgerFee"
+     Target_en_us "Release fee at the impound desk behind the garage: $%1 in cash."
+     Comment "Ledger card line when a vehicle is impounded. %1 is the fee"
+    }
+    CustomStringTableItem "{66D8858FA06871D7}" {
+     Id "LF-Garage_LedgerClose"
+     Target_en_us "Put it back"
+     Comment "Closes the garage ledger card"
+    }
+    CustomStringTableItem "{FC90DC9BBE2A0562}" {
+     Id "LF-Garage_Stored"
+     Target_en_us "Stored in the garage: %1. Keep your key."
+     Comment "Store succeeded. %1 is the plate"
+    }
+    CustomStringTableItem "{EFE87FE08B769414}" {
+     Id "LF-Garage_Retrieved"
+     Target_en_us "%1 is waiting on the pad in front of the garage."
+     Comment "Retrieve succeeded. %1 is the plate"
+    }
+    CustomStringTableItem "{844A5DFB122EDF8C}" {
+     Id "LF-Garage_NothingStored"
+     Target_en_us "You have no vehicle in the garage."
+     Comment "Retrieve refused: nothing stored"
+    }
+    CustomStringTableItem "{A103BFA88FF840F0}" {
+     Id "LF-Garage_PadBusy"
+     Target_en_us "The pad in front of the garage is blocked. Move the car that is standing there."
+     Comment "Retrieve refused: every garage pad is occupied"
+    }
+    CustomStringTableItem "{50E0662C55792133}" {
+     Id "LF-Impound_Title"
+     Target_en_us "Impound Lot"
+     Comment "Notification title at the impound desk"
+    }
+    CustomStringTableItem "{7E2E61FB397A0CDF}" {
+     Id "LF-Impound_Collect"
+     Target_en_us "Pay the fee and collect your vehicle"
+     Comment "Impound desk action"
+    }
+    CustomStringTableItem "{8A114E81A1FA0278}" {
+     Id "LF-Impound_NothingHere"
+     Target_en_us "None of your vehicles is at the impound lot."
+     Comment "Impound collect refused: nothing impounded for this player"
+    }
+    CustomStringTableItem "{1736103CC4077F8B}" {
+     Id "LF-Impound_CannotAfford"
+     Target_en_us "The release fee is $%1 in cash."
+     Comment "Impound collect refused: carried cash is short. %1 is the fee"
+    }
+    CustomStringTableItem "{DF52697EEFAFA6B6}" {
+     Id "LF-Impound_PadBusy"
+     Target_en_us "The yard is full. Wait until a vehicle is driven out."
+     Comment "Impound collect refused: every yard pad is occupied"
+    }
+    CustomStringTableItem "{1A7DF5F007730F80}" {
+     Id "LF-Impound_Closed"
+     Target_en_us "The impound desk is closed."
+     Comment "Impound collect refused: the fee is not configured"
+    }
+    CustomStringTableItem "{E4FB9D76BA99F73A}" {
+     Id "LF-Impound_Collected"
+     Target_en_us "Released: %1 is waiting in the yard."
+     Comment "Impound collect succeeded. %1 is the plate"
+    }
+    CustomStringTableItem "{D033165293830B25}" {
+     Id "LF-Garage_LedgerStreet"
+     Target_en_us "on the street, towed to the impound lot at the next restart unless garaged"
+     Comment "Ledger row place: the vehicle is out in the world"
+    }
+    CustomStringTableItem "{86AD47C0A38CE390}" {
+     Id "LF-Garage_BuyHint"
+     Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
+     Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
+    }
+    CustomStringTableItem "{576A5D52994C158C}" {
+     Id "LF-Sign_Impound_Title"
+     Target_en_us "Impound Lot"
+     Comment "Sign card for the impound desk behind the garage, title."
+    }
+    CustomStringTableItem "{D1E213563FB92C8D}" {
+     Id "LF-Sign_Impound_What"
+     Target_en_us "Cars left on the street at a server restart are towed here."
+     Comment "Sign card for the impound desk, What section."
+    }
+    CustomStringTableItem "{F209D5D9A5D3E58D}" {
+     Id "LF-Sign_Impound_How"
+     Target_en_us "Pay the fee and collect your vehicle at this desk. It waits in the yard, and you get a key."
+     Comment "Sign card for the impound desk, How section."
+    }
+    CustomStringTableItem "{12D5DBFBC8D59765}" {
+     Id "LF-Sign_Impound_Needs"
+     Target_en_us "The release fee in cash. Read the ledger at the desk for the amount."
+     Comment "Sign card for the impound desk, Needs section."
+    }
+    CustomStringTableItem "{C8EC4BFEE00D94E9}" {
+     Id "LF-Sign_Impound_Rules"
+     Target_en_us "Only the owner can collect. Store your car in the garage to never pay this."
+     Comment "Sign card for the impound desk, Rules section."
     }
   }
  }
