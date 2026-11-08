@@ -1,7 +1,7 @@
 // Checks that every route answers with its own prerendered page.
 //
 //   node scripts/check-routes.mjs --dist                         # the local build, served like Pages
-//   node scripts/check-routes.mjs https://life-framework-arn.pages.dev
+//   node scripts/check-routes.mjs https://life-framework.org
 //
 // Each route must answer 200 with its own <title>, a description, a canonical link, and an
 // og:image that exists; old addresses must redirect; an unknown path must answer 404 with
@@ -11,7 +11,7 @@ import { startServer } from "./serve-dist.mjs";
 
 const useDist = process.argv.includes("--dist");
 let server = null;
-let base = (process.argv.slice(2).find((a) => !a.startsWith("--")) || "https://life-framework-arn.pages.dev").replace(/\/$/, "");
+let base = (process.argv.slice(2).find((a) => !a.startsWith("--")) || "https://life-framework.org").replace(/\/$/, "");
 if (useDist) {
   server = await startServer(4199);
   base = "http://127.0.0.1:4199";
