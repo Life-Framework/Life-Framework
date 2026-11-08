@@ -756,6 +756,8 @@
   so `HandleOnItemAdded` no longer merges the spawned init quantity (100 for
   MoneyStack) into the source. Split 1 used to add 99. Pin test
   `security/inventory-split-no-mint`.
+- ✅ Stack tier meshes hold their `Resource` while applied, so a tier swap no longer logs
+  `Usage of released BaseResourceObject` (2026-11-08, `quantity/operations` visual path).
 - ⚠️ `Split` with `splitSize` 0 spawns an item then deletes it via
   `SetQuantity(0)`; `ExtractQuantityComponents` inserts null components with
   no check; `HandleOnItemAdded` may refresh UI on a just-deleted entity.

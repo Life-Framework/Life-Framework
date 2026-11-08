@@ -45,6 +45,10 @@ class EL_QuantityComponent : ScriptComponent
 	//! Last stack-tier model applied to the owner; empty when the base model is shown.
 	protected ResourceName m_sAppliedStackModel;
 
+	//! Holds the applied tier mesh's resource. Without it the resource is released when
+	//! UpdateStackModel returns, and the next SetObject touches a released VObject.
+	protected ref Resource m_AppliedStackResource;
+
 	//------------------------------------------------------------------------------------------------
 	int GetMaxQuantity()
 	{
@@ -181,6 +185,7 @@ class EL_QuantityComponent : ScriptComponent
 
 		ResourceName stackModelName = GetStackModelForQuantity(m_iQuantity, m_aQuantityStacks);
 		VObject targetModel;
+		Resource targetResource;
 
 		if (stackModelName)
 		{
@@ -205,6 +210,7 @@ class EL_QuantityComponent : ScriptComponent
 				return;
 			}
 
+			targetResource = resource;
 			EL_Debug.Info("Quantity", string.Format("stack visual %1 at quantity %2", stackModelName, m_iQuantity));
 			m_sAppliedStackModel = stackModelName;
 		}
@@ -220,6 +226,8 @@ class EL_QuantityComponent : ScriptComponent
 		}
 
 		owner.SetObject(targetModel, "");
+		// Swap the held resource only after SetObject, so the old mesh stays valid during the swap.
+		m_AppliedStackResource = targetResource;
 	}
 
 	//------------------------------------------------------------------------------------------------
