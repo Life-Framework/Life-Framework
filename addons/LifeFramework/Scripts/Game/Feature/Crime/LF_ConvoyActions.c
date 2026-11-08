@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
-//! Starts the hideout convoy. A member who is seated is watched; leaving that
-//! vehicle fails the run.
+//! Starts the hideout convoy at the barn and hands the member a crate of spirits.
+//! The vehicle the member is in, or the first one they get into, is watched;
+//! leaving it away from the drop fails the run.
 //------------------------------------------------------------------------------------------------
 class LF_ConvoyStartAction : ScriptedUserAction
 {
@@ -26,6 +27,8 @@ class LF_ConvoyStartAction : ScriptedUserAction
 
 		if (!LF_Contraband.Start(characterId, pUserEntity))
 			SetCannotPerformReason("#EL-Contraband_NotMember");
+		else
+			LF_Contraband.GiveCrate(pUserEntity);
 	}
 }
 

@@ -3502,6 +3502,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{AC8D0A406C890A6E}" {
+     Id "LF-Contraband_Crate_Name"
+     Target_en_us "Crate of spirits"
+     Comment "Item name of the contraband cargo: a wooden crate of untaxed spirits carried in both hands"
+    }
+    CustomStringTableItem "{1D5E4503B79F1A6F}" {
+     Id "LF-Contraband_Crate_Desc"
+     Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
+     Comment "Item description of the contraband crate"
+    }
+    CustomStringTableItem "{8269943001D9EADB}" {
+     Id "LF-Contraband_Loaded"
+     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
+     Comment "Toast when the convoy start hands the player a contraband crate at the barn"
+    }
+    CustomStringTableItem "{DEDBE2A372F43FF6}" {
+     Id "LF-Contraband_HandsFull"
+     Target_en_us "Your hands are full. Put down what you carry, then take a crate."
+     Comment "Toast when the convoy start cannot hand over the crate because the player already carries something"
+    }
   }
  }
 }

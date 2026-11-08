@@ -16,6 +16,12 @@ class EL_Test_Roadmap_Contraband : EL_Test
 
 		ctx.True(LF_Contraband.IsContraband(LF_Contraband.ITEM), "the configured prefab is contraband");
 		ctx.False(LF_Contraband.IsContraband(EL_MoneyUtils.PREFAB_CASH), "cash is not contraband");
+		ctx.False(LF_Contraband.IsContraband("{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et"), "rowan berries are food again, not contraband");
+
+		vector drop = "131.5 0 284";
+		ctx.True(LF_Contraband.NearDrop("140 0 300", drop), "getting out 18 m from the drop is arriving");
+		ctx.False(LF_Contraband.NearDrop("160 0 284", drop), "getting out 28.5 m from the drop is leaving the vehicle");
+		ctx.True(LF_Contraband.NearDrop("131.5 40 284", drop), "height does not count toward the drop distance");
 
 		string founder = "roadmap-contraband-founder";
 		string member = "roadmap-contraband-member";
@@ -86,9 +92,11 @@ class EL_Test_Roadmap_ContrabandWorld : EL_Test
 		ctx.EqualFloat(0, startOrigin[1], 0.1, "the start marker is at Y 0");
 		ctx.EqualFloat(331, startOrigin[2], 0.1, "the start marker is at Z 331");
 		vector dropOrigin = drop.GetOrigin();
-		ctx.EqualFloat(299, dropOrigin[0], 0.1, "the drop marker is at X 299 (the hideout yard)");
+		ctx.EqualFloat(131.5, dropOrigin[0], 0.1, "the drop marker is at X 131.5 (behind the pub on the square)");
 		ctx.EqualFloat(0, dropOrigin[1], 0.1, "the drop marker is at Y 0");
-		ctx.EqualFloat(293, dropOrigin[2], 0.1, "the drop marker is at Z 293");
+		ctx.EqualFloat(284, dropOrigin[2], 0.1, "the drop marker is at Z 284");
+		ctx.True(start.GetVObject() != null, "the pickup has a mesh");
+		ctx.True(drop.GetVObject() != null, "the drop has a mesh");
 
 		LF_ConvoyMarkerComponent startMarker = EL_Component<LF_ConvoyMarkerComponent>.Find(start);
 		ctx.NotNull(startMarker, "the start marker carries LF_ConvoyMarkerComponent");
@@ -106,6 +114,64 @@ class EL_Test_Roadmap_ContrabandWorld : EL_Test
 		ctx.False(HasAction(start, false), "the start marker does not pay out");
 		ctx.True(HasAction(drop, false), "the drop marker uses the convoy deliver action");
 		ctx.False(HasAction(drop, true), "the drop marker does not start a run");
+
+		CheckCrate(ctx);
+		CheckLeaveAtDrop(ctx, dropOrigin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cargo is a real crate in the hands: it loads, has a mesh, is hand-carried, and is flagged.
+	protected void CheckCrate(EL_TestContext ctx)
+	{
+		ctx.True(LF_Contraband.IsContraband(LF_Contraband.ITEM), "the crate is flagged contraband");
+		Resource resource = Resource.Load(LF_Contraband.ITEM);
+		ctx.True(resource.IsValid(), "the contraband crate prefab loads");
+		if (!resource.IsValid())
+			return;
+
+		EntitySpawnParams params();
+		params.TransformMode = ETransformMode.WORLD;
+		IEntity crate = GetGame().SpawnEntityPrefab(resource, GetGame().GetWorld(), params);
+		ctx.True(crate != null, "the contraband crate spawns");
+		if (!crate)
+			return;
+
+		ctx.True(crate.GetVObject() != null, "the contraband crate has a mesh");
+		ctx.NotNull(EL_Component<EL_HandCarryComponent>.Find(crate), "the contraband crate is carried in both hands");
+		SCR_EntityHelper.DeleteEntityAndChildren(crate);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Getting out at the placed drop keeps the run for the delivery; getting out on the road fails it.
+	protected void CheckLeaveAtDrop(EL_TestContext ctx, vector dropOrigin)
+	{
+		EL_OrganizationManager.Reset();
+		LF_Hideout.Reset();
+		LF_Contraband.Reset();
+
+		string founder = "roadmap-contraband-world-founder";
+		string arriving = "roadmap-contraband-world-arriving";
+		string quitting = "roadmap-contraband-world-quitting";
+		EL_Organization org = EL_OrganizationManager.Create(founder, "Pub Suppliers");
+		ctx.NotNull(org, "founder creates the owning organization");
+		if (!org)
+			return;
+
+		EL_OrganizationManager.Invite(org.GetId(), founder, arriving);
+		EL_OrganizationManager.Invite(org.GetId(), founder, quitting);
+		LF_Hideout.Assign(LF_Hideout.HIDEOUT_ID, org.GetId());
+
+		ctx.True(LF_Contraband.Start(arriving, null), "the arriving driver starts a run");
+		ctx.False(LF_Contraband.LeftVehicleAt(arriving, dropOrigin + "6 0 4"), "getting out beside the drop does not fail the run");
+		ctx.Equal(LF_Contraband.PAYOUT, LF_Contraband.Deliver(arriving, 1, null), "the driver who got out at the drop is paid");
+
+		ctx.True(LF_Contraband.Start(quitting, null), "the quitting driver starts a run");
+		ctx.True(LF_Contraband.LeftVehicleAt(quitting, "300 0 250"), "getting out on the main street fails the run");
+		ctx.Equal(0, LF_Contraband.Deliver(quitting, 1, null), "the driver who got out on the way is not paid");
+
+		EL_OrganizationManager.Reset();
+		LF_Hideout.Reset();
+		LF_Contraband.Reset();
 	}
 
 	protected bool HasAction(IEntity entity, bool startAction)

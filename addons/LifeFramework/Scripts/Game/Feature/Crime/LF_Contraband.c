@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------------------------
-//! One convoy. A member of the organization that owns the hideout hauls the
-//! configured contraband from the start marker to the drop. Delivery pays cash
-//! once. Leaving the vehicle or dying fails the run and logs it. A failed or
+//! One convoy. A member of the organization that owns the hideout takes a crate
+//! of spirits at the barn (the start marker), drives it to the back of the pub
+//! (the drop), and is paid cash in hand once. Once the member gets into a vehicle,
+//! leaving it anywhere but at the drop fails the run, as does dying. A failed or
 //! already-paid run pays nothing.
 //------------------------------------------------------------------------------------------------
 enum LF_EConvoyState
@@ -19,6 +20,7 @@ class LF_ConvoyVehicleWatch : Managed
 	EntityID m_UserId;
 	bool m_bMatchUser;
 	EntityID m_VehicleId = EntityID.INVALID;
+	EntityID m_ArmedUserId = EntityID.INVALID;
 
 	//------------------------------------------------------------------------------------------------
 	void Attach(IEntity user, IEntity vehicle)
@@ -45,9 +47,37 @@ class LF_ConvoyVehicleWatch : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Unregisters the OnCompartmentLeft handler. A vehicle already deleted took its handlers with it.
+	void ~LF_ConvoyVehicleWatch()
+	{
+		Detach();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The member took the crate on foot: watch the first vehicle they get into.
+	void ArmOnEntry(IEntity user)
+	{
+		if (!user)
+			return;
+
+		SCR_CompartmentAccessComponent access = SCR_CompartmentAccessComponent.Cast(user.FindComponent(SCR_CompartmentAccessComponent));
+		if (!access)
+		{
+			EL_Debug.Error("Contraband", "convoy cannot watch for a vehicle: the character has no compartment access");
+			return;
+		}
+
+		access.GetOnCompartmentEntered().Insert(OnUserEntered);
+		m_ArmedUserId = user.GetID();
+		m_UserId = user.GetID();
+		m_bMatchUser = true;
+		EL_Debug.Log("Contraband", string.Format("convoy waits for %1 to get into a vehicle", m_sCharacterId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Unregisters the vehicle and entry handlers. A vehicle already deleted took its handlers with it.
 	void Detach()
 	{
+		DisarmEntry();
 		if (m_VehicleId == EntityID.INVALID)
 			return;
 
@@ -68,6 +98,40 @@ class LF_ConvoyVehicleWatch : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected void DisarmEntry()
+	{
+		if (m_ArmedUserId == EntityID.INVALID)
+			return;
+
+		EntityID userId = m_ArmedUserId;
+		m_ArmedUserId = EntityID.INVALID;
+		if (!GetGame() || !GetGame().GetWorld())
+			return;
+
+		IEntity user = GetGame().GetWorld().FindEntityByID(userId);
+		if (!user)
+			return;
+
+		SCR_CompartmentAccessComponent access = SCR_CompartmentAccessComponent.Cast(user.FindComponent(SCR_CompartmentAccessComponent));
+		if (access && access.GetOnCompartmentEntered(false))
+			access.GetOnCompartmentEntered(false).Remove(OnUserEntered);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The handler stays registered until Detach: removing it from inside its own invoke is not safe.
+	protected void OnUserEntered(IEntity targetEntity, BaseCompartmentManagerComponent manager, int mgrID, int slotID, bool move)
+	{
+		if (!targetEntity || m_VehicleId != EntityID.INVALID || m_ArmedUserId == EntityID.INVALID)
+			return;
+
+		if (!Replication.IsServer())
+			return;
+
+		IEntity user = GetGame().GetWorld().FindEntityByID(m_ArmedUserId);
+		Attach(user, targetEntity);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void OnCompartmentLeft(IEntity vehicle, BaseCompartmentManagerComponent mgr, IEntity occupant, int managerId, int slotID)
 	{
 		if (!occupant)
@@ -75,13 +139,13 @@ class LF_ConvoyVehicleWatch : Managed
 
 		if (m_bMatchUser && occupant.GetID() == m_UserId)
 		{
-			LF_Contraband.FailLeftVehicle(m_sCharacterId);
+			LF_Contraband.LeftVehicleAt(m_sCharacterId, occupant.GetOrigin());
 			return;
 		}
 
 		string occupantId = LF_Hideout.CharacterIdOf(occupant);
 		if (!occupantId.IsEmpty() && occupantId == m_sCharacterId)
-			LF_Contraband.FailLeftVehicle(m_sCharacterId);
+			LF_Contraband.LeftVehicleAt(m_sCharacterId, occupant.GetOrigin());
 	}
 }
 
@@ -100,9 +164,13 @@ class LF_ConvoyRun : Managed
 class LF_Contraband
 {
 	static const int PAYOUT = 200;
-	static const ResourceName ITEM = "{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et";
+	//! A wooden crate of untaxed spirits, carried in both hands (vanilla BoxWooden_01 mesh).
+	static const ResourceName ITEM = "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et";
 	static const string START_ID = "Roadmap_Convoy_Start";
 	static const string DROP_ID = "Roadmap_Convoy_Drop";
+	//! Getting out of the vehicle this close to the drop is arriving, not abandoning the run.
+	static const float DROP_RADIUS_M = 25;
+	static const string PICKUP_SOUND = "SOUND_PICK_UP";
 
 	protected static ref map<string, ref LF_ConvoyRun> s_mRuns;
 	protected static string s_sLastRefusal;
@@ -254,6 +322,9 @@ class LF_Contraband
 				EL_Debug.Error("Contraband", "delivery removed no contraband after payment");
 		}
 
+		if (payTo)
+			PlaySound(payTo, PICKUP_SOUND);
+
 		run.m_iState = LF_EConvoyState.PAID;
 		run.m_iCashPaid = run.m_iCashPaid + paid;
 		StopWatch(run);
@@ -261,6 +332,73 @@ class LF_Contraband
 		if (GetGame() && GetGame().GetWorkspace())
 			EL_Utils.NotifyEntity(payTo, "#EL-Contraband_Paid", "#EL-Contraband_Deliver", 3.0);
 		return paid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hands the member one crate at the barn. A member already holding one keeps it.
+	//! \return true when the member carries a crate afterwards.
+	static bool GiveCrate(IEntity user)
+	{
+		if (!Server())
+			return false;
+
+		if (!user)
+		{
+			Refuse("pickup refused: no player");
+			return false;
+		}
+
+		if (CountCarried(user) > 0)
+			return true;
+
+		int added = EL_InventoryUtils.AddAmount(user, ITEM, 1, false);
+		if (added != 1)
+		{
+			Refuse("pickup refused: hands full");
+			EL_Utils.NotifyEntity(user, "#LF-Contraband_HandsFull", "#EL-Contraband_Start", 5.0);
+			return false;
+		}
+
+		PlaySound(user, PICKUP_SOUND);
+		EL_Debug.Log("Contraband", string.Format("crate handed over %1", ITEM));
+		EL_Utils.NotifyEntity(user, "#LF-Contraband_Loaded", "#EL-Contraband_Start", 6.0);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when where is within DROP_RADIUS_M of drop (flat distance).
+	static bool NearDrop(vector where, vector drop)
+	{
+		float dx = where[0] - drop[0];
+		float dz = where[2] - drop[2];
+		return dx * dx + dz * dz <= DROP_RADIUS_M * DROP_RADIUS_M;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The member got out of the watched vehicle at where. At the drop that ends the drive
+	//! (the watch stops, the run stays open for the delivery); anywhere else the run fails.
+	//! \return true when the run failed.
+	static bool LeftVehicleAt(string characterId, vector where)
+	{
+		LF_ConvoyRun run = Find(characterId);
+		if (!run || run.m_iState != LF_EConvoyState.RUNNING)
+			return false;
+
+		IEntity drop = null;
+		if (GetGame() && GetGame().GetWorld())
+			drop = GetGame().GetWorld().FindEntityByName(DROP_ID);
+
+		if (!drop)
+			EL_Debug.Error("Contraband", "drop marker missing: " + DROP_ID);
+
+		if (drop && NearDrop(where, drop.GetOrigin()))
+		{
+			StopWatch(run);
+			EL_Debug.Log("Contraband", string.Format("convoy reached the drop %1", characterId));
+			return false;
+		}
+
+		return FailLeftVehicle(characterId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -373,8 +511,17 @@ class LF_Contraband
 		StopWatch(run);
 
 		ChimeraCharacter character = ChimeraCharacter.Cast(user);
-		if (!character || !character.IsInVehicle())
+		if (!character)
 			return;
+
+		if (!character.IsInVehicle())
+		{
+			ref LF_ConvoyVehicleWatch armed = new LF_ConvoyVehicleWatch();
+			armed.m_sCharacterId = run.m_sCharacterId;
+			armed.ArmOnEntry(user);
+			run.m_pWatch = armed;
+			return;
+		}
 
 		CompartmentAccessComponent access = CompartmentAccessComponent.Cast(character.FindComponent(CompartmentAccessComponent));
 		if (!access)
@@ -392,6 +539,14 @@ class LF_Contraband
 		watch.m_sCharacterId = run.m_sCharacterId;
 		watch.Attach(user, vehicle);
 		run.m_pWatch = watch;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void PlaySound(IEntity user, string soundEvent)
+	{
+		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(user);
+		if (inventory)
+			inventory.RpcAsk_PlaySound(EL_NetworkUtils.GetRplId(user), soundEvent);
 	}
 
 	//------------------------------------------------------------------------------------------------
