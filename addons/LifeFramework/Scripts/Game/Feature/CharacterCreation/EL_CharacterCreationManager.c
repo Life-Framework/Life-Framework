@@ -162,6 +162,7 @@ class EL_CharacterCreationManager : Managed
 		account.AddCharacter(character, true);
 		EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 		EL_Debug.Info("CharacterCreation", string.Format("character registered for player %1, age %2", playerId, age));
+		OpenStartingBank(playerUid);
 
 		SpawnPlayer(playerId, controller);
 	}
@@ -193,6 +194,27 @@ class EL_CharacterCreationManager : Managed
 	//! Spawns the account's active character through the spawn logic. The spawn logic picks the
 	//! spawn point, hands control over and clears the splash on handover; the ATM/survival
 	//! components init in its post-spawn hook.
+	//! The opening bank balance (EL_SpawnLogic.m_iStartingBank), paid once into an empty account
+	//! when a new character is registered. A returning player never registers again.
+	protected void OpenStartingBank(string playerUid)
+	{
+		EL_SpawnLogic spawnLogic = EL_SpawnLogic.GetInstance();
+		if (!spawnLogic || playerUid.IsEmpty())
+		{
+			EL_Debug.Error("CharacterCreation", "starting bank not paid: no spawn logic or no player id");
+			return;
+		}
+
+		int amount = spawnLogic.GetStartingBank();
+		EL_BankAccount bank = EL_ATMManager.GetOrCreate(playerUid);
+		if (amount <= 0 || !bank || bank.GetBalance() > 0)
+			return;
+
+		bank.Deposit(amount);
+		EL_Debug.Info("CharacterCreation", string.Format("starting bank %1 paid to %2", amount, playerUid));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void SpawnPlayer(int playerId, PlayerController playerController)
 	{
 		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();

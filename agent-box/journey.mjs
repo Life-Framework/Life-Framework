@@ -243,8 +243,14 @@ export const ACTIONS = {
   vehicle(h) {
     h.on(1, { verb: "stand", entityName: "Roadmap_Vehicle_Lot" });
     h.pause(1500);
+    // The lot opens its price sheet; the first row (the S105) has Buy when the bank covers it.
     h.on(1, { verb: "use", className: "EL_VehicleBuyAction", entityName: "Roadmap_Vehicle_Lot" }, 10000);
+    if (h.text(1, "Car0_Action", 8000).found) {
+      h.shot(1, "journey-vehicle-sheet");
+      h.on(1, { verb: "click", widget: "Car0_Action" });
+    }
     h.pause(4000);
+    h.on(1, { verb: "click", widget: "LotClose" });
   },
   give(h) {
     const other = `Player${h.states[2]?.player ?? 2}`;

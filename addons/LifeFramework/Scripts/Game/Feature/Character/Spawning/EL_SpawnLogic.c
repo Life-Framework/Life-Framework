@@ -16,6 +16,17 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	//! The town clerk hands the ID card over in the arrival chain (M1-18, a quest with
 	//! m_bRewardIdCard). From then on every spawn of that player carries a card printed from the
 	//! account's character record. On, every spawn carries one from the start (a mode with no clerk).
+	//! Opening bank balance of a newly registered character (flagship default: the cheapest car on
+	//! the lot, so a new player can drive on day one; docs/decisions.md). Paid once, at registration.
+	[Attribute("1000", desc: "Bank balance a newly registered character starts with. Paid once, when the registration form is signed.", category: "New character defaults")]
+	protected int m_iStartingBank;
+
+	//------------------------------------------------------------------------------------------------
+	int GetStartingBank()
+	{
+		return Math.Max(0, m_iStartingBank);
+	}
+
 	[Attribute("0", desc: "Give every spawned character their ID card (LF_IdCard), registered at the clerk or not. Off: only players who turned in the clerk's ID card quest.", category: "New character defaults")]
 	protected bool m_bGrantIdAtSpawn;
 
