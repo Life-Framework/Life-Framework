@@ -370,6 +370,7 @@ class EL_DebugActionUtils
 		stats.SetHunger(clamped);
 		stats.SetThirst(clamped);
 		stats.SetHealth(clamped);
+		survival.SyncReplication();
 		EL_Debug.Info("DebugMenu", string.Format("survival set to %1", clamped));
 	}
 

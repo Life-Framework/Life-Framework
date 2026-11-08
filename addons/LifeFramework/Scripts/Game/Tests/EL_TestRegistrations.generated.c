@@ -27,6 +27,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_BankSaveEmpty(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMManagerGuards(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_BankApplySnapshot(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_CarriedInventoryRoundtrip(), EL_TestTier.PERSISTENCE);
+		manager.Register(new EL_Test_CarriedInventoryDeathNoDupe(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_CraftingAssets(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropPrefabs(), EL_TestTier.WORLD);
@@ -62,6 +64,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_GarageStoreRange(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HarnessDevGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
@@ -148,6 +151,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ShopPriceHidden(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopCatalog(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SignCatalog(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SignFaceFit(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignLocalization(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignMissingId(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignPrefabs(), EL_TestTier.WORLD);
@@ -157,6 +161,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_StackTrade(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Survival(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalSaveData(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SurvivalLight(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SurvivalSync(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_TraderSellRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitInitialFocus(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitButtonInvoker(), EL_TestTier.LOGIC);

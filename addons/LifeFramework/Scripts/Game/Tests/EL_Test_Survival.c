@@ -35,10 +35,14 @@ class EL_Test_Survival : EL_Test
 		stats.Heal(200);
 		ctx.True(Math.AbsFloat(stats.GetHealth() - 100) < 0.001, "Heal clamps at 100");
 
+		// Explicit rates so the arithmetic below does not move with the flagship config.
+		LF_SurvivalConfig rates = new LF_SurvivalConfig();
+		rates.m_fHungerDrainPerSecond = 0.1;
+		rates.m_fThirstDrainPerSecond = 0.15;
 		stats.SetHunger(50);
 		stats.SetThirst(50);
 		stats.SetHealth(100);
-		stats.UpdateStats(10);
+		stats.UpdateStats(10, rates);
 		ctx.True(Math.AbsFloat(stats.GetHealth() - 100) < 0.001, "no health loss while hunger and thirst stay above 20");
 		ctx.True(Math.AbsFloat(stats.GetHunger() - 49) < 0.001, "UpdateStats(10) drops hunger by 1");
 		ctx.True(Math.AbsFloat(stats.GetThirst() - 48.5) < 0.001, "UpdateStats(10) drops thirst by 1.5");
@@ -46,14 +50,14 @@ class EL_Test_Survival : EL_Test
 		stats.SetHunger(10);
 		stats.SetThirst(10);
 		stats.SetHealth(100);
-		stats.UpdateStats(10);
-		ctx.True(Math.AbsFloat(stats.GetHealth() - 99.5) < 0.001, "hunger or thirst below 20 drains health by 0.5 per 10s");
+		stats.UpdateStats(10, rates);
+		ctx.True(Math.AbsFloat(stats.GetHealth() - 99.5) < 0.001, "low needs drain health above the cap by 0.5 per 10s");
 
 		float thirstBefore = stats.GetThirst();
-		stats.UpdateStats(0);
+		stats.UpdateStats(0, rates);
 		ctx.True(Math.AbsFloat(stats.GetThirst() - thirstBefore) < 0.001, "UpdateStats(0) is a no-op");
 
-		stats.UpdateStats(-10);
+		stats.UpdateStats(-10, rates);
 		ctx.True(stats.GetHunger() >= 0 && stats.GetHunger() <= 100, "stats stay in range under negative delta time");
 	}
 };
