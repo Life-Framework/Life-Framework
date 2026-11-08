@@ -81,22 +81,6 @@
   (owner RPC). A server refusal sends the form back with the reason written on
   it. The form never picks a faction.
 
-### `LF_RegistrationForm` — `Feature/CharacterCreation/LF_RegistrationForm.c`
-- ✅ (2026-11-08) Civil registry form R-89 on `LF_UIScreen`: given name,
-  surname, age, Sign. Client checks only write the error line; the server
-  decides. MenuBack brings the form back unsigned ("sign before you go into
-  town"). Harness: `type RegFirstName Ada` ... `click SignButton`.
-
-### `LF_IdCardComponent` / `LF_IdCard` — `Feature/CharacterCreation/LF_IdCardComponent.c`
-- ✅ (2026-11-08) `IDCard.et` carries holder character id, first name, last
-  name, age (RplProps, server-issued once). Max stack 1, so cards never merge.
-- ✅ `EL_SpawnLogic.m_bGrantIdAtSpawn` (default on) grants a card printed
-  from the account's character record on every spawn. The record is
-  persisted, so the card survives a restart through the account. A character
-  already carrying their own card is refused a second; a blank carried card is
-  printed instead of adding one. Turn the flag off when the arrival clerk
-  (M1-18) hands the card over.
-
 ### `EL_FactionSelectionMenu` — `Feature/CharacterCreation/EL_FactionSelectionMenu.c`
 - ✅ Buttons wired (Civilian/Police) send `EL_AskSelectFaction`; the server
   validates, then sets the account faction, saves, re-enters
@@ -132,6 +116,22 @@
 - ✅ `EL_ChatManagerComponent` registers only `EntityEvent.INIT`; it has no
   frame handler.
 - ✅ Vehicle garage and spawn-point registries remove themselves in `OnDelete`.
+
+### `LF_RegistrationForm` — `Feature/CharacterCreation/LF_RegistrationForm.c`
+- ✅ (2026-11-08) Civil registry form R-89 on `LF_UIScreen`: given name,
+  surname, age, Sign. Client checks only write the error line; the server
+  decides. MenuBack brings the form back unsigned ("sign before you go into
+  town"). Harness: `type RegFirstName Ada` ... `click SignButton`.
+
+### `LF_IdCardComponent` / `LF_IdCard` — `Feature/CharacterCreation/LF_IdCardComponent.c`
+- ✅ (2026-11-08) `IDCard.et` carries holder character id, first name, last
+  name, age (RplProps, server-issued once). Max stack 1, so cards never merge.
+- ✅ `EL_SpawnLogic.m_bGrantIdAtSpawn` (default on) grants a card printed
+  from the account's character record on every spawn. The record is
+  persisted, so the card survives a restart through the account. A character
+  already carrying their own card is refused a second; a blank carried card is
+  printed instead of adding one. Turn the flag off when the arrival clerk
+  (M1-18) hands the card over.
 
 ## Character & Survival
 
@@ -1130,6 +1130,15 @@
   `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
   tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
   (verified 2026-10-11)
+- ✅ Town manifest (`agent-box/town.mjs`): every M1 site by entity name (or
+  prefab, for the unnamed spawn points), the actions look must offer, its sign
+  id, and its journey step. No positions: sites and signs resolve against the
+  layers, so a site can move layers without a manifest edit.
+  `node agent-box/harness.mjs town` and `validate-town-manifest.mjs` check it
+  offline; `report town [site-id...]` walks it in play mode and writes
+  `agent-box/reports/town.html`. Sign problems (none within 8 m, blank Read
+  card) are `sign: pending` warnings until `requireSigns` is true (M1-09).
+  Play-mode run not yet recorded.
 
 ### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
 - ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera
