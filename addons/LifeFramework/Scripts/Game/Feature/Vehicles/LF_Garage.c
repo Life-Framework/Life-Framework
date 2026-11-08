@@ -235,7 +235,7 @@ class LF_GarageLedger
 			}
 
 			string line = WidgetManager.Translate("#LF-Garage_LedgerRow", WidgetManager.Translate(nameKeys.Get(i)), plates.Get(i), WidgetManager.Translate(where));
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.ROW, "LedgerRow" + i, line));
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LedgerRow" + i, line));
 		}
 
 		if (count == 0)
@@ -244,7 +244,7 @@ class LF_GarageLedger
 		if (anyImpounded)
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LedgerFee", WidgetManager.Translate("#LF-Garage_LedgerFee", fee.ToString())));
 
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "LedgerClose", "#LF-Garage_LedgerClose"));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "LedgerCloseButton", "#LF-Garage_LedgerClose"));
 		return parts;
 	}
 

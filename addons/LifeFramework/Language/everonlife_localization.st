@@ -3602,6 +3602,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "on the street, towed to the impound lot at the next restart unless garaged"
      Comment "Ledger row place: the vehicle is out in the world"
     }
+    CustomStringTableItem "{86AD47C0A38CE390}" {
+     Id "LF-Garage_BuyHint"
+     Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
+     Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
+    }
   }
  }
 }

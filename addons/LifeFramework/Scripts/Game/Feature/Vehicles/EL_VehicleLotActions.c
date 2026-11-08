@@ -55,7 +55,13 @@ class EL_VehicleBuyAction : ScriptedUserAction
 		bool bought = lot.Buy(uid, prefab, pUserEntity, vehicleId, cashCharged, reasonKey);
 		Notify(pUserEntity, "#EL-Vehicle_Buy", reasonKey);
 		if (!bought)
+		{
 			EL_Debug.Log("Vehicle", string.Format("buy action rejected uid=%1", uid));
+			return;
+		}
+
+		// Garage it to keep it: the buyer learns the rule at the moment it starts to matter.
+		Notify(pUserEntity, "#LF-Garage_Title", "#LF-Garage_BuyHint");
 	}
 
 	//------------------------------------------------------------------------------------------------

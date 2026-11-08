@@ -31,7 +31,7 @@ class EL_Test_GarageLedger : EL_Test
 		if (parts.Count() == 5)
 		{
 			ctx.True(parts.Get(0).GetKind() == LF_EUIPartKind.TITLE, "the card opens with its title");
-			ctx.True(parts.Get(1).GetKind() == LF_EUIPartKind.ROW, "a stored car is a row");
+			ctx.True(parts.Get(1).GetKind() == LF_EUIPartKind.LINE, "a stored car is a wrapped line, not a clipped row");
 			ctx.True(parts.Get(1).GetText().Contains("LG AA 1001"), "the row prints the plate");
 			ctx.True(parts.Get(2).GetText().Contains("LG BB 2002"), "the impounded car is listed too");
 			ctx.True(parts.Get(3).GetText().Contains("250"), "the fee line prints the configured fee");
