@@ -519,6 +519,12 @@
   `SellItem` pays cash only after the goods are confirmed removable and
   claws back overpayments. `IsItemSoldHere` gates buy and sell.
 - ⚠️ No shop stock (infinite supply).
+- ✅ **The general store sells a short list** (2026-11-08, M1 RC QA): `Shop_GeneralStore_Debug`
+  carries a curated `m_aShopItems` (apple, tomato, cabbage, water, apple juice, field dressing,
+  ALICE backpack). Without it the price list showed the whole 1312-line base-game catalog,
+  starting with an SVD magazine pouch and two "!BASE KIT!" rows. Prices still come from
+  `ShopPrices.conf`. The UI kit status row gives its action button more width (label 1.5,
+  status 1, button 1.5), so "Order" is no longer cut to "Orde".
 
 ### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `EL_ShopMenu`)
 - ✅ (2026-11-08, M1-13) Typed price list on `LF_UIScreen` with the
@@ -709,6 +715,10 @@
   `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
   A client reads the level replicated on `EL_PlayerJobComponent` (the career map is
   server-only), so fuel and taxi open on the client once the server levels the career.
+- ✅ **The toasts say what to do next** (2026-11-08, M1 RC QA): signing up shows the job as the
+  title and the next step as the body (`LF_CivilianJob.SignedUpKey`: "Pick up a parcel at this
+  counter"), not the job name twice. Picking up a parcel toasts where the drop is
+  (`RunStartedKey`, `#LF-Job_RunStarted_Courier`, 8 s).
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -1062,6 +1072,10 @@
   `police/fine-ticket-serializer`.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
+- ✅ **The station reads as a station** (2026-11-08, M1 RC QA): the duty desk and the armory
+  stand in the porch at the door; the armory is a vanilla `Safe_01`, not the empty weapon-rack
+  frame that stood on the lawn; the wanted board leans on the wall beside the porch; the station
+  sign stands by the path.
 - ✅ **Clock in / Clock out at the duty desk** (M1-11, 2026-11-08; WORLD
   `police/duty-swap`, `police/death-on-duty`, `police/station`; restart via
   `wt e2e`). `Roadmap_Police_Desk` is `Prefabs/Police/LF_PoliceDutyDesk.et`
@@ -1457,6 +1471,11 @@
 
 ### Signs — `Scripts/Game/Feature/Signs/`
 - ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules, next). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules, Next; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
+- ✅ **Board signs read from the road** (2026-11-08, M1 RC QA): `LF_Sign_Board.et` is a portrait
+  sign: the vanilla cork board stands on its edge as a child (`angleZ 90`, 1.09 m wide, 1.83 m
+  tall) and the printed sheet fills it (`m_fFaceScale 4.9`, about 1.03 x 1.46 m). The old
+  landscape board held a 0.46 m sheet whose title could not be read past a few metres. Same GUID,
+  same component GUIDs, so every placed board and `LF_WantedBoard.et` changed with it.
 - ✅ Prefabs `Prefabs/Props/Signs/LF_Sign_Board` (cork board), `LF_Sign_Pub` (shop sign), `LF_Sign_Notice` (A4 notice), `LF_Sign_Chalkboard` (standing chalkboard; the vanilla `CardboardSign_01` lives in the Rally addon and does not resolve for this mod) inherit the vanilla props (no new meshes) and add the component, an `LF_Sign` action context on the face, and the Read action. A placed instance sets the id. The title is also printed on the prop on rendering clients: `LF_SignComponent` draws `UI/Layouts/Signs/LF_SignFace.layout` into an `RTTextureWidget` bound (`SetRenderTarget`) to a mesh whose material `Assets/Signs/Data/LF_SignFace.emat` samples `$rendertarget`. `LF_Sign_Board` spawns a local `LF_SignFace` sheet (vanilla A4 poster mesh) on its face; `LF_Sign_Notice` retargets its own poster material. A dedicated server skips the face. `LF_Sign_Pub` and `LF_Sign_Chalkboard` ship with the face off until their sheet placement is checked in a rendering client.
 - ✅ The printed title fits the shown part of the render target at any window size. The target is the layout size times the screen DPI scale, but the widgets inside lay out one reference unit per pixel, so a 720p Workbench viewport printed "MINI / ARE". `LF_SignComponent.FaceTitleRect` places the title box and font by `DPIScale(1)`. Board and notice photographed reading MINING AREA, not mirrored, in a Workbench play session (2026-11-08). LOGIC `signs/face-fit`.
 - ✅ **Game client face size** (M1-09, 2026-11-08). On a 640x360 dedicated-server client the DPI-scaled title printed tiny in the sheet's top-left third. Without the DPI scaling, the full 432-unit box at font 96 cut WELCOME to WELCO at 640x360 and at 1920x1080 alike: only about 328 of the 512 units across reach the paper. The DPI compensation is now Workbench only (`#ifdef WORKBENCH`); a game client uses `LF_SignComponent.ClientTitleRect` (box x 20..310, font 96 or smaller so the longest word fits). All 18 board titles photographed whole and unmirrored at 1920x1080 on a dedicated-server client. LOGIC `signs/face-client`.

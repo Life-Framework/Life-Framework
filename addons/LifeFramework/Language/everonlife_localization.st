@@ -263,7 +263,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    }
   CustomStringTableItem "{B3BF4076847C9C6E}" {
    Id "EL-ATM_Title"
-   Target_en_us "ATM Machine"
+   Target_en_us "ATM"
    Target_es_es "Cajero Automático"
    Target_de_de "Geldautomat"
    Target_fr_fr "Distributeur automatique"
@@ -3669,7 +3669,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
-     Target_en_us "ATM Machine, then Deposit or Withdraw."
+     Target_en_us "ATM, then Deposit or Withdraw."
      Comment "Sign card for the ATM on the bank's front, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{0CD84D83AF49CFAA}" {
@@ -5081,6 +5081,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Offence_UnpaidFine"
      Target_en_us "Unpaid fine"
      Comment "Wanted board offence when a police ticket goes unpaid past its second deadline."
+    }
+    CustomStringTableItem "{618A5B0E5F6A7C85}" {
+     Id "LF-Job_SignedUp_Courier"
+     Target_en_us "You are a courier now. Pick up a parcel at this counter."
+     Comment "Toast after signing up for courier work: the next step."
+    }
+    CustomStringTableItem "{CF7F0BA17E3A08CD}" {
+     Id "LF-Job_SignedUp_Fuel"
+     Target_en_us "You deliver fuel now. Take a fuel can at this counter."
+     Comment "Toast after signing up for fuel delivery: the next step."
+    }
+    CustomStringTableItem "{368CBF7BF68CC9AE}" {
+     Id "LF-Job_SignedUp_Taxi"
+     Target_en_us "You drive a taxi now. Start a fare at this counter."
+     Comment "Toast after signing up for taxi work: the next step."
+    }
+    CustomStringTableItem "{B72D78719E88C276}" {
+     Id "LF-Job_RunStarted_Courier"
+     Target_en_us "Carry the parcel east along the street to the porch past the brick-walled lock-up, then Complete the run."
+     Comment "Toast when a courier picks up a parcel: where the drop is. Capitalized phrase is the drop-off action name."
     }
   }
  }

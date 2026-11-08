@@ -172,9 +172,9 @@ class EL_Test_Roadmap_RanksWorld : EL_Test
 			return;
 
 		vector origin = armory.GetOrigin();
-		ctx.EqualFloat(241.2, origin[0], 0.1, "armory is at X 241.2 (police station forecourt)");
+		ctx.EqualFloat(234.3, origin[0], 0.1, "armory is at X 234.3 (the safe in the station porch)");
 		ctx.EqualFloat(0, origin[1], 0.1, "armory is on the ground");
-		ctx.EqualFloat(244.2, origin[2], 0.1, "armory is at Z 244.2");
+		ctx.EqualFloat(238.9, origin[2], 0.1, "armory is at Z 238.9");
 
 		ActionsManagerComponent actions = EL_Component<ActionsManagerComponent>.Find(armory);
 		ctx.NotNull(actions, "armory carries ActionsManagerComponent");

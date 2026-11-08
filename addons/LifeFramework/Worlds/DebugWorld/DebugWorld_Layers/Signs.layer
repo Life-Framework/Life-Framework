@@ -83,7 +83,7 @@ GenericEntity Sign_PoliceStation : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sig
    m_sSignId "police_station"
   }
  }
- coords 233.5 0 247.5
+ coords 230 0 245.5
 }
 GenericEntity Sign_PoliceWhitelist : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
  coords 220.5 0 246.5
