@@ -26,6 +26,7 @@ class EL_BetaHud : SCR_InfoDisplay
 
 	protected SCR_CharacterControllerComponent m_PlayerController;
 	protected DamageManagerComponent m_DMC;
+	protected EL_CharacterSurvivalComponent m_Survival;
 
 	protected bool m_bUsingProgressWidget;
 	protected bool m_bStatChange;
@@ -149,6 +150,7 @@ class EL_BetaHud : SCR_InfoDisplay
 
 		m_PlayerController = SCR_CharacterControllerComponent.Cast(owner.FindComponent(SCR_CharacterControllerComponent));
 		m_DMC = DamageManagerComponent.Cast(owner.FindComponent(DamageManagerComponent));
+		m_Survival = EL_CharacterSurvivalComponent.Cast(owner.FindComponent(EL_CharacterSurvivalComponent));
 		m_wPlayerStatsHUD = HorizontalLayoutWidget.Cast(m_wRoot.FindAnyWidget("m_playerStatsHUD"));
 
 		if (!m_wPlayerStatsHUD) return;
@@ -200,7 +202,12 @@ class EL_BetaHud : SCR_InfoDisplay
 		m_bStatChange = false;
 		if (m_bEnableHealth) OnHealthChange(m_DMC.GetHealth());
 		if (m_bEnableStamina) OnStaminaChange(m_PlayerController.GetStamina());
-		//TODO: Get info from Survival Stats Components
+		// Owner-only replicated whole points from EL_CharacterSurvivalComponent.
+		if (m_Survival)
+		{
+			if (m_bEnableHunger && m_wHungerIndicator) OnHungerChange(m_Survival.GetReplicatedHunger() / 100.0);
+			if (m_bEnableThirst && m_wThirstIndicator) OnThirstChange(m_Survival.GetReplicatedThirst() / 100.0);
+		}
 
 		if (m_bStatChange)
 		{

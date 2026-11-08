@@ -15,36 +15,38 @@ survival menu to eat."
 Rung 1 for actions (consume the food/drink item in hand), rung 4 for the HUD
 readout (accepted — a body-state gauge has no world object).
 
-Today: `EL_CharacterSurvivalComponent` decays stats per frame (hunger
-`-dt*0.1`, thirst `-dt*0.15`, health falls when hunger or thirst < 20);
-`EL_ConsumableEffectSurvival` restores on item use; `EL_BetaHud` renders the gauges;
-`EL_SurvivalStats` holds the clamped [0,100] state.
+Today (2026-11-08, M1-28, decision "Survival needs are light"): the server
+ticks `EL_SurvivalStats` once a second with rates from `LF_SurvivalConfig`
+(`Configs/Survival/LF_Survival.conf`). Needs drain slowly (a meal lasts a
+session). Low needs hold health at a 75 cap and make exertion drain stamina
+1.5x (`LF_SurvivalStaminaPenalty`); they never kill. Met needs regenerate
+health. `EL_ConsumableEffectSurvival` restores on item use; `EL_BetaHud` shows
+the replicated gauges.
 
 ## V1 (shippable)
 
-1. **Health never recovers** — it only ever falls. Add a recovery path
-   (rest, food+drink, medical) or the player's only option is slow death.
-2. Clamp delta time — a frame hitch drops a big stat chunk in one tick.
-3. Zero-health handling — **defined** (verified 2026-08-30): death is a
-   **body + respawn** flow, not a soft state. On death the body stays in the
-   world with everything it carried, and the player respawns through the death
-   screen (see `Character`). Survival's job is to get the body to zero; the
-   consequence is the respawn, not a health-regeneration branch.
+1. Health recovery: done. Met needs regenerate health; low needs stop at the cap.
+2. Delta clamp: done. One tick applies at most `m_fMaxTickDeltaSeconds`.
+3. Zero health: survival never takes health below the cap, so it never kills.
+   Death from other causes is the body-and-respawn flow (see `Character`).
 4. `EL_SurvivalStatsSaveData.Equals` uses exact float `==` (no epsilon).
 
 ## Iteration path
 
-- **V2** — visible body feedback (camera/hand effects as hunger falls),
-  temperature/weather.
-- **V3** — medical system (injuries, treatment), food quality/spoilage.
+- **V2**: a hunger sound cue (stomach growl) and eat/drink sounds tied to the
+  consumable, temperature/weather.
+- **V3**: medical system (injuries, treatment), food quality/spoilage.
 
 ## Current state
 
-- `EL_SurvivalStats` — clamped state, additive Eat/Drink/Heal, decay driver.
-  ⚠️ no recovery, no zero-health handling.
-- `EL_CharacterSurvivalComponent` — per-frame decay; ⚠️ no dt clamp.
-- `EL_ConsumableEffectSurvival` — restore on use; only values > 0 applied.
-- `EL_BetaHud` — the hunger/thirst readout. The old `EL_SurvivalHUD` menu preset was never
+- `EL_SurvivalStats`: clamped state, additive Eat/Drink/Heal, config-driven
+  `UpdateStats(dt, config)`, `AreNeedsLow`, `GetStaminaDrainMultiplier`.
+- `LF_SurvivalConfig`: every rate, the cap, the stamina multiplier.
+- `EL_CharacterSurvivalComponent`: server tick, dt clamp, owner-only
+  replicated hunger/thirst/low flag with throttled `BumpMe`.
+- `LF_SurvivalStaminaPenalty`: modded `SCR_CharacterStaminaComponent`.
+- `EL_ConsumableEffectSurvival`: restore on use; only values > 0 applied.
+- `EL_BetaHud`: the hunger/thirst readout. The old `EL_SurvivalHUD` menu preset was never
   opened and is removed; its layout stays only as an `EL_Test_Data` load fixture.
 - `Persistence/` save data.
 
