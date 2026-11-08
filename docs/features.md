@@ -807,7 +807,7 @@
   they are not wired into the save serializer, so a restart loses the bags.
   DebugWorld places `Roadmap_Bank_Vault` at 194.1 0 265 (on the bank's east
   wall) and `Roadmap_Bank_Bag` at 195.6 0 263 on `Street_Bank.layer`. The bag is
-  `{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et` (a vanilla sack mesh,
+  `{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et` (a vanilla suitcase mesh,
   #155). Cash is
   `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
   `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits
