@@ -280,7 +280,8 @@ export const ACTIONS = {
     const field = /field:(\w+)=/.exec(sheet.detail || "");
     if (field) {
       h.on(1, { verb: "type", widget: field[1], text: ORG_NAME });
-      const sign = /button:(\w*Sign\w*)=/.exec(sheet.detail || "");
+      // The ledger's button is FoundButton, labelled "Sign and pay $250".
+      const sign = /button:(\w+)=Sign/.exec(sheet.detail || "") || /button:(\w*Found\w*)=/.exec(sheet.detail || "");
       if (sign) h.on(1, { verb: "click", widget: sign[1] });
       h.pause(2500);
     }
