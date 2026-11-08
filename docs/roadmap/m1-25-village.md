@@ -45,7 +45,7 @@ Arrival order, west to east (numbers match the map):
 | 2 | Post office and job counter | House_Town_E_2I01 | `Roadmap_Job_Depot`; parcel drop `Roadmap_Job_Drop` on a porch by the lock-up | 155.2 0 256.3; drop 312.5 0 243.6 |
 | 3 | Bank and ATM | MunicipalOffice_E_01 | `ATM_Debug`, `ATM_Debug_2` on counters; `Roadmap_Bank_Vault` and `Roadmap_Bank_Bag` on the east wall | 177/187 0 256.6; vault 194.1 0 265 |
 | 4 | General store and traders | ShopHouse_E_2I01t (food store), market stalls | `Shop_GeneralStore_Debug`; `TraderChainCounter`, `PoliceDutyNPC`, `AppleTrader`, `PlumTrader`, `TomatoTrader`, `FarmerStand` | 179 0 244.3; stalls x 188..220, z 240.6 |
-| 5 | Vehicle lot and garage | Workshop_01, concrete lot, Garage_E_01 (doors to the street) | `Roadmap_Vehicle_Lot` (pads 206 0 257.5 + 8 m steps north), `Roadmap_Vehicle_S105`, `Roadmap_Garage` | 211 0 262.5; garage 238 0 256.6 |
+| 5 | Vehicle lot and garage | Workshop_01, asphalt lot, Garage_E_01 (doors to the street) | `Roadmap_Vehicle_Lot` (pads 206 0 257.5 + 8 m steps north), `Roadmap_Vehicle_S105`, `Roadmap_Garage` | 211 0 262.5; garage 238 0 256.6 |
 | 6 | Police station and jail | Villa_E_2I01_Police, walled jail yard behind it | `PoliceStation` (duty), `Roadmap_Police_Desk`, `Roadmap_Police_Armory`, `WhitelistStation`, police spawns; `Roadmap_Jail_Cell`, `Roadmap_Jail_Door` (in the yard wall), `Roadmap_Escort_Car` | 229 0 244.3; cell 232.2 0 219 |
 | 7 | Hospital and fuel station | House_Town_E_2I03; FuelStation_E_01 | `Roadmap_Hospital_Till`, `Roadmap_Hospital_Cabinet`; `Roadmap_Fuel_Till`, `Roadmap_Job_FuelCan` | 257 0 256.4; till 259 0 241.2 |
 | 8 | Org registry, hideout off a side alley | Office_E_01; cobbled alley north to a walled yard with a shed | `Roadmap_Org_Desk`; `Roadmap_Hideout_Door` (yard gate), `_Machine`, `_Stash`, `Roadmap_Convoy_Drop` in the yard; `Shop_BlackMarket_Debug`, `CrimeTrader_Debug`, `CrimeFurnace_Debug`, `Roadmap_Breach_Charge` in the alley | 288.9 0 255.7; gate 302.4 0 288 |
@@ -69,7 +69,7 @@ Ground and light: the terrain material (`Assets/World/GridSurface.emat`, ours)
 becomes the vanilla lawn surface (`GrassLawn_01`, grass sound) without clutter,
 so grass does not grow through roads and floors. Roads are vanilla road
 generators saved as `RoadEntity` splines (asphalt street, cobbled square and
-alley, dirt lanes, concrete lot), the format Overthrow's test island uses.
+alley, dirt lanes, asphalt lot), the format Overthrow's test island uses.
 Street lamps stand on the verges between sites.
 
 New layers: `Village_Roads`, `Village_Buildings`, `Village_Dressing`, `Annex`.
@@ -100,12 +100,21 @@ Server side: `tools\cli validate`, `tools\cli test --no-build --tier all`,
 and a filmed walk from the square to the barn, checked by eye for floating or
 sunken props, white meshes, buildings facing the wrong way, and roads.
 
-## Open risks
+## What the rendering pass found (2026-11-08)
 
-- Building fronts: the plan assumes a vanilla building's door side is its local
-  +Z (Overthrow's street uses the same convention). The first rendering pass
-  checks every facade; a wrong guess is a 180 degree turn in one generator.
-- Roads saved as text `RoadEntity` splines render in Overthrow's test island;
-  the first rendering pass confirms them on DebugWorld's flat terrain.
-- Vault, breach, jail, and hideout doors are standalone door prefabs set in wall
-  gaps or against a wall; they need a look from the player's height.
+Checked from a dedicated-server client on the hidden desktop
+(`agent-box/session.mjs up`, `harness.mjs --client 1 shot world`):
+
+- Building fronts: a vanilla building's door side is its local +Z. Every
+  street building shows its entrance to the street.
+- Roads: asphalt, cobblestone, and dirt `RoadEntity` splines render. The
+  concrete-panel and gravel-trail generators did not (the apron drew a stray X),
+  so the lot and fuel apron are asphalt and the market ground is dirt.
+- `HayBale_01` rendered as a white sphere; it is not used.
+- The vault, breach, jail, and hideout doors read as a back door, a yard gate,
+  a cell door, and a yard gate.
+- NPCs at the stalls and desks stand in underwear on the dedicated client.
+  In Workbench play the same NPCs wear uniforms. Not investigated here; filed
+  as #150.
+
+Evidence: the `film-evidence` release assets `pr137-m1-25-*.png`.

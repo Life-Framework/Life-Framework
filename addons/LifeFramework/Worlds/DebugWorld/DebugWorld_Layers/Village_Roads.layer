@@ -319,12 +319,12 @@ SplineShapeEntity Village_VehicleLot {
   }
  }
  {
-  RoadGeneratorEntity : "{EEB3D2A6FCAADFD6}Prefabs/WEGenerators/Roads/Concrete/RG_Road_ConcretePanel_01.et" {
+  RoadGeneratorEntity : "{8E689EDC77E2A3DC}Prefabs/WEGenerators/Roads/Asphalt/RG_Road_Asphalt_E_01_Narrow.et" {
    coords 0 0 0
    AdjustHeightMap 0
    {
     RoadEntity {
-     ID "59E881FE6E5B4479"
+     ID "556C6554AF23997E"
      SplinePoints {
        ShapePoint "{29A9774EFA9AF45B}" {
         Position 0 0 0
@@ -351,12 +351,12 @@ SplineShapeEntity Village_Market {
   }
  }
  {
-  RoadGeneratorEntity : "{F49A6A9439B063BB}Prefabs/WEGenerators/Roads/Dirt/RG_TrailGravel_01.et" {
+  RoadGeneratorEntity : "{8E83BBD5CEC42A11}Prefabs/WEGenerators/Roads/Dirt/RG_Road_Dirt_01.et" {
    coords 0 0 0
    AdjustHeightMap 0
    {
     RoadEntity {
-     ID "5262CB47BB2B3833"
+     ID "523EAA80CAA6C6B5"
      SplinePoints {
        ShapePoint "{F01293228CAC38C0}" {
         Position 0 0 0
@@ -383,12 +383,12 @@ SplineShapeEntity Village_FuelApron {
   }
  }
  {
-  RoadGeneratorEntity : "{EEB3D2A6FCAADFD6}Prefabs/WEGenerators/Roads/Concrete/RG_Road_ConcretePanel_01.et" {
+  RoadGeneratorEntity : "{8E689EDC77E2A3DC}Prefabs/WEGenerators/Roads/Asphalt/RG_Road_Asphalt_E_01_Narrow.et" {
    coords 0 0 0
    AdjustHeightMap 0
    {
     RoadEntity {
-     ID "59E881FE6E5B4479"
+     ID "556C6554AF23997E"
      SplinePoints {
        ShapePoint "{B27538A0C30196D9}" {
         Position 0 0 0

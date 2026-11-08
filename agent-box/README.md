@@ -439,5 +439,7 @@ node agent-box/session.mjs down               # closes every process the session
   during client load and kept running.
 - Police comes from the debug menu (`FactionPoliceButton`): the session has no
   whitelist file, so the faction menu refuses police.
-- `shot world` still poses the body on the server, which a dedicated server's
-  client overwrites. `stand` moves the body on the owning client.
+- `shot world` and `stand` move the body on the owning client (the server
+  pose alone is overwritten by a remote client), so `--client <n> shot world`
+  photographs from the hidden `LF-Agents` desktop. M1-25 took its village
+  evidence this way (2026-11-08).

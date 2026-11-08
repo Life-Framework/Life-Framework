@@ -1174,7 +1174,10 @@
   `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
   player view. That view faces -Z, so a picture stands on the +Z side of
   its target. The pose is applied again 700 ms later so gravity does not drop
-  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
+  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) On a
+  dedicated server the server also sends the pose to the owning client
+  (`RpcDo_EL_HarnessPose`), which would otherwise overwrite it; session
+  clients take world shots this way (verified 2026-11-08, M1-25). A filtered row's wide shot
   stands just north of that row when the street is further north. If the new PNG matches the
   previous PNG, `report roadmap` records `camera_stuck` once and stops.
   `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look

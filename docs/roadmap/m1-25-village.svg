@@ -8,9 +8,9 @@
 <polyline points="220.0,277.2 220.0,407.0 167.2,506.0 167.2,554.4" fill="none" stroke="#b08d5e" stroke-width="8.8" stroke-linecap="butt" stroke-linejoin="round"/>
 <polyline points="666.6,235.4 666.6,160.6" fill="none" stroke="#a79b8a" stroke-width="9.9" stroke-linecap="butt" stroke-linejoin="round"/>
 <polyline points="844.8,248.6 862.4,290.4" fill="none" stroke="#b08d5e" stroke-width="8.8" stroke-linecap="butt" stroke-linejoin="round"/>
-<polyline points="435.6,206.8 512.6,206.8" fill="none" stroke="#bdbdbd" stroke-width="48.4" stroke-linecap="butt" stroke-linejoin="round"/>
-<polyline points="409.2,262.9 486.2,262.9" fill="none" stroke="#c8b896" stroke-width="15.4" stroke-linecap="butt" stroke-linejoin="round"/>
-<polyline points="567.6,254.1 642.4,254.1" fill="none" stroke="#bdbdbd" stroke-width="8.8" stroke-linecap="butt" stroke-linejoin="round"/>
+<polyline points="435.6,206.8 512.6,206.8" fill="none" stroke="#5b5b5b" stroke-width="48.4" stroke-linecap="butt" stroke-linejoin="round"/>
+<polyline points="409.2,262.9 486.2,262.9" fill="none" stroke="#b08d5e" stroke-width="15.4" stroke-linecap="butt" stroke-linejoin="round"/>
+<polyline points="567.6,254.1 642.4,254.1" fill="none" stroke="#5b5b5b" stroke-width="8.8" stroke-linecap="butt" stroke-linejoin="round"/>
 <rect x="497.2" y="294.2" width="8.8" height="1.0" fill="#7a4b32"/>
 <rect x="502.3" y="294.2" width="8.8" height="1.0" fill="#7a4b32"/>
 <rect x="514.1" y="294.2" width="8.8" height="1.0" fill="#7a4b32"/>
@@ -270,7 +270,7 @@
 <circle cx="393.8" cy="254.5" r="2.6" fill="#c0392b"/>
 <circle cx="675.8" cy="178.2" r="2.6" fill="#c0392b"/>
 <circle cx="419.1" cy="262.7" r="2.6" fill="#c0392b"/>
-<circle cx="436.7" cy="262.7" r="2.6" fill="#c0392b"/>
+<circle cx="433.4" cy="262.7" r="2.6" fill="#c0392b"/>
 <circle cx="286.0" cy="110.0" r="2.6" fill="#c0392b"/>
 <circle cx="400.4" cy="106.7" r="2.6" fill="#c0392b"/>
 <circle cx="452.1" cy="262.7" r="2.6" fill="#c0392b"/>
