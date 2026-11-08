@@ -1,0 +1,12 @@
+{
+  "_readme": "Ways to give, shown on /support. Off until the maintainer fills a method and sets enabled to true; see docs/community/support.md. Leave a field empty to hide that method. Never put a seed phrase or private key anywhere in this repo.",
+  "enabled": false,
+  "card": {
+    "name": "",
+    "url": ""
+  },
+  "crypto": [
+    { "asset": "USDT", "network": "TRON", "standard": "TRC-20", "address": "" },
+    { "asset": "USDT", "network": "Ethereum", "standard": "ERC-20", "address": "" }
+  ]
+}

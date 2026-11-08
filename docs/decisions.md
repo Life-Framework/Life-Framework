@@ -72,6 +72,20 @@ play. What it means for code: no donor flag ever reaches a gameplay system.
 Cosmetic unlocks, if built, are flagship content, and nothing before M4 needs
 them.
 
+**2026-11-08 — The project takes donations to pay its running costs.** Anyone
+may give money to the project. It pays the Claude subscription the AI-first
+development runs on, the website and domain, and later a game server, and the
+costs are listed in public on the site's support page
+(`website/content/costs.json`). A donation buys nothing in the framework or in
+any game: no money, gear, vehicles, property, queue priority, or role. The mod,
+its Workshop page, and its UI carry no donation prompt. Why: the bills are real
+and small, and paying them in the open keeps the project honest; Bohemia's
+Workshop terms forbid monetising the mod itself, so the money is tied to the
+project's costs, not to the content. What it means for code: nothing in the
+mod reads donor status. The support page, `.github/FUNDING.yml`, and the
+README section stay off until a way to give exists
+(`docs/community/support.md`).
+
 **2026-11-08 — Overthrow code may be used and relicensed under MIT, with
 credit.** The owner of Overthrow (`ArmaOverthrow/Overthrow.Arma4`) gave us
 explicit permission to use its code and relicense it under our MIT licence
