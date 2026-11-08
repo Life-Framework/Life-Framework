@@ -145,6 +145,17 @@ class EL_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Why QuotePurchase refused, as the key the buyer reads. Above the cash ceiling the price
+	//! comes from the bank only, so a buyer holding enough cash is told to use the ATM.
+	static string RefusalKey(int price, int cashCeiling)
+	{
+		if (price > cashCeiling)
+			return "#LF-Vehicle_BankShort";
+
+		return "#EL-Vehicle_CannotAfford";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool Register(string vehicleId, string ownerUid, string keyId, string prefab, string spawnPrefab, string shopId, string plate, string nameKey, bool locked)
 	{
 		if (vehicleId.IsEmpty() || ownerUid.IsEmpty() || keyId.IsEmpty() || prefab.IsEmpty())
@@ -499,7 +510,7 @@ class EL_VehicleOwnership
 		int bankDebit = 0;
 		if (!QuotePurchase(price, cashCeiling, cash, bank, cashDebit, bankDebit))
 		{
-			reasonKey = "#EL-Vehicle_CannotAfford";
+			reasonKey = RefusalKey(price, cashCeiling);
 			return false;
 		}
 

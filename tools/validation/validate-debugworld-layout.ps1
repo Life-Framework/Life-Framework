@@ -1,6 +1,7 @@
 # Static DebugWorld layout gate.
-# Fails on overlapping area boxes, tables outside their box, raised ground
-# props, and hard intersections between configured large-prop footprints.
+# Fails on overlapping area boxes, tables outside their box (in layers that have
+# boxes), raised ground props, and hard intersections between configured
+# large-prop footprints.
 
 $ErrorActionPreference = "Stop"
 $root = git rev-parse --show-toplevel
@@ -65,7 +66,10 @@ foreach ($layer in @(Get-ChildItem -LiteralPath $layersDir -Filter '*.layer' -Fi
     if ($footprint) { $objects += @{ Layer = $layer.Name; Line = $i + 1; Identity = $context; X = $coord.X; Z = $coord.Z; HalfX = $footprint.X; HalfZ = $footprint.Z } }
   }
 
+  # Debug stations keep their table inside the area box. Village layers have no
+  # boxes (they left the street with M1-25), so there is nothing to sit inside.
   for ($i = 0; $i -lt $lines.Count; $i++) {
+    if ($layerBoxes.Count -eq 0) { break }
     if ($lines[$i] -notmatch 'TableRecreation_01\.et') { continue }
     $table = $null
     for ($j = $i + 1; $j -lt [Math]::Min($i + 8, $lines.Count); $j++) { $table = Coord $lines[$j]; if ($table) { break } }

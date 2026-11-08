@@ -1,5 +1,6 @@
 GenericEntity Roadmap_Vehicle_S105 : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
- coords 240 0 124
+ coords 212.5 0 257.8
+ angleY 120
 }
 GenericEntity Roadmap_Vehicle_Lot {
  components {
@@ -52,7 +53,7 @@ GenericEntity Roadmap_Vehicle_Lot {
   }
   EL_VehicleSpawnPointComponent "{E1B0E70100000005}" {
    m_sShopId "roadmap-lot"
-   m_vOffset 0 0 8
+   m_vOffset -5 0 -5
   }
   ActionsManagerComponent "{E1B0E70100000006}" {
    ActionContexts {
@@ -105,7 +106,7 @@ GenericEntity Roadmap_Vehicle_Lot {
   }
  }
  Flags 0x403 0
- coords 243 0 120
+ coords 211 0 262.5
 }
 GenericEntity Roadmap_Garage {
  components {
@@ -144,10 +145,11 @@ GenericEntity Roadmap_Garage {
    Enabled 1
   }
  }
- coords 186 0 102.1
+ coords 238 0 256.6
  {
   GenericEntity : "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et" {
    coords 0 0 5.9
+   angleY 180
   }
  }
 }

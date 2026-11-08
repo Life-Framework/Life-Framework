@@ -7,7 +7,7 @@ GenericEntity Roadmap_Hideout_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/Build
    m_sHideoutId "Roadmap_Hideout"
   }
  }
- coords 213 0 120
+ coords 302.4 0 288
 }
 GenericEntity Roadmap_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
  components {
@@ -51,7 +51,7 @@ GenericEntity Roadmap_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/Ite
    }
   }
  }
- coords 216 0 120
+ coords 298 0 302
 }
 GenericEntity Roadmap_Hideout_Stash : "{FD1CCD705B12BBCB}Prefabs/Props/Hideouts/LF_HideoutStash.et" {
  components {
@@ -62,5 +62,5 @@ GenericEntity Roadmap_Hideout_Stash : "{FD1CCD705B12BBCB}Prefabs/Props/Hideouts/
    m_sStorageKey "hideout:Roadmap_Hideout"
   }
  }
- coords 219 0 120
+ coords 312 0 296
 }

@@ -14,16 +14,22 @@
 //! the lock identifier. Jail sentences live in LF_Jail, keyed by the player uid. Carried
 //! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name. Placed
 //! storage (LF_PersistentStorageComponent, the hideout stash) rides the same store under its key.
+//! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name.
+//! Progression (career, police rank and duty seconds, benefit cooldown, level, licences, quest
+//! turn-ins) lives in LF_Progression and its owners, keyed by the player uid.
+//! Introductions (who knows whose name) live in LF_Introductions, keyed by player uid pairs.
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried. The written version is that list's length (6). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions. The written version is that list's length (8). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
 //! A version 4 save includes vehicles and has no jail sentences.
 //! A version 5 save includes jail sentences and has no carried inventories.
+//! A version 6 save includes carried inventories and has no progression.
+//! A version 7 save includes progression and has no introductions.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -53,6 +59,8 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("vehicles");
 		order.Insert("jail");
 		order.Insert("carried");
+		order.Insert("progression");
+		order.Insert("introductions");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -79,7 +87,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 6);
+		context.WriteValue("version", 8);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -192,7 +200,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 						characterId,
 						stats.GetHunger(),
 						stats.GetThirst(),
-						stats.GetHealth()
+						EL_SurvivalStatsRecord.RETIRED_HEALTH
 					);
 					survivalRecords.Insert(record);
 				}
@@ -238,6 +246,22 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			context.Write(carriedRecords);
 			EL_Debug.Log("Persistence", string.Format("saved %1 carried snapshot(s), %2 captured from live players, %3 from placed storage", carriedRecords.Count(), captured, placed));
 		}
+		else if (payload == "progression")
+		{
+			array<ref LF_ProgressionRecord> progressionRecords = LF_Progression.ExportAll();
+			if (!progressionRecords)
+				progressionRecords = new array<ref LF_ProgressionRecord>();
+			context.Write(progressionRecords);
+			EL_Debug.Log("Persistence", string.Format("saved %1 progression record(s)", progressionRecords.Count()));
+		}
+		else if (payload == "introductions")
+		{
+			array<ref LF_IntroductionRecord> introductionRecords = LF_Introductions.ExportAll();
+			if (!introductionRecords)
+				introductionRecords = new array<ref LF_IntroductionRecord>();
+			context.Write(introductionRecords);
+			EL_Debug.Log("Persistence", string.Format("saved %1 introduction(s)", introductionRecords.Count()));
+		}
 		else
 		{
 			EL_Debug.Error("Persistence", string.Format("save skipped unknown payload '%1'", payload));
@@ -268,7 +292,6 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 					EL_SurvivalStats stats = EL_SurvivalStats.Create(record.m_sPersistentId);
 					stats.SetHunger(record.m_fHunger);
 					stats.SetThirst(record.m_fThirst);
-					stats.SetHealth(record.m_fHealth);
 					persistence.SetSurvivalStats(record.m_sPersistentId, stats);
 				}
 				EL_Debug.Log("Persistence", string.Format("applied %1 survival record(s)", survivalRecords.Count()));
@@ -346,6 +369,34 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				EL_Debug.Warn("Persistence", "carried snapshots failed to read, leaving live snapshots untouched");
+			}
+		}
+		else if (payload == "progression")
+		{
+			// A version 1-6 save never reaches this payload, so live progression is left alone.
+			array<ref LF_ProgressionRecord> progressionRecords = new array<ref LF_ProgressionRecord>();
+			if (context.Read(progressionRecords))
+			{
+				LF_Progression.ApplyAll(progressionRecords);
+				EL_Debug.Log("Persistence", string.Format("applied %1 progression record(s)", progressionRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "progression records failed to read, leaving live progression untouched");
+			}
+		}
+		else if (payload == "introductions")
+		{
+			// A version 1-7 save never reaches this payload, so live introductions are left alone.
+			array<ref LF_IntroductionRecord> introductionRecords = new array<ref LF_IntroductionRecord>();
+			if (context.Read(introductionRecords))
+			{
+				LF_Introductions.ApplyAll(introductionRecords);
+				EL_Debug.Log("Persistence", string.Format("applied %1 introduction record(s)", introductionRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "introduction records failed to read, leaving live introductions untouched");
 			}
 		}
 		else

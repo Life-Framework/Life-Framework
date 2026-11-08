@@ -5,7 +5,8 @@
 //! Rule: an account may collect when its bank balance is strictly below the configured
 //! threshold, it is not on duty as police, it has no active delivery run, and its last
 //! collection is at least the configured cooldown ago. Everything is read on the server.
-//! The cooldown ledger is session state: a restart lets a broke player collect once again.
+//! The cooldown ledger is saved as seconds since the last collection (LF_Progression, save
+//! version 7), because world time starts over after a restart.
 class LF_UnemploymentBenefit
 {
 	static const string REFUSED_BALANCE = "#EL-Benefit_Refused_Balance";
@@ -62,6 +63,48 @@ class LF_UnemploymentBenefit
 	{
 		if (s_mLastCollectedAt)
 			s_mLastCollectedAt.Remove(uid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: player ids with a recorded collection.
+	static void CollectLedgerUids(notnull array<string> uids)
+	{
+		if (!s_mLastCollectedAt)
+			return;
+
+		foreach (string uid, float collectedAt : s_mLastCollectedAt)
+		{
+			uids.Insert(uid);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Seconds since the player's last collection at now, or -1 when they never collected.
+	static float GetElapsedSinceCollection(string uid, float now)
+	{
+		if (!s_mLastCollectedAt || !s_mLastCollectedAt.Contains(uid))
+			return -1;
+
+		return Math.Max(0, now - s_mLastCollectedAt.Get(uid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: the collection happened elapsedSeconds before now. Negative forgets it.
+	static void RestoreElapsedSinceCollection(string uid, float elapsedSeconds, float now)
+	{
+		if (uid.IsEmpty())
+			return;
+
+		if (elapsedSeconds < 0)
+		{
+			ForgetCollection(uid);
+			return;
+		}
+
+		if (!s_mLastCollectedAt)
+			s_mLastCollectedAt = new map<string, float>();
+
+		s_mLastCollectedAt.Set(uid, now - elapsedSeconds);
 	}
 
 	//------------------------------------------------------------------------------------------------

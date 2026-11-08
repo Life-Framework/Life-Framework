@@ -4,8 +4,10 @@ class EL_CharacterSurvivalComponentClass : ScriptComponentClass
 }
 
 //------------------------------------------------------------------------------------------------
-//! Hunger, thirst, and survival health for one character. Server-authoritative: the stats live
-//! and tick on the server only (a call-queue tick at LF_SurvivalConfig.m_fTickIntervalSeconds).
+//! Hunger and thirst for one character, and their effect on the character's real health.
+//! Server-authoritative: the stats live and tick on the server only (a call-queue tick at
+//! LF_SurvivalConfig.m_fTickIntervalSeconds). Low needs pull the damage manager's health down to
+//! the config cap (LF_SurvivalHealth); met needs give back only what needs took.
 //! The owner's client gets whole-point hunger and thirst plus the low-needs flag as owner-only
 //! RplProps, bumped only when one of them changes, for the stamina penalty and the HUD gauges.
 class EL_CharacterSurvivalComponent : ScriptComponent
@@ -22,6 +24,10 @@ class EL_CharacterSurvivalComponent : ScriptComponent
 	protected ref EL_SurvivalStats m_SurvivalStats;
 	protected string m_sCharacterId;
 	protected float m_fLastTickTimeMs;
+
+	//! Fraction of max health that low needs have taken from this body and not yet given back.
+	//! Session state on purpose: a fresh body after a restart or respawn starts with full health.
+	protected float m_fHealthDeficitScaled;
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: loads (or creates and registers) the survival stats for a character and starts the
@@ -76,13 +82,40 @@ class EL_CharacterSurvivalComponent : ScriptComponent
 		bool wasLow = m_SurvivalStats.AreNeedsLow(config);
 		m_SurvivalStats.UpdateStats(deltaSeconds, config);
 		bool isLow = m_SurvivalStats.AreNeedsLow(config);
+		ApplyNeedsToHealth(deltaSeconds);
 		if (isLow != wasLow)
 		{
-			EL_Debug.Info("Survival", string.Format("%1 needs low=%2 (hunger %3, thirst %4, health %5)",
-				m_sCharacterId, isLow, m_SurvivalStats.GetHunger(), m_SurvivalStats.GetThirst(), m_SurvivalStats.GetHealth()));
+			EL_Debug.Info("Survival", string.Format("%1 needs low=%2 (hunger %3, thirst %4, health deficit %5)",
+				m_sCharacterId, isLow, m_SurvivalStats.GetHunger(), m_SurvivalStats.GetThirst(), m_fHealthDeficitScaled));
 		}
 
 		SyncReplication();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: applies deltaSeconds of needs to the character's real health. Public so a WORLD test
+	//! can drive it without waiting on the tick.
+	void ApplyNeedsToHealth(float deltaSeconds)
+	{
+		if (!m_SurvivalStats || !Replication.IsServer())
+			return;
+
+		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(GetOwner().FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!damageManager)
+		{
+			EL_Debug.Error("Survival", string.Format("%1 has no character damage manager: needs do not touch health", m_sCharacterId));
+			return;
+		}
+
+		LF_SurvivalConfig config = LF_SurvivalConfig.Get();
+		m_fHealthDeficitScaled = LF_SurvivalHealth.Apply(damageManager, m_SurvivalStats.AreNeedsLow(config), deltaSeconds, config, m_fHealthDeficitScaled);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Fraction of max health needs have taken and not given back.
+	float GetHealthDeficitScaled()
+	{
+		return m_fHealthDeficitScaled;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -214,9 +247,19 @@ class EL_CharacterSurvivalComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: heals the character's real health by amount percent of max (consumable restore).
 	void Heal(float amount)
 	{
-		if (m_SurvivalStats)
-			m_SurvivalStats.Heal(amount);
+		if (amount <= 0 || !Replication.IsServer())
+			return;
+
+		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(GetOwner().FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!damageManager)
+		{
+			EL_Debug.Error("Survival", string.Format("%1 heal skipped: no character damage manager", m_sCharacterId));
+			return;
+		}
+
+		LF_SurvivalHealth.Restore(damageManager, amount / 100);
 	}
 };

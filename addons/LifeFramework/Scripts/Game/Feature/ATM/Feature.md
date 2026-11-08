@@ -42,8 +42,10 @@ or a balance becomes cash.
   deposit/withdraw guards. ✅ `SetBalance` clamps corrupt values;
   `CreateAccount` rejects empty IDs and preserves existing accounts on
   duplicate creation (verified 2026-08-30).
-- `EL_ATMMenu` — deposit/withdraw UI on the cash-moving RPC bridge; amount
-  guards via `EL_ATMManager.IsValidAmount`.
+- `LF_ATMTerminal` — the machine's green-screen terminal on the UI kit
+  (keypad, balance, carried cash, DEPOSIT/WITHDRAW); prints the server's
+  refusal reason (`LF_EATMRefusal`) on the screen. Opens only for the player
+  who used the machine.
 - `EL_ATMAction` / `EL_CharacterATMComponent` — interaction and per-character
   wiring.
 - Persistence: `Feature/ATM/Persistence/`.

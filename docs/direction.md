@@ -18,8 +18,11 @@ proven by a flagship server we run ourselves.**
 - **Core is era-agnostic.** 1989 Everon is our content pack, not an assumption
   baked into systems. A modern or alternate setting must be buildable on the
   same core.
-- **Open source, MIT.** We grow by adoption and reputation. The framework is
-  never monetized; servers may follow Bohemia's rules on their own.
+- **Open source, MIT.** We grow by adoption and reputation. The source on
+  GitHub is MIT; the Workshop build is APL, as Bohemia's Workshop terms require.
+  The framework is never monetized. The flagship may take cosmetic-only
+  donations within Bohemia's policy, never gameplay advantages; other servers
+  follow Bohemia's rules on their own.
 
 The ambition is the most played and most built-upon mod in Arma's history. We
 get there by being the most *playable*, the most *provable*, and the easiest to
@@ -30,7 +33,7 @@ contribute to — in that order.
 A build is playable when a stranger can join, understand what to do without
 asking anyone, and complete a loop:
 
-1. Spawn, choose a faction (police is whitelisted).
+1. Arrive: register at the town clerk, get an ID card, read the town board. Everyone starts civilian; whitelisted players clock in as police at the station.
 2. Earn: take a job, gather or process, get paid in cash.
 3. Spend and save: shop, bank at the ATM, buy a vehicle.
 4. Crime: rob a till, a bank, a hospital; carry contraband.
@@ -50,9 +53,13 @@ Each milestone ends with a public build and a filmed showcase.
 |---|---|---|
 | M0 | **Foundation** | `release/next` merged; server-authority, restart, and dedicated-client fixes landed; CI + structural lint on every PR; one honest AGENTS.md. |
 | M1 | **Playtest Town** | The DebugWorld street is a signposted test town: a sign at spawn explains the loop, every site has a sign saying what it is and how to use it, every loop above works on a dedicated server, and the visual harness proves each site from the player's view. Published on the Workshop; sessions hosted from the maintainer's PC; feedback collected through GitHub issues. |
-| M2 | **Flagship town** | The same loops placed in one Everon town from reusable site prefabs, with a filmed tour. |
+| M2 | **Living town** | Four themes work on a dedicated server in the playtest village: moderation (an incident log and Game Master tools), medic (downed state, EMS, ambulance), comms (payphones, pagers, a dispatch board), and investigation (witnesses and evidence behind the vague-description wanted system). M2 closes by placing the loops in one Everon town from reusable site prefabs, on MainWorld, with a filmed tour. Outline: [m2-outline](roadmap/m2-outline.md). |
 | M3 | **Framework release** | A server owner can install from the Workshop, configure from documented files, add a job or shop without writing script, and host on their own box. |
 | M4 | **Flagship live** | A recurring public 1989 Everon server with its own community. |
+
+Until 2026-11-08 M2 was "Flagship town": Everon placement, reusable site
+prefabs, and MainWorld. That work is now the closing step of M2, after the four
+themes are proven in the playtest village.
 
 We do not start a milestone's features before the previous milestone's
 "done when" is true. New systems wait; playability does not.
@@ -102,4 +109,6 @@ Most mod repos stop at "it compiles". Ours proves the world plays:
 
 - New feature systems beyond the release scopes, until M1 is done.
 - Rented hosting; the maintainer's PC hosts playtests for now.
-- Monetization of any kind.
+- Monetization of the framework, and anything on the flagship beyond cosmetic
+  donations.
+- Scheduled and organised events (parked for a later phase).

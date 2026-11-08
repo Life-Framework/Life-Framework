@@ -3,6 +3,8 @@
 // each client with its own -profile, joined over 127.0.0.1:2001.
 //
 //   node agent-box/session.mjs up --clients 2     boot the server, launch the clients
+//   node agent-box/session.mjs up --clients 2 --mission playtest   LF_PlaytestTown, harness build
+//   node agent-box/session.mjs restart            save, stop, load, rejoin (playtest mission)
 //   node agent-box/session.mjs down               close every process the session started
 //   node agent-box/session.mjs status             pids, profiles, logs
 //   node agent-box/session.mjs state <client>     faction, duty, wanted, cash, bank, job, org
@@ -13,6 +15,14 @@
 // The server runs the bare DebugWorld (no mission header, no test define), so
 // the world's game mode keeps dev tools open and the harness RPCs pass
 // EL_DevGate. The playtest mission (LF_PlaytestTown.conf) closes that gate.
+// `up --mission playtest` runs that mission the way `toolscli host start` does,
+// with -scrDefine LF_HARNESS on the server and every client: the harness
+// (stand, pose, use) passes its own gate in that build only, the debug menu
+// stays closed, and a client without the define is refused at the door.
+// `restart` (playtest only) stops the server through the host stop file (the
+// engine writes its SHUTDOWN save), boots it with -loadSessionSave, and
+// rejoins the same client profiles in the same order (same player ids, so the
+// same LF_SESSION_IDENTITY accounts).
 //
 // `up` and `down` run through `tools\cli session` because the server boot
 // shares the CLI's machine-wide server-2001 lock and addon junction helper.
@@ -21,9 +31,11 @@
 // junctions.
 
 import { spawnSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -35,6 +47,26 @@ export const SERVER_READY = "Entered online game state.";
 // ("remote script source code checksum does not match"), so clients compile
 // with the same define as the server.
 export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
+// Opens the harness gate on the playtest mission (EL_DevGate.HarnessBuild).
+// Only a session passes it; toolscli host start never does.
+export const HARNESS_DEFINE = "LF_HARNESS";
+export const MISSIONS = ["debug", "playtest"];
+
+export function parseMission(args) {
+  const i = args.indexOf("--mission");
+  if (i === -1) return "debug";
+  const m = args[i + 1];
+  if (!MISSIONS.includes(m)) throw new Error(`--mission must be ${MISSIONS.join(" or ")}`);
+  return m;
+}
+
+// Both sides compile the same defines, or the server refuses the client
+// ("remote script source code checksum does not match").
+export function defineArgs(mission = "debug") {
+  const args = ["-scrDefine", SESSION_DEFINE];
+  if (mission === "playtest") args.push("-scrDefine", HARNESS_DEFINE);
+  return args;
+}
 
 export function sessionDir(env = process.env) {
   if (env.LF_SESSION_DIR) return env.LF_SESSION_DIR;
@@ -56,9 +88,33 @@ export function clientBox(dir, n) {
   return sessionPaths(dir, n).clients[n - 1].box;
 }
 
-export function serverArgs({ addonsDir, profile }) {
-  return [
-    "-server", SERVER_WORLD,
+// Every `up` names its clients with a fresh id (-lfSession). The harness
+// addresses each command to it, and a client runs only its own session's
+// commands (EL_AgentCommand.SessionAccepts).
+export function newSessionId() {
+  return randomBytes(6).toString("hex");
+}
+
+const samePath = (a, b) => resolve(String(a)).replaceAll("\\", "/").toLowerCase() === resolve(String(b)).replaceAll("\\", "/").toLowerCase();
+
+// Pure: the address for a command to box, given the recorded session.
+// null when box is not a session client's box (Workbench, default profile).
+export function sessionAddress(box, root, dir, s) {
+  const boxes = sessionPaths(dir, MAX_CLIENTS).clients.map((c) => c.box);
+  if (!boxes.some((b) => samePath(b, box))) return null;
+  if (!s || s.stoppedAt) return { error: "no_live_session" };
+  if (!s.id) return { error: "session_has_no_id (started by an older harness; down and up again)" };
+  if (!samePath(s.root, root)) return { error: `session_owned_by_other_checkout ${s.root}` };
+  return { id: s.id };
+}
+
+export function sessionForBox(box, root, dir = sessionDir()) {
+  return sessionAddress(box, root, dir, readSession(dir));
+}
+
+export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false }) {
+  const args = [
+    "-server", mission === "playtest" ? PLAYTEST_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
     "-addons", "LifeFramework",
     "-profile", profile,
@@ -66,10 +122,12 @@ export function serverArgs({ addonsDir, profile }) {
     "-logLevel", "normal",
     // -noBackend clients all carry the NULL identity and the same Steam name;
     // EL_Utils.GetPlayerUID gives each player id its own identity under this define.
-    "-scrDefine", SESSION_DEFINE,
+    ...defineArgs(mission),
     "-disableCrashReporter",
     "-noBackend",
   ];
+  if (loadSave) args.push("-loadSessionSave");
+  return args;
 }
 
 // Small windows in a row along the top of the screen, so the user's desk
@@ -78,7 +136,7 @@ export function windowFor(n) {
   return { x: (n - 1) * (WINDOW.width + WINDOW.gap), y: 0, width: WINDOW.width, height: WINDOW.height };
 }
 
-export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1" }) {
+export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "" }) {
   const w = windowFor(n);
   return [
     "-client", address,
@@ -95,9 +153,10 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1" }) {
     "-noSplash",
     "-noSound",
     "-maxFPS", "30",
-    "-scrDefine", SESSION_DEFINE,
+    ...defineArgs(mission),
     "-disableCrashReporter",
     "-noBackend",
+    ...(session ? ["-lfSession", session] : []),
   ];
 }
 
@@ -158,6 +217,30 @@ export function selftestSession() {
   if (s.some((x) => /EL_AUTOTEST|LF_PlaytestTown|-config/.test(x))) failures.push("server args carry a test define, the playtest mission, or -config");
   if (s[s.indexOf("-scrDefine") + 1] !== SESSION_DEFINE) failures.push("server does not define LF_SESSION_IDENTITY");
   if (a1[a1.indexOf("-scrDefine") + 1] !== SESSION_DEFINE) failures.push("client script define differs from the server (checksum refusal)");
+  if (s.includes(HARNESS_DEFINE) || a1.includes(HARNESS_DEFINE)) failures.push("the bare DebugWorld session carries LF_HARNESS");
+  if (s.includes("-loadSessionSave")) failures.push("a fresh session loads a save");
+  const ps = serverArgs({ addonsDir: "A", profile: "SP", mission: "playtest" });
+  const pc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "playtest" });
+  if (ps[1] !== PLAYTEST_MISSION) failures.push("--mission playtest does not run LF_PlaytestTown");
+  const defs = (args) => args.filter((x, i) => args[i - 1] === "-scrDefine").sort().join(",");
+  if (defs(ps) !== [HARNESS_DEFINE, SESSION_DEFINE].sort().join(",")) failures.push(`playtest server defines are ${defs(ps)}`);
+  if (defs(pc) !== defs(ps)) failures.push("playtest client defines differ from the server (checksum refusal)");
+  if (!serverArgs({ addonsDir: "A", profile: "SP", mission: "playtest", loadSave: true }).includes("-loadSessionSave")) failures.push("a restart does not load the save");
+  const sc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", session: "ab12" });
+  if (sc[sc.indexOf("-lfSession") + 1] !== "ab12") failures.push("a client is not named with its session id");
+  if (newSessionId() === newSessionId() || !/^[0-9a-f]{12}$/.test(newSessionId())) failures.push("session ids must be fresh hex tokens");
+  const box1 = clientBox("S", 1);
+  const live = { id: "ab12", root: "C:/x/wt-a" };
+  if (sessionAddress(box1, "C:/x/wt-a", "S", live)?.id !== "ab12") failures.push("the caller's own session is addressed by id");
+  if (!sessionAddress(box1, "C:\\X\\WT-A", "S", live)?.id) failures.push("root comparison must ignore case and slashes");
+  if (!/other_checkout/.test(sessionAddress(box1, "C:/x/wt-b", "S", live)?.error ?? "")) failures.push("another checkout's session must be refused");
+  if (!sessionAddress(box1, "C:/x/wt-a", "S", { ...live, stoppedAt: "t" })?.error) failures.push("a stopped session must be refused");
+  if (sessionAddress(join("W", "agent-box"), "C:/x/wt-a", "S", live) !== null) failures.push("a Workbench box is not a session box");
+  if (parseMission([]) !== "debug" || parseMission(["--mission", "playtest"]) !== "playtest") failures.push("parseMission");
+  try {
+    parseMission(["--mission", "prod"]);
+    failures.push("--mission prod was accepted");
+  } catch {}
   if (sessionDir({ LF_SESSION_DIR: "X" }) !== "X") failures.push("LF_SESSION_DIR does not override");
   if (sessionDir({ LOCALAPPDATA: "L" }) !== join("L", "LifeFramework", "session")) failures.push("default session dir changed");
   const st = parseState("faction=police duty=1 wanted=0 cash=250 bank=1000 job=none org=none");
@@ -173,7 +256,99 @@ export function selftestSession() {
   if (judgeProof(civ0, civ1, cop).length) failures.push(`judgeProof failed a good run: ${judgeProof(civ0, civ1, cop)}`);
   if (!judgeProof(civ0, civ1, cop.replace(ROB_ALERT, "none")).length) failures.push("judgeProof passed an officer with no alert");
   if (!judgeProof(civ0, civ0, cop).length) failures.push("judgeProof passed a robbery with no payout");
+  const m1 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none player=1 toast=none known=0 name=none";
+  const m2 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none player=2 toast=none known=0 name=none";
+  const g1 = m1.replace("cash=500", "cash=450");
+  const g2 = m2.replace("cash=500", "cash=550").replace("known=0", "known=1");
+  if (judgeInteraction(m1, m2, g1, g2).length) failures.push(`judgeInteraction failed a good run: ${judgeInteraction(m1, m2, g1, g2)}`);
+  if (!judgeInteraction(m1, m2, m1, g2).length) failures.push("judgeInteraction passed a giver who kept the cash");
+  if (!judgeInteraction(m1, m2, g1, g2.replace("cash=550", "cash=600")).length) failures.push("judgeInteraction passed cash out of thin air");
+  if (!judgeInteraction(m1, m2, g1, g2.replace("known=1", "known=0")).length) failures.push("judgeInteraction passed a receiver who never learned the name");
   return failures;
+}
+
+// The M1-12 interaction proof on a running `up --clients 2` session: both
+// civilians; client 1 stands beside client 2, introduces themselves, shows the
+// ID card, and hands over GIVE_AMOUNT cash through the amount sheet. Cash must
+// move by exactly that amount on both sides and client 2 must know one name.
+export const GIVE_AMOUNT = 50;
+
+export function judgeInteraction(before1, before2, after1, after2) {
+  const fails = [];
+  const b1 = parseState(before1);
+  const b2 = parseState(before2);
+  const a1 = parseState(after1);
+  const a2 = parseState(after2);
+  if (Number(a1.cash) !== Number(b1.cash) - GIVE_AMOUNT) fails.push(`client 1 cash ${b1.cash} -> ${a1.cash}, expected -${GIVE_AMOUNT}`);
+  if (Number(a2.cash) !== Number(b2.cash) + GIVE_AMOUNT) fails.push(`client 2 cash ${b2.cash} -> ${a2.cash}, expected +${GIVE_AMOUNT}`);
+  if (!(Number(a2.known) >= 1)) fails.push(`client 2 knows ${a2.known} name(s), expected the introduced name`);
+  return fails;
+}
+
+async function runInteraction() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => on(n, { verb: "state" }, 10000).detail;
+
+  // Arrive: both pick civilian and spawn in town (skipped once characters exist).
+  for (const n of [1, 2]) {
+    const ui = on(n, { verb: "ui" });
+    if (ui.status === "ok" && ui.detail.includes("CivilianButton")) {
+      on(n, { verb: "click", widget: "CivilianButton" });
+      wait(1500);
+      on(n, { verb: "click", widget: "TownButton" });
+    }
+  }
+  wait(4000);
+  // Registration form R-89 (M1-08): sign a name so each player has a character.
+  const names = { 1: "Ada", 2: "Bea" };
+  for (const n of [1, 2]) {
+    const ui = on(n, { verb: "ui" });
+    if (ui.status === "ok" && ui.detail.includes("SignButton")) {
+      on(n, { verb: "type", widget: "RegFirstName", text: names[n] });
+      on(n, { verb: "type", widget: "RegLastName", text: "Tester" });
+      on(n, { verb: "type", widget: "RegAge", text: "30" });
+      on(n, { verb: "click", widget: "SignButton" });
+    }
+  }
+  wait(10000);
+
+  const before1 = state(1);
+  const before2 = state(2);
+  const other = `Player${parseState(before2).player}`;
+  on(1, { verb: "stand", entityName: other });
+  wait(2500);
+  on(1, { verb: "look" });
+  const steps = [];
+  steps.push(on(1, { verb: "use", className: "LF_IntroduceAction", entityName: other }, 10000));
+  wait(2500);
+  steps.push(on(1, { verb: "use", className: "EL_ShowIDAction", entityName: other }, 10000));
+  wait(2000);
+  steps.push(on(1, { verb: "use", className: "LF_GiveCashAction", entityName: other }, 10000));
+  wait(2000);
+  steps.push(on(1, { verb: "type", widget: "GiveCashAmount", text: String(GIVE_AMOUNT) }));
+  steps.push(on(1, { verb: "click", widget: "GiveCashButton" }));
+  wait(3000);
+  const after1 = state(1);
+  const after2 = state(2);
+
+  console.log("");
+  console.log(`before  client 1: ${before1}`);
+  console.log(`before  client 2: ${before2}`);
+  console.log(`after   client 1: ${after1}`);
+  console.log(`after   client 2: ${after2}`);
+  const fails = judgeInteraction(before1, before2, after1, after2);
+  for (const st of steps) if (st.status !== "ok") fails.unshift(`${st.line} returned ${st.status} ${st.detail}`);
+  for (const x of fails) console.log(`FAIL  ${x}`);
+  console.log(fails.length ? "interaction: FAIL" : `interaction: PASS (introduced, showed ID, handed over ${GIVE_AMOUNT} cash)`);
+  return fails.length ? 1 : 0;
 }
 
 // The M1-05 card proof on a running `up --clients 2` session: client 1 is a
@@ -257,11 +432,12 @@ async function main(argv) {
     console.log(f.length ? "session selftest: FAIL" : "session selftest: OK");
     return f.length ? 1 : 0;
   }
-  if (cmd === "up" || cmd === "down" || cmd === "status") {
+  if (cmd === "up" || cmd === "down" || cmd === "status" || cmd === "restart") {
     const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", cmd, ...rest], { windowsHide: true, stdio: "inherit", cwd: process.cwd() });
     return r.status ?? 1;
   }
   if (cmd === "proof") return runProof();
+  if (cmd === "interaction") return runInteraction();
   if (cmd === "state") {
     const n = Number(rest[0]);
     if (!Number.isInteger(n) || n < 1) throw new Error("state <client number>");
@@ -275,7 +451,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] | down | status | state <client> | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | proof | interaction | selftest");
   return cmd ? 1 : 0;
 }
 

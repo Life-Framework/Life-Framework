@@ -61,11 +61,6 @@
  },
  {
   "rule": "L2",
-  "file": "Scripts/Game/Feature/Shop/EL_ShopMenu.c",
-  "text": "Widget rowWidget = GetGame().GetWorkspace().CreateWidgets(\"{3851DEDF6D111FEE}UI/Layouts/ShopMenuRow.layout\", m_wItemList);"
- },
- {
-  "rule": "L2",
   "file": "Scripts/Game/Feature/Whitelist/EL_WhitelistContextAction.c",
   "text": "EL_WhitelistRespawnHandlerComponent whitelistComponent = EL_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(EL_WhitelistRespawnHandlerComponent));"
  },

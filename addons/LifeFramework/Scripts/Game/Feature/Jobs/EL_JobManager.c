@@ -123,6 +123,6 @@ class EL_JobManager : Managed
 			EL_Debug.Warn("Jobs", string.Format("job reward payout short: paid %1 of %2 (player %3)", paid, amount, user));
 
 		// Show notification
-		EL_Utils.Notify(WidgetManager.Translate("#EL-Job_Earned", paid), "#EL-Job_Reward", 3.0);
+		EL_Utils.NotifyEntity(user, "#EL-Job_Earned", "#EL-Job_Reward", 3.0, paid.ToString());
 	}
 };

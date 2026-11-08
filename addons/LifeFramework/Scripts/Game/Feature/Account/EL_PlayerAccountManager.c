@@ -67,6 +67,17 @@ class EL_PlayerAccountManager : Managed
 			account.m_bOnDuty = record.m_bOnDuty;
 			account.SetWantedLevel(record.m_iWantedLevel);
 
+			// Rank and duty totals are not in this record; the progression payload (save version
+			// 7) restores them afterwards. Until then the live values carry over, so re-applying a
+			// version 6 save to a running session does not demote anyone.
+			EL_PlayerAccount live = instance.m_mAccounts.Get(record.m_sPersistentId);
+			if (live)
+			{
+				account.SetPoliceRank(live.GetPoliceRank());
+				account.SetOnDutySeconds(live.GetOnDutySeconds());
+				account.SetUnpaidDutySeconds(live.GetUnpaidDutySeconds());
+			}
+
 			if (record.m_aCharacters)
 			{
 				foreach (EL_PlayerCharacterRecord characterRecord : record.m_aCharacters)

@@ -43,6 +43,9 @@ off:
   dedicated record (no EPF). `EL_PlayerAccountManager.ExportAll` / `ApplyAll`
   feed `EL_PersistenceComponentSerializer`, which writes a `version` header
   first.
+- `LF_Progression` + `Persistence/LF_ProgressionRecord.c` — per-uid progression
+  (career, police rank and duty, benefit cooldown, level, licences, quest
+  turn-ins), the `progression` payload at save version 7. Hidden: no UI.
 
 ## Dependencies
 

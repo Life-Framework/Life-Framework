@@ -90,11 +90,9 @@ class EL_Test_Roadmap_Ranks : EL_Test
 		ctx.Equal(LF_PoliceRanks.SENIOR, timed.GetPoliceRank(), "there is no rank above senior");
 
 		EL_PlayerAccount patrol = Police("roadmap-ranks-patrol", LF_PoliceRanks.PATROL, true);
-		int arrestBefore = LF_PoliceRanks.GetArrestRefusalCount();
-		ctx.False(LF_PoliceRanks.AuthorizeArrest(patrol), "a lower rank's arrest refuses");
-		ctx.Equal(arrestBefore + 1, LF_PoliceRanks.GetArrestRefusalCount(), "the lower-rank arrest refusal is logged");
-		ctx.EqualStr("arrest refused: rank 0 cannot arrest", LF_PoliceRanks.GetLastError(), "the arrest refusal is the rank log");
+		// Who may arrest is config (police/rank-permissions); the flagship lets every on-duty officer arrest.
 		int arrestAfter = LF_PoliceRanks.GetArrestRefusalCount();
+		ctx.True(LF_PoliceRanks.AuthorizeArrest(patrol), "a patrol officer may arrest on the flagship default");
 		ctx.True(LF_PoliceRanks.AuthorizeArrest(senior), "a senior officer may arrest");
 		ctx.Equal(arrestAfter, LF_PoliceRanks.GetArrestRefusalCount(), "an authorized arrest is not a refusal");
 
@@ -174,9 +172,9 @@ class EL_Test_Roadmap_RanksWorld : EL_Test
 			return;
 
 		vector origin = armory.GetOrigin();
-		ctx.EqualFloat(207, origin[0], 0.1, "armory is at X 207");
+		ctx.EqualFloat(241.2, origin[0], 0.1, "armory is at X 241.2 (police station forecourt)");
 		ctx.EqualFloat(0, origin[1], 0.1, "armory is on the ground");
-		ctx.EqualFloat(120, origin[2], 0.1, "armory is at Z 120");
+		ctx.EqualFloat(244.2, origin[2], 0.1, "armory is at Z 244.2");
 
 		ActionsManagerComponent actions = EL_Component<ActionsManagerComponent>.Find(armory);
 		ctx.NotNull(actions, "armory carries ActionsManagerComponent");

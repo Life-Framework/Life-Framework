@@ -99,6 +99,13 @@ class EL_PlayerAccount : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Persistence seam (LF_Progression): the saved total. Negative is read as 0.
+	void SetOnDutySeconds(int seconds)
+	{
+		m_iOnDutySeconds = Math.Max(0, seconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool IsDutyClockRunning()
 	{
 		return m_bDutyClockRunning;
@@ -125,8 +132,8 @@ class EL_PlayerAccount : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Duty seconds settled this shift and not yet paid. Session state like the duty clock:
-	//! a restart drops an open shift's pay; it never pays twice.
+	//! Duty seconds settled this shift and not yet paid. Saved with the progression payload
+	//! (save version 7) together with the carried cash, so a rollback rolls both back.
 	int GetUnpaidDutySeconds()
 	{
 		return m_iUnpaidDutySeconds;
@@ -139,6 +146,13 @@ class EL_PlayerAccount : Managed
 			return;
 
 		m_iUnpaidDutySeconds = m_iUnpaidDutySeconds + seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam (LF_Progression): the saved unpaid seconds. Negative is read as 0.
+	void SetUnpaidDutySeconds(int seconds)
+	{
+		m_iUnpaidDutySeconds = Math.Max(0, seconds);
 	}
 
 	//------------------------------------------------------------------------------------------------

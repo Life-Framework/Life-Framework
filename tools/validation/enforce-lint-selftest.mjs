@@ -7,7 +7,7 @@
 // red-proof: with the L1 spawn regex changed to never match, this printed
 // "L1.bad.c: expected 1 L1 finding(s), got 0" and exited 1; with the L4 cleanup
 // check removed it printed "L4.good.c: expected no findings, got L4@3"; restored,
-// it prints "enforce-lint-selftest: OK (7 rules red on bad, green on good, ratchet holds)".
+// it prints "enforce-lint-selftest: OK (8 rules red on bad, green on good, ratchet holds)".
 import { mkdtempSync, mkdirSync, copyFileSync, writeFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -19,7 +19,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const fixtures = join(here, "fixtures", "enforce-lint");
 
 // Findings each bad fixture must produce for its own rule.
-const EXPECT = { L1: 1, L2: 7, L3: 2, L4: 1, L5: 1, L6: 3, L7: 1 };
+const EXPECT = { L1: 1, L2: 7, L3: 2, L4: 1, L5: 1, L6: 3, L7: 1, L8: 1 };
 
 function runFixture(name) {
   const tmp = mkdtempSync(join(tmpdir(), "lf-enforce-lint-"));

@@ -53,9 +53,9 @@ class EL_RobVehicleAction : ScriptedUserAction
 			return;
 
 		if (CommitVehicleRobbery(EL_Utils.GetPlayerUid(pUserEntity), pUserEntity, m_VehiclePrefab))
-			EL_Utils.Notify("#EL-Vehicle_Stolen", "#EL-Robbery_Successful", 3.0);
+			EL_Utils.NotifyEntity(pUserEntity, "#EL-Vehicle_Stolen", "#EL-Robbery_Successful", 3.0);
 		else
-			EL_Utils.Notify("#EL-Spawn_Failed", "#EL-Robbery_Failed", 3.0);
+			EL_Utils.NotifyEntity(pUserEntity, "#EL-Spawn_Failed", "#EL-Robbery_Failed", 3.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

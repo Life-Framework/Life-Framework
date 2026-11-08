@@ -1,5 +1,5 @@
 GenericEntity CementBuilderStand {
- coords 94 0 128
+ coords 200 0 186
  {
   GenericEntity CementDisplayCrate {
    components {
@@ -74,17 +74,13 @@ SCR_DestructibleBuildingEntity CementPlant_Debug : "{A92A5F3B79FF56BE}Prefabs/St
    }
   }
  }
- coords 96.2 0 128.4
+ coords 202.2 0 186.4
 }
 StaticModelEntity CementPile_Debug : "{81CB1B2631584427}Prefabs/Props/Construction/CementPile.et" {
- coords 94 0 129
+ coords 200 0 187
  angleY -179.853
 }
 GenericEntity CementBag_5A0E821DC5FD235C : "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et" {
- coords 95 0 129.5
+ coords 201 0 187.5
  angleY -0.072
-}
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 94 0 128.5
- m_vSize 2.6 1 1.5
 }
