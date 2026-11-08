@@ -49,8 +49,6 @@ GenericEntity Roadmap_Vehicle_Lot {
     }
    }
   }
-  EL_VehicleGarageComponent "{E1B0E70100000004}" {
-  }
   EL_VehicleSpawnPointComponent "{E1B0E70100000005}" {
    m_sShopId "roadmap-lot"
    m_vOffset -5 0 -5
@@ -83,22 +81,6 @@ GenericEntity Roadmap_Vehicle_Lot {
       Name "#EL-Vehicle_ExtraKey"
      }
     }
-    EL_VehicleStoreAction "{E1B0E70100000025}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{E1B0E70100000026}" {
-      Name "#EL-Vehicle_Store"
-     }
-    }
-    EL_VehicleRetrieveAction "{E1B0E70100000027}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{E1B0E70100000028}" {
-      Name "#EL-Vehicle_Retrieve"
-     }
-    }
    }
   }
   RplComponent "{E1B0E70100000009}" {
@@ -111,6 +93,14 @@ GenericEntity Roadmap_Vehicle_Lot {
 GenericEntity Roadmap_Garage {
  components {
   EL_VehicleGarageComponent "{A1C1080A00000001}" {
+   m_sPadId "roadmap-garage"
+  }
+  EL_VehicleSpawnPointComponent "{C3E2E6F2E56F3E66}" {
+   m_sShopId "roadmap-garage"
+   m_vOffset 0 0 -2
+   m_iSlots 3
+   m_vSlotStep -7 0 0
+   m_vAngles 90 0 0
   }
   ActionsManagerComponent "{A1C1080A00000002}" {
    ActionContexts {
@@ -139,6 +129,14 @@ GenericEntity Roadmap_Garage {
       Name "#EL-Vehicle_Retrieve"
      }
     }
+    LF_GarageLedgerAction "{C9A69B1164585666}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{006BD8DCF53DEDC6}" {
+      Name "#LF-Garage_ReadLedger"
+     }
+    }
    }
   }
   RplComponent "{A1C1080A00000009}" {
@@ -152,4 +150,60 @@ GenericEntity Roadmap_Garage {
    angleY 180
   }
  }
+}
+GenericEntity Roadmap_Impound_Desk {
+ components {
+  MeshObject "{DE98802C17B46422}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{5F5D1789B1447AD1}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_ImpoundDeskComponent "{B7547E5E3F7A5535}" {
+   m_sPadId "roadmap-impound"
+  }
+  EL_VehicleSpawnPointComponent "{853E602F9A3F24EC}" {
+   m_sShopId "roadmap-impound"
+   m_vOffset 6 0 8
+   m_iSlots 3
+   m_vSlotStep -6 0 0
+   m_vAngles 180 0 0
+  }
+  ActionsManagerComponent "{47EB65DDFAE5E427}" {
+   ActionContexts {
+    UserActionContext "{BFA166AD194CF220}" {
+     ContextName "default"
+     Position PointInfo "{52BBA330E1E12774}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ImpoundCollectAction "{2D594A0A83AE40B7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2426F79B9E22C4CB}" {
+      Name "#LF-Impound_Collect"
+     }
+    }
+    LF_GarageLedgerAction "{AB18B805A523E985}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3AE5CC43C788D6EE}" {
+      Name "#LF-Garage_ReadLedger"
+     }
+    }
+   }
+  }
+  RplComponent "{9C41D07E2B85F3A6}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 246 0 269
 }

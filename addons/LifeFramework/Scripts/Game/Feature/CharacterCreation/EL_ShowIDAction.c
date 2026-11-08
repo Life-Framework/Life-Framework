@@ -47,6 +47,13 @@ class EL_ShowIDAction : ScriptedUserAction
 		viewer.LF_ShowIdCardView(card.GetFirstName(), card.GetLastName(), card.GetAge(), EL_NetworkUtils.GetRplId(pUserEntity));
 		LF_PlayerInteraction.PlayGesture(pUserEntity, LF_PlayerInteraction.GESTURE_POINT);
 		LF_PlayerInteraction.PlayHandoverSound(pUserEntity, LF_PlayerInteraction.SOUND_HANDOVER);
+
+		// An ID check: an on-duty officer who reads a wanted player's own card now knows who they
+		// are, and the wanted posters name them. Someone else's card identifies nobody.
+		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		string ownHolderId = OwnHolderId(showerId);
+		if (accounts && !ownHolderId.IsEmpty() && card.GetHolderId() == ownHolderId && EL_PoliceUtils.IsOnDutyOfficer(accounts.GetFromCache(viewerId)))
+			LF_WantedReports.Identify(EL_Utils.GetPlayerUID(showerId), "ID check");
 		EL_NotificationManagerComponent.NotifyPlayer(showerId, "#EL-ID_Information", "#LF-ID_Shown", 4.0);
 		EL_Debug.Info("IdCard", string.Format("player %1 showed their ID card to player %2", showerId, viewerId));
 	}

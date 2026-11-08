@@ -23,6 +23,12 @@ class EL_VehicleBuyAction : ScriptedUserAction
 			return;
 		}
 
+		if (!LF_Garage.WithinReach(pUserEntity, pOwnerEntity))
+		{
+			EL_Debug.Warn("Vehicle", "buy refused: the player is not at the lot counter");
+			return;
+		}
+
 		string uid = EL_Utils.GetPlayerUID(pUserEntity);
 		if (uid.IsEmpty())
 		{
@@ -49,7 +55,13 @@ class EL_VehicleBuyAction : ScriptedUserAction
 		bool bought = lot.Buy(uid, prefab, pUserEntity, vehicleId, cashCharged, reasonKey);
 		Notify(pUserEntity, "#EL-Vehicle_Buy", reasonKey);
 		if (!bought)
+		{
 			EL_Debug.Log("Vehicle", string.Format("buy action rejected uid=%1", uid));
+			return;
+		}
+
+		// Garage it to keep it: the buyer learns the rule at the moment it starts to matter.
+		Notify(pUserEntity, "#LF-Garage_Title", "#LF-Garage_BuyHint");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -64,12 +76,6 @@ class EL_VehicleBuyAction : ScriptedUserAction
 	{
 		if (!user || !GetOwner())
 			return false;
-
-		if (!EL_VehicleGarageComponent.IsPositionNearAnyGarage(user.GetOrigin()))
-		{
-			SetCannotPerformReason("#EL-Vehicle_NoSpawn");
-			return false;
-		}
 
 		if (!EL_Component<EL_VehicleLotComponent>.Find(GetOwner()))
 		{
@@ -107,12 +113,6 @@ class EL_VehicleExtraKeyAction : ScriptedUserAction
 		if (!user || !GetOwner())
 			return false;
 
-		if (!EL_VehicleGarageComponent.IsPositionNearAnyGarage(user.GetOrigin()))
-		{
-			SetCannotPerformReason("#EL-Vehicle_NoSpawn");
-			return false;
-		}
-
 		return EL_Component<EL_VehicleLotComponent>.Find(GetOwner()) != null;
 	}
 
@@ -126,6 +126,12 @@ class EL_VehicleExtraKeyAction : ScriptedUserAction
 		if (!lot)
 		{
 			EL_Debug.Error("Vehicle", "extra key action has no lot component");
+			return;
+		}
+
+		if (!LF_Garage.WithinReach(pUserEntity, pOwnerEntity))
+		{
+			EL_Debug.Warn("Vehicle", "extra key refused: the player is not at the lot counter");
 			return;
 		}
 
@@ -205,29 +211,31 @@ class EL_VehicleStoreAction : ScriptedUserAction
 			return;
 		}
 
-		string vehicleId = EL_VehicleOwnership.LatestInWorld(uid);
-		if (vehicleId.IsEmpty() || EL_VehicleOwnership.GetOwner(vehicleId) != uid)
-		{
-			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#EL-Vehicle_NotOwner");
-			return;
-		}
-
 		bool inVehicle = false;
 		ChimeraCharacter character = ChimeraCharacter.Cast(pUserEntity);
 		if (character && character.IsInVehicle())
 			inVehicle = true;
 
-		bool near = EL_VehicleGarageComponent.IsPositionNearAnyGarage(pUserEntity.GetOrigin());
-		if (!LF_Garage.CanPark(true, inVehicle, near))
+		EL_VehicleGarageComponent garage = EL_VehicleGarageComponent.FindAt(pUserEntity.GetOrigin());
+		if (!LF_Garage.CanPark(true, inVehicle, garage != null))
 		{
 			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_StepOut");
 			return;
 		}
 
-		IEntity vehicle = EL_VehicleOwnership.GetVehicle(vehicleId);
-		if (!vehicle || !EL_VehicleGarageComponent.IsVehicleAtPlayersGarage(pUserEntity.GetOrigin(), vehicle.GetOrigin()))
+		// Storing takes the car off the street, so only the owner's car parked at this garage counts.
+		string vehicleId = EL_VehicleOwnership.OwnedVehicleNear(uid, garage.GetOwner().GetOrigin(), EL_VehicleGarageComponent.INTERACT_RADIUS);
+		if (vehicleId.IsEmpty())
 		{
-			EL_Debug.Warn("Vehicle", string.Format("store refused: vehicle %1 is not at the garage the player %2 is using", vehicleId, uid));
+			EL_Debug.Warn("Vehicle", string.Format("store refused: no vehicle of %1 is parked at this garage", uid));
+			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_VehicleTooFar");
+			return;
+		}
+
+		IEntity vehicle = EL_VehicleOwnership.GetVehicle(vehicleId);
+		if (!vehicle || !EL_VehicleGarageComponent.SharesGarage(garage.GetOwner().GetOrigin(), pUserEntity.GetOrigin(), vehicle.GetOrigin()))
+		{
+			EL_Debug.Warn("Vehicle", string.Format("store refused: vehicle %1 and player %2 are not at one garage", vehicleId, uid));
 			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_VehicleTooFar");
 			return;
 		}
@@ -239,7 +247,8 @@ class EL_VehicleStoreAction : ScriptedUserAction
 			return;
 		}
 
-		EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#EL-Vehicle_Bought");
+		LF_PlayerInteraction.PlayGesture(pUserEntity, LF_PlayerInteraction.GESTURE_POINT);
+		EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_Stored", 5.0, EL_ENotificationType.SUCCESS, EL_VehicleOwnership.GetPlate(vehicleId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -291,14 +300,34 @@ class EL_VehicleRetrieveAction : ScriptedUserAction
 			return;
 		}
 
-		string vehicleId = EL_VehicleOwnership.LatestStored(uid);
-		if (vehicleId.IsEmpty() || !EL_VehicleOwnership.Retrieve(vehicleId, uid))
+		EL_VehicleGarageComponent garage = EL_Component<EL_VehicleGarageComponent>.Find(pOwnerEntity);
+		if (!garage || garage.GetPadId().IsEmpty())
 		{
-			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Retrieve", "#EL-Vehicle_NotOwner");
+			EL_Debug.Error("Vehicle", "retrieve refused: this garage has no pad");
 			return;
 		}
 
-		EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Retrieve", "#EL-Vehicle_Bought");
+		if (!LF_Garage.WithinReach(pUserEntity, pOwnerEntity))
+		{
+			EL_Debug.Warn("Vehicle", "retrieve refused: the player is not at the garage");
+			return;
+		}
+
+		string vehicleId = EL_VehicleOwnership.LatestStored(uid);
+		if (vehicleId.IsEmpty())
+		{
+			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Retrieve", "#LF-Garage_NothingStored", 4.0, EL_ENotificationType.WARNING);
+			return;
+		}
+
+		if (!EL_VehicleOwnership.Retrieve(vehicleId, uid, garage.GetPadId(), pUserEntity))
+		{
+			EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Retrieve", "#LF-Garage_PadBusy", 4.0, EL_ENotificationType.WARNING);
+			return;
+		}
+
+		LF_PlayerInteraction.PlayGesture(pUserEntity, LF_PlayerInteraction.GESTURE_POINT);
+		EL_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Retrieve", "#LF-Garage_Retrieved", 5.0, EL_ENotificationType.SUCCESS, EL_VehicleOwnership.GetPlate(vehicleId));
 	}
 
 	//------------------------------------------------------------------------------------------------

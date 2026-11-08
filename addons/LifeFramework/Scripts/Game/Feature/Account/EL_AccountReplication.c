@@ -3,7 +3,8 @@
 //! simple-type RplProp. Faction, duty, wanted level, and police rank are what client-side action
 //! offers and menus need. Nothing else of the account leaves the server.
 //!
-//! Layout: bit 0 has-account, bit 1 on-duty, bits 2-4 faction, bits 5-7 wanted, bits 8-15 rank.
+//! Layout: bit 0 has-account, bit 1 on-duty, bits 2-4 faction, bits 5-7 wanted, bits 8-15 rank,
+//! bit 16 on the police roster (whitelisted; the duty desk offers Clock in).
 //! Values outside a field's range are clamped, never wrapped into a neighbour field.
 //------------------------------------------------------------------------------------------------
 class EL_AccountStateBits
@@ -16,10 +17,11 @@ class EL_AccountStateBits
 	static const int WANTED_MASK = 7;
 	static const int RANK_SHIFT = 8;
 	static const int RANK_MASK = 255;
+	static const int ON_ROSTER = 1 << 16;
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The packed state. No account is 0, which reads back as a civilian, off duty, not wanted.
-	static int Encode(bool hasAccount, int faction, bool onDuty, int wantedLevel, int policeRank)
+	static int Encode(bool hasAccount, int faction, bool onDuty, int wantedLevel, int policeRank, bool onRoster = false)
 	{
 		if (!hasAccount)
 			return 0;
@@ -31,6 +33,9 @@ class EL_AccountStateBits
 		state = state | (Math.ClampInt(faction, 0, FACTION_MASK) << FACTION_SHIFT);
 		state = state | (Math.ClampInt(wantedLevel, 0, WANTED_MASK) << WANTED_SHIFT);
 		state = state | (Math.ClampInt(policeRank, 0, RANK_MASK) << RANK_SHIFT);
+		if (onRoster)
+			state = state | ON_ROSTER;
+
 		return state;
 	}
 
@@ -40,7 +45,8 @@ class EL_AccountStateBits
 		if (!account)
 			return 0;
 
-		return Encode(true, account.GetFaction(), account.IsOnDuty(), account.GetWantedLevel(), account.GetPoliceRank());
+		bool onRoster = EL_WhitelistManager.IsWhitelistedForFaction(account.GetPersistentId(), EL_EFactionType.POLICE);
+		return Encode(true, account.GetFaction(), account.IsOnDuty(), account.GetWantedLevel(), account.GetPoliceRank(), onRoster);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -74,6 +80,14 @@ class EL_AccountStateBits
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whitelisted for police. Only the duty desk offer reads it; the server re-checks the file.
+	static bool IsOnRoster(int state)
+	{
+		return HasAccount(state) && (state & ON_ROSTER) != 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Clocked in as police. The faction is the duty role, so POLICE means on duty.
 	static bool IsPolice(int state)
 	{
 		return HasAccount(state) && GetFaction(state) == EL_Faction.POLICE;

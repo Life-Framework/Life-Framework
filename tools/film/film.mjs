@@ -4,7 +4,7 @@
 //
 //   node tools/film/film.mjs fetch [--zip <path>]
 //   node tools/film/film.mjs probe
-//   node tools/film/film.mjs record (--window <title> | --region x,y,w,h | --desktop)
+//   node tools/film/film.mjs record (--window <title> [--pid N] | --region x,y,w,h | --desktop)
 //        [--seconds 10] [--fps 30] [--method ddagrab|gdigrab] [--encoder <name>]
 //        [--out <file.mp4>] [--no-preview]
 //   node tools/film/film.mjs flow <agent-box flow> (--window <title> | --region ...)
@@ -20,7 +20,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, copyFileSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -209,7 +209,7 @@ function pickEncoderSafe(text, name) {
 
 // Window rectangle in physical pixels (DPI-aware), plus the monitor index
 // ddagrab needs. Windows only; uses user32 through PowerShell.
-export function windowRect(title) {
+export function windowRect(title, pid = 0) {
   if (process.platform !== "win32") throw new Error("window lookup is Windows-only; pass --region");
   const script = `
 $ErrorActionPreference = 'Stop'
@@ -228,6 +228,8 @@ public static class FilmWin {
 Add-Type -AssemblyName System.Windows.Forms
 # An exact title wins: "Arma Reforger" must not pick "Arma Reforger Workbench".
 $w = Get-Process | Where-Object { $_.MainWindowHandle -ne 0 }
+# A session runs two clients with the same title; FILM_PID picks one.
+if ($env:FILM_PID -ne '0') { $w = $w | Where-Object { $_.Id -eq [int]$env:FILM_PID } }
 $p = $w | Where-Object { $_.MainWindowTitle -eq $env:FILM_EXACT } | Select-Object -First 1
 if (-not $p) { $p = $w | Where-Object { $_.MainWindowTitle -like $env:FILM_TITLE } | Select-Object -First 1 }
 if (-not $p) { Write-Output 'none'; exit 0 }
@@ -250,7 +252,7 @@ Write-Output ("{0} {1} {2} {3} {4} {5} {6} {7}" -f ($pt.X - $ox), ($pt.Y - $oy),
   const run = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", script], {
     windowsHide: true,
     encoding: "utf8",
-    env: { ...process.env, FILM_EXACT: title, FILM_TITLE: title.includes("*") ? title : `*${title}*` },
+    env: { ...process.env, FILM_PID: String(pid || 0), FILM_EXACT: title, FILM_TITLE: title.includes("*") ? title : `*${title}*` },
   });
   const line = (run.stdout || "").trim().split(/\r?\n/).pop() || "";
   if (!line || line === "none") throw new Error(`no visible window matching "${title}"`);
@@ -309,7 +311,7 @@ function ddagrabDelivers(ffPath, source) {
 function planCapture(ffPath, flags) {
   let source = sourceFromFlags(flags);
   let method = flags.method || (hasFilter(ffPath, "ddagrab") ? "ddagrab" : "gdigrab");
-  if (source.kind === "window") source = windowRect(source.title);
+  if (source.kind === "window") source = windowRect(source.title, Number(flags.pid || 0));
   source = applyOutputOverride(source);
   if (method === "ddagrab" && !flags.method && !ddagrabDelivers(ffPath, source)) {
     console.log("ddagrab delivered no frame in 5 s; falling back to gdigrab");
@@ -371,6 +373,39 @@ function record(flags) {
 
 function sleep(ms) {
   return new Promise((done) => setTimeout(done, ms));
+}
+
+// Starts an open-ended recording and returns { out, plan, stop() }. stop()
+// sends "q" so ffmpeg finalises the mp4. ffmpeg's log goes to a file, not a
+// pipe: a synchronous caller (the journey) blocks the event loop for minutes
+// and a full stderr pipe would stall the encoder.
+export function startRecording(flags) {
+  const ff = ffmpegOrThrow();
+  const plan = planCapture(ff.path, flags);
+  mkdirSync(OUT_DIR, { recursive: true });
+  const out = resolve(flags.out || join(OUT_DIR, stampName(flags.label || "clip") + ".mp4"));
+  const logFd = openSync(out.replace(/\.mp4$/i, ".ffmpeg.log"), "w");
+  const child = spawn(ff.path, buildRecordArgs({ ...plan, out }), { windowsHide: true, stdio: ["pipe", "ignore", logFd] });
+  const exited = new Promise((done) => child.on("exit", (code) => done(code)));
+  return {
+    out,
+    plan,
+    async stop() {
+      child.stdin.write("q");
+      child.stdin.end();
+      const code = await Promise.race([exited, sleep(15000).then(() => "timeout")]);
+      if (code === "timeout") child.kill();
+      closeSync(logFd);
+      const ok = code === 0 && existsSync(out);
+      let preview = "";
+      if (ok) {
+        try {
+          preview = makePreview(ff.path, out);
+        } catch {}
+      }
+      return { ok, code, out, preview };
+    },
+  };
 }
 
 // Record while an agent-box flow plays. ffmpeg runs open-ended and is stopped

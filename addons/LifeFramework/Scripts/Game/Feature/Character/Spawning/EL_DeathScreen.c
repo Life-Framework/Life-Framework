@@ -5,7 +5,7 @@
 //! it fell with everything it carried.
 //!
 //! Deliberately a workspace widget (not a MenuManager menu) for the same reason as
-//! EL_FactionSelectionMenu: in a Workbench play session OpenMenu leaves the menu root
+//! LF_UIScreen: in a Workbench play session OpenMenu leaves the menu root
 //! orphaned. While open, the vanilla MenuContext is re-activated every frame so a cursor
 //! appears and the button can be clicked.
 class EL_DeathScreen

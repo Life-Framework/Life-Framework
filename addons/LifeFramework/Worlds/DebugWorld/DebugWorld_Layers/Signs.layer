@@ -68,13 +68,22 @@ GenericEntity Sign_Garage : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board
  coords 242.5 0 254.5
  angleY 180
 }
+GenericEntity Sign_Impound : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "impound"
+  }
+ }
+ coords 243 0 268.5
+ angleY 180
+}
 GenericEntity Sign_PoliceStation : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
  components {
   LF_SignComponent "{44FC6FF960E3CDE5}" {
    m_sSignId "police_station"
   }
  }
- coords 226.3 0 246.5
+ coords 233.5 0 247.5
 }
 GenericEntity Sign_PoliceWhitelist : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
  coords 220.5 0 246.5
