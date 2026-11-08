@@ -39,7 +39,6 @@ Do not spend the evening on these; they are filed or being worked. Full list: [p
 
 - Esc does not close the wanted card, or the org ledger right after founding; use its button or walk away (#199).
 - The arrest now moves the prisoner on your client; it was fixed after the last check, so say whether you end up in the cell.
-- The police station layout and sign titles are being redone by another change: until it lands, the desk and wanted board stand on the lawn and sign titles are small from the road.
 - Some NPCs may appear half-dressed.
 - Fuel delivery opens after five parcel runs and the taxi after fifteen runs in all (#156).
 

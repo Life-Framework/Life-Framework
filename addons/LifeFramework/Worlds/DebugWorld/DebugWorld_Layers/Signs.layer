@@ -225,17 +225,17 @@ GenericEntity Sign_Hideout : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chal
  coords 296.5 0 299
  angleY 90
 }
-GenericEntity Sign_StoreChalk : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+GenericEntity Sign_StoreChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
  components {
-  LF_SignComponent "{82B1E805004F28DE}" {
+  LF_SignComponent "{DF6A14A1AD2B41F0}" {
    m_sSignId "general_store"
   }
  }
  coords 175.4 0 243.2
 }
-GenericEntity Sign_MarketChalk : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+GenericEntity Sign_MarketChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
  components {
-  LF_SignComponent "{82B1E805004F28DE}" {
+  LF_SignComponent "{DF6A14A1AD2B41F0}" {
    m_sSignId "traders"
   }
  }

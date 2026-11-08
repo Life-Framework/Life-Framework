@@ -63,12 +63,14 @@ Each type is a vanilla sign body whose face material is `LF_SignFace.emat` (`$re
 
 | Prefab | Vanilla body | Face area (units of the 1024 x 1024 target the UVs show) | Used for |
 |---|---|---|---|
-| `LF_Sign_Plate` | `SignWall_01_115x67` | 1024 x 596 | police, post office, ATM, garage, jail, hospital, organization office |
+| `LF_Sign_Plate` | `SignWall_01_115x67` | 1024 x 596 | police (blue), post office (yellow, beside the post box), ATM, garage, jail, hospital (beside a red cross), organization office |
 | `LF_Sign_PlateSmall` | `SignWall_01_90x45` | 1024 x 512 | spare; reads only up close |
 | `LF_Sign_Fascia` | `SignCommercial_01` (4.3 m) | 1024 x 213 | bank, general store |
-| `LF_Sign_Posts` | `SignLarge_01` on two posts | 1024 x 1024 | town map, market, vehicle lot |
+| `LF_Sign_Posts` | `SignLarge_01` on two posts | 1024 x 700 | town map, market, vehicle lot |
 | `LF_Sign_PolePlate` | `SignGeneric_01` on `Sign_Pole_A` (`m_bFaceOnChild`) | 1024 x 1024 | safe zones, impound, fuel, farm |
-| `LF_Sign_Board` | cork `NoticeBoardCork_01` | turned A4 sheet | notices: wanted board, hideout, convoy |
+| `LF_Sign_Board` | cork `NoticeBoardCork_01` | turned A4 sheet | notices: wanted board (in the station porch), convoy |
+| `LF_Sign_Pub` | `SignPub_01` A-frame | none (painted body) | general store and market pavement boards |
+| `LF_Sign_Chalkboard` | `ChalkBoard_01` | none | contraband barn (hideout), back room |
 
 Faces read from the body's local +Z. Wall plates are centred on their origin (back at -0.002 m): place them on the
 facade with the face out; the fascia's origin is its bottom edge. A placement sets `m_vRimColor`, `m_vPaintColor`,

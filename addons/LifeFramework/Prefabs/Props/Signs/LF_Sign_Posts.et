@@ -16,9 +16,9 @@ GenericEntity : "{48C842DD171DE304}Prefabs/Structures/Signs/Large/SignLarge_01_b
    m_bFaceOnOwner 1
    m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
    m_vTitlePos 80 80 0
-   m_vTitleSize 864 864 0
+   m_vTitleSize 864 520 0
    m_iTitleFontMax 260
-   m_vFaceArea 1024 1024 0
+   m_vFaceArea 1024 700 0
    m_fRimWidth 40
   }
   ActionsManagerComponent "{E98B19291CF15797}" {
