@@ -202,17 +202,13 @@ class EL_ScreenshotCapture : Managed
 		if (!s_ActiveShot)
 			return;
 
-<<<<<<< HEAD
-		// MakeScreenshot writes a BMP; the harness converts it to the .png it reports.
-=======
 		// A game client writes .bmp, Workbench play writes .png: accept either.
->>>>>>> origin/main
 		string path = s_ActiveShot.OutPath + ".png";
 		if (!FileIO.FileExists(path) && FileIO.FileExists(s_ActiveShot.OutPath + ".bmp"))
 			path = s_ActiveShot.OutPath + ".bmp";
 
 		string result;
-		if (FileIO.FileExists(path) || FileIO.FileExists(s_ActiveShot.OutPath + ".bmp"))
+		if (FileIO.FileExists(path))
 		{
 			result = "ok";
 			EL_Debug.Log(FEATURE, string.Format("captured %1", path));
