@@ -1,0 +1,57 @@
+GenericEntity : "{2F5C4F11D17E1725}Prefabs/Structures/Signs/Generic/SignGeneric_Pole_Base.et" {
+ ID "03F04453A789D19F"
+ components {
+  SCR_DestructionMultiPhaseComponent "{5496C1EF00137501}" {
+   Enabled 0
+  }
+  LF_SignComponent "{026619B31213409D}" {
+   m_bFaceOnOwner 0
+   m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+   m_vTitlePos 60 60 0
+   m_vTitleSize 904 904 0
+   m_iTitleFontMax 260
+   m_vFaceArea 1024 1024 0
+   m_fRimWidth 40
+   m_bFaceOnChild 1
+  }
+  ActionsManagerComponent "{C2AEC892676B4809}" {
+   ActionContexts {
+    UserActionContext "{B4A2CE3EDC23BE08}" {
+     ContextName "LF_Sign"
+     Position PointInfo "{8B383D190F95EAEC}" {
+      Offset 0 2 0.1
+     }
+     Radius 0.8
+    }
+   }
+   additionalActions {
+    LF_SignReadAction "{A5C2DF9D592A6900}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+ {
+  GenericEntity Plate : "{08AA534B2E4BB7FD}Prefabs/Structures/Signs/Generic/SignGeneric_01_Base.et" {
+   ID "1C029F20EB7727EE"
+   components {
+    MeshObject "{54969A6AAAADA251}" {
+     Materials {
+      MaterialAssignClass "{DBF2C3E7FEB0452C}" {
+       SourceMaterial "SignGeneric_01"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    SCR_DestructionMultiPhaseComponent "{5496C1EF00137501}" {
+     Enabled 0
+    }
+    Hierarchy "{56E4C4935E03B637}" {
+     PivotID "socket_sign_01"
+    }
+   }
+  }
+ }
+}

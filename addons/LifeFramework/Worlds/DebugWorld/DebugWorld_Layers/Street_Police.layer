@@ -1,6 +1,6 @@
 GenericEntity Roadmap_Police_Desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
  Flags 0x403 0
- coords 229.9 0 238.6
+ coords 232.9 0 239.6
 }
 GenericEntity Roadmap_Police_Armory {
  components {
@@ -49,5 +49,6 @@ GenericEntity Roadmap_Police_Armory {
  coords 231.9 0 238.2
 }
 GenericEntity Roadmap_Police_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
- coords 236.6 0 241.45
+ coords 234.72 0 239.5
+ angleY -90
 }

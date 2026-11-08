@@ -1,0 +1,65 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{1EB3FEE9574426CB}" {
+  SizeX 1024
+  OffsetRight -1024
+  SizeY 1024
+  OffsetBottom -1024
+ }
+ {
+  RTTextureWidgetClass "{DCA71CCECD33B50B}" {
+   Name "RTTexture0"
+   Slot FrameWidgetSlot "{A8B7008A98B965CC}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 1024
+    OffsetRight -1024
+    SizeY 1024
+    OffsetBottom -1024
+   }
+   {
+    ImageWidgetClass "{395712BA7BFAF43F}" {
+     Name "Rim"
+     Slot FrameWidgetSlot "{A6C8ECAD22E6C0F8}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 1 1 1 1
+    }
+    ImageWidgetClass "{F778A31B969B860F}" {
+     Name "Paint"
+     Slot FrameWidgetSlot "{3BD77C9C7366CDFC}" {
+      Anchor 0 0 1 1
+      OffsetLeft 24
+      OffsetTop 24
+      OffsetRight -24
+      OffsetBottom -24
+     }
+     Color 0.1 0.2 0.5 1
+    }
+    TextWidgetClass "{2880A6F78ED1C36D}" {
+     Name "Title"
+     Slot FrameWidgetSlot "{33DDF31EE0AC5C5E}" {
+      Anchor 0 0 1 1
+      OffsetLeft 40
+      OffsetTop 40
+      OffsetRight -40
+      OffsetBottom -40
+     }
+     Color 1 1 1 1
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{40833A7F50A81601}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

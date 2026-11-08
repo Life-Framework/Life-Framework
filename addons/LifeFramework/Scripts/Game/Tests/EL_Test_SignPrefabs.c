@@ -18,8 +18,18 @@ class EL_Test_SignPrefabs : EL_Test
 			"{70924D289627911B}Prefabs/Props/Signs/LF_Sign_Notice.et",
 			"{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et",
 			"{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et",
-			"{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et"
+			"{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et",
+			"{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et",
+			"{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et",
+			"{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+			"{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et",
+			"{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et"
 		};
+
+		Resource paintLayout = Resource.Load("{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout");
+		ctx.True(paintLayout && paintLayout.IsValid(), "the painted face layout loads");
+		Resource boardLayout = Resource.Load("{FE97102988E1EC48}UI/Layouts/Signs/LF_SignBoardFace.layout");
+		ctx.True(boardLayout && boardLayout.IsValid(), "the cork board face layout loads");
 
 		foreach (ResourceName path : prefabs)
 		{

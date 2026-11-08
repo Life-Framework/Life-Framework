@@ -797,7 +797,7 @@ function selftest() {
   // AppleTrader 197 0 240.6 plus the container's -2.6 0.9 0.7.
   if (!apple || apple.x !== 194.4 || apple.z !== 241.3) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
   const police = findPad(list, "Roadmap_Police_Desk");
-  if (!police || police.x !== 229.9 || police.z !== 238.6 || !police.actions.includes("EL_DutyAction")) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
+  if (!police || police.x !== 232.9 || police.z !== 239.6 || !police.actions.includes("EL_DutyAction")) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
   const pile = findPad(list, "CementPile_Debug");
   if (!pile || !pile.actions.includes("EL_GatherAction")) throw new Error("CementPile_Debug gather missing");
   const ore = findPad(list, "IronOre_Debug");

@@ -14,7 +14,6 @@ class LF_SignComponent : ScriptComponent
 {
 	static const ResourceName FACE_PREFAB = "{B7765F4913B42527}Prefabs/Props/Signs/LF_SignFace.et";
 	static const ResourceName FACE_LAYOUT = "{ED05AC4807160345}UI/Layouts/Signs/LF_SignFace.layout";
-	static const ResourceName BOARD_FACE_LAYOUT = "{FE97102988E1EC48}UI/Layouts/Signs/LF_SignBoardFace.layout";
 	// LF_SignFace.layout: RTTexture0 size, Title margin, Title font size.
 	static const float FACE_WIDTH = 512;
 	static const float FACE_HEIGHT = 724;
@@ -62,11 +61,38 @@ class LF_SignComponent : ScriptComponent
 	[Attribute("1", UIWidgets.EditBox, "Sheet scale. 1 is an A4 sheet (0.21 x 0.30 m)")]
 	protected float m_fFaceScale;
 
-	[Attribute("0", UIWidgets.CheckBox, "Paint the title across the whole face (LF_SignBoardFace.layout) on a sheet turned on its side; the title turns by m_fTitleRotation. Off: a printed paper sheet")]
-	protected bool m_bPaintedFace;
+	[Attribute("", UIWidgets.ResourceNamePicker, "Painted face layout (RTTexture0 with a Title text). Empty: the printed paper sheet (LF_SignFace.layout)", "layout")]
+	protected ResourceName m_sFaceLayout;
 
-	[Attribute("90", UIWidgets.EditBox, "Painted face: title rotation in degrees, so it reads level on the turned sheet")]
+	[Attribute("0", UIWidgets.EditBox, "Painted face: title rotation in degrees, so it reads level on a sheet turned on its side")]
 	protected float m_fTitleRotation;
+
+	[Attribute("-66 152 0", UIWidgets.EditBox, "Painted face: title box top-left before rotation, layout units")]
+	protected vector m_vTitlePos;
+
+	[Attribute("644 420 0", UIWidgets.EditBox, "Painted face: title box size before rotation, layout units")]
+	protected vector m_vTitleSize;
+
+	[Attribute("180", UIWidgets.EditBox, "Painted face: largest title font, layout units")]
+	protected int m_iTitleFontMax;
+
+	[Attribute("0 0 0", UIWidgets.EditBox, "Painted face: the part of the target the mesh shows (width height, layout units from the top-left). Set, it sizes the Rim and Paint images of the layout and colours them; zero leaves the layout as authored")]
+	protected vector m_vFaceArea;
+
+	[Attribute("24", UIWidgets.EditBox, "Painted face: rim width, layout units")]
+	protected float m_fRimWidth;
+
+	[Attribute("1 1 1", UIWidgets.ColorPicker, "Painted face: rim colour (RGB 0..1)")]
+	protected vector m_vRimColor;
+
+	[Attribute("0.1 0.2 0.5", UIWidgets.ColorPicker, "Painted face: paint colour (RGB 0..1)")]
+	protected vector m_vPaintColor;
+
+	[Attribute("1 1 1", UIWidgets.ColorPicker, "Painted face: lettering colour (RGB 0..1)")]
+	protected vector m_vTextColor;
+
+	[Attribute("0", UIWidgets.CheckBox, "The face is the first child entity's mesh (a plate on a pole), not the owner's")]
+	protected bool m_bFaceOnChild;
 
 	protected ref LF_SignDef m_Sign;
 	protected bool m_bResolved;
@@ -159,6 +185,19 @@ class LF_SignComponent : ScriptComponent
 		if (!workspace)
 			return;
 
+		if (m_bFaceOnChild)
+		{
+			IEntity plate = owner.GetChildren();
+			if (!plate)
+			{
+				EL_Debug.Error("Signs", "sign " + m_sSignId + " paints its child but has none");
+				return;
+			}
+
+			PrintOn(plate, workspace, sign);
+			return;
+		}
+
 		if (m_bFaceOnOwner)
 		{
 			PrintOn(owner, workspace, sign);
@@ -213,7 +252,7 @@ class LF_SignComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	//! The title box and font on a game client, in layout units (a game client
 	//! scales the widgets inside the target like any widget).
-	//! param text The printed title, capitals.
+	//! \param text The printed title, capitals.
 	//! eturn Font size: 96, or less so the longest word fits the shown width.
 	static int ClientTitleRect(string text, out vector pos, out vector size)
 	{
@@ -240,39 +279,44 @@ class LF_SignComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The painted board title: the biggest font at which the title, broken into
-	//! lines at spaces, fits the board's title box. The box is laid out before the
-	//! rotation, centred on the shown part of the sheet.
+	//! A painted title: the biggest font, up to fontMax, at which the title, broken
+	//! into lines at spaces, fits a box of width x height layout units (before
+	//! any rotation).
 	//! \param text The printed title, capitals.
 	//! \param[out] lines The title with a line break where it wraps.
-	//! \param[out] pos Title box position before rotation, layout units from the target's top-left.
-	//! \param[out] size Title box size before rotation, layout units.
 	//! \return Font size.
-	static int BoardTitleFit(string text, out string lines, out vector pos, out vector size)
+	static int PaintedTitleFit(string text, float width, float height, int fontMax, out string lines)
 	{
-		pos = Vector(BOARD_SHOWN_WIDTH * 0.5 - BOARD_TEXT_WIDTH * 0.5, BOARD_SHOWN_HEIGHT * 0.5 - BOARD_TEXT_HEIGHT * 0.5, 0);
-		size = Vector(BOARD_TEXT_WIDTH, BOARD_TEXT_HEIGHT, 0);
-
 		array<string> words = {};
 		text.Split(" ", words, true);
 		lines = text;
 		if (words.IsEmpty())
-			return BOARD_FONT_MAX;
+			return fontMax;
 
-		for (int font = BOARD_FONT_MAX; font > BOARD_FONT_MIN; font--)
+		for (int font = fontMax; font > BOARD_FONT_MIN; font--)
 		{
-			int maxChars = Math.Floor(BOARD_TEXT_WIDTH / (CLIENT_EM_PER_CHAR * font));
+			int maxChars = Math.Floor(width / (CLIENT_EM_PER_CHAR * font));
 			int count = WrapWords(words, maxChars, lines);
-			if (count > 0 && count * font * BOARD_LINE_HEIGHT <= BOARD_TEXT_HEIGHT)
+			if (count > 0 && count * font * BOARD_LINE_HEIGHT <= height)
 				return font;
 		}
 
-		int minChars = Math.Floor(BOARD_TEXT_WIDTH / (CLIENT_EM_PER_CHAR * BOARD_FONT_MIN));
+		int minChars = Math.Floor(width / (CLIENT_EM_PER_CHAR * BOARD_FONT_MIN));
 		int last = WrapWords(words, minChars, lines);
 		if (last <= 0)
 			lines = text;
 
 		return BOARD_FONT_MIN;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cork board's painted title (LF_Sign_Board): its box is centred on the
+	//! shown part of the turned sheet.
+	static int BoardTitleFit(string text, out string lines, out vector pos, out vector size)
+	{
+		pos = Vector(BOARD_SHOWN_WIDTH * 0.5 - BOARD_TEXT_WIDTH * 0.5, BOARD_SHOWN_HEIGHT * 0.5 - BOARD_TEXT_HEIGHT * 0.5, 0);
+		size = Vector(BOARD_TEXT_WIDTH, BOARD_TEXT_HEIGHT, 0);
+		return PaintedTitleFit(text, BOARD_TEXT_WIDTH, BOARD_TEXT_HEIGHT, BOARD_FONT_MAX, lines);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -319,13 +363,43 @@ class LF_SignComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Size and colour the painted face: Rim fills the part of the target the mesh shows,
+	//! Paint sits inside it by the rim width, and the title takes the lettering colour.
+	protected void PaintFace(TextWidget title)
+	{
+		title.SetColor(Color.FromVector(m_vTextColor));
+		if (m_vFaceArea[0] <= 0 || m_vFaceArea[1] <= 0)
+			return;
+
+		Widget rim = m_wFaceRoot.FindAnyWidget("Rim");
+		Widget paint = m_wFaceRoot.FindAnyWidget("Paint");
+		if (!rim || !paint)
+		{
+			EL_Debug.Error("Signs", "painted face layout is missing Rim or Paint: " + m_sSignId);
+			return;
+		}
+
+		FrameSlot.SetAnchorMin(rim, 0, 0);
+		FrameSlot.SetAnchorMax(rim, 0, 0);
+		FrameSlot.SetPos(rim, 0, 0);
+		FrameSlot.SetSize(rim, m_vFaceArea[0], m_vFaceArea[1]);
+		rim.SetColor(Color.FromVector(m_vRimColor));
+
+		FrameSlot.SetAnchorMin(paint, 0, 0);
+		FrameSlot.SetAnchorMax(paint, 0, 0);
+		FrameSlot.SetPos(paint, m_fRimWidth, m_fRimWidth);
+		FrameSlot.SetSize(paint, m_vFaceArea[0] - 2 * m_fRimWidth, m_vFaceArea[1] - 2 * m_fRimWidth);
+		paint.SetColor(Color.FromVector(m_vPaintColor));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Lay out the painted board title, turned to read level on the turned sheet.
 	protected void FitBoardTitle(TextWidget title, string text, float dpiScale, bool workbench)
 	{
 		string lines;
-		vector pos;
-		vector size;
-		int font = BoardTitleFit(text, lines, pos, size);
+		vector pos = m_vTitlePos;
+		vector size = m_vTitleSize;
+		int font = PaintedTitleFit(text, size[0], size[1], m_iTitleFontMax, lines);
 
 		// Workbench renders the target at the layout size times the DPI scale
 		// while the widgets inside lay out one unit per pixel (FaceTitleRect).
@@ -333,10 +407,17 @@ class LF_SignComponent : ScriptComponent
 		if (workbench && dpiScale > 0)
 			scale = dpiScale;
 
+		// A turned text is still clipped to the widget's unturned rectangle, so
+		// the widget is a square around the box: the lines fit the box, the clip
+		// covers them at any turn.
+		float side = Math.Max(size[0], size[1]);
+		float left = pos[0] + size[0] * 0.5 - side * 0.5;
+		float top = pos[1] + size[1] * 0.5 - side * 0.5;
+
 		FrameSlot.SetAnchorMin(title, 0, 0);
 		FrameSlot.SetAnchorMax(title, 0, 0);
-		FrameSlot.SetPos(title, pos[0] * scale, pos[1] * scale);
-		FrameSlot.SetSize(title, size[0] * scale, size[1] * scale);
+		FrameSlot.SetPos(title, left * scale, top * scale);
+		FrameSlot.SetSize(title, side * scale, side * scale);
 		title.SetExactFontSize(Math.Round(font * scale));
 		title.SetTextWrapping(false);
 		title.SetPivot(0.5, 0.5);
@@ -366,8 +447,8 @@ class LF_SignComponent : ScriptComponent
 	protected void PrintOn(IEntity target, WorkspaceWidget workspace, LF_SignDef sign)
 	{
 		ResourceName layout = FACE_LAYOUT;
-		if (m_bPaintedFace)
-			layout = BOARD_FACE_LAYOUT;
+		if (!m_sFaceLayout.IsEmpty())
+			layout = m_sFaceLayout;
 
 		m_wFaceRoot = workspace.CreateWidgets(layout);
 		if (!m_wFaceRoot)
@@ -391,8 +472,9 @@ class LF_SignComponent : ScriptComponent
 		workbench = true;
 		#endif
 		string text = FaceText(sign);
-		if (m_bPaintedFace)
+		if (!m_sFaceLayout.IsEmpty())
 		{
+			PaintFace(title);
 			FitBoardTitle(title, text, workspace.DPIScale(1), workbench);
 		}
 		else

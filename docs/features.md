@@ -1484,6 +1484,8 @@
   pay, cooldowns). WORLD `signs/coverage`: every placed sign resolves a titled
   catalog row, every catalog row is placed, and each title and What resolves.
 - ✅ `EL_MiningSign` reads `mining` (`Read: Mining area`) and `EL_WhitelistSign` reads `police_whitelist` beside its whitelist action. `EL_TextLabelComponent` (floating debug text) is deleted.
+- ✅ **Signs belong to the building** (M1 polish, 2026-11-08). Nothing official stands on the grass any more. Building signs are vanilla sign bodies with the title painted on their own face: `LF_Sign_Plate` (enamel wall plate, `SignWall_01_115x67`: police by the porch, garage, jail, hospital, organization office), `LF_Sign_PlateSmall` (`SignWall_01_90x45`: post office, ATM), `LF_Sign_Fascia` (shop fascia, `SignCommercial_01`, over the bank door and the general store front), `LF_Sign_Posts` (large board on two posts, `SignLarge_01`: town map, market, vehicle lot) and `LF_Sign_PolePlate` (plate on a pole: safe zones, impound, fuel, farm). Each carries `LF_SignComponent` with `m_bFaceOnOwner` (or `m_bFaceOnChild` for the pole plate) and `UI/Layouts/Signs/LF_SignPaintFace.layout`: Rim and Paint images sized to `m_vFaceArea` (the part of the target the mesh UVs show, measured with a quadrant test card on a 1080p client) and coloured per placement (`m_vRimColor`, `m_vPaintColor`, `m_vTextColor`). `PaintedTitleFit` picks the largest font at which the title, broken at spaces, fits the title box. The cork `LF_Sign_Board` keeps notices (wanted board under the police porch, hideout, convoy): its A4 sheet is turned on its side (`m_vFaceAngles 0 0 90`, scale 4.7) and the title turns 90 degrees with it; a turned text is clipped to its unturned rectangle, so the widget is a square around the box. Panel widgets do not draw inside a render target; the faces use image widgets. Harness `stand` puts the reader 1.4 m in front of a sign face (`EL_AgentHarness.SIGN_STAND_FRONT`), since beside a wall plate is inside the wall. LOGIC `signs/board-face`.
+- ✅ **Props match what they give** (M1 polish, 2026-11-08). The pub-terrace survival points were a hand pump that gave plums ("Tomar Ciruela") and a wooden box that gave apples ("Tomar Manzana"); they are now a plum tree (`SurvivalPoint_Water`) and an apple tree (`SurvivalPoint_Food`) whose gather prompt is the localized `Gather <fruit>`. `LogPile_Debug` had no mesh; it is a vanilla wood pile (`WoodPile_02_A`). The ATM prompt reads "ATM" (`#EL-ATM_Title`), not "ATM Machine".
 - ⚠️ MenuBack closes the card through the UI kit. The printed face, the card render, the prompt, and the walk-away close are not yet seen in a rendering client (manual steps in the M1-01 PR).
 
 ## Quests
@@ -1605,8 +1607,8 @@
   old police duty table (`PoliceStation`, `PoliceStation_Debug`) and the
   whitelist table (`WhitelistStation`) moved into the annex (100 0 40 and
   100 0 52, names kept). The daylight blue kerosene lamps left the market,
-  quarry, forest, and pub tables. The pub's survival points are a crate
-  (`SurvivalPoint_Food`) and a hand pump (`SurvivalPoint_Water`) instead of a
+  quarry, forest, and pub tables. The pub's survival points are an apple tree
+  (`SurvivalPoint_Food`) and a plum tree (`SurvivalPoint_Water`) instead of a
   fridge and a US water trailer. `Village_Dressing` adds 98 vanilla props:
   bins, planters and flower boxes, a poster column and notice boards, the bus
   stop sign, hydrants, benches, shop crates, a garbage container, yards with a
