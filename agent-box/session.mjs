@@ -607,7 +607,7 @@ async function runTicketProof() {
     must(waitText(2, "POLICE TICKET"), "the ticket pad");
     if (shot) on(2, { verb: "capture", mode: "ui", name: shot }, 25000);
     on(2, { verb: "ui", mode: "text" });
-    must(on(2, { verb: "click", widget: `TicketOffence${offenceRow}_Action` }), `offence row ${offenceRow}`);
+    must(on(2, { verb: "click", widget: `TicketOffence${offenceRow}` }), `offence row ${offenceRow}`);
     wait(3000);
   };
 

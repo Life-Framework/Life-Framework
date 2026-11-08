@@ -4604,13 +4604,13 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{461AFE9329D0D247}" {
      Id "LF-Ticket_PadWrite"
-     Target_en_us "Write"
-     Comment "Button on an offence row of the ticket pad."
+     Target_en_us "Write: %1, %2"
+     Comment "Ticket pad button for one offence. %1 is the offence, %2 its fixed fine."
     }
     CustomStringTableItem "{2AF7CEA623158FD6}" {
      Id "LF-Ticket_PadAboveRank"
-     Target_en_us "%1, senior officers only"
-     Comment "Ticket pad row status above the officer's rank cap. %1 is the amount."
+     Target_en_us "%1, %2: senior officers only"
+     Comment "Ticket pad line for an offence above the officer's rank cap. %1 is the offence, %2 its fixed fine."
     }
     CustomStringTableItem "{406456BDD3AE8B75}" {
      Id "LF-Ticket_PadNote"

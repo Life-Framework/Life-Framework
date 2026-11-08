@@ -975,10 +975,10 @@
   decision 2026-11-08). An on-duty officer facing a player picks **Write ticket**
   (the `fine` slot of the player interaction menu, `LF_FineTicketRole`, no
   prefab edit). The server opens the ticket pad (`LF_FineTicketPad`, paper
-  `LF_UIScreen`) on the officer's machine: one row per offence from
-  `LF_Police.conf` `m_aTicketOffences` at its fixed amount; rows above the
+  `LF_UIScreen`) on the officer's machine: one "Write: <offence>, <amount>" button per offence from
+  `LF_Police.conf` `m_aTicketOffences` at its fixed amount; offences above the
   officer's rank cap (`LF_PoliceRanks.FineCap`: patrol 1000, senior 5000) print
-  "senior officers only" with no Write button. The server re-checks duty,
+  as a plain "senior officers only" line. The server re-checks duty,
   reach (2 m), the cap, and at most 3 unpaid tickets per holder, then hands
   over `Prefabs/Items/Roleplay/FineTicket.et`: number, date, holder, offence,
   amount, deadline, what it rises to, where to pay, officer rank and name. Cues:

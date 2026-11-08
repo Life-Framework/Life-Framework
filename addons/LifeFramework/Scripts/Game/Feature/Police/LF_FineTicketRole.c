@@ -296,11 +296,10 @@ class LF_FineTicketPayAction : ScriptedUserAction
 }
 
 //------------------------------------------------------------------------------------------------
-//! The ticket pad on the officer's machine: one row per offence at its fixed amount. Rows above
-//! the officer's rank cap are printed without a Write button. Client-only, on LF_UIScreen.
+//! The ticket pad on the officer's machine: one button per offence at its fixed amount. Offences
+//! above the officer's rank cap are printed as a plain line. Client-only, on LF_UIScreen.
 class LF_FineTicketPad
 {
-	static const string LIST = "TicketOffences";
 	static const string ROW_PREFIX = "TicketOffence";
 	static const float CLOSE_DISTANCE = 4;
 
@@ -311,13 +310,24 @@ class LF_FineTicketPad
 	protected RplId m_Target;
 
 	//------------------------------------------------------------------------------------------------
-	static array<ref LF_UIPart> BuildParts()
+	static array<ref LF_UIPart> BuildParts(int cap)
 	{
 		ref array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "TicketPadTitle", "#LF-Ticket_PadTitle"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "TicketPadTo", "#LF-Ticket_PadTo"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "TicketPadPick", "#LF-Ticket_PadPick"));
-		parts.Insert(LF_UIPart.CreateList(LIST));
+		array<ref LF_TicketOffence> offences = {};
+		LF_PoliceConfig.TicketOffences(offences);
+		foreach (int i, LF_TicketOffence offence : offences)
+		{
+			string name = WidgetManager.Translate(offence.m_sName);
+			string amount = EL_MoneyFormat.FormatMoney(offence.m_iAmount);
+			if (offence.m_iAmount > cap)
+				parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, RowName(i) + "Locked", WidgetManager.Translate("#LF-Ticket_PadAboveRank", name, amount)));
+			else
+				parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, RowName(i), WidgetManager.Translate("#LF-Ticket_PadWrite", name, amount)));
+		}
+
 		int minutes = LF_FineTicketRules.MinutesLeft(LF_PoliceConfig.TicketFirstDeadline());
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "TicketPadNote", WidgetManager.Translate("#LF-Ticket_PadNote", minutes)));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "TicketPadClose", "#LF-Ticket_PadClose"));
@@ -365,26 +375,11 @@ class LF_FineTicketPad
 		LF_FineTicketPad pad = new LF_FineTicketPad();
 		pad.m_Controller = controller;
 		pad.m_Target = target;
-		pad.m_Screen = LF_UIScreen.Open(BuildParts());
+		pad.m_Screen = LF_UIScreen.Open(BuildParts(cap));
 		if (!pad.m_Screen)
 		{
 			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket pad failed to open");
 			return null;
-		}
-
-		array<ref LF_TicketOffence> offences = {};
-		LF_PoliceConfig.TicketOffences(offences);
-		foreach (int i, LF_TicketOffence offence : offences)
-		{
-			string action = "#LF-Ticket_PadWrite";
-			string status = EL_MoneyFormat.FormatMoney(offence.m_iAmount);
-			if (offence.m_iAmount > cap)
-			{
-				action = string.Empty;
-				status = WidgetManager.Translate("#LF-Ticket_PadAboveRank", status);
-			}
-
-			pad.m_Screen.AddListRow(LIST, RowName(i), offence.m_sName, status, action);
 		}
 
 		pad.m_Screen.GetOnButton().Insert(pad.OnButton);
@@ -397,7 +392,7 @@ class LF_FineTicketPad
 			EL_Debug.Warn(LF_FineTickets.FEATURE, "ticket pad open without the person in this client's world; no distance close");
 
 		s_Pad = pad;
-		EL_Debug.Info(LF_FineTickets.FEATURE, string.Format("ticket pad open: %1 offences, cap %2", offences.Count(), cap));
+		EL_Debug.Info(LF_FineTickets.FEATURE, string.Format("ticket pad open, cap %1", cap));
 		return pad.m_Screen;
 	}
 
