@@ -1020,18 +1020,35 @@
   minimum. A file that does not resolve logs once and uses the same defaults.
   Test: `police/rank-permissions`.
 
-### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
-- ✅ One convoy. A member of the organization that owns the hideout hauls
-  `{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et` from
-  `Roadmap_Convoy_Start` at the barn out of town (`466 0 331`) to
-  `Roadmap_Convoy_Drop` in the hideout yard (`299 0 293`) on
-  `Street_Contraband.layer`. Both markers are pallet boxes carrying the marker
-  component, not debug boundaries. Delivery pays 200 MoneyStack cash once. A second
-  delivery on that run pays nothing. Leaving the vehicle or dying fails the
-  run and logs it; a failed run pays nothing. A non-member is refused and the
-  refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
+### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-11-08, M1-14)
+- ✅ One convoy. A member of the organization that owns the hideout performs
+  `Start convoy` at `Roadmap_Convoy_Start`, a pallet of wooden crates by the barn
+  out of town (`466 0 331`), and is handed a crate of spirits:
+  `{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et`, a
+  hand-carried item on `HandCarryItem_Base.et` with the vanilla
+  `BoxWooden_01.xob` mesh (carry pose `player_carry`, `SOUND_PICK_UP`). A member
+  already holding one keeps it; full hands log `pickup refused: hands full` and
+  toast `#LF-Contraband_HandsFull`. `Deliver contraband` at `Roadmap_Convoy_Drop`,
+  a pallet behind the pub on the square (`131.5 0 284`, off the farm lane), takes
+  the crate and pays 200 MoneyStack cash in hand once (`SOUND_PICK_UP`). A second
+  delivery on that run pays nothing. A non-member is refused and the refusal is
+  logged. The hideout machine also outputs the crate. Dressing on
+  `Street_Contraband.layer`: crates and a kerosene lamp on the pallet, a parked
+  vanilla `S1203_cargo_brown` van (`Convoy_Barn_Van`) at the barn; beer kegs,
+  empty crates, bottles, and a lamp at the pub's back door. Signs
+  `Sign_ConvoyPickup` and `Sign_ConvoyDrop` (`Signs.layer`) explain both ends.
   Player strings: `#EL-Contraband_Start`, `#EL-Contraband_Deliver`,
-  `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`.
+  `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`,
+  `#LF-Contraband_Loaded`, `#LF-Contraband_HandsFull`, `#LF-Contraband_Crate_Name`.
+- ✅ The vehicle the member is in at `Start convoy`, or the first one they get
+  into afterwards (`SCR_CompartmentAccessComponent.GetOnCompartmentEntered`), is
+  watched. Getting out of it within `LF_Contraband.DROP_RADIUS_M` (25 m) of the
+  drop ends the drive and keeps the run for the delivery (`convoy reached the
+  drop`); getting out anywhere else, or dying, fails the run and logs it; a
+  failed run pays nothing. WORLD `e2e/roadmap-contraband` covers the crate
+  (mesh, hand-carry, flagged) and both outcomes of getting out.
+- ⚠️ Not driven end to end by automation: whether a player can board with the
+  crate in hand or must stow it in the vehicle's cargo is a manual check.
 - ✅ **Vehicle watch lifetime** (2026-11-08): payment, failure, and
   `Reset` unregister the `OnCompartmentLeft` handler; a restarted run drops the
   old watch and watches the vehicle the player is in now. A disconnect fails the

@@ -1,3 +1,4 @@
+// red-proof: 2026-11-08 (M1-14) LF_Contraband.ITEM pointed back at RowanBerries.et, `tools\cli test --no-build --only EL_Test_Roadmap_Contraband,EL_Test_Roadmap_ContrabandWorld` printed [ELTEST] SUMMARY tier=only passed=0 failed=2 / - rowan berries are food again, not contraband / - the contraband crate is carried in both hands. Restored: passed=5 failed=0.
 // red-proof: 2026-10-11 fast boot logs_2026-10-11_05-19-01 printed [ELTEST] FAIL roadmap/contraband / [ELTEST]   - delivery pays the configured cash once (expected 0, got 200)
 
 // tier: LOGIC

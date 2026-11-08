@@ -132,8 +132,13 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
 
 // Small windows in a row along the top of the screen, so the user's desk
 // stays usable. -screenWidth/-screenHeight/-posX/-posY need -window.
+// LF_SESSION_WINDOW=1280x720 makes evidence-sized windows (they overlap when
+// there is more than one client).
 export function windowFor(n) {
-  return { x: (n - 1) * (WINDOW.width + WINDOW.gap), y: 0, width: WINDOW.width, height: WINDOW.height };
+  const m = /^(\d{3,4})x(\d{3,4})$/.exec(process.env.LF_SESSION_WINDOW || "");
+  const width = m ? Number(m[1]) : WINDOW.width;
+  const height = m ? Number(m[2]) : WINDOW.height;
+  return { x: (n - 1) * (width + WINDOW.gap), y: 0, width, height };
 }
 
 export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "" }) {

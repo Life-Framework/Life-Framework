@@ -104,8 +104,8 @@ GenericEntity : "{1CE762D0A53A395A}Prefabs/Props/Civilian/LampKerosene_01/LampKe
  coords 467.3 0.56 331.5
 }
 GenericEntity Convoy_Barn_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
- coords 459.5 0 327.5
- angleY 200
+ coords 474 0 324.5
+ angleY 170
 }
 GenericEntity : "{13B4C532861B9DE2}Prefabs/Props/Commercial/BeerKegMetal_01.et" {
  coords 129.8 0 285.6

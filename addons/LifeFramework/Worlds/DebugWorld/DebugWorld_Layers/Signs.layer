@@ -138,7 +138,7 @@ GenericEntity Sign_ConvoyDrop : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_B
    m_sSignId "convoy_drop"
   }
  }
- coords 296.5 0 293.5
+ coords 136.5 0 281.5
  angleY 90
 }
 GenericEntity Sign_ConvoyPickup : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {

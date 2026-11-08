@@ -3894,12 +3894,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F1237DCB347A4604}" {
      Id "LF-Sign_ConvoyPickup_What"
-     Target_en_us "Contraband waiting for a driver."
+     Target_en_us "Crates of untaxed spirits, waiting for a driver."
      Comment "Sign card for the convoy pickup at the barn out of town, What section."
     }
     CustomStringTableItem "{BDE5BBC474B685BE}" {
      Id "LF-Sign_ConvoyPickup_How"
-     Target_en_us "Start convoy here, drive to the hideout yard in the village, and Deliver contraband."
+     Target_en_us "Start convoy at the crates to take one, load it into a vehicle, drive to the back of the pub on the square, and Deliver contraband at the pallet there."
      Comment "Sign card for the convoy pickup at the barn out of town, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{1AD1E7DE6B2D2E35}" {
@@ -3909,33 +3909,33 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D9132B47493CAD58}" {
      Id "LF-Sign_ConvoyPickup_Rules"
-     Target_en_us "Pays $200 cash on delivery. Leave the vehicle or die on the way and the run fails."
+     Target_en_us "Pays "00 cash in hand on delivery. Once you are in a vehicle, getting out before the pub or dying fails the run."
      Comment "Sign card for the convoy pickup at the barn out of town, Rules section."
     }
     CustomStringTableItem "{AE84DE1019124F89}" {
      Id "LF-Sign_ConvoyDrop_Title"
      Target_en_us "Convoy drop"
-     Comment "Title of the sign at the convoy drop in the hideout yard. Printed on the board and shown in the prompt as Read: Convoy drop."
+     Comment "Title of the sign at the convoy drop behind the pub on the square. Printed on the board and shown in the prompt as Read: Convoy drop."
     }
     CustomStringTableItem "{22360C2BF0D6346C}" {
      Id "LF-Sign_ConvoyDrop_What"
-     Target_en_us "Where convoys from the barn unload."
-     Comment "Sign card for the convoy drop in the hideout yard, What section."
+     Target_en_us "The publican buys untaxed spirits at his back door."
+     Comment "Sign card for the convoy drop behind the pub on the square, What section."
     }
     CustomStringTableItem "{155AD337C15BEB65}" {
      Id "LF-Sign_ConvoyDrop_How"
-     Target_en_us "Drive in and Deliver contraband."
-     Comment "Sign card for the convoy drop in the hideout yard, How section. Capitalized phrases are the exact action names the player sees."
+     Target_en_us "Park here, carry the crate to the pallet, and Deliver contraband."
+     Comment "Sign card for the convoy drop behind the pub on the square, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{D786787F97399612}" {
      Id "LF-Sign_ConvoyDrop_Needs"
-     Target_en_us "A convoy started at the barn."
-     Comment "Sign card for the convoy drop in the hideout yard, Needs section."
+     Target_en_us "A crate of spirits from the barn out of town, taken with Start convoy."
+     Comment "Sign card for the convoy drop behind the pub on the square, Needs section."
     }
     CustomStringTableItem "{04B65C3DAC7EE49E}" {
      Id "LF-Sign_ConvoyDrop_Rules"
      Target_en_us "One payment per run."
-     Comment "Sign card for the convoy drop in the hideout yard, Rules section."
+     Comment "Sign card for the convoy drop behind the pub on the square, Rules section."
     }
     CustomStringTableItem "{216366F2B6AA2C9F}" {
      Id "LF-Sign_Farm_Title"
