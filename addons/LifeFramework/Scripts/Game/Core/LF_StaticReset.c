@@ -30,6 +30,7 @@ class LF_StaticReset
 		LF_Introductions.ResetStatics();
 		LF_KnownNames.ResetStatics();
 		LF_Dispatch.ResetStatics();
+		LF_FineTickets.ResetStatics();
 		LF_OrgInvites.Reset();
 
 		s_iRuns = s_iRuns + 1;
