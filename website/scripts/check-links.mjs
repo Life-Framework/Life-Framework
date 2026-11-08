@@ -17,7 +17,7 @@ const REPO_PREFIX = /^https:\/\/github\.com\/Life-Framework\/Life-Framework\/(?:
 const external = process.argv.includes("--external");
 // Repo files another open change is adding. A link to one warns instead of failing; delete the
 // entry once the file is on main.
-const PENDING = new Set(["docs/architecture/core-vs-pack.md"]);
+const PENDING = new Set([]);
 
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
 const pages = walk(dist).filter((f) => f.endsWith(".html"));

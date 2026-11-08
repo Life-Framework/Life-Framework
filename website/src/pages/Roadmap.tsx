@@ -22,10 +22,10 @@ const Roadmap = () => {
       </div>
 
       <Section id="milestones" kicker="M1 to M5" title="The milestones">
-        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:items-start">
-          <div className="space-y-4 muted lg:sticky lg:top-28">
+        <div className="grid gap-8">
+          <div className="grid gap-x-10 gap-y-4 muted md:grid-cols-2 lg:grid-cols-3 lg:items-start">
             <p>
-              Every issue is tagged <LayerTag layer="Core" /> or <LayerTag layer="Flagship" />. The core decides what the game can do.
+              Every branch is tagged <LayerTag layer="Core" /> or <LayerTag layer="Flagship" />. The core decides what the game can do.
               It holds the systems any server can run. The flagship pack decides what our server is. It holds the places, names,
               prices, period look, vehicle catalogue, and story of 1989 Everon.
             </p>
@@ -33,7 +33,10 @@ const Roadmap = () => {
               Today both live in one addon. M3 splits them into two Workshop items, the <code>LifeFramework</code> core and the{" "}
               <code>LF_Everon1989</code> pack, so another community can swap our pack for their own and keep the core.
             </p>
-            <p>An epic opens to show its sub-issues in order. Click one to read it on GitHub.</p>
+            <p>
+              Each epic is a branch, with its sub-issues listed in build order. ✓ is done, ◐ has someone on it, ○ is open. An item shows a tag
+              only when its side differs from its branch. Click one to read it on GitHub.
+            </p>
             <p>
               <GoLink to={CORE_VS_PACK_URL}>Core vs pack</GoLink>
             </p>

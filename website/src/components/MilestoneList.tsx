@@ -10,27 +10,29 @@ import {
   type Issue,
   type Layer,
   type Milestone,
-  type SubIssue,
 } from "@/lib/content";
 
-// "M2 epic: Moderation (incident log + Game Master tools)" -> "Moderation (incident log + Game Master tools)"
-const shortTitle = (t: string) => {
-  // Also drops a sub-issue's "M2-Moderation:" prefix; the epic above it already says so.
-  const s = splitTitle(t)
-    .title.replace(/^M\d+\s+(?:epic|flagship):\s*/i, "")
-    .replace(/^M\d+-[A-Za-z][\w &]*:\s*/, "")
-    .replace(/\s*\(M\d+\)$/, "");
-  // Capitalize a plain first word ("relocated"), not a command or path ("tools\cli").
-  return /^[a-z]+(?=\s)/.test(s) ? s.charAt(0).toUpperCase() + s.slice(1) : s;
-};
-const isEpic = (i: Issue) => (i.subIssues?.length ?? 0) > 0 || i.labels.includes("epic");
+// "M2-Medic: Downed state on lethal damage" -> { area: "Medic", name: "Downed state on lethal damage" }.
+// Other titles lose only their milestone markers: "M2 epic: ", "M1: M1-24 ", " (M2)".
+function parseTitle(t: string): { area: string | null; name: string } {
+  const m = /^M\d+-([A-Za-z][\w &]*?):\s*(.+)$/.exec(t);
+  const raw = m
+    ? m[2]
+    : splitTitle(t)
+        .title.replace(/^M\d+\s+(?:epic|flagship):\s*/i, "")
+        .replace(/\s*\(M\d+\)$/, "");
+  // Capitalize a plain first word ("relocated"), not a command or path ("tools\cli", "schemaVersion").
+  const name = /^[a-z]{3,}(?=\s)/.test(raw) ? raw.charAt(0).toUpperCase() + raw.slice(1) : raw;
+  return { area: m ? m[1] : null, name };
+}
 
-const ROW = "grid grid-cols-[3.25rem_minmax(0,1fr)_auto] gap-x-3";
+// "Config layer (one owner config.json over shipped defaults)" -> "Config layer"
+const branchName = (epic: Issue) => parseTitle(epic.title).name.replace(/\s*\([^)]*\)\s*$/, "");
 
 export function LayerTag({ layer }: { layer: Layer }) {
   return (
     <span
-      className={`inline-block font-mono text-[0.65rem] uppercase tracking-[0.06em] px-1.5 py-px border align-[0.1em] ${
+      className={`inline-block font-mono text-[0.625rem] leading-none uppercase tracking-[0.06em] px-1 py-[3px] border align-[0.15em] ${
         layer === "Flagship" ? "border-ink bg-ink text-paper" : "border-ink-2 text-ink-2"
       }`}
     >
@@ -39,93 +41,131 @@ export function LayerTag({ layer }: { layer: Layer }) {
   );
 }
 
-function StateMark({ state, assignees }: { state: "open" | "closed"; assignees: string[] }) {
-  const label = state === "closed" ? "Done" : assignees.length ? "In progress" : "Open";
+type Item = { number: number; title: string; state: "open" | "closed"; url: string; assignees: string[]; layer: Layer; milestone: string | null };
+
+// A small state marker: done, someone on it, or open.
+function Marker({ item }: { item: Item }) {
+  const [mark, label, cls] =
+    item.state === "closed" ? ["✓", "Done", "text-green"] : item.assignees.length ? ["◐", "In progress", "text-ink"] : ["○", "Open", "text-ink-2"];
   return (
-    <span className={`font-mono text-[0.7rem] uppercase tracking-[0.06em] whitespace-nowrap pt-0.5 ${state === "closed" ? "text-green" : "text-ink-2"}`}>
-      {state === "closed" ? "✓ " : ""}
-      {label}
+    <span className={`font-mono text-[0.75rem] w-3 shrink-0 text-center ${cls}`} title={label}>
+      <span aria-hidden="true">{mark}</span>
+      <span className="sr-only">{label}</span>
     </span>
   );
 }
 
-function SubRow({ s, milestoneId }: { s: SubIssue; milestoneId: string }) {
+function ItemLine({ item, blockLayer, milestoneId }: { item: Item; blockLayer: Layer; milestoneId: string }) {
+  const { name } = parseTitle(item.title);
   return (
-    <li className={`${ROW} py-2 border-b border-rule last:border-b-0 text-[0.9375rem]`}>
-      <span className="font-mono text-[0.75rem] text-ink-2 pt-0.5">#{s.number}</span>
-      <a href={s.url} className="link leading-snug">
-        {shortTitle(s.title)}
-        {s.milestone && s.milestone !== milestoneId && <span className="font-mono text-[0.7rem] text-ink-2"> · {s.milestone}</span>}{" "}
-        <LayerTag layer={issueLayer(s, s.milestone ?? milestoneId)} />
-      </a>
-      <StateMark state={s.state} assignees={s.assignees} />
+    <li className="flex gap-2 py-[3px] text-[0.875rem] leading-snug">
+      <Marker item={item} />
+      <span className="min-w-0">
+        <a href={item.url} className={`link ${item.state === "closed" ? "text-ink-2" : ""}`} title={`#${item.number} ${item.title}`}>
+          {name}
+        </a>
+        {item.milestone && item.milestone !== milestoneId && <span className="font-mono text-[0.7rem] text-ink-2"> · {item.milestone}</span>}
+        {item.layer !== blockLayer && (
+          <>
+            {" "}
+            <LayerTag layer={item.layer} />
+          </>
+        )}
+      </span>
     </li>
   );
 }
 
-function IssueRow({ issue, milestoneId }: { issue: Issue; milestoneId: string }) {
-  const subs = issue.subIssues ?? [];
-  const { code } = splitTitle(issue.title);
-  const layer = issueLayer(issue, milestoneId);
-  const title = (
-    <>
-      {shortTitle(issue.title)} <LayerTag layer={layer} />
-    </>
-  );
-  if (subs.length === 0) {
-    return (
-      <li className={`${ROW} py-2.5 border-b border-rule`}>
-        <span className="font-mono text-[0.75rem] text-ink-2 pt-0.5">{code ?? `#${issue.number}`}</span>
-        <span className="leading-snug">
-          {isEpic(issue) && <span className="kicker block">Epic · sub-issues not filed yet</span>}
-          <a href={issue.url} className="link">
-            {title}
-          </a>
-        </span>
-        <StateMark state={issue.state} assignees={issue.assignees} />
-      </li>
-    );
-  }
-  const done = subs.filter((s) => s.state === "closed").length;
+type Block = { key: string; heading: string; href: string | null; hint: string; layer: Layer; items: Item[]; epic: boolean };
+
+function BlockCard({ b, milestoneId }: { b: Block; milestoneId: string }) {
+  const done = b.items.filter((i) => i.state === "closed").length;
   return (
-    <li className="border-b border-rule">
-      <details className="group">
-        <summary className={`${ROW} py-2.5 cursor-pointer`}>
-          <span className="font-mono text-[0.75rem] text-ink-2 pt-0.5">#{issue.number}</span>
-          <span className="leading-snug">
-            <span className="kicker block">
-              <span aria-hidden="true" className="inline-block transition-transform group-open:rotate-90">▸</span> Epic · {done}/{subs.length}{" "}
-              sub-issues done
-            </span>
-            <span className="font-semibold">{title}</span>
+    <section className={`mb-5 border-t-2 border-ink pt-2 ${b.epic ? "break-inside-avoid" : ""}`} aria-label={b.heading}>
+      <h4 className="flex items-baseline justify-between gap-3">
+        <span className="font-semibold leading-snug">
+          {b.href ? (
+            <a href={b.href} className="link" title={b.hint}>
+              {b.heading}
+            </a>
+          ) : (
+            b.heading
+          )}{" "}
+          <LayerTag layer={b.layer} />
+        </span>
+        {b.items.length > 0 && (
+          <span className="font-mono text-[0.75rem] text-ink-2 whitespace-nowrap">
+            {done}/{b.items.length}
           </span>
-          <StateMark state={issue.state} assignees={issue.assignees} />
-        </summary>
-        <div className="ml-3 md:ml-[3.25rem] mb-3 border-l-2 border-ink pl-3">
-          <ol>
-            {subs.map((s) => (
-              <SubRow key={s.number} s={s} milestoneId={milestoneId} />
-            ))}
-          </ol>
-          <p className="mt-2">
-            <GoLink to={issue.url}>The epic on GitHub</GoLink>
-          </p>
-        </div>
-      </details>
-    </li>
+        )}
+      </h4>
+      {b.items.length > 0 ? (
+        <ol className="mt-1">
+          {b.items.map((i) => (
+            <ItemLine key={i.number} item={i} blockLayer={b.layer} milestoneId={milestoneId} />
+          ))}
+        </ol>
+      ) : (
+        <p className="mt-1 text-[0.8125rem] muted">Sub-issues not filed yet.</p>
+      )}
+    </section>
   );
+}
+
+// Epics become branches with their sub-issues in GitHub's (build) order. Other issues group by their
+// "M2-Area:" prefix when they have one, else into one "Other issues" block.
+function blocksOf(m: Milestone): Block[] {
+  const nested = new Set(m.issues.flatMap((i) => (i.subIssues ?? []).map((s) => s.number)));
+  const isEpic = (i: Issue) => (i.subIssues?.length ?? 0) > 0 || i.labels.includes("epic");
+  const asItem = (i: Issue): Item => ({ ...i, layer: issueLayer(i, m.id), milestone: m.id });
+  const blocks: Block[] = m.issues
+    .filter((i) => isEpic(i) && !nested.has(i.number))
+    .sort((a, b) => a.number - b.number)
+    .map((e) => ({
+      key: `epic-${e.number}`,
+      heading: branchName(e),
+      href: e.url,
+      hint: `#${e.number} ${e.title}`,
+      layer: issueLayer(e, m.id),
+      epic: true,
+      items: (e.subIssues ?? []).map((s) => ({ ...s, layer: issueLayer(s, s.milestone ?? m.id) })),
+    }));
+  const rest = m.issues.filter((i) => !isEpic(i) && !nested.has(i.number)).sort((a, b) => a.number - b.number);
+  const byArea = new Map<string, Issue[]>();
+  for (const i of rest) {
+    const area = parseTitle(i.title).area ?? "";
+    if (!byArea.has(area)) byArea.set(area, []);
+    byArea.get(area)!.push(i);
+  }
+  for (const [area, list] of byArea) {
+    if (!area) continue;
+    const layers = new Set(list.map((i) => issueLayer(i, m.id)));
+    blocks.push({ key: `area-${area}`, heading: area, href: null, hint: "", layer: layers.size === 1 ? [...layers][0] : "Core", epic: true, items: list.map(asItem) });
+  }
+  const other = byArea.get("") ?? [];
+  if (other.length) {
+    const items = other.map(asItem).sort((a, b) => Number(a.state === "closed") - Number(b.state === "closed") || a.number - b.number);
+    const layers = new Set(items.map((i) => i.layer));
+    blocks.push({
+      key: "other",
+      heading: blocks.length ? "Other issues" : "Scopes",
+      href: null,
+      hint: "",
+      layer: layers.size === 1 ? [...layers][0] : "Core",
+      // One long list may run across columns; the branch blocks stay whole.
+      epic: items.length <= 12,
+      items,
+    });
+  }
+  return blocks;
 }
 
 function MilestoneCard({ m }: { m: Milestone }) {
   const plan = MILESTONE_PLAN[m.id];
   const status = milestoneStatus(m);
-  // An issue that is a sub-issue of an epic in the same milestone is listed under the epic only.
-  const nested = new Set(m.issues.flatMap((i) => (i.subIssues ?? []).map((s) => s.number)));
-  const top = m.issues
-    .filter((i) => !nested.has(i.number))
-    .sort((a, b) => Number(a.state === "closed") - Number(b.state === "closed") || Number(isEpic(b)) - Number(isEpic(a)) || a.number - b.number);
+  const blocks = blocksOf(m);
   const done = m.issues.filter((i) => i.state === "closed").length;
-  const epics = top.filter(isEpic).length;
+  const branches = blocks.filter((b) => b.key.startsWith("epic-")).length;
   const goal = plan?.goal ?? m.description.split(/(?<=\.)\s/, 1)[0];
   return (
     <li className="sheet p-5 md:p-6" id={m.id.toLowerCase()}>
@@ -144,17 +184,17 @@ function MilestoneCard({ m }: { m: Milestone }) {
         {plan && <GoLink to={plan.plan.to}>{plan.plan.label}</GoLink>}
         <GoLink to={m.url}>{m.id} on GitHub</GoLink>
       </p>
-      {top.length > 0 ? (
-        <details className="mt-4 border-t-2 border-ink" open={m.state !== "closed" && m.id !== "M1" && top.length <= 12}>
+      {blocks.length > 0 ? (
+        <details className="mt-4 border-t border-rule" open={m.state !== "closed" && m.id !== "M1"}>
           <summary className="cursor-pointer py-2.5 font-mono text-[0.75rem] uppercase tracking-[0.06em]">
             {m.issues.length} {m.issues.length === 1 ? "issue" : "issues"}
-            {epics > 0 && ` · ${epics} ${epics === 1 ? "epic" : "epics"}`} · {done} done
+            {branches > 0 && ` · ${branches} ${branches === 1 ? "branch" : "branches"}`} · {done} done
           </summary>
-          <ul className="border-t border-rule">
-            {top.map((i) => (
-              <IssueRow key={i.number} issue={i} milestoneId={m.id} />
+          <div className="columns-1 sm:columns-2 xl:columns-3 gap-8 pt-2">
+            {blocks.map((b) => (
+              <BlockCard key={b.key} b={b} milestoneId={m.id} />
             ))}
-          </ul>
+          </div>
         </details>
       ) : (
         <p className="mt-4 text-sm muted">No issues filed yet.</p>
