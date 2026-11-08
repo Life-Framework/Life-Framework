@@ -1173,6 +1173,10 @@ function townSelftest() {
     throw new Error("requireSigns true fails a sign issue");
   }
   if (judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "LF_A@Site_A", mesh: "white", neighbourM: 3 }, manifest).ok) throw new Error("a white site fails");
+  if (!judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "LF_A", mesh: "ok", neighbourM: 3 }, manifest).ok) throw new Error("an action on an unnamed prefab child of the site counts");
+  const stateful = judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "none", mesh: "ok", neighbourM: 3, when: "an on-duty officer" }, manifest);
+  if (!stateful.ok || stateful.warnings[0] !== "look: LF_A needs an on-duty officer") throw new Error("a site whose actions need a player state warns instead of failing");
+  if (!manifestErrors({ ...manifest, sites: [{ ...manifest.sites[0], when: "" }] }).some((e) => e.includes("when"))) throw new Error("an empty when is a manifest error");
   const liveBlank = signIssues(manifest.sites[0], world[0], world, catalog, strings, 8, { read: true, card: "blank" });
   if (!liveBlank.issues.some((issue) => issue.includes("shows blank in play"))) throw new Error("a card blank in play is a sign issue");
 

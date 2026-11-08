@@ -1495,6 +1495,18 @@
   roads and floors.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
+- ✅ Town tidy (M1-22, 2026-11-08): the street carries no debug artefacts. The
+  old police duty table (`PoliceStation`, `PoliceStation_Debug`) and the
+  whitelist table (`WhitelistStation`) moved into the annex (100 0 40 and
+  100 0 52, names kept). The daylight blue kerosene lamps left the market,
+  quarry, forest, and pub tables. The pub's survival points are a crate
+  (`SurvivalPoint_Food`) and a hand pump (`SurvivalPoint_Water`) instead of a
+  fridge and a US water trailer. `Village_Dressing` adds 98 vanilla props:
+  bins, planters and flower boxes, a poster column and notice boards, the bus
+  stop sign, hydrants, benches, shop crates, a garbage container, yards with a
+  clothesline, firewood and a dog house, a fenced cabbage plot, trees behind
+  both rows, and four parked cars. The cars are the mod's lockable S105, S1203
+  and UAZ-469 with the vanilla `m_bIsLocked` set, so no key opens them.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
   trader cash payout → shop purchase → ATM deposit path. The robbery step calls
   `EL_RobAction.CommitRobbery` (2026-11-07; it used to hand-write the payout);

@@ -396,6 +396,14 @@ action the way `report roadmap` does. It then stands at the sign, checks that
 the widget list and a `shot ui`. A row fails when the site is white or
 missing, `look` lacks an expected action, or a menu is blank.
 
+A site may name `when`, the player state its actions need (the armory needs
+an on-duty officer, the escort car a restrained suspect). The report walks as
+a civilian, so a missing action there is a warning (`needs <when>`), not a
+failure. An action on an unnamed prefab child (the duty desk's punch clock)
+counts for its site; one named after another entity does not. Before opening a
+menu the report stands at the site again, because the world shot moved the
+character to the camera, and it waits up to 4.5 s for a server-filled sheet.
+
 Sign checks: no sign with that id within 8 m, a card with no title or no
 section text (keys resolved through the string table), Read not offered, or a
 card blank in play. `TOWN.requireSigns` is `true` since M1-09 placed the
