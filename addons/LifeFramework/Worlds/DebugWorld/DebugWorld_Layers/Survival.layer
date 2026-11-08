@@ -5,7 +5,7 @@ GenericEntity SurvivalStation {
    SurvivalPoint_Food {
     components {
      MeshObject "{5A4B0B84C86E4843}" {
-      Object "{FC330655F95CF82F}Assets/Props/Furniture/FridgeSmall_01/FridgeSmall_01.xob"
+      Object "{CEC8A3DF893B9C96}Assets/Props/Crates/BoxWooden_01.xob"
      }
      RigidBody "{5A4B0B84C86E4844}" {
       Mass 10
@@ -17,7 +17,7 @@ GenericEntity SurvivalStation {
        UserActionContext "{5A4B0B84C86E4846}" {
         ContextName "default"
         Position PointInfo "{5A4B0B84C86E4847}" {
-         Offset 0 0.8 0
+         Offset 0 0.4 0
         }
         Radius 3
        }
@@ -46,7 +46,7 @@ GenericEntity SurvivalStation {
    SurvivalPoint_Water {
     components {
      MeshObject "{5A4B0B84C86E5843}" {
-      Object "{6A07B988B26BFD8C}Assets/Props/Military/WaterTanks/MobileWaterTankUS_01/MobileWaterTankUS_01.xob"
+      Object "{2BA3D8DBECF0FB4F}Assets/Structures/Infrastructure/Waterworks/WellPump_01/WellPump_01.xob"
      }
      RigidBody "{5A4B0B84C86E5844}" {
       Mass 10
@@ -110,16 +110,6 @@ GenericEntity SurvivalStation {
     }
    }
    coords 0 0 -1.1
-  }
-  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
-   components {
-    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
-     m_bGradualLightning 0
-     m_fLV 2.6
-     m_eInitialLightState LIT
-    }
-   }
-   coords 0 0.9 0.7
   }
  }
 }

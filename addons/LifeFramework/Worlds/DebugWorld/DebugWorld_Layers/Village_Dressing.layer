@@ -257,3 +257,333 @@ Tree : "{63DC62906A5917F3}Prefabs/Vegetation/Tree/t_populus_nigra/t_populus_nigr
 Tree : "{63DC62906A5917F3}Prefabs/Vegetation/Tree/t_populus_nigra/t_populus_nigra_3s.et" {
  coords 88 0 222
 }
+GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
+ coords 106.3 0 239.2
+}
+GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
+ coords 119.7 0 260.8
+}
+SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 103 0 244.5
+}
+SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
+ coords 103 0 255.5
+}
+SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 123.5 0 256.8
+}
+SCR_DestructibleBuildingEntity : "{F0E03780C850866F}Prefabs/Structures/Commercial/PosterColumn_01.et" {
+ coords 138.5 0 238.2
+}
+GenericEntity : "{8592F599B94DC833}Prefabs/Structures/Civilian/MessageBoard/Filled/MessageBoardSmall_01_pole_filled_V1.et" {
+ coords 137.6 0 257.4
+ angleY 180
+}
+GenericEntity : "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et" {
+ coords 113.6 0 268.6
+}
+GenericEntity : "{F429E4F1B21A5054}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_pink.et" {
+ coords 122.4 0 268.6
+}
+GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 110.8 0 263.3
+ angleY 90
+}
+GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 113.2 0 263.3
+ angleY 270
+}
+GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 126.5 0 271
+}
+GenericEntity : "{7FCD4E7C25D886A8}Prefabs/Structures/Signs/Traffic/SignBusStop_01.et" {
+ coords 150.4 0 245.8
+}
+GenericEntity : "{8DDA73869B957E58}Prefabs/Structures/Civilian/MessageBoard/Filled/MessageBoardSmall_01_pole_filled_V3.et" {
+ coords 143.4 0 243.9
+}
+GenericEntity : "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et" {
+ coords 152.8 0 257.6
+}
+GenericEntity : "{F429E4F1B21A5054}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_pink.et" {
+ coords 159.6 0 257.6
+}
+SCR_DestructibleEntity : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
+ coords 162.5 0 257
+}
+SCR_DestructibleEntity : "{2D4B21B9086F6AFB}Prefabs/Structures/Infrastructure/Waterworks/HydrantStreet_01/HydrantStreet_01.et" {
+ coords 170.6 0 255.8
+}
+GenericEntity : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ components {
+  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIsLocked 1
+  }
+ }
+ coords 162.4 0 245.2
+ angleY 90
+}
+GenericEntity : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
+ coords 150.5 0 221
+}
+GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
+ coords 152.4 0 220
+}
+GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords 165 0 225.5
+}
+GenericEntity : "{FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et" {
+ coords 157 0 223.5
+ angleY 30
+}
+GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
+ coords 172.4 0 243.4
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 175.4 0 242.8
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 175.4 0.28 242.8
+}
+GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 183.2 0 243
+}
+GenericEntity : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 183.9 0 243.1
+ angleY 15
+}
+GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 183.5 0.3 243
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 185.6 0 243
+ angleY 10
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 185.6 0.28 243
+ angleY 10
+}
+GenericEntity : "{72E42BEAFED9B5A7}Prefabs/Props/Garbage/Bins/GarbageContainer_01.et" {
+ coords 186 0 229
+}
+SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 172.3 0 257.2
+}
+SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
+ coords 191.6 0 257.2
+}
+GenericEntity : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 189.6 0 236.6
+}
+GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 190.3 0 236.7
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 199.2 0 237.2
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 199.2 0.28 237.2
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 213.9 0 237.2
+ angleY 20
+}
+GenericEntity : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ coords 224 0 238.2
+ angleY 80
+}
+GenericEntity : "{C9A6A89E58BE2A61}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_red.et" {
+ coords 226.5 0 243.6
+}
+GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
+ coords 228.6 0 243.6
+}
+SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 252.6 0 257.3
+}
+SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
+ coords 271.6 0 257.3
+}
+SCR_DestructibleEntity : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
+ coords 273.6 0 256.9
+}
+GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
+ coords 254.4 0 256.9
+}
+GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 286.4 0 238.2
+}
+GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 287.2 0 238.6
+}
+GenericEntity : "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et" {
+ coords 283.2 0 257.6
+}
+GenericEntity : "{F429E4F1B21A5054}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_pink.et" {
+ coords 294.6 0 257.6
+}
+GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
+ coords 297 0 256.7
+}
+GenericEntity : "{72E42BEAFED9B5A7}Prefabs/Props/Garbage/Bins/GarbageContainer_01.et" {
+ coords 298.6 0 263
+ angleY 90
+}
+SCR_DestructibleEntity : "{2D4B21B9086F6AFB}Prefabs/Structures/Infrastructure/Waterworks/HydrantStreet_01/HydrantStreet_01.et" {
+ coords 313 0 256
+}
+GenericEntity : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et" {
+ components {
+  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIsLocked 1
+  }
+ }
+ coords 324 0 244.8
+ angleY 90
+}
+GenericEntity : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ components {
+  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIsLocked 1
+  }
+ }
+ coords 337.5 0 255.3
+ angleY 270
+}
+GenericEntity : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
+ components {
+  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIsLocked 1
+  }
+ }
+ coords 354 0 244.8
+ angleY 270
+}
+GenericEntity : "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et" {
+ coords 315 0 242.6
+}
+GenericEntity : "{F429E4F1B21A5054}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_pink.et" {
+ coords 321.5 0 242.6
+}
+GenericEntity : "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et" {
+ coords 343.2 0 242.7
+}
+GenericEntity : "{F429E4F1B21A5054}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_pink.et" {
+ coords 349.5 0 242.7
+}
+GenericEntity : "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et" {
+ coords 317 0 257.4
+}
+GenericEntity : "{F429E4F1B21A5054}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_pink.et" {
+ coords 340 0 257.4
+}
+GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords 331.5 0 263.5
+ angleY 90
+}
+GenericEntity : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
+ coords 332 0 229
+}
+GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords 334.5 0 233
+ angleY 40
+}
+SCR_DestructibleEntity : "{403A3EB785E80867}Prefabs/Structures/Walls/Wooden/WoodenFence_02/WoodenFence_02_4m.et" {
+ coords 323 0 216
+}
+SCR_DestructibleEntity : "{403A3EB785E80867}Prefabs/Structures/Walls/Wooden/WoodenFence_02/WoodenFence_02_4m.et" {
+ coords 327 0 216
+}
+SCR_DestructibleEntity : "{403A3EB785E80867}Prefabs/Structures/Walls/Wooden/WoodenFence_02/WoodenFence_02_4m.et" {
+ coords 331 0 216
+}
+SCR_DestructibleEntity : "{403A3EB785E80867}Prefabs/Structures/Walls/Wooden/WoodenFence_02/WoodenFence_02_4m.et" {
+ coords 335 0 216
+}
+Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
+ coords 324 0 219
+}
+Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
+ coords 326 0 219
+}
+Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
+ coords 328 0 219
+}
+Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
+ coords 330 0 219
+}
+Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
+ coords 332 0 219
+}
+Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
+ coords 334 0 219
+}
+Tree : "{D6EC31A48403A52A}Prefabs/Vegetation/Bush/b_sambucus_nigra_1.et" {
+ coords 309.5 0 258.5
+}
+Tree : "{C98A6C1C2372354E}Prefabs/Vegetation/Bush/b_corylus_avellana_1.et" {
+ coords 357.5 0 258.5
+}
+Tree : "{AED5759B653DF6D0}Prefabs/Vegetation/Bush/b_rosa_canina_1s.et" {
+ coords 357.5 0 241.8
+}
+Tree : "{C98A6C1C2372354E}Prefabs/Vegetation/Bush/b_corylus_avellana_1.et" {
+ coords 312 0 231
+}
+Tree : "{D6EC31A48403A52A}Prefabs/Vegetation/Bush/b_sambucus_nigra_1.et" {
+ coords 361 0 229
+}
+Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
+ coords 205 0 289
+}
+Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 216 0 292
+}
+Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
+ coords 229 0 288
+}
+Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
+ coords 263 0 290
+}
+Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 276 0 287
+}
+Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
+ coords 286 0 293
+}
+Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
+ coords 326 0 290
+}
+Tree : "{6C788B70DF94793B}Prefabs/Vegetation/Tree/t_salix_fragilis/t_salix_fragilis_2s.et" {
+ coords 342 0 293
+}
+Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
+ coords 356 0 286
+}
+Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 140 0 219
+}
+Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
+ coords 150 0 214
+}
+Tree : "{6C788B70DF94793B}Prefabs/Vegetation/Tree/t_salix_fragilis/t_salix_fragilis_2s.et" {
+ coords 250 0 218
+}
+Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
+ coords 276 0 219
+}
+Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
+ coords 290 0 216
+}
+Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 347 0 220
+}
+Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
+ coords 304 0 222
+}
+Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 352 0 256.6
+}
+Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ coords 307.5 0 244.2
+}
