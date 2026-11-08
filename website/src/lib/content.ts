@@ -37,6 +37,8 @@ export type Issue = {
   excerpt: string;
   wave: number | null;
   parent: string | null;
+  // "Layer: Core" or "Layer: Flagship" from the body, when the issue says.
+  layer?: Layer | null;
   // From the body's sections (build-content.mjs issueBrief); empty when a body has none.
   why?: string;
   work?: string[];
@@ -45,7 +47,11 @@ export type Issue = {
   comments?: number;
   createdAt?: string;
   updatedAt?: string;
+  // An epic's sub-issues in GitHub's order (build-content.mjs subIssues); empty for other issues.
+  subIssues?: SubIssue[];
 };
+
+export type SubIssue = { number: number; title: string; state: "open" | "closed"; url: string; assignees: string[]; labels?: string[]; layer?: Layer | null; milestone: string | null };
 
 export type Milestone = {
   id: string;
@@ -157,9 +163,68 @@ export function milestoneName(m: Milestone): string {
   return fromDescription || m.id;
 }
 
-const currentMilestone = githubData.milestones.find((m) => m.state === "open") ?? githubData.milestones[0];
+// The one-line goal of each milestone and where its plan lives. The milestones, their titles, and
+// their issues come from GitHub; docs/direction.md and docs/roadmap/ hold the full "done when".
+export const MILESTONE_PLAN: Record<string, { goal: string; plan: { label: string; to: string }; status?: string }> = {
+  M1: {
+    goal: "A signposted test town where a stranger plays every loop on a dedicated server without asking anyone.",
+    plan: { label: "M1 plan", to: "/docs/roadmap-m1-playtest-town" },
+    status: "Final playtest",
+  },
+  M2: {
+    goal: "Moderation, medics and revive, comms, and investigation, proven in the playtest village, then placed in one Everon town.",
+    plan: { label: "M2 outline", to: "/docs/roadmap-m2-outline" },
+  },
+  M3: {
+    goal: "The mod splits into the LifeFramework core and the LF_Everon1989 pack, and an owner configures it from one config.json. No new gameplay.",
+    plan: { label: "M3 outline", to: "/docs/roadmap-m3-outline" },
+  },
+  M4: {
+    goal: "Our 1989 Everon server opens to the public on the released core and pack, for about 40 players.",
+    plan: { label: "M4 outline", to: "/docs/roadmap-m4-outline" },
+  },
+  M5: {
+    goal: "The flagship's own story. Players are relocated from Chernobyl and start life again on Everon in 1989.",
+    plan: { label: "Ideas epic #214", to: "https://github.com/Life-Framework/Life-Framework/issues/214" },
+  },
+};
+
+const currentMilestone =githubData.milestones.find((m) => m.state === "open") ?? githubData.milestones[0];
 export const CURRENT_MILESTONE = currentMilestone?.id ?? "M1";
 export const CURRENT_MILESTONE_NAME = currentMilestone ? milestoneName(currentMilestone) : "Current milestone";
+export function milestoneStatus(m: Milestone): { label: string; tone: "green" | "red" | "ink" } {
+  if (m.state === "closed") return { label: "Done", tone: "green" };
+  if (m.id === CURRENT_MILESTONE) return { label: MILESTONE_PLAN[m.id]?.status ?? "Current", tone: "red" };
+  return { label: "Planned", tone: "ink" };
+}
+
+// Core or Flagship. The core decides what the game can do; the flagship pack decides what our server is
+// (docs/architecture/core-vs-pack.md). A `layer:core` or `layer:flagship` label wins, then a
+// "Layer: Core/Flagship" line in the body, then the milestone: M1 to M3 build core systems
+// (M2 with flagship content on top), M4 and M5 are flagship.
+export type Layer = "Core" | "Flagship";
+// The site page once the doc is on main, the file on GitHub until then.
+export const CORE_VS_PACK_URL = (docsIndex as { slug: string }[]).some((d) => d.slug === "core-vs-pack") ? "/docs/core-vs-pack" : blob("docs/architecture/core-vs-pack.md");
+const FLAGSHIP_MILESTONES = new Set(["M4", "M5"]);
+export const MILESTONE_LAYER: Record<string, string> = {
+  M1: "Core systems, placed in the test village",
+  M2: "Core systems, with flagship content",
+  M3: "Core",
+  M4: "Flagship",
+  M5: "Flagship",
+};
+export function issueLayer(issue: { labels?: string[]; layer?: Layer | null }, milestoneId: string | null): Layer {
+  const l = (issue.labels ?? []).map((x) => x.toLowerCase());
+  if (l.includes("layer:flagship")) return "Flagship";
+  if (l.includes("layer:core")) return "Core";
+  if (issue.layer) return issue.layer;
+  if (l.includes("topic:flagship story")) return "Flagship";
+  return milestoneId && FLAGSHIP_MILESTONES.has(milestoneId) ? "Flagship" : "Core";
+}
+
+// Milestones in number order (M2 before M10), whatever order GitHub returned them in.
+export const milestonesInOrder = () => [...githubData.milestones].sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)));
+
 export const still = (id: string) => siteData.media.stills.find((s) => s.id === id)!;
 export const stillSrc = (s: Still) => `/media/${s.id}-${Math.max(...s.widths)}.webp`;
 export const stillSrcSet = (s: Still) => s.widths.map((w) => `/media/${s.id}-${w}.webp ${w}w`).join(", ");

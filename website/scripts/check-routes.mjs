@@ -30,7 +30,7 @@ const pages = {
   "/docs/direction": "What we are building",
   "/docs/playtest": "Open the playtest",
   "/docs/contributing": "Contributing to Life Framework",
-  "/docs/roadmap": "The gameplay plan",
+  "/docs/roadmap": "Milestones are the one plan",
   "/docs/roadmap-m1-playtest-town": "The player journey",
   "/docs/setup": "Set up your tools",
 };

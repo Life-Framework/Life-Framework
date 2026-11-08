@@ -74,4 +74,4 @@ jobs:
           command: pages deploy dist --project-name=life-framework --branch=main --commit-hash=${{ github.sha }}
       - name: check the live site
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        run: node scripts/check-routes.mjs https://life-framework-arn.pages.dev
+        run: node scripts/check-routes.mjs https://life-framework.org

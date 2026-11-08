@@ -4,7 +4,8 @@
 //                                                         src/generated/data/doc-<slug>.json (HTML)
 //   docs/decisions.md                                   -> src/generated/data/decisions.json
 //   parts of docs/direction.md, content/                -> src/generated/site.json
-//   GitHub milestones, issues, merged PRs, contributors -> src/generated/github.json
+//   GitHub milestones, issues and their sub-issues,     -> src/generated/github.json
+//   merged PRs, contributors
 //                                                         src/generated/data/devlog.json
 //   content/support.json, content/costs.json            ->src/generated/support.json (scripts/support.mjs)
 //   content/media.json (film-evidence release assets)   -> public/media/clips/ (downloaded, git-ignored)
@@ -123,8 +124,10 @@ addRepoDoc("docs/playtest.md", { slug: "playtest", group: "Start here", order: 1
 addRepoDoc("CONTRIBUTING.md", { slug: "contributing", group: "Start here", order: 2 });
 
 addRepoDoc("docs/direction.md", { slug: "direction", group: "Direction & decisions", order: 0 });
-addRepoDoc("docs/design.md", { slug: "design", group: "Direction & decisions", order: 1 });
-addRepoDoc("docs/decisions.md", { slug: "decisions", group: "Direction & decisions", order: 2 });
+// Lands in its own PR; addRepoDoc skips a file that is not there yet.
+addRepoDoc("docs/architecture/core-vs-pack.md", { slug: "core-vs-pack", group: "Direction & decisions", order: 1 });
+addRepoDoc("docs/design.md", { slug: "design", group: "Direction & decisions", order: 2 });
+addRepoDoc("docs/decisions.md", { slug: "decisions", group: "Direction & decisions", order: 3 });
 
 addRepoDoc("docs/features.md", { slug: "features", group: "Engineering reference", order: 0 });
 addRepoDoc("docs/persistence.md", { slug: "persistence", group: "Engineering reference", order: 1 });
@@ -405,6 +408,12 @@ function issueParent(body) {
   return match ? plain(match[1]).trim() || null : null;
 }
 
+// "Layer: Core" or "Layer: Flagship" in the body, when the issue names its side (docs/architecture/core-vs-pack.md).
+function issueLayerLine(body) {
+  const m = /\bLayer:\s*(Core|Flagship)\b/i.exec(body || "");
+  return m ? m[1][0].toUpperCase() + m[1].slice(1).toLowerCase() : null;
+}
+
 // The body's "## Heading" sections, keyed by lowercased heading.
 function issueSections(body) {
   const out = {};
@@ -446,11 +455,34 @@ const issueOut = (i) => ({
   excerpt: issueExcerpt(i.body),
   wave: Number((/\bWave (\d+)\b/.exec(i.body || "") || [])[1]) || null,
   parent: issueParent(i.body),
+  layer: issueLayerLine(i.body),
   ...issueBrief(i.body),
   comments: i.comments ?? 0,
   createdAt: i.created_at,
   updatedAt: i.updated_at,
 });
+
+// An epic's sub-issues in GitHub's order. Asked for when GitHub counts any, or when the
+// title says "epic" (the count can lag). A failure here leaves that epic without children
+// instead of sending the whole GitHub read to the snapshot.
+async function subIssues(i) {
+  if (!(i.sub_issues_summary?.total > 0) && !/\bepic\b/i.test(i.title)) return [];
+  try {
+    return (await gh(`/repos/${GITHUB_REPO}/issues/${i.number}/sub_issues?per_page=100`)).map((s) => ({
+      number: s.number,
+      title: s.title,
+      state: s.state,
+      url: s.html_url,
+      assignees: (s.assignees || []).map((a) => a.login),
+      labels: (s.labels || []).map((l) => l.name),
+      layer: issueLayerLine(s.body),
+      milestone: (/^M\d+/.exec(s.milestone?.title || "") || [])[0] || null,
+    }));
+  } catch (err) {
+    console.warn(`[content] sub-issues of #${i.number} not read (${err.message})`);
+    return [];
+  }
+}
 
 async function fetchGithub() {
   // LF_SITE_OFFLINE=1 builds from the snapshot, to test the fallback.
@@ -460,9 +492,9 @@ async function fetchGithub() {
     .sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true }));
   const milestonesOut = [];
   for (const m of ms) {
-    const issues = (await gh(`/repos/${GITHUB_REPO}/issues?milestone=${m.number}&state=all&per_page=100`))
-      .filter((i) => !i.pull_request)
-      .map(issueOut);
+    const raw = (await gh(`/repos/${GITHUB_REPO}/issues?milestone=${m.number}&state=all&per_page=100`)).filter((i) => !i.pull_request);
+    const issues = [];
+    for (const i of raw) issues.push({ ...issueOut(i), subIssues: await subIssues(i) });
     milestonesOut.push({
       id: /^M\d+/.exec(m.title)[0],
       number: m.number,
@@ -557,6 +589,6 @@ fs.writeFileSync(path.join(outDir, "github.json"), JSON.stringify(githubOut));
 fs.writeFileSync(path.join(outDir, "support.json"), JSON.stringify(buildSupport({ site, repo })));
 console.log(
   `[content] ${docsIndex.length} docs, ${decisionCount} decisions, ${github.milestones.length} milestones, ` +
-    `${github.milestones.map((m) => `${m.id} ${m.issues.length} issues`).join(", ")}, ${pulls.length} merged PRs, ` +
+    `${github.milestones.map((m) => `${m.id} ${m.issues.length} issues, ${m.issues.reduce((n, i) => n + (i.subIssues?.length ?? 0), 0)} sub-issues`).join("; ")}, ${pulls.length} merged PRs, ` +
     `${github.contributors.length} contributors (${github.source})`,
 );

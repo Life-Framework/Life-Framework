@@ -114,4 +114,4 @@ Most mod repos stop at "it compiles". Ours proves the world plays:
 - Rented hosting before M4 goes 24/7; the maintainer's PC hosts playtests and the first M4 sessions.
 - Monetization of the framework, and anything on the flagship beyond cosmetic
   donations.
-- Scheduled and organised events (parked for a later phase).
+- Scheduled and organised events (parked; no milestone plans them).

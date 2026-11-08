@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { GoLink, IssueLedger, PageHeader, Section, Stamp } from "@/components/ui";
-import { CURRENT_MILESTONE, DISCORD_URL, REPO_URL, blob, githubData, issuesUrl, milestone } from "@/lib/content";
+import { CORE_VS_PACK_URL, CURRENT_MILESTONE, DISCORD_URL, REPO_URL, blob, githubData, issuesUrl, milestone } from "@/lib/content";
 
 const steps = [
   {
@@ -22,8 +22,8 @@ const steps = [
     title: "Pick something",
     body: (
       <>
-        Choose a good first issue or an unclaimed M1 scope below. Each issue says what to change and how to prove it. Comment that you
-        are taking it so we can coordinate.
+        Choose a good first issue or an unclaimed {CURRENT_MILESTONE} scope below. Each issue says what to change and how to prove it.
+        Comment that you are taking it so we can coordinate.
       </>
     ),
   },
@@ -113,6 +113,38 @@ const Contribute = () => {
           ))}
         </ol>
       </div>
+
+      <Section id="layers" kicker="Core or flagship" title="Where your change belongs">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr]">
+          <div className="space-y-4 muted max-w-prose">
+            <p>
+              The core decides what the game can do. The flagship pack decides what our 1989 Everon server is. A new system, rule, or
+              config setting is core work. A place, a name, a price, a sign, a vehicle in the catalogue, or a piece of story is
+              flagship content.
+            </p>
+            <p>
+              Today both live in <code>addons/LifeFramework/</code>. M3 moves the content into its own addon,{" "}
+              <code>LF_Everon1989</code>, and the core must never reference it. So write systems that do not assume 1989, and put
+              every value in config. Each issue on the <Link to="/roadmap#milestones" className="link">roadmap</Link> is tagged Core or
+              Flagship.
+            </p>
+            <p>
+              <GoLink to={CORE_VS_PACK_URL}>Core vs pack</GoLink>
+            </p>
+          </div>
+          <ul className="border-t-2 border-ink text-[0.9375rem]">
+            {[
+              ["Core", "A new system, a rule, a config setting, persistence, the UI kit, a test"],
+              ["Flagship", "Places, names, signs, prices, jobs on our server, the vehicle catalogue, the period look, the story"],
+            ].map(([layer, what]) => (
+              <li key={layer} className="py-3 border-b border-rule grid gap-x-4 sm:grid-cols-[7rem_1fr]">
+                <span className="font-mono text-[0.8125rem] uppercase tracking-[0.06em]">{layer}</span>
+                <span className="muted">{what}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Section>
 
       <Section id="reviewers" kicker="Grow with the team" title="From contributor to approver">
         <p className="lede muted max-w-3xl">

@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { HtmlBody } from "@/components/HtmlBody";
 import { GoLink, PageHeader } from "@/components/ui";
-import { docs, groupDocs, type Doc } from "@/lib/content";
+import { CORE_VS_PACK_URL, docs, groupDocs, type Doc } from "@/lib/content";
 import { useData } from "@/lib/data";
 import NotFound from "@/pages/NotFound";
 
@@ -11,6 +11,13 @@ export const DocsIndex = () => (
       <p>
         Start with the setup and playtest guides. The rest is grouped by what you need next: direction, current plan, engineering
         reference, or research. These pages are built from the repository, so contributors and agents read the same source.
+      </p>
+      <p>
+        One rule runs through all of it: the core decides what the game can do, and the 1989 Everon pack decides what our server is.{" "}
+        <a href={CORE_VS_PACK_URL} className="link">
+          Core vs pack
+        </a>{" "}
+        says which side a change belongs on.
       </p>
     </PageHeader>
     <div className="wrap mb-14">

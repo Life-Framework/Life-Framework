@@ -1,14 +1,16 @@
 import { ClipPlayer, Figure, GoLink, PageHeader, RouteMap, Section, SourceNote, Stamp } from "@/components/ui";
+import { LayerTag, MilestoneList } from "@/components/MilestoneList";
 import { RoadmapTree } from "@/components/RoadmapTree";
-import { CURRENT_MILESTONE, githubData, siteData, still } from "@/lib/content";
+import { CORE_VS_PACK_URL, CURRENT_MILESTONE, githubData, siteData, still } from "@/lib/content";
 
 const Roadmap = () => {
   return (
     <>
       <PageHeader kicker="Roadmap" title="The Tree of Life">
         <p>
-          Everything planned for Life Framework, grown from GitHub issues. Each pillar branches into systems, and each system into the
-          work that builds it. Find an open branch and claim it.
+          The plan is five milestones on GitHub, done in order. Each one ends with a public build and a filmed showcase, and the next
+          one's features wait until it is done. Below them, the Tree of Life sorts the same issues by topic. Find an open branch and
+          claim it.
         </p>
       </PageHeader>
 
@@ -19,11 +21,31 @@ const Roadmap = () => {
         </div>
       </div>
 
-      <RoadmapTree />
+      <Section id="milestones" kicker="M1 to M5" title="The milestones">
+        <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:items-start">
+          <div className="space-y-4 muted lg:sticky lg:top-28">
+            <p>
+              Every issue is tagged <LayerTag layer="Core" /> or <LayerTag layer="Flagship" />. The core decides what the game can do.
+              It holds the systems any server can run. The flagship pack decides what our server is. It holds the places, names,
+              prices, period look, vehicle catalogue, and story of 1989 Everon.
+            </p>
+            <p>
+              Today both live in one addon. M3 splits them into two Workshop items, the <code>LifeFramework</code> core and the{" "}
+              <code>LF_Everon1989</code> pack, so another community can swap our pack for their own and keep the core.
+            </p>
+            <p>An epic opens to show its sub-issues in order. Click one to read it on GitHub.</p>
+            <p>
+              <GoLink to={CORE_VS_PACK_URL}>Core vs pack</GoLink>
+            </p>
+          </div>
+          <MilestoneList />
+        </div>
+        <div className="mt-6">
+          <SourceNote source={githubData.source} fetchedAt={githubData.fetchedAt} />
+        </div>
+      </Section>
 
-      <div className="wrap mt-4">
-        <SourceNote source={githubData.source} fetchedAt={githubData.fetchedAt} />
-      </div>
+      <RoadmapTree />
 
       <Section id="loop" kicker="The bar for M1" title="One loop, start to finish">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
@@ -44,7 +66,7 @@ const Roadmap = () => {
 
       <Section id="village" kicker="Captured in the game" title="From the playtest village" aside={<Stamp tone="ink">Work in progress</Stamp>}>
         <p className="lede mb-10 muted">
-          Until 8 November our test world was a white grid with the sites in a row. Now it is a small 1989 village built from vanilla
+          Our test world used to be a white grid with the sites in a row. Now it is a small 1989 village built from vanilla
           Everon buildings, with every M1 site on one street and the test fixtures fenced off to the side. Every picture here is a
           capture from the game, linked to the pull request it came from.
         </p>

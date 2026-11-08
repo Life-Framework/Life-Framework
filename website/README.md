@@ -42,11 +42,11 @@ hydrates the static HTML. Moving between pages after that is client-side.
 
 | Page | Source |
 | --- | --- |
-| Home (`/`) | Copy in `src/pages/Home.tsx` (written to turn visitors into contributors), the milestone table in `docs/direction.md`, M1 progress and open issues from GitHub, and `content/media.json` |
-| Roadmap (`/roadmap`) | The milestone table and playable loop in `docs/direction.md`, every `M<n>` milestone and its issues from GitHub, and the village pictures from `content/media.json` |
+| Home (`/`) | Copy in `src/pages/Home.tsx` (written to turn visitors into contributors, including the framework vs flagship explainer), the milestones, current-milestone progress, and open issues from GitHub, and `content/media.json` |
+| Roadmap (`/roadmap`) | Every `M<n>` milestone from GitHub with its issues and each epic's sub-issues (`/issues/{n}/sub_issues`), the one-line goals and Core/Flagship rule in `src/lib/content.ts` (`MILESTONE_PLAN`, `issueLayer`), the playable loop in `docs/direction.md`, and the village pictures from `content/media.json` |
 | Devlog (`/devlog`) | Merged pull requests into `main` from GitHub (title and the first prose line of the body) and every entry in `docs/decisions.md`, grouped by day |
-| Server owners (`/servers`) | The "Features" list in `README.md`, the M3 row of `docs/direction.md`, and copy in `src/pages/Servers.tsx` |
-| Contribute (`/contribute`) | Open `good first issue` issues, else unassigned M1 issues, and the contributor list, from GitHub |
+| Server owners (`/servers`) | The "Features" list in `README.md`, the M3 milestone from GitHub, and copy in `src/pages/Servers.tsx` (the core/pack split and config model from `docs/roadmap/m3-outline.md`, the M4 hosting plan) |
+| Contribute (`/contribute`) | Open `good first issue` issues, else unassigned issues in the current milestone, and the contributor list, from GitHub |
 | Decisions (`/decisions`) | `docs/decisions.md`, split into its sections and dated entries |
 | Docs (`/docs`, `/docs/:slug`) | Setup and playtest guides, direction and decisions, engineering references, research and community docs, and every `docs/roadmap/**/*.md` |
 
@@ -125,65 +125,17 @@ cd website; npm run build
 $env:CLOUDFLARE_API_TOKEN = [Environment]::GetEnvironmentVariable('CLOUDFLARE_API_TOKEN','User')
 $env:CLOUDFLARE_ACCOUNT_ID = [Environment]::GetEnvironmentVariable('CLOUDFLARE_ACCOUNT_ID','User')
 npx wrangler@4 pages deploy dist --project-name life-framework --branch main
-node scripts/check-routes.mjs https://life-framework-arn.pages.dev
-```
-
-Production URL until the DNS cutover: https://life-framework-arn.pages.dev.
-Canonical links, the sitemap, and share images use `SITE_URL` in
-`src/lib/meta.ts`; change it to `https://life-framework.org` in the cutover PR.
-
-## Domain cutover (not done yet)
-
-`life-framework.org` and `www.life-framework.org` are attached to the Pages
-project as custom domains. They stay pending until DNS points at Pages. The
-zone (`c29e37322367503662ab07c7490890e0`) still has the Lovable records and is
-waiting for the nameserver change:
-
-| Type | Name | Content | Record id |
-| --- | --- | --- | --- |
-| A | life-framework.org | 185.158.133.1 | `ad1b923e779fae8d47e0b1fd4514257b` |
-| A | www.life-framework.org | 185.158.133.1 | `6c70ea7940f0110bb0a1ae4f22bd73ca` |
-
-The MX, SPF, and `_dmarc` records (IONOS mail) are not touched.
-
-After the maintainer has reviewed the pages.dev site and the zone is active on
-Cloudflare nameservers, run (PowerShell):
-
-```powershell
-$t = [Environment]::GetEnvironmentVariable('CLOUDFLARE_API_TOKEN','User')
-$a = [Environment]::GetEnvironmentVariable('CLOUDFLARE_ACCOUNT_ID','User')
-$z = 'c29e37322367503662ab07c7490890e0'
-$h = @{ Authorization = "Bearer $t"; 'Content-Type' = 'application/json' }
-$api = 'https://api.cloudflare.com/client/v4'
-
-# 1. Confirm the zone is active (not "pending").
-(Invoke-RestMethod "$api/zones/$z" -Headers $h).result.status
-
-# 2. Replace the two Lovable A records with proxied CNAMEs to Pages.
-#    (Cloudflare flattens the apex CNAME.)
-Invoke-RestMethod -Method Delete "$api/zones/$z/dns_records/ad1b923e779fae8d47e0b1fd4514257b" -Headers $h
-Invoke-RestMethod -Method Delete "$api/zones/$z/dns_records/6c70ea7940f0110bb0a1ae4f22bd73ca" -Headers $h
-Invoke-RestMethod -Method Post "$api/zones/$z/dns_records" -Headers $h -Body (@{
-  type = 'CNAME'; name = 'life-framework.org'; content = 'life-framework-arn.pages.dev'; proxied = $true; ttl = 1
-} | ConvertTo-Json)
-Invoke-RestMethod -Method Post "$api/zones/$z/dns_records" -Headers $h -Body (@{
-  type = 'CNAME'; name = 'www'; content = 'life-framework-arn.pages.dev'; proxied = $true; ttl = 1
-} | ConvertTo-Json)
-
-# 3. Ask Pages to re-check both domains, then poll until status is "active".
-foreach ($d in 'life-framework.org', 'www.life-framework.org') {
-  Invoke-RestMethod -Method Patch "$api/accounts/$a/pages/projects/life-framework/domains/$d" -Headers $h | Out-Null
-}
-(Invoke-RestMethod "$api/accounts/$a/pages/projects/life-framework/domains" -Headers $h).result |
-  Select-Object name, status
-
-# 4. Prove it.
 node scripts/check-routes.mjs https://life-framework.org
-node scripts/check-routes.mjs https://www.life-framework.org
 ```
 
-Rollback: delete the two CNAMEs and recreate the A records to `185.158.133.1`
-(`proxied = $false`).
+The site is served at https://life-framework.org (and `www.`), a custom domain
+on the Pages project. Canonical links, the sitemap, and share images use
+`SITE_URL` in `src/lib/meta.ts`.
 
-Optional after cutover: redirect `www` to the apex with a Cloudflare redirect
-rule, and turn off the Lovable project.
+## Domain
+
+`life-framework.org` and `www.life-framework.org` are custom domains on the
+Pages project. DNS is on Cloudflare nameservers, in the zone
+`c29e37322367503662ab07c7490890e0`. The MX, SPF, and `_dmarc`
+records (IONOS mail) live in the same zone; leave them alone. The cutover steps
+are in git history (`git log -p -- website/README.md`).

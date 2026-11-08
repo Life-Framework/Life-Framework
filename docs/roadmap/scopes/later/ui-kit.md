@@ -32,7 +32,7 @@ The parts, the theme, the assembler, mutable lines, the status row, the quantity
 
 ## Depends on
 
-The workspace-widget pattern. Not on any row in the after-release table.
+The workspace-widget pattern. No milestone plans the menu migration.
 
 ## Proof
 
