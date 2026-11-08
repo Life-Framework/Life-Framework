@@ -35,6 +35,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
+import * as playtest from "./host/playtest.mjs";
 import * as session from "../agent-box/session.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
@@ -1231,6 +1232,183 @@ function cmdHost(args) {
   return sub ? 1 : 0;
 }
 
+// ----------------------------------------------------------------- playtest
+// `playtest [start]|stop|status|shortcut`: the maintainer's one command
+// (tools/host/playtest.mjs). Start reuses a running host or boots one from the
+// pinned origin/main checkout, then opens the real game client on this
+// desktop, joined to it. Stop closes the client, then `host stop` (shutdown save).
+
+// Clone or fast-forward <parent>\Life-Framework-playtest to origin/main.
+// Returns the checkout root, or null when it cannot be made.
+function playtestCheckout(mainRoot) {
+  const pt = playtest.playtestRoot(mainRoot);
+  const fetch = wt.git(mainRoot, ["fetch", "--quiet", "origin", "main"]);
+  if (fetch.status !== 0) console.log(`WARN  git fetch failed (${fetch.stderr.trim()}); using the last fetched main`);
+  if (!existsSync(join(pt, ".git"))) {
+    console.log(`playtest: creating the playtest checkout ${pt} (origin/main, detached)`);
+    const add = wt.git(mainRoot, ["worktree", "add", "--detach", pt, "origin/main"]);
+    if (add.status !== 0) {
+      console.log(`FAIL  git worktree add: ${add.stderr.trim()}`);
+      return null;
+    }
+    return pt;
+  }
+  const dirty = wt.git(pt, ["status", "--porcelain", "--untracked-files=no"]).stdout.trim();
+  if (dirty) {
+    console.log(`WARN  ${pt} has local edits; playing it as it is (it should only ever track origin/main):`);
+    for (const l of dirty.split(/\r?\n/).slice(0, 5)) console.log(`        ${l}`);
+    return pt;
+  }
+  const ff = wt.git(pt, ["merge", "--ff-only", "--quiet", "origin/main"]);
+  if (ff.status !== 0) console.log(`WARN  ${pt} cannot fast-forward to origin/main (${ff.stderr.trim()}); playing it as it is`);
+  return pt;
+}
+
+function playtestServerSlotHolder(mainRoot) {
+  try {
+    const info = JSON.parse(readFileSync(join(wt.hubDirOf(mainRoot), "locks", `${SERVER_SLOT}.lock`), "utf8"));
+    return info.pid && host.pidAlive(info.pid) ? info : null;
+  } catch {
+    return null;
+  }
+}
+
+function focusWindowOf(pid) {
+  sh(PWSH, ["-NoProfile", "-Command", `$null = (New-Object -ComObject WScript.Shell).AppActivate(${Number(pid)})`]);
+}
+
+function cmdPlaytestStart(mainRoot, hostDir, playerDir) {
+  let s = host.readHostState(hostDir);
+  let root;
+  if (s && host.pidAlive(s.pid)) {
+    root = s.root;
+    console.log(`playtest: the host is already running (pid ${s.pid}, ${root}); joining it`);
+  } else {
+    root = playtestCheckout(mainRoot);
+    if (!root) return 1;
+    const head = wt.git(root, ["log", "-1", "--format=%h %s"]).stdout.trim();
+    console.log(`playtest: build ${head}`);
+    const holder = playtestServerSlotHolder(mainRoot);
+    if (holder) {
+      console.log(`playtest: an agent's test or session is using the game server right now (pid ${holder.pid}, since ${holder.at}).`);
+      console.log("          Waiting for it to finish (up to 30 minutes). Once you are in, agent tests move to the test box.");
+    }
+    const res = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "host", "start", "--wait"], { cwd: root, stdio: "inherit" });
+    s = host.readHostState(hostDir);
+    if (res.status !== 0 || !s || !host.pidAlive(s.pid)) {
+      console.log("FAIL  the playtest server did not come up (see above); nothing else was started");
+      return 1;
+    }
+  }
+
+  const pp = playtest.playerPaths(playerDir);
+  const prev = playtest.readClientState(playerDir);
+  if (prev && host.pidAlive(prev.pid)) {
+    console.log(`playtest: your game is already open (pid ${prev.pid})`);
+    focusWindowOf(prev.pid);
+    return 0;
+  }
+  const game = gameClientExe();
+  if (!existsSync(game)) {
+    console.log(`FAIL  game not found: ${game} (set ENFUSION_GAME_PATH)`);
+    return 1;
+  }
+  const hostLog = host.newestConsoleLog(host.hostPaths(hostDir).profile);
+  const joinsBefore = hostLog ? playtest.countJoins(readFileSync(hostLog, "utf8")) : 0;
+  mkdirSync(pp.profile, { recursive: true });
+  const args = playtest.playerClientArgs({ addonsDir: join(s.root, "addons"), profile: pp.profile });
+  console.log(`playtest: opening the game: ${game}\n  ${args.join(" ")}`);
+  const child = spawn(game, args, { cwd: dirname(game), detached: true, stdio: "ignore" });
+  child.unref();
+  if (!child.pid) {
+    console.log("FAIL  the game did not start");
+    return 1;
+  }
+  playtest.writeClientState(playerDir, { pid: child.pid, root: s.root, startedAt: new Date().toISOString() });
+
+  // Wait for the server to let this player in, then bring the window forward.
+  console.log("playtest: the game is loading and joins the server by itself (about a minute)");
+  const deadline = Date.now() + 300000;
+  let joined = false;
+  while (Date.now() < deadline && host.pidAlive(child.pid)) {
+    sleepMs(3000);
+    const text = hostLog && existsSync(hostLog) ? readFileSync(hostLog, "utf8") : "";
+    if (playtest.countJoins(text) > joinsBefore) {
+      joined = true;
+      break;
+    }
+  }
+  if (!host.pidAlive(child.pid)) {
+    console.log(`FAIL  the game closed before it joined (client logs: ${join(pp.profile, "logs")})`);
+    return 1;
+  }
+  focusWindowOf(child.pid);
+  if (joined) console.log("playtest: you are in. Register at the form, then play. Stop with: tools\\cli playtest stop");
+  else console.log(`WARN  no join seen in the server log within 5 minutes; the game is still open (host log ${hostLog})`);
+  const commit = wt.git(s.root, ["rev-parse", "HEAD"]).stdout.trim();
+  console.log("");
+  for (const l of playtest.friendLines({ lan: host.lanAddresses(), port: host.GAME_PORT, commit })) console.log(l);
+  return joined ? 0 : 1;
+}
+
+function cmdPlaytestStop(hostDir, playerDir) {
+  const c = playtest.readClientState(playerDir);
+  if (c && host.pidAlive(c.pid)) {
+    console.log(`playtest: closing your game (pid ${c.pid})`);
+    sh("taskkill", ["/PID", String(c.pid)]);
+    for (let i = 0; i < 20 && host.pidAlive(c.pid); i++) sleepMs(1000);
+    if (host.pidAlive(c.pid)) killTree(c.pid);
+    // Give the server a moment to handle the disconnect before the shutdown save.
+    sleepMs(5000);
+  } else {
+    console.log("playtest: your game is not open");
+  }
+  if (c) playtest.writeClientState(playerDir, { ...c, stoppedAt: new Date().toISOString() });
+  return cmdHostStop(hostDir, {});
+}
+
+function cmdPlaytestStatus(hostDir, playerDir) {
+  const c = playtest.readClientState(playerDir);
+  const open = !!c && host.pidAlive(c.pid);
+  console.log(`game: ${open ? `open (pid ${c.pid}, since ${c.startedAt})` : "closed"}`);
+  console.log(`  profile:  ${playtest.playerPaths(playerDir).profile}`);
+  return cmdHostStatus(hostDir);
+}
+
+// A desktop shortcut to the repo-root launcher.
+function cmdPlaytestShortcut(mainRoot) {
+  const target = join(mainRoot, "Play Life Framework.cmd");
+  const ps = [
+    "$s = New-Object -ComObject WScript.Shell",
+    "$l = $s.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Desktop')) 'Play Life Framework.lnk'))",
+    `$l.TargetPath = '${target.replaceAll("'", "''")}'`,
+    `$l.WorkingDirectory = '${mainRoot.replaceAll("'", "''")}'`,
+    "$l.Save()",
+    "$l.FullName",
+  ].join("; ");
+  const res = sh(PWSH, ["-NoProfile", "-Command", ps]);
+  if (res.status !== 0) {
+    console.log(`FAIL  ${res.stderr.trim()}`);
+    return 1;
+  }
+  console.log(`playtest: shortcut ${res.stdout.trim()} -> ${target}`);
+  return 0;
+}
+
+function cmdPlaytest(args) {
+  const list = args ?? [];
+  const sub = list[0] ?? "start";
+  const mainRoot = wt.mainRootOf(ROOT);
+  const hostDir = host.hostDir();
+  const playerDir = playtest.playerDir();
+  if (sub === "start") return cmdPlaytestStart(mainRoot, hostDir, playerDir);
+  if (sub === "stop") return cmdPlaytestStop(hostDir, playerDir);
+  if (sub === "status") return cmdPlaytestStatus(hostDir, playerDir);
+  if (sub === "shortcut") return cmdPlaytestShortcut(mainRoot);
+  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut");
+  return 1;
+}
+
 // --only names: a test class (EL_Test_X), a GetName() string, or a test file
 // name (EL_Test_Money or EL_Test_Money.c), which expands to every test class
 // declared in that file. Names the suite cannot match fail the run there.
@@ -1634,6 +1812,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   mcp disable <name>            disable a server in opencode.json
   build                         headless Workbench build of the addon (worktree only)
   serve                         boot the headless test server (blocks, worktree only)
+  playtest [stop|status|shortcut]  the maintainer's one command: host from the pinned origin/main
+                                checkout (..\\Life-Framework-playtest), then open the game joined to it;
+                                stop closes the game and saves; shortcut adds a desktop icon
   host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout)
@@ -2290,6 +2471,7 @@ const cmds = {
   disable: (n) => cmdSetEnabled(n, false),
   build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
   host: (flags) => cmdHost(flags),
+  playtest: (flags) => cmdPlaytest(flags),
   session: (flags) => cmdSession(flags),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
