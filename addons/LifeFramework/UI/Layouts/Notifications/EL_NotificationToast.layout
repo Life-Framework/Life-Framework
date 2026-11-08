@@ -7,9 +7,9 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
   PositionY 140
   OffsetTop 140
   SizeX 420
-  OffsetRight -420
+  OffsetRight -396
   SizeY 92
-  OffsetBottom -92
+  OffsetBottom -232
   Alignment 1 0
  }
  "Z Order" 50
