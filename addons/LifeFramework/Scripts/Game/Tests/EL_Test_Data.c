@@ -16,7 +16,6 @@ class EL_Test_Data : EL_Test
 			"{CBD13209101AACEE}UI/Layouts/Menus/Inventory/SplitQuantityDialog.layout",
 			"{8012E7D806E87F1A}UI/Layouts/EL_ATMMenu.layout",
 			"{64B1F5DD29214016}UI/Layouts/EL_SurvivalHUD.layout",
-			"{41489243B750D7EC}UI/Layouts/FactionSelectionMenu.layout",
 			"{CE3AB8A674B242C5}UI/Layouts/ShopMenu.layout",
 			"{41C6F92AE5EA775C}UI/Layouts/PoliceMenu.layout",
 			"{1CBC0B1329A8762C}UI/Layouts/DeathScreen.layout"

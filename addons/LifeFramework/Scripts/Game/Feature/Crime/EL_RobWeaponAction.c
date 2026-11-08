@@ -73,6 +73,7 @@ class EL_RobWeaponAction : ScriptedUserAction
 		if (account)
 		{
 			account.IncreaseWantedLevel(WANTED_INCREASE);
+			LF_WantedReports.Report(playerUid, user, LF_WantedReports.OFFENCE_WEAPON_THEFT);
 			EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 			AlertPolice("#EL-Police_Alert_Weapon", user.GetOrigin());
 		}

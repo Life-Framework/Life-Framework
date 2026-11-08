@@ -86,6 +86,7 @@ class EL_RobVehicleAction : ScriptedUserAction
 		if (account)
 		{
 			account.IncreaseWantedLevel(WANTED_INCREASE);
+			LF_WantedReports.Report(playerUid, user, LF_WantedReports.OFFENCE_VEHICLE_THEFT);
 			EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 			EL_Utils.AlertPolice("#EL-Police_Alert_Vehicle", user.GetOrigin());
 		}
