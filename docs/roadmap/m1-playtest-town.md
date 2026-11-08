@@ -19,16 +19,18 @@ label `m1`; one issue per scope (§e).
 
 ## Starting line: M0 in flight (not re-planned)
 
-M1 scopes depend on these PRs by number and do not repeat their work. #71 and
-#83 merged on 2026-11-07. The rest are open and unverified (code only, suite not run).
+M1 scopes depend on these PRs by number and do not repeat their work. #71, #77,
+#79, and #83 merged on 2026-11-07 with full-suite runs and observed red-proofs.
+The rest are being finished the same way. Until the maintainer answers the
+decisions at the end, scopes build the plan defaults.
 
 | PR | What M1 needs from it |
 | --- | --- |
 | #71 (merged) | `EL_DevGate`: debug menu and harness RPCs gated server-side (the multi-client harness depends on it) |
 | #73 | Arrest/fine/armory/ATM/org/garage range checks; jail teleport through vanilla |
 | #76 | Tests that can fail; shop partial-funds and ATM boundary tests |
-| #77 | Bank not wiped on first connect; jail sentence in save v5; no ground key on vehicle restore; plate registry; whitelist safe load; `-loadSessionSave` |
-| #79 | Dupes: quest turn-in, cash split, breach needs a charge, locked storage, job-switch guards |
+| #77 (merged) | Bank not wiped on first connect; jail sentence in save v5; no ground key on vehicle restore; plate registry; whitelist safe load; `-loadSessionSave` |
+| #79 (merged) | Dupes: quest turn-in, cash split, breach needs a charge, locked storage, job-switch guards |
 | #80 | Lifetime: job equipment GUIDs, rob cooldown units, breach stuck-armed, contraband watch, disconnect cleanup |
 | #83 (merged) | Dedicated clients: replicated faction/duty/wanted/rank, creation flow over RPC, wanted list over RPC, private notifications, license bitmask |
 | #97 | UX foundation: the missing toast layout (every toast fails today), UI kit gaps, menu input context, menus opening on the wrong machine |
