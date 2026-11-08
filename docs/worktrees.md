@@ -81,7 +81,9 @@ views. Do not run a headless build while an interactive Workbench is open.
    merge drivers in `tools/merge/` then resolve the generated files). A clean
    branch ships as is.
 3. Runs the gate: `validate --full` (with the Workbench compile) + headless
-   build + `test` tier=all.
+   build + `test` tier=all. A branch that changes nothing under `addons/`
+   (docs, website, tools) runs plain `validate` instead and never waits for a
+   pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule).
 4. Pushes `ws/<slug>`, opens the PR (or reuses the open one on a re-run).
    `--closes N` starts the body with `Closes #N`; `--body-file F` supplies the
    body (keep it in `<worktree>/tmp/`).
