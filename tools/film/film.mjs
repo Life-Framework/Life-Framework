@@ -20,7 +20,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,10 +30,17 @@ export const BIN_DIR = join(ROOT, "tools", "film", ".bin");
 export const OUT_DIR = join(ROOT, "agent-box", "reports", "film");
 
 // Pinned portable build. Fetched into tools/film/.bin (git-ignored); never
-// installed system-wide. The hash was recorded on first download (2026-11-07).
+// installed system-wide. Hash and size re-verified 2026-11-08 (asset uploaded
+// 2025-03-12, unchanged). urls are tried in order: the release download link,
+// then the same asset by its immutable API id (a different GitHub front end,
+// which still served it while releases/download answered 504).
 export const FFMPEG_BUILD = {
   version: "7.1.1",
-  url: "https://github.com/GyanD/codexffmpeg/releases/download/7.1.1/ffmpeg-7.1.1-essentials_build.zip",
+  urls: [
+    "https://github.com/GyanD/codexffmpeg/releases/download/7.1.1/ffmpeg-7.1.1-essentials_build.zip",
+    "https://api.github.com/repos/GyanD/codexffmpeg/releases/assets/236740574",
+  ],
+  bytes: 92234348,
   sha256: "04861d3339c5ebe38b56c19a15cf2c0cc97f5de4fa8910e4d47e5e6404e4a2d4",
 };
 
@@ -436,17 +443,46 @@ function sha256(path) {
   return createHash("sha256").update(readFileSync(path)).digest("hex");
 }
 
+// curl args for one download attempt. --fail keeps an HTTP error page (a
+// GitHub 504 is 92 bytes of HTML) out of the zip; the octet-stream header is
+// what the API asset URL needs to redirect to the bytes.
+export function curlArgs(url, out) {
+  return ["-fsSL", "--retry", "3", "--retry-all-errors", "--retry-delay", "2", "-H", "Accept: application/octet-stream", "-o", out, url];
+}
+
+// A zip in hand is only used when it is exactly the pinned build.
+function zipOk(path) {
+  return existsSync(path) && statSync(path).size === FFMPEG_BUILD.bytes && sha256(path) === FFMPEG_BUILD.sha256;
+}
+
+function downloadPinned(zip) {
+  const part = `${zip}.part`;
+  for (const url of FFMPEG_BUILD.urls) {
+    console.log(`downloading ${url}`);
+    rmSync(part, { force: true });
+    const dl = spawnSync("curl.exe", curlArgs(url, part), { windowsHide: true, stdio: "inherit" });
+    if (dl.status === 0 && zipOk(part)) {
+      rmSync(zip, { force: true });
+      renameSync(part, zip);
+      return;
+    }
+    const got = existsSync(part) ? `${statSync(part).size} bytes, sha256 ${sha256(part)}` : `curl exit ${dl.status}`;
+    console.error(`  rejected (${got}); expected ${FFMPEG_BUILD.bytes} bytes, sha256 ${FFMPEG_BUILD.sha256}`);
+  }
+  rmSync(part, { force: true });
+  throw new Error("download failed from every pinned url");
+}
+
 function fetchFfmpeg(flags) {
   if (process.platform !== "win32") throw new Error("fetch is Windows-only; install ffmpeg from your package manager");
   mkdirSync(BIN_DIR, { recursive: true });
-  let zip = flags.zip ? resolve(String(flags.zip)) : join(tmpdir(), `ffmpeg-${FFMPEG_BUILD.version}.zip`);
-  if (!existsSync(zip)) {
-    console.log(`downloading ${FFMPEG_BUILD.url}`);
-    const dl = spawnSync("curl.exe", ["-sSL", "-o", zip, FFMPEG_BUILD.url], { windowsHide: true, stdio: "inherit" });
-    if (dl.status !== 0) throw new Error("download failed");
+  const zip = flags.zip ? resolve(String(flags.zip)) : join(tmpdir(), `ffmpeg-${FFMPEG_BUILD.version}.zip`);
+  if (flags.zip) {
+    if (!zipOk(zip)) throw new Error(`${zip} is not the pinned build (sha256 ${existsSync(zip) ? sha256(zip) : "missing"})`);
+  } else if (!zipOk(zip)) {
+    // A cached zip that fails the check (an earlier error page) is replaced, not trusted.
+    downloadPinned(zip);
   }
-  const hash = sha256(zip);
-  if (hash !== FFMPEG_BUILD.sha256) throw new Error(`sha256 mismatch: ${hash}`);
   const stage = join(tmpdir(), `film-ffmpeg-${process.pid}`);
   mkdirSync(stage, { recursive: true });
   // System32 bsdtar reads zip; a Git-for-Windows GNU tar earlier on PATH does not.
@@ -592,6 +628,9 @@ function selftest() {
     threw = true;
   }
   assert(threw, "publish needs a PR number");
+  const dlArgs = curlArgs(FFMPEG_BUILD.urls[0], "z.part");
+  assert(dlArgs.includes("-fsSL") && dlArgs.includes("--retry"), "fetch fails on an HTTP error page instead of saving it");
+  assert(FFMPEG_BUILD.urls.length >= 2 && FFMPEG_BUILD.urls.every((u) => u.startsWith("https://")), "fetch has a pinned fallback url");
   console.log("film selftest ok");
   return 0;
 }
