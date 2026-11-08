@@ -1,0 +1,32 @@
+GenericEntity : "{4CC2C69DE1AEF103}Prefabs/Props/Core/DestructibleMultiPhase_Props_Base.et" {
+ ID "70A6E1E2569B2626"
+ components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Object "{08759CDA25495BEF}Assets/Props/Signs/CardboardSign_01/CardboardSign_01.xob"
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_bShowFace 0
+  }
+  ActionsManagerComponent "{3C818B6A6011C9DE}" {
+   ActionContexts {
+    UserActionContext "{80B74EB7A10CA83A}" {
+     ContextName "LF_Sign"
+     Position PointInfo "{A105B8257C43EBD9}" {
+      Offset 0 0.28 0.002
+     }
+     Radius 0.275
+    }
+   }
+   additionalActions {
+    LF_SignReadAction "{7F71D6CF122FA0F9}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}

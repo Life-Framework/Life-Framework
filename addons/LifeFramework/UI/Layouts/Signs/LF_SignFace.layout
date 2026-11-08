@@ -1,0 +1,56 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{D85A9B035E96BB36}" {
+  SizeX 512
+  OffsetRight -512
+  SizeY 724
+  OffsetBottom -724
+ }
+ {
+  RTTextureWidgetClass "{C959EEACEBD3396A}" {
+   Name "RTTexture0"
+   Slot FrameWidgetSlot "{CA84161037CE8EC2}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 512
+    OffsetRight -512
+    SizeY 724
+    OffsetBottom -724
+   }
+   {
+    PanelWidgetClass "{6BB2B0351009FB8F}" {
+     Name "Paper"
+     Slot FrameWidgetSlot "{E13817F19ED09B6C}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.890 0.851 0.761 1
+     {
+      TextWidgetClass "{805115A48A99ED7D}" {
+       Name "Title"
+       Slot FrameWidgetSlot "{83A79DD266494918}" {
+        Anchor 0 0 1 1
+        OffsetLeft 40
+        OffsetTop 40
+        OffsetRight -40
+        OffsetBottom -40
+       }
+       Color 0.110 0.102 0.086 1
+       Text ""
+       "Font Size" 96
+       "Min Font Size" 48
+       "Horizontal Alignment" Center
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{2F67A2891752FB8D}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

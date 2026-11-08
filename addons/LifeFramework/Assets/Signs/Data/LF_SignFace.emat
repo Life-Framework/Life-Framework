@@ -1,0 +1,5 @@
+MatPBRBasic {
+ Color 1 1 1 1
+ CastShadow 0
+ BCRMap "$rendertarget"
+}

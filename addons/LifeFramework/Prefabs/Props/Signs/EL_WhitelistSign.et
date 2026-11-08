@@ -1,6 +1,10 @@
 GenericEntity : "{81206EAE6A99ACF8}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_base.et" {
  ID "F0DBA538AC2A0552"
  components {
+  LF_SignComponent "{8C5C38336589F619}" {
+   m_sSignId "police_whitelist"
+   m_bShowFace 0
+  }
   MeshObject "{5872F0EB7FA40561}" {
    Object "{35B830BBC773DB23}Assets/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_entryforbidden.xob"
   }
@@ -18,6 +22,11 @@ GenericEntity : "{81206EAE6A99ACF8}Prefabs/Props/Signs/Industrial/SignIndustrial
      }
      UIInfo UIInfo "{15C49629D3CF3C68}" {
       Name "#EL-Whitelist_Sign_Action"
+     }
+    }
+    LF_SignReadAction "{ADEDD9093DFD7999}" {
+     ParentContextList {
+      "EL_WhitelistSign"
      }
     }
    }

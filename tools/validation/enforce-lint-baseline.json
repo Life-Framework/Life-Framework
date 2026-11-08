@@ -50,11 +50,6 @@
   "text": "IEntity pickaxe = GetGame().SpawnEntityPrefab(Resource.Load(PICKAXE), GetGame().GetWorld(), params);"
  },
  {
-  "rule": "L1",
-  "file": "Scripts/Game/Tests/EL_Test_TextLabel.c",
-  "text": "IEntity sign = GetGame().SpawnEntityPrefab(Resource.Load(SIGN), GetGame().GetWorld(), params);"
- },
- {
   "rule": "L2",
   "file": "Scripts/Game/Components/BuildingSystem/EL_BuildingManagerComponent.c",
   "text": "m_Cam = GetGame().GetCameraManager().CurrentCamera();"

@@ -1,0 +1,30 @@
+GenericEntity : "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et" {
+ ID "9E110985DF818798"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_vFaceOffset 0 0.55 -0.007
+   m_fFaceScale 2.2
+  }
+  ActionsManagerComponent "{6E065C9694DC3BE5}" {
+   ActionContexts {
+    UserActionContext "{360C30155120CB67}" {
+     ContextName "LF_Sign"
+     Position PointInfo "{F4B2C68D18A4160E}" {
+      Offset 0.01 0.77 -0.009
+     }
+     Radius 0.9
+    }
+   }
+   additionalActions {
+    LF_SignReadAction "{2B2AD1067EB174B8}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}
