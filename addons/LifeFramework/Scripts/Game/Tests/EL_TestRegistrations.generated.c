@@ -59,6 +59,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_FilmCameraPath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_GarageStoreRange(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
@@ -76,6 +77,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_PlaytestMission(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceFineMath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_PoliceAbuse(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityStack(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
@@ -128,6 +130,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_PersistenceManagerWiring(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ScreenshotFailSafe(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FruitCatcherRewardClamp(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_ServiceRange(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ShopQuantityGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopTotalPrice(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMAmountGuard(), EL_TestTier.LOGIC);
