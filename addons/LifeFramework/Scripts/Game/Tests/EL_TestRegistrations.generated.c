@@ -71,6 +71,10 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_GarageStoreRange(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HarnessDevGate(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HospitalBillOnce(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HospitalBillDebt(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HospitalBedPick(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HospitalWard(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
@@ -191,6 +195,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_UIKitQuantity(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitClose(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitFocus(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UIPaperSheet(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_UnemploymentBenefit(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleBankRefusal(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);

@@ -89,6 +89,8 @@ class EL_AgentCommand
 			return true;
 		if (cmd.Verb == "state")
 			return true;
+		if (cmd.Verb == "die")
+			return true;
 		if (cmd.Verb == "ui")
 			return true;
 		if (cmd.Verb == "click")
@@ -664,6 +666,11 @@ class EL_AgentHarness
 			DoState(cmd);
 			return;
 		}
+		if (cmd.Verb == "die")
+		{
+			DoDie(cmd);
+			return;
+		}
 		if (cmd.Verb == "ui")
 		{
 			DoUi(cmd);
@@ -811,6 +818,21 @@ class EL_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Kill the local character on the server (dev gate), so a session can prove the death and
+	//! hospital respawn path. The death screen opens as for any death.
+	protected static void DoDie(EL_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.EL_AskHarnessDie(cmd.Id);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: one line of key=value tokens for the harness `state` verb:
 	//! faction, duty, wanted, rank, cash carried, bank balance, job, organization.
 	static string StateLine(IEntity character)
@@ -847,8 +869,26 @@ class EL_AgentHarness
 		if (organization)
 			org = Token(organization.GetName());
 
+		vector origin = character.GetOrigin();
+		string pos = string.Format("%1,%2,%3", Math.Round(origin[0] * 10) / 10, Math.Round(origin[1] * 10) / 10, Math.Round(origin[2] * 10) / 10);
+		int bills = 0;
+		array<IEntity> items = {};
+		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(character);
+		if (inventory)
+			inventory.GetItems(items);
+		array<IEntity> counted = {};
+		foreach (IEntity item : items)
+		{
+			if (item && counted.Find(item) < 0 && item.FindComponent(LF_HospitalBillComponent))
+			{
+				counted.Insert(item);
+				bills++;
+			}
+		}
+
 		string line = string.Format("faction=%1 duty=%2 wanted=%3 rank=%4 cash=%5 bank=%6 job=%7 org=%8", faction, duty, wanted, rank, EL_MoneyUtils.GetCash(character), bank, job, org);
-		return line + " player=" + LF_PlayerInteraction.PlayerIdOf(character).ToString();
+		line += " player=" + LF_PlayerInteraction.PlayerIdOf(character).ToString();
+		return line + string.Format(" pos=%1 bills=%2", pos, bills);
 	}
 
 	//------------------------------------------------------------------------------------------------

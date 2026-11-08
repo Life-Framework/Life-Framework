@@ -3517,6 +3517,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Contraband runs are for organization members. Join one or found your own at the organization desk."
      Comment "Convoy start refused: the player has no organization"
     }
+    CustomStringTableItem "{682DF358EBADD27A}" {
+     Id "LF-Hospital_Title"
+     Target_en_us "Hospital"
+     Comment "Toast title when a player wakes up in hospital."
+    }
+    CustomStringTableItem "{BE26E458ADA922A8}" {
+     Id "LF-Hospital_BillToast"
+     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
+     Comment "Toast on waking in hospital after a death. %1 is the bill amount."
+    }
+    CustomStringTableItem "{25C8757AA18DD8A8}" {
+     Id "LF-Hospital_BillTitle"
+     Target_en_us "Hospital bill"
+     Comment "Title of the paper hospital bill."
+    }
+    CustomStringTableItem "{DB6C9E5F09D39D13}" {
+     Id "LF-Hospital_BillAmount"
+     Target_en_us "Treatment: %1, charged to your bank account"
+     Comment "Hospital bill line. %1 is the amount charged."
+    }
+    CustomStringTableItem "{4F2335135A4FF34F}" {
+     Id "LF-Hospital_BillBalance"
+     Target_en_us "Bank balance after payment: %1"
+     Comment "Hospital bill line. %1 is the bank balance after the bill."
+    }
+    CustomStringTableItem "{1CE638BD33BB8722}" {
+     Id "LF-Hospital_BillDebt"
+     Target_en_us "You owe the bank. Your next deposits pay the debt first."
+     Comment "Hospital bill line shown when the bill put the player into debt."
+    }
+    CustomStringTableItem "{94693CF4600BC9D5}" {
+     Id "LF-Hospital_BillNote"
+     Target_en_us "You don't remember how you got here."
+     Comment "Hospital bill note: the New Life Rule cue. The player forgets the fight that killed them."
+    }
+    CustomStringTableItem "{FFEA0B7D7B19622C}" {
+     Id "LF-Hospital_BillNewLife"
+     Target_en_us "New Life Rule: stay away from where you died for %1 minutes."
+     Comment "Hospital bill line: the server rule. %1 is the number of minutes."
+    }
+    CustomStringTableItem "{D66A5204D011B83B}" {
+     Id "LF-Hospital_BillClose"
+     Target_en_us "Put the bill away"
+     Comment "Closes the hospital bill card."
+    }
+    CustomStringTableItem "{8AA134FCD11961A4}" {
+     Id "LF-Hospital_BillRead"
+     Target_en_us "Read hospital bill"
+     Comment "Action on a hospital bill lying in the world."
+    }
+    CustomStringTableItem "{BF9E5680A14113DA}" {
+     Id "LF-Hospital_BillItem"
+     Target_en_us "Hospital bill"
+     Comment "Inventory name of the paper hospital bill."
+    }
+    CustomStringTableItem "{B496BB68DF603A03}" {
+     Id "LF-Hospital_BillItemDesc"
+     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
+     Comment "Inventory description of the paper hospital bill."
+    }
   }
  }
 }
