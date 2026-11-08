@@ -43,7 +43,7 @@ class EL_ShopMenuRowComponent : ScriptedWidgetComponent
 			return;
 
 		if (m_wItemName)
-			m_wItemName.SetText(item.m_sDisplayName);
+			m_wItemName.SetText(WidgetManager.Translate(item.m_sDisplayName));
 
 		if (m_wOwned)
 			m_wOwned.SetText(ownedCount.ToString());
@@ -66,6 +66,16 @@ class EL_ShopMenuRowComponent : ScriptedWidgetComponent
 	//------------------------------------------------------------------------------------------------
 	override bool OnClick(Widget w, int x, int y, int button)
 	{
+		if (Press(w))
+			return true;
+
+		return super.OnClick(w, x, y, button);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse click and pad MenuSelect share this. The menu debounces the trade itself.
+	bool Press(Widget w)
+	{
 		if (m_wBuyButton && w == m_wBuyButton)
 		{
 			if (m_Menu && m_Item)
@@ -80,6 +90,17 @@ class EL_ShopMenuRowComponent : ScriptedWidgetComponent
 			return true;
 		}
 
-		return super.OnClick(w, x, y, button);
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Buy and Sell, in pad focus order.
+	void GetFocusables(notnull array<Widget> outWidgets)
+	{
+		if (m_wBuyButton)
+			outWidgets.Insert(m_wBuyButton);
+
+		if (m_wSellButton)
+			outWidgets.Insert(m_wSellButton);
 	}
 };

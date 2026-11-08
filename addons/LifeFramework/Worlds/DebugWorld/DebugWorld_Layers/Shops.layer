@@ -10,8 +10,8 @@ $grp GenericEntity {
     Static 1
    }
    EL_ShopComponent "{5A4B0B84C86E2843}" {
-    m_sShopName "General Store"
-    m_sShopDescription "Tienda general de suministros"
+    m_sShopName "#LF-Shop_Name_General"
+    m_sShopDescription "#LF-Shop_Desc_General"
    }
    ActionsManagerComponent "{5A4B0B84C86E2845}" {
     ActionContexts {
@@ -29,8 +29,8 @@ $grp GenericEntity {
        "default"
       }
       UIInfo UIInfo "{5A4B0B84C86E2849}" {
-       Name "Abrir Tienda"
-       Description "Comprar comida y suministros"
+       Name "#LF-Shop_Open_General"
+       Description "#LF-Shop_OpenDesc_General"
       }
      }
     }
@@ -53,13 +53,13 @@ $grp GenericEntity {
     Static 1
    }
    EL_ShopComponent "{5A4B0B84C86E3843}" {
-    m_sShopName "Mercado Negro"
-    m_sShopDescription "Equipamiento especial"
+    m_sShopName "#LF-Shop_Name_BackRoom"
+    m_sShopDescription "#LF-Shop_Desc_BackRoom"
     m_aShopItems {
      EL_ShopItem "{6398C091849BE007}" {
       m_ItemPrefab "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
       m_iPrice 500
-      m_sDisplayName "M9 Pistol"
+      m_sDisplayName "#LF-Shop_Item_M9"
       m_iMaxQuantity 1
      }
     }
@@ -80,8 +80,8 @@ $grp GenericEntity {
        "default"
       }
       UIInfo UIInfo "{5A4B0B84C86E3849}" {
-       Name "Abrir Mercado Negro"
-       Description "Comprar equipamiento"
+       Name "#LF-Shop_Open_BackRoom"
+       Description "#LF-Shop_OpenDesc_BackRoom"
       }
      }
     }

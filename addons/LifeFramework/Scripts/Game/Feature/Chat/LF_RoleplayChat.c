@@ -69,7 +69,7 @@ class LF_RoleplayChat
 
 		if (style == LF_ERoleplayChatStyle.GLOBAL)
 		{
-			described.m_sName = "Twatter";
+			described.m_sName = "Classifieds";
 			described.m_sPrefix = "";
 			described.m_sIconName = "twatter";
 			described.m_bColoredBackground = true;

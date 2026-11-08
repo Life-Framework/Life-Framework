@@ -2238,6 +2238,710 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The benefit is not paid here"
      Comment "Benefit refused because it is disabled in config or the player has no account"
     }
+    CustomStringTableItem "{C1337327CA2B69B2}" {
+     Id "EL-ATM_InvalidAmount"
+     Target_en_us "Enter an amount greater than zero"
+     Comment "ATM deposit/withdraw refused on the client because the typed amount is empty, zero or negative"
+    }
+    CustomStringTableItem "{16D56900DC5246BC}" {
+     Id "EL-ATM_DepositRefused"
+     Target_en_us "The teller refused the deposit: you do not carry that much cash"
+     Comment "ATM deposit refused by the server"
+    }
+    CustomStringTableItem "{5FF37114605F0B03}" {
+     Id "EL-ATM_WithdrawRefused"
+     Target_en_us "The teller refused the withdrawal: the account does not hold that much"
+     Comment "ATM withdrawal refused by the server"
+    }
+    CustomStringTableItem "{4B31E1642B5E97C0}" {
+     Id "EL-ATM_Close"
+     Target_en_us "Close"
+     Comment "Button that closes the ATM screen"
+    }
+    CustomStringTableItem "{1ED4B50F195B57BB}" {
+     Id "LF-Menu_Close"
+     Target_en_us "Close"
+     Comment "Generic button that closes a menu"
+    }
+    CustomStringTableItem "{F4140C183366F34A}" {
+     Id "LF-Job_Name_Unemployed"
+     Target_en_us "Civilian"
+     Target_es_es "Civil"
+     Comment "Job title of a player with no employment"
+    }
+    CustomStringTableItem "{695CFE5E8782D705}" {
+     Id "LF-Job_Name_Farmer"
+     Target_en_us "Farm hand"
+     Target_es_es "Peón agrícola"
+     Comment "Job title: agricultural worker (1989 employment form wording)"
+    }
+    CustomStringTableItem "{81696576D9405DAC}" {
+     Id "LF-Job_Name_Miner"
+     Target_en_us "Miner"
+     Target_es_es "Minero"
+     Comment "Job title: miner"
+    }
+    CustomStringTableItem "{EBFC5BE844D9E9E3}" {
+     Id "LF-Job_Name_Lumberjack"
+     Target_en_us "Logger"
+     Target_es_es "Leñador"
+     Comment "Job title: forestry worker"
+    }
+    CustomStringTableItem "{7199A0B3FCE020A3}" {
+     Id "LF-Job_Name_Medic"
+     Target_en_us "Ambulance crew"
+     Target_es_es "Servicio de ambulancias"
+     Comment "Job title: emergency medical (ambulance) service"
+    }
+    CustomStringTableItem "{FDFA125F576C29FB}" {
+     Id "LF-Job_Name_Police"
+     Target_en_us "Police officer"
+     Target_es_es "Policía"
+     Comment "Job title: police officer"
+    }
+    CustomStringTableItem "{446722059437550F}" {
+     Id "LF-Job_Name_Unknown"
+     Target_en_us "Unknown post"
+     Target_es_es "Puesto desconocido"
+     Comment "Job title shown when the player's job config is missing"
+    }
+    CustomStringTableItem "{0DAF48DFDAAF2069}" {
+     Id "LF-Job_Desc_Medic"
+     Target_en_us "Emergency ambulance crew. Treats the injured on the public payroll."
+     Target_es_es "Paramédico de emergencias. Atiende a los heridos con sueldo público."
+     Comment "Description of the ambulance service job"
+    }
+    CustomStringTableItem "{4CA1C4431CA9A325}" {
+     Id "LF-Job_Desc_Police"
+     Target_en_us "Sworn police officer. Requires an approved appointment."
+     Target_es_es "Oficial de policía. Requiere un nombramiento aprobado."
+     Comment "Description of the police job (appointment = whitelist)"
+    }
+    CustomStringTableItem "{CDE67184D007F114}" {
+     Id "LF-Job_AccessDenied"
+     Target_en_us "Access denied"
+     Target_es_es "Acceso denegado"
+     Comment "Hint title when a job cannot be taken"
+    }
+    CustomStringTableItem "{0F3FC6994B2A56D8}" {
+     Id "LF-Job_NeedPoliceBadge"
+     Target_en_us "You need your police warrant card to go on duty. It is issued at the station."
+     Target_es_es "Necesitas la placa policial para entrar de servicio. Se expide en la comisaría."
+     Comment "Police job refused: the player lacks the police credential licence"
+    }
+    CustomStringTableItem "{A6F0C19B47735D9E}" {
+     Id "LF-Job_NeedMedicCard"
+     Target_en_us "You need your ambulance service ID to go on duty. It is issued at the hospital."
+     Target_es_es "Necesitas la credencial del servicio de ambulancias para entrar de servicio. Se expide en el hospital."
+     Comment "Ambulance job refused: the player lacks the ambulance credential licence"
+    }
+    CustomStringTableItem "{5F637FC76D6C6D7E}" {
+     Id "LF-Job_NotWhitelisted"
+     Target_en_us "You are not on the roster for this post. Speak to an administrator."
+     Target_es_es "No figuras en la plantilla de este puesto. Habla con un administrador."
+     Comment "Restricted job refused: the player is not whitelisted"
+    }
+    CustomStringTableItem "{26D3AE4AB6FDC686}" {
+     Id "LF-Job_OffDuty_Title"
+     Target_en_us "Off duty"
+     Target_es_es "Fuera de servicio"
+     Comment "Hint title when the player ends a shift"
+    }
+    CustomStringTableItem "{C474DE8385A4FAC0}" {
+     Id "LF-Job_OffDuty"
+     Target_en_us "You have ended your shift."
+     Target_es_es "Has finalizado tu turno de servicio."
+     Comment "Hint text when the player ends a shift"
+    }
+    CustomStringTableItem "{52D2FDF4AA85DFF5}" {
+     Id "LF-Job_OnDutyPolice_Title"
+     Target_en_us "Police on duty"
+     Target_es_es "Policía de servicio"
+     Comment "Hint title when a police officer starts a shift"
+    }
+    CustomStringTableItem "{B8F62B559B06F232}" {
+     Id "LF-Job_OnDutyPolice"
+     Target_en_us "On duty as %1. 10-4, unit on patrol."
+     Target_es_es "De servicio como %1. 10-4, unidad en patrulla."
+     Comment "Hint text when a police officer starts a shift. %1 = job title"
+    }
+    CustomStringTableItem "{71853BEF3A3822F3}" {
+     Id "LF-Job_OnDutyMedic_Title"
+     Target_en_us "Ambulance on duty"
+     Target_es_es "Ambulancia de servicio"
+     Comment "Hint title when an ambulance crew member starts a shift"
+    }
+    CustomStringTableItem "{7A7A526CF01F6A86}" {
+     Id "LF-Job_OnDutyMedic"
+     Target_en_us "On duty as %1. Ambulance crew standing by."
+     Target_es_es "De servicio como %1. Ambulancia operativa."
+     Comment "Hint text when an ambulance crew member starts a shift. %1 = job title"
+    }
+    CustomStringTableItem "{60E43C3EAEE492E1}" {
+     Id "LF-Job_Hired_Title"
+     Target_en_us "New employment"
+     Target_es_es "Nuevo empleo"
+     Comment "Hint title when the player takes a civilian job"
+    }
+    CustomStringTableItem "{5374FA2BFDB1A7AE}" {
+     Id "LF-Job_Hired"
+     Target_en_us "You now work as %1, grade %2."
+     Target_es_es "Ahora trabajas como %1, categoría %2."
+     Comment "Hint text when the player takes a civilian job. %1 = job title, %2 = grade (job level)"
+    }
+    CustomStringTableItem "{967C561794E4E4EC}" {
+     Id "LF-Job_Paycheck"
+     Target_en_us "Wages paid into your bank account: %1"
+     Target_es_es "Salario ingresado en tu cuenta bancaria: %1"
+     Comment "Hint text on payday. %1 = formatted amount. Title is the job title"
+    }
+    CustomStringTableItem "{AF990714687E46C1}" {
+     Id "LF-Job_Promoted_Title"
+     Target_en_us "Promotion"
+     Target_es_es "Ascenso"
+     Comment "Hint title when the player's job grade rises (employment fiction, not an arcade level-up)"
+    }
+    CustomStringTableItem "{CF29236D0C626F05}" {
+     Id "LF-Job_Promoted"
+     Target_en_us "%1, grade %2. Practice pays: you bring in %3% more per shift."
+     Target_es_es "%1, categoría %2. La práctica se nota: rindes un %3% más por turno."
+     Comment "Hint text when job grade rises. %1 = job title, %2 = grade, %3 = yield bonus percent"
+    }
+    CustomStringTableItem "{3B3C747588B68991}" {
+     Id "LF-Job_Work_Title"
+     Target_en_us "Work"
+     Target_es_es "Trabajo"
+     Comment "Hint title for work results"
+    }
+    CustomStringTableItem "{2FFBFD36EA8DB8AE}" {
+     Id "LF-Job_FruitHarvest"
+     Target_en_us "You picked %1 %2."
+     Target_es_es "Recolectaste %1 %2."
+     Comment "Fruit picking result. %1 = count, %2 = fruit name (plural, lowercase)"
+    }
+    CustomStringTableItem "{FA4E9EE301A756F1}" {
+     Id "LF-Fruit_Apples"
+     Target_en_us "apples"
+     Target_es_es "manzanas"
+     Comment "Fruit name, plural lowercase, used inside a sentence"
+    }
+    CustomStringTableItem "{4C162FE7FB60324B}" {
+     Id "LF-Fruit_Tomatoes"
+     Target_en_us "tomatoes"
+     Target_es_es "tomates"
+     Comment "Fruit name, plural lowercase, used inside a sentence"
+    }
+    CustomStringTableItem "{F4B9336DFFCD7180}" {
+     Id "LF-Fruit_Plums"
+     Target_en_us "plums"
+     Target_es_es "ciruelas"
+     Comment "Fruit name, plural lowercase, used inside a sentence"
+    }
+    CustomStringTableItem "{1D84C759982BB357}" {
+     Id "LF-Fruit_Berries"
+     Target_en_us "berries"
+     Target_es_es "bayas"
+     Comment "Fruit name, plural lowercase, used inside a sentence"
+    }
+    CustomStringTableItem "{0B6BBD519DC9B906}" {
+     Id "LF-Level_BonusNone"
+     Target_en_us "No standing bonuses yet"
+     Target_es_es "Sin bonos activos"
+     Comment "Character standing summary when there are no bonuses"
+    }
+    CustomStringTableItem "{AFDD3C3A428C4C18}" {
+     Id "LF-Level_Bonus"
+     Target_en_us "Yield +%1% | Sale price +%2%"
+     Target_es_es "Rendimiento +%1% | Precio de venta +%2%"
+     Comment "Character standing bonuses. %1 = gathering bonus percent, %2 = sale bonus percent"
+    }
+    CustomStringTableItem "{53E56B72A7F27F7F}" {
+     Id "LF-Level_Promoted_Title"
+     Target_en_us "Standing improved"
+     Target_es_es "Mejora de categoría"
+     Comment "Hint title when the character's overall standing rises (replaces an arcade LEVEL UP)"
+    }
+    CustomStringTableItem "{2024E806595907BF}" {
+     Id "LF-Level_Promoted"
+     Target_en_us "Your record now reads grade %1. Your supervisor has put you down for further training."
+     Target_es_es "Tu expediente ya figura en la categoría %1. Tu supervisor te ha propuesto para más formación."
+     Comment "Hint text when overall standing rises. %1 = grade. Further training = one skill point to spend on a licence"
+    }
+    CustomStringTableItem "{8D0BA6972F630893}" {
+     Id "LF-Level_PromotedBonus"
+     Target_en_us "Experience shows: yield +%1%, sale price +%2%."
+     Target_es_es "Se nota la experiencia: rendimiento +%1%, precio de venta +%2%."
+     Comment "Appended to the standing hint. %1 = gathering bonus percent, %2 = sale bonus percent"
+    }
+    CustomStringTableItem "{72CC7BD2B9986C3B}" {
+     Id "LF-License_Granted_Title"
+     Target_en_us "Licence issued"
+     Target_es_es "Licencia expedida"
+     Comment "Hint title when a licence is granted"
+    }
+    CustomStringTableItem "{942A472691F6510B}" {
+     Id "LF-License_Granted"
+     Target_en_us "Issued: %1. %2"
+     Target_es_es "Expedida: %1. %2"
+     Comment "Hint text when a licence is granted. %1 = licence name, %2 = licence description"
+    }
+    CustomStringTableItem "{9895E82D79A912D8}" {
+     Id "LF-License_Unemployed_Name"
+     Target_en_us "Unemployed"
+     Target_es_es "Desempleado"
+     Comment "Licence name: no employment"
+    }
+    CustomStringTableItem "{78705B86BC3B43C0}" {
+     Id "LF-License_Unemployed_Desc"
+     Target_en_us "No current employment."
+     Target_es_es "Sin trabajo activo."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{33B679F9679C9184}" {
+     Id "LF-License_FarmerTomato_Name"
+     Target_en_us "Field hand: tomatoes"
+     Target_es_es "Recolector de tomates"
+     Comment "Licence name: starting farm permit"
+    }
+    CustomStringTableItem "{1921CA724A9210CF}" {
+     Id "LF-License_FarmerTomato_Desc"
+     Target_en_us "Starting permit for farm work. Lets you pick tomatoes."
+     Target_es_es "Permiso inicial de trabajo agrícola. Permite recolectar tomates."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{F8F02CBA407DB562}" {
+     Id "LF-License_FarmerApple_Name"
+     Target_en_us "Orchard hand"
+     Target_es_es "Hortelano"
+     Comment "Licence name: apple picking"
+    }
+    CustomStringTableItem "{C8B554017BA55A32}" {
+     Id "LF-License_FarmerApple_Desc"
+     Target_en_us "Permits picking apples in the orchards. Farm work only."
+     Target_es_es "Permite recolectar manzanas en los huertos. Solo para trabajo agrícola."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{907E758E2A75E717}" {
+     Id "LF-License_FarmerPlum_Name"
+     Target_en_us "Plum picker"
+     Target_es_es "Recolector de ciruelas"
+     Comment "Licence name: plum picking"
+    }
+    CustomStringTableItem "{DB482F762BCADC84}" {
+     Id "LF-License_FarmerPlum_Desc"
+     Target_en_us "Permits picking plums. Farm work only."
+     Target_es_es "Permite recolectar ciruelas. Solo para trabajo agrícola."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{5439217A822B0A98}" {
+     Id "LF-License_FarmerWater_Name"
+     Target_en_us "Water collection permit"
+     Target_es_es "Permiso de recogida de agua"
+     Comment "Licence name: drawing clean water"
+    }
+    CustomStringTableItem "{16307C311176370F}" {
+     Id "LF-License_FarmerWater_Desc"
+     Target_en_us "Permits drawing clean water. Farm work only."
+     Target_es_es "Permite recoger agua limpia. Solo para trabajo agrícola."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{6B8613BCC510B24D}" {
+     Id "LF-License_FarmerSpeed_Name"
+     Target_en_us "Seasoned field hand"
+     Target_es_es "Peón experimentado"
+     Comment "Licence name: faster farm work from experience"
+    }
+    CustomStringTableItem "{9D0A14CCECAD0FA0}" {
+     Id "LF-License_FarmerSpeed_Desc"
+     Target_en_us "Years in the fields: you pick fruit and draw water twice as fast. Farm work only."
+     Target_es_es "Años en el campo: recolectas fruta y agua el doble de rápido. Solo para trabajo agrícola."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{D07532E7830E5DA7}" {
+     Id "LF-License_MinerCoal_Name"
+     Target_en_us "Coal face permit"
+     Target_es_es "Permiso de mina de carbón"
+     Comment "Licence name: coal mining"
+    }
+    CustomStringTableItem "{B9758C07B8B9645C}" {
+     Id "LF-License_MinerCoal_Desc"
+     Target_en_us "Permits cutting coal with a pick. Mine work only."
+     Target_es_es "Permite extraer carbón con pico. Solo para trabajo de mina."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{51B16D9C30945CED}" {
+     Id "LF-License_MinerCopper_Name"
+     Target_en_us "Copper seam permit"
+     Target_es_es "Permiso de veta de cobre"
+     Comment "Licence name: copper mining"
+    }
+    CustomStringTableItem "{398537ABA9F82833}" {
+     Id "LF-License_MinerCopper_Desc"
+     Target_en_us "Permits cutting copper ore with a pick, for smelting into ingots. Mine work only."
+     Target_es_es "Permite extraer cobre con pico para fundirlo en lingotes. Solo para trabajo de mina."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{4B7BC1922CC8F9E1}" {
+     Id "LF-License_MinerIron_Name"
+     Target_en_us "Iron seam permit"
+     Target_es_es "Permiso de veta de hierro"
+     Comment "Licence name: iron mining"
+    }
+    CustomStringTableItem "{344D05FF039E5DB8}" {
+     Id "LF-License_MinerIron_Desc"
+     Target_en_us "Permits cutting iron ore with a pick. Mine work only."
+     Target_es_es "Permite extraer hierro con pico. Solo para trabajo de mina."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{C0B66A5D6C1156ED}" {
+     Id "LF-License_MinerGold_Name"
+     Target_en_us "Gold seam permit"
+     Target_es_es "Permiso de veta de oro"
+     Comment "Licence name: gold mining"
+    }
+    CustomStringTableItem "{A98C4D4518CD4411}" {
+     Id "LF-License_MinerGold_Desc"
+     Target_en_us "Permits cutting gold ore with a pick, for smelting into high-value ingots. Mine work only."
+     Target_es_es "Permite extraer oro con pico para fundirlo en lingotes de alto valor. Solo para trabajo de mina."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{7CECA66DA479A94D}" {
+     Id "LF-License_MinerSpeed_Name"
+     Target_en_us "Seasoned miner"
+     Target_es_es "Minero experimentado"
+     Comment "Licence name: faster mining from experience"
+    }
+    CustomStringTableItem "{F5405603934A1084}" {
+     Id "LF-License_MinerSpeed_Desc"
+     Target_en_us "Years underground: you cut any ore twice as fast. Mine work only."
+     Target_es_es "Años bajo tierra: extraes cualquier mineral el doble de rápido. Solo para trabajo de mina."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{963225B9757EABD9}" {
+     Id "LF-License_LumberjackBasic_Name"
+     Target_en_us "Felling permit"
+     Target_es_es "Permiso de tala"
+     Comment "Licence name: tree felling"
+    }
+    CustomStringTableItem "{E61C0E0A8EDB2204}" {
+     Id "LF-License_LumberjackBasic_Desc"
+     Target_en_us "Permits felling trees with an axe. Forestry work only."
+     Target_es_es "Permite talar árboles con hacha. Solo para trabajo forestal."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{0425EDE7B909E287}" {
+     Id "LF-License_LumberjackProcess_Name"
+     Target_en_us "Sawmill hand"
+     Target_es_es "Operario de aserradero"
+     Comment "Licence name: sawmill work"
+    }
+    CustomStringTableItem "{B70475822D8E7065}" {
+     Id "LF-License_LumberjackProcess_Desc"
+     Target_en_us "Permits sawing logs into planks at the sawmill. Forestry work only."
+     Target_es_es "Permite convertir troncos en tablones en el aserradero. Solo para trabajo forestal."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{9310A55A29C5AB39}" {
+     Id "LF-License_LumberjackSpeed_Name"
+     Target_en_us "Seasoned logger"
+     Target_es_es "Leñador experimentado"
+     Comment "Licence name: faster felling from experience"
+    }
+    CustomStringTableItem "{799448B54F0FA216}" {
+     Id "LF-License_LumberjackSpeed_Desc"
+     Target_en_us "Years in the forest: you fell trees twice as fast. Forestry work only."
+     Target_es_es "Años en el bosque: talas árboles el doble de rápido. Solo para trabajo forestal."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{8E937DCF7ED8F47C}" {
+     Id "LF-License_MedicAccess_Name"
+     Target_en_us "Ambulance service ID"
+     Target_es_es "Credencial del servicio de ambulancias"
+     Comment "Licence name: ambulance service credential"
+    }
+    CustomStringTableItem "{3D7CB03E481166E3}" {
+     Id "LF-License_MedicAccess_Desc"
+     Target_en_us "Official ambulance service credential. Required to go on duty."
+     Target_es_es "Acreditación oficial del servicio de ambulancias. Necesaria para entrar de servicio."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{10272FAC97B59D22}" {
+     Id "LF-License_MedicBasic_Name"
+     Target_en_us "First aid certificate"
+     Target_es_es "Certificado de primeros auxilios"
+     Comment "Licence name: basic treatment"
+    }
+    CustomStringTableItem "{9E699328091A399D}" {
+     Id "LF-License_MedicBasic_Desc"
+     Target_en_us "Qualifies you to treat the injured. Ambulance service only."
+     Target_es_es "Te habilita para atender a los heridos. Solo para el servicio de ambulancias."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{6D4FFAC95B90D728}" {
+     Id "LF-License_MedicAdvanced_Name"
+     Target_en_us "Advanced first aid certificate"
+     Target_es_es "Certificado de primeros auxilios avanzados"
+     Comment "Licence name: advanced treatment"
+    }
+    CustomStringTableItem "{A4EB0844DD10A6FB}" {
+     Id "LF-License_MedicAdvanced_Desc"
+     Target_en_us "Qualifies you for advanced treatment of the injured. Ambulance service only."
+     Target_es_es "Te habilita para tratamientos avanzados de los heridos. Solo para el servicio de ambulancias."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{E25FC9B920D69E5B}" {
+     Id "LF-License_MedicRevive_Name"
+     Target_en_us "Resuscitation certificate"
+     Target_es_es "Certificado de reanimación"
+     Comment "Licence name: reviving the unconscious"
+    }
+    CustomStringTableItem "{B3A142A68954DFD4}" {
+     Id "LF-License_MedicRevive_Desc"
+     Target_en_us "Qualifies you to resuscitate the unconscious. Ambulance service only."
+     Target_es_es "Te habilita para reanimar a personas inconscientes. Solo para el servicio de ambulancias."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{F5DCC2DF5B1749C9}" {
+     Id "LF-License_PoliceAccess_Name"
+     Target_en_us "Police warrant card"
+     Target_es_es "Placa policial"
+     Comment "Licence name: police credential"
+    }
+    CustomStringTableItem "{BDE1051C590C0420}" {
+     Id "LF-License_PoliceAccess_Desc"
+     Target_en_us "Official police credential. Required to go on duty."
+     Target_es_es "Acreditación oficial de policía. Necesaria para entrar de servicio."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{C73088E5160767C2}" {
+     Id "LF-License_PoliceArrest_Name"
+     Target_en_us "Arrest powers"
+     Target_es_es "Facultad de arresto"
+     Comment "Licence name: authority to arrest"
+    }
+    CustomStringTableItem "{D4F41D86072924D4}" {
+     Id "LF-License_PoliceArrest_Desc"
+     Target_en_us "Authorises arrests. Police officers on the roster only."
+     Target_es_es "Autoriza a realizar arrestos. Solo para policías en plantilla."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{44CBDAFCAE506445}" {
+     Id "LF-License_PoliceFine_Name"
+     Target_en_us "Fixed penalty powers"
+     Target_es_es "Facultad de multar"
+     Comment "Licence name: authority to fine"
+    }
+    CustomStringTableItem "{C5AA33FDAE156EF8}" {
+     Id "LF-License_PoliceFine_Desc"
+     Target_en_us "Authorises issuing fines. Police officers on the roster only."
+     Target_es_es "Autoriza a imponer multas. Solo para policías en plantilla."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{B1588D6DB4D51DBF}" {
+     Id "LF-License_PoliceSearch_Name"
+     Target_en_us "Search powers"
+     Target_es_es "Facultad de registro"
+     Comment "Licence name: authority to search"
+    }
+    CustomStringTableItem "{8D66BEC61FE33397}" {
+     Id "LF-License_PoliceSearch_Desc"
+     Target_en_us "Authorises searching suspects. Police officers on the roster only."
+     Target_es_es "Autoriza a registrar a sospechosos. Solo para policías en plantilla."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{9947E3456A8EF3DE}" {
+     Id "LF-License_CriminalWeed_Name"
+     Target_en_us "Cannabis grower"
+     Target_es_es "Cultivador de marihuana"
+     Comment "Underground skill name: growing cannabis"
+    }
+    CustomStringTableItem "{ECE42E82F73C04B0}" {
+     Id "LF-License_CriminalWeed_Desc"
+     Target_en_us "You know how to grow and harvest cannabis. Illegal and risky."
+     Target_es_es "Sabes cultivar y cosechar marihuana. Ilegal y arriesgado."
+     Comment "Underground skill description"
+    }
+    CustomStringTableItem "{45C9A748A0EC27AC}" {
+     Id "LF-License_CriminalRobbery_Name"
+     Target_en_us "Professional thief"
+     Target_es_es "Ladrón profesional"
+     Comment "Underground skill name: robbery"
+    }
+    CustomStringTableItem "{19A2ACB62354FA15}" {
+     Id "LF-License_CriminalRobbery_Desc"
+     Target_en_us "You know how to rob shops and other premises. The police can arrest you."
+     Target_es_es "Sabes robar tiendas y otros locales. La policía puede arrestarte."
+     Comment "Underground skill description"
+    }
+    CustomStringTableItem "{02105F9797802A3E}" {
+     Id "LF-License_CriminalBlackmarket_Name"
+     Target_en_us "Back-room contact"
+     Target_es_es "Contacto del mercado negro"
+     Comment "Underground skill name: access to the black market"
+    }
+    CustomStringTableItem "{C8CAEB5DF24A1E79}" {
+     Id "LF-License_CriminalBlackmarket_Desc"
+     Target_en_us "You know someone in the back room: illegal weapons, vehicles and clothing."
+     Target_es_es "Conoces a alguien en el mercado negro: armas, vehículos y ropa ilegales."
+     Comment "Underground skill description"
+    }
+    CustomStringTableItem "{7FAA4878EC1B10D1}" {
+     Id "LF-License_CriminalWeapons_Name"
+     Target_en_us "Arms trafficker"
+     Target_es_es "Traficante de armas"
+     Comment "Underground skill name: illegal weapons"
+    }
+    CustomStringTableItem "{2EDB9E69E8E040F3}" {
+     Id "LF-License_CriminalWeapons_Desc"
+     Target_en_us "Lets you buy illegal weapons in the back room. Requires a back-room contact."
+     Target_es_es "Permite comprar armas ilegales en el mercado negro. Requiere un contacto del mercado negro."
+     Comment "Underground skill description"
+    }
+    CustomStringTableItem "{5EF93ACC4BD2B30E}" {
+     Id "LF-License_CriminalVehicles_Name"
+     Target_en_us "Vehicle smuggler"
+     Target_es_es "Contrabandista de vehículos"
+     Comment "Underground skill name: illegal vehicles"
+    }
+    CustomStringTableItem "{05A75882D73C7AA8}" {
+     Id "LF-License_CriminalVehicles_Desc"
+     Target_en_us "Lets you buy modified or stolen vehicles. Requires a back-room contact."
+     Target_es_es "Permite comprar vehículos modificados o robados. Requiere un contacto del mercado negro."
+     Comment "Underground skill description"
+    }
+    CustomStringTableItem "{D54B837891C0BD0B}" {
+     Id "LF-License_CriminalClothes_Name"
+     Target_en_us "Back-room tailor's client"
+     Target_es_es "Cliente del sastre clandestino"
+     Comment "Underground skill name: exclusive black-market clothing"
+    }
+    CustomStringTableItem "{AEC9683418ADA5E9}" {
+     Id "LF-License_CriminalClothes_Desc"
+     Target_en_us "Lets you buy exclusive clothing in the back room. Requires a back-room contact."
+     Target_es_es "Permite comprar ropa exclusiva en el mercado negro. Requiere un contacto del mercado negro."
+     Comment "Underground skill description"
+    }
+    CustomStringTableItem "{745AC868616D92EC}" {
+     Id "LF-Duty_OnDuty"
+     Target_en_us "on duty"
+     Comment "Inserted into the duty status sentence (EL-Duty_Status_Change, You are now %1)"
+    }
+    CustomStringTableItem "{342841806FB0631D}" {
+     Id "LF-Duty_OffDuty"
+     Target_en_us "off duty"
+     Comment "Inserted into the duty status sentence (EL-Duty_Status_Change, You are now %1)"
+    }
+    CustomStringTableItem "{F72676CB2A9E8ED9}" {
+     Id "LF-Rob_RecentlyRobbed"
+     Target_en_us "Robbed recently. Lie low for now."
+     Comment "Vehicle/weapon robbery refused because the cooldown is still running"
+    }
+    CustomStringTableItem "{CAE4963AFB138F1B}" {
+     Id "LF-Rob_NeedPoliceCount"
+     Target_en_us "At least %1 police officers must be on duty"
+     Comment "Vehicle/weapon robbery refused because too few police are on duty. %1 = required count"
+    }
+    CustomStringTableItem "{DDFD7A1F8207F359}" {
+     Id "LF-Gather_Action"
+     Target_en_us "Gather %1"
+     Comment "Action name for gathering a resource. %1 = item name"
+    }
+    CustomStringTableItem "{2969D3779A79F0EA}" {
+     Id "LF-Gather_Unknown"
+     Target_en_us "resource"
+     Comment "Gather action fallback when the gathered item has no name"
+    }
+    CustomStringTableItem "{90AE356E2AC3F7C8}" {
+     Id "LF-Gather_Wait"
+     Target_en_us "Wait %1 seconds"
+     Comment "Gather refused: the resource is restocking. %1 = seconds"
+    }
+    CustomStringTableItem "{44A28FD4E95EA8C3}" {
+     Id "LF-Gather_RequiresItem"
+     Target_en_us "Requires the right tool"
+     Comment "Gather refused: the required tool is not in the inventory"
+    }
+    CustomStringTableItem "{FDA4450EBA23EE4D}" {
+     Id "LF-Gather_RequiresItemInHands"
+     Target_en_us "Requires the right tool in hand"
+     Comment "Gather refused: the required tool is not held"
+    }
+    CustomStringTableItem "{60B6DD582597F066}" {
+     Id "LF-Process_NoItems"
+     Target_en_us "Missing the input materials"
+     Comment "Processing refused: the player does not carry the input items"
+    }
+    CustomStringTableItem "{F612D2192DFC33C8}" {
+     Id "LF-Shop_SaleFailed_Title"
+     Target_en_us "Sale failed"
+     Target_es_es "Venta fallida"
+     Comment "Shop sell failure notification title (selling, not buying)"
+    }
+    CustomStringTableItem "{9B2FF881F1CB91D3}" {
+     Id "LF-Shop_Name_General"
+     Target_en_us "General store"
+     Target_es_es "Tienda general"
+     Comment "DebugWorld shop name"
+    }
+    CustomStringTableItem "{595445544B0E7D7B}" {
+     Id "LF-Shop_Desc_General"
+     Target_en_us "General supplies"
+     Target_es_es "Tienda general de suministros"
+     Comment "DebugWorld shop description"
+    }
+    CustomStringTableItem "{65F7FEC08E8AAFA4}" {
+     Id "LF-Shop_Open_General"
+     Target_en_us "Browse the store"
+     Target_es_es "Abrir tienda"
+     Comment "Interaction name on the general store counter"
+    }
+    CustomStringTableItem "{C23FF12F6B1296E1}" {
+     Id "LF-Shop_Name_BackRoom"
+     Target_en_us "Back room"
+     Target_es_es "Mercado negro"
+     Comment "DebugWorld black-market shop name"
+    }
+    CustomStringTableItem "{C600431286D021E1}" {
+     Id "LF-Shop_Desc_BackRoom"
+     Target_en_us "Special equipment"
+     Target_es_es "Equipamiento especial"
+     Comment "DebugWorld black-market shop description"
+    }
+    CustomStringTableItem "{B50F85FC9F4CC91E}" {
+     Id "LF-Shop_Open_BackRoom"
+     Target_en_us "Knock on the back door"
+     Target_es_es "Abrir mercado negro"
+     Comment "Interaction name on the black-market shop"
+    }
+    CustomStringTableItem "{1B9D952889159031}" {
+     Id "LF-Shop_Item_M9"
+     Target_en_us "M9 pistol"
+     Comment "Shop item display name"
+    }
+    CustomStringTableItem "{028FE3699291F64C}" {
+     Id "LF-Quest_Giver_Start"
+     Target_en_us "Town hall clerk"
+     Target_es_es "Funcionario del ayuntamiento"
+     Comment "Quest menu title for the starting quest giver"
+    }
+    CustomStringTableItem "{1A64603286E76D07}" {
+     Id "LF-Shop_OpenDesc_General"
+     Target_en_us "Buy food and supplies"
+     Target_es_es "Comprar comida y suministros"
+     Comment "Interaction description on the general store counter"
+    }
+    CustomStringTableItem "{F1C7C0F870099A03}" {
+     Id "LF-Shop_OpenDesc_BackRoom"
+     Target_en_us "Buy equipment"
+     Target_es_es "Comprar equipamiento"
+     Comment "Interaction description on the black-market shop"
+    }
+    CustomStringTableItem "{7D3A91C4E85B2F60}" {
+     Id "LF-Police_MenuTitle"
+     Target_en_us "Station desk"
+     Target_es_es "Mostrador de la comisaría"
+     Comment "Title of the police station desk menu (wanted list, fines, arrests)"
+    }
   }
  }
 }

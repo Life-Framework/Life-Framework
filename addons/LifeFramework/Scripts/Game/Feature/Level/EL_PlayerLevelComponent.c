@@ -215,9 +215,9 @@ class EL_PlayerLevelComponent : ScriptComponent
 		int salePercent = Math.Round((GetSaleBonus() - 1.0) * 100);
 		
 		if (gatherPercent == 0 && salePercent == 0)
-			return "Sin bonos activos";
+			return WidgetManager.Translate("#LF-Level_BonusNone");
 		
-		return string.Format("+%1%% recolección | +%2%% venta", gatherPercent, salePercent);
+		return WidgetManager.Translate("#LF-Level_Bonus", gatherPercent, salePercent);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -303,11 +303,11 @@ class EL_PlayerLevelComponent : ScriptComponent
 		string bonusText = "";
 		if (gatherPercent > 0 || salePercent > 0)
 		{
-			bonusText = string.Format("\n\nBonos Activos:\n+%1%% Recolección | +%2%% Venta", gatherPercent, salePercent);
+			bonusText = " " + WidgetManager.Translate("#LF-Level_PromotedBonus", gatherPercent, salePercent);
 		}
 		
-		string message = string.Format("¡NIVEL %1 ALCANZADO!\n+1 Skill Point ganado%2", m_iPlayerLevel, bonusText);
-		SCR_HintManagerComponent.ShowCustomHint(message, "LEVEL UP!", 8.0);
+		string message = WidgetManager.Translate("#LF-Level_Promoted", m_iPlayerLevel) + bonusText;
+		SCR_HintManagerComponent.ShowCustomHint(message, WidgetManager.Translate("#LF-Level_Promoted_Title"), 8.0);
 	}
 	
 	//------------------------------------------------------------------------------------------------

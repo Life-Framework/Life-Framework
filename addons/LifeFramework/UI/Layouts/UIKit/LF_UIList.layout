@@ -1,0 +1,22 @@
+SizeLayoutWidgetClass "{D2E6A6C1B87F3E40}" {
+ Name "List"
+ Slot LayoutSlot "{5B0F7E2A91C34D86}" {
+  Padding 28 10 28 10
+ }
+ AllowHeightOverride 1
+ HeightOverride 300
+ {
+  ScrollLayoutWidgetClass "{8C47D1E39A2B6F05}" {
+   Name "ListScroll"
+   Slot AlignableSlot "{E91A3C5D7B204F68}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    VerticalLayoutWidgetClass "{3F6B92A0D4E1C857}" {
+     Name "ListContent"
+    }
+   }
+  }
+ }
+}

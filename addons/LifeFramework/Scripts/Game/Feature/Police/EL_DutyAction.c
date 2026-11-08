@@ -39,14 +39,21 @@ class EL_DutyAction : ScriptedUserAction
 		LF_PoliceRanks.OnDutyChanged(account, newDuty);
 
 		string status;
+		string statusKey;
 		if (newDuty)
+		{
 			status = "on duty";
+			statusKey = "#LF-Duty_OnDuty";
+		}
 		else
+		{
 			status = "off duty";
+			statusKey = "#LF-Duty_OffDuty";
+		}
 
 		EL_Debug.Log("Police", string.Format("duty toggled -> %1 (player %2)", status, pUserEntity));
 
-		EL_Utils.NotifyEntity(pUserEntity, "#EL-Duty_Status_Change", "#EL-Duty_Status", 3.0, status);
+		EL_Utils.NotifyEntity(pUserEntity, "#EL-Duty_Status_Change", "#EL-Duty_Status", 3.0, statusKey);
 
 		// Duty pay is handed over here, at the desk, once per shift.
 		if (!newDuty)

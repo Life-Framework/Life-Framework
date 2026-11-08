@@ -19,6 +19,7 @@ class LF_UITheme
 	static const string ROW_LAYOUT = "{635A66887A0CB6BF}UI/Layouts/UIKit/LF_UIListRow.layout";
 	static const string STATUS_LAYOUT = "{FF15C6F4AC42BECB}UI/Layouts/UIKit/LF_UIStatusRow.layout";
 	static const string QUANTITY_LAYOUT = "{7BD6344F5ACD8B35}UI/Layouts/UIKit/LF_UIQuantity.layout";
+	static const string LIST_LAYOUT = "{9A3E5C71B2D84F06}UI/Layouts/UIKit/LF_UIList.layout";
 
 	static const int FONT_TITLE = 28;
 	static const int FONT_BODY = 18;

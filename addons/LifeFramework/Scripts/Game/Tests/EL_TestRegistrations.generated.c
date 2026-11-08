@@ -145,6 +145,10 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_TextLabel(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_TraderItemConfig(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ProcessingRecipeConfig(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UIKitInitialFocus(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UIKitButtonInvoker(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_NotificationToastTiming(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_NotificationToastLayout(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_UIKitParts(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitQuantity(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitClose(), EL_TestTier.LOGIC);
