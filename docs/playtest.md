@@ -2,7 +2,7 @@
 
 There are two ways to play. **Host** runs the village on this PC as a dedicated server, the way friends will play it: start with [Play tonight](#play-tonight). **Workbench play** runs it inside Workbench for one person: see [Start DebugWorld](#start-debugworld). Both use `main`; the old `release/next` branch is merged and gone.
 
-Walk up to each site and try it. Send back what you did, what you expected, and what you want built next. That note becomes the next agent prompt. The last QA pass is [playtest/qa-2026-11-08.md](playtest/qa-2026-11-08.md).
+Walk up to each site and try it. Send back what you did, what you expected, and what you want built next. That note becomes the next agent prompt. The last QA pass is [playtest/rc-2026-11-08.md](playtest/rc-2026-11-08.md) (the first: [playtest/qa-2026-11-08.md](playtest/qa-2026-11-08.md)).
 
 ## Play tonight
 
@@ -23,24 +23,25 @@ It closes the game and the server and saves. `tools\cli playtest status` shows b
 Your character is keyed by your Steam name and kept in `%LOCALAPPDATA%\LifeFramework\host`. The launcher prints how a friend joins at the end ([How a friend joins](#how-a-friend-joins)); give friends distinct Steam names. The manual steps behind the command are in [Host a playtest on a dedicated server](#host-a-playtest-on-a-dedicated-server).
 ### What to try tonight
 
-In this order, it is the M1 loop:
+Nothing outside the game is needed: the clerk on the square, the signs, and the prompts lead the way. In this order, it is the M1 loop:
 
-1. Parcel job at the post office (`Roadmap_Job_Depot`), deliver at `Roadmap_Job_Drop`. Expect "Run paid: $40".
-2. Deposit cash at the ATM, then buy the S105 at the car dealer (`Roadmap_Vehicle_Lot`). Cars are paid from the bank.
-3. A second player clocks in as police at the station (police needs the whitelist or an admin; see [Police](#police)), the first robs `Roadmap_Fuel_Till`. The officer gets an alert toast; the robber is wanted.
-4. The officer arrests the robber and escorts them to the cell. A new officer can do both from the first minute on duty.
-5. Found an organization at `Roadmap_Org_Desk`, buy processing, open the hideout.
-6. `host stop`, `host start`, rejoin: cash, bank, car, organization, and hideout are still there.
+1. Register on form R-89, then follow the clerk: ID card, town board, a parcel run ("Run paid: $40").
+2. You start with $1,000 in the bank. At the car lot, "Look at the cars": the price sheet shows what you can buy. Buy the S105.
+3. Your character also owns a car in the garage and one at the impound lot (playtest only). Read the ledger at the garage, retrieve one, collect the other at the impound desk for the fee.
+4. The general store sells food, drink, and a dressing from a price sheet.
+5. Police: the first player on a fresh playtest save is on the police roster. Clock in at the station desk; the kit includes the key to the station car. A second player robs `Roadmap_Fuel_Till`: the officer gets the radio dispatch and reads the wanted board, then arrests the robber, who goes to the cell.
+6. Found an organization at `Roadmap_Org_Desk`, take the alley yard lease, store something in the stash, run contraband from the barn to the pub.
+7. `toolscli playtest stop`, then `toolscli playtest` again: you wake on the square with your cash, bank, job, organization, and cars.
 
 ### Known rough edges (2026-11-08)
 
-Do not spend the evening on these; they are filed.
+Do not spend the evening on these; they are filed or being worked. Full list: [playtest/rc-2026-11-08.md](playtest/rc-2026-11-08.md).
 
-- The registration form, ATM, and org screens are dark and hard to read; the form's labels read "Editbox" (#110, M1-13 is rebuilding these screens).
-- The parcel and bank bags are invisible in your hands (#155).
-- Fuel delivery opens after five parcel runs and the taxi after fifteen runs in all (#156). The game never shows a level; the drop-off tells you when new work opens.
-- The police duty desk and wanted board are not on the street yet (M1-11); duty is the panel in front of the station.
-- Toasts are the only alert: no alarm at the site, no dispatch board (M1-20).
+- Esc does not close the wanted card, or the org ledger right after founding; use its button or walk away (#199).
+- The arrest now moves the prisoner on your client; it was fixed after the last check, so say whether you end up in the cell.
+- The police station layout and sign titles are being redone by another change: until it lands, the desk and wanted board stand on the lawn and sign titles are small from the road.
+- Some NPCs may appear half-dressed.
+- Fuel delivery opens after five parcel runs and the taxi after fifteen runs in all (#156).
 
 ## Start DebugWorld
 

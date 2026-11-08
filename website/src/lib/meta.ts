@@ -3,7 +3,7 @@
 import { docs } from "@/lib/content";
 
 // Where the site is served. Change to https://life-framework.org at the DNS cutover (README).
-export const SITE_URL = "https://life-framework-arn.pages.dev";
+export const SITE_URL = "https://life-framework.org";
 export const SITE_NAME = "Life Framework";
 
 export type PageMeta = { title: string; description: string; og: string; path: string; noindex?: boolean };

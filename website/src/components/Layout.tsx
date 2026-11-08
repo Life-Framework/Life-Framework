@@ -14,7 +14,7 @@ const NAV = [
 
 export const Wordmark = ({ className = "" }: { className?: string }) => (
   <span className={`inline-flex items-center gap-2.5 ${className}`}>
-    <Mark className="w-8 h-8 shrink-0" />
+    <Mark className="w-9 h-9 shrink-0" />
     <span className="font-display font-bold uppercase text-[1.4rem] leading-none tracking-[0.01em]">Life Framework</span>
   </span>
 );

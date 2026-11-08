@@ -822,7 +822,7 @@ class LF_UIScreen
 		TextWidget label = button.GetTextWidget();
 		if (label)
 		{
-			label.SetExactFontSize(LF_UITheme.FONT_BUTTON);
+			label.SetExactFontSize(Math.Round(LF_UITheme.FONT_BUTTON * GetSkin().m_fTypeScale));
 			label.SetFont(GetSkin().m_Font);
 		}
 
@@ -853,7 +853,7 @@ class LF_UIScreen
 
 		text.SetIsColorInherited(false);
 		text.SetColor(GetSkin().m_Ink);
-		text.SetExactFontSize(fontSize);
+		text.SetExactFontSize(Math.Round(fontSize * GetSkin().m_fTypeScale));
 		text.SetFont(GetSkin().m_Font);
 		text.SetOutline(0);
 		text.SetShadow(0);
