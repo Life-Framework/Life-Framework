@@ -4452,6 +4452,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
      Comment "Wanted board sign card: what to do next."
     }
+    CustomStringTableItem "{50FCD7F3D7EB972C}" {
+     Id "LF-Job_MoreRunsFirst"
+     Target_en_us "Do more parcel runs first"
+     Comment "Greyed job sign-up reason: the player needs more delivery runs. Hidden progression: no level is named."
+    }
   }
  }
 }

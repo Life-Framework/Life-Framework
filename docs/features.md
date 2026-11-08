@@ -688,6 +688,11 @@
   house porch at the east end, the taxi pad at the bus stop by the square, the
   fuel can at the fuel station.
 
+- ✅ **Sign-up offers on a dedicated client** (2026-11-08, #157): the greyed reason reads
+  `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
+  A client reads the level replicated on `EL_PlayerJobComponent` (the career map is
+  server-only), so fuel and taxi open on the client once the server levels the career.
+
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
   `SetScopeReward` for that prefab (verified 2026-10-11). Gather and process
