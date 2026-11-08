@@ -12,8 +12,10 @@
 //   [ELTEST] FAIL restart/jail-serializer-roundtrip
 //   [ELTEST]   - the save is written at version 5 (expected 5, got 4)
 //   [ELTEST]   - the sentence is served again after the load
-//   [ELTEST] FAIL restart/vehicle-restore-no-ground-key
+//   [ELTEST] FAIL restart/vehicle-restore-no-ground-key (now restart/vehicle-street-impounded)
 //   [ELTEST]   - restore drops no key beside the pad
+// restart/vehicle-street-impounded, 2026-11-08 (M1-16): EL_VehicleOwnership.IsImpounded returning
+// false failed it with `- the street car is at the impound lot`, `- a second pass keeps it impounded`.
 //   [ELTEST] FAIL restart/vehicle-plates-reserved
 //   [ELTEST]   - a purchase after the load cannot take the saved plate (expected '', got 'RS PL 7001')
 //   [ELTEST] FAIL restart/whitelist-unreadable-file-kept
@@ -153,7 +155,7 @@ class EL_Test_RestartVehicleNoGroundKey : EL_Test
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
 	{
-		return "restart/vehicle-restore-no-ground-key";
+		return "restart/vehicle-street-impounded";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -166,16 +168,17 @@ class EL_Test_RestartVehicleNoGroundKey : EL_Test
 		loaded.Insert(EL_VehicleRecord.Create(VEHICLE_ID, OWNER_UID, VEHICLE_ID, EL_VehicleCatalog.S105, EL_VehicleCatalog.S105_LOCKED, "roadmap-lot", PLATE, "#EL-Vehicle_S105", true, false));
 		EL_VehicleOwnership.ApplyAll(loaded);
 
-		ctx.True(EL_VehicleOwnership.RestoreVehicle(VEHICLE_ID), "restore puts the out-in-world vehicle back");
-		ctx.True(EL_VehicleOwnership.GetVehicle(VEHICLE_ID) != null, "the restored vehicle is live");
-		ctx.True(EL_VehicleOwnership.GetKey(VEHICLE_ID) == null, "restore drops no key beside the pad");
-		ctx.True(EL_VehicleOwnership.IsLocked(VEHICLE_ID), "the restored vehicle keeps its saved lock");
+		// Garage it to keep it: a car left on the street is at the impound lot, not on a pad.
+		ctx.True(EL_VehicleOwnership.ImpoundStreetVehicles() >= 1, "the load counts the street car as impounded");
+		ctx.True(EL_VehicleOwnership.IsImpounded(VEHICLE_ID), "the street car is at the impound lot");
+		ctx.True(EL_VehicleOwnership.GetVehicle(VEHICLE_ID) == null, "the impounded car is not spawned");
+		ctx.True(EL_VehicleOwnership.GetKey(VEHICLE_ID) == null, "the load drops no key anywhere");
+		ctx.True(EL_VehicleOwnership.IsLocked(VEHICLE_ID), "the impounded car keeps its saved lock");
 
-		ctx.True(EL_VehicleOwnership.RestoreVehicle(VEHICLE_ID), "a second restore finds the live vehicle");
-		ctx.True(EL_VehicleOwnership.GetKey(VEHICLE_ID) == null, "a second restore still drops no key");
+		EL_VehicleOwnership.ImpoundStreetVehicles();
+		ctx.True(EL_VehicleOwnership.IsImpounded(VEHICLE_ID), "a second pass keeps it impounded");
+		ctx.True(EL_VehicleOwnership.GetVehicle(VEHICLE_ID) == null, "a second pass spawns nothing");
 
-		// Cleanup: the owner store removes the entity, then the registry returns to its prior state.
-		EL_VehicleOwnership.Store(VEHICLE_ID, OWNER_UID);
 		EL_VehicleOwnership.ApplyAll(before);
 		EL_LicensePlateRegistry.Release(PLATE);
 	}

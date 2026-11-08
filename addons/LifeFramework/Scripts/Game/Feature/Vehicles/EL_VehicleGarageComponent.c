@@ -12,7 +12,7 @@
 // Ported from LNGC_GarageComponent. One shared garage network: any garage retrieves any
 // of the player's stored vehicles. Cash stays MoneyStack. No LNGC_ types.
 //------------------------------------------------------------------------------------------------
-[ComponentEditorProps(category: "EveronLife/Feature/Vehicles", description: "Marks a garage. Any garage can store or retrieve an owned vehicle.")]
+[ComponentEditorProps(category: "EveronLife/Feature/Vehicles", description: "Marks a garage. Any garage stores an owned vehicle parked at it and retrieves onto its own pad.")]
 class EL_VehicleGarageComponentClass : ScriptComponentClass
 {
 }
@@ -21,7 +21,10 @@ class EL_VehicleGarageComponentClass : ScriptComponentClass
 class EL_VehicleGarageComponent : ScriptComponent
 {
 	static const ResourceName GARAGE_SHELL = "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et";
-	protected static const float INTERACT_RADIUS = 15.0;
+	static const float INTERACT_RADIUS = 15.0;
+
+	[Attribute("", UIWidgets.EditBox, desc: "Pad id of the EL_VehicleSpawnPointComponent a retrieved vehicle is placed on, in front of this garage.")]
+	protected string m_sPadId;
 	protected static ref array<EL_VehicleGarageComponent> s_aAll = {};
 	protected bool m_bRegistered;
 
@@ -40,7 +43,32 @@ class EL_VehicleGarageComponent : ScriptComponent
 
 		m_bRegistered = true;
 		s_aAll.Insert(this);
-		EL_Debug.Log("Vehicle", "garage registered");
+		if (m_sPadId.IsEmpty())
+			EL_Debug.Error("Vehicle", "garage has no pad id: retrieve is refused there");
+		else
+			EL_Debug.Log("Vehicle", "garage registered pad=" + m_sPadId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetPadId()
+	{
+		return m_sPadId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The first garage whose radius holds origin, or null.
+	static EL_VehicleGarageComponent FindAt(vector origin)
+	{
+		foreach (EL_VehicleGarageComponent garage : s_aAll)
+		{
+			if (!garage || !garage.GetOwner())
+				continue;
+
+			if (vector.Distance(origin, garage.GetOwner().GetOrigin()) <= INTERACT_RADIUS)
+				return garage;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -65,19 +93,12 @@ class EL_VehicleGarageComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	static bool IsPositionNearAnyGarage(vector origin)
 	{
-		foreach (EL_VehicleGarageComponent garage : s_aAll)
-		{
-			if (!garage || !garage.GetOwner())
-				continue;
-
-			if (vector.Distance(origin, garage.GetOwner().GetOrigin()) <= INTERACT_RADIUS)
-				return true;
-		}
-
-		return false;
+		return FindAt(origin) != null;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Storing takes the vehicle off the map, so the vehicle has to be at the garage the player is
+	//! using. Checking only the player let an owner store a car from anywhere.
 	//! \return true when both the player and the vehicle stand within INTERACT_RADIUS of garageOrigin.
 	static bool SharesGarage(vector garageOrigin, vector playerOrigin, vector vehicleOrigin)
 	{
@@ -85,24 +106,5 @@ class EL_VehicleGarageComponent : ScriptComponent
 			return false;
 
 		return vector.Distance(vehicleOrigin, garageOrigin) <= INTERACT_RADIUS;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Storing takes the vehicle off the map, so the vehicle has to be at the garage the player is
-	//! using. Checking only the player let an owner store a car from anywhere, including one in
-	//! a police impound.
-	//! \return true when one garage has both the player and the vehicle within its radius.
-	static bool IsVehicleAtPlayersGarage(vector playerOrigin, vector vehicleOrigin)
-	{
-		foreach (EL_VehicleGarageComponent garage : s_aAll)
-		{
-			if (!garage || !garage.GetOwner())
-				continue;
-
-			if (SharesGarage(garage.GetOwner().GetOrigin(), playerOrigin, vehicleOrigin))
-				return true;
-		}
-
-		return false;
 	}
 }
