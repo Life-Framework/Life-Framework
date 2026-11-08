@@ -136,15 +136,33 @@
 ## Character & Survival
 
 ### `EL_SurvivalStats` — `Feature/Survival/EL_SurvivalStats.c`
-- ✅ All stats clamped `[0,100]`. `Eat`/`Drink`/`Heal` are additive through
-  clamped setters. `Create(id)` starts all at 100.
-- ✅ (2026-11-08, M1-28) **Needs are light and never kill.** `UpdateStats(dt,
-  config)` takes every rate from `LF_SurvivalConfig`
-  (`Configs/Survival/LF_Survival.conf`). Flagship: hunger `0.01/s` (about
-  2.8 h from full), thirst `0.0125/s` (about 2.2 h). Below 20 hunger or thirst,
-  health falls at `0.05/s` to the 75 cap and stops; health already below the
-  cap is not touched. With needs met, health regains `0.02/s` up to 100.
-  `dt <= 0` is a no-op. Tests: `survival/light`.
+- ✅ Hunger and thirst clamped `[0,100]`. `Eat`/`Drink` are additive through
+  clamped setters. `Create(id)` starts both at 100.
+- ✅ (2026-11-08, M1-28) `UpdateStats(dt, config)` drains needs at the
+  `LF_SurvivalConfig` rates. Flagship: hunger `0.01/s` (about 2.8 h from
+  full), thirst `0.0125/s` (about 2.2 h). `dt <= 0` is a no-op.
+- ✅ (2026-11-08) The separate survival health stat is gone. Needs act on the
+  character's real health (`LF_SurvivalHealth`). The save record keeps its
+  `m_fHealth` slot, written as 100 and ignored on load, so the save format
+  does not change.
+
+### `LF_SurvivalHealth` — `Feature/Survival/LF_SurvivalHealth.c`
+- ✅ (2026-11-08) **Needs never kill.** On the server tick, with hunger or
+  thirst below 20, the damage manager's default `Health` hit zone falls at
+  `0.0005` of max per second (about 8 min) to `0.75` of max, then stops. An
+  injury already below the cap is not touched. Survival tracks what it took;
+  once needs are met it gives back only that, at `0.001`/s. Vanilla healing
+  above the cap is never pulled down while fed. A dead body is skipped.
+  Tests: `survival/light` (math), `survival/real-health` (WORLD, spawned
+  character).
+- ✅ The consumable `m_fHealthRestore` heals real health (percent of max).
+
+### `LF_SurvivalConfig` — `Feature/Survival/LF_SurvivalConfig.c`
+- ✅ (2026-11-08) Framework knobs: hunger and thirst drain, the low-needs
+  threshold, the real-health cap, drain and give-back (fractions of max), the
+  stamina drain multiplier, the tick interval and the max tick delta. A
+  missing `.conf` logs `[ELDebug:Survival]` once and falls back to the same
+  built-in defaults.
 
 ### `EL_CharacterSurvivalComponent` — `Feature/Survival/EL_CharacterSurvivalComponent.c`
 - ✅ (2026-11-08) Server-authoritative: stats tick on the server only, on a
@@ -156,6 +174,19 @@
   `survival/sync`.
 - ✅ The old per-frame `EOnFrame` driver is gone. It had no event mask and
   treated world-time milliseconds as seconds.
+
+### `LF_SurvivalStaminaPenalty` — `Feature/Survival/LF_SurvivalStaminaPenalty.c`
+- ✅ (2026-11-08) Modded `SCR_CharacterStaminaComponent.OnStaminaDrain`: with
+  low needs, exertion drains stamina `1.5x` (config), so a hungry player
+  sprints for less time and breathes hard sooner. It lifts on the next sync
+  after eating and drinking. Same reentrancy pattern as the base hydration
+  penalty.
+- ⚠️ Not yet felt in game: set survival to 10 in the DebugMenu and sprint.
+
+### `EL_BetaHud` survival gauges — `HUD/EL_BetaHud.c`
+- ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
+  The HUD stays second to the body cue. The health gauge already reads the
+  damage manager, so the needs cap now shows there too.
 
 ### `EL_ConsumableEffectSurvival` — `Feature/Survival/EL_ConsumableEffectSurvival.c`
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
@@ -176,24 +207,6 @@
   (account-aware, re-applies the faction loadout).
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
-
-### `LF_SurvivalConfig` — `Feature/Survival/LF_SurvivalConfig.c`
-- ✅ (2026-11-08) Framework knobs: hunger and thirst drain, low-needs
-  threshold, health cap, health drain and regen, stamina drain multiplier,
-  tick interval, max tick delta. A missing `.conf` logs
-  `[ELDebug:Survival]` once and uses the same built-in defaults.
-
-### `LF_SurvivalStaminaPenalty` — `Feature/Survival/LF_SurvivalStaminaPenalty.c`
-- ✅ (2026-11-08) Modded `SCR_CharacterStaminaComponent.OnStaminaDrain`: with
-  low needs, exertion drains stamina `1.5x` (config), so a hungry player
-  sprints for less time and breathes hard sooner. It lifts on the next sync
-  after eating and drinking. Same reentrancy pattern as the base hydration
-  penalty.
-- ⚠️ Not yet felt in game: set survival to 10 in the DebugMenu and sprint.
-
-### `EL_BetaHud` survival gauges — `HUD/EL_BetaHud.c`
-- ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
-  The HUD stays second to the body cue.
 
 ### Carried inventory — `Feature/Character/Persistence/LF_StorageSnapshot.c`
 - ✅ **Carried cash and items survive a restart** (2026-11-08, M1-04, tests
@@ -217,6 +230,27 @@
   longer self-spawns the player character, so a pocket `MoneyStack` does not
   come back loose on the ground next to the restored one (the two-boot e2e
   counts it).
+
+### Progression — `Feature/Account/LF_Progression.c`
+- ✅ **Progression survives a restart** (2026-11-08, M1-10, tests
+  `persist/progression-roundtrip`, `persist/progression-old-save`, and
+  `e2e/pass2-verify-load` across a real two-boot restart). The `progression`
+  payload, appended at save version 7, holds one `LF_ProgressionRecord` per
+  player uid: the civilian delivery career (level, XP, paid total), police rank,
+  on-duty seconds and unpaid duty seconds, seconds since the last benefit
+  collection, the player level (level, XP, skill points), licences by enum name,
+  and turned-in quest ids. A courier at level 2 still opens fuel delivery and a
+  senior officer stays senior.
+- ✅ Level, licences, and turn-ins live on the character, so their owners write
+  through to the store and `EL_SpawnLogic` applies the record to every new body.
+  They now survive death as well; only carried items drop.
+- ✅ Tolerant load: an unknown licence name is skipped with a warning, an unknown
+  quest id is kept with a warning, a rank above the ladder clamps to senior. A
+  version 6 save leaves live rank and duty totals alone (the account apply
+  carries them over). A running duty clock is settled into the save.
+- ⚠️ Sign-ups, an active run, and the open duty clock are session state; after a
+  restart the courier signs up again. `EL_LicenseManagerComponent` is not on
+  `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 - ⚠️ Ammo count, weapon state, and placed storage (hideout stash, M1-15) are not
   in the snapshot. Attachments and magazines are kept as items.
 
@@ -612,8 +646,8 @@
   $100, below $500, 1200 s). Pick-up sound, then a `#EL-Benefit_Paid` toast; a
   refusal toasts its reason. A full inventory pays nothing and does not start
   the cooldown.
-- ⚠️ The cooldown ledger is session state; a restart lets a broke player collect
-  once more.
+- ✅ The cooldown survives a restart (M1-10): the save holds seconds since the
+  last collection, because world time starts over.
 
 ## Crime & Police
 
@@ -846,9 +880,9 @@
   `draw refused: <uid> already drew a kit this shift` and shows
   `#EL-Rank_AlreadyDrawn`. `OnDutyChanged` clears the mark. Test:
   `security/police-abuse`.
-- ⚠️ Rank, on-duty seconds, and the shift draw mark live on the account object
-  and are not in `EL_PlayerAccountRecord`, so a restart returns the officer to
-  patrol and allows one more draw.
+- ✅ Rank, on-duty seconds, and unpaid duty seconds survive a restart (M1-10,
+  `progression` payload, save version 7).
+- ⚠️ The shift draw mark is session state, so a restart allows one more draw.
 
 ### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
 - ✅ One convoy. A member of the organization that owns the hideout hauls

@@ -13,7 +13,6 @@ class EL_Test_Survival : EL_Test
 	{
 		EL_SurvivalStats stats = EL_SurvivalStats.Create("test-survival");
 
-		ctx.True(Math.AbsFloat(stats.GetHealth() - 100) < 0.001, "fresh stats start at 100 health");
 		ctx.True(Math.AbsFloat(stats.GetHunger() - 100) < 0.001, "fresh stats start at 100 hunger");
 		ctx.True(Math.AbsFloat(stats.GetThirst() - 100) < 0.001, "fresh stats start at 100 thirst");
 
@@ -23,17 +22,11 @@ class EL_Test_Survival : EL_Test
 		stats.Eat(200);
 		ctx.True(Math.AbsFloat(stats.GetHunger() - 100) < 0.001, "hunger clamps at 100");
 
-		stats.SetHealth(-10);
-		ctx.True(Math.AbsFloat(stats.GetHealth()) < 0.001, "health clamps at 0");
-
 		stats.Drink(-60);
 		ctx.True(Math.AbsFloat(stats.GetThirst() - 40) < 0.001, "Drink(-60) lowers thirst to 40");
 
 		stats.Drink(200);
 		ctx.True(Math.AbsFloat(stats.GetThirst() - 100) < 0.001, "thirst clamps at 100");
-
-		stats.Heal(200);
-		ctx.True(Math.AbsFloat(stats.GetHealth() - 100) < 0.001, "Heal clamps at 100");
 
 		// Explicit rates so the arithmetic below does not move with the flagship config.
 		LF_SurvivalConfig rates = new LF_SurvivalConfig();
@@ -41,17 +34,13 @@ class EL_Test_Survival : EL_Test
 		rates.m_fThirstDrainPerSecond = 0.15;
 		stats.SetHunger(50);
 		stats.SetThirst(50);
-		stats.SetHealth(100);
 		stats.UpdateStats(10, rates);
-		ctx.True(Math.AbsFloat(stats.GetHealth() - 100) < 0.001, "no health loss while hunger and thirst stay above 20");
 		ctx.True(Math.AbsFloat(stats.GetHunger() - 49) < 0.001, "UpdateStats(10) drops hunger by 1");
 		ctx.True(Math.AbsFloat(stats.GetThirst() - 48.5) < 0.001, "UpdateStats(10) drops thirst by 1.5");
 
 		stats.SetHunger(10);
 		stats.SetThirst(10);
-		stats.SetHealth(100);
 		stats.UpdateStats(10, rates);
-		ctx.True(Math.AbsFloat(stats.GetHealth() - 99.5) < 0.001, "low needs drain health above the cap by 0.5 per 10s");
 
 		float thirstBefore = stats.GetThirst();
 		stats.UpdateStats(0, rates);
@@ -79,14 +68,13 @@ class EL_Test_SurvivalSaveData : EL_Test
 
 		// Serialize: copy the live values into the persisted record.
 		EL_SurvivalStatsRecord record = EL_SurvivalStatsRecord.Create(
-			stats.GetPersistentId(), stats.GetHunger(), stats.GetThirst(), stats.GetHealth());
+			stats.GetPersistentId(), stats.GetHunger(), stats.GetThirst(), EL_SurvivalStatsRecord.RETIRED_HEALTH);
 
 		// Deserialize: apply the record back through the public setters.
 		EL_SurvivalStats restored = EL_SurvivalStats.Create("other-id");
 		restored.SetPersistentId(record.m_sPersistentId);
 		restored.SetHunger(record.m_fHunger);
 		restored.SetThirst(record.m_fThirst);
-		restored.SetHealth(record.m_fHealth);
 
 		ctx.True(Math.AbsFloat(restored.GetHunger() - 70) < 0.001, "hunger survives the save round trip");
 		ctx.EqualStr("survival-save-source", restored.GetPersistentId(), "persistent id survives the round trip");

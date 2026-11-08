@@ -87,6 +87,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceAbuse(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_ProgressionRoundtrip(), EL_TestTier.PERSISTENCE);
+		manager.Register(new EL_Test_ProgressionOldSave(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_QuantityStack(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityVisuals(), EL_TestTier.LOGIC);
@@ -162,6 +164,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Survival(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalLight(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SurvivalRealHealth(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SurvivalSync(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_TraderSellRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitInitialFocus(), EL_TestTier.LOGIC);

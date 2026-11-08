@@ -18,14 +18,15 @@ readout (accepted — a body-state gauge has no world object).
 Today (2026-11-08, M1-28, decision "Survival needs are light"): the server
 ticks `EL_SurvivalStats` once a second with rates from `LF_SurvivalConfig`
 (`Configs/Survival/LF_Survival.conf`). Needs drain slowly (a meal lasts a
-session). Low needs hold health at a 75 cap and make exertion drain stamina
+session). Low needs hold the character's real health (damage manager) at 75% of
+max through `LF_SurvivalHealth` and make exertion drain stamina
 1.5x (`LF_SurvivalStaminaPenalty`); they never kill. Met needs regenerate
-health. `EL_ConsumableEffectSurvival` restores on item use; `EL_BetaHud` shows
+health by giving back what needs took. `EL_ConsumableEffectSurvival` restores on item use; `EL_BetaHud` shows
 the replicated gauges.
 
 ## V1 (shippable)
 
-1. Health recovery: done. Met needs regenerate health; low needs stop at the cap.
+1. Health recovery: done. Met needs give back what they took; vanilla healing is untouched.
 2. Delta clamp: done. One tick applies at most `m_fMaxTickDeltaSeconds`.
 3. Zero health: survival never takes health below the cap, so it never kills.
    Death from other causes is the body-and-respawn flow (see `Character`).
@@ -39,7 +40,8 @@ the replicated gauges.
 
 ## Current state
 
-- `EL_SurvivalStats`: clamped state, additive Eat/Drink/Heal, config-driven
+- `LF_SurvivalHealth`: the real-health cap and give-back (server).
+- `EL_SurvivalStats`: clamped hunger/thirst, additive Eat/Drink, config-driven
   `UpdateStats(dt, config)`, `AreNeedsLow`, `GetStaminaDrainMultiplier`.
 - `LF_SurvivalConfig`: every rate, the cap, the stamina multiplier.
 - `EL_CharacterSurvivalComponent`: server tick, dt clamp, owner-only
