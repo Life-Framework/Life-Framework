@@ -296,6 +296,15 @@ export function selftestSession() {
   if (!judgeInteraction(m1, m2, m1, g2).length) failures.push("judgeInteraction passed a giver who kept the cash");
   if (!judgeInteraction(m1, m2, g1, g2.replace("cash=550", "cash=600")).length) failures.push("judgeInteraction passed cash out of thin air");
   if (!judgeInteraction(m1, m2, g1, g2.replace("known=1", "known=0")).length) failures.push("judgeInteraction passed a receiver who never learned the name");
+  const d1 = "faction=CIVILIAN duty=0 wanted=1 dispatch=0 lastdispatch=none alarm=normal";
+  const d2 = `faction=POLICE duty=1 wanted=0 toast=${ROB_ALERT} dispatch=1 lastdispatch=#LF-Offence_Robbery@#LF-Sign_Fuel_Title alarm=none`;
+  const q1 = d1.replace("alarm=normal", "alarm=loud");
+  const q2 = d2.replace("duty=1", "duty=0").replace("faction=POLICE", "faction=CIVILIAN");
+  if (judgeDispatch(d1, d2, q1, q2).length) failures.push(`judgeDispatch failed a good run: ${judgeDispatch(d1, d2, q1, q2)}`);
+  if (!judgeDispatch(d1, d2.replace("dispatch=1", "dispatch=0"), q1, q2).length) failures.push("judgeDispatch passed an officer who got no dispatch");
+  if (!judgeDispatch(d1, d2, d1, q2).length) failures.push("judgeDispatch passed a normal alarm with nobody on duty");
+  if (!judgeDispatch(d1, d2, q1, q2.replace("dispatch=1", "dispatch=2")).length) failures.push("judgeDispatch passed a dispatch with nobody on duty");
+  if (!judgeDispatch(d1, d2.replace("@#LF", "@Ada_#LF"), q1, q2).length) failures.push("judgeDispatch passed a dispatch naming the robber");
   return failures;
 }
 
@@ -378,7 +387,8 @@ async function runInteraction() {
 // menu, dev gate open on the bare DebugWorld) who receives the alert. Prints
 // `state` for both before and after, then judges the after line.
 export const ROB_TARGET = "Roadmap_Fuel_Till";
-export const ROB_ALERT = "#EL-Police_Alert_Robbery";
+// The officer's last toast after a robbery: the radio dispatch line (LF_Dispatch, M1-20).
+export const ROB_ALERT = "#LF-Dispatch_Radio";
 
 export function judgeProof(before1, after1, after2) {
   const fails = [];
@@ -549,6 +559,105 @@ async function runPoliceProof() {
   return fails.length ? 1 : 0;
 }
 
+// M1-20 on a running `up --clients 2` session with client 2 on the roster
+// (`session.mjs roster 2` before up): client 2 clocks in, client 1 robs the
+// till. Client 1 hears the normal alarm; client 2 gets the radio dispatch (place
+// and description, no name) and reads it on the wanted board. Client 2 clocks
+// out, the till cooldown runs out, client 1 robs again: nobody is on duty, so
+// the alarm is the loud one and no dispatch goes out.
+export const TILL_COOLDOWN_MS = 61000;
+
+export function judgeDispatch(robbed1, robbed2, loud1, loud2) {
+  const fails = [];
+  const r1 = parseState(robbed1);
+  const r2 = parseState(robbed2);
+  const l1 = parseState(loud1);
+  const l2 = parseState(loud2);
+  if (r1.alarm !== "normal") fails.push(`client 1 hears alarm=${r1.alarm} with an officer on duty, expected normal`);
+  if (r2.dispatch !== "1") fails.push(`client 2 dispatch=${r2.dispatch} after the first robbery, expected 1`);
+  if (!String(r2.lastdispatch ?? "").startsWith("#LF-Offence_Robbery@")) fails.push(`client 2 lastdispatch=${r2.lastdispatch}, expected the robbery and its place`);
+  // The robber's first name (the surname "Robber" is inside the offence key itself).
+  for (const name of [ARRIVAL_NAMES[1][0], ARRIVAL_NAMES[1].join("_")]) {
+    if (String(r2.lastdispatch ?? "").includes(name)) fails.push(`client 2's dispatch names the robber (${name})`);
+  }
+  if (r2.toast !== ROB_ALERT) fails.push(`client 2 last toast is ${r2.toast}, expected ${ROB_ALERT}`);
+  if (l1.alarm !== "loud") fails.push(`client 1 hears alarm=${l1.alarm} with nobody on duty, expected loud`);
+  if (l2.dispatch !== "1") fails.push(`client 2 dispatch=${l2.dispatch} off duty, expected still 1 (no dispatch with nobody on duty)`);
+  if (l2.duty !== "0") fails.push(`client 2 duty=${l2.duty} for the loud robbery, expected 0`);
+  return fails;
+}
+
+async function runDispatchProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => on(n, { verb: "state" }, 10000).detail;
+  const duty = (n) => {
+    on(n, { verb: "stand", entityName: "Roadmap_Police_Desk" });
+    wait(2500);
+    on(n, { verb: "look" });
+    const r = on(n, { verb: "use", className: "EL_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000);
+    wait(2500);
+    return r;
+  };
+  const rob = (n) => {
+    on(n, { verb: "stand", entityName: ROB_TARGET });
+    wait(2500);
+    on(n, { verb: "look" });
+    const r = on(n, { verb: "use", className: "EL_RobAction", entityName: ROB_TARGET }, 10000);
+    wait(3000);
+    return r;
+  };
+  const fails = [];
+
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  if (duty(2).status !== "ok") fails.push("client 2 clock in failed");
+  // Client 2 waits at the station, out of the till's normal hear range.
+  const first = rob(1);
+  if (first.status !== "ok") fails.push(`rob returned ${first.status} ${first.detail}`);
+  const robbed1 = state(1);
+  on(1, { verb: "capture", mode: "ui", name: "m1_20_alarm_normal_client1" }, 25000);
+  wait(1000);
+  on(2, { verb: "capture", mode: "ui", name: "m1_20_dispatch_client2" }, 25000);
+  const robbed2 = state(2);
+
+  on(2, { verb: "stand", entityName: "Roadmap_Police_WantedBoard" });
+  wait(2500);
+  on(2, { verb: "look" });
+  on(2, { verb: "use", className: "LF_WantedBoardReadAction", entityName: "Roadmap_Police_WantedBoard" }, 10000);
+  wait(2500);
+  on(2, { verb: "capture", mode: "ui", name: "m1_20_board_dispatch_client2" }, 25000);
+  on(2, { verb: "ui" });
+  on(2, { verb: "click", widget: "Close" });
+  wait(800);
+
+  if (duty(2).status !== "ok") fails.push("client 2 clock out failed");
+  console.log(`waiting ${TILL_COOLDOWN_MS / 1000} s for the till cooldown`);
+  wait(TILL_COOLDOWN_MS);
+  const second = rob(1);
+  if (second.status !== "ok") fails.push(`second rob returned ${second.status} ${second.detail}`);
+  const loud1 = state(1);
+  on(1, { verb: "capture", mode: "ui", name: "m1_20_alarm_loud_client1" }, 25000);
+  const loud2 = state(2);
+
+  console.log("");
+  console.log(`robbed (officer on duty) client 1: ${robbed1}`);
+  console.log(`robbed (officer on duty) client 2: ${robbed2}`);
+  console.log(`robbed (nobody on duty)  client 1: ${loud1}`);
+  console.log(`robbed (nobody on duty)  client 2: ${loud2}`);
+  fails.push(...judgeDispatch(robbed1, robbed2, loud1, loud2));
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "dispatch proof: FAIL" : "dispatch proof: PASS (normal alarm + radio dispatch on duty; loud alarm and no dispatch off duty)");
+  return fails.length ? 1 : 0;
+}
+
 async function main(argv) {
   const [cmd, ...rest] = argv;
   if (cmd === "selftest") {
@@ -563,6 +672,7 @@ async function main(argv) {
   }
   if (cmd === "proof") return runProof();
   if (cmd === "police-proof") return runPoliceProof();
+  if (cmd === "dispatch-proof") return runDispatchProof();
   if (cmd === "roster") {
     const ids = rest.map(Number).filter((n) => Number.isInteger(n) && n > 0);
     if (!ids.length) throw new Error("roster <player id> [<player id> ...]");
@@ -582,7 +692,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | proof | interaction | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | proof | police-proof | dispatch-proof | interaction | selftest");
   return cmd ? 1 : 0;
 }
 

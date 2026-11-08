@@ -4437,6 +4437,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
      Comment "Wanted board sign card: what to do next."
     }
+    CustomStringTableItem "{69BB0FD8421E7F07}" {
+     Id "LF-Dispatch_Title"
+     Target_en_us "Radio - dispatch"
+     Comment "Title of the radio dispatch an on-duty officer gets when a crime is reported (M1-20)."
+    }
+    CustomStringTableItem "{F03D5F8438D95A26}" {
+     Id "LF-Dispatch_Radio"
+     Target_en_us "All units: %1 at %2. Suspect: %3."
+     Comment "Radio dispatch line. %1 = offence, %2 = place, %3 = description (what they wore, on foot or driving). Never a name."
+    }
+    CustomStringTableItem "{F069A4CD98ADF898}" {
+     Id "LF-Dispatch_UnknownPlace"
+     Target_en_us "an unknown place"
+     Comment "Dispatch place when the crime report has no place."
+    }
+    CustomStringTableItem "{123EFB6232FAF7F2}" {
+     Id "LF-Dispatch_BoardHeading"
+     Target_en_us "DISPATCH LOG - newest first"
+     Comment "Wanted board, police view: heading above the recent dispatch calls."
+    }
+    CustomStringTableItem "{19D578215BBBA07B}" {
+     Id "LF-Dispatch_BoardLine"
+     Target_en_us "%1  %2 at %3: %4"
+     Comment "Wanted board dispatch line. %1 = clock time HH:MM, %2 = offence, %3 = place, %4 = what happened to the call."
+    }
+    CustomStringTableItem "{5D059C7A2F962F91}" {
+     Id "LF-Dispatch_BoardRadioed"
+     Target_en_us "%1 on duty, radioed"
+     Comment "Dispatch outcome: %1 = number of officers on duty who got the radio call."
+    }
+    CustomStringTableItem "{3C88CC2A8BE5A6A5}" {
+     Id "LF-Dispatch_BoardLoud"
+     Target_en_us "nobody on duty, loud alarm"
+     Comment "Dispatch outcome when no officer was on duty: the loud alarm sounded at the site instead."
+    }
   }
  }
 }

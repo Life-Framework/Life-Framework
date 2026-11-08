@@ -185,13 +185,13 @@ class LF_Breach
 			return false;
 
 		account.IncreaseWantedLevel(1);
-		LF_WantedReports.Report(playerUid, chargeCarrier, LF_WantedReports.OFFENCE_BREAK_IN);
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		if (accountManager)
 			accountManager.SaveAndReleaseAccount(account);
 
 		target.m_iPoliceNotifies = target.m_iPoliceNotifies + 1;
-		EL_Utils.AlertPolice("#EL-Police_Alert_Breach", TargetOrigin(targetId));
+		// The alarm sounds at the door or vault and on-duty officers are radioed (LF_Dispatch).
+		LF_Dispatch.Report(playerUid, chargeCarrier, LF_WantedReports.OFFENCE_BREAK_IN, TargetOrigin(targetId));
 		EL_Debug.Log("Breach", string.Format("armed %1 by %2 fuse=%3", targetId, playerUid, target.m_fFuseSeconds));
 
 		target.m_bChargeArmed = true;

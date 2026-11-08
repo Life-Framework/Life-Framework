@@ -1,0 +1,13 @@
+GenericEntity : "{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et" {
+ ID "B2EB82C3AE45A2ED"
+ components {
+  LF_SiteAlarmComponent "{7615F1642D373349}" {
+   m_bLoud 1
+   m_sSoundProject "{20E24672048CB08E}Sounds/Structures/Millitary/Sirens/Structures_Siren_Loud.acp"
+   m_fHearRange 600
+   m_fLightRadius 25
+   m_fLightLV 12
+   m_iFlashMs 350
+  }
+ }
+}

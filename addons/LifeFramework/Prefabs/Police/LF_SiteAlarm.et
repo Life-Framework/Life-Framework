@@ -1,0 +1,17 @@
+GenericEntity {
+ ID "CF23E5ADFCBD7FE0"
+ components {
+  LF_SiteAlarmComponent "{7615F1642D373349}" {
+   m_bLoud 0
+   m_sSoundProject "{852528B9C262A607}Sounds/Structures/Military/Sirens/Structures_Siren.acp"
+   m_sSoundEvent "SOUND_SIREN_LP"
+   m_fHearRange 150
+   m_bFlash 1
+   m_fLightRadius 10
+   m_fLightLV 6
+   m_iFlashMs 600
+  }
+  RplComponent "{A2D9C9BB0D0839D7}" {
+  }
+ }
+}

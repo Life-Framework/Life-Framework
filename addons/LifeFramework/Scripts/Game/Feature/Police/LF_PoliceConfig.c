@@ -17,6 +17,13 @@ class LF_PoliceConfig
 	static const float DEFAULT_PLACE_RADIUS = 80;
 	static const float DEFAULT_BOARD_READ_DISTANCE = 4;
 	static const int DEFAULT_BOARD_MAX_POSTERS = 8;
+	static const float DEFAULT_ALARM_SECONDS = 30;
+	static const float DEFAULT_LOUD_ALARM_SECONDS = 60;
+	static const ResourceName DEFAULT_ALARM_PREFAB = "{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et";
+	static const ResourceName DEFAULT_LOUD_ALARM_PREFAB = "{8E15F0B7A26C4D93}Prefabs/Police/LF_SiteAlarm_Loud.et";
+	static const ResourceName DEFAULT_RADIO_SOUND_PROJECT = "{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp";
+	static const string DEFAULT_RADIO_SOUND_EVENT = "SOUND_RADIO_SIGNAL_2";
+	static const int DEFAULT_DISPATCH_LOG_LINES = 5;
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)")]
 	int m_iArrestMinRank;
@@ -38,6 +45,27 @@ class LF_PoliceConfig
 
 	[Attribute("8", UIWidgets.Auto, "Most posters the wanted board shows, newest first")]
 	int m_iBoardMaxPosters;
+
+	[Attribute("30", UIWidgets.Auto, "Seconds the site alarm sounds when at least one officer is on duty (M1-20)")]
+	float m_fAlarmSeconds;
+
+	[Attribute("60", UIWidgets.Auto, "Seconds the site alarm sounds when nobody is on duty: the louder, longer alarm")]
+	float m_fLoudAlarmSeconds;
+
+	[Attribute("{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et", UIWidgets.ResourceNamePicker, "Alarm spawned at the site when officers are on duty. Its LF_SiteAlarmComponent sets the sound, hear range, and light", "et")]
+	ResourceName m_sAlarmPrefab;
+
+	[Attribute("{8E15F0B7A26C4D93}Prefabs/Police/LF_SiteAlarm_Loud.et", UIWidgets.ResourceNamePicker, "Alarm spawned at the site when nobody is on duty: the loud siren, a longer range, a brighter flashing light", "et")]
+	ResourceName m_sLoudAlarmPrefab;
+
+	[Attribute("{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp", UIWidgets.ResourceNamePicker, "Sound project of the radio chirp an on-duty officer hears with a dispatch", "acp")]
+	ResourceName m_sRadioSoundProject;
+
+	[Attribute("SOUND_RADIO_SIGNAL_2", UIWidgets.EditBox, "Sound event of the radio chirp")]
+	string m_sRadioSoundEvent;
+
+	[Attribute("5", UIWidgets.Auto, "Dispatch lines the wanted board shows to on-duty police, newest first")]
+	int m_iDispatchLogLines;
 
 	protected static ref LF_PoliceConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -132,5 +160,72 @@ class LF_PoliceConfig
 			return DEFAULT_BOARD_MAX_POSTERS;
 
 		return config.m_iBoardMaxPosters;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds the site alarm runs; the loud alarm when nobody is on duty.
+	static float AlarmSeconds(bool loud)
+	{
+		LF_PoliceConfig config = Get();
+		if (loud)
+		{
+			if (!config)
+				return DEFAULT_LOUD_ALARM_SECONDS;
+
+			return config.m_fLoudAlarmSeconds;
+		}
+
+		if (!config)
+			return DEFAULT_ALARM_SECONDS;
+
+		return config.m_fAlarmSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static ResourceName AlarmPrefab(bool loud)
+	{
+		LF_PoliceConfig config = Get();
+		if (loud)
+		{
+			if (!config)
+				return DEFAULT_LOUD_ALARM_PREFAB;
+
+			return config.m_sLoudAlarmPrefab;
+		}
+
+		if (!config)
+			return DEFAULT_ALARM_PREFAB;
+
+		return config.m_sAlarmPrefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static ResourceName RadioSoundProject()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_RADIO_SOUND_PROJECT;
+
+		return config.m_sRadioSoundProject;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string RadioSoundEvent()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_RADIO_SOUND_EVENT;
+
+		return config.m_sRadioSoundEvent;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int DispatchLogLines()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_DISPATCH_LOG_LINES;
+
+		return config.m_iDispatchLogLines;
 	}
 }

@@ -883,7 +883,7 @@
   count (that ran every offer refresh) and refuses an empty vehicle prefab with
   `EL_Debug.Error`; the spawn goes through `EL_Utils.SpawnEntityPrefab`.
 - ⚠️ Near-duplicated guard logic across all three.
-  `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
+  Police alerts go through `LF_Dispatch.Report` (M1-20).
 
 ### `LF_Jail` — `Feature/Police/LF_Jail.c`
 - ✅ Placed cell and timed sentence (verified 2026-10-11). `GetJailPosition()`
@@ -1008,7 +1008,7 @@
 ### `LF_WantedReports` / `LF_WantedBoard` — `Feature/Police/`
 - ✅ **Crime reports** (M1-11, LOGIC `police/wanted-board`): each crime that
   raises wanted (till, vehicle and weapon robbery, breach, hospital till) calls
-  `LF_WantedReports.Report`, which records the offence and a description of the
+  `LF_Dispatch.Report` (M1-20), which calls `LF_WantedReports.Report`. It records the offence and a description of the
   suspect at that moment: clothing display names, the vehicle they sit in, and
   the nearest sign title within `m_fPlaceRadius` (else a 100 m grid square).
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
@@ -1023,6 +1023,38 @@
   everyone else gets the public poster without the place. A name appears only
   on identified reports. The card is an `LF_UIScreen` paper sheet that closes
   4 m from the board; reading plays the map pick-up sound and gesture.
+  On-duty police also see the dispatch log under the posters (M1-20).
+
+### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
+- ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`
+  is what every crime calls (till, vehicle and weapon robbery, breach and bank
+  vault, hospital cabinet). It records the crime report, sounds the site alarm,
+  radios on-duty officers, and appends a line to the dispatch log. A refused
+  crime reports nothing; no crime refuses for lack of police (the per-crime
+  minimum stays a framework attribute, 0 on the flagship). `EL_Utils.AlertPolice`
+  is gone.
+- ✅ **Site alarm** (WORLD `dispatch/site-alarm`): a replicated
+  `Prefabs/Police/LF_SiteAlarm.et` spawns at the site, so only players the
+  site streams to get it. It loops the vanilla siren
+  (`Structures_Siren.acp`, `SOUND_SIREN_LP`) and flashes an orange light for
+  `m_fAlarmSeconds` (30). With nobody on duty when the crime starts it is
+  `LF_SiteAlarm_Loud.et`: the vanilla loud siren (`Structures_Siren_Loud.acp`,
+  600 m), a brighter, faster flash, `m_fLoudAlarmSeconds` (60). A newer alarm
+  at the same site replaces the old one. Durations, prefabs, and the radio
+  sound are in `Configs/Police/LF_Police.conf`; the sound, hear range, and
+  light are attributes on the prefabs.
+- ✅ **Radio dispatch**: each on-duty officer's own client (Owner RPC on the
+  controller) hears a vanilla radio chirp from their body
+  (`Props_Radios_Signals.acp`, `SOUND_RADIO_SIGNAL_2`), then a toast
+  "All units: <offence> at <place>. Suspect: <clothing>; on foot/driving ...".
+  The line is built from the report's description snapshot; it has no name field.
+- ✅ **Dispatch log on the wanted board**: the newest `m_iDispatchLogLines` (5)
+  calls, "HH:MM <offence> at <place>: N on duty, radioed" or "nobody on duty,
+  loud alarm". Session-local (the posters are the persisted record).
+- Harness: `state` adds `dispatch=<n> lastdispatch=<offence@place> alarm=none|normal|loud`;
+  `node agent-box/session.mjs dispatch-proof` drives the two-client run.
+- Manual: listening check (the siren loop and the radio chirp) and the light at
+  night; payphones, pagers, and AI police are later.
 
 ### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
 - ✅ Two ranks (verified 2026-10-11). Patrol officer draws
@@ -1175,7 +1207,7 @@
   client receives it; the listen host's own controller calls the handler
   directly. Broadcast is left for `SendToAll` only. `SendToPolice` /
   `NotifyPolice` reach connected on-duty police by account faction.
-  `EL_Utils.AlertPolice` and `EL_Utils.NotifyEntity` (shop, robbery, duty,
+  `EL_Utils.NotifyEntity` (shop, robbery, duty,
   confiscate toasts) route through it; `EL_Utils.Notify` still shows a hint on
   the calling machine only. Since 2026-11-08 the courier job (sign-up, paid,
   abandoned), gather/process rewards, weapon and vehicle robbery, and the
