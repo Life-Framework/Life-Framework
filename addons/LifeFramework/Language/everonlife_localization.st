@@ -4487,6 +4487,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Beyond the square, killing anyone, resident or stranger, is murder. The killer is wanted at once, and the police get a description of their clothes, their vehicle, and the place. By order of the Everon Constabulary."
      Comment "Safe zone sign card, Rules section."
     }
+    CustomStringTableItem "{7C1E5A92D04B36F8}" {
+     Id "LF-Sign_SafeZone_Next"
+     Target_en_us "Read the town map board beside this one, then talk to the town hall clerk a few steps east."
+     Comment "Safe zone sign card, Next section: where the player goes after this place."
+    }
   }
  }
 }
