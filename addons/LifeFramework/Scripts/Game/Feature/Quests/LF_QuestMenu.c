@@ -7,6 +7,10 @@ class LF_QuestMenu : ChimeraMenuBase
 	protected Widget m_wRoot;
 	protected Widget m_wQuestList;
 	protected TextWidget m_wGiverTitle;
+	protected Widget m_wCloseButton;
+
+	//! Enter, Esc and the pad, polled every frame (LF_UIMenuInput).
+	protected ref LF_UIMenuInput m_Input = new LF_UIMenuInput();
 
 	protected LF_QuestGiverComponent m_Giver;
 	protected IEntity m_PlayerEntity;
@@ -23,6 +27,14 @@ class LF_QuestMenu : ChimeraMenuBase
 		m_wRoot = GetRootWidget();
 		m_wQuestList = m_wRoot.FindAnyWidget("QuestList");
 		m_wGiverTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("GiverTitle"));
+		m_wCloseButton = m_wRoot.FindAnyWidget("CloseButton");
+		ScriptInvoker closeClick = LF_UIMenuInput.ClickInvoker(m_wCloseButton);
+		if (closeClick)
+			closeClick.Insert(OnClosePressed);
+		else
+			EL_Debug.Error("Quests", "close button missing or not a button; Esc still closes");
+
+		RebuildFocus();
 
 		BindTracker();
 
@@ -42,13 +54,97 @@ class LF_QuestMenu : ChimeraMenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override void OnMenuUpdate(float tDelta)
+	{
+		super.OnMenuUpdate(tDelta);
+
+		LF_EUIMenuInput pressed = m_Input.Tick();
+		if (pressed == LF_EUIMenuInput.BACK)
+		{
+			OnClosePressed();
+			return;
+		}
+
+		if (pressed == LF_EUIMenuInput.SELECT)
+			Press(m_Input.GetSelected());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_wCloseButton && m_Input.RingEntry(w) == m_wCloseButton)
+		{
+			OnClosePressed();
+			return true;
+		}
+
+		return super.OnClick(w, x, y, button);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! MenuSelect on a focused widget: Close, or a row action button.
+	protected void Press(Widget w)
+	{
+		if (!w)
+			return;
+
+		if (w == m_wCloseButton)
+		{
+			OnClosePressed();
+			return;
+		}
+
+		Widget cursor = w;
+		while (cursor)
+		{
+			LF_QuestMenuRowComponent row = LF_QuestMenuRowComponent.Cast(cursor.FindHandler(LF_QuestMenuRowComponent));
+			if (row)
+			{
+				row.Press(w);
+				return;
+			}
+
+			cursor = cursor.GetParent();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnClosePressed()
+	{
+		if (m_Input.Ready("Close"))
+			Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pad order: each row action, then Close. Rebuilt with the rows.
+	protected void RebuildFocus()
+	{
+		array<Widget> focus = {};
+		if (m_wQuestList)
+		{
+			Widget rowWidget = m_wQuestList.GetChildren();
+			while (rowWidget)
+			{
+				LF_QuestMenuRowComponent row = LF_QuestMenuRowComponent.Cast(rowWidget.FindHandler(LF_QuestMenuRowComponent));
+				if (row && row.GetActionButton())
+					focus.Insert(row.GetActionButton());
+
+				rowWidget = rowWidget.GetSibling();
+			}
+		}
+
+		focus.Insert(m_wCloseButton);
+		m_Input.SetFocusOrder(focus);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void SetGiver(LF_QuestGiverComponent giver, IEntity playerEntity)
 	{
 		m_Giver = giver;
 		m_PlayerEntity = playerEntity;
 
 		if (m_wGiverTitle && giver)
-			m_wGiverTitle.SetText(giver.GetGiverId());
+			m_wGiverTitle.SetText(WidgetManager.Translate(giver.GetDisplayName()));
 
 		// OpenMenu may call OnMenuOpen before this setter, so complete the
 		// client-side binding here as well as in OnMenuOpen.
@@ -87,6 +183,10 @@ class LF_QuestMenu : ChimeraMenuBase
 		if (!m_TrackerComponent)
 			return;
 
+		// One press can arrive by click and by the MenuSelect poll; ask once.
+		if (!m_Input.Ready("Quest:" + questId))
+			return;
+
 		LF_QuestLogEntry entry = FindLogEntry(questId);
 		int status = LF_EQuestStatus.AVAILABLE;
 		if (entry)
@@ -121,6 +221,8 @@ class LF_QuestMenu : ChimeraMenuBase
 			if (row)
 				row.SetQuest(this, def, FindLogEntry(def.m_sQuestId));
 		}
+
+		RebuildFocus();
 	}
 
 	//------------------------------------------------------------------------------------------------

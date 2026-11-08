@@ -136,7 +136,7 @@ class EL_BetaHud : SCR_InfoDisplay
 			if (!m_wMoneyIndicator) return;
 		}
 
-		m_wMoneyIndicator.SetText("$ " + EL_FormatUtils.AbbreviateNumber(newAmount)); //for configurabiluity could have the $ changeable in config...
+		m_wMoneyIndicator.SetText(EL_MoneyFormat.FormatMoney(newAmount));
 		//m_bStatChange = true;
 	}
 
