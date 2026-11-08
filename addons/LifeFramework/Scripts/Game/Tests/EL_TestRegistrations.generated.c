@@ -101,6 +101,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_MiningPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyCash(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyRework(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Murder(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_NoPassivePaycheck(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_NpcClothesReplicate(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_PlaytestMission(), EL_TestTier.LOGIC);
@@ -164,6 +165,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_RobWeaponVehicle(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Robustness(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobustnessWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_SafeZone(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionBitmask(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionNewest(), EL_TestTier.LOGIC);

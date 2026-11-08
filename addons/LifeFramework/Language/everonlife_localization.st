@@ -4147,6 +4147,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A picked plant needs time to ripen again."
      Comment "Sign card for the farm north of the square, Rules section."
     }
+    CustomStringTableItem "{0A1E0465064F3E5F}" {
+     Id "LF-Offence_Murder"
+     Target_en_us "Murder"
+     Comment "Offence on a wanted poster: the suspect killed a person (M1-27)."
+    }
+    CustomStringTableItem "{4781500A4B2C8282}" {
+     Id "LF-Police_Alert_Murder"
+     Target_en_us "Crime Alert: a person was killed"
+     Comment "Police notification when a player kills someone (M1-27)."
+    }
+    CustomStringTableItem "{014EE9C8731D5B15}" {
+     Id "LF-Murder_Title"
+     Target_en_us "Murder"
+     Comment "Toast title for the killer after a murder."
+    }
+    CustomStringTableItem "{1CF2A86D80F0C6CA}" {
+     Id "LF-Murder_Wanted"
+     Target_en_us "You killed someone. You are wanted for murder, and witnesses will describe your clothes and vehicle to the police."
+     Comment "Toast to the killer after a murder. The police get a description, not a name."
+    }
+    CustomStringTableItem "{3DCC039CAC772B0D}" {
+     Id "LF-SafeZone_Title"
+     Target_en_us "Safe zone"
+     Comment "Toast title when a shot is refused in the spawn safe zone."
+    }
+    CustomStringTableItem "{4AA0194A741E081B}" {
+     Id "LF-SafeZone_ShotRefused"
+     Target_en_us "The town square is a safe zone. Your shot hurt nobody."
+     Comment "Toast to a player whose shot was refused in or into the spawn safe zone. Rate-limited."
+    }
+    CustomStringTableItem "{963D03A213F5DB4B}" {
+     Id "LF-Sign_SafeZone_Title"
+     Target_en_us "Safe Zone"
+     Comment "Title of the safe zone notice boards on the town square. Printed on the board and shown as Read: Safe Zone."
+    }
+    CustomStringTableItem "{17CC4B91C722E270}" {
+     Id "LF-Sign_SafeZone_What"
+     Target_en_us "The town square is a safe zone. Within 30 metres of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
+     Comment "Safe zone sign card, What section."
+    }
+    CustomStringTableItem "{A0732BEC5B5104E5}" {
+     Id "LF-Sign_SafeZone_How"
+     Target_en_us "Put your weapon away on the square. Settle disputes somewhere else, or report them at the police station."
+     Comment "Safe zone sign card, How section."
+    }
+    CustomStringTableItem "{CD3D63226CFCE5F9}" {
+     Id "LF-Sign_SafeZone_Rules"
+     Target_en_us "Beyond the square, killing anyone, resident or stranger, is murder. The killer is wanted at once, and the police get a description of their clothes, their vehicle, and the place. By order of the Everon Constabulary."
+     Comment "Safe zone sign card, Rules section."
+    }
   }
  }
 }

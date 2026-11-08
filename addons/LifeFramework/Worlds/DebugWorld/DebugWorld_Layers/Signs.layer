@@ -159,3 +159,21 @@ GenericEntity Sign_Farm : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.e
  coords 144.5 0 292.5
  angleY 180
 }
+GenericEntity Sign_SafeZone_Spawn : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "safe_zone"
+  }
+ }
+ coords 130.5 0 250
+ angleY -90
+}
+GenericEntity Sign_SafeZone_East : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "safe_zone"
+  }
+ }
+ coords 145.5 0 255.5
+ angleY 90
+}
