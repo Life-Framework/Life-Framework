@@ -38,6 +38,23 @@ class EL_Test_SafeZone : EL_Test
 
 		ctx.True(LF_SafeZone.Find("LF_SafeZone_Square") != null, "the square zone registered itself");
 		ctx.True(LF_SafeZone.IsInside("126 0 246"), "the civilian spawn point is inside the zone");
+
+		// Every civilian arrival lands in a zone, whichever spawn point the game picks.
+		int civilianPoints;
+		array<SCR_SpawnPoint> spawnPoints = SCR_SpawnPoint.GetSpawnPoints();
+		if (spawnPoints)
+		{
+			foreach (SCR_SpawnPoint spawnPoint : spawnPoints)
+			{
+				if (!spawnPoint || spawnPoint.GetFactionKey() != "CIVILIAN")
+					continue;
+
+				civilianPoints++;
+				ctx.True(LF_SafeZone.IsInside(spawnPoint.GetOrigin()), string.Format("civilian spawn point at %1 is inside a safe zone", spawnPoint.GetOrigin()));
+			}
+		}
+
+		ctx.True(civilianPoints > 0, "DebugWorld has civilian spawn points");
 		ctx.True(LF_SafeZone.IsInside("113 0 250"), "the fountain is inside the zone");
 		ctx.True(LF_SafeZone.IsInside("113 6 250"), "a roof above the fountain is inside the zone");
 		ctx.False(LF_SafeZone.IsInside("179 0 244.3"), "the general store is outside the zone");

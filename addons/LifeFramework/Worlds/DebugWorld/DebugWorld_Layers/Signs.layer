@@ -174,6 +174,6 @@ GenericEntity Sign_SafeZone_East : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sig
    m_sSignId "safe_zone"
   }
  }
- coords 145.5 0 255.5
+ coords 145.5 0 258
  angleY 90
 }

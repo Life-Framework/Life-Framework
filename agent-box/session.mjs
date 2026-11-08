@@ -550,9 +550,9 @@ async function runMurderProof() {
   on(1, { verb: "stand", entityName: ROB_TARGET });
   wait(2500);
   const outside = on(1, { verb: "shoot", playerId: 2 }, 10000);
-  wait(2500);
-  const murder1 = state(1);
+  wait(600);
   on(1, { verb: "capture", mode: "ui", name: "m1_27_murder_client1" }, 25000);
+  const murder1 = state(1);
   if (!outside.detail.includes("refused=0 alive=0")) fails.push(`shot outside: ${outside.status} ${outside.detail}`);
   if (!murder1.includes("wanted=3")) fails.push(`client 1 after the kill: ${murder1}`);
 
@@ -562,16 +562,25 @@ async function runMurderProof() {
   wait(12000);
   const respawned2 = state(2);
 
-  // Inside the zone: the town square.
+  // The wanted board now carries a murder poster: a description, no name.
+  on(2, { verb: "stand", entityName: "Roadmap_Police_WantedBoard" });
+  wait(2500);
+  const board = on(2, { verb: "use", className: "LF_WantedBoardReadAction", entityName: "Roadmap_Police_WantedBoard" }, 10000);
+  wait(2500);
+  on(2, { verb: "capture", mode: "ui", name: "m1_27_board_client2" }, 25000);
+  on(2, { verb: "click", widget: "Close" });
+  if (board.status !== "ok") fails.push(`board read: ${board.status} ${board.detail}`);
+
+  // Inside the zone: the town square, 3.5 m apart.
   on(2, { verb: "stand", entityName: "Sign_SafeZone_Spawn" });
   wait(2500);
-  on(1, { verb: "stand", entityName: "Sign_SafeZone_Spawn" });
+  on(1, { verb: "stand", entityName: "Sign_TownMap" });
   wait(2500);
   const inside = on(1, { verb: "shoot", playerId: 2 }, 10000);
-  wait(1500);
+  wait(600);
+  on(1, { verb: "capture", mode: "ui", name: "m1_27_safezone_client1" }, 25000);
   const square1 = state(1);
   const square2 = state(2);
-  on(1, { verb: "capture", mode: "ui", name: "m1_27_safezone_client1" }, 25000);
   if (!inside.detail.includes("refused=1 alive=1")) fails.push(`shot inside: ${inside.status} ${inside.detail}`);
   if (!square1.includes("wanted=3")) fails.push(`client 1 after the refused shot: ${square1}`);
 
@@ -583,8 +592,8 @@ async function runMurderProof() {
   on(1, { verb: "click", widget: "Close" });
   if (read.status !== "ok") fails.push(`sign read: ${read.status} ${read.detail}`);
   on(1, { verb: "capture", mode: "world", name: "m1_27_sign_spawn_west", x: 130.5, y: 1.2, z: 250, ox: -4, oy: 0.6, oz: 0 }, 25000);
-  on(1, { verb: "capture", mode: "world", name: "m1_27_sign_east_out", x: 145.5, y: 1.2, z: 255.5, ox: 4, oy: 0.6, oz: 0 }, 25000);
-  on(1, { verb: "capture", mode: "world", name: "m1_27_sign_east_in", x: 145.5, y: 1.2, z: 255.5, ox: -4, oy: 0.6, oz: 0 }, 25000);
+  on(1, { verb: "capture", mode: "world", name: "m1_27_sign_east_out", x: 145.5, y: 1.2, z: 258, ox: 5, oy: 0.6, oz: 0 }, 25000);
+  on(1, { verb: "capture", mode: "world", name: "m1_27_sign_east_in", x: 145.5, y: 1.2, z: 258, ox: -4, oy: 0.6, oz: 0 }, 25000);
 
   console.log("");
   console.log(`start     client 1: ${start1}`);

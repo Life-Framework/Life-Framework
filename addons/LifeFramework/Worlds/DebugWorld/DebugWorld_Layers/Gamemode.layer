@@ -7,8 +7,8 @@ SCR_SpawnPoint Spawn_Town : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.
 }
 SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
  m_sFaction "CIVILIAN"
- coords 170 0 199
- angleY 0
+ coords 121 0 253
+ angleY 90
 }
 SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
  m_sFaction "POLICE"

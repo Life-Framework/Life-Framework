@@ -837,7 +837,10 @@
   logs `[ELDebug:SafeZone] refused ...`; the shooter gets a toast at most every
   8 s. Two `safe_zone` notice boards (`Sign_SafeZone_Spawn`,
   `Sign_SafeZone_East`) say so in the world.
-- ⚠️ The second civilian spawn point (170 0 199) is outside the zone.
+- ✅ Both civilian spawn points stand on the square (the second moved from
+  170 0 199, by the quarry, to 121 0 253); `safezone/blocks` asserts every
+  civilian spawn point is inside a zone. The hospital wake (M1-26) is not a
+  spawn and stays outside.
 
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
