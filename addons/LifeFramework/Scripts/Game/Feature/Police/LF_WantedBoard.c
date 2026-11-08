@@ -232,8 +232,23 @@ class LF_WantedBoard
 
 		s_Screen.CloseOnDeath();
 		s_Screen.CloseWhenUncontrolled();
+		// A read the server started for this player (no local action) names no board: anchor on
+		// the board beside the reader, so walking off closes the card either way.
+		float range = LF_PoliceConfig.Get().m_fBoardReadDistance;
+		if (s_PendingBoard == EntityID.INVALID)
+		{
+			IEntity reader = EL_Utils.GetLocalCharacter();
+			IEntity board;
+			if (reader)
+				board = EL_ActionSite.FindNear(reader.GetOrigin(), range + 2, READ_ACTION);
+			if (board)
+				s_PendingBoard = board.GetID();
+		}
+
 		if (s_PendingBoard != EntityID.INVALID)
-			s_Screen.CloseBeyond(LF_PoliceConfig.Get().m_fBoardReadDistance, s_PendingBoard);
+			s_Screen.CloseBeyond(range, s_PendingBoard);
+
+		s_PendingBoard = EntityID.INVALID;
 
 		int count;
 		if (offences)
