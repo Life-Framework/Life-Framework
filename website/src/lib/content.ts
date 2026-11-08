@@ -2,6 +2,7 @@
 import site from "@/generated/site.json";
 import github from "@/generated/github.json";
 import docsIndex from "@/generated/docs-index.json";
+import supportJson from "@/generated/support.json";
 
 export const REPO = "Life-Framework/Life-Framework";
 export const REPO_URL = `https://github.com/${REPO}`;
@@ -112,7 +113,27 @@ export type Decision = {
 };
 export type Decisions = { introHtml: string; sections: { title: string; id: string; entries: Decision[] }[] };
 
+export type Wallet = {
+  asset: string;
+  network: string;
+  standard: string;
+  address: string;
+  explorer: string;
+  explorerName: string;
+  qr: { size: number; path: string };
+};
+export type Cost = { what: string; why: string; amount: number | null; period: "month" | "year"; status: "paying" | "planned" };
+export type SupportData = {
+  enabled: boolean;
+  card: { name: string; url: string } | null;
+  crypto: Wallet[];
+  costs: { updated: string; items: Cost[] };
+};
+
 export const siteData = site as SiteData;
+export const support = supportJson as SupportData;
+// True once a way to give is live; the footer link and the page's methods follow it.
+export const supportOpen = support.enabled && (support.card !== null || support.crypto.length > 0);
 export const githubData = github as GithubData;
 export const docs = docsIndex as DocMeta[];
 

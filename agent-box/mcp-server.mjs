@@ -14,6 +14,7 @@ import {
   runScriptPillar,
   sendCommand,
   statusText,
+  waitForText,
 } from "./harness.mjs";
 
 const tools = [
@@ -54,8 +55,13 @@ const tools = [
     {
       name: "player_ui",
       description:
-        "List visible buttons whose names end in Button: faction and spawn text buttons, plus shop and ATM buttons owned by a Life Framework menu. Repeated names are click indexes.",
-      inputSchema: { type: "object", properties: {} },
+        "List visible clickable widgets: faction and spawn text buttons, debug menu buttons, and every button of an open UI kit sheet (ATM keys, price list rows, form Sign, Close). Repeated names are click indexes. text: true also lists each button's label, each field's typed text, and each printed line of the sheet as kind:name=text.",
+      inputSchema: { type: "object", properties: { text: { type: "boolean" } } },
+    },
+    {
+      name: "player_wait_text",
+      description: "Poll ui text until a widget shows the text (case-insensitive) or a widget has that name. Use after an action that opens a screen or after a button the server answers.",
+      inputSchema: { type: "object", properties: { text: { type: "string" }, timeoutMs: { type: "integer" } }, required: ["text"] },
     },
     {
       name: "player_click",
@@ -199,7 +205,11 @@ function callTool(name, args) {
     return commandText(sendCommand({ verb: "look" }));
   }
   if (name === "player_ui") {
-    return commandText(sendCommand({ verb: "ui" }));
+    return commandText(sendCommand(a.text ? { verb: "ui", mode: "text" } : { verb: "ui" }));
+  }
+  if (name === "player_wait_text") {
+    const r = waitForText(a.text, a.timeoutMs ?? 8000);
+    return commandText(r.found ? { ...r, status: "ok" } : r);
   }
   if (name === "player_click") {
     return commandText(sendCommand({ verb: "click", widget: a.widget, index: a.index }));

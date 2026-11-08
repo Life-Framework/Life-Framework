@@ -25,6 +25,7 @@ const pages = {
   "/servers": "Host it, tune it, build on it",
   "/contribute": "Pick a scope. Prove it in the game.",
   "/decisions": "The calls that set the taste",
+  "/support": "Where the money goes",
   "/docs": "The paperwork",
   "/docs/direction": "What we are building",
   "/docs/roadmap-m1-playtest-town": "The player journey",

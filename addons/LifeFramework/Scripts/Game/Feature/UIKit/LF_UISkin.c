@@ -25,7 +25,7 @@ class LF_UISkin
 	string m_sName = "paper";
 	//! Sheet width in reference pixels (LF_UIFrame.layout is 560).
 	float m_fWidth = 560;
-	//! Frosted glass behind the sheet. Off for a sheet that must read as an opaque object.
+	//! Dim and soften the world behind the sheet (the full-screen blur in LF_UIFrame.layout).
 	bool m_bBlur = true;
 
 	//------------------------------------------------------------------------------------------------
@@ -39,8 +39,9 @@ class LF_UISkin
 		skin.m_Rule = LF_UITheme.Rule();
 		skin.m_Blur = LF_UITheme.Blur();
 		skin.m_Row = LF_UITheme.Row();
-		skin.m_ButtonText = Color.FromSRGBA(255, 255, 255, 255);
-		skin.m_ButtonFocus = Color.FromSRGBA(255, 152, 50, 255);
+		skin.m_ButtonText = LF_UITheme.Ink();
+		skin.m_ButtonFocus = Color.FromSRGBA(150, 40, 30, 255);
+		skin.m_bRecolorButtons = true;
 		return skin;
 	}
 
@@ -51,10 +52,10 @@ class LF_UISkin
 		LF_UISkin skin = new LF_UISkin();
 		skin.m_sName = "terminal";
 		skin.m_Metal = Color.FromSRGBA(150, 146, 132, 255);
-		skin.m_Paper = Color.FromSRGBA(6, 14, 8, 252);
+		skin.m_Paper = Color.FromSRGBA(6, 14, 8, 255);
 		skin.m_Ink = Color.FromSRGBA(96, 236, 120, 255);
 		skin.m_Rule = Color.FromSRGBA(34, 110, 52, 255);
-		skin.m_Blur = Color.FromSRGBA(30, 30, 28, 255);
+		skin.m_Blur = LF_UITheme.Blur();
 		skin.m_Row = Color.FromSRGBA(14, 34, 18, 255);
 		skin.m_ButtonText = Color.FromSRGBA(96, 236, 120, 255);
 		skin.m_ButtonFocus = Color.FromSRGBA(255, 176, 0, 255);
@@ -70,13 +71,7 @@ class LF_UISkin
 	{
 		LF_UISkin skin = Paper();
 		skin.m_sName = "price-list";
-		skin.m_bBlur = false;
-		skin.m_Paper = Color.FromSRGBA(236, 228, 206, 248);
-		skin.m_Row = Color.FromSRGBA(222, 212, 186, 255);
-		skin.m_ButtonText = LF_UITheme.Ink();
-		skin.m_ButtonFocus = Color.FromSRGBA(150, 40, 30, 255);
 		skin.m_Font = FONT_MONO;
-		skin.m_bRecolorButtons = true;
 		skin.m_fWidth = 640;
 		return skin;
 	}
