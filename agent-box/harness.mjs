@@ -1124,6 +1124,7 @@ function usage() {
   node agent-box/harness.mjs look
   node agent-box/harness.mjs ui
   node agent-box/harness.mjs click <WidgetName> [index]
+  node agent-box/harness.mjs type <FieldName> <Text>
   node agent-box/harness.mjs press F|WheelUp|WheelDown|F10
   node agent-box/harness.mjs use <ClassName> [EntityName]
   node agent-box/harness.mjs input <MenuAction>
@@ -1221,6 +1222,9 @@ function main(argv) {
     }
     if (cmd === "click") {
       return printResult(sendCommand({ verb: "click", widget: rest[0], index: rest[1] }));
+    }
+    if (cmd === "type") {
+      return printResult(sendCommand({ verb: "type", widget: rest[0], text: rest[1] }));
     }
     if (cmd === "press") {
       const spec = PRESS[rest[0]];

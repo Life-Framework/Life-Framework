@@ -63,7 +63,7 @@ class LF_JobSignUpAction : ScriptedUserAction
 		if (!jobs.SetJob(m_eJob))
 			EL_Debug.Error("Jobs", "signup action: job component refused the workplace");
 
-		EL_Utils.Notify(WidgetManager.Translate(LF_CivilianJob.NameKey(m_eJob)), WidgetManager.Translate(LF_CivilianJob.NameKey(m_eJob)), 3.0);
+		EL_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.NameKey(m_eJob), LF_CivilianJob.NameKey(m_eJob), 3.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -207,7 +207,7 @@ class LF_JobDropoffAction : ScriptedUserAction
 		else
 			EL_Debug.Error("Jobs", "dropoff action: player has no EL_PlayerJobComponent");
 
-		EL_Utils.Notify(WidgetManager.Translate("#EL-Job_Paid", paid), WidgetManager.Translate(LF_CivilianJob.NameKey(finished)), 4.0);
+		EL_Utils.NotifyEntity(pUserEntity, "#EL-Job_Paid", LF_CivilianJob.NameKey(finished), 4.0, paid.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ class LF_JobAbandonAction : ScriptedUserAction
 		if (!LF_CivilianJob.AbandonRun(uid))
 			return;
 
-		EL_Utils.Notify(WidgetManager.Translate("#EL-Job_Abandoned"), WidgetManager.Translate(LF_CivilianJob.NameKey(finished)), 4.0);
+		EL_Utils.NotifyEntity(pUserEntity, "#EL-Job_Abandoned", LF_CivilianJob.NameKey(finished), 4.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

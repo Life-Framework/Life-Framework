@@ -1,0 +1,135 @@
+{
+  "note": "Real captures only. Each entry names where it came from. Stills live in public/media/<id>-<width>.webp, one file per width in `widths`. Clips are film-evidence release assets that build-content.mjs downloads at build time. Label anything that is not final as work in progress.",
+  "stills": [
+    {
+      "id": "village-street",
+      "alt": "The main street of the playtest village: a narrow asphalt road between old plastered houses with tiled roofs, yellow lamp posts, a bus shelter, and a parked sedan.",
+      "caption": "The main street of the M1 playtest village, built from vanilla Everon buildings. Every site in the loop sits along this road.",
+      "where": "Playtest village, dedicated-server client",
+      "date": "2026-11-08",
+      "source": "PR #137",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/137",
+      "wip": true,
+      "widths": [640],
+      "width": 640,
+      "height": 360
+    },
+    {
+      "id": "village-square",
+      "alt": "A cobbled village square with a stone fountain, two large lime trees, green benches, and houses beyond.",
+      "caption": "The square at the spawn: cobbles, a fountain, the pub, lime trees. A new player starts here.",
+      "where": "Playtest village",
+      "date": "2026-11-08",
+      "source": "PR #137",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/137",
+      "wip": true,
+      "widths": [640],
+      "width": 640,
+      "height": 360
+    },
+    {
+      "id": "village-post",
+      "alt": "A grey two-storey post office with a yellow post box on the porch, beside a pink-roofed building and a lamp post.",
+      "caption": "The post office, where delivery jobs start: a counter and a post box on the porch.",
+      "where": "Playtest village",
+      "date": "2026-11-08",
+      "source": "PR #137",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/137",
+      "wip": true,
+      "widths": [640],
+      "width": 640,
+      "height": 360
+    },
+    {
+      "id": "village-police",
+      "alt": "A white three-storey police station with a forecourt holding a desk, crates, and figures in uniform.",
+      "caption": "The police station forecourt: duty desk, armory, and the whitelist check.",
+      "where": "Playtest village",
+      "date": "2026-11-08",
+      "source": "PR #137",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/137",
+      "wip": true,
+      "widths": [640],
+      "width": 640,
+      "height": 360
+    },
+    {
+      "id": "village-fuel",
+      "alt": "A road past a weathered apartment block towards a red and white fuel station canopy, with a yellow till counter in the foreground.",
+      "caption": "The hospital till and the fuel station till, the two small robberies on the street.",
+      "where": "Playtest village",
+      "date": "2026-11-08",
+      "source": "PR #137",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/137",
+      "wip": true,
+      "widths": [640],
+      "width": 640,
+      "height": 360
+    },
+    {
+      "id": "sign-board",
+      "alt": "A cork notice board in the old grid test world with a paper sheet that reads MINING AREA. Soldiers stand at tables and a spoil heap in the background.",
+      "caption": "A sign board with its site name printed on the paper. The game draws the title onto the sheet; nothing is added afterwards.",
+      "where": "DebugWorld before the village",
+      "date": "2026-11-08",
+      "source": "PR #138",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/138",
+      "wip": true,
+      "widths": [640, 1280],
+      "width": 1280,
+      "height": 707
+    },
+    {
+      "id": "mine",
+      "alt": "A mining site in the old grid test world: a conveyor tower, a rusty ore bucket, tables with crates, and a spoil heap.",
+      "caption": "The mining site, filmed by the harness walking the street as a player.",
+      "where": "DebugWorld before the village",
+      "date": "2026-11-08",
+      "source": "PR #111",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/111",
+      "wip": true,
+      "widths": [640, 1280],
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "id": "street-row",
+      "alt": "A wide shot of the old test street from above: cars, desks, crates, a garage and jeeps in one row on a white grid.",
+      "caption": "Before the village: every site in one row on a white grid.",
+      "where": "DebugWorld before the village",
+      "date": "2026-11-08",
+      "source": "PR #138",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/138",
+      "wip": true,
+      "widths": [640, 1280],
+      "width": 1280,
+      "height": 707
+    },
+    {
+      "id": "village-overview",
+      "alt": "The playtest village from the air: a short road with a dozen houses, trees, and fields, on a flat green test terrain.",
+      "caption": "The village from the south-west, with the fenced test annex out of shot.",
+      "where": "Playtest village",
+      "date": "2026-11-08",
+      "source": "PR #137",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/137",
+      "wip": true,
+      "widths": [640],
+      "width": 640,
+      "height": 360
+    }
+  ],
+  "clips": [
+    {
+      "id": "debugworld-tour",
+      "title": "Harness tour, before the village",
+      "caption": "The first clip from the filming harness: an agent plays the game client, walks the old grid street, and records it. 20 seconds, no edits.",
+      "release": "https://github.com/Life-Framework/Life-Framework/releases/download/film-evidence/pr111-flow-film-debugworld-20261108-073342.mp4",
+      "poster": "mine",
+      "date": "2026-11-08",
+      "source": "PR #111",
+      "sourceUrl": "https://github.com/Life-Framework/Life-Framework/pull/111",
+      "wip": true
+    }
+  ]
+}

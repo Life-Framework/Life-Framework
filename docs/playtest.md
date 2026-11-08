@@ -1,26 +1,62 @@
 # DebugWorld playtest
 
-Play the release on your own computer. You need Arma Reforger and Arma Reforger Tools. You do not need the dedicated server. Install and open the project with the [setup guide](setup.md), then come back here.
+There are two ways to play. **Host** runs the village on this PC as a dedicated server, the way friends will play it: start with [Play tonight](#play-tonight). **Workbench play** runs it inside Workbench for one person: see [Start DebugWorld](#start-debugworld). Both use `main`; the old `release/next` branch is merged and gone.
 
-This session is Workbench play of DebugWorld. The sites sit on one street. Walk up to each one and try it. Send back what you did, what you expected, and what you want built next. That note becomes the next agent prompt.
+Walk up to each site and try it. Send back what you did, what you expected, and what you want built next. That note becomes the next agent prompt. The last QA pass is [playtest/qa-2026-11-08.md](playtest/qa-2026-11-08.md).
 
-## Get the release branch
+## Play tonight
 
-```sh
-git clone https://github.com/Life-Framework/Life-Framework.git
-cd Life-Framework
-git checkout release/next
-```
+You need Arma Reforger, the Arma Reforger Server (Steam app 1874900), Node, and a clone set up with the [setup guide](setup.md).
 
-If you already have the clone:
+1. Host, from a worktree (the main checkout refuses):
 
-```sh
-git fetch origin
-git checkout release/next
-git pull
-```
+   ```sh
+   git -C <your clone> pull
+   tools\cli wt new playtest          # once; afterwards: cd ..\Life-Framework-ws-playtest && git merge origin/main
+   cd ..\Life-Framework-ws-playtest
+   tools\cli host start               # add --wait if a test run holds port 2001
+   ```
 
-`main` has the first street but not the latest sites (vehicle escort, among others). Stay on `release/next` until that branch is merged.
+   Wait for `host: up`, then `session continued from a save point` or `fresh session`, then the LAN addresses.
+
+2. Join on this PC. Start the release game executable (not the Diag one: a vanilla HUD script error opens a modal dialog there) from the game folder:
+
+   ```
+   cd "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger"
+   ArmaReforgerSteam.exe -client 127.0.0.1 -addonsDir "<your worktree>\addons" -addons LifeFramework
+   ```
+
+   A friend uses the same line with their own clone at the same commit and your address ([How a friend joins](#how-a-friend-joins)).
+
+3. Pick **Civilian**, then **Town Square**, then fill in form R-89 (given name, surname, age 18 to 80) and sign it. You wake on the village square with 500 cash and an ID card.
+
+4. When you are done: `tools\cli host stop` (never close the server window; that skips the save). Next time `tools\cli host start` continues where you stopped.
+
+Your account is keyed by your Steam name on this server (it runs without the Bohemia backend). Two players with the same Steam name would share one character, so give friends distinct names. A name change starts a new character.
+
+### What to try tonight
+
+In this order, it is the M1 loop:
+
+1. Parcel job at the post office (`Roadmap_Job_Depot`), deliver at `Roadmap_Job_Drop`. Expect "Run paid: $40".
+2. Deposit cash at the ATM, then buy the S105 at the car dealer (`Roadmap_Vehicle_Lot`). Cars are paid from the bank.
+3. A second player clocks in as police at the station (police needs the whitelist or an admin; see [Police](#police)), the first robs `Roadmap_Fuel_Till`. The officer gets an alert toast; the robber is wanted.
+4. The officer arrests the robber (a senior officer; a new patrol officer is refused) and escorts them to the cell.
+5. Found an organization at `Roadmap_Org_Desk`, buy processing, open the hideout.
+6. `host stop`, `host start`, rejoin: cash, bank, car, organization, and hideout are still there.
+
+### Known rough edges (2026-11-08)
+
+Do not spend the evening on these; they are filed.
+
+- Everyone, players and NPCs, renders in underwear on a game client (#150).
+- The registration form, ATM, and org screens are dark and hard to read; the form's labels read "Editbox" (#110, M1-13 is rebuilding these screens).
+- The parcel and bank bags are invisible in your hands (#155).
+- One delivery is one job level; the first car takes about 13 runs (#156).
+- A new officer cannot arrest: senior rank takes one hour on duty, and a fresh server has no senior to promote anyone (#165). Plan the police player's first hour as patrol.
+- The police duty desk and wanted board are not on the street yet (M1-11); duty is the panel in front of the station.
+- A contraband run without an organization is refused with no message (#157).
+- Toasts are the only alert: no alarm at the site, no dispatch board (M1-20).
 
 ## Start DebugWorld
 
@@ -62,7 +98,13 @@ A locked target is a breach. Plant the charge at `Roadmap_Breach_Door`, `Roadmap
 
 ### Police
 
-Use a police character. Go on duty at the panel in front of the police station (`PoliceStation_Debug`, south side of the street): `Roadmap_Police_Desk` beside it has no actions yet (M1-11 moves duty there). At `Roadmap_Police_Armory`, take the kit.
+Use a police character. On the hosted server the faction screen refuses Police until the player is on the whitelist, and there is no admin login in this mode, so write the file by hand:
+
+1. Have the player join once. The host log (`tools\cli host status` prints its path) shows `[ELDebug:Whitelist] join allowed: uuid=<their id>`.
+2. `tools\cli host stop`, then create `%LOCALAPPDATA%\LifeFramework\host\profile\profile\LifeFramework\whitelist.txt` with five lines: `1`, `1`, the uuid, `POLICE`, `0` (version, one faction entry, who, which faction, no job entries).
+3. `tools\cli host start`. A player who has not made a character yet picks Police on the faction screen. A character that already exists keeps its faction (M1-11 replaces the faction screen with clocking in at the desk).
+
+Go on duty at the panel in front of the police station (`PoliceStation_Debug`, south side of the street): `Roadmap_Police_Desk` beside it has no actions yet (M1-11 moves duty there). At `Roadmap_Police_Armory`, take the kit.
 
 A new officer is patrol: a pistol, fines up to 1000, and no arrest. Senior is a rifle, fines up to 5000, and can arrest. An hour on duty promotes. Promoting yourself should be refused.
 
@@ -136,13 +178,15 @@ Only one server can run on this PC at a time. Every server listens on UDP port 2
 The mod is not on the Workshop yet, so your friend needs the same addon you host:
 
 1. Clone the repository and check out the same commit you host (`git rev-parse HEAD` in your worktree).
-2. Start the game's diag executable from the game folder with the addon and your address:
+2. Start the release game executable from the game folder with the addon and your address. Not `ArmaReforgerSteamDiag.exe`: it stops on a modal dialog for a vanilla HUD script error.
 
    ```
-   ArmaReforgerSteamDiag.exe -addonsDir "<their clone>\addons" -addons LifeFramework -client <your address>
+   ArmaReforgerSteam.exe -client <your address> -addonsDir "<their clone>\addons" -addons LifeFramework
    ```
 
    `-client` connects on port 2001. On the same network use the LAN address `host start` printed. Over the internet use your public IP.
+
+3. Each player is keyed by their Steam name (the server runs with `-noBackend`, so there is no platform identity). Distinct names keep distinct characters across restarts.
 
 ### Firewall and port forwarding
 

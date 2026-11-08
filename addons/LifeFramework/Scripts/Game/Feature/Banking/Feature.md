@@ -50,7 +50,7 @@ the rung-2 convenience for cash in/out without a teller.
   unclamped; `CreateAccount` silently overwrites.
 - `EL_CharacterATMComponent` (`Feature/ATM/`) — cash-moving RPC bridge; the
   only cash↔account boundary.
-- `EL_ATMMenu` (`Feature/ATM/`) — deposit/withdraw UI on the bridge.
+- `LF_ATMTerminal` (`Feature/ATM/`) — deposit/withdraw terminal on the bridge.
 - Persistence: `Feature/ATM/Persistence/`.
 
 ## Dependencies
