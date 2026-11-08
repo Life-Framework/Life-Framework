@@ -9,51 +9,48 @@
 // The above copyright notice and this permission notice shall be included in all copies
 // or substantial portions of the Software.
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
-// Ported from LNGC_GarageDialog. That dialog was a picker over stored vehicles plus the
-// lot catalog. These rows are that picker. Labels are localization keys.
+// Ported from LNGC_GarageDialog.
+// That dialog was a picker over stored vehicles plus the lot catalog. The lot sells, so only
+// the owner's rows remain: they feed the garage ledger card (LF_GarageLedger).
 //------------------------------------------------------------------------------------------------
 class EL_VehicleGarageRow : Managed
 {
 	string m_sVehicleId;
 	string m_sLabelKey;
 	string m_sPlate;
-	int m_iPrice;
+	//! LF_GarageLedger.PLACE_*: in the garage, on the street, or at the impound lot.
+	int m_iPlace;
 }
 
 //------------------------------------------------------------------------------------------------
 class EL_VehicleGarageDialog
 {
 	//------------------------------------------------------------------------------------------------
-	static array<ref EL_VehicleGarageRow> CatalogRows(EL_VehicleLotComponent lot)
+	static array<ref EL_VehicleGarageRow> StoredRows(string ownerUid)
 	{
 		array<ref EL_VehicleGarageRow> rows = new array<ref EL_VehicleGarageRow>();
-		if (!lot)
-			return rows;
-
-		for (int i = 0; i < lot.GetOfferCount(); i++)
-		{
-			EL_VehicleOffer offer = lot.GetOfferAt(i);
-			if (!offer)
-				continue;
-
-			EL_VehicleGarageRow row = new EL_VehicleGarageRow();
-			row.m_sLabelKey = offer.GetNameKey();
-			row.m_iPrice = offer.GetPrice();
-			rows.Insert(row);
-		}
-
+		AppendRows(rows, EL_VehicleOwnership.StoredFor(ownerUid), LF_GarageLedger.PLACE_STORED);
 		return rows;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static array<ref EL_VehicleGarageRow> StoredRows(string ownerUid)
+	//! Stored vehicles first, then the ones out on the street, then the ones at the impound lot.
+	static array<ref EL_VehicleGarageRow> LedgerRows(string ownerUid)
 	{
 		array<ref EL_VehicleGarageRow> rows = new array<ref EL_VehicleGarageRow>();
-		array<ref EL_VehicleRecord> stored = EL_VehicleOwnership.StoredFor(ownerUid);
-		if (!stored)
-			return rows;
+		AppendRows(rows, EL_VehicleOwnership.StoredFor(ownerUid), LF_GarageLedger.PLACE_STORED);
+		AppendRows(rows, EL_VehicleOwnership.InWorldFor(ownerUid), LF_GarageLedger.PLACE_STREET);
+		AppendRows(rows, EL_VehicleOwnership.ImpoundedFor(ownerUid), LF_GarageLedger.PLACE_IMPOUNDED);
+		return rows;
+	}
 
-		foreach (EL_VehicleRecord record : stored)
+	//------------------------------------------------------------------------------------------------
+	protected static void AppendRows(array<ref EL_VehicleGarageRow> rows, array<ref EL_VehicleRecord> records, int place)
+	{
+		if (!records)
+			return;
+
+		foreach (EL_VehicleRecord record : records)
 		{
 			if (!record)
 				continue;
@@ -62,9 +59,8 @@ class EL_VehicleGarageDialog
 			row.m_sVehicleId = record.m_sVehicleId;
 			row.m_sLabelKey = record.m_sNameKey;
 			row.m_sPlate = record.m_sPlate;
+			row.m_iPlace = place;
 			rows.Insert(row);
 		}
-
-		return rows;
 	}
 }

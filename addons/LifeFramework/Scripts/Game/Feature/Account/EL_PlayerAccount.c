@@ -10,7 +10,6 @@ class EL_PlayerAccount : Managed
 	/*protected*/ ref array<ref EL_PlayerCharacter> m_aCharacters = {};
 	/*protected*/ int m_iActiveCharacterIdx;
 	/*protected*/ EL_Faction m_eFaction = EL_Faction.CIVILIAN;
-	/*protected*/ bool m_bFactionChosen = false;
 	/*protected*/ bool m_bOnDuty = false;
 	/*protected*/ int m_iPoliceRank = 0;
 	/*protected*/ int m_iOnDutySeconds = 0;
@@ -33,20 +32,12 @@ class EL_PlayerAccount : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The current role, not a pick: POLICE only while clocked in at the duty desk (EL_DutyAction,
+	//! LF_DutyLocker), CIVILIAN otherwise. There is no faction screen.
 	void SetFaction(EL_Faction faction)
 	{
 		m_eFaction = faction;
-		m_bFactionChosen = true;
 		EL_AccountReplication.Publish(this);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Distinguishes "faction not picked yet" from the CIVILIAN default value, which is also a
-	//! legitimate choice. OnPlayerConnected keys off this so a CIVILIAN pick cannot re-open the
-	//! faction menu forever.
-	bool WasFactionChosen()
-	{
-		return m_bFactionChosen;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -182,6 +173,11 @@ class EL_PlayerAccount : Managed
 	void SetWantedLevel(int level)
 	{
 		m_iWantedLevel = Math.Clamp(level, 0, 5); // Max 5
+
+		// Wanted cleared (jail, fine, admin): the posters for this person come down.
+		if (m_iWantedLevel == 0)
+			LF_WantedReports.ClearFor(m_sPersistentId);
+
 		EL_AccountReplication.Publish(this);
 	}
 

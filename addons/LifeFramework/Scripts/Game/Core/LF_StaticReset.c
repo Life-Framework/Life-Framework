@@ -25,6 +25,7 @@ class LF_StaticReset
 		EL_VehicleSpawnPointComponent.ResetStatics();
 		EL_QuantityComponent.ResetStatics();
 		LF_StorageSnapshot.ResetStatics();
+		LF_PersistentStorageComponent.ResetStatics();
 		LF_Progression.ResetStatics();
 		LF_Introductions.ResetStatics();
 		LF_KnownNames.ResetStatics();

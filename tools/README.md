@@ -14,6 +14,7 @@ tools\cli mcp update [name]             # update MCP servers from GitHub
 tools\cli mcp verify [name]             # prove a server starts
 tools\cli mcp enable|disable <name>     # toggle a server in opencode.json
 tools\cli build                         # headless Workbench build (worktree only)
+toolscli rdb                           # register new .meta files in this worktree's resourceDatabase.rdb (~10 s; boots do it when stale)
 tools\cli serve                         # boot the headless test server (blocks, worktree only)
 tools\cli test [--no-build] [--tier fast|all|persistence] [--only <names>]
                                         # build + boot server + parse ELTEST results (worktree only)
@@ -26,6 +27,7 @@ tools\cli wt test|build|dev|gate <slug> # run a heavy command in a specific work
 tools\cli wt logs <slug> <pattern>      # grep a worktree's newest console.log (from anywhere)
 tools\cli wt ship <slug> [--closes N]   # gate -> push -> PR -> auto-merge (merges main only on conflict)
 tools\cli wt prune <slug>               # remove a merged worktree + branch
+tools\cli prs status|heal [--dry-run]   # open ws/* PRs; heal idle DIRTY/BEHIND and stuck-green ones (docs/worktrees.md)
 tools\cli call <tool> '<json>'|@file    # call an MCP tool directly (see mcp-call.mjs)
 tools\cli validate [--full]             # run tools/validation/* checks (also in CI); --full adds the Workbench compile
 ```
