@@ -106,9 +106,9 @@ EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
     UserActionContext "{9A10A5431D5BFE10}" {
      ContextName "Quest"
      Position PointInfo "{5A9CB1824EBB2DDF}" {
-      Offset 0 0.5 0
+      PivotID "Spine5"
      }
-     Radius 2.0
+     Radius 0.6
     }
    }
    additionalActions + {

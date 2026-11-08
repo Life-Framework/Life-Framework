@@ -117,6 +117,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Murder(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_NoPassivePaycheck(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_NpcClothesReplicate(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_NpcInteractionHeight(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_OrgInviteRole(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_OrgRegistry(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PlaytestMission(), EL_TestTier.LOGIC);
@@ -228,6 +229,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_VehicleImpound(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_VehicleLockIdMatch(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_VehicleLotSheet(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistChatResources(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_WhitelistLogic(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistCommandParse(), EL_TestTier.LOGIC);
