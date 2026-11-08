@@ -1,89 +1,29 @@
 GenericEntity SurvivalStation {
  coords 112 0 262.5
  {
+  Tree SurvivalPoint_Food : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+   components {
+    ActionsManagerComponent "{596540948BBDD481}" {
+     additionalActions {
+      EL_GatherAction "{59654094806921B6}" {
+      }
+     }
+    }
+   }
+   coords -3.2 0 0.4
+  }
+  Tree SurvivalPoint_Water : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+   components {
+    ActionsManagerComponent "{597CB6B1CB95890C}" {
+     additionalActions {
+      EL_GatherAction "{597CB6B14BA63749}" {
+      }
+     }
+    }
+   }
+   coords 3.6 0 0.4
+  }
   $grp GenericEntity {
-   SurvivalPoint_Food {
-    components {
-     MeshObject "{5A4B0B84C86E4843}" {
-      Object "{CEC8A3DF893B9C96}Assets/Props/Crates/BoxWooden_01.xob"
-     }
-     RigidBody "{5A4B0B84C86E4844}" {
-      Mass 10
-      ModelGeometry 1
-      Static 1
-     }
-     ActionsManagerComponent "{5A4B0B84C86E4845}" {
-      ActionContexts {
-       UserActionContext "{5A4B0B84C86E4846}" {
-        ContextName "default"
-        Position PointInfo "{5A4B0B84C86E4847}" {
-         Offset 0 0.4 0
-        }
-        Radius 3
-       }
-      }
-      additionalActions {
-       EL_GatherAction "{5A4B0B84C86E4848}" {
-        ParentContextList {
-         "default"
-        }
-        UIInfo UIInfo "{5A4B0B84C86E4849}" {
-         Name "Tomar Manzana"
-         Description "Obtener manzana para restaurar hambre"
-        }
-        m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
-        m_GatherAmount 1
-       }
-      }
-     }
-     RplComponent "{5A4B0B84C86E484A}" {
-      Enabled 1
-     }
-    }
-     Flags 0x403 0
-     coords 0 -0.001 0
-   }
-   SurvivalPoint_Water {
-    components {
-     MeshObject "{5A4B0B84C86E5843}" {
-      Object "{2BA3D8DBECF0FB4F}Assets/Structures/Infrastructure/Waterworks/WellPump_01/WellPump_01.xob"
-     }
-     RigidBody "{5A4B0B84C86E5844}" {
-      Mass 10
-      ModelGeometry 1
-      Static 1
-     }
-     ActionsManagerComponent "{5A4B0B84C86E5845}" {
-      ActionContexts {
-       UserActionContext "{5A4B0B84C86E5846}" {
-        ContextName "default"
-        Position PointInfo "{5A4B0B84C86E5847}" {
-         Offset 0 1 0
-        }
-        Radius 3
-       }
-      }
-      additionalActions {
-       EL_GatherAction "{5A4B0B84C86E5848}" {
-        ParentContextList {
-         "default"
-        }
-        UIInfo UIInfo "{5A4B0B84C86E5849}" {
-         Name "Tomar Ciruela"
-         Description "Obtener ciruela para restaurar sed y hambre"
-       }
-       m_GatherItemPrefab "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et"
-       m_GatherAmount 1
-       }
-      }
-     }
-     RplComponent "{5A4B0B84C86E584A}" {
-      Enabled 1
-     }
-    }
-     Flags 0x403 0
-     coords 3.2 -0.001 0
-   }
    SurvivalTableItems {
      coords 0 0.9 0.7
     {

@@ -51,7 +51,7 @@ export const TOWN = {
     { id: "hospital", entity: "Roadmap_Hospital_Cabinet", actions: ["LF_HospitalCabinetAction"], sign: "hospital", step: 13 },
     { id: "convoy_pickup", entity: "Roadmap_Convoy_Start", actions: ["LF_ConvoyStartAction"], sign: "convoy_pickup", step: 14, outskirts: true },
     { id: "convoy_drop", entity: "Roadmap_Convoy_Drop", actions: ["LF_ConvoyDeliverAction"], sign: "convoy_drop", step: 14 },
-    // The duty desk (Clock in / Clock out) and the wanted board stand in front of the station (M1-11).
+    // The duty desk (Clock in / Clock out) and the armory locker stand under the station porch, the wanted board on its front wall (M1-11).
     { id: "police_station", entity: "Roadmap_Police_Desk", actions: ["EL_DutyAction"], sign: "police_station", step: 15 },
     { id: "wanted_board", entity: "Roadmap_Police_WantedBoard", actions: ["LF_WantedBoardReadAction"], sign: null, step: 17 },
     { id: "police_armory", entity: "Roadmap_Police_Armory", actions: ["LF_ArmoryDrawAction"], sign: null, step: 15, when: "an on-duty officer" },

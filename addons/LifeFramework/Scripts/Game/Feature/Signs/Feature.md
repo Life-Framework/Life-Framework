@@ -55,10 +55,34 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules, 
 sets `m_sSignId`. `EL_MiningSign` (`mining`) and `EL_WhitelistSign`
 (`police_whitelist`) carry the same pair.
 
+## Sign types (2026-11-08)
+
+Official signs belong to a building or stand on posts; nothing official stands on the grass.
+Each type is a vanilla sign body whose face material is `LF_SignFace.emat` (`$rendertarget`), painted with
+`UI/Layouts/Signs/LF_SignPaintFace.layout`:
+
+| Prefab | Vanilla body | Face area (units of the 1024 x 1024 target the UVs show) | Used for |
+|---|---|---|---|
+| `LF_Sign_Plate` | `SignWall_01_115x67` | 1024 x 596 | police (blue), post office (yellow, beside the post box), ATM, garage, jail, hospital (beside a red cross), organization office |
+| `LF_Sign_PlateSmall` | `SignWall_01_90x45` | 1024 x 512 | spare; reads only up close |
+| `LF_Sign_Fascia` | `SignCommercial_01` (4.3 m) | 1024 x 213 | bank, general store |
+| `LF_Sign_Posts` | `SignLarge_01` on two posts | 1024 x 700 | town map, market, vehicle lot |
+| `LF_Sign_PolePlate` | `SignGeneric_01` on `Sign_Pole_A` (`m_bFaceOnChild`) | 1024 x 1024 | safe zones, impound, fuel, farm |
+| `LF_Sign_Board` | cork `NoticeBoardCork_01` | turned A4 sheet | notices: wanted board (in the station porch), convoy |
+| `LF_Sign_Pub` | `SignPub_01` A-frame | none (painted body) | general store and market pavement boards |
+| `LF_Sign_Chalkboard` | `ChalkBoard_01` | none | contraband barn (hideout), back room |
+
+Faces read from the body's local +Z. Wall plates are centred on their origin (back at -0.002 m): place them on the
+facade with the face out; the fascia's origin is its bottom edge. A placement sets `m_vRimColor`, `m_vPaintColor`,
+`m_vTextColor` and may scale the body (`scale 1.4` on a plate). The face areas were measured with a quadrant test card
+on a 1080p client. Panel widgets do not draw inside a render target: the faces use image widgets. Each vanilla body
+already has an `RplComponent`; a second one breaks the entity ("cannot be combined"). `SCR_DestructionMultiPhaseComponent`
+is disabled so a shot does not take a sign away until restart.
+
 ## Tests
 
 LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`,
-`signs/face-fit`, `signs/face-client`. WORLD `signs/prefabs`,
+`signs/face-fit`, `signs/face-client`, `signs/board-face`. WORLD `signs/prefabs`,
 `signs/coverage` (every placed sign resolves; every catalog row is placed).
 
 ## Placement
