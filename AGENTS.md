@@ -13,6 +13,7 @@ intent: `docs/design.md`. An agent handed a scope, issue, or PR starts with the
 |---|---|
 | `addons/LifeFramework/Scripts/Game/` | Enforce Script: `Core/`, `Feature/<Area>/` (each with a `Feature.md`), `Persistence/`, `UI/`, `Tests/`, ... |
 | `addons/LifeFramework/{Prefabs,Configs,UI,Language,Missions}/` | Resources (`.et`, `.conf`, `.layout`, `.st`) |
+| `addons/LF_Everon1989/` | The 1989 Everon flagship pack: a skeleton, not loaded yet. What goes there: `docs/architecture/core-vs-pack.md` |
 | `addons/LifeFramework/Worlds/DebugWorld/` | Test world. `DebugWorld.ent` is 0 bytes on purpose; content is in `DebugWorld_Layers/*.layer` |
 | `tools/` | `cli` (one entry point), `validation/`, `test/`, `merge/`, `actions/`, `street/` |
 | `agent-box/` | Player-equivalent checks on a rendering Workbench (`agent-box/README.md`) |
@@ -44,6 +45,12 @@ intent: `docs/design.md`. An agent handed a scope, issue, or PR starts with the
 8. **Update `docs/features.md` in the same change** that alters a feature.
    Append or edit only your rows; the merge driver keeps rows both sides
    append and stops with conflict markers when both edit the same line.
+9. **Classify every new resource core or pack with the red line**
+   (`docs/architecture/core-vs-pack.md`): the core decides what the game can
+   do, the pack decides what this server is. The core never references
+   `addons/LF_Everon1989/`; `validate-addon-boundary` enforces it. Until the
+   M3 move loads the pack, a pack resource still lands in the core and gets a
+   row in `docs/architecture/core-pack-inventory.md`.
 
 ## Commands
 

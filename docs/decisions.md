@@ -515,6 +515,22 @@ their own pack without forking the systems. What it means for code: M3 moves
 pack resources with their `.meta` (the GUIDs stay the same), and a validator
 guards the one-way boundary (`docs/roadmap/m3-outline.md`).
 
+**2026-11-08 — The core decides what the game can do; the pack decides what
+this server is.** The core (`addons/LifeFramework/`) gets script, components,
+anything a server in another setting would use unchanged, anything a test
+needs, base prefabs a system spawns with a neutral look, and one neutral
+working default per system. The pack (`addons/LF_Everon1989/`) gets the
+choices: placement and the village, names and flavour copy, prices and timers
+as `.conf` values, the 1989 look, the vehicle catalogue, and the flagship
+mission header. A resource belongs in the core when the pack can be deleted and
+the core still boots and passes the suite, or when a modern-setting server
+would use it as is. Script in the pack is a smell; the fix is an extension
+point in the core. The maintainer set the line and its grey cases. Why: without
+one written rule every agent classifies by feel, and the boundary leaks before
+the move happens. What it means for code: every new resource is classified
+with `docs/architecture/core-vs-pack.md`; `validate-addon-boundary` fails when
+the core references the pack or the pack holds script.
+
 **2026-11-08 — Owners configure through one JSON file over shipped defaults.**
 Shipped `.conf` files are the defaults (core, then pack). The owner writes
 `$profile:LifeFramework/config.json` with sections for jobs, shops, crime,

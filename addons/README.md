@@ -1,22 +1,26 @@
 # Addons
 
-`addons/` contains the Life Framework mod.
+`addons/` contains the Life Framework core and the flagship content pack.
 
 ## Structure
 
-Single mod, built as a Reforger GameProject:
+Two Reforger GameProjects:
 
 ```
 addons/
-└── LifeFramework/          # LifeFramework.gproj — scripts, prefabs, worlds, UI
+├── LifeFramework/          # the core: LifeFramework.gproj, scripts, prefabs, worlds, UI
+└── LF_Everon1989/          # the 1989 Everon pack: skeleton, not loaded yet
 ```
 
 `LifeFramework/LifeFramework.gproj` declares the project, language configs, and
 dependencies (base game only — no third-party addons). EnforceScript, prefabs,
-worlds, UI layouts, and localization all live under `LifeFramework/`.
+worlds, UI layouts, and localization all live under `LifeFramework/` today.
 
-Future packs (jobs, vehicles, era assets) must be **separate mods** with their
-own mod ID and GUID — not folders inside `LifeFramework`.
+`LF_Everon1989/LF_Everon1989.gproj` depends on the base game and on the core by
+its GUID. The core never references the pack. What goes where:
+[`docs/architecture/core-vs-pack.md`](../docs/architecture/core-vs-pack.md).
+Another setting is another pack with its own ID and GUID, never a folder
+inside `LifeFramework`.
 
 ## Key paths
 
