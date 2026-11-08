@@ -47,6 +47,13 @@ class LF_UIScreen
 	protected int m_iCurrentOrder;
 	protected ref LF_UIButtonInvoker m_OnButton;
 	protected ref LF_UIClosedInvoker m_OnClosed;
+	protected ref LF_UISkin m_Skin;
+	//! KEYS: key widget name -> owning row part, and its column in that row.
+	protected ref map<string, string> m_mKeyRow = new map<string, string>();
+	protected ref map<string, int> m_mKeyColumn = new map<string, int>();
+	//! Input actions polled while the sheet is open (no field focused); each reports a name.
+	protected ref array<string> m_aHotkeyActions = {};
+	protected ref array<string> m_aHotkeyNames = {};
 
 	//------------------------------------------------------------------------------------------------
 	//! Fires with the part name when a BUTTON, a STATUS action, or a list row action is pressed.
@@ -77,9 +84,11 @@ class LF_UIScreen
 	//------------------------------------------------------------------------------------------------
 	//! Builds the frame, then each part, and starts the input driver.
 	//! \return The screen, or null when the frame failed to load.
-	static LF_UIScreen Open(array<ref LF_UIPart> parts)
+	//! \param skin What the sheet is made of; null is the paper form (LF_UISkin.Paper).
+	static LF_UIScreen Open(array<ref LF_UIPart> parts, LF_UISkin skin = null)
 	{
 		LF_UIScreen screen = new LF_UIScreen();
+		screen.m_Skin = skin;
 		if (!screen.OpenInternal(parts))
 			return null;
 
@@ -333,6 +342,244 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The sheet's skin; the paper form when none was given.
+	LF_UISkin GetSkin()
+	{
+		if (!m_Skin)
+			m_Skin = LF_UISkin.Paper();
+
+		return m_Skin;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! While the sheet is open and no text field has focus, a triggered actionName reports name
+	//! through GetOnButton, the same as pressing a button. The action must be in a context the
+	//! sheet activates (MenuContext).
+	void BindHotkey(string actionName, string name)
+	{
+		if (actionName.IsEmpty() || name.IsEmpty())
+		{
+			EL_Debug.Error("UIKit", "hotkey refused: action and name are required");
+			return;
+		}
+
+		m_aHotkeyActions.Insert(actionName);
+		m_aHotkeyNames.Insert(name);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets how tall a LIST part draws (the layout default is 300).
+	bool SetListHeight(string listName, float height)
+	{
+		SizeLayoutWidget list = SizeLayoutWidget.Cast(WidgetNamed(listName));
+		if (!list || height <= 0)
+		{
+			EL_Debug.Error("UIKit", "list height refused for " + listName);
+			return false;
+		}
+
+		list.SetHeightOverride(height);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Rewrites the label of a BUTTON part or a key.
+	bool SetButtonText(string name, string text)
+	{
+		Widget button = WidgetNamed(name);
+		if (!button)
+		{
+			EL_Debug.Error("UIKit", "no button named " + name);
+			return false;
+		}
+
+		SCR_ButtonTextComponent textButton = SCR_ButtonTextComponent.Cast(button.FindHandler(SCR_ButtonTextComponent));
+		if (!textButton)
+			return false;
+
+		textButton.SetText(text);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Builds one button per key inside the row. Keys share the row's width evenly.
+	protected void AddKeys(WorkspaceWidget workspace, Widget widget, LF_UIPart part)
+	{
+		array<string> names = part.GetKeyNames();
+		array<string> texts = part.GetKeyTexts();
+		if (names.IsEmpty())
+		{
+			EL_Debug.Error("UIKit", "keys " + part.GetName() + " has no keys");
+			return;
+		}
+
+		for (int i = 0; i < names.Count(); i++)
+		{
+			string keyName = names.Get(i);
+			string seen;
+			if (FindPart(keyName) || m_mKeyRow.Find(keyName, seen))
+			{
+				EL_Debug.Error("UIKit", "skipped duplicate key " + keyName);
+				continue;
+			}
+
+			Widget key = workspace.CreateWidgets(LF_UITheme.BUTTON_LAYOUT, widget);
+			if (!key)
+			{
+				EL_Debug.Error("UIKit", "failed to create key " + keyName);
+				continue;
+			}
+
+			key.SetName(keyName);
+			LayoutSlot.SetSizeMode(key, LayoutSizeMode.Fill);
+			LayoutSlot.SetFillWeight(key, 1);
+			LayoutSlot.SetPadding(key, 2, 0, 2, 0);
+			Remember(keyName, key);
+			m_mKeyRow.Set(keyName, part.GetName());
+			m_mKeyColumn.Set(keyName, i);
+			// Keys keep their row order inside the row's focus span.
+			WireButton(key, keyName, texts.Get(i), false, m_iCurrentOrder + i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Index in the focus ring of the key at column in row, or -1.
+	protected int KeyIndex(string row, int column)
+	{
+		for (int i = 0; i < m_aFocus.Count(); i++)
+		{
+			Widget candidate = m_aFocus.Get(i);
+			if (!candidate)
+				continue;
+
+			string candidateRow;
+			if (!m_mKeyRow.Find(candidate.GetName(), candidateRow) || candidateRow != row)
+				continue;
+
+			int candidateColumn;
+			m_mKeyColumn.Find(candidate.GetName(), candidateColumn);
+			if (candidateColumn == column)
+				return i;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! MenuLeft/MenuRight on a key: the next key in its row, wrapping.
+	//! \return true when the focused entry is a key.
+	protected bool StepKeySideways(WorkspaceWidget workspace, int direction)
+	{
+		Widget focused = FocusedEntry(workspace);
+		if (!focused)
+			return false;
+
+		string row;
+		if (!m_mKeyRow.Find(focused.GetName(), row))
+			return false;
+
+		LF_UIPart part = FindPart(row);
+		if (!part)
+			return true;
+
+		int column;
+		m_mKeyColumn.Find(focused.GetName(), column);
+		int index = KeyIndex(row, LF_UIFocus.Step(part.GetKeyNames().Count(), column, direction));
+		if (index >= 0)
+			FocusIndex(workspace, index);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! MenuUp/MenuDown from a key: leave the row; when focus lands in another row of keys, take the
+	//! same column there, so a keypad moves like a grid.
+	//! \return true when the focused entry is a key.
+	protected bool StepKeyVertical(WorkspaceWidget workspace, int direction)
+	{
+		Widget focused = FocusedEntry(workspace);
+		if (!focused)
+			return false;
+
+		string row;
+		if (!m_mKeyRow.Find(focused.GetName(), row))
+			return false;
+
+		int column;
+		m_mKeyColumn.Find(focused.GetName(), column);
+
+		int count = m_aFocus.Count();
+		int index = m_aFocus.Find(focused);
+		for (int guard = 0; guard < count; guard++)
+		{
+			index = LF_UIFocus.Step(count, index, direction);
+			Widget candidate = m_aFocus.Get(index);
+			if (!candidate || !candidate.IsVisible())
+				continue;
+
+			string candidateRow;
+			if (m_mKeyRow.Find(candidate.GetName(), candidateRow))
+			{
+				if (candidateRow == row)
+					continue;
+
+				LF_UIPart other = FindPart(candidateRow);
+				if (other)
+				{
+					int landed = KeyIndex(candidateRow, LF_UIFocus.Column(column, other.GetKeyNames().Count()));
+					if (landed >= 0)
+						index = landed;
+				}
+			}
+
+			FocusIndex(workspace, index);
+			return true;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected Widget FocusedEntry(WorkspaceWidget workspace)
+	{
+		if (!workspace)
+			return null;
+
+		int index = IndexOfFocus(workspace.GetFocusedWidget());
+		if (index < 0)
+			index = m_iFocus;
+
+		if (index < 0 || index >= m_aFocus.Count())
+			return null;
+
+		return m_aFocus.Get(index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FocusIndex(WorkspaceWidget workspace, int index)
+	{
+		if (!workspace || index < 0 || index >= m_aFocus.Count())
+			return;
+
+		m_iFocus = index;
+		workspace.SetFocusedWidget(m_aFocus.Get(index));
+		ScrollIntoView(m_aFocus.Get(index));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PollHotkeys(InputManager inputManager)
+	{
+		for (int i = 0; i < m_aHotkeyActions.Count(); i++)
+		{
+			if (!m_wRoot)
+				return;
+
+			if (inputManager.GetActionTriggered(m_aHotkeyActions.Get(i)))
+				Notify(m_aHotkeyNames.Get(i));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void SetFace(Widget row, string widgetName, string key, int value)
 	{
 		TextWidget face = TextWidget.Cast(row.FindAnyWidget(widgetName));
@@ -348,10 +595,18 @@ class LF_UIScreen
 	//------------------------------------------------------------------------------------------------
 	protected void PaintFrame()
 	{
-		Paint("Metal", LF_UITheme.Metal());
-		Paint("Paper", LF_UITheme.Paper());
-		Paint("Rule", LF_UITheme.Rule());
-		Paint("BackgroundBlur", LF_UITheme.Blur());
+		Paint("Metal", GetSkin().m_Metal);
+		Paint("Paper", GetSkin().m_Paper);
+		Paint("Rule", GetSkin().m_Rule);
+		Paint("BackgroundBlur", GetSkin().m_Blur);
+
+		Widget blur = m_wRoot.FindAnyWidget("BackgroundBlur");
+		if (blur)
+			blur.SetVisible(GetSkin().m_bBlur);
+
+		Widget sheet = m_wRoot.FindAnyWidget("Sheet");
+		if (sheet && GetSkin().m_fWidth > 0)
+			FrameSlot.SetSizeX(sheet, GetSkin().m_fWidth);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -387,6 +642,9 @@ class LF_UIScreen
 			return;
 		}
 
+		if (part.GetKind() == LF_EUIPartKind.FIELD)
+			AddCaption(workspace, content, part);
+
 		Widget widget = workspace.CreateWidgets(layout, content);
 		if (!widget)
 		{
@@ -411,6 +669,12 @@ class LF_UIScreen
 			return;
 		}
 
+		if (part.GetKind() == LF_EUIPartKind.KEYS)
+		{
+			AddKeys(workspace, widget, part);
+			return;
+		}
+
 		if (part.GetKind() == LF_EUIPartKind.TITLE)
 		{
 			ApplyInk(TextWidget.Cast(widget), LF_UITheme.FONT_TITLE, part.GetText());
@@ -428,7 +692,7 @@ class LF_UIScreen
 
 		if (part.GetKind() == LF_EUIPartKind.ROW)
 		{
-			PaintNamed(widget, "RowPlate", LF_UITheme.Row());
+			PaintNamed(widget, "RowPlate", GetSkin().m_Row);
 			ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowLabel")), LF_UITheme.FONT_BODY, part.GetText());
 			return;
 		}
@@ -463,7 +727,7 @@ class LF_UIScreen
 	//------------------------------------------------------------------------------------------------
 	protected void AddStatus(Widget widget, LF_UIPart part)
 	{
-		PaintNamed(widget, "RowPlate", LF_UITheme.Row());
+		PaintNamed(widget, "RowPlate", GetSkin().m_Row);
 		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowLabel")), LF_UITheme.FONT_BODY, part.GetText());
 		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowStatus")), LF_UITheme.FONT_BODY, part.GetStatus());
 
@@ -504,6 +768,22 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The printed name of a blank, in ink, right above it (a form, not a menu placeholder).
+	protected void AddCaption(WorkspaceWidget workspace, Widget content, LF_UIPart part)
+	{
+		TextWidget caption = TextWidget.Cast(workspace.CreateWidgets(LF_UITheme.LINE_LAYOUT, content));
+		if (!caption)
+		{
+			EL_Debug.Error("UIKit", "failed to create the caption for " + part.GetName());
+			return;
+		}
+
+		caption.SetName(part.GetName() + "Caption");
+		AlignableSlot.SetPadding(caption, LF_UITheme.PAD_LEFT, LF_UITheme.PAD_TOP, LF_UITheme.PAD_RIGHT, 0);
+		ApplyInk(caption, LF_UITheme.FONT_CAPTION, part.GetText());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void AddField(Widget widget, LF_UIPart part)
 	{
 		m_bHasField = true;
@@ -516,8 +796,10 @@ class LF_UIScreen
 		}
 
 		box.SetIsColorInherited(false);
-		box.SetColor(LF_UITheme.Ink());
-		box.SetPlaceholderText(part.GetText());
+		box.SetColor(GetSkin().m_Ink);
+		// The caption above the blank names it. The vanilla placeholder draws light grey, which
+		// does not read on paper.
+		box.SetPlaceholderText("");
 		box.SetText("");
 		box.SetTextOutline(0);
 		box.SetTextShadow(0);
@@ -526,7 +808,7 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void WireButton(Widget widget, string notifyName, string text, bool close)
+	protected void WireButton(Widget widget, string notifyName, string text, bool close, int order = -1)
 	{
 		SCR_ButtonTextComponent button = SCR_ButtonTextComponent.Cast(widget.FindHandler(SCR_ButtonTextComponent));
 		if (!button)
@@ -541,8 +823,10 @@ class LF_UIScreen
 		if (label)
 		{
 			label.SetExactFontSize(LF_UITheme.FONT_BUTTON);
-			label.SetFont(LF_UITheme.FONT);
+			label.SetFont(GetSkin().m_Font);
 		}
+
+		GetSkin().RecolorButton(widget);
 
 		LF_UIButtonRelay relay = LF_UIButtonRelay.Cast(widget.FindHandler(LF_UIButtonRelay));
 		if (!relay)
@@ -552,7 +836,10 @@ class LF_UIScreen
 		}
 
 		relay.Bind(this, notifyName, close);
-		AddFocus(widget, m_iCurrentOrder);
+		if (order < 0)
+			order = m_iCurrentOrder;
+
+		AddFocus(widget, order);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -565,9 +852,9 @@ class LF_UIScreen
 		}
 
 		text.SetIsColorInherited(false);
-		text.SetColor(LF_UITheme.Ink());
+		text.SetColor(GetSkin().m_Ink);
 		text.SetExactFontSize(fontSize);
-		text.SetFont(LF_UITheme.FONT);
+		text.SetFont(GetSkin().m_Font);
 		text.SetOutline(0);
 		text.SetShadow(0);
 		text.SetText(value);
@@ -911,16 +1198,24 @@ class LF_UIScreen
 		else if (inputManager.GetActionTriggered("MenuUp"))
 			direction = -1;
 
-		if (direction != 0)
+		if (direction != 0 && !StepKeyVertical(workspace, direction))
 			StepFocus(workspace, direction);
 
 		if (fieldFocused)
 			return;
 
+		int sideways = 0;
 		if (inputManager.GetActionTriggered("MenuLeft"))
-			NudgeQuantity(workspace, -1);
+			sideways = -1;
 		else if (inputManager.GetActionTriggered("MenuRight"))
-			NudgeQuantity(workspace, 1);
+			sideways = 1;
+
+		if (sideways != 0 && !StepKeySideways(workspace, sideways))
+			NudgeQuantity(workspace, sideways);
+
+		PollHotkeys(inputManager);
+		if (!m_wRoot)
+			return;
 
 		if (inputManager.GetActionTriggered("MenuSelect"))
 			ActivateFocused(workspace);

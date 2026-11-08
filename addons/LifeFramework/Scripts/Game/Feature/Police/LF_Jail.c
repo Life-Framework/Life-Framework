@@ -26,6 +26,14 @@
 //! open door does not. Leaving does not clear the sentence. Expiry reduces wanted
 //! by the configured amount. Early release is refused.
 //!
+//! ONLINE TIME. The sentence counts down only while the prisoner is connected (Tick reads the
+//! connected players). An offline prisoner keeps the remaining time they had at logoff.
+//!
+//! IN THE WORLD. Sentencing hands the prisoner a sentence slip (LF_JailSlip) and the slip shows
+//! the online minutes left. Release opens the cell door (the vanilla door motion and its sound),
+//! places the prisoner outside the cell, stamps the slip, and then shows a short toast. A
+//! prisoner seated in a vehicle is dismounted straight to the target; the vehicle stays put.
+//!
 //! PERSISTENCE. Export copies the remaining seconds. Apply writes them back.
 //! The key is the player uid, never an EntityID. ExportAll / ApplyAll are the
 //! "jail" payload of EL_PersistenceComponentSerializer (save version 5+), so a
@@ -65,6 +73,39 @@ class LF_JailSentence : Managed
 	string m_sPlayerUid;
 	float m_fRemaining;
 	bool m_bServing;
+
+	//! Session-only: never saved. The body moved to the cell, for a body with no player (a test
+	//! stand-in). A connected player is always resolved through their uid.
+	EntityID m_BodyId = EntityID.INVALID;
+	bool m_bPaused;
+	int m_iReleases;
+}
+
+//------------------------------------------------------------------------------------------------
+//! How a body is moved to the cell or the release point.
+enum LF_EJailMove
+{
+	DIRECT,
+	TELEPORT_PLAYER,
+	DISMOUNT
+}
+
+//------------------------------------------------------------------------------------------------
+//! Pure move rule, for LOGIC tests. A seated body is always dismounted: TeleportPlayer moves
+//! the vehicle of a seated player ("When in a vehicle, teleport the vehicle instead",
+//! Scripts/Game/Global/Functions.c), and a server SetOrigin leaves the body in the seat.
+class LF_JailMoveRules
+{
+	static LF_EJailMove Pick(bool seated, bool isPlayer)
+	{
+		if (seated)
+			return LF_EJailMove.DISMOUNT;
+
+		if (isPlayer)
+			return LF_EJailMove.TELEPORT_PLAYER;
+
+		return LF_EJailMove.DIRECT;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -74,9 +115,16 @@ class LF_Jail
 	static const string DOOR_ID = "Roadmap_Jail_Door";
 	static const ResourceName DOOR_PREFAB = "{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et";
 
+	static const int RELEASE_DOOR_OPEN_MS = 5000;
+	static const int RELEASE_TOAST_DELAY_MS = 1500;
+	static const int DISMOUNT_RETRY_MS = 250;
+	static const int DISMOUNT_MAX_TRIES = 20;
+
 	protected static ref map<string, ref LF_JailSentence> s_mSentences;
 	protected static bool s_bCellPlaced;
 	protected static vector s_vCellOrigin;
+	protected static vector s_vReleaseOffset;
+	protected static int s_iDoorOpenings;
 	protected static string s_sDoorId;
 	protected static int s_iSecondsPerWanted;
 	protected static int s_iMaxSeconds;
@@ -135,6 +183,21 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where a released prisoner stands, relative to the cell origin in world axes. Zero keeps
+	//! them on the cell origin.
+	static void SetReleaseOffset(vector worldOffset)
+	{
+		s_vReleaseOffset = worldOffset;
+		EL_Debug.Log("Jail", string.Format("release offset %1 %2 %3", worldOffset[0], worldOffset[1], worldOffset[2]));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static vector GetReleasePoint()
+	{
+		return s_vCellOrigin + s_vReleaseOffset;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void SetDoorTarget(string doorId)
 	{
 		if (doorId.IsEmpty())
@@ -177,6 +240,8 @@ class LF_Jail
 		s_mSentences = null;
 		s_bCellPlaced = false;
 		s_vCellOrigin = "0 0 0";
+		s_vReleaseOffset = "0 0 0";
+		s_iDoorOpenings = 0;
 		s_sDoorId = "";
 		s_iSecondsPerWanted = 0;
 		s_iMaxSeconds = 0;
@@ -244,6 +309,13 @@ class LF_Jail
 			return false;
 		}
 
+		// One server gate for every arrest path (action, menu, escort to the cell).
+		if (!LF_PoliceRanks.CanArrestRank(officer.GetPoliceRank()))
+		{
+			EL_Debug.Warn("Jail", string.Format("arrest refused: rank %1 is below the arrest rank %2", officer.GetPoliceRank(), LF_PoliceConfig.ArrestMinRank()));
+			return false;
+		}
+
 		EL_PlayerAccount prisoner = accounts.GetAccount(prisonerUid);
 		if (!prisoner)
 		{
@@ -271,8 +343,13 @@ class LF_Jail
 		if (seconds > 0)
 			sentence.m_bServing = true;
 		Sentences().Set(prisonerUid, sentence);
-		MoveToCell(prisonerUid, standIn);
+		IEntity body = MoveToCell(prisonerUid, standIn);
+		if (body)
+			sentence.m_BodyId = body.GetID();
+
 		EL_Debug.Log("Jail", string.Format("sentence started %1 seconds=%2 wanted=%3", prisonerUid, seconds, prisoner.GetWantedLevel()));
+		if (seconds > 0)
+			HandSlip(prisonerUid, body);
 
 		if (seconds <= 0)
 		{
@@ -372,8 +449,18 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Confine check and sentence clock for placed cells. Tests advance time themselves.
+	//! Confine check and sentence clock for placed cells. Only connected prisoners serve time.
 	static void Tick(float elapsedSeconds)
+	{
+		array<string> online = {};
+		CollectOnlineUids(online);
+		TickOnline(elapsedSeconds, online);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sentence clock with the connected uids given. A prisoner not in onlineUids is paused:
+	//! the remaining time does not move. Public so a LOGIC test drives both sides.
+	static void TickOnline(float elapsedSeconds, notnull array<string> onlineUids)
 	{
 		array<string> ids = {};
 		foreach (string playerUid, LF_JailSentence sentence : Sentences())
@@ -384,7 +471,18 @@ class LF_Jail
 			if (!sentence.m_bServing)
 				continue;
 
-			ids.Insert(playerUid);
+			bool online = onlineUids.Find(playerUid) >= 0;
+			if (online == sentence.m_bPaused)
+			{
+				sentence.m_bPaused = !online;
+				if (online)
+					EL_Debug.Info("Jail", string.Format("sentence resumed %1 remaining=%2", playerUid, sentence.m_fRemaining));
+				else
+					EL_Debug.Info("Jail", string.Format("sentence paused %1 (offline) remaining=%2", playerUid, sentence.m_fRemaining));
+			}
+
+			if (online)
+				ids.Insert(playerUid);
 		}
 
 		foreach (string playerUid : ids)
@@ -394,7 +492,63 @@ class LF_Jail
 				continue;
 
 			PullBack(playerUid);
+			RefreshSlip(playerUid);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The uid of every connected player. A disconnected player is not listed.
+	static void CollectOnlineUids(notnull array<string> outUids)
+	{
+		outUids.Clear();
+		if (!GetGame() || !GetGame().GetPlayerManager())
+			return;
+
+		array<int> playerIds = {};
+		GetGame().GetPlayerManager().GetPlayers(playerIds);
+		foreach (int playerId : playerIds)
+		{
+			string uid = EL_Utils.GetPlayerUID(playerId);
+			if (!uid.IsEmpty())
+				outUids.Insert(uid);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A respawned or rejoined prisoner with time left goes back to the cell with their slip.
+	//! Called on every spawn path (EL_SpawnLogic).
+	static void OnPlayerSpawned(string playerUid, IEntity body)
+	{
+		if (playerUid.IsEmpty() || !body || !IsServing(playerUid))
+			return;
+
+		if (!s_bCellPlaced)
+		{
+			EL_Debug.Error("Jail", string.Format("spawned prisoner %1 not returned: no cell is placed", playerUid));
+			return;
+		}
+
+		MoveBody(body, s_vCellOrigin);
+		HandSlip(playerUid, body);
+		EL_Debug.Info("Jail", string.Format("spawned prisoner %1 returned to the cell remaining=%2", playerUid, GetRemaining(playerUid)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return How many times this prisoner's sentence has released (door, placement, slip stamp).
+	static int GetReleaseCount(string playerUid)
+	{
+		LF_JailSentence sentence = Sentences().Get(playerUid);
+		if (!sentence)
+			return 0;
+
+		return sentence.m_iReleases;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return How many times a release opened the placed cell door this session.
+	static int GetDoorOpenings()
+	{
+		return s_iDoorOpenings;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -495,7 +649,8 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void MoveToCell(string prisonerUid, IEntity standIn)
+	//! \return The body that was moved, or null when the prisoner has none.
+	protected static IEntity MoveToCell(string prisonerUid, IEntity standIn)
 	{
 		IEntity target = standIn;
 		if (!target)
@@ -507,11 +662,28 @@ class LF_Jail
 		if (!target)
 		{
 			EL_Debug.Log("Jail", string.Format("no body to move for %1", prisonerUid));
-			return;
+			return null;
 		}
 
 		MoveBody(target, s_vCellOrigin);
 		EL_Debug.Log("Jail", string.Format("moved %1 to the cell", prisonerUid));
+		return target;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The connected body of a prisoner, else the session body recorded at arrest (a stand-in).
+	protected static IEntity FindBody(string playerUid)
+	{
+		EL_PlayerAccount account;
+		IEntity body = EL_PoliceUtils.FindPlayerEntityByUid(playerUid, account);
+		if (body)
+			return body;
+
+		LF_JailSentence sentence = Sentences().Get(playerUid);
+		if (!sentence || sentence.m_BodyId == EntityID.INVALID || !GetGame() || !GetGame().GetWorld())
+			return null;
+
+		return GetGame().GetWorld().FindEntityByID(sentence.m_BodyId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -519,13 +691,25 @@ class LF_Jail
 	//! SetOrigin is overwritten by the next owner update and the prisoner snaps back. A connected
 	//! player is moved through SCR_Global.TeleportPlayer, the vanilla server-side player teleport
 	//! that reaches the owning client. A body with no player (a test stand-in) is set directly.
+	//! A seated body is dismounted first: TeleportPlayer moves the vehicle when the player sits
+	//! in one ("When in a vehicle, teleport the vehicle instead", Scripts/Game/Global/Functions.c).
 	protected static void MoveBody(IEntity body, vector position)
 	{
+		if (!body)
+			return;
+
 		int playerId = 0;
 		if (GetGame() && GetGame().GetPlayerManager())
 			playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(body);
 
-		if (playerId > 0)
+		LF_EJailMove how = LF_JailMoveRules.Pick(IsSeated(body), playerId > 0);
+		if (how == LF_EJailMove.DISMOUNT)
+		{
+			DismountTo(body, position);
+			return;
+		}
+
+		if (how == LF_EJailMove.TELEPORT_PLAYER)
 		{
 			if (SCR_Global.TeleportPlayer(playerId, position))
 				return;
@@ -534,6 +718,210 @@ class LF_Jail
 		}
 
 		body.SetOrigin(position);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A seated body leaves the vehicle straight at position (GetOutVehicle_NoDoor). The owner
+	//! does it: a server-owned body here, a client-owned player through the vanilla Game Master
+	//! path SCR_EditableCharacterComponent.SetTransform, which asks the owning client.
+	//! \return False when the body is not seated (the caller moves it). True when the dismount
+	//! was started or refused; the vehicle is never moved.
+	protected static bool IsSeated(IEntity body)
+	{
+		CompartmentAccessComponent access = CompartmentAccessComponent.Cast(body.FindComponent(CompartmentAccessComponent));
+		if (!access)
+			return false;
+
+		return access.IsInCompartment();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool DismountTo(IEntity body, vector position)
+	{
+		CompartmentAccessComponent access = CompartmentAccessComponent.Cast(body.FindComponent(CompartmentAccessComponent));
+		if (!access || !access.IsInCompartment())
+			return false;
+
+		vector transform[4];
+		body.GetWorldTransform(transform);
+		transform[3] = position;
+
+		RplComponent rpl = RplComponent.Cast(body.FindComponent(RplComponent));
+		if (!rpl || rpl.IsOwner())
+		{
+			access.GetOutVehicle_NoDoor(transform, false, true);
+			EL_Debug.Info("Jail", "seated prisoner dismounted on the server; the vehicle stays put");
+		}
+		else
+		{
+			SCR_EditableCharacterComponent editable = SCR_EditableCharacterComponent.Cast(body.FindComponent(SCR_EditableCharacterComponent));
+			if (!editable)
+			{
+				EL_Debug.Error("Jail", "seated prisoner not moved: no SCR_EditableCharacterComponent to ask the owner to dismount");
+				return true;
+			}
+
+			editable.SetTransform(transform);
+			EL_Debug.Info("Jail", "seated prisoner asked to dismount at the target; the vehicle stays put");
+		}
+
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().CallLater(FinishDismount, DISMOUNT_RETRY_MS, false, body, position, 1);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Waits for the dismount, then makes sure the body stands at position. A body still seated
+	//! after DISMOUNT_MAX_TRIES is left where it is (logged) rather than moving the vehicle.
+	static void FinishDismount(IEntity body, vector position, int attempt)
+	{
+		if (!body)
+		{
+			EL_Debug.Warn("Jail", "dismount check skipped: the body is gone");
+			return;
+		}
+
+		CompartmentAccessComponent access = CompartmentAccessComponent.Cast(body.FindComponent(CompartmentAccessComponent));
+		if (access && access.IsInCompartment())
+		{
+			if (attempt >= DISMOUNT_MAX_TRIES)
+			{
+				EL_Debug.Error("Jail", "prisoner still seated after the dismount request; not moved so the vehicle stays put");
+				return;
+			}
+
+			GetGame().GetCallqueue().CallLater(FinishDismount, DISMOUNT_RETRY_MS, false, body, position, attempt + 1);
+			return;
+		}
+
+		if (vector.Distance(body.GetOrigin(), position) > 1.0)
+			MoveBody(body, position);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Prints the sentence on the slip the prisoner carries, or hands them one.
+	protected static void HandSlip(string playerUid, IEntity body)
+	{
+		if (!body)
+		{
+			EL_Debug.Warn("Jail", string.Format("no slip for %1: no body", playerUid));
+			return;
+		}
+
+		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		if (!accounts)
+			return;
+
+		EL_PlayerAccount account = accounts.GetAccount(playerUid);
+		if (!account)
+			return;
+
+		string name = playerUid;
+		EL_PlayerCharacter character = account.GetActiveCharacter();
+		if (character)
+			name = character.GetFirstName() + " " + character.GetLastName();
+
+		if (!LF_JailSlip.Grant(body, playerUid, name, account.GetWantedLevel(), GetRemaining(playerUid)))
+			return;
+
+		if (!GetGame() || !GetGame().GetPlayerManager())
+			return;
+
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(body);
+		if (playerId > 0)
+			EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", "#LF-Jail_SlipHanded", 4.0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RefreshSlip(string playerUid)
+	{
+		IEntity body = FindBody(playerUid);
+		if (!body)
+			return;
+
+		LF_JailSlipComponent slip = LF_JailSlip.FindFor(body, playerUid);
+		if (slip && slip.GetHolderUid() == playerUid)
+			slip.Refresh(GetRemaining(playerUid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Release in the world: the cell door swings open (its vanilla door sound), the prisoner
+	//! stands outside the cell, the slip is stamped, and the toast follows.
+	protected static void Release(string playerUid)
+	{
+		LF_JailSentence sentence = Sentences().Get(playerUid);
+		if (sentence)
+			sentence.m_iReleases++;
+
+		OpenCellDoor();
+
+		IEntity body = FindBody(playerUid);
+		if (body)
+		{
+			MoveBody(body, GetReleasePoint());
+			LF_JailSlipComponent slip = LF_JailSlip.FindFor(body, playerUid);
+			if (slip && slip.GetHolderUid() == playerUid)
+				slip.Stamp();
+		}
+		else
+		{
+			EL_Debug.Info("Jail", string.Format("released %1 with no body in the world", playerUid));
+		}
+
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().CallLater(NotifyReleased, RELEASE_TOAST_DELAY_MS, false, playerUid);
+
+		EL_Debug.Info("Jail", string.Format("released %1 outside the cell", playerUid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static DoorComponent FindCellDoor()
+	{
+		if (!GetGame() || !GetGame().GetWorld())
+			return null;
+
+		string doorId = s_sDoorId;
+		if (doorId.IsEmpty())
+			doorId = DOOR_ID;
+
+		IEntity door = GetGame().GetWorld().FindEntityByName(doorId);
+		if (!door)
+			return null;
+
+		return DoorComponent.Cast(door.FindComponent(DoorComponent));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void OpenCellDoor()
+	{
+		DoorComponent door = FindCellDoor();
+		if (!door)
+		{
+			EL_Debug.Warn("Jail", "release door not opened: no placed door with a DoorComponent");
+			return;
+		}
+
+		door.SetControlValue(1, RplId.Invalid());
+		s_iDoorOpenings++;
+		if (GetGame().GetCallqueue())
+		{
+			GetGame().GetCallqueue().Remove(CloseCellDoor);
+			GetGame().GetCallqueue().CallLater(CloseCellDoor, RELEASE_DOOR_OPEN_MS, false);
+		}
+
+		EL_Debug.Info("Jail", "release door opened");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void CloseCellDoor()
+	{
+		DoorComponent door = FindCellDoor();
+		if (!door)
+			return;
+
+		door.SetControlValue(0, RplId.Invalid());
+		EL_Debug.Info("Jail", "release door closed");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -561,10 +949,12 @@ class LF_Jail
 			sentence.m_fRemaining = 0;
 		}
 
+		Release(playerUid);
+
 		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
 		if (!accounts)
 		{
-			EL_Debug.Error("Jail", "sentence complete skipped: no account manager");
+			EL_Debug.Error("Jail", "sentence complete skipped wanted: no account manager");
 			return;
 		}
 
@@ -579,11 +969,10 @@ class LF_Jail
 		account.IncreaseWantedLevel(-GetWantedReduction());
 		accounts.SaveAndReleaseAccount(account);
 		EL_Debug.Log("Jail", string.Format("sentence complete %1 wanted %2 -> %3", playerUid, before, account.GetWantedLevel()));
-		NotifyReleased(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void NotifyReleased(string playerUid)
+	static void NotifyReleased(string playerUid)
 	{
 		if (!GetGame() || !GetGame().GetPlayerManager())
 			return;

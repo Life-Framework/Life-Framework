@@ -38,10 +38,11 @@ GenericEntity Roadmap_Jail_Cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.
  components {
   LF_JailCellComponent "{540EBBB989D3A80A}" {
    m_fZoneRadius 8
-   m_iSecondsPerWanted 0
-   m_iMaxSeconds 0
+   m_iSecondsPerWanted 60
+   m_iMaxSeconds 300
    m_iWantedReduction 1
    m_sDoorTargetId "Roadmap_Jail_Door"
+   m_vReleaseOffset 0.15 0 10
   }
  }
  coords 232.2 0 219

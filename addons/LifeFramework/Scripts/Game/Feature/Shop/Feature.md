@@ -17,7 +17,7 @@ from a list." We have played those mods and we are tired of them.
 ## Interaction pattern (in-world)
 
 Today the Shop feature is a world-anchored menu (rung 3): an `EL_ShopComponent`
-on an entity, an `EL_ShopAction` that opens `EL_ShopMenu` within 3 m. The target
+on an entity, an `EL_ShopAction` that opens `LF_ShopPriceList` within 3 m. The target
 is rung 1–2 — **physical goods are the purchase point**.
 
 The ladder per store type:
@@ -83,8 +83,9 @@ type; no per-map scripting. See `docs/design.md` §4.
 
 - `EL_ShopComponent` — catalog-driven buy; **money exploit** (partial
   `RemoveAmount` treated as full success, refund over-credits). Infinite stock.
-- `EL_ShopMenu` / `EL_ShopAction` — list menu within 3 m, opens for the local
-  player regardless of who interacted.
+- `LF_ShopPriceList` / `EL_ShopAction` — typed price list with an order slip
+  on the UI kit, within 3 m, only for the player who used the counter; the
+  till's refusal reason (`LF_EShopRefusal`) prints on the slip.
 - `EL_ShopPriceResolver` / `EL_ShopPricesConfig` / `EL_ShopRules` / `EL_ShopItem`
   — price resolution and rules scaffolding.
 - `Configs/Shop/ShopPrices.conf` — the price table.

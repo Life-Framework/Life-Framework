@@ -44,6 +44,23 @@ class LF_UIFocus
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Column a grid move lands on in a row of count keys: the same column, or the row's last key
+	//! when the row is shorter. -1 for an empty row.
+	static int Column(int column, int count)
+	{
+		if (count <= 0)
+			return -1;
+
+		if (column < 0)
+			return 0;
+
+		if (column >= count)
+			return count - 1;
+
+		return column;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Vertical scroll fraction (0 top, 1 bottom) that keeps row index of count rows in view.
 	static float ScrollFraction(int index, int count)
 	{

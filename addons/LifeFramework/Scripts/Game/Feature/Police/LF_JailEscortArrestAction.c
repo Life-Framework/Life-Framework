@@ -34,7 +34,7 @@ class LF_JailEscortArrestAction : ScriptedUserAction
 		if (GetOwner() == user)
 			return false;
 
-		return EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(user));
+		return EL_AccountStateBits.IsOnDutyPolice(EL_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -46,10 +46,17 @@ class LF_JailEscortArrestAction : ScriptedUserAction
 			return false;
 		}
 
-		EL_PlayerAccount suspect = EL_PoliceUtils.GetAccountForEntity(GetOwner());
-		if (!suspect || suspect.GetWantedLevel() <= 0)
+		// Offer checks run on the client too, where accounts do not exist: read the replicated
+		// state (the account cache on the server). PerformAction re-checks on the server.
+		if (EL_AccountStateBits.GetWantedLevel(EL_AccountReplication.GetState(GetOwner())) <= 0)
 		{
 			SetCannotPerformReason("#EL-Jail_NotWanted");
+			return false;
+		}
+
+		if (!LF_PoliceRanks.CanEscortRank(EL_AccountStateBits.GetPoliceRank(EL_AccountReplication.GetState(user))))
+		{
+			SetCannotPerformReason("#LF-Rank_EscortDenied");
 			return false;
 		}
 

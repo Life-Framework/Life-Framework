@@ -1,0 +1,28 @@
+# Kit sheets on a client: every paper-skin screen, then the ATM terminal, for a look at the sheet.
+# Registration form (Form R-89), the mining sign's Read card, the general store price list.
+# Requires the faction menu (a fresh profile); signs the form so the character spawns.
+ui
+click CivilianButton
+wait 800
+click TownButton
+wait 1500
+shot ui paper_form
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 4000
+layer EL_MiningSign_Debug LF_SignReadAction
+wait 800
+shot ui paper_sign
+input MenuBack
+wait 500
+layer Shop_GeneralStore_Debug
+wait 1200
+shot ui paper_shop
+click CloseButton
+wait 500
+layer ATM_Debug
+wait 800
+shot ui paper_atm
+input MenuBack
