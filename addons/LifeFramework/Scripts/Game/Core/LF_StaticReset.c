@@ -29,7 +29,11 @@ class LF_StaticReset
 		LF_Progression.ResetStatics();
 		LF_Introductions.ResetStatics();
 		LF_KnownNames.ResetStatics();
+<<<<<<< HEAD
 		LF_FineTickets.ResetStatics();
+=======
+		LF_OrgInvites.Reset();
+>>>>>>> origin/main
 
 		s_iRuns = s_iRuns + 1;
 		EL_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

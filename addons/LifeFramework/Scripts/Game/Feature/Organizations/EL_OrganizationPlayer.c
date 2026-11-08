@@ -52,13 +52,86 @@ class EL_OrganizationPlayer
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool Create(IEntity user, string name)
+	//! Founds an organization: the name is checked, then LF_OrgRules.FOUNDING_FEE leaves the
+	//! founder's carried MoneyStack. A refused registration gives the fee back.
+	//! \return Empty on success, else the localization key the ledger shows.
+	static string Found(IEntity user, string name)
 	{
 		string characterId = CharacterId(user);
 		if (characterId.IsEmpty())
-			return false;
+			return "#LF-Org_NoCharacter";
 
-		return EL_OrganizationManager.Create(characterId, name) != null;
+		if (EL_OrganizationManager.GetByCharacter(characterId))
+		{
+			EL_Debug.Info("Organizations", "found refused: already a member");
+			return "#LF-Org_AlreadyMember";
+		}
+
+		string refusal = LF_OrgRules.RefuseName(name);
+		if (!refusal.IsEmpty())
+		{
+			EL_Debug.Info("Organizations", string.Format("found refused: name '%1' (%2)", name, refusal));
+			return refusal;
+		}
+
+		if (EL_OrganizationManager.IsNameTaken(name))
+		{
+			EL_Debug.Info("Organizations", string.Format("found refused: name '%1' is taken", name));
+			return "#LF-Org_NameTaken";
+		}
+
+		int fee = LF_OrgRules.FOUNDING_FEE;
+		int removed = EL_MoneyUtils.RemoveCash(user, fee);
+		if (removed != fee)
+		{
+			if (removed > 0)
+				EL_MoneyUtils.AddCash(user, removed);
+
+			EL_Debug.Info("Organizations", string.Format("found refused: fee %1, carried %2", fee, removed));
+			return "#LF-Org_NoFee";
+		}
+
+		if (!EL_OrganizationManager.Create(characterId, name))
+		{
+			EL_MoneyUtils.AddCash(user, fee);
+			EL_Debug.Error("Organizations", "found failed after the fee; fee returned");
+			return "#LF-Org_FoundFailed";
+		}
+
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Name|RankKey" per member, rows joined by ";", founder first. Offline members are listed by the
+	//! name on their character record.
+	static string MemberLines(EL_Organization org)
+	{
+		if (!org)
+			return string.Empty;
+
+		array<string> ids = {};
+		org.GetMemberIds(ids);
+		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		string lines;
+		foreach (string memberId : ids)
+		{
+			string memberName = "?";
+			EL_PlayerCharacter character;
+			if (accounts)
+				character = accounts.FindCharacter(memberId);
+			if (character)
+				memberName = (character.GetFirstName() + " " + character.GetLastName()).Trim();
+
+			memberName.Replace("|", " ");
+			memberName.Replace(";", " ");
+
+			if (!lines.IsEmpty())
+				lines += ";";
+
+			lines += memberName + "|" + LF_OrgRules.RankKey(LF_OrgRules.RightsOf(org, memberId));
+		}
+
+		return lines;
 	}
 
 	//------------------------------------------------------------------------------------------------
