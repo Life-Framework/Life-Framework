@@ -1,6 +1,7 @@
-// red-proof: PENDING - the suite could not run on 2026-11-07 (Arma Reforger game data project
-// missing while Steam restores the install). Planned: make EL_CharacterATMComponent.IsAtATM
-// return true and run --tier all; "an ATM 200 m away does not serve the player" must go red.
+// red-proof: observed 2026-11-08 (tools/cli test --no-build --tier all): with
+// EL_CharacterATMComponent.IsAtATM returning true, the run printed
+// "[ELTEST] FAIL security/service-range" / "- an ATM 200 m away does not serve the player"
+// and "- the organization desk is not an ATM". Restored, it passes.
 
 // tier: WORLD
 //! The ATM and organization desk RPCs only move cash at the placed site. Reads the DebugWorld

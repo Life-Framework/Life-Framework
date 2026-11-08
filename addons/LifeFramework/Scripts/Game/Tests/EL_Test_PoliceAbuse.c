@@ -1,6 +1,7 @@
-// red-proof: PENDING - the suite could not run on 2026-11-07 (Arma Reforger game data project
-// missing while Steam restores the install). Planned: comment out the HasDrawnArmoryThisShift
-// gate in LF_PoliceRanks.Draw and run --tier fast; "a second draw in one shift refuses" must go red.
+// red-proof: observed 2026-11-08 (tools/cli test --no-build --tier all): with the
+// HasDrawnArmoryThisShift gate in LF_PoliceRanks.Draw disabled, the run printed
+// "[ELTEST] FAIL security/police-abuse" / "- the refusal names the spent shift draw".
+// Restored, it passes (13 assertions).
 
 // tier: LOGIC
 //! Police menu reach, the minimum useful fine, and one armory draw per duty shift.

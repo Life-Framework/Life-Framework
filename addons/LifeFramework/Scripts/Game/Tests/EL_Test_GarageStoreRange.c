@@ -1,7 +1,7 @@
-// red-proof: PENDING - the suite could not run on 2026-11-07 (Arma Reforger game data project
-// missing while Steam restores the install). Planned: drop the vehicle distance from
-// EL_VehicleGarageComponent.SharesGarage and run --tier fast; "a vehicle in an impound
-// across the map cannot be stored" must go red.
+// red-proof: observed 2026-11-08 (tools/cli test --no-build --tier all): with the vehicle
+// distance dropped from EL_VehicleGarageComponent.SharesGarage (return true), the run printed
+// "[ELTEST] FAIL security/garage-store-range" / "- a vehicle in an impound across the map
+// cannot be stored". Restored, it passes (3 assertions).
 
 // tier: LOGIC
 //! Storing a vehicle requires the vehicle, not only the player, at the garage.
