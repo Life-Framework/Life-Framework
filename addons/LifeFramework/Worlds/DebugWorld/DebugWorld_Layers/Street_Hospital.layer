@@ -105,3 +105,49 @@ GenericEntity Roadmap_Hospital_Cabinet {
  coords 266.5 1.04 256.9
  angleY 180
 }
+GenericEntity Hospital_Bed_1 {
+ components {
+  MeshObject "{A7BBB322D984048B}" {
+   Object "{182E4B9CDAC405D7}Assets/Props/Services/Healthcare/BedMedical_01/BedMedical_01.xob"
+  }
+  RigidBody "{B1936423B30D905C}" {
+   ModelGeometry 1
+   Static 1
+  }
+  LF_HospitalBedComponent "{469C52342BC5B0EA}" {
+  }
+ }
+ coords 270.5 0.19 261.45
+ angleY 180
+}
+GenericEntity Hospital_Bed_2 {
+ components {
+  MeshObject "{919C0C51776C7BFC}" {
+   Object "{182E4B9CDAC405D7}Assets/Props/Services/Healthcare/BedMedical_01/BedMedical_01.xob"
+  }
+  RigidBody "{522A5242A07B598A}" {
+   ModelGeometry 1
+   Static 1
+  }
+  LF_HospitalBedComponent "{33DF6DA4DC3DFC2D}" {
+  }
+ }
+ coords 268.6 0.19 261.45
+ angleY 180
+}
+GenericEntity Hospital_Bed_3 {
+ components {
+  MeshObject "{BF34F2590F2A6313}" {
+   Object "{182E4B9CDAC405D7}Assets/Props/Services/Healthcare/BedMedical_01/BedMedical_01.xob"
+  }
+  RigidBody "{E9DDA308472F3E01}" {
+   ModelGeometry 1
+   Static 1
+  }
+  LF_HospitalBedComponent "{2B4D1062D83CA37D}" {
+   m_vStandOffset -0.85 0 0
+  }
+ }
+ coords 266.7 0.19 261.45
+ angleY 180
+}

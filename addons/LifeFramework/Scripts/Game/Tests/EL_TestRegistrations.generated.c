@@ -71,6 +71,10 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_GarageStoreRange(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HarnessDevGate(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HospitalBillOnce(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HospitalBillDebt(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HospitalBedPick(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HospitalWard(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
