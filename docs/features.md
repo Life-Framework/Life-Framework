@@ -1054,6 +1054,7 @@
 ### Signs — `Scripts/Game/Feature/Signs/`
 - ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
 - ✅ Prefabs `Prefabs/Props/Signs/LF_Sign_Board` (cork board), `LF_Sign_Pub` (shop sign), `LF_Sign_Notice` (A4 notice), `LF_Sign_Chalkboard` (standing chalkboard; the vanilla `CardboardSign_01` lives in the Rally addon and does not resolve for this mod) inherit the vanilla props (no new meshes) and add the component, an `LF_Sign` action context on the face, and the Read action. A placed instance sets the id. The title is also printed on the prop on rendering clients: `LF_SignComponent` draws `UI/Layouts/Signs/LF_SignFace.layout` into an `RTTextureWidget` bound (`SetRenderTarget`) to a mesh whose material `Assets/Signs/Data/LF_SignFace.emat` samples `$rendertarget`. `LF_Sign_Board` spawns a local `LF_SignFace` sheet (vanilla A4 poster mesh) on its face; `LF_Sign_Notice` retargets its own poster material. A dedicated server skips the face. `LF_Sign_Pub` and `LF_Sign_Chalkboard` ship with the face off until their sheet placement is checked in a rendering client.
+- ✅ The printed title fits the shown part of the render target at any window size. The target is the layout size times the screen DPI scale, but the widgets inside lay out one reference unit per pixel, so a 720p Workbench viewport printed "MINI / ARE". `LF_SignComponent.FaceTitleRect` places the title box and font by `DPIScale(1)`. Board and notice photographed reading MINING AREA, not mirrored, in a Workbench play session (2026-11-08). LOGIC `signs/face-fit`.
 - ✅ `EL_MiningSign` reads `mining` (`Read: Mining area`) and `EL_WhitelistSign` reads `police_whitelist` beside its whitelist action. `EL_TextLabelComponent` (floating debug text) is deleted.
 - ⚠️ MenuBack closes the card through the UI kit. The printed face, the card render, the prompt, and the walk-away close are not yet seen in a rendering client (manual steps in the M1-01 PR).
 
@@ -1195,18 +1196,14 @@
   `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
   tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
   (verified 2026-10-11)
-- ✅ Multi-client on a dedicated server (M1-05): `node agent-box/session.mjs up --clients 2`
-  boots the bare DebugWorld server plus two windowed game clients on this PC, each with its
-  own `-profile`; `harness.mjs --client <n>` drives one. `stand`, `use`, and the new `state`
-  answer from the server over an owner RPC, so a refusal arrives as `error dev_gate_closed`
-  instead of a timeout. A client's `stand` moves the body on the owning client, because a
-  server-side move is overwritten by the owner's movement. `state` reads faction, duty,
-  wanted, rank, cash carried, bank balance, job, and organization on the server and adds the
-  client's last toast. A client starts its poll from `OnPlayerRegistered`, because
-  `OnPlayerConnected` runs only on the server. `session.mjs proof`: client 1 robs
-  `Roadmap_Fuel_Till`, client 2 (on-duty police) gets `#EL-Police_Alert_Robbery`
-  (verified 2026-11-08). LOGIC test `harness/dev-gate-dedicated` pins the stand refusal on the
-  playtest mission.
+- ✅ A world-shot pose turns off damage handling on the posed character for
+  8 s, so the fall from the camera height no longer kills it (a 4.5 m pose
+  ended on the death screen; verified 2026-11-08 with an 18 m row shot).
+  `shot world <name> x y z ox oy oz` takes a close camera offset. The poll
+  restarts when a new game mode appears, so a second Play in the same
+  Workbench no longer answers `no_session`. The command file is shared by
+  every default-profile session on the machine; the `agent-box-play` lock
+  ties it to one checkout's Workbench or game process.
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.

@@ -15,19 +15,19 @@ tools\cli mcp verify [name]             # prove a server starts
 tools\cli mcp enable|disable <name>     # toggle a server in opencode.json
 tools\cli build                         # headless Workbench build (worktree only)
 tools\cli serve                         # boot the headless test server (blocks, worktree only)
-tools\cli test [--no-build] [--tier fast|all|persistence]
+tools\cli test [--no-build] [--tier fast|all|persistence] [--only <names>]
                                         # build + boot server + parse ELTEST results (worktree only)
-tools\cli ci                            # validate + build + test (full gate, worktree only)
+tools\cli ci                            # validate --full + build + test (full gate, worktree only)
 tools\cli logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                         # grep the newest server console.log (default after=3 limit=8)
 tools\cli wt new <feature>              # create worktree + branch + port allocation
 tools\cli wt list                       # worktrees, ports, dirty/merged state
 tools\cli wt test|build|dev|gate <slug> # run a heavy command in a specific worktree
 tools\cli wt logs <slug> <pattern>      # grep a worktree's newest console.log (from anywhere)
-tools\cli wt ship <slug>                # sync -> gate -> push -> PR -> auto-merge into main
+tools\cli wt ship <slug> [--closes N]   # gate -> push -> PR -> auto-merge (merges main only on conflict)
 tools\cli wt prune <slug>               # remove a merged worktree + branch
 tools\cli call <tool> '<json>'|@file    # call an MCP tool directly (see mcp-call.mjs)
-tools\cli validate                      # run tools/validation/* checks (also in CI)
+tools\cli validate [--full]             # run tools/validation/* checks (also in CI); --full adds the Workbench compile
 ```
 
 `build / test / dev / serve / ci` refuse to run in the main checkout (the

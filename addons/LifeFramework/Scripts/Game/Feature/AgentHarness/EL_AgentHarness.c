@@ -509,6 +509,7 @@ class EL_AgentHarness
 	protected static const string RESULT_PATH = "$profile:agent-box/result.txt";
 
 	protected static bool s_bLoop;
+	protected static IEntity s_pLoopMode;
 	protected static int s_iEnsureTries;
 	protected static int s_iCaptureId;
 	protected static vector s_vShotStand;
@@ -532,11 +533,25 @@ class EL_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	static void EnsureLoop()
 	{
-		if (s_bLoop)
-			return;
-
 		if (!GetGame())
 			return;
+
+		// Workbench keeps script statics between play sessions when nothing
+		// recompiles. The old poll died with the old game, so a second Play
+		// answered every command with no_session. A new game mode entity marks
+		// a new session.
+		IEntity mode = GetGame().GetGameMode();
+		if (s_bLoop && s_pLoopMode == mode)
+			return;
+
+		if (s_bLoop)
+		{
+			s_bLoop = false;
+			s_iEnsureTries = 0;
+			s_iCaptureId = 0;
+			s_bShotPose = false;
+			EL_Debug.Log(FEATURE, "new play session; restarting poll");
+		}
 
 		// A headless dedicated server never has a local controller. Do not
 		// schedule retries there: the logic suite must not grow a poll.
@@ -561,6 +576,7 @@ class EL_AgentHarness
 		}
 
 		s_bLoop = true;
+		s_pLoopMode = mode;
 		GetGame().GetCallqueue().CallLater(Poll, 400, true);
 		EL_Debug.Log(FEATURE, "poll started");
 	}
