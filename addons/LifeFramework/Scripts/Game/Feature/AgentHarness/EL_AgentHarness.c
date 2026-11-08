@@ -2006,6 +2006,14 @@ class EL_AgentHarness
 			string toast = SCR_PlayerController.EL_GetLastToast();
 			text = text + " toast=" + Token(toast);
 			text = text + " known=" + LF_KnownNames.KnownCount().ToString() + " name=" + Token(LF_KnownNames.GetShown());
+			// M1-20: radio dispatches this client heard, the newest, and the site alarm it can hear.
+			text = text + " dispatch=" + SCR_PlayerController.LF_GetDispatchCount().ToString() + " lastdispatch=" + Token(SCR_PlayerController.LF_GetLastDispatch());
+			string alarm = "none";
+			IEntity listener = EL_Utils.GetLocalCharacter();
+			if (listener)
+				alarm = LF_SiteAlarmComponent.HeardAt(listener.GetOrigin());
+
+			text = text + " alarm=" + alarm;
 		}
 
 		WriteResult(id, status, text);

@@ -50,6 +50,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_CharacterCreationRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobNoAccount(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AccountReplicationWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Dispatch(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_DispatchAlarm(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_DoorLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_DutyPay(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_E2E_Narrative(), EL_TestTier.WORLD);

@@ -224,14 +224,14 @@ class LF_Hospital
 		if (account)
 		{
 			account.IncreaseWantedLevel(1);
-			LF_WantedReports.Report(playerUid, player, LF_WantedReports.OFFENCE_HOSPITAL);
 			EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 			if (accountManager)
 				accountManager.SaveAndReleaseAccount(account);
 		}
 
 		till.m_iAlerts = till.m_iAlerts + 1;
-		EL_Utils.AlertPolice("#EL-Police_Alert_Hospital", TargetOrigin(targetId));
+		// The alarm sounds at the cabinet and on-duty officers are radioed (LF_Dispatch).
+		LF_Dispatch.Report(playerUid, player, LF_WantedReports.OFFENCE_HOSPITAL, TargetOrigin(targetId));
 		EL_Debug.Log("Hospital", string.Format("till robbed %1 cash=%2 delivered=%3", targetId, CashPrefab(), paid));
 		return true;
 	}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{8E15F0B7A26C4D93}Prefabs/Police/LF_SiteAlarm_Loud.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
