@@ -3107,66 +3107,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You hold up your ID card."
      Comment "Show ID performed: the other player now sees the card."
     }
-    CustomStringTableItem "{682DF358EBADD27A}" {
-     Id "LF-Hospital_Title"
-     Target_en_us "Hospital"
-     Comment "Toast title when a player wakes up in hospital."
-    }
-    CustomStringTableItem "{BE26E458ADA922A8}" {
-     Id "LF-Hospital_BillToast"
-     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
-     Comment "Toast on waking in hospital after a death. %1 is the bill amount."
-    }
-    CustomStringTableItem "{25C8757AA18DD8A8}" {
-     Id "LF-Hospital_BillTitle"
-     Target_en_us "Hospital bill"
-     Comment "Title of the paper hospital bill."
-    }
-    CustomStringTableItem "{DB6C9E5F09D39D13}" {
-     Id "LF-Hospital_BillAmount"
-     Target_en_us "Treatment: %1, charged to your bank account"
-     Comment "Hospital bill line. %1 is the amount charged."
-    }
-    CustomStringTableItem "{4F2335135A4FF34F}" {
-     Id "LF-Hospital_BillBalance"
-     Target_en_us "Bank balance after payment: %1"
-     Comment "Hospital bill line. %1 is the bank balance after the bill."
-    }
-    CustomStringTableItem "{1CE638BD33BB8722}" {
-     Id "LF-Hospital_BillDebt"
-     Target_en_us "You owe the bank. Your next deposits pay the debt first."
-     Comment "Hospital bill line shown when the bill put the player into debt."
-    }
-    CustomStringTableItem "{94693CF4600BC9D5}" {
-     Id "LF-Hospital_BillNote"
-     Target_en_us "You don't remember how you got here."
-     Comment "Hospital bill note: the New Life Rule cue. The player forgets the fight that killed them."
-    }
-    CustomStringTableItem "{FFEA0B7D7B19622C}" {
-     Id "LF-Hospital_BillNewLife"
-     Target_en_us "New Life Rule: stay away from where you died for %1 minutes."
-     Comment "Hospital bill line: the server rule. %1 is the number of minutes."
-    }
-    CustomStringTableItem "{D66A5204D011B83B}" {
-     Id "LF-Hospital_BillClose"
-     Target_en_us "Put the bill away"
-     Comment "Closes the hospital bill card."
-    }
-    CustomStringTableItem "{8AA134FCD11961A4}" {
-     Id "LF-Hospital_BillRead"
-     Target_en_us "Read hospital bill"
-     Comment "Action on a hospital bill lying in the world."
-    }
-    CustomStringTableItem "{BF9E5680A14113DA}" {
-     Id "LF-Hospital_BillItem"
-     Target_en_us "Hospital bill"
-     Comment "Inventory name of the paper hospital bill."
-    }
-    CustomStringTableItem "{B496BB68DF603A03}" {
-     Id "LF-Hospital_BillItemDesc"
-     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
-     Comment "Inventory description of the paper hospital bill."
-    }
     CustomStringTableItem "{E5BDB7CD47972752}" {
      Id "LF-ATM_Header"
      Target_en_us "FIRST BANK OF EVERON"
@@ -3562,155 +3502,110 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
-    CustomStringTableItem "{5985DB962913E1DE}" {
-     Id "LF-Rank_EscortDenied"
-     Target_en_us "Your rank cannot escort"
-     Comment "Escort refused because the officer's rank is below the configured escort rank"
+    CustomStringTableItem "{7EC51FB11D0B1C50}" {
+     Id "LF-Garage_ReadLedger"
+     Target_en_us "Read the garage ledger"
+     Comment "Action at the garage and the impound desk that opens the ledger card of your vehicles"
     }
-    CustomStringTableItem "{0A0AF64EEE5BACBB}" {
-     Id "LF-Duty_ClockIn"
-     Target_en_us "Clock in"
-     Comment "Duty desk action: punch the card and go on duty as police. Swaps to the police inventory."
+    CustomStringTableItem "{B91E50924997458C}" {
+     Id "LF-Garage_LedgerTitle"
+     Target_en_us "Garage Ledger"
+     Comment "Title of the garage ledger card"
     }
-    CustomStringTableItem "{E4D4E1EE39E260F2}" {
-     Id "LF-Duty_ClockOut"
-     Target_en_us "Clock out"
-     Comment "Duty desk action: punch the card, go off duty, collect duty pay, get the civilian inventory back."
+    CustomStringTableItem "{F48BC16138BA72D1}" {
+     Id "LF-Garage_LedgerRow"
+     Target_en_us "%1, plate %2: %3"
+     Comment "Ledger row. %1 is the model, %2 the plate, %3 where the vehicle is (in the garage, at the impound lot)"
     }
-    CustomStringTableItem "{073A8C6E2A477B10}" {
-     Id "LF-Duty_ClockDesc"
-     Target_en_us "Punch your card at the station duty desk."
-     Comment "Description of the duty desk action."
+    CustomStringTableItem "{B2FF1D7EF35A27D7}" {
+     Id "LF-Garage_LedgerStored"
+     Target_en_us "in the garage"
+     Comment "Ledger row place: the vehicle is stored and survives restarts"
     }
-    CustomStringTableItem "{AB08E8AF6A8954AD}" {
-     Id "LF-Duty_NoAccount"
-     Target_en_us "Register your character first."
-     Comment "Duty desk refusal: the player has no registered character."
+    CustomStringTableItem "{A95D5C7E27177491}" {
+     Id "LF-Garage_LedgerImpounded"
+     Target_en_us "at the impound lot"
+     Comment "Ledger row place: the vehicle was left on the street at a restart"
     }
-    CustomStringTableItem "{F8D832E3CE9C3E7A}" {
-     Id "LF-Duty_NotOnRoster"
-     Target_en_us "Only officers on the police roster can clock in. Ask an admin to join the police."
-     Comment "Duty desk refusal: the player is not whitelisted for police."
+    CustomStringTableItem "{03E3D61F9E999AD2}" {
+     Id "LF-Garage_LedgerEmpty"
+     Target_en_us "No vehicles are registered to you."
+     Comment "Ledger card line when the reader owns no stored or impounded vehicle"
     }
-    CustomStringTableItem "{B20154B0D085697C}" {
-     Id "LF-Duty_AlreadyOn"
-     Target_en_us "You are already on duty."
-     Comment "Duty desk refusal: a second clock-in."
+    CustomStringTableItem "{5CDA9148049FE180}" {
+     Id "LF-Garage_LedgerFee"
+     Target_en_us "Release fee at the impound desk behind the garage: $%1 in cash."
+     Comment "Ledger card line when a vehicle is impounded. %1 is the fee"
     }
-    CustomStringTableItem "{F9746F64FC7DF70C}" {
-     Id "LF-Duty_NotOn"
-     Target_en_us "You are not on duty."
-     Comment "Duty desk refusal: clock-out while off duty."
+    CustomStringTableItem "{66D8858FA06871D7}" {
+     Id "LF-Garage_LedgerClose"
+     Target_en_us "Put it back"
+     Comment "Closes the garage ledger card"
     }
-    CustomStringTableItem "{75DBEF394E6BF363}" {
-     Id "LF-Offence_Robbery"
-     Target_en_us "Armed robbery"
-     Comment "Offence on a wanted poster: a till or safe was robbed."
+    CustomStringTableItem "{FC90DC9BBE2A0562}" {
+     Id "LF-Garage_Stored"
+     Target_en_us "Stored in the garage: %1. Keep your key."
+     Comment "Store succeeded. %1 is the plate"
     }
-    CustomStringTableItem "{9B5C5EBC51647BBD}" {
-     Id "LF-Offence_VehicleTheft"
-     Target_en_us "Vehicle theft"
-     Comment "Offence on a wanted poster."
+    CustomStringTableItem "{EFE87FE08B769414}" {
+     Id "LF-Garage_Retrieved"
+     Target_en_us "%1 is waiting on the pad in front of the garage."
+     Comment "Retrieve succeeded. %1 is the plate"
     }
-    CustomStringTableItem "{E2A9C867DDFB5021}" {
-     Id "LF-Offence_WeaponTheft"
-     Target_en_us "Weapon theft"
-     Comment "Offence on a wanted poster."
+    CustomStringTableItem "{844A5DFB122EDF8C}" {
+     Id "LF-Garage_NothingStored"
+     Target_en_us "You have no vehicle in the garage."
+     Comment "Retrieve refused: nothing stored"
     }
-    CustomStringTableItem "{A1B41FC05FD138B7}" {
-     Id "LF-Offence_BreakIn"
-     Target_en_us "Breaking and entering"
-     Comment "Offence on a wanted poster: a door was breached."
+    CustomStringTableItem "{A103BFA88FF840F0}" {
+     Id "LF-Garage_PadBusy"
+     Target_en_us "The pad in front of the garage is blocked. Move the car that is standing there."
+     Comment "Retrieve refused: every garage pad is occupied"
     }
-    CustomStringTableItem "{6E4CC71CE2AF3D51}" {
-     Id "LF-Offence_HospitalRobbery"
-     Target_en_us "Hospital robbery"
-     Comment "Offence on a wanted poster."
+    CustomStringTableItem "{50E0662C55792133}" {
+     Id "LF-Impound_Title"
+     Target_en_us "Impound Lot"
+     Comment "Notification title at the impound desk"
     }
-    CustomStringTableItem "{35F30778D3B26361}" {
-     Id "LF-Wanted_PlaceGrid"
-     Target_en_us "grid %1"
-     Comment "Place on a wanted poster when no sign is near. %1 is the map grid square, e.g. 002-002."
+    CustomStringTableItem "{7E2E61FB397A0CDF}" {
+     Id "LF-Impound_Collect"
+     Target_en_us "Pay the fee and collect your vehicle"
+     Comment "Impound desk action"
     }
-    CustomStringTableItem "{8C5D85EC61903BF8}" {
-     Id "LF-Wanted_VehicleUnknown"
-     Target_en_us "a vehicle"
-     Comment "Wanted poster: the suspect drove a vehicle with no display name."
+    CustomStringTableItem "{8A114E81A1FA0278}" {
+     Id "LF-Impound_NothingHere"
+     Target_en_us "None of your vehicles is at the impound lot."
+     Comment "Impound collect refused: nothing impounded for this player"
     }
-    CustomStringTableItem "{0C509872EDE3C2C8}" {
-     Id "LF-Wanted_Read"
-     Target_en_us "Read the wanted posters"
-     Comment "Action on the station wanted board."
+    CustomStringTableItem "{1736103CC4077F8B}" {
+     Id "LF-Impound_CannotAfford"
+     Target_en_us "The release fee is $%1 in cash."
+     Comment "Impound collect refused: carried cash is short. %1 is the fee"
     }
-    CustomStringTableItem "{BD4E87FFF2BC3717}" {
-     Id "LF-Wanted_Title"
-     Target_en_us "WANTED"
-     Comment "Title of the public wanted poster card."
+    CustomStringTableItem "{DF52697EEFAFA6B6}" {
+     Id "LF-Impound_PadBusy"
+     Target_en_us "The yard is full. Wait until a vehicle is driven out."
+     Comment "Impound collect refused: every yard pad is occupied"
     }
-    CustomStringTableItem "{9E5C42E17A717873}" {
-     Id "LF-Wanted_TitlePolice"
-     Target_en_us "WANTED - police notices"
-     Comment "Title of the wanted board card an on-duty officer reads."
+    CustomStringTableItem "{1A7DF5F007730F80}" {
+     Id "LF-Impound_Closed"
+     Target_en_us "The impound desk is closed."
+     Comment "Impound collect refused: the fee is not configured"
     }
-    CustomStringTableItem "{208346B2A0835221}" {
-     Id "LF-Wanted_None"
-     Target_en_us "No one is wanted right now."
-     Comment "Wanted board card when the board is empty."
+    CustomStringTableItem "{E4FB9D76BA99F73A}" {
+     Id "LF-Impound_Collected"
+     Target_en_us "Released: %1 is waiting in the yard."
+     Comment "Impound collect succeeded. %1 is the plate"
     }
-    CustomStringTableItem "{E067EA2BE746BA32}" {
-     Id "LF-Wanted_PublicTip"
-     Target_en_us "Seen them? Tell an officer."
-     Comment "Line on the public wanted poster card."
+    CustomStringTableItem "{D033165293830B25}" {
+     Id "LF-Garage_LedgerStreet"
+     Target_en_us "on the street, towed to the impound lot at the next restart unless garaged"
+     Comment "Ledger row place: the vehicle is out in the world"
     }
-    CustomStringTableItem "{9A51FA9C497B307F}" {
-     Id "LF-Wanted_Unknown"
-     Target_en_us "Unknown person"
-     Comment "Wanted poster headline before the suspect is identified."
-    }
-    CustomStringTableItem "{D733E65634209297}" {
-     Id "LF-Wanted_NoDescription"
-     Target_en_us "no description"
-     Comment "Wanted poster: nothing was seen of the clothing."
-    }
-    CustomStringTableItem "{9DFCE698AEB990D9}" {
-     Id "LF-Wanted_Wearing"
-     Target_en_us "Wearing %1"
-     Comment "Wanted poster description. %1 is a list of clothing names."
-    }
-    CustomStringTableItem "{66B7B59C6D36A297}" {
-     Id "LF-Wanted_OnFoot"
-     Target_en_us "on foot"
-     Comment "Wanted poster: the suspect was not in a vehicle."
-    }
-    CustomStringTableItem "{DA0581F22B573242}" {
-     Id "LF-Wanted_Driving"
-     Target_en_us "driving %1"
-     Comment "Wanted poster: %1 is the vehicle name."
-    }
-    CustomStringTableItem "{92CC57DB2785885E}" {
-     Id "LF-Wanted_SeenAt"
-     Target_en_us "last seen at %1"
-     Comment "Wanted poster, police only: %1 is the place of the crime."
-    }
-    CustomStringTableItem "{41F96CA57255836D}" {
-     Id "LF-Sign_PoliceWanted_Title"
-     Target_en_us "Wanted"
-     Comment "Title printed on the station wanted board."
-    }
-    CustomStringTableItem "{167EC6A64DF46E04}" {
-     Id "LF-Sign_PoliceWanted_What"
-     Target_en_us "Posters of people the police are looking for, one per crime."
-     Comment "Wanted board sign card: what it is."
-    }
-    CustomStringTableItem "{BFD2376670AE25CD}" {
-     Id "LF-Sign_PoliceWanted_How"
-     Target_en_us "A poster describes what the suspect wore and drove. The name goes up once the police identify them."
-     Comment "Wanted board sign card: how it works."
-    }
-    CustomStringTableItem "{4C129F5AB03484F6}" {
-     Id "LF-Sign_PoliceWanted_Rules"
-     Target_en_us "Officers on duty see where each crime happened."
-     Comment "Wanted board sign card: rules."
+    CustomStringTableItem "{86AD47C0A38CE390}" {
+     Id "LF-Garage_BuyHint"
+     Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
+     Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
     }
     CustomStringTableItem "{7EFC20EBB3D29E7E}" {
      Id "LF-Sign_TownMap_Title"
@@ -4147,120 +4042,70 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A picked plant needs time to ripen again."
      Comment "Sign card for the farm north of the square, Rules section."
     }
-    CustomStringTableItem "{F51D6FC3BD1F68DC}" {
-     Id "LF-Job_NewWork"
-     Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
-     Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
+    CustomStringTableItem "{682DF358EBADD27A}" {
+     Id "LF-Hospital_Title"
+     Target_en_us "Hospital"
+     Comment "Toast title when a player wakes up in hospital."
     }
-    CustomStringTableItem "{196A4BD9FFC674C5}" {
-     Id "LF-Job_HiredHidden"
-     Target_en_us "You now work as %1."
-     Comment "Hint when hired; %1 = job name. Hidden progression: no grade or level."
+    CustomStringTableItem "{BE26E458ADA922A8}" {
+     Id "LF-Hospital_BillToast"
+     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
+     Comment "Toast on waking in hospital after a death. %1 is the bill amount."
     }
-    CustomStringTableItem "{7EC51FB11D0B1C50}" {
-     Id "LF-Garage_ReadLedger"
-     Target_en_us "Read the garage ledger"
-     Comment "Action at the garage and the impound desk that opens the ledger card of your vehicles"
+    CustomStringTableItem "{25C8757AA18DD8A8}" {
+     Id "LF-Hospital_BillTitle"
+     Target_en_us "Hospital bill"
+     Comment "Title of the paper hospital bill."
     }
-    CustomStringTableItem "{B91E50924997458C}" {
-     Id "LF-Garage_LedgerTitle"
-     Target_en_us "Garage Ledger"
-     Comment "Title of the garage ledger card"
+    CustomStringTableItem "{DB6C9E5F09D39D13}" {
+     Id "LF-Hospital_BillAmount"
+     Target_en_us "Treatment: %1, charged to your bank account"
+     Comment "Hospital bill line. %1 is the amount charged."
     }
-    CustomStringTableItem "{F48BC16138BA72D1}" {
-     Id "LF-Garage_LedgerRow"
-     Target_en_us "%1, plate %2: %3"
-     Comment "Ledger row. %1 is the model, %2 the plate, %3 where the vehicle is (in the garage, at the impound lot)"
+    CustomStringTableItem "{4F2335135A4FF34F}" {
+     Id "LF-Hospital_BillBalance"
+     Target_en_us "Bank balance after payment: %1"
+     Comment "Hospital bill line. %1 is the bank balance after the bill."
     }
-    CustomStringTableItem "{B2FF1D7EF35A27D7}" {
-     Id "LF-Garage_LedgerStored"
-     Target_en_us "in the garage"
-     Comment "Ledger row place: the vehicle is stored and survives restarts"
+    CustomStringTableItem "{1CE638BD33BB8722}" {
+     Id "LF-Hospital_BillDebt"
+     Target_en_us "You owe the bank. Your next deposits pay the debt first."
+     Comment "Hospital bill line shown when the bill put the player into debt."
     }
-    CustomStringTableItem "{A95D5C7E27177491}" {
-     Id "LF-Garage_LedgerImpounded"
-     Target_en_us "at the impound lot"
-     Comment "Ledger row place: the vehicle was left on the street at a restart"
+    CustomStringTableItem "{94693CF4600BC9D5}" {
+     Id "LF-Hospital_BillNote"
+     Target_en_us "You don't remember how you got here."
+     Comment "Hospital bill note: the New Life Rule cue. The player forgets the fight that killed them."
     }
-    CustomStringTableItem "{03E3D61F9E999AD2}" {
-     Id "LF-Garage_LedgerEmpty"
-     Target_en_us "No vehicles are registered to you."
-     Comment "Ledger card line when the reader owns no stored or impounded vehicle"
+    CustomStringTableItem "{FFEA0B7D7B19622C}" {
+     Id "LF-Hospital_BillNewLife"
+     Target_en_us "New Life Rule: stay away from where you died for %1 minutes."
+     Comment "Hospital bill line: the server rule. %1 is the number of minutes."
     }
-    CustomStringTableItem "{5CDA9148049FE180}" {
-     Id "LF-Garage_LedgerFee"
-     Target_en_us "Release fee at the impound desk behind the garage: $%1 in cash."
-     Comment "Ledger card line when a vehicle is impounded. %1 is the fee"
+    CustomStringTableItem "{D66A5204D011B83B}" {
+     Id "LF-Hospital_BillClose"
+     Target_en_us "Put the bill away"
+     Comment "Closes the hospital bill card."
     }
-    CustomStringTableItem "{66D8858FA06871D7}" {
-     Id "LF-Garage_LedgerClose"
-     Target_en_us "Put it back"
-     Comment "Closes the garage ledger card"
+    CustomStringTableItem "{8AA134FCD11961A4}" {
+     Id "LF-Hospital_BillRead"
+     Target_en_us "Read hospital bill"
+     Comment "Action on a hospital bill lying in the world."
     }
-    CustomStringTableItem "{FC90DC9BBE2A0562}" {
-     Id "LF-Garage_Stored"
-     Target_en_us "Stored in the garage: %1. Keep your key."
-     Comment "Store succeeded. %1 is the plate"
+    CustomStringTableItem "{BF9E5680A14113DA}" {
+     Id "LF-Hospital_BillItem"
+     Target_en_us "Hospital bill"
+     Comment "Inventory name of the paper hospital bill."
     }
-    CustomStringTableItem "{EFE87FE08B769414}" {
-     Id "LF-Garage_Retrieved"
-     Target_en_us "%1 is waiting on the pad in front of the garage."
-     Comment "Retrieve succeeded. %1 is the plate"
+    CustomStringTableItem "{B496BB68DF603A03}" {
+     Id "LF-Hospital_BillItemDesc"
+     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
+     Comment "Inventory description of the paper hospital bill."
     }
-    CustomStringTableItem "{844A5DFB122EDF8C}" {
-     Id "LF-Garage_NothingStored"
-     Target_en_us "You have no vehicle in the garage."
-     Comment "Retrieve refused: nothing stored"
-    }
-    CustomStringTableItem "{A103BFA88FF840F0}" {
-     Id "LF-Garage_PadBusy"
-     Target_en_us "The pad in front of the garage is blocked. Move the car that is standing there."
-     Comment "Retrieve refused: every garage pad is occupied"
-    }
-    CustomStringTableItem "{50E0662C55792133}" {
-     Id "LF-Impound_Title"
-     Target_en_us "Impound Lot"
-     Comment "Notification title at the impound desk"
-    }
-    CustomStringTableItem "{7E2E61FB397A0CDF}" {
-     Id "LF-Impound_Collect"
-     Target_en_us "Pay the fee and collect your vehicle"
-     Comment "Impound desk action"
-    }
-    CustomStringTableItem "{8A114E81A1FA0278}" {
-     Id "LF-Impound_NothingHere"
-     Target_en_us "None of your vehicles is at the impound lot."
-     Comment "Impound collect refused: nothing impounded for this player"
-    }
-    CustomStringTableItem "{1736103CC4077F8B}" {
-     Id "LF-Impound_CannotAfford"
-     Target_en_us "The release fee is $%1 in cash."
-     Comment "Impound collect refused: carried cash is short. %1 is the fee"
-    }
-    CustomStringTableItem "{DF52697EEFAFA6B6}" {
-     Id "LF-Impound_PadBusy"
-     Target_en_us "The yard is full. Wait until a vehicle is driven out."
-     Comment "Impound collect refused: every yard pad is occupied"
-    }
-    CustomStringTableItem "{1A7DF5F007730F80}" {
-     Id "LF-Impound_Closed"
-     Target_en_us "The impound desk is closed."
-     Comment "Impound collect refused: the fee is not configured"
-    }
-    CustomStringTableItem "{E4FB9D76BA99F73A}" {
-     Id "LF-Impound_Collected"
-     Target_en_us "Released: %1 is waiting in the yard."
-     Comment "Impound collect succeeded. %1 is the plate"
-    }
-    CustomStringTableItem "{D033165293830B25}" {
-     Id "LF-Garage_LedgerStreet"
-     Target_en_us "on the street, towed to the impound lot at the next restart unless garaged"
-     Comment "Ledger row place: the vehicle is out in the world"
-    }
-    CustomStringTableItem "{86AD47C0A38CE390}" {
-     Id "LF-Garage_BuyHint"
-     Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
-     Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
+    CustomStringTableItem "{5985DB962913E1DE}" {
+     Id "LF-Rank_EscortDenied"
+     Target_en_us "Your rank cannot escort"
+     Comment "Escort refused because the officer's rank is below the configured escort rank"
     }
     CustomStringTableItem "{576A5D52994C158C}" {
      Id "LF-Sign_Impound_Title"
@@ -4427,6 +4272,171 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Park it in the garage next door, to the west, and it will not be towed again."
      Comment "Sign card for the impound lot, Next section: where the player goes after this place."
     }
+    CustomStringTableItem "{0A0AF64EEE5BACBB}" {
+     Id "LF-Duty_ClockIn"
+     Target_en_us "Clock in"
+     Comment "Duty desk action: punch the card and go on duty as police. Swaps to the police inventory."
+    }
+    CustomStringTableItem "{E4D4E1EE39E260F2}" {
+     Id "LF-Duty_ClockOut"
+     Target_en_us "Clock out"
+     Comment "Duty desk action: punch the card, go off duty, collect duty pay, get the civilian inventory back."
+    }
+    CustomStringTableItem "{073A8C6E2A477B10}" {
+     Id "LF-Duty_ClockDesc"
+     Target_en_us "Punch your card at the station duty desk."
+     Comment "Description of the duty desk action."
+    }
+    CustomStringTableItem "{AB08E8AF6A8954AD}" {
+     Id "LF-Duty_NoAccount"
+     Target_en_us "Register your character first."
+     Comment "Duty desk refusal: the player has no registered character."
+    }
+    CustomStringTableItem "{F8D832E3CE9C3E7A}" {
+     Id "LF-Duty_NotOnRoster"
+     Target_en_us "Only officers on the police roster can clock in. Ask an admin to join the police."
+     Comment "Duty desk refusal: the player is not whitelisted for police."
+    }
+    CustomStringTableItem "{B20154B0D085697C}" {
+     Id "LF-Duty_AlreadyOn"
+     Target_en_us "You are already on duty."
+     Comment "Duty desk refusal: a second clock-in."
+    }
+    CustomStringTableItem "{F9746F64FC7DF70C}" {
+     Id "LF-Duty_NotOn"
+     Target_en_us "You are not on duty."
+     Comment "Duty desk refusal: clock-out while off duty."
+    }
+    CustomStringTableItem "{75DBEF394E6BF363}" {
+     Id "LF-Offence_Robbery"
+     Target_en_us "Armed robbery"
+     Comment "Offence on a wanted poster: a till or safe was robbed."
+    }
+    CustomStringTableItem "{9B5C5EBC51647BBD}" {
+     Id "LF-Offence_VehicleTheft"
+     Target_en_us "Vehicle theft"
+     Comment "Offence on a wanted poster."
+    }
+    CustomStringTableItem "{E2A9C867DDFB5021}" {
+     Id "LF-Offence_WeaponTheft"
+     Target_en_us "Weapon theft"
+     Comment "Offence on a wanted poster."
+    }
+    CustomStringTableItem "{A1B41FC05FD138B7}" {
+     Id "LF-Offence_BreakIn"
+     Target_en_us "Breaking and entering"
+     Comment "Offence on a wanted poster: a door was breached."
+    }
+    CustomStringTableItem "{6E4CC71CE2AF3D51}" {
+     Id "LF-Offence_HospitalRobbery"
+     Target_en_us "Hospital robbery"
+     Comment "Offence on a wanted poster."
+    }
+    CustomStringTableItem "{35F30778D3B26361}" {
+     Id "LF-Wanted_PlaceGrid"
+     Target_en_us "grid %1"
+     Comment "Place on a wanted poster when no sign is near. %1 is the map grid square, e.g. 002-002."
+    }
+    CustomStringTableItem "{8C5D85EC61903BF8}" {
+     Id "LF-Wanted_VehicleUnknown"
+     Target_en_us "a vehicle"
+     Comment "Wanted poster: the suspect drove a vehicle with no display name."
+    }
+    CustomStringTableItem "{0C509872EDE3C2C8}" {
+     Id "LF-Wanted_Read"
+     Target_en_us "Read the wanted posters"
+     Comment "Action on the station wanted board."
+    }
+    CustomStringTableItem "{BD4E87FFF2BC3717}" {
+     Id "LF-Wanted_Title"
+     Target_en_us "WANTED"
+     Comment "Title of the public wanted poster card."
+    }
+    CustomStringTableItem "{9E5C42E17A717873}" {
+     Id "LF-Wanted_TitlePolice"
+     Target_en_us "WANTED - police notices"
+     Comment "Title of the wanted board card an on-duty officer reads."
+    }
+    CustomStringTableItem "{208346B2A0835221}" {
+     Id "LF-Wanted_None"
+     Target_en_us "No one is wanted right now."
+     Comment "Wanted board card when the board is empty."
+    }
+    CustomStringTableItem "{E067EA2BE746BA32}" {
+     Id "LF-Wanted_PublicTip"
+     Target_en_us "Seen them? Tell an officer."
+     Comment "Line on the public wanted poster card."
+    }
+    CustomStringTableItem "{9A51FA9C497B307F}" {
+     Id "LF-Wanted_Unknown"
+     Target_en_us "Unknown person"
+     Comment "Wanted poster headline before the suspect is identified."
+    }
+    CustomStringTableItem "{D733E65634209297}" {
+     Id "LF-Wanted_NoDescription"
+     Target_en_us "no description"
+     Comment "Wanted poster: nothing was seen of the clothing."
+    }
+    CustomStringTableItem "{9DFCE698AEB990D9}" {
+     Id "LF-Wanted_Wearing"
+     Target_en_us "Wearing %1"
+     Comment "Wanted poster description. %1 is a list of clothing names."
+    }
+    CustomStringTableItem "{66B7B59C6D36A297}" {
+     Id "LF-Wanted_OnFoot"
+     Target_en_us "on foot"
+     Comment "Wanted poster: the suspect was not in a vehicle."
+    }
+    CustomStringTableItem "{DA0581F22B573242}" {
+     Id "LF-Wanted_Driving"
+     Target_en_us "driving %1"
+     Comment "Wanted poster: %1 is the vehicle name."
+    }
+    CustomStringTableItem "{92CC57DB2785885E}" {
+     Id "LF-Wanted_SeenAt"
+     Target_en_us "last seen at %1"
+     Comment "Wanted poster, police only: %1 is the place of the crime."
+    }
+    CustomStringTableItem "{41F96CA57255836D}" {
+     Id "LF-Sign_PoliceWanted_Title"
+     Target_en_us "Wanted"
+     Comment "Title printed on the station wanted board."
+    }
+    CustomStringTableItem "{167EC6A64DF46E04}" {
+     Id "LF-Sign_PoliceWanted_What"
+     Target_en_us "Posters of people the police are looking for, one per crime."
+     Comment "Wanted board sign card: what it is."
+    }
+    CustomStringTableItem "{BFD2376670AE25CD}" {
+     Id "LF-Sign_PoliceWanted_How"
+     Target_en_us "A poster describes what the suspect wore and drove. The name goes up once the police identify them."
+     Comment "Wanted board sign card: how it works."
+    }
+    CustomStringTableItem "{4C129F5AB03484F6}" {
+     Id "LF-Sign_PoliceWanted_Rules"
+     Target_en_us "Officers on duty see where each crime happened."
+     Comment "Wanted board sign card: rules."
+    }
+    CustomStringTableItem "{2AE926B35D391FDA}" {
+     Id "LF-Wanted_Level"
+     Target_en_us "wanted level %1 of 5"
+     Comment "Wanted poster headline: how wanted the suspect is now. %1 is 1 to 5."
+    }
+    CustomStringTableItem "{F51D6FC3BD1F68DC}" {
+     Id "LF-Job_NewWork"
+     Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
+     Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
+    }
+    CustomStringTableItem "{196A4BD9FFC674C5}" {
+     Id "LF-Job_HiredHidden"
+     Target_en_us "You now work as %1."
+     Comment "Hint when hired; %1 = job name. Hidden progression: no grade or level."
+    }
+    CustomStringTableItem "{94B78288ADF3D767}" {
+     Id "LF-Sign_PoliceWanted_Next"
+     Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
+     Comment "Wanted board sign card: what to do next."
+    }
     CustomStringTableItem "{0A1E0465064F3E5F}" {
      Id "LF-Offence_Murder"
      Target_en_us "Murder"
@@ -4476,16 +4486,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_SafeZone_Rules"
      Target_en_us "Beyond the square, killing anyone, resident or stranger, is murder. The killer is wanted at once, and the police get a description of their clothes, their vehicle, and the place. By order of the Everon Constabulary."
      Comment "Safe zone sign card, Rules section."
-    }
-    CustomStringTableItem "{2AE926B35D391FDA}" {
-     Id "LF-Wanted_Level"
-     Target_en_us "wanted level %1 of 5"
-     Comment "Wanted poster headline: how wanted the suspect is now. %1 is 1 to 5."
-    }
-    CustomStringTableItem "{94B78288ADF3D767}" {
-     Id "LF-Sign_PoliceWanted_Next"
-     Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
-     Comment "Wanted board sign card: what to do next."
     }
   }
  }
