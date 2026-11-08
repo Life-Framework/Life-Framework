@@ -17,6 +17,7 @@ addons/LifeFramework/Language/everonlife_localization.*.conf merge=lf-regen-loca
 addons/LifeFramework/Scripts/Game/Tests/EL_TestRegistrations.generated.c merge=lf-regen-tests
 docs/features.md merge=lf-markdown
 docs/debug-log-triage.md merge=lf-markdown
+tools/validation/enforce-lint-baseline.json merge=lf-lint-baseline
 
 # NOTE: Git LFS is NOT enabled yet. Binary assets are committed as plain blobs.
 # To migrate to LFS later (recommended once the repo is stable):

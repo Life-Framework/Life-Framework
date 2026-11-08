@@ -18,3 +18,7 @@
 [merge "lf-markdown"]
 	name = Line merge that keeps both sides appended rows
 	driver = node tools/merge/merge-markdown.mjs %O %A %B %P
+
+[merge "lf-lint-baseline"]
+	name = Three-way multiset merge of the enforce-lint baseline
+	driver = node tools/merge/union-lint-baseline.mjs %O %A %B %P
