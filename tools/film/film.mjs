@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Filming harness. Records the rendering game window to mp4 with ffmpeg and
-// makes a small looping preview (GIF by default) for a PR comment.
+// makes a small looping GIF preview for a PR comment.
 //
 //   node tools/film/film.mjs fetch [--zip <path>]
 //   node tools/film/film.mjs probe
@@ -14,7 +14,7 @@
 //
 // Capture is desktop duplication (ddagrab, GPU) of the game window's rectangle,
 // encoded on the GPU (h264_nvenc / qsv / amf, libx264 fallback). gdigrab is
-// the fallback when ddagrab is missing; it can record black frames from a
+// the fallback when ddagrab is missing or delivers no frame; it can record black frames from a
 // flip-model D3D window, so prefer ddagrab for the game. Nothing here talks to
 // the engine: the agent-box harness drives the player, this records the screen.
 
@@ -129,14 +129,11 @@ export function buildRecordArgs({ source, method = "ddagrab", encoder, fps = 30,
 export function buildPreviewArgs(input, out, { width = 640, fps = 10, maxSeconds = 12 } = {}) {
   const scale = `fps=${fps},scale=${width}:-2:flags=lanczos`;
   const head = ["-hide_banner", "-nostats", "-loglevel", "warning", "-y", "-t", String(maxSeconds), "-i", input];
-  if (out.toLowerCase().endsWith(".webp")) {
-    return [...head, "-vf", scale, "-c:v", "libwebp", "-lossless", "0", "-quality", "60", "-loop", "0", "-an", out];
-  }
   if (out.toLowerCase().endsWith(".gif")) {
     const graph = `${scale},split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4`;
     return [...head, "-filter_complex", graph, "-loop", "0", out];
   }
-  throw new Error(`preview must be .gif or .webp: ${out}`);
+  throw new Error(`preview must be .gif: ${out}`);
 }
 
 export function stampName(label, now = new Date()) {
@@ -217,12 +214,18 @@ public static class FilmWin {
   [DllImport("user32.dll")] public static extern bool GetClientRect(IntPtr h, out RECT r);
   [StructLayout(LayoutKind.Sequential)] public struct POINT { public int X, Y; }
   [DllImport("user32.dll")] public static extern bool ClientToScreen(IntPtr h, ref POINT p);
+  [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
 }
 "@
 [FilmWin]::SetProcessDPIAware() | Out-Null
 Add-Type -AssemblyName System.Windows.Forms
-$p = Get-Process | Where-Object { $_.MainWindowHandle -ne 0 -and $_.MainWindowTitle -like $env:FILM_TITLE } | Select-Object -First 1
+# An exact title wins: "Arma Reforger" must not pick "Arma Reforger Workbench".
+$w = Get-Process | Where-Object { $_.MainWindowHandle -ne 0 }
+$p = $w | Where-Object { $_.MainWindowTitle -eq $env:FILM_EXACT } | Select-Object -First 1
+if (-not $p) { $p = $w | Where-Object { $_.MainWindowTitle -like $env:FILM_TITLE } | Select-Object -First 1 }
 if (-not $p) { Write-Output 'none'; exit 0 }
+# Desktop duplication records whatever is on top, so raise the game window.
+[FilmWin]::SetForegroundWindow($p.MainWindowHandle) | Out-Null
 $r = New-Object FilmWin+RECT
 [FilmWin]::GetClientRect($p.MainWindowHandle, [ref]$r) | Out-Null
 $pt = New-Object FilmWin+POINT
@@ -233,17 +236,19 @@ for ($i = 0; $i -lt $screens.Length; $i++) {
   $b = $screens[$i].Bounds
   if ($pt.X -ge $b.X -and $pt.X -lt ($b.X + $b.Width) -and $pt.Y -ge $b.Y -and $pt.Y -lt ($b.Y + $b.Height)) { $idx = $i; $ox = $b.X; $oy = $b.Y }
 }
-Write-Output ("{0} {1} {2} {3} {4} {5}" -f ($pt.X - $ox), ($pt.Y - $oy), ($r.R - $r.L), ($r.B - $r.T), $idx, $p.MainWindowTitle)
+Write-Output ("{0} {1} {2} {3} {4} {5} {6} {7}" -f ($pt.X - $ox), ($pt.Y - $oy), ($r.R - $r.L), ($r.B - $r.T), $idx, $ox, $oy, $p.MainWindowTitle)
 `;
   const run = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", script], {
     encoding: "utf8",
-    env: { ...process.env, FILM_TITLE: title.includes("*") ? title : `*${title}*` },
+    env: { ...process.env, FILM_EXACT: title, FILM_TITLE: title.includes("*") ? title : `*${title}*` },
   });
   const line = (run.stdout || "").trim().split(/\r?\n/).pop() || "";
   if (!line || line === "none") throw new Error(`no visible window matching "${title}"`);
-  const [x, y, w, h, output, ...rest] = line.split(" ");
+  const [x, y, w, h, output, originX, originY, ...rest] = line.split(" ");
   const region = parseRegion(`${x},${y},${w},${h}`);
-  return { kind: "region", ...region, output: Number(output), title: rest.join(" ") };
+  // x,y are relative to the monitor (ddagrab); originX/Y turn them into desktop
+  // coordinates for gdigrab.
+  return { kind: "region", ...region, output: Number(output), originX: Number(originX), originY: Number(originY), title: rest.join(" ") };
 }
 
 // Display-adapter order can differ from Screen.AllScreens order on mixed GPU
@@ -283,11 +288,26 @@ function sourceFromFlags(flags) {
   throw new Error("pass --window <title>, --region x,y,w,h, or --desktop");
 }
 
+// ddagrab can open an output and then never deliver a frame (seen on a box
+// with a virtual display adapter beside the real GPU): ffmpeg hangs on the
+// first frame. A 1-frame grab with a timeout settles it before recording.
+function ddagrabDelivers(ffPath, source) {
+  const args = ["-hide_banner", "-loglevel", "error", ...captureInputArgs(source, "ddagrab", 30), "-frames:v", "1", "-vf", "hwdownload,format=bgra", "-f", "null", "-"];
+  return spawnSync(ffPath, args, { encoding: "utf8", timeout: 5000 }).status === 0;
+}
+
 function planCapture(ffPath, flags) {
   let source = sourceFromFlags(flags);
   let method = flags.method || (hasFilter(ffPath, "ddagrab") ? "ddagrab" : "gdigrab");
-  if (method === "ddagrab" && source.kind === "window") source = windowRect(source.title);
+  if (source.kind === "window") source = windowRect(source.title);
   source = applyOutputOverride(source);
+  if (method === "ddagrab" && !flags.method && !ddagrabDelivers(ffPath, source)) {
+    console.log("ddagrab delivered no frame in 5 s; falling back to gdigrab");
+    method = "gdigrab";
+  }
+  if (method === "gdigrab" && source.originX !== undefined) {
+    source = { ...source, x: source.x + source.originX, y: source.y + source.originY };
+  }
   const encoder = chooseEncoder(ffPath, flags.encoder);
   if (!encoder) throw new Error("no working H.264 encoder in this ffmpeg build");
   const fps = Number(flags.fps || 30);
@@ -333,7 +353,7 @@ function record(flags) {
   console.log(`clip: ${sizeLine(out, BUDGET.mp4Bytes)}`);
   console.log(`probe: ${probeDuration(ff.path, out)}`);
   if (!flags["no-preview"]) {
-    const preview = makePreview(ff.path, out, flags.preview === "webp" ? ".webp" : ".gif");
+    const preview = makePreview(ff.path, out);
     console.log(`preview: ${sizeLine(preview, BUDGET.previewBytes)}`);
   }
   return 0;
@@ -385,7 +405,7 @@ async function filmFlow(flags) {
     return 1;
   }
   console.log(`clip: ${sizeLine(out, BUDGET.mp4Bytes)}`);
-  const preview = makePreview(ff.path, out, flags.preview === "webp" ? ".webp" : ".gif");
+  const preview = makePreview(ff.path, out);
   console.log(`preview: ${sizeLine(preview, BUDGET.previewBytes)}`);
   console.log(`steps: ${sidecar}`);
   return played.code;
@@ -554,8 +574,6 @@ function selftest() {
 
   const gif = buildPreviewArgs("in.mp4", "in.preview.gif").join(" ");
   assert(gif.includes("palettegen") && gif.includes("paletteuse") && gif.endsWith("in.preview.gif"), gif);
-  const webp = buildPreviewArgs("in.mp4", "in.preview.webp").join(" ");
-  assert(webp.includes("libwebp"), webp);
   assert(stampName("flow world-atm", new Date("2026-11-07T10:11:12Z")) === "flow_world-atm-20261107-101112", "stamp name");
 
   const plan = publishPlan({ clip: "C:\\x\\atm.mp4", preview: "C:\\x\\atm.preview.gif", pr: 75, repo: "Life-Framework/Life-Framework", title: "ATM deposit" });

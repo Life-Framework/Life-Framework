@@ -1,9 +1,7 @@
-// red-proof: NOT YET OBSERVED. On 2026-11-07 the quarter-time assertion was
-// broken (15.625 -> 15.0) and the fast suite was run
-// (`cli test --no-build --tier fast`). One boot caught a compile error;
-// every later boot compiled, then stopped at "Unable to start replication"
-// (servers from other worktrees kept taking UDP 2001), so no FAIL line was
-// printed. Replace this with the observed FAIL line on the next free boot.
+// red-proof: 2026-11-08, quarter-time assertion 15.625 -> 15.0, cli test --no-build --tier fast:
+//   [ELTEST] FAIL film/camera-path
+//   [ELTEST]   - quarter time eases in (smoothstep 0.25 = 0.15625) (expected 15, got 15.625)
+// Restored; the fast suite is green.
 
 // tier: LOGIC
 class EL_Test_FilmCameraPath : EL_Test

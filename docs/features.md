@@ -941,9 +941,10 @@
   camera and HUD. It compiles but has not run in a rendering session and no
   agent-box verb calls it yet.
 - ✅ `tools/film/film.mjs` records a window or region to mp4 (ddagrab +
-  NVENC, gdigrab/libx264 fallback), makes a GIF preview, films an agent-box
-  flow, and publishes a clip to the `film-evidence` prerelease for a PR
-  comment. Proven on a desktop window; the in-game clip is still to do.
+  NVENC; gdigrab when ddagrab delivers no frame in 5 s), makes a GIF preview,
+  films an agent-box flow, and publishes a clip to the `film-evidence`
+  prerelease for a PR comment. Proven in game 2026-11-08: a game client on
+  DebugWorld, flow `film-debugworld`, 20.7 s at 1280x720, 2.8 MB (PR #111).
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
