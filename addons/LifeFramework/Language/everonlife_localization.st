@@ -4432,6 +4432,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You now work as %1."
      Comment "Hint when hired; %1 = job name. Hidden progression: no grade or level."
     }
+    CustomStringTableItem "{94B78288ADF3D767}" {
+     Id "LF-Sign_PoliceWanted_Next"
+     Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
+     Comment "Wanted board sign card: what to do next."
+    }
   }
  }
 }
