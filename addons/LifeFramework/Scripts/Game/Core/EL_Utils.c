@@ -1,3 +1,11 @@
+//! What GetPlayerUID uses when the platform has no identity for a player.
+enum LF_EIdentityFallback
+{
+	WAIT,
+	PLAYER_NAME,
+	SESSION_SLOT
+}
+
 class EL_Utils : Managed
 {
 	//------------------------------------------------------------------------------------------------
@@ -309,29 +317,50 @@ class EL_Utils : Managed
 		// The backend can transiently answer the per-player lookup with the NULL UUID
 		// ("00000000-...") instead of an empty string - it is non-empty, so it defeats both
 		// vanilla's name-hash fallback and the empty-identity guards in every caller.
-		// On a non-dedicated session (offline Workbench play / listen host) there is no
-		// backend to ever resolve it, so fall back to a name-derived identity like vanilla's
-		// peer-tool polyfill; without it the spawn flow retries forever. Dedicated servers
-		// keep the strict path - the backend must provide the real identity.
+		// ChooseIdentityFallback decides what stands in for it.
 		UUID identityUuid = identity;
 		if (identity.IsEmpty() || identityUuid.IsNull())
 		{
-			if (RplSession.Mode() == RplMode.Dedicated)
-			{
+			bool sessionDefine = false;
 #ifdef LF_SESSION_IDENTITY
-				// agent-box/session.mjs boots a -noBackend dedicated server with this define.
-				// Its clients all carry the NULL UUID and the same Steam name, so the
-				// identity is per player id. Never defined on a hosted server.
-				return BuildSessionIdentity(playerId);
-#else
-				return "";
+			sessionDefine = true;
 #endif
-			}
+			LF_EIdentityFallback fallback = ChooseIdentityFallback(RplSession.Mode() == RplMode.Dedicated, sessionDefine, System.IsCLIParam("noBackend"));
+			if (fallback == LF_EIdentityFallback.SESSION_SLOT)
+				return BuildSessionIdentity(playerId);
+			if (fallback == LF_EIdentityFallback.PLAYER_NAME)
+				return BuildLocalIdentity(playerId);
 
-			return BuildLocalIdentity(playerId);
+			return "";
 		}
 
 		return identity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stands in for a missing platform identity. Pure, so it is LOGIC-tier tested
+	//! (EL_Test_IdentityFallback).
+	//! - Not dedicated (Workbench play, listen host): no backend will ever answer, so the player
+	//!   name keys the account, like vanilla's peer-tool polyfill.
+	//! - Dedicated with LF_SESSION_IDENTITY (agent-box/session.mjs): every client is the same
+	//!   Steam account with the same name, so the player id keys it, for one server run.
+	//! - Dedicated with -noBackend (toolscli host start): no backend will ever answer either.
+	//!   Each friend joins with their own Steam name, so the name keys the account and survives a
+	//!   restart. Two players with the same name share one account.
+	//! - Dedicated with a backend: the identity is still resolving; wait for it (the spawn flow
+	//!   retries on an empty identity).
+	static LF_EIdentityFallback ChooseIdentityFallback(bool dedicated, bool sessionDefine, bool noBackend)
+	{
+		if (!dedicated)
+			return LF_EIdentityFallback.PLAYER_NAME;
+
+		if (sessionDefine)
+			return LF_EIdentityFallback.SESSION_SLOT;
+
+		if (noBackend)
+			return LF_EIdentityFallback.PLAYER_NAME;
+
+		return LF_EIdentityFallback.WAIT;
 	}
 
 	//------------------------------------------------------------------------------------------------
