@@ -546,3 +546,24 @@ M2. Day and night (#129) and police missions go to M4. Bus stops (#203), trash
 cans (#205), housing, crafting, and tasks go to M5 with the flagship story
 (#214). Revive folds into the M2 medic theme. Scheduled events stay parked. M3
 carries no new gameplay.
+
+**2026-11-08 — Features talk through a server event bus.** Core features
+publish typed events (`OnMoneyMoved`, `OnCrimeCommitted`, `OnPlayerDowned`,
+...) on `LF_EventBus`, and other features and packs subscribe instead of
+calling each other. A failing subscriber logs and the rest still run. The
+event list is part of the supported API. Why: M2's crime, dispatch, incident
+log and investigation all react to the same moments; direct calls would tangle
+them and leave packs nothing to hook. Scope #329, first in M2.
+
+**2026-11-08 — Money is a ledger, not a balance.** Every cash and bank change
+goes through `LF_Ledger` as a recorded transaction (who, why, amount, source,
+balance after). Balances can be rebuilt from the log, and a validate rule bans
+direct balance writes. Why: moderation must trace and reverse money, and a dupe
+on a live server is otherwise unrecoverable. Scope #330.
+
+**2026-11-08 — Characters per account come from config.** The framework keys
+every record by a stable character id and allows `characters.maxPerAccount`
+characters. The flagship ships one per account with an in-world "start a new
+life" form. Bans and whitelists attach to the account; reputation and records
+attach to the character. Why: the New Life Rule, whitelists and save keys all
+depend on it, and changing it after live data is a migration. Scope #331.
