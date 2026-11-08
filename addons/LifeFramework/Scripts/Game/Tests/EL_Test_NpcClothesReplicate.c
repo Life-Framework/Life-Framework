@@ -20,7 +20,8 @@ class EL_Test_NpcClothesReplicate : EL_Test
 	{
 		array<ResourceName> prefabs = {
 			"{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et",
-			"{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et"
+			"{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et",
+			"{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et"
 		};
 
 		foreach (ResourceName prefab : prefabs)

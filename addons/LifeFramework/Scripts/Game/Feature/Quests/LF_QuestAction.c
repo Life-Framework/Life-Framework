@@ -46,7 +46,20 @@ class LF_QuestAction : ScriptedUserAction
 			return;
 
 		LF_QuestGiverComponent giver = EL_Component<LF_QuestGiverComponent>.Find(pOwnerEntity);
-		if (giver)
-			giver.OpenQuestMenu(pUserEntity);
+		if (!giver)
+			return;
+
+		// A converse giver (the town clerk) talks in person: the server moves the quests along.
+		if (giver.IsConverse())
+		{
+			LF_QuestTrackerComponent tracker = EL_Component<LF_QuestTrackerComponent>.Find(pUserEntity);
+			if (tracker)
+				tracker.AskConverse(giver.GetGiverId());
+			else
+				EL_Debug.Error("Quests", "talk not sent: the player has no quest tracker");
+			return;
+		}
+
+		giver.OpenQuestMenu(pUserEntity);
 	}
 }

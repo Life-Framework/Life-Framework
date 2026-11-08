@@ -79,7 +79,7 @@ class LF_JobSignUpAction : ScriptedUserAction
 		if (!jobs.SetJob(m_eJob))
 			EL_Debug.Error("Jobs", "signup action: job component refused the workplace");
 
-		EL_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.NameKey(m_eJob), LF_CivilianJob.NameKey(m_eJob), 3.0);
+		EL_Utils.NotifyEntity(pUserEntity, "#LF-Job_SignedUp", LF_CivilianJob.NameKey(m_eJob), 6.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
