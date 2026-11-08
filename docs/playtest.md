@@ -115,7 +115,7 @@ At `Roadmap_Org_Desk`, the screen should show an empty organization, a name fiel
 
 Create an organization, deposit cash, and buy the processing upgrade. The fund is not your personal bank balance.
 
-`Roadmap_Hideout_Door` opens for a member and refuses everyone else. `Roadmap_Hideout_Machine` works only after the processing upgrade. `Roadmap_Hideout_Stash` is a crate mesh with no storage yet, so it cannot hold items.
+`Roadmap_Hideout_Door` opens for a member and refuses everyone else. `Roadmap_Hideout_Machine` works only after the processing upgrade. `Roadmap_Hideout_Stash` is a real container: members open it and store items, everyone else is refused with a sound and a toast, and its contents survive a restart.
 
 Run the contraband convoy from `Roadmap_Convoy_Start` to `Roadmap_Convoy_Drop`. Delivery pays cash once. Leaving the vehicle or dying should fail the run. An on-duty officer can confiscate the flagged goods.
 

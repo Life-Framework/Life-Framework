@@ -297,6 +297,17 @@
   longer self-spawns the player character, so a pocket `MoneyStack` does not
   come back loose on the ground next to the restored one (the two-boot e2e
   counts it).
+- ✅ **Placed storage** (2026-11-08, M1-15): `LF_PersistentStorageComponent`
+  (`Scripts/Game/Persistence/`) saves a placed container's tree in the same store
+  under its `m_sStorageKey` and slot `placed`, so it rides the `carried` payload
+  with no new save version. Captured on every item added or removed and at every
+  save point; restored a frame after the entity initializes and a frame after a
+  load. Restore reconciles, so a second restore spawns nothing. The prefab carries
+  no native `Persistence` component, so the engine does not save the contents a
+  second time (the two-boot e2e finds the 151 cash in the stash and no loose
+  copy in the world).
+- ⚠️ Ammo count and weapon state are not in the snapshot. Attachments and
+  magazines are kept as items.
 
 ### Progression — `Feature/Account/LF_Progression.c`
 - ✅ **Progression survives a restart** (2026-11-08, M1-10, tests
@@ -318,8 +329,6 @@
 - ⚠️ Sign-ups, an active run, and the open duty clock are session state; after a
   restart the courier signs up again. `EL_LicenseManagerComponent` is not on
   `Character_Roleplay.et`, so licences persist only once a prefab carries it.
-- ⚠️ Ammo count, weapon state, and placed storage (hideout stash, M1-15) are not
-  in the snapshot. Attachments and magazines are kept as items.
 
 ## Account & Persistence
 
@@ -1090,13 +1099,29 @@
   refuses and logs. The recipe turns one cabbage into one RowanBerries stack,
   the configured contraband prefab. A chain machine with no hideout component
   still reads `ResourceChains.conf`.
-- ✅ `Roadmap_Hideout_Stash` at `219 0 120` is the base-game crate mesh
-  `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`.
+- ✅ **Hideout stash holds items** (2026-11-08, M1-15, tests `hideout/stash`,
+  `hideout/stash-save`, and `e2e/pass2-verify-load` across a real two-boot
+  restart). `Roadmap_Hideout_Stash` (now at `312 0 296` in the village) is an instance of the reusable
+  prefab `Prefabs/Props/Hideouts/LF_HideoutStash.et` (the base-game
+  `Chest_01.xob` chest, a crate was too small to notice): a real container (`LF_HideoutStashStorageComponent`,
+  200 kg) whose items are entities. Open storage asks the server
+  (`SCR_PlayerController.LF_RequestOpenStash`); a member of the organization that
+  owns the hideout (`m_sHideoutId` on `LF_HideoutStashStorageManagerComponent`)
+  gets the inventory, anyone else hears a refusal sound and gets the
+  `#LF-HideoutStash_NotMember` toast, and the refusal is logged
+  (`stash refused: not a member`). The server also refuses a non-member moving an
+  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership is the
+  only key: an open or breached door does not open the stash.
+- ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
+  keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its
+  items wherever the layer places it. See the placed-storage row under Carried
+  inventory.
 - ✅ `ExportAll` / `ApplyAll` put the organization id and the lock flag back,
   and a second apply does not change them. The game-mode serializer writes
   these records at version 3. A version 2 save has no hideout payload and does
   not clear a live hideout. Player strings: `#EL-Hideout_NotMember`,
-  `#EL-Hideout_NoUpgrade`, `#EL-Hideout_Process`.
+  `#EL-Hideout_NoUpgrade`, `#EL-Hideout_Process`, `#LF-HideoutStash_Name`,
+  `#LF-HideoutStash_Desc`, `#LF-HideoutStash_Title`, `#LF-HideoutStash_NotMember`.
 
 ## Notifications
 

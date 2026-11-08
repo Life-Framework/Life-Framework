@@ -12,6 +12,8 @@
 //! from and written into the component's own map (keyed by character persistence id).
 //! Hideout records live in LF_Hideout. Vehicle records live in EL_VehicleOwnership, keyed by
 //! the lock identifier. Jail sentences live in LF_Jail, keyed by the player uid. Carried
+//! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name. Placed
+//! storage (LF_PersistentStorageComponent, the hideout stash) rides the same store under its key.
 //! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name.
 //! Progression (career, police rank and duty seconds, benefit cooldown, level, licences, quest
 //! turn-ins) lives in LF_Progression and its owners, keyed by the player uid.
@@ -237,11 +239,12 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		{
 			// Every save point (autosave, manual, shutdown) refreshes living players first.
 			int captured = LF_StorageSnapshot.CaptureAllPlayers();
+			int placed = LF_PersistentStorageComponent.CaptureAllPlaced();
 			array<ref LF_StorageSnapshotRecord> carriedRecords = LF_StorageSnapshot.ExportAll();
 			if (!carriedRecords)
 				carriedRecords = new array<ref LF_StorageSnapshotRecord>();
 			context.Write(carriedRecords);
-			EL_Debug.Log("Persistence", string.Format("saved %1 carried snapshot(s), %2 captured from live players", carriedRecords.Count(), captured));
+			EL_Debug.Log("Persistence", string.Format("saved %1 carried snapshot(s), %2 captured from live players, %3 from placed storage", carriedRecords.Count(), captured, placed));
 		}
 		else if (payload == "progression")
 		{

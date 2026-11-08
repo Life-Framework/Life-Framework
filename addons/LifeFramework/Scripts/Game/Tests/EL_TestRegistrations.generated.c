@@ -73,6 +73,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_HarnessDevGate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HarnessScreenText(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HarnessSessionScope(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_HideoutStash(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_HideoutStashPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_HospitalBillOnce(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HospitalBillDebt(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HospitalBedPick(), EL_TestTier.LOGIC);
