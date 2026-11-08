@@ -536,6 +536,12 @@ class LF_JailEscort
 			return false;
 		}
 
+		if (!LF_PoliceRanks.CanEscortRank(officer.GetPoliceRank()))
+		{
+			Note(string.Format("escort refused: rank %1 is below the escort rank %2", officer.GetPoliceRank(), LF_PoliceConfig.EscortMinRank()));
+			return false;
+		}
+
 		EL_PlayerAccount prisoner = accounts.GetAccount(prisonerUid);
 		if (!prisoner)
 		{

@@ -40,6 +40,11 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
     description: "The design calls that set the taste of Life Framework, each one dated, with why and what it means for code.",
     og: "decisions",
   },
+  "/support": {
+    title: "Support the project",
+    description: "What running Life Framework costs, where donations go, and how to give. A donation buys nothing in the game.",
+    og: "home",
+  },
   "/docs": {
     title: "Docs",
     description: "Direction, decisions, the roadmap scopes, and the community guides, rendered from the repository.",

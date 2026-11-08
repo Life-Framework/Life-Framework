@@ -22,9 +22,38 @@ class EL_BankAccount : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Sets the balance as stored. A negative value is debt (a hospital bill the player could not
+	//! cover) and is kept, so a saved debt loads as debt.
 	void SetBalance(int value)
 	{
-		m_iBalance = Math.Max(value, 0);
+		m_iBalance = value;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True while the balance is below zero. Deposits pay the debt off first (they add to
+	//!         the balance); withdrawals are refused until the balance covers them.
+	bool IsInDebt()
+	{
+		return m_iBalance < 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-decided charge that may go into debt (the hospital bill). Withdraw stays the player
+	//! path and never goes below zero.
+	//! \param amount Amount to charge; zero or less charges nothing.
+	//! \param allowDebt When false, only what the account holds is charged.
+	//! \return The amount actually charged.
+	int Charge(int amount, bool allowDebt)
+	{
+		if (amount <= 0)
+			return 0;
+
+		int charged = amount;
+		if (!allowDebt)
+			charged = Math.Max(Math.Min(amount, m_iBalance), 0);
+
+		m_iBalance -= charged;
+		return charged;
 	}
 
 	//------------------------------------------------------------------------------------------------

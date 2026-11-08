@@ -6,6 +6,7 @@
 //   parts of docs/direction.md, content/                -> src/generated/site.json
 //   GitHub milestones, issues, merged PRs, contributors -> src/generated/github.json
 //                                                         src/generated/data/devlog.json
+//   content/support.json, content/costs.json            ->src/generated/support.json (scripts/support.mjs)
 //   content/media.json (film-evidence release assets)   -> public/media/clips/ (downloaded, git-ignored)
 //
 // GitHub is read through the public REST API (GITHUB_TOKEN lifts the rate limit).
@@ -22,6 +23,7 @@ import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
+import { buildSupport } from "./support.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const site = path.resolve(here, "..");
@@ -527,6 +529,7 @@ const githubOut = { ...githubRest, latestPulls: pulls.slice(0, 5) };
 fs.writeFileSync(path.join(outDir, "docs-index.json"), JSON.stringify(docsIndex));
 fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, media }));
 fs.writeFileSync(path.join(outDir, "github.json"), JSON.stringify(githubOut));
+fs.writeFileSync(path.join(outDir, "support.json"), JSON.stringify(buildSupport({ site, repo })));
 console.log(
   `[content] ${docsIndex.length} docs, ${decisionCount} decisions, ${siteJson.milestones.length} milestones, ` +
     `${github.milestones.map((m) => `${m.id} ${m.issues.length} issues`).join(", ")}, ${pulls.length} merged PRs, ` +

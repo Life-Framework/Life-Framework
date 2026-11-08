@@ -133,6 +133,10 @@ class EL_BetaHud : SCR_InfoDisplay
 	{
 		if (!m_wMoneyIndicator)
 		{
+			// A respawned body's money recount can land before the HUD is drawn.
+			if (!m_wPlayerStatsHUD)
+				return;
+
 			m_wMoneyIndicator = TextWidget.Cast(m_wPlayerStatsHUD.FindAnyWidget("m_moneyIndicator"));
 			if (!m_wMoneyIndicator) return;
 		}
