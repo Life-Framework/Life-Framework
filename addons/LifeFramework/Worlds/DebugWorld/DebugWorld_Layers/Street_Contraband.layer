@@ -20,7 +20,7 @@ GenericEntity Roadmap_Convoy_Start {
     UserActionContext "{9D7C3F60241AD015}" {
      ContextName "default"
      Position PointInfo "{94355C47E2CDDF70}" {
-      Offset 0 1 0
+      Offset 0 0.6 0
      }
      Radius 3
     }
@@ -62,7 +62,7 @@ GenericEntity Roadmap_Convoy_Drop {
     UserActionContext "{AE28098525A07FB3}" {
      ContextName "default"
      Position PointInfo "{165C9C429ADC7093}" {
-      Offset 0 1 0
+      Offset 0 0.6 0
      }
      Radius 3
     }
@@ -79,6 +79,50 @@ GenericEntity Roadmap_Convoy_Drop {
    }
   }
  }
- coords 299 0 293
+ coords 131.5 0 284
  Flags 0x403 0
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 465.75 1.01 330.8
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 466.25 1.01 330.8
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 466 1.29 330.8
+ angleY 15
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 464.7 0 331.6
+ angleY 90
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 464.7 0.28 331.6
+ angleY 80
+}
+GenericEntity : "{1CE762D0A53A395A}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_base.et" {
+ coords 464.7 0.56 331.6
+}
+GenericEntity Convoy_Barn_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
+ coords 474 0 324.5
+ angleY 170
+}
+GenericEntity : "{13B4C532861B9DE2}Prefabs/Props/Commercial/BeerKegMetal_01.et" {
+ coords 129.8 0 285.6
+}
+GenericEntity : "{13B4C532861B9DE2}Prefabs/Props/Commercial/BeerKegMetal_01.et" {
+ coords 129.8 0 286.6
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 133.2 0 285.4
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 133.2 0.28 285.4
+ angleY 10
+}
+GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+ coords 133.2 0.56 285.4
+}
+GenericEntity : "{1CE762D0A53A395A}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_base.et" {
+ coords 130.3 0 285.1
 }
