@@ -14,8 +14,9 @@ export const STREET_GAP_M = 30;
 // (docs/roadmap/m1-25-village.md). Sites face it from both sides.
 export const STREET_Z = 250;
 
-// Sites that are out of town by design: no 30 m street rule, not in the wide shot.
-export const OUT_OF_TOWN = ["Roadmap_Convoy_Start"];
+// Sites off the street by design: no 30 m street rule, not in the wide shot.
+// The contraband pickup is the barn out of town; the drop is behind the pub (M1-14).
+export const OUT_OF_TOWN = ["Roadmap_Convoy_Start", "Roadmap_Convoy_Drop"];
 
 // Vanilla prison doors are near-white. The interaction is real, so a white
 // center on these two sites is painted-light when look offers an action.
