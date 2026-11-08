@@ -10,12 +10,14 @@
 *.rdb
 *.rdb.lock
 addons/LifeFramework/log
+addons/LF_Everon1989/log
 
 # MCP server clones (managed via tools\cli.mjs - never commit)
 tools/mcp/*/
 
 # EnfusionMCP Workbench handler scripts (injected, never commit)
 addons/LifeFramework/Scripts/WorkbenchGame/
+addons/LF_Everon1989/Scripts/WorkbenchGame/
 
 # Editor temporary files
 *~

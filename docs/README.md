@@ -30,6 +30,7 @@ Reference:
 
 ## Engineering reference
 
+- [Core vs pack](architecture/core-vs-pack.md) — what goes in the core addon and what goes in the flagship pack; [inventory](architecture/core-pack-inventory.md).
 - [Features](features.md) — implemented behavior and fragile paths.
 - [Persistence](persistence.md) — saved data, serializers, and restart rules.
 - [Foundation design](foundation-design.md) — economy, trade, processing, and ownership primitives.

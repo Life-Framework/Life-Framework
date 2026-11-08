@@ -1,0 +1,20 @@
+GameProject {
+ ID "LF_Everon1989"
+ GUID "B1E84D5687E11724"
+ TITLE "Life Framework: Everon 1989"
+ Dependencies {
+  "58D0FB3206B6F859" "79636E668EA37AC9"
+ }
+ Configurations {
+  GameProjectConfig PC {
+  }
+  GameProjectConfig XBOX_ONE {
+  }
+  GameProjectConfig XBOX_SERIES {
+  }
+  GameProjectConfig PS4 {
+  }
+  GameProjectConfig HEADLESS {
+  }
+ }
+}
