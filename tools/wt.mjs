@@ -307,6 +307,15 @@ export function transferLock(root, name, pid) {
   writeFileSync(file, JSON.stringify({ ...info, pid, at: new Date().toISOString() }));
 }
 
+// Takes a lock over from a process that holds it (a server about to restart),
+// so no queued run can grab it in the gap. Throws when fromPid does not hold it.
+export function adoptLock(root, name, fromPid) {
+  const file = join(ensureHub(root), "locks", `${name}.lock`);
+  const info = JSON.parse(readFileSync(file, "utf8"));
+  if (info.pid !== fromPid) throw new Error(`lock '${name}' is held by pid ${info.pid}, not ${fromPid}`);
+  writeFileSync(file, JSON.stringify({ ...info, pid: process.pid, at: new Date().toISOString() }));
+}
+
 export function releaseLock(root, name, owner = process.pid) {
   const file = join(ensureHub(root), "locks", `${name}.lock`);
   try {

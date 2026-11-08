@@ -19,6 +19,15 @@ class LF_SignComponent : ScriptComponent
 	static const float FACE_HEIGHT = 724;
 	static const float FACE_MARGIN = 40;
 	static const float FACE_FONT_SIZE = 96;
+	// A game client shows only the left part of the sheet's render target: at
+	// 640x360 and at 1920x1080 alike, a title centred at x 256 printed 78% of the
+	// way across the paper, so about 328 of the 512 units are on the paper. The
+	// full height shows. The title box sits inside the shown width.
+	static const float CLIENT_TITLE_LEFT = 20;
+	static const float CLIENT_TITLE_WIDTH = 290;
+	// RobotoCondensed Bold capitals measured about 0.6 em each ("WELCOME" was
+	// 406 units at 96). A long word does not wrap, so the font shrinks to fit it.
+	static const float CLIENT_EM_PER_CHAR = 0.62;
 
 	[Attribute("", UIWidgets.EditBox, "Sign id in Configs/Signs/LF_Signs.conf")]
 	protected string m_sSignId;
@@ -181,11 +190,45 @@ class LF_SignComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void FitFaceTitle(TextWidget title, float dpiScale)
+	//! The title box and font on a game client, in layout units (a game client
+	//! scales the widgets inside the target like any widget).
+	//! param text The printed title, capitals.
+	//! eturn Font size: 96, or less so the longest word fits the shown width.
+	static int ClientTitleRect(string text, out vector pos, out vector size)
+	{
+		pos = Vector(CLIENT_TITLE_LEFT, FACE_MARGIN, 0);
+		size = Vector(CLIENT_TITLE_WIDTH, FACE_HEIGHT - 2 * FACE_MARGIN, 0);
+
+		int longest = 0;
+		array<string> words = {};
+		text.Split(" ", words, true);
+		foreach (string word : words)
+		{
+			if (word.Length() > longest)
+				longest = word.Length();
+		}
+
+		if (longest <= 0)
+			return FACE_FONT_SIZE;
+
+		int font = Math.Floor(CLIENT_TITLE_WIDTH / (CLIENT_EM_PER_CHAR * longest));
+		if (font > FACE_FONT_SIZE)
+			return FACE_FONT_SIZE;
+
+		return font;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FitFaceTitle(TextWidget title, string text, float dpiScale, bool workbench)
 	{
 		vector pos;
 		vector size;
-		int font = FaceTitleRect(dpiScale, pos, size);
+		int font;
+		if (workbench)
+			font = FaceTitleRect(dpiScale, pos, size);
+		else
+			font = ClientTitleRect(text, pos, size);
+
 		FrameSlot.SetAnchorMin(title, 0, 0);
 		FrameSlot.SetAnchorMax(title, 0, 0);
 		FrameSlot.SetPos(title, pos[0], pos[1]);
@@ -213,9 +256,14 @@ class LF_SignComponent : ScriptComponent
 			return;
 		}
 
-		FitFaceTitle(title, workspace.DPIScale(1));
+		bool workbench = false;
+		#ifdef WORKBENCH
+		workbench = true;
+		#endif
+		string text = FaceText(sign);
+		FitFaceTitle(title, text, workspace.DPIScale(1), workbench);
 		title.SetTextWrapping(true);
-		title.SetText(FaceText(sign));
+		title.SetText(text);
 		m_wFaceTexture.SetRenderTarget(target);
 		m_FaceTarget = target;
 		EL_Debug.Info("Signs", "face printed: " + m_sSignId);
