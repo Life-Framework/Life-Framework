@@ -349,7 +349,7 @@ class EL_DebugActionUtils
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Sets hunger/thirst/health to the given level (0..100).
+	//! Sets hunger and thirst to the given level (0..100). Health is the character's real health.
 	static void ApplySurvival(IEntity character, int value)
 	{
 		EL_CharacterSurvivalComponent survival = EL_Component<EL_CharacterSurvivalComponent>.Find(character);
@@ -369,7 +369,6 @@ class EL_DebugActionUtils
 		int clamped = Math.Clamp(value, 0, 100);
 		stats.SetHunger(clamped);
 		stats.SetThirst(clamped);
-		stats.SetHealth(clamped);
 		survival.SyncReplication();
 		EL_Debug.Info("DebugMenu", string.Format("survival set to %1", clamped));
 	}

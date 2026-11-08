@@ -136,21 +136,33 @@
 ## Character & Survival
 
 ### `EL_SurvivalStats` — `Feature/Survival/EL_SurvivalStats.c`
-- ✅ All stats clamped `[0,100]`. `Eat`/`Drink`/`Heal` are additive through
-  clamped setters. `Create(id)` starts all at 100.
-- ✅ (2026-11-08, M1-28) **Needs are light and never kill.** `UpdateStats(dt,
-  config)` takes every rate from `LF_SurvivalConfig`
-  (`Configs/Survival/LF_Survival.conf`). Flagship: hunger `0.01/s` (about
-  2.8 h from full), thirst `0.0125/s` (about 2.2 h). Below 20 hunger or thirst,
-  health falls at `0.05/s` to the 75 cap and stops; health already below the
-  cap is not touched. With needs met, health regains `0.02/s` up to 100.
-  `dt <= 0` is a no-op. Tests: `survival/light`.
+- ✅ Hunger and thirst clamped `[0,100]`. `Eat`/`Drink` are additive through
+  clamped setters. `Create(id)` starts both at 100.
+- ✅ (2026-11-08, M1-28) `UpdateStats(dt, config)` drains needs at the
+  `LF_SurvivalConfig` rates. Flagship: hunger `0.01/s` (about 2.8 h from
+  full), thirst `0.0125/s` (about 2.2 h). `dt <= 0` is a no-op.
+- ✅ (2026-11-08) The separate survival health stat is gone. Needs act on the
+  character's real health (`LF_SurvivalHealth`). The save record keeps its
+  `m_fHealth` slot, written as 100 and ignored on load, so the save format
+  does not change.
+
+### `LF_SurvivalHealth` — `Feature/Survival/LF_SurvivalHealth.c`
+- ✅ (2026-11-08) **Needs never kill.** On the server tick, with hunger or
+  thirst below 20, the damage manager's default `Health` hit zone falls at
+  `0.0005` of max per second (about 8 min) to `0.75` of max, then stops. An
+  injury already below the cap is not touched. Survival tracks what it took;
+  once needs are met it gives back only that, at `0.001`/s. Vanilla healing
+  above the cap is never pulled down while fed. A dead body is skipped.
+  Tests: `survival/light` (math), `survival/real-health` (WORLD, spawned
+  character).
+- ✅ The consumable `m_fHealthRestore` heals real health (percent of max).
 
 ### `LF_SurvivalConfig` — `Feature/Survival/LF_SurvivalConfig.c`
-- ✅ (2026-11-08) Framework knobs: hunger and thirst drain, low-needs
-  threshold, health cap, health drain and regen, stamina drain multiplier,
-  tick interval, max tick delta. A missing `.conf` logs
-  `[ELDebug:Survival]` once and uses the same built-in defaults.
+- ✅ (2026-11-08) Framework knobs: hunger and thirst drain, the low-needs
+  threshold, the real-health cap, drain and give-back (fractions of max), the
+  stamina drain multiplier, the tick interval and the max tick delta. A
+  missing `.conf` logs `[ELDebug:Survival]` once and falls back to the same
+  built-in defaults.
 
 ### `EL_CharacterSurvivalComponent` — `Feature/Survival/EL_CharacterSurvivalComponent.c`
 - ✅ (2026-11-08) Server-authoritative: stats tick on the server only, on a
@@ -173,7 +185,8 @@
 
 ### `EL_BetaHud` survival gauges — `HUD/EL_BetaHud.c`
 - ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
-  The HUD stays second to the body cue.
+  The HUD stays second to the body cue. The health gauge already reads the
+  damage manager, so the needs cap now shows there too.
 
 ### `EL_ConsumableEffectSurvival` — `Feature/Survival/EL_ConsumableEffectSurvival.c`
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
