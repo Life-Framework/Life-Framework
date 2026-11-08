@@ -170,7 +170,7 @@ tools\\cli wt ship m1-19-paper-fine --closes 104`}
 
       <Section
         id="scopes"
-        kicker={githubData.goodFirst.length > 0 ? "Good first issues" : `${CURRENT_MILESTONE} scopes nobody is on`}
+        kicker={githubData.goodFirst.length > 0 ? "Good first issues" : `${CURRENT_MILESTONE} issues nobody is on`}
         title="Open now"
         aside={<Stamp>{pick.length} open</Stamp>}
       >
@@ -187,7 +187,9 @@ tools\\cli wt ship m1-19-paper-fine --closes 104`}
         )}
         <p className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
           <GoLink to={issuesUrl('is:open is:issue label:"good first issue"')}>Good first issues</GoLink>
-          <GoLink to={issuesUrl("is:open is:issue label:m1 no:assignee")}>Unassigned M1 scopes</GoLink>
+          <GoLink to={issuesUrl(`is:open is:issue label:${CURRENT_MILESTONE.toLowerCase()} no:assignee`)}>
+            Unassigned {CURRENT_MILESTONE} issues
+          </GoLink>
         </p>
       </Section>
 

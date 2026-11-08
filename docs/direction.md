@@ -47,7 +47,9 @@ Every step works on a **dedicated server with several clients**, gives
 
 ## Milestones
 
-Each milestone ends with a public build and a filmed showcase.
+Each milestone ends with a public build and a filmed showcase. M0 is completed
+history. GitHub's M1+ milestones, descriptions, and issue assignments are the
+live roadmap data that the website and Discord board render.
 
 | # | Milestone | Done when |
 |---|---|---|

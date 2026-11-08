@@ -68,6 +68,11 @@ licences beside them). No Google Fonts request, no other families.
 - **Rule** (`.rule-top`): a 2px ink rule opens every section, like a form.
 - **Route map** (`<RouteMap>`): milestones are stops on a line. The current stop
   is yellow and says "you are here".
+- **Roadmap tree** (`<RoadmapTree>`): the Tree of Life grows from topic pillars;
+  each pillar branches through M1, M2, and later milestones into selectable
+  issue nodes. Assignment is the claim mechanism; the site and Discord mirror
+  it. Keep branch lines ruled and status marks small. No
+  gradients or glows.
 - **Scope meter** (`<ScopeMeter>`): one cell per issue, filled when closed. No
   percentage bars.
 - **Figure** (`<Figure>`): a photo print with a caption and a mono credit line:

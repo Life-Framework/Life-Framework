@@ -11,6 +11,10 @@ on:
       - "docs/**"
       - "README.md"
       - ".github/workflows/website.yml"
+  issues:
+    types: [opened, edited, closed, reopened, assigned, unassigned, labeled, unlabeled, milestoned, demilestoned]
+  milestone:
+    types: [created, edited, deleted, opened, closed]
   push:
     branches: [main]
     paths:
@@ -34,6 +38,8 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+      issues: read
+      pull-requests: read
       deployments: write
     defaults:
       run:

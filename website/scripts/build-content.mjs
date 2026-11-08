@@ -45,6 +45,8 @@ const toHtml = (text) => String(md.processSync(text));
 // One line of plain text from markdown: links keep their text, code and emphasis lose their marks.
 const plain = (s) =>
   s
+    // Some issue bodies carry a UTF-8 arrow that was read as Windows-1252.
+    .replace(/ÔåÆ/g, "→")
     .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
     .replace(/<[^>]+>/g, "")
@@ -288,16 +290,6 @@ function section(text, title) {
   return lines.slice(start + 1, end).join("\n").trim();
 }
 
-function milestones(text) {
-  return section(text, "Milestones")
-    .split("\n")
-    .filter((l) => /^\|\s*M\d/.test(l))
-    .map((l) => {
-      const cells = l.split("|").slice(1, -1).map((c) => c.trim());
-      return { id: cells[0], name: plain(cells[1]), doneWhen: plain(cells[2]).replace(/\s*Outline: [^.]*\.?$/, "") };
-    });
-}
-
 // The numbered loop under "What playable means".
 function loop(text) {
   return text
@@ -325,7 +317,6 @@ const siteJson = {
   inWorldFirst: plain(
     decisions.sections.flatMap((s) => s.entries).find((e) => e.title === "In-world first")?.html.replace(/<[^>]+>/g, " ") || "",
   ),
-  milestones: milestones(direction),
   features: readmeFeatures(),
   decisionCount,
   latestDecisions: decisions.sections
@@ -339,16 +330,21 @@ if (!siteJson.ambition) throw new Error('site.json: "The ambition is ... in that
 if (siteJson.loop.length < 5) throw new Error('site.json: the numbered loop under "What playable means" in docs/direction.md is missing');
 if (!siteJson.inWorldFirst) throw new Error('site.json: the "In-world first" entry is missing from docs/decisions.md');
 if (siteJson.features.length < 5) throw new Error('site.json: the "- **Name** — what" bullets under "## Features" in README.md are missing');
-if (siteJson.milestones.length === 0) throw new Error("site.json: no milestone rows in docs/direction.md");
-
 // ---------------------------------------------------------------- GitHub
 
-async function gh(pathAndQuery, { maxPages = 10 } = {}) {
+async function gh(pathAndQuery, { maxPages = 10, allowTruncate = false } = {}) {
   const headers = { Accept: "application/vnd.github+json", "User-Agent": "life-framework-website" };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   const out = [];
   let url = `https://api.github.com${pathAndQuery}`;
-  for (let page = 0; url && page < maxPages; page++) {
+  for (let page = 0; url; page++) {
+    if (page >= maxPages) {
+      if (allowTruncate) {
+        console.warn(`[content] stopped after ${maxPages} pages for ${new URL(url).pathname}`);
+        break;
+      }
+      throw new Error(`GitHub pagination exceeded ${maxPages} pages for ${new URL(url).pathname}`);
+    }
     const res = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
     if (!res.ok) throw new Error(`GitHub ${res.status} for ${url}`);
     const body = await res.json();
@@ -371,7 +367,7 @@ function issueExcerpt(body) {
         .replace(/```[\s\S]*?```/g, "")
         .replace(/<!--[\s\S]*?-->/g, "")
         .split("\n")
-        .filter((l) => l.trim() && !/^\s*(#|\||- \[|>|Part of\b)/.test(l))
+        .filter((l) => l.trim() && !/^\s*(#|\||- \[|>|Part of\b|Parent:)/.test(l))
         .join(" "),
     ),
     240,
@@ -403,6 +399,42 @@ function prSummary(body) {
   return "";
 }
 
+// A system parent named in the issue body: "Parent: #148" or "Parent: Police & Response".
+function issueParent(body) {
+  const match = /^\s*Parent:\s*(.+)$/im.exec(body || "");
+  return match ? plain(match[1]).trim() || null : null;
+}
+
+// The body's "## Heading" sections, keyed by lowercased heading.
+function issueSections(body) {
+  const out = {};
+  const text = (body || "").replace(/\r\n/g, "\n").replace(/```[\s\S]*?```/g, "").replace(/<!--[\s\S]*?-->/g, "");
+  const parts = text.split(/^##\s+(.+)$/m);
+  for (let k = 1; k < parts.length; k += 2) out[parts[k].trim().toLowerCase()] = parts[k + 1] || "";
+  return out;
+}
+
+// Top-level list items of a section as short plain lines; nested items are skipped.
+const bullets = (section, max, len) =>
+  (section || "")
+    .split("\n")
+    .filter((l) => /^[-*]\s+/.test(l))
+    .map((l) => clip(plain(l.replace(/^[-*]\s+/, "")), len))
+    .filter(Boolean)
+    .slice(0, max);
+
+// What a contributor needs on the roadmap card: the work, the proof, what it waits on.
+function issueBrief(body) {
+  const s = issueSections(body);
+  const deps = [...(s["depends on"] || "").matchAll(/#(\d+)/g)].map((m) => Number(m[1]));
+  return {
+    why: s.why ? clip(plain(s.why.split(/\n\s*[-*]\s/)[0]), 420) : "",
+    work: bullets(s.work ?? s["candidate scopes (not cards yet)"], 5, 160),
+    proof: bullets(s["acceptance proof"], 4, 140),
+    dependsOn: [...new Set(deps)],
+  };
+}
+
 const issueOut = (i) => ({
   number: i.number,
   title: i.title,
@@ -413,6 +445,11 @@ const issueOut = (i) => ({
   closedAt: i.closed_at,
   excerpt: issueExcerpt(i.body),
   wave: Number((/\bWave (\d+)\b/.exec(i.body || "") || [])[1]) || null,
+  parent: issueParent(i.body),
+  ...issueBrief(i.body),
+  comments: i.comments ?? 0,
+  createdAt: i.created_at,
+  updatedAt: i.updated_at,
 });
 
 async function fetchGithub() {
@@ -439,12 +476,12 @@ async function fetchGithub() {
   const goodFirst = (await gh(`/repos/${GITHUB_REPO}/issues?labels=${encodeURIComponent("good first issue")}&state=open&per_page=100`))
     .filter((i) => !i.pull_request)
     .map(issueOut);
-  const pulls = (await gh(`/repos/${GITHUB_REPO}/pulls?state=closed&sort=updated&direction=desc&per_page=100`, { maxPages: 3 }))
+  const pulls = (await gh(`/repos/${GITHUB_REPO}/pulls?state=closed&sort=updated&direction=desc&per_page=100`, { maxPages: 3, allowTruncate: true }))
     .filter((p) => p.merged_at && p.base.ref === "main")
     .sort((a, b) => b.merged_at.localeCompare(a.merged_at))
     .slice(0, 150)
     .map((p) => ({ number: p.number, title: p.title, url: p.html_url, mergedAt: p.merged_at, author: p.user?.login || null, summary: prSummary(p.body) }));
-  const contributors = (await gh(`/repos/${GITHUB_REPO}/contributors?per_page=100`, { maxPages: 2 }))
+  const contributors = (await gh(`/repos/${GITHUB_REPO}/contributors?per_page=100`, { maxPages: 2, allowTruncate: true }))
     .filter((c) => c.type === "User" && !/\[bot\]$/.test(c.login))
     .map((c) => ({ login: c.login, url: c.html_url, contributions: c.contributions }));
   return { fetchedAt: new Date().toISOString(), milestones: milestonesOut, goodFirst, pulls, contributors };
@@ -519,7 +556,7 @@ fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, m
 fs.writeFileSync(path.join(outDir, "github.json"), JSON.stringify(githubOut));
 fs.writeFileSync(path.join(outDir, "support.json"), JSON.stringify(buildSupport({ site, repo })));
 console.log(
-  `[content] ${docsIndex.length} docs, ${decisionCount} decisions, ${siteJson.milestones.length} milestones, ` +
+  `[content] ${docsIndex.length} docs, ${decisionCount} decisions, ${github.milestones.length} milestones, ` +
     `${github.milestones.map((m) => `${m.id} ${m.issues.length} issues`).join(", ")}, ${pulls.length} merged PRs, ` +
     `${github.contributors.length} contributors (${github.source})`,
 );

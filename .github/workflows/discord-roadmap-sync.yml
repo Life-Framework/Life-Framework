@@ -1,0 +1,42 @@
+# GitHub issues are the source of truth. Mirror the website's Tree of Life into
+# the Discord #roadmap forum (one discussion thread per issue) on every issue or
+# milestone change, with a periodic refresh to keep posts visible in Discord's
+# auto-archiving forum. Passes with a notice until the bot secret and forum
+# variable are set.
+name: discord-roadmap-sync
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened, assigned, unassigned, labeled, unlabeled, milestoned, demilestoned]
+  milestone:
+    types: [created, edited, deleted, opened, closed]
+  schedule:
+    - cron: "17 5 */5 * *"
+  workflow_dispatch:
+
+concurrency:
+  group: discord-roadmap-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test the post renderer
+        run: node --test tools/discord-mcp/sync-roadmap.test.mjs
+      - name: Reconcile Discord roadmap forum
+        run: node tools/discord-mcp/sync-roadmap.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_ROADMAP_FORUM_ID: ${{ vars.DISCORD_ROADMAP_FORUM_ID }}
