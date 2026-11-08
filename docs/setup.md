@@ -186,6 +186,13 @@ node tools/cli.mjs mcp disable <name>   # enabled=false in opencode.json
 
 `[name]` is `enfusion-mcp` or `enfusion-workbench`; omitted means all.
 
+`enfusion-workbench` carries a native addon (`better-sqlite3`) compiled for one
+Node ABI. After a Node upgrade the server dies at startup with "compiled
+against a different Node.js version". `toolscli status` names the addon and
+exits 1; `toolscli mcp install` (or `update`) runs `npm rebuild` on it and
+checks it loads. A new worktree has no `tools/mcp/` clones of its own; the CLI
+and `toolscli call` use the main checkout's clones.
+
 Call any server tool from a plain terminal, no opencode session or restart
 needed (see `tools/mcp-call.mjs`):
 

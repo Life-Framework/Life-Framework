@@ -1,9 +1,12 @@
 // Git merge driver for Language/everonlife_localization.st.
-// Unions string ids. Fails only when the same id has different target text.
+// Unions string ids. When the same id has different target text on both
+// sides it writes git line-merge conflict markers and exits 1, so nothing
+// from either side is lost.
 //
 //   node tools/merge/union-string-table.mjs %O %A %B %P
 
 import { readFileSync, writeFileSync } from "node:fs";
+import { mergeLines } from "./merge-markdown.mjs";
 
 const ITEM_RE = /CustomStringTableItem\s+"\{[0-9A-Fa-f]+\}"\s*\{[^}]*\}/g;
 
@@ -107,6 +110,8 @@ function runDriver() {
     readFileSync(theirsPath, "utf8"),
   );
   if (!merged.ok) {
+    const ours = readFileSync(oursPath, "utf8");
+    writeFileSync(oursPath, mergeLines(readFileSync(basePath, "utf8"), ours, readFileSync(theirsPath, "utf8")).text);
     console.error(merged.error);
     process.exit(1);
   }

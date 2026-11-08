@@ -38,7 +38,8 @@ intent: `docs/design.md`.
    `Language/everonlife_localization.st` (append, never rewrite; then
    `tools\cli regen-localization`). Layouts reference `#Key`.
 8. **Update `docs/features.md` in the same change** that alters a feature.
-   Append or edit only your rows; a merge driver keeps both sides.
+   Append or edit only your rows; the merge driver keeps rows both sides
+   append and stops with conflict markers when both edit the same line.
 
 ## Commands
 

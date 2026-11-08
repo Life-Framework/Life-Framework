@@ -12,6 +12,11 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	[Attribute(category: "New character defaults")]
 	protected ref array<ref EL_FactionLoadout> m_aFactionCharacterItems;
 
+	//! Every spawn carries an ID card printed from the account's character record. Turned off once
+	//! the town clerk hands the card over in the arrival chain (M1-18).
+	[Attribute("1", desc: "Give each spawned character their ID card (LF_IdCard). Off when the arrival chain hands it over.", category: "New character defaults")]
+	protected bool m_bGrantIdAtSpawn;
+
 	//! Player-chosen spawn locations (second stage of the faction menu), session-local.
 	protected static ref map<int, ref EL_SpawnLocation> m_mSelectedLocations;
 
@@ -87,6 +92,16 @@ class EL_SpawnLogic : SCR_SpawnLogic
 			questManager.ReportKill(playerEntity, killerEntity);
 
 		LF_Contraband.FailDiedFromEntity(playerEntity);
+
+		// Death drops what you carry: the body keeps the items, the account loses the snapshot.
+		string uid = EL_Utils.GetPlayerUID(playerId);
+		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		if (accounts && !uid.IsEmpty())
+		{
+			EL_PlayerAccount account = accounts.GetAccount(uid);
+			if (account && account.GetActiveCharacter())
+				LF_StorageSnapshot.OnCharacterDied(account.GetActiveCharacter().GetId());
+		}
 
 		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
 		if (respawn)
@@ -336,8 +351,27 @@ class EL_SpawnLogic : SCR_SpawnLogic
 
 	//------------------------------------------------------------------------------------------------
 	//! Called after a player character has been created and spawned into the world.
-	//! Initializes the character's inventory with the configured default loadout items.
+	//! A saved carried inventory replaces the starter kit; without one the character gets the
+	//! configured default loadout items.
 	protected void OnCharacterCreated(int playerId, string characterPersistenceId, IEntity character)
+	{
+		LF_StorageSnapshotRecord carried = LF_StorageSnapshot.Get(characterPersistenceId, LF_StorageSnapshot.SLOT_CARRIED);
+		if (carried)
+		{
+			LF_StorageSnapshot.Apply(character, carried);
+			EL_Debug.Info("Spawn", "restored carried inventory for player " + playerId + " instead of the starter kit");
+		}
+		else
+		{
+			ApplyStarterKit(playerId, character);
+		}
+
+		BindAccountComponents(playerId, characterPersistenceId, character);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gives a character with no saved carried inventory the configured default loadout items.
+	protected void ApplyStarterKit(int playerId, IEntity character)
 	{
 		InventoryStorageManagerComponent storageManager = EL_Component<InventoryStorageManagerComponent>.Find(character);
 
@@ -378,6 +412,16 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		// them first leaves a bare character with no pockets, so they fail the best-slot search.
 		if (factionLoadout)
 			SpawnDirectCharacterItems(storageManager, factionLoadout.m_aDirectItems);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void BindAccountComponents(int playerId, string characterPersistenceId, IEntity character)
+	{
+		// After the inventory (starter kit or restored), so the card has a pocket to land in. A
+		// restored card comes back blank (the snapshot keeps the prefab, not the print); Grant
+		// reprints a blank carried card instead of adding a second one.
+		if (m_bGrantIdAtSpawn)
+			GrantIdCard(EL_PlayerAccountManager.GetInstance().GetFromCache(playerId), character);
 
 		// The account components need their ids bound to the entity; this runs on every spawn
 		// path (first spawn, death respawn) so the bindings survive a fresh character entity.
@@ -388,6 +432,20 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		EL_CharacterSurvivalComponent survivalComponent = EL_CharacterSurvivalComponent.Cast(character.FindComponent(EL_CharacterSurvivalComponent));
 		if (survivalComponent)
 			survivalComponent.Init(characterPersistenceId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Prints the account's active character on an ID card in the new body's inventory.
+	protected void GrantIdCard(EL_PlayerAccount account, IEntity character)
+	{
+		if (!account || !account.GetActiveCharacter())
+		{
+			EL_Debug.Error("Spawn", "ID card not granted: no account character for the spawned body");
+			return;
+		}
+
+		EL_PlayerCharacter identity = account.GetActiveCharacter();
+		LF_IdCard.Grant(character, identity.GetId(), identity.GetFirstName(), identity.GetLastName(), identity.GetAge());
 	}
 
 	//------------------------------------------------------------------------------------------------
