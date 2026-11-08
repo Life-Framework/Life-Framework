@@ -75,6 +75,9 @@ export function buildLine(id, spec) {
     if (index === 0) return `${id} click ${widget}`;
     return `${id} click ${widget} ${index}`;
   }
+  if (spec.verb === "type") {
+    return `${id} type ${token(spec.widget, "field")} ${token(spec.text, "text")}`;
+  }
   if (spec.verb === "input") {
     if (!MENU_ACTIONS.has(spec.action)) {
       throw new Error(`action not allowed: ${spec.action}. Menu actions only.`);
@@ -430,6 +433,7 @@ export function runFlow(lines) {
     else if (verb === "look") result = sendCommand({ verb: "look" });
     else if (verb === "ui") result = sendCommand({ verb: "ui" });
     else if (verb === "click") result = sendCommand({ verb: "click", widget: rest[0], index: rest[1] });
+    else if (verb === "type") result = sendCommand({ verb: "type", widget: rest[0], text: rest[1] });
     else if (verb === "press") {
       const spec = PRESS[rest[0]];
       if (!spec) throw new Error(`press one of F, WheelUp, WheelDown, F10: ${line}`);
@@ -647,6 +651,8 @@ function selftest() {
   if (shown !== "11 open DebugMenu show") throw new Error(shown);
   const click = buildLine(12, { verb: "click", widget: "CivilianButton" });
   if (click !== "12 click CivilianButton") throw new Error(click);
+  const typed = buildLine(13, { verb: "type", widget: "RegFirstName", text: "Ada" });
+  if (typed !== "13 type RegFirstName Ada") throw new Error(typed);
   const indexed = buildLine(13, { verb: "click", widget: "BuyButton", index: 1 });
   if (indexed !== "13 click BuyButton 1") throw new Error(indexed);
   const flow = readFlow("ui-debug-menu").filter((line) => line.trim() && !line.trim().startsWith("#"));
