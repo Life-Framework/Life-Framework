@@ -2,7 +2,7 @@ GenericEntity : "{10C26F96EF7A8CF5}Prefabs/Props/Core/Props_Base.et" {
  ID "CB50823A1DC04EF8"
  components {
   MeshObject "{5872F0EB7FA40561}" {
-   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   Object "{98CD0A123E772237}Assets/Props/Furniture/Chest_01/Chest_01.xob"
   }
   RigidBody "{5872F0EB7DFB5A9D}" {
    Mass 10
@@ -42,9 +42,9 @@ GenericEntity : "{10C26F96EF7A8CF5}Prefabs/Props/Core/Props_Base.et" {
     UserActionContext "{FDF41235464C72D5}" {
      ContextName "default"
      Position PointInfo "{3FD7B062BBC9935E}" {
-      Offset 0 0.2 0
+      Offset 0 0.35 0
      }
-     Radius 0.5
+     Radius 0.7
     }
    }
    additionalActions {

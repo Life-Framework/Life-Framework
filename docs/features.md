@@ -1103,7 +1103,7 @@
   `hideout/stash-save`, and `e2e/pass2-verify-load` across a real two-boot
   restart). `Roadmap_Hideout_Stash` (now at `312 0 296` in the village) is an instance of the reusable
   prefab `Prefabs/Props/Hideouts/LF_HideoutStash.et` (the base-game
-  `Crate_01.xob` crate): a real container (`LF_HideoutStashStorageComponent`,
+  `Chest_01.xob` chest, a crate was too small to notice): a real container (`LF_HideoutStashStorageComponent`,
   200 kg) whose items are entities. Open storage asks the server
   (`SCR_PlayerController.LF_RequestOpenStash`); a member of the organization that
   owns the hideout (`m_sHideoutId` on `LF_HideoutStashStorageManagerComponent`)
