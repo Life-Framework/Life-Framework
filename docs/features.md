@@ -556,7 +556,9 @@
   `Roadmap_Job_Depot` (post counter
   `{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et`),
   `Roadmap_Job_Drop`, `Roadmap_Job_TaxiPad`, and `Roadmap_Job_FuelCan` on
-  `Street_Jobs.layer`.
+  `Street_Jobs.layer`: the counter on the post office porch, the drop on a
+  house porch at the east end, the taxi pad at the bus stop by the square, the
+  fuel can at the fuel station.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -693,8 +695,8 @@
   Carry leaves the cash on the bag; dropping it leaves that cash in the world.
   `Export` / `Apply` restore the ground bags and do not write a bank balance;
   they are not wired into the save serializer, so a restart loses the bags.
-  DebugWorld places `Roadmap_Bank_Vault` at 189 0 120 and `Roadmap_Bank_Bag`
-  at 189 0 122 on `Street_Bank.layer`. The bag is
+  DebugWorld places `Roadmap_Bank_Vault` at 194.1 0 265 (on the bank's east
+  wall) and `Roadmap_Bank_Bag` at 195.6 0 263 on `Street_Bank.layer`. The bag is
   `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
   mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
   `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
@@ -708,7 +710,7 @@
   to the bank (verified 2026-10-11). The placed action is `EL_RobAction` on the
   till's single `ActionsManagerComponent`. Wanted rises by 1. One police alert per
   successful rob; an offer refresh does not alert. DebugWorld places
-  `Roadmap_Hospital_Till` at `195 0 120` on `Street_Hospital.layer`.
+  `Roadmap_Hospital_Till` at `257 0 256.4` (hospital porch) on `Street_Hospital.layer`.
 - ✅ The cabinet is a forced-entry container. `BreachCabinet` calls
   `LF_Breach.Arm`. When that lock opens it spawns the configured medicine
   prefabs: field dressing, morphine, saline, and tourniquet. A missing prefab
@@ -727,7 +729,7 @@
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted.
 - ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
-  `Street_Fuel.layer` at `201 0 120` is
+  `Street_Fuel.layer` at `259 1.04 241.2` (on a counter at the fuel station) is
   `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits
   `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`,
   with `EL_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
@@ -789,9 +791,9 @@
   arrive at the cell, not when they enter the car. A player who is not wanted
   is refused and logged. Early release stays refused. A reconnect or a
   restart keeps the remaining sentence. DebugWorld places
-  `Roadmap_Escort_Car` at `204 0 108` on `Street_Jail.layer`, the police M151 with
+  `Roadmap_Escort_Car` at `247.5 0 238` (beside the police station) on `Street_Jail.layer`, the police M151 with
   `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
-  still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
+  still requires an on-duty officer and a prisoner on foot. (verified 2026-10-11)
 - ✅ **Sentences survive a restart** (2026-11-07, tests
   `restart/jail-serializer-roundtrip` and `e2e/pass2-verify-load` across a real
   restart, verified 2026-11-07): `LF_Jail.ExportAll` / `ApplyAll` are the `jail` payload of
@@ -871,8 +873,8 @@
   lower officer. 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
   is the self-promotion RPC body and always refuses. Rank does not change
   faction and does not write the police whitelist. Lower ranks still open the
-  wanted list. DebugWorld places `Roadmap_Police_Armory` at `207 0 120` on
-  `Street_Police.layer`.
+  wanted list. DebugWorld places `Roadmap_Police_Armory` at `241.2 0 244.2`
+  (police station forecourt) on `Street_Police.layer`.
 - ✅ **One armory draw per duty shift** (2026-11-07): a draw
   that hands out any kit line marks the account; a second draw logs
   `draw refused: <uid> already drew a kit this shift` and shows
@@ -885,8 +887,10 @@
 ### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
 - ✅ One convoy. A member of the organization that owns the hideout hauls
   `{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et` from
-  `Roadmap_Convoy_Start` at `222 0 120` to `Roadmap_Convoy_Drop` at `225 0 120`
-  on `Street_Contraband.layer`. Delivery pays 200 MoneyStack cash once. A second
+  `Roadmap_Convoy_Start` at the barn out of town (`466 0 331`) to
+  `Roadmap_Convoy_Drop` in the hideout yard (`299 0 293`) on
+  `Street_Contraband.layer`. Both markers are pallet boxes carrying the marker
+  component, not debug boundaries. Delivery pays 200 MoneyStack cash once. A second
   delivery on that run pays nothing. Leaving the vehicle or dying fails the
   run and logs it; a failed run pays nothing. A non-member is refused and the
   refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
@@ -918,7 +922,7 @@
 - ✅ Cash moves only as MoneyStack through `EL_OrganizationPlayer`. A short
   removal is returned to the character. A short payout puts the fund back. The
   personal ATM balance is not read or written. The desk is
-  `Roadmap_Org_Desk` on `Street_Org.layer` at `210 0 120`, using
+  `Roadmap_Org_Desk` on `Street_Org.layer` at `288.9 0 255.7` (org registry porch), using
   `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`. The menu is a
   workspace widget on `{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout`.
   It lists the name, the fund, and the processing-slot upgrade, and shows an
@@ -1061,7 +1065,7 @@
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
 - ✅ **A restart drops no ground key** (2026-11-07, test `restart/vehicle-restore-no-ground-key`, verified 2026-11-07): `RestoreWorld` / `RestoreVehicle` put each out-in-world vehicle back on the pad, locked as saved, without spawning a key. Before, every restart left a fresh key beside the pad for every such vehicle (anyone could take the car, and keys piled up). The owner re-keys through the existing owner-only flow: garage store, then retrieve (retrieve spawns a key when the session has none), or an extra key at the lot.
-- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `186 0 102.1` on `Street_Vehicles.layer`, with store and retrieve. The shell sits 5.9 m north of that point, so the player stands outside the wall. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
+- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `238 0 256.6` on `Street_Vehicles.layer`, with store and retrieve. The shell is its child 5.9 m north, turned so its doors face the street; the player stands in front of the doors. The lot counter is `Roadmap_Vehicle_Lot`: bought cars land on a pad 5 m west and 5 m south of it, then 8 m steps north across the concrete lot. The showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11; moved with M1-25)
 - ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, and refuses a vehicle that is not within the same garage's radius as the player (`EL_VehicleGarageComponent.IsVehicleAtPlayersGarage`, `#LF-Garage_VehicleTooFar`, test `security/garage-store-range`, 2026-11-07), then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
 
 ## UI / Layouts / Localization
@@ -1145,26 +1149,25 @@
   character movement and projectile traces pass through it. Prefab fixtures
   such as `EL_TestRunner` inherit the flag; hand-authored `GenericEntity`
   fixtures must set it explicitly.
-- ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
-  Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
-  traders, jobs, police, crime, houses, survival, tests, and the release
-  street on `Roadmap.layer` (street root and boundary) plus one
-  `Street_<Site>.layer` per site. Sites sit 3 m apart on +X, from the breach door
-  at `186 0 120` through the vehicle lot at `243 0 120`. The debug terrain is
-  the 512 m square (world 0..512, `TERRAIN_MAX` in `tools/street/manifest.mjs`).
-  The row stays on that ground. That
-  one layer holds the breach door at `186 0 120`
-  and the charge at `186 0 122`, the bank vault at `189 0 120` and the bag at
-  `189 0 122`, the jail door at `192 0 120` and the cell at `192 0 122`, the
-  hospital till at `195 0 120` and the cabinet at `198 0 120`, the fuel till at
-  `201 0 120`, the police desk at `204 0 120`, the armory at `207 0 120`, the
-  organization desk at `210 0 120`, the hideout door at `213 0 120`, the
-  machine at `216 0 120`, the stash at `219 0 120`, the convoy start at
-  `222 0 120`, the convoy drop at `225 0 120`, the job depot at `228 0 120`,
-  the job drop at `231 0 120`, the taxi pad at `234 0 120`, the fuel can at
-  `237 0 120`, the S105 at `240 0 124`, and the vehicle lot at `243 0 120`.
-  The second row is `Roadmap_Garage` at `186 0 102.1` and `Roadmap_Escort_Car`
-  at `204 0 108`. The garage shell is north of its use point. The Z=120 street is not moved.
+- ✅ DebugWorld is a one-street 1989 Everon village (M1-25, 2026-11-08;
+  `docs/roadmap/m1-25-village.md` has the map). The main street runs east-west
+  at z = 250 on the flat 512 m terrain (world 0..512, `TERRAIN_MAX` in
+  `tools/street/manifest.mjs`; every heightmap sample is 0, so ground props sit
+  at Y = 0). Sites stand in arrival order in front of vanilla buildings: the
+  square (spawn, clerk, pub, church), post office, bank, general store and
+  market, vehicle lot and garage, police station with a jail yard, hospital and
+  fuel station, org registry, and the hideout down a side alley; the contraband
+  barn is out of town on the east track. The farm, quarry, builders' yard and
+  forest edge are on the outskirts. `Village_Roads`, `Village_Buildings` and
+  `Village_Dressing` hold the roads (road generator splines saved as
+  `RoadEntity`), vanilla buildings, walls, lamps and trees; `Annex.layer` is
+  the net fence of the test annex at x 20..112, z 20..112, which holds the test
+  runner, the PR fixtures, and the legacy debug stations (with their
+  boundaries) on the ground where world tests spawn their characters. Sites
+  keep their names; chain layers moved as blocks. The terrain material
+  (`Assets/World/GridSurface.emat`, name kept so the terrain reference holds)
+  is the vanilla lawn surface without clutter, so grass does not grow through
+  roads and floors.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
@@ -1205,7 +1208,10 @@
   `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
   player view. That view faces -Z, so a picture stands on the +Z side of
   its target. The pose is applied again 700 ms later so gravity does not drop
-  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
+  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) On a
+  dedicated server the server also sends the pose to the owning client
+  (`RpcDo_EL_HarnessPose`), which would otherwise overwrite it; session
+  clients take world shots this way (verified 2026-11-08, M1-25). A filtered row's wide shot
   stands just north of that row when the street is further north. If the new PNG matches the
   previous PNG, `report roadmap` records `camera_stuck` once and stops.
   `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look

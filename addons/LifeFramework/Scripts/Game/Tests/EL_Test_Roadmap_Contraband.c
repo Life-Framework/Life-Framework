@@ -82,13 +82,13 @@ class EL_Test_Roadmap_ContrabandWorld : EL_Test
 			return;
 
 		vector startOrigin = start.GetOrigin();
-		ctx.EqualFloat(222, startOrigin[0], 0.1, "the start marker is at X 222");
+		ctx.EqualFloat(466, startOrigin[0], 0.1, "the start marker is at X 466 (the barn out of town)");
 		ctx.EqualFloat(0, startOrigin[1], 0.1, "the start marker is at Y 0");
-		ctx.EqualFloat(120, startOrigin[2], 0.1, "the start marker is at Z 120");
+		ctx.EqualFloat(331, startOrigin[2], 0.1, "the start marker is at Z 331");
 		vector dropOrigin = drop.GetOrigin();
-		ctx.EqualFloat(225, dropOrigin[0], 0.1, "the drop marker is at X 225");
+		ctx.EqualFloat(299, dropOrigin[0], 0.1, "the drop marker is at X 299 (the hideout yard)");
 		ctx.EqualFloat(0, dropOrigin[1], 0.1, "the drop marker is at Y 0");
-		ctx.EqualFloat(120, dropOrigin[2], 0.1, "the drop marker is at Z 120");
+		ctx.EqualFloat(293, dropOrigin[2], 0.1, "the drop marker is at Z 293");
 
 		LF_ConvoyMarkerComponent startMarker = EL_Component<LF_ConvoyMarkerComponent>.Find(start);
 		ctx.NotNull(startMarker, "the start marker carries LF_ConvoyMarkerComponent");

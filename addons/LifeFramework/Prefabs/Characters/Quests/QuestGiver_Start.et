@@ -62,7 +62,7 @@ EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
        m_eType AREA_ENTER
        m_iTarget 1
        m_sFilter "Area_Start"
-       m_vPosition 110 0 137
+       m_vPosition 134 0 243.5
        m_fRadius 15
       }
      }
