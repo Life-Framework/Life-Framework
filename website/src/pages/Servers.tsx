@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Figure, GoLink, PageHeader, Section, Stamp } from "@/components/ui";
-import { DISCORD_URL, blob, milestone, milestoneName, siteData, still } from "@/lib/content";
+import { CORE_VS_PACK_URL, DISCORD_URL, blob, milestone, milestoneName, siteData, still } from "@/lib/content";
 
 const flagship: { rule: string; id: string }[] = [
   { rule: "Death drops what you carry. Bank, vehicles, and property are safe.", id: "death-drops-what-you-carry" },
@@ -53,11 +53,16 @@ const Servers = () => {
         <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
           <article className="sheet p-6 md:p-8">
             <p className="kicker">Layer 1 · what you install</p>
-            <h3 className="display-3 mt-1">The framework</h3>
+            <h3 className="display-3 mt-1">The framework core</h3>
             <p className="mt-3 muted">
-              Modular systems for a life server. The core knows nothing about 1989: prices, places, and prefabs come from config and
-              content, so a modern or alternate setting runs on the same code. Persistence uses Reforger's own{" "}
+              Modular systems for a life server. The core decides what the game can do; a content pack decides what your server is.
+              Today the systems and our 1989 content share one addon. M3 splits them into two Workshop items, the{" "}
+              <code>LifeFramework</code> core and our <code>LF_Everon1989</code> pack, and the core will hold no 1989 copy or Everon
+              place names. You keep the core and swap the pack for your own. Persistence uses Reforger's own{" "}
               <code>SCR_PersistenceSystem</code>; no third-party addon is needed.
+            </p>
+            <p className="mt-3">
+              <GoLink to={CORE_VS_PACK_URL}>Core vs pack</GoLink>
             </p>
             <p className="kicker mt-6 mb-2">In the tree today</p>
             <ul className="border-t border-rule text-[0.9375rem]">
@@ -77,8 +82,9 @@ const Servers = () => {
             <p className="kicker">Layer 2 · what we run</p>
             <h3 className="display-3 mt-1">The 1989 Everon flagship</h3>
             <p className="mt-3 muted">
-              Our own server, built on the same framework, played by real people. It is the proof that the framework plays. Where a
-              system has a range of settings, the flagship picks one. Some of its defaults:
+              Our content pack and our own server. The pack holds the places, names, prices, period look, vehicle catalogue, and story. The server runs on
+              the released core and pack, configured the way an owner would configure theirs. Where a system has a range of settings,
+              the flagship picks one. Some of its defaults:
             </p>
             <ul className="mt-4 border-t border-rule text-[0.9375rem]">
               {flagship.map((f) => (
@@ -103,7 +109,12 @@ const Servers = () => {
           <div>
             <p className="muted">
               The rule is that every price, threshold, and timer lives in a config file under <code>addons/LifeFramework/Configs/</code>, never as a
-              literal in a system. The set grows scope by scope; a documented reference ships with M3.
+              literal in a system. Today you change them in Workbench.
+            </p>
+            <p className="muted mt-3">
+              M3 turns these files into defaults. You write one <code>$profile:LifeFramework/config.json</code> with sections for jobs,
+              shops, crime, licences, vehicles, zones, and persistence, by hand or with a generator on this site. Your file wins over
+              the pack, and the pack over the core. A bad value logs, falls back to its default, and the server stays up.
             </p>
             <ul className="mt-6 border-t-2 border-ink text-[0.9375rem]">
               {configs.map(([file, what]) => (
@@ -175,7 +186,12 @@ const Servers = () => {
         <div className="grid gap-8 md:grid-cols-2 max-w-5xl">
           <p className="muted">
             Playtests are hosted from the maintainer's PC with <code>tools\cli host</code>, which runs the playtest scenario, continues
-            the latest save, and backs saves up. You need Arma Reforger Server (Steam app 1874900). Rented hosting comes later.
+            the latest save, and backs saves up. You need Arma Reforger Server (Steam app 1874900).
+          </p>
+          <p className="muted md:col-start-1">
+            Our public flagship opens in M4, after the framework release. It starts as announced sessions from the same PC, sized for
+            about 40 players, and moves to a rented box for 24/7 play once sessions fill several times in a row and donations cover
+            three months of rent.
           </p>
           <ul className="space-y-2">
             <li>

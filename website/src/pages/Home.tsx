@@ -11,6 +11,8 @@ import {
   issuesUrl,
   milestone,
   milestoneProgress,
+  milestoneStatus,
+  CORE_VS_PACK_URL,
   siteData,
   still,
 } from "@/lib/content";
@@ -49,8 +51,25 @@ const different = [
   {
     n: "03",
     title: "A framework with a flagship",
-    body: "Server owners host it and add jobs and shops without forking. Our own 1989 Everon server is the proof that it plays. The core knows nothing about 1989, so a modern setting runs on the same systems.",
-    more: { label: "For server owners", to: "/servers" },
+    body: "The systems are the product. Any server can run them and tune them in config. Our own 1989 Everon server is the proof that they play. From M3 the two ship as separate addons, so a modern setting can run on the same core.",
+    more: { label: "Framework vs flagship", to: "/#layers" },
+  },
+];
+
+const layers = [
+  {
+    kicker: "What any server can run",
+    name: "Life Framework, the core",
+    body: "The systems: economy, jobs, crime, police, ownership, persistence, the UI kit, and the tests. It holds no 1989 copy and no Everon place names, so another setting can run on it.",
+    items: ["What a player can do: earn, bank, buy, steal, arrest, own", "What survives a server restart", "Which values an owner can set in config"],
+    folder: "LifeFramework",
+  },
+  {
+    kicker: "What our server is",
+    name: "Everon 1989, the flagship pack and server",
+    body: "The content, shipped as a second Workshop addon, and the public server we run on it. It depends on the core; the core never depends on it.",
+    items: ["The places, names, and signs", "Prices, jobs, and the vehicle catalogue", "The period look and the story"],
+    folder: "LF_Everon1989 (from M3)",
   },
 ];
 
@@ -139,6 +158,41 @@ const Home = () => {
         </p>
       </Section>
 
+      {/* Framework vs flagship */}
+      <Section id="layers" kicker="Framework vs flagship" title="Two things, kept apart">
+        <p className="lede muted mb-10 max-w-3xl">
+          The core decides what the game can do. The pack decides what this server is. When you add something, ask which of the two
+          it belongs to.
+        </p>
+        <div className="grid gap-6 md:grid-cols-2">
+          {layers.map((l) => (
+            <article key={l.name} className="sheet p-6 md:p-8 flex flex-col">
+              <p className="kicker">{l.kicker}</p>
+              <h3 className="display-3 mt-1">{l.name}</h3>
+              <p className="mt-3 muted">{l.body}</p>
+              <p className="kicker mt-6 mb-2">It decides</p>
+              <ul className="border-t border-rule text-[0.9375rem] flex-1">
+                {l.items.map((i) => (
+                  <li key={i} className="py-2 border-b border-rule">
+                    {i}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-5 font-mono text-[0.8125rem] text-ink-2">{l.folder}</p>
+            </article>
+          ))}
+        </div>
+        <p className="mt-8 max-w-prose muted">
+          Today both live in one addon, <code>addons/LifeFramework/</code>. M3 moves the 1989 content into its own addon and adds one{" "}
+          <code>config.json</code> where an owner sets prices, jobs, crimes, and the rest without forking.
+        </p>
+        <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+          <GoLink to={CORE_VS_PACK_URL}>Core vs pack</GoLink>
+          <GoLink to="/docs/roadmap-m3-outline">The M3 outline</GoLink>
+          <GoLink to="/servers">For server owners</GoLink>
+        </p>
+      </Section>
+
       {/* Where we are */}
       <Section id="status" kicker="Where we are" title="Nothing to download yet">
         <div className="sheet p-5 md:p-8">
@@ -146,13 +200,14 @@ const Home = () => {
             <h3 className="display-3">
               {CURRENT_MILESTONE} {m1Name}
             </h3>
-            <Stamp>In development</Stamp>
+            <Stamp>{m1 ? milestoneStatus(m1).label : "In development"}</Stamp>
           </div>
           <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
             <p className="muted">
-              {left > 0 && left <= 5 ? "The playtest town is nearly done. " : "We are building the playtest town now. "}
-              It is a signposted village where a stranger can play the whole loop on a dedicated server without asking anyone. Next
-              come private playtests with friends, then the first public Workshop release.
+              {left > 0 && left <= 5 ? "The playtest town is in its final playtest. " : "We are building the playtest town now. "}
+              It is a signposted village where a stranger can play the whole loop on a dedicated server without asking anyone. M1
+              ends with a playtest build on the Workshop and sessions hosted from the maintainer's PC. Then M2 adds moderation,
+              medics, comms, and investigation; M3 releases the framework for other servers; M4 opens our 1989 Everon server.
             </p>
             <div>
               <p className="flex items-baseline justify-between gap-4 mb-2">

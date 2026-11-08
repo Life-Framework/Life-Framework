@@ -71,7 +71,7 @@ tools\cli call wb_capture '{"position":"400 0 400","cameraOffset":"18 8 18","tim
 
 `wb_play` first, same MCP session. Read the PNG. White or missing mesh fails the gate. Captures stay in the Workbench logs directory, not in the repo.
 
-## Release setups
+## Setups in the tree
 
 ### Forced entry
 
@@ -217,9 +217,9 @@ Layer: `Roadmap_Vehicle_S105`, `Roadmap_Vehicle_Lot`.
 
 Persistence: owner id and key id match after apply-save. Garage store/retrieve, once ported, is a second persistence class: store, apply-save, retrieve, same prefab and lock flag.
 
-## After release
+## Later setups
 
-Same three gates. Add the entities to `Roadmap.layer` when the setup starts, inside the same boundary, further along +X at the 3 m pitch. Extend the boundary with the row. Stop before the terrain edge at 512. Do not open a second layer.
+Same three gates, for the scopes placed in M2 (revive, now the medic theme), M4 (police missions), and M5 (housing, crafting, tasks); events are parked. Add the entities to `Roadmap.layer` when the setup starts, inside the same boundary, further along +X at the 3 m pitch. Extend the boundary with the row. Stop before the terrain edge at 512. Do not open a second layer.
 
 | Setup | Layer entities | Headless | E2E | Visual |
 | --- | --- | --- | --- | --- |

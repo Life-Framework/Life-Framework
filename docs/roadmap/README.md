@@ -7,8 +7,9 @@ before the previous milestone is done ([direction](../direction.md)).
 A **scope** is one bounded plan: the player loop, the assets it may use, the
 first slice, and how to prove it. Scope cards live in [scopes/](scopes/README.md)
 and each names its milestone. The site's roadmap page (`website/`) renders these
-docs with the milestones from GitHub; the November 2025 community checklist is
-archived in `website/content/archive/roadmap-2025.json`.
+docs with the milestones, their issues, and each epic's sub-issues from GitHub.
+The November 2025 community checklist is in git history
+(`website/content/archive/roadmap-2025.json`, removed in `4c96b4e`).
 
 ## Milestones
 

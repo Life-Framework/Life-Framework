@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
-import { DISCORD_URL, REPO_URL, formatDate, githubData, issueStatus, issueTopic, splitTitle, type Issue, type Milestone } from "@/lib/content";
+import { DISCORD_URL, REPO_URL, formatDate, githubData, issueLayer, issueStatus, issueTopic, splitTitle, type Issue, type Milestone } from "@/lib/content";
 
 // Milestone and epic markers are shown as badges, so drop them from the display title.
 function titleOf(issue: Issue) {
@@ -293,6 +293,7 @@ function Menu({
         <p className="tree-menu__tags">
           <span className={`tree-menu__state tree-menu__state--${state}`}>{status.label}</span>
           <span>{item.milestone.id}</span>
+          <span>{issueLayer(issue, item.milestone.id)}</span>
           <span>{code ?? `#${issue.number}`}</span>
           {issue.wave && <span>Wave {issue.wave}</span>}
           {labels.slice(0, 3).map((l) => (
@@ -330,6 +331,30 @@ function Menu({
                 <li key={p}>{p}</li>
               ))}
             </ul>
+          </div>
+        )}
+        {(issue.subIssues?.length ?? 0) > 0 && (
+          <div className="tree-menu__section">
+            <p className="tree-menu__label">
+              Sub-issues · {issue.subIssues!.filter((s) => s.state === "closed").length}/{issue.subIssues!.length} done
+            </p>
+            <ol className="tree-menu__list tree-menu__list--tight">
+              {issue.subIssues!.map((s) => {
+                const sub = byNumber.get(s.number);
+                if (sub) return <IssueRow item={sub} key={s.number} onPick={onPick} />;
+                return (
+                  <li key={s.number}>
+                    <a className="tree-menu__row" href={s.url} target="_blank" rel="noreferrer">
+                      <span className="tree-menu__row-dot" aria-hidden="true">
+                        <Icon name={s.state === "closed" ? "done" : s.assignees.length ? "in-progress" : "open"} />
+                      </span>
+                      <span className="tree-menu__row-title">{titleOf({ ...issue, title: s.title }).title}</span>
+                      <span className="tree-menu__row-ms">{s.state === "closed" ? "done" : "open"} ↗</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ol>
           </div>
         )}
         <Related label="Waits on" numbers={deps} byNumber={byNumber} onPick={onPick} />
@@ -810,7 +835,7 @@ export function RoadmapTree() {
                                   style={{ left: x, top: y }}
                                   type="button"
                                   aria-pressed={selectedIssue}
-                                  aria-label={`${title}, ${issueStatus(item.issue).label}, ${item.milestone.id} ${code ?? `#${item.issue.number}`}`}
+                                  aria-label={`${title}, ${issueStatus(item.issue).label}, ${item.milestone.id} ${issueLayer(item.issue, item.milestone.id)}, ${code ?? `#${item.issue.number}`}`}
                                   onClick={() => setSelection({ pillar: p.pillar.name, system: s.system.name, issue: item.issue.number })}
                                 >
                                   <span className="tree-node__dot">

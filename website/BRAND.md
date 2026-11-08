@@ -62,7 +62,7 @@ licences beside them). No Google Fonts request, no other families.
   hard 4px offset shadow. No blur, no gradient, no glass, no rounded corners.
 - **Stamp** (`<Stamp>`): status only, in mono capitals with a double border.
   Tilt one per view at most. Words: WORK IN PROGRESS, IN DEVELOPMENT, DONE,
-  NEEDS A HAND, SUPERSEDED, NOT RELEASED, NOT OPEN YET.
+  NEEDS A HAND, SUPERSEDED, NOT RELEASED, NOT OPEN YET, FINAL PLAYTEST, PLANNED.
 - **Plate** (`.plate`): a yellow road-sign plate for a signpost word (PLAYERS,
   MIT). Never for status.
 - **Rule** (`.rule-top`): a 2px ink rule opens every section, like a form.
@@ -73,6 +73,10 @@ licences beside them). No Google Fonts request, no other families.
   issue nodes. Assignment is the claim mechanism; the site and Discord mirror
   it. Keep branch lines ruled and status marks small. No
   gradients or glows.
+- **Milestone list** (`<MilestoneList>`): one sheet per milestone in number
+  order, with its stamp, one-line goal, and issues. An epic folds open to its
+  sub-issues. Each row carries a small CORE (outlined) or FLAGSHIP (solid ink)
+  tag; never red, so the stamps stay the only red on the card.
 - **Scope meter** (`<ScopeMeter>`): one cell per issue, filled when closed. No
   percentage bars.
 - **Figure** (`<Figure>`): a photo print with a caption and a mono credit line:

@@ -2,7 +2,7 @@
 // page's <head>; the client updates the title on navigation.
 import { docs } from "@/lib/content";
 
-// Where the site is served. Change to https://life-framework.org at the DNS cutover (README).
+// Where the site is served.
 export const SITE_URL = "https://life-framework.org";
 export const SITE_NAME = "Life Framework";
 
@@ -17,7 +17,7 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
   },
   "/roadmap": {
     title: "Roadmap",
-    description: "Milestones M0 to M4 and every M1 scope, read from GitHub when the site is built.",
+    description: "Milestones M1 to M5, each with its goal, its status, and its issues and epics, read from GitHub when the site is built.",
     og: "roadmap",
   },
   "/devlog": {

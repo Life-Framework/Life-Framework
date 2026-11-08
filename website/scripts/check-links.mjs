@@ -15,6 +15,9 @@ const dist = path.join(site, "dist");
 const repo = path.resolve(site, "..");
 const REPO_PREFIX = /^https:\/\/github\.com\/Life-Framework\/Life-Framework\/(?:blob|tree|edit)\/main\/([^#?]+)/;
 const external = process.argv.includes("--external");
+// Repo files another open change is adding. A link to one warns instead of failing; delete the
+// entry once the file is on main.
+const PENDING = new Set(["docs/architecture/core-vs-pack.md"]);
 
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
 const pages = walk(dist).filter((f) => f.endsWith(".html"));
@@ -39,6 +42,7 @@ const idsOf = (route) => {
 
 let failed = 0;
 let checked = 0;
+const pendingSeen = new Set();
 const externals = new Map();
 const report = (from, msg) => {
   failed++;
@@ -58,7 +62,11 @@ for (const [route, html] of htmlByRoute) {
       const m = REPO_PREFIX.exec(ref);
       if (m) {
         const target = path.join(repo, decodeURIComponent(m[1]));
-        if (!fs.existsSync(target)) report(route, `${ref} names ${m[1]}, which is not in the repo`);
+        const file = decodeURIComponent(m[1]);
+        if (!fs.existsSync(target)) {
+          if (PENDING.has(file)) pendingSeen.add(file);
+          else report(route, `${ref} names ${m[1]}, which is not in the repo`);
+        }
       } else if (!/^https?:\/\/(life-framework-arn\.pages\.dev|life-framework\.org|github\.com\/)/.test(ref)) {
         // github.com answers scripted requests with 429 and 504 too often to be a signal;
         // issue and PR links come from the API, and repo file links are checked above.
@@ -100,5 +108,6 @@ if (external) {
 console.log(
   `${pages.length} pages, ${checked} references, ${externals.size} external URLs ${external ? "requested" : "not requested (--external)"}`,
 );
+for (const f of pendingSeen) console.log(`warn ${f} is linked but not on main yet (PENDING in check-links.mjs)`);
 console.log(failed ? `${failed} link problem(s)` : "all links resolve");
 process.exit(failed ? 1 : 0);
