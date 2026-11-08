@@ -863,6 +863,31 @@
   `198 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
   to the contraband scope.
 
+### `LF_Murder` / `LF_SafeZone` — `Feature/Crime/` (M1-27, #125)
+- ✅ **Murder makes you wanted** (test `crime/murder`). Every character death
+  reaches `EL_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
+  player who kills another player or an NPC gets wanted +`m_iMurderWanted`
+  (`LF_Police.conf`, default 3), one `LF_WantedReports` report with the
+  `#LF-Offence_Murder` offence and their description (no name), an alert to
+  every on-duty officer, and a toast. Not murder: a death with no player behind
+  it, a self-kill, a destroyed vehicle, and (config
+  `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
+  wanted suspect. Each decision logs `[ELDebug:Murder]`. No automatic ban.
+- ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_SafeZoneComponent` on
+  `LF_SafeZone_Square` (`Gamemode.layer`, fountain 115 0 250, radius 30 m as
+  the component attribute) registers a flat circle. The modded
+  `SCR_CharacterDamageManagerComponent.HijackDamageHandling` swallows a hit
+  when a player hurts a different player and either stands inside: no health,
+  bleeding, or ragdoll. NPC, world, and self damage pass. Weapons still raise
+  and fire. No police exemption: arrest is an interact action. Each refusal
+  logs `[ELDebug:SafeZone] refused ...`; the shooter gets a toast at most every
+  8 s. Two `safe_zone` notice boards (`Sign_SafeZone_Spawn`,
+  `Sign_SafeZone_East`) say so in the world.
+- ✅ Both civilian spawn points stand on the square (the second moved from
+  170 0 199, by the quarry, to 121 0 253); `safezone/blocks` asserts every
+  civilian spawn point is inside a zone. The hospital wake (M1-26) is not a
+  spawn and stays outside.
+
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
   gates; raises wanted level (+1/+2/+3); notifies police. DebugWorld's three

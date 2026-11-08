@@ -7,8 +7,8 @@ SCR_SpawnPoint Spawn_Town : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.
 }
 SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
  m_sFaction "CIVILIAN"
- coords 170 0 199
- angleY 0
+ coords 121 0 253
+ angleY 90
 }
 SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
  m_sFaction "POLICE"
@@ -19,4 +19,12 @@ SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
  m_sFaction "POLICE"
  coords 234 0 245.5
  angleY 0
+}
+GenericEntity LF_SafeZone_Square {
+ components {
+  LF_SafeZoneComponent "{EBAFCFFFF653DC56}" {
+   m_fRadius 30
+  }
+ }
+ coords 115 0 250
 }
