@@ -1,48 +1,56 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import Navigation from "./components/Navigation";
-import Footer from "./components/Footer";
-import Index from "./pages/Index";
-import Team from "./pages/Team";
-import Philosophy from "./pages/Philosophy";
-import Roadmap from "./pages/Roadmap";
-import Contribute from "./pages/Contribute";
-import Documentation from "./pages/Documentation";
-import DocumentView from "./pages/DocumentView";
-import NotFound from "./pages/NotFound";
+import { useEffect, useRef } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Layout } from "@/components/Layout";
+import { fullTitle, metaFor } from "@/lib/meta";
+import Home from "@/pages/Home";
+import Roadmap from "@/pages/Roadmap";
+import Devlog from "@/pages/Devlog";
+import Servers from "@/pages/Servers";
+import Contribute from "@/pages/Contribute";
+import Decisions from "@/pages/Decisions";
+import { DocView, DocsIndex } from "@/pages/Docs";
+import NotFound from "@/pages/NotFound";
 
-function ScrollToTop() {
+// After a client-side navigation: scroll to the hash or the top, set the title, and move
+// focus to the page so a screen reader announces it. The first load is left alone.
+function RouteEffects() {
   const { pathname, hash } = useLocation();
+  const first = useRef(true);
   useEffect(() => {
-    if (hash) {
-      const el = document.getElementById(decodeURIComponent(hash.slice(1)));
-      if (el) {
-        el.scrollIntoView();
-        return;
-      }
+    document.title = fullTitle(metaFor(pathname));
+    if (first.current) {
+      first.current = false;
+      return;
     }
-    window.scrollTo(0, 0);
+    const target = hash ? document.getElementById(decodeURIComponent(hash.slice(1))) : null;
+    if (target) target.scrollIntoView();
+    else {
+      window.scrollTo(0, 0);
+      document.getElementById("main")?.focus({ preventScroll: true });
+    }
   }, [pathname, hash]);
   return null;
 }
 
 const App = () => (
-  <BrowserRouter>
-    <ScrollToTop />
-    <Navigation />
+  <Layout>
+    <RouteEffects />
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/philosophy" element={<Philosophy />} />
+      <Route path="/" element={<Home />} />
       <Route path="/roadmap" element={<Roadmap />} />
+      <Route path="/devlog" element={<Devlog />} />
+      <Route path="/servers" element={<Servers />} />
       <Route path="/contribute" element={<Contribute />} />
-      <Route path="/team" element={<Team />} />
-      <Route path="/documentation" element={<Documentation />} />
-      <Route path="/docs" element={<Navigate to="/documentation" replace />} />
-      <Route path="/docs/:slug" element={<DocumentView />} />
+      <Route path="/decisions" element={<Decisions />} />
+      <Route path="/docs" element={<DocsIndex />} />
+      <Route path="/docs/decisions" element={<Navigate to="/decisions" replace />} />
+      <Route path="/docs/:slug" element={<DocView />} />
+      <Route path="/documentation" element={<Navigate to="/docs" replace />} />
+      <Route path="/philosophy" element={<Navigate to="/" replace />} />
+      <Route path="/team" element={<Navigate to="/contribute" replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
-    <Footer />
-  </BrowserRouter>
+  </Layout>
 );
 
 export default App;

@@ -26,3 +26,6 @@ dist-ssr
 # Written by scripts/build-content.mjs on every dev/build/lint run
 src/generated/
 .wrangler/
+
+# Downloaded by scripts/build-content.mjs from the film-evidence release
+public/media/clips/

@@ -1,308 +1,530 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+/* Life Framework brand. Tokens and rules are documented in BRAND.md; change both together. */
+
+@font-face {
+  font-family: "Barlow Condensed";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/barlow-condensed-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/barlow-condensed-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-sans-latin-400-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@keyframes grid-move {
-  0% {
-    transform: translate(0, 0);
+/* ------------------------------------------------------------------ tokens */
+
+:root {
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* Day: printed paper. */
+  --paper: #f0ebe1;
+  --card: #fbf8f2;
+  --inset: #e5ddcd;
+  --ink: #1b1d19;
+  --ink-2: #54564d;
+  --rule: #c9bfac;
+  --green: #2d4a33;
+  --on-green: #fbf8f2;
+  --stamp: #a3302a;
+  --sign: #e3b23c;
+  --on-sign: #1b1d19;
+  --shadow: rgba(27, 29, 25, 0.16);
+  --terminal: #1b1d19;
+  --terminal-ink: #e4dfcf;
+  color-scheme: light;
+}
+
+/* Night: the duty office after dark. Same roles, lit from the screen.
+   The inline script in index.html sets data-theme before paint; the media query
+   covers a browser with scripts off. Keep the two blocks identical. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121410;
+    --card: #1a1d17;
+    --inset: #23271f;
+    --ink: #ebe5d7;
+    --ink-2: #aaa696;
+    --rule: #3a3f33;
+    --green: #a3c596;
+    --on-green: #121410;
+    --stamp: #ee7a6b;
+    --sign: #e3b23c;
+    --on-sign: #121410;
+    --shadow: rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
   }
-  100% {
-    transform: translate(50px, 50px);
-  }
+}
+:root[data-theme="dark"] {
+  --paper: #121410;
+  --card: #1a1d17;
+  --inset: #23271f;
+  --ink: #ebe5d7;
+  --ink-2: #aaa696;
+  --rule: #3a3f33;
+  --green: #a3c596;
+  --on-green: #121410;
+  --stamp: #ee7a6b;
+  --sign: #e3b23c;
+  --on-sign: #121410;
+  --shadow: rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) translateX(0);
-    opacity: 0.2;
-  }
-  50% {
-    transform: translateY(-30px) translateX(15px);
-    opacity: 1;
-  }
-}
-
-@keyframes scan {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
-}
-
-/* Rendered markdown (docs, roadmap and vision excerpts) */
-.doc-content h1 {
-  @apply text-3xl font-bold mt-6 mb-4 text-foreground;
-}
-
-.doc-content h2 {
-  @apply text-2xl font-bold mt-5 mb-3 text-foreground;
-}
-
-.doc-content h3 {
-  @apply text-xl font-bold mt-4 mb-2 text-foreground;
-}
-
-.doc-content p {
-  @apply my-3 text-foreground;
-}
-
-.doc-content ul,
-.doc-content ol {
-  @apply pl-6 my-3 text-foreground;
-}
-
-.doc-content ul {
-  @apply list-disc;
-}
-
-.doc-content ol {
-  @apply list-decimal;
-}
-
-.doc-content li {
-  @apply my-1;
-}
-
-.doc-content blockquote {
-  @apply border-l-4 border-primary pl-4 italic my-4 text-muted-foreground;
-}
-
-.doc-content code {
-  @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground;
-}
-
-.doc-content pre {
-  @apply bg-muted p-4 rounded-lg overflow-x-auto my-4;
-}
-
-.doc-content pre code {
-  @apply bg-transparent p-0 text-foreground;
-}
-
-.doc-content img {
-  @apply max-w-full h-auto rounded-lg shadow-lg my-4;
-}
-
-.doc-content a {
-  @apply text-primary hover:underline;
-}
-
-.doc-content strong {
-  @apply font-semibold text-foreground;
-}
-
-
-.doc-content > :first-child {
-  @apply mt-0;
-}
-
-.doc-content h4 {
-  @apply text-lg font-bold mt-4 mb-2 text-foreground;
-}
-
-.doc-content h1,
-.doc-content h2,
-.doc-content h3,
-.doc-content h4 {
-  scroll-margin-top: 5rem;
-}
-
-.doc-content hr {
-  @apply my-8 border-border;
-}
-
-.doc-content table {
-  @apply w-full text-sm border-collapse;
-}
-
-.doc-content th {
-  @apply bg-muted/40 font-semibold text-left p-2 border border-border align-top;
-}
-
-.doc-content td {
-  @apply p-2 border border-border align-top;
-}
-
-.doc-content li > p {
-  @apply my-1;
-}
-
-.doc-content input[type="checkbox"] {
-  @apply mr-2 align-middle;
-}
-
-.doc-content.compact p {
-  @apply my-2 text-muted-foreground;
-}
-
-.doc-content.compact strong {
-  @apply text-foreground;
-}
-
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
-All colors MUST be HSL.
-*/
+/* ------------------------------------------------------------------ base */
 
 @layer base {
-  :root {
-    --background: 209 40% 96%;
-    --foreground: 222 47% 11%;
-
-    --card: 210 40% 98%;
-    --card-foreground: 222 47% 11%;
-
-    --popover: 214 31% 91%;
-    --popover-foreground: 222 47% 11%;
-
-    --primary: 200 98% 39%;
-    --primary-foreground: 204 100% 97%;
-
-    --secondary: 215 24% 26%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 215 20% 65%;
-    --muted-foreground: 222 47% 11%;
-
-    --accent: 210 40% 98%;
-    --accent-foreground: 215 19% 34%;
-
-    --destructive: 0 72% 50%;
-    --destructive-foreground: 0 85% 97%;
-
-    --border: 212 26% 83%;
-    --input: 212 26% 83%;
-    --ring: 200 98% 39%;
-
-    --radius: 0.5rem;
-
-    --tactical-green: 160 84% 39%;
-    --tactical-green-glow: 160 84% 45%;
-
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    --chart-1: 198 93% 59%;
-
-    --chart-2: 213 93% 67%;
-
-    --chart-3: 215 20% 65%;
-
-    --chart-4: 215 16% 46%;
-
-    --chart-5: 215 19% 34%;
-
-    --sidebar: 210 40% 98%;
-
-    --sidebar-foreground: 222 47% 11%;
-
-    --sidebar-primary: 200 98% 39%;
-
-    --sidebar-primary-foreground: 204 100% 97%;
-
-    --sidebar-accent: 215 24% 26%;
-
-    --sidebar-accent-foreground: 210 40% 98%;
-
-    --sidebar-border: 212 26% 83%;
-
-    --sidebar-ring: 200 98% 39%;
-
-    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-
-    --font-serif: 'Lora', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-
-    --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-
-    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-
-    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-
-    --tracking-normal: 0em;
-
-    --spacing: 0.25rem;
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
   }
-  .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 217 32% 17%;
-    --card-foreground: 210 40% 98%;
-    --popover: 215 24% 26%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 198 93% 59%;
-    --primary-foreground: 204 80% 15%;
-    --secondary: 212 26% 83%;
-    --secondary-foreground: 228 84% 4%;
-    --muted: 215 16% 46%;
-    --muted-foreground: 210 40% 98%;
-    --accent: 228 84% 4%;
-    --accent-foreground: 215 20% 65%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 85% 97%;
-    --border: 215 19% 34%;
-    --input: 215 19% 34%;
-    --ring: 198 93% 59%;
-    --chart-1: 199 95% 73%;
-    --chart-2: 211 96% 78%;
-    --chart-3: 215 20% 65%;
-    --chart-4: 215 16% 46%;
-    --chart-5: 215 19% 34%;
-    --sidebar: 217 32% 17%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 198 93% 59%;
-    --sidebar-primary-foreground: 204 80% 15%;
-    --sidebar-accent: 215 20% 65%;
-    --sidebar-accent-foreground: 228 84% 4%;
-    --sidebar-border: 215 19% 34%;
-    --sidebar-ring: 198 93% 59%;
-    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--sign);
+    color: var(--on-sign);
+  }
+  :focus-visible {
+    outline: 3px solid var(--sign);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 5px var(--ink);
+    border-radius: 1px;
+  }
+  a {
+    color: inherit;
+  }
+  code,
+  kbd,
+  pre {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+  }
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      animation: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ type */
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 74rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 768px) {
+    .wrap {
+      padding-inline: 1.5rem;
+    }
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', 'Inter', sans-serif;
+  .display-1,
+  .display-2,
+  .display-3 {
+    font-family: var(--font-display);
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.005em;
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+  .display-1 {
+    font-size: clamp(2.75rem, 8.5vw, 5.75rem);
+  }
+  .display-2 {
+    font-size: clamp(2rem, 5vw, 3.25rem);
+  }
+  .display-3 {
+    font-size: clamp(1.5rem, 3vw, 1.875rem);
+    line-height: 1.05;
+  }
+  .heading {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.1875rem;
+    line-height: 1.3;
+  }
+  .lede {
+    font-size: clamp(1.125rem, 2vw, 1.3125rem);
+    line-height: 1.5;
+    color: var(--ink);
+    max-width: 40rem;
+    text-wrap: pretty;
+  }
+  .muted {
+    color: var(--ink-2);
+  }
+
+  /* A form label: what a field on a 1989 form would be called. */
+  .kicker {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  }
+  .link:hover {
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 2px;
+  }
+  .link-green {
+    color: var(--green);
+  }
+
+  /* ------------------------------------------------------------------ surfaces */
+
+  /* A sheet of paper on the board: flat, ruled edge, hard offset shadow like a print. */
+  .sheet {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    box-shadow: 4px 4px 0 var(--shadow);
+  }
+  .rule-top {
+    border-top: 2px solid var(--ink);
+  }
+  .rule-double {
+    border-top: 3px double var(--ink);
+  }
+  .hr {
+    border: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* Rubber stamp: for status only (WORK IN PROGRESS, DONE, SUPERSEDED). */
+  .stamp {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1;
+    padding: 0.35rem 0.5rem 0.3rem;
+    color: var(--stamp);
+    border: 2px solid currentColor;
+    outline: 1px solid currentColor;
+    outline-offset: 2px;
+    white-space: nowrap;
+  }
+  .stamp-tilt {
+    transform: rotate(-3deg);
+  }
+  .stamp-green {
+    color: var(--green);
+  }
+  .stamp-ink {
+    color: var(--ink-2);
+  }
+
+  /* Road-sign plate: yellow with an ink border. Never yellow text on paper. */
+  .plate {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    background: var(--sign);
+    color: var(--on-sign);
+    border: 2px solid var(--on-sign);
+    box-shadow: 0 0 0 2px var(--sign);
+    border-radius: 3px;
+    padding: 0.05rem 0.45rem;
+    line-height: 1.2;
+  }
+
+  /* ------------------------------------------------------------------ buttons */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.55rem 1.1rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 2px solid var(--ink);
+    transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+  }
+  .btn-primary {
+    background: var(--green);
+    color: var(--on-green);
+    border-color: var(--green);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .btn-primary:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .btn-primary:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn-ghost:hover {
+    background: var(--inset);
+  }
+
+  /* ------------------------------------------------------------------ ledger */
+
+  .ledger {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .ledger th {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .ledger td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  /* ------------------------------------------------------------------ figures */
+
+  .photo {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    padding: 0.5rem 0.5rem 0;
+    box-shadow: 4px 4px 0 var(--shadow);
+  }
+  .photo img,
+  .photo video {
+    display: block;
+    width: 100%;
+    background: var(--inset);
+  }
+  .photo figcaption {
+    padding: 0.6rem 0.25rem 0.7rem;
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  /* A terminal screen: dark in both themes, like the ATM and the duty-desk screens. */
+  .terminal {
+    background: var(--terminal);
+    color: var(--terminal-ink);
+    border: 1px solid var(--rule);
+    box-shadow: 4px 4px 0 var(--shadow);
+  }
+
+  .skip {
+    position: absolute;
+    left: 0.5rem;
+    top: -4rem;
+    z-index: 100;
+    background: var(--sign);
+    color: var(--on-sign);
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+  .skip:focus {
+    top: 0.5rem;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
+/* ------------------------------------------------------------------ rendered markdown */
 
-  body {
-    @apply bg-background text-foreground;
-  }
+.prose-lf {
+  max-width: 46rem;
+  overflow-wrap: break-word;
+}
+.prose-lf > * + * {
+  margin-top: 1rem;
+}
+.prose-lf h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1.875rem;
+  line-height: 1.05;
+  margin-top: 2.75rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--ink);
+}
+.prose-lf h3 {
+  font-weight: 600;
+  font-size: 1.1875rem;
+  margin-top: 2rem;
+}
+.prose-lf h4 {
+  font-weight: 600;
+  margin-top: 1.5rem;
+}
+.prose-lf a {
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+.prose-lf a:hover {
+  text-decoration-thickness: 2px;
+}
+.prose-lf ul {
+  list-style: square;
+  padding-left: 1.25rem;
+}
+.prose-lf ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.prose-lf li + li {
+  margin-top: 0.35rem;
+}
+.prose-lf li::marker {
+  color: var(--ink-2);
+}
+.prose-lf strong {
+  font-weight: 600;
+}
+.prose-lf blockquote {
+  border-left: 3px solid var(--sign);
+  padding-left: 1rem;
+  color: var(--ink-2);
+}
+.prose-lf :not(pre) > code {
+  background: var(--inset);
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+  font-size: 0.85em;
+}
+.prose-lf pre {
+  background: var(--terminal);
+  color: var(--terminal-ink);
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.prose-lf hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin-block: 2rem;
+}
+.prose-lf img {
+  border: 1px solid var(--rule);
+}
+.prose-lf .table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  background: var(--card);
+}
+.prose-lf table {
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  min-width: 100%;
+}
+.prose-lf th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  border-bottom: 2px solid var(--ink);
+  padding: 0.5rem 0.75rem;
+  white-space: nowrap;
+}
+.prose-lf td {
+  border-bottom: 1px solid var(--rule);
+  padding: 0.55rem 0.75rem;
+  vertical-align: top;
+  min-width: 8rem;
+}
+.prose-lf tr:last-child td {
+  border-bottom: 0;
+}
+.prose-lf input[type="checkbox"] {
+  margin-right: 0.4rem;
 }
