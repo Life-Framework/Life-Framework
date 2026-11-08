@@ -26,6 +26,8 @@ class LF_StaticReset
 		EL_QuantityComponent.ResetStatics();
 		LF_StorageSnapshot.ResetStatics();
 		LF_Progression.ResetStatics();
+		LF_Introductions.ResetStatics();
+		LF_KnownNames.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		EL_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

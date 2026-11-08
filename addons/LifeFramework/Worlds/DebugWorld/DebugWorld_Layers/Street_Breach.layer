@@ -22,8 +22,8 @@ GenericEntity Roadmap_Breach_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/Buildi
    m_fFuseSeconds 0
   }
  }
- coords 186 0 120
+ coords 297.4 0 241.5
 }
 GenericEntity Roadmap_Breach_Charge : "{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et" {
- coords 186 0 122
+ coords 308.6 0 276.6
 }

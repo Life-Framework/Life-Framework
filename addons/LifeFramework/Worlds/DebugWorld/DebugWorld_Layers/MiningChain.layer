@@ -1,6 +1,6 @@
 $grp GenericEntity {
  MinerStand {
-  coords 129.259 0 143.495
+  coords 176.259 0 167.495
   {
    $grp GenericEntity {
     MiningDisplayCrate {
@@ -78,7 +78,7 @@ $grp GenericEntity {
   }
  }
  IronOreRock {
-  coords 129 0 145
+  coords 176 0 169
   {
    GenericEntity IronOre_Debug : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
     components {
@@ -95,7 +95,7 @@ $grp GenericEntity {
   }
  }
  GoldOreRock {
-  coords 130.5 0 145.5
+  coords 177.5 0 169.5
   {
    GenericEntity GoldOre_Debug : "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et" {
     components {
@@ -112,7 +112,7 @@ $grp GenericEntity {
   }
  }
  CopperOreRock {
-  coords 131 0 146
+  coords 178 0 170
   {
    GenericEntity CopperOre_Debug : "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et" {
     components {
@@ -130,10 +130,10 @@ $grp GenericEntity {
  }
 }
 GenericEntity Pickaxe_Debug : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
- coords 135.079 0 145.373
+ coords 182.079 0 169.373
 }
 EL_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et" {
- coords 128.169 -0.459 151.274
+ coords 175.169 -0.459 175.274
  m_vSize 10 1 10
  m_iAmount 5
  m_fRespawnTime 1
@@ -153,13 +153,9 @@ EL_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/Min
  }
 }
 GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
- coords 122.777 0 147.497
+ coords 169.777 0 171.497
 }
 GenericEntity EL_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
- coords 124 0 145.5
+ coords 171 0 169.5
  angles 0 90 0
-}
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 128 0 151
-  m_vSize 10 1 10
 }

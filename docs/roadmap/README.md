@@ -9,6 +9,8 @@ This folder is the plan for the playable mod. The site's roadmap page (`website/
 
 **Current milestone: [M1 Playtest Town](m1-playtest-town.md)** (journey status, in-world redesign, signs, arrival chain, scopes and waves; issues labelled `m1`).
 
+**Next: [M2 Living Town](m2-outline.md)** (outline only: moderation, medic, comms, investigation; epics labelled `m2` and `epic`). Planned in full after the M1 playtests.
+
 ## Rules for every scope
 
 - **1989 Everon.** Jobs, places, and copy fit the period. A taxi rank, a fuel delivery, a parcel run. No phone apps.

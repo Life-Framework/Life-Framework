@@ -101,6 +101,22 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		EL_ApplyHarnessPose(x, y, z, yaw, pitch);
+
+		// A remote client owns its character's movement and overwrites the server
+		// pose on its next update (the same reason stand moves on the owner).
+		if (EL_Utils.GetLocalCharacter() != this)
+			Rpc(RpcDo_EL_HarnessPose, x, y, z, yaw);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_EL_HarnessPose(float x, float y, float z, float yaw)
+	{
+		vector transform[4];
+		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), transform);
+		transform[3] = Vector(x, y, z);
+		Teleport(transform);
+		EL_Debug.Log("AgentHarness", string.Format("owner posed %1 %2 %3 facing %4", x, y, z, yaw));
 	}
 
 	//------------------------------------------------------------------------------------------------

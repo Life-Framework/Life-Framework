@@ -21,7 +21,8 @@ the framework; our 1989 Everon server proves it. Core systems are era-agnostic;
 hard-coded in systems; they come from config or content.
 
 **2026-11-07 — Pure open source (MIT).** We grow through adoption and
-reputation, never monetization.
+reputation, never monetization. Amended 2026-11-08: the Workshop build is APL, and the
+flagship may take cosmetic donations (entries below).
 
 **2026-11-07 — AI-first contribution.** Conventions assume the contributor is an
 agent; humans can read and reason about everything. Agents improve the tooling
@@ -49,6 +50,56 @@ dependency is its own entry in this file. Why: polish we cannot build alone
 What it means for code: core systems check for the dependency and degrade
 instead of failing, and the addon's dependency list changes only with a
 decision entry.
+
+**2026-11-08 — The Workshop build is APL; the GitHub repo stays MIT.** The
+build we publish on the Workshop is licensed under the Arma Public License
+(APL). The source on GitHub stays MIT. Why: section 3 of Bohemia's Workshop
+Terms of Use requires uploaded content to carry an APL-family licence (or a
+custom non-commercial one), and MIT is not on that list. What it means for
+code: nothing in the source changes. The README's License section says which
+licence covers which copy, the Workshop description names APL, and the M1
+playtest release (M1-24, #109) publishes under APL. A server owner who wants MIT
+terms builds from GitHub.
+
+**2026-11-08 — The framework is always free; the flagship may take cosmetic
+donations.** The framework is never monetised. The 1989 Everon flagship may take
+donations for cosmetics only, within Bohemia's server monetisation policy. It
+never sells money, gear, vehicles, property, queue priority, or a faster
+whitelist. Amends "Pure open source (MIT)" (2026-11-07) for the flagship server
+only. Why: paid advantages broke trust on Altis Life and GTA RP servers, and
+Bohemia forbids them; cosmetics can pay for hosting at M4 without touching
+play. What it means for code: no donor flag ever reaches a gameplay system.
+Cosmetic unlocks, if built, are flagship content, and nothing before M4 needs
+them.
+
+**2026-11-08 — Overthrow code may be used and relicensed under MIT, with
+credit.** The owner of Overthrow (`ArmaOverthrow/Overthrow.Arma4`) gave us
+explicit permission to use its code and relicense it under our MIT licence
+(APL on the Workshop build, like the rest of ours). The maintainer holds the
+record of that permission. This overrides the repo's APL-SA licence for Life
+Framework only; anyone else still takes Overthrow under APL-SA. Why: Overthrow
+is a mature Reforger mod with persistence, economy, AI, and UI code that solves
+problems we would otherwise solve again. What it means for code: a copied or
+derived file keeps the header
+`// Derived from Overthrow (https://github.com/ArmaOverthrow/Overthrow.Arma4), used with the author's permission, relicensed MIT.`
+and its path is listed under Overthrow in `THIRD_PARTY.md`. The four files
+already ported from Overthrow (money format and delta, resource defs, shop
+rules) carry that header. New classes are `LF_` (AGENTS.md rule 5). `docs/ecosystem.md` lists the systems worth
+pulling.
+
+**2026-11-08 — A permissive licence on GitHub governs the code in that repo.**
+When a project's copyright holder publishes its code on GitHub under MIT, BSD,
+Apache-2.0, CC0, or CC-BY, that licence governs our use of the code in that
+repo, even if the same mod's Workshop page carries an APL-family licence. An
+author may license the same work differently in different places, and Bohemia
+requires an APL-family licence on every Workshop upload anyway. Two conditions:
+the repo is published by the copyright holder (an author or official account,
+not a third-party re-upload), and the grant covers only what is in the repo; an
+asset that exists only in the Workshop build stays under the Workshop licence.
+Why: the Workshop licence is often a requirement of the upload, not the
+author's choice for the source. What it means for code: read the `LICENSE`
+file on the commit we copy from (a badge or README line does not count), then
+follow the copy rules in `docs/ecosystem.md` section 5.
 
 ## Gameplay
 
@@ -275,6 +326,72 @@ round often. What it means for code: prefer vanilla `TimeAndWeatherManager`
 settings over a script loop. Framework: day length, night speed, and the
 real-time mode are config. After M1 (#129).
 
+**2026-11-08 — One marked lawless area; the town stays civil.** The flagship
+has one marked remote place, such as the quarry or the islands, where the
+server rules about starting a fight do not apply. Gangs and contraband are
+drawn there; the town keeps its rules. Why: Altis servers that kept a war zone
+moved PvP away from town and gave gangs a home. One clearly marked area keeps
+that without turning Everon into Wasteland. What it means for code: zones are a
+framework feature. A zone has a shape, a rule set (lawless, safe like the spawn
+plaza, or normal), and in-world markings (signs, a gate, a fence line). Systems
+ask the zone service, never a hard-coded position. The incident log records the
+zone with every event, so a moderator sees at once whether a fight broke a
+rule. Framework: zones and their rule sets are config. Flagship: one lawless
+area, the spawn plaza safe, the rest normal.
+
+**2026-11-08 — Hostile intent is a light mechanic.** A "hold up" action, or a
+raised weapon aimed at someone, marks intent toward that player. The server
+records it in the incident log. There is no forced dialogue, no countdown, and
+no menu. Why: every lasting life community wrote initiation rules ("talk
+first"). Recording the hold-up makes those rules cheap to enforce without
+adding friction to play. What it means for code: the hold-up is an entry in the
+player interaction menu (M1-12, #98) with an animation and a sound. The server
+detects a raised and aimed weapon and logs it with throttling. Intent marks are
+facts for moderators; on their own they change no damage rules. Framework: the
+aim window, the range, and whether aim alone counts are config.
+
+**2026-11-08 — Top-tier crime needs tools from a fence.** The armory, the cash
+van, and the bank vault need tools (a drill, charges, a keycard) sold only by a
+black-market fence. The fence deals with you after you have done smaller jobs.
+There is no reputation bar and no menu: the fence turns you away until he has
+seen your work. Why: the top tier stays rare and earned, and each tier feeds the
+next, as the Altis Federal Reserve and GTA RP heist tools did. "Major crimes are
+always allowed" still holds once you have the tools. What it means for code: a
+hidden per-account crime record (count and kind of completed jobs) that the
+fence NPC checks on the server. The tools are real items with their own
+animation and sound in use. Framework: the fence's thresholds, tool list, and
+prices are config.
+
+**2026-11-08 — Death costs a hospital bill and the New Life Rule.** You wake in
+hospital with the bill (decision "You wake up in hospital"). You also forget the
+fight that killed you and must not return to that scene for about 15 minutes.
+This is a server rule with a soft in-world cue: a hospital wristband or a note
+on waking, and a quiet reminder if you walk back toward the scene. Why: death
+needs a cost beyond money, or a fight restarts the moment the loser respawns.
+Altis's New Life Rule is the tested answer. What it means for code: the server
+stores the death position and time per player, and the incident log records a
+return inside the radius and window. Nothing blocks the player physically.
+Framework: the radius, the window, and the cue are config. Permanent character
+death is not planned.
+
+**2026-11-08 — Officers apply fixed penalties from config.** For M1 and M2 a
+fine or sentence for a crime is the amount the server's penalty table sets. The
+officer writes the ticket or the jail slip; the amount is not theirs to choose.
+A player-staffed bail and appeal desk is a later option, not planned. Why:
+fixed penalties are fair between officers and easy to explain on a sign; a
+court needs players we do not have yet. What it means for code: the paper
+ticket (M1-19, #104) and jailing (M1-21, #106) read the amount from a config
+table keyed by crime. Framework: the table is config.
+
+**2026-11-08 — Gamepad-friendly, PC-first.** Every interaction works on a
+gamepad: amounts come from presets, lists stay short, and typing is rare.
+Crossplay is on. Design and testing happen on PC first. Why: Workshop mods
+reach Xbox and PS5 players, and a menu that needs a keyboard shuts them out.
+What it means for code: every action binds keyboard plus `gamepad0:`
+(AGENTS.md input rules). A UI that takes a number offers presets first and free
+entry second. A feature PR names how a gamepad player completes it. Console
+playtests come after the PC loop is proven.
+
 ## Delivery
 
 **2026-11-07 — Milestone 1 is a signposted DebugWorld playtest town.** Every
@@ -322,3 +439,22 @@ swap them.
 **2026-11-07 — 3D proof and filming are part of the dev loop.** The visual
 harness and a filming harness run on any machine with the game; clips are PR
 evidence and showcase material.
+
+**2026-11-08 — Scheduled events are parked.** Organised events (a rally, a gang
+war night, a strike at the factory) are interesting for a later roadmap phase
+and are not planned for M2. Why: the sandbox has to prove its emergent loops
+before a schedule sits on top of them. What it means for code: nothing now.
+Game Master is the likely base when events come back.
+
+**2026-11-08 — Milestone 2 leads with four themes.** M2 builds moderation (the
+incident log and Game Master tools), medic (downed state, EMS, ambulance),
+comms (payphones, pagers, a dispatch board), and investigation (witnesses and
+evidence, which make the vague-description wanted system real). The maintainer
+picked all four from the benchmark's top ten
+(`docs/research/life-rp-benchmark.md`). The lawless zone, the hold-up, the
+fence, and the New Life Rule ship as scopes under these themes. Why: moderation
+decides whether a server lives, and the other three give police, medics, and
+criminals something to do when the other side is absent. What it means for
+code: `docs/roadmap/m2-outline.md` holds the outline; M2 is planned in full
+after the M1 playtests. Placing the town in Everon from reusable site prefabs
+stays in M2 as its closing step (`docs/direction.md`).

@@ -40,7 +40,7 @@ $grp GenericEntity {
    }
   }
   Flags 0x403 0
-  coords 142 0 130
+  coords 179 0 244.3
  }
  Shop_BlackMarket_Debug {
   components {
@@ -91,10 +91,7 @@ $grp GenericEntity {
    }
   }
   Flags 0x403 0
-  coords 146 0 130
+  coords 307.2 0 279
+  angleY 270
  }
-}
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 144 0 130
- m_vSize 2.5 1 1.5
 }

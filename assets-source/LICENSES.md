@@ -59,6 +59,15 @@ Attribution Required: [Yes/No and how]
 
 ## Adding New Assets
 
+Which sources and licenses are allowed: `docs/ecosystem.md` (section 3 and the
+import policy). Record each imported asset as one line under its section:
+
+```
+- <asset> | <source URL> | <author> | <license> | <our resource path>
+```
+
+CC-BY assets are also credited in the README.
+
 When adding a new third-party asset:
 
 1. Verify the license is compatible with MIT
