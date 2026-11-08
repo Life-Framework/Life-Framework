@@ -27,7 +27,7 @@
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { spawn, spawnSync } from "node:child_process";
-import { closeSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
@@ -36,8 +36,17 @@ import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
 
+function mcpDirFor(root) {
+  const own = join(root, "tools", "mcp");
+  if (existsSync(join(own, "enfusion-mcp-bk")) || existsSync(join(own, "enfusion-workbench-mcp"))) return own;
+  const shared = join(wt.mainRootOf(root), "tools", "mcp");
+  return existsSync(shared) ? shared : own;
+}
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const MCP_DIR = join(ROOT, "tools", "mcp");
+// tools/mcp/ is git-ignored, so a new worktree has no clones. It shares the
+// main checkout's clones until it installs its own.
+const MCP_DIR = mcpDirFor(ROOT);
 const CONFIG_PATH = join(ROOT, "opencode.json");
 const TOOL_DIRS = { validate: "validation" };
 
@@ -241,6 +250,54 @@ function handlerBundlesInSync() {
   return true;
 }
 
+// ---------------------------------------------------------------- native addons
+
+// A package with a binding.gyp (better-sqlite3 in enfusion-workbench) compiles
+// a .node binary against one Node ABI. Upgrading Node leaves the old binary in
+// place, and the server dies at startup with ERR_DLOPEN_FAILED "was compiled
+// against a different Node.js version". Loading each binary in a child process
+// with this Node finds that before a tool call does.
+function nativeAddons(dir) {
+  const nm = join(dir, "node_modules");
+  if (!existsSync(nm)) return [];
+  const names = [];
+  for (const top of readdirSync(nm)) {
+    if (top.startsWith(".")) continue;
+    const scoped = top.startsWith("@") ? readdirSync(join(nm, top)).map((n) => `${top}/${n}`) : [top];
+    for (const name of scoped) if (existsSync(join(nm, name, "binding.gyp"))) names.push(name);
+  }
+  return names.map((name) => {
+    const release = join(nm, name, "build", "Release");
+    const binaries = existsSync(release) ? readdirSync(release).filter((f) => f.endsWith(".node")) : [];
+    if (binaries.length === 0) return { name, ok: false, reason: "not built (no build/Release/*.node)" };
+    for (const bin of binaries) {
+      const res = spawnSync(process.execPath, ["-e", `require(${JSON.stringify(join(release, bin))})`], { encoding: "utf8" });
+      if (res.status !== 0) {
+        const text = `${res.stderr || ""}${res.stdout || ""}`;
+        const abi = text.match(/using\s+NODE_MODULE_VERSION (\d+)[\s\S]*?requires\s+NODE_MODULE_VERSION (\d+)/);
+        const reason = abi
+          ? `built for Node ABI ${abi[1]}, this Node (${process.version}) needs ABI ${abi[2]}`
+          : (text.split(/\r?\n/).find((l) => /Error/.test(l)) || `load failed (exit ${res.status})`).trim();
+        return { name, ok: false, reason };
+      }
+    }
+    return { name, ok: true, reason: "" };
+  });
+}
+
+/** Rebuild stale native addons with this Node. Returns the names still broken. */
+function rebuildNativeAddons(n, dir) {
+  const stale = nativeAddons(dir).filter((a) => !a.ok);
+  if (stale.length === 0) return [];
+  const names = stale.map((a) => a.name);
+  console.log(`${n}: rebuilding native addons for ${process.version}: ${names.join(", ")}`);
+  const res = sh(NPM, ["rebuild", ...names], { cwd: dir });
+  if (res.status !== 0) console.log(`FAIL  npm rebuild ${n}: ${res.stderr || res.stdout}`);
+  const still = nativeAddons(dir).filter((a) => !a.ok);
+  for (const a of still) console.log(`FAIL  ${n}: ${a.name} ${a.reason}`);
+  return still.map((a) => a.name);
+}
+
 // ---------------------------------------------------------------- commands
 
 function cmdStatus() {
@@ -251,6 +308,7 @@ function cmdStatus() {
   console.log(`  npm  ${npmv}`);
   console.log("");
   console.log("mcp servers (tools/mcp/):");
+  let nativeBroken = false;
   for (const name of Object.keys(SERVERS)) {
     const s = SERVERS[name];
     const installed = existsSync(entryOf(s));
@@ -260,6 +318,13 @@ function cmdStatus() {
       `  ${name.padEnd(20)} installed=${installed} enabled=${String(enabled).padEnd(5)} commit=${commit}`,
     );
     console.log(`      ${s.label}`);
+    if (installed) {
+      for (const a of nativeAddons(join(MCP_DIR, s.dir)).filter((x) => !x.ok)) {
+        nativeBroken = true;
+        console.log(`      FAIL  native addon ${a.name}: ${a.reason}`);
+        console.log(`            the server cannot start. FIX: tools\\cli mcp install ${name}  (runs npm rebuild)`);
+      }
+    }
   }
   if (!handlerBundlesInSync()) {
     console.log("");
@@ -299,7 +364,7 @@ function cmdStatus() {
     console.log("       'Verify integrity of game files'. Verifying only 'Arma Reforger Tools' does");
     console.log("       NOT restore the game data project. Then relaunch the game once.");
   }
-  return healthy ? 0 : 1;
+  return healthy && !nativeBroken ? 0 : 1;
 }
 
 // The identity files the engine uses to discover the vanilla Game addon
@@ -345,6 +410,10 @@ function cmdInstall(name) {
     const b = sh(NPM, ["run", "build"], { cwd: dir });
     if (b.status !== 0) {
       console.log(`FAIL  build ${n}: ${b.stderr || b.stdout}`);
+      failed++;
+      continue;
+    }
+    if (rebuildNativeAddons(n, dir).length) {
       failed++;
       continue;
     }
@@ -402,6 +471,10 @@ function cmdUpdate(name) {
       failed++;
       continue;
     }
+    if (rebuildNativeAddons(n, dir).length) {
+      failed++;
+      continue;
+    }
     console.log(`OK    ${n}: ${before} -> ${after}`);
   }
   const synced = syncHandlerBundles();
@@ -436,7 +509,8 @@ function verifyOne(name) {
       stdio: ["pipe", "pipe", "pipe"],
     });
     child.stdout?.on("data", () => {});
-    child.stderr?.on("data", () => {});
+    let stderr = "";
+    child.stderr?.on("data", (d) => { stderr += d; });
     let settled = false;
     const done = (ok, msg) => {
       if (settled) return;
@@ -446,7 +520,10 @@ function verifyOne(name) {
       resolvePromise(ok ? 0 : 1);
     };
     child.on("error", (e) => done(false, `spawn error: ${e.message}`));
-    child.on("exit", (code) => done(code === 0, `exited unexpectedly (code ${code})`));
+    child.on("exit", (code) => {
+      const why = stderr.split(/\r?\n/).find((l) => /Error|NODE_MODULE_VERSION/.test(l));
+      done(code === 0, `exited unexpectedly (code ${code})${why ? `: ${why.trim()}` : ""}`);
+    });
     setTimeout(() => done(true, "server started and stayed alive (killed after 4s)"), 4000);
   });
 }

@@ -34,7 +34,7 @@
 //     server's environment for this one call (e.g. point ENFUSION_PROJECT_PATH
 //     at a worktree addon to build/validate it without touching opencode.json).
 
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -70,6 +70,23 @@ function cursorServer(name) {
   if (!server || server.command !== "node" || !Array.isArray(server.args) || !server.args[0]) return null;
   if (!existsSync(server.args[0])) return null;
   return server;
+}
+
+// tools/mcp/ is git-ignored, so a new worktree has no clones of its own. Use
+// the main checkout's clone (git-common-dir is <main>/.git).
+function mainCheckoutEntry(cwdRelative, entryRelative) {
+  const res = spawnSync("git", ["-C", ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir"], { encoding: "utf8" });
+  const common = (res.stdout || "").trim();
+  if (res.status !== 0 || !common) return null;
+  const cwd = resolve(dirname(common), cwdRelative);
+  const entry = resolve(cwd, entryRelative);
+  return existsSync(entry) ? { cwd, entry } : null;
+}
+
+// The harness and worktree commands set ENFUSION_* for the checkout they run
+// in. Those win over the machine config, which names the main checkout.
+function enfusionEnvOf(env) {
+  return Object.fromEntries(Object.entries(env).filter(([k]) => k.startsWith("ENFUSION_")));
 }
 
 function pickServer(wanted) {
@@ -173,16 +190,21 @@ async function main() {
   let serverEnv = serverCfg.environment ?? {};
   if (!existsSync(entry)) {
     const bridged = cursorServer(serverName);
-    if (!bridged) {
+    const shared = bridged ? null : mainCheckoutEntry(serverCfg.cwd ?? ".", cmd[1]);
+    if (bridged) {
+      entry = bridged.args[0];
+      cwd = dirname(entry);
+      serverEnv = { ...(bridged.env ?? {}), ...serverEnv };
+    } else if (shared) {
+      entry = shared.entry;
+      cwd = shared.cwd;
+    } else {
       console.error(`server ${serverName}: entry not found: ${entry}`);
       console.error(`  run: tools\\cli mcp install ${serverName}`);
       return 1;
     }
-    entry = bridged.args[0];
-    cwd = dirname(entry);
-    serverEnv = { ...(bridged.env ?? {}), ...serverEnv };
   }
-  const env = { ...process.env, ...globalMcpEnv(serverName), ...serverEnv, ...envOverrides };
+  const env = { ...process.env, ...globalMcpEnv(serverName), ...serverEnv, ...enfusionEnvOf(process.env), ...envOverrides };
 
   let toolArgs = {};
   if (rawArgs) {
