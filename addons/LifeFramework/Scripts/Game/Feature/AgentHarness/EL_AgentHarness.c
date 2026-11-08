@@ -584,6 +584,8 @@ class EL_AgentHarness
 	protected static const int UI_TEXT_MAX = 80;
 	//! stand puts the character this far along +X from the entity, facing it.
 	static const float STAND_SIDE = 1.2;
+	//! How far an unnamed part may sit from the named prop it belongs to (CollectActionEntity).
+	static const float PART_REACH = 1.5;
 
 	protected static bool s_bLoop;
 	protected static IEntity s_pLoopMode;
@@ -1867,21 +1869,17 @@ class EL_AgentHarness
 		if (!entity)
 			return true;
 
+		// A named prop's actions can sit on an unnamed part of it (the duty desk's punch clock):
+		// an unnamed entity within PART_REACH of the named one stands in for it.
 		if (s_sWantedName != "" && entity.GetName() != s_sWantedName)
-			return true;
-
-		// A named prop's actions can sit on a child part (the duty desk's punch clock).
-		if (!FindOnEntity(entity, s_sWantedClass))
 		{
-			IEntity child = entity.GetChildren();
-			while (child && !FindOnEntity(child, s_sWantedClass))
-				child = child.GetSibling();
-
-			if (!child)
+			IEntity named = GetGame().GetWorld().FindEntityByName(s_sWantedName);
+			if (!named || !entity.GetName().IsEmpty() || vector.Distance(named.GetOrigin(), entity.GetOrigin()) > PART_REACH)
 				return true;
-
-			entity = child;
 		}
+
+		if (!FindOnEntity(entity, s_sWantedClass))
+			return true;
 
 		float dist = vector.Distance(entity.GetOrigin(), s_vOrigin);
 		if (!s_pFoundEntity || dist < s_fBestDist)

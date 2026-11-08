@@ -151,7 +151,7 @@ class LF_WantedBoard
 		if (who.IsEmpty())
 			who = WidgetManager.Translate("#LF-Wanted_Unknown");
 
-		return string.Format("%1  %2 - %3", Stars(level), who, ResolveKey(offence));
+		return string.Format("%1 - %2 (%3)", who, ResolveKey(offence), WidgetManager.Translate("#LF-Wanted_Level", level));
 	}
 
 	//------------------------------------------------------------------------------------------------

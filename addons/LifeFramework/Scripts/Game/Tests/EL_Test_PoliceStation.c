@@ -311,9 +311,7 @@ class EL_Test_PoliceStationWorld : EL_Test
 		{
 			// The action sits on the punch clock itself: the interaction trace hits the clock, so
 			// the prompt shows when the player looks at it.
-			IEntity clock = desk.GetChildren();
-			while (clock && !HasAction(clock, EL_DutyAction))
-				clock = clock.GetSibling();
+			IEntity clock = EL_ActionSite.FindNear(desk.GetOrigin(), 1.5, "EL_DutyAction");
 
 			ctx.NotNull(clock, "the desk's punch clock carries the Clock in / Clock out action");
 			if (clock)

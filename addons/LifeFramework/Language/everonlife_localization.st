@@ -4147,6 +4147,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A picked plant needs time to ripen again."
      Comment "Sign card for the farm north of the square, Rules section."
     }
+    CustomStringTableItem "{2AE926B35D391FDA}" {
+     Id "LF-Wanted_Level"
+     Target_en_us "wanted level %1 of 5"
+     Comment "Wanted poster headline: how wanted the suspect is now. %1 is 1 to 5."
+    }
   }
  }
 }
