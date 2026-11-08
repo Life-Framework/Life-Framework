@@ -69,6 +69,8 @@ export type GithubData = {
   source: "github" | "snapshot";
   fetchedAt: string;
   milestones: Milestone[];
+  // Ongoing tracks beside the milestone path (GitHub milestone "Development", id "Dev"); absent in old snapshots.
+  tracks?: Milestone[];
   goodFirst: Issue[];
   latestPulls: Pull[];
   contributors: { login: string; url: string; contributions: number }[];
@@ -224,6 +226,7 @@ export function issueLayer(issue: { labels?: string[]; layer?: Layer | null }, m
 
 // Milestones in number order (M2 before M10), whatever order GitHub returned them in.
 export const milestonesInOrder = () => [...githubData.milestones].sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)));
+export const devTrack = () => githubData.tracks?.find((t) => t.id === "Dev") ?? null;
 
 export const still = (id: string) => siteData.media.stills.find((s) => s.id === id)!;
 export const stillSrc = (s: Still) => `/media/${s.id}-${Math.max(...s.widths)}.webp`;

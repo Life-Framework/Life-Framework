@@ -487,24 +487,19 @@ async function subIssues(i) {
 async function fetchGithub() {
   // LF_SITE_OFFLINE=1 builds from the snapshot, to test the fallback.
   if (process.env.LF_SITE_OFFLINE) throw new Error("LF_SITE_OFFLINE is set");
-  const ms = (await gh(`/repos/${GITHUB_REPO}/milestones?state=all&per_page=100`))
-    .filter((m) => /^M\d+\b/.test(m.title))
-    .sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true }));
-  const milestonesOut = [];
-  for (const m of ms) {
+  const all = await gh(`/repos/${GITHUB_REPO}/milestones?state=all&per_page=100`);
+  const readMilestone = async (m, id) => {
     const raw = (await gh(`/repos/${GITHUB_REPO}/issues?milestone=${m.number}&state=all&per_page=100`)).filter((i) => !i.pull_request);
     const issues = [];
     for (const i of raw) issues.push({ ...issueOut(i), subIssues: await subIssues(i) });
-    milestonesOut.push({
-      id: /^M\d+/.exec(m.title)[0],
-      number: m.number,
-      title: m.title,
-      description: m.description || "",
-      url: m.html_url,
-      state: m.state,
-      issues,
-    });
-  }
+    return { id, number: m.number, title: m.title, description: m.description || "", url: m.html_url, state: m.state, issues };
+  };
+  const milestonesOut = [];
+  const ms = all.filter((m) => /^M\d+\b/.test(m.title)).sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true }));
+  for (const m of ms) milestonesOut.push(await readMilestone(m, /^M\d+/.exec(m.title)[0]));
+  // A track runs beside the milestone path and is never the current milestone. "Development" is one.
+  const tracks = [];
+  for (const m of all.filter((x) => /^development$/i.test(x.title.trim()))) tracks.push(await readMilestone(m, "Dev"));
   const goodFirst = (await gh(`/repos/${GITHUB_REPO}/issues?labels=${encodeURIComponent("good first issue")}&state=open&per_page=100`))
     .filter((i) => !i.pull_request)
     .map(issueOut);
@@ -516,7 +511,7 @@ async function fetchGithub() {
   const contributors = (await gh(`/repos/${GITHUB_REPO}/contributors?per_page=100`, { maxPages: 2, allowTruncate: true }))
     .filter((c) => c.type === "User" && !/\[bot\]$/.test(c.login))
     .map((c) => ({ login: c.login, url: c.html_url, contributions: c.contributions }));
-  return { fetchedAt: new Date().toISOString(), milestones: milestonesOut, goodFirst, pulls, contributors };
+  return { fetchedAt: new Date().toISOString(), milestones: milestonesOut, tracks, goodFirst, pulls, contributors };
 }
 
 let github;
@@ -590,5 +585,6 @@ fs.writeFileSync(path.join(outDir, "support.json"), JSON.stringify(buildSupport(
 console.log(
   `[content] ${docsIndex.length} docs, ${decisionCount} decisions, ${github.milestones.length} milestones, ` +
     `${github.milestones.map((m) => `${m.id} ${m.issues.length} issues, ${m.issues.reduce((n, i) => n + (i.subIssues?.length ?? 0), 0)} sub-issues`).join("; ")}, ${pulls.length} merged PRs, ` +
+    `${(github.tracks ?? []).map((t) => `${t.title} track ${t.issues.length} issues`).join(", ") || "no tracks"}, ` +
     `${github.contributors.length} contributors (${github.source})`,
 );
