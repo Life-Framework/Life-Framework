@@ -10,6 +10,11 @@ class LF_StorageItemRecord : Managed
 	int m_iStorage;
 	int m_iSlot = -1;
 
+	//! Rounds in a magazine, -1 for anything that is not one. Not part of the carried payload's
+	//! positional format: it travels in the separate itemstate payload (save version 9).
+	[NonSerialized()]
+	int m_iAmmo = -1;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_StorageItemRecord Create(string prefab, int quantity, int parent, int storage, int slot)
 	{
@@ -24,8 +29,18 @@ class LF_StorageItemRecord : Managed
 }
 
 //------------------------------------------------------------------------------------------------
+//! Per-item state of one snapshot, parallel to its item list: magazine ammo by item index (-1 =
+//! not a magazine). Its own payload so the carried record format stays positional and unchanged.
+class LF_StorageItemStateRecord : Managed
+{
+	string m_sOwnerKey;
+	string m_sSlot;
+	ref array<int> m_aAmmo = {};
+}
+
+//------------------------------------------------------------------------------------------------
 //! A named inventory tree owned by a stable key. One owner can hold several named snapshots
-//! (SLOT_CARRIED today; a police duty / civilian stash pair later) without a format change.
+//! (SLOT_CARRIED, and the duty desk's police_duty / civilian_stash pair) without a format change.
 class LF_StorageSnapshotRecord : Managed
 {
 	static const int VERSION = 1;
@@ -354,7 +369,12 @@ class LF_StorageSnapshot
 				if (quantityComponent)
 					quantity = quantityComponent.GetQuantity();
 
-				items.Insert(LF_StorageItemRecord.Create(prefab, quantity, parentIndex, storageIndex, slot));
+				LF_StorageItemRecord record = LF_StorageItemRecord.Create(prefab, quantity, parentIndex, storageIndex, slot);
+				BaseMagazineComponent magazine = BaseMagazineComponent.Cast(item.FindComponent(BaseMagazineComponent));
+				if (magazine)
+					record.m_iAmmo = magazine.GetAmmoCount();
+
+				items.Insert(record);
 				CaptureChildren(item, items.Count() - 1, items, visited);
 			}
 		}
@@ -435,6 +455,7 @@ class LF_StorageSnapshot
 			claimed[match] = true;
 			resolved[index] = occupants[match];
 			SetQuantity(occupants[match], item);
+			SetAmmo(occupants[match], item);
 		}
 
 		// What the snapshot does not list is not carried: default prefab contents included.
@@ -506,6 +527,91 @@ class LF_StorageSnapshot
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a magazine gets back the rounds it held. SetAmmoCount runs on the master only.
+	protected static void SetAmmo(IEntity entity, LF_StorageItemRecord item)
+	{
+		if (item.m_iAmmo < 0)
+			return;
+
+		BaseMagazineComponent magazine = BaseMagazineComponent.Cast(entity.FindComponent(BaseMagazineComponent));
+		if (!magazine || magazine.GetAmmoCount() == item.m_iAmmo)
+			return;
+
+		int ammo = Math.ClampInt(item.m_iAmmo, 0, magazine.GetMaxAmmoCount());
+		magazine.SetAmmoCount(ammo);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The itemstate payload: one record per stored snapshot that holds a magazine.
+	static array<ref LF_StorageItemStateRecord> ExportItemState()
+	{
+		array<ref LF_StorageItemStateRecord> states = new array<ref LF_StorageItemStateRecord>();
+		if (!s_mSnapshots)
+			return states;
+
+		foreach (string key, LF_StorageSnapshotRecord record : s_mSnapshots)
+		{
+			if (!record || !record.m_aItems)
+				continue;
+
+			LF_StorageItemStateRecord state = new LF_StorageItemStateRecord();
+			state.m_sOwnerKey = record.m_sOwnerKey;
+			state.m_sSlot = record.m_sSlot;
+			bool any;
+			foreach (LF_StorageItemRecord item : record.m_aItems)
+			{
+				int ammo = -1;
+				if (item)
+					ammo = item.m_iAmmo;
+
+				if (ammo >= 0)
+					any = true;
+
+				state.m_aAmmo.Insert(ammo);
+			}
+
+			if (any)
+				states.Insert(state);
+		}
+
+		return states;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Runs after the carried payload loaded the snapshots. A state whose snapshot is gone, or
+	//! whose item count differs, is skipped with a warning (the magazines keep prefab ammo).
+	//! eturn Number of snapshots that took their state.
+	static int ApplyItemState(array<ref LF_StorageItemStateRecord> states)
+	{
+		if (!states)
+			return 0;
+
+		int matched;
+		foreach (LF_StorageItemStateRecord state : states)
+		{
+			if (!state || !state.m_aAmmo)
+				continue;
+
+			LF_StorageSnapshotRecord record = Get(state.m_sOwnerKey, state.m_sSlot);
+			if (!record || !record.m_aItems || record.m_aItems.Count() != state.m_aAmmo.Count())
+			{
+				EL_Debug.Warn(FEATURE, string.Format("item state for %1/%2 skipped: no matching snapshot", state.m_sOwnerKey, state.m_sSlot));
+				continue;
+			}
+
+			for (int index = 0; index < record.m_aItems.Count(); index++)
+			{
+				if (record.m_aItems[index])
+					record.m_aItems[index].m_iAmmo = state.m_aAmmo[index];
+			}
+
+			matched++;
+		}
+
+		return matched;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static IEntity SpawnInto(InventoryStorageManagerComponent manager, IEntity owner, array<BaseInventoryStorageComponent> storages, LF_StorageItemRecord item)
 	{
 		Resource resource = Resource.Load(item.m_sPrefab);
@@ -525,6 +631,7 @@ class LF_StorageSnapshot
 		}
 
 		SetQuantity(entity, item);
+		SetAmmo(entity, item);
 
 		// A restored stack keeps its own slot instead of merging into a neighbour.
 		bool isStack = entity.FindComponent(EL_QuantityComponent) != null;

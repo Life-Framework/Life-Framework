@@ -47,6 +47,19 @@ export function quietSpawn(exe, args, opts = {}) {
   });
 }
 
+// Blocking quietSpawn: { status } when the tool exits, or after timeoutMs
+// (the helper is killed and its kill-on-close job ends the tool).
+export function quietSpawnSync(exe, args, opts = {}) {
+  if (showWindows()) return spawnSync(exe, args, { cwd: opts.cwd, env: opts.env, timeout: opts.timeoutMs, stdio: "ignore" });
+  return spawnSync(PWSH, helperArgs(exe, args, opts, "wait"), {
+    cwd: opts.cwd,
+    env: opts.env,
+    encoding: "utf8",
+    timeout: opts.timeoutMs,
+    windowsHide: true,
+  });
+}
+
 // Start a long-lived process on the LF-Agents desktop and return its pid.
 export function quietSpawnDetached(exe, args, opts = {}) {
   if (showWindows()) {

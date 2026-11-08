@@ -34,18 +34,7 @@ GenericEntity Roadmap_Bank_Vault : "{99D61E9EDBDF3CC8}Prefabs/Structures/Buildin
  coords 194.1 0 265
  angleY 270
 }
-GenericEntity Roadmap_Bank_Bag : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
- components {
-  MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
-  }
-  ActionsManagerComponent "{508AB5952B584B2E}" {
-   additionalActions {
-    SCR_PickUpItemAction "{7C31A9E04B18D6A5}" {
-    }
-   }
-  }
- }
+GenericEntity Roadmap_Bank_Bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
  Flags 0x403 0
  coords 195.6 0 263
  {

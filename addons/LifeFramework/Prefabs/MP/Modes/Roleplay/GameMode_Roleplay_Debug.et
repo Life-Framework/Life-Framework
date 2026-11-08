@@ -46,37 +46,24 @@ EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
      EL_FactionLoadout "{496433624FE9BF32}" {
       m_eFaction POLICE
       m_aItems {
-       EL_DefaultLoadoutItem "{20DD18E93899FDF3}" {
-        m_rPrefab "{B02281435AED8274}Prefabs/Characters/HeadGear/Hat_M70_01/Hat_M70_01.et"
+       EL_DefaultLoadoutItem "{9DCC455F94985BCB}" {
+        m_rPrefab "{DD565E2C7E00A5BB}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_blue.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
-       EL_DefaultLoadoutItem "{FA6EF6E7395A8CB0}" {
-        m_rPrefab "{E44990162EBC47B7}Prefabs/Characters/Uniforms/Jacket_M88_base.et"
-        m_ePurpose PURPOSE_LOADOUT_PROXY
-        m_aStoredItems {
-         EL_DefaultLoadoutItem "{012AB4E598265AF8}" {
-          m_rPrefab "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et"
-         }
-         EL_DefaultLoadoutItem "{2A61AA36A93A5A02}" {
-          m_rPrefab "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et"
-          m_aComponentDefaults {
-           EL_DefaultLoadoutItemQuantityComponent "{65A22E1723FC4F01}" {
-            m_iQuantity 200
-           }
-          }
-         }
-        }
-       }
-       EL_DefaultLoadoutItem "{C846FE0A482B4099}" {
-        m_rPrefab "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et"
+       EL_DefaultLoadoutItem "{473C6D347D322CB5}" {
+        m_rPrefab "{6A3F994EFFE22995}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_DarkBlue.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
-       EL_DefaultLoadoutItem "{961052121A0C8D02}" {
-        m_rPrefab "{DCF980831E880F6A}Prefabs/Characters/Uniforms/Pants_M88.et"
+       EL_DefaultLoadoutItem "{6BBCF470BA9E0F2D}" {
+        m_rPrefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
+       EL_DefaultLoadoutItem "{B1A8EFD1319B34F4}" {
+        m_rPrefab "{6065A0A410E65A45}Prefabs/Characters/Vests/Vest_SovietHarness/Variants/Vest_SovietHarness_officer_Black.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
        EL_DefaultLoadoutItem "{9805FF033764712B}" {
-        m_rPrefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+        m_rPrefab "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
       }

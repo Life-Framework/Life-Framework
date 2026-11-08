@@ -29,6 +29,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_BankApplySnapshot(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_CarriedInventoryRoundtrip(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_CarriedInventoryDeathNoDupe(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_CarryMeshes(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMKeypad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_CounterRefusalText(), EL_TestTier.LOGIC);
@@ -92,6 +93,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_JailOnlineTime(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JailSlip(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_JailVehicleArrest(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JobPacing(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JobSignUpPersist(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);
@@ -110,6 +113,11 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceAbuse(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceRankPermissions(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_PoliceDutySwap(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_PoliceDeathOnDuty(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_PoliceWantedBoard(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_PoliceStationWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_PoliceItemState(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ProgressionRoundtrip(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_ProgressionOldSave(), EL_TestTier.PERSISTENCE);
@@ -186,7 +194,6 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_SignPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Siren(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SirenMode(), EL_TestTier.LOGIC);
-		manager.Register(new EL_Test_SpawnLocation(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_StackTrade(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Survival(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalSaveData(), EL_TestTier.LOGIC);

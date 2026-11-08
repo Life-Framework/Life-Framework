@@ -224,6 +224,7 @@ class LF_Hospital
 		if (account)
 		{
 			account.IncreaseWantedLevel(1);
+			LF_WantedReports.Report(playerUid, player, LF_WantedReports.OFFENCE_HOSPITAL);
 			EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 			if (accountManager)
 				accountManager.SaveAndReleaseAccount(account);

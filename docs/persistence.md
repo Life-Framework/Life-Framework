@@ -12,7 +12,8 @@ Do not re-add EPF.
 Each of these must survive a server restart:
 
 1. A player's account: characters (id, prefab, first/last name, age), active
-   character index, faction, on-duty, wanted level.
+   character index, faction (the duty role: POLICE only while clocked in), on-duty,
+   wanted level. A save from the faction-screen era loads POLICE-off-duty as CIVILIAN.
 2. Bank balances.
 3. Survival stats (hunger, thirst, health).
 4. Stacked item quantity.
@@ -27,6 +28,12 @@ Each of these must survive a server restart:
    enum name); turned-in quest ids. Death keeps it.
 9. The contents of placed storage (the hideout stash), keyed by a stable
    storage key such as `hideout:Roadmap_Hideout`, never an entity id.
+10. Both duty inventories (M1-11): the police inventory stored at the desk
+   (`police_duty`) or the civilian one (`civilian_stash`), whichever is not
+   worn, keyed by character persistence id in the carried payload, and the
+   rounds in every stored magazine (`itemstate` payload).
+11. Wanted reports: offence, the description recorded at the crime, and the
+   identified flag, keyed by player uid.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character
@@ -73,8 +80,8 @@ Identity:
 - **`EL_PersistenceComponentSerializer`** (`Scripts/Game/Persistence/Serializers/`)
   writes `version` first, then accounts and bank records (the prefix on every
   version), then the payloads listed in `RegisterPersistencePayloads`:
-  survival, organizations, hideout, vehicles, jail, carried, progression. The written version
-  is that list's length (currently 7). Deserialize stops at the stored version, so an
+  survival, organizations, hideout, vehicles, jail, carried, progression, introductions,
+  itemstate, wanted, jobsignups. The written version is that list's length (currently 11). Deserialize stops at the stored version, so an
   older save leaves later payloads untouched. A new system appends one entry at
   the end and raises the version by one. Never insert earlier or reorder.
   The override bodies live in public static `SerializeStore` /
@@ -90,6 +97,10 @@ Identity:
   | 5 | serving jail sentences (`LF_Jail.ExportAll` / `ApplyAll`) |
   | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`); placed storage rides the same records (slot `placed`, no new version) |
   | 7 | progression (`LF_Progression.ExportAll` / `ApplyAll`; `ApplyToCharacter` on each spawn) |
+  | 8 | introductions (`LF_Introductions.ExportAll` / `ApplyAll`) |
+  | 9 | per-item state of every snapshot: magazine ammo by item index (`LF_StorageSnapshot.ExportItemState` / `ApplyItemState`) |
+  | 10 | wanted reports (`LF_WantedReports.ExportAll` / `ApplyAll`) |
+  | 11 | delivery-job sign-ups (`LF_CivilianJob.ExportSignUps` / `ApplySignUps`; `ApplySignUpToCharacter` on each spawn) |
 - Managers expose `ExportAll()` / `ApplyAll(records)` / `GetOrCreate(id)`.
   Record classes are plain Managed: `EL_PlayerAccountRecord`,
   `EL_BankAccountRecord`, `EL_SurvivalStatsRecord` (each under the feature's
@@ -208,6 +219,10 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   character persistence id and slot name) is captured at each save point and on
   disconnect, and applied on spawn in place of the starter kit. Apply reconciles
   against what the entity already has, so it is idempotent. Death clears it.
+- A field added to a persisted record class breaks every older positional save.
+  Per-item state (`LF_StorageItemRecord.m_iAmmo`) is `[NonSerialized()]` and
+  travels in its own payload instead; `police/item-state` proves the carried
+  record format did not change.
 - Session-only registries must be rebuilt on load: saved plates are
   re-reserved in `EL_LicensePlateRegistry` by `EL_VehicleOwnership.ApplyAll`.
 - Garage it to keep it: after a load, an owned vehicle that was not stored is

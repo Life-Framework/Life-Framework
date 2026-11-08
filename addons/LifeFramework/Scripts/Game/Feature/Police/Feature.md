@@ -40,9 +40,17 @@ is the entry point.
 
 ## Current state
 
-- `EL_PoliceMenu` — wanted list; ❌ unreachable Arrest/Fine, unguarded deref,
-  hard-coded jail.
-- `EL_DutyAction` — duty toggle; ⚠️ cache churn.
+- Duty desk (M1-11): `Roadmap_Police_Desk` (`Prefabs/Police/LF_PoliceDutyDesk.et`)
+  carries `EL_DutyAction` (Clock in / Clock out). `LF_DutyLocker` checks the
+  police roster (`EL_WhitelistManager`) on the server and swaps the civilian and
+  police inventories (`civilian_stash` / `police_duty` snapshots, persisted).
+  A first shift gets the starter police kit (config). Clock-out pays duty pay
+  (`LF_DutyPay`). There is no faction screen; the faction is the duty role.
+- Wanted board (M1-11): `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`),
+  `LF_WantedBoardReadAction` -> `LF_WantedBoard` (per-read RPC). Posters come
+  from `LF_WantedReports`: a description at the crime, the name once identified
+  (ID check to an on-duty officer, or caught in the act).
+- `EL_PoliceMenu` — arrest/fine entry points; the wanted list moved to the board.
 - `EL_ConfiscateAction` — weapon confiscation; ⚠️ mutation-during-iteration.
 
 ## Dependencies
