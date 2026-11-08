@@ -195,7 +195,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 						characterId,
 						stats.GetHunger(),
 						stats.GetThirst(),
-						stats.GetHealth()
+						EL_SurvivalStatsRecord.RETIRED_HEALTH
 					);
 					survivalRecords.Insert(record);
 				}
@@ -278,7 +278,6 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 					EL_SurvivalStats stats = EL_SurvivalStats.Create(record.m_sPersistentId);
 					stats.SetHunger(record.m_fHunger);
 					stats.SetThirst(record.m_fThirst);
-					stats.SetHealth(record.m_fHealth);
 					persistence.SetSurvivalStats(record.m_sPersistentId, stats);
 				}
 				EL_Debug.Log("Persistence", string.Format("applied %1 survival record(s)", survivalRecords.Count()));
