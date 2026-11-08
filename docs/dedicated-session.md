@@ -32,14 +32,10 @@ The load must show four lines, in this order, after the load starts:
 
 ## Ports
 
-`server/configs/test-server.json` hardcodes `bindPort` 2001. The real run does
-not take that value. It passes the worktree's `-bindPort` and `-a2sPort` from
-`tools\cli wt list` on both the first process and the restarted process. The
-restart also passes `-loadSessionSave`. The launch does not pass `-config`, so
-the json port is not the bind port.
-
-A console line that only says `2001`, or that is only the engine default bind
-text, is not a failure by itself.
+The server listens on 2001 whatever `-bindPort` says: `-server <world>` mode
+ignores it (see `docs/worktrees.md`). Clients join `127.0.0.1:2001`. Only one
+server runs on the machine at a time; the CLI's `server-2001` lock enforces
+that. The restart passes `-loadSessionSave`.
 
 ## Fixtures
 

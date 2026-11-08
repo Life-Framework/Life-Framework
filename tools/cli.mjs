@@ -643,8 +643,10 @@ function serverArgs(root, ports) {
   // junction to the game client's core/data ONLY - the server install's own
   // ./addons is skipped so stray downloaded or packed addons there never load
   // (LifeFramework.gproj depends only on the vanilla Game addon
-  // 58D0FB3206B6F859). -bindPort/-a2sPort give every worktree its
-  // own port pair so parallel test runs never collide.
+  // 58D0FB3206B6F859). In -server mode the engine ignores -bindPort and
+  // always listens on 2001 (-bindPort only overrides a -config JSON, and
+  // -config cannot be combined with -addons). withServerSlot() serializes
+  // every server boot on this machine instead.
   const profile = join(root, "server", "profile", "test");
   const junction = serverGameAddons(root);
   const addonsDir = [join(root, "addons"), junction].filter(Boolean).join(",");
@@ -806,6 +808,26 @@ function cmdBuild(root = ROOT, opts = {}) {
 
 }
 
+// Every -server boot listens on 0.0.0.0:2001 whatever -bindPort says
+// (observed 2026-11-08 on 1.9.0.37). Two boots at once fail with "Unable to
+// start replication", so one machine-wide lock covers every server boot.
+const SERVER_SLOT = "server-2001";
+
+function withServerSlot(root, waitMs, fn) {
+  try {
+    wt.acquireLock(root, SERVER_SLOT, { waitMs });
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    console.log("      another worktree's server holds port 2001; it frees when that run ends");
+    return 1;
+  }
+  try {
+    return fn();
+  } finally {
+    wt.releaseLock(root, SERVER_SLOT);
+  }
+}
+
 function cmdServe(root = ROOT, opts = {}) {
   guardHeavy(root, "serve", opts.force);
   const exe = serverExe();
@@ -816,12 +838,22 @@ function cmdServe(root = ROOT, opts = {}) {
   }
   wt.copyResourceDatabase(root);
   const args = serverArgs(root, wt.portsForRoot(root));
+  try {
+    wt.acquireLock(root, SERVER_SLOT, { waitMs: 0 });
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
   console.log(`launching: ${exe}`);
   console.log(`  ${args.join(" ")}`);
   return new Promise((resolvePromise) => {
+    const done = (code) => {
+      wt.releaseLock(root, SERVER_SLOT);
+      resolvePromise(code);
+    };
     const child = spawn(exe, args, { cwd: dirname(exe), stdio: "inherit" });
-    child.on("error", (e) => resolvePromise((console.log(`FAIL  spawn error: ${e.message}`), 1)));
-    child.on("exit", (code) => resolvePromise(code ?? 1));
+    child.on("error", (e) => done((console.log(`FAIL  spawn error: ${e.message}`), 1)));
+    child.on("exit", (code) => done(code ?? 1));
   });
 }
 
@@ -847,19 +879,8 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   }
   const ports = wt.portsForRoot(root);
   console.log(`test: worktree ports game=${ports.gamePort} a2s=${ports.a2sPort}`);
-  console.log(`test: the server was started with -bindPort ${ports.gamePort}; a console line that mentions port 2001 is the engine default text; if the boot says Unable to initialize the game, run the same command once more; do not investigate the port`);
   wt.copyResourceDatabase(root);
-  // Full suites boot one worktree at a time. Tier fast does not take this lock.
-  const lockSuite = tier === "all" || tier === "persistence";
-  if (lockSuite) {
-    try {
-      wt.acquireLock(root, "test", { waitMs: 900000 });
-    } catch (e) {
-      console.log(`FAIL  ${e.message}`);
-      return 1;
-    }
-  }
-  try {
+  return withServerSlot(root, 1800000, () => {
     const res = sh(PWSH, [
       "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
       "-Tier", tier,
@@ -868,9 +889,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     ], { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
     return res.status;
-  } finally {
-    if (lockSuite) wt.releaseLock(root, "test");
-  }
+  });
 }
 
 async function cmdDev(tier = "all", root = ROOT, opts = {}) {
@@ -1263,9 +1282,11 @@ function runE2ePass(root, tier, opts = {}) {
   else if (opts.loadSessionSave !== undefined) psArgs.push("-LoadSessionSave", opts.loadSessionSave);
   if (opts.gracefulClose) psArgs.push("-GracefulClose");
   if (opts.extraDefine) psArgs.push("-ExtraDefine", opts.extraDefine);
-  const res = sh(PWSH, psArgs, { cwd: root, env: toolEnv() });
-  process.stdout.write(res.stdout + res.stderr);
-  return res.status;
+  return withServerSlot(root, 1800000, () => {
+    const res = sh(PWSH, psArgs, { cwd: root, env: toolEnv() });
+    process.stdout.write(res.stdout + res.stderr);
+    return res.status;
+  });
 }
 
 function runWorktreeCli(root, args) {

@@ -61,8 +61,8 @@ export function worktreePorts(root = ROOT) {
   return { gamePort: ports.gamePort, a2sPort: ports.a2sPort };
 }
 
-// The real run passes these flags. test-server.json hardcodes bindPort 2001;
-// that file is not the launch port.
+// The real run passes these flags. In -server mode the engine ignores
+// -bindPort and listens on 2001; a2s still uses -a2sPort.
 export function serverLaunchArgs({ gamePort, a2sPort, load = false }) {
   if (!Number.isInteger(gamePort) || !Number.isInteger(a2sPort)) {
     throw new Error("the worktree game port and a2s port are required");
@@ -89,9 +89,8 @@ export function formatSession(root = ROOT, ports = worktreePorts(root)) {
     "The server is not started.",
     "",
     `Worktree ports: game ${ports.gamePort} a2s ${ports.a2sPort}`,
-    `test-server.json bindPort: ${jsonPort}`,
-    `Launch passes -bindPort ${ports.gamePort} and -a2sPort ${ports.a2sPort}.`,
-    "A console line that only mentions port 2001 is not a failure.",
+    `Launch passes -bindPort ${ports.gamePort} and -a2sPort ${ports.a2sPort}; -server mode ignores -bindPort,`,
+    `so the server listens on ${jsonPort} and clients join 127.0.0.1:${jsonPort}. One server per machine.`,
     "",
     "1. Dedicated server up",
     `   ArmaReforgerServer ${first.join(" ")}`,
