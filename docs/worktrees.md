@@ -25,13 +25,18 @@ harmless to your editor because the worktree is a separate directory.
   `Unable to start replication`. `serve` fails fast when the lock is held.
   The per-worktree `(gamePort, a2sPort)` pair from `wt list` is still passed
   and is what a2s uses.
-- **Resource database** — `resourceDatabase.rdb` is gitignored. `wt new`, `test`,
-  `dev`, `serve`, and `wt e2e` copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into
-  the worktree when that copy is missing, or smaller and older. A worktree copy newer than main's
-  came from this worktree's build and is the only one listing the resources the branch adds; a
-  new prefab missing from it logs `Wrong GUID/name` and replication refuses the entity, so its
-  inventory operations never complete. After adding a resource, run one `test` with the build.
-  Do not commit it.
+- **Resource database** — `resourceDatabase.rdb` is gitignored and only Workbench
+  writes it. `wt new`, `test`, `dev`, `serve`, `session up`, `host start`, and `wt e2e`
+  copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into the worktree when that
+  copy is missing, or smaller and older. Before a server boot they then check that the file
+  registers every `.meta` in the addon (path and GUID, `tools/lib/rdb-fresh.mjs`, ~0.2 s). A
+  resource that landed on main after anyone last opened Workbench is missing from every copy;
+  the server refuses it (`Wrong GUID/name`, inventory operations that never complete). When
+  stale, the worktree copy is refreshed by a headless `-wbModule=ResourceManager` Workbench on
+  the hidden desktop, under the `build` lock (one line: `resource database stale: N
+  unregistered resource(s) ... -> refreshing`, about 10 s). `toolscli rdb` does the same on
+  demand, and `validate` warns. The main checkout's copy is the human's editor file: it is
+  only warned about, never rewritten. `LF_RDB_REFRESH=0` turns the refresh off. Do not commit it.
 - **Build** — the headless Workbench build is the one truly shared resource
   (shader cache, resource DB). It is serialized by a machine-wide lock file:
   one build at a time, everyone else `--wait`s. `cli dev` skips the build

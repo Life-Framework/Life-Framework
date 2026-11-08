@@ -315,8 +315,16 @@
   quest id is kept with a warning, a rank above the ladder clamps to senior. A
   version 6 save leaves live rank and duty totals alone (the account apply
   carries them over). A running duty clock is settled into the save.
-- ⚠️ Sign-ups, an active run, and the open duty clock are session state; after a
-  restart the courier signs up again. `EL_LicenseManagerComponent` is not on
+- ✅ **The delivery sign-up survives a restart** (2026-11-08, test
+  `persist/job-signup-roundtrip`). The `jobsignups` payload, appended at save
+  version 11, holds one `LF_JobSignUpRecord` (player uid, job by enum name) per
+  signed-up player. It loads after `progression`, so the career level that gates
+  the job is back first. `EL_SpawnLogic` puts the job on every new body after the
+  hand-over, so the sign-up also survives death. An unknown name, a job that is
+  not delivery work, or one above the player's level stays unemployed with a
+  `[ELDebug:Jobs]` warning.
+- ⚠️ An active run and the open duty clock are session state; after a restart the
+  courier is still signed up and starts a new run. `EL_LicenseManagerComponent` is not on
   `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 
 ## Account & Persistence
@@ -662,7 +670,9 @@
 ### `LF_CivilianJob` — `Feature/Jobs/LF_CivilianJob.c`
 - ✅ Workplace signup, one active run, cash once, abandon pays nothing
   (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
-  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et`. Fuel cargo is
+  `{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et`, a cardboard box carried
+  in both hands (#155: the bare `HandCarryItem_Base.et` had no mesh, so the
+  hands were empty on a client). Test: `items/carry-meshes`. Fuel cargo is
   `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
   the drop consumes it. The taxi fare uses the rank vehicle
   `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
@@ -813,8 +823,8 @@
   they are not wired into the save serializer, so a restart loses the bags.
   DebugWorld places `Roadmap_Bank_Vault` at 194.1 0 265 (on the bank's east
   wall) and `Roadmap_Bank_Bag` at 195.6 0 263 on `Street_Bank.layer`. The bag is
-  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
-  mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
+  `{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et` (a vanilla suitcase mesh,
+  #155). Cash is
   `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
   `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits
   `{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`.
