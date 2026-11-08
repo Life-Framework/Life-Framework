@@ -977,7 +977,8 @@ function townSelftest() {
   const real = checkTown(ROOT);
   if (!real.ok) throw new Error(`town manifest does not resolve against the layers: ${real.errors.join("; ")}`);
   const spawn = real.rows.find((row) => row.site.id === "spawn");
-  if (!spawn || spawn.place.count < 1 || spawn.place.layer !== "Gamemode.layer") throw new Error("spawn must resolve to the SpawnPoint_LIFE placements");
+  if (!spawn || spawn.place.layer !== "Gamemode.layer") throw new Error("spawn must resolve to the Spawn_Town placement");
+  if (!spawn.sign || spawn.signIssues.length) throw new Error(`the town map must stand within 8 m of the spawn: ${spawn.signIssues.join("; ")}`);
   const mining = real.rows.find((row) => row.site.id === "mining");
   if (!mining || !mining.sign || mining.sign.name !== "EL_MiningSign_Debug" || mining.signIssues.length) {
     throw new Error(`the mining sign must be found within 8 m with a card: ${mining && mining.signIssues.join("; ")}`);

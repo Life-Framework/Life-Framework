@@ -153,6 +153,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ShopPriceHidden(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopCatalog(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SignCatalog(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SignCoverage(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_SignFaceClient(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignFaceFit(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignLocalization(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignMissingId(), EL_TestTier.LOGIC);

@@ -305,8 +305,9 @@ Workbench between sites.
 `agent-box/town.mjs` (`TOWN`) is the one list of M1 sites: spawn, post office,
 traders, ATM, shops, vehicle lot, the robbery and breach sites, police
 station, jail, org registry, hideout, garage, mining, and farm. Each site names
-an entity (`entity`) or, for unnamed placements like the spawn points, a
-prefab (`prefab`, every placement counts and the site sits at their centre).
+an entity (`entity`; the spawn is the named town spawn `Spawn_Town`) or, for
+unnamed placements like the clerk, a prefab (`prefab`, every placement counts
+and the site sits at their centre).
 It also lists the actions `look` must offer there, the `LF_Signs.conf` id of
 its sign (or `null`), and its journey step. It holds no positions. Sites and
 signs resolve against the layer scan (`loadWorld` in `layers.mjs`), so moving
@@ -332,10 +333,9 @@ missing, `look` lacks an expected action, or a menu is blank.
 
 Sign checks: no sign with that id within 8 m, a card with no title or no
 section text (keys resolved through the string table), Read not offered, or a
-card blank in play. While `TOWN.requireSigns` is `false` these print as
-`sign: pending (...)` warnings and do not fail. M1-09 places the signs and
-sets it to `true`, after which the same checks fail the row, offline and in
-play. `selftest` covers a missing sign, a blank card, a sign 9 m away, an 80 m
+card blank in play. `TOWN.requireSigns` is `true` since M1-09 placed the
+signs (`Signs.layer`), so these fail the row, offline and in play. Set to
+`false`, they print as `sign: pending (...)` warnings instead. `selftest` covers a missing sign, a blank card, a sign 9 m away, an 80 m
 outlier, an empty look, an action on another entity, and the flag.
 
 ## DebugWorld chains

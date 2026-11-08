@@ -181,6 +181,19 @@ class LF_SignComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The scale FaceTitleRect needs. Only a Workbench viewport sizes the render
+	//! target by DPI while laying widgets out one unit per pixel. A game client
+	//! scales both alike: at 640x360 (DPIScale 0.33) the DPI-scaled title printed
+	//! in the sheet's top-left third, so a game client uses the layout as written.
+	static float FaceLayoutScale(float dpiScale, bool workbench)
+	{
+		if (!workbench)
+			return 1;
+
+		return dpiScale;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void FitFaceTitle(TextWidget title, float dpiScale)
 	{
 		vector pos;
@@ -213,7 +226,11 @@ class LF_SignComponent : ScriptComponent
 			return;
 		}
 
-		FitFaceTitle(title, workspace.DPIScale(1));
+		bool workbench = false;
+		#ifdef WORKBENCH
+		workbench = true;
+		#endif
+		FitFaceTitle(title, FaceLayoutScale(workspace.DPIScale(1), workbench));
 		title.SetTextWrapping(true);
 		title.SetText(FaceText(sign));
 		m_wFaceTexture.SetRenderTarget(target);

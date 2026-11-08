@@ -1080,6 +1080,20 @@
 - ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
 - ✅ Prefabs `Prefabs/Props/Signs/LF_Sign_Board` (cork board), `LF_Sign_Pub` (shop sign), `LF_Sign_Notice` (A4 notice), `LF_Sign_Chalkboard` (standing chalkboard; the vanilla `CardboardSign_01` lives in the Rally addon and does not resolve for this mod) inherit the vanilla props (no new meshes) and add the component, an `LF_Sign` action context on the face, and the Read action. A placed instance sets the id. The title is also printed on the prop on rendering clients: `LF_SignComponent` draws `UI/Layouts/Signs/LF_SignFace.layout` into an `RTTextureWidget` bound (`SetRenderTarget`) to a mesh whose material `Assets/Signs/Data/LF_SignFace.emat` samples `$rendertarget`. `LF_Sign_Board` spawns a local `LF_SignFace` sheet (vanilla A4 poster mesh) on its face; `LF_Sign_Notice` retargets its own poster material. A dedicated server skips the face. `LF_Sign_Pub` and `LF_Sign_Chalkboard` ship with the face off until their sheet placement is checked in a rendering client.
 - ✅ The printed title fits the shown part of the render target at any window size. The target is the layout size times the screen DPI scale, but the widgets inside lay out one reference unit per pixel, so a 720p Workbench viewport printed "MINI / ARE". `LF_SignComponent.FaceTitleRect` places the title box and font by `DPIScale(1)`. Board and notice photographed reading MINING AREA, not mirrored, in a Workbench play session (2026-11-08). LOGIC `signs/face-fit`.
+- ✅ **Game client face size** (M1-09, 2026-11-08). On a 640x360 dedicated-server client the DPI-scaled title printed tiny in the sheet's top-left third: a game client scales the render target and its widgets alike. `LF_SignComponent.FaceLayoutScale` keeps the DPI compensation for Workbench (`#ifdef WORKBENCH`) and uses the layout size in a game client. LOGIC `signs/face-client`.
+- ✅ **Placed in DebugWorld** (M1-09, 2026-11-08). `DebugWorld_Layers/Signs.layer`
+  holds one sign per town manifest site, within 8 m of it, facing the street:
+  `Sign_TownMap` at the spawn square (`town_map`, "Welcome to Everon": the
+  loop in order and where each place stands, left and right walking east),
+  then post office, ATM, bank, general store, market, vehicle lot, garage,
+  police station, jail (inside the yard), fuel station, hospital, organization
+  office, hideout and convoy drop (in the yard), convoy pickup at the barn, and
+  farm, all `LF_Sign_Board`. The back room is an `LF_Sign_Chalkboard` with no
+  printed title. `Sign_PoliceWhitelist` places `EL_WhitelistSign` beside the
+  whitelist station. Cards are `#LF-Sign_<Site>_<Field>` keys: what, how with
+  the exact action names, needs, rules, with the DebugWorld numbers (prices,
+  pay, cooldowns). WORLD `signs/coverage`: every placed sign resolves a titled
+  catalog row, every catalog row is placed, and each title and What resolves.
 - ✅ `EL_MiningSign` reads `mining` (`Read: Mining area`) and `EL_WhitelistSign` reads `police_whitelist` beside its whitelist action. `EL_TextLabelComponent` (floating debug text) is deleted.
 - ⚠️ MenuBack closes the card through the UI kit. The printed face, the card render, the prompt, and the walk-away close are not yet seen in a rendering client (manual steps in the M1-01 PR).
 
@@ -1273,7 +1287,10 @@
   `node agent-box/harness.mjs town` and `validate-town-manifest.mjs` check it
   offline; `report town [site-id...]` walks it in play mode and writes
   `agent-box/reports/town.html`. Sign problems (none within 8 m, blank Read
-  card) are `sign: pending` warnings until `requireSigns` is true (M1-09).
+  card) fail the row: `requireSigns` is true since M1-09 placed the signs.
+  The spawn site is the named civilian town spawn `Spawn_Town`; the clerk
+  (`QuestGiver_Start`, prefab mode) is a site so the square meets the 30 m
+  neighbour rule.
   Play-mode run not yet recorded.
 
 ### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
