@@ -34,6 +34,8 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	{
 		super.OnGameStart();
 		LF_HostStop.StartIfRequested();
+		// Interaction menu role slots, on every machine (offer on the client, decide on the server).
+		LF_OrgInviteRole.Register();
 	}
 
 	//------------------------------------------------------------------------------------------------

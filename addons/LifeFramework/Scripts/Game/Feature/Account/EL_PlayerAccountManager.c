@@ -187,6 +187,28 @@ class EL_PlayerAccountManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Any resident account's character with this id (an organization lists offline members too).
+	EL_PlayerCharacter FindCharacter(string characterId)
+	{
+		if (characterId.IsEmpty())
+			return null;
+
+		foreach (string playerUid, EL_PlayerAccount account : m_mAccounts)
+		{
+			if (!account)
+				continue;
+
+			foreach (EL_PlayerCharacter character : account.m_aCharacters)
+			{
+				if (character && character.GetId() == characterId)
+					return character;
+			}
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static EL_PlayerAccountManager GetInstance()
 	{
 		if (!s_pInstance)

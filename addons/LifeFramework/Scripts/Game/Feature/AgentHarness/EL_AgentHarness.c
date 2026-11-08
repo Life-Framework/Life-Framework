@@ -1187,6 +1187,33 @@ class EL_AgentHarness
 			return;
 		}
 
+		// A local-effect action (a desk that opens a page) runs on the acting client only, as the
+		// interact key would run it; the server would open nothing.
+		IEntity localTarget = FindTarget(character, cmd.Arg1, cmd.Arg2);
+		ScriptedUserAction localAction;
+		if (localTarget)
+			localAction = FindOnEntity(localTarget, cmd.Arg1);
+
+		if (localAction && localAction.HasLocalEffectOnlyScript())
+		{
+			if (!localAction.CanBeShownScript(character))
+			{
+				WriteResult(cmd.Id, "error", "cannot_show");
+				return;
+			}
+
+			if (!localAction.CanBePerformedScript(character))
+			{
+				WriteResult(cmd.Id, "error", "cannot_perform");
+				return;
+			}
+
+			localAction.PerformAction(localTarget, character);
+			EL_Debug.Log(FEATURE, string.Format("performed %1 locally", cmd.Arg1));
+			WriteResult(cmd.Id, "ok", cmd.Arg1);
+			return;
+		}
+
 		character.EL_AskHarnessUse(cmd.Id, cmd.Arg1, cmd.Arg2);
 	}
 

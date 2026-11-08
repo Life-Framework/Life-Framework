@@ -267,6 +267,18 @@ class EL_Organization : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Character ids in join order (founder first).
+	void GetMemberIds(notnull array<string> outIds)
+	{
+		outIds.Clear();
+		foreach (EL_OrganizationMember member : m_aMembers)
+		{
+			if (member)
+				outIds.Insert(member.GetCharacterId());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool IsMember(string characterId)
 	{
 		return !RankIdOf(characterId).IsEmpty();
@@ -490,7 +502,6 @@ class EL_Organization : Managed
 class EL_OrganizationManager : Managed
 {
 	static const int MAX_CASH_MOVE = 1000000;
-	static const int MAX_NAME_LENGTH = 32;
 	static const int PRICE_EXTRA_STORAGE = 500;
 	static const int PRICE_PROCESSING_SLOT = 250;
 	static const int PRICE_PARKED_VEHICLE = 750;
@@ -624,6 +635,24 @@ class EL_OrganizationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Case and outer spaces do not make a second organization: "North Dock" takes "north dock ".
+	static bool IsNameTaken(string name)
+	{
+		if (!s_Instance)
+			return false;
+
+		string key = LF_OrgRules.NameKey(name);
+		foreach (string orgId, EL_Organization org : s_Instance.m_mOrganizations)
+		{
+			if (org && LF_OrgRules.NameKey(org.GetName()) == key)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Name rules: LF_OrgRules.RefuseName, then unique (IsNameTaken). The name is stored trimmed.
 	static EL_Organization Create(string founderCharacterId, string name)
 	{
 		if (!Server())
@@ -633,14 +662,15 @@ class EL_OrganizationManager : Managed
 			EL_Debug.Error("Organizations", "create refused: empty character id");
 			return null;
 		}
-		if (name.IsEmpty())
+		string refusal = LF_OrgRules.RefuseName(name);
+		if (!refusal.IsEmpty())
 		{
-			EL_Debug.Error("Organizations", "create refused: empty name");
+			EL_Debug.Error("Organizations", string.Format("create refused: name '%1' (%2)", name, refusal));
 			return null;
 		}
-		if (name.Length() > MAX_NAME_LENGTH)
+		if (IsNameTaken(name))
 		{
-			EL_Debug.Error("Organizations", "create refused: name is too long");
+			EL_Debug.Error("Organizations", string.Format("create refused: name '%1' is already registered", name));
 			return null;
 		}
 		if (GetByCharacter(founderCharacterId))
@@ -657,10 +687,10 @@ class EL_OrganizationManager : Managed
 		}
 
 		EL_OrganizationManager instance = GetInstance();
-		EL_Organization org = EL_Organization.CreateNew(orgId, name, founderCharacterId);
+		EL_Organization org = EL_Organization.CreateNew(orgId, name.Trim(), founderCharacterId);
 		instance.m_mOrganizations.Set(orgId, org);
 		instance.m_mMembership.Set(founderCharacterId, orgId);
-		EL_Debug.Log("Organizations", string.Format("created org=%1 name=%2 founder=%3", orgId, name, founderCharacterId));
+		EL_Debug.Log("Organizations", string.Format("created org=%1 name=%2 founder=%3", orgId, org.GetName(), founderCharacterId));
 		return org;
 	}
 
