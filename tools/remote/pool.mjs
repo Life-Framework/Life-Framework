@@ -23,7 +23,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { hostname } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -60,6 +60,85 @@ function readJson(file, fallback) {
   } catch {
     return fallback;
   }
+}
+
+// ---------------------------------------------------------------- reclaim rules
+
+// A remote lock this PC's run took (origin = this host) whose local owner
+// process is gone: the holder outlived it (Windows sshd can keep the session
+// and the holder alive after the local ssh dies). Returns a reason or null.
+export function remoteOwnerGone(info, { self = hostname(), alive = pidAlive } = {}) {
+  if (!info || !info.origin || !info.originPid) return null;
+  if (String(info.origin).toLowerCase() !== String(self).toLowerCase()) return null;
+  if (alive(Number(info.originPid))) return null;
+  return `owner pid ${info.originPid} on ${info.origin} is gone`;
+}
+
+// How long a pool run may hold a slot with no server process before the hang
+// guard takes it: max(5 min, 10x the median run of that purpose).
+const HANG_MIN_MS = 300000;
+export function hangLimitMs(runs, purpose) {
+  const d = runs
+    .filter((r) => r.purpose === purpose && (r.result === "pass" || r.result === "fail"))
+    .slice(-30)
+    .map((r) => Number(r.durS) * 1000)
+    .filter((x) => x > 0)
+    .sort((a, b) => a - b);
+  const median = d.length ? d[Math.floor(d.length / 2)] : 0;
+  return Math.max(HANG_MIN_MS, 10 * median);
+}
+
+// A pool-taken lock (it names a purpose; serve/host/session locks do not)
+// held past the limit while no server runs for it. Returns a reason or null.
+export function hangReason(info, { now = Date.now(), limitMs, serverAlive }) {
+  if (!info || !info.purpose || serverAlive !== false) return null;
+  const age = now - Date.parse(info.at);
+  if (!Number.isFinite(age) || age <= limitMs) return null;
+  return `held ${Math.round(age / 60000)} min (limit ${Math.round(limitMs / 60000)} min) with no server process alive`;
+}
+
+function noticeFile(root, pid, lockName) {
+  const d = join(poolDir(root), "reclaimed");
+  mkdirSync(d, { recursive: true });
+  return join(d, `${pid}-${lockName}.json`);
+}
+
+// Logs a reclaim in runs.jsonl (pool stats counts them) and leaves a notice
+// the owner prints when it releases or loses the slot.
+function noteReclaim(root, m, info, kind, reason) {
+  const rec = {
+    at: new Date().toISOString(),
+    slug: info.slug ?? "?",
+    purpose: "reclaim",
+    victimPurpose: info.purpose ?? null,
+    machine: m.name,
+    slot: info.name ?? null,
+    kind,
+    reason,
+    result: "reclaimed",
+  };
+  try {
+    appendFileSync(runsFile(root), JSON.stringify(rec) + "\n");
+  } catch {}
+  const owner = m.via === "local" ? info.pid : String(info.origin ?? "").toLowerCase() === hostname().toLowerCase() ? info.originPid : null;
+  if (owner) {
+    try {
+      writeFileSync(noticeFile(root, owner, info.name), JSON.stringify(rec));
+    } catch {}
+  }
+  console.log(`pool: reclaimed ${m.name} ${info.name} from ${info.slug ?? "?"} ${info.purpose ?? ""}: ${reason}`);
+}
+
+// The owner's side: print (once) why the pool took this process's slot.
+export function takeNotice(root, lockName, pid = process.pid) {
+  const f = noticeFile(root, pid, lockName);
+  const n = readJson(f, null);
+  if (!n) return null;
+  try {
+    unlinkSync(f);
+  } catch {}
+  console.log(`WARN  pool: the scheduler reclaimed this run's slot ${n.machine} ${lockName}: ${n.reason}`);
+  return n;
 }
 
 export function poolDir(root) {
@@ -198,13 +277,35 @@ function stopLocalOrphans(ownerRoot) {
   if (r.stdout?.trim()) console.log(r.stdout.trim());
 }
 
-function tryLocal(root, m, i, meta) {
+// Whether an ArmaReforgerServer runs out of that worktree's server/profile.
+function localServerAlive(ownerRoot) {
+  if (!ownerRoot) return false;
+  const ps = `$a = ${tb.psQuote(join(ownerRoot, "server", "profile").replace(/\//g, "\\"))}; $n = @(Get-CimInstance Win32_Process -Filter "Name LIKE 'ArmaReforgerServer%'" | Where-Object { $_.CommandLine -and $_.CommandLine.IndexOf($a, [StringComparison]::OrdinalIgnoreCase) -ge 0 }).Count; Write-Output "lf-pool: servers $n"`;
+  const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { windowsHide: true, encoding: "utf8", timeout: 30000 });
+  const mm = /lf-pool: servers (\d+)/.exec(r.stdout ?? "");
+  // No answer counts as alive: the guard never takes a slot on a guess.
+  return mm ? Number(mm[1]) > 0 : true;
+}
+
+// opts.serverAlive / opts.runs are test seams.
+export function tryLocal(root, m, i, meta, opts = {}) {
   const name = slotLockName(i);
   const file = localLockFile(root, name);
   if (existsSync(file)) {
     const info = readJson(file, null);
-    if (!info || pidAlive(info.pid)) return null;
-    stopLocalOrphans(info.root);
+    if (!info) return null;
+    if (pidAlive(info.pid)) {
+      // Hang guard: the cheap age check first, the process scan only past it.
+      const limitMs = hangLimitMs(opts.runs ?? readRuns(root), info.purpose);
+      if (!info.purpose || !(Date.now() - Date.parse(info.at) > limitMs)) return null;
+      const serverAlive = (opts.serverAlive ?? localServerAlive)(info.root);
+      const reason = hangReason(info, { limitMs, serverAlive });
+      if (!reason) return null;
+      noteReclaim(root, m, { ...info, name }, "hang", reason);
+      try {
+        unlinkSync(file);
+      } catch {}
+    } else stopLocalOrphans(info.root);
   }
   try {
     wt.acquireLock(root, name, { waitMs: 0, meta });
@@ -216,7 +317,10 @@ function tryLocal(root, m, i, meta) {
     index: i,
     lockName: name,
     local: true,
-    release: () => wt.releaseLock(root, name),
+    release: () => {
+      takeNotice(root, name);
+      wt.releaseLock(root, name);
+    },
   };
 }
 
@@ -241,18 +345,30 @@ export function remoteRunDir(m, slug, i = 1, suffix = "") {
 
 // The holder: acquire (when cfg.slots is non-empty), prepare the run folder,
 // report what the folder already has, then hold until its ssh session ends.
-const PS_HOLDER = String.raw`
-$cfg = $cfgJson | ConvertFrom-Json
-$main = $cfg.main
-$ld = Join-Path $main 'tmp\wt\locks'
-New-Item -ItemType Directory -Force -Path $ld | Out-Null
-function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }
+// Stops processes whose command line names a run folder (never deletes files,
+// so a junction under it is never followed).
+const PS_STOP_UNDER = String.raw`
 function Stop-Under($dir) {
   if (-not $dir) { return }
   $a = $dir.Replace('/', '\').TrimEnd('\') + '\'
   $b = $a.Replace('\', '/')
   Get-CimInstance Win32_Process | Where-Object { $_.ProcessId -ne $PID -and $_.CommandLine -and ($_.CommandLine.IndexOf($a, [StringComparison]::OrdinalIgnoreCase) -ge 0 -or $_.CommandLine.IndexOf($b, [StringComparison]::OrdinalIgnoreCase) -ge 0) } | ForEach-Object { Write-Host "lf-pool: stopping leftover $($_.Name) pid $($_.ProcessId)"; & taskkill /T /F /PID $_.ProcessId 2>&1 | Out-Null }
 }
+function Test-Server($dir) {
+  if (-not $dir) { return $false }
+  $a = $dir.Replace('/', '\').TrimEnd('\') + '\'
+  $b = $a.Replace('\', '/')
+  return [bool](@(Get-CimInstance Win32_Process -Filter "Name LIKE 'ArmaReforgerServer%'" | Where-Object { $_.CommandLine -and ($_.CommandLine.IndexOf($a, [StringComparison]::OrdinalIgnoreCase) -ge 0 -or $_.CommandLine.IndexOf($b, [StringComparison]::OrdinalIgnoreCase) -ge 0) }).Count)
+}
+`;
+
+const PS_HOLDER = String.raw`
+$cfg = $cfgJson | ConvertFrom-Json
+$main = $cfg.main
+$ld = Join-Path $main 'tmp\wt\locks'
+New-Item -ItemType Directory -Force -Path $ld | Out-Null
+function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }
+${PS_STOP_UNDER}
 $enc = New-Object System.Text.UTF8Encoding($false)
 $got = -1
 $slots = @($cfg.slots)
@@ -270,7 +386,7 @@ for ($i = 0; $i -lt $slots.Count -and $got -lt 0; $i++) {
     }
     $raw = $null; try { $raw = [IO.File]::ReadAllText($f) } catch {}
     $held = $null; if ($raw) { try { $held = $raw | ConvertFrom-Json } catch {} }
-    if ($held -and (Test-Alive $held.pid)) { Write-Host ('lf-pool: holder ' + $raw.Trim()); break }
+    if ($held -and (Test-Alive $held.pid)) { Write-Host ('lf-pool: holder ' + $raw.Trim()); Write-Host ('lf-pool: holder-srv ' + (Test-Server $held.rDir)); break }
     if (-not $held) { $age = 0; try { $age = ((Get-Date) - (Get-Item -LiteralPath $f -ErrorAction Stop).LastWriteTime).TotalSeconds } catch { continue }; if ($age -lt 60) { Write-Host 'lf-pool: holder {}'; break } }
     if ($held) { Write-Host "lf-pool: reclaiming stale $($s.lock) (pid $($held.pid) gone)"; Stop-Under $held.rDir }
     Remove-Item -LiteralPath $f -Force -ErrorAction SilentlyContinue
@@ -322,7 +438,7 @@ try {
 }
 `;
 
-function holderScript(cfg) {
+export function holderScript(cfg) {
   return `$cfgJson = @'\n${JSON.stringify(cfg)}\n'@\n$main = ${tb.psQuote(cfg.main)}\n${tb.PS_BUILDID}\n${PS_HOLDER}`;
 }
 
@@ -380,7 +496,9 @@ export function startHolder(root, m, cfg, { onLost } = {}) {
       else if (t === "lf-pool: fetched origin") prep.fetched = true;
       else if ((mm = /^lf-remote: buildid (d+)/.exec(t))) prep.build = mm[1];
       else if (t === "lf-pool: new run folder") prep.fresh = true;
-      else if ((mm = /^lf-pool: holder (.*)$/.exec(t))) busy.push(readJsonText(mm[1]));
+      else if ((mm = /^lf-pool: holder-srv (True|False)$/.exec(t))) {
+        if (busy.length) busy[busy.length - 1].serverAlive = mm[1] === "True";
+      } else if ((mm = /^lf-pool: holder (.*)$/.exec(t))) busy.push(readJsonText(mm[1]));
       else if (t === "lf-pool: busy") done({ busy });
       else if ((mm = /^lf-pool: error (.*)$/.exec(t))) done({ error: `${m.name}: ${mm[1]}` });
       else if (/^lf-pool: (reclaiming|stopping)/.test(t)) console.log(`pool: ${m.name}: ${t.slice(9)}`);
@@ -408,6 +526,7 @@ export function startHolder(root, m, cfg, { onLost } = {}) {
         else child.on("close", () => {
           if (liveHolders.has(child)) {
             slot.lost = true;
+            takeNotice(root, acquired.lockName);
             onLost?.(slot);
           }
         });
@@ -430,6 +549,40 @@ export function startHolder(root, m, cfg, { onLost } = {}) {
       done({ error: `${m.name}: holder exited (${code}) ${errText.trim().split(/\r?\n/).slice(-3).join(" | ")}` });
     });
   });
+}
+
+// Takes a remote slot back from a holder the rules above condemned: only when
+// the lock still names that holder (pid + token) and the pid is still that
+// PowerShell (not a reused pid), kill the holder's tree by pid, stop what runs
+// out of its run folder, delete the lock. Returns true when the lock is gone.
+export function reclaimRemote(root, m, info, kind, reason) {
+  if (!info?.name || !info.pid || !info.token) return false;
+  const ps = [
+    PS_STOP_UNDER,
+    `$f = Join-Path ${tb.psQuote(m.root)} ${tb.psQuote(`tmp\\wt\\locks\\${info.name}.lock`)}`,
+    "$h = $null; try { $h = [IO.File]::ReadAllText($f) | ConvertFrom-Json } catch {}",
+    `if (-not $h -or $h.token -ne ${tb.psQuote(info.token)} -or [int]$h.pid -ne ${Number(info.pid)}) { Write-Host 'lf-pool: reclaim skipped (lock changed)'; exit 0 }`,
+    `$p = Get-CimInstance Win32_Process -Filter "ProcessId=${Number(info.pid)}"`,
+    "if ($p -and $p.Name -like 'powershell*') { Write-Host \"lf-pool: stopping holder pid $($p.ProcessId)\"; & taskkill /T /F /PID $p.ProcessId 2>&1 | Out-Null }",
+    "Stop-Under $h.rDir",
+    "Remove-Item -LiteralPath $f -Force -ErrorAction SilentlyContinue",
+    "if (-not (Test-Path -LiteralPath $f)) { Write-Host 'lf-pool: reclaimed' }",
+  ].join("\n");
+  const r = tb.sshPs(m.host, ps, { timeout: 60000, connectTimeout: 4 });
+  const out = r.stdout ?? "";
+  for (const l of out.split(/\r?\n/)) if (/^lf-pool: (stopping|reclaim skipped)/.test(l.trim())) console.log(`pool: ${m.name}: ${l.trim().slice(9)}`);
+  if (!/lf-pool: reclaimed/.test(out)) return false;
+  noteReclaim(root, m, info, kind, reason);
+  return true;
+}
+
+// The verdict on one busy remote holder: { kind, reason } to reclaim, or null.
+export function remoteBusyVerdict(info, runs, { self = hostname(), alive = pidAlive, now = Date.now() } = {}) {
+  const gone = remoteOwnerGone(info, { self, alive });
+  if (gone) return { kind: "dead-owner", reason: gone };
+  const hang = hangReason(info, { now, limitMs: hangLimitMs(runs, info?.purpose), serverAlive: info?.serverAlive });
+  if (hang) return { kind: "hang", reason: hang };
+  return null;
 }
 
 function readJsonText(s) {
@@ -496,6 +649,30 @@ function snapshotSupportsPool(root, sha) {
 
 // ---------------------------------------------------------------- acquire
 
+// The machines a run may use under the current config (re-read every call).
+export function resolveMachines(root, opts = {}) {
+  const mode = opts.mode ?? "any";
+  const all = loadMachines(root);
+  let machines;
+  if (opts.machine) {
+    const m = findMachine(all, opts.machine);
+    if (!m) throw new Error(`pool: no machine '${opts.machine}' (known: ${all.map((x) => x.name).join(", ")}); see tools/pool.json`);
+    machines = [m];
+  } else if (mode === "local") machines = all.filter((m) => m.via === "local");
+  else if (mode === "remote") machines = all.filter((m) => m.via === "ssh");
+  else machines = all;
+  return machines.filter((m) => m.caps.includes("server"));
+}
+
+// Temp file + rename: a reader never sees a half-written ticket (and deletes it).
+function rewriteTicket(root, f, t) {
+  const file = join(queueDir(root), f);
+  try {
+    writeFileSync(`${file}.tmp`, JSON.stringify(t));
+    renameSync(`${file}.tmp`, file);
+  } catch {}
+}
+
 // opts: mode "any"|"local"|"remote", machine (name or ssh host), purpose,
 // waitMs. Returns a slot with .release(), .machine, .waitedMs, and for a
 // remote slot .rDir, .prep, .snap.
@@ -508,35 +685,31 @@ export async function acquireSlot(root, opts = {}) {
     s.waitedMs = 0;
     return s;
   }
-  const all = loadMachines(root);
-  let machines;
-  if (opts.machine) {
-    const m = findMachine(all, opts.machine);
-    if (!m) throw new Error(`pool: no machine '${opts.machine}' (known: ${all.map((x) => x.name).join(", ")}); see tools/pool.json`);
-    machines = [m];
-  } else if (mode === "local") machines = all.filter((m) => m.via === "local");
-  else if (mode === "remote") machines = all.filter((m) => m.via === "ssh");
-  else machines = all;
-  machines = machines.filter((m) => m.caps.includes("server"));
+  let machines = resolveMachines(root, opts);
   if (machines.length === 0) throw new Error(`pool: no machine for --${mode}`);
 
-  // Remote runs ship a snapshot; take it now (what the worktree is when the
-  // run was asked for) and only when a remote is in play.
+  // Remote runs ship a snapshot; take it once, when a remote first comes into
+  // play (what the worktree is when the run was asked for, or when a remote
+  // was enabled while it waited).
   let snap = null;
-  const remotes = machines.filter((m) => m.via === "ssh");
-  if (remotes.length) {
-    try {
-      snap = tb.snapshotCommit(root);
-      if (!snapshotSupportsPool(root, snap.sha)) {
-        console.log(`pool: this snapshot's tools/cli.mjs predates the pool (no ${SLOT_ENV}); merge origin/main to run remotely. Local only.`);
-        snap = null;
+  let snapTried = false;
+  const withSnap = (list) => {
+    if (!snapTried && list.some((m) => m.via === "ssh")) {
+      snapTried = true;
+      try {
+        snap = tb.snapshotCommit(root);
+        if (!snapshotSupportsPool(root, snap.sha)) {
+          console.log(`pool: this snapshot's tools/cli.mjs predates the pool (no ${SLOT_ENV}); merge origin/main to run remotely. Local only.`);
+          snap = null;
+        }
+      } catch (e) {
+        console.log(`pool: snapshot failed (${e.message}); local only`);
       }
-    } catch (e) {
-      console.log(`pool: snapshot failed (${e.message}); local only`);
     }
-    if (!snap) machines = machines.filter((m) => m.via === "local");
-    if (machines.length === 0) throw new Error("pool: no machine can take this run");
-  }
+    return snap ? list : list.filter((m) => m.via === "local");
+  };
+  machines = withSnap(machines);
+  if (machines.length === 0) throw new Error("pool: no machine can take this run");
 
   const hereBuild = tb.serverBuildId(tb.localServerDir(root));
   const skipNote = new Set();
@@ -570,13 +743,29 @@ export async function acquireSlot(root, opts = {}) {
   }
 
   const slug = slugFor(root);
-  const ticket = writeTicket(root, { pid: process.pid, at: new Date().toISOString(), slug, purpose, root, machines: machines.map((m) => m.name) });
+  const pinned = !!opts.machine || mode !== "any";
+  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, machines: machines.map((m) => m.name) });
+  const ticket = writeTicket(root, ticketBody());
   const lastTry = new Map();
   const waitMs = opts.waitMs ?? 3600000;
   let announced = false;
   let lastNotice = Date.now();
   try {
     for (;;) {
+      // Every poll re-reads the pool config: a machine enabled or disabled in
+      // lf.local.json while this ticket waits counts now, and the ticket's
+      // "wants" follow it (same file, so its place in the queue is kept).
+      if (!opts.machine) {
+        let now = machines;
+        try {
+          now = withSnap(resolveMachines(root, opts));
+        } catch {}
+        if (now.map((m) => m.name).join("|") !== machines.map((m) => m.name).join("|")) {
+          console.log(`pool: machines now ${now.map((m) => m.name).join(", ") || "(none enabled)"}`);
+          machines = now;
+          rewriteTicket(root, ticket, ticketBody());
+        }
+      }
       const tickets = liveTickets(root);
       const mine = tickets.findIndex((t) => t.file === ticket);
       const older = mine < 0 ? [] : tickets.slice(0, mine);
@@ -605,6 +794,15 @@ export async function acquireSlot(root, opts = {}) {
         if (r.slot) {
           r.slot.snap = snap;
           return finish(r.slot, attemptAt);
+        }
+        // Busy: a holder whose owner on this PC died, or one hung with no
+        // server, is reclaimed now and the machine retried on the next poll.
+        if (r.busy?.length) {
+          const runs = readRuns(root);
+          for (const b of r.busy) {
+            const v = remoteBusyVerdict(b, runs);
+            if (v && reclaimRemote(root, m, b, v.kind, v.reason)) lastTry.delete(m.name);
+          }
         }
         if (r.error) {
           console.log(`pool: ${r.error}`);
@@ -732,15 +930,17 @@ export function cmdPoolStatus(root) {
       } else {
         info = locks ? locks[name] : undefined;
         if (info && !info.alive) info = { ...info, stale: true };
+        else if (info && remoteOwnerGone(info)) info = { ...info, ownerGone: true };
       }
-      const text = info === undefined ? "unknown" : info?.stale ? `stale (pid ${info.pid} gone; next acquirer reclaims it)` : holderText(info);
+      let text = info === undefined ? "unknown" : info?.stale ? `stale (pid ${info.pid} gone; next acquirer reclaims it)` : holderText(info);
+      if (info?.ownerGone) text += `; STALE: owner pid ${info.originPid} gone here, the next queued run reclaims it`;
       console.log(`      slot ${i} ${name.padEnd(16)} ${text}`);
     }
   }
   const q = liveTickets(root);
   console.log(`queue: ${q.length} waiting`);
-  for (const t of q) console.log(`  ${t.slug ?? "?"} ${t.purpose ?? ""} pid ${t.pid}, ${ago(t.at)}, wants ${(t.machines ?? []).join("|")}`);
-  const runs = readRuns(root).slice(-20);
+  for (const t of q) console.log(`  ${t.slug ?? "?"} ${t.purpose ?? ""} pid ${t.pid}, ${ago(t.at)}, wants ${(t.machines ?? []).join("|")}${t.pinned ? " (pinned)" : ""}`);
+  const runs = readRuns(root).filter((r) => r.purpose !== "reclaim").slice(-20);
   console.log(`last ${runs.length} run(s):`);
   for (const r of runs) {
     console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(22)} ${String(r.purpose).padEnd(14)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
@@ -749,7 +949,9 @@ export function cmdPoolStatus(root) {
 }
 
 export function cmdPoolStats(root) {
-  const runs = readRuns(root);
+  const all = readRuns(root);
+  const reclaims = all.filter((r) => r.purpose === "reclaim");
+  const runs = all.filter((r) => r.purpose !== "reclaim");
   const by = new Map();
   for (const r of runs) {
     const k = r.machine;
@@ -760,7 +962,13 @@ export function cmdPoolStats(root) {
   for (const [k, rs] of by) {
     const avg = (f) => (rs.reduce((a, r) => a + (Number(r[f]) || 0), 0) / rs.length).toFixed(1);
     const pass = rs.filter((r) => r.result === "pass").length;
-    console.log(`  ${k.padEnd(12)} runs ${String(rs.length).padStart(4)}  pass ${pass}  avg wait ${avg("waitS")} s  avg run ${avg("durS")} s`);
+    const rc = reclaims.filter((r) => r.machine === k);
+    const rcText = rc.length ? `  reclaimed ${rc.length} (dead owner ${rc.filter((r) => r.kind === "dead-owner").length}, hang ${rc.filter((r) => r.kind === "hang").length})` : "";
+    console.log(`  ${k.padEnd(12)} runs ${String(rs.length).padStart(4)}  pass ${pass}  avg wait ${avg("waitS")} s  avg run ${avg("durS")} s${rcText}`);
+  }
+  if (reclaims.length) {
+    console.log(`reclaimed slots (last ${Math.min(5, reclaims.length)} of ${reclaims.length}):`);
+    for (const r of reclaims.slice(-5)) console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${r.slot}  ${r.slug} ${r.victimPurpose ?? ""}: ${r.kind}, ${r.reason}`);
   }
   return 0;
 }
