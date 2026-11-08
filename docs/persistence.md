@@ -26,14 +26,14 @@ Each of these must survive a server restart:
    and paid total; police rank, on-duty and unpaid duty seconds; seconds since
    the last benefit collection; player level, XP and skill points; licences (by
    enum name); turned-in quest ids. Death keeps it.
-9. Both duty inventories (M1-11): the police inventory stored at the desk
+9. The contents of placed storage (the hideout stash), keyed by a stable
+   storage key such as `hideout:Roadmap_Hideout`, never an entity id.
+10. Both duty inventories (M1-11): the police inventory stored at the desk
    (`police_duty`) or the civilian one (`civilian_stash`), whichever is not
    worn, keyed by character persistence id in the carried payload, and the
    rounds in every stored magazine (`itemstate` payload).
-10. Wanted reports: offence, the description recorded at the crime, and the
+11. Wanted reports: offence, the description recorded at the crime, and the
    identified flag, keyed by player uid.
-11. The contents of placed storage (the hideout stash), keyed by a stable
-   storage key such as `hideout:Roadmap_Hideout`, never an entity id.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character

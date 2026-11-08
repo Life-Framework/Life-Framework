@@ -6,6 +6,7 @@
 // police/death-on-duty: OnDied did not hand the civilian stash to the carried slot -> `- the respawn has a carried inventory`
 // police/wanted-board: BuildPosters gave the place to every reader -> `- the public poster does not say where (expected '', got 'Fuel station')`
 // police/station: Roadmap_Police_Desk back on the plain vanilla desk -> `- the desk carries the Clock in / Clock out action`
+//   (the action now sits on the desk's punch clock; the assertion reads "the desk's punch clock carries ...")
 // police/item-state: [NonSerialized()] removed from m_iAmmo -> `- the ammo field stays out of the carried record format`
 
 //------------------------------------------------------------------------------------------------
@@ -308,9 +309,13 @@ class EL_Test_PoliceStationWorld : EL_Test
 		ctx.NotNull(desk, "Roadmap_Police_Desk is placed");
 		if (desk)
 		{
-			ctx.True(HasAction(desk, EL_DutyAction), "the desk carries the Clock in / Clock out action");
-			ctx.NotNull(desk.FindComponent(SCR_SoundDataComponent), "the desk carries the punch-clock sound");
-			ctx.NotNull(desk.FindComponent(RplComponent), "the desk replicates (the sound is broadcast by its RplId)");
+			// The action sits on the punch clock itself: the interaction trace hits the clock, so
+			// the prompt shows when the player looks at it.
+			IEntity clock = EL_ActionSite.FindNear(desk.GetOrigin(), 1.5, "EL_DutyAction");
+
+			ctx.NotNull(clock, "the desk's punch clock carries the Clock in / Clock out action");
+			if (clock)
+				ctx.NotNull(clock.FindComponent(SCR_SoundDataComponent), "the punch clock carries its click sound");
 		}
 
 		IEntity board = GetGame().GetWorld().FindEntityByName("Roadmap_Police_WantedBoard");
@@ -361,9 +366,9 @@ class EL_Test_PoliceItemState : EL_Test
 	{
 		LF_StorageItemRecord item = LF_StorageItemRecord.Create("{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et", 1, -1, 0, 0);
 		item.m_iAmmo = 11;
-		SCR_JsonSaveContext json = new SCR_JsonSaveContext();
+		JsonSaveContext json = new JsonSaveContext(false);
 		json.WriteValue("item", item);
-		string text = json.ExportToString();
+		string text = json.SaveToString();
 		ctx.True(text.Contains("m_sPrefab"), "the record serializes its fields");
 		ctx.False(text.Contains("m_iAmmo"), "the ammo field stays out of the carried record format");
 

@@ -93,6 +93,11 @@ export function buildLine(id, spec) {
     return `${id} interact ${spec.step}`;
   }
   if (spec.verb === "stand") {
+    // Optional side (e default, w, n, s): stand on that side of the entity, facing it.
+    if (spec.side) {
+      if (!["e", "w", "n", "s"].includes(spec.side)) throw new Error(`bad stand side ${spec.side}`);
+      return `${id} stand ${token(spec.entityName, "entity")} ${spec.side}`;
+    }
     return `${id} stand ${token(spec.entityName, "entity")}`;
   }
   if (spec.verb === "look") {
@@ -1300,7 +1305,7 @@ function main(argv) {
       return played.code;
     }
     if (cmd === "stand") {
-      return printResult(sendCommand({ verb: "stand", entityName: rest[0] }));
+      return printResult(sendCommand({ verb: "stand", entityName: rest[0], side: rest[1] }));
     }
     if (cmd === "look") {
       return printResult(sendCommand({ verb: "look" }));
