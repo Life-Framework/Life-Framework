@@ -65,10 +65,10 @@ in the world (§b).
 | 14 | Contraband run | `Roadmap_Convoy_Start/Drop` 222/225,120 | **works**, **broken look** | The cargo is `RowanBerries.et`. The markers are `EL_DebugAreaBoundary` debug meshes. → M1-14 |
 | 15 | Police clock in | `Roadmap_Police_Desk` 204,120 | **broken** | The desk has **no components** (`Roadmap.layer`). Duty is at `PoliceStation_Debug` (170,120) on `Police.layer`. `docs/playtest.md` sends players to the wrong place. The desk becomes the only way to become police: whitelist check and loadout there. → M1-11 |
 | 16 | Police learn of a crime | toast | **broken** | Alerts are toasts, and toasts fail until #97. Nothing happens at the site. → M1-20 |
-| 17 | Find the suspect | police menu | **broken** | The wanted list now comes over RPC (#83), but the layout does not render `GetWantedPlayers()`. The menu buttons are unlabeled. → M1-11 |
+| 17 | Find the suspect | police menu | **broken** | The wanted list now comes over RPC (#83), but the layout does not render `GetWantedPlayers()`. The menu buttons are unlabeled. Decided 2026-11-08: police see a vague description (clothing, vehicle, place) until they identify the suspect by an ID check or in the act. → M1-11 |
 | 18 | Arrest and escort | on the suspect, `Roadmap_Escort_Car` 204,108 | **works** | `LF_JailArrestAction`, `LF_JailPutInVehicleAction`. Ranges in #73. |
 | 19 | Fine | police menu | **UI**, **broken** | A remote action takes cash at any distance (`EL_PoliceMenu.RpcAsk_EL_PoliceFine`). The menu is a stub. → M1-19 |
-| 20 | Jail | `Roadmap_Jail_Cell` 192,122 | **works** | Timed sentence. #77 persists it. The prisoner gets no slip and release is silent. → M1-21 |
+| 20 | Jail | `Roadmap_Jail_Cell` 192,122 | **works** | Timed sentence. #77 persists it. The prisoner gets no slip and release is silent. `LF_Jail.Tick` advances offline prisoners too. Decided 2026-11-08: the sentence ticks only while the prisoner is online; in-jail work that shortens it is after M1 (#127). → M1-21 |
 | 21 | Found an organization | `Roadmap_Org_Desk` 210,120 | **works**, **UI** | The desk screen has create, deposit, withdraw, and upgrade. Invite and kick are unreachable from the world (`EL_OrganizationManager` only). → M1-17 |
 | 22 | Hideout | door 213, machine 216, stash 219 (z 120) | **works** / **missing** | The door and machine work. The stash has no storage component. → M1-15 |
 | 23 | Garage | `Roadmap_Garage` 186,102.1 | **works**, partly unreachable | Store and retrieve work. Retrieve spawns at the lot pad. The `LF_Garage` catalog screen is unreachable. There is no impound rule. → M1-16 |
@@ -102,12 +102,12 @@ without adding play, so the UI stays and is made to look like an object.
 | Garage | actions + unreachable catalog | Park at the garage, retrieve on its pad, read a ledger card; ungaraged cars go to impound for a fee | **Adopt** (M1-16). Delete the catalog purchase path |
 | Robbery, breach, bank bags, cabinet | actions, charge item, carried bags | Already in the world | Keep |
 | Police alert | toast | Alarm at the site, a radio chirp to on-duty officers, a dispatch line on the station board. With no officer on duty the alarm is louder and more visible | **Adopt** (M1-20). Payphones and pagers are **later** |
-| Wanted list | menu stub | Wanted board at the station; posters with names for civilians, details for on-duty police | **Adopt** (M1-11) |
+| Wanted list | menu stub | Wanted board at the station. Posters carry a vague description (clothing, vehicle, place) until the suspect is identified by an ID check or in the act; then the name. Murder is a crime like any other (M1-27) | **Adopt** (M1-11) |
 | Duty | action at a debug station off the street | Clock in and out at the station desk (`ClockPunch_01`). Clocking in stores the civilian inventory and restores the police one; clocking out swaps back | **Adopt** (M1-11). Replaces the once-per-shift armory for M1 |
 | Death and respawn | death screen, free respawn at a civilian spawn | Wake in a hospital bed; a small bill from the bank, debt if broke | **Adopt** (M1-26) |
 | Fine | remote menu, any distance | Officer writes a paper ticket face to face. The suspect carries it and pays in cash at the police desk within N minutes. Unpaid, it doubles once; unpaid again, +1 wanted. Never from the bank. A paid ticket stays as a receipt | **Adopt** (M1-19). The amount entry is a UI field |
 | Arrest and escort | actions, vehicle seat | Already in the world | Keep |
-| Jail | silent timer | Sentence slip with the release time; door sound on release | **Adopt** (M1-21) |
+| Jail | silent timer | Sentence slip with the release time; door sound on release. The sentence ticks only while the prisoner is online | **Adopt** (M1-21). In-jail work that shortens the sentence is **later** (#127) |
 | Confiscation | deletes weapons | Seized items go to an evidence locker at the station | **Later** |
 | Organization | desk menu | Ledger-page UI at the registry desk. Invite and remove are person-to-person actions | **Adopt** (M1-17). The ledger stays a UI: it needs typing and a list |
 | Org fund | number in a menu | Cash in a safe at the hideout that can be robbed | **Later**: it changes the economy and needs persistence |
@@ -186,7 +186,7 @@ boxes. A scope starts as soon as its dependencies are merged.
 
 - **Wave 1 (foundations):** M1-00 street split, M1-01 sign system, M1-02 town manifest, M1-03 playtest host, M1-04 carried inventory persists, M1-05 multi-client harness, M1-06 filming, M1-07 pay at the counter, M1-08 registration + ID card.
 - **Wave 2 (sites):** M1-25 one-street town, M1-09 signs placed, M1-10 progression persists, M1-11 police station, M1-12 player interaction menu, M1-13 counter screens, M1-14 contraband cargo, M1-15 hideout stash, M1-26 wake up in hospital.
-- **Wave 3 (consequence and polish):** M1-16 garage + impound, M1-17 org registry, M1-18 arrival chain, M1-19 fine ticket, M1-20 alarm + dispatch, M1-21 jail slip, M1-22 town tidy.
+- **Wave 3 (consequence and polish):** M1-16 garage + impound, M1-17 org registry, M1-18 arrival chain, M1-19 fine ticket, M1-20 alarm + dispatch, M1-21 jail slip, M1-22 town tidy, M1-27 murder and spawn safe zone, M1-28 light survival needs.
 - **Wave 4 (acceptance):** M1-23 journey proof on dedicated, M1-24 playtest release.
 
 ### Wave 1
@@ -225,16 +225,18 @@ boxes. A scope starts as soon as its dependencies are merged.
 | M1-17 | [#102](https://github.com/Life-Framework/Life-Framework/issues/102) | **Organization registry: ledger desk and invite by facing**. The org desk screen lists name, fund, and the processing upgrade, but invite/kick exist only in `EL_OrganizationManager` and are unreachable from the world. | M1-12, M1-00 | 2 clients: found org, invite, member opens the hideout door. | yes |
 | M1-18 | [#103](https://github.com/Life-Framework/Life-Framework/issues/103) | **Guided arrival chain**. Decision "Short guided arrival, then free". | M1-07, M1-08, M1-09, M1-10, #97 | Fresh dedicated client completes the chain with flows; `state` shows ID card, cash, bank > 0. | yes |
 | M1-19 | [#104](https://github.com/Life-Framework/Life-Framework/issues/104) | **Fine as a paper ticket**. Fines are a remote menu action that takes cash from a wanted player at any distance (`EL_PoliceMenu.RpcAsk_EL_PoliceFine`; #73 adds a range). The ticket is paid in cash at the police desk within N minutes, doubles once at the deadline, then +1 wanted. | M1-11, M1-12 | 2 clients on dedicated: ticket written, paid at the desk; a second ticket left past both deadlines doubles, then `state` shows wanted +1. | yes |
-| M1-20 | [#105](https://github.com/Life-Framework/Life-Framework/issues/105) | **Alarm and dispatch**. Police learn about a robbery only from a toast (and toasts are broken until #97). No crime needs police online; with no officer on duty the alarm is louder. Flagship minimum 0. | M1-11, M1-03 | 2 clients: till robbery → police client `state` shows dispatch received; alarm audible in clip. Robbery with nobody on duty plays the loud alarm. | yes |
-| M1-21 | [#106](https://github.com/Life-Framework/Life-Framework/issues/106) | **Jail you can see**. Arrest, escort, and the timed sentence work (`LF_Jail.c`), and #77 persists the sentence, but the prisoner gets no in-world statement of the sentence and release is silent. | #73, #77, M1-00 | 2 clients: arrest → slip → release; restart mid-sentence resumes. | yes |
+| M1-20 | [#105](https://github.com/Life-Framework/Life-Framework/issues/105) | **Alarm and dispatch**. Police learn about a robbery only from a toast (and toasts are broken until #97). No crime needs police online; with no officer on duty the alarm is louder. Flagship minimum 0. | M1-11, M1-03 | 2 clients: till robbery → police client `state` shows dispatch received; alarm audible in clip. Robbery with nobody on duty plays the loud alarm. The dispatch carries a description, not a name. | yes |
+| M1-21 | [#106](https://github.com/Life-Framework/Life-Framework/issues/106) | **Jail you can see**. Arrest, escort, and the timed sentence work (`LF_Jail.c`), and #77 persists the sentence, but the prisoner gets no in-world statement of the sentence and release is silent. | #73, #77, M1-00 | 2 clients: arrest → slip → release; restart mid-sentence resumes; a prisoner who logs off resumes with the same remaining time. | yes |
 | M1-22 | [#107](https://github.com/Life-Framework/Life-Framework/issues/107) | **Town tidy**. A stranger walks past debug clutter: visible `EL_DebugAreaBoundary` markers on ATM, Shops, Jobs, NPCs, Survival, chain layers, test fixtures (`PRFeatureCrate` 176,130, `Tests.layer`), and duplicate stations. Dev fixtures move into the fenced test annex (M1-25) rather than being deleted. | M1-25, M1-09, M1-11, M1-14, M1-15 | `report town` passes with no outliers; a wide shot from spawn shows no debug meshes. | yes |
+| M1-27 | [#125](https://github.com/Life-Framework/Life-Framework/issues/125) | **Murder makes you wanted; the spawn is a safe zone**. Decision "Killing anyone makes you wanted for murder". A kill raises nothing today, and nothing stops players shooting arrivals at the plaza. | M1-25, M1-11, M1-20 | 2 clients: a kill outside the plaza makes the killer wanted and the board shows a description; a shot inside the plaza does nothing. | yes |
+| M1-28 | [#126](https://github.com/Life-Framework/Life-Framework/issues/126) | **Light survival needs**. Decision "Survival needs are light". `EL_SurvivalStats` starves a player to death in well under an hour, with hard-coded rates. Config rates; health capped near 75%; never kills. | none | A dedicated client at 0 hunger and thirst stays alive at the health cap. | no |
 
 ### Wave 4
 
 | ID | Issue | Scope | Depends on | Player-view proof | Game |
 | --- | --- | --- | --- | --- | --- |
 | M1-23 | [#108](https://github.com/Life-Framework/Life-Framework/issues/108) | **Journey proof on a dedicated server**. M1 is done only when every loop is proven from the player's view on a dedicated server with several clients, including a restart. | all M1 scopes, M1-05, M1-06 | `report journey` all green; report committed as an artifact link in the PR. | yes |
-| M1-24 | [#109](https://github.com/Life-Framework/Life-Framework/issues/109) | **Playtest release: guide, Workshop, showcase**. M1 is published on the Workshop, hosted from the maintainer's PC, and collects feedback through GitHub issues. | M1-23 | A clean machine (or clean profile) subscribes, joins the hosted server, and completes the arrival chain. | yes |
+| M1-24 | [#109](https://github.com/Life-Framework/Life-Framework/issues/109) | **Playtest release: guide, Workshop, showcase**. Decided 2026-11-08: two or three private playtests with friends and their fixes come first; then the public Workshop release with a showcase video. Hosted from the maintainer's PC; feedback through GitHub issues. | M1-23 | A clean machine (or clean profile) subscribes, joins the hosted server, and completes the arrival chain. | yes |
 
 ## f. Not in M1
 
@@ -253,6 +255,8 @@ Do not build these in M1. File them for later.
 - **Name tags. A phone UI. Custom meshes or textures for signs.**
 - **New jobs, crafting, revive, police missions, world events.**
 - **Rented hosting. Monetization.**
+- **In-jail work that shortens a sentence** (#127). **The police application form** (#128). **The day and night cycle** (#129).
+- **Money sinks beyond M1:** paying for fuel, vehicle repairs, property upkeep, rent, and taxes, and licences as paid cards. M1 has food and medicine, the hospital bill, fines, and impound fees.
 
 ## Hot files (read before taking a scope)
 
@@ -292,7 +296,7 @@ Do not build these in M1. File them for later.
 
 ## Decided 2026-11-08
 
-The maintainer answered the plan's six questions and made four more calls.
+The maintainer answered the plan's six questions and made more calls.
 Each answer is an entry in [decisions](../decisions.md).
 
 - **Q1. Sign titles:** printed on the board, not only in the prompt. Done in #119 for the board and notice; pub sign and chalkboard in #116. ([decision](../decisions.md#gameplay))
@@ -305,3 +309,13 @@ Each answer is an entry in [decisions](../decisions.md).
 - **Names:** after an introduction, a name shows only up close, never over a crowd, and is remembered across sessions (M1-12). ([decision](../decisions.md#gameplay))
 - **Police gear:** clocking in swaps in a separate police inventory and clocking out swaps it back; both persist across a restart (M1-11, M1-04). ([decision](../decisions.md#gameplay))
 - **Town style:** a small 1989 Everon village with a real road and a square at the spawn, plus a fenced test annex for dev fixtures (M1-25, M1-22). ([decision](../decisions.md#delivery))
+- **Wanted:** a crime makes you wanted at once; police get a vague description, not a name, until they identify you (M1-11, M1-20). ([decision](../decisions.md#gameplay))
+- **Violence:** killing anyone is murder and makes you wanted; the spawn plaza is a safe zone; admins handle repeat offenders (M1-27, #125). ([decision](../decisions.md#gameplay))
+- **Survival:** hunger and thirst drain slowly, cap health near 75% and cut stamina, and never kill (M1-28, #126). ([decision](../decisions.md#gameplay))
+- **Jail:** the sentence ticks only while the prisoner is online (M1-21); in-jail work that shortens it is after M1 (#127). ([decision](../decisions.md#gameplay))
+- **Money sinks:** fuel and repairs; food, medicine, and hospital bills; property upkeep, rent, and taxes; licences, fines, and impound. M1 ships the food, hospital, fine, and impound sinks. ([decision](../decisions.md#gameplay))
+- **Police whitelist:** an application form at the station desk, approved by admins or chiefs; after M1 (#128). ([decision](../decisions.md#gameplay))
+- **Time of day:** accelerated day and night by default, real time as an option; after M1 (#129). ([decision](../decisions.md#gameplay))
+- **Release:** two or three private playtests with friends and fixes, then the public Workshop release with a showcase video (M1-24). ([decision](../decisions.md#delivery))
+- **Quality bar:** a physical interaction without a fitting animation and sound is not done on the flagship. Every M1 clip shows them. ([decision](../decisions.md#delivery))
+- **Open source and dependencies:** permissive work may be copied with its notice and credit; share-alike and unlicensed work is never copied. A very small number of Workshop dependencies is acceptable, each recorded as a decision. ([decision](../decisions.md#identity))
