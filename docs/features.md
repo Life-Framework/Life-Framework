@@ -230,7 +230,9 @@
 - ✅ The handler bodies are the static seams
   `EL_CharacterATMComponent.ServeDeposit/ServeWithdraw` (extracted 2026-11-07,
   no behavior change); `atm/request-cash-boundary` (WORLD) drives them with a
-  real character. Its red-proof is still pending a suite run.
+  real character (red-proof observed 2026-11-08). The withdraw rollback case
+  pays into an entity with no inventory: a bare `Character_Roleplay` still
+  holds MoneyStack.
 
 ### `EL_BankAccountComponent` — `Feature/Banking/` (deleted 2026-08-30)
 - ❌ The second, unintegrated entity bank is **gone** (file deleted, no
@@ -269,7 +271,7 @@
 - ✅ The value lookup and the black-market decision are the static seams
   `EL_TraderManagerComponent.GetUnitValue` / `CanAccessBlackMarket`
   (extracted 2026-11-07; the lookup now skips a null row instead of crashing),
-  pinned by `trader/sell-rules` (LOGIC). Red-proof pending a suite run.
+  pinned by `trader/sell-rules` (LOGIC; red-proof observed 2026-11-08).
 - ⚠️ Unguarded `pStorageFrom.GetOwner()` (null crash); null `m_aTradableItems`
   foreach crash; delete-then-pay not atomic; `RETCODE_ITEM_TOO_BIG` used for
   "not tradable"; black-market check fails closed but is only cache-keyed.

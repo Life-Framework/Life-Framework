@@ -2,10 +2,10 @@
 // loop goes red. Observed red: expected GetCash 201 after AddCash(200), then
 // reverted. Dropping the apple tradable value below 5 in AppleChain.layer sends
 // the same cash assertion red.
-// red-proof (robbery step, now EL_RobAction.CommitRobbery instead of a hand-written
-// AddCash + IncreaseWantedLevel mirror): PENDING - not yet observed; the server install was
-// being restored. Planned: deposit the payout to the bank in CommitRobbery and the
-// "bank balance stays 100" assertion goes red.
+// Robbery step (now EL_RobAction.CommitRobbery instead of a hand-written AddCash +
+// IncreaseWantedLevel mirror): Observed 2026-11-08 with `tools\cli test --no-build --tier all`, EL_RobAction.PayCash reporting
+// the payout paid without calling AddCash failed it with `[ELTEST] FAIL e2e/narrative-loop`,
+// `- robbery payout lands as MoneyStack: cash 210 (expected 210, got 10)`. Restored; green.
 // tier: WORLD
 class EL_Test_E2E_Narrative : EL_Test
 {

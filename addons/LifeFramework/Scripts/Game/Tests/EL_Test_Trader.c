@@ -1,8 +1,6 @@
-// red-proof: PENDING - not yet observed. The Arma Reforger Server install was being restored
-// when this test was rewritten, so `tools\cli test --no-build --tier fast` could not boot.
-// Planned perturbation: make EL_TraderManagerComponent.CanAccessBlackMarket return true for a
-// missing account (the police/no-account assertions go red), or return the first row's value
-// from GetUnitValue (the unlisted-item assertion goes red).
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: EL_TraderManagerComponent.CanAccessBlackMarket
+// returning true for any account failed it with `[ELTEST] FAIL trader/sell-rules`,
+// `- the black market refuses a police officer`. Restored; green.
 // The previous trader/item-config and trader/processing-config tests only read back struct
 // fields they had just set; they were deleted. Recipe validation is covered by
 // actions/guards (EL_ProcessAction.IsRecipeConfigured).

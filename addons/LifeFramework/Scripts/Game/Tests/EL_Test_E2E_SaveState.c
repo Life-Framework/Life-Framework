@@ -1,15 +1,7 @@
-// red-proof: e2e/pass2-verify-load goes red when the reload boot loads no save:
-// run pass 2 with a fresh profile (drop -KeepProfile) so no account records land
-// in the managers and the bank GetAccount null-checks fail. Breaking the loaded
-// balance expectation to 301 also fails the == 300 assertion, and removing
-// EL_PersistenceComponent from GameMode_Roleplay.et fails the component resolve.
-// e2e/pass1-write-save goes red when the save request is rejected, e.g. mission
-// header m_eSaveTypes 0, which leaves IsSaveInProgress() false right after
-// SaveGame(), or when the blocking shutdown save never lands (no graceful close),
-// which makes pass 2's loaded-account assertions fail.
-// Red run pending: the two-boot persistence gate is serial-only this session;
-// the mutations above fail on the next persistence-boot run.
-// Jail (save version 5), observed 2026-11-07 with `tools\cli wt e2e restart-safety`:
+// red-proof: e2e/pass1-write-save, Observed 2026-11-08 with `tools\cli test --no-build --tier all`: skipping
+// manager.SaveGame() failed it with `[ELTEST] FAIL e2e/pass1-write-save`,
+// `- SaveGame() accepts the manual save request`. Restored; green.
+// e2e/pass2-verify-load (save version 5), observed 2026-11-07 with `tools\cli wt e2e restart-safety`:
 // dropping order.Insert("jail") and writing version 4 left pass 1 green and failed
 // pass 2 with `SUMMARY tier=persistence passed=7 failed=1 total=8`,
 // `[ELTEST] FAIL e2e/pass2-verify-load`,

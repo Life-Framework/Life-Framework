@@ -1,8 +1,8 @@
-// red-proof: PENDING - not yet observed. The Arma Reforger Server install was being restored
-// when the silent skip was removed, so `tools\cli test --no-build --tier all` could not boot.
-// Planned perturbation: expect GetCash 51 after TakeCash(150). Before this change an unresolved
-// storage manager returned ctx.Pass and skipped every cash assertion while the test read green;
-// the fixture now records a FAIL with its reason instead.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: expecting GetCash 51
+// after TakeCash(150) failed it with `[ELTEST] FAIL money/cash-roundtrip`,
+// `- GetCash reads 50 after TakeCash(150) (expected 51, got 50)`. Restored; green. Before this
+// change an unresolved storage manager returned ctx.Pass and skipped every cash assertion; the
+// fixture now records a FAIL with its reason instead.
 // tier: WORLD
 class EL_Test_MoneyCash : EL_Test
 {

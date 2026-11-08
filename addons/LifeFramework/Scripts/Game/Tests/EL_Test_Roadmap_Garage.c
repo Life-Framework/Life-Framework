@@ -1,9 +1,7 @@
-// red-proof: PENDING - not yet observed. The server was not booted for this test, before or after
-// this revision (the Arma Reforger Server install was being restored). Planned perturbation:
-// drop the empty-spawn-prefab fallback in LF_Garage.AppendRow, or make the screen skip the
-// first catalog row, and run `tools\cli test --no-build --tier fast`; the fallback or
-// screen-matches-catalog assertion goes red. The per-row restatement of the hard-coded
-// catalog constants was replaced with invariants the garage relies on.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: dropping the empty-spawn-prefab fallback in
+// LF_Garage.AppendRow failed it with `[ELTEST] FAIL roadmap/garage`, `- an empty spawn prefab falls
+// back to the preview prefab (expected '{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et',
+// got '')`. Restored; green.
 // tier: LOGIC
 class EL_Test_Roadmap_Garage : EL_Test
 {

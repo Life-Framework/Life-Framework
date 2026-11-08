@@ -1,7 +1,7 @@
-// red-proof: PENDING - not yet observed. The Arma Reforger Server install was being restored, so
-// `tools\cli test --no-build --tier all` could not boot. Planned perturbation: delete the
-// `EL_MoneyUtils.AddCash(character, removed)` rollback in EL_CharacterATMComponent.ServeDeposit;
-// "over-deposit leaves the 50 cash in the pockets" goes red (expected 50, got 0).
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: commenting out the
+// EL_MoneyUtils.AddCash(character, removed) rollback in EL_CharacterATMComponent.ServeDeposit
+// failed it with `[ELTEST] FAIL atm/request-cash-boundary`,
+// `- over-deposit leaves the 50 cash in the pockets (expected 50, got 0)`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
 //! The ATM is the only cash-to-account boundary. Drives the server seams RpcAsk_Deposit and

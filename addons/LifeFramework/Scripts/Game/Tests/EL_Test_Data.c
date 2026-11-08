@@ -1,6 +1,7 @@
-// red-proof: append a nonexistent path (e.g. "UI/Layouts/Missing.layout") to
-// the layout list and run `tools\cli test --tier all`. Red run pending: first
-// boot after the EPF dependency removal lands.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: appending
+// "{0000000000000001}UI/Layouts/Missing.layout" to the layout list failed it with
+// `[ELTEST] FAIL config-and-localization`,
+// `- menu layout loads: {0000000000000001}UI/Layouts/Missing.layout`. Restored; green.
 // tier: WORLD
 class EL_Test_Data : EL_Test
 {

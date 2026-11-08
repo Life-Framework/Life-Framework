@@ -1,8 +1,9 @@
-// red-proof: PENDING - not yet observed for roadmap/hideout, e2e/roadmap-hideout or
-// roadmap/hideout-save. The line here before was copied from the contraband test and recorded
-// that test's failure, not this file's. The server install was being restored, so no suite ran.
-// Planned perturbation: make LF_Hideout.Assign return true without recording the owner and run
-// `tools\cli test --no-build --tier all`; "ownership is the organization id" goes red.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: commenting out
+// `state.m_sOrganizationId = organizationId;` in LF_Hideout.Assign failed all three tests here:
+// `[ELTEST] FAIL roadmap/hideout` (`- ownership is the organization id (expected '<org id>', got '')`),
+// `[ELTEST] FAIL e2e/roadmap-hideout` (`- the lock identifier is the organization id`), and
+// `[ELTEST] FAIL roadmap/hideout-save` (`- one hideout record is exported (expected 1, got 0)`).
+// Restored; green.
 
 // tier: LOGIC
 class EL_Test_Roadmap_Hideout : EL_Test

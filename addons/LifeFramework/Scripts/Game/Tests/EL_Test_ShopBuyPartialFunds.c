@@ -1,7 +1,7 @@
-// red-proof: PENDING - not yet observed. The Arma Reforger Server install was being restored, so
-// `tools\cli test --no-build --tier all` could not boot. Planned perturbation: remove the
-// `if (removed != totalPrice)` refusal in EL_ShopComponent.BuyItem; BuyItem takes the partial
-// cash and delivers the M9, so "buyer keeps their cash" goes red.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: turning the
+// `if (removed != totalPrice)` refusal in EL_ShopComponent.BuyItem into `if (false && ...)` failed it
+// with `[ELTEST] FAIL shop/buy-partial-funds`, `- a buyer with half the price is refused` and
+// `- buyer keeps their cash after the refused purchase (expected 250, got 0)`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
 //! A buyer with half the price cannot buy. Drives EL_ShopComponent.BuyItem on the DebugWorld

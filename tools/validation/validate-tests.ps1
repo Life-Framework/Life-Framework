@@ -10,13 +10,13 @@
 #      assertions were observed failing at least once.
 #   4. The red-proof is not a placeholder. Two shapes are reported:
 #      - placeholder: the comment says pending / TODO / TBD / not run / not
-#        observed / not booted, or carries almost no text. WARN: a pending
-#        red-proof is honest, but it is not proof yet.
+#        observed / not booted, or carries almost no text. FAIL: break the
+#        guarded code, watch the test go red, restore it, and record that line.
 #      - copied: the comment names another test's GetName() (an `area/name`
 #        id defined in a different file) and none of this file's own names.
 #        FAIL: the comment records a different test's failure.
 #
-# Exit codes: 0 = contract holds (warnings allowed), 1 = violations listed.
+# Exit codes: 0 = contract holds, 1 = violations listed.
 
 $ErrorActionPreference = "Stop"
 
@@ -89,12 +89,8 @@ foreach ($file in $files) {
   }
 }
 
+$violations += $placeholders
 $violations += $copied
-
-if ($placeholders.Count -gt 0) {
-  Write-Host "validate-tests: WARN $($placeholders.Count) of $($files.Count) test file(s) carry a placeholder red-proof"
-  foreach ($p in $placeholders) { Write-Host "  ~ $p" }
-}
 
 if ($violations.Count -gt 0) {
   $failed = $true
@@ -104,5 +100,5 @@ if ($violations.Count -gt 0) {
 
 if ($failed) { exit 1 }
 
-Write-Host "validate-tests: OK (registry in sync, red-proofs present, $($placeholders.Count) placeholder warning(s), 0 copied)"
+Write-Host "validate-tests: OK (registry in sync, red-proofs observed, 0 placeholder, 0 copied)"
 exit 0

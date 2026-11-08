@@ -1,4 +1,6 @@
-// red-proof: the server was not booted. tools\cli test was not run, so no failing suite line was observed.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: removing the driver-seat skip from
+// LF_JailEscort.NearestFreePassengerSlot failed it with `[ELTEST] FAIL roadmap/escort`,
+// `- a driver seat is not a passenger seat (expected -1, got 0)`. Restored; green.
 // tier: LOGIC
 class EL_Test_Roadmap_Escort : EL_Test
 {

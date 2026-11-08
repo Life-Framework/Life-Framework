@@ -1,8 +1,6 @@
-// red-proof: PENDING for this revision - not yet observed (the server install was being restored).
-// Planned perturbation: give two EL_SirenMode.MODE_NAMES entries the same key, or move
-// "default" off index 0, and run `tools\cli test --no-build --tier fast`; the unique-name or
-// default-first assertion goes red. The old assertion compared N_MODES with a list the test
-// typed itself, which restated the constant and was removed.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: renaming MODE_NAMES entry "Mode1" to "Mode2"
+// failed it with `[ELTEST] FAIL siren/mode-enum-integrity`, `- mode name Mode2 is unique`.
+// Restored; green.
 
 // tier: LOGIC
 class EL_Test_SirenMode : EL_Test

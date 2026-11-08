@@ -1,10 +1,10 @@
-// red-proof: PENDING - not yet observed. The Arma Reforger Server install was being restored
-// when this test was rewritten, so `tools\cli test --no-build --tier all` could not boot.
-// Planned perturbations: crime/rob-reward - deposit the payout to EL_ATMManager in
-// EL_RobAction.CommitRobbery (bank-0 assertion goes red) or drop the cooldown gate
-// (cooldown assertions go red). crime/rob-weapon-vehicle - change
-// EL_RobWeaponAction.WANTED_INCREASE to 1 (wanted-2 assertion goes red) or drop the
-// IsFactionAllowedToRob faction check (police assertion goes red).
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`.
+// crime/rob-reward: EL_RobAction.PayCash reporting the payout paid without calling AddCash failed
+// it with `[ELTEST] FAIL crime/rob-reward`,
+// `- payout lands in the robber's inventory as MoneyStack (expected 200, got 0)`.
+// crime/rob-weapon-vehicle: EL_RobWeaponAction.WANTED_INCREASE 2 -> 1 failed it with
+// `[ELTEST] FAIL crime/rob-weapon-vehicle`, `- weapon robbery raises wanted by 2 (expected 2, got 1)`.
+// Both restored; green.
 
 //------------------------------------------------------------------------------------------------
 //! The cash robbery through the production server path, with a real character so the payout is

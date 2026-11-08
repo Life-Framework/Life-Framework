@@ -1,7 +1,6 @@
-// red-proof: PENDING for this revision - not yet observed (the server install was being restored).
-// Planned perturbation: build the identity from "LocalPlayer" alone (drop the playerId) and run
-// `tools\cli test --no-build --tier fast`; the distinct-players assertion goes red. The old test
-// only checked non-empty and same-input-same-output.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: building the fallback name from "LocalPlayer"
+// alone (no playerId) in EL_Utils.BuildLocalIdentity failed it with
+// `[ELTEST] FAIL spawn/local-identity`, `- two players get different local identities`. Restored; green.
 
 // tier: LOGIC
 class EL_Test_LocalIdentity : EL_Test

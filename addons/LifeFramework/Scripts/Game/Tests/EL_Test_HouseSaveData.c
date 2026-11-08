@@ -1,9 +1,7 @@
-// red-proof: PENDING for this revision - not yet observed (the server install was being restored).
-// Planned perturbation: remove the empty-identifier guard from EL_HouseLockRecord.IsValidFor
-// (return m_sHouseIdentifier == houseIdentifier) and run `tools\cli test --no-build --tier fast`;
-// the unbound-record assertions go red, because an unbound record would relock every house.
-// The VERSION constant and Create field read-backs were removed: they restated what the test
-// had just written and could not fail.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: replacing the empty-identifier guard in
+// EL_HouseLockRecord.IsValidFor with `if (false)` failed it with `[ELTEST] FAIL houses/save-data`,
+// `- an unbound record is rejected everywhere`. Restored; green. The VERSION constant and Create
+// field read-backs were removed: they restated what the test had just written and could not fail.
 
 // tier: LOGIC
 class EL_Test_HouseSaveData : EL_Test

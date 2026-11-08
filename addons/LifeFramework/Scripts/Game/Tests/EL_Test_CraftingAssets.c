@@ -1,8 +1,9 @@
-// red-proof: PENDING - not yet observed. The Arma Reforger Server install was being restored, so
-// `tools\cli test --no-build --tier all` could not boot. Planned perturbation: change one GUID
-// below to a GUID no resource has; Resource.Load returns an invalid resource and that prefab's
-// assertion goes red. The README and file-existence checks this test used to do by reading
-// repo files through a cwd-dependent $profile path moved to
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: Lathe.et
+// listed as {9FB8E1E473BF6504}Prefabs/Crafting/LatheMissing.et failed it with
+// `[ELTEST] FAIL crafting/assets`, `- crafting prefab loads: {9FB8E1E473BF6504}Prefabs/Crafting/LatheMissing.et`.
+// A wrong GUID with the right path, or a wrong path with the right GUID, still loads (observed
+// green both ways): the engine resolves either half, so this test catches a deleted prefab, not a
+// typo in one half. Restored; green. The README and file-existence checks live in
 // tools/validation/validate-crafting-assets.mjs, which runs in `tools\cli validate`.
 // tier: WORLD
 class EL_Test_CraftingAssets : EL_Test
