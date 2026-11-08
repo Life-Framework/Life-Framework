@@ -26,6 +26,9 @@ class LF_SignDef
 
 	[Attribute("", UIWidgets.EditBox, "Cooldowns, wanted level, other rules")]
 	string m_sRules;
+
+	[Attribute("", UIWidgets.EditBox, "Where to go after this place, so a stranger can follow the loop")]
+	string m_sNext;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -46,6 +49,7 @@ class LF_SignCatalog
 	static const string KEY_HOW = "#LF-Sign_How";
 	static const string KEY_NEEDS = "#LF-Sign_Needs";
 	static const string KEY_RULES = "#LF-Sign_Rules";
+	static const string KEY_NEXT = "#LF-Sign_Next";
 	static const string KEY_CLOSE = "#LF-Sign_Close";
 
 	protected static ref LF_SignConfig s_Config;
@@ -136,7 +140,7 @@ class LF_SignCatalog
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Title, then one line per filled section in the order What, How, Needs, Rules, then Close.
+	//! Title, then one line per filled section in the order What, How, Needs, Rules, Next, then Close.
 	static array<ref LF_UIPart> BuildParts(LF_SignDef sign)
 	{
 		ref array<ref LF_UIPart> parts = {};
@@ -148,6 +152,7 @@ class LF_SignCatalog
 		AddSection(parts, "How", KEY_HOW, sign.m_sHow);
 		AddSection(parts, "Needs", KEY_NEEDS, sign.m_sNeeds);
 		AddSection(parts, "Rules", KEY_RULES, sign.m_sRules);
+		AddSection(parts, "Next", KEY_NEXT, sign.m_sNext);
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "Close", KEY_CLOSE));
 		return parts;
 	}

@@ -62,7 +62,7 @@ export const TOWN = {
   ],
 };
 
-const SIGN_FIELDS = ["m_sTitle", "m_sWhat", "m_sHow", "m_sNeeds", "m_sRules"];
+const SIGN_FIELDS = ["m_sTitle", "m_sWhat", "m_sHow", "m_sNeeds", "m_sRules", "m_sNext"];
 
 function round(value) {
   return Math.round(value * 1000) / 1000;
@@ -181,7 +181,7 @@ export function signCard(id, catalog, strings) {
     const value = (def[field] || "").trim();
     resolved[field] = value.length > 1 && value.startsWith("#") ? (strings.get(value.slice(1)) || "").trim() : value;
   }
-  const sections = ["m_sWhat", "m_sHow", "m_sNeeds", "m_sRules"].filter((field) => resolved[field]).length;
+  const sections = ["m_sWhat", "m_sHow", "m_sNeeds", "m_sRules", "m_sNext"].filter((field) => resolved[field]).length;
   return { found: true, blank: !resolved.m_sTitle || sections === 0, title: resolved.m_sTitle, sections };
 }
 
