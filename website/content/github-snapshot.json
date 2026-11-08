@@ -1,0 +1,473 @@
+{
+  "fetchedAt": "2026-11-08T08:45:53.899Z",
+  "milestone": {
+    "number": 1,
+    "title": "M1 Playtest Town",
+    "description": "The DebugWorld street becomes a signposted test town; every loop works on a dedicated server with several clients and is proven by the visual harness. Plan: docs/roadmap/m1-playtest-town.md",
+    "url": "https://github.com/Life-Framework/Life-Framework/milestone/1",
+    "state": "open",
+    "open": 20,
+    "closed": 9,
+    "dueOn": null
+  },
+  "issues": [
+    {
+      "number": 126,
+      "title": "M1: M1-28 Light survival needs: hunger and thirst never kill",
+      "state": "closed",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/126",
+      "labels": [
+        "m1",
+        "scope"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:38:08Z",
+      "closedAt": "2026-11-08T08:38:08Z",
+      "excerpt": "Decision \"Survival needs are light\" (docs/decisions.md, 2026-11-08): hunger and thirst never kill. Today EL_SurvivalStats.UpdateStats drains hunger at 0.1/s and thirst at 0.15/s, so a player reaches 20 within 9 to 13 minutes. Below 20, h...",
+      "wave": 3
+    },
+    {
+      "number": 125,
+      "title": "M1: M1-27 Murder makes you wanted; the spawn is a safe zone",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/125",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:23:00Z",
+      "closedAt": null,
+      "excerpt": "Decision \"Killing anyone makes you wanted for murder; the spawn is a safe zone\" (docs/decisions.md, 2026-11-08). Today only robberies, breaches, and the hospital raise wanted (EL_RobAction, EL_RobVehicleAction, EL_RobWeaponAction, LF_Bre...",
+      "wave": 3
+    },
+    {
+      "number": 121,
+      "title": "M1-26: Wake up in hospital",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/121",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:09:21Z",
+      "closedAt": null,
+      "excerpt": "Decision 2026-11-08 \"You wake up in hospital\" (docs/decisions.md, Gameplay). Today the death screen's Respawn button (EL_DeathScreen → SCR_RespawnComponent.RpcAsk_EL_Respawn → EL_SpawnLogic.RespawnPlayer_S) puts the player back at a civi...",
+      "wave": 2
+    },
+    {
+      "number": 120,
+      "title": "M1-25: One-street town layout",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/120",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:10:23Z",
+      "closedAt": null,
+      "excerpt": "Decision 2026-11-08 \"Every M1 site moves onto one street now\" (docs/decisions.md, Delivery). The M1 sites are spread over x 94 to 243 across the Street_ layers that M1-00 (#115) split out of Roadmap.layer. A stranger should walk one stre...",
+      "wave": 2
+    },
+    {
+      "number": 110,
+      "title": "M1: M1-13 Counter screens: ATM terminal and shop price list on the UI kit",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/110",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-07T22:15:53Z",
+      "closedAt": null,
+      "excerpt": "ATM and shop are the two menus every player uses. They are old MenuManager menus; the shop menu opens for the local player regardless of who interacted (features.md). Decision: when a UI is right (typing an amount), it should feel like a...",
+      "wave": 2
+    },
+    {
+      "number": 109,
+      "title": "M1: M1-24 Playtest release: guide, Workshop, showcase",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/109",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:24:45Z",
+      "closedAt": null,
+      "excerpt": "M1 is published on the Workshop, hosted from the maintainer's PC, and collects feedback through GitHub issues. docs/playtest.md still describes Workbench play.",
+      "wave": 4
+    },
+    {
+      "number": 108,
+      "title": "M1: M1-23 Journey proof on a dedicated server",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/108",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-07T22:15:47Z",
+      "closedAt": null,
+      "excerpt": "M1 is done only when every loop is proven from the player's view on a dedicated server with several clients, including a restart.",
+      "wave": 4
+    },
+    {
+      "number": 107,
+      "title": "M1: M1-22 Town tidy",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/107",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:10:24Z",
+      "closedAt": null,
+      "excerpt": "A stranger walks past debug clutter: visible EL_DebugAreaBoundary markers on ATM, Shops, Jobs, NPCs, Survival, chain layers, test fixtures (PRFeatureCrate 176,130, Tests.layer), and duplicate stations. The town spans x 94 to 243.",
+      "wave": 3
+    },
+    {
+      "number": 106,
+      "title": "M1: M1-21 Jail you can see",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/106",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:24:43Z",
+      "closedAt": null,
+      "excerpt": "Arrest, escort, and the timed sentence work (LF_Jail.c), and #77 persists the sentence, but the prisoner gets no in-world statement of the sentence and release is silent.",
+      "wave": 3
+    },
+    {
+      "number": 105,
+      "title": "M1: M1-20 Alarm and dispatch",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/105",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:24:41Z",
+      "closedAt": null,
+      "excerpt": "Police learn about a robbery only from a toast (and toasts are broken until #97). Decisions: feedback from the world first; period comms (radios, pagers); major crimes need police online.",
+      "wave": 3
+    },
+    {
+      "number": 104,
+      "title": "M1: M1-19 Fine as a paper ticket",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/104",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:07:55Z",
+      "closedAt": null,
+      "excerpt": "Fines are a remote menu action that takes cash from a wanted player at any distance (EL_PoliceMenu.RpcAsk_EL_PoliceFine; #73 adds a range). The police menu is otherwise a stub. Decision \"In-world first\" lists a fine ticket as a real item.",
+      "wave": 3
+    },
+    {
+      "number": 103,
+      "title": "M1: M1-18 Guided arrival chain",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/103",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-07T22:15:24Z",
+      "closedAt": null,
+      "excerpt": "Decision \"Short guided arrival, then free\". The quest giver at spawn (QuestGiver_Start at 110,137) offers test quests (talk, kill, timed). The quest system has no events for job runs, ATM deposits, or reading a sign.",
+      "wave": 3
+    },
+    {
+      "number": 102,
+      "title": "M1: M1-17 Organization registry: ledger desk and invite by facing",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/102",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-07T22:15:22Z",
+      "closedAt": null,
+      "excerpt": "The org desk screen lists name, fund, and the processing upgrade, but invite/kick exist only in EL_OrganizationManager and are unreachable from the world.",
+      "wave": 3
+    },
+    {
+      "number": 101,
+      "title": "M1: M1-16 Garage it to keep it: garage pad, ledger card, impound",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/101",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-07T22:15:19Z",
+      "closedAt": null,
+      "excerpt": "Decision \"Garage it to keep it\". Today retrieve spawns at the lot pad, not the garage; the LF_Garage catalog screen is unreachable from the world and duplicates the lot's buy path; vehicles left on the street have no rule.",
+      "wave": 3
+    },
+    {
+      "number": 100,
+      "title": "M1: M1-15 Hideout stash that holds items",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/100",
+      "labels": [
+        "m1",
+        "scope"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-07T22:15:16Z",
+      "closedAt": null,
+      "excerpt": "Roadmap_Hideout_Stash is a crate mesh with no storage component (features.md, playtest.md). An organization cannot keep anything.",
+      "wave": 2
+    },
+    {
+      "number": 99,
+      "title": "M1: M1-14 Contraband: real cargo and real drop points",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/99",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-07T22:15:15Z",
+      "closedAt": null,
+      "excerpt": "The convoy hauls RowanBerries.et between two EL_DebugAreaBoundary markers (Roadmap_Convoy_Start/_Drop). A stranger cannot tell it is contraband or where to go.",
+      "wave": 2
+    },
+    {
+      "number": 98,
+      "title": "M1: M1-12 One player interaction menu",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/98",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:10:21Z",
+      "closedAt": null,
+      "excerpt": "Decision \"One player interaction menu\": introduce yourself, show ID, give cash or an item, and role actions (search, cuff, fine) on the person in front of you. Today these are scattered: EL_ShowIDAction, LF_JailArrestAction, EL_Confiscat...",
+      "wave": 2
+    },
+    {
+      "number": 96,
+      "title": "M1: M1-11 Police station on the street: duty desk and wanted board",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/96",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:36:39Z",
+      "closedAt": null,
+      "excerpt": "docs/playtest.md says go on duty at Roadmap_Police_Desk, but that desk has no components at all (Roadmap.layer, 204 0 120); duty lives at PoliceStation_Debug (170,120) on another layer. The wanted list is a menu stub whose layout does no...",
+      "wave": 2
+    },
+    {
+      "number": 95,
+      "title": "M1: M1-10 Progression survives a restart",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/95",
+      "labels": [
+        "m1",
+        "scope"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-07T22:15:08Z",
+      "closedAt": null,
+      "excerpt": "Job careers and levels, police rank and on-duty seconds, licenses, and quest turn-ins are not in EL_PlayerAccountRecord; a restart returns officers to patrol and couriers to level 1 (features.md: LF_PoliceRanks ⚠, Jobs ⚠).",
+      "wave": 2
+    },
+    {
+      "number": 94,
+      "title": "M1: M1-09 Place the signs: one per site, town map at spawn",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/94",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:07:52Z",
+      "closedAt": null,
+      "excerpt": "M1 \"done when\": a sign at spawn explains the loop, every site has a sign saying what it is and how to use it.",
+      "wave": 2
+    },
+    {
+      "number": 93,
+      "title": "M1: M1-08 Registration form and a real ID card",
+      "state": "closed",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/93",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:25:14Z",
+      "closedAt": "2026-11-08T08:25:14Z",
+      "excerpt": "The name/age screen is never opened: EL_CharacterCreationManager.CreateAndSpawnDefaultCharacter makes every character \"Default Citizen\". IDCard.et exists but nobody receives it, and EL_ShowIDAction shows a toast. Decision \"One player int...",
+      "wave": 1
+    },
+    {
+      "number": 92,
+      "title": "M1: M1-07 Pay at the counter: remove the passive paycheck",
+      "state": "closed",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/92",
+      "labels": [
+        "m1",
+        "scope"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T07:48:50Z",
+      "closedAt": "2026-11-08T07:48:50Z",
+      "excerpt": "EL_PlayerJobComponent pays $700 cash every 300 s to every job including UNEMPLOYED (EL_PlayerJobComponent.c ~line 63). It is invisible money that dwarfs the $150 till and the $200 convoy, and it is hard-coded (decision: no prices in syst...",
+      "wave": 1
+    },
+    {
+      "number": 91,
+      "title": "M1: M1-06 Filming harness",
+      "state": "open",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/91",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-07T22:19:09Z",
+      "closedAt": null,
+      "excerpt": "Direction: \"Filming harness records the same runs as video: short clips attached to PRs\". Nothing records video on main. Draft #111 (ws/filming-harness) is the spike: ffmpeg ddagrab + h264_nvenc, film a flow, clips as release assets. Thi...",
+      "wave": 1
+    },
+    {
+      "number": 90,
+      "title": "M1: M1-05 Multi-client harness on a dedicated server",
+      "state": "closed",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/90",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:36:16Z",
+      "closedAt": "2026-11-08T08:36:16Z",
+      "excerpt": "The harness runs only in Workbench play as host. M1 must prove every loop on a dedicated server with several clients. No dedicated + multi-client + restart session has ever been recorded.",
+      "wave": 1
+    },
+    {
+      "number": 89,
+      "title": "M1: M1-04 Carried inventory and cash survive a restart",
+      "state": "closed",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/89",
+      "labels": [
+        "m1",
+        "scope"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:36:05Z",
+      "closedAt": "2026-11-08T08:36:04Z",
+      "excerpt": "Every restart hands a fresh starter kit: carried cash and items are not persisted (audit). \"Restart keeps what they earned\" fails for everyone who did not bank at the ATM.",
+      "wave": 1
+    },
+    {
+      "number": 88,
+      "title": "M1: M1-03 Playtest host: mission, server config, `cli host`, auto-load",
+      "state": "closed",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/88",
+      "labels": [
+        "m1",
+        "scope"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T07:43:14Z",
+      "closedAt": "2026-11-08T07:43:14Z",
+      "excerpt": "Playtests are hosted from the maintainer's PC on a dedicated server. Today the only scenario is the test-suite mission, and #77 documents -loadSessionSave but nothing loads the last save on restart, so \"restart keeps what they earned\" ca...",
+      "wave": 1
+    },
+    {
+      "number": 87,
+      "title": "M1: M1-02 Town manifest and `report town`",
+      "state": "closed",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/87",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:16:19Z",
+      "closedAt": "2026-11-08T08:16:19Z",
+      "excerpt": "report roadmap only walks Roadmap_ entities. The town also includes the ATM (ATM_Debug 139,130), shops (144,130), traders, job center (118,120), spawn (100-110,130-137) and the police station (170,120). M1 needs one list of every site, i...",
+      "wave": 1
+    },
+    {
+      "number": 86,
+      "title": "M1: M1-01 Diegetic sign system with a Read card",
+      "state": "closed",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/86",
+      "labels": [
+        "m1",
+        "scope",
+        "needs-game"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T08:02:45Z",
+      "closedAt": "2026-11-08T08:02:45Z",
+      "excerpt": "Decision \"Signs are diegetic, with a Read for detail\". The only signs today are EL_MiningSign and EL_WhitelistSign, which draw floating debug text through DebugTextWorldSpace (Scripts/Game/Components/Signs/EL_TextLabelComponent.c). That...",
+      "wave": 1
+    },
+    {
+      "number": 85,
+      "title": "M1: M1-00 Split the street into site layers",
+      "state": "closed",
+      "url": "https://github.com/Life-Framework/Life-Framework/issues/85",
+      "labels": [
+        "m1",
+        "scope"
+      ],
+      "assignees": [],
+      "updatedAt": "2026-11-08T07:36:21Z",
+      "closedAt": "2026-11-08T07:36:21Z",
+      "excerpt": "Roadmap.layer holds 24 sites and AGENTS.md forbids editing it unless a task names it. Every M1 site scope would collide on that one file. Splitting it once lets later scopes each own a layer.",
+      "wave": 1
+    }
+  ],
+  "goodFirst": []
+}
