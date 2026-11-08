@@ -44,5 +44,4 @@ GenericEntity Roadmap_Police_Armory {
 }
 GenericEntity Roadmap_Police_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
  coords 235.4 0 244.4
- angleY 180
 }

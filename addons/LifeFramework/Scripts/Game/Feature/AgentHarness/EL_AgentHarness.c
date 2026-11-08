@@ -1867,14 +1867,21 @@ class EL_AgentHarness
 		if (!entity)
 			return true;
 
-		// A named prop's actions can sit on a child part (the duty desk's punch clock).
-		IEntity parent = entity.GetParent();
-		bool parentNamed = parent && parent.GetName() == s_sWantedName;
-		if (s_sWantedName != "" && entity.GetName() != s_sWantedName && !parentNamed)
+		if (s_sWantedName != "" && entity.GetName() != s_sWantedName)
 			return true;
 
+		// A named prop's actions can sit on a child part (the duty desk's punch clock).
 		if (!FindOnEntity(entity, s_sWantedClass))
-			return true;
+		{
+			IEntity child = entity.GetChildren();
+			while (child && !FindOnEntity(child, s_sWantedClass))
+				child = child.GetSibling();
+
+			if (!child)
+				return true;
+
+			entity = child;
+		}
 
 		float dist = vector.Distance(entity.GetOrigin(), s_vOrigin);
 		if (!s_pFoundEntity || dist < s_fBestDist)
