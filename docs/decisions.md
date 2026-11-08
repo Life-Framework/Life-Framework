@@ -72,6 +72,20 @@ play. What it means for code: no donor flag ever reaches a gameplay system.
 Cosmetic unlocks, if built, are flagship content, and nothing before M4 needs
 them.
 
+**2026-11-08 — The project takes donations to pay its running costs.** Anyone
+may give money to the project. It pays the Claude subscription the AI-first
+development runs on, the website and domain, and later a game server, and the
+costs are listed in public on the site's support page
+(`website/content/costs.json`). A donation buys nothing in the framework or in
+any game: no money, gear, vehicles, property, queue priority, or role. The mod,
+its Workshop page, and its UI carry no donation prompt. Why: the bills are real
+and small, and paying them in the open keeps the project honest; Bohemia's
+Workshop terms forbid monetising the mod itself, so the money is tied to the
+project's costs, not to the content. What it means for code: nothing in the
+mod reads donor status. The support page, `.github/FUNDING.yml`, and the
+README section stay off until a way to give exists
+(`docs/community/support.md`).
+
 **2026-11-08 — Overthrow code may be used and relicensed under MIT, with
 credit.** The owner of Overthrow (`ArmaOverthrow/Overthrow.Arma4`) gave us
 explicit permission to use its code and relicense it under our MIT licence
@@ -382,6 +396,19 @@ fixed penalties are fair between officers and easy to explain on a sign; a
 court needs players we do not have yet. What it means for code: the paper
 ticket (M1-19, #104) and jailing (M1-21, #106) read the amount from a config
 table keyed by crime. Framework: the table is config.
+
+**2026-11-08 — Every on-duty officer can arrest and escort; rank gates the
+extras.** Arrest and escort are the core police loop, and a new officer can do
+both from the first minute on duty. Rank gates the fine cap, the armory tier,
+and later supervisory actions (promotion, and what M2 adds), not the loop.
+Why: on a fresh server nobody is senior, and senior took an hour on duty, so
+the first hour of police play had no arrests (#165). What it means for code:
+`LF_PoliceConfig` (`Configs/Police/LF_Police.conf`) holds the lowest rank that
+may arrest and the lowest that may escort, and the patrol fine cap. Every
+arrest and escort path re-checks it on the server (`LF_Jail.Arrest`,
+`LF_JailEscort`); the offers read the same rule from the replicated rank.
+Framework: per-rank permissions are config. Flagship: arrest and escort at
+rank 0 (patrol), patrol fine cap 1000.
 
 **2026-11-08 — Gamepad-friendly, PC-first.** Every interaction works on a
 gamepad: amounts come from presets, lists stay short, and typing is rare.

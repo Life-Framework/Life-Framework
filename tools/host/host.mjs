@@ -161,7 +161,7 @@ export function selftestHost() {
   if (has(fresh, "-loadSessionSave")) failures.push("a boot with no save passes -loadSessionSave");
   if (!has(reload, "-loadSessionSave")) failures.push("a boot with a save does not pass -loadSessionSave");
   for (const args of [fresh, reload]) {
-    if (args.some((a) => /EL_AUTOTEST|EL_TEST_TIER|EL_E2E/.test(a))) failures.push("host args carry a test define");
+    if (args.some((a) => /EL_AUTOTEST|EL_TEST_TIER|EL_E2E|LF_HARNESS|LF_SESSION_IDENTITY/.test(a))) failures.push("host args carry a test or harness define (LF_HARNESS opens the harness gate)");
     if (has(args, "-config")) failures.push("host args pass -config (fatal with -addons)");
     if (args[args.indexOf("-profile") + 1] !== "P") failures.push("host args do not use the host profile");
   }
