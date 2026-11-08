@@ -41,7 +41,13 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 export const SERVER_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
 export const MAX_CLIENTS = 3;
-export const WINDOW = { width: 640, height: 360, gap: 8 };
+// LF_SESSION_WINDOW=1280x720 gives evidence-sized clients; the default keeps the desk usable.
+export function parseWindow(text) {
+  const m = /^(\d{3,4})x(\d{3,4})$/.exec(String(text || ""));
+  if (!m) return { width: 640, height: 360, gap: 8 };
+  return { width: Number(m[1]), height: Number(m[2]), gap: 8 };
+}
+export const WINDOW = parseWindow(process.env.LF_SESSION_WINDOW);
 export const SERVER_READY = "Entered online game state.";
 // The server refuses a client whose script checksum differs
 // ("remote script source code checksum does not match"), so clients compile
@@ -132,13 +138,8 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
 
 // Small windows in a row along the top of the screen, so the user's desk
 // stays usable. -screenWidth/-screenHeight/-posX/-posY need -window.
-// LF_SESSION_WINDOW=1280x720 makes evidence-sized windows (they overlap when
-// there is more than one client).
 export function windowFor(n) {
-  const m = /^(\d{3,4})x(\d{3,4})$/.exec(process.env.LF_SESSION_WINDOW || "");
-  const width = m ? Number(m[1]) : WINDOW.width;
-  const height = m ? Number(m[2]) : WINDOW.height;
-  return { x: (n - 1) * (width + WINDOW.gap), y: 0, width, height };
+  return { x: (n - 1) * (WINDOW.width + WINDOW.gap), y: 0, width: WINDOW.width, height: WINDOW.height };
 }
 
 export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "" }) {
