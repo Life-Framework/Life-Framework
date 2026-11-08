@@ -9,18 +9,18 @@ This session is Workbench play of DebugWorld. The sites sit on one street. Walk 
 ```sh
 git clone https://github.com/Life-Framework/Life-Framework.git
 cd Life-Framework
-git checkout release/roadmap
+git checkout release/next
 ```
 
 If you already have the clone:
 
 ```sh
 git fetch origin
-git checkout release/roadmap
+git checkout release/next
 git pull
 ```
 
-`main` does not have this street yet. Stay on `release/roadmap` until that branch is merged.
+`main` has the first street but not the latest sites (vehicle escort, among others). Stay on `release/next` until that branch is merged.
 
 ## Start DebugWorld
 
@@ -66,7 +66,7 @@ Use a police character. At `Roadmap_Police_Desk`, go on duty. At `Roadmap_Police
 
 A new officer is patrol: a pistol, fines up to 1000, and no arrest. Senior is a rifle, fines up to 5000, and can arrest. An hour on duty promotes. Promoting yourself should be refused.
 
-Arrest a wanted player into `Roadmap_Jail_Cell`. Repair an open breach. There is no vehicle escort in this build.
+Arrest a wanted player into `Roadmap_Jail_Cell`. Repair an open breach. At `Roadmap_Escort_Car`, an on-duty officer can put a wanted player on foot into a passenger seat; the sentence starts when they reach the cell.
 
 ### Organization, hideout, convoy
 
@@ -74,7 +74,7 @@ At `Roadmap_Org_Desk`, the screen should show an empty organization, a name fiel
 
 Create an organization, deposit cash, and buy the processing upgrade. The fund is not your personal bank balance.
 
-`Roadmap_Hideout_Door` opens for a member and refuses everyone else. `Roadmap_Hideout_Machine` works only after the processing upgrade. Leave something in `Roadmap_Hideout_Stash`.
+`Roadmap_Hideout_Door` opens for a member and refuses everyone else. `Roadmap_Hideout_Machine` works only after the processing upgrade. `Roadmap_Hideout_Stash` is a crate mesh with no storage yet, so it cannot hold items.
 
 Run the contraband convoy from `Roadmap_Convoy_Start` to `Roadmap_Convoy_Drop`. Delivery pays cash once. Leaving the vehicle or dying should fail the run. An on-duty officer can confiscate the flagged goods.
 
@@ -82,9 +82,9 @@ Run the contraband convoy from `Roadmap_Convoy_Start` to `Roadmap_Convoy_Drop`. 
 
 Stop play and start the scenario again.
 
-Still there: organization members, the fund, the processing upgrade, hideout contents, and the vehicle lock.
+Still there: organization members, the fund, the processing upgrade, hideout ownership and its lock, and the vehicle lock.
 
-Expected to reset: police rank goes back to patrol.
+Expected to reset: police rank goes back to patrol. A jail sentence, an open breach, and the bank bags on the ground are not saved yet and are lost.
 
 Write down anything that did not match that.
 
@@ -98,7 +98,6 @@ Do not file these as broken. File them under "build next" if you want them.
 - A police mission board
 - World events
 - New guns, cars, or aircraft
-- Driving a suspect to jail
 
 ## Send feedback
 

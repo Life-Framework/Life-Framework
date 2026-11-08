@@ -147,7 +147,10 @@ class LF_Breach
 	//! leaves it open until Repair. Wanted and the police notify fire once, here, including
 	//! when the fuse is still running. Returns false when the target is not configured, a
 	//! charge is already on it, the player id is empty, or the charge prefab does not load.
-	static bool Arm(string targetId, string playerUid)
+	//! \param chargeCarrier The player entity placing the charge. Every player-facing action
+	//! passes it: one DemoBlock charge is taken from that inventory before anything happens,
+	//! and Arm refuses when there is none. Null is the server-scripted arm (tests, events).
+	static bool Arm(string targetId, string playerUid, IEntity chargeCarrier = null)
 	{
 		if (targetId.IsEmpty() || playerUid.IsEmpty())
 		{
@@ -177,6 +180,9 @@ class LF_Breach
 			EL_Debug.Error("Breach", string.Format("arm refused: no account for %1", playerUid));
 			return false;
 		}
+
+		if (chargeCarrier && !TakeCharge(chargeCarrier, targetId))
+			return false;
 
 		account.IncreaseWantedLevel(1);
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
@@ -228,6 +234,7 @@ class LF_Breach
 
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
+		SyncTarget(target);
 		EL_Debug.Error("Breach", string.Format("charge cancelled on %1: %2", targetId, reason));
 	}
 
@@ -281,6 +288,7 @@ class LF_Breach
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
 		WriteLock(targetId, true);
+		SyncTarget(target);
 		EL_Debug.Log("Breach", string.Format("repaired %1 by %2", targetId, playerUid));
 		return true;
 	}
@@ -351,6 +359,7 @@ class LF_Breach
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
 		WriteLock(target.m_sTargetId, !record.m_bOpen);
+		SyncTarget(target);
 		EL_Debug.Log("Breach", string.Format("apply-save %1 open=%2", target.m_sTargetId, record.m_bOpen));
 		return true;
 	}
@@ -377,7 +386,90 @@ class LF_Breach
 		target.m_bOpen = true;
 		target.m_bChargeArmed = false;
 		WriteLock(target.m_sTargetId, false);
+		SyncTarget(target);
 		EL_Debug.Log("Breach", string.Format("lock opened: %1", target.m_sTargetId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when user carries at least one breach charge.
+	static bool HasCharge(IEntity user)
+	{
+		if (!user)
+			return false;
+
+		if (EL_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
+			return true;
+
+		return FindEquippedCharge(user) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The M112 is a weapon: picked up, it lands in the equipped-weapon storage, which the
+	//! deposit-count GetAmount/RemoveAmount do not cover. Finds a charge there.
+	protected static IEntity FindEquippedCharge(IEntity user)
+	{
+		EquipedWeaponStorageComponent weaponStorage = EL_Component<EquipedWeaponStorageComponent>.Find(user);
+		if (!weaponStorage)
+			return null;
+
+		array<IEntity> weapons = {};
+		weaponStorage.GetAll(weapons);
+		foreach (IEntity weapon : weapons)
+		{
+			if (weapon && EL_Utils.GetPrefabName(weapon) == CHARGE_PREFAB)
+				return weapon;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes one breach charge from user. Logs and refuses when there is none.
+	protected static bool TakeCharge(IEntity user, string targetId)
+	{
+		if (!HasCharge(user))
+		{
+			EL_Debug.Warn("Breach", string.Format("arm refused: %1 carries no breach charge", targetId));
+			return false;
+		}
+
+		int removed = 0;
+		if (EL_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
+			removed = EL_InventoryUtils.RemoveAmount(user, CHARGE_PREFAB, 1);
+
+		if (removed != 1)
+		{
+			IEntity equipped = FindEquippedCharge(user);
+			InventoryStorageManagerComponent storage = EL_InventoryUtils.GetResponsibleStorageManager(user);
+			if (equipped && storage && storage.TryDeleteItem(equipped))
+				removed = 1;
+		}
+
+		if (removed != 1)
+		{
+			EL_Debug.Error("Breach", string.Format("arm refused: %1 charge could not be taken (removed %2)", targetId, removed));
+			return false;
+		}
+
+		EL_Debug.Log("Breach", string.Format("charge used on %1", targetId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mirrors the open/armed flags onto the placed door so client offers can read them.
+	//! A target without a placed entity (logic tests) has nothing to mirror.
+	protected static void SyncTarget(LF_BreachTarget target)
+	{
+		if (!target || !GetGame() || !GetGame().GetWorld())
+			return;
+
+		IEntity entity = GetGame().GetWorld().FindEntityByName(target.m_sTargetId);
+		if (!entity)
+			return;
+
+		LF_BreachTargetComponent component = EL_Component<LF_BreachTargetComponent>.Find(entity);
+		if (component)
+			component.SetReplicatedState(target.m_bOpen, target.m_bChargeArmed);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -465,6 +557,11 @@ class LF_Breach
 		}
 
 		if (!component.ScheduleFuse(fuseSeconds))
+		{
 			CancelCharge(targetId, "fuse timer could not be scheduled");
+			return;
+		}
+
+		component.SetReplicatedState(false, true);
 	}
 }

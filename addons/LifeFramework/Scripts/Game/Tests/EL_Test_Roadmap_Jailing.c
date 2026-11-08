@@ -186,6 +186,19 @@ class EL_Test_Roadmap_JailingPersistence : EL_Test
 
 		string officerUid = "roadmap-jailing-save-officer";
 		string prisonerUid = "roadmap-jailing-save-prisoner";
+
+		// Sentences are saved since version 5, so the reload boot of the two-boot e2e
+		// restores this prisoner's sentence from the save boot. Start from no sentence for
+		// this uid, keeping every other sentence.
+		array<ref LF_JailRecord> live = LF_Jail.ExportAll();
+		array<ref LF_JailRecord> others = new array<ref LF_JailRecord>();
+		foreach (LF_JailRecord record : live)
+		{
+			if (record && record.m_sPlayerUid != prisonerUid)
+				others.Insert(record);
+		}
+		LF_Jail.ApplyAll(others);
+
 		EL_PlayerAccount officer = EL_PlayerAccountManager.GetOrCreate(officerUid);
 		officer.SetFaction(EL_Faction.POLICE);
 		officer.SetOnDuty(true);

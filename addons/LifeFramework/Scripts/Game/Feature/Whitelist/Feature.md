@@ -1,7 +1,7 @@
 # Whitelist — Design Requirements
 
 > Context file for access control. Written against
-> `docs/design-philosophy.md`.
+> `docs/design.md`.
 
 ## Intent
 

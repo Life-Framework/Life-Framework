@@ -31,7 +31,16 @@ class EL_PlayerJobComponent : ScriptComponent
 	
 	protected ref EL_JobConfig m_CurrentJobConfig;
 	protected ref map<EL_EJobType, ref EL_JobConfig> m_mJobConfigs;
-	
+
+	//! World time (seconds) of the last accepted job switch. Negative = never.
+	protected float m_fLastJobSwitchAt = -1;
+
+	//! Server-side Fruit Catcher round ledger. The client never holds the truth.
+	protected ref LF_FruitCatcherRound m_FruitRound = new LF_FruitCatcherRound();
+
+	//! Client copy of the round id the server issued, sent back with the claim.
+	protected int m_iClientFruitRoundId;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -257,6 +266,7 @@ class EL_PlayerJobComponent : ScriptComponent
 		// Cambiar al nuevo trabajo
 		m_eCurrentJob = jobType;
 		m_fTimeSinceLastPaycheck = 0;
+		m_fLastJobSwitchAt = LF_JobGuards.Now();
 		
 		// Cargar progreso del nuevo trabajo (si existe)
 		if (m_mJobLevels.Contains(jobType))
@@ -320,6 +330,12 @@ class EL_PlayerJobComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void AskSetJob(EL_EJobType jobType)
 	{
+		if (Replication.IsServer())
+		{
+			RequestJobFromClient(jobType);
+			return;
+		}
+
 		Rpc(RpcAsk_SetJob, jobType);
 	}
 
@@ -327,29 +343,63 @@ class EL_PlayerJobComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_SetJob(EL_EJobType jobType)
 	{
+		RequestJobFromClient(jobType);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-side gate for a job switch a client asked for. A client can name any job, so the
+	//! switch needs the job's workplace within LF_JobGuards.WORKPLACE_RADIUS and the switch
+	//! cooldown elapsed. Going off duty (UNEMPLOYED) needs no workplace. Workplace actions call
+	//! SetJob directly; the action range is their proximity check.
+	//! \return True when the job was set.
+	bool RequestJobFromClient(EL_EJobType jobType)
+	{
+		if (!Replication.IsServer() && Replication.IsRunning())
+			return false;
+
+		IEntity owner = GetOwner();
+		if (!owner)
+		{
+			EL_Debug.Error("Jobs", "job request refused: no owner");
+			return false;
+		}
+
+		float now = LF_JobGuards.Now();
+		if (!LF_JobGuards.SwitchCooldownElapsed(m_fLastJobSwitchAt, now))
+		{
+			EL_Debug.Warn("Jobs", string.Format("job request refused: switch cooldown (%1 s) not elapsed for %2", LF_JobGuards.SWITCH_COOLDOWN_SECONDS, typename.EnumToString(EL_EJobType, jobType)));
+			return false;
+		}
+
+		if (jobType != EL_EJobType.UNEMPLOYED && !LF_JobGuards.IsNearWorkplace(owner.GetOrigin(), jobType))
+		{
+			EL_Debug.Warn("Jobs", string.Format("job request refused: no %1 workplace within %2 m", typename.EnumToString(EL_EJobType, jobType), LF_JobGuards.WORKPLACE_RADIUS));
+			return false;
+		}
+
 		// Security check: Only allow switching to POLICE if they have the license
 		if (jobType == EL_EJobType.POLICE)
 		{
 			EL_LicenseManagerComponent licenseManager = EL_Component<EL_LicenseManagerComponent>.Find(GetOwner());
 			if (!licenseManager || !licenseManager.HasLicense(EL_ELicenseType.POLICE_ACCESS))
 			{
-				EL_Debug.Warn("Jobs", "security: POLICE job request denied (no POLICE_ACCESS license)");
-				return;
+				EL_Debug.Warn("Jobs", "job request refused: POLICE needs the POLICE_ACCESS license");
+				return false;
 			}
 		}
-		
+
 		// Security check: Only allow switching to MEDIC if they have the license
 		if (jobType == EL_EJobType.MEDIC)
 		{
 			EL_LicenseManagerComponent licenseManager = EL_Component<EL_LicenseManagerComponent>.Find(GetOwner());
 			if (!licenseManager || !licenseManager.HasLicense(EL_ELicenseType.MEDIC_ACCESS))
 			{
-				EL_Debug.Warn("Jobs", "security: MEDIC job request denied (no MEDIC_ACCESS license)");
-				return;
+				EL_Debug.Warn("Jobs", "job request refused: MEDIC needs the MEDIC_ACCESS license");
+				return false;
 			}
 		}
-		
-		SetJob(jobType);
+
+		return SetJob(jobType);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -525,14 +575,32 @@ class EL_PlayerJobComponent : ScriptComponent
 		if (!m_CurrentJobConfig || !m_CurrentJobConfig.m_aEquipmentPrefabs)
 			return;
 		
+		if (m_CurrentJobConfig.m_aEquipmentPrefabs.IsEmpty())
+			return;
+
 		IEntity owner = GetOwner();
 		if (!owner)
 			return;
-		
+
 		InventoryStorageManagerComponent inventory = EL_Component<InventoryStorageManagerComponent>.Find(owner);
 		if (!inventory)
 			return;
-		
+
+		// One kit per job per account per session. Without this, switching jobs back and
+		// forth (or dying and switching again) mints a fresh tool every time.
+		string uid = EL_Utils.GetPlayerUID(owner);
+		if (uid.IsEmpty())
+		{
+			EL_Debug.Error("Jobs", "equipment refused: player has no account id");
+			return;
+		}
+
+		if (!LF_JobGuards.ClaimEquipmentGrant(uid, m_eCurrentJob))
+		{
+			EL_Debug.Warn("Jobs", string.Format("equipment refused: %1 already received the %2 kit this session", uid, typename.EnumToString(EL_EJobType, m_eCurrentJob)));
+			return;
+		}
+
 		// Spawn and give equipment items
 		foreach (ResourceName prefab : m_CurrentJobConfig.m_aEquipmentPrefabs)
 		{
@@ -682,62 +750,158 @@ class EL_PlayerJobComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Ask server to claim fruit catcher rewards
-	void AskClaimFruitCatcherReward(int score, EHarvestJobType jobType)
+	//! Ask the server to open a Fruit Catcher round. The minigame calls this when the round
+	//! starts; the server records the round id and start time and sends the id back.
+	void AskStartFruitCatcherRound(EHarvestJobType jobType)
 	{
-		Rpc(RpcAsk_ClaimFruitCatcherReward, score, jobType);
+		if (Replication.IsServer())
+		{
+			StartFruitCatcherRound(jobType);
+			return;
+		}
+
+		Rpc(RpcAsk_StartFruitCatcherRound, jobType);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_ClaimFruitCatcherReward(int score, EHarvestJobType jobType)
+	protected void RpcAsk_StartFruitCatcherRound(EHarvestJobType jobType)
 	{
+		StartFruitCatcherRound(jobType);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: opens a round for the caller. Requires the harvest job (FARMER).
+	//! \return The new round id, or 0 when refused.
+	int StartFruitCatcherRound(EHarvestJobType jobType)
+	{
+		if (!Replication.IsServer() && Replication.IsRunning())
+			return 0;
+
+		if (m_eCurrentJob != EL_EJobType.FARMER)
+		{
+			EL_Debug.Warn("Jobs", string.Format("fruit round refused: caller holds %1, not FARMER", typename.EnumToString(EL_EJobType, m_eCurrentJob)));
+			return 0;
+		}
+
+		if (LF_FruitCatcherRound.FruitPrefab(jobType).IsEmpty())
+		{
+			EL_Debug.Warn("Jobs", string.Format("fruit round refused: unknown fruit type %1", jobType));
+			return 0;
+		}
+
+		int roundId = m_FruitRound.Start(jobType, LF_JobGuards.Now());
+		m_iClientFruitRoundId = roundId;
+		EL_Debug.Log("Jobs", string.Format("fruit round %1 started (%2)", roundId, typename.EnumToString(EHarvestJobType, jobType)));
+		Rpc(RpcDo_FruitCatcherRoundStarted, roundId);
+		return roundId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_FruitCatcherRoundStarted(int roundId)
+	{
+		m_iClientFruitRoundId = roundId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Round id the server issued for this player's open round (0 = none).
+	int GetFruitCatcherRoundId()
+	{
+		return m_iClientFruitRoundId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ask server to claim fruit catcher rewards for the round the server opened.
+	void AskClaimFruitCatcherReward(int score, EHarvestJobType jobType)
+	{
+		int roundId = m_iClientFruitRoundId;
+		m_iClientFruitRoundId = 0;
+
+		if (Replication.IsServer())
+		{
+			ClaimFruitCatcherReward(roundId, score, jobType);
+			return;
+		}
+
+		Rpc(RpcAsk_ClaimFruitCatcherReward, roundId, score, jobType);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_ClaimFruitCatcherReward(int roundId, int score, EHarvestJobType jobType)
+	{
+		ClaimFruitCatcherReward(roundId, score, jobType);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: pays one Fruit Catcher round. Refused unless the caller holds FARMER, the round
+	//! id matches the open round for that fruit, and the round ran at least
+	//! LF_FruitCatcherRound.MIN_ROUND_SECONDS. A paid round is closed; a second claim is refused.
+	//! \return The number of fruit awarded (0 when refused).
+	int ClaimFruitCatcherReward(int roundId, int score, EHarvestJobType jobType)
+	{
+		if (!Replication.IsServer() && Replication.IsRunning())
+			return 0;
+
+		if (m_eCurrentJob != EL_EJobType.FARMER)
+		{
+			EL_Debug.Warn("Jobs", string.Format("fruit claim refused: caller holds %1, not FARMER", typename.EnumToString(EL_EJobType, m_eCurrentJob)));
+			return 0;
+		}
+
+		string reason = m_FruitRound.Claim(roundId, jobType, LF_JobGuards.Now());
+		if (!reason.IsEmpty())
+		{
+			EL_Debug.Warn("Jobs", string.Format("fruit claim refused: round %1 %2", roundId, reason));
+			return 0;
+		}
+
 		// Server-side clamp: a forged score can never exceed one round's max
 		int rewardCount = EL_GetFruitCatcherRewardCount(score);
-		if (rewardCount <= 0) return;
-		
-		// Spawn Items
-		ResourceName fruitPrefab;
+		if (rewardCount <= 0) return 0;
+
+
+		ResourceName fruitPrefab = LF_FruitCatcherRound.FruitPrefab(jobType);
 		string fruitName;
 		
 		switch (jobType)
 		{
 			case EHarvestJobType.APPLES:
-				fruitPrefab = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
 				fruitName = "Manzanas";
 				break;
 			case EHarvestJobType.TOMATOES:
-				fruitPrefab = "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et";
 				fruitName = "Tomates";
 				break;
 			case EHarvestJobType.PLUMS:
-				fruitPrefab = "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
 				fruitName = "Ciruelas";
 				break;
 			case EHarvestJobType.BERRIES:
-				fruitPrefab = "{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et";
 				fruitName = "Bayas";
 				break;
 		}
 		
 		// Unknown fruit type gets nothing, not even XP
-		if (!fruitPrefab) return;
+		if (!fruitPrefab) return 0;
+
+		IEntity owner = GetOwner();
+		if (!owner)
+			return 0;
+
+		SCR_InventoryStorageManagerComponent inventory = SCR_InventoryStorageManagerComponent.Cast(owner.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inventory)
+		{
+			EL_Debug.Error("Jobs", "fruit claim refused: no inventory found on player");
+			return 0;
+		}
 
 		// Give XP (e.g. 5 XP per fruit)
 		float xpAmount = rewardCount * 5.0;
 		
-		EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(GetOwner());
+		EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(owner);
 		if (levelComp)
 		{
 			levelComp.AddExperience(xpAmount, "Recolección de Frutas");
-		}
-		
-		IEntity owner = GetOwner();
-		SCR_InventoryStorageManagerComponent inventory = SCR_InventoryStorageManagerComponent.Cast(owner.FindComponent(SCR_InventoryStorageManagerComponent));
-		if (!inventory)
-		{
-			EL_Debug.Error("Jobs", "fruit reward skipped: no inventory found on player");
-			return;
 		}
 		
 		int actuallyAdded = 0;
@@ -752,27 +916,22 @@ class EL_PlayerJobComponent : ScriptComponent
 			IEntity fruitEntity = GetGame().SpawnEntityPrefabEx(fruitPrefab, false, null, spawnParams);
 			if (!fruitEntity)
 			{
-				EL_Debug.Error("Jobs", string.Format("fruit reward: failed to spawn fruit %1", i));
+				EL_Debug.Error("Jobs", string.Format("fruit claim: failed to spawn fruit %1", i));
 				continue;
 			}
 			
 			// Try to insert using TryInsertItem (will go to any available storage)
 			if (inventory.TryInsertItem(fruitEntity))
-			{
 				actuallyAdded++;
-			}
 			else
-			{
-				// If inventory full, item remains in world at spawn position
-				EL_Debug.Warn("Jobs", string.Format("fruit reward: inventory full, fruit %1 dropped near player", i));
-			}
+				EL_Debug.Warn("Jobs", string.Format("fruit claim: inventory full, fruit %1 dropped near player", i));
 		}
 		
-		EL_Debug.Log("Jobs", string.Format("fruit reward: added %1/%2 %3 to player inventory", 
-			actuallyAdded, rewardCount, fruitName));
+		EL_Debug.Log("Jobs", string.Format("fruit round %1 paid %2/%3 %4", roundId, actuallyAdded, rewardCount, fruitName));
 		
 		// Notify
 		string message = string.Format("¡Recibiste %1 %2 y %3 XP!", actuallyAdded, fruitName, xpAmount);
 		SCR_HintManagerComponent.ShowCustomHint(message, "TRABAJO", 5.0);
+		return rewardCount;
 	}
 }

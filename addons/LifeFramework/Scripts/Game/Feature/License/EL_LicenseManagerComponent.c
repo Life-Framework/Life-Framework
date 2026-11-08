@@ -80,11 +80,101 @@ class EL_LicenseManagerComponentClass : ScriptComponentClass
 }
 
 //------------------------------------------------------------------------------------------------
+//! License set <-> int bitmask for replication. The enum values are sparse (0..205), so each
+//! type gets a bit by its position in ORDER. Append new types at the end; never reorder, or a
+//! client decodes a different license. 31 bits are available (bit 31 is the sign).
+class EL_LicenseBits
+{
+	protected static ref array<EL_ELicenseType> s_aOrder;
+
+	//------------------------------------------------------------------------------------------------
+	static array<EL_ELicenseType> Order()
+	{
+		if (!s_aOrder)
+		{
+			array<EL_ELicenseType> order = {
+				EL_ELicenseType.UNEMPLOYED,
+				EL_ELicenseType.FARMER_TOMATO, EL_ELicenseType.FARMER_APPLE, EL_ELicenseType.FARMER_PLUM, EL_ELicenseType.FARMER_WATER, EL_ELicenseType.FARMER_SPEED,
+				EL_ELicenseType.MINER_COAL, EL_ELicenseType.MINER_COPPER, EL_ELicenseType.MINER_IRON, EL_ELicenseType.MINER_GOLD, EL_ELicenseType.MINER_SPEED,
+				EL_ELicenseType.LUMBERJACK_BASIC, EL_ELicenseType.LUMBERJACK_PROCESS, EL_ELicenseType.LUMBERJACK_SPEED,
+				EL_ELicenseType.MEDIC_ACCESS, EL_ELicenseType.MEDIC_BASIC, EL_ELicenseType.MEDIC_ADVANCED, EL_ELicenseType.MEDIC_REVIVE,
+				EL_ELicenseType.POLICE_ACCESS, EL_ELicenseType.POLICE_ARREST, EL_ELicenseType.POLICE_FINE, EL_ELicenseType.POLICE_SEARCH,
+				EL_ELicenseType.CRIMINAL_WEED, EL_ELicenseType.CRIMINAL_ROBBERY, EL_ELicenseType.CRIMINAL_BLACKMARKET, EL_ELicenseType.CRIMINAL_WEAPONS,
+				EL_ELicenseType.CRIMINAL_VEHICLES, EL_ELicenseType.CRIMINAL_CLOTHES
+			};
+			s_aOrder = order;
+		}
+
+		return s_aOrder;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Bit index for a license type, or -1 when it has none (logged).
+	static int BitOf(EL_ELicenseType licenseType)
+	{
+		int index = Order().Find(licenseType);
+		if (index < 0 || index > 30)
+		{
+			EL_Debug.Error("License", string.Format("license %1 has no replication bit", licenseType));
+			return -1;
+		}
+
+		return index;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int Encode(notnull array<EL_ELicenseType> licenses)
+	{
+		int bits = 0;
+		foreach (EL_ELicenseType licenseType : licenses)
+		{
+			int bit = BitOf(licenseType);
+			if (bit >= 0)
+				bits = bits | (1 << bit);
+		}
+
+		return bits;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool Has(int bits, EL_ELicenseType licenseType)
+	{
+		int bit = BitOf(licenseType);
+		if (bit < 0)
+			return false;
+
+		return (bits & (1 << bit)) != 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fills outLicenses in ORDER with every type whose bit is set.
+	static void Decode(int bits, notnull array<EL_ELicenseType> outLicenses)
+	{
+		outLicenses.Clear();
+		array<EL_ELicenseType> order = Order();
+		int count = order.Count();
+		if (count > 31)
+			count = 31;
+
+		for (int i = 0; i < count; i++)
+		{
+			if ((bits & (1 << i)) != 0)
+				outLicenses.Insert(order.Get(i));
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class EL_LicenseManagerComponent : ScriptComponent
 {
-	[RplProp()]
+	//! Server-side list (authoritative). Not replicated: RplProp carries simple types only.
 	protected ref array<EL_ELicenseType> m_aUnlockedLicenses = new array<EL_ELicenseType>();
-	
+
+	//! Replicated copy of m_aUnlockedLicenses as an EL_LicenseBits mask. Written on the server
+	//! whenever the list changes; a client decodes it on read, so a late joiner needs no callback.
+	[RplProp()]
+	protected int m_iUnlockedBits;
+
 	protected ref ScriptInvoker m_OnLicenseUnlocked;
 	protected ref map<EL_ELicenseType, ref EL_LicenseConfig> m_mLicenseConfigs;
 	
@@ -537,6 +627,7 @@ if (!Replication.IsServer())
 		
 		// Desbloquear licencia
 		m_aUnlockedLicenses.Insert(licenseType);
+		m_iUnlockedBits = EL_LicenseBits.Encode(m_aUnlockedLicenses);
 		
 		EL_Debug.Log("License", string.Format("License unlocked: %1", config.m_sLicenseName));
 		
@@ -561,6 +652,9 @@ if (!Replication.IsServer())
 	//! Verificar si tiene una licencia
 	bool HasLicense(EL_ELicenseType licenseType)
 	{
+		if (!Replication.IsServer())
+			return EL_LicenseBits.Has(m_iUnlockedBits, licenseType);
+
 		return m_aUnlockedLicenses.Contains(licenseType);
 	}
 	
@@ -568,6 +662,10 @@ if (!Replication.IsServer())
 	//! Obtener todas las licencias desbloqueadas
 	array<EL_ELicenseType> GetUnlockedLicenses()
 	{
+		// A client has only the replicated mask; rebuild the list from it on read.
+		if (!Replication.IsServer())
+			EL_LicenseBits.Decode(m_iUnlockedBits, m_aUnlockedLicenses);
+
 		return m_aUnlockedLicenses;
 	}
 	
@@ -580,6 +678,7 @@ if (!Replication.IsServer())
 		{
 			m_aUnlockedLicenses.Insert(license);
 		}
+		m_iUnlockedBits = EL_LicenseBits.Encode(m_aUnlockedLicenses);
 		Replication.BumpMe();
 	}
 	

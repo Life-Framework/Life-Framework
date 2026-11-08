@@ -141,10 +141,10 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server-side accept: prerequisite snapshot, fail-safe guards, notification.
-	void AcceptQuest(string questId)
+	bool AcceptQuest(string questId)
 	{
 		if (!Replication.IsServer())
-			return;
+			return false;
 
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
 		LF_QuestDefinition def = manager.GetDefinition(questId);
@@ -152,14 +152,14 @@ class LF_QuestTrackerComponent : ScriptComponent
 		{
 			EL_Debug.Warn("Quests", string.Format("accept rejected quest=%1 (unknown id)", questId));
 			Notify("#LF-Quest_Rejected", "#LF-Quest_Title");
-			return;
+			return false;
 		}
 
 		// Fail-safe: a quest with no objectives is a misconfiguration and must not be accepted.
 		if (!def.HasObjectives())
 		{
 			EL_Debug.Error("Quests", string.Format("accept rejected quest=%1 (no objectives, misconfigured)", questId));
-			return;
+			return false;
 		}
 
 		IEntity owner = GetOwner();
@@ -180,32 +180,33 @@ class LF_QuestTrackerComponent : ScriptComponent
 		{
 			EL_Debug.Log("Quests", string.Format("accept rejected quest=%1 (prerequisites or cooldown)", questId));
 			Notify("#LF-Quest_Rejected", "#LF-Quest_Title");
-			return;
+			return false;
 		}
 
 		EL_Debug.Log("Quests", string.Format("accepted quest=%1", questId));
 		Notify("#LF-Quest_Accepted", "#LF-Quest_Title");
 		PushLog();
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server-side turn-in: authoritative collect recount, then reward.
-	void TurnInQuest(string questId)
+	bool TurnInQuest(string questId)
 	{
 		if (!Replication.IsServer())
-			return;
+			return false;
 
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
 		LF_QuestDefinition def = manager.GetDefinition(questId);
 		if (!def)
-			return;
+			return false;
 
 		LF_QuestState state = m_Tracker.GetState(questId);
 		if (!state || state.GetStatus() != LF_EQuestStatus.COMPLETED)
 		{
 			EL_Debug.Log("Quests", string.Format("turn-in rejected quest=%1 (not completable)", questId));
 			Notify("#LF-Quest_NotComplete", "#LF-Quest_Title");
-			return;
+			return false;
 		}
 
 		// Authoritative recount: the completion must hold against the live inventory.
@@ -215,7 +216,14 @@ class LF_QuestTrackerComponent : ScriptComponent
 		{
 			EL_Debug.Log("Quests", string.Format("turn-in rejected quest=%1 (collect items no longer held)", questId));
 			Notify("#LF-Quest_MissingItems", "#LF-Quest_Title");
-			return;
+			return false;
+		}
+
+		// Collect objectives hand the items over: take them before paying, all or nothing.
+		if (!TakeCollectedItems(def))
+		{
+			Notify("#LF-Quest_MissingItems", "#LF-Quest_Title");
+			return false;
 		}
 
 		GrantReward(def);
@@ -227,6 +235,67 @@ class LF_QuestTrackerComponent : ScriptComponent
 		EL_Debug.Log("Quests", string.Format("turned in quest=%1 reward=money:%2 xp:%3 items:%4", questId, def.m_iRewardMoney, def.m_fRewardXp, rewardItems));
 		Notify("#LF-Quest_TurnedIn", "#LF-Quest_Title");
 		PushLog();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes every COLLECT_REPORT objective's target amount from the player. Checks all
+	//! amounts first, then removes; a short removal puts back what was taken and refuses.
+	//! \return True when every collected item was handed over (or the quest collects nothing).
+	protected bool TakeCollectedItems(LF_QuestDefinition def)
+	{
+		map<string, int> needed = new map<string, int>();
+		for (int i = 0; i < def.GetObjectiveCount(); i++)
+		{
+			LF_QuestObjective objective = def.GetObjective(i);
+			if (!objective || objective.m_eType != LF_EQuestEventType.COLLECT_REPORT)
+				continue;
+			if (objective.m_sFilter.IsEmpty() || objective.m_iTarget <= 0)
+				continue;
+
+			needed.Set(objective.m_sFilter, needed.Get(objective.m_sFilter) + objective.m_iTarget);
+		}
+
+		if (needed.IsEmpty())
+			return true;
+
+		IEntity owner = GetOwner();
+		if (!owner)
+		{
+			EL_Debug.Error("Quests", string.Format("turn-in refused quest=%1 (no owner to take items from)", def.m_sQuestId));
+			return false;
+		}
+
+		foreach (string prefab, int amount : needed)
+		{
+			int held = EL_InventoryUtils.GetAmount(owner, prefab);
+			if (held < amount)
+			{
+				EL_Debug.Warn("Quests", string.Format("turn-in refused quest=%1 (holds %2 of %3 %4)", def.m_sQuestId, held, amount, prefab));
+				return false;
+			}
+		}
+
+		map<string, int> taken = new map<string, int>();
+		foreach (string prefab, int amount : needed)
+		{
+			int removed = EL_InventoryUtils.RemoveAmount(owner, prefab, amount);
+			taken.Set(prefab, removed);
+			if (removed >= amount)
+				continue;
+
+			foreach (string takenPrefab, int takenAmount : taken)
+			{
+				if (takenAmount > 0)
+					EL_InventoryUtils.AddAmount(owner, takenPrefab, takenAmount, true);
+			}
+
+			EL_Debug.Error("Quests", string.Format("turn-in refused quest=%1 (removed %2 of %3 %4, items returned)", def.m_sQuestId, removed, amount, prefab));
+			return false;
+		}
+
+		EL_Debug.Log("Quests", string.Format("turn-in took collected items for quest=%1", def.m_sQuestId));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -311,40 +380,118 @@ class LF_QuestTrackerComponent : ScriptComponent
 	//! what completes TALK objectives.
 	void AskOpenGiver(string giverId)
 	{
+		if (Replication.IsServer())
+		{
+			RequestOpenGiver(giverId);
+			return;
+		}
+
 		Rpc(RpcAsk_OpenGiver, giverId);
 	}
 
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_OpenGiver(string giverId)
 	{
+		RequestOpenGiver(giverId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a client opened a giver menu. The giver must be registered and within
+	//! LF_QuestManager.GIVER_RADIUS, or a client could complete TALK objectives anywhere.
+	//! \return True when the talk was reported.
+	bool RequestOpenGiver(string giverId)
+	{
+		if (!Replication.IsServer())
+			return false;
+
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		if (!manager.IsNearGiver(GetOwner(), giverId))
+		{
+			EL_Debug.Warn("Quests", string.Format("open giver refused giver=%1 (unknown or not within %2 m)", giverId, LF_QuestManager.GIVER_RADIUS));
+			return false;
+		}
+
 		manager.ReportTalk(GetOwner(), giverId);
 		manager.ReportCollect(GetOwner());
 		PushLog();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: true when the caller stands at the giver that offers questId. Logs the refusal.
+	protected bool IsAtQuestGiver(string questId, string verb)
+	{
+		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		string giverId = manager.GetGiverOfQuest(questId);
+		if (manager.IsNearGiver(GetOwner(), giverId))
+			return true;
+
+		EL_Debug.Warn("Quests", string.Format("%1 refused quest=%2 (giver '%3' unknown or not within %4 m)", verb, questId, giverId, LF_QuestManager.GIVER_RADIUS));
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void AskAccept(string questId)
 	{
+		if (Replication.IsServer())
+		{
+			RequestAccept(questId);
+			return;
+		}
+
 		Rpc(RpcAsk_Accept, questId);
 	}
 
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Accept(string questId)
 	{
-		AcceptQuest(questId);
+		RequestAccept(questId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: client-requested accept. Requires the quest's giver within reach.
+	//! \return True when the quest is ACTIVE afterwards.
+	bool RequestAccept(string questId)
+	{
+		if (!Replication.IsServer())
+			return false;
+
+		if (!IsAtQuestGiver(questId, "accept"))
+			return false;
+
+		return AcceptQuest(questId);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void AskTurnIn(string questId)
 	{
+		if (Replication.IsServer())
+		{
+			RequestTurnIn(questId);
+			return;
+		}
+
 		Rpc(RpcAsk_TurnIn, questId);
 	}
 
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_TurnIn(string questId)
 	{
-		TurnInQuest(questId);
+		RequestTurnIn(questId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: client-requested turn-in. Requires the quest's giver within reach.
+	//! \return True when the quest is TURNED_IN afterwards.
+	bool RequestTurnIn(string questId)
+	{
+		if (!Replication.IsServer())
+			return false;
+
+		if (!IsAtQuestGiver(questId, "turn-in"))
+			return false;
+
+		return TurnInQuest(questId);
 	}
 
 	//------------------------------------------------------------------------------------------------
