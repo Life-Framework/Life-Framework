@@ -6,8 +6,26 @@
 // (MenuTextEditContext while an edit box is focused, MenuWithEditorContext so
 // a pad can move focus). Close removes the widgets and that per-frame call.
 // It does not go through MenuManager.
+//
+// Input: MenuUp/MenuDown move focus (and scroll a list to the focused row),
+// MenuSelect presses the focused button, MenuBack closes. Focus lands on the
+// first non-field entry at open. A feature hears its buttons through
+// GetOnButton() (the part name) and learns the sheet went away through
+// GetOnClosed() (Close button, MenuBack, death, distance).
+
+void LF_UIButtonMethod(string name);
+typedef func LF_UIButtonMethod;
+typedef ScriptInvokerBase<LF_UIButtonMethod> LF_UIButtonInvoker;
+
+void LF_UIClosedMethod();
+typedef func LF_UIClosedMethod;
+typedef ScriptInvokerBase<LF_UIClosedMethod> LF_UIClosedInvoker;
+
 class LF_UIScreen
 {
+	//! Focus order keys: each top-level part owns a span, list rows sort inside their list's span.
+	static const int ORDER_SPAN = 1000;
+
 	protected Widget m_wRoot;
 	protected bool m_bHasField;
 	protected bool m_bInputArmed;
@@ -22,6 +40,39 @@ class LF_UIScreen
 	protected ref array<string> m_aWidgetNames = {};
 	protected ref array<Widget> m_aWidgets = {};
 	protected ref array<Widget> m_aFocus = {};
+	//! Parallel to m_aFocus: ascending order keys, so list rows added later still sit in place.
+	protected ref array<int> m_aFocusOrder = {};
+	protected ref map<string, int> m_mListOrder = new map<string, int>();
+	protected int m_iPartSeq;
+	protected int m_iCurrentOrder;
+	protected ref LF_UIButtonInvoker m_OnButton;
+	protected ref LF_UIClosedInvoker m_OnClosed;
+
+	//------------------------------------------------------------------------------------------------
+	//! Fires with the part name when a BUTTON, a STATUS action, or a list row action is pressed.
+	LF_UIButtonInvoker GetOnButton()
+	{
+		if (!m_OnButton)
+			m_OnButton = new LF_UIButtonInvoker();
+
+		return m_OnButton;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fires once when the sheet closes, for any reason.
+	LF_UIClosedInvoker GetOnClosed()
+	{
+		if (!m_OnClosed)
+			m_OnClosed = new LF_UIClosedInvoker();
+
+		return m_OnClosed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsOpen()
+	{
+		return m_wRoot != null;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Builds the frame, then each part, and starts the input driver.
@@ -98,6 +149,8 @@ class LF_UIScreen
 		{
 			EL_Debug.Error("UIKit", "screen is open but the input driver failed: no callqueue");
 		}
+
+		FocusInitial(workspace);
 
 		EL_Debug.Info("UIKit", "screen open");
 		return true;
@@ -346,6 +399,18 @@ class LF_UIScreen
 		Remember(part.GetName(), widget);
 		AlignableSlot.SetPadding(widget, LF_UITheme.PAD_LEFT, LF_UITheme.PAD_TOP, LF_UITheme.PAD_RIGHT, LF_UITheme.PAD_BOTTOM);
 
+		m_iCurrentOrder = m_iPartSeq * ORDER_SPAN;
+		m_iPartSeq++;
+
+		if (part.GetKind() == LF_EUIPartKind.LIST)
+		{
+			m_mListOrder.Set(part.GetName(), m_iCurrentOrder);
+			if (!widget.FindAnyWidget("ListContent"))
+				EL_Debug.Error("UIKit", "list " + part.GetName() + " is missing ListContent");
+
+			return;
+		}
+
 		if (part.GetKind() == LF_EUIPartKind.TITLE)
 		{
 			ApplyInk(TextWidget.Cast(widget), LF_UITheme.FONT_TITLE, part.GetText());
@@ -433,7 +498,7 @@ class LF_UIScreen
 
 		Widget sliderRoot = widget.FindAnyWidget("QuantitySlider");
 		if (sliderRoot)
-			m_aFocus.Insert(sliderRoot);
+			AddFocus(sliderRoot, m_iCurrentOrder);
 
 		SetQuantity(part.GetName(), part.GetTotal(), part.GetTake());
 	}
@@ -457,7 +522,7 @@ class LF_UIScreen
 		box.SetTextOutline(0);
 		box.SetTextShadow(0);
 
-		m_aFocus.Insert(box);
+		AddFocus(box, m_iCurrentOrder);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -487,7 +552,7 @@ class LF_UIScreen
 		}
 
 		relay.Bind(this, notifyName, close);
-		m_aFocus.Insert(widget);
+		AddFocus(widget, m_iCurrentOrder);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -557,6 +622,197 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected void Forget(string name)
+	{
+		int index = m_aWidgetNames.Find(name);
+		if (index < 0)
+			return;
+
+		m_aWidgetNames.Remove(index);
+		m_aWidgets.Remove(index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void AddFocus(Widget widget, int order)
+	{
+		if (!widget)
+			return;
+
+		int at = LF_UIFocus.InsertIndex(m_aFocusOrder, order);
+		m_aFocus.InsertAt(widget, at);
+		m_aFocusOrder.InsertAt(order, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RemoveFocus(Widget widget)
+	{
+		int index = m_aFocus.Find(widget);
+		if (index < 0)
+			return;
+
+		m_aFocus.Remove(index);
+		m_aFocusOrder.Remove(index);
+		if (m_iFocus >= m_aFocus.Count())
+			m_iFocus = m_aFocus.Count() - 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Focus the first non-field entry so MenuSelect works without pressing MenuDown first.
+	protected void FocusInitial(WorkspaceWidget workspace)
+	{
+		array<bool> isField = {};
+		foreach (Widget candidate : m_aFocus)
+		{
+			isField.Insert(EditBoxWidget.Cast(candidate) != null);
+		}
+
+		int index = LF_UIFocus.Initial(isField);
+		if (index < 0)
+			return;
+
+		m_iFocus = index;
+		if (workspace)
+			workspace.SetFocusedWidget(m_aFocus.Get(index));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Text typed into a FIELD part, or empty when there is no such field.
+	string GetFieldText(string name)
+	{
+		Widget row = WidgetNamed(name);
+		if (!row)
+			return string.Empty;
+
+		EditBoxWidget box = EditBoxWidget.Cast(row.FindAnyWidget("EditBox"));
+		if (!box)
+			return string.Empty;
+
+		return box.GetText();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool SetFieldText(string name, string text)
+	{
+		Widget row = WidgetNamed(name);
+		if (!row)
+			return false;
+
+		EditBoxWidget box = EditBoxWidget.Cast(row.FindAnyWidget("EditBox"));
+		if (!box)
+			return false;
+
+		box.SetText(text);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Adds a status row to a LIST part. The row's action button reports rowName through GetOnButton.
+	//! An empty action hides the button. Row names are unique across the screen.
+	bool AddListRow(string listName, string rowName, string label, string status, string action)
+	{
+		LF_UIPart list = FindPart(listName);
+		if (!list || list.GetKind() != LF_EUIPartKind.LIST)
+		{
+			EL_Debug.Error("UIKit", listName + " is not a list");
+			return false;
+		}
+
+		if (FindPart(rowName))
+		{
+			EL_Debug.Error("UIKit", "skipped duplicate list row " + rowName);
+			return false;
+		}
+
+		Widget listWidget = WidgetNamed(listName);
+		Widget content;
+		if (listWidget)
+			content = listWidget.FindAnyWidget("ListContent");
+
+		WorkspaceWidget workspace;
+		if (GetGame())
+			workspace = GetGame().GetWorkspace();
+
+		if (!content || !workspace)
+		{
+			EL_Debug.Error("UIKit", "list " + listName + " cannot take rows");
+			return false;
+		}
+
+		Widget row = workspace.CreateWidgets(LF_UITheme.STATUS_LAYOUT, content);
+		if (!row)
+		{
+			EL_Debug.Error("UIKit", "failed to create list row " + rowName);
+			return false;
+		}
+
+		LF_UIPart part = LF_UIPart.CreateStatus(rowName, label, status, action);
+		part.SetList(listName);
+		m_aParts.Insert(part);
+		row.SetName(rowName);
+		Remember(rowName, row);
+
+		int listOrder = 0;
+		m_mListOrder.Find(listName, listOrder);
+		m_iCurrentOrder = listOrder + 1 + list.GetRows().Count();
+		list.GetRows().Insert(rowName);
+
+		AddStatus(row, part);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes every row of a LIST part (for a refresh).
+	void ClearList(string listName)
+	{
+		LF_UIPart list = FindPart(listName);
+		if (!list || list.GetKind() != LF_EUIPartKind.LIST)
+		{
+			EL_Debug.Error("UIKit", listName + " is not a list");
+			return;
+		}
+
+		foreach (string rowName : list.GetRows())
+		{
+			Widget button = WidgetNamed(rowName + "_Action");
+			RemoveFocus(button);
+			Forget(rowName + "_Action");
+
+			Widget row = WidgetNamed(rowName);
+			if (row)
+				row.RemoveFromHierarchy();
+
+			Forget(rowName);
+			LF_UIPart rowPart = FindPart(rowName);
+			if (rowPart)
+				m_aParts.RemoveItem(rowPart);
+		}
+
+		list.GetRows().Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Scrolls the owning list so a focused row stays on screen.
+	protected void ScrollIntoView(Widget focused)
+	{
+		string name = PartNameFrom(focused);
+		LF_UIPart part = FindPart(name);
+		if (!part || part.GetList().IsEmpty())
+			return;
+
+		LF_UIPart list = FindPart(part.GetList());
+		Widget listWidget = WidgetNamed(part.GetList());
+		if (!list || !listWidget)
+			return;
+
+		ScrollLayoutWidget scroll = ScrollLayoutWidget.Cast(listWidget.FindAnyWidget("ListScroll"));
+		if (!scroll)
+			return;
+
+		int index = list.GetRows().Find(name);
+		scroll.SetSliderPos(0, LF_UIFocus.ScrollFraction(index, list.GetRows().Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool EvaluateClose()
 	{
 		if (!m_bCheckDeath && !m_bCheckLost && !m_bCheckDistance)
@@ -606,6 +862,10 @@ class LF_UIScreen
 	//------------------------------------------------------------------------------------------------
 	protected void ActivateInputContext()
 	{
+		// Closed earlier this frame; the deferred DisarmInput removes this call.
+		if (!m_bInputArmed || !m_wRoot)
+			return;
+
 		if (EvaluateClose())
 			return;
 
@@ -638,6 +898,13 @@ class LF_UIScreen
 	//------------------------------------------------------------------------------------------------
 	protected void MoveFocus(InputManager inputManager, WorkspaceWidget workspace, bool fieldFocused)
 	{
+		if (inputManager.GetActionTriggered("MenuBack"))
+		{
+			EL_Debug.Info("UIKit", "closed: back");
+			Close();
+			return;
+		}
+
 		int direction = 0;
 		if (inputManager.GetActionTriggered("MenuDown"))
 			direction = 1;
@@ -679,6 +946,7 @@ class LF_UIScreen
 			{
 				m_iFocus = next;
 				workspace.SetFocusedWidget(candidate);
+				ScrollIntoView(candidate);
 				return;
 			}
 
@@ -777,13 +1045,24 @@ class LF_UIScreen
 	void Notify(string name)
 	{
 		EL_Debug.Info("UIKit", "button " + name);
+		if (!m_OnButton)
+		{
+			EL_Debug.Warn("UIKit", "button " + name + " has no listener");
+			return;
+		}
+
+		m_OnButton.Invoke(name);
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Close can run inside the repeating ActivateInputContext call (MenuBack, MenuSelect on the
+	//! Close button, death or distance). Removing a call from inside its own callback is not safe
+	//! (see EL_CharacterCreationManager.OnPlayerConnected), so the removal is deferred one tick and
+	//! ActivateInputContext refuses to run once m_bInputArmed is false.
 	void Close()
 	{
 		if (m_bInputArmed && GetGame() && GetGame().GetCallqueue())
-			GetGame().GetCallqueue().Remove(ActivateInputContext);
+			GetGame().GetCallqueue().CallLater(DisarmInput, 0, false);
 
 		m_bInputArmed = false;
 		m_bCheckDeath = false;
@@ -796,5 +1075,15 @@ class LF_UIScreen
 		m_wRoot.RemoveFromHierarchy();
 		m_wRoot = null;
 		EL_Debug.Info("UIKit", "screen closed");
+
+		if (m_OnClosed)
+			m_OnClosed.Invoke();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DisarmInput()
+	{
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(ActivateInputContext);
 	}
 }

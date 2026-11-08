@@ -56,6 +56,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_JobAndBuildingExploit(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionLoadoutConfig(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FactionSpawn(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_FilmCameraPath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);
@@ -72,6 +73,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_MiningPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyCash(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyRework(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_PlaytestMission(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceFineMath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
@@ -145,6 +147,10 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_SurvivalSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_TraderItemConfig(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ProcessingRecipeConfig(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UIKitInitialFocus(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UIKitButtonInvoker(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_NotificationToastTiming(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_NotificationToastLayout(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_UIKitParts(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitQuantity(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitClose(), EL_TestTier.LOGIC);
@@ -155,6 +161,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_WhitelistLogic(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistCommandParse(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistPersist(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_WoodcuttingDamage(), EL_TestTier.WORLD);
 		manager.Register(new LF_Test_QuestTracker(), EL_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestWorld(), EL_TestTier.WORLD);
 	}

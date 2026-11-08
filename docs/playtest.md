@@ -62,7 +62,7 @@ A locked target is a breach. Plant the charge at `Roadmap_Breach_Door`, `Roadmap
 
 ### Police
 
-Use a police character. At `Roadmap_Police_Desk`, go on duty. At `Roadmap_Police_Armory`, take the kit.
+Use a police character. Go on duty at `PoliceStation_Debug` (x 170, z 120, west of the street): `Roadmap_Police_Desk` has no actions yet (M1-11 moves duty there). At `Roadmap_Police_Armory`, take the kit.
 
 A new officer is patrol: a pistol, fines up to 1000, and no arrest. Senior is a rifle, fines up to 5000, and can arrest. An hour on duty promotes. Promoting yourself should be refused.
 
@@ -98,6 +98,55 @@ Do not file these as broken. File them under "build next" if you want them.
 - A police mission board
 - World events
 - New guns, cars, or aircraft
+
+## Host a playtest on a dedicated server
+
+This runs the town on your PC as a dedicated server so friends can join and keep what they earn across restarts. You need the Arma Reforger Server (Steam app 1874900) and Node. It uses the mission **Life Framework Playtest Town** (`Missions/LF_PlaytestTown.conf`): DebugWorld with the debug menu and harness tools closed to everyone except server admins, and no test suite.
+
+Host from a worktree. `host start` refuses in the main checkout, because that copy belongs to the world editor:
+
+```sh
+tools\cli wt new playtest          # once
+cd ..\Life-Framework-ws-playtest
+tools\cli host start
+```
+
+`host start`:
+
+- copies any existing saves to `backups\<time>-start`, then boots with `-loadSessionSave` so the latest save continues. With no save it starts fresh.
+- waits for the world and prints the session line: `session continued from a save point (-loadSessionSave)` or `fresh session: no save point exists for this mission`.
+- prints the join addresses and returns. The server keeps running in the background.
+
+Other commands:
+
+| Command | Does |
+|---|---|
+| `tools\cli host status` | Running or stopped, the newest save point, the newest backup, the log path, join addresses |
+| `tools\cli host stop` | Asks the server to close normally, waits for `save completed (SHUTDOWN)`, then copies the saves to `backups\<time>-stop` |
+| `tools\cli host backup` | Copies the saves now |
+
+Always stop with `host stop`. Closing the window or killing the process skips the shutdown save, so the restart loses everything since the last autosave (every 10 minutes).
+
+The host profile, saves, logs, and backups live in `%LOCALAPPDATA%\LifeFramework\host` (set `LF_HOST_DIR` to move it). Nothing there is inside a worktree, so pruning a worktree or running tests never touches the saves. Restore a backup by stopping the host and copying the backup folder back over `profile\profile\.save`.
+
+Only one server can run on this PC at a time. Every server listens on UDP port 2001. If a test run in another worktree holds the port, `host start` says so; `host start --wait` queues behind it. While the host runs, `tools\cli test` in any worktree waits for it.
+
+### How a friend joins
+
+The mod is not on the Workshop yet, so your friend needs the same addon you host:
+
+1. Clone the repository and check out the same commit you host (`git rev-parse HEAD` in your worktree).
+2. Start the game's diag executable from the game folder with the addon and your address:
+
+   ```
+   ArmaReforgerSteamDiag.exe -addonsDir "<their clone>\addons" -addons LifeFramework -client <your address>
+   ```
+
+   `-client` connects on port 2001. On the same network use the LAN address `host start` printed. Over the internet use your public IP.
+
+### Firewall and port forwarding
+
+Allow `ArmaReforgerServer.exe` through Windows Firewall when Windows asks (private and public networks for internet play). For friends outside your network, forward UDP 2001 on your router to this PC's LAN address. Port 2001 is fixed in this mode: the server ignores `-bindPort` when it runs a mission directly, and the JSON server config (`-config`) cannot be combined with a local addon.
 
 ## Send feedback
 

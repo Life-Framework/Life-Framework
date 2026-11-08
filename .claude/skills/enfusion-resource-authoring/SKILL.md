@@ -52,7 +52,9 @@ is a capsule along the mesh. Handheld pickups stay as they are.
 `Worlds/DebugWorld/DebugWorld_Layers/*.layer`. The generic world entity is
 declared in `default.layer`; props in a layer loaded before it get no physics
 body and the player walks through them. Features have their own layer files;
-the roadmap street (`Roadmap_*` entities) lives in `Roadmap.layer`. Do not
+the roadmap street root is `Roadmap.layer`; each site (`Roadmap_*` entities)
+lives in its own `Street_<Site>.layer` (Breach, Bank, Jail, Police, Hospital,
+Fuel, Org, Hideout, Contraband, Jobs, Vehicles). Do not
 "repair" the empty `.ent`. `validate-debugworld-layer-order` and
 `validate-debugworld-layout` (overlapping area boxes, raised ground props,
 footprint intersections) run in `tools\cli validate`.

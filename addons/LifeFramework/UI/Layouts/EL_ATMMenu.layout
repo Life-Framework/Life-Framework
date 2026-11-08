@@ -47,7 +47,7 @@ TextWidgetClass "{0430257BDA31FEC6}" {
       Padding 20 20 20 20
      }
      {
-      ButtonWidgetClass "{38C7258D1B446DAC}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
+      ButtonWidgetClass "{38C7258D1B446DAC}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
        Name "DepositButton"
        Slot LayoutSlot "{6DDA246F145B2419}" {
         SizeMode Fill
@@ -55,7 +55,7 @@ TextWidgetClass "{0430257BDA31FEC6}" {
         Padding 0 5 10 0
        }
       }
-      ButtonWidgetClass "{32BB272503AD9192}" : "{0114A06AD44D49BD}UI/layouts/WidgetLibrary/Buttons/DialogButtonCancel.layout" {
+      ButtonWidgetClass "{32BB272503AD9192}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
        Name "WithdrawButton"
        Slot LayoutSlot "{3FDFAD67154C67A6}" {
         SizeMode Fill
@@ -63,6 +63,13 @@ TextWidgetClass "{0430257BDA31FEC6}" {
         Padding 10 5 0 0
        }
       }
+     }
+    }
+    ButtonWidgetClass "{E71253E5BA69493F}" : "{0114A06AD44D49BD}UI/layouts/WidgetLibrary/Buttons/DialogButtonCancel.layout" {
+     Name "CloseButton"
+     Slot LayoutSlot "{BA52E79D3D122E9E}" {
+      HorizontalAlign 1
+      Padding 20 0 20 20
      }
     }
    }

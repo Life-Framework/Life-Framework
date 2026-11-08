@@ -50,6 +50,7 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `SCR_PlaceableEntitiesRegistryFromCatalog cannot find SCR_EntityCatalogManagerComponent` | VANILLA | An editor-mode entity was instantiated in play mode (DebugWorld boots). Harmless in debug. |
 | `The default minimap texture ('$LifeFramework:Worlds/DebugWorld/DebugWorldRasterized.edds') not found ... Skipping...` | BY DESIGN | DebugWorld has no satellite minimap. The engine derives the path from the world name and skips when absent; world + tests are unaffected. To add one: World Editor → Export Map Data → Type: Rasterization → convert to `.edds` at `Worlds/DebugWorld/DebugWorldRasterized.edds`. |
 | `[ELDebug:Whitelist] no whitelist file yet: $profile:LifeFramework/Whitelists/<X>.txt` | BY DESIGN | First boot before an admin created the whitelist file; the feature degrades to allow (CONNECT-gate file-missing path). Create the file to restrict. |
+| `Usage of released BaseResourceObject` with `GetInfo() Scripts/Game/Core/EL_UIInfoUtils.c` under `ResolveDisplayName` / `BuildCatalog` | FIXED | `EL_UIInfoUtils.GetInfo` passed `Resource.Load(prefab)` straight into `FindEntitySource`, so the resource was released before the source was read: about 16,000 error lines per DebugWorld boot, one stack per catalog item. The resource is now held in a local (2026-11-07). The same message from `EL_QuantityComponent.UpdateStackModel` came from the tier mesh's `Resource` being released when the method returned, so the next `SetObject` touched a released mesh. The component now holds that `Resource` in a `ref` member (2026-11-08): 1 line per `--tier all` boot before, 0 after. |
 | `[ELDebug:Siren] mode -> default (index 0)` | INFO | Siren state machine initializing. |
 | `[ELDebug:DebugWorld] boundary spawned 4/4 corner poles` | INFO | Debug boundary poles placed. |
 | `[ELDebug:Mining] spawned 5/5 ores` / `respawn scheduled in 60000 ms` | INFO | Mining feature state. |
@@ -92,6 +93,9 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:CharacterCreation] faction menu not opened: no workspace on this machine` | OPEN | The owner RPC landed on a machine without UI (a dedicated server owning a controller should never happen). |
 | `[ELDebug:Police] wanted list refused: ...` / `wanted list sent: <n> entries` / `wanted list received: <n> entries` | INFO | Server and client halves of the police menu wanted-list RPC. A refusal means the requester was not an on-duty officer. |
 | `[ELDebug:License] license <type> has no replication bit` | OPEN | A new `EL_ELicenseType` was not appended to `EL_LicenseBits.Order()`; clients will not see it. Append it. |
+| `[ELDebug:Host] watching $profile:lf-host-stop` / `stop requested, closing the game` | INFO | The playtest mission (`LF_PlaytestTown.conf`) listens for `toolscli host stop`, which writes that file; the server then closes normally and the engine writes its SHUTDOWN save. |
+| `[ELDebug:Host] removed a stale stop file from an earlier run` | BY DESIGN | A stop file survived a crash or a force kill. It is deleted at start so the new run does not close at once. |
+| `[ELDebug:Persistence] session ended without a shutdown save` logged right after `system state ACTIVE -> SHUTDOWN` and before `save completed (SHUTDOWN)` | FIXED | The check ran on the SHUTDOWN state change, which the engine enters before it writes the SHUTDOWN save. It now runs at component teardown (`OnDelete`), after the save. Seen on every `host stop` before the fix (2026-11-08). |
 
 ## How to add a row
 

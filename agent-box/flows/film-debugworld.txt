@@ -1,0 +1,12 @@
+# Filming: a short tour of DebugWorld from the player view. Run after the
+# character is spawned (flow ui-intake). Each stand moves the player beside a
+# site; the waits give the camera time on it.
+stand ATM_Debug
+wait 3500
+look
+stand AppleGatherTree
+wait 3500
+stand PoliceStation_Debug
+wait 3500
+stand Roadmap_Bank_Vault
+wait 3500

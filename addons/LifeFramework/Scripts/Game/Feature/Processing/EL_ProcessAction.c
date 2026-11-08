@@ -246,6 +246,6 @@ class EL_ProcessAction : ScriptedUserAction
 	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
 	{
 		m_pHideoutMachine = EL_Component<LF_HideoutMachineComponent>.Find(pOwnerEntity);
-		SetCannotPerformReason("Can't find items");
+		SetCannotPerformReason("#LF-Process_NoItems");
 	}
 }

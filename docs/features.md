@@ -168,6 +168,15 @@
   manager scans the mission's saves and logs `EL_Debug.Error` ("started a NEW
   session while N save point(s) exist") when any exist; with none it logs a
   fresh-session info line. See `docs/persistence.md`.
+- ✅ **Playtest host** (`toolscli host start|stop|status|backup`, `tools/host/host.mjs`;
+  verified 2026-11-08 on the dedicated server): `start` runs `LF_PlaytestTown.conf`
+  from a profile outside every worktree (`%LOCALAPPDATA%LifeFrameworkhost`,
+  `LF_HOST_DIR`), passes `-loadSessionSave` when a save exists, and backs the saves
+  up first. `stop` writes `$profile:lf-host-stop`; `LF_HostStop` closes the game
+  normally so the engine writes the SHUTDOWN save, then the CLI backs the saves up.
+  The server owns the machine-wide `server-2001` lock while it runs. The
+  no-shutdown-save error now fires at teardown, not on the SHUTDOWN state change
+  that comes before the save. Selftest: `tools/validation/host-selftest.mjs`.
 
 ### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
 - ✅ Explicit persisted form of an account and its characters (faction,
@@ -392,7 +401,7 @@
   `Roadmap_Job_Depot` (post counter
   `{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et`),
   `Roadmap_Job_Drop`, `Roadmap_Job_TaxiPad`, and `Roadmap_Job_FuelCan` on
-  `Roadmap.layer`.
+  `Street_Jobs.layer`.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -480,7 +489,7 @@
   can repair its own door. `Export` / `Apply` put the open lock back in memory
   but are not wired into the save serializer, so a restart loses it. The
   vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
-  `Roadmap_Breach_Charge` on `Roadmap.layer`. The charge prefab is
+  `Roadmap_Breach_Charge` on `Street_Breach.layer`. The charge prefab is
   `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
   **Charge consumed** (verified 2026-11-07): `Arm(targetId, playerUid,
   chargeCarrier)` takes one charge from `chargeCarrier` before the wanted bump and
@@ -507,7 +516,7 @@
   `Export` / `Apply` restore the ground bags and do not write a bank balance;
   they are not wired into the save serializer, so a restart loses the bags.
   DebugWorld places `Roadmap_Bank_Vault` at 189 0 120 and `Roadmap_Bank_Bag`
-  at 189 0 122 on `Roadmap.layer`. The bag is
+  at 189 0 122 on `Street_Bank.layer`. The bag is
   `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
   mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
   `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
@@ -521,7 +530,7 @@
   to the bank (verified 2026-10-11). The placed action is `EL_RobAction` on the
   till's single `ActionsManagerComponent`. Wanted rises by 1. One police alert per
   successful rob; an offer refresh does not alert. DebugWorld places
-  `Roadmap_Hospital_Till` at `195 0 120` on `Roadmap.layer`.
+  `Roadmap_Hospital_Till` at `195 0 120` on `Street_Hospital.layer`.
 - ✅ The cabinet is a forced-entry container. `BreachCabinet` calls
   `LF_Breach.Arm`. When that lock opens it spawns the configured medicine
   prefabs: field dressing, morphine, saline, and tourniquet. A missing prefab
@@ -540,7 +549,7 @@
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted (pin test `crime/rob-wanted-clamp`).
 - ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
-  `Roadmap.layer` at `201 0 120` is
+  `Street_Fuel.layer` at `201 0 120` is
   `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits
   `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`,
   with `EL_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
@@ -574,7 +583,7 @@
   stays. `Export` / `Apply` put the remaining seconds back, and `ExportAll` /
   `ApplyAll` carry every serving sentence through the save. DebugWorld places
   `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
-  `Roadmap.layer`. The placed door is
+  `Street_Jail.layer` (the desk on `Street_Police.layer`). The placed door is
   `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
   inherits
   `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
@@ -586,7 +595,7 @@
   arrive at the cell, not when they enter the car. A player who is not wanted
   is refused and logged. Early release stays refused. A reconnect or a
   restart keeps the remaining sentence. DebugWorld places
-  `Roadmap_Escort_Car` at `204 0 108` on `Roadmap.layer`, the police M151 with
+  `Roadmap_Escort_Car` at `204 0 108` on `Street_Jail.layer`, the police M151 with
   `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
   still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
 - ✅ **Sentences survive a restart** (2026-11-07, tests
@@ -642,7 +651,7 @@
   is the self-promotion RPC body and always refuses. Rank does not change
   faction and does not write the police whitelist. Lower ranks still open the
   wanted list. DebugWorld places `Roadmap_Police_Armory` at `207 0 120` on
-  `Roadmap.layer`.
+  `Street_Police.layer`.
 - ⚠️ Rank and on-duty seconds live on the account object and are not in
   `EL_PlayerAccountRecord`, so a restart returns the officer to patrol.
 
@@ -650,7 +659,7 @@
 - ✅ One convoy. A member of the organization that owns the hideout hauls
   `{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et` from
   `Roadmap_Convoy_Start` at `222 0 120` to `Roadmap_Convoy_Drop` at `225 0 120`
-  on `Roadmap.layer`. Delivery pays 200 MoneyStack cash once. A second
+  on `Street_Contraband.layer`. Delivery pays 200 MoneyStack cash once. A second
   delivery on that run pays nothing. Leaving the vehicle or dying fails the
   run and logs it; a failed run pays nothing. A non-member is refused and the
   refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
@@ -678,7 +687,7 @@
 - ✅ Cash moves only as MoneyStack through `EL_OrganizationPlayer`. A short
   removal is returned to the character. A short payout puts the fund back. The
   personal ATM balance is not read or written. The desk is
-  `Roadmap_Org_Desk` on `Roadmap.layer` at `210 0 120`, using
+  `Roadmap_Org_Desk` on `Street_Org.layer` at `210 0 120`, using
   `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`. The menu is a
   workspace widget on `{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout`.
   It lists the name, the fund, and the processing-slot upgrade, and shows an
@@ -717,6 +726,16 @@
 ### `EL_NotificationManagerComponent` — `Feature/Notifications/`
 - ✅ Server→client notification broadcast with toast renderer; `SendToPlayer`/
   `SendToJob`/`SendToAll` + static `NotifyPlayer`/`NotifyJob`/`NotifyAll`.
+  Before 2026-11-07 the toast layout
+  `{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout` did not
+  exist, so every toast (fines, arrests, rank denials, lot, lock, jail) failed silently. It
+  now exists: a paper slip in the UI kit palette with a stamp-ink type strip (`Background`,
+  `ColorStrip`, `Icon`, `Title`, `Message`, `EL_NotificationToastUI` on the root).
+  Slips that overlap in time stack downwards. Timing reads the real clock
+  (`System.GetTickCount`), not an assumed 16 ms frame. `notifications/toast-layout` (WORLD)
+  instantiates the layout on the dedicated server and checks every named widget;
+  `notifications/toast-timing` (LOGIC) checks show/fade/remove. On-screen look is
+  visual-only: manual check pending (verified 2026-11-07)
 - ✅ **Targeted delivery fixed** (verified 2026-08-30): `RpcDo_ShowNotification`
   is `RplRcver.Broadcast` with a client-side `playerId` filter (`-1` = all),
   plus a direct call for the listen-server host so the authority sees its own
@@ -746,6 +765,8 @@
   so `HandleOnItemAdded` no longer merges the spawned init quantity (100 for
   MoneyStack) into the source. Split 1 used to add 99. Pin test
   `security/inventory-split-no-mint`.
+- ✅ Stack tier meshes hold their `Resource` while applied, so a tier swap no longer logs
+  `Usage of released BaseResourceObject` (2026-11-08, `quantity/operations` visual path).
 - ⚠️ `Split` with `splitSize` 0 spawns an item then deletes it via
   `SetQuantity(0)`; `ExtractQuantityComponents` inserts null components with
   no check; `HandleOnItemAdded` may refresh UI on a just-deleted entity.
@@ -798,13 +819,15 @@
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
 - ✅ **A restart drops no ground key** (2026-11-07, test `restart/vehicle-restore-no-ground-key`, verified 2026-11-07): `RestoreWorld` / `RestoreVehicle` put each out-in-world vehicle back on the pad, locked as saved, without spawning a key. Before, every restart left a fresh key beside the pad for every such vehicle (anyone could take the car, and keys piled up). The owner re-keys through the existing owner-only flow: garage store, then retrieve (retrieve spawns a key when the session has none), or an extra key at the lot.
-- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `186 0 102.1` on `Roadmap.layer`, with store and retrieve. The shell sits 5.9 m north of that point, so the player stands outside the wall. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
+- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `186 0 102.1` on `Street_Vehicles.layer`, with store and retrieve. The shell sits 5.9 m north of that point, so the player stands outside the wall. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
 - ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
 
 ## UI / Layouts / Localization
 
 ### UI kit — `Scripts/Game/Feature/UIKit/`
 - Post-release polish. `LF_UITheme` holds the 1989 type, padding, and paper/metal colors. `LF_UIScreen` assembles a frame, title, body line, WLib edit box (ink, no text outline or shadow; the box is not a `TextWidget`), list row, status row, quantity slider, and pause-menu button with `WorkspaceWidget.CreateWidgets`, wires `SCR_ButtonTextComponent`, and activates `MenuContext` every frame (`MenuTextEditContext` while an edit box is focused, `MenuWithEditorContext` so a pad can move). Close removes the widgets and that call. It does not use MenuManager.
+- Input (verified 2026-11-07): focus lands on the first non-field control at open, so MenuSelect works without MenuDown first. MenuBack closes. `GetOnButton()` hands the feature the part name of a pressed BUTTON, STATUS action, or list row action. `GetOnClosed()` fires once for any close. A LIST part (`LF_UIList.layout`, `AddListRow`/`ClearList`) scrolls to the focused row. Close defers the removal of its per-frame call by one tick, because it can run inside that call. `ui-kit/initial-focus` and `ui-kit/button-invoker` (LOGIC) cover the pure parts; the on-screen focus ring is visual-only.
+- `LF_UIMenuInput` gives the remaining MenuManager menus (ATM, shop, quest, police) and the workspace pickers (faction, spawn location, death, organization) the same input: MenuContext plus MenuWithEditorContext every frame, MenuUp/MenuDown focus ring, MenuSelect on the focused button, MenuBack closes (not on the mandatory faction, spawn and death pickers), and a 150 ms debounce so a click and the poll do not double-fire. The ATM has a Close button and labelled Deposit/Withdraw buttons, tells the player when the amount is blank or zero, and names deposit and withdraw refusals separately. The shop and quest Close buttons work. Shop and ATM were not migrated onto the kit: `EL_CharacterATMComponent`, `EL_ShopComponent` and `EL_CharacterShopComponent` find these menus by MenuManager preset, and moving them would rewrite that lookup in files other work owns. The shop, quest, organization desk, and police menu actions are `HasLocalEffectOnlyScript`, so the menu opens only on the acting client.
 - A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. It reuses a play session that is already up. Faction, character creation, death, shop, ATM, quest, police, and spawn menus were not migrated.
 
 ### Signs — `Scripts/Game/Feature/Signs/`
@@ -833,7 +856,11 @@
 ### Layouts (loaded by `EL_Test_Data`)
 - ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,
   `EL_SurvivalHUD`, `FactionSelectionMenu`, `ShopMenu`, `PoliceMenu`,
-  `DeathScreen` load (WORLD tier).
+  `DeathScreen` load (WORLD tier). The `SurvivalHUD` menu preset and its
+  `EL_SurvivalHUD` class were never opened and are removed (2026-11-07); `EL_BetaHud`
+  draws the gauges. The layout stays only as this load fixture. The unused
+  falling-fruit widget (`EL_FallingFruit`, which loaded a layout that never existed) is
+  removed; `EHarvestJobType` moved to `Feature/Jobs/EL_HarvestJobType.c`.
 - ✅ `EL_DebugMenu` is a development menu opened with F10 (or its rebind),
   with server-routed controls for cash, wanted state, faction, jobs, survival,
   XP, and skill points. Actions affect only the requesting player's state
@@ -845,11 +872,20 @@
   off. The open key runs the same check on the client and logs
   `open refused` instead of opening. `EL_DevGate.IsAllowed` has the LOGIC test
   `debug-menu/gate` (2026-11-07).
+- ✅ The playtest mission `Missions/LF_PlaytestTown.conf` (`LF_MissionHeader`,
+  `Core/LF_MissionHeader.c`) runs DebugWorld with `m_bLF_DevToolsOff 1`: the
+  header overrides the DebugWorld game mode opt-in, so only administrators
+  pass `EL_DevGate` there. A bare world (Workbench play, `toolscli test`) has
+  no LF header and keeps the opt-in. LOGIC test `host/playtest-mission`
+  (2026-11-08).
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
-  — the player sees raw keys. Spanish literals throughout jobs/licenses/
-  notifications. Violates the AGENTS.md localization contract.
+  — the player sees raw keys. Spanish literals in notifications remain. The job,
+  level and licence texts, the duty status words, the robbery, gather and process action
+  texts, and the DebugWorld shop names moved to `#LF-*` keys on 2026-11-07, worded as
+  employment rather than XP. Violates the AGENTS.md localization contract until the
+  notification prefixes move too.
 
 ## DebugWorld coverage
 
@@ -869,7 +905,8 @@
 - ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
   Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
   traders, jobs, police, crime, houses, survival, tests, and the release
-  street on `Roadmap.layer`. Sites sit 3 m apart on +X, from the breach door
+  street on `Roadmap.layer` (street root and boundary) plus one
+  `Street_<Site>.layer` per site. Sites sit 3 m apart on +X, from the breach door
   at `186 0 120` through the vehicle lot at `243 0 120`. The debug terrain is
   the 512 m square (world 0..512, `TERRAIN_MAX` in `tools/street/manifest.mjs`).
   The row stays on that ground. That
@@ -936,6 +973,21 @@
   `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
   tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
   (verified 2026-10-11)
+
+### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
+- ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera
+  keys (position, look-at, FOV); `Sample(t)` eases between keys with
+  smoothstep and clamps at both ends. Out-of-order keys are rejected and
+  logged (`[ELDebug:Film]`). Covered by `film/camera-path` (LOGIC).
+- ⚠️ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
+  hides the HUD, moves the camera each frame, then restores the previous
+  camera and HUD. It compiles but has not run in a rendering session and no
+  agent-box verb calls it yet.
+- ✅ `tools/film/film.mjs` records a window or region to mp4 (ddagrab +
+  NVENC; gdigrab when ddagrab delivers no frame in 5 s), makes a GIF preview,
+  films an agent-box flow, and publishes a clip to the `film-evidence`
+  prerelease for a PR comment. Proven in game 2026-11-08: a game client on
+  DebugWorld, flow `film-debugworld`, 20.7 s at 1280x720, 2.8 MB (PR #111).
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
