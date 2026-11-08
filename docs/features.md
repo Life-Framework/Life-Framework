@@ -315,8 +315,16 @@
   quest id is kept with a warning, a rank above the ladder clamps to senior. A
   version 6 save leaves live rank and duty totals alone (the account apply
   carries them over). A running duty clock is settled into the save.
-- ⚠️ Sign-ups, an active run, and the open duty clock are session state; after a
-  restart the courier signs up again. `EL_LicenseManagerComponent` is not on
+- ✅ **The delivery sign-up survives a restart** (2026-11-08, test
+  `persist/job-signup-roundtrip`). The `jobsignups` payload, appended at save
+  version 9, holds one `LF_JobSignUpRecord` (player uid, job by enum name) per
+  signed-up player. It loads after `progression`, so the career level that gates
+  the job is back first. `EL_SpawnLogic` puts the job on every new body after the
+  hand-over, so the sign-up also survives death. An unknown name, a job that is
+  not delivery work, or one above the player's level stays unemployed with a
+  `[ELDebug:Jobs]` warning.
+- ⚠️ An active run and the open duty clock are session state; after a restart the
+  courier is still signed up and starts a new run. `EL_LicenseManagerComponent` is not on
   `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 - ⚠️ Ammo count, weapon state, and placed storage (hideout stash, M1-15) are not
   in the snapshot. Attachments and magazines are kept as items.

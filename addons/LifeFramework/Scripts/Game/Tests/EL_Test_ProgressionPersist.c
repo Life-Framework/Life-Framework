@@ -130,7 +130,7 @@ class EL_Test_ProgressionRoundtrip : EL_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(8, version, "the save is written at version 8 (progression is payload 7)");
+		ctx.Equal(9, version, "the save is written at version 9 (progression is payload 7)");
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "progression");
 
 		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER), "courier level 2 after the load");

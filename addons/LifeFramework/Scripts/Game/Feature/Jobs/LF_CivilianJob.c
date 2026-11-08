@@ -86,8 +86,8 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Persistence seam: sets the saved career. The sign-up and any active run are session state
-	//! and are left alone, so a re-apply to a live session does not end a run.
+	//! Persistence seam: sets the saved career. The sign-up has its own payload (ApplySignUps) and an
+	//! active run is session state; both are left alone, so a re-apply to a live session does not end a run.
 	static void RestoreCareer(string playerUid, int level, float experience, int paidTotal)
 	{
 		if (playerUid.IsEmpty())
@@ -108,6 +108,149 @@ class LF_CivilianJob
 	{
 		if (s_mWorkers)
 			s_mWorkers.Remove(playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The delivery job the player is signed up for, or UNEMPLOYED (never creates a career).
+	static EL_EJobType GetSignedUpJob(string playerUid)
+	{
+		if (!s_mWorkers || playerUid.IsEmpty())
+			return EL_EJobType.UNEMPLOYED;
+
+		LF_JobWorker worker = s_mWorkers.Get(playerUid);
+		if (!worker || !worker.m_bSignedUp)
+			return EL_EJobType.UNEMPLOYED;
+
+		return worker.m_eJob;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: one record per signed-up player. The job is stored by enum name, so a
+	//! reordered EL_EJobType does not move a saved sign-up to another job. An active run is not
+	//! saved; after a restart the player is still signed up and starts a new run.
+	static array<ref LF_JobSignUpRecord> ExportSignUps()
+	{
+		array<ref LF_JobSignUpRecord> records = new array<ref LF_JobSignUpRecord>();
+		if (!s_mWorkers)
+			return records;
+
+		foreach (string playerUid, LF_JobWorker worker : s_mWorkers)
+		{
+			if (!worker || !worker.m_bSignedUp || !IsDeliveryJob(worker.m_eJob))
+				continue;
+
+			records.Insert(LF_JobSignUpRecord.Create(playerUid, typename.EnumToString(EL_EJobType, worker.m_eJob)));
+		}
+
+		return records;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: signs the saved players up again and puts the job on their live bodies.
+	//! Runs after the progression payload, so the career level that gates the job is restored
+	//! first. Applying the same records twice ends in the same state; an active run is left alone.
+	static void ApplySignUps(notnull array<ref LF_JobSignUpRecord> records)
+	{
+		int restored = 0;
+		int bodies = 0;
+		foreach (LF_JobSignUpRecord record : records)
+		{
+			if (!record)
+				continue;
+
+			if (!RestoreSignUp(record.m_sPlayerUid, record.m_sJob))
+				continue;
+
+			restored++;
+			if (ApplySignUpToLiveBody(record.m_sPlayerUid))
+				bodies++;
+		}
+
+		EL_Debug.Info("Jobs", string.Format("restored %1 of %2 job sign-up(s), %3 live body(ies)", restored, records.Count(), bodies));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Signs the player up for a saved job by name. A name that is no longer a delivery job, or a
+	//! job above the player's career level, is logged and leaves the player unemployed.
+	//! \return true when the player is signed up for the job afterwards.
+	static bool RestoreSignUp(string playerUid, string jobName)
+	{
+		if (playerUid.IsEmpty())
+		{
+			EL_Debug.Warn("Jobs", string.Format("saved sign-up '%1' has no player id, skipped", jobName));
+			return false;
+		}
+
+		EL_EJobType job = typename.StringToEnum(EL_EJobType, jobName);
+		if (typename.EnumToString(EL_EJobType, job) != jobName || !IsDeliveryJob(job))
+		{
+			EL_Debug.Warn("Jobs", string.Format("saved sign-up '%1' for %2 is not a delivery job, stays unemployed", jobName, playerUid));
+			return false;
+		}
+
+		if (!CanSignUp(playerUid, job))
+		{
+			EL_Debug.Warn("Jobs", string.Format("saved sign-up %1 for %2 is above career level %3, stays unemployed", jobName, playerUid, GetLevel(playerUid)));
+			return false;
+		}
+
+		LF_JobWorker worker = Worker(playerUid);
+		worker.m_eJob = job;
+		worker.m_bSignedUp = true;
+		EL_Debug.Info("Jobs", string.Format("sign-up restored %1 -> %2", playerUid, jobName));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the signed-up job on a body the player controls (a new spawn, or a live body after a
+	//! load). The job component reads the player id from its controlled body, so a spawn calls
+	//! this after the hand-over. Setting the same job again is a no-op.
+	//! \return true when the body carries the signed-up job afterwards.
+	static bool ApplySignUpToCharacter(string playerUid, IEntity character)
+	{
+		EL_EJobType job = GetSignedUpJob(playerUid);
+		if (job == EL_EJobType.UNEMPLOYED || !character)
+			return false;
+
+		EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(character);
+		if (!jobs)
+		{
+			EL_Debug.Error("Jobs", string.Format("sign-up %1 not put on %2's body: no EL_PlayerJobComponent", typename.EnumToString(EL_EJobType, job), playerUid));
+			return false;
+		}
+
+		if (!jobs.SetJob(job))
+		{
+			EL_Debug.Warn("Jobs", string.Format("sign-up %1 not put on %2's body: the job component refused it", typename.EnumToString(EL_EJobType, job), playerUid));
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool ApplySignUpToLiveBody(string playerUid)
+	{
+		if (!GetGame())
+			return false;
+
+		PlayerManager players = GetGame().GetPlayerManager();
+		if (!players)
+			return false;
+
+		array<int> playerIds = {};
+		players.GetPlayers(playerIds);
+		foreach (int playerId : playerIds)
+		{
+			if (EL_Utils.GetPlayerUID(playerId) != playerUid)
+				continue;
+
+			IEntity body = players.GetPlayerControlledEntity(playerId);
+			if (body)
+				return ApplySignUpToCharacter(playerUid, body);
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

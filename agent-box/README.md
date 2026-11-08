@@ -585,4 +585,4 @@ the bare DebugWorld run reach the car in one pass; the playtest run has no
 fixtures, so a step that needs more money than a courier run pays reports
 "blocked". First runs (2026-11-08): bare DebugWorld 10 of 12 (org: the desk was
 still the old menu, #168), playtest restart kept cash, bank, and org but lost
-the signed-up job.
+the signed-up job; the `jobsignups` payload (save version 9) keeps it since.

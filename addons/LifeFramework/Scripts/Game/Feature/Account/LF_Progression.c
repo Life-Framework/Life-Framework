@@ -13,8 +13,8 @@
 //! defines is kept. A rank above the ladder clamps to the top usable rank.
 //!
 //! IDEMPOTENT. ApplyAll replaces the store and sets owner state to the saved values; applying the
-//! same records twice ends in the same state. Sign-ups, active runs, and the duty clock are
-//! session state and are left alone.
+//! same records twice ends in the same state. Active runs and the duty clock are session state
+//! and are left alone. The delivery sign-up is its own payload (LF_CivilianJob.ApplySignUps).
 //------------------------------------------------------------------------------------------------
 class LF_Progression
 {
