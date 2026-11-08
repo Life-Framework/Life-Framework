@@ -1,6 +1,6 @@
 EL_GameModeRoleplay : "{7F729501AA82DA9A}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay_Debug.et" {
 }
-SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
+SCR_SpawnPoint Spawn_Town : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
  m_sFaction "CIVILIAN"
  coords 126 0 246
  angleY 90

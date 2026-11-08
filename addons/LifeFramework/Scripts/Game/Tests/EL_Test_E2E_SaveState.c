@@ -29,6 +29,9 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
+	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
+	protected static const string GARAGED_ID = "e2e-garaged-car";
+	protected static const string STREET_ID = "e2e-street-car";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -105,6 +108,10 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 		ctx.NotNull(stash, "e2e hideout stash is placed");
 		if (stash)
 			EL_TestHideoutStashKit.SeedThree(ctx, stash);
+		// Garage it to keep it (vehicles payload, save version 4): one car garaged, one left on the street.
+		EL_VehicleOwnership.Register(GARAGED_ID, GARAGE_OWNER_UID, GARAGED_ID, EL_VehicleCatalog.S105, EL_VehicleCatalog.S105_LOCKED, "roadmap-lot", "EE GA 1601", "#EL-Vehicle_S105", true);
+		EL_VehicleOwnership.Register(STREET_ID, GARAGE_OWNER_UID, STREET_ID, EL_VehicleCatalog.S105, EL_VehicleCatalog.S105_LOCKED, "roadmap-lot", "EE ST 1602", "#EL-Vehicle_S105", true);
+		ctx.True(EL_VehicleOwnership.Store(GARAGED_ID, GARAGE_OWNER_UID), "e2e car garaged before the save");
 
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
@@ -123,6 +130,9 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
+	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
+	protected static const string GARAGED_ID = "e2e-garaged-car";
+	protected static const string STREET_ID = "e2e-street-car";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -205,6 +215,24 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 			ctx.Equal(1, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.WATER_PREFAB), "e2e the water bottle is in the stash after the restart");
 			ctx.Equal(0, EL_TestLooseStackCount.Count(EL_TestHideoutStashKit.MONEY_PREFAB, EL_TestHideoutStashKit.SEEDED_CASH), "no 151 cash stack came back loose in the world (no dupe)");
 			ctx.Equal(0, LF_PersistentStorageComponent.RestoreAllPlaced(), "e2e restoring the stash again spawns nothing");
+		}
+
+		ctx.True(EL_VehicleOwnership.IsStored(GARAGED_ID), "e2e garaged car is still in the garage after the restart");
+		ctx.False(EL_VehicleOwnership.IsImpounded(GARAGED_ID), "e2e garaged car is not impounded");
+		ctx.True(EL_VehicleOwnership.IsImpounded(STREET_ID), "e2e street car is at the impound lot after the restart");
+		ctx.True(EL_VehicleOwnership.GetVehicle(STREET_ID) == null, "e2e street car was not spawned on the street");
+		IEntity payer = EL_TestCharacterFixture.Spawn(ctx);
+		if (payer)
+		{
+			int fee = LF_GarageConfig.ImpoundFee();
+			EL_MoneyUtils.AddCash(payer, fee);
+			string reasonKey;
+			ctx.True(EL_VehicleOwnership.CollectFromImpound(STREET_ID, GARAGE_OWNER_UID, payer, fee, "roadmap-impound", reasonKey), "e2e street car collected from the impound for the fee");
+			ctx.Equal(0, EL_MoneyUtils.GetCash(payer), "e2e impound fee taken from carried cash");
+			ctx.False(EL_VehicleOwnership.CollectFromImpound(STREET_ID, GARAGE_OWNER_UID, payer, fee, "roadmap-impound", reasonKey), "e2e street car is collected only once");
+			ctx.True(EL_VehicleOwnership.GetVehicle(STREET_ID) != null, "e2e collected car is in the impound yard");
+			EL_VehicleOwnership.Store(STREET_ID, GARAGE_OWNER_UID);
+			EL_TestCharacterFixture.Delete(payer);
 		}
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
