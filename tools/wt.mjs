@@ -365,7 +365,9 @@ export function wtSync(root, slug) {
   if (dirty) throw new Error(`worktree ${slug} has uncommitted changes; commit or stash first`);
   const merge = git(e.path, ["merge", "origin/main", "--no-edit", "--no-ff"]);
   if (merge.status !== 0) {
-    throw new Error(`merge origin/main into ${e.branch} failed:\n${merge.stderr || merge.stdout}`);
+    const unmerged = git(e.path, ["diff", "--name-only", "--diff-filter=U"]).stdout.trim();
+    const detail = unmerged ? `conflicts in:\n${unmerged}\nresolve them, commit, and re-run` : (merge.stderr || merge.stdout).trim();
+    throw new Error(`merge origin/main into ${e.branch} failed: ${detail}`);
   }
   return { slug, branch: e.branch, path: e.path };
 }
