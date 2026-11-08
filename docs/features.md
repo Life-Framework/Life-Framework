@@ -628,7 +628,9 @@
 ### `LF_CivilianJob` — `Feature/Jobs/LF_CivilianJob.c`
 - ✅ Workplace signup, one active run, cash once, abandon pays nothing
   (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
-  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et`. Fuel cargo is
+  `{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et`, a cardboard box carried
+  in both hands (#155: the bare `HandCarryItem_Base.et` had no mesh, so the
+  hands were empty on a client). Test: `items/carry-meshes`. Fuel cargo is
   `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
   the drop consumes it. The taxi fare uses the rank vehicle
   `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
@@ -778,8 +780,8 @@
   they are not wired into the save serializer, so a restart loses the bags.
   DebugWorld places `Roadmap_Bank_Vault` at 194.1 0 265 (on the bank's east
   wall) and `Roadmap_Bank_Bag` at 195.6 0 263 on `Street_Bank.layer`. The bag is
-  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
-  mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
+  `{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et` (a vanilla sack mesh,
+  #155). Cash is
   `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
   `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits
   `{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`.

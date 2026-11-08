@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

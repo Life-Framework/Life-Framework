@@ -3502,6 +3502,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{867133165FC03CB2}" {
+     Id "LF-Item_Parcel"
+     Target_en_us "Parcel"
+     Comment "Courier parcel item name"
+    }
+    CustomStringTableItem "{836BCE9515B5DC47}" {
+     Id "LF-Item_Parcel_Desc"
+     Target_en_us "A taped cardboard parcel for the drop-off address."
+     Comment "Courier parcel item description"
+    }
+    CustomStringTableItem "{315A7D38264FAED4}" {
+     Id "LF-Item_MoneyBag"
+     Target_en_us "Money bag"
+     Comment "Bank vault money bag item name"
+    }
+    CustomStringTableItem "{44F201EB4501CD73}" {
+     Id "LF-Item_MoneyBag_Desc"
+     Target_en_us "A heavy sack of banknotes from the vault."
+     Comment "Bank money bag item description"
+    }
   }
  }
 }
