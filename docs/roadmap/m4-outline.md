@@ -2,7 +2,8 @@
 
 M4 opens the 1989 Everon flagship to the public as a recurring server with its
 own community. The maintainer set the shape on 2026-11-08. This file is an
-outline, not a plan. M4 gets full scope cards after M3 ships. Read it with
+outline. Each workstream is broken into sub-issues on GitHub, listed under
+its section; they get full scope cards after M3 ships. Read it with
 [direction](../direction.md), [decisions](../decisions.md), and the
 [M3 outline](m3-outline.md).
 
@@ -42,6 +43,17 @@ and staff cover for that: roughly 6 to 8 police and 2 to 3 moderators online.
 - Move to the rented box: a checklist (box spec for 40 players, ports, profile
   copy, save copy), done once the 24/7 trigger is met.
 
+**Sub-issues** (epic #230, in order):
+
+1. #305 Session runbook and session commands (flagship)
+2. #306 Save backup before every session and restart, with a tested restore
+3. #307 Crash auto-restart
+4. #308 Scheduled restarts with in-world warnings
+5. #309 Post-session log triage into issues
+6. #310 Config-only hotfix path (flagship)
+7. #311 Move to a rented box checklist (flagship)
+
+
 ## 2. Staff and community
 
 - Server rules, written and linked from the town board and Discord.
@@ -53,6 +65,15 @@ and staff cover for that: roughly 6 to 8 police and 2 to 3 moderators online.
 - Session announcements and a feedback channel. Feedback is triaged into
   GitHub issues with the existing template.
 
+**Sub-issues** (epic #231, in order):
+
+1. #312 Server rules on the town board and Discord (flagship)
+2. #313 Moderator team and moderator guide (flagship)
+3. #314 Police applications reviewed by staff (flagship)
+4. #315 Appeals channel and ban record (flagship)
+5. #316 Session announcements and feedback triage (flagship)
+
+
 ## 3. Showcase and growth
 
 - A launch trailer and session clips from the filming harness.
@@ -61,6 +82,14 @@ and staff cover for that: roughly 6 to 8 police and 2 to 3 moderators online.
 - The site's servers page lists the flagship's status and next session.
 - A "run your own" funnel: every flagship surface links back to the framework,
   its install guide, and the generator (M3).
+
+**Sub-issues** (epic #232, in order):
+
+1. #317 Launch trailer from the filming harness (flagship)
+2. #318 Flagship Workshop page and server-browser listing (flagship)
+3. #319 Servers page shows the flagship's status and next session (flagship)
+4. #320 Run-your-own links from every flagship surface (flagship)
+
 
 ## Scopes Mapping A sends to M4
 

@@ -4,7 +4,9 @@ M3 turns the mod into a product other communities can run. A server owner
 installs from the Workshop, configures it from documented files or a web
 generator, adds a job or a shop without writing script, and hosts on their own
 box. The maintainer set the shape on 2026-11-08 over four interview rounds.
-This file is an outline, not a plan. M3 gets full scope cards after M2 closes.
+This file is an outline. Workstreams 2 to 7 are broken into sub-issues on
+GitHub, listed under each section (workstream 1, #223, is planned separately);
+they get full scope cards after M2 closes.
 Read it with [direction](../direction.md) and [decisions](../decisions.md).
 
 **Done when.** A stranger with a dedicated server and no Workbench installs the
@@ -106,19 +108,17 @@ the real tables.
   (`RplSave`/`RplLoad`, as Overthrow does); server-only values never leave the
   server.
 
-**Candidate scopes.**
+**Sub-issues** (epic #224, in order):
 
-- Config inventory: today there are 14 config roots, about 234 attributes, and
-  about 40 hard-coded tuning constants in `Feature/` (most in Police,
-  Organizations, Jobs). Move each tuning constant onto a config class or list
-  it as deliberately fixed.
-- `LF_ConfigService`: load, merge, validate, and expose effective values; every
-  `LF_*Config.Get()` reads through it.
-- The client config stream with a version and a loud mismatch error.
-- Schema export: generate `config.schema.json` from the config classes.
-  `validate-config-schema` fails CI when the checked-in schema is stale.
-- `tools\cli config-check <file>`: the same validation offline, with line
-  numbers.
+1. #277 Inventory every config attribute and hard-coded constant
+2. #278 Config service merges config.json over shipped defaults, starting with shops
+3. #279 A bad config field falls back to its default; the server stays up
+4. #280 Generate config.schema.json from the config classes
+5. #281 tools\cli config-check validates an owner file offline
+6. #282 Jobs, crime, and licences sections read through the config service
+7. #283 Vehicles, zones, and persistence sections read through the config service
+8. #284 Move hard-coded tuning constants onto config classes
+9. #285 Clients receive config values through a versioned stream
 
 **Risks.** Merging arrays of records (a shop's item list) needs stable keys per
 record, not array positions. Prefab references in JSON must be `{GUID}path` and
@@ -138,6 +138,14 @@ A page on life-framework.org (`website/`), built from the schema.
 **Risks.** The site build must read the schema from the repo at build time, so
 a schema change ships the generator change in the same PR.
 
+**Sub-issues** (epic #225, in order):
+
+1. #286 Generator page renders a form from config.schema.json
+2. #287 Generator validates with config-check's rules and exports only a valid file
+3. #288 Import an existing config.json into the generator
+4. #289 Generator presets: flagship 1989, small server, hardcore economy
+
+
 ## 4. Owner docs
 
 - An install guide from zero: Workshop items, `server.json`, profile folder,
@@ -146,12 +154,28 @@ a schema change ships the generator change in the same PR.
 - "Add a job" and "add a shop" walkthroughs that use only prefabs and config.
 - An upgrade page per release that lists schema changes and migrations.
 
+**Sub-issues** (epic #226, in order):
+
+1. #290 Install guide from zero to a joinable server
+2. #291 Config reference pages generated from the schema
+3. #292 Walkthrough: add a job with prefabs and config only
+4. #293 Walkthrough: add a shop with prefabs and config only
+5. #294 Upgrade page per release
+
+
 ## 5. The example server
 
 The example server is the flagship in its most basic form: the core plus
 `LF_Everon1989` running, with a starter `server.json` and `config.json`. An
 owner swaps the pack for their own. It lives under `server/` as a template and
 ships as a release download beside the Workshop items.
+
+**Sub-issues** (epic #227, in order):
+
+1. #295 Example server template under server/ boots core and pack (flagship)
+2. #296 Release download built from the template
+3. #297 The template boots with the pack swapped out
+
 
 ## 6. Config harness
 
@@ -166,6 +190,14 @@ The automated proof for M3. For each preset and a set of broken fixtures it:
 Broken fixtures prove the per-field reject: the server boots, logs the field,
 and uses the default. It runs in `wt gate` and before every release.
 
+**Sub-issues** (epic #228, in order):
+
+1. #298 Harness fixtures and the parse and validate stages
+2. #299 Harness boots a dedicated server per fixture
+3. #300 Harness joins a client and checks a client-visible value
+4. #301 Config harness runs in wt gate and before every release
+
+
 ## 7. Upgrade path
 
 - `schemaVersion` in the owner file and a migration per version bump,
@@ -173,6 +205,13 @@ and uses the default. It runs in `wt gate` and before every release.
 - `config-check` reports which migrations would run.
 - The persistence save keeps its own version rules (`docs/persistence.md`);
   a config migration never rewrites save data.
+
+**Sub-issues** (epic #229, in order):
+
+1. #302 schemaVersion in the owner file, with too-new and too-old handling
+2. #303 Config migrations run at boot after a backup
+3. #304 config-check reports which migrations would run
+
 
 ## Order
 

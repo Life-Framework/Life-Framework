@@ -15,9 +15,9 @@ archived in `website/content/archive/roadmap-2025.json`.
 | # | Milestone | Status | Plan |
 | --- | --- | --- | --- |
 | M1 | Playtest Town | **Current** (issues labelled `m1`) | [m1-playtest-town.md](m1-playtest-town.md) |
-| M2 | Living Town | Outline: moderation, medic, comms, investigation (epics #145-#148) | [m2-outline.md](m2-outline.md) |
-| M3 | Framework Release | Outline: two addons, config layer, web generator, owner docs, example server, config harness | [m3-outline.md](m3-outline.md) |
-| M4 | Flagship Live | Outline: hosting and ops, staff and community, showcase | [m4-outline.md](m4-outline.md) |
+| M2 | Living Town | Outline: moderation, medic, comms, investigation (epics #145-#148, each broken into sub-issues) | [m2-outline.md](m2-outline.md) |
+| M3 | Framework Release | Outline: two addons, config layer, web generator, owner docs, example server, config harness (epics #223-#229, sub-issues under #224-#229) | [m3-outline.md](m3-outline.md) |
+| M4 | Flagship Live | Outline: hosting and ops, staff and community, showcase (epics #230-#232, each broken into sub-issues) | [m4-outline.md](m4-outline.md) |
 | M5 | Flagship Story | Ideas only: relocated from Chernobyl, life on Everon 1989 | epic #214 |
 
 Each outline is planned in full only after the milestone before it closes.
