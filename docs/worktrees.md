@@ -43,8 +43,8 @@ tools\cli wt new <feature>      # create worktree + branch + ports
 tools\cli wt list               # who's working, ports, dirty/merged state
 tools\cli wt test <slug>        # run the ELTEST suite in that worktree
 tools\cli wt dev <slug>         # fast loop in that worktree (no build)
-tools\cli wt gate <slug>        # validate + build + test (tier=all)
-tools\cli wt ship <slug>        # sync -> gate -> push -> PR -> auto-merge
+tools\cli wt gate <slug>        # validate --full + build + test (tier=all)
+tools\cli wt ship <slug>        # gate -> push -> PR -> auto-merge (merges main only on conflict)
 tools\cli wt prune <slug>       # remove a merged worktree + branch
 ```
 
@@ -65,11 +65,33 @@ views. Do not run a headless build while an interactive Workbench is open.
 
 ## Auto-merge
 
-`wt ship` runs the full gate in the worktree (validate + build + test tier=all),
-pushes `ws/<slug>`, opens a PR into `main`, and merges it — no babysitting.
-`--pr-only` leaves the PR open if you want to review. If the gate fails or
-`origin/main` conflicts, the ship stops with a message; the agent fixes and
-re-runs the same command.
+`wt ship <slug> [--closes N] [--body-file F]`:
+
+1. Refuses a dirty tree or a branch with no commits beyond `origin/main`.
+2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
+   merge drivers in `tools/merge/` then resolve the generated files). A clean
+   branch ships as is.
+3. Runs the gate: `validate --full` (with the Workbench compile) + headless
+   build + `test` tier=all.
+4. Pushes `ws/<slug>`, opens the PR (or reuses the open one on a re-run).
+   `--closes N` starts the body with `Closes #N`; `--body-file F` supplies the
+   body (keep it in `<worktree>/tmp/`).
+5. Queues `gh pr merge --auto --merge`: GitHub merges once the required
+   `validate` check and reviews pass, and deletes the branch.
+6. Prints `PR <url>, head <sha>`.
+
+`--pr-only` stops after step 4. If the gate fails or the merge of main
+conflicts, the ship stops with a message; fix, commit, and re-run the same
+command. Do not merge `origin/main` by hand unless GitHub reports the PR
+`CONFLICTING` or you need code from main.
+
+## Scratch files
+
+Each worktree has a gitignored `tmp/` (created by `wt new`, also home of the
+`tmp/wt.json` marker). Put scratch there with names unique to the task, such
+as `tmp/pr-body.md`. A shared session scratch dir lets one agent publish
+another's file. `validate-worktrees` warns when the main checkout has
+untracked files under `addons/` or `tools/`.
 
 **One-time setup**: GitHub CLI must be authenticated once per machine
 (`gh auth login`). The REST API fallback works with a `GITHUB_TOKEN` env var
