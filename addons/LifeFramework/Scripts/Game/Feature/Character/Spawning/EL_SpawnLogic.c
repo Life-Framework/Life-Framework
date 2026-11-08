@@ -432,6 +432,9 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		EL_CharacterSurvivalComponent survivalComponent = EL_CharacterSurvivalComponent.Cast(character.FindComponent(EL_CharacterSurvivalComponent));
 		if (survivalComponent)
 			survivalComponent.Init(characterPersistenceId);
+
+		// Level, licences, and turned-in quests live on the body; every new body gets them back.
+		LF_Progression.ApplyToCharacter(EL_Utils.GetPlayerUID(playerId), character);
 	}
 
 	//------------------------------------------------------------------------------------------------
