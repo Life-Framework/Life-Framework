@@ -3107,66 +3107,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You hold up your ID card."
      Comment "Show ID performed: the other player now sees the card."
     }
-    CustomStringTableItem "{682DF358EBADD27A}" {
-     Id "LF-Hospital_Title"
-     Target_en_us "Hospital"
-     Comment "Toast title when a player wakes up in hospital."
-    }
-    CustomStringTableItem "{BE26E458ADA922A8}" {
-     Id "LF-Hospital_BillToast"
-     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
-     Comment "Toast on waking in hospital after a death. %1 is the bill amount."
-    }
-    CustomStringTableItem "{25C8757AA18DD8A8}" {
-     Id "LF-Hospital_BillTitle"
-     Target_en_us "Hospital bill"
-     Comment "Title of the paper hospital bill."
-    }
-    CustomStringTableItem "{DB6C9E5F09D39D13}" {
-     Id "LF-Hospital_BillAmount"
-     Target_en_us "Treatment: %1, charged to your bank account"
-     Comment "Hospital bill line. %1 is the amount charged."
-    }
-    CustomStringTableItem "{4F2335135A4FF34F}" {
-     Id "LF-Hospital_BillBalance"
-     Target_en_us "Bank balance after payment: %1"
-     Comment "Hospital bill line. %1 is the bank balance after the bill."
-    }
-    CustomStringTableItem "{1CE638BD33BB8722}" {
-     Id "LF-Hospital_BillDebt"
-     Target_en_us "You owe the bank. Your next deposits pay the debt first."
-     Comment "Hospital bill line shown when the bill put the player into debt."
-    }
-    CustomStringTableItem "{94693CF4600BC9D5}" {
-     Id "LF-Hospital_BillNote"
-     Target_en_us "You don't remember how you got here."
-     Comment "Hospital bill note: the New Life Rule cue. The player forgets the fight that killed them."
-    }
-    CustomStringTableItem "{FFEA0B7D7B19622C}" {
-     Id "LF-Hospital_BillNewLife"
-     Target_en_us "New Life Rule: stay away from where you died for %1 minutes."
-     Comment "Hospital bill line: the server rule. %1 is the number of minutes."
-    }
-    CustomStringTableItem "{D66A5204D011B83B}" {
-     Id "LF-Hospital_BillClose"
-     Target_en_us "Put the bill away"
-     Comment "Closes the hospital bill card."
-    }
-    CustomStringTableItem "{8AA134FCD11961A4}" {
-     Id "LF-Hospital_BillRead"
-     Target_en_us "Read hospital bill"
-     Comment "Action on a hospital bill lying in the world."
-    }
-    CustomStringTableItem "{BF9E5680A14113DA}" {
-     Id "LF-Hospital_BillItem"
-     Target_en_us "Hospital bill"
-     Comment "Inventory name of the paper hospital bill."
-    }
-    CustomStringTableItem "{B496BB68DF603A03}" {
-     Id "LF-Hospital_BillItemDesc"
-     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
-     Comment "Inventory description of the paper hospital bill."
-    }
     CustomStringTableItem "{E5BDB7CD47972752}" {
      Id "LF-ATM_Header"
      Target_en_us "FIRST BANK OF EVERON"
@@ -3561,21 +3501,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Vehicle_BankShort"
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
-    }
-    CustomStringTableItem "{C6C3575A8274C731}" {
-     Id "LF-Contraband_NotHideoutOwner"
-     Target_en_us "Your organization has to hold the hideout before it can run this convoy."
-     Comment "Convoy start refused: the player's organization does not hold the hideout"
-    }
-    CustomStringTableItem "{ADBB1F127BBEB201}" {
-     Id "LF-Contraband_Title"
-     Target_en_us "Contraband"
-     Comment "Toast title for contraband convoy messages"
-    }
-    CustomStringTableItem "{07C181E87F83A891}" {
-     Id "LF-Contraband_JoinOrg"
-     Target_en_us "Contraband runs are for organization members. Join one or found your own at the organization desk."
-     Comment "Convoy start refused: the player has no organization"
     }
     CustomStringTableItem "{7EC51FB11D0B1C50}" {
      Id "LF-Garage_ReadLedger"
@@ -4117,6 +4042,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A picked plant needs time to ripen again."
      Comment "Sign card for the farm north of the square, Rules section."
     }
+    CustomStringTableItem "{682DF358EBADD27A}" {
+     Id "LF-Hospital_Title"
+     Target_en_us "Hospital"
+     Comment "Toast title when a player wakes up in hospital."
+    }
+    CustomStringTableItem "{BE26E458ADA922A8}" {
+     Id "LF-Hospital_BillToast"
+     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
+     Comment "Toast on waking in hospital after a death. %1 is the bill amount."
+    }
+    CustomStringTableItem "{25C8757AA18DD8A8}" {
+     Id "LF-Hospital_BillTitle"
+     Target_en_us "Hospital bill"
+     Comment "Title of the paper hospital bill."
+    }
+    CustomStringTableItem "{DB6C9E5F09D39D13}" {
+     Id "LF-Hospital_BillAmount"
+     Target_en_us "Treatment: %1, charged to your bank account"
+     Comment "Hospital bill line. %1 is the amount charged."
+    }
+    CustomStringTableItem "{4F2335135A4FF34F}" {
+     Id "LF-Hospital_BillBalance"
+     Target_en_us "Bank balance after payment: %1"
+     Comment "Hospital bill line. %1 is the bank balance after the bill."
+    }
+    CustomStringTableItem "{1CE638BD33BB8722}" {
+     Id "LF-Hospital_BillDebt"
+     Target_en_us "You owe the bank. Your next deposits pay the debt first."
+     Comment "Hospital bill line shown when the bill put the player into debt."
+    }
+    CustomStringTableItem "{94693CF4600BC9D5}" {
+     Id "LF-Hospital_BillNote"
+     Target_en_us "You don't remember how you got here."
+     Comment "Hospital bill note: the New Life Rule cue. The player forgets the fight that killed them."
+    }
+    CustomStringTableItem "{FFEA0B7D7B19622C}" {
+     Id "LF-Hospital_BillNewLife"
+     Target_en_us "New Life Rule: stay away from where you died for %1 minutes."
+     Comment "Hospital bill line: the server rule. %1 is the number of minutes."
+    }
+    CustomStringTableItem "{D66A5204D011B83B}" {
+     Id "LF-Hospital_BillClose"
+     Target_en_us "Put the bill away"
+     Comment "Closes the hospital bill card."
+    }
+    CustomStringTableItem "{8AA134FCD11961A4}" {
+     Id "LF-Hospital_BillRead"
+     Target_en_us "Read hospital bill"
+     Comment "Action on a hospital bill lying in the world."
+    }
+    CustomStringTableItem "{BF9E5680A14113DA}" {
+     Id "LF-Hospital_BillItem"
+     Target_en_us "Hospital bill"
+     Comment "Inventory name of the paper hospital bill."
+    }
+    CustomStringTableItem "{B496BB68DF603A03}" {
+     Id "LF-Hospital_BillItemDesc"
+     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
+     Comment "Inventory description of the paper hospital bill."
+    }
     CustomStringTableItem "{5985DB962913E1DE}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"
@@ -4452,10 +4437,45 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
      Comment "Wanted board sign card: what to do next."
     }
+    CustomStringTableItem "{C6C3575A8274C731}" {
+     Id "LF-Contraband_NotHideoutOwner"
+     Target_en_us "Your organization has to hold the hideout before it can run this convoy."
+     Comment "Convoy start refused: the player's organization does not hold the hideout"
+    }
+    CustomStringTableItem "{ADBB1F127BBEB201}" {
+     Id "LF-Contraband_Title"
+     Target_en_us "Contraband"
+     Comment "Toast title for contraband convoy messages"
+    }
+    CustomStringTableItem "{07C181E87F83A891}" {
+     Id "LF-Contraband_JoinOrg"
+     Target_en_us "Contraband runs are for organization members. Join one or found your own at the organization desk."
+     Comment "Convoy start refused: the player has no organization"
+    }
     CustomStringTableItem "{50FCD7F3D7EB972C}" {
      Id "LF-Job_MoreRunsFirst"
      Target_en_us "Do more parcel runs first"
      Comment "Greyed job sign-up reason: the player needs more delivery runs. Hidden progression: no level is named."
+    }
+    CustomStringTableItem "{867133165FC03CB2}" {
+     Id "LF-Item_Parcel"
+     Target_en_us "Parcel"
+     Comment "Courier parcel item name"
+    }
+    CustomStringTableItem "{836BCE9515B5DC47}" {
+     Id "LF-Item_Parcel_Desc"
+     Target_en_us "A taped cardboard parcel for the drop-off address."
+     Comment "Courier parcel item description"
+    }
+    CustomStringTableItem "{315A7D38264FAED4}" {
+     Id "LF-Item_MoneyBag"
+     Target_en_us "Cash case"
+     Comment "Bank vault money bag item name"
+    }
+    CustomStringTableItem "{44F201EB4501CD73}" {
+     Id "LF-Item_MoneyBag_Desc"
+     Target_en_us "A heavy case of banknotes from the vault."
+     Comment "Bank money bag item description"
     }
   }
  }

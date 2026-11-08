@@ -87,3 +87,6 @@ tools/film/.bin/
 website/dist/
 website/src/generated/
 website/.wrangler/
+
+# Machine-local settings (tools/lib/local-config.mjs): install paths, test box host
+lf.local.json
