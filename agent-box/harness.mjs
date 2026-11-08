@@ -1223,6 +1223,7 @@ function usage() {
   node agent-box/harness.mjs report roadmap [EntityName...]
   node agent-box/harness.mjs town
   node agent-box/harness.mjs report town [site-id...]
+  node agent-box/harness.mjs journey [step...] [--list]     (also: report journey)
   node agent-box/harness.mjs pillar script [--run]
 
 Pillars
@@ -1369,6 +1370,12 @@ function main(argv) {
       console.log(`town ${result.ok ? "ok" : "FAILED"} (static): sites=${result.rows.length} errors=${result.errors.length} warnings=${result.warnings.length} requireSigns=${TOWN.requireSigns}`);
       return result.ok ? 0 : 1;
     }
+    if (cmd === "journey" || (cmd === "report" && rest[0] === "journey")) {
+      // agent-box/journey.mjs: the M1 journey on a running session, report in agent-box/reports/journey.html.
+      const args = cmd === "journey" ? rest : rest.slice(1);
+      const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "journey.mjs"), ...args], { windowsHide: true, stdio: "inherit" });
+      return r.status ?? 1;
+    }
     if (cmd === "report" && rest[0] === "town") {
       return runTownReport({
         root: ROOT,
@@ -1390,7 +1397,7 @@ function main(argv) {
       });
     }
     if (cmd === "report") {
-      if (rest[0] !== "roadmap") throw new Error("report roadmap|town");
+      if (rest[0] !== "roadmap") throw new Error("report roadmap|town|journey");
       const names = [];
       for (let i = 1; i < rest.length; i++) {
         if (rest[i] === "--name") {
