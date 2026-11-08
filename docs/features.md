@@ -137,16 +137,43 @@
 
 ### `EL_SurvivalStats` — `Feature/Survival/EL_SurvivalStats.c`
 - ✅ All stats clamped `[0,100]`. `Eat`/`Drink`/`Heal` are additive through
-  clamped setters. `UpdateStats(dt)`: hunger `-dt*0.1`, thirst `-dt*0.15`,
-  and if hunger or thirst `< 20`, health `-dt*0.05`. `Create(id)` starts all
-  at 100.
-- ⚠️ No recovery (health only ever falls); negative `dt` heals. Zero health
-  hands off to the death flow below (survival does not model a down-state).
+  clamped setters. `Create(id)` starts all at 100.
+- ✅ (2026-11-08, M1-28) **Needs are light and never kill.** `UpdateStats(dt,
+  config)` takes every rate from `LF_SurvivalConfig`
+  (`Configs/Survival/LF_Survival.conf`). Flagship: hunger `0.01/s` (about
+  2.8 h from full), thirst `0.0125/s` (about 2.2 h). Below 20 hunger or thirst,
+  health falls at `0.05/s` to the 75 cap and stops; health already below the
+  cap is not touched. With needs met, health regains `0.02/s` up to 100.
+  `dt <= 0` is a no-op. Tests: `survival/light`.
+
+### `LF_SurvivalConfig` — `Feature/Survival/LF_SurvivalConfig.c`
+- ✅ (2026-11-08) Framework knobs: hunger and thirst drain, low-needs
+  threshold, health cap, health drain and regen, stamina drain multiplier,
+  tick interval, max tick delta. A missing `.conf` logs
+  `[ELDebug:Survival]` once and uses the same built-in defaults.
 
 ### `EL_CharacterSurvivalComponent` — `Feature/Survival/EL_CharacterSurvivalComponent.c`
-- ✅ Per-frame decay driver; async-loads stats by character id; null-guards
-  until loaded.
-- ⚠️ No clamp on delta time (a hitch drops a big stat chunk in one frame).
+- ✅ (2026-11-08) Server-authoritative: stats tick on the server only, on a
+  1 s call-queue timer. The delta is clamped to 5 s so a hitch does not drop a
+  chunk. The owner gets whole-point hunger and thirst and the low-needs flag as
+  owner-only RplProps; `BumpMe` fires only when one of them changes (about
+  once per 100 s at flagship rates), and right after eating or drinking. The
+  low-needs flip logs `[ELDebug:Survival] <id> needs low=...`. Tests:
+  `survival/sync`.
+- ✅ The old per-frame `EOnFrame` driver is gone. It had no event mask and
+  treated world-time milliseconds as seconds.
+
+### `LF_SurvivalStaminaPenalty` — `Feature/Survival/LF_SurvivalStaminaPenalty.c`
+- ✅ (2026-11-08) Modded `SCR_CharacterStaminaComponent.OnStaminaDrain`: with
+  low needs, exertion drains stamina `1.5x` (config), so a hungry player
+  sprints for less time and breathes hard sooner. It lifts on the next sync
+  after eating and drinking. Same reentrancy pattern as the base hydration
+  penalty.
+- ⚠️ Not yet felt in game: set survival to 10 in the DebugMenu and sprint.
+
+### `EL_BetaHud` survival gauges — `HUD/EL_BetaHud.c`
+- ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
+  The HUD stays second to the body cue.
 
 ### `EL_ConsumableEffectSurvival` — `Feature/Survival/EL_ConsumableEffectSurvival.c`
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
