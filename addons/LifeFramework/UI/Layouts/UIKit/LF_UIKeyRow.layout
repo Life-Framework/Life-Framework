@@ -1,0 +1,6 @@
+HorizontalLayoutWidgetClass "{B225A9CCC40ECADD}" {
+ Name "KeyRow"
+ Slot LayoutSlot "{40BC70D1534A24BD}" {
+  Padding 28 4 28 4
+ }
+}
