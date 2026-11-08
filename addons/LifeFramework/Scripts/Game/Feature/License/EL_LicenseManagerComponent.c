@@ -202,8 +202,8 @@ class EL_LicenseManagerComponent : ScriptComponent
 			GiveInitialLicenses();
 		}
 		
-		Print(string.Format("[EL_LicenseManagerComponent] Player has %1 licenses unlocked", 
-			m_aUnlockedLicenses.Count()), LogLevel.NORMAL);
+		EL_Debug.Log("License", string.Format("Player has %1 licenses unlocked", 
+			m_aUnlockedLicenses.Count()));
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -457,7 +457,7 @@ class EL_LicenseManagerComponent : ScriptComponent
 		UnlockLicense(EL_ELicenseType.UNEMPLOYED, true);
 		UnlockLicense(EL_ELicenseType.FARMER_TOMATO, true);
 		
-		Print("[EL_LicenseManagerComponent] Initial licenses granted", LogLevel.NORMAL);
+		EL_Debug.Log("License", "Initial licenses granted");
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -589,14 +589,14 @@ if (!Replication.IsServer())
 			EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(owner);
 			if (!levelComp)
 			{
-				Print("[EL_LicenseManagerComponent] Player level component not found!", LogLevel.ERROR);
+				EL_Debug.Error("License", "Player level component not found!");
 				return false;
 			}
 			
 			if (levelComp.GetLevel() < config.m_iMinLevelRequired)
 			{
-				Print(string.Format("[EL_LicenseManagerComponent] Player level %1 is below required level %2", 
-					levelComp.GetLevel(), config.m_iMinLevelRequired), LogLevel.WARNING);
+				EL_Debug.Warn("License", string.Format("Player level %1 is below required level %2", 
+					levelComp.GetLevel(), config.m_iMinLevelRequired));
 				return false;
 			}
 			
@@ -607,13 +607,13 @@ if (!Replication.IsServer())
 				EL_EJobType whitelistJob = GetLicenseWhitelistJob(licenseType);
 				if (whitelistJob == EL_EJobType.UNEMPLOYED)
 				{
-					Print(string.Format("[EL_LicenseManagerComponent] License %1 requires a whitelist but maps to no job", typename.EnumToString(EL_ELicenseType, licenseType)), LogLevel.ERROR);
+					EL_Debug.Error("License", string.Format("License %1 requires a whitelist but maps to no job", typename.EnumToString(EL_ELicenseType, licenseType)));
 					return false;
 				}
 
 				if (!EL_WhitelistManager.IsWhitelistedForJob(playerUID, whitelistJob))
 				{
-					Print("[EL_LicenseManagerComponent] Player not whitelisted for this license", LogLevel.WARNING);
+					EL_Debug.Warn("License", "Player not whitelisted for this license");
 					return false;
 				}
 			}
@@ -629,7 +629,7 @@ if (!Replication.IsServer())
 		m_aUnlockedLicenses.Insert(licenseType);
 		m_iUnlockedBits = EL_LicenseBits.Encode(m_aUnlockedLicenses);
 		
-		Print(string.Format("[EL_LicenseManagerComponent] License unlocked: %1", config.m_sLicenseName), LogLevel.NORMAL);
+		EL_Debug.Log("License", string.Format("License unlocked: %1", config.m_sLicenseName));
 		
 		// Notificar
 		if (m_OnLicenseUnlocked)

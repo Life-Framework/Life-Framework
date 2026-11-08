@@ -31,7 +31,8 @@ class EL_ChatManagerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
-		SetEventMask(owner, EntityEvent.INIT | EntityEvent.FRAME);
+		// INIT only: there is no EOnFrame, so a FRAME mask would just schedule an empty per-frame call.
+		SetEventMask(owner, EntityEvent.INIT);
 		owner.SetFlags(EntityFlags.ACTIVE, true);
 	}
 }

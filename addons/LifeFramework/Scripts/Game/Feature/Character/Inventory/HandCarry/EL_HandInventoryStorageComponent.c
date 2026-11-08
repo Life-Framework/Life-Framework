@@ -31,6 +31,11 @@ class EL_HandInventoryStorageComponent : UniversalInventoryStorageComponent
 		if (!HasLocalControl()) return;
 
 		CharacterControllerComponent characterController = EL_Component<CharacterControllerComponent>.Find(GetOwner());
+		if (!characterController)
+		{
+			EL_Debug.Error("HandCarry", "hand carry skipped: owner has no CharacterControllerComponent");
+			return;
+		}
 
 		IEntity currentGadget = characterController.GetAttachedGadgetAtLeftHandSlot();
 		if (currentGadget)
@@ -45,7 +50,8 @@ class EL_HandInventoryStorageComponent : UniversalInventoryStorageComponent
 		m_eState = EL_EHandCarryState.READY;
 
 		// If weapon, holster weapon and and wait invoke of weapon changed
-		if (characterController.GetWeaponManagerComponent().GetCurrent())
+		BaseWeaponManagerComponent weaponManager = characterController.GetWeaponManagerComponent();
+		if (weaponManager && weaponManager.GetCurrent())
 		{
 			m_eState = EL_EHandCarryState.AWAIT_HOLSTER;
 			characterController.SelectWeapon(null);
@@ -121,7 +127,9 @@ class EL_HandInventoryStorageComponent : UniversalInventoryStorageComponent
 	protected void StopCarry(IEntity gadget = null)
 	{
 		CharacterControllerComponent characterController = EL_Component<CharacterControllerComponent>.Find(GetOwner());
-		if (m_eState != EL_EHandCarryState.AWAIT_SWAP)
+		if (!characterController)
+			EL_Debug.Error("HandCarry", "stop carry: owner has no CharacterControllerComponent; dropping hand items only");
+		else if (m_eState != EL_EHandCarryState.AWAIT_SWAP)
 		{
 			// Only remove gadget if there not a new one scheduled. Otherwise the new gadget will be removed instead "too".
 			characterController.RemoveGadgetFromHand(true);
@@ -135,6 +143,12 @@ class EL_HandInventoryStorageComponent : UniversalInventoryStorageComponent
 	protected void ClearHandStorage(IEntity keepItem = null)
 	{
 		InventoryStorageManagerComponent inventoryManager = EL_Component<InventoryStorageManagerComponent>.Find(GetOwner());
+		if (!inventoryManager)
+		{
+			EL_Debug.Error("HandCarry", "clear hand storage skipped: owner has no InventoryStorageManagerComponent");
+			return;
+		}
+
 		array<IEntity> outItems();
 		GetAll(outItems);
 		foreach (IEntity handItem : outItems)

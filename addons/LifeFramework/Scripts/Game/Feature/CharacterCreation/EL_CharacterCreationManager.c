@@ -127,6 +127,20 @@ class EL_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Disconnect: drops a faction accepted in stage one whose location never came. Does not
+	//! create the manager.
+	//! \return True when a pending faction was dropped.
+	static bool ReleasePlayer(int playerId)
+	{
+		if (!s_Instance || !s_Instance.m_mPendingFactions || !s_Instance.m_mPendingFactions.Contains(playerId))
+			return false;
+
+		s_Instance.m_mPendingFactions.Remove(playerId);
+		EL_Debug.Info("CharacterCreation", string.Format("pending faction dropped for player %1: disconnected", playerId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Entry point from the game mode. The world is still loading when this fires, so the flow
 	//! starts on the first tick after the game state reaches GAME; menus opened during loading
 	//! never make it on screen. The poll self-reschedules (non-repeating): removing a call from

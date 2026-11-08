@@ -12,13 +12,13 @@ class EL_RobVehicleAction : ScriptedUserAction
 	[Attribute(defvalue: "3", uiwidget: UIWidgets.Auto, desc: "Minimum police on duty required")]
 	protected int m_iMinPoliceOnDuty;
 
-	protected float m_fLastRobTime;
+	protected float m_fLastRobTime = LF_RobCooldown.NEVER;
 
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
 		float currentTime = GetGame().GetWorld().GetWorldTime();
-		if (currentTime - m_fLastRobTime < m_fCooldown)
+		if (LF_RobCooldown.IsActive(currentTime, m_fLastRobTime, m_fCooldown))
 		{
 			SetCannotPerformReason("#LF-Rob_RecentlyRobbed");
 			return false;
@@ -45,7 +45,12 @@ class EL_RobVehicleAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		// Recorded on both sides so the performing client's CanBePerformed also sees the cooldown.
 		m_fLastRobTime = GetGame().GetWorld().GetWorldTime();
+
+		// The spawn, wanted level, and alert are authority-only.
+		if (!Replication.IsServer())
+			return;
 
 		if (CommitVehicleRobbery(EL_Utils.GetPlayerUid(pUserEntity), pUserEntity, m_VehiclePrefab))
 			EL_Utils.Notify("#EL-Vehicle_Stolen", "#EL-Robbery_Successful", 3.0);
@@ -66,10 +71,14 @@ class EL_RobVehicleAction : ScriptedUserAction
 			return null;
 		}
 
-		vector spawnPos = user.GetOrigin() + Vector(5, 0, 0);
-		EntitySpawnParams params = EntitySpawnParams();
-		params.Transform[3] = spawnPos;
-		IEntity vehicle = GetGame().SpawnEntityPrefab(Resource.Load(vehiclePrefab), null, params);
+		if (vehiclePrefab.IsEmpty())
+		{
+			EL_Debug.Error("Crime", "vehicle robbery failed: no vehicle prefab configured on the action");
+			return null;
+		}
+
+		// The helper logs EL_Debug.Error when the prefab does not resolve.
+		IEntity vehicle = EL_Utils.SpawnEntityPrefab(vehiclePrefab, user.GetOrigin() + Vector(5, 0, 0));
 		if (!vehicle)
 			return null;
 
@@ -107,8 +116,6 @@ class EL_RobVehicleAction : ScriptedUserAction
 						   if (account && account.GetFaction() == EL_Faction.POLICE && account.IsOnDuty())
 						   {
 							   count++;
-							   // Send alert (global notify; per-player parameter omitted)
-							   EL_Utils.Notify("#EL-Police_Alert_Vehicle", "#EL-PoliceAlert_Title", 5.0);
 						}
 					}
 				}

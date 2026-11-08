@@ -42,8 +42,8 @@ class EL_PlayerLevelComponent : ScriptComponent
 		if (!Replication.IsServer())
 			return;
 		
-		Print(string.Format("[EL_PlayerLevelComponent] Initialized for player. Level: %1, XP: %2, SP: %3", 
-			m_iPlayerLevel, m_fPlayerExperience, m_iSkillPoints), LogLevel.NORMAL);
+		EL_Debug.Log("Level", string.Format("Initialized for player. Level: %1, XP: %2, SP: %3", 
+			m_iPlayerLevel, m_fPlayerExperience, m_iSkillPoints));
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -110,15 +110,15 @@ class EL_PlayerLevelComponent : ScriptComponent
 		
 		if (m_iSkillPoints < amount)
 		{
-			Print(string.Format("[EL_PlayerLevelComponent] Cannot spend %1 SP, only has %2", 
-				amount, m_iSkillPoints), LogLevel.WARNING);
+			EL_Debug.Warn("Level", string.Format("Cannot spend %1 SP, only has %2", 
+				amount, m_iSkillPoints));
 			return false;
 		}
 		
 		m_iSkillPoints -= amount;
 		
-		Print(string.Format("[EL_PlayerLevelComponent] Spent %1 SP for '%2'. Remaining: %3", 
-			amount, reason, m_iSkillPoints), LogLevel.NORMAL);
+		EL_Debug.Log("Level", string.Format("Spent %1 SP for '%2'. Remaining: %3", 
+			amount, reason, m_iSkillPoints));
 		
 		if (m_OnSkillPointsChanged)
 			m_OnSkillPointsChanged.Invoke(m_iSkillPoints);
@@ -137,8 +137,8 @@ class EL_PlayerLevelComponent : ScriptComponent
 		
 		m_iSkillPoints += amount;
 		
-		Print(string.Format("[EL_PlayerLevelComponent] Added %1 SP for '%2'. Total: %3", 
-			amount, reason, m_iSkillPoints), LogLevel.NORMAL);
+		EL_Debug.Log("Level", string.Format("Added %1 SP for '%2'. Total: %3", 
+			amount, reason, m_iSkillPoints));
 		
 		if (m_OnSkillPointsChanged)
 			m_OnSkillPointsChanged.Invoke(m_iSkillPoints);
@@ -226,8 +226,8 @@ class EL_PlayerLevelComponent : ScriptComponent
 	
 	void SetLevel(int level)
 	{
-		Print(string.Format("[EL_PlayerLevelComponent] SetLevel called - Old: %1, New: %2", 
-			m_iPlayerLevel, level), LogLevel.NORMAL);
+		EL_Debug.Log("Level", string.Format("SetLevel called - Old: %1, New: %2", 
+			m_iPlayerLevel, level));
 		m_iPlayerLevel = level;
 		Replication.BumpMe();
 	}
@@ -281,8 +281,8 @@ class EL_PlayerLevelComponent : ScriptComponent
 	
 	protected void OnLevelChanged()
 	{
-		Print(string.Format("[EL_PlayerLevelComponent] OnLevelChanged RPC callback - Current level: %1", 
-			m_iPlayerLevel), LogLevel.NORMAL);
+		EL_Debug.Log("Level", string.Format("OnLevelChanged RPC callback - Current level: %1", 
+			m_iPlayerLevel));
 		
 		if (m_OnLevelUp)
 			m_OnLevelUp.Invoke(m_iPlayerLevel);

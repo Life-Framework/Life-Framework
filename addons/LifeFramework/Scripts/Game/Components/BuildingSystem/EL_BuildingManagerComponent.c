@@ -200,21 +200,29 @@ class EL_BuildingManagerComponent : ScriptComponent
 
 		// Authority specific behavior
 
-		m_Cam = GetGame().GetCameraManager().CurrentCamera();
+		// The camera manager can be null before the first camera exists; retry next frame.
+		CameraManager cameraManager = GetGame().GetCameraManager();
+		if (!cameraManager)
+			return;
+
+		m_Cam = cameraManager.CurrentCamera();
 		m_InputManager = GetGame().GetInputManager();
 
 		if (!m_InputManager || !m_Cam)
 			return;
 
-		m_InputManager.AddActionListener("MouseLeft", EActionTrigger.DOWN, OnMouseLeftDown);
-
-		// Spawn base preview and set invisible
-		m_PreviewEntity = EL_Utils.SpawnEntityPrefab(m_BasePreviewPrefab, owner.GetOrigin());
+		// The preview is a visual for the owning client only: spawn it local (not replicated)
+		// so no networked orphan appears on other machines. OnDelete removes it.
+		m_PreviewEntity = EL_Utils.SpawnEntityPrefab(m_BasePreviewPrefab, owner.GetOrigin(), "0 0 0", false);
 		if (!m_PreviewEntity)
 		{
 			EL_Debug.Error("Farming", string.Format("building preview failed to spawn: %1", m_BasePreviewPrefab));
+			// Degrade: building stays off for this character instead of retrying (and logging) every frame.
+			ClearEventMask(owner, EntityEvent.FRAME);
 			return;
 		}
+
+		m_InputManager.AddActionListener("MouseLeft", EActionTrigger.DOWN, OnMouseLeftDown);
 
 		EL_Utils.ChangeEntityMaterial(m_PreviewEntity, m_PreviewMaterial);
 		m_PreviewEntity.ClearFlags(EntityFlags.VISIBLE, true);
@@ -257,10 +265,30 @@ class EL_BuildingManagerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Destructor -> remove ActionListener
+	//! Character deleted (death, respawn, disconnect) -> remove the local preview entity.
+	override void OnDelete(IEntity owner)
+	{
+		DeletePreview();
+		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	private void DeletePreview()
+	{
+		if (!m_PreviewEntity)
+			return;
+
+		SCR_EntityHelper.DeleteEntityAndChildren(m_PreviewEntity);
+		m_PreviewEntity = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Destructor -> remove ActionListener, and the preview if OnDelete did not run
 	void ~EL_BuildingManagerComponent()
 	{
 		if (m_InputManager)
 			m_InputManager.RemoveActionListener("MouseLeft", EActionTrigger.DOWN, OnMouseLeftDown);
+
+		DeletePreview();
 	}
 }
