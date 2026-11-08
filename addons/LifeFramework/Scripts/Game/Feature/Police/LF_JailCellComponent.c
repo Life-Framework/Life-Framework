@@ -50,6 +50,26 @@ class LF_JailCellComponent : ScriptComponent
 	[Attribute("1000", UIWidgets.EditBox, desc: "Milliseconds between confine and release checks.")]
 	protected int m_iTickIntervalMs;
 
+	//! LF_Jail config and its tick are process-global, so exactly one cell owns them. A second
+	//! placed cell would otherwise overwrite the config and add a second repeating Tick
+	//! (two cells = sentences run at double speed).
+	protected static LF_JailCellComponent s_TickOwner;
+	protected bool m_bTicking;
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when this cell owns the jail config and the repeating LF_Jail.Tick.
+	bool IsTickOwner()
+	{
+		return s_TickOwner == this && m_bTicking;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Game-mode start/end reset (LF_StaticReset). Placed cells re-register on the next world load.
+	static void ResetStatics()
+	{
+		s_TickOwner = null;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -64,6 +84,13 @@ class LF_JailCellComponent : ScriptComponent
 			return;
 		}
 
+		if (s_TickOwner && s_TickOwner != this)
+		{
+			EL_Debug.Error("Jail", string.Format("second jail cell ignored at %1: the first placed cell owns the config and tick", owner.GetOrigin()));
+			return;
+		}
+
+		s_TickOwner = this;
 		LF_Jail.Configure(m_iSecondsPerWanted, m_iMaxSeconds, m_iWantedReduction, m_fZoneRadius);
 		LF_Jail.SetDoorTarget(m_sDoorTargetId);
 		LF_Jail.SetCellOrigin(owner.GetOrigin());
@@ -81,7 +108,26 @@ class LF_JailCellComponent : ScriptComponent
 		}
 
 		GetGame().GetCallqueue().CallLater(OnTick, m_iTickIntervalMs, true);
+		m_bTicking = true;
 		EL_Debug.Log("Jail", string.Format("cell tick scheduled ms=%1", m_iTickIntervalMs));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		if (m_bTicking)
+		{
+			m_bTicking = false;
+			if (GetGame() && GetGame().GetCallqueue())
+				GetGame().GetCallqueue().Remove(OnTick);
+
+			EL_Debug.Log("Jail", "cell tick removed");
+		}
+
+		if (s_TickOwner == this)
+			s_TickOwner = null;
+
+		super.OnDelete(owner);
 	}
 
 	//------------------------------------------------------------------------------------------------

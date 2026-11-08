@@ -15,6 +15,11 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	//! Player-chosen spawn locations (second stage of the faction menu), session-local.
 	protected static ref map<int, ref EL_SpawnLocation> m_mSelectedLocations;
 
+	//! Registration retries per player. Capped so a player whose UID or account never resolves
+	//! (or who left) does not keep a ~1 s retry alive for the whole session.
+	protected static ref map<int, int> s_mRegisterRetries;
+	static const int MAX_REGISTER_RETRIES = 60;
+
 	//------------------------------------------------------------------------------------------------
 	//! Account manager owns player data, not vanilla collections. Leaving the vanilla Player/Character
 	//! collections unresolved keeps SCR_SpawnLogic.RequestPlayerData_S on its synchronous no-persistence
@@ -38,8 +43,27 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	//! Handles failed player registration attempts by scheduling a retry.
 	protected void OnPlayerRegisterFailed(int playerId)
 	{
+		if (!s_mRegisterRetries)
+			s_mRegisterRetries = new map<int, int>();
+
+		int attempts = s_mRegisterRetries.Get(playerId) + 1;
+		if (!ShouldRetryRegister(attempts))
+		{
+			s_mRegisterRetries.Remove(playerId);
+			EL_Debug.Error("Spawn", string.Format("spawn abandoned for playerId %1: UID/account did not resolve after %2 retries", playerId, MAX_REGISTER_RETRIES));
+			return;
+		}
+
+		s_mRegisterRetries.Set(playerId, attempts);
 		int delay = Math.RandomFloat(900, 1100);
 		GetGame().GetCallqueue().CallLater(OnPlayerAuditSuccess_S, delay, false, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param attempt 1-based retry number about to be scheduled.
+	static bool ShouldRetryRegister(int attempt)
+	{
+		return attempt <= MAX_REGISTER_RETRIES;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -107,6 +131,9 @@ class EL_SpawnLogic : SCR_SpawnLogic
 			OnPlayerRegisterFailed(playerId);
 			return;
 		}
+
+		if (s_mRegisterRetries)
+			s_mRegisterRetries.Remove(playerId);
 
 		CreateCharacter(playerId, account);
 	}

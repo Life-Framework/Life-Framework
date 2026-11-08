@@ -5,6 +5,10 @@ class EL_CharacterATMComponentClass : ScriptComponentClass
 
 class EL_CharacterATMComponent : ScriptComponent
 {
+	//! How far the player may stand from an ATM's origin when the server takes a deposit or
+	//! withdraw. The ATM action shows at 3 m; the extra 2 m absorbs movement and latency.
+	static const float ATM_RANGE = 5.0;
+
 	protected ref EL_BankAccount m_BankAccount;
 
 	//------------------------------------------------------------------------------------------------
@@ -29,23 +33,61 @@ class EL_CharacterATMComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Menu entry points: forward a request to the server through the RPC
-	//! bridge. Safe to call from host and client alike; the engine routes
-	//! server-direction RPCs locally on a host.
+	//! bridge. A listen-server host calls the handler directly, the same as
+	//! the shop bridge, so the host's own requests never depend on a loopback.
 	void RequestDeposit(int amount)
 	{
-		Rpc(RpcAsk_Deposit, amount);
+		if (Replication.IsServer())
+			RpcAsk_Deposit(amount);
+		else
+			Rpc(RpcAsk_Deposit, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void RequestWithdraw(int amount)
 	{
-		Rpc(RpcAsk_Withdraw, amount);
+		if (Replication.IsServer())
+			RpcAsk_Withdraw(amount);
+		else
+			Rpc(RpcAsk_Withdraw, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void RequestBalance()
 	{
-		Rpc(RpcAsk_GetBalance);
+		if (Replication.IsServer())
+			RpcAsk_GetBalance();
+		else
+			Rpc(RpcAsk_GetBalance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param origin World position of the player.
+	//! \return true when an ATM stands within ATM_RANGE of origin. The server checks this on every
+	//! deposit and withdraw, so a menu kept open (or a forged RPC) cannot bank cash away from an ATM.
+	static bool IsAtATM(vector origin)
+	{
+		return EL_ActionSite.IsNear(origin, ATM_RANGE, "EL_ATMAction");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Refuses a cash request made away from an ATM. Logs the refusal and tells the player.
+	//! \return true when the request was refused.
+	protected bool RefuseAwayFromATM(IEntity character, string request, int amount, string playerUid)
+	{
+		if (IsAtATM(character.GetOrigin()))
+			return false;
+
+		EL_Debug.Warn("ATM", string.Format("%1 refused: not at an ATM (amount=%2 uid %3)", request, amount, playerUid));
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (playerManager)
+		{
+			int playerId = playerManager.GetPlayerIdFromControlledEntity(character);
+			if (playerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ATM_Title", "#EL-ATM_TooFar", 3.0, EL_ENotificationType.WARNING);
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -68,7 +110,12 @@ class EL_CharacterATMComponent : ScriptComponent
 			if (!account)
 			{
 				EL_Debug.Error("ATM", "deposit rejected: player UID is unavailable");
-				Rpc(RpcDo_DepositResult, false, 0);
+				ReplyDeposit(false, 0);
+				return;
+			}
+			if (RefuseAwayFromATM(character, "deposit", amount, playerUid))
+			{
+				ReplyDeposit(false, account.GetBalance());
 				return;
 			}
 			if (EL_ATMManager.IsValidAmount(amount))
@@ -102,7 +149,7 @@ class EL_CharacterATMComponent : ScriptComponent
 
 		if (account)
 			newBalance = account.GetBalance();
-		Rpc(RpcDo_DepositResult, success, newBalance);
+		ReplyDeposit(success, newBalance);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -123,7 +170,12 @@ class EL_CharacterATMComponent : ScriptComponent
 			if (!account)
 			{
 				EL_Debug.Error("ATM", "withdraw rejected: player UID is unavailable");
-				Rpc(RpcDo_WithdrawResult, false, 0);
+				ReplyWithdraw(false, 0);
+				return;
+			}
+			if (RefuseAwayFromATM(character, "withdraw", amount, playerUid))
+			{
+				ReplyWithdraw(false, account.GetBalance());
 				return;
 			}
 			if (EL_ATMManager.IsValidAmount(amount))
@@ -162,7 +214,7 @@ class EL_CharacterATMComponent : ScriptComponent
 
 		if (account)
 			newBalance = account.GetBalance();
-		Rpc(RpcDo_WithdrawResult, success, newBalance);
+		ReplyWithdraw(success, newBalance);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -180,7 +232,45 @@ class EL_CharacterATMComponent : ScriptComponent
 			EL_Debug.Error("ATM", "balance request rejected: player UID is unavailable");
 			return;
 		}
-		Rpc(RpcDo_Balance, account.GetBalance());
+		int balance = account.GetBalance();
+		if (IsLocalPlayer())
+			RpcDo_Balance(balance);
+		else
+			Rpc(RpcDo_Balance, balance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Delivers a deposit outcome to the owning client. A listen-server host has no wire hop for an
+	//! Owner-targeted RPC to itself, so the handler runs directly there (same as the shop bridge).
+	protected void ReplyDeposit(bool success, int newBalance)
+	{
+		if (IsLocalPlayer())
+			RpcDo_DepositResult(success, newBalance);
+		else
+			Rpc(RpcDo_DepositResult, success, newBalance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReplyWithdraw(bool success, int newBalance)
+	{
+		if (IsLocalPlayer())
+			RpcDo_WithdrawResult(success, newBalance);
+		else
+			Rpc(RpcDo_WithdrawResult, success, newBalance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsLocalPlayer()
+	{
+		IEntity player = GetOwner();
+		if (!player)
+			return false;
+
+		RplComponent rpl = RplComponent.Cast(player.FindComponent(RplComponent));
+		if (!rpl)
+			return false;
+
+		return rpl.IsOwner();
 	}
 
 	//------------------------------------------------------------------------------------------------

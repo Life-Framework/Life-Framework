@@ -29,6 +29,19 @@ class LF_PoliceRanks
 	protected static ref array<string> s_aBoundUids;
 
 	//------------------------------------------------------------------------------------------------
+	//! Game-mode start/end reset (LF_StaticReset). EntityIDs bound in one world mean nothing in the next.
+	static void ResetStatics()
+	{
+		s_iArrestRefusals = 0;
+		s_iFineRefusals = 0;
+		s_iSelfPromotionRefusals = 0;
+		s_iMissingPrefabSkips = 0;
+		s_sLastError = "";
+		s_aBoundIds = null;
+		s_aBoundUids = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int GetArrestRefusalCount()
 	{
 		return s_iArrestRefusals;
@@ -329,17 +342,27 @@ class LF_PoliceRanks
 	//------------------------------------------------------------------------------------------------
 	static void OnDutyChanged(EL_PlayerAccount account, bool nowOnDuty)
 	{
+		OnDutyChangedAt(account, nowOnDuty, NowMs());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! OnDutyChanged with the world time passed in, so a test can drive the clock.
+	static void OnDutyChangedAt(EL_PlayerAccount account, bool nowOnDuty, int nowMs)
+	{
 		if (!account)
 			return;
 
+		// A shift boundary in either direction opens the next shift's single armory draw.
+		account.SetArmoryDrawnThisShift(false);
+
 		if (nowOnDuty)
 		{
-			account.StartDutyClock(NowMs());
+			account.StartDutyClock(nowMs);
 			EL_Debug.Log("Ranks", string.Format("duty clock started for %1", account.GetPersistentId()));
 			return;
 		}
 
-		SettleDuty(account, false);
+		SettleDutyAt(account, false, nowMs);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -359,7 +382,17 @@ class LF_PoliceRanks
 			return false;
 		}
 
-		SettleDuty(account, true);
+		if (account.HasDrawnArmoryThisShift())
+		{
+			// One kit per duty shift. Without this an officer could draw kits without end and
+			// hand them to anyone. Going off duty opens the next shift's draw.
+			s_sLastError = string.Format("draw refused: %1 already drew a kit this shift", uid);
+			EL_Debug.Warn("Ranks", s_sLastError);
+			NotifyOfficer(officer, "#EL-Rank_AlreadyDrawn");
+			return false;
+		}
+
+		SettleDutyAt(account, true, NowMs());
 
 		array<ResourceName> kit = {};
 		CollectKit(account.GetPoliceRank(), kit);
@@ -393,6 +426,11 @@ class LF_PoliceRanks
 
 			inserted++;
 		}
+
+		// Any weapon handed out spends the shift's draw, so a partly full inventory cannot be
+		// retried for more kit lines.
+		if (inserted > 0)
+			account.SetArmoryDrawnThisShift(true);
 
 		if (inserted != kit.Count())
 			return false;
@@ -527,18 +565,23 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void SettleDuty(EL_PlayerAccount account, bool stillOnDuty)
+	//! Closes the running duty clock at nowMs: the seconds count toward rank and toward the
+	//! shift's unpaid duty pay (police only). stillOnDuty restarts the clock at nowMs.
+	static void SettleDutyAt(EL_PlayerAccount account, bool stillOnDuty, int nowMs)
 	{
 		if (!account || !account.IsDutyClockRunning())
 			return;
 
 		int started = account.GetDutyStartedAtMs();
-		int nowMs = NowMs();
 		if (nowMs > started)
 		{
 			int deltaSeconds = (nowMs - started) / 1000;
 			if (deltaSeconds > 0)
+			{
 				AccrueDuty(account.GetPersistentId(), deltaSeconds);
+				if (account.GetFaction() == EL_Faction.POLICE)
+					account.AddUnpaidDutySeconds(deltaSeconds);
+			}
 		}
 
 		if (stillOnDuty)
@@ -554,6 +597,17 @@ class LF_PoliceRanks
 			return 0;
 
 		return Math.Round(GetGame().GetWorld().GetWorldTime());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void NotifyOfficer(IEntity officer, string messageKey)
+	{
+		if (!officer || !GetGame() || !GetGame().GetPlayerManager())
+			return;
+
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
+		if (playerId > 0)
+			EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", messageKey, 3.0, EL_ENotificationType.WARNING);
 	}
 
 	//------------------------------------------------------------------------------------------------

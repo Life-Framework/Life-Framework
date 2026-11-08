@@ -170,6 +170,21 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Drops sentences, the cell, the door, and the sentence config. Called on game-mode start/end
+	//! (LF_StaticReset) so a world reload does not inherit the previous world's jail.
+	static void ResetStatics()
+	{
+		s_mSentences = null;
+		s_bCellPlaced = false;
+		s_vCellOrigin = "0 0 0";
+		s_sDoorId = "";
+		s_iSecondsPerWanted = 0;
+		s_iMaxSeconds = 0;
+		s_iWantedReduction = 0;
+		s_fZoneRadius = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool HasCell()
 	{
 		return s_bCellPlaced;
@@ -495,8 +510,30 @@ class LF_Jail
 			return;
 		}
 
-		target.SetOrigin(s_vCellOrigin);
+		MoveBody(target, s_vCellOrigin);
 		EL_Debug.Log("Jail", string.Format("moved %1 to the cell", prisonerUid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player's character is owned by their client, which simulates its movement: a server-only
+	//! SetOrigin is overwritten by the next owner update and the prisoner snaps back. A connected
+	//! player is moved through SCR_Global.TeleportPlayer, the vanilla server-side player teleport
+	//! that reaches the owning client. A body with no player (a test stand-in) is set directly.
+	protected static void MoveBody(IEntity body, vector position)
+	{
+		int playerId = 0;
+		if (GetGame() && GetGame().GetPlayerManager())
+			playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(body);
+
+		if (playerId > 0)
+		{
+			if (SCR_Global.TeleportPlayer(playerId, position))
+				return;
+
+			EL_Debug.Warn("Jail", string.Format("player teleport refused for player %1; setting the origin on the server", playerId));
+		}
+
+		body.SetOrigin(position);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -511,7 +548,7 @@ class LF_Jail
 		if (vector.Distance(resolved, entity.GetOrigin()) < 0.05)
 			return;
 
-		entity.SetOrigin(resolved);
+		MoveBody(entity, resolved);
 	}
 
 	//------------------------------------------------------------------------------------------------

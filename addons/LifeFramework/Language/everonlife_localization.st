@@ -2138,136 +2138,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Step out of the vehicle first"
      Comment "Garage store refused because the player is still seated."
     }
-    CustomStringTableItem "{6717E4FCF46F11F2}" {
-     Id "EL-Breach_NeedCharge"
-     Target_en_us "You need a demolition charge"
-     Comment "Breach arm refused because the player carries no M112 demolition charge"
-    }
-    CustomStringTableItem "{BDFF965656B478E0}" {
-     Id "EL-Duty_GoOn"
-     Target_en_us "Go on duty"
-     Comment "Police duty toggle action name while the officer is off duty"
-    }
-    CustomStringTableItem "{D302B585166A8EAE}" {
-     Id "EL-Duty_GoOff"
-     Target_en_us "Go off duty"
-     Comment "Police duty toggle action name while the officer is on duty"
-    }
-    CustomStringTableItem "{C63996AB2CF2559D}" {
-     Id "EL-Duty_PoliceOnly"
-     Target_en_us "Only police can change duty"
-     Comment "Duty toggle refused because the player is not in the police faction"
-    }
-    CustomStringTableItem "{92FBA59A53BA6764}" {
-     Id "EL-Confiscate_OnDutyOnly"
-     Target_en_us "Only on-duty police can confiscate"
-     Comment "Confiscate action refused because the player is not an on-duty officer"
-    }
-    CustomStringTableItem "{4D0E7310AF59E5DA}" {
-     Id "EL-Confiscate_NoTarget"
-     Target_en_us "No wanted player nearby"
-     Comment "Confiscate action refused because no wanted player is within range"
-    }
-    CustomStringTableItem "{65A21AB01575E40D}" {
-     Id "EL-CC_Error_FactionDenied"
-     Target_en_us "You are not cleared for that faction."
-     Comment "Faction pick refused by the server whitelist. The faction menu opens again."
-    }
-    CustomStringTableItem "{9EFAFBA759167819}" {
-     Id "EL-CC_Error_FactionLocked"
-     Target_en_us "Your faction is already set."
-     Comment "Faction or character request refused because the account already chose a faction, or has not chosen one yet for a character"
-    }
-    CustomStringTableItem "{C84EED35CC0A568B}" {
-     Id "EL-CC_Error_NoAccount"
-     Target_en_us "Your account is still loading. Try again."
-     Comment "Creation request refused because the server has no account for the player yet"
-    }
-    CustomStringTableItem "{654A62843AE6EBC8}" {
-     Id "EL-CC_Error_Location"
-     Target_en_us "That spawn location is not available."
-     Comment "Spawn location refused because it does not belong to the chosen faction. The location menu opens again."
-    }
-    CustomStringTableItem "{584BFA3C9B4E7978}" {
-     Id "EL-CC_Error_NameLength"
-     Target_en_us "Names can be at most 32 characters."
-     Comment "Character creation refused because a name is longer than 32 characters"
-    }
-    CustomStringTableItem "{1D9FBDE69C69275F}" {
-     Id "EL-CC_Error_Exists"
-     Target_en_us "This account already has a character."
-     Comment "Character creation refused because the account already has a character"
-    }
-    CustomStringTableItem "{C71FE54AE5989467}" {
-     Id "LF-Sign_Read"
-     Target_en_us "Read: %1"
-     Comment "Interaction prompt on a sign, board, or notice. %1 is the sign title, e.g. Read: Mining area."
-    }
-    CustomStringTableItem "{84F64B2018E1B414}" {
-     Id "LF-Sign_What"
-     Target_en_us "What"
-     Comment "Sign card section heading: what this place is."
-    }
-    CustomStringTableItem "{6A32B827033280BE}" {
-     Id "LF-Sign_How"
-     Target_en_us "How"
-     Comment "Sign card section heading: how to use the place, with the action names."
-    }
-    CustomStringTableItem "{998F8A9D60C65734}" {
-     Id "LF-Sign_Needs"
-     Target_en_us "Needs"
-     Comment "Sign card section heading: items, faction, or people needed."
-    }
-    CustomStringTableItem "{B4AC01A970C24DB6}" {
-     Id "LF-Sign_Rules"
-     Target_en_us "Rules"
-     Comment "Sign card section heading: cooldowns, wanted level, other rules."
-    }
-    CustomStringTableItem "{62312EEA2BF57769}" {
-     Id "LF-Sign_Close"
-     Target_en_us "Put it back"
-     Comment "Button that closes the sign card. The player is done reading the notice."
-    }
-    CustomStringTableItem "{DB2A007036A674C1}" {
-     Id "LF-Sign_Mining_Title"
-     Target_en_us "Mining area"
-     Comment "Title of the mining area sign. Shown in the prompt as Read: Mining area."
-    }
-    CustomStringTableItem "{31F99065D184F5F5}" {
-     Id "LF-Sign_Mining_What"
-     Target_en_us "Iron, copper, and gold ore in the rocks here. The furnace stands next to them."
-     Comment "Mining sign card, What section."
-    }
-    CustomStringTableItem "{EACF0508930A1624}" {
-     Id "LF-Sign_Mining_How"
-     Target_en_us "Strike the ore with a pickaxe to break off nuggets. At the furnace, use Smelt Iron Nuggets or Smelt Gold Nuggets."
-     Comment "Mining sign card, How section. Smelt Iron Nuggets and Smelt Gold Nuggets are the furnace action names."
-    }
-    CustomStringTableItem "{223169ECC7DBE15F}" {
-     Id "LF-Sign_Mining_Needs"
-     Target_en_us "A pickaxe in your hands."
-     Comment "Mining sign card, Needs section."
-    }
-    CustomStringTableItem "{7DA72D96E9E141A1}" {
-     Id "LF-Sign_Mining_Rules"
-     Target_en_us "Broken rocks grow back over time."
-     Comment "Mining sign card, Rules section."
-    }
-    CustomStringTableItem "{25CBE1F3714907FE}" {
-     Id "LF-Sign_PoliceWhitelist_Title"
-     Target_en_us "Police only"
-     Comment "Title of the police whitelist sign. Shown in the prompt as Read: Police only."
-    }
-    CustomStringTableItem "{872DAC511763A07E}" {
-     Id "LF-Sign_PoliceWhitelist_What"
-     Target_en_us "A police post. Only whitelisted officers may use it."
-     Comment "Police whitelist sign card, What section."
-    }
-    CustomStringTableItem "{E6BC64F34A07EA32}" {
-     Id "LF-Sign_PoliceWhitelist_Needs"
-     Target_en_us "A police whitelist from the server staff."
-     Comment "Police whitelist sign card, Needs section."
-    }
     CustomStringTableItem "{C1337327CA2B69B2}" {
      Id "EL-ATM_InvalidAmount"
      Target_en_us "Enter an amount greater than zero"
@@ -2971,6 +2841,206 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Station desk"
      Target_es_es "Mostrador de la comisaría"
      Comment "Title of the police station desk menu (wanted list, fines, arrests)"
+    }
+    CustomStringTableItem "{6717E4FCF46F11F2}" {
+     Id "EL-Breach_NeedCharge"
+     Target_en_us "You need a demolition charge"
+     Comment "Breach arm refused because the player carries no M112 demolition charge"
+    }
+    CustomStringTableItem "{BDFF965656B478E0}" {
+     Id "EL-Duty_GoOn"
+     Target_en_us "Go on duty"
+     Comment "Police duty toggle action name while the officer is off duty"
+    }
+    CustomStringTableItem "{D302B585166A8EAE}" {
+     Id "EL-Duty_GoOff"
+     Target_en_us "Go off duty"
+     Comment "Police duty toggle action name while the officer is on duty"
+    }
+    CustomStringTableItem "{C63996AB2CF2559D}" {
+     Id "EL-Duty_PoliceOnly"
+     Target_en_us "Only police can change duty"
+     Comment "Duty toggle refused because the player is not in the police faction"
+    }
+    CustomStringTableItem "{92FBA59A53BA6764}" {
+     Id "EL-Confiscate_OnDutyOnly"
+     Target_en_us "Only on-duty police can confiscate"
+     Comment "Confiscate action refused because the player is not an on-duty officer"
+    }
+    CustomStringTableItem "{4D0E7310AF59E5DA}" {
+     Id "EL-Confiscate_NoTarget"
+     Target_en_us "No wanted player nearby"
+     Comment "Confiscate action refused because no wanted player is within range"
+    }
+    CustomStringTableItem "{65A21AB01575E40D}" {
+     Id "EL-CC_Error_FactionDenied"
+     Target_en_us "You are not cleared for that faction."
+     Comment "Faction pick refused by the server whitelist. The faction menu opens again."
+    }
+    CustomStringTableItem "{9EFAFBA759167819}" {
+     Id "EL-CC_Error_FactionLocked"
+     Target_en_us "Your faction is already set."
+     Comment "Faction or character request refused because the account already chose a faction, or has not chosen one yet for a character"
+    }
+    CustomStringTableItem "{C84EED35CC0A568B}" {
+     Id "EL-CC_Error_NoAccount"
+     Target_en_us "Your account is still loading. Try again."
+     Comment "Creation request refused because the server has no account for the player yet"
+    }
+    CustomStringTableItem "{654A62843AE6EBC8}" {
+     Id "EL-CC_Error_Location"
+     Target_en_us "That spawn location is not available."
+     Comment "Spawn location refused because it does not belong to the chosen faction. The location menu opens again."
+    }
+    CustomStringTableItem "{584BFA3C9B4E7978}" {
+     Id "EL-CC_Error_NameLength"
+     Target_en_us "Names can be at most 32 characters."
+     Comment "Character creation refused because a name is longer than 32 characters"
+    }
+    CustomStringTableItem "{1D9FBDE69C69275F}" {
+     Id "EL-CC_Error_Exists"
+     Target_en_us "This account already has a character."
+     Comment "Character creation refused because the account already has a character"
+    }
+    CustomStringTableItem "{C71FE54AE5989467}" {
+     Id "LF-Sign_Read"
+     Target_en_us "Read: %1"
+     Comment "Interaction prompt on a sign, board, or notice. %1 is the sign title, e.g. Read: Mining area."
+    }
+    CustomStringTableItem "{84F64B2018E1B414}" {
+     Id "LF-Sign_What"
+     Target_en_us "What"
+     Comment "Sign card section heading: what this place is."
+    }
+    CustomStringTableItem "{6A32B827033280BE}" {
+     Id "LF-Sign_How"
+     Target_en_us "How"
+     Comment "Sign card section heading: how to use the place, with the action names."
+    }
+    CustomStringTableItem "{998F8A9D60C65734}" {
+     Id "LF-Sign_Needs"
+     Target_en_us "Needs"
+     Comment "Sign card section heading: items, faction, or people needed."
+    }
+    CustomStringTableItem "{B4AC01A970C24DB6}" {
+     Id "LF-Sign_Rules"
+     Target_en_us "Rules"
+     Comment "Sign card section heading: cooldowns, wanted level, other rules."
+    }
+    CustomStringTableItem "{62312EEA2BF57769}" {
+     Id "LF-Sign_Close"
+     Target_en_us "Put it back"
+     Comment "Button that closes the sign card. The player is done reading the notice."
+    }
+    CustomStringTableItem "{DB2A007036A674C1}" {
+     Id "LF-Sign_Mining_Title"
+     Target_en_us "Mining area"
+     Comment "Title of the mining area sign. Shown in the prompt as Read: Mining area."
+    }
+    CustomStringTableItem "{31F99065D184F5F5}" {
+     Id "LF-Sign_Mining_What"
+     Target_en_us "Iron, copper, and gold ore in the rocks here. The furnace stands next to them."
+     Comment "Mining sign card, What section."
+    }
+    CustomStringTableItem "{EACF0508930A1624}" {
+     Id "LF-Sign_Mining_How"
+     Target_en_us "Strike the ore with a pickaxe to break off nuggets. At the furnace, use Smelt Iron Nuggets or Smelt Gold Nuggets."
+     Comment "Mining sign card, How section. Smelt Iron Nuggets and Smelt Gold Nuggets are the furnace action names."
+    }
+    CustomStringTableItem "{223169ECC7DBE15F}" {
+     Id "LF-Sign_Mining_Needs"
+     Target_en_us "A pickaxe in your hands."
+     Comment "Mining sign card, Needs section."
+    }
+    CustomStringTableItem "{7DA72D96E9E141A1}" {
+     Id "LF-Sign_Mining_Rules"
+     Target_en_us "Broken rocks grow back over time."
+     Comment "Mining sign card, Rules section."
+    }
+    CustomStringTableItem "{25CBE1F3714907FE}" {
+     Id "LF-Sign_PoliceWhitelist_Title"
+     Target_en_us "Police only"
+     Comment "Title of the police whitelist sign. Shown in the prompt as Read: Police only."
+    }
+    CustomStringTableItem "{872DAC511763A07E}" {
+     Id "LF-Sign_PoliceWhitelist_What"
+     Target_en_us "A police post. Only whitelisted officers may use it."
+     Comment "Police whitelist sign card, What section."
+    }
+    CustomStringTableItem "{E6BC64F34A07EA32}" {
+     Id "LF-Sign_PoliceWhitelist_Needs"
+     Target_en_us "A police whitelist from the server staff."
+     Comment "Police whitelist sign card, Needs section."
+    }
+    CustomStringTableItem "{F4D6F78E634D1214}" {
+     Id "EL-Duty_Paid"
+     Target_en_us "Duty pay: $%1 cash"
+     Comment "Toast after the station desk hands an officer going off duty their shift pay in cash; %1 is the amount"
+    }
+    CustomStringTableItem "{F4D6F78E634D1216}" {
+     Id "EL-Benefit_Collect"
+     Target_en_us "Collect benefit"
+     Comment "Job counter action: collect the unemployment benefit in cash"
+    }
+    CustomStringTableItem "{20909EFABF36AC7A}" {
+     Id "EL-Benefit_Title"
+     Target_en_us "Job counter"
+     Comment "Toast title for the unemployment benefit"
+    }
+    CustomStringTableItem "{13CD00AAEFCF43FD}" {
+     Id "EL-Benefit_Paid"
+     Target_en_us "Unemployment benefit: $%1 cash"
+     Comment "Toast after the job counter hands over the unemployment benefit; %1 is the amount"
+    }
+    CustomStringTableItem "{6B1E0C2D9A4F7E31}" {
+     Id "EL-Benefit_Refused_Balance"
+     Target_en_us "Your bank balance is too high for the benefit"
+     Comment "Benefit refused because the bank balance is at or above the threshold"
+    }
+    CustomStringTableItem "{6B1E0C2D9A4F7E32}" {
+     Id "EL-Benefit_Refused_Working"
+     Target_en_us "The benefit is for people out of work"
+     Comment "Benefit refused because the player is on duty as police or has an active delivery run"
+    }
+    CustomStringTableItem "{6B1E0C2D9A4F7E33}" {
+     Id "EL-Benefit_Refused_Cooldown"
+     Target_en_us "You collected the benefit recently. Come back later."
+     Comment "Benefit refused because the cooldown since the last collection has not elapsed"
+    }
+    CustomStringTableItem "{6B1E0C2D9A4F7E34}" {
+     Id "EL-Benefit_Refused_Disabled"
+     Target_en_us "The benefit is not paid here"
+     Comment "Benefit refused because it is disabled in config or the player has no account"
+    }
+    CustomStringTableItem "{200D9FF1811EAA61}" {
+     Id "EL-Police_TooFar"
+     Target_en_us "The suspect is too far away"
+     Comment "Police menu arrest or fine refused because the target is not within 5 m of the officer or is not connected"
+    }
+    CustomStringTableItem "{DEBD888942A8B233}" {
+     Id "EL-Fine_TooSmall"
+     Target_en_us "A fine must be at least 1000 to lower the wanted level"
+     Comment "Police fine refused because the amount is below one wanted level (1000 cash per level)"
+    }
+    CustomStringTableItem "{9D15B91990A1723B}" {
+     Id "EL-Rank_AlreadyDrawn"
+     Target_en_us "You already drew your kit this shift"
+     Comment "Police armory refused because the officer drew a kit this duty shift. Going off duty resets it."
+    }
+    CustomStringTableItem "{B0D42569EC54BD93}" {
+     Id "EL-ATM_TooFar"
+     Target_en_us "Stand at an ATM to do that"
+     Comment "ATM deposit or withdraw refused because the player walked away from the ATM"
+    }
+    CustomStringTableItem "{9922728E793CD0D8}" {
+     Id "EL-Org_TooFar"
+     Target_en_us "Stand at the organization desk to do that"
+     Comment "Organization fund deposit or withdraw refused because the player walked away from the desk"
+    }
+    CustomStringTableItem "{2D4F8FB9A33C7F28}" {
+     Id "LF-Garage_VehicleTooFar"
+     Target_en_us "Bring the vehicle to the garage first"
+     Comment "Garage store refused because the owned vehicle is not parked at the garage the player is using"
     }
   }
  }

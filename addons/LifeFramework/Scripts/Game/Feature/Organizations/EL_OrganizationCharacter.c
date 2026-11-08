@@ -54,7 +54,8 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_OrganizationDeposit(int amount)
 	{
-		EL_OrganizationPlayer.DepositCash(this, amount);
+		if (!EL_RefuseAwayFromOrganizationDesk("deposit", amount))
+			EL_OrganizationPlayer.DepositCash(this, amount);
 		EL_PushOrganizationView();
 	}
 
@@ -62,8 +63,30 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_OrganizationWithdraw(int amount)
 	{
-		EL_OrganizationPlayer.WithdrawCash(this, amount);
+		if (!EL_RefuseAwayFromOrganizationDesk("withdraw", amount))
+			EL_OrganizationPlayer.WithdrawCash(this, amount);
 		EL_PushOrganizationView();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fund cash moves only at the desk. The menu stays open after the player walks off, and a
+	//! client can send the RPC without the menu, so the server looks for the desk itself.
+	//! \return true when the request was refused.
+	protected bool EL_RefuseAwayFromOrganizationDesk(string request, int amount)
+	{
+		if (EL_OrganizationPlayer.IsAtDesk(GetOrigin()))
+			return false;
+
+		EL_Debug.Warn("Organizations", string.Format("%1 refused: not at an organization desk (amount=%2 uid %3)", request, amount, EL_Utils.GetPlayerUid(this)));
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (playerManager)
+		{
+			int playerId = playerManager.GetPlayerIdFromControlledEntity(this);
+			if (playerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Org_Title", "#EL-Org_TooFar", 3.0, EL_ENotificationType.WARNING);
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

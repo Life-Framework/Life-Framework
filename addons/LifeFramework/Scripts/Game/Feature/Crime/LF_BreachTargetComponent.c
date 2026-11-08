@@ -19,6 +19,8 @@ class LF_BreachTargetComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, desc: "Owning organization id. Empty means only police can repair.")]
 	protected string m_sOwnerOrganization;
 
+	protected bool m_bFusePending;
+
 	//! Replicated copy of the LF_Breach target flags (the table is server-only). Written by
 	//! LF_Breach on the server, read by the breach actions on a client. Late joiners get them
 	//! with the door snapshot.
@@ -118,15 +120,16 @@ class LF_BreachTargetComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server timer for a positive fuse. Fuse 0 never reaches this; Arm opens inline.
-	void ScheduleFuse(float fuseSeconds)
+	//! \return False when no timer was scheduled (the caller cancels the charge).
+	bool ScheduleFuse(float fuseSeconds)
 	{
 		if (fuseSeconds <= 0)
-			return;
+			return false;
 
 		if (!GetGame() || !GetGame().GetCallqueue())
 		{
 			EL_Debug.Error("Breach", "fuse timer skipped: no callqueue");
-			return;
+			return false;
 		}
 
 		int delayMs = fuseSeconds * 1000;
@@ -134,15 +137,34 @@ class LF_BreachTargetComponent : ScriptComponent
 			delayMs = 1;
 
 		GetGame().GetCallqueue().CallLater(OnFuse, delayMs, false);
+		m_bFusePending = true;
 		EL_Debug.Log("Breach", string.Format("fuse scheduled %1 ms=%2", GetTargetId(), delayMs));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnFuse()
 	{
+		m_bFusePending = false;
 		if (!Replication.IsServer())
 			return;
 
 		LF_Breach.Advance(GetTargetId(), m_fFuseSeconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Door deleted before its fuse fired: drop the timer and the charge so the target is not armed forever.
+	override void OnDelete(IEntity owner)
+	{
+		if (m_bFusePending)
+		{
+			m_bFusePending = false;
+			if (GetGame() && GetGame().GetCallqueue())
+				GetGame().GetCallqueue().Remove(OnFuse);
+
+			LF_Breach.CancelCharge(GetTargetId(), "door deleted before the fuse fired");
+		}
+
+		super.OnDelete(owner);
 	}
 }

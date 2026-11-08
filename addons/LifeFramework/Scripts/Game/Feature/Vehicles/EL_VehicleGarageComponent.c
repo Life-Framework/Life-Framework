@@ -44,6 +44,25 @@ class EL_VehicleGarageComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		if (m_bRegistered)
+		{
+			s_aAll.RemoveItem(this);
+			m_bRegistered = false;
+		}
+
+		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Game-mode start/end reset (LF_StaticReset).
+	static void ResetStatics()
+	{
+		s_aAll.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsPositionNearAnyGarage(vector origin)
 	{
 		foreach (EL_VehicleGarageComponent garage : s_aAll)
@@ -52,6 +71,35 @@ class EL_VehicleGarageComponent : ScriptComponent
 				continue;
 
 			if (vector.Distance(origin, garage.GetOwner().GetOrigin()) <= INTERACT_RADIUS)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when both the player and the vehicle stand within INTERACT_RADIUS of garageOrigin.
+	static bool SharesGarage(vector garageOrigin, vector playerOrigin, vector vehicleOrigin)
+	{
+		if (vector.Distance(playerOrigin, garageOrigin) > INTERACT_RADIUS)
+			return false;
+
+		return vector.Distance(vehicleOrigin, garageOrigin) <= INTERACT_RADIUS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Storing takes the vehicle off the map, so the vehicle has to be at the garage the player is
+	//! using. Checking only the player let an owner store a car from anywhere, including one in
+	//! a police impound.
+	//! \return true when one garage has both the player and the vehicle within its radius.
+	static bool IsVehicleAtPlayersGarage(vector playerOrigin, vector vehicleOrigin)
+	{
+		foreach (EL_VehicleGarageComponent garage : s_aAll)
+		{
+			if (!garage || !garage.GetOwner())
+				continue;
+
+			if (SharesGarage(garage.GetOwner().GetOrigin(), playerOrigin, vehicleOrigin))
 				return true;
 		}
 

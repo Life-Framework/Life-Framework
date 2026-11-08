@@ -73,6 +73,25 @@ class EL_VehicleSpawnPointComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		if (m_bRegistered)
+		{
+			s_aAll.RemoveItem(this);
+			m_bRegistered = false;
+		}
+
+		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Game-mode start/end reset (LF_StaticReset).
+	static void ResetStatics()
+	{
+		s_aAll.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool FindFreeOrigin(string shopId, out vector origin)
 	{
 		origin = "0 0 0";

@@ -101,6 +101,43 @@ class LF_JailEscort
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Game-mode start/end reset (LF_StaticReset).
+	static void ResetStatics()
+	{
+		s_mVehicles = null;
+		s_mSeats = null;
+		s_mHolds = null;
+		s_sLastLog = "";
+		s_iTickSteps = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Disconnect: drops every escort hold where playerUid is the prisoner or the officer, and
+	//! frees the seat the prisoner held. A sentence already started is not touched.
+	//! \return Number of holds released.
+	static int ReleasePlayer(string playerUid)
+	{
+		if (playerUid.IsEmpty() || !s_mHolds)
+			return 0;
+
+		array<string> prisoners = {};
+		foreach (string prisonerUid, LF_JailEscortHold hold : s_mHolds)
+		{
+			if (prisonerUid == playerUid || (hold && hold.m_sOfficerUid == playerUid))
+				prisoners.Insert(prisonerUid);
+		}
+
+		foreach (string prisonerUid : prisoners)
+		{
+			ClearSeat(prisonerUid);
+			s_mHolds.Remove(prisonerUid);
+			Note(string.Format("escort released %1: player %2 disconnected", prisonerUid, playerUid));
+		}
+
+		return prisoners.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int GetTickSteps()
 	{
 		return s_iTickSteps;
