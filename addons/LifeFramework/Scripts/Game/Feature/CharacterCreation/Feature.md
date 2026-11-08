@@ -6,14 +6,15 @@
 ## Intent
 
 First join should feel like **registering your presence in the world** — pick a
-name, an age, a faction, then you spawn into it. It is a gate, not a lifestyle.
+name and an age, then you spawn into it as a civilian. Police clock in at the
+station duty desk (M1-11); there is no faction screen. It is a gate, not a lifestyle.
 Character creation is one of the few flows with no physical analog at scale, so
 a menu is acceptable — but it should be framed as intake and stay minimal.
 
 ## Interaction pattern
 
-Rung 4 today (menus): no account → create → faction selection → registration
-form R-89 → spawn carrying an ID card. Typing a name is a correct UI, so the
+Rung 4 today (menus): no account → create → registration form R-89 → spawn
+carrying an ID card. Typing a name is a correct UI, so the
 form is a 1989 paper sheet on `LF_UIScreen`, not a desktop dialog. The ID card
 is a real item (`IDCard.et` + `LF_IdCardComponent`); `EL_ShowIDAction` holds
 it up to the player you face, who sees the card.
@@ -40,9 +41,8 @@ office). Low priority; the menu flow is fine for V1 as long as it is honest.
 
 - `EL_CharacterCreationManager` — flow driver; ✅ real roleplay character
   prefab.
-- `EL_FactionSelectionMenu` — faction menu (removed by M1-11; police clock in
-  at the station instead). `EL_CharacterCreationRules.RefuseCharacter` still
-  requires a chosen faction; M1-11 drops that gate with the menu.
+- The faction and spawn-location menus are gone (M1-11), and so is the
+  faction gate in `EL_CharacterCreationRules.RefuseCharacter`.
 - `LF_RegistrationForm` / `LF_RegistrationRules` — form R-89 and its checks.
 - `LF_IdCardComponent` / `LF_IdCard` — the card's printed identity and the
   grant: the town clerk hands it over (M1-18, `LF_QuestRewards.HandIdCard`), then

@@ -20,7 +20,7 @@ export const REQUIRED_LAYERS = [
   "LoggingChain.layer",
   "MiningChain.layer",
   "PlumChain.layer",
-  "Police.layer",
+  "Street_Police.layer",
   "SandChain.layer",
   "Shops.layer",
   "Survival.layer",
@@ -58,7 +58,8 @@ export const PROBES = [
   { layer: "Jobs.layer", name: "GatherPoint_AppleTree", action: "EL_GatherAction" },
   { layer: "Shops.layer", name: "Shop_GeneralStore_Debug", action: "EL_ShopAction" },
   { layer: "Shops.layer", name: "Shop_BlackMarket_Debug", action: "EL_ShopAction" },
-  { layer: "Police.layer", name: "PoliceStation_Debug", action: "EL_DutyAction" },
+  { layer: "Street_Police.layer", name: "Roadmap_Police_Desk", action: "EL_DutyAction" },
+  { layer: "Street_Police.layer", name: "Roadmap_Police_WantedBoard", action: "LF_WantedBoardReadAction" },
   { layer: "Survival.layer", name: "SurvivalPoint_Food", action: "EL_GatherAction" },
   { layer: "Survival.layer", name: "SurvivalPoint_Water", action: "EL_GatherAction" },
   { layer: "HousesKeys.layer", name: "House_Door_Locked", action: "SCR_DoorUserAction" },
@@ -83,7 +84,7 @@ export function allProbes() {
 export function runOrder() {
   const robs = allProbes().filter((probe) => probe.action.startsWith("EL_Rob"));
   const rest = allProbes().filter((probe) => !probe.action.startsWith("EL_Rob"));
-  const policeAt = rest.findIndex((probe) => probe.name === "PoliceStation_Debug");
+  const policeAt = rest.findIndex((probe) => probe.name === "Roadmap_Police_Desk");
   if (policeAt < 0) return rest.concat(robs);
   return rest.slice(0, policeAt).concat(robs, rest.slice(policeAt));
 }
@@ -142,15 +143,7 @@ export function runChainProbes({ send, pause, onLine }) {
     return { code: 1, lines, summary: { noSession: true } };
   }
   if (ping.detail === "no_character" || ping.status === "error") {
-    const ui = send({ verb: "ui" });
-    say(`ui ${ui.status} ${ui.detail}`);
-    if (ui.status === "ok" && ui.detail.includes("CivilianButton")) {
-      send({ verb: "click", widget: "CivilianButton" });
-      pause(800);
-      send({ verb: "click", widget: "TownButton" });
-      pause(1500);
-    }
-    // First arrival: form R-89 (name, age) stands between the town pick and the spawn.
+    // First arrival: form R-89 (name, age) stands before the spawn; there is no faction screen.
     const form = send({ verb: "ui" });
     if (form.status === "ok" && form.detail.includes("SignButton")) {
       send({ verb: "type", widget: "RegFirstName", text: "Agent" });
@@ -171,7 +164,7 @@ export function runChainProbes({ send, pause, onLine }) {
   let missing = 0;
   let useFail = 0;
   for (const probe of runOrder()) {
-    if (probe.name === "PoliceStation_Debug") {
+    if (probe.name === "Roadmap_Police_Desk") {
       const opened = send({ verb: "open", menu: "DebugMenu", mode: "show" });
       say(`prep duty menu ${opened.status} ${opened.detail}`);
       pause(400);

@@ -28,7 +28,11 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
+	protected static const string DUTY_UID = "e2e-duty-officer";
 	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
+	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
+	protected static const string GARAGED_ID = "e2e-garaged-car";
+	protected static const string STREET_ID = "e2e-street-car";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -93,12 +97,41 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 
 		// Progression rides the "progression" payload (save version 7): a level 2 courier, a
 		// senior officer, and a turned-in quest.
+		// SeedCourier leaves the courier signed up for parcels: the "jobsignups" payload (save version 11).
 		EL_TestProgressionKit.SeedCourier(ctx, COURIER_UID);
 		EL_TestProgressionKit.SeedSeniorOfficer(ctx, OFFICER_UID);
 		LF_Progression.NoteTurnedIn(COURIER_UID, EL_TestProgressionKit.QUEST_ID);
 		// An introduction rides the "introductions" payload (save version 8): Bea still knows Ada.
 		LF_Introductions.Introduce(INTRO_KNOWER_UID, ACCOUNT_UID);
 		ctx.True(LF_Introductions.Knows(INTRO_KNOWER_UID, ACCOUNT_UID), "e2e introduction known before the save");
+		// The hideout stash rides the same payload under hideout:<id>. Its three items stay in the
+		// placed crate through the shutdown save; the reload boot counts them there.
+		IEntity stash = EL_TestHideoutStashKit.FindStash();
+		ctx.NotNull(stash, "e2e hideout stash is placed");
+		if (stash)
+			EL_TestHideoutStashKit.SeedThree(ctx, stash);
+		// Garage it to keep it (vehicles payload, save version 4): one car garaged, one left on the street.
+		EL_VehicleOwnership.Register(GARAGED_ID, GARAGE_OWNER_UID, GARAGED_ID, EL_VehicleCatalog.S105, EL_VehicleCatalog.S105_LOCKED, "roadmap-lot", "EE GA 1601", "#EL-Vehicle_S105", true);
+		EL_VehicleOwnership.Register(STREET_ID, GARAGE_OWNER_UID, STREET_ID, EL_VehicleCatalog.S105, EL_VehicleCatalog.S105_LOCKED, "roadmap-lot", "EE ST 1602", "#EL-Vehicle_S105", true);
+		ctx.True(EL_VehicleOwnership.Store(GARAGED_ID, GARAGE_OWNER_UID), "e2e car garaged before the save");
+
+		// Both duty inventories ride the carried payload (police_duty, civilian worn) and the
+		// magazine rounds the itemstate payload (save version 9): clock in, pick up 2 apples,
+		// leave 9 rounds, clock out. A wanted report with its identified flag rides "wanted" (10).
+		EL_PlayerAccount dutyAccount = EL_TestPoliceKit.Account(DUTY_UID, true);
+		IEntity dutyBody = EL_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		if (dutyBody)
+		{
+			ctx.EqualStr("", LF_DutyLocker.ClockIn(dutyAccount, dutyBody), "e2e officer clocks in before the save");
+			ctx.Equal(2, EL_InventoryUtils.AddAmount(dutyBody, EL_TestCarriedInventoryKit.APPLE_PREFAB, 2), "e2e officer picks up 2 apples on shift");
+			BaseMagazineComponent magazine = EL_TestPoliceKit.FindMagazine(dutyBody);
+			ctx.NotNull(magazine, "e2e police kit carries a magazine");
+			if (magazine)
+				magazine.SetAmmoCount(9);
+			ctx.EqualStr("", LF_DutyLocker.ClockOut(dutyAccount, dutyBody), "e2e officer clocks out before the save");
+		}
+
+		LF_WantedReports.Add(ACCOUNT_UID, LF_WantedReports.OFFENCE_ROBBERY, "#AR-Jacket_M88", "", "Fuel station", true);
 
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
@@ -116,7 +149,11 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
+	protected static const string DUTY_UID = "e2e-duty-officer";
 	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
+	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
+	protected static const string GARAGED_ID = "e2e-garaged-car";
+	protected static const string STREET_ID = "e2e-street-car";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -168,6 +205,7 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 
 		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER_UID), "e2e courier is still level 2 after the save load");
 		ctx.True(LF_CivilianJob.CanSignUp(COURIER_UID, EL_EJobType.FUEL_DELIVERY), "e2e courier level 2 still opens fuel delivery");
+		ctx.Equal(EL_EJobType.PARCEL, LF_CivilianJob.GetSignedUpJob(COURIER_UID), "e2e courier is still signed up for parcels after the save load");
 		EL_PlayerAccount officer = EL_PlayerAccountManager.GetInstance().GetFromCache(OFFICER_UID);
 		ctx.NotNull(officer, "e2e officer account present after the save load");
 		if (officer)
@@ -177,6 +215,10 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 		}
 
 		ctx.True(LF_Progression.HasTurnedIn(COURIER_UID, EL_TestProgressionKit.QUEST_ID), "e2e turned-in quest stays done after the save load");
+
+		VerifyDutyInventories(ctx);
+		ctx.Equal(1, LF_WantedReports.CountFor(ACCOUNT_UID), "e2e wanted report present after the save load");
+		ctx.True(LF_WantedReports.IsIdentified(ACCOUNT_UID), "e2e wanted report stays identified after the save load");
 		IEntity body = EL_TestCharacterFixture.Spawn(ctx);
 		if (body)
 		{
@@ -188,6 +230,37 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 		ctx.True(LF_Introductions.Knows(INTRO_KNOWER_UID, ACCOUNT_UID), "e2e introduction still known after the save load");
 		ctx.False(LF_Introductions.Knows(ACCOUNT_UID, INTRO_KNOWER_UID), "e2e introduction stays one way after the save load");
 
+		IEntity stash = EL_TestHideoutStashKit.FindStash();
+		ctx.NotNull(stash, "e2e hideout stash is placed in the reload boot");
+		ctx.NotNull(LF_StorageSnapshot.Get(EL_TestHideoutStashKit.STASH_KEY, LF_PersistentStorageComponent.SLOT_PLACED), "e2e stash snapshot present after the save load");
+		if (stash)
+		{
+			ctx.Equal(3, EL_TestHideoutStashKit.ItemCount(stash), "e2e the stash holds its 3 items after the restart");
+			ctx.Equal(EL_TestHideoutStashKit.SEEDED_CASH, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.MONEY_PREFAB), "e2e 151 cash in the stash after the restart");
+			ctx.Equal(1, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.APPLE_PREFAB), "e2e the apple is in the stash after the restart");
+			ctx.Equal(1, EL_TestHideoutStashKit.Count(stash, EL_TestHideoutStashKit.WATER_PREFAB), "e2e the water bottle is in the stash after the restart");
+			ctx.Equal(0, EL_TestLooseStackCount.Count(EL_TestHideoutStashKit.MONEY_PREFAB, EL_TestHideoutStashKit.SEEDED_CASH), "no 151 cash stack came back loose in the world (no dupe)");
+			ctx.Equal(0, LF_PersistentStorageComponent.RestoreAllPlaced(), "e2e restoring the stash again spawns nothing");
+		}
+
+		ctx.True(EL_VehicleOwnership.IsStored(GARAGED_ID), "e2e garaged car is still in the garage after the restart");
+		ctx.False(EL_VehicleOwnership.IsImpounded(GARAGED_ID), "e2e garaged car is not impounded");
+		ctx.True(EL_VehicleOwnership.IsImpounded(STREET_ID), "e2e street car is at the impound lot after the restart");
+		ctx.True(EL_VehicleOwnership.GetVehicle(STREET_ID) == null, "e2e street car was not spawned on the street");
+		IEntity payer = EL_TestCharacterFixture.Spawn(ctx);
+		if (payer)
+		{
+			int fee = LF_GarageConfig.ImpoundFee();
+			EL_MoneyUtils.AddCash(payer, fee);
+			string reasonKey;
+			ctx.True(EL_VehicleOwnership.CollectFromImpound(STREET_ID, GARAGE_OWNER_UID, payer, fee, "roadmap-impound", reasonKey), "e2e street car collected from the impound for the fee");
+			ctx.Equal(0, EL_MoneyUtils.GetCash(payer), "e2e impound fee taken from carried cash");
+			ctx.False(EL_VehicleOwnership.CollectFromImpound(STREET_ID, GARAGE_OWNER_UID, payer, fee, "roadmap-impound", reasonKey), "e2e street car is collected only once");
+			ctx.True(EL_VehicleOwnership.GetVehicle(STREET_ID) != null, "e2e collected car is in the impound yard");
+			EL_VehicleOwnership.Store(STREET_ID, GARAGE_OWNER_UID);
+			EL_TestCharacterFixture.Delete(payer);
+		}
+
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");
 		if (gameMode)
@@ -198,6 +271,51 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 #else
 		ctx.Pass("runs in the reload boot");
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the restart: the civilian inventory is what the officer carries, the police one waits
+	//! at the desk, and clocking in brings it back with the rounds left in the magazine.
+	protected void VerifyDutyInventories(EL_TestContext ctx)
+	{
+		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetFromCache(DUTY_UID);
+		ctx.NotNull(account, "e2e duty officer account present after the save load");
+		if (!account || !account.GetActiveCharacter())
+			return;
+
+		ctx.False(account.IsOnDuty(), "e2e officer is off duty after the save load");
+		string characterId = account.GetActiveCharacter().GetId();
+		LF_StorageSnapshotRecord carried = LF_StorageSnapshot.Get(characterId, LF_StorageSnapshot.SLOT_CARRIED);
+		LF_StorageSnapshotRecord police = LF_StorageSnapshot.Get(characterId, LF_DutyLocker.SLOT_POLICE);
+		ctx.NotNull(carried, "e2e civilian inventory carried after the save load");
+		ctx.NotNull(police, "e2e police inventory stored at the desk after the save load");
+		if (!carried || !police)
+			return;
+
+		ctx.Equal(2, police.CountPrefab(EL_TestCarriedInventoryKit.APPLE_PREFAB), "e2e stored police inventory keeps the 2 apples");
+		IEntity body = EL_TestCharacterFixture.Spawn(ctx);
+		if (!body)
+			return;
+
+		LF_StorageSnapshot.Apply(body, carried);
+		ctx.Equal(3, EL_InventoryUtils.GetAmount(body, EL_TestCarriedInventoryKit.APPLE_PREFAB), "e2e officer carries the civilian 3 apples after the restart");
+		EL_WhitelistManager.AddFactionWhitelist(DUTY_UID, EL_EFactionType.POLICE);
+		ctx.EqualStr("", LF_DutyLocker.ClockIn(account, body), "e2e officer clocks in after the restart");
+		ctx.True(EL_TestCharacterFixture.HasItem(body, EL_TestPoliceKit.M9_PREFAB), "e2e the M9 comes back after the restart");
+		ctx.Equal(2, EL_InventoryUtils.GetAmount(body, EL_TestCarriedInventoryKit.APPLE_PREFAB), "e2e the police 2 apples come back after the restart");
+		BaseMagazineComponent magazine = EL_TestPoliceKit.FindMagazine(body);
+		ctx.NotNull(magazine, "e2e the magazine comes back after the restart");
+		if (magazine)
+			ctx.Equal(9, magazine.GetAmmoCount(), "e2e the magazine keeps 9 rounds across the restart");
+
+		LF_StorageSnapshotRecord civilian = LF_StorageSnapshot.Get(characterId, LF_DutyLocker.SLOT_CIVILIAN);
+		ctx.NotNull(civilian, "e2e the civilian inventory is stored at the desk again");
+		if (civilian)
+			ctx.Equal(3, civilian.CountPrefab(EL_TestCarriedInventoryKit.APPLE_PREFAB), "e2e the stored civilian inventory holds the 3 apples");
+
+		LF_DutyLocker.ClockOut(account, body);
+		EL_TestPoliceKit.Release(DUTY_UID);
+		EL_TestCharacterFixture.Delete(body);
 	}
 }
 

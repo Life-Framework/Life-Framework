@@ -6,6 +6,9 @@
 // node get windowsHide so no console flashes either (see hidden()).
 //
 // LF_SHOW_WINDOWS=1 turns it off: processes start normally and visibly.
+// So does an ssh session (SSH_CONNECTION, e.g. a run on the test box): it has
+// no interactive window station, creating LF-Agents there kills the server
+// before it logs a line, and nothing it starts reaches a screen anyway.
 
 import { spawn, spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
@@ -15,7 +18,7 @@ const HELPER = join(dirname(fileURLToPath(import.meta.url)), "quiet-launch.ps1")
 const PWSH = join(process.env.SystemRoot || "C:\\Windows", "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
 
 export function showWindows() {
-  return process.env.LF_SHOW_WINDOWS === "1" || process.platform !== "win32";
+  return process.env.LF_SHOW_WINDOWS === "1" || !!process.env.SSH_CONNECTION || process.platform !== "win32";
 }
 
 // Spawn options for a console tool: never pop a console window.
@@ -40,6 +43,19 @@ export function quietSpawn(exe, args, opts = {}) {
     cwd: opts.cwd,
     env: opts.env,
     stdio: ["ignore", "pipe", "pipe"],
+    windowsHide: true,
+  });
+}
+
+// Blocking quietSpawn: { status } when the tool exits, or after timeoutMs
+// (the helper is killed and its kill-on-close job ends the tool).
+export function quietSpawnSync(exe, args, opts = {}) {
+  if (showWindows()) return spawnSync(exe, args, { cwd: opts.cwd, env: opts.env, timeout: opts.timeoutMs, stdio: "ignore" });
+  return spawnSync(PWSH, helperArgs(exe, args, opts, "wait"), {
+    cwd: opts.cwd,
+    env: opts.env,
+    encoding: "utf8",
+    timeout: opts.timeoutMs,
     windowsHide: true,
   });
 }

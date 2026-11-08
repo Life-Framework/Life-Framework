@@ -85,6 +85,21 @@ Check that everything resolves:
 node tools/cli.mjs status
 ```
 
+### Machine-local settings (`lf.local.json`)
+
+A gitignored `lf.local.json` in the main checkout holds one machine's
+settings for the CLI and every worktree of that checkout
+(`tools/lib/local-config.mjs`). Precedence: OS env > `lf.local.json` >
+`opencode.json` > the Steam defaults. Without the file nothing changes.
+
+| Key | Meaning |
+| --- | --- |
+| `ENFUSION_*_PATH` | Same as the env vars above |
+| `LF_GAME_ADDONS` | Folder with the base-game `core/` and `data/` projects the test server loads through the `game-addons` junction. Default: the server install's `addons`, else the game client's |
+| `LF_TESTBOX` | ssh host of a second test machine (`docs/worktrees.md` "Test box") |
+| `LF_TESTBOX_ROOT` | Main checkout on that machine (default `C:/LF/Life-Framework`) |
+| `LF_TESTBOX_AUTO` | `0` keeps `test` local even while `server-2001` is busy |
+
 ## 3. Open the mod in Workbench
 
 The mod project is:

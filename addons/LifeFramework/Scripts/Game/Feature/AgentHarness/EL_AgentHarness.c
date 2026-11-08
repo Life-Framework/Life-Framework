@@ -120,6 +120,8 @@ class EL_AgentCommand
 			return true;
 		if (cmd.Verb == "die")
 			return true;
+		if (cmd.Verb == "shoot")
+			return ParseShoot(parts, cmd);
 		if (cmd.Verb == "ui")
 			return ParseUi(parts, cmd);
 		if (cmd.Verb == "click")
@@ -370,6 +372,19 @@ class EL_AgentCommand
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected static bool ParseShoot(array<string> parts, EL_AgentCommand cmd)
+	{
+		if (parts.Count() < 3 || parts[2].ToInt() <= 0)
+		{
+			cmd.Error = "need_player_id";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static bool ParseStand(array<string> parts, EL_AgentCommand cmd)
 	{
 		if (parts.Count() < 3)
@@ -383,6 +398,18 @@ class EL_AgentCommand
 		{
 			cmd.Error = "bad_entity";
 			return false;
+		}
+
+		// Optional side: e (default), w, n, s. Stand on that side of the entity, facing it.
+		cmd.Arg2 = "e";
+		if (parts.Count() > 3)
+		{
+			cmd.Arg2 = parts[3];
+			if (cmd.Arg2 != "e" && cmd.Arg2 != "w" && cmd.Arg2 != "n" && cmd.Arg2 != "s")
+			{
+				cmd.Error = "bad_side";
+				return false;
+			}
 		}
 
 		return true;
@@ -572,6 +599,8 @@ class EL_AgentHarness
 	protected static const int UI_TEXT_MAX = 80;
 	//! stand puts the character this far along +X from the entity, facing it.
 	static const float STAND_SIDE = 1.2;
+	//! How far an unnamed part may sit from the named prop it belongs to (CollectActionEntity).
+	static const float PART_REACH = 1.5;
 
 	protected static bool s_bLoop;
 	protected static IEntity s_pLoopMode;
@@ -752,6 +781,11 @@ class EL_AgentHarness
 			DoDie(cmd);
 			return;
 		}
+		if (cmd.Verb == "shoot")
+		{
+			DoShoot(cmd);
+			return;
+		}
 		if (cmd.Verb == "ui")
 		{
 			DoUi(cmd);
@@ -848,7 +882,7 @@ class EL_AgentHarness
 		}
 
 		// The server answers: ok once it moved the character, or the refusal.
-		character.EL_AskHarnessStand(cmd.Id, cmd.Arg1);
+		character.EL_AskHarnessStand(cmd.Id, cmd.Arg1, cmd.Arg2);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -860,7 +894,7 @@ class EL_AgentHarness
 	//! \param gateOpen EL_DevGate allowed this player.
 	//! \param[out] destination Where to put the character.
 	//! \return empty on success, else the refusal token sent back to the harness.
-	static string ServerStand(IEntity character, string entityName, bool gateOpen, out vector destination)
+	static string ServerStand(IEntity character, string entityName, bool gateOpen, out vector destination, string side = "e")
 	{
 		if (!gateOpen)
 			return REFUSED_DEV_GATE;
@@ -881,7 +915,7 @@ class EL_AgentHarness
 
 		// One metre to the side keeps the character inside a 3m action radius
 		// without planting them inside the prop.
-		destination = target.GetOrigin() + Vector(STAND_SIDE, 0, 0);
+		destination = target.GetOrigin() + StandOffset(side);
 		EL_Debug.Log(FEATURE, string.Format("stand beside %1 at %2", entityName, destination));
 		return "";
 	}
@@ -889,12 +923,27 @@ class EL_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	//! Yaw in degrees that faces the stand target from where stand puts the character, so the
 	//! interaction key (which aims along the view) reaches the entity after a stand.
-	static float StandYaw()
+	static float StandYaw(string side = "e")
 	{
 		vector stand;
 		vector angles;
-		EL_AgentCommand.CameraStand(vector.Zero, Vector(STAND_SIDE, 0, 0), stand, angles);
+		EL_AgentCommand.CameraStand(vector.Zero, StandOffset(side), stand, angles);
 		return angles[0];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where stand puts the character relative to the entity: STAND_SIDE metres east (+X, the
+	//! default), west, north (+Z), or south.
+	static vector StandOffset(string side)
+	{
+		if (side == "w")
+			return Vector(-STAND_SIDE, 0, 0);
+		if (side == "n")
+			return Vector(0, 0, STAND_SIDE);
+		if (side == "s")
+			return Vector(0, 0, -STAND_SIDE);
+
+		return Vector(STAND_SIDE, 0, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -909,6 +958,22 @@ class EL_AgentHarness
 		}
 
 		character.EL_AskHarnessState(cmd.Id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `shoot <playerId>` (dev gate): the server deals one lethal kinetic hit from the local
+	//! character to that player's body through the vanilla damage path (HandleDamage), so the safe
+	//! zone hook and the murder hook see it as they would see a bullet.
+	protected static void DoShoot(EL_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.EL_AskHarnessShoot(cmd.Id, cmd.Arg1.ToInt());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1881,8 +1946,14 @@ class EL_AgentHarness
 		if (!entity)
 			return true;
 
+		// A named prop's actions can sit on an unnamed part of it (the duty desk's punch clock):
+		// an unnamed entity within PART_REACH of the named one stands in for it.
 		if (s_sWantedName != "" && entity.GetName() != s_sWantedName)
-			return true;
+		{
+			IEntity named = GetGame().GetWorld().FindEntityByName(s_sWantedName);
+			if (!named || !entity.GetName().IsEmpty() || vector.Distance(named.GetOrigin(), entity.GetOrigin()) > PART_REACH)
+				return true;
+		}
 
 		if (!FindOnEntity(entity, s_sWantedClass))
 			return true;

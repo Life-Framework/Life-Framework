@@ -80,8 +80,6 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	//------------------------------------------------------------------------------------------------
 	protected void ReleaseDisconnectedPlayer(int playerId)
 	{
-		EL_CharacterCreationManager.ReleasePlayer(playerId);
-
 		string uid = EL_Utils.GetPlayerUID(playerId);
 		IEntity controlled;
 		PlayerManager playerManager = GetGame().GetPlayerManager();
@@ -110,6 +108,24 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 
 		LF_Contraband.ReleasePlayer(characterId, controlled);
 		EL_Debug.Log("Session", string.Format("disconnect cleanup player=%1 escorts=%2", playerId, escorts));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every character death, players and NPCs. Murder is decided here (LF_Murder).
+	protected override void OnControllableDestroyedEx(notnull SCR_InstigatorContextData instigatorContextData)
+	{
+		super.OnControllableDestroyedEx(instigatorContextData);
+
+		if (!Replication.IsServer())
+			return;
+
+		IEntity victim = instigatorContextData.GetVictimEntity();
+		int victimPlayerId;
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (playerManager && victim)
+			victimPlayerId = playerManager.GetPlayerIdFromControlledEntity(victim);
+
+		LF_Murder.OnCharacterKilled(victim, instigatorContextData.GetKillerEntity(), victimPlayerId, instigatorContextData.GetKillerPlayerID());
 	}
 
 	//------------------------------------------------------------------------------------------------

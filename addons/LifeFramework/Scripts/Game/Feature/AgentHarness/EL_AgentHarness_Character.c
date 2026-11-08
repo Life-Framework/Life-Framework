@@ -16,31 +16,32 @@ modded class SCR_ChimeraCharacter
 	//------------------------------------------------------------------------------------------------
 	//! \param commandId Result id the harness is waiting on.
 	//! \param entityName World entity to stand beside. Resolved on the server.
-	void EL_AskHarnessStand(int commandId, string entityName)
+	//! param side e (default), w, n or s: which side of the entity to stand on, facing it.
+	void EL_AskHarnessStand(int commandId, string entityName, string side = "e")
 	{
 		if (Replication.IsServer())
 		{
-			EL_ApplyHarnessStand(commandId, entityName, true);
+			EL_ApplyHarnessStand(commandId, entityName, true, side);
 			return;
 		}
 
-		Rpc(RpcAsk_EL_HarnessStand, commandId, entityName);
+		Rpc(RpcAsk_EL_HarnessStand, commandId, entityName, side);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_EL_HarnessStand(int commandId, string entityName)
+	protected void RpcAsk_EL_HarnessStand(int commandId, string entityName, string side)
 	{
 		// A client could otherwise teleport itself or fire an action out of reach.
 		bool gateOpen = EL_DevGate.CheckHarnessRequest(this, "stand");
-		EL_ApplyHarnessStand(commandId, entityName, gateOpen);
+		EL_ApplyHarnessStand(commandId, entityName, gateOpen, side);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void EL_ApplyHarnessStand(int commandId, string entityName, bool gateOpen)
+	protected void EL_ApplyHarnessStand(int commandId, string entityName, bool gateOpen, string side)
 	{
 		vector destination;
-		string error = EL_AgentHarness.ServerStand(this, entityName, gateOpen, destination);
+		string error = EL_AgentHarness.ServerStand(this, entityName, gateOpen, destination, side);
 		if (!error.IsEmpty())
 		{
 			EL_HarnessReply(commandId, "error", error);
@@ -52,28 +53,28 @@ modded class SCR_ChimeraCharacter
 		// the same). The listen host's own character is local.
 		if (EL_Utils.GetLocalCharacter() == this)
 		{
-			EL_MoveHarnessBody(destination);
+			EL_MoveHarnessBody(destination, side);
 			EL_HarnessReply(commandId, "ok", entityName);
 			return;
 		}
 
-		Rpc(RpcDo_EL_HarnessStand, commandId, entityName, destination);
+		Rpc(RpcDo_EL_HarnessStand, commandId, entityName, destination, side);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_EL_HarnessStand(int commandId, string entityName, vector destination)
+	protected void RpcDo_EL_HarnessStand(int commandId, string entityName, vector destination, string side)
 	{
-		EL_MoveHarnessBody(destination);
+		EL_MoveHarnessBody(destination, side);
 		EL_AgentHarness.Reply(commandId, "ok", entityName);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Stand at destination facing the entity (EL_AgentHarness.StandYaw), the way a player walks up
 	//! to a counter, so the interaction key aims at it.
-	protected void EL_MoveHarnessBody(vector destination)
+	protected void EL_MoveHarnessBody(vector destination, string side = "e")
 	{
-		float yaw = EL_AgentHarness.StandYaw();
+		float yaw = EL_AgentHarness.StandYaw(side);
 		vector transform[4];
 		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), transform);
 		transform[3] = destination;
@@ -227,6 +228,75 @@ modded class SCR_ChimeraCharacter
 		damage.EnableDamageHandling(true);
 		damage.Kill(Instigator.CreateInstigator(this));
 		EL_Debug.Info("AgentHarness", "character killed by the harness");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `shoot`: this character deals one lethal hit to a player, behind the dev gate.
+	void EL_AskHarnessShoot(int commandId, int targetPlayerId)
+	{
+		if (Replication.IsServer())
+		{
+			EL_ApplyHarnessShoot(commandId, targetPlayerId, true);
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessShoot, commandId, targetPlayerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_HarnessShoot(int commandId, int targetPlayerId)
+	{
+		bool gateOpen = EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "shoot");
+		EL_ApplyHarnessShoot(commandId, targetPlayerId, gateOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a KINETIC hit of 1000 on the target's head through HandleDamage, with this
+	//! character as the instigator. Replies with whether the zone refused it and whether the
+	//! target still lives.
+	protected void EL_ApplyHarnessShoot(int commandId, int targetPlayerId, bool gateOpen)
+	{
+		if (!gateOpen)
+		{
+			EL_HarnessReply(commandId, "error", EL_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		IEntity target = GetGame().GetPlayerManager().GetPlayerControlledEntity(targetPlayerId);
+		if (!target || target == this)
+		{
+			EL_HarnessReply(commandId, "error", "no_target");
+			return;
+		}
+
+		SCR_CharacterDamageManagerComponent damage = SCR_CharacterDamageManagerComponent.Cast(target.FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!damage)
+		{
+			EL_HarnessReply(commandId, "error", "no_damage_manager");
+			return;
+		}
+
+		HitZone head = damage.GetHeadHitZone();
+		if (!head)
+			head = damage.GetDefaultHitZone();
+
+		vector hitPosDirNorm[3];
+		hitPosDirNorm[0] = target.GetOrigin() + Vector(0, 1.6, 0);
+		hitPosDirNorm[1] = vector.Direction(GetOrigin(), target.GetOrigin()).Normalized();
+		hitPosDirNorm[2] = vector.Up;
+		SCR_DamageContext context = new SCR_DamageContext(EDamageType.KINETIC, 1000, hitPosDirNorm, target, head, Instigator.CreateInstigator(this), null, -1, -1);
+		context.damageSource = this;
+
+		int refusedBefore = LF_SafeZone.GetRefusedCount();
+		damage.HandleDamage(context);
+		int refused = LF_SafeZone.GetRefusedCount() - refusedBefore;
+		int alive = 1;
+		if (damage.GetState() == EDamageState.DESTROYED)
+			alive = 0;
+
+		EL_Debug.Info("AgentHarness", string.Format("shot player %1: refused=%2 alive=%3", targetPlayerId, refused, alive));
+		EL_HarnessReply(commandId, "ok", string.Format("shot player=%1 refused=%2 alive=%3", targetPlayerId, refused, alive));
 	}
 
 	//------------------------------------------------------------------------------------------------

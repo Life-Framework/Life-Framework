@@ -1,13 +1,9 @@
 # Arrival chain (M1-18): a fresh player registers at the clerk, gets the ID card, reads the town
 # board, runs one parcel, banks the cash, and returns to the clerk for the welcome.
-# Requires the faction menu (a fresh profile); signs form R-89 so the character spawns.
-# Dedicated session: LF_SESSION_WINDOW=1280x720 node agent-box/session.mjs up --clients 1
+# Requires a fresh profile (form R-89 is the first screen); signing it spawns the character.
+# Dedicated session: node agent-box/session.mjs up --clients 1
 #                    node agent-box/harness.mjs --client 1 flow arrival-chain
 ui
-click CivilianButton
-wait 800
-click TownButton
-wait 1500
 type RegFirstName Ada
 type RegLastName Lovelace
 type RegAge 36

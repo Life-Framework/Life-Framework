@@ -54,6 +54,7 @@ intent: `docs/design.md`. An agent handed a scope, issue, or PR starts with the
 | `tools\cli validate [--full]` | The repo checks in `tools/validation/`. The default skips the Workbench compile (`validate-scripts.ps1`); `--full`, `ci`, `wt gate`, and `wt ship` run it |
 | `tools\cli test --no-build --tier fast\|all\|persistence` | Boot DebugWorld, run the `EL_Test` suite; exit code is pass/fail; a compile error fails it |
 | `tools\cli test --no-build --only <EL_Test_Class\|name\|EL_Test_File>[,...]` | Run just those tests (the red-proof loop); prints `SUMMARY tier=only` |
+| `tools\cli test ... --remote [host]` / `--local` | Run the worktree (uncommitted state too) on the second test machine; with `LF_TESTBOX` set, `test` moves there by itself while the local `server-2001` lock is busy (`docs/worktrees.md` "Test box") |
 | `tools\cli dev --tier fast` | validate + test without a build, then dump `[ELDebug:*]` lines |
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
@@ -86,6 +87,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   generated and append-only files (string table, language confs, test
   registry, `features.md`, `debug-log-triage.md`, the enforce-lint baseline)
   have merge drivers in `tools/merge/`, so they do not count as conflicts.
+- After your PR is up, `tools\cli prs status`; the maintainer/lead runs `prs heal`.
 
 ## Tests
 

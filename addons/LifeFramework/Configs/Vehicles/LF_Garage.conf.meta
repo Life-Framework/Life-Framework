@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6A1E5C0D2B7F4E93}Configs/Vehicles/LF_Garage.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
