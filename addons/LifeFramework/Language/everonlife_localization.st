@@ -3107,66 +3107,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You hold up your ID card."
      Comment "Show ID performed: the other player now sees the card."
     }
-    CustomStringTableItem "{682DF358EBADD27A}" {
-     Id "LF-Hospital_Title"
-     Target_en_us "Hospital"
-     Comment "Toast title when a player wakes up in hospital."
-    }
-    CustomStringTableItem "{BE26E458ADA922A8}" {
-     Id "LF-Hospital_BillToast"
-     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
-     Comment "Toast on waking in hospital after a death. %1 is the bill amount."
-    }
-    CustomStringTableItem "{25C8757AA18DD8A8}" {
-     Id "LF-Hospital_BillTitle"
-     Target_en_us "Hospital bill"
-     Comment "Title of the paper hospital bill."
-    }
-    CustomStringTableItem "{DB6C9E5F09D39D13}" {
-     Id "LF-Hospital_BillAmount"
-     Target_en_us "Treatment: %1, charged to your bank account"
-     Comment "Hospital bill line. %1 is the amount charged."
-    }
-    CustomStringTableItem "{4F2335135A4FF34F}" {
-     Id "LF-Hospital_BillBalance"
-     Target_en_us "Bank balance after payment: %1"
-     Comment "Hospital bill line. %1 is the bank balance after the bill."
-    }
-    CustomStringTableItem "{1CE638BD33BB8722}" {
-     Id "LF-Hospital_BillDebt"
-     Target_en_us "You owe the bank. Your next deposits pay the debt first."
-     Comment "Hospital bill line shown when the bill put the player into debt."
-    }
-    CustomStringTableItem "{94693CF4600BC9D5}" {
-     Id "LF-Hospital_BillNote"
-     Target_en_us "You don't remember how you got here."
-     Comment "Hospital bill note: the New Life Rule cue. The player forgets the fight that killed them."
-    }
-    CustomStringTableItem "{FFEA0B7D7B19622C}" {
-     Id "LF-Hospital_BillNewLife"
-     Target_en_us "New Life Rule: stay away from where you died for %1 minutes."
-     Comment "Hospital bill line: the server rule. %1 is the number of minutes."
-    }
-    CustomStringTableItem "{D66A5204D011B83B}" {
-     Id "LF-Hospital_BillClose"
-     Target_en_us "Put the bill away"
-     Comment "Closes the hospital bill card."
-    }
-    CustomStringTableItem "{8AA134FCD11961A4}" {
-     Id "LF-Hospital_BillRead"
-     Target_en_us "Read hospital bill"
-     Comment "Action on a hospital bill lying in the world."
-    }
-    CustomStringTableItem "{BF9E5680A14113DA}" {
-     Id "LF-Hospital_BillItem"
-     Target_en_us "Hospital bill"
-     Comment "Inventory name of the paper hospital bill."
-    }
-    CustomStringTableItem "{B496BB68DF603A03}" {
-     Id "LF-Hospital_BillItemDesc"
-     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
-     Comment "Inventory description of the paper hospital bill."
-    }
     CustomStringTableItem "{E5BDB7CD47972752}" {
      Id "LF-ATM_Header"
      Target_en_us "FIRST BANK OF EVERON"
@@ -3561,41 +3501,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Vehicle_BankShort"
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
-    }
-    CustomStringTableItem "{5985DB962913E1DE}" {
-     Id "LF-Rank_EscortDenied"
-     Target_en_us "Your rank cannot escort"
-     Comment "Escort refused because the officer's rank is below the configured escort rank"
-    }
-    CustomStringTableItem "{003DBD3771195E72}" {
-     Id "LF-HideoutStash_Name"
-     Target_en_us "Hideout stash"
-     Comment "Inventory title of the organization hideout stash crate."
-    }
-    CustomStringTableItem "{E33FDD3D631C2068}" {
-     Id "LF-HideoutStash_Desc"
-     Target_en_us "Shared storage of the organization that owns this hideout."
-     Comment "Inventory description of the organization hideout stash crate."
-    }
-    CustomStringTableItem "{38490B8B4615127D}" {
-     Id "LF-HideoutStash_Title"
-     Target_en_us "Hideout stash"
-     Comment "Toast title when the hideout stash refuses a player."
-    }
-    CustomStringTableItem "{6544A393A6C50DA4}" {
-     Id "LF-HideoutStash_NoOwner"
-     Target_en_us "The stash is padlocked. No organization owns this hideout yet."
-     Comment "Toast when a player tries to open the stash of a hideout no organization owns."
-    }
-    CustomStringTableItem "{71BCA78110E0B841}" {
-     Id "LF-HideoutStash_Open"
-     Target_en_us "Open hideout stash (members only)"
-     Comment "Action on the hideout stash crate. Tells a stranger who may open it."
-    }
-    CustomStringTableItem "{0F3071065A46DE99}" {
-     Id "LF-HideoutStash_NotMember"
-     Target_en_us "The stash is padlocked. Only members of the organization that owns this hideout can open it. Ask a member to invite you at the organization registry."
-     Comment "Toast when a player who is not in the hideout's organization tries to open its stash."
     }
     CustomStringTableItem "{7EC51FB11D0B1C50}" {
      Id "LF-Garage_ReadLedger"
@@ -4129,13 +4034,78 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{905E4015631C43F6}" {
      Id "LF-Sign_Farm_How"
-     Target_en_us "Gather Tomato from a ripe plant. Sell the harvest at the market stalls on the main street."
+     Target_en_us "Gather Tomato from a ripe plant in the beds, Gather Apple or Gather Plum from the orchard trees."
      Comment "Sign card for the farm north of the square, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{33EBA210B27B7F63}" {
      Id "LF-Sign_Farm_Rules"
      Target_en_us "A picked plant needs time to ripen again."
      Comment "Sign card for the farm north of the square, Rules section."
+    }
+    CustomStringTableItem "{682DF358EBADD27A}" {
+     Id "LF-Hospital_Title"
+     Target_en_us "Hospital"
+     Comment "Toast title when a player wakes up in hospital."
+    }
+    CustomStringTableItem "{BE26E458ADA922A8}" {
+     Id "LF-Hospital_BillToast"
+     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
+     Comment "Toast on waking in hospital after a death. %1 is the bill amount."
+    }
+    CustomStringTableItem "{25C8757AA18DD8A8}" {
+     Id "LF-Hospital_BillTitle"
+     Target_en_us "Hospital bill"
+     Comment "Title of the paper hospital bill."
+    }
+    CustomStringTableItem "{DB6C9E5F09D39D13}" {
+     Id "LF-Hospital_BillAmount"
+     Target_en_us "Treatment: %1, charged to your bank account"
+     Comment "Hospital bill line. %1 is the amount charged."
+    }
+    CustomStringTableItem "{4F2335135A4FF34F}" {
+     Id "LF-Hospital_BillBalance"
+     Target_en_us "Bank balance after payment: %1"
+     Comment "Hospital bill line. %1 is the bank balance after the bill."
+    }
+    CustomStringTableItem "{1CE638BD33BB8722}" {
+     Id "LF-Hospital_BillDebt"
+     Target_en_us "You owe the bank. Your next deposits pay the debt first."
+     Comment "Hospital bill line shown when the bill put the player into debt."
+    }
+    CustomStringTableItem "{94693CF4600BC9D5}" {
+     Id "LF-Hospital_BillNote"
+     Target_en_us "You don't remember how you got here."
+     Comment "Hospital bill note: the New Life Rule cue. The player forgets the fight that killed them."
+    }
+    CustomStringTableItem "{FFEA0B7D7B19622C}" {
+     Id "LF-Hospital_BillNewLife"
+     Target_en_us "New Life Rule: stay away from where you died for %1 minutes."
+     Comment "Hospital bill line: the server rule. %1 is the number of minutes."
+    }
+    CustomStringTableItem "{D66A5204D011B83B}" {
+     Id "LF-Hospital_BillClose"
+     Target_en_us "Put the bill away"
+     Comment "Closes the hospital bill card."
+    }
+    CustomStringTableItem "{8AA134FCD11961A4}" {
+     Id "LF-Hospital_BillRead"
+     Target_en_us "Read hospital bill"
+     Comment "Action on a hospital bill lying in the world."
+    }
+    CustomStringTableItem "{BF9E5680A14113DA}" {
+     Id "LF-Hospital_BillItem"
+     Target_en_us "Hospital bill"
+     Comment "Inventory name of the paper hospital bill."
+    }
+    CustomStringTableItem "{B496BB68DF603A03}" {
+     Id "LF-Hospital_BillItemDesc"
+     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
+     Comment "Inventory description of the paper hospital bill."
+    }
+    CustomStringTableItem "{5985DB962913E1DE}" {
+     Id "LF-Rank_EscortDenied"
+     Target_en_us "Your rank cannot escort"
+     Comment "Escort refused because the officer's rank is below the configured escort rank"
     }
     CustomStringTableItem "{576A5D52994C158C}" {
      Id "LF-Sign_Impound_Title"
@@ -4161,6 +4131,146 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_Impound_Rules"
      Target_en_us "Only the owner can collect. Store your car in the garage to never pay this."
      Comment "Sign card for the impound desk, Rules section."
+    }
+    CustomStringTableItem "{003DBD3771195E72}" {
+     Id "LF-HideoutStash_Name"
+     Target_en_us "Hideout stash"
+     Comment "Inventory title of the organization hideout stash crate."
+    }
+    CustomStringTableItem "{E33FDD3D631C2068}" {
+     Id "LF-HideoutStash_Desc"
+     Target_en_us "Shared storage of the organization that owns this hideout."
+     Comment "Inventory description of the organization hideout stash crate."
+    }
+    CustomStringTableItem "{38490B8B4615127D}" {
+     Id "LF-HideoutStash_Title"
+     Target_en_us "Hideout stash"
+     Comment "Toast title when the hideout stash refuses a player."
+    }
+    CustomStringTableItem "{6544A393A6C50DA4}" {
+     Id "LF-HideoutStash_NoOwner"
+     Target_en_us "The stash is padlocked. No organization owns this hideout yet."
+     Comment "Toast when a player tries to open the stash of a hideout no organization owns."
+    }
+    CustomStringTableItem "{71BCA78110E0B841}" {
+     Id "LF-HideoutStash_Open"
+     Target_en_us "Open hideout stash (members only)"
+     Comment "Action on the hideout stash crate. Tells a stranger who may open it."
+    }
+    CustomStringTableItem "{0F3071065A46DE99}" {
+     Id "LF-HideoutStash_NotMember"
+     Target_en_us "The stash is padlocked. Only members of the organization that owns this hideout can open it. Ask a member to invite you at the organization registry."
+     Comment "Toast when a player who is not in the hideout's organization tries to open its stash."
+    }
+    CustomStringTableItem "{B19428DE73DCD0A7}" {
+     Id "LF-Sign_Next"
+     Target_en_us "Next"
+     Comment "Sign card section heading: where to go after this place."
+    }
+    CustomStringTableItem "{0C88CA858FE8EBEF}" {
+     Id "LF-Sign_Mining_Next"
+     Target_en_us "The village is a short walk north."
+     Comment "Sign card for the mining area, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{D2AC7C0652FB4B17}" {
+     Id "LF-Sign_PoliceWhitelist_Next"
+     Target_en_us "Not on the list? The rest of the town is open to you. Work starts at the post office."
+     Comment "Sign card for the police whitelist post, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{E4DF25A9FAFF4CFA}" {
+     Id "LF-Sign_TownMap_Next"
+     Target_en_us "The town hall clerk stands a few steps east of this board. After the clerk, the post office is the first building on your left as you walk east."
+     Comment "Sign card for the town map board at the spawn square, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{1E58663948A81073}" {
+     Id "LF-Sign_PostOffice_Next"
+     Target_en_us "With a parcel in hand, walk east, away from the church, to the porch past the brick-walled lock-up on the right. Then bank your pay at the ATM, next door to the east."
+     Comment "Sign card for the post office, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{75E472C5F7014CCC}" {
+     Id "LF-Sign_Atm_Next"
+     Target_en_us "Spend it: the general store and the market stalls are across the street. The vehicle lot is further east on this side."
+     Comment "Sign card for the ATM, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{54F7C5BEECED4902}" {
+     Id "LF-Sign_Bank_Next"
+     Target_en_us "Get the bag clear before the police arrive. The police station is across the street, a little further east."
+     Comment "Sign card for the bank vault, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{9998DA1944C26EE3}" {
+     Id "LF-Sign_GeneralStore_Next"
+     Target_en_us "Sell what you gather at the market stalls next door, to the east. Cars are sold at the vehicle lot across the street."
+     Comment "Sign card for the general store, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{0D9D9BF03C41923B}" {
+     Id "LF-Sign_Traders_Next"
+     Target_en_us "Bank the cash at the ATM across the street, or spend it at the general store next door, to the west."
+     Comment "Sign card for the market stalls, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{3F61541B4C366743}" {
+     Id "LF-Sign_VehicleLot_Next"
+     Target_en_us "Park it at the garage, further east on this side. The fuel station is across the street, past the police station."
+     Comment "Sign card for the vehicle lot, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{E3A7A4FF84B6A717}" {
+     Id "LF-Sign_Garage_Next"
+     Target_en_us "The fuel station is across the street, a little further east."
+     Comment "Sign card for the garage, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{4C72B4805EB4D1C1}" {
+     Id "LF-Sign_PoliceStation_Next"
+     Target_en_us "On duty, walk the street and bring wanted people to the jail yard behind this building."
+     Comment "Sign card for the police station, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{0FA68AE1B98C4FF2}" {
+     Id "LF-Sign_Jail_Next"
+     Target_en_us "Out again? Honest work is at the post office, at the west end of the street near the church."
+     Comment "Sign card for the jail yard, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{1BD052D1AD834FF7}" {
+     Id "LF-Sign_FuelStation_Next"
+     Target_en_us "The fuel cans stand east of here, by the lock-up. Carry one to the drop on the porch past the lock-up and Complete the run."
+     Comment "Sign card for the fuel station, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{957811C8220247D4}" {
+     Id "LF-Sign_Hospital_Next"
+     Target_en_us "Want a crew of your own? The organization office is next door, to the east."
+     Comment "Sign card for the hospital, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{44321472683DEF2A}" {
+     Id "LF-Sign_OrgRegistry_Next"
+     Target_en_us "The alley beside this office leads north to the back room and the hideout gate."
+     Comment "Sign card for the organization office, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{DC9FB128B95A14B4}" {
+     Id "LF-Sign_BlackMarket_Next"
+     Target_en_us "The hideout gate is at the end of this alley."
+     Comment "Sign card for the back room, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{754927C4ED5BDA5F}" {
+     Id "LF-Sign_Hideout_Next"
+     Target_en_us "Contraband comes from the barn at the end of the dirt track east of the village. Start the convoy there."
+     Comment "Sign card for the hideout yard, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{2538FBA6D41AC399}" {
+     Id "LF-Sign_ConvoyPickup_Next"
+     Target_en_us "Drive west into the village, then up the alley beside the organization office to the hideout yard."
+     Comment "Sign card for the convoy pickup at the barn, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{34D0C003C71CEDAA}" {
+     Id "LF-Sign_ConvoyDrop_Next"
+     Target_en_us "Bank the cash at the ATM on the main street, or spend it at the back room down the alley."
+     Comment "Sign card for the convoy drop, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{F12F68A7BB4FAF51}" {
+     Id "LF-Sign_Farm_Next"
+     Target_en_us "Sell the harvest at the market stalls on the main street, south of here."
+     Comment "Sign card for the farm, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{BA517CCD13044B16}" {
+     Id "LF-Sign_Impound_Next"
+     Target_en_us "Park it in the garage next door, to the west, and it will not be towed again."
+     Comment "Sign card for the impound lot, Next section: where the player goes after this place."
     }
   }
  }

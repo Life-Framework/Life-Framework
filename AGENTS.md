@@ -86,6 +86,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   generated and append-only files (string table, language confs, test
   registry, `features.md`, `debug-log-triage.md`, the enforce-lint baseline)
   have merge drivers in `tools/merge/`, so they do not count as conflicts.
+- After your PR is up, `tools\cli prs status`; the maintainer/lead runs `prs heal`.
 
 ## Tests
 
