@@ -13,7 +13,7 @@
       "host": "lf-testbox",
       "root": "C:/LF/Life-Framework",
       "slots": 1,
-      "caps": ["server"]
+      "caps": ["server", "clients"]
     }
   ]
 }

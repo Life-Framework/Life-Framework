@@ -548,6 +548,8 @@ node agent-box/session.mjs murder-proof       # client 1 kills client 2 at the f
 node agent-box/session.mjs down               # closes every process the session started
 ```
 
+- `flow arrival-chain` drives the M1-18 arrival chain on a fresh client, from form R-89 to
+  the clerk's welcome.
 - `up` runs from a worktree and holds the machine-wide `server-2001` lock while
   the server lives (`--wait` queues behind a test or host run). `down` frees it.
 - The server runs the bare DebugWorld, not `LF_PlaytestTown.conf`, so the world's

@@ -36,8 +36,8 @@ export const TOWN = {
     // The civilian town spawn on the square. The other spawn points (mine,
     // police) are elsewhere, and their centre is not a place a player stands.
     { id: "spawn", entity: "Spawn_Town", actions: [], sign: "town_map", step: 4 },
-    // Arrival step 1 on the square; the town map board explains it. M1-18 swaps in the clerk prefab.
-    { id: "clerk", prefab: "Prefabs/Characters/Quests/QuestGiver_Start.et", actions: ["LF_QuestAction"], sign: null, step: 5 },
+    // Arrival step 1 on the square (QuestGiver_Clerk, M1-18); the town map board beside him explains it.
+    { id: "clerk", entity: "Quest_Clerk", actions: ["LF_QuestAction"], sign: "town_map", step: 5 },
     { id: "post_office", entity: "Roadmap_Job_Depot", actions: ["LF_JobSignUpAction", "LF_JobStartRunAction"], sign: "post_office", step: 6 },
     { id: "job_drop", entity: "Roadmap_Job_Drop", actions: ["LF_JobDropoffAction"], sign: null, step: 7 },
     { id: "traders", entity: "TraderChainCounter", actions: ["EL_OpenTraderAction"], sign: "traders", step: 7 },

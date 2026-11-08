@@ -140,12 +140,14 @@
 ### `LF_IdCardComponent` / `LF_IdCard` — `Feature/CharacterCreation/LF_IdCardComponent.c`
 - ✅ (2026-11-08) `IDCard.et` carries holder character id, first name, last
   name, age (RplProps, server-issued once). Max stack 1, so cards never merge.
-- ✅ `EL_SpawnLogic.m_bGrantIdAtSpawn` (default on) grants a card printed
-  from the account's character record on every spawn. The record is
-  persisted, so the card survives a restart through the account. A character
-  already carrying their own card is refused a second; a blank carried card is
-  printed instead of adding one. Turn the flag off when the arrival clerk
-  (M1-18) hands the card over.
+- ✅ (M1-18, 2026-11-08) The town clerk hands the card over at arrival step 1
+  (a quest with `m_bRewardIdCard`). From then on `EL_SpawnLogic` prints one
+  from the account's character record on every spawn of that player
+  (`LF_QuestManager.HasEarnedIdCard`, from the persisted turn-ins), so the card
+  survives death and restart. `m_bGrantIdAtSpawn` (now default off) gives every
+  spawn a card for a mode with no clerk. A character already carrying their own
+  card is refused a second; a blank carried card is printed instead of adding
+  one. The DebugWorld civilian starter kit no longer carries a blank card.
 
 ### `EL_NpcBaseEntity` station NPCs — `Prefabs/Characters/Core/Npc_Base.et`
 - ✅ **Dressed on every machine** (2026-11-08, #150): `BaseLoadoutManagerComponent`
@@ -709,6 +711,13 @@
   `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
   A client reads the level replicated on `EL_PlayerJobComponent` (the career map is
   server-only), so fuel and taxi open on the client once the server levels the career.
+- ✅ **Pick up, Complete, and Abandon work on a dedicated client** (2026-11-08, LOGIC
+  `jobs/client-offers`): the offers read the server-only sign-up and run maps, so on a hosted
+  server "Pick up parcel" stayed greyed ("Sign up at the workplace first") after a good sign-up.
+  A client now reads the job replicated on `EL_PlayerJobComponent` (set at sign-up and when a
+  restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
+  inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
+  re-checks everything when the action runs.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -1493,6 +1502,34 @@
   `LF_QuestManager.GIVER_RADIUS` (5 m); an unknown giver id is refused. Server
   scripts may still call `AcceptQuest`/`TurnInQuest` directly. Pin test
   `security/quest-turnin-takes-items`.
+- ✅ **Guided arrival chain** (M1-18, 2026-11-08): `QuestGiver_Clerk.et`
+  (`Quest_Clerk` on the square, 134 0 243.5) runs five steps: `arrival_register`
+  (talk; hands over the ID card), `arrival_board` (`SIGNAL sign.read:town_map`),
+  `arrival_work` (`SIGNAL job.run_complete:parcel`), `arrival_bank`
+  (`SIGNAL atm.deposit`), `arrival_done` (talk; $250 and "the town is yours" with
+  pointers to the rest of town). Steps 2-4 start and finish on their own
+  (`m_bAutoAccept`, `m_bAutoTurnIn`), so the player never walks back between
+  errands; each new step's errand shows as a 12 s hint. A fresh spawn without the
+  card is pointed at the clerk. A giver's menu lists one chain step at a time and
+  never re-lists a one-off quest already turned in (`LF_QuestDefinition.IsListed`),
+  so a returning player is not offered the chain; a player who left mid-chain
+  gets the next step back on spawn (`SettleChain` after `RestoreTurnedIn`).
+  Accepting at a giver counts that giver's talk objective at once. No waypoints.
+  The clerk is a converse giver (`m_bConverse`): "Talk to the clerk" opens no menu; one talk
+  turns in what is done, takes on the next quest, and the clerk's lines show as slips
+  (`RequestConverse`); mid-errand he repeats the errand, after the chain his idle line
+  (`m_sIdleKey`). A second NPC with a placed giver's id no longer takes the giver over.
+  Harness: `agent-box/flows/arrival-chain.txt`; `state` adds `idcard=` and `quests=`;
+  `stand`/`use` reach a replicated NPC (no layer name on a client).
+- ✅ `SIGNAL` event type with a string key (`LF_QuestManager.ReportSignal`).
+  Hooks in `LF_QuestHooks.c` (modded classes; the job, ATM, and sign files are
+  untouched): `LF_JobDropoffAction` reports `job.run_complete:<job>` for a paid
+  run, `EL_CharacterATMComponent.ReplyResult` reports `atm.deposit` for a
+  successful deposit, and `LF_SignReadAction` asks the server (`RpcAsk_SignRead`)
+  to report `sign.read:<id>`, counted only with that sign within 6 m.
+  `QuestGiver_Start` (test quests, "Test quest board") moved to the test annex
+  (`Quest_TestGiver`, 104 0 70). Tests: `quests/signal-event` (LOGIC),
+  `quests/arrival-chain` (WORLD).
 
 ### Layouts (loaded by `EL_Test_Data`)
 - ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,

@@ -50,8 +50,38 @@ class LF_QuestDefinition
 	[Attribute(defvalue: "", UIWidgets.ResourceNamePicker, "Reward items (spawned into inventory on turn-in)", "et")]
 	ref array<ResourceName> m_aRewardItems;
 
+	[Attribute(defvalue: "", UIWidgets.EditBox, "Localization key the giver says on turn-in (empty = the generic turned-in hint)")]
+	string m_sTurnInKey;
+
+	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Hand over the holder's registered ID card on turn-in (the town clerk). A player who turned this in gets the card back on every spawn.")]
+	bool m_bRewardIdCard;
+
+	//! Chain steps. A chained step needs no trip back to the giver between errands.
+	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Accepted on its own once the previous quest is turned in (chain step)")]
+	bool m_bAutoAccept;
+
+	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Turned in on its own wherever the player stands once complete (chain step)")]
+	bool m_bAutoTurnIn;
+
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Objectives")]
 	ref array<ref LF_QuestObjective> m_aObjectives;
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a giver's menu lists this quest. A quest whose previous quest is not turned in
+	//! stays hidden (a chain shows one step at a time), and a one-off quest already turned in
+	//! is not offered again (a returning player never sees the arrival chain).
+	//! \param status This player's status for the quest.
+	//! \param previousTurnedIn Whether m_sRequiredPreviousQuestId is turned in (ignored when empty).
+	bool IsListed(LF_EQuestStatus status, bool previousTurnedIn)
+	{
+		if (!m_sRequiredPreviousQuestId.IsEmpty() && !previousTurnedIn)
+			return false;
+
+		if (status == LF_EQuestStatus.TURNED_IN && !m_bRepeatable)
+			return false;
+
+		return true;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	bool HasObjectives()

@@ -932,8 +932,10 @@ class EL_AgentHarness
 			return;
 		}
 
+		// A replicated NPC (Npc_Base.et, Runtime override) is built on a client from its prefab and
+		// carries no layer name there, so only the server can resolve every name.
 		BaseWorld world = GetGame().GetWorld();
-		if (!world || !ResolveNamed(cmd.Arg1))
+		if (!world || (Replication.IsServer() && !ResolveNamed(cmd.Arg1)))
 		{
 			WriteResult(cmd.Id, "error", "entity_not_found");
 			return;
@@ -1126,7 +1128,43 @@ class EL_AgentHarness
 		if (firstUnpaid)
 			owed = firstUnpaid.GetAmount();
 
-		return line + string.Format(" pos=%1 bills=%2 tickets=%3 owed=%4", pos, bills, unpaidTickets, owed);
+		line += string.Format(" pos=%1 bills=%2 tickets=%3 owed=%4", pos, bills, unpaidTickets, owed);
+		return line + string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Name_Surname" of the card the character would show, else "none".
+	protected static string IdCardToken(IEntity character, EL_PlayerAccount account)
+	{
+		string holderId;
+		if (account && account.GetActiveCharacter())
+			holderId = account.GetActiveCharacter().GetId();
+
+		LF_IdCardComponent card = LF_IdCard.FindShown(character, holderId);
+		if (!card)
+			return "none";
+
+		return Token(card.GetFirstName() + "_" + card.GetLastName());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Turned-in quest ids joined with "," (the arrival chain progress), else "none".
+	protected static string QuestToken(IEntity character)
+	{
+		LF_QuestTrackerComponent tracker = LF_QuestTrackerComponent.Cast(character.FindComponent(LF_QuestTrackerComponent));
+		if (!tracker)
+			return "none";
+
+		array<string> ids = tracker.GetTurnedInQuestIds();
+		string joined;
+		foreach (string questId : ids)
+		{
+			if (!joined.IsEmpty())
+				joined += ",";
+			joined += questId;
+		}
+
+		return Token(joined);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1604,6 +1642,9 @@ class EL_AgentHarness
 		if (!Replication.IsServer() && (cmd.Arg1.StartsWith("EL_") || cmd.Arg1.StartsWith("LF_")))
 		{
 			IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
+			// A replicated NPC has no layer name on a client: take the nearest host of the action.
+			if (!target && cmd.Arg2 != "")
+				target = FindTarget(character, cmd.Arg1, "");
 			ScriptedUserAction localAction;
 			if (target)
 				localAction = FindShownOnEntity(target, cmd.Arg1, character);

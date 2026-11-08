@@ -5,8 +5,9 @@
 //! card in its inventory (Show ID needs it).
 //!
 //! PERSISTENCE. The source of truth is the account's character record (name, age, id), which
-//! is persisted. The card itself is session state: EL_SpawnLogic grants a fresh one at spawn
-//! (m_bGrantIdAtSpawn) from that record, so the card survives a restart through the account.
+//! is persisted. The card itself is session state: the town clerk hands the first one over
+//! (arrival chain, M1-18), then EL_SpawnLogic grants a fresh one at every spawn
+//! (LF_QuestManager.HasEarnedIdCard) from that record, so the card survives a restart.
 //! If carried inventory comes back blank after a restart, LF_IdCard.Grant issues that blank card
 //! instead of adding a second one.
 //------------------------------------------------------------------------------------------------

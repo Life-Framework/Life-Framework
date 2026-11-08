@@ -210,6 +210,9 @@ class LF_QuestMenu : ChimeraMenuBase
 			if (!def)
 				continue;
 
+			if (!def.IsListed(StatusOf(def.m_sQuestId), StatusOf(def.m_sRequiredPreviousQuestId) == LF_EQuestStatus.TURNED_IN))
+				continue;
+
 			Widget rowWidget = GetGame().GetWorkspace().CreateWidgets("{CE14CB47B66299DC}UI/Layouts/QuestMenuRow.layout", m_wQuestList);
 			if (!rowWidget)
 			{
@@ -223,6 +226,17 @@ class LF_QuestMenu : ChimeraMenuBase
 		}
 
 		RebuildFocus();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This player's status for questId from the last log; AVAILABLE when the log has no entry.
+	protected LF_EQuestStatus StatusOf(string questId)
+	{
+		LF_QuestLogEntry entry = FindLogEntry(questId);
+		if (!entry)
+			return LF_EQuestStatus.AVAILABLE;
+
+		return entry.m_iStatus;
 	}
 
 	//------------------------------------------------------------------------------------------------

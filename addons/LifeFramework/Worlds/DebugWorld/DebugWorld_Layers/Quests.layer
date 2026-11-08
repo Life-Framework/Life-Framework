@@ -1,4 +1,8 @@
-EL_NpcBaseEntity : "{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et" {
+EL_NpcBaseEntity Quest_Clerk : "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et" {
  coords 134 0 243.5
  angleY 270
+}
+EL_NpcBaseEntity Quest_TestGiver : "{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et" {
+ coords 104 0 70
+ angleY 90
 }
