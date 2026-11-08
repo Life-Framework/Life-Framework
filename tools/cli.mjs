@@ -18,6 +18,7 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the ELTEST suite
+//   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N] [--mission debug|playtest]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved ELTEST summary for a tier
@@ -36,10 +37,11 @@ import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
 import * as session from "../agent-box/session.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
+import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
-import { listHidden, quietSpawn, quietSpawnDetached } from "./lib/quiet-launch.mjs";
+import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -934,6 +936,67 @@ function cmdBuild(root = ROOT, opts = {}) {
 
 }
 
+// Before every server boot from a worktree: copy main's resourceDatabase.rdb
+// when it is the better copy, then make sure it registers every .meta in the
+// addon. A resource that landed on main after anyone last opened Workbench is
+// missing from every copy, and the server then refuses it (`Wrong GUID/name`,
+// inventory operations that never complete). When stale, a headless Workbench
+// opens the project, which registers the new metas and rewrites the file.
+// The main checkout's rdb is the human's editor copy: only warn there.
+// LF_RDB_REFRESH=0 turns the refresh off (warn only).
+const RDB_REFRESH_TYPICAL_S = 15;
+function ensureResourceDatabase(root) {
+  wt.copyResourceDatabase(root);
+  const addon = join(root, "addons", "LifeFramework");
+  const before = rdbFreshness(addon);
+  if (before.missing.length === 0) return 0;
+  const what = `${before.missing.length} unregistered resource(s): ${describeMissing(before.missing)}`;
+  if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0") {
+    console.log(`WARN  resource database stale: ${what}`);
+    console.log("      open Workbench on this checkout once (it rewrites resourceDatabase.rdb), or run from a worktree");
+    return 1;
+  }
+  const exe = workbenchExe();
+  if (!existsSync(exe)) {
+    console.log(`WARN  resource database stale: ${what}; Workbench not found (${exe}), cannot refresh`);
+    return 1;
+  }
+  console.log(`resource database stale: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: 900000 });
+    locked = true;
+    const started = Date.now();
+    const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+    const profile = join(root, "server", "profile", "rdb");
+    mkdirSync(profile, { recursive: true });
+    const args = [
+      "-gproj", join(addon, "LifeFramework.gproj"),
+      "-wbModule=ResourceManager",
+      "-noSplash",
+      "-run",
+      "-exitAfterInit",
+      "-profile", profile,
+      "-addonsDir", join(root, "addons"),
+      "-addonsDir", workbenchGameAddons(root, "rdb"),
+    ];
+    const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
+    const after = rdbFreshness(addon);
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    if (after.missing.length === 0) {
+      console.log(`resource database refreshed in ${secs}s (${after.total} resources registered)`);
+      return 0;
+    }
+    console.log(`WARN  resource database still stale after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${after.missing.length} unregistered: ${describeMissing(after.missing)}`);
+    return 1;
+  } catch (e) {
+    console.log(`WARN  resource database refresh failed: ${e.message}`);
+    return 1;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
 // Every -server boot listens on 0.0.0.0:2001 whatever -bindPort says
 // (observed 2026-11-08 on 1.9.0.37). Two boots at once fail with "Unable to
 // start replication", so one machine-wide lock covers every server boot.
@@ -962,7 +1025,7 @@ function cmdServe(root = ROOT, opts = {}) {
     console.log("      install Arma Reforger Server (Steam app 1874900) or set ENFUSION_SERVER_PATH");
     return 1;
   }
-  wt.copyResourceDatabase(root);
+  ensureResourceDatabase(root);
   const args = serverArgs(root, wt.portsForRoot(root));
   try {
     wt.acquireLock(root, SERVER_SLOT, { waitMs: 0 });
@@ -1050,7 +1113,7 @@ function cmdHostStart(root, dir, opts) {
   }
   let pid = 0;
   try {
-    wt.copyResourceDatabase(root);
+    ensureResourceDatabase(root);
     const junction = serverGameAddons(root);
     mkdirSync(p.profile, { recursive: true });
     const saves = host.findSavePoints(p.profile);
@@ -1264,7 +1327,7 @@ function cmdSessionUp(root, dir, flags) {
     return 1;
   };
   try {
-    wt.copyResourceDatabase(root);
+    ensureResourceDatabase(root);
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
     const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail });
     if (typeof log === "number") return log;
@@ -1474,7 +1537,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   }
   const ports = wt.portsForRoot(root);
   console.log(`test: worktree ports game=${ports.gamePort} a2s=${ports.a2sPort}`);
-  wt.copyResourceDatabase(root);
+  ensureResourceDatabase(root);
   return withServerSlot(root, 1800000, () => {
     const res = sh(PWSH, [
       "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
@@ -1570,6 +1633,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 and merges green PRs stuck open (see: cli prs help)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
+  rdb                           register new .meta resources in this worktree's resourceDatabase.rdb
+                                (headless Workbench, ~10 s; test/dev/serve/session/e2e run it when stale)
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                 grep the newest server console.log (default after=3 limit=8)
   suite-stamp <tier>            print the newest tmp/test-results/summaries.jsonl line for a tier
@@ -1900,7 +1965,7 @@ function runE2ePass(root, tier, opts = {}) {
     console.log(`FAIL  harness not found: ${harness}`);
     return 1;
   }
-  wt.copyResourceDatabase(root);
+  ensureResourceDatabase(root);
   const ports = wt.portsForRoot(root);
   const psArgs = [
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
@@ -2232,6 +2297,7 @@ const cmds = {
   scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
   hidden: (flags) => cmdHidden(flags ?? []),
+  rdb: () => ensureResourceDatabase(ROOT),
   help: () => cmdHelp(),
 };
 
