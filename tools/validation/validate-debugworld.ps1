@@ -14,7 +14,11 @@ $requiredLayers = @(
   "FarmingChain.layer", "GravelChain.layer", "HousesKeys.layer", "Jobs.layer",
   "LoggingChain.layer", "MiningChain.layer", "PlumChain.layer", "Police.layer",
   "SandChain.layer", "Shops.layer", "Survival.layer", "TomatoChain.layer",
-  "TraderChain.layer", "Roadmap.layer"
+  "TraderChain.layer", "Roadmap.layer",
+  # The roadmap street, one layer per site so each site scope owns one file.
+  "Street_Bank.layer", "Street_Breach.layer", "Street_Contraband.layer", "Street_Fuel.layer",
+  "Street_Hideout.layer", "Street_Hospital.layer", "Street_Jail.layer", "Street_Jobs.layer",
+  "Street_Org.layer", "Street_Police.layer", "Street_Vehicles.layer"
 )
 
 $missing = @()

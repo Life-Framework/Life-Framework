@@ -1,0 +1,62 @@
+EL_DebugAreaBoundary Roadmap_Convoy_Start : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ components {
+  LF_ConvoyMarkerComponent "{25C2D7236C4A29B1}" {
+   m_sMarkerId "Roadmap_Convoy_Start"
+   m_bDrop 0
+  }
+  ActionsManagerComponent "{9B8D994BDBAEF726}" {
+   ActionContexts {
+    UserActionContext "{9D7C3F60241AD015}" {
+     ContextName "default"
+     Position PointInfo "{94355C47E2CDDF70}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ConvoyStartAction "{42568856A7E966E3}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C3E27FF4A4014650}" {
+      Name "#EL-Contraband_Start"
+     }
+    }
+   }
+  }
+ }
+ coords 222 0 120
+ m_vSize 0.75 1 0.75
+}
+EL_DebugAreaBoundary Roadmap_Convoy_Drop : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ components {
+  LF_ConvoyMarkerComponent "{4BB744212552420B}" {
+   m_sMarkerId "Roadmap_Convoy_Drop"
+   m_bDrop 1
+  }
+  ActionsManagerComponent "{F1C18E37EDE2CFCE}" {
+   ActionContexts {
+    UserActionContext "{AE28098525A07FB3}" {
+     ContextName "default"
+     Position PointInfo "{165C9C429ADC7093}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ConvoyDeliverAction "{EF0CFB2B88BD4BF0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{137D64E55A2FF5E1}" {
+      Name "#EL-Contraband_Deliver"
+     }
+    }
+   }
+  }
+ }
+ coords 225 0 120
+ m_vSize 0.75 1 0.75
+}

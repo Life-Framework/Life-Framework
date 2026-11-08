@@ -152,6 +152,43 @@ The two Enfusion servers stay the source for API search, prefabs, and live
 Workbench editing (`wb_entity_create`, layers, and the rest). This folder does
 not replace them.
 
+## Filming
+
+`tools/film/film.mjs` records the game window while a flow plays. It does not
+talk to the engine; the harness drives the player and ffmpeg records the
+screen (desktop duplication `ddagrab`, NVENC when the GPU has it). The window
+is raised before recording because screen capture records whatever is on top.
+If `ddagrab` delivers no frame within 5 s (seen on a box with a virtual
+display adapter), it falls back to `gdigrab` of the same rectangle.
+
+Film a flow in a game client playing DebugWorld (Workbench play works too;
+pass its play window title):
+
+```powershell
+node tools/film/film.mjs fetch          # once: portable ffmpeg into tools/film/.bin (git-ignored)
+node tools/film/film.mjs probe          # which encoders actually open on this box
+# Game client on DebugWorld (a separate process; no dedicated server needed):
+#   ArmaReforgerSteam.exe -world Worlds/DebugWorld/DebugWorld.ent
+#     -worldSystemsConfig {2104C177A245B6D1}Configs/Systems/LifeFrameworkSystems.conf
+#     -addonsDir <worktree>\addons -addons LifeFramework -window -noBackend
+node agent-box/harness.mjs flow ui-intake                     # spawn the character
+node tools/film/film.mjs flow film-debugworld --window "Arma Reforger"
+node tools/film/film.mjs publish agent-box/reports/film/<clip>.mp4 --pr <N>   # dry run; --yes uploads
+```
+
+Use the release `ArmaReforgerSteam.exe`; the Diag build stops on a modal
+dialog for a vanilla HUD VME. The exact title `Arma Reforger` wins over
+`Arma Reforger Workbench`. The first in-game clip held the machine-wide
+`server-2001` lock (`tools/wt.mjs` `acquireLock`) while the client ran, as a
+precaution; whether a `-world` client listens on 2001 is not verified.
+
+A clip lands in `agent-box/reports/film/` with a `.preview.gif` and a `.json`
+of the flow steps. Check a few frames before publishing
+(`ffmpeg -ss 8 -i <clip>.mp4 -frames:v 1 -update 1 f.png`). `publish` uploads both to the rolling `film-evidence`
+prerelease and comments on the PR with the GIF inline. `flow film-smoke` is a
+capture-only smoke flow that needs no game. Showcase camera passes use
+`LF_FilmCameraRunner` (`Scripts/Game/Feature/Film/`), not yet wired to a verb.
+
 ## Screenshots
 
 Every shot runs on a **rendering instance** (Workbench play mode or a game
