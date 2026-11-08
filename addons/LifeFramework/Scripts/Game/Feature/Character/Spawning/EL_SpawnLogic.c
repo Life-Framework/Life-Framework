@@ -238,6 +238,10 @@ class EL_SpawnLogic : SCR_SpawnLogic
 
 		OnCharacterCreated(playerId, characterPersistenceId, character);
 		HandoverToPlayer(playerId, character);
+
+		// The signed-up delivery job (kept across death and restarts) goes on the new body. After the
+		// hand-over: the job component reads the player id from the body its player controls.
+		LF_CivilianJob.ApplySignUpToCharacter(EL_Utils.GetPlayerUID(playerId), character);
 	}
 
 	//------------------------------------------------------------------------------------------------

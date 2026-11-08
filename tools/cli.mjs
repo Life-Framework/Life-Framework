@@ -42,6 +42,8 @@ import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp 
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
+import { localEnv } from "./lib/local-config.mjs";
+import * as testbox from "./remote/testbox.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -646,10 +648,12 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
 // Effective ENFUSION_* environment: process.env wins over opencode.json, so
 // contributors on non-default installs can set OS env vars instead of editing
 // the (committed, portable) config.
+// The gitignored lf.local.json (tools/lib/local-config.mjs) sits between the
+// two: OS env > lf.local.json > opencode.json.
 function envOf() {
   const cfg = readConfig().mcp?.["enfusion-mcp"]?.environment ?? {};
-  const env = { ...cfg };
-  for (const k of ["ENFUSION_WORKBENCH_PATH", "ENFUSION_GAME_PATH", "ENFUSION_SERVER_PATH", "ENFUSION_PROJECT_PATH"]) {
+  const env = { ...cfg, ...localEnv(ROOT) };
+  for (const k of ["ENFUSION_WORKBENCH_PATH", "ENFUSION_GAME_PATH", "ENFUSION_SERVER_PATH", "ENFUSION_PROJECT_PATH", "LF_GAME_ADDONS", ...Object.keys(env)]) {
     if (process.env[k]) env[k] = process.env[k];
   }
   return env;
@@ -732,8 +736,13 @@ function serverGameAddons(root) {
   const configured = env.ENFUSION_SERVER_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server";
   const serverDir = /\.exe$/i.test(configured) ? dirname(configured) : configured;
   const gameDir = env.ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
-  let source = join(serverDir, "addons");
-  if (!existsSync(join(source, "core")) || !existsSync(join(source, "data"))) source = join(gameDir, "addons");
+  // LF_GAME_ADDONS (OS env or lf.local.json) names the core/data source outright.
+  let source = env.LF_GAME_ADDONS || join(serverDir, "addons");
+  if (env.LF_GAME_ADDONS) {
+    if (!existsSync(join(source, "core")) || !existsSync(join(source, "data"))) throw new Error(`LF_GAME_ADDONS=${source} has no core/ and data/ folders`);
+  } else if (!existsSync(join(source, "core")) || !existsSync(join(source, "data"))) {
+    source = join(gameDir, "addons");
+  }
 
   const target = join(root, "server", "profile", "serve", "game-addons");
   removeGeneratedAddonRoot(root, target);
@@ -1525,6 +1534,16 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     const b = await cmdBuild(root, { wait: opts.wait });
     if (b !== 0) return b;
   }
+  // The second test machine (tools/remote/testbox.mjs): --remote [host] runs
+  // there; without --local, a busy local server-2001 lock moves the run there
+  // when the box (LF_TESTBOX) answers ssh.
+  // Before the choice: a remote run ships this worktree's rdb, so refresh it here.
+  ensureResourceDatabase(root);
+  const target = testbox.chooseTarget(root, opts);
+  if (target) {
+    console.log(`test: running on ${target.host} (${target.reason})`);
+    return testbox.runRemoteTest(root, { host: target.host, tier, only });
+  }
   // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
   // boots the dedicated server via -server + a neutral addonsDir, polls the
   // profile console.log every 2s for the [ELTEST] SUMMARY, self-terminates.
@@ -1537,7 +1556,6 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   }
   const ports = wt.portsForRoot(root);
   console.log(`test: worktree ports game=${ports.gamePort} a2s=${ports.a2sPort}`);
-  ensureResourceDatabase(root);
   return withServerSlot(root, 1800000, () => {
     const res = sh(PWSH, [
       "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
@@ -1619,10 +1637,14 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout)
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]]
+  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--remote [host]|--local]
                                 build + boot server + parse ELTEST results (worktree only).
                                 --only runs just those tests (class, GetName(), or test file
-                                name like EL_Test_Money); SUMMARY tier=only, any tier allowed
+                                name like EL_Test_Money); SUMMARY tier=only, any tier allowed.
+                                --remote runs the worktree (uncommitted state too) on the test
+                                box; with LF_TESTBOX set, a busy local server-2001 lock moves the
+                                run there by itself; --local never moves it (docs/worktrees.md)
+  testbox provision|status|prune  set up / inspect / clean the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [ELDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
@@ -1663,6 +1685,17 @@ function argValue(flags, name) {
   const i = flags.indexOf(name);
   if (i === -1 || i + 1 >= flags.length) return null;
   return flags[i + 1];
+}
+
+// --local pins a test run to this machine; --remote [host] sends it to the
+// test box (host defaults to LF_TESTBOX). See tools/remote/testbox.mjs.
+function remoteFlags(list) {
+  const out = { local: list.includes("--local") };
+  if (list.includes("--remote")) {
+    const v = argValue(list, "--remote");
+    out.remote = v && !v.startsWith("--") ? v : "";
+  }
+  return out;
 }
 
 // tools\cli call <tool> '<json>'|@file [server]  -  delegate to tools/mcp-call.mjs
@@ -2261,14 +2294,15 @@ const cmds = {
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
-    return cmdDev(argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait") });
+    return cmdDev(argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), ...remoteFlags(list) });
   },
   test: (flags) => {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
     const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only });
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, ...remoteFlags(list) });
   },
+  testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
   validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),
   "regen-tests": () => {
@@ -2384,7 +2418,7 @@ try {
   } else if (cmd === "prs") {
     code = cmdPrs(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

@@ -97,6 +97,7 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 
 		// Progression rides the "progression" payload (save version 7): a level 2 courier, a
 		// senior officer, and a turned-in quest.
+		// SeedCourier leaves the courier signed up for parcels: the "jobsignups" payload (save version 11).
 		EL_TestProgressionKit.SeedCourier(ctx, COURIER_UID);
 		EL_TestProgressionKit.SeedSeniorOfficer(ctx, OFFICER_UID);
 		LF_Progression.NoteTurnedIn(COURIER_UID, EL_TestProgressionKit.QUEST_ID);
@@ -204,6 +205,7 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 
 		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER_UID), "e2e courier is still level 2 after the save load");
 		ctx.True(LF_CivilianJob.CanSignUp(COURIER_UID, EL_EJobType.FUEL_DELIVERY), "e2e courier level 2 still opens fuel delivery");
+		ctx.Equal(EL_EJobType.PARCEL, LF_CivilianJob.GetSignedUpJob(COURIER_UID), "e2e courier is still signed up for parcels after the save load");
 		EL_PlayerAccount officer = EL_PlayerAccountManager.GetInstance().GetFromCache(OFFICER_UID);
 		ctx.NotNull(officer, "e2e officer account present after the save load");
 		if (officer)

@@ -120,6 +120,8 @@ class EL_AgentCommand
 			return true;
 		if (cmd.Verb == "die")
 			return true;
+		if (cmd.Verb == "shoot")
+			return ParseShoot(parts, cmd);
 		if (cmd.Verb == "ui")
 			return ParseUi(parts, cmd);
 		if (cmd.Verb == "click")
@@ -366,6 +368,19 @@ class EL_AgentCommand
 				return false;
 		}
 
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool ParseShoot(array<string> parts, EL_AgentCommand cmd)
+	{
+		if (parts.Count() < 3 || parts[2].ToInt() <= 0)
+		{
+			cmd.Error = "need_player_id";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
 		return true;
 	}
 
@@ -766,6 +781,11 @@ class EL_AgentHarness
 			DoDie(cmd);
 			return;
 		}
+		if (cmd.Verb == "shoot")
+		{
+			DoShoot(cmd);
+			return;
+		}
 		if (cmd.Verb == "ui")
 		{
 			DoUi(cmd);
@@ -936,6 +956,22 @@ class EL_AgentHarness
 		}
 
 		character.EL_AskHarnessState(cmd.Id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `shoot <playerId>` (dev gate): the server deals one lethal kinetic hit from the local
+	//! character to that player's body through the vanilla damage path (HandleDamage), so the safe
+	//! zone hook and the murder hook see it as they would see a bullet.
+	protected static void DoShoot(EL_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.EL_AskHarnessShoot(cmd.Id, cmd.Arg1.ToInt());
 	}
 
 	//------------------------------------------------------------------------------------------------

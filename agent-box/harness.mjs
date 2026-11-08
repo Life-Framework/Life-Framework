@@ -109,6 +109,11 @@ export function buildLine(id, spec) {
   if (spec.verb === "die") {
     return `${id} die`;
   }
+  if (spec.verb === "shoot") {
+    const target = Number(spec.playerId);
+    if (!Number.isInteger(target) || target <= 0) throw new Error(`shoot needs a positive player id: ${spec.playerId}`);
+    return `${id} shoot ${target}`;
+  }
   if (spec.verb === "ui") {
     if (spec.mode === "text") return `${id} ui text`;
     if (spec.mode) throw new Error(`ui mode must be text: ${spec.mode}`);
@@ -1310,6 +1315,9 @@ function main(argv) {
     }
     if (cmd === "die") {
       return printResult(sendCommand({ verb: "die" }, 10000));
+    }
+    if (cmd === "shoot") {
+      return printResult(sendCommand({ verb: "shoot", playerId: rest[0] }, 10000));
     }
     if (cmd === "ui") {
       if (rest[0] !== "text" && rest[0] !== "--text") return printResult(sendCommand({ verb: "ui" }));
