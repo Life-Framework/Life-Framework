@@ -47,6 +47,7 @@ class LF_WantedReports
 	static const string OFFENCE_WEAPON_THEFT = "#LF-Offence_WeaponTheft";
 	static const string OFFENCE_BREAK_IN = "#LF-Offence_BreakIn";
 	static const string OFFENCE_HOSPITAL = "#LF-Offence_HospitalRobbery";
+	static const string OFFENCE_MURDER = "#LF-Offence_Murder";
 	static const string PLACE_GRID_KEY = "#LF-Wanted_PlaceGrid";
 
 	protected static ref map<string, ref array<ref LF_WantedReportRecord>> s_mReports;

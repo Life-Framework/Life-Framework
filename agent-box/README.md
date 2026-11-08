@@ -199,6 +199,9 @@ the game profile). Hooks:
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
   `MenuRight`, `MenuSelect`, `MenuBack`, `EL_OpenDebugMenu`) for about 80ms.
   Movement actions are refused.
+- `shoot <playerId>` (dev gate) deals one lethal KINETIC hit from the local character to that
+  player through `HandleDamage`, the path a bullet takes, so the safe zone and the murder hook
+  see it. Replies `shot player=N refused=R alive=A`.
 - `die` asks the server to kill the local character (dev gate), so a session
   can prove the death screen and the hospital respawn. `state` also reports
   `pos=x,y,z` and `bills=` (hospital bills carried).
@@ -494,6 +497,7 @@ node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one c
 node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
 node agent-box/session.mjs proof              # client 1 robs Roadmap_Fuel_Till, client 2 (police) gets the alert
 node agent-box/session.mjs police-proof       # client 2 clocks in at the desk, client 1 robs the till, both read the wanted board
+node agent-box/session.mjs murder-proof       # client 1 kills client 2 at the fuel station (wanted 3), then shoots on the square (refused)
 node agent-box/session.mjs down               # closes every process the session started
 ```
 
