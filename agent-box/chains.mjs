@@ -148,6 +148,16 @@ export function runChainProbes({ send, pause, onLine }) {
       send({ verb: "click", widget: "CivilianButton" });
       pause(800);
       send({ verb: "click", widget: "TownButton" });
+      pause(1500);
+    }
+    // First arrival: form R-89 (name, age) stands between the town pick and the spawn.
+    const form = send({ verb: "ui" });
+    if (form.status === "ok" && form.detail.includes("SignButton")) {
+      send({ verb: "type", widget: "RegFirstName", text: "Agent" });
+      send({ verb: "type", widget: "RegLastName", text: "Box" });
+      send({ verb: "type", widget: "RegAge", text: "30" });
+      send({ verb: "click", widget: "SignButton" });
+      say("registered Agent Box");
       pause(4000);
     }
     ping = send({ verb: "look" });

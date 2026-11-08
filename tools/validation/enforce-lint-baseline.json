@@ -41,26 +41,6 @@
  },
  {
   "rule": "L2",
-  "file": "Scripts/Game/Feature/CharacterCreation/EL_CharacterCreationMenu.c",
-  "text": "m_wAge = EditBoxWidget.Cast(m_wRoot.FindAnyWidget(\"AgeEditBox\").FindAnyWidget(\"EditBox\"));"
- },
- {
-  "rule": "L2",
-  "file": "Scripts/Game/Feature/CharacterCreation/EL_CharacterCreationMenu.c",
-  "text": "m_wFirstName = EditBoxWidget.Cast(m_wRoot.FindAnyWidget(\"FirstNameEditBox\").FindAnyWidget(\"EditBox\"));"
- },
- {
-  "rule": "L2",
-  "file": "Scripts/Game/Feature/CharacterCreation/EL_CharacterCreationMenu.c",
-  "text": "m_wLastName = EditBoxWidget.Cast(m_wRoot.FindAnyWidget(\"LastNameEditBox\").FindAnyWidget(\"EditBox\"));"
- },
- {
-  "rule": "L2",
-  "file": "Scripts/Game/Feature/CharacterCreation/EL_CharacterCreationMenu.c",
-  "text": "Widget focused = GetGame().GetWorkspace().GetFocusedWidget();"
- },
- {
-  "rule": "L2",
   "file": "Scripts/Game/Feature/Chat/AdminChatChannel.c",
   "text": "EL_WhitelistRespawnHandlerComponent whitelistComponent = EL_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(EL_WhitelistRespawnHandlerComponent));"
  },

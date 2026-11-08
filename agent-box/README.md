@@ -103,7 +103,7 @@ node agent-box/harness.mjs chains
 node agent-box/harness.mjs chains --run
 ```
 
-Steps: `stand`, `look`, `ui`, `click`, `press F|WheelUp|WheelDown|F10`, `use`,
+Steps: `stand`, `look`, `ui`, `click`, `type`, `press F|WheelUp|WheelDown|F10`, `use`,
 `input`, `open`, `layer`, `shot ui`, `shot world`, and `wait <ms>`. A shot line
 prints `image: <absolute png>` when the capture file is on disk. If the engine
 wrote a BMP and the `.png` sibling is missing, the harness converts it.
@@ -126,6 +126,9 @@ the game profile). Hooks:
   `m_OnClicked`, the invoker the menu inserted. Other buttons call `OnClick`
   on the menu handler, the same call the engine makes for a mouse click.
   `index` picks a later visible widget when several share a name (`BuyButton`).
+- `type <FieldName> <Text>` writes one plain token (letters, digits, `_`) into
+  the edit box of a visible field, such as the registration form's
+  `RegFirstName`, `RegLastName`, `RegAge`. `click SignButton` then signs it.
 - `use` finds a `ScriptedUserAction`, checks `CanBeShownScript` and
   `CanBePerformedScript`, then calls `PerformAction`. Named confirm, same
   checks, no dependence on which row is highlighted.
