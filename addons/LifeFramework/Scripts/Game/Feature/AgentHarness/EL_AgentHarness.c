@@ -1524,13 +1524,14 @@ class EL_AgentHarness
 		}
 
 		// A local-effect action (ATM terminal, shop price list) runs PerformAction only on the
-		// acting client when the F key uses it, so the harness performs it here the same way.
-		if (!Replication.IsServer())
+		// acting client when the F key uses it, so the harness performs it here the same way. Only this
+		// mod's actions: a vanilla door is local-effect too, but its perform asks the server.
+		if (!Replication.IsServer() && (cmd.Arg1.StartsWith("EL_") || cmd.Arg1.StartsWith("LF_")))
 		{
 			IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
 			ScriptedUserAction localAction;
 			if (target)
-				localAction = FindOnEntity(target, cmd.Arg1);
+				localAction = FindShownOnEntity(target, cmd.Arg1, character);
 
 			if (localAction && localAction.HasLocalEffectOnlyScript())
 			{
@@ -1577,7 +1578,7 @@ class EL_AgentHarness
 			return;
 		}
 
-		ScriptedUserAction action = FindOnEntity(target, className);
+		ScriptedUserAction action = FindShownOnEntity(target, className, user);
 		if (!action)
 		{
 			UseReply(user, commandId, "error", "action_not_found");
@@ -1925,6 +1926,27 @@ class EL_AgentHarness
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Several entries of one class on an entity (the interaction menu's role slots): the first one
+	//! the user is offered, else the first of that class.
+	protected static ScriptedUserAction FindShownOnEntity(IEntity entity, string className, IEntity user)
+	{
+		BaseActionsManagerComponent mgr = BaseActionsManagerComponent.Cast(entity.FindComponent(BaseActionsManagerComponent));
+		if (!mgr)
+			return null;
+
+		array<BaseUserAction> actions = {};
+		mgr.GetActionsList(actions);
+		foreach (BaseUserAction action : actions)
+		{
+			ScriptedUserAction scripted = ScriptedUserAction.Cast(action);
+			if (scripted && action.Type().ToString() == className && scripted.CanBeShownScript(user))
+				return scripted;
+		}
+
+		return FindOnEntity(entity, className);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -36,8 +36,20 @@ modded class SCR_DoorUserAction
 
 		if (m_pHideoutDoor)
 		{
+			// The client reads the organization replicated on the character (LF_OrgReplication) against
+			// the owner written on the lock, so a non-member sees the reason at the gate. The server
+			// decides below from the registry.
 			if (!Replication.IsServer())
+			{
+				string orgId = LF_OrgReplication.ViewOf(user).m_sOrgId;
+				if (orgId.IsEmpty() || orgId != m_pHouseLock.GetHouseIdentifier())
+				{
+					SetCannotPerformReason("#EL-Hideout_NotMember");
+					return false;
+				}
+
 				return true;
+			}
 
 			string characterId = LF_Hideout.CharacterIdOf(user);
 			if (!LF_Hideout.AllowsUnlock(characterId, m_pHideoutDoor.GetHideoutId(), true))

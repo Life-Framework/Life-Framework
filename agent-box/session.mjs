@@ -296,6 +296,13 @@ export function selftestSession() {
   if (!judgeInteraction(m1, m2, m1, g2).length) failures.push("judgeInteraction passed a giver who kept the cash");
   if (!judgeInteraction(m1, m2, g1, g2.replace("cash=550", "cash=600")).length) failures.push("judgeInteraction passed cash out of thin air");
   if (!judgeInteraction(m1, m2, g1, g2.replace("known=1", "known=0")).length) failures.push("judgeInteraction passed a receiver who never learned the name");
+  const o1 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none player=1";
+  const oa1 = o1.replace("cash=500", "cash=250").replace("org=none", `org=${ORG_NAME}`);
+  const oa2 = o1.replace("player=1", "player=2").replace("org=none", `org=${ORG_NAME}`);
+  if (judgeOrg(o1, oa1, oa2, "cannot_perform", GATE_OPENED).length) failures.push(`judgeOrg failed a good run: ${judgeOrg(o1, oa1, oa2, "cannot_perform", GATE_OPENED)}`);
+  if (!judgeOrg(o1, oa1, o1, "cannot_perform", GATE_OPENED).length) failures.push("judgeOrg passed an invitee who never joined");
+  if (!judgeOrg(o1, oa1, oa2, GATE_OPENED, GATE_OPENED).length) failures.push("judgeOrg passed a gate that opened for a stranger");
+  if (!judgeOrg(o1, oa1.replace("cash=250", "cash=500"), oa2, "cannot_perform", GATE_OPENED).length) failures.push("judgeOrg passed a founding with no fee");
   return failures;
 }
 
@@ -317,6 +324,31 @@ export function judgeInteraction(before1, before2, after1, after2) {
   return fails;
 }
 
+// Both clients pick civilian, spawn in town, and sign form R-89 (M1-08); skipped once
+// characters exist.
+function arriveCivilians(on, wait) {
+  for (const n of [1, 2]) {
+    const ui = on(n, { verb: "ui" });
+    if (ui.status === "ok" && ui.detail.includes("CivilianButton")) {
+      on(n, { verb: "click", widget: "CivilianButton" });
+      wait(1500);
+      on(n, { verb: "click", widget: "TownButton" });
+    }
+  }
+  wait(4000);
+  const names = { 1: "Ada", 2: "Bea" };
+  for (const n of [1, 2]) {
+    const ui = on(n, { verb: "ui" });
+    if (ui.status === "ok" && ui.detail.includes("SignButton")) {
+      on(n, { verb: "type", widget: "RegFirstName", text: names[n] });
+      on(n, { verb: "type", widget: "RegLastName", text: "Tester" });
+      on(n, { verb: "type", widget: "RegAge", text: "30" });
+      on(n, { verb: "click", widget: "SignButton" });
+    }
+  }
+  wait(10000);
+}
+
 async function runInteraction() {
   const h = await import("./harness.mjs");
   const dir = sessionDir();
@@ -329,18 +361,8 @@ async function runInteraction() {
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const state = (n) => on(n, { verb: "state" }, 10000).detail;
 
-  // Registration form R-89 (M1-08): sign a name so each player has a character.
-  const names = { 1: "Ada", 2: "Bea" };
-  for (const n of [1, 2]) {
-    const ui = on(n, { verb: "ui" });
-    if (ui.status === "ok" && ui.detail.includes("SignButton")) {
-      on(n, { verb: "type", widget: "RegFirstName", text: names[n] });
-      on(n, { verb: "type", widget: "RegLastName", text: "Tester" });
-      on(n, { verb: "type", widget: "RegAge", text: "30" });
-      on(n, { verb: "click", widget: "SignButton" });
-    }
-  }
-  wait(10000);
+  // Registration form R-89 (M1-08): each player signs a name (any faction screen first).
+  arriveCivilians(on, wait);
 
   const before1 = state(1);
   const before2 = state(2);
@@ -370,6 +392,104 @@ async function runInteraction() {
   for (const st of steps) if (st.status !== "ok") fails.unshift(`${st.line} returned ${st.status} ${st.detail}`);
   for (const x of fails) console.log(`FAIL  ${x}`);
   console.log(fails.length ? "interaction: FAIL" : `interaction: PASS (introduced, showed ID, handed over ${GIVE_AMOUNT} cash)`);
+  return fails.length ? 1 : 0;
+}
+
+// The M1-17 organization proof on a running `up --clients 2` session: client 1
+// opens the registry ledger, founds ORG_NAME (fee in carried cash), and takes the
+// alley yard lease; client 2 is refused at the gate; client 1 walks to client 2 and
+// chooses "Invite to"; client 2 faces client 1 and chooses "Join"; client 2 opens
+// the hideout gate. `--shot` photographs the ledger page on client 1.
+export const ORG_NAME = "AlleyKings";
+export const ORG_FEE = 250;
+export const ORG_GATE = "Roadmap_Hideout_Door";
+export const GATE_OPENED = "SCR_DoorUserAction";
+
+export function judgeOrg(before1, after1, after2, gateBefore, gateAfter) {
+  const fails = [];
+  const b1 = parseState(before1);
+  const a1 = parseState(after1);
+  const a2 = parseState(after2);
+  if (a1.org !== ORG_NAME) fails.push(`client 1 org=${a1.org}, expected ${ORG_NAME}`);
+  if (a2.org !== ORG_NAME) fails.push(`client 2 org=${a2.org}, expected ${ORG_NAME}`);
+  if (Number(a1.cash) !== Number(b1.cash) - ORG_FEE) fails.push(`client 1 cash ${b1.cash} -> ${a1.cash}, expected the ${ORG_FEE} fee`);
+  if (gateBefore !== "cannot_perform") fails.push(`the gate before joining answered ${gateBefore}, expected cannot_perform`);
+  if (gateAfter !== GATE_OPENED) fails.push(`the gate after joining answered ${gateAfter}, expected ${GATE_OPENED} (performed)`);
+  return fails;
+}
+
+async function runOrg(args) {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => on(n, { verb: "state" }, 10000).detail;
+
+  arriveCivilians(on, wait);
+  const before1 = state(1);
+  const before2 = state(2);
+  const one = `Player${parseState(before1).player}`;
+  const two = `Player${parseState(before2).player}`;
+
+  // Client 1 founds the organization at the registry desk and takes the yard lease.
+  const steps = [];
+  on(1, { verb: "stand", entityName: "Roadmap_Org_Desk" });
+  wait(2500);
+  steps.push(on(1, { verb: "use", className: "EL_OrganizationDeskAction", entityName: "Roadmap_Org_Desk" }, 10000));
+  wait(1500);
+  steps.push(on(1, { verb: "type", widget: "OrgName", text: ORG_NAME }));
+  steps.push(on(1, { verb: "click", widget: "FoundButton" }));
+  wait(3000);
+  steps.push(on(1, { verb: "click", widget: "OrgHideoutRow_Action" }));
+  wait(2500);
+  on(1, { verb: "ui" });
+  if (args.includes("--shot")) {
+    h.setBoxes([clientBox(dir, 1)]);
+    const shot = h.sendCommand({ verb: "capture", mode: "ui", name: "org_ledger" }, 25000);
+    console.log(`client 1: shot ui org_ledger -> ${shot.status} ${shot.detail}`);
+    wait(3000);
+    console.log(`client 1: ledger shot ${h.resolveCapture(shot.detail) || "not written"}`);
+  }
+  steps.push(on(1, { verb: "click", widget: "CloseButton" }));
+
+  // The lease shut the gate. Client 2 is not a member yet: the gate refuses.
+  on(2, { verb: "stand", entityName: ORG_GATE });
+  wait(2500);
+  const gateBefore = on(2, { verb: "use", className: "SCR_DoorUserAction", entityName: ORG_GATE }, 10000).detail;
+
+  // Face to face: client 1 invites, client 2 joins.
+  on(1, { verb: "stand", entityName: two });
+  wait(2500);
+  on(1, { verb: "look" });
+  steps.push(on(1, { verb: "use", className: "LF_PlayerRoleAction", entityName: two }, 10000));
+  wait(2000);
+  on(2, { verb: "look" });
+  steps.push(on(2, { verb: "use", className: "LF_PlayerRoleAction", entityName: one }, 10000));
+  wait(2500);
+
+  // Client 2 is a member now: the gate opens.
+  on(2, { verb: "stand", entityName: ORG_GATE });
+  wait(2500);
+  const gateAfter = on(2, { verb: "use", className: "SCR_DoorUserAction", entityName: ORG_GATE }, 10000).detail;
+  wait(1500);
+  const after1 = state(1);
+  const after2 = state(2);
+
+  console.log("");
+  console.log(`before  client 1: ${before1}`);
+  console.log(`before  client 2: ${before2}`);
+  console.log(`after   client 1: ${after1}`);
+  console.log(`after   client 2: ${after2}`);
+  console.log(`gate    client 2: before join ${gateBefore}, after join ${gateAfter}`);
+  const fails = judgeOrg(before1, after1, after2, gateBefore, gateAfter);
+  for (const st of steps) if (st.status !== "ok") fails.unshift(`${st.line} returned ${st.status} ${st.detail}`);
+  for (const x of fails) console.log(`FAIL  ${x}`);
+  console.log(fails.length ? "org: FAIL" : `org: PASS (founded ${ORG_NAME}, invited, joined, the gate opened for the member)`);
   return fails.length ? 1 : 0;
 }
 
@@ -655,6 +775,7 @@ async function main(argv) {
     return writeRoster(ids);
   }
   if (cmd === "interaction") return runInteraction();
+  if (cmd === "org") return runOrg(rest);
   if (cmd === "state") {
     const n = Number(rest[0]);
     if (!Number.isInteger(n) || n < 1) throw new Error("state <client number>");
@@ -668,7 +789,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | proof | interaction | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | proof | interaction | org [--shot] | selftest");
   return cmd ? 1 : 0;
 }
 

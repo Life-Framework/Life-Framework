@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! Opens the organization desk. The menu is local. Cash and membership changes
+//! Opens the registry ledger (LF_OrgLedger). The page is local. Cash and membership changes
 //! go through the character RPC, which the server checks.
 //------------------------------------------------------------------------------------------------
 class EL_OrganizationDeskAction : ScriptedUserAction
@@ -40,12 +40,8 @@ class EL_OrganizationDeskAction : ScriptedUserAction
 			return;
 		}
 
-		EL_OrganizationMenu menu = EL_OrganizationMenu.Open();
-		if (!menu)
-		{
-			EL_Debug.Error("Organizations", "organization menu failed to open");
-			return;
-		}
+		if (!LF_OrgLedger.Open(pOwnerEntity))
+			EL_Debug.Error("Organizations", "registry ledger failed to open");
 	}
 
 	//------------------------------------------------------------------------------------------------
