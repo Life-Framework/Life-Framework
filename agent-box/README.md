@@ -199,6 +199,9 @@ the game profile). Hooks:
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
   `MenuRight`, `MenuSelect`, `MenuBack`, `EL_OpenDebugMenu`) for about 80ms.
   Movement actions are refused.
+- `die` asks the server to kill the local character (dev gate), so a session
+  can prove the death screen and the hospital respawn. `state` also reports
+  `pos=x,y,z` and `bills=` (hospital bills carried).
 - `open DebugMenu` toggles, the same as the debug key. `open DebugMenu show`
   opens it and leaves it open, which is what a UI screenshot uses. `hide` closes
   it only when it is up.

@@ -185,6 +185,51 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `die`: the server kills this character, behind the dev gate.
+	void EL_AskHarnessDie(int commandId)
+	{
+		if (Replication.IsServer())
+		{
+			EL_ApplyHarnessDie(commandId, true);
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessDie, commandId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_HarnessDie(int commandId)
+	{
+		// A client could otherwise end its own life outside the game's damage path.
+		bool gateOpen = EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "die");
+		EL_ApplyHarnessDie(commandId, gateOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void EL_ApplyHarnessDie(int commandId, bool gateOpen)
+	{
+		if (!gateOpen)
+		{
+			EL_HarnessReply(commandId, "error", EL_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		SCR_CharacterDamageManagerComponent damage = SCR_CharacterDamageManagerComponent.Cast(FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!damage)
+		{
+			EL_HarnessReply(commandId, "error", "no_damage_manager");
+			return;
+		}
+
+		// Reply before the kill: the owner RPC needs a live controlled body to land on.
+		EL_HarnessReply(commandId, "ok", "died");
+		damage.EnableDamageHandling(true);
+		damage.Kill(Instigator.CreateInstigator(this));
+		EL_Debug.Info("AgentHarness", "character killed by the harness");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Read this character's account, money, job, and organization on the server.
 	//! Read-only, so it does not pass the dev gate: it reports what the player
 	//! could already see in their own menus.

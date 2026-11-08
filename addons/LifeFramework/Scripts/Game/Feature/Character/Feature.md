@@ -46,6 +46,9 @@ Rung 1.
 - `Feature/Character/Spawning/` — `EL_SpawnLogic` (account-aware spawn, death →
   death screen), `EL_DeathScreen` + `EL_RespawnComponent` (death-screen bridge),
   `EL_SpawnPointsProvider`, `EL_FactionSpawnPoint`.
+- `Feature/Character/Spawning/LF_HospitalRespawn.c` and friends - you wake up in
+  hospital after a death: bed pick, bill (debt allowed), printed `LF_HospitalBill`,
+  the owner's get-out-of-bed animation; config `Configs/Spawning/LF_Respawn.conf`.
 - `Feature/Character/Persistence/` — `LF_StorageSnapshot`: the carried inventory
   survives a restart (captured at save points and disconnect, applied on spawn
   instead of the starter kit, dropped at death). Named snapshots per owner.

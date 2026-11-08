@@ -101,6 +101,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "state") {
     return `${id} state`;
   }
+  if (spec.verb === "die") {
+    return `${id} die`;
+  }
   if (spec.verb === "ui") {
     if (spec.mode === "text") return `${id} ui text`;
     if (spec.mode) throw new Error(`ui mode must be text: ${spec.mode}`);
@@ -1297,6 +1300,9 @@ function main(argv) {
     }
     if (cmd === "state") {
       return printResult(sendCommand({ verb: "state" }, 10000));
+    }
+    if (cmd === "die") {
+      return printResult(sendCommand({ verb: "die" }, 10000));
     }
     if (cmd === "ui") {
       if (rest[0] !== "text" && rest[0] !== "--text") return printResult(sendCommand({ verb: "ui" }));

@@ -247,6 +247,33 @@
   (account-aware, re-applies the faction loadout).
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
+- ✅ **You wake up in hospital** (M1-26, #121; tests `respawn/bill-once`,
+  `respawn/bill-debt`, `respawn/bed-pick`, `respawn/ward`). A death marks the
+  player's uid with a pending wake (`LF_HospitalRespawn.MarkDied`). The next
+  spawn of that player (death-screen Respawn, or a reconnect while dead) takes
+  it once: the body spawns at a free `LF_HospitalBedComponent` bed (rotating,
+  occupied beds skipped), the bill is charged to the bank, a printed paper
+  `HospitalBill.et` (amount, balance after, in-game date) goes in the pockets,
+  and a toast names the amount. The owner plays the base game's
+  bed wake loiter (the tutorial intro's, type 7) with the spawn sound, gets up
+  after 4 s and steps down to the bed's stand point on the floor,
+  then reads the bill: the note "You don't remember how you got here." and the
+  New Life Rule window (a printed server rule, nothing enforces it). A bill
+  lying in the world has Read. Server-decided; the client never sends an
+  amount or a bed. Every charge and debt logs `[ELDebug:Respawn]`.
+- ✅ Debt: `EL_BankAccount.Charge` may go below zero when debt is allowed; a
+  negative balance is kept through save and load, deposits pay it off first,
+  withdrawals are refused while in debt.
+- ✅ Config `Configs/Spawning/LF_Respawn.conf` (`LF_RespawnConfig`): wake in
+  hospital (off, or no bed placed: the spawn plaza), bill amount (flagship
+  150), debt allowed, New Life Rule minutes (15), wake animation. The beds are
+  the respawn point list: put `LF_HospitalBedComponent` on any bed (wake offset
+  and yaw are attributes). DebugWorld: three `BedMedical_01` in the front west
+  room of the hospital (`Street_Hospital.layer`); the hospital building is now
+  the unfurnished `House_Town_E_2I03_Base`.
+- ⚠️ The pending wake is session state: a restart between death and respawn
+  forgets it (plaza, no bill). A carried bill comes back blank after a restart
+  and hides Read.
 
 ### Carried inventory — `Feature/Character/Persistence/LF_StorageSnapshot.c`
 - ✅ **Carried cash and items survive a restart** (2026-11-08, M1-04, tests
@@ -477,7 +504,7 @@
 
 ### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `EL_ShopMenu`)
 - ✅ (2026-11-08, M1-13) Typed price list on `LF_UIScreen` with the
-  `LF_UISkin.PriceList()` skin (paper, mono face, no blur): carried cash, a
+  `LF_UISkin.PriceList()` skin (paper, mono face, ink buttons): carried cash, a
   "Look for" field that narrows the list as you type, up to 40 lines of item
   and buy price with an Order button, an order slip (quantity with One less /
   One more, 1..99), Pay <total> cash, Sell these, Leave. Buy and sell are the
@@ -1181,6 +1208,7 @@
 - `LF_UIMenuInput` gives the remaining MenuManager menus (ATM, shop, quest, police) and the workspace pickers (faction, spawn location, death, organization) the same input: MenuContext plus MenuWithEditorContext every frame, MenuUp/MenuDown focus ring, MenuSelect on the focused button, MenuBack closes (not on the mandatory faction, spawn and death pickers), and a 150 ms debounce so a click and the poll do not double-fire. The ATM has a Close button and labelled Deposit/Withdraw buttons, tells the player when the amount is blank or zero, and names deposit and withdraw refusals separately. The shop and quest Close buttons work. Shop and ATM moved onto the kit in M1-13 (2026-11-08); their MenuManager presets are gone. The shop, quest, organization desk, and police menu actions are `HasLocalEffectOnlyScript`, so the menu opens only on the acting client.
 - A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. It reuses a play session that is already up. Faction, character creation, death, quest, police, and spawn menus were not migrated.
 - (2026-11-08, M1-13) Skins: `LF_UIScreen.Open(parts, skin)` paints from an `LF_UISkin` (`Paper()` is the old look and the default, `Terminal()` the ATM, `PriceList()` the shop): frame colours, face, sheet width, blur on or off, and, for skins that ask, the vanilla button text colours (and its arrow glyph hidden). A KEYS part (`LF_UIKeyRow.layout`, `LF_UIPart.CreateKeys`) lays buttons side by side; MenuLeft/MenuRight walk the row and MenuUp/MenuDown keep the column in the next row. `BindHotkey(action, name)` reports an input action as a button press while no field is focused. `SetButtonText`, `SetListHeight`. `LF_UISound.Play` plays a UI sound event. Seen on a dedicated client (agent-box session, 640x360): the frame `Paper` panel draws nearly transparent and the blur darkens it, so paper sheets read dark; the price list turns the blur off to stay legible. The registration form shows the same on that client.
+- ✅ (2026-11-08) Opaque paper. The frame's `Metal`, `Paper`, `Rule` and the row plates were `PanelWidget`s, which draw the engine default style's panel image under their colour, so the sheet read dark and see-through. They are untextured `ImageWidget`s now (the vanilla solid-fill pattern, `DialogBackground.layout`), the paper is opaque warm off-white (238, 230, 212), and a full-screen `BackgroundBlur` behind the `Sheet` dims and softens the world. Paper skins paint button labels in ink with a red focus. A field gets an ink caption above it (`<Part>Caption`) because the vanilla placeholder draws light grey. `LF_UIEditBox.layout` now overrides the base `SCR_EditBoxComponent` by its GUID, which removes the stray "Editbox" label and applies the paper-coloured well. The sheet is 900 tall so the price list's Leave and the ATM's EXIT fit. Seen on a session client (WORLD `ui-kit/paper-sheet`, flow `ui-paper`).
 
 ### Signs — `Scripts/Game/Feature/Signs/`
 - ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
