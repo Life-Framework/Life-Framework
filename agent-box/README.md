@@ -468,6 +468,9 @@ node agent-box/session.mjs proof              # client 1 robs Roadmap_Fuel_Till,
 node agent-box/session.mjs down               # closes every process the session started
 ```
 
+- `LF_SESSION_WINDOW=1280x720` before `up` opens larger client windows, for screenshots a
+  person reads (the default stays 640x360). `flow arrival-chain` drives the M1-18 arrival
+  chain from the faction menu to the clerk's welcome.
 - `up` runs from a worktree and holds the machine-wide `server-2001` lock while
   the server lives (`--wait` queues behind a test or host run). `down` frees it.
 - The server runs the bare DebugWorld, not `LF_PlaytestTown.conf`, so the world's

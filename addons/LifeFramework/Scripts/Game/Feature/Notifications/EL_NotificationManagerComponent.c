@@ -91,6 +91,14 @@ class EL_NotificationManagerComponentClass : ScriptComponentClass
 class EL_NotificationManagerComponent : ScriptComponent
 {
 	protected static EL_NotificationManagerComponent s_Instance;
+
+	//! Slip geometry in reference pixels (EL_NotificationToast.layout is 420 x 92 at the top right).
+	static const float TOAST_WIDTH = 420;
+	static const float TOAST_MIN_HEIGHT = 92;
+	static const float TOAST_TOP = 140;
+	static const float TOAST_MARGIN = 24;
+	static const float TOAST_GAP = 8;
+	static const float TOAST_CHARS_PER_LINE = 44;
 	
 	//------------------------------------------------------------------------------------------------
 	static EL_NotificationManagerComponent GetInstance()
@@ -430,6 +438,8 @@ class EL_NotificationManagerComponent : ScriptComponent
 		}
 
 		Widget toastWidget = workspace.CreateWidgets("{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout", notificationContainer);
+		if (toastWidget)
+			PlaceToast(workspace, notificationContainer, toastWidget, displayMessage);
 
 		if (!toastWidget)
 		{
@@ -448,5 +458,29 @@ class EL_NotificationManagerComponent : ScriptComponent
 		{
 			EL_Debug.Error("Notify", "toast dropped: no EL_NotificationToastUI handler on the widget");
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts a slip in the top-right corner in screen units, below the slips still up, tall enough
+	//! for its message. The container is a bare top-level frame, so the slip's authored top-right
+	//! anchor has no size to anchor to; an explicit top-left position does.
+	protected void PlaceToast(WorkspaceWidget workspace, Widget container, Widget toast, string message)
+	{
+		float height = Math.Max(TOAST_MIN_HEIGHT, 44 + 22 * Math.Ceil(message.Length() / TOAST_CHARS_PER_LINE));
+		float top = TOAST_TOP;
+		Widget sibling = container.GetChildren();
+		while (sibling)
+		{
+			if (sibling != toast && sibling.GetName() == EL_NotificationToastUI.ROOT_NAME)
+				top = Math.Max(top, FrameSlot.GetPosY(sibling) + FrameSlot.GetSizeY(sibling) + TOAST_GAP);
+
+			sibling = sibling.GetSibling();
+		}
+
+		float screenWidth = workspace.DPIUnscale(workspace.GetWidth());
+		FrameSlot.SetAnchor(toast, 0, 0);
+		FrameSlot.SetAlignment(toast, 0, 0);
+		FrameSlot.SetSize(toast, TOAST_WIDTH, height);
+		FrameSlot.SetPos(toast, screenWidth - TOAST_MARGIN - TOAST_WIDTH, top);
 	}
 }

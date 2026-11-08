@@ -1132,6 +1132,13 @@
   contraband payout toast through `NotifyEntity`; on a dedicated server they
   had reached nobody. enforce-lint L8 fails an `EL_Utils.Notify` after an
   `if (!Replication.IsServer()) return;` guard.
+- ✅ **Slips show on a game client** (M1-18, verified 2026-11-08 on a dedicated client at 1280x720):
+  no slip had ever been visible. With no HUD `NotificationContainer` the slip was parented to
+  `workspace.GetParent()`, where nothing renders; it now goes into a full-screen
+  `EL_NotificationContainer.layout` frame created once on the workspace, placed top right in
+  screen units (`PlaceToast`), as tall as its message, below the slips still up. Its panels are
+  untextured ImageWidgets (a PanelWidget draws see-through) with stretched-anchor insets, and
+  the tick sets the opacity from the real clock (no `AnimateWidget`).
 - ⚠️ Hard-coded Spanish prefixes, emoji in logs, `m_Color` never transmitted.
 
 ## Inventory / Quantity
@@ -1273,6 +1280,12 @@
   so a returning player is not offered the chain; a player who left mid-chain
   gets the next step back on spawn (`SettleChain` after `RestoreTurnedIn`).
   Accepting at a giver counts that giver's talk objective at once. No waypoints.
+  The clerk is a converse giver (`m_bConverse`): "Talk to the clerk" opens no menu; one talk
+  turns in what is done, takes on the next quest, and the clerk's lines show as slips
+  (`RequestConverse`); mid-errand he repeats the errand, after the chain his idle line
+  (`m_sIdleKey`). A second NPC with a placed giver's id no longer takes the giver over.
+  Harness: `agent-box/flows/arrival-chain.txt`; `state` adds `idcard=` and `quests=`;
+  `stand`/`use` reach a replicated NPC (no layer name on a client).
 - ✅ `SIGNAL` event type with a string key (`LF_QuestManager.ReportSignal`).
   Hooks in `LF_QuestHooks.c` (modded classes; the job, ATM, and sign files are
   untouched): `LF_JobDropoffAction` reports `job.run_complete:<job>` for a paid

@@ -18,85 +18,85 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
   }
  }
  {
-  PanelWidgetClass "{6EC77273F9FEFB65}" {
+  ImageWidgetClass "{6EC77273F9FEFB65}" {
    Name "Rim"
    Slot FrameWidgetSlot "{41C61FAD3B7EC90C}" {
     Anchor 0 0 1 1
    }
    Color 0.243 0.251 0.227 1
+  }
+  ImageWidgetClass "{17665D7A2427B51C}" {
+   Name "Background"
+   Slot FrameWidgetSlot "{D91698E60BF10DF6}" {
+    Anchor 0 0 1 1
+    OffsetLeft 3
+    OffsetTop 3
+    OffsetRight 3
+    OffsetBottom 3
+   }
+   Color 0.933 0.902 0.839 1
+  }
+  ImageWidgetClass "{FB11D60E95462439}" {
+   Name "ColorStrip"
+   Slot FrameWidgetSlot "{4DE037A5421F8592}" {
+    Anchor 0 0 0 1
+    PositionX 3
+    OffsetLeft 3
+    OffsetTop 3
+    SizeX 8
+    OffsetRight -11
+    OffsetBottom 3
+   }
+   Color 0.584 0.647 0.651 1
+  }
+  ImageWidgetClass "{67EA38E086DA3C96}" {
+   Name "Icon"
+   Slot FrameWidgetSlot "{D35BFB32A62C0146}" {
+    Anchor 0 0 0 0
+    PositionX 16
+    OffsetLeft 16
+    PositionY 12
+    OffsetTop 12
+    SizeX 32
+    OffsetRight -48
+    SizeY 32
+    OffsetBottom -44
+   }
+  }
+  VerticalLayoutWidgetClass "{6B8BD8B94856A7F2}" {
+   Name "TextColumn"
+   Slot FrameWidgetSlot "{2CAAF4CB8FC4C462}" {
+    Anchor 0 0 1 1
+    OffsetLeft 22
+    OffsetTop 10
+    OffsetRight 14
+    OffsetBottom 8
+   }
    {
-    PanelWidgetClass "{17665D7A2427B51C}" {
-     Name "Background"
-     Slot FrameWidgetSlot "{D91698E60BF10DF6}" {
-      Anchor 0 0 1 1
-      OffsetLeft 4
-      OffsetTop 4
-      OffsetRight -4
-      OffsetBottom -4
+    TextWidgetClass "{598D633F202909E7}" {
+     Name "Title"
+     Slot LayoutSlot "{D633A26727A73ABF}" {
+      Padding 0 0 0 4
      }
-     Color 0.839 0.776 0.659 0.949
-     {
-      PanelWidgetClass "{FB11D60E95462439}" {
-       Name "ColorStrip"
-       Slot FrameWidgetSlot "{4DE037A5421F8592}" {
-        Anchor 0 0 0 1
-        SizeX 8
-        OffsetRight -8
-       }
-       Color 0.584 0.647 0.651 1
-      }
-      ImageWidgetClass "{67EA38E086DA3C96}" {
-       Name "Icon"
-       Slot FrameWidgetSlot "{D35BFB32A62C0146}" {
-        Anchor 0 0 0 0
-        PositionX 16
-        OffsetLeft 16
-        PositionY 12
-        OffsetTop 12
-        SizeX 32
-        OffsetRight -48
-        SizeY 32
-        OffsetBottom -44
-       }
-      }
-      VerticalLayoutWidgetClass "{6B8BD8B94856A7F2}" {
-       Name "TextColumn"
-       Slot FrameWidgetSlot "{2CAAF4CB8FC4C462}" {
-        Anchor 0 0 1 1
-        OffsetLeft 20
-        OffsetTop 8
-        OffsetRight -12
-        OffsetBottom -8
-       }
-       {
-        TextWidgetClass "{598D633F202909E7}" {
-         Name "Title"
-         Slot LayoutSlot "{D633A26727A73ABF}" {
-          Padding 0 0 0 4
-         }
-         Color 0.110 0.102 0.086 1
-         Text ""
-         "Font Size" 20
-         "Min Font Size" 16
-         FontProperties FontProperties "{359FE119CF483694}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        TextWidgetClass "{0A65D22660FCDF02}" {
-         Name "Message"
-         Slot LayoutSlot "{A80A451BB7C08C55}" {
-          SizeMode Fill
-         }
-         Color 0.110 0.102 0.086 1
-         Text ""
-         "Font Size" 17
-         "Min Font Size" 14
-         FontProperties FontProperties "{CAA881DD629DC115}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-       }
-      }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 16
+     FontProperties FontProperties "{359FE119CF483694}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{0A65D22660FCDF02}" {
+     Name "Message"
+     Slot LayoutSlot "{A80A451BB7C08C55}" {
+      SizeMode Fill
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 17
+     "Min Font Size" 14
+     FontProperties FontProperties "{CAA881DD629DC115}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
    }

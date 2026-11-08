@@ -4082,6 +4082,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are settled in. The town board on the square shows the rest: shops, the car lot, the police station, the organization office."
      Comment "The town clerk after the arrival chain, when there is nothing left to hand out."
     }
+    CustomStringTableItem "{958D10C1086B7C3E}" {
+     Id "LF-Job_SignedUp"
+     Target_en_us "You are signed up. Start a run at the counter when you are ready."
+     Comment "Toast after a delivery-job sign-up at the post office counter."
+    }
   }
  }
 }
