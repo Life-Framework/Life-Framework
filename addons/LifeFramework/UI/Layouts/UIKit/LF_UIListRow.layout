@@ -12,7 +12,7 @@ SizeLayoutWidgetClass "{3FA2229C40F2666B}" {
     VerticalAlign 3
    }
    {
-    PanelWidgetClass "{7A93F1382F811226}" {
+    ImageWidgetClass "{7A93F1382F811226}" {
      Name "RowPlate"
      Slot OverlayWidgetSlot "{47CD8E8B76569579}" {
       HorizontalAlign 3

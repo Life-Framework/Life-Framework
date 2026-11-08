@@ -41,7 +41,7 @@ In this order, it is the M1 loop:
 1. Parcel job at the post office (`Roadmap_Job_Depot`), deliver at `Roadmap_Job_Drop`. Expect "Run paid: $40".
 2. Deposit cash at the ATM, then buy the S105 at the car dealer (`Roadmap_Vehicle_Lot`). Cars are paid from the bank.
 3. A second player clocks in as police at the station (police needs the whitelist or an admin; see [Police](#police)), the first robs `Roadmap_Fuel_Till`. The officer gets an alert toast; the robber is wanted.
-4. The officer arrests the robber (a senior officer; a new patrol officer is refused) and escorts them to the cell.
+4. The officer arrests the robber and escorts them to the cell. A new officer can do both from the first minute on duty.
 5. Found an organization at `Roadmap_Org_Desk`, buy processing, open the hideout.
 6. `host stop`, `host start`, rejoin: cash, bank, car, organization, and hideout are still there.
 
@@ -53,7 +53,6 @@ Do not spend the evening on these; they are filed.
 - The registration form, ATM, and org screens are dark and hard to read; the form's labels read "Editbox" (#110, M1-13 is rebuilding these screens).
 - The parcel and bank bags are invisible in your hands (#155).
 - One delivery is one job level; the first car takes about 13 runs (#156).
-- A new officer cannot arrest: senior rank takes one hour on duty, and a fresh server has no senior to promote anyone (#165). Plan the police player's first hour as patrol.
 - The police duty desk and wanted board are not on the street yet (M1-11); duty is the panel in front of the station.
 - A contraband run without an organization is refused with no message (#157).
 - Toasts are the only alert: no alarm at the site, no dispatch board (M1-20).
@@ -106,7 +105,7 @@ Everyone joins as a civilian; there is no faction screen. To play police, the pl
 
 At the station desk (`Roadmap_Police_Desk`, the punch clock in front of the police station) use **Clock in**: your civilian clothes and pockets are stored and you get the police uniform and M9 (a first shift) or the police inventory you left at your last clock-out. **Clock out** at the same desk swaps back and pays duty pay in cash. Say whether anything from one inventory showed up in the other. Read the wanted board (`Roadmap_Police_WantedBoard`) beside the desk on and off duty: police see where each crime happened, everyone sees a description, and a name only after an ID check. At `Roadmap_Police_Armory`, take the rank kit.
 
-A new officer is patrol: a pistol, fines up to 1000, and no arrest. Senior is a rifle, fines up to 5000, and can arrest. An hour on duty promotes. Promoting yourself should be refused.
+A new officer is patrol: a pistol and fines up to 1000. Senior is a rifle and fines up to 5000. Both can arrest and escort. An hour on duty promotes. Promoting yourself should be refused.
 
 Arrest a wanted player into `Roadmap_Jail_Cell`. Repair an open breach. At `Roadmap_Escort_Car`, an on-duty officer can put a wanted player on foot into a passenger seat; the sentence starts when they reach the cell.
 

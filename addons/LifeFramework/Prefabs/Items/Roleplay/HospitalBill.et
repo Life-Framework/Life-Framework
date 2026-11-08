@@ -1,0 +1,54 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  LF_HospitalBillComponent "{E1784E4FD8B2EC35}" {
+  }
+  SoundComponent "{5A4ADB24952425BA}" {
+   Filenames {
+    "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
+   }
+  }
+  EL_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Hospital_BillItem"
+     Description "#LF-Hospital_BillItemDesc"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.05
+     ItemVolume 113
+     RestingUP Forward
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{1BF8C5BE3DEEC82C}Assets/Items/Identity/Belongings_Personal/Papers_Personal.xob"
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    SCR_PickUpItemAction "{51EC842E3A187379}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{51EC842E413D3E1D}" {
+      Name "#AR-Inventory_PickUp"
+      m_sIconName "pick-up"
+     }
+    }
+    LF_HospitalBillReadAction "{73749E9988E628DF}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{F4FD2C64B31F365B}" {
+      Name "#LF-Hospital_BillRead"
+     }
+    }
+   }
+  }
+ }
+}

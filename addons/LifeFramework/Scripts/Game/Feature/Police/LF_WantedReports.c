@@ -1,53 +1,4 @@
 //------------------------------------------------------------------------------------------------
-//! Police tuning. Loaded from Configs/Police/LF_Police.conf; a missing file falls back to the
-//! defaults below and logs once.
-[BaseContainerProps(configRoot: true)]
-class LF_PoliceConfig
-{
-	static const ResourceName CONFIG_PATH = "{D6DB2FB6399D91AB}Configs/Police/LF_Police.conf";
-
-	[Attribute("10", UIWidgets.Auto, "An on-duty officer this close (metres) when a crime is committed catches the suspect in the act: the report is identified at once")]
-	float m_fCatchInActRadius;
-
-	[Attribute("80", UIWidgets.Auto, "A crime report names the nearest sign within this many metres as the place; beyond it the place is a map grid square")]
-	float m_fPlaceRadius;
-
-	[Attribute("4", UIWidgets.Auto, "How close (metres) a player must stand to the wanted board for the server to answer a read")]
-	float m_fBoardReadDistance;
-
-	[Attribute("8", UIWidgets.Auto, "Most posters the wanted board shows, newest first")]
-	int m_iBoardMaxPosters;
-
-	protected static ref LF_PoliceConfig s_Config;
-	protected static bool s_bLoadAttempted;
-
-	//------------------------------------------------------------------------------------------------
-	//! The loaded config, or the code defaults when the file does not resolve (logged once).
-	static LF_PoliceConfig Get()
-	{
-		if (s_bLoadAttempted && s_Config)
-			return s_Config;
-
-		s_bLoadAttempted = true;
-		Resource container = BaseContainerTools.LoadContainer(CONFIG_PATH);
-		if (container && container.GetResource())
-			s_Config = LF_PoliceConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
-
-		if (!s_Config)
-		{
-			EL_Debug.Error("Police", string.Format("police config does not resolve, using defaults: %1", CONFIG_PATH));
-			s_Config = new LF_PoliceConfig();
-			s_Config.m_fCatchInActRadius = 10;
-			s_Config.m_fPlaceRadius = 80;
-			s_Config.m_fBoardReadDistance = 4;
-			s_Config.m_iBoardMaxPosters = 8;
-		}
-
-		return s_Config;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! One crime report: what a witness would tell the police. The description is a snapshot taken
 //! at the crime (what the suspect wore, what they drove, where it happened), so a suspect who
 //! changes clothes or cars is not described by their new look. The name stays off the poster
@@ -139,7 +90,7 @@ class LF_WantedReports
 			place = DescribePlace(suspect.GetOrigin());
 		}
 
-		bool caught = suspect && IsOfficerNear(suspect, LF_PoliceConfig.Get().m_fCatchInActRadius);
+		bool caught = suspect && IsOfficerNear(suspect, LF_PoliceConfig.CatchInActRadius());
 		LF_WantedReportRecord record = Add(playerUid, offence, clothing, vehicle, place, caught);
 		EL_Debug.Info(FEATURE, string.Format("crime report #%1 %2 by %3: clothing='%4' vehicle='%5' place='%6' identified=%7", record.m_iSequence, offence, playerUid, clothing, vehicle, place, caught));
 		return record;
@@ -394,7 +345,7 @@ class LF_WantedReports
 	static string DescribePlace(vector origin)
 	{
 		s_vPlaceOrigin = origin;
-		s_fPlaceBest = LF_PoliceConfig.Get().m_fPlaceRadius;
+		s_fPlaceBest = LF_PoliceConfig.PlaceRadius();
 		s_sPlaceTitle = string.Empty;
 		if (GetGame() && GetGame().GetWorld())
 			GetGame().GetWorld().QueryEntitiesBySphere(origin, s_fPlaceBest, CollectPlaceSign, null, EQueryEntitiesFlags.ALL);

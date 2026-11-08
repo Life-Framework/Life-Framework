@@ -75,8 +75,8 @@ class LF_WantedBoard
 
 		int playerId = controller.GetPlayerId();
 		IEntity reader = controller.GetControlledEntity();
-		LF_PoliceConfig config = LF_PoliceConfig.Get();
-		if (!reader || !EL_ActionSite.IsNear(reader.GetOrigin(), config.m_fBoardReadDistance, READ_ACTION))
+		
+		if (!reader || !EL_ActionSite.IsNear(reader.GetOrigin(), LF_PoliceConfig.BoardReadDistance(), READ_ACTION))
 		{
 			EL_Debug.Warn(FEATURE, string.Format("board read refused for player %1: not at a wanted board", playerId));
 			return;
@@ -94,7 +94,7 @@ class LF_WantedBoard
 		array<string> vehicles = {};
 		array<string> places = {};
 		array<int> levels = {};
-		int count = BuildPosters(police, config.m_iBoardMaxPosters, names, offences, clothing, vehicles, places, levels);
+		int count = BuildPosters(police, LF_PoliceConfig.BoardMaxPosters(), names, offences, clothing, vehicles, places, levels);
 		EL_Debug.Info(FEATURE, string.Format("board read by player %1: police=%2 posters=%3", playerId, police, count));
 		controller.LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels);
 	}
@@ -234,7 +234,7 @@ class LF_WantedBoard
 		s_Screen.CloseWhenUncontrolled();
 		// A read the server started for this player (no local action) names no board: anchor on
 		// the board beside the reader, so walking off closes the card either way.
-		float range = LF_PoliceConfig.Get().m_fBoardReadDistance;
+		float range = LF_PoliceConfig.BoardReadDistance();
 		if (s_PendingBoard == EntityID.INVALID)
 		{
 			IEntity reader = EL_Utils.GetLocalCharacter();

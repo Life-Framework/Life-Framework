@@ -107,8 +107,9 @@ node agent-box/harness.mjs chains
 node agent-box/harness.mjs chains --run
 ```
 
-Steps: `stand`, `look`, `ui`, `click`, `type`, `press F|WheelUp|WheelDown|F10`, `use`,
-`input`, `open`, `layer`, `shot ui`, `shot world`, and `wait <ms>`. A shot line
+Steps: `stand`, `look`, `ui`, `ui text`, `wait-text <text>`, `click`, `type`,
+`press F|WheelUp|WheelDown|F10`, `use`, `input`, `open`, `layer`, `shot ui`
+(also `ui-shot <name>`), `shot world`, and `wait <ms>`. A shot line
 prints `image: <absolute png>` when the capture file is on disk. If the engine
 wrote a BMP and the `.png` sibling is missing, the harness converts it.
 
@@ -127,6 +128,29 @@ The lock frees itself when that process exits. A Workbench opened from the
 launcher has no project on its command line and runs unclaimed. Clients with
 their own `-profile` (the multi-client session) have their own channel.
 
+Session clients share one session dir on the machine
+(`%LOCALAPPDATA%\LifeFramework\session`), so a command from one worktree once
+reached another worktree's client 1 (a click and a registration) when a new
+session started between two runs. The channel is now session-scoped:
+
+- Every `session.mjs up` records a fresh id and the starting checkout in
+  `session.json` and launches its clients with `-lfSession <id>`.
+- `--client <n>` (and `setBoxes`) addresses each command as
+  `<cmd id> s:<session id> <verb> ...`. Before writing, `sendCommand` reads
+  `session.json` and refuses with `error session_owned_by_other_checkout
+  <root>` when the live session was started from another checkout, or
+  `error no_live_session` when none is running.
+- A client runs only commands addressed to its own id
+  (`EL_AgentCommand.SessionAccepts`); anything else answers
+  `error wrong_session` and logs `[ELDebug:AgentHarness] refused command ...`.
+  Workbench and default-profile clients have no id and refuse addressed
+  commands.
+- `session.mjs down` and `restart` refuse a live session another checkout
+  started (`--force` overrides). `restart` keeps the id.
+
+LOGIC test `agent-harness/session-scope`; `session.mjs selftest` and
+`harness.mjs selftest` cover the address and the refusal.
+
 
 The play session polls `$profile:agent-box/command.txt` (Workbench profile and
 the game profile). Hooks:
@@ -137,9 +161,24 @@ the game profile). Hooks:
   debug menu.
 - `look` lists `ScriptedUserAction`s within 4m whose `CanBeShownScript` is
   true. That is the list the interact key would offer.
-- `ui` lists visible buttons whose names end in `Button`. Faction and spawn
-  buttons are included because they carry `SCR_ButtonTextComponent`. Shop and
-  ATM buttons are included when a Life Framework menu owns them.
+- `ui` lists the visible widgets `click` accepts: the registration form button
+  (`SCR_ButtonTextComponent`), debug menu buttons, buttons whose name ends in
+  `Button` under a Life Framework handler, and every button of an open UI kit
+  sheet whatever its name (they carry `LF_UIButtonRelay`: ATM keys, the price
+  list's `Item0Row_Action`, `IdClose`, the sign card's `Close`, the garage's
+  `Buy`).
+- `ui text` (`harness.mjs ui text`, MCP `player_ui` with `text: true`) reads
+  the screen: each clickable with its label, and on a UI kit sheet each field
+  with what is typed and each printed line, as `kind:name=text` joined by
+  ` | ` (`line:Balance=BALANCE ....... $1,200 | field:RegAge=30 |
+  button:DepositButton=DEPOSIT`). The name is the part name the screen gave
+  it, the same name `type` and `click` take. `#keys` are translated.
+- `wait-text <text> [--timeout ms]` polls `ui text` until a label, field, or
+  line contains the text (case-insensitive) or a widget has that name. Use it
+  after `use` opens a screen and after a button the server answers
+  (`wait-text DEPOSITED`). Times out with `text_not_found <text>`.
+- `ui-shot <name>` is `shot ui <name>`: the client's screen with the UI on it.
+  Only a game client captures the UI; Workbench play writes the 3D view only.
 - `click <WidgetName> [index]` fires that button. Text buttons call
   `m_OnClicked`, the invoker the menu inserted. Other buttons call `OnClick`
   on the menu handler, the same call the engine makes for a mouse click.
@@ -155,11 +194,14 @@ the game profile). Hooks:
 - `click` also takes a UI kit list row's `<row>_Action` button (the price
   list's `Item0Row_Action`).
 - `stand <EntityName>` asks the server to move the local character beside
-  that entity so a 3m action radius can succeed. It does not inject movement
-  keys.
+  that entity so a 3m action radius can succeed, 1.2 m along +X and turned to
+  face it, so `press F` aims at the entity. It does not inject movement keys.
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
   `MenuRight`, `MenuSelect`, `MenuBack`, `EL_OpenDebugMenu`) for about 80ms.
   Movement actions are refused.
+- `die` asks the server to kill the local character (dev gate), so a session
+  can prove the death screen and the hospital respawn. `state` also reports
+  `pos=x,y,z` and `bills=` (hospital bills carried).
 - `open DebugMenu` toggles, the same as the debug key. `open DebugMenu show`
   opens it and leaves it open, which is what a UI screenshot uses. `hide` closes
   it only when it is up.
@@ -170,7 +212,7 @@ contain `EL_AgentHarness` yet.
 
 MCP tools on the `life-agent-box` server match these commands: `box_status`,
 `layer_list`, `layer_play`, `player_press`, `player_look`, `player_ui`,
-`player_click`, `player_stand`, `player_use`, `player_input`, `player_open`,
+`player_wait_text`, `player_click`, `player_stand`, `player_use`, `player_input`, `player_open`,
 `pillar_shot`, `pillar_script`, `player_flow`.
 
 The two Enfusion servers stay the source for API search, prefabs, and live
@@ -347,7 +389,7 @@ outlier, an empty look, an action on another entity, and the flag.
 `node agent-box/harness.mjs chains` checks the probe list against the layer
 files, with no game: every required DebugWorld layer has a named stand target
 or a recorded gap. `chains --run` is the play-mode e2e: it spawns through
-the faction buttons when no character exists, then stands beside each named
+the registration form when no character exists, then stands beside each named
 probe, reads `look`, and calls `use` on the expected action.
 `agent-box/flows/chain-apple.txt` is the apple gather-then-trade sequence on
 its own. Probes live in `agent-box/chains.mjs`.
@@ -420,6 +462,8 @@ along the top of the screen, and joins `127.0.0.1:2001` with `-client`.
 ```powershell
 node agent-box/session.mjs roster 2             # put player id 2 on the police roster (before up)
 node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms
+node agent-box/session.mjs up --clients 2 --mission playtest   # LF_PlaytestTown, harness build
+node agent-box/session.mjs restart            # playtest: shutdown save, load, same clients rejoin
 node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client
 node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
 node agent-box/session.mjs proof              # client 1 robs Roadmap_Fuel_Till, client 2 (police) gets the alert
@@ -433,6 +477,21 @@ node agent-box/session.mjs down               # closes every process the session
   game mode keeps dev tools open and the harness passes `EL_DevGate`. On the
   playtest mission a non-admin's `stand` and `use` come back as
   `error dev_gate_closed` (LOGIC test `harness/dev-gate-dedicated`).
+- `up --mission playtest` runs `LF_PlaytestTown` the way `tools\cli host start`
+  does (dev gate closed, debug menu closed, host stop file) and adds
+  `-scrDefine LF_HARNESS` on the server and every client. In that build the
+  harness RPCs (`stand`, pose, `use`) pass their own gate
+  (`EL_DevGate.HarnessBuild`, `[ELDebug:AgentHarness] stand allowed: LF_HARNESS
+  build`); the debug menu stays refused. The define changes the script
+  checksum, so a client without it (a real player) is refused at the door, and
+  `host start` never passes it (host selftest; the suite pins
+  `HarnessBuild()` false in `harness/dev-gate-dedicated`). Police and cash
+  fixtures from the debug menu do not exist there.
+- `restart` (playtest mission only) writes the host stop file, waits for the
+  server to close after its `SHUTDOWN` save, closes the clients, boots the
+  server with `-loadSessionSave`, and relaunches the same client profiles in
+  the same order, 15 s apart, so player ids and the `LF_SESSION_IDENTITY`
+  accounts match. It waits for `flow start for player <n>` per client.
 - Server and clients pass `-noBackend` and `-scrDefine LF_SESSION_IDENTITY`.
   Without the backend every client has the NULL identity and the same Steam
   name, so the define gives each player id its own identity. The define must be

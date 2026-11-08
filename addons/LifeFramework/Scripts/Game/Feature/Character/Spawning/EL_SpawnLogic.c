@@ -106,6 +106,10 @@ class EL_SpawnLogic : SCR_SpawnLogic
 			}
 		}
 
+		// You wake up in hospital: the next spawn of this player goes to a bed and pays the bill.
+		if (!uid.IsEmpty())
+			LF_HospitalRespawn.MarkDied(uid);
+
 		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
 		if (respawn)
 			respawn.NotifyReadyForSpawn_S();
@@ -245,6 +249,9 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		position = "0 0 0";
 		yawPitchRoll = "0 0 0";
 
+		if (LF_HospitalRespawn.ResolveWake(playerId, EL_Utils.GetPlayerUID(playerId), position, yawPitchRoll))
+			return true;
+
 		SCR_SpawnPoint spawnPoint = ResolveSpawnPoint(playerId);
 		if (!spawnPoint)
 		{
@@ -308,6 +315,9 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		}
 
 		BindAccountComponents(playerId, characterPersistenceId, character);
+
+		// After the inventory so the printed bill has a pocket to land in.
+		LF_HospitalRespawn.OnBodyCreated(playerId, EL_Utils.GetPlayerUID(playerId), character);
 	}
 
 	//------------------------------------------------------------------------------------------------
