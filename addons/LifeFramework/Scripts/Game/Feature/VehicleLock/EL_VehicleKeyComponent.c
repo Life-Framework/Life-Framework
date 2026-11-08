@@ -29,6 +29,16 @@ class EL_VehicleKeyComponent : ScriptComponent
 	protected string m_sVehicleIdentifier;
 
 	//------------------------------------------------------------------------------------------------
+	//! A ScriptComponent gets EOnInit only when it asks for it. Without this an editor-bound key
+	//! (m_sDebugIdentifier, the police car key) stayed unbound and opened nothing.
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+		if (!m_sDebugIdentifier.IsEmpty())
+			SetEventMask(owner, EntityEvent.INIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void EOnInit(IEntity owner)
 	{
 		super.EOnInit(owner);
