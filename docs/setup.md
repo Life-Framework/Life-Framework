@@ -96,9 +96,10 @@ settings for the CLI and every worktree of that checkout
 | --- | --- |
 | `ENFUSION_*_PATH` | Same as the env vars above |
 | `LF_GAME_ADDONS` | Folder with the base-game `core/` and `data/` projects the test server loads through the `game-addons` junction. Default: the server install's `addons`, else the game client's |
-| `LF_TESTBOX` | ssh host of a second test machine (`docs/worktrees.md` "Test box") |
+| `LF_TESTBOX` | ssh host of a second test machine; added to the pool when `tools/pool.json` lacks it (`docs/worktrees.md` "Test pool") |
 | `LF_TESTBOX_ROOT` | Main checkout on that machine (default `C:/LF/Life-Framework`) |
-| `LF_TESTBOX_AUTO` | `0` keeps `test` local even while `server-2001` is busy |
+| `LF_TESTBOX_AUTO` | `0` keeps `test` on this machine by default (`--remote` and `--machine` still work) |
+| `pool` | Object: `{ "machines": [ { "name": "lf-testbox", "slots": 2 } ] }` merges by name over `tools/pool.json`; `"disabled": true` drops a machine, a new name adds one (`docs/worktrees.md` "Test pool") |
 
 ## 3. Open the mod in Workbench
 

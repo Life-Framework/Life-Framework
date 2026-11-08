@@ -675,6 +675,13 @@ export function readRuns(root) {
 
 // ---------------------------------------------------------------- status / stats / prune
 
+function localTime(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+
 function ago(iso) {
   const s = Math.round((Date.now() - Date.parse(iso)) / 1000);
   if (!Number.isFinite(s)) return "?";
@@ -736,7 +743,7 @@ export function cmdPoolStatus(root) {
   const runs = readRuns(root).slice(-20);
   console.log(`last ${runs.length} run(s):`);
   for (const r of runs) {
-    console.log(`  ${String(r.at).slice(0, 19).replace("T", " ")}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(22)} ${String(r.purpose).padEnd(14)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
+    console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(22)} ${String(r.purpose).padEnd(14)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
   }
   return 0;
 }
