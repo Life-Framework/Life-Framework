@@ -33,6 +33,7 @@ import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, rmSy
 import { basename, dirname, join, resolve } from "node:path";
 import * as wt from "../wt.mjs";
 import { localSetting } from "../lib/local-config.mjs";
+import { cmdRecord, cmdScreenshot, cmdStart, cmdVdd } from "./desktop.mjs";
 
 const DEFAULT_REMOTE_ROOT = "C:/LF/Life-Framework";
 const SERVER_SLOT = "server-2001";
@@ -443,12 +444,16 @@ export function cmdTestbox(root, args) {
   const hi = rest.indexOf("--host");
   const host = (hi >= 0 ? rest[hi + 1] : undefined) || configuredHost(root);
   const flags = hi >= 0 ? rest.filter((_, i) => i !== hi && i !== hi + 1) : rest;
-  if (!sub || sub === "help" || !["provision", "status", "prune"].includes(sub)) {
-    console.log(`usage: tools\\cli testbox provision|status|prune [--host <ssh-host>]
+  if (!sub || sub === "help" || !["provision", "status", "prune", "screenshot", "record", "start", "vdd"].includes(sub)) {
+    console.log(`usage: tools\\cli testbox provision|status|prune|screenshot|record|start|vdd [--host <ssh-host>]
   provision [--skip-server-update]  install Git/Node (if missing), SteamCMD + Arma Reforger Server
                                     (anonymous), clone the repo, write lf.local.json; send the rdb
   status                            reachability, server build, the box's server-2001 lock, run dirs
   prune <slug>|--all                remove run worktrees on the box (junction-safe)
+  screenshot                        png of the box's desktop -> tmp/testbox/
+  record [secs] [--gdigrab]         mp4 of the box's screen + system audio (default 10 s) -> tmp/testbox/
+  start <exe> [args...]             start a program in the box's desktop session (a game client)
+  vdd                               install the virtual display driver (no reboot)
 host: --host, else LF_TESTBOX (env or lf.local.json). Pool view of every machine: tools\\cli pool status`);
     return sub && sub !== "help" ? 2 : 0;
   }
@@ -458,5 +463,9 @@ host: --host, else LF_TESTBOX (env or lf.local.json). Pool view of every machine
   }
   if (sub === "provision") return cmdProvision(root, host, flags);
   if (sub === "status") return cmdStatus(root, host);
+  if (sub === "screenshot") return cmdScreenshot(root, host);
+  if (sub === "record") return cmdRecord(root, host, flags);
+  if (sub === "start") return cmdStart(root, host, flags);
+  if (sub === "vdd") return cmdVdd(root, host);
   return cmdPrune(root, host, flags);
 }
