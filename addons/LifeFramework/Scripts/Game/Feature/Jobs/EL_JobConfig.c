@@ -31,12 +31,6 @@ class EL_JobConfig
 	[Attribute(defvalue: "", UIWidgets.ResourceNamePicker, "Icon for HUD/Menu", "edds")]
 	ResourceName m_sIcon;
 	
-	[Attribute(defvalue: "100", UIWidgets.Slider, "Base salary per paycheck", "0 10000 10")]
-	int m_iBaseSalary;
-	
-	[Attribute(defvalue: "300", UIWidgets.Slider, "Time between paychecks in seconds", "60 3600 10")]
-	float m_fPaycheckInterval;
-	
 	[Attribute(defvalue: "", UIWidgets.ResourceNamePicker, "Uniform/clothing prefabs for this job", "et")]
 	ref array<ResourceName> m_aUniformPrefabs;
 	

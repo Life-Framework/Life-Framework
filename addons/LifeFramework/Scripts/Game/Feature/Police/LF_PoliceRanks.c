@@ -329,17 +329,24 @@ class LF_PoliceRanks
 	//------------------------------------------------------------------------------------------------
 	static void OnDutyChanged(EL_PlayerAccount account, bool nowOnDuty)
 	{
+		OnDutyChangedAt(account, nowOnDuty, NowMs());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! OnDutyChanged with the world time passed in, so a test can drive the clock.
+	static void OnDutyChangedAt(EL_PlayerAccount account, bool nowOnDuty, int nowMs)
+	{
 		if (!account)
 			return;
 
 		if (nowOnDuty)
 		{
-			account.StartDutyClock(NowMs());
+			account.StartDutyClock(nowMs);
 			EL_Debug.Log("Ranks", string.Format("duty clock started for %1", account.GetPersistentId()));
 			return;
 		}
 
-		SettleDuty(account, false);
+		SettleDutyAt(account, false, nowMs);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -359,7 +366,7 @@ class LF_PoliceRanks
 			return false;
 		}
 
-		SettleDuty(account, true);
+		SettleDutyAt(account, true, NowMs());
 
 		array<ResourceName> kit = {};
 		CollectKit(account.GetPoliceRank(), kit);
@@ -527,18 +534,23 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void SettleDuty(EL_PlayerAccount account, bool stillOnDuty)
+	//! Closes the running duty clock at nowMs: the seconds count toward rank and toward the
+	//! shift's unpaid duty pay (police only). stillOnDuty restarts the clock at nowMs.
+	static void SettleDutyAt(EL_PlayerAccount account, bool stillOnDuty, int nowMs)
 	{
 		if (!account || !account.IsDutyClockRunning())
 			return;
 
 		int started = account.GetDutyStartedAtMs();
-		int nowMs = NowMs();
 		if (nowMs > started)
 		{
 			int deltaSeconds = (nowMs - started) / 1000;
 			if (deltaSeconds > 0)
+			{
 				AccrueDuty(account.GetPersistentId(), deltaSeconds);
+				if (account.GetFaction() == EL_Faction.POLICE)
+					account.AddUnpaidDutySeconds(deltaSeconds);
+			}
 		}
 
 		if (stillOnDuty)

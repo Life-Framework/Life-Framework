@@ -2198,6 +2198,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This account already has a character."
      Comment "Character creation refused because the account already has a character"
     }
+    CustomStringTableItem "{F4D6F78E634D1214}" {
+     Id "EL-Duty_Paid"
+     Target_en_us "Duty pay: $%1 cash"
+     Comment "Toast after the station desk hands an officer going off duty their shift pay in cash; %1 is the amount"
+    }
+    CustomStringTableItem "{F4D6F78E634D1216}" {
+     Id "EL-Benefit_Collect"
+     Target_en_us "Collect benefit"
+     Comment "Job counter action: collect the unemployment benefit in cash"
+    }
+    CustomStringTableItem "{20909EFABF36AC7A}" {
+     Id "EL-Benefit_Title"
+     Target_en_us "Job counter"
+     Comment "Toast title for the unemployment benefit"
+    }
+    CustomStringTableItem "{13CD00AAEFCF43FD}" {
+     Id "EL-Benefit_Paid"
+     Target_en_us "Unemployment benefit: $%1 cash"
+     Comment "Toast after the job counter hands over the unemployment benefit; %1 is the amount"
+    }
+    CustomStringTableItem "{6B1E0C2D9A4F7E31}" {
+     Id "EL-Benefit_Refused_Balance"
+     Target_en_us "Your bank balance is too high for the benefit"
+     Comment "Benefit refused because the bank balance is at or above the threshold"
+    }
+    CustomStringTableItem "{6B1E0C2D9A4F7E32}" {
+     Id "EL-Benefit_Refused_Working"
+     Target_en_us "The benefit is for people out of work"
+     Comment "Benefit refused because the player is on duty as police or has an active delivery run"
+    }
+    CustomStringTableItem "{6B1E0C2D9A4F7E33}" {
+     Id "EL-Benefit_Refused_Cooldown"
+     Target_en_us "You collected the benefit recently. Come back later."
+     Comment "Benefit refused because the cooldown since the last collection has not elapsed"
+    }
+    CustomStringTableItem "{6B1E0C2D9A4F7E34}" {
+     Id "EL-Benefit_Refused_Disabled"
+     Target_en_us "The benefit is not paid here"
+     Comment "Benefit refused because it is disabled in config or the player has no account"
+    }
   }
  }
 }

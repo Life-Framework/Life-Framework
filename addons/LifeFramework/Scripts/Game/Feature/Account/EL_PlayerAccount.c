@@ -16,6 +16,7 @@ class EL_PlayerAccount : Managed
 	/*protected*/ int m_iOnDutySeconds = 0;
 	/*protected*/ bool m_bDutyClockRunning = false;
 	/*protected*/ int m_iDutyStartedAtMs = 0;
+	/*protected*/ int m_iUnpaidDutySeconds = 0;
 	/*protected*/ int m_iWantedLevel = 0;
 
 	//------------------------------------------------------------------------------------------------
@@ -120,6 +121,32 @@ class EL_PlayerAccount : Managed
 	int GetDutyStartedAtMs()
 	{
 		return m_iDutyStartedAtMs;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Duty seconds settled this shift and not yet paid. Session state like the duty clock:
+	//! a restart drops an open shift's pay; it never pays twice.
+	int GetUnpaidDutySeconds()
+	{
+		return m_iUnpaidDutySeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void AddUnpaidDutySeconds(int seconds)
+	{
+		if (seconds <= 0)
+			return;
+
+		m_iUnpaidDutySeconds = m_iUnpaidDutySeconds + seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Returns the unpaid duty seconds and zeroes them, so a second take returns 0.
+	int TakeUnpaidDutySeconds()
+	{
+		int seconds = m_iUnpaidDutySeconds;
+		m_iUnpaidDutySeconds = 0;
+		return seconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
