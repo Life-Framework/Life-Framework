@@ -191,11 +191,6 @@
  },
  {
   "rule": "L5",
-  "file": "Scripts/Game/Feature/Jobs/EL_PlayerJobComponent.c",
-  "text": "Print(\"[EL_PlayerJobComponent] ERROR: No inventory found on player\", LogLevel.ERROR);"
- },
- {
-  "rule": "L5",
   "file": "Scripts/Game/Feature/License/EL_LicenseManagerComponent.c",
   "text": "Print(\"[EL_LicenseManagerComponent] Initial licenses granted\", LogLevel.NORMAL);"
  },
