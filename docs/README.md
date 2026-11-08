@@ -41,6 +41,7 @@ Feature design context files live beside the code in
 
 - [Overthrow survey](overthrow-survey.md) — what Overthrow.Arma4 offers and its license terms.
 - [EveronLife forks](everonlife-forks.md) — what the EveronLife forks hold and what was already ported.
+- [Ecosystem leverage map](ecosystem.md) — community repos, Workshop dependencies, free asset sources, licenses, and the import policy.
 
 ## Agent guidance
 
