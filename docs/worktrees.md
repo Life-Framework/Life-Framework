@@ -143,55 +143,106 @@ throwaway repo: a registry-only conflict is healed and pushed, a real code
 conflict (alone or beside the registry) is aborted with HEAD and origin
 untouched.
 
-## Test box (second machine)
+## Test pool (every machine)
 
-In-game runs on one machine queue on `server-2001`. A second Windows machine
-(the "test box", ssh alias `lf-testbox`) runs the same suite with its own
-`server-2001` lock, so agents stop waiting on each other.
+Every `-server` boot binds UDP 2001, so one machine runs one test server at a
+time. The test pool spreads in-game runs over every machine that can boot
+one: this PC and the test box (ssh alias `lf-testbox`), more when they are
+added. Each run takes the first free slot on any machine; when every slot is
+busy it queues, first come first served, and takes the first slot that frees
+anywhere.
 
 ```sh
-tools\cli test --no-build --tier all --remote            # run this worktree on the box
-tools\cli test --no-build --only EL_Test_Money --remote   # the red-proof loop, remotely
-tools\cli test --no-build --tier fast --local             # never leave this machine
-tools\cli testbox status                                  # reachable? build? the box's lock and run dirs
-tools\cli testbox provision                               # set up or update the box (idempotent)
-tools\cli testbox prune <slug>|--all                      # remove run dirs on the box (junction-safe)
+tools\cli test --no-build --tier all                      # first free slot anywhere (--any, the default)
+tools\cli test --no-build --only EL_Test_Money --local     # this PC only
+tools\cli test --no-build --tier all --remote [name]       # a remote machine (any, or that one)
+tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
+tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
+tools\cli pool stats                                       # per machine: runs, passes, average wait and run
+tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders of gone worktrees
 ```
 
-- **Which machine.** `--remote [host]` runs on the box (host defaults to
-  `LF_TESTBOX`); `--local` runs here. With neither, `test` (and `dev`,
-  `wt test`, `wt gate`, `wt ship`, which call it) stays local while the local
-  `server-2001` lock is free, and moves to the box when the lock is held by a
-  live run and the box answers ssh within 5 s. If the box is down it queues
-  here as before. `LF_TESTBOX_AUTO=0` turns the automatic move off.
-- **What runs.** The worktree as it is now: HEAD plus uncommitted edits and
-  untracked, non-ignored files. `tools/remote/testbox.mjs` builds that
-  snapshot as a commit from a copy of the index (your index, HEAD, and branch
-  do not change), sends it with the worktree's `resourceDatabase.rdb` over
-  scp as a git bundle of the commits that are not on `origin/main`, and checks
-  it out on the box. Nothing is pushed; the box fetches main from the public
-  GitHub repo and holds no credentials.
-- **Where it runs.** `C:\LF\Life-Framework-rt-<slug>` on the box: a linked
-  worktree of the box's clone `C:\LF\Life-Framework` at a detached HEAD, kept
-  between runs so the next run only checks out what changed. A plain
-  per-run checkout would copy the whole tree each time; a `ws/<slug>` branch
-  there would be one more thing to keep in sync. Remove run dirs with
-  `testbox prune`, never by hand: their `server/profile` holds junctions into
-  the server install.
-- **What comes back.** The run streams live: the `test-e2e` lines, the
-  `SUMMARY`, failing tests, `[ELDebug:*]` lines, and the exit code (0 pass,
-  1 fail, 2 no verdict, 3 the box could not be prepared). The header prints
-  both machines' server Steam build and warns when they differ; the footer
-  prints the box's `Initializing engine, version` line. The box's
-  `console.log` is copied to
-  `server/profile/test/logs/remote-<host>-<logdir>/console.log`, so
-  `tools\cli logs` greps it, and on a failure its `SCRIPT (E)`, VME, and
-  `Unable to find` lines are printed. The summary is stamped into
-  `tmp/test-results/summaries.jsonl` with `"host"`.
-- **Limits.** `wt e2e`, `serve`, `host`, and `session` stay local. `build`
-  stays local (the box has no Workbench build step; it runs `--no-build`
-  against the rdb you send). Two runs of the same slug at once on the box are
-  not supported.
+- **Who uses it.** `test`, `dev`, `ci`, `wt test`, `wt gate`, `wt ship` (its
+  gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
+  waited (`pool: test all runs on lf-testbox ...; waited 0.7 s`) and a footer
+  with the exit code, wait, and run time. `--local`, `--remote [name]`,
+  `--machine <name>`, and `--any` pick; `LF_TESTBOX_AUTO=0` makes the
+  default `--local`.
+- **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
+  `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
+  (`server`, `clients`, `workbench`). The gitignored `lf.local.json` overrides
+  per machine with a `"pool"` key (`docs/setup.md`). `slots` is 1 everywhere
+  today; slot 1 is the machine's own `server-2001` lock (the one `serve`,
+  `host`, and `session` take too) and slot k is `server-2001-s<k>`, so a
+  machine that can run more servers at once (a network namespace or VM per
+  slot) only raises the number.
+- **Queue.** Tickets live in `<main>/tmp/wt/pool/queue/` (time, pid, slug,
+  machines wanted). A ticket may try a machine only when no older live ticket
+  wants it; tickets of dead processes are deleted. A local lock whose owner is
+  dead is taken over after any `ArmaReforgerServer` still running from that
+  owner's `server/profile` is stopped.
+- **Remote slots.** A holder (one ssh session running PowerShell on the
+  remote) creates the remote `server-2001` lock with its own pid, prepares the
+  run folder, and watches its ancestor processes. When the run ends, or this
+  process is killed, ctrl-c'd, or crashes, the local ssh dies, sshd drops the
+  session, and within about 2 s the holder stops anything still running out of
+  the run folder and deletes the lock. A remote lock whose pid is dead is
+  reclaimed by the next acquirer there. The remote CLI runs under the held
+  slot (`LF_SERVER_SLOT_HELD` names the lock and a token it must still carry).
+- **Health.** An unreachable machine (ssh connect timeout 4 s) is skipped for
+  a minute (`<main>/tmp/wt/pool/health.json`); the holder attempt itself is the
+  probe. A machine whose server Steam build differs from this PC's is skipped
+  with a `WARN`, unless it was named with `--remote <name>`.
+- **Sync.** A remote run carries the worktree as it is: HEAD plus uncommitted
+  edits plus untracked, non-ignored files, as one snapshot commit built from a
+  copy of the index (your index, HEAD, and branch do not change). The run
+  folder `C:\LF\Life-Framework-rt-<slug>` is a linked worktree of the box's
+  clone, kept between runs. The holder reports which of the snapshot, the
+  last commit this worktree sent, and `origin/main` the box has, and the git
+  bundle carries only what is missing. `resourceDatabase.rdb` is gitignored:
+  `test` refreshes the local copy first (headless Workbench; the box has none)
+  and sends it when its SHA-1 differs from the run folder's. Measured
+  2026-11-09: new run folder 5.1 s holder + 1.3 s sync, repeat 3.0 s + 0.0 s
+  (no bundle, rdb unchanged); an edit sends a ~2 KiB bundle. A run folder
+  whose rdb predated `LF_HideoutStash` got the fresh one by hash and passed the
+  stash tests (the box's main clone rdb has no `LF_HideoutStash` entry).
+- **What comes back.** The run streams live. The remote `console.log` is
+  copied to `server/profile/test/logs/remote-<machine>-<logdir>/`, so
+  `tools\cli logs` greps it; on a failure its `SCRIPT (E)`, VME, and `Unable
+  to find` lines are printed. The summary is stamped into
+  `tmp/test-results/summaries.jsonl` with `"host"`, and every run is a line
+  in `<main>/tmp/wt/pool/runs.jsonl`.
+- **Cleanup.** Each run folder holds `tmp/pool-owner.json` (PC, slug,
+  worktree). `wt prune <slug>` removes that worktree's remote run folders;
+  `pool prune` removes every folder whose worktree on this PC is gone
+  (`--unmarked` also takes older folders without the marker). Both go through
+  the box's own `tools/link-safety.mjs`, never a raw delete: `server/profile`
+  holds junctions into the server install.
+- **Cost.** A box run of the full suite takes about 22 s door to door (10 s
+  suite plus ssh, checkout, CLI start, log copy), this PC about 8 s. Four
+  concurrent `--tier all` runs from four worktrees (2026-11-09): 28-31 s wall,
+  three on this PC and one on the box, all 224/224, against 36 s for the four
+  in a row on this PC. The pool pays most when this PC's slot is held by
+  something long (`host`, `session`, `e2e`, another agent's gate).
+- **Limits.** `build` and `validate --full` stay on this PC. A pre-pool
+  branch's snapshot (no `LF_SERVER_SLOT_HELD` in its `tools/cli.mjs`) runs
+  local only until it merges main.
+
+### Sessions on a pool machine
+
+`node agent-box/session.mjs up --machine <name|any|local> --clients N`.
+Game clients need a desktop session. Over ssh there is none: on 2026-11-09
+the box showed the logon screen (`LogonUI` in session 1, no `explorer`) and
+ssh commands run in session 0, so a remote machine runs **server-only**
+sessions (`--clients 0`). Its server is started through WMI
+(`Win32_Process.Create`) because ssh kills every child of the session when
+the connection closes (a detached spawn was gone seconds later). The machine
+is remembered in `<worktree>/tmp/session-remote.json`, so `down`, `status`,
+and `restart` from that worktree go there. `--machine any` picks the first
+machine with a free slot that can run the requested clients (clients: this
+PC only). `journey` drives clients, so it runs on this PC; it refuses
+`--machine lf-testbox` and a recorded remote session. Clients on this PC can
+join a box server over the LAN (manual steps below).
 
 ### Box setup
 

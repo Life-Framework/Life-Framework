@@ -46,10 +46,11 @@ Arrival order, west to east (numbers match the map):
 | 3 | Bank and ATM | MunicipalOffice_E_01 | `ATM_Debug`, `ATM_Debug_2` on counters; `Roadmap_Bank_Vault` and `Roadmap_Bank_Bag` on the east wall | 177/187 0 256.6; vault 194.1 0 265 |
 | 4 | General store and traders | ShopHouse_E_2I01t (food store), market stalls | `Shop_GeneralStore_Debug`; `TraderChainCounter`, `PoliceDutyNPC`, `AppleTrader`, `PlumTrader`, `TomatoTrader`, `FarmerStand` | 179 0 244.3; stalls x 188..220, z 240.6 |
 | 5 | Vehicle lot and garage | Workshop_01, asphalt lot, Garage_E_01 (doors to the street) | `Roadmap_Vehicle_Lot` (pads 206 0 257.5 + 8 m steps north), `Roadmap_Vehicle_S105`, `Roadmap_Garage` | 211 0 262.5; garage 238 0 256.6 |
-| 6 | Police station and jail | Villa_E_2I01_Police, walled jail yard behind it | `PoliceStation` (duty), `Roadmap_Police_Desk`, `Roadmap_Police_Armory`, `WhitelistStation`, police spawns; `Roadmap_Jail_Cell`, `Roadmap_Jail_Door` (in the yard wall), `Roadmap_Escort_Car` | 229 0 244.3; cell 232.2 0 219 |
+| 6 | Police station and jail | Villa_E_2I01_Police, walled jail yard behind it | `Roadmap_Police_Desk` (duty), `Roadmap_Police_Armory`, police spawns (the old `PoliceStation` and `WhitelistStation` tables moved to the annex in M1-22); `Roadmap_Jail_Cell`, `Roadmap_Jail_Door` (in the yard wall), `Roadmap_Escort_Car` | desk 237.4 0 243.9; cell 232.2 0 219 |
 | 7 | Hospital and fuel station | House_Town_E_2I03; FuelStation_E_01 | `Roadmap_Hospital_Till`, `Roadmap_Hospital_Cabinet`; `Roadmap_Fuel_Till`, `Roadmap_Job_FuelCan` | 257 0 256.4; till 259 0 241.2 |
-| 8 | Org registry, hideout off a side alley | Office_E_01; cobbled alley north to a walled yard with a shed | `Roadmap_Org_Desk`; `Roadmap_Hideout_Door` (yard gate), `_Machine`, `_Stash`, `Roadmap_Convoy_Drop` in the yard; `Shop_BlackMarket_Debug`, `CrimeTrader_Debug`, `CrimeFurnace_Debug`, `Roadmap_Breach_Charge` in the alley | 288.9 0 255.7; gate 302.4 0 288 |
-| 9 | Contraband pickup | Barn_E_01 at the end of the east track | `Roadmap_Convoy_Start` | 466 0 331 |
+| 8 | Org registry, hideout off a side alley | Office_E_01; cobbled alley north to a walled yard with a shed | `Roadmap_Org_Desk`; `Roadmap_Hideout_Door` (yard gate), `_Machine`, `_Stash` in the yard; `Shop_BlackMarket_Debug`, `CrimeTrader_Debug`, `CrimeFurnace_Debug`, `Roadmap_Breach_Charge` in the alley | 288.9 0 255.7; gate 302.4 0 288 |
+| 9 | Contraband pickup | Barn_E_01 at the end of the east track; crates, lamp, parked van | `Roadmap_Convoy_Start` | 466 0 331 |
+| 9b | Contraband drop (M1-14) | Back door of the pub on the square, off the farm lane; kegs, empty crates, lamp | `Roadmap_Convoy_Drop` | 131.5 0 284 |
 | B | Lock-up (forced entry) | Brick-walled yard beside the fuel station | `Roadmap_Breach_Door` as its gate | 297.4 0 241.5 |
 
 Outskirts: the farm north of the square (farmhouse, barn with the apple juicer,

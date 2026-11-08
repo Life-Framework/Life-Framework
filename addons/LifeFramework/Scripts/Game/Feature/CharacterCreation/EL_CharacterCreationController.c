@@ -98,4 +98,28 @@ modded class SCR_PlayerController
 		if (respawnSystem)
 			respawnSystem.DestroyLoadingPlaceholder();
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A returning player whose character the save restored never sees the form and is never
+	//! spawned (EL_SpawnLogic: "already controls a character"), so nothing else clears the splash.
+	//! It stayed on screen with game sound paused after every restart. Taking control of a living
+	//! character is the moment the splash has to go, whichever path handed it over.
+	override void OnControlledEntityChanged(IEntity from, IEntity to)
+	{
+		super.OnControlledEntityChanged(from, to);
+
+		if (!to || !EL_IsLocalController() || !GetGame().GetWorkspace())
+			return;
+
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(to);
+		if (!character)
+			return;
+
+		CharacterControllerComponent characterController = CharacterControllerComponent.Cast(character.FindComponent(CharacterControllerComponent));
+		if (characterController && characterController.GetLifeState() == ECharacterLifeState.DEAD)
+			return;
+
+		EL_DestroySpawnSplash();
+		EL_Debug.Info("CharacterCreation", "spawn splash cleared: local player controls a character");
+	}
 }

@@ -1,0 +1,19 @@
+{
+  "comment": "Test pool machines (tools/remote/pool.mjs, docs/worktrees.md 'Test pool'). Override per machine with the \"pool\" key of the gitignored lf.local.json. slots = concurrent test servers; every -server boot binds UDP 2001, so 1 per OS today.",
+  "machines": [
+    {
+      "name": "local",
+      "via": "local",
+      "slots": 1,
+      "caps": ["server", "clients", "workbench"]
+    },
+    {
+      "name": "lf-testbox",
+      "via": "ssh",
+      "host": "lf-testbox",
+      "root": "C:/LF/Life-Framework",
+      "slots": 1,
+      "caps": ["server"]
+    }
+  ]
+}

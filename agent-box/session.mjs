@@ -8,6 +8,8 @@
 //   node agent-box/session.mjs down               close every process the session started
 //   node agent-box/session.mjs status             pids, profiles, logs
 //   node agent-box/session.mjs state <client>     faction, duty, wanted, cash, bank, job, org
+//   node agent-box/session.mjs film <seconds> [--client 1] [--fps 12]   in-engine clip of one client
+//   node agent-box/session.mjs proof --film [--film-client 1]          the proof, filmed in-engine
 //
 // Any harness verb targets one client with --client <n>:
 //   node agent-box/harness.mjs --client 2 look
@@ -32,7 +34,7 @@
 
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
@@ -185,7 +187,8 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", missi
 export function parseClients(args) {
   const i = args.indexOf("--clients");
   const n = i === -1 ? 2 : Number(args[i + 1]);
-  if (!Number.isInteger(n) || n < 1 || n > MAX_CLIENTS) throw new Error(`--clients must be 1..${MAX_CLIENTS}`);
+  // 0 is a server-only session (the only kind a remote pool machine runs).
+  if (!Number.isInteger(n) || n < 0 || n > MAX_CLIENTS) throw new Error(`--clients must be 0..${MAX_CLIENTS}`);
   return n;
 }
 
@@ -296,6 +299,15 @@ export function selftestSession() {
   if (!judgeInteraction(m1, m2, m1, g2).length) failures.push("judgeInteraction passed a giver who kept the cash");
   if (!judgeInteraction(m1, m2, g1, g2.replace("cash=550", "cash=600")).length) failures.push("judgeInteraction passed cash out of thin air");
   if (!judgeInteraction(m1, m2, g1, g2.replace("known=1", "known=0")).length) failures.push("judgeInteraction passed a receiver who never learned the name");
+  const d1 = "faction=CIVILIAN duty=0 wanted=1 dispatch=0 lastdispatch=none alarm=normal";
+  const d2 = `faction=POLICE duty=1 wanted=0 toast=${ROB_ALERT} dispatch=1 lastdispatch=#LF-Offence_Robbery@#LF-Sign_Fuel_Title alarm=none`;
+  const q1 = d1.replace("alarm=normal", "alarm=loud");
+  const q2 = d2.replace("duty=1", "duty=0").replace("faction=POLICE", "faction=CIVILIAN");
+  if (judgeDispatch(d1, d2, q1, q2).length) failures.push(`judgeDispatch failed a good run: ${judgeDispatch(d1, d2, q1, q2)}`);
+  if (!judgeDispatch(d1, d2.replace("dispatch=1", "dispatch=0"), q1, q2).length) failures.push("judgeDispatch passed an officer who got no dispatch");
+  if (!judgeDispatch(d1, d2, d1, q2).length) failures.push("judgeDispatch passed a normal alarm with nobody on duty");
+  if (!judgeDispatch(d1, d2, q1, q2.replace("dispatch=1", "dispatch=2")).length) failures.push("judgeDispatch passed a dispatch with nobody on duty");
+  if (!judgeDispatch(d1, d2.replace("@#LF", "@Ada_#LF"), q1, q2).length) failures.push("judgeDispatch passed a dispatch naming the robber");
   const o1 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none player=1";
   const oa1 = o1.replace("cash=500", "cash=250").replace("org=none", `org=${ORG_NAME}`);
   const oa2 = o1.replace("player=1", "player=2").replace("org=none", `org=${ORG_NAME}`);
@@ -498,7 +510,8 @@ async function runOrg(args) {
 // menu, dev gate open on the bare DebugWorld) who receives the alert. Prints
 // `state` for both before and after, then judges the after line.
 export const ROB_TARGET = "Roadmap_Fuel_Till";
-export const ROB_ALERT = "#EL-Police_Alert_Robbery";
+// The officer's last toast after a robbery: the radio dispatch line (LF_Dispatch, M1-20).
+export const ROB_ALERT = "#LF-Dispatch_Radio";
 
 export function judgeProof(before1, after1, after2) {
   const fails = [];
@@ -669,6 +682,31 @@ async function runPoliceProof() {
   return fails.length ? 1 : 0;
 }
 
+// Runs fn while one client records itself in-engine (tools/film/engine.mjs),
+// then encodes the clip. Works on the hidden LF-Agents desktop.
+async function filmed(label, rest, fn) {
+  const eng = await import("../tools/film/engine.mjs");
+  const h = await import("./harness.mjs");
+  const i = rest.indexOf("--film-client");
+  const client = i === -1 ? 1 : Number(rest[i + 1]);
+  const box = clientBox(sessionDir(), client);
+  const send = (spec, t) => {
+    h.setBoxes([box]);
+    return h.sendCommand(spec, t);
+  };
+  const name = `${label.replace(/[^A-Za-z0-9]/g, "_")}_${Date.now() % 100000000}`;
+  const start = eng.engineStart(send, name);
+  if (!start.ok) console.log(`film: start on client ${client} failed: ${start.error}`);
+  const code = await fn();
+  if (!start.ok) return code;
+  const clip = eng.engineStop(send, (alias) => {
+    h.setBoxes([box]);
+    return h.resolveCapture(alias);
+  }, { label: `session-${label}` });
+  console.log(`film: client ${client} ${eng.describe(clip)}`);
+  return code;
+}
+
 // M1-27: client 1 shoots client 2 at the fuel station (murder, wanted), then on the town square
 // (safe zone, refused). `shoot` is one lethal hit through the vanilla HandleDamage path.
 async function runMurderProof() {
@@ -754,8 +792,306 @@ async function runMurderProof() {
   return fails.length ? 1 : 0;
 }
 
+// The ticket deadlines the server will run with (Configs/Police/LF_Police.conf).
+export function ticketDeadlines(confText) {
+  const first = Number(/m_iTicketFirstDeadline\s+(\d+)/.exec(confText)?.[1] ?? 1800);
+  const second = Number(/m_iTicketSecondDeadline\s+(\d+)/.exec(confText)?.[1] ?? 1800);
+  return { first, second };
+}
+
+// M1-19 on a running `up --clients 2` session (roster: player 2): client 2 clocks in and
+// writes client 1 a ticket face to face; client 1 reads it and pays at the desk; client 2
+// writes a second one that client 1 leaves unpaid past both deadlines (doubled, then
+// wanted +1). Needs short deadlines in LF_Police.conf (each 120 s or less) for the run.
+// Screenshots: the ticket pad, the ticket card, the paid receipt, the doubled ticket.
+async function runTicketProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const conf = readFileSync(join(ROOT, "addons", "LifeFramework", "Configs", "Police", "LF_Police.conf"), "utf8");
+  const { first, second } = ticketDeadlines(conf);
+  if (first > 120 || second > 120) {
+    console.log(`ticket proof: the deadlines are ${first} s and ${second} s; set both to 120 or less in LF_Police.conf for the run`);
+    return 1;
+  }
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => parseState(on(n, { verb: "state" }, 10000).detail);
+  const waitText = (n, text) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.waitForText(text, 10000);
+    console.log(`client ${n}: wait-text ${text} -> ${r.status} ${r.found ? "found" : r.detail}`);
+    return r;
+  };
+  const fails = [];
+  const must = (r, what) => {
+    if (r.status !== "ok") fails.push(`${what} returned ${r.status} ${r.detail}`);
+    return r;
+  };
+
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  const suspect = `Player${state(1).player}`;
+
+  on(2, { verb: "stand", entityName: "Roadmap_Police_Desk" });
+  wait(2500);
+  must(on(2, { verb: "use", className: "EL_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000), "clock in");
+  wait(2500);
+
+  const write = (offenceRow, shot) => {
+    on(2, { verb: "stand", entityName: suspect });
+    wait(2500);
+    on(2, { verb: "look" });
+    must(on(2, { verb: "use", className: "LF_PlayerRoleAction", entityName: suspect }, 10000), "Write ticket");
+    must(waitText(2, "POLICE TICKET"), "the ticket pad");
+    if (shot) on(2, { verb: "capture", mode: "ui", name: shot }, 25000);
+    on(2, { verb: "ui", mode: "text" });
+    must(on(2, { verb: "click", widget: `TicketOffence${offenceRow}` }), `offence row ${offenceRow}`);
+    wait(3000);
+  };
+
+  // Ticket 1: written, read, paid at the desk.
+  const before = state(1);
+  write(0, "m1_19_ticket_pad");
+  must(waitText(1, "Issued to"), "the ticket card on the holder's screen");
+  on(1, { verb: "capture", mode: "ui", name: "m1_19_ticket_card" }, 25000);
+  on(1, { verb: "ui", mode: "text" });
+  on(1, { verb: "click", widget: "TicketClose" });
+  const written = state(1);
+  if (written.tickets !== "1") fails.push(`client 1 carries ${written.tickets} unpaid ticket(s) after the write, expected 1`);
+  const owed = Number(written.owed);
+
+  on(1, { verb: "stand", entityName: "Roadmap_Police_Desk" });
+  wait(2500);
+  on(1, { verb: "look" });
+  must(on(1, { verb: "use", className: "LF_FineTicketPayAction", entityName: "Roadmap_Police_Desk" }, 10000), "Pay ticket");
+  must(waitText(1, "PAID"), "the stamped receipt");
+  on(1, { verb: "capture", mode: "ui", name: "m1_19_ticket_receipt" }, 25000);
+  on(1, { verb: "ui", mode: "text" });
+  on(1, { verb: "click", widget: "TicketClose" });
+  const paid = state(1);
+  if (Number(paid.cash) !== Number(before.cash) - owed) fails.push(`client 1 cash ${before.cash} -> ${paid.cash}, expected -${owed}`);
+  if (paid.tickets !== "0") fails.push(`client 1 still carries ${paid.tickets} unpaid ticket(s) after paying`);
+
+  // Ticket 2: left unpaid past both deadlines.
+  write(1, null);
+  on(1, { verb: "click", widget: "TicketClose" });
+  const second1 = state(1);
+  const base = Number(second1.owed);
+  console.log(`waiting ${first + 5} s of online time for the first deadline`);
+  wait((first + 5) * 1000);
+  const late = state(1);
+  if (Number(late.owed) !== base * 2) fails.push(`after the first deadline the ticket owes ${late.owed}, expected ${base * 2}`);
+  if (late.wanted !== second1.wanted) fails.push(`the first deadline changed wanted ${second1.wanted} -> ${late.wanted}`);
+  on(1, { verb: "stand", entityName: "Roadmap_Police_Desk" });
+  wait(2500);
+  on(1, { verb: "look" });
+  on(1, { verb: "capture", mode: "ui", name: "m1_19_ticket_doubled_at_desk" }, 25000);
+  console.log(`waiting ${second + 5} s of online time for the second deadline`);
+  wait((second + 5) * 1000);
+  const wanted = state(1);
+  if (Number(wanted.wanted) !== Number(second1.wanted) + 1) fails.push(`after the second deadline wanted is ${wanted.wanted}, expected ${Number(second1.wanted) + 1}`);
+
+  console.log("");
+  console.log(`before         client 1: ${JSON.stringify(before)}`);
+  console.log(`written        client 1: ${JSON.stringify(written)}`);
+  console.log(`paid           client 1: ${JSON.stringify(paid)}`);
+  console.log(`second written client 1: ${JSON.stringify(second1)}`);
+  console.log(`first deadline client 1: ${JSON.stringify(late)}`);
+  console.log(`second deadln  client 1: ${JSON.stringify(wanted)}`);
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "ticket proof: FAIL" : "ticket proof: PASS (written face to face, paid at the desk in cash, unpaid one doubled then wanted +1)");
+  return fails.length ? 1 : 0;
+}
+
+// --machine <name|any|local> (tools/pool.json). Game clients need a desktop
+// session; over ssh there is none (the box shows the logon screen, ssh runs in
+// session 0), so a remote machine runs server-only sessions (--clients 0) and
+// clients join it over the LAN. The chosen remote is remembered per worktree
+// in tmp/session-remote.json, so down/status/state/restart from this worktree
+// follow it (the local session dir is shared by every checkout on this PC).
+function remotePointerFile() {
+  return join(ROOT, "tmp", "session-remote.json");
+}
+
+export function readRemotePointer() {
+  try {
+    return JSON.parse(readFileSync(remotePointerFile(), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+async function routeMachine(cmd, rest) {
+  const i = rest.indexOf("--machine");
+  const want = i === -1 ? null : String(rest[i + 1] ?? "");
+  const args = i === -1 ? rest : rest.filter((_, k) => k !== i && k !== i + 1);
+  const pool = await import("../tools/remote/pool.mjs");
+  const machines = pool.loadMachines(ROOT);
+  const ptr = readRemotePointer();
+  if (cmd !== "up") {
+    if (want === "local" || !ptr) return { local: true, args };
+    const m = pool.findMachine(machines, ptr.machine);
+    if (!m) throw new Error(`session is on ${ptr.machine}, which is not in the pool any more; delete ${remotePointerFile()}`);
+    console.log(`session: on ${m.name} (${ptr.dir})`);
+    const code = await pool.runIn(m, ptr.dir, "agent-box/session.mjs", [cmd, ...args]);
+    if (cmd === "down" && code === 0) rmSync(remotePointerFile(), { force: true });
+    return { code };
+  }
+  if (!want || want === "local") return { local: true, args };
+  const clients = parseClients(args);
+  let target = null;
+  if (want === "any") {
+    for (const m of machines) {
+      if (clients > 0 && !m.caps.includes("clients")) continue;
+      if (m.via === "ssh" && !pool.probe(ROOT, m).reachable) continue;
+      if (pool.freeSlotOn(ROOT, m)) {
+        target = m;
+        break;
+      }
+    }
+    if (!target) {
+      console.log(`session: no machine with a free server slot${clients > 0 ? " that can run game clients" : ""}; queuing here (--wait) or retry`);
+      return { local: true, args };
+    }
+  } else {
+    target = pool.findMachine(machines, want);
+    if (!target) throw new Error(`--machine ${want}: not in the pool (${machines.map((m) => m.name).join(", ")})`);
+  }
+  if (target.via === "local") return { local: true, args };
+  if (clients > 0 && !target.caps.includes("clients")) {
+    console.log(`session: ${target.name} cannot start game clients over ssh (no desktop session); use --clients 0 for a server-only session there and join it from this PC`);
+    return { code: 2 };
+  }
+  if (ptr) {
+    console.log(`session: one is recorded on ${ptr.machine}; 'node agent-box/session.mjs down' first`);
+    return { code: 1 };
+  }
+  console.log(`session: server-only session on ${target.name}`);
+  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", ...args] });
+  mkdirSync(dirname(remotePointerFile()), { recursive: true });
+  if (r.code === 0) writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir: r.rDir, at: new Date().toISOString(), root: ROOT }));
+  return { code: r.code };
+}
+
+// M1-20 on a running `up --clients 2` session with client 2 on the roster
+// (`session.mjs roster 2` before up): client 2 clocks in, client 1 robs the
+// till. Client 1 hears the normal alarm; client 2 gets the radio dispatch (place
+// and description, no name) and reads it on the wanted board. Client 2 clocks
+// out, the till cooldown runs out, client 1 robs again: nobody is on duty, so
+// the alarm is the loud one and no dispatch goes out.
+export const TILL_COOLDOWN_MS = 61000;
+
+export function judgeDispatch(robbed1, robbed2, loud1, loud2) {
+  const fails = [];
+  const r1 = parseState(robbed1);
+  const r2 = parseState(robbed2);
+  const l1 = parseState(loud1);
+  const l2 = parseState(loud2);
+  if (r1.alarm !== "normal") fails.push(`client 1 hears alarm=${r1.alarm} with an officer on duty, expected normal`);
+  if (r2.dispatch !== "1") fails.push(`client 2 dispatch=${r2.dispatch} after the first robbery, expected 1`);
+  if (!String(r2.lastdispatch ?? "").startsWith("#LF-Offence_Robbery@")) fails.push(`client 2 lastdispatch=${r2.lastdispatch}, expected the robbery and its place`);
+  // The robber's first name (the surname "Robber" is inside the offence key itself).
+  for (const name of [ARRIVAL_NAMES[1][0], ARRIVAL_NAMES[1].join("_")]) {
+    if (String(r2.lastdispatch ?? "").includes(name)) fails.push(`client 2's dispatch names the robber (${name})`);
+  }
+  if (r2.toast !== ROB_ALERT) fails.push(`client 2 last toast is ${r2.toast}, expected ${ROB_ALERT}`);
+  if (l1.alarm !== "loud") fails.push(`client 1 hears alarm=${l1.alarm} with nobody on duty, expected loud`);
+  if (l2.dispatch !== "1") fails.push(`client 2 dispatch=${l2.dispatch} off duty, expected still 1 (no dispatch with nobody on duty)`);
+  if (l2.duty !== "0") fails.push(`client 2 duty=${l2.duty} for the loud robbery, expected 0`);
+  return fails;
+}
+
+async function runDispatchProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => on(n, { verb: "state" }, 10000).detail;
+  const duty = (n) => {
+    on(n, { verb: "stand", entityName: "Roadmap_Police_Desk" });
+    wait(2500);
+    on(n, { verb: "look" });
+    const r = on(n, { verb: "use", className: "EL_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000);
+    wait(2500);
+    return r;
+  };
+  const rob = (n) => {
+    on(n, { verb: "stand", entityName: ROB_TARGET });
+    wait(2500);
+    on(n, { verb: "look" });
+    const r = on(n, { verb: "use", className: "EL_RobAction", entityName: ROB_TARGET }, 10000);
+    wait(3000);
+    return r;
+  };
+  const fails = [];
+
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  if (duty(2).status !== "ok") fails.push("client 2 clock in failed");
+  // Client 2 waits at the station, out of the till's normal hear range.
+  const first = rob(1);
+  if (first.status !== "ok") fails.push(`rob returned ${first.status} ${first.detail}`);
+  const robbed1 = state(1);
+  on(1, { verb: "capture", mode: "ui", name: "m1_20_alarm_normal_client1" }, 25000);
+  wait(1000);
+  on(2, { verb: "capture", mode: "ui", name: "m1_20_dispatch_client2" }, 25000);
+  const robbed2 = state(2);
+
+  on(2, { verb: "stand", entityName: "Roadmap_Police_WantedBoard" });
+  wait(2500);
+  on(2, { verb: "look" });
+  on(2, { verb: "use", className: "LF_WantedBoardReadAction", entityName: "Roadmap_Police_WantedBoard" }, 10000);
+  wait(2500);
+  on(2, { verb: "capture", mode: "ui", name: "m1_20_board_dispatch_client2" }, 25000);
+  on(2, { verb: "ui" });
+  on(2, { verb: "click", widget: "Close" });
+  wait(800);
+
+  if (duty(2).status !== "ok") fails.push("client 2 clock out failed");
+  console.log(`waiting ${TILL_COOLDOWN_MS / 1000} s for the till cooldown`);
+  wait(TILL_COOLDOWN_MS);
+  const second = rob(1);
+  if (second.status !== "ok") fails.push(`second rob returned ${second.status} ${second.detail}`);
+  const loud1 = state(1);
+  on(1, { verb: "capture", mode: "ui", name: "m1_20_alarm_loud_client1" }, 25000);
+  const loud2 = state(2);
+
+  console.log("");
+  console.log(`robbed (officer on duty) client 1: ${robbed1}`);
+  console.log(`robbed (officer on duty) client 2: ${robbed2}`);
+  console.log(`robbed (nobody on duty)  client 1: ${loud1}`);
+  console.log(`robbed (nobody on duty)  client 2: ${loud2}`);
+  fails.push(...judgeDispatch(robbed1, robbed2, loud1, loud2));
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "dispatch proof: FAIL" : "dispatch proof: PASS (normal alarm + radio dispatch on duty; loud alarm and no dispatch off duty)");
+  return fails.length ? 1 : 0;
+}
+
 async function main(argv) {
-  const [cmd, ...rest] = argv;
+  let [cmd, ...rest] = argv;
+  if (["up", "down", "status", "restart", "state"].includes(cmd)) {
+    const routed = await routeMachine(cmd, rest);
+    if (!routed.local) return routed.code;
+    rest = routed.args;
+  }
+  if (rest.includes("--film") && ["proof", "police-proof", "murder-proof", "interaction"].includes(cmd)) {
+    const run = { proof: runProof, "police-proof": runPoliceProof, "murder-proof": runMurderProof, interaction: runInteraction }[cmd];
+    return filmed(cmd, rest, run);
+  }
+  if (cmd === "film") {
+    const r = spawnSync(process.execPath, [join(ROOT, "tools", "film", "film.mjs"), "engine", ...rest, ...(rest.includes("--client") ? [] : ["--client", "1"])], { windowsHide: true, stdio: "inherit" });
+    return r.status ?? 1;
+  }
   if (cmd === "selftest") {
     const f = selftestSession();
     for (const x of f) console.log(`  ${x}`);
@@ -768,6 +1104,8 @@ async function main(argv) {
   }
   if (cmd === "proof") return runProof();
   if (cmd === "police-proof") return runPoliceProof();
+  if (cmd === "dispatch-proof") return runDispatchProof();
+  if (cmd === "ticket-proof") return runTicketProof();
   if (cmd === "murder-proof") return runMurderProof();
   if (cmd === "roster") {
     const ids = rest.map(Number).filter((n) => Number.isInteger(n) && n > 0);
@@ -789,7 +1127,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | proof | interaction | org [--shot] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|dispatch-proof|interaction [--film] | org [--shot] | selftest");
   return cmd ? 1 : 0;
 }
 

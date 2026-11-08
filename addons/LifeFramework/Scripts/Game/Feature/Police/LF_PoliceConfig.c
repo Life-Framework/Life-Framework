@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------
-//! Police tuning: per-rank permissions, and the wanted board and crime reports (M1-11).
+//! Police tuning: per-rank permissions, the wanted board and crime reports (M1-11), and the
+//! paper ticket (M1-19): offences with fixed amounts, both deadlines, and the late rule.
 //! Loaded from Configs/Police/LF_Police.conf.
 //! Ranks are LF_PoliceRanks.PATROL (0) and SENIOR (1). A minimum rank of 0 opens the action to
 //! every on-duty officer. Flagship default (docs/decisions.md, "Every on-duty officer can arrest"):
@@ -17,6 +18,17 @@ class LF_PoliceConfig
 	static const float DEFAULT_PLACE_RADIUS = 80;
 	static const float DEFAULT_BOARD_READ_DISTANCE = 4;
 	static const int DEFAULT_BOARD_MAX_POSTERS = 8;
+	static const float DEFAULT_ALARM_SECONDS = 30;
+	static const float DEFAULT_LOUD_ALARM_SECONDS = 60;
+	static const ResourceName DEFAULT_ALARM_PREFAB = "{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et";
+	static const ResourceName DEFAULT_LOUD_ALARM_PREFAB = "{8E15F0B7A26C4D93}Prefabs/Police/LF_SiteAlarm_Loud.et";
+	static const ResourceName DEFAULT_RADIO_SOUND_PROJECT = "{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp";
+	static const string DEFAULT_RADIO_SOUND_EVENT = "SOUND_RADIO_SIGNAL_2";
+	static const int DEFAULT_DISPATCH_LOG_LINES = 5;
+	static const int DEFAULT_TICKET_FIRST_DEADLINE = 1800;
+	static const int DEFAULT_TICKET_SECOND_DEADLINE = 1800;
+	static const float DEFAULT_TICKET_LATE_MULTIPLIER = 2;
+	static const int DEFAULT_TICKET_LATE_WANTED = 1;
 	static const int DEFAULT_MURDER_WANTED = 3;
 	static const bool DEFAULT_OFFICER_KILL_OF_WANTED_EXEMPT = true;
 
@@ -41,6 +53,42 @@ class LF_PoliceConfig
 	[Attribute("8", UIWidgets.Auto, "Most posters the wanted board shows, newest first")]
 	int m_iBoardMaxPosters;
 
+	[Attribute("30", UIWidgets.Auto, "Seconds the site alarm sounds when at least one officer is on duty (M1-20)")]
+	float m_fAlarmSeconds;
+
+	[Attribute("60", UIWidgets.Auto, "Seconds the site alarm sounds when nobody is on duty: the louder, longer alarm")]
+	float m_fLoudAlarmSeconds;
+
+	[Attribute("{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et", UIWidgets.ResourceNamePicker, "Alarm spawned at the site when officers are on duty. Its LF_SiteAlarmComponent sets the sound, hear range, and light", "et")]
+	ResourceName m_sAlarmPrefab;
+
+	[Attribute("{8E15F0B7A26C4D93}Prefabs/Police/LF_SiteAlarm_Loud.et", UIWidgets.ResourceNamePicker, "Alarm spawned at the site when nobody is on duty: the loud siren, a longer range, a brighter flashing light", "et")]
+	ResourceName m_sLoudAlarmPrefab;
+
+	[Attribute("{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp", UIWidgets.ResourceNamePicker, "Sound project of the radio chirp an on-duty officer hears with a dispatch", "acp")]
+	ResourceName m_sRadioSoundProject;
+
+	[Attribute("SOUND_RADIO_SIGNAL_2", UIWidgets.EditBox, "Sound event of the radio chirp")]
+	string m_sRadioSoundEvent;
+
+	[Attribute("5", UIWidgets.Auto, "Dispatch lines the wanted board shows to on-duty police, newest first")]
+	int m_iDispatchLogLines;
+
+
+	[Attribute("", UIWidgets.Object, "Offences an officer can write on a ticket, each with its fixed amount. The rank fine cap decides which ones an officer may write")]
+	ref array<ref LF_TicketOffence> m_aTicketOffences;
+
+	[Attribute("1800", UIWidgets.Auto, "Online seconds a ticket holder has to pay at the police desk before the amount goes up")]
+	int m_iTicketFirstDeadline;
+
+	[Attribute("1800", UIWidgets.Auto, "Further online seconds after the first deadline before an unpaid ticket makes the holder wanted")]
+	int m_iTicketSecondDeadline;
+
+	[Attribute("2", UIWidgets.Auto, "The amount is multiplied by this once, at the first deadline")]
+	float m_fTicketLateMultiplier;
+
+	[Attribute("1", UIWidgets.Auto, "Wanted levels added at the second deadline")]
+	int m_iTicketLateWanted;
 	[Attribute("3", UIWidgets.Auto, "Wanted levels a murder adds (M1-27). Robbery adds 1; wanted caps at 5")]
 	int m_iMurderWanted;
 
@@ -140,5 +188,158 @@ class LF_PoliceConfig
 			return DEFAULT_BOARD_MAX_POSTERS;
 
 		return config.m_iBoardMaxPosters;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds the site alarm runs; the loud alarm when nobody is on duty.
+	static float AlarmSeconds(bool loud)
+	{
+		LF_PoliceConfig config = Get();
+		if (loud)
+		{
+			if (!config)
+				return DEFAULT_LOUD_ALARM_SECONDS;
+
+			return config.m_fLoudAlarmSeconds;
+		}
+
+		if (!config)
+			return DEFAULT_ALARM_SECONDS;
+
+		return config.m_fAlarmSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static ResourceName AlarmPrefab(bool loud)
+	{
+		LF_PoliceConfig config = Get();
+		if (loud)
+		{
+			if (!config)
+				return DEFAULT_LOUD_ALARM_PREFAB;
+
+			return config.m_sLoudAlarmPrefab;
+		}
+
+		if (!config)
+			return DEFAULT_ALARM_PREFAB;
+
+		return config.m_sAlarmPrefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static ResourceName RadioSoundProject()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_RADIO_SOUND_PROJECT;
+
+		return config.m_sRadioSoundProject;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string RadioSoundEvent()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_RADIO_SOUND_EVENT;
+
+		return config.m_sRadioSoundEvent;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int DispatchLogLines()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_DISPATCH_LOG_LINES;
+
+		return config.m_iDispatchLogLines;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ticket offences, in form order. A missing config or an empty list is the flagship list.
+	static void TicketOffences(notnull array<ref LF_TicketOffence> outOffences)
+	{
+		outOffences.Clear();
+		LF_PoliceConfig config = Get();
+		if (config && config.m_aTicketOffences)
+		{
+			foreach (LF_TicketOffence offence : config.m_aTicketOffences)
+			{
+				if (offence && !offence.m_sName.IsEmpty() && offence.m_iAmount > 0)
+					outOffences.Insert(LF_TicketOffence.Create(offence.m_sName, offence.m_iAmount));
+			}
+
+			if (!outOffences.IsEmpty())
+				return;
+		}
+
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceSpeeding", 200));
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceDisturbance", 150));
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceRecklessDriving", 500));
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceBrandishing", 800));
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceCrash", 1500));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TicketFirstDeadline()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config || config.m_iTicketFirstDeadline <= 0)
+			return DEFAULT_TICKET_FIRST_DEADLINE;
+
+		return config.m_iTicketFirstDeadline;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TicketSecondDeadline()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config || config.m_iTicketSecondDeadline <= 0)
+			return DEFAULT_TICKET_SECOND_DEADLINE;
+
+		return config.m_iTicketSecondDeadline;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float TicketLateMultiplier()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config || config.m_fTicketLateMultiplier < 1)
+			return DEFAULT_TICKET_LATE_MULTIPLIER;
+
+		return config.m_fTicketLateMultiplier;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TicketLateWanted()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config || config.m_iTicketLateWanted < 0)
+			return DEFAULT_TICKET_LATE_WANTED;
+
+		return config.m_iTicketLateWanted;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One line of the ticket form: the offence the officer ticks and its fixed amount.
+[BaseContainerProps()]
+class LF_TicketOffence
+{
+	[Attribute("", UIWidgets.EditBox, "Offence name, a localization key")]
+	string m_sName;
+
+	[Attribute("100", UIWidgets.Auto, "Fixed amount in cash")]
+	int m_iAmount;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_TicketOffence Create(string name, int amount)
+	{
+		LF_TicketOffence offence = new LF_TicketOffence();
+		offence.m_sName = name;
+		offence.m_iAmount = amount;
+		return offence;
 	}
 }

@@ -53,16 +53,6 @@ GenericEntity CementBuilderStand {
    coords 0 0 -1.1
   }
 
-  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
-   components {
-    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
-     m_bGradualLightning 0
-     m_fLV 2.6
-     m_eInitialLightState LIT
-    }
-   }
-   coords 0 0.9 0.7
-  }
  }
 }
 SCR_DestructibleBuildingEntity CementPlant_Debug : "{A92A5F3B79FF56BE}Prefabs/Structures/Industrial/Houses/ConcretePlant_E_01.et" {

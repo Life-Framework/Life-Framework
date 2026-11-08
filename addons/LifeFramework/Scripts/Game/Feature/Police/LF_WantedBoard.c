@@ -2,7 +2,8 @@
 //! The wanted board at the police station: a cork board of paper posters, one per crime report
 //! (LF_WantedReports). Reading it asks the server, which answers per read with what this reader
 //! may see; nothing is replicated continuously.
-//!   on-duty police : offence, clothing, vehicle, place, wanted level; the name once identified
+//!   on-duty police : offence, clothing, vehicle, place, wanted level; the name once identified;
+//!                    below the posters, the dispatch log (LF_Dispatch, M1-20)
 //!   anyone else    : the public poster, the same without the place
 //! The name is never on a poster before the server marked the report identified.
 //------------------------------------------------------------------------------------------------
@@ -95,8 +96,13 @@ class LF_WantedBoard
 		array<string> places = {};
 		array<int> levels = {};
 		int count = BuildPosters(police, LF_PoliceConfig.BoardMaxPosters(), names, offences, clothing, vehicles, places, levels);
-		EL_Debug.Info(FEATURE, string.Format("board read by player %1: police=%2 posters=%3", playerId, police, count));
-		controller.LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels);
+		// The dispatch log (M1-20) is pinned beside the posters for officers only.
+		array<string> dispatches = {};
+		if (police)
+			LF_Dispatch.BuildBoardEntries(LF_PoliceConfig.DispatchLogLines(), dispatches);
+
+		EL_Debug.Info(FEATURE, string.Format("board read by player %1: police=%2 posters=%3 dispatches=%4", playerId, police, count, dispatches.Count()));
+		controller.LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels, dispatches);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -108,7 +114,7 @@ class LF_WantedBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: the poster lines of the card (no UI), so a test reads what a player would see.
-	static array<ref LF_UIPart> BuildParts(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels)
+	static array<ref LF_UIPart> BuildParts(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches = null)
 	{
 		array<ref LF_UIPart> parts = {};
 		if (police)
@@ -134,6 +140,17 @@ class LF_WantedBoard
 		{
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Poster" + i, PosterHeadline(names[i], offences[i], levels[i])));
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Seen" + i, PosterDescription(clothing[i], vehicles[i], places[i])));
+		}
+
+		if (police && dispatches && !dispatches.IsEmpty())
+		{
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "DispatchHeading", WidgetManager.Translate("#LF-Dispatch_BoardHeading")));
+			foreach (int index, string entry : dispatches)
+			{
+				string line = LF_Dispatch.BoardLine(entry);
+				if (!line.IsEmpty())
+					parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Dispatch" + index, line));
+			}
 		}
 
 		if (!police)
@@ -200,7 +217,7 @@ class LF_WantedBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static string ResolveKey(string value)
+	static string ResolveKey(string value)
 	{
 		if (value.StartsWith("#"))
 			return WidgetManager.Translate(value);
@@ -210,7 +227,7 @@ class LF_WantedBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! A place is a sign title (key or text) or "<grid key> 002-001".
-	protected static string ResolvePlace(string place)
+	static string ResolvePlace(string place)
 	{
 		if (place.StartsWith(LF_WantedReports.PLACE_GRID_KEY + " "))
 			return WidgetManager.Translate(LF_WantedReports.PLACE_GRID_KEY, place.Substring(LF_WantedReports.PLACE_GRID_KEY.Length() + 1, place.Length() - LF_WantedReports.PLACE_GRID_KEY.Length() - 1));
@@ -220,10 +237,10 @@ class LF_WantedBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: the server's answer arrived; open the card of posters.
-	static void OpenCard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels)
+	static void OpenCard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches = null)
 	{
 		Hide();
-		s_Screen = LF_UIScreen.Open(BuildParts(police, names, offences, clothing, vehicles, places, levels));
+		s_Screen = LF_UIScreen.Open(BuildParts(police, names, offences, clothing, vehicles, places, levels, dispatches));
 		if (!s_Screen)
 		{
 			EL_Debug.Error(FEATURE, "wanted card failed to open");
@@ -255,6 +272,14 @@ class LF_WantedBoard
 			count = offences.Count();
 
 		EL_Debug.Info(FEATURE, string.Format("wanted card open: police=%1 posters=%2", police, count));
+		if (dispatches)
+		{
+			foreach (int line, string entry : dispatches)
+			{
+				EL_Debug.Info(FEATURE, string.Format("dispatch line %1: %2", line, entry));
+			}
+		}
+
 		bool sizesMatch = names && clothing && vehicles && places && levels && names.Count() == count && clothing.Count() == count && vehicles.Count() == count && places.Count() == count && levels.Count() == count;
 		if (!sizesMatch)
 			return;
@@ -351,12 +376,12 @@ modded class SCR_PlayerController
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: send this player the posters.
-	void LF_ShowWantedBoard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels)
+	void LF_ShowWantedBoard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches)
 	{
 		if (EL_IsLocalController())
-			RpcDo_LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels);
+			RpcDo_LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels, dispatches);
 		else
-			Rpc(RpcDo_LF_ShowWantedBoard, police, names, offences, clothing, vehicles, places, levels);
+			Rpc(RpcDo_LF_ShowWantedBoard, police, names, offences, clothing, vehicles, places, levels, dispatches);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -368,7 +393,7 @@ modded class SCR_PlayerController
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_ShowWantedBoard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels)
+	protected void RpcDo_LF_ShowWantedBoard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches)
 	{
 		if (!GetGame().GetWorkspace())
 		{
@@ -376,6 +401,6 @@ modded class SCR_PlayerController
 			return;
 		}
 
-		LF_WantedBoard.OpenCard(police, names, offences, clothing, vehicles, places, levels);
+		LF_WantedBoard.OpenCard(police, names, offences, clothing, vehicles, places, levels, dispatches);
 	}
 }

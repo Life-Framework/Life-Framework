@@ -1,5 +1,5 @@
 GenericEntity PoliceStation {
- coords 229 0 244.3
+ coords 100 0 40
  {
   GenericEntity PoliceStation_Debug {
    components {

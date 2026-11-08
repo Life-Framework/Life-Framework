@@ -107,16 +107,6 @@ class EL_Utils : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: alert every connected on-duty police officer. Position is not shown yet.
-	static void AlertPolice(string message, vector pos)
-	{
-		if (!Replication.IsServer())
-			return;
-
-		EL_NotificationManagerComponent.NotifyPolice("#EL-PoliceAlert_Title", message, 5.0, EL_ENotificationType.POLICE_ALERT);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static SCR_ChimeraCharacter GetLocalCharacter()
 	{
 		PlayerController controller = GetGame().GetPlayerController();

@@ -31,7 +31,7 @@ is the entry point.
    array (mutation-during-iteration risk) and gives no compensation/wanted
    reduction.
 4. Duty toggle evicts the account (cache churn) — fix via `Account`.
-5. `#EL-Fined %1!` builds a non-key — localize properly.
+5. ~~`#EL-Fined %1!` builds a non-key~~ — the remote fine is gone (M1-19).
 
 ## Iteration path
 
@@ -50,7 +50,17 @@ is the entry point.
   `LF_WantedBoardReadAction` -> `LF_WantedBoard` (per-read RPC). Posters come
   from `LF_WantedReports`: a description at the crime, the name once identified
   (ID check to an on-duty officer, or caught in the act).
-- `EL_PoliceMenu` — arrest/fine entry points; the wanted list moved to the board.
+- Alarm and dispatch (M1-20): every crime calls `LF_Dispatch.Report`. The site
+  alarm is a replicated `LF_SiteAlarm` prefab (vanilla siren loop and a
+  flashing light; `LF_SiteAlarm_Loud` when nobody is on duty). On-duty officers
+  hear a vanilla radio chirp, then read a dispatch line with the place and the
+  description, never a name. The wanted board lists recent dispatches for police.
+- `EL_PoliceMenu` — arrest entry point; the wanted list moved to the board.
+- Fine as a paper ticket (M1-19): Write ticket (player interaction `fine` slot)
+  opens the ticket pad; the holder carries `Prefabs/Items/Roleplay/FineTicket.et`
+  and pays it in carried cash at the desk punch clock (Pay ticket). Deadlines
+  count online time: x2 once, then +1 wanted and an Unpaid fine poster.
+  Records persist (save version 12).
 - `EL_ConfiscateAction` — weapon confiscation; ⚠️ mutation-during-iteration.
 
 ## Dependencies

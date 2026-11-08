@@ -156,7 +156,6 @@ class EL_RobAction : ScriptedUserAction
 		}
 
 		account.IncreaseWantedLevel(bump);
-		LF_WantedReports.Report(playerUid, user, LF_WantedReports.OFFENCE_ROBBERY);
 		EL_Debug.Log("Crime", string.Format("wanted level increased for %1", playerUid));
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		if (accountManager)
@@ -167,7 +166,8 @@ class EL_RobAction : ScriptedUserAction
 		if (user)
 			origin = user.GetOrigin();
 
-		EL_Utils.AlertPolice("#EL-Police_Alert_Robbery", origin);
+		// The alarm sounds at the till and on-duty officers are radioed (LF_Dispatch).
+		LF_Dispatch.Report(playerUid, user, LF_WantedReports.OFFENCE_ROBBERY, origin, policeOnDuty);
 
 		if (paid > 0)
 		{

@@ -35,6 +35,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
+import * as playtest from "./host/playtest.mjs";
 import * as session from "../agent-box/session.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
@@ -44,6 +45,7 @@ import { cmdPrs } from "./prs.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
+import * as pool from "./remote/pool.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -1012,6 +1014,18 @@ function ensureResourceDatabase(root) {
 const SERVER_SLOT = "server-2001";
 
 function withServerSlot(root, waitMs, fn) {
+  // The pool already holds the slot: this process took it (pool.acquireSlot on
+  // this machine), or a pool holder owns it for this remote run (LF_SERVER_SLOT_HELD).
+  if (process.env[pool.SLOT_ENV]) {
+    try {
+      pool.heldSlotFromEnv(root);
+    } catch (e) {
+      console.log(`FAIL  ${e.message}`);
+      return 1;
+    }
+    return fn();
+  }
+  if (testbox.serverSlotOwner(root)?.pid === process.pid) return fn();
   try {
     wt.acquireLock(root, SERVER_SLOT, { waitMs });
   } catch (e) {
@@ -1231,6 +1245,183 @@ function cmdHost(args) {
   return sub ? 1 : 0;
 }
 
+// ----------------------------------------------------------------- playtest
+// `playtest [start]|stop|status|shortcut`: the maintainer's one command
+// (tools/host/playtest.mjs). Start reuses a running host or boots one from the
+// pinned origin/main checkout, then opens the real game client on this
+// desktop, joined to it. Stop closes the client, then `host stop` (shutdown save).
+
+// Clone or fast-forward <parent>\Life-Framework-playtest to origin/main.
+// Returns the checkout root, or null when it cannot be made.
+function playtestCheckout(mainRoot) {
+  const pt = playtest.playtestRoot(mainRoot);
+  const fetch = wt.git(mainRoot, ["fetch", "--quiet", "origin", "main"]);
+  if (fetch.status !== 0) console.log(`WARN  git fetch failed (${fetch.stderr.trim()}); using the last fetched main`);
+  if (!existsSync(join(pt, ".git"))) {
+    console.log(`playtest: creating the playtest checkout ${pt} (origin/main, detached)`);
+    const add = wt.git(mainRoot, ["worktree", "add", "--detach", pt, "origin/main"]);
+    if (add.status !== 0) {
+      console.log(`FAIL  git worktree add: ${add.stderr.trim()}`);
+      return null;
+    }
+    return pt;
+  }
+  const dirty = wt.git(pt, ["status", "--porcelain", "--untracked-files=no"]).stdout.trim();
+  if (dirty) {
+    console.log(`WARN  ${pt} has local edits; playing it as it is (it should only ever track origin/main):`);
+    for (const l of dirty.split(/\r?\n/).slice(0, 5)) console.log(`        ${l}`);
+    return pt;
+  }
+  const ff = wt.git(pt, ["merge", "--ff-only", "--quiet", "origin/main"]);
+  if (ff.status !== 0) console.log(`WARN  ${pt} cannot fast-forward to origin/main (${ff.stderr.trim()}); playing it as it is`);
+  return pt;
+}
+
+function playtestServerSlotHolder(mainRoot) {
+  try {
+    const info = JSON.parse(readFileSync(join(wt.hubDirOf(mainRoot), "locks", `${SERVER_SLOT}.lock`), "utf8"));
+    return info.pid && host.pidAlive(info.pid) ? info : null;
+  } catch {
+    return null;
+  }
+}
+
+function focusWindowOf(pid) {
+  sh(PWSH, ["-NoProfile", "-Command", `$null = (New-Object -ComObject WScript.Shell).AppActivate(${Number(pid)})`]);
+}
+
+function cmdPlaytestStart(mainRoot, hostDir, playerDir) {
+  let s = host.readHostState(hostDir);
+  let root;
+  if (s && host.pidAlive(s.pid)) {
+    root = s.root;
+    console.log(`playtest: the host is already running (pid ${s.pid}, ${root}); joining it`);
+  } else {
+    root = playtestCheckout(mainRoot);
+    if (!root) return 1;
+    const head = wt.git(root, ["log", "-1", "--format=%h %s"]).stdout.trim();
+    console.log(`playtest: build ${head}`);
+    const holder = playtestServerSlotHolder(mainRoot);
+    if (holder) {
+      console.log(`playtest: an agent's test or session is using the game server right now (pid ${holder.pid}, since ${holder.at}).`);
+      console.log("          Waiting for it to finish (up to 30 minutes). Once you are in, agent tests move to the test box.");
+    }
+    const res = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "host", "start", "--wait"], { cwd: root, stdio: "inherit" });
+    s = host.readHostState(hostDir);
+    if (res.status !== 0 || !s || !host.pidAlive(s.pid)) {
+      console.log("FAIL  the playtest server did not come up (see above); nothing else was started");
+      return 1;
+    }
+  }
+
+  const pp = playtest.playerPaths(playerDir);
+  const prev = playtest.readClientState(playerDir);
+  if (prev && host.pidAlive(prev.pid)) {
+    console.log(`playtest: your game is already open (pid ${prev.pid})`);
+    focusWindowOf(prev.pid);
+    return 0;
+  }
+  const game = gameClientExe();
+  if (!existsSync(game)) {
+    console.log(`FAIL  game not found: ${game} (set ENFUSION_GAME_PATH)`);
+    return 1;
+  }
+  const hostLog = host.newestConsoleLog(host.hostPaths(hostDir).profile);
+  const joinsBefore = hostLog ? playtest.countJoins(readFileSync(hostLog, "utf8")) : 0;
+  mkdirSync(pp.profile, { recursive: true });
+  const args = playtest.playerClientArgs({ addonsDir: join(s.root, "addons"), profile: pp.profile });
+  console.log(`playtest: opening the game: ${game}\n  ${args.join(" ")}`);
+  const child = spawn(game, args, { cwd: dirname(game), detached: true, stdio: "ignore" });
+  child.unref();
+  if (!child.pid) {
+    console.log("FAIL  the game did not start");
+    return 1;
+  }
+  playtest.writeClientState(playerDir, { pid: child.pid, root: s.root, startedAt: new Date().toISOString() });
+
+  // Wait for the server to let this player in, then bring the window forward.
+  console.log("playtest: the game is loading and joins the server by itself (about a minute)");
+  const deadline = Date.now() + 300000;
+  let joined = false;
+  while (Date.now() < deadline && host.pidAlive(child.pid)) {
+    sleepMs(3000);
+    const text = hostLog && existsSync(hostLog) ? readFileSync(hostLog, "utf8") : "";
+    if (playtest.countJoins(text) > joinsBefore) {
+      joined = true;
+      break;
+    }
+  }
+  if (!host.pidAlive(child.pid)) {
+    console.log(`FAIL  the game closed before it joined (client logs: ${join(pp.profile, "logs")})`);
+    return 1;
+  }
+  focusWindowOf(child.pid);
+  if (joined) console.log("playtest: you are in. Register at the form, then play. Stop with: tools\\cli playtest stop");
+  else console.log(`WARN  no join seen in the server log within 5 minutes; the game is still open (host log ${hostLog})`);
+  const commit = wt.git(s.root, ["rev-parse", "HEAD"]).stdout.trim();
+  console.log("");
+  for (const l of playtest.friendLines({ lan: host.lanAddresses(), port: host.GAME_PORT, commit })) console.log(l);
+  return joined ? 0 : 1;
+}
+
+function cmdPlaytestStop(hostDir, playerDir) {
+  const c = playtest.readClientState(playerDir);
+  if (c && host.pidAlive(c.pid)) {
+    console.log(`playtest: closing your game (pid ${c.pid})`);
+    sh("taskkill", ["/PID", String(c.pid)]);
+    for (let i = 0; i < 20 && host.pidAlive(c.pid); i++) sleepMs(1000);
+    if (host.pidAlive(c.pid)) killTree(c.pid);
+    // Give the server a moment to handle the disconnect before the shutdown save.
+    sleepMs(5000);
+  } else {
+    console.log("playtest: your game is not open");
+  }
+  if (c) playtest.writeClientState(playerDir, { ...c, stoppedAt: new Date().toISOString() });
+  return cmdHostStop(hostDir, {});
+}
+
+function cmdPlaytestStatus(hostDir, playerDir) {
+  const c = playtest.readClientState(playerDir);
+  const open = !!c && host.pidAlive(c.pid);
+  console.log(`game: ${open ? `open (pid ${c.pid}, since ${c.startedAt})` : "closed"}`);
+  console.log(`  profile:  ${playtest.playerPaths(playerDir).profile}`);
+  return cmdHostStatus(hostDir);
+}
+
+// A desktop shortcut to the repo-root launcher.
+function cmdPlaytestShortcut(mainRoot) {
+  const target = join(mainRoot, "Play Life Framework.cmd");
+  const ps = [
+    "$s = New-Object -ComObject WScript.Shell",
+    "$l = $s.CreateShortcut((Join-Path ([Environment]::GetFolderPath('Desktop')) 'Play Life Framework.lnk'))",
+    `$l.TargetPath = '${target.replaceAll("'", "''")}'`,
+    `$l.WorkingDirectory = '${mainRoot.replaceAll("'", "''")}'`,
+    "$l.Save()",
+    "$l.FullName",
+  ].join("; ");
+  const res = sh(PWSH, ["-NoProfile", "-Command", ps]);
+  if (res.status !== 0) {
+    console.log(`FAIL  ${res.stderr.trim()}`);
+    return 1;
+  }
+  console.log(`playtest: shortcut ${res.stdout.trim()} -> ${target}`);
+  return 0;
+}
+
+function cmdPlaytest(args) {
+  const list = args ?? [];
+  const sub = list[0] ?? "start";
+  const mainRoot = wt.mainRootOf(ROOT);
+  const hostDir = host.hostDir();
+  const playerDir = playtest.playerDir();
+  if (sub === "start") return cmdPlaytestStart(mainRoot, hostDir, playerDir);
+  if (sub === "stop") return cmdPlaytestStop(hostDir, playerDir);
+  if (sub === "status") return cmdPlaytestStatus(hostDir, playerDir);
+  if (sub === "shortcut") return cmdPlaytestShortcut(mainRoot);
+  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut");
+  return 1;
+}
+
 // --only names: a test class (EL_Test_X), a GetName() string, or a test file
 // name (EL_Test_Money or EL_Test_Money.c), which expands to every test class
 // declared in that file. Names the suite cannot match fail the run there.
@@ -1266,6 +1457,23 @@ function killTree(pid) {
   if (!pid || !host.pidAlive(pid)) return false;
   sh("taskkill", ["/PID", String(pid), "/T", "/F"]);
   return true;
+}
+
+// Under ssh (a session on a remote pool machine) every child dies with the ssh
+// session (observed 2026-11-09: a detached spawn was gone seconds after the
+// connection closed). A process WMI creates is not in that session's job, so
+// the session server outlives the command that started it.
+function spawnOutsideSsh(exe, args, cwd) {
+  const q = (a) => (/[\s"]/.test(a) ? `"${a.replace(/"/g, '\\"')}"` : a);
+  const cmdline = [exe, ...args].map(q).join(" ");
+  const ps = `$r = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = '${cmdline.replace(/'/g, "''")}'; CurrentDirectory = '${cwd.replace(/'/g, "''")}' }; Write-Output "$($r.ReturnValue) $($r.ProcessId)"`;
+  const r = sh(PWSH, ["-NoProfile", "-NonInteractive", "-Command", ps]);
+  const m = /^(\d+) (\d+)/m.exec(r.stdout ?? "");
+  if (!m || m[1] !== "0") {
+    console.log(`FAIL  Win32_Process.Create: ${(r.stdout + r.stderr).trim()}`);
+    return { pid: 0 };
+  }
+  return { pid: Number(m[2]) };
 }
 
 function cmdSessionDown(dir) {
@@ -1312,14 +1520,14 @@ function cmdSessionUp(root, dir, flags) {
   }
   const exe = serverExe();
   const game = gameClientExe();
-  for (const f of [exe, game]) {
+  for (const f of clients > 0 ? [exe, game] : [exe]) {
     if (!existsSync(f)) {
       console.log(`FAIL  not found: ${f}`);
       return 1;
     }
   }
   try {
-    wt.acquireLock(root, SERVER_SLOT, { waitMs: flags.includes("--wait") ? 1800000 : 0 });
+    wt.acquireLock(root, SERVER_SLOT, { waitMs: flags.includes("--wait") ? 1800000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root } });
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
     console.log("      a test, host, or session server holds port 2001; retry when it ends, or pass --wait");
@@ -1367,8 +1575,8 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave });
   console.log(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
-  const srv = spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
-  srv.unref();
+  const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
+  srv.unref?.();
   if (!srv.pid) return fail("server did not start");
   state.serverPid = srv.pid;
   wt.transferLock(root, SERVER_SLOT, srv.pid);
@@ -1534,16 +1742,65 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     const b = await cmdBuild(root, { wait: opts.wait });
     if (b !== 0) return b;
   }
-  // The second test machine (tools/remote/testbox.mjs): --remote [host] runs
-  // there; without --local, a busy local server-2001 lock moves the run there
-  // when the box (LF_TESTBOX) answers ssh.
-  // Before the choice: a remote run ships this worktree's rdb, so refresh it here.
+  // The test pool (tools/remote/pool.mjs) picks the machine: the first free
+  // slot on this PC or any reachable remote (--local / --remote [name] narrow
+  // it); when all are busy the run queues FIFO for whichever frees first.
+  // A remote run ships this worktree's rdb, so refresh it before the choice.
   ensureResourceDatabase(root);
-  const target = testbox.chooseTarget(root, opts);
-  if (target) {
-    console.log(`test: running on ${target.host} (${target.reason})`);
-    return testbox.runRemoteTest(root, { host: target.host, tier, only });
+  const purpose = only.length ? "test only" : `test ${tier}`;
+  let slot;
+  try {
+    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose });
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 3;
   }
+  let code = 3;
+  let extra = {};
+  try {
+    if (!slot.local) {
+      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : [])];
+      const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState });
+      code = r.code;
+      if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
+      if (r.sync) extra.syncS = Math.round(r.sync.ms / 100) / 10;
+      return code;
+    }
+    const before = Date.now();
+    code = runLocalTest(root, tier, only);
+    const stamp = newestStamp(root, before);
+    if (stamp) extra = { passed: stamp.passed, total: stamp.total };
+    return code;
+  } finally {
+    slot.release();
+    if (!slot.inherited) pool.recordRun(root, slot, { purpose, code, extra });
+  }
+}
+
+// The summary this run stamped (tools/test/test-e2e.ps1 appends one line).
+function newestStamp(root, since) {
+  const f = join(root, "tmp", "test-results", "summaries.jsonl");
+  try {
+    if (statSync(f).mtimeMs < since) return null;
+    const lines = readFileSync(f, "utf8").trim().split(/\r?\n/);
+    return JSON.parse(lines[lines.length - 1]);
+  } catch {
+    return null;
+  }
+}
+
+// --local / --remote [name] / --machine <name|any> / --any (default).
+// LF_TESTBOX_AUTO=0 keeps the default on this machine.
+function poolMode(root, opts) {
+  if (opts.local) return { mode: "local" };
+  if (opts.machine) return opts.machine === "any" ? { mode: "any" } : { mode: "any", machine: opts.machine };
+  if (opts.remote !== undefined) return opts.remote ? { mode: "remote", machine: opts.remote } : { mode: "remote" };
+  if (opts.any) return { mode: "any" };
+  if (envOf().LF_TESTBOX_AUTO === "0") return { mode: "local" };
+  return { mode: "any" };
+}
+
+function runLocalTest(root, tier, only) {
   // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
   // boots the dedicated server via -server + a neutral addonsDir, polls the
   // profile console.log every 2s for the [ELTEST] SUMMARY, self-terminates.
@@ -1556,7 +1813,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   }
   const ports = wt.portsForRoot(root);
   console.log(`test: worktree ports game=${ports.gamePort} a2s=${ports.a2sPort}`);
-  return withServerSlot(root, 1800000, () => {
+  return withServerSlot(root, 0, () => {
     const res = sh(PWSH, [
       "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
       "-Tier", tier,
@@ -1634,16 +1891,22 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   mcp disable <name>            disable a server in opencode.json
   build                         headless Workbench build of the addon (worktree only)
   serve                         boot the headless test server (blocks, worktree only)
+  playtest [stop|status|shortcut]  the maintainer's one command: host from the pinned origin/main
+                                checkout (..\\Life-Framework-playtest), then open the game joined to it;
+                                stop closes the game and saves; shortcut adds a desktop icon
   host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout)
-  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--remote [host]|--local]
+  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--any|--local|--remote [name]|--machine <name>]
                                 build + boot server + parse ELTEST results (worktree only).
                                 --only runs just those tests (class, GetName(), or test file
                                 name like EL_Test_Money); SUMMARY tier=only, any tier allowed.
-                                --remote runs the worktree (uncommitted state too) on the test
-                                box; with LF_TESTBOX set, a busy local server-2001 lock moves the
-                                run there by itself; --local never moves it (docs/worktrees.md)
+                                The test pool runs it on the first free slot of any machine
+                                (--any, default); --local / --remote [name] / --machine narrow it.
+                                Remote runs carry uncommitted state too (docs/worktrees.md)
+  e2e [--local|--remote [name]]   two-boot save, restart, and reload proof in this worktree
+  pool status|stats|prune       test pool: machines, slots and holders, queue, last runs;
+                                prune removes remote run folders of gone worktrees
   testbox provision|status|prune  set up / inspect / clean the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [ELDebug:*] feature log lines (worktree only)
@@ -1690,11 +1953,13 @@ function argValue(flags, name) {
 // --local pins a test run to this machine; --remote [host] sends it to the
 // test box (host defaults to LF_TESTBOX). See tools/remote/testbox.mjs.
 function remoteFlags(list) {
-  const out = { local: list.includes("--local") };
+  const out = { local: list.includes("--local"), any: list.includes("--any") };
   if (list.includes("--remote")) {
     const v = argValue(list, "--remote");
     out.remote = v && !v.startsWith("--") ? v : "";
   }
+  const m = argValue(list, "--machine");
+  if (m && !m.startsWith("--")) out.machine = m;
   return out;
 }
 
@@ -1934,6 +2199,15 @@ function wtPruneCmd(args) {
   try {
     const r = wt.wtPrune(ROOT, slug, { force: args.includes("--force") });
     console.log(`pruned ${r.slug}: removed ${r.path} and branch ${r.branch}`);
+    // Its run folders on the pool's remote machines go too (best effort; a
+    // machine that is down keeps them until the next `tools\cli pool prune`).
+    if (!args.includes("--keep-remote")) {
+      try {
+        pool.cmdPoolPrune(ROOT, []);
+      } catch (e) {
+        console.log(`WARN  pool prune: ${e.message}`);
+      }
+    }
     return 0;
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
@@ -2011,7 +2285,7 @@ function runE2ePass(root, tier, opts = {}) {
   else if (opts.loadSessionSave !== undefined) psArgs.push("-LoadSessionSave", opts.loadSessionSave);
   if (opts.gracefulClose) psArgs.push("-GracefulClose");
   if (opts.extraDefine) psArgs.push("-ExtraDefine", opts.extraDefine);
-  return withServerSlot(root, 1800000, () => {
+  return withServerSlot(root, 0, () => {
     const res = sh(PWSH, psArgs, { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
     return res.status;
@@ -2043,7 +2317,38 @@ async function wtE2eCmd(args) {
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
-  const profile = join(e.path, "server", "profile", "test");
+  return runE2e(e.path, remoteFlags(args.slice(1)));
+}
+
+// The two-boot save/restart proof in one pool slot: both boots run on the same
+// machine, back to back, with nothing else on that slot in between.
+async function runE2e(root, opts = {}) {
+  ensureResourceDatabase(root);
+  let slot;
+  try {
+    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose: "e2e" });
+  } catch (err) {
+    console.log(`FAIL  ${err.message}`);
+    return 3;
+  }
+  let code = 3;
+  try {
+    if (!slot.local) {
+      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local"], writeSyncState: pool.writeSyncState });
+      code = r.code;
+    } else {
+      code = runE2eHere(root);
+    }
+    return code;
+  } finally {
+    slot.release();
+    if (!slot.inherited) pool.recordRun(root, slot, { purpose: "e2e", code });
+  }
+}
+
+function runE2eHere(root) {
+  const profile = join(root, "server", "profile", "test");
+  const e = { path: root };
   console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, graceful close so the shutdown save lands) in ${e.path}`);
   const pass1 = runE2ePass(e.path, "persistence", { gracefulClose: true });
   if (pass1 !== 0) {
@@ -2290,6 +2595,7 @@ const cmds = {
   disable: (n) => cmdSetEnabled(n, false),
   build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
   host: (flags) => cmdHost(flags),
+  playtest: (flags) => cmdPlaytest(flags),
   session: (flags) => cmdSession(flags),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
@@ -2303,7 +2609,12 @@ const cmds = {
     return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only, ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),
-  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
+  ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
+  e2e: (flags) => {
+    guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
+    return runE2e(ROOT, remoteFlags(flags ?? []));
+  },
+  pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");
@@ -2406,7 +2717,7 @@ function cmdSuiteValid(flags) {
 }
 
 const [a, b] = rest;
-const HEAVY = ["build", "serve", "dev", "test", "ci"];
+const HEAVY = ["build", "serve", "dev", "test", "ci", "e2e"];
 
 let code;
 try {
@@ -2418,7 +2729,7 @@ try {
   } else if (cmd === "prs") {
     code = cmdPrs(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

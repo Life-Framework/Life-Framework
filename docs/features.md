@@ -397,6 +397,13 @@
   `EL_Utils.ChooseIdentityFallback` now keys a player by Steam name on a
   `-noBackend` dedicated server: stable across restarts, one character per name
   (`spawn/identity-fallback`; join, restart, rejoin seen live).
+- ✅ **One-command playtest** (`tools\cli playtest [stop|status|shortcut]`,
+  `Play Life Framework.cmd`, `tools/host/playtest.mjs`): fast-forwards the detached
+  checkout `..\Life-Framework-playtest` to `origin/main` (only while no host runs),
+  runs its `host start --wait`, then opens `ArmaReforgerSteam.exe` visibly with the
+  persistent profile `%LOCALAPPDATA%\LifeFramework\player` (`LF_PLAYER_DIR`), waits
+  for the host's `join allowed` line, and prints friend join lines. A running host
+  is reused and joined with its own addon. `stop` closes the game, then `host stop`.
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
@@ -870,8 +877,8 @@
   reaches `EL_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
   player who kills another player or an NPC gets wanted +`m_iMurderWanted`
   (`LF_Police.conf`, default 3), one `LF_WantedReports` report with the
-  `#LF-Offence_Murder` offence and their description (no name), an alert to
-  every on-duty officer, and a toast. Not murder: a death with no player behind
+  `#LF-Offence_Murder` offence and their description (no name), a radio
+  dispatch to every on-duty officer (`LF_Dispatch.Report`, no site alarm), and a toast. Not murder: a death with no player behind
   it, a self-kill, a destroyed vehicle, and (config
   `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
   wanted suspect. Each decision logs `[ELDebug:Murder]`. No automatic ban.
@@ -938,7 +945,7 @@
   count (that ran every offer refresh) and refuses an empty vehicle prefab with
   `EL_Debug.Error`; the spawn goes through `EL_Utils.SpawnEntityPrefab`.
 - ⚠️ Near-duplicated guard logic across all three.
-  `EL_RobWeaponAction.AlertPolice` hardcodes "ALERTA POLICIAL".
+  Police alerts go through `LF_Dispatch.Report` (M1-20).
 
 ### `LF_Jail` — `Feature/Police/LF_Jail.c`
 - ✅ Placed cell and timed sentence (verified 2026-10-11). `GetJailPosition()`
@@ -1004,27 +1011,57 @@
 
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
-- ✅ `ArrestPlayer`/`FinePlayer` are client-side entry points. The wanted list
-  left the menu in M1-11: wanted people are on the station wanted board.
+- ✅ `ArrestPlayer` is the client-side entry point. The wanted list
+  left the menu in M1-11: wanted people are on the station wanted board. The
+  remote fine (`RpcAsk_EL_PoliceFine`, `FinePlayer`, the Fine button) is gone
+  (M1-19): a fine is a paper ticket written face to face (`LF_FineTicket*`).
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
-  through `SCR_ChimeraCharacter.EL_AskPoliceArrest/Fine`, and the server
-  handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
-  target, and fine range before acting. Arrest also requires the configured
-  arrest rank (patrol on the flagship, #165), and the fine must sit inside
-  that rank's cap. `EL_PoliceUtils` (pure) holds the
-  sentence-length math, wanted-reduction and fine-range checks for tests.
+  through `SCR_ChimeraCharacter.EL_AskPoliceArrest`, and the server
+  handler `RpcAsk_EL_PoliceArrest` validates on-duty officer and wanted
+  target before acting. Arrest also requires the configured
+  arrest rank (patrol on the flagship, #165). `EL_PoliceUtils` (pure) holds the
+  sentence-length math and the reach check for tests; `MAX_FINE` is the
+  senior ticket cap.
   `EL_AskPoliceSelfPromote` always refuses.
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
-- ✅ **Hands-on only** (2026-11-07): arrest and fine refuse a
+- ✅ **Hands-on only** (2026-11-07): arrest refuses a
   target that is not connected or stands beyond `EL_PoliceUtils.POLICE_REACH`
-  (5 m, the in-world arrest range) and show `#EL-Police_TooFar`. Neither the
-  framework nor vanilla has a restraint state, so reach is the requirement. A
-  fine that clears no wanted level (below `WANTED_STEP`, 1000) is refused with
-  `#EL-Fine_TooSmall`, so repeated small fines cannot drain a wanted player.
-  The fine RPC logs through `EL_Debug.Warn("Police", "fine refused: ...")`.
+  (5 m, the in-world arrest range) and shows `#EL-Police_TooFar`. Neither the
+  framework nor vanilla has a restraint state, so reach is the requirement.
   Test: `security/police-abuse`.
+
+### `LF_FineTickets` — `Feature/Police/LF_FineTicket*.c`
+- ✅ **A fine is a paper ticket paid at the police desk** (M1-19, #104;
+  decision 2026-11-08). An on-duty officer facing a player picks **Write ticket**
+  (the `fine` slot of the player interaction menu, `LF_FineTicketRole`, no
+  prefab edit). The server opens the ticket pad (`LF_FineTicketPad`, paper
+  `LF_UIScreen`) on the officer's machine: one "Write: <offence>, <amount>" button per offence from
+  `LF_Police.conf` `m_aTicketOffences` at its fixed amount; offences above the
+  officer's rank cap (`LF_PoliceRanks.FineCap`: patrol 1000, senior 5000) print
+  as a plain "senior officers only" line. The server re-checks duty,
+  reach (2 m), the cap, and at most 3 unpaid tickets per holder, then hands
+  over `Prefabs/Items/Roleplay/FineTicket.et`: number, date, holder, offence,
+  amount, deadline, what it rises to, where to pay, officer rank and name. Cues:
+  the officer's point gesture, the paper sound from the ticket, the holder's
+  pick-up gesture, and the ticket card on the holder's screen. Inventory hover
+  and Read (on the ground) show the same text.
+- ✅ **Pay ticket** on the punch clock of `LF_PoliceDutyDesk.et`: carried cash
+  only (`LF_EntityCashWallet`), never the bank, all or nothing, oldest unpaid
+  first. The clock's punch sound stamps it for everyone nearby; the carried
+  paper turns into a receipt ("PAID <date>").
+- ✅ **Deadlines in online time** (like the jail sentence): unpaid after
+  `m_iTicketFirstDeadline` (1800 s) the amount is multiplied once by
+  `m_fTicketLateMultiplier` (x2) and the paper updates; after a further
+  `m_iTicketSecondDeadline` (1800 s) the holder gets `m_iTicketLateWanted` (+1)
+  wanted and a named "Unpaid fine" poster on the wanted board. Still payable
+  after; paying does not lift the warrant. Logs: `[ELDebug:Ticket]`.
+- ✅ **Persisted** (save version 12, payload `tickets`). A restart's blank
+  copy is reprinted on spawn; a respawn hands an unpaid ticket back. Up to 3
+  paid receipts per holder are kept for reprinting. Tests:
+  `police/fine-ticket-rules`, `police/fine-ticket`,
+  `police/fine-ticket-serializer`.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ **Clock in / Clock out at the duty desk** (M1-11, 2026-11-08; WORLD
@@ -1063,7 +1100,7 @@
 ### `LF_WantedReports` / `LF_WantedBoard` — `Feature/Police/`
 - ✅ **Crime reports** (M1-11, LOGIC `police/wanted-board`): each crime that
   raises wanted (till, vehicle and weapon robbery, breach, hospital till) calls
-  `LF_WantedReports.Report`, which records the offence and a description of the
+  `LF_Dispatch.Report` (M1-20), which calls `LF_WantedReports.Report`. It records the offence and a description of the
   suspect at that moment: clothing display names, the vehicle they sit in, and
   the nearest sign title within `m_fPlaceRadius` (else a 100 m grid square).
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
@@ -1078,6 +1115,38 @@
   everyone else gets the public poster without the place. A name appears only
   on identified reports. The card is an `LF_UIScreen` paper sheet that closes
   4 m from the board; reading plays the map pick-up sound and gesture.
+  On-duty police also see the dispatch log under the posters (M1-20).
+
+### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
+- ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`
+  is what every crime calls (till, vehicle and weapon robbery, breach and bank
+  vault, hospital cabinet, murder with no site alarm). It records the crime report, sounds the site alarm,
+  radios on-duty officers, and appends a line to the dispatch log. A refused
+  crime reports nothing; no crime refuses for lack of police (the per-crime
+  minimum stays a framework attribute, 0 on the flagship). `EL_Utils.AlertPolice`
+  is gone.
+- ✅ **Site alarm** (WORLD `dispatch/site-alarm`): a replicated
+  `Prefabs/Police/LF_SiteAlarm.et` spawns at the site, so only players the
+  site streams to get it. It loops the vanilla siren
+  (`Structures_Siren.acp`, `SOUND_SIREN_LP`) and flashes an orange light for
+  `m_fAlarmSeconds` (30). With nobody on duty when the crime starts it is
+  `LF_SiteAlarm_Loud.et`: the vanilla loud siren (`Structures_Siren_Loud.acp`,
+  600 m), a brighter, faster flash, `m_fLoudAlarmSeconds` (60). A newer alarm
+  at the same site replaces the old one. Durations, prefabs, and the radio
+  sound are in `Configs/Police/LF_Police.conf`; the sound, hear range, and
+  light are attributes on the prefabs.
+- ✅ **Radio dispatch**: each on-duty officer's own client (Owner RPC on the
+  controller) hears a vanilla radio chirp from their body
+  (`Props_Radios_Signals.acp`, `SOUND_RADIO_SIGNAL_2`), then a toast
+  "All units: <offence> at <place>. Suspect: <clothing>; on foot/driving ...".
+  The line is built from the report's description snapshot; it has no name field.
+- ✅ **Dispatch log on the wanted board**: the newest `m_iDispatchLogLines` (5)
+  calls, "HH:MM <offence> at <place>: N on duty, radioed" or "nobody on duty,
+  loud alarm". Session-local (the posters are the persisted record).
+- Harness: `state` adds `dispatch=<n> lastdispatch=<offence@place> alarm=none|normal|loud`;
+  `node agent-box/session.mjs dispatch-proof` drives the two-client run.
+- Manual: listening check (the siren loop and the radio chirp) and the light at
+  night; payphones, pagers, and AI police are later.
 
 ### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
 - ✅ Two ranks (verified 2026-10-11). Patrol officer draws
@@ -1111,18 +1180,36 @@
   minimum. A file that does not resolve logs once and uses the same defaults.
   Test: `police/rank-permissions`.
 
-### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
-- ✅ One convoy. A member of the organization that owns the hideout hauls
-  `{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et` from
-  `Roadmap_Convoy_Start` at the barn out of town (`466 0 331`) to
-  `Roadmap_Convoy_Drop` in the hideout yard (`299 0 293`) on
-  `Street_Contraband.layer`. Both markers are pallet boxes carrying the marker
-  component, not debug boundaries. Delivery pays 200 MoneyStack cash once. A second
-  delivery on that run pays nothing. Leaving the vehicle or dying fails the
-  run and logs it; a failed run pays nothing. A non-member is refused and the
-  refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
+### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-11-08, M1-14)
+- ✅ One convoy. A member of the organization that owns the hideout performs
+  `Start convoy` at `Roadmap_Convoy_Start`, a pallet of wooden crates by the barn
+  out of town (`466 0 331`), and is handed a crate of spirits:
+  `{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et`, a
+  hand-carried item on `HandCarryItem_Base.et` with the vanilla
+  `BoxWooden_01.xob` mesh (carry pose `player_carry`, `SOUND_PICK_UP`). A member
+  already holding one keeps it; full hands log `pickup refused: hands full` and
+  toast `#LF-Contraband_HandsFull`. `Deliver contraband` at `Roadmap_Convoy_Drop`,
+  an empty crate cage behind the pub on the square (`131.5 0 284`, off the farm lane), takes
+  the crate and pays 200 MoneyStack cash in hand once (`SOUND_PICK_UP`). A second
+  delivery on that run pays nothing. A non-member is refused and the refusal is
+  logged. The hideout machine also outputs the crate. Dressing on
+  `Street_Contraband.layer`: crates and a kerosene lamp on the pallet, a parked
+  vanilla `S1203_cargo_brown` van (`Convoy_Barn_Van`) at the barn; beer kegs,
+  empty crates, bottles, and a lamp at the pub's back door. Signs
+  `Sign_ConvoyPickup` (barn front wall) and `Sign_ConvoyDrop` (pub east wall) on
+  `Signs.layer` explain both ends. Both action contexts sit 0.6 m up, on the cage.
   Player strings: `#EL-Contraband_Start`, `#EL-Contraband_Deliver`,
-  `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`.
+  `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`,
+  `#LF-Contraband_Loaded`, `#LF-Contraband_HandsFull`, `#LF-Contraband_Crate_Name`.
+- ✅ The vehicle the member is in at `Start convoy`, or the first one they get
+  into afterwards (`SCR_CompartmentAccessComponent.GetOnCompartmentEntered`), is
+  watched. Getting out of it within `LF_Contraband.DROP_RADIUS_M` (25 m) of the
+  drop ends the drive and keeps the run for the delivery (`convoy reached the
+  drop`); getting out anywhere else, or dying, fails the run and logs it; a
+  failed run pays nothing. WORLD `e2e/roadmap-contraband` covers the crate
+  (mesh, hand-carry, flagged) and both outcomes of getting out.
+- ⚠️ Not driven end to end by automation: whether a player can board with the
+  crate in hand or must stow it in the vehicle's cargo is a manual check.
 - ✅ **Vehicle watch lifetime** (2026-11-08): payment, failure, and
   `Reset` unregister the `OnCompartmentLeft` handler; a restarted run drops the
   old watch and watches the vehicle the player is in now. A disconnect fails the
@@ -1272,7 +1359,7 @@
   client receives it; the listen host's own controller calls the handler
   directly. Broadcast is left for `SendToAll` only. `SendToPolice` /
   `NotifyPolice` reach connected on-duty police by account faction.
-  `EL_Utils.AlertPolice` and `EL_Utils.NotifyEntity` (shop, robbery, duty,
+  `EL_Utils.NotifyEntity` (shop, robbery, duty,
   confiscate toasts) route through it; `EL_Utils.Notify` still shows a hint on
   the calling machine only. Since 2026-11-08 the courier job (sign-up, paid,
   abandoned), gather/process rewards, weapon and vehicle robbery, and the
@@ -1507,6 +1594,18 @@
   roads and floors.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
+- ✅ Town tidy (M1-22, 2026-11-08): the street carries no debug artefacts. The
+  old police duty table (`PoliceStation`, `PoliceStation_Debug`) and the
+  whitelist table (`WhitelistStation`) moved into the annex (100 0 40 and
+  100 0 52, names kept). The daylight blue kerosene lamps left the market,
+  quarry, forest, and pub tables. The pub's survival points are a crate
+  (`SurvivalPoint_Food`) and a hand pump (`SurvivalPoint_Water`) instead of a
+  fridge and a US water trailer. `Village_Dressing` adds 98 vanilla props:
+  bins, planters and flower boxes, a poster column and notice boards, the bus
+  stop sign, hydrants, benches, shop crates, a garbage container, yards with a
+  clothesline, firewood and a dog house, a fenced cabbage plot, trees behind
+  both rows, and four parked cars. The cars are the mod's lockable S105, S1203
+  and UAZ-469 with the vanilla `m_bIsLocked` set, so no key opens them.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
   trader cash payout → shop purchase → ATM deposit path. The robbery step calls
   `EL_RobAction.CommitRobbery` (2026-11-07; it used to hand-write the payout);
@@ -1586,7 +1685,7 @@
   writes `agent-box/reports/journey.html` with the client screenshots.
   `tools/validation/agent-box-selftest.mjs` runs the harness, session, and
   journey selftests in `validate`.
-  Every step ends with a picture from each client it touched. Clients default to 1280x720 (`session.mjs up --res 1920x1080` for evidence) on the hidden desktop; `--visible` plus `journey.mjs --film` records client 1, but the first clip held one frame (README, Filming).
+  Every step ends with a picture from each client it touched. Clients default to 1280x720 (`session.mjs up --res 1920x1080` for evidence) on the hidden desktop. `journey.mjs --film` records each step inside the game client (`LF_FilmRecorder`), one mp4 per step plus the joined run, linked from the report; it works on the hidden desktop.
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
@@ -1649,6 +1748,22 @@
   films an agent-box flow, and publishes a clip to the `film-evidence`
   prerelease for a PR comment. Proven in game 2026-11-08: a game client on
   DebugWorld, flow `film-debugworld`, 20.7 s at 1280x720, 2.8 MB (PR #111).
+  Screen capture records a frozen frame when the window is unfocused and
+  cannot see the hidden `LF-Agents` desktop (#91).
+- ✅ `LF_FilmRecorder` records inside the game client: a per-frame callqueue
+  tick calls `System.MakeScreenshot` at a fixed rate (default 15 fps) into
+  `$logs:el-film/<name>/`, with HUD and menus, and writes `index.txt` with
+  each shot's real time and frame-time stats (`[ELDebug:Film]`). Harness verb
+  `film start <name> <fps> [max s]` / `film stop`; a dedicated server refuses
+  (`error no_renderer`). `tools/film/engine.mjs` encodes the BMPs at true speed
+  (concat with per-frame durations, NVENC) and deletes them. Wired as
+  `film.mjs engine|encode`, `film.mjs flow <flow> --engine`,
+  `journey.mjs --film`, and `session.mjs film` / `proof --film`. Covered by
+  `film/recorder` (LOGIC). Proven 2026-11-08 on the hidden desktop, 1280x720,
+  client capped at 30 fps: a 64.5 s journey clip (arrive, job, earn, fund, atm,
+  shop) and a 27.9 s `world-atm` clip, capture 14.7-15.1 fps, game 29.5-30
+  fps, frame after a shot 33.3-33.5 ms vs 33.2-34.5 ms otherwise, one 243 ms
+  stall in 64 s (shop menu, not a shot frame).
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
