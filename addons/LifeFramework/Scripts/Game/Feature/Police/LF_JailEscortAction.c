@@ -54,6 +54,12 @@ class LF_JailEscortAction : ScriptedUserAction
 			return false;
 		}
 
+		if (!LF_PoliceRanks.CanEscortRank(EL_AccountStateBits.GetPoliceRank(EL_AccountReplication.GetState(user))))
+		{
+			SetCannotPerformReason("#LF-Rank_EscortDenied");
+			return false;
+		}
+
 		return true;
 	}
 

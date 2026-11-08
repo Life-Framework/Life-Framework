@@ -1,8 +1,10 @@
 //------------------------------------------------------------------------------------------------
 //! Police rank ladder. LNGC has no rank ladder; this is not a port of faction select.
 //!
-//! Two ranks. Patrol officer draws the M9 and cannot arrest. Senior officer draws the
-//! M16A2, fines up to the existing cap, and can arrest. Promotion is server-side: an
+//! Two ranks. Patrol officer draws the M9 and fines up to the patrol cap. Senior officer
+//! draws the M16A2 and fines up to the existing maximum. Who may arrest and escort is config
+//! (LF_PoliceConfig); the flagship opens both to every on-duty officer, so a fresh server
+//! plays the arrest loop from the first minute. Promotion is server-side: an
 //! on-duty senior promotes a lower officer, or 3600 seconds on duty promotes patrol.
 //! RequestSelfPromotion is the RPC body and always refuses. Rank does not whitelist
 //! anyone and is not a license.
@@ -95,7 +97,7 @@ class LF_PoliceRanks
 		if (rank >= SENIOR)
 			return EL_PoliceUtils.MAX_FINE;
 
-		return PATROL_FINE_CAP;
+		return LF_PoliceConfig.PatrolFineCap();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -151,9 +153,22 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pure rank check: rank meets the configured minimum.
+	static bool RankMeets(int rank, int minRank)
+	{
+		return rank >= minRank;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool CanArrestRank(int rank)
 	{
-		return rank >= SENIOR;
+		return RankMeets(rank, LF_PoliceConfig.ArrestMinRank());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool CanEscortRank(int rank)
+	{
+		return RankMeets(rank, LF_PoliceConfig.EscortMinRank());
 	}
 
 	//------------------------------------------------------------------------------------------------

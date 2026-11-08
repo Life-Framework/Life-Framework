@@ -3,6 +3,8 @@
 // each client with its own -profile, joined over 127.0.0.1:2001.
 //
 //   node agent-box/session.mjs up --clients 2     boot the server, launch the clients
+//   node agent-box/session.mjs up --clients 2 --mission playtest   LF_PlaytestTown, harness build
+//   node agent-box/session.mjs restart            save, stop, load, rejoin (playtest mission)
 //   node agent-box/session.mjs down               close every process the session started
 //   node agent-box/session.mjs status             pids, profiles, logs
 //   node agent-box/session.mjs state <client>     faction, duty, wanted, cash, bank, job, org
@@ -13,6 +15,14 @@
 // The server runs the bare DebugWorld (no mission header, no test define), so
 // the world's game mode keeps dev tools open and the harness RPCs pass
 // EL_DevGate. The playtest mission (LF_PlaytestTown.conf) closes that gate.
+// `up --mission playtest` runs that mission the way `toolscli host start` does,
+// with -scrDefine LF_HARNESS on the server and every client: the harness
+// (stand, pose, use) passes its own gate in that build only, the debug menu
+// stays closed, and a client without the define is refused at the door.
+// `restart` (playtest only) stops the server through the host stop file (the
+// engine writes its SHUTDOWN save), boots it with -loadSessionSave, and
+// rejoins the same client profiles in the same order (same player ids, so the
+// same LF_SESSION_IDENTITY accounts).
 //
 // `up` and `down` run through `tools\cli session` because the server boot
 // shares the CLI's machine-wide server-2001 lock and addon junction helper.
@@ -21,9 +31,11 @@
 // junctions.
 
 import { spawnSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -35,6 +47,26 @@ export const SERVER_READY = "Entered online game state.";
 // ("remote script source code checksum does not match"), so clients compile
 // with the same define as the server.
 export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
+// Opens the harness gate on the playtest mission (EL_DevGate.HarnessBuild).
+// Only a session passes it; toolscli host start never does.
+export const HARNESS_DEFINE = "LF_HARNESS";
+export const MISSIONS = ["debug", "playtest"];
+
+export function parseMission(args) {
+  const i = args.indexOf("--mission");
+  if (i === -1) return "debug";
+  const m = args[i + 1];
+  if (!MISSIONS.includes(m)) throw new Error(`--mission must be ${MISSIONS.join(" or ")}`);
+  return m;
+}
+
+// Both sides compile the same defines, or the server refuses the client
+// ("remote script source code checksum does not match").
+export function defineArgs(mission = "debug") {
+  const args = ["-scrDefine", SESSION_DEFINE];
+  if (mission === "playtest") args.push("-scrDefine", HARNESS_DEFINE);
+  return args;
+}
 
 export function sessionDir(env = process.env) {
   if (env.LF_SESSION_DIR) return env.LF_SESSION_DIR;
@@ -56,9 +88,33 @@ export function clientBox(dir, n) {
   return sessionPaths(dir, n).clients[n - 1].box;
 }
 
-export function serverArgs({ addonsDir, profile }) {
-  return [
-    "-server", SERVER_WORLD,
+// Every `up` names its clients with a fresh id (-lfSession). The harness
+// addresses each command to it, and a client runs only its own session's
+// commands (EL_AgentCommand.SessionAccepts).
+export function newSessionId() {
+  return randomBytes(6).toString("hex");
+}
+
+const samePath = (a, b) => resolve(String(a)).replaceAll("\\", "/").toLowerCase() === resolve(String(b)).replaceAll("\\", "/").toLowerCase();
+
+// Pure: the address for a command to box, given the recorded session.
+// null when box is not a session client's box (Workbench, default profile).
+export function sessionAddress(box, root, dir, s) {
+  const boxes = sessionPaths(dir, MAX_CLIENTS).clients.map((c) => c.box);
+  if (!boxes.some((b) => samePath(b, box))) return null;
+  if (!s || s.stoppedAt) return { error: "no_live_session" };
+  if (!s.id) return { error: "session_has_no_id (started by an older harness; down and up again)" };
+  if (!samePath(s.root, root)) return { error: `session_owned_by_other_checkout ${s.root}` };
+  return { id: s.id };
+}
+
+export function sessionForBox(box, root, dir = sessionDir()) {
+  return sessionAddress(box, root, dir, readSession(dir));
+}
+
+export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false }) {
+  const args = [
+    "-server", mission === "playtest" ? PLAYTEST_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
     "-addons", "LifeFramework",
     "-profile", profile,
@@ -66,10 +122,12 @@ export function serverArgs({ addonsDir, profile }) {
     "-logLevel", "normal",
     // -noBackend clients all carry the NULL identity and the same Steam name;
     // EL_Utils.GetPlayerUID gives each player id its own identity under this define.
-    "-scrDefine", SESSION_DEFINE,
+    ...defineArgs(mission),
     "-disableCrashReporter",
     "-noBackend",
   ];
+  if (loadSave) args.push("-loadSessionSave");
+  return args;
 }
 
 // Small windows in a row along the top of the screen, so the user's desk
@@ -78,7 +136,7 @@ export function windowFor(n) {
   return { x: (n - 1) * (WINDOW.width + WINDOW.gap), y: 0, width: WINDOW.width, height: WINDOW.height };
 }
 
-export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1" }) {
+export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "" }) {
   const w = windowFor(n);
   return [
     "-client", address,
@@ -95,9 +153,10 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1" }) {
     "-noSplash",
     "-noSound",
     "-maxFPS", "30",
-    "-scrDefine", SESSION_DEFINE,
+    ...defineArgs(mission),
     "-disableCrashReporter",
     "-noBackend",
+    ...(session ? ["-lfSession", session] : []),
   ];
 }
 
@@ -158,6 +217,30 @@ export function selftestSession() {
   if (s.some((x) => /EL_AUTOTEST|LF_PlaytestTown|-config/.test(x))) failures.push("server args carry a test define, the playtest mission, or -config");
   if (s[s.indexOf("-scrDefine") + 1] !== SESSION_DEFINE) failures.push("server does not define LF_SESSION_IDENTITY");
   if (a1[a1.indexOf("-scrDefine") + 1] !== SESSION_DEFINE) failures.push("client script define differs from the server (checksum refusal)");
+  if (s.includes(HARNESS_DEFINE) || a1.includes(HARNESS_DEFINE)) failures.push("the bare DebugWorld session carries LF_HARNESS");
+  if (s.includes("-loadSessionSave")) failures.push("a fresh session loads a save");
+  const ps = serverArgs({ addonsDir: "A", profile: "SP", mission: "playtest" });
+  const pc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "playtest" });
+  if (ps[1] !== PLAYTEST_MISSION) failures.push("--mission playtest does not run LF_PlaytestTown");
+  const defs = (args) => args.filter((x, i) => args[i - 1] === "-scrDefine").sort().join(",");
+  if (defs(ps) !== [HARNESS_DEFINE, SESSION_DEFINE].sort().join(",")) failures.push(`playtest server defines are ${defs(ps)}`);
+  if (defs(pc) !== defs(ps)) failures.push("playtest client defines differ from the server (checksum refusal)");
+  if (!serverArgs({ addonsDir: "A", profile: "SP", mission: "playtest", loadSave: true }).includes("-loadSessionSave")) failures.push("a restart does not load the save");
+  const sc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", session: "ab12" });
+  if (sc[sc.indexOf("-lfSession") + 1] !== "ab12") failures.push("a client is not named with its session id");
+  if (newSessionId() === newSessionId() || !/^[0-9a-f]{12}$/.test(newSessionId())) failures.push("session ids must be fresh hex tokens");
+  const box1 = clientBox("S", 1);
+  const live = { id: "ab12", root: "C:/x/wt-a" };
+  if (sessionAddress(box1, "C:/x/wt-a", "S", live)?.id !== "ab12") failures.push("the caller's own session is addressed by id");
+  if (!sessionAddress(box1, "C:\\X\\WT-A", "S", live)?.id) failures.push("root comparison must ignore case and slashes");
+  if (!/other_checkout/.test(sessionAddress(box1, "C:/x/wt-b", "S", live)?.error ?? "")) failures.push("another checkout's session must be refused");
+  if (!sessionAddress(box1, "C:/x/wt-a", "S", { ...live, stoppedAt: "t" })?.error) failures.push("a stopped session must be refused");
+  if (sessionAddress(join("W", "agent-box"), "C:/x/wt-a", "S", live) !== null) failures.push("a Workbench box is not a session box");
+  if (parseMission([]) !== "debug" || parseMission(["--mission", "playtest"]) !== "playtest") failures.push("parseMission");
+  try {
+    parseMission(["--mission", "prod"]);
+    failures.push("--mission prod was accepted");
+  } catch {}
   if (sessionDir({ LF_SESSION_DIR: "X" }) !== "X") failures.push("LF_SESSION_DIR does not override");
   if (sessionDir({ LOCALAPPDATA: "L" }) !== join("L", "LifeFramework", "session")) failures.push("default session dir changed");
   const st = parseState("faction=police duty=1 wanted=0 cash=250 bank=1000 job=none org=none");
@@ -349,7 +432,7 @@ async function main(argv) {
     console.log(f.length ? "session selftest: FAIL" : "session selftest: OK");
     return f.length ? 1 : 0;
   }
-  if (cmd === "up" || cmd === "down" || cmd === "status") {
+  if (cmd === "up" || cmd === "down" || cmd === "status" || cmd === "restart") {
     const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", cmd, ...rest], { windowsHide: true, stdio: "inherit", cwd: process.cwd() });
     return r.status ?? 1;
   }
@@ -368,7 +451,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] | down | status | state <client> | proof | interaction | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | proof | interaction | selftest");
   return cmd ? 1 : 0;
 }
 

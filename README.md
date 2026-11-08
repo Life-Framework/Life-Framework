@@ -124,6 +124,14 @@ with its owner's permission and relicensed under MIT for Life Framework; the
 repo's own APL-SA licence still applies to everyone else. Each derived file
 names its source in a header. Per-file credits: [THIRD_PARTY.md](THIRD_PARTY.md).
 
+## Support
+
+Life Framework is free and stays free. Running it costs money: the Claude
+subscription the AI-first development runs on, the website and domain, and
+later a game server. We do not take donations yet. When we do, the site's
+support page lists the ways to give and every cost. A donation buys nothing in
+the game. How it is set up: [docs/community/support.md](docs/community/support.md).
+
 ## License
 
 The source in this repository is MIT; see [LICENSE](LICENSE). Contributions
