@@ -90,11 +90,36 @@
   `playerId` UID (not the controlled entity), so the faction choice lands on
   the same account the spawn logic reads.
 
+### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
+- ✅ One list on another player's body (`Character_Roleplay.et`, context
+  `EL_ID`): Introduce yourself, Show ID, Give cash, Give what you hold; on-duty
+  police also Search and Arrest. `LF_PlayerRoleAction` slots `fine` and
+  `org_invite` stay hidden until `LF_PlayerInteraction.RegisterRole(slot,
+  handler)` is called on every machine. Reach: 2 m between origins, both
+  alive, the target a player, not yourself; the server re-checks every action.
+- ✅ Give cash: the server opens `LF_GiveCashSheet` on the giver (`GiveCashAmount`,
+  `GiveCashButton`), then `RpcAsk_LF_GiveCash` moves MoneyStack cash through
+  `LF_CashHandover.Move`: more than carried is refused, what the receiver cannot
+  take goes back (no cash created or lost). Gesture `Point` + `SOUND_PICK_UP`.
+- ✅ Give item: the giver's machine names the item in hand (gadget, right-hand
+  item, or current weapon); the server moves it only when its storage root is
+  the giver and the receiver has room.
+- ✅ Introduce: the target learns the user's character name (`LF_Introductions`,
+  keyed by player uid, one way). Persisted as the `introductions` payload (save
+  version 8); names re-sync to clients on every spawn. Gesture `Halt`.
+- ✅ `LF_KnownNames` (client): a known name shows under the crosshair only while
+  looking at that player (15 degree cone) within 4 m. Strangers show nothing.
+- ⏳ Gesture visibility, the name label, and the restart path on a real
+  dedicated server are manual (PR #98 steps).
+
 ### `EL_ShowIDAction` — `Feature/CharacterCreation/EL_ShowIDAction.c`
 - ✅ (2026-11-08) Shows the ID card the user carries (their own first, else
   the first printed one) to the player they face: the server reads the item
   and opens `LF_IdCardView` on the viewer's machine. No card: not performable,
-  reason `#LF-ID_NoCard`. Facing check is `dot > 0.707` both ways within 1.5 m.
+  reason `#LF-ID_NoCard`. Offered by the player interaction reach rule
+  (`LF_PlayerInteraction.CanOffer`, 2 m, both alive, a player); the server
+  re-checks it. The shower points (`Gesture_Point`) and the viewer hears
+  `SOUND_PICK_UP` (M1-12).
 - ⏳ Proof on a dedicated server with two clients is manual (PR #93 steps).
 
 ### `EL_Utils` / `EL_FormatUtils` / `EL_Component` / `EL_ComponentData` — `Core/`
@@ -902,11 +927,14 @@
   running convoy.
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
-- ✅ On-duty police delete weapons from the nearest wanted player within 5 m.
+- ✅ (2026-11-08, M1-12) Search in the player interaction menu: shown to on-duty
+  police within the 2 m reach; deletes the weapons of the wanted player in
+  front of them (the action owner), not the nearest wanted player. Weapons are
+  collected before deletion. Earlier contract: on-duty police delete weapons
+  from a wanted player.
   The offer reads replicated officer and target state; the deletion runs on the
   server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
-- ⚠️ Deletes items while iterating a live `FindItems` array (mutation-during-
-  iteration risk); no compensation or wanted reduction.
+- ⚠️ No compensation or wanted reduction.
 
 ## Ownership
 

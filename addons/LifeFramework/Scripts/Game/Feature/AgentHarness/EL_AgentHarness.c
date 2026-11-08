@@ -751,7 +751,7 @@ class EL_AgentHarness
 		}
 
 		BaseWorld world = GetGame().GetWorld();
-		if (!world || !world.FindEntityByName(cmd.Arg1))
+		if (!world || !ResolveNamed(cmd.Arg1))
 		{
 			WriteResult(cmd.Id, "error", "entity_not_found");
 			return;
@@ -782,7 +782,7 @@ class EL_AgentHarness
 		if (!world)
 			return "no_world";
 
-		IEntity target = world.FindEntityByName(entityName);
+		IEntity target = ResolveNamed(entityName);
 		if (!target)
 		{
 			EL_Debug.Error(FEATURE, string.Format("stand refused: %1 is not in the world", entityName));
@@ -847,7 +847,8 @@ class EL_AgentHarness
 		if (organization)
 			org = Token(organization.GetName());
 
-		return string.Format("faction=%1 duty=%2 wanted=%3 rank=%4 cash=%5 bank=%6 job=%7 org=%8", faction, duty, wanted, rank, EL_MoneyUtils.GetCash(character), bank, job, org);
+		string line = string.Format("faction=%1 duty=%2 wanted=%3 rank=%4 cash=%5 bank=%6 job=%7 org=%8", faction, duty, wanted, rank, EL_MoneyUtils.GetCash(character), bank, job, org);
+		return line + " player=" + LF_PlayerInteraction.PlayerIdOf(character).ToString();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1469,6 +1470,39 @@ class EL_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A named world entity, or Player<id> for the character that player controls.
+	static IEntity ResolveNamed(string entityName)
+	{
+		IEntity player = PlayerNamed(entityName);
+		if (player)
+			return player;
+
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return null;
+
+		return world.FindEntityByName(entityName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Player<id> (for example Player2) resolves to that player's character on this machine.
+	static IEntity PlayerNamed(string entityName)
+	{
+		if (!entityName.StartsWith("Player") || entityName.Length() <= 6)
+			return null;
+
+		string digits = entityName.Substring(6, entityName.Length() - 6);
+		int playerId = digits.ToInt();
+		if (playerId <= 0 || playerId.ToString() != digits)
+			return null;
+
+		if (!GetGame().GetPlayerManager())
+			return null;
+
+		return GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static IEntity FindTarget(IEntity user, string className, string entityName)
 	{
 		BaseWorld world = GetGame().GetWorld();
@@ -1480,6 +1514,16 @@ class EL_AgentHarness
 		s_pFoundEntity = null;
 		s_fBestDist = 999999;
 		s_vOrigin = user.GetOrigin();
+
+		// Another player is named Player<id>: their character, if it carries the action.
+		IEntity player = PlayerNamed(entityName);
+		if (player)
+		{
+			if (FindOnEntity(player, className))
+				return player;
+
+			return null;
+		}
 
 		float radius = 5;
 		if (entityName != "")
@@ -1552,6 +1596,7 @@ class EL_AgentHarness
 		{
 			string toast = SCR_PlayerController.EL_GetLastToast();
 			text = text + " toast=" + Token(toast);
+			text = text + " known=" + LF_KnownNames.KnownCount().ToString() + " name=" + Token(LF_KnownNames.GetShown());
 		}
 
 		WriteResult(id, status, text);

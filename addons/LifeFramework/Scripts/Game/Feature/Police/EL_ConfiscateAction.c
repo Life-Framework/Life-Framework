@@ -1,11 +1,16 @@
 //------------------------------------------------------------------------------------------------
-//! Confiscates the weapons of the nearest wanted player. Offer checks read EL_AccountReplication
-//! (account cache on the server, replicated character state on a client); the confiscation
-//! itself runs on the server and re-checks the officer against the real account.
+//! Search: an on-duty officer confiscates the weapons of the wanted player in front of them (the
+//! action's owner), as one entry in the player interaction menu (LF_PlayerInteraction). Offer
+//! checks read EL_AccountReplication (account cache on the server, replicated character state on
+//! a client); the confiscation itself runs on the server and re-checks the officer against the
+//! real account, the reach, and the suspect's wanted level.
 class EL_ConfiscateAction : ScriptedUserAction
 {
-	[Attribute(defvalue: "5.0", uiwidget: UIWidgets.Auto, desc: "Maximum distance to confiscate")]
-	protected float m_fMaxDistance;
+	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		return LF_PlayerInteraction.Offers(LF_EPlayerAction.SEARCH, LF_PlayerInteraction.IsOnDutyPolice(user)) && LF_PlayerInteraction.CanOffer(user, GetOwner());
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
@@ -16,9 +21,7 @@ class EL_ConfiscateAction : ScriptedUserAction
 			return false;
 		}
 
-		// Check if there's a wanted player nearby
-		IEntity target = GetNearestWantedPlayer(user);
-		if (!target)
+		if (!IsWanted(GetOwner()))
 		{
 			SetCannotPerformReason("#EL-Confiscate_NoTarget");
 			return false;
@@ -39,72 +42,54 @@ class EL_ConfiscateAction : ScriptedUserAction
 			return;
 		}
 
-		IEntity target = GetNearestWantedPlayer(pUserEntity);
-		if (!target)
+		LF_EInteractionRefusal refusal = LF_PlayerInteraction.CheckPair(pUserEntity, pOwnerEntity);
+		if (refusal != LF_EInteractionRefusal.NONE)
 		{
-			EL_Debug.Warn("Police", "confiscate failed: no wanted player in range");
+			EL_Debug.Warn("Police", "confiscate refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
 			return;
 		}
 
-		// Confiscate all weapons
-		SCR_InventoryStorageManagerComponent targetInventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(target);
+		EL_PlayerAccount suspect = EL_PoliceUtils.GetAccountForEntity(pOwnerEntity);
+		if (!suspect || suspect.GetWantedLevel() <= 0)
+		{
+			EL_Debug.Warn("Police", "confiscate refused: the person searched is not wanted");
+			return;
+		}
+
+		SCR_InventoryStorageManagerComponent targetInventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(pOwnerEntity);
 		if (!targetInventory)
 		{
 			EL_Debug.Warn("Police", "confiscate failed: target has no inventory");
 			return;
 		}
 
+		// Collect first, then delete: deleting while walking the live list skips items.
 		array<IEntity> allItems();
-		targetInventory.FindItems(allItems, null); // Get all items
+		targetInventory.FindItems(allItems, null);
+		array<IEntity> weapons();
 		foreach (IEntity item : allItems)
 		{
-			if (EL_Component<BaseWeaponComponent>.Find(item))
-			{
-				EL_InventoryUtils.DropItem(target, item);
-				SCR_EntityHelper.DeleteEntityAndChildren(item);
-			}
+			if (item && EL_Component<BaseWeaponComponent>.Find(item))
+				weapons.Insert(item);
 		}
 
-		EL_Debug.Log("Police", string.Format("confiscated weapons from %1", target));
+		foreach (IEntity weapon : weapons)
+		{
+			EL_InventoryUtils.DropItem(pOwnerEntity, weapon);
+			SCR_EntityHelper.DeleteEntityAndChildren(weapon);
+		}
+
+		EL_Debug.Log("Police", string.Format("confiscated %1 weapon(s) from %2", weapons.Count(), pOwnerEntity));
 		EL_Utils.NotifyEntity(pUserEntity, "#EL-Police_Action", "#EL-Police_Title", 3.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Nearest player character within range whose (replicated) wanted level is above 0.
-	//! Characters are queried by sphere, so a client sees the same set it has streamed in.
-	protected IEntity GetNearestWantedPlayer(IEntity user)
+	//! Replicated wanted level above 0 on a player character.
+	protected bool IsWanted(IEntity target)
 	{
-		if (!user || !GetGame() || !GetGame().GetWorld())
-			return null;
+		if (LF_PlayerInteraction.PlayerIdOf(target) <= 0)
+			return false;
 
-		PlayerManager playerManager = GetGame().GetPlayerManager();
-		if (!playerManager)
-			return null;
-
-		vector userPos = user.GetOrigin();
-		float minDist = m_fMaxDistance;
-		IEntity nearest = null;
-
-		array<IEntity> characters = EL_Utils.GetNearbyCharacters(userPos, m_fMaxDistance);
-		foreach (IEntity entity : characters)
-		{
-			if (!entity || entity == user)
-				continue;
-
-			if (playerManager.GetPlayerIdFromControlledEntity(entity) <= 0)
-				continue;
-
-			if (EL_AccountStateBits.GetWantedLevel(EL_AccountReplication.GetState(entity)) <= 0)
-				continue;
-
-			float dist = vector.Distance(userPos, entity.GetOrigin());
-			if (dist < minDist)
-			{
-				minDist = dist;
-				nearest = entity;
-			}
-		}
-
-		return nearest;
+		return EL_AccountStateBits.GetWantedLevel(EL_AccountReplication.GetState(target)) > 0;
 	}
 };
