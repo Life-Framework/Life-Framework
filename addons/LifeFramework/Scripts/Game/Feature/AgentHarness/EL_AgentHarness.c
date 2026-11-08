@@ -933,7 +933,13 @@ class EL_AgentHarness
 		if (!uid.IsEmpty())
 			bank = EL_ATMManager.GetOrCreate(uid).GetBalance();
 
-		string job = typename.EnumToString(EL_EJobType, LF_CivilianJob.GetActiveJob(uid));
+		// The job the player signed up for (the counter sets it on the job component); the active
+		// run alone read UNEMPLOYED between runs, so a sign-up never showed in state.
+		EL_EJobType jobType = LF_CivilianJob.GetActiveJob(uid);
+		EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(character);
+		if (jobs && jobType == EL_EJobType.UNEMPLOYED)
+			jobType = jobs.GetJob();
+		string job = typename.EnumToString(EL_EJobType, jobType);
 		string org = "none";
 		EL_Organization organization = EL_OrganizationManager.GetByCharacter(LF_Hideout.CharacterIdOf(character));
 		if (organization)
@@ -1086,11 +1092,7 @@ class EL_AgentHarness
 		if (!inButton && Clickable(widget))
 		{
 			button = true;
-			string label = "";
-			SCR_ButtonTextComponent textButton = SCR_ButtonTextComponent.Cast(widget.FindHandler(SCR_ButtonTextComponent));
-			if (textButton)
-				label = textButton.GetText();
-			AddUiText(EL_AgentCommand.UiEntry("button", widget.GetName(), Translated(label)));
+			AddUiText(EL_AgentCommand.UiEntry("button", widget.GetName(), Translated(ButtonLabel(widget))));
 		}
 		else if (!inButton && InKitSheet(widget))
 		{
@@ -1108,6 +1110,44 @@ class EL_AgentHarness
 			CollectUiText(child, inButton || button);
 			child = child.GetSibling();
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a button shows: the first visible non-empty text inside it. SCR_ButtonTextComponent
+	//! GetText() returned the layout default ("Back to main menu") on the faction menu.
+	protected static string ButtonLabel(Widget button)
+	{
+		string shown = FirstText(button.GetChildren());
+		if (!shown.IsEmpty())
+			return shown;
+
+		SCR_ButtonTextComponent textButton = SCR_ButtonTextComponent.Cast(button.FindHandler(SCR_ButtonTextComponent));
+		if (textButton)
+			return textButton.GetText();
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string FirstText(Widget widget)
+	{
+		while (widget)
+		{
+			if (widget.IsVisible())
+			{
+				TextWidget text = TextWidget.Cast(widget);
+				if (text && !text.GetText().IsEmpty())
+					return text.GetText();
+
+				string inner = FirstText(widget.GetChildren());
+				if (!inner.IsEmpty())
+					return inner;
+			}
+
+			widget = widget.GetSibling();
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

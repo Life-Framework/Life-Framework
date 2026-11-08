@@ -1362,6 +1362,14 @@ function cmdSessionRestart(root, dir, flags) {
   const exe = serverExe();
   const game = gameClientExe();
   const oldLog = session.newestLog(join(prev.serverProfile, "logs"));
+  // Hold port 2001 across the restart: a queued test would otherwise take it
+  // between the old server's exit and the new boot.
+  try {
+    wt.adoptLock(root, SERVER_SLOT, prev.serverPid);
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
   const stopFile = join(prev.serverProfile, ...host.STOP_FILE);
   mkdirSync(dirname(stopFile), { recursive: true });
   writeFileSync(stopFile, new Date().toISOString());
@@ -1369,19 +1377,13 @@ function cmdSessionRestart(root, dir, flags) {
   const deadline = Date.now() + 180000;
   while (Date.now() < deadline && host.pidAlive(prev.serverPid)) sleepMs(1000);
   if (host.pidAlive(prev.serverPid)) {
+    wt.transferLock(root, SERVER_SLOT, prev.serverPid);
     console.log("FAIL  the server did not close within 180s; close it with 'node agent-box/session.mjs down'");
     return 1;
   }
   const saved = !!oldLog && /\(SHUTDOWN\)/.test(readFileSync(oldLog, "utf8"));
   console.log(`session: server closed${saved ? " after the SHUTDOWN save" : "; WARN no SHUTDOWN save line in its log"}`);
   for (const c of prev.clients ?? []) console.log(`session: client ${c.n} pid ${c.pid} ${killTree(c.pid) ? "closed" : "already gone"}`);
-  wt.releaseLock(root, SERVER_SLOT, prev.serverPid);
-  try {
-    wt.acquireLock(root, SERVER_SLOT, { waitMs: 0 });
-  } catch (e) {
-    console.log(`FAIL  ${e.message}`);
-    return 1;
-  }
   const clients = (prev.clients ?? []).length;
   const paths = session.sessionPaths(dir, clients);
   const state = { ...prev, restartedAt: new Date().toISOString(), serverPid: 0, clients: [] };
