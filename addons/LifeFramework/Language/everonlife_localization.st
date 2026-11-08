@@ -3107,6 +3107,506 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You hold up your ID card."
      Comment "Show ID performed: the other player now sees the card."
     }
+    CustomStringTableItem "{E5BDB7CD47972752}" {
+     Id "LF-ATM_Header"
+     Target_en_us "FIRST BANK OF EVERON"
+     Comment "ATM terminal screen header. Upper case: a 1989 green-screen terminal."
+    }
+    CustomStringTableItem "{627D8D9DEE75887B}" {
+     Id "LF-ATM_LineBalance"
+     Target_en_us "BALANCE ....... %1"
+     Comment "ATM terminal balance line. %1 is the formatted account balance, or ---- before the bank answers."
+    }
+    CustomStringTableItem "{78E20ABFCFFBB92B}" {
+     Id "LF-ATM_LineCash"
+     Target_en_us "CASH IN HAND .. %1"
+     Comment "ATM terminal line for the cash the player carries. %1 is the formatted amount."
+    }
+    CustomStringTableItem "{7F695CCFB7B1DEFD}" {
+     Id "LF-ATM_LineEntry"
+     Target_en_us "AMOUNT > %1_"
+     Comment "ATM terminal entry line with a cursor. %1 is the amount keyed in so far."
+    }
+    CustomStringTableItem "{E54FB6AD91A6A823}" {
+     Id "LF-ATM_Unknown"
+     Target_en_us "----"
+     Comment "Placeholder for a figure the bank has not sent yet."
+    }
+    CustomStringTableItem "{C69157C8E92DD27F}" {
+     Id "LF-ATM_Prompt"
+     Target_en_us "KEY IN AN AMOUNT, THEN DEPOSIT OR WITHDRAW"
+     Comment "ATM terminal status line when idle."
+    }
+    CustomStringTableItem "{C537821836A5ADD5}" {
+     Id "LF-ATM_Working"
+     Target_en_us "PLEASE WAIT ..."
+     Comment "ATM terminal status line while the server handles a request."
+    }
+    CustomStringTableItem "{7880A378781D2C8D}" {
+     Id "LF-ATM_NoReply"
+     Target_en_us "NO REPLY FROM THE BANK. TRY AGAIN."
+     Comment "ATM terminal status line when the server did not answer within 5 seconds."
+    }
+    CustomStringTableItem "{4A64CBDDC70A3B14}" {
+     Id "LF-ATM_Deposited"
+     Target_en_us "DEPOSITED %1. THANK YOU."
+     Comment "ATM terminal status line after a deposit. %1 is the amount."
+    }
+    CustomStringTableItem "{CAF4A9272F7A5651}" {
+     Id "LF-ATM_Dispensed"
+     Target_en_us "PLEASE TAKE YOUR CASH: %1"
+     Comment "ATM terminal status line after a withdrawal. %1 is the amount paid out."
+    }
+    CustomStringTableItem "{9549498E04A2B4B9}" {
+     Id "LF-ATM_KeyClear"
+     Target_en_us "CLR"
+     Comment "ATM keypad key that clears the amount."
+    }
+    CustomStringTableItem "{A67CBEC8AAD45E67}" {
+     Id "LF-ATM_KeyBack"
+     Target_en_us "DEL"
+     Comment "ATM keypad key that removes the last digit."
+    }
+    CustomStringTableItem "{B052CECB9FD10BBA}" {
+     Id "LF-ATM_KeyDeposit"
+     Target_en_us "DEPOSIT"
+     Comment "ATM terminal key: pay the keyed amount of carried cash into the account."
+    }
+    CustomStringTableItem "{9BA4937AFAD95E3E}" {
+     Id "LF-ATM_KeyWithdraw"
+     Target_en_us "WITHDRAW"
+     Comment "ATM terminal key: take the keyed amount out of the account as cash."
+    }
+    CustomStringTableItem "{2028FAF6D9D3BF5C}" {
+     Id "LF-ATM_Exit"
+     Target_en_us "EXIT"
+     Comment "ATM terminal key that closes the screen."
+    }
+    CustomStringTableItem "{8839595C4DED196B}" {
+     Id "LF-ATM_RefuseAmount"
+     Target_en_us "REFUSED: KEY IN AN AMOUNT ABOVE ZERO"
+     Comment "ATM refusal: the amount is zero or outside the transaction limit."
+    }
+    CustomStringTableItem "{4FE6F21A50365940}" {
+     Id "LF-ATM_RefuseCash"
+     Target_en_us "REFUSED: YOU DO NOT CARRY THAT MUCH CASH"
+     Comment "ATM refusal: a deposit larger than the cash the player carries."
+    }
+    CustomStringTableItem "{FA6C0202EB152BE3}" {
+     Id "LF-ATM_RefuseBalance"
+     Target_en_us "REFUSED: INSUFFICIENT FUNDS IN ACCOUNT"
+     Comment "ATM refusal: a withdrawal larger than the account balance."
+    }
+    CustomStringTableItem "{9AC0372760E9657E}" {
+     Id "LF-ATM_RefusePockets"
+     Target_en_us "REFUSED: NO ROOM IN YOUR POCKETS FOR THE CASH"
+     Comment "ATM refusal: the withdrawn cash does not fit in the inventory; the balance is restored."
+    }
+    CustomStringTableItem "{2FA569A76F73369A}" {
+     Id "LF-ATM_RefuseFar"
+     Target_en_us "REFUSED: STAND AT THE MACHINE"
+     Comment "ATM refusal: the server found no ATM within 5 m of the player."
+    }
+    CustomStringTableItem "{234C990779F19F26}" {
+     Id "LF-ATM_RefuseAccount"
+     Target_en_us "REFUSED: ACCOUNT UNAVAILABLE"
+     Comment "ATM refusal: the player's account could not be found."
+    }
+    CustomStringTableItem "{C2D8EF8EC8E7CAC8}" {
+     Id "LF-Shop_CashLine"
+     Target_en_us "Cash in hand: %1"
+     Comment "Shop price list line for the cash the player carries. %1 is the formatted amount."
+    }
+    CustomStringTableItem "{02FFEC0ECB74AFC2}" {
+     Id "LF-Shop_LookFor"
+     Target_en_us "Look for an item ..."
+     Comment "Shop price list search field placeholder; typing narrows the list."
+    }
+    CustomStringTableItem "{BE3CD5847E4642EA}" {
+     Id "LF-Shop_Order"
+     Target_en_us "Order"
+     Comment "Shop price list row button that puts the item on the order slip."
+    }
+    CustomStringTableItem "{89D9F751DFF3D649}" {
+     Id "LF-Shop_SlipEmpty"
+     Target_en_us "Order slip: pick a line from the list."
+     Comment "Shop order slip before an item is picked."
+    }
+    CustomStringTableItem "{1C832CFE28C35A01}" {
+     Id "LF-Shop_SlipLine"
+     Target_en_us "Order slip: %1 x %2"
+     Comment "Shop order slip line. %1 is the quantity, %2 the item name."
+    }
+    CustomStringTableItem "{6BEE9A234FAE3042}" {
+     Id "LF-Shop_Less"
+     Target_en_us "One less"
+     Comment "Shop order slip key: lower the quantity by one."
+    }
+    CustomStringTableItem "{0314921F9811C286}" {
+     Id "LF-Shop_More"
+     Target_en_us "One more"
+     Comment "Shop order slip key: raise the quantity by one."
+    }
+    CustomStringTableItem "{F0B657CA9B23547B}" {
+     Id "LF-Shop_Pay"
+     Target_en_us "Pay cash"
+     Comment "Shop till key before an item is picked."
+    }
+    CustomStringTableItem "{932451884B68684C}" {
+     Id "LF-Shop_PayTotal"
+     Target_en_us "Pay %1 cash"
+     Comment "Shop till key. %1 is the order total."
+    }
+    CustomStringTableItem "{4D7E3AE3D3960088}" {
+     Id "LF-Shop_SellBack"
+     Target_en_us "Sell these"
+     Comment "Shop till key: sell the slip's quantity of the picked item back to the counter."
+    }
+    CustomStringTableItem "{934DA7DD0FA38AC9}" {
+     Id "LF-Shop_Leave"
+     Target_en_us "Leave"
+     Comment "Shop price list key that closes it."
+    }
+    CustomStringTableItem "{5F8B9B94FCD989FE}" {
+     Id "LF-Shop_PickFirst"
+     Target_en_us "Pick a line from the list first."
+     Comment "Shop refusal on the client: Pay or Sell with no item on the slip."
+    }
+    CustomStringTableItem "{B385B4702F2997BF}" {
+     Id "LF-Shop_Working"
+     Target_en_us "At the till ..."
+     Comment "Shop slip line while the server handles the order."
+    }
+    CustomStringTableItem "{684633A0ED601DA3}" {
+     Id "LF-Shop_NoReply"
+     Target_en_us "The till did not answer. Try again."
+     Comment "Shop slip line when the server did not answer within 5 seconds."
+    }
+    CustomStringTableItem "{00DDE66DC70CDDE2}" {
+     Id "LF-Shop_Paid"
+     Target_en_us "Paid %1. Thank you."
+     Comment "Shop slip line after a purchase. %1 is the amount paid."
+    }
+    CustomStringTableItem "{5A394611DC4124C6}" {
+     Id "LF-Shop_SoldFor"
+     Target_en_us "Sold for %1."
+     Comment "Shop slip line after a sale. %1 is the amount received."
+    }
+    CustomStringTableItem "{61B8D820AD73FEDC}" {
+     Id "LF-Shop_RefuseNotSold"
+     Target_en_us "This counter does not trade that item."
+     Comment "Shop refusal: the item is not sold here."
+    }
+    CustomStringTableItem "{CD2FED1EA8EFF86B}" {
+     Id "LF-Shop_RefuseUnpriced"
+     Target_en_us "That item has no price here."
+     Comment "Shop refusal: the item has no price."
+    }
+    CustomStringTableItem "{601C97E84CB077AF}" {
+     Id "LF-Shop_RefuseCash"
+     Target_en_us "Not enough cash on you for that."
+     Comment "Shop refusal: the buyer carries less cash than the total."
+    }
+    CustomStringTableItem "{7E91491254C3EF1B}" {
+     Id "LF-Shop_RefusePockets"
+     Target_en_us "No room in your pockets."
+     Comment "Shop refusal: the goods or the payout do not fit in the inventory; nothing changed hands."
+    }
+    CustomStringTableItem "{6DC38164E7C5B1CF}" {
+     Id "LF-Shop_RefuseNothing"
+     Target_en_us "You are not carrying any of those."
+     Comment "Shop refusal: a sale of an item the player does not carry."
+    }
+    CustomStringTableItem "{D4DD9D081F778020}" {
+     Id "LF-Shop_RefuseQuantity"
+     Target_en_us "Order between 1 and 99."
+     Comment "Shop refusal: quantity outside the per-order limit."
+    }
+    CustomStringTableItem "{3C541C5654D4DCEF}" {
+     Id "LF-Shop_RefuseFar"
+     Target_en_us "Step up to the counter."
+     Comment "Shop refusal: the player is too far from the shop."
+    }
+    CustomStringTableItem "{B586E2861C625AE3}" {
+     Id "LF-Shop_RefuseNoShop"
+     Target_en_us "The till is closed."
+     Comment "Shop refusal: the shop could not be found or the server has no buyer."
+    }
+    CustomStringTableItem "{60B9F032C5F7B335}" {
+     Id "LF-Interact_Title"
+     Target_en_us "Person to person"
+     Comment "Toast title for the player interaction menu."
+    }
+    CustomStringTableItem "{8E626C1D03166F0E}" {
+     Id "LF-Interact_Introduce"
+     Target_en_us "Introduce yourself"
+     Comment "Player interaction: tell the person in front of you your name."
+    }
+    CustomStringTableItem "{7E14502EF85F5A4A}" {
+     Id "LF-Interact_GiveCash"
+     Target_en_us "Give cash"
+     Comment "Player interaction: hand carried cash to the person in front of you."
+    }
+    CustomStringTableItem "{02C4E3CA42A96CE2}" {
+     Id "LF-Interact_GiveItem"
+     Target_en_us "Give what you hold"
+     Comment "Player interaction: hand the item in your hands to the person in front of you."
+    }
+    CustomStringTableItem "{A671E78C5ACEFC66}" {
+     Id "LF-Interact_RoleSlot"
+     Target_en_us "Role action"
+     Comment "Fallback name of a role slot (fine, org invite); the registered handler names it."
+    }
+    CustomStringTableItem "{8CADCC5825E64F26}" {
+     Id "LF-Interact_TooFar"
+     Target_en_us "Step closer to them."
+     Comment "Player interaction refused: the other person is out of reach."
+    }
+    CustomStringTableItem "{94040D66A82501E4}" {
+     Id "LF-Interact_NotAlive"
+     Target_en_us "They cannot respond."
+     Comment "Player interaction refused: one of the two is dead."
+    }
+    CustomStringTableItem "{962C35F4A89E8FB6}" {
+     Id "LF-Interact_NoOne"
+     Target_en_us "There is no one to talk to."
+     Comment "Player interaction refused: no player in front of you."
+    }
+    CustomStringTableItem "{00B6F39DAD843E76}" {
+     Id "LF-Interact_AlreadyKnown"
+     Target_en_us "They already know your name."
+     Comment "Introduce: the other player had already been introduced to you."
+    }
+    CustomStringTableItem "{892ED800F24AFCCA}" {
+     Id "LF-Interact_Introduced"
+     Target_en_us "You told them your name."
+     Comment "Introduce performed, shown to the one introducing themselves."
+    }
+    CustomStringTableItem "{85B3688798684AE5}" {
+     Id "LF-Interact_MetSomeone"
+     Target_en_us "%1 introduced themselves."
+     Comment "Introduce received. %1 is the other player's character name."
+    }
+    CustomStringTableItem "{1ECCEC67D6536926}" {
+     Id "LF-Interact_NoCash"
+     Target_en_us "You are not carrying any cash."
+     Comment "Give cash refused: nothing carried."
+    }
+    CustomStringTableItem "{C5A7B4999DC6BE9B}" {
+     Id "LF-Interact_NotEnoughCash"
+     Target_en_us "You do not carry that much."
+     Comment "Give cash refused: amount above the cash carried."
+    }
+    CustomStringTableItem "{35BF5A30C7E8CB61}" {
+     Id "LF-Interact_BadAmount"
+     Target_en_us "Write a whole amount above zero."
+     Comment "Give cash sheet: the amount is not a positive whole number."
+    }
+    CustomStringTableItem "{A8E16EB722360B68}" {
+     Id "LF-Interact_CashFailed"
+     Target_en_us "The cash did not change hands."
+     Comment "Give cash failed: the receiver could not take it; nothing moved."
+    }
+    CustomStringTableItem "{F3146FBEA250635F}" {
+     Id "LF-Interact_CashGiven"
+     Target_en_us "You handed over $%1."
+     Comment "Give cash performed, giver side. %1 is the amount."
+    }
+    CustomStringTableItem "{CDE85A79D1DDEB85}" {
+     Id "LF-Interact_CashReceived"
+     Target_en_us "You were handed $%1."
+     Comment "Give cash performed, receiver side. %1 is the amount."
+    }
+    CustomStringTableItem "{4785856902D6478D}" {
+     Id "LF-Interact_NothingInHand"
+     Target_en_us "You are not holding anything."
+     Comment "Give item refused: nothing in hand."
+    }
+    CustomStringTableItem "{9DCD0FDDC5828103}" {
+     Id "LF-Interact_NoRoom"
+     Target_en_us "They have no room for it."
+     Comment "Give item refused: the receiver's inventory has no space."
+    }
+    CustomStringTableItem "{D291A0929FB8ADB3}" {
+     Id "LF-Interact_ItemGiven"
+     Target_en_us "You handed it over."
+     Comment "Give item performed, giver side."
+    }
+    CustomStringTableItem "{9868061D4DF3FF33}" {
+     Id "LF-Interact_ItemReceived"
+     Target_en_us "You were handed something."
+     Comment "Give item performed, receiver side."
+    }
+    CustomStringTableItem "{71D81EDC67E0708A}" {
+     Id "LF-Interact_GiveCashTitle"
+     Target_en_us "Hand over cash"
+     Comment "Title of the give cash sheet."
+    }
+    CustomStringTableItem "{C316763AB24BFEC1}" {
+     Id "LF-Interact_GiveCashCarried"
+     Target_en_us "In your pocket: $%1"
+     Comment "Give cash sheet line. %1 is the cash carried."
+    }
+    CustomStringTableItem "{D123351114EF634A}" {
+     Id "LF-Interact_GiveCashAmount"
+     Target_en_us "Amount"
+     Comment "Give cash sheet field label."
+    }
+    CustomStringTableItem "{2E7513CA7BB7DDF1}" {
+     Id "LF-Interact_GiveCashButton"
+     Target_en_us "Hand it over"
+     Comment "Give cash sheet button that sends the amount."
+    }
+    CustomStringTableItem "{BDC4A6899C77AE87}" {
+     Id "LF-Interact_GiveCashKeep"
+     Target_en_us "Keep it"
+     Comment "Give cash sheet close button."
+    }
+    CustomStringTableItem "{26F8FC7CB843012A}" {
+     Id "LF-JailSlip_Name"
+     Target_en_us "Sentence slip"
+     Comment "Inventory name of the paper a prisoner receives on sentencing."
+    }
+    CustomStringTableItem "{B248F0FEF12E26A8}" {
+     Id "LF-JailSlip_Blank"
+     Target_en_us "A blank sentence slip."
+     Comment "Sentence slip description before it is printed."
+    }
+    CustomStringTableItem "{37A65DC6C4FED493}" {
+     Id "LF-JailSlip_Prisoner"
+     Target_en_us "Prisoner: %1"
+     Comment "Sentence slip line. %1 is the prisoner name."
+    }
+    CustomStringTableItem "{FD775A4BC17E874E}" {
+     Id "LF-JailSlip_Offence"
+     Target_en_us "Offence: wanted level %1"
+     Comment "Sentence slip line. %1 is the wanted level at sentencing."
+    }
+    CustomStringTableItem "{AB8EEC396FC517C0}" {
+     Id "LF-JailSlip_MinutesLeft"
+     Target_en_us "Time left: %1 min, served while you are online"
+     Comment "Sentence slip line. %1 is the whole online minutes left."
+    }
+    CustomStringTableItem "{67C253FDB532D573}" {
+     Id "LF-JailSlip_Stamped"
+     Target_en_us "SERVED. Released."
+     Comment "Stamp printed on a sentence slip when the sentence ends."
+    }
+    CustomStringTableItem "{6C2C86A5611DFD9A}" {
+     Id "LF-Jail_SlipHanded"
+     Target_en_us "You were handed a sentence slip. Check your inventory."
+     Comment "Toast when a prisoner receives the sentence slip."
+    }
+    CustomStringTableItem "{2606D4AE3E7A4FE0}" {
+     Id "LF-Vehicle_BankShort"
+     Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
+     Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
+    }
+    CustomStringTableItem "{7EC51FB11D0B1C50}" {
+     Id "LF-Garage_ReadLedger"
+     Target_en_us "Read the garage ledger"
+     Comment "Action at the garage and the impound desk that opens the ledger card of your vehicles"
+    }
+    CustomStringTableItem "{B91E50924997458C}" {
+     Id "LF-Garage_LedgerTitle"
+     Target_en_us "Garage Ledger"
+     Comment "Title of the garage ledger card"
+    }
+    CustomStringTableItem "{F48BC16138BA72D1}" {
+     Id "LF-Garage_LedgerRow"
+     Target_en_us "%1, plate %2: %3"
+     Comment "Ledger row. %1 is the model, %2 the plate, %3 where the vehicle is (in the garage, at the impound lot)"
+    }
+    CustomStringTableItem "{B2FF1D7EF35A27D7}" {
+     Id "LF-Garage_LedgerStored"
+     Target_en_us "in the garage"
+     Comment "Ledger row place: the vehicle is stored and survives restarts"
+    }
+    CustomStringTableItem "{A95D5C7E27177491}" {
+     Id "LF-Garage_LedgerImpounded"
+     Target_en_us "at the impound lot"
+     Comment "Ledger row place: the vehicle was left on the street at a restart"
+    }
+    CustomStringTableItem "{03E3D61F9E999AD2}" {
+     Id "LF-Garage_LedgerEmpty"
+     Target_en_us "No vehicles are registered to you."
+     Comment "Ledger card line when the reader owns no stored or impounded vehicle"
+    }
+    CustomStringTableItem "{5CDA9148049FE180}" {
+     Id "LF-Garage_LedgerFee"
+     Target_en_us "Release fee at the impound desk behind the garage: $%1 in cash."
+     Comment "Ledger card line when a vehicle is impounded. %1 is the fee"
+    }
+    CustomStringTableItem "{66D8858FA06871D7}" {
+     Id "LF-Garage_LedgerClose"
+     Target_en_us "Put it back"
+     Comment "Closes the garage ledger card"
+    }
+    CustomStringTableItem "{FC90DC9BBE2A0562}" {
+     Id "LF-Garage_Stored"
+     Target_en_us "Stored in the garage: %1. Keep your key."
+     Comment "Store succeeded. %1 is the plate"
+    }
+    CustomStringTableItem "{EFE87FE08B769414}" {
+     Id "LF-Garage_Retrieved"
+     Target_en_us "%1 is waiting on the pad in front of the garage."
+     Comment "Retrieve succeeded. %1 is the plate"
+    }
+    CustomStringTableItem "{844A5DFB122EDF8C}" {
+     Id "LF-Garage_NothingStored"
+     Target_en_us "You have no vehicle in the garage."
+     Comment "Retrieve refused: nothing stored"
+    }
+    CustomStringTableItem "{A103BFA88FF840F0}" {
+     Id "LF-Garage_PadBusy"
+     Target_en_us "The pad in front of the garage is blocked. Move the car that is standing there."
+     Comment "Retrieve refused: every garage pad is occupied"
+    }
+    CustomStringTableItem "{50E0662C55792133}" {
+     Id "LF-Impound_Title"
+     Target_en_us "Impound Lot"
+     Comment "Notification title at the impound desk"
+    }
+    CustomStringTableItem "{7E2E61FB397A0CDF}" {
+     Id "LF-Impound_Collect"
+     Target_en_us "Pay the fee and collect your vehicle"
+     Comment "Impound desk action"
+    }
+    CustomStringTableItem "{8A114E81A1FA0278}" {
+     Id "LF-Impound_NothingHere"
+     Target_en_us "None of your vehicles is at the impound lot."
+     Comment "Impound collect refused: nothing impounded for this player"
+    }
+    CustomStringTableItem "{1736103CC4077F8B}" {
+     Id "LF-Impound_CannotAfford"
+     Target_en_us "The release fee is $%1 in cash."
+     Comment "Impound collect refused: carried cash is short. %1 is the fee"
+    }
+    CustomStringTableItem "{DF52697EEFAFA6B6}" {
+     Id "LF-Impound_PadBusy"
+     Target_en_us "The yard is full. Wait until a vehicle is driven out."
+     Comment "Impound collect refused: every yard pad is occupied"
+    }
+    CustomStringTableItem "{1A7DF5F007730F80}" {
+     Id "LF-Impound_Closed"
+     Target_en_us "The impound desk is closed."
+     Comment "Impound collect refused: the fee is not configured"
+    }
+    CustomStringTableItem "{E4FB9D76BA99F73A}" {
+     Id "LF-Impound_Collected"
+     Target_en_us "Released: %1 is waiting in the yard."
+     Comment "Impound collect succeeded. %1 is the plate"
+    }
+    CustomStringTableItem "{D033165293830B25}" {
+     Id "LF-Garage_LedgerStreet"
+     Target_en_us "on the street, towed to the impound lot at the next restart unless garaged"
+     Comment "Ledger row place: the vehicle is out in the world"
+    }
+    CustomStringTableItem "{86AD47C0A38CE390}" {
+     Id "LF-Garage_BuyHint"
+     Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
+     Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
+    }
     CustomStringTableItem "{7EFC20EBB3D29E7E}" {
      Id "LF-Sign_TownMap_Title"
      Target_en_us "Welcome to Everon"
@@ -3602,520 +4102,10 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The bill from your stay in hospital. Drop it to read it again."
      Comment "Inventory description of the paper hospital bill."
     }
-    CustomStringTableItem "{E5BDB7CD47972752}" {
-     Id "LF-ATM_Header"
-     Target_en_us "FIRST BANK OF EVERON"
-     Comment "ATM terminal screen header. Upper case: a 1989 green-screen terminal."
-    }
-    CustomStringTableItem "{627D8D9DEE75887B}" {
-     Id "LF-ATM_LineBalance"
-     Target_en_us "BALANCE ....... %1"
-     Comment "ATM terminal balance line. %1 is the formatted account balance, or ---- before the bank answers."
-    }
-    CustomStringTableItem "{78E20ABFCFFBB92B}" {
-     Id "LF-ATM_LineCash"
-     Target_en_us "CASH IN HAND .. %1"
-     Comment "ATM terminal line for the cash the player carries. %1 is the formatted amount."
-    }
-    CustomStringTableItem "{7F695CCFB7B1DEFD}" {
-     Id "LF-ATM_LineEntry"
-     Target_en_us "AMOUNT > %1_"
-     Comment "ATM terminal entry line with a cursor. %1 is the amount keyed in so far."
-    }
-    CustomStringTableItem "{E54FB6AD91A6A823}" {
-     Id "LF-ATM_Unknown"
-     Target_en_us "----"
-     Comment "Placeholder for a figure the bank has not sent yet."
-    }
-    CustomStringTableItem "{C69157C8E92DD27F}" {
-     Id "LF-ATM_Prompt"
-     Target_en_us "KEY IN AN AMOUNT, THEN DEPOSIT OR WITHDRAW"
-     Comment "ATM terminal status line when idle."
-    }
-    CustomStringTableItem "{C537821836A5ADD5}" {
-     Id "LF-ATM_Working"
-     Target_en_us "PLEASE WAIT ..."
-     Comment "ATM terminal status line while the server handles a request."
-    }
-    CustomStringTableItem "{7880A378781D2C8D}" {
-     Id "LF-ATM_NoReply"
-     Target_en_us "NO REPLY FROM THE BANK. TRY AGAIN."
-     Comment "ATM terminal status line when the server did not answer within 5 seconds."
-    }
-    CustomStringTableItem "{4A64CBDDC70A3B14}" {
-     Id "LF-ATM_Deposited"
-     Target_en_us "DEPOSITED %1. THANK YOU."
-     Comment "ATM terminal status line after a deposit. %1 is the amount."
-    }
-    CustomStringTableItem "{CAF4A9272F7A5651}" {
-     Id "LF-ATM_Dispensed"
-     Target_en_us "PLEASE TAKE YOUR CASH: %1"
-     Comment "ATM terminal status line after a withdrawal. %1 is the amount paid out."
-    }
-    CustomStringTableItem "{9549498E04A2B4B9}" {
-     Id "LF-ATM_KeyClear"
-     Target_en_us "CLR"
-     Comment "ATM keypad key that clears the amount."
-    }
-    CustomStringTableItem "{A67CBEC8AAD45E67}" {
-     Id "LF-ATM_KeyBack"
-     Target_en_us "DEL"
-     Comment "ATM keypad key that removes the last digit."
-    }
-    CustomStringTableItem "{B052CECB9FD10BBA}" {
-     Id "LF-ATM_KeyDeposit"
-     Target_en_us "DEPOSIT"
-     Comment "ATM terminal key: pay the keyed amount of carried cash into the account."
-    }
-    CustomStringTableItem "{9BA4937AFAD95E3E}" {
-     Id "LF-ATM_KeyWithdraw"
-     Target_en_us "WITHDRAW"
-     Comment "ATM terminal key: take the keyed amount out of the account as cash."
-    }
-    CustomStringTableItem "{2028FAF6D9D3BF5C}" {
-     Id "LF-ATM_Exit"
-     Target_en_us "EXIT"
-     Comment "ATM terminal key that closes the screen."
-    }
-    CustomStringTableItem "{8839595C4DED196B}" {
-     Id "LF-ATM_RefuseAmount"
-     Target_en_us "REFUSED: KEY IN AN AMOUNT ABOVE ZERO"
-     Comment "ATM refusal: the amount is zero or outside the transaction limit."
-    }
-    CustomStringTableItem "{4FE6F21A50365940}" {
-     Id "LF-ATM_RefuseCash"
-     Target_en_us "REFUSED: YOU DO NOT CARRY THAT MUCH CASH"
-     Comment "ATM refusal: a deposit larger than the cash the player carries."
-    }
-    CustomStringTableItem "{FA6C0202EB152BE3}" {
-     Id "LF-ATM_RefuseBalance"
-     Target_en_us "REFUSED: INSUFFICIENT FUNDS IN ACCOUNT"
-     Comment "ATM refusal: a withdrawal larger than the account balance."
-    }
-    CustomStringTableItem "{9AC0372760E9657E}" {
-     Id "LF-ATM_RefusePockets"
-     Target_en_us "REFUSED: NO ROOM IN YOUR POCKETS FOR THE CASH"
-     Comment "ATM refusal: the withdrawn cash does not fit in the inventory; the balance is restored."
-    }
-    CustomStringTableItem "{2FA569A76F73369A}" {
-     Id "LF-ATM_RefuseFar"
-     Target_en_us "REFUSED: STAND AT THE MACHINE"
-     Comment "ATM refusal: the server found no ATM within 5 m of the player."
-    }
-    CustomStringTableItem "{234C990779F19F26}" {
-     Id "LF-ATM_RefuseAccount"
-     Target_en_us "REFUSED: ACCOUNT UNAVAILABLE"
-     Comment "ATM refusal: the player's account could not be found."
-    }
-    CustomStringTableItem "{C2D8EF8EC8E7CAC8}" {
-     Id "LF-Shop_CashLine"
-     Target_en_us "Cash in hand: %1"
-     Comment "Shop price list line for the cash the player carries. %1 is the formatted amount."
-    }
-    CustomStringTableItem "{02FFEC0ECB74AFC2}" {
-     Id "LF-Shop_LookFor"
-     Target_en_us "Look for an item ..."
-     Comment "Shop price list search field placeholder; typing narrows the list."
-    }
-    CustomStringTableItem "{BE3CD5847E4642EA}" {
-     Id "LF-Shop_Order"
-     Target_en_us "Order"
-     Comment "Shop price list row button that puts the item on the order slip."
-    }
-    CustomStringTableItem "{89D9F751DFF3D649}" {
-     Id "LF-Shop_SlipEmpty"
-     Target_en_us "Order slip: pick a line from the list."
-     Comment "Shop order slip before an item is picked."
-    }
-    CustomStringTableItem "{1C832CFE28C35A01}" {
-     Id "LF-Shop_SlipLine"
-     Target_en_us "Order slip: %1 x %2"
-     Comment "Shop order slip line. %1 is the quantity, %2 the item name."
-    }
-    CustomStringTableItem "{6BEE9A234FAE3042}" {
-     Id "LF-Shop_Less"
-     Target_en_us "One less"
-     Comment "Shop order slip key: lower the quantity by one."
-    }
-    CustomStringTableItem "{0314921F9811C286}" {
-     Id "LF-Shop_More"
-     Target_en_us "One more"
-     Comment "Shop order slip key: raise the quantity by one."
-    }
-    CustomStringTableItem "{F0B657CA9B23547B}" {
-     Id "LF-Shop_Pay"
-     Target_en_us "Pay cash"
-     Comment "Shop till key before an item is picked."
-    }
-    CustomStringTableItem "{932451884B68684C}" {
-     Id "LF-Shop_PayTotal"
-     Target_en_us "Pay %1 cash"
-     Comment "Shop till key. %1 is the order total."
-    }
-    CustomStringTableItem "{4D7E3AE3D3960088}" {
-     Id "LF-Shop_SellBack"
-     Target_en_us "Sell these"
-     Comment "Shop till key: sell the slip's quantity of the picked item back to the counter."
-    }
-    CustomStringTableItem "{934DA7DD0FA38AC9}" {
-     Id "LF-Shop_Leave"
-     Target_en_us "Leave"
-     Comment "Shop price list key that closes it."
-    }
-    CustomStringTableItem "{5F8B9B94FCD989FE}" {
-     Id "LF-Shop_PickFirst"
-     Target_en_us "Pick a line from the list first."
-     Comment "Shop refusal on the client: Pay or Sell with no item on the slip."
-    }
-    CustomStringTableItem "{B385B4702F2997BF}" {
-     Id "LF-Shop_Working"
-     Target_en_us "At the till ..."
-     Comment "Shop slip line while the server handles the order."
-    }
-    CustomStringTableItem "{684633A0ED601DA3}" {
-     Id "LF-Shop_NoReply"
-     Target_en_us "The till did not answer. Try again."
-     Comment "Shop slip line when the server did not answer within 5 seconds."
-    }
-    CustomStringTableItem "{00DDE66DC70CDDE2}" {
-     Id "LF-Shop_Paid"
-     Target_en_us "Paid %1. Thank you."
-     Comment "Shop slip line after a purchase. %1 is the amount paid."
-    }
-    CustomStringTableItem "{5A394611DC4124C6}" {
-     Id "LF-Shop_SoldFor"
-     Target_en_us "Sold for %1."
-     Comment "Shop slip line after a sale. %1 is the amount received."
-    }
-    CustomStringTableItem "{61B8D820AD73FEDC}" {
-     Id "LF-Shop_RefuseNotSold"
-     Target_en_us "This counter does not trade that item."
-     Comment "Shop refusal: the item is not sold here."
-    }
-    CustomStringTableItem "{CD2FED1EA8EFF86B}" {
-     Id "LF-Shop_RefuseUnpriced"
-     Target_en_us "That item has no price here."
-     Comment "Shop refusal: the item has no price."
-    }
-    CustomStringTableItem "{601C97E84CB077AF}" {
-     Id "LF-Shop_RefuseCash"
-     Target_en_us "Not enough cash on you for that."
-     Comment "Shop refusal: the buyer carries less cash than the total."
-    }
-    CustomStringTableItem "{7E91491254C3EF1B}" {
-     Id "LF-Shop_RefusePockets"
-     Target_en_us "No room in your pockets."
-     Comment "Shop refusal: the goods or the payout do not fit in the inventory; nothing changed hands."
-    }
-    CustomStringTableItem "{6DC38164E7C5B1CF}" {
-     Id "LF-Shop_RefuseNothing"
-     Target_en_us "You are not carrying any of those."
-     Comment "Shop refusal: a sale of an item the player does not carry."
-    }
-    CustomStringTableItem "{D4DD9D081F778020}" {
-     Id "LF-Shop_RefuseQuantity"
-     Target_en_us "Order between 1 and 99."
-     Comment "Shop refusal: quantity outside the per-order limit."
-    }
-    CustomStringTableItem "{3C541C5654D4DCEF}" {
-     Id "LF-Shop_RefuseFar"
-     Target_en_us "Step up to the counter."
-     Comment "Shop refusal: the player is too far from the shop."
-    }
-    CustomStringTableItem "{B586E2861C625AE3}" {
-     Id "LF-Shop_RefuseNoShop"
-     Target_en_us "The till is closed."
-     Comment "Shop refusal: the shop could not be found or the server has no buyer."
-    }
-    CustomStringTableItem "{60B9F032C5F7B335}" {
-     Id "LF-Interact_Title"
-     Target_en_us "Person to person"
-     Comment "Toast title for the player interaction menu."
-    }
-    CustomStringTableItem "{8E626C1D03166F0E}" {
-     Id "LF-Interact_Introduce"
-     Target_en_us "Introduce yourself"
-     Comment "Player interaction: tell the person in front of you your name."
-    }
-    CustomStringTableItem "{7E14502EF85F5A4A}" {
-     Id "LF-Interact_GiveCash"
-     Target_en_us "Give cash"
-     Comment "Player interaction: hand carried cash to the person in front of you."
-    }
-    CustomStringTableItem "{02C4E3CA42A96CE2}" {
-     Id "LF-Interact_GiveItem"
-     Target_en_us "Give what you hold"
-     Comment "Player interaction: hand the item in your hands to the person in front of you."
-    }
-    CustomStringTableItem "{A671E78C5ACEFC66}" {
-     Id "LF-Interact_RoleSlot"
-     Target_en_us "Role action"
-     Comment "Fallback name of a role slot (fine, org invite); the registered handler names it."
-    }
-    CustomStringTableItem "{8CADCC5825E64F26}" {
-     Id "LF-Interact_TooFar"
-     Target_en_us "Step closer to them."
-     Comment "Player interaction refused: the other person is out of reach."
-    }
-    CustomStringTableItem "{94040D66A82501E4}" {
-     Id "LF-Interact_NotAlive"
-     Target_en_us "They cannot respond."
-     Comment "Player interaction refused: one of the two is dead."
-    }
-    CustomStringTableItem "{962C35F4A89E8FB6}" {
-     Id "LF-Interact_NoOne"
-     Target_en_us "There is no one to talk to."
-     Comment "Player interaction refused: no player in front of you."
-    }
-    CustomStringTableItem "{00B6F39DAD843E76}" {
-     Id "LF-Interact_AlreadyKnown"
-     Target_en_us "They already know your name."
-     Comment "Introduce: the other player had already been introduced to you."
-    }
-    CustomStringTableItem "{892ED800F24AFCCA}" {
-     Id "LF-Interact_Introduced"
-     Target_en_us "You told them your name."
-     Comment "Introduce performed, shown to the one introducing themselves."
-    }
-    CustomStringTableItem "{85B3688798684AE5}" {
-     Id "LF-Interact_MetSomeone"
-     Target_en_us "%1 introduced themselves."
-     Comment "Introduce received. %1 is the other player's character name."
-    }
-    CustomStringTableItem "{1ECCEC67D6536926}" {
-     Id "LF-Interact_NoCash"
-     Target_en_us "You are not carrying any cash."
-     Comment "Give cash refused: nothing carried."
-    }
-    CustomStringTableItem "{C5A7B4999DC6BE9B}" {
-     Id "LF-Interact_NotEnoughCash"
-     Target_en_us "You do not carry that much."
-     Comment "Give cash refused: amount above the cash carried."
-    }
-    CustomStringTableItem "{35BF5A30C7E8CB61}" {
-     Id "LF-Interact_BadAmount"
-     Target_en_us "Write a whole amount above zero."
-     Comment "Give cash sheet: the amount is not a positive whole number."
-    }
-    CustomStringTableItem "{A8E16EB722360B68}" {
-     Id "LF-Interact_CashFailed"
-     Target_en_us "The cash did not change hands."
-     Comment "Give cash failed: the receiver could not take it; nothing moved."
-    }
-    CustomStringTableItem "{F3146FBEA250635F}" {
-     Id "LF-Interact_CashGiven"
-     Target_en_us "You handed over $%1."
-     Comment "Give cash performed, giver side. %1 is the amount."
-    }
-    CustomStringTableItem "{CDE85A79D1DDEB85}" {
-     Id "LF-Interact_CashReceived"
-     Target_en_us "You were handed $%1."
-     Comment "Give cash performed, receiver side. %1 is the amount."
-    }
-    CustomStringTableItem "{4785856902D6478D}" {
-     Id "LF-Interact_NothingInHand"
-     Target_en_us "You are not holding anything."
-     Comment "Give item refused: nothing in hand."
-    }
-    CustomStringTableItem "{9DCD0FDDC5828103}" {
-     Id "LF-Interact_NoRoom"
-     Target_en_us "They have no room for it."
-     Comment "Give item refused: the receiver's inventory has no space."
-    }
-    CustomStringTableItem "{D291A0929FB8ADB3}" {
-     Id "LF-Interact_ItemGiven"
-     Target_en_us "You handed it over."
-     Comment "Give item performed, giver side."
-    }
-    CustomStringTableItem "{9868061D4DF3FF33}" {
-     Id "LF-Interact_ItemReceived"
-     Target_en_us "You were handed something."
-     Comment "Give item performed, receiver side."
-    }
-    CustomStringTableItem "{71D81EDC67E0708A}" {
-     Id "LF-Interact_GiveCashTitle"
-     Target_en_us "Hand over cash"
-     Comment "Title of the give cash sheet."
-    }
-    CustomStringTableItem "{C316763AB24BFEC1}" {
-     Id "LF-Interact_GiveCashCarried"
-     Target_en_us "In your pocket: $%1"
-     Comment "Give cash sheet line. %1 is the cash carried."
-    }
-    CustomStringTableItem "{D123351114EF634A}" {
-     Id "LF-Interact_GiveCashAmount"
-     Target_en_us "Amount"
-     Comment "Give cash sheet field label."
-    }
-    CustomStringTableItem "{2E7513CA7BB7DDF1}" {
-     Id "LF-Interact_GiveCashButton"
-     Target_en_us "Hand it over"
-     Comment "Give cash sheet button that sends the amount."
-    }
-    CustomStringTableItem "{BDC4A6899C77AE87}" {
-     Id "LF-Interact_GiveCashKeep"
-     Target_en_us "Keep it"
-     Comment "Give cash sheet close button."
-    }
-    CustomStringTableItem "{26F8FC7CB843012A}" {
-     Id "LF-JailSlip_Name"
-     Target_en_us "Sentence slip"
-     Comment "Inventory name of the paper a prisoner receives on sentencing."
-    }
-    CustomStringTableItem "{B248F0FEF12E26A8}" {
-     Id "LF-JailSlip_Blank"
-     Target_en_us "A blank sentence slip."
-     Comment "Sentence slip description before it is printed."
-    }
-    CustomStringTableItem "{37A65DC6C4FED493}" {
-     Id "LF-JailSlip_Prisoner"
-     Target_en_us "Prisoner: %1"
-     Comment "Sentence slip line. %1 is the prisoner name."
-    }
-    CustomStringTableItem "{FD775A4BC17E874E}" {
-     Id "LF-JailSlip_Offence"
-     Target_en_us "Offence: wanted level %1"
-     Comment "Sentence slip line. %1 is the wanted level at sentencing."
-    }
-    CustomStringTableItem "{AB8EEC396FC517C0}" {
-     Id "LF-JailSlip_MinutesLeft"
-     Target_en_us "Time left: %1 min, served while you are online"
-     Comment "Sentence slip line. %1 is the whole online minutes left."
-    }
-    CustomStringTableItem "{67C253FDB532D573}" {
-     Id "LF-JailSlip_Stamped"
-     Target_en_us "SERVED. Released."
-     Comment "Stamp printed on a sentence slip when the sentence ends."
-    }
-    CustomStringTableItem "{6C2C86A5611DFD9A}" {
-     Id "LF-Jail_SlipHanded"
-     Target_en_us "You were handed a sentence slip. Check your inventory."
-     Comment "Toast when a prisoner receives the sentence slip."
-    }
-    CustomStringTableItem "{2606D4AE3E7A4FE0}" {
-     Id "LF-Vehicle_BankShort"
-     Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
-     Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
-    }
     CustomStringTableItem "{5985DB962913E1DE}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"
      Comment "Escort refused because the officer's rank is below the configured escort rank"
-    }
-    CustomStringTableItem "{F51D6FC3BD1F68DC}" {
-     Id "LF-Job_NewWork"
-     Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
-     Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
-    }
-    CustomStringTableItem "{196A4BD9FFC674C5}" {
-     Id "LF-Job_HiredHidden"
-     Target_en_us "You now work as %1."
-     Comment "Hint when hired; %1 = job name. Hidden progression: no grade or level."
-    }
-    CustomStringTableItem "{7EC51FB11D0B1C50}" {
-     Id "LF-Garage_ReadLedger"
-     Target_en_us "Read the garage ledger"
-     Comment "Action at the garage and the impound desk that opens the ledger card of your vehicles"
-    }
-    CustomStringTableItem "{B91E50924997458C}" {
-     Id "LF-Garage_LedgerTitle"
-     Target_en_us "Garage Ledger"
-     Comment "Title of the garage ledger card"
-    }
-    CustomStringTableItem "{F48BC16138BA72D1}" {
-     Id "LF-Garage_LedgerRow"
-     Target_en_us "%1, plate %2: %3"
-     Comment "Ledger row. %1 is the model, %2 the plate, %3 where the vehicle is (in the garage, at the impound lot)"
-    }
-    CustomStringTableItem "{B2FF1D7EF35A27D7}" {
-     Id "LF-Garage_LedgerStored"
-     Target_en_us "in the garage"
-     Comment "Ledger row place: the vehicle is stored and survives restarts"
-    }
-    CustomStringTableItem "{A95D5C7E27177491}" {
-     Id "LF-Garage_LedgerImpounded"
-     Target_en_us "at the impound lot"
-     Comment "Ledger row place: the vehicle was left on the street at a restart"
-    }
-    CustomStringTableItem "{03E3D61F9E999AD2}" {
-     Id "LF-Garage_LedgerEmpty"
-     Target_en_us "No vehicles are registered to you."
-     Comment "Ledger card line when the reader owns no stored or impounded vehicle"
-    }
-    CustomStringTableItem "{5CDA9148049FE180}" {
-     Id "LF-Garage_LedgerFee"
-     Target_en_us "Release fee at the impound desk behind the garage: $%1 in cash."
-     Comment "Ledger card line when a vehicle is impounded. %1 is the fee"
-    }
-    CustomStringTableItem "{66D8858FA06871D7}" {
-     Id "LF-Garage_LedgerClose"
-     Target_en_us "Put it back"
-     Comment "Closes the garage ledger card"
-    }
-    CustomStringTableItem "{FC90DC9BBE2A0562}" {
-     Id "LF-Garage_Stored"
-     Target_en_us "Stored in the garage: %1. Keep your key."
-     Comment "Store succeeded. %1 is the plate"
-    }
-    CustomStringTableItem "{EFE87FE08B769414}" {
-     Id "LF-Garage_Retrieved"
-     Target_en_us "%1 is waiting on the pad in front of the garage."
-     Comment "Retrieve succeeded. %1 is the plate"
-    }
-    CustomStringTableItem "{844A5DFB122EDF8C}" {
-     Id "LF-Garage_NothingStored"
-     Target_en_us "You have no vehicle in the garage."
-     Comment "Retrieve refused: nothing stored"
-    }
-    CustomStringTableItem "{A103BFA88FF840F0}" {
-     Id "LF-Garage_PadBusy"
-     Target_en_us "The pad in front of the garage is blocked. Move the car that is standing there."
-     Comment "Retrieve refused: every garage pad is occupied"
-    }
-    CustomStringTableItem "{50E0662C55792133}" {
-     Id "LF-Impound_Title"
-     Target_en_us "Impound Lot"
-     Comment "Notification title at the impound desk"
-    }
-    CustomStringTableItem "{7E2E61FB397A0CDF}" {
-     Id "LF-Impound_Collect"
-     Target_en_us "Pay the fee and collect your vehicle"
-     Comment "Impound desk action"
-    }
-    CustomStringTableItem "{8A114E81A1FA0278}" {
-     Id "LF-Impound_NothingHere"
-     Target_en_us "None of your vehicles is at the impound lot."
-     Comment "Impound collect refused: nothing impounded for this player"
-    }
-    CustomStringTableItem "{1736103CC4077F8B}" {
-     Id "LF-Impound_CannotAfford"
-     Target_en_us "The release fee is $%1 in cash."
-     Comment "Impound collect refused: carried cash is short. %1 is the fee"
-    }
-    CustomStringTableItem "{DF52697EEFAFA6B6}" {
-     Id "LF-Impound_PadBusy"
-     Target_en_us "The yard is full. Wait until a vehicle is driven out."
-     Comment "Impound collect refused: every yard pad is occupied"
-    }
-    CustomStringTableItem "{1A7DF5F007730F80}" {
-     Id "LF-Impound_Closed"
-     Target_en_us "The impound desk is closed."
-     Comment "Impound collect refused: the fee is not configured"
-    }
-    CustomStringTableItem "{E4FB9D76BA99F73A}" {
-     Id "LF-Impound_Collected"
-     Target_en_us "Released: %1 is waiting in the yard."
-     Comment "Impound collect succeeded. %1 is the plate"
-    }
-    CustomStringTableItem "{D033165293830B25}" {
-     Id "LF-Garage_LedgerStreet"
-     Target_en_us "on the street, towed to the impound lot at the next restart unless garaged"
-     Comment "Ledger row place: the vehicle is out in the world"
-    }
-    CustomStringTableItem "{86AD47C0A38CE390}" {
-     Id "LF-Garage_BuyHint"
-     Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
-     Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
     }
     CustomStringTableItem "{576A5D52994C158C}" {
      Id "LF-Sign_Impound_Title"
@@ -4282,26 +4272,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Park it in the garage next door, to the west, and it will not be towed again."
      Comment "Sign card for the impound lot, Next section: where the player goes after this place."
     }
-    CustomStringTableItem "{867133165FC03CB2}" {
-     Id "LF-Item_Parcel"
-     Target_en_us "Parcel"
-     Comment "Courier parcel item name"
-    }
-    CustomStringTableItem "{836BCE9515B5DC47}" {
-     Id "LF-Item_Parcel_Desc"
-     Target_en_us "A taped cardboard parcel for the drop-off address."
-     Comment "Courier parcel item description"
-    }
-    CustomStringTableItem "{315A7D38264FAED4}" {
-     Id "LF-Item_MoneyBag"
-     Target_en_us "Cash case"
-     Comment "Bank vault money bag item name"
-    }
-    CustomStringTableItem "{44F201EB4501CD73}" {
-     Id "LF-Item_MoneyBag_Desc"
-     Target_en_us "A heavy case of banknotes from the vault."
-     Comment "Bank money bag item description"
-    }
     CustomStringTableItem "{0A0AF64EEE5BACBB}" {
      Id "LF-Duty_ClockIn"
      Target_en_us "Clock in"
@@ -4452,10 +4422,95 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "wanted level %1 of 5"
      Comment "Wanted poster headline: how wanted the suspect is now. %1 is 1 to 5."
     }
+    CustomStringTableItem "{F51D6FC3BD1F68DC}" {
+     Id "LF-Job_NewWork"
+     Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
+     Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
+    }
+    CustomStringTableItem "{196A4BD9FFC674C5}" {
+     Id "LF-Job_HiredHidden"
+     Target_en_us "You now work as %1."
+     Comment "Hint when hired; %1 = job name. Hidden progression: no grade or level."
+    }
     CustomStringTableItem "{94B78288ADF3D767}" {
      Id "LF-Sign_PoliceWanted_Next"
      Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
      Comment "Wanted board sign card: what to do next."
+    }
+    CustomStringTableItem "{0A1E0465064F3E5F}" {
+     Id "LF-Offence_Murder"
+     Target_en_us "Murder"
+     Comment "Offence on a wanted poster: the suspect killed a person (M1-27)."
+    }
+    CustomStringTableItem "{4781500A4B2C8282}" {
+     Id "LF-Police_Alert_Murder"
+     Target_en_us "Crime Alert: a person was killed"
+     Comment "Police notification when a player kills someone (M1-27)."
+    }
+    CustomStringTableItem "{014EE9C8731D5B15}" {
+     Id "LF-Murder_Title"
+     Target_en_us "Murder"
+     Comment "Toast title for the killer after a murder."
+    }
+    CustomStringTableItem "{1CF2A86D80F0C6CA}" {
+     Id "LF-Murder_Wanted"
+     Target_en_us "You killed someone. You are wanted for murder, and witnesses will describe your clothes and vehicle to the police."
+     Comment "Toast to the killer after a murder. The police get a description, not a name."
+    }
+    CustomStringTableItem "{3DCC039CAC772B0D}" {
+     Id "LF-SafeZone_Title"
+     Target_en_us "Safe zone"
+     Comment "Toast title when a shot is refused in the spawn safe zone."
+    }
+    CustomStringTableItem "{4AA0194A741E081B}" {
+     Id "LF-SafeZone_ShotRefused"
+     Target_en_us "The town square is a safe zone. Your shot hurt nobody."
+     Comment "Toast to a player whose shot was refused in or into the spawn safe zone. Rate-limited."
+    }
+    CustomStringTableItem "{963D03A213F5DB4B}" {
+     Id "LF-Sign_SafeZone_Title"
+     Target_en_us "Safe Zone"
+     Comment "Title of the safe zone notice boards on the town square. Printed on the board and shown as Read: Safe Zone."
+    }
+    CustomStringTableItem "{17CC4B91C722E270}" {
+     Id "LF-Sign_SafeZone_What"
+     Target_en_us "The town square is a safe zone. Within 30 metres of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
+     Comment "Safe zone sign card, What section."
+    }
+    CustomStringTableItem "{A0732BEC5B5104E5}" {
+     Id "LF-Sign_SafeZone_How"
+     Target_en_us "Put your weapon away on the square. Settle disputes somewhere else, or report them at the police station."
+     Comment "Safe zone sign card, How section."
+    }
+    CustomStringTableItem "{CD3D63226CFCE5F9}" {
+     Id "LF-Sign_SafeZone_Rules"
+     Target_en_us "Beyond the square, killing anyone, resident or stranger, is murder. The killer is wanted at once, and the police get a description of their clothes, their vehicle, and the place. By order of the Everon Constabulary."
+     Comment "Safe zone sign card, Rules section."
+    }
+    CustomStringTableItem "{7C1E5A92D04B36F8}" {
+     Id "LF-Sign_SafeZone_Next"
+     Target_en_us "Read the town map board beside this one, then talk to the town hall clerk a few steps east."
+     Comment "Safe zone sign card, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{867133165FC03CB2}" {
+     Id "LF-Item_Parcel"
+     Target_en_us "Parcel"
+     Comment "Courier parcel item name"
+    }
+    CustomStringTableItem "{836BCE9515B5DC47}" {
+     Id "LF-Item_Parcel_Desc"
+     Target_en_us "A taped cardboard parcel for the drop-off address."
+     Comment "Courier parcel item description"
+    }
+    CustomStringTableItem "{315A7D38264FAED4}" {
+     Id "LF-Item_MoneyBag"
+     Target_en_us "Cash case"
+     Comment "Bank vault money bag item name"
+    }
+    CustomStringTableItem "{44F201EB4501CD73}" {
+     Id "LF-Item_MoneyBag_Desc"
+     Target_en_us "A heavy case of banknotes from the vault."
+     Comment "Bank money bag item description"
     }
   }
  }

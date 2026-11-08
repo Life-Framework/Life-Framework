@@ -18,6 +18,8 @@ toolscli rdb                           # register new .meta files in this worktr
 tools\cli serve                         # boot the headless test server (blocks, worktree only)
 tools\cli test [--no-build] [--tier fast|all|persistence] [--only <names>]
                                         # build + boot server + parse ELTEST results (worktree only)
+                                        # --remote [host] runs it on the test box, --local pins it here
+tools\cli testbox provision|status|prune # second test machine (tools/remote/, docs/worktrees.md)
 tools\cli ci                            # validate --full + build + test (full gate, worktree only)
 tools\cli logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                         # grep the newest server console.log (default after=3 limit=8)

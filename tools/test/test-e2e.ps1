@@ -138,6 +138,17 @@ $dataSource = Join-Path $serverInstall "addons"
 $serverHasData = (Get-ChildItem (Join-Path $dataSource "core") -ErrorAction SilentlyContinue).Count -gt 0 -and
                  (Get-ChildItem (Join-Path $dataSource "data") -ErrorAction SilentlyContinue).Count -gt 0
 if (-not $serverHasData) { $dataSource = Join-Path $gameInstall "addons" }
+# LF_GAME_ADDONS (OS env or lf.local.json, passed in by tools\cli) names the
+# core/data source outright, e.g. a SteamCMD server install on a test box.
+if ($env:LF_GAME_ADDONS) {
+  # mklink /J reads forward slashes as switches.
+  $dataSource = $env:LF_GAME_ADDONS.Replace('/', '\').TrimEnd('\')
+  if (-not (Test-Path -LiteralPath (Join-Path $dataSource "core")) -or -not (Test-Path -LiteralPath (Join-Path $dataSource "data"))) {
+    Write-Host "ERROR LF_GAME_ADDONS=$dataSource has no core\ and data\ folders"
+    exit 2
+  }
+}
+Write-Host "test-e2e: base game data from $dataSource"
 # game-addons holds junctions into the Steam installs. safe-rm unlinks every
 # link without following it, then deletes, and exits nonzero when a link stays.
 function Remove-GeneratedAddonRoot([string]$path) {
