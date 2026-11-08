@@ -14,12 +14,14 @@ tools\cli mcp update [name]             # update MCP servers from GitHub
 tools\cli mcp verify [name]             # prove a server starts
 tools\cli mcp enable|disable <name>     # toggle a server in opencode.json
 tools\cli build                         # headless Workbench build (worktree only)
-toolscli rdb                           # register new .meta files in this worktree's resourceDatabase.rdb (~10 s; boots do it when stale)
+tools\cli rdb                           # register new .meta files in this worktree's resourceDatabase.rdb (~10 s; boots do it when stale)
 tools\cli serve                         # boot the headless test server (blocks, worktree only)
 tools\cli test [--no-build] [--tier fast|all|persistence] [--only <names>]
                                         # build + boot server + parse ELTEST results (worktree only)
-                                        # --remote [host] runs it on the test box, --local pins it here
-tools\cli testbox provision|status|prune # second test machine (tools/remote/, docs/worktrees.md)
+                                        # first free slot on any pool machine (--any); --local, --remote [name]
+tools\cli e2e [--local|--remote [name]] # two-boot save/restart proof in this worktree, on a pool slot
+tools\cli pool status|stats|prune       # test pool: machines, slots, queue, last runs (tools/pool.json)
+tools\cli testbox provision|status|prune # set up / inspect a remote pool machine (tools/remote/, docs/worktrees.md)
 tools\cli ci                            # validate --full + build + test (full gate, worktree only)
 tools\cli logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                         # grep the newest server console.log (default after=3 limit=8)

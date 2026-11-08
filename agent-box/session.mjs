@@ -34,7 +34,7 @@
 
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
@@ -187,7 +187,8 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", missi
 export function parseClients(args) {
   const i = args.indexOf("--clients");
   const n = i === -1 ? 2 : Number(args[i + 1]);
-  if (!Number.isInteger(n) || n < 1 || n > MAX_CLIENTS) throw new Error(`--clients must be 1..${MAX_CLIENTS}`);
+  // 0 is a server-only session (the only kind a remote pool machine runs).
+  if (!Number.isInteger(n) || n < 0 || n > MAX_CLIENTS) throw new Error(`--clients must be 0..${MAX_CLIENTS}`);
   return n;
 }
 
@@ -907,6 +908,76 @@ async function runTicketProof() {
   return fails.length ? 1 : 0;
 }
 
+// --machine <name|any|local> (tools/pool.json). Game clients need a desktop
+// session; over ssh there is none (the box shows the logon screen, ssh runs in
+// session 0), so a remote machine runs server-only sessions (--clients 0) and
+// clients join it over the LAN. The chosen remote is remembered per worktree
+// in tmp/session-remote.json, so down/status/state/restart from this worktree
+// follow it (the local session dir is shared by every checkout on this PC).
+function remotePointerFile() {
+  return join(ROOT, "tmp", "session-remote.json");
+}
+
+export function readRemotePointer() {
+  try {
+    return JSON.parse(readFileSync(remotePointerFile(), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+async function routeMachine(cmd, rest) {
+  const i = rest.indexOf("--machine");
+  const want = i === -1 ? null : String(rest[i + 1] ?? "");
+  const args = i === -1 ? rest : rest.filter((_, k) => k !== i && k !== i + 1);
+  const pool = await import("../tools/remote/pool.mjs");
+  const machines = pool.loadMachines(ROOT);
+  const ptr = readRemotePointer();
+  if (cmd !== "up") {
+    if (want === "local" || !ptr) return { local: true, args };
+    const m = pool.findMachine(machines, ptr.machine);
+    if (!m) throw new Error(`session is on ${ptr.machine}, which is not in the pool any more; delete ${remotePointerFile()}`);
+    console.log(`session: on ${m.name} (${ptr.dir})`);
+    const code = await pool.runIn(m, ptr.dir, "agent-box/session.mjs", [cmd, ...args]);
+    if (cmd === "down" && code === 0) rmSync(remotePointerFile(), { force: true });
+    return { code };
+  }
+  if (!want || want === "local") return { local: true, args };
+  const clients = parseClients(args);
+  let target = null;
+  if (want === "any") {
+    for (const m of machines) {
+      if (clients > 0 && !m.caps.includes("clients")) continue;
+      if (m.via === "ssh" && !pool.probe(ROOT, m).reachable) continue;
+      if (pool.freeSlotOn(ROOT, m)) {
+        target = m;
+        break;
+      }
+    }
+    if (!target) {
+      console.log(`session: no machine with a free server slot${clients > 0 ? " that can run game clients" : ""}; queuing here (--wait) or retry`);
+      return { local: true, args };
+    }
+  } else {
+    target = pool.findMachine(machines, want);
+    if (!target) throw new Error(`--machine ${want}: not in the pool (${machines.map((m) => m.name).join(", ")})`);
+  }
+  if (target.via === "local") return { local: true, args };
+  if (clients > 0 && !target.caps.includes("clients")) {
+    console.log(`session: ${target.name} cannot start game clients over ssh (no desktop session); use --clients 0 for a server-only session there and join it from this PC`);
+    return { code: 2 };
+  }
+  if (ptr) {
+    console.log(`session: one is recorded on ${ptr.machine}; 'node agent-box/session.mjs down' first`);
+    return { code: 1 };
+  }
+  console.log(`session: server-only session on ${target.name}`);
+  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", ...args] });
+  mkdirSync(dirname(remotePointerFile()), { recursive: true });
+  if (r.code === 0) writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir: r.rDir, at: new Date().toISOString(), root: ROOT }));
+  return { code: r.code };
+}
+
 // M1-20 on a running `up --clients 2` session with client 2 on the roster
 // (`session.mjs roster 2` before up): client 2 clocks in, client 1 robs the
 // till. Client 1 hears the normal alarm; client 2 gets the radio dispatch (place
@@ -1007,7 +1078,12 @@ async function runDispatchProof() {
 }
 
 async function main(argv) {
-  const [cmd, ...rest] = argv;
+  let [cmd, ...rest] = argv;
+  if (["up", "down", "status", "restart", "state"].includes(cmd)) {
+    const routed = await routeMachine(cmd, rest);
+    if (!routed.local) return routed.code;
+    rest = routed.args;
+  }
   if (rest.includes("--film") && ["proof", "police-proof", "murder-proof", "interaction"].includes(cmd)) {
     const run = { proof: runProof, "police-proof": runPoliceProof, "murder-proof": runMurderProof, interaction: runInteraction }[cmd];
     return filmed(cmd, rest, run);

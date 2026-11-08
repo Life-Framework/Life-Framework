@@ -17,8 +17,10 @@
 //                     else the game client's
 //   LF_TESTBOX        ssh host of a second test machine (tools/remote/testbox.mjs)
 //   LF_TESTBOX_ROOT   main checkout on that machine (default C:/LF/Life-Framework)
-//   LF_TESTBOX_AUTO   "0" stops `test` from moving to the test box when the
-//                     local server-2001 lock is busy
+//   LF_TESTBOX_AUTO   "0" keeps `test` on this machine by default (the pool
+//                     still answers --remote / --machine)
+//   pool              object, not a string: { "machines": [ { "name", ... } ] }
+//                     merged by name over tools/pool.json (tools/remote/pool.mjs)
 
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";

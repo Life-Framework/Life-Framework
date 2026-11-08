@@ -540,6 +540,24 @@ async function main(argv) {
     for (const s of STEPS) console.log(`${s.id.padEnd(8)} clients ${s.clients.join(",")}${s.debug ? "  (debug fixture)" : ""}${s.playtest ? "  (playtest only)" : ""}  ${s.title}`);
     return 0;
   }
+  // The journey drives game clients through files in their local profiles, so
+  // it runs where the clients run: this PC. A remote pool machine has no
+  // desktop session over ssh and runs server-only sessions (session.mjs --machine).
+  const mi = argv.indexOf("--machine");
+  if (mi !== -1) {
+    const want = String(argv[mi + 1] ?? "");
+    argv = argv.filter((_, k) => k !== mi && k !== mi + 1);
+    if (want !== "local" && want !== "any") {
+      console.log(`journey: --machine ${want}: the journey needs game clients, which start only on this PC's desktop; run it with --machine local (or any)`);
+      return 2;
+    }
+  }
+  const { readRemotePointer } = await import("./session.mjs");
+  const remote = readRemotePointer();
+  if (remote) {
+    console.log(`journey: the recorded session runs on ${remote.machine} (server only); 'node agent-box/session.mjs down', then 'up' here with clients`);
+    return 2;
+  }
   const h = await import("./harness.mjs");
   const ses = await import("./session.mjs");
   const dir = ses.sessionDir();
