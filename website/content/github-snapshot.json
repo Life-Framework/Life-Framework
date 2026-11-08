@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-08T21:00:14.164Z",
+  "fetchedAt": "2026-11-08T21:05:03.076Z",
   "milestones": [
     {
       "id": "M1",
@@ -6398,8 +6398,158 @@
       ]
     }
   ],
+  "tracks": [
+    {
+      "id": "Dev",
+      "number": 6,
+      "title": "Development",
+      "description": "Ongoing development track beside M1–M5: content pipelines and tooling that let agents build assets, animations, weapons, vehicles and voice. Not a release; items land when they unblock milestone work.",
+      "url": "https://github.com/Life-Framework/Life-Framework/milestone/6",
+      "state": "open",
+      "issues": [
+        {
+          "number": 343,
+          "title": "Dev epic: Voice pipeline (AI dialogue to in-game audio)",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/343",
+          "labels": [
+            "epic",
+            "topic:Framework & Playtest",
+            "layer:core",
+            "track:dev"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "The tooling half of #218: an agent pipeline of script, then AI voice generation, then normalising, then Reforger audio import, then attaching to an NPC dialogue line, then verifying on film with sound.",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T21:01:45Z",
+          "updatedAt": "2026-11-08T21:01:45Z",
+          "subIssues": []
+        },
+        {
+          "number": 342,
+          "title": "Dev epic: Vehicle pipeline (custom cars as content)",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/342",
+          "labels": [
+            "epic",
+            "topic:Framework & Playtest",
+            "layer:core",
+            "track:dev"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "A pipeline for custom cars as content: the mesh and LODs, physics and wheels, damage zones, seats and doors, lights and sirens, liveries, sounds, and LF components (ownership, keys, garage).",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T21:01:43Z",
+          "updatedAt": "2026-11-08T21:01:43Z",
+          "subIssues": []
+        },
+        {
+          "number": 341,
+          "title": "Dev epic: Weapon pipeline (melee and taser-type)",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/341",
+          "labels": [
+            "epic",
+            "topic:Framework & Playtest",
+            "layer:core",
+            "track:dev"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "A pipeline for custom weapons: melee (baton, knife) and firearm-type (a taser, special-purpose guns). It covers the mesh, the weapon and muzzle components, ammo and effects, hand poses and animations, sounds, and balance values in config.",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T21:01:39Z",
+          "updatedAt": "2026-11-08T21:01:40Z",
+          "subIssues": []
+        },
+        {
+          "number": 340,
+          "title": "Dev epic: Animation pipeline (understand, clone, create)",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/340",
+          "labels": [
+            "epic",
+            "topic:Framework & Playtest",
+            "layer:core",
+            "track:dev"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Understand the Reforger animation system (animation graphs, .anm, the workspace, character and prop animation, IK, gestures) well enough that agents can clone, retarget and create the animations content needs: carrying, handcuffing, CPR...",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T21:01:36Z",
+          "updatedAt": "2026-11-08T21:01:37Z",
+          "subIssues": []
+        },
+        {
+          "number": 339,
+          "title": "Dev epic: 3D asset pipeline (static items from prompt to in-game)",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/339",
+          "labels": [
+            "epic",
+            "topic:Framework & Playtest",
+            "layer:core",
+            "track:dev"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Agents create new static 3D items end to end: mesh, UVs, PBR textures, colliders, import, prefab, and in-game proof. The first target is a bowling ball made from scratch. Research: docs/research/asset-pipeline.md (PR #337). Shape.",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T21:01:34Z",
+          "updatedAt": "2026-11-08T21:01:34Z",
+          "subIssues": []
+        }
+      ]
+    }
+  ],
   "goodFirst": [],
   "pulls": [
+    {
+      "number": 338,
+      "title": "Roadmap epics become compact branch blocks in columns.",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/338",
+      "mergedAt": "2026-11-08T21:02:23Z",
+      "author": "jasper-one",
+      "summary": "The roadmap's milestone cards now pack each epic into a compact branch block, and the blocks fill one to three columns. Before, every epic was a tall row that unfolded into a full-width list."
+    },
     {
       "number": 337,
       "title": "Research: agent-driven static asset pipeline (bowling ball first).",

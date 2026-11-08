@@ -1,7 +1,7 @@
 import { ClipPlayer, Figure, GoLink, PageHeader, RouteMap, Section, SourceNote, Stamp } from "@/components/ui";
-import { LayerTag, MilestoneList } from "@/components/MilestoneList";
+import { DevTrack, LayerTag, MilestoneList } from "@/components/MilestoneList";
 import { RoadmapTree } from "@/components/RoadmapTree";
-import { CORE_VS_PACK_URL, CURRENT_MILESTONE, githubData, siteData, still } from "@/lib/content";
+import { CORE_VS_PACK_URL, CURRENT_MILESTONE, devTrack, githubData, siteData, still } from "@/lib/content";
 
 const Roadmap = () => {
   return (
@@ -42,6 +42,12 @@ const Roadmap = () => {
             </p>
           </div>
           <MilestoneList />
+          {devTrack() && (
+            <div>
+              <p className="kicker mb-3">Beside the milestones</p>
+              <DevTrack />
+            </div>
+          )}
         </div>
         <div className="mt-6">
           <SourceNote source={githubData.source} fetchedAt={githubData.fetchedAt} />

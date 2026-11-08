@@ -2,6 +2,7 @@ import { GoLink, Stamp } from "@/components/ui";
 import {
   MILESTONE_LAYER,
   MILESTONE_PLAN,
+  devTrack,
   issueLayer,
   milestoneName,
   milestoneStatus,
@@ -15,11 +16,11 @@ import {
 // "M2-Medic: Downed state on lethal damage" -> { area: "Medic", name: "Downed state on lethal damage" }.
 // Other titles lose only their milestone markers: "M2 epic: ", "M1: M1-24 ", " (M2)".
 function parseTitle(t: string): { area: string | null; name: string } {
-  const m = /^M\d+-([A-Za-z][\w &]*?):\s*(.+)$/.exec(t);
+  const m = /^(?:M\d+|Dev)-([A-Za-z][\w &]*?):\s*(.+)$/.exec(t);
   const raw = m
     ? m[2]
     : splitTitle(t)
-        .title.replace(/^M\d+\s+(?:epic|flagship):\s*/i, "")
+        .title.replace(/^(?:M\d+|Dev)\s+(?:epic|flagship):\s*/i, "")
         .replace(/\s*\(M\d+\)$/, "");
   // Capitalize a plain first word ("relocated"), not a command or path ("tools\cli", "schemaVersion").
   const name = /^[a-z]{3,}(?=\s)/.test(raw) ? raw.charAt(0).toUpperCase() + raw.slice(1) : raw;
@@ -200,6 +201,46 @@ function MilestoneCard({ m }: { m: Milestone }) {
         <p className="mt-4 text-sm muted">No issues filed yet.</p>
       )}
     </li>
+  );
+}
+
+// The Development track: pipelines beside the milestone path, in the same branch blocks.
+export function DevTrack() {
+  const t = devTrack();
+  if (!t) return null;
+  const blocks = blocksOf(t);
+  const done = t.issues.filter((i) => i.state === "closed").length;
+  return (
+    <div className="sheet p-5 md:p-6" id="dev">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="kicker">Track · beside M1 to M5</p>
+          <h3 className="display-3 mt-1">Development</h3>
+        </div>
+        <Stamp tone="ink">Ongoing</Stamp>
+      </div>
+      <p className="mt-3 muted max-w-prose">
+        Pipelines that let agents build assets, animations, weapons, cars, and voice. This is not a release. Each piece lands when it
+        unblocks milestone work.
+      </p>
+      <p className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+        <GoLink to={t.url}>The track on GitHub</GoLink>
+      </p>
+      {blocks.length > 0 ? (
+        <>
+          <p className="mt-4 pt-2.5 border-t border-rule font-mono text-[0.75rem] uppercase tracking-[0.06em]">
+            {t.issues.length} {t.issues.length === 1 ? "issue" : "issues"} · {done} done
+          </p>
+          <div className="columns-1 sm:columns-2 xl:columns-3 gap-8 pt-3">
+            {blocks.map((b) => (
+              <BlockCard key={b.key} b={b} milestoneId={t.id} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="mt-4 text-sm muted">No issues filed yet.</p>
+      )}
+    </div>
   );
 }
 
