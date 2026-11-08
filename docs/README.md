@@ -1,57 +1,55 @@
 # Life Framework Docs
 
-Project documentation for the Life Framework Arma Reforger mod.
+Use this index to find the current project guidance. The website renders these
+same documents under `/docs`.
 
 ## Start here
 
-| Doc | Audience |
-| --- | --- |
-| [Setup guide](setup.md) | New contributors — install, toolchain paths, Workbench, CLI, MCP, troubleshooting |
-| [Playtest](playtest.md) | Play DebugWorld on your own machine and send feedback |
-| [Agent box](../agent-box/README.md) | GPU or remote box — setup script, player-equivalent checks, screenshots, roadmap street pass, DebugWorld chains |
-| [CONTRIBUTING.md](../CONTRIBUTING.md) | How to contribute, PR checklist, AI harness |
-| [AGENTS.md](../AGENTS.md) | Engineering contract — GUID rules, EnforceScript traps, verification ladder |
+1. Join the [Discord](https://discord.gg/MjMexJteqz) and introduce yourself.
+2. Read [CONTRIBUTING.md](../CONTRIBUTING.md), then follow the [setup guide](setup.md).
+3. Open the [playtest town](playtest.md), choose an issue, and build with the team.
 
-## Product and plan
+Reference:
 
-- [Design](design.md) — vision, values, MIT commitment, in-world-first
-  interaction ladder, economy/profession/ownership principles, base mod vs
-  extension, feature checklist. The "why" behind every feature's `Feature.md`.
-- [Roadmap](roadmap/README.md) — the live plan: phases and scopes for the
-  playable mod. Testing gates in [roadmap/testing](roadmap/testing/README.md).
-- [Community roadmap scrape](roadmap.md) — copy of the 2025 life-framework.org
-  roadmap, kept for reference. The site itself now lives in
-  [`website/`](../website/README.md) and is built from these docs.
+- [AGENTS.md](../AGENTS.md) is the engineering contract for people and agents.
+- [Agent box](../agent-box/README.md) covers rendering setup and player-equivalent checks.
 
-Feature design context files live beside the code in
-`addons/LifeFramework/Scripts/Game/Feature/*/Feature.md` (indexed by
-[`Feature/README.md`](../addons/LifeFramework/Scripts/Game/Feature/README.md)).
+## Direction and decisions
 
-## Engineering
+- [Direction](direction.md) — what we are building, what playable means, and the milestones.
+- [Design](design.md) — the principles behind the framework and its systems.
+- [Decisions](decisions.md) — recorded product and design calls.
 
-- [Features](features.md) — implemented features, behavior contracts, fragile paths.
-- [Testing plan](roadmap/testing/README.md) — test gates, file rules, and per-setup cases.
-- [Persistence](persistence.md) — save data, serializers, autosave/shutdown orchestration, rules.
-- [Foundation design](foundation-design.md) — Economy, Trade, Processing, Real Estate primitives.
-- [Worktrees](worktrees.md) — parallel agent worktrees, ports, gate, ship.
-- [Debug log triage](debug-log-triage.md) — what every known DebugWorld boot line means. Read before chasing a log message.
-- [Dedicated server session](dedicated-session.md) — the dedicated-server proof pass.
-- [Street manifest](street-manifest.md) — DebugWorld street layout tool.
+## Current plan
 
-## Surveys
+- [Roadmap](roadmap/README.md) — the live gameplay plan and current milestone.
+- [M1 Playtest Town](roadmap/m1-playtest-town.md) — the player journey and acceptance bar.
+- [M2 outline](roadmap/m2-outline.md) — the next milestone's themes.
+- [Scopes](roadmap/scopes/README.md) — how to shape a bounded piece of work.
+- [Testing plan](roadmap/testing/README.md) — test gates and per-setup proof.
 
-- [Overthrow survey](overthrow-survey.md) — what Overthrow.Arma4 offers and its license terms.
-- [EveronLife forks](everonlife-forks.md) — what the EveronLife forks hold and what was already ported.
-- [Life/RP benchmark](research/life-rp-benchmark.md) — Altis Life, GTA RP, and Elan Life against ours: feature matrix, what kept and lost players, top 10 M2+ candidates, open taste questions.
-- [Discord server](community/discord.md). Channel layout, roles, and moderation of the community Discord.
-- [Support and donations](community/support.md). Donation routes compared, the cost list, and how to switch the support page on.
-- [Ecosystem leverage map](ecosystem.md) — community repos, Workshop dependencies, free asset sources, licenses, and the import policy.
+## Engineering reference
 
-## Agent guidance
+- [Features](features.md) — implemented behavior and fragile paths.
+- [Persistence](persistence.md) — saved data, serializers, and restart rules.
+- [Foundation design](foundation-design.md) — economy, trade, processing, and ownership primitives.
+- [Worktrees](worktrees.md) — parallel changes, ports, validation, and shipping.
+- [Dedicated server session](dedicated-session.md) — multiplayer proof on a dedicated server.
+- [Debug log triage](debug-log-triage.md) — known boot messages and what they mean.
+- [Street manifest](street-manifest.md) — the DebugWorld street layout tool.
 
-When picking up roadmap work, start from [roadmap/README.md](roadmap/README.md).
-Coordinate on [Discord](https://discord.com/invite/MjMexJteqz) before large
-efforts.
+Feature design notes live beside their code under
+`addons/LifeFramework/Scripts/Game/Feature/*/Feature.md` and are indexed in
+[`Feature/README.md`](../addons/LifeFramework/Scripts/Game/Feature/README.md).
 
-All factual engineering rules live in [AGENTS.md](../AGENTS.md); agent
-workflows (playbooks, authoring guides) live in `.claude/skills/`.
+## Research and community
+
+- [Ecosystem map](ecosystem.md) — upstream code, Workshop dependencies, asset sources, and licences.
+- [Life/RP benchmark](research/life-rp-benchmark.md) — genre patterns and design opportunities.
+- [Overthrow survey](overthrow-survey.md) — systems and licence notes.
+- [EveronLife forks](everonlife-forks.md) — upstream context and prior ports.
+- [Discord server](community/discord.md) — channels, roles, and moderation.
+- [Support and donations](community/support.md) — project costs and support settings.
+
+The gameplay plan is maintained in `docs/roadmap/`; GitHub milestones and
+issues carry current scope status.

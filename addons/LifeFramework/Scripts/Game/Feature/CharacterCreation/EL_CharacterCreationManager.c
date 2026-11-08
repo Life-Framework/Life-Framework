@@ -162,8 +162,39 @@ class EL_CharacterCreationManager : Managed
 		account.AddCharacter(character, true);
 		EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 		EL_Debug.Info("CharacterCreation", string.Format("character registered for player %1, age %2", playerId, age));
+		OpenStartingBank(playerUid);
 
 		SpawnPlayer(playerId, controller);
+		GrantTestCars(playerId, playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Playtest (EL_SpawnLogic.m_bGrantTestCars): a new character owns a garaged and an impounded car.
+	protected void GrantTestCars(int playerId, string playerUid)
+	{
+		EL_SpawnLogic spawnLogic = EL_SpawnLogic.GetInstance();
+		if (!spawnLogic || !spawnLogic.GrantsTestCars())
+			return;
+
+		IEntity body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		IEntity lotEntity = GetGame().GetWorld().FindEntityByName(spawnLogic.GetTestCarLot());
+		EL_VehicleLotComponent lot;
+		if (lotEntity)
+			lot = EL_Component<EL_VehicleLotComponent>.Find(lotEntity);
+
+		if (!body || !lot)
+		{
+			EL_Debug.Error("CharacterCreation", string.Format("test cars not granted to player %1: no body or no lot named %2", playerId, spawnLogic.GetTestCarLot()));
+			return;
+		}
+
+		array<EL_VehicleOffer> offers = {};
+		for (int i = 0; i < lot.GetOfferCount(); i++)
+		{
+			offers.Insert(lot.GetOfferAt(i));
+		}
+
+		EL_VehicleOwnership.GrantTestCars(playerUid, body, offers, lot.GetShopId());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -193,6 +224,27 @@ class EL_CharacterCreationManager : Managed
 	//! Spawns the account's active character through the spawn logic. The spawn logic picks the
 	//! spawn point, hands control over and clears the splash on handover; the ATM/survival
 	//! components init in its post-spawn hook.
+	//! The opening bank balance (EL_SpawnLogic.m_iStartingBank), paid once into an empty account
+	//! when a new character is registered. A returning player never registers again.
+	protected void OpenStartingBank(string playerUid)
+	{
+		EL_SpawnLogic spawnLogic = EL_SpawnLogic.GetInstance();
+		if (!spawnLogic || playerUid.IsEmpty())
+		{
+			EL_Debug.Error("CharacterCreation", "starting bank not paid: no spawn logic or no player id");
+			return;
+		}
+
+		int amount = spawnLogic.GetStartingBank();
+		EL_BankAccount bank = EL_ATMManager.GetOrCreate(playerUid);
+		if (amount <= 0 || !bank || bank.GetBalance() > 0)
+			return;
+
+		bank.Deposit(amount);
+		EL_Debug.Info("CharacterCreation", string.Format("starting bank %1 paid to %2", amount, playerUid));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void SpawnPlayer(int playerId, PlayerController playerController)
 	{
 		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();

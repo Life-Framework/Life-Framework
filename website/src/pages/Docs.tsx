@@ -9,10 +9,20 @@ export const DocsIndex = () => (
   <>
     <PageHeader kicker="Docs" title="The paperwork">
       <p>
-        The plan, the design calls, and the scopes, rendered from <code>docs/</code> in the repository every time the site is built.
-        What you read here is what the agents read.
+        Start with the setup and playtest guides. The rest is grouped by what you need next: direction, current plan, engineering
+        reference, or research. These pages are built from the repository, so contributors and agents read the same source.
       </p>
     </PageHeader>
+    <div className="wrap mb-14">
+      <div className="sheet p-5 md:p-6 flex flex-wrap items-center justify-between gap-4">
+        <p className="heading">New here? Join the community, open the playtest, then choose a scope.</p>
+        <div className="flex flex-wrap gap-x-6 gap-y-2">
+          <GoLink to="/contribute">How to contribute</GoLink>
+          <GoLink to="/docs/setup">Set up your tools</GoLink>
+          <GoLink to="/docs/playtest">Open the playtest</GoLink>
+        </div>
+      </div>
+    </div>
     <div className="wrap space-y-14">
       {groupDocs(docs).map(([group, list]) => (
         <section key={group} aria-labelledby={`g-${group}`}>

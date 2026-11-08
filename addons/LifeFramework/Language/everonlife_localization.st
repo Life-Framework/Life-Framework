@@ -5167,6 +5167,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Unpaid fine"
      Comment "Wanted board offence when a police ticket goes unpaid past its second deadline."
     }
+    CustomStringTableItem "{618A5B0E5F6A7C85}" {
+     Id "LF-Job_SignedUp_Courier"
+     Target_en_us "You are a courier now. Pick up a parcel at this counter."
+     Comment "Toast after signing up for courier work: the next step."
+    }
+    CustomStringTableItem "{CF7F0BA17E3A08CD}" {
+     Id "LF-Job_SignedUp_Fuel"
+     Target_en_us "You deliver fuel now. Take a fuel can at this counter."
+     Comment "Toast after signing up for fuel delivery: the next step."
+    }
+    CustomStringTableItem "{368CBF7BF68CC9AE}" {
+     Id "LF-Job_SignedUp_Taxi"
+     Target_en_us "You drive a taxi now. Start a fare at this counter."
+     Comment "Toast after signing up for taxi work: the next step."
+    }
+    CustomStringTableItem "{B72D78719E88C276}" {
+     Id "LF-Job_RunStarted_Courier"
+     Target_en_us "Carry the parcel east along the street to the porch past the brick-walled lock-up, then Complete the run."
+     Comment "Toast when a courier picks up a parcel: where the drop is. Capitalized phrase is the drop-off action name."
+    }
+    CustomStringTableItem "{EBA0820132F44791}" {
+     Id "LF-Lot_Browse"
+     Target_en_us "Look at the cars"
+     Comment "Car lot interaction: opens the lot price sheet."
+    }
+    CustomStringTableItem "{2099A882EC6B2C01}" {
+     Id "LF-Lot_Title"
+     Target_en_us "Car lot - price list"
+     Comment "Car lot sheet title."
+    }
+    CustomStringTableItem "{3E2EC9B19D88B571}" {
+     Id "LF-Lot_Money"
+     Target_en_us "In the bank: %1    Cash in hand: %2"
+     Comment "Car lot sheet: the money the reader can pay with. %1 bank, %2 cash."
+    }
+    CustomStringTableItem "{B58D71B1650E8EBB}" {
+     Id "LF-Lot_Rule"
+     Target_en_us "Cars up to %1 are paid in cash. Dearer cars are paid from your bank: deposit cash at the ATM first."
+     Comment "Car lot sheet: the payment rule. %1 is the cash ceiling."
+    }
+    CustomStringTableItem "{3A23ABBFC38B6FC4}" {
+     Id "LF-Lot_NeedsBank"
+     Target_en_us "needs %1"
+     Comment "Car lot row for a car the reader cannot afford from the bank. %1 is the price."
+    }
+    CustomStringTableItem "{3E8956543B8EFAAA}" {
+     Id "LF-Lot_NeedsCash"
+     Target_en_us "needs %1"
+     Comment "Car lot row for a cheap car the reader cannot afford in cash. %1 is the price."
+    }
+    CustomStringTableItem "{7C18C714BFDC5DBE}" {
+     Id "LF-Lot_Buy"
+     Target_en_us "Buy"
+     Comment "Car lot row button."
+    }
+    CustomStringTableItem "{EEBDBD6504C8B4FF}" {
+     Id "LF-Lot_Leave"
+     Target_en_us "Leave"
+     Comment "Car lot sheet close button."
+    }
   }
  }
 }

@@ -36,6 +36,15 @@ export type Issue = {
   closedAt: string | null;
   excerpt: string;
   wave: number | null;
+  parent: string | null;
+  // From the body's sections (build-content.mjs issueBrief); empty when a body has none.
+  why?: string;
+  work?: string[];
+  proof?: string[];
+  dependsOn?: number[];
+  comments?: number;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type Milestone = {
@@ -85,15 +94,11 @@ export type Clip = {
   src: string | null;
 };
 
-export type ArchiveItem = { title: string; description: string | null; status: "planned" | "in-progress" | "completed" };
-
 export type SiteData = {
   ambition: string;
   loop: string[];
   inWorldFirst: string;
-  milestones: { id: string; name: string; doneWhen: string }[];
   features: { name: string; what: string }[];
-  archive: { exported: string; phases: { number: number; name: string; description: string; items: ArchiveItem[] }[] };
   decisionCount: number;
   latestDecisions: { date: string; title: string; id: string; summary: string }[];
   media: { stills: Still[]; clips: Clip[] };
@@ -137,8 +142,24 @@ export const supportOpen = support.enabled && (support.card !== null || support.
 export const githubData = github as GithubData;
 export const docs = docsIndex as DocMeta[];
 
-export const CURRENT_MILESTONE = "M1";
 export const milestone = (id: string) => githubData.milestones.find((m) => m.id === id) ?? null;
+export function issueTopic(issue: Issue): string {
+  const topics = issue.labels.filter((label) => label.startsWith("topic:")).map((label) => label.slice(6).trim()).filter(Boolean);
+  if (topics.length === 0) return "Unsorted";
+  if (topics.length > 1) return "Multiple topics";
+  return topics[0];
+}
+
+export function milestoneName(m: Milestone): string {
+  const fromTitle = m.title.replace(new RegExp(`^${m.id}\\b\\s*(?:[:—–-]\\s*)?`), "").trim();
+  if (fromTitle) return fromTitle;
+  const fromDescription = m.description.split(/[:.]\s/, 1)[0].trim();
+  return fromDescription || m.id;
+}
+
+const currentMilestone = githubData.milestones.find((m) => m.state === "open") ?? githubData.milestones[0];
+export const CURRENT_MILESTONE = currentMilestone?.id ?? "M1";
+export const CURRENT_MILESTONE_NAME = currentMilestone ? milestoneName(currentMilestone) : "Current milestone";
 export const still = (id: string) => siteData.media.stills.find((s) => s.id === id)!;
 export const stillSrc = (s: Still) => `/media/${s.id}-${Math.max(...s.widths)}.webp`;
 export const stillSrcSet = (s: Still) => s.widths.map((w) => `/media/${s.id}-${w}.webp ${w}w`).join(", ");
@@ -159,7 +180,7 @@ export function splitTitle(title: string): { code: string | null; title: string 
 export const formatDate = (iso: string, opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" }) =>
   new Date(iso.length === 10 ? `${iso}T12:00:00Z` : iso).toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
 
-export const DOC_GROUPS = ["Project", "Roadmap", "Community guides (2025)"];
+export const DOC_GROUPS = ["Start here", "Direction & decisions", "Current plan", "Engineering reference", "Research & community"];
 export function groupDocs(list: DocMeta[]): [string, DocMeta[]][] {
   const groups = new Map<string, DocMeta[]>(DOC_GROUPS.map((g) => [g, []]));
   for (const d of list) {

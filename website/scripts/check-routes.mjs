@@ -1,7 +1,7 @@
 // Checks that every route answers with its own prerendered page.
 //
 //   node scripts/check-routes.mjs --dist                         # the local build, served like Pages
-//   node scripts/check-routes.mjs https://life-framework-arn.pages.dev
+//   node scripts/check-routes.mjs https://life-framework.org
 //
 // Each route must answer 200 with its own <title>, a description, a canonical link, and an
 // og:image that exists; old addresses must redirect; an unknown path must answer 404 with
@@ -11,7 +11,7 @@ import { startServer } from "./serve-dist.mjs";
 
 const useDist = process.argv.includes("--dist");
 let server = null;
-let base = (process.argv.slice(2).find((a) => !a.startsWith("--")) || "https://life-framework-arn.pages.dev").replace(/\/$/, "");
+let base = (process.argv.slice(2).find((a) => !a.startsWith("--")) || "https://life-framework.org").replace(/\/$/, "");
 if (useDist) {
   server = await startServer(4199);
   base = "http://127.0.0.1:4199";
@@ -19,17 +19,20 @@ if (useDist) {
 
 // route -> text that only that page renders
 const pages = {
-  "/": "Real cash.",
-  "/roadmap": "Where we are on the road",
+  "/": "We are building the modern Life Framework",
+  "/roadmap": "The Tree of Life",
   "/devlog": "What changed, day by day",
   "/servers": "Host it, tune it, build on it",
-  "/contribute": "Pick a scope. Prove it in the game.",
+  "/contribute": "Join the Discord",
   "/decisions": "The calls that set the taste",
   "/support": "Where the money goes",
   "/docs": "The paperwork",
   "/docs/direction": "What we are building",
+  "/docs/playtest": "Open the playtest",
+  "/docs/contributing": "Contributing to Life Framework",
+  "/docs/roadmap": "The gameplay plan",
   "/docs/roadmap-m1-playtest-town": "The player journey",
-  "/docs/welcome": "Founded 30th of November 2025",
+  "/docs/setup": "Set up your tools",
 };
 const redirects = {
   "/philosophy": "/",

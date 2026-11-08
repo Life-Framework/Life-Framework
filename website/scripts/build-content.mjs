@@ -1,6 +1,6 @@
 // Builds the site's content from the repo and GitHub, so the site and the mod never drift.
 //
-//   docs/*.md, docs/roadmap/**, website/content/docs/  -> src/generated/docs-index.json
+//   curated docs/*.md and docs/roadmap/**              -> src/generated/docs-index.json
 //                                                         src/generated/data/doc-<slug>.json (HTML)
 //   docs/decisions.md                                   -> src/generated/data/decisions.json
 //   parts of docs/direction.md, content/                -> src/generated/site.json
@@ -45,6 +45,8 @@ const toHtml = (text) => String(md.processSync(text));
 // One line of plain text from markdown: links keep their text, code and emphasis lose their marks.
 const plain = (s) =>
   s
+    // Some issue bodies carry a UTF-8 arrow that was read as Windows-1252.
+    .replace(/ÔåÆ/g, "→")
     .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
     .replace(/<[^>]+>/g, "")
@@ -67,24 +69,6 @@ function clip(text, max) {
     t = end > 0 ? t.slice(0, end + 1) : t.slice(0, -1) + ".";
   }
   return t;
-}
-
-// ---------------------------------------------------------------- frontmatter
-
-function parseFrontmatter(text) {
-  const m = /^---\n([\s\S]*?)\n---\n?/.exec(text);
-  if (!m) return { data: {}, body: text };
-  const data = {};
-  for (const line of m[1].split("\n")) {
-    const kv = /^([A-Za-z_][\w-]*):\s*(.*)$/.exec(line);
-    if (!kv) continue;
-    let v = kv[2].trim();
-    if (v.startsWith('"')) {
-      try { v = JSON.parse(v); } catch { /* keep raw */ }
-    }
-    data[kv[1]] = v;
-  }
-  return { data, body: text.slice(m[0].length) };
 }
 
 // ---------------------------------------------------------------- docs
@@ -134,10 +118,28 @@ function addRepoDoc(rel, { slug, group, order, title }) {
   docs.push({ slug, group, order, title: title || firstHeading(raw) || slug, repoPath: rel, body: stripFirstHeading(raw) });
 }
 
-addRepoDoc("docs/direction.md", { slug: "direction", group: "Project", order: 0 });
-addRepoDoc("docs/decisions.md", { slug: "decisions", group: "Project", order: 1 });
-addRepoDoc("docs/ecosystem.md", { slug: "ecosystem", group: "Project", order: 2 });
-addRepoDoc("docs/research/life-rp-benchmark.md", { slug: "life-rp-benchmark", group: "Project", order: 3 });
+addRepoDoc("docs/setup.md", { slug: "setup", group: "Start here", order: 0, title: "Set up your tools" });
+addRepoDoc("docs/playtest.md", { slug: "playtest", group: "Start here", order: 1, title: "Open the playtest" });
+addRepoDoc("CONTRIBUTING.md", { slug: "contributing", group: "Start here", order: 2 });
+
+addRepoDoc("docs/direction.md", { slug: "direction", group: "Direction & decisions", order: 0 });
+addRepoDoc("docs/design.md", { slug: "design", group: "Direction & decisions", order: 1 });
+addRepoDoc("docs/decisions.md", { slug: "decisions", group: "Direction & decisions", order: 2 });
+
+addRepoDoc("docs/features.md", { slug: "features", group: "Engineering reference", order: 0 });
+addRepoDoc("docs/persistence.md", { slug: "persistence", group: "Engineering reference", order: 1 });
+addRepoDoc("docs/foundation-design.md", { slug: "foundation-design", group: "Engineering reference", order: 2 });
+addRepoDoc("docs/worktrees.md", { slug: "worktrees", group: "Engineering reference", order: 3 });
+addRepoDoc("docs/dedicated-session.md", { slug: "dedicated-session", group: "Engineering reference", order: 4 });
+addRepoDoc("docs/debug-log-triage.md", { slug: "debug-log-triage", group: "Engineering reference", order: 5 });
+addRepoDoc("docs/street-manifest.md", { slug: "street-manifest", group: "Engineering reference", order: 6 });
+
+addRepoDoc("docs/ecosystem.md", { slug: "ecosystem", group: "Research & community", order: 0 });
+addRepoDoc("docs/research/life-rp-benchmark.md", { slug: "life-rp-benchmark", group: "Research & community", order: 1 });
+addRepoDoc("docs/overthrow-survey.md", { slug: "overthrow-survey", group: "Research & community", order: 2 });
+addRepoDoc("docs/everonlife-forks.md", { slug: "everonlife-forks", group: "Research & community", order: 3 });
+addRepoDoc("docs/community/discord.md", { slug: "discord", group: "Research & community", order: 4 });
+addRepoDoc("docs/community/support.md", { slug: "support", group: "Research & community", order: 5 });
 
 const roadmapFiles = walk(path.join(repo, "docs", "roadmap"))
   .map((p) => toPosix(path.relative(repo, p)))
@@ -150,20 +152,9 @@ const roadmapFiles = walk(path.join(repo, "docs", "roadmap"))
 roadmapFiles.forEach((rel, i) => {
   const parts = rel.slice("docs/roadmap/".length).replace(/\.md$/, "").split("/");
   if (parts[parts.length - 1] === "README") parts.pop();
-  addRepoDoc(rel, { slug: ["roadmap", ...parts].join("-").toLowerCase(), group: "Roadmap", order: i });
+  const title = rel === "docs/roadmap/README.md" ? "Current gameplay plan" : undefined;
+  addRepoDoc(rel, { slug: ["roadmap", ...parts].join("-").toLowerCase(), group: "Current plan", order: i, title });
 });
-
-for (const abs of walk(path.join(site, "content", "docs"))) {
-  const { data, body } = parseFrontmatter(read(abs));
-  docs.push({
-    slug: data.slug || path.basename(abs, ".md"),
-    group: "Community guides (2025)",
-    order: Number(data.order || 0),
-    title: data.title || firstHeading(body) || data.slug,
-    repoPath: toPosix(path.relative(repo, abs)),
-    body: stripFirstHeading(body),
-  });
-}
 
 // Pages with their own route instead of /docs/<slug>.
 const ownRoute = { decisions: "/decisions" };
@@ -299,16 +290,6 @@ function section(text, title) {
   return lines.slice(start + 1, end).join("\n").trim();
 }
 
-function milestones(text) {
-  return section(text, "Milestones")
-    .split("\n")
-    .filter((l) => /^\|\s*M\d/.test(l))
-    .map((l) => {
-      const cells = l.split("|").slice(1, -1).map((c) => c.trim());
-      return { id: cells[0], name: plain(cells[1]), doneWhen: plain(cells[2]).replace(/\s*Outline: [^.]*\.?$/, "") };
-    });
-}
-
 // The numbered loop under "What playable means".
 function loop(text) {
   return text
@@ -336,9 +317,7 @@ const siteJson = {
   inWorldFirst: plain(
     decisions.sections.flatMap((s) => s.entries).find((e) => e.title === "In-world first")?.html.replace(/<[^>]+>/g, " ") || "",
   ),
-  milestones: milestones(direction),
   features: readmeFeatures(),
-  archive: JSON.parse(read(path.join(site, "content", "archive", "roadmap-2025.json"))),
   decisionCount,
   latestDecisions: decisions.sections
     .flatMap((s) => s.entries.map((e) => ({ ...e, section: s.title })))
@@ -351,16 +330,21 @@ if (!siteJson.ambition) throw new Error('site.json: "The ambition is ... in that
 if (siteJson.loop.length < 5) throw new Error('site.json: the numbered loop under "What playable means" in docs/direction.md is missing');
 if (!siteJson.inWorldFirst) throw new Error('site.json: the "In-world first" entry is missing from docs/decisions.md');
 if (siteJson.features.length < 5) throw new Error('site.json: the "- **Name** — what" bullets under "## Features" in README.md are missing');
-if (siteJson.milestones.length === 0) throw new Error("site.json: no milestone rows in docs/direction.md");
-
 // ---------------------------------------------------------------- GitHub
 
-async function gh(pathAndQuery, { maxPages = 10 } = {}) {
+async function gh(pathAndQuery, { maxPages = 10, allowTruncate = false } = {}) {
   const headers = { Accept: "application/vnd.github+json", "User-Agent": "life-framework-website" };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   const out = [];
   let url = `https://api.github.com${pathAndQuery}`;
-  for (let page = 0; url && page < maxPages; page++) {
+  for (let page = 0; url; page++) {
+    if (page >= maxPages) {
+      if (allowTruncate) {
+        console.warn(`[content] stopped after ${maxPages} pages for ${new URL(url).pathname}`);
+        break;
+      }
+      throw new Error(`GitHub pagination exceeded ${maxPages} pages for ${new URL(url).pathname}`);
+    }
     const res = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
     if (!res.ok) throw new Error(`GitHub ${res.status} for ${url}`);
     const body = await res.json();
@@ -383,7 +367,7 @@ function issueExcerpt(body) {
         .replace(/```[\s\S]*?```/g, "")
         .replace(/<!--[\s\S]*?-->/g, "")
         .split("\n")
-        .filter((l) => l.trim() && !/^\s*(#|\||- \[|>|Part of\b)/.test(l))
+        .filter((l) => l.trim() && !/^\s*(#|\||- \[|>|Part of\b|Parent:)/.test(l))
         .join(" "),
     ),
     240,
@@ -415,6 +399,42 @@ function prSummary(body) {
   return "";
 }
 
+// A system parent named in the issue body: "Parent: #148" or "Parent: Police & Response".
+function issueParent(body) {
+  const match = /^\s*Parent:\s*(.+)$/im.exec(body || "");
+  return match ? plain(match[1]).trim() || null : null;
+}
+
+// The body's "## Heading" sections, keyed by lowercased heading.
+function issueSections(body) {
+  const out = {};
+  const text = (body || "").replace(/\r\n/g, "\n").replace(/```[\s\S]*?```/g, "").replace(/<!--[\s\S]*?-->/g, "");
+  const parts = text.split(/^##\s+(.+)$/m);
+  for (let k = 1; k < parts.length; k += 2) out[parts[k].trim().toLowerCase()] = parts[k + 1] || "";
+  return out;
+}
+
+// Top-level list items of a section as short plain lines; nested items are skipped.
+const bullets = (section, max, len) =>
+  (section || "")
+    .split("\n")
+    .filter((l) => /^[-*]\s+/.test(l))
+    .map((l) => clip(plain(l.replace(/^[-*]\s+/, "")), len))
+    .filter(Boolean)
+    .slice(0, max);
+
+// What a contributor needs on the roadmap card: the work, the proof, what it waits on.
+function issueBrief(body) {
+  const s = issueSections(body);
+  const deps = [...(s["depends on"] || "").matchAll(/#(\d+)/g)].map((m) => Number(m[1]));
+  return {
+    why: s.why ? clip(plain(s.why.split(/\n\s*[-*]\s/)[0]), 420) : "",
+    work: bullets(s.work ?? s["candidate scopes (not cards yet)"], 5, 160),
+    proof: bullets(s["acceptance proof"], 4, 140),
+    dependsOn: [...new Set(deps)],
+  };
+}
+
 const issueOut = (i) => ({
   number: i.number,
   title: i.title,
@@ -425,6 +445,11 @@ const issueOut = (i) => ({
   closedAt: i.closed_at,
   excerpt: issueExcerpt(i.body),
   wave: Number((/\bWave (\d+)\b/.exec(i.body || "") || [])[1]) || null,
+  parent: issueParent(i.body),
+  ...issueBrief(i.body),
+  comments: i.comments ?? 0,
+  createdAt: i.created_at,
+  updatedAt: i.updated_at,
 });
 
 async function fetchGithub() {
@@ -451,12 +476,12 @@ async function fetchGithub() {
   const goodFirst = (await gh(`/repos/${GITHUB_REPO}/issues?labels=${encodeURIComponent("good first issue")}&state=open&per_page=100`))
     .filter((i) => !i.pull_request)
     .map(issueOut);
-  const pulls = (await gh(`/repos/${GITHUB_REPO}/pulls?state=closed&sort=updated&direction=desc&per_page=100`, { maxPages: 3 }))
+  const pulls = (await gh(`/repos/${GITHUB_REPO}/pulls?state=closed&sort=updated&direction=desc&per_page=100`, { maxPages: 3, allowTruncate: true }))
     .filter((p) => p.merged_at && p.base.ref === "main")
     .sort((a, b) => b.merged_at.localeCompare(a.merged_at))
     .slice(0, 150)
     .map((p) => ({ number: p.number, title: p.title, url: p.html_url, mergedAt: p.merged_at, author: p.user?.login || null, summary: prSummary(p.body) }));
-  const contributors = (await gh(`/repos/${GITHUB_REPO}/contributors?per_page=100`, { maxPages: 2 }))
+  const contributors = (await gh(`/repos/${GITHUB_REPO}/contributors?per_page=100`, { maxPages: 2, allowTruncate: true }))
     .filter((c) => c.type === "User" && !/\[bot\]$/.test(c.login))
     .map((c) => ({ login: c.login, url: c.html_url, contributions: c.contributions }));
   return { fetchedAt: new Date().toISOString(), milestones: milestonesOut, goodFirst, pulls, contributors };
@@ -531,7 +556,7 @@ fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, m
 fs.writeFileSync(path.join(outDir, "github.json"), JSON.stringify(githubOut));
 fs.writeFileSync(path.join(outDir, "support.json"), JSON.stringify(buildSupport({ site, repo })));
 console.log(
-  `[content] ${docsIndex.length} docs, ${decisionCount} decisions, ${siteJson.milestones.length} milestones, ` +
+  `[content] ${docsIndex.length} docs, ${decisionCount} decisions, ${github.milestones.length} milestones, ` +
     `${github.milestones.map((m) => `${m.id} ${m.issues.length} issues`).join(", ")}, ${pulls.length} merged PRs, ` +
     `${github.contributors.length} contributors (${github.source})`,
 );

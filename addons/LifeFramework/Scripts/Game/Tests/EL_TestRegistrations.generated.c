@@ -74,6 +74,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_FineTicket(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FineTicketRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FineTicketSerializer(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_FirstPlayerPolice(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_GarageStoreRange(), EL_TestTier.LOGIC);
@@ -99,6 +100,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_JailOnlineTime(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JailSlip(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_JailVehicleArrest(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JobClientOffers(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JobPacing(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JobSignUpPersist(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
@@ -115,6 +117,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Murder(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_NoPassivePaycheck(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_NpcClothesReplicate(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_NpcInteractionHeight(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_OreYield(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_OrgInviteRole(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_OrgRegistry(), EL_TestTier.LOGIC);
@@ -122,6 +125,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_PlaytestOffers(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceAbuse(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_PoliceCarKey(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_PoliceRankPermissions(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceDutySwap(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_PoliceDeathOnDuty(), EL_TestTier.WORLD);
@@ -211,6 +215,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_SurvivalLight(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalRealHealth(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SurvivalSync(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_TestCarsGrant(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_TraderSellRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitInitialFocus(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitButtonInvoker(), EL_TestTier.LOGIC);
@@ -227,6 +232,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_VehicleImpound(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_VehicleLockIdMatch(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_VehicleLotSheet(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistChatResources(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_WhitelistLogic(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistCommandParse(), EL_TestTier.LOGIC);

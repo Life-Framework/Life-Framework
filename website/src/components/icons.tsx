@@ -1,11 +1,12 @@
 // The few marks the site uses. Brand logos only where they name the service.
 type P = { className?: string };
 
+// The small mark from public/brand (BRAND.md "Logo"), one file per theme.
 export const Mark = ({ className = "w-8 h-8" }: P) => (
-  <svg viewBox="0 0 32 32" className={className} aria-hidden="true" focusable="false">
-    <rect x="1.5" y="1.5" width="29" height="29" fill="none" stroke="currentColor" strokeWidth="3" />
-    <path fill="currentColor" d="M7 7h4.5v13.5H15V25H7zM17 7h9v4h-4.5v3H25v4h-3.5v7H17z" />
-  </svg>
+  <>
+    <img src="/brand/mark-light.svg" alt="" width={32} height={32} className={`${className} dark:hidden`} />
+    <img src="/brand/mark-dark.svg" alt="" width={32} height={32} className={`${className} hidden dark:block`} />
+  </>
 );
 
 export const GitHubIcon = ({ className = "w-5 h-5" }: P) => (

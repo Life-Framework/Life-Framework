@@ -79,7 +79,8 @@ class LF_JobSignUpAction : ScriptedUserAction
 		if (!jobs.SetJob(m_eJob))
 			EL_Debug.Error("Jobs", "signup action: job component refused the workplace");
 
-		EL_Utils.NotifyEntity(pUserEntity, "#LF-Job_SignedUp", LF_CivilianJob.NameKey(m_eJob), 6.0);
+		// The title names the job; the body says what to do next, at this same counter.
+		EL_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.SignedUpKey(m_eJob), LF_CivilianJob.NameKey(m_eJob), 5.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -122,20 +123,45 @@ class LF_JobStartRunAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		string uid = EL_Utils.GetPlayerUid(user);
-		if (uid.IsEmpty() || LF_CivilianJob.GetJob(uid) != m_eJob)
+		string refusal;
+		if (Replication.IsServer())
 		{
-			SetCannotPerformReason("#EL-Job_NotSignedUp");
-			return false;
+			string uid = EL_Utils.GetPlayerUid(user);
+			if (uid.IsEmpty() || LF_CivilianJob.GetJob(uid) != m_eJob)
+				refusal = "#EL-Job_NotSignedUp";
+			else if (LF_CivilianJob.HasActiveRun(uid))
+				refusal = "#EL-Job_NoActiveRun";
+		}
+		else
+		{
+			// The sign-ups live on the server. A dedicated client reads the job replicated on the
+			// player's EL_PlayerJobComponent (set at sign-up and again when a restored sign-up is
+			// put on a spawned body); reading the server map greyed "Pick up parcel" for every
+			// player on a hosted server. The server re-checks everything in PerformAction.
+			EL_EJobType bodyJob = EL_EJobType.UNEMPLOYED;
+			EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(user);
+			if (jobs)
+				bodyJob = jobs.GetJob();
+
+			refusal = ClientRefusal(bodyJob, m_eJob);
 		}
 
-		if (LF_CivilianJob.HasActiveRun(uid))
-		{
-			SetCannotPerformReason("#EL-Job_NoActiveRun");
-			return false;
-		}
+		if (refusal.IsEmpty())
+			return true;
 
-		return true;
+		SetCannotPerformReason(refusal);
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client offer rule: open when the job replicated on the body is this counter's job.
+	//! \return "" when the run can start, else the reason key shown greyed.
+	static string ClientRefusal(EL_EJobType bodyJob, EL_EJobType counterJob)
+	{
+		if (!LF_CivilianJob.IsDeliveryJob(counterJob) || bodyJob != counterJob)
+			return "#EL-Job_NotSignedUp";
+
+		return string.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -155,7 +181,15 @@ class LF_JobStartRunAction : ScriptedUserAction
 			return;
 
 		if (!LF_CivilianJob.GiveCargo(pUserEntity, m_eJob))
+		{
 			LF_CivilianJob.AbandonRun(uid);
+			return;
+		}
+
+		// A first-time courier does not know where the drop is; the toast says.
+		string started = LF_CivilianJob.RunStartedKey(m_eJob);
+		if (!started.IsEmpty())
+			EL_Utils.NotifyEntity(pUserEntity, started, LF_CivilianJob.NameKey(m_eJob), 8.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -184,14 +218,11 @@ class LF_JobDropoffAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		string uid = EL_Utils.GetPlayerUid(user);
-		if (uid.IsEmpty() || !LF_CivilianJob.HasActiveRun(uid))
-		{
-			SetCannotPerformReason("#EL-Job_NoActiveRun");
-			return false;
-		}
+		if (LF_CivilianJob.RunOfferOpen(user))
+			return true;
 
-		return true;
+		SetCannotPerformReason("#EL-Job_NoActiveRun");
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -252,14 +283,11 @@ class LF_JobAbandonAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		string uid = EL_Utils.GetPlayerUid(user);
-		if (uid.IsEmpty() || !LF_CivilianJob.HasActiveRun(uid))
-		{
-			SetCannotPerformReason("#EL-Job_NoActiveRun");
-			return false;
-		}
+		if (LF_CivilianJob.RunOfferOpen(user))
+			return true;
 
-		return true;
+		SetCannotPerformReason("#EL-Job_NoActiveRun");
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

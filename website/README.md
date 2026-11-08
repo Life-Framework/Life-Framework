@@ -42,13 +42,13 @@ hydrates the static HTML. Moving between pages after that is client-side.
 
 | Page | Source |
 | --- | --- |
-| Home (`/`) | `docs/direction.md` (the ambition line, the playable loop, the milestone table), M1 progress and the latest merged PRs from GitHub, the latest entries of `docs/decisions.md`, and `content/media.json` |
-| Roadmap (`/roadmap`) | The milestone table in `docs/direction.md`, every `M<n>` milestone and its issues from GitHub, and `content/archive/roadmap-2025.json` |
+| Home (`/`) | Copy in `src/pages/Home.tsx` (written to turn visitors into contributors), the milestone table in `docs/direction.md`, M1 progress and open issues from GitHub, and `content/media.json` |
+| Roadmap (`/roadmap`) | The milestone table and playable loop in `docs/direction.md`, every `M<n>` milestone and its issues from GitHub, and the village pictures from `content/media.json` |
 | Devlog (`/devlog`) | Merged pull requests into `main` from GitHub (title and the first prose line of the body) and every entry in `docs/decisions.md`, grouped by day |
 | Server owners (`/servers`) | The "Features" list in `README.md`, the M3 row of `docs/direction.md`, and copy in `src/pages/Servers.tsx` |
 | Contribute (`/contribute`) | Open `good first issue` issues, else unassigned M1 issues, and the contributor list, from GitHub |
 | Decisions (`/decisions`) | `docs/decisions.md`, split into its sections and dated entries |
-| Docs (`/docs`, `/docs/:slug`) | `docs/direction.md`, `docs/ecosystem.md`, `docs/research/life-rp-benchmark.md`, every `docs/roadmap/**/*.md`, and `content/docs/*.md` |
+| Docs (`/docs`, `/docs/:slug`) | Setup and playtest guides, direction and decisions, engineering references, research and community docs, and every `docs/roadmap/**/*.md` |
 
 Markdown is turned into HTML at build time (remark and rehype); the browser
 never parses markdown. Relative links in the docs are rewritten: a link to a
@@ -64,10 +64,6 @@ GitHub is read without a token (the repo is public). CI passes `GITHUB_TOKEN`
 for a higher rate limit. When the API cannot be reached, the build uses the
 committed `content/github-snapshot.json` and the pages say so. Refresh the
 snapshot with `npm run snapshot` and commit it now and then.
-
-`content/docs/` holds the three guides exported from the 2025 site's Supabase
-database (images in `public/docs-images/`). `content/archive/roadmap-2025.json`
-holds its roadmap.
 
 ## Pictures, clips, and share images
 

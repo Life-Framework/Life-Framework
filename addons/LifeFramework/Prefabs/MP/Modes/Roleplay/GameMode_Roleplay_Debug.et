@@ -3,6 +3,7 @@ EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
  components {
   SCR_RespawnSystemComponent "{66BD3C8588F5687E}" {
    m_SpawnLogic EL_SpawnLogic "{66BD3ED1B2F2AD15}" {
+    m_bGrantTestCars 1
     m_aFactionCharacterItems {
      EL_FactionLoadout "{B7C2A6677AF28A10}" {
       m_eFaction CIVILIAN
@@ -68,6 +69,7 @@ EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
        "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
        "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
        "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
+       "{976BD4B5B482A8D9}Prefabs/Items/Roleplay/LF_PoliceCarKey.et"
       }
      }
     }

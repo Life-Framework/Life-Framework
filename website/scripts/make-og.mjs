@@ -15,8 +15,8 @@ const out = path.join(pub, "og");
 fs.mkdirSync(out, { recursive: true });
 
 const cards = [
-  { file: "home", kicker: "Open-source life/RP for Arma Reforger", title: "Real cash. Real keys. A fine on paper.", still: "village-street-640" },
-  { file: "roadmap", kicker: "Roadmap", title: "Where we are on the road", still: "village-overview-640" },
+  { file: "home", kicker: "Open-source life/RP for Arma Reforger", title: "We are building the modern Life Framework", still: "spawn-square-1280" },
+  { file: "roadmap", kicker: "Roadmap", title: "The Tree of Life", still: "village-overview-640" },
   { file: "devlog", kicker: "Devlog", title: "What changed, day by day", still: "village-post-640" },
   { file: "servers", kicker: "For server owners", title: "Host it, tune it, build on it", still: "village-police-640" },
   { file: "contribute", kicker: "Contribute", title: "Pick a scope. Prove it in the game.", still: "village-fuel-640" },
@@ -31,7 +31,7 @@ const html = (c) => `<!doctype html><html><head><style>
 *{margin:0;box-sizing:border-box}
 body{width:1200px;height:630px;background:#f0ebe1;color:#1b1d19;font-family:B;display:grid;grid-template-columns:640px 1fr;overflow:hidden}
 .l{padding:56px 48px 48px 64px;display:flex;flex-direction:column;border-right:3px solid #1b1d19}
-.mark{display:flex;align-items:center;gap:14px;font-size:34px;text-transform:uppercase}
+.mark{display:flex;align-items:center;gap:20px;font-size:40px;text-transform:uppercase}
 .k{font-family:M;font-size:20px;letter-spacing:.08em;text-transform:uppercase;color:#54564d;margin-top:auto}
 h1{font-size:${c.title.length > 30 ? 84 : 96}px;line-height:.93;text-transform:uppercase;margin-top:14px}
 .r{position:relative;background:#e5ddcd}
@@ -39,7 +39,7 @@ h1{font-size:${c.title.length > 30 ? 84 : 96}px;line-height:.93;text-transform:u
 .s{z-index:1;position:absolute;left:28px;top:40px;font-family:M;font-size:18px;letter-spacing:.1em;text-transform:uppercase;color:#a3302a;border:3px solid #a3302a;outline:1.5px solid #a3302a;outline-offset:3px;padding:8px 10px 6px;transform:rotate(-3deg);background:rgba(240,235,225,.9)}
 .bar{z-index:1;position:absolute;left:0;right:0;top:0;height:14px;background:#e3b23c;border-bottom:3px solid #1b1d19}
 </style></head><body>
-<div class="l"><div class="mark"><svg viewBox="0 0 32 32" width="48" height="48"><rect x="1.5" y="1.5" width="29" height="29" fill="none" stroke="#1b1d19" stroke-width="3"/><path fill="#1b1d19" d="M7 7h4.5v13.5H15V25H7zM17 7h9v4h-4.5v3H25v4h-3.5v7H17z"/></svg>Life Framework</div>
+<div class="l"><div class="mark"><img src="${url("brand/logo-light.svg")}" width="132" height="132">Life Framework</div>
 <p class="k">${c.kicker}</p><h1>${c.title}</h1></div>
 <div class="r"><div class="bar"></div><img src="${url(`media/${c.still}.webp`)}"><span class="s">In development</span></div>
 </body></html>`;

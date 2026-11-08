@@ -3,16 +3,16 @@
 import { docs } from "@/lib/content";
 
 // Where the site is served. Change to https://life-framework.org at the DNS cutover (README).
-export const SITE_URL = "https://life-framework-arn.pages.dev";
+export const SITE_URL = "https://life-framework.org";
 export const SITE_NAME = "Life Framework";
 
 export type PageMeta = { title: string; description: string; og: string; path: string; noindex?: boolean };
 
 const pages: Record<string, Omit<PageMeta, "path">> = {
   "/": {
-    title: "Life Framework: open-source life and roleplay for Arma Reforger",
+    title: "Life Framework: the modern life and roleplay framework for Arma Reforger",
     description:
-      "Cash you can lose, keys you can steal, a fine written on paper. An open-source life/RP framework for Arma Reforger, proven on a 1989 Everon server. In development: M1 playtest town.",
+      "We are building the modern Life Framework for Arma Reforger: inspired by Altis Life, built in the world instead of menus, open source. Join the Discord, test what we build, or pick an issue.",
     og: "home",
   },
   "/roadmap": {

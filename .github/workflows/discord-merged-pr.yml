@@ -1,0 +1,79 @@
+# Announce merged pull requests in Discord. pull_request_target is used so the
+# repository secret is available for PRs from forks; this workflow never checks
+# out or executes PR code.
+name: discord-merged-pr
+
+on:
+  pull_request_target:
+    types: [closed]
+
+permissions: {}
+
+jobs:
+  announce:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Post merged PR to Discord
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          script: |
+            const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+            if (!webhookUrl) {
+              // Not connected yet: pass quietly so merges do not show a failed check.
+              core.notice("Discord announcement skipped: set the repository Actions secret DISCORD_WEBHOOK_URL to enable it.");
+              return;
+            }
+
+            const webhook = new URL(webhookUrl);
+            if (webhook.protocol !== "https:" || webhook.hostname !== "discord.com" || !webhook.pathname.startsWith("/api/webhooks/")) {
+              throw new Error("DISCORD_WEBHOOK_URL must be a Discord channel webhook URL.");
+            }
+
+            const pr = context.payload.pull_request;
+            const imageUrls = new Set();
+            const imageCaption = (alt, rawUrl) => {
+              try {
+                const imageUrl = new URL(rawUrl);
+                const githubHosted = imageUrl.hostname === "github.com" || imageUrl.hostname.endsWith(".github.com") || imageUrl.hostname.endsWith(".githubusercontent.com");
+                if (imageUrl.protocol === "https:" && githubHosted) imageUrls.add(imageUrl.toString());
+              } catch {}
+              return alt ? `*${alt}*` : "";
+            };
+
+            let description = pr.body || "No description provided.";
+            description = description.replace(/!\[([^\]]*)\]\(\s*(?:<([^>]+)>|([^\s)]+))(?:\s+["'][^"']*["'])?\s*\)/g, (_match, alt, angleUrl, bareUrl) => imageCaption(alt, angleUrl || bareUrl));
+            description = description.replace(/<img\b[^>]*>/gi, (tag) => {
+              const src = tag.match(/\bsrc=["']([^"']+)["']/i);
+              const alt = tag.match(/\balt=["']([^"']*)["']/i);
+              return src ? imageCaption(alt ? alt[1] : "", src[1]) : (alt ? `*${alt[1]}*` : "");
+            }).trim();
+            if (!description) description = "No description provided.";
+
+            const images = [...imageUrls].slice(0, 9);
+            const omittedImages = imageUrls.size - images.length;
+            if (omittedImages > 0) description += `\n\n_${omittedImages} additional image(s) omitted._`;
+            const descriptionLimit = 3600;
+            if (description.length > descriptionLimit) {
+              description = `${description.slice(0, descriptionLimit - 70).trimEnd()}…\n\n[Read the full description on GitHub](${pr.html_url})`;
+            }
+
+            const embeds = [{
+              title: `#${pr.number} ${pr.title}`.slice(0, 256),
+              url: pr.html_url,
+              description,
+              color: 0x5865f2,
+              author: { name: pr.user.login, url: pr.user.html_url },
+              footer: { text: `Merged by ${pr.merged_by ? pr.merged_by.login : "unknown"} into ${pr.base.ref}` },
+              timestamp: pr.merged_at
+            }, ...images.map((url) => ({ image: { url } }))];
+
+            const response = await fetch(webhookUrl, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ embeds, allowed_mentions: { parse: [] } })
+            });
+            if (!response.ok) throw new Error(`Discord webhook returned HTTP ${response.status}.`);

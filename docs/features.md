@@ -163,6 +163,12 @@
   and other overrides never reach clients. `validate-npc-layer-overrides.mjs`
   enforces this. Names set in the layer do not reach clients either
   (`FindEntityByName` works only on the server).
+- ✅ (2026-11-08) An NPC's talk context (clerk, quest giver, police duty) sits on
+  its chest: `PivotID "Spine5"`, `Radius 0.6`, as vanilla `Character_Base` does
+  for "Chest". It was `Offset 0 0.5 0`, `Radius 2.0`, at the hips. The town
+  trader's counter crate (`TraderChainCounter`) stands on a table in front of
+  the trader instead of on the ground at his feet. Test:
+  `npc/interaction-height` (WORLD).
 
 ## Character & Survival
 
@@ -521,6 +527,12 @@
   `SellItem` pays cash only after the goods are confirmed removable and
   claws back overpayments. `IsItemSoldHere` gates buy and sell.
 - ⚠️ No shop stock (infinite supply).
+- ✅ **The general store sells a short list** (2026-11-08, M1 RC QA): `Shop_GeneralStore_Debug`
+  carries a curated `m_aShopItems` (apple, tomato, cabbage, water, apple juice, field dressing,
+  ALICE backpack). Without it the price list showed the whole 1312-line base-game catalog,
+  starting with an SVD magazine pouch and two "!BASE KIT!" rows. Prices still come from
+  `ShopPrices.conf`. The UI kit status row gives its action button more width (label 1.5,
+  status 1, button 1.5), so "Order" is no longer cut to "Orde".
 
 ### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `EL_ShopMenu`)
 - ✅ (2026-11-08, M1-13) Typed price list on `LF_UIScreen` with the
@@ -728,6 +740,17 @@
   `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
   A client reads the level replicated on `EL_PlayerJobComponent` (the career map is
   server-only), so fuel and taxi open on the client once the server levels the career.
+- ✅ **The toasts say what to do next** (2026-11-08, M1 RC QA): signing up shows the job as the
+  title and the next step as the body (`LF_CivilianJob.SignedUpKey`: "Pick up a parcel at this
+  counter"), not the job name twice. Picking up a parcel toasts where the drop is
+  (`RunStartedKey`, `#LF-Job_RunStarted_Courier`, 8 s).
+- ✅ **Pick up, Complete, and Abandon work on a dedicated client** (2026-11-08, LOGIC
+  `jobs/client-offers`): the offers read the server-only sign-up and run maps, so on a hosted
+  server "Pick up parcel" stayed greyed ("Sign up at the workplace first") after a good sign-up.
+  A client now reads the job replicated on `EL_PlayerJobComponent` (set at sign-up and when a
+  restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
+  inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
+  re-checks everything when the action runs.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -765,6 +788,14 @@
   `EL_LicenseBits.Order()`: append new types, never reorder.
 
 ### `EL_WhitelistManager` — `Feature/Whitelist/EL_WhitelistManager.c`
+- ✅ **The playtest host is police from the first join** (2026-11-08, LOGIC
+  `whitelist/first-player-police`): with `LF_MissionHeader.m_bLF_FirstPlayerPolice` (on in
+  `LF_PlaytestTown.conf`, off by default), the first player to join while the police roster is
+  empty is added to it (`$profile:LifeFramework/whitelist.txt`), so the maintainer can clock in
+  on his own playtest without writing the file. That file is the one roster: the duty desk and
+  the join gate read it. The unused `Whitelists/Police.txt` and `Whitelists/Medic.txt` lists on
+  `EL_WhitelistRespawnHandlerComponent` (nothing read their flags) are gone from
+  `GameMode_Roleplay.et`; the component keeps the CONNECT join gate.
 - ✅ Pure static in-memory whitelists; `IsFactionRestricted` (POLICE,
   MILITARY, MAFIA), `IsJobRestricted` (POLICE only), add/remove/get.
 - ✅ **Compiles** (verified 2026-08-30): `enum EL_EFactionType` is now defined
@@ -1081,6 +1112,13 @@
   `police/fine-ticket-serializer`.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
+- ✅ **The police kit carries the station car key** (2026-11-08, WORLD `police/car-key`):
+  the starter police kit adds `Prefabs/Items/Roleplay/LF_PoliceCarKey.et`, a vehicle key bound
+  to the shared identifier `POLICE`; `Roadmap_Escort_Car`'s lock is bound to the same, so every
+  officer's key opens every station car. The key is part of the duty inventory (clock-out stores
+  it with the uniform). The car is a world entity, not an owned record: no garage, no impound,
+  back at the station after a restart. `EL_VehicleKeyComponent` now asks for its INIT event, so
+  an editor-bound key actually takes its identifier (before, it stayed unbound).
 - ✅ **Clock in / Clock out at the duty desk** (M1-11, 2026-11-08; WORLD
   `police/duty-swap`, `police/death-on-duty`, `police/station`; restart via
   `wt e2e`). `Roadmap_Police_Desk` is `Prefabs/Police/LF_PoliceDutyDesk.et`
@@ -1456,6 +1494,7 @@
 - ✅ The registry is session memory, so `EL_VehicleOwnership.ApplyAll` re-reserves every saved plate on load; a purchase after a restart cannot be issued a plate already on a saved vehicle (2026-11-07, test `restart/vehicle-plates-reserved`, verified 2026-11-07).
 
 ### Vehicle lot and garage — `Feature/Vehicles/`
+- ✅ **Playtest: two cars from the start** (2026-11-08, WORLD `vehicles/test-cars`): with `EL_SpawnLogic.m_bGrantTestCars` (on in `GameMode_Roleplay_Debug.et`, so DebugWorld and the playtest; off in the flagship mode) a newly registered character owns the lot's first two cars as records with their keys in hand: the S105 stored in the garage and the UAZ at the impound lot (`EL_VehicleOwnership.GrantTestCars`). Nothing spawns; retrieve and collect work at once. Granted only to an owner with no vehicle yet.
 - ✅ `Roadmap_Vehicle_Lot` sells vanilla S105, UAZ469, S1203, UAZ452, and M923. Each spawn is a thin child of that vanilla prefab with `EL_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. (verified 2026-10-11)
 - ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing. Above the ceiling the refusal reads `#LF-Vehicle_BankShort` (pay from the bank; deposit at an ATM), so a buyer holding enough cash knows why (`vehicles/bank-refusal`).
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
