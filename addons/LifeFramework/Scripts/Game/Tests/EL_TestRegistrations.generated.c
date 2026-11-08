@@ -93,6 +93,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_JailSlip(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_JailVehicleArrest(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JobPacing(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JobSignUpPersist(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);
