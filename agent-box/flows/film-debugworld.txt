@@ -6,7 +6,7 @@ wait 3500
 look
 stand AppleGatherTree
 wait 3500
-stand PoliceStation_Debug
+stand Roadmap_Police_Desk
 wait 3500
 stand Roadmap_Bank_Vault
 wait 3500

@@ -33,53 +33,6 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Ask the server for the wanted list. The account cache is server-only, so the menu cannot
-	//! build it locally on a client. The reply arrives in RpcDo_EL_PoliceWantedList.
-	void EL_AskPoliceWantedList()
-	{
-		if (Replication.IsServer())
-			RpcAsk_EL_PoliceWantedList();
-		else
-			Rpc(RpcAsk_EL_PoliceWantedList);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_EL_PoliceWantedList()
-	{
-		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(this);
-		if (!LF_PoliceRanks.CanViewWantedList(officerAccount))
-		{
-			EL_Debug.Warn("Police", string.Format("wanted list refused: %1 is not an on-duty officer", this));
-			return;
-		}
-
-		array<string> uids = {};
-		array<string> names = {};
-		array<int> levels = {};
-		EL_PoliceUtils.CollectWantedPlayers(uids, names, levels);
-		EL_Debug.Log("Police", string.Format("wanted list sent: %1 entries", uids.Count()));
-
-		if (EL_Utils.IsCharacterLocal(this))
-			RpcDo_EL_PoliceWantedList(uids, names, levels);
-		else
-			Rpc(RpcDo_EL_PoliceWantedList, uids, names, levels);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_EL_PoliceWantedList(array<string> uids, array<string> names, array<int> levels)
-	{
-		MenuManager menuManager = GetGame().GetMenuManager();
-		if (!menuManager)
-			return;
-
-		EL_PoliceMenu menu = EL_PoliceMenu.Cast(menuManager.FindMenuByPreset(ChimeraMenuPreset.PoliceMenu));
-		if (menu)
-			menu.SetWantedList(uids, names, levels);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_EL_PoliceArrest(string targetPlayerUid)
 	{
@@ -317,42 +270,6 @@ class EL_PoliceUtils
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: every connected player with a wanted level above 0, as parallel arrays for the
-	//! wanted-list RPC. The name is the active character name, else the player name.
-	static void CollectWantedPlayers(notnull array<string> outUids, notnull array<string> outNames, notnull array<int> outLevels)
-	{
-		outUids.Clear();
-		outNames.Clear();
-		outLevels.Clear();
-
-		PlayerManager playerManager = GetGame().GetPlayerManager();
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-		if (!playerManager || !accountManager)
-			return;
-
-		array<int> playerIds = {};
-		playerManager.GetPlayers(playerIds);
-		foreach (int playerId : playerIds)
-		{
-			string playerUid = EL_Utils.GetPlayerUID(playerId);
-			EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-			if (!account || account.GetWantedLevel() <= 0)
-				continue;
-
-			string name;
-			EL_PlayerCharacter character = account.GetActiveCharacter();
-			if (character)
-				name = character.GetFullName();
-			else
-				name = playerManager.GetPlayerName(playerId);
-
-			outUids.Insert(playerUid);
-			outNames.Insert(name);
-			outLevels.Insert(account.GetWantedLevel());
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! \param entity Player character.
 	//! \return The cached account for the character, or null.
 	static EL_PlayerAccount GetAccountForEntity(IEntity entity)
@@ -406,7 +323,6 @@ class EL_PoliceUtils
 class EL_PoliceMenu : ChimeraMenuBase
 {
 	protected PlayerController m_PlayerController;
-	protected ref array<ref EL_WantedPlayerInfo> m_aWantedPlayers;
 
 	// UI input only: Enter, Esc and the pad, polled every frame (LF_UIMenuInput).
 	protected Widget m_wCloseButton;
@@ -478,51 +394,6 @@ class EL_PoliceMenu : ChimeraMenuBase
 	void SetPlayerController(PlayerController playerController)
 	{
 		m_PlayerController = playerController;
-		RefreshWantedList();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Asks the server for the list (the account cache is server-only). SetWantedList fills it
-	//! when the reply arrives.
-	protected void RefreshWantedList()
-	{
-		m_aWantedPlayers = {};
-		SCR_ChimeraCharacter officer = GetOfficerCharacter();
-		if (officer)
-			officer.EL_AskPoliceWantedList();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Reply of the wanted-list RPC: parallel arrays built on the server.
-	void SetWantedList(array<string> uids, array<string> names, array<int> levels)
-	{
-		m_aWantedPlayers = {};
-		if (!uids || !names || !levels)
-			return;
-
-		int count = uids.Count();
-		if (names.Count() != count || levels.Count() != count)
-		{
-			EL_Debug.Error("Police", "wanted list reply dropped: array sizes differ");
-			return;
-		}
-
-		for (int i = 0; i < count; i++)
-		{
-			EL_WantedPlayerInfo info = new EL_WantedPlayerInfo();
-			info.m_sPlayerUid = uids.Get(i);
-			info.m_sPlayerName = names.Get(i);
-			info.m_iWantedLevel = levels.Get(i);
-			m_aWantedPlayers.Insert(info);
-		}
-
-		EL_Debug.Log("Police", string.Format("wanted list received: %1 entries", count));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	array<ref EL_WantedPlayerInfo> GetWantedPlayers()
-	{
-		return m_aWantedPlayers;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -552,12 +423,4 @@ class EL_PoliceMenu : ChimeraMenuBase
 		IEntity entity = m_PlayerController.GetControlledEntity();
 		return SCR_ChimeraCharacter.Cast(entity);
 	}
-};
-
-//------------------------------------------------------------------------------------------------
-class EL_WantedPlayerInfo
-{
-	string m_sPlayerUid;
-	string m_sPlayerName;
-	int m_iWantedLevel;
 };

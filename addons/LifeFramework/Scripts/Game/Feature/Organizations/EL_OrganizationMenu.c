@@ -4,7 +4,7 @@
 //!
 //! Deliberately a workspace widget. MenuManager.OpenMenu leaves the root
 //! orphaned in a Workbench play session, so the tree exists and nothing renders.
-//! Same path as EL_FactionSelectionMenu.
+//! Same path as LF_UIScreen.
 //------------------------------------------------------------------------------------------------
 class EL_OrganizationMenu
 {
