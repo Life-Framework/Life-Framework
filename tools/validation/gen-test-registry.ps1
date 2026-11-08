@@ -73,7 +73,8 @@ foreach ($e in $entries) {
 [void]$sb.AppendLine("}")
 [void]$sb.AppendLine("")
 
-$generated = $sb.ToString()
+# LF on every platform (AppendLine uses the OS newline); .gitattributes pins LF.
+$generated = $sb.ToString() -replace "`r`n", "`n"
 
 if ($violations.Count -gt 0) {
   Write-Host "gen-test-registry: FAILED ($($violations.Count) violation(s))"
@@ -95,7 +96,7 @@ if ($Check -or -not $Write) {
     exit 1
   }
   $onDisk = Get-Content -LiteralPath $generatedPath -Raw
-  if ($onDisk -ne $generated) {
+  if (($onDisk -replace "`r`n", "`n") -ne $generated) {
     Write-Host "gen-test-registry: FAILED - $generatedName out of sync with the test files (run 'tools\cli regen-tests')"
     exit 1
   }

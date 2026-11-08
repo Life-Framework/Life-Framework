@@ -1,8 +1,9 @@
 # M2 Living Town (outline)
 
 M2 leads with four themes the maintainer picked on 2026-11-08: moderation,
-medic, comms, and investigation. This file is an outline, not a plan. M2 gets
-full scope cards after the M1 playtests show what players need. Read it with
+medic, comms, and investigation. This file is an outline. Each theme is broken
+into sub-issues on GitHub, listed under its section; they get full scope cards
+after the M1 playtests show what players need. Read it with
 [direction](../direction.md), [decisions](../decisions.md), and the
 [life/RP benchmark](../research/life-rp-benchmark.md), which ranks these four as
 its top candidates.
@@ -63,20 +64,16 @@ and a fence line, and the New Life Rule cue appears as a hospital wristband
 safe zone (#125), the interaction menu (M1-12, #98), the restart-safe save
 (M1-04, #89).
 
-**Candidate scopes.**
+**Sub-issues** (epic #145, in order; the first is the playable core):
 
-- Incident log service: server-only, append-only, bounded, persisted; one
-  `EL_Debug` feature name; queryable by position and time.
-- Game Master view: incidents as markers and an entity context panel (look at
-  Overthrow `OVT_GMRecords` and `OVT_GMPanelUIComponent` first).
-- **Zones** (decision "One marked lawless area"): a zone service with shape and
-  rule set, generalising the M1 safe zone; the flagship lawless area with signs
-  and a fence line.
-- **Hold-up** (decision "Hostile intent is a light mechanic"): an interaction
-  menu entry with animation and sound; server-side aimed-weapon detection,
-  throttled; both logged as intent.
-- Admin actions logged too (teleport, heal, kick), so moderators are
-  accountable.
+1. #239 Incident log records deaths, damage, and cash moves
+2. #240 Admins read incidents in Game Master
+3. #241 A player report flags recent incidents for staff
+4. #242 Zone service with safe, lawless, and normal rule sets
+5. #243 The quarry is the one marked lawless area (flagship)
+6. #244 Hold-up action marks hostile intent
+7. #245 Aiming a weapon at a player is logged as intent
+8. #246 Admin actions are logged too
 
 **Risks.** Log volume on a busy server (bound it, sample damage). Aim
 detection cost per frame (check on a timer, only for drawn weapons). Game
@@ -117,17 +114,19 @@ Polish: carry and drag animations (ACE Carrying, under evaluation in
 **Depends on M1.** Wake up in hospital (M1-26, #121), duty desk pattern and
 duty pay (M1-11, #96; M1-07, #92), dual inventory for duty gear (#96).
 
-**Candidate scopes.**
+**Sub-issues** (epic #146, in order; the first is the playable core):
 
-- Downed state: intercept death, bleed-out, give-up option, server authority.
-- Medic job: clock in at the hospital desk, duty kit as a second inventory,
-  duty pay.
-- Stabilise and revive with vanilla items, with animations.
-- Ambulance and bed transfer: load, drive, deliver to a bed for the reduced
-  bill.
-- **New Life Rule** (decision "Death costs a hospital bill and the New Life
-  Rule"): death position and time per player, wristband or note on waking, a
-  quiet reminder near the scene, returns logged to the incident log.
+1. #255 Downed state on lethal damage
+2. #256 Bleed-out timer and the give-up option
+3. #257 Anyone with first aid slows the bleed-out
+4. #258 Medic job clocked in at the hospital desk
+5. #259 A medic revives a downed patient
+6. #260 Treatment bill on paper, paid at the hospital desk
+7. #261 Carry and drag a downed player
+8. #262 Ambulance delivers a patient to a hospital bed for the reduced bill
+9. #263 Siren and lights on service vehicles
+10. #264 New Life Rule: wristband on waking and a reminder near the scene
+11. #265 Village hospital: medic desk, ambulance bay, and 1989 bills (flagship)
 
 **Risks.** Intercepting vanilla death without breaking respawn, loot on the
 body, and the murder hook. Downed players as hostages or loot pinatas (decide
@@ -166,12 +165,16 @@ beep, teleprinter clatter.
 **Depends on M1.** Alarm and dispatch on the vanilla radio (M1-20, #105), the
 wanted board (#96), the interaction menu patterns (#98).
 
-**Candidate scopes.**
+**Sub-issues** (epic #147, in order; the first is the playable core):
 
-- Payphone prop and call flow with gamepad presets.
-- Pager item: receive, show, beep; issued at duty desks.
-- Dispatch board at the station and the hospital.
-- Radio frequencies per service on vanilla radios; a scanner as a crime tool.
+1. #247 Call the police from a payphone
+2. #248 Calls route to any service in config
+3. #249 Pager item beeps with the call
+4. #250 Dispatch board at each service's station
+5. #251 A responder takes a call and the caller hears back
+6. #252 Service radios on fixed frequencies
+7. #253 Police scanner as an illegal crime tool
+8. #254 Payphones and boards placed around the village (flagship)
 
 **Risks.** Spam calls (cost and cooldown, logged). Message text on a
 dedicated server is fine, but rendering on a prop needs the RT-texture pattern
@@ -211,15 +214,19 @@ record.
 2026-11-08, wanted board #96, dispatch #105), the paper ticket (#104), jail
 (#106), plates (`EL_LicensePlateManager`).
 
-**Candidate scopes.**
+**Sub-issues** (epic #148, in order; the first is the playable core):
 
-- Witness reports from payphones and from NPC or player civilians.
-- Physical evidence: casings and dropped items as bagged evidence; the evidence
-  locker.
-- **Fence** (decision "Top-tier crime needs tools from a fence"): a fence NPC
-  that checks a hidden per-account crime record; drills, charges, and keycards
-  as real items with animation and sound; serials that feed evidence.
-- Heist tiers that require the fence's tools: armory, cash van, bank vault.
+1. #266 Witness description from the payphone
+2. #267 Officers question witnesses in person, including NPCs
+3. #268 Casings and dropped items become scene evidence
+4. #269 Evidence locker at the station
+5. #270 Hidden crime record per account
+6. #271 Fence NPC sells tools to proven criminals only
+7. #272 Fence tools carry serials that lead back to the buyer
+8. #273 The bank vault needs fence tools
+9. #274 Cash van robbery
+10. #275 Police armory heist
+11. #276 Fence, cash van route, and evidence locker in the village (flagship)
 
 **Risks.** Witness quality on a low-population server (NPC witnesses may be
 needed). Evidence that never gets used turns into clutter (expiry). The fence
