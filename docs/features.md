@@ -172,6 +172,13 @@
   wanted bumps and police-menu reads do not lose the account mid-session
   (the old evict-on-write churn is gone).
 
+### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
+- ✅ Explicit persisted form of an account and its characters (faction,
+  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
+  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
+  its `version` field. `account/save-roundtrip` covers the
+  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
+
 ### `EL_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
   (one AUTO slot per playthrough via `EL_SaveSelection`), manual saves,
@@ -206,13 +213,6 @@
   The server owns the machine-wide `server-2001` lock while it runs. The
   no-shutdown-save error now fires at teardown, not on the SHUTDOWN state change
   that comes before the save. Selftest: `tools/validation/host-selftest.mjs`.
-
-### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
-- ✅ Explicit persisted form of an account and its characters (faction,
-  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
-  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
-  its `version` field. `account/save-roundtrip` covers the
-  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
@@ -388,8 +388,7 @@
 ## Jobs / Level / Licenses / Whitelist
 
 ### `EL_PlayerJobComponent` — `Feature/Jobs/EL_PlayerJobComponent.c`
-- ✅ Per-player job state, paycheck clock (`salary * (1 + (playerLevel-1)*0.05)`,
-  `Math.Round`), per-job level/XP maps, license gates (POLICE→POLICE_ACCESS,
+- ✅ Per-player job state, per-job level/XP maps, license gates (POLICE→POLICE_ACCESS,
   MEDIC→MEDIC_ACCESS), client→server `RpcAsk_SetJob` re-validates licenses.
 - ✅ **Fruit-catcher mint closed** (verified 2026-08-30): the server clamps any
   claimed score through `EL_GetFruitCatcherRewardCount` to
@@ -412,21 +411,22 @@
   (`LF_JobGuards.ClaimEquipmentGrant`). Pin test `security/job-switch-guards`.
 - ✅ **Debug-license backdoor removed** (verified 2026-08-30): `RpcAsk_DebugGrantLicense`
   no longer exists anywhere in `Scripts/Game`.
-- ✅ **Paychecks pay cash** (verified 2026-08-30): `ProcessPaycheck` uses
-  `EL_MoneyUtils.GiveCash`; the old `EL_BankAccountComponent` deposit branch is
-  gone (that entity bank is deleted). The only cash↔account boundary is the ATM.
+- ✅ **No passive paycheck** (verified 2026-11-08, M1-07): the timer paycheck
+  (700-1000 cash every 300 s to every job, unemployed included) is deleted; the
+  component has no frame event. `EL_JobConfig` has no salary fields. Money comes
+  from completed runs, trader sales, police duty pay (`LF_DutyPay`), and the
+  unemployment benefit (`LF_UnemploymentBenefit`). Pin test `jobs/no-passive-paycheck`.
 - ✅ **Civilian run XP** (verified 2026-10-11): `AddExperience` forwards to
   `LF_CivilianJob`. A completed courier, fuel, or taxi run adds 100 XP.
   100 XP levels that career and `PullCareer` copies the level onto this
   component, so `OnLevelUp` fires. Level 1 may take courier work, level 2
   opens fuel delivery, level 3 opens taxi. Under-level signup refuses and is
-  logged. Paychecks stay cash on the existing clock.
+  logged.
 - ✅ **Job tool grant** (2026-11-08): miner gets
   `{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et` (the old `Prefabs/Tools/Axe/Pico.et`
   never existed), lumberjack gets `{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et`
   (the old GUID was wrong). Spawn goes through `EL_Utils.SpawnEntityPrefab`; a
-  tool that does not fit is logged and left at the player's feet. Fruit-reward
-  logs go through `EL_Debug` ("Jobs").
+  tool that does not fit is logged and left at the player's feet.
 - ⚠️ Whitelist branch in `SetJob` is dead (only POLICE is restricted and it is
   special-cased). Hard-coded Spanish strings (not localized). Per-job level/XP
   persistence is convention-only, no SaveData pair.
@@ -519,6 +519,20 @@
   a quantity stack, else the item is deleted) before spawning. The client
   preview stops offering placements past that range. Pin tests
   `security/building-placement-range`, `security/job-workplace-and-seed`.
+
+### `LF_UnemploymentBenefit` — `Feature/Jobs/LF_UnemploymentBenefit.c`
+- ✅ "Collect benefit" (`LF_CollectBenefitAction`) at `Roadmap_Job_Depot`
+  (verified 2026-11-08: LOGIC test `jobs/unemployment-benefit`; in-world collection
+  is manual). The server reads the bank balance (`EL_ATMManager`) and pays
+  `m_iBenefitAmount` cash when the balance is strictly below
+  `m_iBenefitBalanceThreshold`, the player is not on duty as police and has no
+  active delivery run, and `m_fBenefitCooldownSeconds` passed since that
+  account's last collection. Values in `Configs/Jobs/LF_Jobs.conf` (flagship
+  $100, below $500, 1200 s). Pick-up sound, then a `#EL-Benefit_Paid` toast; a
+  refusal toasts its reason. A full inventory pays nothing and does not start
+  the cooldown.
+- ⚠️ The cooldown ledger is session state; a restart lets a broke player collect
+  once more.
 
 ## Crime & Police
 
@@ -708,6 +722,14 @@
   police faction button sets faction and duty, which is how a solo session
   reaches the toggle (verified 2026-10-10). Going on duty starts the rank
   clock; going off duty settles it.
+- ✅ **Duty pay at the desk** (verified 2026-11-08: LOGIC test `jobs/duty-pay`;
+  the 2-client cash check is manual). Going off duty pays the shift's on-duty
+  seconds times `m_fPoliceDutyPayPerSecond` (`Configs/Jobs/LF_Jobs.conf`, flagship
+  0.5) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
+  `#EL-Duty_Paid` toast. Seconds settled by an armory draw mid-shift are kept
+  for the clock-out. A second clock-out, a clock-out with no clock-in, and a
+  non-police account pay nothing. Unpaid seconds are session state: a restart
+  during a shift drops that shift's pay, it never pays twice.
 - ✅ Toggling keeps the account resident: `SaveAndReleaseAccount` re-caches
   the account instead of evicting it, so the officer can reopen the police
   menu and re-toggle at once.
@@ -1084,7 +1106,7 @@
 
 1. **Money — one canonical path, all payouts cash.** The entity bank
    `EL_BankAccountComponent` is **deleted**; `EL_ATMManager`/`EL_BankAccount`
-   is the only bank and the ATM is the only cash↔account boundary. Paychecks,
+   is the only bank and the ATM is the only cash↔account boundary. Duty pay, benefits,
    trader sells, shop sells, robberies and job rewards all pay `EL_MoneyUtils`
    cash. Shop buy/sell correctness closed (partial refunds), ATM deposit/
    withdraw moves real cash with rollback. Remaining: no shop stock / per-item

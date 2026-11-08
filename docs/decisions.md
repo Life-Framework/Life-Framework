@@ -88,6 +88,18 @@ restart goes to the impound lot, collected for a fee. Why: mostly in-world,
 controls clutter and car-camping. Framework: impound fee and owned spots are
 config.
 
+**2026-11-08 — No passive paycheck; unemployment benefit at the counter.** The
+timer paycheck ($700 every 300 s to every job, unemployed included) is gone.
+Civilians are paid cash at the drop for each completed run and by selling to
+traders. Police are paid duty pay in cash at the station desk when they go off
+duty (on-duty seconds times a rate). A player whose bank balance is below a
+threshold, who is not on duty as police and has no active delivery run, collects
+a cash benefit in person at the job counter, once per cooldown. Why: removes the
+invisible mint while keeping a safety net for broke players. Framework: duty
+rate, benefit threshold, amount, and cooldown are config
+(`Configs/Jobs/LF_Jobs.conf`). Flagship: $0.50 per duty second; $100 benefit
+below a $500 balance, once per 20 minutes. (Maintainer decision.)
+
 **2026-11-07 — One player interaction menu.** Walking up to another player
 offers a short, simple list of person-to-person actions: introduce yourself,
 show ID, give cash or an item, and role actions (search, cuff, fine) when the
