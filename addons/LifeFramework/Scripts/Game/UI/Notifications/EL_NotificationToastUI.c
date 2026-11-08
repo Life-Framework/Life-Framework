@@ -9,7 +9,7 @@ class EL_NotificationToastUI : ScriptedWidgetComponent
 	static const float FADE_SECONDS = 0.3;
 	static const int TICK_MS = 50;
 	//! Vertical step between stacked slips, in pixels (slip height + gap).
-	static const float STACK_STEP = 100;
+	static const float STACK_STEP = 128;
 	static const float STACK_TOP = 140;
 
 	protected Widget m_wRoot;

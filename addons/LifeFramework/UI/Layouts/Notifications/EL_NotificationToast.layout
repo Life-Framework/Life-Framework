@@ -8,8 +8,8 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
   OffsetTop 140
   SizeX 420
   OffsetRight -396
-  SizeY 92
-  OffsetBottom -232
+  SizeY 120
+  OffsetBottom -260
   Alignment 1 0
  }
  "Z Order" 50
@@ -18,14 +18,14 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
   }
  }
  {
-  PanelWidgetClass "{6EC77273F9FEFB65}" {
+  ImageWidgetClass "{6EC77273F9FEFB65}" {
    Name "Rim"
    Slot FrameWidgetSlot "{41C61FAD3B7EC90C}" {
     Anchor 0 0 1 1
    }
    Color 0.243 0.251 0.227 1
    {
-    PanelWidgetClass "{17665D7A2427B51C}" {
+    ImageWidgetClass "{17665D7A2427B51C}" {
      Name "Background"
      Slot FrameWidgetSlot "{D91698E60BF10DF6}" {
       Anchor 0 0 1 1
@@ -36,7 +36,7 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
      }
      Color 0.839 0.776 0.659 0.949
      {
-      PanelWidgetClass "{FB11D60E95462439}" {
+      ImageWidgetClass "{FB11D60E95462439}" {
        Name "ColorStrip"
        Slot FrameWidgetSlot "{4DE037A5421F8592}" {
         Anchor 0 0 0 1
@@ -91,6 +91,7 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
          Text ""
          "Font Size" 17
          "Min Font Size" 14
+         Wrap 1
          FontProperties FontProperties "{CAA881DD629DC115}" {
           Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
          }
