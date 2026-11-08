@@ -23,7 +23,7 @@ function runMergeFile(oursPath, basePath, theirsPath) {
   const result = spawnSync(
     "git",
     ["merge-file", "-p", "--diff3", "-L", OURS_LABEL, "-L", BASE_LABEL, "-L", THEIRS_LABEL, oursPath, basePath, theirsPath],
-    { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
+    { windowsHide: true, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
   );
   if (result.error || result.status === null || result.status < 0) {
     throw new Error(`git merge-file failed: ${result.error ? result.error.message : result.stderr}`);

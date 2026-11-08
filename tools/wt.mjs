@@ -38,7 +38,7 @@ export function ghAvailable() {
 }
 
 export function run(cmd, args, opts = {}) {
-  const res = spawnSync(cmd, args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], ...opts });
+  const res = spawnSync(cmd, args, { windowsHide: true, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], ...opts });
   if (res.error) {
     res.status = res.status ?? 1;
     res.stdout = res.stdout ?? "";

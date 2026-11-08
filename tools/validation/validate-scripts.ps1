@@ -92,15 +92,18 @@ New-Item -ItemType Directory -Force -Path $gameAddonsJunction | Out-Null
 cmd /c mklink /J "$gameAddonsJunction\core" "$coreSource" 2>$null | Out-Null
 cmd /c mklink /J "$gameAddonsJunction\data" "$dataSource" 2>$null | Out-Null
 $wbArgs = @(
-  '-gproj', "`"$gproj`"",
-  '-addonsDir', "`"$gameAddonsJunction`"",
+  '-gproj', $gproj,
+  '-addonsDir', $gameAddonsJunction,
   '-wbModule=ScriptEditor', '-run',
   '-validate', 'PC',
   '-exitAfterInit', '-noSplash', '-noThrow'
 )
 
 $started = Get-Date
-$p = Start-Process -FilePath $wb -ArgumentList $wbArgs -PassThru -WorkingDirectory $gameDir
+# The private LF-Agents desktop keeps this Workbench off the user's screen
+# (tools/lib/quiet-launch.ps1; LF_SHOW_WINDOWS=1 shows it).
+. (Join-Path $root "tools\lib\quiet-launch.ps1")
+$p = Start-LfQuietProcess -FilePath $wb -ArgumentList $wbArgs -WorkingDirectory $gameDir -KillOnClose
 
 if (-not $p.WaitForExit(900000)) {
   Write-Host "validate-scripts: TIMEOUT after 15 min - killing Workbench (pid $($p.Id))"

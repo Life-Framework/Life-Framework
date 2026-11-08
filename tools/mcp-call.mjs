@@ -39,6 +39,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ensureQuietWorkbench, needsWorkbench } from "./lib/quiet-workbench.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const CONFIG_PATH = join(ROOT, "opencode.json");
@@ -75,7 +76,7 @@ function cursorServer(name) {
 // tools/mcp/ is git-ignored, so a new worktree has no clones of its own. Use
 // the main checkout's clone (git-common-dir is <main>/.git).
 function mainCheckoutEntry(cwdRelative, entryRelative) {
-  const res = spawnSync("git", ["-C", ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir"], { encoding: "utf8" });
+  const res = spawnSync("git", ["-C", ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir"], { windowsHide: true, encoding: "utf8" });
   const common = (res.stdout || "").trim();
   if (res.status !== 0 || !common) return null;
   const cwd = resolve(dirname(common), cwdRelative);
@@ -206,6 +207,14 @@ async function main() {
   }
   const env = { ...process.env, ...globalMcpEnv(serverName), ...serverEnv, ...enfusionEnvOf(process.env), ...envOverrides };
 
+  // A wb_* call with no Workbench up would make the MCP launch one in front of
+  // the user. Start it on the hidden LF-Agents desktop first (LF_SHOW_WINDOWS=1 opts out).
+  const calls = batch ? batch.map((c) => c.tool) : toolName ? [toolName] : [];
+  if (needsWorkbench(calls)) {
+    const status = await ensureQuietWorkbench({ serverDir: cwd, env: { ENFUSION_PROJECT_PATH: join(ROOT, "addons"), ...env } });
+    if (!status.startsWith("skip")) console.error(`[quiet-workbench] ${status}`);
+  }
+
   let toolArgs = {};
   if (rawArgs) {
     const isFile =
@@ -235,6 +244,7 @@ async function main() {
   }
 
   const child = spawn(process.execPath, [entry], {
+    windowsHide: true,
     cwd,
     env,
     stdio: ["pipe", "pipe", "pipe"],

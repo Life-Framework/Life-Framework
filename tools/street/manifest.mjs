@@ -162,7 +162,7 @@ function usage() {
 }
 
 function runCli(args) {
-  return spawnSync(process.execPath, [scriptPath, ...args], { encoding: "utf8", cwd: repoRoot });
+  return spawnSync(process.execPath, [scriptPath, ...args], { windowsHide: true, encoding: "utf8", cwd: repoRoot });
 }
 
 function assertCli(args, expectOk, needle, label) {

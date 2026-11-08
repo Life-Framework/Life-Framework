@@ -61,6 +61,8 @@ intent: `docs/design.md`. An agent handed a scope, issue, or PR starts with the
 | `tools\cli wt gate <slug>` / `wt ship <slug> [--closes N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
 
+Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desktop; node spawns get `windowsHide: true`), never in front of the user; `tools\cli hidden [--close]` lists them, `LF_SHOW_WINDOWS=1` shows them (`docs/setup.md`).
+
 ## Worktrees
 
 Start with `tools\cli wt new <slug>` and work inside it on `ws/<slug>`; never

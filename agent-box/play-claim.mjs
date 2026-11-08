@@ -61,7 +61,7 @@ function renderingProcesses() {
   const res = spawnSync(
     "powershell.exe",
     ["-NoProfile", "-Command", `Get-CimInstance Win32_Process -Filter "${filter}" | Select-Object ProcessId,CommandLine | ConvertTo-Json -Compress`],
-    { encoding: "utf8" },
+    { windowsHide: true, encoding: "utf8" },
   );
   const text = (res.stdout || "").trim();
   if (!text) return [];

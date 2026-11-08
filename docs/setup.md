@@ -141,6 +141,33 @@ suite, parses `[ELTEST] SUMMARY`, and exits nonzero on failure. Details:
 - `test` and `serve` need Arma Reforger Server (Steam app 1874900).
 - Server config (scenario + RCON): `server/configs/test-server.json`.
 
+### Tool windows stay off your screen
+
+Agents run Workbench and the server many times an hour. Those runs start on a
+private Win32 desktop named `LF-Agents` (`tools/lib/quiet-launch.ps1`), so they
+never draw a window on your monitor and never take focus:
+
+| Run | Where it goes |
+| --- | --- |
+| `validate --full` (Workbench `-validate` in `validate-scripts.ps1`), `cli build` | `LF-Agents` desktop; exit code and console.log as before |
+| `cli test` / `wt e2e` dedicated server | `LF-Agents`, no console window |
+| `agent-box/session.mjs up` game clients | `LF-Agents`; the server runs detached with no console |
+| `cli call wb_*`, `agent-box/harness.mjs play` | When no Workbench serves NET API port 5775, `tools/lib/quiet-workbench.mjs` starts one on `LF-Agents` first, so the MCP never launches a visible one |
+| every node-spawned console tool | `windowsHide: true` |
+
+Workbench play mode and a game client both render on `LF-Agents`: harness
+screenshots (`EL_ScreenshotCapture`) come back as the real 3D world. Screen
+recording (`tools/film`) cannot see that desktop; film a game client you start
+yourself on a visible monitor. `film.mjs` no longer brings that window to the
+front; on a second monitor it lifts it without activating it.
+
+- `tools\cli hidden` lists processes with a window on `LF-Agents`;
+  `tools\cli hidden --close` ends them (a hidden Workbench stays up between agent
+  calls, as the visible one used to).
+- `LF_SHOW_WINDOWS=1` turns all of this off for debugging: every run starts on
+  your desktop again.
+- `wt open --workbench` and `wt open` are for you, so they still open visibly.
+
 ## 5. AI tooling (optional)
 
 We encourage AI-assisted contributions. MCP servers are configured in

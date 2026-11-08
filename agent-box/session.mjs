@@ -258,7 +258,7 @@ async function main(argv) {
     return f.length ? 1 : 0;
   }
   if (cmd === "up" || cmd === "down" || cmd === "status") {
-    const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", cmd, ...rest], { stdio: "inherit", cwd: process.cwd() });
+    const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", cmd, ...rest], { windowsHide: true, stdio: "inherit", cwd: process.cwd() });
     return r.status ?? 1;
   }
   if (cmd === "proof") return runProof();
