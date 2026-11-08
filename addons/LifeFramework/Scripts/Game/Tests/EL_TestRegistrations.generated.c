@@ -190,6 +190,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_UIKitQuantity(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitClose(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitFocus(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UIPaperSheet(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_UnemploymentBenefit(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleBankRefusal(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);
