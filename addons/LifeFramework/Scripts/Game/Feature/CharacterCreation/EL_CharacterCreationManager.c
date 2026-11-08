@@ -4,10 +4,6 @@
 //------------------------------------------------------------------------------------------------
 class EL_CharacterCreationRules
 {
-	static const int NAME_MAX_LENGTH = 32;
-	static const int MIN_AGE = 18;
-	static const int MAX_AGE = 80;
-
 	//------------------------------------------------------------------------------------------------
 	//! \return True when value is a faction the creation flow offers.
 	static bool IsOfferedFaction(int value)
@@ -60,7 +56,8 @@ class EL_CharacterCreationRules
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Name/age submission. One character per account, after the faction is chosen.
+	//! Name/age submission (form R-89, LF_RegistrationRules). One character per account, after
+	//! the faction is chosen.
 	static string RefuseCharacter(EL_PlayerAccount account, string firstName, string lastName, int age)
 	{
 		if (!account)
@@ -77,13 +74,15 @@ class EL_CharacterCreationRules
 		if (first.IsEmpty() || last.IsEmpty())
 			return "#EL-CC_Error_Fields";
 
-		if (first.Length() > NAME_MAX_LENGTH || last.Length() > NAME_MAX_LENGTH)
-			return "#EL-CC_Error_NameLength";
+		string refusal = LF_RegistrationRules.RefuseName(first);
+		if (!refusal.IsEmpty())
+			return refusal;
 
-		if (age < MIN_AGE || age > MAX_AGE)
-			return "#EL-CC_Error_Age";
+		refusal = LF_RegistrationRules.RefuseName(last);
+		if (!refusal.IsEmpty())
+			return refusal;
 
-		return "";
+		return LF_RegistrationRules.RefuseAge(age);
 	}
 }
 
@@ -194,7 +193,7 @@ class EL_CharacterCreationManager : Managed
 				return;
 			}
 
-			CreateAndSpawnDefaultCharacter(account, playerController);
+			ShowRegistrationForm(playerController, "");
 			return;
 		}
 
@@ -202,16 +201,20 @@ class EL_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Faction chosen but no character yet: create a default character and spawn. The old
-	//! name/age creation menu was removed; this keeps the flow playable until a new creation
-	//! UI lands.
-	protected void CreateAndSpawnDefaultCharacter(EL_PlayerAccount account, PlayerController playerController)
+	//! Faction chosen but no character yet: the registration form (R-89) opens on the player's
+	//! machine. Its answer comes back as RpcAsk_EL_CreateCharacter. The form never picks a faction.
+	//! \param refusal Localization key written on the form when the last answer was refused.
+	protected void ShowRegistrationForm(PlayerController playerController, string refusal)
 	{
-		EL_PlayerCharacter character = EL_PlayerCharacter.Create(DEFAULT_CHARACTER_PREFAB, "Default", "Citizen", 30);
-		account.AddCharacter(character, true);
-		EL_Debug.Info("CharacterCreation", "created default character for player " + playerController.GetPlayerId());
+		SCR_PlayerController controller = SCR_PlayerController.Cast(playerController);
+		if (!controller)
+		{
+			EL_Debug.Error("CharacterCreation", "registration form not sent: controller is not an SCR_PlayerController");
+			return;
+		}
 
-		SpawnPlayer(playerController.GetPlayerId(), playerController);
+		EL_Debug.Info("CharacterCreation", "registration form sent to player " + controller.GetPlayerId());
+		controller.LF_ShowRegistrationForm(refusal);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -303,13 +306,19 @@ class EL_CharacterCreationManager : Managed
 		if (!refusal.IsEmpty())
 		{
 			EL_Debug.Warn("CharacterCreation", string.Format("character refused for player %1: %2", playerId, refusal));
-			EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ID_Information", refusal, 5.0, EL_ENotificationType.WARNING);
+			// The form comes back with the reason written on it, unless the account already has a
+			// character (a double submit) or none is loaded yet.
+			if (account && !account.HasCharacters() && account.WasFactionChosen())
+				ShowRegistrationForm(controller, refusal);
+			else
+				EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ID_Information", refusal, 5.0, EL_ENotificationType.WARNING);
 			return;
 		}
 
 		EL_PlayerCharacter character = EL_PlayerCharacter.Create(DEFAULT_CHARACTER_PREFAB, firstName.Trim(), lastName.Trim(), age);
 		account.AddCharacter(character, true);
-		EL_Debug.Info("CharacterCreation", string.Format("character created for player %1, age %2", playerId, age));
+		EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
+		EL_Debug.Info("CharacterCreation", string.Format("character registered for player %1, age %2", playerId, age));
 
 		SpawnPlayer(playerId, controller);
 	}

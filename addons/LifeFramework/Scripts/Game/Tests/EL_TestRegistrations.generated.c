@@ -66,6 +66,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_HouseKeyMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_HouseSaveData(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_IdCardGrant(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_IdCardRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);
@@ -87,6 +89,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_QuantityOperations(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_QuantityVisuals(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RecipeChains(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_RegistrationRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RestartBankSurvivesConnect(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RestartJailSerializerRoundtrip(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_RestartVehicleNoGroundKey(), EL_TestTier.WORLD);

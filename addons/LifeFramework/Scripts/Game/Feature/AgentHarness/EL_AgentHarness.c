@@ -44,6 +44,7 @@ class EL_AgentCommand
 	//!   <id> state
 	//!   <id> ui
 	//!   <id> click <WidgetName> [index]
+	//!   <id> type <PartName> <Text>
 	//!   <id> capture ui <Name>
 	//!   <id> capture world <Name> <x> <y> <z> [ox oy oz]
 	static bool Parse(string line, out EL_AgentCommand cmd)
@@ -92,6 +93,8 @@ class EL_AgentCommand
 			return true;
 		if (cmd.Verb == "click")
 			return ParseClick(parts, cmd);
+		if (cmd.Verb == "type")
+			return ParseType(parts, cmd);
 		if (cmd.Verb == "capture")
 			return ParseCapture(parts, cmd);
 
@@ -172,6 +175,27 @@ class EL_AgentCommand
 				cmd.Error = "bad_index";
 				return false;
 			}
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! type <PartName> <Text>: both tokens are letters, digits, or underscore.
+	protected static bool ParseType(array<string> parts, EL_AgentCommand cmd)
+	{
+		if (parts.Count() < 4)
+		{
+			cmd.Error = "need_field_and_text";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		cmd.Arg2 = parts[3];
+		if (!IsClassToken(cmd.Arg1) || !IsClassToken(cmd.Arg2))
+		{
+			cmd.Error = "bad_field_or_text";
+			return false;
 		}
 
 		return true;
@@ -634,6 +658,11 @@ class EL_AgentHarness
 			DoClick(cmd);
 			return;
 		}
+		if (cmd.Verb == "type")
+		{
+			DoType(cmd);
+			return;
+		}
 		if (cmd.Verb == "input")
 		{
 			DoInput(cmd);
@@ -1010,6 +1039,39 @@ class EL_AgentHarness
 		}
 
 		WriteResult(cmd.Id, "error", "click_unhandled");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Writes text into the edit box of a visible field (a UI kit FIELD part or any widget that
+	//! wraps an EditBox), the way a player would type it.
+	protected static void DoType(EL_AgentCommand cmd)
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+		{
+			WriteResult(cmd.Id, "error", "no_workspace");
+			return;
+		}
+
+		Widget field = workspace.FindAnyWidget(cmd.Arg1);
+		if (!field || !Shown(field))
+		{
+			WriteResult(cmd.Id, "error", "widget_not_found");
+			return;
+		}
+
+		EditBoxWidget box = EditBoxWidget.Cast(field);
+		if (!box)
+			box = EditBoxWidget.Cast(field.FindAnyWidget("EditBox"));
+		if (!box)
+		{
+			WriteResult(cmd.Id, "error", "not_a_field");
+			return;
+		}
+
+		box.SetText(cmd.Arg2);
+		EL_Debug.Log(FEATURE, string.Format("type %1", cmd.Arg1));
+		WriteResult(cmd.Id, "ok", cmd.Arg1);
 	}
 
 	//------------------------------------------------------------------------------------------------

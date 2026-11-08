@@ -85,6 +85,12 @@ class EL_Test_AgentHarness : EL_Test
 		ctx.False(EL_AgentCommand.Parse("13 click BuyButton next", cmd), "click index must be digits");
 		ctx.EqualStr("bad_index", cmd.Error, "bad click index error");
 
+		ctx.True(EL_AgentCommand.Parse("14 type RegFirstName Ada", cmd), "type parses");
+		ctx.EqualStr("RegFirstName", cmd.Arg1, "type field");
+		ctx.EqualStr("Ada", cmd.Arg2, "type text");
+		ctx.False(EL_AgentCommand.Parse("15 type RegFirstName", cmd), "type needs text");
+		ctx.False(EL_AgentCommand.Parse("15 type RegFirstName A;B", cmd), "type text is one plain token");
+
 		ctx.False(EL_AgentCommand.Parse("", cmd), "empty line is rejected");
 
 		ctx.True(EL_NetworkUtils.DecideApplyAction(true, false), "the owner applies the action");

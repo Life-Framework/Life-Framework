@@ -57,7 +57,8 @@
 
 ### `EL_CharacterCreationManager` — `Feature/CharacterCreation/EL_CharacterCreationManager.c`
 - ✅ Flow: no account → create → faction menu → spawn-location picker →
-  spawn. `OnCharacterCreated` persists a character, inits ATM + survival
+  registration form R-89 (`LF_RegistrationForm`) → spawn with an ID card.
+  A returning account skips the menus and the form. `OnCharacterCreated` persists a character, inits ATM + survival
   components, spawns.
 - ✅ **Server-owned on a dedicated server** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the flow runs on the server
   only. Menus open on the joining client through owner RPCs on its
@@ -69,18 +70,16 @@
   controller's id, never a client value. `EL_CharacterCreationRules` re-checks
   every pick: the police whitelist (`MayJoinFaction`, now enforced server-side),
   faction already chosen, spawn location belongs to the faction, one character
-  per account, names 1..32 characters, age 18..80. A refusal toasts the reason
+  per account, names 1..32 ASCII letters with single inner spaces, hyphens,
+  or apostrophes (`LF_RegistrationRules`), age 18..80. Names are not unique. A refusal toasts the reason
   key (`#EL-CC_Error_*`) and re-opens the menu. A listen host's joiners now get
   their own menus instead of the host.
-- ✅ Real character prefab + real coordinates (verified 2026-08-30): the old
-  `{YourTempCharacterPrefab}` placeholder and hard-coded `"0 0 0"`/
-  `"1000 0 1000"` are gone; `CreateAndSpawnDefaultCharacter` uses
+- ✅ Real character prefab (verified 2026-08-30):
   `{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et`.
-
-### `EL_CharacterCreationMenu` — `Feature/CharacterCreation/EL_CharacterCreationMenu.c`
-- ✅ Validates first/last name non-empty and age in `[18, 80]` for its error
-  text, then sends `EL_AskCreateCharacter`; the server re-validates.
-- ⚠️ Validation failure silently early-returns with no error shown.
+- ✅ (2026-11-08, M1-08) No more "Default Citizen": a chosen faction with no
+  character opens the registration form over `LF_ShowRegistrationForm`
+  (owner RPC). A server refusal sends the form back with the reason written on
+  it. The form never picks a faction.
 
 ### `EL_FactionSelectionMenu` — `Feature/CharacterCreation/EL_FactionSelectionMenu.c`
 - ✅ Buttons wired (Civilian/Police) send `EL_AskSelectFaction`; the server
@@ -92,9 +91,11 @@
   the same account the spawn logic reads.
 
 ### `EL_ShowIDAction` — `Feature/CharacterCreation/EL_ShowIDAction.c`
-- ✅ Shows `"FirstName LastName, Age: N"` via notification.
-- ⚠️ `CanBePerformedScript` returns true unconditionally; facing check is
-  `dot > 0.707` both ways within 1.5 m.
+- ✅ (2026-11-08) Shows the ID card the user carries (their own first, else
+  the first printed one) to the player they face: the server reads the item
+  and opens `LF_IdCardView` on the viewer's machine. No card: not performable,
+  reason `#LF-ID_NoCard`. Facing check is `dot > 0.707` both ways within 1.5 m.
+- ⏳ Proof on a dedicated server with two clients is manual (PR #93 steps).
 
 ### `EL_Utils` / `EL_FormatUtils` / `EL_Component` / `EL_ComponentData` — `Core/`
 - ✅ `MaxInt`/`MinInt`, `AbbreviateNumber` (999→raw, 1000→`1.0K`,
@@ -115,6 +116,22 @@
 - ✅ `EL_ChatManagerComponent` registers only `EntityEvent.INIT`; it has no
   frame handler.
 - ✅ Vehicle garage and spawn-point registries remove themselves in `OnDelete`.
+
+### `LF_RegistrationForm` — `Feature/CharacterCreation/LF_RegistrationForm.c`
+- ✅ (2026-11-08) Civil registry form R-89 on `LF_UIScreen`: given name,
+  surname, age, Sign. Client checks only write the error line; the server
+  decides. MenuBack brings the form back unsigned ("sign before you go into
+  town"). Harness: `type RegFirstName Ada` ... `click SignButton`.
+
+### `LF_IdCardComponent` / `LF_IdCard` — `Feature/CharacterCreation/LF_IdCardComponent.c`
+- ✅ (2026-11-08) `IDCard.et` carries holder character id, first name, last
+  name, age (RplProps, server-issued once). Max stack 1, so cards never merge.
+- ✅ `EL_SpawnLogic.m_bGrantIdAtSpawn` (default on) grants a card printed
+  from the account's character record on every spawn. The record is
+  persisted, so the card survives a restart through the account. A character
+  already carrying their own card is refused a second; a blank carried card is
+  printed instead of adding one. Turn the flag off when the arrival clerk
+  (M1-18) hands the card over.
 
 ## Character & Survival
 
@@ -1125,6 +1142,50 @@
   `Roadmap_Fuel_Till`, client 2 (on-duty police) gets `#EL-Police_Alert_Robbery`
   (verified 2026-11-08). LOGIC test `harness/dev-gate-dedicated` pins the stand refusal on the
   playtest mission.
+
+### `EL_AgentHarness` — `Feature/AgentHarness/`
+- ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
+  `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
+  calls `ActionScroll`. `click` invokes the same button invoker or `OnClick` a
+  mouse click does. `use` still checks `CanBeShownScript` and
+  `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
+  (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
+  `EL_OpenDebugMenu`); movement actions are refused.
+- ✅ `stand` is the placement exception: the server moves the local character
+  beside a named entity. The poll does not start on a dedicated server
+  (`RplMode.Dedicated`). The server checks the `stand`, `pose`, and `use` RPCs
+  with `EL_DevGate`, the same gate as the debug menu. It refuses and logs
+  (`[ELDebug:AgentHarness] <request> refused: ...`) unless the game mode sets
+  `m_bDevToolsEnabled` or the sender is an administrator. On a production or
+  listen-hosted server a client cannot teleport or reach past action range
+  (2026-11-07). On a client it retries until a local controller exists,
+  including while faction and spawn menus are up.
+- ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
+  alone. A world shot teleports the character to the camera offset (default
+  `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
+  player view. That view faces -Z, so a picture stands on the +Z side of
+  its target. The pose is applied again 700 ms later so gravity does not drop
+  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
+  stands just north of that row when the street is further north. If the new PNG matches the
+  previous PNG, `report roadmap` records `camera_stuck` once and stops.
+  `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look
+  returns an action. Any other white mesh fails. Menu shots use `shot ui`; the
+  report judges `classify` and the widget list. Names after `roadmap` walk
+  only that row. `node agent-box/harness.mjs kit` photographs the UI kit
+  sample in the current play session when play is already up, and enters play
+  only when it is not. `node agent-box/harness.mjs report roadmap` writes
+  `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
+  tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
+  (verified 2026-10-11)
+- ✅ Town manifest (`agent-box/town.mjs`): every M1 site by entity name (or
+  prefab, for the unnamed spawn points), the actions look must offer, its sign
+  id, and its journey step. No positions: sites and signs resolve against the
+  layers, so a site can move layers without a manifest edit.
+  `node agent-box/harness.mjs town` and `validate-town-manifest.mjs` check it
+  offline; `report town [site-id...]` walks it in play mode and writes
+  `agent-box/reports/town.html`. Sign problems (none within 8 m, blank Read
+  card) are `sign: pending` warnings until `requireSigns` is true (M1-09).
+  Play-mode run not yet recorded.
 
 ### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
 - ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera
