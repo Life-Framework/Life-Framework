@@ -1,9 +1,6 @@
-// red-proof: the pure helpers are exercised through EL_BaseCrop's own math.
-// Make IsStageDue return nowMs > start + duration (strict) and this test fails
-// at the exact-boundary assertions; drop the CanGatherAtStage out-of-range guard
-// and the past-final-stage assertion fails. Red run pending: blocked by the
-// parallel-workstream rule (tools\cli test is serial-only this session), the
-// mutation above fails the next `tools\cli test --tier fast`.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: making EL_BaseCrop.IsStageDue strict
+// (nowMs > start + duration) failed it with `[ELTEST] FAIL crop/stage-progression`,
+// `- due exactly at the boundary` and `- seed due at 12s`. Restored; green.
 // tier: LOGIC
 class EL_Test_CropStages : EL_Test
 {

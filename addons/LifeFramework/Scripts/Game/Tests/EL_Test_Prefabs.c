@@ -1,6 +1,7 @@
-// red-proof: append a nonexistent path (e.g. "Prefabs/Items/Food/Missing.et")
-// to the prefab list and run `tools\cli test --tier all`. Red run pending:
-// first boot after the EPF dependency removal lands.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: appending
+// "{0000000000000002}Prefabs/Items/Food/Missing.et" to the prefab list failed it with
+// `[ELTEST] FAIL prefabs-load-and-spawn`,
+// `- prefab loads: {0000000000000002}Prefabs/Items/Food/Missing.et`. Restored; green.
 // tier: WORLD
 class EL_Test_Prefabs : EL_Test
 {
