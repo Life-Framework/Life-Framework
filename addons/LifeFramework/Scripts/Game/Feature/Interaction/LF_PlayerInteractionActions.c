@@ -118,7 +118,7 @@ class LF_PlayerRoleAction : ScriptedUserAction
 		if (!handler)
 			return false;
 
-		outName = handler.GetActionName();
+		outName = handler.GetActionNameFor(SCR_PlayerController.GetLocalControlledEntity(), GetOwner());
 		return !outName.IsEmpty();
 	}
 

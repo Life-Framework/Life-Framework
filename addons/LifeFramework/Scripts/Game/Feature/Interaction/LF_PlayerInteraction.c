@@ -40,6 +40,13 @@ class LF_PlayerRoleHandler : Managed
 		return string.Empty;
 	}
 
+	//! The entry name for this user facing this target. Defaults to GetActionName(); a handler
+	//! whose entry reads differently per target (Invite / Remove / Join) overrides this.
+	string GetActionNameFor(IEntity user, IEntity target)
+	{
+		return GetActionName();
+	}
+
 	//! Client and server: is the action offered to user on target?
 	bool CanOffer(IEntity user, IEntity target)
 	{

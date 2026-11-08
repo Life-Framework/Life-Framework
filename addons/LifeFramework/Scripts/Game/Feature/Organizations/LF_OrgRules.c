@@ -1,0 +1,169 @@
+//------------------------------------------------------------------------------------------------
+//! Pure rules for the organization registry (M1-17): the founding fee, what a name may be, the
+//! rights a rank carries as replicated bits, and which entry the `org_invite` slot of the player
+//! interaction menu offers. No entity, no world: the server and the offer side share these.
+//------------------------------------------------------------------------------------------------
+enum LF_EOrgRoleMode
+{
+	NONE,
+	//! A leader faces someone with no organization.
+	INVITE,
+	//! A leader faces a member of their own organization who is not the founder.
+	REMOVE,
+	//! Someone with no organization faces the leader whose offer they hold.
+	JOIN
+}
+
+//------------------------------------------------------------------------------------------------
+//! What one character's organization looks like from the offer side. The server fills it from
+//! EL_OrganizationManager; a client reads the copy replicated on the character.
+class LF_OrgView : Managed
+{
+	string m_sOrgId;
+	string m_sOrgName;
+	int m_iRights;
+	//! Name of the organization whose offer this character holds, or empty.
+	string m_sOfferOrgName;
+	//! Player id of whoever made that offer, or 0.
+	int m_iOfferFromPlayerId;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_OrgView Create(string orgId, string orgName, int rights, string offerOrgName, int offerFromPlayerId)
+	{
+		LF_OrgView view = new LF_OrgView();
+		view.m_sOrgId = orgId;
+		view.m_sOrgName = orgName;
+		view.m_iRights = rights;
+		view.m_sOfferOrgName = offerOrgName;
+		view.m_iOfferFromPlayerId = offerFromPlayerId;
+		return view;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasOrg()
+	{
+		return !m_sOrgId.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool Can(int right)
+	{
+		return (m_iRights & right) != 0;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class LF_OrgRules
+{
+	//! Cash the founder hands over at the registry desk. Carried MoneyStack, not the bank.
+	static const int FOUNDING_FEE = 250;
+	static const int NAME_MIN = 3;
+	static const int NAME_MAX = 32;
+	//! An offer stands this long; then the invitee has to be asked again.
+	static const int OFFER_MS = 120000;
+	protected static const string NAME_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 -'&.";
+
+	static const int RIGHT_INVITE = 1;
+	static const int RIGHT_KICK = 2;
+	static const int RIGHT_WITHDRAW = 4;
+	static const int RIGHT_BUY = 8;
+	static const int RIGHT_FOUNDER = 16;
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Empty when the typed name may be registered (uniqueness is the manager's check),
+	//! else the localization key of the reason.
+	static string RefuseName(string typed)
+	{
+		string name = typed.Trim();
+		if (name.IsEmpty())
+			return "#LF-Org_NameEmpty";
+
+		if (name.Length() < NAME_MIN)
+			return "#LF-Org_NameShort";
+
+		if (name.Length() > NAME_MAX)
+			return "#LF-Org_NameLong";
+
+		for (int i = 0; i < name.Length(); i++)
+		{
+			if (!NAME_CHARS.Contains(name.Get(i)))
+				return "#LF-Org_NameChars";
+		}
+
+		if (name.Contains("  "))
+			return "#LF-Org_NameChars";
+
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The comparison key for "is this name taken": trimmed, lower case.
+	static string NameKey(string name)
+	{
+		string key = name.Trim();
+		key.ToLower();
+		return key;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int RightsOf(EL_Organization org, string characterId)
+	{
+		if (!org || characterId.IsEmpty() || !org.IsMember(characterId))
+			return 0;
+
+		int rights = 0;
+		if (org.Allows(characterId, EL_EOrganizationPermission.INVITE))
+			rights = rights | RIGHT_INVITE;
+		if (org.Allows(characterId, EL_EOrganizationPermission.KICK))
+			rights = rights | RIGHT_KICK;
+		if (org.Allows(characterId, EL_EOrganizationPermission.WITHDRAW))
+			rights = rights | RIGHT_WITHDRAW;
+		if (org.Allows(characterId, EL_EOrganizationPermission.BUY_UPGRADE))
+			rights = rights | RIGHT_BUY;
+		if (org.GetRankId(characterId) == EL_OrganizationConfig.RANK_FOUNDER)
+			rights = rights | RIGHT_FOUNDER;
+
+		return rights;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Which `org_invite` entry user sees on target. Exactly one or none.
+	static LF_EOrgRoleMode ModeFor(LF_OrgView user, LF_OrgView target, int targetPlayerId)
+	{
+		if (!user || !target)
+			return LF_EOrgRoleMode.NONE;
+
+		if (!user.HasOrg())
+		{
+			if (!user.m_sOfferOrgName.IsEmpty() && targetPlayerId > 0 && user.m_iOfferFromPlayerId == targetPlayerId)
+				return LF_EOrgRoleMode.JOIN;
+
+			return LF_EOrgRoleMode.NONE;
+		}
+
+		if (!target.HasOrg())
+		{
+			if (user.Can(RIGHT_INVITE))
+				return LF_EOrgRoleMode.INVITE;
+
+			return LF_EOrgRoleMode.NONE;
+		}
+
+		if (target.m_sOrgId != user.m_sOrgId)
+			return LF_EOrgRoleMode.NONE;
+
+		if (user.Can(RIGHT_KICK) && !target.Can(RIGHT_FOUNDER))
+			return LF_EOrgRoleMode.REMOVE;
+
+		return LF_EOrgRoleMode.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string RankKey(int rights)
+	{
+		if ((rights & RIGHT_FOUNDER) != 0)
+			return "#LF-Org_RankFounder";
+
+		return "#LF-Org_RankMember";
+	}
+}

@@ -1149,7 +1149,7 @@
 
 ## Ownership
 
-### `EL_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11)
+### `EL_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11; ledger and invites 2026-11-08)
 - ✅ A character founds one organization. The id comes from `PersistenceIdUtils`,
   never an entity id. The founder invites and kicks. A member can leave. The
   founder cannot leave or be kicked. A second membership is refused.
@@ -1162,15 +1162,34 @@
   removal is returned to the character. A short payout puts the fund back. The
   personal ATM balance is not read or written. The desk is
   `Roadmap_Org_Desk` on `Street_Org.layer` at `288.9 0 255.7` (org registry porch), using
-  `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`. The menu is a
-  workspace widget on `{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout`.
-  It lists the name, the fund, and the processing-slot upgrade, and shows an
-  empty state before create. Create, deposit, withdraw, buy-processing, and
-  close stay on the character RPCs. Fund deposit and withdraw are refused
-  unless an entity carrying `EL_OrganizationDeskAction` stands within
-  `EL_OrganizationPlayer.DESK_RANGE` (5 m) of the character
-  (`#EL-Org_TooFar`; test `security/service-range`, 2026-11-07). Cash and
-  membership still go through the server.
+  `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`.
+- ✅ (2026-11-08, M1-17) The desk opens the registry ledger `LF_OrgLedger`, a
+  1989 ledger page on the UI kit (the old `OrganizationMenu.layout` is gone).
+  No organization: name field and "Sign and pay $250"; the fee
+  (`LF_OrgRules.FOUNDING_FEE`) leaves carried MoneyStack and comes back if the
+  registration is refused. Names: 3 to 32 letters, digits, spaces, `- ' & .`,
+  unique ignoring case and outer spaces (`EL_OrganizationManager.IsNameTaken`).
+  A member's page: name, rank, fund with deposit (and withdraw for the rank
+  that may), the processing upgrade, the alley yard lease
+  (`LF_OrgHideoutLease`, free, founder takes it), the member list (offline
+  members by their record name), and Leave (not for the founder). Found,
+  deposit, withdraw, buy, lease, and leave are refused unless an
+  `EL_OrganizationDeskAction` stands within `EL_OrganizationPlayer.DESK_RANGE`
+  (5 m) (`#EL-Org_TooFar`; test `security/service-range`). The page closes at
+  4 m from the desk, on death, and on MenuBack. Sounds: page turn on open,
+  pencil on Sign, map close on close. LOGIC `org/registry`, `org/invite-role`.
+- ✅ (2026-11-08, M1-17) Invite and remove are face to face, in the `org_invite`
+  slot of the player interaction menu (`LF_OrgInviteRole`, registered in
+  `EL_GameModeRoleplay.OnGameStart`). A leader facing someone with no
+  organization sees "Invite to <org>" (offer, `Gesture_Point`); the invitee
+  facing that leader sees "Join <org>" and joins with one press (raised hand,
+  hand-over sound); a leader facing a member sees "Remove from <org>"; nobody
+  can remove the founder. An offer is session state (`LF_OrgInvites`, not
+  saved) and lapses after 2 minutes. The offer side reads the organization
+  replicated on each character (`LF_OrgReplication`: id, name, rights bits,
+  held offer; RplProps written on spawn, on change, and every 10 s); the
+  server decides from the registry. Two-client proof:
+  `node agent-box/session.mjs org [--shot]`.
 - ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
   compound the fund. The game-mode serializer writes these records at version 2,
   after survival. A version 1 save has no organization payload and does not
@@ -1184,6 +1203,11 @@
   refusal is logged. The door is `EL_Door_Base` with the inherited
   `EL_LockComponent`. The organization id is written onto that lock. The door
   does not call `LF_Breach` and does not add a second `ActionsManagerComponent`.
+- ✅ (2026-11-08, M1-17) An organization takes the yard (`LF_Hideout.HIDEOUT_ID`,
+  gate `302.4 0 288` since M1-25) with "Take the lease" on the registry ledger; taking it locks the gate.
+  The gate prompt on a client compares the organization replicated on the
+  character with the owner on the lock and shows `#EL-Hideout_NotMember` to a
+  non-member; the server still decides from the registry.
 - ✅ `Roadmap_Hideout_Machine` at `216 0 120` uses the existing
   `EL_ProcessAction` on `ItemProcessor_Base`. It runs only when the player's
   organization owns the hideout and has the processing upgrade. Otherwise it
