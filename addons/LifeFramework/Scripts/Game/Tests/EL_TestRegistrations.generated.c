@@ -175,6 +175,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ShopPriceHidden(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopCatalog(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SignCatalog(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SignCoverage(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_SignFaceClient(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignFaceFit(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignLocalization(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SignMissingId(), EL_TestTier.LOGIC);
@@ -200,6 +202,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_UIPaperSheet(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_UnemploymentBenefit(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleBankRefusal(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_GarageLedger(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_VehicleImpound(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_VehicleLockIdMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistChatResources(), EL_TestTier.WORLD);

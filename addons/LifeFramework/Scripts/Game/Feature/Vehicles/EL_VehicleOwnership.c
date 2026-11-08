@@ -268,41 +268,180 @@ class EL_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawns owned vehicles that are not in the garage and have no live entity.
-	static void RestoreWorld()
+	//! Garage it to keep it. After a load, an owned vehicle that was not stored has no entity:
+	//! it is at the impound lot and is not spawned. A vehicle that still has a live entity (a
+	//! re-apply to a running session) stays where it is. Idempotent.
+	//! \return The number of vehicles at the impound lot afterwards.
+	static int ImpoundStreetVehicles()
 	{
+		int impounded = 0;
 		foreach (string vehicleId : Order())
 		{
-			RestoreVehicle(vehicleId);
+			EL_VehicleRecord record = Records().Get(vehicleId);
+			if (!record || record.m_bStored)
+				continue;
+
+			if (GetVehicle(vehicleId))
+			{
+				Rebind(record);
+				continue;
+			}
+
+			impounded++;
+			EL_Debug.Info("Vehicle", string.Format("impounded %1 owner=%2 plate=%3: left on the street at restart", vehicleId, record.m_sOwnerUid, record.m_sPlate));
 		}
+
+		return impounded;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Puts one owned, not-stored vehicle back in the world after a load. No key is spawned:
-	//! a ground key beside the pad on every restart let anyone take the car and piled keys up.
-	//! The owner gets a fresh key through the existing owner-only flow (garage store, then
-	//! retrieve), or buys an extra key at the lot.
-	//! \return True when the vehicle is live afterwards.
-	static bool RestoreVehicle(string vehicleId)
+	//! At the impound lot: owned, not stored, and not in the world. The state is derived, so it
+	//! needs no save field: every restart puts each unstored vehicle here, and a collect or a
+	//! retrieve puts it back in the world.
+	static bool IsImpounded(string vehicleId)
 	{
 		EL_VehicleRecord record = Records().Get(vehicleId);
 		if (!record || record.m_bStored)
 			return false;
 
-		if (GetVehicle(vehicleId))
+		return GetVehicle(vehicleId) == null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string LatestImpounded(string ownerUid)
+	{
+		for (int i = Order().Count() - 1; i >= 0; i--)
 		{
-			Rebind(record);
-			return true;
+			string vehicleId = Order().Get(i);
+			EL_VehicleRecord record = Records().Get(vehicleId);
+			if (!record || record.m_sOwnerUid != ownerUid)
+				continue;
+
+			if (IsImpounded(vehicleId))
+				return vehicleId;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The owner's vehicles out in the world: not stored, with a live entity.
+	static array<ref EL_VehicleRecord> InWorldFor(string ownerUid)
+	{
+		array<ref EL_VehicleRecord> found = new array<ref EL_VehicleRecord>();
+		foreach (string vehicleId : Order())
+		{
+			EL_VehicleRecord record = Records().Get(vehicleId);
+			if (!record || record.m_bStored || record.m_sOwnerUid != ownerUid)
+				continue;
+
+			if (GetVehicle(vehicleId))
+				found.Insert(EL_VehicleRecord.Copy(record));
+		}
+
+		return found;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static array<ref EL_VehicleRecord> ImpoundedFor(string ownerUid)
+	{
+		array<ref EL_VehicleRecord> found = new array<ref EL_VehicleRecord>();
+		foreach (string vehicleId : Order())
+		{
+			EL_VehicleRecord record = Records().Get(vehicleId);
+			if (!record || record.m_sOwnerUid != ownerUid)
+				continue;
+
+			if (IsImpounded(vehicleId))
+				found.Insert(EL_VehicleRecord.Copy(record));
+		}
+
+		return found;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The owner's live, unstored vehicle within radius of a point (the garage the owner stands at).
+	//! \return The vehicle id, or empty when none of the owner's vehicles is there.
+	static string OwnedVehicleNear(string ownerUid, vector point, float radius)
+	{
+		for (int i = Order().Count() - 1; i >= 0; i--)
+		{
+			string vehicleId = Order().Get(i);
+			EL_VehicleRecord record = Records().Get(vehicleId);
+			if (!record || record.m_bStored || record.m_sOwnerUid != ownerUid)
+				continue;
+
+			IEntity vehicle = GetVehicle(vehicleId);
+			if (vehicle && vector.Distance(vehicle.GetOrigin(), point) <= radius)
+				return vehicleId;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pays the impound fee from carried cash and puts the vehicle on the impound pad. The key is
+	//! handed to the payer when the owner no longer holds a live one.
+	//! \param[out] reasonKey What the owner reads, success or refusal.
+	static bool CollectFromImpound(string vehicleId, string ownerUid, IEntity payer, int fee, string padId, out string reasonKey)
+	{
+		reasonKey = "#LF-Impound_NothingHere";
+		if (!Replication.IsServer())
+		{
+			EL_Debug.Error("Vehicle", "impound collect refused: not running on the server");
+			return false;
+		}
+
+		EL_VehicleRecord record = Records().Get(vehicleId);
+		if (!Owned(record, ownerUid))
+		{
+			EL_Debug.Info("Vehicle", string.Format("impound collect refused: %1 does not own %2", ownerUid, vehicleId));
+			return false;
+		}
+
+		if (!IsImpounded(vehicleId))
+		{
+			EL_Debug.Info("Vehicle", string.Format("impound collect refused: %1 is not at the impound lot", vehicleId));
+			return false;
+		}
+
+		if (fee < 0)
+		{
+			EL_Debug.Error("Vehicle", string.Format("impound collect refused: fee %1 is not configured", fee));
+			reasonKey = "#LF-Impound_Closed";
+			return false;
+		}
+
+		if (fee > 0 && CashOn(payer) < fee)
+		{
+			EL_Debug.Info("Vehicle", string.Format("impound collect refused: %1 carries %2 of the %3 fee", ownerUid, CashOn(payer), fee));
+			reasonKey = "#LF-Impound_CannotAfford";
+			return false;
 		}
 
 		vector origin;
-		if (!EL_VehicleSpawnPointComponent.FindFreeOrigin(record.m_sShopId, origin))
+		vector angles;
+		if (!EL_VehicleSpawnPointComponent.FindFreePad(padId, origin, angles))
+		{
+			reasonKey = "#LF-Impound_PadBusy";
 			return false;
+		}
 
-		if (!SpawnOwned(record, origin, false))
+		if (fee > 0 && !TakePayment(payer, null, fee, 0))
+		{
+			reasonKey = "#LF-Impound_CannotAfford";
 			return false;
+		}
 
-		EL_Debug.Log("Vehicle", string.Format("restored %1 owner=%2 without a ground key", vehicleId, record.m_sOwnerUid));
+		if (!SpawnOwned(record, origin, angles, payer))
+		{
+			Refund(payer, null, fee, 0);
+			reasonKey = "#LF-Impound_PadBusy";
+			return false;
+		}
+
+		reasonKey = "#LF-Impound_Collected";
+		EL_Debug.Info("Vehicle", string.Format("impound collected %1 owner=%2 fee=%3 plate=%4", vehicleId, ownerUid, fee, record.m_sPlate));
 		return true;
 	}
 
@@ -689,7 +828,10 @@ class EL_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool Retrieve(string vehicleId, string ownerUid)
+	//! Puts a stored vehicle on the pads of the garage the owner retrieves at.
+	//! \param padId The garage's pad id (EL_VehicleGarageComponent.GetPadId).
+	//! \param keyHolder Receives a fresh key when the owner holds no live one; null drops it on the pad.
+	static bool Retrieve(string vehicleId, string ownerUid, string padId, IEntity keyHolder = null)
 	{
 		EL_VehicleRecord record = Records().Get(vehicleId);
 		if (!Owned(record, ownerUid))
@@ -705,14 +847,15 @@ class EL_VehicleOwnership
 		}
 
 		vector origin;
-		if (!EL_VehicleSpawnPointComponent.FindFreeOrigin(record.m_sShopId, origin))
+		vector angles;
+		if (!EL_VehicleSpawnPointComponent.FindFreePad(padId, origin, angles))
 			return false;
 
-		if (!SpawnOwned(record, origin, true))
+		if (!SpawnOwned(record, origin, angles, keyHolder))
 			return false;
 
 		record.m_bStored = false;
-		EL_Debug.Log("Vehicle", string.Format("retrieved %1 owner=%2 prefab=%3", vehicleId, ownerUid, record.m_sPrefab));
+		EL_Debug.Info("Vehicle", string.Format("retrieved %1 owner=%2 prefab=%3 pad=%4", vehicleId, ownerUid, record.m_sPrefab, padId));
 		return true;
 	}
 
@@ -853,15 +996,16 @@ class EL_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \param issueKey True only on the owner's garage retrieve, where the owner stands at the pad.
-	//!        A restart restore passes false and never drops a key.
-	protected static bool SpawnOwned(EL_VehicleRecord record, vector origin, bool issueKey)
+	//! Spawns the owner's vehicle at a garage or impound pad, in the owner's presence. When the
+	//! owner holds no live key (a restart unbinds carried keys), a fresh one bound to the same id
+	//! goes into keyHolder's inventory, or onto the pad when there is no holder.
+	protected static bool SpawnOwned(EL_VehicleRecord record, vector origin, vector angles, IEntity keyHolder)
 	{
 		string spawnName = record.m_sSpawnPrefab;
 		if (spawnName.IsEmpty())
 			spawnName = record.m_sPrefab;
 
-		IEntity vehicle = EL_Utils.SpawnEntityPrefab(spawnName, origin);
+		IEntity vehicle = EL_Utils.SpawnEntityPrefab(spawnName, origin, angles);
 		if (!vehicle)
 			return false;
 
@@ -884,7 +1028,7 @@ class EL_VehicleOwnership
 		}
 
 		IEntity key = FindLive(session.m_Key);
-		if (!key && issueKey)
+		if (!key)
 		{
 			key = SpawnKey(record.m_sKeyId, origin);
 			if (!key)
@@ -894,6 +1038,7 @@ class EL_VehicleOwnership
 			}
 
 			session.m_Key = key.GetID();
+			GiveKey(keyHolder, key);
 		}
 		else if (key)
 		{

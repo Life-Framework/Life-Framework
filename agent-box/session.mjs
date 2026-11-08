@@ -41,13 +41,19 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 export const SERVER_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
 export const MAX_CLIENTS = 3;
-export const WINDOW = { width: 640, height: 360, gap: 8 };
+// LF_SESSION_WINDOW=1280x720 sets the window when no --res is given.
+export function parseWindow(text) {
+  const m = /^(\d{3,4})x(\d{3,4})$/.exec(String(text || ""));
+  if (!m) return { width: 640, height: 360, gap: 8 };
+  return { width: Number(m[1]), height: Number(m[2]), gap: 8 };
+}
+export const WINDOW = parseWindow(process.env.LF_SESSION_WINDOW);
 // Client render size. Screenshots are taken at this size (System.MakeScreenshot
 // writes the window's backbuffer), so evidence needs a playable one: 1280x720
 // by default, --res 1920x1080 for final evidence. Clients render on the hidden
 // LF-Agents desktop, so a large window never covers the user's screen or takes
 // focus; --visible puts them on the user's desktop so tools/film can record.
-export const DEFAULT_RES = "1280x720";
+export const DEFAULT_RES = process.env.LF_SESSION_WINDOW || "1280x720";
 
 export function parseRes(args) {
   const i = args.indexOf("--res");
