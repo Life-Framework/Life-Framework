@@ -1,9 +1,6 @@
-GenericEntity : "{4CC2C69DE1AEF103}Prefabs/Props/Core/DestructibleMultiPhase_Props_Base.et" {
+GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
  ID "70A6E1E2569B2626"
  components {
-  MeshObject "{5872F0EB7FA40561}" {
-   Object "{08759CDA25495BEF}Assets/Props/Signs/CardboardSign_01/CardboardSign_01.xob"
-  }
   RplComponent "{5624A88DC2D9928D}" {
    Enabled 1
   }
@@ -15,9 +12,10 @@ GenericEntity : "{4CC2C69DE1AEF103}Prefabs/Props/Core/DestructibleMultiPhase_Pro
     UserActionContext "{80B74EB7A10CA83A}" {
      ContextName "LF_Sign"
      Position PointInfo "{A105B8257C43EBD9}" {
-      Offset 0 0.28 0.002
+      Offset 0 1.062 0.115
      }
-     Radius 0.275
+     Radius 1.112
+     Height 2.124
     }
    }
    additionalActions {

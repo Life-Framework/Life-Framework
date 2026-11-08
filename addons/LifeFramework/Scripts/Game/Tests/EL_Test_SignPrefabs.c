@@ -16,7 +16,7 @@ class EL_Test_SignPrefabs : EL_Test
 			"{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et",
 			"{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et",
 			"{70924D289627911B}Prefabs/Props/Signs/LF_Sign_Notice.et",
-			"{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Cardboard.et",
+			"{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et",
 			"{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et",
 			"{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et"
 		};

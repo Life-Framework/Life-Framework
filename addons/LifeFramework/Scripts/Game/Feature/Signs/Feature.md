@@ -5,7 +5,7 @@
 
 ## Intent
 
-A sign is a 1989 board, pub sign, notice, or cardboard sign that belongs in the
+A sign is a 1989 board, pub sign, notice, or chalkboard that belongs in the
 scene. The title is printed on the prop (a paper sheet pinned to the cork
 board, or the A4 notice itself), and looking at it shows `Read: <title>` in
 the interaction prompt. Read opens a short paper card: What, How, Needs, Rules.
@@ -20,9 +20,8 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules.
 - `LF_SignReadAction` is local-effect only (`HasLocalEffectOnlyScript`). It
   names itself `Read: <title>` and opens `LF_SignCard` on the reading client.
   No RPC: the content is static config.
-- `LF_SignCard` builds the card on `LF_UIScreen` (UI kit). Close, death,
-  losing the character, or walking 4 m from the sign closes it. MenuBack
-  closes it once the kit handles MenuBack (#97).
+- `LF_SignCard` builds the card on `LF_UIScreen` (UI kit). Close, MenuBack,
+  death, losing the character, or walking 4 m from the sign closes it.
 - **Printed title.** On a rendering client `LF_SignComponent` creates
   `UI/Layouts/Signs/LF_SignFace.layout` (paper, ink title in capitals) and
   points its `RTTextureWidget` at a mesh whose material is
@@ -31,7 +30,7 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules.
   child (the vanilla A4 poster mesh) on its -Z face, where vanilla filled
   boards pin their posters. The notice retargets its own poster material
   (`m_bFaceOnOwner`). A dedicated server, or a client with no workspace,
-  skips it. Pub and cardboard signs keep `m_bShowFace 0` until a rendering
+  skips it. Pub signs and chalkboards keep `m_bShowFace 0` until a rendering
   pass places their sheet; the mining and whitelist plates keep their painted
   vanilla text.
 - An unknown or empty id, or a sign with no title, logs
@@ -40,8 +39,8 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules.
 ## Prefabs
 
 `Prefabs/Props/Signs/`: `LF_Sign_Board` (cork notice board), `LF_Sign_Pub`
-(hanging shop sign), `LF_Sign_Notice` (A4 notice), `LF_Sign_Cardboard`
-(hand-made sign). Each inherits the vanilla prop and adds the component, an
+(hanging shop sign), `LF_Sign_Notice` (A4 notice), `LF_Sign_Chalkboard`
+(standing chalkboard; the vanilla `CardboardSign_01` is Rally-addon content). Each inherits the vanilla prop and adds the component, an
 `LF_Sign` action context on the face, and the Read action. A placed instance
 sets `m_sSignId`. `EL_MiningSign` (`mining`) and `EL_WhitelistSign`
 (`police_whitelist`) carry the same pair.

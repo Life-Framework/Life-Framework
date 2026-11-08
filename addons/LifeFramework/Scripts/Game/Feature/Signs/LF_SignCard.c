@@ -1,5 +1,5 @@
 // LF_SignCard.c — the paper card a Read opens. One card at a time, client-only.
-// Built on LF_UIScreen: Close, death, losing the character, or walking
+// Built on LF_UIScreen: Close, MenuBack, death, losing the character, or walking
 // CLOSE_DISTANCE meters from the sign closes it.
 
 class LF_SignCard
