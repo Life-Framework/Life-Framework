@@ -2721,21 +2721,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permite comprar ropa exclusiva en el mercado negro. Requiere un contacto del mercado negro."
      Comment "Underground skill description"
     }
-    CustomStringTableItem "{49664B32DB02C17F}" {
-     Id "LF-Duty_PoliceOnly"
-     Target_en_us "Only police officers can sign on or off duty"
-     Comment "Duty toggle refused: the player is not police"
-    }
-    CustomStringTableItem "{9EE73382982FF4DC}" {
-     Id "LF-Duty_SignOff"
-     Target_en_us "Sign off duty"
-     Comment "Action name: police officer ends a shift"
-    }
-    CustomStringTableItem "{4F1C93201CB7722F}" {
-     Id "LF-Duty_SignOn"
-     Target_en_us "Sign on duty"
-     Comment "Action name: police officer starts a shift"
-    }
     CustomStringTableItem "{745AC868616D92EC}" {
      Id "LF-Duty_OnDuty"
      Target_en_us "on duty"
@@ -2755,16 +2740,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Rob_NeedPoliceCount"
      Target_en_us "At least %1 police officers must be on duty"
      Comment "Vehicle/weapon robbery refused because too few police are on duty. %1 = required count"
-    }
-    CustomStringTableItem "{68887EE9A855BCE8}" {
-     Id "LF-Confiscate_PoliceOnly"
-     Target_en_us "Only on-duty police can confiscate"
-     Comment "Confiscate refused: the player is not police on duty"
-    }
-    CustomStringTableItem "{0954263B9244B6BC}" {
-     Id "LF-Confiscate_NoWanted"
-     Target_en_us "No wanted person nearby"
-     Comment "Confiscate refused: no wanted player in range"
     }
     CustomStringTableItem "{DDFD7A1F8207F359}" {
      Id "LF-Gather_Action"
@@ -2866,6 +2841,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Station desk"
      Target_es_es "Mostrador de la comisaría"
      Comment "Title of the police station desk menu (wanted list, fines, arrests)"
+    }
+    CustomStringTableItem "{6717E4FCF46F11F2}" {
+     Id "EL-Breach_NeedCharge"
+     Target_en_us "You need a demolition charge"
+     Comment "Breach arm refused because the player carries no M112 demolition charge"
+    }
+    CustomStringTableItem "{BDFF965656B478E0}" {
+     Id "EL-Duty_GoOn"
+     Target_en_us "Go on duty"
+     Comment "Police duty toggle action name while the officer is off duty"
+    }
+    CustomStringTableItem "{D302B585166A8EAE}" {
+     Id "EL-Duty_GoOff"
+     Target_en_us "Go off duty"
+     Comment "Police duty toggle action name while the officer is on duty"
+    }
+    CustomStringTableItem "{C63996AB2CF2559D}" {
+     Id "EL-Duty_PoliceOnly"
+     Target_en_us "Only police can change duty"
+     Comment "Duty toggle refused because the player is not in the police faction"
+    }
+    CustomStringTableItem "{92FBA59A53BA6764}" {
+     Id "EL-Confiscate_OnDutyOnly"
+     Target_en_us "Only on-duty police can confiscate"
+     Comment "Confiscate action refused because the player is not an on-duty officer"
+    }
+    CustomStringTableItem "{4D0E7310AF59E5DA}" {
+     Id "EL-Confiscate_NoTarget"
+     Target_en_us "No wanted player nearby"
+     Comment "Confiscate action refused because no wanted player is within range"
+    }
+    CustomStringTableItem "{65A21AB01575E40D}" {
+     Id "EL-CC_Error_FactionDenied"
+     Target_en_us "You are not cleared for that faction."
+     Comment "Faction pick refused by the server whitelist. The faction menu opens again."
+    }
+    CustomStringTableItem "{9EFAFBA759167819}" {
+     Id "EL-CC_Error_FactionLocked"
+     Target_en_us "Your faction is already set."
+     Comment "Faction or character request refused because the account already chose a faction, or has not chosen one yet for a character"
+    }
+    CustomStringTableItem "{C84EED35CC0A568B}" {
+     Id "EL-CC_Error_NoAccount"
+     Target_en_us "Your account is still loading. Try again."
+     Comment "Creation request refused because the server has no account for the player yet"
+    }
+    CustomStringTableItem "{654A62843AE6EBC8}" {
+     Id "EL-CC_Error_Location"
+     Target_en_us "That spawn location is not available."
+     Comment "Spawn location refused because it does not belong to the chosen faction. The location menu opens again."
+    }
+    CustomStringTableItem "{584BFA3C9B4E7978}" {
+     Id "EL-CC_Error_NameLength"
+     Target_en_us "Names can be at most 32 characters."
+     Comment "Character creation refused because a name is longer than 32 characters"
+    }
+    CustomStringTableItem "{1D9FBDE69C69275F}" {
+     Id "EL-CC_Error_Exists"
+     Target_en_us "This account already has a character."
+     Comment "Character creation refused because the account already has a character"
     }
   }
  }

@@ -265,7 +265,7 @@ class LF_Bank
 	//! Arms the vault for playerUid when the robbery gates pass, then spawns the
 	//! configured bags once the lock is open. Returns false when a gate refuses,
 	//! the breach does not arm, or the vault is not configured.
-	static bool Rob(string vaultId, string playerUid)
+	static bool Rob(string vaultId, string playerUid, IEntity robber = null)
 	{
 		if (vaultId.IsEmpty() || playerUid.IsEmpty())
 		{
@@ -283,7 +283,7 @@ class LF_Bank
 		if (!GatesPass(vault, playerUid))
 			return false;
 
-		if (!LF_Breach.Arm(vaultId, playerUid))
+		if (!LF_Breach.Arm(vaultId, playerUid, robber))
 		{
 			EL_Debug.Log("Bank", string.Format("rob refused: breach did not arm %1", vaultId));
 			return false;

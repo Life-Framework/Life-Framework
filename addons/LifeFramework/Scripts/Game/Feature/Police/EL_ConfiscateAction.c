@@ -1,3 +1,7 @@
+//------------------------------------------------------------------------------------------------
+//! Confiscates the weapons of the nearest wanted player. Offer checks read EL_AccountReplication
+//! (account cache on the server, replicated character state on a client); the confiscation
+//! itself runs on the server and re-checks the officer against the real account.
 class EL_ConfiscateAction : ScriptedUserAction
 {
 	[Attribute(defvalue: "5.0", uiwidget: UIWidgets.Auto, desc: "Maximum distance to confiscate")]
@@ -6,10 +10,9 @@ class EL_ConfiscateAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		EL_PlayerAccount account = GetPlayerAccount(user);
-		if (!account || account.GetFaction() != EL_Faction.POLICE || !account.IsOnDuty())
+		if (!EL_AccountStateBits.IsOnDutyPolice(EL_AccountReplication.GetState(user)))
 		{
-			SetCannotPerformReason("#LF-Confiscate_PoliceOnly");
+			SetCannotPerformReason("#EL-Confiscate_OnDutyOnly");
 			return false;
 		}
 
@@ -17,7 +20,7 @@ class EL_ConfiscateAction : ScriptedUserAction
 		IEntity target = GetNearestWantedPlayer(user);
 		if (!target)
 		{
-			SetCannotPerformReason("#LF-Confiscate_NoWanted");
+			SetCannotPerformReason("#EL-Confiscate_NoTarget");
 			return false;
 		}
 
@@ -27,6 +30,15 @@ class EL_ConfiscateAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (!Replication.IsServer())
+			return;
+
+		if (!EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(pUserEntity)))
+		{
+			EL_Debug.Warn("Police", string.Format("confiscate refused: %1 is not an on-duty officer", pUserEntity));
+			return;
+		}
+
 		IEntity target = GetNearestWantedPlayer(pUserEntity);
 		if (!target)
 		{
@@ -52,61 +64,47 @@ class EL_ConfiscateAction : ScriptedUserAction
 				SCR_EntityHelper.DeleteEntityAndChildren(item);
 			}
 		}
-		EL_Utils.Notify("#EL-Police_Action", "#EL-Police_Title", 3.0);
+
+		EL_Debug.Log("Police", string.Format("confiscated weapons from %1", target));
+		EL_Utils.NotifyEntity(pUserEntity, "#EL-Police_Action", "#EL-Police_Title", 3.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Nearest player character within range whose (replicated) wanted level is above 0.
+	//! Characters are queried by sphere, so a client sees the same set it has streamed in.
 	protected IEntity GetNearestWantedPlayer(IEntity user)
 	{
+		if (!user || !GetGame() || !GetGame().GetWorld())
+			return null;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
+			return null;
+
 		vector userPos = user.GetOrigin();
 		float minDist = m_fMaxDistance;
 		IEntity nearest = null;
 
-		EL_PlayerControllerManagerCompat playerManager = EL_PlayerControllerManagerCompat.GetInstance();
-		if (playerManager)
+		array<IEntity> characters = EL_Utils.GetNearbyCharacters(userPos, m_fMaxDistance);
+		foreach (IEntity entity : characters)
 		{
-			array<int> playerIds = {};
-			playerManager.GetAllPlayerIds(playerIds);
-			
-			EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-			if (accountManager)
+			if (!entity || entity == user)
+				continue;
+
+			if (playerManager.GetPlayerIdFromControlledEntity(entity) <= 0)
+				continue;
+
+			if (EL_AccountStateBits.GetWantedLevel(EL_AccountReplication.GetState(entity)) <= 0)
+				continue;
+
+			float dist = vector.Distance(userPos, entity.GetOrigin());
+			if (dist < minDist)
 			{
-				foreach (int playerId : playerIds)
-				{
-					PlayerController pc = playerManager.GetPlayerController(playerId);
-					if (pc)
-					{
-						IEntity entity = pc.GetControlledEntity();
-						if (entity && entity != user)
-						{
-							string playerUid = EL_Utils.GetPlayerUID(entity);
-							EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-							if (account && account.GetWantedLevel() > 0)
-							{
-								float dist = vector.Distance(userPos, entity.GetOrigin());
-								if (dist < minDist)
-								{
-									minDist = dist;
-									nearest = entity;
-								}
-							}
-						}
-					}
-				}
+				minDist = dist;
+				nearest = entity;
 			}
 		}
-		return nearest;
-	}
 
-	//------------------------------------------------------------------------------------------------
-	protected EL_PlayerAccount GetPlayerAccount(IEntity user)
-	{
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-		if (accountManager)
-		{
-			string playerUid = EL_Utils.GetPlayerUid(user);
-			return accountManager.GetAccount(playerUid);
-		}
-		return null;
+		return nearest;
 	}
 };

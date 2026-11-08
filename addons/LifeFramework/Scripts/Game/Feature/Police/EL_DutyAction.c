@@ -1,12 +1,15 @@
+//------------------------------------------------------------------------------------------------
+//! Police duty toggle. Offer checks and the action name read EL_AccountReplication, which is the
+//! account cache on the server and the character's replicated copy on a client. The toggle
+//! itself runs on the server against the real account.
 class EL_DutyAction : ScriptedUserAction
 {
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		EL_PlayerAccount account = GetPlayerAccount(user);
-		if (!account || account.GetFaction() != EL_Faction.POLICE)
+		if (!EL_AccountStateBits.IsPolice(EL_AccountReplication.GetState(user)))
 		{
-			SetCannotPerformReason("#LF-Duty_PoliceOnly");
+			SetCannotPerformReason("#EL-Duty_PoliceOnly");
 			return false;
 		}
 		return true;
@@ -15,10 +18,19 @@ class EL_DutyAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		if (!Replication.IsServer())
+			return;
+
 		EL_PlayerAccount account = GetPlayerAccount(pUserEntity);
 		if (!account)
 		{
 			EL_Debug.Warn("Police", string.Format("duty toggle failed: no account for %1", pUserEntity));
+			return;
+		}
+
+		if (account.GetFaction() != EL_Faction.POLICE)
+		{
+			EL_Debug.Warn("Police", string.Format("duty toggle refused: %1 is not police", pUserEntity));
 			return;
 		}
 
@@ -41,8 +53,8 @@ class EL_DutyAction : ScriptedUserAction
 
 		EL_Debug.Log("Police", string.Format("duty toggled -> %1 (player %2)", status, pUserEntity));
 
-		EL_Utils.Notify(WidgetManager.Translate("#EL-Duty_Status_Change", WidgetManager.Translate(statusKey)), "#EL-Duty_Status", 3.0);
-		
+		EL_Utils.NotifyEntity(pUserEntity, "#EL-Duty_Status_Change", "#EL-Duty_Status", 3.0, statusKey);
+
 		// Save account
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		if (accountManager)
@@ -61,16 +73,15 @@ class EL_DutyAction : ScriptedUserAction
 		if (!entity)
 			return false;
 
-		EL_PlayerAccount account = GetPlayerAccount(entity);
-		if (account)
-		{
-			if (account.IsOnDuty())
-				outName = "#LF-Duty_SignOff";
-			else
-				outName = "#LF-Duty_SignOn";
-			return true;
-		}
-		return false;
+		int state = EL_AccountReplication.GetState(entity);
+		if (!EL_AccountStateBits.HasAccount(state))
+			return false;
+
+		if (EL_AccountStateBits.IsOnDuty(state))
+			outName = "#EL-Duty_GoOff";
+		else
+			outName = "#EL-Duty_GoOn";
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

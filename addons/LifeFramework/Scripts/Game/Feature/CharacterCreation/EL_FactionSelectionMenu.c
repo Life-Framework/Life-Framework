@@ -93,13 +93,8 @@ class EL_FactionSelectionMenu
 	//------------------------------------------------------------------------------------------------
 	protected void OnPoliceClicked()
 	{
-		string playerUid = "";
-		if (m_PlayerController)
-			playerUid = EL_Utils.GetPlayerUID(m_PlayerController.GetPlayerId());
-
-		if (!EL_WhitelistManager.MayJoinFaction(playerUid, EL_EFactionType.POLICE))
-			return;
-
+		// The whitelist lives on the server; it decides in ServerSelectFaction and re-opens this
+		// menu with a notification when the player is not cleared.
 		Select(EL_Faction.POLICE);
 	}
 
@@ -109,15 +104,15 @@ class EL_FactionSelectionMenu
 		EL_Debug.Info("FactionMenu", typename.EnumToString(EL_Faction, faction) + " selected");
 		Close();
 
-		if (!m_PlayerController)
+		// The server validates the pick and answers by opening the spawn location menu.
+		SCR_PlayerController controller = SCR_PlayerController.Cast(m_PlayerController);
+		if (!controller)
+		{
+			EL_Debug.Error("FactionMenu", "faction pick not sent: no SCR_PlayerController");
 			return;
+		}
 
-		// Second stage: the player picks a spawn location before the account is touched.
-		EL_CharacterCreationManager manager = EL_CharacterCreationManager.GetInstance();
-		if (!manager)
-			return;
-
-		manager.OnFactionSelected(m_PlayerController, faction);
+		controller.EL_AskSelectFaction(faction);
 	}
 
 	//------------------------------------------------------------------------------------------------

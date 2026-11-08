@@ -189,7 +189,7 @@ class EL_ShopComponent : ScriptComponent
 			if (removed > 0)
 				EL_MoneyUtils.AddAmount(buyer, removed);
 			EL_Debug.Log("Shop", string.Format("buy failed (insufficient funds) item=%1 qty=%2 price=%3 removed=%4", prefab, quantity, totalPrice, removed));
-			EL_Utils.Notify("#EL-Not_Enough_Money", "#EL-Shop_PurchaseFailed", 3.0);
+			EL_Utils.NotifyEntity(buyer, "#EL-Not_Enough_Money", "#EL-Shop_PurchaseFailed", 3.0);
 			return false;
 		}
 
@@ -197,7 +197,8 @@ class EL_ShopComponent : ScriptComponent
 		if (added == units)
 		{
 			EL_Debug.Log("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
-			EL_Utils.Notify(WidgetManager.Translate("#EL-Item_Bought", WidgetManager.Translate(GetItemDisplayName(prefab)), units), "#EL-Shop_PurchaseSuccessful", 3.0);
+			// Two arguments: formatted on the server, shown as-is on the client.
+			EL_Utils.NotifyEntity(buyer, WidgetManager.Translate("#EL-Item_Bought", WidgetManager.Translate(GetItemDisplayName(prefab)), units), "#EL-Shop_PurchaseSuccessful", 3.0);
 			return true;
 		}
 
@@ -205,7 +206,7 @@ class EL_ShopComponent : ScriptComponent
 		if (notDelivered > 0)
 			EL_MoneyUtils.AddAmount(buyer, EL_ShopRules.StackTradeTotal(unitPrice, notDelivered));
 		EL_Debug.Log("Shop", string.Format("buy failed (inventory full) item=%1 qty=%2 delivered=%3 - refunded %4", prefab, quantity, added, notDelivered));
-		EL_Utils.Notify("#EL-Inventory_Full", "#EL-Shop_PurchaseFailed", 3.0);
+		EL_Utils.NotifyEntity(buyer, "#EL-Inventory_Full", "#EL-Shop_PurchaseFailed", 3.0);
 		return false;
 	}
 
@@ -240,7 +241,7 @@ class EL_ShopComponent : ScriptComponent
 			if (paid > 0)
 				EL_MoneyUtils.RemoveCash(seller, paid);
 			EL_Debug.Log("Shop", string.Format("sell failed (cannot pay out) item=%1 qty=%2 price=%3 paid=%4", prefab, quantity, totalPrice, paid));
-			EL_Utils.Notify("#EL-Inventory_Full", "#LF-Shop_SaleFailed_Title", 3.0);
+			EL_Utils.NotifyEntity(seller, "#EL-Inventory_Full", "#LF-Shop_SaleFailed_Title", 3.0);
 			return false;
 		}
 
@@ -249,7 +250,7 @@ class EL_ShopComponent : ScriptComponent
 		{
 			EL_MoneyUtils.RemoveCash(seller, paid);
 			EL_Debug.Log("Shop", string.Format("sell failed (nothing to sell) item=%1 qty=%2", prefab, units));
-			EL_Utils.Notify("#EL-Shop_SellFailed", "#LF-Shop_SaleFailed_Title", 3.0);
+			EL_Utils.NotifyEntity(seller, "#EL-Shop_SellFailed", "#LF-Shop_SaleFailed_Title", 3.0);
 			return false;
 		}
 
@@ -259,7 +260,7 @@ class EL_ShopComponent : ScriptComponent
 
 		int earned = EL_ShopRules.StackTradeTotal(unitPrice, removed);
 		EL_Debug.Log("Shop", string.Format("sold item=%1 qty=%2 price=%3", prefab, removed, earned));
-		EL_Utils.Notify(WidgetManager.Translate("#EL-Item_Sold", earned), "#EL-Trade_Successful", 3.0);
+		EL_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, earned.ToString());
 		return true;
 	}
 

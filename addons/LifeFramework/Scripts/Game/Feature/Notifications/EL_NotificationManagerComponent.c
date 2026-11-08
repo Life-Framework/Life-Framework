@@ -116,11 +116,11 @@ class EL_NotificationManagerComponent : ScriptComponent
 		if (GetGame().GetGameMode() == owner)
 		{
 			s_Instance = this;
-			Print("[EL_NotificationManagerComponent] ✓ Notification manager initialized successfully", LogLevel.NORMAL);
+			EL_Debug.Log("Notify", "notification manager initialized");
 		}
 		else
 		{
-			Print(string.Format("[EL_NotificationManagerComponent] WARNING: Component attached to %1 instead of GameMode", owner), LogLevel.WARNING);
+			EL_Debug.Warn("Notify", string.Format("notification manager attached to %1 instead of the game mode", owner));
 		}
 	}
 	
@@ -130,7 +130,7 @@ class EL_NotificationManagerComponent : ScriptComponent
 		if (s_Instance == this)
 		{
 			s_Instance = null;
-			Print("[EL_NotificationManagerComponent] Notification manager shut down", LogLevel.NORMAL);
+			EL_Debug.Log("Notify", "notification manager shut down");
 		}
 			
 		super.OnDelete(owner);
@@ -148,24 +148,52 @@ class EL_NotificationManagerComponent : ScriptComponent
 	{
 		if (!Replication.IsServer())
 		{
-			Print("[EL_NotificationManagerComponent] ERROR: SendToPlayer called on client! Only server can send notifications.", LogLevel.ERROR);
+			EL_Debug.Error("Notify", "SendToPlayer refused: called on a client");
 			return;
 		}
 			
-		PlayerController controller = GetGame().GetPlayerManager().GetPlayerController(playerId);
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
 		if (!controller)
 		{
-			Print(string.Format("[EL_NotificationManagerComponent] ERROR: PlayerController not found for player %1", playerId), LogLevel.ERROR);
+			EL_Debug.Error("Notify", string.Format("notify to player %1 failed: no player controller", playerId));
 			return;
 		}
-		
-		Print(string.Format("[EL_NotificationManagerComponent] ✅ Sending notification to player %1: '%2'", playerId, config.m_sTitle), LogLevel.NORMAL);
-		
-		// Broadcast with a playerId filter: the handler drops the toast on every client that is
-		// not the target. The direct call covers the listen-server host (Broadcast skips the
-		// authority, so the host would never see its own notification otherwise).
-		Rpc(RpcDo_ShowNotification, config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound, playerId, config.m_sMessageArg);
-		RpcDo_ShowNotification(config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sIconPath, config.m_bShowSound, playerId, config.m_sMessageArg);
+
+		// Owner RPC on the target's own controller: only that client receives the payload.
+		// The old Broadcast-and-filter sent every player's private toast to every client.
+		EL_Debug.Log("Notify", string.Format("notify player %1: %2", playerId, config.m_sMessage));
+		controller.EL_DeliverNotification(config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sMessageArg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Send notification to every connected on-duty police officer. Police is the account faction
+	//! (EL_PlayerAccount), the same definition the robbery minimum-police gate counts.
+	//! \return Officers notified.
+	int SendToPolice(EL_NotificationConfig config)
+	{
+		if (!Replication.IsServer())
+			return 0;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		if (!playerManager || !accountManager)
+			return 0;
+
+		int sent = 0;
+		array<int> playerIds = {};
+		playerManager.GetPlayers(playerIds);
+		foreach (int playerId : playerIds)
+		{
+			EL_PlayerAccount account = accountManager.GetAccount(EL_Utils.GetPlayerUID(playerId));
+			if (!EL_AccountStateBits.IsOnDutyPolice(EL_AccountStateBits.FromAccount(account)))
+				continue;
+
+			SendToPlayer(playerId, config);
+			sent++;
+		}
+
+		EL_Debug.Log("Notify", string.Format("police alert sent to %1 officer(s): %2", sent, config.m_sMessage));
+		return sent;
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -234,11 +262,10 @@ class EL_NotificationManagerComponent : ScriptComponent
 		EL_NotificationManagerComponent manager = GetInstance();
 		if (!manager)
 		{
-			Print(string.Format("[EL_NotificationManagerComponent] ERROR: Instance not found! Cannot send notification to player %1", playerId), LogLevel.ERROR);
+			EL_Debug.Error("Notify", string.Format("notify to player %1 dropped: no EL_NotificationManagerComponent on the game mode", playerId));
 			return;
 		}
 		
-		Print(string.Format("[EL_NotificationManagerComponent] Sending notification to player %1: %2", playerId, title), LogLevel.NORMAL);
 		
 		EL_NotificationConfig config = new EL_NotificationConfig(title, message, duration, type);
 		config.m_sMessageArg = messageArg;
@@ -259,6 +286,22 @@ class EL_NotificationManagerComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
+	//! Send notification to every connected on-duty police officer (static, server).
+	static void NotifyPolice(string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.POLICE_ALERT, string messageArg = "")
+	{
+		EL_NotificationManagerComponent manager = GetInstance();
+		if (!manager)
+		{
+			EL_Debug.Error("Notify", "police alert dropped: no EL_NotificationManagerComponent on the game mode");
+			return;
+		}
+
+		EL_NotificationConfig config = new EL_NotificationConfig(title, message, duration, type);
+		config.m_sMessageArg = messageArg;
+		manager.SendToPolice(config);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Send notification to all players (static)
 	static void NotifyAll(string title, string message, float duration = 5.0, EL_ENotificationType type = EL_ENotificationType.INFO, string messageArg = "")
 	{
@@ -276,8 +319,8 @@ class EL_NotificationManagerComponent : ScriptComponent
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	//------------------------------------------------------------------------------------------------
-	//! Server->client targeted delivery. Broadcast reaches every client that has the game mode
-	//! proxy; each handler keeps the toast only when playerId matches the local player (-1 = all).
+	//! Server->all clients (SendToAll only, playerId -1). Player-targeted toasts never use this:
+	//! they go through the target's controller (SCR_PlayerController.EL_DeliverNotification).
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	protected void RpcDo_ShowNotification(string title, string message, float duration, EL_ENotificationType type, string iconPath, bool playSound, int playerId, string messageArg)
 	{
@@ -299,8 +342,8 @@ class EL_NotificationManagerComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Show notification toast on client
-	protected void ShowNotificationToast(string title, string message, float duration, EL_ENotificationType type, string messageArg = "")
+	//! Show notification toast on this machine. Called by the owner-RPC on the local controller.
+	void ShowNotificationToast(string title, string message, float duration, EL_ENotificationType type, string messageArg = "")
 	{
 		// Add prefix based on type if no custom title
 		// TODO: these fallback titles are Spanish literals; move to localization keys in the
@@ -343,13 +386,19 @@ class EL_NotificationManagerComponent : ScriptComponent
 
 		string displayMessage = message;
 		if (displayMessage.StartsWith("#"))
-			displayMessage = WidgetManager.Translate(displayMessage, messageArg);
+		{
+			// The argument can be a key too (e.g. "#LF-Duty_OnDuty"); translate it on the client.
+			string displayArg = messageArg;
+			if (displayArg.StartsWith("#"))
+				displayArg = WidgetManager.Translate(displayArg);
+			displayMessage = WidgetManager.Translate(displayMessage, displayArg);
+		}
 		
 		// Create notification widget on HUD layer
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
 		{
-			Print("[EL_NotificationManagerComponent] ERROR: No workspace found", LogLevel.ERROR);
+			EL_Debug.Error("Notify", "toast dropped: no workspace");
 			return;
 		}
 		
@@ -377,28 +426,26 @@ class EL_NotificationManagerComponent : ScriptComponent
 			else
 				parent = workspace;
 				
-			Print("[EL_NotificationManagerComponent] WARNING: NotificationContainer not found, using fallback parent", LogLevel.WARNING);
+			EL_Debug.Warn("Notify", "NotificationContainer not found, using fallback parent");
 		}
 		
 		Widget toastWidget = workspace.CreateWidgets("{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout", parent);
 		if (!toastWidget)
 		{
-			Print("[EL_NotificationManagerComponent] ❌ ERROR: Failed to create notification widget", LogLevel.ERROR);
+			EL_Debug.Error("Notify", "toast dropped: failed to create the notification widget");
 			return;
 		}
 		
-		Print(string.Format("[EL_NotificationManagerComponent] ✅ Widget created successfully for: '%1'", displayTitle), LogLevel.NORMAL);
 		
 		// Get handler and show
 		EL_NotificationToastUI handler = EL_NotificationToastUI.Cast(toastWidget.FindHandler(EL_NotificationToastUI));
 		if (handler)
 		{
-			Print(string.Format("[EL_NotificationManagerComponent] ✅ Handler found, showing notification: '%1'", displayTitle), LogLevel.NORMAL);
 			handler.Show(displayTitle, displayMessage, type, duration);
 		}
 		else
 		{
-			Print("[EL_NotificationManagerComponent] ❌ ERROR: No handler found on notification widget", LogLevel.ERROR);
+			EL_Debug.Error("Notify", "toast dropped: no EL_NotificationToastUI handler on the widget");
 		}
 	}
 }
