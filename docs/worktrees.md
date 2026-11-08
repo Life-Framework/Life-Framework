@@ -219,8 +219,9 @@ a local administrator whose default shell is Windows PowerShell.
 A stale `resourceDatabase.rdb` fails world tests the same way on both
 machines (on 2026-11-08 the main checkout's copy predated the jail and stash
 prefabs: `hideout/stash`, `jail/slip` and two others failed with
-`not found in replication`). `tools\cli build` in the worktree refreshes it;
-the next remote run sends the fresh copy.
+`not found in replication`). `test` refreshes a stale copy on this PC
+(headless Workbench) before it picks the machine, so the box always gets a
+fresh one.
 
 ### Game clients and filming on the box (manual)
 
