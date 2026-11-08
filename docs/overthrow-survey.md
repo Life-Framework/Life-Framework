@@ -2,7 +2,7 @@
 
 Surveyed [Overthrow.Arma4](https://github.com/ArmaOverthrow/Overthrow.Arma4) `main` at `9dbb8fa`. This is the Reforger mod. Nothing here was ported.
 
-`LICENSE.md` is the Arma Public License Share Alike: attribution, noncommercial, Arma-only, and share-alike. The README badge, `docs/technical-design.md`, and `docs/mission-statement.md` still say MIT. Those pages are not the license file. A later copy needs a grant that covers Life Framework, or the copied text stays under APL-SA.
+`LICENSE.md` is the Arma Public License Share Alike: attribution, noncommercial, Arma-only, and share-alike. The README badge, `docs/technical-design.md`, and `docs/mission-statement.md` still say MIT. Those pages are not the license file. Update 2026-11-08: the Overthrow owner gave Life Framework permission to use the code and relicense it under MIT, with credit (`docs/decisions.md`, `THIRD_PARTY.md`). Copied files carry the Overthrow header from `docs/ecosystem.md` section 5.
 
 ## Recommendation
 

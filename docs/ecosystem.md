@@ -31,10 +31,22 @@ us redistribute it under MIT terms, so only permissive licenses qualify.
 [Workshop Terms of Use](https://reforger.armaplatform.com/workshop-terms)
 says uploaded content must be licensed to users under APL, APL-SA, APL-ND,
 ADPL-SA, or a custom license that explicitly forbids commercial use. MIT is
-not on that list. The GitHub source can stay MIT, but the Workshop build
-published for the playtest (M1-24, #109) needs a Workshop license chosen. This is
-a maintainer decision (for example APL-SA or a custom non-commercial license on the
-Workshop build, with MIT on GitHub) and should be settled before #109 ships.
+not on that list. Decided 2026-11-08 (`docs/decisions.md`, "The Workshop build
+is APL"): the Workshop build is published under APL and the GitHub source stays
+MIT, starting with the playtest release (M1-24, #109).
+
+**A GitHub licence governs the code in that repo.** Many mods carry an
+APL-family licence on the Workshop (Bohemia requires one) and a permissive
+licence on GitHub. An author may license the same work differently in different
+places. When the copyright holder publishes the code on GitHub under MIT, BSD,
+Apache-2.0, CC0, or CC-BY, that licence governs our use of the code in the repo,
+whatever the Workshop page says. Two conditions: the repo is published by the
+copyright holder (an official or author account, not a third-party re-upload),
+and the grant covers only what is in the repo (an asset shipped only on the
+Workshop stays under the Workshop licence). Every row below was checked against
+this rule on 2026-11-08; no project in the tables was marked not-copyable
+because of its Workshop licence alone. The Workshop-only candidates in section 2
+have no source repo from their authors.
 
 **Base game first.** Before pulling from anywhere, check the vanilla game:
 `Configs/Commanding/Gestures/Gesture_*.conf` (follow, halt, point, salute,
@@ -57,7 +69,7 @@ animations in Workbench.
 | [blackwaterbread/Marx](https://github.com/blackwaterbread/Marx) | APL | 2026-10-11 | Generic private-property and economy framework: wallet, ledger, shop catalog, **stash grid**, loadouts, in-game test runner and debug panel. Well tested. | Inspiration, ask | n/a | #100, #102, test harness |
 | [wyqydsyq/DynamicEconomy](https://github.com/wyqydsyq/DynamicEconomy) | None | 2026-09-05 | Cash, banking, ATM entity, traders with supply/demand, **`ATM.xob` and `Cash.xob` models**, funds HUD. | Ask (models), inspiration (price curves) | Low if granted | #110, supply-demand decision |
 | [ELifeRPG/reforger-mod](https://github.com/ELifeRPG/reforger-mod) | APL-SA (backend repo AGPL-3.0) | 2026-11-08 | Active life mod with a REST backend: banking, companies, characters, chat emotes, car key model (`CarKey_01.xob`), locked-state indicator. | Inspiration | n/a | #102, #101 |
-| [ArmaOverthrow/Overthrow.Arma4](https://github.com/ArmaOverthrow/Overthrow.Arma4) | APL-SA (badge says MIT; file wins) | 2026-09-18 | See `overthrow-survey.md`. | Inspiration, ask | n/a | #95, #101 |
+| [ArmaOverthrow/Overthrow.Arma4](https://github.com/ArmaOverthrow/Overthrow.Arma4) | APL-SA (badge says MIT; file wins). **For Life Framework only**, the owner's permission overrides it: use and relicense under MIT, with credit (decision 2026-11-08; record held by the maintainer) | 2026-09-18 | Persistence serializers, player and vehicle records, ownership and real estate, economy manager, respawn service, Game Master panel and records, civilian ambience, AI deployments, UI contexts. See `overthrow-survey.md` and pull #2 below. | **Copy with credit** (header in section 5) | Low to medium per system | #89, #95, #101, M2 |
 | [gruppe-adler/DoorLock](https://github.com/gruppe-adler/DoorLock) | None | 2026-01-28 | Door lock action and component with **lock and rattle sounds** (`doorlock1/2.acp`, `rattle.acp`), AI door opening. | Ask (sounds), inspiration | Low | #106, property M2 |
 | [zen-mod/GME_AR](https://github.com/zen-mod/GME_AR) | APL | 2026-11-05 | Game Master tools; admin attributes and context actions. | Inspiration | n/a | admin, M3 |
 | [Kexanone/ArmaReforgerMods](https://github.com/Kexanone/ArmaReforgerMods), [COE2_AR](https://github.com/Kexanone/COE2_AR) | APL-SA | 2026-11-07 | Mature Reforger scripting by an ACE maintainer; AI tasking, objectives. | Inspiration | n/a | AI police M2+ |
@@ -253,17 +265,17 @@ Ranked by value over effort, weighted toward what raises felt quality
 | # | Pull | License | How | Effort | Helps |
 |---|---|---|---|---|---|
 | 1 | **Period SFX set** from Freesound (CC0 first, CC-BY with credit) and Kenney audio: cash register and coins, note handling, ATM keypad beeps, door and cell clang, bank alarm bell, radio squelch, payphone and DTMF, typewriter, pager beep | CC0 / CC-BY | Copy | Low | #105 alarm, #110 ATM and till, #106 jail, #104 ticket, #96 duty desk |
-| 2 | **ACE captives and carrying animations** (surrender, tied, zip-cuff, carried, dragged) | GPL-2.0 | Ask ACE for a permissive grant on these files; fallback: optional flagship dependency on ACE Captives through a bridge addon | Low if granted, medium as dependency | #98 cuff/search/escort, #106 jail, #121 |
-| 3 | **LNGCLifeRP_Public actions not yet ported**: search plus results dialog, uncuff, revive, nearby-players list, dispatch calls list, ATM transfer dialog layout | MIT | Copy with header | Low each | #98, #105, #121 |
-| 4 | **Typewriter, terminal, dot-matrix, and DIN fonts** (Courier Prime, VT323, Doto, D-DIN, OCR-B) | OFL / PD | Copy, renamed | Medium (font conversion spike) | #93 ID card, #104 ticket, #110 screens, #94 signs |
-| 5 | **Vanilla gestures and props first** (`Gesture_*.conf`, `EItemGesture`, chairs, benches) for give-item, show-ID, and wave reactions | Base game | Use | Low | #98, #93 |
-| 6 | **CMU mocap** retargeted for sitting, hands-up idle, and counter use (ATM, till) where vanilla and ACE have nothing | Free, credit | Copy after retarget | High | #110, #98, M2 sitting |
-| 7 | **Poly Haven and ambientCG textures** for paper, card stock, worn signage, and interior surfaces | CC0 | Copy | Low | #94, #93, #104, #120, #107 |
-| 8 | **DynamicEconomy `ATM.xob` and `Cash.xob`, gruppe-adler DoorLock sounds** | None | Ask the authors | Low if granted | #110, #106 |
-| 9 | **Hexomanya/screenshot-toolbox** skeleton posing for staged showcase shots | MIT | Copy into tools | Low | #91 filming, #109 showcase |
-| 10 | **game-icons.net icons** for the interaction menu and Read cards | CC BY 3.0 | Copy with credit | Low | #98, #94 |
+| 2 | **Overthrow systems** (paths under `Scripts/Game/`). Persistence: `Persistence/Serializers/Components/OVT_PlayerManagerSerializer.c` (versioned, append-only, idempotent apply), `OVT_VehicleManagerSerializer.c` (garage record), `OVT_StorageComponentSerializer.c`. Economy and ownership: `GameMode/Managers/OVT_EconomyManagerComponent.c`, `OVT_OwnerManagerComponent.c`, `OVT_RealEstateManagerComponent.c`. Police and AI: `GameMode/Deployments/Modules/OVT_VehicleSpawningDeploymentModule.c` (`SeatAgent` for escort), the other deployment modules for AI police, `GameMode/Civilians/OVT_CivilianAmbienceManagerComponent.c` for town life and witnesses. Moderation: `GameMode/GM/OVT_GMRecords.c`, `UI/GM/OVT_GMPanelUIComponent.c`. Respawn: `Services/OVT_RespawnService.c`. UI: `UI/Context/OVT_ShopContext.c` and `OVT_StorageContext.c` (screens built from parts), `UI/HUD/OVT_WantedInfo.c` | APL-SA, relicensed MIT for us by the owner | Copy with the Overthrow header, rename to `LF_` | Low to medium per system | #89, #95, #101, #106, #121, property, AI police, M2 moderation and investigation |
+| 3 | **ACE captives and carrying animations** (surrender, tied, zip-cuff, carried, dragged) | GPL-2.0 | Ask ACE for a permissive grant on these files; fallback: optional flagship dependency on ACE Captives through a bridge addon | Low if granted, medium as dependency | #98 cuff/search/escort, #106 jail, #121 |
+| 4 | **LNGCLifeRP_Public actions not yet ported**: search plus results dialog, uncuff, revive, nearby-players list, dispatch calls list, ATM transfer dialog layout | MIT | Copy with header | Low each | #98, #105, #121 |
+| 5 | **Typewriter, terminal, dot-matrix, and DIN fonts** (Courier Prime, VT323, Doto, D-DIN, OCR-B) | OFL / PD | Copy, renamed | Medium (font conversion spike) | #93 ID card, #104 ticket, #110 screens, #94 signs |
+| 6 | **Vanilla gestures and props first** (`Gesture_*.conf`, `EItemGesture`, chairs, benches) for give-item, show-ID, and wave reactions | Base game | Use | Low | #98, #93 |
+| 7 | **CMU mocap** retargeted for sitting, hands-up idle, and counter use (ATM, till) where vanilla and ACE have nothing | Free, credit | Copy after retarget | High | #110, #98, M2 sitting |
+| 8 | **Poly Haven and ambientCG textures** for paper, card stock, worn signage, and interior surfaces | CC0 | Copy | Low | #94, #93, #104, #120, #107 |
+| 9 | **DynamicEconomy `ATM.xob` and `Cash.xob`, gruppe-adler DoorLock sounds** | None | Ask the authors | Low if granted | #110, #106 |
+| 10 | **Hexomanya/screenshot-toolbox** skeleton posing for staged showcase shots | MIT | Copy into tools | Low | #91 filming, #109 showcase |
 
-Next after these: Retro Police Cars for M2 police vehicles (ask, APL-SA
+Next after these: game-icons.net icons (CC BY 3.0, copy with credit) for the interaction menu and Read cards, Retro Police Cars for M2 police vehicles (ask, APL-SA
 dependency), Marx's stash grid and test runner as design reading for #100 and
 the harness, and Community-Pause-Menu (MIT) for the playtest guide link in
 #109.
@@ -275,6 +287,11 @@ the harness, and Community-Pause-Menu (MIT) for the playtest guide link in
 1. Copy only MIT, BSD, ISC, Apache-2.0, BSL-1.0, Unlicense, or CC0 code. Read
    the `LICENSE` file on the commit you copy from; a badge or a README line
    does not count (Overthrow's badge says MIT, its file says APL-SA).
+   The licence that counts is the one on the copy we take. A mod whose
+   Workshop page says APL but whose author publishes the code on GitHub under
+   MIT, BSD, Apache-2.0, CC0, or CC-BY is copyable from that repo, provided
+   the copyright holder published it (not a third-party re-upload). Assets
+   that exist only in the Workshop build stay under the Workshop licence.
 2. Keep the original copyright and license text at the top of every copied
    file, followed by `// Ported from <repo> (<license>), author <name>.` as in
    `Feature/Police/LF_JailEscort.c`. Apache-2.0 also needs its NOTICE kept.
@@ -285,6 +302,12 @@ the harness, and Community-Pause-Menu (MIT) for the playtest guide link in
 5. Never copy GPL, AGPL, APL, APL-SA, APL-ND, CC-BY-SA, NC, ND, or unlicensed
    code, not even "rewritten line by line". Read it for design, then write our
    own from the behaviour.
+   One exception: Overthrow, whose owner gave us permission to use and
+   relicense its code under MIT with credit. A file copied or derived from it
+   starts with
+   `// Derived from Overthrow (https://github.com/ArmaOverthrow/Overthrow.Arma4), used with the author's permission, relicensed MIT.`
+   in place of the header in rule 2. README Credits and `THIRD_PARTY.md`
+   already carry the project entry; add the file paths to `THIRD_PARTY.md`.
 6. To ask an author, open an issue or Discord message naming the exact files
    and the license we need (MIT or CC-BY), and keep their written answer
    linked in `THIRD_PARTY.md`.

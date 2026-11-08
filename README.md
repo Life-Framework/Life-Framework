@@ -117,7 +117,17 @@ Parts of the police, jail, garage, and vehicle code are ported from
 LNGCGenetic (MIT); each ported file keeps its notice. Third-party sources and
 the import policy: [docs/ecosystem.md](docs/ecosystem.md).
 
+Code from [Overthrow](https://github.com/ArmaOverthrow/Overthrow.Arma4) is used
+with its owner's permission and relicensed under MIT for Life Framework; the
+repo's own APL-SA licence still applies to everyone else. Each derived file
+names its source in a header. Per-file credits: [THIRD_PARTY.md](THIRD_PARTY.md).
+
 ## License
 
-MIT — see [LICENSE](LICENSE). Contributions are licensed under MIT;
-see [CONTRIBUTING.md](CONTRIBUTING.md).
+The source in this repository is MIT; see [LICENSE](LICENSE). Contributions
+are licensed under MIT; see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+The build published on the Arma Reforger Workshop is licensed under the
+[Arma Public License (APL)](https://www.bohemia.net/community/licenses/arma-public-license),
+because the Workshop Terms of Use require an APL-family licence for uploaded
+content. To use the code under MIT, take it from this repository.
