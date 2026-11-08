@@ -751,7 +751,7 @@ class EL_AgentHarness
 		}
 
 		BaseWorld world = GetGame().GetWorld();
-		if (!world || !world.FindEntityByName(cmd.Arg1))
+		if (!world || !ResolveNamed(cmd.Arg1))
 		{
 			WriteResult(cmd.Id, "error", "entity_not_found");
 			return;

@@ -223,7 +223,19 @@ async function runInteraction() {
       on(n, { verb: "click", widget: "TownButton" });
     }
   }
-  wait(8000);
+  wait(4000);
+  // Registration form R-89 (M1-08): sign a name so each player has a character.
+  const names = { 1: "Ada", 2: "Bea" };
+  for (const n of [1, 2]) {
+    const ui = on(n, { verb: "ui" });
+    if (ui.status === "ok" && ui.detail.includes("SignButton")) {
+      on(n, { verb: "type", widget: "RegFirstName", text: names[n] });
+      on(n, { verb: "type", widget: "RegLastName", text: "Tester" });
+      on(n, { verb: "type", widget: "RegAge", text: "30" });
+      on(n, { verb: "click", widget: "SignButton" });
+    }
+  }
+  wait(10000);
 
   const before1 = state(1);
   const before2 = state(2);
