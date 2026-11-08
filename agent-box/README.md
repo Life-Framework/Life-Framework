@@ -107,7 +107,7 @@ node agent-box/harness.mjs chains
 node agent-box/harness.mjs chains --run
 ```
 
-Steps: `stand`, `look`, `ui`, `click`, `press F|WheelUp|WheelDown|F10`, `use`,
+Steps: `stand`, `look`, `ui`, `click`, `type`, `press F|WheelUp|WheelDown|F10`, `use`,
 `input`, `open`, `layer`, `shot ui`, `shot world`, and `wait <ms>`. A shot line
 prints `image: <absolute png>` when the capture file is on disk. If the engine
 wrote a BMP and the `.png` sibling is missing, the harness converts it.
@@ -144,6 +144,9 @@ the game profile). Hooks:
   `m_OnClicked`, the invoker the menu inserted. Other buttons call `OnClick`
   on the menu handler, the same call the engine makes for a mouse click.
   `index` picks a later visible widget when several share a name (`BuyButton`).
+- `type <FieldName> <Text>` writes one plain token (letters, digits, `_`) into
+  the edit box of a visible field, such as the registration form's
+  `RegFirstName`, `RegLastName`, `RegAge`. `click SignButton` then signs it.
 - `use` finds a `ScriptedUserAction`, checks `CanBeShownScript` and
   `CanBePerformedScript`, then calls `PerformAction`. Named confirm, same
   checks, no dependence on which row is highlighted.
@@ -293,6 +296,44 @@ are judged from the widget list and `classify` of the `shot ui` picture.
 as failures. Do not boot the test server for this report. Do not restart
 Workbench between sites.
 
+## Town manifest
+
+`agent-box/town.mjs` (`TOWN`) is the one list of M1 sites: spawn, post office,
+traders, ATM, shops, vehicle lot, the robbery and breach sites, police
+station, jail, org registry, hideout, garage, mining, and farm. Each site names
+an entity (`entity`) or, for unnamed placements like the spawn points, a
+prefab (`prefab`, every placement counts and the site sits at their centre).
+It also lists the actions `look` must offer there, the `LF_Signs.conf` id of
+its sign (or `null`), and its journey step. It holds no positions. Sites and
+signs resolve against the layer scan (`loadWorld` in `layers.mjs`), so moving
+a site to another layer or street needs no manifest edit. A sign is any
+placed entity whose `LF_SignComponent.m_sSignId` (inline or from its prefab)
+matches.
+
+```powershell
+node agent-box/harness.mjs town                 # offline: resolve every site against the layers
+node agent-box/harness.mjs report town          # play mode: writes agent-box/reports/town.html
+node agent-box/harness.mjs report town atm bank # only those site ids
+```
+
+Offline (`town`, `tools\cli validate` via `validate-town-manifest.mjs`), a
+site fails when its entity is missing or placed more than once, the layer (or
+its addon prefab) lacks an expected action, or it is more than 30 m from
+its nearest neighbour. In play mode, `report town` stands at each named site,
+waits for the expected actions in `look`, takes a world shot, and opens a menu
+action the way `report roadmap` does. It then stands at the sign, checks that
+`look` offers `LF_SignReadAction` there, opens Read, and judges the card from
+the widget list and a `shot ui`. A row fails when the site is white or
+missing, `look` lacks an expected action, or a menu is blank.
+
+Sign checks: no sign with that id within 8 m, a card with no title or no
+section text (keys resolved through the string table), Read not offered, or a
+card blank in play. While `TOWN.requireSigns` is `false` these print as
+`sign: pending (...)` warnings and do not fail. M1-09 places the signs and
+sets it to `true`, after which the same checks fail the row, offline and in
+play. `selftest` covers a missing sign, a blank card, a sign 9 m away, an 80 m
+outlier, an empty look, an action on another entity, and the flag.
+
 ## DebugWorld chains
 
 `node agent-box/harness.mjs chains` checks the probe list against the layer
@@ -359,3 +400,40 @@ addon and the profile EnfusionMCP addon on port 5775. Calling `wb_play` on a
 world already open in edit mode can hang the bridge; kill that process and
 relaunch. Last full run (2026-10-10): 36 probes, `stand_fail=0`,
 `missing_action=0`, `use_fail=0`.
+
+## Multi-client session (dedicated server)
+
+One dedicated server and up to three game clients run side by side on one PC
+(verified 2026-11-08 on an RTX 3080, 16 GB, Windows 11). Steam starts a second
+`ArmaReforgerSteam.exe`; each client gets its own `-profile`, a 640x360 window
+along the top of the screen, and joins `127.0.0.1:2001` with `-client`.
+
+```powershell
+node agent-box/session.mjs up --clients 2     # server, then clients; waits for both faction menus
+node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client
+node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
+node agent-box/session.mjs proof              # client 1 robs Roadmap_Fuel_Till, client 2 (police) gets the alert
+node agent-box/session.mjs down               # closes every process the session started
+```
+
+- `up` runs from a worktree and holds the machine-wide `server-2001` lock while
+  the server lives (`--wait` queues behind a test or host run). `down` frees it.
+- The server runs the bare DebugWorld, not `LF_PlaytestTown.conf`, so the world's
+  game mode keeps dev tools open and the harness passes `EL_DevGate`. On the
+  playtest mission a non-admin's `stand` and `use` come back as
+  `error dev_gate_closed` (LOGIC test `harness/dev-gate-dedicated`).
+- Server and clients pass `-noBackend` and `-scrDefine LF_SESSION_IDENTITY`.
+  Without the backend every client has the NULL identity and the same Steam
+  name, so the define gives each player id its own identity. The define must be
+  on both sides; a mismatch is refused with `remote script source code checksum
+  does not match`.
+- The session dir is `%LOCALAPPDATA%\LifeFramework\session` (`LF_SESSION_DIR`),
+  outside every worktree, with no junctions. Client logs are written when the
+  client exits; read them after `down`.
+- Memory: each client takes about 2.1 GB private, the server about 0.8 GB. With
+  Workbench also open the server logged `Out of memory. Free system ~300 MB`
+  during client load and kept running.
+- Police comes from the debug menu (`FactionPoliceButton`): the session has no
+  whitelist file, so the faction menu refuses police.
+- `shot world` still poses the body on the server, which a dedicated server's
+  client overwrites. `stand` moves the body on the owning client.

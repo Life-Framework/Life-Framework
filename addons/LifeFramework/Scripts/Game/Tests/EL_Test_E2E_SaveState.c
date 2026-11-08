@@ -7,11 +7,18 @@
 // `[ELTEST] FAIL e2e/pass2-verify-load`,
 // `[ELTEST]   - e2e prisoner is still serving after the save load`. Restored; both
 // passes green again.
+// e2e/pass2-verify-load (save version 6, carried inventory), observed 2026-11-08 with
+// `tools\cli wt e2e m1-04-carried-inventory`: with the LifeFramework.conf stack config still on
+// `ParentHandling "Ignore always"` the engine saved the pocket MoneyStack as a root and
+// self-spawned it on the ground, failing pass 2 with `[ELTEST] FAIL e2e/pass2-verify-load`,
+// `- no 237 cash stack came back in the world on its own (no dupe) (expected 0, got 1)`.
+// Stacks now save with their parent; both passes green.
 
 // tier: PERSISTENCE
 class EL_Test_E2E_SaveStateWrite : EL_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
+	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -67,6 +74,13 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 		LF_Jail.ApplyAll(sentences);
 		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is serving before the save");
 
+		// A carried inventory rides the "carried" payload (save version 6). The character stays
+		// alive in the world through the shutdown save, so the reload boot also sees whether the
+		// engine brings its items back on its own (a dupe next to the restored snapshot).
+		IEntity carrier = EL_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		if (carrier)
+			ctx.True(LF_StorageSnapshot.CaptureCarried(CARRIED_CHARACTER_ID, carrier), "e2e carried inventory captured before the save");
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -80,6 +94,7 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 class EL_Test_E2E_SaveStateVerify : EL_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
+	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -111,6 +126,24 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is still serving after the save load");
 		ctx.True(LF_Jail.GetRemaining(ACCOUNT_UID) > 0, "e2e sentence has time left after the save load");
 
+		LF_StorageSnapshotRecord carried = LF_StorageSnapshot.Get(CARRIED_CHARACTER_ID, LF_StorageSnapshot.SLOT_CARRIED);
+		ctx.NotNull(carried, "e2e carried snapshot present after the save load");
+		ctx.Equal(0, EL_TestLooseStackCount.Count(EL_TestCarriedInventoryKit.MONEY_PREFAB, 237), "no 237 cash stack came back in the world on its own (no dupe)");
+		if (carried)
+		{
+			IEntity restored = EL_TestCharacterFixture.Spawn(ctx);
+			if (restored)
+			{
+				LF_StorageSnapshot.Apply(restored, carried);
+				ctx.Equal(237, EL_MoneyUtils.GetCash(restored), "e2e 237 cash carried across the restart");
+				ctx.Equal(3, EL_InventoryUtils.GetAmount(restored, EL_TestCarriedInventoryKit.APPLE_PREFAB), "e2e 3 apples carried across the restart");
+				ctx.Equal(1, EL_TestCarriedInventoryKit.CountInside(restored, EL_TestCarriedInventoryKit.BACKPACK_PREFAB, EL_TestCarriedInventoryKit.WATER_PREFAB), "e2e water bottle still inside the backpack after the restart");
+				ctx.Equal(0, LF_StorageSnapshot.Apply(restored, carried), "e2e second apply spawns nothing");
+				ctx.Equal(237, EL_MoneyUtils.GetCash(restored), "e2e cash unchanged by the second apply");
+				EL_TestCharacterFixture.Delete(restored);
+			}
+		}
+
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");
 		if (gameMode)
@@ -121,5 +154,43 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 #else
 		ctx.Pass("runs in the reload boot");
 #endif
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Counts stacks of a prefab with an exact quantity anywhere in the world.
+class EL_TestLooseStackCount
+{
+	protected static ResourceName s_Prefab;
+	protected static int s_iQuantity;
+	protected static int s_iFound;
+
+	//------------------------------------------------------------------------------------------------
+	static int Count(ResourceName prefab, int quantity)
+	{
+		s_Prefab = prefab;
+		s_iQuantity = quantity;
+		s_iFound = 0;
+		vector mins, maxs;
+		GetGame().GetWorld().GetBoundBox(mins, maxs);
+		GetGame().GetWorld().QueryEntitiesByAABB(mins, maxs, Collect, null, EQueryEntitiesFlags.ALL);
+		return s_iFound;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool Collect(IEntity entity)
+	{
+		if (!entity || EL_Utils.GetPrefabName(entity) != s_Prefab)
+			return true;
+
+		EL_QuantityComponent quantity = EL_QuantityComponent.Cast(entity.FindComponent(EL_QuantityComponent));
+		if (!quantity || quantity.GetQuantity() != s_iQuantity)
+			return true;
+
+		s_iFound++;
+		IEntity root = entity.GetRootParent();
+		EL_Debug.Info("CarriedInventory", string.Format("e2e found a %1 stack of %2 at %3, root %4", s_iQuantity, s_Prefab, entity.GetOrigin(), EL_Utils.GetPrefabName(root)));
+
+		return true;
 	}
 }

@@ -57,7 +57,8 @@
 
 ### `EL_CharacterCreationManager` — `Feature/CharacterCreation/EL_CharacterCreationManager.c`
 - ✅ Flow: no account → create → faction menu → spawn-location picker →
-  spawn. `OnCharacterCreated` persists a character, inits ATM + survival
+  registration form R-89 (`LF_RegistrationForm`) → spawn with an ID card.
+  A returning account skips the menus and the form. `OnCharacterCreated` persists a character, inits ATM + survival
   components, spawns.
 - ✅ **Server-owned on a dedicated server** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the flow runs on the server
   only. Menus open on the joining client through owner RPCs on its
@@ -69,18 +70,16 @@
   controller's id, never a client value. `EL_CharacterCreationRules` re-checks
   every pick: the police whitelist (`MayJoinFaction`, now enforced server-side),
   faction already chosen, spawn location belongs to the faction, one character
-  per account, names 1..32 characters, age 18..80. A refusal toasts the reason
+  per account, names 1..32 ASCII letters with single inner spaces, hyphens,
+  or apostrophes (`LF_RegistrationRules`), age 18..80. Names are not unique. A refusal toasts the reason
   key (`#EL-CC_Error_*`) and re-opens the menu. A listen host's joiners now get
   their own menus instead of the host.
-- ✅ Real character prefab + real coordinates (verified 2026-08-30): the old
-  `{YourTempCharacterPrefab}` placeholder and hard-coded `"0 0 0"`/
-  `"1000 0 1000"` are gone; `CreateAndSpawnDefaultCharacter` uses
+- ✅ Real character prefab (verified 2026-08-30):
   `{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et`.
-
-### `EL_CharacterCreationMenu` — `Feature/CharacterCreation/EL_CharacterCreationMenu.c`
-- ✅ Validates first/last name non-empty and age in `[18, 80]` for its error
-  text, then sends `EL_AskCreateCharacter`; the server re-validates.
-- ⚠️ Validation failure silently early-returns with no error shown.
+- ✅ (2026-11-08, M1-08) No more "Default Citizen": a chosen faction with no
+  character opens the registration form over `LF_ShowRegistrationForm`
+  (owner RPC). A server refusal sends the form back with the reason written on
+  it. The form never picks a faction.
 
 ### `EL_FactionSelectionMenu` — `Feature/CharacterCreation/EL_FactionSelectionMenu.c`
 - ✅ Buttons wired (Civilian/Police) send `EL_AskSelectFaction`; the server
@@ -92,9 +91,11 @@
   the same account the spawn logic reads.
 
 ### `EL_ShowIDAction` — `Feature/CharacterCreation/EL_ShowIDAction.c`
-- ✅ Shows `"FirstName LastName, Age: N"` via notification.
-- ⚠️ `CanBePerformedScript` returns true unconditionally; facing check is
-  `dot > 0.707` both ways within 1.5 m.
+- ✅ (2026-11-08) Shows the ID card the user carries (their own first, else
+  the first printed one) to the player they face: the server reads the item
+  and opens `LF_IdCardView` on the viewer's machine. No card: not performable,
+  reason `#LF-ID_NoCard`. Facing check is `dot > 0.707` both ways within 1.5 m.
+- ⏳ Proof on a dedicated server with two clients is manual (PR #93 steps).
 
 ### `EL_Utils` / `EL_FormatUtils` / `EL_Component` / `EL_ComponentData` — `Core/`
 - ✅ `MaxInt`/`MinInt`, `AbbreviateNumber` (999→raw, 1000→`1.0K`,
@@ -116,20 +117,45 @@
   frame handler.
 - ✅ Vehicle garage and spawn-point registries remove themselves in `OnDelete`.
 
+### `LF_RegistrationForm` — `Feature/CharacterCreation/LF_RegistrationForm.c`
+- ✅ (2026-11-08) Civil registry form R-89 on `LF_UIScreen`: given name,
+  surname, age, Sign. Client checks only write the error line; the server
+  decides. MenuBack brings the form back unsigned ("sign before you go into
+  town"). Harness: `type RegFirstName Ada` ... `click SignButton`.
+
+### `LF_IdCardComponent` / `LF_IdCard` — `Feature/CharacterCreation/LF_IdCardComponent.c`
+- ✅ (2026-11-08) `IDCard.et` carries holder character id, first name, last
+  name, age (RplProps, server-issued once). Max stack 1, so cards never merge.
+- ✅ `EL_SpawnLogic.m_bGrantIdAtSpawn` (default on) grants a card printed
+  from the account's character record on every spawn. The record is
+  persisted, so the card survives a restart through the account. A character
+  already carrying their own card is refused a second; a blank carried card is
+  printed instead of adding one. Turn the flag off when the arrival clerk
+  (M1-18) hands the card over.
+
 ## Character & Survival
 
 ### `EL_SurvivalStats` — `Feature/Survival/EL_SurvivalStats.c`
 - ✅ All stats clamped `[0,100]`. `Eat`/`Drink`/`Heal` are additive through
-  clamped setters. `UpdateStats(dt)`: hunger `-dt*0.1`, thirst `-dt*0.15`,
-  and if hunger or thirst `< 20`, health `-dt*0.05`. `Create(id)` starts all
-  at 100.
-- ⚠️ No recovery (health only ever falls); negative `dt` heals. Zero health
-  hands off to the death flow below (survival does not model a down-state).
+  clamped setters. `Create(id)` starts all at 100.
+- ✅ (2026-11-08, M1-28) **Needs are light and never kill.** `UpdateStats(dt,
+  config)` takes every rate from `LF_SurvivalConfig`
+  (`Configs/Survival/LF_Survival.conf`). Flagship: hunger `0.01/s` (about
+  2.8 h from full), thirst `0.0125/s` (about 2.2 h). Below 20 hunger or thirst,
+  health falls at `0.05/s` to the 75 cap and stops; health already below the
+  cap is not touched. With needs met, health regains `0.02/s` up to 100.
+  `dt <= 0` is a no-op. Tests: `survival/light`.
 
 ### `EL_CharacterSurvivalComponent` — `Feature/Survival/EL_CharacterSurvivalComponent.c`
-- ✅ Per-frame decay driver; async-loads stats by character id; null-guards
-  until loaded.
-- ⚠️ No clamp on delta time (a hitch drops a big stat chunk in one frame).
+- ✅ (2026-11-08) Server-authoritative: stats tick on the server only, on a
+  1 s call-queue timer. The delta is clamped to 5 s so a hitch does not drop a
+  chunk. The owner gets whole-point hunger and thirst and the low-needs flag as
+  owner-only RplProps; `BumpMe` fires only when one of them changes (about
+  once per 100 s at flagship rates), and right after eating or drinking. The
+  low-needs flip logs `[ELDebug:Survival] <id> needs low=...`. Tests:
+  `survival/sync`.
+- ✅ The old per-frame `EOnFrame` driver is gone. It had no event mask and
+  treated world-time milliseconds as seconds.
 
 ### `EL_ConsumableEffectSurvival` — `Feature/Survival/EL_ConsumableEffectSurvival.c`
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
@@ -150,6 +176,49 @@
   (account-aware, re-applies the faction loadout).
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
+
+### `LF_SurvivalConfig` — `Feature/Survival/LF_SurvivalConfig.c`
+- ✅ (2026-11-08) Framework knobs: hunger and thirst drain, low-needs
+  threshold, health cap, health drain and regen, stamina drain multiplier,
+  tick interval, max tick delta. A missing `.conf` logs
+  `[ELDebug:Survival]` once and uses the same built-in defaults.
+
+### `LF_SurvivalStaminaPenalty` — `Feature/Survival/LF_SurvivalStaminaPenalty.c`
+- ✅ (2026-11-08) Modded `SCR_CharacterStaminaComponent.OnStaminaDrain`: with
+  low needs, exertion drains stamina `1.5x` (config), so a hungry player
+  sprints for less time and breathes hard sooner. It lifts on the next sync
+  after eating and drinking. Same reentrancy pattern as the base hydration
+  penalty.
+- ⚠️ Not yet felt in game: set survival to 10 in the DebugMenu and sprint.
+
+### `EL_BetaHud` survival gauges — `HUD/EL_BetaHud.c`
+- ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
+  The HUD stays second to the body cue.
+
+### Carried inventory — `Feature/Character/Persistence/LF_StorageSnapshot.c`
+- ✅ **Carried cash and items survive a restart** (2026-11-08, M1-04, tests
+  `persist/carried-roundtrip`, `persist/carried-death-no-dupe`, and
+  `e2e/pass2-verify-load` across a real two-boot restart): the whole storage
+  tree (prefab, stack quantity, storage index, slot id) is the `carried` payload
+  of `EL_PersistenceComponentSerializer`, appended at version 6. Keyed by
+  character persistence id plus a slot name, so one owner can hold several named
+  snapshots (`carried` now; police duty / civilian stash later, M1-11).
+- ✅ Captured at every save point (autosave, manual, shutdown) for each living
+  player and on disconnect before the character is deleted. On spawn a snapshot
+  replaces the starter kit; without one the starter kit is granted.
+- ✅ Apply reconciles instead of adding: a matching occupant is kept, an occupant
+  no record claims is deleted, a missing record is spawned. A second apply
+  spawns nothing. A prefab that no longer loads logs `EL_Debug.Error` and is
+  skipped with its contents.
+- ✅ Death drops what you carry: `OnPlayerKilled_S` drops the snapshot and a dead
+  body is never captured, so the body keeps the items and a restart grants the
+  starter kit.
+- ✅ No ground copy: `LifeFramework.conf` saves a stack with its parent and no
+  longer self-spawns the player character, so a pocket `MoneyStack` does not
+  come back loose on the ground next to the restored one (the two-boot e2e
+  counts it).
+- ⚠️ Ammo count, weapon state, and placed storage (hideout stash, M1-15) are not
+  in the snapshot. Attachments and magazines are kept as items.
 
 ## Account & Persistence
 
@@ -1122,6 +1191,50 @@
   Workbench no longer answers `no_session`. The command file is shared by
   every default-profile session on the machine; the `agent-box-play` lock
   ties it to one checkout's Workbench or game process.
+
+### `EL_AgentHarness` — `Feature/AgentHarness/`
+- ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
+  `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
+  calls `ActionScroll`. `click` invokes the same button invoker or `OnClick` a
+  mouse click does. `use` still checks `CanBeShownScript` and
+  `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
+  (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
+  `EL_OpenDebugMenu`); movement actions are refused.
+- ✅ `stand` is the placement exception: the server moves the local character
+  beside a named entity. The poll does not start on a dedicated server
+  (`RplMode.Dedicated`). The server checks the `stand`, `pose`, and `use` RPCs
+  with `EL_DevGate`, the same gate as the debug menu. It refuses and logs
+  (`[ELDebug:AgentHarness] <request> refused: ...`) unless the game mode sets
+  `m_bDevToolsEnabled` or the sender is an administrator. On a production or
+  listen-hosted server a client cannot teleport or reach past action range
+  (2026-11-07). On a client it retries until a local controller exists,
+  including while faction and spawn menus are up.
+- ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
+  alone. A world shot teleports the character to the camera offset (default
+  `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
+  player view. That view faces -Z, so a picture stands on the +Z side of
+  its target. The pose is applied again 700 ms later so gravity does not drop
+  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
+  stands just north of that row when the street is further north. If the new PNG matches the
+  previous PNG, `report roadmap` records `camera_stuck` once and stops.
+  `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look
+  returns an action. Any other white mesh fails. Menu shots use `shot ui`; the
+  report judges `classify` and the widget list. Names after `roadmap` walk
+  only that row. `node agent-box/harness.mjs kit` photographs the UI kit
+  sample in the current play session when play is already up, and enters play
+  only when it is not. `node agent-box/harness.mjs report roadmap` writes
+  `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
+  tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
+  (verified 2026-10-11)
+- ✅ Town manifest (`agent-box/town.mjs`): every M1 site by entity name (or
+  prefab, for the unnamed spawn points), the actions look must offer, its sign
+  id, and its journey step. No positions: sites and signs resolve against the
+  layers, so a site can move layers without a manifest edit.
+  `node agent-box/harness.mjs town` and `validate-town-manifest.mjs` check it
+  offline; `report town [site-id...]` walks it in play mode and writes
+  `agent-box/reports/town.html`. Sign problems (none within 8 m, blank Read
+  card) are `sign: pending` warnings until `requireSigns` is true (M1-09).
+  Play-mode run not yet recorded.
 
 ### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
 - ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera

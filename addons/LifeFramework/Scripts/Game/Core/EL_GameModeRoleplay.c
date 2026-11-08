@@ -67,7 +67,8 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	//------------------------------------------------------------------------------------------------
 	//! Releases per-player server state the player can no longer act on: escort holds where they
 	//! are officer or prisoner, and a running convoy (fails it and drops the vehicle watch).
-	//! Jail sentences are kept on purpose: they persist and resume on reconnect.
+	//! Jail sentences are kept on purpose: they persist and resume on reconnect. The carried
+	//! inventory is captured before the base game deletes the character.
 	override void OnPlayerDisconnected(int playerId, KickCauseCode cause, int timeout)
 	{
 		if (Replication.IsServer())
@@ -94,6 +95,9 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 		}
 
 		int escorts = LF_JailEscort.ReleasePlayer(uid);
+
+		if (LF_StorageSnapshot.CapturePlayer(playerId))
+			EL_Debug.Info(LF_StorageSnapshot.FEATURE, string.Format("carried inventory captured on disconnect for player %1", playerId));
 
 		string characterId;
 		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
