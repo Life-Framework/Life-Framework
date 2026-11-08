@@ -25,10 +25,17 @@ class LF_ConvoyStartAction : ScriptedUserAction
 			return;
 		}
 
+		// The offer cannot see organizations on the client, so the refusal has to reach the
+		// player from here, or they press the crate and nothing happens (#157).
+		string refusal = LF_Contraband.StartRefusalKey(characterId);
 		if (!LF_Contraband.Start(characterId, pUserEntity))
-			SetCannotPerformReason("#EL-Contraband_NotMember");
-		else
-			LF_Contraband.GiveCrate(pUserEntity);
+		{
+			if (!refusal.IsEmpty())
+				EL_Utils.NotifyEntity(pUserEntity, refusal, "#LF-Contraband_Title", 5.0);
+			return;
+		}
+
+		LF_Contraband.GiveCrate(pUserEntity);
 	}
 }
 

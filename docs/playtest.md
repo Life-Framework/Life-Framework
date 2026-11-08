@@ -49,12 +49,10 @@ In this order, it is the M1 loop:
 
 Do not spend the evening on these; they are filed.
 
-- Everyone, players and NPCs, renders in underwear on a game client (#150).
 - The registration form, ATM, and org screens are dark and hard to read; the form's labels read "Editbox" (#110, M1-13 is rebuilding these screens).
 - The parcel and bank bags are invisible in your hands (#155).
 - Fuel delivery opens after five parcel runs and the taxi after fifteen runs in all (#156). The game never shows a level; the drop-off tells you when new work opens.
 - The police duty desk and wanted board are not on the street yet (M1-11); duty is the panel in front of the station.
-- A contraband run without an organization is refused with no message (#157).
 - Toasts are the only alert: no alarm at the site, no dispatch board (M1-20).
 
 ## Start DebugWorld
