@@ -435,6 +435,10 @@ class EL_AgentCommand
 			return false;
 		}
 
+		// Optional value, for an axis such as CharacterTurnUp (negative looks down).
+		if (parts.Count() > 3)
+			cmd.Arg2 = parts[3];
+
 		return true;
 	}
 
@@ -637,6 +641,20 @@ class EL_AgentCommand
 		if (actionName == "MenuSelect")
 			return true;
 		if (actionName == "EL_OpenDebugMenu")
+			return true;
+		// The melee swing: what a player presses to hit a rock or a tree with the held tool.
+		if (actionName == "CharacterMelee")
+			return true;
+		// The inventory key: opens the inventory screen, a menu.
+		if (actionName == "Inventory")
+			return true;
+		// Draw the tool from a weapon slot, and the first/third person camera key.
+		if (actionName == "SwitchWeaponCategory1" || actionName == "SwitchWeaponCategory2" || actionName == "SwitchWeaponCategory3")
+			return true;
+		if (actionName == "SwitchCameraType")
+			return true;
+		// Look up or down (mouse pitch), so a swing can reach a low rock.
+		if (actionName == "CharacterTurnUp")
 			return true;
 		return false;
 	}
@@ -1654,6 +1672,35 @@ class EL_AgentHarness
 		// A local-effect action (ATM terminal, shop price list) runs PerformAction only on the
 		// acting client when the F key uses it, so the harness performs it here the same way. Only this
 		// mod's actions: a vanilla door is local-effect too, but its perform asks the server.
+		// Vanilla pick up and equip run on the acting client too: the inventory manager there
+		// sends the server request, the same path the F key takes.
+		bool vanillaInventory = cmd.Arg1 == "SCR_PickUpItemAction" || cmd.Arg1 == "SCR_EquipWeaponAction" || cmd.Arg1 == "SCR_EquipWeaponHolsterAction";
+		if (!Replication.IsServer() && vanillaInventory)
+		{
+			IEntity item = FindTarget(character, cmd.Arg1, cmd.Arg2);
+			if (!item && cmd.Arg2 != "")
+				item = FindTarget(character, cmd.Arg1, "");
+			ScriptedUserAction itemAction;
+			if (item)
+				itemAction = FindShownOnEntity(item, cmd.Arg1, character);
+			if (!itemAction)
+			{
+				WriteResult(cmd.Id, "error", "cannot_show");
+				return;
+			}
+
+			if (!itemAction.CanBePerformedScript(character))
+			{
+				WriteResult(cmd.Id, "error", "cannot_perform");
+				return;
+			}
+
+			itemAction.PerformAction(item, character);
+			EL_Debug.Log(FEATURE, string.Format("performed %1 on this client", cmd.Arg1));
+			WriteResult(cmd.Id, "ok", cmd.Arg1);
+			return;
+		}
+
 		if (!Replication.IsServer() && (cmd.Arg1.StartsWith("EL_") || cmd.Arg1.StartsWith("LF_")))
 		{
 			IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
@@ -1743,8 +1790,45 @@ class EL_AgentHarness
 			return;
 		}
 
+		float value = 1;
+		if (cmd.Arg2 != "")
+			value = cmd.Arg2.ToFloat();
+
+		// The melee key and the mouse pitch reach the character through its input
+		// context, the same flags the command handler reads (SCR_CharacterCommandHandler.HandleMelee).
+		if (cmd.Arg1 == "CharacterMelee" || cmd.Arg1 == "CharacterTurnUp")
+		{
+			SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+			CharacterControllerComponent controller;
+			if (character)
+				controller = character.GetCharacterController();
+			if (!controller || !controller.GetInputContext())
+			{
+				WriteResult(cmd.Id, "error", "no_character");
+				return;
+			}
+
+			CharacterInputContext context = controller.GetInputContext();
+			if (cmd.Arg1 == "CharacterMelee")
+			{
+				context.SetMeleeAttack(true);
+				vector aimNow = context.GetAimingAngles();
+				character.EL_AskHarnessMelee(aimNow[0], aimNow[1]);
+			}
+			else
+			{
+				vector aim = context.GetAimingAngles();
+				aim[1] = aim[1] + value * Math.DEG2RAD;
+				context.SetAimingAngles(aim);
+			}
+
+			EL_Debug.Log(FEATURE, string.Format("input %1 %2", cmd.Arg1, value));
+			WriteResult(cmd.Id, "ok", cmd.Arg1);
+			return;
+		}
+
 		s_sHeldAction = cmd.Arg1;
-		input.SetActionValue(cmd.Arg1, 1);
+		input.SetActionValue(cmd.Arg1, value);
 		GetGame().GetCallqueue().CallLater(ClearInput, 80, false);
 		EL_Debug.Log(FEATURE, string.Format("input %1", cmd.Arg1));
 		WriteResult(cmd.Id, "ok", cmd.Arg1);

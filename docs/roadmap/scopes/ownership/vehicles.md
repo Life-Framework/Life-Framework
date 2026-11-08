@@ -1,6 +1,6 @@
 # Vehicles
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: `VehicleLock`, `LicensePlate`, `Shop`
 
 ## Player loop

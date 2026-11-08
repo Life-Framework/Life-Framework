@@ -1,6 +1,6 @@
 # Police ranks
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: `License`, `Whitelist`, `Police` duty
 
 ## Player loop

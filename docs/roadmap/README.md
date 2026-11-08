@@ -1,66 +1,81 @@
 # Roadmap
 
-The gameplay plan for the base mod. Two axes:
+The gameplay and release plan. Milestones are the one plan: each ends with a
+public build and a filmed showcase, and a milestone's features do not start
+before the previous milestone is done ([direction](../direction.md)).
 
-- A **phase** is when a slice is supposed to be playable.
-- A **scope** is one bounded plan: the player loop, the assets it may use, the first shippable slice, and how to prove it.
+A **scope** is one bounded plan: the player loop, the assets it may use, the
+first slice, and how to prove it. Scope cards live in [scopes/](scopes/README.md)
+and each names its milestone. The site's roadmap page (`website/`) renders these
+docs with the milestones from GitHub; the November 2025 community checklist is
+archived in `website/content/archive/roadmap-2025.json`.
 
-This folder is the current gameplay plan. The website combines these documents with live GitHub milestones and issues. Product direction lives in [`../direction.md`](../direction.md); accepted design calls live in [`../decisions.md`](../decisions.md).
+## Milestones
 
-**Current milestone: [M1 Playtest Town](m1-playtest-town.md)** (journey status, in-world redesign, signs, arrival chain, scopes and waves; issues labelled `m1`).
+| # | Milestone | Status | Plan |
+| --- | --- | --- | --- |
+| M1 | Playtest Town | **Current** (issues labelled `m1`) | [m1-playtest-town.md](m1-playtest-town.md) |
+| M2 | Living Town | Outline: moderation, medic, comms, investigation (epics #145-#148) | [m2-outline.md](m2-outline.md) |
+| M3 | Framework Release | Outline: two addons, config layer, web generator, owner docs, example server, config harness | [m3-outline.md](m3-outline.md) |
+| M4 | Flagship Live | Outline: hosting and ops, staff and community, showcase | [m4-outline.md](m4-outline.md) |
+| M5 | Flagship Story | Ideas only: relocated from Chernobyl, life on Everon 1989 | epic #214 |
 
-**Next: [M2 Living Town](m2-outline.md)** (outline only: moderation, medic, comms, investigation; epics labelled `m2` and `epic`). Planned in full after the M1 playtests.
+Each outline is planned in full only after the milestone before it closes.
 
 ## Rules for every scope
 
-- **1989 Everon.** Jobs, places, and copy fit the period. A taxi rank, a fuel delivery, a parcel run. No phone apps.
-- **Base-game assets.** Doors, vehicles, weapons, medical supplies, fuel cans, and buildings come from Arma Reforger. A scope configures those prefabs. It does not add a weapon pack, a vehicle pack, or aircraft.
-- **Framework, then one example.** Ship the hook and one vanilla setup. Server owners retune items and places in config.
-- **Money stays physical.** Cash is the MoneyStack. The ATM is the only cash-to-account boundary. Stolen money leaves as cash.
-- **In the world.** The place is the interface: a bank vault, a jail door, a till, a hideout machine. See [design](../design.md).
-- **Reuse before writing.** [sources.md](sources.md) names the script or prefab to extend: this repo first, then Arma Reforger, then [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) (MIT).
-- **Three gates.** [testing/README.md](testing/README.md) is the headless case, the DebugWorld entity, and the screenshot for each setup.
+- **Framework, then flagship.** Ship the hook and one 1989 Everon setup. Server
+  owners retune items and places in config. Core is era-agnostic; 1989 lives in
+  the `LF_Everon1989` pack from M3.
+- **1989 Everon.** Flagship jobs, places, and copy fit the period. A taxi rank, a
+  fuel delivery, a parcel run. No phone apps.
+- **Base-game assets.** Doors, vehicles, weapons, medical supplies, fuel cans,
+  and buildings come from Arma Reforger. A scope configures those prefabs. It
+  does not add a weapon pack, a vehicle pack, or aircraft.
+- **Money stays physical.** Cash is the MoneyStack. The ATM is the only
+  cash-to-account boundary. Stolen money leaves as cash.
+- **In the world.** The place is the interface: a bank vault, a jail door, a
+  till, a hideout machine. See [design](../design.md).
+- **Reuse before writing.** [sources.md](sources.md) names the script or prefab
+  to extend: this repo first, then Arma Reforger, then Overthrow and
+  [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) (MIT).
+- **Three gates.** [testing/README.md](testing/README.md) is the headless case,
+  the DebugWorld entity, and the screenshot for each setup.
+- **Proof classes.** In-session checks do not prove a restart. A host-only run
+  does not prove a dedicated server.
 
-## Phases
+## Scope cards
 
-| Phase | What it is | Doc |
+| Scope | Player loop | Milestone |
 | --- | --- | --- |
-| Alpha | A small group plays the systems already in the repo | [phases/alpha.md](phases/alpha.md) |
-| Release | The first public feature set | [phases/release.md](phases/release.md) |
-| After release | Fix what play exposes, then the larger missing loops | [phases/after-release.md](phases/after-release.md) |
+| [Forced entry](scopes/crime/forced-entry.md) | A charge opens a door or container until someone repairs it | In the tree (M1) |
+| [Bank robbery](scopes/crime/bank-robbery.md) | Breach the vault, carry the cash out in bags | In the tree (M1) |
+| [Hospital robbery](scopes/crime/hospital-robbery.md) | Take the till, breach the medicine cabinet | In the tree (M1) |
+| [Contraband](scopes/crime/contraband.md) | Gather, process at the hideout, run a convoy | In the tree (M1) |
+| [Jailing](scopes/police/jailing.md) | A sentence at a placed jail | In the tree (M1) |
+| [Police ranks](scopes/police/ranks.md) | Rank gates duty kit drawn from vanilla gear | In the tree (M1) |
+| [Organizations](scopes/ownership/organizations.md) | Persistent groups, shared funds, bought upgrades | In the tree (M1) |
+| [Hideouts](scopes/ownership/hideouts.md) | The building an organization owns | In the tree (M1) |
+| [Vehicles](scopes/ownership/vehicles.md) | Own and buy base-game vehicles | In the tree (M1) |
+| [Resources](scopes/work/resources.md) | The legal gather, process, sell chains | In the tree (M1) |
+| [Civilian jobs](scopes/work/civilian-jobs.md) | Taxi, fuel delivery, parcel delivery, with levels | In the tree (M1) |
+| [UI kit](scopes/later/ui-kit.md) | Shared 1989 menu parts | In the tree; menu migration not planned |
+| [Jailbreak](scopes/crime/jailbreak.md) | The same breach opens the jail door | M2 |
+| [Gas station robbery](scopes/crime/gas-station-robbery.md) | Rob the till | M2 |
+| [Police missions](scopes/later/police-missions.md) | A mission board for on-duty police | M4 |
+| [Private housing](scopes/later/housing.md) | Buy, rent, and furnish a home; the dacha | M5 |
+| [Crafting](scopes/later/crafting.md) | A general bench; cooking and food | M5 |
+| [Tasks](scopes/later/tasks.md) | Workplace tasks; the state factory | M5 |
+| [Events](scopes/later/events.md) | World events | Parked |
 
-Widen the test only after the smaller group can finish a session on the basic loops. There is no release date in this plan.
-
-## Release scopes
-
-| Scope | Player loop | Doc |
-| --- | --- | --- |
-| Forced entry | A charge opens a door or container until someone repairs it | [scopes/crime/forced-entry.md](scopes/crime/forced-entry.md) |
-| Bank robbery | Breach the vault, carry the cash out in bags | [scopes/crime/bank-robbery.md](scopes/crime/bank-robbery.md) |
-| Jailbreak | The same breach opens the jail door | [scopes/crime/jailbreak.md](scopes/crime/jailbreak.md) |
-| Hospital robbery | Take the till, breach the medicine cabinet | [scopes/crime/hospital-robbery.md](scopes/crime/hospital-robbery.md) |
-| Gas station robbery | Rob the till | [scopes/crime/gas-station-robbery.md](scopes/crime/gas-station-robbery.md) |
-| Jailing | A sentence at a placed jail | [scopes/police/jailing.md](scopes/police/jailing.md) |
-| Police ranks | Rank gates duty kit drawn from vanilla gear | [scopes/police/ranks.md](scopes/police/ranks.md) |
-| Organizations | Persistent groups, shared funds, bought upgrades | [scopes/ownership/organizations.md](scopes/ownership/organizations.md) |
-| Hideouts | The building an organization owns | [scopes/ownership/hideouts.md](scopes/ownership/hideouts.md) |
-| Contraband | Gather, process at the hideout, run a convoy | [scopes/crime/contraband.md](scopes/crime/contraband.md) |
-| Resources | The legal gather → process → sell chains | [scopes/work/resources.md](scopes/work/resources.md) |
-| Civilian jobs | Taxi, fuel delivery, parcel delivery, with levels | [scopes/work/civilian-jobs.md](scopes/work/civilian-jobs.md) |
-| Vehicles | Own and buy base-game vehicles | [scopes/ownership/vehicles.md](scopes/ownership/vehicles.md) |
-
-## Already in the tree
-
-These are not re-planned as new systems. Scopes above extend them.
-
-Character creation, civilian and police factions, persistence, cash and ATM, shops and traders, gathering and processing, jobs and skill-point licenses, cash and weapon robbery, wanted level, police duty, fines, arrest and confiscation, door locks and keys, vehicle locks, and a quest tracker.
-
-Ground truth for behavior: [features.md](../features.md). Design intent beside the code: `addons/LifeFramework/Scripts/Game/Feature/*/Feature.md`.
-
-## After release
-
-Crafting as a general bench, task content, private housing purchase, reviving, police missions, and world events. Index: [phases/after-release.md](phases/after-release.md).
+"In the tree" means the system exists; [features.md](../features.md) is the
+ground truth for its behaviour, and the card is kept as design intent. Revive
+folded into the M2 medic theme (#146). Other placed issues: police application
+#128 and jail work #127 (M2), day and night #129 (M4), bus stops #203 and trash
+cans #205 (M5).
 
 ## How to add a scope
 
-Copy the headings in [scopes/README.md](scopes/README.md). Put the file under `scopes/<area>/`. Name the phase. If it needs a new mesh, a new weapon, or a new vehicle, it does not belong in the base mod.
+Copy the headings in [scopes/README.md](scopes/README.md). Put the file under
+`scopes/<area>/`. Name the milestone. If it needs a new mesh, a new weapon, or a
+new vehicle, it does not belong in the core or the flagship pack.

@@ -56,9 +56,9 @@ live roadmap data that the website and Discord board render.
 | M0 | **Foundation** | `release/next` merged; server-authority, restart, and dedicated-client fixes landed; CI + structural lint on every PR; one honest AGENTS.md. |
 | M1 | **Playtest Town** | The DebugWorld street is a signposted test town: a sign at spawn explains the loop, every site has a sign saying what it is and how to use it, every loop above works on a dedicated server, and the visual harness proves each site from the player's view. Published on the Workshop; sessions hosted from the maintainer's PC; feedback collected through GitHub issues. |
 | M2 | **Living town** | Four themes work on a dedicated server in the playtest village: moderation (an incident log and Game Master tools), medic (downed state, EMS, ambulance), comms (payphones, pagers, a dispatch board), and investigation (witnesses and evidence behind the vague-description wanted system). M2 closes by placing the loops in one Everon town from reusable site prefabs, on MainWorld, with a filmed tour. Outline: [m2-outline](roadmap/m2-outline.md). |
-| M3 | **Framework release** | A server owner can install from the Workshop, configure from documented files, add a job or shop without writing script, and host on their own box. |
-| M4 | **Flagship live** | A recurring public 1989 Everon server with its own community. |
-| M5 | **Flagship story** | After the flagship server goes live: the flagship's own story and content, relocated from Chernobyl and starting life again on Everon in 1989. |
+| M3 | **Framework release** | A server owner installs the `LifeFramework` core and the `LF_Everon1989` pack from the Workshop, sets every price, job, crime, licence, vehicle, zone and save rule in one `config.json` (by hand or with the web generator) without forking, and hosts on their own box; the config harness proves it. Outline: [m3-outline](roadmap/m3-outline.md). |
+| M4 | **Flagship live** | Opens once M3 has shipped: a recurring public 1989 Everon server for about 40 players, first in ad hoc sessions from the maintainer's PC, then 24/7 on a rented box once sessions fill and donations cover it. No closing bar; it keeps iterating. Outline: [m4-outline](roadmap/m4-outline.md). |
+| M5 | **Flagship story** | The flagship's own story and content: relocated from Chernobyl, starting life again on Everon in 1989 (housing, the dacha, food, the state factory, bus stops). Ideas epic #214. |
 
 Until 2026-11-08 M2 was "Flagship town": Everon placement, reusable site
 prefabs, and MainWorld. That work is now the closing step of M2, after the four
@@ -111,7 +111,7 @@ Most mod repos stop at "it compiles". Ours proves the world plays:
 ## Not now
 
 - New feature systems beyond the release scopes, until M1 is done.
-- Rented hosting; the maintainer's PC hosts playtests for now.
+- Rented hosting before M4 goes 24/7; the maintainer's PC hosts playtests and the first M4 sessions.
 - Monetization of the framework, and anything on the flagship beyond cosmetic
   donations.
 - Scheduled and organised events (parked for a later phase).

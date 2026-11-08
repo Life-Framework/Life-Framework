@@ -1,6 +1,6 @@
 # Jailing
 
-Phase: Release
+Milestone: In the tree (M1)
 Extends: `Police` arrest, `Account` wanted
 
 ## Player loop

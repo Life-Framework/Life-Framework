@@ -72,12 +72,8 @@ $grp GenericEntity {
   {
    GenericEntity IronOre_Debug : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
     components {
-     ActionsManagerComponent "{5D6EFBCB5886F4B6}" {
-      additionalActions {
-       EL_GatherAction "{A9004BE06873B6F6}" {
-        m_sNodeId "iron-debug"
-       }
-      }
+     LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+      m_sNodeId "iron-debug"
      }
     }
      coords 5.724 0 2.861
@@ -89,12 +85,8 @@ $grp GenericEntity {
   {
    GenericEntity GoldOre_Debug : "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et" {
     components {
-     ActionsManagerComponent "{13F1B83A91F884BB}" {
-      additionalActions {
-       EL_GatherAction "{BE08537541460600}" {
-        m_sNodeId "gold-debug"
-       }
-      }
+     LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+      m_sNodeId "gold-debug"
      }
     }
     coords 4.842 0 4.976
@@ -106,12 +98,8 @@ $grp GenericEntity {
   {
    GenericEntity CopperOre_Debug : "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et" {
     components {
-     ActionsManagerComponent "{7E1735A0AB21F6F6}" {
-      additionalActions {
-       EL_GatherAction "{7892B435C00A9A4F}" {
-        m_sNodeId "copper-debug"
-       }
-      }
+     LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+      m_sNodeId "copper-debug"
      }
     }
     coords 4.377 0 6.931

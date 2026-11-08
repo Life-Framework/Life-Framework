@@ -618,24 +618,41 @@
   iron-bar trader (45 cash, the ShopPrices iron-bar sell price). That iron
   node requires the pickaxe in hand. DebugWorld keeps Apple, Plum, Tomato,
   Logging, Mining, Cement, Gravel, and Sand. `IronOre_Debug` uses
-  `iron-debug` (4 nuggets, no held tool) so one gather still feeds both
-  furnaces. `GoldOre_Debug` and `CopperOre_Debug` use the tool-free debug
-  rows with the prefab yields.
+  `iron-debug` (4 nuggets per piece) so one piece still feeds both furnaces.
+  `GoldOre_Debug` and `CopperOre_Debug` use the debug rows with the prefab
+  yields. Every ore rock still needs the pickaxe (the hit zone's tool list).
 
 ### `EL_DestructibleResourceComponent` + `EL_DestructibleResourceHitZone` — `Feature/Resources/`
-- ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit.
-- ⚠️ Non-tool or unmapped damage source deals **0 damage silently** (no
-  feedback); damage-source prefab string comparison is fragile on casing.
+- ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit. The
+  tool match compares prefab GUIDs, so path casing no longer matters. A melee
+  hit from a tool the resource does not list logs `[ELDebug:Resources]` and
+  deals 0 (2026-11-08).
 
-### `LF_MiningPhases` + `LF_MiningSpawn` + `LF_MiningForge` — `Feature/Mining/`
-- ✅ Ore health phases (verified 2026-10-11). A strike counts only when its
-  damage equals the tool damage. Non-negative damage walks phase budgets in
-  order; a budget of zero stops the walk. Passing the last phase destroys the
-  ore when delete-after-final is set. Applying a phase sets health to that
-  phase's budget and swaps the mesh when the phase names one. An empty mesh
-  keeps the current mesh. No phase data restores the original health and the
-  original mesh. Ported from EveronLife `EL_DestructionMultiPhaseSingleComponent`
-  and `EL_ToolHitZone`. Logic test `mining/phases`.
+### `LF_OreNodeComponent` + `LF_OreYield` — `Feature/Mining/` (2026-11-08)
+- ✅ You mine ore by swinging the pickaxe at the rock; there is no gather
+  prompt. The hit goes through `EL_DestructibleResourceHitZone` (pickaxe 20
+  damage, the axe 0). Every 60 damage (three swings) a piece breaks off and the
+  node row's yield drops as real nugget items beside the rock, toward the
+  miner. After the row's `m_iMaxGathers` pieces the rock crumbles (hidden, no
+  collision) and grows back after the row's `m_fCooldownMs`. Server-
+  authoritative; clients get the hit dust, a shake and the vanilla rock-break
+  sound by broadcast, and the spent state by RplProp (JIP-safe). The spent
+  state is not saved. Ported from thebonbon `EL_ToolHitZone` and
+  `EL_RandomPrefabSpawnable` with permission. Tests: LOGIC `mining/ore-yield`,
+  WORLD `mining/pickaxe-hits`.
+- ✅ Nuggets and bars render textured: `EL_QuantityComponent.UpdateStackModel`
+  no longer re-sets the base mesh, which dropped the prefab's material
+  overrides and rendered the items white. Cash, pickaxe, axe, ore and bar
+  inventory previews use the Front preset with a narrow FOV.
+- ⚠️ Inventory previews draw the mesh's baked material and ignore the prefab's
+  material override, so nuggets preview as grey stone and bars as red brick
+  (re-applying the remap to `ResolvePreviewEntityForPrefab` did not change the
+  render, 2026-11-08). The fix is a mesh that bakes the ore material (Workbench
+  FBX import). The pickaxe uses the pistol rig and is gripped at the handle end;
+  `HandAdditiveTranslation` has no effect on a weapon, so moving the grip also
+  needs a re-exported mesh with the pivot up the handle.
+
+### `LF_MiningSpawn` + `LF_MiningForge` — `Feature/Mining/`
 - ✅ Weighted ore spawn. A roll in `[0, total)` maps onto the first bin, including
   a roll of 0. The spawn count is the shortfall to the configured amount, and
   an over-full area spawns nothing. An empty list logs `EL_Debug.Error`.
@@ -1495,6 +1512,7 @@
 - A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. It reuses a play session that is already up. Faction, character creation, death, quest, police, and spawn menus were not migrated.
 - (2026-11-08, M1-13) Skins: `LF_UIScreen.Open(parts, skin)` paints from an `LF_UISkin` (`Paper()` is the old look and the default, `Terminal()` the ATM, `PriceList()` the shop): frame colours, face, sheet width, blur on or off, and, for skins that ask, the vanilla button text colours (and its arrow glyph hidden). A KEYS part (`LF_UIKeyRow.layout`, `LF_UIPart.CreateKeys`) lays buttons side by side; MenuLeft/MenuRight walk the row and MenuUp/MenuDown keep the column in the next row. `BindHotkey(action, name)` reports an input action as a button press while no field is focused. `SetButtonText`, `SetListHeight`. `LF_UISound.Play` plays a UI sound event. Seen on a dedicated client (agent-box session, 640x360): the frame `Paper` panel draws nearly transparent and the blur darkens it, so paper sheets read dark; the price list turns the blur off to stay legible. The registration form shows the same on that client.
 - ✅ (2026-11-08) Opaque paper. The frame's `Metal`, `Paper`, `Rule` and the row plates were `PanelWidget`s, which draw the engine default style's panel image under their colour, so the sheet read dark and see-through. They are untextured `ImageWidget`s now (the vanilla solid-fill pattern, `DialogBackground.layout`), the paper is opaque warm off-white (238, 230, 212), and a full-screen `BackgroundBlur` behind the `Sheet` dims and softens the world. Paper skins paint button labels in ink with a red focus. A field gets an ink caption above it (`<Part>Caption`) because the vanilla placeholder draws light grey. `LF_UIEditBox.layout` now overrides the base `SCR_EditBoxComponent` by its GUID, which removes the stray "Editbox" label and applies the paper-coloured well. The sheet is 900 tall so the price list's Leave and the ATM's EXIT fit. Seen on a session client (WORLD `ui-kit/paper-sheet`, flow `ui-paper`).
+- ✅ (2026-11-09) List rows span the sheet. A row sized to its text and sat centred in the scroll, so on the 900-wide price list the car lot cut "needs $2,500" to "needs $2," and "$1,000" to "$1,00". `AddListRow` sets each row to the sheet width less `LIST_ROW_INSET` (list and row padding, scrollbar). Seen on a laptop session client at 1920x1080: the lot and the general store.
 
 ### Signs — `Scripts/Game/Feature/Signs/`
 - ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules, next). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules, Next; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.

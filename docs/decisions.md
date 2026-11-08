@@ -474,6 +474,18 @@ swap them.
 harness and a filming harness run on any machine with the game; clips are PR
 evidence and showcase material.
 
+**2026-11-08 — Ore is mined by swinging a pickaxe at the rock.** The "F to
+gather" action on ore rocks is gone. A pickaxe hit takes the same melee damage
+path as woodcutting; every few hits a nugget breaks off and drops beside the
+rock, and a spent rock crumbles and grows back on its ResourceChains.conf
+cooldown. The maintainer has thebonbon's permission to take the pickaxe-hit
+mining from `thebonbon/EveronLife` branch `enhancement/Main_World` (MIT); the
+port keeps a `// Ported from` header and a THIRD_PARTY.md line. Why: playtest
+feedback asked for physical mining instead of a prompt (decision "In-world
+first"). What it means for code: `LF_OreNodeComponent` owns yield, depletion
+and grow-back on the server; the hit zone only gates the tool. The spent state
+is not saved, so a restart grows every rock back.
+
 **2026-11-08 — Scheduled events are parked.** Organised events (a rally, a gang
 war night, a strike at the factory) are interesting for a later roadmap phase
 and are not planned for M2. Why: the sandbox has to prove its emergent loops
@@ -492,3 +504,45 @@ criminals something to do when the other side is absent. What it means for
 code: `docs/roadmap/m2-outline.md` holds the outline; M2 is planned in full
 after the M1 playtests. Placing the town in Everon from reusable site prefabs
 stays in M2 as its closing step (`docs/direction.md`).
+
+**2026-11-08 — The framework ships as two addons in one repo.** `LifeFramework`
+is the era-agnostic core: every system, the persistence layer, the test suite,
+and neutral defaults. `LF_Everon1989` is the flagship pack: the 1989 village and
+town, period prefabs, flagship values, and period copy. Both live in this
+monorepo and ship as two Workshop items. The pack depends on the core; the core
+never references the pack. Why: an owner must be able to swap the flagship for
+their own pack without forking the systems. What it means for code: M3 moves
+pack resources with their `.meta` (the GUIDs stay the same), and a validator
+guards the one-way boundary (`docs/roadmap/m3-outline.md`).
+
+**2026-11-08 — Owners configure through one JSON file over shipped defaults.**
+Shipped `.conf` files are the defaults (core, then pack). The owner writes
+`$profile:LifeFramework/config.json` with sections for jobs, shops, crime,
+licences, vehicles, zones, and persistence. The owner file wins. An invalid
+field logs, falls back to its default, and the server stays up. Unknown keys
+are kept. Clients get what they need through a versioned stream. Why: Workshop
+paks are read-only, and Overthrow's knobs-only JSON forces owners to fork for
+real changes. What it means for code: every `LF_*Config.Get()` reads effective
+values through one config service.
+
+**2026-11-08 — One JSON Schema is the source for config.** A checked-in
+`config.schema.json`, generated from the script config classes, feeds the game's
+validation, `tools\cli config-check`, the web generator on life-framework.org,
+and the owner docs. CI fails when it drifts. Why: four copies of the field list
+would disagree within a release.
+
+**2026-11-08 — The flagship opens after M3, from the maintainer's PC first.**
+M4 starts once M3 has shipped, on the released core and pack. Sessions are ad
+hoc, sized for about 40 players, and hosted from the maintainer's PC. The
+server moves to a rented box for 24/7 play once sessions fill several times in
+a row and donations cover three months of the box. M4 has no closing bar. Why:
+the flagship proves the same path owners take, and rent is paid only when
+demand and funding exist.
+
+**2026-11-08 — Unplaced scopes go to the milestone they fit.** The Alpha,
+Release, and After-release phases are retired; milestones are the one plan. Jailbreak,
+gas-station robbery, the police application (#128), and jail work (#127) go to
+M2. Day and night (#129) and police missions go to M4. Bus stops (#203), trash
+cans (#205), housing, crafting, and tasks go to M5 with the flagship story
+(#214). Revive folds into the M2 medic theme. Scheduled events stay parked. M3
+carries no new gameplay.

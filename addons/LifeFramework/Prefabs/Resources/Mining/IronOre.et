@@ -1,52 +1,8 @@
-GenericEntity {
+GenericEntity : "{F36375B16DB07ABD}Prefabs/Resources/Mining/MinableOre.et" {
  ID "59A73088FCD22CE8"
  components {
-  MeshObject "{59A73088D86C4A23}" {
-   Object "{6399C4DB701BF230}Assets/Resources/Mining/MetalOre.xob"
-   Materials {
-    MaterialAssignClass "{59A73088CE0292A6}" {
-     SourceMaterial "Material"
-     AssignedMaterial "{29473C87C35726A4}Assets/Resources/Mining/Data/Iron.emat"
-    }
-   }
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_sNodeId "iron"
   }
-  RigidBody "{59A73088D86C4A1C}" {
-   LayerPreset "RockFireView"
-   Mass 1000
-   AngularSleepingThreashold 1
-   ModelGeometry 1
-   Static 1
-  }
-  RplComponent "{59A73088D86C4A13}" {
-  }
- ActionsManagerComponent "{5D6EFBCB5886F4B6}" {
-    ActionContexts {
-     UserActionContext "{C956DDFEF4550380}" {
-      ContextName "Mine"
-      Position PointInfo "{C6FD59ACBB3DD0CA}" {
-      Offset 0 0.5 0
-     }
-     Radius 1.0
-    }
-   }
-   additionalActions {
-    EL_GatherAction "{A9004BE06873B6F6}" {
-     ParentContextList {
-      "Mine"
-     }
-     UIInfo UIInfo "{FC124D0739EDE540}" {
-      Name "Mine Iron"
-     }
-     Duration 5
-     m_sNodeId "iron"
-     m_GatherItemPrefab "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et"
-     m_GatherAmount 1
-     m_GatherAmountMax 5
-      m_GatherTimeout 300000
-    }
-    }
-   }
-  }
-  Flags 0x403 0
-  coords 103.106 0.097 132.47
+ }
 }

@@ -1,6 +1,6 @@
 # UI kit
 
-Phase: After release
+Milestone: In the tree
 Extends: the workspace-widget screens already used by faction pick, character creation, and the death screen. Those screens stay as they are.
 
 ## Player loop
