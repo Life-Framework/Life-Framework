@@ -3502,6 +3502,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{9823FC0642192065}" {
+     Id "LF-Quest_Giver_Clerk"
+     Target_en_us "Town clerk"
+     Comment "Quest menu title for the town clerk on the square (arrival chain)."
+    }
+    CustomStringTableItem "{945AA58155A88BAC}" {
+     Id "LF-Quest_Giver_Tester"
+     Target_en_us "Test quest board"
+     Comment "Quest menu title for the test quest giver in the test annex."
+    }
+    CustomStringTableItem "{DD20CCA577AB2B68}" {
+     Id "LF-Quest_Action_Clerk"
+     Target_en_us "Talk to the clerk"
+     Comment "Interaction on the town clerk NPC."
+    }
+    CustomStringTableItem "{002662BFCD8D20B3}" {
+     Id "LF-Quest_ArrivalRegister_Title"
+     Target_en_us "New in town"
+     Comment "Arrival chain step 1 title."
+    }
+    CustomStringTableItem "{8D29DF46F50BC183}" {
+     Id "LF-Quest_ArrivalRegister_Desc"
+     Target_en_us "You are new in town and carry no papers. The clerk on the square keeps the register: talk to him and he hands you your ID card."
+     Comment "Arrival chain step 1: talk to the clerk, receive the ID card."
+    }
+    CustomStringTableItem "{D6DBC19947C15B40}" {
+     Id "LF-Quest_ArrivalBoard_Title"
+     Target_en_us "The town board"
+     Comment "Arrival chain step 2 title."
+    }
+    CustomStringTableItem "{B58FFAF3FDBE501F}" {
+     Id "LF-Quest_ArrivalBoard_Desc"
+     Target_en_us "Your ID card is in your pocket. Read the town board on the square first: it shows where everything is."
+     Comment "Arrival chain step 2: shown when the clerk hands the card over. Read the town map sign."
+    }
+    CustomStringTableItem "{E9005E06D70F9493}" {
+     Id "LF-Quest_ArrivalWork_Title"
+     Target_en_us "First wages"
+     Comment "Arrival chain step 3 title."
+    }
+    CustomStringTableItem "{172E338F853864B0}" {
+     Id "LF-Quest_ArrivalWork_Desc"
+     Target_en_us "Now earn your first wages. The post office is down the street: at the counter, Take courier work and Pick up parcel, carry it to the drop at the east end of the street, and Complete the run. Its sign tells you more."
+     Comment "Arrival chain step 3: sign up at the post office and deliver one parcel."
+    }
+    CustomStringTableItem "{94FCA4937AA67918}" {
+     Id "LF-Quest_ArrivalBank_Title"
+     Target_en_us "Bank it"
+     Comment "Arrival chain step 4 title."
+    }
+    CustomStringTableItem "{D85E266C2ACFBDC1}" {
+     Id "LF-Quest_ArrivalBank_Desc"
+     Target_en_us "Paid in cash. Cash in a pocket is lost if you die, money in the bank is not. Deposit some at the ATM on the bank wall, next to the post office."
+     Comment "Arrival chain step 4: deposit any amount at the ATM."
+    }
+    CustomStringTableItem "{69E9027CB344A15B}" {
+     Id "LF-Quest_ArrivalDone_Title"
+     Target_en_us "Settled in"
+     Comment "Arrival chain step 5 title."
+    }
+    CustomStringTableItem "{FACD3C7B2CC8836C}" {
+     Id "LF-Quest_ArrivalDone_Desc"
+     Target_en_us "Paid and banked. Go back to the clerk on the square."
+     Comment "Arrival chain step 5: return to the clerk."
+    }
+    CustomStringTableItem "{B01582B10F8D629D}" {
+     Id "LF-Quest_ArrivalDone_TurnIn"
+     Target_en_us "Welcome to Everon, here is something to start with. The town is yours now: the shops, the car lot, the police station and the organization office are all on the town board."
+     Comment "The clerk at the end of the arrival chain, with the welcome cash."
+    }
   }
  }
 }

@@ -1,0 +1,106 @@
+EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "DE27E685D6FE93D7"
+ components {
+  LF_QuestGiverComponent "{BC39FD5B75346EA4}" {
+   m_sGiverId "clerk"
+   m_sDisplayName "#LF-Quest_Giver_Clerk"
+   m_aQuests {
+    LF_QuestDefinition "{3836C68D1806A2F5}" {
+     m_sQuestId "arrival_register"
+     m_sTitleKey "#LF-Quest_ArrivalRegister_Title"
+     m_sDescriptionKey "#LF-Quest_ArrivalRegister_Desc"
+     m_bRewardIdCard 1
+     m_aObjectives {
+      LF_QuestObjective "{AC99E2E4D4057B7A}" {
+       m_eType TALK
+       m_iTarget 1
+       m_sFilter "clerk"
+      }
+     }
+    }
+    LF_QuestDefinition "{573EA81E210F7554}" {
+     m_sQuestId "arrival_board"
+     m_sTitleKey "#LF-Quest_ArrivalBoard_Title"
+     m_sDescriptionKey "#LF-Quest_ArrivalBoard_Desc"
+     m_sRequiredPreviousQuestId "arrival_register"
+     m_bAutoAccept 1
+     m_bAutoTurnIn 1
+     m_aObjectives {
+      LF_QuestObjective "{7E208A957A83BD93}" {
+       m_eType SIGNAL
+       m_iTarget 1
+       m_sFilter "sign.read:town_map"
+      }
+     }
+    }
+    LF_QuestDefinition "{CFE0A66FA5F16CBC}" {
+     m_sQuestId "arrival_work"
+     m_sTitleKey "#LF-Quest_ArrivalWork_Title"
+     m_sDescriptionKey "#LF-Quest_ArrivalWork_Desc"
+     m_sRequiredPreviousQuestId "arrival_board"
+     m_bAutoAccept 1
+     m_bAutoTurnIn 1
+     m_aObjectives {
+      LF_QuestObjective "{5B4B8A139B48EBFE}" {
+       m_eType SIGNAL
+       m_iTarget 1
+       m_sFilter "job.run_complete:parcel"
+      }
+     }
+    }
+    LF_QuestDefinition "{96ACCB7E50EEC362}" {
+     m_sQuestId "arrival_bank"
+     m_sTitleKey "#LF-Quest_ArrivalBank_Title"
+     m_sDescriptionKey "#LF-Quest_ArrivalBank_Desc"
+     m_sRequiredPreviousQuestId "arrival_work"
+     m_bAutoAccept 1
+     m_bAutoTurnIn 1
+     m_aObjectives {
+      LF_QuestObjective "{A733AB5AE484687A}" {
+       m_eType SIGNAL
+       m_iTarget 1
+       m_sFilter "atm.deposit"
+      }
+     }
+    }
+    LF_QuestDefinition "{FB4B3A2C99596DB9}" {
+     m_sQuestId "arrival_done"
+     m_sTitleKey "#LF-Quest_ArrivalDone_Title"
+     m_sDescriptionKey "#LF-Quest_ArrivalDone_Desc"
+     m_sTurnInKey "#LF-Quest_ArrivalDone_TurnIn"
+     m_sRequiredPreviousQuestId "arrival_bank"
+     m_bAutoAccept 1
+     m_iRewardMoney 250
+     m_aObjectives {
+      LF_QuestObjective "{F212DFCA9CE7719F}" {
+       m_eType TALK
+       m_iTarget 1
+       m_sFilter "clerk"
+      }
+     }
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{A226783948538F34}" {
+     ContextName "Quest"
+     Position PointInfo "{BF86CAF713B718B4}" {
+      Offset 0 0.5 0
+     }
+     Radius 2.0
+    }
+   }
+   additionalActions + {
+    LF_QuestAction "{76B98B5462015C42}" {
+     ParentContextList {
+      "Quest"
+     }
+     UIInfo UIInfo "{046955CA1659B55A}" {
+      Name "#LF-Quest_Action_Clerk"
+     }
+    }
+   }
+  }
+ }
+}

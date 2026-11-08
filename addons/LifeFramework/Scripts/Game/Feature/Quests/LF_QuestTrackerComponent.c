@@ -21,6 +21,19 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 	protected ref ScriptInvoker m_OnLogReceived;
 
+	//! Reentrancy guard: a turn-in inside SettleChain settles again at its end.
+	protected bool m_bSettling;
+	static const int MAX_CHAIN_PASSES = 16;
+	static const string HANDOVER_SOUND = "SOUND_PICK_UP";
+
+	//! How long a chain step's errand or the giver's turn-in line stays up: long enough to read.
+	static const float STORY_SECONDS = 12.0;
+	static const int GREET_DELAY_MS = 5000;
+
+	//! How close (meters) a reader must stand to a sign for its read to count. The Read action
+	//! shows within a few meters; the extra room covers stepping back while the card is open.
+	static const float SIGN_READ_RADIUS = 6.0;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -141,7 +154,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server-side accept: prerequisite snapshot, fail-safe guards, notification.
-	bool AcceptQuest(string questId)
+	//! \param chained True for a chain step accepted on its own: the player hears the next
+	//! errand (the step's description) instead of the generic "accepted" hint.
+	bool AcceptQuest(string questId, bool chained = false)
 	{
 		if (!Replication.IsServer())
 			return false;
@@ -183,10 +198,98 @@ class LF_QuestTrackerComponent : ScriptComponent
 			return false;
 		}
 
-		EL_Debug.Log("Quests", string.Format("accepted quest=%1", questId));
-		Notify("#LF-Quest_Accepted", "#LF-Quest_Title");
+		if (chained)
+		{
+			EL_Debug.Log("Quests", string.Format("accepted quest=%1 (chain step)", questId));
+			Notify(def.m_sDescriptionKey, def.m_sTitleKey, STORY_SECONDS);
+		}
+		else
+		{
+			EL_Debug.Log("Quests", string.Format("accepted quest=%1", questId));
+			Notify("#LF-Quest_Accepted", "#LF-Quest_Title");
+		}
+
 		PushLog();
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, at spawn: a player who has not been handed their ID card yet hears where to get it
+	//! (the card quest's description), once the HUD is up. Everyone else hears nothing.
+	void GreetNewcomer()
+	{
+		if (!Replication.IsServer())
+			return;
+
+		GetGame().GetCallqueue().CallLater(DoGreetNewcomer, GREET_DELAY_MS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(DoGreetNewcomer);
+
+		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DoGreetNewcomer()
+	{
+		foreach (string questId, LF_QuestDefinition def : LF_QuestManager.GetInstance().GetDefinitions())
+		{
+			if (!def || !def.m_bRewardIdCard)
+				continue;
+			if (m_Tracker.GetStatus(questId) != LF_EQuestStatus.AVAILABLE)
+				continue;
+
+			EL_Debug.Log("Quests", string.Format("newcomer pointed at quest=%1", questId));
+			Notify(def.m_sDescriptionKey, def.m_sTitleKey, STORY_SECONDS);
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: moves a chain along. Completed auto turn-in steps are turned in where the player
+	//! stands, and auto-accept steps whose previous quest is turned in start. Runs after every
+	//! event, turn-in, and restore; a restored mid-chain player gets the next step back.
+	//! \return How many steps this call turned in or accepted.
+	int SettleChain()
+	{
+		if (!Replication.IsServer() || m_bSettling)
+			return 0;
+
+		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		map<string, ref LF_QuestDefinition> defs = manager.GetDefinitions();
+		m_bSettling = true;
+
+		int moved = 0;
+		array<string> questIds = {};
+		// Each pass can open the next step; a chain longer than this is a misconfiguration loop.
+		for (int pass = 0; pass < MAX_CHAIN_PASSES; pass++)
+		{
+			int before = moved;
+
+			m_Tracker.CollectAutoTurnIns(defs, questIds);
+			foreach (string turnInId : questIds)
+			{
+				if (TurnInQuest(turnInId))
+					moved++;
+			}
+
+			m_Tracker.CollectAutoAccepts(defs, questIds);
+			foreach (string acceptId : questIds)
+			{
+				if (AcceptQuest(acceptId, true))
+					moved++;
+			}
+
+			if (moved == before)
+				break;
+		}
+
+		m_bSettling = false;
+		return moved;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -233,9 +336,16 @@ class LF_QuestTrackerComponent : ScriptComponent
 		int rewardItems = 0;
 		if (def.m_aRewardItems)
 			rewardItems = def.m_aRewardItems.Count();
-		EL_Debug.Log("Quests", string.Format("turned in quest=%1 reward=money:%2 xp:%3 items:%4", questId, def.m_iRewardMoney, def.m_fRewardXp, rewardItems));
-		Notify("#LF-Quest_TurnedIn", "#LF-Quest_Title");
+		EL_Debug.Log("Quests", string.Format("turned in quest=%1 reward=money:%2 xp:%3 items:%4 idcard:%5", questId, def.m_iRewardMoney, def.m_fRewardXp, rewardItems, def.m_bRewardIdCard));
+
+		// A chain step turned in on its own stays quiet; the next step's errand is the news.
+		if (!def.m_sTurnInKey.IsEmpty())
+			Notify(def.m_sTurnInKey, def.m_sTitleKey, STORY_SECONDS);
+		else if (!def.m_bAutoTurnIn)
+			Notify("#LF-Quest_TurnedIn", "#LF-Quest_Title");
+
 		PushLog();
+		SettleChain();
 		return true;
 	}
 
@@ -309,6 +419,13 @@ class LF_QuestTrackerComponent : ScriptComponent
 		if (def.m_iRewardMoney > 0)
 			EL_MoneyUtils.GiveCash(owner, def.m_iRewardMoney);
 
+		if (def.m_bRewardIdCard)
+			LF_QuestRewards.HandIdCard(owner, LF_QuestRewards.AccountOf(owner));
+
+		// A giver hands the reward over: the player hears it land in their pockets.
+		if (def.m_iRewardMoney > 0 || def.m_bRewardIdCard || (def.m_aRewardItems && !def.m_aRewardItems.IsEmpty()))
+			LF_PlayerInteraction.PlayHandoverSound(owner, HANDOVER_SOUND);
+
 		if (def.m_fRewardXp > 0)
 		{
 			EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(owner);
@@ -381,6 +498,8 @@ class LF_QuestTrackerComponent : ScriptComponent
 		{
 			EL_Debug.Log("Quests", string.Format("restored %1 turned-in quest(s)", restored));
 			PushLog();
+			// Only turn-ins persist: a player who left mid-chain gets the next step back.
+			SettleChain();
 		}
 
 		return restored;
@@ -501,7 +620,52 @@ class LF_QuestTrackerComponent : ScriptComponent
 		if (!IsAtQuestGiver(questId, "accept"))
 			return false;
 
-		return AcceptQuest(questId);
+		if (!AcceptQuest(questId))
+			return false;
+
+		// The player is talking to the giver right now: a "talk to me" objective counts at once,
+		// instead of asking them to close the menu and open it again.
+		LF_QuestManager.GetInstance().ReportTalk(GetOwner(), LF_QuestManager.GetInstance().GetGiverOfQuest(questId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the local player read a sign. The server checks the sign stands beside them and
+	//! reports the SIGNAL "sign.read:<id>".
+	void AskSignRead(string signId)
+	{
+		if (Replication.IsServer())
+		{
+			RequestSignRead(signId);
+			return;
+		}
+
+		Rpc(RpcAsk_SignRead, signId);
+	}
+
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SignRead(string signId)
+	{
+		RequestSignRead(signId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a client says its player read signId. Counted only when a sign with that id
+	//! stands within SIGN_READ_RADIUS, or a client could read the town board from anywhere.
+	//! \return True when the read was reported.
+	bool RequestSignRead(string signId)
+	{
+		if (!Replication.IsServer())
+			return false;
+
+		if (!LF_QuestSignals.IsSignNear(GetOwner(), signId, SIGN_READ_RADIUS))
+		{
+			EL_Debug.Warn("Quests", string.Format("sign read refused sign=%1 (no such sign within %2 m)", signId, SIGN_READ_RADIUS));
+			return false;
+		}
+
+		LF_QuestManager.GetInstance().ReportSignal(GetOwner(), LF_QuestSignals.SignRead(signId));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -559,16 +723,16 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_Notify(string message, string title)
+	protected void RpcDo_Notify(string message, string title, float duration)
 	{
-		EL_Utils.Notify(message, title, 4.0);
+		EL_Utils.Notify(message, title, duration);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Notify(string message, string title)
+	protected void Notify(string message, string title, float duration = 4.0)
 	{
 		if (!Replication.IsServer())
 			return;
-		Rpc(RpcDo_Notify, message, title);
+		Rpc(RpcDo_Notify, message, title, duration);
 	}
 }

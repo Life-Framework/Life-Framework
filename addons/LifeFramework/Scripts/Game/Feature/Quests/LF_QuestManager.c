@@ -157,6 +157,37 @@ class LF_QuestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A named world signal (LF_QuestSignals keys) for the user's SIGNAL objectives.
+	//! \return True when any of the user's quests moved.
+	bool ReportSignal(IEntity user, string key)
+	{
+		if (key.IsEmpty())
+		{
+			EL_Debug.Warn("Quests", "signal skipped: empty key");
+			return false;
+		}
+
+		return Route(user, MakeEvent(LF_EQuestEventType.SIGNAL, key, 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the player turned in a quest that hands over the ID card (m_bRewardIdCard).
+	//! EL_SpawnLogic then prints them a card on every spawn, as it did for everyone before.
+	bool HasEarnedIdCard(string playerUid)
+	{
+		if (playerUid.IsEmpty())
+			return false;
+
+		foreach (string questId, LF_QuestDefinition def : m_mDefinitions)
+		{
+			if (def && def.m_bRewardIdCard && LF_Progression.HasTurnedIn(playerUid, questId))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A kill counts toward the KILLER's quests, filtered by the victim's faction.
 	void ReportKill(IEntity victim, IEntity killer)
 	{
@@ -243,6 +274,7 @@ class LF_QuestManager
 		{
 			tracker.PushLog();
 			LogEvent(ev);
+			tracker.SettleChain();
 		}
 		return changed;
 	}

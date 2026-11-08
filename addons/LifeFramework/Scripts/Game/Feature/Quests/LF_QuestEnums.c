@@ -14,7 +14,8 @@ enum LF_EQuestStatus
 //------------------------------------------------------------------------------------------------
 //! World event types the quest manager routes to trackers. Each maps to an existing
 //! gameplay signal: a kill, a gather/process completion, a turn-in inventory report,
-//! a talk interaction, or an area entry.
+//! a talk interaction, an area entry, or a named signal. SIGNAL carries a string key
+//! (LF_QuestSignals): "sign.read:<id>", "job.run_complete:<job>", "atm.deposit".
 enum LF_EQuestEventType
 {
 	KILL,
@@ -22,7 +23,8 @@ enum LF_EQuestEventType
 	PROCESS,
 	COLLECT_REPORT,
 	TALK,
-	AREA_ENTER
+	AREA_ENTER,
+	SIGNAL
 }
 
 //------------------------------------------------------------------------------------------------

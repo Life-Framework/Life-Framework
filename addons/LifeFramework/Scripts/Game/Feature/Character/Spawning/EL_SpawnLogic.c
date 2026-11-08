@@ -12,9 +12,10 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	[Attribute(category: "New character defaults")]
 	protected ref array<ref EL_FactionLoadout> m_aFactionCharacterItems;
 
-	//! Every spawn carries an ID card printed from the account's character record. Turned off once
-	//! the town clerk hands the card over in the arrival chain (M1-18).
-	[Attribute("1", desc: "Give each spawned character their ID card (LF_IdCard). Off when the arrival chain hands it over.", category: "New character defaults")]
+	//! The town clerk hands the ID card over in the arrival chain (M1-18, a quest with
+	//! m_bRewardIdCard). From then on every spawn of that player carries a card printed from the
+	//! account's character record. On, every spawn carries one from the start (a mode with no clerk).
+	[Attribute("0", desc: "Give every spawned character their ID card (LF_IdCard), registered at the clerk or not. Off: only players who turned in the clerk's ID card quest.", category: "New character defaults")]
 	protected bool m_bGrantIdAtSpawn;
 
 	//! Player-chosen spawn locations (second stage of the faction menu), session-local.
@@ -419,8 +420,9 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	{
 		// After the inventory (starter kit or restored), so the card has a pocket to land in. A
 		// restored card comes back blank (the snapshot keeps the prefab, not the print); Grant
-		// reprints a blank carried card instead of adding a second one.
-		if (m_bGrantIdAtSpawn)
+		// reprints a blank carried card instead of adding a second one. A newcomer gets theirs from
+		// the town clerk (arrival chain); after that, every body they spawn in carries it.
+		if (m_bGrantIdAtSpawn || LF_QuestManager.GetInstance().HasEarnedIdCard(EL_Utils.GetPlayerUID(playerId)))
 			GrantIdCard(EL_PlayerAccountManager.GetInstance().GetFromCache(playerId), character);
 
 		// The account components need their ids bound to the entity; this runs on every spawn
@@ -435,6 +437,11 @@ class EL_SpawnLogic : SCR_SpawnLogic
 
 		// Level, licences, and turned-in quests live on the body; every new body gets them back.
 		LF_Progression.ApplyToCharacter(EL_Utils.GetPlayerUID(playerId), character);
+
+		// A newcomer (no card handed over yet) is pointed at the town clerk.
+		LF_QuestTrackerComponent quests = LF_QuestTrackerComponent.Cast(character.FindComponent(LF_QuestTrackerComponent));
+		if (quests)
+			quests.GreetNewcomer();
 
 		// A prisoner with time left (a rejoin or a restart mid-sentence) goes back to the cell.
 		LF_Jail.OnPlayerSpawned(EL_Utils.GetPlayerUID(playerId), character);

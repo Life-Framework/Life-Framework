@@ -1,0 +1,159 @@
+// red-proof: pending
+// tier: WORLD
+//! The town clerk in Quests.layer runs the arrival chain end to end through the public quest
+//! API: talk and register, read the town board, deliver a parcel, bank cash, return. Each
+//! SIGNAL moves only its own step, a returning player is never offered the chain again, and
+//! the ID card is handed over once.
+class LF_Test_ArrivalChain : EL_Test
+{
+	// Quests.layer: Quest_Clerk stands at 134 0 243.5; the test bodies spawn a meter from him.
+
+	override string GetName()
+	{
+		return "quests/arrival-chain";
+	}
+
+	override void Run(EL_TestContext ctx)
+	{
+		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		ctx.EqualStr("clerk", manager.GetGiverOfQuest("arrival_register"), "the clerk offers step 1");
+		ctx.EqualStr("clerk", manager.GetGiverOfQuest("arrival_done"), "the clerk offers step 5");
+		LF_QuestDefinition register = manager.GetDefinition("arrival_register");
+		ctx.True(register != null && register.m_bRewardIdCard, "step 1 hands over the ID card");
+		if (ctx.FailureCount() > 0)
+			return;
+
+		IEntity newcomer = EL_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "134 0 242.5", true);
+		IEntity returning = EL_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "134 0 242.5", true);
+		if (!newcomer || !returning)
+			return;
+
+		RunChain(ctx, manager, newcomer);
+		RunReturningPlayer(ctx, returning);
+		RunIdCardOnce(ctx, newcomer);
+
+		SCR_EntityHelper.DeleteEntityAndChildren(newcomer);
+		SCR_EntityHelper.DeleteEntityAndChildren(returning);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RunChain(EL_TestContext ctx, LF_QuestManager manager, IEntity player)
+	{
+		LF_QuestTrackerComponent tracker = LF_QuestTrackerComponent.Cast(player.FindComponent(LF_QuestTrackerComponent));
+		ctx.True(tracker != null, "the newcomer carries a quest tracker");
+		if (!tracker)
+			return;
+
+		// Step 1: accepting at the clerk is the talk.
+		ctx.True(tracker.RequestOpenGiver("clerk"), "the clerk is in reach");
+		ctx.True(tracker.RequestAccept("arrival_register"), "step 1 is accepted at the clerk");
+		ctx.True(Status(tracker, "arrival_register") == LF_EQuestStatus.COMPLETED, "talking while accepting completes step 1");
+		ctx.True(tracker.RequestTurnIn("arrival_register"), "the clerk takes step 1 back");
+		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.ACTIVE, "step 2 starts on its own");
+		ctx.True(Status(tracker, "arrival_work") == LF_EQuestStatus.AVAILABLE, "step 3 waits for step 2");
+
+		// The town board is far from the newcomer, and other signals do not count for it.
+		ctx.False(tracker.RequestSignRead("town_map_nowhere"), "a sign that is not beside the reader does not count");
+		ctx.False(manager.ReportSignal(player, LF_QuestSignals.SignRead("post_office")), "reading the post office sign does not move step 2");
+		ctx.False(manager.ReportSignal(player, LF_QuestSignals.ATM_DEPOSIT), "an early deposit does not move step 2");
+		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.ACTIVE, "step 2 still runs");
+
+		// Step 2 -> 3 -> 4 -> 5, each on its own signal, in order, with no trip back to the clerk.
+		ctx.True(manager.ReportSignal(player, LF_QuestSignals.SignRead("town_map")), "reading the town board moves step 2");
+		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.TURNED_IN, "step 2 turns in on its own");
+		ctx.True(Status(tracker, "arrival_work") == LF_EQuestStatus.ACTIVE, "step 3 starts on its own");
+
+		ctx.False(manager.ReportSignal(player, LF_QuestSignals.ATM_DEPOSIT), "a deposit before the parcel run does not move step 3");
+		ctx.False(manager.ReportSignal(player, LF_QuestSignals.JobRunComplete(EL_EJobType.TAXI)), "a taxi fare is not the parcel run");
+		ctx.True(manager.ReportSignal(player, LF_QuestSignals.JobRunComplete(EL_EJobType.PARCEL)), "a paid parcel run moves step 3");
+		ctx.True(Status(tracker, "arrival_work") == LF_EQuestStatus.TURNED_IN, "step 3 turns in on its own");
+		ctx.True(Status(tracker, "arrival_bank") == LF_EQuestStatus.ACTIVE, "step 4 starts on its own");
+
+		ctx.True(manager.ReportSignal(player, LF_QuestSignals.ATM_DEPOSIT), "a deposit moves step 4");
+		ctx.True(Status(tracker, "arrival_bank") == LF_EQuestStatus.TURNED_IN, "step 4 turns in on its own");
+		ctx.True(Status(tracker, "arrival_done") == LF_EQuestStatus.ACTIVE, "step 5 starts on its own");
+
+		// Step 5: the clerk, in person.
+		ctx.False(tracker.RequestTurnIn("arrival_done"), "step 5 is not done before the player is back");
+		int cashBefore = EL_MoneyUtils.GetCash(player);
+		ctx.True(tracker.RequestOpenGiver("clerk"), "back at the clerk");
+		ctx.True(Status(tracker, "arrival_done") == LF_EQuestStatus.COMPLETED, "talking to the clerk completes step 5");
+		ctx.True(tracker.RequestTurnIn("arrival_done"), "the clerk takes step 5 back");
+		ctx.Equal(cashBefore + manager.GetDefinition("arrival_done").m_iRewardMoney, EL_MoneyUtils.GetCash(player), "the welcome cash lands in the pockets");
+		ctx.True(manager.GetDefinition("arrival_done").m_iRewardMoney > 0, "the clerk gives a welcome");
+
+		// After step 5 nothing else is pushed.
+		foreach (string questId, LF_QuestState state : tracker.GetTracker().GetStates())
+		{
+			ctx.True(state.GetStatus() == LF_EQuestStatus.TURNED_IN, "nothing runs after the chain: " + questId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A returning player's turn-ins come back from progression (M1-10): the clerk offers nothing.
+	protected void RunReturningPlayer(EL_TestContext ctx, IEntity player)
+	{
+		LF_QuestTrackerComponent tracker = LF_QuestTrackerComponent.Cast(player.FindComponent(LF_QuestTrackerComponent));
+		if (!tracker)
+		{
+			ctx.Fail("the returning player carries no quest tracker");
+			return;
+		}
+
+		array<string> chain = {"arrival_register", "arrival_board", "arrival_work", "arrival_bank", "arrival_done"};
+		ctx.Equal(5, tracker.RestoreTurnedIn(chain), "the five turn-ins come back");
+
+		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		foreach (string questId : chain)
+		{
+			ctx.True(Status(tracker, questId) == LF_EQuestStatus.TURNED_IN, "restored as turned in: " + questId);
+			ctx.False(manager.GetDefinition(questId).IsListed(Status(tracker, questId), true), "the clerk does not list " + questId + " again");
+		}
+
+		ctx.False(tracker.RequestAccept("arrival_register"), "the clerk does not register a returning player twice");
+
+		// A player who left after step 2 picks up at step 3, not at step 1.
+		IEntity midway = EL_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "60 0 60", false);
+		if (!midway)
+			return;
+
+		LF_QuestTrackerComponent midwayTracker = LF_QuestTrackerComponent.Cast(midway.FindComponent(LF_QuestTrackerComponent));
+		if (midwayTracker)
+		{
+			array<string> firstTwo = {"arrival_register", "arrival_board"};
+			midwayTracker.RestoreTurnedIn(firstTwo);
+			ctx.True(Status(midwayTracker, "arrival_work") == LF_EQuestStatus.ACTIVE, "a player back mid-chain gets step 3 again");
+			ctx.True(Status(midwayTracker, "arrival_bank") == LF_EQuestStatus.AVAILABLE, "and not step 4");
+		}
+
+		SCR_EntityHelper.DeleteEntityAndChildren(midway);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The clerk hands the registered card over once; a second hand-over adds nothing.
+	protected void RunIdCardOnce(EL_TestContext ctx, IEntity player)
+	{
+		array<LF_IdCardComponent> cards = {};
+		LF_IdCard.FindCarried(player, cards);
+		ctx.Equal(0, cards.Count(), "a test body with no account was handed no card");
+
+		EL_PlayerAccount account = EL_PlayerAccount.Create("quests-arrival-chain");
+		account.AddCharacter(EL_PlayerCharacter.Create("Prefabs/Characters/Core/Character_Roleplay.et", "Ada", "Clerk", 30), true);
+
+		ctx.True(LF_QuestRewards.HandIdCard(player, account), "the clerk hands the registered card over");
+		ctx.False(LF_QuestRewards.HandIdCard(player, account), "a second hand-over is refused");
+		LF_IdCard.FindCarried(player, cards);
+		ctx.Equal(1, cards.Count(), "the player carries exactly one card");
+
+		LF_IdCardComponent shown = LF_IdCard.FindShown(player, account.GetActiveCharacter().GetId());
+		ctx.True(shown != null && shown.GetFirstName() == "Ada", "the card carries the registered name");
+
+		ctx.False(LF_QuestRewards.HandIdCard(player, null), "no account, no card");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected LF_EQuestStatus Status(LF_QuestTrackerComponent tracker, string questId)
+	{
+		return tracker.GetTracker().GetStatus(questId);
+	}
+}

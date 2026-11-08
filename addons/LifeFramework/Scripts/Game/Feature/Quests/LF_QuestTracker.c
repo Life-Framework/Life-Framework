@@ -120,6 +120,48 @@ class LF_QuestTracker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Chain steps ready to turn in on their own: COMPLETED quests marked m_bAutoTurnIn.
+	void CollectAutoTurnIns(map<string, ref LF_QuestDefinition> defs, notnull array<string> outQuestIds)
+	{
+		outQuestIds.Clear();
+		if (!defs)
+			return;
+
+		foreach (string questId, LF_QuestState state : m_mStates)
+		{
+			if (state.GetStatus() != LF_EQuestStatus.COMPLETED)
+				continue;
+
+			LF_QuestDefinition def = defs.Get(questId);
+			if (def && def.m_bAutoTurnIn)
+				outQuestIds.Insert(questId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Chain steps to accept on their own: m_bAutoAccept quests this player has never started
+	//! whose previous quest is turned in. A step already turned in (a returning player) or
+	//! running is left alone.
+	void CollectAutoAccepts(map<string, ref LF_QuestDefinition> defs, notnull array<string> outQuestIds)
+	{
+		outQuestIds.Clear();
+		if (!defs)
+			return;
+
+		foreach (string questId, LF_QuestDefinition def : defs)
+		{
+			if (!def || !def.m_bAutoAccept || def.m_sRequiredPreviousQuestId.IsEmpty())
+				continue;
+			if (m_mStates.Contains(questId))
+				continue;
+			if (!HasTurnedIn(def.m_sRequiredPreviousQuestId))
+				continue;
+
+			outQuestIds.Insert(questId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Persistence seam: marks a quest turned in when this tracker has no state for it. A live
 	//! state (re-accepted, active) is kept, so applying twice changes nothing.
 	//! \return true when this call added the turned-in state.
