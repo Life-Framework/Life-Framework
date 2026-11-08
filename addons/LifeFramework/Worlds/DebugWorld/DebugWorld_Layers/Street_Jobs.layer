@@ -41,6 +41,11 @@ $grp GenericEntity : "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostO
        "default"
       }
      }
+     LF_CollectBenefitAction "{B0B5A0010000001D}" {
+      ParentContextList {
+       "default"
+      }
+     }
     }
    }
    LF_JobSiteComponent "{B0B5A0010000001C}" {

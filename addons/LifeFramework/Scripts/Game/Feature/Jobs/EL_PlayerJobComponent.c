@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-[ComponentEditorProps(category: "EveronLife/Feature/Jobs", description: "Manages player's job, salary and work statistics")]
+[ComponentEditorProps(category: "EveronLife/Feature/Jobs", description: "Manages player's job, level and work statistics")]
 class EL_PlayerJobComponentClass : ScriptComponentClass
 {
 }
@@ -20,12 +20,7 @@ class EL_PlayerJobComponent : ScriptComponent
 	protected ref map<EL_EJobType, int> m_mJobLevels;
 	protected ref map<EL_EJobType, float> m_mJobExperience;
 	
-	protected float m_fTimeSinceLastPaycheck;
-	protected float m_fTotalWorkTime;
-	protected int m_iTotalEarnings;
-	
 	protected ref ScriptInvoker m_OnJobChanged;
-	protected ref ScriptInvoker m_OnPaycheckReceived;
 	protected ref ScriptInvoker m_OnLevelUp;
 	protected ref ScriptInvoker m_OnJobExperienceGained;
 	
@@ -46,7 +41,6 @@ class EL_PlayerJobComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 		
-		SetEventMask(owner, EntityEvent.INIT | EntityEvent.FRAME);
 		m_eCurrentJob = EL_EJobType.UNEMPLOYED;
 		m_iJobLevel = 1;
 		m_fJobExperience = 0;
@@ -65,19 +59,14 @@ class EL_PlayerJobComponent : ScriptComponent
 		m_mJobConfigs = new map<EL_EJobType, ref EL_JobConfig>();
 		
 		// Initialize default job configs
-		// CIVILIANS (Base 700)
 		EL_JobConfig unemployedConfig = new EL_JobConfig();
 		unemployedConfig.m_eJobType = EL_EJobType.UNEMPLOYED;
 		unemployedConfig.m_sJobName = "#LF-Job_Name_Unemployed";
-		unemployedConfig.m_iBaseSalary = 700;
-		unemployedConfig.m_fPaycheckInterval = 300; // 5 minutes
 		m_mJobConfigs.Set(EL_EJobType.UNEMPLOYED, unemployedConfig);
 		
 		EL_JobConfig farmerConfig = new EL_JobConfig();
 		farmerConfig.m_eJobType = EL_EJobType.FARMER;
 		farmerConfig.m_sJobName = "#LF-Job_Name_Farmer";
-		farmerConfig.m_iBaseSalary = 700;
-		farmerConfig.m_fPaycheckInterval = 300;
 		farmerConfig.m_bCanGatherResources = true;
 		farmerConfig.m_fGatheringSpeedMultiplier = 1.0;
 		farmerConfig.m_sIcon = "{6E1B308726CC6EF8}Images/recolector.edds";
@@ -86,8 +75,6 @@ class EL_PlayerJobComponent : ScriptComponent
 		EL_JobConfig minerConfig = new EL_JobConfig();
 		minerConfig.m_eJobType = EL_EJobType.MINER;
 		minerConfig.m_sJobName = "#LF-Job_Name_Miner";
-		minerConfig.m_iBaseSalary = 700;
-		minerConfig.m_fPaycheckInterval = 300;
 		minerConfig.m_bCanGatherResources = true;
 		minerConfig.m_fGatheringSpeedMultiplier = 1.0;
 		minerConfig.m_aEquipmentPrefabs = {"{E2A803C6E2B7B3E6}Prefabs/Tools/Axe/Pico.et"};
@@ -97,21 +84,16 @@ class EL_PlayerJobComponent : ScriptComponent
 		EL_JobConfig lumberjackConfig = new EL_JobConfig();
 		lumberjackConfig.m_eJobType = EL_EJobType.LUMBERJACK;
 		lumberjackConfig.m_sJobName = "#LF-Job_Name_Lumberjack";
-		lumberjackConfig.m_iBaseSalary = 700;
-		lumberjackConfig.m_fPaycheckInterval = 300;
 		lumberjackConfig.m_bCanGatherResources = true;
 		lumberjackConfig.m_fGatheringSpeedMultiplier = 1.0;
 		lumberjackConfig.m_aEquipmentPrefabs = {"{92FAC15304387B6F}Prefabs/Tools/Axe/Axe.et"};
 		lumberjackConfig.m_sIcon = "{49C8B8FB3D34F654}Images/minero.edds"; // TODO: Update icon
 		m_mJobConfigs.Set(EL_EJobType.LUMBERJACK, lumberjackConfig);
 		
-		// PUBLIC SERVANTS (Base 1000)
 		EL_JobConfig medicConfig = new EL_JobConfig();
 		medicConfig.m_eJobType = EL_EJobType.MEDIC;
 		medicConfig.m_sJobName = "#LF-Job_Name_Medic";
 		medicConfig.m_sDescription = "#LF-Job_Desc_Medic";
-		medicConfig.m_iBaseSalary = 1000;
-		medicConfig.m_fPaycheckInterval = 300;
 		medicConfig.m_bCanGatherResources = false;
 		medicConfig.m_sIcon = "{6E1B308726CC6EF8}Images/recolector.edds"; // Same icon as Police for now
 		m_mJobConfigs.Set(EL_EJobType.MEDIC, medicConfig);
@@ -120,8 +102,6 @@ class EL_PlayerJobComponent : ScriptComponent
 		policeConfig.m_eJobType = EL_EJobType.POLICE;
 		policeConfig.m_sJobName = "#LF-Job_Name_Police";
 		policeConfig.m_sDescription = "#LF-Job_Desc_Police";
-		policeConfig.m_iBaseSalary = 1000;
-		policeConfig.m_fPaycheckInterval = 300;
 		policeConfig.m_bCanGatherResources = false;
 		policeConfig.m_sIcon = "{6E1B308726CC6EF8}Images/recolector.edds"; // TODO: Update icon
 		m_mJobConfigs.Set(EL_EJobType.POLICE, policeConfig);
@@ -130,8 +110,6 @@ class EL_PlayerJobComponent : ScriptComponent
 		courierConfig.m_eJobType = EL_EJobType.PARCEL;
 		courierConfig.m_sJobName = "#EL-Job_Name_Courier";
 		courierConfig.m_sDescription = "#EL-Job_SignUp_Courier";
-		courierConfig.m_iBaseSalary = 700;
-		courierConfig.m_fPaycheckInterval = 300;
 		courierConfig.m_bCanGatherResources = false;
 		m_mJobConfigs.Set(EL_EJobType.PARCEL, courierConfig);
 
@@ -139,8 +117,6 @@ class EL_PlayerJobComponent : ScriptComponent
 		fuelConfig.m_eJobType = EL_EJobType.FUEL_DELIVERY;
 		fuelConfig.m_sJobName = "#EL-Job_Name_Fuel";
 		fuelConfig.m_sDescription = "#EL-Job_SignUp_Fuel";
-		fuelConfig.m_iBaseSalary = 700;
-		fuelConfig.m_fPaycheckInterval = 300;
 		fuelConfig.m_bCanGatherResources = false;
 		m_mJobConfigs.Set(EL_EJobType.FUEL_DELIVERY, fuelConfig);
 
@@ -148,32 +124,10 @@ class EL_PlayerJobComponent : ScriptComponent
 		taxiConfig.m_eJobType = EL_EJobType.TAXI;
 		taxiConfig.m_sJobName = "#EL-Job_Name_Taxi";
 		taxiConfig.m_sDescription = "#EL-Job_SignUp_Taxi";
-		taxiConfig.m_iBaseSalary = 700;
-		taxiConfig.m_fPaycheckInterval = 300;
 		taxiConfig.m_bCanGatherResources = false;
 		m_mJobConfigs.Set(EL_EJobType.TAXI, taxiConfig);
 		
 		m_CurrentJobConfig = m_mJobConfigs.Get(m_eCurrentJob);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	override void EOnFrame(IEntity owner, float timeSlice)
-	{
-		// Only update on server
-		if (!Replication.IsServer() && Replication.IsRunning())
-			return;
-		
-		if (!m_CurrentJobConfig)
-			return;
-		
-		m_fTimeSinceLastPaycheck += timeSlice;
-		m_fTotalWorkTime += timeSlice;
-		
-		// Check for paycheck
-		if (m_fTimeSinceLastPaycheck >= m_CurrentJobConfig.m_fPaycheckInterval)
-		{
-			ProcessPaycheck();
-		}
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -265,7 +219,6 @@ class EL_PlayerJobComponent : ScriptComponent
 		
 		// Cambiar al nuevo trabajo
 		m_eCurrentJob = jobType;
-		m_fTimeSinceLastPaycheck = 0;
 		m_fLastJobSwitchAt = LF_JobGuards.Now();
 		
 		// Cargar progreso del nuevo trabajo (si existe)
@@ -522,53 +475,6 @@ class EL_PlayerJobComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Process paycheck for player
-	protected void ProcessPaycheck()
-	{
-		m_fTimeSinceLastPaycheck = 0;
-		
-		if (!m_CurrentJobConfig)
-			return;
-		
-		// Calculate salary with PLAYER LEVEL bonus
-		int salary = m_CurrentJobConfig.m_iBaseSalary;
-		
-		// Get player level
-		int playerLevel = 1;
-		EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(GetOwner());
-		if (levelComp)
-		{
-			playerLevel = levelComp.GetPlayerLevel();
-		}
-		
-		// Bonus: +5% per player level
-		float levelBonus = 1.0 + ((playerLevel - 1) * 0.05);
-		int totalPay = Math.Round(salary * levelBonus);
-		
-		m_iTotalEarnings += totalPay;
-
-		// Cash is the only payout. The bank balance moves exclusively through the
-		// ATM (Feature/ATM): a paycheck landing straight in the bank would bypass
-		// the physical-money boundary. Inventory-full just shortchanges the
-		// payout, it never mints.
-		IEntity owner = GetOwner();
-		if (owner)
-		{
-			int paid = EL_MoneyUtils.GiveCash(owner, totalPay);
-			if (paid != totalPay)
-				EL_Debug.Warn("Jobs", string.Format("paycheck payout short: paid %1 of %2 (player %3)", paid, totalPay, owner));
-
-			// Give Paycheck XP (+5)
-			if (levelComp)
-			{
-				levelComp.AddExperience(5.0, "Paycheck");
-			}
-		}
-		
-		OnPaycheckReceived(totalPay);
-	}
-	
-	//------------------------------------------------------------------------------------------------
 	//! Give equipment for current job
 	protected void GiveJobEquipment()
 	{
@@ -673,15 +579,6 @@ class EL_PlayerJobComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	ScriptInvoker GetOnPaycheckReceived()
-	{
-		if (!m_OnPaycheckReceived)
-			m_OnPaycheckReceived = new ScriptInvoker();
-		
-		return m_OnPaycheckReceived;
-	}
-	
-	//------------------------------------------------------------------------------------------------
 	ScriptInvoker GetOnLevelUp()
 	{
 		if (!m_OnLevelUp)
@@ -704,17 +601,6 @@ class EL_PlayerJobComponent : ScriptComponent
 	{
 		if (m_OnJobChanged)
 			m_OnJobChanged.Invoke(m_eCurrentJob);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	protected void OnPaycheckReceived(int amount)
-	{
-		if (m_OnPaycheckReceived)
-			m_OnPaycheckReceived.Invoke(amount);
-		
-		// Show notification indicating bank deposit
-		string message = WidgetManager.Translate("#LF-Job_Paycheck", EL_MoneyFormat.FormatMoney(amount));
-		SCR_HintManagerComponent.ShowCustomHint(message, WidgetManager.Translate(GetJobName()), 5.0);
 	}
 	
 	//------------------------------------------------------------------------------------------------
