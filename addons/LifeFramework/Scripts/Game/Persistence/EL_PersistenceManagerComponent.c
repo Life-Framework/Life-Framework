@@ -254,6 +254,11 @@ class EL_PersistenceManagerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override event void OnDelete(IEntity owner)
 	{
+		// Checked at teardown, not on the SHUTDOWN state change: the engine enters SHUTDOWN
+		// first and writes the SHUTDOWN save point right after it.
+		if (m_bSessionEnding && !m_bShutdownSaveObserved)
+			EL_Debug.Error("Persistence", "session ended without a shutdown save - the engine wrote none on this exit path");
+
 		if (m_bAutosaveScheduled)
 			GetGame().GetCallqueue().Remove(OnAutosaveTimer);
 
@@ -800,9 +805,6 @@ class EL_PersistenceManagerComponent : ScriptComponent
 		EL_Debug.Info("Persistence", string.Format("system state %1 -> %2",
 			typename.EnumToString(EPersistenceSystemState, oldState),
 			typename.EnumToString(EPersistenceSystemState, newState)));
-
-		if (newState == EPersistenceSystemState.SHUTDOWN && m_bSessionEnding && !m_bShutdownSaveObserved)
-			EL_Debug.Error("Persistence", "session ended without a shutdown save - the engine wrote none on this exit path");
 
 		if (newState != EPersistenceSystemState.ACTIVE)
 			return;

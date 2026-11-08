@@ -143,13 +143,6 @@
   wanted bumps and police-menu reads do not lose the account mid-session
   (the old evict-on-write churn is gone).
 
-### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
-- ✅ Explicit persisted form of an account and its characters (faction,
-  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
-  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
-  its `version` field. `account/save-roundtrip` covers the
-  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
-
 ### `EL_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
   (one AUTO slot per playthrough via `EL_SaveSelection`), manual saves,
@@ -175,6 +168,22 @@
   manager scans the mission's saves and logs `EL_Debug.Error` ("started a NEW
   session while N save point(s) exist") when any exist; with none it logs a
   fresh-session info line. See `docs/persistence.md`.
+- ✅ **Playtest host** (`toolscli host start|stop|status|backup`, `tools/host/host.mjs`;
+  verified 2026-11-08 on the dedicated server): `start` runs `LF_PlaytestTown.conf`
+  from a profile outside every worktree (`%LOCALAPPDATA%LifeFrameworkhost`,
+  `LF_HOST_DIR`), passes `-loadSessionSave` when a save exists, and backs the saves
+  up first. `stop` writes `$profile:lf-host-stop`; `LF_HostStop` closes the game
+  normally so the engine writes the SHUTDOWN save, then the CLI backs the saves up.
+  The server owns the machine-wide `server-2001` lock while it runs. The
+  no-shutdown-save error now fires at teardown, not on the SHUTDOWN state change
+  that comes before the save. Selftest: `tools/validation/host-selftest.mjs`.
+
+### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
+- ✅ Explicit persisted form of an account and its characters (faction,
+  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
+  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
+  its `version` field. `account/save-roundtrip` covers the
+  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
@@ -857,6 +866,12 @@
   off. The open key runs the same check on the client and logs
   `open refused` instead of opening. `EL_DevGate.IsAllowed` has the LOGIC test
   `debug-menu/gate` (2026-11-07).
+- ✅ The playtest mission `Missions/LF_PlaytestTown.conf` (`LF_MissionHeader`,
+  `Core/LF_MissionHeader.c`) runs DebugWorld with `m_bLF_DevToolsOff 1`: the
+  header overrides the DebugWorld game mode opt-in, so only administrators
+  pass `EL_DevGate` there. A bare world (Workbench play, `toolscli test`) has
+  no LF header and keeps the opt-in. LOGIC test `host/playtest-mission`
+  (2026-11-08).
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
