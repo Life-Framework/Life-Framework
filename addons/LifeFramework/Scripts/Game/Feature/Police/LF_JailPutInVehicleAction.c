@@ -42,7 +42,7 @@ class LF_JailPutInVehicleAction : ScriptedUserAction
 		if (!CanBeShownScript(user))
 			return false;
 
-		if (!EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(user)))
+		if (!EL_AccountStateBits.IsOnDutyPolice(EL_AccountReplication.GetState(user)))
 		{
 			SetCannotPerformReason("#EL-Jail_NotOfficer");
 			return false;
@@ -54,8 +54,9 @@ class LF_JailPutInVehicleAction : ScriptedUserAction
 			return false;
 		}
 
+		// Escort holds live on the server; a client leaves this check to the server.
 		string officerUid = EL_Utils.GetPlayerUid(user);
-		if (LF_JailEscort.GetOnFootPrisoner(officerUid).IsEmpty())
+		if (Replication.IsServer() && LF_JailEscort.GetOnFootPrisoner(officerUid).IsEmpty())
 		{
 			SetCannotPerformReason("#EL-Escort_NoPrisoner");
 			return false;

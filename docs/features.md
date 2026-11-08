@@ -360,8 +360,14 @@
   `GetState(entity)` answers from the account on the server and from the
   replica on a client. Consumers: `EL_RobAction`, `EL_DutyAction`,
   `EL_ConfiscateAction`, `EL_OpenPoliceMenuAction`, `LF_ArmoryDrawAction`,
-  `LF_RankPromoteAction`, `LF_BreachRepairAction`. Every server path still
-  re-checks the real account.
+  `LF_RankPromoteAction`, `LF_BreachRepairAction`, and (since 2026-11-08) the
+  jail actions: arrest, escort, escort-arrest, put in and take out of a
+  vehicle. Before that their offers read the server-only account, so on a
+  dedicated client an on-duty officer was never offered an arrest. Every
+  server path still re-checks the real account; the jail cell and escort holds
+  are checked on the server only. `tools/validation/validate-offer-checks.mjs`
+  fails a `CanBeShownScript` / `CanBePerformedScript` that reads
+  `EL_PoliceUtils.GetAccountForEntity` or `EL_PlayerAccountManager`.
 - ⚠️ `EL_RobWeaponAction`, `EL_RobVehicleAction`, and `LF_Bank` still count
   police and read accounts directly in their offers; move them to
   `EL_AccountReplication` next.
