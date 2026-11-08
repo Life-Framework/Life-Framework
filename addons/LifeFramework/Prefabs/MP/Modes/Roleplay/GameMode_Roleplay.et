@@ -12,16 +12,6 @@ EL_GameModeRoleplay {
   EL_ChatManagerComponent "{69981C1CC6E0B7F7}" {
   }
   EL_WhitelistRespawnHandlerComponent "{021F92C15CC91F1E}" {
-   m_aWhitelists {
-    EL_Whitelist "{C261E36A09742EE8}" {
-     m_eType POLICE
-     m_sWhitelistFilePath "$profile:LifeFramework/Whitelists/Police.txt"
-    }
-    EL_Whitelist "{9BED42C9A7E3586F}" {
-     m_eType MEDIC
-     m_sWhitelistFilePath "$profile:LifeFramework/Whitelists/Medic.txt"
-    }
-   }
   }
   EL_ShopManagerComponent "{11CD207B75F53961}" {
    m_sConfigPath "{A547CE324ADDD178}Configs/Shop/ShopPrices.conf"

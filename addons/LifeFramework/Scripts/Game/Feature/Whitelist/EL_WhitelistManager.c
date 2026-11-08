@@ -84,7 +84,7 @@ class EL_WhitelistManager
 				return true;
 		}
 		
-		return false;
+		return missionAllows && policeCount == 0 && !uid.IsEmpty();
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -131,6 +131,45 @@ class EL_WhitelistManager
 	
 	//------------------------------------------------------------------------------------------------
 	//! Add player to faction whitelist (admin command)
+	//! How many players the roster holds for a faction.
+	static int CountFaction(EL_EFactionType factionType)
+	{
+		if (!s_mFactionWhitelist)
+			Initialize();
+
+		int count = 0;
+		foreach (string uid, array<EL_EFactionType> factions : s_mFactionWhitelist)
+		{
+			if (factions && factions.Contains(factionType))
+				count++;
+		}
+
+		return count;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the first player to join a playtest host whose police roster is empty goes on it.
+	static bool ShouldAddFirstPolice(bool missionAllows, int policeCount, string uid)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, on join: LF_MissionHeader.m_bLF_FirstPlayerPolice puts the first player on an empty
+	//! police roster (the maintainer on his own playtest host). Off on real servers.
+	static bool AddFirstPlayerToPolice(string uid)
+	{
+		LF_MissionHeader header = LF_MissionHeader.GetCurrent();
+		bool allows = header && header.m_bLF_FirstPlayerPolice;
+		if (!ShouldAddFirstPolice(allows, CountFaction(EL_EFactionType.POLICE), uid))
+			return false;
+
+		AddFactionWhitelist(uid, EL_EFactionType.POLICE);
+		EL_Debug.Info("Whitelist", string.Format("first player %1 put on the empty police roster (playtest mission)", uid));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool AddFactionWhitelist(string playerUID, EL_EFactionType factionType)
 	{
 		if (!s_mFactionWhitelist)

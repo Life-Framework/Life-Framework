@@ -11,6 +11,9 @@ class LF_MissionHeader : SCR_MissionHeader
 	[Attribute("0", desc: "Server: close gracefully when $profile:lf-host-stop appears (tools\\cli host stop).")]
 	bool m_bLF_HostStopFile;
 
+	[Attribute("0", desc: "The first player to join while the police roster is empty is added to it (the host on a playtest). Off for real servers.")]
+	bool m_bLF_FirstPlayerPolice;
+
 	//------------------------------------------------------------------------------------------------
 	//! \return the running mission's header when it is an LF_MissionHeader, else null.
 	static LF_MissionHeader GetCurrent()

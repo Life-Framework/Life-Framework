@@ -755,6 +755,14 @@
   `EL_LicenseBits.Order()`: append new types, never reorder.
 
 ### `EL_WhitelistManager` — `Feature/Whitelist/EL_WhitelistManager.c`
+- ✅ **The playtest host is police from the first join** (2026-11-08, LOGIC
+  `whitelist/first-player-police`): with `LF_MissionHeader.m_bLF_FirstPlayerPolice` (on in
+  `LF_PlaytestTown.conf`, off by default), the first player to join while the police roster is
+  empty is added to it (`$profile:LifeFramework/whitelist.txt`), so the maintainer can clock in
+  on his own playtest without writing the file. That file is the one roster: the duty desk and
+  the join gate read it. The unused `Whitelists/Police.txt` and `Whitelists/Medic.txt` lists on
+  `EL_WhitelistRespawnHandlerComponent` (nothing read their flags) are gone from
+  `GameMode_Roleplay.et`; the component keeps the CONNECT join gate.
 - ✅ Pure static in-memory whitelists; `IsFactionRestricted` (POLICE,
   MILITARY, MAFIA), `IsJobRestricted` (POLICE only), add/remove/get.
 - ✅ **Compiles** (verified 2026-08-30): `enum EL_EFactionType` is now defined
