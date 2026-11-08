@@ -1295,19 +1295,20 @@ function cmdSessionUp(root, dir, flags) {
       sleepMs(15000);
       if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
     }
-    // Joined means the server created the player and opened the faction menu.
+    // Joined means the server created the player and sent the registration form (a new
+    // account) or spawned its character (a returning one). There is no faction menu (M1-11).
     const joinDeadline = Date.now() + 240000;
     let joined = 0;
     while (Date.now() < joinDeadline) {
       const text = readFileSync(log, "utf8");
       const refused = text.split(/\r?\n/).find((l) => /ValidationError|Disconnecting identity/.test(l));
       if (refused) return fail(`a client was refused: ${refused.trim()}`);
-      joined = (text.match(/faction menu sent to player \d+/g) ?? []).length;
+      joined = new Set([...text.matchAll(/(?:registration form sent to player|spawning player) (\d+)/g)].map((m) => m[1])).size;
       if (joined >= clients) break;
       sleepMs(2000);
     }
-    if (joined < clients) return fail(`${joined}/${clients} client(s) reached the faction menu within 240s (server log ${log})`);
-    console.log(`session: ${joined} client(s) joined and reached the faction menu`);
+    if (joined < clients) return fail(`${joined}/${clients} client(s) reached the registration form within 240s (server log ${log})`);
+    console.log(`session: ${joined} client(s) joined and reached the registration form or spawned`);
     console.log("drive with:");
     console.log("  node agent-box/harness.mjs --client <n> <verb>   and   node agent-box/session.mjs state <n>");
     console.log("close everything with: node agent-box/session.mjs down");

@@ -240,6 +240,14 @@ class LF_WantedBoard
 			count = offences.Count();
 
 		EL_Debug.Info(FEATURE, string.Format("wanted card open: police=%1 posters=%2", police, count));
+		bool sizesMatch = names && clothing && vehicles && places && levels && names.Count() == count && clothing.Count() == count && vehicles.Count() == count && places.Count() == count && levels.Count() == count;
+		if (!sizesMatch)
+			return;
+
+		for (int i = 0; i < count; i++)
+		{
+			EL_Debug.Info(FEATURE, string.Format("poster %1: name='%2' offence=%3 level=%4 clothing='%5' vehicle='%6' place='%7'", i, names[i], offences[i], levels[i], clothing[i], vehicles[i], places[i]));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

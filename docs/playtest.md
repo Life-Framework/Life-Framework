@@ -40,7 +40,7 @@ Do these as separate passes if one character cannot be both civilian and police.
 
 ### Arrive
 
-Create a civilian, then later a police officer. Say whether the faction screen and the name screen actually appeared.
+Register a character. Say whether the name screen appeared straight away, with no faction screen before it.
 
 ### Civilian work
 
@@ -62,7 +62,7 @@ A locked target is a breach. Plant the charge at `Roadmap_Breach_Door`, `Roadmap
 
 ### Police
 
-Use a police character. Go on duty at the panel in front of the police station (`PoliceStation_Debug`, south side of the street): `Roadmap_Police_Desk` beside it has no actions yet (M1-11 moves duty there). At `Roadmap_Police_Armory`, take the kit.
+Everyone joins as a civilian. To play police, your uid must be on the police roster (`$profile:LifeFramework/whitelist.txt`, `EL_WhitelistManager`). At the station desk (`Roadmap_Police_Desk`, the punch clock in front of the police station) use **Clock in**: your civilian clothes and pockets are stored and you get the police uniform and M9 (a first shift) or the police inventory you left at your last clock-out. **Clock out** at the same desk swaps back and pays duty pay in cash. Say whether anything from one inventory showed up in the other. Read the wanted board (`Roadmap_Police_WantedBoard`) beside the desk on and off duty: police see where each crime happened, everyone sees a description, and a name only after an ID check. At `Roadmap_Police_Armory`, take the rank kit.
 
 A new officer is patrol: a pistol, fines up to 1000, and no arrest. Senior is a rifle, fines up to 5000, and can arrest. An hour on duty promotes. Promoting yourself should be refused.
 

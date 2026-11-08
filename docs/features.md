@@ -33,17 +33,18 @@
   `OnPlayerDisconnected` releases escort holds where the player is officer or
   prisoner (`LF_JailEscort.ReleasePlayer`) and fails a running convoy, dropping
   its vehicle watch (`LF_Contraband.ReleasePlayer`). Jail sentences stay (they
-  resume on reconnect). A faction accepted in stage one of character creation
-  whose location never came is dropped (`EL_CharacterCreationManager.ReleasePlayer`).
+  resume on reconnect). An officer who leaves on duty stays on duty with the
+  police inventory carried; the civilian inventory waits at the desk (M1-11).
 - ⚠️ Managers are only created on first connect; a server-side call before any
   player connects gets null.
 
 ### `EL_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/EL_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `EL_PlayerAccount`, spawns the active
-  character's prefab at a spawn point for the account's faction (falls back to
-  any point), and applies the default loadout (recursive, purpose-filtered
-  storage fill).
-- ✅ `ResolveSpawnPoint` (static) picks `SCR_SpawnPoint` by account faction key;
+  character's prefab at a spawn point for the account's role (CIVILIAN, or
+  POLICE for an officer who reconnects on duty; falls back to any point), and
+  applies the role's kit (`GiveRoleKit`, recursive, purpose-filtered storage
+  fill). The POLICE kit is the starter police kit the duty desk issues (M1-11).
+- ✅ `ResolveSpawnPoint` (static) picks `SCR_SpawnPoint` by account role key;
   shared with the character-creation flow so both spawn paths land in the same
   area. Verified 2026-08-30.
 - ✅ **No-spawn-point fail-safe** (verified 2026-08-30): `GetCreationPosition`
@@ -56,39 +57,27 @@
   depth guard.
 
 ### `EL_CharacterCreationManager` — `Feature/CharacterCreation/EL_CharacterCreationManager.c`
-- ✅ Flow: no account → create → faction menu → spawn-location picker →
-  registration form R-89 (`LF_RegistrationForm`) → spawn with an ID card.
+- ✅ Flow (M1-11, 2026-11-08): no account → create → registration form R-89
+  (`LF_RegistrationForm`) → civilian spawn with an ID card. There is no faction
+  screen and no spawn-location picker; police clock in at the duty desk.
   A returning account skips the menus and the form. `OnCharacterCreated` persists a character, inits ATM + survival
   components, spawns.
 - ✅ **Server-owned on a dedicated server** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the flow runs on the server
-  only. Menus open on the joining client through owner RPCs on its
-  `SCR_PlayerController` (`EL_ShowFactionMenu`, `EL_ShowSpawnLocationMenu`,
-  `EL_CharacterCreationController.c`); picks come back as
-  `RpcAsk_EL_SelectFaction` / `RpcAsk_EL_SpawnLocation` /
-  `RpcAsk_EL_CreateCharacter` and land in `ServerSelectFaction` /
-  `ServerSelectSpawnLocation` / `ServerCreateCharacter`. The player is the
-  controller's id, never a client value. `EL_CharacterCreationRules` re-checks
-  every pick: the police whitelist (`MayJoinFaction`, now enforced server-side),
-  faction already chosen, spawn location belongs to the faction, one character
-  per account, names 1..32 ASCII letters with single inner spaces, hyphens,
+  only. The form opens on the joining client through an owner RPC on its
+  `SCR_PlayerController` (`LF_ShowRegistrationForm`,
+  `EL_CharacterCreationController.c`); the answer comes back as
+  `RpcAsk_EL_CreateCharacter` and lands in `ServerCreateCharacter`. The player
+  is the controller's id, never a client value. `EL_CharacterCreationRules`
+  re-checks it: one character per account, names 1..32 ASCII letters with single inner spaces, hyphens,
   or apostrophes (`LF_RegistrationRules`), age 18..80. Names are not unique. A refusal toasts the reason
   key (`#EL-CC_Error_*`) and re-opens the menu. A listen host's joiners now get
   their own menus instead of the host.
 - ✅ Real character prefab (verified 2026-08-30):
   `{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et`.
-- ✅ (2026-11-08, M1-08) No more "Default Citizen": a chosen faction with no
+- ✅ (2026-11-08, M1-08) No more "Default Citizen": an account with no
   character opens the registration form over `LF_ShowRegistrationForm`
   (owner RPC). A server refusal sends the form back with the reason written on
   it. The form never picks a faction.
-
-### `EL_FactionSelectionMenu` — `Feature/CharacterCreation/EL_FactionSelectionMenu.c`
-- ✅ Buttons wired (Civilian/Police) send `EL_AskSelectFaction`; the server
-  validates, then sets the account faction, saves, re-enters
-  `OnPlayerConnected`. `SaveAndReleaseAccount` keeps the account cached, so the
-  re-entrant flow converges instead of looping.
-- ✅ `EL_CharacterCreationManager.OnPlayerConnected` keys the account by
-  `playerId` UID (not the controlled entity), so the faction choice lands on
-  the same account the spawn logic reads.
 
 ### `EL_ShowIDAction` — `Feature/CharacterCreation/EL_ShowIDAction.c`
 - ✅ (2026-11-08) Shows the ID card the user carries (their own first, else
@@ -606,8 +595,9 @@
   missing file logs `EL_Debug.Error` and leaves the police faction closed.
   Civilian stays open. `MayJoinFaction` refuses a uid that is not on the
   police list and logs that refusal. The server calls it in
-  `EL_CharacterCreationRules.RefuseFaction` when the faction RPC arrives; the
-  client menu no longer checks it (a client has no whitelist). A uid
+  `LF_DutyLocker.RefuseClockIn` when a player clocks in at the duty desk (M1-11;
+  the faction screen is gone). A client has no whitelist; the desk offer reads
+  the roster bit of `EL_AccountReplication`. A uid
   that was not in the file is still refused after load. This file is not
   `EL_PersistenceComponentSerializer`.
 - ✅ **An unreadable file is never overwritten** (2026-11-07, test
@@ -816,7 +806,8 @@
 
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
-- ✅ Wanted list; `ArrestPlayer`/`FinePlayer` are client-side entry points.
+- ✅ `ArrestPlayer`/`FinePlayer` are client-side entry points. The wanted list
+  left the menu in M1-11: wanted people are on the station wanted board.
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
   through `SCR_ChimeraCharacter.EL_AskPoliceArrest/Fine`, and the server
   handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
@@ -827,11 +818,6 @@
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
-- ✅ **Wanted list over RPC** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the menu asks the server
-  (`EL_AskPoliceWantedList` → `RpcAsk_EL_PoliceWantedList`, which re-checks
-  `CanViewWantedList`); the server answers the officer's client with parallel
-  uid/name/level arrays (`RpcDo_EL_PoliceWantedList`, `SetWantedList`). The
-  open action's offer reads `EL_AccountReplication`.
 - ✅ **Hands-on only** (2026-11-07): arrest and fine refuse a
   target that is not connected or stands beyond `EL_PoliceUtils.POLICE_REACH`
   (5 m, the in-world arrest range) and show `#EL-Police_TooFar`. Neither the
@@ -840,13 +826,26 @@
   `#EL-Fine_TooSmall`, so repeated small fines cannot drain a wanted player.
   The fine RPC logs through `EL_Debug.Warn("Police", "fine refused: ...")`.
   Test: `security/police-abuse`.
-- ⚠️ The menu layout does not render `GetWantedPlayers()` yet.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
-- ✅ Toggles police on-duty flag. Civilians are refused. The debug menu's
-  police faction button sets faction and duty, which is how a solo session
-  reaches the toggle (verified 2026-10-10). Going on duty starts the rank
-  clock; going off duty settles it.
+- ✅ **Clock in / Clock out at the duty desk** (M1-11, 2026-11-08; WORLD
+  `police/duty-swap`, `police/death-on-duty`, `police/station`; restart via
+  `wt e2e`). `Roadmap_Police_Desk` is `Prefabs/Police/LF_PoliceDutyDesk.et`
+  (desk + vanilla `ClockPunch_01`). The offer reads the roster bit of
+  `EL_AccountReplication`; the server re-checks `EL_WhitelistManager` and
+  `LF_DutyLocker` swaps the whole carried inventory, clothes included:
+  clock-in stores the civilian tree as `civilian_stash` and restores
+  `police_duty` (or the starter police kit, the POLICE entry of
+  `EL_SpawnLogic.m_aFactionCharacterItems`); clock-out does the reverse and pays
+  duty pay. The faction is the duty role: POLICE only while clocked in.
+  Feedback: the vanilla pick-up gesture on the acting client, the range control
+  panel button click (`SOUND_RANGECP_STARTBUTTON`) broadcast from the desk, then
+  a toast. Death on duty ends the shift: the body keeps the police gear, the
+  civilian stash becomes the carried snapshot the respawn restores, and the
+  next shift starts from the starter kit. Going on duty starts the rank clock;
+  going off duty settles it. `PoliceStation_Debug` and `PoliceDutyNPC` no
+  longer offer duty. The debug menu's police button still sets the role without
+  a swap (dev only).
 - ✅ **Duty pay at the desk** (verified 2026-11-08: LOGIC test `jobs/duty-pay`;
   the 2-client cash check is manual). Going off duty pays the shift's on-duty
   seconds times `m_fPoliceDutyPayPerSecond` (`Configs/Jobs/LF_Jobs.conf`, flagship
@@ -859,8 +858,27 @@
   the account instead of evicting it, so the officer can reopen the police
   menu and re-toggle at once.
 - ✅ **Dedicated client** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the toggle
-  runs on the server only; the offer and the name (`#EL-Duty_GoOn` /
-  `#EL-Duty_GoOff`) read `EL_AccountReplication`.
+  runs on the server only; the offer and the name (`#LF-Duty_ClockIn` /
+  `#LF-Duty_ClockOut`) read `EL_AccountReplication`.
+
+### `LF_WantedReports` / `LF_WantedBoard` — `Feature/Police/`
+- ✅ **Crime reports** (M1-11, LOGIC `police/wanted-board`): each crime that
+  raises wanted (till, vehicle and weapon robbery, breach, hospital till) calls
+  `LF_WantedReports.Report`, which records the offence and a description of the
+  suspect at that moment: clothing display names, the vehicle they sit in, and
+  the nearest sign title within `m_fPlaceRadius` (else a 100 m grid square).
+  An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
+  catches it in the act and the report is identified at once. Showing your own
+  ID card to an on-duty officer (`EL_ShowIDAction`) identifies every open
+  report. Reports come down when wanted returns to 0, and persist as the
+  `wanted` payload (save version 9).
+- ✅ **Wanted board** `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`,
+  a cork `LF_Sign_Board` printing WANTED): "Read the wanted posters" asks the
+  server per read (`RpcAsk_LF_WantedBoard`, the server finds the board near
+  the reader). On-duty police get offence, stars, clothing, vehicle, and place;
+  everyone else gets the public poster without the place. A name appears only
+  on identified reports. The card is an `LF_UIScreen` paper sheet that closes
+  4 m from the board; reading plays the map pick-up sound and gesture.
 
 ### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
 - ✅ Two ranks (verified 2026-10-11). Patrol officer draws
@@ -1102,7 +1120,7 @@
 
 ### Layouts (loaded by `EL_Test_Data`)
 - ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,
-  `EL_SurvivalHUD`, `FactionSelectionMenu`, `ShopMenu`, `PoliceMenu`,
+  `EL_SurvivalHUD`, `ShopMenu`, `PoliceMenu`,
   `DeathScreen` load (WORLD tier). The `SurvivalHUD` menu preset and its
   `EL_SurvivalHUD` class were never opened and are removed (2026-11-07); `EL_BetaHud`
   draws the gauges. The layout stays only as this load fixture. The unused
