@@ -57,6 +57,8 @@ intent: `docs/design.md`.
 | `tools\cli wt gate <slug>` / `wt ship <slug> [--pr-only]` | validate + build + full suite / sync, gate, push, PR |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
 
+Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desktop; node spawns get `windowsHide: true`), never in front of the user; `tools\cli hidden [--close]` lists them, `LF_SHOW_WINDOWS=1` shows them (`docs/setup.md`).
+
 ## Worktrees
 
 Start with `tools\cli wt new <slug>` and work inside it on `ws/<slug>`; never

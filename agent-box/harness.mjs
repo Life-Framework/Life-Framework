@@ -232,6 +232,7 @@ function mergeMcp(path, config) {
 
 function runNode(args, extraEnv) {
   const res = spawnSync("node", args, {
+    windowsHide: true,
     cwd: ROOT,
     encoding: "utf8",
     env: extraEnv ? { ...process.env, ...extraEnv } : process.env,
@@ -273,6 +274,7 @@ function mcpBatch(steps) {
   const file = join(dir, "agent-box-batch.json");
   writeFileSync(file, JSON.stringify(steps));
   const res = spawnSync("node", ["tools/mcp-call.mjs", "--batch", `@${file}`, "enfusion-workbench"], {
+    windowsHide: true,
     cwd: ROOT,
     encoding: "utf8",
     env: { ...process.env, ...workbenchEnv() },
@@ -313,12 +315,12 @@ export function runScriptPillar(shouldRun) {
       text: "refusing script pillar on the main checkout. Use a worktree: tools\\cli wt new <feature>\n",
     };
   }
-  const res = spawnSync("node", ["tools/cli.mjs", "test", "--tier", "fast"], { cwd: ROOT, encoding: "utf8" });
+  const res = spawnSync("node", ["tools/cli.mjs", "test", "--tier", "fast"], { windowsHide: true, cwd: ROOT, encoding: "utf8" });
   return { code: res.status ?? 1, text: `${res.stdout || ""}${res.stderr || ""}` };
 }
 
 export function isMainCheckout() {
-  const res = spawnSync("git", ["rev-parse", "--git-dir"], { cwd: ROOT, encoding: "utf8" });
+  const res = spawnSync("git", ["rev-parse", "--git-dir"], { windowsHide: true, cwd: ROOT, encoding: "utf8" });
   const dir = (res.stdout || "").trim().replaceAll("/", "\\");
   if (!dir) return false;
   return !dir.toLowerCase().includes("\\worktrees\\");
@@ -603,7 +605,7 @@ function printResult(result) {
 }
 
 function selftest() {
-  const check = spawnSync(process.execPath, ["--check", join(ROOT, "agent-box", "mcp-server.mjs")], { encoding: "utf8" });
+  const check = spawnSync(process.execPath, ["--check", join(ROOT, "agent-box", "mcp-server.mjs")], { windowsHide: true, encoding: "utf8" });
   if ((check.status ?? 1) !== 0) throw new Error(check.stderr || "life-agent-box MCP server failed to parse");
   const use = buildLine(4, { verb: "use", className: "EL_ShopAction", entityName: "Trader_01" });
   if (use !== "4 use EL_ShopAction Trader_01") throw new Error(use);

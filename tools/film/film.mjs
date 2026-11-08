@@ -150,7 +150,7 @@ export function resolveFfmpeg(env = process.env) {
   candidates.push(join(BIN_DIR, process.platform === "win32" ? "ffmpeg.exe" : "ffmpeg"));
   candidates.push("ffmpeg");
   for (const path of candidates) {
-    const run = spawnSync(path, ["-hide_banner", "-version"], { encoding: "utf8" });
+    const run = spawnSync(path, ["-hide_banner", "-version"], { windowsHide: true, encoding: "utf8" });
     if (run.status === 0) return { path, version: (run.stdout.split(/\r?\n/)[0] || "").trim() };
   }
   return null;
@@ -163,11 +163,11 @@ function ffmpegOrThrow() {
 }
 
 function listEncoders(ffPath) {
-  return spawnSync(ffPath, ["-hide_banner", "-encoders"], { encoding: "utf8" }).stdout || "";
+  return spawnSync(ffPath, ["-hide_banner", "-encoders"], { windowsHide: true, encoding: "utf8" }).stdout || "";
 }
 
 function hasFilter(ffPath, name) {
-  const text = spawnSync(ffPath, ["-hide_banner", "-filters"], { encoding: "utf8" }).stdout || "";
+  const text = spawnSync(ffPath, ["-hide_banner", "-filters"], { windowsHide: true, encoding: "utf8" }).stdout || "";
   return text.split(/\r?\n/).some((line) => line.trim().split(/\s+/)[1] === name);
 }
 
@@ -177,7 +177,7 @@ function encoderWorks(ffPath, encoder) {
   const run = spawnSync(
     ffPath,
     ["-hide_banner", "-loglevel", "error", "-f", "lavfi", "-i", "color=c=black:s=256x256:d=0.1", "-frames:v", "1", ...encoderArgs(encoder), "-pix_fmt", "yuv420p", "-f", "null", "-"],
-    { encoding: "utf8" },
+    { windowsHide: true, encoding: "utf8" },
   );
   return run.status === 0;
 }
@@ -214,7 +214,7 @@ public static class FilmWin {
   [DllImport("user32.dll")] public static extern bool GetClientRect(IntPtr h, out RECT r);
   [StructLayout(LayoutKind.Sequential)] public struct POINT { public int X, Y; }
   [DllImport("user32.dll")] public static extern bool ClientToScreen(IntPtr h, ref POINT p);
-  [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
+  [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int w, int ht, uint flags);
 }
 "@
 [FilmWin]::SetProcessDPIAware() | Out-Null
@@ -224,8 +224,6 @@ $w = Get-Process | Where-Object { $_.MainWindowHandle -ne 0 }
 $p = $w | Where-Object { $_.MainWindowTitle -eq $env:FILM_EXACT } | Select-Object -First 1
 if (-not $p) { $p = $w | Where-Object { $_.MainWindowTitle -like $env:FILM_TITLE } | Select-Object -First 1 }
 if (-not $p) { Write-Output 'none'; exit 0 }
-# Desktop duplication records whatever is on top, so raise the game window.
-[FilmWin]::SetForegroundWindow($p.MainWindowHandle) | Out-Null
 $r = New-Object FilmWin+RECT
 [FilmWin]::GetClientRect($p.MainWindowHandle, [ref]$r) | Out-Null
 $pt = New-Object FilmWin+POINT
@@ -236,9 +234,14 @@ for ($i = 0; $i -lt $screens.Length; $i++) {
   $b = $screens[$i].Bounds
   if ($pt.X -ge $b.X -and $pt.X -lt ($b.X + $b.Width) -and $pt.Y -ge $b.Y -and $pt.Y -lt ($b.Y + $b.Height)) { $idx = $i; $ox = $b.X; $oy = $b.Y }
 }
+# Desktop duplication records whatever is on top. Never take focus from the
+# user: on a secondary (film) monitor, lift the window in z-order without
+# activating it; on the primary monitor leave the user's windows alone.
+if (-not $screens[$idx].Primary) { [FilmWin]::SetWindowPos($p.MainWindowHandle, [IntPtr]::Zero, 0, 0, 0, 0, 0x13) | Out-Null }
 Write-Output ("{0} {1} {2} {3} {4} {5} {6} {7}" -f ($pt.X - $ox), ($pt.Y - $oy), ($r.R - $r.L), ($r.B - $r.T), $idx, $ox, $oy, $p.MainWindowTitle)
 `;
   const run = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", script], {
+    windowsHide: true,
     encoding: "utf8",
     env: { ...process.env, FILM_EXACT: title, FILM_TITLE: title.includes("*") ? title : `*${title}*` },
   });
@@ -293,7 +296,7 @@ function sourceFromFlags(flags) {
 // first frame. A 1-frame grab with a timeout settles it before recording.
 function ddagrabDelivers(ffPath, source) {
   const args = ["-hide_banner", "-loglevel", "error", ...captureInputArgs(source, "ddagrab", 30), "-frames:v", "1", "-vf", "hwdownload,format=bgra", "-f", "null", "-"];
-  return spawnSync(ffPath, args, { encoding: "utf8", timeout: 5000 }).status === 0;
+  return spawnSync(ffPath, args, { windowsHide: true, encoding: "utf8", timeout: 5000 }).status === 0;
 }
 
 function planCapture(ffPath, flags) {
@@ -316,7 +319,7 @@ function planCapture(ffPath, flags) {
 
 export function makePreview(ffPath, mp4, ext = ".gif") {
   const out = mp4.replace(/\.mp4$/i, "") + ".preview" + ext;
-  const run = spawnSync(ffPath, buildPreviewArgs(mp4, out), { encoding: "utf8" });
+  const run = spawnSync(ffPath, buildPreviewArgs(mp4, out), { windowsHide: true, encoding: "utf8" });
   if (run.status !== 0 || !existsSync(out)) throw new Error(`preview failed: ${run.stderr}`);
   return out;
 }
@@ -331,7 +334,7 @@ function sizeLine(path, budget) {
 function probeDuration(ffPath, mp4) {
   const probe = join(dirname(ffPath), process.platform === "win32" ? "ffprobe.exe" : "ffprobe");
   const exe = existsSync(probe) ? probe : "ffprobe";
-  const run = spawnSync(exe, ["-v", "error", "-show_entries", "format=duration:stream=width,height,codec_name,nb_frames", "-of", "default=nw=1", mp4], { encoding: "utf8" });
+  const run = spawnSync(exe, ["-v", "error", "-show_entries", "format=duration:stream=width,height,codec_name,nb_frames", "-of", "default=nw=1", mp4], { windowsHide: true, encoding: "utf8" });
   return (run.stdout || "").trim().replace(/\r?\n/g, " ");
 }
 
@@ -345,7 +348,7 @@ function record(flags) {
   const args = buildRecordArgs({ ...plan, seconds, out });
   console.log(`ffmpeg: ${ff.path}`);
   console.log(`capture: ${plan.method} ${JSON.stringify(plan.source)} @${plan.fps}fps, encoder ${plan.encoder}`);
-  const run = spawnSync(ff.path, args, { encoding: "utf8", timeout: (seconds + 30) * 1000 });
+  const run = spawnSync(ff.path, args, { windowsHide: true, encoding: "utf8", timeout: (seconds + 30) * 1000 });
   if (run.status !== 0 || !existsSync(out)) {
     console.error(run.stderr || "ffmpeg failed");
     return 1;
@@ -377,7 +380,7 @@ async function filmFlow(flags) {
   const args = buildRecordArgs({ ...plan, out });
   console.log(`capture: ${plan.method} ${JSON.stringify(plan.source)} @${plan.fps}fps, encoder ${plan.encoder}`);
 
-  const child = spawn(ff.path, args, { stdio: ["pipe", "ignore", "pipe"] });
+  const child = spawn(ff.path, args, { windowsHide: true, stdio: ["pipe", "ignore", "pipe"] });
   let stderr = "";
   child.stderr.on("data", (chunk) => {
     stderr += chunk;
@@ -439,7 +442,7 @@ function fetchFfmpeg(flags) {
   let zip = flags.zip ? resolve(String(flags.zip)) : join(tmpdir(), `ffmpeg-${FFMPEG_BUILD.version}.zip`);
   if (!existsSync(zip)) {
     console.log(`downloading ${FFMPEG_BUILD.url}`);
-    const dl = spawnSync("curl.exe", ["-sSL", "-o", zip, FFMPEG_BUILD.url], { stdio: "inherit" });
+    const dl = spawnSync("curl.exe", ["-sSL", "-o", zip, FFMPEG_BUILD.url], { windowsHide: true, stdio: "inherit" });
     if (dl.status !== 0) throw new Error("download failed");
   }
   const hash = sha256(zip);
@@ -448,7 +451,7 @@ function fetchFfmpeg(flags) {
   mkdirSync(stage, { recursive: true });
   // System32 bsdtar reads zip; a Git-for-Windows GNU tar earlier on PATH does not.
   const tar = join(process.env.SystemRoot || "C:\\Windows", "System32", "tar.exe");
-  const unzip = spawnSync(tar, ["-xf", zip, "-C", stage], { stdio: "inherit" });
+  const unzip = spawnSync(tar, ["-xf", zip, "-C", stage], { windowsHide: true, stdio: "inherit" });
   if (unzip.status !== 0) throw new Error("extract failed");
   const top = readdirSync(stage).find((name) => name.startsWith("ffmpeg-"));
   for (const exe of ["ffmpeg.exe", "ffprobe.exe"]) {
@@ -498,7 +501,7 @@ function publish(flags) {
   const preview = flags.preview ? resolve(String(flags.preview)) : existsSync(guess) ? guess : "";
   let repo = flags.repo;
   if (!repo) {
-    const view = spawnSync("gh", ["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"], { encoding: "utf8" });
+    const view = spawnSync("gh", ["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"], { windowsHide: true, encoding: "utf8" });
     repo = (view.stdout || "").trim();
   }
   const plan = publishPlan({ clip, preview, pr: flags.pr, repo, title: flags.title });
@@ -521,10 +524,10 @@ function publish(flags) {
     return target;
   });
   const gh = (args) => {
-    const run = spawnSync("gh", args, { stdio: "inherit" });
+    const run = spawnSync("gh", args, { windowsHide: true, stdio: "inherit" });
     return run.status === 0;
   };
-  if (spawnSync("gh", plan.ensureRelease, { stdio: "ignore" }).status !== 0) {
+  if (spawnSync("gh", plan.ensureRelease, { windowsHide: true, stdio: "ignore" }).status !== 0) {
     if (!gh(plan.createRelease)) throw new Error("could not create the evidence release");
   }
   if (!gh(plan.upload(staged))) throw new Error("upload failed");

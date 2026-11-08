@@ -26,7 +26,7 @@ function mcpVfsPath() {
   const rel = join("tools", "mcp", "enfusion-mcp-bk", "dist", "pak", "vfs.js");
   const local = join(ROOT, rel);
   if (existsSync(local)) return local;
-  const res = spawnSync("git", ["-C", ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir"], { encoding: "utf8" });
+  const res = spawnSync("git", ["-C", ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir"], { windowsHide: true, encoding: "utf8" });
   const main = res.status === 0 ? join(dirname(res.stdout.trim()), rel) : "";
   if (main && existsSync(main)) return main;
   throw new Error(`enfusion-mcp is not built (${local}); run tools/cli mcp install in the main checkout`);

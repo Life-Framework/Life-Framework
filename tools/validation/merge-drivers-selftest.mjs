@@ -87,7 +87,7 @@ for (const [path, driver] of [
 }
 
 function git(dir, args, env) {
-  return spawnSync("git", args, { cwd: dir, encoding: "utf8", env: env ?? process.env });
+  return spawnSync("git", args, { windowsHide: true, cwd: dir, encoding: "utf8", env: env ?? process.env });
 }
 
 function initRepo(dir) {

@@ -35,6 +35,7 @@ import * as host from "./host/host.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
+import { listHidden, quietSpawn } from "./lib/quiet-launch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MCP_DIR = join(ROOT, "tools", "mcp");
@@ -79,6 +80,7 @@ function serverEnv(name) {
 function sh(cmd, args, opts = {}) {
   const winCmd = IS_WIN && /\.(cmd|bat)$/i.test(cmd);
   const res = spawnSync(cmd, args, {
+    windowsHide: true,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
     ...(winCmd ? { shell: true } : {}),
@@ -432,6 +434,7 @@ function verifyOne(name) {
   }
   return new Promise((resolvePromise) => {
     const child = spawn(process.execPath, [entry], {
+      windowsHide: true,
       env: { ...process.env, ...serverEnv(name) },
       stdio: ["pipe", "pipe", "pipe"],
     });
@@ -736,7 +739,8 @@ function cmdBuild(root = ROOT, opts = {}) {
       wt.releaseLock(root, "build");
       resolvePromise(code);
     };
-    const child = spawn(exe, args, { cwd: gameDir });
+    // LF-Agents desktop: no Workbench window on the user's screen (tools/lib/quiet-launch.mjs).
+    const child = quietSpawn(exe, args, { cwd: gameDir });
     let buffer = "";
     const onData = (d) => {
       buffer += d.toString();
@@ -854,7 +858,7 @@ function cmdServe(root = ROOT, opts = {}) {
       wt.releaseLock(root, SERVER_SLOT);
       resolvePromise(code);
     };
-    const child = spawn(exe, args, { cwd: dirname(exe), stdio: "inherit" });
+    const child = spawn(exe, args, { windowsHide: true, cwd: dirname(exe), stdio: "inherit" });
     child.on("error", (e) => done((console.log(`FAIL  spawn error: ${e.message}`), 1)));
     child.on("exit", (code) => done(code ?? 1));
   });
@@ -1100,6 +1104,26 @@ async function cmdCi(root = ROOT, opts = {}) {
   return failed === 0 ? 0 : 1;
 }
 
+// Tool runs live on the private LF-Agents desktop (tools/lib/quiet-launch.mjs),
+// so nobody can see or close them by hand. This lists them; --close ends them.
+function cmdHidden(flags) {
+  const procs = listHidden();
+  if (procs.length === 0) {
+    console.log("hidden: no windows on the LF-Agents desktop");
+    return 0;
+  }
+  for (const p of procs) console.log(`  pid ${p.pid}  ${p.name}  started ${p.started}`);
+  if (!flags.includes("--close")) {
+    console.log("close them with: tools\\cli hidden --close");
+    return 0;
+  }
+  for (const p of procs) {
+    const res = sh("taskkill", ["/PID", String(p.pid), "/T", "/F"]);
+    console.log(`${res.status === 0 ? "closed" : "FAIL  could not close"} pid ${p.pid} ${p.name}`);
+  }
+  return 0;
+}
+
 function cmdHelp() {
   console.log(`Life Framework dev CLI
 
@@ -1137,6 +1161,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 to append, and one street-manifest row into <dir>
   scope --selftest              run that write in a temp directory and check the four outputs
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
+  hidden [--close]              list (or close) tool processes on the private LF-Agents desktop
+                                (Workbench/server runs started there never show a window)
   validate                      run every script in tools/validation/
 
 servers: ${Object.keys(SERVERS).join(", ")}
@@ -1340,7 +1366,7 @@ async function wtListCmd() {
   const live = rows.filter((e) => existsSync(e.path));
   const statuses = await Promise.all(live.map((e) => new Promise((done) => {
     let out = "";
-    const child = spawn("git", ["-C", e.path, "status", "--porcelain"], { stdio: ["ignore", "pipe", "ignore"] });
+    const child = spawn("git", ["-C", e.path, "status", "--porcelain"], { windowsHide: true, stdio: ["ignore", "pipe", "ignore"] });
     child.stdout.on("data", (d) => { out += d; });
     child.on("error", () => done(""));
     child.on("close", () => done(out));
@@ -1478,6 +1504,7 @@ function runWorktreeCli(root, args) {
     return 1;
   }
   const result = spawnSync(process.execPath, [cli, ...args], {
+    windowsHide: true,
     cwd: root,
     env: toolEnv(),
     stdio: "inherit",
@@ -1745,6 +1772,7 @@ const cmds = {
   "suite-valid": (flags) => cmdSuiteValid(flags),
   scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
+  hidden: (flags) => cmdHidden(flags ?? []),
   help: () => cmdHelp(),
 };
 

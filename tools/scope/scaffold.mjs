@@ -133,7 +133,7 @@ export function selftestScope(cliPath = CLI_PATH) {
   const dir = mkdtempSync(join(tmpdir(), "lf-scope-"));
   const name = "sample";
   try {
-    const res = spawnSync(process.execPath, [cliPath, "scope", name, dir], { encoding: "utf8" });
+    const res = spawnSync(process.execPath, [cliPath, "scope", name, dir], { windowsHide: true, encoding: "utf8" });
     if (res.status !== 0) {
       const detail = `${res.stdout || ""}${res.stderr || ""}`.trim();
       failures.push(`scope command exited ${res.status}${detail ? `: ${detail}` : ""}`);
