@@ -4054,7 +4054,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
-     Target_en_us "Members open the gate. Inside, Process contraband at the machine."
+     Target_en_us "Members open the gate. Inside, Process contraband at the machine, and keep the crew's goods in the crate: Open hideout stash."
      Comment "Sign card for the organization hideout yard, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{CCE875EFC2A291AB}" {
@@ -4064,7 +4064,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D93B25598500E634}" {
      Id "LF-Sign_Hideout_Rules"
-     Target_en_us "Outsiders cannot open the gate."
+     Target_en_us "Outsiders cannot open the gate or the stash, even when the gate stands open."
      Comment "Sign card for the organization hideout yard, Rules section."
     }
     CustomStringTableItem "{29B7EE9B299AEAF2}" {
