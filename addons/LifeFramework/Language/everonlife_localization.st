@@ -4237,6 +4237,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Only the owner can collect. Store your car in the garage to never pay this."
      Comment "Sign card for the impound desk, Rules section."
     }
+    CustomStringTableItem "{BA517CCD13044B16}" {
+     Id "LF-Sign_Impound_Next"
+     Target_en_us "Park it in the garage next door, to the west, and it will not be towed again."
+     Comment "Sign card for the impound lot, Next section: where the player goes after this place."
+    }
   }
  }
 }
