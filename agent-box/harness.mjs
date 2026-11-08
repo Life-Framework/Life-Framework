@@ -682,8 +682,8 @@ function selftest() {
   // docs/roadmap/m1-25-village.md).
   if (shop.x !== 179 || shop.z !== 244.3) throw new Error(`shop coords ${shop.x} ${shop.z}`);
   const apple = findPad(list, "AppleTradeContainer");
-  // AppleTrader 198.5 0 240.6 plus the container's -2.6 0.9 0.7.
-  if (!apple || apple.x !== 195.9 || apple.z !== 241.3) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
+  // AppleTrader 197 0 240.6 plus the container's -2.6 0.9 0.7.
+  if (!apple || apple.x !== 194.4 || apple.z !== 241.3) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
   const police = findPad(list, "PoliceStation_Debug");
   if (!police || police.x !== 229 || police.z !== 244.3) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
   const pile = findPad(list, "CementPile_Debug");

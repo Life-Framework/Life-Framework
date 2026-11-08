@@ -1,5 +1,5 @@
 GenericEntity AppleTrader {
- coords 198.5 0 240.6
+ coords 197 0 240.6
  {
   $grp GenericEntity {
    AppleTradeContainer {
