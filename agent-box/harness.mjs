@@ -25,6 +25,14 @@ import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadSt
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 const MENU_ACTIONS = new Set([
+  // Character actions the harness drives for melee proof (pickaxe swing at an ore rock).
+  "CharacterMelee",
+  "CharacterTurnUp",
+  "Inventory",
+  "SwitchWeaponCategory1",
+  "SwitchWeaponCategory2",
+  "SwitchWeaponCategory3",
+  "SwitchCameraType",
   "MenuBack",
   "MenuUp",
   "MenuDown",
@@ -132,6 +140,10 @@ export function buildLine(id, spec) {
   if (spec.verb === "input") {
     if (!MENU_ACTIONS.has(spec.action)) {
       throw new Error(`action not allowed: ${spec.action}. Menu actions only.`);
+    }
+    if (spec.value !== undefined && spec.value !== "") {
+      if (!/^-?[0-9]+(.[0-9]+)?$/.test(String(spec.value))) throw new Error(`input value must be a number: ${spec.value}`);
+      return `${id} input ${spec.action} ${spec.value}`;
     }
     return `${id} input ${spec.action}`;
   }
@@ -573,7 +585,7 @@ export function runFlow(lines) {
       if (!spec) throw new Error(`press one of F, WheelUp, WheelDown, F10: ${line}`);
       result = sendCommand(spec);
     } else if (verb === "use") result = sendCommand({ verb: "use", className: rest[0], entityName: rest[1] });
-    else if (verb === "input") result = sendCommand({ verb: "input", action: rest[0] });
+    else if (verb === "input") result = sendCommand({ verb: "input", action: rest[0], value: rest[1] });
     else if (verb === "open") result = sendCommand({ verb: "open", menu: rest[0], mode: rest[1] });
     else if (verb === "kit") result = sendKit(rest);
     else if (verb === "layer") {
@@ -801,7 +813,8 @@ function selftest() {
   const pile = findPad(list, "CementPile_Debug");
   if (!pile || !pile.actions.includes("EL_GatherAction")) throw new Error("CementPile_Debug gather missing");
   const ore = findPad(list, "IronOre_Debug");
-  if (!ore || !ore.actions.includes("EL_GatherAction")) throw new Error("IronOre_Debug gather missing");
+  // Ore rocks are mined by a pickaxe swing, so they carry no action and are not pads.
+  if (ore && ore.actions.includes("EL_GatherAction")) throw new Error("IronOre_Debug still has an F-key gather; it is mined by hitting it");
   const counter = findPad(list, "TraderChainCounter");
   if (!counter || !counter.actions.includes("EL_OpenTraderAction")) throw new Error("TraderChainCounter missing");
   const saw = findPad(list, "Sawmill_Debug");
@@ -1382,7 +1395,7 @@ function main(argv) {
       return printResult(sendCommand({ verb: "use", className: rest[0], entityName: rest[1] }));
     }
     if (cmd === "input") {
-      return printResult(sendCommand({ verb: "input", action: rest[0] }));
+      return printResult(sendCommand({ verb: "input", action: rest[0], value: rest[1] }));
     }
     if (cmd === "open") {
       return printResult(sendCommand({ verb: "open", menu: rest[0], mode: rest[1] }));

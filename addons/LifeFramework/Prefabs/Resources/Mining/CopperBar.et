@@ -22,21 +22,24 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
     }
     CustomAttributes {
      PreviewRenderAttributes "{59A7230CA5F74B01}" {
-      CameraPreset Top
-      CameraOrbitAngles 0 0 0
-      CameraDistanceToItem 0.15
-      CameraOffset 0 -0.02 0
-      ItemRenderRotation 0 0 -90
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 2.0
+      FOV 10
      }
     }
     m_Size SLOT_2x1
    }
   }
-   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{75ABFBE70F78E212}Assets/Resources/Mining/MetalBar.xob"
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{2A301FAA4ED493E3}Assets/Props/Debris/Brick/Brick_dbr_02.xob"
    Materials {
     MaterialAssignClass "{59A72078EECC547E}" {
-     SourceMaterial "Material"
+     SourceMaterial "Assets/Structures/Walls/Brick/Data/BrickWall_01_bricks"
+     AssignedMaterial "{C20061C6145643B8}Assets/Resources/Mining/Data/Copper.emat"
+    }
+    MaterialAssignClass "{B374F929F1B4854C}" {
+     SourceMaterial "Common/Materials/ColorPalette/Color_palette"
      AssignedMaterial "{C20061C6145643B8}Assets/Resources/Mining/Data/Copper.emat"
     }
    }

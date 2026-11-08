@@ -2944,7 +2944,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{EACF0508930A1624}" {
      Id "LF-Sign_Mining_How"
-     Target_en_us "Strike the ore with a pickaxe to break off nuggets. At the furnace, use Smelt Iron Nuggets or Smelt Gold Nuggets."
+     Target_en_us "Swing your pickaxe at the rock. Every few swings a nugget breaks off and drops at your feet; pick it up. At the furnace, use Smelt Iron Nuggets or Smelt Gold Nuggets."
      Comment "Mining sign card, How section. Smelt Iron Nuggets and Smelt Gold Nuggets are the furnace action names."
     }
     CustomStringTableItem "{223169ECC7DBE15F}" {
@@ -2954,7 +2954,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7DA72D96E9E141A1}" {
      Id "LF-Sign_Mining_Rules"
-     Target_en_us "Broken rocks grow back over time."
+     Target_en_us "A rock runs out after a few nuggets and crumbles. It grows back after a few minutes."
      Comment "Mining sign card, Rules section."
     }
     CustomStringTableItem "{25CBE1F3714907FE}" {

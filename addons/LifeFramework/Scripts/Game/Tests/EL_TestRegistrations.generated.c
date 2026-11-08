@@ -108,13 +108,14 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_LocalIdentity(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LoggingChain(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MiningAreaWeightedSpawns(), EL_TestTier.LOGIC);
-		manager.Register(new EL_Test_MiningPhases(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_MiningDamage(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MiningPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyCash(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyRework(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Murder(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_NoPassivePaycheck(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_NpcClothesReplicate(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_OreYield(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_OrgInviteRole(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_OrgRegistry(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PlaytestMission(), EL_TestTier.LOGIC);

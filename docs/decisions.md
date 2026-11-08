@@ -467,6 +467,18 @@ swap them.
 harness and a filming harness run on any machine with the game; clips are PR
 evidence and showcase material.
 
+**2026-11-08 — Ore is mined by swinging a pickaxe at the rock.** The "F to
+gather" action on ore rocks is gone. A pickaxe hit takes the same melee damage
+path as woodcutting; every few hits a nugget breaks off and drops beside the
+rock, and a spent rock crumbles and grows back on its ResourceChains.conf
+cooldown. The maintainer has thebonbon's permission to take the pickaxe-hit
+mining from `thebonbon/EveronLife` branch `enhancement/Main_World` (MIT); the
+port keeps a `// Ported from` header and a THIRD_PARTY.md line. Why: playtest
+feedback asked for physical mining instead of a prompt (decision "In-world
+first"). What it means for code: `LF_OreNodeComponent` owns yield, depletion
+and grow-back on the server; the hit zone only gates the tool. The spent state
+is not saved, so a restart grows every rock back.
+
 **2026-11-08 — Scheduled events are parked.** Organised events (a rally, a gang
 war night, a strike at the factory) are interesting for a later roadmap phase
 and are not planned for M2. Why: the sandbox has to prove its emergent loops

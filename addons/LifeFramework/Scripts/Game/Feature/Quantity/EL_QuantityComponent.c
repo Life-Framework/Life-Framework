@@ -178,9 +178,14 @@ class EL_QuantityComponent : ScriptComponent
 	//! model below the lowest tier. Runs on the authority after every quantity change and on
 	//! proxies through the replicated property callback. Fail-safe: a missing list, unresolvable
 	//! model or missing base mesh logs an error and leaves the current model untouched.
+	//! Mesh swaps since the session started. A test reads it to prove a plain item keeps its mesh.
+	static int s_iModelSwaps;
+
+	//------------------------------------------------------------------------------------------------
 	void UpdateStackModel()
 	{
-		if (!m_aQuantityStacks)
+		// No tiers: the prefab's own mesh stays. Re-setting it would drop its material overrides.
+		if (!m_aQuantityStacks || m_aQuantityStacks.IsEmpty())
 			return;
 
 		IEntity owner = GetOwner();
@@ -220,6 +225,12 @@ class EL_QuantityComponent : ScriptComponent
 		}
 		else
 		{
+			// Already on the base mesh: SetObject with an empty remap would drop the prefab's
+			// MaterialAssignClass overrides and the mesh would render its baked material
+			// (the white mining items, 2026-11-08).
+			if (m_sAppliedStackModel.IsEmpty())
+				return;
+
 			if (!m_InitalModel)
 				m_InitalModel = GetOwner().GetVObject();
 			if (!m_InitalModel)
@@ -229,6 +240,7 @@ class EL_QuantityComponent : ScriptComponent
 			m_sAppliedStackModel = "";
 		}
 
+		s_iModelSwaps++;
 		owner.SetObject(targetModel, "");
 		// Swap the held resource only after SetObject, so the old mesh stays valid during the swap.
 		m_AppliedStackResource = targetResource;
