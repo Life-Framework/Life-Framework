@@ -25,6 +25,8 @@ class LF_UIScreen
 {
 	//! Focus order keys: each top-level part owns a span, list rows sort inside their list's span.
 	static const int ORDER_SPAN = 1000;
+	//! Sheet width minus a list row's width: list and row padding (4 x 28) and the scrollbar.
+	static const float LIST_ROW_INSET = 136;
 
 	protected Widget m_wRoot;
 	protected bool m_bHasField;
@@ -1030,6 +1032,16 @@ class LF_UIScreen
 		{
 			EL_Debug.Error("UIKit", "failed to create list row " + rowName);
 			return false;
+		}
+
+		// A list row sizes to its text and sits centred in the scroll, so on a wide sheet (the
+		// 900 price list) "needs $2,500" was cut to "needs $2,". Rows span the sheet instead:
+		// the sheet less the list and row padding (28 each side, each) and the scrollbar.
+		SizeLayoutWidget rowSize = SizeLayoutWidget.Cast(row);
+		if (rowSize && GetSkin().m_fWidth > 0)
+		{
+			rowSize.EnableWidthOverride(true);
+			rowSize.SetWidthOverride(GetSkin().m_fWidth - LIST_ROW_INSET);
 		}
 
 		LF_UIPart part = LF_UIPart.CreateStatus(rowName, label, status, action);

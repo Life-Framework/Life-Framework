@@ -1146,7 +1146,8 @@ async function pullFromSession(rest) {
     "New-Item -ItemType Directory -Force $stage | Out-Null",
     `$reports = Join-Path ${tb.psQuote(ptr.dir)} 'agent-box\\reports'`,
     "if (Test-Path $reports) { Copy-Item -Recurse -Force $reports (Join-Path $stage 'reports') }",
-    "$session = Join-Path $env:LOCALAPPDATA 'LifeFramework\\session'",
+    // The run folder's own session dir (sessionDir: one per checkout, named after its folder).
+    `$session = Join-Path $env:LOCALAPPDATA ${tb.psQuote(join("LifeFramework", "session", basename(String(ptr.dir).replace(/[\\/]+$/, ""))))}`,
     "Get-ChildItem -LiteralPath $session -Directory -Filter 'client*' -ErrorAction SilentlyContinue | ForEach-Object {",
     "  $logs = Join-Path $_.FullName 'logs'",
     "  $newest = Get-ChildItem -LiteralPath $logs -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
@@ -1167,7 +1168,8 @@ async function pullFromSession(rest) {
     console.log(`FAIL  pull: scp failed: ${(c.stderr || "").trim()}`);
     return 1;
   }
-  const x = spawnSync("tar", ["-xf", local, "-C", dest], { windowsHide: true, encoding: "utf8" });
+  // Windows tar (bsdtar) reads zip; a Git Bash PATH finds GNU tar first, which takes "C:" for a host.
+  const x = spawnSync(join(process.env.SystemRoot || "C:\\Windows", "System32", "tar.exe"), ["-xf", local, "-C", dest], { windowsHide: true, encoding: "utf8" });
   if (x.status !== 0) {
     console.log(`FAIL  pull: unpack failed: ${(x.stderr || "").trim()}`);
     return 1;
