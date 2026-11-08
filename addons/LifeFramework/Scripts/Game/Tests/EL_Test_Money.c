@@ -17,7 +17,7 @@ class EL_Test_MoneyCash : EL_Test
 	{
 		// An unresolved character, storage manager, or jacket is a FAIL with its reason
 		// (EL_TestCharacterFixture), never a pass that skips the cash assertions.
-		IEntity character = EL_TestCharacterFixture.Spawn(ctx, true);
+		IEntity character = EL_TestCharacterFixture.Spawn(ctx);
 		if (!character)
 			return;
 

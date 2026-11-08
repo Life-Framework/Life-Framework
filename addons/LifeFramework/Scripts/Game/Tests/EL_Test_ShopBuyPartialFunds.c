@@ -34,7 +34,7 @@ class EL_Test_ShopBuyPartialFunds : EL_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		IEntity buyer = EL_TestCharacterFixture.Spawn(ctx, true);
+		IEntity buyer = EL_TestCharacterFixture.Spawn(ctx);
 		if (!buyer)
 			return;
 

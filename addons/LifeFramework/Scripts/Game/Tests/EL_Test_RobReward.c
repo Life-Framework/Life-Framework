@@ -31,11 +31,11 @@ class EL_Test_RobReward : EL_Test
 
 		ctx.True(Replication.IsServer(), "rob reward test runs on the server");
 
-		IEntity robber = EL_TestCharacterFixture.Spawn(ctx, true);
+		IEntity robber = EL_TestCharacterFixture.Spawn(ctx);
 		if (!robber)
 			return;
 
-		IEntity officer = EL_TestCharacterFixture.Spawn(ctx, true);
+		IEntity officer = EL_TestCharacterFixture.Spawn(ctx);
 		if (!officer)
 		{
 			EL_TestCharacterFixture.Delete(robber);
@@ -128,7 +128,7 @@ class EL_Test_RobWeaponVehicle : EL_Test
 		string uid = "test-rob-weapon-vehicle";
 		string policeUid = "test-rob-weapon-vehicle-police";
 
-		IEntity robber = EL_TestCharacterFixture.Spawn(ctx, true);
+		IEntity robber = EL_TestCharacterFixture.Spawn(ctx);
 		if (!robber)
 			return;
 

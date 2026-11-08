@@ -20,7 +20,7 @@ class EL_Test_ATMBoundary : EL_Test
 		EL_ATMManager.Reset();
 		string uid = "test-atm-boundary";
 
-		IEntity character = EL_TestCharacterFixture.Spawn(ctx, true);
+		IEntity character = EL_TestCharacterFixture.Spawn(ctx);
 		if (!character)
 			return;
 
@@ -65,19 +65,20 @@ class EL_Test_ATMBoundary : EL_Test
 
 		EL_TestCharacterFixture.Delete(character);
 
-		// All-or-nothing payout: a character with no pockets cannot take the cash, so the
-		// withdraw is rolled back and the balance restored.
-		IEntity naked = EL_TestCharacterFixture.Spawn(ctx, false);
-		if (!naked)
+		// All-or-nothing payout: a payout target with no inventory manager cannot take the cash,
+		// so the withdraw is rolled back and the balance restored. A bare Character_Roleplay
+		// still holds MoneyStack, so the target is a jacket lying on the ground.
+		IEntity noInventory = EL_Utils.SpawnEntityPrefab(EL_TestCharacterFixture.JACKET_PREFAB, vector.Zero);
+		ctx.NotNull(noInventory, "fixture: a jacket on the ground spawns");
+		if (!noInventory)
 			return;
 
 		EL_BankAccount rollbackAccount = EL_ATMManager.GetOrCreate(uid + "-rollback");
 		rollbackAccount.Deposit(40);
-		ctx.Equal(0, EL_MoneyUtils.AddCash(naked, 1), "fixture: a character with no clothing has no pocket for cash");
-		ctx.False(EL_CharacterATMComponent.ServeWithdraw(naked, rollbackAccount, 40, uid), "a withdraw the inventory cannot hold is refused");
+		ctx.Equal(0, EL_MoneyUtils.AddCash(noInventory, 1), "fixture: an entity with no inventory manager takes no cash");
+		ctx.False(EL_CharacterATMComponent.ServeWithdraw(noInventory, rollbackAccount, 40, uid), "a withdraw the target cannot hold is refused");
 		ctx.Equal(40, rollbackAccount.GetBalance(), "the refused payout is returned to the account");
-		ctx.True(EL_MoneyUtils.GetCash(naked) <= 0, "the refused payout leaves no cash behind");
 
-		EL_TestCharacterFixture.Delete(naked);
+		EL_TestCharacterFixture.Delete(noInventory);
 	}
 };

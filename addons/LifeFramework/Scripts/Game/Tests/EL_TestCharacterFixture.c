@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Shared WORLD-tier fixture: a character spawned the way EL_SpawnLogic does (WORLD transform at
-//! a spawn point). With pockets it also wears a jacket, because a naked character has no deposit
-//! storage for MoneyStack. Same shape as the setup EL_Test_E2E_Narrative proved.
+//! a spawn point) wearing a jacket, so MoneyStack has a deposit storage whatever the prefab's
+//! default loadout is. Same shape as the setup EL_Test_E2E_Narrative proved.
 //! Every step that does not resolve is a test FAIL with its reason, never a silent skip.
 class EL_TestCharacterFixture
 {
@@ -9,9 +9,8 @@ class EL_TestCharacterFixture
 	static const ResourceName JACKET_PREFAB = "{9F546CCA2582D16F}Prefabs/Characters/Uniforms/Jacket_M88.et";
 
 	//------------------------------------------------------------------------------------------------
-	//! \param withPockets True inserts a jacket so the character can hold MoneyStack.
 	//! \return The character, or null after recording the FAIL reason on ctx.
-	static IEntity Spawn(EL_TestContext ctx, bool withPockets)
+	static IEntity Spawn(EL_TestContext ctx)
 	{
 		Resource res = Resource.Load(CHARACTER_PREFAB);
 		if (!res.IsValid())
@@ -51,9 +50,6 @@ class EL_TestCharacterFixture
 			Delete(character);
 			return null;
 		}
-
-		if (!withPockets)
-			return character;
 
 		IEntity jacket = EL_Utils.SpawnEntityPrefab(JACKET_PREFAB, character.GetOrigin());
 		if (!jacket)
