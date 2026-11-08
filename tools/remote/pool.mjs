@@ -139,6 +139,16 @@ export function probe(root, m, { fresh = false } = {}) {
   return h;
 }
 
+function markHealth(root, m, h) {
+  const hf = healthFile(root);
+  const hc = readJson(hf, {});
+  const prev = hc[m.name] ?? {};
+  hc[m.name] = { ...prev, ...h, build: h.build ?? (h.reachable ? prev.build : null) ?? null, at: Date.now() };
+  try {
+    writeFileSync(hf, JSON.stringify(hc, null, 2));
+  } catch {}
+}
+
 // ---------------------------------------------------------------- queue
 
 function queueDir(root) {
@@ -313,7 +323,7 @@ try {
 `;
 
 function holderScript(cfg) {
-  return `$cfgJson = @'\n${JSON.stringify(cfg)}\n'@\n${PS_HOLDER}`;
+  return `$cfgJson = @'\n${JSON.stringify(cfg)}\n'@\n$main = ${tb.psQuote(cfg.main)}\n${tb.PS_BUILDID}\n${PS_HOLDER}`;
 }
 
 const liveHolders = new Set();
@@ -368,6 +378,7 @@ export function startHolder(root, m, cfg, { onLost } = {}) {
       else if ((mm = /^lf-pool: has ([0-9a-f]{40})/.exec(t))) prep.has.add(mm[1]);
       else if ((mm = /^lf-pool: rdb ([0-9a-f]{40})/.exec(t))) prep.rdb = mm[1];
       else if (t === "lf-pool: fetched origin") prep.fetched = true;
+      else if ((mm = /^lf-remote: buildid (d+)/.exec(t))) prep.build = mm[1];
       else if (t === "lf-pool: new run folder") prep.fresh = true;
       else if ((mm = /^lf-pool: holder (.*)$/.exec(t))) busy.push(readJsonText(mm[1]));
       else if (t === "lf-pool: busy") done({ busy });
@@ -536,7 +547,10 @@ export async function acquireSlot(root, opts = {}) {
   };
   const usable = (m) => {
     if (m.via === "local") return true;
-    const h = probe(root, m);
+    // Only a cached answer here: the holder attempt itself is the probe (it
+    // reports the build), so a healthy box costs no extra ssh round trip.
+    const h = readJson(healthFile(root), {})[m.name];
+    if (!h || Date.now() - h.at > HEALTH_TTL_MS) return true;
     if (!h.reachable) {
       note(`down-${m.name}`, `pool: ${m.name} does not answer ssh (cached ${Math.round((Date.now() - h.at) / 1000)} s); skipping it`);
       return false;
@@ -583,6 +597,11 @@ export async function acquireSlot(root, opts = {}) {
         const r = await startHolder(root, m, cfg, {
           onLost: (s) => console.log(`WARN  pool: lost the ssh session holding ${s.machine.name} ${s.lockName}; the run there is being stopped`),
         });
+        if (r.slot || r.busy) markHealth(root, m, { reachable: true, build: r.slot?.prep.build ?? null });
+        if (r.slot && !usable(m)) {
+          r.slot.release();
+          continue;
+        }
         if (r.slot) {
           r.slot.snap = snap;
           return finish(r.slot, attemptAt);
@@ -590,12 +609,7 @@ export async function acquireSlot(root, opts = {}) {
         if (r.error) {
           console.log(`pool: ${r.error}`);
           // Treat as down for the health window.
-          const hf = healthFile(root);
-          const hc = readJson(hf, {});
-          hc[m.name] = { ...(hc[m.name] ?? {}), reachable: false, at: Date.now(), error: r.error };
-          try {
-            writeFileSync(hf, JSON.stringify(hc, null, 2));
-          } catch {}
+          markHealth(root, m, { reachable: false, error: r.error });
         }
       }
       const ahead = older.length;

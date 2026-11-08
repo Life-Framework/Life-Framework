@@ -874,10 +874,11 @@ async function runTicketProof() {
 // --machine <name|any|local> (tools/pool.json). Game clients need a desktop
 // session; over ssh there is none (the box shows the logon screen, ssh runs in
 // session 0), so a remote machine runs server-only sessions (--clients 0) and
-// clients join it over the LAN. The chosen remote is remembered in
-// <session dir>/remote.json, so down/status/state/restart follow it.
+// clients join it over the LAN. The chosen remote is remembered per worktree
+// in tmp/session-remote.json, so down/status/state/restart from this worktree
+// follow it (the local session dir is shared by every checkout on this PC).
 function remotePointerFile() {
-  return join(sessionDir(), "remote.json");
+  return join(ROOT, "tmp", "session-remote.json");
 }
 
 export function readRemotePointer() {
@@ -935,6 +936,7 @@ async function routeMachine(cmd, rest) {
   }
   console.log(`session: server-only session on ${target.name}`);
   const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", ...args] });
+  mkdirSync(dirname(remotePointerFile()), { recursive: true });
   if (r.code === 0) writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir: r.rDir, at: new Date().toISOString(), root: ROOT }));
   return { code: r.code };
 }

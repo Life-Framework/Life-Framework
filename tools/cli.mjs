@@ -1281,6 +1281,23 @@ function killTree(pid) {
   return true;
 }
 
+// Under ssh (a session on a remote pool machine) every child dies with the ssh
+// session (observed 2026-11-09: a detached spawn was gone seconds after the
+// connection closed). A process WMI creates is not in that session's job, so
+// the session server outlives the command that started it.
+function spawnOutsideSsh(exe, args, cwd) {
+  const q = (a) => (/[\s"]/.test(a) ? `"${a.replace(/"/g, '\\"')}"` : a);
+  const cmdline = [exe, ...args].map(q).join(" ");
+  const ps = `$r = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = '${cmdline.replace(/'/g, "''")}'; CurrentDirectory = '${cwd.replace(/'/g, "''")}' }; Write-Output "$($r.ReturnValue) $($r.ProcessId)"`;
+  const r = sh(PWSH, ["-NoProfile", "-NonInteractive", "-Command", ps]);
+  const m = /^(\d+) (\d+)/m.exec(r.stdout ?? "");
+  if (!m || m[1] !== "0") {
+    console.log(`FAIL  Win32_Process.Create: ${(r.stdout + r.stderr).trim()}`);
+    return { pid: 0 };
+  }
+  return { pid: Number(m[2]) };
+}
+
 function cmdSessionDown(dir) {
   const s = session.readSession(dir);
   if (!s) {
@@ -1332,7 +1349,7 @@ function cmdSessionUp(root, dir, flags) {
     }
   }
   try {
-    wt.acquireLock(root, SERVER_SLOT, { waitMs: flags.includes("--wait") ? 1800000 : 0 });
+    wt.acquireLock(root, SERVER_SLOT, { waitMs: flags.includes("--wait") ? 1800000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root } });
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
     console.log("      a test, host, or session server holds port 2001; retry when it ends, or pass --wait");
@@ -1380,8 +1397,8 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave });
   console.log(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
-  const srv = spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
-  srv.unref();
+  const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
+  srv.unref?.();
   if (!srv.pid) return fail("server did not start");
   state.serverPid = srv.pid;
   wt.transferLock(root, SERVER_SLOT, srv.pid);
@@ -2001,6 +2018,15 @@ function wtPruneCmd(args) {
   try {
     const r = wt.wtPrune(ROOT, slug, { force: args.includes("--force") });
     console.log(`pruned ${r.slug}: removed ${r.path} and branch ${r.branch}`);
+    // Its run folders on the pool's remote machines go too (best effort; a
+    // machine that is down keeps them until the next `tools\cli pool prune`).
+    if (!args.includes("--keep-remote")) {
+      try {
+        pool.cmdPoolPrune(ROOT, []);
+      } catch (e) {
+        console.log(`WARN  pool prune: ${e.message}`);
+      }
+    }
     return 0;
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
