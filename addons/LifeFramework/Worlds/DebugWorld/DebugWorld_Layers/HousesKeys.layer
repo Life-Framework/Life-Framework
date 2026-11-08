@@ -1,5 +1,5 @@
 GenericEntity HouseKeysStation {
- coords 98 0 134
+ coords 30 0 64
  {
   GenericEntity HouseKeysTableItems {
     coords 0 0.9 0.7
@@ -61,6 +61,6 @@ GenericEntity HouseKeysStation {
  }
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 98 0 134
+ coords 30 0 64
  m_vSize 2 1 1.5
 }

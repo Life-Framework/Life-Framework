@@ -9,6 +9,13 @@ import { loadPlaced } from "./layers.mjs";
 
 export const STREET_GAP_M = 30;
 
+// The village main street runs east-west on this centre line
+// (docs/roadmap/m1-25-village.md). Sites face it from both sides.
+export const STREET_Z = 250;
+
+// Sites that are out of town by design: no 30 m street rule, not in the wide shot.
+export const OUT_OF_TOWN = ["Roadmap_Convoy_Start"];
+
 // Vanilla prison doors are near-white. The interaction is real, so a white
 // center on these two sites is painted-light when look offers an action.
 export const PAINTED_LIGHT = ["Roadmap_Jail_Door", "Roadmap_Jail_Cell"];
@@ -79,12 +86,14 @@ export function siteLook(name, look) {
   return hits.join(",");
 }
 
-// The player camera faces -Z. Close pictures stand on the +Z side of the
-// Z=108 row so that view looks south at the shell and the car.
-export function siteShotOffset(name) {
-  if (name === "Roadmap_Garage") return { ox: 8, oy: 1.6, oz: 14 };
-  if (name === "Roadmap_Escort_Car") return { ox: 0, oy: 1.6, oz: 8 };
-  return null;
+// The capture camera aims at the site from target + offset. A site on the
+// street faces it, so the close picture stands in the street: north-side sites
+// are shot from the south, south-side sites from the north. Anything else
+// (jail yard, hideout, outskirts) keeps the harness default.
+export function siteShotOffset(name, site) {
+  if (!site || Math.abs(site.z - STREET_Z) > 15) return null;
+  const towardStreet = site.z > STREET_Z ? -9 : 9;
+  return { ox: 4, oy: 2.2, oz: towardStreet };
 }
 
 export function judgeRoadmapRow(row) {
@@ -98,7 +107,7 @@ export function judgeRoadmapRow(row) {
     if (!widgets || !shot) failures.push("menu is blank");
   }
   if (row.mesh === "white" || row.mesh === "missing") failures.push("mesh is white or missing");
-  if (Number(row.distanceM) > STREET_GAP_M) failures.push("more than 30 m from the rest of the street");
+  if (Number(row.distanceM) > STREET_GAP_M && !OUT_OF_TOWN.includes(row.name)) failures.push("more than 30 m from the rest of the street");
   return { ok: failures.length === 0, failures };
 }
 
@@ -286,7 +295,8 @@ export function runRoadmapReport(deps) {
   const rows = [];
   function takeWide() {
     if (!sites.length || cameraStuck || playDown) return;
-    const camera = rowCamera(sites, catalog);
+    const inTown = sites.filter((site) => !OUT_OF_TOWN.includes(site.name));
+    const camera = rowCamera(inTown.length ? inTown : sites, catalog);
     try {
       const shot = deps.captureWorld({
         name: "roadmap_row",
@@ -366,7 +376,7 @@ export function runRoadmapReport(deps) {
         }
         row.look = lookText(look);
         const shotSpec = { name: site.name, x: site.x, y: site.y, z: site.z };
-        const offset = siteShotOffset(site.name);
+        const offset = siteShotOffset(site.name, site);
         if (offset) {
           shotSpec.ox = offset.ox;
           shotSpec.oy = offset.oy;

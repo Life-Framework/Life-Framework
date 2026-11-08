@@ -17,7 +17,7 @@ import { fileURLToPath } from "node:url";
 import { bmpFileToPng, classifyMesh, classifyMeshFile, decodeBmp, decodePng, encodePng, syntheticBmp } from "./bmp.mjs";
 import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads, loadPlaced } from "./layers.mjs";
-import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, selectRoadmapSites, siteLook, siteShotOffset } from "./report.mjs";
+import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, selectRoadmapSites, siteLook, siteShotOffset, STREET_Z } from "./report.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -620,11 +620,14 @@ function selftest() {
   if (!atm || !atm.actions.includes("EL_ATMAction")) throw new Error("ATM_Debug missing from layer catalog");
   const shop = findPad(list, "Shop_GeneralStore_Debug");
   if (!shop || shop.actions[0] !== "EL_ShopAction") throw new Error("Shop_GeneralStore_Debug missing from layer catalog");
-  if (shop.x !== 142 || shop.z !== 130) throw new Error(`shop coords ${shop.x} ${shop.z}`);
+  // $grp members carry world coords; children add their parent's (village layout,
+  // docs/roadmap/m1-25-village.md).
+  if (shop.x !== 179 || shop.z !== 244.3) throw new Error(`shop coords ${shop.x} ${shop.z}`);
   const apple = findPad(list, "AppleTradeContainer");
-  if (!apple || apple.x !== 91.4 || apple.z !== 140.7) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
+  // AppleTrader 198.5 0 240.6 plus the container's -2.6 0.9 0.7.
+  if (!apple || apple.x !== 195.9 || apple.z !== 241.3) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
   const police = findPad(list, "PoliceStation_Debug");
-  if (!police || police.x !== 170 || police.z !== 120) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
+  if (!police || police.x !== 229 || police.z !== 244.3) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
   const pile = findPad(list, "CementPile_Debug");
   if (!pile || !pile.actions.includes("EL_GatherAction")) throw new Error("CementPile_Debug gather missing");
   const ore = findPad(list, "IronOre_Debug");
@@ -709,10 +712,16 @@ function selftest() {
   if (siteLook("Roadmap_Garage", "EL_VehicleStoreAction@Roadmap_Garage,SCR_LootDeadBodyAction") !== "EL_VehicleStoreAction@Roadmap_Garage") {
     throw new Error("a named site keeps only its own action");
   }
-  const garageShot = siteShotOffset("Roadmap_Garage");
-  const carShot = siteShotOffset("Roadmap_Escort_Car");
-  if (!garageShot || garageShot.oz <= 0 || !carShot || carShot.oz <= 0) {
-    throw new Error("the player camera faces -Z, so the row is photographed from the north");
+  const northShot = siteShotOffset("Roadmap_Garage", { x: 238, y: 0, z: STREET_Z + 6.6 });
+  const southShot = siteShotOffset("Roadmap_Escort_Car", { x: 247.5, y: 0, z: STREET_Z - 12 });
+  if (!northShot || northShot.oz >= 0 || !southShot || southShot.oz <= 0) {
+    throw new Error("a street site is photographed from the street: north side from the south, south side from the north");
+  }
+  if (siteShotOffset("Roadmap_Convoy_Start", { x: 466, y: 0, z: 331 }) !== null) {
+    throw new Error("an off-street site keeps the default camera");
+  }
+  if (!judgeRoadmapRow({ name: "Roadmap_Convoy_Start", look: "LF_ConvoyStartAction@Roadmap_Convoy_Start", mesh: "ok", distanceM: 170, menu: null }).ok) {
+    throw new Error("the contraband pickup is out of town by design");
   }
   if (!judgeRoadmapRow({ look: "EL_RobAction@X", mesh: "ok", distanceM: 30, menu: null }).ok) {
     throw new Error("30 m is still with the street");
@@ -745,7 +754,7 @@ function selftest() {
   const placed = loadPlaced(ROOT).filter((site) => site.name.startsWith("Roadmap_"));
   if (!placed.some((site) => site.name === "Roadmap_Breach_Charge")) throw new Error("charge is part of the walk");
   const cash = placed.find((site) => site.name === "Roadmap_Bank_Bag_Cash");
-  if (!cash || cash.x !== 189 || cash.z !== 122) throw new Error("bag cash world position");
+  if (!cash || cash.x !== 195.6 || cash.z !== 263) throw new Error("bag cash world position (Roadmap_Bank_Bag plus its child offset)");
   if (roadmapSites(ROOT).length < 12) throw new Error("roadmap walk is short");
   const page = renderRoadmapReport({
     wide: { src: "shots/roadmap-row.png", mesh: "ok" },
@@ -887,15 +896,14 @@ function selftest() {
     { name: "Roadmap_Vehicle_Lot", x: 243, y: 0, z: 120 },
   ]);
   if (wideStreet.oz <= 0) throw new Error("the release street wide shot stays on +Z");
-  const placedGarage = loadPlaced(ROOT).find((site) => site.name === "Roadmap_Garage");
-  const placedCar = loadPlaced(ROOT).find((site) => site.name === "Roadmap_Escort_Car");
-  if (!placedGarage || placedGarage.z !== 102.1 || placedGarage.x !== 186) throw new Error("garage use point is at 186 0 102.1");
-  if (!placedCar || placedCar.z !== 108 || placedCar.x !== 204) throw new Error("escort car is at 204 0 108");
-  const release = loadPlaced(ROOT).filter((site) => site.name.startsWith("Roadmap_") && site.z === 120);
-  const releaseX = release.map((site) => site.x);
-  if (Math.min(...releaseX) !== 186 || Math.max(...releaseX) !== 243) {
-    throw new Error("release street stays on Z=120 from x=186 to x=243");
-  }
+  // The live village: every street site has a neighbour within 30 m, and the
+  // contraband pickup is the one site out of town.
+  const placedStreet = roadmapSites(ROOT);
+  const placedRows = judgeStreet(placedStreet.map((site) => ({ ...site, look: `X@${site.name}`, mesh: "ok", menu: null })));
+  const strays = placedRows.filter((row) => !row.ok).map((row) => `${row.name} ${row.distanceM} m`);
+  if (strays.length) throw new Error(`street sites more than 30 m from the rest: ${strays.join(", ")}`);
+  const pickup = placedRows.find((row) => row.name === "Roadmap_Convoy_Start");
+  if (!pickup || pickup.distanceM < 60) throw new Error("the contraband pickup stands out of town");
   console.log("selftest ok");
   return 0;
 }

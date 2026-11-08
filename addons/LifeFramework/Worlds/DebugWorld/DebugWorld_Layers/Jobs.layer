@@ -1,5 +1,5 @@
 GenericEntity JobCenter {
- coords 118 0 120
+ coords 45 0 100
  {
   $grp GenericEntity {
    JobCenter_Debug {
@@ -117,6 +117,6 @@ GenericEntity JobCenter {
  }
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 118 0 120
+ coords 45 0 100
  m_vSize 2.5 1 1.5
 }

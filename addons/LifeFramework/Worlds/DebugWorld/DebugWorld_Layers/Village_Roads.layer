@@ -1,0 +1,406 @@
+SplineShapeEntity Village_Square {
+ coords 95 0 250
+ Points {
+  ShapePoint "{39C06A229F3085BD}" {
+   Position 0 0 0
+  }
+  ShapePoint "{9E8774C3BD56B4E4}" {
+   Position 46 0 0
+  }
+ }
+ {
+  RoadGeneratorEntity : "{24948AB10942D327}Prefabs/WEGenerators/Roads/Cobblestone/RG_Road_Cobblestone_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "56F07CB2CD0F496C"
+     SplinePoints {
+       ShapePoint "{6FD2A283C7149674}" {
+        Position 0 0 0
+       }
+       ShapePoint "{863F43F20FBFD6DE}" {
+        Position 46 0 0
+       }
+     }
+     IsClosedSpline 0
+     Width 34
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_MainStreet {
+ coords 138 0 250
+ Points {
+  ShapePoint "{1480FE43BB205B34}" {
+   Position 0 0 0
+  }
+  ShapePoint "{E0CBC615048DFE65}" {
+   Position 132 0 0
+  }
+  ShapePoint "{8F10E076D9B32D9C}" {
+   Position 262 0 0
+  }
+ }
+ {
+  RoadGeneratorEntity : "{8E689EDC77E2A3DC}Prefabs/WEGenerators/Roads/Asphalt/RG_Road_Asphalt_E_01_Narrow.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "556C6554AF23997E"
+     SplinePoints {
+       ShapePoint "{35FB8B2B11306257}" {
+        Position 0 0 0
+       }
+       ShapePoint "{4E524446DE2C0FDE}" {
+        Position 132 0 0
+       }
+       ShapePoint "{9F19D4702C40697B}" {
+        Position 262 0 0
+       }
+     }
+     IsClosedSpline 0
+     Width 7
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_EastTrack {
+ coords 398 0 250
+ Points {
+  ShapePoint "{4B0E05A372D70823}" {
+   Position 0 0 0
+  }
+  ShapePoint "{C36360C3EEDF014F}" {
+   Position 42 0 0
+  }
+  ShapePoint "{1EDC2798D0888611}" {
+   Position 64 0 12
+  }
+  ShapePoint "{0A6A3E3C07EE4502}" {
+   Position 70 0 50
+  }
+  ShapePoint "{F5F579DDABFD558D}" {
+   Position 70 0 76
+  }
+ }
+ {
+  RoadGeneratorEntity : "{8E83BBD5CEC42A11}Prefabs/WEGenerators/Roads/Dirt/RG_Road_Dirt_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "523EAA80CAA6C6B5"
+     SplinePoints {
+       ShapePoint "{64887F717A1EB914}" {
+        Position 0 0 0
+       }
+       ShapePoint "{26AD975F80F285B6}" {
+        Position 42 0 0
+       }
+       ShapePoint "{9E9A01A02A557AC4}" {
+        Position 64 0 12
+       }
+       ShapePoint "{A05A7876A7D1A33A}" {
+        Position 70 0 50
+       }
+       ShapePoint "{86FA674F24DF22D3}" {
+        Position 70 0 76
+       }
+     }
+     IsClosedSpline 0
+     Width 4
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_FarmLane {
+ coords 144 0 253
+ Points {
+  ShapePoint "{DBEC0B9AFC274180}" {
+   Position 0 0 0
+  }
+  ShapePoint "{9CB9BD2BC0D3AA6E}" {
+   Position 0 0 47
+  }
+  ShapePoint "{A8393E9A90F0B825}" {
+   Position 31 0 49
+  }
+ }
+ {
+  RoadGeneratorEntity : "{8E83BBD5CEC42A11}Prefabs/WEGenerators/Roads/Dirt/RG_Road_Dirt_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "523EAA80CAA6C6B5"
+     SplinePoints {
+       ShapePoint "{8F57D03D900B4238}" {
+        Position 0 0 0
+       }
+       ShapePoint "{260BCD40AA2DF1AC}" {
+        Position 0 0 47
+       }
+       ShapePoint "{01C308F9C7AC7D46}" {
+        Position 31 0 49
+       }
+     }
+     IsClosedSpline 0
+     Width 4
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_QuarryLane {
+ coords 168.5 0 247
+ Points {
+  ShapePoint "{9F6A2CEC8E82EC86}" {
+   Position 0 0 0
+  }
+  ShapePoint "{C86CBAB4B7A0B0D7}" {
+   Position 0 0 -45
+  }
+  ShapePoint "{AED3CD8EF0D825EA}" {
+   Position 11.5 0 -50.5
+  }
+  ShapePoint "{AD9E1073BF320C9D}" {
+   Position 57.5 0 -50.5
+  }
+ }
+ {
+  RoadGeneratorEntity : "{8E83BBD5CEC42A11}Prefabs/WEGenerators/Roads/Dirt/RG_Road_Dirt_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "523EAA80CAA6C6B5"
+     SplinePoints {
+       ShapePoint "{882EA6B11503C169}" {
+        Position 0 0 0
+       }
+       ShapePoint "{F212DA47102C8D68}" {
+        Position 0 0 -45
+       }
+       ShapePoint "{75C3D7A656624400}" {
+        Position 11.5 0 -50.5
+       }
+       ShapePoint "{5786FB0D53242682}" {
+        Position 57.5 0 -50.5
+       }
+     }
+     IsClosedSpline 0
+     Width 4
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_AnnexTrack {
+ coords 100 0 234
+ Points {
+  ShapePoint "{61D8FFF37184A5BA}" {
+   Position 0 0 0
+  }
+  ShapePoint "{73517EA23DB865E8}" {
+   Position 0 0 -59
+  }
+  ShapePoint "{4E092548259416F9}" {
+   Position -24 0 -104
+  }
+  ShapePoint "{5389DCE4501A869C}" {
+   Position -24 0 -126
+  }
+ }
+ {
+  RoadGeneratorEntity : "{8E83BBD5CEC42A11}Prefabs/WEGenerators/Roads/Dirt/RG_Road_Dirt_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "523EAA80CAA6C6B5"
+     SplinePoints {
+       ShapePoint "{C298A423D21712DC}" {
+        Position 0 0 0
+       }
+       ShapePoint "{C28BD23E8751B25E}" {
+        Position 0 0 -59
+       }
+       ShapePoint "{50EC128238E1EA79}" {
+        Position -24 0 -104
+       }
+       ShapePoint "{B2A219D08C979E95}" {
+        Position -24 0 -126
+       }
+     }
+     IsClosedSpline 0
+     Width 4
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_HideoutAlley {
+ coords 303 0 253
+ Points {
+  ShapePoint "{09DE7C99DDF72237}" {
+   Position 0 0 0
+  }
+  ShapePoint "{10E15077BB48B174}" {
+   Position 0 0 34
+  }
+ }
+ {
+  RoadGeneratorEntity : "{24948AB10942D327}Prefabs/WEGenerators/Roads/Cobblestone/RG_Road_Cobblestone_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "56F07CB2CD0F496C"
+     SplinePoints {
+       ShapePoint "{6D869BB89844DD2B}" {
+        Position 0 0 0
+       }
+       ShapePoint "{6B76C7D2BB702E79}" {
+        Position 0 0 34
+       }
+     }
+     IsClosedSpline 0
+     Width 4.5
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_ForestTrack {
+ coords 384 0 247
+ Points {
+  ShapePoint "{ADF5BC628C222A2C}" {
+   Position 0 0 0
+  }
+  ShapePoint "{B595F43D04188694}" {
+   Position 8 0 -19
+  }
+ }
+ {
+  RoadGeneratorEntity : "{8E83BBD5CEC42A11}Prefabs/WEGenerators/Roads/Dirt/RG_Road_Dirt_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "523EAA80CAA6C6B5"
+     SplinePoints {
+       ShapePoint "{B1040F91F9CDE292}" {
+        Position 0 0 0
+       }
+       ShapePoint "{9109A7E5CBE551B4}" {
+        Position 8 0 -19
+       }
+     }
+     IsClosedSpline 0
+     Width 4
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_VehicleLot {
+ coords 198 0 266
+ Points {
+  ShapePoint "{104DDDCE3548C107}" {
+   Position 0 0 0
+  }
+  ShapePoint "{3BE92C2B85FFFE58}" {
+   Position 35 0 0
+  }
+ }
+ {
+  RoadGeneratorEntity : "{EEB3D2A6FCAADFD6}Prefabs/WEGenerators/Roads/Concrete/RG_Road_ConcretePanel_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "59E881FE6E5B4479"
+     SplinePoints {
+       ShapePoint "{29A9774EFA9AF45B}" {
+        Position 0 0 0
+       }
+       ShapePoint "{4BDC21696913C83A}" {
+        Position 35 0 0
+       }
+     }
+     IsClosedSpline 0
+     Width 22
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_Market {
+ coords 186 0 240.5
+ Points {
+  ShapePoint "{2D23A81A71D8F0EB}" {
+   Position 0 0 0
+  }
+  ShapePoint "{D18B9E9B17BADD1A}" {
+   Position 35 0 0
+  }
+ }
+ {
+  RoadGeneratorEntity : "{F49A6A9439B063BB}Prefabs/WEGenerators/Roads/Dirt/RG_TrailGravel_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "5262CB47BB2B3833"
+     SplinePoints {
+       ShapePoint "{F01293228CAC38C0}" {
+        Position 0 0 0
+       }
+       ShapePoint "{ED805524BEB619E8}" {
+        Position 35 0 0
+       }
+     }
+     IsClosedSpline 0
+     Width 7
+    }
+   }
+  }
+ }
+}
+SplineShapeEntity Village_FuelApron {
+ coords 258 0 244.5
+ Points {
+  ShapePoint "{5A2B9A13039C53A1}" {
+   Position 0 0 0
+  }
+  ShapePoint "{7A83FB1703684F7F}" {
+   Position 34 0 0
+  }
+ }
+ {
+  RoadGeneratorEntity : "{EEB3D2A6FCAADFD6}Prefabs/WEGenerators/Roads/Concrete/RG_Road_ConcretePanel_01.et" {
+   coords 0 0 0
+   AdjustHeightMap 0
+   {
+    RoadEntity {
+     ID "59E881FE6E5B4479"
+     SplinePoints {
+       ShapePoint "{B27538A0C30196D9}" {
+        Position 0 0 0
+       }
+       ShapePoint "{D231FF98367D37C2}" {
+        Position 34 0 0
+       }
+     }
+     IsClosedSpline 0
+     Width 4
+    }
+   }
+  }
+ }
+}
