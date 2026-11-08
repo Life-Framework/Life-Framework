@@ -73,9 +73,8 @@ class EL_RobWeaponAction : ScriptedUserAction
 		if (account)
 		{
 			account.IncreaseWantedLevel(WANTED_INCREASE);
-			LF_WantedReports.Report(playerUid, user, LF_WantedReports.OFFENCE_WEAPON_THEFT);
 			EL_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
-			AlertPolice("#EL-Police_Alert_Weapon", user.GetOrigin());
+			LF_Dispatch.Report(playerUid, user, LF_WantedReports.OFFENCE_WEAPON_THEFT, user.GetOrigin());
 		}
 
 		return true;
@@ -109,45 +108,5 @@ class EL_RobWeaponAction : ScriptedUserAction
 			}
 		}
 		return count;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static void AlertPolice(string message, vector position)
-	{
-		// Send notification to all on-duty police
-		EL_PlayerControllerManagerCompat playerManager = EL_PlayerControllerManagerCompat.GetInstance();
-		if (playerManager)
-		{
-			array<int> playerIds = {};
-			playerManager.GetAllPlayerIds(playerIds);
-			EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-			if (accountManager)
-			{
-				foreach (int playerId : playerIds)
-				{
-					PlayerController pc = playerManager.GetPlayerController(playerId);
-					if (pc)
-					{
-						IEntity entity = pc.GetControlledEntity();
-						if (entity)
-						{
-							string playerUid = EL_Utils.GetPlayerUID(entity);
-							EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-							if (account && account.GetFaction() == EL_Faction.POLICE && account.IsOnDuty())
-							{
-								// Send police alert notification using static method
-								EL_NotificationManagerComponent.NotifyPlayer(
-									playerId, 
-									"#EL-PoliceAlert_Title", 
-									message, 
-									10.0, 
-									EL_ENotificationType.POLICE_ALERT
-								);
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 };

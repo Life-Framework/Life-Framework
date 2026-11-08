@@ -135,7 +135,7 @@ export const STEPS = [
       const fails = [];
       if (!(num(after[1], "wanted") > num(before[1], "wanted"))) fails.push(`client 1 wanted ${before[1].wanted} -> ${after[1].wanted}`);
       if (!(num(after[1], "cash") > num(before[1], "cash"))) fails.push(`client 1 cash ${before[1].cash} -> ${after[1].cash}, expected the till`);
-      if (after[2].faction === "POLICE" && after[2].toast !== "#EL-Police_Alert_Robbery") fails.push(`officer's last toast is ${after[2].toast}`);
+      if (after[2].faction === "POLICE" && after[2].toast !== "#LF-Dispatch_Radio") fails.push(`officer's last toast is ${after[2].toast}`);
       return fails;
     },
   },
