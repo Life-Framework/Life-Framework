@@ -7,6 +7,8 @@ The gameplay plan for the base mod. Two axes:
 
 The public site still hosts the November 2025 community checklist (website, Discord, brand). This folder is the plan for the playable mod.
 
+**Current milestone: [M1 Playtest Town](m1-playtest-town.md)** (journey status, in-world redesign, signs, arrival chain, scopes and waves; issues labelled `m1`).
+
 ## Rules for every scope
 
 - **1989 Everon.** Jobs, places, and copy fit the period. A taxi rank, a fuel delivery, a parcel run. No phone apps.
