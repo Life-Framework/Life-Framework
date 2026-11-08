@@ -852,7 +852,7 @@
   respawn or a second arrest reprints the carried slip instead of adding one. No new save data.
 - ✅ **Visible release** (M1-21, tests `jail/slip`, `jail/online-time`): release opens the cell
   door (`DoorComponent.SetControlValue`, the vanilla door motion and sound; it closes after
-  5 s), places the prisoner at the cell release offset (`m_vReleaseOffset`, `0 0 -5`, outside
+  5 s), places the prisoner at the cell release offset (`m_vReleaseOffset`; DebugWorld `0.15 0 10`, outside
   the door), stamps the slip, then shows the toast 1.5 s later. Release runs once per sentence.
   The DebugWorld cell now sentences 60 s per wanted level, max 300 s (it was zero-length).
 
