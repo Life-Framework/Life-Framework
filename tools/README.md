@@ -46,6 +46,7 @@ Runs on Windows (PowerShell), and works from any terminal.
 - `validation/` - Repo validator (also wired in as a git pre-commit hook; see below)
 - `test/` - `test-e2e.ps1`, the server-suite harness `cli test` drives
 - `utilities/` - Helper scripts for common tasks
+- `film/` - Filming harness: record the game window to mp4 + GIF preview, film an agent-box flow, publish PR evidence (`node tools/film/film.mjs`)
 
 ## MCP tool calls without opencode
 

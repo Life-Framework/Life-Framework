@@ -143,6 +143,13 @@
   wanted bumps and police-menu reads do not lose the account mid-session
   (the old evict-on-write churn is gone).
 
+### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
+- ✅ Explicit persisted form of an account and its characters (faction,
+  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
+  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
+  its `version` field. `account/save-roundtrip` covers the
+  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
+
 ### `EL_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
   (one AUTO slot per playthrough via `EL_SaveSelection`), manual saves,
@@ -168,13 +175,6 @@
   manager scans the mission's saves and logs `EL_Debug.Error` ("started a NEW
   session while N save point(s) exist") when any exist; with none it logs a
   fresh-session info line. See `docs/persistence.md`.
-
-### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
-- ✅ Explicit persisted form of an account and its characters (faction,
-  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
-  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
-  its `version` field. `account/save-roundtrip` covers the
-  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
@@ -931,6 +931,21 @@
   `agent-box/reports/roadmap.html` from a play session. The Node harness, MCP
   tools, layers, and named flows live in `agent-box/`. See `agent-box/README.md`.
   (verified 2026-10-11)
+
+### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
+- ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera
+  keys (position, look-at, FOV); `Sample(t)` eases between keys with
+  smoothstep and clamps at both ends. Out-of-order keys are rejected and
+  logged (`[ELDebug:Film]`). Covered by `film/camera-path` (LOGIC).
+- ⚠️ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
+  hides the HUD, moves the camera each frame, then restores the previous
+  camera and HUD. It compiles but has not run in a rendering session and no
+  agent-box verb calls it yet.
+- ✅ `tools/film/film.mjs` records a window or region to mp4 (ddagrab +
+  NVENC; gdigrab when ddagrab delivers no frame in 5 s), makes a GIF preview,
+  films an agent-box flow, and publishes a clip to the `film-evidence`
+  prerelease for a PR comment. Proven in game 2026-11-08: a game client on
+  DebugWorld, flow `film-debugworld`, 20.7 s at 1280x720, 2.8 MB (PR #111).
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
