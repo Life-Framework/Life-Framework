@@ -62,7 +62,7 @@ licences beside them). No Google Fonts request, no other families.
   hard 4px offset shadow. No blur, no gradient, no glass, no rounded corners.
 - **Stamp** (`<Stamp>`): status only, in mono capitals with a double border.
   Tilt one per view at most. Words: WORK IN PROGRESS, IN DEVELOPMENT, DONE,
-  NEEDS A HAND, SUPERSEDED, NOT RELEASED.
+  NEEDS A HAND, SUPERSEDED, NOT RELEASED, NOT OPEN YET.
 - **Plate** (`.plate`): a yellow road-sign plate for a signpost word (PLAYERS,
   MIT). Never for status.
 - **Rule** (`.rule-top`): a 2px ink rule opens every section, like a form.

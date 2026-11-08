@@ -8,6 +8,7 @@ import Devlog from "@/pages/Devlog";
 import Servers from "@/pages/Servers";
 import Contribute from "@/pages/Contribute";
 import Decisions from "@/pages/Decisions";
+import Support from "@/pages/Support";
 import { DocView, DocsIndex } from "@/pages/Docs";
 import NotFound from "@/pages/NotFound";
 
@@ -42,6 +43,7 @@ const App = () => (
       <Route path="/servers" element={<Servers />} />
       <Route path="/contribute" element={<Contribute />} />
       <Route path="/decisions" element={<Decisions />} />
+      <Route path="/support" element={<Support />} />
       <Route path="/docs" element={<DocsIndex />} />
       <Route path="/docs/decisions" element={<Navigate to="/decisions" replace />} />
       <Route path="/docs/:slug" element={<DocView />} />

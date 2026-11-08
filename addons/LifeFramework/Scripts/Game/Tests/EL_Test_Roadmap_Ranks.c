@@ -90,11 +90,9 @@ class EL_Test_Roadmap_Ranks : EL_Test
 		ctx.Equal(LF_PoliceRanks.SENIOR, timed.GetPoliceRank(), "there is no rank above senior");
 
 		EL_PlayerAccount patrol = Police("roadmap-ranks-patrol", LF_PoliceRanks.PATROL, true);
-		int arrestBefore = LF_PoliceRanks.GetArrestRefusalCount();
-		ctx.False(LF_PoliceRanks.AuthorizeArrest(patrol), "a lower rank's arrest refuses");
-		ctx.Equal(arrestBefore + 1, LF_PoliceRanks.GetArrestRefusalCount(), "the lower-rank arrest refusal is logged");
-		ctx.EqualStr("arrest refused: rank 0 cannot arrest", LF_PoliceRanks.GetLastError(), "the arrest refusal is the rank log");
+		// Who may arrest is config (police/rank-permissions); the flagship lets every on-duty officer arrest.
 		int arrestAfter = LF_PoliceRanks.GetArrestRefusalCount();
+		ctx.True(LF_PoliceRanks.AuthorizeArrest(patrol), "a patrol officer may arrest on the flagship default");
 		ctx.True(LF_PoliceRanks.AuthorizeArrest(senior), "a senior officer may arrest");
 		ctx.Equal(arrestAfter, LF_PoliceRanks.GetArrestRefusalCount(), "an authorized arrest is not a refusal");
 

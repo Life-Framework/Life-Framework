@@ -26,3 +26,13 @@ On a dedicated server (`agent-box/session.mjs`) the server answers `stand`,
 `use`, and `state` over an owner RPC, so a client's harness gets the result or
 the refusal (`dev_gate_closed`). `state` reads the account, money, job, and
 organization on the server and adds the client's last toast.
+
+`ui text` reads an open UI kit sheet the way a player reads it: each button
+with its label, each field with what is typed, each printed line, named by the
+part the screen gave it. `click` takes any kit button (`LF_UIButtonRelay`).
+`stand` turns the character to face the entity.
+
+The playtest mission closes the gate. A session started with
+`-scrDefine LF_HARNESS` (`session.mjs up --mission playtest`) opens it for the
+harness RPCs only (`EL_DevGate.CheckHarnessRequest`); the define changes the
+script checksum, so only clients with the same define can join that server.

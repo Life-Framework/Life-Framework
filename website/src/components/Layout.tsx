@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { DiscordIcon, GitHubIcon, Mark } from "@/components/icons";
-import { DISCORD_URL, REPO_URL, githubData, milestoneProgress, CURRENT_MILESTONE, formatDate } from "@/lib/content";
+import { DISCORD_URL, REPO_URL, githubData, milestoneProgress, CURRENT_MILESTONE, formatDate, supportOpen } from "@/lib/content";
 
 const NAV = [
   { to: "/roadmap", label: "Roadmap" },
@@ -153,6 +153,7 @@ function Footer() {
         { label: "Contribute", href: "/contribute" },
         { label: "Docs", href: "/docs" },
         { label: "Discord", href: DISCORD_URL },
+        ...(supportOpen ? [{ label: "Support the project", href: "/support" }] : []),
       ],
     },
     {
