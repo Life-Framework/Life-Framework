@@ -16,13 +16,14 @@ class EL_TestProgressionKit
 	static const string QUEST_ID = "intro_talk";
 
 	//------------------------------------------------------------------------------------------------
-	//! Courier at career level 2 through one paid parcel run.
+	//! Courier at career level 2 through paid parcel runs.
 	static void SeedCourier(EL_TestContext ctx, string uid)
 	{
 		ctx.True(LF_CivilianJob.SignUp(uid, EL_EJobType.PARCEL), "the courier signs up for parcels");
 		ctx.True(LF_CivilianJob.StartRun(uid, EL_EJobType.PARCEL), "the courier starts a parcel run");
 		ctx.True(LF_CivilianJob.CompleteRun(uid) > 0, "the parcel run pays");
-		ctx.Equal(2, LF_CivilianJob.GetLevel(uid), "one paid run makes the courier level 2");
+		EL_TestJobRuns.ToLevel(ctx, uid, EL_EJobType.PARCEL, 2);
+		ctx.Equal(2, LF_CivilianJob.GetLevel(uid), "paid runs make the courier level 2");
 		ctx.True(LF_CivilianJob.CanSignUp(uid, EL_EJobType.FUEL_DELIVERY), "level 2 opens fuel delivery");
 	}
 
@@ -135,7 +136,7 @@ class EL_Test_ProgressionRoundtrip : EL_Test
 
 		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER), "courier level 2 after the load");
 		ctx.True(LF_CivilianJob.CanSignUp(COURIER, EL_EJobType.FUEL_DELIVERY), "courier level 2 still opens fuel delivery");
-		ctx.Equal(LF_CivilianJob.PAY_PARCEL, LF_CivilianJob.GetPaidTotal(COURIER), "the courier's paid total survives");
+		ctx.Equal(LF_CivilianJob.PAY_PARCEL * LF_CivilianJob.RunsToReach(2), LF_CivilianJob.GetPaidTotal(COURIER), "the courier's paid total survives");
 		ctx.EqualStr(LF_UnemploymentBenefit.REFUSED_COOLDOWN, LF_UnemploymentBenefit.Refusal(COURIER, 0, false, LF_JobGuards.Now(), 100, 50, 3600), "the benefit cooldown survives");
 		if (officer)
 		{

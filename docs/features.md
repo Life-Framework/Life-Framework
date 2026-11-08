@@ -647,11 +647,20 @@
   from completed runs, trader sales, police duty pay (`LF_DutyPay`), and the
   unemployment benefit (`LF_UnemploymentBenefit`). Pin test `jobs/no-passive-paycheck`.
 - ✅ **Civilian run XP** (verified 2026-10-11): `AddExperience` forwards to
-  `LF_CivilianJob`. A completed courier, fuel, or taxi run adds 100 XP.
-  100 XP levels that career and `PullCareer` copies the level onto this
-  component, so `OnLevelUp` fires. Level 1 may take courier work, level 2
-  opens fuel delivery, level 3 opens taxi. Under-level signup refuses and is
-  logged.
+  `LF_CivilianJob`. A completed courier, fuel, or taxi run adds
+  `m_iJobXpPerRun` XP and `PullCareer` copies the level onto this component,
+  so `OnLevelUp` fires. Level 1 may take courier work, level 2 opens fuel
+  delivery, level 3 opens taxi. Under-level signup refuses and is logged.
+- ✅ **Job pacing is config and hidden** (2026-11-08, #156): `LF_Jobs.conf`
+  sets `m_iJobXpPerRun` (100), `m_iJobXpFirstLevel` (500), and
+  `m_fJobXpLevelGrowth` (2): 5 runs open fuel delivery, 15 open the taxi
+  (`LF_CivilianJob.RunsToReach`). No level text reaches the player: the
+  level-up hint ("grade N, +N%") and the grade in the hire hint are gone
+  (`#LF-Job_HiredHidden`). When a run opens new work the drop-off shows
+  `#LF-Job_NewWork` titled with the job name (`LF_CivilianJob.NewlyOpened`).
+  Pay per run is unchanged (40/60/80): 5 parcels then 5 fuel runs is about
+  500 cash, so a new player can buy the S105 (1000, from the bank) after about
+  10 runs. Test: `jobs/pacing`.
 - ✅ **Job tool grant** (2026-11-08): miner gets
   `{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et` (the old `Prefabs/Tools/Axe/Pico.et`
   never existed), lumberjack gets `{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et`
