@@ -618,24 +618,41 @@
   iron-bar trader (45 cash, the ShopPrices iron-bar sell price). That iron
   node requires the pickaxe in hand. DebugWorld keeps Apple, Plum, Tomato,
   Logging, Mining, Cement, Gravel, and Sand. `IronOre_Debug` uses
-  `iron-debug` (4 nuggets, no held tool) so one gather still feeds both
-  furnaces. `GoldOre_Debug` and `CopperOre_Debug` use the tool-free debug
-  rows with the prefab yields.
+  `iron-debug` (4 nuggets per piece) so one piece still feeds both furnaces.
+  `GoldOre_Debug` and `CopperOre_Debug` use the debug rows with the prefab
+  yields. Every ore rock still needs the pickaxe (the hit zone's tool list).
 
 ### `EL_DestructibleResourceComponent` + `EL_DestructibleResourceHitZone` — `Feature/Resources/`
-- ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit.
-- ⚠️ Non-tool or unmapped damage source deals **0 damage silently** (no
-  feedback); damage-source prefab string comparison is fragile on casing.
+- ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit. The
+  tool match compares prefab GUIDs, so path casing no longer matters. A melee
+  hit from a tool the resource does not list logs `[ELDebug:Resources]` and
+  deals 0 (2026-11-08).
 
-### `LF_MiningPhases` + `LF_MiningSpawn` + `LF_MiningForge` — `Feature/Mining/`
-- ✅ Ore health phases (verified 2026-10-11). A strike counts only when its
-  damage equals the tool damage. Non-negative damage walks phase budgets in
-  order; a budget of zero stops the walk. Passing the last phase destroys the
-  ore when delete-after-final is set. Applying a phase sets health to that
-  phase's budget and swaps the mesh when the phase names one. An empty mesh
-  keeps the current mesh. No phase data restores the original health and the
-  original mesh. Ported from EveronLife `EL_DestructionMultiPhaseSingleComponent`
-  and `EL_ToolHitZone`. Logic test `mining/phases`.
+### `LF_OreNodeComponent` + `LF_OreYield` — `Feature/Mining/` (2026-11-08)
+- ✅ You mine ore by swinging the pickaxe at the rock; there is no gather
+  prompt. The hit goes through `EL_DestructibleResourceHitZone` (pickaxe 20
+  damage, the axe 0). Every 60 damage (three swings) a piece breaks off and the
+  node row's yield drops as real nugget items beside the rock, toward the
+  miner. After the row's `m_iMaxGathers` pieces the rock crumbles (hidden, no
+  collision) and grows back after the row's `m_fCooldownMs`. Server-
+  authoritative; clients get the hit dust, a shake and the vanilla rock-break
+  sound by broadcast, and the spent state by RplProp (JIP-safe). The spent
+  state is not saved. Ported from thebonbon `EL_ToolHitZone` and
+  `EL_RandomPrefabSpawnable` with permission. Tests: LOGIC `mining/ore-yield`,
+  WORLD `mining/pickaxe-hits`.
+- ✅ Nuggets and bars render textured: `EL_QuantityComponent.UpdateStackModel`
+  no longer re-sets the base mesh, which dropped the prefab's material
+  overrides and rendered the items white. Cash, pickaxe, axe, ore and bar
+  inventory previews use the Front preset with a narrow FOV.
+- ⚠️ Inventory previews draw the mesh's baked material and ignore the prefab's
+  material override, so nuggets preview as grey stone and bars as red brick
+  (re-applying the remap to `ResolvePreviewEntityForPrefab` did not change the
+  render, 2026-11-08). The fix is a mesh that bakes the ore material (Workbench
+  FBX import). The pickaxe uses the pistol rig and is gripped at the handle end;
+  `HandAdditiveTranslation` has no effect on a weapon, so moving the grip also
+  needs a re-exported mesh with the pivot up the handle.
+
+### `LF_MiningSpawn` + `LF_MiningForge` — `Feature/Mining/`
 - ✅ Weighted ore spawn. A roll in `[0, total)` maps onto the first bin, including
   a roll of 0. The spawn count is the shortfall to the configured amount, and
   an over-full area spawns nothing. An empty list logs `EL_Debug.Error`.

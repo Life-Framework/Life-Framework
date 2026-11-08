@@ -90,7 +90,8 @@ class EL_Test_MiningPrefabs : EL_Test
 		}
 		ctx.True(pickaxeMapped, "minable ore tool list maps the pickaxe");
 		ctx.True(Resource.Load(settings.m_rHitEffect).IsValid(), "minable ore hit effect resolves");
-		ctx.Equal(2, settings.m_aDamagePhases.Count(), "minable ore configures two damage phases");
+		ctx.True(!settings.m_aDamagePhases || settings.m_aDamagePhases.Count() == 0, "minable ore has no damage phases: LF_OreNodeComponent counts the hits");
+		ctx.True(minable.FindComponent(LF_OreNodeComponent) != null, "minable ore carries LF_OreNodeComponent");
 
 		IEntity pickaxe = GetGame().SpawnEntityPrefab(Resource.Load(PICKAXE), GetGame().GetWorld(), params);
 		ctx.True(pickaxe != null, "pickaxe spawns");

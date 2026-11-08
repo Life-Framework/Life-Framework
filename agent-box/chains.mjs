@@ -44,9 +44,9 @@ export const PROBES = [
   { layer: "SandChain.layer", name: "SandPile_Debug", action: "EL_GatherAction" },
   { layer: "CementChain.layer", name: "CementPlant_Debug", action: "EL_ProcessAction" },
   { layer: "GravelChain.layer", name: "GravelPile_Large_Debug", action: "EL_GatherAction" },
-  { layer: "MiningChain.layer", name: "IronOre_Debug", action: "EL_GatherAction" }, // layer grants 4, enough for both furnaces
-  { layer: "MiningChain.layer", name: "GoldOre_Debug", action: "EL_GatherAction" },
-  { layer: "MiningChain.layer", name: "CopperOre_Debug", action: "EL_GatherAction" },
+  { layer: "MiningChain.layer", name: "IronOre_Debug", action: "" }, // pickaxe swing, not an F-key action; a piece drops 4 nuggets
+  { layer: "MiningChain.layer", name: "GoldOre_Debug", action: "" },
+  { layer: "MiningChain.layer", name: "CopperOre_Debug", action: "" },
   { layer: "MiningChain.layer", name: "Furnace", action: "EL_ProcessAction" },
   { layer: "LoggingChain.layer", name: "LogPile_Debug", action: "EL_GatherAction" },
   { layer: "LoggingChain.layer", name: "Sawmill_Debug", action: "EL_ProcessAction" },
@@ -73,7 +73,7 @@ export const EXTRA_PROBES = [
   { layer: "Crimes.layer", name: "RobberyPoint_Vehicle", action: "EL_RobVehicleAction" },
 ];
 
-// Cuttable trees stay melee (axe hit), not an F-key action. The probe only stands.
+// Cuttable trees and ore rocks are melee (axe or pickaxe hit), not an F-key action. Their probes only stand.
 export const GAPS = [];
 
 export function allProbes() {

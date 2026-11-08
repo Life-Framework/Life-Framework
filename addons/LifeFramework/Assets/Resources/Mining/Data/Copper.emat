@@ -1,6 +1,8 @@
-MatPBRBasic {
- BCRMap "{3CAE11A406D2E3E3}Assets/Resources/Mining/Data/Copper_BCR.edds"
- NMOMap "{0476AA36DFA5B17D}Assets/Resources/Mining/Data/Copper_NMO.edds"
- MetalnessScale 1
- RoughnessScale 0.25
+MatPBR2Layers {
+ Color 0.75 0.4 0.22 1
+ Specular 0.75 0.4 0.22 1
+ MetalnessScale 1.5
+ RoughnessScale 0.6
+ BCRMap "{6E3195AD6C06CB70}Assets/_SharedData/Metal/ST_Metal_Galv_01_BCR.edds"
+ NMOMap "{56E92E3FB57199EE}Assets/_SharedData/Metal/ST_Metal_Galv_01_NMO.edds"
 }

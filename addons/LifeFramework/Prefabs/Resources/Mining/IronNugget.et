@@ -23,25 +23,23 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
     }
     CustomAttributes {
      PreviewRenderAttributes "{59A730880E261EBE}" {
-      CameraPreset Top
-      CameraOrbitAngles 0 0 0
-      CameraDistanceToItem 0.19
-      CameraOffset 0 -0.01 0
-      ItemRenderRotation 0 0 0
+      CameraPreset Front
+      CameraOrbitAngles -30 30 0
+      CameraDistanceToItem 1.15
+      FOV 10
      }
     }
     m_Size SLOT_1x1
    }
   }
-   MeshObject "{5A4ACD10B8DA304F}" {
-    Object "{6399C4DB701BF230}Assets/Resources/Mining/MetalOre.xob"
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{67E93053E4FB78E4}Assets/Props/Debris/Concrete/FragmentConcrete_dbr_02.xob"
    Materials {
     MaterialAssignClass "{59A730883D27F65B}" {
-     SourceMaterial "Material"
-      AssignedMaterial "{29473C87C35726A4}Assets/Resources/Mining/Data/Iron.emat"
-     }
+     SourceMaterial "ConcreteFragment_dbr"
+     AssignedMaterial "{4C13D3611F78FB98}Assets/Resources/Mining/Data/Iron_Ore.emat"
     }
    }
   }
-  scale 0.2
+ }
 }

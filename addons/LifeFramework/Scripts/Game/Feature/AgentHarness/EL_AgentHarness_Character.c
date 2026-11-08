@@ -344,4 +344,43 @@ modded class SCR_ChimeraCharacter
 	{
 		EL_AgentHarness.Reply(commandId, status, detail);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness melee swing at the current aim. The owning client has already raised
+	//! its own melee flag (animation); the server raises it on its copy of the input
+	//! context with the client's aim, so the hit is traced and applied where damage is
+	//! authoritative. Behind the dev gate.
+	void EL_AskHarnessMelee(float aimYaw, float aimPitch)
+	{
+		if (Replication.IsServer())
+		{
+			EL_ApplyHarnessMelee(aimYaw, aimPitch);
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessMelee, aimYaw, aimPitch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_HarnessMelee(float aimYaw, float aimPitch)
+	{
+		if (!EL_DevGate.CheckHarnessRequest(this, "melee"))
+			return;
+
+		EL_ApplyHarnessMelee(aimYaw, aimPitch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void EL_ApplyHarnessMelee(float aimYaw, float aimPitch)
+	{
+		CharacterControllerComponent controller = GetCharacterController();
+		if (!controller || !controller.GetInputContext())
+			return;
+
+		CharacterInputContext context = controller.GetInputContext();
+		context.SetAimingAngles(Vector(aimYaw, aimPitch, 0));
+		context.SetMeleeAttack(true);
+		EL_Debug.Log("AgentHarness", string.Format("melee swing on the server, pitch %1", aimPitch * Math.RAD2DEG));
+	}
 }
