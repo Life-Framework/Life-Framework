@@ -27,10 +27,11 @@
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { spawn, spawnSync } from "node:child_process";
-import { closeSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
+import * as host from "./host/host.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -597,7 +598,9 @@ function removeGeneratedAddonRoot(repoRoot, target) {
     const child = join(targetPath, entry.name);
     safeRemoveTree(child);
   }
-  rmSync(targetPath, { recursive: false, force: true });
+  // The children are gone, so the root is an empty directory. rmSync without
+  // recursive throws EISDIR on a directory in current Node.
+  rmdirSync(targetPath);
 }
 
 function serverGameAddons(root) {
@@ -857,6 +860,182 @@ function cmdServe(root = ROOT, opts = {}) {
   });
 }
 
+// ----------------------------------------------------------------- playtest host
+// `host start|stop|status|backup`: the playtest dedicated server on
+// Missions/LF_PlaytestTown.conf with a stable profile outside every worktree
+// (tools/host/host.mjs). The server runs detached and owns the server-2001
+// lock while it lives; `host stop` asks for a graceful close so the engine
+// writes its SHUTDOWN save, then backs the saves up.
+
+function sleepMs(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+function hostPrintLines(log, from = 0, limit = 40) {
+  if (!log || !existsSync(log)) return;
+  const lines = host.hostLines(readFileSync(log, "utf8")).slice(from);
+  for (const l of lines.slice(-limit)) console.log(`  ${l.trim()}`);
+}
+
+function hostJoinInfo() {
+  const lan = host.lanAddresses();
+  console.log(`join: direct connect to <this PC's address>:${host.GAME_PORT} (UDP)`);
+  for (const a of lan) console.log(`  LAN  ${a}:${host.GAME_PORT}`);
+  console.log(`  internet: your public IP:${host.GAME_PORT}, with UDP ${host.GAME_PORT} forwarded to this PC (docs/playtest.md)`);
+}
+
+function cmdHostStatus(dir) {
+  const p = host.hostPaths(dir);
+  const s = host.readHostState(dir);
+  const alive = !!s && host.pidAlive(s.pid);
+  console.log(`host: ${alive ? `running (pid ${s.pid})` : "stopped"}`);
+  console.log(`  host dir: ${dir}`);
+  if (s) {
+    console.log(`  addon:    ${s.root}`);
+    console.log(`  mission:  ${s.mission}`);
+    console.log(`  started:  ${s.startedAt}${s.loadSave ? " (continued the latest save)" : " (fresh: no save existed)"}`);
+  }
+  const saves = host.findSavePoints(p.profile);
+  console.log(`  saves:    ${saves.length ? `${saves.length} save point(s), newest ${saves[0].dir}` : "none yet"}`);
+  const backups = existsSync(p.backups) ? readdirSync(p.backups).sort() : [];
+  console.log(`  backups:  ${backups.length ? `${backups.length}, newest ${join(p.backups, backups[backups.length - 1])}` : "none yet"}`);
+  const log = host.newestConsoleLog(p.profile);
+  if (log) console.log(`  log:      ${log}`);
+  if (alive) hostJoinInfo();
+  return 0;
+}
+
+function cmdHostStart(root, dir, opts) {
+  guardHeavy(root, "host start", opts.force);
+  const p = host.hostPaths(dir);
+  const s = host.readHostState(dir);
+  if (s && host.pidAlive(s.pid)) {
+    console.log(`host: already running (pid ${s.pid}); 'tools\\cli host stop' first`);
+    return 1;
+  }
+  const exe = serverExe();
+  if (!existsSync(exe)) {
+    console.log(`FAIL  dedicated server not found: ${exe}`);
+    return 1;
+  }
+  try {
+    wt.acquireLock(root, SERVER_SLOT, { waitMs: opts.wait ? 1800000 : 0 });
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    console.log("      a test or server run holds port 2001; retry when it ends, or pass --wait");
+    return 1;
+  }
+  let pid = 0;
+  try {
+    wt.copyResourceDatabase(root);
+    const junction = serverGameAddons(root);
+    mkdirSync(p.profile, { recursive: true });
+    const saves = host.findSavePoints(p.profile);
+    const loadSave = saves.length > 0;
+    if (loadSave) {
+      const b = host.backupSaves(dir, "start");
+      console.log(`host: backed up saves -> ${b}`);
+    }
+    const args = host.hostArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: p.profile, loadSave });
+    console.log(`host: ${loadSave ? `continuing the latest save (${saves.length} save point(s))` : "no save yet, starting a fresh session"}`);
+    console.log(`launching: ${exe}`);
+    console.log(`  ${args.join(" ")}`);
+    const before = new Set(existsSync(join(p.profile, "logs")) ? readdirSync(join(p.profile, "logs")) : []);
+    const child = spawn(exe, args, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
+    pid = child.pid;
+    child.unref();
+    if (!pid) throw new Error("server did not start");
+    wt.transferLock(root, SERVER_SLOT, pid);
+    host.writeHostState(dir, { pid, root, mission: host.PLAYTEST_MISSION, loadSave, startedAt: new Date().toISOString(), exe });
+
+    // Wait for the world: "Entered online game state." in the new console.log.
+    const deadline = Date.now() + (opts.timeoutSec ?? 300) * 1000;
+    let log = null;
+    while (Date.now() < deadline) {
+      sleepMs(2000);
+      if (!host.pidAlive(pid)) break;
+      const f = host.newestConsoleLog(p.profile);
+      if (f && !before.has(basenameOfLogDir(f))) log = f;
+      if (log && readFileSync(log, "utf8").includes(host.READY_LINE)) break;
+    }
+    if (!host.pidAlive(pid)) {
+      console.log("FAIL  the server exited during startup");
+      hostPrintLines(log);
+      return 1;
+    }
+    const ready = log && readFileSync(log, "utf8").includes(host.READY_LINE);
+    if (!ready) {
+      console.log(`WARN  no '${host.READY_LINE}' within the timeout; the server is still running (pid ${pid})`);
+      if (log) console.log(`      log: ${log}`);
+      return 1;
+    }
+    sleepMs(3000); // the session-start check logs just after the game state.
+    console.log(`host: up (pid ${pid}); log ${log}`);
+    hostPrintLines(log);
+    hostJoinInfo();
+    console.log("stop with: tools\\cli host stop");
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  } finally {
+    // Before the transfer this process owns the lock; after it the server
+    // does, and releaseLock leaves a lock it does not own alone.
+    wt.releaseLock(root, SERVER_SLOT);
+  }
+}
+
+function basenameOfLogDir(consoleLog) {
+  return dirname(consoleLog).split(/[\\/]/).pop();
+}
+
+function cmdHostStop(dir, opts) {
+  const p = host.hostPaths(dir);
+  const s = host.readHostState(dir);
+  if (!s || !host.pidAlive(s.pid)) {
+    console.log("host: not running");
+    if (s) wt.releaseLock(ROOT, SERVER_SLOT, s.pid);
+    return 0;
+  }
+  const log = host.newestConsoleLog(p.profile);
+  const seen = log ? host.hostLines(readFileSync(log, "utf8")).length : 0;
+  const stopFile = join(p.profile, ...host.STOP_FILE);
+  mkdirSync(dirname(stopFile), { recursive: true });
+  writeFileSync(stopFile, new Date().toISOString());
+  console.log(`host: stop requested (pid ${s.pid}); waiting for the shutdown save`);
+  const deadline = Date.now() + (opts.timeoutSec ?? 180) * 1000;
+  while (Date.now() < deadline && host.pidAlive(s.pid)) sleepMs(1000);
+  let code = 0;
+  if (host.pidAlive(s.pid)) {
+    console.log(`FAIL  the server did not close within ${opts.timeoutSec ?? 180}s; force-killing pid ${s.pid} (no shutdown save)`);
+    sh("taskkill", ["/PID", String(s.pid), "/F"]);
+    code = 1;
+  }
+  hostPrintLines(log, seen);
+  wt.releaseLock(ROOT, SERVER_SLOT, s.pid);
+  const b = host.backupSaves(dir, "stop");
+  console.log(b ? `host: backed up saves -> ${b}` : "host: no save to back up");
+  return code;
+}
+
+function cmdHost(args) {
+  const list = args ?? [];
+  const sub = list[0];
+  const dir = host.hostDir();
+  const timeout = argValue(list, "--timeout");
+  const opts = { force: list.includes("--force"), wait: list.includes("--wait"), timeoutSec: timeout ? Number(timeout) : undefined };
+  if (sub === "start") return cmdHostStart(ROOT, dir, opts);
+  if (sub === "stop") return cmdHostStop(dir, opts);
+  if (sub === "status") return cmdHostStatus(dir);
+  if (sub === "backup") {
+    const b = host.backupSaves(dir, "manual");
+    console.log(b ? `host: backed up saves -> ${b}` : "host: no save to back up");
+    return 0;
+  }
+  console.log("usage: tools\\cli host start|stop|status|backup [--wait] [--timeout <s>] [--force]");
+  return sub ? 1 : 0;
+}
+
 async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   if (tier !== "fast" && tier !== "all" && tier !== "persistence") {
     console.log(`unknown tier: ${tier} (expected fast, all, or persistence)`);
@@ -937,6 +1116,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   mcp disable <name>            disable a server in opencode.json
   build                         headless Workbench build of the addon (worktree only)
   serve                         boot the headless test server (blocks, worktree only)
+  host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
+                                start continues the latest save, stop saves and backs up
+                                (docs/playtest.md; start refuses in the main checkout)
   test [--no-build] [--tier fast|all|persistence]
                                 build + boot server + parse ELTEST results (worktree only)
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
@@ -1525,6 +1707,7 @@ const cmds = {
   enable: (n) => cmdSetEnabled(n, true),
   disable: (n) => cmdSetEnabled(n, false),
   build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
+  host: (flags) => cmdHost(flags),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
@@ -1646,7 +1829,7 @@ try {
   } else if (cmd === "wt") {
     code = cmdWt(rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "host" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

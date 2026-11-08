@@ -90,6 +90,9 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:CharacterCreation] faction menu not opened: no workspace on this machine` | OPEN | The owner RPC landed on a machine without UI (a dedicated server owning a controller should never happen). |
 | `[ELDebug:Police] wanted list refused: ...` / `wanted list sent: <n> entries` / `wanted list received: <n> entries` | INFO | Server and client halves of the police menu wanted-list RPC. A refusal means the requester was not an on-duty officer. |
 | `[ELDebug:License] license <type> has no replication bit` | OPEN | A new `EL_ELicenseType` was not appended to `EL_LicenseBits.Order()`; clients will not see it. Append it. |
+| `[ELDebug:Host] watching $profile:lf-host-stop` / `stop requested, closing the game` | INFO | The playtest mission (`LF_PlaytestTown.conf`) listens for `toolscli host stop`, which writes that file; the server then closes normally and the engine writes its SHUTDOWN save. |
+| `[ELDebug:Host] removed a stale stop file from an earlier run` | BY DESIGN | A stop file survived a crash or a force kill. It is deleted at start so the new run does not close at once. |
+| `[ELDebug:Persistence] session ended without a shutdown save` logged right after `system state ACTIVE -> SHUTDOWN` and before `save completed (SHUTDOWN)` | FIXED | The check ran on the SHUTDOWN state change, which the engine enters before it writes the SHUTDOWN save. It now runs at component teardown (`OnDelete`), after the save. Seen on every `host stop` before the fix (2026-11-08). |
 
 ## How to add a row
 
