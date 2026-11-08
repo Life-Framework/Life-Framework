@@ -217,6 +217,27 @@
   longer self-spawns the player character, so a pocket `MoneyStack` does not
   come back loose on the ground next to the restored one (the two-boot e2e
   counts it).
+
+### Progression — `Feature/Account/LF_Progression.c`
+- ✅ **Progression survives a restart** (2026-11-08, M1-10, tests
+  `persist/progression-roundtrip`, `persist/progression-old-save`, and
+  `e2e/pass2-verify-load` across a real two-boot restart). The `progression`
+  payload, appended at save version 7, holds one `LF_ProgressionRecord` per
+  player uid: the civilian delivery career (level, XP, paid total), police rank,
+  on-duty seconds and unpaid duty seconds, seconds since the last benefit
+  collection, the player level (level, XP, skill points), licences by enum name,
+  and turned-in quest ids. A courier at level 2 still opens fuel delivery and a
+  senior officer stays senior.
+- ✅ Level, licences, and turn-ins live on the character, so their owners write
+  through to the store and `EL_SpawnLogic` applies the record to every new body.
+  They now survive death as well; only carried items drop.
+- ✅ Tolerant load: an unknown licence name is skipped with a warning, an unknown
+  quest id is kept with a warning, a rank above the ladder clamps to senior. A
+  version 6 save leaves live rank and duty totals alone (the account apply
+  carries them over). A running duty clock is settled into the save.
+- ⚠️ Sign-ups, an active run, and the open duty clock are session state; after a
+  restart the courier signs up again. `EL_LicenseManagerComponent` is not on
+  `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 - ⚠️ Ammo count, weapon state, and placed storage (hideout stash, M1-15) are not
   in the snapshot. Attachments and magazines are kept as items.
 
@@ -610,8 +631,8 @@
   $100, below $500, 1200 s). Pick-up sound, then a `#EL-Benefit_Paid` toast; a
   refusal toasts its reason. A full inventory pays nothing and does not start
   the cooldown.
-- ⚠️ The cooldown ledger is session state; a restart lets a broke player collect
-  once more.
+- ✅ The cooldown survives a restart (M1-10): the save holds seconds since the
+  last collection, because world time starts over.
 
 ## Crime & Police
 
@@ -844,9 +865,9 @@
   `draw refused: <uid> already drew a kit this shift` and shows
   `#EL-Rank_AlreadyDrawn`. `OnDutyChanged` clears the mark. Test:
   `security/police-abuse`.
-- ⚠️ Rank, on-duty seconds, and the shift draw mark live on the account object
-  and are not in `EL_PlayerAccountRecord`, so a restart returns the officer to
-  patrol and allows one more draw.
+- ✅ Rank, on-duty seconds, and unpaid duty seconds survive a restart (M1-10,
+  `progression` payload, save version 7).
+- ⚠️ The shift draw mark is session state, so a restart allows one more draw.
 
 ### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
 - ✅ One convoy. A member of the organization that owns the hideout hauls

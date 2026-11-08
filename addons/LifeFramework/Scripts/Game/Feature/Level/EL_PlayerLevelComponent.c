@@ -63,10 +63,23 @@ class EL_PlayerLevelComponent : ScriptComponent
 
 		// Comprobar si sube de nivel
 		CheckLevelUp();
+		RememberProgress();
 
 		Replication.BumpMe();
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Copies level, XP and skill points into the account's progression record (saved at version
+	//! 7). A body with no player yet (spawn init, a test fixture) has nothing to copy into.
+	protected void RememberProgress()
+	{
+		string uid = EL_Utils.GetPlayerUID(GetOwner());
+		if (uid.IsEmpty())
+			return;
+
+		LF_Progression.NoteLevel(uid, m_iPlayerLevel, m_fPlayerExperience, m_iSkillPoints, m_iTotalSkillPointsEarned);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Comprobar si el jugador debe subir de nivel
 	protected void CheckLevelUp()
@@ -116,6 +129,7 @@ class EL_PlayerLevelComponent : ScriptComponent
 		}
 		
 		m_iSkillPoints -= amount;
+		RememberProgress();
 		
 		EL_Debug.Log("Level", string.Format("Spent %1 SP for '%2'. Remaining: %3", 
 			amount, reason, m_iSkillPoints));
@@ -136,6 +150,7 @@ class EL_PlayerLevelComponent : ScriptComponent
 			return;
 		
 		m_iSkillPoints += amount;
+		RememberProgress();
 		
 		EL_Debug.Log("Level", string.Format("Added %1 SP for '%2'. Total: %3", 
 			amount, reason, m_iSkillPoints));

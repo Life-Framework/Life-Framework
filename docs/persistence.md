@@ -21,6 +21,10 @@ Each of these must survive a server restart:
 6. Serving jail sentences (player uid, remaining seconds).
 7. Each living player's carried inventory: the storage tree under the character
    (prefab, stack quantity, nesting). Death drops it.
+8. Each player's progression, keyed by player uid: delivery career level, XP
+   and paid total; police rank, on-duty and unpaid duty seconds; seconds since
+   the last benefit collection; player level, XP and skill points; licences (by
+   enum name); turned-in quest ids. Death keeps it.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character
@@ -67,8 +71,8 @@ Identity:
 - **`EL_PersistenceComponentSerializer`** (`Scripts/Game/Persistence/Serializers/`)
   writes `version` first, then accounts and bank records (the prefix on every
   version), then the payloads listed in `RegisterPersistencePayloads`:
-  survival, organizations, hideout, vehicles, jail, carried. The written version
-  is that list's length (currently 6). Deserialize stops at the stored version, so an
+  survival, organizations, hideout, vehicles, jail, carried, progression. The written version
+  is that list's length (currently 7). Deserialize stops at the stored version, so an
   older save leaves later payloads untouched. A new system appends one entry at
   the end and raises the version by one. Never insert earlier or reorder.
   The override bodies live in public static `SerializeStore` /
@@ -83,6 +87,7 @@ Identity:
   | 4 | owned vehicles |
   | 5 | serving jail sentences (`LF_Jail.ExportAll` / `ApplyAll`) |
   | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`) |
+  | 7 | progression (`LF_Progression.ExportAll` / `ApplyAll`; `ApplyToCharacter` on each spawn) |
 - Managers expose `ExportAll()` / `ApplyAll(records)` / `GetOrCreate(id)`.
   Record classes are plain Managed: `EL_PlayerAccountRecord`,
   `EL_BankAccountRecord`, `EL_SurvivalStatsRecord` (each under the feature's

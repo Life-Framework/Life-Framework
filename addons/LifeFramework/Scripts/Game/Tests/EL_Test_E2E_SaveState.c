@@ -13,12 +13,21 @@
 // self-spawned it on the ground, failing pass 2 with `[ELTEST] FAIL e2e/pass2-verify-load`,
 // `- no 237 cash stack came back in the world on its own (no dupe) (expected 0, got 1)`.
 // Stacks now save with their parent; both passes green.
+// e2e/pass2-verify-load (save version 7, progression), observed 2026-11-08 with
+// `tools\cli wt e2e m1-10-progression`: DeserializeStore stopping one payload early
+// (`index >= version - 1`) left pass 1 green and failed pass 2 with
+// `SUMMARY tier=persistence passed=10 failed=1 total=11`,
+// `- e2e courier is still level 2 after the save load (expected 2, got 1)`,
+// `- e2e senior officer stays senior after the save load (expected 1, got 0)`,
+// `- e2e turned-in quest stays done after the save load`. Restored; both passes green.
 
 // tier: PERSISTENCE
 class EL_Test_E2E_SaveStateWrite : EL_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
+	protected static const string COURIER_UID = "e2e-courier";
+	protected static const string OFFICER_UID = "e2e-officer";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -81,6 +90,12 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 		if (carrier)
 			ctx.True(LF_StorageSnapshot.CaptureCarried(CARRIED_CHARACTER_ID, carrier), "e2e carried inventory captured before the save");
 
+		// Progression rides the "progression" payload (save version 7): a level 2 courier, a
+		// senior officer, and a turned-in quest.
+		EL_TestProgressionKit.SeedCourier(ctx, COURIER_UID);
+		EL_TestProgressionKit.SeedSeniorOfficer(ctx, OFFICER_UID);
+		LF_Progression.NoteTurnedIn(COURIER_UID, EL_TestProgressionKit.QUEST_ID);
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -95,6 +110,8 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
+	protected static const string COURIER_UID = "e2e-courier";
+	protected static const string OFFICER_UID = "e2e-officer";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -142,6 +159,26 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 				ctx.Equal(237, EL_MoneyUtils.GetCash(restored), "e2e cash unchanged by the second apply");
 				EL_TestCharacterFixture.Delete(restored);
 			}
+		}
+
+		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER_UID), "e2e courier is still level 2 after the save load");
+		ctx.True(LF_CivilianJob.CanSignUp(COURIER_UID, EL_EJobType.FUEL_DELIVERY), "e2e courier level 2 still opens fuel delivery");
+		EL_PlayerAccount officer = EL_PlayerAccountManager.GetInstance().GetFromCache(OFFICER_UID);
+		ctx.NotNull(officer, "e2e officer account present after the save load");
+		if (officer)
+		{
+			ctx.Equal(LF_PoliceRanks.SENIOR, officer.GetPoliceRank(), "e2e senior officer stays senior after the save load");
+			ctx.Equal(LF_PoliceRanks.DUTY_SECONDS, officer.GetOnDutySeconds(), "e2e on-duty seconds survive the save load");
+		}
+
+		ctx.True(LF_Progression.HasTurnedIn(COURIER_UID, EL_TestProgressionKit.QUEST_ID), "e2e turned-in quest stays done after the save load");
+		IEntity body = EL_TestCharacterFixture.Spawn(ctx);
+		if (body)
+		{
+			LF_Progression.ApplyToCharacter(COURIER_UID, body);
+			LF_QuestTrackerComponent tracker = EL_Component<LF_QuestTrackerComponent>.Find(body);
+			ctx.True(tracker && tracker.HasTurnedIn(EL_TestProgressionKit.QUEST_ID), "e2e new body has the quest turned in");
+			EL_TestCharacterFixture.Delete(body);
 		}
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
