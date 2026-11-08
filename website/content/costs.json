@@ -1,0 +1,34 @@
+{
+  "_readme": "What running the project costs, shown on /support. The maintainer edits this file. amount is in USD per period; null means not filled in yet and the page says so. Never type an estimate as a real amount.",
+  "updated": "2026-11-08",
+  "items": [
+    {
+      "what": "Claude subscription",
+      "why": "The development is AI-first: agents write and test most of the code.",
+      "amount": null,
+      "period": "month",
+      "status": "paying"
+    },
+    {
+      "what": "Website hosting",
+      "why": "Cloudflare Pages serves this site on its free plan.",
+      "amount": 0,
+      "period": "month",
+      "status": "paying"
+    },
+    {
+      "what": "Domain life-framework.org",
+      "why": "The site's address. Cloudflare Registrar renews a .org at cost, about $10 a year.",
+      "amount": null,
+      "period": "year",
+      "status": "paying"
+    },
+    {
+      "what": "Game server",
+      "why": "Playtests run on the maintainer's PC today. A rented server comes later.",
+      "amount": null,
+      "period": "month",
+      "status": "planned"
+    }
+  ]
+}
