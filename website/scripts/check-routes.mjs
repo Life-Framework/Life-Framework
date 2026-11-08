@@ -20,7 +20,7 @@ if (useDist) {
 // route -> text that only that page renders
 const pages = {
   "/": "We are building the modern Life Framework",
-  "/roadmap": "Where we are on the road",
+  "/roadmap": "The Tree of Life",
   "/devlog": "What changed, day by day",
   "/servers": "Host it, tune it, build on it",
   "/contribute": "Join the Discord",

@@ -1,0 +1,43 @@
+GenericEntity : "{6E5B06E7CD970830}Prefabs/Structures/BuildingParts/Signs/SignWall/SignWall_01_90x45_base.et" {
+ ID "AFB8FDDF6462B358"
+ components {
+  MeshObject "{5111E74D5E891458}" {
+   Materials {
+    MaterialAssignClass "{4C01CF00719446EA}" {
+     SourceMaterial "SignWall_01_90X45"
+     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+    }
+   }
+  }
+  SCR_DestructionMultiPhaseComponent "{58F896B4CD371A8B}" {
+   Enabled 0
+  }
+  LF_SignComponent "{A19037297E81C6EC}" {
+   m_bFaceOnOwner 1
+   m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+   m_vTitlePos 60 56 0
+   m_vTitleSize 904 400 0
+   m_iTitleFontMax 220
+   m_vFaceArea 1024 512 0
+   m_fRimWidth 26
+  }
+  ActionsManagerComponent "{D475B6F9FC005E1E}" {
+   ActionContexts {
+    UserActionContext "{51DB8843ABE2F774}" {
+     ContextName "LF_Sign"
+     Position PointInfo "{1EFAD633C73E718D}" {
+      Offset 0 0 0.1
+     }
+     Radius 0.8
+    }
+   }
+   additionalActions {
+    LF_SignReadAction "{3B5DFF6E55C409D5}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}

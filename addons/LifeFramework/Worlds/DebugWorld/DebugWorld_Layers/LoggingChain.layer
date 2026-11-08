@@ -73,6 +73,13 @@ $grp GenericEntity : "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylv
 }
 GenericEntity LogPile_Debug {
  components {
+  MeshObject "{5B10C0DE7A11E017}" {
+   Object "{6D5412DF737E9B03}Assets/Props/Forest/WoodPile_02/WoodPile_02_A.xob"
+  }
+  RigidBody "{5B10C0DE7A11E018}" {
+   ModelGeometry 1
+   Static 1
+  }
   ActionsManagerComponent "{5B10C0DE7A11E011}" {
    ActionContexts {
     UserActionContext "{5B10C0DE7A11E012}" {

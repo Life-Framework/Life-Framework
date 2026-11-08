@@ -39,7 +39,6 @@ Do not spend the evening on these; they are filed or being worked. Full list: [p
 
 - Esc does not close the wanted card, or the org ledger right after founding; use its button or walk away (#199).
 - The arrest now moves the prisoner on your client; it was fixed after the last check, so say whether you end up in the cell.
-- The police station layout and sign titles are being redone by another change: until it lands, the desk and wanted board stand on the lawn and sign titles are small from the road.
 - Some NPCs may appear half-dressed.
 - Fuel delivery opens after five parcel runs and the taxi after fifteen runs in all (#156).
 
@@ -89,7 +88,7 @@ Everyone joins as a civilian; there is no faction screen. To play police, the pl
 2. `tools\cli host stop`, then create `%LOCALAPPDATA%\LifeFramework\host\profile\profile\LifeFramework\whitelist.txt` with five lines: `1`, `1`, the uuid, `POLICE`, `0` (version, one faction entry, who, which faction, no job entries).
 3. `tools\cli host start`.
 
-At the station desk (`Roadmap_Police_Desk`, the punch clock in front of the police station) use **Clock in**: your civilian clothes and pockets are stored and you get the police uniform and M9 (a first shift) or the police inventory you left at your last clock-out. **Clock out** at the same desk swaps back and pays duty pay in cash. Say whether anything from one inventory showed up in the other. Read the wanted board (`Roadmap_Police_WantedBoard`) beside the desk on and off duty: police see where each crime happened, everyone sees a description, and a name only after an ID check. At `Roadmap_Police_Armory`, take the rank kit.
+At the station desk (`Roadmap_Police_Desk`, the punch clock under the police station porch) use **Clock in**: your civilian clothes and pockets are stored and you get the police uniform and M9 (a first shift) or the police inventory you left at your last clock-out. **Clock out** at the same desk swaps back and pays duty pay in cash. Say whether anything from one inventory showed up in the other. Read the wanted board (`Roadmap_Police_WantedBoard`) on the station front wall on and off duty: police see where each crime happened, everyone sees a description, and a name only after an ID check. At `Roadmap_Police_Armory` (the grey locker under the porch), take the rank kit.
 
 A new officer is patrol: a pistol and fines up to 1000. Senior is a rifle and fines up to 5000. Both can arrest and escort. An hour on duty promotes. Promoting yourself should be refused.
 

@@ -654,6 +654,8 @@ class EL_AgentHarness
 	protected static const int UI_TEXT_MAX = 80;
 	//! stand puts the character this far along +X from the entity, facing it.
 	static const float STAND_SIDE = 1.2;
+	//! Metres in front of a sign's face (its local +Z) where stand puts the reader.
+	static const float SIGN_STAND_FRONT = 1.4;
 	//! How far an unnamed part may sit from the named prop it belongs to (CollectActionEntity).
 	static const float PART_REACH = 1.5;
 
@@ -976,6 +978,19 @@ class EL_AgentHarness
 		// One metre to the side keeps the character inside a 3m action radius
 		// without planting them inside the prop.
 		destination = target.GetOrigin() + StandOffset(side);
+
+		// A sign is read from the front: a wall plate or fascia hangs above the
+		// pavement with the wall right behind it, so beside it is inside the wall
+		// or in the air. Stand on the ground in front of its face instead.
+		if (target.FindComponent(LF_SignComponent))
+		{
+			vector transform[4];
+			target.GetWorldTransform(transform);
+			vector front = target.GetOrigin() + transform[2] * SIGN_STAND_FRONT;
+			front[1] = world.GetSurfaceY(front[0], front[2]);
+			destination = front;
+		}
+
 		EL_Debug.Log(FEATURE, string.Format("stand beside %1 at %2", entityName, destination));
 		return "";
 	}
