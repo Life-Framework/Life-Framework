@@ -54,7 +54,7 @@ class LF_Dispatch
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: report a crime. site is where the alarm sounds (the till, the vault door, the
-	//! cabinet); a zero vector sounds no alarm (the logic-tier seam with no world position).
+	//! cabinet); a zero vector sounds no alarm (a murder in the street, the logic-tier seam).
 	//! \param officersOnDuty On-duty police when the crime started; negative counts them now.
 	//! \return The dispatch record, or null when the crime report was refused (no player uid).
 	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1)
@@ -74,7 +74,7 @@ class LF_Dispatch
 		record.m_sTime = ClockText();
 
 		if (site == vector.Zero)
-			EL_Debug.Warn(FEATURE, string.Format("dispatch #%1: no site position, no alarm sounded", record.m_iSequence));
+			EL_Debug.Info(FEATURE, string.Format("dispatch #%1: no alarm site, no alarm sounded", record.m_iSequence));
 		else
 			StartAlarm(site, record.m_bLoud);
 

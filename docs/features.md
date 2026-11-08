@@ -315,8 +315,16 @@
   quest id is kept with a warning, a rank above the ladder clamps to senior. A
   version 6 save leaves live rank and duty totals alone (the account apply
   carries them over). A running duty clock is settled into the save.
-- ⚠️ Sign-ups, an active run, and the open duty clock are session state; after a
-  restart the courier signs up again. `EL_LicenseManagerComponent` is not on
+- ✅ **The delivery sign-up survives a restart** (2026-11-08, test
+  `persist/job-signup-roundtrip`). The `jobsignups` payload, appended at save
+  version 11, holds one `LF_JobSignUpRecord` (player uid, job by enum name) per
+  signed-up player. It loads after `progression`, so the career level that gates
+  the job is back first. `EL_SpawnLogic` puts the job on every new body after the
+  hand-over, so the sign-up also survives death. An unknown name, a job that is
+  not delivery work, or one above the player's level stays unemployed with a
+  `[ELDebug:Jobs]` warning.
+- ⚠️ An active run and the open duty clock are session state; after a restart the
+  courier is still signed up and starts a new run. `EL_LicenseManagerComponent` is not on
   `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 
 ## Account & Persistence
@@ -408,6 +416,11 @@
   are checked on the server only. `tools/validation/validate-offer-checks.mjs`
   fails a `CanBeShownScript` / `CanBePerformedScript` that reads
   `EL_PoliceUtils.GetAccountForEntity` or `EL_PlayerAccountManager`.
+- ✅ **Armory actions hidden from non-police** (2026-11-08, #157): Draw and
+  Promote at `Roadmap_Police_Armory` are shown only to on-duty police
+  (`LF_ArmoryDrawAction.ShownTo`, replicated state); a civilian no longer sees
+  them greyed. The server still refuses in `PerformAction`. Test:
+  `playtest/offers`.
 - ⚠️ `EL_RobWeaponAction`, `EL_RobVehicleAction`, and `LF_Bank` still count
   police and read accounts directly in their offers; move them to
   `EL_AccountReplication` next.
@@ -543,6 +556,14 @@
   adds nothing is an error log (verified 2026-10-10). A sandbag the inventory
   rejects, or a nugget with no usable slot, used to look like a successful use.
 - ✅ A node id copies tool, yield, and cooldown from `ResourceChains.conf`.
+- ✅ **Crop growth runs on the server only** (2026-11-08, #157): `EL_BaseCrop`
+  starts its growth clock only on the server (`Replication.IsServer()` and
+  `RplSession.Mode()` is not `Client`), not on
+  `RplComponent.IsOwner()`, which is still true on a client while the world
+  loads. Every stage read goes through `EL_BaseCrop.StageAt`, which returns
+  null for an index outside the list. Before this each game client logged a
+  `NULL pointer to instance` VME in `EL_BaseCrop.EOnFrame` for every crop.
+  Each crop logs `crop <name> init: grows here <bool> (rpl mode <mode>)` once.
   A missing row or a prefab that does not resolve logs `EL_Debug.Error` and
   grants nothing (verified 2026-10-11). The action stays on the node.
 
@@ -662,7 +683,9 @@
 ### `LF_CivilianJob` — `Feature/Jobs/LF_CivilianJob.c`
 - ✅ Workplace signup, one active run, cash once, abandon pays nothing
   (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
-  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et`. Fuel cargo is
+  `{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et`, a cardboard box carried
+  in both hands (#155: the bare `HandCarryItem_Base.et` had no mesh, so the
+  hands were empty on a client). Test: `items/carry-meshes`. Fuel cargo is
   `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
   the drop consumes it. The taxi fare uses the rank vehicle
   `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
@@ -674,6 +697,11 @@
   `Street_Jobs.layer`: the counter on the post office porch, the drop on a
   house porch at the east end, the taxi pad at the bus stop by the square, the
   fuel can at the fuel station.
+
+- ✅ **Sign-up offers on a dedicated client** (2026-11-08, #157): the greyed reason reads
+  `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
+  A client reads the level replicated on `EL_PlayerJobComponent` (the career map is
+  server-only), so fuel and taxi open on the client once the server levels the career.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -813,8 +841,8 @@
   they are not wired into the save serializer, so a restart loses the bags.
   DebugWorld places `Roadmap_Bank_Vault` at 194.1 0 265 (on the bank's east
   wall) and `Roadmap_Bank_Bag` at 195.6 0 263 on `Street_Bank.layer`. The bag is
-  `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
-  mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
+  `{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et` (a vanilla suitcase mesh,
+  #155). Cash is
   `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
   `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits
   `{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`.
@@ -834,6 +862,31 @@
   spawns nothing and does not alert again. `Roadmap_Hospital_Cabinet` is at
   `198 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
   to the contraband scope.
+
+### `LF_Murder` / `LF_SafeZone` — `Feature/Crime/` (M1-27, #125)
+- ✅ **Murder makes you wanted** (test `crime/murder`). Every character death
+  reaches `EL_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
+  player who kills another player or an NPC gets wanted +`m_iMurderWanted`
+  (`LF_Police.conf`, default 3), one `LF_WantedReports` report with the
+  `#LF-Offence_Murder` offence and their description (no name), a radio
+  dispatch to every on-duty officer (`LF_Dispatch.Report`, no site alarm), and a toast. Not murder: a death with no player behind
+  it, a self-kill, a destroyed vehicle, and (config
+  `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
+  wanted suspect. Each decision logs `[ELDebug:Murder]`. No automatic ban.
+- ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_SafeZoneComponent` on
+  `LF_SafeZone_Square` (`Gamemode.layer`, fountain 115 0 250, radius 30 m as
+  the component attribute) registers a flat circle. The modded
+  `SCR_CharacterDamageManagerComponent.HijackDamageHandling` swallows a hit
+  when a player hurts a different player and either stands inside: no health,
+  bleeding, or ragdoll. NPC, world, and self damage pass. Weapons still raise
+  and fire. No police exemption: arrest is an interact action. Each refusal
+  logs `[ELDebug:SafeZone] refused ...`; the shooter gets a toast at most every
+  8 s. Two `safe_zone` notice boards (`Sign_SafeZone_Spawn`,
+  `Sign_SafeZone_East`) say so in the world.
+- ✅ Both civilian spawn points stand on the square (the second moved from
+  170 0 199, by the quarry, to 121 0 253); `safezone/blocks` asserts every
+  civilian spawn point is inside a zone. The hospital wake (M1-26) is not a
+  spawn and stays outside.
 
 ### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
@@ -1028,7 +1081,7 @@
 ### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
 - ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`
   is what every crime calls (till, vehicle and weapon robbery, breach and bank
-  vault, hospital cabinet). It records the crime report, sounds the site alarm,
+  vault, hospital cabinet, murder with no site alarm). It records the crime report, sounds the site alarm,
   radios on-duty officers, and appends a line to the dispatch log. A refused
   crime reports nothing; no crime refuses for lack of police (the per-crime
   minimum stays a framework attribute, 0 on the flagship). `EL_Utils.AlertPolice`
@@ -1104,6 +1157,15 @@
   `Reset` unregister the `OnCompartmentLeft` handler; a restarted run drops the
   old watch and watches the vehicle the player is in now. A disconnect fails the
   running convoy.
+- ✅ **The refusal reaches the player** (2026-11-08, #157): a start refused for
+  membership shows a toast with the reason, `#LF-Contraband_JoinOrg` (no
+  organization: join or found one at the organization desk) or
+  `#LF-Contraband_NotHideoutOwner` (your organization does not hold the
+  hideout). `LF_Contraband.StartRefusalKey` picks it. Before this the server
+  logged `convoy refused: not a member` and the player saw nothing.
+- ⚠️ The crate still offers "Start convoy" to everyone: a client cannot see
+  organization membership, so the reason arrives after the press, not on the
+  offer.
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
 - ✅ (2026-11-08, M1-12) Search in the player interaction menu: shown to on-duty
@@ -1117,7 +1179,7 @@
 
 ## Ownership
 
-### `EL_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11)
+### `EL_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11; ledger and invites 2026-11-08)
 - ✅ A character founds one organization. The id comes from `PersistenceIdUtils`,
   never an entity id. The founder invites and kicks. A member can leave. The
   founder cannot leave or be kicked. A second membership is refused.
@@ -1130,15 +1192,34 @@
   removal is returned to the character. A short payout puts the fund back. The
   personal ATM balance is not read or written. The desk is
   `Roadmap_Org_Desk` on `Street_Org.layer` at `288.9 0 255.7` (org registry porch), using
-  `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`. The menu is a
-  workspace widget on `{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout`.
-  It lists the name, the fund, and the processing-slot upgrade, and shows an
-  empty state before create. Create, deposit, withdraw, buy-processing, and
-  close stay on the character RPCs. Fund deposit and withdraw are refused
-  unless an entity carrying `EL_OrganizationDeskAction` stands within
-  `EL_OrganizationPlayer.DESK_RANGE` (5 m) of the character
-  (`#EL-Org_TooFar`; test `security/service-range`, 2026-11-07). Cash and
-  membership still go through the server.
+  `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`.
+- ✅ (2026-11-08, M1-17) The desk opens the registry ledger `LF_OrgLedger`, a
+  1989 ledger page on the UI kit (the old `OrganizationMenu.layout` is gone).
+  No organization: name field and "Sign and pay $250"; the fee
+  (`LF_OrgRules.FOUNDING_FEE`) leaves carried MoneyStack and comes back if the
+  registration is refused. Names: 3 to 32 letters, digits, spaces, `- ' & .`,
+  unique ignoring case and outer spaces (`EL_OrganizationManager.IsNameTaken`).
+  A member's page: name, rank, fund with deposit (and withdraw for the rank
+  that may), the processing upgrade, the alley yard lease
+  (`LF_OrgHideoutLease`, free, founder takes it), the member list (offline
+  members by their record name), and Leave (not for the founder). Found,
+  deposit, withdraw, buy, lease, and leave are refused unless an
+  `EL_OrganizationDeskAction` stands within `EL_OrganizationPlayer.DESK_RANGE`
+  (5 m) (`#EL-Org_TooFar`; test `security/service-range`). The page closes at
+  4 m from the desk, on death, and on MenuBack. Sounds: page turn on open,
+  pencil on Sign, map close on close. LOGIC `org/registry`, `org/invite-role`.
+- ✅ (2026-11-08, M1-17) Invite and remove are face to face, in the `org_invite`
+  slot of the player interaction menu (`LF_OrgInviteRole`, registered in
+  `EL_GameModeRoleplay.OnGameStart`). A leader facing someone with no
+  organization sees "Invite to <org>" (offer, `Gesture_Point`); the invitee
+  facing that leader sees "Join <org>" and joins with one press (raised hand,
+  hand-over sound); a leader facing a member sees "Remove from <org>"; nobody
+  can remove the founder. An offer is session state (`LF_OrgInvites`, not
+  saved) and lapses after 2 minutes. The offer side reads the organization
+  replicated on each character (`LF_OrgReplication`: id, name, rights bits,
+  held offer; RplProps written on spawn, on change, and every 10 s); the
+  server decides from the registry. Two-client proof:
+  `node agent-box/session.mjs org [--shot]`.
 - ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
   compound the fund. The game-mode serializer writes these records at version 2,
   after survival. A version 1 save has no organization payload and does not
@@ -1152,6 +1233,11 @@
   refusal is logged. The door is `EL_Door_Base` with the inherited
   `EL_LockComponent`. The organization id is written onto that lock. The door
   does not call `LF_Breach` and does not add a second `ActionsManagerComponent`.
+- ✅ (2026-11-08, M1-17) An organization takes the yard (`LF_Hideout.HIDEOUT_ID`,
+  gate `302.4 0 288` since M1-25) with "Take the lease" on the registry ledger; taking it locks the gate.
+  The gate prompt on a client compares the organization replicated on the
+  character with the owner on the lock and shows `#EL-Hideout_NotMember` to a
+  non-member; the server still decides from the registry.
 - ✅ `Roadmap_Hideout_Machine` at `216 0 120` uses the existing
   `EL_ProcessAction` on `ItemProcessor_Base`. It runs only when the player's
   organization owns the hideout and has the processing upgrade. Otherwise it
@@ -1197,6 +1283,15 @@
   instantiates the layout on the dedicated server and checks every named widget;
   `notifications/toast-timing` (LOGIC) checks show/fade/remove. On-screen look is
   visual-only: manual check pending (verified 2026-11-07)
+- ✅ **Toasts are visible on a game client** (2026-11-08, #157): until now no toast
+  was ever drawn. The slip's frame slot had a height of -48 (`OffsetBottom -92` under
+  `OffsetTop 140`), the fills were `PanelWidget`s (near-transparent) nested inside
+  an `ImageWidget` (which draws no children), and the text column's negative
+  stretch offsets ran the message past the slip. Now: 420x120 slip, sibling image
+  fills, wrapped message, fade driven from `Tick` (`EL_NotificationToastUI.OpacityAt`).
+  Seen at 1280x720 on a dedicated client (contraband refusal). New
+  `tools/validation/validate-layout-slots.mjs` fails a point-anchored slot whose
+  `Offset*` and `Size*` disagree (it also fixed `EL_SurvivalHUD.layout`).
 - ✅ **Targeted delivery fixed** (verified 2026-08-30): `RpcDo_ShowNotification`
   is `RplRcver.Broadcast` with a client-side `playerId` filter (`-1` = all),
   plus a direct call for the listen-server host so the authority sees its own

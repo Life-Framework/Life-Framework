@@ -142,7 +142,7 @@ class EL_Test_Roadmap_BankWorld : EL_Test
 		Resource shell = Resource.Load(LF_Bank.SHELL_PREFAB);
 		ctx.True(shell.IsValid(), "EL_Bank.et loads");
 		Resource bagPrefab = Resource.Load(LF_Bank.BAG_PREFAB);
-		ctx.True(bagPrefab.IsValid(), "HandCarryItem_Base.et loads");
+		ctx.True(bagPrefab.IsValid(), "the money bag prefab loads");
 		Resource money = Resource.Load(EL_MoneyUtils.PREFAB_CASH);
 		ctx.True(money.IsValid(), "MoneyStack.et loads");
 		Resource crate = Resource.Load(LF_Bank.CRATE_MESH);

@@ -120,6 +120,8 @@ class EL_AgentCommand
 			return true;
 		if (cmd.Verb == "die")
 			return true;
+		if (cmd.Verb == "shoot")
+			return ParseShoot(parts, cmd);
 		if (cmd.Verb == "ui")
 			return ParseUi(parts, cmd);
 		if (cmd.Verb == "click")
@@ -366,6 +368,19 @@ class EL_AgentCommand
 				return false;
 		}
 
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool ParseShoot(array<string> parts, EL_AgentCommand cmd)
+	{
+		if (parts.Count() < 3 || parts[2].ToInt() <= 0)
+		{
+			cmd.Error = "need_player_id";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
 		return true;
 	}
 
@@ -766,6 +781,11 @@ class EL_AgentHarness
 			DoDie(cmd);
 			return;
 		}
+		if (cmd.Verb == "shoot")
+		{
+			DoShoot(cmd);
+			return;
+		}
 		if (cmd.Verb == "ui")
 		{
 			DoUi(cmd);
@@ -936,6 +956,22 @@ class EL_AgentHarness
 		}
 
 		character.EL_AskHarnessState(cmd.Id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `shoot <playerId>` (dev gate): the server deals one lethal kinetic hit from the local
+	//! character to that player's body through the vanilla damage path (HandleDamage), so the safe
+	//! zone hook and the murder hook see it as they would see a bullet.
+	protected static void DoShoot(EL_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.EL_AskHarnessShoot(cmd.Id, cmd.Arg1.ToInt());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1488,13 +1524,14 @@ class EL_AgentHarness
 		}
 
 		// A local-effect action (ATM terminal, shop price list) runs PerformAction only on the
-		// acting client when the F key uses it, so the harness performs it here the same way.
-		if (!Replication.IsServer())
+		// acting client when the F key uses it, so the harness performs it here the same way. Only this
+		// mod's actions: a vanilla door is local-effect too, but its perform asks the server.
+		if (!Replication.IsServer() && (cmd.Arg1.StartsWith("EL_") || cmd.Arg1.StartsWith("LF_")))
 		{
 			IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
 			ScriptedUserAction localAction;
 			if (target)
-				localAction = FindOnEntity(target, cmd.Arg1);
+				localAction = FindShownOnEntity(target, cmd.Arg1, character);
 
 			if (localAction && localAction.HasLocalEffectOnlyScript())
 			{
@@ -1541,7 +1578,7 @@ class EL_AgentHarness
 			return;
 		}
 
-		ScriptedUserAction action = FindOnEntity(target, className);
+		ScriptedUserAction action = FindShownOnEntity(target, className, user);
 		if (!action)
 		{
 			UseReply(user, commandId, "error", "action_not_found");
@@ -1889,6 +1926,27 @@ class EL_AgentHarness
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Several entries of one class on an entity (the interaction menu's role slots): the first one
+	//! the user is offered, else the first of that class.
+	protected static ScriptedUserAction FindShownOnEntity(IEntity entity, string className, IEntity user)
+	{
+		BaseActionsManagerComponent mgr = BaseActionsManagerComponent.Cast(entity.FindComponent(BaseActionsManagerComponent));
+		if (!mgr)
+			return null;
+
+		array<BaseUserAction> actions = {};
+		mgr.GetActionsList(actions);
+		foreach (BaseUserAction action : actions)
+		{
+			ScriptedUserAction scripted = ScriptedUserAction.Cast(action);
+			if (scripted && action.Type().ToString() == className && scripted.CanBeShownScript(user))
+				return scripted;
+		}
+
+		return FindOnEntity(entity, className);
 	}
 
 	//------------------------------------------------------------------------------------------------

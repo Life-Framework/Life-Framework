@@ -24,6 +24,8 @@ class LF_PoliceConfig
 	static const ResourceName DEFAULT_RADIO_SOUND_PROJECT = "{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp";
 	static const string DEFAULT_RADIO_SOUND_EVENT = "SOUND_RADIO_SIGNAL_2";
 	static const int DEFAULT_DISPATCH_LOG_LINES = 5;
+	static const int DEFAULT_MURDER_WANTED = 3;
+	static const bool DEFAULT_OFFICER_KILL_OF_WANTED_EXEMPT = true;
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)")]
 	int m_iArrestMinRank;
@@ -66,6 +68,12 @@ class LF_PoliceConfig
 
 	[Attribute("5", UIWidgets.Auto, "Dispatch lines the wanted board shows to on-duty police, newest first")]
 	int m_iDispatchLogLines;
+
+	[Attribute("3", UIWidgets.Auto, "Wanted levels a murder adds (M1-27). Robbery adds 1; wanted caps at 5")]
+	int m_iMurderWanted;
+
+	[Attribute("1", UIWidgets.Auto, "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder")]
+	bool m_bOfficerKillOfWantedExempt;
 
 	protected static ref LF_PoliceConfig s_Config;
 	protected static bool s_bLoadAttempted;

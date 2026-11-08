@@ -169,20 +169,32 @@ class LF_Contraband
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The player-facing reason a character may not start the convoy, or empty when they may.
+	//! No organization and an organization that does not hold the hideout read differently,
+	//! so the player knows what to do next.
+	static string StartRefusalKey(string characterId)
+	{
+		if (characterId.IsEmpty())
+			return "#LF-Contraband_JoinOrg";
+
+		EL_Organization org = EL_OrganizationManager.GetByCharacter(characterId);
+		if (!org)
+			return "#LF-Contraband_JoinOrg";
+
+		string ownerId = LF_Hideout.GetOwner(LF_Hideout.HIDEOUT_ID);
+		if (ownerId.IsEmpty() || org.GetId() != ownerId)
+			return "#LF-Contraband_NotHideoutOwner";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool Start(string characterId, IEntity user)
 	{
 		if (!Server())
 			return false;
 
-		if (characterId.IsEmpty())
-		{
-			Refuse("convoy refused: not a member");
-			return false;
-		}
-
-		string ownerId = LF_Hideout.GetOwner(LF_Hideout.HIDEOUT_ID);
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(characterId);
-		if (ownerId.IsEmpty() || !org || org.GetId() != ownerId)
+		if (!StartRefusalKey(characterId).IsEmpty())
 		{
 			Refuse("convoy refused: not a member");
 			return false;
