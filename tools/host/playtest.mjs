@@ -55,8 +55,16 @@ export function countJoins(text) {
   return (String(text).match(JOIN_LINE) ?? []).length;
 }
 
+// Home-network addresses first (192.168/16, 10/8, 172.16/12); VPN addresses
+// such as Tailscale's 100.64/10 last.
+export function rankLan(lan) {
+  const home = (a) => /^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(a);
+  return [...lan].sort((a, b) => Number(home(b)) - Number(home(a)));
+}
+
 // What a friend does to join (printed after a launch).
-export function friendLines({ lan, port, commit }) {
+export function friendLines({ lan: raw, port, commit }) {
+  const lan = rankLan(raw);
   const out = [];
   out.push("friends (optional): they need Arma Reforger and a clone of the repo at the same commit");
   out.push(`  1. git clone https://github.com/Life-Framework/Life-Framework.git && git -C Life-Framework checkout ${commit}`);
@@ -84,5 +92,6 @@ export function selftestPlaytest() {
   if (countJoins("x [ELDebug:Whitelist] join allowed: uuid=a\ny\n[ELDebug:Whitelist] join allowed: uuid=b") !== 2) failures.push("countJoins miscounts");
   const f = friendLines({ lan: ["192.168.1.5"], port: 2001, commit: "abc" }).join("\n");
   if (!f.includes("-client 192.168.1.5") || !f.includes("checkout abc")) failures.push("friend lines miss the address or commit");
+  if (rankLan(["100.114.75.96", "192.168.1.130"])[0] !== "192.168.1.130") failures.push("a VPN address ranks above the home LAN");
   return failures;
 }
