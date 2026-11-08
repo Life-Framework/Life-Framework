@@ -230,6 +230,75 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `shoot`: this character deals one lethal hit to a player, behind the dev gate.
+	void EL_AskHarnessShoot(int commandId, int targetPlayerId)
+	{
+		if (Replication.IsServer())
+		{
+			EL_ApplyHarnessShoot(commandId, targetPlayerId, true);
+			return;
+		}
+
+		Rpc(RpcAsk_EL_HarnessShoot, commandId, targetPlayerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_EL_HarnessShoot(int commandId, int targetPlayerId)
+	{
+		bool gateOpen = EL_DevGate.CheckCharacterRequest(this, "AgentHarness", "shoot");
+		EL_ApplyHarnessShoot(commandId, targetPlayerId, gateOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a KINETIC hit of 1000 on the target's head through HandleDamage, with this
+	//! character as the instigator. Replies with whether the zone refused it and whether the
+	//! target still lives.
+	protected void EL_ApplyHarnessShoot(int commandId, int targetPlayerId, bool gateOpen)
+	{
+		if (!gateOpen)
+		{
+			EL_HarnessReply(commandId, "error", EL_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		IEntity target = GetGame().GetPlayerManager().GetPlayerControlledEntity(targetPlayerId);
+		if (!target || target == this)
+		{
+			EL_HarnessReply(commandId, "error", "no_target");
+			return;
+		}
+
+		SCR_CharacterDamageManagerComponent damage = SCR_CharacterDamageManagerComponent.Cast(target.FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!damage)
+		{
+			EL_HarnessReply(commandId, "error", "no_damage_manager");
+			return;
+		}
+
+		HitZone head = damage.GetHeadHitZone();
+		if (!head)
+			head = damage.GetDefaultHitZone();
+
+		vector hitPosDirNorm[3];
+		hitPosDirNorm[0] = target.GetOrigin() + Vector(0, 1.6, 0);
+		hitPosDirNorm[1] = vector.Direction(GetOrigin(), target.GetOrigin()).Normalized();
+		hitPosDirNorm[2] = vector.Up;
+		SCR_DamageContext context = new SCR_DamageContext(EDamageType.KINETIC, 1000, hitPosDirNorm, target, head, Instigator.CreateInstigator(this), null, -1, -1);
+		context.damageSource = this;
+
+		int refusedBefore = LF_SafeZone.GetRefusedCount();
+		damage.HandleDamage(context);
+		int refused = LF_SafeZone.GetRefusedCount() - refusedBefore;
+		int alive = 1;
+		if (damage.GetState() == EDamageState.DESTROYED)
+			alive = 0;
+
+		EL_Debug.Info("AgentHarness", string.Format("shot player %1: refused=%2 alive=%3", targetPlayerId, refused, alive));
+		EL_HarnessReply(commandId, "ok", string.Format("shot player=%1 refused=%2 alive=%3", targetPlayerId, refused, alive));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Read this character's account, money, job, and organization on the server.
 	//! Read-only, so it does not pass the dev gate: it reports what the player
 	//! could already see in their own menus.
