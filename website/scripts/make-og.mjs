@@ -15,7 +15,7 @@ const out = path.join(pub, "og");
 fs.mkdirSync(out, { recursive: true });
 
 const cards = [
-  { file: "home", kicker: "Open-source life/RP for Arma Reforger", title: "Real cash. Real keys. A fine on paper.", still: "village-street-640" },
+  { file: "home", kicker: "Open-source life/RP for Arma Reforger", title: "We are building the modern Life Framework", still: "spawn-square-1280" },
   { file: "roadmap", kicker: "Roadmap", title: "Where we are on the road", still: "village-overview-640" },
   { file: "devlog", kicker: "Devlog", title: "What changed, day by day", still: "village-post-640" },
   { file: "servers", kicker: "For server owners", title: "Host it, tune it, build on it", still: "village-police-640" },

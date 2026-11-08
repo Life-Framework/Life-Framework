@@ -74,8 +74,14 @@ licences beside them). No Google Fonts request, no other families.
   WORK IN PROGRESS when it is, the place, the date, and the pull request it came
   from.
 - **Terminal** (`.terminal`): commands and config, dark in both themes.
+- **Band** (`.band`): a full-width night strip on the emblem's near-black
+  ground, dark in both themes. It sets the night tokens locally, so anything
+  inside keeps its contrast. Only the home page uses it, to open (hero, with
+  the full emblem) and to close (the community call). Two per page at most.
 - **Buttons**: mono capitals. Primary is green with an ink offset shadow that
-  presses in; secondary is an ink outline. Two buttons per view at most.
+  presses in; secondary is an ink outline. On a band, the second call to
+  action may be a yellow sign button (`.btn-sign`). Two buttons per view at
+  most.
 
 ## Imagery
 

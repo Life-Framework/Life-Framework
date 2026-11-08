@@ -228,7 +228,7 @@ For [opencode](https://opencode.ai) users: skills and playbooks live in
 [`.opencode/`](../.opencode/README.md). Restart opencode after changing MCP
 settings.
 
-Full harness overview: [CONTRIBUTING.md § AI-assisted development](../CONTRIBUTING.md#-ai-assisted-development).
+Full agent workflow: [CONTRIBUTING.md, Working with coding agents](../CONTRIBUTING.md#working-with-coding-agents).
 
 ### Parallel agents (worktrees)
 

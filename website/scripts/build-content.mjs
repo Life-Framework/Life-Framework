@@ -1,6 +1,6 @@
 // Builds the site's content from the repo and GitHub, so the site and the mod never drift.
 //
-//   docs/*.md, docs/roadmap/**, website/content/docs/  -> src/generated/docs-index.json
+//   curated docs/*.md and docs/roadmap/**              -> src/generated/docs-index.json
 //                                                         src/generated/data/doc-<slug>.json (HTML)
 //   docs/decisions.md                                   -> src/generated/data/decisions.json
 //   parts of docs/direction.md, content/                -> src/generated/site.json
@@ -69,24 +69,6 @@ function clip(text, max) {
   return t;
 }
 
-// ---------------------------------------------------------------- frontmatter
-
-function parseFrontmatter(text) {
-  const m = /^---\n([\s\S]*?)\n---\n?/.exec(text);
-  if (!m) return { data: {}, body: text };
-  const data = {};
-  for (const line of m[1].split("\n")) {
-    const kv = /^([A-Za-z_][\w-]*):\s*(.*)$/.exec(line);
-    if (!kv) continue;
-    let v = kv[2].trim();
-    if (v.startsWith('"')) {
-      try { v = JSON.parse(v); } catch { /* keep raw */ }
-    }
-    data[kv[1]] = v;
-  }
-  return { data, body: text.slice(m[0].length) };
-}
-
 // ---------------------------------------------------------------- docs
 
 function walk(dir) {
@@ -134,10 +116,28 @@ function addRepoDoc(rel, { slug, group, order, title }) {
   docs.push({ slug, group, order, title: title || firstHeading(raw) || slug, repoPath: rel, body: stripFirstHeading(raw) });
 }
 
-addRepoDoc("docs/direction.md", { slug: "direction", group: "Project", order: 0 });
-addRepoDoc("docs/decisions.md", { slug: "decisions", group: "Project", order: 1 });
-addRepoDoc("docs/ecosystem.md", { slug: "ecosystem", group: "Project", order: 2 });
-addRepoDoc("docs/research/life-rp-benchmark.md", { slug: "life-rp-benchmark", group: "Project", order: 3 });
+addRepoDoc("docs/setup.md", { slug: "setup", group: "Start here", order: 0, title: "Set up your tools" });
+addRepoDoc("docs/playtest.md", { slug: "playtest", group: "Start here", order: 1, title: "Open the playtest" });
+addRepoDoc("CONTRIBUTING.md", { slug: "contributing", group: "Start here", order: 2 });
+
+addRepoDoc("docs/direction.md", { slug: "direction", group: "Direction & decisions", order: 0 });
+addRepoDoc("docs/design.md", { slug: "design", group: "Direction & decisions", order: 1 });
+addRepoDoc("docs/decisions.md", { slug: "decisions", group: "Direction & decisions", order: 2 });
+
+addRepoDoc("docs/features.md", { slug: "features", group: "Engineering reference", order: 0 });
+addRepoDoc("docs/persistence.md", { slug: "persistence", group: "Engineering reference", order: 1 });
+addRepoDoc("docs/foundation-design.md", { slug: "foundation-design", group: "Engineering reference", order: 2 });
+addRepoDoc("docs/worktrees.md", { slug: "worktrees", group: "Engineering reference", order: 3 });
+addRepoDoc("docs/dedicated-session.md", { slug: "dedicated-session", group: "Engineering reference", order: 4 });
+addRepoDoc("docs/debug-log-triage.md", { slug: "debug-log-triage", group: "Engineering reference", order: 5 });
+addRepoDoc("docs/street-manifest.md", { slug: "street-manifest", group: "Engineering reference", order: 6 });
+
+addRepoDoc("docs/ecosystem.md", { slug: "ecosystem", group: "Research & community", order: 0 });
+addRepoDoc("docs/research/life-rp-benchmark.md", { slug: "life-rp-benchmark", group: "Research & community", order: 1 });
+addRepoDoc("docs/overthrow-survey.md", { slug: "overthrow-survey", group: "Research & community", order: 2 });
+addRepoDoc("docs/everonlife-forks.md", { slug: "everonlife-forks", group: "Research & community", order: 3 });
+addRepoDoc("docs/community/discord.md", { slug: "discord", group: "Research & community", order: 4 });
+addRepoDoc("docs/community/support.md", { slug: "support", group: "Research & community", order: 5 });
 
 const roadmapFiles = walk(path.join(repo, "docs", "roadmap"))
   .map((p) => toPosix(path.relative(repo, p)))
@@ -150,20 +150,9 @@ const roadmapFiles = walk(path.join(repo, "docs", "roadmap"))
 roadmapFiles.forEach((rel, i) => {
   const parts = rel.slice("docs/roadmap/".length).replace(/\.md$/, "").split("/");
   if (parts[parts.length - 1] === "README") parts.pop();
-  addRepoDoc(rel, { slug: ["roadmap", ...parts].join("-").toLowerCase(), group: "Roadmap", order: i });
+  const title = rel === "docs/roadmap/README.md" ? "Current gameplay plan" : undefined;
+  addRepoDoc(rel, { slug: ["roadmap", ...parts].join("-").toLowerCase(), group: "Current plan", order: i, title });
 });
-
-for (const abs of walk(path.join(site, "content", "docs"))) {
-  const { data, body } = parseFrontmatter(read(abs));
-  docs.push({
-    slug: data.slug || path.basename(abs, ".md"),
-    group: "Community guides (2025)",
-    order: Number(data.order || 0),
-    title: data.title || firstHeading(body) || data.slug,
-    repoPath: toPosix(path.relative(repo, abs)),
-    body: stripFirstHeading(body),
-  });
-}
 
 // Pages with their own route instead of /docs/<slug>.
 const ownRoute = { decisions: "/decisions" };
@@ -338,7 +327,6 @@ const siteJson = {
   ),
   milestones: milestones(direction),
   features: readmeFeatures(),
-  archive: JSON.parse(read(path.join(site, "content", "archive", "roadmap-2025.json"))),
   decisionCount,
   latestDecisions: decisions.sections
     .flatMap((s) => s.entries.map((e) => ({ ...e, section: s.title })))
