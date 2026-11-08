@@ -3502,6 +3502,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{F51D6FC3BD1F68DC}" {
+     Id "LF-Job_NewWork"
+     Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
+     Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
+    }
+    CustomStringTableItem "{196A4BD9FFC674C5}" {
+     Id "LF-Job_HiredHidden"
+     Target_en_us "You now work as %1."
+     Comment "Hint when hired; %1 = job name. Hidden progression: no grade or level."
+    }
   }
  }
 }
