@@ -9,13 +9,13 @@ class EL_RobWeaponAction : ScriptedUserAction
 	[Attribute(defvalue: "1", uiwidget: UIWidgets.Auto, desc: "Minimum police on duty required")]
 	protected int m_iMinPoliceOnDuty;
 
-	protected float m_fLastRobTime;
+	protected float m_fLastRobTime = LF_RobCooldown.NEVER;
 
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
 		float currentTime = GetGame().GetWorld().GetWorldTime();
-		if (currentTime - m_fLastRobTime < m_fCooldown)
+		if (LF_RobCooldown.IsActive(currentTime, m_fLastRobTime, m_fCooldown))
 		{
 			SetCannotPerformReason("#LF-Rob_RecentlyRobbed");
 			return false;
@@ -43,7 +43,12 @@ class EL_RobWeaponAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		// Recorded on both sides so the performing client's CanBePerformed also sees the cooldown.
 		m_fLastRobTime = GetGame().GetWorld().GetWorldTime();
+
+		// The item grant, wanted level, and alert are authority-only.
+		if (!Replication.IsServer())
+			return;
 
 		// Spawn weapon in inventory
 		SCR_InventoryStorageManagerComponent inventoryManager = EL_Component<SCR_InventoryStorageManagerComponent>.Find(pUserEntity);

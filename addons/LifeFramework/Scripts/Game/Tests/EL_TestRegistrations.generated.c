@@ -126,6 +126,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Roadmap_VehiclesPersistence(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_RobReward(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobRewardWantedClamp(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_Robustness(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_RobustnessWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionBitmask(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionNewest(), EL_TestTier.LOGIC);

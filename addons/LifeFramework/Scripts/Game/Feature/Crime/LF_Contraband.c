@@ -18,6 +18,7 @@ class LF_ConvoyVehicleWatch : Managed
 	string m_sCharacterId;
 	EntityID m_UserId;
 	bool m_bMatchUser;
+	EntityID m_VehicleId = EntityID.INVALID;
 
 	//------------------------------------------------------------------------------------------------
 	void Attach(IEntity user, IEntity vehicle)
@@ -39,7 +40,31 @@ class LF_ConvoyVehicleWatch : Managed
 		}
 
 		events.RegisterScriptHandler("OnCompartmentLeft", this, OnCompartmentLeft);
+		m_VehicleId = vehicle.GetID();
 		EL_Debug.Log("Contraband", string.Format("convoy watching vehicle for %1", m_sCharacterId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Unregisters the OnCompartmentLeft handler. A vehicle already deleted took its handlers with it.
+	void Detach()
+	{
+		if (m_VehicleId == EntityID.INVALID)
+			return;
+
+		EntityID vehicleId = m_VehicleId;
+		m_VehicleId = EntityID.INVALID;
+		if (!GetGame() || !GetGame().GetWorld())
+			return;
+
+		IEntity vehicle = GetGame().GetWorld().FindEntityByID(vehicleId);
+		if (!vehicle)
+			return;
+
+		EventHandlerManagerComponent events = EventHandlerManagerComponent.Cast(vehicle.FindComponent(EventHandlerManagerComponent));
+		if (events)
+			events.RemoveScriptHandler("OnCompartmentLeft", this, OnCompartmentLeft);
+
+		EL_Debug.Log("Contraband", string.Format("convoy stopped watching vehicle for %1", m_sCharacterId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -83,10 +108,49 @@ class LF_Contraband
 	protected static string s_sLastRefusal;
 
 	//------------------------------------------------------------------------------------------------
+	//! Drops every run (and unregisters its vehicle watch). Also the game-mode start/end reset.
 	static void Reset()
 	{
+		if (s_mRuns)
+		{
+			foreach (string characterId, LF_ConvoyRun run : s_mRuns)
+				StopWatch(run);
+		}
+
 		s_sLastRefusal = "";
 		s_mRuns = new map<string, ref LF_ConvoyRun>();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Disconnect: a running convoy fails (the hauler left) and the vehicle watch is dropped.
+	//! \param characterId Active character id of the leaving player, may be empty.
+	//! \param user Controlled entity of the leaving player, may be null.
+	static void ReleasePlayer(string characterId, IEntity user)
+	{
+		if (!s_mRuns)
+			return;
+
+		string key = characterId;
+		if ((key.IsEmpty() || !s_mRuns.Contains(key)) && user)
+		{
+			key = "";
+			EntityID userId = user.GetID();
+			foreach (string runKey, LF_ConvoyRun bound : s_mRuns)
+			{
+				if (bound && bound.m_bUserBound && bound.m_UserId == userId)
+				{
+					key = runKey;
+					break;
+				}
+			}
+		}
+
+		LF_ConvoyRun run = Find(key);
+		if (!run)
+			return;
+
+		Fail(key, "convoy failed: player disconnected");
+		StopWatch(run);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -192,6 +256,7 @@ class LF_Contraband
 
 		run.m_iState = LF_EConvoyState.PAID;
 		run.m_iCashPaid = run.m_iCashPaid + paid;
+		StopWatch(run);
 		EL_Debug.Log("Contraband", string.Format("delivery paid %1 to %2", paid, characterId));
 		if (GetGame() && GetGame().GetWorkspace())
 			EL_Utils.Notify("#EL-Contraband_Paid", "#EL-Contraband_Deliver", 3.0);
@@ -268,6 +333,7 @@ class LF_Contraband
 			return false;
 
 		run.m_iState = LF_EConvoyState.FAILED;
+		StopWatch(run);
 		Refuse(message);
 		if (GetGame() && GetGame().GetWorkspace())
 			EL_Utils.Notify("#EL-Contraband_Failed", "#EL-Contraband_Deliver", 3.0);
@@ -286,10 +352,25 @@ class LF_Contraband
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Unregisters the run's vehicle handler. The watch object itself is kept until the next
+	//! WatchVehicle replaces it: Fail can run inside that watch's own OnCompartmentLeft, and
+	//! dropping the last strong ref there would delete the object mid-call.
+	protected static void StopWatch(LF_ConvoyRun run)
+	{
+		if (!run || !run.m_pWatch)
+			return;
+
+		run.m_pWatch.Detach();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A (re)started run always watches the vehicle the user is in now, never a previous run's.
 	protected static void WatchVehicle(LF_ConvoyRun run, IEntity user)
 	{
-		if (!run || !user || run.m_pWatch)
+		if (!run || !user)
 			return;
+
+		StopWatch(run);
 
 		ChimeraCharacter character = ChimeraCharacter.Cast(user);
 		if (!character || !character.IsInVehicle())
