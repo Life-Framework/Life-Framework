@@ -7,8 +7,9 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	[Attribute(category: "New character defaults")]
 	protected ref array<ref EL_DefaultLoadoutItem> m_aDefaultCharacterItems;
 
-	//! Per-faction starter loadouts. When a faction has one configured, it replaces
-	//! m_aDefaultCharacterItems for that faction's spawns (clothing slots cannot stack).
+	//! Per-role starter loadouts. The CIVILIAN entry is every new body's kit (it replaces
+	//! m_aDefaultCharacterItems; clothing slots cannot stack). The POLICE entry is the starter
+	//! police kit a first clock-in at the duty desk issues (LF_DutyLocker). No menu picks a role.
 	[Attribute(category: "New character defaults")]
 	protected ref array<ref EL_FactionLoadout> m_aFactionCharacterItems;
 
@@ -16,9 +17,6 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	//! the town clerk hands the card over in the arrival chain (M1-18).
 	[Attribute("1", desc: "Give each spawned character their ID card (LF_IdCard). Off when the arrival chain hands it over.", category: "New character defaults")]
 	protected bool m_bGrantIdAtSpawn;
-
-	//! Player-chosen spawn locations (second stage of the faction menu), session-local.
-	protected static ref map<int, ref EL_SpawnLocation> m_mSelectedLocations;
 
 	//! Registration retries per player. Capped so a player whose UID or account never resolves
 	//! (or who left) does not keep a ~1 s retry alive for the whole session.
@@ -100,7 +98,12 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		{
 			EL_PlayerAccount account = accounts.GetAccount(uid);
 			if (account && account.GetActiveCharacter())
+			{
 				LF_StorageSnapshot.OnCharacterDied(account.GetActiveCharacter().GetId());
+
+				// Death on duty ends the shift; the stored civilian inventory comes back at respawn.
+				LF_DutyLocker.OnDied(account);
+			}
 		}
 
 		// You wake up in hospital: the next spawn of this player goes to a bed and pays the bill.
@@ -173,8 +176,8 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		EL_PlayerCharacter activeCharacter = account.GetActiveCharacter();
 		if (!activeCharacter)
 		{
-			// No character yet: the character-creation flow owns first spawn (faction pick, name,
-			// age) and calls SpawnPlayer_S once the account has one.
+			// No character yet: the character-creation flow owns first spawn (name and age on the
+			// registration form) and calls SpawnPlayer_S once the account has one.
 			EL_Debug.Info("Spawn", "player " + playerId + " has no character yet, waiting for the character-creation flow");
 			return;
 		}
@@ -265,84 +268,22 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Resolves the spawn point for a player's account faction, falling back to any spawn point when
-	//! the map has none for that faction. Shared with the character-creation flow so both spawn paths
-	//! land in the same area.
-	//! \param playerId Player whose account faction drives the choice.
+	//! Resolves the spawn point for the player's current role (CIVILIAN, or POLICE for an officer
+	//! who reconnects on duty), falling back to any spawn point when the map has none for that
+	//! role. Shared with the character-creation flow so both spawn paths land in the same area.
+	//! \param playerId Player whose account role drives the choice.
 	//! \return Spawn point, or null when the map has no spawn point at all.
 	static SCR_SpawnPoint ResolveSpawnPoint(int playerId)
 	{
 		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetFromCache(playerId);
 		if (account)
 		{
-			SCR_SpawnPoint locationPoint = ResolveSpawnPointForLocation(playerId, account.GetFaction());
-			if (locationPoint)
-				return locationPoint;
-
 			SCR_SpawnPoint factionPoint = SCR_SpawnPoint.GetRandomSpawnPointForFaction(typename.EnumToString(EL_Faction, account.GetFaction()));
 			if (factionPoint)
 				return factionPoint;
 		}
 
 		return SCR_SpawnPoint.GetRandomSpawnPointDeathmatch();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Picks the faction's spawn point nearest the location the player chose in the second
-	//! stage of the faction menu. No choice (or an unknown key) falls back to null so the
-	//! caller can use its own fallback.
-	static SCR_SpawnPoint ResolveSpawnPointForLocation(int playerId, EL_Faction faction)
-	{
-		EL_SpawnLocation location = GetSelectedLocation(playerId);
-		if (!location || location.m_eFaction != faction)
-			return null;
-
-		SCR_SpawnPoint nearest;
-		float nearestDistance = float.MAX;
-		foreach (SCR_SpawnPoint spawnPoint : SCR_SpawnPoint.GetSpawnPoints())
-		{
-			if (spawnPoint.GetFactionKey() != typename.EnumToString(EL_Faction, faction))
-				continue;
-			float distance = vector.DistanceSq(spawnPoint.GetOrigin(), location.m_vPosition);
-			if (distance < nearestDistance)
-			{
-				nearestDistance = distance;
-				nearest = spawnPoint;
-			}
-		}
-
-		if (nearest)
-			EL_Debug.Info("Spawn", "spawn point resolved by location '" + location.m_sKey + "'");
-		return nearest;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Stores the spawn location a player picked in the second stage of the faction menu.
-	//! Session-local; the menu calls this on the same machine the spawn logic runs.
-	static void SetSelectedLocation(int playerId, string locationKey)
-	{
-		if (!m_mSelectedLocations)
-			m_mSelectedLocations = new map<int, ref EL_SpawnLocation>();
-
-		EL_SpawnLocation location = EL_SpawnLocations.GetByKey(locationKey);
-		if (!location)
-		{
-			EL_Debug.Error("Spawn", "rejected unknown spawn location key '" + locationKey + "'");
-			m_mSelectedLocations.Remove(playerId);
-			return;
-		}
-
-		m_mSelectedLocations.Set(playerId, location);
-		EL_Debug.Info("Spawn", "player " + playerId + " chose spawn location '" + location.m_sKey + "'");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static EL_SpawnLocation GetSelectedLocation(int playerId)
-	{
-		if (!m_mSelectedLocations)
-			return null;
-
-		return m_mSelectedLocations.Get(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -384,25 +325,42 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Gives a character with no saved carried inventory the configured default loadout items.
+	//! Gives a character with no saved carried inventory the kit of its current role: CIVILIAN for
+	//! every new body, POLICE only for an officer who reconnects on duty without a snapshot.
 	protected void ApplyStarterKit(int playerId, IEntity character)
 	{
-		InventoryStorageManagerComponent storageManager = EL_Component<InventoryStorageManagerComponent>.Find(character);
-
-		EL_FactionLoadout factionLoadout;
+		EL_Faction role = EL_Faction.CIVILIAN;
 		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetFromCache(playerId);
-		if (account)
-			factionLoadout = GetFactionLoadout(account.GetFaction());
+		if (account && account.IsOnDuty())
+			role = account.GetFaction();
+
+		GiveRoleKit(character, role);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawns a role's configured kit onto a character (clothing first, then direct items). The
+	//! duty desk uses it for the starter police kit and for a civilian with no stored clothes.
+	//! \return False when the character has no inventory.
+	bool GiveRoleKit(IEntity character, EL_Faction role)
+	{
+		InventoryStorageManagerComponent storageManager = EL_Component<InventoryStorageManagerComponent>.Find(character);
+		if (!storageManager)
+		{
+			EL_Debug.Error("Spawn", "role kit not given: the character has no inventory storage manager");
+			return false;
+		}
+
+		EL_FactionLoadout factionLoadout = GetFactionLoadout(role);
 
 		ref array<ref EL_DefaultLoadoutItem> items = m_aDefaultCharacterItems;
 		if (factionLoadout)
 		{
 			items = factionLoadout.m_aItems;
-			EL_Debug.Log("Spawn", "applied faction loadout for " + typename.EnumToString(EL_Faction, account.GetFaction()));
+			EL_Debug.Log("Spawn", "applied role kit " + typename.EnumToString(EL_Faction, role));
 		}
 		else
 		{
-			EL_Debug.Log("Spawn", "no faction loadout configured for player " + playerId + ", using generic default items");
+			EL_Debug.Log("Spawn", "no kit configured for role " + typename.EnumToString(EL_Faction, role) + ", using generic default items");
 		}
 
 		foreach (EL_DefaultLoadoutItem loadoutItem : items)
@@ -426,6 +384,19 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		// them first leaves a bare character with no pockets, so they fail the best-slot search.
 		if (factionLoadout)
 			SpawnDirectCharacterItems(storageManager, factionLoadout.m_aDirectItems);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The live spawn logic of the respawn system, or null outside a game mode.
+	static EL_SpawnLogic GetInstance()
+	{
+		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
+		if (!respawnSystem)
+			return null;
+
+		return EL_SpawnLogic.Cast(respawnSystem.GetSpawnLogic());
 	}
 
 	//------------------------------------------------------------------------------------------------

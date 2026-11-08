@@ -93,6 +93,11 @@ export function buildLine(id, spec) {
     return `${id} interact ${spec.step}`;
   }
   if (spec.verb === "stand") {
+    // Optional side (e default, w, n, s): stand on that side of the entity, facing it.
+    if (spec.side) {
+      if (!["e", "w", "n", "s"].includes(spec.side)) throw new Error(`bad stand side ${spec.side}`);
+      return `${id} stand ${token(spec.entityName, "entity")} ${spec.side}`;
+    }
     return `${id} stand ${token(spec.entityName, "entity")}`;
   }
   if (spec.verb === "look") {
@@ -762,8 +767,8 @@ function selftest() {
   const apple = findPad(list, "AppleTradeContainer");
   // AppleTrader 197 0 240.6 plus the container's -2.6 0.9 0.7.
   if (!apple || apple.x !== 194.4 || apple.z !== 241.3) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
-  const police = findPad(list, "PoliceStation_Debug");
-  if (!police || police.x !== 229 || police.z !== 244.3) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
+  const police = findPad(list, "Roadmap_Police_Desk");
+  if (!police || police.x !== 237.4 || police.z !== 243.9 || !police.actions.includes("EL_DutyAction")) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
   const pile = findPad(list, "CementPile_Debug");
   if (!pile || !pile.actions.includes("EL_GatherAction")) throw new Error("CementPile_Debug gather missing");
   const ore = findPad(list, "IronOre_Debug");
@@ -822,7 +827,7 @@ function selftest() {
   }
   if (!kitFlow.includes("kit show") || !kitFlow.includes("kit hide")) throw new Error(kitFlow.join("|"));
   const intake = readFlow("ui-intake").filter((line) => line.trim() && !line.trim().startsWith("#"));
-  if (!intake.includes("click CivilianButton") || !intake.includes("click TownButton")) throw new Error(intake.join("|"));
+  if (intake.includes("click CivilianButton") || !intake.includes("click SignButton")) throw new Error(intake.join("|"));
   const chain = checkChains(ROOT);
   if (!chain.ok) throw new Error(chain.errors.join("; "));
   const appleFlow = readFlow("chain-apple").filter((line) => line.trim() && !line.trim().startsWith("#"));
@@ -1295,7 +1300,7 @@ function main(argv) {
       return played.code;
     }
     if (cmd === "stand") {
-      return printResult(sendCommand({ verb: "stand", entityName: rest[0] }));
+      return printResult(sendCommand({ verb: "stand", entityName: rest[0], side: rest[1] }));
     }
     if (cmd === "look") {
       return printResult(sendCommand({ verb: "look" }));

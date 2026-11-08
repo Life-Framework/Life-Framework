@@ -3809,17 +3809,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{728122BE2EE80D4F}" {
      Id "LF-Sign_PoliceStation_What"
-     Target_en_us "Duty desk and armory of the Everon police."
+     Target_en_us "Duty desk, wanted board, and armory of the Everon police."
      Comment "Sign card for the police station duty desk, What section."
     }
     CustomStringTableItem "{1A20ADB3E49DD4E0}" {
      Id "LF-Sign_PoliceStation_How"
-     Target_en_us "At the duty desk: Go on duty, Go off duty. At the armory: Draw kit."
+     Target_en_us "Punch the clock on the duty desk: Clock in puts your own clothes and pockets in the locker and hands you the police uniform; Clock out gives them back. Read the wanted board beside the desk. At the armory: Draw kit."
      Comment "Sign card for the police station duty desk, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{E8967D4A9BC98A92}" {
      Id "LF-Sign_PoliceStation_Needs"
-     Target_en_us "A place on the police whitelist."
+     Target_en_us "A place on the police roster. Ask an admin to join the police."
      Comment "Sign card for the police station duty desk, Needs section."
     }
     CustomStringTableItem "{216CC8B9B69FEA9E}" {
@@ -3959,7 +3959,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
-     Target_en_us "Members open the gate. Inside, Process contraband at the machine."
+     Target_en_us "Members open the gate. Inside, Process contraband at the machine, and keep the crew's goods in the chest: Open hideout stash."
      Comment "Sign card for the organization hideout yard, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{CCE875EFC2A291AB}" {
@@ -3969,7 +3969,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D93B25598500E634}" {
      Id "LF-Sign_Hideout_Rules"
-     Target_en_us "Outsiders cannot open the gate."
+     Target_en_us "Outsiders cannot open the gate or the stash, even when the gate stands open."
      Comment "Sign card for the organization hideout yard, Rules section."
     }
     CustomStringTableItem "{29B7EE9B299AEAF2}" {
@@ -4034,7 +4034,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{905E4015631C43F6}" {
      Id "LF-Sign_Farm_How"
-     Target_en_us "Gather Tomato from a ripe plant. Sell the harvest at the market stalls on the main street."
+     Target_en_us "Gather Tomato from a ripe plant in the beds, Gather Apple or Gather Plum from the orchard trees."
      Comment "Sign card for the farm north of the square, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{33EBA210B27B7F63}" {
@@ -4131,6 +4131,311 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_Impound_Rules"
      Target_en_us "Only the owner can collect. Store your car in the garage to never pay this."
      Comment "Sign card for the impound desk, Rules section."
+    }
+    CustomStringTableItem "{003DBD3771195E72}" {
+     Id "LF-HideoutStash_Name"
+     Target_en_us "Hideout stash"
+     Comment "Inventory title of the organization hideout stash crate."
+    }
+    CustomStringTableItem "{E33FDD3D631C2068}" {
+     Id "LF-HideoutStash_Desc"
+     Target_en_us "Shared storage of the organization that owns this hideout."
+     Comment "Inventory description of the organization hideout stash crate."
+    }
+    CustomStringTableItem "{38490B8B4615127D}" {
+     Id "LF-HideoutStash_Title"
+     Target_en_us "Hideout stash"
+     Comment "Toast title when the hideout stash refuses a player."
+    }
+    CustomStringTableItem "{6544A393A6C50DA4}" {
+     Id "LF-HideoutStash_NoOwner"
+     Target_en_us "The stash is padlocked. No organization owns this hideout yet."
+     Comment "Toast when a player tries to open the stash of a hideout no organization owns."
+    }
+    CustomStringTableItem "{71BCA78110E0B841}" {
+     Id "LF-HideoutStash_Open"
+     Target_en_us "Open hideout stash (members only)"
+     Comment "Action on the hideout stash crate. Tells a stranger who may open it."
+    }
+    CustomStringTableItem "{0F3071065A46DE99}" {
+     Id "LF-HideoutStash_NotMember"
+     Target_en_us "The stash is padlocked. Only members of the organization that owns this hideout can open it. Ask a member to invite you at the organization registry."
+     Comment "Toast when a player who is not in the hideout's organization tries to open its stash."
+    }
+    CustomStringTableItem "{B19428DE73DCD0A7}" {
+     Id "LF-Sign_Next"
+     Target_en_us "Next"
+     Comment "Sign card section heading: where to go after this place."
+    }
+    CustomStringTableItem "{0C88CA858FE8EBEF}" {
+     Id "LF-Sign_Mining_Next"
+     Target_en_us "The village is a short walk north."
+     Comment "Sign card for the mining area, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{D2AC7C0652FB4B17}" {
+     Id "LF-Sign_PoliceWhitelist_Next"
+     Target_en_us "Not on the list? The rest of the town is open to you. Work starts at the post office."
+     Comment "Sign card for the police whitelist post, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{E4DF25A9FAFF4CFA}" {
+     Id "LF-Sign_TownMap_Next"
+     Target_en_us "The town hall clerk stands a few steps east of this board. After the clerk, the post office is the first building on your left as you walk east."
+     Comment "Sign card for the town map board at the spawn square, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{1E58663948A81073}" {
+     Id "LF-Sign_PostOffice_Next"
+     Target_en_us "With a parcel in hand, walk east, away from the church, to the porch past the brick-walled lock-up on the right. Then bank your pay at the ATM, next door to the east."
+     Comment "Sign card for the post office, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{75E472C5F7014CCC}" {
+     Id "LF-Sign_Atm_Next"
+     Target_en_us "Spend it: the general store and the market stalls are across the street. The vehicle lot is further east on this side."
+     Comment "Sign card for the ATM, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{54F7C5BEECED4902}" {
+     Id "LF-Sign_Bank_Next"
+     Target_en_us "Get the bag clear before the police arrive. The police station is across the street, a little further east."
+     Comment "Sign card for the bank vault, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{9998DA1944C26EE3}" {
+     Id "LF-Sign_GeneralStore_Next"
+     Target_en_us "Sell what you gather at the market stalls next door, to the east. Cars are sold at the vehicle lot across the street."
+     Comment "Sign card for the general store, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{0D9D9BF03C41923B}" {
+     Id "LF-Sign_Traders_Next"
+     Target_en_us "Bank the cash at the ATM across the street, or spend it at the general store next door, to the west."
+     Comment "Sign card for the market stalls, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{3F61541B4C366743}" {
+     Id "LF-Sign_VehicleLot_Next"
+     Target_en_us "Park it at the garage, further east on this side. The fuel station is across the street, past the police station."
+     Comment "Sign card for the vehicle lot, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{E3A7A4FF84B6A717}" {
+     Id "LF-Sign_Garage_Next"
+     Target_en_us "The fuel station is across the street, a little further east."
+     Comment "Sign card for the garage, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{4C72B4805EB4D1C1}" {
+     Id "LF-Sign_PoliceStation_Next"
+     Target_en_us "On duty, walk the street and bring wanted people to the jail yard behind this building."
+     Comment "Sign card for the police station, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{0FA68AE1B98C4FF2}" {
+     Id "LF-Sign_Jail_Next"
+     Target_en_us "Out again? Honest work is at the post office, at the west end of the street near the church."
+     Comment "Sign card for the jail yard, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{1BD052D1AD834FF7}" {
+     Id "LF-Sign_FuelStation_Next"
+     Target_en_us "The fuel cans stand east of here, by the lock-up. Carry one to the drop on the porch past the lock-up and Complete the run."
+     Comment "Sign card for the fuel station, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{957811C8220247D4}" {
+     Id "LF-Sign_Hospital_Next"
+     Target_en_us "Want a crew of your own? The organization office is next door, to the east."
+     Comment "Sign card for the hospital, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{44321472683DEF2A}" {
+     Id "LF-Sign_OrgRegistry_Next"
+     Target_en_us "The alley beside this office leads north to the back room and the hideout gate."
+     Comment "Sign card for the organization office, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{DC9FB128B95A14B4}" {
+     Id "LF-Sign_BlackMarket_Next"
+     Target_en_us "The hideout gate is at the end of this alley."
+     Comment "Sign card for the back room, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{754927C4ED5BDA5F}" {
+     Id "LF-Sign_Hideout_Next"
+     Target_en_us "Contraband comes from the barn at the end of the dirt track east of the village. Start the convoy there."
+     Comment "Sign card for the hideout yard, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{2538FBA6D41AC399}" {
+     Id "LF-Sign_ConvoyPickup_Next"
+     Target_en_us "Drive west into the village, then up the alley beside the organization office to the hideout yard."
+     Comment "Sign card for the convoy pickup at the barn, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{34D0C003C71CEDAA}" {
+     Id "LF-Sign_ConvoyDrop_Next"
+     Target_en_us "Bank the cash at the ATM on the main street, or spend it at the back room down the alley."
+     Comment "Sign card for the convoy drop, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{F12F68A7BB4FAF51}" {
+     Id "LF-Sign_Farm_Next"
+     Target_en_us "Sell the harvest at the market stalls on the main street, south of here."
+     Comment "Sign card for the farm, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{BA517CCD13044B16}" {
+     Id "LF-Sign_Impound_Next"
+     Target_en_us "Park it in the garage next door, to the west, and it will not be towed again."
+     Comment "Sign card for the impound lot, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{0A0AF64EEE5BACBB}" {
+     Id "LF-Duty_ClockIn"
+     Target_en_us "Clock in"
+     Comment "Duty desk action: punch the card and go on duty as police. Swaps to the police inventory."
+    }
+    CustomStringTableItem "{E4D4E1EE39E260F2}" {
+     Id "LF-Duty_ClockOut"
+     Target_en_us "Clock out"
+     Comment "Duty desk action: punch the card, go off duty, collect duty pay, get the civilian inventory back."
+    }
+    CustomStringTableItem "{073A8C6E2A477B10}" {
+     Id "LF-Duty_ClockDesc"
+     Target_en_us "Punch your card at the station duty desk."
+     Comment "Description of the duty desk action."
+    }
+    CustomStringTableItem "{AB08E8AF6A8954AD}" {
+     Id "LF-Duty_NoAccount"
+     Target_en_us "Register your character first."
+     Comment "Duty desk refusal: the player has no registered character."
+    }
+    CustomStringTableItem "{F8D832E3CE9C3E7A}" {
+     Id "LF-Duty_NotOnRoster"
+     Target_en_us "Only officers on the police roster can clock in. Ask an admin to join the police."
+     Comment "Duty desk refusal: the player is not whitelisted for police."
+    }
+    CustomStringTableItem "{B20154B0D085697C}" {
+     Id "LF-Duty_AlreadyOn"
+     Target_en_us "You are already on duty."
+     Comment "Duty desk refusal: a second clock-in."
+    }
+    CustomStringTableItem "{F9746F64FC7DF70C}" {
+     Id "LF-Duty_NotOn"
+     Target_en_us "You are not on duty."
+     Comment "Duty desk refusal: clock-out while off duty."
+    }
+    CustomStringTableItem "{75DBEF394E6BF363}" {
+     Id "LF-Offence_Robbery"
+     Target_en_us "Armed robbery"
+     Comment "Offence on a wanted poster: a till or safe was robbed."
+    }
+    CustomStringTableItem "{9B5C5EBC51647BBD}" {
+     Id "LF-Offence_VehicleTheft"
+     Target_en_us "Vehicle theft"
+     Comment "Offence on a wanted poster."
+    }
+    CustomStringTableItem "{E2A9C867DDFB5021}" {
+     Id "LF-Offence_WeaponTheft"
+     Target_en_us "Weapon theft"
+     Comment "Offence on a wanted poster."
+    }
+    CustomStringTableItem "{A1B41FC05FD138B7}" {
+     Id "LF-Offence_BreakIn"
+     Target_en_us "Breaking and entering"
+     Comment "Offence on a wanted poster: a door was breached."
+    }
+    CustomStringTableItem "{6E4CC71CE2AF3D51}" {
+     Id "LF-Offence_HospitalRobbery"
+     Target_en_us "Hospital robbery"
+     Comment "Offence on a wanted poster."
+    }
+    CustomStringTableItem "{35F30778D3B26361}" {
+     Id "LF-Wanted_PlaceGrid"
+     Target_en_us "grid %1"
+     Comment "Place on a wanted poster when no sign is near. %1 is the map grid square, e.g. 002-002."
+    }
+    CustomStringTableItem "{8C5D85EC61903BF8}" {
+     Id "LF-Wanted_VehicleUnknown"
+     Target_en_us "a vehicle"
+     Comment "Wanted poster: the suspect drove a vehicle with no display name."
+    }
+    CustomStringTableItem "{0C509872EDE3C2C8}" {
+     Id "LF-Wanted_Read"
+     Target_en_us "Read the wanted posters"
+     Comment "Action on the station wanted board."
+    }
+    CustomStringTableItem "{BD4E87FFF2BC3717}" {
+     Id "LF-Wanted_Title"
+     Target_en_us "WANTED"
+     Comment "Title of the public wanted poster card."
+    }
+    CustomStringTableItem "{9E5C42E17A717873}" {
+     Id "LF-Wanted_TitlePolice"
+     Target_en_us "WANTED - police notices"
+     Comment "Title of the wanted board card an on-duty officer reads."
+    }
+    CustomStringTableItem "{208346B2A0835221}" {
+     Id "LF-Wanted_None"
+     Target_en_us "No one is wanted right now."
+     Comment "Wanted board card when the board is empty."
+    }
+    CustomStringTableItem "{E067EA2BE746BA32}" {
+     Id "LF-Wanted_PublicTip"
+     Target_en_us "Seen them? Tell an officer."
+     Comment "Line on the public wanted poster card."
+    }
+    CustomStringTableItem "{9A51FA9C497B307F}" {
+     Id "LF-Wanted_Unknown"
+     Target_en_us "Unknown person"
+     Comment "Wanted poster headline before the suspect is identified."
+    }
+    CustomStringTableItem "{D733E65634209297}" {
+     Id "LF-Wanted_NoDescription"
+     Target_en_us "no description"
+     Comment "Wanted poster: nothing was seen of the clothing."
+    }
+    CustomStringTableItem "{9DFCE698AEB990D9}" {
+     Id "LF-Wanted_Wearing"
+     Target_en_us "Wearing %1"
+     Comment "Wanted poster description. %1 is a list of clothing names."
+    }
+    CustomStringTableItem "{66B7B59C6D36A297}" {
+     Id "LF-Wanted_OnFoot"
+     Target_en_us "on foot"
+     Comment "Wanted poster: the suspect was not in a vehicle."
+    }
+    CustomStringTableItem "{DA0581F22B573242}" {
+     Id "LF-Wanted_Driving"
+     Target_en_us "driving %1"
+     Comment "Wanted poster: %1 is the vehicle name."
+    }
+    CustomStringTableItem "{92CC57DB2785885E}" {
+     Id "LF-Wanted_SeenAt"
+     Target_en_us "last seen at %1"
+     Comment "Wanted poster, police only: %1 is the place of the crime."
+    }
+    CustomStringTableItem "{41F96CA57255836D}" {
+     Id "LF-Sign_PoliceWanted_Title"
+     Target_en_us "Wanted"
+     Comment "Title printed on the station wanted board."
+    }
+    CustomStringTableItem "{167EC6A64DF46E04}" {
+     Id "LF-Sign_PoliceWanted_What"
+     Target_en_us "Posters of people the police are looking for, one per crime."
+     Comment "Wanted board sign card: what it is."
+    }
+    CustomStringTableItem "{BFD2376670AE25CD}" {
+     Id "LF-Sign_PoliceWanted_How"
+     Target_en_us "A poster describes what the suspect wore and drove. The name goes up once the police identify them."
+     Comment "Wanted board sign card: how it works."
+    }
+    CustomStringTableItem "{4C129F5AB03484F6}" {
+     Id "LF-Sign_PoliceWanted_Rules"
+     Target_en_us "Officers on duty see where each crime happened."
+     Comment "Wanted board sign card: rules."
+    }
+    CustomStringTableItem "{2AE926B35D391FDA}" {
+     Id "LF-Wanted_Level"
+     Target_en_us "wanted level %1 of 5"
+     Comment "Wanted poster headline: how wanted the suspect is now. %1 is 1 to 5."
+    }
+    CustomStringTableItem "{F51D6FC3BD1F68DC}" {
+     Id "LF-Job_NewWork"
+     Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
+     Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
+    }
+    CustomStringTableItem "{196A4BD9FFC674C5}" {
+     Id "LF-Job_HiredHidden"
+     Target_en_us "You now work as %1."
+     Comment "Hint when hired; %1 = job name. Hidden progression: no grade or level."
+    }
+    CustomStringTableItem "{94B78288ADF3D767}" {
+     Id "LF-Sign_PoliceWanted_Next"
+     Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
+     Comment "Wanted board sign card: what to do next."
     }
   }
  }

@@ -12,16 +12,20 @@
 //! from and written into the component's own map (keyed by character persistence id).
 //! Hideout records live in LF_Hideout. Vehicle records live in EL_VehicleOwnership, keyed by
 //! the lock identifier. Jail sentences live in LF_Jail, keyed by the player uid. Carried
+//! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name. Placed
+//! storage (LF_PersistentStorageComponent, the hideout stash) rides the same store under its key.
 //! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name.
 //! Progression (career, police rank and duty seconds, benefit cooldown, level, licences, quest
 //! turn-ins) lives in LF_Progression and its owners, keyed by the player uid.
 //! Introductions (who knows whose name) live in LF_Introductions, keyed by player uid pairs.
-//! Delivery-job sign-ups live in LF_CivilianJob, keyed by the player uid.
+//! Per-item state of a snapshot (magazine ammo) lives beside its snapshot in LF_StorageSnapshot.
+//! Wanted reports (the description recorded at each crime and its identified flag) live in
+//! LF_WantedReports. Delivery-job sign-ups live in LF_CivilianJob, keyed by the player uid.
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, jobsignups. The written version is that list's length (9). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups. The written version is that list's length (11). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -29,7 +33,9 @@
 //! A version 5 save includes jail sentences and has no carried inventories.
 //! A version 6 save includes carried inventories and has no progression.
 //! A version 7 save includes progression and has no introductions.
-//! A version 8 save includes introductions and has no job sign-ups.
+//! A version 8 save includes introductions and has no per-item state (magazine ammo).
+//! A version 9 save includes per-item state and has no wanted reports.
+//! A version 10 save includes wanted reports and has no job sign-ups.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -61,6 +67,8 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("carried");
 		order.Insert("progression");
 		order.Insert("introductions");
+		order.Insert("itemstate");
+		order.Insert("wanted");
 		order.Insert("jobsignups");
 	}
 
@@ -88,7 +96,7 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 9);
+		context.WriteValue("version", 11);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -240,11 +248,12 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 		{
 			// Every save point (autosave, manual, shutdown) refreshes living players first.
 			int captured = LF_StorageSnapshot.CaptureAllPlayers();
+			int placed = LF_PersistentStorageComponent.CaptureAllPlaced();
 			array<ref LF_StorageSnapshotRecord> carriedRecords = LF_StorageSnapshot.ExportAll();
 			if (!carriedRecords)
 				carriedRecords = new array<ref LF_StorageSnapshotRecord>();
 			context.Write(carriedRecords);
-			EL_Debug.Log("Persistence", string.Format("saved %1 carried snapshot(s), %2 captured from live players", carriedRecords.Count(), captured));
+			EL_Debug.Log("Persistence", string.Format("saved %1 carried snapshot(s), %2 captured from live players, %3 from placed storage", carriedRecords.Count(), captured, placed));
 		}
 		else if (payload == "progression")
 		{
@@ -261,6 +270,23 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 				introductionRecords = new array<ref LF_IntroductionRecord>();
 			context.Write(introductionRecords);
 			EL_Debug.Log("Persistence", string.Format("saved %1 introduction(s)", introductionRecords.Count()));
+		}
+		else if (payload == "itemstate")
+		{
+			// Written after carried: the carried write captured live players, so this matches it.
+			array<ref LF_StorageItemStateRecord> stateRecords = LF_StorageSnapshot.ExportItemState();
+			if (!stateRecords)
+				stateRecords = new array<ref LF_StorageItemStateRecord>();
+			context.Write(stateRecords);
+			EL_Debug.Log("Persistence", string.Format("saved per-item state of %1 snapshot(s)", stateRecords.Count()));
+		}
+		else if (payload == "wanted")
+		{
+			array<ref LF_WantedReportRecord> wantedRecords = LF_WantedReports.ExportAll();
+			if (!wantedRecords)
+				wantedRecords = new array<ref LF_WantedReportRecord>();
+			context.Write(wantedRecords);
+			EL_Debug.Log("Persistence", string.Format("saved %1 wanted report(s)", wantedRecords.Count()));
 		}
 		else if (payload == "jobsignups")
 		{
@@ -407,9 +433,37 @@ class EL_PersistenceComponentSerializer : ScriptedComponentSerializer
 				EL_Debug.Warn("Persistence", "introduction records failed to read, leaving live introductions untouched");
 			}
 		}
+		else if (payload == "itemstate")
+		{
+			// A version 1-8 save never reaches this payload: restored magazines keep their prefab ammo.
+			array<ref LF_StorageItemStateRecord> stateRecords = new array<ref LF_StorageItemStateRecord>();
+			if (context.Read(stateRecords))
+			{
+				int matched = LF_StorageSnapshot.ApplyItemState(stateRecords);
+				EL_Debug.Log("Persistence", string.Format("applied per-item state to %1 of %2 snapshot(s)", matched, stateRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "per-item state failed to read, restored magazines keep their prefab ammo");
+			}
+		}
+		else if (payload == "wanted")
+		{
+			// A version 1-9 save never reaches this payload, so live reports are left alone.
+			array<ref LF_WantedReportRecord> wantedRecords = new array<ref LF_WantedReportRecord>();
+			if (context.Read(wantedRecords))
+			{
+				LF_WantedReports.ApplyAll(wantedRecords);
+				EL_Debug.Log("Persistence", string.Format("applied %1 wanted report(s)", wantedRecords.Count()));
+			}
+			else
+			{
+				EL_Debug.Warn("Persistence", "wanted reports failed to read, leaving live reports untouched");
+			}
+		}
 		else if (payload == "jobsignups")
 		{
-			// A version 1-8 save never reaches this payload, so live sign-ups are left alone.
+			// A version 1-10 save never reaches this payload, so live sign-ups are left alone.
 			array<ref LF_JobSignUpRecord> signUpRecords = new array<ref LF_JobSignUpRecord>();
 			if (context.Read(signUpRecords))
 			{

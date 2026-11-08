@@ -1,0 +1,30 @@
+GenericEntity : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ ID "8BDABF0C44C54323"
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "police_wanted"
+  }
+  SCR_SoundDataComponent "{1E8C5E3C23DF47B3}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{9871642E641449F0}" {
+     m_sSoundProject "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
+     m_sSoundEventName "SOUND_PICK_UP"
+    }
+   }
+  }
+  ActionsManagerComponent "{6E065C9694DC3BE5}" {
+   ActionContexts {
+    UserActionContext "{360C30155120CB67}" {
+     Radius 1.5
+    }
+   }
+   additionalActions + {
+    LF_WantedBoardReadAction "{F60E16CD45D0A0FE}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}

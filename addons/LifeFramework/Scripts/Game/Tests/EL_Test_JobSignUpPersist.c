@@ -11,7 +11,7 @@
 // tier: PERSISTENCE
 //! A signed-up delivery job survives a save and load (found by the #183 journey: PARCEL ->
 //! UNEMPLOYED after a restart). The career level that gates the job rides the progression
-//! payload; the sign-up rides "jobsignups". An active run is not saved.
+//! payload; the sign-up rides "jobsignups" (save version 11). An active run is not saved.
 class EL_Test_JobSignUpPersist : EL_Test
 {
 	protected static const string COURIER = "signup-courier";
@@ -56,7 +56,7 @@ class EL_Test_JobSignUpPersist : EL_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(9, version, "the save is written at version 9 (job sign-ups are payload 9)");
+		ctx.Equal(11, version, "the save is written at version 11 (job sign-ups are payload 11)");
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "progression");
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "introductions");
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "jobsignups");

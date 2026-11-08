@@ -161,7 +161,7 @@ the game profile). Hooks:
   debug menu.
 - `look` lists `ScriptedUserAction`s within 4m whose `CanBeShownScript` is
   true. That is the list the interact key would offer.
-- `ui` lists the visible widgets `click` accepts: faction and spawn buttons
+- `ui` lists the visible widgets `click` accepts: the registration form button
   (`SCR_ButtonTextComponent`), debug menu buttons, buttons whose name ends in
   `Button` under a Life Framework handler, and every button of an open UI kit
   sheet whatever its name (they carry `LF_UIButtonRelay`: ATM keys, the price
@@ -405,7 +405,7 @@ outlier, an empty look, an action on another entity, and the flag.
 `node agent-box/harness.mjs chains` checks the probe list against the layer
 files, with no game: every required DebugWorld layer has a named stand target
 or a recorded gap. `chains --run` is the play-mode e2e: it spawns through
-the faction buttons when no character exists, then stands beside each named
+the registration form when no character exists, then stands beside each named
 probe, reads `look`, and calls `use` on the expected action.
 `agent-box/flows/chain-apple.txt` is the apple gather-then-trade sequence on
 its own. Probes live in `agent-box/chains.mjs`.
@@ -427,7 +427,8 @@ its own. Probes live in `agent-box/chains.mjs`.
 | CrimeChain | `CrimeTrader_Debug`, `CrimeFurnace_Debug` | open trader, process |
 | Jobs | `GatherPoint_AppleTree` | gather |
 | Shops | general store, black market | `EL_ShopAction` |
-| Police | `PoliceStation_Debug` | `EL_DutyAction` |
+| Police | `Roadmap_Police_Desk` | `EL_DutyAction` (Clock in / Clock out) |
+| Police | `Roadmap_Police_WantedBoard` | `LF_WantedBoardReadAction` |
 | Survival | food and water points | gather |
 | Houses | `House_Door_Locked` | `SCR_DoorUserAction` |
 | Crimes (not `CrimeChain.layer`) | money, weapon, vehicle points | rob actions |
@@ -455,7 +456,7 @@ empty rock shells 6-8 m away.
 | `CementPlant_Debug` | `Sandbag.et` is a child of the gravel bag with an explicit 1x1 volume slot. The old 2x1 bag was rejected by the inventory, so the plant never saw its third input. |
 | `Furnace`, `CrimeFurnace_Debug` | Iron, gold, and copper nuggets use `SLOT_1x1`. `IronOre_Debug` grants 4 nuggets, enough for both furnaces. `use EL_ProcessAction` hits the first action, the iron smelt. |
 | `Sawmill_Debug` | `LogPile_Debug` grants `WoodLog_01_Small.et` before any weapon pickup, so the log stays in hand. A later pickup drops it. |
-| `PoliceStation_Debug` | The chain opens the debug menu and clicks `FactionPoliceButton` first (sets police and duty); the duty action then toggles. |
+| `Roadmap_Police_Desk` | The chain opens the debug menu and clicks `FactionPoliceButton` first (sets police and duty without the inventory swap); the desk then offers Clock out. A real officer must be on the police roster (whitelist file) to clock in. |
 | `RobberyPoint_Money` / `_Weapon` / `_Vehicle` | These DebugWorld points set `m_iMinPoliceOnDuty` to 0 (the action classes default to 2 / 1 / 3), so they run while the character is civilian. |
 
 ### Launching Workbench for a live run
@@ -483,7 +484,8 @@ the user's screen or takes focus, and screenshots still work there.
 which is what `tools/film` needs.
 
 ```powershell
-node agent-box/session.mjs up --clients 2     # server, then clients; waits for both faction menus
+node agent-box/session.mjs roster 2             # put player id 2 on the police roster (before up)
+node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms
 node agent-box/session.mjs up --clients 2 --mission playtest   # LF_PlaytestTown, harness build
 node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop
 node agent-box/session.mjs up --clients 2 --visible            # on the user's desktop, for film
@@ -491,6 +493,7 @@ node agent-box/session.mjs restart            # playtest: shutdown save, load, s
 node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client
 node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
 node agent-box/session.mjs proof              # client 1 robs Roadmap_Fuel_Till, client 2 (police) gets the alert
+node agent-box/session.mjs police-proof       # client 2 clocks in at the desk, client 1 robs the till, both read the wanted board
 node agent-box/session.mjs down               # closes every process the session started
 ```
 
@@ -526,8 +529,12 @@ node agent-box/session.mjs down               # closes every process the session
 - Memory: each client takes about 2.1 GB private, the server about 0.8 GB. With
   Workbench also open the server logged `Out of memory. Free system ~300 MB`
   during client load and kept running.
-- Police comes from the debug menu (`FactionPoliceButton`): the session has no
-  whitelist file, so the faction menu refuses police.
+- Police: there is no faction screen. `roster <id>` writes the server profile's
+  `LifeFramework/whitelist.txt` with that player id's session identity before
+  `up`; that client can then Clock in at `Roadmap_Police_Desk`. `proof` still
+  uses the debug menu (`FactionPoliceButton`), which sets the role without the
+  inventory swap. The wanted card's posters are logged on the reading client
+  (`[ELDebug:WantedBoard] poster N: ...`); read the client log after `down`.
 - `shot world` and `stand` move the body on the owning client (the server
   pose alone is overwritten by a remote client), so `--client <n> shot world`
   photographs from the hidden `LF-Agents` desktop. M1-25 took its village
@@ -585,4 +592,4 @@ the bare DebugWorld run reach the car in one pass; the playtest run has no
 fixtures, so a step that needs more money than a courier run pays reports
 "blocked". First runs (2026-11-08): bare DebugWorld 10 of 12 (org: the desk was
 still the old menu, #168), playtest restart kept cash, bank, and org but lost
-the signed-up job; the `jobsignups` payload (save version 9) keeps it since.
+the signed-up job; the `jobsignups` payload (save version 11) keeps it since.

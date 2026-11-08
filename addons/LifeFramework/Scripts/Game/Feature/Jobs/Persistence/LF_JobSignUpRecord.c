@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! Persisted delivery-job sign-up of one player, keyed by the player uid (the account key). Saved
-//! as the "jobsignups" payload (save version 9) by EL_PersistenceComponentSerializer.
+//! as the "jobsignups" payload (save version 11) by EL_PersistenceComponentSerializer.
 //!
 //! The job is stored by EL_EJobType name, not by enum value, so a reordered enum drops an unknown
 //! name instead of signing the player up for another job. An active run is not part of it.

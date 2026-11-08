@@ -195,6 +195,7 @@ class LF_JobDropoffAction : ScriptedUserAction
 		if (!LF_CivilianJob.TakeCargo(pUserEntity, finished))
 			return;
 
+		int levelBefore = LF_CivilianJob.GetLevel(uid);
 		int paid = LF_CivilianJob.CompleteRun(uid);
 		if (paid <= 0)
 			return;
@@ -208,6 +209,11 @@ class LF_JobDropoffAction : ScriptedUserAction
 			EL_Debug.Error("Jobs", "dropoff action: player has no EL_PlayerJobComponent");
 
 		EL_Utils.NotifyEntity(pUserEntity, "#EL-Job_Paid", LF_CivilianJob.NameKey(finished), 4.0, paid.ToString());
+
+		// Hidden progression: no level text. When the experience opens new work, the clerk says so.
+		EL_EJobType opened = LF_CivilianJob.NewlyOpened(levelBefore, LF_CivilianJob.GetLevel(uid));
+		if (opened != EL_EJobType.UNEMPLOYED)
+			EL_Utils.NotifyEntity(pUserEntity, "#LF-Job_NewWork", LF_CivilianJob.NameKey(opened), 6.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

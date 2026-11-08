@@ -1,6 +1,7 @@
 // red-proof: on 2026-11-07 dropped `& WANTED_MASK` in EL_AccountStateBits.GetWantedLevel,
 // made EL_LicenseBits.Has return true, replaced the MayJoinFaction check in
-// EL_CharacterCreationRules.RefuseFaction with `if (false)`, and made
+// EL_CharacterCreationRules.RefuseFaction with `if (false)` (that rule is gone with the faction
+// screen, M1-11; dedicated/creation-rules now proves a fresh account registers), and made
 // EL_RobAction.CommitRobbery return payout without an account. Ran
 // `tools\cli test --no-build --tier fast`; observed
 // `[ELTEST] SUMMARY tier=fast passed=79 failed=4 total=83` with
@@ -9,6 +10,9 @@
 // `[ELTEST]   - police pick without the server whitelist is refused (expected '#EL-CC_Error_FactionDenied', got '')`,
 // `[ELTEST]   - a robbery without an account pays nothing (expected 0, got 150)`.
 // Restored all four; the fast tier went green again.
+// dedicated/creation-rules red-proof (M1-11), observed 2026-11-08 in the same --only run: a faction gate put
+// back into RefuseCharacter failed it with `- a fresh account registers with no faction pick (expected '',
+// got '#EL-CC_Error_FactionLocked')`. Restored; green.
 // dedicated/replication-world (WORLD) red-proof: see the comment above that class.
 
 // tier: LOGIC
@@ -104,30 +108,17 @@ class EL_Test_CharacterCreationRules : EL_Test
 
 	override void Run(EL_TestContext ctx)
 	{
-		string uid = "dedicated-creation-not-whitelisted";
-		EL_PlayerAccount fresh = EL_PlayerAccount.Create(uid);
+		// No faction screen (M1-11): a fresh account registers without any faction pick. The
+		// faction gate #130 left in RefuseCharacter is gone, or new players never reach the form.
+		EL_PlayerAccount fresh = EL_PlayerAccount.Create("dedicated-creation-fresh");
+		ctx.EqualStr("", EL_CharacterCreationRules.RefuseCharacter(fresh, "Ada", "Lovelace", 36), "a fresh account registers with no faction pick");
+		ctx.EqualStr("#EL-CC_Error_NoAccount", EL_CharacterCreationRules.RefuseCharacter(null, "Ada", "Lovelace", 36), "no account is refused");
 
-		ctx.EqualStr("", EL_CharacterCreationRules.RefuseFaction(fresh, EL_Faction.CIVILIAN, uid), "civilian pick is accepted");
-		ctx.EqualStr("#EL-CC_Error_FactionDenied", EL_CharacterCreationRules.RefuseFaction(fresh, EL_Faction.POLICE, uid), "police pick without the server whitelist is refused");
-		ctx.EqualStr("#EL-CC_Error_FactionDenied", EL_CharacterCreationRules.RefuseFaction(fresh, 7, uid), "an unknown faction value is refused");
-		ctx.EqualStr("#EL-CC_Error_NoAccount", EL_CharacterCreationRules.RefuseFaction(null, EL_Faction.CIVILIAN, uid), "no account is refused");
-		ctx.EqualStr("#EL-CC_Error_NoAccount", EL_CharacterCreationRules.RefuseFaction(fresh, EL_Faction.CIVILIAN, ""), "an empty uid is refused");
-
-		EL_PlayerAccount chosen = EL_PlayerAccount.Create("dedicated-creation-chosen");
-		chosen.SetFaction(EL_Faction.CIVILIAN);
-		ctx.EqualStr("#EL-CC_Error_FactionLocked", EL_CharacterCreationRules.RefuseFaction(chosen, EL_Faction.POLICE, "dedicated-creation-chosen"), "a chosen faction cannot be re-picked over RPC");
-
-		ctx.EqualStr("", EL_CharacterCreationRules.RefuseSpawnLocation(EL_Faction.POLICE, "station"), "police may spawn at the station");
-		ctx.EqualStr("#EL-CC_Error_Location", EL_CharacterCreationRules.RefuseSpawnLocation(EL_Faction.CIVILIAN, "station"), "a civilian may not pick the police station");
-		ctx.EqualStr("#EL-CC_Error_Location", EL_CharacterCreationRules.RefuseSpawnLocation(EL_Faction.CIVILIAN, "bogus"), "an unknown location is refused");
-		ctx.EqualStr("", EL_CharacterCreationRules.RefuseSpawnLocation(EL_Faction.CIVILIAN, ""), "no location is the degrade path");
-
-		ctx.EqualStr("", EL_CharacterCreationRules.RefuseCharacter(chosen, "Ada", "Lovelace", 36), "a valid form is accepted");
+		EL_PlayerAccount chosen = fresh;
 		ctx.EqualStr("#EL-CC_Error_Fields", EL_CharacterCreationRules.RefuseCharacter(chosen, "  ", "Lovelace", 36), "a blank first name is refused");
 		ctx.EqualStr("#EL-CC_Error_Age", EL_CharacterCreationRules.RefuseCharacter(chosen, "Ada", "Lovelace", 17), "age 17 is refused");
 		ctx.EqualStr("#EL-CC_Error_Age", EL_CharacterCreationRules.RefuseCharacter(chosen, "Ada", "Lovelace", 81), "age 81 is refused");
 		ctx.EqualStr("#EL-CC_Error_NameLength", EL_CharacterCreationRules.RefuseCharacter(chosen, "Adaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Lovelace", 36), "a 33 character name is refused");
-		ctx.EqualStr("#EL-CC_Error_FactionLocked", EL_CharacterCreationRules.RefuseCharacter(fresh, "Ada", "Lovelace", 36), "a character needs a chosen faction");
 
 		chosen.AddCharacter(EL_PlayerCharacter.Create("{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et", "Ada", "Lovelace", 36), true);
 		ctx.EqualStr("#EL-CC_Error_Exists", EL_CharacterCreationRules.RefuseCharacter(chosen, "Bob", "Builder", 40), "a second character over RPC is refused");

@@ -24,6 +24,7 @@
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
 //   scope <name> <dir>                Write the test stub, features row, keys, and street row
 //   scope --selftest                  Check those four outputs in a temp directory
+//   prs status|heal                   Open ws/* PRs; heal conflicting or stuck ones (tools/prs.mjs)
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
@@ -37,6 +38,7 @@ import * as session from "../agent-box/session.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
+import { cmdPrs } from "./prs.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached } from "./lib/quiet-launch.mjs";
 
 function mcpDirFor(root) {
@@ -1266,10 +1268,11 @@ function cmdSessionUp(root, dir, flags) {
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
     const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail });
     if (typeof log === "number") return log;
-    // Joined means the server created the player and opened the faction menu.
-    const joined = sessionAwaitJoin(log, clients, /faction menu sent to player \d+/g, fail);
+    // Joined means the server sent a new account the registration form or spawned a returning
+    // one. There is no faction menu (M1-11).
+    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail);
     if (joined < 0) return 1;
-    console.log(`session: ${joined} client(s) joined and reached the faction menu`);
+    console.log(`session: ${joined} client(s) joined and reached the registration form or spawned`);
     if (mission === "playtest") console.log("session: LF_PlaytestTown, LF_HARNESS build (harness gate open, debug menu closed)");
     console.log("drive with:");
     console.log("  node agent-box/harness.mjs --client <n> <verb>   and   node agent-box/session.mjs state <n>");
@@ -1561,6 +1564,10 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 dump [ELDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
+  prs status|heal [--dry-run] [<n>...]
+                                open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
+                                (generated conflicts only), gates, pushes, re-queues auto-merge,
+                                and merges green PRs stuck open (see: cli prs help)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
@@ -2308,6 +2315,8 @@ try {
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
   } else if (cmd === "wt") {
     code = cmdWt(rest);
+  } else if (cmd === "prs") {
+    code = cmdPrs(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {

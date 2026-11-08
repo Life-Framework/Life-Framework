@@ -1,12 +1,7 @@
 # UI pillar: what a new player clicks and types, then the screen they land on.
-# Requires the faction menu. A profile that already has a character returns widget_not_found.
-# Form R-89 (registration) follows the town pick; signing it spawns the character with an ID card.
-ui
-click CivilianButton
-wait 800
-ui
-click TownButton
-wait 1500
+# Requires a fresh profile (no character); a returning one returns widget_not_found.
+# Form R-89 (registration) is the first screen (no faction screen, M1-11); signing it spawns
+# the character as a civilian with an ID card.
 ui
 shot ui intake_form
 type RegFirstName Ada

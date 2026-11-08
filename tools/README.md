@@ -26,6 +26,7 @@ tools\cli wt test|build|dev|gate <slug> # run a heavy command in a specific work
 tools\cli wt logs <slug> <pattern>      # grep a worktree's newest console.log (from anywhere)
 tools\cli wt ship <slug> [--closes N]   # gate -> push -> PR -> auto-merge (merges main only on conflict)
 tools\cli wt prune <slug>               # remove a merged worktree + branch
+tools\cli prs status|heal [--dry-run]   # open ws/* PRs; heal idle DIRTY/BEHIND and stuck-green ones (docs/worktrees.md)
 tools\cli call <tool> '<json>'|@file    # call an MCP tool directly (see mcp-call.mjs)
 tools\cli validate [--full]             # run tools/validation/* checks (also in CI); --full adds the Workbench compile
 ```
