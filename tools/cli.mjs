@@ -24,6 +24,7 @@
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
 //   scope <name> <dir>                Write the test stub, features row, keys, and street row
 //   scope --selftest                  Check those four outputs in a temp directory
+//   prs status|heal                   Open ws/* PRs; heal conflicting or stuck ones (tools/prs.mjs)
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
@@ -37,6 +38,7 @@ import * as session from "../agent-box/session.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
+import { cmdPrs } from "./prs.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached } from "./lib/quiet-launch.mjs";
 
 function mcpDirFor(root) {
@@ -1551,6 +1553,10 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 dump [ELDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
+  prs status|heal [--dry-run] [<n>...]
+                                open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
+                                (generated conflicts only), gates, pushes, re-queues auto-merge,
+                                and merges green PRs stuck open (see: cli prs help)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
@@ -2298,6 +2304,8 @@ try {
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
   } else if (cmd === "wt") {
     code = cmdWt(rest);
+  } else if (cmd === "prs") {
+    code = cmdPrs(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {
