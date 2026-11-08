@@ -173,7 +173,87 @@ export function selftestSession() {
   if (judgeProof(civ0, civ1, cop).length) failures.push(`judgeProof failed a good run: ${judgeProof(civ0, civ1, cop)}`);
   if (!judgeProof(civ0, civ1, cop.replace(ROB_ALERT, "none")).length) failures.push("judgeProof passed an officer with no alert");
   if (!judgeProof(civ0, civ0, cop).length) failures.push("judgeProof passed a robbery with no payout");
+  const m1 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none player=1 toast=none known=0 name=none";
+  const m2 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none player=2 toast=none known=0 name=none";
+  const g1 = m1.replace("cash=500", "cash=450");
+  const g2 = m2.replace("cash=500", "cash=550").replace("known=0", "known=1");
+  if (judgeInteraction(m1, m2, g1, g2).length) failures.push(`judgeInteraction failed a good run: ${judgeInteraction(m1, m2, g1, g2)}`);
+  if (!judgeInteraction(m1, m2, m1, g2).length) failures.push("judgeInteraction passed a giver who kept the cash");
+  if (!judgeInteraction(m1, m2, g1, g2.replace("cash=550", "cash=600")).length) failures.push("judgeInteraction passed cash out of thin air");
+  if (!judgeInteraction(m1, m2, g1, g2.replace("known=1", "known=0")).length) failures.push("judgeInteraction passed a receiver who never learned the name");
   return failures;
+}
+
+// The M1-12 interaction proof on a running `up --clients 2` session: both
+// civilians; client 1 stands beside client 2, introduces themselves, shows the
+// ID card, and hands over GIVE_AMOUNT cash through the amount sheet. Cash must
+// move by exactly that amount on both sides and client 2 must know one name.
+export const GIVE_AMOUNT = 50;
+
+export function judgeInteraction(before1, before2, after1, after2) {
+  const fails = [];
+  const b1 = parseState(before1);
+  const b2 = parseState(before2);
+  const a1 = parseState(after1);
+  const a2 = parseState(after2);
+  if (Number(a1.cash) !== Number(b1.cash) - GIVE_AMOUNT) fails.push(`client 1 cash ${b1.cash} -> ${a1.cash}, expected -${GIVE_AMOUNT}`);
+  if (Number(a2.cash) !== Number(b2.cash) + GIVE_AMOUNT) fails.push(`client 2 cash ${b2.cash} -> ${a2.cash}, expected +${GIVE_AMOUNT}`);
+  if (!(Number(a2.known) >= 1)) fails.push(`client 2 knows ${a2.known} name(s), expected the introduced name`);
+  return fails;
+}
+
+async function runInteraction() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => on(n, { verb: "state" }, 10000).detail;
+
+  // Arrive: both pick civilian and spawn in town (skipped once characters exist).
+  for (const n of [1, 2]) {
+    const ui = on(n, { verb: "ui" });
+    if (ui.status === "ok" && ui.detail.includes("CivilianButton")) {
+      on(n, { verb: "click", widget: "CivilianButton" });
+      wait(1500);
+      on(n, { verb: "click", widget: "TownButton" });
+    }
+  }
+  wait(8000);
+
+  const before1 = state(1);
+  const before2 = state(2);
+  const other = `Player${parseState(before2).player}`;
+  on(1, { verb: "stand", entityName: other });
+  wait(2500);
+  on(1, { verb: "look" });
+  const steps = [];
+  steps.push(on(1, { verb: "use", className: "LF_IntroduceAction", entityName: other }, 10000));
+  wait(2500);
+  steps.push(on(1, { verb: "use", className: "EL_ShowIDAction", entityName: other }, 10000));
+  wait(2000);
+  steps.push(on(1, { verb: "use", className: "LF_GiveCashAction", entityName: other }, 10000));
+  wait(2000);
+  steps.push(on(1, { verb: "type", widget: "GiveCashAmount", text: String(GIVE_AMOUNT) }));
+  steps.push(on(1, { verb: "click", widget: "GiveCashButton" }));
+  wait(3000);
+  const after1 = state(1);
+  const after2 = state(2);
+
+  console.log("");
+  console.log(`before  client 1: ${before1}`);
+  console.log(`before  client 2: ${before2}`);
+  console.log(`after   client 1: ${after1}`);
+  console.log(`after   client 2: ${after2}`);
+  const fails = judgeInteraction(before1, before2, after1, after2);
+  for (const st of steps) if (st.status !== "ok") fails.unshift(`${st.line} returned ${st.status} ${st.detail}`);
+  for (const x of fails) console.log(`FAIL  ${x}`);
+  console.log(fails.length ? "interaction: FAIL" : `interaction: PASS (introduced, showed ID, handed over ${GIVE_AMOUNT} cash)`);
+  return fails.length ? 1 : 0;
 }
 
 // The M1-05 card proof on a running `up --clients 2` session: client 1 is a
@@ -262,6 +342,7 @@ async function main(argv) {
     return r.status ?? 1;
   }
   if (cmd === "proof") return runProof();
+  if (cmd === "interaction") return runInteraction();
   if (cmd === "state") {
     const n = Number(rest[0]);
     if (!Number.isInteger(n) || n < 1) throw new Error("state <client number>");
@@ -275,7 +356,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] | down | status | state <client> | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] | down | status | state <client> | proof | interaction | selftest");
   return cmd ? 1 : 0;
 }
 
