@@ -1,4 +1,7 @@
-// red-proof: pending
+// red-proof: observed 2026-11-08 with `tools\cli test --no-build --only EL_Test_VehicleLotSheet` (lf-testbox) and
+// LF_VehicleLot.Shortfall comparing bank > price:
+// [ELTEST]   - a $1,000 car is buyable with $1,000 in the bank (expected '', got 'needs $1,000 in the bank')
+// Restored to >=; green.
 
 //! The car lot's price sheet (maintainer playtest 2026-11-08): every car is listed; a row has Buy
 //! when the reader can pay, otherwise the line says what is missing. Cars up to the cash ceiling

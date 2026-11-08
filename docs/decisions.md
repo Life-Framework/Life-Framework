@@ -419,6 +419,13 @@ What it means for code: every action binds keyboard plus `gamepad0:`
 entry second. A feature PR names how a gamepad player completes it. Console
 playtests come after the PC loop is proven.
 
+**2026-11-08 — A new character can buy the cheapest car.** A newly registered
+character starts with $1,000 in the bank, the price of the S105 on the lot, on
+top of the $500 cash in the starter kit. Why: the maintainer's first playtest
+stalled at the car lot with $650 in the bank; a first car should be a choice on
+day one, not a grind. Framework: config (`EL_SpawnLogic.m_iStartingBank`, paid
+once at registration). Flagship: the cheapest car on the lot.
+
 ## Delivery
 
 **2026-11-07 — Milestone 1 is a signposted DebugWorld playtest town.** Every
