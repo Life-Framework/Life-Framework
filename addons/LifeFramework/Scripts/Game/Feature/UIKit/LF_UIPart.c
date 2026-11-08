@@ -10,7 +10,9 @@ enum LF_EUIPartKind
 	CLOSE,
 	STATUS,
 	QUANTITY,
-	LIST
+	LIST,
+	//! A row of buttons side by side (a keypad row, a till's keys). MenuLeft/MenuRight move along it.
+	KEYS
 }
 
 class LF_UIPart
@@ -25,6 +27,9 @@ class LF_UIPart
 	//! LIST: owning list of a row part, or the row names of a list part, in display order.
 	protected string m_sList;
 	protected ref array<string> m_aRows = {};
+	//! KEYS: one button per key, named and labelled in order.
+	protected ref array<string> m_aKeyNames = {};
+	protected ref array<string> m_aKeyTexts = {};
 
 	//------------------------------------------------------------------------------------------------
 	static LF_UIPart Create(LF_EUIPartKind kind, string name, string text)
@@ -59,6 +64,35 @@ class LF_UIPart
 	static LF_UIPart CreateList(string name)
 	{
 		return Create(LF_EUIPartKind.LIST, name, string.Empty);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A row of buttons. Each key reports its own name through LF_UIScreen.GetOnButton.
+	//! Key names are unique across the screen; names ending in "Button" are clickable by the harness.
+	static LF_UIPart CreateKeys(string name, array<string> keyNames, array<string> keyTexts)
+	{
+		LF_UIPart part = Create(LF_EUIPartKind.KEYS, name, string.Empty);
+		if (!keyNames || !keyTexts || keyNames.Count() != keyTexts.Count())
+		{
+			EL_Debug.Error("UIKit", "keys " + name + " need one text per key name");
+			return part;
+		}
+
+		part.m_aKeyNames.Copy(keyNames);
+		part.m_aKeyTexts.Copy(keyTexts);
+		return part;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<string> GetKeyNames()
+	{
+		return m_aKeyNames;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<string> GetKeyTexts()
+	{
+		return m_aKeyTexts;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -180,6 +214,9 @@ class LF_UIPart
 
 		if (kind == LF_EUIPartKind.LIST)
 			return LF_UITheme.LIST_LAYOUT;
+
+		if (kind == LF_EUIPartKind.KEYS)
+			return LF_UITheme.KEYS_LAYOUT;
 
 		return string.Empty;
 	}

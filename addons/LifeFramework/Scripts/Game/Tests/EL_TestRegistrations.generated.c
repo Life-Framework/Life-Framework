@@ -30,6 +30,12 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_CarriedInventoryRoundtrip(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_CarriedInventoryDeathNoDupe(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_ATMKeypad(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_CounterRefusalText(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_CounterLocalOnly(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_ATMRefusalReasons(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_ShopRefusalReasons(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_CounterScreenLayout(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CraftingAssets(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropStages(), EL_TestTier.LOGIC);

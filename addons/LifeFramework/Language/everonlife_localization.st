@@ -3107,6 +3107,231 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You hold up your ID card."
      Comment "Show ID performed: the other player now sees the card."
     }
+    CustomStringTableItem "{E5BDB7CD47972752}" {
+     Id "LF-ATM_Header"
+     Target_en_us "FIRST BANK OF EVERON"
+     Comment "ATM terminal screen header. Upper case: a 1989 green-screen terminal."
+    }
+    CustomStringTableItem "{627D8D9DEE75887B}" {
+     Id "LF-ATM_LineBalance"
+     Target_en_us "BALANCE ....... %1"
+     Comment "ATM terminal balance line. %1 is the formatted account balance, or ---- before the bank answers."
+    }
+    CustomStringTableItem "{78E20ABFCFFBB92B}" {
+     Id "LF-ATM_LineCash"
+     Target_en_us "CASH IN HAND .. %1"
+     Comment "ATM terminal line for the cash the player carries. %1 is the formatted amount."
+    }
+    CustomStringTableItem "{7F695CCFB7B1DEFD}" {
+     Id "LF-ATM_LineEntry"
+     Target_en_us "AMOUNT > %1_"
+     Comment "ATM terminal entry line with a cursor. %1 is the amount keyed in so far."
+    }
+    CustomStringTableItem "{E54FB6AD91A6A823}" {
+     Id "LF-ATM_Unknown"
+     Target_en_us "----"
+     Comment "Placeholder for a figure the bank has not sent yet."
+    }
+    CustomStringTableItem "{C69157C8E92DD27F}" {
+     Id "LF-ATM_Prompt"
+     Target_en_us "KEY IN AN AMOUNT, THEN DEPOSIT OR WITHDRAW"
+     Comment "ATM terminal status line when idle."
+    }
+    CustomStringTableItem "{C537821836A5ADD5}" {
+     Id "LF-ATM_Working"
+     Target_en_us "PLEASE WAIT ..."
+     Comment "ATM terminal status line while the server handles a request."
+    }
+    CustomStringTableItem "{7880A378781D2C8D}" {
+     Id "LF-ATM_NoReply"
+     Target_en_us "NO REPLY FROM THE BANK. TRY AGAIN."
+     Comment "ATM terminal status line when the server did not answer within 5 seconds."
+    }
+    CustomStringTableItem "{4A64CBDDC70A3B14}" {
+     Id "LF-ATM_Deposited"
+     Target_en_us "DEPOSITED %1. THANK YOU."
+     Comment "ATM terminal status line after a deposit. %1 is the amount."
+    }
+    CustomStringTableItem "{CAF4A9272F7A5651}" {
+     Id "LF-ATM_Dispensed"
+     Target_en_us "PLEASE TAKE YOUR CASH: %1"
+     Comment "ATM terminal status line after a withdrawal. %1 is the amount paid out."
+    }
+    CustomStringTableItem "{9549498E04A2B4B9}" {
+     Id "LF-ATM_KeyClear"
+     Target_en_us "CLR"
+     Comment "ATM keypad key that clears the amount."
+    }
+    CustomStringTableItem "{A67CBEC8AAD45E67}" {
+     Id "LF-ATM_KeyBack"
+     Target_en_us "DEL"
+     Comment "ATM keypad key that removes the last digit."
+    }
+    CustomStringTableItem "{B052CECB9FD10BBA}" {
+     Id "LF-ATM_KeyDeposit"
+     Target_en_us "DEPOSIT"
+     Comment "ATM terminal key: pay the keyed amount of carried cash into the account."
+    }
+    CustomStringTableItem "{9BA4937AFAD95E3E}" {
+     Id "LF-ATM_KeyWithdraw"
+     Target_en_us "WITHDRAW"
+     Comment "ATM terminal key: take the keyed amount out of the account as cash."
+    }
+    CustomStringTableItem "{2028FAF6D9D3BF5C}" {
+     Id "LF-ATM_Exit"
+     Target_en_us "EXIT"
+     Comment "ATM terminal key that closes the screen."
+    }
+    CustomStringTableItem "{8839595C4DED196B}" {
+     Id "LF-ATM_RefuseAmount"
+     Target_en_us "REFUSED: KEY IN AN AMOUNT ABOVE ZERO"
+     Comment "ATM refusal: the amount is zero or outside the transaction limit."
+    }
+    CustomStringTableItem "{4FE6F21A50365940}" {
+     Id "LF-ATM_RefuseCash"
+     Target_en_us "REFUSED: YOU DO NOT CARRY THAT MUCH CASH"
+     Comment "ATM refusal: a deposit larger than the cash the player carries."
+    }
+    CustomStringTableItem "{FA6C0202EB152BE3}" {
+     Id "LF-ATM_RefuseBalance"
+     Target_en_us "REFUSED: INSUFFICIENT FUNDS IN ACCOUNT"
+     Comment "ATM refusal: a withdrawal larger than the account balance."
+    }
+    CustomStringTableItem "{9AC0372760E9657E}" {
+     Id "LF-ATM_RefusePockets"
+     Target_en_us "REFUSED: NO ROOM IN YOUR POCKETS FOR THE CASH"
+     Comment "ATM refusal: the withdrawn cash does not fit in the inventory; the balance is restored."
+    }
+    CustomStringTableItem "{2FA569A76F73369A}" {
+     Id "LF-ATM_RefuseFar"
+     Target_en_us "REFUSED: STAND AT THE MACHINE"
+     Comment "ATM refusal: the server found no ATM within 5 m of the player."
+    }
+    CustomStringTableItem "{234C990779F19F26}" {
+     Id "LF-ATM_RefuseAccount"
+     Target_en_us "REFUSED: ACCOUNT UNAVAILABLE"
+     Comment "ATM refusal: the player's account could not be found."
+    }
+    CustomStringTableItem "{C2D8EF8EC8E7CAC8}" {
+     Id "LF-Shop_CashLine"
+     Target_en_us "Cash in hand: %1"
+     Comment "Shop price list line for the cash the player carries. %1 is the formatted amount."
+    }
+    CustomStringTableItem "{02FFEC0ECB74AFC2}" {
+     Id "LF-Shop_LookFor"
+     Target_en_us "Look for an item ..."
+     Comment "Shop price list search field placeholder; typing narrows the list."
+    }
+    CustomStringTableItem "{BE3CD5847E4642EA}" {
+     Id "LF-Shop_Order"
+     Target_en_us "Order"
+     Comment "Shop price list row button that puts the item on the order slip."
+    }
+    CustomStringTableItem "{89D9F751DFF3D649}" {
+     Id "LF-Shop_SlipEmpty"
+     Target_en_us "Order slip: pick a line from the list."
+     Comment "Shop order slip before an item is picked."
+    }
+    CustomStringTableItem "{1C832CFE28C35A01}" {
+     Id "LF-Shop_SlipLine"
+     Target_en_us "Order slip: %1 x %2"
+     Comment "Shop order slip line. %1 is the quantity, %2 the item name."
+    }
+    CustomStringTableItem "{6BEE9A234FAE3042}" {
+     Id "LF-Shop_Less"
+     Target_en_us "One less"
+     Comment "Shop order slip key: lower the quantity by one."
+    }
+    CustomStringTableItem "{0314921F9811C286}" {
+     Id "LF-Shop_More"
+     Target_en_us "One more"
+     Comment "Shop order slip key: raise the quantity by one."
+    }
+    CustomStringTableItem "{F0B657CA9B23547B}" {
+     Id "LF-Shop_Pay"
+     Target_en_us "Pay cash"
+     Comment "Shop till key before an item is picked."
+    }
+    CustomStringTableItem "{932451884B68684C}" {
+     Id "LF-Shop_PayTotal"
+     Target_en_us "Pay %1 cash"
+     Comment "Shop till key. %1 is the order total."
+    }
+    CustomStringTableItem "{4D7E3AE3D3960088}" {
+     Id "LF-Shop_SellBack"
+     Target_en_us "Sell these"
+     Comment "Shop till key: sell the slip's quantity of the picked item back to the counter."
+    }
+    CustomStringTableItem "{934DA7DD0FA38AC9}" {
+     Id "LF-Shop_Leave"
+     Target_en_us "Leave"
+     Comment "Shop price list key that closes it."
+    }
+    CustomStringTableItem "{5F8B9B94FCD989FE}" {
+     Id "LF-Shop_PickFirst"
+     Target_en_us "Pick a line from the list first."
+     Comment "Shop refusal on the client: Pay or Sell with no item on the slip."
+    }
+    CustomStringTableItem "{B385B4702F2997BF}" {
+     Id "LF-Shop_Working"
+     Target_en_us "At the till ..."
+     Comment "Shop slip line while the server handles the order."
+    }
+    CustomStringTableItem "{684633A0ED601DA3}" {
+     Id "LF-Shop_NoReply"
+     Target_en_us "The till did not answer. Try again."
+     Comment "Shop slip line when the server did not answer within 5 seconds."
+    }
+    CustomStringTableItem "{00DDE66DC70CDDE2}" {
+     Id "LF-Shop_Paid"
+     Target_en_us "Paid %1. Thank you."
+     Comment "Shop slip line after a purchase. %1 is the amount paid."
+    }
+    CustomStringTableItem "{5A394611DC4124C6}" {
+     Id "LF-Shop_SoldFor"
+     Target_en_us "Sold for %1."
+     Comment "Shop slip line after a sale. %1 is the amount received."
+    }
+    CustomStringTableItem "{61B8D820AD73FEDC}" {
+     Id "LF-Shop_RefuseNotSold"
+     Target_en_us "This counter does not trade that item."
+     Comment "Shop refusal: the item is not sold here."
+    }
+    CustomStringTableItem "{CD2FED1EA8EFF86B}" {
+     Id "LF-Shop_RefuseUnpriced"
+     Target_en_us "That item has no price here."
+     Comment "Shop refusal: the item has no price."
+    }
+    CustomStringTableItem "{601C97E84CB077AF}" {
+     Id "LF-Shop_RefuseCash"
+     Target_en_us "Not enough cash on you for that."
+     Comment "Shop refusal: the buyer carries less cash than the total."
+    }
+    CustomStringTableItem "{7E91491254C3EF1B}" {
+     Id "LF-Shop_RefusePockets"
+     Target_en_us "No room in your pockets."
+     Comment "Shop refusal: the goods or the payout do not fit in the inventory; nothing changed hands."
+    }
+    CustomStringTableItem "{6DC38164E7C5B1CF}" {
+     Id "LF-Shop_RefuseNothing"
+     Target_en_us "You are not carrying any of those."
+     Comment "Shop refusal: a sale of an item the player does not carry."
+    }
+    CustomStringTableItem "{D4DD9D081F778020}" {
+     Id "LF-Shop_RefuseQuantity"
+     Target_en_us "Order between 1 and 99."
+     Comment "Shop refusal: quantity outside the per-order limit."
+    }
+    CustomStringTableItem "{3C541C5654D4DCEF}" {
+     Id "LF-Shop_RefuseFar"
+     Target_en_us "Step up to the counter."
+     Comment "Shop refusal: the player is too far from the shop."
+    }
+    CustomStringTableItem "{B586E2861C625AE3}" {
+     Id "LF-Shop_RefuseNoShop"
+     Target_en_us "The till is closed."
+     Comment "Shop refusal: the shop could not be found or the server has no buyer."
+    }
     CustomStringTableItem "{60B9F032C5F7B335}" {
      Id "LF-Interact_Title"
      Target_en_us "Person to person"

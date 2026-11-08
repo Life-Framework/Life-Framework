@@ -1,2 +1,19 @@
-# UI pillar: stand at the general store, perform its shop action, shoot the menu.
+# Shop price list (M1-13): use the general store counter, look for water, put two on the
+# order slip, pay with carried cash. `state` before and after shows the cash going down.
+# Needs a spawned character carrying cash (run ui-intake first).
+state
 layer Shop_GeneralStore_Debug
+wait 1200
+shot ui shop_open
+type Search Water
+wait 800
+shot ui shop_search
+click Item0Row_Action
+click QtyMoreButton
+wait 300
+shot ui shop_slip
+click PayButton
+wait 1500
+shot ui shop_paid
+state
+click CloseButton
