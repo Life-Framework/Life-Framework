@@ -13,7 +13,7 @@
 //! not take the wanted level back down (that is the arrest's job).
 //!
 //! The server owns every number: the record (LF_FineTicketRecord) is the truth, the item is its
-//! printed copy. PERSISTENCE: the records are the "tickets" payload (save version 11). A carried
+//! printed copy. PERSISTENCE: the records are the "tickets" payload (save version 12). A carried
 //! ticket comes back blank after a restart (the snapshot keeps the prefab, not the print);
 //! OnPlayerSpawned prints it again from the record, and grants a fresh copy of an unpaid ticket
 //! the holder no longer carries (death, a lost item).

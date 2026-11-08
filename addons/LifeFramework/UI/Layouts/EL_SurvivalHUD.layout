@@ -7,9 +7,9 @@ FrameWidgetClass {
   PositionY 20
   OffsetTop 20
   SizeX 300
-  OffsetRight -300
+  OffsetRight -320
   SizeY 150
-  OffsetBottom -150
+  OffsetBottom -170
   Alignment 1 1
  }
  {

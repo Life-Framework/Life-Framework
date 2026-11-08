@@ -149,7 +149,7 @@ class EL_Test_CarriedInventoryRoundtrip : EL_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(11, version, "the save is written at version 11");
+		ctx.Equal(12, version, "the save is written at version 12");
 		EL_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "carried");
 		LF_StorageSnapshotRecord loaded = LF_StorageSnapshot.Get(CHARACTER_ID, LF_StorageSnapshot.SLOT_CARRIED);
 		ctx.NotNull(loaded, "the snapshot is back after the load");

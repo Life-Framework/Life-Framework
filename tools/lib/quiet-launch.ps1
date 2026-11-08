@@ -10,6 +10,8 @@
 # Start-LfQuietProcess; tools/lib/quiet-launch.mjs calls Invoke-LfQuietSpec.
 #
 # LF_SHOW_WINDOWS=1 starts the process on the user's desktop instead (debugging).
+# An ssh session (SSH_CONNECTION set) does the same: it has no interactive
+# window station, and creating LF-Agents there kills the server before it logs.
 if (-not ("LfQuiet" -as [type])) {
   Add-Type -TypeDefinition @'
 using System;
@@ -176,7 +178,7 @@ function Start-LfQuietProcess {
     [string]$RedirectStandardError,
     [switch]$KillOnClose
   )
-  if ($env:LF_SHOW_WINDOWS -eq "1") {
+  if ($env:LF_SHOW_WINDOWS -eq "1" -or $env:SSH_CONNECTION) {
     $sp = @{ FilePath = $FilePath; PassThru = $true }
     if ($ArgumentList.Count) { $sp.ArgumentList = @($ArgumentList | ForEach-Object { [LfQuiet]::Quote($_) }) }
     if ($WorkingDirectory) { $sp.WorkingDirectory = $WorkingDirectory }

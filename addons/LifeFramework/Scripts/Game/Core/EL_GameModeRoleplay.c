@@ -111,6 +111,24 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every character death, players and NPCs. Murder is decided here (LF_Murder).
+	protected override void OnControllableDestroyedEx(notnull SCR_InstigatorContextData instigatorContextData)
+	{
+		super.OnControllableDestroyedEx(instigatorContextData);
+
+		if (!Replication.IsServer())
+			return;
+
+		IEntity victim = instigatorContextData.GetVictimEntity();
+		int victimPlayerId;
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (playerManager && victim)
+			victimPlayerId = playerManager.GetPlayerIdFromControlledEntity(victim);
+
+		LF_Murder.OnCharacterKilled(victim, instigatorContextData.GetKillerEntity(), victimPlayerId, instigatorContextData.GetKillerPlayerID());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void OnPlayerSpawned(int playerId, IEntity controlledEntity)
 	{
 		super.OnPlayerSpawned(playerId, controlledEntity);

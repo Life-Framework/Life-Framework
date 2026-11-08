@@ -22,6 +22,8 @@ class LF_PoliceConfig
 	static const int DEFAULT_TICKET_SECOND_DEADLINE = 1800;
 	static const float DEFAULT_TICKET_LATE_MULTIPLIER = 2;
 	static const int DEFAULT_TICKET_LATE_WANTED = 1;
+	static const int DEFAULT_MURDER_WANTED = 3;
+	static const bool DEFAULT_OFFICER_KILL_OF_WANTED_EXEMPT = true;
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)")]
 	int m_iArrestMinRank;
@@ -58,6 +60,11 @@ class LF_PoliceConfig
 
 	[Attribute("1", UIWidgets.Auto, "Wanted levels added at the second deadline")]
 	int m_iTicketLateWanted;
+	[Attribute("3", UIWidgets.Auto, "Wanted levels a murder adds (M1-27). Robbery adds 1; wanted caps at 5")]
+	int m_iMurderWanted;
+
+	[Attribute("1", UIWidgets.Auto, "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder")]
+	bool m_bOfficerKillOfWantedExempt;
 
 	protected static ref LF_PoliceConfig s_Config;
 	protected static bool s_bLoadAttempted;

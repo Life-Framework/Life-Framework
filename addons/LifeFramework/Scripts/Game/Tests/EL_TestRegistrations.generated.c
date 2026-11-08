@@ -29,6 +29,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_BankApplySnapshot(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_CarriedInventoryRoundtrip(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_CarriedInventoryDeathNoDupe(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_CarryMeshes(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMKeypad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_CounterRefusalText(), EL_TestTier.LOGIC);
@@ -96,6 +97,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_JailSlip(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_JailVehicleArrest(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JobPacing(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JobSignUpPersist(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);
@@ -107,9 +109,11 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_MiningPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyCash(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyRework(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_Murder(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_NoPassivePaycheck(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_NpcClothesReplicate(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_PlaytestMission(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_PlaytestOffers(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceAbuse(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceRankPermissions(), EL_TestTier.LOGIC);
@@ -169,6 +173,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_RobWeaponVehicle(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Robustness(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_RobustnessWorld(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_SafeZone(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_AutosaveSelection(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionBitmask(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AutosaveSelectionNewest(), EL_TestTier.LOGIC);

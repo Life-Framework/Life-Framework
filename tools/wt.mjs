@@ -202,7 +202,8 @@ export function defaultPorts() {
 // Copy it from the main checkout when the worktree copy is missing, or smaller and older.
 // A worktree build that registers a new resource writes a newer copy that can be smaller
 // than main's; overwriting it dropped the new GUID ("Wrong GUID" on a new prefab).
-// Called by `wt new` and before a server boot (cli test/dev/serve, wt e2e).
+// Called by `wt new`, and before a server boot by ensureResourceDatabase in cli.mjs,
+// which also refreshes a copy that misses a .meta (tools/lib/rdb-fresh.mjs).
 // Never commit the destination.
 export function copyResourceDatabase(wtRoot, mainRoot = mainRootOf(wtRoot)) {
   const src = join(mainRoot, "addons", "LifeFramework", "resourceDatabase.rdb");
