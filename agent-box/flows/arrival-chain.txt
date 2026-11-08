@@ -17,16 +17,9 @@ shot ui arrival_0_spawn_hint
 state
 shot world Quest_Clerk
 layer Quest_Clerk LF_QuestAction
-wait 1200
-shot ui arrival_1_clerk_menu
-click ActionButton
-wait 1500
-shot ui arrival_1_accepted
-click ActionButton
-wait 2000
+wait 600
 shot ui arrival_1_card_handed
-click CloseButton
-wait 800
+wait 3000
 shot ui arrival_2_errand
 state
 layer Sign_TownMap LF_SignReadAction
@@ -40,7 +33,7 @@ wait 1000
 layer Roadmap_Job_Depot LF_JobStartRunAction
 wait 1000
 layer Roadmap_Job_Drop LF_JobDropoffAction
-wait 1500
+wait 600
 shot ui arrival_3_paid
 state
 layer ATM_Debug
@@ -54,11 +47,9 @@ input MenuBack
 wait 1500
 shot ui arrival_5_errand
 layer Quest_Clerk LF_QuestAction
-wait 1200
-shot ui arrival_5_clerk_menu
-click ActionButton
-wait 2000
+wait 600
 shot ui arrival_5_welcome
-click CloseButton
-wait 800
 state
+layer Quest_Clerk LF_QuestAction
+wait 600
+shot ui arrival_6_clerk_idle

@@ -417,19 +417,20 @@ class EL_NotificationManagerComponent : ScriptComponent
 			notificationContainer = workspace.FindAnyWidget("NotificationContainer");
 		}
 		
-		// If still not found, use hudParent or workspace as fallback
-		Widget parent = notificationContainer;
-		if (!parent)
+		// No HUD container: create one full-screen frame on the workspace (as the UI kit sheets sit) and
+		// keep reusing it. Parenting slips to workspace.GetParent() rendered nothing on a game client, and
+		// a top-level slip ignores its top-right slot and stretches over the whole screen.
+		if (!notificationContainer)
+			notificationContainer = workspace.CreateWidgets("{BA6104B88FA13223}UI/Layouts/Notifications/EL_NotificationContainer.layout");
+
+		if (!notificationContainer)
 		{
-			if (hudParent)
-				parent = hudParent;
-			else
-				parent = workspace;
-				
-			EL_Debug.Warn("Notify", "NotificationContainer not found, using fallback parent");
+			EL_Debug.Error("Notify", "toast dropped: the notification container layout did not load");
+			return;
 		}
-		
-		Widget toastWidget = workspace.CreateWidgets("{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout", parent);
+
+		Widget toastWidget = workspace.CreateWidgets("{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout", notificationContainer);
+
 		if (!toastWidget)
 		{
 			EL_Debug.Error("Notify", "toast dropped: failed to create the notification widget");

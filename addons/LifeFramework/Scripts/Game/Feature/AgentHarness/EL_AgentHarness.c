@@ -838,8 +838,10 @@ class EL_AgentHarness
 			return;
 		}
 
+		// A replicated NPC (Npc_Base.et, Runtime override) is built on a client from its prefab and
+		// carries no layer name there, so only the server can resolve every name.
 		BaseWorld world = GetGame().GetWorld();
-		if (!world || !ResolveNamed(cmd.Arg1))
+		if (!world || (Replication.IsServer() && !ResolveNamed(cmd.Arg1)))
 		{
 			WriteResult(cmd.Id, "error", "entity_not_found");
 			return;
@@ -1499,6 +1501,9 @@ class EL_AgentHarness
 		if (!Replication.IsServer())
 		{
 			IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
+			// A replicated NPC has no layer name on a client: take the nearest host of the action.
+			if (!target && cmd.Arg2 != "")
+				target = FindTarget(character, cmd.Arg1, "");
 			ScriptedUserAction localAction;
 			if (target)
 				localAction = FindOnEntity(target, cmd.Arg1);

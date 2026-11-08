@@ -46,11 +46,10 @@ class LF_Test_ArrivalChain : EL_Test
 		if (!tracker)
 			return;
 
-		// Step 1: accepting at the clerk is the talk.
-		ctx.True(tracker.RequestOpenGiver("clerk"), "the clerk is in reach");
-		ctx.True(tracker.RequestAccept("arrival_register"), "step 1 is accepted at the clerk");
-		ctx.True(Status(tracker, "arrival_register") == LF_EQuestStatus.COMPLETED, "talking while accepting completes step 1");
-		ctx.True(tracker.RequestTurnIn("arrival_register"), "the clerk takes step 1 back");
+		// Step 1: one talk with the clerk registers the player and hands the card over.
+		ctx.True(manager.GetGiver("clerk") != null && manager.GetGiver("clerk").IsConverse(), "the clerk talks in person, no quest menu");
+		ctx.True(tracker.RequestConverse("clerk"), "talking to the clerk moves the chain");
+		ctx.True(Status(tracker, "arrival_register") == LF_EQuestStatus.TURNED_IN, "one talk registers the player (step 1 done)");
 		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.ACTIVE, "step 2 starts on its own");
 		ctx.True(Status(tracker, "arrival_work") == LF_EQuestStatus.AVAILABLE, "step 3 waits for step 2");
 
@@ -60,6 +59,8 @@ class LF_Test_ArrivalChain : EL_Test
 		ctx.False(manager.ReportSignal(player, LF_QuestSignals.SignRead("post_office")), "reading the post office sign does not move step 2");
 		ctx.False(manager.ReportSignal(player, LF_QuestSignals.ATM_DEPOSIT), "an early deposit does not move step 2");
 		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.ACTIVE, "step 2 still runs");
+		ctx.False(tracker.RequestConverse("clerk"), "talking to the clerk mid-errand only repeats the errand");
+		ctx.True(Status(tracker, "arrival_board") == LF_EQuestStatus.ACTIVE, "and leaves step 2 running");
 
 		// Step 2 -> 3 -> 4 -> 5, each on its own signal, in order, with no trip back to the clerk.
 		// Signs.layer: Sign_TownMap stands at 130.5 0 246.5, about 5 m from the clerk.
@@ -80,9 +81,9 @@ class LF_Test_ArrivalChain : EL_Test
 		// Step 5: the clerk, in person.
 		ctx.False(tracker.RequestTurnIn("arrival_done"), "step 5 is not done before the player is back");
 		int cashBefore = EL_MoneyUtils.GetCash(player);
-		ctx.True(tracker.RequestOpenGiver("clerk"), "back at the clerk");
-		ctx.True(Status(tracker, "arrival_done") == LF_EQuestStatus.COMPLETED, "talking to the clerk completes step 5");
-		ctx.True(tracker.RequestTurnIn("arrival_done"), "the clerk takes step 5 back");
+		ctx.True(tracker.RequestConverse("clerk"), "back at the clerk, the talk finishes step 5");
+		ctx.True(Status(tracker, "arrival_done") == LF_EQuestStatus.TURNED_IN, "the clerk takes step 5 back");
+		ctx.False(tracker.RequestConverse("clerk"), "after the chain the clerk has nothing more to hand out");
 		ctx.Equal(cashBefore + manager.GetDefinition("arrival_done").m_iRewardMoney, EL_MoneyUtils.GetCash(player), "the welcome cash lands in the pockets");
 		ctx.True(manager.GetDefinition("arrival_done").m_iRewardMoney > 0, "the clerk gives a welcome");
 
@@ -115,6 +116,7 @@ class LF_Test_ArrivalChain : EL_Test
 		}
 
 		ctx.False(tracker.RequestAccept("arrival_register"), "the clerk does not register a returning player twice");
+		ctx.False(tracker.RequestConverse("clerk"), "talking to the clerk offers a returning player nothing");
 
 		// A player who left after step 2 picks up at step 3, not at step 1.
 		IEntity midway = EL_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "60 0 60", false);

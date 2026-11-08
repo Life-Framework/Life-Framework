@@ -21,6 +21,14 @@ class LF_QuestGiverComponent : ScriptComponent
 	[Attribute("", UIWidgets.Object, "Quests offered by this giver")]
 	ref array<ref LF_QuestDefinition> m_aQuests;
 
+	//! In person: talking to the giver hands over what is done and takes on the next errand,
+	//! with the giver's lines as toasts. No quest menu (the town clerk).
+	[Attribute(defvalue: "0", uiwidget: UIWidgets.CheckBox, desc: "Talking moves this giver's quests along in person (turn in, take the next one). No quest menu.")]
+	bool m_bConverse;
+
+	[Attribute(defvalue: "", uiwidget: UIWidgets.EditBox, desc: "Localization key the giver says when there is nothing left to hand out (converse givers)")]
+	string m_sIdleKey;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -46,6 +54,18 @@ class LF_QuestGiverComponent : ScriptComponent
 			return m_sDisplayName;
 
 		return m_sGiverId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsConverse()
+	{
+		return m_bConverse;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetIdleKey()
+	{
+		return m_sIdleKey;
 	}
 
 	//------------------------------------------------------------------------------------------------

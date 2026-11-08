@@ -4,11 +4,14 @@ EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
   LF_QuestGiverComponent "{BC39FD5B75346EA4}" {
    m_sGiverId "clerk"
    m_sDisplayName "#LF-Quest_Giver_Clerk"
+   m_bConverse 1
+   m_sIdleKey "#LF-Quest_Clerk_Idle"
    m_aQuests {
     LF_QuestDefinition "{3836C68D1806A2F5}" {
      m_sQuestId "arrival_register"
      m_sTitleKey "#LF-Quest_ArrivalRegister_Title"
      m_sDescriptionKey "#LF-Quest_ArrivalRegister_Desc"
+     m_sTurnInKey "#LF-Quest_ArrivalRegister_TurnIn"
      m_bRewardIdCard 1
      m_aObjectives {
       LF_QuestObjective "{AC99E2E4D4057B7A}" {

@@ -3534,7 +3534,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B58FFAF3FDBE501F}" {
      Id "LF-Quest_ArrivalBoard_Desc"
-     Target_en_us "Your ID card is in your pocket. Read the town board on the square first: it shows where everything is."
+     Target_en_us "Read the town board on the square, next to the clerk: it shows where everything in town is."
      Comment "Arrival chain step 2: shown when the clerk hands the card over. Read the town map sign."
     }
     CustomStringTableItem "{E9005E06D70F9493}" {
@@ -3589,7 +3589,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D2080755156ACB5D}" {
      Id "LF-Sign_TownMap_Needs"
-     Target_en_us "Start with the town hall clerk on this square: Talk to Quest Giver. Your first wage is at the post office counter: Take courier work."
+     Target_en_us "Start with the town clerk on this square: Talk to the clerk, and he hands you your ID card. Your first wage is at the post office counter: Take courier work."
      Comment "Sign card for the town map board at the spawn square, Needs section."
     }
     CustomStringTableItem "{9894F8E301871E9A}" {
@@ -4071,6 +4071,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"
      Comment "Escort refused because the officer's rank is below the configured escort rank"
+    }
+    CustomStringTableItem "{419B451194328DF6}" {
+     Id "LF-Quest_ArrivalRegister_TurnIn"
+     Target_en_us "The clerk writes your name in the register and hands you your ID card. Keep it on you: the police may ask to see it."
+     Comment "Arrival chain step 1: the clerk hands over the ID card."
+    }
+    CustomStringTableItem "{1A709CDB196EBDDA}" {
+     Id "LF-Quest_Clerk_Idle"
+     Target_en_us "You are settled in. The town board on the square shows the rest: shops, the car lot, the police station, the organization office."
+     Comment "The town clerk after the arrival chain, when there is nothing left to hand out."
     }
   }
  }

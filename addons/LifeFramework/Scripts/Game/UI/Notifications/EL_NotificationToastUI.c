@@ -100,7 +100,8 @@ class EL_NotificationToastUI : ScriptedWidgetComponent
 			m_wColorStrip.SetColor(GetColorForType(type));
 		}
 
-		AnimateWidget.Opacity(m_wRoot, 1.0, 1.0 / FADE_SECONDS);
+		// The tick drives the opacity from the real clock; nothing else has to animate the slip.
+		m_wRoot.SetOpacity(1);
 
 		StartTicking();
 	}
@@ -149,11 +150,12 @@ class EL_NotificationToastUI : ScriptedWidgetComponent
 		if (!m_bTicking || !m_wRoot)
 			return;
 
-		int phase = Phase(GetElapsedSeconds(), m_fDisplayTime);
-		if (phase == 1 && !m_bFadingOut)
+		float elapsed = GetElapsedSeconds();
+		int phase = Phase(elapsed, m_fDisplayTime);
+		if (phase == 1)
 		{
 			m_bFadingOut = true;
-			AnimateWidget.Opacity(m_wRoot, 0, 1.0 / FADE_SECONDS);
+			m_wRoot.SetOpacity(Math.Clamp(1 - (elapsed - m_fDisplayTime) / FADE_SECONDS, 0, 1));
 		}
 
 		if (phase == 2)

@@ -156,7 +156,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 	//! Server-side accept: prerequisite snapshot, fail-safe guards, notification.
 	//! \param chained True for a chain step accepted on its own: the player hears the next
 	//! errand (the step's description) instead of the generic "accepted" hint.
-	bool AcceptQuest(string questId, bool chained = false)
+	bool AcceptQuest(string questId, bool chained = false, bool quiet = false)
 	{
 		if (!Replication.IsServer())
 			return false;
@@ -198,7 +198,11 @@ class LF_QuestTrackerComponent : ScriptComponent
 			return false;
 		}
 
-		if (chained)
+		if (quiet)
+		{
+			EL_Debug.Log("Quests", string.Format("accepted quest=%1 (in conversation)", questId));
+		}
+		else if (chained)
 		{
 			EL_Debug.Log("Quests", string.Format("accepted quest=%1 (chain step)", questId));
 			Notify(def.m_sDescriptionKey, def.m_sTitleKey, STORY_SECONDS);
@@ -630,6 +634,133 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client: the local player talks to a converse giver (the town clerk).
+	void AskConverse(string giverId)
+	{
+		if (Replication.IsServer())
+		{
+			RequestConverse(giverId);
+			return;
+		}
+
+		Rpc(RpcAsk_Converse, giverId);
+	}
+
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_Converse(string giverId)
+	{
+		RequestConverse(giverId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one conversation with a converse giver in reach. The talk counts, every quest of
+	//! this giver that is done is handed in (rewards change hands), and the giver's next quest is
+	//! taken on and counts the same talk. With nothing to hand over, the giver repeats the running
+	//! errand, or says their idle line.
+	//! \return True when the conversation turned in or accepted anything.
+	bool RequestConverse(string giverId)
+	{
+		if (!Replication.IsServer())
+			return false;
+
+		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		LF_QuestGiverComponent giver = manager.GetGiver(giverId);
+		if (!giver || !giver.GetQuests() || !manager.IsNearGiver(GetOwner(), giverId))
+		{
+			EL_Debug.Warn("Quests", string.Format("talk refused giver=%1 (unknown or not within %2 m)", giverId, LF_QuestManager.GIVER_RADIUS));
+			return false;
+		}
+
+		manager.ReportTalk(GetOwner(), giverId);
+
+		bool acted = false;
+		// Each pass hands in, then takes on at most one new quest whose talk may finish it at once.
+		for (int pass = 0; pass < MAX_CHAIN_PASSES; pass++)
+		{
+			bool moved = false;
+			foreach (LF_QuestDefinition def : giver.GetQuests())
+			{
+				if (def && m_Tracker.GetStatus(def.m_sQuestId) == LF_EQuestStatus.COMPLETED && TurnInQuest(def.m_sQuestId))
+					moved = true;
+			}
+
+			if (!moved)
+			{
+				LF_QuestDefinition next = NextOffer(giver);
+				if (next && AcceptQuest(next.m_sQuestId, true, IsTalkOnly(next, giver.GetGiverId())))
+				{
+					manager.ReportTalk(GetOwner(), giverId);
+					moved = true;
+				}
+			}
+
+			if (!moved)
+				break;
+
+			acted = true;
+		}
+
+		if (acted)
+		{
+			EL_Debug.Log("Quests", string.Format("talked with giver=%1", giverId));
+			return true;
+		}
+
+		// Nothing changed hands: repeat the errand that is running, else the idle line.
+		foreach (LF_QuestDefinition running : giver.GetQuests())
+		{
+			if (running && m_Tracker.GetStatus(running.m_sQuestId) == LF_EQuestStatus.ACTIVE)
+			{
+				Notify(running.m_sDescriptionKey, running.m_sTitleKey, STORY_SECONDS);
+				return false;
+			}
+		}
+
+		if (!giver.GetIdleKey().IsEmpty())
+			Notify(giver.GetIdleKey(), giver.GetDisplayName(), STORY_SECONDS);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the quest asks only for a talk with this giver: taken on and done in one breath,
+	//! so its errand text is not worth a toast.
+	protected bool IsTalkOnly(LF_QuestDefinition def, string giverId)
+	{
+		for (int i = 0; i < def.GetObjectiveCount(); i++)
+		{
+			LF_QuestObjective objective = def.GetObjective(i);
+			if (!objective || objective.m_eType != LF_EQuestEventType.TALK || objective.m_sFilter != giverId)
+				return false;
+		}
+
+		return def.HasObjectives();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first quest this giver lists to this player that the player can take on now.
+	protected LF_QuestDefinition NextOffer(LF_QuestGiverComponent giver)
+	{
+		float now = GetGame().GetWorld().GetWorldTime() / 1000.0;
+		array<string> completed = m_Tracker.GetCompletedQuestIds();
+		foreach (LF_QuestDefinition def : giver.GetQuests())
+		{
+			if (!def || !def.HasObjectives())
+				continue;
+
+			LF_EQuestStatus status = m_Tracker.GetStatus(def.m_sQuestId);
+			bool previousDone = def.m_sRequiredPreviousQuestId.IsEmpty() || m_Tracker.HasTurnedIn(def.m_sRequiredPreviousQuestId);
+			if (!def.IsListed(status, previousDone))
+				continue;
+
+			if (m_Tracker.CanAccept(def, 1, EL_EJobType.UNEMPLOYED, "", now, completed))
+				return def;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: the local player read a sign. The server checks the sign stands beside them and
 	//! reports the SIGNAL "sign.read:<id>".
 	void AskSignRead(string signId)
@@ -722,17 +853,12 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_Notify(string message, string title, float duration)
-	{
-		EL_Utils.Notify(message, title, duration);
-	}
-
-	//------------------------------------------------------------------------------------------------
+	//! Server: a toast for the owning player (EL notification toast, the same path as job pay).
 	protected void Notify(string message, string title, float duration = 4.0)
 	{
 		if (!Replication.IsServer())
 			return;
-		Rpc(RpcDo_Notify, message, title, duration);
+
+		EL_Utils.NotifyEntity(GetOwner(), message, title, duration);
 	}
 }
