@@ -116,6 +116,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_Murder(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_NoPassivePaycheck(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_NpcClothesReplicate(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_NpcInteractionHeight(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_OrgInviteRole(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_OrgRegistry(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PlaytestMission(), EL_TestTier.LOGIC);

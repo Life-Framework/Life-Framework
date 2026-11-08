@@ -1,23 +1,23 @@
 EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
  ID "PoliceDutyNPC"
  components {
-  CharacterIdentityComponent "{A115C91A8D3482F2}" {
-   Identity Identity "{9852B5151EBE160F}" {
+  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+   Identity Identity "{5A4B0B84AF44A913}" {
     Name "Police Sergeant"
     Surname "Duty"
    }
   }
-  ActionsManagerComponent "{8A2EA126DD778F5B}" {
-   ActionContexts {
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
     UserActionContext "{44B338DEF6C1C3FB}" {
      ContextName "Duty"
      Position PointInfo "{DFBF0A2E09D45988}" {
-      Offset 0 0.5 0
+      PivotID "Spine5"
      }
-     Radius 2.0
+     Radius 0.6
     }
    }
-   additionalActions {
+   additionalActions + {
     EL_OpenPoliceMenuAction "{8CC2DDEDDEB10C07}" {
      ParentContextList {
       "Duty"

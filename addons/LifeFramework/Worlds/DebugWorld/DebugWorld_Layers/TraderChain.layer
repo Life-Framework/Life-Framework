@@ -14,6 +14,9 @@ EL_NpcBaseEntity PoliceDutyNPC {
   }
  }
 }
-GenericEntity TraderChainCounter : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
+SCR_DestructibleEntity TraderChainCounterTable : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
  coords 190.5 0 240.6
+}
+GenericEntity TraderChainCounter : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
+ coords 190.5 0.9 240.6
 }
