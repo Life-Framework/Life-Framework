@@ -43,6 +43,7 @@ import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp 
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
+import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
@@ -1513,6 +1514,8 @@ function cmdSessionUp(root, dir, flags) {
   const mission = session.parseMission(flags);
   const res = session.parseRes(flags);
   const visible = flags.includes("--visible");
+  // --sound keeps game audio on (the default session is -noSound); for a filmed audio pass.
+  const sound = flags.includes("--sound");
   const prev = session.readSession(dir);
   if (prev && !prev.stoppedAt && (host.pidAlive(prev.serverPid) || (prev.clients ?? []).some((c) => host.pidAlive(c.pid)))) {
     console.log("session: one is already running; 'node agent-box/session.mjs down' first");
@@ -1535,7 +1538,7 @@ function cmdSessionUp(root, dir, flags) {
   }
   const paths = session.sessionPaths(dir, clients);
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), root, mission, res, visible, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
+  const state = { id: session.newSessionId(), root, mission, res, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
     session.writeSession(dir, state);
@@ -1595,12 +1598,20 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
 
   for (const c of paths.clients) {
     mkdirSync(c.box, { recursive: true });
-    const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id, res });
+    const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id, res, sound: !!state.sound });
     console.log(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
     // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
     // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
+    // Over ssh (a pool machine such as lf-testbox) there is no desktop: the client
+    // goes to the signed-in user's desktop through an interactive scheduled task.
     let child = { pid: 0 };
-    if (visible) {
+    if (interactiveNeeded()) {
+      try {
+        child = { pid: interactiveSpawnDetached(game, cArgs, { cwd: dirname(game), marker: c.profile }) };
+      } catch (e) {
+        return fail(`client ${c.n}: ${e.message}`);
+      }
+    } else if (visible) {
       const p = spawn(game, cArgs, { cwd: dirname(game), detached: true, stdio: "ignore" });
       p.unref();
       child = { pid: p.pid };
@@ -1719,7 +1730,7 @@ function cmdSession(args) {
   if (list[0] === "restart") return cmdSessionRestart(ROOT, dir, list.slice(1));
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
-  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--wait] | restart | down | status");
+  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] | restart | down | status");
   return list[0] ? 1 : 0;
 }
 

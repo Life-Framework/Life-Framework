@@ -160,7 +160,7 @@ export function windowFor(n, res = WINDOW) {
   return { x: (n - 1) * (res.width + WINDOW.gap), y: 0, width: res.width, height: res.height };
 }
 
-export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "", res = WINDOW }) {
+export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "", res = WINDOW, sound = false }) {
   const w = windowFor(n, res);
   return [
     "-client", address,
@@ -175,7 +175,7 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", missi
     "-forceUpdate",
     "-noFocus",
     "-noSplash",
-    "-noSound",
+    ...(sound ? [] : ["-noSound"]),
     "-maxFPS", "30",
     ...defineArgs(mission),
     "-disableCrashReporter",
@@ -909,9 +909,12 @@ async function runTicketProof() {
 }
 
 // --machine <name|any|local> (tools/pool.json). Game clients need a desktop
-// session; over ssh there is none (the box shows the logon screen, ssh runs in
-// session 0), so a remote machine runs server-only sessions (--clients 0) and
-// clients join it over the LAN. The chosen remote is remembered per worktree
+// session; ssh runs in session 0, which has none. A machine whose pool entry has
+// the "clients" cap keeps a user signed in, and `up` there starts each client on
+// that desktop through an interactive scheduled task (tools/lib/interactive-launch.mjs).
+// Without the cap a remote machine runs server-only sessions (--clients 0) and
+// clients join it over the LAN. Drive a remote session with `run <script>` and
+// fetch its screenshots and films with `pull`. The chosen remote is remembered per worktree
 // in tmp/session-remote.json, so down/status/state/restart from this worktree
 // follow it (the local session dir is shared by every checkout on this PC).
 function remotePointerFile() {
@@ -1077,8 +1080,79 @@ async function runDispatchProof() {
   return fails.length ? 1 : 0;
 }
 
+// `run <script> [args]`: runs node <script> where the recorded session runs. On a
+// pool machine (session up --machine) the journey, harness, and proofs have to
+// run there: they talk to the clients through files in that machine's session dir.
+async function runWhereSession(rest) {
+  const [script, ...args] = rest;
+  if (!script) throw new Error("run <script> [args...]");
+  const ptr = readRemotePointer();
+  if (!ptr) {
+    const r = spawnSync(process.execPath, [join(ROOT, script), ...args], { windowsHide: true, stdio: "inherit", cwd: ROOT });
+    return r.status ?? 1;
+  }
+  const pool = await import("../tools/remote/pool.mjs");
+  const m = pool.findMachine(pool.loadMachines(ROOT), ptr.machine);
+  if (!m) throw new Error(`session is on ${ptr.machine}, which is not in the pool any more`);
+  console.log(`session: running ${script} on ${m.name} (${ptr.dir})`);
+  return pool.runIn(m, ptr.dir, script, args);
+}
+
+// `pull [dest]`: copies the remote session's evidence here: the run folder's
+// agent-box/reports (journey.html, films) and each client's newest el-captures.
+// Lands in tmp/session-pull/<machine>-<time>/ unless dest is given.
+async function pullFromSession(rest) {
+  const ptr = readRemotePointer();
+  if (!ptr) {
+    console.log("pull: no remote session recorded; the evidence is already on this PC");
+    return 0;
+  }
+  const tb = await import("../tools/remote/testbox.mjs");
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const dest = resolve(rest[0] || join(ROOT, "tmp", "session-pull", `${ptr.machine}-${stamp}`));
+  mkdirSync(dest, { recursive: true });
+  const zip = `${ptr.dir}\\tmp\\session-pull.zip`;
+  const ps = [
+    `$stage = Join-Path ${tb.psQuote(ptr.dir)} 'tmp\\session-pull'`,
+    "if (Test-Path $stage) { Get-ChildItem -LiteralPath $stage -Recurse -File | Remove-Item -Force; Get-ChildItem -LiteralPath $stage -Recurse -Directory | Sort-Object FullName -Descending | Remove-Item -Force }",
+    "New-Item -ItemType Directory -Force $stage | Out-Null",
+    `$reports = Join-Path ${tb.psQuote(ptr.dir)} 'agent-box\\reports'`,
+    "if (Test-Path $reports) { Copy-Item -Recurse -Force $reports (Join-Path $stage 'reports') }",
+    "$session = Join-Path $env:LOCALAPPDATA 'LifeFramework\\session'",
+    "Get-ChildItem -LiteralPath $session -Directory -Filter 'client*' -ErrorAction SilentlyContinue | ForEach-Object {",
+    "  $logs = Join-Path $_.FullName 'logs'",
+    "  $newest = Get-ChildItem -LiteralPath $logs -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+    "  if ($newest) { $to = Join-Path $stage $_.Name; New-Item -ItemType Directory -Force $to | Out-Null; Copy-Item -Force (Join-Path $newest.FullName 'console.log') $to -ErrorAction SilentlyContinue; $cap = Join-Path $newest.FullName 'el-captures'; if (Test-Path $cap) { Copy-Item -Recurse -Force $cap $to } }",
+    "}",
+    `if (Test-Path ${tb.psQuote(zip)}) { Remove-Item -Force ${tb.psQuote(zip)} }`,
+    `Compress-Archive -Path (Join-Path $stage '*') -DestinationPath ${tb.psQuote(zip)}`,
+    "exit 0",
+  ].join("\n");
+  const r = tb.sshPs(ptr.host, ps, { timeout: 900000 });
+  if (r.status !== 0) {
+    console.log(`FAIL  pull: staging on ${ptr.machine} failed: ${(r.stderr || r.stdout || "").trim().slice(-400)}`);
+    return 1;
+  }
+  const local = join(dest, "session-pull.zip");
+  const c = tb.scp([`${ptr.host}:${zip.replace(/\\/g, "/")}`, local]);
+  if (c.status !== 0) {
+    console.log(`FAIL  pull: scp failed: ${(c.stderr || "").trim()}`);
+    return 1;
+  }
+  const x = spawnSync("tar", ["-xf", local, "-C", dest], { windowsHide: true, encoding: "utf8" });
+  if (x.status !== 0) {
+    console.log(`FAIL  pull: unpack failed: ${(x.stderr || "").trim()}`);
+    return 1;
+  }
+  rmSync(local, { force: true });
+  console.log(`pull: ${ptr.machine} evidence -> ${dest}`);
+  return 0;
+}
+
 async function main(argv) {
   let [cmd, ...rest] = argv;
+  if (cmd === "run") return runWhereSession(rest);
+  if (cmd === "pull") return pullFromSession(rest);
   if (["up", "down", "status", "restart", "state"].includes(cmd)) {
     const routed = await routeMachine(cmd, rest);
     if (!routed.local) return routed.code;
@@ -1094,6 +1168,10 @@ async function main(argv) {
   }
   if (cmd === "selftest") {
     const f = selftestSession();
+    const launch = await import("../tools/lib/interactive-launch.mjs");
+    f.push(...launch.selftest().map((x) => `interactive launch: ${x}`));
+    if (!clientArgs({ n: 1, addonsDir: "a", profile: "p" }).includes("-noSound")) f.push("a default client is not -noSound");
+    if (clientArgs({ n: 1, addonsDir: "a", profile: "p", sound: true }).includes("-noSound")) f.push("--sound still passes -noSound");
     for (const x of f) console.log(`  ${x}`);
     console.log(f.length ? "session selftest: FAIL" : "session selftest: OK");
     return f.length ? 1 : 0;
@@ -1127,7 +1205,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|dispatch-proof|interaction [--film] | org [--shot] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 
