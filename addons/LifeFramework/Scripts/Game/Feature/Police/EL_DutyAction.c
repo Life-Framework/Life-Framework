@@ -55,6 +55,10 @@ class EL_DutyAction : ScriptedUserAction
 
 		EL_Utils.NotifyEntity(pUserEntity, "#EL-Duty_Status_Change", "#EL-Duty_Status", 3.0, statusKey);
 
+		// Duty pay is handed over here, at the desk, once per shift.
+		if (!newDuty)
+			LF_DutyPay.PayAtClockOut(account, pUserEntity);
+
 		// Save account
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		if (accountManager)

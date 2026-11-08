@@ -41,6 +41,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_RobNoAccount(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_AccountReplicationWorld(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_DoorLock(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_DutyPay(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_E2E_Narrative(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_E2E_SaveStateWrite(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_E2E_SaveStateVerify(), EL_TestTier.PERSISTENCE);
@@ -74,6 +75,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_MiningPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyCash(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_MoneyRework(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_NoPassivePaycheck(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_PlaytestMission(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceFineMath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
@@ -155,6 +157,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_UIKitQuantity(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitClose(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitFocus(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_UnemploymentBenefit(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_VehicleLock(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_VehicleLockIdMatch(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_WhitelistChatResources(), EL_TestTier.WORLD);
