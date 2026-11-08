@@ -6,7 +6,9 @@ GenericEntity : "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et"
   }
   LF_SignComponent "{44FC6FF960E3CDE5}" {
    m_vFaceOffset 0 0.55 -0.007
-   m_fFaceScale 2.2
+   m_vFaceAngles 0 0 90
+   m_fFaceScale 4.7
+   m_bPaintedFace 1
   }
   ActionsManagerComponent "{6E065C9694DC3BE5}" {
    ActionContexts {

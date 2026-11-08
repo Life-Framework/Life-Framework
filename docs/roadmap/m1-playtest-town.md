@@ -63,7 +63,7 @@ in the world (§b).
 | 12 | Rob the bank | `Roadmap_Bank_Vault` 189,120 + bag | **works**, ⚠ dedicated | `LF_Bank` still reads accounts directly in its offer (#83 ⚠). Bags are real carried cash. Decided 2026-11-08: no police minimum on the flagship (0 for every crime); a louder alarm when no officer is on duty. → M1-20 |
 | 13 | Hospital cabinet | `Roadmap_Hospital_Cabinet` 198,120 | **works** | Breach → medicine items. |
 | 14 | Contraband run | `Roadmap_Convoy_Start/Drop` 222/225,120 | **works**, **broken look** | The cargo is `RowanBerries.et`. The markers are `EL_DebugAreaBoundary` debug meshes. → M1-14 |
-| 15 | Police clock in | `Roadmap_Police_Desk` (police station forecourt) | **works** (M1-11) | Clock in / Clock out at the punch clock. The server checks the police roster and swaps the civilian and police inventories (starter kit on a first shift); both persist. No faction screen. |
+| 15 | Police clock in | `Roadmap_Police_Desk` (under the police station porch) | **works** (M1-11) | Clock in / Clock out at the punch clock. The server checks the police roster and swaps the civilian and police inventories (starter kit on a first shift); both persist. No faction screen. |
 | 16 | Police learn of a crime | toast | **broken** | Alerts are toasts, and toasts fail until #97. Nothing happens at the site. → M1-20 |
 | 17 | Find the suspect | `Roadmap_Police_WantedBoard` beside the desk | **works** (M1-11) | Posters describe clothing, vehicle, and place (police only) from the moment of the crime; the name appears after an ID check or a catch in the act. |
 | 18 | Arrest and escort | on the suspect, `Roadmap_Escort_Car` 204,108 | **works** | `LF_JailArrestAction`, `LF_JailPutInVehicleAction`. Ranges in #73. |

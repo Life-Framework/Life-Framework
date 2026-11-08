@@ -263,7 +263,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    }
   CustomStringTableItem "{B3BF4076847C9C6E}" {
    Id "EL-ATM_Title"
-   Target_en_us "ATM Machine"
+   Target_en_us "ATM"
    Target_es_es "Cajero Automático"
    Target_de_de "Geldautomat"
    Target_fr_fr "Distributeur automatique"
@@ -3669,7 +3669,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
-     Target_en_us "ATM Machine, then Deposit or Withdraw."
+     Target_en_us "ATM, then Deposit or Withdraw."
      Comment "Sign card for the ATM on the bank's front, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{0CD84D83AF49CFAA}" {
