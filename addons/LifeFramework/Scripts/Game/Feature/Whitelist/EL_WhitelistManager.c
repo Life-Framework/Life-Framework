@@ -84,7 +84,7 @@ class EL_WhitelistManager
 				return true;
 		}
 		
-		return missionAllows && policeCount == 0 && !uid.IsEmpty();
+		return false;
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ class EL_WhitelistManager
 	//! Pure: the first player to join a playtest host whose police roster is empty goes on it.
 	static bool ShouldAddFirstPolice(bool missionAllows, int policeCount, string uid)
 	{
-		return false;
+		return missionAllows && policeCount == 0 && !uid.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
