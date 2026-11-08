@@ -14,6 +14,7 @@ tools\cli mcp update [name]             # update MCP servers from GitHub
 tools\cli mcp verify [name]             # prove a server starts
 tools\cli mcp enable|disable <name>     # toggle a server in opencode.json
 tools\cli build                         # headless Workbench build (worktree only)
+toolscli rdb                           # register new .meta files in this worktree's resourceDatabase.rdb (~10 s; boots do it when stale)
 tools\cli serve                         # boot the headless test server (blocks, worktree only)
 tools\cli test [--no-build] [--tier fast|all|persistence] [--only <names>]
                                         # build + boot server + parse ELTEST results (worktree only)
