@@ -19,17 +19,20 @@ if (useDist) {
 
 // route -> text that only that page renders
 const pages = {
-  "/": "Real cash.",
+  "/": "We are building the modern Life Framework",
   "/roadmap": "Where we are on the road",
   "/devlog": "What changed, day by day",
   "/servers": "Host it, tune it, build on it",
-  "/contribute": "Pick a scope. Prove it in the game.",
+  "/contribute": "Join the Discord",
   "/decisions": "The calls that set the taste",
   "/support": "Where the money goes",
   "/docs": "The paperwork",
   "/docs/direction": "What we are building",
+  "/docs/playtest": "Open the playtest",
+  "/docs/contributing": "Contributing to Life Framework",
+  "/docs/roadmap": "The gameplay plan",
   "/docs/roadmap-m1-playtest-town": "The player journey",
-  "/docs/welcome": "Founded 30th of November 2025",
+  "/docs/setup": "Set up your tools",
 };
 const redirects = {
   "/philosophy": "/",

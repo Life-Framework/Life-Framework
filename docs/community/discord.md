@@ -62,5 +62,5 @@ Top to bottom: Discord Admin, Organizer, Community Manager, Life Framework
 
 #discord-community-updates, #hidden-join-channel, #roles, #roadmap-items,
 #roadmap-design, #documentation, #technical-support, #clips-and-highlights,
-the old #feedback text channel, and the old #welcome. The #roadmap-items forum
-held the 2025 P0 roadmap; the GitHub milestones replace it.
+the old #feedback text channel, and the old #welcome. Planning now happens in
+GitHub milestones and issues.

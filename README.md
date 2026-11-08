@@ -22,7 +22,7 @@ native assets.
 | **Contribute** | [CONTRIBUTING.md](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md) |
 | **Engineering** | [AGENTS.md](AGENTS.md) · [Docs index](docs/README.md) |
 | **Community** | [Discord](https://discord.com/invite/MjMexJteqz) |
-| **Roadmap** | [docs/roadmap.md](docs/roadmap.md) |
+| **Roadmap** | [Current gameplay plan](docs/roadmap/README.md) |
 | **Website** | [life-framework.org](https://life-framework.org) · source in [website/](website/README.md) |
 
 ## Features
