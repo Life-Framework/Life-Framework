@@ -258,8 +258,7 @@ class LF_Contraband
 		run.m_iCashPaid = run.m_iCashPaid + paid;
 		StopWatch(run);
 		EL_Debug.Log("Contraband", string.Format("delivery paid %1 to %2", paid, characterId));
-		if (GetGame() && GetGame().GetWorkspace())
-			EL_Utils.Notify("#EL-Contraband_Paid", "#EL-Contraband_Deliver", 3.0);
+		EL_Utils.NotifyEntity(payTo, "#EL-Contraband_Paid", "#EL-Contraband_Deliver", 3.0);
 		return paid;
 	}
 

@@ -1,2 +1,27 @@
-# 3D pillar: aim at the ATM pad from the layer catalog and shoot the world.
+# ATM terminal (M1-13): use the cash machine, key in 100 on the keypad, deposit it, then ask
+# for more than the account holds and read the refusal on the screen. `state` before and after
+# shows cash and bank moving. Needs a spawned character carrying cash (run ui-intake first).
+state
+layer ATM_Debug
+wait 1200
+shot ui atm_open
+click Key1Button
+click Key0Button
+click Key0Button
+wait 300
+shot ui atm_keyed
+click DepositButton
+wait 1500
+shot ui atm_deposited
+state
+click Key9Button
+click Key9Button
+click Key9Button
+click Key9Button
+click Key9Button
+click WithdrawButton
+wait 1500
+shot ui atm_refused
+click CloseButton
+wait 300
 shot world ATM_Debug

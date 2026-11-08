@@ -1120,6 +1120,11 @@ class EL_AgentHarness
 		string name = widget.GetName();
 		if (!EL_AgentCommand.IsClassToken(name))
 			return false;
+		// A UI kit list row's action button is <row>_Action (the shop's Order buttons).
+		bool kitRowAction = name.Length() > 7 && name.Substring(name.Length() - 7, 7) == "_Action";
+		if (kitRowAction)
+			return SCR_ButtonTextComponent.Cast(widget.FindHandler(SCR_ButtonTextComponent)) != null;
+
 		if (name.Length() < 6 || name.Substring(name.Length() - 6, 6) != "Button")
 			return false;
 
@@ -1184,6 +1189,36 @@ class EL_AgentHarness
 		{
 			WriteResult(cmd.Id, "error", "no_character");
 			return;
+		}
+
+		// A local-effect action (ATM terminal, shop price list) runs PerformAction only on the
+		// acting client when the F key uses it, so the harness performs it here the same way.
+		if (!Replication.IsServer())
+		{
+			IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
+			ScriptedUserAction localAction;
+			if (target)
+				localAction = FindOnEntity(target, cmd.Arg1);
+
+			if (localAction && localAction.HasLocalEffectOnlyScript())
+			{
+				if (!localAction.CanBeShownScript(character))
+				{
+					WriteResult(cmd.Id, "error", "cannot_show");
+					return;
+				}
+
+				if (!localAction.CanBePerformedScript(character))
+				{
+					WriteResult(cmd.Id, "error", "cannot_perform");
+					return;
+				}
+
+				localAction.PerformAction(target, character);
+				EL_Debug.Log(FEATURE, string.Format("performed %1 on this client", cmd.Arg1));
+				WriteResult(cmd.Id, "ok", cmd.Arg1);
+				return;
+			}
 		}
 
 		character.EL_AskHarnessUse(cmd.Id, cmd.Arg1, cmd.Arg2);
