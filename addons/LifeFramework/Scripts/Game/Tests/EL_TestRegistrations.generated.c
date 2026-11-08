@@ -27,6 +27,8 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_BankSaveEmpty(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ATMManagerGuards(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_BankApplySnapshot(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_CarriedInventoryRoundtrip(), EL_TestTier.PERSISTENCE);
+		manager.Register(new EL_Test_CarriedInventoryDeathNoDupe(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ChatChannels(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_CraftingAssets(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_CropPrefabs(), EL_TestTier.WORLD);
