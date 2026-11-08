@@ -320,8 +320,9 @@ class EL_ShopManagerComponent : GameComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Best available name for the menu: the item's own UI display name, else the prefab path tail.
-	protected string ResolveDisplayName(ResourceName prefab)
+	//! Best available name for the menu: the item's own UI display name (often a #key; text widgets
+	//! translate it), else the prefab file name without the folder or the .et extension.
+	static string ResolveDisplayName(ResourceName prefab)
 	{
 		UIInfo info = EL_UIInfoUtils.GetInfo(prefab);
 		if (info)
@@ -334,7 +335,9 @@ class EL_ShopManagerComponent : GameComponent
 		string path = prefab.GetPath();
 		int lastSlash = path.LastIndexOf("/");
 		if (lastSlash >= 0 && lastSlash < path.Length() - 1)
-			return path.Substring(lastSlash + 1, path.Length() - lastSlash - 1);
+			path = path.Substring(lastSlash + 1, path.Length() - lastSlash - 1);
+		if (path.EndsWith(".et"))
+			path = path.Substring(0, path.Length() - 3);
 		return path;
 	}
 };

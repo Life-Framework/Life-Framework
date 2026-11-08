@@ -68,14 +68,14 @@ class EL_PlayerJobComponent : ScriptComponent
 		// CIVILIANS (Base 700)
 		EL_JobConfig unemployedConfig = new EL_JobConfig();
 		unemployedConfig.m_eJobType = EL_EJobType.UNEMPLOYED;
-		unemployedConfig.m_sJobName = "Civil";
+		unemployedConfig.m_sJobName = "#LF-Job_Name_Unemployed";
 		unemployedConfig.m_iBaseSalary = 700;
 		unemployedConfig.m_fPaycheckInterval = 300; // 5 minutes
 		m_mJobConfigs.Set(EL_EJobType.UNEMPLOYED, unemployedConfig);
 		
 		EL_JobConfig farmerConfig = new EL_JobConfig();
 		farmerConfig.m_eJobType = EL_EJobType.FARMER;
-		farmerConfig.m_sJobName = "Civil (Granjero)";
+		farmerConfig.m_sJobName = "#LF-Job_Name_Farmer";
 		farmerConfig.m_iBaseSalary = 700;
 		farmerConfig.m_fPaycheckInterval = 300;
 		farmerConfig.m_bCanGatherResources = true;
@@ -85,7 +85,7 @@ class EL_PlayerJobComponent : ScriptComponent
 		
 		EL_JobConfig minerConfig = new EL_JobConfig();
 		minerConfig.m_eJobType = EL_EJobType.MINER;
-		minerConfig.m_sJobName = "Civil (Minero)";
+		minerConfig.m_sJobName = "#LF-Job_Name_Miner";
 		minerConfig.m_iBaseSalary = 700;
 		minerConfig.m_fPaycheckInterval = 300;
 		minerConfig.m_bCanGatherResources = true;
@@ -96,7 +96,7 @@ class EL_PlayerJobComponent : ScriptComponent
 		
 		EL_JobConfig lumberjackConfig = new EL_JobConfig();
 		lumberjackConfig.m_eJobType = EL_EJobType.LUMBERJACK;
-		lumberjackConfig.m_sJobName = "Civil (Leñador)";
+		lumberjackConfig.m_sJobName = "#LF-Job_Name_Lumberjack";
 		lumberjackConfig.m_iBaseSalary = 700;
 		lumberjackConfig.m_fPaycheckInterval = 300;
 		lumberjackConfig.m_bCanGatherResources = true;
@@ -108,8 +108,8 @@ class EL_PlayerJobComponent : ScriptComponent
 		// PUBLIC SERVANTS (Base 1000)
 		EL_JobConfig medicConfig = new EL_JobConfig();
 		medicConfig.m_eJobType = EL_EJobType.MEDIC;
-		medicConfig.m_sJobName = "EMS";
-		medicConfig.m_sDescription = "Paramédico de emergencias. Cura jugadores y gana recompensas.";
+		medicConfig.m_sJobName = "#LF-Job_Name_Medic";
+		medicConfig.m_sDescription = "#LF-Job_Desc_Medic";
 		medicConfig.m_iBaseSalary = 1000;
 		medicConfig.m_fPaycheckInterval = 300;
 		medicConfig.m_bCanGatherResources = false;
@@ -118,8 +118,8 @@ class EL_PlayerJobComponent : ScriptComponent
 		
 		EL_JobConfig policeConfig = new EL_JobConfig();
 		policeConfig.m_eJobType = EL_EJobType.POLICE;
-		policeConfig.m_sJobName = "Policía";
-		policeConfig.m_sDescription = "Oficial de policía. Requiere whitelist de Discord.";
+		policeConfig.m_sJobName = "#LF-Job_Name_Police";
+		policeConfig.m_sDescription = "#LF-Job_Desc_Police";
 		policeConfig.m_iBaseSalary = 1000;
 		policeConfig.m_fPaycheckInterval = 300;
 		policeConfig.m_bCanGatherResources = false;
@@ -190,8 +190,8 @@ class EL_PlayerJobComponent : ScriptComponent
 			if (!licenseManager || !licenseManager.HasLicense(EL_ELicenseType.POLICE_ACCESS))
 			{
 				SCR_HintManagerComponent.ShowCustomHint(
-					"Necesitas la Placa Policial para entrar de servicio.\n\nObtén la licencia en la comisaría.",
-					"Acceso Denegado",
+					WidgetManager.Translate("#LF-Job_NeedPoliceBadge"),
+					WidgetManager.Translate("#LF-Job_AccessDenied"),
 					5.0
 				);
 				return false;
@@ -205,8 +205,8 @@ class EL_PlayerJobComponent : ScriptComponent
 			if (!licenseManager || !licenseManager.HasLicense(EL_ELicenseType.MEDIC_ACCESS))
 			{
 				SCR_HintManagerComponent.ShowCustomHint(
-					"Necesitas la Credencial EMS para entrar de servicio.\n\nObtén la licencia en el hospital.",
-					"Acceso Denegado",
+					WidgetManager.Translate("#LF-Job_NeedMedicCard"),
+					WidgetManager.Translate("#LF-Job_AccessDenied"),
 					5.0
 				);
 				return false;
@@ -249,8 +249,8 @@ class EL_PlayerJobComponent : ScriptComponent
 			if (!EL_WhitelistManager.IsWhitelistedForJob(playerUID, jobType))
 			{
 				SCR_HintManagerComponent.ShowCustomHint(
-					"You are not whitelisted for this job. Contact an administrator.",
-					"Access Denied"
+					WidgetManager.Translate("#LF-Job_NotWhitelisted"),
+					WidgetManager.Translate("#LF-Job_AccessDenied")
 				);
 				return false;
 			}
@@ -291,29 +291,29 @@ class EL_PlayerJobComponent : ScriptComponent
 		EL_Debug.Log("Jobs", string.Format("job set -> %1 (level %2)", typename.EnumToString(EL_EJobType, jobType), m_iJobLevel));
 		
 		// Show notification for job change
-		string jobName = GetJobName();
+		string jobName = WidgetManager.Translate(GetJobName());
 		string message;
 		string title;
 		
 		if (jobType == EL_EJobType.UNEMPLOYED)
 		{
-			message = "Has finalizado tu turno de servicio.";
-			title = "FUERA DE SERVICIO";
+			message = WidgetManager.Translate("#LF-Job_OffDuty");
+			title = WidgetManager.Translate("#LF-Job_OffDuty_Title");
 		}
 		else if (jobType == EL_EJobType.POLICE)
 		{
-			message = string.Format("¡Estás de servicio como %1!\n\n10-4, oficial en patrulla.", jobName);
-			title = "POLICÍA EN SERVICIO";
+			message = WidgetManager.Translate("#LF-Job_OnDutyPolice", jobName);
+			title = WidgetManager.Translate("#LF-Job_OnDutyPolice_Title");
 		}
 		else if (jobType == EL_EJobType.MEDIC)
 		{
-			message = string.Format("¡Estás de servicio como %1!\n\nUnidad médica operativa.", jobName);
-			title = "EMS EN SERVICIO";
+			message = WidgetManager.Translate("#LF-Job_OnDutyMedic", jobName);
+			title = WidgetManager.Translate("#LF-Job_OnDutyMedic_Title");
 		}
 		else
 		{
-			message = string.Format("Ahora trabajas como: %1\nNivel: %2 | XP: %.0f", jobName, m_iJobLevel, m_fJobExperience);
-			title = "TRABAJO CAMBIADO";
+			message = WidgetManager.Translate("#LF-Job_Hired", jobName, m_iJobLevel);
+			title = WidgetManager.Translate("#LF-Job_Hired_Title");
 		}
 		
 		SCR_HintManagerComponent.ShowCustomHint(message, title, 4.0);
@@ -414,7 +414,7 @@ class EL_PlayerJobComponent : ScriptComponent
 	string GetJobName()
 	{
 		if (!m_CurrentJobConfig)
-			return "Unknown";
+			return "#LF-Job_Name_Unknown";
 		
 		return m_CurrentJobConfig.m_sJobName;
 	}
@@ -713,8 +713,8 @@ class EL_PlayerJobComponent : ScriptComponent
 			m_OnPaycheckReceived.Invoke(amount);
 		
 		// Show notification indicating bank deposit
-		string message = string.Format("Paycheck deposited to bank: $%1 (+5 XP)", amount);
-		SCR_HintManagerComponent.ShowCustomHint(message, GetJobName(), 5.0);
+		string message = WidgetManager.Translate("#LF-Job_Paycheck", EL_MoneyFormat.FormatMoney(amount));
+		SCR_HintManagerComponent.ShowCustomHint(message, WidgetManager.Translate(GetJobName()), 5.0);
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -727,10 +727,10 @@ class EL_PlayerJobComponent : ScriptComponent
 		float gatherBonus = (m_iJobLevel - 1) * 10.0; // 10% por nivel
 		
 		// Show notification con información del bonus
-		string jobName = GetJobName();
-		string message = string.Format("¡%1 NIVEL %2!\n\nBonus de recolección: +%.0f%%\nGanas más recursos al trabajar", 
-			jobName, m_iJobLevel, gatherBonus);
-		SCR_HintManagerComponent.ShowCustomHint(message, "¡SUBIDA DE NIVEL!", 6.0);
+		string jobName = WidgetManager.Translate(GetJobName());
+		int bonusPercent = Math.Round(gatherBonus);
+		string message = WidgetManager.Translate("#LF-Job_Promoted", jobName, m_iJobLevel, bonusPercent);
+		SCR_HintManagerComponent.ShowCustomHint(message, WidgetManager.Translate("#LF-Job_Promoted_Title"), 6.0);
 	}
 	//------------------------------------------------------------------------------------------------
 	//! Maximum score a single Fruit Catcher round can award. The minigame screen
@@ -867,16 +867,16 @@ class EL_PlayerJobComponent : ScriptComponent
 		switch (jobType)
 		{
 			case EHarvestJobType.APPLES:
-				fruitName = "Manzanas";
+				fruitName = "#LF-Fruit_Apples";
 				break;
 			case EHarvestJobType.TOMATOES:
-				fruitName = "Tomates";
+				fruitName = "#LF-Fruit_Tomatoes";
 				break;
 			case EHarvestJobType.PLUMS:
-				fruitName = "Ciruelas";
+				fruitName = "#LF-Fruit_Plums";
 				break;
 			case EHarvestJobType.BERRIES:
-				fruitName = "Bayas";
+				fruitName = "#LF-Fruit_Berries";
 				break;
 		}
 		
@@ -900,7 +900,7 @@ class EL_PlayerJobComponent : ScriptComponent
 		EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(owner);
 		if (levelComp)
 		{
-			levelComp.AddExperience(xpAmount, "Recolección de Frutas");
+			levelComp.AddExperience(xpAmount, "fruit picking");
 		}
 		
 		int actuallyAdded = 0;
@@ -929,8 +929,8 @@ class EL_PlayerJobComponent : ScriptComponent
 		EL_Debug.Log("Jobs", string.Format("fruit round %1 paid %2/%3 %4", roundId, actuallyAdded, rewardCount, fruitName));
 		
 		// Notify
-		string message = string.Format("¡Recibiste %1 %2 y %3 XP!", actuallyAdded, fruitName, xpAmount);
-		SCR_HintManagerComponent.ShowCustomHint(message, "TRABAJO", 5.0);
+		string message = WidgetManager.Translate("#LF-Job_FruitHarvest", actuallyAdded, WidgetManager.Translate(fruitName));
+		SCR_HintManagerComponent.ShowCustomHint(message, WidgetManager.Translate("#LF-Job_Work_Title"), 5.0);
 		return rewardCount;
 	}
 }

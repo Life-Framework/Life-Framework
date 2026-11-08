@@ -1,142 +1,193 @@
 //------------------------------------------------------------------------------------------------
-//! UI handler for notification toast
+//! One notification slip. Lives on the root of
+//! {4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout.
+//! A paper slip in the UI kit palette; the left strip carries the notice type in stamp ink.
+//! Timing reads the real clock (System.GetTickCount), so a slow frame does not stretch the slip.
 class EL_NotificationToastUI : ScriptedWidgetComponent
 {
+	static const string ROOT_NAME = "NotificationToast";
+	static const float FADE_SECONDS = 0.3;
+	static const int TICK_MS = 50;
+	//! Vertical step between stacked slips, in pixels (slip height + gap).
+	static const float STACK_STEP = 100;
+	static const float STACK_TOP = 140;
+
 	protected Widget m_wRoot;
 	protected ImageWidget m_wIcon;
 	protected TextWidget m_wTitle;
 	protected TextWidget m_wMessage;
 	protected Widget m_wBackground;
 	protected Widget m_wColorStrip;
-	
+
 	protected float m_fDisplayTime = 5.0;
-	protected float m_fElapsedTime = 0;
-	protected bool m_bFadingOut = false;
-	
+	protected int m_iShownAtMs;
+	protected bool m_bFadingOut;
+	protected bool m_bTicking;
+
 	//------------------------------------------------------------------------------------------------
 	override void HandlerAttached(Widget w)
 	{
 		super.HandlerAttached(w);
-		
+
 		m_wRoot = w;
 		m_wBackground = m_wRoot.FindAnyWidget("Background");
 		m_wColorStrip = m_wRoot.FindAnyWidget("ColorStrip");
 		m_wIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("Icon"));
 		m_wTitle = TextWidget.Cast(m_wRoot.FindAnyWidget("Title"));
 		m_wMessage = TextWidget.Cast(m_wRoot.FindAnyWidget("Message"));
-		
-		Print(string.Format("[EL_NotificationToastUI] HandlerAttached - Background: %1, ColorStrip: %2", m_wBackground != null, m_wColorStrip != null), LogLevel.NORMAL);
-		
-		// Start invisible for fade-in animation
-		if (m_wRoot)
-			m_wRoot.SetOpacity(0);
-			
-		// Hide icon by default
+
+		if (!m_wTitle || !m_wMessage)
+			EL_Debug.Error("Notifications", "toast layout is missing Title or Message");
+
+		if (m_wMessage)
+			m_wMessage.SetTextWrapping(true);
+
+		// No icon assets yet; the strip carries the type.
 		if (m_wIcon)
 			m_wIcon.SetVisible(false);
+
+		// Start invisible for the fade-in.
+		m_wRoot.SetOpacity(0);
+		StackBelowSiblings();
 	}
-	
+
+	//------------------------------------------------------------------------------------------------
+	override void HandlerDeattached(Widget w)
+	{
+		StopTicking();
+		super.HandlerDeattached(w);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Slips that arrive while others are still up stack downwards instead of overlapping.
+	protected void StackBelowSiblings()
+	{
+		Widget parent = m_wRoot.GetParent();
+		if (!parent)
+			return;
+
+		int earlier = 0;
+		Widget sibling = parent.GetChildren();
+		while (sibling)
+		{
+			if (sibling != m_wRoot && sibling.GetName() == ROOT_NAME)
+				earlier++;
+
+			sibling = sibling.GetSibling();
+		}
+
+		// The slip is authored with a frame slot (top right); move it down one step per earlier slip.
+		if (earlier > 0)
+			FrameSlot.SetPos(m_wRoot, FrameSlot.GetPosX(m_wRoot), STACK_TOP + earlier * STACK_STEP);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	void Show(string title, string message, EL_ENotificationType type, float duration = 5.0)
 	{
-		Print(string.Format("[EL_NotificationToastUI] Show called: title='%1', message='%2'", title, message), LogLevel.NORMAL);
-		
 		m_fDisplayTime = duration;
-		m_fElapsedTime = 0;
+		m_iShownAtMs = System.GetTickCount();
 		m_bFadingOut = false;
-		
-		// Set text
+
 		if (m_wTitle)
-		{
 			m_wTitle.SetText(title);
-			m_wTitle.SetColor(Color.FromSRGBA(255, 255, 255, 255)); // White title
-			Print(string.Format("[EL_NotificationToastUI] ✅ Title widget found and text set to: '%1'", title), LogLevel.NORMAL);
-		}
-		else
-		{
-			Print("[EL_NotificationToastUI] ❌ ERROR: Title widget is NULL!", LogLevel.ERROR);
-		}
-		
+
 		if (m_wMessage)
-		{
 			m_wMessage.SetText(message);
-			Print(string.Format("[EL_NotificationToastUI] ✅ Message widget found and text set to: '%1'", message), LogLevel.NORMAL);
-		}
-		else
-		{
-			Print("[EL_NotificationToastUI] ❌ ERROR: Message widget is NULL!", LogLevel.ERROR);
-		}
-		
-		// Set color based on type
-		Color typeColor = GetColorForType(type);
-		
-		// Background is always dark
-		if (m_wBackground)
-			m_wBackground.SetColor(Color.FromSRGBA(0, 0, 0, 230)); // ~90% opacity black
-			
-		// Color strip shows the type color
+
 		if (m_wColorStrip)
-			m_wColorStrip.SetColor(typeColor);
-		
-		// TODO: Set icon based on type when we have icon assets
-		// For now, hide icon
-		if (m_wIcon)
-			m_wIcon.SetVisible(false);
-		
-		// Fade in animation
-		AnimateWidget.Opacity(m_wRoot, 1.0, 0.3);
-		
-		// Start update loop
-		GetGame().GetCallqueue().CallLater(Update, 16, true); // ~60fps
+		{
+			m_wColorStrip.SetIsColorInherited(false);
+			m_wColorStrip.SetColor(GetColorForType(type));
+		}
+
+		AnimateWidget.Opacity(m_wRoot, 1.0, 1.0 / FADE_SECONDS);
+
+		StartTicking();
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
-	protected void Update()
+	//! Seconds since Show, from the real clock.
+	float GetElapsedSeconds()
 	{
-		m_fElapsedTime += 0.016; // Approximately 16ms per frame
-		
-		// Check if time to fade out
-		if (!m_bFadingOut && m_fElapsedTime >= m_fDisplayTime)
+		return (System.GetTickCount() - m_iShownAtMs) / 1000.0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure timing rule shared with the test: 0 = showing, 1 = fading, 2 = done.
+	static int Phase(float elapsedSeconds, float displaySeconds)
+	{
+		if (elapsedSeconds < displaySeconds)
+			return 0;
+
+		if (elapsedSeconds < displaySeconds + FADE_SECONDS)
+			return 1;
+
+		return 2;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StartTicking()
+	{
+		if (m_bTicking || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		m_bTicking = true;
+		GetGame().GetCallqueue().CallLater(Tick, TICK_MS, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StopTicking()
+	{
+		m_bTicking = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Self-rescheduling (non-repeating): removing a repeating call from inside its own callback
+	//! is not safe, so the tick simply does not reschedule when it is done.
+	protected void Tick()
+	{
+		if (!m_bTicking || !m_wRoot)
+			return;
+
+		int phase = Phase(GetElapsedSeconds(), m_fDisplayTime);
+		if (phase == 1 && !m_bFadingOut)
 		{
 			m_bFadingOut = true;
-			AnimateWidget.Opacity(m_wRoot, 0, 0.3);
+			AnimateWidget.Opacity(m_wRoot, 0, 1.0 / FADE_SECONDS);
 		}
-		
-		// Check if fully faded out and ready to destroy
-		if (m_bFadingOut && m_fElapsedTime >= m_fDisplayTime + 0.3)
+
+		if (phase == 2)
 		{
-			GetGame().GetCallqueue().Remove(Update);
-			
-			// Destroy widget
-			if (m_wRoot)
-			{
-				m_wRoot.RemoveFromHierarchy();
-			}
+			m_bTicking = false;
+			m_wRoot.RemoveFromHierarchy();
+			return;
 		}
+
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().CallLater(Tick, TICK_MS, false);
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
+	//! Stamp-ink colours: muted, printed, not neon.
 	protected Color GetColorForType(EL_ENotificationType type)
 	{
 		switch (type)
 		{
 			case EL_ENotificationType.SUCCESS:
-				return Color.FromSRGBA(46, 204, 113, 255); // Green
+				return Color.FromSRGBA(74, 110, 64, 255); // ledger green
 			case EL_ENotificationType.WARNING:
-				return Color.FromSRGBA(230, 126, 34, 255); // Orange
+				return Color.FromSRGBA(176, 118, 42, 255); // ochre
 			case EL_ENotificationType.ERROR:
 			case EL_ENotificationType.ROBBERY_ALERT:
-				return Color.FromSRGBA(231, 76, 60, 255); // Red
+				return Color.FromSRGBA(150, 40, 32, 255); // stamp red
 			case EL_ENotificationType.POLICE_ALERT:
-				return Color.FromSRGBA(52, 152, 219, 255); // Blue
+				return Color.FromSRGBA(40, 64, 112, 255); // carbon blue
 			case EL_ENotificationType.EMS_ALERT:
-				return Color.FromSRGBA(192, 57, 43, 255); // Dark Red
+				return Color.FromSRGBA(120, 30, 30, 255); // oxblood
 			case EL_ENotificationType.SMS_RECEIVED:
-				return Color.FromSRGBA(155, 89, 182, 255); // Purple
-			default:
-				return Color.FromSRGBA(149, 165, 166, 255); // Gray
+				return Color.FromSRGBA(92, 70, 110, 255); // violet copy ink
 		}
-		
-		return Color.FromSRGBA(149, 165, 166, 255);
+
+		return Color.FromSRGBA(122, 102, 64, 255); // brass, as LF_UITheme.Rule
 	}
 }

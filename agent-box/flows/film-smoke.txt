@@ -1,0 +1,3 @@
+# Filming smoke: no game calls. Proves `film.mjs flow` starts ffmpeg, plays a
+# flow, and stops the recording cleanly (mp4 + preview + steps sidecar).
+wait 1500

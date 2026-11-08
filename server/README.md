@@ -20,5 +20,7 @@ tools\cli serve       # boot the test server and stream logs (blocks)
 
 ## Production
 
-*Coming soon — example configs and launch scripts for a public server once the
-mod is playable. The test config above is for automation only.*
+`toolscli host start|stop|status|backup` runs the playtest server on
+`Missions/LF_PlaytestTown.conf` from a profile outside every worktree. It
+continues the latest save and backs saves up. See `../docs/playtest.md`.
+The test config above is for automation only.

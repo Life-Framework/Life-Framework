@@ -3,7 +3,7 @@ FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialo
   VerticalLayoutWidgetClass "{5000C2935D1AE4D8}" {
    {
     TextWidgetClass "{1C6C61F936FB30DB}" {
-     Text "Police Menu"
+     Text "#LF-Police_MenuTitle"
      "Font Size" 24
      Slot LayoutSlot "{C3E7F37113FA73D6}" {
       HorizontalAlign 1

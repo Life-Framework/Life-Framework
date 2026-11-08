@@ -5,6 +5,10 @@ class EL_CharacterATMComponentClass : ScriptComponentClass
 
 class EL_CharacterATMComponent : ScriptComponent
 {
+	//! How far the player may stand from an ATM's origin when the server takes a deposit or
+	//! withdraw. The ATM action shows at 3 m; the extra 2 m absorbs movement and latency.
+	static const float ATM_RANGE = 5.0;
+
 	protected ref EL_BankAccount m_BankAccount;
 
 	//------------------------------------------------------------------------------------------------
@@ -29,56 +33,145 @@ class EL_CharacterATMComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Menu entry points: forward a request to the server through the RPC
-	//! bridge. Safe to call from host and client alike; the engine routes
-	//! server-direction RPCs locally on a host.
+	//! bridge. A listen-server host calls the handler directly, the same as
+	//! the shop bridge, so the host's own requests never depend on a loopback.
 	void RequestDeposit(int amount)
 	{
-		Rpc(RpcAsk_Deposit, amount);
+		if (Replication.IsServer())
+			RpcAsk_Deposit(amount);
+		else
+			Rpc(RpcAsk_Deposit, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void RequestWithdraw(int amount)
 	{
-		Rpc(RpcAsk_Withdraw, amount);
+		if (Replication.IsServer())
+			RpcAsk_Withdraw(amount);
+		else
+			Rpc(RpcAsk_Withdraw, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void RequestBalance()
 	{
-		Rpc(RpcAsk_GetBalance);
+		if (Replication.IsServer())
+			RpcAsk_GetBalance();
+		else
+			Rpc(RpcAsk_GetBalance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param origin World position of the player.
+	//! \return true when an ATM stands within ATM_RANGE of origin. The server checks this on every
+	//! deposit and withdraw, so a menu kept open (or a forged RPC) cannot bank cash away from an ATM.
+	static bool IsAtATM(vector origin)
+	{
+		return EL_ActionSite.IsNear(origin, ATM_RANGE, "EL_ATMAction");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Refuses a cash request made away from an ATM. Logs the refusal and tells the player.
+	//! \return true when the request was refused.
+	protected bool RefuseAwayFromATM(IEntity character, string request, int amount, string playerUid)
+	{
+		if (IsAtATM(character.GetOrigin()))
+			return false;
+
+		EL_Debug.Warn("ATM", string.Format("%1 refused: not at an ATM (amount=%2 uid %3)", request, amount, playerUid));
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (playerManager)
+		{
+			int playerId = playerManager.GetPlayerIdFromControlledEntity(character);
+			if (playerId > 0)
+				EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ATM_Title", "#EL-ATM_TooFar", 3.0, EL_ENotificationType.WARNING);
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: deposit cash from the player's inventory into their account.
-	//! Always replies so the menu never hangs.
+	//! Removes exactly the requested amount; a partial removal is rolled back
+	//! so a failed deposit never consumes cash. Always replies so the menu
+	//! never hangs.
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Deposit(int amount)
 	{
 		IEntity character = GetOwner();
-		if (!character)
+		bool success = false;
+		int newBalance = 0;
+		EL_BankAccount account;
+
+		if (character)
+		{
+			string playerUid = EL_Utils.GetPlayerUID(character);
+			account = EL_ATMManager.GetOrCreate(playerUid);
+			if (!account)
+			{
+				EL_Debug.Error("ATM", "deposit rejected: player UID is unavailable");
+				ReplyDeposit(false, 0);
+				return;
+			}
+			if (RefuseAwayFromATM(character, "deposit", amount, playerUid))
+			{
+				ReplyDeposit(false, account.GetBalance());
+				return;
+			}
+			success = ServeDeposit(character, account, amount, playerUid);
+		}
+		else
 		{
 			EL_Debug.Error("ATM", string.Format("deposit rejected: no owning character (amount=%1)", amount));
-			Rpc(RpcDo_DepositResult, false, 0);
-			return;
 		}
 
-		string playerUid = EL_Utils.GetPlayerUID(character);
-		EL_BankAccount account = EL_ATMManager.GetOrCreate(playerUid);
-		if (!account)
+		if (account)
+			newBalance = account.GetBalance();
+		ReplyDeposit(success, newBalance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: withdraw from the account and pay out cash. Refuses when the
+	//! inventory cannot hold the payout, leaving the account untouched.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_Withdraw(int amount)
+	{
+		IEntity character = GetOwner();
+		bool success = false;
+		int newBalance = 0;
+		EL_BankAccount account;
+
+		if (character)
 		{
-			EL_Debug.Error("ATM", "deposit rejected: player UID is unavailable");
-			Rpc(RpcDo_DepositResult, false, 0);
-			return;
+			string playerUid = EL_Utils.GetPlayerUID(character);
+			account = EL_ATMManager.GetOrCreate(playerUid);
+			if (!account)
+			{
+				EL_Debug.Error("ATM", "withdraw rejected: player UID is unavailable");
+				ReplyWithdraw(false, 0);
+				return;
+			}
+			if (RefuseAwayFromATM(character, "withdraw", amount, playerUid))
+			{
+				ReplyWithdraw(false, account.GetBalance());
+				return;
+			}
+			success = ServeWithdraw(character, account, amount, playerUid);
+		}
+		else
+		{
+			EL_Debug.Error("ATM", string.Format("withdraw rejected: no owning character (amount=%1)", amount));
 		}
 
-		bool success = ServeDeposit(character, account, amount, playerUid);
-		Rpc(RpcDo_DepositResult, success, account.GetBalance());
+		if (account)
+			newBalance = account.GetBalance();
+		ReplyWithdraw(success, newBalance);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server seam of RpcAsk_Deposit, the cash-to-account boundary. Removes exactly the requested
 	//! amount of MoneyStack and credits it. A partial removal is rolled back so a failed deposit
-	//! never consumes cash and never credits the account.
+	//! never consumes cash and never credits the account. The caller has already checked range.
 	//! \return True when the full amount moved from cash to the account.
 	static bool ServeDeposit(IEntity character, notnull EL_BankAccount account, int amount, string playerUid)
 	{
@@ -110,35 +203,9 @@ class EL_CharacterATMComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: withdraw from the account and pay out cash. Always replies so the menu never hangs.
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_Withdraw(int amount)
-	{
-		IEntity character = GetOwner();
-		if (!character)
-		{
-			EL_Debug.Error("ATM", string.Format("withdraw rejected: no owning character (amount=%1)", amount));
-			Rpc(RpcDo_WithdrawResult, false, 0);
-			return;
-		}
-
-		string playerUid = EL_Utils.GetPlayerUID(character);
-		EL_BankAccount account = EL_ATMManager.GetOrCreate(playerUid);
-		if (!account)
-		{
-			EL_Debug.Error("ATM", "withdraw rejected: player UID is unavailable");
-			Rpc(RpcDo_WithdrawResult, false, 0);
-			return;
-		}
-
-		bool success = ServeWithdraw(character, account, amount, playerUid);
-		Rpc(RpcDo_WithdrawResult, success, account.GetBalance());
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server seam of RpcAsk_Withdraw, the account-to-cash boundary. All-or-nothing: refuses when
-	//! the balance is short (the balance never goes negative), and when the inventory cannot hold
-	//! the full payout it returns the amount to the account and takes back the partial cash.
+	//! Server seam of RpcAsk_Withdraw. All-or-nothing: when the payout cannot be made in full, the
+	//! amount goes back to the account and any partial cash is taken back. The caller has already
+	//! checked range.
 	//! \return True when the full amount moved from the account to cash.
 	static bool ServeWithdraw(IEntity character, notnull EL_BankAccount account, int amount, string playerUid)
 	{
@@ -182,7 +249,45 @@ class EL_CharacterATMComponent : ScriptComponent
 			EL_Debug.Error("ATM", "balance request rejected: player UID is unavailable");
 			return;
 		}
-		Rpc(RpcDo_Balance, account.GetBalance());
+		int balance = account.GetBalance();
+		if (IsLocalPlayer())
+			RpcDo_Balance(balance);
+		else
+			Rpc(RpcDo_Balance, balance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Delivers a deposit outcome to the owning client. A listen-server host has no wire hop for an
+	//! Owner-targeted RPC to itself, so the handler runs directly there (same as the shop bridge).
+	protected void ReplyDeposit(bool success, int newBalance)
+	{
+		if (IsLocalPlayer())
+			RpcDo_DepositResult(success, newBalance);
+		else
+			Rpc(RpcDo_DepositResult, success, newBalance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReplyWithdraw(bool success, int newBalance)
+	{
+		if (IsLocalPlayer())
+			RpcDo_WithdrawResult(success, newBalance);
+		else
+			Rpc(RpcDo_WithdrawResult, success, newBalance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsLocalPlayer()
+	{
+		IEntity player = GetOwner();
+		if (!player)
+			return false;
+
+		RplComponent rpl = RplComponent.Cast(player.FindComponent(RplComponent));
+		if (!rpl)
+			return false;
+
+		return rpl.IsOwner();
 	}
 
 	//------------------------------------------------------------------------------------------------

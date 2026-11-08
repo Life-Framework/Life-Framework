@@ -14,6 +14,10 @@ class EL_ShopMenu : ChimeraMenuBase
 	protected EditBoxWidget m_wSearchBox;
 	protected TextWidget m_wResultText;
 	protected Widget m_wItemList;
+	protected Widget m_wCloseButton;
+
+	//! Enter, Esc and the pad, polled every frame (LF_UIMenuInput).
+	protected ref LF_UIMenuInput m_Input = new LF_UIMenuInput();
 
 	protected string m_sSearchFilter;
 	protected ref array<ref EL_ShopCatalogItem> m_aCatalogItems;
@@ -29,8 +33,101 @@ class EL_ShopMenu : ChimeraMenuBase
 		m_wSearchBox = EditBoxWidget.Cast(m_wRoot.FindAnyWidget("SearchBox"));
 		m_wResultText = TextWidget.Cast(m_wRoot.FindAnyWidget("ResultText"));
 		m_wItemList = m_wRoot.FindAnyWidget("ItemList");
+		m_wCloseButton = m_wRoot.FindAnyWidget("CloseButton");
+		ScriptInvoker closeClick = LF_UIMenuInput.ClickInvoker(m_wCloseButton);
+		if (closeClick)
+			closeClick.Insert(OnClosePressed);
+		else
+			EL_Debug.Error("Shop", "close button missing or not a button; Esc still closes");
 
 		Refresh();
+		RebuildFocus();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuUpdate(float tDelta)
+	{
+		super.OnMenuUpdate(tDelta);
+
+		LF_EUIMenuInput pressed = m_Input.Tick();
+		if (pressed == LF_EUIMenuInput.BACK)
+		{
+			OnClosePressed();
+			return;
+		}
+
+		if (pressed == LF_EUIMenuInput.SELECT)
+			Press(m_Input.GetSelected());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_wCloseButton && m_Input.RingEntry(w) == m_wCloseButton)
+		{
+			OnClosePressed();
+			return true;
+		}
+
+		return super.OnClick(w, x, y, button);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! MenuSelect on a focused widget: Close, or a row Buy/Sell button.
+	protected void Press(Widget w)
+	{
+		if (!w)
+			return;
+
+		if (w == m_wCloseButton)
+		{
+			OnClosePressed();
+			return;
+		}
+
+		Widget cursor = w;
+		while (cursor)
+		{
+			EL_ShopMenuRowComponent row = EL_ShopMenuRowComponent.Cast(cursor.FindHandler(EL_ShopMenuRowComponent));
+			if (row)
+			{
+				row.Press(w);
+				return;
+			}
+
+			cursor = cursor.GetParent();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnClosePressed()
+	{
+		if (m_Input.Ready("Close"))
+			Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pad order: search box, each row Buy then Sell, Close. Rebuilt with the rows.
+	protected void RebuildFocus()
+	{
+		array<Widget> focus = {};
+		focus.Insert(m_wSearchBox);
+
+		if (m_wItemList)
+		{
+			Widget rowWidget = m_wItemList.GetChildren();
+			while (rowWidget)
+			{
+				EL_ShopMenuRowComponent row = EL_ShopMenuRowComponent.Cast(rowWidget.FindHandler(EL_ShopMenuRowComponent));
+				if (row)
+					row.GetFocusables(focus);
+
+				rowWidget = rowWidget.GetSibling();
+			}
+		}
+
+		focus.Insert(m_wCloseButton);
+		m_Input.SetFocusOrder(focus);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -71,7 +168,7 @@ class EL_ShopMenu : ChimeraMenuBase
 			return;
 
 		if (m_wShopTitle)
-			m_wShopTitle.SetText(m_ShopComponent.GetShopName());
+			m_wShopTitle.SetText(WidgetManager.Translate(m_ShopComponent.GetShopName()));
 
 		if (m_wCash && m_PlayerEntity)
 		{
@@ -97,7 +194,12 @@ class EL_ShopMenu : ChimeraMenuBase
 
 			if (hasFilter)
 			{
-				if (item.m_sDisplayName.IndexOf(m_sSearchFilter) == -1)
+				// Names can be #keys; search what the player reads, case-insensitively.
+				string shownName = WidgetManager.Translate(item.m_sDisplayName);
+				shownName.ToLower();
+				string filter = m_sSearchFilter;
+				filter.ToLower();
+				if (shownName.IndexOf(filter) == -1)
 					continue;
 			}
 			else if (shown >= MAX_BROWSE_ROWS)
@@ -124,6 +226,7 @@ class EL_ShopMenu : ChimeraMenuBase
 		}
 
 		UpdateResultText(shown, total);
+		RebuildFocus();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -207,6 +310,10 @@ class EL_ShopMenu : ChimeraMenuBase
 	//! Buy one unit of an item through the owning player's transaction bridge.
 	void BuyItem(EL_ShopCatalogItem item)
 	{
+		// One press can arrive by click and by the MenuSelect poll; trade once.
+		if (!item || !m_Input.Ready("Buy:" + item.m_ItemPrefab))
+			return;
+
 		if (m_CharacterShop && m_ShopRplId.IsValid() && item)
 			m_CharacterShop.RequestBuy(m_ShopRplId, item.m_ItemPrefab, 1);
 	}
@@ -216,6 +323,9 @@ class EL_ShopMenu : ChimeraMenuBase
 	void SellItem(EL_ShopCatalogItem item)
 	{
 		if (!m_CharacterShop || !m_ShopRplId.IsValid() || !item)
+			return;
+
+		if (!m_Input.Ready("Sell:" + item.m_ItemPrefab))
 			return;
 
 		int quantity = 1;

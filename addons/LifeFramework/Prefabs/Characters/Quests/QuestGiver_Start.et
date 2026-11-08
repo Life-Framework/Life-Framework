@@ -3,6 +3,7 @@ EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
  components {
   LF_QuestGiverComponent "{7949D44D2207BE39}" {
    m_sGiverId "Start"
+   m_sDisplayName "#LF-Quest_Giver_Start"
    m_aQuests {
     LF_QuestDefinition "{DABE7A6925B6E36E}" {
      m_sQuestId "intro_talk"

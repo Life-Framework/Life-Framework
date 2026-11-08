@@ -386,7 +386,13 @@ class EL_NotificationManagerComponent : ScriptComponent
 
 		string displayMessage = message;
 		if (displayMessage.StartsWith("#"))
-			displayMessage = WidgetManager.Translate(displayMessage, messageArg);
+		{
+			// The argument can be a key too (e.g. "#LF-Duty_OnDuty"); translate it on the client.
+			string displayArg = messageArg;
+			if (displayArg.StartsWith("#"))
+				displayArg = WidgetManager.Translate(displayArg);
+			displayMessage = WidgetManager.Translate(displayMessage, displayArg);
+		}
 		
 		// Create notification widget on HUD layer
 		WorkspaceWidget workspace = GetGame().GetWorkspace();

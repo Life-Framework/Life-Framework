@@ -20,14 +20,14 @@ class EL_RobWeaponAction : ScriptedUserAction
 		float currentTime = GetGame().GetWorld().GetWorldTime();
 		if (currentTime - m_fLastRobTime < m_fCooldown)
 		{
-			SetCannotPerformReason("Cooldown active");
+			SetCannotPerformReason("#LF-Rob_RecentlyRobbed");
 			return false;
 		}
 
 		// Only civilians can rob
 		if (!EL_RobAction.IsFactionAllowedToRob(EL_Utils.GetPlayerUid(user)))
 		{
-			SetCannotPerformReason("Only civilians can rob");
+			SetCannotPerformReason("#EL-Rob_CiviliansOnly");
 			return false;
 		}
 
@@ -35,7 +35,7 @@ class EL_RobWeaponAction : ScriptedUserAction
 		int policeOnDuty = GetPoliceOnDutyCount();
 		if (policeOnDuty < m_iMinPoliceOnDuty)
 		{
-			SetCannotPerformReason(string.Format("Need at least %1 police on duty", m_iMinPoliceOnDuty));
+			SetCannotPerformReason(WidgetManager.Translate("#LF-Rob_NeedPoliceCount", m_iMinPoliceOnDuty));
 			return false;
 		}
 

@@ -13,7 +13,7 @@ class EL_Test_ChatChannels : EL_Test
 	override void Run(EL_TestContext ctx)
 	{
 		ref LF_RoleplayChatStyle global = LF_RoleplayChat.Describe(LF_RoleplayChat.ResolveStyle(BaseChatChannel, "Global"));
-		ctx.EqualStr("Twatter", global.m_sName, "global channel is branded Twatter");
+		ctx.EqualStr("Classifieds", global.m_sName, "global channel is branded Classifieds");
 		ctx.EqualStr("twatter", global.m_sIconName, "global channel uses the twatter icon");
 		ctx.True(global.m_sPrefix.IsEmpty(), "global channel has no prefix");
 		ctx.True(global.m_bColoredBackground, "global channel uses a colored background");

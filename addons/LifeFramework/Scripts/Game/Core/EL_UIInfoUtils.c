@@ -9,7 +9,10 @@ class EL_UIInfoUtils
 
 		if (!resultInfo)
 		{
-			IEntitySource entitySource = SCR_BaseContainerTools.FindEntitySource(Resource.Load(prefab));
+			// Hold the resource: a temporary is released before the source is read
+			// ("Usage of released BaseResourceObject" on every shop catalog build).
+			Resource resource = Resource.Load(prefab);
+			IEntitySource entitySource = SCR_BaseContainerTools.FindEntitySource(resource);
 			if (entitySource)
 			{
 			    for(int nComponent, componentCount = entitySource.GetComponentCount(); nComponent < componentCount; nComponent++)
