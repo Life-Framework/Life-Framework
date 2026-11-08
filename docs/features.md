@@ -711,6 +711,13 @@
   `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
   A client reads the level replicated on `EL_PlayerJobComponent` (the career map is
   server-only), so fuel and taxi open on the client once the server levels the career.
+- ✅ **Pick up, Complete, and Abandon work on a dedicated client** (2026-11-08, LOGIC
+  `jobs/client-offers`): the offers read the server-only sign-up and run maps, so on a hosted
+  server "Pick up parcel" stayed greyed ("Sign up at the workplace first") after a good sign-up.
+  A client now reads the job replicated on `EL_PlayerJobComponent` (set at sign-up and when a
+  restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
+  inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
+  re-checks everything when the action runs.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
