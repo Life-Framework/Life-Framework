@@ -6,6 +6,9 @@
 // node get windowsHide so no console flashes either (see hidden()).
 //
 // LF_SHOW_WINDOWS=1 turns it off: processes start normally and visibly.
+// So does an ssh session (SSH_CONNECTION, e.g. a run on the test box): it has
+// no interactive window station, creating LF-Agents there kills the server
+// before it logs a line, and nothing it starts reaches a screen anyway.
 
 import { spawn, spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
@@ -15,7 +18,7 @@ const HELPER = join(dirname(fileURLToPath(import.meta.url)), "quiet-launch.ps1")
 const PWSH = join(process.env.SystemRoot || "C:\\Windows", "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
 
 export function showWindows() {
-  return process.env.LF_SHOW_WINDOWS === "1" || process.platform !== "win32";
+  return process.env.LF_SHOW_WINDOWS === "1" || !!process.env.SSH_CONNECTION || process.platform !== "win32";
 }
 
 // Spawn options for a console tool: never pop a console window.
