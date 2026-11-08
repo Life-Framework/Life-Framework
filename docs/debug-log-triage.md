@@ -101,6 +101,9 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[ELDebug:Spawn] spawn abandoned for playerId N: UID/account did not resolve after 60 retries` | OPEN if seen | The ~1 s registration retry is capped (`EL_SpawnLogic.MAX_REGISTER_RETRIES`). Seeing it means the backend never returned an identity or the account never loaded: check the persistence/identity lines above it. |
 | `[ELDebug:Quantity] stale transfer intent ignored for <entity>` | INFO | A keep-separate/merge intent older than `EL_QuantityComponent.INTENT_TTL_MS` (5 s) belonged to a move that failed; the later add ignores it. |
 | `[ELDebug:Jobs] job equipment ... did not fit the inventory; left at the player's feet` | BY DESIGN | Job tool grant (pickaxe/axe) found no room. The tool stays on the ground at the player. |
+| `[ELDebug:Host] watching $profile:lf-host-stop` / `stop requested, closing the game` | INFO | The playtest mission (`LF_PlaytestTown.conf`) listens for `toolscli host stop`, which writes that file; the server then closes normally and the engine writes its SHUTDOWN save. |
+| `[ELDebug:Host] removed a stale stop file from an earlier run` | BY DESIGN | A stop file survived a crash or a force kill. It is deleted at start so the new run does not close at once. |
+| `[ELDebug:Persistence] session ended without a shutdown save` logged right after `system state ACTIVE -> SHUTDOWN` and before `save completed (SHUTDOWN)` | FIXED | The check ran on the SHUTDOWN state change, which the engine enters before it writes the SHUTDOWN save. It now runs at component teardown (`OnDelete`), after the save. Seen on every `host stop` before the fix (2026-11-08). |
 
 ## How to add a row
 

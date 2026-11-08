@@ -172,13 +172,6 @@
   wanted bumps and police-menu reads do not lose the account mid-session
   (the old evict-on-write churn is gone).
 
-### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
-- ✅ Explicit persisted form of an account and its characters (faction,
-  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
-  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
-  its `version` field. `account/save-roundtrip` covers the
-  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
-
 ### `EL_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
   (one AUTO slot per playthrough via `EL_SaveSelection`), manual saves,
@@ -204,6 +197,22 @@
   manager scans the mission's saves and logs `EL_Debug.Error` ("started a NEW
   session while N save point(s) exist") when any exist; with none it logs a
   fresh-session info line. See `docs/persistence.md`.
+- ✅ **Playtest host** (`toolscli host start|stop|status|backup`, `tools/host/host.mjs`;
+  verified 2026-11-08 on the dedicated server): `start` runs `LF_PlaytestTown.conf`
+  from a profile outside every worktree (`%LOCALAPPDATA%LifeFrameworkhost`,
+  `LF_HOST_DIR`), passes `-loadSessionSave` when a save exists, and backs the saves
+  up first. `stop` writes `$profile:lf-host-stop`; `LF_HostStop` closes the game
+  normally so the engine writes the SHUTDOWN save, then the CLI backs the saves up.
+  The server owns the machine-wide `server-2001` lock while it runs. The
+  no-shutdown-save error now fires at teardown, not on the SHUTDOWN state change
+  that comes before the save. Selftest: `tools/validation/host-selftest.mjs`.
+
+### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
+- ✅ Explicit persisted form of an account and its characters (faction,
+  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
+  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
+  its `version` field. `account/save-roundtrip` covers the
+  export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
@@ -256,6 +265,13 @@
   (partial removals rolled back) and pay cash out on withdraw (all-or-nothing
   with balance restore), guarded by `EL_ATMManager.IsValidAmount`. No money
   from thin air.
+- ✅ **At the ATM only** (2026-11-07): the server refuses a
+  deposit or withdraw unless an entity carrying `EL_ATMAction` stands within
+  `EL_CharacterATMComponent.ATM_RANGE` (5 m) of the character
+  (`EL_ActionSite`, server-side search; the client names no site). A refusal
+  logs `deposit refused: not at an ATM` / `withdraw refused: ...` and shows
+  `#EL-ATM_TooFar`. On a listen host the requests and the replies call their
+  handlers directly, like the shop bridge. Test: `security/service-range`.
 
 ### `EL_BankAccountComponent` — `Feature/Banking/` (deleted 2026-08-30)
 - ❌ The second, unintegrated entity bank is **gone** (file deleted, no
@@ -652,6 +668,12 @@
   cells used to run sentences at double speed). `OnDelete` removes the tick.
   `LF_JailArrestableComponent` hosts `LF_JailEscort.Tick` on one live instance
   and hands it to the next registered one when that host is deleted.
+- ⚠️ Moving a connected prisoner to the cell, or pulling them back into it,
+  goes through `SCR_Global.TeleportPlayer` (the vanilla server-side player
+  teleport) instead of a server-only `SetOrigin` that the owning client can
+  overwrite; a stand-in with no player is still set directly (2026-11-07). A
+  prisoner seated in a vehicle moves the vehicle (vanilla behaviour). Not yet
+  checked on a dedicated server with a remote client.
 
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
@@ -671,7 +693,14 @@
   `CanViewWantedList`); the server answers the officer's client with parallel
   uid/name/level arrays (`RpcDo_EL_PoliceWantedList`, `SetWantedList`). The
   open action's offer reads `EL_AccountReplication`.
-- ✅ Fine denials log through `EL_Debug.Warn("Police", ...)` (2026-11-08).
+- ✅ **Hands-on only** (2026-11-07): arrest and fine refuse a
+  target that is not connected or stands beyond `EL_PoliceUtils.POLICE_REACH`
+  (5 m, the in-world arrest range) and show `#EL-Police_TooFar`. Neither the
+  framework nor vanilla has a restraint state, so reach is the requirement. A
+  fine that clears no wanted level (below `WANTED_STEP`, 1000) is refused with
+  `#EL-Fine_TooSmall`, so repeated small fines cannot drain a wanted player.
+  The fine RPC logs through `EL_Debug.Warn("Police", "fine refused: ...")`.
+  Test: `security/police-abuse`.
 - ⚠️ The menu layout does not render `GetWantedPlayers()` yet.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
@@ -699,8 +728,14 @@
   faction and does not write the police whitelist. Lower ranks still open the
   wanted list. DebugWorld places `Roadmap_Police_Armory` at `207 0 120` on
   `Street_Police.layer`.
-- ⚠️ Rank and on-duty seconds live on the account object and are not in
-  `EL_PlayerAccountRecord`, so a restart returns the officer to patrol.
+- ✅ **One armory draw per duty shift** (2026-11-07): a draw
+  that hands out any kit line marks the account; a second draw logs
+  `draw refused: <uid> already drew a kit this shift` and shows
+  `#EL-Rank_AlreadyDrawn`. `OnDutyChanged` clears the mark. Test:
+  `security/police-abuse`.
+- ⚠️ Rank, on-duty seconds, and the shift draw mark live on the account object
+  and are not in `EL_PlayerAccountRecord`, so a restart returns the officer to
+  patrol and allows one more draw.
 
 ### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
 - ✅ One convoy. A member of the organization that owns the hideout hauls
@@ -743,8 +778,11 @@
   workspace widget on `{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout`.
   It lists the name, the fund, and the processing-slot upgrade, and shows an
   empty state before create. Create, deposit, withdraw, buy-processing, and
-  close stay on the character RPCs. Cash and membership still go through the
-  server.
+  close stay on the character RPCs. Fund deposit and withdraw are refused
+  unless an entity carrying `EL_OrganizationDeskAction` stands within
+  `EL_OrganizationPlayer.DESK_RANGE` (5 m) of the character
+  (`#EL-Org_TooFar`; test `security/service-range`, 2026-11-07). Cash and
+  membership still go through the server.
 - ✅ `ExportAll` / `ApplyAll` replace the cache, so a second apply does not
   compound the fund. The game-mode serializer writes these records at version 2,
   after survival. A version 1 save has no organization payload and does not
@@ -879,7 +917,7 @@
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
 - ✅ **A restart drops no ground key** (2026-11-07, test `restart/vehicle-restore-no-ground-key`, verified 2026-11-07): `RestoreWorld` / `RestoreVehicle` put each out-in-world vehicle back on the pad, locked as saved, without spawning a key. Before, every restart left a fresh key beside the pad for every such vehicle (anyone could take the car, and keys piled up). The owner re-keys through the existing owner-only flow: garage store, then retrieve (retrieve spawns a key when the session has none), or an extra key at the lot.
 - ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `186 0 102.1` on `Street_Vehicles.layer`, with store and retrieve. The shell sits 5.9 m north of that point, so the player stands outside the wall. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
-- ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
+- ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, and refuses a vehicle that is not within the same garage's radius as the player (`EL_VehicleGarageComponent.IsVehicleAtPlayersGarage`, `#LF-Garage_VehicleTooFar`, test `security/garage-store-range`, 2026-11-07), then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
 
 ## UI / Layouts / Localization
 
@@ -925,6 +963,12 @@
   off. The open key runs the same check on the client and logs
   `open refused` instead of opening. `EL_DevGate.IsAllowed` has the LOGIC test
   `debug-menu/gate` (2026-11-07).
+- ✅ The playtest mission `Missions/LF_PlaytestTown.conf` (`LF_MissionHeader`,
+  `Core/LF_MissionHeader.c`) runs DebugWorld with `m_bLF_DevToolsOff 1`: the
+  header overrides the DebugWorld game mode opt-in, so only administrators
+  pass `EL_DevGate` there. A bare world (Workbench play, `toolscli test`) has
+  no LF header and keeps the opt-in. LOGIC test `host/playtest-mission`
+  (2026-11-08).
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`

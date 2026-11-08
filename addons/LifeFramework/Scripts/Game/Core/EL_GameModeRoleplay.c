@@ -22,10 +22,18 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	protected bool m_bEL_AccountRefreshRunning;
 
 	//------------------------------------------------------------------------------------------------
-	//! \return true when this game mode opts every player into dev tools.
+	//! \return true when this game mode opts every player into dev tools and the mission header
+	//! (LF_MissionHeader, e.g. the playtest mission) does not close them.
 	bool AreDevToolsEnabled()
 	{
-		return m_bDevToolsEnabled;
+		return LF_MissionHeader.ResolveDevToolsEnabled(m_bDevToolsEnabled, GetGame().GetMissionHeader());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override void OnGameStart()
+	{
+		super.OnGameStart();
+		LF_HostStop.StartIfRequested();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -345,6 +345,9 @@ class LF_PoliceRanks
 		if (!account)
 			return;
 
+		// A shift boundary in either direction opens the next shift's single armory draw.
+		account.SetArmoryDrawnThisShift(false);
+
 		if (nowOnDuty)
 		{
 			account.StartDutyClock(NowMs());
@@ -369,6 +372,16 @@ class LF_PoliceRanks
 		if (!IsRankUsable(account.GetPoliceRank()))
 		{
 			Note(string.Format("draw refused: rank %1 is not usable", account.GetPoliceRank()));
+			return false;
+		}
+
+		if (account.HasDrawnArmoryThisShift())
+		{
+			// One kit per duty shift. Without this an officer could draw kits without end and
+			// hand them to anyone. Going off duty opens the next shift's draw.
+			s_sLastError = string.Format("draw refused: %1 already drew a kit this shift", uid);
+			EL_Debug.Warn("Ranks", s_sLastError);
+			NotifyOfficer(officer, "#EL-Rank_AlreadyDrawn");
 			return false;
 		}
 
@@ -406,6 +419,11 @@ class LF_PoliceRanks
 
 			inserted++;
 		}
+
+		// Any weapon handed out spends the shift's draw, so a partly full inventory cannot be
+		// retried for more kit lines.
+		if (inserted > 0)
+			account.SetArmoryDrawnThisShift(true);
 
 		if (inserted != kit.Count())
 			return false;
@@ -567,6 +585,17 @@ class LF_PoliceRanks
 			return 0;
 
 		return Math.Round(GetGame().GetWorld().GetWorldTime());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void NotifyOfficer(IEntity officer, string messageKey)
+	{
+		if (!officer || !GetGame() || !GetGame().GetPlayerManager())
+			return;
+
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
+		if (playerId > 0)
+			EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", messageKey, 3.0, EL_ENotificationType.WARNING);
 	}
 
 	//------------------------------------------------------------------------------------------------
