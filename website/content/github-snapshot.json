@@ -1,473 +1,1148 @@
 {
-  "fetchedAt": "2026-11-08T08:45:53.899Z",
-  "milestone": {
-    "number": 1,
-    "title": "M1 Playtest Town",
-    "description": "The DebugWorld street becomes a signposted test town; every loop works on a dedicated server with several clients and is proven by the visual harness. Plan: docs/roadmap/m1-playtest-town.md",
-    "url": "https://github.com/Life-Framework/Life-Framework/milestone/1",
-    "state": "open",
-    "open": 20,
-    "closed": 9,
-    "dueOn": null
-  },
-  "issues": [
+  "fetchedAt": "2026-11-08T09:43:24.336Z",
+  "milestones": [
     {
-      "number": 126,
-      "title": "M1: M1-28 Light survival needs: hunger and thirst never kill",
-      "state": "closed",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/126",
-      "labels": [
-        "m1",
-        "scope"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:38:08Z",
-      "closedAt": "2026-11-08T08:38:08Z",
-      "excerpt": "Decision \"Survival needs are light\" (docs/decisions.md, 2026-11-08): hunger and thirst never kill. Today EL_SurvivalStats.UpdateStats drains hunger at 0.1/s and thirst at 0.15/s, so a player reaches 20 within 9 to 13 minutes. Below 20, h...",
-      "wave": 3
-    },
-    {
-      "number": 125,
-      "title": "M1: M1-27 Murder makes you wanted; the spawn is a safe zone",
+      "id": "M1",
+      "number": 1,
+      "title": "M1 Playtest Town",
+      "description": "The DebugWorld street becomes a signposted test town; every loop works on a dedicated server with several clients and is proven by the visual harness. Plan: docs/roadmap/m1-playtest-town.md",
+      "url": "https://github.com/Life-Framework/Life-Framework/milestone/1",
       "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/125",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:23:00Z",
-      "closedAt": null,
-      "excerpt": "Decision \"Killing anyone makes you wanted for murder; the spawn is a safe zone\" (docs/decisions.md, 2026-11-08). Today only robberies, breaches, and the hospital raise wanted (EL_RobAction, EL_RobVehicleAction, EL_RobWeaponAction, LF_Bre...",
-      "wave": 3
+      "issues": [
+        {
+          "number": 126,
+          "title": "M1: M1-28 Light survival needs: hunger and thirst never kill",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/126",
+          "labels": [
+            "m1",
+            "scope"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T08:38:08Z",
+          "excerpt": "Decision \"Survival needs are light\" (docs/decisions.md, 2026-11-08): hunger and thirst never kill. Today EL_SurvivalStats.UpdateStats drains hunger at 0.1/s and thirst at 0.15/s, so a player reaches 20 within 9 to 13 minutes.",
+          "wave": 3
+        },
+        {
+          "number": 125,
+          "title": "M1: M1-27 Murder makes you wanted; the spawn is a safe zone",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/125",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Decision \"Killing anyone makes you wanted for murder; the spawn is a safe zone\" (docs/decisions.md, 2026-11-08).",
+          "wave": 3
+        },
+        {
+          "number": 121,
+          "title": "M1-26: Wake up in hospital",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/121",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Decision 2026-11-08 \"You wake up in hospital\" (docs/decisions.md, Gameplay). Today the death screen's Respawn button (EL_DeathScreen → SCR_RespawnComponent.RpcAsk_EL_Respawn → EL_SpawnLogic.RespawnPlayer_S) puts the player back at a...",
+          "wave": 2
+        },
+        {
+          "number": 120,
+          "title": "M1-25: One-street town layout",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/120",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T09:17:15Z",
+          "excerpt": "Decision 2026-11-08 \"Every M1 site moves onto one street now\" (docs/decisions.md, Delivery). The M1 sites are spread over x 94 to 243 across the Street_ layers that M1-00 (#115) split out of Roadmap.layer.",
+          "wave": 2
+        },
+        {
+          "number": 110,
+          "title": "M1: M1-13 Counter screens: ATM terminal and shop price list on the UI kit",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/110",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "ATM and shop are the two menus every player uses. They are old MenuManager menus; the shop menu opens for the local player regardless of who interacted (features.md).",
+          "wave": 2
+        },
+        {
+          "number": 109,
+          "title": "M1: M1-24 Playtest release: guide, Workshop, showcase",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/109",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "M1 is published on the Workshop, hosted from the maintainer's PC, and collects feedback through GitHub issues. docs/playtest.md still describes Workbench play.",
+          "wave": 4
+        },
+        {
+          "number": 108,
+          "title": "M1: M1-23 Journey proof on a dedicated server",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/108",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "M1 is done only when every loop is proven from the player's view on a dedicated server with several clients, including a restart.",
+          "wave": 4
+        },
+        {
+          "number": 107,
+          "title": "M1: M1-22 Town tidy",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/107",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "A stranger walks past debug clutter: visible EL_DebugAreaBoundary markers on ATM, Shops, Jobs, NPCs, Survival, chain layers, test fixtures (PRFeatureCrate 176,130, Tests.layer), and duplicate stations. The town spans x 94 to 243.",
+          "wave": 3
+        },
+        {
+          "number": 106,
+          "title": "M1: M1-21 Jail you can see",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/106",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Arrest, escort, and the timed sentence work (LF_Jail.c), and #77 persists the sentence, but the prisoner gets no in-world statement of the sentence and release is silent.",
+          "wave": 3
+        },
+        {
+          "number": 105,
+          "title": "M1: M1-20 Alarm and dispatch",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/105",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Police learn about a robbery only from a toast (and toasts are broken until #97). Decisions: feedback from the world first; period comms (radios, pagers); major crimes need police online.",
+          "wave": 3
+        },
+        {
+          "number": 104,
+          "title": "M1: M1-19 Fine as a paper ticket",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/104",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Fines are a remote menu action that takes cash from a wanted player at any distance (EL_PoliceMenu.RpcAsk_EL_PoliceFine; #73 adds a range). The police menu is otherwise a stub. Decision \"In-world first\" lists a fine ticket as a real item.",
+          "wave": 3
+        },
+        {
+          "number": 103,
+          "title": "M1: M1-18 Guided arrival chain",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/103",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Decision \"Short guided arrival, then free\". The quest giver at spawn (QuestGiver_Start at 110,137) offers test quests (talk, kill, timed). The quest system has no events for job runs, ATM deposits, or reading a sign.",
+          "wave": 3
+        },
+        {
+          "number": 102,
+          "title": "M1: M1-17 Organization registry: ledger desk and invite by facing",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/102",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "The org desk screen lists name, fund, and the processing upgrade, but invite/kick exist only in EL_OrganizationManager and are unreachable from the world.",
+          "wave": 3
+        },
+        {
+          "number": 101,
+          "title": "M1: M1-16 Garage it to keep it: garage pad, ledger card, impound",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/101",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Decision \"Garage it to keep it\". Today retrieve spawns at the lot pad, not the garage; the LF_Garage catalog screen is unreachable from the world and duplicates the lot's buy path; vehicles left on the street have no rule.",
+          "wave": 3
+        },
+        {
+          "number": 100,
+          "title": "M1: M1-15 Hideout stash that holds items",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/100",
+          "labels": [
+            "m1",
+            "scope"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Roadmap_Hideout_Stash is a crate mesh with no storage component (features.md, playtest.md). An organization cannot keep anything.",
+          "wave": 2
+        },
+        {
+          "number": 99,
+          "title": "M1: M1-14 Contraband: real cargo and real drop points",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/99",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "The convoy hauls RowanBerries.et between two EL_DebugAreaBoundary markers (Roadmap_Convoy_Start/_Drop). A stranger cannot tell it is contraband or where to go.",
+          "wave": 2
+        },
+        {
+          "number": 98,
+          "title": "M1: M1-12 One player interaction menu",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/98",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T09:25:42Z",
+          "excerpt": "Decision \"One player interaction menu\": introduce yourself, show ID, give cash or an item, and role actions (search, cuff, fine) on the person in front of you.",
+          "wave": 2
+        },
+        {
+          "number": 96,
+          "title": "M1: M1-11 Police station on the street: duty desk and wanted board",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/96",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "docs/playtest.md says go on duty at Roadmap_Police_Desk, but that desk has no components at all (Roadmap.layer, 204 0 120); duty lives at PoliceStation_Debug (170,120) on another layer.",
+          "wave": 2
+        },
+        {
+          "number": 95,
+          "title": "M1: M1-10 Progression survives a restart",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/95",
+          "labels": [
+            "m1",
+            "scope"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T08:52:46Z",
+          "excerpt": "Job careers and levels, police rank and on-duty seconds, licenses, and quest turn-ins are not in EL_PlayerAccountRecord; a restart returns officers to patrol and couriers to level 1 (features.md: LF_PoliceRanks ⚠, Jobs ⚠).",
+          "wave": 2
+        },
+        {
+          "number": 94,
+          "title": "M1: M1-09 Place the signs: one per site, town map at spawn",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/94",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "M1 \"done when\": a sign at spawn explains the loop, every site has a sign saying what it is and how to use it.",
+          "wave": 2
+        },
+        {
+          "number": 93,
+          "title": "M1: M1-08 Registration form and a real ID card",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/93",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T08:25:14Z",
+          "excerpt": "The name/age screen is never opened: EL_CharacterCreationManager.CreateAndSpawnDefaultCharacter makes every character \"Default Citizen\". IDCard.et exists but nobody receives it, and EL_ShowIDAction shows a toast.",
+          "wave": 1
+        },
+        {
+          "number": 92,
+          "title": "M1: M1-07 Pay at the counter: remove the passive paycheck",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/92",
+          "labels": [
+            "m1",
+            "scope"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T07:48:50Z",
+          "excerpt": "EL_PlayerJobComponent pays $700 cash every 300 s to every job including UNEMPLOYED (EL_PlayerJobComponent.c ~line 63).",
+          "wave": 1
+        },
+        {
+          "number": 91,
+          "title": "M1: M1-06 Filming harness",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/91",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Direction: \"Filming harness records the same runs as video: short clips attached to PRs\". Nothing records video on main. Draft #111 (ws/filming-harness) is the spike: ffmpeg ddagrab + h264_nvenc, film a flow, clips as release assets.",
+          "wave": 1
+        },
+        {
+          "number": 90,
+          "title": "M1: M1-05 Multi-client harness on a dedicated server",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/90",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T08:36:16Z",
+          "excerpt": "The harness runs only in Workbench play as host. M1 must prove every loop on a dedicated server with several clients. No dedicated + multi-client + restart session has ever been recorded.",
+          "wave": 1
+        },
+        {
+          "number": 89,
+          "title": "M1: M1-04 Carried inventory and cash survive a restart",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/89",
+          "labels": [
+            "m1",
+            "scope"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T08:36:04Z",
+          "excerpt": "Every restart hands a fresh starter kit: carried cash and items are not persisted (audit). \"Restart keeps what they earned\" fails for everyone who did not bank at the ATM.",
+          "wave": 1
+        },
+        {
+          "number": 88,
+          "title": "M1: M1-03 Playtest host: mission, server config, `cli host`, auto-load",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/88",
+          "labels": [
+            "m1",
+            "scope"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T07:43:14Z",
+          "excerpt": "Playtests are hosted from the maintainer's PC on a dedicated server. Today the only scenario is the test-suite mission, and #77 documents -loadSessionSave but nothing loads the last save on restart, so \"restart keeps what they earned\"...",
+          "wave": 1
+        },
+        {
+          "number": 87,
+          "title": "M1: M1-02 Town manifest and `report town`",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/87",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T08:16:19Z",
+          "excerpt": "report roadmap only walks Roadmap_ entities. The town also includes the ATM (ATM_Debug 139,130), shops (144,130), traders, job center (118,120), spawn (100-110,130-137) and the police station (170,120).",
+          "wave": 1
+        },
+        {
+          "number": 86,
+          "title": "M1: M1-01 Diegetic sign system with a Read card",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/86",
+          "labels": [
+            "m1",
+            "scope",
+            "needs-game"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T08:02:45Z",
+          "excerpt": "Decision \"Signs are diegetic, with a Read for detail\". The only signs today are EL_MiningSign and EL_WhitelistSign, which draw floating debug text through DebugTextWorldSpace (Scripts/Game/Components/Signs/EL_TextLabelComponent.c).",
+          "wave": 1
+        },
+        {
+          "number": 85,
+          "title": "M1: M1-00 Split the street into site layers",
+          "state": "closed",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/85",
+          "labels": [
+            "m1",
+            "scope"
+          ],
+          "assignees": [],
+          "closedAt": "2026-11-08T07:36:21Z",
+          "excerpt": "Roadmap.layer holds 24 sites and AGENTS.md forbids editing it unless a task names it. Every M1 site scope would collide on that one file. Splitting it once lets later scopes each own a layer.",
+          "wave": 1
+        }
+      ]
     },
     {
-      "number": 121,
-      "title": "M1-26: Wake up in hospital",
+      "id": "M2",
+      "number": 2,
+      "title": "M2",
+      "description": "Living Town. Four themes: moderation (incident log + Game Master tools), medic (downed state + EMS + ambulance), comms (payphones, pagers, dispatch board), investigation (witnesses + evidence). Closes with Everon placement from reusable site prefabs. Outline: docs/roadmap/m2-outline.md",
+      "url": "https://github.com/Life-Framework/Life-Framework/milestone/2",
       "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/121",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:09:21Z",
-      "closedAt": null,
-      "excerpt": "Decision 2026-11-08 \"You wake up in hospital\" (docs/decisions.md, Gameplay). Today the death screen's Respawn button (EL_DeathScreen → SCR_RespawnComponent.RpcAsk_EL_Respawn → EL_SpawnLogic.RespawnPlayer_S) puts the player back at a civi...",
-      "wave": 2
-    },
-    {
-      "number": 120,
-      "title": "M1-25: One-street town layout",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/120",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:10:23Z",
-      "closedAt": null,
-      "excerpt": "Decision 2026-11-08 \"Every M1 site moves onto one street now\" (docs/decisions.md, Delivery). The M1 sites are spread over x 94 to 243 across the Street_ layers that M1-00 (#115) split out of Roadmap.layer. A stranger should walk one stre...",
-      "wave": 2
-    },
-    {
-      "number": 110,
-      "title": "M1: M1-13 Counter screens: ATM terminal and shop price list on the UI kit",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/110",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-07T22:15:53Z",
-      "closedAt": null,
-      "excerpt": "ATM and shop are the two menus every player uses. They are old MenuManager menus; the shop menu opens for the local player regardless of who interacted (features.md). Decision: when a UI is right (typing an amount), it should feel like a...",
-      "wave": 2
-    },
-    {
-      "number": 109,
-      "title": "M1: M1-24 Playtest release: guide, Workshop, showcase",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/109",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:24:45Z",
-      "closedAt": null,
-      "excerpt": "M1 is published on the Workshop, hosted from the maintainer's PC, and collects feedback through GitHub issues. docs/playtest.md still describes Workbench play.",
-      "wave": 4
-    },
-    {
-      "number": 108,
-      "title": "M1: M1-23 Journey proof on a dedicated server",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/108",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-07T22:15:47Z",
-      "closedAt": null,
-      "excerpt": "M1 is done only when every loop is proven from the player's view on a dedicated server with several clients, including a restart.",
-      "wave": 4
-    },
-    {
-      "number": 107,
-      "title": "M1: M1-22 Town tidy",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/107",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:10:24Z",
-      "closedAt": null,
-      "excerpt": "A stranger walks past debug clutter: visible EL_DebugAreaBoundary markers on ATM, Shops, Jobs, NPCs, Survival, chain layers, test fixtures (PRFeatureCrate 176,130, Tests.layer), and duplicate stations. The town spans x 94 to 243.",
-      "wave": 3
-    },
-    {
-      "number": 106,
-      "title": "M1: M1-21 Jail you can see",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/106",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:24:43Z",
-      "closedAt": null,
-      "excerpt": "Arrest, escort, and the timed sentence work (LF_Jail.c), and #77 persists the sentence, but the prisoner gets no in-world statement of the sentence and release is silent.",
-      "wave": 3
-    },
-    {
-      "number": 105,
-      "title": "M1: M1-20 Alarm and dispatch",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/105",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:24:41Z",
-      "closedAt": null,
-      "excerpt": "Police learn about a robbery only from a toast (and toasts are broken until #97). Decisions: feedback from the world first; period comms (radios, pagers); major crimes need police online.",
-      "wave": 3
-    },
-    {
-      "number": 104,
-      "title": "M1: M1-19 Fine as a paper ticket",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/104",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:07:55Z",
-      "closedAt": null,
-      "excerpt": "Fines are a remote menu action that takes cash from a wanted player at any distance (EL_PoliceMenu.RpcAsk_EL_PoliceFine; #73 adds a range). The police menu is otherwise a stub. Decision \"In-world first\" lists a fine ticket as a real item.",
-      "wave": 3
-    },
-    {
-      "number": 103,
-      "title": "M1: M1-18 Guided arrival chain",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/103",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-07T22:15:24Z",
-      "closedAt": null,
-      "excerpt": "Decision \"Short guided arrival, then free\". The quest giver at spawn (QuestGiver_Start at 110,137) offers test quests (talk, kill, timed). The quest system has no events for job runs, ATM deposits, or reading a sign.",
-      "wave": 3
-    },
-    {
-      "number": 102,
-      "title": "M1: M1-17 Organization registry: ledger desk and invite by facing",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/102",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-07T22:15:22Z",
-      "closedAt": null,
-      "excerpt": "The org desk screen lists name, fund, and the processing upgrade, but invite/kick exist only in EL_OrganizationManager and are unreachable from the world.",
-      "wave": 3
-    },
-    {
-      "number": 101,
-      "title": "M1: M1-16 Garage it to keep it: garage pad, ledger card, impound",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/101",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-07T22:15:19Z",
-      "closedAt": null,
-      "excerpt": "Decision \"Garage it to keep it\". Today retrieve spawns at the lot pad, not the garage; the LF_Garage catalog screen is unreachable from the world and duplicates the lot's buy path; vehicles left on the street have no rule.",
-      "wave": 3
-    },
-    {
-      "number": 100,
-      "title": "M1: M1-15 Hideout stash that holds items",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/100",
-      "labels": [
-        "m1",
-        "scope"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-07T22:15:16Z",
-      "closedAt": null,
-      "excerpt": "Roadmap_Hideout_Stash is a crate mesh with no storage component (features.md, playtest.md). An organization cannot keep anything.",
-      "wave": 2
-    },
-    {
-      "number": 99,
-      "title": "M1: M1-14 Contraband: real cargo and real drop points",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/99",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-07T22:15:15Z",
-      "closedAt": null,
-      "excerpt": "The convoy hauls RowanBerries.et between two EL_DebugAreaBoundary markers (Roadmap_Convoy_Start/_Drop). A stranger cannot tell it is contraband or where to go.",
-      "wave": 2
-    },
-    {
-      "number": 98,
-      "title": "M1: M1-12 One player interaction menu",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/98",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:10:21Z",
-      "closedAt": null,
-      "excerpt": "Decision \"One player interaction menu\": introduce yourself, show ID, give cash or an item, and role actions (search, cuff, fine) on the person in front of you. Today these are scattered: EL_ShowIDAction, LF_JailArrestAction, EL_Confiscat...",
-      "wave": 2
-    },
-    {
-      "number": 96,
-      "title": "M1: M1-11 Police station on the street: duty desk and wanted board",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/96",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:36:39Z",
-      "closedAt": null,
-      "excerpt": "docs/playtest.md says go on duty at Roadmap_Police_Desk, but that desk has no components at all (Roadmap.layer, 204 0 120); duty lives at PoliceStation_Debug (170,120) on another layer. The wanted list is a menu stub whose layout does no...",
-      "wave": 2
-    },
-    {
-      "number": 95,
-      "title": "M1: M1-10 Progression survives a restart",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/95",
-      "labels": [
-        "m1",
-        "scope"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-07T22:15:08Z",
-      "closedAt": null,
-      "excerpt": "Job careers and levels, police rank and on-duty seconds, licenses, and quest turn-ins are not in EL_PlayerAccountRecord; a restart returns officers to patrol and couriers to level 1 (features.md: LF_PoliceRanks ⚠, Jobs ⚠).",
-      "wave": 2
-    },
-    {
-      "number": 94,
-      "title": "M1: M1-09 Place the signs: one per site, town map at spawn",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/94",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:07:52Z",
-      "closedAt": null,
-      "excerpt": "M1 \"done when\": a sign at spawn explains the loop, every site has a sign saying what it is and how to use it.",
-      "wave": 2
-    },
-    {
-      "number": 93,
-      "title": "M1: M1-08 Registration form and a real ID card",
-      "state": "closed",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/93",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:25:14Z",
-      "closedAt": "2026-11-08T08:25:14Z",
-      "excerpt": "The name/age screen is never opened: EL_CharacterCreationManager.CreateAndSpawnDefaultCharacter makes every character \"Default Citizen\". IDCard.et exists but nobody receives it, and EL_ShowIDAction shows a toast. Decision \"One player int...",
-      "wave": 1
-    },
-    {
-      "number": 92,
-      "title": "M1: M1-07 Pay at the counter: remove the passive paycheck",
-      "state": "closed",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/92",
-      "labels": [
-        "m1",
-        "scope"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T07:48:50Z",
-      "closedAt": "2026-11-08T07:48:50Z",
-      "excerpt": "EL_PlayerJobComponent pays $700 cash every 300 s to every job including UNEMPLOYED (EL_PlayerJobComponent.c ~line 63). It is invisible money that dwarfs the $150 till and the $200 convoy, and it is hard-coded (decision: no prices in syst...",
-      "wave": 1
-    },
-    {
-      "number": 91,
-      "title": "M1: M1-06 Filming harness",
-      "state": "open",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/91",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-07T22:19:09Z",
-      "closedAt": null,
-      "excerpt": "Direction: \"Filming harness records the same runs as video: short clips attached to PRs\". Nothing records video on main. Draft #111 (ws/filming-harness) is the spike: ffmpeg ddagrab + h264_nvenc, film a flow, clips as release assets. Thi...",
-      "wave": 1
-    },
-    {
-      "number": 90,
-      "title": "M1: M1-05 Multi-client harness on a dedicated server",
-      "state": "closed",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/90",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:36:16Z",
-      "closedAt": "2026-11-08T08:36:16Z",
-      "excerpt": "The harness runs only in Workbench play as host. M1 must prove every loop on a dedicated server with several clients. No dedicated + multi-client + restart session has ever been recorded.",
-      "wave": 1
-    },
-    {
-      "number": 89,
-      "title": "M1: M1-04 Carried inventory and cash survive a restart",
-      "state": "closed",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/89",
-      "labels": [
-        "m1",
-        "scope"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:36:05Z",
-      "closedAt": "2026-11-08T08:36:04Z",
-      "excerpt": "Every restart hands a fresh starter kit: carried cash and items are not persisted (audit). \"Restart keeps what they earned\" fails for everyone who did not bank at the ATM.",
-      "wave": 1
-    },
-    {
-      "number": 88,
-      "title": "M1: M1-03 Playtest host: mission, server config, `cli host`, auto-load",
-      "state": "closed",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/88",
-      "labels": [
-        "m1",
-        "scope"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T07:43:14Z",
-      "closedAt": "2026-11-08T07:43:14Z",
-      "excerpt": "Playtests are hosted from the maintainer's PC on a dedicated server. Today the only scenario is the test-suite mission, and #77 documents -loadSessionSave but nothing loads the last save on restart, so \"restart keeps what they earned\" ca...",
-      "wave": 1
-    },
-    {
-      "number": 87,
-      "title": "M1: M1-02 Town manifest and `report town`",
-      "state": "closed",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/87",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:16:19Z",
-      "closedAt": "2026-11-08T08:16:19Z",
-      "excerpt": "report roadmap only walks Roadmap_ entities. The town also includes the ATM (ATM_Debug 139,130), shops (144,130), traders, job center (118,120), spawn (100-110,130-137) and the police station (170,120). M1 needs one list of every site, i...",
-      "wave": 1
-    },
-    {
-      "number": 86,
-      "title": "M1: M1-01 Diegetic sign system with a Read card",
-      "state": "closed",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/86",
-      "labels": [
-        "m1",
-        "scope",
-        "needs-game"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T08:02:45Z",
-      "closedAt": "2026-11-08T08:02:45Z",
-      "excerpt": "Decision \"Signs are diegetic, with a Read for detail\". The only signs today are EL_MiningSign and EL_WhitelistSign, which draw floating debug text through DebugTextWorldSpace (Scripts/Game/Components/Signs/EL_TextLabelComponent.c). That...",
-      "wave": 1
-    },
-    {
-      "number": 85,
-      "title": "M1: M1-00 Split the street into site layers",
-      "state": "closed",
-      "url": "https://github.com/Life-Framework/Life-Framework/issues/85",
-      "labels": [
-        "m1",
-        "scope"
-      ],
-      "assignees": [],
-      "updatedAt": "2026-11-08T07:36:21Z",
-      "closedAt": "2026-11-08T07:36:21Z",
-      "excerpt": "Roadmap.layer holds 24 sites and AGENTS.md forbids editing it unless a task names it. Every M1 site scope would collide on that one file. Splitting it once lets later scopes each own a layer.",
-      "wave": 1
+      "issues": [
+        {
+          "number": 148,
+          "title": "M2 epic: Investigation (witnesses + evidence)",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/148",
+          "labels": [
+            "m2",
+            "epic"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Gives police work between chases and makes the vague-description wanted system real: witnesses describe, evidence connects, an ID check identifies.",
+          "wave": null
+        },
+        {
+          "number": 147,
+          "title": "M2 epic: Comms (payphones, pagers, dispatch board)",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/147",
+          "labels": [
+            "m2",
+            "epic"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Every service (police, medic, taxi, mechanic) needs a way to be called. 1989 comms only, no phone UI.",
+          "wave": null
+        },
+        {
+          "number": 146,
+          "title": "M2 epic: Medic (downed state + EMS + ambulance)",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/146",
+          "labels": [
+            "m2",
+            "epic"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "A third role with its own loop. Reforger's medical simulation does half the work, and the M1 hospital respawn (#121) gives it a destination.",
+          "wave": null
+        },
+        {
+          "number": 145,
+          "title": "M2 epic: Moderation (incident log + Game Master tools)",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/145",
+          "labels": [
+            "m2",
+            "epic"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Moderation decides whether a life server survives. An incident log the server keeps (deaths, damage, cash moves, intent, zone crossings) lets an admin rule from facts inside vanilla Game Master.",
+          "wave": null
+        }
+      ]
     }
   ],
-  "goodFirst": []
+  "goodFirst": [],
+  "pulls": [
+    {
+      "number": 154,
+      "title": "M1-12: one player interaction menu",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/154",
+      "mergedAt": "2026-11-08T09:25:40Z",
+      "author": "jasper-one",
+      "summary": ""
+    },
+    {
+      "number": 153,
+      "title": "film fetch: survive GitHub 504s, reject error pages (#151)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/153",
+      "mergedAt": "2026-11-08T09:23:08Z",
+      "author": "jasper-one",
+      "summary": "In-world first: not applicable (tooling only)."
+    },
+    {
+      "number": 152,
+      "title": "Add the Discord connector (MCP) for running the community server.",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/152",
+      "mergedAt": "2026-11-08T09:18:08Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree discord-mcp."
+    },
+    {
+      "number": 137,
+      "title": "M1-25: Rebuild DebugWorld as a one-street 1989 village with a test annex",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/137",
+      "mergedAt": "2026-11-08T09:17:13Z",
+      "author": "jasper-one",
+      "summary": "DebugWorld is now a one-street 1989 Everon village with a fenced test annex, replacing the debug rows. The plan, site table, and map: docs/roadmap/m1-25-village.md."
+    },
+    {
+      "number": 133,
+      "title": "Ecosystem leverage map: repos, Workshop deps, asset sources, import policy",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/133",
+      "mergedAt": "2026-11-08T09:03:45Z",
+      "author": "jasper-one",
+      "summary": "docs/ecosystem.md: where Life Framework can take leverage from the Reforger community and free asset sites, and under which terms. No code or assets imported."
+    },
+    {
+      "number": 149,
+      "title": "Add the ecosystem leverage map and import policy.",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/149",
+      "mergedAt": "2026-11-08T09:03:43Z",
+      "author": "jasper-one",
+      "summary": "Records the maintainer's 2026-11-08 decisions and outlines Milestone 2."
+    },
+    {
+      "number": 144,
+      "title": "Queue website deploys on main instead of cancelling them",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/144",
+      "mergedAt": "2026-11-08T08:55:08Z",
+      "author": "jasper-one",
+      "summary": "The website workflow used cancel-in-progress: true, so each new push to main cancelled the running deploy at npm ci. After #142, three main runs in a row were cancelled and nothing deployed."
+    },
+    {
+      "number": 139,
+      "title": "M1-28 follow-up: needs cap the character's real health at 75%",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/139",
+      "mergedAt": "2026-11-08T08:53:08Z",
+      "author": "jasper-one",
+      "summary": "Follow-up to #136. The maintainer's decision is that hunger and thirst reduce the character's real health to about 75% (and reduce stamina)."
+    },
+    {
+      "number": 143,
+      "title": "M1-10: Progression survives a restart",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/143",
+      "mergedAt": "2026-11-08T08:52:45Z",
+      "author": "jasper-one",
+      "summary": "A progression payload is appended at save version 7 (one bump)."
+    },
+    {
+      "number": 141,
+      "title": "Start agent tool runs on a hidden desktop so windows stop flashing",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/141",
+      "mergedAt": "2026-11-08T08:52:11Z",
+      "author": "jasper-one",
+      "summary": "Agent tool runs kept opening Workbench, server consoles, and game clients in front of the user and stealing focus."
+    },
+    {
+      "number": 142,
+      "title": "Move the website into the repo and host it on Cloudflare Pages",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/142",
+      "mergedAt": "2026-11-08T08:51:37Z",
+      "author": "jasper-one",
+      "summary": "The life-framework.org site now lives in website/ and is built from the repo, so the site and the mod always match. Edits are pull requests. There is no database, login, editor, or user management."
+    },
+    {
+      "number": 140,
+      "title": "Add a merge driver for the enforce-lint baseline.",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/140",
+      "mergedAt": "2026-11-08T08:48:14Z",
+      "author": "jasper-one",
+      "summary": "Speeds up the agent loop. Today about 15 agent runs hit five problems: repeated merges of main, a slow validate, no single-test loop, shared scratch files, and no written protocol."
+    },
+    {
+      "number": 138,
+      "title": "Agent box: visual harness runs on Node 26; sign face reads MINING AREA in 3D",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/138",
+      "mergedAt": "2026-11-08T08:45:04Z",
+      "author": "jasper-one",
+      "summary": "The 3D visual harness now runs on this PC (Node 26), and the #119 sign faces were checked in a rendering Workbench play session. That check found a bug in the sign face, which this PR fixes."
+    },
+    {
+      "number": 136,
+      "title": "M1-28: light survival needs (hunger and thirst never kill)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/136",
+      "mergedAt": "2026-11-08T08:38:06Z",
+      "author": "jasper-one",
+      "summary": "Decision \"Survival needs are light\" (docs/decisions.md, 2026-11-08): hunger and thirst drain slowly, at worst cap health and reduce stamina, and never kill."
+    },
+    {
+      "number": 134,
+      "title": "M1-05: multi-client harness on a dedicated server",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/134",
+      "mergedAt": "2026-11-08T08:36:14Z",
+      "author": "jasper-one",
+      "summary": "Yes. This PC (RTX 3080, 16 GB, Windows 11) runs one dedicated server plus 2 game clients side by side."
+    },
+    {
+      "number": 135,
+      "title": "M1-04: Carried inventory and cash survive a restart",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/135",
+      "mergedAt": "2026-11-08T08:36:03Z",
+      "author": "jasper-one",
+      "summary": ""
+    },
+    {
+      "number": 132,
+      "title": "Life/RP genre benchmark for the M2+ roadmap",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/132",
+      "mergedAt": "2026-11-08T08:33:34Z",
+      "author": "jasper-one",
+      "summary": "Adds docs/research/life-rp-benchmark.md, a benchmark of the life/RP genre to inform the roadmap after M1, and links it from docs/README.md."
+    },
+    {
+      "number": 131,
+      "title": "Decisions 2026-11-08: wanted, violence, survival, jail, money, release, quality, open source",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/131",
+      "mergedAt": "2026-11-08T08:27:14Z",
+      "author": "jasper-one",
+      "summary": "Records eleven maintainer decisions from 2026-11-08 in docs/decisions.md and updates the M1 plan. Docs only; no code."
+    },
+    {
+      "number": 130,
+      "title": "M1-08: Registration form R-89 and a real ID card",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/130",
+      "mergedAt": "2026-11-08T08:25:13Z",
+      "author": "jasper-one",
+      "summary": "Harness equivalent for step 2-4: node agent-box/harness.mjs flow ui-intake."
+    },
+    {
+      "number": 124,
+      "title": "M1-02: Town manifest and report town",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/124",
+      "mergedAt": "2026-11-08T08:16:18Z",
+      "author": "jasper-one",
+      "summary": "agent-box/town.mjs (TOWN) is the single list of M1 sites. It has 23 sites, covering spawn, post office, job drop, traders, ATM, both shops, vehicle lot, fuel and hospital tills, bank, hospital..."
+    },
+    {
+      "number": 123,
+      "title": "Replace the heading-keyed features.md merge driver with a line merge",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/123",
+      "mergedAt": "2026-11-08T08:13:38Z",
+      "author": "jasper-one",
+      "summary": "The lf-features driver for docs/features.md keyed rows by their ### heading."
+    },
+    {
+      "number": 122,
+      "title": "Record the maintainer's 2026-11-08 decisions",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/122",
+      "mergedAt": "2026-11-08T08:12:32Z",
+      "author": "jasper-one",
+      "summary": "Records the maintainer's 2026-11-08 product decisions. Docs only."
+    },
+    {
+      "number": 119,
+      "title": "M1-01: Diegetic signs with a Read card and a printed board title",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/119",
+      "mergedAt": "2026-11-08T08:02:44Z",
+      "author": "jasper-one",
+      "summary": "Friction hit: the issue named CardboardSign_01_base.et as the hand-made sign, but that prop is Rally-addon content: the test server reports \"Wrong GUID/name ... Failed to open\" for it and its mesh."
+    },
+    {
+      "number": 76,
+      "title": "Make tests call the code they claim to cover; require observed red-proofs",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/76",
+      "mergedAt": "2026-11-08T07:59:07Z",
+      "author": "jasper-one",
+      "summary": "An audit found tests that could not fail, so they reported coverage that did not exist. Each one below now calls the production path or was deleted."
+    },
+    {
+      "number": 80,
+      "title": "Robustness: lifetime, cleanup, and fail-safe fixes (R2-R20)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/80",
+      "mergedAt": "2026-11-08T07:53:05Z",
+      "author": "jasper-one",
+      "summary": "Robustness pass: lifetime, cleanup, and fail-safe fixes from the audit (R2, R4, R6–R15, R17, R19, R20)."
+    },
+    {
+      "number": 118,
+      "title": "M1-07: Pay at the counter (no passive paycheck, duty pay, unemployment benefit)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/118",
+      "mergedAt": "2026-11-08T07:48:48Z",
+      "author": "jasper-one",
+      "summary": ""
+    },
+    {
+      "number": 73,
+      "title": "Security set B: range checks and police abuse",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/73",
+      "mergedAt": "2026-11-08T07:45:54Z",
+      "author": "jasper-one",
+      "summary": "Security set B: server-side range checks and police abuse."
+    },
+    {
+      "number": 117,
+      "title": "M1-03: playtest host (LF_PlaytestTown mission, cli host start/stop, auto-load)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/117",
+      "mergedAt": "2026-11-08T07:43:12Z",
+      "author": "jasper-one",
+      "summary": "Missions/LF_PlaytestTown.conf ({1054CC8646357708}): DebugWorld through a new LF_MissionHeader with m_bLF_DevToolsOff 1 and m_bLF_HostStopFile 1."
+    },
+    {
+      "number": 97,
+      "title": "UX: toast layout, menu keyboard/pad input, local-only menu actions, player text to keys",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/97",
+      "mergedAt": "2026-11-08T07:41:34Z",
+      "author": "jasper-one",
+      "summary": "UX fixes from the release/next UI audit (U1-U8). release/next (#56) merged into main and its branch was deleted while this was in flight, so this targets main; origin/main is merged in."
+    },
+    {
+      "number": 111,
+      "title": "Filming harness: film a flow in game, PR evidence via release assets",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/111",
+      "mergedAt": "2026-11-08T07:38:04Z",
+      "author": "jasper-one",
+      "summary": "The filming harness (docs/direction.md → \"Proof in the 3D world\") records the game while an agent-box flow plays. It produces short clips as PR evidence now, and showcase camera passes later."
+    },
+    {
+      "number": 70,
+      "title": "Add a WORLD test for the axe damage path on a cuttable tree",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/70",
+      "mergedAt": "2026-11-08T07:36:48Z",
+      "author": "jasper-one",
+      "summary": "New EL_Test_WoodcuttingDamage (logging/axe-damage, tier WORLD). logging/chain-wiring only proves the axe is listed in the tree's m_aTools."
+    },
+    {
+      "number": 115,
+      "title": "M1-00: Split the roadmap street into Street_* site layers",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/115",
+      "mergedAt": "2026-11-08T07:36:20Z",
+      "author": "jasper-one",
+      "summary": "The escort car goes to Jail because its only action is LF_JailPutInVehicleAction."
+    },
+    {
+      "number": 114,
+      "title": "validate-scripts: fail on scripts that do not compile",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/114",
+      "mergedAt": "2026-11-08T07:31:23Z",
+      "author": "jasper-one",
+      "summary": "tools/validation/validate-scripts.ps1 reported OK on Enforce Script that does not compile. Only a server boot caught it."
+    },
+    {
+      "number": 112,
+      "title": "Plan Milestone 1: Playtest Town (journey map, in-world redesign, signs, arrival, 25 scopes)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/112",
+      "mergedAt": "2026-11-08T07:27:12Z",
+      "author": "jasper-one",
+      "summary": "Plan for Milestone 1, Playtest Town: docs/roadmap/m1-playtest-town.md. Milestone: M1 Playtest Town."
+    },
+    {
+      "number": 113,
+      "title": "Serialize server boots: -server mode always listens on 2001",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/113",
+      "mergedAt": "2026-11-08T07:25:09Z",
+      "author": "jasper-one",
+      "summary": "The fix is one machine-wide server-2001 lock (withServerSlot) around test (every tier; fast was unlocked before), dev, wt e2e, and serve. serve fails fast when the lock is held."
+    },
+    {
+      "number": 77,
+      "title": "Restart safety: bank singleton, session load, jail payload v5, no ground keys, plates, whitelist",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/77",
+      "mergedAt": "2026-11-07T22:24:57Z",
+      "author": "jasper-one",
+      "summary": "Verified on this machine: tools\\cli validate 20/20; SUMMARY tier=fast passed=91 failed=0 total=91; SUMMARY tier=all passed=148 failed=0 total=148 (after merging main at 0c12011; before that merge..."
+    },
+    {
+      "number": 79,
+      "title": "Security set A: close money/item duplication and unbounded rewards",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/79",
+      "mergedAt": "2026-11-07T22:19:01Z",
+      "author": "jasper-one",
+      "summary": "Security fixes, set A: money/item duplication and unbounded rewards. Every fix is server-side, and every refusal logs EL_Debug.Warn/Error with \"refused\" and the reason."
+    },
+    {
+      "number": 71,
+      "title": "Gate the debug menu and agent-harness RPCs behind one server-side dev gate",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/71",
+      "mergedAt": "2026-11-07T22:15:55Z",
+      "author": "jasper-one",
+      "summary": "Note: an administrator can now use the harness RPCs on a dedicated server. Before this change every request there was refused. This follows the requested gate: debug opt-in OR ADMINISTRATOR."
+    },
+    {
+      "number": 83,
+      "title": "Give dedicated-server clients the account state, creation flow, and private notifications they need",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/83",
+      "mergedAt": "2026-11-07T22:13:39Z",
+      "author": "jasper-one",
+      "summary": "Suite (2026-11-07, after merging origin/main): tools\\cli validate 20/20. tools\\cli test --no-build --tier fast → [ELTEST] SUMMARY tier=fast passed=83 failed=0 total=83."
+    },
+    {
+      "number": 56,
+      "title": "Next version",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/56",
+      "mergedAt": "2026-11-07T22:06:49Z",
+      "author": "jasper-one",
+      "summary": "release/roadmap is on main (#57). This is the version after it. Head 9d288e2 includes origin/main up to 5d968b7 (#65 junction safety)."
+    },
+    {
+      "number": 84,
+      "title": "Decide garaged vehicles, one interaction menu, period comms, buy-and-furnish property",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/84",
+      "mergedAt": "2026-11-07T22:06:35Z",
+      "author": "jasper-one",
+      "summary": "Adds four maintainer calls to docs/decisions.md."
+    },
+    {
+      "number": 82,
+      "title": "Decide in-world first, diegetic signs, guided arrival, sandbox tone, dynamic prices",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/82",
+      "mergedAt": "2026-11-07T22:02:41Z",
+      "author": "jasper-one",
+      "summary": "Adds the maintainer's next calls to docs/decisions.md."
+    },
+    {
+      "number": 81,
+      "title": "Add the decision log: death, police gating, progression, weapons",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/81",
+      "mergedAt": "2026-11-07T21:58:21Z",
+      "author": "jasper-one",
+      "summary": "Adds docs/decisions.md, a log of design calls that could reasonably have gone the other way."
+    },
+    {
+      "number": 78,
+      "title": "Add the project direction: framework + flagship, M1 playtest town, AI-first",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/78",
+      "mergedAt": "2026-11-07T21:54:21Z",
+      "author": "jasper-one",
+      "summary": "Adds docs/direction.md, the north star every agent and contributor reads before choosing work, and links it from the README."
+    },
+    {
+      "number": 74,
+      "title": "Add a ratcheting structural lint for Enforce Script (L1-L7)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/74",
+      "mergedAt": "2026-11-07T21:52:05Z",
+      "author": "jasper-one",
+      "summary": "Adds tools/validation/validate-enforce-lint.mjs, a pure-Node structural lint. It catches the Enforce Script defect classes the audits kept finding by hand."
+    },
+    {
+      "number": 72,
+      "title": "Subtract dead tooling; fast wt list; test harness fails fast",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/72",
+      "mergedAt": "2026-11-07T21:48:30Z",
+      "author": "jasper-one",
+      "summary": "Tooling subtraction, step 1 of the refactor. Every deletion was checked with git grep: nothing in code references the deleted files."
+    },
+    {
+      "number": 69,
+      "title": "Remove stale EPF instructions from the guides and feature docs",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/69",
+      "mergedAt": "2026-11-07T21:41:00Z",
+      "author": "jasper-one",
+      "summary": "EPF and EDF were removed from LifeFramework.gproj during the persistence migration, and the base game is now the only dependency."
+    },
+    {
+      "number": 68,
+      "title": "Unlink game-addons junctions through safe-rm in the test and validate scripts",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/68",
+      "mergedAt": "2026-11-07T21:40:56Z",
+      "author": "jasper-one",
+      "summary": "tools/test/test-e2e.ps1 and tools/validation/validate-scripts.ps1 still had their own Remove-GeneratedAddonRoot after #65."
+    },
+    {
+      "number": 67,
+      "title": "Never label a worktree with uncommitted edits as prune me",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/67",
+      "mergedAt": "2026-11-07T21:35:15Z",
+      "author": "jasper-one",
+      "summary": "cli wt list said merged (prune me) for a merged branch even when its worktree held uncommitted edits. Those edits exist nowhere else. Four stale worktrees were labelled that way while holding work."
+    },
+    {
+      "number": 66,
+      "title": "Run cli validate on every PR in GitHub Actions",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/66",
+      "mergedAt": "2026-11-07T21:32:10Z",
+      "author": "jasper-one",
+      "summary": ""
+    },
+    {
+      "number": 65,
+      "title": "Never follow a game-addons junction when removing a worktree or test profile",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/65",
+      "mergedAt": "2026-11-07T21:27:50Z",
+      "author": "jasper-one",
+      "summary": "cli wt prune itself calls git worktree remove --force and then a recursive rmSync. test-e2e.ps1 wipes server/profile/test with Remove-Item -Recurse, and that folder holds the same junctions."
+    },
+    {
+      "number": 57,
+      "title": "Release roadmap",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/57",
+      "mergedAt": "2026-10-11T14:36:18Z",
+      "author": "jasper-one",
+      "summary": ""
+    },
+    {
+      "number": 28,
+      "title": "Let a solo DebugWorld session run the chain probes",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/28",
+      "mergedAt": "2026-10-11T00:05:21Z",
+      "author": "jasper-one",
+      "summary": ""
+    },
+    {
+      "number": 27,
+      "title": "Document the gameplay roadmap apart from the stale site checklist.",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/27",
+      "mergedAt": "2026-10-10T23:57:28Z",
+      "author": "jasper-one",
+      "summary": ""
+    },
+    {
+      "number": 26,
+      "title": "Add an agent box for script, world, and player-equivalent UI checks",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/26",
+      "mergedAt": "2026-10-10T20:51:25Z",
+      "author": "jasper-one",
+      "summary": ".cursor/mcp.json is machine-local and stays untracked via .cursor/.gitignore. Fresh setup is agent-box/setup.ps1."
+    },
+    {
+      "number": 25,
+      "title": "fix debug world log errors",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/25",
+      "mergedAt": "2026-09-19T16:23:33Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree debug-log-fixes."
+    },
+    {
+      "number": 24,
+      "title": "debugworld: widen apple area boundary to cover the third trade table",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/24",
+      "mergedAt": "2026-09-19T16:21:56Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree prfeatures-vehiclelock."
+    },
+    {
+      "number": 23,
+      "title": "debugworld: load world entity before gameplay layers so props get physics bodies",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/23",
+      "mergedAt": "2026-09-19T15:59:24Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree civilian-collision."
+    },
+    {
+      "number": 22,
+      "title": "Fix DebugWorld entity collision",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/22",
+      "mergedAt": "2026-08-30T17:06:04Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree no-clip-investigation."
+    },
+    {
+      "number": 21,
+      "title": "Fix DebugWorld boot issues: persistence, HUD/chat, gather tree, localization",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/21",
+      "mergedAt": "2026-08-30T16:47:32Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree issue-fixes."
+    },
+    {
+      "number": 20,
+      "title": "Add material-chain validator and MCP batch mode",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/20",
+      "mergedAt": "2026-08-30T15:26:03Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree agent-tooling."
+    },
+    {
+      "number": 19,
+      "title": "Validate and repair DebugWorld placement",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/19",
+      "mergedAt": "2026-08-30T13:48:20Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree debug-world-layout-checks-final."
+    },
+    {
+      "number": 18,
+      "title": "Fix debug menu actions in direct world runs",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/18",
+      "mergedAt": "2026-08-30T11:33:11Z",
+      "author": "jasper-one",
+      "summary": ""
+    },
+    {
+      "number": 17,
+      "title": "Add DebugWorld state menu",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/17",
+      "mergedAt": "2026-08-30T10:59:10Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree debug-menu."
+    },
+    {
+      "number": 16,
+      "title": "Add mining area warning sign to DebugWorld mining chain",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/16",
+      "mergedAt": "2026-08-30T10:58:40Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree text-signs."
+    },
+    {
+      "number": 15,
+      "title": "Organize DebugWorld feature areas",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/15",
+      "mergedAt": "2026-08-30T10:52:26Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree debug-world-opt."
+    },
+    {
+      "number": 14,
+      "title": "Merge remote-tracking branch 'origin/main' into ws/e2e-harness",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/14",
+      "mergedAt": "2026-08-30T10:49:16Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree e2e-harness."
+    },
+    {
+      "number": 13,
+      "title": "Fail-safe the character spawn: abort instead of spawning at origin",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/13",
+      "mergedAt": "2026-08-30T10:44:32Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree p0-ship-blockers."
+    },
+    {
+      "number": 12,
+      "title": "Add EL_ScreenshotCapture: in-world screenshot harness for AI visual checks",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/12",
+      "mergedAt": "2026-08-30T10:42:37Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree screenshot-capture."
+    },
+    {
+      "number": 11,
+      "title": "Render custom text on signs with EL_TextLabelComponent; label the debug mining sign MINING AREA",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/11",
+      "mergedAt": "2026-08-30T10:06:26Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree sign-text."
+    },
+    {
+      "number": 10,
+      "title": "Add mining area warning sign to DebugWorld mining chain",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/10",
+      "mergedAt": "2026-08-30T09:27:59Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree text-signs."
+    },
+    {
+      "number": 9,
+      "title": "Fix localized hint formatting, wire plate/lock onto police M151A2, dedupe DebugWorld entity names",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/9",
+      "mergedAt": "2026-08-30T09:09:42Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree debug."
+    },
+    {
+      "number": 8,
+      "title": "Add greenhouse and planting beds to DebugWorld farming chain; fix duplicate entity names that crashed the debug server",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/8",
+      "mergedAt": "2026-08-30T09:04:33Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree framing-debugging."
+    },
+    {
+      "number": 7,
+      "title": "Add quantity tier visuals: swap item mesh by stack quantity",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/7",
+      "mergedAt": "2026-08-30T08:22:04Z",
+      "author": "jasper-one",
+      "summary": "Automated ship from worktree quantity-visuals."
+    },
+    {
+      "number": 4,
+      "title": "Port mining area system (weighted ore spawns, respawn, pickaxe)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/4",
+      "mergedAt": "2026-08-30T06:31:59Z",
+      "author": "jasper-one",
+      "summary": "Ports thebonbon's Main_World mining system.\\n\\n- EL_MiningArea: weighted prefab spawns in an area box, respawn timer, parented to area for accounting\\n- MinableOre rebuilt on local..."
+    },
+    {
+      "number": 3,
+      "title": "Port farming + base building (staged crops, area spawner, building placement)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/3",
+      "mergedAt": "2026-08-30T06:31:59Z",
+      "author": "jasper-one",
+      "summary": "Ports thebonbon's farming_system branch.\\n\\n- EL_BaseCrop staged-growth: EL_CropStage table (duration/model/scale/offset/can-gather), RplProp stage + BumpMe, delete-after-final, area-spawner hook\\n-..."
+    },
+    {
+      "number": 2,
+      "title": "Port houses / keys / locks system (server-authoritative lock+key, save-data API)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/2",
+      "mergedAt": "2026-08-30T06:31:59Z",
+      "author": "jasper-one",
+      "summary": "Ports thebonbon's Main_World houses/keys/locks.\\n\\n- EL_LockComponent/EL_KeyComponent rebuilt on the vehicle-lock semantics: RplProp locked+identifier, server-only setters, shared IdentifiersMatch..."
+    },
+    {
+      "number": 1,
+      "title": "Port thebonbon whitelist + roleplay chat (UUID-file whitelist, join gate, chat channels/UI)",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/1",
+      "mergedAt": "2026-08-30T06:31:59Z",
+      "author": "jasper-one",
+      "summary": "Ports thebonbon's dedicated_server Whitelist + Chat systems.\\n\\n- UUID-file whitelist with CONNECT/POLICE/MEDIC types, join gate via OnPlayerAuditSuccess, respawn push, !wadd admin command\\n-..."
+    }
+  ],
+  "contributors": [
+    {
+      "login": "jasper-one",
+      "url": "https://github.com/jasper-one",
+      "contributions": 477
+    },
+    {
+      "login": "cursoragent",
+      "url": "https://github.com/cursoragent",
+      "contributions": 4
+    }
+  ]
 }

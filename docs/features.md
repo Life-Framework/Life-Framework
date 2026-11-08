@@ -79,11 +79,36 @@
   (owner RPC). A server refusal sends the form back with the reason written on
   it. The form never picks a faction.
 
+### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
+- ✅ One list on another player's body (`Character_Roleplay.et`, context
+  `EL_ID`): Introduce yourself, Show ID, Give cash, Give what you hold; on-duty
+  police also Search and Arrest. `LF_PlayerRoleAction` slots `fine` and
+  `org_invite` stay hidden until `LF_PlayerInteraction.RegisterRole(slot,
+  handler)` is called on every machine. Reach: 2 m between origins, both
+  alive, the target a player, not yourself; the server re-checks every action.
+- ✅ Give cash: the server opens `LF_GiveCashSheet` on the giver (`GiveCashAmount`,
+  `GiveCashButton`), then `RpcAsk_LF_GiveCash` moves MoneyStack cash through
+  `LF_CashHandover.Move`: more than carried is refused, what the receiver cannot
+  take goes back (no cash created or lost). Gesture `Point` + `SOUND_PICK_UP`.
+- ✅ Give item: the giver's machine names the item in hand (gadget, right-hand
+  item, or current weapon); the server moves it only when its storage root is
+  the giver and the receiver has room.
+- ✅ Introduce: the target learns the user's character name (`LF_Introductions`,
+  keyed by player uid, one way). Persisted as the `introductions` payload (save
+  version 8); names re-sync to clients on every spawn. Gesture `Halt`.
+- ✅ `LF_KnownNames` (client): a known name shows under the crosshair only while
+  looking at that player (15 degree cone) within 4 m. Strangers show nothing.
+- ⏳ Gesture visibility, the name label, and the restart path on a real
+  dedicated server are manual (PR #98 steps).
+
 ### `EL_ShowIDAction` — `Feature/CharacterCreation/EL_ShowIDAction.c`
 - ✅ (2026-11-08) Shows the ID card the user carries (their own first, else
   the first printed one) to the player they face: the server reads the item
   and opens `LF_IdCardView` on the viewer's machine. No card: not performable,
-  reason `#LF-ID_NoCard`. Facing check is `dot > 0.707` both ways within 1.5 m.
+  reason `#LF-ID_NoCard`. Offered by the player interaction reach rule
+  (`LF_PlayerInteraction.CanOffer`, 2 m, both alive, a player); the server
+  re-checks it. The shower points (`Gesture_Point`) and the viewer hears
+  `SOUND_PICK_UP` (M1-12).
 - ⏳ Proof on a dedicated server with two clients is manual (PR #93 steps).
 
 ### `EL_Utils` / `EL_FormatUtils` / `EL_Component` / `EL_ComponentData` — `Core/`
@@ -121,6 +146,21 @@
   already carrying their own card is refused a second; a blank carried card is
   printed instead of adding one. Turn the flag off when the arrival clerk
   (M1-18) hands the card over.
+
+### `EL_NpcBaseEntity` station NPCs — `Prefabs/Characters/Core/Npc_Base.et`
+- ✅ **Dressed on every machine** (2026-11-08, #150): `BaseLoadoutManagerComponent`
+  spawns the slot clothing (jacket, pants, boots) on the server, and that
+  clothing is replicated. `Npc_Base.et` carries an `RplComponent`
+  (`"Rpl State Override" Runtime`, `"Parent Node From Parent Entity" 0`) and a
+  `Hierarchy`, as vanilla `Character_Base.et` does: the server streams each
+  placed NPC with its worn clothes as children. Before this fix, a dedicated client saw
+  the NPCs in underwear. Test: `npc/clothes-replicate` (WORLD).
+- ⚠️ A client builds a placed NPC from its prefab, not from the layer. A
+  layer may override only `CharacterIdentityComponent` on an NPC. An added
+  component kicks every client (`RplCreationError: Number of items mismatch`),
+  and other overrides never reach clients. `validate-npc-layer-overrides.mjs`
+  enforces this. Names set in the layer do not reach clients either
+  (`FindEntityByName` works only on the server).
 
 ## Character & Survival
 
@@ -305,6 +345,12 @@
   The server owns the machine-wide `server-2001` lock while it runs. The
   no-shutdown-save error now fires at teardown, not on the SHUTDOWN state change
   that comes before the save. Selftest: `tools/validation/host-selftest.mjs`.
+  Joining: the host runs `-noBackend`, so every player has the NULL platform
+  identity. Until 2026-11-08 that made `GetPlayerUID` empty and the faction pick
+  failed with `#EL-CC_Error_NoAccount` (nobody could join).
+  `EL_Utils.ChooseIdentityFallback` now keys a player by Steam name on a
+  `-noBackend` dedicated server: stable across restarts, one character per name
+  (`spawn/identity-fallback`; join, restart, rejoin seen live).
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
@@ -318,8 +364,14 @@
   `GetState(entity)` answers from the account on the server and from the
   replica on a client. Consumers: `EL_RobAction`, `EL_DutyAction`,
   `EL_ConfiscateAction`, `EL_OpenPoliceMenuAction`, `LF_ArmoryDrawAction`,
-  `LF_RankPromoteAction`, `LF_BreachRepairAction`. Every server path still
-  re-checks the real account.
+  `LF_RankPromoteAction`, `LF_BreachRepairAction`, and (since 2026-11-08) the
+  jail actions: arrest, escort, escort-arrest, put in and take out of a
+  vehicle. Before that their offers read the server-only account, so on a
+  dedicated client an on-duty officer was never offered an arrest. Every
+  server path still re-checks the real account; the jail cell and escort holds
+  are checked on the server only. `tools/validation/validate-offer-checks.mjs`
+  fails a `CanBeShownScript` / `CanBePerformedScript` that reads
+  `EL_PoliceUtils.GetAccountForEntity` or `EL_PlayerAccountManager`.
 - ⚠️ `EL_RobWeaponAction`, `EL_RobVehicleAction`, and `LF_Bank` still count
   police and read accounts directly in their offers; move them to
   `EL_AccountReplication` next.
@@ -350,7 +402,27 @@
   mode keeps no manager fields; `EL_GameModeRoleplay.ResolveConnectManagers()`
   only resolves them.
 
-### `EL_ATMMenu` — `Feature/ATM/EL_ATMMenu.c`
+### ATM terminal — `Feature/ATM/LF_ATMTerminal.c` (was `EL_ATMMenu`)
+- ✅ (2026-11-08, M1-13) **Terminal screen** on `LF_UIScreen` with the
+  `LF_UISkin.Terminal()` skin: green phosphor (vanilla `robotomono` face) in a
+  bezel, balance and carried cash from the server, an `AMOUNT >` entry line, a
+  status line, a 3x4 keypad (CLR, 0, DEL), DEPOSIT, WITHDRAW, EXIT. Keys: mouse,
+  pad focus that moves like a grid (MenuUp/Down keep the column, MenuLeft/Right
+  walk a row), keyboard digits and numpad (`LF_Keypad0..9`), Backspace or pad X
+  (`LF_KeypadBack`), Delete or pad Y (`LF_KeypadClear`). The entry cannot pass
+  `MAX_TRANSACTION_AMOUNT`. Closes on EXIT, MenuBack, death, or 3.5 m from the
+  machine. `EL_ATMAction` runs PerformAction only on the acting machine
+  (`HasLocalEffectOnlyScript`) and opens only when the user is this machine's
+  character (`LF_CounterAccess.IsLocalActor`).
+- ✅ (2026-11-08) **Refusals say why, on the screen**: the server replies
+  `LF_EATMRefusal` (amount, cash short, balance short, pockets full, not at an
+  ATM, no account) with the new balance and carried cash; no toast (the old
+  away-from-ATM toast plus the menu toast was the duplicate). No reply in 5 s
+  prints `NO REPLY FROM THE BANK`. Sounds: key click, accept and refuse are UI
+  events set on the `EL_ATMAction` attributes; an accepted deposit or
+  withdrawal plays `SOUND_PICK_UP` on the character for everyone nearby.
+  Tests: `atm/keypad`, `atm/refusal-reasons`, `counter/refusal-text`,
+  `counter/local-only`, `counter/screen-layout`.
 - ✅ **Cash moves** (verified 2026-08-30): the menu forwards through
   `EL_CharacterATMComponent.RequestDeposit/RequestWithdraw`, and the server
   RPC handlers `RpcAsk_Deposit`/`RpcAsk_Withdraw` remove cash on deposit
@@ -367,8 +439,8 @@
   deposit or withdraw unless an entity carrying `EL_ATMAction` stands within
   `EL_CharacterATMComponent.ATM_RANGE` (5 m) of the character
   (`EL_ActionSite`, server-side search; the client names no site). A refusal
-  logs `deposit refused: not at an ATM` / `withdraw refused: ...` and shows
-  `#EL-ATM_TooFar`. On a listen host the requests and the replies call their
+  logs `deposit refused: not at an ATM` / `withdraw refused: ...` and the
+  terminal prints `REFUSED: STAND AT THE MACHINE` (2026-11-08; was a toast). On a listen host the requests and the replies call their
   handlers directly, like the shop bridge. Test: `security/service-range`.
 
 ### `EL_BankAccountComponent` — `Feature/Banking/` (deleted 2026-08-30)
@@ -390,13 +462,22 @@
   item), and a partial delivery refunds only the undelivered quantity.
   `SellItem` pays cash only after the goods are confirmed removable and
   claws back overpayments. `IsItemSoldHere` gates buy and sell.
-- ⚠️ No shop stock (infinite supply). Client→server bridge
-  (`EL_CharacterShopComponent.RpcAsk_Buy/Sell`) does not enforce a max
-  quantity per item.
+- ⚠️ No shop stock (infinite supply).
 
-### `EL_ShopMenu` / `EL_ShopAction` — `Feature/Shop/`
-- ✅ List UI; action opens menu within 3 m and counts items across managed nested storage.
-- ⚠️ Menu always opens for the local player regardless of who interacted.
+### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `EL_ShopMenu`)
+- ✅ (2026-11-08, M1-13) Typed price list on `LF_UIScreen` with the
+  `LF_UISkin.PriceList()` skin (paper, mono face, no blur): carried cash, a
+  "Look for" field that narrows the list as you type, up to 40 lines of item
+  and buy price with an Order button, an order slip (quantity with One less /
+  One more, 1..99), Pay <total> cash, Sell these, Leave. Buy and sell are the
+  existing `EL_CharacterShopComponent` RPCs; every request now gets a reply
+  with `LF_EShopRefusal` (not sold here, unpriced, cash short, pockets full,
+  nothing to sell, quantity, too far, no shop), the money moved and the carried
+  cash, printed on the slip. The shop no longer raises toasts. An accepted
+  trade plays `SOUND_PICK_UP` on the character; UI sounds are `EL_ShopAction`
+  attributes. `EL_ShopAction` opens only on the acting machine for its own
+  character. Closes on Leave, MenuBack, death, or 3.5 m from the counter.
+  Tests: `shop/refusal-reasons`, `counter/local-only`, `counter/screen-layout`.
 
 ### `EL_TraderManagerComponent` + `EL_InventoryStorageManagerComponent` — `Components/InventorySystem/`
 - ✅ Sell-to-trader pays **cash** (verified 2026-10-11): inserting into a
@@ -801,8 +882,25 @@
   goes through `SCR_Global.TeleportPlayer` (the vanilla server-side player
   teleport) instead of a server-only `SetOrigin` that the owning client can
   overwrite; a stand-in with no player is still set directly (2026-11-07). A
-  prisoner seated in a vehicle moves the vehicle (vanilla behaviour). Not yet
-  checked on a dedicated server with a remote client.
+  prisoner seated in a vehicle is dismounted straight to the target first
+  (`GetOutVehicle_NoDoor`; a client-owned player through the vanilla Game Master
+  `SCR_EditableCharacterComponent.SetTransform`), so the vehicle stays put (M1-21,
+  test `jail/vehicle-arrest`). Not yet checked on a dedicated server with a remote client.
+- ✅ **Online time** (M1-21, 2026-11-08, tests `jail/online-time`, `e2e/pass2-verify-load`): the
+  sentence counts down only for connected players (`LF_Jail.Tick` reads
+  `PlayerManager.GetPlayers`; `TickOnline` is the testable seam). An offline prisoner keeps
+  the time they had at logoff and logs `sentence paused` / `sentence resumed`. A prisoner who
+  spawns with time left (rejoin, restart) goes back to the cell with their slip (`EL_SpawnLogic`).
+- ✅ **Sentence slip** (M1-21, test `jail/slip`): sentencing hands the prisoner
+  `Prefabs/Items/Roleplay/SentenceSlip.et` (vanilla personal-papers mesh). `LF_JailSlipComponent`
+  prints name, offence (wanted level), and online minutes left; the minutes replicate only when
+  the whole minute changes. Hovering it in the inventory reads it (`LF_JailSlipUIInfo`). A
+  respawn or a second arrest reprints the carried slip instead of adding one. No new save data.
+- ✅ **Visible release** (M1-21, tests `jail/slip`, `jail/online-time`): release opens the cell
+  door (`DoorComponent.SetControlValue`, the vanilla door motion and sound; it closes after
+  5 s), places the prisoner at the cell release offset (`m_vReleaseOffset`; DebugWorld `0.15 0 10`, outside
+  the door), stamps the slip, then shows the toast 1.5 s later. Release runs once per sentence.
+  The DebugWorld cell now sentences 60 s per wanted level, max 300 s (it was zero-length).
 
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
@@ -871,7 +969,7 @@
   catches it in the act and the report is identified at once. Showing your own
   ID card to an on-duty officer (`EL_ShowIDAction`) identifies every open
   report. Reports come down when wanted returns to 0, and persist as the
-  `wanted` payload (save version 9).
+  `wanted` payload (save version 10).
 - ✅ **Wanted board** `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`,
   a cork `LF_Sign_Board` printing WANTED): "Read the wanted posters" asks the
   server per read (`RpcAsk_LF_WantedBoard`, the server finds the board near
@@ -920,11 +1018,14 @@
   running convoy.
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
-- ✅ On-duty police delete weapons from the nearest wanted player within 5 m.
+- ✅ (2026-11-08, M1-12) Search in the player interaction menu: shown to on-duty
+  police within the 2 m reach; deletes the weapons of the wanted player in
+  front of them (the action owner), not the nearest wanted player. Weapons are
+  collected before deletion. Earlier contract: on-duty police delete weapons
+  from a wanted player.
   The offer reads replicated officer and target state; the deletion runs on the
   server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
-- ⚠️ Deletes items while iterating a live `FindItems` array (mutation-during-
-  iteration risk); no compensation or wanted reduction.
+- ⚠️ No compensation or wanted reduction.
 
 ## Ownership
 
@@ -1004,7 +1105,11 @@
   `NotifyPolice` reach connected on-duty police by account faction.
   `EL_Utils.AlertPolice` and `EL_Utils.NotifyEntity` (shop, robbery, duty,
   confiscate toasts) route through it; `EL_Utils.Notify` still shows a hint on
-  the calling machine only.
+  the calling machine only. Since 2026-11-08 the courier job (sign-up, paid,
+  abandoned), gather/process rewards, weapon and vehicle robbery, and the
+  contraband payout toast through `NotifyEntity`; on a dedicated server they
+  had reached nobody. enforce-lint L8 fails an `EL_Utils.Notify` after an
+  `if (!Replication.IsServer()) return;` guard.
 - ⚠️ Hard-coded Spanish prefixes, emoji in logs, `m_Color` never transmitted.
 
 ## Inventory / Quantity
@@ -1079,7 +1184,7 @@
 
 ### Vehicle lot and garage — `Feature/Vehicles/`
 - ✅ `Roadmap_Vehicle_Lot` sells vanilla S105, UAZ469, S1203, UAZ452, and M923. Each spawn is a thin child of that vanilla prefab with `EL_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. (verified 2026-10-11)
-- ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing.
+- ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing. Above the ceiling the refusal reads `#LF-Vehicle_BankShort` (pay from the bank; deposit at an ATM), so a buyer holding enough cash knows why (`vehicles/bank-refusal`).
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
 - ✅ **A restart drops no ground key** (2026-11-07, test `restart/vehicle-restore-no-ground-key`, verified 2026-11-07): `RestoreWorld` / `RestoreVehicle` put each out-in-world vehicle back on the pad, locked as saved, without spawning a key. Before, every restart left a fresh key beside the pad for every such vehicle (anyone could take the car, and keys piled up). The owner re-keys through the existing owner-only flow: garage store, then retrieve (retrieve spawns a key when the session has none), or an extra key at the lot.
@@ -1091,8 +1196,9 @@
 ### UI kit — `Scripts/Game/Feature/UIKit/`
 - Post-release polish. `LF_UITheme` holds the 1989 type, padding, and paper/metal colors. `LF_UIScreen` assembles a frame, title, body line, WLib edit box (ink, no text outline or shadow; the box is not a `TextWidget`), list row, status row, quantity slider, and pause-menu button with `WorkspaceWidget.CreateWidgets`, wires `SCR_ButtonTextComponent`, and activates `MenuContext` every frame (`MenuTextEditContext` while an edit box is focused, `MenuWithEditorContext` so a pad can move). Close removes the widgets and that call. It does not use MenuManager.
 - Input (verified 2026-11-07): focus lands on the first non-field control at open, so MenuSelect works without MenuDown first. MenuBack closes. `GetOnButton()` hands the feature the part name of a pressed BUTTON, STATUS action, or list row action. `GetOnClosed()` fires once for any close. A LIST part (`LF_UIList.layout`, `AddListRow`/`ClearList`) scrolls to the focused row. Close defers the removal of its per-frame call by one tick, because it can run inside that call. `ui-kit/initial-focus` and `ui-kit/button-invoker` (LOGIC) cover the pure parts; the on-screen focus ring is visual-only.
-- `LF_UIMenuInput` gives the remaining MenuManager menus (ATM, shop, quest, police) and the workspace pickers (faction, spawn location, death, organization) the same input: MenuContext plus MenuWithEditorContext every frame, MenuUp/MenuDown focus ring, MenuSelect on the focused button, MenuBack closes (not on the mandatory faction, spawn and death pickers), and a 150 ms debounce so a click and the poll do not double-fire. The ATM has a Close button and labelled Deposit/Withdraw buttons, tells the player when the amount is blank or zero, and names deposit and withdraw refusals separately. The shop and quest Close buttons work. Shop and ATM were not migrated onto the kit: `EL_CharacterATMComponent`, `EL_ShopComponent` and `EL_CharacterShopComponent` find these menus by MenuManager preset, and moving them would rewrite that lookup in files other work owns. The shop, quest, organization desk, and police menu actions are `HasLocalEffectOnlyScript`, so the menu opens only on the acting client.
-- A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. It reuses a play session that is already up. Faction, character creation, death, shop, ATM, quest, police, and spawn menus were not migrated.
+- `LF_UIMenuInput` gives the remaining MenuManager menus (ATM, shop, quest, police) and the workspace pickers (faction, spawn location, death, organization) the same input: MenuContext plus MenuWithEditorContext every frame, MenuUp/MenuDown focus ring, MenuSelect on the focused button, MenuBack closes (not on the mandatory faction, spawn and death pickers), and a 150 ms debounce so a click and the poll do not double-fire. The ATM has a Close button and labelled Deposit/Withdraw buttons, tells the player when the amount is blank or zero, and names deposit and withdraw refusals separately. The shop and quest Close buttons work. Shop and ATM moved onto the kit in M1-13 (2026-11-08); their MenuManager presets are gone. The shop, quest, organization desk, and police menu actions are `HasLocalEffectOnlyScript`, so the menu opens only on the acting client.
+- A line can be rewritten after open. A status row has one action that hides when the action is empty. A quantity splits one stack into keep and take. The sheet can close on death, on losing the character, or past a distance from an anchor. Nothing in the world opens the sample. `node agent-box/harness.mjs kit` screenshots the sheet, a rewritten balance, a hidden action, both split faces, and focus on the field. It reuses a play session that is already up. Faction, character creation, death, quest, police, and spawn menus were not migrated.
+- (2026-11-08, M1-13) Skins: `LF_UIScreen.Open(parts, skin)` paints from an `LF_UISkin` (`Paper()` is the old look and the default, `Terminal()` the ATM, `PriceList()` the shop): frame colours, face, sheet width, blur on or off, and, for skins that ask, the vanilla button text colours (and its arrow glyph hidden). A KEYS part (`LF_UIKeyRow.layout`, `LF_UIPart.CreateKeys`) lays buttons side by side; MenuLeft/MenuRight walk the row and MenuUp/MenuDown keep the column in the next row. `BindHotkey(action, name)` reports an input action as a button press while no field is focused. `SetButtonText`, `SetListHeight`. `LF_UISound.Play` plays a UI sound event. Seen on a dedicated client (agent-box session, 640x360): the frame `Paper` panel draws nearly transparent and the blur darkens it, so paper sheets read dark; the price list turns the blur off to stay legible. The registration form shows the same on that client.
 
 ### Signs — `Scripts/Game/Feature/Signs/`
 - ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.

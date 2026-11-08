@@ -1,61 +1,123 @@
 # Life Framework website
 
 The public site (life-framework.org). Vite + React + TypeScript + Tailwind,
-with the look carried over from the 2025 Lovable site. It has no database,
-login, or editor: it is built from this repository, so the site and the mod
+prerendered to one static HTML file per route. It has no database, login, or
+editor: it is built from this repository and GitHub, so the site and the mod
 always match. To change the site, open a pull request.
+
+The look, the palette, the type, and the voice are in [BRAND.md](BRAND.md).
+Read it before you change how anything looks or reads.
 
 ## Develop
 
 ```sh
 cd website
 npm ci
-npm run dev          # http://localhost:8080
-npm run build        # content + typecheck + vite build -> dist/
+npm run dev          # http://localhost:8080, client-rendered, no prerender
+npm run build        # content, typecheck, client + SSR build, prerender -> dist/
+npm run preview      # serve dist/ like Cloudflare Pages: http://127.0.0.1:4173
 npm run lint
-npm run preview      # serve dist/
+npm run check        # route check against dist/, then the link check
 ```
 
 Node 20 or newer. `website/` has its own `package.json` and `package-lock.json`;
 the repo's `tools\cli` does not touch it.
 
-## Where content comes from
+## How a build works
 
-`scripts/build-content.mjs` runs before every `dev`, `build`, and `lint` and
-writes `src/generated/` (git-ignored):
+1. `scripts/build-content.mjs` reads the repo and GitHub and writes
+   `src/generated/` (git-ignored). Big page data (each doc, the decisions, the
+   devlog) goes to `src/generated/data/*.json`, one chunk each, so the main
+   bundle stays small.
+2. `vite build` builds the client; `vite build --ssr src/entry-server.tsx`
+   builds the renderer.
+3. `scripts/prerender.mjs` renders every route into `dist/<route>.html` with its
+   own `<title>`, description, canonical link, and share image, then writes
+   `404.html`, `sitemap.xml`, `robots.txt`, and `_redirects`.
+
+In the browser, `src/entry-client.tsx` loads the current page's data chunk and
+hydrates the static HTML. Moving between pages after that is client-side.
+
+## Where content comes from
 
 | Page | Source |
 | --- | --- |
-| Docs (`/documentation`, `/docs/:slug`) | `docs/direction.md`, `docs/decisions.md`, `docs/ecosystem.md` (when present), every `docs/roadmap/**/*.md`, and `website/content/docs/*.md` |
-| Vision (`/philosophy`) | Sections of `docs/direction.md` ("What we are building", "What playable means", "How we build: AI-first") and the "In-world first" entry of `docs/decisions.md` |
-| Roadmap (`/roadmap`) | The milestone table in `docs/direction.md`, the `M1` milestone and its issues from the GitHub REST API, and `content/archive/roadmap-2025.json` |
-| Contribute (`/contribute`) | Open `good first issue` issues, else unassigned M1 issues, from the GitHub API |
-| Team (`/team`) | `content/team.json` |
-| Home (`/`) | M1 progress from the GitHub API, the M1 row of `docs/direction.md` |
+| Home (`/`) | `docs/direction.md` (the ambition line, the playable loop, the milestone table), M1 progress and the latest merged PRs from GitHub, the latest entries of `docs/decisions.md`, and `content/media.json` |
+| Roadmap (`/roadmap`) | The milestone table in `docs/direction.md`, every `M<n>` milestone and its issues from GitHub, and `content/archive/roadmap-2025.json` |
+| Devlog (`/devlog`) | Merged pull requests into `main` from GitHub (title and the first prose line of the body) and every entry in `docs/decisions.md`, grouped by day |
+| Server owners (`/servers`) | The "Features" list in `README.md`, the M3 row of `docs/direction.md`, and copy in `src/pages/Servers.tsx` |
+| Contribute (`/contribute`) | Open `good first issue` issues, else unassigned M1 issues, and the contributor list, from GitHub |
+| Decisions (`/decisions`) | `docs/decisions.md`, split into its sections and dated entries |
+| Docs (`/docs`, `/docs/:slug`) | `docs/direction.md`, `docs/ecosystem.md`, `docs/research/life-rp-benchmark.md`, every `docs/roadmap/**/*.md`, and `content/docs/*.md` |
 
-Relative links in the docs are rewritten at build time: a link to another
-rendered doc becomes `/docs/<slug>`, anything else points at the file on GitHub.
-The build fails if a section it extracts from `direction.md` or `decisions.md`
-disappears; rename the heading in `build-content.mjs` when you rename it in the doc.
+Markdown is turned into HTML at build time (remark and rehype); the browser
+never parses markdown. Relative links in the docs are rewritten: a link to a
+rendered doc becomes its page, anything else points at the file on GitHub.
+
+The build fails when something it extracts disappears: the ambition line or
+the numbered loop in `direction.md`, the milestone table, the "In-world first"
+decision, the README feature list, or the `**YYYY-MM-DD — Title.**` entry format
+in `decisions.md`. Fix the extractor in `build-content.mjs` when you change the
+doc.
 
 GitHub is read without a token (the repo is public). CI passes `GITHUB_TOKEN`
 for a higher rate limit. When the API cannot be reached, the build uses the
-committed `content/github-snapshot.json` and the roadmap page says so. Refresh
-the snapshot with `npm run snapshot` and commit it now and then.
+committed `content/github-snapshot.json` and the pages say so. Refresh the
+snapshot with `npm run snapshot` and commit it now and then.
 
-`content/docs/` holds the three guides exported from the old site's Supabase
-database (HTML converted to markdown, images in `public/docs-images/`).
-`content/archive/roadmap-2025.json` holds its roadmap phases and items.
+`content/docs/` holds the three guides exported from the 2025 site's Supabase
+database (images in `public/docs-images/`). `content/archive/roadmap-2025.json`
+holds its roadmap.
+
+## Pictures, clips, and share images
+
+Only captures from the game (BRAND.md, "Imagery"). `content/media.json` lists
+each still and clip with its caption, place, date, source PR, and whether it is
+work in progress.
+
+- **Stills** are webp files in `public/media/<id>-<width>.webp`, at 640 and,
+  when the source is big enough, 1280 wide. Add the file and the entry together.
+- **Clips** stay assets on the `film-evidence` release. The build downloads
+  each one into `public/media/clips/` (git-ignored). If the download fails, the
+  page links to the release instead of embedding the video.
+- **Share images** (`public/og/*.jpg`, 1200x630) are drawn by
+  `scripts/make-og.mjs` from the brand fonts and a still. Run it after changing
+  a page's title or the brand; it needs Playwright, which is not a dependency:
+  `npm i --no-save playwright@1.49.1`, then `node scripts/make-og.mjs` (set
+  `PLAYWRIGHT_CHANNEL=msedge` to use an installed Edge instead of downloading
+  Chromium).
+
+## Checks
+
+- `npm run lint`: ESLint and TypeScript rules.
+- `scripts/check-routes.mjs --dist` serves `dist/` with
+  `scripts/serve-dist.mjs` (Pages rules: `/x` to `x.html`, `_redirects`, a 404
+  status with `404.html`, brotli). Every page must answer 200 with a unique
+  title, a description, a canonical link, an og:image that loads, and its own
+  body text; old addresses must redirect; an unknown path must 404.
+- `scripts/check-links.mjs` reads every page in `dist/`: internal links must
+  reach a page, `#anchors` must exist on it, assets must exist, and links to
+  `github.com/Life-Framework/Life-Framework/blob|tree/main/<path>` must name a
+  file in the checkout. `--external` also requests every other URL once (not
+  in CI, since third-party sites rate-limit).
+
+Lighthouse, mobile, against `npm run preview` (record new scores in the PR when
+a change could move them):
+
+```sh
+npx lighthouse http://127.0.0.1:4173/ --only-categories=performance,accessibility,best-practices,seo
+```
 
 ## Deploy
 
 `.github/workflows/website.yml`:
 
-- On a PR that touches `website/**` or `docs/**`: `npm ci`, lint, build.
+- On a PR that touches `website/**`, `docs/**`, or `README.md`: `npm ci`, lint,
+  build, check.
 - On a push to `main` (same paths), daily at 05:17 UTC, or by hand
   (`workflow_dispatch`): the same, then `wrangler pages deploy` to the
-  Cloudflare Pages project `life-framework`. The daily run keeps the roadmap in
-  step with issue changes that touch no file.
+  Cloudflare Pages project `life-framework`, then the route check against the
+  live site. The daily run keeps the roadmap and devlog in step with GitHub.
 
 Repo secrets: `CLOUDFLARE_API_TOKEN` (an account token with Pages edit) and
 `CLOUDFLARE_ACCOUNT_ID`.
@@ -70,12 +132,9 @@ npx wrangler@4 pages deploy dist --project-name life-framework --branch main
 node scripts/check-routes.mjs https://life-framework-arn.pages.dev
 ```
 
-`public/_redirects` (`/* /index.html 200`) is the SPA fallback: every route
-serves the app shell and React Router renders the page, including the 404.
-`scripts/check-routes.mjs` requests every route, expects 200 and the shell,
-and checks that each page's text is in the JS bundle.
-
-Production URL until the DNS cutover: https://life-framework-arn.pages.dev
+Production URL until the DNS cutover: https://life-framework-arn.pages.dev.
+Canonical links, the sitemap, and share images use `SITE_URL` in
+`src/lib/meta.ts`; change it to `https://life-framework.org` in the cutover PR.
 
 ## Domain cutover (not done yet)
 

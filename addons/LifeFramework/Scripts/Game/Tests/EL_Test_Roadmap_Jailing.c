@@ -154,7 +154,7 @@ class EL_Test_Roadmap_JailingWorld : EL_Test
 		prisoner.SetWantedLevel(2);
 
 		ctx.True(LF_Jail.Arrest(officerUid, prisonerUid, standIn), "arrest of a wanted test account runs");
-		ctx.True(SamePlace(standIn.GetOrigin(), cell.GetOrigin()), "arrest moves the stand-in to Roadmap_Jail_Cell");
+		ctx.True(SamePlace(standIn.GetOrigin(), LF_Jail.GetReleasePoint()), "a zero-duration arrest releases the stand-in outside Roadmap_Jail_Cell");
 		ctx.False(LF_Jail.IsServing(prisonerUid), "zero-duration config releases");
 		ctx.Equal(1, prisoner.GetWantedLevel(), "zero-duration config reduces wanted");
 	}

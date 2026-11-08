@@ -406,6 +406,9 @@ class EL_SpawnLogic : SCR_SpawnLogic
 
 		// Level, licences, and turned-in quests live on the body; every new body gets them back.
 		LF_Progression.ApplyToCharacter(EL_Utils.GetPlayerUID(playerId), character);
+
+		// A prisoner with time left (a rejoin or a restart mid-sentence) goes back to the cell.
+		LF_Jail.OnPlayerSpawned(EL_Utils.GetPlayerUID(playerId), character);
 	}
 
 	//------------------------------------------------------------------------------------------------

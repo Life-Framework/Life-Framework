@@ -1,7 +1,7 @@
-# The public site (website/) is built from the repo: docs/ markdown, the M1
-# milestone and issues from the GitHub API, and website/content/.
-# PRs that touch the site or the docs build and lint it; pushes to main deploy
-# it to the Cloudflare Pages project `life-framework`.
+# The public site (website/) is built from the repo: docs/ markdown, README.md,
+# the milestones, issues, and merged PRs from the GitHub API, and website/content/.
+# PRs that touch the site or the docs lint, build, and check it; pushes to main
+# deploy it to the Cloudflare Pages project `life-framework` and check the live site.
 name: website
 
 on:
@@ -9,12 +9,14 @@ on:
     paths:
       - "website/**"
       - "docs/**"
+      - "README.md"
       - ".github/workflows/website.yml"
   push:
     branches: [main]
     paths:
       - "website/**"
       - "docs/**"
+      - "README.md"
       - ".github/workflows/website.yml"
   schedule:
     # Daily, so the roadmap page follows issue changes that touch no file.
@@ -52,6 +54,10 @@ jobs:
         run: npm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Every route answers with its own prerendered page, old addresses redirect,
+      # unknown ones 404, and every link, anchor, asset, and repo file link resolves.
+      - name: route and link check
+        run: npm run check
       - name: deploy to Cloudflare Pages
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
@@ -60,3 +66,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: website
           command: pages deploy dist --project-name=life-framework --branch=main --commit-hash=${{ github.sha }}
+      - name: check the live site
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: node scripts/check-routes.mjs https://life-framework-arn.pages.dev

@@ -29,6 +29,7 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string DUTY_UID = "e2e-duty-officer";
+	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -96,10 +97,13 @@ class EL_Test_E2E_SaveStateWrite : EL_Test
 		EL_TestProgressionKit.SeedCourier(ctx, COURIER_UID);
 		EL_TestProgressionKit.SeedSeniorOfficer(ctx, OFFICER_UID);
 		LF_Progression.NoteTurnedIn(COURIER_UID, EL_TestProgressionKit.QUEST_ID);
+		// An introduction rides the "introductions" payload (save version 8): Bea still knows Ada.
+		LF_Introductions.Introduce(INTRO_KNOWER_UID, ACCOUNT_UID);
+		ctx.True(LF_Introductions.Knows(INTRO_KNOWER_UID, ACCOUNT_UID), "e2e introduction known before the save");
 
 		// Both duty inventories ride the carried payload (police_duty, civilian worn) and the
-		// magazine rounds the itemstate payload (save version 8): clock in, pick up 2 apples,
-		// leave 9 rounds, clock out. A wanted report with its identified flag rides "wanted" (9).
+		// magazine rounds the itemstate payload (save version 9): clock in, pick up 2 apples,
+		// leave 9 rounds, clock out. A wanted report with its identified flag rides "wanted" (10).
 		EL_PlayerAccount dutyAccount = EL_TestPoliceKit.Account(DUTY_UID, true);
 		IEntity dutyBody = EL_TestCarriedInventoryKit.SpawnLoaded(ctx);
 		if (dutyBody)
@@ -132,6 +136,7 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string DUTY_UID = "e2e-duty-officer";
+	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -161,7 +166,7 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 		}
 
 		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is still serving after the save load");
-		ctx.True(LF_Jail.GetRemaining(ACCOUNT_UID) > 0, "e2e sentence has time left after the save load");
+		ctx.EqualFloat(3600, LF_Jail.GetRemaining(ACCOUNT_UID), 0.01, "e2e sentence resumes with the same remaining time (an offline prisoner serves no time)");
 
 		LF_StorageSnapshotRecord carried = LF_StorageSnapshot.Get(CARRIED_CHARACTER_ID, LF_StorageSnapshot.SLOT_CARRIED);
 		ctx.NotNull(carried, "e2e carried snapshot present after the save load");
@@ -204,6 +209,8 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 			ctx.True(tracker && tracker.HasTurnedIn(EL_TestProgressionKit.QUEST_ID), "e2e new body has the quest turned in");
 			EL_TestCharacterFixture.Delete(body);
 		}
+		ctx.True(LF_Introductions.Knows(INTRO_KNOWER_UID, ACCOUNT_UID), "e2e introduction still known after the save load");
+		ctx.False(LF_Introductions.Knows(ACCOUNT_UID, INTRO_KNOWER_UID), "e2e introduction stays one way after the save load");
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");

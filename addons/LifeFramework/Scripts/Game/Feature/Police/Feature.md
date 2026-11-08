@@ -57,3 +57,12 @@ is the entry point.
 
 - `Crime` (the wanted state it enforces), `Account` (duty, wanted), `Character`
   (inventory), `Houses` (raiding later), `License` (revocation).
+## Jail (M1-21)
+
+- The sentence is online time: `LF_Jail.Tick` advances connected prisoners only.
+- Sentencing hands a real paper, the sentence slip (`LF_JailSlip.c`,
+  `Prefabs/Items/Roleplay/SentenceSlip.et`); the inventory tooltip reads it.
+- Release is in the world: cell door opens (vanilla door sound), the prisoner
+  stands outside the door, the slip is stamped, then the toast.
+- A seated prisoner is dismounted to the cell; the vehicle never moves.
+- Later: in-jail work that shortens the sentence (#127).

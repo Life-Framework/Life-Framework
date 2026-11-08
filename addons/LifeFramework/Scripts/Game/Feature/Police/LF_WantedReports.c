@@ -53,7 +53,7 @@ class LF_PoliceConfig
 //! changes clothes or cars is not described by their new look. The name stays off the poster
 //! until the server marks the report identified (an ID check by an on-duty officer, or an
 //! officer close enough to catch the crime in the act). The client never sends the flag.
-//! Also the persisted record of the "wanted" payload (save version 9).
+//! Also the persisted record of the "wanted" payload (save version 10).
 class LF_WantedReportRecord : Managed
 {
 	string m_sPlayerUid;

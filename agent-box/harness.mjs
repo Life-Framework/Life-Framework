@@ -686,8 +686,8 @@ function selftest() {
   const apple = findPad(list, "AppleTradeContainer");
   // AppleTrader 197 0 240.6 plus the container's -2.6 0.9 0.7.
   if (!apple || apple.x !== 194.4 || apple.z !== 241.3) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
-  const police = findPad(list, "PoliceStation_Debug");
-  if (!police || police.x !== 229 || police.z !== 244.3) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
+  const police = findPad(list, "Roadmap_Police_Desk");
+  if (!police || police.x !== 237.4 || police.z !== 243.9 || !police.actions.includes("EL_DutyAction")) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
   const pile = findPad(list, "CementPile_Debug");
   if (!pile || !pile.actions.includes("EL_GatherAction")) throw new Error("CementPile_Debug gather missing");
   const ore = findPad(list, "IronOre_Debug");
@@ -1121,6 +1121,7 @@ function usage() {
   node agent-box/harness.mjs look
   node agent-box/harness.mjs ui
   node agent-box/harness.mjs click <WidgetName> [index]
+  node agent-box/harness.mjs type <FieldName> <Text>
   node agent-box/harness.mjs press F|WheelUp|WheelDown|F10
   node agent-box/harness.mjs use <ClassName> [EntityName]
   node agent-box/harness.mjs input <MenuAction>
@@ -1215,6 +1216,9 @@ function main(argv) {
     }
     if (cmd === "click") {
       return printResult(sendCommand({ verb: "click", widget: rest[0], index: rest[1] }));
+    }
+    if (cmd === "type") {
+      return printResult(sendCommand({ verb: "type", widget: rest[0], text: rest[1] }));
     }
     if (cmd === "press") {
       const spec = PRESS[rest[0]];

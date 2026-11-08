@@ -78,8 +78,8 @@ Identity:
 - **`EL_PersistenceComponentSerializer`** (`Scripts/Game/Persistence/Serializers/`)
   writes `version` first, then accounts and bank records (the prefix on every
   version), then the payloads listed in `RegisterPersistencePayloads`:
-  survival, organizations, hideout, vehicles, jail, carried, progression, itemstate,
-  wanted. The written version is that list's length (currently 9). Deserialize stops at the stored version, so an
+  survival, organizations, hideout, vehicles, jail, carried, progression, introductions,
+  itemstate, wanted. The written version is that list's length (currently 10). Deserialize stops at the stored version, so an
   older save leaves later payloads untouched. A new system appends one entry at
   the end and raises the version by one. Never insert earlier or reorder.
   The override bodies live in public static `SerializeStore` /
@@ -95,8 +95,9 @@ Identity:
   | 5 | serving jail sentences (`LF_Jail.ExportAll` / `ApplyAll`) |
   | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`) |
   | 7 | progression (`LF_Progression.ExportAll` / `ApplyAll`; `ApplyToCharacter` on each spawn) |
-  | 8 | per-item state of every snapshot: magazine ammo by item index (`LF_StorageSnapshot.ExportItemState` / `ApplyItemState`) |
-  | 9 | wanted reports (`LF_WantedReports.ExportAll` / `ApplyAll`) |
+  | 8 | introductions (`LF_Introductions.ExportAll` / `ApplyAll`) |
+  | 9 | per-item state of every snapshot: magazine ammo by item index (`LF_StorageSnapshot.ExportItemState` / `ApplyItemState`) |
+  | 10 | wanted reports (`LF_WantedReports.ExportAll` / `ApplyAll`) |
 - Managers expose `ExportAll()` / `ApplyAll(records)` / `GetOrCreate(id)`.
   Record classes are plain Managed: `EL_PlayerAccountRecord`,
   `EL_BankAccountRecord`, `EL_SurvivalStatsRecord` (each under the feature's

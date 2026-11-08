@@ -143,15 +143,7 @@ export function runChainProbes({ send, pause, onLine }) {
     return { code: 1, lines, summary: { noSession: true } };
   }
   if (ping.detail === "no_character" || ping.status === "error") {
-    const ui = send({ verb: "ui" });
-    say(`ui ${ui.status} ${ui.detail}`);
-    if (ui.status === "ok" && ui.detail.includes("CivilianButton")) {
-      send({ verb: "click", widget: "CivilianButton" });
-      pause(800);
-      send({ verb: "click", widget: "TownButton" });
-      pause(1500);
-    }
-    // First arrival: form R-89 (name, age) stands between the town pick and the spawn.
+    // First arrival: form R-89 (name, age) stands before the spawn; there is no faction screen.
     const form = send({ verb: "ui" });
     if (form.status === "ok" && form.detail.includes("SignButton")) {
       send({ verb: "type", widget: "RegFirstName", text: "Agent" });

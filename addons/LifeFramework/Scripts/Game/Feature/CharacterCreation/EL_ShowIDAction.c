@@ -7,8 +7,6 @@
 [BaseContainerProps(configRoot: true)]
 class EL_ShowIDAction : ScriptedUserAction
 {
-	static const float MAX_DISTANCE = 1.5;
-
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
@@ -19,6 +17,14 @@ class EL_ShowIDAction : ScriptedUserAction
 		if (!pOwnerEntity || !pUserEntity || pOwnerEntity == pUserEntity)
 		{
 			EL_Debug.Warn("IdCard", "show refused: no one to show the card to");
+			return;
+		}
+
+		LF_EInteractionRefusal refusal = LF_PlayerInteraction.CheckPair(pUserEntity, pOwnerEntity);
+		if (refusal != LF_EInteractionRefusal.NONE)
+		{
+			EL_Debug.Info("IdCard", "show refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
+			EL_NotificationManagerComponent.NotifyPlayer(showerId, "#EL-ID_Information", LF_PlayerInteraction.RefusalKey(refusal), 4.0, EL_ENotificationType.WARNING);
 			return;
 		}
 
@@ -39,6 +45,8 @@ class EL_ShowIDAction : ScriptedUserAction
 		}
 
 		viewer.LF_ShowIdCardView(card.GetFirstName(), card.GetLastName(), card.GetAge(), EL_NetworkUtils.GetRplId(pUserEntity));
+		LF_PlayerInteraction.PlayGesture(pUserEntity, LF_PlayerInteraction.GESTURE_POINT);
+		LF_PlayerInteraction.PlayHandoverSound(pUserEntity, LF_PlayerInteraction.SOUND_HANDOVER);
 
 		// An ID check: an on-duty officer who reads a wanted player's own card now knows who they
 		// are, and the wanted posters name them. Someone else's card identifies nobody.
@@ -79,43 +87,8 @@ class EL_ShowIDAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		if (!user)
-			return false;
-
-		IEntity owner = GetOwner();
-		if (!owner || owner == user)
-			return false;
-
-		// Check distance
-		vector userPos = user.GetOrigin();
-		vector ownerPos = owner.GetOrigin();
-		float distance = vector.Distance(userPos, ownerPos);
-		if (distance > MAX_DISTANCE)
-			return false;
-
-		// Check if user is facing the owner
-		vector userAngles = user.GetAngles();
-		vector dirToOwner = ownerPos - userPos;
-		dirToOwner.Normalize();
-
-		vector userForward = Vector(userAngles[0], userAngles[1], 0).AnglesToVector();
-		userForward[1] = 0; // Ignore pitch
-		userForward.Normalize();
-
-		float dotUser = vector.Dot(userForward, dirToOwner);
-		// Check if owner is facing the user
-		vector ownerAngles = owner.GetAngles();
-		vector dirToUser = userPos - ownerPos;
-		dirToUser.Normalize();
-
-		vector ownerForward = Vector(ownerAngles[0], ownerAngles[1], 0).AnglesToVector();
-		ownerForward[1] = 0;
-		ownerForward.Normalize();
-
-		float dotOwner = vector.Dot(ownerForward, dirToUser);
-
-		// Both must be facing each other within ~45 degrees -> dot product > cos(45°) ~= 0.7071
-		const float COS_45 = 0.70710678;
-		return dotUser > COS_45 && dotOwner > COS_45;
+		// One reach rule for the whole player interaction menu (LF_PlayerInteraction.REACH).
+		// Looking at the person is the action context's job; they need not face you back.
+		return LF_PlayerInteraction.Offers(LF_EPlayerAction.SHOW_ID, false) && LF_PlayerInteraction.CanOffer(user, GetOwner());
 	}
 };

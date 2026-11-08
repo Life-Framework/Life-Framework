@@ -11,7 +11,7 @@ class LF_StorageItemRecord : Managed
 	int m_iSlot = -1;
 
 	//! Rounds in a magazine, -1 for anything that is not one. Not part of the carried payload's
-	//! positional format: it travels in the separate itemstate payload (save version 8).
+	//! positional format: it travels in the separate itemstate payload (save version 9).
 	[NonSerialized()]
 	int m_iAmmo = -1;
 
