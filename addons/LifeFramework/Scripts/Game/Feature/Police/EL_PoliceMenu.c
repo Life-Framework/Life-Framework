@@ -408,6 +408,72 @@ class EL_PoliceMenu : ChimeraMenuBase
 	protected PlayerController m_PlayerController;
 	protected ref array<ref EL_WantedPlayerInfo> m_aWantedPlayers;
 
+	// UI input only: Enter, Esc and the pad, polled every frame (LF_UIMenuInput).
+	protected Widget m_wCloseButton;
+	protected ref LF_UIMenuInput m_Input = new LF_UIMenuInput();
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuOpen()
+	{
+		super.OnMenuOpen();
+
+		Widget root = GetRootWidget();
+		if (!root)
+		{
+			EL_Debug.Error("Police", "police menu opened without a root widget");
+			return;
+		}
+
+		m_wCloseButton = root.FindAnyWidget("CloseButton");
+		ScriptInvoker closeClick = LF_UIMenuInput.ClickInvoker(m_wCloseButton);
+		if (closeClick)
+			closeClick.Insert(OnClosePressed);
+		else
+			EL_Debug.Error("Police", "police menu close button missing or not a button; Esc still closes");
+
+		array<Widget> focus = {};
+		focus.Insert(root.FindAnyWidget("FineButton"));
+		focus.Insert(root.FindAnyWidget("SearchButton"));
+		focus.Insert(root.FindAnyWidget("ArrestButton"));
+		focus.Insert(m_wCloseButton);
+		m_Input.SetFocusOrder(focus);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuUpdate(float tDelta)
+	{
+		super.OnMenuUpdate(tDelta);
+
+		LF_EUIMenuInput pressed = m_Input.Tick();
+		if (pressed == LF_EUIMenuInput.BACK)
+		{
+			OnClosePressed();
+			return;
+		}
+
+		if (pressed == LF_EUIMenuInput.SELECT && m_Input.GetSelected() == m_wCloseButton)
+			OnClosePressed();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (m_wCloseButton && m_Input.RingEntry(w) == m_wCloseButton)
+		{
+			OnClosePressed();
+			return true;
+		}
+
+		return super.OnClick(w, x, y, button);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnClosePressed()
+	{
+		if (m_Input.Ready("Close"))
+			Close();
+	}
+
 	//------------------------------------------------------------------------------------------------
 	void SetPlayerController(PlayerController playerController)
 	{

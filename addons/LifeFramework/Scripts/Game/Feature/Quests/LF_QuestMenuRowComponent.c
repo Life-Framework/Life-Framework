@@ -107,6 +107,16 @@ class LF_QuestMenuRowComponent : ScriptedWidgetComponent
 	//------------------------------------------------------------------------------------------------
 	override bool OnClick(Widget w, int x, int y, int button)
 	{
+		if (Press(w))
+			return true;
+
+		return super.OnClick(w, x, y, button);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse click and pad MenuSelect share this. The menu debounces the request itself.
+	bool Press(Widget w)
+	{
 		if (m_wActionButton && w == m_wActionButton)
 		{
 			if (m_Menu && !m_sQuestId.IsEmpty())
@@ -114,6 +124,12 @@ class LF_QuestMenuRowComponent : ScriptedWidgetComponent
 			return true;
 		}
 
-		return super.OnClick(w, x, y, button);
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	Widget GetActionButton()
+	{
+		return m_wActionButton;
 	}
 }

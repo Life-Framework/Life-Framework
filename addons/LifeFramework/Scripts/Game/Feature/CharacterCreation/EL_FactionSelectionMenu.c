@@ -11,6 +11,7 @@ class EL_FactionSelectionMenu
 {
 	protected Widget m_wRoot;
 	protected PlayerController m_PlayerController;
+	protected ref LF_UIMenuInput m_Input = new LF_UIMenuInput();
 
 	//------------------------------------------------------------------------------------------------
 	//! Creates the layout on the workspace and wires the two faction buttons.
@@ -45,6 +46,12 @@ class EL_FactionSelectionMenu
 		if (police)
 			police.m_OnClicked.Insert(OnPoliceClicked);
 
+		// Pad: focus starts on the first faction; MenuUp/MenuDown move, MenuSelect picks.
+		array<Widget> focus = {};
+		focus.Insert(m_wRoot.FindAnyWidget("CivilianButton"));
+		focus.Insert(m_wRoot.FindAnyWidget("PoliceButton"));
+		m_Input.SetFocusOrder(focus);
+
 		// 0ms delay = every frame; removed again in Close().
 		GetGame().GetCallqueue().CallLater(ActivateMenuContext, 0, true);
 
@@ -55,9 +62,26 @@ class EL_FactionSelectionMenu
 	//------------------------------------------------------------------------------------------------
 	protected void ActivateMenuContext()
 	{
-		InputManager inputManager = GetGame().GetInputManager();
-		if (inputManager)
-			inputManager.ActivateContext("MenuContext");
+		// Tick activates MenuContext (+ MenuWithEditorContext for MenuUp/MenuDown) and moves focus.
+		// MenuBack is ignored: this choice is mandatory.
+		if (m_Input.Tick() != LF_EUIMenuInput.SELECT)
+			return;
+
+		// Pressing can Close, which removes this repeating call; never do that from inside it.
+		GetGame().GetCallqueue().CallLater(PressWidget, 0, false, m_Input.GetSelected());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PressWidget(Widget pressed)
+	{
+		// Already closed by a click on the same press.
+		if (!m_wRoot || !pressed)
+			return;
+
+		if (pressed.GetName() == "CivilianButton")
+			OnCivilianClicked();
+		else if (pressed.GetName() == "PoliceButton")
+			OnPoliceClicked();
 	}
 
 	//------------------------------------------------------------------------------------------------

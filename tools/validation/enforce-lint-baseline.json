@@ -125,11 +125,6 @@
   "text": "EL_WhitelistRespawnHandlerComponent whitelistComponent = EL_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(EL_WhitelistRespawnHandlerComponent));"
  },
  {
-  "rule": "L2",
-  "file": "Scripts/Game/UI/Minigames/EL_FallingFruit.c",
-  "text": "m_wFruitWidget = GetGame().GetWorkspace().CreateWidgets(\"{EC56C6F70AE2FEDE}UI/Layouts/Minigames/EL_FruitWidget.layout\", parent);"
- },
- {
   "rule": "L3",
   "file": "Scripts/Game/Feature/AgentHarness/EL_AgentHarness.c",
   "text": "GetGame().GetCallqueue().CallLater(Poll, 400, true);"
@@ -218,15 +213,5 @@
   "rule": "L6",
   "file": "Scripts/Game/Feature/Jobs/EL_PlayerJobComponent.c",
   "text": "lumberjackConfig.m_aEquipmentPrefabs = {\"{92FAC15304387B6F}Prefabs/Tools/Axe/Axe.et\"};"
- },
- {
-  "rule": "L6",
-  "file": "Scripts/Game/Feature/Notifications/EL_NotificationManagerComponent.c",
-  "text": "Widget toastWidget = workspace.CreateWidgets(\"{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout\", parent);"
- },
- {
-  "rule": "L6",
-  "file": "Scripts/Game/UI/Minigames/EL_FallingFruit.c",
-  "text": "m_wFruitWidget = GetGame().GetWorkspace().CreateWidgets(\"{EC56C6F70AE2FEDE}UI/Layouts/Minigames/EL_FruitWidget.layout\", parent);"
  }
 ]

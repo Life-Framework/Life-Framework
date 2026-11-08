@@ -90,10 +90,12 @@ class EL_GatherAction : ScriptedUserAction
 	{
 		if (!m_sDisplayName)
 		{
-			m_sDisplayName = "Unknown";
+			// UIInfo names are usually #keys; translate before formatting or the raw key shows.
+			string itemName = "#LF-Gather_Unknown";
 			UIInfo uiInfo = EL_UIInfoUtils.GetInfo(m_GatherItemPrefab);
-			if (uiInfo) m_sDisplayName = uiInfo.GetName();
-			m_sDisplayName = string.Format("Gather %1", m_sDisplayName);
+			if (uiInfo && !uiInfo.GetName().IsEmpty())
+				itemName = uiInfo.GetName();
+			m_sDisplayName = WidgetManager.Translate("#LF-Gather_Action", WidgetManager.Translate(itemName));
 		}
 
 		outName = m_sDisplayName;
@@ -114,7 +116,7 @@ class EL_GatherAction : ScriptedUserAction
 		if (m_GatherAmountMax > 0 && m_iRemainingGathers <= 0 && m_NextRestock.Greater(user.GetWorld().GetTimestamp()))
 		{
 			int secondsLeft = m_NextRestock.DiffMilliseconds(user.GetWorld().GetTimestamp()) / 1000;
-			SetCannotPerformReason(string.Format("Please wait %1 seconds", secondsLeft + 1)); //+1 to avoid 0 seconds left.
+			SetCannotPerformReason(WidgetManager.Translate("#LF-Gather_Wait", secondsLeft + 1)); //+1 to avoid 0 seconds left.
 			return false;
 		}
 
@@ -126,9 +128,9 @@ class EL_GatherAction : ScriptedUserAction
 		if (!EL_HasGatherTool(user))
 		{
 			if (m_CheckInventoryForToolRequirement)
-				SetCannotPerformReason("Requires item");
+				SetCannotPerformReason("#LF-Gather_RequiresItem");
 			else
-				SetCannotPerformReason("Requires item in hands");
+				SetCannotPerformReason("#LF-Gather_RequiresItemInHands");
 			return false;
 		}
 

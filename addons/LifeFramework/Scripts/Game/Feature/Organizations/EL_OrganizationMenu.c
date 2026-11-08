@@ -17,6 +17,8 @@ class EL_OrganizationMenu
 	protected EditBoxWidget m_wNameEdit;
 	protected EditBoxWidget m_wAmount;
 	protected ref map<string, float> m_mActionStampMs;
+	//! Contexts, pad focus ring, MenuBack/MenuSelect (shared with the other menus).
+	protected ref LF_UIMenuInput m_Input = new LF_UIMenuInput();
 	protected bool m_bExtraStorage;
 	protected bool m_bParkedVehicle;
 
@@ -94,6 +96,17 @@ class EL_OrganizationMenu
 		BindClose();
 
 		ShowEmpty();
+
+		// Pad: focus starts on Create (first non-field); MenuUp/MenuDown walk the desk.
+		array<Widget> focus = {};
+		focus.Insert(m_wNameEdit);
+		focus.Insert(m_wRoot.FindAnyWidget("CreateButton"));
+		focus.Insert(m_wAmount);
+		focus.Insert(m_wRoot.FindAnyWidget("DepositButton"));
+		focus.Insert(m_wRoot.FindAnyWidget("WithdrawButton"));
+		focus.Insert(m_wRoot.FindAnyWidget("BuyButton"));
+		focus.Insert(m_wRoot.FindAnyWidget("CloseButton"));
+		m_Input.SetFocusOrder(focus);
 
 		GetGame().GetCallqueue().CallLater(ActivateInputContext, 0, true);
 
@@ -190,21 +203,34 @@ class EL_OrganizationMenu
 	//------------------------------------------------------------------------------------------------
 	protected void ActivateInputContext()
 	{
-		InputManager inputManager = GetGame().GetInputManager();
-		if (!inputManager)
+		if (!m_wRoot)
 			return;
 
-		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		Widget focused = null;
-		if (workspace)
-			focused = workspace.GetFocusedWidget();
+		// Close removes this repeating call, so presses run one tick later, never inside it.
+		LF_EUIMenuInput pressed = m_Input.Tick();
+		if (pressed == LF_EUIMenuInput.BACK)
+			GetGame().GetCallqueue().CallLater(OnClose, 0, false);
+		else if (pressed == LF_EUIMenuInput.SELECT)
+			GetGame().GetCallqueue().CallLater(PressWidget, 0, false, m_Input.GetSelected());
+	}
 
-		if (focused && EditBoxWidget.Cast(focused))
-			inputManager.ActivateContext("MenuTextEditContext");
-		else
-			inputManager.ActivateContext("MenuContext");
+	//------------------------------------------------------------------------------------------------
+	//! MenuSelect on a focused desk button. Each handler debounces itself (ActionReady).
+	protected void PressWidget(Widget pressed)
+	{
+		if (!m_wRoot || !pressed)
+			return;
 
-		if (inputManager.GetActionTriggered("MenuBack"))
+		string name = pressed.GetName();
+		if (name == "CreateButton")
+			OnCreate();
+		else if (name == "DepositButton")
+			OnDeposit();
+		else if (name == "WithdrawButton")
+			OnWithdraw();
+		else if (name == "BuyButton")
+			OnBuy();
+		else if (name == "CloseButton")
 			OnClose();
 	}
 
