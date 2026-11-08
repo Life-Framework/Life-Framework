@@ -1095,6 +1095,13 @@
   `police/fine-ticket-serializer`.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
+- ✅ **The police kit carries the station car key** (2026-11-08, WORLD `police/car-key`):
+  the starter police kit adds `Prefabs/Items/Roleplay/LF_PoliceCarKey.et`, a vehicle key bound
+  to the shared identifier `POLICE`; `Roadmap_Escort_Car`'s lock is bound to the same, so every
+  officer's key opens every station car. The key is part of the duty inventory (clock-out stores
+  it with the uniform). The car is a world entity, not an owned record: no garage, no impound,
+  back at the station after a restart. `EL_VehicleKeyComponent` now asks for its INIT event, so
+  an editor-bound key actually takes its identifier (before, it stayed unbound).
 - ✅ **Clock in / Clock out at the duty desk** (M1-11, 2026-11-08; WORLD
   `police/duty-swap`, `police/death-on-duty`, `police/station`; restart via
   `wt e2e`). `Roadmap_Police_Desk` is `Prefabs/Police/LF_PoliceDutyDesk.et`

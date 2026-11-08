@@ -124,6 +124,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_PlaytestOffers(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceAbuse(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_PoliceCarKey(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_PoliceRankPermissions(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceDutySwap(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_PoliceDeathOnDuty(), EL_TestTier.WORLD);
