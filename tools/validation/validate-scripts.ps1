@@ -23,10 +23,12 @@
 # (58D0FB3206B6F859), the only dependency in LifeFramework.gproj. Logs land
 # in Documents\My Games\ArmaReforgerWorkbench\logs.
 #
-# Cost: ~25 s warm. It stays in `tools\cli validate`; the pre-commit hook runs
-# validate-repo.ps1 only, so commits do not pay for it.
+# Cost: ~18-40 s and a Workbench launch. It runs in `tools\cli validate --full`,
+# ci, `wt gate`, and `wt ship`. The default `validate` skips it: the test
+# server compiles every script at boot and test-e2e fails on `Can't compile`.
+# The pre-commit hook runs validate-repo.ps1 only.
 #
-# Run via: tools\cli validate   (or directly for verbose output)
+# Run via: tools\cli validate --full   (or directly for verbose output)
 
 $ErrorActionPreference = "Stop"
 

@@ -7,6 +7,23 @@
 #   1 = SUITE FAILED (SUMMARY present, failed>0) or server crashed with errors
 #   2 = NO VERDICT (timeout without SUMMARY, missing tooling, instant crash)
 #
+# A script that does not compile fails with exit 1 and prints the SCRIPT (E)
+# lines as soon as the server logs `Can't compile`. This is why the default
+# `tools\cli validate` can skip the Workbench compile.
+# Red-proof (2026-11-08): a scratch Tests/LF_ZZPlant.c with `return c ? 1 : 2;`
+# (and, separately, `return LF_NoSuchThing.Value();`) gives exit 1:
+#   test-e2e: FAILED (scripts do not compile):
+#     SCRIPT    (E): @"Scripts/Game/Tests/LF_ZZPlant.c,5": Broken expression (missing ';'?)
+#     SCRIPT    (E): Can't compile "Game" script module!
+# The server also crashes on it, so the older crash.log path failed too, but
+# only as "server crashed". Neither compiler rejects `int x = ;`. Workbench
+# validation also compiles the XBOX/PS4/PS5 configs, which this server does
+# not, so `validate --full` stays in ci, wt gate, and wt ship.
+#
+# -Only <a,b> runs just those tests (class names or GetName() strings): it
+# writes $profile:EL_TestOnly.txt and defines EL_TEST_ONLY; the suite then
+# reports tier=only, so suite-stamp never mistakes it for a full tier run.
+#
 # Run via: tools\cli test
 
 param(
@@ -20,7 +37,8 @@ param(
   [string]$LoadSessionSave,
   [switch]$GracefulClose,
   [int]$GracefulCloseSeconds = 30,
-  [string]$ExtraDefine
+  [string]$ExtraDefine,
+  [string]$Only
 )
 
 $ErrorActionPreference = "Stop"
@@ -177,6 +195,17 @@ if ($Tier -eq "fast") {
   $args += @("-scrDefine", "EL_TEST_TIER_PERSISTENCE")
 }
 
+$expectedTier = $Tier
+$onlyFile = Join-Path $profile "profile\EL_TestOnly.txt"
+Remove-Item -LiteralPath $onlyFile -Force -ErrorAction SilentlyContinue
+if (-not [string]::IsNullOrEmpty($Only)) {
+  New-Item -ItemType Directory -Force -Path (Split-Path -Parent $onlyFile) | Out-Null
+  [System.IO.File]::WriteAllText($onlyFile, $Only, (New-Object System.Text.UTF8Encoding $false))
+  $args += @("-scrDefine", "EL_TEST_ONLY")
+  $expectedTier = "only"
+  Write-Host "test-e2e: only $Only"
+}
+
 if (-not [string]::IsNullOrEmpty($ExtraDefine)) {
   $args += @("-scrDefine", $ExtraDefine)
 }
@@ -221,6 +250,7 @@ function Read-Console([string]$dir) {
 $sw = [Diagnostics.Stopwatch]::StartNew()
 $lastSummary = $null
 $harnessError = $null
+$compileFailed = $false
 $crashLines = @()
 
 # Print the suite lines from a console.log so a no-verdict exit still shows
@@ -286,6 +316,14 @@ while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
     break
   }
 
+  # A compile failure does not stop the server; it runs on without the
+  # addon's scripts and never prints a SUMMARY. Fail now with the errors.
+  if ($console -match 'Can''t compile') {
+    $crashLines = @($console -split "`n" | Where-Object { $_ -match 'SCRIPT\s+\(E\)|Can''t compile' } | Select-Object -First 12)
+    $compileFailed = $true
+    break
+  }
+
   $crashes = Read-Crash $logDir.FullName
   if ($crashes.Count -gt 0) {
     $crashLines = $crashes | Select-Object -First 12
@@ -337,8 +375,8 @@ if ($lastSummary) {
     foreach ($d in $debugLines) { Write-Host "  $($d -replace '.*\[ELDebug:', '[ELDebug:')" }
   }
 
-  if ($lastSummary.Tier -ne $Tier) {
-    Write-Host "test-e2e: FAILED (tier mismatch: requested $Tier but suite reported $($lastSummary.Tier))"
+  if ($lastSummary.Tier -ne $expectedTier) {
+    Write-Host "test-e2e: FAILED (tier mismatch: requested $expectedTier but suite reported $($lastSummary.Tier))"
     exit 1
   }
 
@@ -351,6 +389,13 @@ if ($lastSummary) {
 
   if ($lastSummary.Failed -eq 0) { Write-Host "test-e2e: OK"; exit 0 }
   Write-Host "test-e2e: FAILED ($($lastSummary.Failed) failing test(s))"
+  exit 1
+}
+
+if ($compileFailed) {
+  Write-Host "test-e2e: FAILED (scripts do not compile):"
+  foreach ($l in $crashLines) { Write-Host "  $($l.Trim())" }
+  Write-Host "test-e2e: log $((Get-LogDir).FullName)"
   exit 1
 }
 

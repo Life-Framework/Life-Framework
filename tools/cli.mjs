@@ -16,7 +16,7 @@
 //   mcp verify [name]                 Boot the server briefly to prove it starts
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
-//   validate                          Run every script in tools/validation/
+//   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the ELTEST suite
 //   session up [--clients N]|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
@@ -547,20 +547,40 @@ function cmdSetEnabled(name, enabled) {
   return 0;
 }
 
-function invokeScript(full, opts = {}) {
-  if (full.endsWith(".ps1")) return sh(PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full], opts);
-  if (full.endsWith(".cmd") || full.endsWith(".bat")) return sh("cmd", ["/c", full], opts);
-  if (full.endsWith(".sh")) return sh("bash", [full], opts);
-  return sh(process.execPath, [full], opts); // .mjs/.js/.cjs and bare scripts
-}
-
 // Effective env for spawned tool scripts: OS env overlaid with the configured
 // ENFUSION_* values so tools/validation/* and tools/test/test-e2e.ps1 agree with the CLI.
 function toolEnv() {
   return { ...process.env, ...envOf() };
 }
 
-function cmdRunArea(area, root = ROOT) {
+// Checks that launch Workbench (~20-40 s and a window). The default `validate`
+// skips them because agents run it constantly and the test server compiles
+// every script at boot anyway (test-e2e fails on `Can't compile`). They run in
+// `validate --full`, `ci`, `wt gate`, and `wt ship`.
+const FULL_ONLY = new Set(["validate-scripts.ps1"]);
+
+// Checks are independent read-only scripts, so they run concurrently (most of
+// their time is PowerShell start-up). Output is printed in file order.
+const AREA_CONCURRENCY = 8;
+
+function invokeScriptAsync(full, opts = {}) {
+  let cmd = process.execPath;
+  let args = [full]; // .mjs/.js/.cjs and bare scripts
+  if (full.endsWith(".ps1")) [cmd, args] = [PWSH, ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", full]];
+  else if (full.endsWith(".cmd") || full.endsWith(".bat")) [cmd, args] = ["cmd", ["/c", full]];
+  else if (full.endsWith(".sh")) [cmd, args] = ["bash", [full]];
+  return new Promise((done) => {
+    let stdout = "";
+    let stderr = "";
+    const child = spawn(cmd, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], ...opts });
+    child.stdout.on("data", (d) => { stdout += d; });
+    child.stderr.on("data", (d) => { stderr += d; });
+    child.on("error", (e) => done({ status: 1, stdout, stderr: stderr + `failed to spawn ${cmd}: ${e.message}` }));
+    child.on("close", (code) => done({ status: code ?? 1, stdout, stderr }));
+  });
+}
+
+async function cmdRunArea(area, root = ROOT, opts = {}) {
   // Worktree checks must use the target checkout's scripts. Using the main
   // checkout here makes a branch's generated registries look stale when it
   // has added a test or validator.
@@ -579,20 +599,38 @@ function cmdRunArea(area, root = ROOT) {
   // LF_VALIDATE_SKIP=a.ps1,b.mjs skips checks a machine cannot run (CI has no
   // base game or MCP build). Each skip is printed so a run never hides one.
   const skip = new Set((process.env.LF_VALIDATE_SKIP || "").split(",").map((s) => s.trim()).filter(Boolean));
+  const areaStarted = Date.now();
+  const jobs = scripts.map((s) => {
+    if (skip.has(s)) return { s, skipped: "LF_VALIDATE_SKIP" };
+    if (area === "validate" && !opts.full && FULL_ONLY.has(s)) {
+      return { s, skipped: "Workbench compile: runs in 'validate --full', ci, wt gate, wt ship" };
+    }
+    return { s };
+  });
+  const queue = jobs.filter((j) => !j.skipped);
+  const env = toolEnv();
+  const worker = async () => {
+    for (let job = queue.shift(); job; job = queue.shift()) {
+      const started = Date.now();
+      job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env });
+      job.secs = (Date.now() - started) / 1000;
+    }
+  };
+  await Promise.all(Array.from({ length: AREA_CONCURRENCY }, worker));
   let failed = 0;
-  for (const s of scripts) {
-    if (skip.has(s)) {
-      console.log(`SKIP  ${area}/${s} (LF_VALIDATE_SKIP)`);
+  for (const job of jobs) {
+    if (job.skipped) {
+      console.log(`SKIP  ${area}/${job.s} (${job.skipped})`);
       continue;
     }
-    const res = invokeScript(join(dir, s), { cwd: root, env: toolEnv() });
+    const { res } = job;
     const ok = res.status === 0;
-    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${s}`);
+    console.log(`${ok ? "PASS" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s)`);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok) failed++;
   }
-  console.log(`${area}: ${scripts.length} check(s), ${failed} failed`);
+  console.log(`${area}: ${scripts.length} check(s), ${failed} failed (${((Date.now() - areaStarted) / 1000).toFixed(1)} s)`);
   return failed ? 1 : 0;
 }
 
@@ -1115,6 +1153,26 @@ function cmdHost(args) {
   return sub ? 1 : 0;
 }
 
+// --only names: a test class (EL_Test_X), a GetName() string, or a test file
+// name (EL_Test_Money or EL_Test_Money.c), which expands to every test class
+// declared in that file. Names the suite cannot match fail the run there.
+function resolveOnlyNames(root, spec) {
+  const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
+  const names = [];
+  for (const raw of String(spec).split(",").map((x) => x.trim()).filter(Boolean)) {
+    const file = join(testsDir, raw.endsWith(".c") ? raw : `${raw}.c`);
+    if (/^(EL|LF)_Test_\w+(\.c)?$/.test(raw) && existsSync(file)) {
+      const classes = [...readFileSync(file, "utf8").matchAll(/class\s+((?:EL_Test_|LF_Test_)\w+)\s*:\s*EL_Test\b/g)].map((m) => m[1]);
+      if (classes.length) {
+        names.push(...classes);
+        continue;
+      }
+    }
+    names.push(raw.replace(/\.c$/, ""));
+  }
+  return [...new Set(names)];
+}
+
 // ------------------------------------------------------------ multi-client session
 // `session up|down|status` (agent-box/session.mjs): one dedicated server on the
 // bare DebugWorld plus N windowed game clients, each with its own -profile,
@@ -1273,6 +1331,15 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     console.log(`unknown tier: ${tier} (expected fast, all, or persistence)`);
     return 2;
   }
+  let only = [];
+  if (opts.only !== undefined) {
+    only = resolveOnlyNames(root, opts.only);
+    if (only.length === 0) {
+      console.log("usage: tools\\cli test --no-build --only <EL_Test_Class|test-name|EL_Test_File>[,...]");
+      return 2;
+    }
+    console.log(`test: --only ${only.join(",")}`);
+  }
   guardHeavy(root, "test", opts.force);
   if (!noBuild) {
     const b = await cmdBuild(root, { wait: opts.wait });
@@ -1297,6 +1364,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
       "-Tier", tier,
       "-BindPort", String(ports.gamePort),
       "-A2sPort", String(ports.a2sPort),
+      ...(only.length ? ["-Only", only.join(",")] : []),
     ], { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
     return res.status;
@@ -1318,7 +1386,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
 async function cmdCi(root = ROOT, opts = {}) {
   guardHeavy(root, "ci", opts.force);
   const steps = [
-    ["validate", () => cmdRunArea("validate", root)],
+    ["validate --full", () => cmdRunArea("validate", root, { full: true })],
     ["build", () => cmdBuild(root, { wait: opts.wait })],
     ["test", () => cmdTest(true, "all", root, opts)],
   ];
@@ -1351,11 +1419,13 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout)
-  test [--no-build] [--tier fast|all|persistence]
-                                build + boot server + parse ELTEST results (worktree only)
+  test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]]
+                                build + boot server + parse ELTEST results (worktree only).
+                                --only runs just those tests (class, GetName(), or test file
+                                name like EL_Test_Money); SUMMARY tier=only, any tier allowed
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [ELDebug:*] feature log lines (worktree only)
-  ci                            validate + build + test (full gate, worktree only)
+  ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
@@ -1369,7 +1439,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 to append, and one street-manifest row into <dir>
   scope --selftest              run that write in a temp directory and check the four outputs
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
-  validate                      run every script in tools/validation/
+  validate [--full]             run the checks in tools/validation/; --full adds the
+                                Workbench compile (validate-scripts.ps1), which ci/gate/ship run
 
 servers: ${Object.keys(SERVERS).join(", ")}
 `);
@@ -1499,7 +1570,7 @@ function wtHelp() {
 
   tools\\cli wt new <slug> [--wait]    create Life-Framework-ws-<slug> at ws/<slug>, allocate ports
   tools\\cli wt list                   worktrees, ports, dirty/merged state
-  tools\\cli wt test <slug> [--tier fast|all|persistence] [--no-build] [--wait]
+  tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the ELTEST suite in that worktree (from anywhere)
   tools\\cli wt e2e <slug>
                                        two-boot save-state E2E: persistence save boot, then
@@ -1508,10 +1579,11 @@ function wtHelp() {
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
                                        grep that worktree's newest console.log (from anywhere)
-  tools\\cli wt gate <slug> [--wait]   validate + build + test (tier=all) in that worktree
+  tools\\cli wt gate <slug> [--wait]   validate --full + build + test (tier=all) in that worktree
   tools\\cli wt sync <slug>            merge origin/main into the worktree branch
-  tools\\cli wt ship <slug> [--pr-only] [--skip-gate] [--skip-sync]
-                                       sync -> gate -> push -> PR -> auto-merge into main
+  tools\\cli wt ship <slug> [--closes N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync]
+                                       clean-tree check -> merge origin/main only if it conflicts ->
+                                       gate -> push -> PR (or reuse the open one) -> gh auto-merge
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
   tools\\cli wt open <slug>            open a terminal in the worktree
   tools\\cli wt open <slug> --workbench launch Workbench on that worktree
@@ -1520,6 +1592,8 @@ function wtHelp() {
 flags:
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
+  --closes N   start the PR body with 'Closes #N'
+  --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
   --skip-gate  / --skip-sync   skip a ship stage (debug only)
   --force      prune without merge/dirty checks
 `);
@@ -1806,6 +1880,8 @@ async function wtShipCmd(args) {
   const prOnly = flags.includes("--pr-only");
   const skipGate = flags.includes("--skip-gate");
   const skipSync = flags.includes("--skip-sync");
+  const closes = argValue(flags, "--closes");
+  const bodyFile = argValue(flags, "--body-file");
   let e;
   try {
     e = wt.requireWorktree(ROOT, slug);
@@ -1824,22 +1900,49 @@ async function wtShipCmd(args) {
     console.log(`FAIL  worktree ${slug} has uncommitted changes; commit before shipping`);
     return 1;
   }
+  if (closes && !/^\d+$/.test(closes)) {
+    console.log(`FAIL  --closes takes an issue number, got '${closes}'`);
+    return 1;
+  }
+  let customBody = null;
+  if (bodyFile) {
+    const p = resolve(wtRoot, bodyFile);
+    if (!existsSync(p)) {
+      console.log(`FAIL  --body-file not found: ${p}`);
+      return 1;
+    }
+    customBody = readFileSync(p, "utf8").replace(/\r\n/g, "\n").trim();
+  }
+  wt.git(wtRoot, ["fetch", "origin", "--prune"]);
   const nCommits = parseInt(wt.git(wtRoot, ["rev-list", "--count", "origin/main..HEAD"]).stdout.trim() || "0", 10);
   if (nCommits === 0) {
     console.log(`FAIL  nothing to ship: ${e.branch} has no commits beyond origin/main`);
     return 1;
   }
+  // Merge main only when it conflicts. A clean branch goes up as is: the PR's
+  // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
-    console.log("=== ship: sync origin/main ===");
+    let conflicting;
     try {
-      wt.wtSync(ROOT, slug);
+      conflicting = wt.mergeWouldConflict(wtRoot, "origin/main");
     } catch (err) {
       console.log(`FAIL  ${err.message}`);
       return 1;
     }
+    if (conflicting) {
+      console.log("=== ship: origin/main conflicts; merging it ===");
+      try {
+        wt.wtSync(ROOT, slug);
+      } catch (err) {
+        console.log(`FAIL  ${err.message}`);
+        return 1;
+      }
+    } else {
+      console.log("=== ship: origin/main merges clean; no sync ===");
+    }
   }
   if (!skipGate) {
-    console.log("=== ship: gate (validate + build + test tier=all) ===");
+    console.log("=== ship: gate (validate --full + build + test tier=all) ===");
     const code = runWorktreeCli(wtRoot, ["ci", "--wait"]);
     if (code !== 0) {
       console.log(`FAIL  gate failed; not shipping. Fix, commit, re-run 'cli wt ship ${slug}'.`);
@@ -1852,20 +1955,24 @@ async function wtShipCmd(args) {
     console.log(`FAIL  push: ${push.stderr || push.stdout}`);
     return 1;
   }
+  const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
   const subjects = wt.commitSubjects(wtRoot, "origin/main..HEAD");
   const title = subjects[0] ?? e.branch;
-  const body = [
+  let body = customBody ?? [
     `Automated ship from worktree \`${slug}\`.`,
     "",
-    "Gate passed locally: `validate` + headless `build` + `test` (tier=all).",
+    "Gate passed locally: `validate --full` + headless `build` + `test` (tier=all).",
     "",
     "## Commits",
     ...subjects.map((s) => `- ${s}`),
   ].join("\n");
+  if (closes && !new RegExp(`\\b(closes|fixes|resolves) #${closes}\\b`, "i").test(body)) body = `Closes #${closes}\n\n${body}`;
   let pr;
   try {
     if (wt.ghAvailable()) {
-      pr = wt.createPrGh(wtRoot, { head: e.branch, title, body });
+      pr = wt.findOpenPrGh(wtRoot, e.branch);
+      if (pr) console.log(`ship: PR already open, pushed ${head.slice(0, 7)} to it`);
+      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body });
     } else {
       const token = process.env.GITHUB_TOKEN;
       if (!token) {
@@ -1881,24 +1988,25 @@ async function wtShipCmd(args) {
   console.log(`PR: ${pr.url}`);
   if (prOnly) {
     console.log("ship: PR left open for review (--pr-only)");
+    console.log(`PR ${pr.url}, head ${head}`);
     return 0;
   }
-  console.log("=== ship: merge ===");
+  console.log("=== ship: auto-merge ===");
   try {
     if (wt.ghAvailable()) {
-      const m = wt.mergePrGh(wtRoot, pr.number, e.branch);
-      if (m.already) console.log(`ship: PR already merged or no-op: ${m.output.trim()}`);
-      else console.log("ship: merged into main");
+      const out = wt.autoMergePrGh(wtRoot, pr.number);
+      console.log(`ship: auto-merge queued; GitHub merges once checks and reviews pass${out ? ` (${out})` : ""}`);
     } else {
+      // The REST API has no auto-merge; this merges now.
       const m = await wt.mergePrRest(wtRoot, pr.number, e.branch, process.env.GITHUB_TOKEN);
-      if (m.already) console.log("ship: PR already merged or no-op");
-      else console.log("ship: merged into main");
+      console.log(m.already ? "ship: PR already merged or no-op" : "ship: merged into main");
     }
   } catch (err) {
     console.log(`FAIL  merge: ${err.message} (PR is at ${pr.url})`);
     return 1;
   }
-  console.log("ship: done. cleanup with 'cli wt prune " + slug + "'");
+  console.log(`ship: done. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
+  console.log(`PR ${pr.url}, head ${head}`);
   return 0;
 }
 
@@ -1949,10 +2057,11 @@ const cmds = {
   test: (flags) => {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
-    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait") });
+    const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
+    return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), only });
   },
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
-  validate: () => cmdRunArea("validate"),
+  validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");
     if (!existsSync(gen)) {
@@ -2062,7 +2171,7 @@ try {
   } else if (cmd === "wt") {
     code = cmdWt(rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();
