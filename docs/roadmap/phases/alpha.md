@@ -21,11 +21,11 @@ A small group plays the systems already in the repository. This phase adds no ne
 
 These are gaps in systems that already exist, from [features.md](../../features.md):
 
-- Job experience does not advance (`AddExperience` is a no-op).
-- Police jail position is not a real placed cell yet (see [jailing](../scopes/police/jailing.md)).
-- Duty toggle can drop the account cache so the officer cannot act again until reload.
-- Whitelist does not persist and does not gate the faction picker.
-- A dedicated-server pass is still required for the death-screen respawn and the police RPCs.
+- Closed: job experience advances. `EL_PlayerJobComponent.AddExperience` calls `LF_CivilianJob.AddExperience`, which adds XP and levels the career.
+- Closed: the jail position is the placed cell. `EL_PoliceMenu.GetJailPosition` returns `LF_Jail.GetCellOrigin()` (`Roadmap_Jail_Cell` on `Roadmap.layer`); see [jailing](../scopes/police/jailing.md).
+- Closed: the duty toggle keeps the account cached. `EL_DutyAction` calls `SaveAndReleaseAccount`, which re-caches the account instead of evicting it.
+- Closed: the whitelist saves to `$profile:LifeFramework/whitelist.txt` on every add/remove and loads lazily, and `EL_FactionSelectionMenu` calls `EL_WhitelistManager.MayJoinFaction` before police is selected.
+- Open: a dedicated-server pass is still required for the death-screen respawn and the police RPCs.
 
 ## Then
 

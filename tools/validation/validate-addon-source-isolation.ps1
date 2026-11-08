@@ -13,6 +13,18 @@ if ($validationScript -match 'server\\profile\\test\\game-addons') {
   exit 1
 }
 
+# These scripts build and wipe game-addons junctions into the Steam installs.
+# Remove-Item -Recurse and a silent cmd rmdir follow or leave those links; every
+# delete there goes through tools/safe-rm.mjs, which fails closed.
+foreach ($script in @("tools\test\test-e2e.ps1", "tools\validation\validate-scripts.ps1")) {
+  $code = (Get-Content -LiteralPath (Join-Path $root $script)) | Where-Object { $_ -notmatch '^\s*#' }
+  $unsafe = @($code | Where-Object { $_ -match 'Remove-Item\b.*-Recurse|cmd /c rmdir' })
+  if ($unsafe.Count -gt 0) {
+    Write-Host "ERROR $script deletes a junction tree without tools/safe-rm.mjs: $($unsafe[0].Trim())"
+    exit 1
+  }
+}
+
 $cli = Get-Content -LiteralPath (Join-Path $root "tools\cli.mjs") -Raw
 $buildStart = $cli.IndexOf("function cmdBuild")
 $buildEnd = $cli.IndexOf("function cmdServe")

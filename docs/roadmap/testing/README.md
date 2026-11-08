@@ -18,6 +18,8 @@ Every roadmap setup is done only when three gates are green. A scope doc's Proof
 - Logic test name: `roadmap/<setup>`. World test name: `e2e/roadmap-<setup>`.
 - Assertions go through public functions. A persistence test mutates, reloads, and reads back. It does not touch save internals.
 - A zero fuse, a fixed payout, and a fixed sentence are the test config. Random ranges are not asserted.
+- `new` applies no `[Attribute]` defaults. A hand-built subject starts zeroed, so set every field the assertion depends on, even when the declared default matches.
+- Floats compare with an epsilon, never `==`. Cases are independent and deterministic: three consecutive runs give identical results.
 - `Run()` is one pass. Time-based behavior (a real fuse, a jail tick) is tested as pure math in LOGIC. The world entity uses a zero duration so the E2E test can see the result in that single pass.
 
 ## The layer
@@ -28,7 +30,7 @@ Placement, clear of the current area boxes (the easternmost box is `PRFeatures.l
 
 - Root entity `RoadmapStreet` at `186 0 120`.
 - Sites every 3 m along +X, from the breach door at `186 0 120` to the vehicle lot at `243 0 120`. Ground props at Y=0. `Flags 0x403` on any new traceable mesh.
-- Debug terrain is 256 m on X and Z (world 0..256). The row stays on that ground, clear of the police box that ends at x=172. Do not shrink the pitch.
+- Debug terrain is 512 m on X and Z (world 0..512, `TERRAIN_MAX` in `tools/street/manifest.mjs`). The row stays on that ground, clear of the police box that ends at x=172. Do not shrink the pitch.
 - One `EL_DebugAreaBoundary` (`{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`) around the row. `validate-debugworld-layout.ps1` must report no overlap and no raised ground prop.
 - The world entity stays in `default.layer`. Do not add `GenericWorldEntity world` here.
 - Add `Roadmap.layer` to the required list in `tools/validation/validate-debugworld.ps1`. An empty file fails that check.
@@ -217,7 +219,7 @@ Persistence: owner id and key id match after apply-save. Garage store/retrieve, 
 
 ## After release
 
-Same three gates. Add the entities to `Roadmap.layer` when the setup starts, inside the same boundary, further along +X at the 3 m pitch. Extend the boundary with the row. Stop before the terrain edge at 256. Do not open a second layer.
+Same three gates. Add the entities to `Roadmap.layer` when the setup starts, inside the same boundary, further along +X at the 3 m pitch. Extend the boundary with the row. Stop before the terrain edge at 512. Do not open a second layer.
 
 | Setup | Layer entities | Headless | E2E | Visual |
 | --- | --- | --- | --- | --- |

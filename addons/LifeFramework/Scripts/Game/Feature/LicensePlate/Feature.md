@@ -1,7 +1,7 @@
 # LicensePlate — Design Requirements
 
 > Context file for vehicle registration plates. Written against
-> `docs/design-philosophy.md` (in-world first).
+> `docs/design.md` (in-world first).
 
 ## Intent
 
