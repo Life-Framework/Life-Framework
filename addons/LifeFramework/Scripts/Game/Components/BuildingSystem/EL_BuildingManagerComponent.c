@@ -20,32 +20,97 @@ class EL_BuildingManagerComponent : ScriptComponent
 	private EL_BuildingPerformerComponent m_BuildingPerformer;
 	private EL_BuildingPerformerComponent m_LastBuildingPerformer;
 
+	//! Farthest a placement may land from the placing character, in meters.
+	static const float MAX_PLACEMENT_DISTANCE = 5.0;
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when pos is within MAX_PLACEMENT_DISTANCE of characterPos.
+	static bool IsPlacementInRange(vector characterPos, vector pos)
+	{
+		return vector.Distance(characterPos, pos) <= MAX_PLACEMENT_DISTANCE;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Client asks the server to spawn the prefab it holds as a building performer.
 	//! Server re-validates the request against the caller's held performer.
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	void RpcAsk_SpawnEntityPrefab(ResourceName resource, vector pos)
 	{
+		PlaceHeldBuilding(resource, pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: places the held building item at pos. The caller must hold a performer for that
+	//! prefab, pos must be within MAX_PLACEMENT_DISTANCE, and the held item is consumed before
+	//! the building spawns: one seed, one crop.
+	//! \return The spawned building, or null when refused.
+	IEntity PlaceHeldBuilding(ResourceName resource, vector pos)
+	{
 		IEntity character = GetOwner();
 		if (!character)
-			return;
+			return null;
 
 		EL_BuildingPerformerComponent performer = GetHeldBuildingPerformer(character);
 		if (!performer || performer.m_BuildingPrefab != resource)
 		{
-			EL_Debug.Log("Farming", string.Format("placement rejected: resource=%1 (performer mismatch or none)", resource));
-			return;
+			EL_Debug.Warn("Farming", string.Format("placement refused: resource=%1 (performer mismatch or none)", resource));
+			return null;
+		}
+
+		if (!IsPlacementInRange(character.GetOrigin(), pos))
+		{
+			EL_Debug.Warn("Farming", string.Format("placement refused: resource=%1 pos=%2 is more than %3 m from the player", resource, pos, MAX_PLACEMENT_DISTANCE));
+			return null;
+		}
+
+		if (!ConsumeBuildingItem(character, performer.GetOwner()))
+		{
+			EL_Debug.Error("Farming", string.Format("placement refused: resource=%1 (held item could not be consumed)", resource));
+			return null;
 		}
 
 		EL_Debug.Log("Farming", string.Format("placement accepted: resource=%1 pos=%2", resource, pos));
-		EL_Utils.SpawnEntityPrefab(resource, pos);
+		return EL_Utils.SpawnEntityPrefab(resource, pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Uses up one building item. A quantity stack loses one; a single item leaves the hand and
+	//! is deleted.
+	//! \return True when one item was consumed.
+	static bool ConsumeBuildingItem(IEntity character, IEntity item)
+	{
+		if (!character || !item)
+			return false;
+
+		EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(item);
+		if (quantity && quantity.GetQuantity() > 1)
+		{
+			int change;
+			quantity.AddQuantity(-1, false, change);
+			return change == -1;
+		}
+
+		CharacterControllerComponent controller = EL_Component<CharacterControllerComponent>.Find(character);
+		if (controller && controller.GetAttachedGadgetAtLeftHandSlot() == item)
+			controller.RemoveGadgetFromHand(true);
+
+		SCR_EntityHelper.DeleteEntityAndChildren(item);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void OnMouseLeftDown()
 	{
-		if (m_CanBuild && m_BuildingPerformer)
-			Rpc(RpcAsk_SpawnEntityPrefab, m_BuildingPerformer.m_BuildingPrefab, m_PosInWorld);
+		if (!m_CanBuild || !m_BuildingPerformer)
+			return;
+
+		if (Replication.IsServer())
+		{
+			PlaceHeldBuilding(m_BuildingPerformer.m_BuildingPrefab, m_PosInWorld);
+			return;
+		}
+
+		Rpc(RpcAsk_SpawnEntityPrefab, m_BuildingPerformer.m_BuildingPrefab, m_PosInWorld);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -89,6 +154,10 @@ class EL_BuildingManagerComponent : ScriptComponent
 			return false;
 
 		if (!m_PreviewEntity)
+			return false;
+
+		// The server refuses placements beyond this range; do not offer them.
+		if (!IsPlacementInRange(GetOwner().GetOrigin(), m_PosInWorld))
 			return false;
 
 		m_PreviewEntity.SetOrigin(m_PosInWorld);

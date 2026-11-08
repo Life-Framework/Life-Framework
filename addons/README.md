@@ -44,8 +44,10 @@ New-Item -ItemType SymbolicLink `
 
 Or copy `LifeFramework/` into your Reforger profile `addons/` folder.
 
-**Authoring guides** (in this directory):
+**Authoring references:**
 
-- [GUIDE_DEBUG_WORLD_SCRIPTS.md](LifeFramework/GUIDE_DEBUG_WORLD_SCRIPTS.md)
-- [GUIDE_COMPONENT_REFERENCE.md](LifeFramework/GUIDE_COMPONENT_REFERENCE.md)
-- [GUIDE_CREATING_DEBUG_WORLD.md](LifeFramework/GUIDE_CREATING_DEBUG_WORLD.md)
+- Per-feature design and component notes: [`Feature/README.md`](LifeFramework/Scripts/Game/Feature/README.md)
+  and each feature's `Feature.md`.
+- Implemented behavior contracts: [`docs/features.md`](../docs/features.md).
+- DebugWorld: `Worlds/DebugWorld/DebugWorld.ent` is 0 bytes on purpose; each
+  feature is its own layer in `Worlds/DebugWorld/DebugWorld_Layers/*.layer`.

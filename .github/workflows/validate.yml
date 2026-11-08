@@ -1,0 +1,39 @@
+# Repo consistency on every PR and push to main: GUIDs, path casing, test
+# registry and red-proofs, localization, DebugWorld layers, persistence
+# version, docs sync, and the junction-safety selftest.
+#
+# The runner has no Arma Reforger install and no MCP build, so the two checks
+# that need them are skipped and named in the log. Script compilation and the
+# in-game suite stay local: tools\cli test --no-build in a worktree.
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: cli validate
+        shell: pwsh
+        env:
+          LF_VALIDATE_SKIP: validate-scripts.ps1,validate-action-contexts.mjs
+        run: node tools/cli.mjs validate
+      - name: generated files are committed
+        shell: pwsh
+        run: |
+          git status --porcelain
+          if (git status --porcelain) { Write-Host "::error::validate regenerated files; run tools\cli regen-tests / regen-localization and commit"; exit 1 }

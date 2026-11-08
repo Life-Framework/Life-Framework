@@ -102,9 +102,15 @@ class EL_CharacterCreationMenu
 		EL_Debug.Info("CharacterCreation", "character created: " + firstName + " " + lastName + ", age " + age);
 		Close();
 
-		EL_CharacterCreationManager manager = EL_CharacterCreationManager.GetInstance();
-		if (manager)
-			manager.OnCharacterCreated(m_PlayerController, firstName, lastName, age);
+		// The checks above are for the error text only; the server re-validates the request.
+		SCR_PlayerController controller = SCR_PlayerController.Cast(m_PlayerController);
+		if (!controller)
+		{
+			EL_Debug.Error("CharacterCreation", "character form not sent: no SCR_PlayerController");
+			return;
+		}
+
+		controller.EL_AskCreateCharacter(firstName, lastName, age);
 	}
 
 	//------------------------------------------------------------------------------------------------

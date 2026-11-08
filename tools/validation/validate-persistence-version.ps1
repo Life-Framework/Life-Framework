@@ -1,8 +1,9 @@
 # tools/validation/validate-persistence-version.ps1
 #
 # EL_PersistenceComponentSerializer.c writes one version integer.
-# RegisterPersistencePayloads is the only order. Serialize walks that list.
-# Deserialize walks the same list and stops at the version stored in the save.
+# RegisterPersistencePayloads is the only order. SerializeStore (the body the
+# Serialize override delegates to) walks that list. DeserializeStore walks the
+# same list and stops at the version stored in the save.
 # The written version, the list length, and the read order must agree.
 # A written version that skips a payload fails. This check does not change
 # the version.
@@ -25,6 +26,7 @@ function Get-WriteToken([string]$argument) {
   if ($argument -match "vehicle") { return "vehicles" }
   if ($argument -match "org") { return "organizations" }
   if ($argument -match "survival") { return "survival" }
+  if ($argument -match "jail") { return "jail" }
   return $null
 }
 
@@ -93,9 +95,9 @@ function Get-LoopBody([string]$text, [int]$openIndex) {
 # Read order is the list when Deserialize walks it from index 0 and stops at
 # the stored version. An explicit ladder is its own order and can disagree.
 function Get-ReadOrder([string]$text, $list) {
-  $body = Get-BraceBody $text 'bool\s+Deserialize\s*\('
+  $body = Get-BraceBody $text 'bool\s+DeserializeStore\s*\('
   if (-not $body) {
-    return @{ Order = @(); Error = "Deserialize function not found" }
+    return @{ Order = @(); Error = "DeserializeStore function not found" }
   }
 
   $walk = [regex]::Match($body, 'for\s*\(\s*int\s+index\s*=\s*0\s*;\s*index\s*<\s*order\.Count\(\)\s*;\s*index\+\+\s*\)')
@@ -137,9 +139,9 @@ function Get-ReadOrder([string]$text, $list) {
 }
 
 function Get-WriteOrder([string]$text, $list) {
-  $body = Get-BraceBody $text 'ESerializeResult\s+Serialize\s*\('
+  $body = Get-BraceBody $text 'ESerializeResult\s+SerializeStore\s*\('
   if (-not $body) {
-    return @{ Order = @(); Error = "Serialize function not found" }
+    return @{ Order = @(); Error = "SerializeStore function not found" }
   }
 
   $explicit = New-Object System.Collections.Generic.List[string]
@@ -230,7 +232,7 @@ void RegisterPersistencePayloads(notnull array<string> order)
 	order.Insert("hideout");
 	order.Insert("vehicles");
 }
-ESerializeResult Serialize()
+ESerializeResult SerializeStore()
 {
 	array<string> order = new array<string>();
 	RegisterPersistencePayloads(order);
@@ -242,7 +244,7 @@ ESerializeResult Serialize()
 		WritePersistencePayload(persistence, context, payload);
 	}
 }
-bool Deserialize()
+bool DeserializeStore()
 {
 	array<string> order = new array<string>();
 	RegisterPersistencePayloads(order);
@@ -279,7 +281,7 @@ void RegisterPersistencePayloads(notnull array<string> order)
 	order.Insert("organizations");
 	order.Insert("vehicles");
 }
-ESerializeResult Serialize()
+ESerializeResult SerializeStore()
 {
 	array<string> order = new array<string>();
 	RegisterPersistencePayloads(order);
@@ -289,7 +291,7 @@ ESerializeResult Serialize()
 		WritePersistencePayload(persistence, context, payload);
 	}
 }
-bool Deserialize()
+bool DeserializeStore()
 {
 	array<string> order = new array<string>();
 	RegisterPersistencePayloads(order);
@@ -324,7 +326,7 @@ void RegisterPersistencePayloads(notnull array<string> order)
 	order.Insert("hideout");
 	order.Insert("vehicles");
 }
-ESerializeResult Serialize()
+ESerializeResult SerializeStore()
 {
 	RegisterPersistencePayloads(order);
 	context.WriteValue("version", 3);
@@ -333,7 +335,7 @@ ESerializeResult Serialize()
 		WritePersistencePayload(persistence, context, payload);
 	}
 }
-bool Deserialize()
+bool DeserializeStore()
 {
 	for (int index = 0; index < order.Count(); index++)
 	{
@@ -366,7 +368,7 @@ void RegisterPersistencePayloads(notnull array<string> order)
 	order.Insert("hideout");
 	order.Insert("vehicles");
 }
-ESerializeResult Serialize()
+ESerializeResult SerializeStore()
 {
 	RegisterPersistencePayloads(order);
 	context.WriteValue("version", 4);
@@ -375,7 +377,7 @@ ESerializeResult Serialize()
 		WritePersistencePayload(persistence, context, payload);
 	}
 }
-bool Deserialize()
+bool DeserializeStore()
 {
 	if (version >= 1)
 		ReadPersistencePayload(persistence, context, "survival");
@@ -410,7 +412,7 @@ void RegisterPersistencePayloads(notnull array<string> order)
 	order.Insert("hideout");
 	order.Insert("vehicles");
 }
-ESerializeResult Serialize()
+ESerializeResult SerializeStore()
 {
 	context.WriteValue("version", 4);
 	context.Write(survivalRecords);
@@ -418,7 +420,7 @@ ESerializeResult Serialize()
 	context.Write(vehicleRecords);
 	context.Write(hideoutRecords);
 }
-bool Deserialize()
+bool DeserializeStore()
 {
 	for (int index = 0; index < order.Count(); index++)
 	{
@@ -449,11 +451,11 @@ void RegisterPersistencePayloads(notnull array<string> order)
 	order.Insert("organizations");
 	order.Insert("organizations");
 }
-ESerializeResult Serialize()
+ESerializeResult SerializeStore()
 {
 	context.WriteValue("version", 2);
 }
-bool Deserialize()
+bool DeserializeStore()
 {
 }
 '@
@@ -463,12 +465,12 @@ void RegisterPersistencePayloads(notnull array<string> order)
 {
 	order.Insert("organizations");
 }
-ESerializeResult Serialize()
+ESerializeResult SerializeStore()
 {
 	context.WriteValue("version", 2);
 	context.WriteValue("version", 2);
 }
-bool Deserialize()
+bool DeserializeStore()
 {
 }
 '@
@@ -539,5 +541,6 @@ if ($errorText) {
   exit 1
 }
 
-Write-Host "validate-persistence-version: OK (version 4 matches the payload list; a skipped payload fails)"
+$payloadCount = @((Get-PayloadList $text).Order).Count
+Write-Host "validate-persistence-version: OK (version $payloadCount matches the payload list; a skipped payload fails)"
 exit 0

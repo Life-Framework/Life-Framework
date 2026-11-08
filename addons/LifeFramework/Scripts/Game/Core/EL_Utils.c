@@ -74,11 +74,38 @@ class EL_Utils : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// Convenience: alert police (global notify for now)
+	//! Server: toast for the player controlling `player`, delivered to that player only
+	//! (owner RPC on their controller; a direct call for a listen host). Notify above shows a
+	//! hint on the machine that calls it, which on a dedicated server is nobody.
+	//! A client call is a no-op: the server copy of the same action sends the toast.
+	//! \param messageArg Fills %1 in a #key message on the receiving client.
+	static void NotifyEntity(IEntity player, string message, string title = "", float duration = 3.0, string messageArg = "")
+	{
+		if (!Replication.IsServer() || !player)
+			return;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
+			return;
+
+		int playerId = playerManager.GetPlayerIdFromControlledEntity(player);
+		if (playerId <= 0)
+		{
+			EL_Debug.Log("Notify", string.Format("notify skipped: %1 is not a player (%2)", player, message));
+			return;
+		}
+
+		EL_NotificationManagerComponent.NotifyPlayer(playerId, title, message, duration, EL_ENotificationType.INFO, messageArg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: alert every connected on-duty police officer. Position is not shown yet.
 	static void AlertPolice(string message, vector pos)
 	{
-		// For now, broadcast a police alert notification. Position currently unused.
-		Notify(message, "Police Alert", 5.0);
+		if (!Replication.IsServer())
+			return;
+
+		EL_NotificationManagerComponent.NotifyPolice("#EL-PoliceAlert_Title", message, 5.0, EL_ENotificationType.POLICE_ALERT);
 	}
 
 	//------------------------------------------------------------------------------------------------

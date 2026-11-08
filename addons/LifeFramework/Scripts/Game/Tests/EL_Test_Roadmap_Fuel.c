@@ -168,11 +168,14 @@ class EL_Test_Roadmap_FuelWorld : EL_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
+		// A spawned body is not a connected player, so it has no account. The server refuses
+		// it (no civilian gate, no wanted bump, so no cash); the paying path is roadmap/fuel.
 		int before = EL_MoneyUtils.GetCash(character);
-		ctx.True(rob.CanBePerformedScript(character), "till can be robbed before the cooldown");
 		int alertsBefore = EL_RobAction.GetAlertCount();
+		ctx.False(rob.CanBePerformedScript(character), "a character with no account is not offered the till");
 		rob.PerformAction(till, character);
-		ctx.Equal(before + payout, EL_MoneyUtils.GetCash(character), "Roadmap_Fuel_Till pays the fixed test amount once");
+		ctx.Equal(before, EL_MoneyUtils.GetCash(character), "a character with no account is paid nothing");
+		ctx.EqualStr("robbery refused: no account", EL_RobAction.GetLastRefusal(), "the no-account refusal is logged");
 		ctx.Equal(alertsBefore, EL_RobAction.GetAlertCount(), "a character with no account does not alert");
 
 		string uid = "roadmap-fuel-e2e";
@@ -181,13 +184,7 @@ class EL_Test_Roadmap_FuelWorld : EL_Test
 		EL_BankAccount bank = atm.GetAccount(uid);
 		ctx.NotNull(bank, "e2e bank account exists");
 		if (bank)
-			ctx.Equal(0, bank.GetBalance(), "till payout does not change the bank");
-
-		ctx.False(rob.CanBePerformedScript(character), "offer refuses inside the cooldown");
-		ctx.Equal(alertsBefore, EL_RobAction.GetAlertCount(), "offer refresh does not alert");
-		rob.PerformAction(till, character);
-		ctx.Equal(before + payout, EL_MoneyUtils.GetCash(character), "second attempt inside the cooldown pays nothing");
-		ctx.EqualStr("robbery refused: cooldown", EL_RobAction.GetLastRefusal(), "second attempt logs the cooldown refusal");
+			ctx.Equal(0, bank.GetBalance(), "a refused robbery does not change the bank");
 	}
 
 	//------------------------------------------------------------------------------------------------
