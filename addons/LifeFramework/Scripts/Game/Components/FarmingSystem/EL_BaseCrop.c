@@ -63,6 +63,7 @@ class EL_BaseCrop : EL_BaseBuilding
 	protected int m_iCropStage = -1;
 
 	protected bool m_IsInit = false;
+	protected bool m_bRunsGrowth = false;
 	private float m_fStageStartTime = 0;
 	private vector m_vStartPos;
 
@@ -194,9 +195,13 @@ class EL_BaseCrop : EL_BaseBuilding
 		m_IsInit = true;
 
 		// Growth runs on the server only. RplComponent.IsOwner() is still true on a client while
-		// the world loads, so the client used to start its own growth clock and index a stage it
-		// never set (VME in EOnFrame on every client, #157).
-		if (!RunsGrowth(Replication.IsServer(), rplComponent != null))
+		// the world loads, so the client used to start its own growth clock, then the snapshot set
+		// the stage back to the server's value and EOnFrame indexed it (VME on every client, #157).
+		// RplSession.Mode() is Client on a game client from the start of the load.
+		bool server = Replication.IsServer() && RplSession.Mode() != RplMode.Client;
+		m_bRunsGrowth = RunsGrowth(server, rplComponent != null);
+		EL_Debug.Log("Farming", string.Format("crop %1 init: grows here %2 (rpl mode %3)", GetName(), m_bRunsGrowth, typename.EnumToString(RplMode, RplSession.Mode())));
+		if (!m_bRunsGrowth)
 		{
 			ClearEventMask(EntityEvent.FRAME);
 			ClearFlags(EntityFlags.ACTIVE, true);
@@ -219,6 +224,10 @@ class EL_BaseCrop : EL_BaseBuilding
 			return;
 		}
 
+		// A client only shows the replicated stage (OnCropStageChanged).
+		if (!m_bRunsGrowth)
+			return;
+
 		// A base crop without authored stages idles at stage 0
 		if (!m_aCropStages)
 			return;
@@ -230,6 +239,7 @@ class EL_BaseCrop : EL_BaseBuilding
 		if (!stage)
 		{
 			EL_Debug.Error("Farming", string.Format("crop %1 has no stage %2; growth stopped", GetName(), m_iCropStage));
+			m_bRunsGrowth = false;
 			ClearEventMask(EntityEvent.FRAME);
 			return;
 		}

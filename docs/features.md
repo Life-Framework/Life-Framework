@@ -551,11 +551,13 @@
   rejects, or a nugget with no usable slot, used to look like a successful use.
 - ✅ A node id copies tool, yield, and cooldown from `ResourceChains.conf`.
 - ✅ **Crop growth runs on the server only** (2026-11-08, #157): `EL_BaseCrop`
-  starts its growth clock when `Replication.IsServer()`, not on
+  starts its growth clock only on the server (`Replication.IsServer()` and
+  `RplSession.Mode()` is not `Client`), not on
   `RplComponent.IsOwner()`, which is still true on a client while the world
   loads. Every stage read goes through `EL_BaseCrop.StageAt`, which returns
   null for an index outside the list. Before this each game client logged a
   `NULL pointer to instance` VME in `EL_BaseCrop.EOnFrame` for every crop.
+  Each crop logs `crop <name> init: grows here <bool> (rpl mode <mode>)` once.
   A missing row or a prefab that does not resolve logs `EL_Debug.Error` and
   grants nothing (verified 2026-10-11). The action stays on the node.
 

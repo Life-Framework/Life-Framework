@@ -29,7 +29,13 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 export const SERVER_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
 export const MAX_CLIENTS = 3;
-export const WINDOW = { width: 640, height: 360, gap: 8 };
+// LF_SESSION_SIZE=1280x720 opens larger client windows for evidence shots (default 640x360).
+export function windowSize(env = process.env) {
+  const m = /^(\d{3,4})x(\d{3,4})$/.exec(env.LF_SESSION_SIZE || "");
+  if (!m) return { width: 640, height: 360, gap: 8 };
+  return { width: Number(m[1]), height: Number(m[2]), gap: 8 };
+}
+export const WINDOW = windowSize();
 export const SERVER_READY = "Entered online game state.";
 // The server refuses a client whose script checksum differs
 // ("remote script source code checksum does not match"), so clients compile
