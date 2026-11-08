@@ -6,34 +6,21 @@ Walk up to each site and try it. Send back what you did, what you expected, and 
 
 ## Play tonight
 
-You need Arma Reforger, the Arma Reforger Server (Steam app 1874900), Node, and a clone set up with the [setup guide](setup.md).
+Double-click **`Play Life Framework.cmd`** in your clone, or run:
 
-1. Host, from a worktree (the main checkout refuses):
+```sh
+tools\cli playtest
+```
 
-   ```sh
-   git -C <your clone> pull
-   tools\cli wt new playtest          # once; afterwards: cd ..\Life-Framework-ws-playtest && git merge origin/main
-   cd ..\Life-Framework-ws-playtest
-   tools\cli host start               # add --wait if a test run holds port 2001
-   ```
+That is all. It updates a playtest copy of `main` (`..\Life-Framework-playtest`, never an agent's work in progress), starts the server (continuing your last save), and opens the game joined to it. Register on form R-89 and play. When you are done:
 
-   Wait for `host: up`, then `session continued from a save point` or `fresh session`, then the LAN addresses.
+```sh
+tools\cli playtest stop
+```
 
-2. Join on this PC. Start the release game executable (not the Diag one: a vanilla HUD script error opens a modal dialog there) from the game folder:
+It closes the game and the server and saves. `tools\cli playtest status` shows both; `tools\cli playtest shortcut` puts the launcher on your desktop. If an agent's test is using the server when you start, it waits for it (up to 30 minutes) and says so; while you play, agent tests move to the test box.
 
-   ```
-   cd "C:\Program Files (x86)\Steam\steamapps\common\Arma Reforger"
-   ArmaReforgerSteam.exe -client 127.0.0.1 -addonsDir "<your worktree>\addons" -addons LifeFramework
-   ```
-
-   A friend uses the same line with their own clone at the same commit and your address ([How a friend joins](#how-a-friend-joins)).
-
-3. Pick **Civilian**, then **Town Square**, then fill in form R-89 (given name, surname, age 18 to 80) and sign it. You wake on the village square with 500 cash and an ID card.
-
-4. When you are done: `tools\cli host stop` (never close the server window; that skips the save). Next time `tools\cli host start` continues where you stopped.
-
-Your account is keyed by your Steam name on this server (it runs without the Bohemia backend). Two players with the same Steam name would share one character, so give friends distinct names. A name change starts a new character.
-
+Your character is keyed by your Steam name and kept in `%LOCALAPPDATA%\LifeFramework\host`. The launcher prints how a friend joins at the end ([How a friend joins](#how-a-friend-joins)); give friends distinct Steam names. The manual steps behind the command are in [Host a playtest on a dedicated server](#host-a-playtest-on-a-dedicated-server).
 ### What to try tonight
 
 In this order, it is the M1 loop:

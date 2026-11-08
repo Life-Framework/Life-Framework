@@ -395,6 +395,13 @@
   `EL_Utils.ChooseIdentityFallback` now keys a player by Steam name on a
   `-noBackend` dedicated server: stable across restarts, one character per name
   (`spawn/identity-fallback`; join, restart, rejoin seen live).
+- ✅ **One-command playtest** (`tools\cli playtest [stop|status|shortcut]`,
+  `Play Life Framework.cmd`, `tools/host/playtest.mjs`): fast-forwards the detached
+  checkout `..\Life-Framework-playtest` to `origin/main` (only while no host runs),
+  runs its `host start --wait`, then opens `ArmaReforgerSteam.exe` visibly with the
+  persistent profile `%LOCALAPPDATA%\LifeFramework\player` (`LF_PLAYER_DIR`), waits
+  for the host's `join allowed` line, and prints friend join lines. A running host
+  is reused and joined with its own addon. `stop` closes the game, then `host stop`.
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
