@@ -1471,7 +1471,7 @@
   writes `agent-box/reports/journey.html` with the client screenshots.
   `tools/validation/agent-box-selftest.mjs` runs the harness, session, and
   journey selftests in `validate`.
-  Every step ends with a picture from each client it touched. Clients default to 1280x720 (`session.mjs up --res 1920x1080` for evidence) on the hidden desktop; `--visible` plus `journey.mjs --film` records client 1, but the first clip held one frame (README, Filming).
+  Every step ends with a picture from each client it touched. Clients default to 1280x720 (`session.mjs up --res 1920x1080` for evidence) on the hidden desktop. `journey.mjs --film` records each step inside the game client (`LF_FilmRecorder`), one mp4 per step plus the joined run, linked from the report; it works on the hidden desktop.
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
@@ -1534,6 +1534,22 @@
   films an agent-box flow, and publishes a clip to the `film-evidence`
   prerelease for a PR comment. Proven in game 2026-11-08: a game client on
   DebugWorld, flow `film-debugworld`, 20.7 s at 1280x720, 2.8 MB (PR #111).
+  Screen capture records a frozen frame when the window is unfocused and
+  cannot see the hidden `LF-Agents` desktop (#91).
+- ✅ `LF_FilmRecorder` records inside the game client: a per-frame callqueue
+  tick calls `System.MakeScreenshot` at a fixed rate (default 15 fps) into
+  `$logs:el-film/<name>/`, with HUD and menus, and writes `index.txt` with
+  each shot's real time and frame-time stats (`[ELDebug:Film]`). Harness verb
+  `film start <name> <fps> [max s]` / `film stop`; a dedicated server refuses
+  (`error no_renderer`). `tools/film/engine.mjs` encodes the BMPs at true speed
+  (concat with per-frame durations, NVENC) and deletes them. Wired as
+  `film.mjs engine|encode`, `film.mjs flow <flow> --engine`,
+  `journey.mjs --film`, and `session.mjs film` / `proof --film`. Covered by
+  `film/recorder` (LOGIC). Proven 2026-11-08 on the hidden desktop, 1280x720,
+  client capped at 30 fps: a 64.5 s journey clip (arrive, job, earn, fund, atm,
+  shop) and a 27.9 s `world-atm` clip, capture 14.7-15.1 fps, game 29.5-30
+  fps, frame after a shot 33.3-33.5 ms vs 33.2-34.5 ms otherwise, one 243 ms
+  stall in 64 s (shop menu, not a shot frame).
 
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 

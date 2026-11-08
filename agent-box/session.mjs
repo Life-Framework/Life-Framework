@@ -8,6 +8,8 @@
 //   node agent-box/session.mjs down               close every process the session started
 //   node agent-box/session.mjs status             pids, profiles, logs
 //   node agent-box/session.mjs state <client>     faction, duty, wanted, cash, bank, job, org
+//   node agent-box/session.mjs film <seconds> [--client 1] [--fps 12]   in-engine clip of one client
+//   node agent-box/session.mjs proof --film [--film-client 1]          the proof, filmed in-engine
 //
 // Any harness verb targets one client with --client <n>:
 //   node agent-box/harness.mjs --client 2 look
@@ -549,8 +551,41 @@ async function runPoliceProof() {
   return fails.length ? 1 : 0;
 }
 
+// Runs fn while one client records itself in-engine (tools/film/engine.mjs),
+// then encodes the clip. Works on the hidden LF-Agents desktop.
+async function filmed(label, rest, fn) {
+  const eng = await import("../tools/film/engine.mjs");
+  const h = await import("./harness.mjs");
+  const i = rest.indexOf("--film-client");
+  const client = i === -1 ? 1 : Number(rest[i + 1]);
+  const box = clientBox(sessionDir(), client);
+  const send = (spec, t) => {
+    h.setBoxes([box]);
+    return h.sendCommand(spec, t);
+  };
+  const name = `${label.replace(/[^A-Za-z0-9]/g, "_")}_${Date.now() % 100000000}`;
+  const start = eng.engineStart(send, name);
+  if (!start.ok) console.log(`film: start on client ${client} failed: ${start.error}`);
+  const code = await fn();
+  if (!start.ok) return code;
+  const clip = eng.engineStop(send, (alias) => {
+    h.setBoxes([box]);
+    return h.resolveCapture(alias);
+  }, { label: `session-${label}` });
+  console.log(`film: client ${client} ${eng.describe(clip)}`);
+  return code;
+}
+
 async function main(argv) {
   const [cmd, ...rest] = argv;
+  if (rest.includes("--film") && ["proof", "police-proof", "interaction"].includes(cmd)) {
+    const run = { proof: runProof, "police-proof": runPoliceProof, interaction: runInteraction }[cmd];
+    return filmed(cmd, rest, run);
+  }
+  if (cmd === "film") {
+    const r = spawnSync(process.execPath, [join(ROOT, "tools", "film", "film.mjs"), "engine", ...rest, ...(rest.includes("--client") ? [] : ["--client", "1"])], { windowsHide: true, stdio: "inherit" });
+    return r.status ?? 1;
+  }
   if (cmd === "selftest") {
     const f = selftestSession();
     for (const x of f) console.log(`  ${x}`);
@@ -582,7 +617,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | proof | interaction | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|interaction [--film] | selftest");
   return cmd ? 1 : 0;
 }
 

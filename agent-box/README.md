@@ -221,6 +221,49 @@ not replace them.
 
 ## Filming
 
+### In-engine (use this)
+
+The game client films itself. `LF_FilmRecorder`
+(`Scripts/Game/Feature/Film/LF_FilmRecorder.c`) calls `System.MakeScreenshot`
+from a per-frame callqueue tick at a fixed rate into `$logs:el-film/<name>/`
+(the window's backbuffer: world, HUD, menus, toasts), and on stop writes
+`index.txt` with every shot's real time and the frame-time stats.
+`tools/film/engine.mjs` encodes the BMPs into an mp4 at true speed (concat
+demuxer with per-frame durations, NVENC, `libx264` fallback), makes the GIF
+preview, and deletes the BMPs. No window, focus, or visible desktop is
+involved, so it works on the hidden `LF-Agents` desktop. A game client only:
+Workbench play writes the 3D view without UI (Screenshots, below), and a
+dedicated server refuses with `error no_renderer`.
+
+```powershell
+node agent-box/session.mjs up --clients 2
+node agent-box/journey.mjs job earn fund atm shop --film      # one mp4 per step + the joined run, linked from journey.html
+node tools/film/film.mjs flow world-atm --engine --client 1   # an agent-box flow, filmed in-engine
+node agent-box/session.mjs film 20 --client 2                 # 20 s of what client 2 sees
+node agent-box/session.mjs proof --film                       # a session proof, filmed (client 1; --film-client n)
+node tools/film/film.mjs publish agent-box/reports/film/<clip>.mp4 --pr <N> --yes
+node agent-box/session.mjs down
+```
+
+The harness verb is `film start <name> <fps> [max seconds]` / `film stop` /
+`film status`; `stop` answers `ok $logs:el-film/<name> shots=… seconds=…
+fps=… gameFps=… frameMs=… shotFrameMs=… maxGapMs=… stalls=… failed=…`.
+`shotFrameMs` is the mean time of the frame right after a shot, `frameMs` of
+every other frame, so their difference is what a shot costs. Default 15 fps
+(`--film-fps`, `--fps`), at most 30, at most 300 s per recording.
+
+Measured 2026-11-08, RTX 3080, two 1280x720 clients capped at 30 fps
+(`-maxFPS 30`) on the hidden desktop: capture 14.7-15.1 fps, game 29.5-30
+fps, `shotFrameMs` 33.3-33.5 vs `frameMs` 33.2-34.5, one 243 ms stall in a
+64 s journey (the shop menu opening, not a shot frame). At the 30 fps cap a
+shot costs nothing visible; uncapped it would show up as `shotFrameMs` above
+`frameMs`. A 1280x720 BMP is 2.76 MB, so 15 fps writes about 41 MB/s until the
+step is encoded (about 20 ms per frame with NVENC); a journey step's frames are
+deleted as soon as its clip is written. A 64 s, six-step journey clip was
+7.8 MB.
+
+### Screen capture
+
 `tools/film/film.mjs` records the game window while a flow plays. It does not
 talk to the engine; the harness drives the player and ffmpeg records the
 screen (desktop duplication `ddagrab`, NVENC when the GPU has it). Screen
@@ -229,22 +272,15 @@ monitor it lifts the game window without activating it, on the primary monitor
 it records the rectangle as it is. Screen capture cannot see the hidden
 `LF-Agents` desktop: `ddagrab` (DXGI desktop duplication) and `gdigrab` (GDI
 BitBlt of the screen) both read only the input desktop the user sees, and a
-window on another desktop is never composited into it. Film a client started
-on the visible desktop (`session.mjs up --visible`, then
-`journey.mjs --film`). `record --window "Arma Reforger" --pid <n>` picks one
-client when several share the title.
+window on another desktop is never composited into it.
+`record --window "Arma Reforger" --pid <n>` picks one client when several
+share the title.
 
-Not solved yet (2026-11-08): `journey.mjs job earn atm shop --film` on a
-`--visible` 1280x720 session wrote a 68 s h264_nvenc clip of a 3-minute run
-that holds one frame (the spawn square) throughout, while the harness
-screenshots of the same client show every screen. The unfocused game window
-stops presenting to the desktop (or desktop duplication sees no change), so
-screen capture has nothing new to record. What would fix it: keep the filmed
-client in front on a secondary monitor (film lifts it there without taking
-focus), or record inside the engine (a timed `System.MakeScreenshot` sequence
-encoded by ffmpeg), which also works on the hidden desktop. Until then the
-journey report's per-step screenshots are the visual record.
-Screenshots (below) work on `LF-Agents`.
+An unfocused game window also stops presenting to the desktop: a screen-capture
+journey clip on a `--visible` 1280x720 session (2026-11-08) held one frame for
+68 s while the harness screenshots showed every screen. That is why the journey
+and session films are in-engine (above). Screen capture is still the tool for a
+focused window, such as Workbench play on the user's own screen.
 If `ddagrab` delivers no frame within 5 s (seen on a box with a virtual
 display adapter), it falls back to `gdigrab` of the same rectangle.
 
@@ -481,14 +517,14 @@ final evidence. `System.MakeScreenshot` writes the window's backbuffer, so a
 Clients run on the hidden `LF-Agents` desktop: a 1920x1080 window never covers
 the user's screen or takes focus, and screenshots still work there.
 `--visible` starts the clients on the user's desktop instead (with `-noFocus`),
-which is what `tools/film` needs.
+for screen capture; in-engine filming (Filming) needs neither.
 
 ```powershell
 node agent-box/session.mjs roster 2             # put player id 2 on the police roster (before up)
 node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms
 node agent-box/session.mjs up --clients 2 --mission playtest   # LF_PlaytestTown, harness build
 node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop
-node agent-box/session.mjs up --clients 2 --visible            # on the user's desktop, for film
+node agent-box/session.mjs up --clients 2 --visible            # on the user's desktop, for screen capture
 node agent-box/session.mjs restart            # playtest: shutdown save, load, same clients rejoin
 node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client
 node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
@@ -560,8 +596,8 @@ node agent-box/journey.mjs atm shop                # only those (arrive runs fir
 node agent-box/journey.mjs --list
 node agent-box/session.mjs down
 
-node agent-box/session.mjs up --clients 2 --visible
-node agent-box/journey.mjs job earn atm shop --film   # mp4 + GIF of client 1 in reports/film/, linked from the report
+node agent-box/session.mjs up --clients 2
+node agent-box/journey.mjs job earn atm shop --film   # in-engine: an mp4 per step + the joined run in reports/film/, linked from the report
 node agent-box/session.mjs down
 
 node agent-box/session.mjs up --clients 2 --mission playtest
