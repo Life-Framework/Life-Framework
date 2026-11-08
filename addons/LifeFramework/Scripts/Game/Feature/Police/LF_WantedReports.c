@@ -6,7 +6,7 @@ class LF_PoliceConfig
 {
 	static const ResourceName CONFIG_PATH = "{D6DB2FB6399D91AB}Configs/Police/LF_Police.conf";
 
-	[Attribute("25", UIWidgets.Auto, "An on-duty officer this close (metres) when a crime is committed catches the suspect in the act: the report is identified at once")]
+	[Attribute("10", UIWidgets.Auto, "An on-duty officer this close (metres) when a crime is committed catches the suspect in the act: the report is identified at once")]
 	float m_fCatchInActRadius;
 
 	[Attribute("80", UIWidgets.Auto, "A crime report names the nearest sign within this many metres as the place; beyond it the place is a map grid square")]
@@ -37,7 +37,7 @@ class LF_PoliceConfig
 		{
 			EL_Debug.Error("Police", string.Format("police config does not resolve, using defaults: %1", CONFIG_PATH));
 			s_Config = new LF_PoliceConfig();
-			s_Config.m_fCatchInActRadius = 25;
+			s_Config.m_fCatchInActRadius = 10;
 			s_Config.m_fPlaceRadius = 80;
 			s_Config.m_fBoardReadDistance = 4;
 			s_Config.m_iBoardMaxPosters = 8;
@@ -388,18 +388,46 @@ class LF_WantedReports
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The nearest sign's title within the configured radius, else the 100 m grid square.
+	//! The nearest place sign's title within the configured radius, else the 100 m grid square.
+	//! Police notices (the wanted board, the roster sign) name no place: a robbery beside the
+	//! station is not "seen at Wanted".
 	static string DescribePlace(vector origin)
 	{
-		IEntity signEntity = EL_ActionSite.FindNear(origin, LF_PoliceConfig.Get().m_fPlaceRadius, "LF_SignReadAction");
-		if (signEntity)
-		{
-			LF_SignComponent sign = LF_SignComponent.Cast(signEntity.FindComponent(LF_SignComponent));
-			if (sign && sign.GetSign() && !sign.GetSign().m_sTitle.IsEmpty())
-				return sign.GetSign().m_sTitle;
-		}
+		s_vPlaceOrigin = origin;
+		s_fPlaceBest = LF_PoliceConfig.Get().m_fPlaceRadius;
+		s_sPlaceTitle = string.Empty;
+		if (GetGame() && GetGame().GetWorld())
+			GetGame().GetWorld().QueryEntitiesBySphere(origin, s_fPlaceBest, CollectPlaceSign, null, EQueryEntitiesFlags.ALL);
+
+		string title = s_sPlaceTitle;
+		s_sPlaceTitle = string.Empty;
+		if (!title.IsEmpty())
+			return title;
 
 		return GridPlace(origin);
+	}
+
+	protected static vector s_vPlaceOrigin;
+	protected static float s_fPlaceBest;
+	protected static string s_sPlaceTitle;
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectPlaceSign(IEntity entity)
+	{
+		if (!entity)
+			return true;
+
+		LF_SignComponent sign = LF_SignComponent.Cast(entity.FindComponent(LF_SignComponent));
+		if (!sign || sign.GetSignId().StartsWith("police_"))
+			return true;
+
+		float distance = vector.Distance(entity.GetOrigin(), s_vPlaceOrigin);
+		if (distance > s_fPlaceBest || !sign.GetSign() || sign.GetSign().m_sTitle.IsEmpty())
+			return true;
+
+		s_fPlaceBest = distance;
+		s_sPlaceTitle = sign.GetSign().m_sTitle;
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

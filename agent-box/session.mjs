@@ -246,7 +246,7 @@ async function runProof() {
 export const ARRIVAL_NAMES = { 1: ["Ada", "Robber"], 2: ["Bob", "Officer"], 3: ["Cy", "Walker"] };
 function arrive(on, n, wait) {
   const ui = on(n, { verb: "ui" });
-  if (ui.status !== "ok" || !ui.detail.includes("RegFirstName")) return;
+  if (ui.status !== "ok" || !ui.detail.includes("SignButton")) return;
   const [first, last] = ARRIVAL_NAMES[n] ?? ["Pat", "Player"];
   on(n, { verb: "type", widget: "RegFirstName", text: first });
   on(n, { verb: "type", widget: "RegLastName", text: last });
@@ -326,7 +326,7 @@ async function runPoliceProof() {
     const read = on(n, { verb: "use", className: "LF_WantedBoardReadAction", entityName: "Roadmap_Police_WantedBoard" }, 10000);
     if (read.status !== "ok") fails.push(`client ${n} board read returned ${read.status} ${read.detail}`);
     wait(2500);
-    on(n, { verb: "capture", mode: "ui", name: `m1-11-board-client${n}` }, 25000);
+    on(n, { verb: "capture", mode: "ui", name: `m1_11_board_client${n}` }, 25000);
     on(n, { verb: "ui" });
     on(n, { verb: "click", widget: "Close" });
     wait(800);

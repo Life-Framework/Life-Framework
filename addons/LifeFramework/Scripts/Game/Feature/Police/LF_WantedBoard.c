@@ -285,8 +285,20 @@ class LF_WantedBoardReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!pOwnerEntity || pUserEntity != EL_Utils.GetLocalCharacter())
+		if (!pOwnerEntity || !pUserEntity)
 			return;
+
+		// Performed on the server for a remote reader (a server-driven use, as the agent harness
+		// does): answer that reader directly. The same distance rule applies in ServerRead.
+		if (pUserEntity != EL_Utils.GetLocalCharacter())
+		{
+			if (!Replication.IsServer())
+				return;
+
+			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
+			LF_WantedBoard.ServerRead(SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId)));
+			return;
+		}
 
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (!controller)

@@ -69,22 +69,22 @@ class EL_DutyAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the punch clock clicks for every machine near the desk (vanilla inventory sound
-	//! broadcast, the same path duty pay uses for the cash).
+	//! Server: the punch clock clicks for every machine near the desk. A placed static prop has no
+	//! usable RplId on a dedicated server, so the broadcast rides the officer's character and each
+	//! machine finds the desk beside them.
 	protected void PlayPunch(IEntity desk, IEntity user)
 	{
 		if (!desk || m_sPunchSound.IsEmpty())
 			return;
 
-		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(user);
-		RplId deskId = EL_NetworkUtils.GetRplId(desk);
-		if (!inventory || deskId == RplId.Invalid())
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(user);
+		if (!character)
 		{
-			EL_Debug.Warn("Police", "punch clock sound skipped: no inventory or the desk has no RplComponent");
+			EL_Debug.Warn("Police", "punch clock sound skipped: the user is not a character");
 			return;
 		}
 
-		inventory.RpcAsk_PlaySound(deskId, m_sPunchSound);
+		character.LF_BroadcastStationSound("EL_DutyAction", m_sPunchSound);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -125,3 +125,39 @@ class EL_DutyAction : ScriptedUserAction
 		return null;
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+//! Station prop sounds that every nearby player hears, sent through the acting character (a
+//! replicated entity every nearby machine streams). Each machine plays the event from the prop
+//! that carries the named action beside the character.
+modded class SCR_ChimeraCharacter
+{
+	static const float LF_STATION_SOUND_RANGE = 3;
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: play soundEvent from the nearest prop carrying actionClass, on every machine.
+	void LF_BroadcastStationSound(string actionClass, string soundEvent)
+	{
+		Rpc(RpcDo_LF_StationSound, actionClass, soundEvent);
+		RpcDo_LF_StationSound(actionClass, soundEvent);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Unreliable, RplRcver.Broadcast)]
+	protected void RpcDo_LF_StationSound(string actionClass, string soundEvent)
+	{
+		// A dedicated server renders and hears nothing.
+		if (RplSession.Mode() == RplMode.Dedicated)
+			return;
+
+		IEntity prop = EL_ActionSite.FindNear(GetOrigin(), LF_STATION_SOUND_RANGE, actionClass);
+		if (!prop)
+		{
+			EL_Debug.Warn("Police", string.Format("station sound %1 skipped: no %2 prop near the character", soundEvent, actionClass));
+			return;
+		}
+
+		SCR_SoundManagerModule.CreateAndPlayAudioSource(prop, soundEvent);
+		EL_Debug.Info("Police", string.Format("station sound %1 played at %2", soundEvent, EL_Utils.GetPrefabName(prop)));
+	}
+}
