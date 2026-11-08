@@ -33,7 +33,7 @@ contribute to — in that order.
 A build is playable when a stranger can join, understand what to do without
 asking anyone, and complete a loop:
 
-1. Spawn, choose a faction (police is whitelisted).
+1. Arrive: register at the town clerk, get an ID card, read the town board. Everyone starts civilian; whitelisted players clock in as police at the station.
 2. Earn: take a job, gather or process, get paid in cash.
 3. Spend and save: shop, bank at the ATM, buy a vehicle.
 4. Crime: rob a till, a bank, a hospital; carry contraband.
