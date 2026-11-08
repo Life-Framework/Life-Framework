@@ -1401,6 +1401,14 @@
   closed, a client without the define is refused by the script checksum, and
   `host start` never passes it. `session.mjs restart` (playtest) stops with the
   host stop file (SHUTDOWN save), loads, and rejoins the same profiles.
+- (2026-11-08, #108) `node agent-box/journey.mjs` plays the M1 journey on a
+  two-client session from the player's view (job, parcel run, ATM keypad, price
+  list, car, give cash, till robbery and alert, org desk, garage, and on the
+  playtest mission a restart), judges `state` before and after each step, and
+  writes `agent-box/reports/journey.html` with the client screenshots.
+  `tools/validation/agent-box-selftest.mjs` runs the harness, session, and
+  journey selftests in `validate`.
+  Every step ends with a picture from each client it touched. Clients default to 1280x720 (`session.mjs up --res 1920x1080` for evidence) on the hidden desktop; `--visible` plus `journey.mjs --film` records client 1, but the first clip held one frame (README, Filming).
 
 ### `EL_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
