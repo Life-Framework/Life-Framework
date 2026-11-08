@@ -1014,7 +1014,11 @@
   `NotifyPolice` reach connected on-duty police by account faction.
   `EL_Utils.AlertPolice` and `EL_Utils.NotifyEntity` (shop, robbery, duty,
   confiscate toasts) route through it; `EL_Utils.Notify` still shows a hint on
-  the calling machine only.
+  the calling machine only. Since 2026-11-08 the courier job (sign-up, paid,
+  abandoned), gather/process rewards, weapon and vehicle robbery, and the
+  contraband payout toast through `NotifyEntity`; on a dedicated server they
+  had reached nobody. enforce-lint L8 fails an `EL_Utils.Notify` after an
+  `if (!Replication.IsServer()) return;` guard.
 - ⚠️ Hard-coded Spanish prefixes, emoji in logs, `m_Color` never transmitted.
 
 ## Inventory / Quantity
@@ -1089,7 +1093,7 @@
 
 ### Vehicle lot and garage — `Feature/Vehicles/`
 - ✅ `Roadmap_Vehicle_Lot` sells vanilla S105, UAZ469, S1203, UAZ452, and M923. Each spawn is a thin child of that vanilla prefab with `EL_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. (verified 2026-10-11)
-- ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing.
+- ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing. Above the ceiling the refusal reads `#LF-Vehicle_BankShort` (pay from the bank; deposit at an ATM), so a buyer holding enough cash knows why (`vehicles/bank-refusal`).
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
 - ✅ **A restart drops no ground key** (2026-11-07, test `restart/vehicle-restore-no-ground-key`, verified 2026-11-07): `RestoreWorld` / `RestoreVehicle` put each out-in-world vehicle back on the pad, locked as saved, without spawning a key. Before, every restart left a fresh key beside the pad for every such vehicle (anyone could take the car, and keys piled up). The owner re-keys through the existing owner-only flow: garage store, then retrieve (retrieve spawns a key when the session has none), or an extra key at the lot.

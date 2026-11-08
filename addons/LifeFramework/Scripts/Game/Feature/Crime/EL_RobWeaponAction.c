@@ -53,9 +53,9 @@ class EL_RobWeaponAction : ScriptedUserAction
 			return;
 
 		if (CommitWeaponRobbery(EL_Utils.GetPlayerUid(pUserEntity), pUserEntity, m_WeaponPrefab))
-			EL_Utils.Notify("#EL-Weapon_Stolen", "#EL-Robbery_Successful", 3.0);
+			EL_Utils.NotifyEntity(pUserEntity, "#EL-Weapon_Stolen", "#EL-Robbery_Successful", 3.0);
 		else
-			EL_Utils.Notify("#EL-Inventory_Full", "#EL-Robbery_Failed", 3.0);
+			EL_Utils.NotifyEntity(pUserEntity, "#EL-Inventory_Full", "#EL-Robbery_Failed", 3.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

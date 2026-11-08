@@ -3237,6 +3237,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Keep it"
      Comment "Give cash sheet close button."
     }
+    CustomStringTableItem "{2606D4AE3E7A4FE0}" {
+     Id "LF-Vehicle_BankShort"
+     Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
+     Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
+    }
   }
  }
 }
