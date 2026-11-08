@@ -4,12 +4,14 @@ ButtonWidgetClass "{054447CAC1AAFA00}" : "{0022F0B45ADBC5AC}UI/layouts/WidgetLib
   Padding 28 10 28 10
  }
  components {
-  SCR_EditBoxComponent "{4E8B963DC68EC697}" {
+  SCR_EditBoxComponent "{547290FFBD5B33E9}" {
    m_bUseLabel 0
    m_sLabel ""
    m_fSizeWithLabel 48
    m_fSizeWithoutLabel 48
-   m_BackgroundDefault 0.910 0.863 0.769 1
+   m_BackgroundDefault 0.672 0.578 0.402 1
+   m_BackgroundInteracting 0.565 0.468 0.296 1
+   m_BackgroundFocused 0.565 0.468 0.296 1
   }
  }
 }

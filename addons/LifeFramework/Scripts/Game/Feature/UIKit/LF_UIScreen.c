@@ -604,9 +604,9 @@ class LF_UIScreen
 		if (blur)
 			blur.SetVisible(GetSkin().m_bBlur);
 
-		Widget metal = m_wRoot.FindAnyWidget("Metal");
-		if (metal && GetSkin().m_fWidth > 0)
-			FrameSlot.SetSizeX(metal, GetSkin().m_fWidth);
+		Widget sheet = m_wRoot.FindAnyWidget("Sheet");
+		if (sheet && GetSkin().m_fWidth > 0)
+			FrameSlot.SetSizeX(sheet, GetSkin().m_fWidth);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -641,6 +641,9 @@ class LF_UIScreen
 			EL_Debug.Error("UIKit", "skipped " + part.GetName() + ": no layout for that part");
 			return;
 		}
+
+		if (part.GetKind() == LF_EUIPartKind.FIELD)
+			AddCaption(workspace, content, part);
 
 		Widget widget = workspace.CreateWidgets(layout, content);
 		if (!widget)
@@ -765,6 +768,22 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The printed name of a blank, in ink, right above it (a form, not a menu placeholder).
+	protected void AddCaption(WorkspaceWidget workspace, Widget content, LF_UIPart part)
+	{
+		TextWidget caption = TextWidget.Cast(workspace.CreateWidgets(LF_UITheme.LINE_LAYOUT, content));
+		if (!caption)
+		{
+			EL_Debug.Error("UIKit", "failed to create the caption for " + part.GetName());
+			return;
+		}
+
+		caption.SetName(part.GetName() + "Caption");
+		AlignableSlot.SetPadding(caption, LF_UITheme.PAD_LEFT, LF_UITheme.PAD_TOP, LF_UITheme.PAD_RIGHT, 0);
+		ApplyInk(caption, LF_UITheme.FONT_CAPTION, part.GetText());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void AddField(Widget widget, LF_UIPart part)
 	{
 		m_bHasField = true;
@@ -778,7 +797,9 @@ class LF_UIScreen
 
 		box.SetIsColorInherited(false);
 		box.SetColor(GetSkin().m_Ink);
-		box.SetPlaceholderText(part.GetText());
+		// The caption above the blank names it. The vanilla placeholder draws light grey, which
+		// does not read on paper.
+		box.SetPlaceholderText("");
 		box.SetText("");
 		box.SetTextOutline(0);
 		box.SetTextShadow(0);

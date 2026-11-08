@@ -5,8 +5,12 @@
 // these values when it assembles a screen.
 //
 // The edit-box well is the exception the vanilla component reads at creation:
-// LF_UIEditBox.layout m_BackgroundDefault is FIELD_WELL (232, 220, 196).
-// Blur strength (0.8) is authored on the blur widget in LF_UIFrame.layout.
+// LF_UIEditBox.layout m_BackgroundDefault is FIELD_WELL (214, 200, 170), written there in
+// linear space (0.672 0.578 0.402) because the component animates the raw value.
+// The sheet is solid ImageWidgets (no texture): a PanelWidget draws the engine's
+// default-style panel image tinted by its colour, which reads as see-through.
+// Blur strength (0.4) is authored on the full-screen blur widget in LF_UIFrame.layout;
+// its colour multiplies the world behind the sheet, so it is the dim.
 class LF_UITheme
 {
 	static const ResourceName FONT = "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt";
@@ -26,6 +30,8 @@ class LF_UITheme
 	static const int FONT_BODY = 18;
 	static const int FONT_BUTTON = 20;
 	static const int FONT_FIELD = 18;
+	//! The printed name above a blank on a form.
+	static const int FONT_CAPTION = 16;
 
 	static const float PAD_LEFT = 28;
 	static const float PAD_TOP = 10;
@@ -38,11 +44,11 @@ class LF_UITheme
 	static const int METAL_B = 58;
 	static const int METAL_A = 255;
 
-	// Aged paper. Slightly translucent so the blur sits behind the sheet.
-	static const int PAPER_R = 214;
-	static const int PAPER_G = 198;
-	static const int PAPER_B = 168;
-	static const int PAPER_A = 242;
+	// Warm off-white form paper. Opaque: nothing behind the sheet shows through.
+	static const int PAPER_R = 238;
+	static const int PAPER_G = 230;
+	static const int PAPER_B = 212;
+	static const int PAPER_A = 255;
 
 	// Carbon ink.
 	static const int INK_R = 28;
@@ -56,22 +62,23 @@ class LF_UITheme
 	static const int RULE_B = 64;
 	static const int RULE_A = 255;
 
-	// Warm dark frost behind the metal.
-	static const int BLUR_R = 48;
-	static const int BLUR_G = 44;
-	static const int BLUR_B = 36;
+	// The world behind the sheet, dimmed to about a third and softly blurred.
+	static const int BLUR_R = 168;
+	static const int BLUR_G = 164;
+	static const int BLUR_B = 156;
 	static const int BLUR_A = 255;
 
 	// Roster strip, a step darker than the sheet.
-	static const int ROW_R = 186;
-	static const int ROW_G = 170;
-	static const int ROW_B = 140;
+	static const int ROW_R = 220;
+	static const int ROW_G = 208;
+	static const int ROW_B = 182;
 	static const int ROW_A = 255;
 
-	// Blank on the form. LF_UIEditBox.layout writes these as 0.910 0.863 0.769 1.
-	static const int FIELD_WELL_R = 232;
-	static const int FIELD_WELL_G = 220;
-	static const int FIELD_WELL_B = 196;
+	// Blank on the form, a step darker than the sheet. LF_UIEditBox.layout writes it in linear
+	// space as 0.672 0.578 0.402 1 (focused and typing: 198, 182, 148 = 0.565 0.468 0.296).
+	static const int FIELD_WELL_R = 214;
+	static const int FIELD_WELL_G = 200;
+	static const int FIELD_WELL_B = 170;
 	static const int FIELD_WELL_A = 255;
 
 	//------------------------------------------------------------------------------------------------
