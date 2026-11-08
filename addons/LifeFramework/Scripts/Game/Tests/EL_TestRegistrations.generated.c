@@ -70,6 +70,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_IdCardGrant(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_IdCardRules(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_IdentityFallback(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_InteractionGiveCash(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_InteractionIntroductions(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_InteractionOffers(), EL_TestTier.LOGIC);

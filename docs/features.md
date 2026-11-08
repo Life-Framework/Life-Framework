@@ -341,6 +341,12 @@
   The server owns the machine-wide `server-2001` lock while it runs. The
   no-shutdown-save error now fires at teardown, not on the SHUTDOWN state change
   that comes before the save. Selftest: `tools/validation/host-selftest.mjs`.
+  Joining: the host runs `-noBackend`, so every player has the NULL platform
+  identity. Until 2026-11-08 that made `GetPlayerUID` empty and the faction pick
+  failed with `#EL-CC_Error_NoAccount` (nobody could join).
+  `EL_Utils.ChooseIdentityFallback` now keys a player by Steam name on a
+  `-noBackend` dedicated server: stable across restarts, one character per name
+  (`spawn/identity-fallback`; join, restart, rejoin seen live).
 
 ### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
