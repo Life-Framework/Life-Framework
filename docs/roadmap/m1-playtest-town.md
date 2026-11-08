@@ -2,7 +2,7 @@
 
 M1 is done when a stranger joins a dedicated server hosted from the maintainer's
 PC and gets through the whole loop with nobody helping. They take a short
-guided arrival, read 1989 signs, and finish spawn → faction → job → cash → ATM
+guided arrival, read 1989 signs, and finish spawn → job → cash → ATM
 → shop → vehicle → crime → police response → arrest, fine, or jail →
 organization, hideout, garage. After a server restart, what they earned is
 still there. Every step runs on a dedicated server with several clients. Every
@@ -21,8 +21,8 @@ label `m1`; one issue per scope (§e).
 
 M1 scopes depend on these PRs by number and do not repeat their work. #71, #77,
 #79, and #83 merged on 2026-11-07 with full-suite runs and observed red-proofs.
-The rest are being finished the same way. Until the maintainer answers the
-decisions at the end, scopes build the plan defaults.
+The rest are being finished the same way. The maintainer's answers to the
+plan's open questions are at the end ([Decided 2026-11-08](#decided-2026-11-08)).
 
 | PR | What M1 needs from it |
 | --- | --- |
@@ -50,7 +50,7 @@ in the world (§b).
 | # | Step | Where | Status | Evidence |
 | --- | --- | --- | --- | --- |
 | 1 | Join the hosted server | maintainer PC | **missing** | No playtest mission (only `Missions/EL_DebugTest.conf`). No host command. No auto-load of the last save (#77 only documents `-loadSessionSave`). No dedicated + multi-client session has ever been recorded. → M1-03, M1-05 |
-| 2 | Choose a faction (police whitelisted) | faction screen | **works** (code) | The picks never reached the server on dedicated. #83 (merged) moved them to server RPCs (`EL_CharacterCreationController.c`). Not yet seen live. |
+| 2 | Choose a faction (police whitelisted) | faction screen | **UI**, to delete | #83 (merged) moved the picks to server RPCs (`EL_CharacterCreationController.c`). Decided 2026-11-08: no faction screen; everyone spawns civilian and police clock in at the duty desk. → M1-11 deletes the screen |
 | 3 | Name and age | creation screen | **broken** | `EL_CharacterCreationManager.CreateAndSpawnDefaultCharacter` skips the screen, so every character is "Default Citizen". → M1-08 |
 | 4 | Spawn and orientation | civilian spawns 100-110, 130-137 (`Gamemode.layer`) | **missing** | No signs. The only labels are debug text (`EL_TextLabelComponent` → `DebugTextWorldSpace`). `QuestGiver_Start` (110,137) offers test quests: talk, kill, timed. → M1-01, M1-09, M1-18 |
 | 5 | ID card | inventory | **missing** | `Prefabs/Items/Roleplay/IDCard.et` exists, but nobody is given one. `EL_ShowIDAction` shows a toast. → M1-08 |
@@ -60,10 +60,10 @@ in the world (§b).
 | 9 | Shop | general store 144,130 | **works**, **UI** | `EL_ShopMenu` opens for the local player whoever interacted (features.md). Stock is infinite. → M1-13 |
 | 10 | Buy a vehicle | `Roadmap_Vehicle_Lot` 243,120 | **works** (in-world) | Each vehicle has its own buy action. The key is a real item and the lock and plate are real. → proven by M1-23 |
 | 11 | Rob a till | `Roadmap_Fuel_Till` 201,120, `Roadmap_Hospital_Till` 195,120 | **works** (code) | Offers read a server-only account on clients. #83 (merged) moved them to `EL_AccountReplication`. Not yet seen live. DebugWorld sets min police 0. |
-| 12 | Rob the bank | `Roadmap_Bank_Vault` 189,120 + bag | **works**, ⚠ dedicated | `LF_Bank` still reads accounts directly in its offer (#83 ⚠). Bags are real carried cash. |
+| 12 | Rob the bank | `Roadmap_Bank_Vault` 189,120 + bag | **works**, ⚠ dedicated | `LF_Bank` still reads accounts directly in its offer (#83 ⚠). Bags are real carried cash. Decided 2026-11-08: no police minimum on the flagship (0 for every crime); a louder alarm when no officer is on duty. → M1-20 |
 | 13 | Hospital cabinet | `Roadmap_Hospital_Cabinet` 198,120 | **works** | Breach → medicine items. |
 | 14 | Contraband run | `Roadmap_Convoy_Start/Drop` 222/225,120 | **works**, **broken look** | The cargo is `RowanBerries.et`. The markers are `EL_DebugAreaBoundary` debug meshes. → M1-14 |
-| 15 | Police clock in | `Roadmap_Police_Desk` 204,120 | **broken** | The desk has **no components** (`Roadmap.layer`). Duty is at `PoliceStation_Debug` (170,120) on `Police.layer`. `docs/playtest.md` sends players to the wrong place. → M1-11 |
+| 15 | Police clock in | `Roadmap_Police_Desk` 204,120 | **broken** | The desk has **no components** (`Roadmap.layer`). Duty is at `PoliceStation_Debug` (170,120) on `Police.layer`. `docs/playtest.md` sends players to the wrong place. The desk becomes the only way to become police: whitelist check and loadout there. → M1-11 |
 | 16 | Police learn of a crime | toast | **broken** | Alerts are toasts, and toasts fail until #97. Nothing happens at the site. → M1-20 |
 | 17 | Find the suspect | police menu | **broken** | The wanted list now comes over RPC (#83), but the layout does not render `GetWantedPlayers()`. The menu buttons are unlabeled. → M1-11 |
 | 18 | Arrest and escort | on the suspect, `Roadmap_Escort_Car` 204,108 | **works** | `LF_JailArrestAction`, `LF_JailPutInVehicleAction`. Ranges in #73. |
@@ -73,7 +73,7 @@ in the world (§b).
 | 22 | Hideout | door 213, machine 216, stash 219 (z 120) | **works** / **missing** | The door and machine work. The stash has no storage component. → M1-15 |
 | 23 | Garage | `Roadmap_Garage` 186,102.1 | **works**, partly unreachable | Store and retrieve work. Retrieve spawns at the lot pad. The `LF_Garage` catalog screen is unreachable. There is no impound rule. → M1-16 |
 | 24 | Restart keeps it | server | **broken** | Carried items and cash reset to the starter kit. Careers, levels, police rank, licenses, and quests are not saved. Bank and org fund, hideout, and vehicle records are saved. → M1-03, M1-04, M1-10 |
-| 25 | Die and respawn | death screen | **works**, unproven on dedicated | The body keeps what it carried (matches decision "Death drops what you carry"). The respawn RPC bridge has never run on a multi-client server. → M1-23 |
+| 25 | Die and respawn | death screen | **works**, unproven on dedicated | The body keeps what it carried (matches decision "Death drops what you carry"). The respawn RPC bridge has never run on a multi-client server. Decided 2026-11-08: you wake in a hospital bed and pay a small bill from the bank (debt if broke); today respawn is free at a civilian spawn. → M1-26, M1-23 |
 
 ## b. In-world redesign
 
@@ -86,12 +86,12 @@ without adding play, so the UI stays and is made to look like an object.
 | --- | --- | --- | --- |
 | Orientation and help | none; debug floating text | Notice boards, pub signs, A4 notices, cardboard signs; Read opens a paper card | **Adopt** (M1-01, M1-09) |
 | Arrival | test quest giver | Town clerk at the spawn plaza hands you your ID card and sends you on four errands | **Adopt** (M1-18) |
-| Faction choice | screen at first join | Everyone spawns civilian; police clock in at the station desk, where the whitelist is checked | **Keep UI for M1**. Faction also picks spawn point and loadout, and #83 just fixed the screen. Revisit: decision Q2 |
-| Name and age | never shown | Registration form, typed | **Keep UI** (typing a name), styled as a 1989 form (M1-08) |
+| Faction choice | screen at first join | Everyone spawns civilian; police clock in at the station desk, where the whitelist is checked and duty sets the police loadout | **Adopt** (M1-11). Delete the faction screen (decided 2026-11-08) |
+| Name and age | never shown | Registration form, typed; it does not pick a faction | **Keep UI** (typing a name), styled as a 1989 form (M1-08) |
 | ID | toast | `IDCard.et` carried, shown face to face, and police can ask for it | **Adopt** (M1-08, M1-12) |
-| Meeting people | scattered actions | One person-to-person menu: introduce, show ID, give cash or item, role actions | **Adopt** (M1-12) |
+| Meeting people | scattered actions | One person-to-person menu: introduce, show ID, give cash or item, role actions. After an introduction the name shows only up close, and is remembered across sessions | **Adopt** (M1-12) |
 | Job signup and runs | actions at the post counter | Already in the world: parcel, jerrycan, taxi | Keep; add signs |
-| Paycheck | $700 timer for everyone | Delete it. Civilians are paid in cash at the drop. Police get duty pay in cash at the desk when they clock out | **Adopt** (M1-07) |
+| Paycheck | $700 timer for everyone | Delete it. Civilians are paid in cash at the drop. Police get duty pay in cash at the desk when they clock out. Broke players collect an unemployment benefit at the counter | **Adopt** (M1-07) |
 | Pay envelope / pay slip item | – | An envelope holding the cash | **Later**: it adds a step and no play |
 | Selling goods | drop into trader crate → cash | Already in the world | Keep |
 | ATM | menu | Terminal-screen UI at the machine; typing an amount is a correct UI | **Keep UI**, restyled (M1-13) |
@@ -101,10 +101,11 @@ without adding play, so the UI stays and is made to look like an object.
 | Keys and locks | real key item | Already in the world | Keep |
 | Garage | actions + unreachable catalog | Park at the garage, retrieve on its pad, read a ledger card; ungaraged cars go to impound for a fee | **Adopt** (M1-16). Delete the catalog purchase path |
 | Robbery, breach, bank bags, cabinet | actions, charge item, carried bags | Already in the world | Keep |
-| Police alert | toast | Alarm at the site, a radio chirp to on-duty officers, a dispatch line on the station board | **Adopt** (M1-20). Payphones and pagers are **later** |
+| Police alert | toast | Alarm at the site, a radio chirp to on-duty officers, a dispatch line on the station board. With no officer on duty the alarm is louder and more visible | **Adopt** (M1-20). Payphones and pagers are **later** |
 | Wanted list | menu stub | Wanted board at the station; posters with names for civilians, details for on-duty police | **Adopt** (M1-11) |
-| Duty | action at a debug station off the street | Clock in and out at the station desk (`ClockPunch_01`) | **Adopt** (M1-11) |
-| Fine | remote menu, any distance | Officer writes a paper ticket face to face. The suspect gets a ticket item with Pay or Refuse. A paid ticket stays as a receipt | **Adopt** (M1-19). The amount entry is a UI field |
+| Duty | action at a debug station off the street | Clock in and out at the station desk (`ClockPunch_01`). Clocking in stores the civilian inventory and restores the police one; clocking out swaps back | **Adopt** (M1-11). Replaces the once-per-shift armory for M1 |
+| Death and respawn | death screen, free respawn at a civilian spawn | Wake in a hospital bed; a small bill from the bank, debt if broke | **Adopt** (M1-26) |
+| Fine | remote menu, any distance | Officer writes a paper ticket face to face. The suspect carries it and pays in cash at the police desk within N minutes. Unpaid, it doubles once; unpaid again, +1 wanted. Never from the bank. A paid ticket stays as a receipt | **Adopt** (M1-19). The amount entry is a UI field |
 | Arrest and escort | actions, vehicle seat | Already in the world | Keep |
 | Jail | silent timer | Sentence slip with the release time; door sound on release | **Adopt** (M1-21) |
 | Confiscation | deletes weapons | Seized items go to an evidence locker at the station | **Later** |
@@ -141,14 +142,16 @@ how, needs, rules.
 - A missing id logs `EL_Debug.Error("Signs", …)` and that sign's action hides.
 
 **Placement.** A new `Signs.layer` (M1-09).
-- **Spawn plaza** (civilian spawn ~105,134): a `LF_Sign_Board` "Welcome to Everon". Its card lists the loop in order and where each site is ("Post office: east on the main street, by the red counter").
+- **Spawn plaza** (civilian spawn ~105,134 today; M1-25 moves it to one end of the street): a `LF_Sign_Board` "Welcome to Everon". Its card lists the loop in order and where each site is ("Post office: east on the main street, by the red counter").
 - **One sign per site**, within 8 m of the site: post office, traders, ATM, general store, black market, vehicle lot, garage, bank, fuel station, hospital, police station, jail, organization registry, hideout, convoy pickup and drop, and the mining and farm chains.
 - **Retire debug text.** `EL_MiningSign` and `EL_WhitelistSign` move to `LF_SignComponent`. `EL_TextLabelComponent` is deleted.
 
 **Proof.** `report town` (M1-02) fails a site with no sign within 8 m, or with
 a blank card.
 
-**Open:** text on the board face itself. See decision Q1.
+**Board face.** The title is printed on the board itself (decided 2026-11-08).
+#119 prints it on `LF_Sign_Board` and `LF_Sign_Notice` as a render-target paper
+sheet. `LF_Sign_Pub` and `LF_Sign_Chalkboard` follow in #116.
 
 ## d. Guided arrival chain
 
@@ -182,7 +185,7 @@ wave, scopes do not touch the same files apart from the append-only ones
 boxes. A scope starts as soon as its dependencies are merged.
 
 - **Wave 1 (foundations):** M1-00 street split, M1-01 sign system, M1-02 town manifest, M1-03 playtest host, M1-04 carried inventory persists, M1-05 multi-client harness, M1-06 filming, M1-07 pay at the counter, M1-08 registration + ID card.
-- **Wave 2 (sites):** M1-09 signs placed, M1-10 progression persists, M1-11 police station, M1-12 player interaction menu, M1-13 counter screens, M1-14 contraband cargo, M1-15 hideout stash.
+- **Wave 2 (sites):** M1-25 one-street town, M1-09 signs placed, M1-10 progression persists, M1-11 police station, M1-12 player interaction menu, M1-13 counter screens, M1-14 contraband cargo, M1-15 hideout stash, M1-26 wake up in hospital.
 - **Wave 3 (consequence and polish):** M1-16 garage + impound, M1-17 org registry, M1-18 arrival chain, M1-19 fine ticket, M1-20 alarm + dispatch, M1-21 jail slip, M1-22 town tidy.
 - **Wave 4 (acceptance):** M1-23 journey proof on dedicated, M1-24 playtest release.
 
@@ -204,13 +207,15 @@ boxes. A scope starts as soon as its dependencies are merged.
 
 | ID | Issue | Scope | Depends on | Player-view proof | Game |
 | --- | --- | --- | --- | --- | --- |
-| M1-09 | [#94](https://github.com/Life-Framework/Life-Framework/issues/94) | **Place the signs: one per site, town map at spawn**. M1 "done when": a sign at spawn explains the loop, every site has a sign saying what it is and how to use it. | M1-00, M1-01, M1-02 | `report town` with `requireSigns` passes: every site has a sign within 8 m and a non-blank card. | yes |
+| M1-25 | [#120](https://github.com/Life-Framework/Life-Framework/issues/120) | **One-street town layout**. Decision "Every M1 site moves onto one street now". Move every M1 site from the `Street_*` layers onto one street: spawn plaza at one end, then clerk → post office and jobs → ATM and bank → store → vehicle lot and garage → police station and jail → hospital and fuel → org registry and hideout off a side alley → contraband out of town. A small 1989 Everon village: vanilla Everon buildings, a real road, a square at the spawn, and a fenced test annex off to the side for dev fixtures. Names and GUIDs stay; positions change. | M1-00 (#115), M1-02 | `report roadmap` and `report town` pass at the new positions; a filmed fly-through of the street (`tools/film`). | yes |
+| M1-09 | [#94](https://github.com/Life-Framework/Life-Framework/issues/94) | **Place the signs: one per site, town map at spawn**. M1 "done when": a sign at spawn explains the loop, every site has a sign saying what it is and how to use it. | M1-00, M1-01, M1-02, M1-25 | `report town` with `requireSigns` passes: every site has a sign within 8 m and a non-blank card. | yes |
 | M1-10 | [#95](https://github.com/Life-Framework/Life-Framework/issues/95) | **Progression survives a restart**. Job careers and levels, police rank and on-duty seconds, licenses, and quest turn-ins are not in `EL_PlayerAccountRecord`; a restart returns officers to patrol and couriers to level 1 (features.md: LF_PoliceRanks ⚠, Jobs ⚠). | M1-04 | Real restart: senior officer stays senior; courier level 2 still opens fuel delivery. | no |
-| M1-11 | [#96](https://github.com/Life-Framework/Life-Framework/issues/96) | **Police station on the street: duty desk and wanted board**. `docs/playtest.md` says go on duty at `Roadmap_Police_Desk`, but that desk has no components at all (`Roadmap.layer`, 204 0 120); duty lives at `PoliceStation_Debug` (170,120) on another layer. | M1-00, #83 | 2 clients: civilian robs the fuel till; police client clocks in, reads the board, sees the robber at level 1. | yes |
-| M1-12 | [#98](https://github.com/Life-Framework/Life-Framework/issues/98) | **One player interaction menu**. Decision "One player interaction menu": introduce yourself, show ID, give cash or an item, and role actions (search, cuff, fine) on the person in front of you. | M1-08, #73 | 2 clients: introduce, show ID, give 50 cash; `state` cash changes on both. | yes |
+| M1-11 | [#96](https://github.com/Life-Framework/Life-Framework/issues/96) | **Police station on the street: duty desk and wanted board**. `docs/playtest.md` says go on duty at `Roadmap_Police_Desk`, but that desk has no components at all (`Roadmap.layer`, 204 0 120); duty lives at `PoliceStation_Debug` (170,120) on another layer. Clocking in replaces the faction screen, which this scope deletes. Clocking in and out swaps a separate police inventory with the civilian one; both persist. | M1-00, M1-25, M1-04, #83 | 2 clients: civilian robs the fuel till; whitelisted client clocks in, gets the police inventory, reads the board, sees the robber at level 1. Clock out, restart, clock in: both inventories come back. | yes |
+| M1-12 | [#98](https://github.com/Life-Framework/Life-Framework/issues/98) | **One player interaction menu**. Decision "One player interaction menu": introduce yourself, show ID, give cash or an item, and role actions (search, cuff, fine) on the person in front of you. After an introduction the name shows only up close and is remembered across sessions. | M1-08, #73 | 2 clients: introduce, show ID, give 50 cash; `state` cash changes on both. The name shows within a few metres, not beyond, and again after a restart. | yes |
 | M1-13 | [#110](https://github.com/Life-Framework/Life-Framework/issues/110) | **Counter screens: ATM terminal and shop price list on the UI kit**. ATM and shop are the two menus every player uses. | #97 | `flow world-atm`, `flow ui-shop` on a dedicated client: shots not blank, cash and balance change in `state`. | yes |
 | M1-14 | [#99](https://github.com/Life-Framework/Life-Framework/issues/99) | **Contraband: real cargo and real drop points**. The convoy hauls `RowanBerries.et` between two `EL_DebugAreaBoundary` markers (`Roadmap_Convoy_Start`/`_Drop`). | M1-00 | `report town` rows for start/drop pass (not white, action present). | yes |
 | M1-15 | [#100](https://github.com/Life-Framework/Life-Framework/issues/100) | **Hideout stash that holds items**. `Roadmap_Hideout_Stash` is a crate mesh with no storage component (features.md, playtest.md). | M1-00, M1-04 | Org member stores 3 items, restart, items present. | no |
+| M1-26 | [#121](https://github.com/Life-Framework/Life-Framework/issues/121) | **Wake up in hospital**. Decision "You wake up in hospital". Respawn is free at a civilian spawn today (`EL_SpawnLogic.RespawnPlayer_S`). Respawn in a hospital bed; a small bill from the bank, debt if broke. Respawn point and bill are config. | M1-25 | Dedicated client dies, wakes at a hospital bed; `state` bank drops by the bill; a broke player goes negative. | yes |
 
 ### Wave 3
 
@@ -219,10 +224,10 @@ boxes. A scope starts as soon as its dependencies are merged.
 | M1-16 | [#101](https://github.com/Life-Framework/Life-Framework/issues/101) | **Garage it to keep it: garage pad, ledger card, impound**. Decision "Garage it to keep it". | M1-00, M1-10 | Buy, drive, park, restart, retrieve at the garage; leave a second car on the street, restart, pay impound. | yes |
 | M1-17 | [#102](https://github.com/Life-Framework/Life-Framework/issues/102) | **Organization registry: ledger desk and invite by facing**. The org desk screen lists name, fund, and the processing upgrade, but invite/kick exist only in `EL_OrganizationManager` and are unreachable from the world. | M1-12, M1-00 | 2 clients: found org, invite, member opens the hideout door. | yes |
 | M1-18 | [#103](https://github.com/Life-Framework/Life-Framework/issues/103) | **Guided arrival chain**. Decision "Short guided arrival, then free". | M1-07, M1-08, M1-09, M1-10, #97 | Fresh dedicated client completes the chain with flows; `state` shows ID card, cash, bank > 0. | yes |
-| M1-19 | [#104](https://github.com/Life-Framework/Life-Framework/issues/104) | **Fine as a paper ticket**. Fines are a remote menu action that takes cash from a wanted player at any distance (`EL_PoliceMenu.RpcAsk_EL_PoliceFine`; #73 adds a range). | M1-11, M1-12 | 2 clients on dedicated: ticket written, paid; `state` cash and wanted change. | yes |
-| M1-20 | [#105](https://github.com/Life-Framework/Life-Framework/issues/105) | **Alarm and dispatch**. Police learn about a robbery only from a toast (and toasts are broken until #97). | M1-11, M1-03 | 2 clients: till robbery → police client `state` shows dispatch received; alarm audible in clip. | yes |
+| M1-19 | [#104](https://github.com/Life-Framework/Life-Framework/issues/104) | **Fine as a paper ticket**. Fines are a remote menu action that takes cash from a wanted player at any distance (`EL_PoliceMenu.RpcAsk_EL_PoliceFine`; #73 adds a range). The ticket is paid in cash at the police desk within N minutes, doubles once at the deadline, then +1 wanted. | M1-11, M1-12 | 2 clients on dedicated: ticket written, paid at the desk; a second ticket left past both deadlines doubles, then `state` shows wanted +1. | yes |
+| M1-20 | [#105](https://github.com/Life-Framework/Life-Framework/issues/105) | **Alarm and dispatch**. Police learn about a robbery only from a toast (and toasts are broken until #97). No crime needs police online; with no officer on duty the alarm is louder. Flagship minimum 0. | M1-11, M1-03 | 2 clients: till robbery → police client `state` shows dispatch received; alarm audible in clip. Robbery with nobody on duty plays the loud alarm. | yes |
 | M1-21 | [#106](https://github.com/Life-Framework/Life-Framework/issues/106) | **Jail you can see**. Arrest, escort, and the timed sentence work (`LF_Jail.c`), and #77 persists the sentence, but the prisoner gets no in-world statement of the sentence and release is silent. | #73, #77, M1-00 | 2 clients: arrest → slip → release; restart mid-sentence resumes. | yes |
-| M1-22 | [#107](https://github.com/Life-Framework/Life-Framework/issues/107) | **Town tidy**. A stranger walks past debug clutter: visible `EL_DebugAreaBoundary` markers on ATM, Shops, Jobs, NPCs, Survival, chain layers, test fixtures (`PRFeatureCrate` 176,130, `Tests.layer`), and duplicate stations. | M1-09, M1-11, M1-14, M1-15 | `report town` passes with no outliers; a wide shot from spawn shows no debug meshes. | yes |
+| M1-22 | [#107](https://github.com/Life-Framework/Life-Framework/issues/107) | **Town tidy**. A stranger walks past debug clutter: visible `EL_DebugAreaBoundary` markers on ATM, Shops, Jobs, NPCs, Survival, chain layers, test fixtures (`PRFeatureCrate` 176,130, `Tests.layer`), and duplicate stations. Dev fixtures move into the fenced test annex (M1-25) rather than being deleted. | M1-25, M1-09, M1-11, M1-14, M1-15 | `report town` passes with no outliers; a wide shot from spawn shows no debug meshes. | yes |
 
 ### Wave 4
 
@@ -285,36 +290,18 @@ Do not build these in M1. File them for later.
    mission and any Workshop build must keep that gate closed.
    - **Mitigation:** a test pins it (M1-05).
 
-## Decisions for the maintainer
+## Decided 2026-11-08
 
-- **Q1. How does a sign's title show on the board?**
-  - (a) Only in the interaction prompt (`Read: Bank`). The board stays plain vanilla.
-  - (b) A floating world-text label, like the old `EL_TextLabelComponent`.
-  - (c) A painted texture per sign. It looks best, but every new sign needs asset work.
-  - (d) A spike on render-target text drawn on the board's material.
-  - Plan default: (a), with (d) as a later spike.
-- **Q2. Faction choice.**
-  - (a) Keep the faction screen at first join.
-  - (b) Everyone spawns civilian, and whitelisted players clock in as police at the station.
-  - (c) Keep the screen for M1 and move to (b) in M2.
-  - Plan default: (c).
-- **Q3. The passive paycheck.**
-  - (a) Delete it. Pay only for completed runs and police duty time.
-  - (b) Keep a small base wage that must be collected at the job counter.
-  - (c) Keep the timer and lower the amount.
-  - Plan default: (a).
-- **Q4. Paying a fine.**
-  - (a) On the spot in cash, or refuse and become arrestable.
-  - (b) A ticket payable at the police desk within N minutes; unpaid means +1 wanted.
-  - (c) Taken from the bank balance. This breaks "money stays physical".
-  - Plan default: (a).
-- **Q5. Police minimums with few playtesters.**
-  - (a) Flagship values (bank and hospital need 1 or more on duty).
-  - (b) 0 for every crime during playtests.
-  - (c) Major crimes always allowed, with a louder alarm when no officer is on.
-  - Plan default: (a) for bank and hospital, 0 for tills.
-- **Q6. Town layout.**
-  - (a) Signpost the sites where they stand today (x 94 to 243).
-  - (b) Move every M1 site onto one street now.
-  - (c) Signpost now; the reusable site prefabs in M2 decide the layout.
-  - Plan default: (a) + tidy (M1-22).
+The maintainer answered the plan's six questions and made four more calls.
+Each answer is an entry in [decisions](../decisions.md).
+
+- **Q1. Sign titles:** printed on the board, not only in the prompt. Done in #119 for the board and notice; pub sign and chalkboard in #116. ([decision](../decisions.md#gameplay))
+- **Q2. Faction choice:** no faction screen. Everyone spawns civilian; whitelisted players become police by clocking in at the duty desk, which sets the loadout (M1-11, M1-08). ([decision](../decisions.md#gameplay))
+- **Q3. Passive paycheck:** deleted; unemployment benefit for broke players at the job counter (M1-07). ([decision](../decisions.md#gameplay))
+- **Q4. Fines:** a paper ticket paid in cash at the police desk within N minutes; it doubles once at the deadline, then +1 wanted. Never from the bank (M1-19). ([decision](../decisions.md#gameplay))
+- **Q5. Police minimums:** major crimes always allowed; louder alarm when no officer is on duty. Flagship minimum 0, configurable per crime (M1-20). ([decision](../decisions.md#gameplay))
+- **Q6. Town layout:** every M1 site moves onto one street now (M1-25, #120). ([decision](../decisions.md#delivery))
+- **Respawn:** you wake in a hospital bed and pay a small bill from the bank; debt if broke (M1-26, #121). ([decision](../decisions.md#gameplay))
+- **Names:** after an introduction, a name shows only up close, never over a crowd, and is remembered across sessions (M1-12). ([decision](../decisions.md#gameplay))
+- **Police gear:** clocking in swaps in a separate police inventory and clocking out swaps it back; both persist across a restart (M1-11, M1-04). ([decision](../decisions.md#gameplay))
+- **Town style:** a small 1989 Everon village with a real road and a square at the spawn, plus a fenced test annex for dev fixtures (M1-25, M1-22). ([decision](../decisions.md#delivery))
