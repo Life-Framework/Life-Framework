@@ -628,7 +628,13 @@ if (!Replication.IsServer())
 		// Desbloquear licencia
 		m_aUnlockedLicenses.Insert(licenseType);
 		m_iUnlockedBits = EL_LicenseBits.Encode(m_aUnlockedLicenses);
-		
+
+		// Saved with the account's progression (version 7). The free starter grant at spawn init
+		// runs before the body has a player, so only real unlocks land here.
+		string ownerUid = EL_Utils.GetPlayerUID(GetOwner());
+		if (!ownerUid.IsEmpty())
+			LF_Progression.NoteLicenses(ownerUid, m_aUnlockedLicenses);
+
 		EL_Debug.Log("License", string.Format("License unlocked: %1", config.m_sLicenseName));
 		
 		// Notificar

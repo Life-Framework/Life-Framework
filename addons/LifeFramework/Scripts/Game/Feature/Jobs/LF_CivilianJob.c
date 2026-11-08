@@ -62,6 +62,55 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: player ids that have a career, without creating one.
+	static void CollectCareerUids(notnull array<string> uids)
+	{
+		if (!s_mWorkers)
+			return;
+
+		foreach (string playerUid, LF_JobWorker worker : s_mWorkers)
+		{
+			if (worker)
+				uids.Insert(playerUid);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Whether the player has a career record (never creates one).
+	static bool HasCareer(string playerUid)
+	{
+		if (!s_mWorkers || playerUid.IsEmpty())
+			return false;
+
+		return s_mWorkers.Contains(playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: sets the saved career. The sign-up and any active run are session state
+	//! and are left alone, so a re-apply to a live session does not end a run.
+	static void RestoreCareer(string playerUid, int level, float experience, int paidTotal)
+	{
+		if (playerUid.IsEmpty())
+		{
+			EL_Debug.Error("Jobs", "career restore refused: empty player id");
+			return;
+		}
+
+		LF_JobWorker worker = Worker(playerUid);
+		worker.m_iLevel = Math.Max(1, level);
+		worker.m_fExperience = Math.Max(0, experience);
+		worker.m_iPaidTotal = Math.Max(0, paidTotal);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the player's career (test cleanup, admin wipe).
+	static void ForgetCareer(string playerUid)
+	{
+		if (s_mWorkers)
+			s_mWorkers.Remove(playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsDeliveryJob(EL_EJobType job)
 	{
 		if (job == EL_EJobType.PARCEL)

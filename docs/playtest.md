@@ -28,7 +28,7 @@ git pull
 2. Build for PC.
 3. Play the scenario **Life Framework Test Suite** (`Missions/EL_DebugTest.conf`). That loads DebugWorld. It does not run the automated test suite unless you launch that suite yourself. Do not run `tools\cli test`.
 4. Pick Civilian or Police and finish character creation.
-5. Find the release street. The sites are named `Roadmap_` and sit together. Older debug props (crops, the mine, the shop, the ATM) are elsewhere in the same world.
+5. You start on the village square at the west end of the main street. Walk east: post office, bank and ATM, general store and market, car dealer and garage, police station, hospital and fuel station, org registry with the hideout down the alley to its east. The farm is north of the square, the quarry and builders' yard south of the street, the forest at the east end, and the contraband barn up the dirt track past the village. The map is in `docs/roadmap/m1-25-village.md`. The fenced yard to the south-west is the test annex; nothing there is part of the playtest.
 
 Walk up to an object. The interact key offers the same actions you see when you look at it. If looking at a site offers nothing, write that down.
 
@@ -48,7 +48,7 @@ At `Roadmap_Job_Depot`, take the parcel job. Carry it to `Roadmap_Job_Drop`. You
 
 Level 1 is the parcel. Level 2 opens fuel delivery (`Roadmap_Job_FuelCan`). Level 3 opens the taxi (`Roadmap_Job_TaxiPad`). If a job you have not earned is offered, or an earned job is missing, say so.
 
-Crops, logs, and ore are the older chains already in DebugWorld (apples, plums, tomatoes, logging, mining, cement, gravel, sand). Gather one and sell it if you can find the trader.
+Crops, logs, and ore are the older chains (apples, plums, tomatoes on the farm; logging at the forest edge; mining, cement, gravel, sand south of the street). Gather one and sell it at the market stalls next to the general store.
 
 ### A vehicle
 
@@ -62,7 +62,7 @@ A locked target is a breach. Plant the charge at `Roadmap_Breach_Door`, `Roadmap
 
 ### Police
 
-Use a police character. Go on duty at `PoliceStation_Debug` (x 170, z 120, west of the street): `Roadmap_Police_Desk` has no actions yet (M1-11 moves duty there). At `Roadmap_Police_Armory`, take the kit.
+Use a police character. Go on duty at the panel in front of the police station (`PoliceStation_Debug`, south side of the street): `Roadmap_Police_Desk` beside it has no actions yet (M1-11 moves duty there). At `Roadmap_Police_Armory`, take the kit.
 
 A new officer is patrol: a pistol, fines up to 1000, and no arrest. Senior is a rifle, fines up to 5000, and can arrest. An hour on duty promotes. Promoting yourself should be refused.
 

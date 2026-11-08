@@ -1,6 +1,6 @@
 # Street manifest
 
-DebugWorld terrain is the box from 0 to 512 on X and Z. Ground props sit at Y=0. The release street uses Z=120. Sites stay inside that box. This tool checks a manifest and can write a layer to a path you choose. It does not edit `Roadmap.layer`, the `Street_*.layer` site layers, or any other file under `Worlds/DebugWorld`.
+DebugWorld terrain is the box from 0 to 512 on X and Z. Ground props sit at Y=0. The village main street uses Z=250 (docs/roadmap/m1-25-village.md); this tool's own examples still use Z=120. Sites stay inside that box. This tool checks a manifest and can write a layer to a path you choose. It does not edit `Roadmap.layer`, the `Street_*.layer` site layers, or any other file under `Worlds/DebugWorld`.
 
 `validate-debugworld-layout.ps1` still checks area-box overlap. This tool does not replace it.
 

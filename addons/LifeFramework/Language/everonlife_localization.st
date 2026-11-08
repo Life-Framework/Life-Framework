@@ -3142,6 +3142,136 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You were handed a sentence slip. Check your inventory."
      Comment "Toast when a prisoner receives the sentence slip."
     }
+    CustomStringTableItem "{60B9F032C5F7B335}" {
+     Id "LF-Interact_Title"
+     Target_en_us "Person to person"
+     Comment "Toast title for the player interaction menu."
+    }
+    CustomStringTableItem "{8E626C1D03166F0E}" {
+     Id "LF-Interact_Introduce"
+     Target_en_us "Introduce yourself"
+     Comment "Player interaction: tell the person in front of you your name."
+    }
+    CustomStringTableItem "{7E14502EF85F5A4A}" {
+     Id "LF-Interact_GiveCash"
+     Target_en_us "Give cash"
+     Comment "Player interaction: hand carried cash to the person in front of you."
+    }
+    CustomStringTableItem "{02C4E3CA42A96CE2}" {
+     Id "LF-Interact_GiveItem"
+     Target_en_us "Give what you hold"
+     Comment "Player interaction: hand the item in your hands to the person in front of you."
+    }
+    CustomStringTableItem "{A671E78C5ACEFC66}" {
+     Id "LF-Interact_RoleSlot"
+     Target_en_us "Role action"
+     Comment "Fallback name of a role slot (fine, org invite); the registered handler names it."
+    }
+    CustomStringTableItem "{8CADCC5825E64F26}" {
+     Id "LF-Interact_TooFar"
+     Target_en_us "Step closer to them."
+     Comment "Player interaction refused: the other person is out of reach."
+    }
+    CustomStringTableItem "{94040D66A82501E4}" {
+     Id "LF-Interact_NotAlive"
+     Target_en_us "They cannot respond."
+     Comment "Player interaction refused: one of the two is dead."
+    }
+    CustomStringTableItem "{962C35F4A89E8FB6}" {
+     Id "LF-Interact_NoOne"
+     Target_en_us "There is no one to talk to."
+     Comment "Player interaction refused: no player in front of you."
+    }
+    CustomStringTableItem "{00B6F39DAD843E76}" {
+     Id "LF-Interact_AlreadyKnown"
+     Target_en_us "They already know your name."
+     Comment "Introduce: the other player had already been introduced to you."
+    }
+    CustomStringTableItem "{892ED800F24AFCCA}" {
+     Id "LF-Interact_Introduced"
+     Target_en_us "You told them your name."
+     Comment "Introduce performed, shown to the one introducing themselves."
+    }
+    CustomStringTableItem "{85B3688798684AE5}" {
+     Id "LF-Interact_MetSomeone"
+     Target_en_us "%1 introduced themselves."
+     Comment "Introduce received. %1 is the other player's character name."
+    }
+    CustomStringTableItem "{1ECCEC67D6536926}" {
+     Id "LF-Interact_NoCash"
+     Target_en_us "You are not carrying any cash."
+     Comment "Give cash refused: nothing carried."
+    }
+    CustomStringTableItem "{C5A7B4999DC6BE9B}" {
+     Id "LF-Interact_NotEnoughCash"
+     Target_en_us "You do not carry that much."
+     Comment "Give cash refused: amount above the cash carried."
+    }
+    CustomStringTableItem "{35BF5A30C7E8CB61}" {
+     Id "LF-Interact_BadAmount"
+     Target_en_us "Write a whole amount above zero."
+     Comment "Give cash sheet: the amount is not a positive whole number."
+    }
+    CustomStringTableItem "{A8E16EB722360B68}" {
+     Id "LF-Interact_CashFailed"
+     Target_en_us "The cash did not change hands."
+     Comment "Give cash failed: the receiver could not take it; nothing moved."
+    }
+    CustomStringTableItem "{F3146FBEA250635F}" {
+     Id "LF-Interact_CashGiven"
+     Target_en_us "You handed over $%1."
+     Comment "Give cash performed, giver side. %1 is the amount."
+    }
+    CustomStringTableItem "{CDE85A79D1DDEB85}" {
+     Id "LF-Interact_CashReceived"
+     Target_en_us "You were handed $%1."
+     Comment "Give cash performed, receiver side. %1 is the amount."
+    }
+    CustomStringTableItem "{4785856902D6478D}" {
+     Id "LF-Interact_NothingInHand"
+     Target_en_us "You are not holding anything."
+     Comment "Give item refused: nothing in hand."
+    }
+    CustomStringTableItem "{9DCD0FDDC5828103}" {
+     Id "LF-Interact_NoRoom"
+     Target_en_us "They have no room for it."
+     Comment "Give item refused: the receiver's inventory has no space."
+    }
+    CustomStringTableItem "{D291A0929FB8ADB3}" {
+     Id "LF-Interact_ItemGiven"
+     Target_en_us "You handed it over."
+     Comment "Give item performed, giver side."
+    }
+    CustomStringTableItem "{9868061D4DF3FF33}" {
+     Id "LF-Interact_ItemReceived"
+     Target_en_us "You were handed something."
+     Comment "Give item performed, receiver side."
+    }
+    CustomStringTableItem "{71D81EDC67E0708A}" {
+     Id "LF-Interact_GiveCashTitle"
+     Target_en_us "Hand over cash"
+     Comment "Title of the give cash sheet."
+    }
+    CustomStringTableItem "{C316763AB24BFEC1}" {
+     Id "LF-Interact_GiveCashCarried"
+     Target_en_us "In your pocket: $%1"
+     Comment "Give cash sheet line. %1 is the cash carried."
+    }
+    CustomStringTableItem "{D123351114EF634A}" {
+     Id "LF-Interact_GiveCashAmount"
+     Target_en_us "Amount"
+     Comment "Give cash sheet field label."
+    }
+    CustomStringTableItem "{2E7513CA7BB7DDF1}" {
+     Id "LF-Interact_GiveCashButton"
+     Target_en_us "Hand it over"
+     Comment "Give cash sheet button that sends the amount."
+    }
+    CustomStringTableItem "{BDC4A6899C77AE87}" {
+     Id "LF-Interact_GiveCashKeep"
+     Target_en_us "Keep it"
+     Comment "Give cash sheet close button."
+    }
   }
  }
 }

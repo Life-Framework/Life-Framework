@@ -30,5 +30,6 @@ GenericEntity Roadmap_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL
   }
  }
  Flags 0x403 0
- coords 201 0 120
+ coords 259 1.04 241.2
+ angleY 0
 }

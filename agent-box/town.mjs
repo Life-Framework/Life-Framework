@@ -22,6 +22,9 @@ import { loadWorld } from "./layers.mjs";
 //            layer (or its addon prefab) must carry them too
 //   sign     LF_Signs.conf id of the sign that explains the site, or null
 //   step     player-journey step in docs/roadmap/m1-playtest-town.md section a
+//   outskirts true for a site that stands off the street by design (farm,
+//            quarry, the contraband barn out of town): the neighbour rule skips
+//            it (docs/roadmap/m1-25-village.md)
 export const TOWN = {
   requireSigns: false,
   signRadiusM: 8,
@@ -39,7 +42,7 @@ export const TOWN = {
     { id: "hospital_till", entity: "Roadmap_Hospital_Till", actions: ["EL_RobAction"], sign: null, step: 11 },
     { id: "bank", entity: "Roadmap_Bank_Vault", actions: ["LF_BankRobAction"], sign: "bank", step: 12 },
     { id: "hospital", entity: "Roadmap_Hospital_Cabinet", actions: ["LF_HospitalCabinetAction"], sign: "hospital", step: 13 },
-    { id: "convoy_pickup", entity: "Roadmap_Convoy_Start", actions: ["LF_ConvoyStartAction"], sign: "convoy_pickup", step: 14 },
+    { id: "convoy_pickup", entity: "Roadmap_Convoy_Start", actions: ["LF_ConvoyStartAction"], sign: "convoy_pickup", step: 14, outskirts: true },
     { id: "convoy_drop", entity: "Roadmap_Convoy_Drop", actions: ["LF_ConvoyDeliverAction"], sign: "convoy_drop", step: 14 },
     // Duty is on Police.layer today; Roadmap_Police_Desk has no components (M1-11).
     { id: "police_station", entity: "PoliceStation_Debug", actions: ["EL_DutyAction"], sign: "police_station", step: 15 },
@@ -50,8 +53,8 @@ export const TOWN = {
     { id: "org_registry", entity: "Roadmap_Org_Desk", actions: ["EL_OrganizationDeskAction"], sign: "org_registry", step: 21 },
     { id: "hideout", entity: "Roadmap_Hideout_Machine", actions: ["EL_ProcessAction"], sign: "hideout", step: 22 },
     { id: "garage", entity: "Roadmap_Garage", actions: ["EL_VehicleStoreAction", "EL_VehicleRetrieveAction"], sign: "garage", step: 23 },
-    { id: "mining", entity: "Furnace", actions: ["EL_ProcessAction"], sign: "mining", step: 7 },
-    { id: "farm", entity: "TomatoCrop_Debug", actions: ["EL_GatherAction"], sign: "farm", step: 7 },
+    { id: "mining", entity: "Furnace", actions: ["EL_ProcessAction"], sign: "mining", step: 7, outskirts: true },
+    { id: "farm", entity: "TomatoCrop_Debug", actions: ["EL_GatherAction"], sign: "farm", step: 7, outskirts: true },
   ],
 };
 
@@ -233,7 +236,7 @@ export function checkTown(root, { manifest = TOWN, world, catalog, strings } = {
   for (const row of placed) {
     const index = placed.indexOf(row);
     row.neighbourM = nearestNeighbour(index, placed.map((item) => item.place));
-    if (row.neighbourM > manifest.neighbourM) {
+    if (row.neighbourM > manifest.neighbourM && !row.site.outskirts) {
       errors.push(`${row.site.id}: ${row.neighbourM} m from the nearest other site (max ${manifest.neighbourM})`);
     }
     const signed = signIssues(row.site, row.place, world, catalog, strings, manifest.signRadiusM);
@@ -295,7 +298,7 @@ export function judgeTownRow(row, { requireSigns = TOWN.requireSigns, neighbourM
     if (!widgets || !shot) failures.push("menu is blank");
   }
   if (row.mesh === "white" || row.mesh === "missing") failures.push("site is white or missing");
-  if (Number(row.neighbourM) > neighbourM) failures.push(`more than ${neighbourM} m from its nearest neighbour`);
+  if (Number(row.neighbourM) > neighbourM && !row.outskirts) failures.push(`more than ${neighbourM} m from its nearest neighbour`);
   for (const issue of row.signIssues || []) {
     if (requireSigns) failures.push(`sign: ${issue}`);
     else warnings.push(`sign: pending (${issue})`);

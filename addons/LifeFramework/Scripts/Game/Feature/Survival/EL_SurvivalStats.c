@@ -3,7 +3,6 @@ class EL_SurvivalStats : Managed
 	protected string m_sPersistentId;
 	protected float m_fHunger; // 0-100
 	protected float m_fThirst; // 0-100
-	protected float m_fHealth; // 0-100
 
 	//------------------------------------------------------------------------------------------------
 	string GetPersistentId()
@@ -30,12 +29,6 @@ class EL_SurvivalStats : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	float GetHealth()
-	{
-		return m_fHealth;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	void SetHunger(float value)
 	{
 		m_fHunger = Math.Clamp(value, 0, 100);
@@ -45,12 +38,6 @@ class EL_SurvivalStats : Managed
 	void SetThirst(float value)
 	{
 		m_fThirst = Math.Clamp(value, 0, 100);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void SetHealth(float value)
-	{
-		m_fHealth = Math.Clamp(value, 0, 100);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -65,12 +52,6 @@ class EL_SurvivalStats : Managed
 	{
 		SetThirst(m_fThirst + amount);
 		EL_Debug.Log("Survival", string.Format("drink +%1 -> thirst %2", amount, m_fThirst));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void Heal(float amount)
-	{
-		SetHealth(m_fHealth + amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -98,8 +79,8 @@ class EL_SurvivalStats : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Drains hunger and thirst by deltaTime seconds. Low needs pull health down to the config cap
-	//! and never below it, so needs never kill; met needs regenerate health up to 100.
+	//! Drains hunger and thirst by deltaTime seconds. Health is the character's real health, handled
+	//! by LF_SurvivalHealth on the server tick, not a stat here.
 	//! \param deltaTime Seconds elapsed; zero or negative is a no-op.
 	//! \param config Survival tuning; null uses LF_SurvivalConfig.Get().
 	void UpdateStats(float deltaTime, LF_SurvivalConfig config = null)
@@ -112,17 +93,6 @@ class EL_SurvivalStats : Managed
 
 		SetHunger(m_fHunger - deltaTime * config.m_fHungerDrainPerSecond);
 		SetThirst(m_fThirst - deltaTime * config.m_fThirstDrainPerSecond);
-
-		if (AreNeedsLow(config))
-		{
-			// Only health above the cap is pulled down; an injury below the cap is not worsened.
-			if (m_fHealth > config.m_fHealthCap)
-				SetHealth(Math.Max(m_fHealth - deltaTime * config.m_fHealthDrainPerSecond, config.m_fHealthCap));
-		}
-		else if (config.m_fHealthRegenPerSecond > 0)
-		{
-			SetHealth(m_fHealth + deltaTime * config.m_fHealthRegenPerSecond);
-		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -132,7 +102,6 @@ class EL_SurvivalStats : Managed
 		stats.SetPersistentId(statsId);
 		stats.m_fHunger = 100;
 		stats.m_fThirst = 100;
-		stats.m_fHealth = 100;
 		return stats;
 	}
 };

@@ -35,7 +35,8 @@ GenericEntity ATM_Debug {
   }
  }
   Flags 0x403 0
-  coords 138 0 130
+ coords 177 1.04 256.6
+ angleY 180
 }
 GenericEntity ATM_Debug_2 {
  components {
@@ -74,9 +75,6 @@ GenericEntity ATM_Debug_2 {
   }
  }
   Flags 0x403 0
-  coords 140 0 130
-}
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 139 0 130
- m_vSize 1.5 1 1.5
+ coords 187 1.04 256.6
+ angleY 180
 }

@@ -37,6 +37,10 @@ class LF_JailArrestAction : ScriptedUserAction
 		if (GetOwner() == user)
 			return false;
 
+		// One entry in the player interaction menu: same reach as the rest of the list.
+		if (!LF_PlayerInteraction.CanOffer(user, GetOwner()))
+			return false;
+
 		return EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(user));
 	}
 
@@ -83,6 +87,13 @@ class LF_JailArrestAction : ScriptedUserAction
 	{
 		if (!Replication.IsServer())
 			return;
+
+		LF_EInteractionRefusal refusal = LF_PlayerInteraction.CheckPair(pUserEntity, pOwnerEntity);
+		if (refusal != LF_EInteractionRefusal.NONE)
+		{
+			EL_Debug.Warn("Jail", "arrest action refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
+			return;
+		}
 
 		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(pUserEntity);
 		if (!LF_PoliceRanks.AuthorizeArrest(officerAccount))

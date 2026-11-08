@@ -3,7 +3,9 @@
 //!
 //! A DEDICATED RECORD, NOT EL_SurvivalStats ITSELF - the live class is the mutable session object.
 //! m_sPersistentId is the character persistence id; the floats mirror EL_SurvivalStats
-//! (hunger/thirst/health, each 0-100).
+//! (hunger/thirst, each 0-100). m_fHealth is retired (2026-11-08, M1-28): needs act on the
+//! character's real health now. The slot stays so the save format is unchanged; it is written as
+//! RETIRED_HEALTH and ignored on load.
 //------------------------------------------------------------------------------------------------
 class EL_SurvivalStatsRecord
 {
@@ -12,11 +14,13 @@ class EL_SurvivalStatsRecord
 	float m_fThirst;
 	float m_fHealth;
 
+	static const float RETIRED_HEALTH = 100;
+
 	//------------------------------------------------------------------------------------------------
 	//! \param[in] persistentId Character persistence id.
 	//! \param[in] hunger Hunger value (0-100).
 	//! \param[in] thirst Thirst value (0-100).
-	//! \param[in] health Health value (0-100).
+	//! \param[in] health Retired slot; pass RETIRED_HEALTH.
 	//! \return A fully populated survival stats record.
 	static EL_SurvivalStatsRecord Create(string persistentId, float hunger, float thirst, float health)
 	{

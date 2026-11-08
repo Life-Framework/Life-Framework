@@ -1,5 +1,5 @@
 GenericEntity WorldActionsStation {
- coords 106 0 122
+ coords 30 0 88
  {
   GenericEntity : "{33882C61BA9F0F90}Prefabs/Props/Civilian/Globe_01.et" {
    components {
@@ -87,6 +87,6 @@ GenericEntity WorldActionsStation {
  }
 }
 EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 106 0 122
+ coords 30 0 88
  m_vSize 2 1 1.5
 }

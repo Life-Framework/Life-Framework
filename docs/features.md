@@ -90,11 +90,36 @@
   `playerId` UID (not the controlled entity), so the faction choice lands on
   the same account the spawn logic reads.
 
+### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
+- ✅ One list on another player's body (`Character_Roleplay.et`, context
+  `EL_ID`): Introduce yourself, Show ID, Give cash, Give what you hold; on-duty
+  police also Search and Arrest. `LF_PlayerRoleAction` slots `fine` and
+  `org_invite` stay hidden until `LF_PlayerInteraction.RegisterRole(slot,
+  handler)` is called on every machine. Reach: 2 m between origins, both
+  alive, the target a player, not yourself; the server re-checks every action.
+- ✅ Give cash: the server opens `LF_GiveCashSheet` on the giver (`GiveCashAmount`,
+  `GiveCashButton`), then `RpcAsk_LF_GiveCash` moves MoneyStack cash through
+  `LF_CashHandover.Move`: more than carried is refused, what the receiver cannot
+  take goes back (no cash created or lost). Gesture `Point` + `SOUND_PICK_UP`.
+- ✅ Give item: the giver's machine names the item in hand (gadget, right-hand
+  item, or current weapon); the server moves it only when its storage root is
+  the giver and the receiver has room.
+- ✅ Introduce: the target learns the user's character name (`LF_Introductions`,
+  keyed by player uid, one way). Persisted as the `introductions` payload (save
+  version 8); names re-sync to clients on every spawn. Gesture `Halt`.
+- ✅ `LF_KnownNames` (client): a known name shows under the crosshair only while
+  looking at that player (15 degree cone) within 4 m. Strangers show nothing.
+- ⏳ Gesture visibility, the name label, and the restart path on a real
+  dedicated server are manual (PR #98 steps).
+
 ### `EL_ShowIDAction` — `Feature/CharacterCreation/EL_ShowIDAction.c`
 - ✅ (2026-11-08) Shows the ID card the user carries (their own first, else
   the first printed one) to the player they face: the server reads the item
   and opens `LF_IdCardView` on the viewer's machine. No card: not performable,
-  reason `#LF-ID_NoCard`. Facing check is `dot > 0.707` both ways within 1.5 m.
+  reason `#LF-ID_NoCard`. Offered by the player interaction reach rule
+  (`LF_PlayerInteraction.CanOffer`, 2 m, both alive, a player); the server
+  re-checks it. The shower points (`Gesture_Point`) and the viewer hears
+  `SOUND_PICK_UP` (M1-12).
 - ⏳ Proof on a dedicated server with two clients is manual (PR #93 steps).
 
 ### `EL_Utils` / `EL_FormatUtils` / `EL_Component` / `EL_ComponentData` — `Core/`
@@ -136,15 +161,33 @@
 ## Character & Survival
 
 ### `EL_SurvivalStats` — `Feature/Survival/EL_SurvivalStats.c`
-- ✅ All stats clamped `[0,100]`. `Eat`/`Drink`/`Heal` are additive through
-  clamped setters. `Create(id)` starts all at 100.
-- ✅ (2026-11-08, M1-28) **Needs are light and never kill.** `UpdateStats(dt,
-  config)` takes every rate from `LF_SurvivalConfig`
-  (`Configs/Survival/LF_Survival.conf`). Flagship: hunger `0.01/s` (about
-  2.8 h from full), thirst `0.0125/s` (about 2.2 h). Below 20 hunger or thirst,
-  health falls at `0.05/s` to the 75 cap and stops; health already below the
-  cap is not touched. With needs met, health regains `0.02/s` up to 100.
-  `dt <= 0` is a no-op. Tests: `survival/light`.
+- ✅ Hunger and thirst clamped `[0,100]`. `Eat`/`Drink` are additive through
+  clamped setters. `Create(id)` starts both at 100.
+- ✅ (2026-11-08, M1-28) `UpdateStats(dt, config)` drains needs at the
+  `LF_SurvivalConfig` rates. Flagship: hunger `0.01/s` (about 2.8 h from
+  full), thirst `0.0125/s` (about 2.2 h). `dt <= 0` is a no-op.
+- ✅ (2026-11-08) The separate survival health stat is gone. Needs act on the
+  character's real health (`LF_SurvivalHealth`). The save record keeps its
+  `m_fHealth` slot, written as 100 and ignored on load, so the save format
+  does not change.
+
+### `LF_SurvivalHealth` — `Feature/Survival/LF_SurvivalHealth.c`
+- ✅ (2026-11-08) **Needs never kill.** On the server tick, with hunger or
+  thirst below 20, the damage manager's default `Health` hit zone falls at
+  `0.0005` of max per second (about 8 min) to `0.75` of max, then stops. An
+  injury already below the cap is not touched. Survival tracks what it took;
+  once needs are met it gives back only that, at `0.001`/s. Vanilla healing
+  above the cap is never pulled down while fed. A dead body is skipped.
+  Tests: `survival/light` (math), `survival/real-health` (WORLD, spawned
+  character).
+- ✅ The consumable `m_fHealthRestore` heals real health (percent of max).
+
+### `LF_SurvivalConfig` — `Feature/Survival/LF_SurvivalConfig.c`
+- ✅ (2026-11-08) Framework knobs: hunger and thirst drain, the low-needs
+  threshold, the real-health cap, drain and give-back (fractions of max), the
+  stamina drain multiplier, the tick interval and the max tick delta. A
+  missing `.conf` logs `[ELDebug:Survival]` once and falls back to the same
+  built-in defaults.
 
 ### `EL_CharacterSurvivalComponent` — `Feature/Survival/EL_CharacterSurvivalComponent.c`
 - ✅ (2026-11-08) Server-authoritative: stats tick on the server only, on a
@@ -156,6 +199,19 @@
   `survival/sync`.
 - ✅ The old per-frame `EOnFrame` driver is gone. It had no event mask and
   treated world-time milliseconds as seconds.
+
+### `LF_SurvivalStaminaPenalty` — `Feature/Survival/LF_SurvivalStaminaPenalty.c`
+- ✅ (2026-11-08) Modded `SCR_CharacterStaminaComponent.OnStaminaDrain`: with
+  low needs, exertion drains stamina `1.5x` (config), so a hungry player
+  sprints for less time and breathes hard sooner. It lifts on the next sync
+  after eating and drinking. Same reentrancy pattern as the base hydration
+  penalty.
+- ⚠️ Not yet felt in game: set survival to 10 in the DebugMenu and sprint.
+
+### `EL_BetaHud` survival gauges — `HUD/EL_BetaHud.c`
+- ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
+  The HUD stays second to the body cue. The health gauge already reads the
+  damage manager, so the needs cap now shows there too.
 
 ### `EL_ConsumableEffectSurvival` — `Feature/Survival/EL_ConsumableEffectSurvival.c`
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
@@ -176,24 +232,6 @@
   (account-aware, re-applies the faction loadout).
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
-
-### `LF_SurvivalConfig` — `Feature/Survival/LF_SurvivalConfig.c`
-- ✅ (2026-11-08) Framework knobs: hunger and thirst drain, low-needs
-  threshold, health cap, health drain and regen, stamina drain multiplier,
-  tick interval, max tick delta. A missing `.conf` logs
-  `[ELDebug:Survival]` once and uses the same built-in defaults.
-
-### `LF_SurvivalStaminaPenalty` — `Feature/Survival/LF_SurvivalStaminaPenalty.c`
-- ✅ (2026-11-08) Modded `SCR_CharacterStaminaComponent.OnStaminaDrain`: with
-  low needs, exertion drains stamina `1.5x` (config), so a hungry player
-  sprints for less time and breathes hard sooner. It lifts on the next sync
-  after eating and drinking. Same reentrancy pattern as the base hydration
-  penalty.
-- ⚠️ Not yet felt in game: set survival to 10 in the DebugMenu and sprint.
-
-### `EL_BetaHud` survival gauges — `HUD/EL_BetaHud.c`
-- ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
-  The HUD stays second to the body cue.
 
 ### Carried inventory — `Feature/Character/Persistence/LF_StorageSnapshot.c`
 - ✅ **Carried cash and items survive a restart** (2026-11-08, M1-04, tests
@@ -217,6 +255,27 @@
   longer self-spawns the player character, so a pocket `MoneyStack` does not
   come back loose on the ground next to the restored one (the two-boot e2e
   counts it).
+
+### Progression — `Feature/Account/LF_Progression.c`
+- ✅ **Progression survives a restart** (2026-11-08, M1-10, tests
+  `persist/progression-roundtrip`, `persist/progression-old-save`, and
+  `e2e/pass2-verify-load` across a real two-boot restart). The `progression`
+  payload, appended at save version 7, holds one `LF_ProgressionRecord` per
+  player uid: the civilian delivery career (level, XP, paid total), police rank,
+  on-duty seconds and unpaid duty seconds, seconds since the last benefit
+  collection, the player level (level, XP, skill points), licences by enum name,
+  and turned-in quest ids. A courier at level 2 still opens fuel delivery and a
+  senior officer stays senior.
+- ✅ Level, licences, and turn-ins live on the character, so their owners write
+  through to the store and `EL_SpawnLogic` applies the record to every new body.
+  They now survive death as well; only carried items drop.
+- ✅ Tolerant load: an unknown licence name is skipped with a warning, an unknown
+  quest id is kept with a warning, a rank above the ladder clamps to senior. A
+  version 6 save leaves live rank and duty totals alone (the account apply
+  carries them over). A running duty clock is settled into the save.
+- ⚠️ Sign-ups, an active run, and the open duty clock are session state; after a
+  restart the courier signs up again. `EL_LicenseManagerComponent` is not on
+  `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 - ⚠️ Ammo count, weapon state, and placed storage (hideout stash, M1-15) are not
   in the snapshot. Attachments and magazines are kept as items.
 
@@ -522,7 +581,9 @@
   `Roadmap_Job_Depot` (post counter
   `{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et`),
   `Roadmap_Job_Drop`, `Roadmap_Job_TaxiPad`, and `Roadmap_Job_FuelCan` on
-  `Street_Jobs.layer`.
+  `Street_Jobs.layer`: the counter on the post office porch, the drop on a
+  house porch at the east end, the taxi pad at the bus stop by the square, the
+  fuel can at the fuel station.
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -610,8 +671,8 @@
   $100, below $500, 1200 s). Pick-up sound, then a `#EL-Benefit_Paid` toast; a
   refusal toasts its reason. A full inventory pays nothing and does not start
   the cooldown.
-- ⚠️ The cooldown ledger is session state; a restart lets a broke player collect
-  once more.
+- ✅ The cooldown survives a restart (M1-10): the save holds seconds since the
+  last collection, because world time starts over.
 
 ## Crime & Police
 
@@ -659,8 +720,8 @@
   Carry leaves the cash on the bag; dropping it leaves that cash in the world.
   `Export` / `Apply` restore the ground bags and do not write a bank balance;
   they are not wired into the save serializer, so a restart loses the bags.
-  DebugWorld places `Roadmap_Bank_Vault` at 189 0 120 and `Roadmap_Bank_Bag`
-  at 189 0 122 on `Street_Bank.layer`. The bag is
+  DebugWorld places `Roadmap_Bank_Vault` at 194.1 0 265 (on the bank's east
+  wall) and `Roadmap_Bank_Bag` at 195.6 0 263 on `Street_Bank.layer`. The bag is
   `{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et` with the crate
   mesh `{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob`. Cash is
   `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
@@ -674,7 +735,7 @@
   to the bank (verified 2026-10-11). The placed action is `EL_RobAction` on the
   till's single `ActionsManagerComponent`. Wanted rises by 1. One police alert per
   successful rob; an offer refresh does not alert. DebugWorld places
-  `Roadmap_Hospital_Till` at `195 0 120` on `Street_Hospital.layer`.
+  `Roadmap_Hospital_Till` at `257 0 256.4` (hospital porch) on `Street_Hospital.layer`.
 - ✅ The cabinet is a forced-entry container. `BreachCabinet` calls
   `LF_Breach.Arm`. When that lock opens it spawns the configured medicine
   prefabs: field dressing, morphine, saline, and tourniquet. A missing prefab
@@ -693,7 +754,7 @@
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted.
 - ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
-  `Street_Fuel.layer` at `201 0 120` is
+  `Street_Fuel.layer` at `259 1.04 241.2` (on a counter at the fuel station) is
   `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits
   `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`,
   with `EL_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
@@ -755,9 +816,9 @@
   arrive at the cell, not when they enter the car. A player who is not wanted
   is refused and logged. Early release stays refused. A reconnect or a
   restart keeps the remaining sentence. DebugWorld places
-  `Roadmap_Escort_Car` at `204 0 108` on `Street_Jail.layer`, the police M151 with
+  `Roadmap_Escort_Car` at `247.5 0 238` (beside the police station) on `Street_Jail.layer`, the police M151 with
   `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
-  still requires an on-duty officer and a prisoner on foot. The release street stays at Z=120. (verified 2026-10-11)
+  still requires an on-duty officer and a prisoner on foot. (verified 2026-10-11)
 - ✅ **Sentences survive a restart** (2026-11-07, tests
   `restart/jail-serializer-roundtrip` and `e2e/pass2-verify-load` across a real
   restart, verified 2026-11-07): `LF_Jail.ExportAll` / `ApplyAll` are the `jail` payload of
@@ -854,22 +915,24 @@
   lower officer. 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
   is the self-promotion RPC body and always refuses. Rank does not change
   faction and does not write the police whitelist. Lower ranks still open the
-  wanted list. DebugWorld places `Roadmap_Police_Armory` at `207 0 120` on
-  `Street_Police.layer`.
+  wanted list. DebugWorld places `Roadmap_Police_Armory` at `241.2 0 244.2`
+  (police station forecourt) on `Street_Police.layer`.
 - ✅ **One armory draw per duty shift** (2026-11-07): a draw
   that hands out any kit line marks the account; a second draw logs
   `draw refused: <uid> already drew a kit this shift` and shows
   `#EL-Rank_AlreadyDrawn`. `OnDutyChanged` clears the mark. Test:
   `security/police-abuse`.
-- ⚠️ Rank, on-duty seconds, and the shift draw mark live on the account object
-  and are not in `EL_PlayerAccountRecord`, so a restart returns the officer to
-  patrol and allows one more draw.
+- ✅ Rank, on-duty seconds, and unpaid duty seconds survive a restart (M1-10,
+  `progression` payload, save version 7).
+- ⚠️ The shift draw mark is session state, so a restart allows one more draw.
 
 ### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-10-11)
 - ✅ One convoy. A member of the organization that owns the hideout hauls
   `{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et` from
-  `Roadmap_Convoy_Start` at `222 0 120` to `Roadmap_Convoy_Drop` at `225 0 120`
-  on `Street_Contraband.layer`. Delivery pays 200 MoneyStack cash once. A second
+  `Roadmap_Convoy_Start` at the barn out of town (`466 0 331`) to
+  `Roadmap_Convoy_Drop` in the hideout yard (`299 0 293`) on
+  `Street_Contraband.layer`. Both markers are pallet boxes carrying the marker
+  component, not debug boundaries. Delivery pays 200 MoneyStack cash once. A second
   delivery on that run pays nothing. Leaving the vehicle or dying fails the
   run and logs it; a failed run pays nothing. A non-member is refused and the
   refusal is logged. Markers are `{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`.
@@ -881,11 +944,14 @@
   running convoy.
 
 ### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
-- ✅ On-duty police delete weapons from the nearest wanted player within 5 m.
+- ✅ (2026-11-08, M1-12) Search in the player interaction menu: shown to on-duty
+  police within the 2 m reach; deletes the weapons of the wanted player in
+  front of them (the action owner), not the nearest wanted player. Weapons are
+  collected before deletion. Earlier contract: on-duty police delete weapons
+  from a wanted player.
   The offer reads replicated officer and target state; the deletion runs on the
   server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
-- ⚠️ Deletes items while iterating a live `FindItems` array (mutation-during-
-  iteration risk); no compensation or wanted reduction.
+- ⚠️ No compensation or wanted reduction.
 
 ## Ownership
 
@@ -901,7 +967,7 @@
 - ✅ Cash moves only as MoneyStack through `EL_OrganizationPlayer`. A short
   removal is returned to the character. A short payout puts the fund back. The
   personal ATM balance is not read or written. The desk is
-  `Roadmap_Org_Desk` on `Street_Org.layer` at `210 0 120`, using
+  `Roadmap_Org_Desk` on `Street_Org.layer` at `288.9 0 255.7` (org registry porch), using
   `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`. The menu is a
   workspace widget on `{977FCAE08556886B}UI/Layouts/OrganizationMenu.layout`.
   It lists the name, the fund, and the processing-slot upgrade, and shows an
@@ -1044,7 +1110,7 @@
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
 - ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns at the lot pad (`EL_VehicleSpawnPointComponent`), the same spawn-point rule as a character, not at the last world coordinates.
 - ✅ **A restart drops no ground key** (2026-11-07, test `restart/vehicle-restore-no-ground-key`, verified 2026-11-07): `RestoreWorld` / `RestoreVehicle` put each out-in-world vehicle back on the pad, locked as saved, without spawning a key. Before, every restart left a fresh key beside the pad for every such vehicle (anyone could take the car, and keys piled up). The owner re-keys through the existing owner-only flow: garage store, then retrieve (retrieve spawns a key when the session has none), or an extra key at the lot.
-- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `186 0 102.1` on `Street_Vehicles.layer`, with store and retrieve. The shell sits 5.9 m north of that point, so the player stands outside the wall. The release street stays at Z=120 from x=186 to x=243. The lot pad remains `Roadmap_Vehicle_Lot`, and the showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11)
+- ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `238 0 256.6` on `Street_Vehicles.layer`, with store and retrieve. The shell is its child 5.9 m north, turned so its doors face the street; the player stands in front of the doors. The lot counter is `Roadmap_Vehicle_Lot`: bought cars land on a pad 5 m west and 5 m south of it, then 8 m steps north across the concrete lot. The showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11; moved with M1-25)
 - ✅ `LF_Garage` is the catalog on the UI kit. The rows are the civilian S105, covered UAZ469, S1203, UAZ452, and M923 transport, at the lot cash prices. Each row keeps a preview slot that names that prefab and spawns the existing locked child. The texture path is empty, and `UI/Layouts/Garage/LF_GarageVehicleRow.layout` still has `VehicleImage` plus the name. `LF_GarageScreen.Open` uses `LF_UIScreen.Open` and `LF_UIPart`. A price at or below 500 debits MoneyStack. A higher price debits the ATM balance and does not take cash. Paint is stored on the record and applied with `EL_Utils`. Park refuses a seated player or a missing garage, and refuses a vehicle that is not within the same garage's radius as the player (`EL_VehicleGarageComponent.IsVehicleAtPlayersGarage`, `#LF-Garage_VehicleTooFar`, test `security/garage-store-range`, 2026-11-07), then stops the engine and teleports remaining occupants out with `GetOutVehicle` before store. A failed eject is logged. Retrieve returns the same prefab and key to the owner. Another player is refused and that refusal is logged. A missing prefab logs `EL_Debug.Error` and that row is skipped. Preview and the editor camera are skipped when the building or prefab is missing. (verified 2026-10-11)
 
 ## UI / Layouts / Localization
@@ -1128,26 +1194,25 @@
   character movement and projectile traces pass through it. Prefab fixtures
   such as `EL_TestRunner` inherit the flag; hand-authored `GenericEntity`
   fixtures must set it explicitly.
-- ✅ DebugWorld keeps the reference gameplay surface populated: ATM, Apple/
-  Plum/Tomato farming, Cement/Gravel/Sand/Logging/Mining chains, shops,
-  traders, jobs, police, crime, houses, survival, tests, and the release
-  street on `Roadmap.layer` (street root and boundary) plus one
-  `Street_<Site>.layer` per site. Sites sit 3 m apart on +X, from the breach door
-  at `186 0 120` through the vehicle lot at `243 0 120`. The debug terrain is
-  the 512 m square (world 0..512, `TERRAIN_MAX` in `tools/street/manifest.mjs`).
-  The row stays on that ground. That
-  one layer holds the breach door at `186 0 120`
-  and the charge at `186 0 122`, the bank vault at `189 0 120` and the bag at
-  `189 0 122`, the jail door at `192 0 120` and the cell at `192 0 122`, the
-  hospital till at `195 0 120` and the cabinet at `198 0 120`, the fuel till at
-  `201 0 120`, the police desk at `204 0 120`, the armory at `207 0 120`, the
-  organization desk at `210 0 120`, the hideout door at `213 0 120`, the
-  machine at `216 0 120`, the stash at `219 0 120`, the convoy start at
-  `222 0 120`, the convoy drop at `225 0 120`, the job depot at `228 0 120`,
-  the job drop at `231 0 120`, the taxi pad at `234 0 120`, the fuel can at
-  `237 0 120`, the S105 at `240 0 124`, and the vehicle lot at `243 0 120`.
-  The second row is `Roadmap_Garage` at `186 0 102.1` and `Roadmap_Escort_Car`
-  at `204 0 108`. The garage shell is north of its use point. The Z=120 street is not moved.
+- ✅ DebugWorld is a one-street 1989 Everon village (M1-25, 2026-11-08;
+  `docs/roadmap/m1-25-village.md` has the map). The main street runs east-west
+  at z = 250 on the flat 512 m terrain (world 0..512, `TERRAIN_MAX` in
+  `tools/street/manifest.mjs`; every heightmap sample is 0, so ground props sit
+  at Y = 0). Sites stand in arrival order in front of vanilla buildings: the
+  square (spawn, clerk, pub, church), post office, bank, general store and
+  market, vehicle lot and garage, police station with a jail yard, hospital and
+  fuel station, org registry, and the hideout down a side alley; the contraband
+  barn is out of town on the east track. The farm, quarry, builders' yard and
+  forest edge are on the outskirts. `Village_Roads`, `Village_Buildings` and
+  `Village_Dressing` hold the roads (road generator splines saved as
+  `RoadEntity`), vanilla buildings, walls, lamps and trees; `Annex.layer` is
+  the net fence of the test annex at x 20..112, z 20..112, which holds the test
+  runner, the PR fixtures, and the legacy debug stations (with their
+  boundaries) on the ground where world tests spawn their characters. Sites
+  keep their names; chain layers moved as blocks. The terrain material
+  (`Assets/World/GridSurface.emat`, name kept so the terrain reference holds)
+  is the vanilla lawn surface without clutter, so grass does not grow through
+  roads and floors.
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
@@ -1188,7 +1253,10 @@
   `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
   player view. That view faces -Z, so a picture stands on the +Z side of
   its target. The pose is applied again 700 ms later so gravity does not drop
-  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) A filtered row's wide shot
+  the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) On a
+  dedicated server the server also sends the pose to the owning client
+  (`RpcDo_EL_HarnessPose`), which would otherwise overwrite it; session
+  clients take world shots this way (verified 2026-11-08, M1-25). A filtered row's wide shot
   stands just north of that row when the street is further north. If the new PNG matches the
   previous PNG, `report roadmap` records `camera_stuck` once and stops.
   `Roadmap_Jail_Door` and `Roadmap_Jail_Cell` are painted-light when look

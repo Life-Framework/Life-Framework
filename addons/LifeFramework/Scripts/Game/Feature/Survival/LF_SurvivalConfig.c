@@ -17,14 +17,14 @@ class LF_SurvivalConfig
 	[Attribute("20", UIWidgets.Auto, "Hunger or thirst below this counts as low needs")]
 	float m_fLowNeedThreshold = 20;
 
-	[Attribute("75", UIWidgets.Auto, "With low needs, health falls to this cap and no further. Needs never kill")]
-	float m_fHealthCap = 75;
+	[Attribute("0.75", UIWidgets.Auto, "With low needs, the character's real health (fraction of max) falls to this cap and no further. Needs never kill", params: "0 1")]
+	float m_fHealthCapScaled = 0.75;
 
-	[Attribute("0.05", UIWidgets.Auto, "Health lost per second while needs are low and health is above the cap")]
-	float m_fHealthDrainPerSecond = 0.05;
+	[Attribute("0.0005", UIWidgets.Auto, "Fraction of max health lost per second while needs are low and health is above the cap. 0.0005 reaches a 0.75 cap from full in about 8 minutes")]
+	float m_fHealthDrainScaledPerSecond = 0.0005;
 
-	[Attribute("0.02", UIWidgets.Auto, "Health regained per second while needs are met, up to 100. 0 disables recovery")]
-	float m_fHealthRegenPerSecond = 0.02;
+	[Attribute("0.001", UIWidgets.Auto, "Fraction of max health given back per second once needs are met, only up to what needs took. 0 disables the give-back")]
+	float m_fHealthRestoreScaledPerSecond = 0.001;
 
 	[Attribute("1.5", UIWidgets.Auto, "Stamina drain multiplier while needs are low (1.5 = sprinting tires 50% faster). 1 disables the penalty")]
 	float m_fStaminaDrainMultiplier = 1.5;

@@ -228,6 +228,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		GrantReward(def);
 		m_Tracker.TurnIn(questId, GetGame().GetWorld().GetWorldTime() / 1000.0);
+		LF_Progression.NoteTurnedIn(EL_Utils.GetPlayerUID(GetOwner()), questId);
 
 		int rewardItems = 0;
 		if (def.m_aRewardItems)
@@ -342,6 +343,47 @@ class LF_QuestTrackerComponent : ScriptComponent
 				}
 			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Whether this character has turned the quest in.
+	bool HasTurnedIn(string questId)
+	{
+		return m_Tracker.HasTurnedIn(questId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Quest ids this character has turned in.
+	array<string> GetTurnedInQuestIds()
+	{
+		return m_Tracker.GetCompletedQuestIds();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam (LF_Progression): marks saved turn-ins on a fresh character. A quest id
+	//! no giver defines any more is kept (its giver may come back) and logged.
+	//! \return How many quests this call marked turned in.
+	int RestoreTurnedIn(notnull array<string> questIds)
+	{
+		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		int restored = 0;
+		foreach (string questId : questIds)
+		{
+			if (!m_Tracker.RestoreTurnedIn(questId))
+				continue;
+
+			restored++;
+			if (manager && !manager.GetDefinition(questId))
+				EL_Debug.Warn("Quests", string.Format("restored turn-in for quest=%1 that no giver defines", questId));
+		}
+
+		if (restored > 0)
+		{
+			EL_Debug.Log("Quests", string.Format("restored %1 turned-in quest(s)", restored));
+			PushLog();
+		}
+
+		return restored;
 	}
 
 	//------------------------------------------------------------------------------------------------
