@@ -64,6 +64,10 @@ node agent-box/harness.mjs shot ui debug_menu
 node agent-box/harness.mjs shot world ATM_Debug
 ```
 
+`launch` starts Workbench on this checkout's project with DebugWorld open
+(`wb_launch`; a no-op when a Workbench already answers on the bridge port). It
+is the one place the harness launches Workbench.
+
 `play` stops play mode if it is up, opens `Worlds/DebugWorld/DebugWorld.ent`,
 then enters play mode. It passes this machine's toolchain paths so the
 Workbench bridge compiles into the open mod. It reads the mode, stops only
@@ -109,6 +113,20 @@ prints `image: <absolute png>` when the capture file is on disk. If the engine
 wrote a BMP and the `.png` sibling is missing, the harness converts it.
 
 ## Same actions a player gets
+
+### One checkout per command channel
+
+Every Workbench and every game client on the default profile reads the same
+`Documents/My Games/.../profile/agent-box/command.txt`, so two worktrees
+driving play sessions at once would move each other's character. The first
+command from a checkout takes the machine-wide `agent-box-play` lock
+(`tmp/wt/locks/` in the main checkout) and hands it to the Workbench or game
+process whose command line names that checkout's `addons`. Another
+checkout's command then returns `error play_owned_by_other_checkout <root>`.
+The lock frees itself when that process exits. A Workbench opened from the
+launcher has no project on its command line and runs unclaimed. Clients with
+their own `-profile` (the multi-client session) have their own channel.
+
 
 The play session polls `$profile:agent-box/command.txt` (Workbench profile and
 the game profile). Hooks:
@@ -215,9 +233,18 @@ The engine writes BMP at native window resolution. The harness and the
 `wb_capture` tool convert it to a PNG beside it (pure Node + `zlib`, BI_RGB
 24/32 bpp; an exotic variant falls back to the raw BMP path).
 
+**Workbench play captures no UI.** `System.MakeScreenshot` in a Workbench
+play session writes the 3D view only: a `shot ui` with the debug menu or the
+sign card open shows the world behind it (2026-11-08). Judge a Workbench menu
+from `ui` (the widget list) and the `[ELDebug:UIKit]` lines; photograph menus
+in a game client.
+
 Harness shots: UI shots leave the camera where it is. World shots teleport the
 character to the camera offset, face the target, and screenshot the player
-view, at noon, in Clear weather. The character camera ignores
+view, at noon, in Clear weather. `shot world <name> x y z ox oy oz` sets the
+offset; `0 0 2` reads printed text on a prop whose face points +Z. The posed
+character takes no damage for 8 s, so the drop from a high offset does not
+kill it. The character camera ignores
 `CameraManager.SetCamera`, so `EL_ScreenshotCapture.SetCamera` does not move
 that view.
 

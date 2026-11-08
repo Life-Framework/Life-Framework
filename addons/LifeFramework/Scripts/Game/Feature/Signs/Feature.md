@@ -30,7 +30,10 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules.
   child (the vanilla A4 poster mesh) on its -Z face, where vanilla filled
   boards pin their posters. The notice retargets its own poster material
   (`m_bFaceOnOwner`). A dedicated server, or a client with no workspace,
-  skips it. Pub signs and chalkboards keep `m_bShowFace 0` until a rendering
+  skips it. The render target is the layout size times the screen DPI
+  scale while its widgets lay out one unit per pixel, so `FaceTitleRect`
+  sizes the title by `DPIScale(1)`; anchored to the full sheet it was cut
+  off in a small window. Pub signs and chalkboards keep `m_bShowFace 0` until a rendering
   pass places their sheet; the mining and whitelist plates keep their painted
   vanilla text.
 - An unknown or empty id, or a sign with no title, logs
@@ -47,5 +50,6 @@ sets `m_sSignId`. `EL_MiningSign` (`mining`) and `EL_WhitelistSign`
 
 ## Tests
 
-LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`. WORLD
+LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`,
+`signs/face-fit`. WORLD
 `signs/prefabs`.

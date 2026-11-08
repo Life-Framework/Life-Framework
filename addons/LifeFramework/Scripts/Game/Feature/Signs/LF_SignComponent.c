@@ -14,6 +14,11 @@ class LF_SignComponent : ScriptComponent
 {
 	static const ResourceName FACE_PREFAB = "{B7765F4913B42527}Prefabs/Props/Signs/LF_SignFace.et";
 	static const ResourceName FACE_LAYOUT = "{ED05AC4807160345}UI/Layouts/Signs/LF_SignFace.layout";
+	// LF_SignFace.layout: RTTexture0 size, Title margin, Title font size.
+	static const float FACE_WIDTH = 512;
+	static const float FACE_HEIGHT = 724;
+	static const float FACE_MARGIN = 40;
+	static const float FACE_FONT_SIZE = 96;
 
 	[Attribute("", UIWidgets.EditBox, "Sign id in Configs/Signs/LF_Signs.conf")]
 	protected string m_sSignId;
@@ -155,6 +160,40 @@ class LF_SignComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The render target is FACE_WIDTH x FACE_HEIGHT reference units times the
+	//! screen DPI scale in pixels, but the widgets inside it lay out one
+	//! reference unit per pixel. Anchored to the full sheet, the title centred on
+	//! a 512-wide box while a 720p window only showed the first 340: the sheet
+	//! read "MINI / ARE". The title box is placed in the part that is shown.
+	//! \param dpiScale WorkspaceWidget.DPIScale(1): pixels per reference unit.
+	//! \param[out] pos Title position, reference units from the sheet's top-left.
+	//! \param[out] size Title size, reference units.
+	//! \return Font size for the title.
+	static int FaceTitleRect(float dpiScale, out vector pos, out vector size)
+	{
+		float scale = dpiScale;
+		if (scale <= 0)
+			scale = 1;
+
+		pos = Vector(FACE_MARGIN * scale, FACE_MARGIN * scale, 0);
+		size = Vector((FACE_WIDTH - 2 * FACE_MARGIN) * scale, (FACE_HEIGHT - 2 * FACE_MARGIN) * scale, 0);
+		return Math.Round(FACE_FONT_SIZE * scale);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FitFaceTitle(TextWidget title, float dpiScale)
+	{
+		vector pos;
+		vector size;
+		int font = FaceTitleRect(dpiScale, pos, size);
+		FrameSlot.SetAnchorMin(title, 0, 0);
+		FrameSlot.SetAnchorMax(title, 0, 0);
+		FrameSlot.SetPos(title, pos[0], pos[1]);
+		FrameSlot.SetSize(title, size[0], size[1]);
+		title.SetExactFontSize(font);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void PrintOn(IEntity target, WorkspaceWidget workspace, LF_SignDef sign)
 	{
 		m_wFaceRoot = workspace.CreateWidgets(FACE_LAYOUT);
@@ -174,6 +213,7 @@ class LF_SignComponent : ScriptComponent
 			return;
 		}
 
+		FitFaceTitle(title, workspace.DPIScale(1));
 		title.SetTextWrapping(true);
 		title.SetText(FaceText(sign));
 		m_wFaceTexture.SetRenderTarget(target);
