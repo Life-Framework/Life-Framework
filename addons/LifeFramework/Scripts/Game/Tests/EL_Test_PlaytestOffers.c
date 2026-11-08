@@ -64,5 +64,10 @@ class EL_Test_PlaytestOffers : EL_Test
 		ctx.False(EL_BaseCrop.RunsGrowth(false, true), "a client never runs crop growth");
 		ctx.True(EL_BaseCrop.RunsGrowth(true, true), "the server runs crop growth");
 		ctx.False(EL_BaseCrop.RunsGrowth(true, false), "a crop without replication does not grow");
+
+		// 4. A toast is visible from its first frame and gone after its time plus the fade.
+		ctx.True(EL_NotificationToastUI.OpacityAt(0, 5) > 0, "a fresh toast is not transparent");
+		ctx.EqualFloat(1, EL_NotificationToastUI.OpacityAt(1, 5), 0.001, "a toast is fully shown while its time runs");
+		ctx.EqualFloat(0, EL_NotificationToastUI.OpacityAt(6, 5), 0.001, "a toast is gone after its time and the fade");
 	}
 }
