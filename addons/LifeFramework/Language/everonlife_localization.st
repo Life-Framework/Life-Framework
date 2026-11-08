@@ -4437,6 +4437,326 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Seen someone on a poster? Tell an officer. Officers clock in at the punch clock on the desk."
      Comment "Wanted board sign card: what to do next."
     }
+    CustomStringTableItem "{E69F55595D3DEC33}" {
+     Id "LF-Org_Title"
+     Target_en_us "Organization register"
+     Comment "Toast title for organization registry messages."
+    }
+    CustomStringTableItem "{D4B253C21B4066E6}" {
+     Id "LF-Org_LedgerTitle"
+     Target_en_us "Organization Register - 1989 ledger"
+     Comment "Registry ledger page title."
+    }
+    CustomStringTableItem "{D45EFB759CEED8F8}" {
+     Id "LF-Org_FoundIntro"
+     Target_en_us "Register a new organization here. Write its name once; the clerk takes a $%1 fee in cash."
+     Comment "Ledger founding line. %1 is the fee."
+    }
+    CustomStringTableItem "{A74957BC3D56482F}" {
+     Id "LF-Org_NameField"
+     Target_en_us "Organization name"
+     Comment "Ledger founding field placeholder."
+    }
+    CustomStringTableItem "{C7FD7A0ABE2999FE}" {
+     Id "LF-Org_FoundButton"
+     Target_en_us "Sign and pay $%1"
+     Comment "Ledger founding button. %1 is the fee."
+    }
+    CustomStringTableItem "{155A971B5EE37AD7}" {
+     Id "LF-Org_CloseLedger"
+     Target_en_us "Close the ledger"
+     Comment "Ledger close button."
+    }
+    CustomStringTableItem "{CF00BD73AD496C88}" {
+     Id "LF-Org_NameEmpty"
+     Target_en_us "Write a name first."
+     Comment "Founding refusal: empty name."
+    }
+    CustomStringTableItem "{966C8BD11E837E8E}" {
+     Id "LF-Org_NameShort"
+     Target_en_us "The name needs at least 3 letters."
+     Comment "Founding refusal: name too short."
+    }
+    CustomStringTableItem "{164B713160BF19CB}" {
+     Id "LF-Org_NameLong"
+     Target_en_us "The name fits 32 letters at most."
+     Comment "Founding refusal: name too long."
+    }
+    CustomStringTableItem "{A8AB0A602B627AEA}" {
+     Id "LF-Org_NameChars"
+     Target_en_us "Use letters, digits, spaces, - ' & and . only."
+     Comment "Founding refusal: characters not allowed."
+    }
+    CustomStringTableItem "{1C9D32A034633228}" {
+     Id "LF-Org_NameTaken"
+     Target_en_us "That name is already in the register."
+     Comment "Founding refusal: duplicate name."
+    }
+    CustomStringTableItem "{AF38925B41949B01}" {
+     Id "LF-Org_AlreadyMember"
+     Target_en_us "You already belong to an organization."
+     Comment "Founding refusal: already a member."
+    }
+    CustomStringTableItem "{BFB5F121CB45359D}" {
+     Id "LF-Org_NoFee"
+     Target_en_us "You do not carry the fee in cash."
+     Comment "Founding refusal: not enough carried cash."
+    }
+    CustomStringTableItem "{1536EF0E4145400E}" {
+     Id "LF-Org_NoCharacter"
+     Target_en_us "Register your character at the town hall first."
+     Comment "Ledger refusal: no character."
+    }
+    CustomStringTableItem "{6FEEAF6F48E6E38E}" {
+     Id "LF-Org_FoundFailed"
+     Target_en_us "The clerk could not register it. Your fee was returned."
+     Comment "Founding failed after the fee; fee returned."
+    }
+    CustomStringTableItem "{E8FFE477BDEE452B}" {
+     Id "LF-Org_Founded"
+     Target_en_us "%1 is in the register."
+     Comment "Toast after founding. %1 is the organization name."
+    }
+    CustomStringTableItem "{50EDA5787944C496}" {
+     Id "LF-Org_FoundedLine"
+     Target_en_us "Signed. The page is yours."
+     Comment "Ledger notice line after founding."
+    }
+    CustomStringTableItem "{7F43F0ADE5BC0F97}" {
+     Id "LF-Org_NameLine"
+     Target_en_us "Organization: %1"
+     Comment "Ledger line. %1 is the organization name."
+    }
+    CustomStringTableItem "{D52956E69B9B3735}" {
+     Id "LF-Org_RankLine"
+     Target_en_us "Your rank: %1"
+     Comment "Ledger line. %1 is the translated rank."
+    }
+    CustomStringTableItem "{2B01C1DAA65E369C}" {
+     Id "LF-Org_RankFounder"
+     Target_en_us "Founder"
+     Comment "Rank name: founder."
+    }
+    CustomStringTableItem "{B9419ACE4881130A}" {
+     Id "LF-Org_RankMember"
+     Target_en_us "Member"
+     Comment "Rank name: member."
+    }
+    CustomStringTableItem "{9051423983A8FD93}" {
+     Id "LF-Org_Processing"
+     Target_en_us "Processing upgrade"
+     Comment "Ledger row label."
+    }
+    CustomStringTableItem "{8FB7D90A7A0A7386}" {
+     Id "LF-Org_Owned"
+     Target_en_us "Owned"
+     Comment "Ledger row status: upgrade owned."
+    }
+    CustomStringTableItem "{BDDBD2D70EDA029F}" {
+     Id "LF-Org_NotOwned"
+     Target_en_us "Not owned"
+     Comment "Ledger row status: upgrade not owned."
+    }
+    CustomStringTableItem "{F0174EC746BF1252}" {
+     Id "LF-Org_BuyFor"
+     Target_en_us "Buy (%1)"
+     Comment "Ledger row action. %1 is the price."
+    }
+    CustomStringTableItem "{6D53E58AC9FADED3}" {
+     Id "LF-Org_Hideout"
+     Target_en_us "Alley yard lease"
+     Comment "Ledger row label: the hideout yard off the registry alley."
+    }
+    CustomStringTableItem "{624F7970B1B5A487}" {
+     Id "LF-Org_LeaseFree"
+     Target_en_us "Free"
+     Comment "Hideout lease status: nobody holds it."
+    }
+    CustomStringTableItem "{22205B2B89D3D298}" {
+     Id "LF-Org_LeaseOurs"
+     Target_en_us "Yours - members open the gate"
+     Comment "Hideout lease status: this organization holds it."
+    }
+    CustomStringTableItem "{717EDA57B8114856}" {
+     Id "LF-Org_LeaseTaken"
+     Target_en_us "Leased to another organization"
+     Comment "Hideout lease status: another organization holds it."
+    }
+    CustomStringTableItem "{CC1FC9A0CFEB04C1}" {
+     Id "LF-Org_TakeLease"
+     Target_en_us "Take the lease"
+     Comment "Ledger row action: lease the hideout yard."
+    }
+    CustomStringTableItem "{BD09FA58337E3B9B}" {
+     Id "LF-Org_Leased"
+     Target_en_us "The alley yard is yours. Members open its gate."
+     Comment "Ledger notice after the lease."
+    }
+    CustomStringTableItem "{376956E573282A68}" {
+     Id "LF-Org_LeaseRefused"
+     Target_en_us "The lease was refused."
+     Comment "Ledger notice: lease refused."
+    }
+    CustomStringTableItem "{22BBDF48A1B92971}" {
+     Id "LF-Org_MembersLine"
+     Target_en_us "Members (%1)"
+     Comment "Ledger line above the member list. %1 is the count."
+    }
+    CustomStringTableItem "{E12E744484FC2C12}" {
+     Id "LF-Org_InviteHint"
+     Target_en_us "To invite someone, face them and choose Invite."
+     Comment "Ledger hint for leaders: invites are face to face."
+    }
+    CustomStringTableItem "{EDD9EFE11266F42F}" {
+     Id "LF-Org_Membership"
+     Target_en_us "Your membership"
+     Comment "Ledger row label."
+    }
+    CustomStringTableItem "{7B6C0A4DF16E499F}" {
+     Id "LF-Org_Leave"
+     Target_en_us "Leave"
+     Comment "Ledger row action: leave the organization."
+    }
+    CustomStringTableItem "{A26182C89E316E79}" {
+     Id "LF-Org_Left"
+     Target_en_us "You left the organization."
+     Comment "Ledger notice after leaving."
+    }
+    CustomStringTableItem "{5057D088D80BAF22}" {
+     Id "LF-Org_LeaveRefused"
+     Target_en_us "You cannot leave here."
+     Comment "Ledger notice: leave refused."
+    }
+    CustomStringTableItem "{D2F38ED8270CB008}" {
+     Id "LF-Org_Deposited"
+     Target_en_us "Deposited into the fund."
+     Comment "Ledger notice after a deposit."
+    }
+    CustomStringTableItem "{F4D49F45A1FDC774}" {
+     Id "LF-Org_Withdrawn"
+     Target_en_us "Withdrawn from the fund."
+     Comment "Ledger notice after a withdrawal."
+    }
+    CustomStringTableItem "{896B3C564891420F}" {
+     Id "LF-Org_CashRefused"
+     Target_en_us "The clerk refused that amount."
+     Comment "Ledger notice: deposit or withdrawal refused."
+    }
+    CustomStringTableItem "{ACCC2C27C1D1B7A8}" {
+     Id "LF-Org_Bought"
+     Target_en_us "Upgrade bought from the fund."
+     Comment "Ledger notice after an upgrade."
+    }
+    CustomStringTableItem "{461C2E397686A4EA}" {
+     Id "LF-Org_BuyRefused"
+     Target_en_us "The upgrade was refused."
+     Comment "Ledger notice: upgrade refused."
+    }
+    CustomStringTableItem "{CF1AB48D810C8C66}" {
+     Id "LF-Org_InviteGeneric"
+     Target_en_us "Organization"
+     Comment "Interaction entry fallback name for the org_invite slot."
+    }
+    CustomStringTableItem "{99CE77E7DA096BC0}" {
+     Id "LF-Org_InviteTo"
+     Target_en_us "Invite to %1"
+     Comment "Interaction entry: a leader invites the person faced. %1 is the organization."
+    }
+    CustomStringTableItem "{BCB1B5591518BDCE}" {
+     Id "LF-Org_RemoveFrom"
+     Target_en_us "Remove from %1"
+     Comment "Interaction entry: a leader removes a member faced. %1 is the organization."
+    }
+    CustomStringTableItem "{20AD09A604FD14B1}" {
+     Id "LF-Org_Join"
+     Target_en_us "Join %1"
+     Comment "Interaction entry: accept the offer of the person faced. %1 is the organization."
+    }
+    CustomStringTableItem "{3E111C0C61E4B594}" {
+     Id "LF-Org_OfferMade"
+     Target_en_us "Offer made. They join by facing you and choosing Join."
+     Comment "Toast to the inviter."
+    }
+    CustomStringTableItem "{7FCF2CD0A3A7C858}" {
+     Id "LF-Org_OfferReceived"
+     Target_en_us "You are offered a place in %1. Face them and choose Join."
+     Comment "Toast to the invitee. %1 is the organization."
+    }
+    CustomStringTableItem "{BC1CC53C1A3EE577}" {
+     Id "LF-Org_OfferRefused"
+     Target_en_us "They cannot be invited."
+     Comment "Toast to the inviter: offer refused."
+    }
+    CustomStringTableItem "{0703409DF8667523}" {
+     Id "LF-Org_Joined"
+     Target_en_us "You joined %1."
+     Comment "Toast to the new member. %1 is the organization."
+    }
+    CustomStringTableItem "{10964C3EA631B4CE}" {
+     Id "LF-Org_NewMember"
+     Target_en_us "A new member joined %1."
+     Comment "Toast to the inviter. %1 is the organization."
+    }
+    CustomStringTableItem "{571CB642933950D6}" {
+     Id "LF-Org_JoinRefused"
+     Target_en_us "The offer is gone. Ask again."
+     Comment "Toast to the invitee: join refused."
+    }
+    CustomStringTableItem "{724D689AC7D42CE4}" {
+     Id "LF-Org_Removed"
+     Target_en_us "Member removed."
+     Comment "Toast to the leader after a removal."
+    }
+    CustomStringTableItem "{774D14CCF0672CF3}" {
+     Id "LF-Org_RemoveRefused"
+     Target_en_us "You cannot remove them."
+     Comment "Toast to the leader: removal refused."
+    }
+    CustomStringTableItem "{B97AC9C36C0F3C52}" {
+     Id "LF-Org_YouWereRemoved"
+     Target_en_us "You were removed from %1."
+     Comment "Toast to the removed member. %1 is the organization."
+    }
+    CustomStringTableItem "{867133165FC03CB2}" {
+     Id "LF-Item_Parcel"
+     Target_en_us "Parcel"
+     Comment "Courier parcel item name"
+    }
+    CustomStringTableItem "{836BCE9515B5DC47}" {
+     Id "LF-Item_Parcel_Desc"
+     Target_en_us "A taped cardboard parcel for the drop-off address."
+     Comment "Courier parcel item description"
+    }
+    CustomStringTableItem "{315A7D38264FAED4}" {
+     Id "LF-Item_MoneyBag"
+     Target_en_us "Cash case"
+     Comment "Bank vault money bag item name"
+    }
+    CustomStringTableItem "{44F201EB4501CD73}" {
+     Id "LF-Item_MoneyBag_Desc"
+     Target_en_us "A heavy case of banknotes from the vault."
+     Comment "Bank money bag item description"
+    }
+    CustomStringTableItem "{C6C3575A8274C731}" {
+     Id "LF-Contraband_NotHideoutOwner"
+     Target_en_us "Your organization has to hold the hideout before it can run this convoy."
+     Comment "Convoy start refused: the player's organization does not hold the hideout"
+    }
+    CustomStringTableItem "{ADBB1F127BBEB201}" {
+     Id "LF-Contraband_Title"
+     Target_en_us "Contraband"
+     Comment "Toast title for contraband convoy messages"
+    }
+    CustomStringTableItem "{07C181E87F83A891}" {
+     Id "LF-Contraband_JoinOrg"
+     Target_en_us "Contraband runs are for organization members. Join one or found your own at the organization desk."
+     Comment "Convoy start refused: the player has no organization"
+    }
+    CustomStringTableItem "{50FCD7F3D7EB972C}" {
+     Id "LF-Job_MoreRunsFirst"
+     Target_en_us "Do more parcel runs first"
+     Comment "Greyed job sign-up reason: the player needs more delivery runs. Hidden progression: no level is named."
+    }
     CustomStringTableItem "{0A1E0465064F3E5F}" {
      Id "LF-Offence_Murder"
      Target_en_us "Murder"
@@ -4491,26 +4811,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_SafeZone_Next"
      Target_en_us "Read the town map board beside this one, then talk to the town hall clerk a few steps east."
      Comment "Safe zone sign card, Next section: where the player goes after this place."
-    }
-    CustomStringTableItem "{867133165FC03CB2}" {
-     Id "LF-Item_Parcel"
-     Target_en_us "Parcel"
-     Comment "Courier parcel item name"
-    }
-    CustomStringTableItem "{836BCE9515B5DC47}" {
-     Id "LF-Item_Parcel_Desc"
-     Target_en_us "A taped cardboard parcel for the drop-off address."
-     Comment "Courier parcel item description"
-    }
-    CustomStringTableItem "{315A7D38264FAED4}" {
-     Id "LF-Item_MoneyBag"
-     Target_en_us "Cash case"
-     Comment "Bank vault money bag item name"
-    }
-    CustomStringTableItem "{44F201EB4501CD73}" {
-     Id "LF-Item_MoneyBag_Desc"
-     Target_en_us "A heavy case of banknotes from the vault."
-     Comment "Bank money bag item description"
     }
   }
  }

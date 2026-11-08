@@ -169,6 +169,8 @@ class EL_AccountReplication
 			account = accountManager.GetAccount(uid);
 
 		character.EL_SetAccountState(EL_AccountStateBits.FromAccount(account));
+		// Organization copy for the offer side (M1-17), on the same spawn hook and periodic pass.
+		LF_OrgReplication.Publish(character);
 	}
 
 	//------------------------------------------------------------------------------------------------
