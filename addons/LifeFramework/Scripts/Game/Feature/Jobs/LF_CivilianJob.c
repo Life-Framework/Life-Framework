@@ -380,6 +380,28 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The sign-up toast body: the next step, at the same counter.
+	static string SignedUpKey(EL_EJobType job)
+	{
+		if (job == EL_EJobType.FUEL_DELIVERY)
+			return "#LF-Job_SignedUp_Fuel";
+		if (job == EL_EJobType.TAXI)
+			return "#LF-Job_SignedUp_Taxi";
+
+		return "#LF-Job_SignedUp_Courier";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The toast when a run starts: where the cargo goes. Empty for a job that does not need one.
+	static string RunStartedKey(EL_EJobType job)
+	{
+		if (job == EL_EJobType.PARCEL)
+			return "#LF-Job_RunStarted_Courier";
+
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool CanSignUp(string playerUid, EL_EJobType job)
 	{
 		if (playerUid.IsEmpty() || !IsDeliveryJob(job))

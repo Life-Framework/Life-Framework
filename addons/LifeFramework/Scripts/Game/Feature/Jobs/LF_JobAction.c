@@ -79,7 +79,8 @@ class LF_JobSignUpAction : ScriptedUserAction
 		if (!jobs.SetJob(m_eJob))
 			EL_Debug.Error("Jobs", "signup action: job component refused the workplace");
 
-		EL_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.NameKey(m_eJob), LF_CivilianJob.NameKey(m_eJob), 3.0);
+		// The title names the job; the body says what to do next, at this same counter.
+		EL_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.SignedUpKey(m_eJob), LF_CivilianJob.NameKey(m_eJob), 5.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -155,7 +156,15 @@ class LF_JobStartRunAction : ScriptedUserAction
 			return;
 
 		if (!LF_CivilianJob.GiveCargo(pUserEntity, m_eJob))
+		{
 			LF_CivilianJob.AbandonRun(uid);
+			return;
+		}
+
+		// A first-time courier does not know where the drop is; the toast says.
+		string started = LF_CivilianJob.RunStartedKey(m_eJob);
+		if (!started.IsEmpty())
+			EL_Utils.NotifyEntity(pUserEntity, started, LF_CivilianJob.NameKey(m_eJob), 8.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

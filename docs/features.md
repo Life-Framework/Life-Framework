@@ -519,6 +519,12 @@
   `SellItem` pays cash only after the goods are confirmed removable and
   claws back overpayments. `IsItemSoldHere` gates buy and sell.
 - ⚠️ No shop stock (infinite supply).
+- ✅ **The general store sells a short list** (2026-11-08, M1 RC QA): `Shop_GeneralStore_Debug`
+  carries a curated `m_aShopItems` (apple, tomato, cabbage, water, apple juice, field dressing,
+  ALICE backpack). Without it the price list showed the whole 1312-line base-game catalog,
+  starting with an SVD magazine pouch and two "!BASE KIT!" rows. Prices still come from
+  `ShopPrices.conf`. The UI kit status row gives its action button more width (label 1.5,
+  status 1, button 1.5), so "Order" is no longer cut to "Orde".
 
 ### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `EL_ShopMenu`)
 - ✅ (2026-11-08, M1-13) Typed price list on `LF_UIScreen` with the
@@ -709,6 +715,10 @@
   `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
   A client reads the level replicated on `EL_PlayerJobComponent` (the career map is
   server-only), so fuel and taxi open on the client once the server levels the career.
+- ✅ **The toasts say what to do next** (2026-11-08, M1 RC QA): signing up shows the job as the
+  title and the next step as the body (`LF_CivilianJob.SignedUpKey`: "Pick up a parcel at this
+  counter"), not the job name twice. Picking up a parcel toasts where the drop is
+  (`RunStartedKey`, `#LF-Job_RunStarted_Courier`, 8 s).
 
 ### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls

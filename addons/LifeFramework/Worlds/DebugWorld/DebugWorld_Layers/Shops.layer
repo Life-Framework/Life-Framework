@@ -12,6 +12,43 @@ $grp GenericEntity {
    EL_ShopComponent "{5A4B0B84C86E2843}" {
     m_sShopName "#LF-Shop_Name_General"
     m_sShopDescription "#LF-Shop_Desc_General"
+    m_aShopItems {
+     EL_ShopItem "{998FEC04638C4A69}" {
+      m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+      m_sDisplayName ""
+      m_iMaxQuantity 5
+     }
+     EL_ShopItem "{39FE80C2EC0C2328}" {
+      m_ItemPrefab "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et"
+      m_sDisplayName ""
+      m_iMaxQuantity 5
+     }
+     EL_ShopItem "{9677D2B68D0A754C}" {
+      m_ItemPrefab "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et"
+      m_sDisplayName ""
+      m_iMaxQuantity 5
+     }
+     EL_ShopItem "{1D8DB1EE2BA77910}" {
+      m_ItemPrefab "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+      m_sDisplayName ""
+      m_iMaxQuantity 5
+     }
+     EL_ShopItem "{0C7E34DBE8B16C4D}" {
+      m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+      m_sDisplayName ""
+      m_iMaxQuantity 5
+     }
+     EL_ShopItem "{991ACBEB6EB3F109}" {
+      m_ItemPrefab "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+      m_sDisplayName ""
+      m_iMaxQuantity 5
+     }
+     EL_ShopItem "{EFF0C8856CBE002A}" {
+      m_ItemPrefab "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et"
+      m_sDisplayName ""
+      m_iMaxQuantity 1
+     }
+    }
    }
    ActionsManagerComponent "{5A4B0B84C86E2845}" {
     ActionContexts {

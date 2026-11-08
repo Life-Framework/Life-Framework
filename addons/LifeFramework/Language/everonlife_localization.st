@@ -5082,6 +5082,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Unpaid fine"
      Comment "Wanted board offence when a police ticket goes unpaid past its second deadline."
     }
+    CustomStringTableItem "{618A5B0E5F6A7C85}" {
+     Id "LF-Job_SignedUp_Courier"
+     Target_en_us "You are a courier now. Pick up a parcel at this counter."
+     Comment "Toast after signing up for courier work: the next step."
+    }
+    CustomStringTableItem "{CF7F0BA17E3A08CD}" {
+     Id "LF-Job_SignedUp_Fuel"
+     Target_en_us "You deliver fuel now. Take a fuel can at this counter."
+     Comment "Toast after signing up for fuel delivery: the next step."
+    }
+    CustomStringTableItem "{368CBF7BF68CC9AE}" {
+     Id "LF-Job_SignedUp_Taxi"
+     Target_en_us "You drive a taxi now. Start a fare at this counter."
+     Comment "Toast after signing up for taxi work: the next step."
+    }
+    CustomStringTableItem "{B72D78719E88C276}" {
+     Id "LF-Job_RunStarted_Courier"
+     Target_en_us "Carry the parcel east along the street to the porch past the brick-walled lock-up, then Complete the run."
+     Comment "Toast when a courier picks up a parcel: where the drop is. Capitalized phrase is the drop-off action name."
+    }
   }
  }
 }
