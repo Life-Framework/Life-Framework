@@ -5,7 +5,7 @@ The gameplay plan for the base mod. Two axes:
 - A **phase** is when a slice is supposed to be playable.
 - A **scope** is one bounded plan: the player loop, the assets it may use, the first shippable slice, and how to prove it.
 
-The public site still hosts the November 2025 community checklist (website, Discord, brand). This folder is the plan for the playable mod.
+This folder is the plan for the playable mod. The site's roadmap page (`website/`) renders it with the M1 milestone from GitHub; the November 2025 community checklist (website, Discord, brand) is archived in `website/content/archive/roadmap-2025.json`.
 
 **Current milestone: [M1 Playtest Town](m1-playtest-town.md)** (journey status, in-world redesign, signs, arrival chain, scopes and waves; issues labelled `m1`).
 

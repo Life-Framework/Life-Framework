@@ -10,6 +10,8 @@
 *.xob -text
 *.png -text
 *.jpg -text
+*.webp -text
+*.ico -text
 
 # Rebase additions of keys, tests, feature rows, and triage rows. Drivers live in tools/merge/.
 addons/LifeFramework/Language/everonlife_localization.st merge=lf-string-table

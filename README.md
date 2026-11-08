@@ -23,6 +23,7 @@ native assets.
 | **Engineering** | [AGENTS.md](AGENTS.md) · [Docs index](docs/README.md) |
 | **Community** | [Discord](https://discord.com/invite/MjMexJteqz) |
 | **Roadmap** | [docs/roadmap.md](docs/roadmap.md) |
+| **Website** | [life-framework.org](https://life-framework.org) · source in [website/](website/README.md) |
 
 ## Features
 
@@ -101,6 +102,7 @@ docs/                   Roadmap, features, testing plan, setup guide
 server/                 Dedicated-server configs and launch scripts
 tools/                  Dev CLI, validation, MCP tooling
 agent-box/              GPU-box setup, player-equivalent hooks, pillar flows
+website/                life-framework.org, built from docs/ and GitHub (website/README.md)
 assets-source/          Source asset licenses (LICENSES.md)
 .opencode/              AI skills and playbooks (opencode)
 AGENTS.md               Engineering contract for humans and AI agents

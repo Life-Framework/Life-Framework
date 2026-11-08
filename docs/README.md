@@ -19,8 +19,9 @@ Project documentation for the Life Framework Arma Reforger mod.
   extension, feature checklist. The "why" behind every feature's `Feature.md`.
 - [Roadmap](roadmap/README.md) — the live plan: phases and scopes for the
   playable mod. Testing gates in [roadmap/testing](roadmap/testing/README.md).
-- [Community roadmap scrape](roadmap.md) — copy of the life-framework.org
-  roadmap, kept for reference.
+- [Community roadmap scrape](roadmap.md) — copy of the 2025 life-framework.org
+  roadmap, kept for reference. The site itself now lives in
+  [`website/`](../website/README.md) and is built from these docs.
 
 Feature design context files live beside the code in
 `addons/LifeFramework/Scripts/Game/Feature/*/Feature.md` (indexed by
