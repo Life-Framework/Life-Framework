@@ -112,6 +112,11 @@ Fork/continuation of the **Everon Life RPG Framework** by
 [Arkensor](https://github.com/EveronLife/EveronLife) (MIT). The `EL_` class
 prefix reflects that heritage.
 
+Parts of the police, jail, garage, and vehicle code are ported from
+[LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) by
+LNGCGenetic (MIT); each ported file keeps its notice. Third-party sources and
+the import policy: [docs/ecosystem.md](docs/ecosystem.md).
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Contributions are licensed under MIT;
