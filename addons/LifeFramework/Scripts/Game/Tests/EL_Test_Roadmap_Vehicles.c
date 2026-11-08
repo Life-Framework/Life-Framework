@@ -144,16 +144,12 @@ class EL_Test_Roadmap_VehiclesWorld : EL_Test
 		ctx.Equal(5, lot.GetOfferCount(), "the lot lists the catalog");
 		ctx.Equal(500, lot.GetCashCeiling(), "the cash ceiling is configured");
 		ctx.Equal(1000, lot.GetPrice(EL_VehicleCatalog.S105), "the S105 price is above the cash ceiling");
-		ctx.True(EL_VehicleGarageComponent.IsPositionNearAnyGarage(lotEntity.GetOrigin()), "the lot is a garage");
+		ctx.True(EL_Component<EL_VehicleGarageComponent>.Find(lotEntity) == null, "the lot sells; it is not a garage");
 		ctx.True(EL_VehicleSpawnPointComponent.CountForShop("roadmap-lot") > 0, "the lot has a spawn pad");
-
-		array<ref EL_VehicleGarageRow> rows = EL_VehicleGarageDialog.CatalogRows(lot);
-		ctx.Equal(5, rows.Count(), "catalog rows");
-		if (rows.Count() > 0)
-		{
-			ctx.EqualStr("#EL-Vehicle_S105", rows.Get(0).m_sLabelKey, "the first catalog row is the S105");
-			ctx.Equal(1000, rows.Get(0).m_iPrice, "the first catalog row shows the configured price");
-		}
+		EL_VehicleOffer firstOffer = lot.GetOfferAt(0);
+		ctx.NotNull(firstOffer, "the lot has a first offer");
+		if (firstOffer)
+			ctx.EqualStr("#EL-Vehicle_S105", firstOffer.GetNameKey(), "the first offer is the S105");
 
 		ActionsManagerComponent actions = EL_Component<ActionsManagerComponent>.Find(lotEntity);
 		ctx.NotNull(actions, "the lot carries actions");
@@ -180,8 +176,8 @@ class EL_Test_Roadmap_VehiclesWorld : EL_Test
 
 		ctx.True(buyWired, "buy action is on the lot");
 		ctx.True(keyWired, "extra key action is on the lot");
-		ctx.True(storeWired, "store action is on the lot");
-		ctx.True(retrieveWired, "retrieve action is on the lot");
+		ctx.False(storeWired, "store is at the garage, not the lot");
+		ctx.False(retrieveWired, "retrieve is at the garage, not the lot");
 
 		string uid = "roadmap-vehicles-e2e";
 		EL_BankAccount account = EL_ATMManager.GetOrCreate(uid);
@@ -324,7 +320,7 @@ class EL_Test_Roadmap_VehiclesPersistence : EL_Test
 		array<ref EL_VehicleGarageRow> rows = EL_VehicleGarageDialog.StoredRows(uid);
 		ctx.True(rows.Count() > 0, "the garage picker lists the stored vehicle");
 
-		ctx.True(EL_VehicleOwnership.Retrieve(vehicleId, uid), "retrieve after apply-save");
+		ctx.True(EL_VehicleOwnership.Retrieve(vehicleId, uid, "roadmap-garage"), "retrieve after apply-save onto the garage pad");
 		ctx.False(EL_VehicleOwnership.IsStored(vehicleId), "retrieve brings it back");
 		ctx.EqualStr(EL_VehicleCatalog.S105, EL_VehicleOwnership.GetPrefab(vehicleId), "retrieve keeps the prefab");
 		ctx.False(EL_VehicleOwnership.IsLocked(vehicleId), "retrieve keeps the lock flag");
@@ -345,5 +341,8 @@ class EL_Test_Roadmap_VehiclesPersistence : EL_Test
 		ctx.False(restoredLock.IsVehicleLocked(), "the retrieved lock flag is still unlocked");
 		ctx.EqualStr(saved.m_sKeyId, restoredLock.GetVehicleIdentifier(), "the retrieved lock uses the saved key id");
 		ctx.True(restoredLock.IsValidKey(EL_VehicleOwnership.GetKey(vehicleId)), "the original key matches after retrieve");
+
+		// Leave the garage pad free for the next retrieve.
+		EL_VehicleOwnership.Store(vehicleId, uid);
 	}
 }

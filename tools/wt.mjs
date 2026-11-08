@@ -202,7 +202,8 @@ export function defaultPorts() {
 // Copy it from the main checkout when the worktree copy is missing, or smaller and older.
 // A worktree build that registers a new resource writes a newer copy that can be smaller
 // than main's; overwriting it dropped the new GUID ("Wrong GUID" on a new prefab).
-// Called by `wt new` and before a server boot (cli test/dev/serve, wt e2e).
+// Called by `wt new`, and before a server boot by ensureResourceDatabase in cli.mjs,
+// which also refreshes a copy that misses a .meta (tools/lib/rdb-fresh.mjs).
 // Never commit the destination.
 export function copyResourceDatabase(wtRoot, mainRoot = mainRootOf(wtRoot)) {
   const src = join(mainRoot, "addons", "LifeFramework", "resourceDatabase.rdb");
@@ -305,6 +306,15 @@ export function transferLock(root, name, pid) {
   const info = JSON.parse(readFileSync(file, "utf8"));
   if (info.pid !== process.pid) throw new Error(`lock '${name}' is not held by this process`);
   writeFileSync(file, JSON.stringify({ ...info, pid, at: new Date().toISOString() }));
+}
+
+// Takes a lock over from a process that holds it (a server about to restart),
+// so no queued run can grab it in the gap. Throws when fromPid does not hold it.
+export function adoptLock(root, name, fromPid) {
+  const file = join(ensureHub(root), "locks", `${name}.lock`);
+  const info = JSON.parse(readFileSync(file, "utf8"));
+  if (info.pid !== fromPid) throw new Error(`lock '${name}' is held by pid ${info.pid}, not ${fromPid}`);
+  writeFileSync(file, JSON.stringify({ ...info, pid: process.pid, at: new Date().toISOString() }));
 }
 
 export function releaseLock(root, name, owner = process.pid) {

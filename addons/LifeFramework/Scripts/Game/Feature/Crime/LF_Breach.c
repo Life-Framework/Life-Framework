@@ -185,6 +185,7 @@ class LF_Breach
 			return false;
 
 		account.IncreaseWantedLevel(1);
+		LF_WantedReports.Report(playerUid, chargeCarrier, LF_WantedReports.OFFENCE_BREAK_IN);
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
 		if (accountManager)
 			accountManager.SaveAndReleaseAccount(account);

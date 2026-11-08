@@ -18,12 +18,14 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the ELTEST suite
-//   session up [--clients N]|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
+//   session up [--clients N] [--mission debug|playtest]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved ELTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
 //   scope <name> <dir>                Write the test stub, features row, keys, and street row
 //   scope --selftest                  Check those four outputs in a temp directory
+//   prs status|heal                   Open ws/* PRs; heal conflicting or stuck ones (tools/prs.mjs)
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
@@ -35,9 +37,11 @@ import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
 import * as session from "../agent-box/session.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
+import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
-import { listHidden, quietSpawn, quietSpawnDetached } from "./lib/quiet-launch.mjs";
+import { cmdPrs } from "./prs.mjs";
+import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -932,6 +936,67 @@ function cmdBuild(root = ROOT, opts = {}) {
 
 }
 
+// Before every server boot from a worktree: copy main's resourceDatabase.rdb
+// when it is the better copy, then make sure it registers every .meta in the
+// addon. A resource that landed on main after anyone last opened Workbench is
+// missing from every copy, and the server then refuses it (`Wrong GUID/name`,
+// inventory operations that never complete). When stale, a headless Workbench
+// opens the project, which registers the new metas and rewrites the file.
+// The main checkout's rdb is the human's editor copy: only warn there.
+// LF_RDB_REFRESH=0 turns the refresh off (warn only).
+const RDB_REFRESH_TYPICAL_S = 15;
+function ensureResourceDatabase(root) {
+  wt.copyResourceDatabase(root);
+  const addon = join(root, "addons", "LifeFramework");
+  const before = rdbFreshness(addon);
+  if (before.missing.length === 0) return 0;
+  const what = `${before.missing.length} unregistered resource(s): ${describeMissing(before.missing)}`;
+  if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0") {
+    console.log(`WARN  resource database stale: ${what}`);
+    console.log("      open Workbench on this checkout once (it rewrites resourceDatabase.rdb), or run from a worktree");
+    return 1;
+  }
+  const exe = workbenchExe();
+  if (!existsSync(exe)) {
+    console.log(`WARN  resource database stale: ${what}; Workbench not found (${exe}), cannot refresh`);
+    return 1;
+  }
+  console.log(`resource database stale: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: 900000 });
+    locked = true;
+    const started = Date.now();
+    const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+    const profile = join(root, "server", "profile", "rdb");
+    mkdirSync(profile, { recursive: true });
+    const args = [
+      "-gproj", join(addon, "LifeFramework.gproj"),
+      "-wbModule=ResourceManager",
+      "-noSplash",
+      "-run",
+      "-exitAfterInit",
+      "-profile", profile,
+      "-addonsDir", join(root, "addons"),
+      "-addonsDir", workbenchGameAddons(root, "rdb"),
+    ];
+    const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
+    const after = rdbFreshness(addon);
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    if (after.missing.length === 0) {
+      console.log(`resource database refreshed in ${secs}s (${after.total} resources registered)`);
+      return 0;
+    }
+    console.log(`WARN  resource database still stale after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${after.missing.length} unregistered: ${describeMissing(after.missing)}`);
+    return 1;
+  } catch (e) {
+    console.log(`WARN  resource database refresh failed: ${e.message}`);
+    return 1;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
 // Every -server boot listens on 0.0.0.0:2001 whatever -bindPort says
 // (observed 2026-11-08 on 1.9.0.37). Two boots at once fail with "Unable to
 // start replication", so one machine-wide lock covers every server boot.
@@ -960,7 +1025,7 @@ function cmdServe(root = ROOT, opts = {}) {
     console.log("      install Arma Reforger Server (Steam app 1874900) or set ENFUSION_SERVER_PATH");
     return 1;
   }
-  wt.copyResourceDatabase(root);
+  ensureResourceDatabase(root);
   const args = serverArgs(root, wt.portsForRoot(root));
   try {
     wt.acquireLock(root, SERVER_SLOT, { waitMs: 0 });
@@ -1048,12 +1113,7 @@ function cmdHostStart(root, dir, opts) {
   }
   let pid = 0;
   try {
-    wt.copyResourceDatabase(root);
-    const stale = host.missingFromRdb(join(root, "addons", "LifeFramework"));
-    if (stale.length > 0) {
-      console.log(`WARN  ${stale.length} resource(s) are not in resourceDatabase.rdb and will not load on this server, e.g. ${stale[0].path}`);
-      console.log("      the rdb predates them: run 'tools\\cli wt build <slug>' (or a Workbench build in main), then host start again");
-    }
+    ensureResourceDatabase(root);
     const junction = serverGameAddons(root);
     mkdirSync(p.profile, { recursive: true });
     const saves = host.findSavePoints(p.profile);
@@ -1233,6 +1293,9 @@ function cmdSessionStatus(dir) {
 function cmdSessionUp(root, dir, flags) {
   guardHeavy(root, "session up", flags.includes("--force"));
   const clients = session.parseClients(flags);
+  const mission = session.parseMission(flags);
+  const res = session.parseRes(flags);
+  const visible = flags.includes("--visible");
   const prev = session.readSession(dir);
   if (prev && !prev.stoppedAt && (host.pidAlive(prev.serverPid) || (prev.clients ?? []).some((c) => host.pidAlive(c.pid)))) {
     console.log("session: one is already running; 'node agent-box/session.mjs down' first");
@@ -1254,7 +1317,8 @@ function cmdSessionUp(root, dir, flags) {
     return 1;
   }
   const paths = session.sessionPaths(dir, clients);
-  const state = { root, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
+  // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
+  const state = { id: session.newSessionId(), root, mission, res, visible, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
     session.writeSession(dir, state);
@@ -1263,56 +1327,16 @@ function cmdSessionUp(root, dir, flags) {
     return 1;
   };
   try {
-    wt.copyResourceDatabase(root);
-    const junction = serverGameAddons(root);
-    mkdirSync(paths.server, { recursive: true });
-    const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server });
-    console.log(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
-    const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
-    const srv = spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
-    srv.unref();
-    if (!srv.pid) return fail("server did not start");
-    state.serverPid = srv.pid;
-    wt.transferLock(root, SERVER_SLOT, srv.pid);
-    session.writeSession(dir, state);
-
-    let log = null;
-    const deadline = Date.now() + 300000;
-    while (Date.now() < deadline && host.pidAlive(srv.pid)) {
-      sleepMs(2000);
-      const f = session.newestLog(join(paths.server, "logs"));
-      if (f && !before.has(basenameOfLogDir(f))) log = f;
-      if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) break;
-    }
-    if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
-    console.log(`session: server up (pid ${srv.pid}); log ${log}`);
-
-    for (const c of paths.clients) {
-      mkdirSync(c.box, { recursive: true });
-      const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile });
-      console.log(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
-      // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
-      const child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
-      if (!child.pid) return fail(`client ${c.n} did not start`);
-      state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
-      session.writeSession(dir, state);
-      // Stagger so two clients do not load the same data at the same instant.
-      sleepMs(15000);
-      if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
-    }
-    // Joined means the server created the player and opened the faction menu.
-    const joinDeadline = Date.now() + 240000;
-    let joined = 0;
-    while (Date.now() < joinDeadline) {
-      const text = readFileSync(log, "utf8");
-      const refused = text.split(/\r?\n/).find((l) => /ValidationError|Disconnecting identity/.test(l));
-      if (refused) return fail(`a client was refused: ${refused.trim()}`);
-      joined = (text.match(/faction menu sent to player \d+/g) ?? []).length;
-      if (joined >= clients) break;
-      sleepMs(2000);
-    }
-    if (joined < clients) return fail(`${joined}/${clients} client(s) reached the faction menu within 240s (server log ${log})`);
-    console.log(`session: ${joined} client(s) joined and reached the faction menu`);
+    ensureResourceDatabase(root);
+    // A fresh session starts from no save: an old playtest save would be loaded by restart.
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail });
+    if (typeof log === "number") return log;
+    // Joined means the server sent a new account the registration form or spawned a returning
+    // one. There is no faction menu (M1-11).
+    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail);
+    if (joined < 0) return 1;
+    console.log(`session: ${joined} client(s) joined and reached the registration form or spawned`);
+    if (mission === "playtest") console.log("session: LF_PlaytestTown, LF_HARNESS build (harness gate open, debug menu closed)");
     console.log("drive with:");
     console.log("  node agent-box/harness.mjs --client <n> <verb>   and   node agent-box/session.mjs state <n>");
     console.log("close everything with: node agent-box/session.mjs down");
@@ -1325,13 +1349,160 @@ function cmdSessionUp(root, dir, flags) {
   }
 }
 
+// Boots the server (fresh, or with -loadSessionSave), then each client in
+// order with its own profile. Returns the server console.log path, or the exit
+// code fail() returned.
+function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail }) {
+  const junction = serverGameAddons(root);
+  mkdirSync(paths.server, { recursive: true });
+  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave });
+  console.log(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
+  const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
+  const srv = spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
+  srv.unref();
+  if (!srv.pid) return fail("server did not start");
+  state.serverPid = srv.pid;
+  wt.transferLock(root, SERVER_SLOT, srv.pid);
+  session.writeSession(dir, state);
+
+  let log = null;
+  const deadline = Date.now() + 300000;
+  while (Date.now() < deadline && host.pidAlive(srv.pid)) {
+    sleepMs(2000);
+    const f = session.newestLog(join(paths.server, "logs"));
+    if (f && !before.has(basenameOfLogDir(f))) log = f;
+    if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) break;
+  }
+  if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
+  console.log(`session: server up (pid ${srv.pid}); log ${log}`);
+
+  for (const c of paths.clients) {
+    mkdirSync(c.box, { recursive: true });
+    const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id, res });
+    console.log(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
+    // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
+    // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
+    let child = { pid: 0 };
+    if (visible) {
+      const p = spawn(game, cArgs, { cwd: dirname(game), detached: true, stdio: "ignore" });
+      p.unref();
+      child = { pid: p.pid };
+    } else {
+      child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
+    }
+    if (!child.pid) return fail(`client ${c.n} did not start`);
+    state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
+    session.writeSession(dir, state);
+    // Stagger so two clients do not load the same data at the same instant, and
+    // so player ids follow client numbers (the same accounts after a restart).
+    sleepMs(15000);
+    if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
+  }
+  return log;
+}
+
+// Waits until marker matches the server log once per client. Returns the
+// count, or -1 after fail().
+function sessionAwaitJoin(log, clients, marker, fail) {
+  const joinDeadline = Date.now() + 240000;
+  let joined = 0;
+  while (Date.now() < joinDeadline) {
+    const text = readFileSync(log, "utf8");
+    const refused = text.split(/\r?\n/).find((l) => /ValidationError|Disconnecting identity/.test(l));
+    if (refused) {
+      fail(`a client was refused: ${refused.trim()}`);
+      return -1;
+    }
+    joined = (text.match(marker) ?? []).length;
+    if (joined >= clients) return joined;
+    sleepMs(2000);
+  }
+  fail(`${joined}/${clients} client(s) joined within 240s (server log ${log})`);
+  return -1;
+}
+
+// Playtest only: the host stop file closes the server gracefully (the engine
+// writes its SHUTDOWN save), then the same client profiles rejoin, in the same
+// order, a server that loaded that save.
+function cmdSessionRestart(root, dir, flags) {
+  guardHeavy(root, "session restart", flags.includes("--force"));
+  const prev = session.readSession(dir);
+  if (!prev || prev.stoppedAt || !host.pidAlive(prev.serverPid)) {
+    console.log("session: no running session to restart; 'node agent-box/session.mjs up --mission playtest' first");
+    return 1;
+  }
+  if (prev.mission !== "playtest") {
+    console.log("session: restart needs --mission playtest (the bare DebugWorld has no stop file, so no shutdown save)");
+    return 1;
+  }
+  const exe = serverExe();
+  const game = gameClientExe();
+  const oldLog = session.newestLog(join(prev.serverProfile, "logs"));
+  // Hold port 2001 across the restart: a queued test would otherwise take it
+  // between the old server's exit and the new boot.
+  try {
+    wt.adoptLock(root, SERVER_SLOT, prev.serverPid);
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    return 1;
+  }
+  const stopFile = join(prev.serverProfile, ...host.STOP_FILE);
+  mkdirSync(dirname(stopFile), { recursive: true });
+  writeFileSync(stopFile, new Date().toISOString());
+  console.log(`session: stop requested (server pid ${prev.serverPid}); waiting for the shutdown save`);
+  const deadline = Date.now() + 180000;
+  while (Date.now() < deadline && host.pidAlive(prev.serverPid)) sleepMs(1000);
+  if (host.pidAlive(prev.serverPid)) {
+    wt.transferLock(root, SERVER_SLOT, prev.serverPid);
+    console.log("FAIL  the server did not close within 180s; close it with 'node agent-box/session.mjs down'");
+    return 1;
+  }
+  const saved = !!oldLog && /\(SHUTDOWN\)/.test(readFileSync(oldLog, "utf8"));
+  console.log(`session: server closed${saved ? " after the SHUTDOWN save" : "; WARN no SHUTDOWN save line in its log"}`);
+  for (const c of prev.clients ?? []) console.log(`session: client ${c.n} pid ${c.pid} ${killTree(c.pid) ? "closed" : "already gone"}`);
+  const clients = (prev.clients ?? []).length;
+  const paths = session.sessionPaths(dir, clients);
+  const state = { ...prev, restartedAt: new Date().toISOString(), serverPid: 0, clients: [] };
+  const fail = (msg) => {
+    console.log(`FAIL  ${msg}`);
+    session.writeSession(dir, state);
+    cmdSessionDown(dir);
+    wt.releaseLock(root, SERVER_SLOT);
+    return 1;
+  };
+  try {
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission: prev.mission, res: prev.res, visible: prev.visible, loadSave: true, fail });
+    if (typeof log === "number") return log;
+    const joined = sessionAwaitJoin(log, clients, /flow start for player \d+/g, fail);
+    if (joined < 0) return 1;
+    const loaded = /session continued from a save point|loading the latest save point/.test(readFileSync(log, "utf8"));
+    console.log(`session: restarted${loaded ? " from the save" : "; WARN the server log does not say it loaded a save"}; ${joined} client(s) rejoined`);
+    return 0;
+  } catch (e) {
+    return fail(e.message);
+  } finally {
+    wt.releaseLock(root, SERVER_SLOT);
+  }
+}
+
 function cmdSession(args) {
   const list = args ?? [];
   const dir = session.sessionDir();
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
+  // The session dir is shared by every checkout: only the one that started a
+  // live session may restart or close it (--force overrides).
+  if ((list[0] === "restart" || list[0] === "down") && !list.includes("--force")) {
+    const s = session.readSession(dir);
+    const live = s && !s.stoppedAt && (host.pidAlive(s.serverPid) || (s.clients ?? []).some((c) => host.pidAlive(c.pid)));
+    if (live && s.root && resolve(s.root).toLowerCase() !== resolve(ROOT).toLowerCase()) {
+      console.log(`session: the live session belongs to ${s.root}; refusing ${list[0]} from ${ROOT} (pass --force to override)`);
+      return 1;
+    }
+  }
+  if (list[0] === "restart") return cmdSessionRestart(ROOT, dir, list.slice(1));
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
-  console.log("usage: tools\\cli session up [--clients N] [--wait] | down | status");
+  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--wait] | restart | down | status");
   return list[0] ? 1 : 0;
 }
 
@@ -1366,7 +1537,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   }
   const ports = wt.portsForRoot(root);
   console.log(`test: worktree ports game=${ports.gamePort} a2s=${ports.a2sPort}`);
-  wt.copyResourceDatabase(root);
+  ensureResourceDatabase(root);
   return withServerSlot(root, 1800000, () => {
     const res = sh(PWSH, [
       "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
@@ -1456,8 +1627,14 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 dump [ELDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
+  prs status|heal [--dry-run] [<n>...]
+                                open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
+                                (generated conflicts only), gates, pushes, re-queues auto-merge,
+                                and merges green PRs stuck open (see: cli prs help)
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
+  rdb                           register new .meta resources in this worktree's resourceDatabase.rdb
+                                (headless Workbench, ~10 s; test/dev/serve/session/e2e run it when stale)
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                 grep the newest server console.log (default after=3 limit=8)
   suite-stamp <tier>            print the newest tmp/test-results/summaries.jsonl line for a tier
@@ -1788,7 +1965,7 @@ function runE2ePass(root, tier, opts = {}) {
     console.log(`FAIL  harness not found: ${harness}`);
     return 1;
   }
-  wt.copyResourceDatabase(root);
+  ensureResourceDatabase(root);
   const ports = wt.portsForRoot(root);
   const psArgs = [
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
@@ -2120,6 +2297,7 @@ const cmds = {
   scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
   hidden: (flags) => cmdHidden(flags ?? []),
+  rdb: () => ensureResourceDatabase(ROOT),
   help: () => cmdHelp(),
 };
 
@@ -2203,6 +2381,8 @@ try {
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
   } else if (cmd === "wt") {
     code = cmdWt(rest);
+  } else if (cmd === "prs") {
+    code = cmdPrs(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {

@@ -41,7 +41,7 @@ In this order, it is the M1 loop:
 1. Parcel job at the post office (`Roadmap_Job_Depot`), deliver at `Roadmap_Job_Drop`. Expect "Run paid: $40".
 2. Deposit cash at the ATM, then buy the S105 at the car dealer (`Roadmap_Vehicle_Lot`). Cars are paid from the bank.
 3. A second player clocks in as police at the station (police needs the whitelist or an admin; see [Police](#police)), the first robs `Roadmap_Fuel_Till`. The officer gets an alert toast; the robber is wanted.
-4. The officer arrests the robber (a senior officer; a new patrol officer is refused) and escorts them to the cell.
+4. The officer arrests the robber and escorts them to the cell. A new officer can do both from the first minute on duty.
 5. Found an organization at `Roadmap_Org_Desk`, buy processing, open the hideout.
 6. `host stop`, `host start`, rejoin: cash, bank, car, organization, and hideout are still there.
 
@@ -52,8 +52,7 @@ Do not spend the evening on these; they are filed.
 - Everyone, players and NPCs, renders in underwear on a game client (#150).
 - The registration form, ATM, and org screens are dark and hard to read; the form's labels read "Editbox" (#110, M1-13 is rebuilding these screens).
 - The parcel and bank bags are invisible in your hands (#155).
-- One delivery is one job level; the first car takes about 13 runs (#156).
-- A new officer cannot arrest: senior rank takes one hour on duty, and a fresh server has no senior to promote anyone (#165). Plan the police player's first hour as patrol.
+- Fuel delivery opens after five parcel runs and the taxi after fifteen runs in all (#156). The game never shows a level; the drop-off tells you when new work opens.
 - The police duty desk and wanted board are not on the street yet (M1-11); duty is the panel in front of the station.
 - A contraband run without an organization is refused with no message (#157).
 - Toasts are the only alert: no alarm at the site, no dispatch board (M1-20).
@@ -76,7 +75,7 @@ Do these as separate passes if one character cannot be both civilian and police.
 
 ### Arrive
 
-Create a civilian, then later a police officer. Say whether the faction screen and the name screen actually appeared.
+Register a character. Say whether the name screen appeared straight away, with no faction screen before it.
 
 ### Civilian work
 
@@ -98,15 +97,15 @@ A locked target is a breach. Plant the charge at `Roadmap_Breach_Door`, `Roadmap
 
 ### Police
 
-Use a police character. On the hosted server the faction screen refuses Police until the player is on the whitelist, and there is no admin login in this mode, so write the file by hand:
+Everyone joins as a civilian; there is no faction screen. To play police, the player's uid must be on the police roster. On the hosted server there is no admin login, so write the file by hand:
 
 1. Have the player join once. The host log (`tools\cli host status` prints its path) shows `[ELDebug:Whitelist] join allowed: uuid=<their id>`.
 2. `tools\cli host stop`, then create `%LOCALAPPDATA%\LifeFramework\host\profile\profile\LifeFramework\whitelist.txt` with five lines: `1`, `1`, the uuid, `POLICE`, `0` (version, one faction entry, who, which faction, no job entries).
-3. `tools\cli host start`. A player who has not made a character yet picks Police on the faction screen. A character that already exists keeps its faction (M1-11 replaces the faction screen with clocking in at the desk).
+3. `tools\cli host start`.
 
-Go on duty at the panel in front of the police station (`PoliceStation_Debug`, south side of the street): `Roadmap_Police_Desk` beside it has no actions yet (M1-11 moves duty there). At `Roadmap_Police_Armory`, take the kit.
+At the station desk (`Roadmap_Police_Desk`, the punch clock in front of the police station) use **Clock in**: your civilian clothes and pockets are stored and you get the police uniform and M9 (a first shift) or the police inventory you left at your last clock-out. **Clock out** at the same desk swaps back and pays duty pay in cash. Say whether anything from one inventory showed up in the other. Read the wanted board (`Roadmap_Police_WantedBoard`) beside the desk on and off duty: police see where each crime happened, everyone sees a description, and a name only after an ID check. At `Roadmap_Police_Armory`, take the rank kit.
 
-A new officer is patrol: a pistol, fines up to 1000, and no arrest. Senior is a rifle, fines up to 5000, and can arrest. An hour on duty promotes. Promoting yourself should be refused.
+A new officer is patrol: a pistol and fines up to 1000. Senior is a rifle and fines up to 5000. Both can arrest and escort. An hour on duty promotes. Promoting yourself should be refused.
 
 Arrest a wanted player into `Roadmap_Jail_Cell`. Repair an open breach. At `Roadmap_Escort_Car`, an on-duty officer can put a wanted player on foot into a passenger seat; the sentence starts when they reach the cell.
 
@@ -116,7 +115,7 @@ At `Roadmap_Org_Desk`, the screen should show an empty organization, a name fiel
 
 Create an organization, deposit cash, and buy the processing upgrade. The fund is not your personal bank balance.
 
-`Roadmap_Hideout_Door` opens for a member and refuses everyone else. `Roadmap_Hideout_Machine` works only after the processing upgrade. `Roadmap_Hideout_Stash` is a crate mesh with no storage yet, so it cannot hold items.
+`Roadmap_Hideout_Door` opens for a member and refuses everyone else. `Roadmap_Hideout_Machine` works only after the processing upgrade. `Roadmap_Hideout_Stash` is a real container: members open it and store items, everyone else is refused with a sound and a toast, and its contents survive a restart.
 
 Run the contraband convoy from `Roadmap_Convoy_Start` to `Roadmap_Convoy_Drop`. Delivery pays cash once. Leaving the vehicle or dying should fail the run. An on-duty officer can confiscate the flagged goods.
 

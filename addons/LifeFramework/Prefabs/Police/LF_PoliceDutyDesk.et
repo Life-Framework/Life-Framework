@@ -1,0 +1,47 @@
+GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ ID "1F1FD347C068108F"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+ {
+  GenericEntity DutyClock : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {
+   ID "281D3BD880CE964E"
+   components {
+    SCR_SoundDataComponent "{BC459247BBA4457F}" {
+     m_aAudioSourceConfiguration {
+      SCR_AudioSourceConfiguration "{B46B5DD6F8897BFD}" {
+       m_sSoundProject "{5A46144CB8BFC66B}Sounds/Structures/Military/Training/RangeCP/Structures_RangeCP.acp"
+       m_sSoundEventName "SOUND_RANGECP_STARTBUTTON"
+      }
+     }
+    }
+    ActionsManagerComponent "{775836274AF8BE66}" {
+     ActionContexts {
+      UserActionContext "{22A17EEEA2399F2D}" {
+       ContextName "LF_DutyClock"
+       Position PointInfo "{B046DE7E017B07C6}" {
+        Offset 0 0.25 0
+       }
+       Radius 1.5
+      }
+     }
+     additionalActions {
+      EL_DutyAction "{E0CCF06A3D9A2E06}" {
+       ParentContextList {
+        "LF_DutyClock"
+       }
+       UIInfo UIInfo "{857016BF95624B25}" {
+        Name "#LF-Duty_ClockIn"
+        Description "#LF-Duty_ClockDesc"
+       }
+      }
+     }
+    }
+   }
+   coords 0 0.63 0
+   angleY -90
+  }
+ }
+}

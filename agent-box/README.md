@@ -107,8 +107,9 @@ node agent-box/harness.mjs chains
 node agent-box/harness.mjs chains --run
 ```
 
-Steps: `stand`, `look`, `ui`, `click`, `type`, `press F|WheelUp|WheelDown|F10`, `use`,
-`input`, `open`, `layer`, `shot ui`, `shot world`, and `wait <ms>`. A shot line
+Steps: `stand`, `look`, `ui`, `ui text`, `wait-text <text>`, `click`, `type`,
+`press F|WheelUp|WheelDown|F10`, `use`, `input`, `open`, `layer`, `shot ui`
+(also `ui-shot <name>`), `shot world`, and `wait <ms>`. A shot line
 prints `image: <absolute png>` when the capture file is on disk. If the engine
 wrote a BMP and the `.png` sibling is missing, the harness converts it.
 
@@ -127,6 +128,29 @@ The lock frees itself when that process exits. A Workbench opened from the
 launcher has no project on its command line and runs unclaimed. Clients with
 their own `-profile` (the multi-client session) have their own channel.
 
+Session clients share one session dir on the machine
+(`%LOCALAPPDATA%\LifeFramework\session`), so a command from one worktree once
+reached another worktree's client 1 (a click and a registration) when a new
+session started between two runs. The channel is now session-scoped:
+
+- Every `session.mjs up` records a fresh id and the starting checkout in
+  `session.json` and launches its clients with `-lfSession <id>`.
+- `--client <n>` (and `setBoxes`) addresses each command as
+  `<cmd id> s:<session id> <verb> ...`. Before writing, `sendCommand` reads
+  `session.json` and refuses with `error session_owned_by_other_checkout
+  <root>` when the live session was started from another checkout, or
+  `error no_live_session` when none is running.
+- A client runs only commands addressed to its own id
+  (`EL_AgentCommand.SessionAccepts`); anything else answers
+  `error wrong_session` and logs `[ELDebug:AgentHarness] refused command ...`.
+  Workbench and default-profile clients have no id and refuse addressed
+  commands.
+- `session.mjs down` and `restart` refuse a live session another checkout
+  started (`--force` overrides). `restart` keeps the id.
+
+LOGIC test `agent-harness/session-scope`; `session.mjs selftest` and
+`harness.mjs selftest` cover the address and the refusal.
+
 
 The play session polls `$profile:agent-box/command.txt` (Workbench profile and
 the game profile). Hooks:
@@ -137,9 +161,24 @@ the game profile). Hooks:
   debug menu.
 - `look` lists `ScriptedUserAction`s within 4m whose `CanBeShownScript` is
   true. That is the list the interact key would offer.
-- `ui` lists visible buttons whose names end in `Button`. Faction and spawn
-  buttons are included because they carry `SCR_ButtonTextComponent`. Shop and
-  ATM buttons are included when a Life Framework menu owns them.
+- `ui` lists the visible widgets `click` accepts: the registration form button
+  (`SCR_ButtonTextComponent`), debug menu buttons, buttons whose name ends in
+  `Button` under a Life Framework handler, and every button of an open UI kit
+  sheet whatever its name (they carry `LF_UIButtonRelay`: ATM keys, the price
+  list's `Item0Row_Action`, `IdClose`, the sign card's `Close`, the garage's
+  `Buy`).
+- `ui text` (`harness.mjs ui text`, MCP `player_ui` with `text: true`) reads
+  the screen: each clickable with its label, and on a UI kit sheet each field
+  with what is typed and each printed line, as `kind:name=text` joined by
+  ` | ` (`line:Balance=BALANCE ....... $1,200 | field:RegAge=30 |
+  button:DepositButton=DEPOSIT`). The name is the part name the screen gave
+  it, the same name `type` and `click` take. `#keys` are translated.
+- `wait-text <text> [--timeout ms]` polls `ui text` until a label, field, or
+  line contains the text (case-insensitive) or a widget has that name. Use it
+  after `use` opens a screen and after a button the server answers
+  (`wait-text DEPOSITED`). Times out with `text_not_found <text>`.
+- `ui-shot <name>` is `shot ui <name>`: the client's screen with the UI on it.
+  Only a game client captures the UI; Workbench play writes the 3D view only.
 - `click <WidgetName> [index]` fires that button. Text buttons call
   `m_OnClicked`, the invoker the menu inserted. Other buttons call `OnClick`
   on the menu handler, the same call the engine makes for a mouse click.
@@ -155,8 +194,8 @@ the game profile). Hooks:
 - `click` also takes a UI kit list row's `<row>_Action` button (the price
   list's `Item0Row_Action`).
 - `stand <EntityName>` asks the server to move the local character beside
-  that entity so a 3m action radius can succeed. It does not inject movement
-  keys.
+  that entity so a 3m action radius can succeed, 1.2 m along +X and turned to
+  face it, so `press F` aims at the entity. It does not inject movement keys.
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
   `MenuRight`, `MenuSelect`, `MenuBack`, `EL_OpenDebugMenu`) for about 80ms.
   Movement actions are refused.
@@ -173,7 +212,7 @@ contain `EL_AgentHarness` yet.
 
 MCP tools on the `life-agent-box` server match these commands: `box_status`,
 `layer_list`, `layer_play`, `player_press`, `player_look`, `player_ui`,
-`player_click`, `player_stand`, `player_use`, `player_input`, `player_open`,
+`player_wait_text`, `player_click`, `player_stand`, `player_use`, `player_input`, `player_open`,
 `pillar_shot`, `pillar_script`, `player_flow`.
 
 The two Enfusion servers stay the source for API search, prefabs, and live
@@ -188,7 +227,23 @@ screen (desktop duplication `ddagrab`, NVENC when the GPU has it). Screen
 capture records whatever is on top, but film never takes focus: on a second
 monitor it lifts the game window without activating it, on the primary monitor
 it records the rectangle as it is. Screen capture cannot see the hidden
-`LF-Agents` desktop, so film a client you started on a visible monitor.
+`LF-Agents` desktop: `ddagrab` (DXGI desktop duplication) and `gdigrab` (GDI
+BitBlt of the screen) both read only the input desktop the user sees, and a
+window on another desktop is never composited into it. Film a client started
+on the visible desktop (`session.mjs up --visible`, then
+`journey.mjs --film`). `record --window "Arma Reforger" --pid <n>` picks one
+client when several share the title.
+
+Not solved yet (2026-11-08): `journey.mjs job earn atm shop --film` on a
+`--visible` 1280x720 session wrote a 68 s h264_nvenc clip of a 3-minute run
+that holds one frame (the spawn square) throughout, while the harness
+screenshots of the same client show every screen. The unfocused game window
+stops presenting to the desktop (or desktop duplication sees no change), so
+screen capture has nothing new to record. What would fix it: keep the filmed
+client in front on a secondary monitor (film lifts it there without taking
+focus), or record inside the engine (a timed `System.MakeScreenshot` sequence
+encoded by ffmpeg), which also works on the hidden desktop. Until then the
+journey report's per-step screenshots are the visual record.
 Screenshots (below) work on `LF-Agents`.
 If `ddagrab` delivers no frame within 5 s (seen on a box with a virtual
 display adapter), it falls back to `gdigrab` of the same rectangle.
@@ -312,8 +367,9 @@ Workbench between sites.
 `agent-box/town.mjs` (`TOWN`) is the one list of M1 sites: spawn, post office,
 traders, ATM, shops, vehicle lot, the robbery and breach sites, police
 station, jail, org registry, hideout, garage, mining, and farm. Each site names
-an entity (`entity`) or, for unnamed placements like the spawn points, a
-prefab (`prefab`, every placement counts and the site sits at their centre).
+an entity (`entity`; the spawn is the named town spawn `Spawn_Town`) or, for
+unnamed placements like the clerk, a prefab (`prefab`, every placement counts
+and the site sits at their centre).
 It also lists the actions `look` must offer there, the `LF_Signs.conf` id of
 its sign (or `null`), and its journey step. It holds no positions. Sites and
 signs resolve against the layer scan (`loadWorld` in `layers.mjs`), so moving
@@ -339,10 +395,9 @@ missing, `look` lacks an expected action, or a menu is blank.
 
 Sign checks: no sign with that id within 8 m, a card with no title or no
 section text (keys resolved through the string table), Read not offered, or a
-card blank in play. While `TOWN.requireSigns` is `false` these print as
-`sign: pending (...)` warnings and do not fail. M1-09 places the signs and
-sets it to `true`, after which the same checks fail the row, offline and in
-play. `selftest` covers a missing sign, a blank card, a sign 9 m away, an 80 m
+card blank in play. `TOWN.requireSigns` is `true` since M1-09 placed the
+signs (`Signs.layer`), so these fail the row, offline and in play. Set to
+`false`, they print as `sign: pending (...)` warnings instead. `selftest` covers a missing sign, a blank card, a sign 9 m away, an 80 m
 outlier, an empty look, an action on another entity, and the flag.
 
 ## DebugWorld chains
@@ -350,7 +405,7 @@ outlier, an empty look, an action on another entity, and the flag.
 `node agent-box/harness.mjs chains` checks the probe list against the layer
 files, with no game: every required DebugWorld layer has a named stand target
 or a recorded gap. `chains --run` is the play-mode e2e: it spawns through
-the faction buttons when no character exists, then stands beside each named
+the registration form when no character exists, then stands beside each named
 probe, reads `look`, and calls `use` on the expected action.
 `agent-box/flows/chain-apple.txt` is the apple gather-then-trade sequence on
 its own. Probes live in `agent-box/chains.mjs`.
@@ -372,7 +427,8 @@ its own. Probes live in `agent-box/chains.mjs`.
 | CrimeChain | `CrimeTrader_Debug`, `CrimeFurnace_Debug` | open trader, process |
 | Jobs | `GatherPoint_AppleTree` | gather |
 | Shops | general store, black market | `EL_ShopAction` |
-| Police | `PoliceStation_Debug` | `EL_DutyAction` |
+| Police | `Roadmap_Police_Desk` | `EL_DutyAction` (Clock in / Clock out) |
+| Police | `Roadmap_Police_WantedBoard` | `LF_WantedBoardReadAction` |
 | Survival | food and water points | gather |
 | Houses | `House_Door_Locked` | `SCR_DoorUserAction` |
 | Crimes (not `CrimeChain.layer`) | money, weapon, vehicle points | rob actions |
@@ -400,7 +456,7 @@ empty rock shells 6-8 m away.
 | `CementPlant_Debug` | `Sandbag.et` is a child of the gravel bag with an explicit 1x1 volume slot. The old 2x1 bag was rejected by the inventory, so the plant never saw its third input. |
 | `Furnace`, `CrimeFurnace_Debug` | Iron, gold, and copper nuggets use `SLOT_1x1`. `IronOre_Debug` grants 4 nuggets, enough for both furnaces. `use EL_ProcessAction` hits the first action, the iron smelt. |
 | `Sawmill_Debug` | `LogPile_Debug` grants `WoodLog_01_Small.et` before any weapon pickup, so the log stays in hand. A later pickup drops it. |
-| `PoliceStation_Debug` | The chain opens the debug menu and clicks `FactionPoliceButton` first (sets police and duty); the duty action then toggles. |
+| `Roadmap_Police_Desk` | The chain opens the debug menu and clicks `FactionPoliceButton` first (sets police and duty without the inventory swap); the desk then offers Clock out. A real officer must be on the police roster (whitelist file) to clock in. |
 | `RobberyPoint_Money` / `_Weapon` / `_Vehicle` | These DebugWorld points set `m_iMinPoliceOnDuty` to 0 (the action classes default to 2 / 1 / 3), so they run while the character is civilian. |
 
 ### Launching Workbench for a live run
@@ -416,14 +472,28 @@ relaunch. Last full run (2026-10-10): 36 probes, `stand_fail=0`,
 
 One dedicated server and up to three game clients run side by side on one PC
 (verified 2026-11-08 on an RTX 3080, 16 GB, Windows 11). Steam starts a second
-`ArmaReforgerSteam.exe`; each client gets its own `-profile`, a 640x360 window
-along the top of the screen, and joins `127.0.0.1:2001` with `-client`.
+`ArmaReforgerSteam.exe`; each client gets its own `-profile`, a window in a row
+along the top, and joins `127.0.0.1:2001` with `-client`.
+
+Client size is `--res WxH`, 1280x720 by default; use `--res 1920x1080` for
+final evidence. `System.MakeScreenshot` writes the window's backbuffer, so a
+`shot ui` is the size of the client and includes every menu, sheet, and toast.
+Clients run on the hidden `LF-Agents` desktop: a 1920x1080 window never covers
+the user's screen or takes focus, and screenshots still work there.
+`--visible` starts the clients on the user's desktop instead (with `-noFocus`),
+which is what `tools/film` needs.
 
 ```powershell
-node agent-box/session.mjs up --clients 2     # server, then clients; waits for both faction menus
+node agent-box/session.mjs roster 2             # put player id 2 on the police roster (before up)
+node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms
+node agent-box/session.mjs up --clients 2 --mission playtest   # LF_PlaytestTown, harness build
+node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop
+node agent-box/session.mjs up --clients 2 --visible            # on the user's desktop, for film
+node agent-box/session.mjs restart            # playtest: shutdown save, load, same clients rejoin
 node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client
 node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
 node agent-box/session.mjs proof              # client 1 robs Roadmap_Fuel_Till, client 2 (police) gets the alert
+node agent-box/session.mjs police-proof       # client 2 clocks in at the desk, client 1 robs the till, both read the wanted board
 node agent-box/session.mjs down               # closes every process the session started
 ```
 
@@ -433,6 +503,21 @@ node agent-box/session.mjs down               # closes every process the session
   game mode keeps dev tools open and the harness passes `EL_DevGate`. On the
   playtest mission a non-admin's `stand` and `use` come back as
   `error dev_gate_closed` (LOGIC test `harness/dev-gate-dedicated`).
+- `up --mission playtest` runs `LF_PlaytestTown` the way `tools\cli host start`
+  does (dev gate closed, debug menu closed, host stop file) and adds
+  `-scrDefine LF_HARNESS` on the server and every client. In that build the
+  harness RPCs (`stand`, pose, `use`) pass their own gate
+  (`EL_DevGate.HarnessBuild`, `[ELDebug:AgentHarness] stand allowed: LF_HARNESS
+  build`); the debug menu stays refused. The define changes the script
+  checksum, so a client without it (a real player) is refused at the door, and
+  `host start` never passes it (host selftest; the suite pins
+  `HarnessBuild()` false in `harness/dev-gate-dedicated`). Police and cash
+  fixtures from the debug menu do not exist there.
+- `restart` (playtest mission only) writes the host stop file, waits for the
+  server to close after its `SHUTDOWN` save, closes the clients, boots the
+  server with `-loadSessionSave`, and relaunches the same client profiles in
+  the same order, 15 s apart, so player ids and the `LF_SESSION_IDENTITY`
+  accounts match. It waits for `flow start for player <n>` per client.
 - Server and clients pass `-noBackend` and `-scrDefine LF_SESSION_IDENTITY`.
   Without the backend every client has the NULL identity and the same Steam
   name, so the define gives each player id its own identity. The define must be
@@ -444,9 +529,67 @@ node agent-box/session.mjs down               # closes every process the session
 - Memory: each client takes about 2.1 GB private, the server about 0.8 GB. With
   Workbench also open the server logged `Out of memory. Free system ~300 MB`
   during client load and kept running.
-- Police comes from the debug menu (`FactionPoliceButton`): the session has no
-  whitelist file, so the faction menu refuses police.
+- Police: there is no faction screen. `roster <id>` writes the server profile's
+  `LifeFramework/whitelist.txt` with that player id's session identity before
+  `up`; that client can then Clock in at `Roadmap_Police_Desk`. `proof` still
+  uses the debug menu (`FactionPoliceButton`), which sets the role without the
+  inventory swap. The wanted card's posters are logged on the reading client
+  (`[ELDebug:WantedBoard] poster N: ...`); read the client log after `down`.
 - `shot world` and `stand` move the body on the owning client (the server
   pose alone is overwritten by a remote client), so `--client <n> shot world`
   photographs from the hidden `LF-Agents` desktop. M1-25 took its village
   evidence this way (2026-11-08).
+
+## Journey (multi-client)
+
+`node agent-box/journey.mjs` (or `harness.mjs journey`, `harness.mjs report
+journey`) plays the M1 journey on a running `session.mjs up --clients 2` and
+writes `agent-box/reports/journey.html`. Each step is driven from a game client
+the way a player does it: `stand` (facing the site), `use`, then the screen's
+own buttons and fields (`click`, `type`, `wait-text`). It reads `state` on
+the clients it touches before and after, judges the change, and takes
+`ui-shot`s: the screens a step opens (form, ATM terminal, price list, cash
+sheet, ledger) and one picture from each client it touched at the end of every
+step, refusals and toasts included. The report puts the pictures beside the verdict, the state table
+(changed cells marked), and every command with its result.
+
+```powershell
+node agent-box/session.mjs up --clients 2          # bare DebugWorld
+node agent-box/journey.mjs                         # every step that fits the session
+node agent-box/journey.mjs atm shop                # only those (arrive runs first when needed)
+node agent-box/journey.mjs --list
+node agent-box/session.mjs down
+
+node agent-box/session.mjs up --clients 2 --visible
+node agent-box/journey.mjs job earn atm shop --film   # mp4 + GIF of client 1 in reports/film/, linked from the report
+node agent-box/session.mjs down
+
+node agent-box/session.mjs up --clients 2 --mission playtest
+node agent-box/journey.mjs job earn atm restart    # restart: save, stop, load, rejoin, compare
+node agent-box/session.mjs down
+```
+
+| Step | Client | Done by | Passes when |
+| --- | --- | --- | --- |
+| `arrive` | 1, 2 | faction Civilian, Town, R-89 form typed and signed | both are CIVILIAN |
+| `job` | 1 | `LF_JobSignUpAction` at `Roadmap_Job_Depot` | `job` is not UNEMPLOYED |
+| `earn` | 1 | start run, stand at `Roadmap_Job_Drop`, drop off | cash rises |
+| `fund` | 1 | debug menu `GiveCashButton` (fixture; bare DebugWorld only) | cash +1000 |
+| `atm` | 1 | ATM terminal: key the amount, `DepositButton`, `wait-text DEPOSITED` | bank +amount, cash -amount (1200, or 100 when less is carried) |
+| `shop` | 1 | price list `Item0Row_Action`, `PayButton` | cash falls |
+| `vehicle` | 1 | `EL_VehicleBuyAction` at `Roadmap_Vehicle_Lot` (S105, 1000 from the bank) | bank -1000; "blocked" when the bank holds less |
+| `give` | 1, 2 | stand at `Player<id>`, `LF_GiveCashAction`, type 50, hand over | -50 / +50 |
+| `police` | 2 | debug menu `FactionPoliceButton` (fixture; bare DebugWorld only) | POLICE on duty |
+| `rob` | 1, 2 | `EL_RobAction` at `Roadmap_Fuel_Till` | wanted and cash rise; an on-duty officer's last toast is the robbery alert |
+| `org` | 1 | org desk: type the name in the ledger's field, Sign | `org` is the new name |
+| `garage` | 1 | stand at `Roadmap_Garage`, `look` | store or retrieve offered |
+| `restart` | 1, 2 | `session.mjs restart` (playtest mission only) | cash, bank, org, job unchanged |
+
+This is the harness M1-23 (#108) proves the journey with, not that proof:
+police clock-in at the desk, dispatch, tickets, jail, hideout, stash, and
+contraband are M1-23's to add as their scopes land. Debug-menu fixtures make
+the bare DebugWorld run reach the car in one pass; the playtest run has no
+fixtures, so a step that needs more money than a courier run pays reports
+"blocked". First runs (2026-11-08): bare DebugWorld 10 of 12 (org: the desk was
+still the old menu, #168), playtest restart kept cash, bank, and org but lost
+the signed-up job.

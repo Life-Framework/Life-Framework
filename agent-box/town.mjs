@@ -26,11 +26,15 @@ import { loadWorld } from "./layers.mjs";
 //            quarry, the contraband barn out of town): the neighbour rule skips
 //            it (docs/roadmap/m1-25-village.md)
 export const TOWN = {
-  requireSigns: false,
+  requireSigns: true,
   signRadiusM: 8,
   neighbourM: 30,
   sites: [
-    { id: "spawn", prefab: "Prefabs/MP/Spawn/SpawnPoint_LIFE.et", actions: [], sign: "town_map", step: 4 },
+    // The civilian town spawn on the square. The other spawn points (mine,
+    // police) are elsewhere, and their centre is not a place a player stands.
+    { id: "spawn", entity: "Spawn_Town", actions: [], sign: "town_map", step: 4 },
+    // Arrival step 1 on the square; the town map board explains it. M1-18 swaps in the clerk prefab.
+    { id: "clerk", prefab: "Prefabs/Characters/Quests/QuestGiver_Start.et", actions: ["LF_QuestAction"], sign: null, step: 5 },
     { id: "post_office", entity: "Roadmap_Job_Depot", actions: ["LF_JobSignUpAction", "LF_JobStartRunAction"], sign: "post_office", step: 6 },
     { id: "job_drop", entity: "Roadmap_Job_Drop", actions: ["LF_JobDropoffAction"], sign: null, step: 7 },
     { id: "traders", entity: "TraderChainCounter", actions: ["EL_OpenTraderAction"], sign: "traders", step: 7 },
@@ -44,21 +48,23 @@ export const TOWN = {
     { id: "hospital", entity: "Roadmap_Hospital_Cabinet", actions: ["LF_HospitalCabinetAction"], sign: "hospital", step: 13 },
     { id: "convoy_pickup", entity: "Roadmap_Convoy_Start", actions: ["LF_ConvoyStartAction"], sign: "convoy_pickup", step: 14, outskirts: true },
     { id: "convoy_drop", entity: "Roadmap_Convoy_Drop", actions: ["LF_ConvoyDeliverAction"], sign: "convoy_drop", step: 14 },
-    // Duty is on Police.layer today; Roadmap_Police_Desk has no components (M1-11).
-    { id: "police_station", entity: "PoliceStation_Debug", actions: ["EL_DutyAction"], sign: "police_station", step: 15 },
+    // The duty desk (Clock in / Clock out) and the wanted board stand in front of the station (M1-11).
+    { id: "police_station", entity: "Roadmap_Police_Desk", actions: ["EL_DutyAction"], sign: "police_station", step: 15 },
+    { id: "wanted_board", entity: "Roadmap_Police_WantedBoard", actions: ["LF_WantedBoardReadAction"], sign: null, step: 17 },
     { id: "police_armory", entity: "Roadmap_Police_Armory", actions: ["LF_ArmoryDrawAction"], sign: null, step: 15 },
     { id: "escort_car", entity: "Roadmap_Escort_Car", actions: ["LF_JailPutInVehicleAction"], sign: null, step: 18 },
     // Arrest is a character action; the cell itself offers nothing to press.
     { id: "jail", entity: "Roadmap_Jail_Cell", actions: [], sign: "jail", step: 20 },
     { id: "org_registry", entity: "Roadmap_Org_Desk", actions: ["EL_OrganizationDeskAction"], sign: "org_registry", step: 21 },
     { id: "hideout", entity: "Roadmap_Hideout_Machine", actions: ["EL_ProcessAction"], sign: "hideout", step: 22 },
-    { id: "garage", entity: "Roadmap_Garage", actions: ["EL_VehicleStoreAction", "EL_VehicleRetrieveAction"], sign: "garage", step: 23 },
+    { id: "garage", entity: "Roadmap_Garage", actions: ["EL_VehicleStoreAction", "EL_VehicleRetrieveAction", "LF_GarageLedgerAction"], sign: "garage", step: 23 },
+    { id: "impound", entity: "Roadmap_Impound_Desk", actions: ["LF_ImpoundCollectAction", "LF_GarageLedgerAction"], sign: "impound", step: 23 },
     { id: "mining", entity: "Furnace", actions: ["EL_ProcessAction"], sign: "mining", step: 7, outskirts: true },
     { id: "farm", entity: "TomatoCrop_Debug", actions: ["EL_GatherAction"], sign: "farm", step: 7, outskirts: true },
   ],
 };
 
-const SIGN_FIELDS = ["m_sTitle", "m_sWhat", "m_sHow", "m_sNeeds", "m_sRules"];
+const SIGN_FIELDS = ["m_sTitle", "m_sWhat", "m_sHow", "m_sNeeds", "m_sRules", "m_sNext"];
 
 function round(value) {
   return Math.round(value * 1000) / 1000;
@@ -177,7 +183,7 @@ export function signCard(id, catalog, strings) {
     const value = (def[field] || "").trim();
     resolved[field] = value.length > 1 && value.startsWith("#") ? (strings.get(value.slice(1)) || "").trim() : value;
   }
-  const sections = ["m_sWhat", "m_sHow", "m_sNeeds", "m_sRules"].filter((field) => resolved[field]).length;
+  const sections = ["m_sWhat", "m_sHow", "m_sNeeds", "m_sRules", "m_sNext"].filter((field) => resolved[field]).length;
   return { found: true, blank: !resolved.m_sTitle || sections === 0, title: resolved.m_sTitle, sections };
 }
 

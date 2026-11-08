@@ -8,7 +8,7 @@
 A sign is a 1989 board, pub sign, notice, or chalkboard that belongs in the
 scene. The title is printed on the prop (a paper sheet pinned to the cork
 board, or the A4 notice itself), and looking at it shows `Read: <title>` in
-the interaction prompt. Read opens a short paper card: What, How, Needs, Rules.
+the interaction prompt. Read opens a short paper card: What, How, Needs, Rules, Next.
 
 ## Shape
 
@@ -26,14 +26,21 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules.
   `UI/Layouts/Signs/LF_SignFace.layout` (paper, ink title in capitals) and
   points its `RTTextureWidget` at a mesh whose material is
   `Assets/Signs/Data/LF_SignFace.emat` (`BCRMap "$rendertarget"`), the
-  vanilla ballistic-table pattern. The board spawns a local `LF_SignFace`
-  child (the vanilla A4 poster mesh) on its -Z face, where vanilla filled
+  vanilla ballistic-table pattern. The sheet reads from the board's local
+  +Z side; placed signs turn that side to the street. The board spawns a local `LF_SignFace`
+  child (the vanilla A4 poster mesh) at `m_vFaceOffset`, where vanilla filled
   boards pin their posters. The notice retargets its own poster material
   (`m_bFaceOnOwner`). A dedicated server, or a client with no workspace,
   skips it. The render target is the layout size times the screen DPI
-  scale while its widgets lay out one unit per pixel, so `FaceTitleRect`
-  sizes the title by `DPIScale(1)`; anchored to the full sheet it was cut
-  off in a small window. Pub signs and chalkboards keep `m_bShowFace 0` until a rendering
+  scale while its widgets lay out one unit per pixel, so in Workbench
+  `FaceTitleRect` sizes the title by `DPIScale(1)`; anchored to the full
+  sheet it was cut off in a small window. That branch is Workbench only
+  (`#ifdef WORKBENCH`). A game client uses `ClientTitleRect`: at 640x360 and
+  at 1920x1080 alike only about 328 of the 512 units across reach the paper
+  (full height shows), so the title box is x 20..310, and the font is 96 or
+  smaller so the longest word fits (0.62 em per capital; a word does not
+  wrap). The DPI-scaled box printed in the sheet's top-left third; the full
+  box at 96 cut WELCOME to WELCO. Pub signs and chalkboards keep `m_bShowFace 0` until a rendering
   pass places their sheet; the mining and whitelist plates keep their painted
   vanilla text.
 - An unknown or empty id, or a sign with no title, logs
@@ -51,5 +58,10 @@ sets `m_sSignId`. `EL_MiningSign` (`mining`) and `EL_WhitelistSign`
 ## Tests
 
 LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`,
-`signs/face-fit`. WORLD
-`signs/prefabs`.
+`signs/face-fit`, `signs/face-client`. WORLD `signs/prefabs`,
+`signs/coverage` (every placed sign resolves; every catalog row is placed).
+
+## Placement
+
+`Worlds/DebugWorld/DebugWorld_Layers/Signs.layer`, one per town manifest site
+(`agent-box/town.mjs`, `requireSigns` true), within 8 m and facing the street.

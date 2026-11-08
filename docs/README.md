@@ -44,6 +44,7 @@ Feature design context files live beside the code in
 - [EveronLife forks](everonlife-forks.md) — what the EveronLife forks hold and what was already ported.
 - [Life/RP benchmark](research/life-rp-benchmark.md) — Altis Life, GTA RP, and Elan Life against ours: feature matrix, what kept and lost players, top 10 M2+ candidates, open taste questions.
 - [Discord server](community/discord.md). Channel layout, roles, and moderation of the community Discord.
+- [Support and donations](community/support.md). Donation routes compared, the cost list, and how to switch the support page on.
 - [Ecosystem leverage map](ecosystem.md) — community repos, Workshop dependencies, free asset sources, licenses, and the import policy.
 
 ## Agent guidance

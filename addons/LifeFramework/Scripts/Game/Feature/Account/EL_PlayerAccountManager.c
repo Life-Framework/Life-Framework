@@ -60,11 +60,15 @@ class EL_PlayerAccountManager : Managed
 
 			EL_PlayerAccount account = EL_PlayerAccount.Create(record.m_sPersistentId);
 			account.m_iActiveCharacterIdx = record.m_iActiveCharacterIdx;
-			account.m_eFaction = record.m_eFaction;
-			// A persisted non-civilian faction is proof the choice was made; a persisted civilian
-			// may just be the default, so it re-opens the faction menu on a no-character account.
-			account.m_bFactionChosen = (record.m_eFaction != EL_Faction.CIVILIAN);
-			account.m_bOnDuty = record.m_bOnDuty;
+			// The faction is the duty role (POLICE only while clocked in). A save from the faction
+			// screen era can hold POLICE off duty, or a civilian on duty: both load as civilian.
+			bool onDutyPolice = record.m_bOnDuty && record.m_eFaction == EL_Faction.POLICE;
+			if (onDutyPolice)
+				account.m_eFaction = EL_Faction.POLICE;
+			else
+				account.m_eFaction = EL_Faction.CIVILIAN;
+
+			account.m_bOnDuty = onDutyPolice;
 			account.SetWantedLevel(record.m_iWantedLevel);
 
 			// Rank and duty totals are not in this record; the progression payload (save version

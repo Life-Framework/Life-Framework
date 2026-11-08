@@ -3,6 +3,10 @@
 //   [ELTEST]   - stand is refused with dev_gate_closed (expected 'dev_gate_closed', got 'no_character')
 //   [ELTEST] SUMMARY tier=fast passed=100 failed=1 total=101
 // Restored the check and the suite went green (101/101).
+// red-proof (LF_HARNESS, #108): made EL_DevGate.HarnessBuild return true without the define
+// (2026-11-08). Observed:
+//   [ELTEST]   - a build without LF_HARNESS keeps the hosted harness gate closed
+// Restored it and the test passed.
 
 // tier: LOGIC
 //! M1-05: a multi-client session drives clients through the harness RPCs on a dedicated server.
@@ -38,5 +42,10 @@ class EL_Test_HarnessDevGate : EL_Test
 		// so the refusal above is the gate and not a side effect of the null character.
 		string open = EL_AgentHarness.ServerStand(null, "Roadmap_Fuel_Till", true, destination);
 		ctx.EqualStr("no_character", open, "an open gate reaches the character check");
+
+		// The harness opens its gate on the playtest mission only in a build compiled with
+		// -scrDefine LF_HARNESS (session.mjs up --mission playtest). The suite, like tools\cli host
+		// start, is built without it, so nothing but that define can open the hosted gate.
+		ctx.False(EL_DevGate.HarnessBuild(), "a build without LF_HARNESS keeps the hosted harness gate closed");
 	}
 }
