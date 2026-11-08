@@ -121,7 +121,7 @@ Layer: `Roadmap_Fuel_Till`.
 
 | Gate | Case |
 | --- | --- |
-| Headless | Same pins as `crime/rob-reward` and `crime/rob-wanted-clamp`: cash up, bank unchanged, wanted up, cooldown refuses, refusal is logged |
+| Headless | Same pins as `crime/rob-reward` and `roadmap/fuel`: cash up, bank unchanged, wanted up, cooldown refuses, refusal is logged |
 | E2E | `Roadmap_Fuel_Till` pays the fixed test amount once |
 | Visual | `shot world Roadmap_Fuel_Till`. `wb_capture` of `FuelStation_E_01` |
 

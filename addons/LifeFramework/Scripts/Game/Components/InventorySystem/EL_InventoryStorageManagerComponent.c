@@ -30,14 +30,14 @@ modded class SCR_InventoryStorageManagerComponent
 		}
 
 		ResourceName itemPrefab = pItem.GetPrefabData().GetPrefabName();
-		int unitValue = GetItemValue(trader, itemPrefab);
+		int unitValue = EL_TraderManagerComponent.GetUnitValue(trader.m_aTradableItems, itemPrefab);
 		if (unitValue <= 0)
 		{
 			FailSell(cb);
 			return;
 		}
 
-		if (trader.m_bBlackMarket && !CanAccessBlackMarket(seller))
+		if (trader.m_bBlackMarket && !EL_TraderManagerComponent.CanAccessBlackMarket(GetPlayerAccount(seller)))
 		{
 			FailSell(cb);
 			return;
@@ -83,22 +83,6 @@ modded class SCR_InventoryStorageManagerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected int GetItemValue(EL_TraderManagerComponent trader, ResourceName itemPrefab)
-	{
-		if (!trader.m_aTradableItems)
-			return 0;
-
-		foreach (EL_TraderItem tradableItem : trader.m_aTradableItems)
-		{
-			if (tradableItem.m_ItemPrefab == itemPrefab)
-			{
-				return tradableItem.m_ValuePerItem;
-			}
-		}
-		return 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Stack size of the sold entity; 1 for items without a quantity component.
 	protected int GetItemQuantity(IEntity item)
 	{
@@ -109,16 +93,6 @@ modded class SCR_InventoryStorageManagerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Black market access. Fails closed: an account that cannot be verified
-	//! as civilian is not admitted.
-	protected bool CanAccessBlackMarket(IEntity playerEntity)
-	{
-		EL_PlayerAccount account = GetPlayerAccount(playerEntity);
-		if (!account)
-			return false;
-		return account.GetFaction() == EL_Faction.CIVILIAN;
-	}
-
 	protected EL_PlayerAccount GetPlayerAccount(IEntity user)
 	{
 		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();

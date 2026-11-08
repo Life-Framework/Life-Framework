@@ -1,7 +1,6 @@
-// red-proof: expect 3 tomatoes after SpawnPrefabs instead of 5 (or point the
-// assertion at an empty m_PrefabToSpawn) and run `tools\cli test --tier all`.
-// Red run pending: blocked by the parallel-workstream rule (tools\cli test is
-// serial-only this session); the mutation above fails on the next full-tier run.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: expecting 3 tomatoes after SpawnPrefabs
+// failed it with `[ELTEST] FAIL crop/area-spawner`,
+// `- SpawnPrefabs drops 5 tomatoes (was 0, now 5) (expected 3, got 5)`. Restored; green.
 // tier: WORLD
 class EL_Test_AreaSpawner : EL_Test
 {

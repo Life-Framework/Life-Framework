@@ -1,4 +1,9 @@
-// red-proof: 2026-10-11 fast boot logs_2026-10-11_05-19-01 printed [ELTEST] FAIL roadmap/contraband / [ELTEST]   - delivery pays the configured cash once (expected 0, got 200)
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: commenting out
+// `state.m_sOrganizationId = organizationId;` in LF_Hideout.Assign failed all three tests here:
+// `[ELTEST] FAIL roadmap/hideout` (`- ownership is the organization id (expected '<org id>', got '')`),
+// `[ELTEST] FAIL e2e/roadmap-hideout` (`- the lock identifier is the organization id`), and
+// `[ELTEST] FAIL roadmap/hideout-save` (`- one hideout record is exported (expected 1, got 0)`).
+// Restored; green.
 
 // tier: LOGIC
 class EL_Test_Roadmap_Hideout : EL_Test

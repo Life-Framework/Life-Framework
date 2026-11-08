@@ -265,6 +265,12 @@
   (partial removals rolled back) and pay cash out on withdraw (all-or-nothing
   with balance restore), guarded by `EL_ATMManager.IsValidAmount`. No money
   from thin air.
+- ✅ The money-moving bodies are the static seams
+  `EL_CharacterATMComponent.ServeDeposit/ServeWithdraw` (extracted 2026-11-07,
+  no behavior change; the RPC handlers keep the range check and reply);
+  `atm/request-cash-boundary` (WORLD) drives them with a real character
+  (red-proof observed 2026-11-08). The withdraw rollback case pays into an
+  entity with no inventory: a bare `Character_Roleplay` still holds MoneyStack.
 - ✅ **At the ATM only** (2026-11-07): the server refuses a
   deposit or withdraw unless an entity carrying `EL_ATMAction` stands within
   `EL_CharacterATMComponent.ATM_RANGE` (5 m) of the character
@@ -307,6 +313,10 @@
   (pay-before-delete, clawed back if the item cannot be removed); black-market
   rejects non-civilian factions. The old "payout to ATM bank" and the
   `Print("testtesttest")` debug line are gone.
+- ✅ The value lookup and the black-market decision are the static seams
+  `EL_TraderManagerComponent.GetUnitValue` / `CanAccessBlackMarket`
+  (extracted 2026-11-07; the lookup now skips a null row instead of crashing),
+  pinned by `trader/sell-rules` (LOGIC; red-proof observed 2026-11-08).
 - ⚠️ Unguarded `pStorageFrom.GetOwner()` (null crash); null `m_aTradableItems`
   foreach crash; delete-then-pay not atomic; `RETCODE_ITEM_TOO_BIG` used for
   "not tradable"; black-market check fails closed but is only cache-keyed.
@@ -612,7 +622,7 @@
 - ✅ **Cash payout + reliable wanted bump** (verified 2026-08-30): the haul is
   `EL_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
   asserts the bank balance stays 0), and the account cache churn is fixed so
-  every robbery escalates wanted (pin test `crime/rob-wanted-clamp`).
+  every robbery escalates wanted.
 - ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
   `Street_Fuel.layer` at `201 0 120` is
   `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits
@@ -628,6 +638,16 @@
   is the capture prefab and is not placed in the row. Player strings:
   `#EL-Fuel_Till_Rob`, `#EL-Rob_Cooldown`, `#EL-Rob_CiviliansOnly`,
   `#EL-Rob_NeedPolice`.
+- ✅ **Tests call the real actions** (2026-11-07; red-proofs observed
+  2026-11-08). `crime/rob-reward` (WORLD) runs `EL_RobAction.CommitRobbery` with a
+  real character: MoneyStack cash, bank 0, wanted +1, cooldown, civilian gate.
+  The weapon and vehicle grant/spawn, wanted, and alert moved into
+  `EL_RobWeaponAction.CommitWeaponRobbery` and
+  `EL_RobVehicleAction.CommitVehicleRobbery` (wanted `WANTED_INCREASE` 2 / 3;
+  `PerformAction` keeps the server-only guard), and their civilian check into
+  `EL_RobAction.IsFactionAllowedToRob`; `crime/rob-weapon-vehicle` (WORLD)
+  drives them. The earlier `crime/rob-reward` and `crime/rob-wanted-clamp`
+  never called an action and are gone; the clamp is pinned by `roadmap/fuel`.
 - ✅ **No account, no robbery** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `CommitRobbery` refuses and logs
   `robbery refused: no account` instead of paying without the civilian gate and
   wanted bump. `PerformAction` runs on the server only; offers read
@@ -1038,8 +1058,9 @@
   `tools\cli validate` runs
   `validate-debugworld.ps1` to guard the layer set.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
-  trader cash payout → shop purchase → ATM deposit path. Robbery proceeds are
-  asserted as cash and are not added to the bank.
+  trader cash payout → shop purchase → ATM deposit path. The robbery step calls
+  `EL_RobAction.CommitRobbery` (2026-11-07; it used to hand-write the payout);
+  its proceeds are asserted as cash and are not added to the bank.
 - ✅ `debugworld/entity-collision` checks live physics bodies, geometry, and
   sphere sweeps through both apple trade crates and all three trader tables.
   Flags alone cannot prove collision. World initialization runs first in

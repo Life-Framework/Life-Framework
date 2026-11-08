@@ -35,5 +35,5 @@ One DebugWorld till. Cash increases, bank balance does not, wanted increases by 
 
 ## Proof
 
-- Logic: same pin style as `crime/rob-reward` and `crime/rob-wanted-clamp`.
+- Logic: same pin style as `crime/rob-reward` and `roadmap/fuel`.
 - World: the till on a station prefab pays once per cooldown.

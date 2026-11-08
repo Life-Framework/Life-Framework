@@ -1,6 +1,6 @@
-// red-proof: change an expected value (e.g. clamp quantity 1 -> 2, or the
-// rejection return) and run `tools\cli test --tier all`. Red run pending:
-// first boot after the EPF dependency removal lands.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: expecting AddQuantity(5) to clamp to 2 failed it
+// with `[ELTEST] FAIL quantity/stack-clamp`,
+// `- AddQuantity(5) clamps to max 1 (expected 2, got 1)`. Restored; green.
 // tier: WORLD
 class EL_Test_QuantityStack : EL_Test
 {

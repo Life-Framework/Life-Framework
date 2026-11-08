@@ -1,7 +1,6 @@
-// red-proof: the assertion "a restart still refuses a uid that was not saved" was
-// inverted to ctx.True (expecting the unsaved uid to be listed) and then restored
-// in this same change. The game suite was not booted, so no [ELTEST] FAIL line
-// was observed.
+// red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: inverting "a restart still refuses a uid
+// that was not saved" to ctx.True failed it with `[ELTEST] FAIL whitelist/persist`,
+// `- a restart still refuses a uid that was not saved`. Restored; green.
 
 // tier: LOGIC
 class EL_Test_WhitelistPersist : EL_Test

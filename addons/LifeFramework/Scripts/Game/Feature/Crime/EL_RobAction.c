@@ -258,7 +258,19 @@ class EL_RobAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static EL_PlayerAccount FindAccount(string playerUid)
+	//! The civilian gate the weapon and vehicle robberies offer through. A missing account is
+	//! allowed, the same as their original inline check; a non-civilian account is refused.
+	static bool IsFactionAllowedToRob(string playerUid)
+	{
+		EL_PlayerAccount account = FindAccount(playerUid);
+		if (account && account.GetFaction() != EL_Faction.CIVILIAN)
+			return false;
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static EL_PlayerAccount FindAccount(string playerUid)
 	{
 		if (playerUid.IsEmpty())
 			return null;
