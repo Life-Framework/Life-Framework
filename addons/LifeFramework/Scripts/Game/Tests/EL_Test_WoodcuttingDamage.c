@@ -1,7 +1,7 @@
-// red-proof: PENDING. Not yet observed. Planned perturbation: make
-// EL_DestructibleResourceHitZone.ComputeEffectiveDamage return 0.0 and run
-// `tools\cli test --no-build --tier all`; "axe damage lowers the tree hit zone
-// health" must fail. Record the observed line here before this PR leaves draft.
+// red-proof: 2026-11-08, EL_DestructibleResourceHitZone.ComputeEffectiveDamage returned
+// 0.0 for a matched tool; `tools\cli test --no-build --tier all` failed 1 of 149 with
+// "the axe maps to positive damage on the tree" and "axe damage lowers the tree hit
+// zone health (100 -> 100)". Restored, green.
 
 // tier: WORLD
 //! Logging chain wiring (logging/chain-wiring) proves the axe is listed on the
@@ -37,12 +37,23 @@ class EL_Test_WoodcuttingDamage : EL_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(EL_TestContext ctx)
 	{
-		EntitySpawnParams params();
-		params.TransformMode = ETransformMode.LOCAL;
+		IEntity tree = EL_Utils.SpawnEntityPrefab(TREE, vector.Zero);
+		IEntity axe = EL_Utils.SpawnEntityPrefab(AXE, vector.Zero);
+		IEntity pickaxe = EL_Utils.SpawnEntityPrefab(PICKAXE, vector.Zero);
 
-		IEntity tree = GetGame().SpawnEntityPrefab(Resource.Load(TREE), GetGame().GetWorld(), params);
-		IEntity axe = GetGame().SpawnEntityPrefab(Resource.Load(AXE), GetGame().GetWorld(), params);
-		IEntity pickaxe = GetGame().SpawnEntityPrefab(Resource.Load(PICKAXE), GetGame().GetWorld(), params);
+		RunChecks(ctx, tree, axe, pickaxe);
+
+		if (tree)
+			SCR_EntityHelper.DeleteEntityAndChildren(tree);
+		if (axe)
+			SCR_EntityHelper.DeleteEntityAndChildren(axe);
+		if (pickaxe)
+			SCR_EntityHelper.DeleteEntityAndChildren(pickaxe);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RunChecks(EL_TestContext ctx, IEntity tree, IEntity axe, IEntity pickaxe)
+	{
 		ctx.NotNull(tree, "cuttable tree spawns");
 		ctx.NotNull(axe, "axe spawns");
 		ctx.NotNull(pickaxe, "pickaxe spawns");
