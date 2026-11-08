@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------
-//! Police tuning: per-rank permissions, and the wanted board and crime reports (M1-11).
+//! Police tuning: per-rank permissions, the wanted board and crime reports (M1-11), and the
+//! paper ticket (M1-19): offences with fixed amounts, both deadlines, and the late rule.
 //! Loaded from Configs/Police/LF_Police.conf.
 //! Ranks are LF_PoliceRanks.PATROL (0) and SENIOR (1). A minimum rank of 0 opens the action to
 //! every on-duty officer. Flagship default (docs/decisions.md, "Every on-duty officer can arrest"):
@@ -17,6 +18,10 @@ class LF_PoliceConfig
 	static const float DEFAULT_PLACE_RADIUS = 80;
 	static const float DEFAULT_BOARD_READ_DISTANCE = 4;
 	static const int DEFAULT_BOARD_MAX_POSTERS = 8;
+	static const int DEFAULT_TICKET_FIRST_DEADLINE = 1800;
+	static const int DEFAULT_TICKET_SECOND_DEADLINE = 1800;
+	static const float DEFAULT_TICKET_LATE_MULTIPLIER = 2;
+	static const int DEFAULT_TICKET_LATE_WANTED = 1;
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)")]
 	int m_iArrestMinRank;
@@ -38,6 +43,21 @@ class LF_PoliceConfig
 
 	[Attribute("8", UIWidgets.Auto, "Most posters the wanted board shows, newest first")]
 	int m_iBoardMaxPosters;
+
+	[Attribute("", UIWidgets.Object, "Offences an officer can write on a ticket, each with its fixed amount. The rank fine cap decides which ones an officer may write")]
+	ref array<ref LF_TicketOffence> m_aTicketOffences;
+
+	[Attribute("1800", UIWidgets.Auto, "Online seconds a ticket holder has to pay at the police desk before the amount goes up")]
+	int m_iTicketFirstDeadline;
+
+	[Attribute("1800", UIWidgets.Auto, "Further online seconds after the first deadline before an unpaid ticket makes the holder wanted")]
+	int m_iTicketSecondDeadline;
+
+	[Attribute("2", UIWidgets.Auto, "The amount is multiplied by this once, at the first deadline")]
+	float m_fTicketLateMultiplier;
+
+	[Attribute("1", UIWidgets.Auto, "Wanted levels added at the second deadline")]
+	int m_iTicketLateWanted;
 
 	protected static ref LF_PoliceConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -132,5 +152,91 @@ class LF_PoliceConfig
 			return DEFAULT_BOARD_MAX_POSTERS;
 
 		return config.m_iBoardMaxPosters;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ticket offences, in form order. A missing config or an empty list is the flagship list.
+	static void TicketOffences(notnull array<ref LF_TicketOffence> outOffences)
+	{
+		outOffences.Clear();
+		LF_PoliceConfig config = Get();
+		if (config && config.m_aTicketOffences)
+		{
+			foreach (LF_TicketOffence offence : config.m_aTicketOffences)
+			{
+				if (offence && !offence.m_sName.IsEmpty() && offence.m_iAmount > 0)
+					outOffences.Insert(LF_TicketOffence.Create(offence.m_sName, offence.m_iAmount));
+			}
+
+			if (!outOffences.IsEmpty())
+				return;
+		}
+
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceSpeeding", 200));
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceDisturbance", 150));
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceRecklessDriving", 500));
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceBrandishing", 800));
+		outOffences.Insert(LF_TicketOffence.Create("#LF-Ticket_OffenceCrash", 1500));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TicketFirstDeadline()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config || config.m_iTicketFirstDeadline <= 0)
+			return DEFAULT_TICKET_FIRST_DEADLINE;
+
+		return config.m_iTicketFirstDeadline;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TicketSecondDeadline()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config || config.m_iTicketSecondDeadline <= 0)
+			return DEFAULT_TICKET_SECOND_DEADLINE;
+
+		return config.m_iTicketSecondDeadline;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float TicketLateMultiplier()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config || config.m_fTicketLateMultiplier < 1)
+			return DEFAULT_TICKET_LATE_MULTIPLIER;
+
+		return config.m_fTicketLateMultiplier;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TicketLateWanted()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config || config.m_iTicketLateWanted < 0)
+			return DEFAULT_TICKET_LATE_WANTED;
+
+		return config.m_iTicketLateWanted;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One line of the ticket form: the offence the officer ticks and its fixed amount.
+[BaseContainerProps()]
+class LF_TicketOffence
+{
+	[Attribute("", UIWidgets.EditBox, "Offence name, a localization key")]
+	string m_sName;
+
+	[Attribute("100", UIWidgets.Auto, "Fixed amount in cash")]
+	int m_iAmount;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_TicketOffence Create(string name, int amount)
+	{
+		LF_TicketOffence offence = new LF_TicketOffence();
+		offence.m_sName = name;
+		offence.m_iAmount = amount;
+		return offence;
 	}
 }

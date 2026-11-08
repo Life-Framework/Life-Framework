@@ -949,27 +949,57 @@
 
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
-- ✅ `ArrestPlayer`/`FinePlayer` are client-side entry points. The wanted list
-  left the menu in M1-11: wanted people are on the station wanted board.
+- ✅ `ArrestPlayer` is the client-side entry point. The wanted list
+  left the menu in M1-11: wanted people are on the station wanted board. The
+  remote fine (`RpcAsk_EL_PoliceFine`, `FinePlayer`, the Fine button) is gone
+  (M1-19): a fine is a paper ticket written face to face (`LF_FineTicket*`).
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
-  through `SCR_ChimeraCharacter.EL_AskPoliceArrest/Fine`, and the server
-  handlers `RpcAsk_EL_PoliceArrest/Fine` validate on-duty officer, wanted
-  target, and fine range before acting. Arrest also requires the configured
-  arrest rank (patrol on the flagship, #165), and the fine must sit inside
-  that rank's cap. `EL_PoliceUtils` (pure) holds the
-  sentence-length math, wanted-reduction and fine-range checks for tests.
+  through `SCR_ChimeraCharacter.EL_AskPoliceArrest`, and the server
+  handler `RpcAsk_EL_PoliceArrest` validates on-duty officer and wanted
+  target before acting. Arrest also requires the configured
+  arrest rank (patrol on the flagship, #165). `EL_PoliceUtils` (pure) holds the
+  sentence-length math and the reach check for tests; `MAX_FINE` is the
+  senior ticket cap.
   `EL_AskPoliceSelfPromote` always refuses.
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
-- ✅ **Hands-on only** (2026-11-07): arrest and fine refuse a
+- ✅ **Hands-on only** (2026-11-07): arrest refuses a
   target that is not connected or stands beyond `EL_PoliceUtils.POLICE_REACH`
-  (5 m, the in-world arrest range) and show `#EL-Police_TooFar`. Neither the
-  framework nor vanilla has a restraint state, so reach is the requirement. A
-  fine that clears no wanted level (below `WANTED_STEP`, 1000) is refused with
-  `#EL-Fine_TooSmall`, so repeated small fines cannot drain a wanted player.
-  The fine RPC logs through `EL_Debug.Warn("Police", "fine refused: ...")`.
+  (5 m, the in-world arrest range) and shows `#EL-Police_TooFar`. Neither the
+  framework nor vanilla has a restraint state, so reach is the requirement.
   Test: `security/police-abuse`.
+
+### `LF_FineTickets` — `Feature/Police/LF_FineTicket*.c`
+- ✅ **A fine is a paper ticket paid at the police desk** (M1-19, #104;
+  decision 2026-11-08). An on-duty officer facing a player picks **Write ticket**
+  (the `fine` slot of the player interaction menu, `LF_FineTicketRole`, no
+  prefab edit). The server opens the ticket pad (`LF_FineTicketPad`, paper
+  `LF_UIScreen`) on the officer's machine: one row per offence from
+  `LF_Police.conf` `m_aTicketOffences` at its fixed amount; rows above the
+  officer's rank cap (`LF_PoliceRanks.FineCap`: patrol 1000, senior 5000) print
+  "senior officers only" with no Write button. The server re-checks duty,
+  reach (2 m), the cap, and at most 3 unpaid tickets per holder, then hands
+  over `Prefabs/Items/Roleplay/FineTicket.et`: number, date, holder, offence,
+  amount, deadline, what it rises to, where to pay, officer rank and name. Cues:
+  the officer's point gesture, the paper sound from the ticket, the holder's
+  pick-up gesture, and the ticket card on the holder's screen. Inventory hover
+  and Read (on the ground) show the same text.
+- ✅ **Pay ticket** on the punch clock of `LF_PoliceDutyDesk.et`: carried cash
+  only (`LF_EntityCashWallet`), never the bank, all or nothing, oldest unpaid
+  first. The clock's punch sound stamps it for everyone nearby; the carried
+  paper turns into a receipt ("PAID <date>").
+- ✅ **Deadlines in online time** (like the jail sentence): unpaid after
+  `m_iTicketFirstDeadline` (1800 s) the amount is multiplied once by
+  `m_fTicketLateMultiplier` (x2) and the paper updates; after a further
+  `m_iTicketSecondDeadline` (1800 s) the holder gets `m_iTicketLateWanted` (+1)
+  wanted and a named "Unpaid fine" poster on the wanted board. Still payable
+  after; paying does not lift the warrant. Logs: `[ELDebug:Ticket]`.
+- ✅ **Persisted** (save version 11, payload `tickets`). A restart's blank
+  copy is reprinted on spawn; a respawn hands an unpaid ticket back. Up to 3
+  paid receipts per holder are kept for reprinting. Tests:
+  `police/fine-ticket-rules`, `police/fine-ticket`,
+  `police/fine-ticket-serializer`.
 
 ### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
 - ✅ **Clock in / Clock out at the duty desk** (M1-11, 2026-11-08; WORLD

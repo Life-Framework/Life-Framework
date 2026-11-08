@@ -37,6 +37,15 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
         Description "#LF-Duty_ClockDesc"
        }
       }
+      LF_FineTicketPayAction "{6F2B91D4C8A3E517}" {
+       ParentContextList {
+        "LF_DutyClock"
+       }
+       UIInfo UIInfo "{A41E7C3B9D5F2860}" {
+        Name "#LF-Ticket_PayGeneric"
+        Description "#LF-Ticket_PayDesc"
+       }
+      }
      }
     }
    }

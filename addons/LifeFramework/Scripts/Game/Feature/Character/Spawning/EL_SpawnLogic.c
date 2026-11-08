@@ -419,6 +419,9 @@ class EL_SpawnLogic : SCR_SpawnLogic
 
 		// A prisoner with time left (a rejoin or a restart mid-sentence) goes back to the cell.
 		LF_Jail.OnPlayerSpawned(EL_Utils.GetPlayerUID(playerId), character);
+
+		// Unpaid police tickets go with the player; a restart's blank copies are printed again.
+		LF_FineTickets.OnPlayerSpawned(EL_Utils.GetPlayerUID(playerId), character);
 	}
 
 	//------------------------------------------------------------------------------------------------

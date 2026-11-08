@@ -201,7 +201,10 @@ the game profile). Hooks:
   Movement actions are refused.
 - `die` asks the server to kill the local character (dev gate), so a session
   can prove the death screen and the hospital respawn. `state` also reports
-  `pos=x,y,z` and `bills=` (hospital bills carried).
+  `pos=x,y,z`, `bills=` (hospital bills carried), and `tickets=` / `owed=`
+  (unpaid police tickets carried, the amount on the oldest).
+  `session.mjs ticket-proof` drives M1-19 on a 2-client session (roster player 2,
+  short ticket deadlines in `LF_Police.conf` for the run).
 - `open DebugMenu` toggles, the same as the debug key. `open DebugMenu show`
   opens it and leaves it open, which is what a UI screenshot uses. `hide` closes
   it only when it is up.

@@ -15,12 +15,6 @@ FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialo
       Padding 20 10 20 10
      }
      {
-      ButtonWidgetClass "{EA57C0DD066B3314}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
-       Name "FineButton"
-       Slot LayoutSlot "{EE0F47F775C93075}" {
-        Padding 0 5 0 5
-       }
-      }
       ButtonWidgetClass "{2054CAE4FF7C4148}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
        Name "SearchButton"
        Slot LayoutSlot "{9E70EF369D89C8FB}" {
