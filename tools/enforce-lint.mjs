@@ -24,6 +24,10 @@
 //                        so the check needs no game install.
 //   L7 null-coalescing   `??` in code (the ternary half lives in
 //                        check-no-ternaries).
+//   L8 server-toast      EL_Utils.Notify after an `if (!Replication.IsServer())
+//                        return;` guard in the same method. Notify shows a hint on
+//                        the machine that runs it, which on a dedicated server is
+//                        nobody; use EL_Utils.NotifyEntity(user, ...).
 //
 // Pure Node, no game data: runs in CI. The CLI wrapper is
 // tools/validation/validate-enforce-lint.mjs; the selftest is
@@ -39,6 +43,7 @@ export const RULES = {
   L5: "bare-print",
   L6: "resource-ref",
   L7: "null-coalescing",
+  L8: "server-toast",
 };
 
 const DATA_EXT = /\.(et|layer|conf|layout|ent|emat|st)$/i;
@@ -298,6 +303,24 @@ export function lint({ addonDir, scriptsDir, includeData = true }) {
       const re = /\?\?/g;
       let m;
       while ((m = re.exec(code))) add("L7", src, at(m.index), "`??` does not exist in Enforce Script");
+    }
+
+    // L8
+    {
+      // A method head: one tab in, a signature, then `{` on the next line at one tab.
+      const heads = [];
+      const head = /\n\t[A-Za-z][^\n;{}]*\([^\n;{}]*\)[ \t]*\n\t\{/g;
+      let h;
+      while ((h = head.exec(code))) heads.push(h.index);
+      const re = /\bEL_Utils\s*\.\s*Notify\s*\(/g;
+      let m;
+      while ((m = re.exec(code))) {
+        let start = 0;
+        for (const x of heads) if (x < m.index) start = x;
+        const body = code.slice(start, m.index);
+        if (/if\s*\(\s*!\s*Replication\s*\.\s*IsServer\s*\(\s*\)\s*\)\s*return\s*;/.test(body))
+          add("L8", src, at(m.index), "Notify after a server-only guard reaches nobody on a dedicated server; use EL_Utils.NotifyEntity");
+      }
     }
   }
 

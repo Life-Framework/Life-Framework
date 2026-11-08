@@ -149,7 +149,11 @@ the game profile). Hooks:
   `RegFirstName`, `RegLastName`, `RegAge`. `click SignButton` then signs it.
 - `use` finds a `ScriptedUserAction`, checks `CanBeShownScript` and
   `CanBePerformedScript`, then calls `PerformAction`. Named confirm, same
-  checks, no dependence on which row is highlighted.
+  checks, no dependence on which row is highlighted. An action with
+  `HasLocalEffectOnlyScript` (ATM terminal, shop price list, sign Read) runs
+  on the client, the way the F key runs it; other actions run on the server.
+- `click` also takes a UI kit list row's `<row>_Action` button (the price
+  list's `Item0Row_Action`).
 - `stand <EntityName>` asks the server to move the local character beside
   that entity so a 3m action radius can succeed. It does not inject movement
   keys.

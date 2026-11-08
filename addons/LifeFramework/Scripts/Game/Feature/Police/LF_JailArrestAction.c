@@ -41,7 +41,7 @@ class LF_JailArrestAction : ScriptedUserAction
 		if (!LF_PlayerInteraction.CanOffer(user, GetOwner()))
 			return false;
 
-		return EL_PoliceUtils.IsOnDutyOfficer(EL_PoliceUtils.GetAccountForEntity(user));
+		return EL_AccountStateBits.IsOnDutyPolice(EL_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -53,7 +53,8 @@ class LF_JailArrestAction : ScriptedUserAction
 			return false;
 		}
 
-		if (!LF_Jail.HasCell())
+		// The cell registers on the server only; a client leaves this check to the server.
+		if (Replication.IsServer() && !LF_Jail.HasCell())
 		{
 			SetCannotPerformReason("#EL-Jail_NoCell");
 			return false;
@@ -65,15 +66,15 @@ class LF_JailArrestAction : ScriptedUserAction
 			return false;
 		}
 
-		EL_PlayerAccount suspect = EL_PoliceUtils.GetAccountForEntity(GetOwner());
-		if (!suspect || suspect.GetWantedLevel() <= 0)
+		// Offer checks run on the client too, where accounts do not exist: read the replicated
+		// state (the account cache on the server). PerformAction re-checks on the server.
+		if (EL_AccountStateBits.GetWantedLevel(EL_AccountReplication.GetState(GetOwner())) <= 0)
 		{
 			SetCannotPerformReason("#EL-Jail_NotWanted");
 			return false;
 		}
 
-		EL_PlayerAccount officer = EL_PoliceUtils.GetAccountForEntity(user);
-		if (!officer || !LF_PoliceRanks.CanArrestRank(officer.GetPoliceRank()))
+		if (!LF_PoliceRanks.CanArrestRank(EL_AccountStateBits.GetPoliceRank(EL_AccountReplication.GetState(user))))
 		{
 			SetCannotPerformReason("#EL-Rank_ArrestDenied");
 			return false;

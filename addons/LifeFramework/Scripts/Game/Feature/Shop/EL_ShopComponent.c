@@ -159,25 +159,39 @@ class EL_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: charge the buyer the config buy price and deliver the items. Only what was delivered
-	//! is charged; a partial delivery refunds the difference.
+	//! Server: \see Buy. \return True when the whole order was paid for and delivered.
 	bool BuyItem(ResourceName prefab, int quantity, IEntity buyer)
 	{
-		if (!Replication.IsServer())
-			return false;
-		if (!buyer || quantity <= 0)
-			return false;
+		int charged;
+		return Buy(prefab, quantity, buyer, charged) == LF_EShopRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: charge the buyer the config buy price and deliver the items. Only what was delivered
+	//! is charged; a partial delivery refunds the difference. The till slip shows the outcome, so
+	//! this raises no toast.
+	//! \param[out] charged Cash taken for the order (0 when refused).
+	//! \return NONE when the whole order was paid for and delivered, else why not.
+	LF_EShopRefusal Buy(ResourceName prefab, int quantity, IEntity buyer, out int charged)
+	{
+		charged = 0;
+		if (!Replication.IsServer() || !buyer)
+			return LF_EShopRefusal.NO_SHOP;
+
+		if (quantity <= 0)
+			return LF_EShopRefusal.BAD_QUANTITY;
+
 		if (!IsItemSoldHere(prefab))
 		{
-			EL_Debug.Log("Shop", string.Format("buy rejected (not sold here) item=%1 qty=%2", prefab, quantity));
-			return false;
+			EL_Debug.Info("Shop", string.Format("buy rejected (not sold here) item=%1 qty=%2", prefab, quantity));
+			return LF_EShopRefusal.NOT_SOLD_HERE;
 		}
 
 		int unitPrice = GetBuyPrice(prefab);
 		if (unitPrice <= 0)
 		{
-			EL_Debug.Log("Shop", string.Format("buy rejected (unpriced) item=%1", prefab));
-			return false;
+			EL_Debug.Info("Shop", string.Format("buy rejected (unpriced) item=%1", prefab));
+			return LF_EShopRefusal.UNPRICED;
 		}
 
 		int units = EL_ShopRules.StackTradeOutputCount(quantity);
@@ -188,48 +202,59 @@ class EL_ShopComponent : ScriptComponent
 		{
 			if (removed > 0)
 				EL_MoneyUtils.AddAmount(buyer, removed);
-			EL_Debug.Log("Shop", string.Format("buy failed (insufficient funds) item=%1 qty=%2 price=%3 removed=%4", prefab, quantity, totalPrice, removed));
-			EL_Utils.NotifyEntity(buyer, "#EL-Not_Enough_Money", "#EL-Shop_PurchaseFailed", 3.0);
-			return false;
+			EL_Debug.Info("Shop", string.Format("buy failed (insufficient funds) item=%1 qty=%2 price=%3 removed=%4", prefab, quantity, totalPrice, removed));
+			return LF_EShopRefusal.NOT_ENOUGH_CASH;
 		}
 
 		int added = EL_InventoryUtils.AddAmount(buyer, prefab, units);
 		if (added == units)
 		{
-			EL_Debug.Log("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
-			// Two arguments: formatted on the server, shown as-is on the client.
-			EL_Utils.NotifyEntity(buyer, WidgetManager.Translate("#EL-Item_Bought", WidgetManager.Translate(GetItemDisplayName(prefab)), units), "#EL-Shop_PurchaseSuccessful", 3.0);
-			return true;
+			charged = totalPrice;
+			EL_Debug.Info("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
+			return LF_EShopRefusal.NONE;
 		}
 
 		int notDelivered = units - added;
 		if (notDelivered > 0)
 			EL_MoneyUtils.AddAmount(buyer, EL_ShopRules.StackTradeTotal(unitPrice, notDelivered));
-		EL_Debug.Log("Shop", string.Format("buy failed (inventory full) item=%1 qty=%2 delivered=%3 - refunded %4", prefab, quantity, added, notDelivered));
-		EL_Utils.NotifyEntity(buyer, "#EL-Inventory_Full", "#EL-Shop_PurchaseFailed", 3.0);
-		return false;
+		EL_Debug.Warn("Shop", string.Format("buy failed (inventory full) item=%1 qty=%2 delivered=%3 - refunded %4", prefab, quantity, added, notDelivered));
+		return LF_EShopRefusal.POCKETS_FULL;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: \see Sell. \return True when the sale went through.
+	bool SellItem(ResourceName prefab, int quantity, IEntity seller)
+	{
+		int earned;
+		return Sell(prefab, quantity, seller, earned) == LF_EShopRefusal.NONE;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: take the items from the seller and pay the config sell price. Cash is paid before the
-	//! items are consumed, so a sale that cannot pay out never loses the goods.
-	bool SellItem(ResourceName prefab, int quantity, IEntity seller)
+	//! items are consumed, so a sale that cannot pay out never loses the goods. No toast; the slip
+	//! shows the outcome.
+	//! \param[out] earned Cash paid for what was taken (0 when refused).
+	//! \return NONE when at least one unit was sold, else why not.
+	LF_EShopRefusal Sell(ResourceName prefab, int quantity, IEntity seller, out int earned)
 	{
-		if (!Replication.IsServer())
-			return false;
-		if (!seller || quantity <= 0)
-			return false;
+		earned = 0;
+		if (!Replication.IsServer() || !seller)
+			return LF_EShopRefusal.NO_SHOP;
+
+		if (quantity <= 0)
+			return LF_EShopRefusal.BAD_QUANTITY;
+
 		if (!IsItemSoldHere(prefab))
 		{
-			EL_Debug.Log("Shop", string.Format("sell rejected (not bought here) item=%1 qty=%2", prefab, quantity));
-			return false;
+			EL_Debug.Info("Shop", string.Format("sell rejected (not bought here) item=%1 qty=%2", prefab, quantity));
+			return LF_EShopRefusal.NOT_SOLD_HERE;
 		}
 
 		int unitPrice = GetSellPrice(prefab);
 		if (unitPrice <= 0)
 		{
-			EL_Debug.Log("Shop", string.Format("sell rejected (unpriced) item=%1", prefab));
-			return false;
+			EL_Debug.Info("Shop", string.Format("sell rejected (unpriced) item=%1", prefab));
+			return LF_EShopRefusal.UNPRICED;
 		}
 
 		int units = EL_ShopRules.StackTradeOutputCount(quantity);
@@ -240,33 +265,30 @@ class EL_ShopComponent : ScriptComponent
 		{
 			if (paid > 0)
 				EL_MoneyUtils.RemoveCash(seller, paid);
-			EL_Debug.Log("Shop", string.Format("sell failed (cannot pay out) item=%1 qty=%2 price=%3 paid=%4", prefab, quantity, totalPrice, paid));
-			EL_Utils.NotifyEntity(seller, "#EL-Inventory_Full", "#LF-Shop_SaleFailed_Title", 3.0);
-			return false;
+			EL_Debug.Warn("Shop", string.Format("sell failed (cannot pay out) item=%1 qty=%2 price=%3 paid=%4", prefab, quantity, totalPrice, paid));
+			return LF_EShopRefusal.POCKETS_FULL;
 		}
 
 		int removed = EL_InventoryUtils.RemoveAmount(seller, prefab, units);
 		if (removed <= 0)
 		{
 			EL_MoneyUtils.RemoveCash(seller, paid);
-			EL_Debug.Log("Shop", string.Format("sell failed (nothing to sell) item=%1 qty=%2", prefab, units));
-			EL_Utils.NotifyEntity(seller, "#EL-Shop_SellFailed", "#LF-Shop_SaleFailed_Title", 3.0);
-			return false;
+			EL_Debug.Info("Shop", string.Format("sell failed (nothing to sell) item=%1 qty=%2", prefab, units));
+			return LF_EShopRefusal.NOTHING_TO_SELL;
 		}
 
 		int overpaid = EL_ShopRules.StackTradeTotal(unitPrice, units - removed);
 		if (overpaid > 0)
 			EL_MoneyUtils.RemoveCash(seller, overpaid);
 
-		int earned = EL_ShopRules.StackTradeTotal(unitPrice, removed);
-		EL_Debug.Log("Shop", string.Format("sold item=%1 qty=%2 price=%3", prefab, removed, earned));
-		EL_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, earned.ToString());
-		return true;
+		earned = EL_ShopRules.StackTradeTotal(unitPrice, removed);
+		EL_Debug.Info("Shop", string.Format("sold item=%1 qty=%2 price=%3", prefab, removed, earned));
+		return LF_EShopRefusal.NONE;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Best available display name for an item, for notifications.
-	protected string GetItemDisplayName(ResourceName prefab)
+	//! Best available display name for an item (a #key or a plain name).
+	string GetItemDisplayName(ResourceName prefab)
 	{
 		EL_ShopCatalogItem item = BuildCatalogItem(prefab);
 		if (item && !item.m_sDisplayName.IsEmpty())
@@ -321,23 +343,5 @@ class EL_ShopComponent : ScriptComponent
 		}
 
 		return null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void OpenShopMenu(IEntity playerEntity)
-	{
-		if (!playerEntity)
-			return;
-
-		PlayerController playerController = GetGame().GetPlayerController();
-		if (playerController)
-		{
-			EL_ShopMenu menu = EL_ShopMenu.Cast(GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.Shop));
-			if (menu)
-			{
-				menu.SetShopComponent(this);
-				menu.SetPlayerEntity(playerEntity);
-			}
-		}
 	}
 };

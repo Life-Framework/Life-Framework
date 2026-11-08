@@ -1,22 +1,28 @@
-import { Link, useLocation } from "react-router-dom";
-import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Arrow } from "@/components/icons";
+import { Stamp } from "@/components/ui";
 
-const NotFound = () => {
-  const location = useLocation();
-  return (
-    <div className="min-h-screen pt-24 pb-16 relative flex items-center justify-center">
-      <AnimatedBackground />
-      <div className="text-center relative z-10 px-4">
-        <h1 className="mb-4 text-5xl font-display font-bold text-primary">404</h1>
-        <p className="mb-2 text-xl">Page not found</p>
-        <p className="mb-6 text-sm text-muted-foreground font-mono">{location.pathname}</p>
-        <Button asChild>
-          <Link to="/">Return to Home</Link>
-        </Button>
+const NotFound = () => (
+  <div className="wrap py-20 md:py-28">
+    <div className="sheet max-w-xl p-6 md:p-10 relative">
+      <div className="absolute -top-4 right-4">
+        <Stamp tilt>Return to sender</Stamp>
       </div>
+      <p className="kicker">Error 404</p>
+      <h1 className="display-2 mt-2">No such address</h1>
+      <p className="mt-4 muted">
+        There is no page here. If a link on this site brought you here, that link is wrong; tell us on GitHub and we will fix it.
+      </p>
+      <p className="mt-8 flex flex-wrap gap-3">
+        <Link to="/" className="btn btn-primary">
+          Home <Arrow />
+        </Link>
+        <Link to="/docs" className="btn btn-ghost">
+          Docs
+        </Link>
+      </p>
     </div>
-  );
-};
+  </div>
+);
 
 export default NotFound;

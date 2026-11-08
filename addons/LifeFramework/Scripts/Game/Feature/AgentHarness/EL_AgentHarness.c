@@ -1121,9 +1121,12 @@ class EL_AgentHarness
 		string name = widget.GetName();
 		if (!EL_AgentCommand.IsClassToken(name))
 			return false;
-		// UI kit status rows name their button <Row>_Action.
-		bool kitAction = name.Length() > 7 && name.Substring(name.Length() - 7, 7) == "_Action";
-		if (!kitAction && (name.Length() < 6 || name.Substring(name.Length() - 6, 6) != "Button"))
+		// A UI kit list row's action button is <row>_Action (the shop's Order buttons).
+		bool kitRowAction = name.Length() > 7 && name.Substring(name.Length() - 7, 7) == "_Action";
+		if (kitRowAction)
+			return SCR_ButtonTextComponent.Cast(widget.FindHandler(SCR_ButtonTextComponent)) != null;
+
+		if (name.Length() < 6 || name.Substring(name.Length() - 6, 6) != "Button")
 			return false;
 
 		if (SCR_ButtonTextComponent.Cast(widget.FindHandler(SCR_ButtonTextComponent)))
@@ -1189,34 +1192,35 @@ class EL_AgentHarness
 			return;
 		}
 
-		// A local-effect action (a desk that opens a page) runs on the acting client only, as the
-		// interact key would run it; the server would open nothing.
-		// Only this mod's actions: a vanilla door is local-effect too but its perform asks the server.
-		IEntity localTarget;
-		ScriptedUserAction localAction;
-		if (cmd.Arg1.StartsWith("EL_") || cmd.Arg1.StartsWith("LF_"))
-			localTarget = FindTarget(character, cmd.Arg1, cmd.Arg2);
-		if (localTarget)
-			localAction = FindShownOnEntity(localTarget, cmd.Arg1, character);
-
-		if (localAction && localAction.HasLocalEffectOnlyScript())
+		// A local-effect action (ATM terminal, shop price list) runs PerformAction only on the
+		// acting client when the F key uses it, so the harness performs it here the same way. Only this
+		// mod's actions: a vanilla door is local-effect too, but its perform asks the server.
+		if (!Replication.IsServer() && (cmd.Arg1.StartsWith("EL_") || cmd.Arg1.StartsWith("LF_")))
 		{
-			if (!localAction.CanBeShownScript(character))
+			IEntity target = FindTarget(character, cmd.Arg1, cmd.Arg2);
+			ScriptedUserAction localAction;
+			if (target)
+				localAction = FindShownOnEntity(target, cmd.Arg1, character);
+
+			if (localAction && localAction.HasLocalEffectOnlyScript())
 			{
-				WriteResult(cmd.Id, "error", "cannot_show");
+				if (!localAction.CanBeShownScript(character))
+				{
+					WriteResult(cmd.Id, "error", "cannot_show");
+					return;
+				}
+
+				if (!localAction.CanBePerformedScript(character))
+				{
+					WriteResult(cmd.Id, "error", "cannot_perform");
+					return;
+				}
+
+				localAction.PerformAction(target, character);
+				EL_Debug.Log(FEATURE, string.Format("performed %1 on this client", cmd.Arg1));
+				WriteResult(cmd.Id, "ok", cmd.Arg1);
 				return;
 			}
-
-			if (!localAction.CanBePerformedScript(character))
-			{
-				WriteResult(cmd.Id, "error", "cannot_perform");
-				return;
-			}
-
-			localAction.PerformAction(localTarget, character);
-			EL_Debug.Log(FEATURE, string.Format("performed %1 locally", cmd.Arg1));
-			WriteResult(cmd.Id, "ok", cmd.Arg1);
-			return;
 		}
 
 		character.EL_AskHarnessUse(cmd.Id, cmd.Arg1, cmd.Arg2);
