@@ -80,8 +80,6 @@ class EL_GameModeRoleplay: SCR_BaseGameMode
 	//------------------------------------------------------------------------------------------------
 	protected void ReleaseDisconnectedPlayer(int playerId)
 	{
-		EL_CharacterCreationManager.ReleasePlayer(playerId);
-
 		string uid = EL_Utils.GetPlayerUID(playerId);
 		IEntity controlled;
 		PlayerManager playerManager = GetGame().GetPlayerManager();

@@ -36,7 +36,7 @@ class EL_Test_FactionLoadoutConfig : EL_Test
 		EL_FactionLoadout civilian = spawnLogic.GetFactionLoadout(EL_Faction.CIVILIAN);
 		EL_FactionLoadout police = spawnLogic.GetFactionLoadout(EL_Faction.POLICE);
 		ctx.True(civilian != null, "CIVILIAN spawn has a configured loadout");
-		ctx.True(police != null, "POLICE spawn has a configured loadout");
+		ctx.True(police != null, "the starter police kit (first clock-in at the duty desk) is configured");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -44,11 +44,10 @@ class EL_Test_FactionLoadoutConfig : EL_Test
 		CheckLoadoutPrefabs(ctx, police, "police");
 
 		ctx.True(HasLoadoutItem(civilian, BACKPACK_PREFAB), "CIVILIAN spawns with a backpack");
-		ctx.True(HasLoadoutItem(police, BACKPACK_PREFAB), "POLICE spawns with a backpack");
 		ctx.True(LoadoutStoresMoney(civilian, 500), "CIVILIAN starts with 500 cash");
-		ctx.True(LoadoutStoresMoney(police, 200), "POLICE starts with 200 cash");
+		ctx.False(LoadoutStoresMoney(police, 200), "the starter police kit carries no cash (it is re-issued after a death on duty)");
 		ctx.True(HasDirectItem(civilian, APPLE_PREFAB), "CIVILIAN spawns apples for survival testing");
-		ctx.True(HasDirectItem(police, M9_PREFAB), "POLICE spawns an M9 sidearm");
+		ctx.True(HasDirectItem(police, M9_PREFAB), "the starter police kit carries an M9 sidearm");
 	}
 
 	//------------------------------------------------------------------------------------------------
