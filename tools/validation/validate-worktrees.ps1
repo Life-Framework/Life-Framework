@@ -88,6 +88,16 @@ for ($i = 0; $i -lt $linked.Count; $i++) {
   }
 }
 
+# Agents write only in their own worktree. An untracked file under addons/ or
+# tools/ of the main checkout (the world-editor copy) is a stray write, like
+# the 0-byte file an agent left there on 2026-11-08. Scratch goes in
+# <worktree>/tmp/ (gitignored).
+$strays = @(git -C $mainRoot ls-files --others --exclude-standard -- addons tools 2>$null | Where-Object { $_ })
+foreach ($s in ($strays | Select-Object -First 10)) {
+  $warnings += "main checkout has an untracked file: $(Join-Path $mainRoot $s) (agents: scratch goes in <worktree>\tmp\; delete it if it is yours)"
+}
+if ($strays.Count -gt 10) { $warnings += "main checkout has $($strays.Count - 10) more untracked file(s) under addons/ or tools/" }
+
 # Running in the main checkout? Heavy commands refuse there by design.
 if ($commonDir -eq ".git") {
   $warnings += "running in the main checkout (world-editor copy) - build/test/dev/serve/ci refuse to run here"

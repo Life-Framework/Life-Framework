@@ -149,7 +149,7 @@ never draw a window on your monitor and never take focus:
 
 | Run | Where it goes |
 | --- | --- |
-| `validate-scripts.ps1` (Workbench `-validate`), `cli build` | `LF-Agents` desktop; exit code and console.log as before |
+| `validate --full` (Workbench `-validate` in `validate-scripts.ps1`), `cli build` | `LF-Agents` desktop; exit code and console.log as before |
 | `cli test` / `wt e2e` dedicated server | `LF-Agents`, no console window |
 | `agent-box/session.mjs up` game clients | `LF-Agents`; the server runs detached with no console |
 | `cli call wb_*`, `agent-box/harness.mjs play` | When no Workbench serves NET API port 5775, `tools/lib/quiet-workbench.mjs` starts one on `LF-Agents` first, so the MCP never launches a visible one |

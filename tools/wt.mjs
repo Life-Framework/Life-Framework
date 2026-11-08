@@ -365,9 +365,22 @@ export function wtSync(root, slug) {
   if (dirty) throw new Error(`worktree ${slug} has uncommitted changes; commit or stash first`);
   const merge = git(e.path, ["merge", "origin/main", "--no-edit", "--no-ff"]);
   if (merge.status !== 0) {
-    throw new Error(`merge origin/main into ${e.branch} failed:\n${merge.stderr || merge.stdout}`);
+    const unmerged = git(e.path, ["diff", "--name-only", "--diff-filter=U"]).stdout.trim();
+    const detail = unmerged ? `conflicts in:\n${unmerged}\nresolve them, commit, and re-run` : (merge.stderr || merge.stdout).trim();
+    throw new Error(`merge origin/main into ${e.branch} failed: ${detail}`);
   }
   return { slug, branch: e.branch, path: e.path };
+}
+
+// True when merging `theirs` into the worktree branch would conflict. Uses
+// `git merge-tree --write-tree` (no checkout, no index change). merge-tree may
+// not run the custom drivers in tools/merge/, so a "conflict" here only means
+// "try the real merge"; wtSync then applies the drivers.
+export function mergeWouldConflict(wtRoot, theirs = "origin/main") {
+  const res = git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", theirs]);
+  if (res.status === 0) return false;
+  if (res.status === 1) return true;
+  throw new Error(`git merge-tree failed: ${res.stderr || res.stdout}`);
 }
 
 export function wtPrune(root, slug, { force = false } = {}) {
@@ -438,18 +451,27 @@ export function createPrGh(root, { head, title, body }) {
   return { url, number };
 }
 
-export function mergePrGh(root, number, branch) {
+// The open PR for a head branch, or null. Lets a re-run of `wt ship` reuse it.
+export function findOpenPrGh(root, branch) {
   const gh = ghBin();
-  // gh attempts to check out the default branch for --delete-branch. That
-  // fails while main is occupied by the reserved world-editor worktree.
-  const res = run(gh, ["pr", "merge", String(number), "--merge"], { cwd: root });
-  if (res.status !== 0) {
-    const out = res.stdout + res.stderr;
-    if (/already|no commits|closed|not mergeable/i.test(out)) return { already: true, output: out };
-    throw new Error(`gh pr merge failed: ${out}`);
+  const res = run(gh, ["pr", "list", "--head", branch, "--state", "open", "--json", "number,url", "--limit", "1"], { cwd: root });
+  if (res.status !== 0) return null;
+  try {
+    const list = JSON.parse(res.stdout || "[]");
+    return list.length ? { url: list[0].url, number: list[0].number } : null;
+  } catch {
+    return null;
   }
-  if (branch) git(root, ["push", "origin", "--delete", branch]);
-  return { already: false };
+}
+
+// Queue the PR to merge itself once required checks and reviews pass. The
+// repo deletes the head branch on merge (delete_branch_on_merge).
+export function autoMergePrGh(root, number) {
+  const gh = ghBin();
+  const res = run(gh, ["pr", "merge", String(number), "--auto", "--merge"], { cwd: root });
+  const out = (res.stdout + res.stderr).trim();
+  if (res.status !== 0 && !/already/i.test(out)) throw new Error(`gh pr merge --auto failed: ${out}`);
+  return out;
 }
 
 async function githubFetch(owner, repo, path, { method = "GET", body, token } = {}) {
