@@ -38,6 +38,7 @@ class EL_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 		}
 
 		EL_Debug.Log("Whitelist", string.Format("join allowed: uuid=%1", EL_Utils.GetPlayerUID(playerId)));
+		EL_WhitelistManager.AddFirstPlayerToPolice(EL_Utils.GetPlayerUID(playerId));
 		super.OnPlayerAuditSuccess(playerId);
 	}
 

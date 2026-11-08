@@ -74,6 +74,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_FineTicket(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_FineTicketRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FineTicketSerializer(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_FirstPlayerPolice(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_FormatAbbreviate(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UtilsMinMax(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_GarageStoreRange(), EL_TestTier.LOGIC);

@@ -113,8 +113,41 @@ repo's `unslop` skill.
 
 ## Logo
 
-The mark is "LF" built from rectangles inside a square frame, like a stencil
-on a crate (`Mark` in `src/components/icons.tsx`, `public/favicon.svg`). The
-wordmark is the mark plus "LIFE FRAMEWORK" in Barlow Condensed 700. Keep at
-least the frame's width of clear space around it. Do not recolour it except
-to `ink` or `paper`.
+The logo is a round emblem: a helmeted figure with a rifle in front of a globe
+and two pines, inside a double ring, with LIFE-FRAMEWORK on the top arc in
+Barlow Condensed 800. The maintainer supplied it. The figure and pines are
+vectorised from that image, the globe and rings are redrawn, and the lettering
+is outlined, so no file needs a font. The SVGs in `public/brand/` are the
+source; the PNGs are renders of them.
+
+The rest of the site keeps the 1989 paperwork look described above. Only the
+mark changed. Whether the framework gets its own modern site brand, with the
+1989 look kept for the flagship, is a separate decision.
+
+| File | What it is | Use it for |
+| --- | --- | --- |
+| `logo.svg`, `icon-512.png`, `logo-1024.png` | Full emblem, blue `#3b82b8` on `#0b0e12` | Discord server icon, bot avatar, profile pictures |
+| `logo-light.svg` | Full emblem, `#1d5a85`, transparent | Light backgrounds: share images (`scripts/make-og.mjs`), print |
+| `logo-mono.svg` | Full emblem, `#0b0e12`, transparent | One-colour use: stickers, stamps, embroidery |
+| `social-1024.png` | Full emblem with margin on `#0b0e12` | Square profile pictures on other sites |
+| `mark.svg`, `mark-512.png` | Small mark (ring, head and shoulders) on a dark disc | `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` |
+| `mark-light.svg`, `mark-dark.svg`, `mark-mono.svg` | Small mark, transparent | The site header (`Mark` in `src/components/icons.tsx`), day and night |
+| `wordmark.svg`, `wordmark-dark.svg` | Small mark plus LIFE FRAMEWORK in Barlow Condensed 700 | Places that need the name beside the mark as one image |
+
+- **Full emblem or small mark.** The emblem's lettering stops reading below
+  about 96 px. At 64 px and below, and anywhere the name is already written
+  beside it, use the small mark.
+- **Minimum size.** Full emblem 96 px across; small mark 16 px.
+- **Clear space.** Keep a quarter of the emblem's diameter clear on every
+  side. The small mark needs its ring's width.
+- **Colour.** Emblem blue on near-black, `#1d5a85` on light grounds, or one
+  flat colour. The blue belongs to the logo only; it is not a site token, so
+  do not use it for text or UI.
+
+| Do | Don't |
+| --- | --- |
+| Use the files in `public/brand/` as they are | Redraw, re-letter, or trace the emblem again |
+| Use the small mark in a browser tab, a header, or the Discord member list | Shrink the full emblem until the lettering turns to texture |
+| Use the transparent `logo-light.svg` or `logo-mono.svg` on light grounds | Put the dark square `logo.svg` on paper |
+| Keep the emblem upright | Rotate it, add a shadow, a glow, a gradient, or a texture |
+| Leave the figure, globe, and pines as drawn | Swap in Bohemia or Arma marks, or anything that suggests an official link |
