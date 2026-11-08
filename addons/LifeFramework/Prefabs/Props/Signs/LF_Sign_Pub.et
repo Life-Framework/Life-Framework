@@ -1,0 +1,26 @@
+SCR_DestructibleEntity : "{45849C84A20B71C1}Prefabs/Props/Commercial/SignPub_01_base.et" {
+ ID "2B8E751A14A9CF15"
+ components {
+  LF_SignComponent "{DF6A14A1AD2B41F0}" {
+   m_bShowFace 0
+  }
+  ActionsManagerComponent "{B20674C5093ED17C}" {
+   ActionContexts {
+    UserActionContext "{8608E1A7D3DD299F}" {
+     ContextName "LF_Sign"
+     Position PointInfo "{AC3082E906AE5129}" {
+      Offset 0.001 0.705 0
+     }
+     Radius 0.344
+    }
+   }
+   additionalActions {
+    LF_SignReadAction "{B2264AA5DB16FF4F}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}

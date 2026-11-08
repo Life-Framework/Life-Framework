@@ -1,0 +1,36 @@
+GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+ ID "7D97AA091E6080AD"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  MeshObject "{5872F0EB7FA40561}" {
+   Materials {
+    MaterialAssignClass "{5DFE7399EE8FFE17}" {
+     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+    }
+   }
+  }
+  LF_SignComponent "{18C0F82DD8448393}" {
+   m_bFaceOnOwner 1
+  }
+  ActionsManagerComponent "{6D6B77A2F10EB212}" {
+   ActionContexts {
+    UserActionContext "{CAC60940A3F0038E}" {
+     ContextName "LF_Sign"
+     Position PointInfo "{58C9C850FB6E3D35}" {
+      Offset 0 0 0
+     }
+     Radius 0.2
+    }
+   }
+   additionalActions {
+    LF_SignReadAction "{51410A0DEC444765}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}

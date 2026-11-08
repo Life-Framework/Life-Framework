@@ -35,11 +35,6 @@
   "text": "IEntity pickaxe = GetGame().SpawnEntityPrefab(Resource.Load(PICKAXE), GetGame().GetWorld(), params);"
  },
  {
-  "rule": "L1",
-  "file": "Scripts/Game/Tests/EL_Test_TextLabel.c",
-  "text": "IEntity sign = GetGame().SpawnEntityPrefab(Resource.Load(SIGN), GetGame().GetWorld(), params);"
- },
- {
   "rule": "L2",
   "file": "Scripts/Game/Feature/Character/Spawning/EL_DeathScreen.c",
   "text": "m_wRoot = GetGame().GetWorkspace().CreateWidgets(\"{1CBC0B1329A8762C}UI/Layouts/DeathScreen.layout\");"

@@ -144,13 +144,16 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_ShopPriceResolve(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopPriceHidden(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_ShopCatalog(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_SignCatalog(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SignLocalization(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SignMissingId(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_SignPrefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_Siren(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_SirenMode(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SpawnLocation(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_StackTrade(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Survival(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_SurvivalSaveData(), EL_TestTier.LOGIC);
-		manager.Register(new EL_Test_TextLabel(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_TraderSellRules(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitInitialFocus(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_UIKitButtonInvoker(), EL_TestTier.LOGIC);

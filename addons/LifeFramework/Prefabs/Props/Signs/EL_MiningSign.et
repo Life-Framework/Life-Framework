@@ -1,8 +1,28 @@
 GenericEntity : "{27EDF8AFC363A7D5}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_underminedarea_pole.et" {
  ID "50D67C36F4200F97"
  components {
-  EL_TextLabelComponent "C22EE4C92DD05090" {
-   m_sText "MINING AREA"
+  LF_SignComponent "{613D7B61D7C0B65B}" {
+   m_sSignId "mining"
+   m_bShowFace 0
+  }
+  ActionsManagerComponent "{49D55DE547660FCC}" {
+   ActionContexts {
+    UserActionContext "{4AD5AFDDC3783EDB}" {
+     ContextName "LF_Sign"
+     Position PointInfo "{D3EA5889B0283EAD}" {
+      Offset 0 1.6 0
+     }
+     Radius 0.45
+     Height 1.6
+    }
+   }
+   additionalActions {
+    LF_SignReadAction "{06B57A0AA1F58FE4}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
   }
  }
 }

@@ -2902,6 +2902,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This account already has a character."
      Comment "Character creation refused because the account already has a character"
     }
+    CustomStringTableItem "{C71FE54AE5989467}" {
+     Id "LF-Sign_Read"
+     Target_en_us "Read: %1"
+     Comment "Interaction prompt on a sign, board, or notice. %1 is the sign title, e.g. Read: Mining area."
+    }
+    CustomStringTableItem "{84F64B2018E1B414}" {
+     Id "LF-Sign_What"
+     Target_en_us "What"
+     Comment "Sign card section heading: what this place is."
+    }
+    CustomStringTableItem "{6A32B827033280BE}" {
+     Id "LF-Sign_How"
+     Target_en_us "How"
+     Comment "Sign card section heading: how to use the place, with the action names."
+    }
+    CustomStringTableItem "{998F8A9D60C65734}" {
+     Id "LF-Sign_Needs"
+     Target_en_us "Needs"
+     Comment "Sign card section heading: items, faction, or people needed."
+    }
+    CustomStringTableItem "{B4AC01A970C24DB6}" {
+     Id "LF-Sign_Rules"
+     Target_en_us "Rules"
+     Comment "Sign card section heading: cooldowns, wanted level, other rules."
+    }
+    CustomStringTableItem "{62312EEA2BF57769}" {
+     Id "LF-Sign_Close"
+     Target_en_us "Put it back"
+     Comment "Button that closes the sign card. The player is done reading the notice."
+    }
+    CustomStringTableItem "{DB2A007036A674C1}" {
+     Id "LF-Sign_Mining_Title"
+     Target_en_us "Mining area"
+     Comment "Title of the mining area sign. Shown in the prompt as Read: Mining area."
+    }
+    CustomStringTableItem "{31F99065D184F5F5}" {
+     Id "LF-Sign_Mining_What"
+     Target_en_us "Iron, copper, and gold ore in the rocks here. The furnace stands next to them."
+     Comment "Mining sign card, What section."
+    }
+    CustomStringTableItem "{EACF0508930A1624}" {
+     Id "LF-Sign_Mining_How"
+     Target_en_us "Strike the ore with a pickaxe to break off nuggets. At the furnace, use Smelt Iron Nuggets or Smelt Gold Nuggets."
+     Comment "Mining sign card, How section. Smelt Iron Nuggets and Smelt Gold Nuggets are the furnace action names."
+    }
+    CustomStringTableItem "{223169ECC7DBE15F}" {
+     Id "LF-Sign_Mining_Needs"
+     Target_en_us "A pickaxe in your hands."
+     Comment "Mining sign card, Needs section."
+    }
+    CustomStringTableItem "{7DA72D96E9E141A1}" {
+     Id "LF-Sign_Mining_Rules"
+     Target_en_us "Broken rocks grow back over time."
+     Comment "Mining sign card, Rules section."
+    }
+    CustomStringTableItem "{25CBE1F3714907FE}" {
+     Id "LF-Sign_PoliceWhitelist_Title"
+     Target_en_us "Police only"
+     Comment "Title of the police whitelist sign. Shown in the prompt as Read: Police only."
+    }
+    CustomStringTableItem "{872DAC511763A07E}" {
+     Id "LF-Sign_PoliceWhitelist_What"
+     Target_en_us "A police post. Only whitelisted officers may use it."
+     Comment "Police whitelist sign card, What section."
+    }
+    CustomStringTableItem "{E6BC64F34A07EA32}" {
+     Id "LF-Sign_PoliceWhitelist_Needs"
+     Target_en_us "A police whitelist from the server staff."
+     Comment "Police whitelist sign card, Needs section."
+    }
     CustomStringTableItem "{F4D6F78E634D1214}" {
      Id "EL-Duty_Paid"
      Target_en_us "Duty pay: $%1 cash"

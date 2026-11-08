@@ -1,0 +1,48 @@
+// red-proof: expected "Read: Bank!"; `tools\cli test --no-build --tier all`
+// (2026-11-08) failed signs/localization with "a literal title reads
+// Read: <title> (expected 'Read: Bank!', got 'Read: Bank')". The same run
+// showed the dedicated test server resolves sign keys.
+
+// tier: LOGIC
+class EL_Test_SignLocalization : EL_Test
+{
+	override string GetName()
+	{
+		return "signs/localization";
+	}
+
+	override void Run(EL_TestContext ctx)
+	{
+		ctx.True(LF_SignCatalog.IsKey("#LF-Sign_What"), "a # value is a key");
+		ctx.False(LF_SignCatalog.IsKey("Bank"), "a plain value is not a key");
+		ctx.False(LF_SignCatalog.IsKey("#"), "a lone # is not a key");
+		ctx.False(LF_SignCatalog.IsKey(""), "an empty value is not a key");
+
+		ctx.EqualStr("Bring cash, #1 rule: no guns.", LF_SignCatalog.Resolve("Bring cash, #1 rule: no guns."), "a literal is shown as written");
+		ctx.EqualStr("What", LF_SignCatalog.Resolve("#LF-Sign_What"), "a key resolves through the string table");
+		ctx.EqualStr("Mining area", LF_SignCatalog.Resolve("#LF-Sign_Mining_Title"), "a sign title key resolves");
+
+		LF_SignDef literal = EL_Test_SignCatalog.MakeSign("bank", "Bank", "", "", "", "");
+		ctx.EqualStr("Read: Bank", LF_SignCatalog.ReadName(literal), "a literal title reads Read: <title>");
+
+		LF_SignDef keyed = EL_Test_SignCatalog.MakeSign("mining", "#LF-Sign_Mining_Title", "#LF-Sign_Mining_What", "", "", "");
+		ctx.EqualStr("Read: Mining area", LF_SignCatalog.ReadName(keyed), "a keyed title reads Read: <translated title>");
+
+		ctx.EqualStr("MINING AREA", LF_SignComponent.FaceText(keyed), "the board face prints the translated title in capitals");
+		ctx.EqualStr("BANK", LF_SignComponent.FaceText(literal), "the board face prints a literal title in capitals");
+		ctx.False(LF_SignComponent.WantsFace(true, true, true), "a dedicated server draws no board face");
+		ctx.False(LF_SignComponent.WantsFace(true, false, false), "no workspace, no board face");
+		ctx.False(LF_SignComponent.WantsFace(false, false, true), "a sign with the face off draws none");
+		ctx.True(LF_SignComponent.WantsFace(true, false, true), "a rendering client draws the board face");
+
+		array<ref LF_UIPart> parts = LF_SignCatalog.BuildParts(keyed);
+		ctx.Equal(3, parts.Count(), "a keyed sign builds title, What, and Close");
+		if (parts.Count() != 3)
+			return;
+
+		ctx.EqualStr("Mining area", parts.Get(0).GetText(), "the card title is translated");
+		string what = parts.Get(1).GetText();
+		ctx.True(what.StartsWith("What: "), "the section heading is translated");
+		ctx.False(what.Contains("#LF-"), "no raw key reaches the card");
+	}
+}

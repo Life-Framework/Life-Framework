@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,14 @@
+GenericEntity {
+ ID "F5497CA4EDD51D51"
+ components {
+  MeshObject "{F0E7C569630004B5}" {
+   Object "{905BB0ECA52369BC}Assets/Props/Commercial/Posters/PosterSingle_A4.xob"
+   Materials {
+    MaterialAssignClass "{5A4D6D8AF357FFBC}" {
+     SourceMaterial "Poster_A4_mat"
+     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+    }
+   }
+  }
+ }
+}
