@@ -1,0 +1,29 @@
+// MIT. Item-prefab recipe adapted from thebonbon/EveronLife branch enhancement/Main_World.
+// One input item and one output item, the same shape as the apple processor. This file uses a new GUID.
+GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
+ ID "598F21A86EB5B48E"
+ components {
+  ActionsManagerComponent "{598F21A8710B89C1}" {
+   additionalActions {
+    EL_ProcessAction "{598F21A877BE6DEE}" {
+     UIInfo UIInfo "{3211755A1DC611E3}" {
+      Name "Make 1 beer with 1 empty beer bottle"
+     }
+     Duration 1
+     m_aProcessingInputs {
+      EL_ProcessingInput "{992030BBC9C89F23}" {
+       m_InputPrefab "{2B0213949BE91F38}Prefabs/Items/Resources/EmptyBeerBottle.et"
+       m_iInputAmount 1
+      }
+     }
+     m_aProcessingOutputs {
+      EL_ProcessingOutput "{875A7855899B2B75}" {
+       m_OutputPrefab "{C3B9A61B460BE287}Prefabs/Items/Drinks/BeerBottle.et"
+       m_iOutputAmount 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

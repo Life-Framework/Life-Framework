@@ -14,9 +14,9 @@ class EL_JobManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Does not register itself; only GetInstance() sets the singleton.
 	void EL_JobManager()
 	{
-		s_Instance = this;
 		m_mScopeGatherRewards = new map<string, int>();
 		m_mScopeProcessRewards = new map<string, int>();
 	}
@@ -24,7 +24,8 @@ class EL_JobManager : Managed
 	//------------------------------------------------------------------------------------------------
 	void ~EL_JobManager()
 	{
-		s_Instance = null;
+		if (s_Instance == this)
+			s_Instance = null;
 	}
 
 	//------------------------------------------------------------------------------------------------

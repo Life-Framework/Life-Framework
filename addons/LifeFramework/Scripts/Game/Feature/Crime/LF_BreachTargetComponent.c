@@ -19,6 +19,15 @@ class LF_BreachTargetComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, desc: "Owning organization id. Empty means only police can repair.")]
 	protected string m_sOwnerOrganization;
 
+	//! Replicated copy of the LF_Breach target flags (the table is server-only). Written by
+	//! LF_Breach on the server, read by the breach actions on a client. Late joiners get them
+	//! with the door snapshot.
+	[RplProp()]
+	protected bool m_bRplOpen;
+
+	[RplProp()]
+	protected bool m_bRplArmed;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -53,6 +62,58 @@ class LF_BreachTargetComponent : ScriptComponent
 			return GetOwner().GetName();
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: mirror the LF_Breach flags. Bumps only on a change.
+	void SetReplicatedState(bool isOpen, bool isArmed)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		if (isOpen == m_bRplOpen && isArmed == m_bRplArmed)
+			return;
+
+		m_bRplOpen = isOpen;
+		m_bRplArmed = isArmed;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsReplicatedOpen()
+	{
+		return m_bRplOpen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsReplicatedArmed()
+	{
+		return m_bRplArmed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Offer check for the arm action. The server asks LF_Breach; a client reads the mirror.
+	bool CanArmForOffer()
+	{
+		if (Replication.IsServer())
+			return LF_Breach.CanArm(GetTargetId());
+
+		return !m_bRplOpen && !m_bRplArmed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Offer check for the repair action. The server asks LF_Breach. A client shows it to police
+	//! (replicated account state) and, on an organization door, to anyone: organization
+	//! membership is server-only, so LF_Breach.Repair decides and logs the refusal.
+	bool CanRepairForOffer(IEntity user)
+	{
+		if (Replication.IsServer())
+			return LF_Breach.CanRepair(GetTargetId(), EL_Utils.GetPlayerUid(user));
+
+		if (EL_AccountStateBits.IsPolice(EL_AccountReplication.GetState(user)))
+			return true;
+
+		return !m_sOwnerOrganization.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------

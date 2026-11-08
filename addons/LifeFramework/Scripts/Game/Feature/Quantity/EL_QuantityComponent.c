@@ -257,6 +257,29 @@ class EL_QuantityComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Ported from Jacob-Mango/EveronLife branch feature/item-stacking (MIT).
+	//! Combine adds the source quantity onto the destination. 2 and 3 yield 5.
+	static int CombineQuantities(int destinationQuantity, int sourceQuantity)
+	{
+		if (destinationQuantity < 0)
+			destinationQuantity = 0;
+		if (sourceQuantity < 0)
+			sourceQuantity = 0;
+		return destinationQuantity + sourceQuantity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ported from Jacob-Mango/EveronLife branch feature/item-stacking (MIT).
+	//! A split that takes splitSize out of totalQuantity leaves the remainder.
+	//! Split of 5 into 2 leaves 3. An out-of-range split leaves the stack unchanged.
+	static int QuantityRemainingAfterSplit(int totalQuantity, int splitSize)
+	{
+		if (splitSize < 1 || splitSize >= totalQuantity)
+			return totalQuantity;
+		return totalQuantity - splitSize;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Return new quantity after operation
 	int Combine(notnull EL_QuantityComponent quantitySource, int amount = -1, out int transferred = 0)
 	{
@@ -265,7 +288,14 @@ class EL_QuantityComponent : ScriptComponent
 			if (amount == -1) amount = quantitySource.GetQuantity();
 			if (amount < 0) amount = 0;
 
-			transferred = EL_Utils.MinInt(quantitySource.GetQuantity(), EL_Utils.MinInt(GetRemainingCapacity(), amount));
+			int take = amount;
+			if (take > quantitySource.GetQuantity())
+				take = quantitySource.GetQuantity();
+			if (take > GetRemainingCapacity())
+				take = GetRemainingCapacity();
+
+			int combined = CombineQuantities(m_iQuantity, take);
+			transferred = combined - m_iQuantity;
 
 			AddQuantity(transferred);
 			quantitySource.AddQuantity(-transferred);
@@ -278,7 +308,9 @@ class EL_QuantityComponent : ScriptComponent
 	void Split(int splitSize = -1)
 	{
 		if (splitSize == -1) splitSize = m_iQuantity / 2;
-		if (splitSize < 1 || splitSize >= m_iQuantity) return;
+		int kept = QuantityRemainingAfterSplit(m_iQuantity, splitSize);
+		if (kept == m_iQuantity) return;
+		splitSize = m_iQuantity - kept;
 
 		IEntity owner = GetOwner();
 		IEntity destinationEntity = EL_Utils.SpawnEntityPrefab(EL_Utils.GetPrefabName(owner), owner.GetOrigin());
@@ -306,18 +338,24 @@ class EL_QuantityComponent : ScriptComponent
 			return;
 		}
 
+		// The fresh entity spawned holding its init quantity (100 for MoneyStack). Size it and
+		// mark it keep-separate BEFORE the insert: OnItemAdded runs inside the insert, and
+		// without the intent it merges the whole spawned stack into the source (split 1 => +99).
+		quantityDestination.SetQuantity(splitSize);
+		SetTransferIntent(destinationEntity, true);
+
 		BaseInventoryStorageComponent storage = sourceInventoryItem.GetParentSlot().GetStorage();
 		InventoryStorageManagerComponent storageManager = EL_InventoryUtils.GetResponsibleStorageManager(owner);
 		if (!storageManager || !storageManager.TryInsertItemInStorage(destinationEntity, storage))
 		{
-			// Storage could not take the split item: roll the quantity back and drop the spawned entity
+			// Storage could not take the split item: the source was never touched, drop the spawned entity
+			EL_Debug.Warn("Quantity", string.Format("split refused: storage did not take a %1 stack", splitSize));
+			RemoveTransferIntent(destinationEntity);
 			SCR_EntityHelper.DeleteEntityAndChildren(destinationEntity);
 			return;
 		}
 
 		AddQuantity(-splitSize);
-		quantityDestination.SetQuantity(splitSize);
-		SetTransferIntent(destinationEntity, true);
 	}
 
 	//------------------------------------------------------------------------------------------------

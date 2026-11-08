@@ -1,7 +1,7 @@
 # Level — Design Requirements
 
 > Context file for progression. Written against
-> `docs/design-philosophy.md`.
+> `docs/design.md`.
 
 ## Intent
 

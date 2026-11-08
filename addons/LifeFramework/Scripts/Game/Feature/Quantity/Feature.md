@@ -1,7 +1,7 @@
 # Quantity — Design Requirements
 
 > Context file for the item-stack engineering layer. Written against
-> `docs/design-philosophy.md`.
+> `docs/design.md`.
 
 ## Intent
 

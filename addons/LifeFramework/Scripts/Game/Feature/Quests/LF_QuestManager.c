@@ -11,6 +11,15 @@ class LF_QuestManager
 	protected static ref LF_QuestManager s_Instance;
 	protected ref map<string, ref LF_QuestDefinition> m_mDefinitions = new map<string, ref LF_QuestDefinition>();
 
+	//! Giver id -> giver entity, and quest id -> giver id. The server checks a client's
+	//! accept/turn-in/talk request against the position of the giver that offers the quest.
+	protected ref map<string, EntityID> m_mGiverEntities = new map<string, EntityID>();
+	protected ref map<string, string> m_mQuestGivers = new map<string, string>();
+
+	//! How close (meters) a player must stand to a giver for the server to accept a request.
+	//! The giver action shows at 3 m; the extra room covers movement while the menu is open.
+	static const float GIVER_RADIUS = 5.0;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_QuestManager GetInstance()
 	{
@@ -46,11 +55,19 @@ class LF_QuestManager
 			return;
 		}
 
+		IEntity giverEntity = giver.GetOwner();
+		if (giverEntity && !giver.GetGiverId().IsEmpty())
+			m_mGiverEntities.Set(giver.GetGiverId(), giverEntity.GetID());
+		else
+			EL_Debug.Error("Quests", string.Format("giver '%1' has no entity or id; its quests cannot be reached", giver.GetGiverId()));
+
 		foreach (LF_QuestDefinition def : quests)
 		{
 			if (!def)
 				continue;
 			RegisterDefinition(def);
+			if (!def.m_sQuestId.IsEmpty())
+				m_mQuestGivers.Set(def.m_sQuestId, giver.GetGiverId());
 			EL_Debug.Log("Quests", string.Format("registered quest '%1' from giver '%2'", def.m_sQuestId, giver.GetGiverId()));
 		}
 	}
@@ -65,6 +82,35 @@ class LF_QuestManager
 	map<string, ref LF_QuestDefinition> GetDefinitions()
 	{
 		return m_mDefinitions;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Giver id that offers questId, or empty when no registered giver offers it.
+	string GetGiverOfQuest(string questId)
+	{
+		return m_mQuestGivers.Get(questId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when user stands within GIVER_RADIUS of the registered, live giver giverId.
+	//! An unknown id or a deleted giver entity is never near.
+	bool IsNearGiver(IEntity user, string giverId)
+	{
+		if (!user || giverId.IsEmpty())
+			return false;
+
+		EntityID giverEntityId;
+		if (!m_mGiverEntities.Find(giverId, giverEntityId))
+			return false;
+
+		if (!GetGame() || !GetGame().GetWorld())
+			return false;
+
+		IEntity giverEntity = GetGame().GetWorld().FindEntityByID(giverEntityId);
+		if (!giverEntity)
+			return false;
+
+		return vector.Distance(user.GetOrigin(), giverEntity.GetOrigin()) <= GIVER_RADIUS;
 	}
 
 	//------------------------------------------------------------------------------------------------

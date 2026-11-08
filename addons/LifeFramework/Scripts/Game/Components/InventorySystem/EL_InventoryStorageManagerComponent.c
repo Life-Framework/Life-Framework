@@ -43,7 +43,12 @@ modded class SCR_InventoryStorageManagerComponent
 			return;
 		}
 
-		int totalValue = unitValue * GetItemQuantity(pItem);
+		// One output unit per EL_QuantityComponent quantity, then one cash unit per
+		// output. Ported from rekterakathom/EveronLife (MIT), commit
+		// 482b74a5a7e39e999d129b0657253696b9b8be15. This trader pays cash rather
+		// than spawning a barter prefab; the count is the same rule.
+		int outputUnits = EL_ShopRules.StackTradeOutputCount(GetItemQuantity(pItem));
+		int totalValue = EL_ShopRules.StackTradeTotal(unitValue, outputUnits);
 
 		// Pay before deleting: a sale that cannot pay out never consumes the item.
 		int paid = EL_MoneyUtils.AddCash(seller, totalValue);

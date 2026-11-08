@@ -2,8 +2,8 @@
 // tools/cli.mjs — unified Life Framework development CLI.
 //
 // Zero-dependency Node.js. Manages the MCP servers (clone / build / update /
-// verify / enable / disable) and dispatches validation, lint and test scripts
-// that live under tools/{validation,lint,test}/.
+// verify / enable / disable), runs the repo checks in tools/validation/, and
+// drives the worktree build / test / ship flow.
 //
 // Usage:
 //   node tools/cli.mjs <command> [args]
@@ -16,25 +16,29 @@
 //   mcp verify [name]                 Boot the server briefly to prove it starts
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
-//   validate | lint | test            Run every script in tools/{dir}/
+//   validate                          Run every script in tools/validation/
+//   test [--no-build] [--tier T]      Boot DebugWorld and run the ELTEST suite
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved ELTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
+//   scope <name> <dir>                Write the test stub, features row, keys, and street row
+//   scope --selftest                  Check those four outputs in a temp directory
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { spawn, spawnSync } from "node:child_process";
-import { closeSync, cpSync, createWriteStream, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
+import { runScopeCli } from "./scope/scaffold.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MCP_DIR = join(ROOT, "tools", "mcp");
 const CONFIG_PATH = join(ROOT, "opencode.json");
-const TOOL_DIRS = { validate: "validation", lint: "lint", test: "test" };
+const TOOL_DIRS = { validate: "validation" };
 
 const SERVERS = {
   "enfusion-mcp": {
@@ -471,7 +475,7 @@ function invokeScript(full, opts = {}) {
 }
 
 // Effective env for spawned tool scripts: OS env overlaid with the configured
-// ENFUSION_* values so tools/validation/* and tools/test/* agree with the CLI.
+// ENFUSION_* values so tools/validation/* and tools/test/test-e2e.ps1 agree with the CLI.
 function toolEnv() {
   return { ...process.env, ...envOf() };
 }
@@ -637,8 +641,9 @@ function serverArgs(root, ports) {
   // Addon discovery: -server loads the DebugWorld directly (no -config, which
   // conflicts with -addons). -addonsDir points at the repo addons plus a
   // junction to the game client's core/data ONLY - the server install's own
-  // ./addons is skipped so the packed EPF/EDF paks (which fail to compile on
-  // current Reforger) never load. -bindPort/-a2sPort give every worktree its
+  // ./addons is skipped so stray downloaded or packed addons there never load
+  // (LifeFramework.gproj depends only on the vanilla Game addon
+  // 58D0FB3206B6F859). -bindPort/-a2sPort give every worktree its
   // own port pair so parallel test runs never collide.
   const profile = join(root, "server", "profile", "test");
   const junction = serverGameAddons(root);
@@ -809,6 +814,7 @@ function cmdServe(root = ROOT, opts = {}) {
     console.log("      install Arma Reforger Server (Steam app 1874900) or set ENFUSION_SERVER_PATH");
     return 1;
   }
+  wt.copyResourceDatabase(root);
   const args = serverArgs(root, wt.portsForRoot(root));
   console.log(`launching: ${exe}`);
   console.log(`  ${args.join(" ")}`);
@@ -816,75 +822,6 @@ function cmdServe(root = ROOT, opts = {}) {
     const child = spawn(exe, args, { cwd: dirname(exe), stdio: "inherit" });
     child.on("error", (e) => resolvePromise((console.log(`FAIL  spawn error: ${e.message}`), 1)));
     child.on("exit", (code) => resolvePromise(code ?? 1));
-  });
-}
-
-function runServerTest(exe, args, logFile, tier = "all") {
-  return new Promise((resolvePromise) => {
-    const log = createWriteStream(logFile, { flags: "a" });
-    // Unpacked addon discovery is CWD-relative (./addons), so the server must
-    // run from the repo root; the -addonsDir entries supply the packed
-    // dependency addons (EPF/EDF) and the vanilla Game addon.
-    const child = spawn(exe, args, { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] });
-    const interesting = /\[ELTEST\]|\( E \)|\( W \)|ERROR|Unable to|scenario|mission|Initializing|Starting|loading addon|loaded addon|Game destroyed/i;
-    child.stdout?.on("data", (d) => {
-      log.write(d);
-      for (const l of d.toString().split(/\r?\n/)) {
-        if (l && interesting.test(l)) console.log(`  ${l}`);
-      }
-    });
-    child.stderr?.on("data", (d) => {
-      log.write(d);
-      for (const l of d.toString().split(/\r?\n/)) {
-        if (l && interesting.test(l)) console.log(`  ${l}`);
-      }
-    });
-    let done = false;
-    const finish = (ok, msg) => {
-      if (done) return;
-      done = true;
-      if (child.exitCode === null) child.kill();
-      log.end();
-      console.log(msg);
-      resolvePromise(ok ? 0 : 1);
-    };
-    child.on("error", (e) => finish(false, `FAIL  spawn error: ${e.message}`));
-    child.on("exit", (code) => {
-      if (!done) finish(false, `FAIL  server exited before tests completed (code ${code})`);
-    });
-    const started = Date.now();
-    const iv = setInterval(() => {
-      let tail = "";
-      try {
-        tail = readFileSync(logFile, "utf8");
-      } catch {
-        return;
-      }
-      const eltest = tail.match(/\[ELTEST\] SUMMARY (?:tier=(\w+) )?passed=(\d+) failed=(\d+) total=(\d+)/);
-      const mgr = tail.match(/\[EL_Tests\] runtime tests done, failures=(\d+)/);
-      const m = eltest || mgr;
-      if (m) {
-        clearInterval(iv);
-        const passed = eltest ? +eltest[2] : null;
-        const failed = eltest ? +eltest[3] : +mgr[1];
-        const engineErrors = (tail.match(/\( E \)/g) || []).length;
-        // A fast request answered by an all run (or vice versa) means the
-        // -scrDefine plumbing failed; that is a no-verdict, not a pass.
-        const tierSeen = eltest ? eltest[1] : null;
-        const tierOk = !eltest || !tierSeen || tierSeen === tier;
-        const ok = failed === 0 && engineErrors === 0 && tierOk;
-        console.log(
-          `tests: ${eltest ? `tier=${tierSeen} passed=${passed} failed=${failed}` : `failures=${failed} (EL_TestManager)`} engineErrors=${engineErrors} ${ok ? "OK" : "FAILED"}`,
-        );
-        if (!tierOk) console.log(`FAIL  requested tier=${tier} but suite reported tier=${tierSeen}`);
-        finish(ok, `test result: ${ok ? "OK" : "FAILED"}`);
-        return;
-      }
-      if (Date.now() - started > 300000) {
-        clearInterval(iv);
-        finish(false, "FAIL  timeout waiting for test summary (300s)");
-      }
-    }, 2000);
   });
 }
 
@@ -995,9 +932,11 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   suite-valid <sha>             exit 0 when every file since <sha> is localization, the generated
                                 test registry, or docs/features.md; exit 1 for gameplay, a
                                 persistence serializer, a prefab, or a world layer
+  scope <name> <dir>            write a test stub, a features-row snippet, localization keys
+                                to append, and one street-manifest row into <dir>
+  scope --selftest              run that write in a temp directory and check the four outputs
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
-  validate | lint               run every script in tools/{validation,lint}/
-  run <area>                    run every script in tools/<area>/ (validate, lint, test, ...)
+  validate                      run every script in tools/validation/
 
 servers: ${Object.keys(SERVERS).join(", ")}
 `);
@@ -1175,7 +1114,7 @@ function wtNewCmd(args) {
   }
 }
 
-function wtListCmd() {
+async function wtListCmd() {
   const state = wt.reconcileState(ROOT);
   const rows = Object.values(state.worktrees ?? {});
   if (rows.length === 0) {
@@ -1183,21 +1122,47 @@ function wtListCmd() {
     return 0;
   }
   console.log("worktrees  (main checkout is reserved for the world editor)");
-  console.log(`  ${"slug".padEnd(20)}${"branch".padEnd(22)}${"ports".padEnd(14)}state`);
+  const slugW = Math.max(4, ...rows.map((e) => e.slug.length)) + 2;
+  const branchW = Math.max(6, ...rows.map((e) => e.branch.length)) + 2;
+  const line = (e, text) => `  ${e.slug.padEnd(slugW)}${e.branch.padEnd(branchW)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}${text}`;
+  console.log(`  ${"slug".padEnd(slugW)}${"branch".padEnd(branchW)}${"ports".padEnd(14)}state`);
+  // One git call for every branch's ahead/behind, one for every checkout's
+  // current branch, and the per-worktree status calls in parallel: a serial
+  // five-calls-per-row loop took ~3 s with a dozen worktrees.
+  const counts = new Map();
+  const refs = wt.git(ROOT, ["for-each-ref", "refs/heads", "--format=%(refname:short) %(ahead-behind:origin/main)"]);
+  for (const l of refs.stdout.split(/\r?\n/)) {
+    const [name, a, b] = l.trim().split(" ");
+    if (name && a !== undefined) counts.set(name, { ahead: parseInt(a, 10) || 0, behind: parseInt(b, 10) || 0 });
+  }
+  const checkedOut = new Map(wt.listWorktrees(ROOT).map((w) => [resolve(w.path), w.branch ?? ""]));
+  const live = rows.filter((e) => existsSync(e.path));
+  const statuses = await Promise.all(live.map((e) => new Promise((done) => {
+    let out = "";
+    const child = spawn("git", ["-C", e.path, "status", "--porcelain"], { stdio: ["ignore", "pipe", "ignore"] });
+    child.stdout.on("data", (d) => { out += d; });
+    child.on("error", () => done(""));
+    child.on("close", () => done(out));
+  })));
+  const dirtyOf = new Map(live.map((e, i) => [e.path, statuses[i].trim() ? "dirty" : "clean"]));
   for (const e of rows) {
     if (!existsSync(e.path)) {
-      console.log(`  ${e.slug.padEnd(20)}${e.branch.padEnd(22)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}MISSING`);
+      console.log(line(e, "MISSING"));
       continue;
     }
-    const merged = wt.gitOk(ROOT, ["merge-base", "--is-ancestor", e.branch, "origin/main"]);
-    const ahead = parseInt(wt.git(ROOT, ["rev-list", "--count", "origin/main.." + e.branch]).stdout.trim() || "0", 10);
-    const behind = parseInt(wt.git(ROOT, ["rev-list", "--count", e.branch + "..origin/main"]).stdout.trim() || "0", 10);
-    const dirty = wt.git(e.path, ["status", "--porcelain"]).stdout.trim() ? "dirty" : "clean";
-    const cur = wt.currentBranch(e.path);
-    const stateText = merged && ahead === 0
-      ? (behind > 0 ? "merged (prune me)" : "fresh (no commits yet)")
-      : `${dirty}${cur !== e.branch ? ` on ${cur}` : ""}${ahead > 0 ? ` +${ahead}` : ""}`;
-    console.log(`  ${e.slug.padEnd(20)}${e.branch.padEnd(22)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}${stateText}`);
+    const c = counts.get(e.branch) ?? { ahead: 0, behind: 0 };
+    const ahead = c.ahead;
+    const behind = c.behind;
+    // The branch is an ancestor of origin/main exactly when it has no commits
+    // of its own (ahead 0); a missing ref counts as not merged.
+    const merged = counts.has(e.branch) && ahead === 0;
+    const dirty = dirtyOf.get(e.path);
+    const cur = checkedOut.get(resolve(e.path)) ?? "";
+    // Uncommitted edits are never "prune me": they exist nowhere else.
+    let stateText = `${dirty}${cur !== e.branch ? ` on ${cur}` : ""}${ahead > 0 ? ` +${ahead}` : ""}`;
+    if (merged && ahead === 0 && dirty === "clean") stateText = behind > 0 ? "merged (prune me)" : "fresh (no commits yet)";
+    else if (merged && ahead === 0) stateText = "dirty, uncommitted work (commit or discard before prune)";
+    console.log(line(e, stateText));
   }
   return 0;
 }
@@ -1285,6 +1250,7 @@ function runE2ePass(root, tier, opts = {}) {
     console.log(`FAIL  harness not found: ${harness}`);
     return 1;
   }
+  wt.copyResourceDatabase(root);
   const ports = wt.portsForRoot(root);
   const psArgs = [
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness,
@@ -1550,7 +1516,6 @@ const cmds = {
   },
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
   validate: () => cmdRunArea("validate"),
-  lint: () => cmdRunArea("lint"),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");
     if (!existsSync(gen)) {
@@ -1571,11 +1536,10 @@ const cmds = {
     process.stdout.write(res.stdout + res.stderr);
     return res.status;
   },
-  run: (n) =>
-    TOOL_DIRS[n] ? cmdRunArea(n) : (console.log(`unknown area: ${n} (expected one of: ${Object.keys(TOOL_DIRS).join(", ")}`), 1),
   logs: (flags) => cmdLogs(flags),
   "suite-stamp": (flags) => cmdSuiteStamp(flags),
   "suite-valid": (flags) => cmdSuiteValid(flags),
+  scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
   help: () => cmdHelp(),
 };
@@ -1661,7 +1625,7 @@ try {
   } else if (cmd === "wt") {
     code = cmdWt(rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "suite-stamp" || cmd === "suite-valid" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "logs" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

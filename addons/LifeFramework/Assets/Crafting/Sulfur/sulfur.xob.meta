@@ -1,0 +1,51 @@
+MetaFileClass {
+ Name "{2A40539EDABCBE37}Assets/Crafting/Sulfur/sulfur.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{FB51286B4DE4FD67}" {
+     SourceMaterial "Sulfur_LOD0"
+     AssignedMaterial "{835AF267A980634B}Assets/Crafting/Sulfur/Data/Sulfur_LOD0.emat"
+    }
+    MaterialAssignClass "{E91A5866B89F9ABF}" {
+     SourceMaterial "DefaultGeneratedMaterial"
+     AssignedMaterial "{1F4E6361C1D1C1A5}Assets/Crafting/Sulfur/Data/DefaultGeneratedMaterial.emat"
+    }
+    MaterialAssignClass "{ED3594DD192EC174}" {
+     SourceMaterial "Sulfur_LOD1"
+     AssignedMaterial "{F6B00E513AB39362}Assets/Crafting/Sulfur/Data/Sulfur_LOD1.emat"
+    }
+    MaterialAssignClass "{C880092B7C2EE4FB}" {
+     SourceMaterial "Sulfur_LOD2"
+     AssignedMaterial "{19D950B207CFE453}Assets/Crafting/Sulfur/Data/Sulfur_LOD2.emat"
+    }
+   }
+   MeshParams {
+    MeshParam Sulfur {
+    }
+    MeshParam Sulfur_UTM {
+    }
+   }
+   Common TXOCommonClass "{5D27CBAB6F080802}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{ACA29BB43DDB3311}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{37465292A53D3D3B}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{7BE4592C7397C328}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{ED49365994930D08}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+ }
+}
