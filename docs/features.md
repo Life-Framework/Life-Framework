@@ -168,6 +168,31 @@
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
 
+### Carried inventory — `Feature/Character/Persistence/LF_StorageSnapshot.c`
+- ✅ **Carried cash and items survive a restart** (2026-11-08, M1-04, tests
+  `persist/carried-roundtrip`, `persist/carried-death-no-dupe`, and
+  `e2e/pass2-verify-load` across a real two-boot restart): the whole storage
+  tree (prefab, stack quantity, storage index, slot id) is the `carried` payload
+  of `EL_PersistenceComponentSerializer`, appended at version 6. Keyed by
+  character persistence id plus a slot name, so one owner can hold several named
+  snapshots (`carried` now; police duty / civilian stash later, M1-11).
+- ✅ Captured at every save point (autosave, manual, shutdown) for each living
+  player and on disconnect before the character is deleted. On spawn a snapshot
+  replaces the starter kit; without one the starter kit is granted.
+- ✅ Apply reconciles instead of adding: a matching occupant is kept, an occupant
+  no record claims is deleted, a missing record is spawned. A second apply
+  spawns nothing. A prefab that no longer loads logs `EL_Debug.Error` and is
+  skipped with its contents.
+- ✅ Death drops what you carry: `OnPlayerKilled_S` drops the snapshot and a dead
+  body is never captured, so the body keeps the items and a restart grants the
+  starter kit.
+- ✅ No ground copy: `LifeFramework.conf` saves a stack with its parent and no
+  longer self-spawns the player character, so a pocket `MoneyStack` does not
+  come back loose on the ground next to the restored one (the two-boot e2e
+  counts it).
+- ⚠️ Ammo count, weapon state, and placed storage (hideout stash, M1-15) are not
+  in the snapshot. Attachments and magazines are kept as items.
+
 ## Account & Persistence
 
 ### `EL_PlayerAccount` — `Feature/Account/EL_PlayerAccount.c`

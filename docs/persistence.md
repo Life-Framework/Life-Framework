@@ -19,9 +19,12 @@ Each of these must survive a server restart:
 5. Organizations, hideout ownership, and owned vehicle records (lock
    identifier, key id, owner, lock flag).
 6. Serving jail sentences (player uid, remaining seconds).
+7. Each living player's carried inventory: the storage tree under the character
+   (prefab, stack quantity, nesting). Death drops it.
 
 On connect the player spawns at a spawn point with the active character's
-prefab and the default loadout configured on `EL_SpawnLogic` in
+prefab. A saved carried inventory is applied to it; without one the character
+gets the default loadout configured on `EL_SpawnLogic` in
 `GameMode_Roleplay.et` (jacket carrying `MoneyStack`, plus clothing).
 
 Identity:
@@ -37,8 +40,13 @@ Identity:
   is a `PersistenceSystemConfig` inheriting the vanilla `Common.conf`. It binds:
   - the game-mode entity serializer and its component serializers, including
     `EL_PersistenceComponentSerializer`;
-  - item entity configs with `SelfSpawn 1` and `EL_QuantityComponentSerializer`;
-  - the player character config with `SelfSpawn 1`.
+  - item entity configs with `SelfSpawn 1` and `EL_QuantityComponentSerializer`.
+    A stack saves with its parent (no `ParentHandling "Ignore always"`): with that
+    flag a stack in a pocket was saved as a root and self-spawned on the ground
+    after a restart, a copy of the cash the carried snapshot restores;
+  - the player character config with `SelfSpawn 0` (the vanilla value). `EL_SpawnLogic`
+    spawns every player character fresh and the carried snapshot restores what it
+    carried; a self-spawned saved body would be an unowned copy of the same items.
 - **System registration.** `SCR_PersistenceSystem` (pointing at
   `LifeFramework.conf`) is registered in `Configs/Systems/LifeFrameworkSystems.conf`,
   which inherits vanilla `ChimeraSystemsConfig.conf` by GUID and is referenced
@@ -59,8 +67,8 @@ Identity:
 - **`EL_PersistenceComponentSerializer`** (`Scripts/Game/Persistence/Serializers/`)
   writes `version` first, then accounts and bank records (the prefix on every
   version), then the payloads listed in `RegisterPersistencePayloads`:
-  survival, organizations, hideout, vehicles, jail. The written version is that
-  list's length (currently 5). Deserialize stops at the stored version, so an
+  survival, organizations, hideout, vehicles, jail, carried. The written version
+  is that list's length (currently 6). Deserialize stops at the stored version, so an
   older save leaves later payloads untouched. A new system appends one entry at
   the end and raises the version by one. Never insert earlier or reorder.
   The override bodies live in public static `SerializeStore` /
@@ -74,6 +82,7 @@ Identity:
   | 3 | hideout ownership |
   | 4 | owned vehicles |
   | 5 | serving jail sentences (`LF_Jail.ExportAll` / `ApplyAll`) |
+  | 6 | carried inventories (`LF_StorageSnapshot.ExportAll` / `ApplyAll`) |
 - Managers expose `ExportAll()` / `ApplyAll(records)` / `GetOrCreate(id)`.
   Record classes are plain Managed: `EL_PlayerAccountRecord`,
   `EL_BankAccountRecord`, `EL_SurvivalStatsRecord` (each under the feature's
@@ -187,6 +196,11 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   registration. The game mode once did `new EL_ATMManager()` on the first
   connect, which replaced the bank cache the load had filled and wiped every
   balance.
+- Carried inventory is a snapshot, not engine entity persistence. The player
+  character is spawned fresh by `EL_SpawnLogic`, so the snapshot (keyed by
+  character persistence id and slot name) is captured at each save point and on
+  disconnect, and applied on spawn in place of the starter kit. Apply reconciles
+  against what the entity already has, so it is idempotent. Death clears it.
 - Session-only registries must be rebuilt on load: saved plates are
   re-reserved in `EL_LicensePlateRegistry` by `EL_VehicleOwnership.ApplyAll`.
 - A restored out-in-world vehicle spawns without a key (a ground key per
@@ -206,7 +220,10 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   (WORLD), restored vehicle has no ground key (WORLD), plates re-reserved on
   load (LOGIC), unreadable whitelist file is kept (LOGIC).
 - `e2e/pass1-write-save` / `e2e/pass2-verify-load` (PERSISTENCE, two boots)
-  also carry a jail sentence across the real restart.
+  also carry a jail sentence and a carried inventory (237 cash, 3 apples, a
+  water bottle inside a backpack) across the real restart.
+- `persist/carried-roundtrip` (PERSISTENCE) and `persist/carried-death-no-dupe`
+  (WORLD) drive the carried payload through the real serializer and the death rule.
 - In-session round trips prove nothing; the restart is ground truth. The
   restart pass (save -> shutdown -> boot -> load) stays manual because the
   `EL_Test` runner cannot survive a game-state transition.
