@@ -3107,6 +3107,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You hold up your ID card."
      Comment "Show ID performed: the other player now sees the card."
     }
+    CustomStringTableItem "{26F8FC7CB843012A}" {
+     Id "LF-JailSlip_Name"
+     Target_en_us "Sentence slip"
+     Comment "Inventory name of the paper a prisoner receives on sentencing."
+    }
+    CustomStringTableItem "{B248F0FEF12E26A8}" {
+     Id "LF-JailSlip_Blank"
+     Target_en_us "A blank sentence slip."
+     Comment "Sentence slip description before it is printed."
+    }
+    CustomStringTableItem "{37A65DC6C4FED493}" {
+     Id "LF-JailSlip_Prisoner"
+     Target_en_us "Prisoner: %1"
+     Comment "Sentence slip line. %1 is the prisoner name."
+    }
+    CustomStringTableItem "{FD775A4BC17E874E}" {
+     Id "LF-JailSlip_Offence"
+     Target_en_us "Offence: wanted level %1"
+     Comment "Sentence slip line. %1 is the wanted level at sentencing."
+    }
+    CustomStringTableItem "{AB8EEC396FC517C0}" {
+     Id "LF-JailSlip_MinutesLeft"
+     Target_en_us "Time left: %1 min, served while you are online"
+     Comment "Sentence slip line. %1 is the whole online minutes left."
+    }
+    CustomStringTableItem "{67C253FDB532D573}" {
+     Id "LF-JailSlip_Stamped"
+     Target_en_us "SERVED. Released."
+     Comment "Stamp printed on a sentence slip when the sentence ends."
+    }
+    CustomStringTableItem "{6C2C86A5611DFD9A}" {
+     Id "LF-Jail_SlipHanded"
+     Target_en_us "You were handed a sentence slip. Check your inventory."
+     Comment "Toast when a prisoner receives the sentence slip."
+    }
   }
  }
 }

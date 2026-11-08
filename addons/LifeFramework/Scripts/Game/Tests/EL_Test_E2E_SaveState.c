@@ -124,7 +124,7 @@ class EL_Test_E2E_SaveStateVerify : EL_Test
 		}
 
 		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is still serving after the save load");
-		ctx.True(LF_Jail.GetRemaining(ACCOUNT_UID) > 0, "e2e sentence has time left after the save load");
+		ctx.EqualFloat(3600, LF_Jail.GetRemaining(ACCOUNT_UID), 0.01, "e2e sentence resumes with the same remaining time (an offline prisoner serves no time)");
 
 		LF_StorageSnapshotRecord carried = LF_StorageSnapshot.Get(CARRIED_CHARACTER_ID, LF_StorageSnapshot.SLOT_CARRIED);
 		ctx.NotNull(carried, "e2e carried snapshot present after the save load");

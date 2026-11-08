@@ -775,8 +775,25 @@
   goes through `SCR_Global.TeleportPlayer` (the vanilla server-side player
   teleport) instead of a server-only `SetOrigin` that the owning client can
   overwrite; a stand-in with no player is still set directly (2026-11-07). A
-  prisoner seated in a vehicle moves the vehicle (vanilla behaviour). Not yet
-  checked on a dedicated server with a remote client.
+  prisoner seated in a vehicle is dismounted straight to the target first
+  (`GetOutVehicle_NoDoor`; a client-owned player through the vanilla Game Master
+  `SCR_EditableCharacterComponent.SetTransform`), so the vehicle stays put (M1-21,
+  test `jail/vehicle-arrest`). Not yet checked on a dedicated server with a remote client.
+- ✅ **Online time** (M1-21, 2026-11-08, tests `jail/online-time`, `e2e/pass2-verify-load`): the
+  sentence counts down only for connected players (`LF_Jail.Tick` reads
+  `PlayerManager.GetPlayers`; `TickOnline` is the testable seam). An offline prisoner keeps
+  the time they had at logoff and logs `sentence paused` / `sentence resumed`. A prisoner who
+  spawns with time left (rejoin, restart) goes back to the cell with their slip (`EL_SpawnLogic`).
+- ✅ **Sentence slip** (M1-21, test `jail/slip`): sentencing hands the prisoner
+  `Prefabs/Items/Roleplay/SentenceSlip.et` (vanilla personal-papers mesh). `LF_JailSlipComponent`
+  prints name, offence (wanted level), and online minutes left; the minutes replicate only when
+  the whole minute changes. Hovering it in the inventory reads it (`LF_JailSlipUIInfo`). A
+  respawn or a second arrest reprints the carried slip instead of adding one. No new save data.
+- ✅ **Visible release** (M1-21, tests `jail/slip`, `jail/online-time`): release opens the cell
+  door (`DoorComponent.SetControlValue`, the vanilla door motion and sound; it closes after
+  5 s), places the prisoner at the cell release offset (`m_vReleaseOffset`, `0 0 -5`, outside
+  the door), stamps the slip, then shows the toast 1.5 s later. Release runs once per sentence.
+  The DebugWorld cell now sentences 60 s per wanted level, max 300 s (it was zero-length).
 
 
 ### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`

@@ -70,6 +70,9 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_IDCard(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_IdCardGrant(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_IdCardRules(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JailOnlineTime(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_JailSlip(), EL_TestTier.WORLD);
+		manager.Register(new EL_Test_JailVehicleArrest(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_JumpPad(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateFormat(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_LicensePlateParenting(), EL_TestTier.WORLD);

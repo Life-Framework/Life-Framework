@@ -432,6 +432,9 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		EL_CharacterSurvivalComponent survivalComponent = EL_CharacterSurvivalComponent.Cast(character.FindComponent(EL_CharacterSurvivalComponent));
 		if (survivalComponent)
 			survivalComponent.Init(characterPersistenceId);
+
+		// A prisoner with time left (a rejoin or a restart mid-sentence) goes back to the cell.
+		LF_Jail.OnPlayerSpawned(EL_Utils.GetPlayerUID(playerId), character);
 	}
 
 	//------------------------------------------------------------------------------------------------
