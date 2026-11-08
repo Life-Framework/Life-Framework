@@ -29,6 +29,8 @@ intent: `docs/design.md`. An agent handed a scope, issue, or PR starts with the
    orphan metas.
 3. **Reference resources by `{GUID}path`** with the real folder casing.
 4. **Binary assets are plain blobs** marked `-text` in `.gitattributes`.
+   Text is LF in the repo and in every checkout (`* text=auto eol=lf`; `.cmd`/`.bat`
+   stay CRLF). Generators write LF; scripts that patch files need not handle `\r\n`.
 5. **New classes are `LF_`.** Existing `EL_` classes keep their names. The real
    EveronLife mod (`EL_`) can load on the same server, so new `EL_` names can
    collide. `LF_` code calls `EL_` infrastructure freely. Tests keep the

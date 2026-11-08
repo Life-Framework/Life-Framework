@@ -2103,7 +2103,7 @@ function wtHelp() {
                                        grep that worktree's newest console.log (from anywhere)
   tools\\cli wt gate <slug> [--wait]   validate --full + build + test (tier=all) in that worktree
   tools\\cli wt sync <slug>            merge origin/main into the worktree branch
-  tools\\cli wt ship <slug> [--closes N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync]
+  tools\\cli wt ship <slug> [--closes N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate]
                                        clean-tree check -> merge origin/main only if it conflicts ->
                                        gate -> push -> PR (or reuse the open one) -> gh auto-merge
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
@@ -2117,6 +2117,8 @@ flags:
   --closes N   start the PR body with 'Closes #N'
   --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
   --skip-gate  / --skip-sync   skip a ship stage (debug only)
+  --full-gate                  run the in-game gate even when addons/ is unchanged
+                               (a branch without addons/ changes runs validate only)
   --force      prune without merge/dirty checks
 `);
   return 0;
@@ -2423,13 +2425,33 @@ async function wtLogsCmd(args) {
   }
 }
 
+// Only addons/ reaches the game. A branch that changes nothing there (docs,
+// website, tools) gets the cheap gate: `validate` without the Workbench
+// compile, build, or in-game suite, so it never queues for a pool slot.
+function gameChanged(wtRoot) {
+  const r = wt.git(wtRoot, ["diff", "--name-only", "origin/main...HEAD"]);
+  if (r.status !== 0) return true;
+  const files = r.stdout.split(/\r?\n/).filter(Boolean);
+  return files.some((f) => f.startsWith("addons/"));
+}
+
+function gateArgs(wtRoot, flags) {
+  if (flags.includes("--full-gate") || gameChanged(wtRoot)) {
+    console.log("=== gate: addons/ changed; validate --full + build + test tier=all ===");
+    return ["ci", ...flags.filter((f) => f !== "--full-gate")];
+  }
+  console.log("=== gate: no addons/ changes; validate only (pass --full-gate to force the in-game gate) ===");
+  return ["validate"];
+}
+
 async function wtGateCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   const flags = args.slice(1);
   try {
     const e = wt.requireWorktree(ROOT, slug);
-    return runWorktreeCli(e.path, ["ci", ...flags]);
+    wt.git(e.path, ["fetch", "origin", "--prune"]);
+    return runWorktreeCli(e.path, gateArgs(e.path, flags));
   } catch (err) {
     console.log(`FAIL  ${err.message}`);
     return 1;
@@ -2505,8 +2527,8 @@ async function wtShipCmd(args) {
     }
   }
   if (!skipGate) {
-    console.log("=== ship: gate (validate --full + build + test tier=all) ===");
-    const code = runWorktreeCli(wtRoot, ["ci", "--wait"]);
+    const gateFlags = flags.includes("--full-gate") ? ["--wait", "--full-gate"] : ["--wait"];
+    const code = runWorktreeCli(wtRoot, gateArgs(wtRoot, gateFlags));
     if (code !== 0) {
       console.log(`FAIL  gate failed; not shipping. Fix, commit, re-run 'cli wt ship ${slug}'.`);
       return 1;
