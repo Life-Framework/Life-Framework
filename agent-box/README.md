@@ -128,10 +128,13 @@ The lock frees itself when that process exits. A Workbench opened from the
 launcher has no project on its command line and runs unclaimed. Clients with
 their own `-profile` (the multi-client session) have their own channel.
 
-Session clients share one session dir on the machine
-(`%LOCALAPPDATA%\LifeFramework\session`), so a command from one worktree once
-reached another worktree's client 1 (a click and a registration) when a new
-session started between two runs. The channel is now session-scoped:
+Session clients once shared one session dir on the machine, so a command from
+one worktree reached another worktree's client 1 (a click and a registration)
+when a new session started between two runs, and each `up` overwrote the other
+checkout's `session.json`, client profiles, and save. Each checkout now has its
+own dir (`%LOCALAPPDATA%\LifeFramework\session\<checkout folder>`), `up`
+refuses while another checkout's session is live, and the channel is
+session-scoped:
 
 - Every `session.mjs up` records a fresh id and the starting checkout in
   `session.json` and launches its clients with `-lfSession <id>`.
@@ -576,8 +579,8 @@ node agent-box/session.mjs down               # closes every process the session
   name, so the define gives each player id its own identity. The define must be
   on both sides; a mismatch is refused with `remote script source code checksum
   does not match`.
-- The session dir is `%LOCALAPPDATA%\LifeFramework\session` (`LF_SESSION_DIR`),
-  outside every worktree, with no junctions. Client logs are written when the
+- The session dir is `%LOCALAPPDATA%\LifeFramework\session\<checkout folder>`
+  (`LF_SESSION_DIR`), one per checkout, outside every worktree, with no junctions. Client logs are written when the
   client exits; read them after `down`.
 - Memory: each client takes about 2.1 GB private, the server about 0.8 GB. With
   Workbench also open the server logged `Out of memory. Free system ~300 MB`

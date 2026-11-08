@@ -1521,6 +1521,11 @@ function cmdSessionUp(root, dir, flags) {
     console.log("session: one is already running; 'node agent-box/session.mjs down' first");
     return 1;
   }
+  // Each checkout has its own session dir; clients another checkout left running still hold memory and windows.
+  for (const o of session.liveSessionsElsewhere(dir, host.pidAlive)) {
+    console.log(`session: ${o.root ?? o.dir} has a live session; it runs 'node agent-box/session.mjs down' first`);
+    return 1;
+  }
   const exe = serverExe();
   const game = gameClientExe();
   for (const f of clients > 0 ? [exe, game] : [exe]) {
