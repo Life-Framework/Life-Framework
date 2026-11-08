@@ -74,9 +74,13 @@ licences beside them). No Google Fonts request, no other families.
   it. Keep branch lines ruled and status marks small. No
   gradients or glows.
 - **Milestone list** (`<MilestoneList>`): one sheet per milestone in number
-  order, with its stamp, one-line goal, and issues. An epic folds open to its
-  sub-issues. Each row carries a small CORE (outlined) or FLAGSHIP (solid ink)
-  tag; never red, so the stamps stay the only red on the card.
+  order, with its stamp, one-line goal, and issues. Each epic is a branch block
+  under a 2px rule: its name, a CORE (outlined) or FLAGSHIP (solid ink) tag, a
+  done count, then its sub-issues in build order as short lines with a small
+  mark (✓ done, ◐ someone on it, ○ open). The `M2-Medic:` prefix is dropped
+  because the block heading says it. Blocks pack into one to three CSS columns;
+  a block never splits. An item shows its own tag only when it differs from the
+  block's. Tags are never red, so the stamp stays the only red on the card.
 - **Scope meter** (`<ScopeMeter>`): one cell per issue, filled when closed. No
   percentage bars.
 - **Figure** (`<Figure>`): a photo print with a caption and a mono credit line:

@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-08T20:50:40.551Z",
+  "fetchedAt": "2026-11-08T21:00:14.164Z",
   "milestones": [
     {
       "id": "M1",
@@ -1178,11 +1178,146 @@
     {
       "id": "M2",
       "number": 2,
-      "title": "M2",
+      "title": "M2 Living Town",
       "description": "Living Town. Four themes: moderation (incident log + Game Master tools), medic (downed state + EMS + ambulance), comms (payphones, pagers, dispatch board), investigation (witnesses + evidence). Closes with Everon placement from reusable site prefabs. Outline: docs/roadmap/m2-outline.md",
       "url": "https://github.com/Life-Framework/Life-Framework/milestone/2",
       "state": "open",
       "issues": [
+        {
+          "number": 335,
+          "title": "M2-Core: 128-player budget and benchmark gate",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/335",
+          "labels": [
+            "scope",
+            "needs-game",
+            "m2",
+            "topic:Framework & Playtest",
+            "layer:core"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Why. The maintainer set the target on 2026-11-08: build for 128 players. Every system has to hold up at that count on a dedicated server: replication, server tick cost, persistence size and save time, UI fan-out (dispatch, toasts, the...",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:55:31Z",
+          "updatedAt": "2026-11-08T20:55:31Z",
+          "subIssues": []
+        },
+        {
+          "number": 334,
+          "title": "M2-Core: Rename every EL_ class to LF_ in one freeze",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/334",
+          "labels": [
+            "scope",
+            "needs-game",
+            "m2",
+            "topic:Framework & Playtest",
+            "layer:core"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Why. The maintainer decided on 2026-11-08 to rename every EL_ class to LF_. EL_ names can collide with the real EveronLife mod on the same server, the mixed prefixes confuse contributors, and the public API (M3) has to start with final...",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:55:29Z",
+          "updatedAt": "2026-11-08T20:55:29Z",
+          "subIssues": []
+        },
+        {
+          "number": 331,
+          "title": "M2-Core: Characters per account set in config, keyed by character id",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/331",
+          "labels": [
+            "scope",
+            "needs-game",
+            "m2",
+            "topic:Life & Identity",
+            "layer:core"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Why. The New Life Rule, police whitelisting, bans, records and the save keys all depend on how many characters an account can have. Changing that after live data exists is a migration. Decided 2026-11-08. Work.",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:53:19Z",
+          "updatedAt": "2026-11-08T20:53:37Z",
+          "subIssues": []
+        },
+        {
+          "number": 330,
+          "title": "M2-Core: Money ledger records every cash and bank change",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/330",
+          "labels": [
+            "scope",
+            "needs-game",
+            "m2",
+            "topic:Economy & Work",
+            "layer:core"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Why. Moderation has to answer \"where did this $50k come from\". A money-duplication bug on a live server is fatal unless every change can be traced and reversed. Decided 2026-11-08. Work.",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:53:17Z",
+          "updatedAt": "2026-11-08T20:53:35Z",
+          "subIssues": []
+        },
+        {
+          "number": 329,
+          "title": "M2-Core: Server event bus that features publish to",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/329",
+          "labels": [
+            "scope",
+            "needs-game",
+            "m2",
+            "topic:Framework & Playtest",
+            "layer:core"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Why. M2 is cross-cutting: a crime raises a wanted report, which pages dispatch, which lands in the incident log, and the investigation feeds the crime record.",
+          "wave": null,
+          "parent": null,
+          "layer": "Core",
+          "why": "",
+          "work": [],
+          "proof": [],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:53:15Z",
+          "updatedAt": "2026-11-08T20:53:34Z",
+          "subIssues": []
+        },
         {
           "number": 276,
           "title": "M2-Investigation: Fence, cash van route, and evidence locker in the village",
@@ -2545,9 +2680,9 @@
             125,
             89
           ],
-          "comments": 0,
+          "comments": 1,
           "createdAt": "2026-11-08T20:42:06Z",
-          "updatedAt": "2026-11-08T20:42:06Z",
+          "updatedAt": "2026-11-08T20:53:38Z",
           "subIssues": []
         },
         {
@@ -3412,6 +3547,193 @@
       "url": "https://github.com/Life-Framework/Life-Framework/milestone/3",
       "state": "open",
       "issues": [
+        {
+          "number": 327,
+          "title": "M3-Addons: wt e2e loads a save made before the move",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/327",
+          "labels": [
+            "scope",
+            "needs-game",
+            "topic:Framework & Playtest",
+            "m3",
+            "layer:core"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "A move keeps each GUID but changes its path. Saves and persistence data that store a prefab path, and worlds that reference one, must still load after the move. In-session round trips prove nothing about restarts.",
+          "wave": null,
+          "parent": "Packaging",
+          "layer": "Core",
+          "why": "A move keeps each GUID but changes its path. Saves and persistence data that store a prefab path, and worlds that reference one, must still load after the move. In-session round trips prove nothing about restarts.",
+          "work": [
+            "Make a save on main before the first move batch: a player with cash, an ID card, a ticket, a parked and locked EL_ vehicle, an org with storage, and a house...",
+            "Load that save on the branch after each batch with tools\\cli wt e2e (two boots: save, restart, reload), with both addons loaded.",
+            "Fix any loader that resolves by path instead of by GUID; record the finding in docs/persistence.md."
+          ],
+          "proof": [
+            "Restart: wt e2e loads the pre-move save; the player's items, the vehicle and its lock state, the org storage and the key are all back.",
+            "Log: no Unable to find or EL_Debug.Error lines for a moved resource in the second boot."
+          ],
+          "dependsOn": [
+            323
+          ],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:52:37Z",
+          "updatedAt": "2026-11-08T20:52:37Z",
+          "subIssues": []
+        },
+        {
+          "number": 326,
+          "title": "M3-Addons: The core boots DebugWorld and passes the suite without the pack",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/326",
+          "labels": [
+            "scope",
+            "needs-game",
+            "topic:Framework & Playtest",
+            "m3",
+            "layer:core"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Test 1 of the red line: delete the pack, and the core still boots DebugWorld, every test passes, and nothing references the pack. validate-addon-boundary covers the references; nothing yet proves the boot.",
+          "wave": null,
+          "parent": "Packaging",
+          "layer": "Core",
+          "why": "Test 1 of the red line: delete the pack, and the core still boots DebugWorld, every test passes, and nothing references the pack. validate-addon-boundary covers the references; nothing yet proves the boot.",
+          "work": [
+            "A tools\\cli mode (or a test flag) that runs the suite with -addons LifeFramework only, with the pack folder hidden from -addonsDir.",
+            "It runs in wt gate and wt ship once the pack holds content.",
+            "Failures name the missing resource or key, so the fix is a neutral core default, not a pack reference."
+          ],
+          "proof": [
+            "Suite: --tier all green with the core alone, on the same commit where it is green with both addons.",
+            "Red: plant a core prefab that inherits a pack prefab; the core-alone run fails with Unable to find naming it."
+          ],
+          "dependsOn": [
+            322,
+            323
+          ],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:52:35Z",
+          "updatedAt": "2026-11-08T20:52:35Z",
+          "subIssues": []
+        },
+        {
+          "number": 325,
+          "title": "M3-Addons: Split the string table into core keys and pack flavour",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/325",
+          "labels": [
+            "scope",
+            "topic:Framework & Playtest",
+            "m3",
+            "layer:core"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "Language/everonlife_localization.st holds 862 keys. Functional UI and prompt keys are core; flavour copy is the pack's.",
+          "wave": null,
+          "parent": "Packaging",
+          "layer": "Core",
+          "why": "Language/everonlife_localization.st holds 862 keys. Functional UI and prompt keys are core; flavour copy is the pack's. About 138 LF-Sign_ keys, the arrival and intro quest copy, and the Everon-named forms (\"Civil Registry of Everon, Form R-89\", \"Republic of Everon, Identity Card\", \"Welcome to Everon\") are flagship content in the core table.",
+          "work": [
+            "A pack string table LF_Everon1989/Language/lf_everon1989_localization.st with its language .conf files, declared in LF_Everon1989.gproj's...",
+            "Move the flavour keys; each one the core still shows gets a neutral core default under a core key (a generic sign title, a neutral form title).",
+            "regen-localization and the lf-string-table / lf-regen-localization merge drivers handle both tables.",
+            "A check fails when a core key's English text names a pack place (Everon, St Philippe, 1989)."
+          ],
+          "proof": [
+            "Validate: regen-localization leaves no diff; the new place-name check passes.",
+            "Suite: --tier all green with the pack loaded, and with the core alone (no unresolved # keys in the core's own UI).",
+            "Manual: with the pack loaded the town board still reads \"Welcome to Everon\"; with the core alone it reads the neutral default."
+          ],
+          "dependsOn": [
+            322
+          ],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:52:33Z",
+          "updatedAt": "2026-11-08T20:52:33Z",
+          "subIssues": []
+        },
+        {
+          "number": 323,
+          "title": "M3-Addons: Move pack resources into LF_Everon1989 in batches",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/323",
+          "labels": [
+            "scope",
+            "needs-game",
+            "topic:Framework & Playtest",
+            "m3",
+            "layer:flagship"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "The pack and split rows in docs/architecture/core-pack-inventory.md (6 pack rows, 22 split rows, about 87 files) still live in the core. M3 moves them in small batches during one short freeze, so open PRs do not rot.",
+          "wave": null,
+          "parent": "Packaging",
+          "layer": "Flagship",
+          "why": "The pack and split rows in docs/architecture/core-pack-inventory.md (6 pack rows, 22 split rows, about 87 files) still live in the core. M3 moves them in small batches during one short freeze, so open PRs do not rot.",
+          "work": [
+            "Batch 0, before anything moves: give each of the 23 village fixtures that tests find by name (Roadmap_, Sign_SafeZone_) a neutral twin in the DebugWorld annex...",
+            "Batch 1, pure pack rows: Village_Buildings, Village_Dressing, Village_Roads, MainWorld/, Assets/Props/TitlePoster/, EL_MiningSign.et, the two flagship mission...",
+            "Later batches, split rows: neutral core base plus a pack child for Npc_Default_01, PoliceDutyNPC, QuestGiver_Clerk, the EL_ vehicle variants and the M151A2...",
+            "Value .conf splits (LF_Jobs, LF_Police, ShopPrices, ResourceChains, LF_Signs, LF_Garage) wait for the config service, because every LF_Config loads one...",
+            "Every resource moves with its .meta, so its GUID stays the same. ShopPrices.conf rules match by path substring, so each batch updates the rules for paths it..."
+          ],
+          "proof": [
+            "Validate: validate-addon-boundary passes after each batch.",
+            "Suite: --tier all green after each batch, with and without the pack loaded.",
+            "Manual: the playtest town looks the same after the move (side-by-side screenshots of the square, the police station and the car lot)."
+          ],
+          "dependsOn": [
+            322,
+            278,
+            284
+          ],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:52:31Z",
+          "updatedAt": "2026-11-08T20:52:31Z",
+          "subIssues": []
+        },
+        {
+          "number": 322,
+          "title": "M3-Addons: Load the LF_Everon1989 pack in build, test, serve and playtest",
+          "state": "open",
+          "url": "https://github.com/Life-Framework/Life-Framework/issues/322",
+          "labels": [
+            "scope",
+            "needs-game",
+            "topic:Framework & Playtest",
+            "m3",
+            "layer:core"
+          ],
+          "assignees": [],
+          "closedAt": null,
+          "excerpt": "addons/LF_Everon1989/ exists as a skeleton that nothing loads. Every launch passes -addons LifeFramework only, so a resource moved into the pack would vanish from the game.",
+          "wave": null,
+          "parent": "Packaging",
+          "layer": "Core",
+          "why": "addons/LF_Everon1989/ exists as a skeleton that nothing loads. Every launch passes -addons LifeFramework only, so a resource moved into the pack would vanish from the game.",
+          "work": [
+            "build, test, serve, host, playtest, dev, wt e2e, tools/dedicated/session.mjs and agent-box/session.mjs load both addons when the pack is present (-addons...",
+            "validate-scripts.ps1 compiles the pack project too. The one-off probe in the skeleton PR already showed Workbench resolves the dependency: with -gproj...",
+            "The pack gets its own mission header (Missions/) and tools\\cli playtest uses it. EL_DebugTest.conf stays in the core.",
+            ".gitignore, the pre-commit hook and validate-rdb-fresh cover the pack's resourceDatabase.rdb and log."
+          ],
+          "proof": [
+            "Suite: tools\\cli test --tier all green with both addons loaded; the console shows both Adding relative directory lines.",
+            "Validate: validate --full compiles both projects.",
+            "Manual: tools\\cli playtest boots the pack mission header and a client joins."
+          ],
+          "dependsOn": [],
+          "comments": 0,
+          "createdAt": "2026-11-08T20:52:29Z",
+          "updatedAt": "2026-11-08T20:52:30Z",
+          "subIssues": []
+        },
         {
           "number": 304,
           "title": "M3-Upgrade: config-check reports which migrations would run",
@@ -4965,7 +5287,87 @@
           "comments": 0,
           "createdAt": "2026-11-08T20:29:39Z",
           "updatedAt": "2026-11-08T20:29:40Z",
-          "subIssues": []
+          "subIssues": [
+            {
+              "number": 322,
+              "title": "M3-Addons: Load the LF_Everon1989 pack in build, test, serve and playtest",
+              "state": "open",
+              "url": "https://github.com/Life-Framework/Life-Framework/issues/322",
+              "assignees": [],
+              "labels": [
+                "scope",
+                "needs-game",
+                "topic:Framework & Playtest",
+                "m3",
+                "layer:core"
+              ],
+              "layer": "Core",
+              "milestone": "M3"
+            },
+            {
+              "number": 323,
+              "title": "M3-Addons: Move pack resources into LF_Everon1989 in batches",
+              "state": "open",
+              "url": "https://github.com/Life-Framework/Life-Framework/issues/323",
+              "assignees": [],
+              "labels": [
+                "scope",
+                "needs-game",
+                "topic:Framework & Playtest",
+                "m3",
+                "layer:flagship"
+              ],
+              "layer": "Flagship",
+              "milestone": "M3"
+            },
+            {
+              "number": 325,
+              "title": "M3-Addons: Split the string table into core keys and pack flavour",
+              "state": "open",
+              "url": "https://github.com/Life-Framework/Life-Framework/issues/325",
+              "assignees": [],
+              "labels": [
+                "scope",
+                "topic:Framework & Playtest",
+                "m3",
+                "layer:core"
+              ],
+              "layer": "Core",
+              "milestone": "M3"
+            },
+            {
+              "number": 326,
+              "title": "M3-Addons: The core boots DebugWorld and passes the suite without the pack",
+              "state": "open",
+              "url": "https://github.com/Life-Framework/Life-Framework/issues/326",
+              "assignees": [],
+              "labels": [
+                "scope",
+                "needs-game",
+                "topic:Framework & Playtest",
+                "m3",
+                "layer:core"
+              ],
+              "layer": "Core",
+              "milestone": "M3"
+            },
+            {
+              "number": 327,
+              "title": "M3-Addons: wt e2e loads a save made before the move",
+              "state": "open",
+              "url": "https://github.com/Life-Framework/Life-Framework/issues/327",
+              "assignees": [],
+              "labels": [
+                "scope",
+                "needs-game",
+                "topic:Framework & Playtest",
+                "m3",
+                "layer:core"
+              ],
+              "layer": "Core",
+              "milestone": "M3"
+            }
+          ]
         }
       ]
     },
@@ -5998,6 +6400,46 @@
   ],
   "goodFirst": [],
   "pulls": [
+    {
+      "number": 337,
+      "title": "Research: agent-driven static asset pipeline (bowling ball first).",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/337",
+      "mergedAt": "2026-11-08T20:59:29Z",
+      "author": "jasper-one",
+      "summary": "Docs only: docs/research/asset-pipeline.md, linked from docs/README.md."
+    },
+    {
+      "number": 336,
+      "title": "Decisions: sites are prefabs, EL_ to LF_ rename, save compatibility, 128 players, licence.",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/336",
+      "mergedAt": "2026-11-08T20:57:41Z",
+      "author": "jasper-one",
+      "summary": "Records five architecture decisions the maintainer made on 2026-11-08."
+    },
+    {
+      "number": 333,
+      "title": "Write the core-vs-pack rule and add the LF_Everon1989 skeleton.",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/333",
+      "mergedAt": "2026-11-08T20:55:14Z",
+      "author": "jasper-one",
+      "summary": "docs/architecture/core-vs-pack.md: the rule (\"the core decides what the game can do; the pack decides what this server is\"), the four tests, the decided grey cases, and how a split works."
+    },
+    {
+      "number": 332,
+      "title": "Decisions: event bus, money ledger, characters per account (M2 foundations).",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/332",
+      "mergedAt": "2026-11-08T20:54:54Z",
+      "author": "jasper-one",
+      "summary": "Records three architecture decisions the maintainer approved on 2026-11-08, ahead of M2."
+    },
+    {
+      "number": 324,
+      "title": "Site follows the M1-M5 milestones, epics, and the core/flagship split.",
+      "url": "https://github.com/Life-Framework/Life-Framework/pull/324",
+      "mergedAt": "2026-11-08T20:53:44Z",
+      "author": "jasper-one",
+      "summary": "The site now follows the milestone plan from #221. The roadmap page lists M1 to M5 in order. Each milestone shows its title, a one-line goal, its status, and its issues."
+    },
     {
       "number": 321,
       "title": "Roadmap outlines list each epic's sub-issues in build order.",
