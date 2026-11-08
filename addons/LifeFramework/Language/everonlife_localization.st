@@ -3042,6 +3042,71 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Bring the vehicle to the garage first"
      Comment "Garage store refused because the owned vehicle is not parked at the garage the player is using"
     }
+    CustomStringTableItem "{9A15FD5CEB932A07}" {
+     Id "LF-Reg_Title"
+     Target_en_us "Civil Registry of Everon, Form R-89"
+     Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{30D2235B40838FDE}" {
+     Id "LF-Reg_Intro"
+     Target_en_us "Print your name and age as they should appear on your identity card, then sign."
+     Comment "Registration form instruction line."
+    }
+    CustomStringTableItem "{350A552D4FDC07CE}" {
+     Id "LF-Reg_FirstName"
+     Target_en_us "Given name"
+     Comment "Registration form blank: first name."
+    }
+    CustomStringTableItem "{62351BCDA9111771}" {
+     Id "LF-Reg_LastName"
+     Target_en_us "Surname"
+     Comment "Registration form blank: last name."
+    }
+    CustomStringTableItem "{A45A061D749A854A}" {
+     Id "LF-Reg_Age"
+     Target_en_us "Age in years (18 to 80)"
+     Comment "Registration form blank: age."
+    }
+    CustomStringTableItem "{DE4D23E044F55A7E}" {
+     Id "LF-Reg_Sign"
+     Target_en_us "Sign the form"
+     Comment "Registration form submit button."
+    }
+    CustomStringTableItem "{3B87F299D63D5A69}" {
+     Id "LF-Reg_MustSign"
+     Target_en_us "Sign the form before you go into town."
+     Comment "Written on the registration form when the player put it away unsigned and it came back."
+    }
+    CustomStringTableItem "{FE48833B6120DE32}" {
+     Id "LF-Reg_Error_NameChars"
+     Target_en_us "Names use letters, with single spaces, hyphens, or apostrophes between them."
+     Comment "Registration refused: a name has a character outside A-Z, a-z, inner space, hyphen, apostrophe."
+    }
+    CustomStringTableItem "{E0F52B7C093E0EB8}" {
+     Id "LF-ID_CardTitle"
+     Target_en_us "Republic of Everon, Identity Card"
+     Comment "Title of the ID card view another player holds up."
+    }
+    CustomStringTableItem "{57AECD3805F0082C}" {
+     Id "LF-ID_CardAge"
+     Target_en_us "Age: %1"
+     Comment "ID card view age line. %1 is the holder's age."
+    }
+    CustomStringTableItem "{8864012F52FEEA31}" {
+     Id "LF-ID_CardClose"
+     Target_en_us "Hand it back"
+     Comment "Closes the ID card view."
+    }
+    CustomStringTableItem "{E071A012FB179790}" {
+     Id "LF-ID_NoCard"
+     Target_en_us "You are not carrying an ID card."
+     Comment "Show ID refused: the player carries no printed ID card."
+    }
+    CustomStringTableItem "{BB194A05F21678B1}" {
+     Id "LF-ID_Shown"
+     Target_en_us "You hold up your ID card."
+     Comment "Show ID performed: the other player now sees the card."
+    }
   }
  }
 }

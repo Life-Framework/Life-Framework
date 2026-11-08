@@ -16,8 +16,9 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { bmpFileToPng, classifyMesh, classifyMeshFile, decodeBmp, decodePng, encodePng, syntheticBmp } from "./bmp.mjs";
 import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
-import { findPad, loadPads, loadPlaced } from "./layers.mjs";
-import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, selectRoadmapSites, siteLook, siteShotOffset } from "./report.mjs";
+import { findPad, loadPads, loadPlaced, loadWorld } from "./layers.mjs";
+import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, runTownReport, selectRoadmapSites, siteLook, siteShotOffset } from "./report.mjs";
+import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadStrings, manifestErrors, parseSignConfig, resolveSite, signCard, signIssues } from "./town.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -74,6 +75,9 @@ export function buildLine(id, spec) {
     if (!Number.isInteger(index) || index < 0) throw new Error(`click index must be a non-negative integer: ${spec.index}`);
     if (index === 0) return `${id} click ${widget}`;
     return `${id} click ${widget} ${index}`;
+  }
+  if (spec.verb === "type") {
+    return `${id} type ${token(spec.widget, "field")} ${token(spec.text, "text")}`;
   }
   if (spec.verb === "input") {
     if (!MENU_ACTIONS.has(spec.action)) {
@@ -430,6 +434,7 @@ export function runFlow(lines) {
     else if (verb === "look") result = sendCommand({ verb: "look" });
     else if (verb === "ui") result = sendCommand({ verb: "ui" });
     else if (verb === "click") result = sendCommand({ verb: "click", widget: rest[0], index: rest[1] });
+    else if (verb === "type") result = sendCommand({ verb: "type", widget: rest[0], text: rest[1] });
     else if (verb === "press") {
       const spec = PRESS[rest[0]];
       if (!spec) throw new Error(`press one of F, WheelUp, WheelDown, F10: ${line}`);
@@ -647,6 +652,8 @@ function selftest() {
   if (shown !== "11 open DebugMenu show") throw new Error(shown);
   const click = buildLine(12, { verb: "click", widget: "CivilianButton" });
   if (click !== "12 click CivilianButton") throw new Error(click);
+  const typed = buildLine(13, { verb: "type", widget: "RegFirstName", text: "Ada" });
+  if (typed !== "13 type RegFirstName Ada") throw new Error(typed);
   const indexed = buildLine(13, { verb: "click", widget: "BuyButton", index: 1 });
   if (indexed !== "13 click BuyButton 1") throw new Error(indexed);
   const flow = readFlow("ui-debug-menu").filter((line) => line.trim() && !line.trim().startsWith("#"));
@@ -896,8 +903,138 @@ function selftest() {
   if (Math.min(...releaseX) !== 186 || Math.max(...releaseX) !== 243) {
     throw new Error("release street stays on Z=120 from x=186 to x=243");
   }
+  townSelftest();
   console.log("selftest ok");
   return 0;
+}
+
+// Town manifest: missing sign, blank card, 80 m outlier, empty look, and the
+// requireSigns flag that M1-09 turns on. The real manifest must resolve offline.
+function townSelftest() {
+  const real = checkTown(ROOT);
+  if (!real.ok) throw new Error(`town manifest does not resolve against the layers: ${real.errors.join("; ")}`);
+  const spawn = real.rows.find((row) => row.site.id === "spawn");
+  if (!spawn || spawn.place.count < 1 || spawn.place.layer !== "Gamemode.layer") throw new Error("spawn must resolve to the SpawnPoint_LIFE placements");
+  const mining = real.rows.find((row) => row.site.id === "mining");
+  if (!mining || !mining.sign || mining.sign.name !== "EL_MiningSign_Debug" || mining.signIssues.length) {
+    throw new Error(`the mining sign must be found within 8 m with a card: ${mining && mining.signIssues.join("; ")}`);
+  }
+  if (manifestErrors({ ...TOWN, sites: [{ id: "a", entity: "A", actions: [], sign: null, step: 1, x: 3 }] }).length !== 1) {
+    throw new Error("a manifest site with a position must be rejected");
+  }
+
+  const world = [
+    { name: "Site_A", layer: "T.layer", x: 0, y: 0, z: 0, actions: ["LF_A"], prefab: "" },
+    { name: "Site_B", layer: "T.layer", x: 10, y: 0, z: 0, actions: ["LF_B"], prefab: "" },
+    { name: "Site_Far", layer: "T.layer", x: 10, y: 0, z: 80, actions: ["LF_Far"], prefab: "" },
+    { name: "Sign_A", layer: "T.layer", x: 3, y: 0, z: 0, actions: ["LF_SignReadAction"], prefab: "", signId: "a" },
+    { name: "Sign_B", layer: "T.layer", x: 10, y: 0, z: 9, actions: ["LF_SignReadAction"], prefab: "", signId: "b" },
+    { name: "Sign_Blank", layer: "T.layer", x: 10, y: 0, z: 81, actions: ["LF_SignReadAction"], prefab: "", signId: "blank" },
+  ];
+  const catalog = parseSignConfig(`LF_SignConfig {
+ m_aSigns {
+  LF_SignDef "{0000000000000001}" {
+   m_sId "a"
+   m_sTitle "#T-A_Title"
+   m_sWhat "A place."
+  }
+  LF_SignDef "{0000000000000002}" {
+   m_sId "b"
+   m_sTitle "B"
+   m_sHow "Press it."
+  }
+  LF_SignDef "{0000000000000003}" {
+   m_sId "blank"
+   m_sTitle "Blank"
+   m_sWhat "#T-Missing"
+  }
+ }
+}`);
+  const strings = new Map([["T-A_Title", "Site A"]]);
+  if (signCard("a", catalog, strings).blank || signCard("a", catalog, strings).title !== "Site A") throw new Error("a #key title resolves");
+  if (!signCard("blank", catalog, strings).blank) throw new Error("a card whose only section is an unknown key is blank");
+  const manifest = {
+    requireSigns: false,
+    signRadiusM: 8,
+    neighbourM: 30,
+    sites: [
+      { id: "a", entity: "Site_A", actions: ["LF_A"], sign: "a", step: 1 },
+      { id: "b", entity: "Site_B", actions: ["LF_B"], sign: "b", step: 2 },
+      { id: "far", entity: "Site_Far", actions: ["LF_Far"], sign: "blank", step: 3 },
+      { id: "nosign", entity: "Site_B", actions: [], sign: "missing", step: 4 },
+    ],
+  };
+  const soft = checkTown(ROOT, { manifest, world, catalog, strings });
+  if (!soft.errors.some((error) => error.startsWith("far:") && error.includes("80 m from the nearest other site"))) {
+    throw new Error(`a site 80 m away must fail: ${soft.errors.join("; ")}`);
+  }
+  if (soft.errors.some((error) => error.includes("sign"))) throw new Error("requireSigns false: sign problems are warnings");
+  const pending = (id, text) => soft.warnings.some((warning) => warning.startsWith(`${id}: sign: pending`) && warning.includes(text));
+  if (!pending("nosign", "no missing sign placed")) throw new Error(`missing sign must be sign: pending: ${soft.warnings.join("; ")}`);
+  if (!pending("b", "9 m away")) throw new Error("a sign 9 m away is too far");
+  if (!pending("far", "Read card is blank")) throw new Error("a blank card must be reported");
+  if (soft.warnings.some((warning) => warning.startsWith("a:"))) throw new Error("a sign 3 m away with a card passes");
+  const strict = checkTown(ROOT, { manifest: { ...manifest, requireSigns: true }, world, catalog, strings });
+  for (const [id, text] of [["nosign", "no missing sign placed"], ["far", "Read card is blank"], ["b", "9 m away"]]) {
+    if (!strict.errors.some((error) => error.startsWith(`${id}:`) && error.includes(text))) throw new Error(`requireSigns true must fail ${id}`);
+  }
+  const twice = resolveSite({ id: "x", entity: "Site_A", actions: [] }, [...world, world[0]]);
+  if (twice.ok || !twice.errors[0].includes("placed 2 times")) throw new Error("a site must resolve to exactly one entity");
+  const lacking = resolveSite({ id: "x", entity: "Site_A", actions: ["LF_Other"] }, world);
+  if (lacking.ok || !lacking.errors[0].includes("does not carry LF_Other")) throw new Error("the layer must carry the expected action");
+
+  const emptyLook = judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "none", mesh: "ok", neighbourM: 3 }, manifest);
+  if (emptyLook.ok || !emptyLook.failures.includes("look offers no interaction")) throw new Error("empty look must fail");
+  const otherLook = judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "LF_A@Site_B,SCR_LootDeadBodyAction", mesh: "ok", neighbourM: 3 }, manifest);
+  if (otherLook.ok || !otherLook.failures.includes("look lacks LF_A")) throw new Error("an action on another entity is not this site");
+  const goodLook = judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "LF_A@Site_A", mesh: "ok", neighbourM: 3, signIssues: ["x"] }, manifest);
+  if (!goodLook.ok || goodLook.warnings[0] !== "sign: pending (x)") throw new Error("pending sign is a warning while requireSigns is false");
+  if (judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "LF_A@Site_A", mesh: "ok", neighbourM: 3, signIssues: ["x"] }, { ...manifest, requireSigns: true }).ok) {
+    throw new Error("requireSigns true fails a sign issue");
+  }
+  if (judgeTownRow({ entity: "Site_A", actions: ["LF_A"], look: "LF_A@Site_A", mesh: "white", neighbourM: 3 }, manifest).ok) throw new Error("a white site fails");
+  const liveBlank = signIssues(manifest.sites[0], world[0], world, catalog, strings, 8, { read: true, card: "blank" });
+  if (!liveBlank.issues.some((issue) => issue.includes("shows blank in play"))) throw new Error("a card blank in play is a sign issue");
+
+  const scratch = mkdtempSync(join(tmpdir(), "town-"));
+  const png = (shade) => {
+    const file = join(scratch, `shot-${shade}.png`);
+    writeFileSync(file, encodePng(2, 2, Buffer.from([shade, 30, 90, 30, shade, 90, 90, 30, shade, 60, 60, shade])));
+    return file;
+  };
+  let shade = 10;
+  const logs = [];
+  const used = [];
+  const code = runTownReport({
+    root: scratch,
+    manifest,
+    world: () => world,
+    catalog,
+    strings,
+    stand: () => ({ status: "ok", detail: "stood" }),
+    look: () => ({ status: "ok", detail: "LF_A@Site_A,LF_SignReadAction@Sign_A,LF_B@Site_B" }),
+    ui: () => ({ status: "ok", detail: "CloseButton" }),
+    use: (className, entityName) => {
+      used.push(`${className}@${entityName}`);
+      return { status: "ok" };
+    },
+    input: () => ({ status: "ok" }),
+    captureWorld: () => ({ status: "ok", detail: "x" }),
+    captureUi: () => ({ status: "ok", detail: "x" }),
+    resolve: () => png((shade += 7) % 250),
+    pause: () => {},
+    log: (line) => logs.push(line),
+  });
+  if (code !== 1) throw new Error("the 80 m site and the empty look must fail the town report");
+  if (!used.includes("LF_SignReadAction@Sign_A")) throw new Error(`report town must open Read on a sign within 8 m: ${used.join(",")}`);
+  if (!logs.includes("pass a: ok") || !logs.some((line) => line.startsWith("fail far:") && line.includes("look lacks LF_Far"))) {
+    throw new Error(logs.join(" | "));
+  }
+  if (!logs.some((line) => line.startsWith("warn nosign: sign: pending"))) throw new Error("missing sign is a warning in the run");
+  const page = readFileSync(join(scratch, "agent-box", "reports", "town.html"), "utf8");
+  if (!page.includes("<h1>Town</h1>") || !page.includes("shots/town-far.png") || !page.includes("sign: pending")) {
+    throw new Error("town.html must put each picture beside its verdict and pending signs");
+  }
 }
 
 function usage() {
@@ -923,6 +1060,8 @@ function usage() {
   node agent-box/harness.mjs flow <name>
   node agent-box/harness.mjs chains [--run]
   node agent-box/harness.mjs report roadmap [EntityName...]
+  node agent-box/harness.mjs town
+  node agent-box/harness.mjs report town [site-id...]
   node agent-box/harness.mjs pillar script [--run]
 
 Pillars
@@ -1028,8 +1167,34 @@ function main(argv) {
       for (const line of played.lines) console.log(line);
       return played.code;
     }
+    if (cmd === "town") {
+      const result = checkTown(ROOT);
+      console.log(formatTownCheck(result));
+      console.log(`town ${result.ok ? "ok" : "FAILED"} (static): sites=${result.rows.length} errors=${result.errors.length} warnings=${result.warnings.length} requireSigns=${TOWN.requireSigns}`);
+      return result.ok ? 0 : 1;
+    }
+    if (cmd === "report" && rest[0] === "town") {
+      return runTownReport({
+        root: ROOT,
+        manifest: TOWN,
+        ids: rest.slice(1).filter((arg) => !arg.startsWith("--")),
+        world: () => loadWorld(ROOT),
+        catalog: loadSignCatalog(ROOT),
+        strings: loadStrings(ROOT),
+        stand: (entityName) => sendCommand({ verb: "stand", entityName }),
+        look: () => sendCommand({ verb: "look" }),
+        ui: () => sendCommand({ verb: "ui" }),
+        use: (className, entityName) => sendCommand({ verb: "use", className, entityName }),
+        input: (action) => sendCommand({ verb: "input", action }),
+        captureWorld: (spec) => sendCommand({ verb: "capture", mode: "world", ...spec }, 25000),
+        captureUi: (name) => sendCommand({ verb: "capture", mode: "ui", name }, 25000),
+        resolve: (result) => resolveCapture(result.detail),
+        pause,
+        log: (line) => console.log(line),
+      });
+    }
     if (cmd === "report") {
-      if (rest[0] !== "roadmap") throw new Error("report roadmap");
+      if (rest[0] !== "roadmap") throw new Error("report roadmap|town");
       const names = [];
       for (let i = 1; i < rest.length; i++) {
         if (rest[i] === "--name") {

@@ -1,46 +1,72 @@
+//------------------------------------------------------------------------------------------------
+//! "Show ID" on another character: the user holds up the ID card they carry, and the character
+//! they face (the action's owner) sees the card (LF_IdCardView on that player's machine). The
+//! card is the item in the user's inventory, not an account lookup, so a player without a card
+//! has nothing to show. The server reads the card and sends the printed fields to the viewer.
+//------------------------------------------------------------------------------------------------
 [BaseContainerProps(configRoot: true)]
 class EL_ShowIDAction : ScriptedUserAction
 {
+	static const float MAX_DISTANCE = 1.5;
+
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!pOwnerEntity || !pUserEntity)
+		if (!Replication.IsServer())
 			return;
 
-		// Get the character component from the target entity
-		EL_CharacterSurvivalComponent survivalComp = EL_CharacterSurvivalComponent.Cast(pOwnerEntity.FindComponent(EL_CharacterSurvivalComponent));
-		if (!survivalComp)
+		int showerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
+		if (!pOwnerEntity || !pUserEntity || pOwnerEntity == pUserEntity)
+		{
+			EL_Debug.Warn("IdCard", "show refused: no one to show the card to");
 			return;
+		}
 
-		// Get the survival stats (which has the character data)
-		EL_SurvivalStats stats = survivalComp.GetSurvivalStats();
-		if (!stats)
+		LF_IdCardComponent card = LF_IdCard.FindShown(pUserEntity, OwnHolderId(showerId));
+		if (!card)
+		{
+			EL_Debug.Info("IdCard", "show refused: player " + showerId + " carries no ID card");
+			EL_NotificationManagerComponent.NotifyPlayer(showerId, "#EL-ID_Information", "#LF-ID_NoCard", 5.0, EL_ENotificationType.WARNING);
 			return;
+		}
 
-		// Get the character from the account
-		// Assuming the player has an account, get the active character via UID
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
-		string playerUid = EL_Utils.GetPlayerUid(pUserEntity);
-		EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-		if (!account)
+		int viewerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pOwnerEntity);
+		SCR_PlayerController viewer = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(viewerId));
+		if (!viewer)
+		{
+			EL_Debug.Warn("IdCard", "show refused: the character facing player " + showerId + " is not a player");
 			return;
+		}
 
-		EL_PlayerCharacter character = account.GetActiveCharacter();
-		if (!character)
-			return;
-
-		// Format the ID info
-		string idInfo = string.Format("%1 %2, Age: %3", character.GetFirstName(), character.GetLastName(), character.GetAge().ToString());
-
-		// Show hint
-		EL_Utils.Notify(idInfo, "#EL-ID_Information", 10.0);
+		viewer.LF_ShowIdCardView(card.GetFirstName(), card.GetLastName(), card.GetAge(), EL_NetworkUtils.GetRplId(pUserEntity));
+		EL_NotificationManagerComponent.NotifyPlayer(showerId, "#EL-ID_Information", "#LF-ID_Shown", 4.0);
+		EL_Debug.Info("IdCard", string.Format("player %1 showed their ID card to player %2", showerId, viewerId));
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected string OwnHolderId(int playerId)
+	{
+		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		if (!accounts)
+			return string.Empty;
+
+		EL_PlayerAccount account = accounts.GetFromCache(playerId);
+		if (!account || !account.GetActiveCharacter())
+			return string.Empty;
+
+		return account.GetActiveCharacter().GetId();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The user's own client sees its replicated inventory, so a player with no card is told why
+	//! instead of offered a dead action.
 	override bool CanBePerformedScript(IEntity user)
 	{
-		// Check if user is looking at another player
-		return true; // Basic check, can be refined
+		if (LF_IdCard.FindShown(user, string.Empty))
+			return true;
+
+		SetCannotPerformReason("#LF-ID_NoCard");
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -50,14 +76,14 @@ class EL_ShowIDAction : ScriptedUserAction
 			return false;
 
 		IEntity owner = GetOwner();
-		if (!owner)
+		if (!owner || owner == user)
 			return false;
 
 		// Check distance
 		vector userPos = user.GetOrigin();
 		vector ownerPos = owner.GetOrigin();
 		float distance = vector.Distance(userPos, ownerPos);
-		if (distance > 1.5)
+		if (distance > MAX_DISTANCE)
 			return false;
 
 		// Check if user is facing the owner

@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------------------------
 //! Client <-> server bridge for the first-join menus. Hosted on the PlayerController: it exists
 //! (and is owned by the joining client) before any character is spawned.
-//!   server -> owner : EL_ShowFactionMenu, EL_ShowSpawnLocationMenu (RpcDo_*, RplRcver.Owner)
+//!   server -> owner : EL_ShowFactionMenu, EL_ShowSpawnLocationMenu, LF_ShowRegistrationForm,
+//!                     LF_ShowIdCardView (RpcDo_*, RplRcver.Owner)
 //!   owner -> server : EL_AskSelectFaction, EL_AskSpawnLocation, EL_AskCreateCharacter (RpcAsk_*)
 //! The server identifies the player by this controller's id, never by a client-sent value, and
 //! EL_CharacterCreationManager re-validates every choice. A listen host's own controller is
@@ -36,6 +37,28 @@ modded class SCR_PlayerController
 			RpcDo_EL_ShowSpawnLocationMenu(faction);
 		else
 			Rpc(RpcDo_EL_ShowSpawnLocationMenu, faction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: open the registration form (R-89) on this player's machine.
+	//! \param refusal Localization key written on the form, empty on the first open.
+	void LF_ShowRegistrationForm(string refusal)
+	{
+		if (EL_IsLocalController())
+			RpcDo_LF_ShowRegistrationForm(refusal);
+		else
+			Rpc(RpcDo_LF_ShowRegistrationForm, refusal);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: show this player the ID card another player holds up. The card's printed fields
+	//! travel as values; the shower travels as an RplId so the view closes when they walk off.
+	void LF_ShowIdCardView(string firstName, string lastName, int age, RplId shower)
+	{
+		if (EL_IsLocalController())
+			RpcDo_LF_ShowIdCardView(firstName, lastName, age, shower);
+		else
+			Rpc(RpcDo_LF_ShowIdCardView, firstName, lastName, age, shower);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -108,6 +131,34 @@ modded class SCR_PlayerController
 			EL_Debug.Error("CharacterCreation", "failed to open the spawn location menu, finalizing faction without one");
 			EL_AskSpawnLocation("");
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_LF_ShowRegistrationForm(string refusal)
+	{
+		if (!GetGame().GetWorkspace())
+		{
+			EL_Debug.Error("CharacterCreation", "registration form not opened: no workspace on this machine");
+			return;
+		}
+
+		EL_DestroySpawnSplash();
+		if (!LF_RegistrationForm.Open(this, refusal))
+			EL_Debug.Error("CharacterCreation", "failed to open the registration form");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_LF_ShowIdCardView(string firstName, string lastName, int age, RplId shower)
+	{
+		if (!GetGame().GetWorkspace())
+		{
+			EL_Debug.Error("IdCard", "card view not opened: no workspace on this machine");
+			return;
+		}
+
+		LF_IdCardView.Open(firstName, lastName, age, EL_NetworkUtils.FindEntityByRplId(shower));
 	}
 
 	//------------------------------------------------------------------------------------------------

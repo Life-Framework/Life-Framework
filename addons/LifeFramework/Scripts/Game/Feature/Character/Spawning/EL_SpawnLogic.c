@@ -12,6 +12,11 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	[Attribute(category: "New character defaults")]
 	protected ref array<ref EL_FactionLoadout> m_aFactionCharacterItems;
 
+	//! Every spawn carries an ID card printed from the account's character record. Turned off once
+	//! the town clerk hands the card over in the arrival chain (M1-18).
+	[Attribute("1", desc: "Give each spawned character their ID card (LF_IdCard). Off when the arrival chain hands it over.", category: "New character defaults")]
+	protected bool m_bGrantIdAtSpawn;
+
 	//! Player-chosen spawn locations (second stage of the faction menu), session-local.
 	protected static ref map<int, ref EL_SpawnLocation> m_mSelectedLocations;
 
@@ -412,6 +417,12 @@ class EL_SpawnLogic : SCR_SpawnLogic
 	//------------------------------------------------------------------------------------------------
 	protected void BindAccountComponents(int playerId, string characterPersistenceId, IEntity character)
 	{
+		// After the inventory (starter kit or restored), so the card has a pocket to land in. A
+		// restored card comes back blank (the snapshot keeps the prefab, not the print); Grant
+		// reprints a blank carried card instead of adding a second one.
+		if (m_bGrantIdAtSpawn)
+			GrantIdCard(EL_PlayerAccountManager.GetInstance().GetFromCache(playerId), character);
+
 		// The account components need their ids bound to the entity; this runs on every spawn
 		// path (first spawn, death respawn) so the bindings survive a fresh character entity.
 		EL_CharacterATMComponent atmComponent = EL_CharacterATMComponent.Cast(character.FindComponent(EL_CharacterATMComponent));
@@ -421,6 +432,20 @@ class EL_SpawnLogic : SCR_SpawnLogic
 		EL_CharacterSurvivalComponent survivalComponent = EL_CharacterSurvivalComponent.Cast(character.FindComponent(EL_CharacterSurvivalComponent));
 		if (survivalComponent)
 			survivalComponent.Init(characterPersistenceId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Prints the account's active character on an ID card in the new body's inventory.
+	protected void GrantIdCard(EL_PlayerAccount account, IEntity character)
+	{
+		if (!account || !account.GetActiveCharacter())
+		{
+			EL_Debug.Error("Spawn", "ID card not granted: no account character for the spawned body");
+			return;
+		}
+
+		EL_PlayerCharacter identity = account.GetActiveCharacter();
+		LF_IdCard.Grant(character, identity.GetId(), identity.GetFirstName(), identity.GetLastName(), identity.GetAge());
 	}
 
 	//------------------------------------------------------------------------------------------------

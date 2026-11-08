@@ -14,7 +14,6 @@ class EL_Test_Data : EL_Test
 	{
 		array<string> menus = {
 			"{CBD13209101AACEE}UI/Layouts/Menus/Inventory/SplitQuantityDialog.layout",
-			"{D9C065A9AD23B91B}UI/Layouts/EL_CharacterCreationMenu.layout",
 			"{8012E7D806E87F1A}UI/Layouts/EL_ATMMenu.layout",
 			"{64B1F5DD29214016}UI/Layouts/EL_SurvivalHUD.layout",
 			"{41489243B750D7EC}UI/Layouts/FactionSelectionMenu.layout",

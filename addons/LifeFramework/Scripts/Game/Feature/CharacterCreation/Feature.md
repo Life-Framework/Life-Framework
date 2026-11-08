@@ -12,9 +12,11 @@ a menu is acceptable — but it should be framed as intake and stay minimal.
 
 ## Interaction pattern
 
-Rung 4 today (menus): no account → create → faction selection → character
-creation → spawn. `EL_ShowIDAction` shows "First Last, Age: N" in-world, which
-is the physical counterpoint (your ID is a real thing you show people).
+Rung 4 today (menus): no account → create → faction selection → registration
+form R-89 → spawn carrying an ID card. Typing a name is a correct UI, so the
+form is a 1989 paper sheet on `LF_UIScreen`, not a desktop dialog. The ID card
+is a real item (`IDCard.et` + `LF_IdCardComponent`); `EL_ShowIDAction` holds
+it up to the player you face, who sees the card.
 
 Target: rung 3 — a world-anchored intake (a registration desk at a faction
 office). Low priority; the menu flow is fine for V1 as long as it is honest.
@@ -24,8 +26,8 @@ office). Low priority; the menu flow is fine for V1 as long as it is honest.
 1. ✅ Done: `CreateAndSpawnDefaultCharacter` uses
    `{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et`; the
    placeholder prefab and hard-coded coordinates are gone.
-2. Validation failures (`EL_CharacterCreationMenu` silently early-returns on
-   bad name/age) must show the reason, not no-op.
+2. ✅ Done (M1-08): validation failures are written on the form (client) and
+   the server sends the form back with its refusal.
 3. Account flow stays re-entrant-safe (the `SaveAndReleaseAccount` converge
    path is already correct — keep it).
 
@@ -38,10 +40,13 @@ office). Low priority; the menu flow is fine for V1 as long as it is honest.
 
 - `EL_CharacterCreationManager` — flow driver; ✅ real roleplay character
   prefab.
-- `EL_CharacterCreationMenu` / `EL_FactionSelectionMenu` — menus; ⚠️ silent
-  validation failure.
-- `EL_ShowIDAction` — in-world ID display; ⚠️ `CanBePerformedScript` returns
-  true unconditionally.
+- `EL_FactionSelectionMenu` — faction menu (removed by M1-11; police clock in
+  at the station instead). `EL_CharacterCreationRules.RefuseCharacter` still
+  requires a chosen faction; M1-11 drops that gate with the menu.
+- `LF_RegistrationForm` / `LF_RegistrationRules` — form R-89 and its checks.
+- `LF_IdCardComponent` / `LF_IdCard` — the card's printed identity and the
+  grant (`EL_SpawnLogic.m_bGrantIdAtSpawn` until M1-18 hands it over).
+- `EL_ShowIDAction` / `LF_IdCardView` — hold the card up; the viewer sees it.
 
 ## Dependencies
 
