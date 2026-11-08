@@ -101,6 +101,7 @@ class EL_TestRegistrations
 		manager.Register(new EL_Test_PoliceFineMath(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceOnDutyOfficer(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_PoliceAbuse(), EL_TestTier.LOGIC);
+		manager.Register(new EL_Test_PoliceRankPermissions(), EL_TestTier.LOGIC);
 		manager.Register(new EL_Test_Prefabs(), EL_TestTier.WORLD);
 		manager.Register(new EL_Test_ProgressionRoundtrip(), EL_TestTier.PERSISTENCE);
 		manager.Register(new EL_Test_ProgressionOldSave(), EL_TestTier.PERSISTENCE);
