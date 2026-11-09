@@ -44,15 +44,15 @@
   `[LFDebug:Events]` Error and the rest run), list copied so unsubscribing
   mid-publish is safe, server only. Published today: `OnCrimeCommitted`,
   `OnMoneyMoved` (every cash and bank change), `OnPlayerKilled`, `OnArrested`, `OnJobCompleted`,
-  `OnVehicleBought`; `OnPlayerDowned` is defined, unpublished. Test `core/event-bus`.
+  `OnVehicleBought`, `OnPlayerDowned` (the downed state, below). Test `core/event-bus`.
   See `docs/architecture/events.md`.
 
 ### `LF_IncidentLog` — `Feature/Moderation/` (#239, 2026-11-09)
 - ✅ Server-only, append-only incident log, a subscriber on `LF_EventBus`
   (`OnPlayerKilled` with killer, weapon, position, murder flag; `OnPlayerDamaged`,
   sampled per victim/attacker pair every `m_fDamageSampleSeconds`; `OnMoneyMoved`
-  with its source). Bounded by `m_iMaxRecords` and `m_iRetentionHours`, kinds from
-  `Configs/Moderation/LF_Incident.conf` (`all` or a list of death, damage, cash).
+  with its source; `OnPlayerDowned` as kind `downed`, #255). Bounded by `m_iMaxRecords` and `m_iRetentionHours`, kinds from
+  `Configs/Moderation/LF_Incident.conf` (`all` or a list of death, damage, cash, downed).
   `Query(center, radius, from, to, kind)`. Saved as the `incidents` payload
   (save version 13); never replicated. Logs `[LFDebug:Incident]`. Tests
   `incident/log`, `persist/incident-log-roundtrip`.
@@ -262,6 +262,34 @@
 ### `LF_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
 - ✅ Save/apply round-trip re-clamps through setters (corrupt save sanitized).
 - ⚠️ `Equals` uses exact float `==` (no epsilon).
+
+### Downed state — `Feature/Medic/` (M2 #255, 2026-11-09)
+- ✅ **Lethal damage downs a player instead of killing them** (config `LF_Medic.conf`
+  `m_bDownedEnabled`, flagship on; tests `medic/downed`, `medic/downed-rules`).
+  `SCR_CharacterHealthHitZone` (every route to death ends at it: a bullet through the limb
+  pass rules, `Kill`, bleeding out) cuts lethal damage to what leaves `m_fDownedHealthScaled`
+  (0.1) of the health, then `LF_Downed.Down` marks the character and publishes `LF_OnPlayerDowned`.
+  Players only (NPCs die as in vanilla); with config off, or a game mode that disallows
+  unconsciousness, lethal damage kills as before.
+- ✅ **Vanilla unconsciousness, held.** `UpdateConsciousness` puts the character in the vanilla
+  `INCAPACITATED` life state (engine-replicated); `ShouldBeUnconscious` stays true while
+  downed, so resilience regeneration cannot wake the player. The downed flag is an RplProp on
+  the character (`SCR_ChimeraCharacter.LF_IsDowned`), so a late joiner reads it with the
+  snapshot. A downed player takes no further damage (hits are absorbed and logged).
+- ✅ **Death is a separate, later event.** The murder hook and the hospital wake run on the real
+  death, which is `LF_Downed.Finish` (the bleed-out timer and give-up, #256). Vanilla keeps the
+  instigator of the knockout as the killer, so the murder lands on whoever downed them.
+  `LF_Downed.Clear` ends the state (revive, #259). Neither caller exists yet; the dev `die`
+  command uses `Finish`.
+- ✅ **Search and robbery.** `m_bDownedCanBeSearched` (flagship on) lets other players open a
+  downed body's inventory; off, `HandleAccessValidation` refuses everyone but the owner. A dead
+  body is always lootable. The body keeps its inventory either way.
+- ✅ Logs `[LFDebug:Medic]` (downed, absorbed hit, cleared, killed for real, search refused).
+  The incident log records each downing as kind `downed` (victim, downer, position).
+- ⚠️ Not built (own issues): bleed-out timer and give-up (#256), revive (#259), screen effects for
+  the downed client, disconnect while downed. A downed player who disconnects loses the state
+  with the body. The suite cannot see the controller's life state (it changes a frame later);
+  `session.mjs downed-proof` proves it on a 2-client session plus a late joiner.
 
 ### Death & Respawn — `Feature/Character/Spawning/`
 - ✅ **Death is defined** (verified 2026-08-30): the dead body stays in the

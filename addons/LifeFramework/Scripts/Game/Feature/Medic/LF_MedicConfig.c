@@ -1,0 +1,45 @@
+//------------------------------------------------------------------------------------------------
+//! Medic tuning. Loaded from Configs/Medic/LF_Medic.conf (#255, the downed state; #256 and #259
+//! add their own fields here). The field initializers match the flagship .conf so a missing file
+//! degrades to the same values.
+[BaseContainerProps(configRoot: true)]
+class LF_MedicConfig
+{
+	static const ResourceName CONFIG_PATH = "{979CD272ABAF7596}Configs/Medic/LF_Medic.conf";
+	static const bool DEFAULT_DOWNED_ENABLED = true;
+	static const bool DEFAULT_DOWNED_CAN_BE_SEARCHED = true;
+	static const float DEFAULT_DOWNED_HEALTH_SCALED = 0.1;
+
+	[Attribute("1", UIWidgets.CheckBox, "Lethal damage to a player puts them in the downed state (vanilla unconsciousness) instead of killing them. Off: lethal damage kills as in vanilla")]
+	bool m_bDownedEnabled = true;
+
+	[Attribute("1", UIWidgets.CheckBox, "Other players can open a downed player's inventory (search, rob). Off: a downed body keeps its inventory but nobody else can touch it. A dead body is always lootable")]
+	bool m_bDownedCanBeSearched = true;
+
+	[Attribute("0.1", UIWidgets.Auto, "Health (fraction of max) a player is left with when lethal damage downs them", params: "0.01 1")]
+	float m_fDownedHealthScaled = 0.1;
+
+	protected static ref LF_MedicConfig s_Config;
+	protected static bool s_bLoadAttempted;
+
+	//------------------------------------------------------------------------------------------------
+	//! The loaded config. When the file does not resolve, logs once and returns built-in defaults.
+	static LF_MedicConfig Get()
+	{
+		if (s_bLoadAttempted)
+			return s_Config;
+
+		s_bLoadAttempted = true;
+		Resource container = BaseContainerTools.LoadContainer(CONFIG_PATH);
+		if (container && container.GetResource())
+			s_Config = LF_MedicConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
+
+		if (!s_Config)
+		{
+			LF_Debug.Error(LF_Downed.FEATURE, string.Format("medic config does not resolve, using defaults: %1", CONFIG_PATH));
+			s_Config = new LF_MedicConfig();
+		}
+
+		return s_Config;
+	}
+}

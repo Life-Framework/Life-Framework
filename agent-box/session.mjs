@@ -344,6 +344,13 @@ export function selftestSession() {
   if (!judgeOrg(o1, oa1, o1, "cannot_perform", GATE_OPENED).length) failures.push("judgeOrg passed an invitee who never joined");
   if (!judgeOrg(o1, oa1, oa2, GATE_OPENED, GATE_OPENED).length) failures.push("judgeOrg passed a gate that opened for a stranger");
   if (!judgeOrg(o1, oa1.replace("cash=250", "cash=500"), oa2, "cannot_perform", GATE_OPENED).length) failures.push("judgeOrg passed a founding with no fee");
+  const seen = "player=1 downed=0 life=ALIVE | player=2 downed=1 life=INCAPACITATED";
+  const shotOk = "shot player=2 refused=0 alive=1 downed=1";
+  const down2 = "wanted=0 player=2 downed=1 life=INCAPACITATED";
+  if (judgeDowned(shotOk, down2, "wanted=0 player=1", seen, seen).length) failures.push(`judgeDowned failed a good run: ${judgeDowned(shotOk, down2, "wanted=0 player=1", seen, seen)}`);
+  if (!judgeDowned("shot player=2 refused=0 alive=0 downed=0", down2, "wanted=0 player=1", seen, seen).length) failures.push("judgeDowned passed a kill");
+  if (!judgeDowned(shotOk, down2, "wanted=3 player=1", seen, seen).length) failures.push("judgeDowned passed a murder report");
+  if (!judgeDowned(shotOk, down2, "wanted=0 player=1", "player=2 downed=0 life=ALIVE", seen).length) failures.push("judgeDowned passed a client that sees the victim standing");
   return failures;
 }
 
@@ -741,6 +748,13 @@ async function filmed(label, rest, fn) {
 async function runMurderProof() {
   const h = await import("./harness.mjs");
   const dir = sessionDir();
+  // A lethal hit downs a player (M2 #255); the murder hook fires on the real death. This proof
+  // shoots to kill, so it runs with the downed state off.
+  const medicConf = readFileSync(join(ROOT, "addons", "LifeFramework", "Configs", "Medic", "LF_Medic.conf"), "utf8");
+  if (!/m_bDownedEnabled\s+0/.test(medicConf)) {
+    console.log("murder proof: lethal hits down a player now; set m_bDownedEnabled to 0 in LF_Medic.conf for the run");
+    return 1;
+  }
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
     const r = h.sendCommand(spec, timeout);
@@ -818,6 +832,122 @@ async function runMurderProof() {
   console.log(`square    client 2: ${square2}`);
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "murder proof: FAIL" : "murder proof: PASS (kill outside -> wanted 3; shot on the square refused)");
+  return fails.length ? 1 : 0;
+}
+
+// M2 #255: client 1 downs client 2 at the fuel station with one lethal hit. Client 2 is alive,
+// downed and unconscious (life=INCAPACITATED) and client 1 is not wanted: the murder hook waits
+// for the real death. Both clients read the other body as downed (`peers`), a client that joins
+// AFTER the downing (client 3, started by `session join 3`) reads it too, and a real death
+// (`die`) of the downed player is the murder, attributed to whoever downed them, and ends in the
+// normal hospital respawn. Needs a session with 2 clients.
+export function judgeDowned(shot, victim, shooter, peers1, peers2) {
+  const fails = [];
+  if (!/refused=0 alive=1 downed=1/.test(shot)) fails.push(`the lethal hit did not down: ${shot}`);
+  const v = parseState(victim);
+  if (v.downed !== "1" || v.life !== "INCAPACITATED") fails.push(`victim state: downed=${v.downed} life=${v.life}, expected downed=1 life=INCAPACITATED`);
+  const sh = parseState(shooter);
+  if (sh.wanted !== "0") fails.push(`shooter wanted=${sh.wanted}: a downing must not be a murder`);
+  const p1 = String(peers1 ?? "");
+  const p2 = String(peers2 ?? "");
+  if (!/player=2 downed=1 life=INCAPACITATED/.test(p1)) fails.push(`client 1 does not see player 2 downed: ${p1}`);
+  if (!/player=2 downed=1 life=INCAPACITATED/.test(p2)) fails.push(`client 2 does not see itself downed: ${p2}`);
+  return fails;
+}
+
+async function runDownedProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const medicConf = readFileSync(join(ROOT, "addons", "LifeFramework", "Configs", "Medic", "LF_Medic.conf"), "utf8");
+  if (/m_bDownedEnabled\s+0/.test(medicConf)) {
+    console.log("downed proof: m_bDownedEnabled is 0 in LF_Medic.conf; set it to 1 for the run");
+    return 1;
+  }
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => on(n, { verb: "state" }, 10000).detail;
+  const fails = [];
+
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  const start1 = state(1);
+  const start2 = state(2);
+
+  on(2, { verb: "stand", entityName: ROB_TARGET });
+  wait(2500);
+  on(1, { verb: "stand", entityName: ROB_TARGET });
+  wait(2500);
+  const shot = on(1, { verb: "shoot", playerId: 2 }, 10000);
+  wait(2500);
+  on(1, { verb: "capture", mode: "ui", name: "m2_255_downed_client1" }, 25000);
+  on(2, { verb: "capture", mode: "ui", name: "m2_255_downed_client2" }, 25000);
+  const victim = state(2);
+  const shooter = state(1);
+  const peers1 = on(1, { verb: "peers" }, 10000).detail;
+  const peers2 = on(2, { verb: "peers" }, 10000).detail;
+  // The body on the ground, seen from 2.5 m away (a world shot from the downed player's position).
+  const [bx, by, bz] = String(parseState(victim).pos ?? "0,0,0").split(",").map(Number);
+  if (Number.isFinite(bx)) on(1, { verb: "capture", mode: "world", name: "m2_255_downed_body", x: bx, y: by + 0.3, z: bz, ox: 2.5, oy: 1.2, oz: 0 }, 25000);
+  for (const f of judgeDowned(shot.detail, victim, shooter, peers1, peers2)) fails.push(f);
+
+  // A second lethal hit changes nothing: a downed player takes no further damage.
+  const again = on(1, { verb: "shoot", playerId: 2 }, 10000);
+  wait(1500);
+  const victimAgain = parseState(state(2));
+  if (victimAgain.downed !== "1" || victimAgain.life !== "INCAPACITATED") fails.push(`after a second hit: downed=${victimAgain.downed} life=${victimAgain.life}`);
+
+  // Late joiner: client 3 connects after the downing and must read client 2 as downed.
+  let peers3 = "";
+  if (process.argv.includes("--no-late-join")) {
+    console.log("late join skipped (--no-late-join)");
+  } else {
+    const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "3"], { windowsHide: true, stdio: "inherit" });
+    if (joined.status !== 0) {
+      fails.push("client 3 did not join late");
+    } else {
+      arrive(on, 3, wait);
+      wait(8000);
+      on(3, { verb: "stand", entityName: ROB_TARGET });
+      wait(4000);
+      peers3 = on(3, { verb: "peers" }, 10000).detail;
+      on(3, { verb: "capture", mode: "ui", name: "m2_255_downed_latejoin_client3" }, 25000);
+      if (!/player=2 downed=1 life=INCAPACITATED/.test(peers3)) fails.push(`the late joiner does not see player 2 downed: ${peers3}`);
+    }
+  }
+
+  // The real death of a downed player (what the bleed-out will call): the death screen, the
+  // respawn, and a fresh body that is not downed.
+  const die = on(2, { verb: "die" }, 10000);
+  if (die.status !== "ok") fails.push(`die returned ${die.status} ${die.detail}`);
+  wait(4000);
+  on(2, { verb: "capture", mode: "ui", name: "m2_255_death_screen_client2" }, 25000);
+  // Vanilla keeps the instigator of the knockout as the killer when the downed player dies, so the
+  // murder is the downer's, on the real death only.
+  const wantedAfterDeath = parseState(state(1)).wanted;
+  if (wantedAfterDeath !== "3") fails.push(`shooter wanted=${wantedAfterDeath} after the downed player died, expected 3 (murder attributed to the downer)`);
+  on(2, { verb: "click", widget: "RespawnButton" });
+  wait(12000);
+  const respawned = parseState(state(2));
+  if (respawned.downed !== "0" || respawned.life !== "ALIVE") fails.push(`after the respawn: downed=${respawned.downed} life=${respawned.life}`);
+
+  console.log("");
+  console.log(`start    client 1: ${start1}`);
+  console.log(`start    client 2: ${start2}`);
+  console.log(`shot     client 1: ${shot.detail}`);
+  console.log(`victim   client 2: ${victim}`);
+  console.log(`shooter  client 1: ${shooter}`);
+  console.log(`peers    client 1: ${peers1}`);
+  console.log(`peers    client 2: ${peers2}`);
+  console.log(`again    client 1: ${again.detail}`);
+  console.log(`peers    client 3 (late joiner): ${peers3 || "skipped"}`);
+  console.log(`respawn  client 2: ${JSON.stringify(respawned)}`);
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "downed proof: FAIL" : "downed proof: PASS (downed, not dead, no murder; seen downed by both clients and a late joiner; real death is the murder and respawns)");
   return fails.length ? 1 : 0;
 }
 
@@ -1207,7 +1337,7 @@ async function main(argv) {
     console.log(f.length ? "session selftest: FAIL" : "session selftest: OK");
     return f.length ? 1 : 0;
   }
-  if (cmd === "up" || cmd === "down" || cmd === "status" || cmd === "restart" || cmd === "wait") {
+  if (cmd === "up" || cmd === "down" || cmd === "status" || cmd === "restart" || cmd === "wait" || cmd === "join") {
     const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", cmd, ...rest], { windowsHide: true, stdio: "inherit", cwd: process.cwd() });
     return r.status ?? 1;
   }
@@ -1216,6 +1346,7 @@ async function main(argv) {
   if (cmd === "dispatch-proof") return runDispatchProof();
   if (cmd === "ticket-proof") return runTicketProof();
   if (cmd === "murder-proof") return runMurderProof();
+  if (cmd === "downed-proof") return runDownedProof();
   if (cmd === "roster") {
     const ids = rest.map(Number).filter((n) => Number.isInteger(n) && n > 0);
     if (!ids.length) throw new Error("roster <player id> [<player id> ...]");
@@ -1236,7 +1367,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|downed-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 

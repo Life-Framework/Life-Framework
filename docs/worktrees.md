@@ -270,6 +270,10 @@ else): one blocking call, exit 0 when ready, 1 with a one-line reason when the
 server or a client exited, the session was closed, nothing is starting after
 30 s, or the timeout passes. Never poll `status` in a loop.
 
+`node agent-box/session.mjs join <n>` starts client n (1 to 3) on a running session that
+was brought up without it, so a proof can show a late joiner: one blocking call that returns
+when the server log shows the extra join. `downed-proof` uses it for client 3.
+
 ### Sessions on a pool machine
 
 `node agent-box/session.mjs up --machine <name|any|local> --clients N`.

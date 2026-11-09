@@ -27,6 +27,9 @@ On a dedicated server (`agent-box/session.mjs`) the server answers `stand`,
 the refusal (`dev_gate_closed`). `state` reads the account, money, job, and
 organization on the server and adds the client's last toast.
 
+`peers` is a client-local read of every streamed-in player body (`downed=`, vanilla `life=`), the
+view a late joiner has of a downed player (`session.mjs downed-proof`, M2 #255).
+
 `ui text` reads an open UI kit sheet the way a player reads it: each button
 with its label, each field with what is typed, each printed line, named by the
 part the screen gave it. `click` takes any kit button (`LF_UIButtonRelay`).
