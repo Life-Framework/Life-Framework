@@ -1,6 +1,6 @@
 # M2 Living Town (outline)
 
-M2 leads with four themes the maintainer picked on 2026-11-08: moderation,
+M2 leads with four themes (a fifth, Underworld, was added on 2026-11-09) the maintainer picked on 2026-11-08: moderation,
 medic, comms, and investigation. This file is an outline. Each theme is broken
 into sub-issues on GitHub, listed under its section; they get full scope cards
 after the M1 playtests show what players need. Read it with
@@ -231,6 +231,44 @@ record.
 **Risks.** Witness quality on a low-population server (NPC witnesses may be
 needed). Evidence that never gets used turns into clutter (expiry). The fence
 must not become a grind wall; thresholds are small and come from playtests.
+
+---
+
+## 5. Underworld: lockpicking, chop shops, illicit chains
+
+Epic: #410. Scope cards: [lockpicking](scopes/crime/lockpicking.md),
+[chop shops](scopes/crime/chop-shop.md),
+[illicit chains](scopes/crime/drug-chains.md). Added 2026-11-09.
+
+Crime beyond robberies. A player picks a lock by hand, steals a car, and sells
+it to a chop shop that pays less than it is worth and asks nothing. A player
+runs a production chain of a chosen difficulty: step count, a skill or licence
+gate, equipment cost, and police heat all scale with the tier. Every chain can
+be run solo, but the hard ones are very slow without a team, because the work
+is physical and spread over several stations (several barrels, several people).
+
+**In-world design.** No loading bars or menus: each step is a held action at a
+real object with animation and sound. Heat is a smell and smoke trace at a
+running site and officer searches at stops; both feed the investigation theme.
+
+**Framework vs flagship.** M2 builds the systems and the easy chain (moonshine).
+The other chains are flagship pack content in M5 (see the M5 outline).
+
+**Sub-issues** (epic #410, in order):
+
+1. #411 Pick a door lock with a lockpick item
+2. #412 Pick a vehicle lock and hotwire an unkeyed vehicle
+3. #414 Stolen vehicles: report, wanted board, police stops
+4. #415 Chop shop yard dismantles a vehicle for cash and parts
+5. #416 Tiered chain config: steps, stations, gates, equipment, heat
+6. #417 Hands-on stations: several barrels, many workers, no progress bars
+7. #418 Smell and smoke from running sites reach officers and witnesses
+8. #419 Officers search players and vehicles for chain goods at stops
+9. #420 Moonshine chain on hands-on stations (the easy tier, flagship)
+
+**Risks.** Chop shops can turn into an endless money tap (cap and cooldown).
+Hands-on stations need good animations; the animation pipeline (#340) may be
+needed. Lockpicking noise must not make crime trivially visible.
 
 ---
 

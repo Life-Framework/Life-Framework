@@ -46,6 +46,14 @@ ongoing quest lines and no quest-state tooling.
      parts system and no random breakdowns.
    - Trash cans (#205) ride along, since they are small and already scoped.
 
+4. **Illicit chains (flagship content).** The M2 Underworld epic (#410) builds
+   the tiered-chain system, hands-on stations, smoke and searches, and the easy
+   moonshine chain. M5 adds the rest as pack config (maintainer, 2026-11-09):
+   tobacco smuggling (medium), pharmacy diversion, counterfeit papers and cash
+   (hard), and poppy-straw "kompot" (hard). Poppy kompot needs a Bohemia
+   Workshop policy check before anything is built. Details:
+   [illicit chains](scopes/crime/drug-chains.md).
+
 ## Moved out of M5
 
 - **Property, renting, the dacha, and farming** go to a new milestone, **M6

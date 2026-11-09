@@ -5642,11 +5642,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The town square, south and west of here, is a safe zone."
      Comment "Lawless area sign card, Next section."
     }
-    CustomStringTableItem "{10850C37306E78EB}" {
-     Id "LF-Duty_WrongDesk"
-     Target_en_us "You are on duty for another service. Clock out at your own desk first."
-     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
-    }
     CustomStringTableItem "{E7C31C63E21652CF}" {
      Id "LF-Evidence_Title"
      Target_en_us "Evidence"
@@ -5707,6 +5702,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Marks an item dropped at a crime scene."
      Comment "Description of the evidence marker."
     }
+    CustomStringTableItem "{10850C37306E78EB}" {
+     Id "LF-Duty_WrongDesk"
+     Target_en_us "You are on duty for another service. Clock out at your own desk first."
+     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
+    }
     CustomStringTableItem "{65B97D3424738198}" {
      Id "LF-Locker_Title"
      Target_en_us "Evidence locker"
@@ -5756,6 +5756,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Locker_Raid_Action"
      Target_en_us "Burn the case file"
      Comment "Action: destroy the logged evidence of a forced locker."
+    }
+    CustomStringTableItem "{3C5A9E71D04B82F6}" {
+     Id "LF-IncidentGm_Kind_aim"
+     Target_en_us "Weapon aimed"
+     Comment "Incident kind: one player kept a raised weapon on another."
     }
   }
  }

@@ -201,6 +201,8 @@ class LF_IncidentGmView
 			kindKey = "#LF-IncidentGm_Kind_downed";
 		else if (kind == "holdup")
 			kindKey = "#LF-IncidentGm_Kind_holdup";
+		else if (kind == "aim")
+			kindKey = "#LF-IncidentGm_Kind_aim";
 
 		string kindText = WidgetManager.Translate(kindKey);
 		string text;
