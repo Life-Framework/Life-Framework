@@ -62,6 +62,7 @@
   (`m_iHoldUpCooldownSeconds`, 30) in `LF_Incident.conf`, then raises the vanilla halt gesture, plays a cue
   at both characters, toasts the target, and publishes `LF_OnHoldUp`. The incident log records kind `holdup`
   (actor, target, position, zone). A refusal logs `[LFDebug:HoldUp] hold-up refused` and records nothing.
+- ✅ **Admin actions are logged** (#246, test `incident/admin-action`). `LF_AdminAction` publishes `LF_OnAdminAction` on the server for every Game Master editor action (teleport, heal, spawn, delete, whitelist, kick), the vanilla `#kick` and `#ban` chat commands, and `!wadd` / `!handled`. The incident log records kind `admin`: the admin is the subject, the player acted on the other party, the action name the detail. Shown in the Game Master incident view only (it answers administrators only). No save change (existing record, new kind string).
 - ✅ **Aim intent** (#245, test `incident/aim-throttle`). Server only: `LF_AimIntent` ticks every `m_fAimCheckSeconds` (1 s), looks only at characters with a raised weapon, and when one keeps another player within `m_fAimRange` (15 m) and `m_fAimConeDegrees` (6) for `m_fAimWindowSeconds` (3 s) publishes `LF_OnAimedAt`: one incident row (kind `aim`) per pair per window. `m_bAimAloneCounts` 0 also needs a clear line of sight. No rule changes. No save change.
   It changes no damage rule. No save change (the kind is a string).
 - ⚠️ Cash given, robbed, or picked up appear only as `OnMoneyMoved` publish points
