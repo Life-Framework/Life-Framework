@@ -236,15 +236,17 @@ class LF_WantedBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: the server's answer arrived; open the card of posters.
-	static void OpenCard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches = null)
+	//! Client: open a card of lines at the board the reader stands at (the wanted board's own
+	//! card and the service dispatch boards share it).
+	//! eturn False when the screen did not open.
+	static bool OpenParts(array<ref LF_UIPart> parts)
 	{
 		Hide();
-		s_Screen = LF_UIScreen.Open(BuildParts(police, names, offences, clothing, vehicles, places, levels, dispatches));
+		s_Screen = LF_UIScreen.Open(parts);
 		if (!s_Screen)
 		{
-			LF_Debug.Error(FEATURE, "wanted card failed to open");
-			return;
+			LF_Debug.Error(FEATURE, "board card failed to open");
+			return false;
 		}
 
 		s_Screen.CloseOnDeath();
@@ -266,6 +268,16 @@ class LF_WantedBoard
 			s_Screen.CloseBeyond(range, s_PendingBoard);
 
 		s_PendingBoard = EntityID.INVALID;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the server's answer arrived; open the card of posters.
+	static void OpenCard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches = null)
+	{
+		if (!OpenParts(BuildParts(police, names, offences, clothing, vehicles, places, levels, dispatches)))
+			return;
+
 
 		int count;
 		if (offences)
@@ -309,6 +321,9 @@ class LF_WantedBoardReadAction : ScriptedUserAction
 	[Attribute("SOUND_PICK_UP", UIWidgets.EditBox, "Sound event on the board's SCR_SoundDataComponent played when the reader takes a poster in hand")]
 	protected string m_sReadSound;
 
+	[Attribute("", UIWidgets.EditBox, "Service key (medic, taxi, ...) when this board is a service's dispatch board (#250); empty for the wanted board")]
+	protected string m_sService;
+
 	//------------------------------------------------------------------------------------------------
 	override bool HasLocalEffectOnlyScript()
 	{
@@ -318,7 +333,10 @@ class LF_WantedBoardReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		outName = "#LF-Wanted_Read";
+		if (m_sService.IsEmpty())
+			outName = "#LF-Wanted_Read";
+		else
+			outName = "#LF-Dispatch_Read";
 		return true;
 	}
 
@@ -336,7 +354,12 @@ class LF_WantedBoardReadAction : ScriptedUserAction
 				return;
 
 			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
-			LF_WantedBoard.ServerRead(SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId)));
+			SCR_PlayerController remote = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
+			if (m_sService.IsEmpty())
+				LF_WantedBoard.ServerRead(remote);
+			else
+				LF_ServiceBoard.ServerRead(remote, m_sService);
+
 			return;
 		}
 
@@ -356,7 +379,10 @@ class LF_WantedBoardReadAction : ScriptedUserAction
 			SCR_SoundManagerModule.CreateAndPlayAudioSource(pOwnerEntity, m_sReadSound);
 
 		LF_WantedBoard.SetPendingBoard(pOwnerEntity.GetID());
-		controller.LF_AskWantedBoard();
+		if (m_sService.IsEmpty())
+			controller.LF_AskWantedBoard();
+		else
+			controller.LF_AskServiceBoard(m_sService);
 	}
 }
 

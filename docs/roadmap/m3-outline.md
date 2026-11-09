@@ -3,8 +3,9 @@
 M3 turns the mod into a product other communities can run. A server owner
 installs from the Workshop, configures it from documented files or a web
 generator, adds a job or a shop without writing script, and hosts on their own
-box. The maintainer set the shape on 2026-11-08 over four interview rounds.
-This file is an outline. Workstreams 2 to 7 are broken into sub-issues on
+box. Both addons are published on the Workshop. The maintainer set the shape
+on 2026-11-08 over four interview rounds.
+This file is an outline. Workstreams 2 to 8 are broken into sub-issues on
 GitHub, listed under each section (workstream 1, #223, is planned separately);
 they get full scope cards after M2 closes.
 Read it with [direction](../direction.md) and [decisions](../decisions.md).
@@ -144,6 +145,7 @@ a schema change ships the generator change in the same PR.
 2. #287 Generator validates with config-check's rules and exports only a valid file
 3. #288 Import an existing config.json into the generator
 4. #289 Generator presets: flagship 1989, small server, hardcore economy
+5. #381 Export a server bundle (config.json + server.json) for hosts
 
 
 ## 4. Owner docs
@@ -213,15 +215,48 @@ and uses the default. It runs in `wt gate` and before every release.
 3. #304 config-check reports which migrations would run
 
 
+## 8. Workshop release
+
+The core and the pack ship as two Workshop items; the pack depends on the core
+item. Releases are repeatable, not hand-built.
+
+- Names and brands are set (decisions, 2026-11-09): "Life Framework (Core)"
+  is clean and modern; "Life Framework: Everon 1989" has its own period
+  branding and narrative. Record the version scheme in #367 before anything is
+  uploaded; Workshop IDs are hard to change once public.
+- #374, early: the flagship mission is hostable and playable solo from the
+  scenario list, so people can try it without a server.
+- `validate-release-ready` checks both addons (metadata, preview image,
+  dependency, no generated files, APL notice) in CI.
+- `tools\cli release <version>` gates, stamps versions in both `.gproj`
+  files, writes notes, and tags.
+- The maintainer does the first upload (core, then pack); an agent prepares the
+  checklist.
+- Proof: a clean dedicated server with no Workbench boots from the two Workshop
+  items alone.
+- `docs/release-process.md` covers updates, compatibility, and rollback.
+
+**Sub-issues** (epic #366, in order):
+
+1. #367 Fix Workshop item names and version scheme
+2. #368 validate-release-ready checks both addons for publishing
+3. #369 tools\cli release stamps versions, gates, and tags
+4. #370 First Workshop upload of core and pack (maintainer)
+5. #371 A clean dedicated server boots from the Workshop items alone
+6. #372 Release process doc for updates and rollback
+7. #375 Separate branding and narrative for core and Everon 1989
+
+
 ## Order
 
 1 (two addons) and 2 (config layer) go first and in that order, because the
 schema has to know which defaults live in which addon. Workstreams 3 to 7 follow
-in parallel once the schema exists.
+in parallel once the schema exists. Workstream 8 (Workshop release) starts with
+the naming decision, and the upload waits for the pack move, the harness, and the
+install guide.
 
 ## Open questions
 
 - Which DebugWorld content stays in the core as neutral test fixtures.
 - Whether a pack can add its own config sections (a modern pack's phone shop)
   or only fill the seven.
-- The Workshop item names and the core's version numbering.

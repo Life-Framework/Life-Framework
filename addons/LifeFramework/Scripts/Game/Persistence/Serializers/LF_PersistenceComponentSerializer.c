@@ -28,7 +28,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger. The written version is that list's length (14). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials. The written version is that list's length (16). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -42,6 +42,8 @@
 //! A version 11 save includes job sign-ups and has no police tickets.
 //! A version 12 save includes police tickets and has no incident log.
 //! A version 13 save includes the incident log and has no money ledger.
+//! A version 14 save includes the money ledger and has no crime record.
+//! A version 15 save includes the crime record and has no fence serial book.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -91,6 +93,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("tickets");
 		order.Insert("incidents");
 		order.Insert("ledger");
+		order.Insert("crimerecord");
+		order.Insert("fenceserials");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -117,7 +121,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 14);
+		context.WriteValue("version", 16);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -338,6 +342,18 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			context.Write(ledgerEntries);
 			LF_Debug.Log("Persistence", string.Format("saved %1 ledger entr(ies)", ledgerEntries.Count()));
 		}
+		else if (payload == "crimerecord")
+		{
+			array<ref LF_CrimeRecordRow> crimeRows = LF_CrimeRecord.ExportAll();
+			context.Write(crimeRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 crime record row(s)", crimeRows.Count()));
+		}
+		else if (payload == "fenceserials")
+		{
+			array<ref LF_FenceSerialRow> serialRows = LF_FenceSerials.ExportAll();
+			context.Write(serialRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 fence serial row(s)", serialRows.Count()));
+		}
 		else
 		{
 			LF_Debug.Error("Persistence", string.Format("save skipped unknown payload '%1'", payload));
@@ -557,6 +573,34 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Warn("Persistence", "money ledger failed to read, leaving the live ledger untouched");
+			}
+		}
+		else if (payload == "crimerecord")
+		{
+			// A version 1-14 save never reaches this payload, so the live record is left alone.
+			array<ref LF_CrimeRecordRow> crimeRows = new array<ref LF_CrimeRecordRow>();
+			if (context.Read(crimeRows))
+			{
+				LF_CrimeRecord.ApplyAll(crimeRows);
+				LF_Debug.Log("Persistence", string.Format("applied %1 crime record row(s)", crimeRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "crime record failed to read, leaving the live record untouched");
+			}
+		}
+		else if (payload == "fenceserials")
+		{
+			// A version 1-15 save never reaches this payload, so the live book is left alone.
+			array<ref LF_FenceSerialRow> serialRows = new array<ref LF_FenceSerialRow>();
+			if (context.Read(serialRows))
+			{
+				LF_FenceSerials.ApplyAll(serialRows);
+				LF_Debug.Log("Persistence", string.Format("applied %1 fence serial row(s)", serialRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "fence serial book failed to read, leaving the live book untouched");
 			}
 		}
 		else

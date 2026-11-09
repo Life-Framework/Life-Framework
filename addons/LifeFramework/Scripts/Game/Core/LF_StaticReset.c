@@ -35,10 +35,13 @@ class LF_StaticReset
 		LF_BleedOut.ResetStatics();
 		LF_FineTickets.ResetStatics();
 		LF_Ledger.ResetStatics();
+		LF_CrimeRecord.ResetStatics();
+		LF_FenceSerials.ResetStatics();
 		LF_IncidentLog.ResetStatics();
 		LF_ServiceCallsConfig.ResetStatics();
 		LF_Payphone.ResetStatics();
 		LF_ServiceCallDispatch.ResetStatics();
+		LF_ServiceBoard.ResetStatics();
 		LF_OrgInvites.Reset();
 
 		s_iRuns = s_iRuns + 1;

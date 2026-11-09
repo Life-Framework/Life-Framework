@@ -18,6 +18,11 @@ class LF_IncidentRecord : Managed
 	int m_iAmount;
 	//! The weapon prefab for a death or damage; the money source for cash.
 	string m_sHow;
+	//! LF_Zones rule set at the position when it happened: safe, lawless, normal. Not saved; a
+	//! loaded record is stamped again from its position.
+	[NonSerialized()]
+	string m_sZone;
+
 	//! Death: LF_Murder counted it as murder.
 	bool m_bMurder;
 
@@ -42,6 +47,7 @@ class LF_IncidentRecord : Managed
 		copy.m_iAmount = m_iAmount;
 		copy.m_sHow = m_sHow;
 		copy.m_bMurder = m_bMurder;
+		copy.m_sZone = m_sZone;
 		return copy;
 	}
 }
@@ -160,10 +166,11 @@ class LF_IncidentLog
 		record.m_iAmount = amount;
 		record.m_sHow = how;
 		record.m_bMurder = murder;
+		record.m_sZone = LF_Zones.RuleName(LF_Zones.RuleAt(position));
 		Records().Insert(record);
 
 		int dropped = Trim(Records(), time, LF_IncidentConfig.RetentionSeconds(), LF_IncidentConfig.MaxRecords());
-		LF_Debug.Info(FEATURE, string.Format("#%1 %2: %3 / %4 amount %5 how %6 at %7 murder %8", record.m_iNumber, kind, subjectUid, otherUid, amount, how, position, murder));
+		LF_Debug.Info(FEATURE, string.Format("#%1 %2: %3 / %4 amount %5 how %6 at %7 murder %8 zone=%9", record.m_iNumber, kind, subjectUid, otherUid, amount, how, position, murder, record.m_sZone));
 		if (dropped > 0)
 			LF_Debug.Info(FEATURE, string.Format("trimmed %1 old record(s), %2 kept", dropped, Records().Count()));
 
@@ -241,7 +248,9 @@ class LF_IncidentLog
 			if (!record)
 				continue;
 
-			s_aRecords.Insert(record.Copy());
+			LF_IncidentRecord copy = record.Copy();
+			copy.m_sZone = LF_Zones.RuleName(LF_Zones.RuleAt(copy.GetPosition()));
+			s_aRecords.Insert(copy);
 			if (record.m_iNumber > s_iLastNumber)
 				s_iLastNumber = record.m_iNumber;
 		}

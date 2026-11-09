@@ -83,3 +83,7 @@ In T3, start new threads on Sonnet and switch a thread to Opus only for
 planning or hard debugging. The agent files in `.claude/agents/` pin each
 tier's model, so a delegated job gets the right model whatever the parent
 thread uses.
+
+## Docs and screenshots
+
+The builder takes the screenshots during its proof session. The free DeepSeek model writes up the player docs, the website and the closed issue for each feature once it merges, and a weekly sweep catches anything missed. See `docs/agent-docs-sweep.md`.

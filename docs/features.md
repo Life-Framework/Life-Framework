@@ -59,6 +59,14 @@
 - ⚠️ Cash given, robbed, or picked up appear only as `OnMoneyMoved` publish points
   land (#330); today the ATM is wired. No query UI yet: admin tooling reads it.
 
+### Game Master incident view — `Feature/Moderation/LF_IncidentGm.c`, `UI/GM/LF_IncidentGmPanel.c` (#240, 2026-11-09)
+- ✅ In vanilla Game Master EDIT mode (modded `SCR_EditModeEditorUIComponent`), a panel plus a marker
+  per incident cell (25 m) near the camera, last hour, 400 m. The marker nearest the screen centre is
+  selected and its rows are listed (kind, minutes ago, who / whom, amount). The client sends only its
+  camera position by RPC; the server checks the ADMINISTRATOR role on every request (radius, window and
+  40-row cap are fixed server side). A non-admin gets nothing and `[LFDebug:IncidentGM]` logs the
+  refusal. Nothing persists. Test `incident/gm-query`. Manual: see the PR.
+
 ### `LF_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `LF_PlayerAccount`, spawns the active
   character's prefab at a spawn point for the account's role (CIVILIAN, or
@@ -996,7 +1004,7 @@
   `198 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
   to the contraband scope.
 
-### `LF_Murder` / `LF_SafeZone` — `Feature/Crime/` (M1-27, #125)
+### `LF_Murder` / `LF_Zones` — `Feature/Crime/`, `Feature/Moderation/` (M1-27, #125; zones #242)
 - ✅ **Murder makes you wanted** (test `crime/murder`). Every character death
   reaches `LF_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
   player who kills another player or an NPC gets wanted +`m_iMurderWanted`
@@ -1006,7 +1014,7 @@
   it, a self-kill, a destroyed vehicle, and (config
   `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
   wanted suspect. Each decision logs `[LFDebug:Murder]`. No automatic ban.
-- ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_SafeZoneComponent` on
+- ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_ZoneComponent` (rule SAFE) on
   `LF_SafeZone_Square` (`Gamemode.layer`, fountain 115 0 250, radius 30 m as
   the component attribute) registers a flat circle. The modded
   `SCR_CharacterDamageManagerComponent.HijackDamageHandling` swallows a hit
@@ -1016,6 +1024,19 @@
   logs `[LFDebug:SafeZone] refused ...`; the shooter gets a toast at most every
   8 s. Two `safe_zone` notice boards (`Sign_SafeZone_Spawn`,
   `Sign_SafeZone_East`) say so in the world.
+- ✅ **Zone service** (#242, tests `zones/rules`, `safezone/blocks`). The safe zone
+  code is now `LF_Zones` (`Feature/Moderation/LF_Zones.c`): a zone is an entity with
+  `LF_ZoneComponent`, a shape (circle, box turned by entity yaw, polyline corridor
+  with a half-width) and a rule set: SAFE (the damage block above), LAWLESS, NORMAL.
+  `LF_Zones.RuleAt(pos)` answers for every caller; overlaps resolve safe, then
+  lawless, then normal; shapes are flat (XZ). What each rule set does lives in
+  `Configs/Moderation/LF_Zones.conf`: `m_bSafeBlocksPlayerDamage` (on) and
+  `m_bLawlessSuppressesWanted` (off: lawless alone does not switch off wanted; on,
+  `LF_Murder` skips a murder in a lawless zone and logs the reason). A zone added,
+  changed or removed logs `[LFDebug:Zones]` and publishes `LF_OnZoneChanged`. The
+  incident log stamps `m_sZone` (safe/lawless/normal) on each record and in its log
+  line; the stamp is not saved and a loaded record is stamped again from its position.
+  #243 (quarry lawless) is one entity: an `LF_ZoneComponent` with rule LAWLESS.
 - ✅ Both civilian spawn points stand on the square (the second moved from
   170 0 199, by the quarry, to 121 0 253); `safezone/blocks` asserts every
   civilian spawn point is inside a zone. The hospital wake (M1-26) is not a
@@ -1944,6 +1965,16 @@
 
 - ✅ `LF_ServiceCalls` routes a call to any service in `Configs/Comms/LF_ServiceCalls.conf` (police, medic, taxi; receiver is on-duty police or a current job). An unknown service is rejected with an error, nobody on duty logs "no answer", otherwise `LF_OnServiceCall` is published on the event bus. No caller yet; the payphone is #247.
 
+## Hidden crime record (#270)
+
+- ✅ `LF_CrimeRecord` (`Feature/Crime/LF_CrimeRecord.c`) subscribes to `LF_OnCrimeCommitted` (`EnsureSubscribed`, game-mode start) and counts completed crimes per account uid and offence key, so one robbery counts once. An unpaid ticket is not counted. Server only, never replicated, no UI. Read with `LF_CrimeRecord.Count(uid, offence)` / `Total(uid)` (the fence #271 and serials #272 use these). Persisted as the `crimerecord` payload (save version 15). Tests `crime/record`, `crime/record-persist`. Crime paths wired to the event today: robbery, vehicle and weapon theft, break-in, hospital, murder; gas station and contraband run count once their success path reports through `LF_Dispatch.Report`.
+- ✅ Fence (#271): an NPC (`Prefabs/Characters/Npcs/LF_Fence.et`, DebugWorld `FenceNpc`) with an `LF_ShopComponent` set to `m_bFence`. Each `LF_ShopItem.m_iMinCrimes` is the completed crimes the buyer needs on the hidden record (`LF_CrimeRecord.Total`): drill 3, charge 5, keycard 8. `LF_ShopComponent.Buy` asks `LF_FenceRules.Check` before any cash moves; a refusal logs `[LFDebug:Fence] refused ...` and prints `#LF-Shop_RefuseNotTrusted` on the order slip. Prices are the `ShopPrices.conf` rules for `Prefabs/Items/Fence/`. Each sale publishes `LF_OnFenceSale`. Test `crime/fence-gate`.
+- ✅ Fence serials (#272): each tool the fence sells carries an `LF_SerialComponent` (`Prefabs/Items/Fence/`; saved with the item by `LF_SerialComponentSerializer`, readable through the Read serial action). `LF_FenceSerials` subscribes to `LF_OnFenceSale`, stamps the delivered tools and books each serial to the buyer's account (server only). `LF_FenceSerials.Identify(serial)` / `IdentifyItem(item)` mark the buyer's wanted reports identified; the evidence locker (#269) calls it when it checks a bagged tool (not wired until #269 lands). Persisted as the `fenceserials` payload (save version 16). Tests `investigation/serial`, `investigation/serial-persist`.
+
 ## Payphone (#247)
 
-- ✅ `LF_Payphone` (prefab `Prefabs/Comms/LF_Payphone.et`, the base-game phone booth): one action per preset (report a crime, an emergency, someone suspicious) calls the police. The coin comes from carried cash (`m_iPayphoneCost` in `LF_ServiceCalls.conf`), per-player and per-phone cooldowns apply, and nothing is charged when nobody is on duty. The call is `LF_OnServiceCall` on the bus; `LF_ServiceCallDispatch` turns a police call into a radio line to on-duty officers with the phone's place (`LF_Dispatch.RelayCall`), and the dispatch log shows it. Coin and dial-tone sounds play from the booth. Not done: free text, handset animation (the booth has no handset mesh). Placed in DebugWorld at the village booth.
+- ✅ `LF_Payphone` (prefab `Prefabs/Comms/LF_Payphone.et`, the base-game phone booth): one action per preset (report a crime, an emergency, someone suspicious) calls the police. The coin comes from carried cash (`m_iPayphoneCost` in `LF_ServiceCalls.conf`), per-player and per-phone cooldowns apply, and nothing is charged when nobody is on duty. The call is `LF_OnServiceCall` on the bus; `LF_ServiceCallDispatch` turns a police call into a radio line to on-duty officers with the phone's place (`LF_Dispatch.Receive`), and the dispatch log shows it. Coin and dial-tone sounds play from the booth. Not done: free text, handset animation (the booth has no handset mesh). Placed in DebugWorld at the village booth.
+
+## Dispatch board (#250)
+
+- ✅ `LF_ServiceBoard` (LOGIC-ish WORLD `comms/board`): calls whose service lists the `board` channel are pinned to that service's board and expire after `m_iBoardExpirySeconds` (900). A medic call shows on the medic board and not the police board; only the service's on-duty staff read the details, anyone else gets a closed board. World board: `Prefabs/Comms/LF_DispatchBoard_Medic.et` (the wanted board with `m_sService`), at the DebugWorld hospital. Crime reports now go out as police service calls (`LF_Dispatch.Report` publishes `LF_OnServiceCall`), so they and payphone calls share one path to the radio, the dispatch log, and the board. Late joiners read current calls on demand. Not done: teleprinter clatter, taxi board prefab, taking a call (#251).

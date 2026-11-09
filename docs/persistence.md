@@ -54,7 +54,10 @@ Each of these must survive a server restart:
 11. Wanted reports: offence, the description recorded at the crime, and the
    identified flag, keyed by player uid.
 12. The money ledger (save version 14, payload `ledger`): every cash and bank change with
+   Then the hidden crime record (save version 15, payload `crimerecord`): completed crimes per
+   account uid and offence key, never replicated (`LF_CrimeRecord`).
    its reason, counterparty and balance after, trimmed by `Configs/Money/LF_Ledger.conf`.
+13. The fence serial book (save version 16, payload `fenceserials`): serial text, buyer account uid and tool prefab, never replicated (`LF_FenceSerials`). The serial itself is saved with the item (`LF_SerialComponentSerializer`).
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character

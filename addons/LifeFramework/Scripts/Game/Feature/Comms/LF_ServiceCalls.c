@@ -50,6 +50,11 @@ class LF_ServiceCallsConfig
 	[Attribute("30", UIWidgets.Auto, "Seconds before the same payphone may be used again by anyone")]
 	int m_iPhoneCooldownSeconds;
 
+	static const int DEFAULT_BOARD_EXPIRY = 900;
+
+	[Attribute("900", UIWidgets.Auto, "Seconds a call stays on a dispatch board before it expires (#250)")]
+	int m_iBoardExpirySeconds;
+
 	protected static ref LF_ServiceCallsConfig s_Config;
 	protected static ref array<ref LF_ServiceDef> s_aDefaults;
 	protected static bool s_bLoadAttempted;
@@ -69,6 +74,15 @@ class LF_ServiceCallsConfig
 		if (!s_Config)
 			return DEFAULT_PAYPHONE_COST;
 		return s_Config.m_iPayphoneCost;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int BoardExpirySeconds()
+	{
+		Load();
+		if (!s_Config)
+			return DEFAULT_BOARD_EXPIRY;
+		return s_Config.m_iBoardExpirySeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -100,8 +114,8 @@ class LF_ServiceCallsConfig
 		{
 			s_aDefaults = {};
 			s_aDefaults.Insert(LF_ServiceDef.Make("police", "#LF-Service_Police", "duty:police", "radio,board"));
-			s_aDefaults.Insert(LF_ServiceDef.Make("medic", "#LF-Service_Medic", "job:4", "pager"));
-			s_aDefaults.Insert(LF_ServiceDef.Make("taxi", "#LF-Service_Taxi", "job:7", "pager"));
+			s_aDefaults.Insert(LF_ServiceDef.Make("medic", "#LF-Service_Medic", "job:4", "pager,board"));
+			s_aDefaults.Insert(LF_ServiceDef.Make("taxi", "#LF-Service_Taxi", "job:7", "pager,board"));
 		}
 		return s_aDefaults;
 	}
@@ -227,10 +241,12 @@ class LF_ServiceCalls
 	//! Server: who a call to this service would reach right now. Publishes nothing.
 	static LF_ServiceRoute Check(string serviceKey, array<ref LF_ServiceCandidate> players = null)
 	{
-		if (!players)
-			players = Candidates();
+		// A strong local: assigning to the parameter would free the fresh array on return.
+		ref array<ref LF_ServiceCandidate> list = players;
+		if (!list)
+			list = Candidates();
 
-		return Route(LF_ServiceCallsConfig.Services(), serviceKey, players);
+		return Route(LF_ServiceCallsConfig.Services(), serviceKey, list);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -11,7 +11,8 @@ enum LF_EShopRefusal
 	NOTHING_TO_SELL,
 	BAD_QUANTITY,
 	TOO_FAR,
-	NO_SHOP
+	NO_SHOP,
+	NOT_TRUSTED
 }
 
 class LF_ShopRefusal
@@ -44,6 +45,9 @@ class LF_ShopRefusal
 		if (reason == LF_EShopRefusal.NO_SHOP)
 			return "#LF-Shop_RefuseNoShop";
 
+		if (reason == LF_EShopRefusal.NOT_TRUSTED)
+			return "#LF-Shop_RefuseNotTrusted";
+
 		return string.Empty;
 	}
 
@@ -51,7 +55,7 @@ class LF_ShopRefusal
 	//! A reason that arrives over the wire as an int; anything unknown reads as no shop.
 	static LF_EShopRefusal FromWire(int reason)
 	{
-		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.NO_SHOP)
+		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.NOT_TRUSTED)
 			return LF_EShopRefusal.NO_SHOP;
 
 		return reason;

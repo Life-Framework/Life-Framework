@@ -36,10 +36,15 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_HostStop.StartIfRequested();
 		LF_IncidentLog.Install();
 		LF_ServiceCallDispatch.Install();
+		LF_ServiceBoard.Install();
 		// Interaction menu role slots, on every machine (offer on the client, decide on the server).
 		LF_OrgInviteRole.Register();
 		// The money ledger listens for every cash and bank change (server only).
 		LF_Ledger.EnsureSubscribed();
+		// The hidden crime record counts every completed crime (server only).
+		LF_CrimeRecord.EnsureSubscribed();
+		// The serial book stamps every tool the fence sells (server only).
+		LF_FenceSerials.EnsureSubscribed();
 	}
 
 	//------------------------------------------------------------------------------------------------

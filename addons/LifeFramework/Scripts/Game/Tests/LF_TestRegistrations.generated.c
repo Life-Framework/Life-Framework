@@ -41,6 +41,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ShopRefusalReasons(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CounterScreenLayout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CraftingAssets(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_CrimeRecord(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CrimeRecordPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CropPrefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CropStages(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);
@@ -75,6 +77,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobAndBuildingExploit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FactionLoadoutConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FactionSpawn(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_FenceGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_FenceSerial(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_FenceSerialPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_FilmCameraPath(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FilmRecorder(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FineTicket(), LF_TestTier.WORLD);
@@ -99,6 +104,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IdCardGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_IdCardRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IdentityFallback(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IncidentGmQuery(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentLog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentLogPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_InteractionGiveCash(), LF_TestTier.LOGIC);
@@ -204,6 +210,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PersistenceManagerWiring(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ScreenshotFailSafe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceCalls(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC);
@@ -254,6 +261,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WhitelistCommandParse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistPersist(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WoodcuttingDamage(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ZoneRules(), LF_TestTier.LOGIC);
 	}
 }
 

@@ -15,6 +15,11 @@ class LF_ShopComponent : ScriptComponent
 	[Attribute("", UIWidgets.Object, desc: "Optional curated item allowlist; empty sells every priced item")]
 	protected ref array<ref LF_ShopItem> m_aShopItems;
 
+	//! A fence: sells only to proven criminals. Each item's threshold is its LF_ShopItem.m_iMinCrimes,
+	//! read against the buyer's hidden crime record on the server. Every sale publishes LF_OnFenceSale.
+	[Attribute("0", UIWidgets.CheckBox, desc: "Fence: refuse buyers whose crime record is below the item's threshold; publish LF_OnFenceSale")]
+	protected bool m_bFence;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -143,6 +148,26 @@ class LF_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	bool IsFence()
+	{
+		return m_bFence;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Completed crimes a buyer needs before this shop sells the prefab. 0 for a plain shop.
+	int GetMinCrimes(ResourceName prefab)
+	{
+		if (!m_bFence)
+			return 0;
+
+		LF_ShopItem curated = FindCuratedItem(prefab);
+		if (!curated)
+			return 0;
+
+		return curated.GetMinCrimes();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Whether a requested quantity is within the item's buy limits.
 	static bool IsQuantityAllowed(int maxQuantity, int quantity)
 	{
@@ -194,6 +219,15 @@ class LF_ShopComponent : ScriptComponent
 			return LF_EShopRefusal.UNPRICED;
 		}
 
+		string buyerUid;
+		if (m_bFence)
+		{
+			buyerUid = LF_Utils.GetPlayerUid(buyer);
+			LF_EShopRefusal trust = LF_FenceRules.Check(buyerUid, GetMinCrimes(prefab), prefab);
+			if (trust != LF_EShopRefusal.NONE)
+				return trust;
+		}
+
 		int units = LF_ShopRules.StackTradeOutputCount(quantity);
 		int totalPrice = LF_ShopRules.StackTradeTotal(unitPrice, units);
 
@@ -211,6 +245,8 @@ class LF_ShopComponent : ScriptComponent
 		{
 			charged = totalPrice;
 			LF_Debug.Info("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
+			if (m_bFence)
+				LF_EventBus.Publish(LF_OnFenceSale.Create(buyerUid, prefab, units, totalPrice));
 			return LF_EShopRefusal.NONE;
 		}
 
