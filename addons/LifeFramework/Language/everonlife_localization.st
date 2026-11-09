@@ -5357,6 +5357,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Need help? Use a payphone to call the service."
      Comment "Dispatch board sign card: what to do next."
     }
+    CustomStringTableItem "{B608F834846FAF73}" {
+     Id "LF-Dispatch_Take"
+     Target_en_us "Take the call"
+     Comment "Action on a service dispatch board: take the oldest open call (#251)."
+    }
+    CustomStringTableItem "{62139B83F8E9AC01}" {
+     Id "LF-Dispatch_TakeDone"
+     Target_en_us "Call taken. Head to the place on the board."
+     Comment "Toast to the responder after taking a call."
+    }
+    CustomStringTableItem "{E26C8E0B2B297718}" {
+     Id "LF-Dispatch_TakeGone"
+     Target_en_us "Another unit already took that call."
+     Comment "Toast when the call has all the takers it allows."
+    }
+    CustomStringTableItem "{7D2865141D4A525F}" {
+     Id "LF-Dispatch_TakeYours"
+     Target_en_us "You already took every call waiting."
+     Comment "Toast when the responder already took the open calls."
+    }
+    CustomStringTableItem "{B8AB7F7CB0A45CFA}" {
+     Id "LF-Dispatch_TakeNone"
+     Target_en_us "No call waiting."
+     Comment "Toast when the board has no call to take."
+    }
+    CustomStringTableItem "{C14AC728DB5CB79F}" {
+     Id "LF-Dispatch_ServiceLineTaken"
+     Target_en_us "%1  %2 at %3 (taken)"
+     Comment "Service dispatch board line for a call a unit has taken. %1 = time, %2 = what, %3 = place."
+    }
+    CustomStringTableItem "{8DE2406C7DDB39E2}" {
+     Id "LF-Service_UnitTitle"
+     Target_en_us "Dispatch"
+     Comment "Title of dispatch toasts."
+    }
+    CustomStringTableItem "{1AD33D680D4FC3B9}" {
+     Id "LF-Service_UnitOnTheWay"
+     Target_en_us "A unit is on the way."
+     Comment "Shown to a caller when a responder takes their call (#251)."
+    }
   }
  }
 }

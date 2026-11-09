@@ -205,6 +205,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceCalls(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ServiceTake(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopTotalPrice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMAmountGuard(), LF_TestTier.LOGIC);

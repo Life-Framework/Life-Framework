@@ -205,3 +205,29 @@ class LF_OnServiceCall : LF_Event
 		return e;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! A responder took a service call (#251). Published by LF_ServiceTake.ServerTake after the server
+//! validated that the taker is on duty for the service and the call had room.
+class LF_OnServiceCallTaken : LF_Event
+{
+	string m_sCallerUid;
+	string m_sService;
+	string m_sTakerUid;
+	string m_sPlace;
+	string m_sSummary;
+	//! Takers so far, this one included.
+	int m_iTakers;
+
+	static LF_OnServiceCallTaken Create(string callerUid, string service, string takerUid, string place, string summary, int takers)
+	{
+		LF_OnServiceCallTaken e = new LF_OnServiceCallTaken();
+		e.m_sCallerUid = callerUid;
+		e.m_sService = service;
+		e.m_sTakerUid = takerUid;
+		e.m_sPlace = place;
+		e.m_sSummary = summary;
+		e.m_iTakers = takers;
+		return e;
+	}
+}
