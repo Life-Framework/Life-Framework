@@ -593,8 +593,11 @@ class LF_PoliceRanks
 			int deltaSeconds = (nowMs - started) / 1000;
 			if (deltaSeconds > 0)
 			{
-				AccrueDuty(account.GetPersistentId(), deltaSeconds);
+				// Rank seconds are police only; a medic's seconds are only the shift's pay.
 				if (account.GetFaction() == LF_Faction.POLICE)
+					AccrueDuty(account.GetPersistentId(), deltaSeconds);
+
+				if (account.GetFaction() != LF_Faction.CIVILIAN)
 					account.AddUnpaidDutySeconds(deltaSeconds);
 			}
 		}

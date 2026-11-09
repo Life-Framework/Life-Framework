@@ -73,6 +73,32 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
        "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et"
       }
      }
+     LF_FactionLoadout "{60769DBAD1279690}" {
+      m_eFaction MEDIC
+      m_aItems {
+       LF_DefaultLoadoutItem "{942CA14DD3A969F2}" {
+        m_rPrefab "{F39929AB609C7943}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_base.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
+       LF_DefaultLoadoutItem "{D7F2D2B0C79E8E88}" {
+        m_rPrefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
+       LF_DefaultLoadoutItem "{A5DC42AFA02AFA35}" {
+        m_rPrefab "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
+      }
+      m_aDirectItems {
+       "{46FD263F0F368A92}Prefabs/Items/Equipment/Kits/MedicalKit_01/MedicalKit_01_base.et"
+       "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+       "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+       "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et"
+       "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
+       "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
+       "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et"
+      }
+     }
     }
    }
   }

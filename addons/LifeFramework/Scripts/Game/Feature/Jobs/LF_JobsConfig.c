@@ -10,6 +10,9 @@ class LF_JobsConfig
 	[Attribute("0.5", UIWidgets.Auto, "Police duty pay in cash per second on duty, paid at the station desk on going off duty. 0 disables duty pay")]
 	float m_fPoliceDutyPayPerSecond;
 
+	[Attribute("0.4", UIWidgets.Auto, "Medic duty pay in cash per second on duty, paid at the hospital desk on going off duty. 0 disables duty pay")]
+	float m_fMedicDutyPayPerSecond = 0.4;
+
 	[Attribute("500", UIWidgets.Auto, "Unemployment benefit: a bank balance strictly below this may collect")]
 	int m_iBenefitBalanceThreshold;
 
