@@ -1,0 +1,19 @@
+TextWidgetClass "{BCC8A69C1D9121F0}" {
+ Name "LF_IncidentGmMarker"
+ Slot FrameWidgetSlot "{DCD24A8BB9795DA3}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 160
+  OffsetRight -160
+  SizeY 22
+  OffsetBottom -22
+  Alignment 0.5 0.5
+ }
+ Color 1 0.35 0.2 1
+ Text "!"
+ "Font Size" 16
+ "Min Font Size" 12
+}

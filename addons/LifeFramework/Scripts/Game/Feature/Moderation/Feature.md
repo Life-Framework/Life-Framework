@@ -5,3 +5,5 @@ sampled player-on-player damage, and cash moves on the server only, as a subscri
 on `LF_EventBus` (`docs/architecture/events.md`). It is bounded by config, saved in
 the `incidents` payload, and never replicated. Query by position and time window.
 See `docs/features.md`.
+
+Administrators read incidents in Game Master EDIT mode (`LF_IncidentGm` answers by RPC, admin role checked on the server; `UI/GM/LF_IncidentGmPanel.c`).
