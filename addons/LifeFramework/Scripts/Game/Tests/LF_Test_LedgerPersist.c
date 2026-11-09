@@ -1,6 +1,6 @@
 // red-proof: PENDING
 // tier: PERSISTENCE
-//! The ledger rides the real save path (the "ledger" payload, version 13): entries come back after
+//! The ledger rides the real save path (the "ledger" payload, version 14): entries come back after
 //! the store is wiped, the id sequence continues, and loading twice leaves the same log.
 class LF_Test_LedgerPersist : LF_Test
 {
@@ -44,7 +44,7 @@ class LF_Test_LedgerPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(13, version, "the save is written at version 13 (ledger is payload 13)");
+		ctx.Equal(14, version, "the save is written at version 14 (ledger is payload 14)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "ledger");
 		ctx.Equal(2, LF_Ledger.Count(), "both lines are back after the load");
 		ctx.True(LF_Ledger.VerifyBank(UID, 500), "the restored log still explains the stored balance");

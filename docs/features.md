@@ -47,6 +47,18 @@
   `OnVehicleBought`; `OnPlayerDowned` is defined, unpublished. Test `core/event-bus`.
   See `docs/architecture/events.md`.
 
+### `LF_IncidentLog` — `Feature/Moderation/` (#239, 2026-11-09)
+- ✅ Server-only, append-only incident log, a subscriber on `LF_EventBus`
+  (`OnPlayerKilled` with killer, weapon, position, murder flag; `OnPlayerDamaged`,
+  sampled per victim/attacker pair every `m_fDamageSampleSeconds`; `OnMoneyMoved`
+  with its source). Bounded by `m_iMaxRecords` and `m_iRetentionHours`, kinds from
+  `Configs/Moderation/LF_Incident.conf` (`all` or a list of death, damage, cash).
+  `Query(center, radius, from, to, kind)`. Saved as the `incidents` payload
+  (save version 13); never replicated. Logs `[LFDebug:Incident]`. Tests
+  `incident/log`, `persist/incident-log-roundtrip`.
+- ⚠️ Cash given, robbed, or picked up appear only as `OnMoneyMoved` publish points
+  land (#330); today the ATM is wired. No query UI yet: admin tooling reads it.
+
 ### `LF_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `LF_PlayerAccount`, spawns the active
   character's prefab at a spawn point for the account's role (CIVILIAN, or
@@ -475,7 +487,7 @@
   subscribes (`LF_Ledger.EnsureSubscribed`, game-mode start). The reason is an optional last
   argument at the call site (`shop-buy`, `atm-deposit`, `give-cash`, `ticket-fine`, ...);
   none given records `cash` / `bank`. A hand-over is two lines that sum to zero and name each
-  other. Persisted as the `ledger` payload (save version 13), trimmed by `Configs/Money/LF_Ledger.conf`
+  other. Persisted as the `ledger` payload (save version 14), trimmed by `Configs/Money/LF_Ledger.conf`
   (`m_iMaxEntries`, `m_iMaxAgeDays`). `Last(uid, account, n)` lists newest first (what the
   incident log reads); `RebuildBalance`/`VerifyBank` rebuild the bank from the log and compare.
   Cash lines are a trail, not a chain: picking up or dropping a note outside `LF_MoneyUtils` is

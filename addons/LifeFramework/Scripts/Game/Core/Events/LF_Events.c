@@ -65,6 +65,12 @@ class LF_OnPlayerKilled : LF_Event
 {
 	string m_sVictimUid;
 	string m_sKillerUid;
+	//! Where the victim died. Zero when the publisher did not know.
+	vector m_vPosition;
+	//! Prefab of the killer's current weapon; empty when unarmed or unknown.
+	string m_sWeapon;
+	//! LF_Murder's rule counts this death as murder (set before the wanted decision).
+	bool m_bMurder;
 
 	static LF_OnPlayerKilled Create(string victimUid, string killerUid)
 	{
@@ -122,6 +128,29 @@ class LF_OnVehicleBought : LF_Event
 		e.m_sBuyerUid = buyerUid;
 		e.m_sCatalogPrefab = catalogPrefab;
 		e.m_iPrice = price;
+		return e;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One sampled stretch of player-on-player damage. LF_IncidentDamage folds every hit between a
+//! victim and an attacker into at most one event per sample window; m_fDamage is the total in it.
+class LF_OnPlayerDamaged : LF_Event
+{
+	string m_sVictimUid;
+	string m_sAttackerUid;
+	float m_fDamage;
+	vector m_vPosition;
+	string m_sWeapon;
+
+	static LF_OnPlayerDamaged Create(string victimUid, string attackerUid, float damage, vector position, string weapon)
+	{
+		LF_OnPlayerDamaged e = new LF_OnPlayerDamaged();
+		e.m_sVictimUid = victimUid;
+		e.m_sAttackerUid = attackerUid;
+		e.m_fDamage = damage;
+		e.m_vPosition = position;
+		e.m_sWeapon = weapon;
 		return e;
 	}
 }

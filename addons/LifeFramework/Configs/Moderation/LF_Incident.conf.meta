@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6A3E91C4B7D2085F}Configs/Moderation/LF_Incident.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
