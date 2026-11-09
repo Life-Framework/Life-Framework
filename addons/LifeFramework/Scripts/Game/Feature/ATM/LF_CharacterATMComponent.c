@@ -171,18 +171,17 @@ class LF_CharacterATMComponent : ScriptComponent
 			return LF_EATMRefusal.INVALID_AMOUNT;
 		}
 
-		int removed = LF_MoneyUtils.RemoveCash(character, amount);
+		int removed = LF_MoneyUtils.RemoveCash(character, amount, "atm-deposit");
 		if (removed == amount)
 		{
-			account.Deposit(amount);
+			account.Deposit(amount, "atm-deposit");
 			LF_Debug.Info("ATM", string.Format("deposit +%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
-			LF_EventBus.Publish(LF_OnMoneyMoved.Create(playerUid, amount, "atm-deposit"));
 			return LF_EATMRefusal.NONE;
 		}
 
 		if (removed > 0)
 		{
-			LF_MoneyUtils.AddCash(character, removed);
+			LF_MoneyUtils.AddCash(character, removed, "atm-deposit-rollback");
 			LF_Debug.Warn("ATM", string.Format("deposit rolled back: removed %1 of %2, cash restored (uid %3)", removed, amount, playerUid));
 		}
 		else
@@ -214,22 +213,21 @@ class LF_CharacterATMComponent : ScriptComponent
 			return LF_EATMRefusal.INVALID_AMOUNT;
 		}
 
-		if (!account.Withdraw(amount))
+		if (!account.Withdraw(amount, "atm-withdraw"))
 		{
 			LF_Debug.Warn("ATM", string.Format("withdraw rejected: balance %1 below %2 (uid %3)", account.GetBalance(), amount, playerUid));
 			return LF_EATMRefusal.NOT_ENOUGH_BALANCE;
 		}
 
-		int paid = LF_MoneyUtils.AddCash(character, amount);
+		int paid = LF_MoneyUtils.AddCash(character, amount, "atm-withdraw");
 		if (paid == amount)
 		{
 			LF_Debug.Info("ATM", string.Format("withdraw -%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
-			LF_EventBus.Publish(LF_OnMoneyMoved.Create(playerUid, amount, "atm-withdraw"));
 			return LF_EATMRefusal.NONE;
 		}
 
-		account.Deposit(amount);
-		LF_MoneyUtils.RemoveCash(character, paid);
+		account.Deposit(amount, "atm-withdraw-rollback");
+		LF_MoneyUtils.RemoveCash(character, paid, "atm-withdraw-rollback");
 		LF_Debug.Warn("ATM", string.Format("withdraw rolled back: paid %1 of %2, balance restored (uid %3)", paid, amount, playerUid));
 		return LF_EATMRefusal.POCKETS_FULL;
 	}

@@ -118,7 +118,7 @@ class LF_JobManager : Managed
 			return;
 
 		// Cash is the only payout; the bank balance moves only through the ATM.
-		int paid = LF_MoneyUtils.GiveCash(user, amount);
+		int paid = LF_MoneyUtils.GiveCash(user, amount, "job-pay");
 		if (paid != amount)
 			LF_Debug.Warn("Jobs", string.Format("job reward payout short: paid %1 of %2 (player %3)", paid, amount, user));
 

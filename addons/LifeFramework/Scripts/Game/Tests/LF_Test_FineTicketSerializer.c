@@ -3,7 +3,7 @@
 // `[LFTEST] FAIL police/fine-ticket-serializer`, `- the ticket is back after the load`.
 
 // tier: WORLD
-//! Outstanding tickets ride the real save path (the "tickets" payload, version 12): amount, clock,
+//! Outstanding tickets ride the real save path (the "tickets" payload, version 13): amount, clock,
 //! stage and paid flag come back after the store is wiped.
 class LF_Test_FineTicketSerializer : LF_Test
 {
@@ -47,7 +47,7 @@ class LF_Test_FineTicketSerializer : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(13, version, "the save is written at version 13 (tickets is payload 12)");
+		ctx.Equal(14, version, "the save is written at version 14 (tickets is payload 12)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "tickets");
 		LF_FineTicketRecord loaded = LF_FineTickets.Find(number);
 		ctx.NotNull(loaded, "the ticket is back after the load");

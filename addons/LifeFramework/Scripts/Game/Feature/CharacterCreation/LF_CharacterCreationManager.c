@@ -240,7 +240,7 @@ class LF_CharacterCreationManager : Managed
 		if (amount <= 0 || !bank || bank.GetBalance() > 0)
 			return;
 
-		bank.Deposit(amount);
+		bank.Deposit(amount, "starting-bank");
 		LF_Debug.Info("CharacterCreation", string.Format("starting bank %1 paid to %2", amount, playerUid));
 	}
 
