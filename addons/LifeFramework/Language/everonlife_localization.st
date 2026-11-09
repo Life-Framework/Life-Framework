@@ -5227,6 +5227,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Leave"
      Comment "Car lot sheet close button."
     }
+    CustomStringTableItem "{869A6F273AAC96A0}" {
+     Id "LF-Service_Police"
+     Target_en_us "Police"
+     Comment "Service name callers see for the police service."
+    }
+    CustomStringTableItem "{7A099928BD809AE7}" {
+     Id "LF-Service_Medic"
+     Target_en_us "Medic"
+     Comment "Service name callers see for the medic service."
+    }
+    CustomStringTableItem "{46622CE72B35428C}" {
+     Id "LF-Service_Taxi"
+     Target_en_us "Taxi"
+     Comment "Service name callers see for the taxi service."
+    }
+    CustomStringTableItem "{719C7271EF84BC5B}" {
+     Id "LF-Service_NoAnswer"
+     Target_en_us "No answer. Nobody is on duty for that service right now."
+     Comment "Shown to a caller when nobody is on duty for the service they called (#248)."
+    }
   }
  }
 }
