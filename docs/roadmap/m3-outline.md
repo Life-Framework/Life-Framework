@@ -219,8 +219,12 @@ and uses the default. It runs in `wt gate` and before every release.
 The core and the pack ship as two Workshop items; the pack depends on the core
 item. Releases are repeatable, not hand-built.
 
-- Fix the item names and version scheme before anything is uploaded; Workshop
-  IDs are hard to change once public.
+- Names and brands are set (decisions, 2026-11-09): "Life Framework (Core)"
+  is clean and modern; "Life Framework: Everon 1989" has its own period
+  branding and narrative. Record the version scheme in #367 before anything is
+  uploaded; Workshop IDs are hard to change once public.
+- #374, early: the flagship mission is hostable and playable solo from the
+  scenario list, so people can try it without a server.
 - `validate-release-ready` checks both addons (metadata, preview image,
   dependency, no generated files, APL notice) in CI.
 - `tools\cli release <version>` gates, stamps versions in both `.gproj`
@@ -239,6 +243,7 @@ item. Releases are repeatable, not hand-built.
 4. #370 First Workshop upload of core and pack (maintainer)
 5. #371 A clean dedicated server boots from the Workshop items alone
 6. #372 Release process doc for updates and rollback
+7. #375 Separate branding and narrative for core and Everon 1989
 
 
 ## Order
@@ -254,4 +259,3 @@ install guide.
 - Which DebugWorld content stays in the core as neutral test fixtures.
 - Whether a pack can add its own config sections (a modern pack's phone shop)
   or only fill the seven.
-- The Workshop item names and the core's version numbering (#367).
