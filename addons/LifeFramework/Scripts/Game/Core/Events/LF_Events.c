@@ -2,12 +2,32 @@
 //! The first bus events (docs/architecture/events.md). Fields are plain values: uids and ints,
 //! never IEntity or EntityID. Published on the server only, after the state change happened.
 
-//! Cash or bank balance moved. Positive amount; m_sSource names the path ("atm-deposit", ...).
+//! Cash or bank balance moved. m_iAmount is positive; m_bCredit says the direction; m_sSource is
+//! the reason key ("atm-deposit", "shop-buy", ...). One event per account side: an ATM deposit is
+//! a cash debit and a bank credit. Published by LF_MoneyUtils (cash) and LF_BankAccount (bank).
 class LF_OnMoneyMoved : LF_Event
 {
 	string m_sPlayerUid;
 	int m_iAmount;
 	string m_sSource;
+	//! LF_Ledger.ACCOUNT_CASH or ACCOUNT_BANK. Empty on an event built with Create.
+	string m_sAccount;
+	//! True when the balance went up. Meaningful with m_sAccount.
+	bool m_bCredit;
+	//! The balance of m_sAccount after the change.
+	int m_iBalanceAfter;
+	//! The other character of a hand-over, empty for a system source or sink.
+	string m_sCounterpartyUid;
+
+	static LF_OnMoneyMoved CreateFull(string playerUid, string account, int amount, bool credit, string reason, int balanceAfter, string counterpartyUid)
+	{
+		LF_OnMoneyMoved e = LF_OnMoneyMoved.Create(playerUid, amount, reason);
+		e.m_sAccount = account;
+		e.m_bCredit = credit;
+		e.m_iBalanceAfter = balanceAfter;
+		e.m_sCounterpartyUid = counterpartyUid;
+		return e;
+	}
 
 	static LF_OnMoneyMoved Create(string playerUid, int amount, string source)
 	{
@@ -40,12 +60,15 @@ class LF_OnPlayerDowned : LF_Event
 {
 	string m_sPlayerUid;
 	string m_sDownerUid;
+	//! Where the player went down.
+	vector m_vPosition;
 
-	static LF_OnPlayerDowned Create(string playerUid, string downerUid)
+	static LF_OnPlayerDowned Create(string playerUid, string downerUid, vector position)
 	{
 		LF_OnPlayerDowned e = new LF_OnPlayerDowned();
 		e.m_sPlayerUid = playerUid;
 		e.m_sDownerUid = downerUid;
+		e.m_vPosition = position;
 		return e;
 	}
 }
@@ -55,6 +78,12 @@ class LF_OnPlayerKilled : LF_Event
 {
 	string m_sVictimUid;
 	string m_sKillerUid;
+	//! Where the victim died. Zero when the publisher did not know.
+	vector m_vPosition;
+	//! Prefab of the killer's current weapon; empty when unarmed or unknown.
+	string m_sWeapon;
+	//! LF_Murder's rule counts this death as murder (set before the wanted decision).
+	bool m_bMurder;
 
 	static LF_OnPlayerKilled Create(string victimUid, string killerUid)
 	{
@@ -112,6 +141,62 @@ class LF_OnVehicleBought : LF_Event
 		e.m_sBuyerUid = buyerUid;
 		e.m_sCatalogPrefab = catalogPrefab;
 		e.m_iPrice = price;
+		return e;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One sampled stretch of player-on-player damage. LF_IncidentDamage folds every hit between a
+//! victim and an attacker into at most one event per sample window; m_fDamage is the total in it.
+class LF_OnPlayerDamaged : LF_Event
+{
+	string m_sVictimUid;
+	string m_sAttackerUid;
+	float m_fDamage;
+	vector m_vPosition;
+	string m_sWeapon;
+
+	static LF_OnPlayerDamaged Create(string victimUid, string attackerUid, float damage, vector position, string weapon)
+	{
+		LF_OnPlayerDamaged e = new LF_OnPlayerDamaged();
+		e.m_sVictimUid = victimUid;
+		e.m_sAttackerUid = attackerUid;
+		e.m_fDamage = damage;
+		e.m_vPosition = position;
+		e.m_sWeapon = weapon;
+		return e;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A player called a service (police, medic, taxi, ...) and at least one receiver is on duty for it.
+//! Dispatch (#250) and any delivery channel subscribe; the caller does not know who listens.
+//! m_aReceiverIds are server-side player ids, never sent to clients.
+class LF_OnServiceCall : LF_Event
+{
+	string m_sCallerUid;
+	string m_sService;
+	//! Place key or grid text the call came from (a payphone's place).
+	string m_sPlace;
+	//! What happened, a preset key or free text.
+	string m_sSummary;
+	//! Where the call is delivered: comma list of pager, board, radio.
+	string m_sChannels;
+	//! World position of the caller's phone; zero when unknown.
+	vector m_vPosition;
+	ref array<int> m_aReceiverIds = {};
+
+	static LF_OnServiceCall Create(string callerUid, string service, string place, string summary, string channels, vector position, array<int> receivers)
+	{
+		LF_OnServiceCall e = new LF_OnServiceCall();
+		e.m_sCallerUid = callerUid;
+		e.m_sService = service;
+		e.m_sPlace = place;
+		e.m_sSummary = summary;
+		e.m_sChannels = channels;
+		e.m_vPosition = position;
+		if (receivers)
+			e.m_aReceiverIds.Copy(receivers);
 		return e;
 	}
 }

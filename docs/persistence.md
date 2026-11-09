@@ -14,8 +14,8 @@ The `EL_` to `LF_` rename (#334) changed the persisted type names: the component
 values `EL_PlayerAccountRecord`, `EL_PlayerCharacterRecord`, `EL_BankAccountRecord` and
 `EL_VehicleRecord`. The engine matches them literally and has no alias API (a `typedef`
 alias fixes the record `$type` but not the component keys), and M1 was never published,
-so this is a deliberate pre-release save reset. The payload format and version (12) are
-unchanged.
+so this is a deliberate pre-release save reset. The payload format and version (12 at the time) are
+unchanged (the ledger payload later raised it to 14).
 
 - A save written before the rename is not loaded: none of accounts, bank, jail, carried
   inventories, progression, stash or tickets come back.
@@ -53,6 +53,8 @@ Each of these must survive a server restart:
    rounds in every stored magazine (`itemstate` payload).
 11. Wanted reports: offence, the description recorded at the crime, and the
    identified flag, keyed by player uid.
+12. The money ledger (save version 14, payload `ledger`): every cash and bank change with
+   its reason, counterparty and balance after, trimmed by `Configs/Money/LF_Ledger.conf`.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character

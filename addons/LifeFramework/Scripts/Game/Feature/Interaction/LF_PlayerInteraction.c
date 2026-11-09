@@ -422,8 +422,8 @@ class LF_PlayerInteraction
 			return LF_EGiveCash.REFUSED_REACH;
 
 		int moved;
-		LF_EntityCashWallet from = new LF_EntityCashWallet(user);
-		LF_EntityCashWallet to = new LF_EntityCashWallet(target);
+		LF_EntityCashWallet from = new LF_EntityCashWallet(user, "give-cash", LF_Utils.GetPlayerUID(target));
+		LF_EntityCashWallet to = new LF_EntityCashWallet(target, "give-cash", LF_Utils.GetPlayerUID(user));
 		LF_EGiveCash result = LF_CashHandover.Move(from, to, amount, moved);
 		int userId = PlayerIdOf(user);
 		int targetId = PlayerIdOf(target);

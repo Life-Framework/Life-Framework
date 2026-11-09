@@ -35,12 +35,21 @@ class LF_Test_Downed : LF_Test
 		bool wasSearchable = config.m_bDownedCanBeSearched;
 		LF_Downed.SetTestAllEligible(true);
 		LF_EventBus.ResetStatics();
+		array<ref LF_IncidentRecord> incidentsBefore = LF_IncidentLog.ExportAll();
+		LF_IncidentLog.ResetStatics();
+		LF_IncidentLog.Install();
 		LF_TestDownedRecorder recorder = new LF_TestDownedRecorder();
 		LF_EventBus.Subscribe(LF_OnPlayerDowned, recorder);
 
 		RunDowned(ctx, config, recorder);
 		RunHeadshot(ctx, config);
 		RunConfigOff(ctx, config);
+
+		// The incident log (#239) is a bus subscriber: exactly the one real downing is in it.
+		array<ref LF_IncidentRecord> downedRecords = LF_IncidentLog.Query(vector.Zero, -1, 0, -1, LF_IncidentConfig.KIND_DOWNED);
+		ctx.Equal(3, downedRecords.Count(), "the incident log recorded each downing (the first kill, the downing after the revive, and the head shot)");
+		LF_IncidentLog.ResetStatics();
+		LF_IncidentLog.ApplyAll(incidentsBefore);
 
 		config.m_bDownedEnabled = wasEnabled;
 		config.m_bDownedCanBeSearched = wasSearchable;

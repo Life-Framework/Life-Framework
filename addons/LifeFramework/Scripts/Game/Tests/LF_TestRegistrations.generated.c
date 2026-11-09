@@ -97,6 +97,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IdCardGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_IdCardRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IdentityFallback(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IncidentLog(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IncidentLogPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_InteractionGiveCash(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionIntroductions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionOffers(), LF_TestTier.LOGIC);
@@ -108,6 +110,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobPacing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_Ledger(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_LedgerPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LicensePlateFormat(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LicensePlateParenting(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicenseWhitelist(), LF_TestTier.LOGIC);
@@ -125,6 +129,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
@@ -197,6 +202,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PersistenceManagerWiring(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ScreenshotFailSafe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ServiceCalls(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopTotalPrice(), LF_TestTier.LOGIC);

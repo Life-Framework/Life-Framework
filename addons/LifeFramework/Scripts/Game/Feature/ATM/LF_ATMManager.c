@@ -163,7 +163,7 @@ class LF_ATMManager : Managed
 		LF_BankAccount account = GetAccount(accountId);
 		if (account)
 		{
-			account.Deposit(amount);
+			account.Deposit(amount, "bank-deposit");
 			LF_Debug.Log("ATM", string.Format("deposit account=%1 amount=%2", accountId, amount));
 			return true;
 		}
@@ -190,7 +190,7 @@ class LF_ATMManager : Managed
 		LF_BankAccount account = GetAccount(accountId);
 		if (account)
 		{
-			bool ok = account.Withdraw(amount);
+			bool ok = account.Withdraw(amount, "bank-withdraw");
 			LF_Debug.Log("ATM", string.Format("withdraw account=%1 amount=%2 ok=%3", accountId, amount, ok));
 			return ok;
 		}

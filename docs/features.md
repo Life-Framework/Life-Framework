@@ -43,9 +43,21 @@
   called in subscription order, each isolated (a false return logs
   `[LFDebug:Events]` Error and the rest run), list copied so unsubscribing
   mid-publish is safe, server only. Published today: `OnCrimeCommitted`,
-  `OnMoneyMoved` (ATM), `OnPlayerKilled`, `OnArrested`, `OnJobCompleted`,
+  `OnMoneyMoved` (every cash and bank change), `OnPlayerKilled`, `OnArrested`, `OnJobCompleted`,
   `OnVehicleBought`, `OnPlayerDowned` (the downed state, below). Test `core/event-bus`.
   See `docs/architecture/events.md`.
+
+### `LF_IncidentLog` — `Feature/Moderation/` (#239, 2026-11-09)
+- ✅ Server-only, append-only incident log, a subscriber on `LF_EventBus`
+  (`OnPlayerKilled` with killer, weapon, position, murder flag; `OnPlayerDamaged`,
+  sampled per victim/attacker pair every `m_fDamageSampleSeconds`; `OnMoneyMoved`
+  with its source; `OnPlayerDowned` as kind `downed`, #255). Bounded by `m_iMaxRecords` and `m_iRetentionHours`, kinds from
+  `Configs/Moderation/LF_Incident.conf` (`all` or a list of death, damage, cash, downed).
+  `Query(center, radius, from, to, kind)`. Saved as the `incidents` payload
+  (save version 13); never replicated. Logs `[LFDebug:Incident]`. Tests
+  `incident/log`, `persist/incident-log-roundtrip`.
+- ⚠️ Cash given, robbed, or picked up appear only as `OnMoneyMoved` publish points
+  land (#330); today the ATM is wired. No query UI yet: admin tooling reads it.
 
 ### `LF_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `LF_PlayerAccount`, spawns the active
@@ -273,7 +285,7 @@
   downed body's inventory; off, `HandleAccessValidation` refuses everyone but the owner. A dead
   body is always lootable. The body keeps its inventory either way.
 - ✅ Logs `[LFDebug:Medic]` (downed, absorbed hit, cleared, killed for real, search refused).
-  Incident log entry: not yet, the log does not exist on this branch (#239 adds it).
+  The incident log records each downing as kind `downed` (victim, downer, position).
 - ⚠️ Not built (own issues): bleed-out timer and give-up (#256), revive (#259), screen effects for
   the downed client, disconnect while downed. A downed player who disconnects loses the state
   with the body. The suite cannot see the controller's life state (it changes a frame later);
@@ -494,6 +506,22 @@
   `AddCash`/`RemoveCash` (actual amount, 0 on fault).
 - ⚠️ Inconsistent sentinels (`-1` vs `0`); doc comments wrong on
   Remove/Take.
+
+### `LF_Ledger` — `Feature/Money/LF_Ledger.c` (#330, 2026-11-09)
+- ✅ Append-only log of every cash and bank change: id, unix time, character uid, account
+  (`cash`/`bank`), signed change, reason key, counterparty uid, balance after. Features never
+  call it: `LF_MoneyUtils.AddCash`/`RemoveCash` (cash, player targets only) and
+  `LF_BankAccount.Deposit`/`Withdraw`/`Charge` (bank) publish `LF_OnMoneyMoved`, and the ledger
+  subscribes (`LF_Ledger.EnsureSubscribed`, game-mode start). The reason is an optional last
+  argument at the call site (`shop-buy`, `atm-deposit`, `give-cash`, `ticket-fine`, ...);
+  none given records `cash` / `bank`. A hand-over is two lines that sum to zero and name each
+  other. Persisted as the `ledger` payload (save version 14), trimmed by `Configs/Money/LF_Ledger.conf`
+  (`m_iMaxEntries`, `m_iMaxAgeDays`). `Last(uid, account, n)` lists newest first (what the
+  incident log reads); `RebuildBalance`/`VerifyBank` rebuild the bank from the log and compare.
+  Cash lines are a trail, not a chain: picking up or dropping a note outside `LF_MoneyUtils` is
+  not logged. Cash moved into a bag or an AI is not a player ledger line. `validate` rule
+  `validate-ledger-writes` fails direct `SetBalance`/`PREFAB_CASH` writes. Tests `money/ledger-records`,
+  `money/ledger-persist`, `e2e/pass2-verify-load`.
 
 ### `LF_BankAccount` + `LF_ATMManager` — `Feature/ATM/`
 - ✅ **The canonical bank** (verified 2026-08-30): every payout in the game pays
@@ -1910,3 +1938,11 @@
 - ✅ A trigger. A wheeled vehicle that enters has each wheel inside the strip
   box set to zero health. Ported from EveronLife `EL_SpikeTriggerComponent`
   (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+
+## Service calls (#248)
+
+- ✅ `LF_ServiceCalls` routes a call to any service in `Configs/Comms/LF_ServiceCalls.conf` (police, medic, taxi; receiver is on-duty police or a current job). An unknown service is rejected with an error, nobody on duty logs "no answer", otherwise `LF_OnServiceCall` is published on the event bus. No caller yet; the payphone is #247.
+
+## Payphone (#247)
+
+- ✅ `LF_Payphone` (prefab `Prefabs/Comms/LF_Payphone.et`, the base-game phone booth): one action per preset (report a crime, an emergency, someone suspicious) calls the police. The coin comes from carried cash (`m_iPayphoneCost` in `LF_ServiceCalls.conf`), per-player and per-phone cooldowns apply, and nothing is charged when nobody is on duty. The call is `LF_OnServiceCall` on the bus; `LF_ServiceCallDispatch` turns a police call into a radio line to on-duty officers with the phone's place (`LF_Dispatch.RelayCall`), and the dispatch log shows it. Coin and dial-tone sounds play from the booth. Not done: free text, handset animation (the booth has no handset mesh). Placed in DebugWorld at the village booth.

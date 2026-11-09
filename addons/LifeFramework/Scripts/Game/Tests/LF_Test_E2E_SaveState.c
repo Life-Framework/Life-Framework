@@ -63,6 +63,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// account managers, and an async manual save can complete after those
 		// resets. Seeding here plus the blocking shutdown save on graceful close
 		// captures exactly the 300/1/CIVILIAN contract the loop must reach.
+		// The deposit below is recorded by the money ledger (save version 14) and must survive the restart.
+		LF_Ledger.EnsureSubscribed();
 		LF_ATMManager atmManager = LF_ATMManager.GetInstance();
 		LF_BankAccount bank = atmManager.CreateAccount(ACCOUNT_UID);
 		ctx.NotNull(bank, "e2e bank account created for the save");
@@ -87,6 +89,9 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		sentences.Insert(LF_JailRecord.Create(ACCOUNT_UID, 3600, true));
 		LF_Jail.ApplyAll(sentences);
 		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is serving before the save");
+
+		// An incident rides the "incidents" payload (save version 13); the reload boot queries it.
+		LF_IncidentLog.Append(LF_IncidentConfig.KIND_DEATH, System.GetUnixTime(), ACCOUNT_UID, "e2e-killer", Vector(4321, 0, 1234), 0, "e2e-rifle", true);
 
 		// A carried inventory rides the "carried" payload (save version 6). The character stays
 		// alive in the world through the shutdown save, so the reload boot also sees whether the
@@ -174,6 +179,18 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		if (bank)
 			ctx.Equal(300, bank.GetBalance(), "bank balance 300 after the save load");
 
+		array<ref LF_LedgerEntry> ledgerLines = {};
+		LF_Ledger.Last(ACCOUNT_UID, LF_Ledger.ACCOUNT_BANK, 20, ledgerLines);
+		ctx.True(ledgerLines.Count() >= 1, "the money ledger kept the e2e deposit across the restart");
+		if (ledgerLines.Count() >= 1)
+		{
+			ctx.Equal(300, ledgerLines.Get(0).m_iDelta, "the ledger line is the 300 deposit");
+			ctx.EqualStr("bank-deposit", ledgerLines.Get(0).m_sReason, "the ledger line keeps its reason");
+		}
+
+		if (bank)
+			ctx.True(LF_Ledger.VerifyBank(ACCOUNT_UID, bank.GetBalance()), "the ledger rebuilds the stored bank balance after the restart");
+
 		LF_PlayerAccount cached = LF_PlayerAccountManager.GetInstance().GetFromCache(ACCOUNT_UID);
 		ctx.NotNull(cached, "player account e2e-uid present after the save load");
 		if (cached)
@@ -184,6 +201,9 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is still serving after the save load");
 		ctx.EqualFloat(3600, LF_Jail.GetRemaining(ACCOUNT_UID), 0.01, "e2e sentence resumes with the same remaining time (an offline prisoner serves no time)");
+
+		array<ref LF_IncidentRecord> incidents = LF_IncidentLog.Query(Vector(4321, 0, 1234), 5, 0, -1, LF_IncidentConfig.KIND_DEATH);
+		ctx.True(incidents.Count() >= 1, "e2e incident from boot 1 is queryable by position after the save load");
 
 		LF_StorageSnapshotRecord carried = LF_StorageSnapshot.Get(CARRIED_CHARACTER_ID, LF_StorageSnapshot.SLOT_CARRIED);
 		ctx.NotNull(carried, "e2e carried snapshot present after the save load");

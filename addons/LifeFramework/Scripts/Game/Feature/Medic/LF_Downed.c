@@ -143,7 +143,7 @@ class LF_Downed
 		s_iDownedCount++;
 		string victimUid = PlayerUid(character);
 		LF_Debug.Info(FEATURE, string.Format("player %1 is downed (by %2), health %3", victimUid, downerUid, health.GetHealthScaled()));
-		LF_EventBus.Publish(LF_OnPlayerDowned.Create(victimUid, downerUid));
+		LF_EventBus.Publish(LF_OnPlayerDowned.Create(victimUid, downerUid, character.GetOrigin()));
 		return true;
 	}
 
