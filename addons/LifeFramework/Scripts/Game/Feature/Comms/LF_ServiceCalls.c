@@ -37,6 +37,19 @@ class LF_ServiceCallsConfig
 	[Attribute("", UIWidgets.Object, "Callable services")]
 	ref array<ref LF_ServiceDef> m_aServices;
 
+	static const int DEFAULT_PAYPHONE_COST = 1;
+	static const int DEFAULT_PLAYER_COOLDOWN = 60;
+	static const int DEFAULT_PHONE_COOLDOWN = 30;
+
+	[Attribute("1", UIWidgets.Auto, "Cash a payphone call takes")]
+	int m_iPayphoneCost;
+
+	[Attribute("60", UIWidgets.Auto, "Seconds before the same player may use any payphone again")]
+	int m_iPlayerCooldownSeconds;
+
+	[Attribute("30", UIWidgets.Auto, "Seconds before the same payphone may be used again by anyone")]
+	int m_iPhoneCooldownSeconds;
+
 	protected static ref LF_ServiceCallsConfig s_Config;
 	protected static ref array<ref LF_ServiceDef> s_aDefaults;
 	protected static bool s_bLoadAttempted;
@@ -50,7 +63,51 @@ class LF_ServiceCallsConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
+	static int PayphoneCost()
+	{
+		Load();
+		if (!s_Config)
+			return DEFAULT_PAYPHONE_COST;
+		return s_Config.m_iPayphoneCost;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int PlayerCooldown()
+	{
+		Load();
+		if (!s_Config)
+			return DEFAULT_PLAYER_COOLDOWN;
+		return s_Config.m_iPlayerCooldownSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int PhoneCooldown()
+	{
+		Load();
+		if (!s_Config)
+			return DEFAULT_PHONE_COOLDOWN;
+		return s_Config.m_iPhoneCooldownSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static array<ref LF_ServiceDef> Services()
+	{
+		Load();
+		if (s_Config)
+			return s_Config.m_aServices;
+
+		if (!s_aDefaults)
+		{
+			s_aDefaults = {};
+			s_aDefaults.Insert(LF_ServiceDef.Make("police", "#LF-Service_Police", "duty:police", "radio,board"));
+			s_aDefaults.Insert(LF_ServiceDef.Make("medic", "#LF-Service_Medic", "job:4", "pager"));
+			s_aDefaults.Insert(LF_ServiceDef.Make("taxi", "#LF-Service_Taxi", "job:7", "pager"));
+		}
+		return s_aDefaults;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Load()
 	{
 		if (!s_bLoadAttempted)
 		{
@@ -65,18 +122,6 @@ class LF_ServiceCallsConfig
 				s_Config = null;
 			}
 		}
-
-		if (s_Config)
-			return s_Config.m_aServices;
-
-		if (!s_aDefaults)
-		{
-			s_aDefaults = {};
-			s_aDefaults.Insert(LF_ServiceDef.Make("police", "#LF-Service_Police", "duty:police", "radio,board"));
-			s_aDefaults.Insert(LF_ServiceDef.Make("medic", "#LF-Service_Medic", "job:4", "pager"));
-			s_aDefaults.Insert(LF_ServiceDef.Make("taxi", "#LF-Service_Taxi", "job:7", "pager"));
-		}
-		return s_aDefaults;
 	}
 }
 
@@ -179,15 +224,24 @@ class LF_ServiceCalls
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: who a call to this service would reach right now. Publishes nothing.
+	static LF_ServiceRoute Check(string serviceKey, array<ref LF_ServiceCandidate> players = null)
+	{
+		if (!players)
+			players = Candidates();
+
+		return Route(LF_ServiceCallsConfig.Services(), serviceKey, players);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: route a call and publish it. The caller shows NO_ANSWER_KEY when the result is not answered.
 	//! \return The route; null off the server.
-	static LF_ServiceRoute Place(string callerUid, string serviceKey, string place, string summary, vector position)
+	static LF_ServiceRoute Place(string callerUid, string serviceKey, string place, string summary, vector position, array<ref LF_ServiceCandidate> players = null)
 	{
 		if (!Replication.IsServer())
 			return null;
 
-		array<ref LF_ServiceCandidate> players = Candidates();
-		LF_ServiceRoute route = Route(LF_ServiceCallsConfig.Services(), serviceKey, players);
+		LF_ServiceRoute route = Check(serviceKey, players);
 		if (!route.m_bKnown)
 			return route;
 

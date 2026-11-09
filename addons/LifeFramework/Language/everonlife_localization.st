@@ -5247,6 +5247,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "No answer. Nobody is on duty for that service right now."
      Comment "Shown to a caller when nobody is on duty for the service they called (#248)."
     }
+    CustomStringTableItem "{B4664D355C98920F}" {
+     Id "LF-Dispatch_RadioCall"
+     Target_en_us "All units: %1 at %2. Reported by phone."
+     Comment "Radio dispatch line for a call phoned in by a witness. %1 = what happened, %2 = place. No suspect."
+    }
+    CustomStringTableItem "{B49F143DD59203D0}" {
+     Id "LF-Payphone_Title"
+     Target_en_us "Payphone"
+     Comment "Title of the payphone toast."
+    }
+    CustomStringTableItem "{50F69750A6284C82}" {
+     Id "LF-Payphone_Connected"
+     Target_en_us "The call went through."
+     Comment "Payphone toast: the call reached the service."
+    }
+    CustomStringTableItem "{F75D3CCB7F1BFC4C}" {
+     Id "LF-Payphone_NoCoin"
+     Target_en_us "You need a coin for the payphone."
+     Comment "Payphone: the player carries no cash for the coin."
+    }
+    CustomStringTableItem "{33B2E99217263B93}" {
+     Id "LF-Payphone_Cooldown"
+     Target_en_us "The line is busy. Try again in a moment."
+     Comment "Payphone: the player or the phone is cooling down."
+    }
+    CustomStringTableItem "{EBEE9355D5E41580}" {
+     Id "LF-Payphone_Broken"
+     Target_en_us "The payphone is out of order."
+     Comment "Payphone: the call was refused for a reason the caller cannot fix."
+    }
+    CustomStringTableItem "{680515D680E0D9C0}" {
+     Id "LF-Payphone_ReportCrime"
+     Target_en_us "Report a crime"
+     Comment "Payphone action: what happened is a crime."
+    }
+    CustomStringTableItem "{EE9B52E0D3888DB4}" {
+     Id "LF-Payphone_ReportEmergency"
+     Target_en_us "Report an emergency"
+     Comment "Payphone action: what happened is an emergency."
+    }
+    CustomStringTableItem "{8E0EDAA6E007836E}" {
+     Id "LF-Payphone_ReportSuspicious"
+     Target_en_us "Report someone suspicious"
+     Comment "Payphone action: what happened is suspicious behaviour."
+    }
+    CustomStringTableItem "{D219D04552F904F3}" {
+     Id "LF-Payphone_Summary_Crime"
+     Target_en_us "Crime reported"
+     Comment "Summary the police radio line shows for a crime phoned in."
+    }
+    CustomStringTableItem "{367F9784CB23B15E}" {
+     Id "LF-Payphone_Summary_Emergency"
+     Target_en_us "Emergency reported"
+     Comment "Summary the police radio line shows for an emergency phoned in."
+    }
+    CustomStringTableItem "{C2AA364A6790F1CE}" {
+     Id "LF-Payphone_Summary_Suspicious"
+     Target_en_us "Suspicious person reported"
+     Comment "Summary the police radio line shows for a suspicious person phoned in."
+    }
   }
  }
 }
