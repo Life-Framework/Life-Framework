@@ -1036,6 +1036,7 @@
   incident log stamps `m_sZone` (safe/lawless/normal) on each record and in its log
   line; the stamp is not saved and a loaded record is stamped again from its position.
   #243 (quarry lawless) is one entity: an `LF_ZoneComponent` with rule LAWLESS.
+- ✅ **Lawless quarry** (#243, test `zones/quarry`). `LF_LawlessZone_Quarry` (`Gamemode.layer`, circle 32 m at 178 0 172 over the mining site) is the one lawless area; the plaza zone stays safe and the town normal. Two `lawless_zone` signs (`Sign_Lawless_Entry` at the lane, just outside; `Sign_Lawless_Pit` at the east edge) say so; the catalog row `lawless_zone` carries the rule text. The harness `state` line now ends its zone as `zone=safe|lawless|normal`; `session.mjs quarry-proof` reads it at both signs and the plaza. No fence or gate yet; no save change.
 - ✅ Both civilian spawn points stand on the square (the second moved from
   170 0 199, by the quarry, to 121 0 253); `safezone/blocks` asserts every
   civilian spawn point is inside a zone. The hospital wake (M1-26) is not a

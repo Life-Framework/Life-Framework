@@ -267,3 +267,27 @@ GenericEntity Sign_ConvoyPickup : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign
  coords 463 1 335.3
  angleY 180
 }
+GenericEntity Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "lawless_zone"
+   m_vRimColor 0.65 0.1 0.1
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.65 0.1 0.1
+  }
+ }
+ coords 171.5 0 207
+ angleY 0
+}
+GenericEntity Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "lawless_zone"
+   m_vRimColor 0.65 0.1 0.1
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.65 0.1 0.1
+  }
+ }
+ coords 206 0 172
+ angleY 90
+}
