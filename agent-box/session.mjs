@@ -931,6 +931,48 @@ async function runDownedProof() {
     }
   }
 
+  // #259: a medic revives. Client 1 clocks in at the hospital desk, walks to the downed client 2
+  // and revives them: client 2 is standing with health above zero, keeps what they carried, and the
+  // bleed-out clock is gone. A civilian is not offered the entry (client 1 before clocking in is
+  // refused by the server). Then client 1 clocks out and downs client 2 again for the rest of the proof.
+  const patientName = `Player${parseState(state(2)).player}`;
+  const cashBefore = parseState(state(2)).cash;
+  const civilianTry = on(1, { verb: "use", className: "LF_ReviveAction", entityName: patientName }, 10000);
+  wait(1500);
+  const afterCivilian = parseState(state(2));
+  if (afterCivilian.downed !== "1") fails.push(`a civilian's revive changed the patient: downed=${afterCivilian.downed} (${civilianTry.status} ${civilianTry.detail})`);
+  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+  wait(2500);
+  on(1, { verb: "look" });
+  const medicIn = on(1, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
+  wait(2500);
+  if (!parseState(state(1)).faction?.includes("MEDIC")) fails.push(`client 1 did not clock in as a medic: ${medicIn.status} ${medicIn.detail}`);
+  on(1, { verb: "stand", entityName: patientName });
+  wait(2500);
+  on(1, { verb: "look" });
+  on(1, { verb: "capture", mode: "ui", name: "m2_259_revive_offer_client1" }, 25000);
+  const revive = on(1, { verb: "use", className: "LF_ReviveAction", entityName: patientName }, 10000);
+  wait(3500);
+  const revived = parseState(state(2));
+  on(2, { verb: "capture", mode: "ui", name: "m2_259_revived_client2" }, 25000);
+  on(1, { verb: "capture", mode: "ui", name: "m2_259_revived_client1" }, 25000);
+  if (revive.status !== "ok") fails.push(`revive returned ${revive.status} ${revive.detail}`);
+  if (revived.downed !== "0" || revived.life !== "ALIVE" || revived.bleed !== "-1") fails.push(`after the revive: downed=${revived.downed} life=${revived.life} bleed=${revived.bleed}`);
+  if (revived.cash !== cashBefore) fails.push(`the revived player's cash changed: ${cashBefore} -> ${revived.cash}`);
+  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+  wait(2500);
+  on(1, { verb: "look" });
+  on(1, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
+  wait(2500);
+  on(2, { verb: "stand", entityName: ROB_TARGET });
+  wait(2500);
+  on(1, { verb: "stand", entityName: ROB_TARGET });
+  wait(2500);
+  on(1, { verb: "shoot", playerId: 2 }, 10000);
+  wait(2500);
+  if (parseState(state(2)).downed !== "1") fails.push("client 2 was not downed again after the revive");
+  console.log(`revive   client 2: ${JSON.stringify(revived)} (civilian try: ${civilianTry.detail})`);
+
   // The real death of a downed player (what the bleed-out will call): the death screen, the
   // respawn, and a fresh body that is not downed.
   // #256: the client reads the time left (a replicated, throttled copy); giving up is refused
@@ -990,7 +1032,7 @@ async function runDownedProof() {
   console.log(`peers    client 3 (late joiner): ${peers3 || "skipped"}`);
   console.log(`respawn  client 2: ${JSON.stringify(respawned)}`);
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "downed proof: FAIL" : "downed proof: PASS (downed, not dead, no murder; seen downed by both clients and a late joiner; real death is the murder and respawns)");
+  console.log(fails.length ? "downed proof: FAIL" : "downed proof: PASS (downed, not dead, no murder; seen downed by both clients and a late joiner; a medic revives; real death is the murder and respawns)");
   return fails.length ? 1 : 0;
 }
 

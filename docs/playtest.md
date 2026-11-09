@@ -57,8 +57,8 @@ log that back them stay on the server and invisible.
   connects and no coin is taken.
 - **Downed, not dead.** A lethal hit knocks a player unconscious instead of
   killing them. You lie on the ground, cannot move or act, take no further
-  damage, and others can search you. NPCs still die as before. There is no
-  bleed-out or revive yet.
+  damage, and others can search you. NPCs still die as before. A downed player
+  bleeds out, and an on-duty medic can revive them.
 - **The fence.** A dealer in the net-fenced test annex sells crime tools only to
   proven criminals: a drill after 3 completed crimes, a breaching charge after
   5, a keycard after 8. Rob a till, steal a vehicle, or breach a door to build
@@ -71,6 +71,14 @@ log that back them stay on the server and invisible.
   While you are clocked in, medic calls reach you: the hospital board opens
   for you, you can take a call there, and the pager beeps. Off duty the board
   tells you it is for on-duty staff.
+- **Revive.** Clocked in as a medic, face a downed player within about two metres
+  and use *Revive* (the same list as Introduce / Show ID). They get up with a
+  sliver of health and keep what they carry, and the bleed-out stops. A civilian
+  does not get the entry.
+- **Revive.** Clocked in as a medic, face a downed player within about two metres
+  and use *Revive* (the same list as Introduce / Show ID). They stand up with a
+  sliver of health and keep what they carry; the bleed-out stops. A civilian does
+  not get the entry.
 - **Safe square.** On the spawn square you cannot hurt another player and they
   cannot hurt you. Weapons still fire; NPC, world, and self damage pass.
 - **Hold up.** Two players face each other within 2 m; the one with a weapon in hand sees *Hold up* in the action menu. It raises their hand, beeps at both, and tells the other player. It changes nothing else: it only lands in the incident log (Game Master incident view, kind Hold-up). Demo: `node agent-box/session.mjs holdup-proof` (two clients).
@@ -83,8 +91,7 @@ log that back them stay on the server and invisible.
 - If an arrest leaves you standing where you were instead of in the cell, say so.
 - Some NPCs may appear half-dressed.
 - Sign titles can be hard to read from the road.
-- Going down has no revive, bleed-out, or give-up yet: you stay on the ground,
-  so leave and rejoin to reset. The state does not survive a disconnect.
+- The downed state does not survive a disconnect (leaving while down is death).
 - The fence and crime scene are in the test annex behind the net fence, not on
   the main street; a village placement is still to come.
 

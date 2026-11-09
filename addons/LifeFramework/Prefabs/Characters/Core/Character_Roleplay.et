@@ -73,6 +73,14 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
       Name "#LF-Interact_GiveItem"
      }
     }
+    LF_ReviveAction "{F6F19446ACCE7688}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{F065AB922FA3605C}" {
+      Name "#LF-Revive_Action"
+     }
+    }
     LF_ConfiscateAction "{5D4BEB8233CF0FEC}" {
      ParentContextList {
       "LF_ID"

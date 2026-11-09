@@ -5507,6 +5507,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You can give up in %1 seconds from going down."
      Comment "Toast: give up asked too early."
     }
+    CustomStringTableItem "{B18A9253EC649E50}" {
+     Id "LF-Revive_Action"
+     Target_en_us "Revive"
+     Comment "Player action on a downed player, offered to an on-duty medic."
+    }
+    CustomStringTableItem "{D4A0B004F3AE2A4B}" {
+     Id "LF-Revive_Done"
+     Target_en_us "You brought them back."
+     Comment "Toast to the medic after a revive."
+    }
+    CustomStringTableItem "{53CD088BE893DA58}" {
+     Id "LF-Revive_Revived"
+     Target_en_us "A medic brought you back. You are weak: take it easy."
+     Comment "Toast to the revived player."
+    }
+    CustomStringTableItem "{4AC63DA91F04B8C1}" {
+     Id "LF-Revive_NotMedic"
+     Target_en_us "Only a medic on duty can revive."
+     Comment "Revive refusal: the user is not clocked in as a medic."
+    }
+    CustomStringTableItem "{9DE20E9DD947A51A}" {
+     Id "LF-Revive_TooFar"
+     Target_en_us "Too far away to revive them."
+     Comment "Revive refusal: out of range."
+    }
+    CustomStringTableItem "{943F121585F92A15}" {
+     Id "LF-Revive_NotDowned"
+     Target_en_us "They are not down."
+     Comment "Revive refusal: the target is not downed."
+    }
     CustomStringTableItem "{3C71B0A2D4E5F612}" {
      Id "LF-Medic_Downed"
      Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."

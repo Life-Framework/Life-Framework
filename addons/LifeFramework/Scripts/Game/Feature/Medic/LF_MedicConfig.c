@@ -43,6 +43,9 @@ class LF_MedicConfig
 	[Attribute("300", UIWidgets.Auto, "First aid never takes a downed player above this many seconds left", params: "10 3600")]
 	float m_fFirstAidCapSeconds = 300;
 
+	[Attribute("2.5", UIWidgets.Auto, "Metres within which an on-duty medic can revive a downed player", params: "0.5 10")]
+	float m_fReviveRange = 2.5;
+
 	protected static ref LF_MedicConfig s_Config;
 	protected static bool s_bLoadAttempted;
 

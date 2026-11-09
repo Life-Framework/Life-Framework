@@ -73,6 +73,25 @@ class LF_OnPlayerDowned : LF_Event
 	}
 }
 
+//! A medic on duty brought a downed player back (LF_Revive, #259). The downed state is gone and the
+//! bleed-out clock stopped by the time this is published.
+class LF_OnPlayerRevived : LF_Event
+{
+	string m_sPlayerUid;
+	string m_sMedicUid;
+	//! Where the player was revived.
+	vector m_vPosition;
+
+	static LF_OnPlayerRevived Create(string playerUid, string medicUid, vector position)
+	{
+		LF_OnPlayerRevived e = new LF_OnPlayerRevived();
+		e.m_sPlayerUid = playerUid;
+		e.m_sMedicUid = medicUid;
+		e.m_vPosition = position;
+		return e;
+	}
+}
+
 //! First aid bought a downed player more time (LF_FirstAid, #257). m_sHelperUid is empty when
 //! the helper is not a player.
 class LF_OnFirstAid : LF_Event

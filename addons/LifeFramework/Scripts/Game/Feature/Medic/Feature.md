@@ -47,14 +47,19 @@ player, duty pay at clock-out. On duty the account's faction is MEDIC and `LF_Me
 `LF_ServiceCalls.JobFor` make routing see the medic job (board, take, pager). The kit lives in the
 game mode's MEDIC `LF_FactionLoadout` and includes `LF_Pager`.
 
+## V1.4 - #259, revive
+
+`LF_ReviveAction` on the player character (context LF_ID) is offered to an on-duty medic facing a downed player
+within `m_fReviveRange`; `LF_Revive.Perform` re-checks on the server and calls `LF_Downed.Clear` (flag,
+bleed-out clock, unconsciousness), then publishes `LF_OnPlayerRevived`. Medic only; item cost and a treatment
+animation are not in yet.
+
 ## Next
 
 - #256 bleed-out timer (server-owned), give-up, screen and sound effects on the
   downed client, disconnect while downed. It calls `Finish`; the murder lands on
   `SCR_ChimeraCharacter.LF_GetDownerUid` because vanilla keeps the knockout's
   instigator as the killer.
-- #259 revive by an on-duty medic. It calls `Clear`; the character keeps the
-  sliver of health.
 
 ## Constraints
 
