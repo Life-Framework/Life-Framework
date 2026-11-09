@@ -51,18 +51,18 @@ modded class SCR_InventoryStorageManagerComponent
 		int totalValue = LF_ShopRules.StackTradeTotal(unitValue, outputUnits);
 
 		// Pay before deleting: a sale that cannot pay out never consumes the item.
-		int paid = LF_MoneyUtils.AddCash(seller, totalValue);
+		int paid = LF_MoneyUtils.AddCash(seller, totalValue, "trader-sell");
 		if (paid != totalValue)
 		{
 			if (paid > 0)
-				LF_MoneyUtils.RemoveCash(seller, paid);
+				LF_MoneyUtils.RemoveCash(seller, paid, "trader-sell-rollback");
 			FailSell(cb);
 			return;
 		}
 
 		if (!this.TryDeleteItem(pItem))
 		{
-			LF_MoneyUtils.RemoveCash(seller, paid);
+			LF_MoneyUtils.RemoveCash(seller, paid, "trader-sell-rollback");
 			FailSell(cb);
 			return;
 		}

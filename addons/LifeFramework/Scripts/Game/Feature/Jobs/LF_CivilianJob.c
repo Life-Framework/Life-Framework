@@ -581,7 +581,7 @@ class LF_CivilianJob
 		if (!user || amount <= 0)
 			return;
 
-		int given = LF_MoneyUtils.GiveCash(user, amount);
+		int given = LF_MoneyUtils.GiveCash(user, amount, "job-pay");
 		if (given != amount)
 			LF_Debug.Warn("Jobs", string.Format("run payout short: paid %1 of %2 (player %3)", given, amount, user));
 		else

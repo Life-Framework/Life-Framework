@@ -167,7 +167,7 @@ class LF_UnemploymentBenefit
 			return 0;
 		}
 
-		int given = LF_MoneyUtils.GiveCash(user, owed);
+		int given = LF_MoneyUtils.GiveCash(user, owed, "benefit");
 		if (given <= 0)
 		{
 			ForgetCollection(uid);
