@@ -11,6 +11,7 @@ class LF_IncidentConfig
 	static const string KIND_CASH = "cash";
 	static const string KIND_DOWNED = "downed";
 	static const string KIND_HOLDUP = "holdup";
+	static const string KIND_AIM = "aim";
 	static const string KIND_ADMIN = "admin";
 	static const string KINDS_ALL = "all";
 
@@ -23,7 +24,7 @@ class LF_IncidentConfig
 	protected static ref LF_IncidentConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
-	[Attribute("all", UIWidgets.Auto, "Event kinds recorded: 'all' or a comma list of death, damage, cash, downed, holdup, admin")]
+	[Attribute("all", UIWidgets.Auto, "Event kinds recorded: 'all' or a comma list of death, damage, cash, downed, holdup, aim, admin")]
 	string m_sKinds;
 
 	[Attribute("2000", UIWidgets.Auto, "Most records kept; the oldest go first")]
@@ -46,6 +47,21 @@ class LF_IncidentConfig
 
 	[Attribute("30", UIWidgets.Auto, "Seconds a player waits between two hold-ups")]
 	int m_iHoldUpCooldownSeconds;
+
+	[Attribute("3", UIWidgets.Auto, "Seconds a weapon must stay on the same player before one aim record is written")]
+	float m_fAimWindowSeconds;
+
+	[Attribute("15", UIWidgets.Auto, "Metres an aimed weapon reaches")]
+	float m_fAimRange;
+
+	[Attribute("6", UIWidgets.Auto, "Degrees off the aim line that still count as aimed at")]
+	float m_fAimConeDegrees;
+
+	[Attribute("1", UIWidgets.Auto, "Seconds between two aim checks on the server")]
+	float m_fAimCheckSeconds;
+
+	[Attribute("1", UIWidgets.CheckBox, "1 = aim alone counts; 0 = the aim line must also reach the player unobstructed")]
+	bool m_bAimAloneCounts;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -167,5 +183,55 @@ class LF_IncidentConfig
 			return DEFAULT_REPORT_COOLDOWN_SECONDS;
 
 		return config.m_iReportCooldownSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float AimWindowSeconds()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_fAimWindowSeconds <= 0)
+			return 3;
+
+		return config.m_fAimWindowSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float AimRange()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_fAimRange <= 0)
+			return 15;
+
+		return config.m_fAimRange;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float AimConeDegrees()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_fAimConeDegrees <= 0)
+			return 6;
+
+		return config.m_fAimConeDegrees;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float AimCheckSeconds()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_fAimCheckSeconds < 0.25)
+			return 1;
+
+		return config.m_fAimCheckSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool AimAloneCounts()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config)
+			return true;
+
+		return config.m_bAimAloneCounts;
 	}
 }

@@ -5652,6 +5652,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Admin action"
      Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
     }
+    CustomStringTableItem "{3C5A9E71D04B82F6}" {
+     Id "LF-IncidentGm_Kind_aim"
+     Target_en_us "Weapon aimed"
+     Comment "Incident kind: one player kept a raised weapon on another."
+    }
   }
  }
 }

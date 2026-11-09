@@ -203,6 +203,8 @@ class LF_IncidentGmView
 			kindKey = "#LF-IncidentGm_Kind_holdup";
 		else if (kind == "admin")
 			kindKey = "#LF-IncidentGm_Kind_admin";
+		else if (kind == "aim")
+			kindKey = "#LF-IncidentGm_Kind_aim";
 
 		string kindText = WidgetManager.Translate(kindKey);
 		string text;
