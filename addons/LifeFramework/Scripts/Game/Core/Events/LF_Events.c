@@ -73,6 +73,30 @@ class LF_OnPlayerDowned : LF_Event
 	}
 }
 
+//! First aid bought a downed player more time (LF_FirstAid, #257). m_sHelperUid is empty when
+//! the helper is not a player.
+class LF_OnFirstAid : LF_Event
+{
+	string m_sPlayerUid;
+	string m_sHelperUid;
+	//! "bandage", "tourniquet" or "saline".
+	string m_sKind;
+	//! Bleed-out seconds actually added (the cap may have trimmed it).
+	float m_fSeconds;
+	vector m_vPosition;
+
+	static LF_OnFirstAid Create(string playerUid, string helperUid, string kind, float seconds, vector position)
+	{
+		LF_OnFirstAid e = new LF_OnFirstAid();
+		e.m_sPlayerUid = playerUid;
+		e.m_sHelperUid = helperUid;
+		e.m_sKind = kind;
+		e.m_fSeconds = seconds;
+		e.m_vPosition = position;
+		return e;
+	}
+}
+
 //! A player character died. m_sKillerUid is empty when no player killed them.
 class LF_OnPlayerKilled : LF_Event
 {
