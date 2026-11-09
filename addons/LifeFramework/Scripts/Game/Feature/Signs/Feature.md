@@ -67,7 +67,7 @@ Each type is a vanilla sign body whose face material is `LF_SignFace.emat` (`$re
 | `LF_Sign_PlateSmall` | `SignWall_01_90x45` | 1024 x 512 | spare; reads only up close |
 | `LF_Sign_Fascia` | `SignCommercial_01` (4.3 m) | 1024 x 213 | bank, general store |
 | `LF_Sign_Posts` | `SignLarge_01` on two posts | 1024 x 700 | town map, market, vehicle lot |
-| `LF_Sign_PolePlate` | `SignGeneric_01` on `Sign_Pole_A` (`m_bFaceOnChild`) | 1024 x 1024 | safe zones, impound, fuel, farm |
+| `LF_Sign_PolePlate` | `SignGeneric_01` on `Sign_Pole_A` (`m_bFaceOnChild`) | 1024 x 733 (the plate shows the top 733 rows; at 1024 the text sat low and the bottom rim was cut) | safe zones, impound, fuel, farm |
 | `LF_Sign_Board` | cork `NoticeBoardCork_01` | turned A4 sheet | notices: wanted board (in the station porch), convoy |
 | `LF_Sign_Pub` | `SignPub_01` A-frame | none (painted body) | general store and market pavement boards |
 | `LF_Sign_Chalkboard` | `ChalkBoard_01` | none | contraband barn (hideout), back room |
