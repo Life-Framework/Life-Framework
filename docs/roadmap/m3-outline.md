@@ -3,8 +3,9 @@
 M3 turns the mod into a product other communities can run. A server owner
 installs from the Workshop, configures it from documented files or a web
 generator, adds a job or a shop without writing script, and hosts on their own
-box. The maintainer set the shape on 2026-11-08 over four interview rounds.
-This file is an outline. Workstreams 2 to 7 are broken into sub-issues on
+box. Both addons are published on the Workshop. The maintainer set the shape
+on 2026-11-08 over four interview rounds.
+This file is an outline. Workstreams 2 to 8 are broken into sub-issues on
 GitHub, listed under each section (workstream 1, #223, is planned separately);
 they get full scope cards after M2 closes.
 Read it with [direction](../direction.md) and [decisions](../decisions.md).
@@ -213,15 +214,44 @@ and uses the default. It runs in `wt gate` and before every release.
 3. #304 config-check reports which migrations would run
 
 
+## 8. Workshop release
+
+The core and the pack ship as two Workshop items; the pack depends on the core
+item. Releases are repeatable, not hand-built.
+
+- Fix the item names and version scheme before anything is uploaded; Workshop
+  IDs are hard to change once public.
+- `validate-release-ready` checks both addons (metadata, preview image,
+  dependency, no generated files, APL notice) in CI.
+- `toolscli release <version>` gates, stamps versions in both `.gproj`
+  files, writes notes, and tags.
+- The maintainer does the first upload (core, then pack); an agent prepares the
+  checklist.
+- Proof: a clean dedicated server with no Workbench boots from the two Workshop
+  items alone.
+- `docs/release-process.md` covers updates, compatibility, and rollback.
+
+**Sub-issues** (epic #366, in order):
+
+1. #367 Fix Workshop item names and version scheme
+2. #368 validate-release-ready checks both addons for publishing
+3. #369 toolscli release stamps versions, gates, and tags
+4. #370 First Workshop upload of core and pack (maintainer)
+5. #371 A clean dedicated server boots from the Workshop items alone
+6. #372 Release process doc for updates and rollback
+
+
 ## Order
 
 1 (two addons) and 2 (config layer) go first and in that order, because the
 schema has to know which defaults live in which addon. Workstreams 3 to 7 follow
-in parallel once the schema exists.
+in parallel once the schema exists. Workstream 8 (Workshop release) starts with
+the naming decision, and the upload waits for the pack move, the harness, and the
+install guide.
 
 ## Open questions
 
 - Which DebugWorld content stays in the core as neutral test fixtures.
 - Whether a pack can add its own config sections (a modern pack's phone shop)
   or only fill the seven.
-- The Workshop item names and the core's version numbering.
+- The Workshop item names and the core's version numbering (#367).
