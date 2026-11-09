@@ -276,6 +276,7 @@
 - ⚠️ `Equals` uses exact float `==` (no epsilon).
 
 ### Downed state — `Feature/Medic/` (M2 #255, 2026-11-09)
+- ✅ **First aid slows the bleed-out (#257).** `LF_FirstAid`: the vanilla bandage, tourniquet and saline bag (`SCR_ConsumableBandage/Tourniquet/SalineBag.ApplyEffect`, so the vanilla animation and healing are unchanged) add `m_fBandageSeconds` (30), `m_fTourniquetSeconds` (45), `m_fSalineSeconds` (60) to a downed player's clock on the server, never above `m_fFirstAidCapSeconds` (300); morphine adds nothing. `m_bFirstAidAnyone` (flagship on; off = only a player whose job is medic). The same item is counted once. Publishes `LF_OnFirstAid`. Tests `medic/first-aid`, `medic/first-aid-rules`. ⚠️ Not driven in a session: the vanilla bandage may refuse a target with no bleeding wound (manual check in the PR).
 - ✅ **Bleed-out timer and give-up (#256).** `LF_BleedOut`: a downed player has `m_fBleedOutSeconds` (180) left on a server-owned clock; one shared 1 s tick counts every downed character down and at zero calls `LF_Downed.Finish` (the real death), attributing it to whoever downed them while they are online. The client reads the time left through an RplProp whole-second copy moved only when it drifts 5 s (no per-frame `BumpMe`). Give-up: hold `LF_GiveUp` (X / pad Y) after `m_fGiveUpDelaySeconds` (30); the request is an RPC on the player controller and `LF_BleedOut.GiveUp` refuses unless the character is downed and the delay has passed. Disconnecting while downed is death (`m_bDisconnectWhileDownedKills`). Tests `medic/bleed-out`, `medic/bleed-out-rules`; `session.mjs downed-proof` covers give-up and a full bleed-out. ⚠️ The dimming screen and heartbeat are vanilla unconsciousness only; no custom effect yet.
 - ✅ **Lethal damage downs a player instead of killing them** (config `LF_Medic.conf`
   `m_bDownedEnabled`, flagship on; tests `medic/downed`, `medic/downed-rules`).
@@ -1041,6 +1042,7 @@
   incident log stamps `m_sZone` (safe/lawless/normal) on each record and in its log
   line; the stamp is not saved and a loaded record is stamped again from its position.
   #243 (quarry lawless) is one entity: an `LF_ZoneComponent` with rule LAWLESS.
+- ✅ **Lawless quarry** (#243, test `zones/quarry`). `LF_LawlessZone_Quarry` (`Gamemode.layer`, circle 32 m at 178 0 172 over the mining site) is the one lawless area; the plaza zone stays safe and the town normal. Two `lawless_zone` signs (`Sign_Lawless_Entry` at the lane, just outside; `Sign_Lawless_Pit` at the east edge) say so; the catalog row `lawless_zone` carries the rule text. The harness `state` line now ends its zone as `zone=safe|lawless|normal`; `session.mjs quarry-proof` reads it at both signs and the plaza. No fence or gate yet; no save change.
 - ✅ Both civilian spawn points stand on the square (the second moved from
   170 0 199, by the quarry, to 121 0 253); `safezone/blocks` asserts every
   civilian spawn point is inside a zone. The hospital wake (M1-26) is not a

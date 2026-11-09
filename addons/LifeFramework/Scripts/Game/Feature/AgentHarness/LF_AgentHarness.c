@@ -1195,6 +1195,7 @@ class LF_AgentHarness
 		int downed = 0;
 		if (LF_Downed.IsDowned(character))
 			downed = 1;
+		line += " zone=" + LF_Zones.RuleName(LF_Zones.RuleAt(origin));
 		line += string.Format(" downed=%1 life=%2 bleed=%3", downed, LifeStateToken(character), BleedToken(character));
 		return line + string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
 	}

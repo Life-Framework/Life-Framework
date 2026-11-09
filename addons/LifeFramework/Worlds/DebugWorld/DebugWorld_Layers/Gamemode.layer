@@ -29,3 +29,12 @@ GenericEntity LF_SafeZone_Square {
  }
  coords 115 0 250
 }
+GenericEntity LF_LawlessZone_Quarry {
+ components {
+  LF_ZoneComponent "{CB40CBA4BF483E6B}" {
+   m_eRule 2
+   m_fRadius 32
+  }
+ }
+ coords 178 0 172
+}
