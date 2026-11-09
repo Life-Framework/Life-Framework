@@ -115,6 +115,20 @@ author's choice for the source. What it means for code: read the `LICENSE`
 file on the commit we copy from (a badge or README line does not count), then
 follow the copy rules in `docs/ecosystem.md` section 5.
 
+**2026-11-09 — Two Workshop items, two brands.** The core is
+"Life Framework (Core)", addon ID `LifeFramework`: clean, modern, neutral, aimed
+at server owners and pack authors. The flagship pack is
+"Life Framework: Everon 1989", addon ID `LF_Everon1989`: period-set, with its
+own narrative, art direction, and Workshop page, aimed at players. The pack
+depends on the core, so a player who subscribes to the pack gets both. The core
+page opens with a pointer to the pack for players; the pack page names the
+core. Versions are semver per item; the pack states the core range it needs; a
+schema or save-format bump is a major version. Why: the core must stay usable
+for a modern or fictional pack, and the flagship needs a personality that a
+neutral engine page cannot carry. What it means for code: no period branding,
+copy, or art in the core (the existing core/pack red line); pack-only strings
+and art live in the pack.
+
 ## Gameplay
 
 **2026-11-07 — In-world first.** Systems live in the environment, not behind a
