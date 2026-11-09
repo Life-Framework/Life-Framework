@@ -17,7 +17,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{1BF8C5BE3DEEC82C}Assets/Items/Identity/Belongings_Personal/Papers_Personal.xob"
+   Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
   }
   ActionsManagerComponent "{508AB5952B584B2E}" {
    additionalActions {

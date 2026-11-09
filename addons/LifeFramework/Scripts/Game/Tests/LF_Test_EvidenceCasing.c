@@ -6,7 +6,7 @@
 //! time on the bag and takes the piece off the ground.
 class LF_Test_EvidenceCasing : LF_Test
 {
-	protected static const vector SCENE = "100 0 100";
+	protected static const vector SCENE = "1000 0 1000";
 	protected static const int T0 = 1000000;
 
 	override string GetName()
@@ -88,5 +88,7 @@ class LF_Test_EvidenceCasing : LF_Test
 		ctx.Equal(0, LF_Evidence.EvidenceCount(), "a bagged piece is no longer scene evidence");
 		ctx.True(LF_Evidence.Bag(casing, null, T0) == null, "a piece cannot be bagged twice");
 		SCR_EntityHelper.DeleteEntityAndChildren(bag);
+		if (casing)
+			SCR_EntityHelper.DeleteEntityAndChildren(casing);
 	}
 }
