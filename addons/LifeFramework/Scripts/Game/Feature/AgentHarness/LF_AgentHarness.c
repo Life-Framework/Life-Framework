@@ -124,6 +124,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "giveup")
 			return true;
+		if (cmd.Verb == "radio")
+			return true;
 		if (cmd.Verb == "peers")
 			return true;
 		if (cmd.Verb == "shoot")
@@ -865,6 +867,11 @@ class LF_AgentHarness
 			DoGiveUp(cmd);
 			return;
 		}
+		if (cmd.Verb == "radio")
+		{
+			DoRadio(cmd);
+			return;
+		}
 		if (cmd.Verb == "peers")
 		{
 			DoPeers(cmd);
@@ -1255,6 +1262,34 @@ class LF_AgentHarness
 		if (token.IsEmpty())
 			return "none";
 		return token;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `radio`: the radios THIS client's own character carries, as this client reads them:
+	//! `radios=N f=<kHz of the first transceiver>,...`. Proves the duty tuning replicated.
+	protected static void DoRadio(LF_AgentCommand cmd)
+	{
+		PlayerController controller = GetGame().GetPlayerController();
+		IEntity body;
+		if (controller)
+			body = controller.GetControlledEntity();
+
+		array<BaseRadioComponent> radios = {};
+		LF_ServiceRadio.FindCarried(body, radios);
+		string freqs;
+		foreach (BaseRadioComponent radio : radios)
+		{
+			if (!freqs.IsEmpty())
+				freqs += ",";
+
+			BaseTransceiver transceiver = radio.GetTransceiver(0);
+			if (transceiver)
+				freqs += transceiver.GetFrequency().ToString();
+			else
+				freqs += "none";
+		}
+
+		WriteResult(cmd.Id, "ok", string.Format("radios=%1 f=%2", radios.Count(), freqs));
 	}
 
 	//------------------------------------------------------------------------------------------------

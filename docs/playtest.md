@@ -38,6 +38,9 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
    second player robs the fuel till: the officer gets the radio dispatch, reads
    the wanted board, arrests the robber, and the robber goes to the cell. Clock
    out at the same desk to swap back.
+   The duty kit includes a radio tuned to the police frequency (41000 kHz; the
+   medic kit is on 42000). Two officers hear each other on it; a civilian
+   does not.
 7. **Organization and hideout.** Found an organization at the registry desk,
    deposit cash, and buy the processing upgrade. Take the alley yard lease, open
    the hideout door, and store something in the stash. Run contraband from the
