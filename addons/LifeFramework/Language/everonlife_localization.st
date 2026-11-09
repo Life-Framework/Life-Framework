@@ -4297,11 +4297,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Only officers on the police roster can clock in. Ask an admin to join the police."
      Comment "Duty desk refusal: the player is not whitelisted for police."
     }
-    CustomStringTableItem "{10850C37306E78EB}" {
-     Id "LF-Duty_WrongDesk"
-     Target_en_us "You are on duty for another service. Clock out at your own desk first."
-     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
-    }
     CustomStringTableItem "{B20154B0D085697C}" {
      Id "LF-Duty_AlreadyOn"
      Target_en_us "You are already on duty."
@@ -5586,6 +5581,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-IncidentGm_RowFlagged"
      Target_en_us "REPORTED #%1 %2, %3 min ago: %4 / %5 (type !handled %1 when done)"
      Comment "Game Master incident row for a reported incident: number, kind, minutes ago, subject, other party."
+    }
+    CustomStringTableItem "{10850C37306E78EB}" {
+     Id "LF-Duty_WrongDesk"
+     Target_en_us "You are on duty for another service. Clock out at your own desk first."
+     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
+    }
+    CustomStringTableItem "{71DE75EB8FB361E9}" {
+     Id "LF-Sign_LawlessZone_Title"
+     Target_en_us "Lawless Area"
+     Comment "Title of the quarry lawless-area sign. Printed on the board and shown as Read: Lawless Area."
+    }
+    CustomStringTableItem "{F8D445EFFEC347EC}" {
+     Id "LF-Sign_LawlessZone_What"
+     Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
+     Comment "Lawless area sign card, What section."
+    }
+    CustomStringTableItem "{9651118BDCD77FA5}" {
+     Id "LF-Sign_LawlessZone_How"
+     Target_en_us "Stay out if you came for a quiet day. Carry only what you can afford to lose. Bring friends."
+     Comment "Lawless area sign card, How section."
+    }
+    CustomStringTableItem "{B81DC8476856440E}" {
+     Id "LF-Sign_LawlessZone_Rules"
+     Target_en_us "Outside the quarry fence line the town keeps its rules: killing anyone is murder and the police are told. Inside, the police still answer a call at their own risk. Marked by order of the Everon Constabulary."
+     Comment "Lawless area sign card, Rules section."
+    }
+    CustomStringTableItem "{3524F59375508DB4}" {
+     Id "LF-Sign_LawlessZone_Next"
+     Target_en_us "The town square, south and west of here, is a safe zone."
+     Comment "Lawless area sign card, Next section."
     }
   }
  }

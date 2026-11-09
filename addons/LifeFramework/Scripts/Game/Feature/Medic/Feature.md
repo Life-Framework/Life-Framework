@@ -34,7 +34,12 @@ body, later a revive action); the downed player's own state is world-visible
 (hold `LF_GiveUp`, server validates), disconnect while downed is death. Expiry and give-up
 call `Finish` with the downer as instigator. Screen/sound effects are vanilla unconsciousness.
 
-## V1.2 - #258, the medic job
+## V1.2 - #257, first aid
+
+`LF_FirstAid` hooks the vanilla bandage, tourniquet and saline bag `ApplyEffect`; on a downed
+patient it adds config seconds (capped) to the bleed-out clock and publishes `LF_OnFirstAid`.
+
+## V1.3 - #258, the medic job
 
 The hospital duty desk (`Prefabs/Medic/LF_MedicDutyDesk.et`, `LF_DutyAction` with `m_eRole MEDIC`) is the
 police desk's twin: same swap through `LF_DutyLocker`, own slot `medic_duty`, open to every registered

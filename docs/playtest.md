@@ -73,6 +73,7 @@ log that back them stay on the server and invisible.
   tells you it is for on-duty staff.
 - **Safe square.** On the spawn square you cannot hurt another player and they
   cannot hurt you. Weapons still fire; NPC, world, and self damage pass.
+- **Lawless quarry.** The quarry south of the dirt lane (about 100 m north of the square) is the one marked lawless area. Two red *Lawless Area* signs stand at the lane and at the east edge; read one for the rules. For now the zone only labels incidents (`lawless` in the incident log) and keeps wanted on; there is no fence or gate yet. Demo: `node agent-box/session.mjs quarry-proof`.
 
 ### Known rough edges
 
@@ -95,7 +96,7 @@ Do not report these as broken. File them under "build next" if you want them.
 - Revive, a bleed-out timer, or giving up while downed
 - A medic job or an ambulance
 - Calling a medic or a taxi from the payphone
-- A lawless area or quarry rules
+- Quarry fence, gate, or lawless-only rules (the zone and its signs are in)
 - A police mission board
 - World events
 - New guns, cars, or aircraft
