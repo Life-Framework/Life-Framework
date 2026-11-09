@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{4C81F2A6D9E37B05}Prefabs/Investigation/LF_EvidenceMarker.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
