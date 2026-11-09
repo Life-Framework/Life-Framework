@@ -162,7 +162,7 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 
 		int payerId = LF_PlayerInteraction.PlayerIdOf(payer);
 		LF_FineTicketRecord record;
-		LF_ETicketPay result = LF_FineTickets.Pay(uid, new LF_EntityCashWallet(payer), LF_HospitalBill.InGameDate(), record);
+		LF_ETicketPay result = LF_FineTickets.Pay(uid, new LF_EntityCashWallet(payer, "ticket-fine"), LF_HospitalBill.InGameDate(), record);
 		if (result == LF_ETicketPay.NO_TICKET)
 		{
 			LF_Debug.Info(LF_FineTickets.FEATURE, "desk payment refused: " + uid + " has no unpaid ticket");

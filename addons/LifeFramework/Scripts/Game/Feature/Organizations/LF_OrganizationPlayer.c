@@ -81,11 +81,11 @@ class LF_OrganizationPlayer
 		}
 
 		int fee = LF_OrgRules.FOUNDING_FEE;
-		int removed = LF_MoneyUtils.RemoveCash(user, fee);
+		int removed = LF_MoneyUtils.RemoveCash(user, fee, "org-fee");
 		if (removed != fee)
 		{
 			if (removed > 0)
-				LF_MoneyUtils.AddCash(user, removed);
+				LF_MoneyUtils.AddCash(user, removed, "org-fee-rollback");
 
 			LF_Debug.Info("Organizations", string.Format("found refused: fee %1, carried %2", fee, removed));
 			return "#LF-Org_NoFee";
@@ -93,7 +93,7 @@ class LF_OrganizationPlayer
 
 		if (!LF_OrganizationManager.Create(characterId, name))
 		{
-			LF_MoneyUtils.AddCash(user, fee);
+			LF_MoneyUtils.AddCash(user, fee, "org-fee-rollback");
 			LF_Debug.Error("Organizations", "found failed after the fee; fee returned");
 			return "#LF-Org_FoundFailed";
 		}
@@ -160,11 +160,11 @@ class LF_OrganizationPlayer
 			return false;
 		}
 
-		int removed = LF_MoneyUtils.RemoveCash(user, amount);
+		int removed = LF_MoneyUtils.RemoveCash(user, amount, "org-deposit");
 		if (removed != amount)
 		{
 			if (removed > 0)
-				LF_MoneyUtils.AddCash(user, removed);
+				LF_MoneyUtils.AddCash(user, removed, "org-deposit-rollback");
 
 			LF_Debug.Error("Organizations", string.Format("deposit cash refused: removed %1 of %2", removed, amount));
 			return false;
@@ -173,7 +173,7 @@ class LF_OrganizationPlayer
 		if (LF_OrganizationManager.Deposit(org.GetId(), characterId, amount))
 			return true;
 
-		LF_MoneyUtils.AddCash(user, amount);
+		LF_MoneyUtils.AddCash(user, amount, "org-deposit-rollback");
 		LF_Debug.Error("Organizations", "deposit cash restored: fund credit failed");
 		return false;
 	}
@@ -201,13 +201,13 @@ class LF_OrganizationPlayer
 		if (!LF_OrganizationManager.Withdraw(org.GetId(), characterId, amount))
 			return false;
 
-		int given = LF_MoneyUtils.AddCash(user, amount);
+		int given = LF_MoneyUtils.AddCash(user, amount, "org-withdraw");
 		if (given == amount)
 			return true;
 
 		LF_OrganizationManager.Deposit(org.GetId(), characterId, amount);
 		if (given > 0)
-			LF_MoneyUtils.RemoveCash(user, given);
+			LF_MoneyUtils.RemoveCash(user, given, "org-withdraw-rollback");
 
 		LF_Debug.Error("Organizations", string.Format("withdraw cash restored: paid %1 of %2", given, amount));
 		return false;

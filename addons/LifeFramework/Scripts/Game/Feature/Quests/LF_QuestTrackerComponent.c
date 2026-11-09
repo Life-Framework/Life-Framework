@@ -421,7 +421,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 			return;
 
 		if (def.m_iRewardMoney > 0)
-			LF_MoneyUtils.GiveCash(owner, def.m_iRewardMoney);
+			LF_MoneyUtils.GiveCash(owner, def.m_iRewardMoney, "quest-reward");
 
 		if (def.m_bRewardIdCard)
 			LF_QuestRewards.HandIdCard(owner, LF_QuestRewards.AccountOf(owner));

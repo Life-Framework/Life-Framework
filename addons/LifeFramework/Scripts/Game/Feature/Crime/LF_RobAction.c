@@ -289,11 +289,11 @@ class LF_RobAction : ScriptedUserAction
 		if (!user)
 			return payout;
 
-		int paid = LF_MoneyUtils.AddCash(user, payout);
+		int paid = LF_MoneyUtils.AddCash(user, payout, "robbery");
 		if (paid != payout)
 		{
 			if (paid > 0)
-				LF_MoneyUtils.RemoveCash(user, paid);
+				LF_MoneyUtils.RemoveCash(user, paid, "robbery-rollback");
 
 			LF_Debug.Error("Crime", string.Format("robbery payout short: paid %1 of %2", paid, payout));
 			return 0;

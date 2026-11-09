@@ -63,6 +63,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// account managers, and an async manual save can complete after those
 		// resets. Seeding here plus the blocking shutdown save on graceful close
 		// captures exactly the 300/1/CIVILIAN contract the loop must reach.
+		// The deposit below is recorded by the money ledger (save version 14) and must survive the restart.
+		LF_Ledger.EnsureSubscribed();
 		LF_ATMManager atmManager = LF_ATMManager.GetInstance();
 		LF_BankAccount bank = atmManager.CreateAccount(ACCOUNT_UID);
 		ctx.NotNull(bank, "e2e bank account created for the save");
@@ -176,6 +178,18 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.NotNull(bank, "bank account e2e-uid present after the save load");
 		if (bank)
 			ctx.Equal(300, bank.GetBalance(), "bank balance 300 after the save load");
+
+		array<ref LF_LedgerEntry> ledgerLines = {};
+		LF_Ledger.Last(ACCOUNT_UID, LF_Ledger.ACCOUNT_BANK, 20, ledgerLines);
+		ctx.True(ledgerLines.Count() >= 1, "the money ledger kept the e2e deposit across the restart");
+		if (ledgerLines.Count() >= 1)
+		{
+			ctx.Equal(300, ledgerLines.Get(0).m_iDelta, "the ledger line is the 300 deposit");
+			ctx.EqualStr("bank-deposit", ledgerLines.Get(0).m_sReason, "the ledger line keeps its reason");
+		}
+
+		if (bank)
+			ctx.True(LF_Ledger.VerifyBank(ACCOUNT_UID, bank.GetBalance()), "the ledger rebuilds the stored bank balance after the restart");
 
 		LF_PlayerAccount cached = LF_PlayerAccountManager.GetInstance().GetFromCache(ACCOUNT_UID);
 		ctx.NotNull(cached, "player account e2e-uid present after the save load");

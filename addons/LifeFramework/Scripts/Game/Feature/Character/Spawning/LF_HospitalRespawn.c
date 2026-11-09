@@ -79,7 +79,7 @@ class LF_HospitalRespawn
 		if (!account || amount <= 0)
 			return 0;
 
-		return account.Charge(amount, debtAllowed);
+		return account.Charge(amount, debtAllowed, "hospital-bill");
 	}
 
 	//------------------------------------------------------------------------------------------------

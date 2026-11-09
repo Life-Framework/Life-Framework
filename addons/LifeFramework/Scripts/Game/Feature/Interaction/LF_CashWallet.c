@@ -28,11 +28,16 @@ class LF_CashWallet : Managed
 class LF_EntityCashWallet : LF_CashWallet
 {
 	protected IEntity m_Owner;
+	//! Ledger reason and the other character for the changes this wallet makes (LF_MoneyUtils).
+	protected string m_sReason;
+	protected string m_sCounterpartyUid;
 
 	//------------------------------------------------------------------------------------------------
-	void LF_EntityCashWallet(IEntity owner)
+	void LF_EntityCashWallet(IEntity owner, string reason = LF_MoneyUtils.REASON_CASH, string counterpartyUid = "")
 	{
 		m_Owner = owner;
+		m_sReason = reason;
+		m_sCounterpartyUid = counterpartyUid;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -54,7 +59,7 @@ class LF_EntityCashWallet : LF_CashWallet
 		if (!m_Owner)
 			return 0;
 
-		return LF_MoneyUtils.RemoveCash(m_Owner, amount);
+		return LF_MoneyUtils.RemoveCash(m_Owner, amount, m_sReason, m_sCounterpartyUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -63,7 +68,7 @@ class LF_EntityCashWallet : LF_CashWallet
 		if (!m_Owner)
 			return 0;
 
-		return LF_MoneyUtils.AddCash(m_Owner, amount);
+		return LF_MoneyUtils.AddCash(m_Owner, amount, m_sReason, m_sCounterpartyUid);
 	}
 }
 

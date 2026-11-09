@@ -321,7 +321,7 @@ class LF_Contraband
 		int paid = PAYOUT;
 		if (payTo)
 		{
-			int given = LF_MoneyUtils.GiveCash(payTo, PAYOUT);
+			int given = LF_MoneyUtils.GiveCash(payTo, PAYOUT, "contraband");
 			if (given <= 0)
 			{
 				Refuse("delivery refused: cash payout failed");
