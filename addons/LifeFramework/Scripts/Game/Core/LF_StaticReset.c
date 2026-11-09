@@ -33,6 +33,7 @@ class LF_StaticReset
 		LF_EventBus.ResetStatics();
 		LF_FineTickets.ResetStatics();
 		LF_IncidentLog.ResetStatics();
+		LF_ServiceCallsConfig.ResetStatics();
 		LF_OrgInvites.Reset();
 
 		s_iRuns = s_iRuns + 1;

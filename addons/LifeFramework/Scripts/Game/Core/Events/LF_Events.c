@@ -134,3 +134,36 @@ class LF_OnPlayerDamaged : LF_Event
 		return e;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! A player called a service (police, medic, taxi, ...) and at least one receiver is on duty for it.
+//! Dispatch (#250) and any delivery channel subscribe; the caller does not know who listens.
+//! m_aReceiverIds are server-side player ids, never sent to clients.
+class LF_OnServiceCall : LF_Event
+{
+	string m_sCallerUid;
+	string m_sService;
+	//! Place key or grid text the call came from (a payphone's place).
+	string m_sPlace;
+	//! What happened, a preset key or free text.
+	string m_sSummary;
+	//! Where the call is delivered: comma list of pager, board, radio.
+	string m_sChannels;
+	//! World position of the caller's phone; zero when unknown.
+	vector m_vPosition;
+	ref array<int> m_aReceiverIds = {};
+
+	static LF_OnServiceCall Create(string callerUid, string service, string place, string summary, string channels, vector position, array<int> receivers)
+	{
+		LF_OnServiceCall e = new LF_OnServiceCall();
+		e.m_sCallerUid = callerUid;
+		e.m_sService = service;
+		e.m_sPlace = place;
+		e.m_sSummary = summary;
+		e.m_sChannels = channels;
+		e.m_vPosition = position;
+		if (receivers)
+			e.m_aReceiverIds.Copy(receivers);
+		return e;
+	}
+}

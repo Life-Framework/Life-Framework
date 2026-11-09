@@ -1894,3 +1894,7 @@
 - ✅ A trigger. A wheeled vehicle that enters has each wheel inside the strip
   box set to zero health. Ported from EveronLife `EL_SpikeTriggerComponent`
   (MIT, Copyright (c) 2022 EveronLife). (verified 2026-10-11)
+
+## Service calls (#248)
+
+- ✅ `LF_ServiceCalls` routes a call to any service in `Configs/Comms/LF_ServiceCalls.conf` (police, medic, taxi; receiver is on-duty police or a current job). An unknown service is rejected with an error, nobody on duty logs "no answer", otherwise `LF_OnServiceCall` is published on the event bus. No caller yet; the payphone is #247.
