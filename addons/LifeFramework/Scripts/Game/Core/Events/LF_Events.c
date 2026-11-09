@@ -245,8 +245,11 @@ class LF_OnServiceCallTaken : LF_Event
 		e.m_sPlace = place;
 		e.m_sSummary = summary;
 		e.m_iTakers = takers;
+		return e;
+	}
+}
 
-
+//------------------------------------------------------------------------------------------------
 //! A fence sold a tool (#271). Published by LF_ShopComponent.Buy after the cash was taken and the
 //! tool delivered, so the serial book (#272) can stamp the tool and name its buyer.
 class LF_OnFenceSale : LF_Event
