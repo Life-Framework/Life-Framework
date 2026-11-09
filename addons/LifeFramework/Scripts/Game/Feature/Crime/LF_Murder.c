@@ -19,6 +19,7 @@ class LF_Murder
 	static const string SKIP_SELF = "self-kill";
 	static const string SKIP_NOT_CHARACTER = "victim is not a character";
 	static const string SKIP_OFFICER_ON_WANTED = "on-duty officer killed a wanted suspect";
+	static const string SKIP_LAWLESS_ZONE = "lawless zone (config: no wanted)";
 
 	protected static int s_iRecorded;
 
@@ -86,6 +87,9 @@ class LF_Murder
 		}
 
 		string skip = SkipReason(killerPlayerId, victimPlayerId, isCharacter, killerIsVictim, killerOnDuty, victimWanted, OfficerExempt());
+		if (skip.IsEmpty() && victim && LF_Zones.WantedSuppressedAt(victim.GetOrigin()))
+			skip = SKIP_LAWLESS_ZONE;
+
 		if (victimPlayerId > 0)
 		{
 			string killerPlayerUid;

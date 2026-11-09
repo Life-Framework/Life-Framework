@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7C41D2A95E0B38F6}Configs/Moderation/LF_Zones.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -134,3 +134,20 @@ class LF_OnPlayerDamaged : LF_Event
 		return e;
 	}
 }
+
+//! A zone was added, changed, or removed (LF_Zones). m_sRule is "safe", "lawless" or "normal".
+class LF_OnZoneChanged : LF_Event
+{
+	string m_sZone;
+	string m_sRule;
+	bool m_bRemoved;
+
+	static LF_OnZoneChanged Create(string zone, string rule, bool removed)
+	{
+		LF_OnZoneChanged e = new LF_OnZoneChanged();
+		e.m_sZone = zone;
+		e.m_sRule = rule;
+		e.m_bRemoved = removed;
+		return e;
+	}
+}

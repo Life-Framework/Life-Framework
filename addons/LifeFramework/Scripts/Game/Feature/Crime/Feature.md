@@ -49,7 +49,7 @@ isn't today — see current state).
 - Wanted state lives on `Account`.
 - `LF_Murder` (M1-27): a player who kills a player or an NPC is wanted for
   murder (config amount, default 3) with a description report and a police
-  alert. `LF_SafeZone`: no player-on-player damage on the town square,
+  alert. `LF_Zones` (Moderation, #242): the town square is a SAFE zone, no player-on-player damage,
   refused in `SCR_CharacterDamageManagerComponent.HijackDamageHandling`; the
   `safe_zone` notice boards say so.
 
