@@ -348,6 +348,7 @@ class LF_Jail
 			sentence.m_BodyId = body.GetID();
 
 		LF_Debug.Log("Jail", string.Format("sentence started %1 seconds=%2 wanted=%3", prisonerUid, seconds, prisoner.GetWantedLevel()));
+		LF_EventBus.Publish(LF_OnArrested.Create(prisonerUid, seconds, prisoner.GetWantedLevel()));
 		if (seconds > 0)
 			HandSlip(prisonerUid, body);
 

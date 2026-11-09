@@ -38,6 +38,15 @@
 - ⚠️ Managers are only created on first connect; a server-side call before any
   player connects gets null.
 
+### `LF_EventBus` — `Core/Events/` (#329, 2026-11-09)
+- ✅ Server event bus: typed events, `Subscribe`/`Unsubscribe`/`Publish`, subscribers
+  called in subscription order, each isolated (a false return logs
+  `[LFDebug:Events]` Error and the rest run), list copied so unsubscribing
+  mid-publish is safe, server only. Published today: `OnCrimeCommitted`,
+  `OnMoneyMoved` (ATM), `OnPlayerKilled`, `OnArrested`, `OnJobCompleted`,
+  `OnVehicleBought`; `OnPlayerDowned` is defined, unpublished. Test `core/event-bus`.
+  See `docs/architecture/events.md`.
+
 ### `LF_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `LF_PlayerAccount`, spawns the active
   character's prefab at a spawn point for the account's role (CIVILIAN, or
