@@ -64,6 +64,9 @@ Each outline is planned in full only after the milestone before it closes.
 | [UI kit](scopes/later/ui-kit.md) | Shared 1989 menu parts | In the tree; menu migration not planned |
 | [Jailbreak](scopes/crime/jailbreak.md) | The same breach opens the jail door | M2 |
 | [Gas station robbery](scopes/crime/gas-station-robbery.md) | Rob the till | M2 |
+| [Lockpicking](scopes/crime/lockpicking.md) | Pick doors and cars by hand; hotwire | M2 |
+| [Chop shops](scopes/crime/chop-shop.md) | Steal a car, dismantle it for cash; stolen-plate reports | M2 |
+| [Illicit chains](scopes/crime/drug-chains.md) | Tiered production chains on hands-on stations | M2 (system, easy chain), M5 (other chains) |
 | [Police missions](scopes/later/police-missions.md) | A mission board for on-duty police | M4 |
 | [Private housing](scopes/later/housing.md) | Buy, rent, and furnish a home; the dacha | M5 |
 | [Crafting](scopes/later/crafting.md) | A general bench; cooking and food | M5 |

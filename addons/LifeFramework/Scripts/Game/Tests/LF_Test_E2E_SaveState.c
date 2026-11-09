@@ -29,6 +29,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string DUTY_UID = "e2e-duty-officer";
+	protected static const string MEDIC_UID = "e2e-duty-medic";
 	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
 	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
 	protected static const string GARAGED_ID = "e2e-garaged-car";
@@ -136,6 +137,16 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			ctx.EqualStr("", LF_DutyLocker.ClockOut(dutyAccount, dutyBody), "e2e officer clocks out before the save");
 		}
 
+		// The medic duty inventory rides the same carried payload in its own slot (medic_duty, #258).
+		LF_PlayerAccount medicAccount = LF_TestPoliceKit.Account(MEDIC_UID, false);
+		IEntity medicBody = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		if (medicBody)
+		{
+			ctx.EqualStr("", LF_DutyLocker.ClockIn(medicAccount, medicBody, LF_Faction.MEDIC), "e2e medic clocks in before the save");
+			ctx.Equal(2, LF_InventoryUtils.AddAmount(medicBody, LF_TestCarriedInventoryKit.APPLE_PREFAB, 2), "e2e medic picks up 2 apples on shift");
+			ctx.EqualStr("", LF_DutyLocker.ClockOut(medicAccount, medicBody, LF_Faction.MEDIC), "e2e medic clocks out before the save");
+		}
+
 		LF_WantedReports.Add(ACCOUNT_UID, LF_WantedReports.OFFENCE_ROBBERY, "#AR-Jacket_M88", "", "Fuel station", true);
 
 		// The async manual save is the belt; the blocking shutdown save on game
@@ -155,6 +166,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string DUTY_UID = "e2e-duty-officer";
+	protected static const string MEDIC_UID = "e2e-duty-medic";
 	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
 	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
 	protected static const string GARAGED_ID = "e2e-garaged-car";
@@ -237,6 +249,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.True(LF_Progression.HasTurnedIn(COURIER_UID, LF_TestProgressionKit.QUEST_ID), "e2e turned-in quest stays done after the save load");
 
 		VerifyDutyInventories(ctx);
+		VerifyMedicInventory(ctx);
 		ctx.Equal(1, LF_WantedReports.CountFor(ACCOUNT_UID), "e2e wanted report present after the save load");
 		ctx.True(LF_WantedReports.IsIdentified(ACCOUNT_UID), "e2e wanted report stays identified after the save load");
 		IEntity body = LF_TestCharacterFixture.Spawn(ctx);
@@ -291,6 +304,35 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 #else
 		ctx.Pass("runs in the reload boot");
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the restart: the medic inventory waits in its own slot and clocking in brings it back.
+	protected void VerifyMedicInventory(LF_TestContext ctx)
+	{
+		LF_PlayerAccount account = LF_PlayerAccountManager.GetInstance().GetFromCache(MEDIC_UID);
+		ctx.NotNull(account, "e2e duty medic account present after the save load");
+		if (!account || !account.GetActiveCharacter())
+			return;
+
+		ctx.False(account.IsOnDuty(), "e2e medic is off duty after the save load");
+		string characterId = account.GetActiveCharacter().GetId();
+		LF_StorageSnapshotRecord stored = LF_StorageSnapshot.Get(characterId, LF_DutyLocker.SLOT_MEDIC);
+		ctx.NotNull(stored, "e2e medic inventory stored at the desk after the save load");
+		if (stored)
+			ctx.Equal(2, stored.CountPrefab(LF_TestCarriedInventoryKit.APPLE_PREFAB), "e2e stored medic inventory keeps the 2 apples");
+
+		IEntity body = LF_TestCharacterFixture.Spawn(ctx);
+		if (body)
+		{
+			ctx.EqualStr("", LF_DutyLocker.ClockIn(account, body, LF_Faction.MEDIC), "e2e medic clocks in after the restart");
+			ctx.Equal(2, LF_InventoryUtils.GetAmount(body, LF_TestCarriedInventoryKit.APPLE_PREFAB), "e2e the medic 2 apples come back after the restart");
+			LF_DutyLocker.ClockOut(account, body, LF_Faction.MEDIC);
+		}
+
+		LF_StorageSnapshot.Clear(characterId, LF_DutyLocker.SLOT_MEDIC);
+		LF_TestPoliceKit.Release(MEDIC_UID);
+		LF_TestCharacterFixture.Delete(body);
 	}
 
 	//------------------------------------------------------------------------------------------------

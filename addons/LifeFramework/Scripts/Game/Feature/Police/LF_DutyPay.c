@@ -16,6 +16,20 @@ class LF_DutyPay
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Configured cash per on-duty second for a duty role.
+	static float RateFor(LF_Faction role)
+	{
+		if (role != LF_Faction.MEDIC)
+			return PoliceRatePerSecond();
+
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return 0;
+
+		return config.m_fMedicDutyPayPerSecond;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Pure: cash owed for seconds at rate, rounded down. Non-positive input owes nothing.
 	static int Owed(int seconds, float rate)
 	{
@@ -37,9 +51,9 @@ class LF_DutyPay
 		}
 
 		int seconds = account.TakeUnpaidDutySeconds();
-		if (account.GetFaction() != LF_Faction.POLICE)
+		if (account.GetFaction() == LF_Faction.CIVILIAN)
 		{
-			LF_Debug.Warn("DutyPay", string.Format("shift pay refused: %1 is not police", account.GetPersistentId()));
+			LF_Debug.Warn("DutyPay", string.Format("shift pay refused: %1 is not on a duty role", account.GetPersistentId()));
 			return 0;
 		}
 
@@ -59,7 +73,7 @@ class LF_DutyPay
 		if (!Replication.IsServer() && Replication.IsRunning())
 			return 0;
 
-		int owed = TakeShiftPay(account, PoliceRatePerSecond());
+		int owed = TakeShiftPay(account, RateFor(account.GetFaction()));
 		if (owed <= 0)
 			return 0;
 

@@ -1,7 +1,8 @@
 enum LF_Faction
 {
 	CIVILIAN,
-	POLICE
+	POLICE,
+	MEDIC
 }
 
 class LF_PlayerAccount : Managed

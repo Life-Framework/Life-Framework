@@ -17,11 +17,31 @@ class LF_DutyLocker
 {
 	static const string FEATURE = "Duty";
 	static const string SLOT_POLICE = "police_duty";
+	static const string SLOT_MEDIC = "medic_duty";
 	static const string SLOT_CIVILIAN = "civilian_stash";
 
 	//------------------------------------------------------------------------------------------------
+	//! The stored-inventory slot of a duty role's gear.
+	static string SlotFor(LF_Faction role)
+	{
+		if (role == LF_Faction.MEDIC)
+			return SLOT_MEDIC;
+
+		return SLOT_POLICE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string RoleName(LF_Faction role)
+	{
+		if (role == LF_Faction.MEDIC)
+			return "medic";
+
+		return "police";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server rule for Clock in. "" accepts; otherwise the key shown to the player.
-	static string RefuseClockIn(LF_PlayerAccount account)
+	static string RefuseClockIn(LF_PlayerAccount account, LF_Faction role = LF_Faction.POLICE)
 	{
 		if (!account || !account.GetActiveCharacter())
 			return "#LF-Duty_NoAccount";
@@ -29,7 +49,8 @@ class LF_DutyLocker
 		if (account.IsOnDuty())
 			return "#LF-Duty_AlreadyOn";
 
-		if (!LF_WhitelistManager.MayJoinFaction(account.GetPersistentId(), LF_EFactionType.POLICE))
+		// Police is the whitelisted role; the medic role is open to any registered player.
+		if (role == LF_Faction.POLICE && !LF_WhitelistManager.MayJoinFaction(account.GetPersistentId(), LF_EFactionType.POLICE))
 			return "#LF-Duty_NotOnRoster";
 
 		return "";
@@ -37,13 +58,17 @@ class LF_DutyLocker
 
 	//------------------------------------------------------------------------------------------------
 	//! Server rule for Clock out.
-	static string RefuseClockOut(LF_PlayerAccount account)
+	static string RefuseClockOut(LF_PlayerAccount account, LF_Faction role = LF_Faction.POLICE)
 	{
 		if (!account || !account.GetActiveCharacter())
 			return "#LF-Duty_NoAccount";
 
 		if (!account.IsOnDuty())
 			return "#LF-Duty_NotOn";
+
+		// A medic punches out at the hospital desk, an officer at the station desk.
+		if (account.GetFaction() != role)
+			return "#LF-Duty_WrongDesk";
 
 		return "";
 	}
@@ -52,9 +77,9 @@ class LF_DutyLocker
 	//! Server: clock the officer in. Stores the civilian inventory and dresses them in the police
 	//! inventory from their last clock-out, or the starter police kit on a first shift.
 	//! \return "" on success, or the refusal key.
-	static string ClockIn(LF_PlayerAccount account, IEntity officer)
+	static string ClockIn(LF_PlayerAccount account, IEntity officer, LF_Faction role = LF_Faction.POLICE)
 	{
-		string refusal = RefuseClockIn(account);
+		string refusal = RefuseClockIn(account, role);
 		if (!refusal.IsEmpty())
 		{
 			LF_Debug.Warn(FEATURE, string.Format("clock-in refused for %1: %2", AccountId(account), refusal));
@@ -72,25 +97,25 @@ class LF_DutyLocker
 		if (!civilian)
 			return "#LF-Duty_NoAccount";
 
-		LF_StorageSnapshotRecord police = LF_StorageSnapshot.Get(characterId, SLOT_POLICE);
+		LF_StorageSnapshotRecord police = LF_StorageSnapshot.Get(characterId, SlotFor(role));
 		LF_StorageSnapshot.Set(civilian);
 		bool starter = !police;
 		if (police)
 		{
 			LF_StorageSnapshot.Apply(officer, police);
-			LF_StorageSnapshot.Clear(characterId, SLOT_POLICE);
+			LF_StorageSnapshot.Clear(characterId, SlotFor(role));
 		}
 		else
 		{
-			DressInKit(officer, LF_Faction.POLICE);
+			DressInKit(officer, role);
 		}
 
-		account.SetFaction(LF_Faction.POLICE);
+		account.SetFaction(role);
 		account.SetOnDuty(true);
 		LF_PoliceRanks.OnDutyChanged(account, true);
 		AfterSwap(account, officer);
 
-		LF_Debug.Info(FEATURE, string.Format("clocked in %1: civilian inventory stored (%2 items), police %3", AccountId(account), civilian.m_aItems.Count(), StarterText(starter)));
+		LF_Debug.Info(FEATURE, string.Format("clocked in %1: civilian inventory stored (%2 items), %3 %4", AccountId(account), civilian.m_aItems.Count(), RoleName(role), StarterText(starter)));
 		return "";
 	}
 
@@ -98,9 +123,9 @@ class LF_DutyLocker
 	//! Server: clock the officer out. Pays the shift, stores the police inventory, and hands the
 	//! civilian inventory back.
 	//! \return "" on success, or the refusal key.
-	static string ClockOut(LF_PlayerAccount account, IEntity officer)
+	static string ClockOut(LF_PlayerAccount account, IEntity officer, LF_Faction role = LF_Faction.POLICE)
 	{
-		string refusal = RefuseClockOut(account);
+		string refusal = RefuseClockOut(account, role);
 		if (!refusal.IsEmpty())
 		{
 			LF_Debug.Warn(FEATURE, string.Format("clock-out refused for %1: %2", AccountId(account), refusal));
@@ -114,7 +139,7 @@ class LF_DutyLocker
 		}
 
 		string characterId = account.GetActiveCharacter().GetId();
-		LF_StorageSnapshotRecord police = LF_StorageSnapshot.Capture(characterId, SLOT_POLICE, officer);
+		LF_StorageSnapshotRecord police = LF_StorageSnapshot.Capture(characterId, SlotFor(role), officer);
 		if (!police)
 			return "#LF-Duty_NoAccount";
 
@@ -140,7 +165,7 @@ class LF_DutyLocker
 		account.SetFaction(LF_Faction.CIVILIAN);
 		AfterSwap(account, officer);
 
-		LF_Debug.Info(FEATURE, string.Format("clocked out %1: police inventory stored (%2 items)", AccountId(account), police.m_aItems.Count()));
+		LF_Debug.Info(FEATURE, string.Format("clocked out %1: %2 inventory stored (%3 items)", AccountId(account), RoleName(role), police.m_aItems.Count()));
 		return "";
 	}
 
@@ -165,7 +190,7 @@ class LF_DutyLocker
 
 		// The police inventory was on the body; nothing of it is stored, so the next shift starts
 		// from the starter kit. A stale stored copy would be a second set next to the lootable one.
-		LF_StorageSnapshot.Clear(characterId, SLOT_POLICE);
+		LF_StorageSnapshot.Clear(characterId, SlotFor(account.GetFaction()));
 
 		LF_PoliceRanks.OnDutyChanged(account, false);
 		account.SetOnDuty(false);

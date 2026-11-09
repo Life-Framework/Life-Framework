@@ -10,6 +10,15 @@ class LF_DutyAction : ScriptedUserAction
 	[Attribute("SOUND_RANGECP_STARTBUTTON", UIWidgets.EditBox, "Sound event on the desk's SCR_SoundDataComponent played when a card is punched")]
 	protected string m_sPunchSound;
 
+	[Attribute(LF_Faction.POLICE.ToString(), UIWidgets.ComboBox, "Duty role this desk clocks in: POLICE at the station, MEDIC at the hospital", enums: ParamEnumArray.FromEnum(LF_Faction))]
+	protected LF_Faction m_eRole;
+
+	//------------------------------------------------------------------------------------------------
+	LF_Faction GetRole()
+	{
+		return m_eRole;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -20,7 +29,14 @@ class LF_DutyAction : ScriptedUserAction
 			return false;
 		}
 
-		if (!LF_AccountStateBits.IsOnDuty(state) && !LF_AccountStateBits.IsOnRoster(state))
+		if (LF_AccountStateBits.IsOnDuty(state) && LF_AccountStateBits.GetFaction(state) != m_eRole)
+		{
+			SetCannotPerformReason("#LF-Duty_WrongDesk");
+			return false;
+		}
+
+		// Only the police role has a roster; the medic desk is open to any registered player.
+		if (m_eRole == LF_Faction.POLICE && !LF_AccountStateBits.IsOnDuty(state) && !LF_AccountStateBits.IsOnRoster(state))
 		{
 			SetCannotPerformReason("#LF-Duty_NotOnRoster");
 			return false;
@@ -49,9 +65,9 @@ class LF_DutyAction : ScriptedUserAction
 		bool clockingIn = !account.IsOnDuty();
 		string refusal;
 		if (clockingIn)
-			refusal = LF_DutyLocker.ClockIn(account, pUserEntity);
+			refusal = LF_DutyLocker.ClockIn(account, pUserEntity, m_eRole);
 		else
-			refusal = LF_DutyLocker.ClockOut(account, pUserEntity);
+			refusal = LF_DutyLocker.ClockOut(account, pUserEntity, m_eRole);
 
 		if (!refusal.IsEmpty())
 		{

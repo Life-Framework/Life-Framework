@@ -155,3 +155,8 @@ GenericEntity Roadmap_Hospital_DispatchBoard : "{38D6A62C995DACCA}Prefabs/Comms/
  coords 262 0 256.4
  angleY 180
 }
+GenericEntity Roadmap_Hospital_Duty_Desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et" {
+ Flags 0x403 0
+ coords 259.4 0 256.4
+ angleY 180
+}
