@@ -22,7 +22,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
   }
-  ActionsManagerComponent "{EDAF6C83366F66FB}" {
+  ActionsManagerComponent "{508AB5952B584B2E}" {
    additionalActions {
     LF_ReadSerialAction "{62C418971E4F9A11}" {
      ParentContextList {

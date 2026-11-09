@@ -1,0 +1,76 @@
+GenericEntity {
+ ID "3A7C5E91B4D20F68"
+ components {
+  MeshObject "{3A7C5E91B4D20F61}" {
+   Object "{138FB8A2D71B1603}Assets/Props/Furniture/CabinetMetal_01/CabinetMetal_01.xob"
+   Materials {
+    MaterialAssignClass "{3A7C5E91B4D20F62}" {
+     SourceMaterial "CabinetMetal_01"
+     AssignedMaterial "{50729867FFC0AF7F}Assets/Props/Furniture/CabinetMetal_01/Data/CabinetMetal_01_V1.emat"
+    }
+   }
+  }
+  RigidBody "{3A7C5E91B4D20F63}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_LockComponent "{3A7C5E91B4D20F64}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{3A7C5E91B4D20F65}" {
+   ActionContexts {
+    UserActionContext "{3A7C5E91B4D20F66}" {
+     ContextName "default"
+     Position PointInfo "{3A7C5E91B4D20F67}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_LogEvidenceAction "{3A7C5E91B4D20F70}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3A7C5E91B4D20F71}" {
+      Name "#LF-Locker_Log_Action"
+     }
+    }
+    LF_ReadLockerAction "{3A7C5E91B4D20F72}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3A7C5E91B4D20F73}" {
+      Name "#LF-Locker_Read_Action"
+     }
+    }
+    LF_RaidLockerAction "{3A7C5E91B4D20F74}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3A7C5E91B4D20F75}" {
+      Name "#LF-Locker_Raid_Action"
+     }
+    }
+    LF_BreachArmAction "{3A7C5E91B4D20F76}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{3A7C5E91B4D20F77}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{3A7C5E91B4D20F78}" {
+   Enabled 1
+  }
+  LF_BreachTargetComponent "{3A7C5E91B4D20F79}" {
+   m_sTargetId "LF_EvidenceLocker"
+   m_fFuseSeconds 0
+  }
+ }
+}

@@ -5707,6 +5707,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Marks an item dropped at a crime scene."
      Comment "Description of the evidence marker."
     }
+    CustomStringTableItem "{65B97D3424738198}" {
+     Id "LF-Locker_Title"
+     Target_en_us "Evidence locker"
+     Comment "Toast title for the evidence locker."
+    }
+    CustomStringTableItem "{1C43A9F024D5E4F2}" {
+     Id "LF-Locker_Logged"
+     Target_en_us "Logged %1 evidence bag(s) against their reports."
+     Comment "Toast: bags logged in the locker; %1 is the count."
+    }
+    CustomStringTableItem "{FAD52119B88896AE}" {
+     Id "LF-Locker_NoBags"
+     Target_en_us "You carry no evidence bag to log."
+     Comment "Toast: nothing to log."
+    }
+    CustomStringTableItem "{155ED171C52FF11B}" {
+     Id "LF-Locker_Empty"
+     Target_en_us "The case file is empty."
+     Comment "Toast: nothing is logged in the locker."
+    }
+    CustomStringTableItem "{606F8E5D11807BC8}" {
+     Id "LF-Locker_Cases"
+     Target_en_us "Case file: %1"
+     Comment "Toast: newest logged bags; %1 is the list."
+    }
+    CustomStringTableItem "{2863ED99FCE23578}" {
+     Id "LF-Locker_Raided"
+     Target_en_us "The case file is burned: %1 bag(s) destroyed."
+     Comment "Toast: a raid destroyed the logged bags; %1 is the count."
+    }
+    CustomStringTableItem "{EF5331F445A7CC64}" {
+     Id "LF-Locker_Name"
+     Target_en_us "Evidence locker"
+     Comment "Name of the evidence locker."
+    }
+    CustomStringTableItem "{8B98128F11F74501}" {
+     Id "LF-Locker_Log_Action"
+     Target_en_us "Log evidence bags"
+     Comment "Action: log carried evidence bags."
+    }
+    CustomStringTableItem "{BD207ABDEF5524C1}" {
+     Id "LF-Locker_Read_Action"
+     Target_en_us "Read case file"
+     Comment "Action: read the case file."
+    }
+    CustomStringTableItem "{F08CF5A240E91728}" {
+     Id "LF-Locker_Raid_Action"
+     Target_en_us "Burn the case file"
+     Comment "Action: destroy the logged evidence of a forced locker."
+    }
   }
  }
 }
