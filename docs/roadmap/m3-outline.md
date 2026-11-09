@@ -145,6 +145,7 @@ a schema change ships the generator change in the same PR.
 2. #287 Generator validates with config-check's rules and exports only a valid file
 3. #288 Import an existing config.json into the generator
 4. #289 Generator presets: flagship 1989, small server, hardcore economy
+5. #381 Export a server bundle (config.json + server.json) for hosts
 
 
 ## 4. Owner docs
