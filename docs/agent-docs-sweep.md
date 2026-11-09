@@ -1,9 +1,10 @@
 # Docs sweep
 
-A daily background job keeps the player docs, the website and closed issues up
-to date with what merged. It runs on the free DeepSeek model in opencode. The
-builder agent takes the screenshots; the sweep only uses shots that are already
-in the repo.
+A background job on the free DeepSeek model in opencode updates the player
+docs, the website and the closed issue for each feature once it merges. The
+orchestrator starts it per feature, one job at a time, so jobs never edit the
+same pages at once. A weekly sweep catches anything missed. The builder takes
+the screenshots; the docs job only uses shots already in the repo.
 
 ## Who does what
 
@@ -11,7 +12,7 @@ in the repo.
 |---|---|---|
 | Take 1–2 shots of the feature working | The Claude builder (`lf-builder`) | During its proof session, before shipping |
 | Commit the shots to `website/public/docs-images/<issue>/` and add them to the PR body | The Claude builder | In the feature PR |
-| Update the player docs and website pages, and comment on closed issues | DeepSeek docs sweep | Once a day, over every PR merged since the last sweep |
+| Update the player docs and website pages, and comment on the closed issue | DeepSeek docs job | Per feature, started by the orchestrator once the PR merges. A weekly sweep catches stragglers |
 
 ## Screenshot rule (builder)
 
@@ -25,7 +26,11 @@ in the repo.
   `![what it shows](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/<issue>/<short-name>.png)`
   The image goes live once the PR merges.
 
-## Sweep rules (DeepSeek)
+## Docs job rules (DeepSeek)
+
+**Per-item mode** (the usual case): the brief names one merged PR. Cover only that PR in steps 2–7, and in step 5 set `docs/.last-sweep` only if that PR's merge commit is newer than the one already there. Use the slug `docs-<pr>`.
+
+**Sweep mode** (weekly): cover every PR merged since `docs/.last-sweep` that has no docs comment on its issue yet.
 
 1. **Find what's new.** Read `docs/.last-sweep`, which holds the last merge commit swept. List the PRs merged since then:
    `gh pr list --state merged --search "merged:>=<date>" --json number,title,body,closingIssuesReferences,mergeCommit`
