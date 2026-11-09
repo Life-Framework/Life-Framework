@@ -5507,36 +5507,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You can give up in %1 seconds from going down."
      Comment "Toast: give up asked too early."
     }
-    CustomStringTableItem "{B18A9253EC649E50}" {
-     Id "LF-Revive_Action"
-     Target_en_us "Revive"
-     Comment "Player action on a downed player, offered to an on-duty medic."
-    }
-    CustomStringTableItem "{D4A0B004F3AE2A4B}" {
-     Id "LF-Revive_Done"
-     Target_en_us "You brought them back."
-     Comment "Toast to the medic after a revive."
-    }
-    CustomStringTableItem "{53CD088BE893DA58}" {
-     Id "LF-Revive_Revived"
-     Target_en_us "A medic brought you back. You are weak: take it easy."
-     Comment "Toast to the revived player."
-    }
-    CustomStringTableItem "{4AC63DA91F04B8C1}" {
-     Id "LF-Revive_NotMedic"
-     Target_en_us "Only a medic on duty can revive."
-     Comment "Revive refusal: the user is not clocked in as a medic."
-    }
-    CustomStringTableItem "{9DE20E9DD947A51A}" {
-     Id "LF-Revive_TooFar"
-     Target_en_us "Too far away to revive them."
-     Comment "Revive refusal: out of range."
-    }
-    CustomStringTableItem "{943F121585F92A15}" {
-     Id "LF-Revive_NotDowned"
-     Target_en_us "They are not down."
-     Comment "Revive refusal: the target is not downed."
-    }
     CustomStringTableItem "{3C71B0A2D4E5F612}" {
      Id "LF-Medic_Downed"
      Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
@@ -5676,6 +5646,101 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-IncidentGm_Kind_holdup"
      Target_en_us "Hold-up"
      Comment "Incident kind: one player held another up."
+    }
+    CustomStringTableItem "{B18A9253EC649E50}" {
+     Id "LF-Revive_Action"
+     Target_en_us "Revive"
+     Comment "Player action on a downed player, offered to an on-duty medic."
+    }
+    CustomStringTableItem "{D4A0B004F3AE2A4B}" {
+     Id "LF-Revive_Done"
+     Target_en_us "You brought them back."
+     Comment "Toast to the medic after a revive."
+    }
+    CustomStringTableItem "{53CD088BE893DA58}" {
+     Id "LF-Revive_Revived"
+     Target_en_us "A medic brought you back. You are weak: take it easy."
+     Comment "Toast to the revived player."
+    }
+    CustomStringTableItem "{4AC63DA91F04B8C1}" {
+     Id "LF-Revive_NotMedic"
+     Target_en_us "Only a medic on duty can revive."
+     Comment "Revive refusal: the user is not clocked in as a medic."
+    }
+    CustomStringTableItem "{9DE20E9DD947A51A}" {
+     Id "LF-Revive_TooFar"
+     Target_en_us "Too far away to revive them."
+     Comment "Revive refusal: out of range."
+    }
+    CustomStringTableItem "{943F121585F92A15}" {
+     Id "LF-Revive_NotDowned"
+     Target_en_us "They are not down."
+     Comment "Revive refusal: the target is not downed."
+    }
+    CustomStringTableItem "{E7C31C63E21652CF}" {
+     Id "LF-Evidence_Title"
+     Target_en_us "Evidence"
+     Comment "Toast title for scene evidence."
+    }
+    CustomStringTableItem "{A47AEE52195635C1}" {
+     Id "LF-Evidence_Bagged"
+     Target_en_us "Bagged. The bag lists the place, the time and the report."
+     Comment "Toast: an officer bagged a piece of evidence."
+    }
+    CustomStringTableItem "{FCFCCDFEF32ED302}" {
+     Id "LF-Evidence_OnDutyOnly"
+     Target_en_us "Only on-duty police bag evidence."
+     Comment "Refusal: bagging needs an on-duty officer."
+    }
+    CustomStringTableItem "{6A6002C800B9F27D}" {
+     Id "LF-Evidence_Read"
+     Target_en_us "Report %1"
+     Comment "Toast on reading an evidence bag; %1 is the report line."
+    }
+    CustomStringTableItem "{A310F950EFD60150}" {
+     Id "LF-Evidence_Read_Action"
+     Target_en_us "Read evidence bag"
+     Comment "Action: read an evidence bag."
+    }
+    CustomStringTableItem "{4587AF3655D18A21}" {
+     Id "LF-Evidence_Bag_Action"
+     Target_en_us "Bag as evidence"
+     Comment "Action: an officer bags scene evidence."
+    }
+    CustomStringTableItem "{08D26A0306C3269E}" {
+     Id "LF-Evidence_Bag_Name"
+     Target_en_us "Evidence bag"
+     Comment "Item name of the evidence bag."
+    }
+    CustomStringTableItem "{8F467BFA9C1D7950}" {
+     Id "LF-Evidence_Bag_Desc"
+     Target_en_us "Sealed at a crime scene. It records where and when the piece was found and which report it belongs to."
+     Comment "Item description of the evidence bag."
+    }
+    CustomStringTableItem "{2B763219ECA24CB8}" {
+     Id "LF-Evidence_Casing_Name"
+     Target_en_us "Spent casing"
+     Comment "Item name of a casing left at a crime scene."
+    }
+    CustomStringTableItem "{B3D1A8AC054C63B7}" {
+     Id "LF-Evidence_Casing_Desc"
+     Target_en_us "A spent casing from a shot fired at a crime scene."
+     Comment "Item description of the casing."
+    }
+    CustomStringTableItem "{13CC981550C3918A}" {
+     Id "LF-Evidence_Marker_Name"
+     Target_en_us "Evidence marker"
+     Comment "Name of the marker beside a dropped item at a crime scene."
+    }
+    CustomStringTableItem "{12E9D2C263E2307D}" {
+     Id "LF-Evidence_Marker_Desc"
+     Target_en_us "Marks an item dropped at a crime scene."
+     Comment "Description of the evidence marker."
+    }
+    CustomStringTableItem "{3C5A9E71D04B82F6}" {
+     Id "LF-IncidentGm_Kind_aim"
+     Target_en_us "Weapon aimed"
+     Comment "Incident kind: one player kept a raised weapon on another."
     }
   }
  }

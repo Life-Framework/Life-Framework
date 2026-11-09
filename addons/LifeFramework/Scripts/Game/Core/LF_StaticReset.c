@@ -37,6 +37,8 @@ class LF_StaticReset
 		LF_Ledger.ResetStatics();
 		LF_CrimeRecord.ResetStatics();
 		LF_FenceSerials.ResetStatics();
+		LF_Evidence.ResetStatics();
+		LF_EvidenceConfig.ResetStatics();
 		LF_IncidentLog.ResetStatics();
 		LF_ServiceCallsConfig.ResetStatics();
 		LF_Payphone.ResetStatics();

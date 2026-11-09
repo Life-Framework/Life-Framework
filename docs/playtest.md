@@ -57,8 +57,11 @@ log that back them stay on the server and invisible.
   connects and no coin is taken.
 - **Downed, not dead.** A lethal hit knocks a player unconscious instead of
   killing them. You lie on the ground, cannot move or act, take no further
-  damage, and others can search you. NPCs still die as before. A downed player
-  bleeds out, and an on-duty medic can revive them.
+  damage, and others can search you. A downed player bleeds out after three
+  minutes unless someone uses a bandage, tourniquet, or saline bag on them, and
+  each one adds time (morphine adds none). Hold X (pad Y) after 30 seconds to
+  give up, which is death. Disconnecting while downed is death too. NPCs still
+  die as before. A medic on duty can revive a downed player.
 - **The fence.** A dealer in the net-fenced test annex sells crime tools only to
   proven criminals: a drill after 3 completed crimes, a breaching charge after
   5, a keycard after 8. Rob a till, steal a vehicle, or breach a door to build
@@ -75,13 +78,14 @@ log that back them stay on the server and invisible.
   and use *Revive* (the same list as Introduce / Show ID). They get up with a
   sliver of health and keep what they carry, and the bleed-out stops. A civilian
   does not get the entry.
-- **Revive.** Clocked in as a medic, face a downed player within about two metres
-  and use *Revive* (the same list as Introduce / Show ID). They stand up with a
-  sliver of health and keep what they carry; the bleed-out stops. A civilian does
-  not get the entry.
+- **Report to staff.** After something happens to you, type `/report` in chat.
+  It flags the incidents from the last ten minutes that involved you, as either
+  party, for admins to see in the Game Master incident view. You get a "Staff
+  were told" toast; a second report within two minutes is refused.
 - **Safe square.** On the spawn square you cannot hurt another player and they
   cannot hurt you. Weapons still fire; NPC, world, and self damage pass.
 - **Hold up.** Two players face each other within 2 m; the one with a weapon in hand sees *Hold up* in the action menu. It raises their hand, beeps at both, and tells the other player. It changes nothing else: it only lands in the incident log (Game Master incident view, kind Hold-up). Demo: `node agent-box/session.mjs holdup-proof` (two clients).
+- **Aim intent.** Hold a raised weapon on another player for 3 s: one "Weapon aimed" row in the Game Master incident view, then at most one more per 3 s of continuous aim. Needs two clients on a dedicated server to prove the aim direction replicates.
 - **Lawless quarry.** The quarry south of the dirt lane (about 100 m north of the square) is the one marked lawless area. Two red *Lawless Area* signs stand at the lane and at the east edge; read one for the rules. For now the zone only labels incidents (`lawless` in the incident log) and keeps wanted on; there is no fence or gate yet. Demo: `node agent-box/session.mjs quarry-proof`.
 
 ### Known rough edges
@@ -91,7 +95,8 @@ log that back them stay on the server and invisible.
 - If an arrest leaves you standing where you were instead of in the cell, say so.
 - Some NPCs may appear half-dressed.
 - Sign titles can be hard to read from the road.
-- The downed state does not survive a disconnect (leaving while down is death).
+- Letting the bleed-out run out, giving up, and disconnecting while downed
+  all end in death.
 - The fence and crime scene are in the test annex behind the net fence, not on
   the main street; a village placement is still to come.
 
@@ -101,8 +106,8 @@ Do not report these as broken. File them under "build next" if you want them.
 
 - Buying a house
 - A general crafting bench
-- Revive, a bleed-out timer, or giving up while downed
-- A medic job or an ambulance
+- Revive while downed
+- An ambulance
 - Calling a medic or a taxi from the payphone
 - Quarry fence, gate, or lawless-only rules (the zone and its signs are in)
 - A police mission board
