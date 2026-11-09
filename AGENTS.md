@@ -7,6 +7,16 @@ a skill and this file disagree, this file wins. Setup: `docs/setup.md`. Design
 intent: `docs/design.md`. An agent handed a scope, issue, or PR starts with the
 `agent-scope` skill.
 
+## Model budget
+
+`docs/agent-budget.md` routes work by cost. Haiku (`lf-scout`) does lookups
+and Sonnet (`lf-builder`) does a scoped issue. Opus (`lf-hard`) takes design,
+replication and persistence, and anything Sonnet failed twice. The free
+DeepSeek model in opencode takes background docs, website work and issue
+grooming. A subagent does the work itself and starts no helper agents unless
+its brief says to. It reads files in pieces and stops after two environment
+failures instead of grinding.
+
 ## Repo map
 
 | Path | What lives there |
