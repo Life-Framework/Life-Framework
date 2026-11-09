@@ -85,6 +85,8 @@ log that back them stay on the server and invisible.
 - **Aim intent.** Hold a raised weapon on another player for 3 s: one "Weapon aimed" row in the Game Master incident view, then at most one more per 3 s of continuous aim. Needs two clients on a dedicated server to prove the aim direction replicates.
 - **Lawless quarry.** The quarry south of the dirt lane (about 100 m north of the square) is the one marked lawless area. Two red *Lawless Area* signs stand at the lane and at the east edge; read one for the rules. For now the zone only labels incidents (`lawless` in the incident log) and keeps wanted on; there is no fence or gate yet. Demo: `node agent-box/session.mjs quarry-proof`.
 
+- **Evidence.** After a crime, shots near it leave casings and dropped items get a paper marker. Clock in, pick "Bag as evidence" on one, then use "Log evidence bags" at the locker beside the armory in the police station. If the piece was a serial'd fence tool, the buyer's wanted card now shows their name. "Read case file" lists what is on file.
+
 ### Known rough edges
 
 - Esc does not close the wanted card or the organization ledger right after

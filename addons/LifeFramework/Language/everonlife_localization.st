@@ -5307,21 +5307,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Suspicious person reported"
      Comment "Summary the police radio line shows for a suspicious person phoned in."
     }
-    CustomStringTableItem "{3C71B0A2D4E5F610}" {
-     Id "LF-Medic_Keybind_GiveUp"
-     Target_en_us "Give up (hold, while downed)"
-     Comment "Keybind: give up and die while downed."
-    }
-    CustomStringTableItem "{3C71B0A2D4E5F611}" {
-     Id "LF-Medic_GiveUpTooEarly"
-     Target_en_us "You can give up in %1 seconds from going down."
-     Comment "Toast: give up asked too early."
-    }
-    CustomStringTableItem "{3C71B0A2D4E5F612}" {
-     Id "LF-Medic_Downed"
-     Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
-     Comment "Toast: shown to a player who goes down."
-    }
     CustomStringTableItem "{177011F784696AD3}" {
      Id "LF-Item_Drill_Name"
      Target_en_us "Drill"
@@ -5442,6 +5427,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Need help? Use a payphone to call the service."
      Comment "Dispatch board sign card: what to do next."
     }
+    CustomStringTableItem "{98E8442712C32CFF}" {
+     Id "LF-IncidentGm_Title"
+     Target_en_us "Incidents near the camera"
+     Comment "Game Master incident panel title."
+    }
+    CustomStringTableItem "{0532BB8A674B16E7}" {
+     Id "LF-IncidentGm_None"
+     Target_en_us "No incidents here in the last hour."
+     Comment "Game Master incident panel: nothing near the camera."
+    }
+    CustomStringTableItem "{575E08BEF8CB275E}" {
+     Id "LF-IncidentGm_Waiting"
+     Target_en_us "Asking the server..."
+     Comment "Game Master incident panel: before the first answer."
+    }
+    CustomStringTableItem "{D4CB8C3C4F736D4A}" {
+     Id "LF-IncidentGm_Row"
+     Target_en_us "%1, %2 min ago: %3 / %4"
+     Comment "Game Master incident row: kind, minutes ago, subject, other party."
+    }
+    CustomStringTableItem "{3425A63D351F8477}" {
+     Id "LF-IncidentGm_Kind_death"
+     Target_en_us "Death"
+     Comment "Incident kind: death."
+    }
+    CustomStringTableItem "{B96B4DA1873C79D6}" {
+     Id "LF-IncidentGm_Kind_murder"
+     Target_en_us "Murder"
+     Comment "Incident kind: death counted as murder."
+    }
+    CustomStringTableItem "{EC2EA6F457CE29F4}" {
+     Id "LF-IncidentGm_Kind_damage"
+     Target_en_us "Damage"
+     Comment "Incident kind: damage."
+    }
+    CustomStringTableItem "{608D778B3672F032}" {
+     Id "LF-IncidentGm_Kind_cash"
+     Target_en_us "Cash"
+     Comment "Incident kind: cash move."
+    }
+    CustomStringTableItem "{2CBEE27A4CEA58CE}" {
+     Id "LF-IncidentGm_Kind_downed"
+     Target_en_us "Downed"
+     Comment "Incident kind: player downed."
+    }
+    CustomStringTableItem "{71DE75EB8FB361E9}" {
+     Id "LF-Sign_LawlessZone_Title"
+     Target_en_us "Lawless Area"
+     Comment "Title of the quarry lawless-area sign. Printed on the board and shown as Read: Lawless Area."
+    }
+    CustomStringTableItem "{F8D445EFFEC347EC}" {
+     Id "LF-Sign_LawlessZone_What"
+     Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
+     Comment "Lawless area sign card, What section."
+    }
+    CustomStringTableItem "{9651118BDCD77FA5}" {
+     Id "LF-Sign_LawlessZone_How"
+     Target_en_us "Stay out if you came for a quiet day. Carry only what you can afford to lose. Bring friends."
+     Comment "Lawless area sign card, How section."
+    }
+    CustomStringTableItem "{B81DC8476856440E}" {
+     Id "LF-Sign_LawlessZone_Rules"
+     Target_en_us "Outside the quarry fence line the town keeps its rules: killing anyone is murder and the police are told. Inside, the police still answer a call at their own risk. Marked by order of the Everon Constabulary."
+     Comment "Lawless area sign card, Rules section."
+    }
+    CustomStringTableItem "{3524F59375508DB4}" {
+     Id "LF-Sign_LawlessZone_Next"
+     Target_en_us "The town square, south and west of here, is a safe zone."
+     Comment "Lawless area sign card, Next section."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F610}" {
+     Id "LF-Medic_Keybind_GiveUp"
+     Target_en_us "Give up (hold, while downed)"
+     Comment "Keybind: give up and die while downed."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F611}" {
+     Id "LF-Medic_GiveUpTooEarly"
+     Target_en_us "You can give up in %1 seconds from going down."
+     Comment "Toast: give up asked too early."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F612}" {
+     Id "LF-Medic_Downed"
+     Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
+     Comment "Toast: shown to a player who goes down."
+    }
     CustomStringTableItem "{B608F834846FAF73}" {
      Id "LF-Dispatch_Take"
      Target_en_us "Take the call"
@@ -5507,51 +5577,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Beeps when a call comes in for your service while you are on duty. Look at it to read the last calls."
      Comment "Inventory description of the pager."
     }
-    CustomStringTableItem "{98E8442712C32CFF}" {
-     Id "LF-IncidentGm_Title"
-     Target_en_us "Incidents near the camera"
-     Comment "Game Master incident panel title."
-    }
-    CustomStringTableItem "{0532BB8A674B16E7}" {
-     Id "LF-IncidentGm_None"
-     Target_en_us "No incidents here in the last hour."
-     Comment "Game Master incident panel: nothing near the camera."
-    }
-    CustomStringTableItem "{575E08BEF8CB275E}" {
-     Id "LF-IncidentGm_Waiting"
-     Target_en_us "Asking the server..."
-     Comment "Game Master incident panel: before the first answer."
-    }
-    CustomStringTableItem "{D4CB8C3C4F736D4A}" {
-     Id "LF-IncidentGm_Row"
-     Target_en_us "%1, %2 min ago: %3 / %4"
-     Comment "Game Master incident row: kind, minutes ago, subject, other party."
-    }
-    CustomStringTableItem "{3425A63D351F8477}" {
-     Id "LF-IncidentGm_Kind_death"
-     Target_en_us "Death"
-     Comment "Incident kind: death."
-    }
-    CustomStringTableItem "{B96B4DA1873C79D6}" {
-     Id "LF-IncidentGm_Kind_murder"
-     Target_en_us "Murder"
-     Comment "Incident kind: death counted as murder."
-    }
-    CustomStringTableItem "{EC2EA6F457CE29F4}" {
-     Id "LF-IncidentGm_Kind_damage"
-     Target_en_us "Damage"
-     Comment "Incident kind: damage."
-    }
-    CustomStringTableItem "{608D778B3672F032}" {
-     Id "LF-IncidentGm_Kind_cash"
-     Target_en_us "Cash"
-     Comment "Incident kind: cash move."
-    }
-    CustomStringTableItem "{2CBEE27A4CEA58CE}" {
-     Id "LF-IncidentGm_Kind_downed"
-     Target_en_us "Downed"
-     Comment "Incident kind: player downed."
-    }
     CustomStringTableItem "{73C1578BB2FBEF30}" {
      Id "LF-IncidentReport_Title"
      Target_en_us "Report"
@@ -5581,6 +5606,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-IncidentGm_RowFlagged"
      Target_en_us "REPORTED #%1 %2, %3 min ago: %4 / %5 (type !handled %1 when done)"
      Comment "Game Master incident row for a reported incident: number, kind, minutes ago, subject, other party."
+    }
+    CustomStringTableItem "{10850C37306E78EB}" {
+     Id "LF-Duty_WrongDesk"
+     Target_en_us "You are on duty for another service. Clock out at your own desk first."
+     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
     }
     CustomStringTableItem "{365AAC156EFDBFE8}" {
      Id "LF-HoldUp_Action"
@@ -5616,46 +5646,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-IncidentGm_Kind_holdup"
      Target_en_us "Hold-up"
      Comment "Incident kind: one player held another up."
-    }
-    CustomStringTableItem "{71DE75EB8FB361E9}" {
-     Id "LF-Sign_LawlessZone_Title"
-     Target_en_us "Lawless Area"
-     Comment "Title of the quarry lawless-area sign. Printed on the board and shown as Read: Lawless Area."
-    }
-    CustomStringTableItem "{F8D445EFFEC347EC}" {
-     Id "LF-Sign_LawlessZone_What"
-     Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
-     Comment "Lawless area sign card, What section."
-    }
-    CustomStringTableItem "{9651118BDCD77FA5}" {
-     Id "LF-Sign_LawlessZone_How"
-     Target_en_us "Stay out if you came for a quiet day. Carry only what you can afford to lose. Bring friends."
-     Comment "Lawless area sign card, How section."
-    }
-    CustomStringTableItem "{B81DC8476856440E}" {
-     Id "LF-Sign_LawlessZone_Rules"
-     Target_en_us "Outside the quarry fence line the town keeps its rules: killing anyone is murder and the police are told. Inside, the police still answer a call at their own risk. Marked by order of the Everon Constabulary."
-     Comment "Lawless area sign card, Rules section."
-    }
-    CustomStringTableItem "{3524F59375508DB4}" {
-     Id "LF-Sign_LawlessZone_Next"
-     Target_en_us "The town square, south and west of here, is a safe zone."
-     Comment "Lawless area sign card, Next section."
-    }
-    CustomStringTableItem "{3C5A9E71D04B82F6}" {
-     Id "LF-IncidentGm_Kind_aim"
-     Target_en_us "Weapon aimed"
-     Comment "Incident kind: one player kept a raised weapon on another."
-    }
-    CustomStringTableItem "{10850C37306E78EB}" {
-     Id "LF-Duty_WrongDesk"
-     Target_en_us "You are on duty for another service. Clock out at your own desk first."
-     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
-    }
-    CustomStringTableItem "{9B2D4E60A17C35F8}" {
-     Id "LF-IncidentGm_Kind_admin"
-     Target_en_us "Admin action"
-     Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
     }
     CustomStringTableItem "{E7C31C63E21652CF}" {
      Id "LF-Evidence_Title"
@@ -5716,6 +5706,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Evidence_Marker_Desc"
      Target_en_us "Marks an item dropped at a crime scene."
      Comment "Description of the evidence marker."
+    }
+    CustomStringTableItem "{3C5A9E71D04B82F6}" {
+     Id "LF-IncidentGm_Kind_aim"
+     Target_en_us "Weapon aimed"
+     Comment "Incident kind: one player kept a raised weapon on another."
+    }
+    CustomStringTableItem "{65B97D3424738198}" {
+     Id "LF-Locker_Title"
+     Target_en_us "Evidence locker"
+     Comment "Toast title for the evidence locker."
+    }
+    CustomStringTableItem "{1C43A9F024D5E4F2}" {
+     Id "LF-Locker_Logged"
+     Target_en_us "Logged %1 evidence bag(s) against their reports."
+     Comment "Toast: bags logged in the locker; %1 is the count."
+    }
+    CustomStringTableItem "{FAD52119B88896AE}" {
+     Id "LF-Locker_NoBags"
+     Target_en_us "You carry no evidence bag to log."
+     Comment "Toast: nothing to log."
+    }
+    CustomStringTableItem "{155ED171C52FF11B}" {
+     Id "LF-Locker_Empty"
+     Target_en_us "The case file is empty."
+     Comment "Toast: nothing is logged in the locker."
+    }
+    CustomStringTableItem "{606F8E5D11807BC8}" {
+     Id "LF-Locker_Cases"
+     Target_en_us "Case file: %1"
+     Comment "Toast: newest logged bags; %1 is the list."
+    }
+    CustomStringTableItem "{2863ED99FCE23578}" {
+     Id "LF-Locker_Raided"
+     Target_en_us "The case file is burned: %1 bag(s) destroyed."
+     Comment "Toast: a raid destroyed the logged bags; %1 is the count."
+    }
+    CustomStringTableItem "{EF5331F445A7CC64}" {
+     Id "LF-Locker_Name"
+     Target_en_us "Evidence locker"
+     Comment "Name of the evidence locker."
+    }
+    CustomStringTableItem "{8B98128F11F74501}" {
+     Id "LF-Locker_Log_Action"
+     Target_en_us "Log evidence bags"
+     Comment "Action: log carried evidence bags."
+    }
+    CustomStringTableItem "{BD207ABDEF5524C1}" {
+     Id "LF-Locker_Read_Action"
+     Target_en_us "Read case file"
+     Comment "Action: read the case file."
+    }
+    CustomStringTableItem "{F08CF5A240E91728}" {
+     Id "LF-Locker_Raid_Action"
+     Target_en_us "Burn the case file"
+     Comment "Action: destroy the logged evidence of a forced locker."
+    }
+    CustomStringTableItem "{9B2D4E60A17C35F8}" {
+     Id "LF-IncidentGm_Kind_admin"
+     Target_en_us "Admin action"
+     Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
     }
   }
  }

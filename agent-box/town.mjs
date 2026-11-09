@@ -55,6 +55,7 @@ export const TOWN = {
     { id: "police_station", entity: "Roadmap_Police_Desk", actions: ["LF_DutyAction"], sign: "police_station", step: 15 },
     { id: "wanted_board", entity: "Roadmap_Police_WantedBoard", actions: ["LF_WantedBoardReadAction"], sign: null, step: 17 },
     { id: "police_armory", entity: "Roadmap_Police_Armory", actions: ["LF_ArmoryDrawAction"], sign: null, step: 15, when: "an on-duty officer" },
+    { id: "evidence_locker", entity: "Roadmap_Police_EvidenceLocker", actions: ["LF_LogEvidenceAction"], sign: null, step: 15, when: "an on-duty officer carrying an evidence bag" },
     { id: "escort_car", entity: "Roadmap_Escort_Car", actions: ["LF_JailPutInVehicleAction"], sign: null, step: 18, when: "an officer escorting a restrained suspect" },
     // Arrest is a character action; the cell itself offers nothing to press.
     { id: "jail", entity: "Roadmap_Jail_Cell", actions: [], sign: "jail", step: 20 },
