@@ -57,7 +57,8 @@ class LF_IncidentRecord : Managed
 //! sampled player-on-player damage, and cash moves, so an admin rules from facts.
 //!
 //! It is a subscriber on LF_EventBus: LF_OnPlayerKilled, LF_OnPlayerDamaged, LF_OnMoneyMoved,
-//! LF_OnPlayerDowned (kind "downed", #255: the downer is the other party). No
+//! LF_OnPlayerDowned (kind "downed", #255: the downer is the other party), LF_OnHoldUp (kind
+//! "holdup", #244: subject the actor, other the target). No
 //! feature calls it. Never replicated: nothing here is sent to a client.
 //! BOUNDED: config m_iMaxRecords (oldest go first) and m_iRetentionHours (older than that are
 //! dropped on every append and load).
@@ -75,6 +76,7 @@ class LF_IncidentLog
 	protected static ref LF_IncidentDamagedSubscriber s_Damaged;
 	protected static ref LF_IncidentMoneySubscriber s_Money;
 	protected static ref LF_IncidentDownedSubscriber s_Downed;
+	protected static ref LF_IncidentHoldUpSubscriber s_HoldUp;
 
 	//------------------------------------------------------------------------------------------------
 	protected static array<ref LF_IncidentRecord> Records()
@@ -96,6 +98,8 @@ class LF_IncidentLog
 			LF_EventBus.Unsubscribe(LF_OnMoneyMoved, s_Money);
 		if (s_Downed)
 			LF_EventBus.Unsubscribe(LF_OnPlayerDowned, s_Downed);
+		if (s_HoldUp)
+			LF_EventBus.Unsubscribe(LF_OnHoldUp, s_HoldUp);
 
 		s_aRecords = null;
 		s_iLastNumber = 0;
@@ -104,6 +108,8 @@ class LF_IncidentLog
 		s_Damaged = null;
 		s_Money = null;
 		s_Downed = null;
+		s_HoldUp = null;
+		LF_HoldUp.ResetStatics();
 		LF_IncidentConfig.ResetStatics();
 		LF_IncidentDamage.ResetStatics();
 		LF_IncidentFlags.ResetStatics();
@@ -121,10 +127,12 @@ class LF_IncidentLog
 		s_Damaged = new LF_IncidentDamagedSubscriber();
 		s_Money = new LF_IncidentMoneySubscriber();
 		s_Downed = new LF_IncidentDownedSubscriber();
+		s_HoldUp = new LF_IncidentHoldUpSubscriber();
 		LF_EventBus.Subscribe(LF_OnPlayerKilled, s_Killed);
 		LF_EventBus.Subscribe(LF_OnPlayerDamaged, s_Damaged);
 		LF_EventBus.Subscribe(LF_OnMoneyMoved, s_Money);
 		LF_EventBus.Subscribe(LF_OnPlayerDowned, s_Downed);
+		LF_EventBus.Subscribe(LF_OnHoldUp, s_HoldUp);
 		s_bInstalled = true;
 		LF_Debug.Info(FEATURE, string.Format("incident log installed (%1 record(s) loaded)", Records().Count()));
 	}
@@ -378,6 +386,21 @@ class LF_IncidentDownedSubscriber : LF_EventSubscriber
 			return false;
 
 		LF_IncidentLog.Append(LF_IncidentConfig.KIND_DOWNED, System.GetUnixTime(), downed.m_sPlayerUid, downed.m_sDownerUid, downed.m_vPosition, 0, "", false);
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A hold-up (LF_HoldUp): the actor is the subject, the held-up player the other party.
+class LF_IncidentHoldUpSubscriber : LF_EventSubscriber
+{
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnHoldUp holdUp = LF_OnHoldUp.Cast(busEvent);
+		if (!holdUp)
+			return false;
+
+		LF_IncidentLog.Append(LF_IncidentConfig.KIND_HOLDUP, System.GetUnixTime(), holdUp.m_sActorUid, holdUp.m_sTargetUid, holdUp.m_vPosition, 0, "", false);
 		return true;
 	}
 }

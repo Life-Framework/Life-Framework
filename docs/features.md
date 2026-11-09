@@ -56,6 +56,13 @@
   `Query(center, radius, from, to, kind)`. Saved as the `incidents` payload
   (save version 13); never replicated. Logs `[LFDebug:Incident]`. Tests
   `incident/log`, `persist/incident-log-roundtrip`.
+- ✅ **Hold-up** (#244, test `incident/holdup`). A `Hold up` entry (`holdup` role slot of the player interaction
+  menu, `Character_Roleplay.et`) is offered while a weapon is in hand. The server (`LF_HoldUp.Attempt`) checks
+  weapon, range (`m_fHoldUpRange`, 2 m; the menu itself reaches 2 m) and the actor's cooldown
+  (`m_iHoldUpCooldownSeconds`, 30) in `LF_Incident.conf`, then raises the vanilla halt gesture, plays a cue
+  at both characters, toasts the target, and publishes `LF_OnHoldUp`. The incident log records kind `holdup`
+  (actor, target, position, zone). A refusal logs `[LFDebug:HoldUp] hold-up refused` and records nothing.
+  It changes no damage rule. No save change (the kind is a string).
 - ⚠️ Cash given, robbed, or picked up appear only as `OnMoneyMoved` publish points
   land (#330); today the ATM is wired. No query UI yet: admin tooling reads it.
 

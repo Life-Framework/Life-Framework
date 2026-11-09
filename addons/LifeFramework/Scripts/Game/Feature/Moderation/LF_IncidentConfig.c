@@ -10,6 +10,7 @@ class LF_IncidentConfig
 	static const string KIND_DAMAGE = "damage";
 	static const string KIND_CASH = "cash";
 	static const string KIND_DOWNED = "downed";
+	static const string KIND_HOLDUP = "holdup";
 	static const string KINDS_ALL = "all";
 
 	static const int DEFAULT_MAX_RECORDS = 2000;
@@ -21,7 +22,7 @@ class LF_IncidentConfig
 	protected static ref LF_IncidentConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
-	[Attribute("all", UIWidgets.Auto, "Event kinds recorded: 'all' or a comma list of death, damage, cash, downed")]
+	[Attribute("all", UIWidgets.Auto, "Event kinds recorded: 'all' or a comma list of death, damage, cash, downed, holdup")]
 	string m_sKinds;
 
 	[Attribute("2000", UIWidgets.Auto, "Most records kept; the oldest go first")]
@@ -38,6 +39,12 @@ class LF_IncidentConfig
 
 	[Attribute("120", UIWidgets.Auto, "Seconds a player must wait between two reports")]
 	int m_iReportCooldownSeconds;
+
+	[Attribute("2", UIWidgets.Auto, "Metres a hold-up reaches. The interaction menu itself reaches 2 m, so more changes nothing until the menu does")]
+	float m_fHoldUpRange;
+
+	[Attribute("30", UIWidgets.Auto, "Seconds a player waits between two hold-ups")]
+	int m_iHoldUpCooldownSeconds;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -89,6 +96,26 @@ class LF_IncidentConfig
 			return true;
 
 		return KindEnabled(config.m_sKinds, kind);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float HoldUpRange()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_fHoldUpRange <= 0)
+			return 2;
+
+		return config.m_fHoldUpRange;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int HoldUpCooldownSeconds()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_iHoldUpCooldownSeconds < 0)
+			return 30;
+
+		return config.m_iHoldUpCooldownSeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------

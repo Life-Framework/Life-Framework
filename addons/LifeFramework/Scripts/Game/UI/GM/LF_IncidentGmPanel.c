@@ -199,6 +199,8 @@ class LF_IncidentGmView
 			kindKey = "#LF-IncidentGm_Kind_cash";
 		else if (kind == "downed")
 			kindKey = "#LF-IncidentGm_Kind_downed";
+		else if (kind == "holdup")
+			kindKey = "#LF-IncidentGm_Kind_holdup";
 
 		string kindText = WidgetManager.Translate(kindKey);
 		string text;
