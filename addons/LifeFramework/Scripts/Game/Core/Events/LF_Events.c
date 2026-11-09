@@ -329,6 +329,11 @@ class LF_OnAdminAction : LF_Event
 		e.m_sAdminUid = adminUid;
 		e.m_sTargetUid = targetUid;
 		e.m_sAction = action;
+		e.m_vPosition = position;
+		return e;
+	}
+}
+
 //! A player kept a raised weapon on another player for the aim window (LF_AimIntent). Intent
 //! only; no rule changes because of it. The incident log records it (kind "aim").
 class LF_OnAimedAt : LF_Event

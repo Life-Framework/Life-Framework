@@ -430,6 +430,11 @@ class LF_IncidentAdminSubscriber : LF_EventSubscriber
 			return false;
 
 		LF_IncidentLog.Append(LF_IncidentConfig.KIND_ADMIN, System.GetUnixTime(), action.m_sAdminUid, action.m_sTargetUid, action.m_vPosition, 0, action.m_sAction, false);
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! A weapon held on a player for the aim window (LF_AimIntent): the aimer is the subject.
 class LF_IncidentAimSubscriber : LF_EventSubscriber
 {
