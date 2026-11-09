@@ -19,7 +19,7 @@
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the ELTEST suite
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
-//   session up [--clients N] [--mission debug|playtest]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   session up [--clients N] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved ELTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
@@ -30,7 +30,7 @@
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { spawn, spawnSync } from "node:child_process";
-import { closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
@@ -1477,6 +1477,19 @@ function spawnOutsideSsh(exe, args, cwd) {
   return { pid: Number(m[2]) };
 }
 
+// Verbose session lines go to <session dir>/up.log; the console gets the verdict.
+let sessionLog = null;
+function slog(msg) {
+  if (sessionLog) {
+    try {
+      appendFileSync(sessionLog, `${new Date().toISOString()} ${msg}
+`);
+      return;
+    } catch {}
+  }
+  console.log(msg);
+}
+
 function cmdSessionDown(dir) {
   const s = session.readSession(dir);
   if (!s) {
@@ -1534,18 +1547,31 @@ function cmdSessionUp(root, dir, flags) {
       return 1;
     }
   }
+  const holderOf = () => {
+    try {
+      const h = JSON.parse(readFileSync(join(wt.hubDirOf(root), "locks", `${SERVER_SLOT}.lock`), "utf8"));
+      return `${h.purpose ?? "a run"} of ${h.slug ?? h.root ?? "another checkout"} (pid ${h.pid})`;
+    } catch {
+      return "another run";
+    }
+  };
   try {
+    if (flags.includes("--wait")) console.log(`session: port 2001 is held by ${holderOf()}; queued (up to 30 min)`);
     wt.acquireLock(root, SERVER_SLOT, { waitMs: flags.includes("--wait") ? 1800000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root } });
-  } catch (e) {
-    console.log(`FAIL  ${e.message}`);
-    console.log("      a test, host, or session server holds port 2001; retry when it ends, or pass --wait");
+  } catch {
+    console.log(`FAIL  port 2001 is held by ${holderOf()}; retry when it ends, or pass --wait`);
     return 1;
   }
   const paths = session.sessionPaths(dir, clients);
+  sessionLog = join(dir, "up.log");
+  try {
+    writeFileSync(sessionLog, "");
+  } catch {}
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), root, mission, res, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [] };
+  const state = { id: session.newSessionId(), root, mission, res, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients };
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
+    console.log(`      full log ${sessionLog}`);
     session.writeSession(dir, state);
     cmdSessionDown(dir);
     wt.releaseLock(root, SERVER_SLOT);
@@ -1558,13 +1584,11 @@ function cmdSessionUp(root, dir, flags) {
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
     // one. There is no faction menu (M1-11).
-    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail);
+    const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail, state);
     if (joined < 0) return 1;
-    console.log(`session: ${joined} client(s) joined and reached the registration form or spawned`);
-    if (mission === "playtest") console.log("session: LF_PlaytestTown, LF_HARNESS build (harness gate open, debug menu closed)");
-    console.log("drive with:");
-    console.log("  node agent-box/harness.mjs --client <n> <verb>   and   node agent-box/session.mjs state <n>");
-    console.log("close everything with: node agent-box/session.mjs down");
+    session.writeSession(dir, { ...state, readyAt: new Date().toISOString() });
+    console.log(`session: ready; ${joined} client(s) joined${mission === "playtest" ? " (LF_PlaytestTown, LF_HARNESS)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    console.log(`session: full log ${sessionLog}`);
     return 0;
   } catch (e) {
     return fail(e.message);
@@ -1581,7 +1605,7 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   const junction = serverGameAddons(root);
   mkdirSync(paths.server, { recursive: true });
   const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave });
-  console.log(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
+  slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
   const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
   srv.unref?.();
@@ -1599,12 +1623,12 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
     if (log && readFileSync(log, "utf8").includes(session.SERVER_READY)) break;
   }
   if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
-  console.log(`session: server up (pid ${srv.pid}); log ${log}`);
+  slog(`server up (pid ${srv.pid}); log ${log}`);
 
   for (const c of paths.clients) {
     mkdirSync(c.box, { recursive: true });
     const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id, res, sound: !!state.sound });
-    console.log(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
+    slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
     // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
     // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
     // Over ssh (a pool machine such as lf-testbox) there is no desktop: the client
@@ -1634,24 +1658,98 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   return log;
 }
 
+// One look at a starting session: { joined } while it is still coming up, or
+// { fail } with a one-line reason as soon as it cannot get there (a refused
+// client, a client or the server exited, Steam not running).
+function sessionVerdict(state, log, marker) {
+  const text = readFileSync(log, "utf8");
+  const refused = text.split(/\r?\n/).find((l) => /ValidationError|Disconnecting identity/.test(l));
+  if (refused) return { fail: `a client was refused: ${refused.trim()}` };
+  const joined = (text.match(marker) ?? []).length;
+  if (state) {
+    if (!host.pidAlive(state.serverPid)) return { fail: `the server exited (log ${log})` };
+    for (const c of state.clients ?? []) {
+      const cl = session.newestLog(c.logs);
+      if (!host.pidAlive(c.pid)) return { fail: `client ${c.n} exited (log ${cl ?? "none"})` };
+      if (cl) {
+        const steam = readFileSync(cl, "utf8").split(/\r?\n/).find((l) => /steam.*(not running|must be running|failed to init|SteamAPI_Init)/i.test(l));
+        if (steam) return { fail: `client ${c.n}: Steam refused it: ${steam.trim().slice(0, 160)}` };
+      }
+    }
+  }
+  return { joined };
+}
+
 // Waits until marker matches the server log once per client. Returns the
 // count, or -1 after fail().
-function sessionAwaitJoin(log, clients, marker, fail) {
+function sessionAwaitJoin(log, clients, marker, fail, state) {
   const joinDeadline = Date.now() + 240000;
   let joined = 0;
   while (Date.now() < joinDeadline) {
-    const text = readFileSync(log, "utf8");
-    const refused = text.split(/\r?\n/).find((l) => /ValidationError|Disconnecting identity/.test(l));
-    if (refused) {
-      fail(`a client was refused: ${refused.trim()}`);
+    const v = sessionVerdict(state, log, marker);
+    if (v.fail) {
+      fail(v.fail);
       return -1;
     }
-    joined = (text.match(marker) ?? []).length;
+    joined = v.joined;
     if (joined >= clients) return joined;
     sleepMs(2000);
   }
   fail(`${joined}/${clients} client(s) joined within 240s (server log ${log})`);
   return -1;
+}
+
+// `session wait [--timeout s]`: blocks on a session that is already starting
+// (an up running in the background or in another terminal) until the server and
+// every client are ready. Exit 0 ready; exit 1 with a one-line reason otherwise.
+function cmdSessionWait(dir, flags) {
+  const i = flags.indexOf("--timeout");
+  const timeoutS = i === -1 ? 600 : Number(flags[i + 1]);
+  if (!Number.isFinite(timeoutS) || timeoutS <= 0) {
+    console.log("FAIL  --timeout needs seconds");
+    return 2;
+  }
+  const t0 = Date.now();
+  const deadline = t0 + timeoutS * 1000;
+  let sawSession = false;
+  for (;;) {
+    const s = session.readSession(dir);
+    if (s && !s.stoppedAt) {
+      sawSession = true;
+      if (s.readyAt && host.pidAlive(s.serverPid)) {
+        console.log(`session: ready; server pid ${s.serverPid}, ${(s.clients ?? []).length} client(s)`);
+        return 0;
+      }
+      const log = s.serverPid ? session.newestLog(join(s.serverProfile, "logs")) : null;
+      if (s.serverPid && !host.pidAlive(s.serverPid)) {
+        console.log(`FAIL  the server exited before it was ready (log ${log ?? "none"})`);
+        return 1;
+      }
+      if (log && s.expectClients !== undefined && (s.clients ?? []).length >= s.expectClients) {
+        const marker = s.restartedAt ? /flow start for player \d+/g : /(?:registration form sent to player|spawning player) \d+/g;
+        const v = sessionVerdict(s, log, marker);
+        if (v.fail) {
+          console.log(`FAIL  ${v.fail}`);
+          return 1;
+        }
+        if (readFileSync(log, "utf8").includes(session.SERVER_READY) && v.joined >= s.expectClients) {
+          console.log(`session: ready; server pid ${s.serverPid}, ${v.joined} client(s) joined`);
+          return 0;
+        }
+      }
+    } else if (s?.stoppedAt && sawSession) {
+      console.log("FAIL  the session was closed while waiting");
+      return 1;
+    } else if (!sawSession && Date.now() - t0 > 30000) {
+      console.log("FAIL  no session starting; run 'node agent-box/session.mjs up' first");
+      return 1;
+    }
+    if (Date.now() > deadline) {
+      console.log(`FAIL  session not ready within ${timeoutS} s (state ${session.sessionPaths(dir).state})`);
+      return 1;
+    }
+    sleepMs(2000);
+  }
 }
 
 // Playtest only: the host stop file closes the server gracefully (the engine
@@ -1695,7 +1793,8 @@ function cmdSessionRestart(root, dir, flags) {
   for (const c of prev.clients ?? []) console.log(`session: client ${c.n} pid ${c.pid} ${killTree(c.pid) ? "closed" : "already gone"}`);
   const clients = (prev.clients ?? []).length;
   const paths = session.sessionPaths(dir, clients);
-  const state = { ...prev, restartedAt: new Date().toISOString(), serverPid: 0, clients: [] };
+  sessionLog = join(dir, "up.log");
+  const state = { ...prev, restartedAt: new Date().toISOString(), readyAt: undefined, serverPid: 0, clients: [] };
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
     session.writeSession(dir, state);
@@ -1706,9 +1805,10 @@ function cmdSessionRestart(root, dir, flags) {
   try {
     const log = sessionLaunch(root, dir, state, paths, { exe, game, mission: prev.mission, res: prev.res, visible: prev.visible, loadSave: true, fail });
     if (typeof log === "number") return log;
-    const joined = sessionAwaitJoin(log, clients, /flow start for player \d+/g, fail);
+    const joined = sessionAwaitJoin(log, clients, /flow start for player \d+/g, fail, state);
     if (joined < 0) return 1;
     const loaded = /session continued from a save point|loading the latest save point/.test(readFileSync(log, "utf8"));
+    session.writeSession(dir, { ...state, readyAt: new Date().toISOString() });
     console.log(`session: restarted${loaded ? " from the save" : "; WARN the server log does not say it loaded a save"}; ${joined} client(s) rejoined`);
     return 0;
   } catch (e) {
@@ -1735,7 +1835,8 @@ function cmdSession(args) {
   if (list[0] === "restart") return cmdSessionRestart(ROOT, dir, list.slice(1));
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
-  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] | restart | down | status");
+  if (list[0] === "wait") return cmdSessionWait(dir, list.slice(1));
+  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] | wait [--timeout s] | restart | down | status");
   return list[0] ? 1 : 0;
 }
 
@@ -1851,6 +1952,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   const v = await cmdRunArea("validate", root);
   if (v !== 0) return v;
   console.log("\n=== dev: test (no build) ===");
+  process.env.LF_TEST_DEBUG_LINES = "1"; // dev is the verb that dumps the feature lines
   return cmdTest(true, tier, root, opts);
 }
 

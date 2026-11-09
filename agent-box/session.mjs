@@ -5,6 +5,7 @@
 //   node agent-box/session.mjs up --clients 2     boot the server, launch the clients
 //   node agent-box/session.mjs up --clients 2 --mission playtest   LF_PlaytestTown, harness build
 //   node agent-box/session.mjs restart            save, stop, load, rejoin (playtest mission)
+//   node agent-box/session.mjs wait [--timeout 600]   block until a starting session is ready (exit 0), or say why not
 //   node agent-box/session.mjs down               close every process the session started
 //   node agent-box/session.mjs status             pids, profiles, logs
 //   node agent-box/session.mjs state <client>     faction, duty, wanted, cash, bank, job, org
@@ -1183,7 +1184,7 @@ async function main(argv) {
   let [cmd, ...rest] = argv;
   if (cmd === "run") return runWhereSession(rest);
   if (cmd === "pull") return pullFromSession(rest);
-  if (["up", "down", "status", "restart", "state"].includes(cmd)) {
+  if (["up", "down", "status", "restart", "state", "wait"].includes(cmd)) {
     const routed = await routeMachine(cmd, rest);
     if (!routed.local) return routed.code;
     rest = routed.args;
@@ -1206,7 +1207,7 @@ async function main(argv) {
     console.log(f.length ? "session selftest: FAIL" : "session selftest: OK");
     return f.length ? 1 : 0;
   }
-  if (cmd === "up" || cmd === "down" || cmd === "status" || cmd === "restart") {
+  if (cmd === "up" || cmd === "down" || cmd === "status" || cmd === "restart" || cmd === "wait") {
     const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", cmd, ...rest], { windowsHide: true, stdio: "inherit", cwd: process.cwd() });
     return r.status ?? 1;
   }
@@ -1235,7 +1236,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 

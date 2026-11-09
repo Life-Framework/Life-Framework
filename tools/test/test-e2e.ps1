@@ -386,8 +386,14 @@ if ($lastSummary) {
 
   $debugLines = @($console -split "`n" | Where-Object { $_ -match '\[ELDebug:' })
   if ($debugLines.Count -gt 0) {
-    Write-Host "test-e2e: feature debug lines ($($debugLines.Count)):"
-    foreach ($d in $debugLines) { Write-Host "  $($d -replace '.*\[ELDebug:', '[ELDebug:')" }
+    # Hundreds of lines per run: a count and a file by default; the lines inline
+    # only with LF_TEST_DEBUG_LINES=1 (tools\cli dev prints its own).
+    $dbgFile = Join-Path $lastSummary.LogDir "eldebug-lines.txt"
+    $debugLines | ForEach-Object { $_ -replace '.*\[ELDebug:', '[ELDebug:' } | Set-Content -LiteralPath $dbgFile -Encoding utf8
+    Write-Host "test-e2e: feature debug lines ($($debugLines.Count)): $dbgFile"
+    if ($env:LF_TEST_DEBUG_LINES -eq '1') {
+      foreach ($d in $debugLines) { Write-Host "  $($d -replace '.*\[ELDebug:', '[ELDebug:')" }
+    }
   }
 
   if ($lastSummary.Tier -ne $expectedTier) {

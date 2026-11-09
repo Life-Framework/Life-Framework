@@ -119,6 +119,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 - Red-proof loop: `tools\cli test --no-build --only <EL_Test_Class>` (~10 s), then `--tier all` once at the end.
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
+- Wait with one blocking call: run `test`, `e2e`, `session up` or `session wait` in the foreground with a timeout up to 600000 ms; never `sleep`/`until` loops, Monitor, ScheduleWakeup or status polls (`docs/agent-budget.md`).
 - A rule that keeps getting broken becomes a check: `tools\cli validate` runs every script in `tools/validation/`.
 
 ## Logging and fail-safe

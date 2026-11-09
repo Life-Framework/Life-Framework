@@ -40,6 +40,11 @@ export function slotLockName(i) {
   return i === 1 ? "server-2001" : `server-2001-s${i}`;
 }
 
+// Every ssh to a pool machine is bounded: ConnectTimeout 4 s plus these overall limits.
+export const PROBE_TIMEOUT_MS = 12000; // probe, lock read
+export const HOLDER_FIRST_BYTE_MS = 40000; // no output at all from the holder
+export const HOLDER_TIMEOUT_MS = 180000; // holder never reports a slot, busy, or error
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -207,7 +212,7 @@ export function probe(root, m, { fresh = false } = {}) {
   const hit = cache[m.name];
   if (!fresh && hit && Date.now() - hit.at < HEALTH_TTL_MS) return hit;
   const t0 = Date.now();
-  const res = tb.sshPs(m.host, [`$main = ${tb.psQuote(m.root)}`, tb.PS_BUILDID, "Write-Host 'lf-pool: ok'"].join("\n"), { timeout: 20000, connectTimeout: 4 });
+  const res = tb.sshPs(m.host, [`$main = ${tb.psQuote(m.root)}`, tb.PS_BUILDID, "Write-Host 'lf-pool: ok'"].join("\n"), { timeout: PROBE_TIMEOUT_MS, connectTimeout: 4 });
   const out = res.stdout ?? "";
   const h = { reachable: /lf-pool: ok/.test(out), build: /lf-remote: buildid (\d+)/.exec(out)?.[1] ?? null, at: Date.now(), ms: Date.now() - t0 };
   const now = readJson(file, {});
@@ -481,13 +486,20 @@ export function startHolder(root, m, cfg, { onLost } = {}) {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      clearTimeout(silent);
       resolvePromise(v);
     };
     const timer = setTimeout(() => {
       child.kill();
-      done({ error: `${m.name}: no answer from the holder within 180 s` });
-    }, 180000);
+      done({ error: `${m.name}: no answer from the holder within ${HOLDER_TIMEOUT_MS / 1000} s` });
+    }, HOLDER_TIMEOUT_MS);
+    // A box that takes the connection and then says nothing is as good as down.
+    const silent = setTimeout(() => {
+      child.kill();
+      done({ error: `${m.name}: ssh connected but nothing came back within ${HOLDER_FIRST_BYTE_MS / 1000} s` });
+    }, HOLDER_FIRST_BYTE_MS);
     const onLine = (line) => {
+      clearTimeout(silent);
       const t = line.trim();
       let mm;
       if ((mm = /^lf-pool: acquired (\S+) (\d+)/.exec(t))) acquired = { lockName: mm[1], index: Number(mm[2]) };
@@ -718,8 +730,10 @@ export async function acquireSlot(root, opts = {}) {
     skipNote.add(key);
     console.log(msg);
   };
+  const downNow = new Set();
   const usable = (m) => {
     if (m.via === "local") return true;
+    if (downNow.has(m.name)) return false;
     // Only a cached answer here: the holder attempt itself is the probe (it
     // reports the build), so a healthy box costs no extra ssh round trip.
     const h = readJson(healthFile(root), {})[m.name];
@@ -749,7 +763,6 @@ export async function acquireSlot(root, opts = {}) {
   const lastTry = new Map();
   const waitMs = opts.waitMs ?? 3600000;
   let announced = false;
-  let lastNotice = Date.now();
   try {
     for (;;) {
       // Every poll re-reads the pool config: a machine enabled or disabled in
@@ -805,18 +818,19 @@ export async function acquireSlot(root, opts = {}) {
           }
         }
         if (r.error) {
-          console.log(`pool: ${r.error}`);
-          // Treat as down for the health window.
+          // Down for the rest of this run and the health window; the next
+          // machine (or this PC) takes the job.
+          downNow.add(m.name);
           markHealth(root, m, { reachable: false, error: r.error });
+          const next = machines.filter((x) => x.name !== m.name && usable(x)).map((x) => x.name);
+          console.log(`pool: ${r.error}; ${m.name} marked down for this run, ${next.length ? `falling back to ${next.join(", ")}` : "no other machine"}`);
+          if (!next.length) throw new Error(`pool: no reachable machine for this run (${m.name} is down)`);
         }
       }
       const ahead = older.length;
       if (!announced) {
         announced = true;
         console.log(`pool: every slot is busy (${machines.map((m) => m.name).join(", ")}); queued with ${ahead} ahead`);
-      } else if (Date.now() - lastNotice > 60000) {
-        lastNotice = Date.now();
-        console.log(`pool: still waiting (${Math.round((Date.now() - started) / 1000)} s, ${ahead} ahead)`);
       }
       if (Date.now() - started > waitMs) throw new Error(`pool: no slot within ${Math.round(waitMs / 60000)} min`);
       await sleep(1000);
@@ -900,7 +914,7 @@ function remoteLocks(m) {
     `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\locks'`,
     `foreach ($n in @(${names.map(tb.psQuote).join(",")})) { $f = Join-Path $ld ($n + '.lock'); if (Test-Path -LiteralPath $f) { $raw = [IO.File]::ReadAllText($f).Trim(); $alive = $false; try { $i = $raw | ConvertFrom-Json; $alive = [bool](Get-Process -Id $i.pid -ErrorAction SilentlyContinue) } catch {}; Write-Host \"lf-pool: lock $n $alive $raw\" } else { Write-Host \"lf-pool: lock $n free\" } }`,
   ].join("\n");
-  const r = tb.sshPs(m.host, ps, { timeout: 20000, connectTimeout: 4 });
+  const r = tb.sshPs(m.host, ps, { timeout: PROBE_TIMEOUT_MS, connectTimeout: 4 });
   const out = {};
   for (const l of (r.stdout ?? "").split(/\r?\n/)) {
     const mm = /^lf-pool: lock (\S+) (free|True|False)(?: (.*))?$/.exec(l.trim());
