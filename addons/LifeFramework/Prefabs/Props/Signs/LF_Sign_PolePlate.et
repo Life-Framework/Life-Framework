@@ -8,9 +8,9 @@ GenericEntity : "{2F5C4F11D17E1725}Prefabs/Structures/Signs/Generic/SignGeneric_
    m_bFaceOnOwner 0
    m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
    m_vTitlePos 60 60 0
-   m_vTitleSize 904 904 0
+   m_vTitleSize 904 613 0
    m_iTitleFontMax 260
-   m_vFaceArea 1024 1024 0
+   m_vFaceArea 1024 733 0
    m_fRimWidth 40
    m_bFaceOnChild 1
   }
