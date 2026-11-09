@@ -85,15 +85,20 @@ class LF_Murder
 				victimWanted = victimAccount.GetWantedLevel();
 		}
 
+		string skip = SkipReason(killerPlayerId, victimPlayerId, isCharacter, killerIsVictim, killerOnDuty, victimWanted, OfficerExempt());
 		if (victimPlayerId > 0)
 		{
 			string killerPlayerUid;
 			if (killerPlayerId > 0 && !killerIsVictim)
 				killerPlayerUid = killerUid;
-			LF_EventBus.Publish(LF_OnPlayerKilled.Create(victimLabel, killerPlayerUid));
+			LF_OnPlayerKilled killed = LF_OnPlayerKilled.Create(victimLabel, killerPlayerUid);
+			if (victim)
+				killed.m_vPosition = victim.GetOrigin();
+			killed.m_sWeapon = LF_IncidentLog.WeaponOf(killerEntity);
+			killed.m_bMurder = skip.IsEmpty();
+			LF_EventBus.Publish(killed);
 		}
 
-		string skip = SkipReason(killerPlayerId, victimPlayerId, isCharacter, killerIsVictim, killerOnDuty, victimWanted, OfficerExempt());
 		if (!skip.IsEmpty())
 		{
 			// Vehicles and props die all the time; only character deaths are worth a line.
