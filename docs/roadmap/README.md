@@ -19,7 +19,8 @@ The November 2025 community checklist is in git history
 | M2 | Living Town | Outline: moderation, medic, comms, investigation (epics #145-#148, each broken into sub-issues) | [m2-outline.md](m2-outline.md) |
 | M3 | Framework Release | Outline: two addons, config layer, web generator, owner docs, example server, config harness, Workshop release (epics #223-#229, #366, sub-issues under #224-#229) | [m3-outline.md](m3-outline.md) |
 | M4 | Flagship Live | Outline: hosting and ops, staff and community, showcase (epics #230-#232, each broken into sub-issues) | [m4-outline.md](m4-outline.md) |
-| M5 | Flagship Story | Ideas only: relocated from Chernobyl, life on Everon 1989 | epic #214 |
+| M5 | Flagship Story | Outline: a light arrival arc, music, voiced key NPCs, food, the state factory, bus stops (idea epic #214) | [m5-outline.md](m5-outline.md) |
+| M6 | Homes and Land | Ideas only: property, renting, the dacha, farming (split from M5, 2026-11-09) | epic #214 items 6 and 7 |
 
 Each outline is planned in full only after the milestone before it closes.
 
