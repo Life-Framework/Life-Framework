@@ -29,3 +29,10 @@ payphone calls take one path to the radio, the dispatch log, and the board.
 `LF_ServiceTakeAction` on a board calls `LF_ServiceTake.ServerTake`: on duty for the service, oldest open call
 with room (`m_iMaxTakers`, police 2). It publishes `LF_OnServiceCallTaken`; the board marks the call taken and
 `LF_ServiceCallTakenNotifier` notifies the caller (owner RPC by player id, no entity id).
+
+## Pager (#249)
+
+`LF_PagerSubscriber` (installed with the board) writes a call whose channels include `pager` to the
+`LF_PagerComponent` of every receiver who carries one (`LF_Pager.Page`), then the pager beeps. The last
+`m_iPagerMessages` calls ride one replicated string; `LF_ReadPagerAction` shows them. Police get one in
+the duty kit (`GameMode_Roleplay_Debug.et`).

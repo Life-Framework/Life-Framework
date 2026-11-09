@@ -5467,6 +5467,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Read serial"
      Comment "Action name to read a fence tool serial (#272)."
     }
+    CustomStringTableItem "{CA566A486AE9A98D}" {
+     Id "LF-Pager_Title"
+     Target_en_us "Pager"
+     Comment "Title of the pager card."
+    }
+    CustomStringTableItem "{4EF600B18D7A2C1B}" {
+     Id "LF-Pager_None"
+     Target_en_us "No calls paged."
+     Comment "Pager card with no messages."
+    }
+    CustomStringTableItem "{9DC6DB6828971952}" {
+     Id "LF-Pager_Read"
+     Target_en_us "Read the pager"
+     Comment "Action on a pager item (#249)."
+    }
+    CustomStringTableItem "{B5DC3AD9F79C05C4}" {
+     Id "LF-Item_Pager_Name"
+     Target_en_us "Pager"
+     Comment "Inventory name of the pager."
+    }
+    CustomStringTableItem "{798CD609229F3E62}" {
+     Id "LF-Item_Pager_Description"
+     Target_en_us "Beeps when a call comes in for your service while you are on duty. Look at it to read the last calls."
+     Comment "Inventory description of the pager."
+    }
   }
  }
 }

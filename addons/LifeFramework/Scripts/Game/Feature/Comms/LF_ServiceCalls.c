@@ -54,9 +54,13 @@ class LF_ServiceCallsConfig
 	int m_iPhoneCooldownSeconds;
 
 	static const int DEFAULT_BOARD_EXPIRY = 900;
+	static const int DEFAULT_PAGER_MESSAGES = 5;
 
 	[Attribute("900", UIWidgets.Auto, "Seconds a call stays on a dispatch board before it expires (#250)")]
 	int m_iBoardExpirySeconds;
+
+	[Attribute("5", UIWidgets.Auto, "Messages a pager keeps, newest first (#249)")]
+	int m_iPagerMessages;
 
 	protected static ref LF_ServiceCallsConfig s_Config;
 	protected static ref array<ref LF_ServiceDef> s_aDefaults;
@@ -77,6 +81,15 @@ class LF_ServiceCallsConfig
 		if (!s_Config)
 			return DEFAULT_PAYPHONE_COST;
 		return s_Config.m_iPayphoneCost;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int PagerMessages()
+	{
+		Load();
+		if (!s_Config || s_Config.m_iPagerMessages <= 0)
+			return DEFAULT_PAGER_MESSAGES;
+		return s_Config.m_iPagerMessages;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -126,7 +139,7 @@ class LF_ServiceCallsConfig
 		if (!s_aDefaults)
 		{
 			s_aDefaults = {};
-			s_aDefaults.Insert(LF_ServiceDef.Make("police", "#LF-Service_Police", "duty:police", "radio,board"));
+			s_aDefaults.Insert(LF_ServiceDef.Make("police", "#LF-Service_Police", "duty:police", "radio,board,pager"));
 			s_aDefaults[0].m_iMaxTakers = 2;
 			s_aDefaults.Insert(LF_ServiceDef.Make("medic", "#LF-Service_Medic", "job:4", "pager,board"));
 			s_aDefaults.Insert(LF_ServiceDef.Make("taxi", "#LF-Service_Taxi", "job:7", "pager,board"));
