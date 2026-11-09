@@ -117,6 +117,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "die") {
     return `${id} die`;
   }
+  if (spec.verb === "giveup") {
+    return `${id} giveup`;
+  }
   if (spec.verb === "peers") {
     return `${id} peers`;
   }
@@ -1359,6 +1362,9 @@ function main(argv) {
     }
     if (cmd === "die") {
       return printResult(sendCommand({ verb: "die" }, 10000));
+    }
+    if (cmd === "giveup") {
+      return printResult(sendCommand({ verb: "giveup" }, 10000));
     }
     if (cmd === "peers") {
       return printResult(sendCommand({ verb: "peers" }, 10000));

@@ -106,6 +106,7 @@ class LF_IncidentLog
 		s_Downed = null;
 		LF_IncidentConfig.ResetStatics();
 		LF_IncidentDamage.ResetStatics();
+		LF_IncidentFlags.ResetStatics();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -220,6 +221,19 @@ class LF_IncidentLog
 		}
 
 		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A copy of the record with this number, or null when it is gone (trimmed or never there).
+	static LF_IncidentRecord Find(int number)
+	{
+		foreach (LF_IncidentRecord record : Records())
+		{
+			if (record.m_iNumber == number)
+				return record.Copy();
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -11,6 +11,9 @@ class LF_ServiceBoardCall : Managed
 	string m_sTime;
 	//! System tick (ms) after which the call leaves the board.
 	int m_iExpiresMs;
+	string m_sCallerUid;
+	//! Uids of the responders who took the call (#251).
+	ref array<string> m_aTakers = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -36,6 +39,8 @@ class LF_ServiceBoard
 		s_aCalls = null;
 		s_iSequence = 0;
 		LF_ServiceBoardSubscriber.ResetStatics();
+		LF_ServiceCallTakenNotifier.ResetStatics();
+		LF_PagerSubscriber.ResetStatics();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -43,6 +48,8 @@ class LF_ServiceBoard
 	static void Install()
 	{
 		LF_ServiceBoardSubscriber.Install();
+		LF_ServiceCallTakenNotifier.Install();
+		LF_PagerSubscriber.Install();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -72,6 +79,7 @@ class LF_ServiceBoard
 		pinned.m_sService = call.m_sService;
 		pinned.m_sSummary = call.m_sSummary;
 		pinned.m_sPlace = call.m_sPlace;
+		pinned.m_sCallerUid = call.m_sCallerUid;
 		pinned.m_sTime = LF_Dispatch.ClockText();
 		pinned.m_iExpiresMs = nowMs + LF_ServiceCallsConfig.BoardExpirySeconds() * 1000;
 		s_aCalls.Insert(pinned);
@@ -89,14 +97,17 @@ class LF_ServiceBoard
 		{
 			if (nowMs - s_aCalls[i].m_iExpiresMs >= 0)
 			{
-				LF_Debug.Info(FEATURE, string.Format("call #%1 expired from the %2 board", s_aCalls[i].m_iSequence, s_aCalls[i].m_sService));
+				if (s_aCalls[i].m_aTakers.IsEmpty())
+					LF_Debug.Warn(FEATURE, string.Format("call #%1 expired from the %2 board unanswered: nobody took it", s_aCalls[i].m_iSequence, s_aCalls[i].m_sService));
+				else
+					LF_Debug.Info(FEATURE, string.Format("call #%1 expired from the %2 board after %3 taker(s)", s_aCalls[i].m_iSequence, s_aCalls[i].m_sService, s_aCalls[i].m_aTakers.Count()));
 				s_aCalls.Remove(i);
 			}
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the live calls on a service's board, newest first, as "time|summary|place" entries.
+	//! Server: the live calls on a service's board, newest first, as "time|summary|taken|place" entries (taken is 1 or 0).
 	static int BuildEntries(string service, int nowMs, int maxLines, notnull array<string> outEntries)
 	{
 		outEntries.Clear();
@@ -111,10 +122,62 @@ class LF_ServiceBoard
 
 			LF_ServiceBoardCall call = s_aCalls[i];
 			if (call.m_sService == service)
-				outEntries.Insert(string.Format("%1|%2|%3", call.m_sTime, call.m_sSummary, call.m_sPlace));
+				outEntries.Insert(string.Format("%1|%2|%3|%4", call.m_sTime, call.m_sSummary, TakenFlag(call), call.m_sPlace));
 		}
 
 		return outEntries.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string TakenFlag(notnull LF_ServiceBoardCall call)
+	{
+		if (call.m_aTakers.IsEmpty())
+			return "0";
+		return "1";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a responder takes the oldest call on the service's board that still has room for a
+	//! taker (maxTakers per call) and that they have not taken. Book-keeping only; the caller of
+	//! this checks the taker is on duty (LF_ServiceTake.ServerTake).
+	static LF_EServiceTake Take(string service, string takerUid, int maxTakers, int nowMs, out LF_ServiceBoardCall taken)
+	{
+		taken = null;
+		PurgeExpired(nowMs);
+		if (!s_aCalls)
+			return LF_EServiceTake.NO_CALL;
+
+		int limit = Math.Max(maxTakers, 1);
+		bool any;
+		bool mine;
+		foreach (LF_ServiceBoardCall call : s_aCalls)
+		{
+			if (call.m_sService != service)
+				continue;
+
+			any = true;
+			if (call.m_aTakers.Find(takerUid) >= 0)
+			{
+				mine = true;
+				continue;
+			}
+
+			if (call.m_aTakers.Count() >= limit)
+				continue;
+
+			call.m_aTakers.Insert(takerUid);
+			taken = call;
+			LF_Debug.Info(FEATURE, string.Format("call #%1 on the %2 board taken by %3 (%4/%5)", call.m_iSequence, service, takerUid, call.m_aTakers.Count(), limit));
+			return LF_EServiceTake.TAKEN;
+		}
+
+		if (!any)
+			return LF_EServiceTake.NO_CALL;
+
+		if (mine)
+			return LF_EServiceTake.ALREADY_YOURS;
+
+		return LF_EServiceTake.ALREADY_TAKEN;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -170,14 +233,14 @@ class LF_ServiceBoard
 	{
 		array<string> fields = {};
 		entry.Split(FIELD_SEPARATOR, fields, false);
-		if (fields.Count() < 3)
+		if (fields.Count() < 4)
 		{
 			LF_Debug.Error(FEATURE, string.Format("board entry dropped: '%1'", entry));
 			return string.Empty;
 		}
 
-		string place = fields[2];
-		for (int i = 3; i < fields.Count(); i++)
+		string place = fields[3];
+		for (int i = 4; i < fields.Count(); i++)
 		{
 			place += FIELD_SEPARATOR + fields[i];
 		}
@@ -187,7 +250,11 @@ class LF_ServiceBoard
 		else
 			place = LF_WantedBoard.ResolvePlace(place);
 
-		return WidgetManager.Translate("#LF-Dispatch_ServiceLine", fields[0], LF_WantedBoard.ResolveKey(fields[1]), place);
+		string lineKey = "#LF-Dispatch_ServiceLine";
+		if (fields[2] == "1")
+			lineKey = "#LF-Dispatch_ServiceLineTaken";
+
+		return WidgetManager.Translate(lineKey, fields[0], LF_WantedBoard.ResolveKey(fields[1]), place);
 	}
 
 	//------------------------------------------------------------------------------------------------

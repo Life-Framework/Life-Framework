@@ -138,6 +138,7 @@ class LF_Downed
 		}
 
 		character.LF_SetDowned(true, downerUid);
+		LF_BleedOut.Begin(character);
 		damageManager.UpdateConsciousness();
 
 		s_iDownedCount++;
@@ -157,6 +158,7 @@ class LF_Downed
 			return false;
 
 		character.LF_SetDowned(false, "");
+		LF_BleedOut.End(character);
 		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(character.FindComponent(SCR_CharacterDamageManagerComponent));
 		if (damageManager)
 			damageManager.UpdateConsciousness();
@@ -179,7 +181,10 @@ class LF_Downed
 
 		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(entity);
 		if (character && character.LF_IsDowned())
+		{
 			character.LF_SetDowned(false, "");
+			LF_BleedOut.End(character);
+		}
 
 		s_iLethalBypass++;
 		damageManager.Kill(instigator);

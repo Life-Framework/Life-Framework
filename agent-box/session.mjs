@@ -351,6 +351,9 @@ export function selftestSession() {
   if (!judgeDowned("shot player=2 refused=0 alive=0 downed=0", down2, "wanted=0 player=1", seen, seen).length) failures.push("judgeDowned passed a kill");
   if (!judgeDowned(shotOk, down2, "wanted=3 player=1", seen, seen).length) failures.push("judgeDowned passed a murder report");
   if (!judgeDowned(shotOk, down2, "wanted=0 player=1", "player=2 downed=0 life=ALIVE", seen).length) failures.push("judgeDowned passed a client that sees the victim standing");
+  if (judgeBleed("120", 180).length) failures.push("judgeBleed failed a good read");
+  if (!judgeBleed("-1", 180).length) failures.push("judgeBleed passed a client that reads no clock");
+  if (!judgeBleed("200", 180).length) failures.push("judgeBleed passed a time above the config");
   return failures;
 }
 
@@ -841,6 +844,14 @@ async function runMurderProof() {
 // AFTER the downing (client 3, started by `session join 3`) reads it too, and a real death
 // (`die`) of the downed player is the murder, attributed to whoever downed them, and ends in the
 // normal hospital respawn. Needs a session with 2 clients.
+// The time left a downed client reads (#256): a number no larger than the configured bleed-out.
+export function judgeBleed(read, bleedSeconds) {
+  const n = Number(read);
+  if (!Number.isFinite(n) || n <= 0) return [`the downed client reads no time left: bleed=${read}`];
+  if (n > bleedSeconds) return [`bleed=${n} is above the configured ${bleedSeconds}`];
+  return [];
+}
+
 export function judgeDowned(shot, victim, shooter, peers1, peers2) {
   const fails = [];
   if (!/refused=0 alive=1 downed=1/.test(shot)) fails.push(`the lethal hit did not down: ${shot}`);
@@ -922,8 +933,20 @@ async function runDownedProof() {
 
   // The real death of a downed player (what the bleed-out will call): the death screen, the
   // respawn, and a fresh body that is not downed.
-  const die = on(2, { verb: "die" }, 10000);
-  if (die.status !== "ok") fails.push(`die returned ${die.status} ${die.detail}`);
+  // #256: the client reads the time left (a replicated, throttled copy); giving up is refused
+  // before the delay and accepted after it, and then it is the real death.
+  const bleedConf = medicConf;
+  const bleedSeconds = Number(/m_fBleedOutSecondss+(d+)/.exec(bleedConf)?.[1] ?? 180);
+  const giveUpDelay = Number(/m_fGiveUpDelaySecondss+(d+)/.exec(bleedConf)?.[1] ?? 30);
+  const bleedRead = parseState(state(2)).bleed;
+  for (const f of judgeBleed(bleedRead, bleedSeconds)) fails.push(f);
+  const early = on(2, { verb: "giveup" }, 10000);
+  wait(2000);
+  const afterEarly = parseState(state(2));
+  if (afterEarly.downed !== "1" || afterEarly.life !== "INCAPACITATED") fails.push(`an early give-up changed the state: downed=${afterEarly.downed} life=${afterEarly.life}`);
+  wait((giveUpDelay + 2) * 1000);
+  const late = on(2, { verb: "giveup" }, 10000);
+  if (late.status !== "ok") fails.push(`giveup returned ${late.status} ${late.detail}`);
   wait(4000);
   on(2, { verb: "capture", mode: "ui", name: "m2_255_death_screen_client2" }, 25000);
   // Vanilla keeps the instigator of the knockout as the killer when the downed player dies, so the
@@ -935,10 +958,30 @@ async function runDownedProof() {
   const respawned = parseState(state(2));
   if (respawned.downed !== "0" || respawned.life !== "ALIVE") fails.push(`after the respawn: downed=${respawned.downed} life=${respawned.life}`);
 
+  // #256: the bleed-out timer. Down client 2 again and leave them alone: the time runs out, the
+  // death is the same real death, and the respawn is the normal one.
+  on(2, { verb: "stand", entityName: ROB_TARGET });
+  wait(2500);
+  const shot2 = on(1, { verb: "shoot", playerId: 2 }, 10000);
+  wait(2500);
+  const down2 = parseState(state(2));
+  if (down2.downed !== "1") fails.push(`the second downing did not down: ${shot2.detail}`);
+  wait((bleedSeconds + 8) * 1000);
+  const bled = parseState(state(2));
+  // A dead player has no body to answer `state` (no_session), which is the expected end.
+  if (bled.downed === "1" || bled.life === "ALIVE" || bled.life === "INCAPACITATED") fails.push(`after the timer: downed=${bled.downed} life=${bled.life}, expected dead`);
+  on(2, { verb: "capture", mode: "ui", name: "m2_256_bled_out_client2" }, 25000);
+  on(2, { verb: "click", widget: "RespawnButton" });
+  wait(12000);
+  const woke = parseState(state(2));
+  if (woke.downed !== "0" || woke.life !== "ALIVE") fails.push(`after the bleed-out respawn: downed=${woke.downed} life=${woke.life}`);
+
   console.log("");
   console.log(`start    client 1: ${start1}`);
   console.log(`start    client 2: ${start2}`);
   console.log(`shot     client 1: ${shot.detail}`);
+  console.log(`bleed    client 2: ${bleedRead} (early give-up: ${early.detail}, then ${late.detail})`);
+  console.log(`bled out client 2: ${JSON.stringify(bled)}; respawn ${JSON.stringify(woke)}`);
   console.log(`victim   client 2: ${victim}`);
   console.log(`shooter  client 1: ${shooter}`);
   console.log(`peers    client 1: ${peers1}`);

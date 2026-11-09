@@ -5497,6 +5497,116 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The town square, south and west of here, is a safe zone."
      Comment "Lawless area sign card, Next section."
     }
+    CustomStringTableItem "{3C71B0A2D4E5F610}" {
+     Id "LF-Medic_Keybind_GiveUp"
+     Target_en_us "Give up (hold, while downed)"
+     Comment "Keybind: give up and die while downed."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F611}" {
+     Id "LF-Medic_GiveUpTooEarly"
+     Target_en_us "You can give up in %1 seconds from going down."
+     Comment "Toast: give up asked too early."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F612}" {
+     Id "LF-Medic_Downed"
+     Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
+     Comment "Toast: shown to a player who goes down."
+    }
+    CustomStringTableItem "{B608F834846FAF73}" {
+     Id "LF-Dispatch_Take"
+     Target_en_us "Take the call"
+     Comment "Action on a service dispatch board: take the oldest open call (#251)."
+    }
+    CustomStringTableItem "{62139B83F8E9AC01}" {
+     Id "LF-Dispatch_TakeDone"
+     Target_en_us "Call taken. Head to the place on the board."
+     Comment "Toast to the responder after taking a call."
+    }
+    CustomStringTableItem "{E26C8E0B2B297718}" {
+     Id "LF-Dispatch_TakeGone"
+     Target_en_us "Another unit already took that call."
+     Comment "Toast when the call has all the takers it allows."
+    }
+    CustomStringTableItem "{7D2865141D4A525F}" {
+     Id "LF-Dispatch_TakeYours"
+     Target_en_us "You already took every call waiting."
+     Comment "Toast when the responder already took the open calls."
+    }
+    CustomStringTableItem "{B8AB7F7CB0A45CFA}" {
+     Id "LF-Dispatch_TakeNone"
+     Target_en_us "No call waiting."
+     Comment "Toast when the board has no call to take."
+    }
+    CustomStringTableItem "{C14AC728DB5CB79F}" {
+     Id "LF-Dispatch_ServiceLineTaken"
+     Target_en_us "%1  %2 at %3 (taken)"
+     Comment "Service dispatch board line for a call a unit has taken. %1 = time, %2 = what, %3 = place."
+    }
+    CustomStringTableItem "{8DE2406C7DDB39E2}" {
+     Id "LF-Service_UnitTitle"
+     Target_en_us "Dispatch"
+     Comment "Title of dispatch toasts."
+    }
+    CustomStringTableItem "{1AD33D680D4FC3B9}" {
+     Id "LF-Service_UnitOnTheWay"
+     Target_en_us "A unit is on the way."
+     Comment "Shown to a caller when a responder takes their call (#251)."
+    }
+    CustomStringTableItem "{CA566A486AE9A98D}" {
+     Id "LF-Pager_Title"
+     Target_en_us "Pager"
+     Comment "Title of the pager card."
+    }
+    CustomStringTableItem "{4EF600B18D7A2C1B}" {
+     Id "LF-Pager_None"
+     Target_en_us "No calls paged."
+     Comment "Pager card with no messages."
+    }
+    CustomStringTableItem "{9DC6DB6828971952}" {
+     Id "LF-Pager_Read"
+     Target_en_us "Read the pager"
+     Comment "Action on a pager item (#249)."
+    }
+    CustomStringTableItem "{B5DC3AD9F79C05C4}" {
+     Id "LF-Item_Pager_Name"
+     Target_en_us "Pager"
+     Comment "Inventory name of the pager."
+    }
+    CustomStringTableItem "{798CD609229F3E62}" {
+     Id "LF-Item_Pager_Description"
+     Target_en_us "Beeps when a call comes in for your service while you are on duty. Look at it to read the last calls."
+     Comment "Inventory description of the pager."
+    }
+    CustomStringTableItem "{73C1578BB2FBEF30}" {
+     Id "LF-IncidentReport_Title"
+     Target_en_us "Report"
+     Comment "Toast title for the report to staff."
+    }
+    CustomStringTableItem "{C4AEA0F427A28843}" {
+     Id "LF-IncidentReport_Sent"
+     Target_en_us "Staff were told about your recent incidents."
+     Comment "Toast: a player report was filed."
+    }
+    CustomStringTableItem "{8C5397BA37749A31}" {
+     Id "LF-IncidentReport_Cooldown"
+     Target_en_us "You reported a moment ago. Wait before reporting again."
+     Comment "Toast: the report cooldown refused a second report."
+    }
+    CustomStringTableItem "{00E362FF96E1289A}" {
+     Id "LF-IncidentReport_Nothing"
+     Target_en_us "Nothing of yours to report from the last few minutes."
+     Comment "Toast: the player has no recent incident."
+    }
+    CustomStringTableItem "{3A18F927506DDB4E}" {
+     Id "LF-IncidentReport_Staff"
+     Target_en_us "A player reported %1 incident(s). They are first in the Game Master incident list."
+     Comment "Toast to online admins after a report; %1 is the count."
+    }
+    CustomStringTableItem "{C8483035D57F363E}" {
+     Id "LF-IncidentGm_RowFlagged"
+     Target_en_us "REPORTED #%1 %2, %3 min ago: %4 / %5 (type !handled %1 when done)"
+     Comment "Game Master incident row for a reported incident: number, kind, minutes ago, subject, other party."
+    }
   }
  }
 }

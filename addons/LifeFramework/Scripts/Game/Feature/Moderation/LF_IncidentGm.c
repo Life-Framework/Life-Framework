@@ -7,7 +7,8 @@
 //! The client sends only where its camera is. Radius, time window and row cap are fixed here, so a
 //! client cannot widen what it is allowed to read.
 //!
-//! Row (pipe separated): number|kind|ageSeconds|x|z|subject|other|amount|how|zone|murder
+//! Row (pipe separated): number|kind|ageSeconds|x|z|subject|other|amount|how|zone|murder|flagged
+//! Flagged rows (#241 player reports) are sent even when they are outside the radius or window.
 //------------------------------------------------------------------------------------------------
 class LF_IncidentGm
 {
@@ -16,6 +17,7 @@ class LF_IncidentGm
 	static const float RADIUS = 400;
 	static const int WINDOW_SECONDS = 3600;
 	static const int MAX_ROWS = 40;
+	static const int MAX_FLAGGED_ROWS = 20;
 	static const string SEP = "|";
 
 	//------------------------------------------------------------------------------------------------
@@ -32,7 +34,7 @@ class LF_IncidentGm
 		{
 			LF_IncidentRecord r = records[i];
 			string head = string.Format("%1|%2|%3|%4|%5|", r.m_iNumber, r.m_sKind, now - r.m_iTime, Math.Round(r.m_fX), Math.Round(r.m_fZ));
-			string tail = string.Format("%1|%2|%3|%4|%5|%6", NameOfUid(r.m_sSubjectUid), NameOfUid(r.m_sOtherUid), r.m_iAmount, Clean(r.m_sHow), r.m_sZone, r.m_bMurder);
+			string tail = string.Format("%1|%2|%3|%4|%5|%6|%7", NameOfUid(r.m_sSubjectUid), NameOfUid(r.m_sOtherUid), r.m_iAmount, Clean(r.m_sHow), r.m_sZone, Bit(r.m_bMurder), Bit(LF_IncidentFlags.IsFlagged(r.m_iNumber)));
 			rows.Insert(head + tail);
 		}
 
@@ -51,9 +53,31 @@ class LF_IncidentGm
 		}
 
 		array<ref LF_IncidentRecord> found = LF_IncidentLog.Query(center, RADIUS, now - WINDOW_SECONDS, -1, "");
-		array<string> rows = BuildRows(found, now);
-		LF_Debug.Info(FEATURE, string.Format("sent %1 incident row(s) to admin %2 around %3", rows.Count(), playerId, center));
+		LF_IncidentFlags.Prune();
+		array<ref LF_IncidentRecord> flaggedFar = new array<ref LF_IncidentRecord>();
+		array<ref LF_IncidentRecord> everything = LF_IncidentLog.Query(vector.Zero, -1, 0, -1, "");
+		for (int i = everything.Count() - 1; i >= 0 && flaggedFar.Count() < MAX_FLAGGED_ROWS; i--)
+		{
+			if (LF_IncidentFlags.IsFlagged(everything[i].m_iNumber) && !IsInside(found, everything[i].m_iNumber))
+				flaggedFar.InsertAt(everything[i], 0);
+		}
+
+		array<string> rows = BuildRows(flaggedFar, now);
+		rows.InsertAll(BuildRows(found, now));
+		LF_Debug.Info(FEATURE, string.Format("sent %1 incident row(s) (%4 flagged outside the view) to admin %2 around %3", rows.Count(), playerId, center, flaggedFar.Count()));
 		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsInside(notnull array<ref LF_IncidentRecord> records, int number)
+	{
+		foreach (LF_IncidentRecord record : records)
+		{
+			if (record.m_iNumber == number)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -88,6 +112,15 @@ class LF_IncidentGm
 		}
 
 		return Clean(uid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string Bit(bool value)
+	{
+		if (value)
+			return "1";
+
+		return "0";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -136,6 +169,24 @@ modded class SCR_PlayerController
 			RpcDo_LF_Incidents(rows);
 		else
 			Rpc(RpcDo_LF_Incidents, rows);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the /report chat command (#241). The server decides what it flags and if the
+	//! cooldown allows it.
+	void LF_AskReport()
+	{
+		if (Replication.IsServer())
+			RpcAsk_LF_Report();
+		else
+			Rpc(RpcAsk_LF_Report);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_Report()
+	{
+		LF_IncidentFlags.ServerReport(GetPlayerId());
 	}
 
 	//------------------------------------------------------------------------------------------------
