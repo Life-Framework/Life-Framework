@@ -28,6 +28,7 @@ under the crosshair, never a tag over heads.
   not yourself), the offer table, amount parsing, role registry
   (`RegisterRole(slot, handler)` / `UnregisterRole`), and the server flows
   (introduce, open the cash sheet, give cash, give item, role perform).
+- `LF_HoldUpRole` fills the `holdup` slot (#244, `Feature/Moderation/LF_HoldUp.c`): offered with a weapon in hand.
 - `LF_CashHandover` / `LF_CashWallet` — the hand-over rule; what the receiver
   cannot take goes back to the giver.
 - `LF_Introductions` — who knows whom by player uid; the `introductions`
