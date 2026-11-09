@@ -68,6 +68,7 @@ The bus keeps its own strong reference.
 | `LF_OnFirstAid` | `m_sPlayerUid`, `m_sHelperUid`, `m_sKind` (bandage, tourniquet, saline), `m_fSeconds` | `LF_FirstAid.Apply`: a vanilla medical item added bleed-out time to a downed player (#257) |
 | `LF_OnServiceCallTaken` | `m_sCallerUid`, `m_sService`, `m_sTakerUid`, `m_sPlace`, `m_sSummary`, `m_iTakers` | `LF_ServiceTake.ServerTake`, after the server checked the taker is on duty for the service and the call had room (`m_iMaxTakers`). `LF_ServiceCallTakenNotifier` tells the caller; the board marks the call taken |
 | `LF_OnFenceSale` | `m_sBuyerUid`, `m_sPrefab`, `m_iQuantity`, `m_iPrice` | `LF_ShopComponent.Buy` on a fence shop, after the cash was taken and the tool delivered |
+| `LF_OnHoldUp` | `m_sActorUid`, `m_sTargetUid`, `m_vPosition` (the actor's) | `LF_HoldUpRole.Perform` via `LF_HoldUp.Attempt`, after the server checked weapon in hand, range and cooldown. `LF_IncidentLog` subscribes (kind `holdup`) |
 
 Adding an event: a class in `LF_Events.c`, a row here, a publish where the feature
 already logs the change, and one line in `docs/features.md`.
