@@ -81,6 +81,38 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
       Name "#LF-Revive_Action"
      }
     }
+    LF_DragAction "{6D1C0A1E7B3F4A01}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{6D1C0A1E7B3F4A11}" {
+      Name "#LF-Carry_Drag"
+     }
+    }
+    LF_CarryAction "{6D1C0A1E7B3F4A02}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{6D1C0A1E7B3F4A12}" {
+      Name "#LF-Carry_Carry"
+     }
+    }
+    LF_DropAction "{6D1C0A1E7B3F4A03}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{6D1C0A1E7B3F4A13}" {
+      Name "#LF-Carry_Drop"
+     }
+    }
+    LF_LoadPatientAction "{6D1C0A1E7B3F4A04}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{6D1C0A1E7B3F4A14}" {
+      Name "#LF-Carry_Load"
+     }
+    }
     LF_ConfiscateAction "{5D4BEB8233CF0FEC}" {
      ParentContextList {
       "LF_ID"

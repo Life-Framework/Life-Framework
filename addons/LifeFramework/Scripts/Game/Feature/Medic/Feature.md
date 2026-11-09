@@ -54,6 +54,12 @@ within `m_fReviveRange`; `LF_Revive.Perform` re-checks on the server and calls `
 bleed-out clock, unconsciousness), then publishes `LF_OnPlayerRevived`. Medic only; item cost and a treatment
 animation are not in yet.
 
+## V1.3 - #261, drag and carry
+
+`LF_Carry` (server hold table, 250 ms follow tick, replicated carrier id on the character), four actions
+on a player character: Drag, Carry, Put down, Load into vehicle. Config `m_bCarryAnyone` and the
+distances in `LF_Medic.conf`. Publishes `LF_OnPlayerCarried`. No animation (ACE's are GPL).
+
 ## Next
 
 - #256 bleed-out timer (server-owned), give-up, screen and sound effects on the

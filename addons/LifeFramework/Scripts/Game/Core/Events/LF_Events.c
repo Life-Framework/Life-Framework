@@ -73,6 +73,26 @@ class LF_OnPlayerDowned : LF_Event
 	}
 }
 
+//! A downed player was dragged, carried, dropped or loaded into a vehicle (LF_Carry, #261).
+//! m_sKind is "drag", "carry", "drop" or "load".
+class LF_OnPlayerCarried : LF_Event
+{
+	string m_sPlayerUid;
+	string m_sCarrierUid;
+	string m_sKind;
+	vector m_vPosition;
+
+	static LF_OnPlayerCarried Create(string playerUid, string carrierUid, string kind, vector position)
+	{
+		LF_OnPlayerCarried e = new LF_OnPlayerCarried();
+		e.m_sPlayerUid = playerUid;
+		e.m_sCarrierUid = carrierUid;
+		e.m_sKind = kind;
+		e.m_vPosition = position;
+		return e;
+	}
+}
+
 //! A medic on duty brought a downed player back (LF_Revive, #259). The downed state is gone and the
 //! bleed-out clock stopped by the time this is published.
 class LF_OnPlayerRevived : LF_Event

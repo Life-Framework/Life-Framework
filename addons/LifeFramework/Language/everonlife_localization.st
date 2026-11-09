@@ -5747,6 +5747,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Admin action"
      Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
     }
+    CustomStringTableItem "{7A30C5E1D49B6A01}" {
+     Id "LF-Carry_Drag"
+     Target_en_us "Drag"
+     Comment "Player action: drag a downed player."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A02}" {
+     Id "LF-Carry_Carry"
+     Target_en_us "Carry"
+     Comment "Player action: carry a downed player."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A03}" {
+     Id "LF-Carry_Drop"
+     Target_en_us "Put down"
+     Comment "Player action: the carrier puts the body down."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A04}" {
+     Id "LF-Carry_Load"
+     Target_en_us "Load into vehicle"
+     Comment "Player action: put the carried player in a free passenger seat."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A05}" {
+     Id "LF-Carry_NotAllowed"
+     Target_en_us "Only a medic on duty can move them."
+     Comment "Carry refusal: config limits it to medics."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A06}" {
+     Id "LF-Carry_TooFar"
+     Target_en_us "Too far away."
+     Comment "Carry refusal: out of range."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A07}" {
+     Id "LF-Carry_Held"
+     Target_en_us "Someone already has them."
+     Comment "Carry refusal: the body is already held."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A08}" {
+     Id "LF-Carry_Busy"
+     Target_en_us "Your hands are full."
+     Comment "Carry refusal: the carrier already holds a body or is in a vehicle."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A09}" {
+     Id "LF-Carry_NoSeat"
+     Target_en_us "No free seat in reach."
+     Comment "Load refusal: no vehicle with a free passenger seat nearby."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A0A}" {
+     Id "LF-Carry_NotHeld"
+     Target_en_us "You are not holding anyone."
+     Comment "Drop or load with nothing held."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A0B}" {
+     Id "LF-Carry_NotDowned"
+     Target_en_us "They are not down."
+     Comment "Carry refusal: the target is not downed."
+    }
   }
  }
 }
