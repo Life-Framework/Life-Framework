@@ -543,6 +543,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Warn("Persistence", "incident log failed to read, leaving the live log untouched");
+			}
 		}
 		else if (payload == "ledger")
 		{

@@ -1,4 +1,4 @@
-// red-proof: PENDING
+// red-proof: Observed 2026-11-09 with the same flip in LF_Ledger.Record: `money/ledger-persist` failed `- the signed change is back`. Restored; green. (The e2e pass 2 checks the restart path.)
 // tier: PERSISTENCE
 //! The ledger rides the real save path (the "ledger" payload, version 14): entries come back after
 //! the store is wiped, the id sequence continues, and loading twice leaves the same log.

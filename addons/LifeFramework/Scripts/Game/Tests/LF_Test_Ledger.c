@@ -1,4 +1,4 @@
-// red-proof: PENDING
+// red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only LF_Test_Ledger`: flipping the credit test in LF_Ledger.Record failed `money/ledger-records` with `- the withdrawal is a debit (expected -200, got 200)`. Restored; green.
 // tier: WORLD
 //! The money ledger records every change that reaches the bus (docs/architecture/events.md):
 //! a bank deposit and withdrawal through LF_BankAccount, a transfer that sums to zero, the
