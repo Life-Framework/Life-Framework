@@ -56,7 +56,7 @@ The bus keeps its own strong reference.
 
 | Event | Fields | Published by (where it already logs the change) |
 |---|---|---|
-| `LF_OnCrimeCommitted` | `m_sPlayerUid`, `m_sOffence` (offence key) | `LF_WantedReports.Report`: every robbery, theft, break-in, murder, and an unpaid ticket, just before the report is filed |
+| `LF_OnCrimeCommitted` | `m_sPlayerUid`, `m_sOffence` (offence key) | `LF_WantedReports.Report`: every robbery, theft, break-in, murder, and an unpaid ticket, just before the report is filed ; also counted by `LF_CrimeRecord` (#270) |
 | `LF_OnMoneyMoved` | `m_sPlayerUid`, `m_iAmount` (positive), `m_sSource` (reason key), `m_sAccount` (`cash`/`bank`), `m_bCredit`, `m_iBalanceAfter`, `m_sCounterpartyUid` | Every cash and bank change, one event per account side: `LF_MoneyUtils.AddCash`/`RemoveCash` (player targets) and `LF_BankAccount.Deposit`/`Withdraw`/`Charge`. An ATM deposit is a cash debit and a bank credit. `LF_Ledger` subscribes (`docs/features.md`) |
 | `LF_OnPlayerKilled` | `m_sVictimUid`, `m_sKillerUid` (empty if no player killer), `m_vPosition`, `m_sWeapon` (killer's held weapon prefab), `m_bMurder` (LF_Murder rule) | `LF_Murder.OnCharacterKilled`, player victims only, before the wanted decision |
 | `LF_OnPlayerDamaged` | `m_sVictimUid`, `m_sAttackerUid`, `m_fDamage` (total in the window), `m_vPosition`, `m_sWeapon` | `LF_IncidentDamage.OnHit` from `SCR_CharacterDamageManagerComponent.HijackDamageHandling`: player-on-player only, at most one per victim/attacker pair per `m_fDamageSampleSeconds` (default 5), never per hit |

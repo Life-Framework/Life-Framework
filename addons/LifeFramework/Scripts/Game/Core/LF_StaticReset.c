@@ -33,6 +33,7 @@ class LF_StaticReset
 		LF_EventBus.ResetStatics();
 		LF_FineTickets.ResetStatics();
 		LF_Ledger.ResetStatics();
+		LF_CrimeRecord.ResetStatics();
 		LF_IncidentLog.ResetStatics();
 		LF_ServiceCallsConfig.ResetStatics();
 		LF_OrgInvites.Reset();

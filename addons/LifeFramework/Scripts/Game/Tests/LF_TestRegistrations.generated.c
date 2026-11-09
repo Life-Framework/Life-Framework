@@ -39,6 +39,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ShopRefusalReasons(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CounterScreenLayout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CraftingAssets(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_CrimeRecord(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CrimeRecordPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CropPrefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CropStages(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);

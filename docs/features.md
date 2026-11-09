@@ -1914,3 +1914,7 @@
 ## Service calls (#248)
 
 - ✅ `LF_ServiceCalls` routes a call to any service in `Configs/Comms/LF_ServiceCalls.conf` (police, medic, taxi; receiver is on-duty police or a current job). An unknown service is rejected with an error, nobody on duty logs "no answer", otherwise `LF_OnServiceCall` is published on the event bus. No caller yet; the payphone is #247.
+
+## Hidden crime record (#270)
+
+- ✅ `LF_CrimeRecord` (`Feature/Crime/LF_CrimeRecord.c`) subscribes to `LF_OnCrimeCommitted` (`EnsureSubscribed`, game-mode start) and counts completed crimes per account uid and offence key, so one robbery counts once. An unpaid ticket is not counted. Server only, never replicated, no UI. Read with `LF_CrimeRecord.Count(uid, offence)` / `Total(uid)` (the fence #271 and serials #272 use these). Persisted as the `crimerecord` payload (save version 15). Tests `crime/record`, `crime/record-persist`. Crime paths wired to the event today: robbery, vehicle and weapon theft, break-in, hospital, murder; gas station and contraband run count once their success path reports through `LF_Dispatch.Report`.
