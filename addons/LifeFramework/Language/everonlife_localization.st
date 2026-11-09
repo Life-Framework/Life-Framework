@@ -5307,6 +5307,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Suspicious person reported"
      Comment "Summary the police radio line shows for a suspicious person phoned in."
     }
+    CustomStringTableItem "{177011F784696AD3}" {
+     Id "LF-Item_Drill_Name"
+     Target_en_us "Drill"
+     Comment "Item name of the fence drill."
+    }
+    CustomStringTableItem "{39F1DED905C80D73}" {
+     Id "LF-Item_Drill_Description"
+     Target_en_us "A hardened drill. The serial is stamped under the grip."
+     Comment "Item description of the fence drill."
+    }
+    CustomStringTableItem "{C422F998AB82B4F0}" {
+     Id "LF-Item_Charge_Name"
+     Target_en_us "Breaching charge"
+     Comment "Item name of the fence charge."
+    }
+    CustomStringTableItem "{62DA24F968E17906}" {
+     Id "LF-Item_Charge_Description"
+     Target_en_us "A shaped charge. The serial is stamped on the casing."
+     Comment "Item description of the fence charge."
+    }
+    CustomStringTableItem "{4CC4FC1BDF31889F}" {
+     Id "LF-Item_Keycard_Name"
+     Target_en_us "Keycard"
+     Comment "Item name of the fence keycard."
+    }
+    CustomStringTableItem "{D905B60D78F7B540}" {
+     Id "LF-Item_Keycard_Description"
+     Target_en_us "A cloned access card. The serial is printed on the back."
+     Comment "Item description of the fence keycard."
+    }
+    CustomStringTableItem "{6190A2B8AD6F7862}" {
+     Id "LF-Shop_Name_Fence"
+     Target_en_us "The Fence"
+     Comment "Fence shop name (#271)."
+    }
+    CustomStringTableItem "{78CFC7A314AD1790}" {
+     Id "LF-Shop_Desc_Fence"
+     Target_en_us "Tools, no questions. If he knows you."
+     Comment "Fence shop description (#271)."
+    }
+    CustomStringTableItem "{FB0002094FEA5005}" {
+     Id "LF-Shop_Open_Fence"
+     Target_en_us "Talk to the fence"
+     Comment "Interaction name on the fence NPC (#271)."
+    }
+    CustomStringTableItem "{962AD3A70D1AF2CA}" {
+     Id "LF-Shop_OpenDesc_Fence"
+     Target_en_us "See what he will sell you"
+     Comment "Interaction description on the fence NPC (#271)."
+    }
+    CustomStringTableItem "{69423E128B199BF7}" {
+     Id "LF-Shop_RefuseNotTrusted"
+     Target_en_us "I don't know you. Come back when you have made a name."
+     Comment "Shop refusal: the fence has not seen enough of the buyer's work (#271)."
+    }
+    CustomStringTableItem "{3BD89A2DB71401CE}" {
+     Id "LF-Serial_Title"
+     Target_en_us "Serial number"
+     Comment "Toast title when a fence tool serial is read (#272)."
+    }
+    CustomStringTableItem "{15EDE2A4CCF09558}" {
+     Id "LF-Serial_Read"
+     Target_en_us "Serial: %1"
+     Comment "Toast text when a fence tool serial is read (#272)."
+    }
+    CustomStringTableItem "{0FE08C6138289656}" {
+     Id "LF-Serial_Read_Action"
+     Target_en_us "Read serial"
+     Comment "Action name to read a fence tool serial (#272)."
+    }
     CustomStringTableItem "{CBEE6929FA9220E9}" {
      Id "LF-Dispatch_Read"
      Target_en_us "Read the dispatch board"
