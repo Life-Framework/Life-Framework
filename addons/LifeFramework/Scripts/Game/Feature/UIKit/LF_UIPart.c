@@ -74,7 +74,7 @@ class LF_UIPart
 		LF_UIPart part = Create(LF_EUIPartKind.KEYS, name, string.Empty);
 		if (!keyNames || !keyTexts || keyNames.Count() != keyTexts.Count())
 		{
-			EL_Debug.Error("UIKit", "keys " + name + " need one text per key name");
+			LF_Debug.Error("UIKit", "keys " + name + " need one text per key name");
 			return part;
 		}
 

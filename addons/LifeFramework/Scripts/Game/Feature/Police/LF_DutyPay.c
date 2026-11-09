@@ -28,24 +28,24 @@ class LF_DutyPay
 	//------------------------------------------------------------------------------------------------
 	//! Takes the account's unpaid duty seconds and returns the cash owed for them. The seconds
 	//! are zeroed, so a second call returns 0. A non-police account is owed nothing.
-	static int TakeShiftPay(EL_PlayerAccount account, float rate)
+	static int TakeShiftPay(LF_PlayerAccount account, float rate)
 	{
 		if (!account)
 		{
-			EL_Debug.Error("DutyPay", "shift pay refused: no account");
+			LF_Debug.Error("DutyPay", "shift pay refused: no account");
 			return 0;
 		}
 
 		int seconds = account.TakeUnpaidDutySeconds();
-		if (account.GetFaction() != EL_Faction.POLICE)
+		if (account.GetFaction() != LF_Faction.POLICE)
 		{
-			EL_Debug.Warn("DutyPay", string.Format("shift pay refused: %1 is not police", account.GetPersistentId()));
+			LF_Debug.Warn("DutyPay", string.Format("shift pay refused: %1 is not police", account.GetPersistentId()));
 			return 0;
 		}
 
 		int owed = Owed(seconds, rate);
 		if (owed <= 0)
-			EL_Debug.Info("DutyPay", string.Format("no shift pay for %1 (%2 s unpaid)", account.GetPersistentId(), seconds));
+			LF_Debug.Info("DutyPay", string.Format("no shift pay for %1 (%2 s unpaid)", account.GetPersistentId(), seconds));
 
 		return owed;
 	}
@@ -54,7 +54,7 @@ class LF_DutyPay
 	//! Server: hands the officer the shift's duty pay as cash, with the pick-up sound first and
 	//! a toast second. Call after the duty clock settled the clock-out.
 	//! \return Cash placed on the officer.
-	static int PayAtClockOut(EL_PlayerAccount account, IEntity officer)
+	static int PayAtClockOut(LF_PlayerAccount account, IEntity officer)
 	{
 		if (!Replication.IsServer() && Replication.IsRunning())
 			return 0;
@@ -65,24 +65,24 @@ class LF_DutyPay
 
 		if (!officer)
 		{
-			EL_Debug.Error("DutyPay", string.Format("shift pay of %1 lost: no officer entity for %2", owed, account.GetPersistentId()));
+			LF_Debug.Error("DutyPay", string.Format("shift pay of %1 lost: no officer entity for %2", owed, account.GetPersistentId()));
 			return 0;
 		}
 
-		int given = EL_MoneyUtils.GiveCash(officer, owed);
+		int given = LF_MoneyUtils.GiveCash(officer, owed);
 		if (given != owed)
-			EL_Debug.Warn("DutyPay", string.Format("shift pay short: paid %1 of %2 (player %3)", given, owed, officer));
+			LF_Debug.Warn("DutyPay", string.Format("shift pay short: paid %1 of %2 (player %3)", given, owed, officer));
 		else
-			EL_Debug.Info("DutyPay", string.Format("shift pay +%1 cash to %2", given, account.GetPersistentId()));
+			LF_Debug.Info("DutyPay", string.Format("shift pay +%1 cash to %2", given, account.GetPersistentId()));
 
 		if (given <= 0)
 			return 0;
 
-		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(officer);
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(officer);
 		if (inventory)
-			inventory.RpcAsk_PlaySound(EL_NetworkUtils.GetRplId(officer), "SOUND_PICK_UP");
+			inventory.RpcAsk_PlaySound(LF_NetworkUtils.GetRplId(officer), "SOUND_PICK_UP");
 
-		EL_Utils.NotifyEntity(officer, "#EL-Duty_Paid", "#EL-Duty_Status", 4.0, given.ToString());
+		LF_Utils.NotifyEntity(officer, "#EL-Duty_Paid", "#EL-Duty_Status", 4.0, given.ToString());
 		return given;
 	}
 }

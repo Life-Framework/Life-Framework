@@ -8,8 +8,8 @@
 //! RobTill. The cabinet alerts once inside LF_Breach.Arm. A menu refresh cannot
 //! fire either.
 //!
-//! CASH. The payout is EL_MoneyUtils.PREFAB_CASH. Nothing in this feature deposits
-//! to EL_BankAccount. The ATM stays the only cash-to-account boundary.
+//! CASH. The payout is LF_MoneyUtils.PREFAB_CASH. Nothing in this feature deposits
+//! to LF_BankAccount. The ATM stays the only cash-to-account boundary.
 //------------------------------------------------------------------------------------------------
 class LF_HospitalTillState : Managed
 {
@@ -50,7 +50,7 @@ class LF_Hospital
 	//------------------------------------------------------------------------------------------------
 	static ResourceName CashPrefab()
 	{
-		return EL_MoneyUtils.PREFAB_CASH;
+		return LF_MoneyUtils.PREFAB_CASH;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -102,13 +102,13 @@ class LF_Hospital
 	{
 		if (targetId.IsEmpty())
 		{
-			EL_Debug.Error("Hospital", "till configure refused: empty target id");
+			LF_Debug.Error("Hospital", "till configure refused: empty target id");
 			return;
 		}
 
 		if (payout < 1)
 		{
-			EL_Debug.Error("Hospital", string.Format("till configure refused: %1 payout %2", targetId, payout));
+			LF_Debug.Error("Hospital", string.Format("till configure refused: %1 payout %2", targetId, payout));
 			return;
 		}
 
@@ -126,7 +126,7 @@ class LF_Hospital
 		till.m_fLastRobTime = -1;
 		till.m_iAlerts = 0;
 		till.m_iCashDelivered = 0;
-		EL_Debug.Log("Hospital", string.Format("till configured %1 payout=%2 cooldown=%3 police=%4", targetId, payout, cooldownSeconds, minPolice));
+		LF_Debug.Log("Hospital", string.Format("till configured %1 payout=%2 cooldown=%3 police=%4", targetId, payout, cooldownSeconds, minPolice));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ class LF_Hospital
 	{
 		if (targetId.IsEmpty())
 		{
-			EL_Debug.Error("Hospital", "cabinet configure refused: empty target id");
+			LF_Debug.Error("Hospital", "cabinet configure refused: empty target id");
 			return;
 		}
 
@@ -152,14 +152,14 @@ class LF_Hospital
 
 		if (!loot || loot.Count() == 0)
 		{
-			EL_Debug.Error("Hospital", string.Format("cabinet %1 has no loot list", targetId));
+			LF_Debug.Error("Hospital", string.Format("cabinet %1 has no loot list", targetId));
 			return;
 		}
 
 		foreach (ResourceName prefab : loot)
 			cabinet.m_aConfigured.Insert(prefab);
 
-		EL_Debug.Log("Hospital", string.Format("cabinet configured %1 lines=%2", targetId, cabinet.m_aConfigured.Count()));
+		LF_Debug.Log("Hospital", string.Format("cabinet configured %1 lines=%2", targetId, cabinet.m_aConfigured.Count()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -179,11 +179,11 @@ class LF_Hospital
 		if (playerUid.IsEmpty())
 			return "#EL-Hospital_TillCivilianOnly";
 
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 		if (accountManager)
 		{
-			EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-			if (account && account.GetFaction() != EL_Faction.CIVILIAN)
+			LF_PlayerAccount account = accountManager.GetAccount(playerUid);
+			if (account && account.GetFaction() != LF_Faction.CIVILIAN)
 				return "#EL-Hospital_TillCivilianOnly";
 		}
 
@@ -203,14 +203,14 @@ class LF_Hospital
 	{
 		if (targetId.IsEmpty() || playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Hospital", "till refused: target id or player uid is empty");
+			LF_Debug.Error("Hospital", "till refused: target id or player uid is empty");
 			return false;
 		}
 
 		string block = TillBlockReason(targetId, playerUid);
 		if (!block.IsEmpty())
 		{
-			EL_Debug.Log("Hospital", string.Format("till refused %1: %2", targetId, block));
+			LF_Debug.Log("Hospital", string.Format("till refused %1: %2", targetId, block));
 			return false;
 		}
 
@@ -220,11 +220,11 @@ class LF_Hospital
 		int paid = PayCash(till, player);
 		till.m_iCashDelivered = till.m_iCashDelivered + paid;
 
-		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(playerUid);
+		LF_PlayerAccount account = LF_PlayerAccountManager.GetOrCreate(playerUid);
 		if (account)
 		{
 			account.IncreaseWantedLevel(1);
-			EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+			LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 			if (accountManager)
 				accountManager.SaveAndReleaseAccount(account);
 		}
@@ -232,7 +232,7 @@ class LF_Hospital
 		till.m_iAlerts = till.m_iAlerts + 1;
 		// The alarm sounds at the cabinet and on-duty officers are radioed (LF_Dispatch).
 		LF_Dispatch.Report(playerUid, player, LF_WantedReports.OFFENCE_HOSPITAL, TargetOrigin(targetId));
-		EL_Debug.Log("Hospital", string.Format("till robbed %1 cash=%2 delivered=%3", targetId, CashPrefab(), paid));
+		LF_Debug.Log("Hospital", string.Format("till robbed %1 cash=%2 delivered=%3", targetId, CashPrefab(), paid));
 		return true;
 	}
 
@@ -272,7 +272,7 @@ class LF_Hospital
 	{
 		if (!configured)
 		{
-			EL_Debug.Error("Hospital", "cabinet loot skipped: list is missing");
+			LF_Debug.Error("Hospital", "cabinet loot skipped: list is missing");
 			return 0;
 		}
 
@@ -280,14 +280,14 @@ class LF_Hospital
 		{
 			if (prefab.IsEmpty())
 			{
-				EL_Debug.Error("Hospital", "cabinet loot skipped: empty prefab");
+				LF_Debug.Error("Hospital", "cabinet loot skipped: empty prefab");
 				continue;
 			}
 
 			Resource resource = Resource.Load(prefab);
 			if (!resource || !resource.IsValid())
 			{
-				EL_Debug.Error("Hospital", "cabinet loot skipped: prefab missing: " + prefab);
+				LF_Debug.Error("Hospital", "cabinet loot skipped: prefab missing: " + prefab);
 				continue;
 			}
 
@@ -313,14 +313,14 @@ class LF_Hospital
 	{
 		if (targetId.IsEmpty() || playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Hospital", "cabinet breach refused: target id or player uid is empty");
+			LF_Debug.Error("Hospital", "cabinet breach refused: target id or player uid is empty");
 			return false;
 		}
 
 		LF_HospitalCabinetState cabinet = Cabinets().Get(targetId);
 		if (!cabinet)
 		{
-			EL_Debug.Error("Hospital", string.Format("cabinet breach refused: %1 is not configured", targetId));
+			LF_Debug.Error("Hospital", string.Format("cabinet breach refused: %1 is not configured", targetId));
 			return false;
 		}
 
@@ -361,13 +361,13 @@ class LF_Hospital
 	static int CountPoliceOnDuty()
 	{
 		int count = 0;
-		EL_PlayerControllerManagerCompat playerManager = EL_PlayerControllerManagerCompat.GetInstance();
+		LF_PlayerControllerManagerCompat playerManager = LF_PlayerControllerManagerCompat.GetInstance();
 		if (!playerManager)
 			return 0;
 
 		array<int> playerIds = {};
 		playerManager.GetAllPlayerIds(playerIds);
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 		if (!accountManager)
 			return 0;
 
@@ -381,9 +381,9 @@ class LF_Hospital
 			if (!controlled)
 				continue;
 
-			string playerUid = EL_Utils.GetPlayerUID(controlled);
-			EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-			if (account && account.GetFaction() == EL_Faction.POLICE && account.IsOnDuty())
+			string playerUid = LF_Utils.GetPlayerUID(controlled);
+			LF_PlayerAccount account = accountManager.GetAccount(playerUid);
+			if (account && account.GetFaction() == LF_Faction.POLICE && account.IsOnDuty())
 				count++;
 		}
 
@@ -395,12 +395,12 @@ class LF_Hospital
 	{
 		if (player)
 		{
-			int paid = EL_MoneyUtils.AddCash(player, till.m_iPayout);
+			int paid = LF_MoneyUtils.AddCash(player, till.m_iPayout);
 			if (paid != till.m_iPayout)
 			{
-				EL_Debug.Error("Hospital", string.Format("till payout short: paid %1 of %2 at %3", paid, till.m_iPayout, till.m_sTargetId));
+				LF_Debug.Error("Hospital", string.Format("till payout short: paid %1 of %2 at %3", paid, till.m_iPayout, till.m_sTargetId));
 				if (paid > 0)
-					EL_MoneyUtils.RemoveCash(player, paid);
+					LF_MoneyUtils.RemoveCash(player, paid);
 				return 0;
 			}
 
@@ -409,17 +409,17 @@ class LF_Hospital
 
 		vector origin = TargetOrigin(till.m_sTargetId);
 		origin = origin + Vector(0, 0.9, 0);
-		IEntity stack = EL_Utils.SpawnEntityPrefab(CashPrefab(), origin);
+		IEntity stack = LF_Utils.SpawnEntityPrefab(CashPrefab(), origin);
 		if (!stack)
 		{
-			EL_Debug.Error("Hospital", string.Format("till payout skipped: MoneyStack did not spawn at %1", till.m_sTargetId));
+			LF_Debug.Error("Hospital", string.Format("till payout skipped: MoneyStack did not spawn at %1", till.m_sTargetId));
 			return 0;
 		}
 
-		EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(stack);
+		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(stack);
 		if (!quantity || !quantity.SetQuantity(till.m_iPayout))
 		{
-			EL_Debug.Error("Hospital", string.Format("till payout skipped: MoneyStack quantity refused at %1", till.m_sTargetId));
+			LF_Debug.Error("Hospital", string.Format("till payout skipped: MoneyStack quantity refused at %1", till.m_sTargetId));
 			SCR_EntityHelper.DeleteEntityAndChildren(stack);
 			return 0;
 		}
@@ -432,7 +432,7 @@ class LF_Hospital
 	{
 		if (cabinet.m_bDelivered)
 		{
-			EL_Debug.Log("Hospital", string.Format("cabinet loot skipped: %1 already delivered", cabinet.m_sTargetId));
+			LF_Debug.Log("Hospital", string.Format("cabinet loot skipped: %1 already delivered", cabinet.m_sTargetId));
 			return;
 		}
 
@@ -447,15 +447,15 @@ class LF_Hospital
 		{
 			ResourceName prefab = resolved.Get(i);
 			vector pos = origin + Vector(0.4 * i, 0.2, 0);
-			IEntity spawned = EL_Utils.SpawnEntityPrefab(prefab, pos);
+			IEntity spawned = LF_Utils.SpawnEntityPrefab(prefab, pos);
 			if (!spawned)
 			{
-				EL_Debug.Error("Hospital", "cabinet loot skipped: spawn failed: " + prefab);
+				LF_Debug.Error("Hospital", "cabinet loot skipped: spawn failed: " + prefab);
 				continue;
 			}
 
 			cabinet.m_aDelivered.Insert(prefab);
-			EL_Debug.Log("Hospital", string.Format("cabinet loot %1 from %2", prefab, cabinet.m_sTargetId));
+			LF_Debug.Log("Hospital", string.Format("cabinet loot %1 from %2", prefab, cabinet.m_sTargetId));
 		}
 	}
 

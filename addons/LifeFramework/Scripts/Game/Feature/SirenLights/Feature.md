@@ -11,8 +11,8 @@ menu toggle.
 
 ## Interaction pattern
 
-Rung 1. The siren knob (`EL_SirenKnobComponent`) in the cab cycles light modes
-(`EL_SirenModeAction` / `EL_LightAnimationComponent`); `EL_SirenManagerComponent`
+Rung 1. The siren knob (`LF_SirenKnobComponent`) in the cab cycles light modes
+(`LF_SirenModeAction` / `LF_LightAnimationComponent`); `LF_SirenManagerComponent`
 coordinates; `Assets/Vehicles/EmergencyLightsKnob/` and
 `Prefabs/Vehicles/SirenLights/` hold the assets.
 
@@ -29,8 +29,8 @@ coordinates; `Assets/Vehicles/EmergencyLightsKnob/` and
 
 ## Current state
 
-- `EL_SirenManagerComponent`, `EL_SirenModeAction`, `EL_SirenKnobComponent`,
-  `EL_LightAnimationComponent`, `EL_LightEntry` (`Feature/SirenLights/`).
+- `LF_SirenManagerComponent`, `LF_SirenModeAction`, `LF_SirenKnobComponent`,
+  `LF_LightAnimationComponent`, `LF_LightEntry` (`Feature/SirenLights/`).
 
 ## Dependencies
 

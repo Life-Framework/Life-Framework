@@ -1,6 +1,6 @@
 // Git merge driver for generated files.
 // Language confs resolve by tools\cli regen-localization.
-// EL_TestRegistrations.generated.c resolves by tools\cli regen-tests.
+// LF_TestRegistrations.generated.c resolves by tools\cli regen-tests.
 // The driver runs those commands. It does not hand-edit the generated text.
 //
 //   node tools/merge/regen-generated.mjs %O %A %B %P
@@ -12,7 +12,7 @@ import { mergeStringTables } from "./union-string-table.mjs";
 
 const ST_PATH = "addons/LifeFramework/Language/everonlife_localization.st";
 const TESTS_PREFIX = "addons/LifeFramework/Scripts/Game/Tests";
-const REGISTRY_NAME = "EL_TestRegistrations.generated.c";
+const REGISTRY_NAME = "LF_TestRegistrations.generated.c";
 
 function git(args) {
   return spawnSync("git", args, { windowsHide: true, encoding: "utf8" });
@@ -193,7 +193,7 @@ function runDriver() {
   const pathname = process.argv[5] || "";
   const plan = regenPlan(pathname);
   if (!oursPath || !plan) {
-    console.error("lf-regen: expected a language conf or EL_TestRegistrations.generated.c");
+    console.error("lf-regen: expected a language conf or LF_TestRegistrations.generated.c");
     process.exit(1);
   }
   const sides = resolveSides();

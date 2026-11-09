@@ -14,7 +14,7 @@ class LF_JobGuards
 
 	protected static ref set<string> s_aEquipmentGranted;
 
-	protected static EL_EJobType s_eWantedJob;
+	protected static LF_EJobType s_eWantedJob;
 	protected static bool s_bWorkplaceFound;
 
 	//------------------------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ class LF_JobGuards
 	//------------------------------------------------------------------------------------------------
 	//! Records that playerUid received the kit for job.
 	//! \return True the first time per uid and job this session, false afterwards or on an empty uid.
-	static bool ClaimEquipmentGrant(string playerUid, EL_EJobType job)
+	static bool ClaimEquipmentGrant(string playerUid, LF_EJobType job)
 	{
 		if (playerUid.IsEmpty())
 			return false;
@@ -49,7 +49,7 @@ class LF_JobGuards
 		if (!s_aEquipmentGranted)
 			s_aEquipmentGranted = new set<string>();
 
-		string key = playerUid + ":" + typename.EnumToString(EL_EJobType, job);
+		string key = playerUid + ":" + typename.EnumToString(LF_EJobType, job);
 		if (s_aEquipmentGranted.Contains(key))
 			return false;
 
@@ -59,7 +59,7 @@ class LF_JobGuards
 
 	//------------------------------------------------------------------------------------------------
 	//! \return True when an entity with an LF_JobSignUpAction for job is within WORKPLACE_RADIUS.
-	static bool IsNearWorkplace(vector position, EL_EJobType job)
+	static bool IsNearWorkplace(vector position, LF_EJobType job)
 	{
 		if (!GetGame() || !GetGame().GetWorld())
 			return false;

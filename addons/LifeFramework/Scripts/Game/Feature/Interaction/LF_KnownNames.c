@@ -35,7 +35,7 @@ class LF_KnownNames
 	{
 		if (playerId <= 0 || name.IsEmpty())
 		{
-			EL_Debug.Warn("Interaction", "name refused: empty player id or name");
+			LF_Debug.Warn("Interaction", "name refused: empty player id or name");
 			return;
 		}
 
@@ -43,7 +43,7 @@ class LF_KnownNames
 			s_mNames = new map<int, string>();
 
 		s_mNames.Set(playerId, name);
-		EL_Debug.Info("Interaction", string.Format("this client knows player %1 (%2 known)", playerId, s_mNames.Count()));
+		LF_Debug.Info("Interaction", string.Format("this client knows player %1 (%2 known)", playerId, s_mNames.Count()));
 		StartTick();
 	}
 
@@ -111,7 +111,7 @@ class LF_KnownNames
 		if (!s_mNames || s_mNames.IsEmpty())
 			return string.Empty;
 
-		SCR_ChimeraCharacter self = EL_Utils.GetLocalCharacter();
+		SCR_ChimeraCharacter self = LF_Utils.GetLocalCharacter();
 		if (!self || !LF_PlayerInteraction.IsAlive(self))
 			return string.Empty;
 
@@ -169,7 +169,7 @@ class LF_KnownNames
 			s_wRoot = workspace.CreateWidgets(LAYOUT);
 			if (!s_wRoot)
 			{
-				EL_Debug.Error("Interaction", "known name label failed to load " + LAYOUT);
+				LF_Debug.Error("Interaction", "known name label failed to load " + LAYOUT);
 				return;
 			}
 

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! Marks an ItemProcessor as the hideout machine. EL_ProcessAction runs only when
+//! Marks an ItemProcessor as the hideout machine. LF_ProcessAction runs only when
 //! the player's organization owns this hideout and has the processing upgrade.
 //------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "LifeFramework/Feature/Hideouts", description: "Processing machine of an organization hideout.")]

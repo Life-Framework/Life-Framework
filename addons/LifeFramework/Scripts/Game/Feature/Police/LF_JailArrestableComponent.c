@@ -58,7 +58,7 @@ class LF_JailArrestableComponent : ScriptComponent
 
 		if (!owner)
 		{
-			EL_Debug.Error("Jail", "arrestable component has no owner");
+			LF_Debug.Error("Jail", "arrestable component has no owner");
 			return;
 		}
 
@@ -75,14 +75,14 @@ class LF_JailArrestableComponent : ScriptComponent
 	{
 		if (!GetGame() || !GetGame().GetCallqueue())
 		{
-			EL_Debug.Error("Jail", "escort tick skipped: no callqueue");
+			LF_Debug.Error("Jail", "escort tick skipped: no callqueue");
 			return;
 		}
 
 		GetGame().GetCallqueue().CallLater(OnTick, TICK_MS, true);
 		m_bTicking = true;
 		s_TickOwner = this;
-		EL_Debug.Log("Jail", "escort tick scheduled");
+		LF_Debug.Log("Jail", "escort tick scheduled");
 	}
 
 	//------------------------------------------------------------------------------------------------

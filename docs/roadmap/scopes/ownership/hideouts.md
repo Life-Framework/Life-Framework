@@ -23,7 +23,7 @@ An organization owns one building. Members use its door, its storage, and its pr
 
 ## Assets
 
-Shell: `Prefabs/Structures/Houses/Garage/Garage_E_01/` or a village house, parented like `EL_Building_Base` (`Building_Base.et`). Door and key: `EL_Door_Base`, `EL_LockComponent`, `HouseKeyItem.et`, identifier set to the organization id by `EL_HouseManagerComponent`. Machine: `ItemProcessor_Base`. Stash prop from LNGC: `Prefabs/Props/Crates/ShineStash.et`. See [sources](../../sources.md).
+Shell: `Prefabs/Structures/Houses/Garage/Garage_E_01/` or a village house, parented like `EL_Building_Base` (`Building_Base.et`). Door and key: `EL_Door_Base`, `LF_LockComponent`, `HouseKeyItem.et`, identifier set to the organization id by `LF_HouseManagerComponent`. Machine: `ItemProcessor_Base`. Stash prop from LNGC: `Prefabs/Props/Crates/ShineStash.et`. See [sources](../../sources.md).
 
 ## First slice
 

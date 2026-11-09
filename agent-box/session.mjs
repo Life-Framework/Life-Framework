@@ -17,7 +17,7 @@
 //
 // The server runs the bare DebugWorld (no mission header, no test define), so
 // the world's game mode keeps dev tools open and the harness RPCs pass
-// EL_DevGate. The playtest mission (LF_PlaytestTown.conf) closes that gate.
+// LF_DevGate. The playtest mission (LF_PlaytestTown.conf) closes that gate.
 // `up --mission playtest` runs that mission the way `tools\cli host start` does,
 // with -scrDefine LF_HARNESS on the server and every client: the harness
 // (stand, pose, use) passes its own gate in that build only, the debug menu
@@ -72,7 +72,7 @@ export const SERVER_READY = "Entered online game state.";
 // ("remote script source code checksum does not match"), so clients compile
 // with the same define as the server.
 export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
-// Opens the harness gate on the playtest mission (EL_DevGate.HarnessBuild).
+// Opens the harness gate on the playtest mission (LF_DevGate.HarnessBuild).
 // Only a session passes it; tools\cli host start never does.
 export const HARNESS_DEFINE = "LF_HARNESS";
 export const MISSIONS = ["debug", "playtest"];
@@ -142,7 +142,7 @@ export function clientBox(dir, n) {
 
 // Every `up` names its clients with a fresh id (-lfSession). The harness
 // addresses each command to it, and a client runs only its own session's
-// commands (EL_AgentCommand.SessionAccepts).
+// commands (LF_AgentCommand.SessionAccepts).
 export function newSessionId() {
   return randomBytes(6).toString("hex");
 }
@@ -173,7 +173,7 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
     "-maxFPS", "30",
     "-logLevel", "normal",
     // -noBackend clients all carry the NULL identity and the same Steam name;
-    // EL_Utils.GetPlayerUID gives each player id its own identity under this define.
+    // LF_Utils.GetPlayerUID gives each player id its own identity under this define.
     ...defineArgs(mission),
     "-disableCrashReporter",
     "-noBackend",
@@ -277,7 +277,7 @@ export function selftestSession() {
   } catch {}
   const s = serverArgs({ addonsDir: "A", profile: "SP" });
   if (s[0] !== "-server" || s[1] !== SERVER_WORLD) failures.push("server does not run the bare DebugWorld");
-  if (s.some((x) => /EL_AUTOTEST|LF_PlaytestTown|-config/.test(x))) failures.push("server args carry a test define, the playtest mission, or -config");
+  if (s.some((x) => /LF_AUTOTEST|LF_PlaytestTown|-config/.test(x))) failures.push("server args carry a test define, the playtest mission, or -config");
   if (s[s.indexOf("-scrDefine") + 1] !== SESSION_DEFINE) failures.push("server does not define LF_SESSION_IDENTITY");
   if (a1[a1.indexOf("-scrDefine") + 1] !== SESSION_DEFINE) failures.push("client script define differs from the server (checksum refusal)");
   if (s.includes(HARNESS_DEFINE) || a1.includes(HARNESS_DEFINE)) failures.push("the bare DebugWorld session carries LF_HARNESS");
@@ -414,7 +414,7 @@ async function runInteraction() {
   const steps = [];
   steps.push(on(1, { verb: "use", className: "LF_IntroduceAction", entityName: other }, 10000));
   wait(2500);
-  steps.push(on(1, { verb: "use", className: "EL_ShowIDAction", entityName: other }, 10000));
+  steps.push(on(1, { verb: "use", className: "LF_ShowIDAction", entityName: other }, 10000));
   wait(2000);
   steps.push(on(1, { verb: "use", className: "LF_GiveCashAction", entityName: other }, 10000));
   wait(2000);
@@ -481,7 +481,7 @@ async function runOrg(args) {
   const steps = [];
   on(1, { verb: "stand", entityName: "Roadmap_Org_Desk" });
   wait(2500);
-  steps.push(on(1, { verb: "use", className: "EL_OrganizationDeskAction", entityName: "Roadmap_Org_Desk" }, 10000));
+  steps.push(on(1, { verb: "use", className: "LF_OrganizationDeskAction", entityName: "Roadmap_Org_Desk" }, 10000));
   wait(1500);
   steps.push(on(1, { verb: "type", widget: "OrgName", text: ORG_NAME }));
   steps.push(on(1, { verb: "click", widget: "FoundButton" }));
@@ -584,7 +584,7 @@ async function runProof() {
   on(1, { verb: "stand", entityName: ROB_TARGET });
   wait(2500);
   on(1, { verb: "look" });
-  const rob = on(1, { verb: "use", className: "EL_RobAction", entityName: ROB_TARGET }, 10000);
+  const rob = on(1, { verb: "use", className: "LF_RobAction", entityName: ROB_TARGET }, 10000);
   wait(2500);
   const after1 = state(1);
   const after2 = state(2);
@@ -615,13 +615,13 @@ function arrive(on, n, wait) {
   wait(1500);
 }
 
-// The session identity of a player id (EL_Utils.BuildSessionIdentity).
+// The session identity of a player id (LF_Utils.BuildSessionIdentity).
 export function sessionUid(playerId) {
   return `00bbbddd-5e55-0000-0000-${String(playerId).padStart(12, "0")}`;
 }
 
 // The police roster file the server reads on first use ($profile:LifeFramework/whitelist.txt,
-// EL_WhitelistManager format: version, faction entries, job entries). Write it before `up`.
+// LF_WhitelistManager format: version, faction entries, job entries). Write it before `up`.
 export function rosterText(playerIds) {
   const lines = ["1", String(playerIds.length)];
   for (const id of playerIds) lines.push(sessionUid(id), "POLICE");
@@ -663,7 +663,7 @@ async function runPoliceProof() {
   on(2, { verb: "stand", entityName: "Roadmap_Police_Desk" });
   wait(2500);
   on(2, { verb: "look" });
-  const clockIn = on(2, { verb: "use", className: "EL_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000);
+  const clockIn = on(2, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000);
   wait(2500);
   const onDuty2 = state(2);
   if (clockIn.status !== "ok") fails.push(`clock in returned ${clockIn.status} ${clockIn.detail}`);
@@ -672,7 +672,7 @@ async function runPoliceProof() {
   on(1, { verb: "stand", entityName: ROB_TARGET });
   wait(2500);
   on(1, { verb: "look" });
-  const rob = on(1, { verb: "use", className: "EL_RobAction", entityName: ROB_TARGET }, 10000);
+  const rob = on(1, { verb: "use", className: "LF_RobAction", entityName: ROB_TARGET }, 10000);
   wait(2500);
   const robbed1 = state(1);
   if (rob.status !== "ok") fails.push(`rob returned ${rob.status} ${rob.detail}`);
@@ -694,7 +694,7 @@ async function runPoliceProof() {
   on(2, { verb: "stand", entityName: "Roadmap_Police_Desk" });
   wait(2500);
   on(2, { verb: "look" });
-  const clockOut = on(2, { verb: "use", className: "EL_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000);
+  const clockOut = on(2, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000);
   wait(2500);
   const offDuty2 = state(2);
   if (clockOut.status !== "ok") fails.push(`clock out returned ${clockOut.status} ${clockOut.detail}`);
@@ -868,7 +868,7 @@ async function runTicketProof() {
 
   on(2, { verb: "stand", entityName: "Roadmap_Police_Desk" });
   wait(2500);
-  must(on(2, { verb: "use", className: "EL_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000), "clock in");
+  must(on(2, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000), "clock in");
   wait(2500);
 
   const write = (offenceRow, shot) => {
@@ -1053,7 +1053,7 @@ async function runDispatchProof() {
     on(n, { verb: "stand", entityName: "Roadmap_Police_Desk" });
     wait(2500);
     on(n, { verb: "look" });
-    const r = on(n, { verb: "use", className: "EL_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000);
+    const r = on(n, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000);
     wait(2500);
     return r;
   };
@@ -1061,7 +1061,7 @@ async function runDispatchProof() {
     on(n, { verb: "stand", entityName: ROB_TARGET });
     wait(2500);
     on(n, { verb: "look" });
-    const r = on(n, { verb: "use", className: "EL_RobAction", entityName: ROB_TARGET }, 10000);
+    const r = on(n, { verb: "use", className: "LF_RobAction", entityName: ROB_TARGET }, 10000);
     wait(3000);
     return r;
   };

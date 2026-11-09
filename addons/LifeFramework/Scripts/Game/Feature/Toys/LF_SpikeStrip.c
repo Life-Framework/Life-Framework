@@ -1,5 +1,5 @@
 // Ported from EveronLife (https://github.com/thebonbon/EveronLife), branch enhancement/Main_World.
-// Original: src/Scripts/Game/Components/Vehicle/EL_SpikeTriggerComponent.c
+// Original: src/Scripts/Game/Components/Vehicle/LF_SpikeTriggerComponent.c
 // Copyright (c) 2022 EveronLife
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -45,7 +45,7 @@ class LF_SpikeStrip : ScriptComponent
 
 		if (!owner)
 		{
-			EL_Debug.Error("SpikeStrip", "init skipped: no owner");
+			LF_Debug.Error("SpikeStrip", "init skipped: no owner");
 			return;
 		}
 
@@ -58,21 +58,21 @@ class LF_SpikeStrip : ScriptComponent
 	{
 		if (!owner)
 		{
-			EL_Debug.Error("SpikeStrip", "init skipped: no owner");
+			LF_Debug.Error("SpikeStrip", "init skipped: no owner");
 			return;
 		}
 
 		SCR_BaseTriggerEntity trigger = SCR_BaseTriggerEntity.Cast(owner);
 		if (!trigger)
 		{
-			EL_Debug.Error("SpikeStrip", "init skipped: owner is not a trigger");
+			LF_Debug.Error("SpikeStrip", "init skipped: owner is not a trigger");
 			return;
 		}
 
 		ScriptInvoker activate = trigger.GetOnActivate();
 		if (!activate)
 		{
-			EL_Debug.Error("SpikeStrip", "init skipped: no activate invoker");
+			LF_Debug.Error("SpikeStrip", "init skipped: no activate invoker");
 			return;
 		}
 
@@ -84,7 +84,7 @@ class LF_SpikeStrip : ScriptComponent
 	{
 		if (!ent)
 		{
-			EL_Debug.Error("SpikeStrip", "enter rejected: no entity");
+			LF_Debug.Error("SpikeStrip", "enter rejected: no entity");
 			return;
 		}
 
@@ -95,14 +95,14 @@ class LF_SpikeStrip : ScriptComponent
 		SCR_VehicleDamageManagerComponent damageManager = SCR_VehicleDamageManagerComponent.Cast(ent.FindComponent(SCR_VehicleDamageManagerComponent));
 		if (!damageManager)
 		{
-			EL_Debug.Error("SpikeStrip", "vehicle has no damage manager");
+			LF_Debug.Error("SpikeStrip", "vehicle has no damage manager");
 			return;
 		}
 
 		IEntity owner = GetOwner();
 		if (!owner)
 		{
-			EL_Debug.Error("SpikeStrip", "enter skipped: no owner");
+			LF_Debug.Error("SpikeStrip", "enter skipped: no owner");
 			return;
 		}
 
@@ -114,7 +114,7 @@ class LF_SpikeStrip : ScriptComponent
 		int wheelCount = simulation.WheelCount();
 		if (wheelCount <= 0)
 		{
-			EL_Debug.Error("SpikeStrip", "vehicle has no wheels");
+			LF_Debug.Error("SpikeStrip", "vehicle has no wheels");
 			return;
 		}
 
@@ -130,12 +130,12 @@ class LF_SpikeStrip : ScriptComponent
 			SCR_WheelHitZone wheel = FindWheel(hitZones, simulation, i);
 			if (!wheel)
 			{
-				EL_Debug.Error("SpikeStrip", string.Format("wheel hit zone missing for index %1", i));
+				LF_Debug.Error("SpikeStrip", string.Format("wheel hit zone missing for index %1", i));
 				continue;
 			}
 
 			wheel.SetHealth(0);
-			EL_Debug.Log("SpikeStrip", string.Format("wheel spiked %1", i));
+			LF_Debug.Log("SpikeStrip", string.Format("wheel spiked %1", i));
 		}
 	}
 

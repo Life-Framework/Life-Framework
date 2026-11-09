@@ -181,7 +181,7 @@ class LF_PlayerInteraction
 	//------------------------------------------------------------------------------------------------
 	static bool IsOnDutyPolice(IEntity user)
 	{
-		return EL_AccountStateBits.IsOnDutyPolice(EL_AccountReplication.GetState(user));
+		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -190,7 +190,7 @@ class LF_PlayerInteraction
 	{
 		if (slot.IsEmpty() || !handler)
 		{
-			EL_Debug.Error("Interaction", "role registration refused: empty slot or null handler");
+			LF_Debug.Error("Interaction", "role registration refused: empty slot or null handler");
 			return;
 		}
 
@@ -198,7 +198,7 @@ class LF_PlayerInteraction
 			s_mRoles = new map<string, ref LF_PlayerRoleHandler>();
 
 		s_mRoles.Set(slot, handler);
-		EL_Debug.Info("Interaction", "role slot registered: " + slot);
+		LF_Debug.Info("Interaction", "role slot registered: " + slot);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -228,8 +228,8 @@ class LF_PlayerInteraction
 		if (refusal == LF_EInteractionRefusal.NONE)
 			return true;
 
-		EL_Debug.Info("Interaction", string.Format("%1 refused: %2", what, typename.EnumToString(LF_EInteractionRefusal, refusal)));
-		EL_NotificationManagerComponent.NotifyPlayer(PlayerIdOf(user), "#LF-Interact_Title", RefusalKey(refusal), 4.0, EL_ENotificationType.WARNING);
+		LF_Debug.Info("Interaction", string.Format("%1 refused: %2", what, typename.EnumToString(LF_EInteractionRefusal, refusal)));
+		LF_NotificationManagerComponent.NotifyPlayer(PlayerIdOf(user), "#LF-Interact_Title", RefusalKey(refusal), 4.0, LF_ENotificationType.WARNING);
 		return false;
 	}
 
@@ -247,15 +247,15 @@ class LF_PlayerInteraction
 	//! Server: the name printed on the player's active character, or empty.
 	static string DisplayName(string playerUid)
 	{
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts || playerUid.IsEmpty())
 			return string.Empty;
 
-		EL_PlayerAccount account = accounts.GetFromCache(playerUid);
+		LF_PlayerAccount account = accounts.GetFromCache(playerUid);
 		if (!account)
 			return string.Empty;
 
-		EL_PlayerCharacter character = account.GetActiveCharacter();
+		LF_PlayerCharacter character = account.GetActiveCharacter();
 		if (!character)
 			return string.Empty;
 
@@ -283,9 +283,9 @@ class LF_PlayerInteraction
 		if (soundEvent.IsEmpty() || !receiver)
 			return;
 
-		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(receiver);
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(receiver);
 		if (inventory)
-			inventory.RpcAsk_PlaySound(EL_NetworkUtils.GetRplId(receiver), soundEvent);
+			inventory.RpcAsk_PlaySound(LF_NetworkUtils.GetRplId(receiver), soundEvent);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -295,18 +295,18 @@ class LF_PlayerInteraction
 		if (!ServerAllows(user, target, "introduce"))
 			return false;
 
-		string userUid = EL_Utils.GetPlayerUID(user);
-		string targetUid = EL_Utils.GetPlayerUID(target);
+		string userUid = LF_Utils.GetPlayerUID(user);
+		string targetUid = LF_Utils.GetPlayerUID(target);
 		if (userUid.IsEmpty() || targetUid.IsEmpty())
 		{
-			EL_Debug.Error("Interaction", "introduce refused: a player has no account id");
+			LF_Debug.Error("Interaction", "introduce refused: a player has no account id");
 			return false;
 		}
 
 		string name = DisplayName(userUid);
 		if (name.IsEmpty())
 		{
-			EL_Debug.Warn("Interaction", "introduce refused: player " + userUid + " has no character name");
+			LF_Debug.Warn("Interaction", "introduce refused: player " + userUid + " has no character name");
 			return false;
 		}
 
@@ -316,16 +316,16 @@ class LF_PlayerInteraction
 		int targetId = PlayerIdOf(target);
 		if (!LF_Introductions.Introduce(targetUid, userUid))
 		{
-			EL_Debug.Info("Interaction", string.Format("player %1 already knows player %2", targetId, userId));
-			EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_AlreadyKnown", 3.0);
+			LF_Debug.Info("Interaction", string.Format("player %1 already knows player %2", targetId, userId));
+			LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_AlreadyKnown", 3.0);
 			SendName(target, userId, name);
 			return true;
 		}
 
 		SendName(target, userId, name);
-		EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_Introduced", 3.0, EL_ENotificationType.SUCCESS);
-		EL_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Interact_Title", "#LF-Interact_MetSomeone", 4.0, EL_ENotificationType.INFO, name);
-		EL_Debug.Info("Interaction", string.Format("player %1 introduced themselves to player %2", userId, targetId));
+		LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_Introduced", 3.0, LF_ENotificationType.SUCCESS);
+		LF_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Interact_Title", "#LF-Interact_MetSomeone", 4.0, LF_ENotificationType.INFO, name);
+		LF_Debug.Info("Interaction", string.Format("player %1 introduced themselves to player %2", userId, targetId));
 		return true;
 	}
 
@@ -346,7 +346,7 @@ class LF_PlayerInteraction
 			return;
 
 		PlayerManager players = GetGame().GetPlayerManager();
-		string uid = EL_Utils.GetPlayerUID(playerId);
+		string uid = LF_Utils.GetPlayerUID(playerId);
 		if (uid.IsEmpty())
 			return;
 
@@ -360,7 +360,7 @@ class LF_PlayerInteraction
 			if (otherId == playerId)
 				continue;
 
-			string otherUid = EL_Utils.GetPlayerUID(otherId);
+			string otherUid = LF_Utils.GetPlayerUID(otherId);
 			if (otherUid.IsEmpty())
 				continue;
 
@@ -385,7 +385,7 @@ class LF_PlayerInteraction
 			}
 		}
 
-		EL_Debug.Info("Interaction", string.Format("names synced for player %1: %2 sent", playerId, sent));
+		LF_Debug.Info("Interaction", string.Format("names synced for player %1: %2 sent", playerId, sent));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -399,18 +399,18 @@ class LF_PlayerInteraction
 		int carried = wallet.Carried();
 		if (carried <= 0)
 		{
-			EL_NotificationManagerComponent.NotifyPlayer(PlayerIdOf(user), "#LF-Interact_Title", "#LF-Interact_NoCash", 3.0, EL_ENotificationType.WARNING);
+			LF_NotificationManagerComponent.NotifyPlayer(PlayerIdOf(user), "#LF-Interact_Title", "#LF-Interact_NoCash", 3.0, LF_ENotificationType.WARNING);
 			return false;
 		}
 
 		SCR_PlayerController controller = ControllerOf(user);
 		if (!controller)
 		{
-			EL_Debug.Error("Interaction", "give cash refused: the giver has no player controller");
+			LF_Debug.Error("Interaction", "give cash refused: the giver has no player controller");
 			return false;
 		}
 
-		controller.LF_OpenGiveCash(EL_NetworkUtils.GetRplId(target), carried);
+		controller.LF_OpenGiveCash(LF_NetworkUtils.GetRplId(target), carried);
 		return true;
 	}
 
@@ -429,22 +429,22 @@ class LF_PlayerInteraction
 		int targetId = PlayerIdOf(target);
 		if (result != LF_EGiveCash.GIVEN)
 		{
-			EL_Debug.Info("Interaction", string.Format("give cash refused: player %1 -> %2 amount %3: %4", userId, targetId, amount, typename.EnumToString(LF_EGiveCash, result)));
+			LF_Debug.Info("Interaction", string.Format("give cash refused: player %1 -> %2 amount %3: %4", userId, targetId, amount, typename.EnumToString(LF_EGiveCash, result)));
 			string reason = "#LF-Interact_CashFailed";
 			if (result == LF_EGiveCash.REFUSED_NOT_CARRIED)
 				reason = "#LF-Interact_NotEnoughCash";
 			else if (result == LF_EGiveCash.REFUSED_AMOUNT)
 				reason = "#LF-Interact_BadAmount";
 
-			EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", reason, 4.0, EL_ENotificationType.WARNING);
+			LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", reason, 4.0, LF_ENotificationType.WARNING);
 			return result;
 		}
 
 		PlayGesture(user, gestureId);
 		PlayHandoverSound(target, SOUND_HANDOVER);
-		EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_CashGiven", 3.0, EL_ENotificationType.SUCCESS, moved.ToString());
-		EL_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Interact_Title", "#LF-Interact_CashReceived", 4.0, EL_ENotificationType.SUCCESS, moved.ToString());
-		EL_Debug.Info("Interaction", string.Format("player %1 gave %2 cash to player %3", userId, moved, targetId));
+		LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_CashGiven", 3.0, LF_ENotificationType.SUCCESS, moved.ToString());
+		LF_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Interact_Title", "#LF-Interact_CashReceived", 4.0, LF_ENotificationType.SUCCESS, moved.ToString());
+		LF_Debug.Info("Interaction", string.Format("player %1 gave %2 cash to player %3", userId, moved, targetId));
 		return result;
 	}
 
@@ -458,11 +458,11 @@ class LF_PlayerInteraction
 		SCR_PlayerController controller = ControllerOf(user);
 		if (!controller)
 		{
-			EL_Debug.Error("Interaction", "give item refused: the giver has no player controller");
+			LF_Debug.Error("Interaction", "give item refused: the giver has no player controller");
 			return false;
 		}
 
-		controller.LF_OfferItemInHand(EL_NetworkUtils.GetRplId(target));
+		controller.LF_OfferItemInHand(LF_NetworkUtils.GetRplId(target));
 		return true;
 	}
 
@@ -506,18 +506,18 @@ class LF_PlayerInteraction
 
 		int userId = PlayerIdOf(user);
 		int targetId = PlayerIdOf(target);
-		if (!item || item == user || EL_InventoryUtils.GetStorageHierachyRoot(item) != user)
+		if (!item || item == user || LF_InventoryUtils.GetStorageHierachyRoot(item) != user)
 		{
-			EL_Debug.Warn("Interaction", string.Format("give item refused: player %1 does not carry that item", userId));
-			EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_NothingInHand", 3.0, EL_ENotificationType.WARNING);
+			LF_Debug.Warn("Interaction", string.Format("give item refused: player %1 does not carry that item", userId));
+			LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_NothingInHand", 3.0, LF_ENotificationType.WARNING);
 			return false;
 		}
 
-		InventoryStorageManagerComponent giverInventory = EL_Component<InventoryStorageManagerComponent>.Find(user);
-		InventoryStorageManagerComponent receiverInventory = EL_Component<InventoryStorageManagerComponent>.Find(target);
+		InventoryStorageManagerComponent giverInventory = LF_Component<InventoryStorageManagerComponent>.Find(user);
+		InventoryStorageManagerComponent receiverInventory = LF_Component<InventoryStorageManagerComponent>.Find(target);
 		if (!giverInventory || !receiverInventory)
 		{
-			EL_Debug.Error("Interaction", "give item refused: a character has no inventory manager");
+			LF_Debug.Error("Interaction", "give item refused: a character has no inventory manager");
 			return false;
 		}
 
@@ -527,23 +527,23 @@ class LF_PlayerInteraction
 
 		if (!storage)
 		{
-			EL_Debug.Info("Interaction", string.Format("give item refused: player %1 has no room", targetId));
-			EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_NoRoom", 3.0, EL_ENotificationType.WARNING);
+			LF_Debug.Info("Interaction", string.Format("give item refused: player %1 has no room", targetId));
+			LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_NoRoom", 3.0, LF_ENotificationType.WARNING);
 			return false;
 		}
 
 		if (!giverInventory.TryMoveItemToStorage(item, storage))
 		{
-			EL_Debug.Warn("Interaction", string.Format("give item failed: move from player %1 to player %2 refused by the inventory", userId, targetId));
-			EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_NoRoom", 3.0, EL_ENotificationType.WARNING);
+			LF_Debug.Warn("Interaction", string.Format("give item failed: move from player %1 to player %2 refused by the inventory", userId, targetId));
+			LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_NoRoom", 3.0, LF_ENotificationType.WARNING);
 			return false;
 		}
 
 		PlayGesture(user, gestureId);
 		PlayHandoverSound(target, SOUND_HANDOVER);
-		EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_ItemGiven", 3.0, EL_ENotificationType.SUCCESS);
-		EL_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Interact_Title", "#LF-Interact_ItemReceived", 4.0, EL_ENotificationType.SUCCESS);
-		EL_Debug.Info("Interaction", string.Format("player %1 gave %2 to player %3", userId, EL_Utils.GetPrefabName(item), targetId));
+		LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Interact_Title", "#LF-Interact_ItemGiven", 3.0, LF_ENotificationType.SUCCESS);
+		LF_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Interact_Title", "#LF-Interact_ItemReceived", 4.0, LF_ENotificationType.SUCCESS);
+		LF_Debug.Info("Interaction", string.Format("player %1 gave %2 to player %3", userId, LF_Utils.GetPrefabName(item), targetId));
 		return true;
 	}
 
@@ -554,7 +554,7 @@ class LF_PlayerInteraction
 		LF_PlayerRoleHandler handler = GetRole(slot);
 		if (!handler)
 		{
-			EL_Debug.Warn("Interaction", "role action refused: no handler for slot " + slot);
+			LF_Debug.Warn("Interaction", "role action refused: no handler for slot " + slot);
 			return false;
 		}
 
@@ -563,7 +563,7 @@ class LF_PlayerInteraction
 
 		if (!handler.CanOffer(user, target))
 		{
-			EL_Debug.Info("Interaction", string.Format("role %1 refused by its handler for player %2", slot, PlayerIdOf(user)));
+			LF_Debug.Info("Interaction", string.Format("role %1 refused by its handler for player %2", slot, PlayerIdOf(user)));
 			return false;
 		}
 

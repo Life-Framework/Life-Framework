@@ -1,0 +1,96 @@
+//------------------------------------------------------------------------------------------------
+//! Vehicle key item: identifies which vehicle this key opens by carrying that vehicle's
+//! identifier (see LF_VehicleLockComponent for how identifiers are generated and matched).
+//!
+//! BINDING. Server only: BindToVehicleIdentifier / SetVehicleIdentifier are the runtime path
+//! (a key-making or purchase flow), m_sDebugIdentifier is the editor path (map maker binds a key
+//! to a whole prefab lineage). The item display name is rewritten to "Vehicle Key [<id>]" so
+//! players can tell keys apart.
+//!
+//! PERSISTENCE. The item's own identifier is session state. LF_VehicleOwnership stores the key
+//! id on the vehicle record and, when the item is gone after a restart, spawns a key bound to
+//! that same id. A key that is still in the world is rebound instead of replaced.
+//!
+//! STACKING. The key prefab sets LF_QuantityComponent.m_iMaxQuantity to 1, so keys never combine:
+//! CanCombine is prefab-based and would merge keys bound to different vehicles into one stack.
+//------------------------------------------------------------------------------------------------
+[ComponentEditorProps(category: "EveronLife/Feature/VehicleLock", description: "Binds an item to the vehicle it opens.")]
+class LF_VehicleKeyComponentClass : ScriptComponentClass
+{
+}
+
+//------------------------------------------------------------------------------------------------
+class LF_VehicleKeyComponent : ScriptComponent
+{
+	[Attribute("", desc: "Editor binding: vehicle identifier this key opens. Leave empty to bind at runtime.")]
+	protected string m_sDebugIdentifier;
+
+	[RplProp()]
+	protected string m_sVehicleIdentifier;
+
+	//------------------------------------------------------------------------------------------------
+	//! A ScriptComponent gets EOnInit only when it asks for it. Without this an editor-bound key
+	//! (m_sDebugIdentifier, the police car key) stayed unbound and opened nothing.
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+		if (!m_sDebugIdentifier.IsEmpty())
+			SetEventMask(owner, EntityEvent.INIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void EOnInit(IEntity owner)
+	{
+		super.EOnInit(owner);
+
+		// The debug binding is assigned during initialization, so explicitly mark the RplProp dirty.
+		if (!m_sDebugIdentifier.IsEmpty() && Replication.IsServer() && m_sVehicleIdentifier.IsEmpty())
+		{
+			m_sVehicleIdentifier = m_sDebugIdentifier;
+			Replication.BumpMe();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The identifier of the vehicle this key opens, empty when unbound.
+	string GetVehicleIdentifier()
+	{
+		return m_sVehicleIdentifier;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Binds this key to the vehicle carrying the given identifier.
+	//! \param identifier The vehicle identifier from LF_VehicleLockComponent.GetVehicleIdentifier.
+	void BindToVehicleIdentifier(string identifier)
+	{
+		SetVehicleIdentifier(identifier);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-authoritative: only the server binds a key.
+	//! \param identifier The vehicle identifier this key opens.
+	void SetVehicleIdentifier(string identifier)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		if (m_sVehicleIdentifier == identifier)
+			return;
+
+		m_sVehicleIdentifier = identifier;
+		Replication.BumpMe();
+		UpdateDisplayName();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void UpdateDisplayName()
+	{
+		InventoryItemComponent inventoryItem = LF_Component<InventoryItemComponent>.Find(GetOwner());
+		if (!inventoryItem)
+			return;
+
+		UIInfo uiInfo = inventoryItem.GetUIInfo();
+		if (uiInfo)
+			uiInfo.SetName("Vehicle Key [" + m_sVehicleIdentifier + "]");
+	}
+}

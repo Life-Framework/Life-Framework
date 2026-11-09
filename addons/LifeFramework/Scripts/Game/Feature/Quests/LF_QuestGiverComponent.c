@@ -1,5 +1,5 @@
 // LF_QuestGiverComponent.c - quest giver on an NPC or a board prop. Holds the
-// quest definitions in the prefab (same pattern as EL_TraderManagerComponent's
+// quest definitions in the prefab (same pattern as LF_TraderManagerComponent's
 // tradable items) and registers them with the manager on server init.
 
 [ComponentEditorProps(category: "LifeFramework/Feature/Quests", description: "Quest giver on an NPC or board")]

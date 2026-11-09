@@ -1,12 +1,12 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_ArrivalChain`: made
-// LF_QuestManager.ReportSignal route a TALK event; got `[ELTEST] FAIL quests/arrival-chain`,
+// LF_QuestManager.ReportSignal route a TALK event; got `[LFTEST] FAIL quests/arrival-chain`,
 // `- step 2 turns in on its own`, `- step 3 starts on its own`, `- a deposit moves step 4`. Restored; green.
 // tier: WORLD
 //! The town clerk in Quests.layer runs the arrival chain end to end through the public quest
 //! API: talk and register, read the town board, deliver a parcel, bank cash, return. Each
 //! SIGNAL moves only its own step, a returning player is never offered the chain again, and
 //! the ID card is handed over once.
-class LF_Test_ArrivalChain : EL_Test
+class LF_Test_ArrivalChain : LF_Test
 {
 	// Quests.layer: Quest_Clerk stands at 134 0 243.5; the test bodies spawn a meter from him.
 
@@ -15,7 +15,7 @@ class LF_Test_ArrivalChain : EL_Test
 		return "quests/arrival-chain";
 	}
 
-	override void Run(EL_TestContext ctx)
+	override void Run(LF_TestContext ctx)
 	{
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
 		ctx.EqualStr("clerk", manager.GetGiverOfQuest("arrival_register"), "the clerk offers step 1");
@@ -25,8 +25,8 @@ class LF_Test_ArrivalChain : EL_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		IEntity newcomer = EL_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "134 0 242.5", true);
-		IEntity returning = EL_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "134 0 242.5", true);
+		IEntity newcomer = LF_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "134 0 242.5", true);
+		IEntity returning = LF_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "134 0 242.5", true);
 		if (!newcomer || !returning)
 			return;
 
@@ -39,7 +39,7 @@ class LF_Test_ArrivalChain : EL_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void RunChain(EL_TestContext ctx, LF_QuestManager manager, IEntity player)
+	protected void RunChain(LF_TestContext ctx, LF_QuestManager manager, IEntity player)
 	{
 		LF_QuestTrackerComponent tracker = LF_QuestTrackerComponent.Cast(player.FindComponent(LF_QuestTrackerComponent));
 		ctx.True(tracker != null, "the newcomer carries a quest tracker");
@@ -69,8 +69,8 @@ class LF_Test_ArrivalChain : EL_Test
 		ctx.True(Status(tracker, "arrival_work") == LF_EQuestStatus.ACTIVE, "step 3 starts on its own");
 
 		ctx.False(manager.ReportSignal(player, LF_QuestSignals.ATM_DEPOSIT), "a deposit before the parcel run does not move step 3");
-		ctx.False(manager.ReportSignal(player, LF_QuestSignals.JobRunComplete(EL_EJobType.TAXI)), "a taxi fare is not the parcel run");
-		ctx.True(manager.ReportSignal(player, LF_QuestSignals.JobRunComplete(EL_EJobType.PARCEL)), "a paid parcel run moves step 3");
+		ctx.False(manager.ReportSignal(player, LF_QuestSignals.JobRunComplete(LF_EJobType.TAXI)), "a taxi fare is not the parcel run");
+		ctx.True(manager.ReportSignal(player, LF_QuestSignals.JobRunComplete(LF_EJobType.PARCEL)), "a paid parcel run moves step 3");
 		ctx.True(Status(tracker, "arrival_work") == LF_EQuestStatus.TURNED_IN, "step 3 turns in on its own");
 		ctx.True(Status(tracker, "arrival_bank") == LF_EQuestStatus.ACTIVE, "step 4 starts on its own");
 
@@ -80,11 +80,11 @@ class LF_Test_ArrivalChain : EL_Test
 
 		// Step 5: the clerk, in person.
 		ctx.False(tracker.RequestTurnIn("arrival_done"), "step 5 is not done before the player is back");
-		int cashBefore = EL_MoneyUtils.GetCash(player);
+		int cashBefore = LF_MoneyUtils.GetCash(player);
 		ctx.True(tracker.RequestConverse("clerk"), "back at the clerk, the talk finishes step 5");
 		ctx.True(Status(tracker, "arrival_done") == LF_EQuestStatus.TURNED_IN, "the clerk takes step 5 back");
 		ctx.False(tracker.RequestConverse("clerk"), "after the chain the clerk has nothing more to hand out");
-		ctx.Equal(cashBefore + manager.GetDefinition("arrival_done").m_iRewardMoney, EL_MoneyUtils.GetCash(player), "the welcome cash lands in the pockets");
+		ctx.Equal(cashBefore + manager.GetDefinition("arrival_done").m_iRewardMoney, LF_MoneyUtils.GetCash(player), "the welcome cash lands in the pockets");
 		ctx.True(manager.GetDefinition("arrival_done").m_iRewardMoney > 0, "the clerk gives a welcome");
 
 		// After step 5 nothing else is pushed.
@@ -96,7 +96,7 @@ class LF_Test_ArrivalChain : EL_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! A returning player's turn-ins come back from progression (M1-10): the clerk offers nothing.
-	protected void RunReturningPlayer(EL_TestContext ctx, IEntity player)
+	protected void RunReturningPlayer(LF_TestContext ctx, IEntity player)
 	{
 		LF_QuestTrackerComponent tracker = LF_QuestTrackerComponent.Cast(player.FindComponent(LF_QuestTrackerComponent));
 		if (!tracker)
@@ -119,7 +119,7 @@ class LF_Test_ArrivalChain : EL_Test
 		ctx.False(tracker.RequestConverse("clerk"), "talking to the clerk offers a returning player nothing");
 
 		// A player who left after step 2 picks up at step 3, not at step 1.
-		IEntity midway = EL_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "60 0 60", false);
+		IEntity midway = LF_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "60 0 60", false);
 		if (!midway)
 			return;
 
@@ -137,14 +137,14 @@ class LF_Test_ArrivalChain : EL_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! The clerk hands the registered card over once; a second hand-over adds nothing.
-	protected void RunIdCardOnce(EL_TestContext ctx, IEntity player)
+	protected void RunIdCardOnce(LF_TestContext ctx, IEntity player)
 	{
 		array<LF_IdCardComponent> cards = {};
 		LF_IdCard.FindCarried(player, cards);
 		ctx.Equal(0, cards.Count(), "a test body with no account was handed no card");
 
-		EL_PlayerAccount account = EL_PlayerAccount.Create("quests-arrival-chain");
-		account.AddCharacter(EL_PlayerCharacter.Create("Prefabs/Characters/Core/Character_Roleplay.et", "Ada", "Clerk", 30), true);
+		LF_PlayerAccount account = LF_PlayerAccount.Create("quests-arrival-chain");
+		account.AddCharacter(LF_PlayerCharacter.Create("Prefabs/Characters/Core/Character_Roleplay.et", "Ada", "Clerk", 30), true);
 
 		ctx.True(LF_QuestRewards.HandIdCard(player, account), "the clerk hands the registered card over");
 		ctx.False(LF_QuestRewards.HandIdCard(player, account), "a second hand-over is refused");

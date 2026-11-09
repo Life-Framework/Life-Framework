@@ -26,8 +26,8 @@ inside `LifeFramework`.
 
 | Path | Purpose |
 | --- | --- |
-| `Scripts/Game/` | EnforceScript (`EL_*` classes) |
-| `Scripts/Game/Tests/` | In-game `EL_Test*` suite |
+| `Scripts/Game/` | EnforceScript (`LF_*` classes) |
+| `Scripts/Game/Tests/` | In-game `LF_Test*` suite |
 | `Prefabs/` | Entities, items, NPCs |
 | `Worlds/MainWorld` | Playable world |
 | `Worlds/DebugWorld` | Dev/test layers + autotest |

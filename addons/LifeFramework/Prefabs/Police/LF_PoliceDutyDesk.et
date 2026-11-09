@@ -28,7 +28,7 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
       }
      }
      additionalActions {
-      EL_DutyAction "{E0CCF06A3D9A2E06}" {
+      LF_DutyAction "{E0CCF06A3D9A2E06}" {
        ParentContextList {
         "LF_DutyClock"
        }

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! Forced entry. A configured charge opens an EL_LockComponent after a fuse and leaves it
+//! Forced entry. A configured charge opens an LF_LockComponent after a fuse and leaves it
 //! open until repair. Vanilla charge detonation is not involved: the demo block is only the
 //! item the action requires to exist.
 //!
@@ -84,7 +84,7 @@ class LF_Breach
 	{
 		if (targetId.IsEmpty())
 		{
-			EL_Debug.Error("Breach", "configure refused: empty target id");
+			LF_Debug.Error("Breach", "configure refused: empty target id");
 			return;
 		}
 
@@ -102,7 +102,7 @@ class LF_Breach
 		// with the old entity. The open flag is kept; Apply/Repair own it.
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
-		EL_Debug.Log("Breach", string.Format("configured %1 fuse=%2", targetId, fuseSeconds));
+		LF_Debug.Log("Breach", string.Format("configured %1 fuse=%2", targetId, fuseSeconds));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ class LF_Breach
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Breach", "organization member refused: empty player uid");
+			LF_Debug.Error("Breach", "organization member refused: empty player uid");
 			return;
 		}
 
@@ -143,7 +143,7 @@ class LF_Breach
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Arms a configured target for playerUid. Opens its EL_LockComponent after the fuse and
+	//! Arms a configured target for playerUid. Opens its LF_LockComponent after the fuse and
 	//! leaves it open until Repair. Wanted and the police notify fire once, here, including
 	//! when the fuse is still running. Returns false when the target is not configured, a
 	//! charge is already on it, the player id is empty, or the charge prefab does not load.
@@ -154,30 +154,30 @@ class LF_Breach
 	{
 		if (targetId.IsEmpty() || playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Breach", "arm refused: target id or player uid is empty");
+			LF_Debug.Error("Breach", "arm refused: target id or player uid is empty");
 			return false;
 		}
 
 		LF_BreachTarget target = Targets().Get(targetId);
 		if (!target)
 		{
-			EL_Debug.Error("Breach", string.Format("arm refused: target %1 is not configured", targetId));
+			LF_Debug.Error("Breach", string.Format("arm refused: target %1 is not configured", targetId));
 			return false;
 		}
 
 		if (target.m_bOpen || target.m_bChargeArmed)
 		{
-			EL_Debug.Log("Breach", string.Format("arm refused: target %1 already open or armed", targetId));
+			LF_Debug.Log("Breach", string.Format("arm refused: target %1 already open or armed", targetId));
 			return false;
 		}
 
 		if (!ChargePrefabLoads())
 			return false;
 
-		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(playerUid);
+		LF_PlayerAccount account = LF_PlayerAccountManager.GetOrCreate(playerUid);
 		if (!account)
 		{
-			EL_Debug.Error("Breach", string.Format("arm refused: no account for %1", playerUid));
+			LF_Debug.Error("Breach", string.Format("arm refused: no account for %1", playerUid));
 			return false;
 		}
 
@@ -185,14 +185,14 @@ class LF_Breach
 			return false;
 
 		account.IncreaseWantedLevel(1);
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 		if (accountManager)
 			accountManager.SaveAndReleaseAccount(account);
 
 		target.m_iPoliceNotifies = target.m_iPoliceNotifies + 1;
 		// The alarm sounds at the door or vault and on-duty officers are radioed (LF_Dispatch).
 		LF_Dispatch.Report(playerUid, chargeCarrier, LF_WantedReports.OFFENCE_BREAK_IN, TargetOrigin(targetId));
-		EL_Debug.Log("Breach", string.Format("armed %1 by %2 fuse=%3", targetId, playerUid, target.m_fFuseSeconds));
+		LF_Debug.Log("Breach", string.Format("armed %1 by %2 fuse=%3", targetId, playerUid, target.m_fFuseSeconds));
 
 		target.m_bChargeArmed = true;
 		target.m_fElapsed = 0;
@@ -236,7 +236,7 @@ class LF_Breach
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
 		SyncTarget(target);
-		EL_Debug.Error("Breach", string.Format("charge cancelled on %1: %2", targetId, reason));
+		LF_Debug.Error("Breach", string.Format("charge cancelled on %1: %2", targetId, reason));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -268,20 +268,20 @@ class LF_Breach
 	{
 		if (targetId.IsEmpty() || playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Breach", "repair refused: target id or player uid is empty");
+			LF_Debug.Error("Breach", "repair refused: target id or player uid is empty");
 			return false;
 		}
 
 		LF_BreachTarget target = Targets().Get(targetId);
 		if (!target)
 		{
-			EL_Debug.Error("Breach", string.Format("repair refused: target %1 is not configured", targetId));
+			LF_Debug.Error("Breach", string.Format("repair refused: target %1 is not configured", targetId));
 			return false;
 		}
 
 		if (!PlayerMayRepair(target, playerUid))
 		{
-			EL_Debug.Log("Breach", string.Format("repair refused: %1 cannot repair %2", playerUid, targetId));
+			LF_Debug.Log("Breach", string.Format("repair refused: %1 cannot repair %2", playerUid, targetId));
 			return false;
 		}
 
@@ -290,7 +290,7 @@ class LF_Breach
 		target.m_fElapsed = 0;
 		WriteLock(targetId, true);
 		SyncTarget(target);
-		EL_Debug.Log("Breach", string.Format("repaired %1 by %2", targetId, playerUid));
+		LF_Debug.Log("Breach", string.Format("repaired %1 by %2", targetId, playerUid));
 		return true;
 	}
 
@@ -308,7 +308,7 @@ class LF_Breach
 		if (!target)
 			return true;
 
-		EL_LockComponent doorLock = FindLock(targetId);
+		LF_LockComponent doorLock = FindLock(targetId);
 		if (doorLock)
 			return doorLock.IsLocked();
 
@@ -331,7 +331,7 @@ class LF_Breach
 		LF_BreachTarget target = Targets().Get(targetId);
 		if (!target)
 		{
-			EL_Debug.Error("Breach", string.Format("export refused: target %1 is not configured", targetId));
+			LF_Debug.Error("Breach", string.Format("export refused: target %1 is not configured", targetId));
 			return null;
 		}
 
@@ -345,14 +345,14 @@ class LF_Breach
 	{
 		if (!record)
 		{
-			EL_Debug.Error("Breach", "apply refused: record is null");
+			LF_Debug.Error("Breach", "apply refused: record is null");
 			return false;
 		}
 
 		LF_BreachTarget target = Targets().Get(record.m_sTargetId);
 		if (!target || !record.IsValidFor(target.m_sTargetId))
 		{
-			EL_Debug.Error("Breach", "apply refused: record does not match a configured target");
+			LF_Debug.Error("Breach", "apply refused: record does not match a configured target");
 			return false;
 		}
 
@@ -361,15 +361,15 @@ class LF_Breach
 		target.m_fElapsed = 0;
 		WriteLock(target.m_sTargetId, !record.m_bOpen);
 		SyncTarget(target);
-		EL_Debug.Log("Breach", string.Format("apply-save %1 open=%2", target.m_sTargetId, record.m_bOpen));
+		LF_Debug.Log("Breach", string.Format("apply-save %1 open=%2", target.m_sTargetId, record.m_bOpen));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected static bool PlayerMayRepair(LF_BreachTarget target, string playerUid)
 	{
-		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(playerUid);
-		if (account && account.GetFaction() == EL_Faction.POLICE)
+		LF_PlayerAccount account = LF_PlayerAccountManager.GetOrCreate(playerUid);
+		if (account && account.GetFaction() == LF_Faction.POLICE)
 			return true;
 
 		if (target.m_sOwnerOrganization.IsEmpty())
@@ -388,7 +388,7 @@ class LF_Breach
 		target.m_bChargeArmed = false;
 		WriteLock(target.m_sTargetId, false);
 		SyncTarget(target);
-		EL_Debug.Log("Breach", string.Format("lock opened: %1", target.m_sTargetId));
+		LF_Debug.Log("Breach", string.Format("lock opened: %1", target.m_sTargetId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -398,7 +398,7 @@ class LF_Breach
 		if (!user)
 			return false;
 
-		if (EL_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
+		if (LF_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
 			return true;
 
 		return FindEquippedCharge(user) != null;
@@ -409,7 +409,7 @@ class LF_Breach
 	//! deposit-count GetAmount/RemoveAmount do not cover. Finds a charge there.
 	protected static IEntity FindEquippedCharge(IEntity user)
 	{
-		EquipedWeaponStorageComponent weaponStorage = EL_Component<EquipedWeaponStorageComponent>.Find(user);
+		EquipedWeaponStorageComponent weaponStorage = LF_Component<EquipedWeaponStorageComponent>.Find(user);
 		if (!weaponStorage)
 			return null;
 
@@ -417,7 +417,7 @@ class LF_Breach
 		weaponStorage.GetAll(weapons);
 		foreach (IEntity weapon : weapons)
 		{
-			if (weapon && EL_Utils.GetPrefabName(weapon) == CHARGE_PREFAB)
+			if (weapon && LF_Utils.GetPrefabName(weapon) == CHARGE_PREFAB)
 				return weapon;
 		}
 
@@ -430,29 +430,29 @@ class LF_Breach
 	{
 		if (!HasCharge(user))
 		{
-			EL_Debug.Warn("Breach", string.Format("arm refused: %1 carries no breach charge", targetId));
+			LF_Debug.Warn("Breach", string.Format("arm refused: %1 carries no breach charge", targetId));
 			return false;
 		}
 
 		int removed = 0;
-		if (EL_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
-			removed = EL_InventoryUtils.RemoveAmount(user, CHARGE_PREFAB, 1);
+		if (LF_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
+			removed = LF_InventoryUtils.RemoveAmount(user, CHARGE_PREFAB, 1);
 
 		if (removed != 1)
 		{
 			IEntity equipped = FindEquippedCharge(user);
-			InventoryStorageManagerComponent storage = EL_InventoryUtils.GetResponsibleStorageManager(user);
+			InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(user);
 			if (equipped && storage && storage.TryDeleteItem(equipped))
 				removed = 1;
 		}
 
 		if (removed != 1)
 		{
-			EL_Debug.Error("Breach", string.Format("arm refused: %1 charge could not be taken (removed %2)", targetId, removed));
+			LF_Debug.Error("Breach", string.Format("arm refused: %1 charge could not be taken (removed %2)", targetId, removed));
 			return false;
 		}
 
-		EL_Debug.Log("Breach", string.Format("charge used on %1", targetId));
+		LF_Debug.Log("Breach", string.Format("charge used on %1", targetId));
 		return true;
 	}
 
@@ -468,7 +468,7 @@ class LF_Breach
 		if (!entity)
 			return;
 
-		LF_BreachTargetComponent component = EL_Component<LF_BreachTargetComponent>.Find(entity);
+		LF_BreachTargetComponent component = LF_Component<LF_BreachTargetComponent>.Find(entity);
 		if (component)
 			component.SetReplicatedState(target.m_bOpen, target.m_bChargeArmed);
 	}
@@ -479,7 +479,7 @@ class LF_Breach
 		Resource charge = Resource.Load(CHARGE_PREFAB);
 		if (!charge.IsValid())
 		{
-			EL_Debug.Error("Breach", "charge prefab missing: " + CHARGE_PREFAB);
+			LF_Debug.Error("Breach", "charge prefab missing: " + CHARGE_PREFAB);
 			return false;
 		}
 
@@ -489,7 +489,7 @@ class LF_Breach
 	//------------------------------------------------------------------------------------------------
 	protected static void WriteLock(string targetId, bool locked)
 	{
-		EL_LockComponent doorLock = FindLock(targetId);
+		LF_LockComponent doorLock = FindLock(targetId);
 		if (!doorLock)
 			return;
 
@@ -500,7 +500,7 @@ class LF_Breach
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static EL_LockComponent FindLock(string targetId)
+	protected static LF_LockComponent FindLock(string targetId)
 	{
 		if (!GetGame() || !GetGame().GetWorld())
 			return null;
@@ -509,9 +509,9 @@ class LF_Breach
 		if (!entity)
 			return null;
 
-		EL_LockComponent doorLock = EL_Component<EL_LockComponent>.Find(entity);
+		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(entity);
 		if (!doorLock)
-			EL_Debug.Error("Breach", string.Format("target %1 has no EL_LockComponent", targetId));
+			LF_Debug.Error("Breach", string.Format("target %1 has no LF_LockComponent", targetId));
 
 		return doorLock;
 	}
@@ -546,11 +546,11 @@ class LF_Breach
 		IEntity entity = GetGame().GetWorld().FindEntityByName(targetId);
 		if (!entity)
 		{
-			EL_Debug.Log("Breach", string.Format("fuse timer not scheduled: %1 is not a placed entity; Advance drives it", targetId));
+			LF_Debug.Log("Breach", string.Format("fuse timer not scheduled: %1 is not a placed entity; Advance drives it", targetId));
 			return;
 		}
 
-		LF_BreachTargetComponent component = EL_Component<LF_BreachTargetComponent>.Find(entity);
+		LF_BreachTargetComponent component = LF_Component<LF_BreachTargetComponent>.Find(entity);
 		if (!component)
 		{
 			CancelCharge(targetId, "fuse timer skipped: entity has no LF_BreachTargetComponent");

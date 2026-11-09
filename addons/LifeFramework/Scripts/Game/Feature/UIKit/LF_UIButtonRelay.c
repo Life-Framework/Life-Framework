@@ -28,14 +28,14 @@ class LF_UIButtonRelay : ScriptedWidgetComponent
 
 		if (!m_wRoot)
 		{
-			EL_Debug.Error("UIKit", "button " + name + " has no widget to wire");
+			LF_Debug.Error("UIKit", "button " + name + " has no widget to wire");
 			return;
 		}
 
 		SCR_ButtonTextComponent button = SCR_ButtonTextComponent.Cast(m_wRoot.FindHandler(SCR_ButtonTextComponent));
 		if (!button)
 		{
-			EL_Debug.Error("UIKit", "button " + name + " is missing SCR_ButtonTextComponent");
+			LF_Debug.Error("UIKit", "button " + name + " is missing SCR_ButtonTextComponent");
 			return;
 		}
 
@@ -48,7 +48,7 @@ class LF_UIButtonRelay : ScriptedWidgetComponent
 	{
 		if (!m_Screen)
 		{
-			EL_Debug.Error("UIKit", "button " + m_sName + " clicked with no screen");
+			LF_Debug.Error("UIKit", "button " + m_sName + " clicked with no screen");
 			return;
 		}
 

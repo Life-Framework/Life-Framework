@@ -10,7 +10,7 @@ Copy the ownership map, the versioned player record, the vehicle record, and the
 
 The structure that made their persistence refactors cheap is one serializer per manager, version written first, new fields only appended, applied through a public mutator. `OVT_PlayerManagerSerializer.Deserialize` is the one to copy: versions 2 through 5 each clear the field an older payload never wrote, then `OVT_PlayerManagerComponent.ApplyPersistedPlayers` writes onto the live record instead of replacing it.
 
-The workspace-widget menu (`OVT_UIContext.ShowLayout`) is already in `EL_FactionSelectionMenu`. It is not listed again.
+The workspace-widget menu (`OVT_UIContext.ShowLayout`) is already in `LF_FactionSelectionMenu`. It is not listed again.
 
 ## Matches
 

@@ -12,7 +12,7 @@ class LF_HideoutStashOpenAction : SCR_OpenStorageAction
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (!controller)
 		{
-			EL_Debug.Error("Hideout", "stash open dropped: no local player controller");
+			LF_Debug.Error("Hideout", "stash open dropped: no local player controller");
 			return;
 		}
 

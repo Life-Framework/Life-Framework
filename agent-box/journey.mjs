@@ -149,7 +149,7 @@ export const STEPS = [
     id: "garage",
     title: "Garage: the counter offers store and retrieve",
     clients: [1],
-    judge: ({ ctx }) => (/EL_Vehicle(Store|Retrieve)Action/.test(ctx.look || "") ? [] : [`look offers ${ctx.look || "nothing"}`]),
+    judge: ({ ctx }) => (/LF_Vehicle(Store|Retrieve)Action/.test(ctx.look || "") ? [] : [`look offers ${ctx.look || "nothing"}`]),
   },
   {
     id: "restart",
@@ -219,7 +219,7 @@ export const ACTIONS = {
   atm(h) {
     h.on(1, { verb: "stand", entityName: "ATM_Debug" });
     h.pause(1500);
-    h.on(1, { verb: "use", className: "EL_ATMAction", entityName: "ATM_Debug" }, 10000);
+    h.on(1, { verb: "use", className: "LF_ATMAction", entityName: "ATM_Debug" }, 10000);
     if (!h.text(1, "DepositButton", 8000).found) return;
     h.ctx.amount = num(h.states[1], "cash") >= DEPOSIT ? DEPOSIT : SMALL_DEPOSIT;
     for (const digit of String(h.ctx.amount)) h.on(1, { verb: "click", widget: `Key${digit}Button` });
@@ -231,7 +231,7 @@ export const ACTIONS = {
   shop(h) {
     h.on(1, { verb: "stand", entityName: "Shop_GeneralStore_Debug" });
     h.pause(1500);
-    h.on(1, { verb: "use", className: "EL_ShopAction", entityName: "Shop_GeneralStore_Debug" }, 10000);
+    h.on(1, { verb: "use", className: "LF_ShopAction", entityName: "Shop_GeneralStore_Debug" }, 10000);
     if (!h.text(1, "Item0Row_Action", 8000).found) return;
     h.on(1, { verb: "click", widget: "Item0Row_Action" });
     h.pause(500);
@@ -244,7 +244,7 @@ export const ACTIONS = {
     h.on(1, { verb: "stand", entityName: "Roadmap_Vehicle_Lot" });
     h.pause(1500);
     // The lot opens its price sheet; the first row (the S105) has Buy when the bank covers it.
-    h.on(1, { verb: "use", className: "EL_VehicleBuyAction", entityName: "Roadmap_Vehicle_Lot" }, 10000);
+    h.on(1, { verb: "use", className: "LF_VehicleBuyAction", entityName: "Roadmap_Vehicle_Lot" }, 10000);
     if (h.text(1, "Car0_Action", 8000).found) {
       h.shot(1, "journey-vehicle-sheet");
       h.on(1, { verb: "click", widget: "Car0_Action" });
@@ -273,13 +273,13 @@ export const ACTIONS = {
   rob(h) {
     h.on(1, { verb: "stand", entityName: "Roadmap_Fuel_Till" });
     h.pause(2000);
-    h.on(1, { verb: "use", className: "EL_RobAction", entityName: "Roadmap_Fuel_Till" }, 10000);
+    h.on(1, { verb: "use", className: "LF_RobAction", entityName: "Roadmap_Fuel_Till" }, 10000);
     h.pause(2500);
   },
   org(h) {
     h.on(1, { verb: "stand", entityName: "Roadmap_Org_Desk" });
     h.pause(1500);
-    h.on(1, { verb: "use", className: "EL_OrganizationDeskAction", entityName: "Roadmap_Org_Desk" }, 10000);
+    h.on(1, { verb: "use", className: "LF_OrganizationDeskAction", entityName: "Roadmap_Org_Desk" }, 10000);
     h.pause(1500);
     const sheet = h.on(1, { verb: "ui", mode: "text" });
     h.ctx.screen = sheet.detail;
@@ -476,7 +476,7 @@ export function selftestJourney() {
   if (!judge("give", civ, civ.replace("cash=500", "cash=450"), civ, civ).length) failures.push("give judge passed cash that vanished");
   if (!judge("vehicle", civ.replace("bank=0", "bank=1200"), civ.replace("bank=0", "bank=1200"), civ, civ).length) failures.push("vehicle judge passed no payment");
   if (!judge("garage", civ, civ, civ, civ, { look: "none" }).length) failures.push("garage judge passed an empty look");
-  if (judge("garage", civ, civ, civ, civ, { look: "EL_VehicleStoreAction@Roadmap_Garage" }).length) failures.push("garage judge failed a store offer");
+  if (judge("garage", civ, civ, civ, civ, { look: "LF_VehicleStoreAction@Roadmap_Garage" }).length) failures.push("garage judge failed a store offer");
   if (!judge("restart", civ, civ.replace("cash=500", "cash=0"), civ, civ).length) failures.push("restart judge passed lost cash");
   if (judge("restart", civ, civ, civ, civ).length) failures.push("restart judge failed kept state");
   if (selectSteps([], "playtest").some((s) => s.debug)) failures.push("a debug-menu fixture runs on the playtest mission");

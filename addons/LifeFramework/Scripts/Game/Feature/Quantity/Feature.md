@@ -13,7 +13,7 @@ never sees it as "the quantity system" — they see a shelf with 6 cans and take
 ## Interaction pattern
 
 No direct player-facing rung. It exists so rung-1/2 interactions can carry
-stacks: `EL_QuantityComponent` (virtual stacks, combine/split), `EL_InventoryUtils`
+stacks: `LF_QuantityComponent` (virtual stacks, combine/split), `LF_InventoryUtils`
 (quantity-aware add/remove returning actual amounts), and
 `ScriptedInventoryStorageManagerComponent` (RPC endpoints for split/transfer/
 intent).
@@ -36,7 +36,7 @@ intent).
 
 ## Current state
 
-- `EL_QuantityComponent` / `EL_InventoryUtils` (`Feature/Quantity/`) — stacks,
+- `LF_QuantityComponent` / `LF_InventoryUtils` (`Feature/Quantity/`) — stacks,
   combine, split, actual-amount add/remove. ⚠️ `AddAmount` fills largest stacks
   first while `Remove` drains smallest (asymmetric by design, untested).
 - `ScriptedInventoryStorageManagerComponent` — split/transfer/intent RPCs,

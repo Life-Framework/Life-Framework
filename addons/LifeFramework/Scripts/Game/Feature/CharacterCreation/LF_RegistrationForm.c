@@ -2,7 +2,7 @@
 // Client-only, on LF_UIScreen: three blanks (given name, surname, age) and a Sign button.
 // The form cannot be put away: MenuBack or a lost sheet brings it back until it is signed,
 // because a player without a character has nothing else to do. The checks here only write the
-// error line; the server re-checks (EL_CharacterCreationRules.RefuseCharacter) and sends the form
+// error line; the server re-checks (LF_CharacterCreationRules.RefuseCharacter) and sends the form
 // back with its reason when it refuses.
 
 class LF_RegistrationForm
@@ -40,7 +40,7 @@ class LF_RegistrationForm
 		Hide();
 		if (!controller)
 		{
-			EL_Debug.Error("CharacterCreation", "registration form refused: no player controller");
+			LF_Debug.Error("CharacterCreation", "registration form refused: no player controller");
 			return null;
 		}
 
@@ -53,7 +53,7 @@ class LF_RegistrationForm
 		form.m_Screen.GetOnButton().Insert(form.OnButton);
 		form.m_Screen.GetOnClosed().Insert(form.OnClosed);
 		s_Form = form;
-		EL_Debug.Info("CharacterCreation", "registration form open");
+		LF_Debug.Info("CharacterCreation", "registration form open");
 		return form.m_Screen;
 	}
 
@@ -93,22 +93,22 @@ class LF_RegistrationForm
 		string refusal = LF_RegistrationRules.RefuseForm(firstName, lastName, ageText);
 		if (!refusal.IsEmpty())
 		{
-			EL_Debug.Info("CharacterCreation", "registration form not signed: " + refusal);
+			LF_Debug.Info("CharacterCreation", "registration form not signed: " + refusal);
 			m_Screen.SetLine(PART_ERROR, refusal);
 			return;
 		}
 
 		if (!m_Controller)
 		{
-			EL_Debug.Error("CharacterCreation", "registration form not sent: no player controller");
+			LF_Debug.Error("CharacterCreation", "registration form not sent: no player controller");
 			return;
 		}
 
 		int age = LF_RegistrationRules.ParseAge(ageText);
-		EL_Debug.Info("CharacterCreation", "registration form signed, age " + age);
+		LF_Debug.Info("CharacterCreation", "registration form signed, age " + age);
 		SCR_PlayerController controller = m_Controller;
 		Hide();
-		controller.EL_AskCreateCharacter(firstName, lastName, age);
+		controller.LF_AskCreateCharacter(firstName, lastName, age);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ class LF_RegistrationForm
 		if (m_bSigned || s_Form != this)
 			return;
 
-		EL_Debug.Info("CharacterCreation", "registration form put away unsigned, opening it again");
+		LF_Debug.Info("CharacterCreation", "registration form put away unsigned, opening it again");
 		GetGame().GetCallqueue().CallLater(Reopen, 0, false, m_Controller);
 	}
 

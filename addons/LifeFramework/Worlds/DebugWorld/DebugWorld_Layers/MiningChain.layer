@@ -54,7 +54,7 @@ $grp GenericEntity {
     Flags 0x403 0
     coords -2.6 0 0.7
    }
-   EL_NpcBaseEntity MinerNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+   LF_NpcBaseEntity MinerNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
     components {
      CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
       Identity Identity "{5A4B0B84AF44A913}" {
@@ -110,21 +110,21 @@ $grp GenericEntity {
 GenericEntity Pickaxe_Debug : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
  coords 182.079 0 169.373
 }
-EL_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et" {
+LF_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et" {
  coords 175.169 -0.459 175.274
  m_vSize 10 1 10
  m_iAmount 5
  m_fRespawnTime 1
  m_PrefabsToSpawn {
-  EL_WeightedSpawn "{5A7D1AB35E424547}" {
+  LF_WeightedSpawn "{5A7D1AB35E424547}" {
    m_iChance 25
    m_Prefab "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et"
   }
-  EL_WeightedSpawn "{AB8F2EA71B954EDB}" {
+  LF_WeightedSpawn "{AB8F2EA71B954EDB}" {
    m_iChance 50
    m_Prefab "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
   }
-  EL_WeightedSpawn "{3744BC775D5B4200}" {
+  LF_WeightedSpawn "{3744BC775D5B4200}" {
    m_iChance 25
    m_Prefab "{3C4F54AD0CB24525}Prefabs/Resources/Mining/GoldOre.et"
   }
@@ -133,7 +133,7 @@ EL_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/Min
 GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
  coords 169.777 0 171.497
 }
-GenericEntity EL_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
+GenericEntity LF_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
  coords 171 0 169.5
  angles 0 90 0
 }

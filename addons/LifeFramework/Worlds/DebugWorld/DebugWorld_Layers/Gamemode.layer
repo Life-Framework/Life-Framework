@@ -1,4 +1,4 @@
-EL_GameModeRoleplay : "{7F729501AA82DA9A}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay_Debug.et" {
+LF_GameModeRoleplay : "{7F729501AA82DA9A}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay_Debug.et" {
 }
 SCR_SpawnPoint Spawn_Town : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
  m_sFaction "CIVILIAN"

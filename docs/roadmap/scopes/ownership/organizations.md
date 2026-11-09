@@ -23,7 +23,7 @@ Players found a group that survives restarts. The group has a name, ranks, membe
 
 ## Assets
 
-No new meshes. The fund moves MoneyStack through the same rules as `EL_BankAccount` (a balance keyed by organization id, not a second currency and not `LNGC_cash`). Upgrades flip flags on the [hideout](hideouts.md). LNGC has no organization scripts. See [sources](../../sources.md).
+No new meshes. The fund moves MoneyStack through the same rules as `LF_BankAccount` (a balance keyed by organization id, not a second currency and not `LNGC_cash`). Upgrades flip flags on the [hideout](hideouts.md). LNGC has no organization scripts. See [sources](../../sources.md).
 
 ## First slice
 

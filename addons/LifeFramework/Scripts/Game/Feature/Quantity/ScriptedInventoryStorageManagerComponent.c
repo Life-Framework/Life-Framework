@@ -6,7 +6,7 @@ modded class ScriptedInventoryStorageManagerComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Event invoker args (ResourceName prefab, int newAmount, int oldAmount)
-	ScriptInvoker EL_GetOnAmountChanged(ResourceName prefab)
+	ScriptInvoker LF_GetOnAmountChanged(ResourceName prefab)
 	{
 		if (!prefab) return null;
 
@@ -24,22 +24,22 @@ modded class ScriptedInventoryStorageManagerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void EL_RecountItemsDebounced(ResourceName prefab)
+	protected void LF_RecountItemsDebounced(ResourceName prefab)
 	{
 		if (!m_aELPendingItemRecountTypes) m_aELPendingItemRecountTypes = new set<ResourceName>();
 		m_aELPendingItemRecountTypes.Insert(prefab);
 
 		ScriptCallQueue callQueue = GetGame().GetCallqueue();
-		if (callQueue.GetRemainingTime(EL_FlushRecountItems) == -1)
-			callQueue.Call(EL_FlushRecountItems);
+		if (callQueue.GetRemainingTime(LF_FlushRecountItems) == -1)
+			callQueue.Call(LF_FlushRecountItems);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void EL_FlushRecountItems()
+	protected void LF_FlushRecountItems()
 	{
 		foreach (ResourceName prefab : m_aELPendingItemRecountTypes)
 		{
-			int newTotal = EL_InventoryUtils.GetAmount(this, prefab);
+			int newTotal = LF_InventoryUtils.GetAmount(this, prefab);
 			if (newTotal == -1) continue;
 
 			int previous = m_mELAmountCache.Get(prefab);
@@ -57,13 +57,13 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		super.OnItemAdded(storageOwner, item);
 
-		ResourceName prefab = EL_Utils.GetPrefabName(item);
+		ResourceName prefab = LF_Utils.GetPrefabName(item);
 		if (m_mELItemCountInvokers && m_mELItemCountInvokers.Contains(prefab))
 		{
-			EL_RecountItemsDebounced(prefab);
+			LF_RecountItemsDebounced(prefab);
 
-			EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(item);
-			if (quantity) quantity.GetOnQuantityChanged().Insert(EL_HandleOnQuantityChanged);
+			LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(item);
+			if (quantity) quantity.GetOnQuantityChanged().Insert(LF_HandleOnQuantityChanged);
 		}
 	}
 
@@ -72,41 +72,41 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		super.OnItemRemoved(storageOwner, item);
 
-		ResourceName prefab = EL_Utils.GetPrefabName(item);
+		ResourceName prefab = LF_Utils.GetPrefabName(item);
 		if (m_mELItemCountInvokers && m_mELItemCountInvokers.Contains(prefab))
 		{
-			EL_RecountItemsDebounced(prefab);
+			LF_RecountItemsDebounced(prefab);
 
-			EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(item);
-			if (quantity) quantity.GetOnQuantityChanged().Remove(EL_HandleOnQuantityChanged);
+			LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(item);
+			if (quantity) quantity.GetOnQuantityChanged().Remove(LF_HandleOnQuantityChanged);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected event void EL_HandleOnQuantityChanged(EL_QuantityComponent quantityComponent)
+	protected event void LF_HandleOnQuantityChanged(LF_QuantityComponent quantityComponent)
 	{
-		EL_RecountItemsDebounced(EL_Utils.GetPrefabName(quantityComponent.GetOwner()));
+		LF_RecountItemsDebounced(LF_Utils.GetPrefabName(quantityComponent.GetOwner()));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void EL_RequestQuantitySplit(notnull IEntity sourceEntity, int splitSize = -1)
+	void LF_RequestQuantitySplit(notnull IEntity sourceEntity, int splitSize = -1)
 	{
-		Rpc(RPC_EL_RequestQuantitySplit, EL_NetworkUtils.GetRplId(sourceEntity), splitSize);
+		Rpc(RPC_LF_RequestQuantitySplit, LF_NetworkUtils.GetRplId(sourceEntity), splitSize);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RPC_EL_RequestQuantitySplit(RplId quantitySourceRplId, int splitSize)
+	protected void RPC_LF_RequestQuantitySplit(RplId quantitySourceRplId, int splitSize)
 	{
-		EL_QuantityComponent quantitySource = EL_Component<EL_QuantityComponent>.Find(EL_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
-		if (!quantitySource || !EL_CanManipulate(quantitySource.GetOwner()))
+		LF_QuantityComponent quantitySource = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
+		if (!quantitySource || !LF_CanManipulate(quantitySource.GetOwner()))
 		{
-			EL_Debug.Warn("Quantity", "Quantity split refused: source not found or out of range");
+			LF_Debug.Warn("Quantity", "Quantity split refused: source not found or out of range");
 			return;
 		}
-		if (!EL_CanManipulateOwned(quantitySource.GetOwner()))
+		if (!LF_CanManipulateOwned(quantitySource.GetOwner()))
 		{
-			EL_Debug.Warn("Quantity", "Quantity split refused: source not owned");
+			LF_Debug.Warn("Quantity", "Quantity split refused: source not owned");
 			return;
 		}
 
@@ -114,7 +114,7 @@ modded class ScriptedInventoryStorageManagerComponent
 		if (splitSize == -1) splitSize = sourceQuantity / 2;
 		if (splitSize < 1 || splitSize >= sourceQuantity)
 		{
-			EL_Debug.Warn("Quantity", string.Format("Quantity split refused: splitSize %1 out of range for quantity %2", splitSize, sourceQuantity));
+			LF_Debug.Warn("Quantity", string.Format("Quantity split refused: splitSize %1 out of range for quantity %2", splitSize, sourceQuantity));
 			return;
 		}
 
@@ -122,36 +122,36 @@ modded class ScriptedInventoryStorageManagerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void EL_RequestQuantityTransfer(notnull IEntity sourceEntity, notnull IEntity destinationEntity, int amount = -1)
+	void LF_RequestQuantityTransfer(notnull IEntity sourceEntity, notnull IEntity destinationEntity, int amount = -1)
 	{
-		Rpc(RPC_EL_QuantityTransfer, EL_NetworkUtils.GetRplId(sourceEntity), EL_NetworkUtils.GetRplId(destinationEntity), amount);
+		Rpc(RPC_LF_QuantityTransfer, LF_NetworkUtils.GetRplId(sourceEntity), LF_NetworkUtils.GetRplId(destinationEntity), amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RPC_EL_QuantityTransfer(RplId quantitySourceRplId, RplId quantityDestinationRplId, int amount)
+	protected void RPC_LF_QuantityTransfer(RplId quantitySourceRplId, RplId quantityDestinationRplId, int amount)
 	{
-		EL_QuantityComponent quantitySource = EL_Component<EL_QuantityComponent>.Find(EL_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
-		if (!quantitySource || !EL_CanManipulate(quantitySource.GetOwner()))
+		LF_QuantityComponent quantitySource = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
+		if (!quantitySource || !LF_CanManipulate(quantitySource.GetOwner()))
 		{
-			EL_Debug.Warn("Quantity", "Quantity transfer refused: source not found or out of range");
+			LF_Debug.Warn("Quantity", "Quantity transfer refused: source not found or out of range");
 			return;
 		}
-		if (!EL_CanManipulateOwned(quantitySource.GetOwner()))
+		if (!LF_CanManipulateOwned(quantitySource.GetOwner()))
 		{
-			EL_Debug.Warn("Quantity", "Quantity transfer refused: source not owned");
+			LF_Debug.Warn("Quantity", "Quantity transfer refused: source not owned");
 			return;
 		}
 
-		EL_QuantityComponent quantityDestination = EL_Component<EL_QuantityComponent>.Find(EL_NetworkUtils.FindEntityByRplId(quantityDestinationRplId));
-		if (!quantityDestination || !EL_CanManipulate(quantityDestination.GetOwner()))
+		LF_QuantityComponent quantityDestination = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantityDestinationRplId));
+		if (!quantityDestination || !LF_CanManipulate(quantityDestination.GetOwner()))
 		{
-			EL_Debug.Warn("Quantity", "Quantity transfer refused: destination not found or out of range");
+			LF_Debug.Warn("Quantity", "Quantity transfer refused: destination not found or out of range");
 			return;
 		}
-		if (!EL_CanManipulateOwned(quantityDestination.GetOwner()))
+		if (!LF_CanManipulateOwned(quantityDestination.GetOwner()))
 		{
-			EL_Debug.Warn("Quantity", "Quantity transfer refused: destination not owned");
+			LF_Debug.Warn("Quantity", "Quantity transfer refused: destination not owned");
 			return;
 		}
 
@@ -159,7 +159,7 @@ modded class ScriptedInventoryStorageManagerComponent
 		if (amount == -1) amount = sourceQuantity;
 		if (amount < 1 || amount > sourceQuantity)
 		{
-			EL_Debug.Warn("Quantity", string.Format("Quantity transfer refused: amount %1 out of range for quantity %2", amount, sourceQuantity));
+			LF_Debug.Warn("Quantity", string.Format("Quantity transfer refused: amount %1 out of range for quantity %2", amount, sourceQuantity));
 			return;
 		}
 
@@ -167,27 +167,27 @@ modded class ScriptedInventoryStorageManagerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void EL_SetTransferIntent(notnull IEntity sourceEntity, bool keepSeperate)
+	void LF_SetTransferIntent(notnull IEntity sourceEntity, bool keepSeperate)
 	{
-		Rpc(RPC_EL_SetTransferIntent, EL_NetworkUtils.GetRplId(sourceEntity), keepSeperate);
+		Rpc(RPC_LF_SetTransferIntent, LF_NetworkUtils.GetRplId(sourceEntity), keepSeperate);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RPC_EL_SetTransferIntent(RplId sourceRplId, bool keepSeperate)
+	protected void RPC_LF_SetTransferIntent(RplId sourceRplId, bool keepSeperate)
 	{
-		IEntity sourceEntity = EL_NetworkUtils.FindEntityByRplId(sourceRplId);
-		if (!sourceEntity || !EL_CanManipulate(sourceEntity)) return;
-		if (!EL_CanManipulateOwned(sourceEntity))
+		IEntity sourceEntity = LF_NetworkUtils.FindEntityByRplId(sourceRplId);
+		if (!sourceEntity || !LF_CanManipulate(sourceEntity)) return;
+		if (!LF_CanManipulateOwned(sourceEntity))
 		{
-			EL_Debug.Warn("Quantity", "Transfer intent refused: source not owned");
+			LF_Debug.Warn("Quantity", "Transfer intent refused: source not owned");
 			return;
 		}
-		EL_QuantityComponent.SetTransferIntent(sourceEntity, keepSeperate);
+		LF_QuantityComponent.SetTransferIntent(sourceEntity, keepSeperate);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool EL_CanManipulate(IEntity entity)
+	protected bool LF_CanManipulate(IEntity entity)
 	{
 		const int maxManipulationRange = 10;
 		return (vector.Distance(entity.GetOrigin(), GetOwner().GetOrigin()) < maxManipulationRange);
@@ -197,19 +197,19 @@ modded class ScriptedInventoryStorageManagerComponent
 	//! Server-side ownership gate. The requesting player may manipulate items in
 	//! their own storage or in storages not held by another living player (loot
 	//! containers, vehicles, ground items). Rejects another player's carried items.
-	protected bool EL_CanManipulateOwned(IEntity entity)
+	protected bool LF_CanManipulateOwned(IEntity entity)
 	{
 		if (!entity) return false;
 
-		IEntity storageOwner = EL_GetStorageOwner(entity);
+		IEntity storageOwner = LF_GetStorageOwner(entity);
 		if (storageOwner == GetOwner()) return true;
 		if (!storageOwner) return false;
 
 		// A locked vehicle or house storage is closed, same vehicle-wide rule as
-		// EL_VehicleStorageAccessControl. Range alone would let anyone within 10 m in.
-		if (EL_IsStorageOwnerLocked(storageOwner))
+		// LF_VehicleStorageAccessControl. Range alone would let anyone within 10 m in.
+		if (LF_IsStorageOwnerLocked(storageOwner))
 		{
-			EL_Debug.Warn("Quantity", string.Format("manipulation refused: storage owner %1 is locked", storageOwner));
+			LF_Debug.Warn("Quantity", string.Format("manipulation refused: storage owner %1 is locked", storageOwner));
 			return false;
 		}
 
@@ -228,18 +228,18 @@ modded class ScriptedInventoryStorageManagerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True when the storage owner carries a locked EL_VehicleLockComponent or a locked
-	//! EL_LockComponent. Null is not locked.
-	static bool EL_IsStorageOwnerLocked(IEntity storageOwner)
+	//! True when the storage owner carries a locked LF_VehicleLockComponent or a locked
+	//! LF_LockComponent. Null is not locked.
+	static bool LF_IsStorageOwnerLocked(IEntity storageOwner)
 	{
 		if (!storageOwner)
 			return false;
 
-		EL_VehicleLockComponent vehicleLock = EL_Component<EL_VehicleLockComponent>.Find(storageOwner);
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(storageOwner);
 		if (vehicleLock && vehicleLock.IsVehicleLocked())
 			return true;
 
-		EL_LockComponent houseLock = EL_Component<EL_LockComponent>.Find(storageOwner);
+		LF_LockComponent houseLock = LF_Component<LF_LockComponent>.Find(storageOwner);
 		if (houseLock && houseLock.IsLocked())
 			return true;
 
@@ -249,9 +249,9 @@ modded class ScriptedInventoryStorageManagerComponent
 	//------------------------------------------------------------------------------------------------
 	//! Topmost entity owning the storage that holds the given item. Ground items
 	//! resolve to themselves.
-	protected IEntity EL_GetStorageOwner(IEntity entity)
+	protected IEntity LF_GetStorageOwner(IEntity entity)
 	{
-		InventoryItemComponent itemComp = EL_Component<InventoryItemComponent>.Find(entity);
+		InventoryItemComponent itemComp = LF_Component<InventoryItemComponent>.Find(entity);
 		if (itemComp)
 		{
 			InventoryStorageSlot parentSlot = itemComp.GetParentSlot();

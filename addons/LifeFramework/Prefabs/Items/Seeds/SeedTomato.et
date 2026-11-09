@@ -1,7 +1,7 @@
 GenericEntity {
  ID "59752C6F3883AB8D"
  components {
-  EL_BuildingPerformerComponent "{5990F8C8019C98C8}" {
+  LF_BuildingPerformerComponent "{5990F8C8019C98C8}" {
    m_eAnimVariable ADRIANOV
    m_GroundType ANY
    m_BuildingPrefab "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et"

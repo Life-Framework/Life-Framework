@@ -10,13 +10,13 @@ The client polls `$profile:agent-box/command.txt`. `press F` calls
 for text buttons, `OnClick` for shop and ATM buttons. Named `use` still runs `CanBeShownScript` and
 `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
 (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
-`EL_OpenDebugMenu`). Movement actions are refused.
+`LF_OpenDebugMenu`). Movement actions are refused.
 
 `stand` is the one exception: the server moves the local character beside a
 named DebugWorld entity so a 3m action radius can succeed. It does not inject
 WASD.
 
-Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
+Screenshots go through `LF_ScreenshotCapture`. UI shots leave the camera
 alone. World shots aim at a position.
 
 The Node side, MCP tools, and the three pillars (script, 3D world, UI) live
@@ -34,5 +34,5 @@ part the screen gave it. `click` takes any kit button (`LF_UIButtonRelay`).
 
 The playtest mission closes the gate. A session started with
 `-scrDefine LF_HARNESS` (`session.mjs up --mission playtest`) opens it for the
-harness RPCs only (`EL_DevGate.CheckHarnessRequest`); the define changes the
+harness RPCs only (`LF_DevGate.CheckHarnessRequest`); the define changes the
 script checksum, so only clients with the same define can join that server.

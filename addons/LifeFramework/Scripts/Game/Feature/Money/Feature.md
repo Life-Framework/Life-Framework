@@ -18,7 +18,7 @@ is no balance-float that a player can reach into from anywhere.
 
 ## V1 (shippable)
 
-1. **A single, honest cash API.** Today `EL_MoneyUtils` returns inconsistent
+1. **A single, honest cash API.** Today `LF_MoneyUtils` returns inconsistent
    sentinels (`-1` on some faults, `0` on others) and the doc comments on
    Remove/Take are wrong. Fix the contract, fix the docs.
 2. Every money path in the game uses it — no `RemoveAmount`-or-similar
@@ -33,11 +33,11 @@ is no balance-float that a player can reach into from anywhere.
 
 ## Current state
 
-- `EL_MoneyUtils` (`Feature/Money/`) — `GetCash` (−1 on fault), `AddCash` /
+- `LF_MoneyUtils` (`Feature/Money/`) — `GetCash` (−1 on fault), `AddCash` /
   `RemoveCash` (actual amount, 0 on fault). ⚠️ Inconsistent sentinels, wrong
   doc comments.
-- `EL_MoneyFormat` — number formatting (`AbbreviateNumber`).
-- `EL_MoneyDeltaTracker` — change tracking.
+- `LF_MoneyFormat` — number formatting (`AbbreviateNumber`).
+- `LF_MoneyDeltaTracker` — change tracking.
 
 ## Dependencies
 

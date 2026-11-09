@@ -3,14 +3,14 @@
 // assertions go red. Run `tools\cli test --tier all`.
 
 // tier: WORLD
-class LF_Test_QuestWorld : EL_Test
+class LF_Test_QuestWorld : LF_Test
 {
 	override string GetName()
 	{
 		return "quests/world-seam";
 	}
 
-	override void Run(EL_TestContext ctx)
+	override void Run(LF_TestContext ctx)
 	{
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
 		ctx.NotNull(manager, "quest manager exists");
@@ -47,7 +47,7 @@ class LF_Test_QuestWorld : EL_Test
 		ctx.True(tracker.GetTracker().GetStatus("intro_talk") == LF_EQuestStatus.COMPLETED, "talk quest completes on giver interaction");
 		tracker.TurnInQuest("intro_talk");
 		ctx.True(tracker.GetTracker().GetStatus("intro_talk") == LF_EQuestStatus.TURNED_IN, "talk quest turned in");
-		EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(character);
+		LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(character);
 		if (levelComp)
 			ctx.True(levelComp.GetPlayerExperience() >= 10, "turn-in granted reward XP");
 

@@ -1,19 +1,19 @@
-EL_GameModeRoleplay {
+LF_GameModeRoleplay {
  ID "59751433747FB462"
  components {
   Persistence "{2A52ABC1969D9E91}" {
   }
-  EL_PersistenceComponent "{DD9C18EE120847A0}" {
+  LF_PersistenceComponent "{DD9C18EE120847A0}" {
   }
-  EL_PersistenceManagerComponent "{018C9FF2786C4558}" {
+  LF_PersistenceManagerComponent "{018C9FF2786C4558}" {
   }
-  EL_NotificationManagerComponent "{D3CF726AEB541890}" {
+  LF_NotificationManagerComponent "{D3CF726AEB541890}" {
   }
-  EL_ChatManagerComponent "{69981C1CC6E0B7F7}" {
+  LF_ChatManagerComponent "{69981C1CC6E0B7F7}" {
   }
-  EL_WhitelistRespawnHandlerComponent "{021F92C15CC91F1E}" {
+  LF_WhitelistRespawnHandlerComponent "{021F92C15CC91F1E}" {
   }
-  EL_ShopManagerComponent "{11CD207B75F53961}" {
+  LF_ShopManagerComponent "{11CD207B75F53961}" {
    m_sConfigPath "{A547CE324ADDD178}Configs/Shop/ShopPrices.conf"
   }
   SCR_DestructionManagerComponent "{59751432896EFC0B}" {
@@ -25,30 +25,30 @@ EL_GameModeRoleplay {
    m_sConfigPath "{8547E1B142411624}Configs/NameTags/NametagRoleplay.conf"
   }
 SCR_RespawnSystemComponent "{66BD3C8588F5687E}" {
-    m_SpawnLogic EL_SpawnLogic "{66BD3ED1B2F2AD15}" {
+    m_SpawnLogic LF_SpawnLogic "{66BD3ED1B2F2AD15}" {
      m_aDefaultCharacterPrefabs {
       "{CE23D4366B47E9B9}Prefabs/Characters/Presets/White_Male_01.et" "{C465F15DDF56A6D8}Prefabs/Characters/Presets/Asian_Male_02.et" "{BFD6AFB8A1D8E2F9}Prefabs/Characters/Presets/Black_Male_02.et"
      }
      m_aDefaultCharacterItems {
-      EL_DefaultLoadoutItem "{5DE922B73E9BEFE0}" {
+      LF_DefaultLoadoutItem "{5DE922B73E9BEFE0}" {
        m_rPrefab "{9F546CCA2582D16F}Prefabs/Characters/Uniforms/Jacket_M88.et"
        m_ePurpose PURPOSE_LOADOUT_PROXY
        m_aStoredItems {
-        EL_DefaultLoadoutItem "{5DE922B7340B5316}" {
+        LF_DefaultLoadoutItem "{5DE922B7340B5316}" {
          m_rPrefab "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et"
          m_aComponentDefaults {
-          EL_DefaultLoadoutItemQuantityComponent "{5DE922B72CFC64BE}" {
+          LF_DefaultLoadoutItemQuantityComponent "{5DE922B72CFC64BE}" {
            m_iQuantity 100
           }
          }
         }
        }
       }
-      EL_DefaultLoadoutItem "{5DE92DF82F18AE7D}" {
+      LF_DefaultLoadoutItem "{5DE92DF82F18AE7D}" {
        m_rPrefab "{DCF980831E880F6A}Prefabs/Characters/Uniforms/Pants_M88.et"
        m_ePurpose PURPOSE_LOADOUT_PROXY
       }
-      EL_DefaultLoadoutItem "{5DE92DF82CDA1016}" {
+      LF_DefaultLoadoutItem "{5DE92DF82CDA1016}" {
        m_rPrefab "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et"
        m_ePurpose PURPOSE_LOADOUT_PROXY
       }

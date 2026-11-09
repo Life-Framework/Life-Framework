@@ -16,8 +16,8 @@ from a list." We have played those mods and we are tired of them.
 
 ## Interaction pattern (in-world)
 
-Today the Shop feature is a world-anchored menu (rung 3): an `EL_ShopComponent`
-on an entity, an `EL_ShopAction` that opens `LF_ShopPriceList` within 3 m. The target
+Today the Shop feature is a world-anchored menu (rung 3): an `LF_ShopComponent`
+on an entity, an `LF_ShopAction` that opens `LF_ShopPriceList` within 3 m. The target
 is rung 1–2 — **physical goods are the purchase point**.
 
 The ladder per store type:
@@ -62,7 +62,7 @@ type; no per-map scripting. See `docs/design.md` §4.
 ## V1 (shippable)
 
 1. Fix the purchase engine's money correctness first — the partial-funds and
-   refund over-credit exploits in `EL_ShopComponent.BuyItem` (see
+   refund over-credit exploits in `LF_ShopComponent.BuyItem` (see
    `docs/features.md` §Money & Economy) block anything else.
 2. Ship one physical store type end-to-end as the reference (supermarket is the
    cheapest: shelf product + scroll). The other store types reuse the same
@@ -81,12 +81,12 @@ type; no per-map scripting. See `docs/design.md` §4.
 
 ## Current state
 
-- `EL_ShopComponent` — catalog-driven buy; **money exploit** (partial
+- `LF_ShopComponent` — catalog-driven buy; **money exploit** (partial
   `RemoveAmount` treated as full success, refund over-credits). Infinite stock.
-- `LF_ShopPriceList` / `EL_ShopAction` — typed price list with an order slip
+- `LF_ShopPriceList` / `LF_ShopAction` — typed price list with an order slip
   on the UI kit, within 3 m, only for the player who used the counter; the
   till's refusal reason (`LF_EShopRefusal`) prints on the slip.
-- `EL_ShopPriceResolver` / `EL_ShopPricesConfig` / `EL_ShopRules` / `EL_ShopItem`
+- `LF_ShopPriceResolver` / `LF_ShopPricesConfig` / `LF_ShopRules` / `LF_ShopItem`
   — price resolution and rules scaffolding.
 - `Configs/Shop/ShopPrices.conf` — the price table.
 

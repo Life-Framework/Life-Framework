@@ -1,4 +1,4 @@
-EL_NpcBaseEntity {
+LF_NpcBaseEntity {
  ID "5A4B0B84EF6F2840"
  components {
   MeshObject "{5A4B0B849B69776C}" {

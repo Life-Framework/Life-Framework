@@ -23,7 +23,7 @@ An organization gathers a configured illegal good, processes it on the machine i
 
 ## Assets
 
-Process on `Prefabs/Processor/ItemProcessor_Base.et` (the juicer, furnace, and sawmill are the working examples). Sell at `Prefabs/Trader/BlackMarketTrader.et`. Confiscation extends `EL_ConfiscateAction`.
+Process on `Prefabs/Processor/ItemProcessor_Base.et` (the juicer, furnace, and sawmill are the working examples). Sell at `Prefabs/Trader/BlackMarketTrader.et`. Confiscation extends `LF_ConfiscateAction`.
 
 The example recipe is moonshine-shaped, taken from LNGC `Configs/Economy/CraftingRecipes.conf`: configured input prefabs in, one output prefab out, at a hideout machine. The stash prop is LNGC `Prefabs/Props/Crates/ShineStash.et`. Search uses the request shape of `LNGC_SearchAction` (police, server validates) but checks inventory prefabs, not LNGC virtual item ids.
 
@@ -37,7 +37,7 @@ One gather node, one hideout machine, one drop point. A member processes a stack
 
 - [Organizations](../ownership/organizations.md) and [hideouts](../ownership/hideouts.md)
 - `Gathering`, `Processing`, `Money`
-- `EL_ConfiscateAction`
+- `LF_ConfiscateAction`
 - [Vehicles](../ownership/vehicles.md) only for the lock and keys if the convoy vehicle is owned; the first slice can use a job vehicle spawned for the run
 
 ## Proof

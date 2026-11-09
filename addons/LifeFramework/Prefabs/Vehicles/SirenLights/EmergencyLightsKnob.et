@@ -3,7 +3,7 @@ GenericEntity {
  components {
   SignalsManagerComponent "{1997CCF6BBF34D3A}" {
   }
-  EL_SirenKnobComponent "{3CE5649FA69F4DB7}" {
+  LF_SirenKnobComponent "{3CE5649FA69F4DB7}" {
   }
    MeshObject "{E03BFC6FF75841B7}" {
     Object "{0D77D089490D4DD0}Assets/Vehicles/Attachments/SirenLights/Knob.xob"
@@ -47,7 +47,7 @@ GenericEntity {
     }
    }
    additionalActions {
-    EL_SirenModeAction "{BDA146461D9643B0}" {
+    LF_SirenModeAction "{BDA146461D9643B0}" {
      ParentContextList {
       "siren"
      }
@@ -56,7 +56,7 @@ GenericEntity {
      }
      m_Mode "default"
     }
-    EL_SirenModeAction "{C71474E318FD4980}" {
+    LF_SirenModeAction "{C71474E318FD4980}" {
      ParentContextList {
       "siren"
      }
@@ -66,7 +66,7 @@ GenericEntity {
      "Sort Priority" 1
      m_Mode "Mode1"
     }
-    EL_SirenModeAction "{A2B6BC9B58974199}" {
+    LF_SirenModeAction "{A2B6BC9B58974199}" {
      ParentContextList {
       "siren"
      }
@@ -76,7 +76,7 @@ GenericEntity {
      "Sort Priority" 2
      m_Mode "Mode2"
     }
-    EL_SirenModeAction "{7D41C75C14334DF8}" {
+    LF_SirenModeAction "{7D41C75C14334DF8}" {
      ParentContextList {
       "siren"
      }

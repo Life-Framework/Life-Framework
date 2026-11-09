@@ -10,7 +10,7 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 		if (!GetOwner())
 			return false;
 
-		return LF_ArmoryDrawAction.ShownTo(EL_AccountReplication.GetState(user));
+		return LF_ArmoryDrawAction.ShownTo(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 		string uid = LF_PoliceRanks.ResolveUid(pUserEntity);
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Ranks", "draw action refused: player has no account id");
+			LF_Debug.Error("Ranks", "draw action refused: player has no account id");
 			return;
 		}
 
@@ -54,7 +54,7 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 	//! still refuses a draw or promote in PerformAction.
 	static bool ShownTo(int accountState)
 	{
-		return EL_AccountStateBits.IsOnDutyPolice(accountState);
+		return LF_AccountStateBits.IsOnDutyPolice(accountState);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -64,8 +64,8 @@ class LF_ArmoryDrawAction : ScriptedUserAction
 		if (Replication.IsServer())
 			return LF_PoliceRanks.CanDraw(LF_PoliceRanks.ResolveUid(user));
 
-		int state = EL_AccountReplication.GetState(user);
-		return EL_AccountStateBits.IsOnDutyPolice(state) && LF_PoliceRanks.IsRankUsable(EL_AccountStateBits.GetPoliceRank(state));
+		int state = LF_AccountReplication.GetState(user);
+		return LF_AccountStateBits.IsOnDutyPolice(state) && LF_PoliceRanks.IsRankUsable(LF_AccountStateBits.GetPoliceRank(state));
 	}
 }
 
@@ -78,7 +78,7 @@ class LF_RankPromoteAction : ScriptedUserAction
 		if (!GetOwner())
 			return false;
 
-		return LF_ArmoryDrawAction.ShownTo(EL_AccountReplication.GetState(user));
+		return LF_ArmoryDrawAction.ShownTo(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -102,14 +102,14 @@ class LF_RankPromoteAction : ScriptedUserAction
 		string promoterUid = LF_PoliceRanks.ResolveUid(pUserEntity);
 		if (promoterUid.IsEmpty())
 		{
-			EL_Debug.Error("Ranks", "promote action refused: player has no account id");
+			LF_Debug.Error("Ranks", "promote action refused: player has no account id");
 			return;
 		}
 
 		string targetUid = LF_PoliceRanks.FindLowerRankNearby(pUserEntity, LF_PoliceRanks.PROMOTE_RADIUS);
 		if (targetUid.IsEmpty())
 		{
-			EL_Debug.Error("Ranks", "promote refused: no lower-rank officer nearby");
+			LF_Debug.Error("Ranks", "promote refused: no lower-rank officer nearby");
 			return;
 		}
 
@@ -130,7 +130,7 @@ class LF_RankPromoteAction : ScriptedUserAction
 		if (Replication.IsServer())
 			return LF_PoliceRanks.CanPromote(LF_PoliceRanks.ResolveUid(user));
 
-		int state = EL_AccountReplication.GetState(user);
-		return EL_AccountStateBits.IsOnDutyPolice(state) && EL_AccountStateBits.GetPoliceRank(state) > LF_PoliceRanks.PATROL;
+		int state = LF_AccountReplication.GetState(user);
+		return LF_AccountStateBits.IsOnDutyPolice(state) && LF_AccountStateBits.GetPoliceRank(state) > LF_PoliceRanks.PATROL;
 	}
 }

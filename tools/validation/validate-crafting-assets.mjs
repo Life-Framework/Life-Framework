@@ -5,7 +5,7 @@
 // README must still name each station. This used to be an in-engine LOGIC test that
 // read repo files through a cwd-dependent $profile path; a repo-file check belongs here.
 // The engine-level check (each prefab loads by {GUID}path) stays in
-// EL_Test_CraftingAssets (crafting/assets, WORLD tier).
+// LF_Test_CraftingAssets (crafting/assets, WORLD tier).
 
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";

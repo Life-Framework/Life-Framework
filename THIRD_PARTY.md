@@ -16,10 +16,10 @@ section 5 of `docs/ecosystem.md`. Paths below are under
 - Every copied or derived file starts with:
   `// Derived from Overthrow (https://github.com/ArmaOverthrow/Overthrow.Arma4), used with the author's permission, relicensed MIT.`
 - Files:
-  - `Feature/Money/EL_MoneyDeltaTracker.c` from `Scripts/Game/Data/OVT_MoneyDeltaTracker.c`
-  - `Feature/Money/EL_MoneyFormat.c` from `Scripts/Game/Data/OVT_MoneyFormat.c`
-  - `Feature/Resources/EL_ResourceDefs.c` from `Scripts/Game/Data/OVT_ResourceDefs.c`
-  - `Feature/Shop/EL_ShopRules.c` from `Scripts/Game/Data/OVT_ShopSellRules.c`
+  - `Feature/Money/LF_MoneyDeltaTracker.c` from `Scripts/Game/Data/OVT_MoneyDeltaTracker.c`
+  - `Feature/Money/LF_MoneyFormat.c` from `Scripts/Game/Data/OVT_MoneyFormat.c`
+  - `Feature/Resources/LF_ResourceDefs.c` from `Scripts/Game/Data/OVT_ResourceDefs.c`
+  - `Feature/Shop/LF_ShopRules.c` from `Scripts/Game/Data/OVT_ShopSellRules.c`
 
 A PR that copies more from Overthrow adds its files here.
 
@@ -28,8 +28,8 @@ A PR that copies more from Overthrow adds its files here.
 - Source: https://github.com/SouLGenetic/LNGCLifeRP_Public
 - Licence: MIT (2026 LNGCGenetic).
 - Files: `Feature/Police/LF_Jail*.c` (jail, arrest, escort, put in and take out
-  of a vehicle) and `Feature/Vehicles/EL_VehicleGarageComponent.c`,
-  `EL_VehicleGarageDialog.c`, `EL_VehicleSpawnPointComponent.c`. Each keeps a
+  of a vehicle) and `Feature/Vehicles/LF_VehicleGarageComponent.c`,
+  `LF_VehicleGarageDialog.c`, `LF_VehicleSpawnPointComponent.c`. Each keeps a
   `// Ported from` line.
 
 ## EveronLife forks
@@ -38,13 +38,13 @@ Our upstream is [EveronLife/EveronLife](https://github.com/EveronLife/EveronLife
 (MIT). Code ported from MIT forks of it keeps a `// Ported from` line naming the
 fork and branch:
 
-- thebonbon/EveronLife: `Feature/Chat/LF_RoleplayChat.c`, `UI/Chat/EL_ChatPanel.c`,
+- thebonbon/EveronLife: `Feature/Chat/LF_RoleplayChat.c`, `UI/Chat/LF_ChatPanel.c`,
   `Feature/Mining/LF_Mining*.c`, `Feature/Mining/LF_OreNodeComponent.c` (pickaxe-hit
   mining from branch `enhancement/Main_World`, ported with the author's permission
   given to the maintainer, 2026-11-08), `Feature/Toys/LF_JumpPad.c`, `Feature/Toys/LF_SpikeStrip.c`
 - rekterakathom/EveronLife: parts of
   `Components/InventorySystem/EL_InventoryStorageManagerComponent.c` and
-  `Feature/Shop/EL_ShopRules.c`
-- Jacob-Mango/EveronLife: parts of `Feature/Quantity/EL_QuantityComponent.c`
+  `Feature/Shop/LF_ShopRules.c`
+- Jacob-Mango/EveronLife: parts of `Feature/Quantity/LF_QuantityComponent.c`
 
 `docs/everonlife-forks.md` surveys the forks.

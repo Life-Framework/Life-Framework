@@ -41,7 +41,7 @@ coords -2.6 0.9 0.7
     coords -2.6 0 0.7
    }
   }
-  EL_NpcBaseEntity GravelBuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity GravelBuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

@@ -8,13 +8,13 @@
 //   refresh, save continue, server-2001 lock).
 // - The client is the release game exe (ArmaReforgerSteam.exe), on the user's
 //   desktop, with its own persistent profile. The host runs -noBackend, so the
-//   account is keyed by the Steam name (EL_Utils.ChooseIdentityFallback); the
+//   account is keyed by the Steam name (LF_Utils.ChooseIdentityFallback); the
 //   client carries no -scrDefine, or the script checksum differs from the host.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 export const CHECKOUT_NAME = "Life-Framework-playtest";
-export const JOIN_LINE = /\[ELDebug:Whitelist\] join allowed/g;
+export const JOIN_LINE = /\[LFDebug:Whitelist\] join allowed/g;
 
 export function playtestRoot(mainRoot) {
   return join(dirname(mainRoot), CHECKOUT_NAME);
@@ -89,7 +89,7 @@ export function selftestPlaytest() {
   for (const bad of ["-window", "-noFocus", "-noBackend", "-scrDefine", "-noSound", "-lfSession"]) {
     if (a.includes(bad)) failures.push(`player client passes ${bad}`);
   }
-  if (countJoins("x [ELDebug:Whitelist] join allowed: uuid=a\ny\n[ELDebug:Whitelist] join allowed: uuid=b") !== 2) failures.push("countJoins miscounts");
+  if (countJoins("x [LFDebug:Whitelist] join allowed: uuid=a\ny\n[LFDebug:Whitelist] join allowed: uuid=b") !== 2) failures.push("countJoins miscounts");
   const f = friendLines({ lan: ["192.168.1.5"], port: 2001, commit: "abc" }).join("\n");
   if (!f.includes("-client 192.168.1.5") || !f.includes("checkout abc")) failures.push("friend lines miss the address or commit");
   if (rankLan(["100.114.75.96", "192.168.1.130"])[0] !== "192.168.1.130") failures.push("a VPN address ranks above the home LAN");

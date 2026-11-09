@@ -12,7 +12,7 @@ GenericEntity {
    {
     ID "9F0AEF47A4A948C1"
     components {
-     EL_SirenLightComponent "{6D5A381650C74E61}" {
+     LF_SirenLightComponent "{6D5A381650C74E61}" {
       m_Name "left2"
       m_OverrideEmissiveColor 1
       m_EmissiveColor 0 0.125 0.502
@@ -27,7 +27,7 @@ GenericEntity {
    {
     ID "FD0B94FC0DC54CF3"
     components {
-     EL_SirenLightComponent "{570D7BADC65B4A6B}" {
+     LF_SirenLightComponent "{570D7BADC65B4A6B}" {
       m_Name "left3"
       m_OverrideEmissiveColor 1
       m_EmissiveColor 0 0.125 0.502
@@ -42,10 +42,10 @@ GenericEntity {
    {
     ID "8A98F64927514B58"
     components {
-     EL_SirenLightComponent "{22447810229542C7}" {
+     LF_SirenLightComponent "{22447810229542C7}" {
       m_Name "left1"
       m_Lights {
-       EL_LightChild "{51B6220B0A784201}" {
+       LF_LightChild "{51B6220B0A784201}" {
         m_eLightType POINT
         m_vLightOffset -0.32 0.3 0
         m_vLightColor 0 0.125 0.502
@@ -67,7 +67,7 @@ GenericEntity {
    {
     ID "0F8E1EB3C5364190"
     components {
-     EL_SirenLightComponent "{CB1515F00D964050}" {
+     LF_SirenLightComponent "{CB1515F00D964050}" {
       m_Name "right2"
       m_OverrideEmissiveColor 1
       m_EmissiveColor 0 0.125 0.502
@@ -82,10 +82,10 @@ GenericEntity {
    {
     ID "DCF26B79C76546B2"
     components {
-     EL_SirenLightComponent "{F63F73C3FADB49E0}" {
+     LF_SirenLightComponent "{F63F73C3FADB49E0}" {
       m_Name "right1"
       m_Lights {
-       EL_LightChild "{07ECF0644167493A}" {
+       LF_LightChild "{07ECF0644167493A}" {
         m_eLightType POINT
         m_vLightOffset 0.32 0.3 0
         m_vLightColor 0 0.125 0.502
@@ -107,7 +107,7 @@ GenericEntity {
    {
     ID "D9D17DB275474B02"
     components {
-     EL_SirenLightComponent "{1AEE2349B3F04ECB}" {
+     LF_SirenLightComponent "{1AEE2349B3F04ECB}" {
       m_Name "left5"
       m_OverrideEmissiveColor 1
       m_EmissiveColor 0 0.125 0.502
@@ -125,7 +125,7 @@ GenericEntity {
    {
     ID "B5421CA903094244"
     components {
-     EL_SirenLightComponent "{1A67BCDDD5614256}" {
+     LF_SirenLightComponent "{1A67BCDDD5614256}" {
       m_Name "left4"
       m_OverrideEmissiveColor 1
       m_EmissiveColor 0 0.125 0.502
@@ -140,7 +140,7 @@ GenericEntity {
    {
     ID "2F576B53FBD640FB"
     components {
-     EL_SirenLightComponent "{1E3076D053DC4ECE}" {
+     LF_SirenLightComponent "{1E3076D053DC4ECE}" {
       m_Name "right5"
       m_OverrideEmissiveColor 1
       m_EmissiveColor 0 0.125 0.502
@@ -159,7 +159,7 @@ GenericEntity {
    {
     ID "7EB9FE94036649C2"
     components {
-     EL_SirenLightComponent "{BE1F29F072F04BFC}" {
+     LF_SirenLightComponent "{BE1F29F072F04BFC}" {
       m_Name "right4"
       m_OverrideEmissiveColor 1
       m_EmissiveColor 0 0.125 0.502
@@ -174,7 +174,7 @@ GenericEntity {
    {
     ID "11B30299A53E40B8"
     components {
-     EL_SirenLightComponent "{4F41BEEC625D450B}" {
+     LF_SirenLightComponent "{4F41BEEC625D450B}" {
       m_Name "right3"
       m_OverrideEmissiveColor 1
       m_EmissiveColor 0 0.125 0.502

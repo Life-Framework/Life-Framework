@@ -6,7 +6,7 @@
 > primitive — the low-LOC philosophy — so the four areas share one stack and one
 > set of tests. Contract: `docs/features.md`. Tests: `Scripts/Game/Tests/`.
 >
-> **Borrow modes:** **Port** = lift the Overthrow file, re-prefix `OVT_`→`EL_`,
+> **Borrow modes:** **Port** = lift the Overthrow file, re-prefix `OVT_`→`LF_`,
 > drop Overthrow-only coupling. **Adapt** = take the architecture, write the
 > Life content. **Pattern** = copy the design lesson, write fresh.
 
@@ -29,7 +29,7 @@ not the bulk.
 | Layer | Where | Responsibility | Test tier |
 | --- | --- | --- | --- |
 | Pure logic | `Scripts/Game/Data/` | Rules, math, records. No `IEntity`, no replication, no `OVT_Global`. | LOGIC |
-| Catalogues | `Scripts/Game/Configuration/` | `.conf`-driven data (`EL_*Config`). Loaded once, owned by a manager. | LOGIC |
+| Catalogues | `Scripts/Game/Configuration/` | `.conf`-driven data (`LF_*Config`). Loaded once, owned by a manager. | LOGIC |
 | Thin component | `Scripts/Game/Components/` | Holds one piece of per-entity state (stock, store, property tag). Replicates only what clients must see. | WORLD |
 | RPC seam | on the player controller | `RpcAsk_*` client→server; **server re-validates everything**, answers via `RpcDo_*` or replicated state. | manual |
 | Persistence | `…/Persistence/` | SaveData round-trip through public API only. | LOGIC |
@@ -37,14 +37,14 @@ not the bulk.
 Rules that make this stay small:
 
 1. **One way to count money.** Every mutation funnels through one seam. The
-   banking merge is complete: `EL_ATMManager` + `EL_BankAccount` is the sole
+   banking merge is complete: `LF_ATMManager` + `LF_BankAccount` is the sole
    bank, payouts are physical cash, and the ATM owns the cash/account boundary.
 2. **The server recomputes price/eligibility through the same pure call the
    client used** (Overthrow's `OVT_ShopSellRules` doctrine — "four callers, one
    rule set"). Client offer and server authority cannot drift.
 3. **All-or-nothing mutations.** Funds/stock/inputs are checked *fully* before
    any deduction; a partial failure refunds exactly what was actually removed
-   (the `EL_ShopComponent` exploit and `EL_ProcessAction` free-output bug die
+   (the `LF_ShopComponent` exploit and `LF_ProcessAction` free-output bug die
    here).
 4. **Config, not code.** A server owner retunes the economy in Workbench.
 
@@ -57,13 +57,13 @@ re-prefixed, minus Overthrow-only fields.
 
 | Primitive | Source (Overthrow) | LOC | Notes |
 | --- | --- | --- | --- |
-| `EL_MoneyFormat` | `Scripts/Game/Data/OVT_MoneyFormat.c` | 65→40 | Thousands separators, `-$150` sign placement. Hand-rolled because EnforceScript has no locale formatter. |
-| `EL_MoneyDeltaTracker` | `Scripts/Game/Data/OVT_MoneyDeltaTracker.c` | 126→90 | HUD "+$500" ticker. Poll-driven, Logic-testable by hand-written sequence. |
-| `EL_ShopRules` | `Scripts/Game/Data/OVT_ShopSellRules.c` | 107→80 | `ShopBuysFromPlayers` / `GetSellMultiplier` / `CanSellItem` / `GetBlockReasonKey`. The one rule set behind menu, grey-out and server. |
-| `EL_ResourceDefs` + `EL_ResourceAmount` | `OVT_ResourcesConfig.c` + `OVT_ResourceLedger.c` (types) | 53→40 | The resource catalogue (id/title/icon/price) + the "which resource, how many" record. **Entry order is the wire index.** |
+| `LF_MoneyFormat` | `Scripts/Game/Data/OVT_MoneyFormat.c` | 65→40 | Thousands separators, `-$150` sign placement. Hand-rolled because EnforceScript has no locale formatter. |
+| `LF_MoneyDeltaTracker` | `Scripts/Game/Data/OVT_MoneyDeltaTracker.c` | 126→90 | HUD "+$500" ticker. Poll-driven, Logic-testable by hand-written sequence. |
+| `LF_ShopRules` | `Scripts/Game/Data/OVT_ShopSellRules.c` | 107→80 | `ShopBuysFromPlayers` / `GetSellMultiplier` / `CanSellItem` / `GetBlockReasonKey`. The one rule set behind menu, grey-out and server. |
+| `LF_ResourceDefs` + `LF_ResourceAmount` | `OVT_ResourcesConfig.c` + `OVT_ResourceLedger.c` (types) | 53→40 | The resource catalogue (id/title/icon/price) + the "which resource, how many" record. **Entry order is the wire index.** |
 | Config load idiom | `OVT_ResourcesConfig.c` (`configRoot`) | — | The `LoadContainer` / `CreateInstanceFromContainer` pattern every catalogue uses. |
 
-Optional, same shape, port when logistics need it: `EL_ResourceLedger`
+Optional, same shape, port when logistics need it: `LF_ResourceLedger`
 (`OVT_ResourceLedger.c`, 278→180, drop litres/weight) — the pure holder with
 `Add`/`Take`/`Count`/`WouldFit`/`GetLines`, capacity passed in, zero lines
 never accumulate. Life's inventory stacks may make this unnecessary for now.
@@ -74,9 +74,9 @@ never accumulate. Life's inventory stacks may make this unnecessary for now.
 
 ### Features we want
 
-- **Cash** = `MoneyStack` inventory item (existing `EL_MoneyUtils` — keep).
+- **Cash** = `MoneyStack` inventory item (existing `LF_MoneyUtils` — keep).
 - **One bank — DONE (verified 2026-08-30)** — persistent balance via
-  `EL_ATMManager` + `EL_BankAccount`; `EL_BankAccountComponent` is deleted.
+  `LF_ATMManager` + `LF_BankAccount`; `LF_BankAccountComponent` is deleted.
   A second, unintegrated bank is a defect, not a feature.
 - **Working ATM RPC path — DONE (verified 2026-08-30)** — Deposit deducts
   *actual* cash removed; Withdraw pays out *actual* cash placed; failures roll
@@ -84,7 +84,7 @@ never accumulate. Life's inventory stacks may make this unnecessary for now.
 - **Money formatting** and the HUD delta ticker (foundation kit).
 - **One authoritative account seam**: `Deposit(playerId, amt)` and
   `Withdraw(playerId, amt)` are called only by the ATM boundary. Payout callers
-  (shop, trader, paycheck, robbery, job reward) use `EL_MoneyUtils` cash and
+  (shop, trader, paycheck, robbery, job reward) use `LF_MoneyUtils` cash and
   never mutate the bank directly. This is the single fix for the money-exploit
   class in `features.md`.
 
@@ -92,10 +92,10 @@ never accumulate. Life's inventory stacks may make this unnecessary for now.
 
 | Piece | Shape | Source (Overthrow) | Borrow | LOC |
 | --- | --- | --- | --- | --- |
-| `EL_Money` / seam | Pure account record: id, balance, `Deposit`/`Withdraw` invariants (never negative, `<= 0` rejected) | `OVT_PlayerData` money record; `OVT_ShopTransactionComponent.c` result-code discipline | Adapt | ~80 |
-| `EL_BankAccount` | Keep existing (`Feature/ATM/EL_BankAccount.c`) | — | — | — |
-| `EL_ATMMenu` RPC fix | `RpcAsk_Deposit` / `RpcAsk_Withdraw` on the player controller, server validates cash vs balance | `OVT_ShopTransactionComponent.c` `RpcAsk_*` shape | Pattern | +60 delta |
-| `EL_MoneyFormat` / `EL_MoneyDeltaTracker` | Foundation kit | `OVT_MoneyFormat.c`, `OVT_MoneyDeltaTracker.c` | Port | 130 |
+| `LF_Money` / seam | Pure account record: id, balance, `Deposit`/`Withdraw` invariants (never negative, `<= 0` rejected) | `OVT_PlayerData` money record; `OVT_ShopTransactionComponent.c` result-code discipline | Adapt | ~80 |
+| `LF_BankAccount` | Keep existing (`Feature/ATM/LF_BankAccount.c`) | — | — | — |
+| `LF_ATMMenu` RPC fix | `RpcAsk_Deposit` / `RpcAsk_Withdraw` on the player controller, server validates cash vs balance | `OVT_ShopTransactionComponent.c` `RpcAsk_*` shape | Pattern | +60 delta |
+| `LF_MoneyFormat` / `LF_MoneyDeltaTracker` | Foundation kit | `OVT_MoneyFormat.c`, `OVT_MoneyDeltaTracker.c` | Port | 130 |
 
 **Reference files:** `OVT_MoneyFormat.c`, `OVT_MoneyDeltaTracker.c`,
 `Scripts/Game/Components/Controller/OVT_ShopTransactionComponent.c` (the
@@ -109,7 +109,7 @@ seams `GetPrice`/`GetBuyPrice`/`GetSellPrice` — pattern only).
 ### Features we want
 
 - **Config-driven price catalogue** — one price per prefab filter
-  (`m_sFind`), optional `demand`, `hidden`. Kills the `EL_ShopComponent`
+  (`m_sFind`), optional `demand`, `hidden`. Kills the `LF_ShopComponent`
   "no stock, no catalogue, no validation" trio.
 - **Finite shop stock** that survives JIP — the shop holds a
   `map<resourceId, amount>`; buy decrements, sell (or restock) increments.
@@ -117,8 +117,8 @@ seams `GetPrice`/`GetBuyPrice`/`GetSellPrice` — pattern only).
   refund exactly what was removed; reject a shop that does not sell the item.
   This is the `shop/buy-math` pin test target.
 - **Sell path with reasons** — shop-buys rules with a reason key per blocked
-  case (`EL_ShopRules`), quantity-aware credit (fixes stack-sells-as-one in
-  `EL_TraderManagerComponent`), atomic delete-then-pay.
+  case (`LF_ShopRules`), quantity-aware credit (fixes stack-sells-as-one in
+  `LF_TraderManagerComponent`), atomic delete-then-pay.
 - **Category/tab UI** eventually reuses the shop model split; not in the
   primitive pass.
 
@@ -126,11 +126,11 @@ seams `GetPrice`/`GetBuyPrice`/`GetSellPrice` — pattern only).
 
 | Piece | Shape | Source (Overthrow) | Borrow | LOC |
 | --- | --- | --- | --- | --- |
-| `EL_PricesConfig` | `configRoot` catalogue: `m_aPrices` (find/cost/demand/hidden) | `Scripts/Game/Configuration/OVT_PricesConfig.c` | Adapt (keep filter+cost+hidden; demand optional) | ~50 |
-| `EL_ShopStock` component | `map<int,int>` stock, `AddToInventory`/`TakeFromInventory`/`GetStock`, `RplSave`/`RplLoad` JIP, `StreamInventory` broadcast | `Scripts/Game/Components/Economy/OVT_ShopComponent.c` | **Port** (this is the clean one) | 164 |
-| `EL_ShopRules` | Foundation kit: buy-eligible, sell-eligible, reason keys | `Scripts/Game/Data/OVT_ShopSellRules.c` | Port | 80 |
-| `EL_ShopTransaction` (server) | `BuyItems`/`SellItems` validated: full-funds check, stock decrement, refund actual, result codes to client | `Scripts/Game/Components/Controller/OVT_ShopTransactionComponent.c` | Pattern (drop town/procurement/AI) | ~150 |
-| `EL_TraderManager` fix | Rebuild on `EL_ShopRules` + the transaction seam; atomic delete+pay | existing + pattern | Fix | ~60 delta |
+| `LF_PricesConfig` | `configRoot` catalogue: `m_aPrices` (find/cost/demand/hidden) | `Scripts/Game/Configuration/OVT_PricesConfig.c` | Adapt (keep filter+cost+hidden; demand optional) | ~50 |
+| `LF_ShopStock` component | `map<int,int>` stock, `AddToInventory`/`TakeFromInventory`/`GetStock`, `RplSave`/`RplLoad` JIP, `StreamInventory` broadcast | `Scripts/Game/Components/Economy/OVT_ShopComponent.c` | **Port** (this is the clean one) | 164 |
+| `LF_ShopRules` | Foundation kit: buy-eligible, sell-eligible, reason keys | `Scripts/Game/Data/OVT_ShopSellRules.c` | Port | 80 |
+| `LF_ShopTransaction` (server) | `BuyItems`/`SellItems` validated: full-funds check, stock decrement, refund actual, result codes to client | `Scripts/Game/Components/Controller/OVT_ShopTransactionComponent.c` | Pattern (drop town/procurement/AI) | ~150 |
+| `LF_TraderManager` fix | Rebuild on `LF_ShopRules` + the transaction seam; atomic delete+pay | existing + pattern | Fix | ~60 delta |
 
 **Reference files:** `OVT_ShopComponent.c` (**portable whole**),
 `OVT_ShopSellRules.c`, `OVT_ShopTransactionComponent.c` (pattern),
@@ -147,24 +147,24 @@ and `OVT_ShopCategory.c` for the later menu pass.
   Generalizes "apples → apple juice" to anything.
 - **Rule-level can-perform gate** — outputs are granted **only if every input
   is fully present**, and consumption uses actual amounts. This kills the
-  `EL_ProcessAction` free-output exploit at the pure-logic layer, not in an
+  `LF_ProcessAction` free-output exploit at the pure-logic layer, not in an
   action.
-- **Server-side re-validation** — the tool check (`EL_GatherAction`) and the
-  input check (`EL_ProcessAction`) run on the **server** in the perform path,
+- **Server-side re-validation** — the tool check (`LF_GatherAction`) and the
+  input check (`LF_ProcessAction`) run on the **server** in the perform path,
   not just the client's `CanBePerformedScript`. Hostile-RPC protection.
 - **Config-driven gather node** — a world-authored component
   (resourceId, units per action, tool, cooldown, max actions) so mappers add
-  resource spots without code. Keep the existing `EL_GatherAction`; make it a
+  resource spots without code. Keep the existing `LF_GatherAction`; make it a
   thin server re-validating caller of the node.
 
 ### Primitives
 
 | Piece | Shape | Source (Overthrow) | Borrow | LOC |
 | --- | --- | --- | --- | --- |
-| `EL_RecipeConfig` | `configRoot` catalogue: `m_aRecipes` (inputs[], outputs[], tool?) | `OVT_ResourceRequirements` shape | Pattern | ~40 |
-| `EL_RecipeRules` | Pure: `CanPerform(recipe, available)`, `GetShortfall(...)`, `Consume(...)` returns actual consumed, all-or-nothing | `OVT_ResourceRules.c` + `OVT_ResourceRequirements.c` doctrine | Pattern | ~120 |
-| `EL_ResourceNode` component | World-authored: resourceId, unitsPerAction, toolPrefab, cooldownSeconds, maxActions, restockSeconds | `Scripts/Game/Components/OVT_ResourceProductionComponent.c` (the authored-site shape) | Adapt | ~90 |
-| `EL_ProcessAction` / `EL_GatherAction` fixes | Thin actions calling the rules; server re-validates | existing + pattern | Fix | ~40 delta |
+| `LF_RecipeConfig` | `configRoot` catalogue: `m_aRecipes` (inputs[], outputs[], tool?) | `OVT_ResourceRequirements` shape | Pattern | ~40 |
+| `LF_RecipeRules` | Pure: `CanPerform(recipe, available)`, `GetShortfall(...)`, `Consume(...)` returns actual consumed, all-or-nothing | `OVT_ResourceRules.c` + `OVT_ResourceRequirements.c` doctrine | Pattern | ~120 |
+| `LF_ResourceNode` component | World-authored: resourceId, unitsPerAction, toolPrefab, cooldownSeconds, maxActions, restockSeconds | `Scripts/Game/Components/OVT_ResourceProductionComponent.c` (the authored-site shape) | Adapt | ~90 |
+| `LF_ProcessAction` / `LF_GatherAction` fixes | Thin actions calling the rules; server re-validates | existing + pattern | Fix | ~40 delta |
 
 **Reference files:** `OVT_ResourceRequirements.c` (requirement lists, "the
 single call behind both the displayed and the consumed figure"),
@@ -185,7 +185,7 @@ replicates**, world-query at Init), `OVT_ResourceRules.c`, `OVT_ResourcePack.c`
   now — plain price + optional multiplier.
 - **Server-side rent collection** — per-day rent on the economy tick, paid
   from balance or the property reverts (debt → repossess).
-- **Home spawn** — `SetHome` on owned property feeds `EL_SpawnLogic`'s spawn
+- **Home spawn** — `SetHome` on owned property feeds `LF_SpawnLogic`'s spawn
   position selection (Life already spawns account-aware).
 - **One request RPC component** on the player controller: buy / sell / rent /
   stop-rent / set-home, every one server-validated.
@@ -194,10 +194,10 @@ replicates**, world-query at Init), `OVT_ResourceRules.c`, `OVT_ResourcePack.c`
 
 | Piece | Shape | Source (Overthrow) | Borrow | LOC |
 | --- | --- | --- | --- | --- |
-| `EL_PropertyConfig` | Per-family: `m_aResourceNameFilters`, `m_BasePrice`, `m_BaseRent`, `m_IsStorage` | `Scripts/Game/Configuration/OVT_RealEstateConfig.c` | **Adapt (near verbatim)** | ~30 |
-| `EL_PropertyOwnership` | Pure record: property key, ownerId, rented, price | `OVT_PersistedOwnership` records | Pattern | ~60 |
-| `EL_PropertyManager` | Server manager: `GetConfig(entity)` filter-match, `Buy`/`Sell`/`Rent`/`StopRent`, `IsOwner`/`GetOwner`, rent tick, `ApplyPersisted` | `Scripts/Game/GameMode/Managers/OVT_RealEstateManagerComponent.c` | Pattern (skip town/starting-home/warehouse bulk) | ~300 |
-| `EL_PropertyRequestComponent` | `RpcAsk_BuyBuilding` / `RpcAsk_RentBuilding` / `RpcAsk_SetHome` / … — resolve owning player, server computes price, deducts through the money seam | `Scripts/Game/Components/Controller/OVT_RealEstateRequestComponent.c` | Pattern | ~150 |
+| `LF_PropertyConfig` | Per-family: `m_aResourceNameFilters`, `m_BasePrice`, `m_BaseRent`, `m_IsStorage` | `Scripts/Game/Configuration/OVT_RealEstateConfig.c` | **Adapt (near verbatim)** | ~30 |
+| `LF_PropertyOwnership` | Pure record: property key, ownerId, rented, price | `OVT_PersistedOwnership` records | Pattern | ~60 |
+| `LF_PropertyManager` | Server manager: `GetConfig(entity)` filter-match, `Buy`/`Sell`/`Rent`/`StopRent`, `IsOwner`/`GetOwner`, rent tick, `ApplyPersisted` | `Scripts/Game/GameMode/Managers/OVT_RealEstateManagerComponent.c` | Pattern (skip town/starting-home/warehouse bulk) | ~300 |
+| `LF_PropertyRequestComponent` | `RpcAsk_BuyBuilding` / `RpcAsk_RentBuilding` / `RpcAsk_SetHome` / … — resolve owning player, server computes price, deducts through the money seam | `Scripts/Game/Components/Controller/OVT_RealEstateRequestComponent.c` | Pattern | ~150 |
 | Property SaveData | Round-trip ownership + renter through public API | existing SaveData idiom | — | ~40 |
 
 **Reference files:** `OVT_RealEstateConfig.c` (**portable whole**, 21 LOC),
@@ -213,18 +213,18 @@ warehouse migration).
 
 Each step ends verifiable (per *sequence verifiable units* in `.claude/skills/principles`):
 
-1. **Foundation kit** — `EL_MoneyFormat`, `EL_MoneyDeltaTracker`, `EL_ShopRules`,
-   `EL_ResourceDefs` + config-load idiom. ~250 LOC, pure LOGIC-tier tests.
-2. **Money seam + ATM fix** — one authoritative mutation path; `EL_ATMMenu`
+1. **Foundation kit** — `LF_MoneyFormat`, `LF_MoneyDeltaTracker`, `LF_ShopRules`,
+   `LF_ResourceDefs` + config-load idiom. ~250 LOC, pure LOGIC-tier tests.
+2. **Money seam + ATM fix** — one authoritative mutation path; `LF_ATMMenu`
    gets working `RpcAsk_*`. Kills money-from-thin-air and the two-bank mess.
    Gate: `bank/*` and `atm/*` tests.
-3. **Price catalogue + `EL_ShopStock`** — port `OVT_ShopComponent` shape.
+3. **Price catalogue + `LF_ShopStock`** — port `OVT_ShopComponent` shape.
    Gate: `prefabs/load` + a stock round-trip.
-4. **Server-authoritative buy + sell** — `EL_ShopTransaction` + trader rebuild
-   on `EL_ShopRules`. Gate: `shop/buy-math`, `trader/*`, `shop/quantity-gate`
+4. **Server-authoritative buy + sell** — `LF_ShopTransaction` + trader rebuild
+   on `LF_ShopRules`. Gate: `shop/buy-math`, `trader/*`, `shop/quantity-gate`
    pin tests go green.
-5. **Processing rules** — `EL_RecipeConfig` + `EL_RecipeRules`, then rewire
-   `EL_ProcessAction`/`EL_GatherAction`. Gate: `process/*`, `gather/*` pin
+5. **Processing rules** — `LF_RecipeConfig` + `LF_RecipeRules`, then rewire
+   `LF_ProcessAction`/`LF_GatherAction`. Gate: `process/*`, `gather/*` pin
    tests.
 6. **Real Estate** — config + ownership + manager + request component + rent
    tick + home spawn. Gate: new `property/*` LOGIC tests + a world
@@ -242,8 +242,8 @@ Each step ends verifiable (per *sequence verifiable units* in `.claude/skills/pr
 
 ## Decisions to make (before build)
 
-1. **One bank, which one?** Recommend `EL_ATMManager` as the single bank and
-   delete/demote `EL_BankAccountComponent`'s balance — or fold its
+1. **One bank, which one?** Recommend `LF_ATMManager` as the single bank and
+   delete/demote `LF_BankAccountComponent`'s balance — or fold its
    per-entity history in later. Do not keep both.
 2. **Cash as `MoneyStack` or int balance?** Overthrow uses int money on the
    player record; Life currently uses a cash item. Keep the cash item (it is

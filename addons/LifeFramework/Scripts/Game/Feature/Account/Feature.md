@@ -13,7 +13,7 @@ surface — the player should never "open their account."
 ## Interaction pattern
 
 Background (rung 4, accepted). Other features read/write it:
-`EL_SpawnLogic` (respawn for the active character), character creation
+`LF_SpawnLogic` (respawn for the active character), character creation
 (faction), `Police`/`Crime` (wanted, duty).
 
 ## V1 (shippable)
@@ -21,7 +21,7 @@ Background (rung 4, accepted). Other features read/write it:
 Keep the account stable and correct — it is the keystone every feature keys
 off:
 
-1. Done: the cache-eviction churn in `EL_PlayerAccountManager` is fixed;
+1. Done: the cache-eviction churn in `LF_PlayerAccountManager` is fixed;
    `SaveAndReleaseAccount` keeps the account cached.
 2. Done: `RemoveCharacter` re-clamps `m_iActiveCharacterIdx` and
    `SetActiveCharacter` ignores a non-member.
@@ -33,15 +33,15 @@ off:
 
 ## Current state
 
-- `EL_PlayerAccount` / `EL_PlayerCharacter` (`Feature/Account/`) — faction,
+- `LF_PlayerAccount` / `LF_PlayerCharacter` (`Feature/Account/`) — faction,
   duty flag, wanted (clamped [0,5]), character roster. `RemoveCharacter`
   re-clamps the active index and `SetActiveCharacter` ignores a non-member.
   Fields effectively public (BIS ticket T174113 workaround).
-- `EL_PlayerAccountManager` — load + cache + save/release.
+- `LF_PlayerAccountManager` — load + cache + save/release.
   `SaveAndReleaseAccount` keeps the account resident (no eviction churn).
-- Persistence: `Feature/Account/Persistence/EL_PlayerAccountRecord.c` — a
-  dedicated record (no EPF). `EL_PlayerAccountManager.ExportAll` / `ApplyAll`
-  feed `EL_PersistenceComponentSerializer`, which writes a `version` header
+- Persistence: `Feature/Account/Persistence/LF_PlayerAccountRecord.c` — a
+  dedicated record (no EPF). `LF_PlayerAccountManager.ExportAll` / `ApplyAll`
+  feed `LF_PersistenceComponentSerializer`, which writes a `version` header
   first.
 - `LF_Progression` + `Persistence/LF_ProgressionRecord.c` — per-uid progression
   (career, police rank and duty, benefit cooldown, level, licences, quest

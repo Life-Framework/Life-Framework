@@ -11,7 +11,7 @@ GenericEntity Roadmap_Org_Desk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk
     }
    }
    additionalActions {
-    EL_OrganizationDeskAction "{A400B8708D3E8AFE}" {
+    LF_OrganizationDeskAction "{A400B8708D3E8AFE}" {
      ParentContextList {
       "default"
      }

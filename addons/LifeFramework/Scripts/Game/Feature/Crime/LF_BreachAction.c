@@ -41,17 +41,17 @@ class LF_BreachArmAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		LF_BreachTargetComponent target = EL_Component<LF_BreachTargetComponent>.Find(pOwnerEntity);
+		LF_BreachTargetComponent target = LF_Component<LF_BreachTargetComponent>.Find(pOwnerEntity);
 		if (!target)
 		{
-			EL_Debug.Error("Breach", "arm action: owner has no LF_BreachTargetComponent");
+			LF_Debug.Error("Breach", "arm action: owner has no LF_BreachTargetComponent");
 			return;
 		}
 
-		string playerUid = EL_Utils.GetPlayerUid(pUserEntity);
+		string playerUid = LF_Utils.GetPlayerUid(pUserEntity);
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Breach", "arm action refused: player has no account id");
+			LF_Debug.Error("Breach", "arm action refused: player has no account id");
 			return;
 		}
 
@@ -71,7 +71,7 @@ class LF_BreachArmAction : ScriptedUserAction
 		if (!GetOwner())
 			return null;
 
-		return EL_Component<LF_BreachTargetComponent>.Find(GetOwner());
+		return LF_Component<LF_BreachTargetComponent>.Find(GetOwner());
 	}
 }
 
@@ -109,17 +109,17 @@ class LF_BreachRepairAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		LF_BreachTargetComponent target = EL_Component<LF_BreachTargetComponent>.Find(pOwnerEntity);
+		LF_BreachTargetComponent target = LF_Component<LF_BreachTargetComponent>.Find(pOwnerEntity);
 		if (!target)
 		{
-			EL_Debug.Error("Breach", "repair action: owner has no LF_BreachTargetComponent");
+			LF_Debug.Error("Breach", "repair action: owner has no LF_BreachTargetComponent");
 			return;
 		}
 
-		string playerUid = EL_Utils.GetPlayerUid(pUserEntity);
+		string playerUid = LF_Utils.GetPlayerUid(pUserEntity);
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Breach", "repair action refused: player has no account id");
+			LF_Debug.Error("Breach", "repair action refused: player has no account id");
 			return;
 		}
 
@@ -139,6 +139,6 @@ class LF_BreachRepairAction : ScriptedUserAction
 		if (!GetOwner())
 			return null;
 
-		return EL_Component<LF_BreachTargetComponent>.Find(GetOwner());
+		return LF_Component<LF_BreachTargetComponent>.Find(GetOwner());
 	}
 }

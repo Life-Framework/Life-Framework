@@ -11,7 +11,7 @@ GenericEntity Roadmap_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL
     }
    }
    additionalActions {
-    EL_RobAction "{4F8CAEB46DCDC14A}" {
+    LF_RobAction "{4F8CAEB46DCDC14A}" {
      ParentContextList {
       "default"
      }

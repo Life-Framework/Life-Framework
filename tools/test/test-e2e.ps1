@@ -1,8 +1,8 @@
-# tools/test/test-e2e.ps1 - fast server e2e: boot DebugWorld, run the ELTEST suite, report.
+# tools/test/test-e2e.ps1 - fast server e2e: boot DebugWorld, run the LFTEST suite, report.
 #
 # Booting the Reforger dedicated server takes ~20-30s before scripts run, so this
 # waits up to a hard 90s cap but polls every 2s and kills the server as soon as
-# the ELTEST SUMMARY marker appears (or the cap hits). Exit codes:
+# the LFTEST SUMMARY marker appears (or the cap hits). Exit codes:
 #   0 = SUITE PASSED (SUMMARY present, failed=0)
 #   1 = SUITE FAILED (SUMMARY present, failed>0) or server crashed with errors
 #   2 = NO VERDICT (timeout without SUMMARY, missing tooling, instant crash)
@@ -21,7 +21,7 @@
 # not, so `validate --full` stays in ci, wt gate, and wt ship.
 #
 # -Only <a,b> runs just those tests (class names or GetName() strings): it
-# writes $profile:EL_TestOnly.txt and defines EL_TEST_ONLY; the suite then
+# writes $profile:LF_TestOnly.txt and defines LF_TEST_ONLY; the suite then
 # reports tier=only, so suite-stamp never mistakes it for a full tier run.
 #
 # Run via: tools\cli test
@@ -83,7 +83,7 @@ function Save-SuiteStamp([string]$ProfileDir, [string]$RepoRoot) {
   $consoleLog = Join-Path $logDir.FullName "console.log"
   if (-not (Test-Path -LiteralPath $consoleLog)) { return }
   $raw = [System.IO.File]::ReadAllText($consoleLog)
-  $found = [regex]::Matches($raw, '\[ELTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)')
+  $found = [regex]::Matches($raw, '\[LFTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)')
   if ($found.Count -eq 0) { return }
   $match = $found[$found.Count - 1]
   $sha = (& git -C $RepoRoot rev-parse HEAD 2>$null)
@@ -194,7 +194,7 @@ $args = @(
   "-profile", $profile,
   "-maxFPS", "30",
   "-logLevel", "normal",
-  "-scrDefine", "EL_AUTOTEST",
+  "-scrDefine", "LF_AUTOTEST",
   "-disableCrashReporter",
   "-noBackend",
   "-bindPort", $BindPort,
@@ -202,18 +202,18 @@ $args = @(
 )
 
 if ($Tier -eq "fast") {
-  $args += @("-scrDefine", "EL_TEST_TIER_FAST")
+  $args += @("-scrDefine", "LF_TEST_TIER_FAST")
 } elseif ($Tier -eq "persistence") {
-  $args += @("-scrDefine", "EL_TEST_TIER_PERSISTENCE")
+  $args += @("-scrDefine", "LF_TEST_TIER_PERSISTENCE")
 }
 
 $expectedTier = $Tier
-$onlyFile = Join-Path $profile "profile\EL_TestOnly.txt"
+$onlyFile = Join-Path $profile "profile\LF_TestOnly.txt"
 Remove-Item -LiteralPath $onlyFile -Force -ErrorAction SilentlyContinue
 if (-not [string]::IsNullOrEmpty($Only)) {
   New-Item -ItemType Directory -Force -Path (Split-Path -Parent $onlyFile) | Out-Null
   [System.IO.File]::WriteAllText($onlyFile, $Only, (New-Object System.Text.UTF8Encoding $false))
-  $args += @("-scrDefine", "EL_TEST_ONLY")
+  $args += @("-scrDefine", "LF_TEST_ONLY")
   $expectedTier = "only"
   Write-Host "test-e2e: only $Only"
 }
@@ -275,8 +275,8 @@ function Write-SuiteLines([string]$dir) {
   $c = Join-Path $dir "console.log"
   Write-Host "test-e2e: log $c"
   if (-not (Test-Path -LiteralPath $c)) { return }
-  $hits = @(Select-String -LiteralPath $c -Pattern '\[ELTEST\] (SUMMARY|FAIL|  - )' -ErrorAction SilentlyContinue)
-  if ($hits.Count -eq 0) { Write-Host "test-e2e: console.log has no [ELTEST] SUMMARY or FAIL line"; return }
+  $hits = @(Select-String -LiteralPath $c -Pattern '\[LFTEST\] (SUMMARY|FAIL|  - )' -ErrorAction SilentlyContinue)
+  if ($hits.Count -eq 0) { Write-Host "test-e2e: console.log has no [LFTEST] SUMMARY or FAIL line"; return }
   foreach ($h in ($hits | Select-Object -First 40)) { Write-Host "  $($h.Line.Trim())" }
 }
 
@@ -302,7 +302,7 @@ while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
 
   try {
     $text = ConvertTo-ConsoleText $console
-    $summaryMatch = [regex]::Match($text, '\[ELTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)')
+    $summaryMatch = [regex]::Match($text, '\[LFTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)')
     if ($summaryMatch.Success) {
       $at = $summaryMatch.Index
       $lineStart = 0
@@ -381,18 +381,18 @@ if ($lastSummary) {
   Write-Host "test-e2e: log $($lastSummary.LogDir)"
 
   $console = Read-Console $lastSummary.LogDir
-  $fails = @($console -split "`n" | Where-Object { $_ -match '\[ELTEST\]   - ' })
+  $fails = @($console -split "`n" | Where-Object { $_ -match '\[LFTEST\]   - ' })
   foreach ($f in $fails) { Write-Host "  $f" }
 
-  $debugLines = @($console -split "`n" | Where-Object { $_ -match '\[ELDebug:' })
+  $debugLines = @($console -split "`n" | Where-Object { $_ -match '\[LFDebug:' })
   if ($debugLines.Count -gt 0) {
     # Hundreds of lines per run: a count and a file by default; the lines inline
     # only with LF_TEST_DEBUG_LINES=1 (tools\cli dev prints its own).
-    $dbgFile = Join-Path $lastSummary.LogDir "eldebug-lines.txt"
-    $debugLines | ForEach-Object { $_ -replace '.*\[ELDebug:', '[ELDebug:' } | Set-Content -LiteralPath $dbgFile -Encoding utf8
+    $dbgFile = Join-Path $lastSummary.LogDir "lfdebug-lines.txt"
+    $debugLines | ForEach-Object { $_ -replace '.*\[LFDebug:', '[LFDebug:' } | Set-Content -LiteralPath $dbgFile -Encoding utf8
     Write-Host "test-e2e: feature debug lines ($($debugLines.Count)): $dbgFile"
     if ($env:LF_TEST_DEBUG_LINES -eq '1') {
-      foreach ($d in $debugLines) { Write-Host "  $($d -replace '.*\[ELDebug:', '[ELDebug:')" }
+      foreach ($d in $debugLines) { Write-Host "  $($d -replace '.*\[LFDebug:', '[LFDebug:')" }
     }
   }
 
@@ -433,6 +433,6 @@ if (-not $alive) {
   exit 2
 }
 
-Write-Host "test-e2e: NO VERDICT - timed out after ${TimeoutSeconds}s without an ELTEST SUMMARY"
+Write-Host "test-e2e: NO VERDICT - timed out after ${TimeoutSeconds}s without an LFTEST SUMMARY"
 Write-SuiteLines (Get-LogDir).FullName
 exit 2

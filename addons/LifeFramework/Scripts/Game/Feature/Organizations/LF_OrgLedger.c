@@ -8,7 +8,7 @@
 //! Inviting and removing are not here: they happen face to face (LF_OrgInviteRole).
 //!
 //! Client-only. The page paints from the replicated copy at once, then the server's answer fills
-//! the numbers. Every button sends an RPC the server re-checks (EL_OrganizationCharacter.c).
+//! the numbers. Every button sends an RPC the server re-checks (LF_OrganizationCharacter.c).
 //------------------------------------------------------------------------------------------------
 class LF_OrgLedgerPage : Managed
 {
@@ -166,7 +166,7 @@ class LF_OrgLedger
 		if (page.m_bProcessing || !page.Can(LF_OrgRules.RIGHT_BUY))
 			return string.Empty;
 
-		return WidgetManager.Translate("#LF-Org_BuyFor", EL_MoneyFormat.FormatMoney(EL_OrganizationManager.PRICE_PROCESSING_SLOT));
+		return WidgetManager.Translate("#LF-Org_BuyFor", LF_MoneyFormat.FormatMoney(LF_OrganizationManager.PRICE_PROCESSING_SLOT));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -193,10 +193,10 @@ class LF_OrgLedger
 	{
 		Hide();
 
-		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
 		if (!character)
 		{
-			EL_Debug.Error("Organizations", "ledger refused: no local character");
+			LF_Debug.Error("Organizations", "ledger refused: no local character");
 			return null;
 		}
 
@@ -214,8 +214,8 @@ class LF_OrgLedger
 
 		s_Ledger = ledger;
 		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.TURN_PAGE);
-		character.EL_AskOrganizationView();
-		EL_Debug.Info("Organizations", "ledger open");
+		character.LF_AskOrganizationView();
+		LF_Debug.Info("Organizations", "ledger open");
 		return ledger;
 	}
 
@@ -245,7 +245,7 @@ class LF_OrgLedger
 		m_Screen = LF_UIScreen.Open(BuildParts(m_Page));
 		if (!m_Screen)
 		{
-			EL_Debug.Error("Organizations", "ledger failed to open");
+			LF_Debug.Error("Organizations", "ledger failed to open");
 			return false;
 		}
 
@@ -293,7 +293,7 @@ class LF_OrgLedger
 
 		m_Screen.SetLine(PART_NAME_LINE, WidgetManager.Translate("#LF-Org_NameLine", m_Page.m_sName));
 		m_Screen.SetLine(PART_RANK_LINE, WidgetManager.Translate("#LF-Org_RankLine", WidgetManager.Translate(LF_OrgRules.RankKey(m_Page.m_iRights))));
-		m_Screen.SetStatusRow(PART_FUND, "#EL-Org_Fund", EL_MoneyFormat.FormatMoney(m_Page.m_iFund), "");
+		m_Screen.SetStatusRow(PART_FUND, "#EL-Org_Fund", LF_MoneyFormat.FormatMoney(m_Page.m_iFund), "");
 
 		string processing = "#LF-Org_NotOwned";
 		if (m_Page.m_bProcessing)
@@ -323,7 +323,7 @@ class LF_OrgLedger
 	//------------------------------------------------------------------------------------------------
 	protected void OnButton(string name)
 	{
-		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
 		if (!character || !m_Screen)
 			return;
 
@@ -338,7 +338,7 @@ class LF_OrgLedger
 				return;
 			}
 
-			if (EL_MoneyUtils.GetCash(character) < LF_OrgRules.FOUNDING_FEE)
+			if (LF_MoneyUtils.GetCash(character) < LF_OrgRules.FOUNDING_FEE)
 			{
 				m_Screen.SetLine(PART_NOTICE, "#LF-Org_NoFee");
 				SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.ERROR);
@@ -347,7 +347,7 @@ class LF_OrgLedger
 
 			// The pencil on the page while the clerk takes the fee.
 			SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_MAP_GADGET_MARKER_DRAW_START);
-			character.EL_AskOrganizationCreate(typed);
+			character.LF_AskOrganizationCreate(typed);
 			return;
 		}
 
@@ -362,16 +362,16 @@ class LF_OrgLedger
 			}
 
 			if (name == PART_DEPOSIT)
-				character.EL_AskOrganizationDeposit(amount);
+				character.LF_AskOrganizationDeposit(amount);
 			else
-				character.EL_AskOrganizationWithdraw(amount);
+				character.LF_AskOrganizationWithdraw(amount);
 
 			return;
 		}
 
 		if (name == PART_PROCESSING)
 		{
-			character.EL_AskOrganizationBuy(EL_EOrganizationUpgrade.PROCESSING_SLOT);
+			character.LF_AskOrganizationBuy(LF_EOrganizationUpgrade.PROCESSING_SLOT);
 			return;
 		}
 
@@ -387,7 +387,7 @@ class LF_OrgLedger
 			return;
 		}
 
-		EL_Debug.Info("Organizations", "ledger ignored button " + name);
+		LF_Debug.Info("Organizations", "ledger ignored button " + name);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -412,6 +412,6 @@ class LF_OrgLedger
 			s_Ledger = null;
 
 		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_HUD_MAP_CLOSE);
-		EL_Debug.Info("Organizations", "ledger closed");
+		LF_Debug.Info("Organizations", "ledger closed");
 	}
 }

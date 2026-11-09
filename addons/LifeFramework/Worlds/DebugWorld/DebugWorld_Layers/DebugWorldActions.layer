@@ -12,7 +12,7 @@ GenericEntity WorldActionsStation {
       }
      }
      additionalActions {
-      EL_ChangeTimeAction "{59AA931427CE2EDC}" {
+      LF_ChangeTimeAction "{59AA931427CE2EDC}" {
        ParentContextList {
         "default"
        }
@@ -21,7 +21,7 @@ GenericEntity WorldActionsStation {
        }
        m_fTargetTime 12
       }
-      EL_ChangeTimeAction "{59AA972B1009CA57}" {
+      LF_ChangeTimeAction "{59AA972B1009CA57}" {
        ParentContextList {
         "default"
        }
@@ -31,7 +31,7 @@ GenericEntity WorldActionsStation {
        "Sort Priority" 1
        m_fTargetTime 0
       }
-      EL_ChangeWeatherAction "{59AA972B2C0B6D29}" {
+      LF_ChangeWeatherAction "{59AA972B2C0B6D29}" {
        ParentContextList {
         "default"
        }
@@ -41,7 +41,7 @@ GenericEntity WorldActionsStation {
        "Sort Priority" 3
        m_fTargetWeatherID 3
       }
-      EL_ChangeWeatherAction "{59AA972B2CE8BA85}" {
+      LF_ChangeWeatherAction "{59AA972B2CE8BA85}" {
        ParentContextList {
         "default"
        }
@@ -62,7 +62,7 @@ GenericEntity WorldActionsStation {
      coords 0 0 0.7
    }
   }
-  EL_NpcBaseEntity WeatherNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity WeatherNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {
@@ -86,7 +86,7 @@ GenericEntity WorldActionsStation {
   }
  }
 }
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
  coords 30 0 88
  m_vSize 2 1 1.5
 }

@@ -24,12 +24,12 @@ processing upgrade are kept at the desk.
 
 ## Current state
 
-- `EL_OrganizationManager` / `EL_Organization` — the persisted register (save
+- `LF_OrganizationManager` / `LF_Organization` — the persisted register (save
   payload unchanged by M1-17). Names checked by `LF_OrgRules.RefuseName` and
   `IsNameTaken`.
-- `EL_OrganizationPlayer` — cash boundary: `Found` (fee from carried MoneyStack),
+- `LF_OrganizationPlayer` — cash boundary: `Found` (fee from carried MoneyStack),
   deposit, withdraw, buy; `MemberLines` for the ledger.
-- `EL_OrganizationCharacter.c` — ledger RPCs; every register change is refused
+- `LF_OrganizationCharacter.c` — ledger RPCs; every register change is refused
   away from the desk (`DESK_RANGE` 5 m).
 - `LF_OrgRules` — fee, name rules, rights bits, `ModeFor` (which entry a pair sees).
 - `LF_OrgInvites` — session offers (not saved, 2 minute lapse);

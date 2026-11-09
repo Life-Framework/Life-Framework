@@ -31,7 +31,7 @@ class LF_ConvoyVehicleWatch : Managed
 		EventHandlerManagerComponent events = EventHandlerManagerComponent.Cast(vehicle.FindComponent(EventHandlerManagerComponent));
 		if (!events)
 		{
-			EL_Debug.Error("Contraband", "convoy vehicle has no event handler");
+			LF_Debug.Error("Contraband", "convoy vehicle has no event handler");
 			return;
 		}
 
@@ -43,7 +43,7 @@ class LF_ConvoyVehicleWatch : Managed
 
 		events.RegisterScriptHandler("OnCompartmentLeft", this, OnCompartmentLeft);
 		m_VehicleId = vehicle.GetID();
-		EL_Debug.Log("Contraband", string.Format("convoy watching vehicle for %1", m_sCharacterId));
+		LF_Debug.Log("Contraband", string.Format("convoy watching vehicle for %1", m_sCharacterId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ class LF_ConvoyVehicleWatch : Managed
 		SCR_CompartmentAccessComponent access = SCR_CompartmentAccessComponent.Cast(user.FindComponent(SCR_CompartmentAccessComponent));
 		if (!access)
 		{
-			EL_Debug.Error("Contraband", "convoy cannot watch for a vehicle: the character has no compartment access");
+			LF_Debug.Error("Contraband", "convoy cannot watch for a vehicle: the character has no compartment access");
 			return;
 		}
 
@@ -70,7 +70,7 @@ class LF_ConvoyVehicleWatch : Managed
 		m_ArmedUserId = user.GetID();
 		m_UserId = user.GetID();
 		m_bMatchUser = true;
-		EL_Debug.Log("Contraband", string.Format("convoy waits for %1 to get into a vehicle", m_sCharacterId));
+		LF_Debug.Log("Contraband", string.Format("convoy waits for %1 to get into a vehicle", m_sCharacterId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ class LF_ConvoyVehicleWatch : Managed
 		if (events)
 			events.RemoveScriptHandler("OnCompartmentLeft", this, OnCompartmentLeft);
 
-		EL_Debug.Log("Contraband", string.Format("convoy stopped watching vehicle for %1", m_sCharacterId));
+		LF_Debug.Log("Contraband", string.Format("convoy stopped watching vehicle for %1", m_sCharacterId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ class LF_Contraband
 		if (characterId.IsEmpty())
 			return "#LF-Contraband_JoinOrg";
 
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(characterId);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
 		if (!org)
 			return "#LF-Contraband_JoinOrg";
 
@@ -272,7 +272,7 @@ class LF_Contraband
 		if (run.m_iState != LF_EConvoyState.RUNNING)
 		{
 			run.m_iState = LF_EConvoyState.RUNNING;
-			EL_Debug.Log("Contraband", string.Format("convoy started %1", characterId));
+			LF_Debug.Log("Contraband", string.Format("convoy started %1", characterId));
 		}
 
 		if (user)
@@ -321,7 +321,7 @@ class LF_Contraband
 		int paid = PAYOUT;
 		if (payTo)
 		{
-			int given = EL_MoneyUtils.GiveCash(payTo, PAYOUT);
+			int given = LF_MoneyUtils.GiveCash(payTo, PAYOUT);
 			if (given <= 0)
 			{
 				Refuse("delivery refused: cash payout failed");
@@ -329,9 +329,9 @@ class LF_Contraband
 			}
 
 			paid = given;
-			int removed = EL_InventoryUtils.RemoveAmount(payTo, ITEM, 1);
+			int removed = LF_InventoryUtils.RemoveAmount(payTo, ITEM, 1);
 			if (removed != 1)
-				EL_Debug.Error("Contraband", "delivery removed no contraband after payment");
+				LF_Debug.Error("Contraband", "delivery removed no contraband after payment");
 		}
 
 		if (payTo)
@@ -340,9 +340,9 @@ class LF_Contraband
 		run.m_iState = LF_EConvoyState.PAID;
 		run.m_iCashPaid = run.m_iCashPaid + paid;
 		StopWatch(run);
-		EL_Debug.Log("Contraband", string.Format("delivery paid %1 to %2", paid, characterId));
+		LF_Debug.Log("Contraband", string.Format("delivery paid %1 to %2", paid, characterId));
 		if (GetGame() && GetGame().GetWorkspace())
-			EL_Utils.NotifyEntity(payTo, "#EL-Contraband_Paid", "#EL-Contraband_Deliver", 3.0);
+			LF_Utils.NotifyEntity(payTo, "#EL-Contraband_Paid", "#EL-Contraband_Deliver", 3.0);
 		return paid;
 	}
 
@@ -363,17 +363,17 @@ class LF_Contraband
 		if (CountCarried(user) > 0)
 			return true;
 
-		int added = EL_InventoryUtils.AddAmount(user, ITEM, 1, false);
+		int added = LF_InventoryUtils.AddAmount(user, ITEM, 1, false);
 		if (added != 1)
 		{
 			Refuse("pickup refused: hands full");
-			EL_Utils.NotifyEntity(user, "#LF-Contraband_HandsFull", "#EL-Contraband_Start", 5.0);
+			LF_Utils.NotifyEntity(user, "#LF-Contraband_HandsFull", "#EL-Contraband_Start", 5.0);
 			return false;
 		}
 
 		PlaySound(user, PICKUP_SOUND);
-		EL_Debug.Log("Contraband", string.Format("crate handed over %1", ITEM));
-		EL_Utils.NotifyEntity(user, "#LF-Contraband_Loaded", "#EL-Contraband_Start", 6.0);
+		LF_Debug.Log("Contraband", string.Format("crate handed over %1", ITEM));
+		LF_Utils.NotifyEntity(user, "#LF-Contraband_Loaded", "#EL-Contraband_Start", 6.0);
 		return true;
 	}
 
@@ -401,12 +401,12 @@ class LF_Contraband
 			drop = GetGame().GetWorld().FindEntityByName(DROP_ID);
 
 		if (!drop)
-			EL_Debug.Error("Contraband", "drop marker missing: " + DROP_ID);
+			LF_Debug.Error("Contraband", "drop marker missing: " + DROP_ID);
 
 		if (drop && NearDrop(where, drop.GetOrigin()))
 		{
 			StopWatch(run);
-			EL_Debug.Log("Contraband", string.Format("convoy reached the drop %1", characterId));
+			LF_Debug.Log("Contraband", string.Format("convoy reached the drop %1", characterId));
 			return false;
 		}
 
@@ -468,7 +468,7 @@ class LF_Contraband
 		if (!user)
 			return 0;
 
-		int carried = EL_InventoryUtils.GetAmount(user, ITEM);
+		int carried = LF_InventoryUtils.GetAmount(user, ITEM);
 		if (carried < 0)
 			return 0;
 
@@ -486,7 +486,7 @@ class LF_Contraband
 		StopWatch(run);
 		Refuse(message);
 		if (GetGame() && GetGame().GetWorkspace())
-			EL_Utils.Notify("#EL-Contraband_Failed", "#EL-Contraband_Deliver", 3.0);
+			LF_Utils.Notify("#EL-Contraband_Failed", "#EL-Contraband_Deliver", 3.0);
 		return true;
 	}
 
@@ -494,7 +494,7 @@ class LF_Contraband
 	protected static bool IsMember(string characterId)
 	{
 		string ownerId = LF_Hideout.GetOwner(LF_Hideout.HIDEOUT_ID);
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(characterId);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
 		if (ownerId.IsEmpty() || !org)
 			return false;
 
@@ -556,9 +556,9 @@ class LF_Contraband
 	//------------------------------------------------------------------------------------------------
 	protected static void PlaySound(IEntity user, string soundEvent)
 	{
-		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(user);
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
 		if (inventory)
-			inventory.RpcAsk_PlaySound(EL_NetworkUtils.GetRplId(user), soundEvent);
+			inventory.RpcAsk_PlaySound(LF_NetworkUtils.GetRplId(user), soundEvent);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -596,7 +596,7 @@ class LF_Contraband
 		if (repeat)
 			return;
 
-		EL_Debug.Error("Contraband", message);
+		LF_Debug.Error("Contraband", message);
 	}
 
 	//------------------------------------------------------------------------------------------------

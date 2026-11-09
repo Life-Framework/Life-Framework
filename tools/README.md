@@ -17,7 +17,7 @@ tools\cli build                         # headless Workbench build (worktree onl
 tools\cli rdb                           # register new .meta files in this worktree's resourceDatabase.rdb (~10 s; boots do it when stale)
 tools\cli serve                         # boot the headless test server (blocks, worktree only)
 tools\cli test [--no-build] [--tier fast|all|persistence] [--only <names>]
-                                        # build + boot server + parse ELTEST results (worktree only)
+                                        # build + boot server + parse LFTEST results (worktree only)
                                         # first free slot on any pool machine (--any); --local, --remote [name]
 tools\cli e2e [--local|--remote [name]] # two-boot save/restart proof in this worktree, on a pool slot
 tools\cli pool status|stats|prune       # test pool: machines, slots, queue, last runs (tools/pool.json)
@@ -78,11 +78,11 @@ The mod's automated lifecycle (see `../AGENTS.md`):
 ```
 tools\cli build    # headless Workbench build: addons/LifeFramework -> server/build/ (PC)
 tools\cli test     # boot Arma Reforger Server on Worlds/DebugWorld (Missions/EL_DebugTest.conf),
-                   #   run the ELTEST suite, parse [ELTEST] SUMMARY, exit nonzero on failure
+                   #   run the LFTEST suite, parse [LFTEST] SUMMARY, exit nonzero on failure
 tools\cli ci       # validate + build + test
 ```
 
-- Test scenario: `addons/LifeFramework/Missions/EL_DebugTest.conf` (DebugWorld + `EL_TestGameMode`)
+- Test scenario: `addons/LifeFramework/Missions/EL_DebugTest.conf` (DebugWorld + `LF_TestGameMode`)
 - Server config: `server/configs/test-server.json`
 - Logs land in `server/logs/`; build output and profile are git-ignored.
 

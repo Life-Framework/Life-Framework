@@ -14,21 +14,21 @@ class LF_SignCard
 		Hide();
 		if (!sign)
 		{
-			EL_Debug.Error("Signs", "card refused: no sign");
+			LF_Debug.Error("Signs", "card refused: no sign");
 			return null;
 		}
 
 		s_Screen = LF_UIScreen.Open(LF_SignCatalog.BuildParts(sign));
 		if (!s_Screen)
 		{
-			EL_Debug.Error("Signs", "card failed to open for " + sign.m_sId);
+			LF_Debug.Error("Signs", "card failed to open for " + sign.m_sId);
 			return null;
 		}
 
 		s_Screen.CloseOnDeath();
 		s_Screen.CloseWhenUncontrolled();
 		s_Screen.CloseBeyond(CLOSE_DISTANCE, anchor);
-		EL_Debug.Info("Signs", "card open: " + sign.m_sId);
+		LF_Debug.Info("Signs", "card open: " + sign.m_sId);
 		return s_Screen;
 	}
 

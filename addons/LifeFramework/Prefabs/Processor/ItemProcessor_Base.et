@@ -16,7 +16,7 @@ GenericEntity {
     }
    }
    additionalActions {
-    EL_ProcessAction "{598F21A877BE6DEE}" {
+    LF_ProcessAction "{598F21A877BE6DEE}" {
      ParentContextList {
       "default"
      }

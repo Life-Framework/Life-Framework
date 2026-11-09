@@ -1,6 +1,6 @@
 // LF_QuestDefinition.c - one quest: objectives, prerequisites, reward, repeatability.
 // BaseContainerProps so a quest giver prefab can carry a list of these directly
-// (same pattern as EL_JobConfig on the job system).
+// (same pattern as LF_JobConfig on the job system).
 
 [BaseContainerProps()]
 class LF_QuestDefinition
@@ -34,8 +34,8 @@ class LF_QuestDefinition
 	[Attribute(defvalue: "0", UIWidgets.EditBox, "Minimum player level (0 = none)")]
 	int m_iMinLevel;
 
-	[Attribute(defvalue: "0", UIWidgets.ComboBox, "Required job (UNEMPLOYED = none)", "", ParamEnumArray.FromEnum(EL_EJobType))]
-	EL_EJobType m_eRequiredJob;
+	[Attribute(defvalue: "0", UIWidgets.ComboBox, "Required job (UNEMPLOYED = none)", "", ParamEnumArray.FromEnum(LF_EJobType))]
+	LF_EJobType m_eRequiredJob;
 
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Required faction key (empty = any)")]
 	string m_sRequiredFaction;

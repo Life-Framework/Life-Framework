@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------------------------
 //! Bank vault robbery. A configured vault calls LF_Breach.Arm, then puts MoneyStack
-//! cash into bags. The haul is physical cash. EL_BankAccount is never deposited
+//! cash into bags. The haul is physical cash. LF_BankAccount is never deposited
 //! and never withdrawn here; the ATM stays the only cash-to-account boundary.
 //!
 //! GATES. Civilian-only, minimum police on duty, and cooldown use the same
-//! comparisons as EL_RobAction. The server config chooses the bag count and the
+//! comparisons as LF_RobAction. The server config chooses the bag count and the
 //! cash in each bag. There is no client request for a larger haul.
 //!
 //! ON OPEN. Fuse 0 spawns the bags before Rob returns. A positive fuse waits
@@ -112,7 +112,7 @@ class LF_Bank
 
 	//------------------------------------------------------------------------------------------------
 	//! True while elapsedSeconds is still short of cooldownSeconds.
-	//! A cooldown of 0 does not block. Matches EL_RobAction's elapsed < cooldown check.
+	//! A cooldown of 0 does not block. Matches LF_RobAction's elapsed < cooldown check.
 	static bool CooldownBlocks(float cooldownSeconds, float elapsedSeconds)
 	{
 		if (cooldownSeconds <= 0)
@@ -122,14 +122,14 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! EL_RobAction allows the action when the account is missing, and refuses
+	//! LF_RobAction allows the action when the account is missing, and refuses
 	//! every faction other than civilian.
-	static bool CivilianAllowed(EL_PlayerAccount account)
+	static bool CivilianAllowed(LF_PlayerAccount account)
 	{
 		if (!account)
 			return true;
 
-		return account.GetFaction() == EL_Faction.CIVILIAN;
+		return account.GetFaction() == LF_Faction.CIVILIAN;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -146,12 +146,12 @@ class LF_Bank
 	{
 		if (vaultId.IsEmpty())
 		{
-			EL_Debug.Error("Bank", "configure refused: empty vault id");
+			LF_Debug.Error("Bank", "configure refused: empty vault id");
 			return;
 		}
 
 		if (bagCount <= 0 || cashPerBag <= 0)
-			EL_Debug.Error("Bank", string.Format("configure degraded: vault %1 bag count %2 cash %3", vaultId, bagCount, cashPerBag));
+			LF_Debug.Error("Bank", string.Format("configure degraded: vault %1 bag count %2 cash %3", vaultId, bagCount, cashPerBag));
 
 		LF_BankVaultState vault = Vaults().Get(vaultId);
 		if (!vault)
@@ -168,7 +168,7 @@ class LF_Bank
 		vault.m_iMinPolice = minPolice;
 		vault.m_sBagEntity = bagEntity;
 		LF_Breach.Configure(vaultId, fuseSeconds, "");
-		EL_Debug.Log("Bank", string.Format("configured %1 bags=%2 cash=%3 cooldown=%4 police=%5", vaultId, bagCount, cashPerBag, cooldownSeconds, minPolice));
+		LF_Debug.Log("Bank", string.Format("configured %1 bags=%2 cash=%3 cooldown=%4 police=%5", vaultId, bagCount, cashPerBag, cooldownSeconds, minPolice));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -227,20 +227,20 @@ class LF_Bank
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Bank", "carry refused: empty player uid");
+			LF_Debug.Error("Bank", "carry refused: empty player uid");
 			return false;
 		}
 
 		LF_BankBagState bag = BagAt(vaultId, index);
 		if (!bag)
 		{
-			EL_Debug.Error("Bank", string.Format("carry refused: vault %1 has no bag %2", vaultId, index));
+			LF_Debug.Error("Bank", string.Format("carry refused: vault %1 has no bag %2", vaultId, index));
 			return false;
 		}
 
 		bag.m_bOnGround = false;
 		bag.m_sCarrierUid = playerUid;
-		EL_Debug.Log("Bank", string.Format("bag %1 carried by %2 cash=%3", bag.m_sBagId, playerUid, bag.m_iCash));
+		LF_Debug.Log("Bank", string.Format("bag %1 carried by %2 cash=%3", bag.m_sBagId, playerUid, bag.m_iCash));
 		return true;
 	}
 
@@ -251,13 +251,13 @@ class LF_Bank
 		LF_BankBagState bag = BagAt(vaultId, index);
 		if (!bag)
 		{
-			EL_Debug.Error("Bank", string.Format("drop refused: vault %1 has no bag %2", vaultId, index));
+			LF_Debug.Error("Bank", string.Format("drop refused: vault %1 has no bag %2", vaultId, index));
 			return false;
 		}
 
 		bag.m_bOnGround = true;
 		bag.m_sCarrierUid = "";
-		EL_Debug.Log("Bank", string.Format("bag %1 dropped cash=%2", bag.m_sBagId, bag.m_iCash));
+		LF_Debug.Log("Bank", string.Format("bag %1 dropped cash=%2", bag.m_sBagId, bag.m_iCash));
 		return true;
 	}
 
@@ -269,14 +269,14 @@ class LF_Bank
 	{
 		if (vaultId.IsEmpty() || playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Bank", "rob refused: vault id or player uid is empty");
+			LF_Debug.Error("Bank", "rob refused: vault id or player uid is empty");
 			return false;
 		}
 
 		LF_BankVaultState vault = Vaults().Get(vaultId);
 		if (!vault)
 		{
-			EL_Debug.Error("Bank", string.Format("rob refused: vault %1 is not configured", vaultId));
+			LF_Debug.Error("Bank", string.Format("rob refused: vault %1 is not configured", vaultId));
 			return false;
 		}
 
@@ -285,14 +285,14 @@ class LF_Bank
 
 		if (!LF_Breach.Arm(vaultId, playerUid, robber))
 		{
-			EL_Debug.Log("Bank", string.Format("rob refused: breach did not arm %1", vaultId));
+			LF_Debug.Log("Bank", string.Format("rob refused: breach did not arm %1", vaultId));
 			return false;
 		}
 
 		if (LF_Breach.IsLocked(vaultId))
 		{
 			vault.m_bSpawnPending = true;
-			EL_Debug.Log("Bank", string.Format("breach armed; bags wait for the fuse on %1", vaultId));
+			LF_Debug.Log("Bank", string.Format("breach armed; bags wait for the fuse on %1", vaultId));
 			return true;
 		}
 
@@ -330,7 +330,7 @@ class LF_Bank
 		LF_BankVaultState vault = Vaults().Get(vaultId);
 		if (!vault)
 		{
-			EL_Debug.Error("Bank", string.Format("export refused: vault %1 is not configured", vaultId));
+			LF_Debug.Error("Bank", string.Format("export refused: vault %1 is not configured", vaultId));
 			return null;
 		}
 
@@ -360,14 +360,14 @@ class LF_Bank
 	{
 		if (!record)
 		{
-			EL_Debug.Error("Bank", "apply refused: record is null");
+			LF_Debug.Error("Bank", "apply refused: record is null");
 			return false;
 		}
 
 		LF_BankVaultState vault = Vaults().Get(record.m_sVaultId);
 		if (!vault || !record.IsValidFor(vault.m_sVaultId))
 		{
-			EL_Debug.Error("Bank", "apply refused: record does not match a configured vault");
+			LF_Debug.Error("Bank", "apply refused: record does not match a configured vault");
 			return false;
 		}
 
@@ -390,7 +390,7 @@ class LF_Bank
 		if (!vault.m_sBagEntity.IsEmpty() && vault.m_aBags.Count() > 0)
 			FillNamedBag(vault.m_sBagEntity, vault.m_aBags[0].m_iCash);
 
-		EL_Debug.Log("Bank", string.Format("apply-save %1 bags=%2", vault.m_sVaultId, vault.m_aBags.Count()));
+		LF_Debug.Log("Bank", string.Format("apply-save %1 bags=%2", vault.m_sVaultId, vault.m_aBags.Count()));
 		return true;
 	}
 
@@ -406,8 +406,8 @@ class LF_Bank
 		if (!vault)
 			return "#EL-Bank_NotReady";
 
-		EL_PlayerAccount account = null;
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccount account = null;
+		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 		if (accountManager)
 			account = accountManager.GetAccount(playerUid);
 
@@ -440,10 +440,10 @@ class LF_Bank
 		if (!bag)
 			return -1;
 
-		InventoryStorageManagerComponent manager = EL_InventoryUtils.GetResponsibleStorageManager(bag);
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(bag);
 		if (manager)
 		{
-			int stored = EL_InventoryUtils.GetAmount(manager, EL_MoneyUtils.PREFAB_CASH);
+			int stored = LF_InventoryUtils.GetAmount(manager, LF_MoneyUtils.PREFAB_CASH);
 			if (stored > 0)
 				return stored;
 		}
@@ -452,7 +452,7 @@ class LF_Bank
 		if (!cash)
 			return 0;
 
-		EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(cash);
+		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(cash);
 		if (!quantity)
 			return 0;
 
@@ -462,23 +462,23 @@ class LF_Bank
 	//------------------------------------------------------------------------------------------------
 	protected static bool GatesPass(LF_BankVaultState vault, string playerUid)
 	{
-		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(playerUid);
+		LF_PlayerAccount account = LF_PlayerAccountManager.GetOrCreate(playerUid);
 		if (!CivilianAllowed(account))
 		{
-			EL_Debug.Log("Bank", string.Format("rob refused: %1 is not a civilian", playerUid));
+			LF_Debug.Log("Bank", string.Format("rob refused: %1 is not a civilian", playerUid));
 			return false;
 		}
 
 		int police = CountPoliceOnDuty();
 		if (!PoliceOnDutyAllows(police, vault.m_iMinPolice))
 		{
-			EL_Debug.Log("Bank", string.Format("rob refused: %1 police on duty, need %2", police, vault.m_iMinPolice));
+			LF_Debug.Log("Bank", string.Format("rob refused: %1 police on duty, need %2", police, vault.m_iMinPolice));
 			return false;
 		}
 
 		if (vault.m_bCooldownRunning && CooldownBlocks(vault.m_fCooldownSeconds, ElapsedSeconds(vault)))
 		{
-			EL_Debug.Log("Bank", string.Format("rob refused: vault %1 is on cooldown", vault.m_sVaultId));
+			LF_Debug.Log("Bank", string.Format("rob refused: vault %1 is on cooldown", vault.m_sVaultId));
 			return false;
 		}
 
@@ -491,7 +491,7 @@ class LF_Bank
 		int count = CappedBagCount(vault.m_iBagCount, vault.m_iBagCount);
 		if (count <= 0 || vault.m_iCashPerBag <= 0)
 		{
-			EL_Debug.Error("Bank", string.Format("spawn refused: vault %1 has no bag config", vault.m_sVaultId));
+			LF_Debug.Error("Bank", string.Format("spawn refused: vault %1 has no bag config", vault.m_sVaultId));
 			return;
 		}
 
@@ -510,7 +510,7 @@ class LF_Bank
 		vault.m_bCooldownRunning = true;
 		vault.m_fAdvancedSeconds = 0;
 		vault.m_fSampledAt = NowSeconds();
-		EL_Debug.Log("Bank", string.Format("spawned %1 bags of %2 at %3", count, vault.m_iCashPerBag, vault.m_sVaultId));
+		LF_Debug.Log("Bank", string.Format("spawned %1 bags of %2 at %3", count, vault.m_iCashPerBag, vault.m_sVaultId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -522,12 +522,12 @@ class LF_Bank
 		IEntity bag = GetGame().GetWorld().FindEntityByName(bagEntity);
 		if (!bag)
 		{
-			EL_Debug.Error("Bank", string.Format("money bag fill refused: %1 is not in the world", bagEntity));
+			LF_Debug.Error("Bank", string.Format("money bag fill refused: %1 is not in the world", bagEntity));
 			return;
 		}
 
 		if (!WriteWorldBagCash(bag, cash))
-			EL_Debug.Error("Bank", string.Format("money bag fill failed for %1", bagEntity));
+			LF_Debug.Error("Bank", string.Format("money bag fill failed for %1", bagEntity));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -535,23 +535,23 @@ class LF_Bank
 	{
 		if (!bag || cash <= 0)
 		{
-			EL_Debug.Error("Bank", "money bag fill refused: bag missing or cash is empty");
+			LF_Debug.Error("Bank", "money bag fill refused: bag missing or cash is empty");
 			return false;
 		}
 
-		Resource money = Resource.Load(EL_MoneyUtils.PREFAB_CASH);
+		Resource money = Resource.Load(LF_MoneyUtils.PREFAB_CASH);
 		if (!money || !money.IsValid())
 		{
-			EL_Debug.Error("Bank", "money bag fill refused: MoneyStack prefab missing");
+			LF_Debug.Error("Bank", "money bag fill refused: MoneyStack prefab missing");
 			return false;
 		}
 
-		int paid = EL_MoneyUtils.AddCash(bag, cash);
+		int paid = LF_MoneyUtils.AddCash(bag, cash);
 		if (paid == cash)
 			return true;
 
 		if (paid > 0)
-			EL_MoneyUtils.RemoveCash(bag, paid);
+			LF_MoneyUtils.RemoveCash(bag, paid);
 
 		IEntity cashEntity = FindCashChild(bag);
 		if (!cashEntity && GetGame() && GetGame().GetWorld())
@@ -559,10 +559,10 @@ class LF_Bank
 
 		if (!cashEntity)
 		{
-			cashEntity = EL_Utils.SpawnEntityPrefab(EL_MoneyUtils.PREFAB_CASH, bag.GetOrigin());
+			cashEntity = LF_Utils.SpawnEntityPrefab(LF_MoneyUtils.PREFAB_CASH, bag.GetOrigin());
 			if (!cashEntity)
 			{
-				EL_Debug.Error("Bank", "money bag fill refused: MoneyStack did not spawn");
+				LF_Debug.Error("Bank", "money bag fill refused: MoneyStack did not spawn");
 				return false;
 			}
 
@@ -572,16 +572,16 @@ class LF_Bank
 		if (cashEntity.GetParent() != bag)
 			bag.AddChild(cashEntity, -1, EAddChildFlags.AUTO_TRANSFORM);
 
-		EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(cashEntity);
+		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(cashEntity);
 		if (!quantity)
 		{
-			EL_Debug.Error("Bank", "money bag fill refused: stack has no quantity");
+			LF_Debug.Error("Bank", "money bag fill refused: stack has no quantity");
 			return false;
 		}
 
 		if (!quantity.SetQuantity(cash))
 		{
-			EL_Debug.Error("Bank", string.Format("money bag fill refused: quantity did not become %1", cash));
+			LF_Debug.Error("Bank", string.Format("money bag fill refused: quantity did not become %1", cash));
 			return false;
 		}
 
@@ -597,7 +597,7 @@ class LF_Bank
 		IEntity child = bag.GetChildren();
 		while (child)
 		{
-			EL_QuantityComponent quantity = EL_Component<EL_QuantityComponent>.Find(child);
+			LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(child);
 			if (quantity)
 				return child;
 
@@ -631,13 +631,13 @@ class LF_Bank
 	protected static int CountPoliceOnDuty()
 	{
 		int count = 0;
-		EL_PlayerControllerManagerCompat playerManager = EL_PlayerControllerManagerCompat.GetInstance();
+		LF_PlayerControllerManagerCompat playerManager = LF_PlayerControllerManagerCompat.GetInstance();
 		if (!playerManager)
 			return 0;
 
 		array<int> playerIds = {};
 		playerManager.GetAllPlayerIds(playerIds);
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 		if (!accountManager)
 			return 0;
 
@@ -651,9 +651,9 @@ class LF_Bank
 			if (!controlled)
 				continue;
 
-			string playerUid = EL_Utils.GetPlayerUid(controlled);
-			EL_PlayerAccount account = accountManager.GetAccount(playerUid);
-			if (account && account.GetFaction() == EL_Faction.POLICE && account.IsOnDuty())
+			string playerUid = LF_Utils.GetPlayerUid(controlled);
+			LF_PlayerAccount account = accountManager.GetAccount(playerUid);
+			if (account && account.GetFaction() == LF_Faction.POLICE && account.IsOnDuty())
 				count++;
 		}
 

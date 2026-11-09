@@ -12,36 +12,36 @@ GenericEntity Roadmap_Vehicle_Lot {
    ModelGeometry 1
    Static 1
   }
-  EL_VehicleLotComponent "{E1B0E70100000003}" {
+  LF_VehicleLotComponent "{E1B0E70100000003}" {
    m_sShopId "roadmap-lot"
    m_iCashCeiling 500
    m_iExtraKeyPrice 25
    m_aOffers {
-    EL_VehicleOffer "{E1B0E70100000011}" {
+    LF_VehicleOffer "{E1B0E70100000011}" {
      m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
      m_sSpawnPrefab "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et"
      m_iPrice 1000
      m_sNameKey "#EL-Vehicle_S105"
     }
-    EL_VehicleOffer "{E1B0E70100000012}" {
+    LF_VehicleOffer "{E1B0E70100000012}" {
      m_sPrefab "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
      m_sSpawnPrefab "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et"
      m_iPrice 2500
      m_sNameKey "#EL-Vehicle_UAZ469"
     }
-    EL_VehicleOffer "{E1B0E70100000013}" {
+    LF_VehicleOffer "{E1B0E70100000013}" {
      m_sPrefab "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
      m_sSpawnPrefab "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et"
      m_iPrice 4000
      m_sNameKey "#EL-Vehicle_S1203"
     }
-    EL_VehicleOffer "{E1B0E70100000014}" {
+    LF_VehicleOffer "{E1B0E70100000014}" {
      m_sPrefab "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
      m_sSpawnPrefab "{E1A452BE1A000001}Prefabs/Vehicles/Wheeled/UAZ452/EL_UAZ452_base.et"
      m_iPrice 3500
      m_sNameKey "#EL-Vehicle_UAZ452"
     }
-    EL_VehicleOffer "{E1B0E70100000015}" {
+    LF_VehicleOffer "{E1B0E70100000015}" {
      m_sPrefab "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et"
      m_sSpawnPrefab "{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/M923A1/EL_M923A1_transport.et"
      m_iPrice 8000
@@ -49,7 +49,7 @@ GenericEntity Roadmap_Vehicle_Lot {
     }
    }
   }
-  EL_VehicleSpawnPointComponent "{E1B0E70100000005}" {
+  LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
    m_sShopId "roadmap-lot"
    m_vOffset -5 0 -5
   }
@@ -64,7 +64,7 @@ GenericEntity Roadmap_Vehicle_Lot {
     }
    }
    additionalActions {
-    EL_VehicleBuyAction "{E1B0E70100000021}" {
+    LF_VehicleBuyAction "{E1B0E70100000021}" {
      m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
      ParentContextList {
       "default"
@@ -73,7 +73,7 @@ GenericEntity Roadmap_Vehicle_Lot {
       Name "#EL-Vehicle_Buy"
      }
     }
-    EL_VehicleExtraKeyAction "{E1B0E70100000023}" {
+    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
      ParentContextList {
       "default"
      }
@@ -92,10 +92,10 @@ GenericEntity Roadmap_Vehicle_Lot {
 }
 GenericEntity Roadmap_Garage {
  components {
-  EL_VehicleGarageComponent "{A1C1080A00000001}" {
+  LF_VehicleGarageComponent "{A1C1080A00000001}" {
    m_sPadId "roadmap-garage"
   }
-  EL_VehicleSpawnPointComponent "{C3E2E6F2E56F3E66}" {
+  LF_VehicleSpawnPointComponent "{C3E2E6F2E56F3E66}" {
    m_sShopId "roadmap-garage"
    m_vOffset 0 0 -2
    m_iSlots 3
@@ -113,7 +113,7 @@ GenericEntity Roadmap_Garage {
     }
    }
    additionalActions {
-    EL_VehicleStoreAction "{A1C1080A00000005}" {
+    LF_VehicleStoreAction "{A1C1080A00000005}" {
      ParentContextList {
       "default"
      }
@@ -121,7 +121,7 @@ GenericEntity Roadmap_Garage {
       Name "#EL-Vehicle_Store"
      }
     }
-    EL_VehicleRetrieveAction "{A1C1080A00000007}" {
+    LF_VehicleRetrieveAction "{A1C1080A00000007}" {
      ParentContextList {
       "default"
      }
@@ -164,7 +164,7 @@ GenericEntity Roadmap_Impound_Desk {
   LF_ImpoundDeskComponent "{B7547E5E3F7A5535}" {
    m_sPadId "roadmap-impound"
   }
-  EL_VehicleSpawnPointComponent "{853E602F9A3F24EC}" {
+  LF_VehicleSpawnPointComponent "{853E602F9A3F24EC}" {
    m_sShopId "roadmap-impound"
    m_vOffset 6 0 8
    m_iSlots 3

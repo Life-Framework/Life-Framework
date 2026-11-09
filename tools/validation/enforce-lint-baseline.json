@@ -1,53 +1,53 @@
 [
  {
   "rule": "L1",
-  "file": "Scripts/Game/Feature/Character/Spawning/EL_SpawnLogic.c",
+  "file": "Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c",
   "text": "IEntity character = GetGame().SpawnEntityPrefab(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);"
  },
  {
   "rule": "L1",
-  "file": "Scripts/Game/Tests/EL_Test_LoggingChain.c",
+  "file": "Scripts/Game/Tests/LF_Test_LoggingChain.c",
   "text": "IEntity sawmill = GetGame().SpawnEntityPrefab(Resource.Load(SAWMILL), GetGame().GetWorld(), params);"
  },
  {
   "rule": "L1",
-  "file": "Scripts/Game/Tests/EL_Test_LoggingChain.c",
+  "file": "Scripts/Game/Tests/LF_Test_LoggingChain.c",
   "text": "IEntity tree = GetGame().SpawnEntityPrefab(Resource.Load(TREE), GetGame().GetWorld(), params);"
  },
  {
   "rule": "L1",
-  "file": "Scripts/Game/Tests/EL_Test_MiningPrefabs.c",
+  "file": "Scripts/Game/Tests/LF_Test_MiningPrefabs.c",
   "text": "IEntity area = GetGame().SpawnEntityPrefab(Resource.Load(MINING_AREA), GetGame().GetWorld(), params);"
  },
  {
   "rule": "L1",
-  "file": "Scripts/Game/Tests/EL_Test_MiningPrefabs.c",
+  "file": "Scripts/Game/Tests/LF_Test_MiningPrefabs.c",
   "text": "IEntity minable = GetGame().SpawnEntityPrefab(Resource.Load(MINABLE_ORE), GetGame().GetWorld(), params);"
  },
  {
   "rule": "L1",
-  "file": "Scripts/Game/Tests/EL_Test_MiningPrefabs.c",
+  "file": "Scripts/Game/Tests/LF_Test_MiningPrefabs.c",
   "text": "IEntity ore = GetGame().SpawnEntityPrefab(Resource.Load(COPPER_ORE), GetGame().GetWorld(), params);"
  },
  {
   "rule": "L1",
-  "file": "Scripts/Game/Tests/EL_Test_MiningPrefabs.c",
+  "file": "Scripts/Game/Tests/LF_Test_MiningPrefabs.c",
   "text": "IEntity pickaxe = GetGame().SpawnEntityPrefab(Resource.Load(PICKAXE), GetGame().GetWorld(), params);"
  },
  {
   "rule": "L2",
-  "file": "Scripts/Game/Feature/Character/Spawning/EL_DeathScreen.c",
+  "file": "Scripts/Game/Feature/Character/Spawning/LF_DeathScreen.c",
   "text": "m_wRoot = GetGame().GetWorkspace().CreateWidgets(\"{1CBC0B1329A8762C}UI/Layouts/DeathScreen.layout\");"
  },
  {
   "rule": "L2",
   "file": "Scripts/Game/Feature/Chat/AdminChatChannel.c",
-  "text": "EL_WhitelistRespawnHandlerComponent whitelistComponent = EL_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(EL_WhitelistRespawnHandlerComponent));"
+  "text": "LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));"
  },
  {
   "rule": "L2",
-  "file": "Scripts/Game/Feature/Quantity/EL_SplitQuantityDialog.c",
-  "text": "m_wSlider = EL_ThinSliderWidget.Cast(w.FindAnyWidget(\"AmountSlider\").FindHandler(EL_ThinSliderWidget));"
+  "file": "Scripts/Game/Feature/Quantity/LF_SplitQuantityDialog.c",
+  "text": "m_wSlider = LF_ThinSliderWidget.Cast(w.FindAnyWidget(\"AmountSlider\").FindHandler(LF_ThinSliderWidget));"
  },
  {
   "rule": "L2",
@@ -61,28 +61,28 @@
  },
  {
   "rule": "L2",
-  "file": "Scripts/Game/Feature/Whitelist/EL_WhitelistContextAction.c",
-  "text": "EL_WhitelistRespawnHandlerComponent whitelistComponent = EL_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(EL_WhitelistRespawnHandlerComponent));"
+  "file": "Scripts/Game/Feature/Whitelist/LF_WhitelistContextAction.c",
+  "text": "LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));"
  },
  {
   "rule": "L2",
-  "file": "Scripts/Game/Feature/Whitelist/EL_WhitelistContextAction.c",
-  "text": "EL_WhitelistRespawnHandlerComponent whitelistComponent = EL_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(EL_WhitelistRespawnHandlerComponent));"
+  "file": "Scripts/Game/Feature/Whitelist/LF_WhitelistContextAction.c",
+  "text": "LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));"
  },
  {
   "rule": "L3",
-  "file": "Scripts/Game/Feature/AgentHarness/EL_AgentHarness.c",
+  "file": "Scripts/Game/Feature/AgentHarness/LF_AgentHarness.c",
   "text": "GetGame().GetCallqueue().CallLater(Poll, 400, true);"
  },
  {
   "rule": "L3",
-  "file": "Scripts/Game/Feature/Quantity/EL_SplitQuantityDialog.c",
-  "text": "class EL_SplitQuantityDialog : DialogUI"
+  "file": "Scripts/Game/Feature/Quantity/LF_SplitQuantityDialog.c",
+  "text": "class LF_SplitQuantityDialog : DialogUI"
  },
  {
   "rule": "L3",
-  "file": "Scripts/Game/Feature/SirenLights/EL_SirenManagerComponent.c",
-  "text": "class EL_SirenManagerComponent : ScriptComponent"
+  "file": "Scripts/Game/Feature/SirenLights/LF_SirenManagerComponent.c",
+  "text": "class LF_SirenManagerComponent : ScriptComponent"
  },
  {
   "rule": "L3",
@@ -91,17 +91,17 @@
  },
  {
   "rule": "L4",
-  "file": "Scripts/Game/Core/EL_Utils.c",
+  "file": "Scripts/Game/Core/LF_Utils.c",
   "text": "protected static ref array<IEntity> s_aNearbyEntities = {};"
  },
  {
   "rule": "L4",
-  "file": "Scripts/Game/Tests/EL_Test_AreaSpawner.c",
+  "file": "Scripts/Game/Tests/LF_Test_AreaSpawner.c",
   "text": "protected static ref array<IEntity> s_aFound = {};"
  },
  {
   "rule": "L4",
-  "file": "Scripts/Game/Tests/EL_Test_Roadmap_Resources.c",
+  "file": "Scripts/Game/Tests/LF_Test_Roadmap_Resources.c",
   "text": "protected static ref array<IEntity> s_aBars = {};"
  },
  {

@@ -20,7 +20,7 @@ StaticModelEntity : "{7AF35E9C21F21BFA}Prefabs/Structures/Military/Fortification
     }
    }
    additionalActions {
-    EL_GatherAction "{598A74217AB52487}" {
+    LF_GatherAction "{598A74217AB52487}" {
      ParentContextList {
       "Gather"
      }

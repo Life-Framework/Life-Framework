@@ -1,6 +1,6 @@
 GenericEntity Roadmap_Jail_Door : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
  components {
-  EL_LockComponent "{5AC29970429B33BB}" {
+  LF_LockComponent "{5AC29970429B33BB}" {
    m_bDebugLocked 1
   }
   ActionsManagerComponent "{F32B667C3C823800}" {
@@ -65,7 +65,7 @@ GenericEntity Roadmap_Jail_Cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.
 }
 GenericEntity Roadmap_Escort_Car : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
  components {
-  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_sDebugIdentifier "POLICE"
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {

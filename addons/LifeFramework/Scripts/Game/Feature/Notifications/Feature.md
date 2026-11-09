@@ -12,7 +12,7 @@ the result of one.
 
 ## Interaction pattern
 
-Rung 4, accepted. `EL_NotificationManagerComponent` broadcasts server→client
+Rung 4, accepted. `LF_NotificationManagerComponent` broadcasts server→client
 toasts; `SendToPlayer`/`SendToJob`/`SendToAll` + static helpers.
 
 ## V1 (shippable)
@@ -31,7 +31,7 @@ toasts; `SendToPlayer`/`SendToJob`/`SendToAll` + static helpers.
 
 ## Current state
 
-- `EL_NotificationManagerComponent` (`Feature/Notifications/`) — toast
+- `LF_NotificationManagerComponent` (`Feature/Notifications/`) — toast
   broadcast. ❌ suspect RPC targeting, conflated SendToJob, Spanish prefixes,
   color never sent.
 

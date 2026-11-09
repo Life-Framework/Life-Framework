@@ -85,4 +85,4 @@ scripts. A key missing from a language renders as the raw key.
 ## Finish
 
 Run `tools\cli validate`, then the cheapest runtime or boot proof for the
-resource (an `EL_Test` that loads it, or the DebugWorld).
+resource (an `LF_Test` that loads it, or the DebugWorld).

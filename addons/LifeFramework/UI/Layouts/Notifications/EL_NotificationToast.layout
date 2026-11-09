@@ -14,7 +14,7 @@ FrameWidgetClass "{A35C7EBD01E5299E}" {
  }
  "Z Order" 50
  components {
-  EL_NotificationToastUI "{9B29A7068EA18260}" {
+  LF_NotificationToastUI "{9B29A7068EA18260}" {
   }
  }
  {

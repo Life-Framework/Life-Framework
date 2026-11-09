@@ -11,7 +11,7 @@ A workplace or faction office offers a task. The player accepts it in the world,
 
 - Tasks authored as data on the existing tracker.
 - One legal example (a delivery that can replace a hard-coded job run) and one police example once [police missions](police-missions.md) need it.
-- Rewards pay cash through `EL_MoneyUtils`.
+- Rewards pay cash through `LF_MoneyUtils`.
 
 ## Out of scope
 
@@ -20,7 +20,7 @@ A workplace or faction office offers a task. The player accepts it in the world,
 
 ## Assets
 
-`LF_QuestTracker`, `LF_QuestGiverComponent`, `LF_QuestAction`, and the DebugWorld `QuestGiver_Start`. Rewards pay through `EL_MoneyUtils`. LNGC has no task board; its dispatch dialog is the police-call case in [police missions](police-missions.md). See [sources](../../sources.md).
+`LF_QuestTracker`, `LF_QuestGiverComponent`, `LF_QuestAction`, and the DebugWorld `QuestGiver_Start`. Rewards pay through `LF_MoneyUtils`. LNGC has no task board; its dispatch dialog is the police-call case in [police missions](police-missions.md). See [sources](../../sources.md).
 
 ## First slice
 

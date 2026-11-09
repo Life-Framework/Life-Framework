@@ -16,14 +16,14 @@ class LF_QuestTracker
 	//! \param faction Player faction key.
 	//! \param now Current game time (cooldown/deadline basis).
 	//! \param completedQuestIds Quest ids the player has turned in (previous-quest prerequisite).
-	bool CanAccept(LF_QuestDefinition def, int level, EL_EJobType job, string faction, float now, array<string> completedQuestIds)
+	bool CanAccept(LF_QuestDefinition def, int level, LF_EJobType job, string faction, float now, array<string> completedQuestIds)
 	{
 		if (!def || def.m_sQuestId.IsEmpty())
 			return false;
 
 		if (def.m_iMinLevel > 0 && level < def.m_iMinLevel)
 			return false;
-		if (def.m_eRequiredJob != EL_EJobType.UNEMPLOYED && job != def.m_eRequiredJob)
+		if (def.m_eRequiredJob != LF_EJobType.UNEMPLOYED && job != def.m_eRequiredJob)
 			return false;
 		if (!def.m_sRequiredFaction.IsEmpty() && faction != def.m_sRequiredFaction)
 			return false;
@@ -43,7 +43,7 @@ class LF_QuestTracker
 
 	//------------------------------------------------------------------------------------------------
 	//! Accept a quest. False when prerequisites fail or the cooldown is still running.
-	bool Accept(LF_QuestDefinition def, int level, EL_EJobType job, string faction, float now, array<string> completedQuestIds)
+	bool Accept(LF_QuestDefinition def, int level, LF_EJobType job, string faction, float now, array<string> completedQuestIds)
 	{
 		if (!CanAccept(def, level, job, faction, now, completedQuestIds))
 			return false;

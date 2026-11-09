@@ -12,13 +12,13 @@ X." No buying licenses from a menu anywhere.
 
 ## Interaction pattern
 
-Rung 4 today: `EL_LicenseManagerComponent` holds a 26-entry catalog,
+Rung 4 today: `LF_LicenseManagerComponent` holds a 26-entry catalog,
 `CanUnlockLicense` (owned/config/whitelist/level), `CanAffordLicense` (SP
 cost), `PurchaseLicense` (spends SP + unlock), `HasLicense`, persistence
 restore.
 
 Target: rung 3 — a DMV / agency counter where the player requests a license,
-meets the check, and pays (cash or bank). The `EL_ShowIDAction` ID card is the
+meets the check, and pays (cash or bank). The `LF_ShowIDAction` ID card is the
 in-world document; a license is another document you carry.
 
 ## V1 (shippable)
@@ -38,7 +38,7 @@ in-world document; a license is another document you carry.
 
 ## Current state
 
-- `EL_LicenseManagerComponent` (`Feature/License/`) — catalog + gates +
+- `LF_LicenseManagerComponent` (`Feature/License/`) — catalog + gates +
   purchase + persistence. ✅ purchase ordering, whitelist mapping, and
   persistence-list deduplication are guarded. Remaining localization work.
 

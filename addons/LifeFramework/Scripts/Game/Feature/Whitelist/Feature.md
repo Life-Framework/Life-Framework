@@ -17,7 +17,7 @@ No player-facing rung. It is a gate that other features call.
 
 ## V1 (shippable)
 
-1. **`EL_EFactionType` is referenced 16× but defined nowhere in the repo** —
+1. **`LF_EFactionType` is referenced 16× but defined nowhere in the repo** —
    the file cannot compile as-is unless the type lives in another addon. Define
    it or route the checks through `Account`'s faction representation.
 2. Persist whitelists — they reset every server start today.
@@ -32,12 +32,12 @@ No player-facing rung. It is a gate that other features call.
 
 ## Current state
 
-- `EL_WhitelistManager`, `EL_Whitelist`, `EL_WhitelistAction`,
-  `EL_WhitelistComponent`, `EL_WhitelistManagerComponent`,
-  `EL_WhitelistRestrictionComponent` (`Feature/Whitelist/`).
-- `EL_EFactionType` is defined on the manager. The faction and job lists are
+- `LF_WhitelistManager`, `LF_Whitelist`, `LF_WhitelistAction`,
+  `LF_WhitelistComponent`, `LF_WhitelistManagerComponent`,
+  `LF_WhitelistRestrictionComponent` (`Feature/Whitelist/`).
+- `LF_EFactionType` is defined on the manager. The faction and job lists are
   the manager's own versioned file (`Load` replaces the cache; a missing file
-  logs `EL_Debug.Error` and leaves police closed). The police button calls
+  logs `LF_Debug.Error` and leaves police closed). The police button calls
   `MayJoinFaction` and logs a refusal for an unlisted uid. Civilian stays
   open. The live-array getter remains.
 

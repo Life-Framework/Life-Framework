@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! What the registry clerk accepts on form R-89. Pure checks, shared by the client form (for its
-//! error line) and the server (EL_CharacterCreationRules.RefuseCharacter, which decides). Each
+//! error line) and the server (LF_CharacterCreationRules.RefuseCharacter, which decides). Each
 //! Refuse* returns "" to accept or the localization key written on the form.
 //!
 //! Names are plain ASCII letters with single inner spaces, hyphens, or apostrophes

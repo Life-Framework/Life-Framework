@@ -33,7 +33,7 @@ export function hostPaths(dir) {
 
 // The launch flags. No -config (fatal with -addons), no -bindPort (ignored
 // in -server mode, the server listens on 2001), no test defines: without
-// EL_AUTOTEST the DebugWorld test runner stays idle.
+// LF_AUTOTEST the DebugWorld test runner stays idle.
 export function hostArgs({ mission = PLAYTEST_MISSION, addonsDir, profile, loadSave }) {
   const args = [
     "-server", mission,
@@ -137,7 +137,7 @@ export function newestConsoleLog(profile) {
 // The lines a host run is judged by: world ready, session start/continue,
 // state applied on load, the host stop, and the shutdown save.
 export function hostLines(text) {
-  const re = /Entered online game state|\[ELDebug:(Persistence|Host)\]|SCRIPT\s+\(E\)|VME|Virtual Machine Exception/;
+  const re = /Entered online game state|\[LFDebug:(Persistence|Host)\]|SCRIPT\s+\(E\)|VME|Virtual Machine Exception/;
   return text.split(/\r?\n/).filter((l) => re.test(l));
 }
 
@@ -161,7 +161,7 @@ export function selftestHost() {
   if (has(fresh, "-loadSessionSave")) failures.push("a boot with no save passes -loadSessionSave");
   if (!has(reload, "-loadSessionSave")) failures.push("a boot with a save does not pass -loadSessionSave");
   for (const args of [fresh, reload]) {
-    if (args.some((a) => /EL_AUTOTEST|EL_TEST_TIER|EL_E2E|LF_HARNESS|LF_SESSION_IDENTITY/.test(a))) failures.push("host args carry a test or harness define (LF_HARNESS opens the harness gate)");
+    if (args.some((a) => /LF_AUTOTEST|LF_TEST_TIER|LF_E2E|LF_HARNESS|LF_SESSION_IDENTITY/.test(a))) failures.push("host args carry a test or harness define (LF_HARNESS opens the harness gate)");
     if (has(args, "-config")) failures.push("host args pass -config (fatal with -addons)");
     if (args[args.indexOf("-profile") + 1] !== "P") failures.push("host args do not use the host profile");
   }
@@ -170,7 +170,7 @@ export function selftestHost() {
   if (d !== join("L", "LifeFramework", "host")) failures.push(`default host dir is ${d}`);
   if (hostDir({ LF_HOST_DIR: "X", LOCALAPPDATA: "L" }) !== "X") failures.push("LF_HOST_DIR does not override the host dir");
   if (stamp(new Date(2026, 10, 8, 9, 5, 7)) !== "2026-11-08_09-05-07") failures.push("backup stamp format changed");
-  const lines = hostLines("a\n12:00 DEFAULT : Entered online game state.\nb\n12:01 SCRIPT : [ELDebug:Persistence] session continued from a save point (-loadSessionSave)\n");
+  const lines = hostLines("a\n12:00 DEFAULT : Entered online game state.\nb\n12:01 SCRIPT : [LFDebug:Persistence] session continued from a save point (-loadSessionSave)\n");
   if (lines.length !== 2) failures.push(`hostLines kept ${lines.length} lines, expected 2`);
   // Backup round trip on a fixture host dir.
   const fixture = mkdtempSync(join(tmpdir(), "lf-host-"));

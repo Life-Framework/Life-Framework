@@ -28,7 +28,7 @@ class LF_IdCardView
 		s_Screen = LF_UIScreen.Open(BuildParts(firstName, lastName, age));
 		if (!s_Screen)
 		{
-			EL_Debug.Error("IdCard", "card view failed to open");
+			LF_Debug.Error("IdCard", "card view failed to open");
 			return null;
 		}
 
@@ -37,9 +37,9 @@ class LF_IdCardView
 		if (shower)
 			s_Screen.CloseBeyond(CLOSE_DISTANCE, shower.GetID());
 		else
-			EL_Debug.Warn("IdCard", "card view open without the shower in this client's world; no distance close");
+			LF_Debug.Warn("IdCard", "card view open without the shower in this client's world; no distance close");
 
-		EL_Debug.Info("IdCard", "card view open");
+		LF_Debug.Info("IdCard", "card view open");
 		return s_Screen;
 	}
 

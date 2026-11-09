@@ -95,7 +95,7 @@ class LF_PoliceRanks
 	static int FineCap(int rank)
 	{
 		if (rank >= SENIOR)
-			return EL_PoliceUtils.MAX_FINE;
+			return LF_PoliceUtils.MAX_FINE;
 
 		return LF_PoliceConfig.PatrolFineCap();
 	}
@@ -121,12 +121,12 @@ class LF_PoliceRanks
 
 	//------------------------------------------------------------------------------------------------
 	//! Lower ranks still open the wanted list. Rank is not part of this gate.
-	static bool CanViewWantedList(EL_PlayerAccount account)
+	static bool CanViewWantedList(LF_PlayerAccount account)
 	{
 		if (!account)
 			return false;
 
-		if (account.GetFaction() != EL_Faction.POLICE)
+		if (account.GetFaction() != LF_Faction.POLICE)
 			return false;
 
 		return account.IsOnDuty();
@@ -135,7 +135,7 @@ class LF_PoliceRanks
 	//------------------------------------------------------------------------------------------------
 	static bool CanDraw(string uid)
 	{
-		EL_PlayerAccount account = Account(uid);
+		LF_PlayerAccount account = Account(uid);
 		if (!OnDutyPolice(account))
 			return false;
 
@@ -145,7 +145,7 @@ class LF_PoliceRanks
 	//------------------------------------------------------------------------------------------------
 	static bool CanPromote(string uid)
 	{
-		EL_PlayerAccount account = Account(uid);
+		LF_PlayerAccount account = Account(uid);
 		if (!OnDutyPolice(account))
 			return false;
 
@@ -181,7 +181,7 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool AuthorizeArrest(EL_PlayerAccount account)
+	static bool AuthorizeArrest(LF_PlayerAccount account)
 	{
 		if (!OnDutyPolice(account))
 		{
@@ -201,7 +201,7 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool AuthorizeFine(EL_PlayerAccount account, int amount)
+	static bool AuthorizeFine(LF_PlayerAccount account, int amount)
 	{
 		if (!OnDutyPolice(account))
 		{
@@ -281,8 +281,8 @@ class LF_PoliceRanks
 		if (promoterUid == targetUid)
 			return RequestSelfPromotion(promoterUid);
 
-		EL_PlayerAccount promoter = Account(promoterUid);
-		EL_PlayerAccount target = Account(targetUid);
+		LF_PlayerAccount promoter = Account(promoterUid);
+		LF_PlayerAccount target = Account(targetUid);
 		if (!promoter || !target)
 		{
 			Note("promote refused: missing account");
@@ -295,7 +295,7 @@ class LF_PoliceRanks
 			return false;
 		}
 
-		if (target.GetFaction() != EL_Faction.POLICE)
+		if (target.GetFaction() != LF_Faction.POLICE)
 		{
 			Note("promote refused: target is not police");
 			return false;
@@ -315,7 +315,7 @@ class LF_PoliceRanks
 		}
 
 		target.SetPoliceRank(nextRank);
-		EL_Debug.Log("Ranks", string.Format("promoted %1 to rank %2 by %3", targetUid, nextRank, promoterUid));
+		LF_Debug.Log("Ranks", string.Format("promoted %1 to rank %2 by %3", targetUid, nextRank, promoterUid));
 		return true;
 	}
 
@@ -327,14 +327,14 @@ class LF_PoliceRanks
 		if (seconds <= 0)
 			return false;
 
-		EL_PlayerAccount account = Account(uid);
+		LF_PlayerAccount account = Account(uid);
 		if (!account)
 		{
 			Note("duty accrual refused: no account");
 			return false;
 		}
 
-		if (account.GetFaction() != EL_Faction.POLICE)
+		if (account.GetFaction() != LF_Faction.POLICE)
 		{
 			Note("duty accrual refused: not police");
 			return false;
@@ -350,19 +350,19 @@ class LF_PoliceRanks
 			return false;
 
 		account.SetPoliceRank(nextRank);
-		EL_Debug.Log("Ranks", string.Format("promoted %1 to rank %2 by time on duty", uid, nextRank));
+		LF_Debug.Log("Ranks", string.Format("promoted %1 to rank %2 by time on duty", uid, nextRank));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static void OnDutyChanged(EL_PlayerAccount account, bool nowOnDuty)
+	static void OnDutyChanged(LF_PlayerAccount account, bool nowOnDuty)
 	{
 		OnDutyChangedAt(account, nowOnDuty, NowMs());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! OnDutyChanged with the world time passed in, so a test can drive the clock.
-	static void OnDutyChangedAt(EL_PlayerAccount account, bool nowOnDuty, int nowMs)
+	static void OnDutyChangedAt(LF_PlayerAccount account, bool nowOnDuty, int nowMs)
 	{
 		if (!account)
 			return;
@@ -373,7 +373,7 @@ class LF_PoliceRanks
 		if (nowOnDuty)
 		{
 			account.StartDutyClock(nowMs);
-			EL_Debug.Log("Ranks", string.Format("duty clock started for %1", account.GetPersistentId()));
+			LF_Debug.Log("Ranks", string.Format("duty clock started for %1", account.GetPersistentId()));
 			return;
 		}
 
@@ -384,7 +384,7 @@ class LF_PoliceRanks
 	//! Gives the officer the resolved kit and nothing else. Refusals are logged.
 	static bool Draw(string uid, IEntity officer)
 	{
-		EL_PlayerAccount account = Account(uid);
+		LF_PlayerAccount account = Account(uid);
 		if (!OnDutyPolice(account))
 		{
 			Note(string.Format("draw refused: %1 is not on-duty police", uid));
@@ -402,7 +402,7 @@ class LF_PoliceRanks
 			// One kit per duty shift. Without this an officer could draw kits without end and
 			// hand them to anyone. Going off duty opens the next shift's draw.
 			s_sLastError = string.Format("draw refused: %1 already drew a kit this shift", uid);
-			EL_Debug.Warn("Ranks", s_sLastError);
+			LF_Debug.Warn("Ranks", s_sLastError);
 			NotifyOfficer(officer, "#EL-Rank_AlreadyDrawn");
 			return false;
 		}
@@ -432,7 +432,7 @@ class LF_PoliceRanks
 		int inserted = 0;
 		foreach (ResourceName prefab : kit)
 		{
-			int added = EL_InventoryUtils.AddAmount(officer, prefab, 1);
+			int added = LF_InventoryUtils.AddAmount(officer, prefab, 1);
 			if (added != 1)
 			{
 				Note(string.Format("kit line not inserted: %1", prefab));
@@ -450,7 +450,7 @@ class LF_PoliceRanks
 		if (inserted != kit.Count())
 			return false;
 
-		EL_Debug.Log("Ranks", string.Format("kit drawn for %1 rank %2 lines %3", uid, account.GetPoliceRank(), inserted));
+		LF_Debug.Log("Ranks", string.Format("kit drawn for %1 rank %2 lines %3", uid, account.GetPoliceRank(), inserted));
 		return true;
 	}
 
@@ -480,7 +480,7 @@ class LF_PoliceRanks
 		if (!user)
 			return "";
 
-		string uid = EL_Utils.GetPlayerUid(user);
+		string uid = LF_Utils.GetPlayerUid(user);
 		if (!uid.IsEmpty())
 			return uid;
 
@@ -494,7 +494,7 @@ class LF_PoliceRanks
 			return "";
 
 		string promoterUid = ResolveUid(promoter);
-		EL_PlayerAccount promoterAccount = Account(promoterUid);
+		LF_PlayerAccount promoterAccount = Account(promoterUid);
 		if (!promoterAccount)
 			return "";
 
@@ -511,8 +511,8 @@ class LF_PoliceRanks
 			if (otherUid.IsEmpty() || otherUid == promoterUid)
 				continue;
 
-			EL_PlayerAccount otherAccount = Account(otherUid);
-			if (!otherAccount || otherAccount.GetFaction() != EL_Faction.POLICE)
+			LF_PlayerAccount otherAccount = Account(otherUid);
+			if (!otherAccount || otherAccount.GetFaction() != LF_Faction.POLICE)
 				continue;
 
 			if (otherAccount.GetPoliceRank() >= promoterAccount.GetPoliceRank())
@@ -555,24 +555,24 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool OnDutyPolice(EL_PlayerAccount account)
+	protected static bool OnDutyPolice(LF_PlayerAccount account)
 	{
 		if (!account)
 			return false;
 
-		if (account.GetFaction() != EL_Faction.POLICE)
+		if (account.GetFaction() != LF_Faction.POLICE)
 			return false;
 
 		return account.IsOnDuty();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static EL_PlayerAccount Account(string uid)
+	protected static LF_PlayerAccount Account(string uid)
 	{
 		if (uid.IsEmpty())
 			return null;
 
-		EL_PlayerAccountManager manager = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager manager = LF_PlayerAccountManager.GetInstance();
 		if (!manager)
 			return null;
 
@@ -582,7 +582,7 @@ class LF_PoliceRanks
 	//------------------------------------------------------------------------------------------------
 	//! Closes the running duty clock at nowMs: the seconds count toward rank and toward the
 	//! shift's unpaid duty pay (police only). stillOnDuty restarts the clock at nowMs.
-	static void SettleDutyAt(EL_PlayerAccount account, bool stillOnDuty, int nowMs)
+	static void SettleDutyAt(LF_PlayerAccount account, bool stillOnDuty, int nowMs)
 	{
 		if (!account || !account.IsDutyClockRunning())
 			return;
@@ -594,7 +594,7 @@ class LF_PoliceRanks
 			if (deltaSeconds > 0)
 			{
 				AccrueDuty(account.GetPersistentId(), deltaSeconds);
-				if (account.GetFaction() == EL_Faction.POLICE)
+				if (account.GetFaction() == LF_Faction.POLICE)
 					account.AddUnpaidDutySeconds(deltaSeconds);
 			}
 		}
@@ -622,14 +622,14 @@ class LF_PoliceRanks
 
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
 		if (playerId > 0)
-			EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", messageKey, 3.0, EL_ENotificationType.WARNING);
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", messageKey, 3.0, LF_ENotificationType.WARNING);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected static void Note(string message)
 	{
 		s_sLastError = message;
-		EL_Debug.Error("Ranks", message);
+		LF_Debug.Error("Ranks", message);
 	}
 
 	//------------------------------------------------------------------------------------------------

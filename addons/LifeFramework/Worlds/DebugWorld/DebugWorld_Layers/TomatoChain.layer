@@ -4,7 +4,7 @@ GenericEntity TomatoTrader {
   $grp GenericEntity {
    TomatoTradeContainer {
     components {
-     EL_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
+     LF_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
       Attributes SCR_ItemAttributeCollection "{59693C53B153D96B}" {
        ItemDisplayName UIInfo "{59693C53AAB06F2D}" {
         Name "Tomato Trade"
@@ -27,9 +27,9 @@ GenericEntity TomatoTrader {
        "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et"
       }
      }
-     EL_TraderManagerComponent "{59693C53B6A5EFC0}" {
+     LF_TraderManagerComponent "{59693C53B6A5EFC0}" {
       m_aTradableItems {
-       EL_TraderItem "{DE1BF96A038524C7}" {
+       LF_TraderItem "{DE1BF96A038524C7}" {
         m_ItemPrefab "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et"
         m_ValuePerItem 5
        }
@@ -54,7 +54,7 @@ GenericEntity TomatoTrader {
        }
       }
       additionalActions {
-       EL_OpenTraderAction "{59670CE9FBF3C749}" {
+       LF_OpenTraderAction "{59670CE9FBF3C749}" {
         ParentContextList {
          "default"
         }
@@ -115,7 +115,7 @@ coords -2.6 0.9 0.7
      coords -2.6 0 0.7
    }
   }
-  EL_NpcBaseEntity TomatoNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity TomatoNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {
@@ -133,7 +133,7 @@ GenericEntity TomatoGather : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoC
  components {
   ActionsManagerComponent "{59A0BBAE906EB838}" {
    additionalActions {
-    EL_GatherAction "{5B10C0DE7A11E001}" {
+    LF_GatherAction "{5B10C0DE7A11E001}" {
      ParentContextList {
       "default"
      }
@@ -149,16 +149,16 @@ GenericEntity TomatoGather : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoC
   }
  }
  m_aCropStages {
-  EL_CropStage "{59A13193B7CC82CF}" {
+  LF_CropStage "{59A13193B7CC82CF}" {
    m_fStageTime 0
   }
-  EL_CropStage "{59A13193B675E0BB}" {
+  LF_CropStage "{59A13193B675E0BB}" {
    m_fStageTime 0
   }
-  EL_CropStage "{59A13193DE9FB1B1}" {
+  LF_CropStage "{59A13193DE9FB1B1}" {
    m_fStageTime 0
   }
-  EL_CropStage "{59A13193B698A315}" {
+  LF_CropStage "{59A13193B698A315}" {
    m_fStageTime 30
    m_bCanGather 1
   }

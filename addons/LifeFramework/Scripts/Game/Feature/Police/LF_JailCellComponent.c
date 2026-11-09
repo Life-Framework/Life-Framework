@@ -83,13 +83,13 @@ class LF_JailCellComponent : ScriptComponent
 
 		if (!owner)
 		{
-			EL_Debug.Error("Jail", "cell component has no owner");
+			LF_Debug.Error("Jail", "cell component has no owner");
 			return;
 		}
 
 		if (s_TickOwner && s_TickOwner != this)
 		{
-			EL_Debug.Error("Jail", string.Format("second jail cell ignored at %1: the first placed cell owns the config and tick", owner.GetOrigin()));
+			LF_Debug.Error("Jail", string.Format("second jail cell ignored at %1: the first placed cell owns the config and tick", owner.GetOrigin()));
 			return;
 		}
 
@@ -101,19 +101,19 @@ class LF_JailCellComponent : ScriptComponent
 
 		if (m_iTickIntervalMs <= 0)
 		{
-			EL_Debug.Error("Jail", "cell tick skipped: interval is not positive");
+			LF_Debug.Error("Jail", "cell tick skipped: interval is not positive");
 			return;
 		}
 
 		if (!GetGame() || !GetGame().GetCallqueue())
 		{
-			EL_Debug.Error("Jail", "cell tick skipped: no callqueue");
+			LF_Debug.Error("Jail", "cell tick skipped: no callqueue");
 			return;
 		}
 
 		GetGame().GetCallqueue().CallLater(OnTick, m_iTickIntervalMs, true);
 		m_bTicking = true;
-		EL_Debug.Log("Jail", string.Format("cell tick scheduled ms=%1", m_iTickIntervalMs));
+		LF_Debug.Log("Jail", string.Format("cell tick scheduled ms=%1", m_iTickIntervalMs));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ class LF_JailCellComponent : ScriptComponent
 			if (GetGame() && GetGame().GetCallqueue())
 				GetGame().GetCallqueue().Remove(OnTick);
 
-			EL_Debug.Log("Jail", "cell tick removed");
+			LF_Debug.Log("Jail", "cell tick removed");
 		}
 
 		if (s_TickOwner == this)

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------
-//! The player interaction menu's own entries on Character_Roleplay.et (context EL_ID). Each one
+//! The player interaction menu's own entries on Character_Roleplay.et (context LF_ID). Each one
 //! offers on the client through LF_PlayerInteraction.CanOffer and decides on the server.
-//! Show ID (EL_ShowIDAction), search (EL_ConfiscateAction), and arrest (LF_JailArrestAction)
+//! Show ID (LF_ShowIDAction), search (LF_ConfiscateAction), and arrest (LF_JailArrestAction)
 //! sit in the same list and use the same reach rule.
 //------------------------------------------------------------------------------------------------
 class LF_IntroduceAction : ScriptedUserAction
@@ -38,7 +38,7 @@ class LF_GiveCashAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		if (EL_MoneyUtils.GetCash(user) > 0)
+		if (LF_MoneyUtils.GetCash(user) > 0)
 			return true;
 
 		SetCannotPerformReason("#LF-Interact_NoCash");
@@ -70,7 +70,7 @@ class LF_GiveItemAction : ScriptedUserAction
 	//! Only the giver's own machine knows its hands; elsewhere the server decides after the offer.
 	override bool CanBePerformedScript(IEntity user)
 	{
-		if (user != EL_Utils.GetLocalCharacter())
+		if (user != LF_Utils.GetLocalCharacter())
 			return true;
 
 		if (LF_PlayerInteraction.ItemInHand(user))

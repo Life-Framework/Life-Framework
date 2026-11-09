@@ -39,17 +39,17 @@ and the DebugWorld village, which the tests depend on.
    first.
 2. **Every config loads one hard-coded core path.** `LF_JobsConfig`,
    `LF_PoliceConfig`, `LF_SignCatalog`, `LF_GarageConfig`, `LF_SurvivalConfig`,
-   `LF_RespawnConfig`, and `EL_ResourceChainCatalog` each hold a
+   `LF_RespawnConfig`, and `LF_ResourceChainCatalog` each hold a
    `static const ResourceName CONFIG_PATH = "{GUID}Configs/..."`, and
-   `EL_LicensePlateManagerComponent` loads `VehicleSettings.conf` by literal. A pack
+   `LF_LicensePlateManagerComponent` loads `VehicleSettings.conf` by literal. A pack
    has no way to override a value until the config layer
    (`m3-outline.md` section 2) gives them one lookup.
 3. **Shop prices match by path.** `ShopPrices.conf` rules use substrings such as
    `Prefabs/Items/Roleplay/` and `Prefabs/Items/Seeds/`. A prefab that moves to
    the pack keeps its GUID but changes its path, so its price silently falls
    back to the default. Rules must match the moved paths, or match by GUID.
-4. **The vehicle catalogue is script.** `EL_VehicleCatalog.c` names five vanilla
-   cars and their five locked `EL_` variants as constants. The catalogue is a
+4. **The vehicle catalogue is script.** `LF_VehicleCatalog.c` names five vanilla
+   cars and their five locked `LF_` variants as constants. The catalogue is a
    pack choice, so it needs a config list before the variants can move.
 5. **The 1989 look is script.** `LF_UITheme` ("the one 1989 sheet") and
    `LF_UISkin` (paper forms, a green-phosphor ATM) hold the period palette as
@@ -110,8 +110,8 @@ under "Hard-coded flagship values in script".
 | `Feature/Toys` | core | Jump pad, spike strip |
 | `Feature/UIKit` | split | The kit is core; `LF_UITheme` and `LF_UISkin` hard-code the 1989 look |
 | `Feature/VehicleLock` | core | System |
-| `Feature/Vehicles` | split | Lot, garage, and impound are core; `EL_VehicleCatalog` is the flagship catalogue |
-| `Feature/Whitelist` | core | System; faction names come from `EL_EFactionType` (see below) |
+| `Feature/Vehicles` | split | Lot, garage, and impound are core; `LF_VehicleCatalog` is the flagship catalogue |
+| `Feature/Whitelist` | core | System; faction names come from `LF_EFactionType` (see below) |
 
 ## Prefabs
 
@@ -146,7 +146,7 @@ under "Hard-coded flagship values in script".
 | `Vegetation/` | core | Crops and fruit trees |
 | `Vehicles/Core/`, `Vehicles/Test/` | core | Vehicle base and test fixtures |
 | `Vehicles/LicensePlate/`, `Vehicles/SirenLights/` | core | System parts |
-| `Vehicles/Wheeled/{S105,S1203,UAZ452,UAZ469,M923A1}/EL_*.et` | split | Locked variants: the catalogue and liveries; core keeps one example car |
+| `Vehicles/Wheeled/{S105,S1203,UAZ452,UAZ469,M923A1}/LF_*.et` | split | Locked variants: the catalogue and liveries; core keeps one example car |
 | `Vehicles/Wheeled/M151A2/` | split | The police car; core needs a police-car slot, the model is a catalogue pick |
 
 ## Configs
@@ -201,7 +201,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Quests` | split | One giver in the annex, the clerk on the square |
 | `Village_Buildings`, `Village_Dressing`, `Village_Roads` | pack | Vanilla buildings, props, and roads; no test names them |
 | `Street_*` (12) | split | Village sites that hold test-named fixtures |
-| `Signs` | split | Village signs; `EL_Test_SafeZone` finds two |
+| `Signs` | split | Village signs; `LF_Test_SafeZone` finds two |
 | Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TomatoChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
 | `ATM`, `Gamemode`, `Roadmap`, `Survival`, `default` | split | Village placement of entities tests use; the game mode entity is core |
 | `MainWorld/` | pack | The Everon town, St Philippe apple farm |
@@ -246,17 +246,17 @@ set them. File and constant, then the value.
 | `Feature/Jobs/LF_JobGuards.c` | `FruitPrefab()` | apple, tomato, plum, rowan berries | jobs config |
 | `Feature/Crime/LF_Contraband.c` | `PAYOUT` | 200 | crime config |
 | `Feature/Crime/LF_Hospital.c` | `DEFAULT_PAYOUT`, `DEFAULT_COOLDOWN` | 200, 60 s | crime config |
-| `Feature/Organizations/EL_Organization.c` | `PRICE_EXTRA_STORAGE`, `PRICE_PROCESSING_SLOT`, `PRICE_PARKED_VEHICLE` | 500, 250, 750 | org config |
+| `Feature/Organizations/LF_Organization.c` | `PRICE_EXTRA_STORAGE`, `PRICE_PROCESSING_SLOT`, `PRICE_PARKED_VEHICLE` | 500, 250, 750 | org config |
 | `Feature/Organizations/LF_OrgRules.c` | `FOUNDING_FEE` | 250 | org config |
 | `Feature/Police/LF_PoliceRanks.c` | `PATROL_FINE_CAP`, `DUTY_SECONDS` | 1000, 3600 s | `LF_Police.conf` (it already has a cap default) |
-| `Feature/Police/EL_PoliceMenu.c` | `MAX_FINE` | 5000 | `LF_Police.conf` |
+| `Feature/Police/LF_PoliceMenu.c` | `MAX_FINE` | 5000 | `LF_Police.conf` |
 | `Feature/Police/LF_FineTicket.c` | `MAX_OPEN_PER_HOLDER` | 3 | `LF_Police.conf` |
-| `Feature/Vehicles/EL_VehicleCatalog.c` | five cars and five `EL_` variants | S105, UAZ-469, S1203, UAZ-452, M923A1 | vehicles config |
+| `Feature/Vehicles/LF_VehicleCatalog.c` | five cars and five `LF_` variants | S105, UAZ-469, S1203, UAZ-452, M923A1 | vehicles config |
 | `Feature/Vehicles/LF_Garage.c` | `FALLBACK_FEE` | 250 | `LF_Garage.conf` (fallback only) |
 | `Feature/Mining/LF_MiningForge.c` | `IRON_BAR`, `IRON_SECONDS` | iron bar, 5 s | resource chains |
 | `Feature/UIKit/LF_UITheme.c`, `LF_UISkin.c` | palette, paper and phosphor skins | the 1989 look | a skin config |
 | `Feature/Police/LF_WantedReports.c` | `GridPlace()` | "grid X-Z", described as how a 1989 map reads | fixed: neutral grid text |
-| `Feature/Whitelist/EL_WhitelistManager.c` | `EL_EFactionType` | `CIVILIAN`, `POLICE`, `MILITARY`, `MAFIA` | fixed enum; display names are pack strings |
+| `Feature/Whitelist/LF_WhitelistManager.c` | `LF_EFactionType` | `CIVILIAN`, `POLICE`, `MILITARY`, `MAFIA` | fixed enum; display names are pack strings |
 | `Prefabs/Characters/Npcs/PoliceDutyNPC.et` | `Name` | "Police Sergeant" (literal) | a pack string key |
 
 Script holds no place names. Every user-facing string in `Feature/` is already a

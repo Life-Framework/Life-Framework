@@ -1,18 +1,18 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_QuestSignal,LF_Test_ArrivalChain`:
 // dropped the previous-quest check in LF_QuestTracker.CollectAutoAccepts; got
-// `[ELTEST] FAIL quests/signal-event`, `- nothing starts on its own before the clerk is met (expected 0, got 3)`,
+// `[LFTEST] FAIL quests/signal-event`, `- nothing starts on its own before the clerk is met (expected 0, got 3)`,
 // `- exactly one step opens after step 1 (expected 1, got 3)`. Restored; green.
 // tier: LOGIC
 //! SIGNAL objectives advance only on their own key, chain steps open one at a time, and a
 //! returning player (turn-ins restored) is offered none of the chain again. Pure tracker logic.
-class LF_Test_QuestSignal : EL_Test
+class LF_Test_QuestSignal : LF_Test
 {
 	override string GetName()
 	{
 		return "quests/signal-event";
 	}
 
-	override void Run(EL_TestContext ctx)
+	override void Run(LF_TestContext ctx)
 	{
 		TestSignalKeys(ctx);
 		TestSignalMatchesOnlyItsKey(ctx);
@@ -21,22 +21,22 @@ class LF_Test_QuestSignal : EL_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void TestSignalKeys(EL_TestContext ctx)
+	protected void TestSignalKeys(LF_TestContext ctx)
 	{
 		ctx.EqualStr("sign.read:town_map", LF_QuestSignals.SignRead("town_map"), "sign read key");
-		ctx.EqualStr("job.run_complete:parcel", LF_QuestSignals.JobRunComplete(EL_EJobType.PARCEL), "parcel run key is the job name in lower case");
+		ctx.EqualStr("job.run_complete:parcel", LF_QuestSignals.JobRunComplete(LF_EJobType.PARCEL), "parcel run key is the job name in lower case");
 		ctx.EqualStr("atm.deposit", LF_QuestSignals.ATM_DEPOSIT, "deposit key");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void TestSignalMatchesOnlyItsKey(EL_TestContext ctx)
+	protected void TestSignalMatchesOnlyItsKey(LF_TestContext ctx)
 	{
 		LF_QuestDefinition board = MakeStep("t_board", "", false, false, LF_EQuestEventType.SIGNAL, "sign.read:town_map");
 		map<string, ref LF_QuestDefinition> defs = new map<string, ref LF_QuestDefinition>();
 		defs.Set(board.m_sQuestId, board);
 
 		LF_QuestTracker tracker = new LF_QuestTracker();
-		tracker.Accept(board, 1, EL_EJobType.UNEMPLOYED, "", 0, new array<string>());
+		tracker.Accept(board, 1, LF_EJobType.UNEMPLOYED, "", 0, new array<string>());
 
 		ctx.False(tracker.ApplyEvent(MakeEvent(LF_EQuestEventType.SIGNAL, "sign.read:post_office"), defs), "another sign's read does not move the board step");
 		ctx.False(tracker.ApplyEvent(MakeEvent(LF_EQuestEventType.SIGNAL, "atm.deposit"), defs), "a deposit does not move the board step");
@@ -49,7 +49,7 @@ class LF_Test_QuestSignal : EL_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! register (manual, talk) -> board (auto, signal) -> bank (auto, signal) -> done (auto accept, talk).
-	protected void TestChainOrder(EL_TestContext ctx)
+	protected void TestChainOrder(LF_TestContext ctx)
 	{
 		map<string, ref LF_QuestDefinition> defs = MakeChain();
 		LF_QuestTracker tracker = new LF_QuestTracker();
@@ -57,9 +57,9 @@ class LF_Test_QuestSignal : EL_Test
 
 		tracker.CollectAutoAccepts(defs, ids);
 		ctx.Equal(0, ids.Count(), "nothing starts on its own before the clerk is met");
-		ctx.False(tracker.CanAccept(defs.Get("c_bank"), 1, EL_EJobType.UNEMPLOYED, "", 0, tracker.GetCompletedQuestIds()), "a later step cannot be taken out of order");
+		ctx.False(tracker.CanAccept(defs.Get("c_bank"), 1, LF_EJobType.UNEMPLOYED, "", 0, tracker.GetCompletedQuestIds()), "a later step cannot be taken out of order");
 
-		ctx.True(tracker.Accept(defs.Get("c_register"), 1, EL_EJobType.UNEMPLOYED, "", 0, tracker.GetCompletedQuestIds()), "step 1 is accepted at the clerk");
+		ctx.True(tracker.Accept(defs.Get("c_register"), 1, LF_EJobType.UNEMPLOYED, "", 0, tracker.GetCompletedQuestIds()), "step 1 is accepted at the clerk");
 		tracker.ApplyEvent(MakeEvent(LF_EQuestEventType.TALK, "clerk"), defs);
 		ctx.True(tracker.TurnIn("c_register", 1), "step 1 turns in");
 
@@ -103,7 +103,7 @@ class LF_Test_QuestSignal : EL_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void TestReturningPlayer(EL_TestContext ctx)
+	protected void TestReturningPlayer(LF_TestContext ctx)
 	{
 		map<string, ref LF_QuestDefinition> defs = MakeChain();
 		LF_QuestTracker tracker = new LF_QuestTracker();
@@ -116,7 +116,7 @@ class LF_Test_QuestSignal : EL_Test
 
 		foreach (string listedId, LF_QuestDefinition listed : defs)
 		{
-			ctx.False(tracker.CanAccept(listed, 1, EL_EJobType.UNEMPLOYED, "", 1000, tracker.GetCompletedQuestIds()), "a returning player cannot take " + listedId + " again");
+			ctx.False(tracker.CanAccept(listed, 1, LF_EJobType.UNEMPLOYED, "", 1000, tracker.GetCompletedQuestIds()), "a returning player cannot take " + listedId + " again");
 			ctx.False(listed.IsListed(tracker.GetStatus(listedId), true), "the clerk does not list " + listedId + " to a returning player");
 		}
 
@@ -132,7 +132,7 @@ class LF_Test_QuestSignal : EL_Test
 	protected void AcceptAll(LF_QuestTracker tracker, map<string, ref LF_QuestDefinition> defs, array<string> ids)
 	{
 		foreach (string questId : ids)
-			tracker.Accept(defs.Get(questId), 1, EL_EJobType.UNEMPLOYED, "", 0, tracker.GetCompletedQuestIds());
+			tracker.Accept(defs.Get(questId), 1, LF_EJobType.UNEMPLOYED, "", 0, tracker.GetCompletedQuestIds());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -164,7 +164,7 @@ class LF_Test_QuestSignal : EL_Test
 		def.m_sRequiredPreviousQuestId = previous;
 		def.m_bAutoAccept = autoAccept;
 		def.m_bAutoTurnIn = autoTurnIn;
-		def.m_eRequiredJob = EL_EJobType.UNEMPLOYED;
+		def.m_eRequiredJob = LF_EJobType.UNEMPLOYED;
 		def.m_aObjectives = new array<ref LF_QuestObjective>();
 		def.m_aObjectives.Insert(objective);
 		return def;

@@ -1,4 +1,4 @@
-EL_BaseCrop : "{F1F4F4FDA1E652E3}Prefabs/Vegetation/Crops/BaseCropSingle.et" {
+LF_BaseCrop : "{F1F4F4FDA1E652E3}Prefabs/Vegetation/Crops/BaseCropSingle.et" {
  ID "59A07C470BE83ADC"
  components {
   MeshObject "{59A0BBAE906EB9AC}" {
@@ -6,7 +6,7 @@ EL_BaseCrop : "{F1F4F4FDA1E652E3}Prefabs/Vegetation/Crops/BaseCropSingle.et" {
   }
   ActionsManagerComponent "{59A0BBAE906EB838}" {
    additionalActions {
-    EL_GatherAction "{59A12C3059847C59}" {
+    LF_GatherAction "{59A12C3059847C59}" {
      m_sNodeId "cabbage"
      m_GatherItemPrefab "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et"
     }
@@ -17,19 +17,19 @@ EL_BaseCrop : "{F1F4F4FDA1E652E3}Prefabs/Vegetation/Crops/BaseCropSingle.et" {
  m_eBuildingType CROP
  m_bDeleteAfterFinalStage 0
  m_aCropStages {
-  EL_CropStage "{59A07C4704334DEA}" {
+  LF_CropStage "{59A07C4704334DEA}" {
    m_fStageTime 0.2
    m_sStageName "Seed"
    m_fStageScale 0.25
    m_bCanGather 0
   }
-  EL_CropStage "{59A07C470719DF36}" {
+  LF_CropStage "{59A07C470719DF36}" {
    m_fStageTime 0.2
    m_sStageName "Growing"
    m_fStageScale 0.5
    m_bCanGather 0
   }
-  EL_CropStage "{59A07C4707323A49}" {
+  LF_CropStage "{59A07C4707323A49}" {
    m_fStageTime 1
    m_sStageName "Ripe"
    m_fStageScale 1

@@ -9,7 +9,7 @@ A civilian holds up the till at a fuel station and leaves with cash. No breach. 
 
 ## In scope
 
-- A till action on a fuel-station building, reusing `EL_RobAction` gates: civilian only, cooldown, minimum police on duty, wanted increase, one police alert.
+- A till action on a fuel-station building, reusing `LF_RobAction` gates: civilian only, cooldown, minimum police on duty, wanted increase, one police alert.
 - Payout is MoneyStack cash in a config range. The server rolls it.
 - The site can sit on an Everon fuel station or a building override dropped in its place.
 
@@ -21,7 +21,7 @@ A civilian holds up the till at a fuel station and leaves with cash. No breach. 
 
 ## Assets
 
-Building: `Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/`. That building is the capture prefab and is not placed in the debug row. The debug till is `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits `Prefabs/Props/Commercial/CashierShop_01.et`. Payout: MoneyStack via `EL_RobAction`. The fuel can `Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` is the delivery job, not this till. LNGC has no till robbery. See [sources](../../sources.md).
+Building: `Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/`. That building is the capture prefab and is not placed in the debug row. The debug till is `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits `Prefabs/Props/Commercial/CashierShop_01.et`. Payout: MoneyStack via `LF_RobAction`. The fuel can `Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` is the delivery job, not this till. LNGC has no till robbery. See [sources](../../sources.md).
 
 ## First slice
 

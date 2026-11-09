@@ -33,9 +33,9 @@ Rung 1.
 4. **Death — defined (verified 2026-08-30):** the dead body stays in the world
    with everything it carried (only removed by a server restart or cleanup);
    the player respawns through the death screen
-   (`EL_DeathScreen`, opened by `SCR_RespawnComponent.GetOnRespawnReadyInvoker_O`),
+   (`LF_DeathScreen`, opened by `SCR_RespawnComponent.GetOnRespawnReadyInvoker_O`),
    whose Respawn button re-runs the account-aware spawn via
-   `RpcAsk_EL_Respawn` → `EL_SpawnLogic.RespawnPlayer_S`.
+   `RpcAsk_LF_Respawn` → `LF_SpawnLogic.RespawnPlayer_S`.
 
 ## Iteration path
 
@@ -43,9 +43,9 @@ Rung 1.
 
 ## Current state
 
-- `Feature/Character/Spawning/` — `EL_SpawnLogic` (account-aware spawn, death →
-  death screen), `EL_DeathScreen` + `EL_RespawnComponent` (death-screen bridge),
-  `EL_SpawnPointsProvider`, `EL_FactionSpawnPoint`.
+- `Feature/Character/Spawning/` — `LF_SpawnLogic` (account-aware spawn, death →
+  death screen), `LF_DeathScreen` + `LF_RespawnComponent` (death-screen bridge),
+  `LF_SpawnPointsProvider`, `LF_FactionSpawnPoint`.
 - `Feature/Character/Spawning/LF_HospitalRespawn.c` and friends - you wake up in
   hospital after a death: bed pick, bill (debt allowed), printed `LF_HospitalBill`,
   the owner's get-out-of-bed animation; config `Configs/Spawning/LF_Respawn.conf`.

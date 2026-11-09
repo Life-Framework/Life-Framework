@@ -3,7 +3,7 @@ modded class SCR_InventoryMenuUI
 	protected static SCR_InventoryMenuUI s_pELThisMenu;
 
 	//------------------------------------------------------------------------------------------------
-	static SCR_InventoryMenuUI EL_GetCurrentInstance()
+	static SCR_InventoryMenuUI LF_GetCurrentInstance()
 	{
 		return s_pELThisMenu;
 	}

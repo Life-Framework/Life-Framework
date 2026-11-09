@@ -4,8 +4,8 @@ $grp GenericEntity : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_P
  }
  Vehicle_LockTest {
   components {
-   EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
-    m_sDebugIdentifier "ELDebugKey1"
+   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+    m_sDebugIdentifier "LFDebugKey1"
    }
   }
   coords 43 0 33
@@ -40,16 +40,16 @@ GenericEntity PRFeatureCrate {
      $grp GenericEntity : "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et" {
       VehicleKey_Matching_Debug {
        components {
-        EL_VehicleKeyComponent "{DF4CAEED0C904715}" {
-         m_sDebugIdentifier "ELDebugKey1"
+        LF_VehicleKeyComponent "{DF4CAEED0C904715}" {
+         m_sDebugIdentifier "LFDebugKey1"
         }
        }
        coords -0.2 0 0
       }
       VehicleKey_Wrong_Debug {
        components {
-        EL_VehicleKeyComponent "{DF4CAEED0C904715}" {
-         m_sDebugIdentifier "ELDebugKeyWrong"
+        LF_VehicleKeyComponent "{DF4CAEED0C904715}" {
+         m_sDebugIdentifier "LFDebugKeyWrong"
         }
        }
        coords -0.4 0 0

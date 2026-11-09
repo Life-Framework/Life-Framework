@@ -114,7 +114,7 @@ addons/LifeFramework/LifeFramework.gproj
 | Scenario | World | Use |
 | --- | --- | --- |
 | `Missions/EveronLifeGameMode.conf` | MainWorld | Normal play / feature demo |
-| `Missions/EL_DebugTest.conf` | DebugWorld | Automated `EL_Test*` suite + per-feature layers |
+| `Missions/EL_DebugTest.conf` | DebugWorld | Automated `LF_Test*` suite + per-feature layers |
 
 **Typical loop**
 
@@ -145,12 +145,12 @@ node tools/cli.mjs status              # toolchain + MCP state
 node tools/cli.mjs validate            # repo hygiene (GUIDs, metas, artifacts)
 node tools/cli.mjs build               # headless Workbench build → server/build/
 node tools/cli.mjs test --tier fast    # LOGIC-tier in-game tests only
-node tools/cli.mjs test                # full EL_Test* suite on DebugWorld
+node tools/cli.mjs test                # full LF_Test* suite on DebugWorld
 node tools/cli.mjs ci                  # validate + build + test
 ```
 
-The test pipeline boots a dedicated server on DebugWorld, runs the `EL_Test*`
-suite, parses `[ELTEST] SUMMARY`, and exits nonzero on failure. Details:
+The test pipeline boots a dedicated server on DebugWorld, runs the `LF_Test*`
+suite, parses `[LFTEST] SUMMARY`, and exits nonzero on failure. Details:
 [server/README.md](../server/README.md) and [AGENTS.md](../AGENTS.md).
 
 - `build` needs Arma Reforger Tools (Workbench) and the game installed.
@@ -172,7 +172,7 @@ never draw a window on your monitor and never take focus:
 | every node-spawned console tool | `windowsHide: true` |
 
 Workbench play mode and a game client both render on `LF-Agents`: harness
-screenshots (`EL_ScreenshotCapture`) come back as the real 3D world. Screen
+screenshots (`LF_ScreenshotCapture`) come back as the real 3D world. Screen
 recording (`tools/film`) cannot see that desktop; film a game client you start
 yourself on a visible monitor. `film.mjs` no longer brings that window to the
 front; on a second monitor it lifts it without activating it.

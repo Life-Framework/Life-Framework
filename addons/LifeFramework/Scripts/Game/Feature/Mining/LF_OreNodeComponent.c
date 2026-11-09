@@ -1,6 +1,6 @@
 // Ported from thebonbon/EveronLife (MIT), enhancement/Main_World:
-// EL_ToolHitZone.c (tool-gated hit, hit particle, shake) and
-// EL_DestructionMultiPhaseSingleComponent.c (EL_RandomPrefabSpawnable: ore pieces
+// LF_ToolHitZone.c (tool-gated hit, hit particle, shake) and
+// LF_DestructionMultiPhaseSingleComponent.c (LF_RandomPrefabSpawnable: ore pieces
 // spawned around the rock with a random offset). Used with the author's permission,
 // relicensed MIT (docs/decisions.md, 2026-11-08).
 // Copyright (c) 2022 EveronLife
@@ -30,7 +30,7 @@ class LF_OreNodeComponentClass : ScriptComponentClass
 }
 
 //------------------------------------------------------------------------------------------------
-//! An ore rock you mine by swinging a pickaxe at it. EL_DestructibleResourceHitZone
+//! An ore rock you mine by swinging a pickaxe at it. LF_DestructibleResourceHitZone
 //! accepts only the tools the rock lists (the pickaxe) and hands every accepted
 //! melee hit to OnToolHit on the server. Damage piles up; each `m_fDamagePerBreak`
 //! breaks a piece off and the node row's yield drops as real items beside the rock.
@@ -117,20 +117,20 @@ class LF_OreNodeComponent : ScriptComponent
 
 		if (m_bDepleted)
 		{
-			EL_Debug.Info(FEATURE, string.Format("hit on spent %1 rock ignored", m_sNodeId));
+			LF_Debug.Info(FEATURE, string.Format("hit on spent %1 rock ignored", m_sNodeId));
 			return 0;
 		}
 
-		EL_ResourceNodeDef row = EL_ResourceChainCatalog.FindNode(m_sNodeId);
-		if (!EL_ResourceChainCatalog.IsNodeUsable(row))
+		LF_ResourceNodeDef row = LF_ResourceChainCatalog.FindNode(m_sNodeId);
+		if (!LF_ResourceChainCatalog.IsNodeUsable(row))
 		{
-			EL_Debug.Error(FEATURE, string.Format("ore rock %1 refused a hit: node id '%2' has no usable row in ResourceChains.conf", EL_Utils.GetPrefabName(owner), m_sNodeId));
+			LF_Debug.Error(FEATURE, string.Format("ore rock %1 refused a hit: node id '%2' has no usable row in ResourceChains.conf", LF_Utils.GetPrefabName(owner), m_sNodeId));
 			return 0;
 		}
 
-		if (!row.m_ToolPrefab.IsEmpty() && !LF_OreNodeComponent.SameResource(row.m_ToolPrefab, EL_Utils.GetPrefabName(tool)))
+		if (!row.m_ToolPrefab.IsEmpty() && !LF_OreNodeComponent.SameResource(row.m_ToolPrefab, LF_Utils.GetPrefabName(tool)))
 		{
-			EL_Debug.Info(FEATURE, string.Format("hit on %1 rock refused: %2 is not %3", m_sNodeId, EL_Utils.GetPrefabName(tool), row.m_ToolPrefab));
+			LF_Debug.Info(FEATURE, string.Format("hit on %1 rock refused: %2 is not %3", m_sNodeId, LF_Utils.GetPrefabName(tool), row.m_ToolPrefab));
 			return 0;
 		}
 
@@ -150,9 +150,9 @@ class LF_OreNodeComponent : ScriptComponent
 		}
 		m_iDropped = m_iDropped + dropped;
 
-		EL_Debug.Info(FEATURE, string.Format("%1 rock hit for %2: piece %3/%4 at %5/%6 damage, dropped %7", m_sNodeId, damage, m_State.m_iBreaks, row.m_iMaxGathers, m_State.m_fDamage, m_fDamagePerBreak, dropped));
+		LF_Debug.Info(FEATURE, string.Format("%1 rock hit for %2: piece %3/%4 at %5/%6 damage, dropped %7", m_sNodeId, damage, m_State.m_iBreaks, row.m_iMaxGathers, m_State.m_fDamage, m_fDamagePerBreak, dropped));
 		if (items > 0 && dropped < items)
-			EL_Debug.Error(FEATURE, string.Format("%1 rock broke %2 pieces but only %3 of %4 dropped", m_sNodeId, breaks, dropped, items));
+			LF_Debug.Error(FEATURE, string.Format("%1 rock broke %2 pieces but only %3 of %4 dropped", m_sNodeId, breaks, dropped, items));
 
 		bool spent = m_State.m_bDepleted;
 		Rpc(RpcDo_HitFx, hitPos, hitDir, breaks > 0, spent);
@@ -167,7 +167,7 @@ class LF_OreNodeComponent : ScriptComponent
 			float delayMs = LF_OreYield.RespawnDelayMs(row.m_fCooldownMs, m_fRespawnSeconds);
 			GetGame().GetCallqueue().Remove(Regrow);
 			GetGame().GetCallqueue().CallLater(Regrow, delayMs, false);
-			EL_Debug.Info(FEATURE, string.Format("%1 rock spent after %2 pieces; grows back in %3 s", m_sNodeId, m_State.m_iBreaks, delayMs / 1000));
+			LF_Debug.Info(FEATURE, string.Format("%1 rock spent after %2 pieces; grows back in %3 s", m_sNodeId, m_State.m_iBreaks, delayMs / 1000));
 		}
 
 		return dropped;
@@ -188,7 +188,7 @@ class LF_OreNodeComponent : ScriptComponent
 		m_bDepleted = false;
 		ApplyDepleted();
 		Replication.BumpMe();
-		EL_Debug.Info(FEATURE, string.Format("%1 rock grew back", m_sNodeId));
+		LF_Debug.Info(FEATURE, string.Format("%1 rock grew back", m_sNodeId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ class LF_OreNodeComponent : ScriptComponent
 		float ground = world.GetSurfaceY(pos[0], pos[2]);
 		pos[1] = Math.Max(hitPos[1], ground + 0.15);
 
-		IEntity piece = EL_Utils.SpawnEntityPrefab(prefab, pos, Vector(Math.RandomFloat(0, 360), 0, 0));
+		IEntity piece = LF_Utils.SpawnEntityPrefab(prefab, pos, Vector(Math.RandomFloat(0, 360), 0, 0));
 		if (!piece)
 			return false;
 
@@ -267,10 +267,10 @@ class LF_OreNodeComponent : ScriptComponent
 	{
 		IEntity owner = GetOwner();
 		if (!m_HitParticle.IsEmpty())
-			EL_Utils.SpawnEntityPrefab(m_HitParticle, hitPos, (-hitDir).VectorToAngles(), false);
+			LF_Utils.SpawnEntityPrefab(m_HitParticle, hitPos, (-hitDir).VectorToAngles(), false);
 
 		if (broke && !m_BreakParticle.IsEmpty())
-			EL_Utils.SpawnEntityPrefab(m_BreakParticle, hitPos - hitDir * 0.3, vector.Zero, false);
+			LF_Utils.SpawnEntityPrefab(m_BreakParticle, hitPos - hitDir * 0.3, vector.Zero, false);
 
 		if (broke)
 		{

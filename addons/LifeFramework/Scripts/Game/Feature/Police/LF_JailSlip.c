@@ -44,13 +44,13 @@ class LF_JailSlipComponent : ScriptComponent
 
 		if (holderUid.IsEmpty())
 		{
-			EL_Debug.Error("Jail", "slip not printed: no holder uid");
+			LF_Debug.Error("Jail", "slip not printed: no holder uid");
 			return false;
 		}
 
 		if (!m_sHolderUid.IsEmpty() && m_sHolderUid != holderUid)
 		{
-			EL_Debug.Warn("Jail", "slip not printed: it belongs to another prisoner");
+			LF_Debug.Warn("Jail", "slip not printed: it belongs to another prisoner");
 			return false;
 		}
 
@@ -196,11 +196,11 @@ class LF_JailSlip
 			return;
 
 		array<IEntity> items = {};
-		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(character);
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(character);
 		if (inventory)
 			inventory.GetItems(items);
 
-		CharacterControllerComponent controller = EL_Component<CharacterControllerComponent>.Find(character);
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(character);
 		if (controller)
 		{
 			IEntity inHand = controller.GetAttachedGadgetAtLeftHandSlot();
@@ -246,13 +246,13 @@ class LF_JailSlip
 	{
 		if (!Replication.IsServer())
 		{
-			EL_Debug.Error("Jail", "slip grant refused: not the server");
+			LF_Debug.Error("Jail", "slip grant refused: not the server");
 			return null;
 		}
 
 		if (!character || holderUid.IsEmpty())
 		{
-			EL_Debug.Error("Jail", "slip grant refused: no character or no holder uid");
+			LF_Debug.Error("Jail", "slip grant refused: no character or no holder uid");
 			return null;
 		}
 
@@ -262,28 +262,28 @@ class LF_JailSlip
 			if (!carried.Print(holderUid, prisonerName, wantedLevel, remainingSeconds))
 				return null;
 
-			EL_Debug.Info("Jail", "slip reprinted for " + holderUid);
+			LF_Debug.Info("Jail", "slip reprinted for " + holderUid);
 			return carried;
 		}
 
-		InventoryStorageManagerComponent storage = EL_Component<InventoryStorageManagerComponent>.Find(character);
+		InventoryStorageManagerComponent storage = LF_Component<InventoryStorageManagerComponent>.Find(character);
 		if (!storage)
 		{
-			EL_Debug.Error("Jail", "slip not granted: the prisoner has no inventory");
+			LF_Debug.Error("Jail", "slip not granted: the prisoner has no inventory");
 			return null;
 		}
 
-		IEntity item = EL_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
+		IEntity item = LF_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
 		if (!item)
 		{
-			EL_Debug.Error("Jail", "slip not granted: prefab did not spawn " + PREFAB);
+			LF_Debug.Error("Jail", "slip not granted: prefab did not spawn " + PREFAB);
 			return null;
 		}
 
 		LF_JailSlipComponent slip = LF_JailSlipComponent.Cast(item.FindComponent(LF_JailSlipComponent));
 		if (!slip)
 		{
-			EL_Debug.Error("Jail", "slip not granted: " + PREFAB + " has no LF_JailSlipComponent");
+			LF_Debug.Error("Jail", "slip not granted: " + PREFAB + " has no LF_JailSlipComponent");
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return null;
 		}
@@ -291,12 +291,12 @@ class LF_JailSlip
 		slip.Print(holderUid, prisonerName, wantedLevel, remainingSeconds);
 		if (!storage.TryInsertItem(item))
 		{
-			EL_Debug.Error("Jail", "slip not granted: no room in the inventory of " + holderUid);
+			LF_Debug.Error("Jail", "slip not granted: no room in the inventory of " + holderUid);
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return null;
 		}
 
-		EL_Debug.Info("Jail", "slip handed to " + holderUid);
+		LF_Debug.Info("Jail", "slip handed to " + holderUid);
 		return slip;
 	}
 }

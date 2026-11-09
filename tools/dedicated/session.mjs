@@ -17,18 +17,18 @@ import { portsForRoot } from "../wt.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const FIXTURES = join(ROOT, "tools", "dedicated", "fixtures");
 
-const SERVER_UP = /\[ELDebug:Persistence\] resolved SCR_PersistenceSystem, subscribed to save events/;
-const SESSION_ENDING = /\[ELDebug:Persistence\] session ending, engine shutdown save expected/;
-const SAVE = /\[ELDebug:Persistence\] (?:save point created|save completed)/;
-const LOAD = /\[ELDebug:Persistence\] loading the latest save point/;
-const JOIN = /\[ELDebug:CharacterCreation\] flow start for player (\d+)/;
-const SPAWN = /\[ELDebug:CharacterCreation\] spawning player (\d+)/;
+const SERVER_UP = /\[LFDebug:Persistence\] resolved SCR_PersistenceSystem, subscribed to save events/;
+const SESSION_ENDING = /\[LFDebug:Persistence\] session ending, engine shutdown save expected/;
+const SAVE = /\[LFDebug:Persistence\] (?:save point created|save completed)/;
+const LOAD = /\[LFDebug:Persistence\] loading the latest save point/;
+const JOIN = /\[LFDebug:CharacterCreation\] flow start for player (\d+)/;
+const SPAWN = /\[LFDebug:CharacterCreation\] spawning player (\d+)/;
 
 const LOAD_LINES = [
-  ["account", /\[ELDebug:Persistence\] applied [1-9]\d* account record\(s\)/],
-  ["bank balance", /\[ELDebug:Persistence\] applied [1-9]\d* bank account record\(s\)/],
-  ["organization", /\[ELDebug:Persistence\] applied [1-9]\d* organization record\(s\)/],
-  ["vehicle lock", /\[ELDebug:VehicleLock\] lock state -> locked/],
+  ["account", /\[LFDebug:Persistence\] applied [1-9]\d* account record\(s\)/],
+  ["bank balance", /\[LFDebug:Persistence\] applied [1-9]\d* bank account record\(s\)/],
+  ["organization", /\[LFDebug:Persistence\] applied [1-9]\d* organization record\(s\)/],
+  ["vehicle lock", /\[LFDebug:VehicleLock\] lock state -> locked/],
 ];
 
 const PORT_WORDS = new Set([
@@ -253,7 +253,7 @@ function selftest() {
     if (line.includes("flow start for player 2") || line.includes("spawning player 2")) return [];
     if (line.includes("flow start for player 1")) {
       return [
-        "08:00:09.000 SCRIPT       : [ELDebug:CharacterCreation] flow start for player 2",
+        "08:00:09.000 SCRIPT       : [LFDebug:CharacterCreation] flow start for player 2",
         line,
       ];
     }

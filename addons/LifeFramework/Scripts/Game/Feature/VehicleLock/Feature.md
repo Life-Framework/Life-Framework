@@ -12,9 +12,9 @@ and the key is a carried object, not a flag in a menu.
 
 ## Interaction pattern
 
-Rung 1. `EL_VehicleLockComponent` (lock state), `EL_VehicleKeyComponent` (key
-item), `EL_OpenVehicleLockAction` / `EL_VehicleLockAction` (interactions),
-`EL_VehicleStorageComponent` (owned trunk). `EL_VehicleKeyManager` coordinates.
+Rung 1. `LF_VehicleLockComponent` (lock state), `LF_VehicleKeyComponent` (key
+item), `LF_OpenVehicleLockAction` / `LF_VehicleLockAction` (interactions),
+`LF_VehicleStorageComponent` (owned trunk). `LF_VehicleKeyManager` coordinates.
 
 Target: the full ownership loop — registered purchase → keys handed over →
 lock/unlock at the vehicle. `LicensePlate` is the visible registration of the
@@ -35,8 +35,8 @@ same ownership chain.
 
 ## Current state
 
-- `EL_VehicleLockComponent`, `EL_VehicleKeyComponent`, `EL_OpenVehicleLockAction`,
-  `EL_VehicleLockAction`, `EL_VehicleKeyManager`, `EL_VehicleStorageComponent`
+- `LF_VehicleLockComponent`, `LF_VehicleKeyComponent`, `LF_OpenVehicleLockAction`,
+  `LF_VehicleLockAction`, `LF_VehicleKeyManager`, `LF_VehicleStorageComponent`
   (`Feature/VehicleLock/`).
 - Prefabs under `Prefabs/Vehicles/`.
 

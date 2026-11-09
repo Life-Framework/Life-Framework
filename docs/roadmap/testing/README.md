@@ -12,7 +12,7 @@ Every roadmap setup is done only when three gates are green. A scope doc's Proof
 
 ## File rules
 
-- One test file per setup: `Scripts/Game/Tests/EL_Test_Roadmap_<Setup>.c`. Do not add cases to another setup's file.
+- One test file per setup: `Scripts/Game/Tests/LF_Test_Roadmap_<Setup>.c`. Do not add cases to another setup's file.
 - `// tier: LOGIC` or `// tier: WORLD` or `// tier: PERSISTENCE` above each class. `// red-proof:` records one observed failure before the test is trusted.
 - `tools\cli regen-tests` after adding the file. `tools\cli validate` checks the registry.
 - Logic test name: `roadmap/<setup>`. World test name: `e2e/roadmap-<setup>`.
@@ -31,7 +31,7 @@ Placement, clear of the current area boxes (the easternmost box is `PRFeatures.l
 - Root entity `RoadmapStreet` at `186 0 120`.
 - Sites every 3 m along +X, from the breach door at `186 0 120` to the vehicle lot at `243 0 120`. Ground props at Y=0. `Flags 0x403` on any new traceable mesh.
 - Debug terrain is 512 m on X and Z (world 0..512, `TERRAIN_MAX` in `tools/street/manifest.mjs`). The row stays on that ground, clear of the police box that ends at x=172. Do not shrink the pitch.
-- One `EL_DebugAreaBoundary` (`{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`) around the row. `validate-debugworld-layout.ps1` must report no overlap and no raised ground prop.
+- One `LF_DebugAreaBoundary` (`{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et`) around the row. `validate-debugworld-layout.ps1` must report no overlap and no raised ground prop.
 - The world entity stays in `default.layer`. Do not add `GenericWorldEntity world` here.
 - Add `Roadmap.layer` to the required list in `tools/validation/validate-debugworld.ps1`. An empty file fails that check.
 
@@ -91,13 +91,13 @@ Layer: `Roadmap_Bank_Vault` (locked door), `Roadmap_Bank_Bag` (hand-carry contai
 
 | Gate | Case |
 | --- | --- |
-| Headless | Payout is cash. `EL_BankAccount` balance stays 0. Bag count and cash per bag match config. A second breach inside the cooldown spawns nothing. Civilian and minimum-police gates match `EL_RobAction` |
+| Headless | Payout is cash. `LF_BankAccount` balance stays 0. Bag count and cash per bag match config. A second breach inside the cooldown spawns nothing. Civilian and minimum-police gates match `LF_RobAction` |
 | E2E | Zero-fuse vault opens, one bag exists, its MoneyStack quantity is the config value, bank balance unchanged. Same uid discipline as `e2e/narrative-loop` (do not reuse `e2e-narrative-uid`) |
 | Visual | `shot world Roadmap_Bank_Bag` shows the crate mesh and, after the action, the stack. `wb_capture` of `EL_Bank.et` (`MunicipalOffice_E_01`) for the shell |
 
 ### Jailbreak
 
-Layer: `Roadmap_Jail_Door` (prison-cell door plus `EL_LockComponent`), `Roadmap_Jail_Cell` (cell volume).
+Layer: `Roadmap_Jail_Door` (prison-cell door plus `LF_LockComponent`), `Roadmap_Jail_Cell` (cell volume).
 
 | Gate | Case |
 | --- | --- |
@@ -167,7 +167,7 @@ No new row. The chains already have layers: `AppleChain`, `PlumChain`, `TomatoCh
 
 | Gate | Case |
 | --- | --- |
-| Headless | Existing `EL_Test_ActionGuards` stays green. A new case: gather reward and process reward stay 0 unless a job scope says otherwise |
+| Headless | Existing `LF_Test_ActionGuards` stays green. A new case: gather reward and process reward stay 0 unless a job scope says otherwise |
 | E2E | Existing `e2e/narrative-loop` (apple, trader, shop, ATM). Add `e2e/roadmap-resources` for one furnace line: two iron nuggets become one iron bar, inventory conserved |
 | Visual | `shot world` of the named juicer, furnace, and sawmill already on those layers. One new flow `roadmap-resources.txt` shoots furnace and sawmill so the release gate has a current PNG |
 
@@ -212,7 +212,7 @@ Layer: `Roadmap_Vehicle_S105`, `Roadmap_Vehicle_Lot`.
 | Gate | Case |
 | --- | --- |
 | Headless | Plate generator covers the full alphabet and the top number. A second issue does not reuse a live plate. Purchase debits the configured price or refuses |
-| E2E | Buy spawns the S105 prefab, owner matches, wrong key does not unlock, matching key does. Extends the existing `EL_Test_VehicleLock` fixture rather than a second lock implementation |
+| E2E | Buy spawns the S105 prefab, owner matches, wrong key does not unlock, matching key does. Extends the existing `LF_Test_VehicleLock` fixture rather than a second lock implementation |
 | Visual | `shot world Roadmap_Vehicle_S105` (body, not white). `wb_capture` of `UAZ469_covered_CIV_blue.et`, `S1203_transport_beige.et`, and `M923A1_transport.et`. `layer Roadmap_Vehicle_Lot` for the catalog rows |
 
 Persistence: owner id and key id match after apply-save. Garage store/retrieve, once ported, is a second persistence class: store, apply-save, retrieve, same prefab and lock flag.
@@ -226,7 +226,7 @@ Same three gates, for the scopes placed in M2 (revive, now the medic theme), M4 
 | Private housing | `Roadmap_House_Door` | Non-owner unlock refuses. Price is all-or-nothing | Buy, lock, store one item | `shot world Roadmap_House_Door`. Office menu via `layer` |
 | Crafting | `Roadmap_Craft_Bench` | Missing inputs and a bad recipe refuse before inventory changes. Output count matches | One iron-nugget recipe on the bench | `shot world Roadmap_Craft_Bench`. Menu rows via `layer` |
 | Tasks | `Roadmap_Task_Board` | Reward pays cash once. Expired task pays nothing | Accept, deliver, quest log shows complete | `layer Roadmap_Task_Board` and `shot ui roadmap-quest-log` |
-| Revive | `Roadmap_Medic_Pad` | No item refuses. Timer expiry calls the death path once | Zero-timer downed state reaches `EL_DeathScreen` | `shot ui roadmap-death-screen`. Downed character at the pad |
+| Revive | `Roadmap_Medic_Pad` | No item refuses. Timer expiry calls the death path once | Zero-timer downed state reaches `LF_DeathScreen` | `shot ui roadmap-death-screen`. Downed character at the pad |
 | Police missions | `Roadmap_Police_Board` | Off-duty accept refuses. Completion pays once | Fine at the marker completes the call | `layer Roadmap_Police_Board` shows the call row |
 | Events | `Roadmap_Event_Marker` | A second event does not start. End despawns the prop | Marker entity exists only while the test event runs | `shot world Roadmap_Event_Marker` during the event, and a shot after end with the prop gone |
 

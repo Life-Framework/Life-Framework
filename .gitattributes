@@ -26,7 +26,7 @@ addons/LifeFramework/Language/*.conf -text
 # Rebase additions of keys, tests, feature rows, and triage rows. Drivers live in tools/merge/.
 addons/LifeFramework/Language/everonlife_localization.st merge=lf-string-table
 addons/LifeFramework/Language/everonlife_localization.*.conf merge=lf-regen-localization
-addons/LifeFramework/Scripts/Game/Tests/EL_TestRegistrations.generated.c merge=lf-regen-tests
+addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c merge=lf-regen-tests
 docs/features.md merge=lf-markdown
 docs/debug-log-triage.md merge=lf-markdown
 tools/validation/enforce-lint-baseline.json merge=lf-lint-baseline

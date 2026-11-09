@@ -28,7 +28,7 @@ import { mergeLintBaselines } from "./merge/union-lint-baseline.mjs";
 export const LIVE_MS = 15 * 60 * 1000;
 export const STUCK_MS = 10 * 60 * 1000;
 
-const REGISTRY = "addons/LifeFramework/Scripts/Game/Tests/EL_TestRegistrations.generated.c";
+const REGISTRY = "addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c";
 const STRING_TABLE = "addons/LifeFramework/Language/everonlife_localization.st";
 const SCRIPTS_PREFIX = "addons/LifeFramework/Scripts/";
 

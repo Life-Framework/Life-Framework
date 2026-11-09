@@ -20,7 +20,7 @@ modded class SCR_CharacterStaminaComponent
 		if (!owner)
 			return;
 
-		EL_CharacterSurvivalComponent survival = EL_CharacterSurvivalComponent.Cast(owner.FindComponent(EL_CharacterSurvivalComponent));
+		LF_CharacterSurvivalComponent survival = LF_CharacterSurvivalComponent.Cast(owner.FindComponent(LF_CharacterSurvivalComponent));
 		if (!survival)
 			return;
 

@@ -3,11 +3,11 @@
 //------------------------------------------------------------------------------------------------
 class LF_JobSignUpAction : ScriptedUserAction
 {
-	[Attribute("5", UIWidgets.ComboBox, "Job", "", ParamEnumArray.FromEnum(EL_EJobType))]
-	protected EL_EJobType m_eJob;
+	[Attribute("5", UIWidgets.ComboBox, "Job", "", ParamEnumArray.FromEnum(LF_EJobType))]
+	protected LF_EJobType m_eJob;
 
 	//------------------------------------------------------------------------------------------------
-	EL_EJobType GetJob()
+	LF_EJobType GetJob()
 	{
 		return m_eJob;
 	}
@@ -20,14 +20,14 @@ class LF_JobSignUpAction : ScriptedUserAction
 
 	//------------------------------------------------------------------------------------------------
 	//! The career lives on the server. A client reads the level replicated on the player's
-	//! EL_PlayerJobComponent, or fuel and taxi stay greyed on a dedicated client forever.
+	//! LF_PlayerJobComponent, or fuel and taxi stay greyed on a dedicated client forever.
 	protected bool OfferOpen(IEntity user, string uid)
 	{
 		if (Replication.IsServer())
 			return LF_CivilianJob.CanSignUp(uid, m_eJob);
 
 		int level = 1;
-		EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(user);
+		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(user);
 		if (jobs)
 			level = Math.Max(1, jobs.GetJobLevel());
 
@@ -37,7 +37,7 @@ class LF_JobSignUpAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		string uid = EL_Utils.GetPlayerUid(user);
+		string uid = LF_Utils.GetPlayerUid(user);
 		if (uid.IsEmpty())
 		{
 			SetCannotPerformReason("#EL-Job_NotSignedUp");
@@ -59,28 +59,28 @@ class LF_JobSignUpAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		string uid = EL_Utils.GetPlayerUid(pUserEntity);
+		string uid = LF_Utils.GetPlayerUid(pUserEntity);
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "signup action refused: player has no account id");
+			LF_Debug.Error("Jobs", "signup action refused: player has no account id");
 			return;
 		}
 
 		if (!LF_CivilianJob.SignUp(uid, m_eJob))
 			return;
 
-		EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(pUserEntity);
+		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(pUserEntity);
 		if (!jobs)
 		{
-			EL_Debug.Error("Jobs", "signup action: player has no EL_PlayerJobComponent");
+			LF_Debug.Error("Jobs", "signup action: player has no LF_PlayerJobComponent");
 			return;
 		}
 
 		if (!jobs.SetJob(m_eJob))
-			EL_Debug.Error("Jobs", "signup action: job component refused the workplace");
+			LF_Debug.Error("Jobs", "signup action: job component refused the workplace");
 
 		// The title names the job; the body says what to do next, at this same counter.
-		EL_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.SignedUpKey(m_eJob), LF_CivilianJob.NameKey(m_eJob), 5.0);
+		LF_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.SignedUpKey(m_eJob), LF_CivilianJob.NameKey(m_eJob), 5.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -91,11 +91,11 @@ class LF_JobSignUpAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string SignUpKey(EL_EJobType job)
+	protected string SignUpKey(LF_EJobType job)
 	{
-		if (job == EL_EJobType.FUEL_DELIVERY)
+		if (job == LF_EJobType.FUEL_DELIVERY)
 			return "#EL-Job_SignUp_Fuel";
-		if (job == EL_EJobType.TAXI)
+		if (job == LF_EJobType.TAXI)
 			return "#EL-Job_SignUp_Taxi";
 
 		return "#EL-Job_SignUp_Courier";
@@ -105,11 +105,11 @@ class LF_JobSignUpAction : ScriptedUserAction
 //------------------------------------------------------------------------------------------------
 class LF_JobStartRunAction : ScriptedUserAction
 {
-	[Attribute("5", UIWidgets.ComboBox, "Job", "", ParamEnumArray.FromEnum(EL_EJobType))]
-	protected EL_EJobType m_eJob;
+	[Attribute("5", UIWidgets.ComboBox, "Job", "", ParamEnumArray.FromEnum(LF_EJobType))]
+	protected LF_EJobType m_eJob;
 
 	//------------------------------------------------------------------------------------------------
-	EL_EJobType GetJob()
+	LF_EJobType GetJob()
 	{
 		return m_eJob;
 	}
@@ -126,7 +126,7 @@ class LF_JobStartRunAction : ScriptedUserAction
 		string refusal;
 		if (Replication.IsServer())
 		{
-			string uid = EL_Utils.GetPlayerUid(user);
+			string uid = LF_Utils.GetPlayerUid(user);
 			if (uid.IsEmpty() || LF_CivilianJob.GetJob(uid) != m_eJob)
 				refusal = "#EL-Job_NotSignedUp";
 			else if (LF_CivilianJob.HasActiveRun(uid))
@@ -135,11 +135,11 @@ class LF_JobStartRunAction : ScriptedUserAction
 		else
 		{
 			// The sign-ups live on the server. A dedicated client reads the job replicated on the
-			// player's EL_PlayerJobComponent (set at sign-up and again when a restored sign-up is
+			// player's LF_PlayerJobComponent (set at sign-up and again when a restored sign-up is
 			// put on a spawned body); reading the server map greyed "Pick up parcel" for every
 			// player on a hosted server. The server re-checks everything in PerformAction.
-			EL_EJobType bodyJob = EL_EJobType.UNEMPLOYED;
-			EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(user);
+			LF_EJobType bodyJob = LF_EJobType.UNEMPLOYED;
+			LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(user);
 			if (jobs)
 				bodyJob = jobs.GetJob();
 
@@ -156,7 +156,7 @@ class LF_JobStartRunAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	//! Client offer rule: open when the job replicated on the body is this counter's job.
 	//! \return "" when the run can start, else the reason key shown greyed.
-	static string ClientRefusal(EL_EJobType bodyJob, EL_EJobType counterJob)
+	static string ClientRefusal(LF_EJobType bodyJob, LF_EJobType counterJob)
 	{
 		if (!LF_CivilianJob.IsDeliveryJob(counterJob) || bodyJob != counterJob)
 			return "#EL-Job_NotSignedUp";
@@ -170,10 +170,10 @@ class LF_JobStartRunAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		string uid = EL_Utils.GetPlayerUid(pUserEntity);
+		string uid = LF_Utils.GetPlayerUid(pUserEntity);
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "start action refused: player has no account id");
+			LF_Debug.Error("Jobs", "start action refused: player has no account id");
 			return;
 		}
 
@@ -189,15 +189,15 @@ class LF_JobStartRunAction : ScriptedUserAction
 		// A first-time courier does not know where the drop is; the toast says.
 		string started = LF_CivilianJob.RunStartedKey(m_eJob);
 		if (!started.IsEmpty())
-			EL_Utils.NotifyEntity(pUserEntity, started, LF_CivilianJob.NameKey(m_eJob), 8.0);
+			LF_Utils.NotifyEntity(pUserEntity, started, LF_CivilianJob.NameKey(m_eJob), 8.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		if (m_eJob == EL_EJobType.FUEL_DELIVERY)
+		if (m_eJob == LF_EJobType.FUEL_DELIVERY)
 			outName = "#EL-Job_Pickup_Fuel";
-		else if (m_eJob == EL_EJobType.TAXI)
+		else if (m_eJob == LF_EJobType.TAXI)
 			outName = "#EL-Job_Start_Taxi";
 		else
 			outName = "#EL-Job_Pickup_Parcel";
@@ -231,14 +231,14 @@ class LF_JobDropoffAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		string uid = EL_Utils.GetPlayerUid(pUserEntity);
+		string uid = LF_Utils.GetPlayerUid(pUserEntity);
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "dropoff action refused: player has no account id");
+			LF_Debug.Error("Jobs", "dropoff action refused: player has no account id");
 			return;
 		}
 
-		EL_EJobType finished = LF_CivilianJob.GetActiveJob(uid);
+		LF_EJobType finished = LF_CivilianJob.GetActiveJob(uid);
 		if (!LF_CivilianJob.TakeCargo(pUserEntity, finished))
 			return;
 
@@ -249,18 +249,18 @@ class LF_JobDropoffAction : ScriptedUserAction
 
 		LF_CivilianJob.HandCash(pUserEntity, paid);
 
-		EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(pUserEntity);
+		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(pUserEntity);
 		if (jobs)
 			jobs.PullCareer();
 		else
-			EL_Debug.Error("Jobs", "dropoff action: player has no EL_PlayerJobComponent");
+			LF_Debug.Error("Jobs", "dropoff action: player has no LF_PlayerJobComponent");
 
-		EL_Utils.NotifyEntity(pUserEntity, "#EL-Job_Paid", LF_CivilianJob.NameKey(finished), 4.0, paid.ToString());
+		LF_Utils.NotifyEntity(pUserEntity, "#EL-Job_Paid", LF_CivilianJob.NameKey(finished), 4.0, paid.ToString());
 
 		// Hidden progression: no level text. When the experience opens new work, the clerk says so.
-		EL_EJobType opened = LF_CivilianJob.NewlyOpened(levelBefore, LF_CivilianJob.GetLevel(uid));
-		if (opened != EL_EJobType.UNEMPLOYED)
-			EL_Utils.NotifyEntity(pUserEntity, "#LF-Job_NewWork", LF_CivilianJob.NameKey(opened), 6.0);
+		LF_EJobType opened = LF_CivilianJob.NewlyOpened(levelBefore, LF_CivilianJob.GetLevel(uid));
+		if (opened != LF_EJobType.UNEMPLOYED)
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Job_NewWork", LF_CivilianJob.NameKey(opened), 6.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -296,18 +296,18 @@ class LF_JobAbandonAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		string uid = EL_Utils.GetPlayerUid(pUserEntity);
+		string uid = LF_Utils.GetPlayerUid(pUserEntity);
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "abandon action refused: player has no account id");
+			LF_Debug.Error("Jobs", "abandon action refused: player has no account id");
 			return;
 		}
 
-		EL_EJobType finished = LF_CivilianJob.GetActiveJob(uid);
+		LF_EJobType finished = LF_CivilianJob.GetActiveJob(uid);
 		if (!LF_CivilianJob.AbandonRun(uid))
 			return;
 
-		EL_Utils.NotifyEntity(pUserEntity, "#EL-Job_Abandoned", LF_CivilianJob.NameKey(finished), 4.0);
+		LF_Utils.NotifyEntity(pUserEntity, "#EL-Job_Abandoned", LF_CivilianJob.NameKey(finished), 4.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

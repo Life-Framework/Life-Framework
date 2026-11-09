@@ -4,7 +4,7 @@ GenericEntity AppleTrader {
   $grp GenericEntity {
    AppleTradeContainer {
     components {
-     EL_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
+     LF_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
       Attributes SCR_ItemAttributeCollection "{59693C53B153D96B}" {
        ItemDisplayName UIInfo "{59693C53AAB06F2D}" {
         Name "Apple Trade"
@@ -27,9 +27,9 @@ GenericEntity AppleTrader {
        "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
       }
      }
-     EL_TraderManagerComponent "{59693C53B6A5EFC0}" {
+     LF_TraderManagerComponent "{59693C53B6A5EFC0}" {
       m_aTradableItems {
-       EL_TraderItem "{58CA092EB7FD6143}" {
+       LF_TraderItem "{58CA092EB7FD6143}" {
         m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
         m_ValuePerItem 5
        }
@@ -54,7 +54,7 @@ GenericEntity AppleTrader {
        }
       }
       additionalActions {
-       EL_OpenTraderAction "{59670CE9FBF3C749}" {
+       LF_OpenTraderAction "{59670CE9FBF3C749}" {
         ParentContextList {
          "default"
         }
@@ -102,7 +102,7 @@ GenericEntity AppleTrader {
    }
    AppleTradeContainer3 {
     components {
-     EL_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
+     LF_RestrictedInventoryStorageComponent "{59693C53BBA0FC99}" {
       Attributes SCR_ItemAttributeCollection "{59693C53B153D96B}" {
        ItemDisplayName UIInfo "{59693C53AAB06F2D}" {
         Name "Apple Juice Trade"
@@ -125,9 +125,9 @@ GenericEntity AppleTrader {
        "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
       }
      }
-     EL_TraderManagerComponent "{59693C53B6A5EFC0}" {
+     LF_TraderManagerComponent "{59693C53B6A5EFC0}" {
       m_aTradableItems {
-       EL_TraderItem "{813045BD92EF6A7C}" {
+       LF_TraderItem "{813045BD92EF6A7C}" {
         m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
         m_ValuePerItem 15
        }
@@ -152,7 +152,7 @@ GenericEntity AppleTrader {
        }
       }
       additionalActions {
-       EL_OpenTraderAction "{59670CE9FBF3C749}" {
+       LF_OpenTraderAction "{59670CE9FBF3C749}" {
         ParentContextList {
          "default"
         }
@@ -183,7 +183,7 @@ GenericEntity AppleTrader {
     Flags 0x403 0
     coords -3.6 0 0.7
    }
-  EL_NpcBaseEntity AppleNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity AppleNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {
@@ -200,7 +200,7 @@ Tree AppleGatherTree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domest
  components {
   ActionsManagerComponent "{596540948BBDD481}" {
    additionalActions {
-    EL_GatherAction "{59654094806921B6}" {
+    LF_GatherAction "{59654094806921B6}" {
     }
    }
   }

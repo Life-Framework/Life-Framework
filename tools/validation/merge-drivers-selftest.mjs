@@ -51,14 +51,14 @@ if (clash.ok) fail("same id with different text should fail");
 const md = (...lines) => lines.map((line) => `${line}\r\n`).join("");
 const count = (text, needle) => text.split(needle).length - 1;
 const jail = (first, third) => md("### `LF_Jail` — `Jail.c`", `- ${first}`, "- second bullet", `- ${third}`, "");
-const featureBase = md("## Money", "", "### `EL_A` — `A.c`", "- row a", "");
-const featureOurs = featureBase + md("### `EL_B` — `B.c`", "- row b", "");
-const featureTheirs = featureBase + md("### `EL_C` — `C.c`", "- row c", "");
+const featureBase = md("## Money", "", "### `LF_A` — `A.c`", "- row a", "");
+const featureOurs = featureBase + md("### `LF_B` — `B.c`", "- row b", "");
+const featureTheirs = featureBase + md("### `LF_C` — `C.c`", "- row c", "");
 
 // Both-append: each side adds a row at the end of the same section.
 const both = mergeLines(featureBase, featureOurs, featureTheirs);
 if (!both.ok) fail("both-append should merge clean");
-for (const heading of ["### `EL_A`", "### `EL_B`", "### `EL_C`"]) {
+for (const heading of ["### `LF_A`", "### `LF_B`", "### `LF_C`"]) {
   if (count(both.text, heading) !== 1) fail(`both-append should keep ${heading} once:\n${both.text}`);
 }
 
@@ -86,12 +86,12 @@ if (count(dup.text, "## Hospital") !== 1) fail("the section theirs added was not
 // one copy per heading and dropped the other copy's lines.
 const lossBase = md(
   "## Jobs", "",
-  "### `EL_PlayerJobComponent`", "- copy one: job tool grant", "",
-  "### `EL_PlayerJobComponent`", "- copy two: paycheck", "",
+  "### `LF_PlayerJobComponent`", "- copy one: job tool grant", "",
+  "### `LF_PlayerJobComponent`", "- copy two: paycheck", "",
 );
-const loss = mergeLines(lossBase, lossBase, lossBase + md("### `EL_C` — `C.c`", "- row c", ""));
+const loss = mergeLines(lossBase, lossBase, lossBase + md("### `LF_C` — `C.c`", "- row c", ""));
 if (!loss.text.includes("job tool grant") || !loss.text.includes("paycheck")) fail("a row under a repeated heading was dropped");
-if (!loss.text.includes("### `EL_C`")) fail("the row theirs appended was dropped");
+if (!loss.text.includes("### `LF_C`")) fail("the row theirs appended was dropped");
 
 // Genuine conflict: both sides rewrite the same line. Markers, never a pick.
 const clashMd = mergeLines(featureBase, featureBase.replace("row a", "row a, ours"), featureBase.replace("row a", "row a, theirs"));
@@ -126,7 +126,7 @@ const lintRound = mergeLintBaselines(lintText, lintText, lintText);
 if (!lintRound.ok || lintRound.text !== lintText) fail("enforce-lint-baseline.json does not round-trip");
 
 const locPlan = regenPlan("addons/LifeFramework/Language/everonlife_localization.en_us.conf");
-const testPlan = regenPlan("addons/LifeFramework/Scripts/Game/Tests/EL_TestRegistrations.generated.c");
+const testPlan = regenPlan("addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c");
 if (!locPlan || !locPlan.script.endsWith("regen-localization.ps1") || !locPlan.args.includes("-Write")) {
   fail("language confs should resolve by regen-localization -Write");
 }
@@ -139,7 +139,7 @@ const driverConfig = readFileSync(join(ROOT, "tools", "merge", "drivers.gitconfi
 for (const [path, driver] of [
   ["addons/LifeFramework/Language/everonlife_localization.st", "lf-string-table"],
   ["addons/LifeFramework/Language/everonlife_localization.*.conf", "lf-regen-localization"],
-  ["addons/LifeFramework/Scripts/Game/Tests/EL_TestRegistrations.generated.c", "lf-regen-tests"],
+  ["addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c", "lf-regen-tests"],
   ["docs/features.md", "lf-markdown"],
   ["docs/debug-log-triage.md", "lf-markdown"],
   ["tools/validation/enforce-lint-baseline.json", "lf-lint-baseline"],
@@ -228,7 +228,7 @@ try {
   if (featureMerge.status !== 0) fail(`feature-row merge should be clean:\n${featureMerge.stdout}\n${featureMerge.stderr}`);
   else {
     const text = readFileSync(join(featureRepo, "docs", "features.md"), "utf8");
-    if (!text.includes("### `EL_B`") || !text.includes("### `EL_C`")) fail("git merge did not keep both feature rows");
+    if (!text.includes("### `LF_B`") || !text.includes("### `LF_C`")) fail("git merge did not keep both feature rows");
   }
   git(featureRepo, ["checkout", "-q", "-b", "left", "master"]);
   writeFileSync(join(featureRepo, "docs", "features.md"), featureOurs.replace("row b", "row b, left"));
@@ -280,25 +280,25 @@ try {
   configureDriver(regenRepo, "lf-regen-tests", "regen-generated.mjs");
   writeFileSync(
     join(regenRepo, ".gitattributes"),
-    "everonlife_localization.en_us.conf merge=lf-regen-localization\nEL_TestRegistrations.generated.c merge=lf-regen-tests\n",
+    "everonlife_localization.en_us.conf merge=lf-regen-localization\nLF_TestRegistrations.generated.c merge=lf-regen-tests\n",
   );
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "ours-conf\n");
-  writeFileSync(join(regenRepo, "EL_TestRegistrations.generated.c"), "ours-registry\n");
+  writeFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "ours-registry\n");
   commitAll(regenRepo, "base");
   git(regenRepo, ["checkout", "-q", "-b", "theirs"]);
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "theirs-conf\n");
-  writeFileSync(join(regenRepo, "EL_TestRegistrations.generated.c"), "theirs-registry\n");
+  writeFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "theirs-registry\n");
   commitAll(regenRepo, "theirs");
   git(regenRepo, ["checkout", "-q", "master"]);
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "master-conf\n");
-  writeFileSync(join(regenRepo, "EL_TestRegistrations.generated.c"), "master-registry\n");
+  writeFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "master-registry\n");
   commitAll(regenRepo, "ours");
   const regenEnv = { ...process.env, LF_MERGE_REGEN_MODE: "plan" };
   const regenMerge = git(regenRepo, ["merge", "theirs", "--no-edit"], regenEnv);
   if (regenMerge.status !== 0) fail(`regen driver merge should be clean:\n${regenMerge.stdout}\n${regenMerge.stderr}`);
   else {
     const conf = readFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "utf8");
-    const registry = readFileSync(join(regenRepo, "EL_TestRegistrations.generated.c"), "utf8");
+    const registry = readFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "utf8");
     if (!conf.startsWith("regen:localization")) fail(`conf driver wrote ${JSON.stringify(conf)}`);
     if (!registry.startsWith("regen:tests")) fail(`registry driver wrote ${JSON.stringify(registry)}`);
   }

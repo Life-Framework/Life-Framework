@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Civilian delivery work. Courier, fuel delivery, and taxi are taken at a
 //! workplace. A run pays cash once. Abandoning it pays nothing. Job XP lives
-//! here; EL_PlayerJobComponent.AddExperience copies it onto the player.
+//! here; LF_PlayerJobComponent.AddExperience copies it onto the player.
 //!
 //! Level 1 may take courier work. Level 2 opens fuel delivery. Level 3 opens
 //! taxi. Experience per run and per level come from LF_JobsConfig (flagship: 100 XP
@@ -11,13 +11,13 @@
 class LF_JobWorker : Managed
 {
 	string m_sPlayerUid;
-	EL_EJobType m_eJob;
+	LF_EJobType m_eJob;
 	bool m_bSignedUp;
 	bool m_bActive;
 	int m_iPaidTotal;
 	float m_fExperience;
 	int m_iLevel;
-	EL_EJobType m_eActiveJob;
+	LF_EJobType m_eActiveJob;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -55,8 +55,8 @@ class LF_CivilianJob
 		{
 			worker = new LF_JobWorker();
 			worker.m_sPlayerUid = playerUid;
-			worker.m_eJob = EL_EJobType.UNEMPLOYED;
-			worker.m_eActiveJob = EL_EJobType.UNEMPLOYED;
+			worker.m_eJob = LF_EJobType.UNEMPLOYED;
+			worker.m_eActiveJob = LF_EJobType.UNEMPLOYED;
 			worker.m_iLevel = 1;
 			worker.m_fExperience = 0;
 			Workers().Set(playerUid, worker);
@@ -96,7 +96,7 @@ class LF_CivilianJob
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "career restore refused: empty player id");
+			LF_Debug.Error("Jobs", "career restore refused: empty player id");
 			return;
 		}
 
@@ -116,21 +116,21 @@ class LF_CivilianJob
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The delivery job the player is signed up for, or UNEMPLOYED (never creates a career).
-	static EL_EJobType GetSignedUpJob(string playerUid)
+	static LF_EJobType GetSignedUpJob(string playerUid)
 	{
 		if (!s_mWorkers || playerUid.IsEmpty())
-			return EL_EJobType.UNEMPLOYED;
+			return LF_EJobType.UNEMPLOYED;
 
 		LF_JobWorker worker = s_mWorkers.Get(playerUid);
 		if (!worker || !worker.m_bSignedUp)
-			return EL_EJobType.UNEMPLOYED;
+			return LF_EJobType.UNEMPLOYED;
 
 		return worker.m_eJob;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Persistence seam: one record per signed-up player. The job is stored by enum name, so a
-	//! reordered EL_EJobType does not move a saved sign-up to another job. An active run is not
+	//! reordered LF_EJobType does not move a saved sign-up to another job. An active run is not
 	//! saved; after a restart the player is still signed up and starts a new run.
 	static array<ref LF_JobSignUpRecord> ExportSignUps()
 	{
@@ -143,7 +143,7 @@ class LF_CivilianJob
 			if (!worker || !worker.m_bSignedUp || !IsDeliveryJob(worker.m_eJob))
 				continue;
 
-			records.Insert(LF_JobSignUpRecord.Create(playerUid, typename.EnumToString(EL_EJobType, worker.m_eJob)));
+			records.Insert(LF_JobSignUpRecord.Create(playerUid, typename.EnumToString(LF_EJobType, worker.m_eJob)));
 		}
 
 		return records;
@@ -170,7 +170,7 @@ class LF_CivilianJob
 				bodies++;
 		}
 
-		EL_Debug.Info("Jobs", string.Format("restored %1 of %2 job sign-up(s), %3 live body(ies)", restored, records.Count(), bodies));
+		LF_Debug.Info("Jobs", string.Format("restored %1 of %2 job sign-up(s), %3 live body(ies)", restored, records.Count(), bodies));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -181,27 +181,27 @@ class LF_CivilianJob
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Warn("Jobs", string.Format("saved sign-up '%1' has no player id, skipped", jobName));
+			LF_Debug.Warn("Jobs", string.Format("saved sign-up '%1' has no player id, skipped", jobName));
 			return false;
 		}
 
-		EL_EJobType job = typename.StringToEnum(EL_EJobType, jobName);
-		if (typename.EnumToString(EL_EJobType, job) != jobName || !IsDeliveryJob(job))
+		LF_EJobType job = typename.StringToEnum(LF_EJobType, jobName);
+		if (typename.EnumToString(LF_EJobType, job) != jobName || !IsDeliveryJob(job))
 		{
-			EL_Debug.Warn("Jobs", string.Format("saved sign-up '%1' for %2 is not a delivery job, stays unemployed", jobName, playerUid));
+			LF_Debug.Warn("Jobs", string.Format("saved sign-up '%1' for %2 is not a delivery job, stays unemployed", jobName, playerUid));
 			return false;
 		}
 
 		if (!CanSignUp(playerUid, job))
 		{
-			EL_Debug.Warn("Jobs", string.Format("saved sign-up %1 for %2 is above career level %3, stays unemployed", jobName, playerUid, GetLevel(playerUid)));
+			LF_Debug.Warn("Jobs", string.Format("saved sign-up %1 for %2 is above career level %3, stays unemployed", jobName, playerUid, GetLevel(playerUid)));
 			return false;
 		}
 
 		LF_JobWorker worker = Worker(playerUid);
 		worker.m_eJob = job;
 		worker.m_bSignedUp = true;
-		EL_Debug.Info("Jobs", string.Format("sign-up restored %1 -> %2", playerUid, jobName));
+		LF_Debug.Info("Jobs", string.Format("sign-up restored %1 -> %2", playerUid, jobName));
 		return true;
 	}
 
@@ -212,20 +212,20 @@ class LF_CivilianJob
 	//! \return true when the body carries the signed-up job afterwards.
 	static bool ApplySignUpToCharacter(string playerUid, IEntity character)
 	{
-		EL_EJobType job = GetSignedUpJob(playerUid);
-		if (job == EL_EJobType.UNEMPLOYED || !character)
+		LF_EJobType job = GetSignedUpJob(playerUid);
+		if (job == LF_EJobType.UNEMPLOYED || !character)
 			return false;
 
-		EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(character);
+		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(character);
 		if (!jobs)
 		{
-			EL_Debug.Error("Jobs", string.Format("sign-up %1 not put on %2's body: no EL_PlayerJobComponent", typename.EnumToString(EL_EJobType, job), playerUid));
+			LF_Debug.Error("Jobs", string.Format("sign-up %1 not put on %2's body: no LF_PlayerJobComponent", typename.EnumToString(LF_EJobType, job), playerUid));
 			return false;
 		}
 
 		if (!jobs.SetJob(job))
 		{
-			EL_Debug.Warn("Jobs", string.Format("sign-up %1 not put on %2's body: the job component refused it", typename.EnumToString(EL_EJobType, job), playerUid));
+			LF_Debug.Warn("Jobs", string.Format("sign-up %1 not put on %2's body: the job component refused it", typename.EnumToString(LF_EJobType, job), playerUid));
 			return false;
 		}
 
@@ -246,7 +246,7 @@ class LF_CivilianJob
 		players.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
 		{
-			if (EL_Utils.GetPlayerUID(playerId) != playerUid)
+			if (LF_Utils.GetPlayerUID(playerId) != playerUid)
 				continue;
 
 			IEntity body = players.GetPlayerControlledEntity(playerId);
@@ -258,46 +258,46 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool IsDeliveryJob(EL_EJobType job)
+	static bool IsDeliveryJob(LF_EJobType job)
 	{
-		if (job == EL_EJobType.PARCEL)
+		if (job == LF_EJobType.PARCEL)
 			return true;
-		if (job == EL_EJobType.FUEL_DELIVERY)
+		if (job == LF_EJobType.FUEL_DELIVERY)
 			return true;
-		if (job == EL_EJobType.TAXI)
+		if (job == LF_EJobType.TAXI)
 			return true;
 
 		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int RequiredLevel(EL_EJobType job)
+	static int RequiredLevel(LF_EJobType job)
 	{
-		if (job == EL_EJobType.FUEL_DELIVERY)
+		if (job == LF_EJobType.FUEL_DELIVERY)
 			return 2;
-		if (job == EL_EJobType.TAXI)
+		if (job == LF_EJobType.TAXI)
 			return 3;
 
 		return 1;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int PayFor(EL_EJobType job)
+	static int PayFor(LF_EJobType job)
 	{
-		if (job == EL_EJobType.FUEL_DELIVERY)
+		if (job == LF_EJobType.FUEL_DELIVERY)
 			return PAY_FUEL;
-		if (job == EL_EJobType.TAXI)
+		if (job == LF_EJobType.TAXI)
 			return PAY_TAXI;
 
 		return PAY_PARCEL;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static ResourceName PrefabFor(EL_EJobType job)
+	static ResourceName PrefabFor(LF_EJobType job)
 	{
-		if (job == EL_EJobType.FUEL_DELIVERY)
+		if (job == LF_EJobType.FUEL_DELIVERY)
 			return FUEL_PREFAB;
-		if (job == EL_EJobType.TAXI)
+		if (job == LF_EJobType.TAXI)
 			return TAXI_PREFAB;
 
 		return PARCEL_PREFAB;
@@ -331,10 +331,10 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static EL_EJobType GetJob(string playerUid)
+	static LF_EJobType GetJob(string playerUid)
 	{
 		if (playerUid.IsEmpty())
-			return EL_EJobType.UNEMPLOYED;
+			return LF_EJobType.UNEMPLOYED;
 
 		return Worker(playerUid).m_eJob;
 	}
@@ -349,31 +349,31 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static EL_EJobType GetActiveJob(string playerUid)
+	static LF_EJobType GetActiveJob(string playerUid)
 	{
 		if (playerUid.IsEmpty())
-			return EL_EJobType.UNEMPLOYED;
+			return LF_EJobType.UNEMPLOYED;
 
 		return Worker(playerUid).m_eActiveJob;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool HasCargo(EL_EJobType job)
+	static bool HasCargo(LF_EJobType job)
 	{
-		if (job == EL_EJobType.PARCEL)
+		if (job == LF_EJobType.PARCEL)
 			return true;
-		if (job == EL_EJobType.FUEL_DELIVERY)
+		if (job == LF_EJobType.FUEL_DELIVERY)
 			return true;
 
 		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string NameKey(EL_EJobType job)
+	static string NameKey(LF_EJobType job)
 	{
-		if (job == EL_EJobType.FUEL_DELIVERY)
+		if (job == LF_EJobType.FUEL_DELIVERY)
 			return "#EL-Job_Name_Fuel";
-		if (job == EL_EJobType.TAXI)
+		if (job == LF_EJobType.TAXI)
 			return "#EL-Job_Name_Taxi";
 
 		return "#EL-Job_Name_Courier";
@@ -381,11 +381,11 @@ class LF_CivilianJob
 
 	//------------------------------------------------------------------------------------------------
 	//! The sign-up toast body: the next step, at the same counter.
-	static string SignedUpKey(EL_EJobType job)
+	static string SignedUpKey(LF_EJobType job)
 	{
-		if (job == EL_EJobType.FUEL_DELIVERY)
+		if (job == LF_EJobType.FUEL_DELIVERY)
 			return "#LF-Job_SignedUp_Fuel";
-		if (job == EL_EJobType.TAXI)
+		if (job == LF_EJobType.TAXI)
 			return "#LF-Job_SignedUp_Taxi";
 
 		return "#LF-Job_SignedUp_Courier";
@@ -393,9 +393,9 @@ class LF_CivilianJob
 
 	//------------------------------------------------------------------------------------------------
 	//! The toast when a run starts: where the cargo goes. Empty for a job that does not need one.
-	static string RunStartedKey(EL_EJobType job)
+	static string RunStartedKey(LF_EJobType job)
 	{
-		if (job == EL_EJobType.PARCEL)
+		if (job == LF_EJobType.PARCEL)
 			return "#LF-Job_RunStarted_Courier";
 
 		return string.Empty;
@@ -404,7 +404,7 @@ class LF_CivilianJob
 	//------------------------------------------------------------------------------------------------
 	//! Whether "Complete the run" and "Abandon" are offered. The server reads its run map. The
 	//! runs live on the server only, so a dedicated client decides from what it can see: the job
-	//! replicated on its EL_PlayerJobComponent and the cargo in its own inventory (ClientRunOpen).
+	//! replicated on its LF_PlayerJobComponent and the cargo in its own inventory (ClientRunOpen).
 	//! Reading the server map on the client greyed both actions for every hosted player.
 	static bool RunOfferOpen(IEntity user)
 	{
@@ -413,12 +413,12 @@ class LF_CivilianJob
 
 		if (Replication.IsServer())
 		{
-			string uid = EL_Utils.GetPlayerUid(user);
+			string uid = LF_Utils.GetPlayerUid(user);
 			return !uid.IsEmpty() && HasActiveRun(uid);
 		}
 
-		EL_EJobType bodyJob = EL_EJobType.UNEMPLOYED;
-		EL_PlayerJobComponent jobs = EL_Component<EL_PlayerJobComponent>.Find(user);
+		LF_EJobType bodyJob = LF_EJobType.UNEMPLOYED;
+		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(user);
 		if (jobs)
 			bodyJob = jobs.GetJob();
 
@@ -427,7 +427,7 @@ class LF_CivilianJob
 		{
 			InventoryStorageManagerComponent storage = InventoryStorageManagerComponent.Cast(user.FindComponent(InventoryStorageManagerComponent));
 			if (storage)
-				carrying = !EL_InventoryUtils.FindItemsByPrefab(storage, PrefabFor(bodyJob)).IsEmpty();
+				carrying = !LF_InventoryUtils.FindItemsByPrefab(storage, PrefabFor(bodyJob)).IsEmpty();
 		}
 
 		return ClientRunOpen(bodyJob, carrying);
@@ -436,7 +436,7 @@ class LF_CivilianJob
 	//------------------------------------------------------------------------------------------------
 	//! Client rule for an active run: a delivery job on the body, and its cargo in hand when the
 	//! job has one (a taxi fare has none; the server refuses a fare that is not running).
-	static bool ClientRunOpen(EL_EJobType bodyJob, bool carryingCargo)
+	static bool ClientRunOpen(LF_EJobType bodyJob, bool carryingCargo)
 	{
 		if (!IsDeliveryJob(bodyJob))
 			return false;
@@ -448,7 +448,7 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool CanSignUp(string playerUid, EL_EJobType job)
+	static bool CanSignUp(string playerUid, LF_EJobType job)
 	{
 		if (playerUid.IsEmpty() || !IsDeliveryJob(job))
 			return false;
@@ -457,58 +457,58 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool SignUp(string playerUid, EL_EJobType job)
+	static bool SignUp(string playerUid, LF_EJobType job)
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "signup refused: empty player id");
+			LF_Debug.Error("Jobs", "signup refused: empty player id");
 			return false;
 		}
 
 		if (!IsDeliveryJob(job))
 		{
-			EL_Debug.Error("Jobs", string.Format("signup refused: %1 is not a delivery job", typename.EnumToString(EL_EJobType, job)));
+			LF_Debug.Error("Jobs", string.Format("signup refused: %1 is not a delivery job", typename.EnumToString(LF_EJobType, job)));
 			return false;
 		}
 
 		if (!CanSignUp(playerUid, job))
 		{
-			EL_Debug.Log("Jobs", string.Format("signup rejected: %1 level %2 below %3 for %4", playerUid, GetLevel(playerUid), RequiredLevel(job), typename.EnumToString(EL_EJobType, job)));
+			LF_Debug.Log("Jobs", string.Format("signup rejected: %1 level %2 below %3 for %4", playerUid, GetLevel(playerUid), RequiredLevel(job), typename.EnumToString(LF_EJobType, job)));
 			return false;
 		}
 
 		LF_JobWorker worker = Worker(playerUid);
 		worker.m_eJob = job;
 		worker.m_bSignedUp = true;
-		EL_Debug.Log("Jobs", string.Format("signed up %1 -> %2 (level %3)", playerUid, typename.EnumToString(EL_EJobType, job), worker.m_iLevel));
+		LF_Debug.Log("Jobs", string.Format("signed up %1 -> %2 (level %3)", playerUid, typename.EnumToString(LF_EJobType, job), worker.m_iLevel));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool StartRun(string playerUid, EL_EJobType job)
+	static bool StartRun(string playerUid, LF_EJobType job)
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "start refused: empty player id");
+			LF_Debug.Error("Jobs", "start refused: empty player id");
 			return false;
 		}
 
 		if (!IsDeliveryJob(job))
 		{
-			EL_Debug.Error("Jobs", "start refused: not a delivery job");
+			LF_Debug.Error("Jobs", "start refused: not a delivery job");
 			return false;
 		}
 
 		LF_JobWorker worker = Worker(playerUid);
 		if (!worker.m_bSignedUp || worker.m_eJob != job)
 		{
-			EL_Debug.Log("Jobs", string.Format("start rejected: %1 is not signed up for %2", playerUid, typename.EnumToString(EL_EJobType, job)));
+			LF_Debug.Log("Jobs", string.Format("start rejected: %1 is not signed up for %2", playerUid, typename.EnumToString(LF_EJobType, job)));
 			return false;
 		}
 
 		if (worker.m_bActive)
 		{
-			EL_Debug.Log("Jobs", string.Format("start rejected: %1 already has a run", playerUid));
+			LF_Debug.Log("Jobs", string.Format("start rejected: %1 already has a run", playerUid));
 			return false;
 		}
 
@@ -517,7 +517,7 @@ class LF_CivilianJob
 
 		worker.m_bActive = true;
 		worker.m_eActiveJob = job;
-		EL_Debug.Log("Jobs", string.Format("run started %1 job %2", playerUid, typename.EnumToString(EL_EJobType, job)));
+		LF_Debug.Log("Jobs", string.Format("run started %1 job %2", playerUid, typename.EnumToString(LF_EJobType, job)));
 		return true;
 	}
 
@@ -527,25 +527,25 @@ class LF_CivilianJob
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "complete refused: empty player id");
+			LF_Debug.Error("Jobs", "complete refused: empty player id");
 			return 0;
 		}
 
 		LF_JobWorker worker = Worker(playerUid);
 		if (!worker.m_bActive)
 		{
-			EL_Debug.Log("Jobs", string.Format("complete rejected: %1 has no active run", playerUid));
+			LF_Debug.Log("Jobs", string.Format("complete rejected: %1 has no active run", playerUid));
 			return 0;
 		}
 
 		int amount = PayFor(worker.m_eActiveJob);
-		EL_EJobType finished = worker.m_eActiveJob;
+		LF_EJobType finished = worker.m_eActiveJob;
 		worker.m_bActive = false;
-		worker.m_eActiveJob = EL_EJobType.UNEMPLOYED;
+		worker.m_eActiveJob = LF_EJobType.UNEMPLOYED;
 		worker.m_iPaidTotal = worker.m_iPaidTotal + amount;
 
 		AddExperience(playerUid, XpPerRun());
-		EL_Debug.Log("Jobs", string.Format("run paid %1 to %2", amount, playerUid));
+		LF_Debug.Log("Jobs", string.Format("run paid %1 to %2", amount, playerUid));
 		return amount;
 	}
 
@@ -555,20 +555,20 @@ class LF_CivilianJob
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "abandon refused: empty player id");
+			LF_Debug.Error("Jobs", "abandon refused: empty player id");
 			return false;
 		}
 
 		LF_JobWorker worker = Worker(playerUid);
 		if (!worker.m_bActive)
 		{
-			EL_Debug.Log("Jobs", string.Format("abandon rejected: %1 has no active run", playerUid));
+			LF_Debug.Log("Jobs", string.Format("abandon rejected: %1 has no active run", playerUid));
 			return false;
 		}
 
 		worker.m_bActive = false;
-		worker.m_eActiveJob = EL_EJobType.UNEMPLOYED;
-		EL_Debug.Log("Jobs", string.Format("run abandoned by %1, no pay", playerUid));
+		worker.m_eActiveJob = LF_EJobType.UNEMPLOYED;
+		LF_Debug.Log("Jobs", string.Format("run abandoned by %1, no pay", playerUid));
 		return true;
 	}
 
@@ -580,82 +580,82 @@ class LF_CivilianJob
 		if (!user || amount <= 0)
 			return;
 
-		int given = EL_MoneyUtils.GiveCash(user, amount);
+		int given = LF_MoneyUtils.GiveCash(user, amount);
 		if (given != amount)
-			EL_Debug.Warn("Jobs", string.Format("run payout short: paid %1 of %2 (player %3)", given, amount, user));
+			LF_Debug.Warn("Jobs", string.Format("run payout short: paid %1 of %2 (player %3)", given, amount, user));
 		else
-			EL_Debug.Log("Jobs", string.Format("run cash +%1", given));
+			LF_Debug.Log("Jobs", string.Format("run cash +%1", given));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Puts one parcel or fuel can on the player. Taxi uses the rank vehicle.
 	//! A full inventory leaves no run and no leftover item.
-	static bool GiveCargo(IEntity user, EL_EJobType job)
+	static bool GiveCargo(IEntity user, LF_EJobType job)
 	{
 		if (!HasCargo(job))
 			return true;
 
 		if (!user)
 		{
-			EL_Debug.Error("Jobs", "cargo give refused: no player");
+			LF_Debug.Error("Jobs", "cargo give refused: no player");
 			return false;
 		}
 
 		ResourceName prefab = PrefabFor(job);
-		int added = EL_InventoryUtils.AddAmount(user, prefab, 1, false);
+		int added = LF_InventoryUtils.AddAmount(user, prefab, 1, false);
 		if (added != 1)
 		{
-			EL_Debug.Error("Jobs", "cargo give failed: " + prefab);
+			LF_Debug.Error("Jobs", "cargo give failed: " + prefab);
 			return false;
 		}
 
-		EL_Debug.Log("Jobs", string.Format("cargo given %1", prefab));
+		LF_Debug.Log("Jobs", string.Format("cargo given %1", prefab));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Removes the parcel or fuel can. The fuel can is consumed here.
-	static bool TakeCargo(IEntity user, EL_EJobType job)
+	static bool TakeCargo(IEntity user, LF_EJobType job)
 	{
 		if (!HasCargo(job))
 			return true;
 
 		if (!user)
 		{
-			EL_Debug.Error("Jobs", "cargo take refused: no player");
+			LF_Debug.Error("Jobs", "cargo take refused: no player");
 			return false;
 		}
 
 		ResourceName prefab = PrefabFor(job);
-		int removed = EL_InventoryUtils.RemoveAmount(user, prefab, 1);
+		int removed = LF_InventoryUtils.RemoveAmount(user, prefab, 1);
 		if (removed != 1)
 		{
-			EL_Debug.Error("Jobs", "cargo missing at dropoff: " + prefab);
+			LF_Debug.Error("Jobs", "cargo missing at dropoff: " + prefab);
 			return false;
 		}
 
-		if (job == EL_EJobType.FUEL_DELIVERY)
-			EL_Debug.Log("Jobs", string.Format("fuel can consumed for %1", EL_Utils.GetPlayerUID(user)));
+		if (job == LF_EJobType.FUEL_DELIVERY)
+			LF_Debug.Log("Jobs", string.Format("fuel can consumed for %1", LF_Utils.GetPlayerUID(user)));
 		else
-			EL_Debug.Log("Jobs", string.Format("parcel delivered for %1", EL_Utils.GetPlayerUID(user)));
+			LF_Debug.Log("Jobs", string.Format("parcel delivered for %1", LF_Utils.GetPlayerUID(user)));
 
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Job XP for the civilian career. EL_PlayerJobComponent.AddExperience
+	//! Job XP for the civilian career. LF_PlayerJobComponent.AddExperience
 	//! forwards here. Each level needs XpForLevel(level); the remainder stays.
 	static void AddExperience(string playerUid, float amount)
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "experience refused: empty player id");
+			LF_Debug.Error("Jobs", "experience refused: empty player id");
 			return;
 		}
 
 		if (amount <= 0)
 		{
-			EL_Debug.Error("Jobs", "experience refused: non-positive amount");
+			LF_Debug.Error("Jobs", "experience refused: non-positive amount");
 			return;
 		}
 
@@ -671,26 +671,26 @@ class LF_CivilianJob
 			step = XpForLevel(worker.m_iLevel);
 		}
 
-		EL_Debug.Log("Jobs", string.Format("job xp +%1 -> level %2 xp %3 (%4)", amount, worker.m_iLevel, worker.m_fExperience, playerUid));
+		LF_Debug.Log("Jobs", string.Format("job xp +%1 -> level %2 xp %3 (%4)", amount, worker.m_iLevel, worker.m_fExperience, playerUid));
 		if (worker.m_iLevel > levelBefore)
-			EL_Debug.Log("Jobs", string.Format("job level -> %1 (%2)", worker.m_iLevel, playerUid));
+			LF_Debug.Log("Jobs", string.Format("job level -> %1 (%2)", worker.m_iLevel, playerUid));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The delivery job that a rise from levelBefore to levelAfter opens, or UNEMPLOYED.
 	//! The clerk mentions new work; the level itself is never shown.
-	static EL_EJobType NewlyOpened(int levelBefore, int levelAfter)
+	static LF_EJobType NewlyOpened(int levelBefore, int levelAfter)
 	{
 		if (levelAfter <= levelBefore)
-			return EL_EJobType.UNEMPLOYED;
+			return LF_EJobType.UNEMPLOYED;
 
-		if (levelBefore < RequiredLevel(EL_EJobType.TAXI) && levelAfter >= RequiredLevel(EL_EJobType.TAXI))
-			return EL_EJobType.TAXI;
+		if (levelBefore < RequiredLevel(LF_EJobType.TAXI) && levelAfter >= RequiredLevel(LF_EJobType.TAXI))
+			return LF_EJobType.TAXI;
 
-		if (levelBefore < RequiredLevel(EL_EJobType.FUEL_DELIVERY) && levelAfter >= RequiredLevel(EL_EJobType.FUEL_DELIVERY))
-			return EL_EJobType.FUEL_DELIVERY;
+		if (levelBefore < RequiredLevel(LF_EJobType.FUEL_DELIVERY) && levelAfter >= RequiredLevel(LF_EJobType.FUEL_DELIVERY))
+			return LF_EJobType.FUEL_DELIVERY;
 
-		return EL_EJobType.UNEMPLOYED;
+		return LF_EJobType.UNEMPLOYED;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -739,13 +739,13 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool PrefabLoads(EL_EJobType job)
+	protected static bool PrefabLoads(LF_EJobType job)
 	{
 		ResourceName prefab = PrefabFor(job);
 		Resource loaded = Resource.Load(prefab);
 		if (!loaded.IsValid())
 		{
-			EL_Debug.Error("Jobs", "run prefab missing: " + prefab);
+			LF_Debug.Error("Jobs", "run prefab missing: " + prefab);
 			return false;
 		}
 

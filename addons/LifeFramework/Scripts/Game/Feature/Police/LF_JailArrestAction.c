@@ -41,7 +41,7 @@ class LF_JailArrestAction : ScriptedUserAction
 		if (!LF_PlayerInteraction.CanOffer(user, GetOwner()))
 			return false;
 
-		return EL_AccountStateBits.IsOnDutyPolice(EL_AccountReplication.GetState(user));
+		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -68,13 +68,13 @@ class LF_JailArrestAction : ScriptedUserAction
 
 		// Offer checks run on the client too, where accounts do not exist: read the replicated
 		// state (the account cache on the server). PerformAction re-checks on the server.
-		if (EL_AccountStateBits.GetWantedLevel(EL_AccountReplication.GetState(GetOwner())) <= 0)
+		if (LF_AccountStateBits.GetWantedLevel(LF_AccountReplication.GetState(GetOwner())) <= 0)
 		{
 			SetCannotPerformReason("#EL-Jail_NotWanted");
 			return false;
 		}
 
-		if (!LF_PoliceRanks.CanArrestRank(EL_AccountStateBits.GetPoliceRank(EL_AccountReplication.GetState(user))))
+		if (!LF_PoliceRanks.CanArrestRank(LF_AccountStateBits.GetPoliceRank(LF_AccountReplication.GetState(user))))
 		{
 			SetCannotPerformReason("#EL-Rank_ArrestDenied");
 			return false;
@@ -92,19 +92,19 @@ class LF_JailArrestAction : ScriptedUserAction
 		LF_EInteractionRefusal refusal = LF_PlayerInteraction.CheckPair(pUserEntity, pOwnerEntity);
 		if (refusal != LF_EInteractionRefusal.NONE)
 		{
-			EL_Debug.Warn("Jail", "arrest action refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
+			LF_Debug.Warn("Jail", "arrest action refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
 			return;
 		}
 
-		EL_PlayerAccount officerAccount = EL_PoliceUtils.GetAccountForEntity(pUserEntity);
+		LF_PlayerAccount officerAccount = LF_PoliceUtils.GetAccountForEntity(pUserEntity);
 		if (!LF_PoliceRanks.AuthorizeArrest(officerAccount))
 			return;
 
-		string officerUid = EL_Utils.GetPlayerUid(pUserEntity);
-		string prisonerUid = EL_Utils.GetPlayerUid(pOwnerEntity);
+		string officerUid = LF_Utils.GetPlayerUid(pUserEntity);
+		string prisonerUid = LF_Utils.GetPlayerUid(pOwnerEntity);
 		if (officerUid.IsEmpty() || prisonerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jail", "arrest action refused: officer or suspect has no account id");
+			LF_Debug.Error("Jail", "arrest action refused: officer or suspect has no account id");
 			return;
 		}
 

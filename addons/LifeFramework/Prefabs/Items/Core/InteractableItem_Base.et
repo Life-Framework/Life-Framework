@@ -17,7 +17,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    }
   }
   SCR_GadgetComponent "{5AD2A3AD8402632B}" {
-   m_eAnimVariable EL_ITEM
+   m_eAnimVariable LF_ITEM
   }
  }
 }

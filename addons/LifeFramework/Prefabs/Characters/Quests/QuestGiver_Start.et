@@ -1,4 +1,4 @@
-EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
  ID "E8989175335080B8"
  components {
   LF_QuestGiverComponent "{7949D44D2207BE39}" {

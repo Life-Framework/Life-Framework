@@ -14,7 +14,7 @@ police check. This is the visible proof of the `VehicleLock` ownership chain.
 Rung 1 for the plate itself (attached to the vehicle), rung 3 for
 registration (DMV counter).
 
-Today: `EL_LicensePlateManager` and generators produce `"AA BB NNNN"` plates;
+Today: `LF_LicensePlateManager` and generators produce `"AA BB NNNN"` plates;
 prefabs under `Prefabs/Vehicles/LicensePlate/` and
 `Assets/Vehicles/LicensePlate/`; `UI/Layouts/LicensePlate/`.
 
@@ -24,7 +24,7 @@ prefabs under `Prefabs/Vehicles/LicensePlate/` and
    `Math.RandomInt(100, 9999)` excludes `9999`.
 2. Add a **registry of issued plates** — no uniqueness guarantee today, so two
    cars can share a plate and police checks are meaningless.
-3. `EL_LicensePlateManager` needs a destructor to clear `s_Instance`.
+3. `LF_LicensePlateManager` needs a destructor to clear `s_Instance`.
 
 ## Iteration path
 
@@ -33,7 +33,7 @@ prefabs under `Prefabs/Vehicles/LicensePlate/` and
 
 ## Current state
 
-- `EL_LicensePlateManager` + `EL_LicensePlateGeneratorGeneric`
+- `LF_LicensePlateManager` + `LF_LicensePlateGeneratorGeneric`
   (`Feature/LicensePlate/`) — ❌ off-by-ones, no uniqueness registry, no
   destructor.
 

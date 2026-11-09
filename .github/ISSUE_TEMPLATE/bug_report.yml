@@ -41,7 +41,7 @@ body:
     id: logs
     attributes:
       label: Logs or screenshots
-      description: Console.log excerpts, `[ELTEST]` output, or screenshots.
+      description: Console.log excerpts, `[LFTEST]` output, or screenshots.
       render: shell
 
   - type: input

@@ -11,7 +11,7 @@ physical thing with a life of its own, not a menu option.
 
 ## Interaction pattern (in-world)
 
-Rung 1. `EL_DestructibleResourceComponent` + `EL_DestructibleResourceHitZone`
+Rung 1. `LF_DestructibleResourceComponent` + `LF_DestructibleResourceHitZone`
 gate damage to configured tools, apply per-hit damage, and play FX on hit.
 
 Target: nodes that visibly deplete, crumble, and respawn; damage sources that
@@ -22,7 +22,7 @@ dealing 0 is a design bug — it must say "no".
 ## V1 (shippable)
 
 1. Non-tool or unmapped damage **does not silently no-op** — log it
-   (`EL_Debug`) and give the player feedback.
+   (`LF_Debug`) and give the player feedback.
 2. Robust damage-source identification (no casing fragility).
 3. Depletion state on the node with a respawn path.
 
@@ -34,7 +34,7 @@ dealing 0 is a design bug — it must say "no".
 
 ## Current state
 
-- `EL_DestructibleResourceComponent` / `EL_DestructibleResourceHitZone`
+- `LF_DestructibleResourceComponent` / `LF_DestructibleResourceHitZone`
   (`Feature/Resources/`) — tool-gated damage, per-hit damage, FX.
 - ⚠️ Unmapped or wrong-tool damage deals 0 silently; damage-source string
   comparison is fragile on casing.

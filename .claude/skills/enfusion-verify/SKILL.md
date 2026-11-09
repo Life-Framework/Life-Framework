@@ -10,7 +10,7 @@ prove it; `AGENTS.md` defines the ladder and the proof classes.
 
 1. Inspect the real diff and artifacts, not your summary of them. Run
    `tools\cli validate` for every code or resource change.
-2. Run the relevant `EL_Test` tier in a worktree: `tools\cli test --no-build
+2. Run the relevant `LF_Test` tier in a worktree: `tools\cli test --no-build
    --tier fast` for logic, `--tier all` for world/runtime changes and before
    calling a phase complete. `tools\cli logs <pattern>` greps the run.
 3. Exercise the actual feature path: DebugWorld play mode, the agent box

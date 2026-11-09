@@ -5,6 +5,6 @@ class LF_FixtureServerToast : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		EL_Utils.Notify("#LF-Fixture_Done", "#LF-Fixture_Title", 3.0);
+		LF_Utils.Notify("#LF-Fixture_Done", "#LF-Fixture_Title", 3.0);
 	}
 }

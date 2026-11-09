@@ -5,7 +5,7 @@ OverlayWidgetClass {
   SizeMode Fill
  }
  components {
-  EL_ThinSliderWidget "{5A78AECEC487F728}" {
+  LF_ThinSliderWidget "{5A78AECEC487F728}" {
   }
  }
  {

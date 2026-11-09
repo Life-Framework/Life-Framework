@@ -39,7 +39,7 @@ const MENU_ACTIONS = new Set([
   "MenuLeft",
   "MenuRight",
   "MenuSelect",
-  "EL_OpenDebugMenu",
+  "LF_OpenDebugMenu",
 ]);
 
 // --client <n> (or setBoxes) points every command at one session client's
@@ -773,8 +773,8 @@ function selftest() {
   if (rendererFor("C:/x/Life-Framework", procs) !== 1) throw new Error("renderer by gproj");
   const check = spawnSync(process.execPath, ["--check", join(ROOT, "agent-box", "mcp-server.mjs")], { windowsHide: true, encoding: "utf8" });
   if ((check.status ?? 1) !== 0) throw new Error(check.stderr || "life-agent-box MCP server failed to parse");
-  const use = buildLine(4, { verb: "use", className: "EL_ShopAction", entityName: "Trader_01" });
-  if (use !== "4 use EL_ShopAction Trader_01") throw new Error(use);
+  const use = buildLine(4, { verb: "use", className: "LF_ShopAction", entityName: "Trader_01" });
+  if (use !== "4 use LF_ShopAction Trader_01") throw new Error(use);
   const input = buildLine(5, { verb: "input", action: "MenuSelect" });
   if (input !== "5 input MenuSelect") throw new Error(input);
   const world = buildLine(8, { verb: "capture", mode: "world", name: "atm_pad", x: 128, y: 1, z: 133 });
@@ -799,9 +799,9 @@ function selftest() {
   if (addressFor(null, "R", theirs).id !== "") throw new Error("Workbench boxes carry no session");
   const list = pads();
   const atm = findPad(list, "ATM_Debug");
-  if (!atm || !atm.actions.includes("EL_ATMAction")) throw new Error("ATM_Debug missing from layer catalog");
+  if (!atm || !atm.actions.includes("LF_ATMAction")) throw new Error("ATM_Debug missing from layer catalog");
   const shop = findPad(list, "Shop_GeneralStore_Debug");
-  if (!shop || shop.actions[0] !== "EL_ShopAction") throw new Error("Shop_GeneralStore_Debug missing from layer catalog");
+  if (!shop || shop.actions[0] !== "LF_ShopAction") throw new Error("Shop_GeneralStore_Debug missing from layer catalog");
   // $grp members carry world coords; children add their parent's (village layout,
   // docs/roadmap/m1-25-village.md).
   if (shop.x !== 179 || shop.z !== 244.3) throw new Error(`shop coords ${shop.x} ${shop.z}`);
@@ -809,16 +809,16 @@ function selftest() {
   // AppleTrader 197 0 240.6 plus the container's -2.6 0.9 0.7.
   if (!apple || apple.x !== 194.4 || apple.z !== 241.3) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
   const police = findPad(list, "Roadmap_Police_Desk");
-  if (!police || police.x !== 232.9 || police.z !== 239.6 || !police.actions.includes("EL_DutyAction")) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
+  if (!police || police.x !== 232.9 || police.z !== 239.6 || !police.actions.includes("LF_DutyAction")) throw new Error(`police coords ${police && police.x} ${police && police.z}`);
   const pile = findPad(list, "CementPile_Debug");
-  if (!pile || !pile.actions.includes("EL_GatherAction")) throw new Error("CementPile_Debug gather missing");
+  if (!pile || !pile.actions.includes("LF_GatherAction")) throw new Error("CementPile_Debug gather missing");
   const ore = findPad(list, "IronOre_Debug");
   // Ore rocks are mined by a pickaxe swing, so they carry no action and are not pads.
-  if (ore && ore.actions.includes("EL_GatherAction")) throw new Error("IronOre_Debug still has an F-key gather; it is mined by hitting it");
+  if (ore && ore.actions.includes("LF_GatherAction")) throw new Error("IronOre_Debug still has an F-key gather; it is mined by hitting it");
   const counter = findPad(list, "TraderChainCounter");
-  if (!counter || !counter.actions.includes("EL_OpenTraderAction")) throw new Error("TraderChainCounter missing");
+  if (!counter || !counter.actions.includes("LF_OpenTraderAction")) throw new Error("TraderChainCounter missing");
   const saw = findPad(list, "Sawmill_Debug");
-  if (!saw || !saw.actions.includes("EL_ProcessAction")) throw new Error("Sawmill_Debug process missing");
+  if (!saw || !saw.actions.includes("LF_ProcessAction")) throw new Error("Sawmill_Debug process missing");
   let rejected = false;
   try {
     buildLine(1, { verb: "input", action: "MoveForward" });
@@ -873,7 +873,7 @@ function selftest() {
   const chain = checkChains(ROOT);
   if (!chain.ok) throw new Error(chain.errors.join("; "));
   const appleFlow = readFlow("chain-apple").filter((line) => line.trim() && !line.trim().startsWith("#"));
-  if (!appleFlow.includes("use EL_GatherAction AppleGatherTree") || !appleFlow.includes("use EL_OpenTraderAction AppleTradeContainer")) {
+  if (!appleFlow.includes("use LF_GatherAction AppleGatherTree") || !appleFlow.includes("use LF_OpenTraderAction AppleTradeContainer")) {
     throw new Error(appleFlow.join("|"));
   }
   const editPlay = playSteps("edit");
@@ -885,7 +885,7 @@ function selftest() {
   const street = judgeStreet([
     { name: "Roadmap_A", x: 210, y: 0, z: 120, look: "LF_BreachArmAction@Roadmap_A", mesh: "ok", menu: null, src: "shots/Roadmap_A.png" },
     { name: "Roadmap_B", x: 228, y: 0, z: 120, look: "none", mesh: "ok", menu: null, src: "shots/Roadmap_B.png" },
-    { name: "Roadmap_Far", x: 228, y: 0, z: 200, look: "EL_RobAction@Roadmap_Far", mesh: "ok", menu: null, src: "shots/Roadmap_Far.png" },
+    { name: "Roadmap_Far", x: 228, y: 0, z: 200, look: "LF_RobAction@Roadmap_Far", mesh: "ok", menu: null, src: "shots/Roadmap_Far.png" },
   ]);
   const byName = Object.fromEntries(street.map((row) => [row.name, row]));
   if (byName.Roadmap_B.ok || !byName.Roadmap_B.failures.includes("look offers no interaction")) {
@@ -897,7 +897,7 @@ function selftest() {
   if (!byName.Roadmap_A.ok) throw new Error("a close site with an interaction must pass");
   const selfActions = judgeRoadmapRow({
     name: "Roadmap_Garage",
-    look: "SCR_LootDeadBodyAction,EL_ConfiscateAction",
+    look: "SCR_LootDeadBodyAction,LF_ConfiscateAction",
     mesh: "ok",
     distanceM: 18,
     menu: null,
@@ -905,7 +905,7 @@ function selftest() {
   if (selfActions.ok || !selfActions.failures.includes("look offers no interaction")) {
     throw new Error("the character's own actions are not the site");
   }
-  if (siteLook("Roadmap_Garage", "EL_VehicleStoreAction@Roadmap_Garage,SCR_LootDeadBodyAction") !== "EL_VehicleStoreAction@Roadmap_Garage") {
+  if (siteLook("Roadmap_Garage", "LF_VehicleStoreAction@Roadmap_Garage,SCR_LootDeadBodyAction") !== "LF_VehicleStoreAction@Roadmap_Garage") {
     throw new Error("a named site keeps only its own action");
   }
   const northShot = siteShotOffset("Roadmap_Garage", { x: 238, y: 0, z: STREET_Z + 6.6 });
@@ -919,13 +919,13 @@ function selftest() {
   if (!judgeRoadmapRow({ name: "Roadmap_Convoy_Start", look: "LF_ConvoyStartAction@Roadmap_Convoy_Start", mesh: "ok", distanceM: 170, menu: null }).ok) {
     throw new Error("the contraband pickup is out of town by design");
   }
-  if (!judgeRoadmapRow({ look: "EL_RobAction@X", mesh: "ok", distanceM: 30, menu: null }).ok) {
+  if (!judgeRoadmapRow({ look: "LF_RobAction@X", mesh: "ok", distanceM: 30, menu: null }).ok) {
     throw new Error("30 m is still with the street");
   }
-  const whiteRow = judgeRoadmapRow({ look: "EL_RobAction@X", mesh: "white", distanceM: 18, menu: null });
+  const whiteRow = judgeRoadmapRow({ look: "LF_RobAction@X", mesh: "white", distanceM: 18, menu: null });
   if (whiteRow.ok || !whiteRow.failures.includes("mesh is white or missing")) throw new Error("white mesh must fail");
   const blankMenu = judgeRoadmapRow({
-    look: "EL_OrganizationDeskAction@Roadmap_Org_Desk",
+    look: "LF_OrganizationDeskAction@Roadmap_Org_Desk",
     mesh: "ok",
     distanceM: 18,
     menu: "none",
@@ -934,7 +934,7 @@ function selftest() {
   if (menuActionFromLook("none") || menuActionFromLook("LF_BreachArmAction@Roadmap_Breach_Door")) {
     throw new Error("world actions are not menus");
   }
-  if (menuActionFromLook("EL_OrganizationDeskAction@Roadmap_Org_Desk") !== "EL_OrganizationDeskAction@Roadmap_Org_Desk") {
+  if (menuActionFromLook("LF_OrganizationDeskAction@Roadmap_Org_Desk") !== "LF_OrganizationDeskAction@Roadmap_Org_Desk") {
     throw new Error("desk action opens a menu");
   }
   const whitePixels = Buffer.alloc(2 * 2 * 3, 255);
@@ -973,7 +973,7 @@ function selftest() {
   const paintedCell = presentedMesh("Roadmap_Jail_Cell", "white", "LF_JailArrestAction@Roadmap_Jail_Cell");
   if (paintedCell !== "painted-light") throw new Error("prison cell with an action is painted-light");
   if (presentedMesh("Roadmap_Jail_Door", "white", "none") !== "white") throw new Error("a white door with no action stays white");
-  if (presentedMesh("Roadmap_Garage", "white", "EL_VehicleStoreAction@Roadmap_Garage") !== "white") {
+  if (presentedMesh("Roadmap_Garage", "white", "LF_VehicleStoreAction@Roadmap_Garage") !== "white") {
     throw new Error("a white mesh on any other site stays a failure");
   }
   const paintedRow = judgeRoadmapRow({
@@ -985,7 +985,7 @@ function selftest() {
   });
   if (!paintedRow.ok) throw new Error("painted-light prison door must pass");
   const whiteMenu = judgeRoadmapRow({
-    look: "EL_OrganizationDeskAction@Roadmap_Org_Desk",
+    look: "LF_OrganizationDeskAction@Roadmap_Org_Desk",
     mesh: "ok",
     distanceM: 3,
     menu: "CloseButton",
@@ -993,7 +993,7 @@ function selftest() {
   });
   if (whiteMenu.ok || !whiteMenu.failures.includes("menu is blank")) throw new Error("a white menu shot is blank");
   const listedMenu = judgeRoadmapRow({
-    look: "EL_OrganizationDeskAction@Roadmap_Org_Desk",
+    look: "LF_OrganizationDeskAction@Roadmap_Org_Desk",
     mesh: "ok",
     distanceM: 3,
     menu: "CloseButton",
@@ -1028,7 +1028,7 @@ function selftest() {
       { name: "Roadmap_Jail_Door", layer: "Roadmap.layer", x: 192, y: 0, z: 120 },
     ],
     stand: () => ({ status: "ok", detail: "stood" }),
-    look: () => ({ status: "ok", detail: "EL_VehicleStoreAction@Roadmap_Garage" }),
+    look: () => ({ status: "ok", detail: "LF_VehicleStoreAction@Roadmap_Garage" }),
     ui: () => ({ status: "ok", detail: "CloseButton" }),
     use: () => ({ status: "ok" }),
     input: () => ({ status: "ok" }),
@@ -1057,7 +1057,7 @@ function selftest() {
       { name: "Roadmap_Jail_Door", layer: "Roadmap.layer", x: 192, y: 0, z: 120 },
     ],
     stand: () => ({ status: "ok", detail: "stood" }),
-    look: () => ({ status: "ok", detail: "EL_VehicleStoreAction@Roadmap_Garage" }),
+    look: () => ({ status: "ok", detail: "LF_VehicleStoreAction@Roadmap_Garage" }),
     ui: () => ({ status: "ok", detail: "none" }),
     use: () => ({ status: "ok" }),
     input: () => ({ status: "ok" }),
@@ -1114,7 +1114,7 @@ function townSelftest() {
   if (!spawn || spawn.place.layer !== "Gamemode.layer") throw new Error("spawn must resolve to the Spawn_Town placement");
   if (!spawn.sign || spawn.signIssues.length) throw new Error(`the town map must stand within 8 m of the spawn: ${spawn.signIssues.join("; ")}`);
   const mining = real.rows.find((row) => row.site.id === "mining");
-  if (!mining || !mining.sign || mining.sign.name !== "EL_MiningSign_Debug" || mining.signIssues.length) {
+  if (!mining || !mining.sign || mining.sign.name !== "LF_MiningSign_Debug" || mining.signIssues.length) {
     throw new Error(`the mining sign must be found within 8 m with a card: ${mining && mining.signIssues.join("; ")}`);
   }
   if (manifestErrors({ ...TOWN, sites: [{ id: "a", entity: "A", actions: [], sign: null, step: 1, x: 3 }] }).length !== 1) {

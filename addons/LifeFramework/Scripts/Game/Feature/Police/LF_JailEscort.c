@@ -160,7 +160,7 @@ class LF_JailEscort
 		int baseFlag = 0;
 		if (baseGame)
 			baseFlag = 1;
-		EL_Debug.Log("Jail", string.Format("escort vehicle %1 base=%2", vehicleId, baseFlag));
+		LF_Debug.Log("Jail", string.Format("escort vehicle %1 base=%2", vehicleId, baseFlag));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ class LF_JailEscort
 
 		if (distanceMeters < 0)
 		{
-			EL_Debug.Error("Jail", "escort seat clamped: negative distance");
+			LF_Debug.Error("Jail", "escort seat clamped: negative distance");
 			distanceMeters = 0;
 		}
 
@@ -522,15 +522,15 @@ class LF_JailEscort
 			return false;
 		}
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts)
 		{
 			FailNote("escort refused: no account manager");
 			return false;
 		}
 
-		EL_PlayerAccount officer = accounts.GetAccount(officerUid);
-		if (!EL_PoliceUtils.IsOnDutyOfficer(officer))
+		LF_PlayerAccount officer = accounts.GetAccount(officerUid);
+		if (!LF_PoliceUtils.IsOnDutyOfficer(officer))
 		{
 			Note(string.Format("escort refused: %1 is not an on-duty officer", officerUid));
 			return false;
@@ -542,7 +542,7 @@ class LF_JailEscort
 			return false;
 		}
 
-		EL_PlayerAccount prisoner = accounts.GetAccount(prisonerUid);
+		LF_PlayerAccount prisoner = accounts.GetAccount(prisonerUid);
 		if (!prisoner)
 		{
 			FailNote(string.Format("escort refused: no account for %1", prisonerUid));
@@ -561,11 +561,11 @@ class LF_JailEscort
 	//------------------------------------------------------------------------------------------------
 	protected static bool OnDuty(string officerUid)
 	{
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts)
 			return false;
 
-		return EL_PoliceUtils.IsOnDutyOfficer(accounts.GetAccount(officerUid));
+		return LF_PoliceUtils.IsOnDutyOfficer(accounts.GetAccount(officerUid));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -633,13 +633,13 @@ class LF_JailEscort
 	protected static void Note(string message)
 	{
 		s_sLastLog = message;
-		EL_Debug.Log("Jail", message);
+		LF_Debug.Log("Jail", message);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected static void FailNote(string message)
 	{
 		s_sLastLog = message;
-		EL_Debug.Error("Jail", message);
+		LF_Debug.Error("Jail", message);
 	}
 }

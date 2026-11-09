@@ -137,7 +137,7 @@ class LF_SiteAlarmComponent : ScriptComponent
 		// The first try can come before the listener is placed; Tick retries the sound while the
 		// alarm lives, so a player who walks into range later still hears it.
 		GetGame().GetCallqueue().CallLater(Tick, m_iFlashMs, true);
-		EL_Debug.Info(FEATURE, string.Format("site alarm up at %1: loud=%2 flash=%3", owner.GetOrigin(), m_bLoud, m_bFlash));
+		LF_Debug.Info(FEATURE, string.Format("site alarm up at %1: loud=%2 flash=%3", owner.GetOrigin(), m_bLoud, m_bFlash));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ class LF_SiteAlarmComponent : ScriptComponent
 			if (m_Light)
 				delete m_Light;
 
-			EL_Debug.Info(FEATURE, string.Format("site alarm down at %1: loud=%2", owner.GetOrigin(), m_bLoud));
+			LF_Debug.Info(FEATURE, string.Format("site alarm down at %1: loud=%2", owner.GetOrigin(), m_bLoud));
 		}
 
 		super.OnDelete(owner);
@@ -193,7 +193,7 @@ class LF_SiteAlarmComponent : ScriptComponent
 
 		if (m_sSoundProject.IsEmpty() || m_sSoundEvent.IsEmpty())
 		{
-			EL_Debug.Error(FEATURE, "site alarm has no sound project or event; the alarm is silent");
+			LF_Debug.Error(FEATURE, "site alarm has no sound project or event; the alarm is silent");
 			m_bSoundBroken = true;
 			return;
 		}
@@ -217,7 +217,7 @@ class LF_SiteAlarmComponent : ScriptComponent
 
 		sound.PlayAudioSource(audio);
 		m_Audio = audio;
-		EL_Debug.Info(FEATURE, string.Format("site alarm sounding: %1 %2 loud=%3", m_sSoundProject, m_sSoundEvent, m_bLoud));
+		LF_Debug.Info(FEATURE, string.Format("site alarm sounding: %1 %2 loud=%3", m_sSoundProject, m_sSoundEvent, m_bLoud));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -226,7 +226,7 @@ class LF_SiteAlarmComponent : ScriptComponent
 		m_Light = LightEntity.CreateLight(LightType.POINT, LightFlags.CASTSHADOW, m_fLightRadius, Color.FromVector(m_vLightColor), m_fLightLV, m_vLightOffset);
 		if (!m_Light)
 		{
-			EL_Debug.Error(FEATURE, "site alarm light was not created");
+			LF_Debug.Error(FEATURE, "site alarm light was not created");
 			return;
 		}
 

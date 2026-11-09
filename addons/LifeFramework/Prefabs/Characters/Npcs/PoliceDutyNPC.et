@@ -1,4 +1,4 @@
-EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
  ID "PoliceDutyNPC"
  components {
   CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
@@ -18,7 +18,7 @@ EL_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
     }
    }
    additionalActions + {
-    EL_OpenPoliceMenuAction "{8CC2DDEDDEB10C07}" {
+    LF_OpenPoliceMenuAction "{8CC2DDEDDEB10C07}" {
      ParentContextList {
       "Duty"
      }

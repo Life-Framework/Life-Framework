@@ -25,7 +25,7 @@ or a balance becomes cash.
 1. **Money flow is honest — DONE (verified 2026-08-30).** Deposit takes real
    cash out of the player's inventory (partial removals rolled back), Withdraw
    pays real cash in (all-or-nothing with balance restore). Server-guarded via
-   `EL_CharacterATMComponent.RpcAsk_Deposit` / `RpcAsk_Withdraw`.
+   `LF_CharacterATMComponent.RpcAsk_Deposit` / `RpcAsk_Withdraw`.
 2. Server-guarded transaction path (RPC ask → server validates balance and
    cash → result) — DONE.
 3. A physical ATM prefab at the bank branch as the interaction point — pending.
@@ -37,7 +37,7 @@ or a balance becomes cash.
 
 ## Current state
 
-- `EL_ATMManager` + `EL_BankAccount` (`Feature/ATM/`) — the canonical bank:
+- `LF_ATMManager` + `LF_BankAccount` (`Feature/ATM/`) — the canonical bank:
   session map registry + async loader; persistent per-player balance with
   deposit/withdraw guards. ✅ `SetBalance` clamps corrupt values;
   `CreateAccount` rejects empty IDs and preserves existing accounts on
@@ -46,7 +46,7 @@ or a balance becomes cash.
   (keypad, balance, carried cash, DEPOSIT/WITHDRAW); prints the server's
   refusal reason (`LF_EATMRefusal`) on the screen. Opens only for the player
   who used the machine.
-- `EL_ATMAction` / `EL_CharacterATMComponent` — interaction and per-character
+- `LF_ATMAction` / `LF_CharacterATMComponent` — interaction and per-character
   wiring.
 - Persistence: `Feature/ATM/Persistence/`.
 

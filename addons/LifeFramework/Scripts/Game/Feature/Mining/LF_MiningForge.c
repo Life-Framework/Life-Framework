@@ -1,5 +1,5 @@
 // Ported from thebonbon/EveronLife (MIT), enhancement/Main_World:
-// EL_ProcessAction timed process on the ore forge (nugget to bar).
+// LF_ProcessAction timed process on the ore forge (nugget to bar).
 // Copyright (c) 2022 EveronLife
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -63,7 +63,7 @@ class LF_MiningForge
 	{
 		if (!heat)
 		{
-			EL_Debug.Error("Mining", "forge recipe rejected: no heat");
+			LF_Debug.Error("Mining", "forge recipe rejected: no heat");
 			return;
 		}
 
@@ -98,13 +98,13 @@ class LF_MiningForge
 		heat.m_iElapsedMs = 0;
 		if (heat.m_iNuggets < heat.m_iNuggetsRequired)
 		{
-			EL_Debug.Error("Mining", "forge failed: nugget missing when the heat finished");
+			LF_Debug.Error("Mining", "forge failed: nugget missing when the heat finished");
 			return false;
 		}
 
 		heat.m_iNuggets = heat.m_iNuggets - heat.m_iNuggetsRequired;
 		heat.m_iBars = heat.m_iBars + heat.m_iBarsYielded;
-		EL_Debug.Log("Mining", string.Format("forge finished %1 -> %2", heat.m_Nugget, heat.m_Bar));
+		LF_Debug.Log("Mining", string.Format("forge finished %1 -> %2", heat.m_Nugget, heat.m_Bar));
 		return true;
 	}
 
@@ -115,31 +115,31 @@ class LF_MiningForge
 	{
 		if (!heat)
 		{
-			EL_Debug.Error("Mining", "forge rejected: no heat");
+			LF_Debug.Error("Mining", "forge rejected: no heat");
 			return false;
 		}
 
 		if (heat.m_bHeating)
 		{
-			EL_Debug.Error("Mining", "forge rejected: a heat is already running");
+			LF_Debug.Error("Mining", "forge rejected: a heat is already running");
 			return false;
 		}
 
 		if (!RecipeReady(heat))
 		{
-			EL_Debug.Error("Mining", "forge rejected: nugget or bar is not configured");
+			LF_Debug.Error("Mining", "forge rejected: nugget or bar is not configured");
 			return false;
 		}
 
 		if (heat.m_iNuggets < heat.m_iNuggetsRequired)
 		{
-			EL_Debug.Error("Mining", "forge rejected: nugget missing");
+			LF_Debug.Error("Mining", "forge rejected: nugget missing");
 			return false;
 		}
 
 		heat.m_bHeating = true;
 		heat.m_iElapsedMs = 0;
-		EL_Debug.Log("Mining", string.Format("forge started for %1 ms", heat.m_iDurationMs));
+		LF_Debug.Log("Mining", string.Format("forge started for %1 ms", heat.m_iDurationMs));
 		if (heat.m_iDurationMs <= 0)
 			return Finish(heat);
 

@@ -39,7 +39,7 @@ class LF_HospitalBillComponent : ScriptComponent
 
 		if (m_bIssued)
 		{
-			EL_Debug.Warn("Respawn", "bill not printed: already printed");
+			LF_Debug.Warn("Respawn", "bill not printed: already printed");
 			return false;
 		}
 
@@ -97,35 +97,35 @@ class LF_HospitalBill
 	{
 		if (!Replication.IsServer() || !character)
 		{
-			EL_Debug.Error("Respawn", "bill not granted: not the server or no character");
+			LF_Debug.Error("Respawn", "bill not granted: not the server or no character");
 			return null;
 		}
 
-		IEntity item = EL_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
+		IEntity item = LF_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
 		if (!item)
 		{
-			EL_Debug.Error("Respawn", "bill not granted: prefab did not spawn: " + PREFAB);
+			LF_Debug.Error("Respawn", "bill not granted: prefab did not spawn: " + PREFAB);
 			return null;
 		}
 
 		LF_HospitalBillComponent bill = LF_HospitalBillComponent.Cast(item.FindComponent(LF_HospitalBillComponent));
 		if (!bill)
 		{
-			EL_Debug.Error("Respawn", "bill not granted: " + PREFAB + " has no LF_HospitalBillComponent");
+			LF_Debug.Error("Respawn", "bill not granted: " + PREFAB + " has no LF_HospitalBillComponent");
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return null;
 		}
 
 		bill.Issue(amount, balanceAfter, date, newLifeMinutes);
 
-		InventoryStorageManagerComponent storage = EL_Component<InventoryStorageManagerComponent>.Find(character);
+		InventoryStorageManagerComponent storage = LF_Component<InventoryStorageManagerComponent>.Find(character);
 		if (!storage || !storage.TryInsertItem(item))
 		{
-			EL_Debug.Warn("Respawn", "no room for the hospital bill; it stays at the bed");
+			LF_Debug.Warn("Respawn", "no room for the hospital bill; it stays at the bed");
 			return item;
 		}
 
-		EL_Debug.Info("Respawn", string.Format("hospital bill printed: %1 on %2, balance %3", amount, date, balanceAfter));
+		LF_Debug.Info("Respawn", string.Format("hospital bill printed: %1 on %2, balance %3", amount, date, balanceAfter));
 		return item;
 	}
 
@@ -170,8 +170,8 @@ class LF_HospitalBillCard
 		ref array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "BillTitle", "#LF-Hospital_BillTitle"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.ROW, "BillDate", date));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillAmount", WidgetManager.Translate("#LF-Hospital_BillAmount", EL_MoneyFormat.FormatMoney(amount))));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillBalance", WidgetManager.Translate("#LF-Hospital_BillBalance", EL_MoneyFormat.FormatMoney(balanceAfter))));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillAmount", WidgetManager.Translate("#LF-Hospital_BillAmount", LF_MoneyFormat.FormatMoney(amount))));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillBalance", WidgetManager.Translate("#LF-Hospital_BillBalance", LF_MoneyFormat.FormatMoney(balanceAfter))));
 		if (balanceAfter < 0)
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillDebt", "#LF-Hospital_BillDebt"));
 
@@ -191,7 +191,7 @@ class LF_HospitalBillCard
 		s_Screen = LF_UIScreen.Open(BuildParts(amount, balanceAfter, date, newLifeMinutes));
 		if (!s_Screen)
 		{
-			EL_Debug.Error("Respawn", "hospital bill card failed to open");
+			LF_Debug.Error("Respawn", "hospital bill card failed to open");
 			return null;
 		}
 
@@ -200,7 +200,7 @@ class LF_HospitalBillCard
 		if (anchor)
 			s_Screen.CloseBeyond(CLOSE_DISTANCE, anchor.GetID());
 
-		EL_Debug.Info("Respawn", string.Format("hospital bill read: %1, balance %2", amount, balanceAfter));
+		LF_Debug.Info("Respawn", string.Format("hospital bill read: %1, balance %2", amount, balanceAfter));
 		return s_Screen;
 	}
 
@@ -233,7 +233,7 @@ class LF_HospitalBillReadAction : ScriptedUserAction
 	{
 		m_Bill = LF_HospitalBillComponent.Cast(pOwnerEntity.FindComponent(LF_HospitalBillComponent));
 		if (!m_Bill)
-			EL_Debug.Error("Respawn", "Read bill action on an entity with no LF_HospitalBillComponent; Read hidden");
+			LF_Debug.Error("Respawn", "Read bill action on an entity with no LF_HospitalBillComponent; Read hidden");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -251,12 +251,12 @@ class LF_HospitalBillReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!pOwnerEntity || pUserEntity != EL_Utils.GetLocalCharacter())
+		if (!pOwnerEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
 
 		if (!m_Bill || !m_Bill.IsIssued())
 		{
-			EL_Debug.Warn("Respawn", "Read performed on a blank bill; card not opened");
+			LF_Debug.Warn("Respawn", "Read performed on a blank bill; card not opened");
 			return;
 		}
 

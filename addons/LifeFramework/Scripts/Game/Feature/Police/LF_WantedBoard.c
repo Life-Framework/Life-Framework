@@ -33,13 +33,13 @@ class LF_WantedBoard
 
 		array<LF_WantedReportRecord> reports = {};
 		LF_WantedReports.CollectNewestFirst(reports);
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		foreach (LF_WantedReportRecord report : reports)
 		{
 			if (maxPosters > 0 && outOffences.Count() >= maxPosters)
 				break;
 
-			EL_PlayerAccount account;
+			LF_PlayerAccount account;
 			if (accounts)
 				account = accounts.GetFromCache(report.m_sPlayerUid);
 
@@ -77,18 +77,18 @@ class LF_WantedBoard
 		int playerId = controller.GetPlayerId();
 		IEntity reader = controller.GetControlledEntity();
 		
-		if (!reader || !EL_ActionSite.IsNear(reader.GetOrigin(), LF_PoliceConfig.BoardReadDistance(), READ_ACTION))
+		if (!reader || !LF_ActionSite.IsNear(reader.GetOrigin(), LF_PoliceConfig.BoardReadDistance(), READ_ACTION))
 		{
-			EL_Debug.Warn(FEATURE, string.Format("board read refused for player %1: not at a wanted board", playerId));
+			LF_Debug.Warn(FEATURE, string.Format("board read refused for player %1: not at a wanted board", playerId));
 			return;
 		}
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
-		EL_PlayerAccount account;
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		LF_PlayerAccount account;
 		if (accounts)
 			account = accounts.GetFromCache(playerId);
 
-		bool police = EL_PoliceUtils.IsOnDutyOfficer(account);
+		bool police = LF_PoliceUtils.IsOnDutyOfficer(account);
 		array<string> names = {};
 		array<string> offences = {};
 		array<string> clothing = {};
@@ -101,7 +101,7 @@ class LF_WantedBoard
 		if (police)
 			LF_Dispatch.BuildBoardEntries(LF_PoliceConfig.DispatchLogLines(), dispatches);
 
-		EL_Debug.Info(FEATURE, string.Format("board read by player %1: police=%2 posters=%3 dispatches=%4", playerId, police, count, dispatches.Count()));
+		LF_Debug.Info(FEATURE, string.Format("board read by player %1: police=%2 posters=%3 dispatches=%4", playerId, police, count, dispatches.Count()));
 		controller.LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels, dispatches);
 	}
 
@@ -129,7 +129,7 @@ class LF_WantedBoard
 		bool sizesMatch = names && clothing && vehicles && places && levels && names.Count() == count && clothing.Count() == count && vehicles.Count() == count && places.Count() == count && levels.Count() == count;
 		if (!sizesMatch)
 		{
-			EL_Debug.Error(FEATURE, "board reply dropped: poster arrays differ in size");
+			LF_Debug.Error(FEATURE, "board reply dropped: poster arrays differ in size");
 			count = 0;
 		}
 
@@ -243,7 +243,7 @@ class LF_WantedBoard
 		s_Screen = LF_UIScreen.Open(BuildParts(police, names, offences, clothing, vehicles, places, levels, dispatches));
 		if (!s_Screen)
 		{
-			EL_Debug.Error(FEATURE, "wanted card failed to open");
+			LF_Debug.Error(FEATURE, "wanted card failed to open");
 			return;
 		}
 
@@ -254,10 +254,10 @@ class LF_WantedBoard
 		float range = LF_PoliceConfig.BoardReadDistance();
 		if (s_PendingBoard == EntityID.INVALID)
 		{
-			IEntity reader = EL_Utils.GetLocalCharacter();
+			IEntity reader = LF_Utils.GetLocalCharacter();
 			IEntity board;
 			if (reader)
-				board = EL_ActionSite.FindNear(reader.GetOrigin(), range + 2, READ_ACTION);
+				board = LF_ActionSite.FindNear(reader.GetOrigin(), range + 2, READ_ACTION);
 			if (board)
 				s_PendingBoard = board.GetID();
 		}
@@ -271,12 +271,12 @@ class LF_WantedBoard
 		if (offences)
 			count = offences.Count();
 
-		EL_Debug.Info(FEATURE, string.Format("wanted card open: police=%1 posters=%2", police, count));
+		LF_Debug.Info(FEATURE, string.Format("wanted card open: police=%1 posters=%2", police, count));
 		if (dispatches)
 		{
 			foreach (int line, string entry : dispatches)
 			{
-				EL_Debug.Info(FEATURE, string.Format("dispatch line %1: %2", line, entry));
+				LF_Debug.Info(FEATURE, string.Format("dispatch line %1: %2", line, entry));
 			}
 		}
 
@@ -286,7 +286,7 @@ class LF_WantedBoard
 
 		for (int i = 0; i < count; i++)
 		{
-			EL_Debug.Info(FEATURE, string.Format("poster %1: name='%2' offence=%3 level=%4 clothing='%5' vehicle='%6' place='%7'", i, names[i], offences[i], levels[i], clothing[i], vehicles[i], places[i]));
+			LF_Debug.Info(FEATURE, string.Format("poster %1: name='%2' offence=%3 level=%4 clothing='%5' vehicle='%6' place='%7'", i, names[i], offences[i], levels[i], clothing[i], vehicles[i], places[i]));
 		}
 	}
 
@@ -330,7 +330,7 @@ class LF_WantedBoardReadAction : ScriptedUserAction
 
 		// Performed on the server for a remote reader (a server-driven use, as the agent harness
 		// does): answer that reader directly. The same distance rule applies in ServerRead.
-		if (pUserEntity != EL_Utils.GetLocalCharacter())
+		if (pUserEntity != LF_Utils.GetLocalCharacter())
 		{
 			if (!Replication.IsServer())
 				return;
@@ -343,7 +343,7 @@ class LF_WantedBoardReadAction : ScriptedUserAction
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (!controller)
 		{
-			EL_Debug.Error(LF_WantedBoard.FEATURE, "board read not sent: no SCR_PlayerController");
+			LF_Debug.Error(LF_WantedBoard.FEATURE, "board read not sent: no SCR_PlayerController");
 			return;
 		}
 
@@ -378,7 +378,7 @@ modded class SCR_PlayerController
 	//! Server: send this player the posters.
 	void LF_ShowWantedBoard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches)
 	{
-		if (EL_IsLocalController())
+		if (LF_IsLocalController())
 			RpcDo_LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels, dispatches);
 		else
 			Rpc(RpcDo_LF_ShowWantedBoard, police, names, offences, clothing, vehicles, places, levels, dispatches);
@@ -397,7 +397,7 @@ modded class SCR_PlayerController
 	{
 		if (!GetGame().GetWorkspace())
 		{
-			EL_Debug.Error(LF_WantedBoard.FEATURE, "wanted card not opened: no workspace on this machine");
+			LF_Debug.Error(LF_WantedBoard.FEATURE, "wanted card not opened: no workspace on this machine");
 			return;
 		}
 

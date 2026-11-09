@@ -19,7 +19,7 @@ GenericEntity ATM_Debug {
     }
    }
    additionalActions {
-    EL_ATMAction "{5A4B0B84C86D5848}" {
+    LF_ATMAction "{5A4B0B84C86D5848}" {
      ParentContextList {
       "default"
      }
@@ -59,7 +59,7 @@ GenericEntity ATM_Debug_2 {
     }
    }
    additionalActions {
-    EL_ATMAction "{5A4B0B84C86D6A48}" {
+    LF_ATMAction "{5A4B0B84C86D6A48}" {
      ParentContextList {
       "default"
      }

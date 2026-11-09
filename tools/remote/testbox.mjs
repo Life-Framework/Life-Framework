@@ -192,7 +192,7 @@ function sha1File(file) {
 }
 
 function appendStamp(root, line, sha, consoleLog, host) {
-  const m = /\[ELTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)/.exec(line);
+  const m = /\[LFTEST\] SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)/.exec(line);
   if (!m) return null;
   const dir = join(root, "tmp", "test-results");
   mkdirSync(dir, { recursive: true });
@@ -224,7 +224,7 @@ export const PS_BUILDID = [
   "if (Test-Path -LiteralPath $cfg) { $sp = (Get-Content -LiteralPath $cfg -Raw | ConvertFrom-Json).ENFUSION_SERVER_PATH; foreach ($m in @((Join-Path $sp 'steamapps\\appmanifest_1874900.acf'), (Join-Path $sp '..\\..\\appmanifest_1874900.acf'))) { if (Test-Path -LiteralPath $m) { if ((Get-Content -LiteralPath $m -Raw) -match '\"buildid\"\\s+\"(\\d+)\"') { Write-Host \"lf-remote: buildid $($matches[1])\"; break } } } }",
 ].join("\n");
 
-const KEY_LINE = /SCRIPT\s+\(E\)|Virtual Machine Exception|VME|Unable to find|Can't compile|\[ELTEST\]   - |\( E \)/;
+const KEY_LINE = /SCRIPT\s+\(E\)|Virtual Machine Exception|VME|Unable to find|Can't compile|\[LFTEST\]   - |\( E \)/;
 
 // Sends the snapshot (delta bundle) and the rdb to the slot's run folder.
 // Returns { ok, sentBundle, bundleBytes, sentRdb, ms } and records what the
@@ -306,7 +306,7 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
   let summaryLine = "";
   let remoteLog = "";
   const code = await sshPsStream(m.host, ps, (line) => {
-    if (/\[ELTEST\] SUMMARY tier=/.test(line)) summaryLine = line;
+    if (/\[LFTEST\] SUMMARY tier=/.test(line)) summaryLine = line;
     const mm = /^lf-remote: console\.log (.+)$/.exec(line.trim());
     if (mm) remoteLog = mm[1].trim();
   });

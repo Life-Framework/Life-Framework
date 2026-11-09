@@ -70,10 +70,10 @@ The mod lives under `addons/LifeFramework/`:
 | Path | Purpose |
 | --- | --- |
 | `Missions/EveronLifeGameMode.conf` | Scenario → MainWorld |
-| `Missions/EL_DebugTest.conf` | Test scenario → DebugWorld + `EL_Test*` suite |
+| `Missions/EL_DebugTest.conf` | Test scenario → DebugWorld + `LF_Test*` suite |
 | `Worlds/MainWorld` | Everon (`Eden`) sub-scene with the game mode, a spawn point, and one apple-farm area; the other systems are not placed here yet |
 | `Worlds/DebugWorld` | Dev/test bed — one layer per feature |
-| `Scripts/Game/Tests/` | In-game automated tests (`EL_AUTOTEST` define) |
+| `Scripts/Game/Tests/` | In-game automated tests (`LF_AUTOTEST` define) |
 
 **Workbench:** open `LifeFramework.gproj` → Build (PC) → play a scenario.
 
@@ -111,8 +111,8 @@ AGENTS.md               Engineering contract for humans and AI agents
 ## Credits
 
 Fork/continuation of the **Everon Life RPG Framework** by
-[Arkensor](https://github.com/EveronLife/EveronLife) (MIT). The `EL_` class
-prefix reflects that heritage.
+[Arkensor](https://github.com/EveronLife/EveronLife) (MIT). The upstream `EL_` class
+prefix became `LF_` on 2026-11-09; the credit stays.
 
 Parts of the police, jail, garage, and vehicle code are ported from
 [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) by

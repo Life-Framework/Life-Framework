@@ -3,7 +3,7 @@
 // A vehicle survives a restart only when it is stored in a garage. Parking at the garage takes
 // the car off the street into its record; the key stays in the owner's pocket. Retrieve places
 // it on the garage's own pad. At restart every owned vehicle that was not stored is at the
-// impound lot (EL_VehicleOwnership.IsImpounded), and the impound desk hands it back for the
+// impound lot (LF_VehicleOwnership.IsImpounded), and the impound desk hands it back for the
 // configured fee in carried cash. Reading the garage, or the impound desk, opens a ledger card
 // that lists the reader's vehicles: model, plate, and where each one is.
 //
@@ -36,13 +36,13 @@ class LF_GarageConfig
 		Resource container = BaseContainerTools.LoadContainer(CONFIG_PATH);
 		if (!container || !container.GetResource())
 		{
-			EL_Debug.Error("Garage", string.Format("garage config does not resolve: %1", CONFIG_PATH));
+			LF_Debug.Error("Garage", string.Format("garage config does not resolve: %1", CONFIG_PATH));
 			return null;
 		}
 
 		s_Config = LF_GarageConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
-			EL_Debug.Error("Garage", string.Format("garage config has an unexpected root class: %1", CONFIG_PATH));
+			LF_Debug.Error("Garage", string.Format("garage config has an unexpected root class: %1", CONFIG_PATH));
 
 		return s_Config;
 	}
@@ -84,19 +84,19 @@ class LF_Garage
 	{
 		if (!isOwner)
 		{
-			EL_Debug.Log("Garage", "park refused: not the owner");
+			LF_Debug.Log("Garage", "park refused: not the owner");
 			return false;
 		}
 
 		if (inVehicle)
 		{
-			EL_Debug.Log("Garage", "park refused: still in the vehicle");
+			LF_Debug.Log("Garage", "park refused: still in the vehicle");
 			return false;
 		}
 
 		if (!garageNearby)
 		{
-			EL_Debug.Log("Garage", "park refused: no garage nearby");
+			LF_Debug.Log("Garage", "park refused: no garage nearby");
 			return false;
 		}
 
@@ -118,7 +118,7 @@ class LF_Garage
 	{
 		if (!vehicle)
 		{
-			EL_Debug.Error("Garage", "park skipped: no vehicle");
+			LF_Debug.Error("Garage", "park skipped: no vehicle");
 			return;
 		}
 
@@ -129,7 +129,7 @@ class LF_Garage
 		SCR_BaseCompartmentManagerComponent compartments = SCR_BaseCompartmentManagerComponent.Cast(vehicle.FindComponent(SCR_BaseCompartmentManagerComponent));
 		if (!compartments)
 		{
-			EL_Debug.Error("Garage", "park skipped: no compartments");
+			LF_Debug.Error("Garage", "park skipped: no compartments");
 			return;
 		}
 
@@ -146,16 +146,16 @@ class LF_Garage
 				continue;
 
 			if (!access.GetOutVehicle(EGetOutType.TELEPORT, 0, ECloseDoorAfterActions.CLOSE_DOOR, false))
-				EL_Debug.Error("Garage", "park eject failed");
+				LF_Debug.Error("Garage", "park eject failed");
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the reader's ledger as parallel arrays (EL_VehicleGarageDialog.LedgerRows order).
+	//! Server: the reader's ledger as parallel arrays (LF_VehicleGarageDialog.LedgerRows order).
 	static void CollectLedger(string ownerUid, notnull array<string> nameKeys, notnull array<string> plates, notnull array<int> places)
 	{
-		array<ref EL_VehicleGarageRow> rows = EL_VehicleGarageDialog.LedgerRows(ownerUid);
-		foreach (EL_VehicleGarageRow row : rows)
+		array<ref LF_VehicleGarageRow> rows = LF_VehicleGarageDialog.LedgerRows(ownerUid);
+		foreach (LF_VehicleGarageRow row : rows)
 		{
 			nameKeys.Insert(row.m_sLabelKey);
 			plates.Insert(row.m_sPlate);
@@ -170,10 +170,10 @@ class LF_Garage
 		if (!Replication.IsServer() || !reader)
 			return false;
 
-		string uid = EL_Utils.GetPlayerUID(reader);
+		string uid = LF_Utils.GetPlayerUID(reader);
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Garage", "ledger refused: player UID is unavailable");
+			LF_Debug.Error("Garage", "ledger refused: player UID is unavailable");
 			return false;
 		}
 
@@ -181,7 +181,7 @@ class LF_Garage
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
 		if (!controller)
 		{
-			EL_Debug.Warn("Garage", "ledger refused: the reader has no player controller");
+			LF_Debug.Warn("Garage", "ledger refused: the reader has no player controller");
 			return false;
 		}
 
@@ -189,8 +189,8 @@ class LF_Garage
 		array<string> plates = {};
 		array<int> places = {};
 		CollectLedger(uid, nameKeys, plates, places);
-		controller.LF_ShowGarageLedger(nameKeys, plates, places, LF_GarageConfig.ImpoundFee(), EL_NetworkUtils.GetRplId(desk));
-		EL_Debug.Info("Garage", string.Format("ledger shown to %1: %2 vehicle(s)", uid, nameKeys.Count()));
+		controller.LF_ShowGarageLedger(nameKeys, plates, places, LF_GarageConfig.ImpoundFee(), LF_NetworkUtils.GetRplId(desk));
+		LF_Debug.Info("Garage", string.Format("ledger shown to %1: %2 vehicle(s)", uid, nameKeys.Count()));
 		return true;
 	}
 }
@@ -218,7 +218,7 @@ class LF_GarageLedger
 		if (nameKeys && plates && places && nameKeys.Count() == plates.Count() && nameKeys.Count() == places.Count())
 			count = nameKeys.Count();
 		else if (nameKeys && nameKeys.Count() > 0)
-			EL_Debug.Error("Garage", "ledger rows skipped: name, plate, and place lists differ in length");
+			LF_Debug.Error("Garage", "ledger rows skipped: name, plate, and place lists differ in length");
 
 		bool anyImpounded = false;
 		for (int i = 0; i < count; i++)
@@ -255,7 +255,7 @@ class LF_GarageLedger
 		s_Screen = LF_UIScreen.Open(BuildParts(nameKeys, plates, places, fee));
 		if (!s_Screen)
 		{
-			EL_Debug.Error("Garage", "ledger card failed to open");
+			LF_Debug.Error("Garage", "ledger card failed to open");
 			return null;
 		}
 
@@ -264,9 +264,9 @@ class LF_GarageLedger
 		if (desk)
 			s_Screen.CloseBeyond(CLOSE_DISTANCE, desk.GetID());
 		else
-			EL_Debug.Warn("Garage", "ledger card open without the desk in this client's world; no distance close");
+			LF_Debug.Warn("Garage", "ledger card open without the desk in this client's world; no distance close");
 
-		EL_Debug.Info("Garage", "ledger card open");
+		LF_Debug.Info("Garage", "ledger card open");
 		return s_Screen;
 	}
 
@@ -307,11 +307,11 @@ modded class SCR_PlayerController
 	{
 		if (!GetGame().GetWorkspace())
 		{
-			EL_Debug.Error("Garage", "ledger card not opened: no workspace on this machine");
+			LF_Debug.Error("Garage", "ledger card not opened: no workspace on this machine");
 			return;
 		}
 
-		LF_GarageLedger.Open(nameKeys, plates, places, fee, EL_NetworkUtils.FindEntityByRplId(desk));
+		LF_GarageLedger.Open(nameKeys, plates, places, fee, LF_NetworkUtils.FindEntityByRplId(desk));
 	}
 }
 
@@ -346,7 +346,7 @@ class LF_ImpoundDeskComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_ImpoundDeskComponent : ScriptComponent
 {
-	[Attribute("roadmap-impound", UIWidgets.EditBox, desc: "Pad id of the EL_VehicleSpawnPointComponent inside the impound yard.")]
+	[Attribute("roadmap-impound", UIWidgets.EditBox, desc: "Pad id of the LF_VehicleSpawnPointComponent inside the impound yard.")]
 	protected string m_sPadId;
 
 	//------------------------------------------------------------------------------------------------
@@ -354,7 +354,7 @@ class LF_ImpoundDeskComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 		if (m_sPadId.IsEmpty())
-			EL_Debug.Error("Vehicle", "impound desk has no pad id: collect is refused there");
+			LF_Debug.Error("Vehicle", "impound desk has no pad id: collect is refused there");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -376,44 +376,44 @@ class LF_ImpoundCollectAction : ScriptedUserAction
 			return;
 
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
-		LF_ImpoundDeskComponent desk = EL_Component<LF_ImpoundDeskComponent>.Find(pOwnerEntity);
+		LF_ImpoundDeskComponent desk = LF_Component<LF_ImpoundDeskComponent>.Find(pOwnerEntity);
 		if (!desk)
 		{
-			EL_Debug.Error("Vehicle", "impound collect action has no LF_ImpoundDeskComponent");
+			LF_Debug.Error("Vehicle", "impound collect action has no LF_ImpoundDeskComponent");
 			return;
 		}
 
 		if (!LF_Garage.WithinReach(pUserEntity, pOwnerEntity))
 		{
-			EL_Debug.Warn("Vehicle", "impound collect refused: the player is not at the desk");
+			LF_Debug.Warn("Vehicle", "impound collect refused: the player is not at the desk");
 			return;
 		}
 
-		string uid = EL_Utils.GetPlayerUID(pUserEntity);
+		string uid = LF_Utils.GetPlayerUID(pUserEntity);
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Vehicle", "impound collect refused: player UID is unavailable");
+			LF_Debug.Error("Vehicle", "impound collect refused: player UID is unavailable");
 			return;
 		}
 
 		int fee = LF_GarageConfig.ImpoundFee();
 		string reasonKey = "#LF-Impound_NothingHere";
-		string vehicleId = EL_VehicleOwnership.LatestImpounded(uid);
+		string vehicleId = LF_VehicleOwnership.LatestImpounded(uid);
 		bool collected = false;
 		if (!vehicleId.IsEmpty())
-			collected = EL_VehicleOwnership.CollectFromImpound(vehicleId, uid, pUserEntity, fee, desk.GetPadId(), reasonKey);
+			collected = LF_VehicleOwnership.CollectFromImpound(vehicleId, uid, pUserEntity, fee, desk.GetPadId(), reasonKey);
 		else
-			EL_Debug.Info("Vehicle", string.Format("impound collect refused: nothing impounded for %1", uid));
+			LF_Debug.Info("Vehicle", string.Format("impound collect refused: nothing impounded for %1", uid));
 
 		if (!collected)
 		{
-			EL_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Impound_Title", reasonKey, 4.0, EL_ENotificationType.WARNING, fee.ToString());
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Impound_Title", reasonKey, 4.0, LF_ENotificationType.WARNING, fee.ToString());
 			return;
 		}
 
 		LF_PlayerInteraction.PlayGesture(pUserEntity, LF_PlayerInteraction.GESTURE_POINT);
 		LF_PlayerInteraction.PlayHandoverSound(pUserEntity, LF_PlayerInteraction.SOUND_HANDOVER);
-		EL_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Impound_Title", reasonKey, 5.0, EL_ENotificationType.SUCCESS, EL_VehicleOwnership.GetPlate(vehicleId));
+		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Impound_Title", reasonKey, 5.0, LF_ENotificationType.SUCCESS, LF_VehicleOwnership.GetPlate(vehicleId));
 	}
 
 	//------------------------------------------------------------------------------------------------

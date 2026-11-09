@@ -13,9 +13,9 @@ The player hands the goods over and is paid. Same physical-store philosophy as
 ## Interaction pattern (in-world)
 
 Today: a trader-owned inventory storage — dropping an item into the storage
-deletes it and pays the seller **cash** (`EL_TraderManagerComponent` +
-`EL_InventoryStorageManagerComponent`; verified 2026-08-30 — the payout is
-`EL_MoneyUtils.AddCash`, never the bank). That is a physical-ish rung 1 action
+deletes it and pays the seller **cash** (`LF_TraderManagerComponent` +
+`LF_InventoryStorageManagerComponent`; verified 2026-08-30 — the payout is
+`LF_MoneyUtils.AddCash`, never the bank). That is a physical-ish rung 1 action
 (the storage is a real object).
 
 Target: a **trader NPC / merchant station** the player walks to and interacts
@@ -33,7 +33,7 @@ banked.
    `m_aTradableItems` foreach crash, delete-then-pay not atomic, quantity stacks
    selling as one item. **The sell path must credit the seller exactly the
    quoted value in cash and only after the goods are actually gone.** (The
-   payout-already-pays-cash contract is covered by `EL_Test_MoneyCash`.)
+   payout-already-pays-cash contract is covered by `LF_Test_MoneyCash`.)
 2. A merchant station (sign + storage + payout) as the reference sell point.
 
 ## Iteration path
@@ -45,12 +45,12 @@ banked.
 
 ## Current state
 
-- `EL_TraderManagerComponent` + `EL_InventoryStorageManagerComponent`
+- `LF_TraderManagerComponent` + `LF_InventoryStorageManagerComponent`
   (`Components/InventorySystem/`) — sell-into-storage pays cash.
 - ❌ Broken: null `GetOwner()` crash, null `m_aTradableItems` foreach crash,
   delete-then-pay not atomic, stacks sell as one item, wrong "not tradable"
   return code, black-market check likely fails open.
-- `EL_OpenTraderAction` — the interaction entry point.
+- `LF_OpenTraderAction` — the interaction entry point.
 - Prefabs: `Prefabs/Trader/UniversalTrader.et`, `Prefabs/Trader/BlackMarketTrader.et`.
 
 ## Dependencies

@@ -4,7 +4,7 @@
 //! puts the same items back in it.
 //!
 //! STORE. The contents are an LF_StorageSnapshot record (owner key = the storage key, slot
-//! SLOT_PLACED), so they ride the existing "carried" payload of EL_PersistenceComponentSerializer
+//! SLOT_PLACED), so they ride the existing "carried" payload of LF_PersistenceComponentSerializer
 //! with no new save version.
 //!
 //! CAPTURE. On every item added to or removed from the owner's storages (coalesced to one capture
@@ -60,7 +60,7 @@ class LF_PersistentStorageComponent : ScriptComponent
 		string key = GetStorageKey();
 		if (key.IsEmpty())
 		{
-			EL_Debug.Error(FEATURE, string.Format("placed storage %1 at %2 has no storage key and no entity name; its contents will not persist", EL_Utils.GetPrefabName(owner), owner.GetOrigin()));
+			LF_Debug.Error(FEATURE, string.Format("placed storage %1 at %2 has no storage key and no entity name; its contents will not persist", LF_Utils.GetPrefabName(owner), owner.GetOrigin()));
 			return;
 		}
 
@@ -70,21 +70,21 @@ class LF_PersistentStorageComponent : ScriptComponent
 		IEntity registered = Resolve(key);
 		if (registered && registered != owner)
 		{
-			EL_Debug.Error(FEATURE, string.Format("second placed storage with key %1 at %2 ignored; the first one owns the key", key, owner.GetOrigin()));
+			LF_Debug.Error(FEATURE, string.Format("second placed storage with key %1 at %2 ignored; the first one owns the key", key, owner.GetOrigin()));
 			return;
 		}
 
 		ScriptedInventoryStorageManagerComponent manager = ScriptedInventoryStorageManagerComponent.Cast(owner.FindComponent(ScriptedInventoryStorageManagerComponent));
 		if (!manager)
 		{
-			EL_Debug.Error(FEATURE, string.Format("placed storage %1 has no ScriptedInventoryStorageManagerComponent; its contents will not persist", key));
+			LF_Debug.Error(FEATURE, string.Format("placed storage %1 has no ScriptedInventoryStorageManagerComponent; its contents will not persist", key));
 			return;
 		}
 
 		s_mPlaced.Set(key, owner.GetID());
 		manager.m_OnItemAddedInvoker.Insert(OnContentsChanged);
 		manager.m_OnItemRemovedInvoker.Insert(OnContentsChanged);
-		EL_Debug.Info(FEATURE, string.Format("placed storage %1 registered at %2", key, owner.GetOrigin()));
+		LF_Debug.Info(FEATURE, string.Format("placed storage %1 registered at %2", key, owner.GetOrigin()));
 
 		// The storages register with the manager during init; restore once they are there.
 		GetGame().GetCallqueue().CallLater(RestoreFromInit, 0);
@@ -163,7 +163,7 @@ class LF_PersistentStorageComponent : ScriptComponent
 		int spawned = LF_StorageSnapshot.Apply(owner, record);
 		m_bApplying = false;
 
-		EL_Debug.Info(FEATURE, string.Format("placed storage %1 restored: %2 record(s), %3 spawned", key, record.m_aItems.Count(), spawned));
+		LF_Debug.Info(FEATURE, string.Format("placed storage %1 restored: %2 record(s), %3 spawned", key, record.m_aItems.Count(), spawned));
 		return spawned;
 	}
 
@@ -201,7 +201,7 @@ class LF_PersistentStorageComponent : ScriptComponent
 			LF_PersistentStorageComponent component = Find(key);
 			if (!component)
 			{
-				EL_Debug.Warn(FEATURE, string.Format("save skipped placed storage %1: the entity is gone, its last record is kept", key));
+				LF_Debug.Warn(FEATURE, string.Format("save skipped placed storage %1: the entity is gone, its last record is kept", key));
 				continue;
 			}
 

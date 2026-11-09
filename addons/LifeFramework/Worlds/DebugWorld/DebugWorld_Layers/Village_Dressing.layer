@@ -316,7 +316,7 @@ SCR_DestructibleEntity : "{2D4B21B9086F6AFB}Prefabs/Structures/Infrastructure/Wa
 }
 GenericEntity : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
  components {
-  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
   }
  }
@@ -434,7 +434,7 @@ SCR_DestructibleEntity : "{2D4B21B9086F6AFB}Prefabs/Structures/Infrastructure/Wa
 }
 GenericEntity : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et" {
  components {
-  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
   }
  }
@@ -443,7 +443,7 @@ GenericEntity : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_trans
 }
 GenericEntity : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
  components {
-  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
   }
  }
@@ -452,7 +452,7 @@ GenericEntity : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.e
 }
 GenericEntity : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
  components {
-  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
   }
  }

@@ -294,7 +294,7 @@ fantasy.
 4. **Authoritative server** - client offers match server validation; a hostile
    RPC cannot grant items, money, or outputs. In-world purchases are
    server-validated and logged like any other money path.
-5. **Logged** - every rejection goes through `EL_Debug`
+5. **Logged** - every rejection goes through `LF_Debug`
    (`rejected` / `failed` / `skipped`), never a silent no-op.
 6. **Fail-safe** - a misconfigured store or population degrades that one
    feature, never the world.

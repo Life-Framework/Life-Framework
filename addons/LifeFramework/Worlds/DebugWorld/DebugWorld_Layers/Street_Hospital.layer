@@ -19,7 +19,7 @@ GenericEntity Roadmap_Hospital_Till {
     }
    }
    additionalActions {
-    EL_RobAction "{8F3A1C2D4B5E6076}" {
+    LF_RobAction "{8F3A1C2D4B5E6076}" {
      ParentContextList {
       "default"
      }
@@ -55,7 +55,7 @@ GenericEntity Roadmap_Hospital_Cabinet {
    ModelGeometry 1
    Static 1
   }
-  EL_LockComponent "{91C4E0A7B2D34810}" {
+  LF_LockComponent "{91C4E0A7B2D34810}" {
    m_bDebugLocked 1
   }
   ActionsManagerComponent "{91C4E0A7B2D34811}" {

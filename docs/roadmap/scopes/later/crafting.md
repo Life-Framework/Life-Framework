@@ -20,7 +20,7 @@ A player stands at a bench and turns carried materials into a product, using a r
 
 ## Assets
 
-Bench prop: LNGC `Prefabs/Compositions/Misc/SubCompositions/CraftingBench.et`, or `ItemProcessor_Base` if that composition pulls extra UI. Recipe fields to copy from `LNGC_CraftingRecipeDef`: input ids, counts, seconds, license, hidden, bulk. Store them as prefab resources the way `EL_ProcessAction` does on `Furnace.et` (iron nugget → iron bar is the example). Do not store LNGC virtual item ids. See [sources](../../sources.md).
+Bench prop: LNGC `Prefabs/Compositions/Misc/SubCompositions/CraftingBench.et`, or `ItemProcessor_Base` if that composition pulls extra UI. Recipe fields to copy from `LNGC_CraftingRecipeDef`: input ids, counts, seconds, license, hidden, bulk. Store them as prefab resources the way `LF_ProcessAction` does on `Furnace.et` (iron nugget → iron bar is the example). Do not store LNGC virtual item ids. See [sources](../../sources.md).
 
 ## First slice
 
@@ -29,7 +29,7 @@ One bench, one recipe, refused when inputs are missing, no partial consume.
 ## Depends on
 
 - [Resources](../work/resources.md)
-- `EL_ProcessAction` rules
+- `LF_ProcessAction` rules
 
 ## Proof
 

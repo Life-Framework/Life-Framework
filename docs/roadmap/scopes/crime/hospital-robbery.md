@@ -22,14 +22,14 @@ Civilians rob the hospital till for cash, and breach a locked cabinet for medica
 
 ## Assets
 
-Building: `Prefabs/Structures/Military/Houses/HospitalMilitary_E_01/`. Till uses `EL_RobAction` and MoneyStack. Cabinet loot, config, defaults:
+Building: `Prefabs/Structures/Military/Houses/HospitalMilitary_E_01/`. Till uses `LF_RobAction` and MoneyStack. Cabinet loot, config, defaults:
 
 - `Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et`
 - `Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et`
 - `Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et`
 - `Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et`
 
-`Prefabs/Items/Medical/Bandage.et` is not a base-game file. It is only a matcher string in `EL_Test_ShopPrices`. LNGC has no hospital robbery. See [sources](../../sources.md).
+`Prefabs/Items/Medical/Bandage.et` is not a base-game file. It is only a matcher string in `LF_Test_ShopPrices`. LNGC has no hospital robbery. See [sources](../../sources.md).
 
 ## First slice
 
@@ -38,7 +38,7 @@ One DebugWorld clinic: till pays cash, cabinet yields the configured medical pre
 ## Depends on
 
 - [Forced entry](forced-entry.md) for the cabinet
-- `EL_RobAction` gates for the till
+- `LF_RobAction` gates for the till
 - `Money`
 
 ## Proof

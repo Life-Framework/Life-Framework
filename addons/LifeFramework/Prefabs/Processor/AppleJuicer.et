@@ -14,20 +14,20 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
     }
    }
    additionalActions {
-    EL_ProcessAction "{598F21A877BE6DEE}" {
+    LF_ProcessAction "{598F21A877BE6DEE}" {
      UIInfo UIInfo "{59947AF4A11A18DC}" {
       Name "Make 1 apple juice with 3 apples"
      }
      m_sMachineId "juicer"
      Duration 1
      m_aProcessingInputs {
-      EL_ProcessingInput "{59B2AD116757D53C}" {
+      LF_ProcessingInput "{59B2AD116757D53C}" {
        m_InputPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
        m_iInputAmount 3
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{59B2AD115CAF9A69}" {
+      LF_ProcessingOutput "{59B2AD115CAF9A69}" {
        m_OutputPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
       }
      }

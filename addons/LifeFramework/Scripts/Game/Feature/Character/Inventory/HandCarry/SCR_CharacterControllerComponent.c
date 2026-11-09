@@ -4,14 +4,14 @@ modded class SCR_CharacterControllerComponent
 	override void OnGadgetStateChanged(IEntity gadget, bool isInHand, bool isOnGround)
 	{
 		super.OnGadgetStateChanged(gadget, isInHand, isOnGround);
-		EL_HandInventoryStorageComponent handStorage = EL_Component<EL_HandInventoryStorageComponent>.Find(GetOwner());
+		LF_HandInventoryStorageComponent handStorage = LF_Component<LF_HandInventoryStorageComponent>.Find(GetOwner());
 		if (handStorage) handStorage.OnGadgetStateChanged(gadget, isInHand, isOnGround);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void EL_OnWeaponChanged(BaseWeaponComponent weapon, BaseWeaponComponent prevWeapon)
+	protected void LF_OnWeaponChanged(BaseWeaponComponent weapon, BaseWeaponComponent prevWeapon)
 	{
-		EL_HandInventoryStorageComponent handStorage = EL_Component<EL_HandInventoryStorageComponent>.Find(GetOwner());
+		LF_HandInventoryStorageComponent handStorage = LF_Component<LF_HandInventoryStorageComponent>.Find(GetOwner());
 		if (handStorage) handStorage.OnWeaponChanged(weapon, prevWeapon);
 	}
 
@@ -24,14 +24,14 @@ modded class SCR_CharacterControllerComponent
 		PlayerController playerController = GetGame().GetPlayerController();
 		if (!controlled || !playerController || owner != playerController.GetControlledEntity()) return;
 
-		EventHandlerManagerComponent eventHandler = EL_Component<EventHandlerManagerComponent>.Find(owner);
-		if (eventHandler) eventHandler.RegisterScriptHandler("OnWeaponChanged", this, EL_OnWeaponChanged, false);
+		EventHandlerManagerComponent eventHandler = LF_Component<EventHandlerManagerComponent>.Find(owner);
+		if (eventHandler) eventHandler.RegisterScriptHandler("OnWeaponChanged", this, LF_OnWeaponChanged, false);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void ~SCR_CharacterControllerComponent()
 	{
-		EventHandlerManagerComponent eventHandler = EL_Component<EventHandlerManagerComponent>.Find(GetOwner());
-		if (eventHandler) eventHandler.RemoveScriptHandler("OnWeaponChanged", this, EL_OnWeaponChanged, false);
+		EventHandlerManagerComponent eventHandler = LF_Component<EventHandlerManagerComponent>.Find(GetOwner());
+		if (eventHandler) eventHandler.RemoveScriptHandler("OnWeaponChanged", this, LF_OnWeaponChanged, false);
 	}
 }

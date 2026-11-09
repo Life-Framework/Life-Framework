@@ -4,7 +4,7 @@
 //! respawn, a reconnect, and a restart.
 //!
 //! PERSISTENCE. ExportAll / ApplyAll are the "introductions" payload of
-//! EL_PersistenceComponentSerializer. One flat record per pair keeps the positional binary save
+//! LF_PersistenceComponentSerializer. One flat record per pair keeps the positional binary save
 //! simple. ApplyAll replaces the live set, so a second pass ends on the same state.
 //------------------------------------------------------------------------------------------------
 class LF_IntroductionRecord : Managed
@@ -45,13 +45,13 @@ class LF_Introductions
 	{
 		if (knowerUid.IsEmpty() || knownUid.IsEmpty())
 		{
-			EL_Debug.Error("Interaction", "introduction refused: empty player uid");
+			LF_Debug.Error("Interaction", "introduction refused: empty player uid");
 			return false;
 		}
 
 		if (knowerUid == knownUid)
 		{
-			EL_Debug.Warn("Interaction", "introduction refused: a player cannot introduce themselves to themselves");
+			LF_Debug.Warn("Interaction", "introduction refused: a player cannot introduce themselves to themselves");
 			return false;
 		}
 
@@ -147,7 +147,7 @@ class LF_Introductions
 		{
 			if (!record || record.m_sKnowerUid.IsEmpty() || record.m_sKnownUid.IsEmpty())
 			{
-				EL_Debug.Error("Interaction", "introduction record skipped: empty player uid");
+				LF_Debug.Error("Interaction", "introduction record skipped: empty player uid");
 				continue;
 			}
 
@@ -155,7 +155,7 @@ class LF_Introductions
 				applied++;
 		}
 
-		EL_Debug.Info("Interaction", string.Format("apply-save restored %1 introduction(s)", applied));
+		LF_Debug.Info("Interaction", string.Format("apply-save restored %1 introduction(s)", applied));
 	}
 
 	//------------------------------------------------------------------------------------------------

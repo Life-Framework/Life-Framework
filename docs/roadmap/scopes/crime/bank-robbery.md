@@ -13,7 +13,7 @@ Civilians enter a bank, breach the vault, and carry cash out in bags. The haul i
 - On open, the vault spawns a config number of money bags.
 - A bag is a container of MoneyStack items. The player picks it up with the existing hand-carry. Dropping it leaves the cash in the world.
 - Bag count and cash per bag are config. The server spawns them. A client cannot ask for a larger haul.
-- Minimum police on duty, cooldown, and civilian-only use the same gates as `EL_RobAction`.
+- Minimum police on duty, cooldown, and civilian-only use the same gates as `LF_RobAction`.
 - Empty vault until the cooldown refills it.
 
 ## Out of scope
@@ -24,9 +24,9 @@ Civilians enter a bank, breach the vault, and carry cash out in bags. The haul i
 
 ## Assets
 
-There is no bank building in the base game. The shell is `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits `Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`. It is capture-only and is not placed in the debug row. The vault is `EL_Door_Base`. Cash is `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The bag is `Prefabs/Items/Core/HandCarryItem_Base.et` (`EL_HandCarryComponent`) filled with those stacks. The black-market crate mesh `Assets/Props/Crates/Crate_01.xob` is the world prop if the bag is dropped as a container.
+There is no bank building in the base game. The shell is `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits `Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`. It is capture-only and is not placed in the debug row. The vault is `EL_Door_Base`. Cash is `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The bag is `Prefabs/Items/Core/HandCarryItem_Base.et` (`LF_HandCarryComponent`) filled with those stacks. The black-market crate mesh `Assets/Props/Crates/Crate_01.xob` is the world prop if the bag is dropped as a container.
 
-Payout still goes through `EL_MoneyUtils`, under `EL_RobAction` gates. LNGC has no vault robbery. See [sources](../../sources.md).
+Payout still goes through `LF_MoneyUtils`, under `LF_RobAction` gates. LNGC has no vault robbery. See [sources](../../sources.md).
 
 ## First slice
 
@@ -35,12 +35,12 @@ One DebugWorld bank. Breach, take one bag, cash is in inventory, bank account ba
 ## Depends on
 
 - [Forced entry](forced-entry.md)
-- `Money` (`EL_MoneyUtils`)
+- `Money` (`LF_MoneyUtils`)
 - `Crime` gates and wanted
 - Character hand-carry
 
 ## Proof
 
-- Logic: payout never touches `EL_BankAccount`; over-capacity spawn is capped by config.
+- Logic: payout never touches `LF_BankAccount`; over-capacity spawn is capped by config.
 - World: bag in hand contains the configured cash; a second breach before cooldown spawns nothing.
 - Persistence: a bag left on the ground is world loot, not a second bank balance.

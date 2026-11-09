@@ -11,7 +11,7 @@
 - [ ] `node tools/cli.mjs validate`
 - [ ] `node tools/cli.mjs test --tier fast` — logic-only changes
 - [ ] `node tools/cli.mjs test` — world, prefab, or spawn changes
-- [ ] New `EL_Test_*` files include `// red-proof:`
+- [ ] New `LF_Test_*` files include `// red-proof:`
 - [ ] No generated artifacts committed
 
 ## Manual testing

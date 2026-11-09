@@ -25,7 +25,7 @@ class LF_BankVaultComponent : ScriptComponent
 	[Attribute("60", UIWidgets.Auto, desc: "Seconds before another haul can spawn.")]
 	protected float m_fCooldownSeconds;
 
-	[Attribute("0", UIWidgets.Auto, desc: "Minimum police on duty. Same gate as EL_RobAction.")]
+	[Attribute("0", UIWidgets.Auto, desc: "Minimum police on duty. Same gate as LF_RobAction.")]
 	protected int m_iMinPoliceOnDuty;
 
 	[Attribute("0", UIWidgets.Auto, desc: "Breach fuse seconds. Zero opens inside Rob.")]
@@ -42,13 +42,13 @@ class LF_BankVaultComponent : ScriptComponent
 		string vaultId = GetVaultId();
 		if (vaultId.IsEmpty())
 		{
-			EL_Debug.Error("Bank", "vault component has no id and the entity is unnamed");
+			LF_Debug.Error("Bank", "vault component has no id and the entity is unnamed");
 			return;
 		}
 
-		if (!EL_Component<EL_LockComponent>.Find(owner))
+		if (!LF_Component<LF_LockComponent>.Find(owner))
 		{
-			EL_Debug.Error("Bank", string.Format("vault %1 has no EL_LockComponent", vaultId));
+			LF_Debug.Error("Bank", string.Format("vault %1 has no LF_LockComponent", vaultId));
 			return;
 		}
 

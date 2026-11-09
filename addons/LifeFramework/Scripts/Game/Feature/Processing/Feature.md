@@ -12,7 +12,7 @@ processing menu from anywhere."
 
 ## Interaction pattern
 
-Rung 1 today: `EL_ProcessAction` is an interact action that consumes all
+Rung 1 today: `LF_ProcessAction` is an interact action that consumes all
 configured inputs and produces all configured outputs (into inventory or
 force-dropped).
 
@@ -35,7 +35,7 @@ visibly holding/expelling the product.
 
 ## Current state
 
-- `EL_ProcessAction` (`Feature/Processing/`) — recipe consume/produce with
+- `LF_ProcessAction` (`Feature/Processing/`) — recipe consume/produce with
   server-side recipe/input validation and rollback on failed mutations.
 
 ## Dependencies

@@ -12,7 +12,7 @@ class LF_ATMKeypad
 		if (digit < 0 || digit > 9 || amount < 0)
 			return amount;
 
-		if (amount > (EL_ATMManager.MAX_TRANSACTION_AMOUNT - digit) / 10)
+		if (amount > (LF_ATMManager.MAX_TRANSACTION_AMOUNT - digit) / 10)
 			return amount;
 
 		return amount * 10 + digit;

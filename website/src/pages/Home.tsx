@@ -310,7 +310,7 @@ const Home = () => {
         <a href="https://github.com/EveronLife/EveronLife" className="link">
           Everon Life
         </a>{" "}
-        framework by Arkensor (MIT). The <code>EL_</code> class prefix is that heritage. See the{" "}
+        framework by Arkensor (MIT). Its <code>EL_</code> class prefix is now <code>LF_</code>. See the{" "}
         <a href={blob("README.md")} className="link">
           README
         </a>{" "}

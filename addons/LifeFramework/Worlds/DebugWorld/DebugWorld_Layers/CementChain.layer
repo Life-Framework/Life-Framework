@@ -41,7 +41,7 @@ GenericEntity CementBuilderStand {
     coords -2.6 0 0.7
    }
   }
-  EL_NpcBaseEntity CementBuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity CementBuilderNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {
@@ -59,7 +59,7 @@ SCR_DestructibleBuildingEntity CementPlant_Debug : "{A92A5F3B79FF56BE}Prefabs/St
  components {
   ActionsManagerComponent "{59BCA07275D1833B}" {
    additionalActions {
-    EL_ProcessAction "{59BCA072523FC76F}" {
+    LF_ProcessAction "{59BCA072523FC76F}" {
     }
    }
   }

@@ -62,26 +62,26 @@ class LF_Dispatch
 		LF_WantedReportRecord report = LF_WantedReports.Report(playerUid, suspect, offence);
 		if (!report)
 		{
-			EL_Debug.Error(FEATURE, string.Format("dispatch dropped: no crime report for %1 (%2)", playerUid, offence));
+			LF_Debug.Error(FEATURE, string.Format("dispatch dropped: no crime report for %1 (%2)", playerUid, offence));
 			return null;
 		}
 
 		int officers = officersOnDuty;
 		if (officers < 0)
-			officers = EL_AccountReplication.CountPoliceOnDuty();
+			officers = LF_AccountReplication.CountPoliceOnDuty();
 
 		LF_DispatchRecord record = Record(offence, report.m_sClothing, report.m_sVehicle, report.m_sPlace, officers);
 		record.m_sTime = ClockText();
 
 		if (site == vector.Zero)
-			EL_Debug.Info(FEATURE, string.Format("dispatch #%1: no alarm site, no alarm sounded", record.m_iSequence));
+			LF_Debug.Info(FEATURE, string.Format("dispatch #%1: no alarm site, no alarm sounded", record.m_iSequence));
 		else
 			StartAlarm(site, record.m_bLoud);
 
 		if (officers > 0)
 			record.m_iRadioed = RadioOfficers(record);
 
-		EL_Debug.Info(FEATURE, string.Format("dispatch #%1 %2 at '%3': officers=%4 alarm=%5 radioed=%6 clothing='%7' vehicle='%8'", record.m_iSequence, offence, record.m_sPlace, officers, AlarmLevel(record.m_bLoud), record.m_iRadioed, record.m_sClothing, record.m_sVehicle));
+		LF_Debug.Info(FEATURE, string.Format("dispatch #%1 %2 at '%3': officers=%4 alarm=%5 radioed=%6 clothing='%7' vehicle='%8'", record.m_iSequence, offence, record.m_sPlace, officers, AlarmLevel(record.m_bLoud), record.m_iRadioed, record.m_sClothing, record.m_sVehicle));
 		return record;
 	}
 
@@ -179,7 +179,7 @@ class LF_Dispatch
 		entry.Split(FIELD_SEPARATOR, fields, false);
 		if (fields.Count() < 5)
 		{
-			EL_Debug.Error(FEATURE, string.Format("dispatch board entry dropped: '%1'", entry));
+			LF_Debug.Error(FEATURE, string.Format("dispatch board entry dropped: '%1'", entry));
 			return string.Empty;
 		}
 
@@ -229,15 +229,15 @@ class LF_Dispatch
 		ResourceName prefab = LF_PoliceConfig.AlarmPrefab(loud);
 		if (prefab.IsEmpty())
 		{
-			EL_Debug.Error(FEATURE, string.Format("no %1 alarm prefab configured; the site stays quiet", AlarmLevel(loud)));
+			LF_Debug.Error(FEATURE, string.Format("no %1 alarm prefab configured; the site stays quiet", AlarmLevel(loud)));
 			return null;
 		}
 
 		StopAlarmsNear(site, 3);
-		IEntity alarm = EL_Utils.SpawnEntityPrefab(prefab, site);
+		IEntity alarm = LF_Utils.SpawnEntityPrefab(prefab, site);
 		if (!alarm)
 		{
-			EL_Debug.Error(FEATURE, string.Format("%1 alarm did not spawn: %2", AlarmLevel(loud), prefab));
+			LF_Debug.Error(FEATURE, string.Format("%1 alarm did not spawn: %2", AlarmLevel(loud), prefab));
 			return null;
 		}
 
@@ -248,7 +248,7 @@ class LF_Dispatch
 		s_mAlarms.Set(s_iAlarmNumber, alarm.GetID());
 		float seconds = LF_PoliceConfig.AlarmSeconds(loud);
 		GetGame().GetCallqueue().CallLater(ExpireAlarm, Math.Max(seconds, 1) * 1000, false, s_iAlarmNumber);
-		EL_Debug.Info(FEATURE, string.Format("%1 alarm sounding at %2 for %3 s", AlarmLevel(loud), site, seconds));
+		LF_Debug.Info(FEATURE, string.Format("%1 alarm sounding at %2 for %3 s", AlarmLevel(loud), site, seconds));
 		return alarm;
 	}
 
@@ -286,7 +286,7 @@ class LF_Dispatch
 		if (!alarm)
 			return;
 
-		EL_Debug.Info(FEATURE, string.Format("alarm at %1 stopped", alarm.GetOrigin()));
+		LF_Debug.Info(FEATURE, string.Format("alarm at %1 stopped", alarm.GetOrigin()));
 		SCR_EntityHelper.DeleteEntityAndChildren(alarm);
 	}
 
@@ -343,10 +343,10 @@ class LF_Dispatch
 		if (!GetGame() || !GetGame().GetPlayerManager())
 			return 0;
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts)
 		{
-			EL_Debug.Error(FEATURE, "dispatch not radioed: no account manager");
+			LF_Debug.Error(FEATURE, "dispatch not radioed: no account manager");
 			return 0;
 		}
 
@@ -355,13 +355,13 @@ class LF_Dispatch
 		GetGame().GetPlayerManager().GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
 		{
-			if (!EL_PoliceUtils.IsOnDutyOfficer(accounts.GetAccount(EL_Utils.GetPlayerUID(playerId))))
+			if (!LF_PoliceUtils.IsOnDutyOfficer(accounts.GetAccount(LF_Utils.GetPlayerUID(playerId))))
 				continue;
 
 			SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
 			if (!controller)
 			{
-				EL_Debug.Warn(FEATURE, string.Format("dispatch #%1 not radioed to player %2: no controller", record.m_iSequence, playerId));
+				LF_Debug.Warn(FEATURE, string.Format("dispatch #%1 not radioed to player %2: no controller", record.m_iSequence, playerId));
 				continue;
 			}
 
@@ -434,7 +434,7 @@ modded class SCR_PlayerController
 	{
 		s_iLF_DispatchCount++;
 		s_sLF_LastDispatch = offence + "@" + place;
-		EL_Debug.Info(LF_Dispatch.FEATURE, string.Format("dispatch received #%1: %2 at '%3' clothing='%4' vehicle='%5'", s_iLF_DispatchCount, offence, place, clothing, vehicle));
+		LF_Debug.Info(LF_Dispatch.FEATURE, string.Format("dispatch received #%1: %2 at '%3' clothing='%4' vehicle='%5'", s_iLF_DispatchCount, offence, place, clothing, vehicle));
 
 		IEntity body = GetControlledEntity();
 		ResourceName project = LF_PoliceConfig.RadioSoundProject();
@@ -449,7 +449,7 @@ modded class SCR_PlayerController
 		}
 		else
 		{
-			EL_Debug.Warn(LF_Dispatch.FEATURE, "radio chirp skipped: no body or no radio sound configured");
+			LF_Debug.Warn(LF_Dispatch.FEATURE, "radio chirp skipped: no body or no radio sound configured");
 		}
 
 		GetGame().GetCallqueue().CallLater(LF_ShowDispatchLine, 700, false, offence, clothing, vehicle, place);
@@ -458,17 +458,17 @@ modded class SCR_PlayerController
 	//------------------------------------------------------------------------------------------------
 	protected void LF_ShowDispatchLine(string offence, string clothing, string vehicle, string place)
 	{
-		EL_NotificationManagerComponent manager = EL_NotificationManagerComponent.GetInstance();
+		LF_NotificationManagerComponent manager = LF_NotificationManagerComponent.GetInstance();
 		if (!manager)
 		{
-			EL_Debug.Error(LF_Dispatch.FEATURE, "dispatch line dropped: no EL_NotificationManagerComponent on this client");
+			LF_Debug.Error(LF_Dispatch.FEATURE, "dispatch line dropped: no LF_NotificationManagerComponent on this client");
 			return;
 		}
 
 		string line = LF_Dispatch.RadioLine(offence, clothing, vehicle, place);
 		// The harness reads the last toast by its key, as for every other toast.
-		s_sEL_LastToast = LF_Dispatch.RADIO_KEY;
-		EL_Debug.Info(LF_Dispatch.FEATURE, string.Format("dispatch line shown: %1", line));
-		manager.ShowNotificationToast("#LF-Dispatch_Title", line, 8.0, EL_ENotificationType.POLICE_ALERT);
+		s_sLF_LastToast = LF_Dispatch.RADIO_KEY;
+		LF_Debug.Info(LF_Dispatch.FEATURE, string.Format("dispatch line shown: %1", line));
+		manager.ShowNotificationToast("#LF-Dispatch_Title", line, 8.0, LF_ENotificationType.POLICE_ALERT);
 	}
 }

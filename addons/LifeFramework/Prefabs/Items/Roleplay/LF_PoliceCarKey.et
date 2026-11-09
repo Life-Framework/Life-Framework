@@ -1,7 +1,7 @@
 GenericEntity : "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et" {
  ID "77C9BCFB67E86B5A"
  components {
-  EL_VehicleKeyComponent "{DF4CAEED0C904715}" {
+  LF_VehicleKeyComponent "{DF4CAEED0C904715}" {
    m_sDebugIdentifier "POLICE"
   }
  }

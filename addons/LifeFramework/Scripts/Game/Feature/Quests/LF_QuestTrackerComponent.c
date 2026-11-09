@@ -5,7 +5,7 @@
 //   - an authoritative collect recount at turn-in (never trusts a client count),
 //   - per-character FRAME tick for timed expiry and area-entry detection,
 //   - quest-log pushes to the owning client (RpcDo_Log) and result hints.
-// All state changes flow through EL_Debug.Log("Quests", ...).
+// All state changes flow through LF_Debug.Log("Quests", ...).
 
 [ComponentEditorProps(category: "LifeFramework/Feature/Quests", description: "Per-player quest tracker attached to the character")]
 class LF_QuestTrackerComponentClass : ScriptComponentClass
@@ -82,7 +82,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 			if (prior == LF_EQuestStatus.ACTIVE && state.GetStatus() == LF_EQuestStatus.FAILED)
 			{
 				anyExpired = true;
-				EL_Debug.Log("Quests", string.Format("quest=%1 expired", questId));
+				LF_Debug.Log("Quests", string.Format("quest=%1 expired", questId));
 				Notify("#LF-Quest_Expired", "#LF-Quest_Title");
 			}
 		}
@@ -165,7 +165,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		LF_QuestDefinition def = manager.GetDefinition(questId);
 		if (!def)
 		{
-			EL_Debug.Warn("Quests", string.Format("accept rejected quest=%1 (unknown id)", questId));
+			LF_Debug.Warn("Quests", string.Format("accept rejected quest=%1 (unknown id)", questId));
 			Notify("#LF-Quest_Rejected", "#LF-Quest_Title");
 			return false;
 		}
@@ -173,18 +173,18 @@ class LF_QuestTrackerComponent : ScriptComponent
 		// Fail-safe: a quest with no objectives is a misconfiguration and must not be accepted.
 		if (!def.HasObjectives())
 		{
-			EL_Debug.Error("Quests", string.Format("accept rejected quest=%1 (no objectives, misconfigured)", questId));
+			LF_Debug.Error("Quests", string.Format("accept rejected quest=%1 (no objectives, misconfigured)", questId));
 			return false;
 		}
 
 		IEntity owner = GetOwner();
 		int level = 1;
-		EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(owner);
+		LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
 		if (levelComp)
 			level = levelComp.GetPlayerLevel();
 
-		EL_EJobType job = EL_EJobType.UNEMPLOYED;
-		EL_PlayerJobComponent jobComp = EL_Component<EL_PlayerJobComponent>.Find(owner);
+		LF_EJobType job = LF_EJobType.UNEMPLOYED;
+		LF_PlayerJobComponent jobComp = LF_Component<LF_PlayerJobComponent>.Find(owner);
 		if (jobComp)
 			job = jobComp.GetJob();
 
@@ -193,23 +193,23 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		if (!m_Tracker.Accept(def, level, job, faction, now, m_Tracker.GetCompletedQuestIds()))
 		{
-			EL_Debug.Log("Quests", string.Format("accept rejected quest=%1 (prerequisites or cooldown)", questId));
+			LF_Debug.Log("Quests", string.Format("accept rejected quest=%1 (prerequisites or cooldown)", questId));
 			Notify("#LF-Quest_Rejected", "#LF-Quest_Title");
 			return false;
 		}
 
 		if (quiet)
 		{
-			EL_Debug.Log("Quests", string.Format("accepted quest=%1 (in conversation)", questId));
+			LF_Debug.Log("Quests", string.Format("accepted quest=%1 (in conversation)", questId));
 		}
 		else if (chained)
 		{
-			EL_Debug.Log("Quests", string.Format("accepted quest=%1 (chain step)", questId));
+			LF_Debug.Log("Quests", string.Format("accepted quest=%1 (chain step)", questId));
 			Notify(def.m_sDescriptionKey, def.m_sTitleKey, STORY_SECONDS);
 		}
 		else
 		{
-			EL_Debug.Log("Quests", string.Format("accepted quest=%1", questId));
+			LF_Debug.Log("Quests", string.Format("accepted quest=%1", questId));
 			Notify("#LF-Quest_Accepted", "#LF-Quest_Title");
 		}
 
@@ -247,7 +247,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 			if (m_Tracker.GetStatus(questId) != LF_EQuestStatus.AVAILABLE)
 				continue;
 
-			EL_Debug.Log("Quests", string.Format("newcomer pointed at quest=%1", questId));
+			LF_Debug.Log("Quests", string.Format("newcomer pointed at quest=%1", questId));
 			Notify(def.m_sDescriptionKey, def.m_sTitleKey, STORY_SECONDS);
 			return;
 		}
@@ -311,7 +311,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		LF_QuestState state = m_Tracker.GetState(questId);
 		if (!state || state.GetStatus() != LF_EQuestStatus.COMPLETED)
 		{
-			EL_Debug.Log("Quests", string.Format("turn-in rejected quest=%1 (not completable)", questId));
+			LF_Debug.Log("Quests", string.Format("turn-in rejected quest=%1 (not completable)", questId));
 			Notify("#LF-Quest_NotComplete", "#LF-Quest_Title");
 			return false;
 		}
@@ -321,7 +321,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		state = m_Tracker.GetState(questId);
 		if (!state || state.GetStatus() != LF_EQuestStatus.COMPLETED)
 		{
-			EL_Debug.Log("Quests", string.Format("turn-in rejected quest=%1 (collect items no longer held)", questId));
+			LF_Debug.Log("Quests", string.Format("turn-in rejected quest=%1 (collect items no longer held)", questId));
 			Notify("#LF-Quest_MissingItems", "#LF-Quest_Title");
 			return false;
 		}
@@ -335,12 +335,12 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		GrantReward(def);
 		m_Tracker.TurnIn(questId, GetGame().GetWorld().GetWorldTime() / 1000.0);
-		LF_Progression.NoteTurnedIn(EL_Utils.GetPlayerUID(GetOwner()), questId);
+		LF_Progression.NoteTurnedIn(LF_Utils.GetPlayerUID(GetOwner()), questId);
 
 		int rewardItems = 0;
 		if (def.m_aRewardItems)
 			rewardItems = def.m_aRewardItems.Count();
-		EL_Debug.Log("Quests", string.Format("turned in quest=%1 reward=money:%2 xp:%3 items:%4 idcard:%5", questId, def.m_iRewardMoney, def.m_fRewardXp, rewardItems, def.m_bRewardIdCard));
+		LF_Debug.Log("Quests", string.Format("turned in quest=%1 reward=money:%2 xp:%3 items:%4 idcard:%5", questId, def.m_iRewardMoney, def.m_fRewardXp, rewardItems, def.m_bRewardIdCard));
 
 		// A chain step turned in on its own stays quiet; the next step's errand is the news.
 		if (!def.m_sTurnInKey.IsEmpty())
@@ -377,16 +377,16 @@ class LF_QuestTrackerComponent : ScriptComponent
 		IEntity owner = GetOwner();
 		if (!owner)
 		{
-			EL_Debug.Error("Quests", string.Format("turn-in refused quest=%1 (no owner to take items from)", def.m_sQuestId));
+			LF_Debug.Error("Quests", string.Format("turn-in refused quest=%1 (no owner to take items from)", def.m_sQuestId));
 			return false;
 		}
 
 		foreach (string prefab, int amount : needed)
 		{
-			int held = EL_InventoryUtils.GetAmount(owner, prefab);
+			int held = LF_InventoryUtils.GetAmount(owner, prefab);
 			if (held < amount)
 			{
-				EL_Debug.Warn("Quests", string.Format("turn-in refused quest=%1 (holds %2 of %3 %4)", def.m_sQuestId, held, amount, prefab));
+				LF_Debug.Warn("Quests", string.Format("turn-in refused quest=%1 (holds %2 of %3 %4)", def.m_sQuestId, held, amount, prefab));
 				return false;
 			}
 		}
@@ -394,7 +394,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		map<string, int> taken = new map<string, int>();
 		foreach (string prefab, int amount : needed)
 		{
-			int removed = EL_InventoryUtils.RemoveAmount(owner, prefab, amount);
+			int removed = LF_InventoryUtils.RemoveAmount(owner, prefab, amount);
 			taken.Set(prefab, removed);
 			if (removed >= amount)
 				continue;
@@ -402,14 +402,14 @@ class LF_QuestTrackerComponent : ScriptComponent
 			foreach (string takenPrefab, int takenAmount : taken)
 			{
 				if (takenAmount > 0)
-					EL_InventoryUtils.AddAmount(owner, takenPrefab, takenAmount, true);
+					LF_InventoryUtils.AddAmount(owner, takenPrefab, takenAmount, true);
 			}
 
-			EL_Debug.Error("Quests", string.Format("turn-in refused quest=%1 (removed %2 of %3 %4, items returned)", def.m_sQuestId, removed, amount, prefab));
+			LF_Debug.Error("Quests", string.Format("turn-in refused quest=%1 (removed %2 of %3 %4, items returned)", def.m_sQuestId, removed, amount, prefab));
 			return false;
 		}
 
-		EL_Debug.Log("Quests", string.Format("turn-in took collected items for quest=%1", def.m_sQuestId));
+		LF_Debug.Log("Quests", string.Format("turn-in took collected items for quest=%1", def.m_sQuestId));
 		return true;
 	}
 
@@ -421,7 +421,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 			return;
 
 		if (def.m_iRewardMoney > 0)
-			EL_MoneyUtils.GiveCash(owner, def.m_iRewardMoney);
+			LF_MoneyUtils.GiveCash(owner, def.m_iRewardMoney);
 
 		if (def.m_bRewardIdCard)
 			LF_QuestRewards.HandIdCard(owner, LF_QuestRewards.AccountOf(owner));
@@ -432,14 +432,14 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		if (def.m_fRewardXp > 0)
 		{
-			EL_PlayerLevelComponent levelComp = EL_Component<EL_PlayerLevelComponent>.Find(owner);
+			LF_PlayerLevelComponent levelComp = LF_Component<LF_PlayerLevelComponent>.Find(owner);
 			if (levelComp)
 				levelComp.AddExperience(def.m_fRewardXp, "Quest");
 		}
 
 		if (def.m_aRewardItems)
 		{
-			SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(owner);
+			SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(owner);
 			if (!inventory)
 				return;
 
@@ -454,13 +454,13 @@ class LF_QuestTrackerComponent : ScriptComponent
 				IEntity item = GetGame().SpawnEntityPrefabEx(prefab, false, null, spawnParams);
 				if (!item)
 				{
-					EL_Debug.Error("Quests", string.Format("reward item failed to spawn: %1", prefab));
+					LF_Debug.Error("Quests", string.Format("reward item failed to spawn: %1", prefab));
 					continue;
 				}
 
 				if (!inventory.TryInsertItem(item))
 				{
-					EL_Debug.Warn("Quests", string.Format("reward item dropped near player (inventory full): %1", prefab));
+					LF_Debug.Warn("Quests", string.Format("reward item dropped near player (inventory full): %1", prefab));
 				}
 			}
 		}
@@ -495,12 +495,12 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 			restored++;
 			if (manager && !manager.GetDefinition(questId))
-				EL_Debug.Warn("Quests", string.Format("restored turn-in for quest=%1 that no giver defines", questId));
+				LF_Debug.Warn("Quests", string.Format("restored turn-in for quest=%1 that no giver defines", questId));
 		}
 
 		if (restored > 0)
 		{
-			EL_Debug.Log("Quests", string.Format("restored %1 turned-in quest(s)", restored));
+			LF_Debug.Log("Quests", string.Format("restored %1 turned-in quest(s)", restored));
 			PushLog();
 			// Only turn-ins persist: a player who left mid-chain gets the next step back.
 			SettleChain();
@@ -572,7 +572,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
 		if (!manager.IsNearGiver(GetOwner(), giverId))
 		{
-			EL_Debug.Warn("Quests", string.Format("open giver refused giver=%1 (unknown or not within %2 m)", giverId, LF_QuestManager.GIVER_RADIUS));
+			LF_Debug.Warn("Quests", string.Format("open giver refused giver=%1 (unknown or not within %2 m)", giverId, LF_QuestManager.GIVER_RADIUS));
 			return false;
 		}
 
@@ -591,7 +591,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		if (manager.IsNearGiver(GetOwner(), giverId))
 			return true;
 
-		EL_Debug.Warn("Quests", string.Format("%1 refused quest=%2 (giver '%3' unknown or not within %4 m)", verb, questId, giverId, LF_QuestManager.GIVER_RADIUS));
+		LF_Debug.Warn("Quests", string.Format("%1 refused quest=%2 (giver '%3' unknown or not within %4 m)", verb, questId, giverId, LF_QuestManager.GIVER_RADIUS));
 		return false;
 	}
 
@@ -667,7 +667,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		LF_QuestGiverComponent giver = manager.GetGiver(giverId);
 		if (!giver || !giver.GetQuests() || !manager.IsNearGiver(GetOwner(), giverId))
 		{
-			EL_Debug.Warn("Quests", string.Format("talk refused giver=%1 (unknown or not within %2 m)", giverId, LF_QuestManager.GIVER_RADIUS));
+			LF_Debug.Warn("Quests", string.Format("talk refused giver=%1 (unknown or not within %2 m)", giverId, LF_QuestManager.GIVER_RADIUS));
 			return false;
 		}
 
@@ -702,7 +702,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		if (acted)
 		{
-			EL_Debug.Log("Quests", string.Format("talked with giver=%1", giverId));
+			LF_Debug.Log("Quests", string.Format("talked with giver=%1", giverId));
 			return true;
 		}
 
@@ -753,7 +753,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 			if (!def.IsListed(status, previousDone))
 				continue;
 
-			if (m_Tracker.CanAccept(def, 1, EL_EJobType.UNEMPLOYED, "", now, completed))
+			if (m_Tracker.CanAccept(def, 1, LF_EJobType.UNEMPLOYED, "", now, completed))
 				return def;
 		}
 
@@ -791,7 +791,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		if (!LF_QuestSignals.IsSignNear(GetOwner(), signId, SIGN_READ_RADIUS))
 		{
-			EL_Debug.Warn("Quests", string.Format("sign read refused sign=%1 (no such sign within %2 m)", signId, SIGN_READ_RADIUS));
+			LF_Debug.Warn("Quests", string.Format("sign read refused sign=%1 (no such sign within %2 m)", signId, SIGN_READ_RADIUS));
 			return false;
 		}
 
@@ -859,6 +859,6 @@ class LF_QuestTrackerComponent : ScriptComponent
 		if (!Replication.IsServer())
 			return;
 
-		EL_Utils.NotifyEntity(GetOwner(), message, title, duration);
+		LF_Utils.NotifyEntity(GetOwner(), message, title, duration);
 	}
 }

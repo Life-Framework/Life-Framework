@@ -14,26 +14,26 @@ SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base
     Surname ""
    }
   }
-   EL_CharacterATMComponent "{1451F1A3FCD22B64}" {
+   LF_CharacterATMComponent "{1451F1A3FCD22B64}" {
    }
-   EL_CharacterShopComponent "{1A15EA02D6D8C60A}" {
+   LF_CharacterShopComponent "{1A15EA02D6D8C60A}" {
    }
-   EL_CharacterSurvivalComponent "{A68F47E449868506}" {
+   LF_CharacterSurvivalComponent "{A68F47E449868506}" {
    }
-   EL_PlayerLevelComponent "{A68F47E449868507}" {
+   LF_PlayerLevelComponent "{A68F47E449868507}" {
    }
-EL_PlayerJobComponent "{A68F47E449868508}" {
+LF_PlayerJobComponent "{A68F47E449868508}" {
     }
     LF_QuestTrackerComponent "{4EDDFD87ACFEE921}" {
     }
-    EL_BuildingManagerComponent "{DF8FCA7984804E51}" {
+    LF_BuildingManagerComponent "{DF8FCA7984804E51}" {
     m_PreviewMaterial "{58F07022C12D0CF5}Assets/Editor/PlacingPreview/Preview.emat"
     m_BasePreviewPrefab "{5626E68741FCB9DB}Prefabs/Building/BaseBuildingPreview.et"
    }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    ActionContexts + {
     UserActionContext "{8CDF2A893F14F514}" {
-     ContextName "EL_ID"
+     ContextName "LF_ID"
      Position PointInfo "{03D908438AC9336D}" {
       Offset 0 1.3 0
      }
@@ -43,15 +43,15 @@ EL_PlayerJobComponent "{A68F47E449868508}" {
    additionalActions + {
     LF_IntroduceAction "{9A4FE806F7DEBA95}" {
      ParentContextList {
-      "EL_ID"
+      "LF_ID"
      }
      UIInfo UIInfo "{12E668436A1DEDF7}" {
       Name "#LF-Interact_Introduce"
      }
     }
-    EL_ShowIDAction "{40BA040D8FCC6416}" {
+    LF_ShowIDAction "{40BA040D8FCC6416}" {
      ParentContextList {
-      "EL_ID"
+      "LF_ID"
      }
      UIInfo UIInfo "{40BA040D8FCC6421}" {
       Name "#EL-ShowID_DisplayName"
@@ -59,7 +59,7 @@ EL_PlayerJobComponent "{A68F47E449868508}" {
     }
     LF_GiveCashAction "{31C13BCEB47B5A51}" {
      ParentContextList {
-      "EL_ID"
+      "LF_ID"
      }
      UIInfo UIInfo "{D3E2FE9CB8DA5B9B}" {
       Name "#LF-Interact_GiveCash"
@@ -67,15 +67,15 @@ EL_PlayerJobComponent "{A68F47E449868508}" {
     }
     LF_GiveItemAction "{614AABB009589D58}" {
      ParentContextList {
-      "EL_ID"
+      "LF_ID"
      }
      UIInfo UIInfo "{19F99F43F9A775C7}" {
       Name "#LF-Interact_GiveItem"
      }
     }
-    EL_ConfiscateAction "{5D4BEB8233CF0FEC}" {
+    LF_ConfiscateAction "{5D4BEB8233CF0FEC}" {
      ParentContextList {
-      "EL_ID"
+      "LF_ID"
      }
      UIInfo UIInfo "{5D4BEB8233CF0FF1}" {
       Name "#EL-Confiscate_DisplayName"
@@ -83,7 +83,7 @@ EL_PlayerJobComponent "{A68F47E449868508}" {
     }
     LF_JailArrestAction "{C9DDD5F29280B309}" {
      ParentContextList {
-      "EL_ID"
+      "LF_ID"
      }
      UIInfo UIInfo "{56C5730E07320FFE}" {
       Name "#EL-Jail_Arrest"
@@ -91,7 +91,7 @@ EL_PlayerJobComponent "{A68F47E449868508}" {
     }
     LF_PlayerRoleAction "{2B55172B79B0124D}" {
      ParentContextList {
-      "EL_ID"
+      "LF_ID"
      }
      UIInfo UIInfo "{335E6219F4ABD75B}" {
       Name "#LF-Interact_RoleSlot"
@@ -100,7 +100,7 @@ EL_PlayerJobComponent "{A68F47E449868508}" {
     }
     LF_PlayerRoleAction "{E8381F5D59305253}" {
      ParentContextList {
-      "EL_ID"
+      "LF_ID"
      }
      UIInfo UIInfo "{AA37217A304B9C5C}" {
       Name "#LF-Interact_RoleSlot"

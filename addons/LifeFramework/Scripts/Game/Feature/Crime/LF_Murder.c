@@ -8,7 +8,7 @@
 //! and, by default (LF_Police.conf m_bOfficerKillOfWantedExempt), an on-duty officer killing a
 //! wanted suspect. Repeat offenders are an admin matter: no ban, no kick, no karma.
 //!
-//! Entry: EL_GameModeRoleplay.OnControllableDestroyedEx on the server, which fires once per
+//! Entry: LF_GameModeRoleplay.OnControllableDestroyedEx on the server, which fires once per
 //! character death, players and NPCs alike.
 //------------------------------------------------------------------------------------------------
 class LF_Murder
@@ -68,19 +68,19 @@ class LF_Murder
 		string killerUid;
 		if (killerPlayerId > 0)
 		{
-			killerUid = EL_Utils.GetPlayerUID(killerPlayerId);
-			EL_PlayerAccount killerAccount = FindAccount(killerUid);
+			killerUid = LF_Utils.GetPlayerUID(killerPlayerId);
+			LF_PlayerAccount killerAccount = FindAccount(killerUid);
 			if (killerAccount)
-				killerOnDuty = killerAccount.GetFaction() == EL_Faction.POLICE && killerAccount.IsOnDuty();
+				killerOnDuty = killerAccount.GetFaction() == LF_Faction.POLICE && killerAccount.IsOnDuty();
 		}
 
 		int victimWanted;
 		string victimLabel = "npc";
 		if (victimPlayerId > 0)
 		{
-			string victimUid = EL_Utils.GetPlayerUID(victimPlayerId);
+			string victimUid = LF_Utils.GetPlayerUID(victimPlayerId);
 			victimLabel = victimUid;
-			EL_PlayerAccount victimAccount = FindAccount(victimUid);
+			LF_PlayerAccount victimAccount = FindAccount(victimUid);
 			if (victimAccount)
 				victimWanted = victimAccount.GetWantedLevel();
 		}
@@ -90,7 +90,7 @@ class LF_Murder
 		{
 			// Vehicles and props die all the time; only character deaths are worth a line.
 			if (isCharacter)
-				EL_Debug.Info(FEATURE, string.Format("death of %1 is not murder: %2", victimLabel, skip));
+				LF_Debug.Info(FEATURE, string.Format("death of %1 is not murder: %2", victimLabel, skip));
 			return false;
 		}
 
@@ -107,30 +107,30 @@ class LF_Murder
 	{
 		if (killerUid.IsEmpty())
 		{
-			EL_Debug.Error(FEATURE, string.Format("murder of %1 not recorded: the killer has no uid", victimLabel));
+			LF_Debug.Error(FEATURE, string.Format("murder of %1 not recorded: the killer has no uid", victimLabel));
 			return false;
 		}
 
-		EL_PlayerAccount account = EL_PlayerAccountManager.GetOrCreate(killerUid);
+		LF_PlayerAccount account = LF_PlayerAccountManager.GetOrCreate(killerUid);
 		if (!account)
 		{
-			EL_Debug.Error(FEATURE, string.Format("murder of %1 not recorded: no account for %2", victimLabel, killerUid));
+			LF_Debug.Error(FEATURE, string.Format("murder of %1 not recorded: no account for %2", victimLabel, killerUid));
 			return false;
 		}
 
 		int amount = WantedAmount();
 		account.IncreaseWantedLevel(amount);
-		EL_PlayerAccountManager accountManager = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
 		if (accountManager)
 			accountManager.SaveAndReleaseAccount(account);
 
 		// A street has no alarm bell: the report and the radio call only (no site, LF_Dispatch).
 		LF_Dispatch.Report(killerUid, killer, LF_WantedReports.OFFENCE_MURDER, vector.Zero);
 		if (killer)
-			EL_Utils.NotifyEntity(killer, "#LF-Murder_Wanted", "#LF-Murder_Title", 6.0);
+			LF_Utils.NotifyEntity(killer, "#LF-Murder_Wanted", "#LF-Murder_Title", 6.0);
 
 		s_iRecorded++;
-		EL_Debug.Info(FEATURE, string.Format("murder by %1 of %2: wanted +%3 -> %4", killerUid, victimLabel, amount, account.GetWantedLevel()));
+		LF_Debug.Info(FEATURE, string.Format("murder by %1 of %2: wanted +%3 -> %4", killerUid, victimLabel, amount, account.GetWantedLevel()));
 		return true;
 	}
 
@@ -150,7 +150,7 @@ class LF_Murder
 
 		if (config.m_iMurderWanted < 1)
 		{
-			EL_Debug.Error(FEATURE, string.Format("murder wanted amount %1 is below 1; using %2", config.m_iMurderWanted, LF_PoliceConfig.DEFAULT_MURDER_WANTED));
+			LF_Debug.Error(FEATURE, string.Format("murder wanted amount %1 is below 1; using %2", config.m_iMurderWanted, LF_PoliceConfig.DEFAULT_MURDER_WANTED));
 			return LF_PoliceConfig.DEFAULT_MURDER_WANTED;
 		}
 
@@ -168,12 +168,12 @@ class LF_Murder
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static EL_PlayerAccount FindAccount(string uid)
+	protected static LF_PlayerAccount FindAccount(string uid)
 	{
 		if (uid.IsEmpty())
 			return null;
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts)
 			return null;
 

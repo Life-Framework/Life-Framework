@@ -37,7 +37,7 @@ class LF_GiveCashSheet
 		Hide();
 		if (!controller)
 		{
-			EL_Debug.Error("Interaction", "give cash sheet refused: no player controller");
+			LF_Debug.Error("Interaction", "give cash sheet refused: no player controller");
 			return null;
 		}
 
@@ -48,21 +48,21 @@ class LF_GiveCashSheet
 		sheet.m_Screen = LF_UIScreen.Open(BuildParts(carried));
 		if (!sheet.m_Screen)
 		{
-			EL_Debug.Error("Interaction", "give cash sheet failed to open");
+			LF_Debug.Error("Interaction", "give cash sheet failed to open");
 			return null;
 		}
 
 		sheet.m_Screen.GetOnButton().Insert(sheet.OnButton);
 		sheet.m_Screen.CloseOnDeath();
 		sheet.m_Screen.CloseWhenUncontrolled();
-		IEntity receiver = EL_NetworkUtils.FindEntityByRplId(target);
+		IEntity receiver = LF_NetworkUtils.FindEntityByRplId(target);
 		if (receiver)
 			sheet.m_Screen.CloseBeyond(CLOSE_DISTANCE, receiver.GetID());
 		else
-			EL_Debug.Warn("Interaction", "give cash sheet open without the receiver in this client's world; no distance close");
+			LF_Debug.Warn("Interaction", "give cash sheet open without the receiver in this client's world; no distance close");
 
 		s_Sheet = sheet;
-		EL_Debug.Info("Interaction", "give cash sheet open, carrying " + carried);
+		LF_Debug.Info("Interaction", "give cash sheet open, carrying " + carried);
 		return sheet.m_Screen;
 	}
 
@@ -111,11 +111,11 @@ class LF_GiveCashSheet
 		Hide();
 		if (!controller)
 		{
-			EL_Debug.Error("Interaction", "give cash not sent: no player controller");
+			LF_Debug.Error("Interaction", "give cash not sent: no player controller");
 			return;
 		}
 
-		EL_Debug.Info("Interaction", "give cash sheet signed: " + amount);
+		LF_Debug.Info("Interaction", "give cash sheet signed: " + amount);
 		controller.LF_AskGiveCash(target, amount);
 	}
 }

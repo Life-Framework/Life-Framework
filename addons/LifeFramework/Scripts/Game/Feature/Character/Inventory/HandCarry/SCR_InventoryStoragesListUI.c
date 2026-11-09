@@ -1,14 +1,14 @@
 modded class SCR_InventoryStoragesListUI
 {
-	protected const int EL_HAND_GRID_ROW = 10;
+	protected const int LF_HAND_GRID_ROW = 10;
 
 	protected SCR_InventorySlotUI m_pELHandSlot;
 	protected Widget m_pELHandSlotBackground;
 
 	//------------------------------------------------------------------------------------------------
-	void EL_UpdateHandSlot()
+	void LF_UpdateHandSlot()
 	{
-		EL_HandInventoryStorageComponent handStorage = EL_Component<EL_HandInventoryStorageComponent>.Find(m_Storage.GetOwner());
+		LF_HandInventoryStorageComponent handStorage = LF_Component<LF_HandInventoryStorageComponent>.Find(m_Storage.GetOwner());
 		if (!handStorage) return;
 
 		IEntity item;
@@ -18,14 +18,14 @@ modded class SCR_InventoryStoragesListUI
 
 		if (item)
 		{
-			InventoryItemComponent invItem = EL_Component<InventoryItemComponent>.Find(item);
+			InventoryItemComponent invItem = LF_Component<InventoryItemComponent>.Find(item);
 
 			if (!m_pELHandSlot)
 			{
-				m_pELHandSlotBackground = CreateEmptySlotUI(EL_HAND_GRID_ROW, 0);
+				m_pELHandSlotBackground = CreateEmptySlotUI(LF_HAND_GRID_ROW, 0);
 				m_pELHandSlot = CreateStorageSlotUI(invItem);
 				Widget w = m_pELHandSlot.GetWidget();
-				GridSlot.SetRow(w, EL_HAND_GRID_ROW);
+				GridSlot.SetRow(w, LF_HAND_GRID_ROW);
 				GridSlot.SetRowSpan(w, 1);
 				GridSlot.SetColumn(w, 0);
 				GridSlot.SetColumnSpan(w, 1);
@@ -55,7 +55,7 @@ modded class SCR_InventoryStoragesListUI
 	override void RefreshList()
 	{
 		super.RefreshList();
-		EL_UpdateHandSlot();
+		LF_UpdateHandSlot();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ modded class SCR_InventoryStoragesListUI
 			InventoryItemComponent item = pSlot.GetInventoryItemComponent();
 			if (!item) continue;
 			InventoryStorageSlot itemSlot = item.GetParentSlot();
-			if (itemSlot && EL_HandInventoryStorageComponent.Cast(itemSlot.GetStorage()))
+			if (itemSlot && LF_HandInventoryStorageComponent.Cast(itemSlot.GetStorage()))
 			{
 				pSlot.Destroy();
 				m_aSlots.RemoveOrdered(nSlot--);
