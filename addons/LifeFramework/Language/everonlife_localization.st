@@ -5247,61 +5247,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "No answer. Nobody is on duty for that service right now."
      Comment "Shown to a caller when nobody is on duty for the service they called (#248)."
     }
-    CustomStringTableItem "{177011F784696AD3}" {
-     Id "LF-Item_Drill_Name"
-     Target_en_us "Drill"
-     Comment "Item name of the fence drill."
-    }
-    CustomStringTableItem "{39F1DED905C80D73}" {
-     Id "LF-Item_Drill_Description"
-     Target_en_us "A hardened drill. The serial is stamped under the grip."
-     Comment "Item description of the fence drill."
-    }
-    CustomStringTableItem "{C422F998AB82B4F0}" {
-     Id "LF-Item_Charge_Name"
-     Target_en_us "Breaching charge"
-     Comment "Item name of the fence charge."
-    }
-    CustomStringTableItem "{62DA24F968E17906}" {
-     Id "LF-Item_Charge_Description"
-     Target_en_us "A shaped charge. The serial is stamped on the casing."
-     Comment "Item description of the fence charge."
-    }
-    CustomStringTableItem "{4CC4FC1BDF31889F}" {
-     Id "LF-Item_Keycard_Name"
-     Target_en_us "Keycard"
-     Comment "Item name of the fence keycard."
-    }
-    CustomStringTableItem "{D905B60D78F7B540}" {
-     Id "LF-Item_Keycard_Description"
-     Target_en_us "A cloned access card. The serial is printed on the back."
-     Comment "Item description of the fence keycard."
-    }
-    CustomStringTableItem "{6190A2B8AD6F7862}" {
-     Id "LF-Shop_Name_Fence"
-     Target_en_us "The Fence"
-     Comment "Fence shop name (#271)."
-    }
-    CustomStringTableItem "{78CFC7A314AD1790}" {
-     Id "LF-Shop_Desc_Fence"
-     Target_en_us "Tools, no questions. If he knows you."
-     Comment "Fence shop description (#271)."
-    }
-    CustomStringTableItem "{FB0002094FEA5005}" {
-     Id "LF-Shop_Open_Fence"
-     Target_en_us "Talk to the fence"
-     Comment "Interaction name on the fence NPC (#271)."
-    }
-    CustomStringTableItem "{962AD3A70D1AF2CA}" {
-     Id "LF-Shop_OpenDesc_Fence"
-     Target_en_us "See what he will sell you"
-     Comment "Interaction description on the fence NPC (#271)."
-    }
-    CustomStringTableItem "{69423E128B199BF7}" {
-     Id "LF-Shop_RefuseNotTrusted"
-     Target_en_us "I don't know you. Come back when you have made a name."
-     Comment "Shop refusal: the fence has not seen enough of the buyer's work (#271)."
-    }
     CustomStringTableItem "{B4664D355C98920F}" {
      Id "LF-Dispatch_RadioCall"
      Target_en_us "All units: %1 at %2. Reported by phone."
@@ -5362,6 +5307,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Suspicious person reported"
      Comment "Summary the police radio line shows for a suspicious person phoned in."
     }
+    CustomStringTableItem "{177011F784696AD3}" {
+     Id "LF-Item_Drill_Name"
+     Target_en_us "Drill"
+     Comment "Item name of the fence drill."
+    }
+    CustomStringTableItem "{39F1DED905C80D73}" {
+     Id "LF-Item_Drill_Description"
+     Target_en_us "A hardened drill. The serial is stamped under the grip."
+     Comment "Item description of the fence drill."
+    }
+    CustomStringTableItem "{C422F998AB82B4F0}" {
+     Id "LF-Item_Charge_Name"
+     Target_en_us "Breaching charge"
+     Comment "Item name of the fence charge."
+    }
+    CustomStringTableItem "{62DA24F968E17906}" {
+     Id "LF-Item_Charge_Description"
+     Target_en_us "A shaped charge. The serial is stamped on the casing."
+     Comment "Item description of the fence charge."
+    }
+    CustomStringTableItem "{4CC4FC1BDF31889F}" {
+     Id "LF-Item_Keycard_Name"
+     Target_en_us "Keycard"
+     Comment "Item name of the fence keycard."
+    }
+    CustomStringTableItem "{D905B60D78F7B540}" {
+     Id "LF-Item_Keycard_Description"
+     Target_en_us "A cloned access card. The serial is printed on the back."
+     Comment "Item description of the fence keycard."
+    }
+    CustomStringTableItem "{6190A2B8AD6F7862}" {
+     Id "LF-Shop_Name_Fence"
+     Target_en_us "The Fence"
+     Comment "Fence shop name (#271)."
+    }
+    CustomStringTableItem "{78CFC7A314AD1790}" {
+     Id "LF-Shop_Desc_Fence"
+     Target_en_us "Tools, no questions. If he knows you."
+     Comment "Fence shop description (#271)."
+    }
+    CustomStringTableItem "{FB0002094FEA5005}" {
+     Id "LF-Shop_Open_Fence"
+     Target_en_us "Talk to the fence"
+     Comment "Interaction name on the fence NPC (#271)."
+    }
+    CustomStringTableItem "{962AD3A70D1AF2CA}" {
+     Id "LF-Shop_OpenDesc_Fence"
+     Target_en_us "See what he will sell you"
+     Comment "Interaction description on the fence NPC (#271)."
+    }
+    CustomStringTableItem "{69423E128B199BF7}" {
+     Id "LF-Shop_RefuseNotTrusted"
+     Target_en_us "I don't know you. Come back when you have made a name."
+     Comment "Shop refusal: the fence has not seen enough of the buyer's work (#271)."
+    }
     CustomStringTableItem "{3BD89A2DB71401CE}" {
      Id "LF-Serial_Title"
      Target_en_us "Serial number"
@@ -5376,6 +5376,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Serial_Read_Action"
      Target_en_us "Read serial"
      Comment "Action name to read a fence tool serial (#272)."
+    }
+    CustomStringTableItem "{CBEE6929FA9220E9}" {
+     Id "LF-Dispatch_Read"
+     Target_en_us "Read the dispatch board"
+     Comment "Action on a service dispatch board (medic, taxi)."
+    }
+    CustomStringTableItem "{40DB3ECCE367BACE}" {
+     Id "LF-Dispatch_ServiceTitle"
+     Target_en_us "%1 - dispatch"
+     Comment "Title of a service dispatch board card. %1 = the service name."
+    }
+    CustomStringTableItem "{A110BD40681B9DE6}" {
+     Id "LF-Dispatch_ServiceLine"
+     Target_en_us "%1  %2 at %3"
+     Comment "Service dispatch board line. %1 = clock time HH:MM, %2 = what was reported, %3 = place."
+    }
+    CustomStringTableItem "{DD4BB860497316E7}" {
+     Id "LF-Dispatch_ServiceNone"
+     Target_en_us "No calls waiting."
+     Comment "Service dispatch board card when no call is open."
+    }
+    CustomStringTableItem "{3C58DD873A36D166}" {
+     Id "LF-Dispatch_ServiceClosed"
+     Target_en_us "This board is for on-duty staff of the service."
+     Comment "Service dispatch board card shown to anyone the service would not reach."
+    }
+    CustomStringTableItem "{3D7FD7F81A65DF0D}" {
+     Id "LF-Sign_DispatchBoard_Title"
+     Target_en_us "Dispatch"
+     Comment "Title printed on a service dispatch board."
+    }
+    CustomStringTableItem "{7F09778274142A4F}" {
+     Id "LF-Sign_DispatchBoard_What"
+     Target_en_us "Calls waiting for this service, newest first."
+     Comment "Dispatch board sign card: what it is."
+    }
+    CustomStringTableItem "{AADF82735259A9A5}" {
+     Id "LF-Sign_DispatchBoard_How"
+     Target_en_us "Calls come from payphones and pagers and stay until they are taken or expire."
+     Comment "Dispatch board sign card: how it works."
+    }
+    CustomStringTableItem "{D3C24B11CBD10FCC}" {
+     Id "LF-Sign_DispatchBoard_Rules"
+     Target_en_us "Only on-duty staff of the service can read the details."
+     Comment "Dispatch board sign card: rules."
+    }
+    CustomStringTableItem "{DF67BD63EAE97B58}" {
+     Id "LF-Sign_DispatchBoard_Next"
+     Target_en_us "Need help? Use a payphone to call the service."
+     Comment "Dispatch board sign card: what to do next."
     }
   }
  }

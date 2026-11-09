@@ -155,7 +155,7 @@ class LF_ServiceCallDispatch : LF_EventSubscriber
 		if (call.m_sService != "police")
 			return true;
 
-		return LF_Dispatch.RelayCall(call.m_sSummary, call.m_sPlace, call.m_vPosition, call.m_aReceiverIds.Count()) != null;
+		return LF_Dispatch.Receive(call) != null;
 	}
 
 	//! Server: subscribe once per world (the bus table is cleared at world end).
@@ -163,8 +163,12 @@ class LF_ServiceCallDispatch : LF_EventSubscriber
 
 	static void Install()
 	{
-		if (!Replication.IsServer() || s_Subscriber)
+		if (!Replication.IsServer())
 			return;
+
+		// Idempotent even after a bus reset: drop any earlier subscription, then subscribe.
+		if (s_Subscriber)
+			LF_EventBus.Unsubscribe(LF_OnServiceCall, s_Subscriber);
 
 		s_Subscriber = new LF_ServiceCallDispatch();
 		LF_EventBus.Subscribe(LF_OnServiceCall, s_Subscriber);
