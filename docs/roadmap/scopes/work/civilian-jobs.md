@@ -25,7 +25,7 @@ A civilian takes a job at a workplace, does the work in the world, and is paid i
 
 ## Assets
 
-Jobs already configured in `EL_PlayerJobComponent`: unemployed, farmer, miner, lumberjack, medic, police. Taxi, fuel delivery, and parcels are new loops on that component.
+Jobs already configured in `LF_PlayerJobComponent`: unemployed, farmer, miner, lumberjack, medic, police. Taxi, fuel delivery, and parcels are new loops on that component.
 
 - Taxi and fuel runs use `Prefabs/Vehicles/Wheeled/S105/S105_beige.et` or `UAZ469_covered_CIV_blue.et`
 - Fuel can: `Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et`
@@ -40,7 +40,7 @@ Fix job XP so a completed run levels the job. Ship parcel delivery end to end (n
 
 ## Depends on
 
-- `EL_PlayerJobComponent` (XP is still a no-op today)
+- `LF_PlayerJobComponent` (XP is still a no-op today)
 - `Money` cash payout
 - `Level` and `License` for gates
 - Hand-carry for parcels

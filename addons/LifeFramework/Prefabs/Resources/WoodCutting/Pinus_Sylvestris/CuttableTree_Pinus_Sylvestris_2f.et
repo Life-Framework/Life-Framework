@@ -1,9 +1,9 @@
 GenericEntity : "{388228D9B7D2CCB0}Prefabs/Resources/WoodCutting/CuttableTree_Base.et" {
  ID "5ACE9762F521AE84"
  components {
-  EL_DestructibleResourceComponent "{5ACCE1B70F3EF473}" {
+  LF_DestructibleResourceComponent "{5ACCE1B70F3EF473}" {
    "Additional hit zones" {
-    EL_DestructibleResourceHitZone WoodCutting {
+    LF_DestructibleResourceHitZone WoodCutting {
      ColliderNames {
       "UTM_F"
      }

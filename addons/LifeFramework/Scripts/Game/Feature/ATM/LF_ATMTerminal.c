@@ -3,7 +3,7 @@
 //
 // Keys: the on-screen keypad (mouse, or pad focus that moves like a grid), the keyboard digits and
 // numpad (LF_Keypad0..9), Backspace (LF_KeypadBack) and Delete or pad Y (LF_KeypadClear).
-// Deposit and Withdraw send the amount to EL_CharacterATMComponent; the reply (balance, carried
+// Deposit and Withdraw send the amount to LF_CharacterATMComponent; the reply (balance, carried
 // cash, refusal reason) is printed on the screen. It closes on Exit, MenuBack, death, losing the
 // character, or walking CLOSE_DISTANCE from the machine.
 class LF_ATMTerminal
@@ -49,12 +49,12 @@ class LF_ATMTerminal
 	//------------------------------------------------------------------------------------------------
 	//! Opens the terminal for the local player at machine.
 	//! \param action The ATM action, for its configured sounds; null keeps the defaults.
-	static LF_ATMTerminal Open(IEntity machine, IEntity user, EL_ATMAction action)
+	static LF_ATMTerminal Open(IEntity machine, IEntity user, LF_ATMAction action)
 	{
 		Hide();
 		if (!machine || !user)
 		{
-			EL_Debug.Error("ATM", "terminal refused: no machine or no user");
+			LF_Debug.Error("ATM", "terminal refused: no machine or no user");
 			return null;
 		}
 
@@ -73,13 +73,13 @@ class LF_ATMTerminal
 		if (action)
 			LF_UISound.Play(action.GetOpenSound());
 
-		EL_CharacterATMComponent atm = EL_Component<EL_CharacterATMComponent>.Find(user);
+		LF_CharacterATMComponent atm = LF_Component<LF_CharacterATMComponent>.Find(user);
 		if (atm)
 			atm.RequestBalance();
 		else
-			EL_Debug.Error("ATM", "terminal open but the character has no EL_CharacterATMComponent");
+			LF_Debug.Error("ATM", "terminal open but the character has no LF_CharacterATMComponent");
 
-		EL_Debug.Info("ATM", "terminal open");
+		LF_Debug.Info("ATM", "terminal open");
 		return terminal;
 	}
 
@@ -130,7 +130,7 @@ class LF_ATMTerminal
 	//! The entry line: the typed amount with a cursor.
 	static string EntryText(int amount)
 	{
-		return WidgetManager.Translate("#LF-ATM_LineEntry", EL_MoneyFormat.FormatMoney(amount));
+		return WidgetManager.Translate("#LF-ATM_LineEntry", LF_MoneyFormat.FormatMoney(amount));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ class LF_ATMTerminal
 		m_Screen = LF_UIScreen.Open(BuildParts(), LF_UISkin.Terminal());
 		if (!m_Screen)
 		{
-			EL_Debug.Error("ATM", "terminal failed to open");
+			LF_Debug.Error("ATM", "terminal failed to open");
 			return false;
 		}
 
@@ -196,7 +196,7 @@ class LF_ATMTerminal
 			return;
 		}
 
-		EL_Debug.Warn("ATM", "terminal ignored button " + name);
+		LF_Debug.Warn("ATM", "terminal ignored button " + name);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -204,22 +204,22 @@ class LF_ATMTerminal
 	{
 		if (m_bWaiting)
 		{
-			EL_Debug.Info("ATM", "request ignored: the machine is still working");
+			LF_Debug.Info("ATM", "request ignored: the machine is still working");
 			return;
 		}
 
 		LF_UISound.Play(m_sKeySound);
-		if (!EL_ATMManager.IsValidAmount(m_iAmount))
+		if (!LF_ATMManager.IsValidAmount(m_iAmount))
 		{
-			EL_Debug.Info("ATM", "rejected: amount must be greater than zero");
+			LF_Debug.Info("ATM", "rejected: amount must be greater than zero");
 			Refuse(LF_EATMRefusal.INVALID_AMOUNT);
 			return;
 		}
 
-		EL_CharacterATMComponent atm = EL_Component<EL_CharacterATMComponent>.Find(EL_Utils.GetLocalCharacter());
+		LF_CharacterATMComponent atm = LF_Component<LF_CharacterATMComponent>.Find(LF_Utils.GetLocalCharacter());
 		if (!atm)
 		{
-			EL_Debug.Error("ATM", "request failed: no ATM component on the controlled character");
+			LF_Debug.Error("ATM", "request failed: no ATM component on the controlled character");
 			Refuse(LF_EATMRefusal.NO_ACCOUNT);
 			return;
 		}
@@ -242,7 +242,7 @@ class LF_ATMTerminal
 			return;
 
 		m_bWaiting = false;
-		EL_Debug.Warn("ATM", "no reply from the server within " + REPLY_TIMEOUT_MS.ToString() + " ms");
+		LF_Debug.Warn("ATM", "no reply from the server within " + REPLY_TIMEOUT_MS.ToString() + " ms");
 		SetStatus("#LF-ATM_NoReply");
 		LF_UISound.Play(m_sRefuseSound);
 	}
@@ -253,7 +253,7 @@ class LF_ATMTerminal
 	{
 		if (!s_Current)
 		{
-			EL_Debug.Info("ATM", "reply arrived after the terminal closed");
+			LF_Debug.Info("ATM", "reply arrived after the terminal closed");
 			return;
 		}
 
@@ -284,9 +284,9 @@ class LF_ATMTerminal
 
 		SetAmount(0);
 		if (deposit)
-			SetStatus(WidgetManager.Translate("#LF-ATM_Deposited", EL_MoneyFormat.FormatMoney(amount)));
+			SetStatus(WidgetManager.Translate("#LF-ATM_Deposited", LF_MoneyFormat.FormatMoney(amount)));
 		else
-			SetStatus(WidgetManager.Translate("#LF-ATM_Dispensed", EL_MoneyFormat.FormatMoney(amount)));
+			SetStatus(WidgetManager.Translate("#LF-ATM_Dispensed", LF_MoneyFormat.FormatMoney(amount)));
 
 		LF_UISound.Play(m_sAcceptSound);
 	}
@@ -296,7 +296,7 @@ class LF_ATMTerminal
 	{
 		SetStatus(LF_ATMRefusal.Key(reason));
 		LF_UISound.Play(m_sRefuseSound);
-		EL_Debug.Info("ATM", "terminal shows refusal " + typename.EnumToString(LF_EATMRefusal, reason));
+		LF_Debug.Info("ATM", "terminal shows refusal " + typename.EnumToString(LF_EATMRefusal, reason));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -307,10 +307,10 @@ class LF_ATMTerminal
 		if (!m_Screen)
 			return;
 
-		m_Screen.SetLine("Balance", WidgetManager.Translate("#LF-ATM_LineBalance", EL_MoneyFormat.FormatMoney(balance)));
+		m_Screen.SetLine("Balance", WidgetManager.Translate("#LF-ATM_LineBalance", LF_MoneyFormat.FormatMoney(balance)));
 		string cashText = WidgetManager.Translate("#LF-ATM_Unknown");
 		if (cash >= 0)
-			cashText = EL_MoneyFormat.FormatMoney(cash);
+			cashText = LF_MoneyFormat.FormatMoney(cash);
 
 		m_Screen.SetLine("Cash", WidgetManager.Translate("#LF-ATM_LineCash", cashText));
 	}
@@ -355,7 +355,7 @@ class LF_ATMTerminal
 		if (s_Current == this)
 			s_Current = null;
 
-		EL_Debug.Info("ATM", "terminal closed");
+		LF_Debug.Info("ATM", "terminal closed");
 	}
 
 	//------------------------------------------------------------------------------------------------

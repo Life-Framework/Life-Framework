@@ -42,7 +42,7 @@ foreach ($layer in @(Get-ChildItem -LiteralPath $layersDir -Filter '*.layer' -Fi
 
   $layerBoxes = @()
   for ($i = 0; $i -lt $lines.Count; $i++) {
-    if ($lines[$i] -notmatch 'EL_DebugAreaBoundary\s*:') { continue }
+    if ($lines[$i] -notmatch 'LF_DebugAreaBoundary\s*:') { continue }
     $boundaryCoord = $null; $size = $null
     for ($j = $i + 1; $j -lt [Math]::Min($i + 8, $lines.Count); $j++) {
       if (-not $boundaryCoord) { $boundaryCoord = Coord $lines[$j] }

@@ -32,7 +32,7 @@ class LF_HospitalTillComponent : ScriptComponent
 		string targetId = GetTargetId();
 		if (targetId.IsEmpty())
 		{
-			EL_Debug.Error("Hospital", "till component has no id and the entity is unnamed");
+			LF_Debug.Error("Hospital", "till component has no id and the entity is unnamed");
 			return;
 		}
 
@@ -80,18 +80,18 @@ class LF_HospitalCabinetComponent : ScriptComponent
 		string targetId = GetTargetId();
 		if (targetId.IsEmpty())
 		{
-			EL_Debug.Error("Hospital", "cabinet component has no id and the entity is unnamed");
+			LF_Debug.Error("Hospital", "cabinet component has no id and the entity is unnamed");
 			return;
 		}
 
-		EL_LockComponent cabinetLock = EL_Component<EL_LockComponent>.Find(owner);
+		LF_LockComponent cabinetLock = LF_Component<LF_LockComponent>.Find(owner);
 		if (!cabinetLock)
 		{
-			EL_Debug.Error("Hospital", string.Format("cabinet %1 has no EL_LockComponent", targetId));
+			LF_Debug.Error("Hospital", string.Format("cabinet %1 has no LF_LockComponent", targetId));
 			return;
 		}
 
-		// A lock added on the layer does not run EL_LockComponent.EOnInit, so the
+		// A lock added on the layer does not run LF_LockComponent.EOnInit, so the
 		// debug flag never reaches the replicated locked bit. Lock here.
 		if (!cabinetLock.IsLocked())
 			cabinetLock.Lock();
@@ -157,17 +157,17 @@ class LF_HospitalCabinetAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		LF_HospitalCabinetComponent cabinet = EL_Component<LF_HospitalCabinetComponent>.Find(pOwnerEntity);
+		LF_HospitalCabinetComponent cabinet = LF_Component<LF_HospitalCabinetComponent>.Find(pOwnerEntity);
 		if (!cabinet)
 		{
-			EL_Debug.Error("Hospital", "cabinet action: owner has no LF_HospitalCabinetComponent");
+			LF_Debug.Error("Hospital", "cabinet action: owner has no LF_HospitalCabinetComponent");
 			return;
 		}
 
-		string playerUid = EL_Utils.GetPlayerUid(pUserEntity);
+		string playerUid = LF_Utils.GetPlayerUid(pUserEntity);
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Hospital", "cabinet action refused: player has no account id");
+			LF_Debug.Error("Hospital", "cabinet action refused: player has no account id");
 			return;
 		}
 
@@ -187,6 +187,6 @@ class LF_HospitalCabinetAction : ScriptedUserAction
 		if (!GetOwner())
 			return null;
 
-		return EL_Component<LF_HospitalCabinetComponent>.Find(GetOwner());
+		return LF_Component<LF_HospitalCabinetComponent>.Find(GetOwner());
 	}
 }

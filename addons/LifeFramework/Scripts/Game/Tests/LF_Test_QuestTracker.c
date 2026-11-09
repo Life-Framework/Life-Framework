@@ -5,14 +5,14 @@
 // COMPLETED guard in LF_QuestTracker.ApplyEvent, then run the fast tier.
 
 // tier: LOGIC
-class LF_Test_QuestTracker : EL_Test
+class LF_Test_QuestTracker : LF_Test
 {
 	override string GetName()
 	{
 		return "quests/tracker-lifecycle";
 	}
 
-	override void Run(EL_TestContext ctx)
+	override void Run(LF_TestContext ctx)
 	{
 		TestLifecycle(ctx);
 		TestPrerequisites(ctx);
@@ -26,14 +26,14 @@ class LF_Test_QuestTracker : EL_Test
 	//------------------------------------------------------------------------------------------------
 	//! The quest-log wire format survives an encode/decode round trip (the menu
 	//! depends on it client-side).
-	void TestLogCodec(EL_TestContext ctx)
+	void TestLogCodec(LF_TestContext ctx)
 	{
 		LF_QuestDefinition def = MakeKillQuest("q_log", 2, "", false, 0);
 		LF_QuestTracker tracker = new LF_QuestTracker();
 		map<string, ref LF_QuestDefinition> defs = MakeDefs(def);
 		array<string> completed = {};
 
-		tracker.Accept(def, 1, EL_EJobType.UNEMPLOYED, "", 0, completed);
+		tracker.Accept(def, 1, LF_EJobType.UNEMPLOYED, "", 0, completed);
 		tracker.ApplyEvent(MakeEvent(LF_EQuestEventType.KILL, "", 1), defs);
 
 		string encoded = LF_QuestLogFormat.Encode(tracker.GetStates());
@@ -52,14 +52,14 @@ class LF_Test_QuestTracker : EL_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! Accept -> progress -> complete -> turn in; wrong-filter kills are ignored.
-	void TestLifecycle(EL_TestContext ctx)
+	void TestLifecycle(LF_TestContext ctx)
 	{
 		LF_QuestDefinition def = MakeKillQuest("q_kill", 2, "FIA", false, 0);
 		LF_QuestTracker tracker = new LF_QuestTracker();
 		map<string, ref LF_QuestDefinition> defs = MakeDefs(def);
 		array<string> completed = {};
 
-		ctx.True(tracker.Accept(def, 1, EL_EJobType.UNEMPLOYED, "", 0, completed), "unrestricted quest accepts");
+		ctx.True(tracker.Accept(def, 1, LF_EJobType.UNEMPLOYED, "", 0, completed), "unrestricted quest accepts");
 		ctx.True(tracker.GetStatus("q_kill") == LF_EQuestStatus.ACTIVE, "accepted quest is ACTIVE");
 
 		tracker.ApplyEvent(MakeEvent(LF_EQuestEventType.KILL, "USSR", 1), defs);
@@ -74,32 +74,32 @@ class LF_Test_QuestTracker : EL_Test
 		ctx.True(tracker.TurnIn("q_kill", 100), "completed quest turns in");
 		ctx.True(tracker.GetStatus("q_kill") == LF_EQuestStatus.TURNED_IN, "turn-in moves quest to TURNED_IN");
 		ctx.False(tracker.TurnIn("q_kill", 101), "second turn-in is refused");
-		ctx.False(tracker.CanAccept(def, 1, EL_EJobType.UNEMPLOYED, "", 101, completed), "non-repeatable quest cannot re-accept");
+		ctx.False(tracker.CanAccept(def, 1, LF_EJobType.UNEMPLOYED, "", 101, completed), "non-repeatable quest cannot re-accept");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Level, job, faction and previous-quest prerequisites gate acceptance.
-	void TestPrerequisites(EL_TestContext ctx)
+	void TestPrerequisites(LF_TestContext ctx)
 	{
 		LF_QuestTracker tracker = new LF_QuestTracker();
 		array<string> completed = {};
 
 		LF_QuestDefinition lvl = MakeKillQuest("q_lvl", 1, "", false, 0);
 		lvl.m_iMinLevel = 5;
-		ctx.False(tracker.Accept(lvl, 3, EL_EJobType.UNEMPLOYED, "", 0, completed), "level below minimum rejects");
-		ctx.True(tracker.Accept(lvl, 5, EL_EJobType.UNEMPLOYED, "", 0, completed), "level at minimum accepts");
+		ctx.False(tracker.Accept(lvl, 3, LF_EJobType.UNEMPLOYED, "", 0, completed), "level below minimum rejects");
+		ctx.True(tracker.Accept(lvl, 5, LF_EJobType.UNEMPLOYED, "", 0, completed), "level at minimum accepts");
 
 		LF_QuestTracker jobTracker = new LF_QuestTracker();
 		LF_QuestDefinition job = MakeKillQuest("q_job", 1, "", false, 0);
-		job.m_eRequiredJob = EL_EJobType.MINER;
-		ctx.False(jobTracker.Accept(job, 1, EL_EJobType.FARMER, "", 0, completed), "wrong job rejects");
-		ctx.True(jobTracker.Accept(job, 1, EL_EJobType.MINER, "", 0, completed), "matching job accepts");
+		job.m_eRequiredJob = LF_EJobType.MINER;
+		ctx.False(jobTracker.Accept(job, 1, LF_EJobType.FARMER, "", 0, completed), "wrong job rejects");
+		ctx.True(jobTracker.Accept(job, 1, LF_EJobType.MINER, "", 0, completed), "matching job accepts");
 
 		LF_QuestTracker factionTracker = new LF_QuestTracker();
 		LF_QuestDefinition faction = MakeKillQuest("q_faction", 1, "", false, 0);
 		faction.m_sRequiredFaction = "US";
-		ctx.False(factionTracker.Accept(faction, 1, EL_EJobType.UNEMPLOYED, "FIA", 0, completed), "wrong faction rejects");
-		ctx.True(factionTracker.Accept(faction, 1, EL_EJobType.UNEMPLOYED, "US", 0, completed), "matching faction accepts");
+		ctx.False(factionTracker.Accept(faction, 1, LF_EJobType.UNEMPLOYED, "FIA", 0, completed), "wrong faction rejects");
+		ctx.True(factionTracker.Accept(faction, 1, LF_EJobType.UNEMPLOYED, "US", 0, completed), "matching faction accepts");
 
 		LF_QuestTracker chainTracker = new LF_QuestTracker();
 		LF_QuestDefinition intro = MakeKillQuest("q_intro", 1, "", false, 0);
@@ -108,19 +108,19 @@ class LF_Test_QuestTracker : EL_Test
 		map<string, ref LF_QuestDefinition> defs = MakeDefs(intro);
 		defs.Set("q_chained", chained);
 
-		ctx.False(chainTracker.Accept(chained, 1, EL_EJobType.UNEMPLOYED, "", 0, completed), "quest gated on unturned-in previous quest rejects");
+		ctx.False(chainTracker.Accept(chained, 1, LF_EJobType.UNEMPLOYED, "", 0, completed), "quest gated on unturned-in previous quest rejects");
 
-		chainTracker.Accept(intro, 1, EL_EJobType.UNEMPLOYED, "", 0, completed);
+		chainTracker.Accept(intro, 1, LF_EJobType.UNEMPLOYED, "", 0, completed);
 		chainTracker.ApplyEvent(MakeEvent(LF_EQuestEventType.KILL, "", 1), defs);
 		chainTracker.TurnIn("q_intro", 10);
 		completed = chainTracker.GetCompletedQuestIds();
-		ctx.True(chainTracker.Accept(chained, 1, EL_EJobType.UNEMPLOYED, "", 11, completed), "chained quest accepts after previous is turned in");
+		ctx.True(chainTracker.Accept(chained, 1, LF_EJobType.UNEMPLOYED, "", 11, completed), "chained quest accepts after previous is turned in");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Collect objectives SET progress from a report and regress when the player
 	//! drops items before turning in.
-	void TestCollectSet(EL_TestContext ctx)
+	void TestCollectSet(LF_TestContext ctx)
 	{
 		LF_QuestDefinition def = MakeKillQuest("q_collect", 1, "", false, 0);
 		def.m_aObjectives.Clear();
@@ -134,7 +134,7 @@ class LF_Test_QuestTracker : EL_Test
 		LF_QuestTracker tracker = new LF_QuestTracker();
 		map<string, ref LF_QuestDefinition> defs = MakeDefs(def);
 		array<string> completed = {};
-		tracker.Accept(def, 1, EL_EJobType.UNEMPLOYED, "", 0, completed);
+		tracker.Accept(def, 1, LF_EJobType.UNEMPLOYED, "", 0, completed);
 
 		tracker.ApplyEvent(MakeEvent(LF_EQuestEventType.COLLECT_REPORT, "", 2), defs);
 		ctx.Equal(2, tracker.GetState("q_collect").GetObjectiveProgress(0), "report sets progress to held count");
@@ -154,7 +154,7 @@ class LF_Test_QuestTracker : EL_Test
 	//------------------------------------------------------------------------------------------------
 	//! A quest time limit expires the quest to FAILED; repeatable quests can then
 	//! be accepted again, but a FAILED quest cannot be turned in.
-	void TestTimedExpiry(EL_TestContext ctx)
+	void TestTimedExpiry(LF_TestContext ctx)
 	{
 		LF_QuestDefinition def = MakeKillQuest("q_timed", 1, "", true, 0);
 		def.m_fTimeLimitSeconds = 100;
@@ -162,7 +162,7 @@ class LF_Test_QuestTracker : EL_Test
 		LF_QuestTracker tracker = new LF_QuestTracker();
 		map<string, ref LF_QuestDefinition> defs = MakeDefs(def);
 		array<string> completed = {};
-		ctx.True(tracker.Accept(def, 1, EL_EJobType.UNEMPLOYED, "", 0, completed), "timed quest accepts");
+		ctx.True(tracker.Accept(def, 1, LF_EJobType.UNEMPLOYED, "", 0, completed), "timed quest accepts");
 
 		tracker.Tick(50);
 		ctx.True(tracker.GetStatus("q_timed") == LF_EQuestStatus.ACTIVE, "before the deadline the quest stays ACTIVE");
@@ -171,34 +171,34 @@ class LF_Test_QuestTracker : EL_Test
 		ctx.True(tracker.GetStatus("q_timed") == LF_EQuestStatus.FAILED, "at the deadline the quest expires to FAILED");
 		ctx.False(tracker.TurnIn("q_timed", 101), "expired quest cannot turn in");
 
-		ctx.True(tracker.CanAccept(def, 1, EL_EJobType.UNEMPLOYED, "", 101, completed), "repeatable expired quest can re-accept");
-		ctx.True(tracker.Accept(def, 1, EL_EJobType.UNEMPLOYED, "", 101, completed), "repeatable expired quest re-accepts");
+		ctx.True(tracker.CanAccept(def, 1, LF_EJobType.UNEMPLOYED, "", 101, completed), "repeatable expired quest can re-accept");
+		ctx.True(tracker.Accept(def, 1, LF_EJobType.UNEMPLOYED, "", 101, completed), "repeatable expired quest re-accepts");
 		ctx.True(tracker.GetStatus("q_timed") == LF_EQuestStatus.ACTIVE, "re-accepted quest restarts ACTIVE");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Cooldown blocks re-accept until it elapses; non-repeatable stays closed.
-	void TestCooldown(EL_TestContext ctx)
+	void TestCooldown(LF_TestContext ctx)
 	{
 		LF_QuestDefinition def = MakeKillQuest("q_cd", 1, "", true, 60);
 		LF_QuestTracker tracker = new LF_QuestTracker();
 		map<string, ref LF_QuestDefinition> defs = MakeDefs(def);
 		array<string> completed = {};
 
-		tracker.Accept(def, 1, EL_EJobType.UNEMPLOYED, "", 0, completed);
+		tracker.Accept(def, 1, LF_EJobType.UNEMPLOYED, "", 0, completed);
 		tracker.ApplyEvent(MakeEvent(LF_EQuestEventType.KILL, "", 1), defs);
 		tracker.TurnIn("q_cd", 100);
 
-		ctx.False(tracker.CanAccept(def, 1, EL_EJobType.UNEMPLOYED, "", 120, completed), "cooldown still running rejects re-accept");
-		ctx.True(tracker.CanAccept(def, 1, EL_EJobType.UNEMPLOYED, "", 160, completed), "cooldown elapsed allows re-accept");
-		ctx.True(tracker.Accept(def, 1, EL_EJobType.UNEMPLOYED, "", 160, completed), "re-accept after cooldown succeeds");
+		ctx.False(tracker.CanAccept(def, 1, LF_EJobType.UNEMPLOYED, "", 120, completed), "cooldown still running rejects re-accept");
+		ctx.True(tracker.CanAccept(def, 1, LF_EJobType.UNEMPLOYED, "", 160, completed), "cooldown elapsed allows re-accept");
+		ctx.True(tracker.Accept(def, 1, LF_EJobType.UNEMPLOYED, "", 160, completed), "re-accept after cooldown succeeds");
 		ctx.True(tracker.GetStatus("q_cd") == LF_EQuestStatus.ACTIVE, "re-accepted quest restarts ACTIVE");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A quest with no objectives must never auto-complete and never turn in:
 	//! misconfiguration degrades to an uncompletable quest, not a free reward.
-	void TestZeroObjective(EL_TestContext ctx)
+	void TestZeroObjective(LF_TestContext ctx)
 	{
 		LF_QuestDefinition def = new LF_QuestDefinition();
 		def.m_sQuestId = "q_empty";
@@ -206,7 +206,7 @@ class LF_Test_QuestTracker : EL_Test
 		map<string, ref LF_QuestDefinition> defs = MakeDefs(def);
 		array<string> completed = {};
 
-		ctx.True(tracker.Accept(def, 1, EL_EJobType.UNEMPLOYED, "", 0, completed), "empty quest accepts (world layer logs the misconfig)");
+		ctx.True(tracker.Accept(def, 1, LF_EJobType.UNEMPLOYED, "", 0, completed), "empty quest accepts (world layer logs the misconfig)");
 		tracker.ApplyEvent(MakeEvent(LF_EQuestEventType.KILL, "", 1), defs);
 		ctx.True(tracker.GetStatus("q_empty") == LF_EQuestStatus.ACTIVE, "empty quest never auto-completes");
 		ctx.False(tracker.TurnIn("q_empty", 10), "empty quest cannot turn in");

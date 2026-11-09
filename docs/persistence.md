@@ -7,6 +7,25 @@ does not compile on Reforger 1.8, so the mod was migrated off it (2026-08-29)
 and `LifeFramework.gproj` depends on the base game (`58D0FB3206B6F859`) only.
 Do not re-add EPF.
 
+## Save reset (2026-11-09, EL_ to LF_ rename)
+
+The `EL_` to `LF_` rename (#334) changed the persisted type names: the component keys
+`EL_PersistenceComponent:<id>` and `EL_QuantityComponent:<id>` and the record `$type`
+values `EL_PlayerAccountRecord`, `EL_PlayerCharacterRecord`, `EL_BankAccountRecord` and
+`EL_VehicleRecord`. The engine matches them literally and has no alias API (a `typedef`
+alias fixes the record `$type` but not the component keys), and M1 was never published,
+so this is a deliberate pre-release save reset. The payload format and version (12) are
+unchanged.
+
+- A save written before the rename is not loaded: none of accounts, bank, jail, carried
+  inventories, progression, stash or tickets come back.
+- A boot that continues a save (`-loadSessionSave`) and reaches `ACTIVE` without the store
+  being read logs once `[LFDebug:Persistence] save predates the LF_ rename; starting fresh`
+  (`LF_PersistenceComponentSerializer.WasStoreLoaded()`) and runs as a fresh world. No error
+  and no partial load of our data.
+- Operators: delete the old `.save` playthrough once so autosaves do not build on it.
+  The next save is written with the new names.
+
 ## Observable contract
 
 Each of these must survive a server restart:
@@ -37,13 +56,13 @@ Each of these must survive a server restart:
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character
-gets the default loadout configured on `EL_SpawnLogic` in
+gets the default loadout configured on `LF_SpawnLogic` in
 `GameMode_Roleplay.et` (jacket carrying `MoneyStack`, plus clothing).
 
 Identity:
 
 - Account key = player identity id (`SCR_PlayerIdentityUtils.GetPlayerIdentityId`),
-  resolved through `EL_Utils.GetPlayerUID`. On a non-dedicated session (offline
+  resolved through `LF_Utils.GetPlayerUID`. On a non-dedicated session (offline
   Workbench play, listen host) it falls back to a name-derived identity.
 - Character persistence id = `PersistenceIdUtils.Generate()` (stable UUID).
 
@@ -52,12 +71,12 @@ Identity:
 - **Config binding (load-bearing).** `Configs/Systems/Persistence/LifeFramework.conf`
   is a `PersistenceSystemConfig` inheriting the vanilla `Common.conf`. It binds:
   - the game-mode entity serializer and its component serializers, including
-    `EL_PersistenceComponentSerializer`;
-  - item entity configs with `SelfSpawn 1` and `EL_QuantityComponentSerializer`.
+    `LF_PersistenceComponentSerializer`;
+  - item entity configs with `SelfSpawn 1` and `LF_QuantityComponentSerializer`.
     A stack saves with its parent (no `ParentHandling "Ignore always"`): with that
     flag a stack in a pocket was saved as a root and self-spawned on the ground
     after a restart, a copy of the cash the carried snapshot restores;
-  - the player character config with `SelfSpawn 0` (the vanilla value). `EL_SpawnLogic`
+  - the player character config with `SelfSpawn 0` (the vanilla value). `LF_SpawnLogic`
     spawns every player character fresh and the carried snapshot restores what it
     carried; a self-spawned saved body would be an unowned copy of the same items.
 - **System registration.** `SCR_PersistenceSystem` (pointing at
@@ -68,16 +87,16 @@ Identity:
   override the base `ChimeraSystemsConfig.conf` at a case-differing path: two
   resources claiming one GUID resolve flakily between boots.
 - **Game-mode prefab.** `GameMode_Roleplay.et` carries the native
-  `Persistence` component, `EL_PersistenceComponent`, and
-  `EL_PersistenceManagerComponent`.
-- **`EL_PersistenceComponent`** (`Scripts/Game/Persistence/`) is a
+  `Persistence` component, `LF_PersistenceComponent`, and
+  `LF_PersistenceManagerComponent`.
+- **`LF_PersistenceComponent`** (`Scripts/Game/Persistence/`) is a
   `ScriptComponent` on the game-mode entity. It owns only the survival-stats
   map (`GetSurvivalStats` / `SetSurvivalStats`, keyed by character
   persistence id). Accounts, bank accounts, and organizations live in their
-  manager singletons (`EL_PlayerAccountManager`, `EL_ATMManager`,
-  `EL_OrganizationManager`); hideout records in `LF_Hideout`; vehicle records
-  in `EL_VehicleOwnership`, keyed by lock identifier.
-- **`EL_PersistenceComponentSerializer`** (`Scripts/Game/Persistence/Serializers/`)
+  manager singletons (`LF_PlayerAccountManager`, `LF_ATMManager`,
+  `LF_OrganizationManager`); hideout records in `LF_Hideout`; vehicle records
+  in `LF_VehicleOwnership`, keyed by lock identifier.
+- **`LF_PersistenceComponentSerializer`** (`Scripts/Game/Persistence/Serializers/`)
   writes `version` first, then accounts and bank records (the prefix on every
   version), then the payloads listed in `RegisterPersistencePayloads`:
   survival, organizations, hideout, vehicles, jail, carried, progression, introductions,
@@ -103,18 +122,18 @@ Identity:
   | 11 | delivery-job sign-ups (`LF_CivilianJob.ExportSignUps` / `ApplySignUps`; `ApplySignUpToCharacter` on each spawn) |
   | 12 | police tickets: amount, online clock, stage, paid flag (`LF_FineTickets.ExportAll` / `ApplyAll`; the carried paper is reprinted on spawn) |
 - Managers expose `ExportAll()` / `ApplyAll(records)` / `GetOrCreate(id)`.
-  Record classes are plain Managed: `EL_PlayerAccountRecord`,
-  `EL_BankAccountRecord`, `EL_SurvivalStatsRecord` (each under the feature's
+  Record classes are plain Managed: `LF_PlayerAccountRecord`,
+  `LF_BankAccountRecord`, `LF_SurvivalStatsRecord` (each under the feature's
   `Persistence/` folder).
-- **`EL_QuantityComponentSerializer`** (`Scripts/Game/Feature/Quantity/Persistence/`)
+- **`LF_QuantityComponentSerializer`** (`Scripts/Game/Feature/Quantity/Persistence/`)
   writes the stack quantity (skipped when 1).
-- Spawning: `EL_SpawnLogic : SCR_SpawnLogic`; `Prefabs/MP/Spawn/SpawnPoint_LIFE.et`
+- Spawning: `LF_SpawnLogic : SCR_SpawnLogic`; `Prefabs/MP/Spawn/SpawnPoint_LIFE.et`
   is a vanilla `SCR_SpawnPoint`.
 
 ## Layer 2: orchestration (when a save happens)
 
 Without this layer nothing asked for a save point, so a dedicated-server
-restart could lose everything. `EL_PersistenceManagerComponent`
+restart could lose everything. `LF_PersistenceManagerComponent`
 (`Scripts/Game/Persistence/`) is a server-side `ScriptComponent` on the game-mode
 entity that drives two engine layers:
 
@@ -134,7 +153,7 @@ tunes it per server.
 - **Autosave**: one repeating `CallLater` timer. A tick is skipped (not
   queued) while a save or load is in flight. One `AUTO` slot per playthrough:
   the latest AUTO save of the current playthrough is overwritten, else one is
-  created. The selection is `EL_SaveSelection` (pure, tested).
+  created. The selection is `LF_SaveSelection` (pure, tested).
 - **Manual save**: `SaveGame()` -> `RequestSavePoint(MANUAL)`. Result via
   `GetOnSaveFinished()` and `GetCompletedSaveCount()`.
 - **Shutdown save is engine-owned.** The engine requests the SHUTDOWN save
@@ -142,7 +161,7 @@ tunes it per server.
   because the persistence system is already tearing down (the callback
   arrives false and nothing is written). The manager marks the session as
   ending, reports the engine's outcome through `OnAfterSave`, and logs an
-  `EL_Debug.Error` if the session ends without a shutdown save.
+  `LF_Debug.Error` if the session ends without a shutdown save.
 - **Save cache**: `HasSaveGame()` / `IsSaveCacheSeeded()`, kept current by
   `OnAfterSave` (fires for engine-initiated saves too).
 - **Load / continue**: `LoadLatestSave()` (engine transition into the save),
@@ -150,7 +169,7 @@ tunes it per server.
   re-apply). Diagnostics: `GetLastLoadDiagnostic()` / `GetLastReapplyDiagnostic()`.
 - **Wipe**: `WipeSave()` purges every save point of the mission.
 - **Session-start check** (dedicated only): `CheckSessionContinued()` logs
-  `EL_Debug.Error` ("started a NEW session while N save point(s) exist") when
+  `LF_Debug.Error` ("started a NEW session while N save point(s) exist") when
   the session was not launched from a save and the mission has saves.
 
 ### Continuing after a restart (production launch)
@@ -180,13 +199,13 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
 ## Gates, logging, fail-safes
 
 - Every save path passes `PassesSaveGates()`: save manager present, saving
-  allowed, persistence system active. Each rejection logs an `EL_Debug`
+  allowed, persistence system active. Each rejection logs an `LF_Debug`
   message under the `Persistence` feature with a reason and degrades that one
   request.
 - Logged transitions: autosave scheduled, tick skipped (busy), save point
   requested / created / failed, session end marked, load requested, re-apply
   accepted/rejected, wipe complete, system state change.
-- No persistence system at game start (server): `EL_Debug.Error` (the systems
+- No persistence system at game start (server): `LF_Debug.Error` (the systems
   config lacks the `SCR_PersistenceSystem` entry). Clients and editor worlds
   degrade to a no-op.
 - A rejected save request logs and fires `GetOnSaveFinished()` with `false`.
@@ -209,14 +228,14 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   lists.
 - Never persist `IEntity` or a session-local `EntityID`; persist a stable key
   and re-resolve on load.
-- Manager singletons (`EL_ATMManager`, `EL_JobManager`,
-  `EL_CharacterCreationManager`) are created only by `GetInstance()`. A
+- Manager singletons (`LF_ATMManager`, `LF_JobManager`,
+  `LF_CharacterCreationManager`) are created only by `GetInstance()`. A
   constructor never registers itself and a destructor only clears its own
-  registration. The game mode once did `new EL_ATMManager()` on the first
+  registration. The game mode once did `new LF_ATMManager()` on the first
   connect, which replaced the bank cache the load had filled and wiped every
   balance.
 - Carried inventory is a snapshot, not engine entity persistence. The player
-  character is spawned fresh by `EL_SpawnLogic`, so the snapshot (keyed by
+  character is spawned fresh by `LF_SpawnLogic`, so the snapshot (keyed by
   character persistence id and slot name) is captured at each save point and on
   disconnect, and applied on spawn in place of the starter kit. Apply reconciles
   against what the entity already has, so it is idempotent. Death clears it.
@@ -225,22 +244,22 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   travels in its own payload instead; `police/item-state` proves the carried
   record format did not change.
 - Session-only registries must be rebuilt on load: saved plates are
-  re-reserved in `EL_LicensePlateRegistry` by `EL_VehicleOwnership.ApplyAll`.
+  re-reserved in `LF_LicensePlateRegistry` by `LF_VehicleOwnership.ApplyAll`.
 - Garage it to keep it: after a load, an owned vehicle that was not stored is
-  not spawned; it is at the impound lot (`EL_VehicleOwnership.IsImpounded`,
+  not spawned; it is at the impound lot (`LF_VehicleOwnership.IsImpounded`,
   derived from "not stored and no live entity", so the save has no impound
   field). No key is spawned at load. The impound desk releases it for the
   configured cash fee and hands the owner a key bound to it.
 - The whitelist file is outside this serializer; an unreadable file blocks
-  `EL_WhitelistManager.Save()` so it is never overwritten.
+  `LF_WhitelistManager.Save()` so it is never overwritten.
 
 ## Tests and proof
 
-- `save/autosave-selection` (LOGIC) drives `EL_SaveSelection` across bitmask
+- `save/autosave-selection` (LOGIC) drives `LF_SaveSelection` across bitmask
   and playthrough edge cases.
 - `save/manager-wiring` (WORLD) checks the manager is on the game-mode entity
   and resolved the persistence system.
-- `restart/*` (`EL_Test_RestartSafety.c`): bank cache survives the connect
+- `restart/*` (`LF_Test_RestartSafety.c`): bank cache survives the connect
   path (LOGIC), jail payload through the real serializer write and read
   (WORLD), street vehicle impounded at load with no key (WORLD), plates re-reserved on
   load (LOGIC), unreadable whitelist file is kept (LOGIC).
@@ -251,4 +270,4 @@ writes the SHUTDOWN save (see `docs/playtest.md`).
   (WORLD) drive the carried payload through the real serializer and the death rule.
 - In-session round trips prove nothing; the restart is ground truth. The
   restart pass (save -> shutdown -> boot -> load) stays manual because the
-  `EL_Test` runner cannot survive a game-state transition.
+  `LF_Test` runner cannot survive a game-state transition.

@@ -38,7 +38,7 @@ class LF_WantedReportRecord : Managed
 //------------------------------------------------------------------------------------------------
 //! Server store of crime reports, keyed by player uid. A crime calls Report with the suspect's
 //! body; the wanted board (LF_WantedBoard) reads the store per read. Reports come down when the
-//! suspect's wanted level returns to 0 (EL_PlayerAccount.SetWantedLevel).
+//! suspect's wanted level returns to 0 (LF_PlayerAccount.SetWantedLevel).
 class LF_WantedReports
 {
 	static const string FEATURE = "Wanted";
@@ -77,7 +77,7 @@ class LF_WantedReports
 	{
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error(FEATURE, "crime report refused: no player uid");
+			LF_Debug.Error(FEATURE, "crime report refused: no player uid");
 			return null;
 		}
 
@@ -93,7 +93,7 @@ class LF_WantedReports
 
 		bool caught = suspect && IsOfficerNear(suspect, LF_PoliceConfig.CatchInActRadius());
 		LF_WantedReportRecord record = Add(playerUid, offence, clothing, vehicle, place, caught);
-		EL_Debug.Info(FEATURE, string.Format("crime report #%1 %2 by %3: clothing='%4' vehicle='%5' place='%6' identified=%7", record.m_iSequence, offence, playerUid, clothing, vehicle, place, caught));
+		LF_Debug.Info(FEATURE, string.Format("crime report #%1 %2 by %3: clothing='%4' vehicle='%5' place='%6' identified=%7", record.m_iSequence, offence, playerUid, clothing, vehicle, place, caught));
 		return record;
 	}
 
@@ -143,7 +143,7 @@ class LF_WantedReports
 		}
 
 		if (changed > 0)
-			EL_Debug.Info(FEATURE, string.Format("%1 identified by %2: %3 report(s) now name them", playerUid, how, changed));
+			LF_Debug.Info(FEATURE, string.Format("%1 identified by %2: %3 report(s) now name them", playerUid, how, changed));
 
 		return changed;
 	}
@@ -191,7 +191,7 @@ class LF_WantedReports
 			return;
 
 		s_mReports.Remove(playerUid);
-		EL_Debug.Info(FEATURE, string.Format("reports for %1 taken down: no longer wanted", playerUid));
+		LF_Debug.Info(FEATURE, string.Format("reports for %1 taken down: no longer wanted", playerUid));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -244,18 +244,18 @@ class LF_WantedReports
 		if (!records)
 			return;
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		foreach (LF_WantedReportRecord record : records)
 		{
 			if (!record || record.m_sPlayerUid.IsEmpty())
 			{
-				EL_Debug.Warn(FEATURE, "load skipped a wanted report with no player id");
+				LF_Debug.Warn(FEATURE, "load skipped a wanted report with no player id");
 				continue;
 			}
 
 			if (accounts)
 			{
-				EL_PlayerAccount account = accounts.GetFromCache(record.m_sPlayerUid);
+				LF_PlayerAccount account = accounts.GetFromCache(record.m_sPlayerUid);
 				if (account && account.GetWantedLevel() <= 0)
 					continue;
 			}
@@ -302,7 +302,7 @@ class LF_WantedReports
 				if (!item || !item.FindComponent(BaseLoadoutClothComponent))
 					continue;
 
-				UIInfo info = EL_UIInfoUtils.GetInfo(item);
+				UIInfo info = LF_UIInfoUtils.GetInfo(item);
 				if (!info)
 					continue;
 
@@ -398,7 +398,7 @@ class LF_WantedReports
 		if (!suspect || radius <= 0 || !GetGame() || !GetGame().GetPlayerManager())
 			return false;
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts)
 			return false;
 
@@ -413,7 +413,7 @@ class LF_WantedReports
 			if (vector.Distance(body.GetOrigin(), suspect.GetOrigin()) > radius)
 				continue;
 
-			if (EL_PoliceUtils.IsOnDutyOfficer(accounts.GetFromCache(playerId)))
+			if (LF_PoliceUtils.IsOnDutyOfficer(accounts.GetFromCache(playerId)))
 				return true;
 		}
 

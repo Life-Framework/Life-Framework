@@ -12,10 +12,10 @@ the design.
 
 ## Interaction pattern (in-world)
 
-Today: rung 1. `EL_GatherAction` is an interact action that grants a configured
+Today: rung 1. `LF_GatherAction` is an interact action that grants a configured
 amount of a configured item into the user's inventory, with a tool requirement
 (right hand / gadget / anywhere in inventory) and a per-resource gather counter
-with cooldown restock. `EL_MiningArea` scopes mining to an area.
+with cooldown restock. `LF_MiningArea` scopes mining to an area.
 
 Target: the resource is a **stateful physical object**:
 
@@ -43,12 +43,12 @@ Target: the resource is a **stateful physical object**:
 - **V3** — tool durability; resource quality/rarity (better yields from richer
   nodes).
 - **V4** — gathering perks from `Level` (speed/amount bonuses already defined on
-  `EL_PlayerLevelComponent`) and jobs.
+  `LF_PlayerLevelComponent`) and jobs.
 
 ## Current state
 
-- `EL_GatherAction` — interact action with server-side tool and cooldown validation.
-- `EL_MiningArea` — spatial gate for mining.
+- `LF_GatherAction` — interact action with server-side tool and cooldown validation.
+- `LF_MiningArea` — spatial gate for mining.
 - `Tool_Base` — shared melee weapon stack now includes weapon attachment storage and a vanilla weapon animation graph; axe and pickaxe inherit the stack.
 - Prefabs: `Prefabs/Vegetation/Tree/`, `Prefabs/Vegetation/Crops/`,
   `Prefabs/Resources/Mining/`, `Prefabs/Resources/WoodCutting/`;

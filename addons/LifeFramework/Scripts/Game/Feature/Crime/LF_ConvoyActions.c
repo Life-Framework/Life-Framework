@@ -21,7 +21,7 @@ class LF_ConvoyStartAction : ScriptedUserAction
 		string characterId = LF_Hideout.CharacterIdOf(pUserEntity);
 		if (characterId.IsEmpty())
 		{
-			EL_Debug.Error("Contraband", "convoy start refused: no character");
+			LF_Debug.Error("Contraband", "convoy start refused: no character");
 			return;
 		}
 
@@ -31,7 +31,7 @@ class LF_ConvoyStartAction : ScriptedUserAction
 		if (!LF_Contraband.Start(characterId, pUserEntity))
 		{
 			if (!refusal.IsEmpty())
-				EL_Utils.NotifyEntity(pUserEntity, refusal, "#LF-Contraband_Title", 5.0);
+				LF_Utils.NotifyEntity(pUserEntity, refusal, "#LF-Contraband_Title", 5.0);
 			return;
 		}
 
@@ -60,13 +60,13 @@ class LF_ConvoyDeliverAction : ScriptedUserAction
 		string characterId = LF_Hideout.CharacterIdOf(pUserEntity);
 		if (characterId.IsEmpty())
 		{
-			EL_Debug.Error("Contraband", "delivery refused: no character");
+			LF_Debug.Error("Contraband", "delivery refused: no character");
 			return;
 		}
 
 		int carried = LF_Contraband.CountCarried(pUserEntity);
 		int paid = LF_Contraband.Deliver(characterId, carried, pUserEntity);
 		if (paid > 0)
-			EL_Debug.Log("Contraband", string.Format("drop paid %1", paid));
+			LF_Debug.Log("Contraband", string.Format("drop paid %1", paid));
 	}
 }

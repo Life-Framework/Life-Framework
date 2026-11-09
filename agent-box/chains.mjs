@@ -30,47 +30,47 @@ export const REQUIRED_LAYERS = [
 
 // action: class look must list. "" records look and does not require a class.
 export const PROBES = [
-  { layer: "ATM.layer", name: "ATM_Debug", action: "EL_ATMAction" },
-  { layer: "AppleChain.layer", name: "AppleGatherTree", action: "EL_GatherAction" },
-  { layer: "AppleChain.layer", name: "AppleTradeContainer", action: "EL_OpenTraderAction" },
-  { layer: "AppleChain.layer", name: "AppleProcessor", action: "EL_ProcessAction" },
-  { layer: "PlumChain.layer", name: "PlumGatherTree", action: "EL_GatherAction" },
-  { layer: "PlumChain.layer", name: "PlumTradeContainer", action: "EL_OpenTraderAction" },
-  { layer: "TomatoChain.layer", name: "TomatoGather", action: "EL_GatherAction" },
-  { layer: "TomatoChain.layer", name: "TomatoTradeContainer", action: "EL_OpenTraderAction" },
-  { layer: "FarmingChain.layer", name: "TomatoCrop_Debug", action: "EL_GatherAction" },
-  { layer: "CementChain.layer", name: "CementPile_Debug", action: "EL_GatherAction" },
-  { layer: "GravelChain.layer", name: "GravelPile_Medium_Debug", action: "EL_GatherAction" },
-  { layer: "SandChain.layer", name: "SandPile_Debug", action: "EL_GatherAction" },
-  { layer: "CementChain.layer", name: "CementPlant_Debug", action: "EL_ProcessAction" },
-  { layer: "GravelChain.layer", name: "GravelPile_Large_Debug", action: "EL_GatherAction" },
+  { layer: "ATM.layer", name: "ATM_Debug", action: "LF_ATMAction" },
+  { layer: "AppleChain.layer", name: "AppleGatherTree", action: "LF_GatherAction" },
+  { layer: "AppleChain.layer", name: "AppleTradeContainer", action: "LF_OpenTraderAction" },
+  { layer: "AppleChain.layer", name: "AppleProcessor", action: "LF_ProcessAction" },
+  { layer: "PlumChain.layer", name: "PlumGatherTree", action: "LF_GatherAction" },
+  { layer: "PlumChain.layer", name: "PlumTradeContainer", action: "LF_OpenTraderAction" },
+  { layer: "TomatoChain.layer", name: "TomatoGather", action: "LF_GatherAction" },
+  { layer: "TomatoChain.layer", name: "TomatoTradeContainer", action: "LF_OpenTraderAction" },
+  { layer: "FarmingChain.layer", name: "TomatoCrop_Debug", action: "LF_GatherAction" },
+  { layer: "CementChain.layer", name: "CementPile_Debug", action: "LF_GatherAction" },
+  { layer: "GravelChain.layer", name: "GravelPile_Medium_Debug", action: "LF_GatherAction" },
+  { layer: "SandChain.layer", name: "SandPile_Debug", action: "LF_GatherAction" },
+  { layer: "CementChain.layer", name: "CementPlant_Debug", action: "LF_ProcessAction" },
+  { layer: "GravelChain.layer", name: "GravelPile_Large_Debug", action: "LF_GatherAction" },
   { layer: "MiningChain.layer", name: "IronOre_Debug", action: "" }, // pickaxe swing, not an F-key action; a piece drops 4 nuggets
   { layer: "MiningChain.layer", name: "GoldOre_Debug", action: "" },
   { layer: "MiningChain.layer", name: "CopperOre_Debug", action: "" },
-  { layer: "MiningChain.layer", name: "Furnace", action: "EL_ProcessAction" },
-  { layer: "LoggingChain.layer", name: "LogPile_Debug", action: "EL_GatherAction" },
-  { layer: "LoggingChain.layer", name: "Sawmill_Debug", action: "EL_ProcessAction" },
+  { layer: "MiningChain.layer", name: "Furnace", action: "LF_ProcessAction" },
+  { layer: "LoggingChain.layer", name: "LogPile_Debug", action: "LF_GatherAction" },
+  { layer: "LoggingChain.layer", name: "Sawmill_Debug", action: "LF_ProcessAction" },
   { layer: "MiningChain.layer", name: "Pickaxe_Debug", action: "SCR_PickUpItemAction" },
   { layer: "LoggingChain.layer", name: "Axe_5ACCA165954CE408", action: "SCR_PickUpItemAction" },
   { layer: "LoggingChain.layer", name: "CuttableTree_1", action: "" },
-  { layer: "CrimeChain.layer", name: "CrimeTrader_Debug", action: "EL_OpenTraderAction" },
-  { layer: "CrimeChain.layer", name: "CrimeFurnace_Debug", action: "EL_ProcessAction" },
-  { layer: "Jobs.layer", name: "GatherPoint_AppleTree", action: "EL_GatherAction" },
-  { layer: "Shops.layer", name: "Shop_GeneralStore_Debug", action: "EL_ShopAction" },
-  { layer: "Shops.layer", name: "Shop_BlackMarket_Debug", action: "EL_ShopAction" },
-  { layer: "Street_Police.layer", name: "Roadmap_Police_Desk", action: "EL_DutyAction" },
+  { layer: "CrimeChain.layer", name: "CrimeTrader_Debug", action: "LF_OpenTraderAction" },
+  { layer: "CrimeChain.layer", name: "CrimeFurnace_Debug", action: "LF_ProcessAction" },
+  { layer: "Jobs.layer", name: "GatherPoint_AppleTree", action: "LF_GatherAction" },
+  { layer: "Shops.layer", name: "Shop_GeneralStore_Debug", action: "LF_ShopAction" },
+  { layer: "Shops.layer", name: "Shop_BlackMarket_Debug", action: "LF_ShopAction" },
+  { layer: "Street_Police.layer", name: "Roadmap_Police_Desk", action: "LF_DutyAction" },
   { layer: "Street_Police.layer", name: "Roadmap_Police_WantedBoard", action: "LF_WantedBoardReadAction" },
-  { layer: "Survival.layer", name: "SurvivalPoint_Food", action: "EL_GatherAction" },
-  { layer: "Survival.layer", name: "SurvivalPoint_Water", action: "EL_GatherAction" },
+  { layer: "Survival.layer", name: "SurvivalPoint_Food", action: "LF_GatherAction" },
+  { layer: "Survival.layer", name: "SurvivalPoint_Water", action: "LF_GatherAction" },
   { layer: "HousesKeys.layer", name: "House_Door_Locked", action: "SCR_DoorUserAction" },
-  { layer: "TraderChain.layer", name: "TraderChainCounter", action: "EL_OpenTraderAction" },
+  { layer: "TraderChain.layer", name: "TraderChainCounter", action: "LF_OpenTraderAction" },
 ];
 
 // Crimes.layer holds the rob points. CrimeChain.layer does not.
 export const EXTRA_PROBES = [
-  { layer: "Crimes.layer", name: "RobberyPoint_Money", action: "EL_RobAction" },
-  { layer: "Crimes.layer", name: "RobberyPoint_Weapon", action: "EL_RobWeaponAction" },
-  { layer: "Crimes.layer", name: "RobberyPoint_Vehicle", action: "EL_RobVehicleAction" },
+  { layer: "Crimes.layer", name: "RobberyPoint_Money", action: "LF_RobAction" },
+  { layer: "Crimes.layer", name: "RobberyPoint_Weapon", action: "LF_RobWeaponAction" },
+  { layer: "Crimes.layer", name: "RobberyPoint_Vehicle", action: "LF_RobVehicleAction" },
 ];
 
 // Cuttable trees and ore rocks are melee (axe or pickaxe hit), not an F-key action. Their probes only stand.
@@ -82,8 +82,8 @@ export function allProbes() {
 
 // Robberies stay civilian. Duty is after them, once the debug menu has set police.
 export function runOrder() {
-  const robs = allProbes().filter((probe) => probe.action.startsWith("EL_Rob"));
-  const rest = allProbes().filter((probe) => !probe.action.startsWith("EL_Rob"));
+  const robs = allProbes().filter((probe) => probe.action.startsWith("LF_Rob"));
+  const rest = allProbes().filter((probe) => !probe.action.startsWith("LF_Rob"));
   const policeAt = rest.findIndex((probe) => probe.name === "Roadmap_Police_Desk");
   if (policeAt < 0) return rest.concat(robs);
   return rest.slice(0, policeAt).concat(robs, rest.slice(policeAt));

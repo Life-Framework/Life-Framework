@@ -5,7 +5,7 @@ GenericEntity SurvivalStation {
    components {
     ActionsManagerComponent "{596540948BBDD481}" {
      additionalActions {
-      EL_GatherAction "{59654094806921B6}" {
+      LF_GatherAction "{59654094806921B6}" {
       }
      }
     }
@@ -16,7 +16,7 @@ GenericEntity SurvivalStation {
    components {
     ActionsManagerComponent "{597CB6B1CB95890C}" {
      additionalActions {
-      EL_GatherAction "{597CB6B14BA63749}" {
+      LF_GatherAction "{597CB6B14BA63749}" {
       }
      }
     }
@@ -40,7 +40,7 @@ GenericEntity SurvivalStation {
    Flags 0x403 0
     coords 0 0 0.7
   }
-  EL_NpcBaseEntity SurvivalNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity SurvivalNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {

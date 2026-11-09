@@ -23,7 +23,7 @@ A player buys a base-game vehicle from a lot, receives a key, locks it, and regi
 
 ## Assets
 
-Keep `EL_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. `LNGC_VehicleKeyLockComponent` is a prototype that keys a virtual item; use it as the replication checklist (`RplProp` plus `BumpMe`), not as the class to drop in.
+Keep `LF_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. `LNGC_VehicleKeyLockComponent` is a prototype that keys a virtual item; use it as the replication checklist (`RplProp` plus `BumpMe`), not as the class to drop in.
 
 Garage persistence is the piece we do not have. Port `LNGC_GarageComponent`, `LNGC_GarageDialog`, and `LNGC_VehicleSpawnPointComponent`. Lot pad: `Garage_E_01`. First catalog, all base game, several already wrapped as locked prefabs in LNGC:
 
@@ -42,8 +42,8 @@ Buy one configured vanilla vehicle, lock it against another player, restart, and
 
 ## Depends on
 
-- `EL_VehicleLockComponent` and keys
-- `EL_LicensePlateManager` (fix the generator's character and number range, and remember issued plates)
+- `LF_VehicleLockComponent` and keys
+- `LF_LicensePlateManager` (fix the generator's character and number range, and remember issued plates)
 - `Money` and the shop purchase rules
 - Persistence
 

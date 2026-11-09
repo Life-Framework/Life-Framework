@@ -2,7 +2,7 @@
 //! Server -> every client: each player's organization (id, name, rights bits) and the offer they
 //! hold, as plain RplProps on their character. The offer side (interaction menu entry name, the
 //! hideout gate prompt, the ledger's first paint) reads them; the server decides from
-//! EL_OrganizationManager and never from these copies. Same shape as EL_AccountReplication: written
+//! LF_OrganizationManager and never from these copies. Same shape as LF_AccountReplication: written
 //! on the server only, bumped only on a change, refreshed on spawn and by the periodic pass, so a
 //! late joiner gets the values with the entity snapshot.
 //------------------------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ class LF_OrgReplication
 		string offerName;
 		int offerFrom;
 
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(characterId);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
 		if (org)
 		{
 			orgId = org.GetId();
@@ -30,7 +30,7 @@ class LF_OrgReplication
 		LF_OrgOffer offer = LF_OrgInvites.Pending(characterId, LF_OrgInvites.Now());
 		if (offer)
 		{
-			EL_Organization offerOrg = EL_OrganizationManager.Get(offer.m_sOrgId);
+			LF_Organization offerOrg = LF_OrganizationManager.Get(offer.m_sOrgId);
 			if (offerOrg)
 			{
 				offerName = offerOrg.GetName();

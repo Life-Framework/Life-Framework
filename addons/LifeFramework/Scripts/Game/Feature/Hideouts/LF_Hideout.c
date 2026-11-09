@@ -4,7 +4,7 @@
 //! processing slot. A refusal is logged and the door or machine stays unused.
 //!
 //! The door identifier is the organization id, written onto the bound
-//! EL_LockComponent. Export / Apply replace that owner and the lock flag.
+//! LF_LockComponent. Export / Apply replace that owner and the lock flag.
 //! Apply is idempotent. The game-mode serializer writes these records at version 3.
 //------------------------------------------------------------------------------------------------
 class LF_HideoutRecord : Managed
@@ -93,7 +93,7 @@ class LF_Hideout
 		if (!user)
 			return "";
 
-		string uid = EL_Utils.GetPlayerUid(user);
+		string uid = LF_Utils.GetPlayerUid(user);
 		if (uid.IsEmpty())
 		{
 			if (s_mBoundCharacters && s_mBoundCharacters.Contains(user.GetID()))
@@ -102,15 +102,15 @@ class LF_Hideout
 			return "";
 		}
 
-		EL_PlayerAccountManager manager = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager manager = LF_PlayerAccountManager.GetInstance();
 		if (!manager)
 			return "";
 
-		EL_PlayerAccount account = manager.GetAccount(uid);
+		LF_PlayerAccount account = manager.GetAccount(uid);
 		if (!account)
 			return "";
 
-		EL_PlayerCharacter character = account.GetActiveCharacter();
+		LF_PlayerCharacter character = account.GetActiveCharacter();
 		if (!character)
 			return "";
 
@@ -136,10 +136,10 @@ class LF_Hideout
 			return;
 		}
 
-		EL_LockComponent lock = EL_Component<EL_LockComponent>.Find(door);
+		LF_LockComponent lock = LF_Component<LF_LockComponent>.Find(door);
 		if (!lock)
 		{
-			Refuse(string.Format("door %1 has no EL_LockComponent", doorName));
+			Refuse(string.Format("door %1 has no LF_LockComponent", doorName));
 			return;
 		}
 
@@ -148,12 +148,12 @@ class LF_Hideout
 		if (!state.m_sOrganizationId.IsEmpty())
 		{
 			PushLock(state);
-			EL_Debug.Log("Hideout", string.Format("door bound %1 hideout=%2 owner=%3", doorName, hideoutId, state.m_sOrganizationId));
+			LF_Debug.Log("Hideout", string.Format("door bound %1 hideout=%2 owner=%3", doorName, hideoutId, state.m_sOrganizationId));
 			return;
 		}
 
 		state.m_bLocked = lock.IsLocked();
-		EL_Debug.Log("Hideout", string.Format("door bound %1 hideout=%2", doorName, hideoutId));
+		LF_Debug.Log("Hideout", string.Format("door bound %1 hideout=%2", doorName, hideoutId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -168,7 +168,7 @@ class LF_Hideout
 			return false;
 		}
 
-		EL_Organization org = EL_OrganizationManager.Get(organizationId);
+		LF_Organization org = LF_OrganizationManager.Get(organizationId);
 		if (!org)
 		{
 			Refuse("assign refused: no organization");
@@ -191,7 +191,7 @@ class LF_Hideout
 
 		state.m_sOrganizationId = organizationId;
 		PushLock(state);
-		EL_Debug.Log("Hideout", string.Format("assigned hideout=%1 org=%2", hideoutId, organizationId));
+		LF_Debug.Log("Hideout", string.Format("assigned hideout=%1 org=%2", hideoutId, organizationId));
 		return true;
 	}
 
@@ -224,7 +224,7 @@ class LF_Hideout
 		LF_HideoutState state = Ensure(hideoutId);
 		state.m_bLocked = false;
 		PushLock(state);
-		EL_Debug.Log("Hideout", string.Format("door unlocked hideout=%1 character=%2", hideoutId, characterId));
+		LF_Debug.Log("Hideout", string.Format("door unlocked hideout=%1 character=%2", hideoutId, characterId));
 		return true;
 	}
 
@@ -237,7 +237,7 @@ class LF_Hideout
 		LF_HideoutState state = Ensure(hideoutId);
 		state.m_bLocked = true;
 		PushLock(state);
-		EL_Debug.Log("Hideout", string.Format("door locked hideout=%1 character=%2", hideoutId, characterId));
+		LF_Debug.Log("Hideout", string.Format("door locked hideout=%1 character=%2", hideoutId, characterId));
 		return true;
 	}
 
@@ -262,7 +262,7 @@ class LF_Hideout
 			return false;
 		}
 
-		EL_Organization org = EL_OrganizationManager.Get(state.m_sOrganizationId);
+		LF_Organization org = LF_OrganizationManager.Get(state.m_sOrganizationId);
 		if (!org || !org.IsMember(characterId))
 		{
 			if (report)
@@ -289,7 +289,7 @@ class LF_Hideout
 			return false;
 		}
 
-		EL_Organization org = EL_OrganizationManager.Get(state.m_sOrganizationId);
+		LF_Organization org = LF_OrganizationManager.Get(state.m_sOrganizationId);
 		if (characterId.IsEmpty() || !org || !org.IsMember(characterId))
 		{
 			if (report)
@@ -347,7 +347,7 @@ class LF_Hideout
 
 			if (record.m_iVersion < 1 || record.m_sHideoutId.IsEmpty() || record.m_sOrganizationId.IsEmpty())
 			{
-				EL_Debug.Error("Hideout", "load skipped a record with no id or version");
+				LF_Debug.Error("Hideout", "load skipped a record with no id or version");
 				continue;
 			}
 
@@ -365,7 +365,7 @@ class LF_Hideout
 			return false;
 
 		string ownerId = GetOwner(hideoutId);
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(characterId);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
 		if (ownerId.IsEmpty() || !org || org.GetId() != ownerId)
 		{
 			if (report)
@@ -396,7 +396,7 @@ class LF_Hideout
 		if (!door)
 			return;
 
-		EL_LockComponent lock = EL_Component<EL_LockComponent>.Find(door);
+		LF_LockComponent lock = LF_Component<LF_LockComponent>.Find(door);
 		if (!lock)
 			return;
 
@@ -459,7 +459,7 @@ class LF_Hideout
 		if (repeat)
 			return;
 
-		EL_Debug.Error("Hideout", message);
+		LF_Debug.Error("Hideout", message);
 	}
 
 	//------------------------------------------------------------------------------------------------

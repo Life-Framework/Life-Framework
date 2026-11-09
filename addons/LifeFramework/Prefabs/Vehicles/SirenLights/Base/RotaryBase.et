@@ -1,7 +1,7 @@
 GameEntity {
  ID "7454581651294523"
  components {
-  EL_SirenLightComponent "{F24A18E446494E8C}" {
+  LF_SirenLightComponent "{F24A18E446494E8C}" {
   }
   MeshObject "{E7BB3A0F7E2944BA}" {
    Object "{7FB5C800EC4746A9}Assets/Vehicles/Attachments/SirenLights/EmergencyLightRotaryBase.xob"

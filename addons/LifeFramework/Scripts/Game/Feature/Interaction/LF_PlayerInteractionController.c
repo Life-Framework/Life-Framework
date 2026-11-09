@@ -44,7 +44,7 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_GiveCash(RplId target, int amount)
 	{
-		IEntity receiver = EL_NetworkUtils.FindEntityByRplId(target);
+		IEntity receiver = LF_NetworkUtils.FindEntityByRplId(target);
 		LF_PlayerInteraction.GiveCash(GetControlledEntity(), receiver, amount, LF_PlayerInteraction.GESTURE_POINT);
 	}
 
@@ -65,12 +65,12 @@ modded class SCR_PlayerController
 		IEntity item = LF_PlayerInteraction.ItemInHand(GetControlledEntity());
 		if (!item)
 		{
-			EL_Debug.Info("Interaction", "give item: nothing in hand");
-			EL_Utils.Notify("#LF-Interact_NothingInHand", "#LF-Interact_Title", 3.0);
+			LF_Debug.Info("Interaction", "give item: nothing in hand");
+			LF_Utils.Notify("#LF-Interact_NothingInHand", "#LF-Interact_Title", 3.0);
 			return;
 		}
 
-		LF_AskGiveItem(target, EL_NetworkUtils.GetRplId(item));
+		LF_AskGiveItem(target, LF_NetworkUtils.GetRplId(item));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -87,8 +87,8 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_GiveItem(RplId target, RplId item)
 	{
-		IEntity receiver = EL_NetworkUtils.FindEntityByRplId(target);
-		IEntity given = EL_NetworkUtils.FindEntityByRplId(item);
+		IEntity receiver = LF_NetworkUtils.FindEntityByRplId(target);
+		IEntity given = LF_NetworkUtils.FindEntityByRplId(item);
 		LF_PlayerInteraction.GiveItem(GetControlledEntity(), receiver, given, LF_PlayerInteraction.GESTURE_POINT);
 	}
 
@@ -133,19 +133,19 @@ modded class SCR_PlayerController
 
 		if (!controller.CanPlayItemGesture())
 		{
-			EL_Debug.Info("Interaction", "gesture skipped: the character cannot gesture right now");
+			LF_Debug.Info("Interaction", "gesture skipped: the character cannot gesture right now");
 			return;
 		}
 
 		if (!controller.TryStartCharacterGesture(gestureId, durationMs))
-			EL_Debug.Info("Interaction", "gesture " + gestureId + " did not start");
+			LF_Debug.Info("Interaction", "gesture " + gestureId + " did not start");
 	}
 }
 
 //------------------------------------------------------------------------------------------------
 //! Names follow a spawn: the spawning player learns who they know, and those who know them
 //! learn their name again (player ids change between sessions; uids do not).
-modded class EL_GameModeRoleplay
+modded class LF_GameModeRoleplay
 {
 	override void OnPlayerSpawned(int playerId, IEntity controlledEntity)
 	{

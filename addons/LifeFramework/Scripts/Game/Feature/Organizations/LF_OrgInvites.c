@@ -2,7 +2,7 @@
 //! Server-side membership offers (M1-17). A leader facing someone makes an offer; the invitee
 //! joins only by facing that leader and choosing Join. The offer is session state: it is not
 //! saved, and it lapses after LF_OrgRules.OFFER_MS. Joining goes through
-//! EL_OrganizationManager.Invite, which checks the leader's rank again at that moment.
+//! LF_OrganizationManager.Invite, which checks the leader's rank again at that moment.
 //------------------------------------------------------------------------------------------------
 enum LF_EOrgOfferResult
 {
@@ -52,17 +52,17 @@ class LF_OrgInvites
 	//! Server: inviter offers targetCharacterId a place in the inviter's organization.
 	static LF_EOrgOfferResult Offer(string inviterCharacterId, int inviterPlayerId, string targetCharacterId, float nowMs)
 	{
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(inviterCharacterId);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(inviterCharacterId);
 		if (!org)
 			return Refused("offer", LF_EOrgOfferResult.REFUSED_NO_ORG, inviterCharacterId, targetCharacterId);
 
 		if (targetCharacterId.IsEmpty() || targetCharacterId == inviterCharacterId)
 			return Refused("offer", LF_EOrgOfferResult.REFUSED_SELF, inviterCharacterId, targetCharacterId);
 
-		if (!org.Allows(inviterCharacterId, EL_EOrganizationPermission.INVITE))
+		if (!org.Allows(inviterCharacterId, LF_EOrganizationPermission.INVITE))
 			return Refused("offer", LF_EOrgOfferResult.REFUSED_RANK, inviterCharacterId, targetCharacterId);
 
-		if (EL_OrganizationManager.GetByCharacter(targetCharacterId))
+		if (LF_OrganizationManager.GetByCharacter(targetCharacterId))
 			return Refused("offer", LF_EOrgOfferResult.REFUSED_ALREADY_MEMBER, inviterCharacterId, targetCharacterId);
 
 		LF_OrgOffer offer = new LF_OrgOffer();
@@ -74,7 +74,7 @@ class LF_OrgInvites
 			s_mOffers = new map<string, ref LF_OrgOffer>();
 
 		s_mOffers.Set(targetCharacterId, offer);
-		EL_Debug.Info("Organizations", string.Format("offer org=%1 from=%2 to=%3", org.GetId(), inviterCharacterId, targetCharacterId));
+		LF_Debug.Info("Organizations", string.Format("offer org=%1 from=%2 to=%3", org.GetId(), inviterCharacterId, targetCharacterId));
 		return LF_EOrgOfferResult.OFFERED;
 	}
 
@@ -90,13 +90,13 @@ class LF_OrgInvites
 			return Refused("join", LF_EOrgOfferResult.REFUSED_WRONG_INVITER, inviterCharacterId, targetCharacterId);
 
 		s_mOffers.Remove(targetCharacterId);
-		if (EL_OrganizationManager.GetByCharacter(targetCharacterId))
+		if (LF_OrganizationManager.GetByCharacter(targetCharacterId))
 			return Refused("join", LF_EOrgOfferResult.REFUSED_ALREADY_MEMBER, inviterCharacterId, targetCharacterId);
 
-		if (!EL_OrganizationManager.Invite(offer.m_sOrgId, inviterCharacterId, targetCharacterId))
+		if (!LF_OrganizationManager.Invite(offer.m_sOrgId, inviterCharacterId, targetCharacterId))
 			return Refused("join", LF_EOrgOfferResult.REFUSED_RANK, inviterCharacterId, targetCharacterId);
 
-		EL_Debug.Info("Organizations", string.Format("joined org=%1 member=%2 invited by %3", offer.m_sOrgId, targetCharacterId, inviterCharacterId));
+		LF_Debug.Info("Organizations", string.Format("joined org=%1 member=%2 invited by %3", offer.m_sOrgId, targetCharacterId, inviterCharacterId));
 		return LF_EOrgOfferResult.JOINED;
 	}
 
@@ -111,10 +111,10 @@ class LF_OrgInvites
 		if (!offer)
 			return null;
 
-		if (nowMs > offer.m_fExpiresMs || !EL_OrganizationManager.Get(offer.m_sOrgId))
+		if (nowMs > offer.m_fExpiresMs || !LF_OrganizationManager.Get(offer.m_sOrgId))
 		{
 			s_mOffers.Remove(targetCharacterId);
-			EL_Debug.Info("Organizations", string.Format("offer to %1 lapsed", targetCharacterId));
+			LF_Debug.Info("Organizations", string.Format("offer to %1 lapsed", targetCharacterId));
 			return null;
 		}
 
@@ -124,7 +124,7 @@ class LF_OrgInvites
 	//------------------------------------------------------------------------------------------------
 	protected static LF_EOrgOfferResult Refused(string what, LF_EOrgOfferResult result, string inviterCharacterId, string targetCharacterId)
 	{
-		EL_Debug.Info("Organizations", string.Format("%1 refused: %2 (inviter %3, invitee %4)", what, typename.EnumToString(LF_EOrgOfferResult, result), inviterCharacterId, targetCharacterId));
+		LF_Debug.Info("Organizations", string.Format("%1 refused: %2 (inviter %3, invitee %4)", what, typename.EnumToString(LF_EOrgOfferResult, result), inviterCharacterId, targetCharacterId));
 		return result;
 	}
 }
@@ -147,7 +147,7 @@ class LF_OrgHideoutLease
 	static LF_EOrgLease StateFor(string orgId, string hideoutId)
 	{
 		string owner = LF_Hideout.GetOwner(hideoutId);
-		if (owner.IsEmpty() || !EL_OrganizationManager.Get(owner))
+		if (owner.IsEmpty() || !LF_OrganizationManager.Get(owner))
 			return LF_EOrgLease.FREE;
 
 		if (owner == orgId)
@@ -160,22 +160,22 @@ class LF_OrgHideoutLease
 	//! Server: a character with the buy right takes the free hideout for their organization.
 	static bool Lease(string characterId, string hideoutId)
 	{
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(characterId);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
 		if (!org)
 		{
-			EL_Debug.Info("Organizations", "lease refused: no organization");
+			LF_Debug.Info("Organizations", "lease refused: no organization");
 			return false;
 		}
 
-		if (!org.Allows(characterId, EL_EOrganizationPermission.BUY_UPGRADE))
+		if (!org.Allows(characterId, LF_EOrganizationPermission.BUY_UPGRADE))
 		{
-			EL_Debug.Info("Organizations", string.Format("lease refused: %1 lacks the rank", characterId));
+			LF_Debug.Info("Organizations", string.Format("lease refused: %1 lacks the rank", characterId));
 			return false;
 		}
 
 		if (StateFor(org.GetId(), hideoutId) != LF_EOrgLease.FREE)
 		{
-			EL_Debug.Info("Organizations", string.Format("lease refused: %1 is not free", hideoutId));
+			LF_Debug.Info("Organizations", string.Format("lease refused: %1 is not free", hideoutId));
 			return false;
 		}
 
@@ -185,7 +185,7 @@ class LF_OrgHideoutLease
 		// A new lease starts with the gate shut: only members open it from here on.
 		LF_Hideout.LockDoor(characterId, hideoutId);
 
-		EL_Debug.Info("Organizations", string.Format("lease org=%1 hideout=%2", org.GetId(), hideoutId));
+		LF_Debug.Info("Organizations", string.Format("lease org=%1 hideout=%2", org.GetId(), hideoutId));
 		return true;
 	}
 }

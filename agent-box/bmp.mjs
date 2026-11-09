@@ -1,5 +1,5 @@
 // Uncompressed 24/32-bit BMP to PNG. Reforger's MakeScreenshot writes a BMP;
-// EL_ScreenshotCapture looks for the .png sibling. This converts the BMP when
+// LF_ScreenshotCapture looks for the .png sibling. This converts the BMP when
 // the png is not already on disk.
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";

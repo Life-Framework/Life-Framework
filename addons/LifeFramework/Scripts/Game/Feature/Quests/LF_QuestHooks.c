@@ -1,5 +1,5 @@
 // LF_QuestHooks.c - additive seams that route existing gameplay signals into the
-// quest system. Gather/process flow through EL_JobManager already; a modded
+// quest system. Gather/process flow through LF_JobManager already; a modded
 // override forwards them without touching the job logic. The arrival chain's
 // SIGNAL keys (sign read, parcel run paid, ATM deposit) come from modded
 // overrides here too, so the sign, job, and ATM files stay untouched.
@@ -24,9 +24,9 @@ class LF_QuestSignals
 
 	//------------------------------------------------------------------------------------------------
 	//! "job.run_complete:<job>", the job enum name in lower case ("parcel", "fuel_delivery", "taxi").
-	static string JobRunComplete(EL_EJobType job)
+	static string JobRunComplete(LF_EJobType job)
 	{
-		string name = typename.EnumToString(EL_EJobType, job);
+		string name = typename.EnumToString(LF_EJobType, job);
 		name.ToLower();
 		return JOB_RUN_COMPLETE + name;
 	}
@@ -67,10 +67,10 @@ class LF_QuestRewards
 {
 	//------------------------------------------------------------------------------------------------
 	//! The account of the player controlling character, or null (an AI or a test body).
-	static EL_PlayerAccount AccountOf(IEntity character)
+	static LF_PlayerAccount AccountOf(IEntity character)
 	{
-		string uid = EL_Utils.GetPlayerUID(character);
-		EL_PlayerAccountManager manager = EL_PlayerAccountManager.GetInstance();
+		string uid = LF_Utils.GetPlayerUID(character);
+		LF_PlayerAccountManager manager = LF_PlayerAccountManager.GetInstance();
 		if (uid.IsEmpty() || !manager)
 			return null;
 
@@ -81,21 +81,21 @@ class LF_QuestRewards
 	//! Server: prints the account's active character on an ID card in the character's pockets.
 	//! A character already carrying their card gets no second one (LF_IdCard.Grant refuses).
 	//! \return True when the character now carries a newly printed card.
-	static bool HandIdCard(IEntity character, EL_PlayerAccount account)
+	static bool HandIdCard(IEntity character, LF_PlayerAccount account)
 	{
 		if (!account || !account.GetActiveCharacter())
 		{
-			EL_Debug.Error("Quests", "ID card not handed over: no registered character for this player");
+			LF_Debug.Error("Quests", "ID card not handed over: no registered character for this player");
 			return false;
 		}
 
-		EL_PlayerCharacter identity = account.GetActiveCharacter();
+		LF_PlayerCharacter identity = account.GetActiveCharacter();
 		return LF_IdCard.Grant(character, identity.GetId(), identity.GetFirstName(), identity.GetLastName(), identity.GetAge());
 	}
 }
 
 //------------------------------------------------------------------------------------------------
-modded class EL_JobManager
+modded class LF_JobManager
 {
 	//------------------------------------------------------------------------------------------------
 	override void OnGatherCompleted(IEntity user, ResourceName gatheredItem)
@@ -125,10 +125,10 @@ modded class LF_JobDropoffAction
 	{
 		string uid;
 		bool hadRun = false;
-		EL_EJobType job = EL_EJobType.UNEMPLOYED;
+		LF_EJobType job = LF_EJobType.UNEMPLOYED;
 		if (Replication.IsServer())
 		{
-			uid = EL_Utils.GetPlayerUid(pUserEntity);
+			uid = LF_Utils.GetPlayerUid(pUserEntity);
 			if (!uid.IsEmpty() && LF_CivilianJob.HasActiveRun(uid))
 			{
 				hadRun = true;
@@ -146,7 +146,7 @@ modded class LF_JobDropoffAction
 
 //------------------------------------------------------------------------------------------------
 //! "atm.deposit" when cash lands in the account.
-modded class EL_CharacterATMComponent
+modded class LF_CharacterATMComponent
 {
 	//------------------------------------------------------------------------------------------------
 	override protected void ReplyResult(bool deposit, LF_EATMRefusal reason, int amount, int balance, int cash)
@@ -168,7 +168,7 @@ modded class LF_SignReadAction
 	{
 		super.PerformAction(pOwnerEntity, pUserEntity);
 
-		if (!pOwnerEntity || !pUserEntity || pUserEntity != EL_Utils.GetLocalCharacter())
+		if (!pOwnerEntity || !pUserEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
 
 		LF_SignDef sign = GetSign();
@@ -178,7 +178,7 @@ modded class LF_SignReadAction
 		LF_QuestTrackerComponent tracker = LF_QuestTrackerComponent.Cast(pUserEntity.FindComponent(LF_QuestTrackerComponent));
 		if (!tracker)
 		{
-			EL_Debug.Error("Quests", "sign read not reported: the reader has no quest tracker");
+			LF_Debug.Error("Quests", "sign read not reported: the reader has no quest tracker");
 			return;
 		}
 

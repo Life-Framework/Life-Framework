@@ -11,7 +11,7 @@ GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et
     }
    }
    additionalActions {
-    EL_ProcessAction "{61CF4728E6A2809D}" {
+    LF_ProcessAction "{61CF4728E6A2809D}" {
      ParentContextList {
       "default"
      }
@@ -20,23 +20,23 @@ GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et
      }
      Duration 1
      m_aProcessingInputs {
-      EL_ProcessingInput "{61CF4728E6A28089}" {
+      LF_ProcessingInput "{61CF4728E6A28089}" {
        m_InputPrefab "{F3BDFD1DAA020E81}Prefabs/Items/Components/BulletCasings.et"
       }
-      EL_ProcessingInput "{61CF4728E6A2808F}" {
+      LF_ProcessingInput "{61CF4728E6A2808F}" {
        m_InputPrefab "{9CB52FAF71DA568F}Prefabs/Crafting/Gunpowder.et"
       }
-      EL_ProcessingInput "{61CF4728E6A28083}" {
+      LF_ProcessingInput "{61CF4728E6A28083}" {
        m_InputPrefab "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{61CF4728E6A28086}" {
+      LF_ProcessingOutput "{61CF4728E6A28086}" {
        m_OutputPrefab "{2EBF60EF24B108FC}Prefabs/Weapons/Magazines/Magazine_556x45_STANAG_30rnd_Ball.et"
       }
      }
     }
-    EL_ProcessAction "{61CF4728E6A280BC}" {
+    LF_ProcessAction "{61CF4728E6A280BC}" {
      ParentContextList {
       "default"
      }
@@ -45,12 +45,12 @@ GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et
      }
      Duration 1
      m_aProcessingInputs {
-      EL_ProcessingInput "{61CF4728E6A280B5}" {
+      LF_ProcessingInput "{61CF4728E6A280B5}" {
        m_InputPrefab "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{61CF4728E6A280B6}" {
+      LF_ProcessingOutput "{61CF4728E6A280B6}" {
        m_OutputPrefab "{F3BDFD1DAA020E81}Prefabs/Items/Components/BulletCasings.et"
        m_iOutputAmount 10
       }

@@ -13,8 +13,8 @@ you go to the bank. The only abstract money in the game lives here.
 **Money boundary (enforced, verified 2026-08-30):** every payout in the game —
 paychecks, trader/shop sells, robbery hauls, job rewards — pays **physical
 cash**. The bank balance moves **only** through the ATM (`Feature/ATM`). There
-is exactly one bank: `EL_ATMManager` + `EL_BankAccount` (per-player, keyed by
-UID, persisted). The old entity bank `EL_BankAccountComponent` was deleted.
+is exactly one bank: `LF_ATMManager` + `LF_BankAccount` (per-player, keyed by
+UID, persisted). The old entity bank `LF_BankAccountComponent` was deleted.
 
 ## Interaction pattern (in-world)
 
@@ -25,11 +25,11 @@ the rung-2 convenience for cash in/out without a teller.
 ## V1 (shippable)
 
 1. **Unify the two bank systems — DONE (verified 2026-08-30).** One account
-   model (`EL_ATMManager`/`EL_BankAccount`), one persistence path; the entity
-   bank `EL_BankAccountComponent` is deleted.
+   model (`LF_ATMManager`/`LF_BankAccount`), one persistence path; the entity
+   bank `LF_BankAccountComponent` is deleted.
 2. Remove the **$20,000 grant** — DONE: `m_iStartingBalance` defaults to 0 and
    persistence restore is authoritative.
-3. Make the money flow honest — DONE: `EL_CharacterATMComponent.RpcAsk_Deposit`
+3. Make the money flow honest — DONE: `LF_CharacterATMComponent.RpcAsk_Deposit`
    removes cash (partial removals rolled back), `RpcAsk_Withdraw` pays cash
    (all-or-nothing with balance restore).
 4. A bank-branch prefab (building override) with a counter interaction as the
@@ -45,10 +45,10 @@ the rung-2 convenience for cash in/out without a teller.
 
 ## Current state
 
-- `EL_ATMManager` + `EL_BankAccount` (`Feature/ATM/`) — the canonical bank:
+- `LF_ATMManager` + `LF_BankAccount` (`Feature/ATM/`) — the canonical bank:
   per-player persistent balance, deposit/withdraw guards. ⚠️ `SetBalance`
   unclamped; `CreateAccount` silently overwrites.
-- `EL_CharacterATMComponent` (`Feature/ATM/`) — cash-moving RPC bridge; the
+- `LF_CharacterATMComponent` (`Feature/ATM/`) — cash-moving RPC bridge; the
   only cash↔account boundary.
 - `LF_ATMTerminal` (`Feature/ATM/`) — deposit/withdraw terminal on the bridge.
 - Persistence: `Feature/ATM/Persistence/`.

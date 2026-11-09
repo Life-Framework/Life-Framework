@@ -1,12 +1,12 @@
 //------------------------------------------------------------------------------------------------
 //! Persisted progression of one player, keyed by the player uid (the account key). Saved as the
-//! "progression" payload (save version 7) by EL_PersistenceComponentSerializer.
+//! "progression" payload (save version 7) by LF_PersistenceComponentSerializer.
 //!
 //! Career, police, and benefit fields mirror state owned elsewhere (LF_CivilianJob,
-//! EL_PlayerAccount, LF_UnemploymentBenefit). Level, licences, and quest turn-ins live on the
+//! LF_PlayerAccount, LF_UnemploymentBenefit). Level, licences, and quest turn-ins live on the
 //! character entity, so LF_Progression keeps them here between bodies.
 //!
-//! Licences are stored by enum name, not by EL_LicenseBits position, so a reordered or renamed
+//! Licences are stored by enum name, not by LF_LicenseBits position, so a reordered or renamed
 //! licence list drops one unknown name instead of shifting every saved bit.
 //------------------------------------------------------------------------------------------------
 class LF_ProgressionRecord : Managed
@@ -21,7 +21,7 @@ class LF_ProgressionRecord : Managed
 	float m_fCareerExperience;
 	int m_iCareerPaidTotal;
 
-	// Police (EL_PlayerAccount).
+	// Police (LF_PlayerAccount).
 	int m_iPoliceRank;
 	int m_iOnDutySeconds;
 	int m_iUnpaidDutySeconds;
@@ -29,14 +29,14 @@ class LF_ProgressionRecord : Managed
 	//! Seconds between the last benefit collection and the save. -1 = never collected.
 	float m_fBenefitElapsedSeconds = -1;
 
-	// Player level (EL_PlayerLevelComponent). Applied only when m_bHasLevel.
+	// Player level (LF_PlayerLevelComponent). Applied only when m_bHasLevel.
 	bool m_bHasLevel;
 	int m_iPlayerLevel = 1;
 	float m_fPlayerExperience;
 	int m_iSkillPoints;
 	int m_iTotalSkillPoints;
 
-	//! EL_ELicenseType names. Empty = the body keeps its starter licences.
+	//! LF_ELicenseType names. Empty = the body keeps its starter licences.
 	ref array<string> m_aLicenses = {};
 	ref array<string> m_aTurnedInQuests = {};
 

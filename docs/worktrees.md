@@ -50,7 +50,7 @@ harmless to your editor because the worktree is a separate directory.
 ```sh
 tools\cli wt new <feature>      # create worktree + branch + ports
 tools\cli wt list               # who's working, ports, dirty/merged state
-tools\cli wt test <slug>        # run the ELTEST suite in that worktree
+tools\cli wt test <slug>        # run the LFTEST suite in that worktree
 tools\cli wt dev <slug>         # fast loop in that worktree (no build)
 tools\cli wt gate <slug>        # validate --full + build + test (tier=all)
 tools\cli wt ship <slug>        # gate -> push -> PR -> auto-merge (merges main only on conflict)
@@ -156,7 +156,7 @@ anywhere.
 
 ```sh
 tools\cli test --no-build --tier all                      # first free slot anywhere (--any, the default)
-tools\cli test --no-build --only EL_Test_Money --local     # this PC only
+tools\cli test --no-build --only LF_Test_Money --local     # this PC only
 tools\cli test --no-build --tier all --remote [name]       # a remote machine (any, or that one)
 tools\cli e2e --remote                                     # the two-boot save/restart proof on the box
 tools\cli pool status                                      # machines, slots and holders, queue, last 20 runs
@@ -335,7 +335,7 @@ Not yet exercised end to end.
    dedicated server" rules already allow `ArmaReforgerServerDiag.exe` inbound
    there.
 2. Send the same commit to the box: `tools\cli test --no-build --only
-   EL_Test_AccountWantedClamp --remote` checks it out in
+   LF_Test_AccountWantedClamp --remote` checks it out in
    `C:\LF\Life-Framework-rt-<slug>`. The server refuses a client whose scripts
    or defines differ ("script source code checksum does not match").
 3. On the box's own desktop (the client must render in the signed-in user's

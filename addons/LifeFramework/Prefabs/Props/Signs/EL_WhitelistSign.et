@@ -15,7 +15,7 @@ GenericEntity : "{81206EAE6A99ACF8}Prefabs/Props/Signs/Industrial/SignIndustrial
     }
    }
    additionalActions + {
-    EL_WhitelistAction "{77527FE1EF344A89}" {
+    LF_WhitelistAction "{77527FE1EF344A89}" {
      m_eWhitelistOnlyType POLICE
      ParentContextList {
       "EL_WhitelistSign"

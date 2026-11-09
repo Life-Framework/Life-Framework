@@ -14,7 +14,7 @@ class LF_FixtureLookups
 {
 	void Run(IEntity owner, Widget root)
 	{
-		EL_Component<EL_QuantityComponent>.Find(owner).SetQuantity(1);
+		LF_Component<LF_QuantityComponent>.Find(owner).SetQuantity(1);
 		SCR_InventoryStorageManagerComponent.Cast(owner.FindComponent(SCR_InventoryStorageManagerComponent)).GetOwner();
 		root.FindAnyWidget("Row").SetVisible(true);
 		GetGame().GetWorkspace().CreateWidgets("x");

@@ -36,7 +36,7 @@
 //!
 //! PERSISTENCE. Export copies the remaining seconds. Apply writes them back.
 //! The key is the player uid, never an EntityID. ExportAll / ApplyAll are the
-//! "jail" payload of EL_PersistenceComponentSerializer (save version 5+), so a
+//! "jail" payload of LF_PersistenceComponentSerializer (save version 5+), so a
 //! sentence survives a server restart.
 //------------------------------------------------------------------------------------------------
 class LF_JailRecord : Managed
@@ -145,25 +145,25 @@ class LF_Jail
 	{
 		if (secondsPerWanted < 0)
 		{
-			EL_Debug.Error("Jail", "configure clamped: negative seconds per wanted");
+			LF_Debug.Error("Jail", "configure clamped: negative seconds per wanted");
 			secondsPerWanted = 0;
 		}
 
 		if (maxSeconds < 0)
 		{
-			EL_Debug.Error("Jail", "configure clamped: negative max seconds");
+			LF_Debug.Error("Jail", "configure clamped: negative max seconds");
 			maxSeconds = 0;
 		}
 
 		if (wantedReduction < 0)
 		{
-			EL_Debug.Error("Jail", "configure clamped: negative wanted reduction");
+			LF_Debug.Error("Jail", "configure clamped: negative wanted reduction");
 			wantedReduction = 0;
 		}
 
 		if (zoneRadius < 0)
 		{
-			EL_Debug.Error("Jail", "configure clamped: negative zone radius");
+			LF_Debug.Error("Jail", "configure clamped: negative zone radius");
 			zoneRadius = 0;
 		}
 
@@ -171,7 +171,7 @@ class LF_Jail
 		s_iMaxSeconds = maxSeconds;
 		s_iWantedReduction = wantedReduction;
 		s_fZoneRadius = zoneRadius;
-		EL_Debug.Log("Jail", string.Format("configured per=%1 max=%2 reduction=%3 radius=%4", secondsPerWanted, maxSeconds, wantedReduction, zoneRadius));
+		LF_Debug.Log("Jail", string.Format("configured per=%1 max=%2 reduction=%3 radius=%4", secondsPerWanted, maxSeconds, wantedReduction, zoneRadius));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ class LF_Jail
 	{
 		s_vCellOrigin = origin;
 		s_bCellPlaced = true;
-		EL_Debug.Log("Jail", string.Format("cell placed at %1 %2 %3", origin[0], origin[1], origin[2]));
+		LF_Debug.Log("Jail", string.Format("cell placed at %1 %2 %3", origin[0], origin[1], origin[2]));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ class LF_Jail
 	static void SetReleaseOffset(vector worldOffset)
 	{
 		s_vReleaseOffset = worldOffset;
-		EL_Debug.Log("Jail", string.Format("release offset %1 %2 %3", worldOffset[0], worldOffset[1], worldOffset[2]));
+		LF_Debug.Log("Jail", string.Format("release offset %1 %2 %3", worldOffset[0], worldOffset[1], worldOffset[2]));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -202,12 +202,12 @@ class LF_Jail
 	{
 		if (doorId.IsEmpty())
 		{
-			EL_Debug.Error("Jail", "door target refused: empty id");
+			LF_Debug.Error("Jail", "door target refused: empty id");
 			return;
 		}
 
 		s_sDoorId = doorId;
-		EL_Debug.Log("Jail", string.Format("door target %1", doorId));
+		LF_Debug.Log("Jail", string.Format("door target %1", doorId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -218,14 +218,14 @@ class LF_Jail
 
 		if (!GetGame() || !GetGame().GetWorld())
 		{
-			EL_Debug.Error("Jail", "placed cell skipped: no world");
+			LF_Debug.Error("Jail", "placed cell skipped: no world");
 			return;
 		}
 
 		IEntity cell = GetGame().GetWorld().FindEntityByName(CELL_ID);
 		if (!cell)
 		{
-			EL_Debug.Error("Jail", "placed cell missing: " + CELL_ID);
+			LF_Debug.Error("Jail", "placed cell missing: " + CELL_ID);
 			return;
 		}
 
@@ -264,7 +264,7 @@ class LF_Jail
 	//------------------------------------------------------------------------------------------------
 	static int SentenceSeconds(int wantedLevel)
 	{
-		return EL_PoliceUtils.SentenceSeconds(wantedLevel, s_iSecondsPerWanted, s_iMaxSeconds);
+		return LF_PoliceUtils.SentenceSeconds(wantedLevel, s_iSecondsPerWanted, s_iMaxSeconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -285,53 +285,53 @@ class LF_Jail
 	{
 		if (officerUid.IsEmpty() || prisonerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jail", "arrest refused: officer or prisoner uid is empty");
+			LF_Debug.Error("Jail", "arrest refused: officer or prisoner uid is empty");
 			return false;
 		}
 
 		if (!s_bCellPlaced)
 		{
-			EL_Debug.Error("Jail", "arrest refused: no cell is placed");
+			LF_Debug.Error("Jail", "arrest refused: no cell is placed");
 			return false;
 		}
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts)
 		{
-			EL_Debug.Error("Jail", "arrest refused: no account manager");
+			LF_Debug.Error("Jail", "arrest refused: no account manager");
 			return false;
 		}
 
-		EL_PlayerAccount officer = accounts.GetAccount(officerUid);
-		if (!EL_PoliceUtils.IsOnDutyOfficer(officer))
+		LF_PlayerAccount officer = accounts.GetAccount(officerUid);
+		if (!LF_PoliceUtils.IsOnDutyOfficer(officer))
 		{
-			EL_Debug.Log("Jail", string.Format("arrest refused: %1 is not an on-duty officer", officerUid));
+			LF_Debug.Log("Jail", string.Format("arrest refused: %1 is not an on-duty officer", officerUid));
 			return false;
 		}
 
 		// One server gate for every arrest path (action, menu, escort to the cell).
 		if (!LF_PoliceRanks.CanArrestRank(officer.GetPoliceRank()))
 		{
-			EL_Debug.Warn("Jail", string.Format("arrest refused: rank %1 is below the arrest rank %2", officer.GetPoliceRank(), LF_PoliceConfig.ArrestMinRank()));
+			LF_Debug.Warn("Jail", string.Format("arrest refused: rank %1 is below the arrest rank %2", officer.GetPoliceRank(), LF_PoliceConfig.ArrestMinRank()));
 			return false;
 		}
 
-		EL_PlayerAccount prisoner = accounts.GetAccount(prisonerUid);
+		LF_PlayerAccount prisoner = accounts.GetAccount(prisonerUid);
 		if (!prisoner)
 		{
-			EL_Debug.Error("Jail", string.Format("arrest refused: no account for %1", prisonerUid));
+			LF_Debug.Error("Jail", string.Format("arrest refused: no account for %1", prisonerUid));
 			return false;
 		}
 
 		if (prisoner.GetWantedLevel() <= 0)
 		{
-			EL_Debug.Log("Jail", string.Format("arrest refused: %1 is not wanted", prisonerUid));
+			LF_Debug.Log("Jail", string.Format("arrest refused: %1 is not wanted", prisonerUid));
 			return false;
 		}
 
 		if (IsServing(prisonerUid))
 		{
-			EL_Debug.Log("Jail", string.Format("arrest refused: %1 is already serving", prisonerUid));
+			LF_Debug.Log("Jail", string.Format("arrest refused: %1 is already serving", prisonerUid));
 			return false;
 		}
 
@@ -347,13 +347,13 @@ class LF_Jail
 		if (body)
 			sentence.m_BodyId = body.GetID();
 
-		EL_Debug.Log("Jail", string.Format("sentence started %1 seconds=%2 wanted=%3", prisonerUid, seconds, prisoner.GetWantedLevel()));
+		LF_Debug.Log("Jail", string.Format("sentence started %1 seconds=%2 wanted=%3", prisonerUid, seconds, prisoner.GetWantedLevel()));
 		if (seconds > 0)
 			HandSlip(prisonerUid, body);
 
 		if (seconds <= 0)
 		{
-			EL_Debug.Log("Jail", string.Format("zero-duration release %1", prisonerUid));
+			LF_Debug.Log("Jail", string.Format("zero-duration release %1", prisonerUid));
 			Complete(prisonerUid);
 		}
 
@@ -366,11 +366,11 @@ class LF_Jail
 	{
 		if (!IsServing(playerUid))
 		{
-			EL_Debug.Log("Jail", string.Format("early release refused: %1 is not serving", playerUid));
+			LF_Debug.Log("Jail", string.Format("early release refused: %1 is not serving", playerUid));
 			return false;
 		}
 
-		EL_Debug.Log("Jail", string.Format("early release refused: %1 has time left", playerUid));
+		LF_Debug.Log("Jail", string.Format("early release refused: %1 has time left", playerUid));
 		return false;
 	}
 
@@ -437,14 +437,14 @@ class LF_Jail
 
 		if (!s_bCellPlaced)
 		{
-			EL_Debug.Error("Jail", "confine skipped: no cell is placed");
+			LF_Debug.Error("Jail", "confine skipped: no cell is placed");
 			return current;
 		}
 
 		if (vector.Distance(current, s_vCellOrigin) <= s_fZoneRadius)
 			return current;
 
-		EL_Debug.Log("Jail", string.Format("returned %1 to the cell", playerUid));
+		LF_Debug.Log("Jail", string.Format("returned %1 to the cell", playerUid));
 		return s_vCellOrigin;
 	}
 
@@ -476,9 +476,9 @@ class LF_Jail
 			{
 				sentence.m_bPaused = !online;
 				if (online)
-					EL_Debug.Info("Jail", string.Format("sentence resumed %1 remaining=%2", playerUid, sentence.m_fRemaining));
+					LF_Debug.Info("Jail", string.Format("sentence resumed %1 remaining=%2", playerUid, sentence.m_fRemaining));
 				else
-					EL_Debug.Info("Jail", string.Format("sentence paused %1 (offline) remaining=%2", playerUid, sentence.m_fRemaining));
+					LF_Debug.Info("Jail", string.Format("sentence paused %1 (offline) remaining=%2", playerUid, sentence.m_fRemaining));
 			}
 
 			if (online)
@@ -508,7 +508,7 @@ class LF_Jail
 		GetGame().GetPlayerManager().GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
 		{
-			string uid = EL_Utils.GetPlayerUID(playerId);
+			string uid = LF_Utils.GetPlayerUID(playerId);
 			if (!uid.IsEmpty())
 				outUids.Insert(uid);
 		}
@@ -516,7 +516,7 @@ class LF_Jail
 
 	//------------------------------------------------------------------------------------------------
 	//! A respawned or rejoined prisoner with time left goes back to the cell with their slip.
-	//! Called on every spawn path (EL_SpawnLogic).
+	//! Called on every spawn path (LF_SpawnLogic).
 	static void OnPlayerSpawned(string playerUid, IEntity body)
 	{
 		if (playerUid.IsEmpty() || !body || !IsServing(playerUid))
@@ -524,13 +524,13 @@ class LF_Jail
 
 		if (!s_bCellPlaced)
 		{
-			EL_Debug.Error("Jail", string.Format("spawned prisoner %1 not returned: no cell is placed", playerUid));
+			LF_Debug.Error("Jail", string.Format("spawned prisoner %1 not returned: no cell is placed", playerUid));
 			return;
 		}
 
 		MoveBody(body, s_vCellOrigin);
 		HandSlip(playerUid, body);
-		EL_Debug.Info("Jail", string.Format("spawned prisoner %1 returned to the cell remaining=%2", playerUid, GetRemaining(playerUid)));
+		LF_Debug.Info("Jail", string.Format("spawned prisoner %1 returned to the cell remaining=%2", playerUid, GetRemaining(playerUid)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -557,7 +557,7 @@ class LF_Jail
 		LF_JailSentence sentence = Sentences().Get(playerUid);
 		if (!sentence)
 		{
-			EL_Debug.Error("Jail", string.Format("export refused: %1 has no sentence", playerUid));
+			LF_Debug.Error("Jail", string.Format("export refused: %1 has no sentence", playerUid));
 			return null;
 		}
 
@@ -571,13 +571,13 @@ class LF_Jail
 	{
 		if (!record)
 		{
-			EL_Debug.Error("Jail", "apply refused: record is null");
+			LF_Debug.Error("Jail", "apply refused: record is null");
 			return false;
 		}
 
 		if (record.m_sPlayerUid.IsEmpty() || !record.IsValidFor(record.m_sPlayerUid))
 		{
-			EL_Debug.Error("Jail", "apply refused: record has no player uid");
+			LF_Debug.Error("Jail", "apply refused: record has no player uid");
 			return false;
 		}
 
@@ -595,7 +595,7 @@ class LF_Jail
 		if (record.m_bServing)
 			serving = 1;
 
-		EL_Debug.Log("Jail", string.Format("apply-save %1 remaining=%2 serving=%3", record.m_sPlayerUid, record.m_fRemaining, serving));
+		LF_Debug.Log("Jail", string.Format("apply-save %1 remaining=%2 serving=%3", record.m_sPlayerUid, record.m_fRemaining, serving));
 		return true;
 	}
 
@@ -635,7 +635,7 @@ class LF_Jail
 				applied++;
 		}
 
-		EL_Debug.Log("Jail", string.Format("apply-save restored %1 sentence(s)", applied));
+		LF_Debug.Log("Jail", string.Format("apply-save restored %1 sentence(s)", applied));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -655,18 +655,18 @@ class LF_Jail
 		IEntity target = standIn;
 		if (!target)
 		{
-			EL_PlayerAccount account;
-			target = EL_PoliceUtils.FindPlayerEntityByUid(prisonerUid, account);
+			LF_PlayerAccount account;
+			target = LF_PoliceUtils.FindPlayerEntityByUid(prisonerUid, account);
 		}
 
 		if (!target)
 		{
-			EL_Debug.Log("Jail", string.Format("no body to move for %1", prisonerUid));
+			LF_Debug.Log("Jail", string.Format("no body to move for %1", prisonerUid));
 			return null;
 		}
 
 		MoveBody(target, s_vCellOrigin);
-		EL_Debug.Log("Jail", string.Format("moved %1 to the cell", prisonerUid));
+		LF_Debug.Log("Jail", string.Format("moved %1 to the cell", prisonerUid));
 		return target;
 	}
 
@@ -674,8 +674,8 @@ class LF_Jail
 	//! The connected body of a prisoner, else the session body recorded at arrest (a stand-in).
 	protected static IEntity FindBody(string playerUid)
 	{
-		EL_PlayerAccount account;
-		IEntity body = EL_PoliceUtils.FindPlayerEntityByUid(playerUid, account);
+		LF_PlayerAccount account;
+		IEntity body = LF_PoliceUtils.FindPlayerEntityByUid(playerUid, account);
 		if (body)
 			return body;
 
@@ -722,7 +722,7 @@ class LF_Jail
 			if (teleported)
 				return;
 
-			EL_Debug.Warn("Jail", string.Format("player teleport refused for player %1; setting the origin on the server", playerId));
+			LF_Debug.Warn("Jail", string.Format("player teleport refused for player %1; setting the origin on the server", playerId));
 		}
 
 		body.SetOrigin(position);
@@ -741,7 +741,7 @@ class LF_Jail
 		SCR_EditableCharacterComponent editable = SCR_EditableCharacterComponent.Cast(body.FindComponent(SCR_EditableCharacterComponent));
 		if (!editable)
 		{
-			EL_Debug.Error("Jail", "prisoner not moved on their client: no SCR_EditableCharacterComponent to ask the owner");
+			LF_Debug.Error("Jail", "prisoner not moved on their client: no SCR_EditableCharacterComponent to ask the owner");
 			return false;
 		}
 
@@ -749,7 +749,7 @@ class LF_Jail
 		body.GetWorldTransform(transform);
 		transform[3] = position;
 		editable.SetTransform(transform);
-		EL_Debug.Info("Jail", string.Format("asked the owning client to move the prisoner to %1", position));
+		LF_Debug.Info("Jail", string.Format("asked the owning client to move the prisoner to %1", position));
 		return true;
 	}
 
@@ -783,19 +783,19 @@ class LF_Jail
 		if (!rpl || rpl.IsOwner())
 		{
 			access.GetOutVehicle_NoDoor(transform, false, true);
-			EL_Debug.Info("Jail", "seated prisoner dismounted on the server; the vehicle stays put");
+			LF_Debug.Info("Jail", "seated prisoner dismounted on the server; the vehicle stays put");
 		}
 		else
 		{
 			SCR_EditableCharacterComponent editable = SCR_EditableCharacterComponent.Cast(body.FindComponent(SCR_EditableCharacterComponent));
 			if (!editable)
 			{
-				EL_Debug.Error("Jail", "seated prisoner not moved: no SCR_EditableCharacterComponent to ask the owner to dismount");
+				LF_Debug.Error("Jail", "seated prisoner not moved: no SCR_EditableCharacterComponent to ask the owner to dismount");
 				return true;
 			}
 
 			editable.SetTransform(transform);
-			EL_Debug.Info("Jail", "seated prisoner asked to dismount at the target; the vehicle stays put");
+			LF_Debug.Info("Jail", "seated prisoner asked to dismount at the target; the vehicle stays put");
 		}
 
 		if (GetGame() && GetGame().GetCallqueue())
@@ -811,7 +811,7 @@ class LF_Jail
 	{
 		if (!body)
 		{
-			EL_Debug.Warn("Jail", "dismount check skipped: the body is gone");
+			LF_Debug.Warn("Jail", "dismount check skipped: the body is gone");
 			return;
 		}
 
@@ -820,7 +820,7 @@ class LF_Jail
 		{
 			if (attempt >= DISMOUNT_MAX_TRIES)
 			{
-				EL_Debug.Error("Jail", "prisoner still seated after the dismount request; not moved so the vehicle stays put");
+				LF_Debug.Error("Jail", "prisoner still seated after the dismount request; not moved so the vehicle stays put");
 				return;
 			}
 
@@ -838,20 +838,20 @@ class LF_Jail
 	{
 		if (!body)
 		{
-			EL_Debug.Warn("Jail", string.Format("no slip for %1: no body", playerUid));
+			LF_Debug.Warn("Jail", string.Format("no slip for %1: no body", playerUid));
 			return;
 		}
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts)
 			return;
 
-		EL_PlayerAccount account = accounts.GetAccount(playerUid);
+		LF_PlayerAccount account = accounts.GetAccount(playerUid);
 		if (!account)
 			return;
 
 		string name = playerUid;
-		EL_PlayerCharacter character = account.GetActiveCharacter();
+		LF_PlayerCharacter character = account.GetActiveCharacter();
 		if (character)
 			name = character.GetFirstName() + " " + character.GetLastName();
 
@@ -863,7 +863,7 @@ class LF_Jail
 
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(body);
 		if (playerId > 0)
-			EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", "#LF-Jail_SlipHanded", 4.0);
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", "#LF-Jail_SlipHanded", 4.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -899,13 +899,13 @@ class LF_Jail
 		}
 		else
 		{
-			EL_Debug.Info("Jail", string.Format("released %1 with no body in the world", playerUid));
+			LF_Debug.Info("Jail", string.Format("released %1 with no body in the world", playerUid));
 		}
 
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().CallLater(NotifyReleased, RELEASE_TOAST_DELAY_MS, false, playerUid);
 
-		EL_Debug.Info("Jail", string.Format("released %1 outside the cell", playerUid));
+		LF_Debug.Info("Jail", string.Format("released %1 outside the cell", playerUid));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -931,7 +931,7 @@ class LF_Jail
 		DoorComponent door = FindCellDoor();
 		if (!door)
 		{
-			EL_Debug.Warn("Jail", "release door not opened: no placed door with a DoorComponent");
+			LF_Debug.Warn("Jail", "release door not opened: no placed door with a DoorComponent");
 			return;
 		}
 
@@ -943,7 +943,7 @@ class LF_Jail
 			GetGame().GetCallqueue().CallLater(CloseCellDoor, RELEASE_DOOR_OPEN_MS, false);
 		}
 
-		EL_Debug.Info("Jail", "release door opened");
+		LF_Debug.Info("Jail", "release door opened");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -954,14 +954,14 @@ class LF_Jail
 			return;
 
 		door.SetControlValue(0, RplId.Invalid());
-		EL_Debug.Info("Jail", "release door closed");
+		LF_Debug.Info("Jail", "release door closed");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected static void PullBack(string playerUid)
 	{
-		EL_PlayerAccount account;
-		IEntity entity = EL_PoliceUtils.FindPlayerEntityByUid(playerUid, account);
+		LF_PlayerAccount account;
+		IEntity entity = LF_PoliceUtils.FindPlayerEntityByUid(playerUid, account);
 		if (!entity)
 			return;
 
@@ -984,24 +984,24 @@ class LF_Jail
 
 		Release(playerUid);
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts)
 		{
-			EL_Debug.Error("Jail", "sentence complete skipped wanted: no account manager");
+			LF_Debug.Error("Jail", "sentence complete skipped wanted: no account manager");
 			return;
 		}
 
-		EL_PlayerAccount account = accounts.GetAccount(playerUid);
+		LF_PlayerAccount account = accounts.GetAccount(playerUid);
 		if (!account)
 		{
-			EL_Debug.Error("Jail", string.Format("sentence complete skipped wanted: no account for %1", playerUid));
+			LF_Debug.Error("Jail", string.Format("sentence complete skipped wanted: no account for %1", playerUid));
 			return;
 		}
 
 		int before = account.GetWantedLevel();
 		account.IncreaseWantedLevel(-GetWantedReduction());
 		accounts.SaveAndReleaseAccount(account);
-		EL_Debug.Log("Jail", string.Format("sentence complete %1 wanted %2 -> %3", playerUid, before, account.GetWantedLevel()));
+		LF_Debug.Log("Jail", string.Format("sentence complete %1 wanted %2 -> %3", playerUid, before, account.GetWantedLevel()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1010,8 +1010,8 @@ class LF_Jail
 		if (!GetGame() || !GetGame().GetPlayerManager())
 			return;
 
-		EL_PlayerAccount account;
-		IEntity entity = EL_PoliceUtils.FindPlayerEntityByUid(playerUid, account);
+		LF_PlayerAccount account;
+		IEntity entity = LF_PoliceUtils.FindPlayerEntityByUid(playerUid, account);
 		if (!entity)
 			return;
 
@@ -1019,6 +1019,6 @@ class LF_Jail
 		if (playerId <= 0)
 			return;
 
-		EL_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", "#EL-Jail_Released", 3.0, EL_ENotificationType.SUCCESS);
+		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", "#EL-Jail_Released", 3.0, LF_ENotificationType.SUCCESS);
 	}
 }

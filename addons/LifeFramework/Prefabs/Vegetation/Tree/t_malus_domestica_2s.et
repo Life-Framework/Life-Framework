@@ -14,7 +14,7 @@ Tree : "{388AE316D09D0680}Prefabs/Vegetation/Core/Tree_Base.et" {
     }
    }
    additionalActions {
-    EL_GatherAction "{59654094806921B6}" {
+    LF_GatherAction "{59654094806921B6}" {
      ParentContextList {
       "Gather"
      }

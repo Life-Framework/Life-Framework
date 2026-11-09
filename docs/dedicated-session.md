@@ -13,7 +13,7 @@ prints the session and the launch flags. It does not start the process either.
 ## The session
 
 1. Dedicated server up.
-2. One player is in game (`[ELDebug:CharacterCreation] spawning player`).
+2. One player is in game (`[LFDebug:CharacterCreation] spawning player`).
 3. A second player joins after the first is in game (`flow start for player` or
    `spawning player` for a different id, before the save).
 4. A save (`save point created` or `save completed`).
@@ -23,10 +23,10 @@ prints the session and the launch flags. It does not start the process either.
 
 The load must show four lines, in this order, after the load starts:
 
-- `[ELDebug:Persistence] applied N account record(s)`
-- `[ELDebug:Persistence] applied N bank account record(s)`
-- `[ELDebug:Persistence] applied N organization record(s)`
-- `[ELDebug:VehicleLock] lock state -> locked`
+- `[LFDebug:Persistence] applied N account record(s)`
+- `[LFDebug:Persistence] applied N bank account record(s)`
+- `[LFDebug:Persistence] applied N organization record(s)`
+- `[LFDebug:VehicleLock] lock state -> locked`
 
 `N` is at least 1. The same four lines from before the restart do not count.
 

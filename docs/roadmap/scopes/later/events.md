@@ -20,7 +20,7 @@ The server starts a timed world event. Players hear about it through the existin
 
 ## Assets
 
-One example can reuse a release site: `FuelStation_E_01`, the hideout stash `ShineStash.et`, or a `S105` left at a marker. Announce with `EL_NotificationManagerComponent`. LNGC has map markers for shops and dispatch, and no event scheduler. See [sources](../../sources.md).
+One example can reuse a release site: `FuelStation_E_01`, the hideout stash `ShineStash.et`, or a `S105` left at a marker. Announce with `LF_NotificationManagerComponent`. LNGC has map markers for shops and dispatch, and no event scheduler. See [sources](../../sources.md).
 
 ## First slice
 

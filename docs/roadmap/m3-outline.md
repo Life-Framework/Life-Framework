@@ -22,7 +22,7 @@ proves it on every release.
 - One source for the schema. The game, `tools\cli config-check`, the web
   generator, and the docs all read one checked-in JSON Schema. A validator
   fails CI when it drifts from the script config classes.
-- Fail one field, not the server. An invalid value logs `EL_Debug.Error`, falls
+- Fail one field, not the server. An invalid value logs `LF_Debug.Error`, falls
   back to its default, and the server stays up.
 - The flagship eats its own food. The 1989 Everon server runs on the released
   framework and pack, configured the same way an owner would.

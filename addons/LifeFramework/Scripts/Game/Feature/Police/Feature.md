@@ -14,9 +14,9 @@ that works from anywhere.
 
 Rung 1 for duty/arrest/confiscate; rung 3 target for the station terminal.
 
-Today: `EL_DutyAction` toggles the on-duty flag; `EL_PoliceMenu` shows the
-wanted list with server-guarded Arrest/Fine; `EL_ConfiscateAction` deletes
-weapons from the nearest wanted player within 5 m; `EL_OpenPoliceMenuAction`
+Today: `LF_DutyAction` toggles the on-duty flag; `LF_PoliceMenu` shows the
+wanted list with server-guarded Arrest/Fine; `LF_ConfiscateAction` deletes
+weapons from the nearest wanted player within 5 m; `LF_OpenPoliceMenuAction`
 is the entry point.
 
 ## V1 (shippable)
@@ -27,7 +27,7 @@ is the entry point.
    (and validate the target on the server, never trust the client's pick).
 2. Guard `account.GetActiveCharacter()` (null deref) and replace the hard-coded
    jail position `"0 0 0"`.
-3. `EL_ConfiscateAction` deletes items while iterating a live `FindItems`
+3. `LF_ConfiscateAction` deletes items while iterating a live `FindItems`
    array (mutation-during-iteration risk) and gives no compensation/wanted
    reduction.
 4. Duty toggle evicts the account (cache churn) — fix via `Account`.
@@ -41,8 +41,8 @@ is the entry point.
 ## Current state
 
 - Duty desk (M1-11): `Roadmap_Police_Desk` (`Prefabs/Police/LF_PoliceDutyDesk.et`)
-  carries `EL_DutyAction` (Clock in / Clock out). `LF_DutyLocker` checks the
-  police roster (`EL_WhitelistManager`) on the server and swaps the civilian and
+  carries `LF_DutyAction` (Clock in / Clock out). `LF_DutyLocker` checks the
+  police roster (`LF_WhitelistManager`) on the server and swaps the civilian and
   police inventories (`civilian_stash` / `police_duty` snapshots, persisted).
   A first shift gets the starter police kit (config). Clock-out pays duty pay
   (`LF_DutyPay`). There is no faction screen; the faction is the duty role.
@@ -55,13 +55,13 @@ is the entry point.
   flashing light; `LF_SiteAlarm_Loud` when nobody is on duty). On-duty officers
   hear a vanilla radio chirp, then read a dispatch line with the place and the
   description, never a name. The wanted board lists recent dispatches for police.
-- `EL_PoliceMenu` — arrest entry point; the wanted list moved to the board.
+- `LF_PoliceMenu` — arrest entry point; the wanted list moved to the board.
 - Fine as a paper ticket (M1-19): Write ticket (player interaction `fine` slot)
   opens the ticket pad; the holder carries `Prefabs/Items/Roleplay/FineTicket.et`
   and pays it in carried cash at the desk punch clock (Pay ticket). Deadlines
   count online time: x2 once, then +1 wanted and an Unpaid fine poster.
   Records persist (save version 12).
-- `EL_ConfiscateAction` — weapon confiscation; ⚠️ mutation-during-iteration.
+- `LF_ConfiscateAction` — weapon confiscation; ⚠️ mutation-during-iteration.
 
 ## Dependencies
 

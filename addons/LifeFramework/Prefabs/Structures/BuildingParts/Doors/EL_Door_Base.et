@@ -1,7 +1,7 @@
 GenericEntity : "{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et" {
  ID "0000000000000001"
  components {
-  EL_LockComponent "{5AC29970429B33BB}" {
+  LF_LockComponent "{5AC29970429B33BB}" {
   }
   ActionsManagerComponent "{F32B667C3C823800}" {
    ActionContexts {

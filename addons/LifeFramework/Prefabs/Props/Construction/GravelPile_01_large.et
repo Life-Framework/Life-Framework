@@ -12,7 +12,7 @@ GenericEntity : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/Grav
     }
    }
    additionalActions {
-    EL_GatherAction "{59A84AD20134F93A}" {
+    LF_GatherAction "{59A84AD20134F93A}" {
      ParentContextList {
       "default"
      }

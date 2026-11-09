@@ -7,7 +7,7 @@
 export function isSuiteSafePath(file) {
   const path = String(file).replace(/\\/g, "/").replace(/^\.\//, "");
   if (path === "docs/features.md") return true;
-  if (path.endsWith("/EL_TestRegistrations.generated.c") || path === "EL_TestRegistrations.generated.c") return true;
+  if (path.endsWith("/LF_TestRegistrations.generated.c") || path === "LF_TestRegistrations.generated.c") return true;
   const parts = path.split("/");
   if (parts.includes("Language")) return true;
   if (/everonlife_localization\.[A-Za-z0-9_]+\.conf$/.test(path)) return true;
@@ -46,15 +46,15 @@ export function selftestSuiteStamp() {
   const safe = [
     "addons/LifeFramework/Language/everonlife_localization.st",
     "addons/LifeFramework/Language/everonlife_localization.en_us.conf",
-    "addons/LifeFramework/Scripts/Game/Tests/EL_TestRegistrations.generated.c",
+    "addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c",
     "docs/features.md",
   ];
   if (suiteValidCode(safe) !== 0) failures.push("safe fixture names should exit 0");
   if (suiteValidCode([]) !== 0) failures.push("no changed paths should exit 0");
 
   const unsafe = [
-    ["addons/LifeFramework/Scripts/Game/Feature/Money/EL_MoneyUtils.c", "gameplay script"],
-    ["addons/LifeFramework/Scripts/Game/Persistence/Serializers/EL_PersistenceComponentSerializer.c", "persistence serializer"],
+    ["addons/LifeFramework/Scripts/Game/Feature/Money/LF_MoneyUtils.c", "gameplay script"],
+    ["addons/LifeFramework/Scripts/Game/Persistence/Serializers/LF_PersistenceComponentSerializer.c", "persistence serializer"],
     ["addons/LifeFramework/Prefabs/Items/Currencies/MoneyStack.et", "prefab"],
     ["addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Roadmap_Breach.layer", "world layer"],
   ];

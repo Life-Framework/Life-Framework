@@ -1,5 +1,5 @@
 // Ported from EveronLife (https://github.com/thebonbon/EveronLife), branch enhancement/Main_World.
-// Original: src/Scripts/Game/Components/Vehicle/EL_JumpTrigger.c
+// Original: src/Scripts/Game/Components/Vehicle/LF_JumpTrigger.c
 // Copyright (c) 2022 EveronLife
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,9 +37,9 @@ class LF_JumpPad
 	{
 		m_bEnabled = enabled;
 		if (enabled)
-			EL_Debug.Log("JumpPad", "enabled");
+			LF_Debug.Log("JumpPad", "enabled");
 		else
-			EL_Debug.Log("JumpPad", "disabled");
+			LF_Debug.Log("JumpPad", "disabled");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -61,19 +61,19 @@ class LF_JumpPad
 	{
 		if (visitorId <= 0)
 		{
-			EL_Debug.Error("JumpPad", "enter rejected: visitor is missing");
+			LF_Debug.Error("JumpPad", "enter rejected: visitor is missing");
 			return Vector(0, 0, 0);
 		}
 
 		if (!m_bEnabled)
 		{
-			EL_Debug.Log("JumpPad", "rejected: pad disabled");
+			LF_Debug.Log("JumpPad", "rejected: pad disabled");
 			return Vector(0, 0, 0);
 		}
 
 		if (m_fUpwardSpeed <= 0)
 		{
-			EL_Debug.Error("JumpPad", "enter skipped: upward speed is not positive");
+			LF_Debug.Error("JumpPad", "enter skipped: upward speed is not positive");
 			return Vector(0, 0, 0);
 		}
 
@@ -83,12 +83,12 @@ class LF_JumpPad
 		int index = m_aAppliedVisitors.Find(visitorId);
 		if (index != -1)
 		{
-			EL_Debug.Log("JumpPad", "rejected: already launched this enter");
+			LF_Debug.Log("JumpPad", "rejected: already launched this enter");
 			return Vector(0, 0, 0);
 		}
 
 		m_aAppliedVisitors.Insert(visitorId);
-		EL_Debug.Log("JumpPad", string.Format("launched visitor %1 at %2", visitorId, m_fUpwardSpeed));
+		LF_Debug.Log("JumpPad", string.Format("launched visitor %1 at %2", visitorId, m_fUpwardSpeed));
 		return Vector(0, m_fUpwardSpeed, 0);
 	}
 
@@ -103,7 +103,7 @@ class LF_JumpPad
 			return;
 
 		m_aAppliedVisitors.Remove(index);
-		EL_Debug.Log("JumpPad", string.Format("visitor %1 left", visitorId));
+		LF_Debug.Log("JumpPad", string.Format("visitor %1 left", visitorId));
 	}
 }
 
@@ -138,7 +138,7 @@ class LF_JumpPadComponent : ScriptComponent
 
 		if (!owner)
 		{
-			EL_Debug.Error("JumpPad", "init skipped: no owner");
+			LF_Debug.Error("JumpPad", "init skipped: no owner");
 			return;
 		}
 
@@ -151,21 +151,21 @@ class LF_JumpPadComponent : ScriptComponent
 	{
 		if (!owner)
 		{
-			EL_Debug.Error("JumpPad", "init skipped: no owner");
+			LF_Debug.Error("JumpPad", "init skipped: no owner");
 			return;
 		}
 
 		SCR_BaseTriggerEntity trigger = SCR_BaseTriggerEntity.Cast(owner);
 		if (!trigger)
 		{
-			EL_Debug.Error("JumpPad", "init skipped: owner is not a trigger");
+			LF_Debug.Error("JumpPad", "init skipped: owner is not a trigger");
 			return;
 		}
 
 		ScriptInvoker activate = trigger.GetOnActivate();
 		if (!activate)
 		{
-			EL_Debug.Error("JumpPad", "init skipped: no activate invoker");
+			LF_Debug.Error("JumpPad", "init skipped: no activate invoker");
 			return;
 		}
 
@@ -174,7 +174,7 @@ class LF_JumpPadComponent : ScriptComponent
 		ScriptInvoker deactivate = trigger.GetOnDeactivate();
 		if (!deactivate)
 		{
-			EL_Debug.Error("JumpPad", "exit will not clear: no deactivate invoker");
+			LF_Debug.Error("JumpPad", "exit will not clear: no deactivate invoker");
 			return;
 		}
 
@@ -199,7 +199,7 @@ class LF_JumpPadComponent : ScriptComponent
 		EntityID id = ent.GetID();
 		if (id == EntityID.INVALID)
 		{
-			EL_Debug.Error("JumpPad", "enter rejected: invalid entity id");
+			LF_Debug.Error("JumpPad", "enter rejected: invalid entity id");
 			return 0;
 		}
 
@@ -222,7 +222,7 @@ class LF_JumpPadComponent : ScriptComponent
 	{
 		if (!ent)
 		{
-			EL_Debug.Error("JumpPad", "enter rejected: no entity");
+			LF_Debug.Error("JumpPad", "enter rejected: no entity");
 			return;
 		}
 
@@ -241,7 +241,7 @@ class LF_JumpPadComponent : ScriptComponent
 		Physics phys = ent.GetPhysics();
 		if (!phys)
 		{
-			EL_Debug.Error("JumpPad", "enter skipped: player has no physics");
+			LF_Debug.Error("JumpPad", "enter skipped: player has no physics");
 			Pad().AcceptExit(token);
 			return;
 		}

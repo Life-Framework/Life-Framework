@@ -20,7 +20,7 @@ class LF_BankRobAction : ScriptedUserAction
 			return false;
 		}
 
-		string reason = LF_Bank.GateReason(vault.GetVaultId(), EL_Utils.GetPlayerUid(user));
+		string reason = LF_Bank.GateReason(vault.GetVaultId(), LF_Utils.GetPlayerUid(user));
 		if (!reason.IsEmpty())
 		{
 			SetCannotPerformReason(reason);
@@ -36,17 +36,17 @@ class LF_BankRobAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		LF_BankVaultComponent vault = EL_Component<LF_BankVaultComponent>.Find(pOwnerEntity);
+		LF_BankVaultComponent vault = LF_Component<LF_BankVaultComponent>.Find(pOwnerEntity);
 		if (!vault)
 		{
-			EL_Debug.Error("Bank", "rob action: owner has no LF_BankVaultComponent");
+			LF_Debug.Error("Bank", "rob action: owner has no LF_BankVaultComponent");
 			return;
 		}
 
-		string playerUid = EL_Utils.GetPlayerUid(pUserEntity);
+		string playerUid = LF_Utils.GetPlayerUid(pUserEntity);
 		if (playerUid.IsEmpty())
 		{
-			EL_Debug.Error("Bank", "rob action refused: player has no account id");
+			LF_Debug.Error("Bank", "rob action refused: player has no account id");
 			return;
 		}
 
@@ -66,6 +66,6 @@ class LF_BankRobAction : ScriptedUserAction
 		if (!GetOwner())
 			return null;
 
-		return EL_Component<LF_BankVaultComponent>.Find(GetOwner());
+		return LF_Component<LF_BankVaultComponent>.Find(GetOwner());
 	}
 }

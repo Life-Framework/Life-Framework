@@ -1,6 +1,6 @@
 # tools/validation/validate-persistence-version.ps1
 #
-# EL_PersistenceComponentSerializer.c writes one version integer.
+# LF_PersistenceComponentSerializer.c writes one version integer.
 # RegisterPersistencePayloads is the only order. SerializeStore (the body the
 # Serialize override delegates to) walks that list. DeserializeStore walks the
 # same list and stops at the version stored in the save.
@@ -257,14 +257,14 @@ bool DeserializeStore()
 		ReadPersistencePayload(persistence, context, order.Get(index));
 	}
 }
-void WritePersistencePayload(notnull EL_PersistenceComponent persistence, notnull SaveContext context, string payload)
+void WritePersistencePayload(notnull LF_PersistenceComponent persistence, notnull SaveContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
 	if (payload == "hideout") return;
 	if (payload == "vehicles") return;
 }
-void ReadPersistencePayload(notnull EL_PersistenceComponent persistence, notnull LoadContext context, string payload)
+void ReadPersistencePayload(notnull LF_PersistenceComponent persistence, notnull LoadContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
@@ -304,13 +304,13 @@ bool DeserializeStore()
 		ReadPersistencePayload(persistence, context, order.Get(index));
 	}
 }
-void WritePersistencePayload(notnull EL_PersistenceComponent persistence, notnull SaveContext context, string payload)
+void WritePersistencePayload(notnull LF_PersistenceComponent persistence, notnull SaveContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
 	if (payload == "vehicles") return;
 }
-void ReadPersistencePayload(notnull EL_PersistenceComponent persistence, notnull LoadContext context, string payload)
+void ReadPersistencePayload(notnull LF_PersistenceComponent persistence, notnull LoadContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
@@ -344,14 +344,14 @@ bool DeserializeStore()
 		ReadPersistencePayload(persistence, context, order.Get(index));
 	}
 }
-void WritePersistencePayload(notnull EL_PersistenceComponent persistence, notnull SaveContext context, string payload)
+void WritePersistencePayload(notnull LF_PersistenceComponent persistence, notnull SaveContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
 	if (payload == "hideout") return;
 	if (payload == "vehicles") return;
 }
-void ReadPersistencePayload(notnull EL_PersistenceComponent persistence, notnull LoadContext context, string payload)
+void ReadPersistencePayload(notnull LF_PersistenceComponent persistence, notnull LoadContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
@@ -388,14 +388,14 @@ bool DeserializeStore()
 	if (version >= 3)
 		ReadPersistencePayload(persistence, context, "hideout");
 }
-void WritePersistencePayload(notnull EL_PersistenceComponent persistence, notnull SaveContext context, string payload)
+void WritePersistencePayload(notnull LF_PersistenceComponent persistence, notnull SaveContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
 	if (payload == "hideout") return;
 	if (payload == "vehicles") return;
 }
-void ReadPersistencePayload(notnull EL_PersistenceComponent persistence, notnull LoadContext context, string payload)
+void ReadPersistencePayload(notnull LF_PersistenceComponent persistence, notnull LoadContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
@@ -429,14 +429,14 @@ bool DeserializeStore()
 		ReadPersistencePayload(persistence, context, order.Get(index));
 	}
 }
-void WritePersistencePayload(notnull EL_PersistenceComponent persistence, notnull SaveContext context, string payload)
+void WritePersistencePayload(notnull LF_PersistenceComponent persistence, notnull SaveContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
 	if (payload == "hideout") return;
 	if (payload == "vehicles") return;
 }
-void ReadPersistencePayload(notnull EL_PersistenceComponent persistence, notnull LoadContext context, string payload)
+void ReadPersistencePayload(notnull LF_PersistenceComponent persistence, notnull LoadContext context, string payload)
 {
 	if (payload == "survival") return;
 	if (payload == "organizations") return;
@@ -529,7 +529,7 @@ if ($fixtureErrors.Count -gt 0) {
 
 $root = git rev-parse --show-toplevel
 if (-not $root) { Write-Host "ERROR not a git work tree"; exit 1 }
-$path = Join-Path $root "addons\LifeFramework\Scripts\Game\Persistence\Serializers\EL_PersistenceComponentSerializer.c"
+$path = Join-Path $root "addons\LifeFramework\Scripts\Game\Persistence\Serializers\LF_PersistenceComponentSerializer.c"
 if (-not (Test-Path -LiteralPath $path)) {
   Write-Host "validate-persistence-version: FAIL missing $path"
   exit 1

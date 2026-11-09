@@ -16,7 +16,7 @@ a menu is acceptable — but it should be framed as intake and stay minimal.
 Rung 4 today (menus): no account → create → registration form R-89 → spawn
 carrying an ID card. Typing a name is a correct UI, so the
 form is a 1989 paper sheet on `LF_UIScreen`, not a desktop dialog. The ID card
-is a real item (`IDCard.et` + `LF_IdCardComponent`); `EL_ShowIDAction` holds
+is a real item (`IDCard.et` + `LF_IdCardComponent`); `LF_ShowIDAction` holds
 it up to the player you face, who sees the card.
 
 Target: rung 3 — a world-anchored intake (a registration desk at a faction
@@ -39,15 +39,15 @@ office). Low priority; the menu flow is fine for V1 as long as it is honest.
 
 ## Current state
 
-- `EL_CharacterCreationManager` — flow driver; ✅ real roleplay character
+- `LF_CharacterCreationManager` — flow driver; ✅ real roleplay character
   prefab.
 - The faction and spawn-location menus are gone (M1-11), and so is the
-  faction gate in `EL_CharacterCreationRules.RefuseCharacter`.
+  faction gate in `LF_CharacterCreationRules.RefuseCharacter`.
 - `LF_RegistrationForm` / `LF_RegistrationRules` — form R-89 and its checks.
 - `LF_IdCardComponent` / `LF_IdCard` — the card's printed identity and the
   grant: the town clerk hands it over (M1-18, `LF_QuestRewards.HandIdCard`), then
-  `EL_SpawnLogic` reprints it on every spawn.
-- `EL_ShowIDAction` / `LF_IdCardView` — hold the card up; the viewer sees it.
+  `LF_SpawnLogic` reprints it on every spawn.
+- `LF_ShowIDAction` / `LF_IdCardView` — hold the card up; the viewer sees it.
 
 ## Dependencies
 

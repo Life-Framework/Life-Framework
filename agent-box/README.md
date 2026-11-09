@@ -3,7 +3,7 @@
 Portable setup for a GPU (or any) machine that should build, play, and inspect
 Life Framework the way a player sees it. Clone the repo, run one script, and
 the Workbench MCP servers plus a small player harness are available.
-Player-equivalent actions are `EL_AgentHarness` under
+Player-equivalent actions are `LF_AgentHarness` under
 `addons/LifeFramework/Scripts/Game/Feature/AgentHarness/`.
 
 ```powershell
@@ -49,7 +49,7 @@ main checkout stays the world editor.
 | 3D world | Placement, interaction, and the shot match | `node agent-box/harness.mjs shot world <EntityName>` |
 | UI | Menus look right after real navigation | `node agent-box/harness.mjs shot ui <name>` |
 
-Script runs are the existing `[ELTEST]` suite. They refuse the main checkout
+Script runs are the existing `[LFTEST]` suite. They refuse the main checkout
 because that copy is the world editor. Create a worktree with
 `node tools/cli.mjs wt new <feature>` first.
 
@@ -144,8 +144,8 @@ session-scoped:
   <root>` when the live session was started from another checkout, or
   `error no_live_session` when none is running.
 - A client runs only commands addressed to its own id
-  (`EL_AgentCommand.SessionAccepts`); anything else answers
-  `error wrong_session` and logs `[ELDebug:AgentHarness] refused command ...`.
+  (`LF_AgentCommand.SessionAccepts`); anything else answers
+  `error wrong_session` and logs `[LFDebug:AgentHarness] refused command ...`.
   Workbench and default-profile clients have no id and refuse addressed
   commands.
 - `session.mjs down` and `restart` refuse a live session another checkout
@@ -200,7 +200,7 @@ the game profile). Hooks:
   that entity so a 3m action radius can succeed, 1.2 m along +X and turned to
   face it, so `press F` aims at the entity. It does not inject movement keys.
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
-  `MenuRight`, `MenuSelect`, `MenuBack`, `EL_OpenDebugMenu`) for about 80ms.
+  `MenuRight`, `MenuSelect`, `MenuBack`, `LF_OpenDebugMenu`) for about 80ms.
   Movement actions are refused.
 - `shoot <playerId>` (dev gate) deals one lethal KINETIC hit from the local character to that
   player through `HandleDamage`, the path a bullet takes, so the safe zone and the murder hook
@@ -217,7 +217,7 @@ the game profile). Hooks:
 
 Results come back on `result.txt` as `<id> ok ...` or `<id> error <reason>`.
 `error no_session` means play mode is not running, or this build does not
-contain `EL_AgentHarness` yet.
+contain `LF_AgentHarness` yet.
 
 MCP tools on the `life-agent-box` server match these commands: `box_status`,
 `layer_list`, `layer_play`, `player_press`, `player_look`, `player_ui`,
@@ -328,15 +328,15 @@ client). `System.MakeScreenshot` captures the screen, so a headless dedicated
 server or the `cli test` server cannot produce pixels. Texture checks are
 visual only for the same reason.
 
-`EL_ScreenshotCapture`
-(`addons/LifeFramework/Scripts/Game/Feature/ScreenshotCapture/EL_ScreenshotCapture.c`)
-is the capability. `StartCapture(EL_ScreenshotShot)` runs an async capture:
+`LF_ScreenshotCapture`
+(`addons/LifeFramework/Scripts/Game/Feature/ScreenshotCapture/LF_ScreenshotCapture.c`)
+is the capability. `StartCapture(LF_ScreenshotShot)` runs an async capture:
 optional prefab spawn, optional camera aim (reuses the first registered
 camera and restores it after), preload, settle, `System.MakeScreenshot`, file
 check. Output lands in `$logs:el-captures/<name>_<n>.bmp`, outside the repo
 (Workbench: `Documents/My Games/ArmaReforgerWorkbench/logs/el-captures/`), so
 captures cannot pollute the addon or the resource database. Every failure
-returns a clean `error:<reason>` through `EL_Debug` and never crashes (no
+returns a clean `error:<reason>` through `LF_Debug` and never crashes (no
 camera on a renderless instance gives `error:no_camera`). The LOGIC test
 `screenshot/fail-safe` proves that on the headless server.
 
@@ -347,7 +347,7 @@ The engine writes BMP at native window resolution. The harness and the
 **Workbench play captures no UI.** `System.MakeScreenshot` in a Workbench
 play session writes the 3D view only: a `shot ui` with the debug menu or the
 sign card open shows the world behind it (2026-11-08). Judge a Workbench menu
-from `ui` (the widget list) and the `[ELDebug:UIKit]` lines; photograph menus
+from `ui` (the widget list) and the `[LFDebug:UIKit]` lines; photograph menus
 in a game client.
 
 Harness shots: UI shots leave the camera where it is. World shots teleport the
@@ -356,7 +356,7 @@ view, at noon, in Clear weather. `shot world <name> x y z ox oy oz` sets the
 offset; `0 0 2` reads printed text on a prop whose face points +Z. The posed
 character takes no damage for 8 s, so the drop from a high offset does not
 kill it. The character camera ignores
-`CameraManager.SetCamera`, so `EL_ScreenshotCapture.SetCamera` does not move
+`CameraManager.SetCamera`, so `LF_ScreenshotCapture.SetCamera` does not move
 that view.
 
 ### `wb_capture` (Workbench MCP)
@@ -367,7 +367,7 @@ that view.
 the whole flow so its `wb_launch` deploys the handler:
 
 1. `wb_launch` (gprojPath = the project; a worktree project works if
-   `EL_ScreenshotCapture` is compiled in), then `wb_play`.
+   `LF_ScreenshotCapture` is compiled in), then `wb_play`.
 2. Place the object in edit mode first (`wb_entity_create`) and capture at its
    position, or pass `prefab` + `position` to spawn a fixture at capture time
    (deleted after the shot).
@@ -391,7 +391,7 @@ takes a world shot, and writes `agent-box/reports/roadmap.html` with each
 picture beside that text, plus one wide shot of the row. Names after
 `roadmap` limit the walk to that row. A world shot teleports the character to
 the camera offset and screenshots the player view.
-`EL_ScreenshotCapture.SetCamera` does not move that view. A filtered row's
+`LF_ScreenshotCapture.SetCamera` does not move that view. A filtered row's
 wide shot stands just north of that row when the street is further north,
 because the player camera faces -Z. If a new PNG matches the previous PNG, the
 report records `camera_stuck` once and stops.
@@ -467,7 +467,7 @@ its own. Probes live in `agent-box/chains.mjs`.
 
 | Layer | Entity | Action `look` must show |
 | --- | --- | --- |
-| ATM | `ATM_Debug` | `EL_ATMAction` |
+| ATM | `ATM_Debug` | `LF_ATMAction` |
 | Apple | `AppleGatherTree`, `AppleTradeContainer`, `AppleProcessor` | gather, open trader, process |
 | Plum | `PlumGatherTree`, `PlumTradeContainer` | gather (prefab only), open trader |
 | Tomato | `TomatoGather`, `TomatoTradeContainer` | gather, open trader |
@@ -479,8 +479,8 @@ its own. Probes live in `agent-box/chains.mjs`.
 | Logging | `LogPile_Debug`, axe, `Sawmill_Debug`, `CuttableTree_1` | gather a log, pick up, process, stand only (melee tree) |
 | CrimeChain | `CrimeTrader_Debug`, `CrimeFurnace_Debug` | open trader, process |
 | Jobs | `GatherPoint_AppleTree` | gather |
-| Shops | general store, black market | `EL_ShopAction` |
-| Police | `Roadmap_Police_Desk` | `EL_DutyAction` (Clock in / Clock out) |
+| Shops | general store, black market | `LF_ShopAction` |
+| Police | `Roadmap_Police_Desk` | `LF_DutyAction` (Clock in / Clock out) |
 | Police | `Roadmap_Police_WantedBoard` | `LF_WantedBoardReadAction` |
 | Survival | food and water points | gather |
 | Houses | `House_Door_Locked` | `SCR_DoorUserAction` |
@@ -493,7 +493,7 @@ empty rock shells 6-8 m away.
 ### Not an F-key action
 
 - Cuttable pines (`CuttableTree_1` to `_3`) are axe hits through
-  `EL_DestructibleResourceComponent`. The probe stands beside the first tree;
+  `LF_DestructibleResourceComponent`. The probe stands beside the first tree;
   it does not swing.
 - `House_Door_Locked` uses vanilla `SCR_DoorUserAction`, which the mod prefab
   does not write, so `layers` omits it; `stand` and `use` address it by name.
@@ -504,10 +504,10 @@ empty rock shells 6-8 m away.
 
 | Probe | Why it performs |
 | --- | --- |
-| `TomatoGather`, `TomatoCrop_Debug` | First three crop stage times are 0 and ripe is 30 min, so both are gatherable within a few frames. The crop prefab still inherits `EL_DeleteAction`, which deletes the plant and grants nothing. |
+| `TomatoGather`, `TomatoCrop_Debug` | First three crop stage times are 0 and ripe is 30 min, so both are gatherable within a few frames. The crop prefab still inherits `LF_DeleteAction`, which deletes the plant and grants nothing. |
 | `SurvivalPoint_Water` | 3.2 m off `SurvivalStation`, inside the look sphere. |
 | `CementPlant_Debug` | `Sandbag.et` is a child of the gravel bag with an explicit 1x1 volume slot. The old 2x1 bag was rejected by the inventory, so the plant never saw its third input. |
-| `Furnace`, `CrimeFurnace_Debug` | Iron, gold, and copper nuggets use `SLOT_1x1`. `IronOre_Debug` grants 4 nuggets, enough for both furnaces. `use EL_ProcessAction` hits the first action, the iron smelt. |
+| `Furnace`, `CrimeFurnace_Debug` | Iron, gold, and copper nuggets use `SLOT_1x1`. `IronOre_Debug` grants 4 nuggets, enough for both furnaces. `use LF_ProcessAction` hits the first action, the iron smelt. |
 | `Sawmill_Debug` | `LogPile_Debug` grants `WoodLog_01_Small.et` before any weapon pickup, so the log stays in hand. A later pickup drops it. |
 | `Roadmap_Police_Desk` | The chain opens the debug menu and clicks `FactionPoliceButton` first (sets police and duty without the inventory swap); the desk then offers Clock out. A real officer must be on the police roster (whitelist file) to clock in. |
 | `RobberyPoint_Money` / `_Weapon` / `_Vehicle` | These DebugWorld points set `m_iMinPoliceOnDuty` to 0 (the action classes default to 2 / 1 / 3), so they run while the character is civilian. |
@@ -556,14 +556,14 @@ node agent-box/session.mjs down               # closes every process the session
 - `up` runs from a worktree and holds the machine-wide `server-2001` lock while
   the server lives (`--wait` queues behind a test or host run). `down` frees it.
 - The server runs the bare DebugWorld, not `LF_PlaytestTown.conf`, so the world's
-  game mode keeps dev tools open and the harness passes `EL_DevGate`. On the
+  game mode keeps dev tools open and the harness passes `LF_DevGate`. On the
   playtest mission a non-admin's `stand` and `use` come back as
   `error dev_gate_closed` (LOGIC test `harness/dev-gate-dedicated`).
 - `up --mission playtest` runs `LF_PlaytestTown` the way `tools\cli host start`
   does (dev gate closed, debug menu closed, host stop file) and adds
   `-scrDefine LF_HARNESS` on the server and every client. In that build the
   harness RPCs (`stand`, pose, `use`) pass their own gate
-  (`EL_DevGate.HarnessBuild`, `[ELDebug:AgentHarness] stand allowed: LF_HARNESS
+  (`LF_DevGate.HarnessBuild`, `[LFDebug:AgentHarness] stand allowed: LF_HARNESS
   build`); the debug menu stays refused. The define changes the script
   checksum, so a client without it (a real player) is refused at the door, and
   `host start` never passes it (host selftest; the suite pins
@@ -590,7 +590,7 @@ node agent-box/session.mjs down               # closes every process the session
   `up`; that client can then Clock in at `Roadmap_Police_Desk`. `proof` still
   uses the debug menu (`FactionPoliceButton`), which sets the role without the
   inventory swap. The wanted card's posters are logged on the reading client
-  (`[ELDebug:WantedBoard] poster N: ...`); read the client log after `down`.
+  (`[LFDebug:WantedBoard] poster N: ...`); read the client log after `down`.
 - `shot world` and `stand` move the body on the owning client (the server
   pose alone is overwritten by a remote client), so `--client <n> shot world`
   photographs from the hidden `LF-Agents` desktop. M1-25 took its village
@@ -633,10 +633,10 @@ node agent-box/session.mjs down
 | `fund` | 1 | debug menu `GiveCashButton` (fixture; bare DebugWorld only) | cash +1000 |
 | `atm` | 1 | ATM terminal: key the amount, `DepositButton`, `wait-text DEPOSITED` | bank +amount, cash -amount (1200, or 100 when less is carried) |
 | `shop` | 1 | price list `Item0Row_Action`, `PayButton` | cash falls |
-| `vehicle` | 1 | `EL_VehicleBuyAction` at `Roadmap_Vehicle_Lot` (S105, 1000 from the bank) | bank -1000; "blocked" when the bank holds less |
+| `vehicle` | 1 | `LF_VehicleBuyAction` at `Roadmap_Vehicle_Lot` (S105, 1000 from the bank) | bank -1000; "blocked" when the bank holds less |
 | `give` | 1, 2 | stand at `Player<id>`, `LF_GiveCashAction`, type 50, hand over | -50 / +50 |
 | `police` | 2 | debug menu `FactionPoliceButton` (fixture; bare DebugWorld only) | POLICE on duty |
-| `rob` | 1, 2 | `EL_RobAction` at `Roadmap_Fuel_Till` | wanted and cash rise; an on-duty officer's last toast is the robbery alert |
+| `rob` | 1, 2 | `LF_RobAction` at `Roadmap_Fuel_Till` | wanted and cash rise; an on-duty officer's last toast is the robbery alert |
 | `org` | 1 | org desk: type the name in the ledger's field, Sign | `org` is the new name |
 | `garage` | 1 | stand at `Roadmap_Garage`, `look` | store or retrieve offered |
 | `restart` | 1, 2 | `session.mjs restart` (playtest mission only) | cash, bank, org, job unchanged |

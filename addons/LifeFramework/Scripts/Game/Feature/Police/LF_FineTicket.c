@@ -231,7 +231,7 @@ class LF_FineTickets
 
 	//------------------------------------------------------------------------------------------------
 	//! The holder's character: a connected player, or a bound test body. Null when neither.
-	static IEntity BodyOf(string holderUid, out EL_PlayerAccount outAccount)
+	static IEntity BodyOf(string holderUid, out LF_PlayerAccount outAccount)
 	{
 		outAccount = null;
 		EntityID bound;
@@ -242,7 +242,7 @@ class LF_FineTickets
 				return body;
 		}
 
-		return EL_PoliceUtils.FindPlayerEntityByUid(holderUid, outAccount);
+		return LF_PoliceUtils.FindPlayerEntityByUid(holderUid, outAccount);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -332,7 +332,7 @@ class LF_FineTickets
 	{
 		if (holderUid.IsEmpty() || amount <= 0)
 		{
-			EL_Debug.Error(FEATURE, string.Format("ticket not recorded: holder '%1' amount %2", holderUid, amount));
+			LF_Debug.Error(FEATURE, string.Format("ticket not recorded: holder '%1' amount %2", holderUid, amount));
 			return null;
 		}
 
@@ -350,7 +350,7 @@ class LF_FineTickets
 		record.m_iStage = LF_FineTicketRules.STAGE_OPEN;
 		record.m_sIssued = issued;
 		Tickets().Insert(record);
-		EL_Debug.Info(FEATURE, string.Format("ticket #%1 written: %2 to %3 by %4, %5, due in %6 s online", record.m_iNumber, offence, holderUid, officerUid, amount, FirstDeadline()));
+		LF_Debug.Info(FEATURE, string.Format("ticket #%1 written: %2 to %3 by %4, %5, due in %6 s online", record.m_iNumber, offence, holderUid, officerUid, amount, FirstDeadline()));
 		return record;
 	}
 
@@ -406,7 +406,7 @@ class LF_FineTickets
 
 	//------------------------------------------------------------------------------------------------
 	//! Server rule for one write, from the officer's account. outOffence is the chosen line.
-	static LF_ETicketRefusal CheckWrite(EL_PlayerAccount officer, string officerUid, string holderUid, int offenceIndex, out LF_TicketOffence outOffence)
+	static LF_ETicketRefusal CheckWrite(LF_PlayerAccount officer, string officerUid, string holderUid, int offenceIndex, out LF_TicketOffence outOffence)
 	{
 		array<ref LF_TicketOffence> offences = {};
 		LF_PoliceConfig.TicketOffences(offences);
@@ -420,7 +420,7 @@ class LF_FineTickets
 		}
 
 		int cap = 0;
-		bool onDuty = EL_PoliceUtils.IsOnDutyOfficer(officer);
+		bool onDuty = LF_PoliceUtils.IsOnDutyOfficer(officer);
 		if (officer)
 			cap = LF_PoliceRanks.FineCap(officer.GetPoliceRank());
 
@@ -474,15 +474,15 @@ class LF_FineTickets
 	//! Server: what a deadline does. Runs once per stage per ticket.
 	protected static void ApplyStage(LF_FineTicketRecord record)
 	{
-		EL_PlayerAccount holderAccount;
+		LF_PlayerAccount holderAccount;
 		IEntity holder = BodyOf(record.m_sHolderUid, holderAccount);
 		int holderId = LF_PlayerInteraction.PlayerIdOf(holder);
 		if (record.m_iStage == LF_FineTicketRules.STAGE_LATE)
 		{
 			record.m_iAmount = LateAmountOf(record);
-			EL_Debug.Info(FEATURE, string.Format("ticket #%1 overdue: %2 now owes %3 (was %4)", record.m_iNumber, record.m_sHolderUid, record.m_iAmount, record.m_iBaseAmount));
+			LF_Debug.Info(FEATURE, string.Format("ticket #%1 overdue: %2 now owes %3 (was %4)", record.m_iNumber, record.m_sHolderUid, record.m_iAmount, record.m_iBaseAmount));
 			if (holderId > 0)
-				EL_NotificationManagerComponent.NotifyPlayer(holderId, "#LF-Ticket_Title", "#LF-Ticket_Overdue", 6.0, EL_ENotificationType.WARNING, EL_MoneyFormat.FormatMoney(record.m_iAmount));
+				LF_NotificationManagerComponent.NotifyPlayer(holderId, "#LF-Ticket_Title", "#LF-Ticket_Overdue", 6.0, LF_ENotificationType.WARNING, LF_MoneyFormat.FormatMoney(record.m_iAmount));
 
 			return;
 		}
@@ -490,26 +490,26 @@ class LF_FineTickets
 		if (record.m_iStage != LF_FineTicketRules.STAGE_WANTED)
 			return;
 
-		EL_PlayerAccount account = holderAccount;
+		LF_PlayerAccount account = holderAccount;
 		if (!account)
-			account = EL_PlayerAccountManager.GetOrCreate(record.m_sHolderUid);
+			account = LF_PlayerAccountManager.GetOrCreate(record.m_sHolderUid);
 
 		if (!account)
 		{
-			EL_Debug.Error(FEATURE, string.Format("ticket #%1 unpaid past the second deadline, but %2 has no account; no wanted level added", record.m_iNumber, record.m_sHolderUid));
+			LF_Debug.Error(FEATURE, string.Format("ticket #%1 unpaid past the second deadline, but %2 has no account; no wanted level added", record.m_iNumber, record.m_sHolderUid));
 			return;
 		}
 
 		account.IncreaseWantedLevel(s_iLateWanted);
 		LF_WantedReports.Report(record.m_sHolderUid, holder, OFFENCE_UNPAID);
 		LF_WantedReports.Identify(record.m_sHolderUid, "unpaid ticket");
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (accounts)
 			accounts.SaveAndReleaseAccount(account);
 
-		EL_Debug.Info(FEATURE, string.Format("ticket #%1 unpaid past the second deadline: %2 wanted +%3, now %4", record.m_iNumber, record.m_sHolderUid, s_iLateWanted, account.GetWantedLevel()));
+		LF_Debug.Info(FEATURE, string.Format("ticket #%1 unpaid past the second deadline: %2 wanted +%3, now %4", record.m_iNumber, record.m_sHolderUid, s_iLateWanted, account.GetWantedLevel()));
 		if (holderId > 0)
-			EL_NotificationManagerComponent.NotifyPlayer(holderId, "#LF-Ticket_Title", "#LF-Ticket_NowWanted", 6.0, EL_ENotificationType.WARNING);
+			LF_NotificationManagerComponent.NotifyPlayer(holderId, "#LF-Ticket_Title", "#LF-Ticket_NowWanted", 6.0, LF_ENotificationType.WARNING);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -530,13 +530,13 @@ class LF_FineTickets
 			if (taken > 0)
 				wallet.Put(taken);
 
-			EL_Debug.Error(FEATURE, string.Format("ticket #%1 not paid: took %2 of %3; returned", outRecord.m_iNumber, taken, amount));
+			LF_Debug.Error(FEATURE, string.Format("ticket #%1 not paid: took %2 of %3; returned", outRecord.m_iNumber, taken, amount));
 			return LF_ETicketPay.FAILED_TAKE;
 		}
 
 		outRecord.m_bPaid = true;
 		outRecord.m_sPaidAt = paidAt;
-		EL_Debug.Info(FEATURE, string.Format("ticket #%1 paid by %2: %3 in cash", outRecord.m_iNumber, holderUid, amount));
+		LF_Debug.Info(FEATURE, string.Format("ticket #%1 paid by %2: %3 in cash", outRecord.m_iNumber, holderUid, amount));
 		PrunePaid(holderUid);
 		return LF_ETicketPay.PAID;
 	}
@@ -582,13 +582,13 @@ class LF_FineTickets
 		{
 			if (!record || record.m_sHolderUid.IsEmpty() || record.m_iNumber <= 0)
 			{
-				EL_Debug.Warn(FEATURE, "load skipped a ticket with no holder or number");
+				LF_Debug.Warn(FEATURE, "load skipped a ticket with no holder or number");
 				continue;
 			}
 
 			if (Find(record.m_iNumber))
 			{
-				EL_Debug.Warn(FEATURE, string.Format("load skipped a second ticket #%1", record.m_iNumber));
+				LF_Debug.Warn(FEATURE, string.Format("load skipped a second ticket #%1", record.m_iNumber));
 				continue;
 			}
 
@@ -612,7 +612,7 @@ class LF_FineTickets
 
 		s_bTicking = true;
 		GetGame().GetCallqueue().CallLater(OnTick, TICK_MS, true);
-		EL_Debug.Info(FEATURE, string.Format("ticket clock started: first deadline %1 s, second %2 s, x%3, +%4 wanted", FirstDeadline(), SecondDeadline(), LateMultiplier(), s_iLateWanted));
+		LF_Debug.Info(FEATURE, string.Format("ticket clock started: first deadline %1 s, second %2 s, x%3, +%4 wanted", FirstDeadline(), SecondDeadline(), LateMultiplier(), s_iLateWanted));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -633,7 +633,7 @@ class LF_FineTickets
 		if (!record || !Replication.IsServer())
 			return;
 
-		EL_PlayerAccount account;
+		LF_PlayerAccount account;
 		IEntity holder = BodyOf(record.m_sHolderUid, account);
 		if (!holder)
 			return;
@@ -685,13 +685,13 @@ class LF_FineTickets
 				granted++;
 		}
 
-		EL_Debug.Info(FEATURE, string.Format("spawn of %1: %2 ticket(s) on record, %3 blank copies printed, %4 unpaid handed again", holderUid, records.Count(), reprinted, granted));
+		LF_Debug.Info(FEATURE, string.Format("spawn of %1: %2 ticket(s) on record, %3 blank copies printed, %4 unpaid handed again", holderUid, records.Count(), reprinted, granted));
 	}
 }
 
 //------------------------------------------------------------------------------------------------
 //! Ticket clock and the role slot, once per world on every machine.
-modded class EL_GameModeRoleplay
+modded class LF_GameModeRoleplay
 {
 	//------------------------------------------------------------------------------------------------
 	protected override void OnGameStart()

@@ -1,9 +1,9 @@
 modded enum EGadgetAnimVariable
 {
-	EL_ITEM
+	LF_ITEM
 }
 
 modded enum ECommonItemType
 {
-	EL_ITEM
+	LF_ITEM
 }

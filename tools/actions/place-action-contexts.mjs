@@ -287,7 +287,7 @@ export function volumeFromBounds(min, max) {
 function isEntityHeader(line) {
   if (/\.et"\s*\{/.test(line)) return true;
   if (/\{[0-9A-Fa-f]{16}\}/.test(line)) return false;
-  return /^[ \t]*(GenericEntity|GameEntity|Tree|SCR_[A-Za-z0-9_]+|EL_[A-Za-z0-9_]+|LF_[A-Za-z0-9_]+)\b.*\{\s*$/.test(line);
+  return /^[ \t]*(GenericEntity|GameEntity|Tree|SCR_[A-Za-z0-9_]+|LF_[A-Za-z0-9_]+|LF_[A-Za-z0-9_]+)\b.*\{\s*$/.test(line);
 }
 
 function entitySpans(text, isLayer) {

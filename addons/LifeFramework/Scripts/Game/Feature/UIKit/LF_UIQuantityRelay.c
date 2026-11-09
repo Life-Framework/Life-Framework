@@ -24,21 +24,21 @@ class LF_UIQuantityRelay : ScriptedWidgetComponent
 
 		if (!m_wRoot)
 		{
-			EL_Debug.Error("UIKit", "quantity " + name + " has no widget");
+			LF_Debug.Error("UIKit", "quantity " + name + " has no widget");
 			return;
 		}
 
 		Widget sliderRoot = m_wRoot.FindAnyWidget("QuantitySlider");
 		if (!sliderRoot)
 		{
-			EL_Debug.Error("UIKit", "quantity " + name + " is missing the slider");
+			LF_Debug.Error("UIKit", "quantity " + name + " is missing the slider");
 			return;
 		}
 
-		EL_ThinSliderWidget slider = EL_ThinSliderWidget.Cast(sliderRoot.FindHandler(EL_ThinSliderWidget));
+		LF_ThinSliderWidget slider = LF_ThinSliderWidget.Cast(sliderRoot.FindHandler(LF_ThinSliderWidget));
 		if (!slider)
 		{
-			EL_Debug.Error("UIKit", "quantity " + name + " slider has no handler");
+			LF_Debug.Error("UIKit", "quantity " + name + " slider has no handler");
 			return;
 		}
 

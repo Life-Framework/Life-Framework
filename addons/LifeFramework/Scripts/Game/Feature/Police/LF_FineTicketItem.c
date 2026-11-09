@@ -138,14 +138,14 @@ class LF_FineTicketComponent : ScriptComponent
 		outLines.Insert(WidgetManager.Translate("#LF-Ticket_Number", m_iNumber.ToString(4), m_sIssued));
 		outLines.Insert(WidgetManager.Translate("#LF-Ticket_IssuedTo", m_sHolderName));
 		outLines.Insert(WidgetManager.Translate("#LF-Ticket_Offence", WidgetManager.Translate(m_sOffence)));
-		outLines.Insert(WidgetManager.Translate("#LF-Ticket_Amount", EL_MoneyFormat.FormatMoney(m_iAmount)));
+		outLines.Insert(WidgetManager.Translate("#LF-Ticket_Amount", LF_MoneyFormat.FormatMoney(m_iAmount)));
 		if (m_bPaid)
 		{
 			outLines.Insert(WidgetManager.Translate("#LF-Ticket_PaidLine", m_sPaidAt));
 		}
 		else if (m_iStage == LF_FineTicketRules.STAGE_OPEN)
 		{
-			outLines.Insert(WidgetManager.Translate("#LF-Ticket_DueOpen", m_iMinutesLeft, EL_MoneyFormat.FormatMoney(m_iLateAmount)));
+			outLines.Insert(WidgetManager.Translate("#LF-Ticket_DueOpen", m_iMinutesLeft, LF_MoneyFormat.FormatMoney(m_iLateAmount)));
 			outLines.Insert(WidgetManager.Translate("#LF-Ticket_HowToPay"));
 		}
 		else if (m_iStage == LF_FineTicketRules.STAGE_LATE)
@@ -216,11 +216,11 @@ class LF_FineTicketItem
 			return;
 
 		array<IEntity> items = {};
-		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(character);
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(character);
 		if (inventory)
 			inventory.GetItems(items);
 
-		CharacterControllerComponent controller = EL_Component<CharacterControllerComponent>.Find(character);
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(character);
 		if (controller)
 		{
 			IEntity inHand = controller.GetAttachedGadgetAtLeftHandSlot();
@@ -294,30 +294,30 @@ class LF_FineTicketItem
 	{
 		if (!Replication.IsServer() || !character || !record)
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: not the server, or no character or record");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: not the server, or no character or record");
 			return null;
 		}
 
-		IEntity item = EL_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
+		IEntity item = LF_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
 		if (!item)
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: prefab did not spawn " + PREFAB);
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: prefab did not spawn " + PREFAB);
 			return null;
 		}
 
 		LF_FineTicketComponent ticket = LF_FineTicketComponent.Cast(item.FindComponent(LF_FineTicketComponent));
 		if (!ticket)
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: " + PREFAB + " has no LF_FineTicketComponent");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket not handed: " + PREFAB + " has no LF_FineTicketComponent");
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return null;
 		}
 
 		ticket.Print(record);
-		InventoryStorageManagerComponent storage = EL_Component<InventoryStorageManagerComponent>.Find(character);
+		InventoryStorageManagerComponent storage = LF_Component<InventoryStorageManagerComponent>.Find(character);
 		if (!storage || !storage.TryInsertItem(item))
 		{
-			EL_Debug.Warn(LF_FineTickets.FEATURE, string.Format("ticket #%1: no room in the pockets of %2; it lies at their feet", record.m_iNumber, record.m_sHolderUid));
+			LF_Debug.Warn(LF_FineTickets.FEATURE, string.Format("ticket #%1: no room in the pockets of %2; it lies at their feet", record.m_iNumber, record.m_sHolderUid));
 			return ticket;
 		}
 
@@ -360,14 +360,14 @@ class LF_FineTicketCard
 		Hide();
 		if (!ticket)
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket card not opened: no ticket");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket card not opened: no ticket");
 			return null;
 		}
 
 		s_Screen = LF_UIScreen.Open(BuildParts(ticket));
 		if (!s_Screen)
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket card failed to open");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket card failed to open");
 			return null;
 		}
 
@@ -376,7 +376,7 @@ class LF_FineTicketCard
 		if (anchor)
 			s_Screen.CloseBeyond(CLOSE_DISTANCE, anchor.GetID());
 
-		EL_Debug.Info(LF_FineTickets.FEATURE, string.Format("ticket #%1 read: amount %2 stage %3 paid %4", ticket.GetNumber(), ticket.GetAmount(), ticket.GetStage(), ticket.IsPaid()));
+		LF_Debug.Info(LF_FineTickets.FEATURE, string.Format("ticket #%1 read: amount %2 stage %3 paid %4", ticket.GetNumber(), ticket.GetAmount(), ticket.GetStage(), ticket.IsPaid()));
 		return s_Screen;
 	}
 
@@ -408,7 +408,7 @@ class LF_FineTicketReadAction : ScriptedUserAction
 	{
 		m_Ticket = LF_FineTicketComponent.Cast(pOwnerEntity.FindComponent(LF_FineTicketComponent));
 		if (!m_Ticket)
-			EL_Debug.Error(LF_FineTickets.FEATURE, "Read ticket on an entity with no LF_FineTicketComponent; Read hidden");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "Read ticket on an entity with no LF_FineTicketComponent; Read hidden");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -426,7 +426,7 @@ class LF_FineTicketReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!pOwnerEntity || pUserEntity != EL_Utils.GetLocalCharacter())
+		if (!pOwnerEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
 
 		LF_FineTicketCard.Open(m_Ticket, pOwnerEntity);

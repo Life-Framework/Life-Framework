@@ -65,8 +65,8 @@ class LF_ShopRefusal
 		if (next < 1)
 			return 1;
 
-		if (next > EL_CharacterShopComponent.MAX_TRANSACTION_QUANTITY)
-			return EL_CharacterShopComponent.MAX_TRANSACTION_QUANTITY;
+		if (next > LF_CharacterShopComponent.MAX_TRANSACTION_QUANTITY)
+			return LF_CharacterShopComponent.MAX_TRANSACTION_QUANTITY;
 
 		return next;
 	}

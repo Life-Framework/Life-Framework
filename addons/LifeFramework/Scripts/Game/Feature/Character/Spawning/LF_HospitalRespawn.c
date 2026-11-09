@@ -28,7 +28,7 @@ class LF_HospitalRespawn
 	{
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Respawn", "death not recorded: empty uid");
+			LF_Debug.Error("Respawn", "death not recorded: empty uid");
 			return;
 		}
 
@@ -36,7 +36,7 @@ class LF_HospitalRespawn
 			s_mPendingWake = new map<string, bool>();
 
 		s_mPendingWake.Set(uid, true);
-		EL_Debug.Info("Respawn", string.Format("death recorded for %1: next spawn wakes in hospital", uid));
+		LF_Debug.Info("Respawn", string.Format("death recorded for %1: next spawn wakes in hospital", uid));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ class LF_HospitalRespawn
 	//! \param amount Bill amount; zero or less charges nothing.
 	//! \param debtAllowed When false the bill takes only what the account holds.
 	//! \return The amount charged.
-	static int ChargeBill(EL_BankAccount account, int amount, bool debtAllowed)
+	static int ChargeBill(LF_BankAccount account, int amount, bool debtAllowed)
 	{
 		if (!account || amount <= 0)
 			return 0;
@@ -89,19 +89,19 @@ class LF_HospitalRespawn
 	{
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Respawn", "bill refused: empty uid");
+			LF_Debug.Error("Respawn", "bill refused: empty uid");
 			return -1;
 		}
 
 		if (!TakePendingWake(uid))
 			return -1;
 
-		EL_BankAccount account = EL_ATMManager.GetOrCreate(uid);
+		LF_BankAccount account = LF_ATMManager.GetOrCreate(uid);
 		int before = account.GetBalance();
 		int charged = ChargeBill(account, amount, debtAllowed);
-		EL_Debug.Info("Respawn", string.Format("hospital bill %1 charged to %2: bank %3 -> %4", charged, uid, before, account.GetBalance()));
+		LF_Debug.Info("Respawn", string.Format("hospital bill %1 charged to %2: bank %3 -> %4", charged, uid, before, account.GetBalance()));
 		if (account.IsInDebt())
-			EL_Debug.Info("Respawn", string.Format("%1 is in debt: %2", uid, account.GetBalance()));
+			LF_Debug.Info("Respawn", string.Format("%1 is in debt: %2", uid, account.GetBalance()));
 
 		return charged;
 	}
@@ -148,7 +148,7 @@ class LF_HospitalRespawn
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server, from EL_SpawnLogic.GetCreationPosition: a player with a pending wake spawns at a bed.
+	//! Server, from LF_SpawnLogic.GetCreationPosition: a player with a pending wake spawns at a bed.
 	//! \return False when this spawn is not a hospital wake or no bed exists (plaza fallback).
 	static bool ResolveWake(int playerId, string uid, out vector position, out vector yawPitchRoll)
 	{
@@ -165,7 +165,7 @@ class LF_HospitalRespawn
 		LF_HospitalBedComponent.GetBedPositions(positions);
 		if (beds.IsEmpty())
 		{
-			EL_Debug.Warn("Respawn", string.Format("no hospital bed in the world; player %1 respawns at the plaza", playerId));
+			LF_Debug.Warn("Respawn", string.Format("no hospital bed in the world; player %1 respawns at the plaza", playerId));
 			return false;
 		}
 
@@ -183,7 +183,7 @@ class LF_HospitalRespawn
 			s_mWokeInBed = new map<int, bool>();
 		s_mWokeInBed.Set(playerId, true);
 
-		EL_Debug.Info("Respawn", string.Format("player %1 wakes in hospital bed %2 of %3 at %4", playerId, index + 1, beds.Count(), position));
+		LF_Debug.Info("Respawn", string.Format("player %1 wakes in hospital bed %2 of %3 at %4", playerId, index + 1, beds.Count(), position));
 		return true;
 	}
 
@@ -211,7 +211,7 @@ class LF_HospitalRespawn
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server, from EL_SpawnLogic.OnCharacterCreated (after the inventory): charge the bill, print it
+	//! Server, from LF_SpawnLogic.OnCharacterCreated (after the inventory): charge the bill, print it
 	//! into the new body's pockets, toast the amount, and tell the owner to wake up. A spawn with no
 	//! pending wake does nothing.
 	static void OnBodyCreated(int playerId, string uid, IEntity character)
@@ -243,7 +243,7 @@ class LF_HospitalRespawn
 		if (charged < 0)
 			return;
 
-		int balance = EL_ATMManager.GetOrCreate(uid).GetBalance();
+		int balance = LF_ATMManager.GetOrCreate(uid).GetBalance();
 		string date = LF_HospitalBill.InGameDate();
 		LF_HospitalBill.Grant(character, charged, balance, date, minutes);
 
@@ -259,12 +259,12 @@ class LF_HospitalRespawn
 		SCR_ChimeraCharacter body = SCR_ChimeraCharacter.Cast(character);
 		if (!body)
 		{
-			EL_Debug.Warn("Respawn", "woken body is gone before the owner could wake up");
+			LF_Debug.Warn("Respawn", "woken body is gone before the owner could wake up");
 			return;
 		}
 
 		// The toast needs the body to be the player's controlled entity, which the handover sets after OnBodyCreated.
-		EL_Utils.NotifyEntity(body, "#LF-Hospital_BillToast", "#LF-Hospital_Title", 6.0, EL_MoneyFormat.FormatMoney(charged));
+		LF_Utils.NotifyEntity(body, "#LF-Hospital_BillToast", "#LF-Hospital_Title", 6.0, LF_MoneyFormat.FormatMoney(charged));
 		body.LF_SendHospitalWake(loiterType, charged, balance, date, minutes);
 	}
 }
@@ -283,7 +283,7 @@ class LF_HospitalWake
 		if (!character)
 			return;
 
-		EL_Debug.Info("Respawn", string.Format("waking in hospital: bill %1, balance %2, animation %3", charged, balance, loiterType));
+		LF_Debug.Info("Respawn", string.Format("waking in hospital: bill %1, balance %2, animation %3", charged, balance, loiterType));
 
 		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
 		if (world && world.GetMusicManager())
@@ -314,14 +314,14 @@ class LF_HospitalWake
 
 		if (controller.IsLoitering())
 		{
-			EL_Debug.Info("Respawn", "lying in the hospital bed");
+			LF_Debug.Info("Respawn", "lying in the hospital bed");
 			GetGame().GetCallqueue().CallLater(WaitForStand, RETRY_MS, false, character, 0, charged, balance, date, minutes);
 			return;
 		}
 
 		if (attempt + 1 >= MAX_START_TRIES)
 		{
-			EL_Debug.Warn("Respawn", "the get-out-of-bed animation did not start; showing the bill");
+			LF_Debug.Warn("Respawn", "the get-out-of-bed animation did not start; showing the bill");
 			StepOffBed(character);
 			OpenBill(charged, balance, date, minutes);
 			return;
@@ -345,7 +345,7 @@ class LF_HospitalWake
 		int lieTicks = LieTicks();
 		if (lieTicks > 0 && attempt == lieTicks)
 		{
-			EL_Debug.Info("Respawn", "getting up from the hospital bed");
+			LF_Debug.Info("Respawn", "getting up from the hospital bed");
 			controller.StopLoitering(false);
 		}
 
@@ -397,7 +397,7 @@ class LF_HospitalWake
 		body.GetWorldTransform(transform);
 		transform[3] = bed.GetStandPosition();
 		body.Teleport(transform);
-		EL_Debug.Info("Respawn", string.Format("stepped off the hospital bed to %1", transform[3]));
+		LF_Debug.Info("Respawn", string.Format("stepped off the hospital bed to %1", transform[3]));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -418,7 +418,7 @@ modded class SCR_ChimeraCharacter
 		if (!Replication.IsServer())
 			return;
 
-		if (EL_Utils.GetLocalCharacter() == this)
+		if (LF_Utils.GetLocalCharacter() == this)
 		{
 			LF_HospitalWake.Begin(this, loiterType, charged, balance, date, minutes);
 			return;

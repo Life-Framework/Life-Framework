@@ -44,7 +44,7 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules, 
   pass places their sheet; the mining and whitelist plates keep their painted
   vanilla text.
 - An unknown or empty id, or a sign with no title, logs
-  `EL_Debug.Error("Signs", ...)` once and the Read action hides.
+  `LF_Debug.Error("Signs", ...)` once and the Read action hides.
 
 ## Prefabs
 

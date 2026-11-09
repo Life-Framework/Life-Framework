@@ -1,10 +1,10 @@
 // LF_QuestManager.c - world-facing quest hub: definition registry + event routing.
 //
-// A lazy singleton (like EL_JobManager). Quest givers register their definitions
+// A lazy singleton (like LF_JobManager). Quest givers register their definitions
 // on server init; the gather/process/kill hook seams and the giver action route
 // world events here, which resolves the acting player's LF_QuestTrackerComponent
 // and pushes typed LF_QuestEvents into the pure tracker. Every accepted state
-// change is logged through EL_Debug.Log("Quests", ...).
+// change is logged through LF_Debug.Log("Quests", ...).
 
 class LF_QuestManager
 {
@@ -35,7 +35,7 @@ class LF_QuestManager
 	{
 		if (!def || def.m_sQuestId.IsEmpty())
 		{
-			EL_Debug.Warn("Quests", "definition skipped: missing quest id");
+			LF_Debug.Warn("Quests", "definition skipped: missing quest id");
 			return;
 		}
 		m_mDefinitions.Set(def.m_sQuestId, def);
@@ -51,7 +51,7 @@ class LF_QuestManager
 		array<ref LF_QuestDefinition> quests = giver.GetQuests();
 		if (!quests)
 		{
-			EL_Debug.Error("Quests", string.Format("giver '%1' has no quest list", giver.GetGiverId()));
+			LF_Debug.Error("Quests", string.Format("giver '%1' has no quest list", giver.GetGiverId()));
 			return;
 		}
 
@@ -61,12 +61,12 @@ class LF_QuestManager
 			// A second NPC with the same giver id (a test spawn, a copy) must not take over the
 			// placed giver while it lives: players talk to the one standing in town.
 			if (GetGiver(giver.GetGiverId()) && GetGiver(giver.GetGiverId()) != giver)
-				EL_Debug.Warn("Quests", string.Format("giver '%1' is already placed; the copy at %2 is not reachable", giver.GetGiverId(), giverEntity.GetOrigin()));
+				LF_Debug.Warn("Quests", string.Format("giver '%1' is already placed; the copy at %2 is not reachable", giver.GetGiverId(), giverEntity.GetOrigin()));
 			else
 				m_mGiverEntities.Set(giver.GetGiverId(), giverEntity.GetID());
 		}
 		else
-			EL_Debug.Error("Quests", string.Format("giver '%1' has no entity or id; its quests cannot be reached", giver.GetGiverId()));
+			LF_Debug.Error("Quests", string.Format("giver '%1' has no entity or id; its quests cannot be reached", giver.GetGiverId()));
 
 		foreach (LF_QuestDefinition def : quests)
 		{
@@ -75,7 +75,7 @@ class LF_QuestManager
 			RegisterDefinition(def);
 			if (!def.m_sQuestId.IsEmpty())
 				m_mQuestGivers.Set(def.m_sQuestId, giver.GetGiverId());
-			EL_Debug.Log("Quests", string.Format("registered quest '%1' from giver '%2'", def.m_sQuestId, giver.GetGiverId()));
+			LF_Debug.Log("Quests", string.Format("registered quest '%1' from giver '%2'", def.m_sQuestId, giver.GetGiverId()));
 		}
 	}
 
@@ -146,15 +146,15 @@ class LF_QuestManager
 		if (!character)
 			return "";
 
-		string uid = EL_Utils.GetCharacterId(character);
+		string uid = LF_Utils.GetCharacterId(character);
 		if (uid.IsEmpty())
 			return "";
 
-		EL_PlayerAccount account = EL_PlayerAccountManager.GetInstance().GetAccount(uid);
+		LF_PlayerAccount account = LF_PlayerAccountManager.GetInstance().GetAccount(uid);
 		if (!account)
 			return "";
 
-		return typename.EnumToString(EL_Faction, account.GetFaction());
+		return typename.EnumToString(LF_Faction, account.GetFaction());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ class LF_QuestManager
 	{
 		if (key.IsEmpty())
 		{
-			EL_Debug.Warn("Quests", "signal skipped: empty key");
+			LF_Debug.Warn("Quests", "signal skipped: empty key");
 			return false;
 		}
 
@@ -197,7 +197,7 @@ class LF_QuestManager
 
 	//------------------------------------------------------------------------------------------------
 	//! Whether the player turned in a quest that hands over the ID card (m_bRewardIdCard).
-	//! EL_SpawnLogic then prints them a card on every spawn, as it did for everyone before.
+	//! LF_SpawnLogic then prints them a card on every spawn, as it did for everyone before.
 	bool HasEarnedIdCard(string playerUid)
 	{
 		if (playerUid.IsEmpty())
@@ -265,7 +265,7 @@ class LF_QuestManager
 		if (!user || prefab.IsEmpty())
 			return 0;
 
-		SCR_InventoryStorageManagerComponent storage = EL_Component<SCR_InventoryStorageManagerComponent>.Find(user);
+		SCR_InventoryStorageManagerComponent storage = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
 		if (!storage)
 			return 0;
 
@@ -275,11 +275,11 @@ class LF_QuestManager
 		int total = 0;
 		foreach (IEntity item : items)
 		{
-			if (!item || EL_Utils.GetPrefabName(item) != prefab)
+			if (!item || LF_Utils.GetPrefabName(item) != prefab)
 				continue;
 
 			int quantity = 1;
-			EL_QuantityComponent quantityComponent = EL_Component<EL_QuantityComponent>.Find(item);
+			LF_QuantityComponent quantityComponent = LF_Component<LF_QuantityComponent>.Find(item);
 			if (quantityComponent)
 				quantity = quantityComponent.GetQuantity();
 			total += quantity;
@@ -325,6 +325,6 @@ class LF_QuestManager
 	//------------------------------------------------------------------------------------------------
 	protected void LogEvent(LF_QuestEvent ev)
 	{
-		EL_Debug.Log("Quests", string.Format("event type=%1 filter='%2' value=%3", typename.EnumToString(LF_EQuestEventType, ev.m_eType), ev.m_sFilter, ev.m_iValue));
+		LF_Debug.Log("Quests", string.Format("event type=%1 filter='%2' value=%3", typename.EnumToString(LF_EQuestEventType, ev.m_eType), ev.m_sFilter, ev.m_iValue));
 	}
 }

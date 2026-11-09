@@ -4,9 +4,9 @@
 //! Saved as the "progression" payload (save version 7).
 //!
 //! OWNERS. Career, police, and benefit state stay with their owners (LF_CivilianJob,
-//! EL_PlayerAccount, LF_UnemploymentBenefit); ExportAll reads them and ApplyAll writes them back.
+//! LF_PlayerAccount, LF_UnemploymentBenefit); ExportAll reads them and ApplyAll writes them back.
 //! Level, licences, and quest turn-ins live on the character entity, which is replaced on every
-//! spawn, so their owners write through to this store (Note*) and EL_SpawnLogic applies the
+//! spawn, so their owners write through to this store (Note*) and LF_SpawnLogic applies the
 //! record to each new body (ApplyToCharacter). Death keeps progression; only carried items drop.
 //!
 //! TOLERANCE. A licence name the enum no longer has is skipped and logged. A quest id no giver
@@ -65,7 +65,7 @@ class LF_Progression
 	{
 		if (playerUid.IsEmpty() || questId.IsEmpty())
 		{
-			EL_Debug.Warn("Progression", string.Format("turn-in not remembered: player '%1' quest '%2'", playerUid, questId));
+			LF_Debug.Warn("Progression", string.Format("turn-in not remembered: player '%1' quest '%2'", playerUid, questId));
 			return;
 		}
 
@@ -86,7 +86,7 @@ class LF_Progression
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Write-through from EL_PlayerLevelComponent.
+	//! Write-through from LF_PlayerLevelComponent.
 	static void NoteLevel(string playerUid, int level, float experience, int skillPoints, int totalSkillPoints)
 	{
 		if (playerUid.IsEmpty())
@@ -101,24 +101,24 @@ class LF_Progression
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Write-through from EL_LicenseManagerComponent.UnlockLicense: the whole unlocked list.
-	static void NoteLicenses(string playerUid, notnull array<EL_ELicenseType> licenses)
+	//! Write-through from LF_LicenseManagerComponent.UnlockLicense: the whole unlocked list.
+	static void NoteLicenses(string playerUid, notnull array<LF_ELicenseType> licenses)
 	{
 		if (playerUid.IsEmpty())
 			return;
 
 		LF_ProgressionRecord record = Entry(playerUid);
 		record.m_aLicenses.Clear();
-		foreach (EL_ELicenseType license : licenses)
+		foreach (LF_ELicenseType license : licenses)
 		{
-			record.m_aLicenses.Insert(typename.EnumToString(EL_ELicenseType, license));
+			record.m_aLicenses.Insert(typename.EnumToString(LF_ELicenseType, license));
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Resolves the stored licence names. Unknown names are skipped and logged.
 	//! \return How many licences resolved.
-	static int GetLicenses(string playerUid, notnull array<EL_ELicenseType> outLicenses)
+	static int GetLicenses(string playerUid, notnull array<LF_ELicenseType> outLicenses)
 	{
 		outLicenses.Clear();
 		LF_ProgressionRecord record = Get(playerUid);
@@ -127,10 +127,10 @@ class LF_Progression
 
 		foreach (string name : record.m_aLicenses)
 		{
-			EL_ELicenseType license = typename.StringToEnum(EL_ELicenseType, name);
-			if (typename.EnumToString(EL_ELicenseType, license) != name)
+			LF_ELicenseType license = typename.StringToEnum(LF_ELicenseType, name);
+			if (typename.EnumToString(LF_ELicenseType, license) != name)
 			{
-				EL_Debug.Warn("Progression", string.Format("saved licence '%1' for %2 no longer exists, skipped", name, playerUid));
+				LF_Debug.Warn("Progression", string.Format("saved licence '%1' for %2 no longer exists, skipped", name, playerUid));
 				continue;
 			}
 
@@ -180,17 +180,17 @@ class LF_Progression
 			AddUid(ownerUid, uids, seen);
 		}
 
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
-		foreach (EL_PlayerAccountRecord accountRecord : EL_PlayerAccountManager.ExportAll())
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		foreach (LF_PlayerAccountRecord accountRecord : LF_PlayerAccountManager.ExportAll())
 		{
 			if (!accountRecord || !accounts)
 				continue;
 
-			EL_PlayerAccount account = accounts.GetFromCache(accountRecord.m_sPersistentId);
+			LF_PlayerAccount account = accounts.GetFromCache(accountRecord.m_sPersistentId);
 			if (!account)
 				continue;
 
-			if (account.GetFaction() == EL_Faction.POLICE && account.IsDutyClockRunning())
+			if (account.GetFaction() == LF_Faction.POLICE && account.IsDutyClockRunning())
 				LF_PoliceRanks.SettleDutyAt(account, true, nowMs);
 
 			if (account.GetPoliceRank() != 0 || account.GetOnDutySeconds() != 0 || account.GetUnpaidDutySeconds() != 0)
@@ -214,7 +214,7 @@ class LF_Progression
 				record.m_iCareerPaidTotal = LF_CivilianJob.GetPaidTotal(uid);
 			}
 
-			EL_PlayerAccount account;
+			LF_PlayerAccount account;
 			if (accounts)
 				account = accounts.GetFromCache(uid);
 			if (account)
@@ -238,14 +238,14 @@ class LF_Progression
 	{
 		float now = LF_JobGuards.Now();
 		s_mRecords = new map<string, ref LF_ProgressionRecord>();
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 
 		int applied = 0;
 		foreach (LF_ProgressionRecord record : records)
 		{
 			if (!record || record.m_sPlayerUid.IsEmpty())
 			{
-				EL_Debug.Warn("Progression", "skipped a progression record with no player id");
+				LF_Debug.Warn("Progression", "skipped a progression record with no player id");
 				continue;
 			}
 
@@ -255,7 +255,7 @@ class LF_Progression
 			LF_CivilianJob.RestoreCareer(uid, record.m_iCareerLevel, record.m_fCareerExperience, record.m_iCareerPaidTotal);
 			LF_UnemploymentBenefit.RestoreElapsedSinceCollection(uid, record.m_fBenefitElapsedSeconds, now);
 
-			EL_PlayerAccount account;
+			LF_PlayerAccount account;
 			if (accounts)
 				account = accounts.GetFromCache(uid);
 			if (account)
@@ -266,14 +266,14 @@ class LF_Progression
 			}
 			else if (record.m_iPoliceRank != 0 || record.m_iOnDutySeconds != 0)
 			{
-				EL_Debug.Warn("Progression", string.Format("police progression for %1 has no account, rank %2 not applied", uid, record.m_iPoliceRank));
+				LF_Debug.Warn("Progression", string.Format("police progression for %1 has no account, rank %2 not applied", uid, record.m_iPoliceRank));
 			}
 
 			applied++;
 		}
 
 		int bodies = ApplyToLivePlayers();
-		EL_Debug.Info("Progression", string.Format("applied %1 progression record(s), %2 live body(ies)", applied, bodies));
+		LF_Debug.Info("Progression", string.Format("applied %1 progression record(s), %2 live body(ies)", applied, bodies));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -290,7 +290,7 @@ class LF_Progression
 
 		if (record.m_bHasLevel)
 		{
-			EL_PlayerLevelComponent level = EL_Component<EL_PlayerLevelComponent>.Find(character);
+			LF_PlayerLevelComponent level = LF_Component<LF_PlayerLevelComponent>.Find(character);
 			if (level)
 			{
 				level.SetLevel(record.m_iPlayerLevel);
@@ -302,10 +302,10 @@ class LF_Progression
 
 		if (!record.m_aLicenses.IsEmpty())
 		{
-			EL_LicenseManagerComponent licenseManager = EL_Component<EL_LicenseManagerComponent>.Find(character);
+			LF_LicenseManagerComponent licenseManager = LF_Component<LF_LicenseManagerComponent>.Find(character);
 			if (licenseManager)
 			{
-				array<EL_ELicenseType> licenses = {};
+				array<LF_ELicenseType> licenses = {};
 				GetLicenses(playerUid, licenses);
 				licenseManager.SetUnlockedLicenses(licenses);
 			}
@@ -314,12 +314,12 @@ class LF_Progression
 		int quests = 0;
 		if (!record.m_aTurnedInQuests.IsEmpty())
 		{
-			LF_QuestTrackerComponent tracker = EL_Component<LF_QuestTrackerComponent>.Find(character);
+			LF_QuestTrackerComponent tracker = LF_Component<LF_QuestTrackerComponent>.Find(character);
 			if (tracker)
 				quests = tracker.RestoreTurnedIn(record.m_aTurnedInQuests);
 		}
 
-		EL_Debug.Info("Progression", string.Format("progression applied to %1: level %2, %3 licence(s), %4 quest(s) restored", playerUid, record.m_iPlayerLevel, record.m_aLicenses.Count(), quests));
+		LF_Debug.Info("Progression", string.Format("progression applied to %1: level %2, %3 licence(s), %4 quest(s) restored", playerUid, record.m_iPlayerLevel, record.m_aLicenses.Count(), quests));
 		return true;
 	}
 
@@ -342,7 +342,7 @@ class LF_Progression
 			if (!body)
 				continue;
 
-			if (ApplyToCharacter(EL_Utils.GetPlayerUID(playerId), body))
+			if (ApplyToCharacter(LF_Utils.GetPlayerUID(playerId), body))
 				bodies++;
 		}
 
@@ -359,7 +359,7 @@ class LF_Progression
 		if (rank > LF_PoliceRanks.SENIOR)
 			clamped = LF_PoliceRanks.SENIOR;
 
-		EL_Debug.Warn("Progression", string.Format("saved police rank %1 for %2 is not on the ladder, using %3", rank, playerUid, clamped));
+		LF_Debug.Warn("Progression", string.Format("saved police rank %1 for %2 is not on the ladder, using %3", rank, playerUid, clamped));
 		return clamped;
 	}
 

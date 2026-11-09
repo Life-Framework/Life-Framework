@@ -11,7 +11,7 @@ SCR_DestructibleBuildingEntity : "{67BB04E9136D6A3E}Prefabs/Structures/Industria
     }
    }
    additionalActions {
-    EL_ProcessAction "{59BCA072523FC76F}" {
+    LF_ProcessAction "{59BCA072523FC76F}" {
      ParentContextList {
       "default"
      }
@@ -21,18 +21,18 @@ SCR_DestructibleBuildingEntity : "{67BB04E9136D6A3E}Prefabs/Structures/Industria
      m_sMachineId "cement-plant"
      Duration 10
      m_aProcessingInputs {
-      EL_ProcessingInput "{59BCA07251625E0D}" {
+      LF_ProcessingInput "{59BCA07251625E0D}" {
        m_InputPrefab "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et"
       }
-      EL_ProcessingInput "{59BCA072572E8F38}" {
+      LF_ProcessingInput "{59BCA072572E8F38}" {
        m_InputPrefab "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et"
       }
-      EL_ProcessingInput "{59BCA07257432CD1}" {
+      LF_ProcessingInput "{59BCA07257432CD1}" {
        m_InputPrefab "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et"
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{59BCA0725583F2F8}" {
+      LF_ProcessingOutput "{59BCA0725583F2F8}" {
        m_OutputPrefab "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et"
        m_iOutputAmount 10
       }

@@ -32,31 +32,31 @@ class LF_JobSiteComponent : ScriptComponent
 
 		if (!owner || owner.GetName().IsEmpty())
 		{
-			EL_Debug.Error("Jobs", "job site has no entity name");
+			LF_Debug.Error("Jobs", "job site has no entity name");
 			return;
 		}
 
-		EL_Debug.Log("Jobs", string.Format("site %1 kind %2", owner.GetName(), m_eSite));
+		LF_Debug.Log("Jobs", string.Format("site %1 kind %2", owner.GetName(), m_eSite));
 
 		if (m_eSite == LF_EJobSite.FUEL)
 		{
 			Resource fuel = Resource.Load(LF_CivilianJob.FUEL_PREFAB);
 			if (!fuel.IsValid())
-				EL_Debug.Error("Jobs", "fuel can prefab missing: " + LF_CivilianJob.FUEL_PREFAB);
+				LF_Debug.Error("Jobs", "fuel can prefab missing: " + LF_CivilianJob.FUEL_PREFAB);
 		}
 
 		if (m_eSite == LF_EJobSite.TAXI)
 		{
 			Resource taxi = Resource.Load(LF_CivilianJob.TAXI_PREFAB);
 			if (!taxi.IsValid())
-				EL_Debug.Error("Jobs", "taxi prefab missing: " + LF_CivilianJob.TAXI_PREFAB);
+				LF_Debug.Error("Jobs", "taxi prefab missing: " + LF_CivilianJob.TAXI_PREFAB);
 		}
 
 		if (m_eSite == LF_EJobSite.DEPOT)
 		{
 			Resource depot = Resource.Load(LF_CivilianJob.DEPOT_PREFAB);
 			if (!depot.IsValid())
-				EL_Debug.Error("Jobs", "depot prefab missing: " + LF_CivilianJob.DEPOT_PREFAB);
+				LF_Debug.Error("Jobs", "depot prefab missing: " + LF_CivilianJob.DEPOT_PREFAB);
 		}
 	}
 

@@ -11,7 +11,7 @@ DebugWorld, not shuffle it.
 
 Forty layers on a flat 512 m square (every heightmap sample is 0) covered in the
 white grid texture. Sites are tables with an NPC, a kerosene lamp, and a blue
-`EL_DebugAreaBoundary` box that spawns survey poles at its corners. They sit in
+`LF_DebugAreaBoundary` box that spawns survey poles at its corners. They sit in
 two clusters: feature stations at x 94..182, z 120..151, and the roadmap row at
 z = 120, x 186..243, with entities 3 m apart and no buildings except one garage
 shell. Nothing tells a stranger where they are.
@@ -24,7 +24,7 @@ Inventory and classification (every layer):
 | Production chain | `AppleChain`, `PlumChain`, `TomatoChain`, `FarmingChain`, `MiningChain`, `LoggingChain`, `CementChain`, `GravelChain`, `SandChain`, `CrimeChain` | Traders to the market; sources to the farm, quarry, builders' yard, forest edge; the fence to the hideout alley |
 | Test fixture / legacy debug station | `Tests` (test runner), `PRFeatures` (plate, lock, siren cars and key crate), `Crimes` (rob safe, rack, tyres), `HousesKeys` (lock and key fixture), `NPCs` (show-ID citizen), `DebugWorldActions` (time and weather globe), `Jobs` (legacy job board) | The fenced test annex, keeping their boundaries |
 | World | `default` (world, terrain, light, fog, weather), `Roadmap` (street root), `Factions` (empty) | Unchanged, except the street root moves to the village centre |
-| Junk | 23 `EL_DebugAreaBoundary` boxes in village layers, the 60 m roadmap boundary | Deleted |
+| Junk | 23 `LF_DebugAreaBoundary` boxes in village layers, the 60 m roadmap boundary | Deleted |
 
 ## The village
 
@@ -77,10 +77,10 @@ New layers: `Village_Roads`, `Village_Buildings`, `Village_Dressing`, `Annex`.
 
 ## What moves with it
 
-- `EL_SpawnLocation` positions (town, mine, station, outpost) follow the spawn
+- `LF_SpawnLocation` positions (town, mine, station, outpost) follow the spawn
   points.
 - `QuestGiver_Start` intro area objective centre follows the clerk.
-- Tests that pin positions: `EL_Test_ExploitGuardsWorld` (clerk "near" point,
+- Tests that pin positions: `LF_Test_ExploitGuardsWorld` (clerk "near" point,
   depot workplace point).
 - `agent-box/harness.mjs` selftest pins the old garage, escort car, and z = 120
   row; it checks the new layout instead. The roadmap report's 30 m street rule
@@ -91,7 +91,7 @@ New layers: `Village_Roads`, `Village_Buildings`, `Village_Dressing`, `Annex`.
 
 Nothing is renamed. The vehicle lot's pad offset changes from `0 0 8` to
 `-5 0 -5` so bought cars land on the lot, and the convoy markers stop being
-`EL_DebugAreaBoundary` entities (no corner poles) and become crates with the
+`LF_DebugAreaBoundary` entities (no corner poles) and become crates with the
 same components.
 
 ## Proof

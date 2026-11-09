@@ -16,7 +16,7 @@ enum LF_EOrgRoleMode
 
 //------------------------------------------------------------------------------------------------
 //! What one character's organization looks like from the offer side. The server fills it from
-//! EL_OrganizationManager; a client reads the copy replicated on the character.
+//! LF_OrganizationManager; a client reads the copy replicated on the character.
 class LF_OrgView : Managed
 {
 	string m_sOrgId;
@@ -106,21 +106,21 @@ class LF_OrgRules
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int RightsOf(EL_Organization org, string characterId)
+	static int RightsOf(LF_Organization org, string characterId)
 	{
 		if (!org || characterId.IsEmpty() || !org.IsMember(characterId))
 			return 0;
 
 		int rights = 0;
-		if (org.Allows(characterId, EL_EOrganizationPermission.INVITE))
+		if (org.Allows(characterId, LF_EOrganizationPermission.INVITE))
 			rights = rights | RIGHT_INVITE;
-		if (org.Allows(characterId, EL_EOrganizationPermission.KICK))
+		if (org.Allows(characterId, LF_EOrganizationPermission.KICK))
 			rights = rights | RIGHT_KICK;
-		if (org.Allows(characterId, EL_EOrganizationPermission.WITHDRAW))
+		if (org.Allows(characterId, LF_EOrganizationPermission.WITHDRAW))
 			rights = rights | RIGHT_WITHDRAW;
-		if (org.Allows(characterId, EL_EOrganizationPermission.BUY_UPGRADE))
+		if (org.Allows(characterId, LF_EOrganizationPermission.BUY_UPGRADE))
 			rights = rights | RIGHT_BUY;
-		if (org.GetRankId(characterId) == EL_OrganizationConfig.RANK_FOUNDER)
+		if (org.GetRankId(characterId) == LF_OrganizationConfig.RANK_FOUNDER)
 			rights = rights | RIGHT_FOUNDER;
 
 		return rights;

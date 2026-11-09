@@ -42,13 +42,13 @@ class LF_JobsConfig
 		Resource container = BaseContainerTools.LoadContainer(CONFIG_PATH);
 		if (!container || !container.GetResource())
 		{
-			EL_Debug.Error("Jobs", string.Format("jobs config does not resolve: %1", CONFIG_PATH));
+			LF_Debug.Error("Jobs", string.Format("jobs config does not resolve: %1", CONFIG_PATH));
 			return null;
 		}
 
 		s_Config = LF_JobsConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
-			EL_Debug.Error("Jobs", string.Format("jobs config has an unexpected root class: %1", CONFIG_PATH));
+			LF_Debug.Error("Jobs", string.Format("jobs config has an unexpected root class: %1", CONFIG_PATH));
 
 		return s_Config;
 	}

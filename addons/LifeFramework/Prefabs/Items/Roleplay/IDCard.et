@@ -8,7 +8,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
     "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
    }
   }
-  EL_QuantityComponent "{5AD2B81F97B9381B}" {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
    m_iMaxQuantity 1
   }
   InventoryItemComponent "{5222EB4D0C73006B}" {
@@ -41,7 +41,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
   }
   SCR_GadgetComponent "{9A7553FE5FE4D3D0}" {
-   m_eAnimVariable EL_ITEM
+   m_eAnimVariable LF_ITEM
   }
  }
 }

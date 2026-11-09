@@ -50,7 +50,7 @@ class LF_HideoutStashStorageManagerComponent : ScriptedInventoryStorageManagerCo
 		if (!Replication.IsServer() || AllowsAccessFrom(instigatorManager))
 			return true;
 
-		EL_Debug.Warn("Hideout", string.Format("stash %1 kept %2: the taker is not a member", GetHideoutId(), EL_Utils.GetPrefabName(item)));
+		LF_Debug.Warn("Hideout", string.Format("stash %1 kept %2: the taker is not a member", GetHideoutId(), LF_Utils.GetPrefabName(item)));
 		return false;
 	}
 }

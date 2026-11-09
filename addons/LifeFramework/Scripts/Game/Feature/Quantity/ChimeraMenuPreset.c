@@ -2,7 +2,7 @@ modded enum ChimeraMenuPreset
 {
 	// Common POPLIFE presets referenced by LifeFramework
 	PoliceMenu,
-	EL_SplitQuantityDialog,
+	LF_SplitQuantityDialog,
 	// Quest menu
 	QuestMenu,
 	// Debug menu

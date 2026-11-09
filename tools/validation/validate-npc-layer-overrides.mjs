@@ -5,13 +5,13 @@
 // not from the layer. A component a layer adds to an NPC therefore exists only
 // on the server, and the client is kicked on join with
 // `RplCreationError: Number of items mismatch` (observed 2026-11-08 with
-// EL_CharacterSurvivalComponent on NPC_TestDebug). Layer overrides of an
+// LF_CharacterSurvivalComponent on NPC_TestDebug). Layer overrides of an
 // existing component are dropped on clients just as silently. A placed NPC may
 // therefore override only CharacterIdentityComponent; anything else belongs in
 // a prefab (PoliceDutyNPC.et, QuestGiver_Start.et).
-// red-proof: with NPC_TestDebug's EL_CharacterSurvivalComponent and
+// red-proof: with NPC_TestDebug's LF_CharacterSurvivalComponent and
 // ActionsManagerComponent overrides restored in NPCs.layer this printed
-// "FAIL ...NPCs.layer:4 NPC_TestDebug overrides EL_CharacterSurvivalComponent, ActionsManagerComponent"
+// "FAIL ...NPCs.layer:4 NPC_TestDebug overrides LF_CharacterSurvivalComponent, ActionsManagerComponent"
 // and exited 1.
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -40,8 +40,8 @@ export function npcOverrides(text) {
   const lines = text.split(/\r?\n/);
   const found = [];
   for (let i = 0; i < lines.length; i++) {
-    // Only prefab instances replicate; a bare EL_NpcBaseEntity has no RplComponent.
-    const head = lines[i].match(/^\s*EL_NpcBaseEntity\b([^:{]*):\s*"\{[0-9A-F]{16}\}/);
+    // Only prefab instances replicate; a bare LF_NpcBaseEntity has no RplComponent.
+    const head = lines[i].match(/^\s*LF_NpcBaseEntity\b([^:{]*):\s*"\{[0-9A-F]{16}\}/);
     if (!head) continue;
     const name = head[1].trim() || "(unnamed)";
     let depth = braces(lines[i]);

@@ -12,7 +12,7 @@ systems read for perks and gates.
 
 ## Interaction pattern
 
-Rung 4 background today: `EL_PlayerLevelComponent` holds level/XP/skill-point
+Rung 4 background today: `LF_PlayerLevelComponent` holds level/XP/skill-point
 state, computes `GetExperienceForNextLevel = level * 100`, applies passive
 bonuses (gathering speed/amount, sale bonus), and cascades level-ups.
 
@@ -36,7 +36,7 @@ convert skill points into perks. XP gain stays automatic from doing the work.
 
 ## Current state
 
-- `EL_PlayerLevelComponent` (`Feature/Level/`) — level/XP/SP + passive bonuses;
+- `LF_PlayerLevelComponent` (`Feature/Level/`) — level/XP/SP + passive bonuses;
   ⚠️ unguarded setters, save-per-gain, Spanish literal.
 
 ## Dependencies

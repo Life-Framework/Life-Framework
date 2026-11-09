@@ -51,7 +51,7 @@ GenericEntity JobCenter {
        }
       }
       additionalActions {
-       EL_GatherAction "{5A4B0B84C86DF848}" {
+       LF_GatherAction "{5A4B0B84C86DF848}" {
         ParentContextList {
          "default"
         }
@@ -93,7 +93,7 @@ GenericEntity JobCenter {
     coords -2.6 0 0.7
    }
   }
-  EL_NpcBaseEntity JobsNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity JobsNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {
@@ -116,7 +116,7 @@ GenericEntity JobCenter {
   }
  }
 }
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
  coords 45 0 100
  m_vSize 2.5 1 1.5
 }

@@ -11,7 +11,7 @@ GenericEntity : "{1D9FA80D3742DBD6}Prefabs/Props/Civilian/SewingMachine_01.et" {
     }
    }
    additionalActions {
-    EL_ProcessAction "{61CF4728B00BD790}" {
+    LF_ProcessAction "{61CF4728B00BD790}" {
      ParentContextList {
       "default"
      }
@@ -20,13 +20,13 @@ GenericEntity : "{1D9FA80D3742DBD6}Prefabs/Props/Civilian/SewingMachine_01.et" {
      }
      Duration 1
      m_aProcessingInputs {
-      EL_ProcessingInput "{61CF4728B00BD78B}" {
+      LF_ProcessingInput "{61CF4728B00BD78B}" {
        m_InputPrefab "{F0F6577FD74790D2}Prefabs/Crafting/Linen.et"
        m_iInputAmount 5
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{61CF4728B00BD781}" {
+      LF_ProcessingOutput "{61CF4728B00BD781}" {
        m_OutputPrefab "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et"
       }
      }

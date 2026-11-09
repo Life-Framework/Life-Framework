@@ -8,7 +8,7 @@ type RegLastName Lovelace
 type RegAge 36
 click SignButton
 wait 4000
-layer EL_MiningSign_Debug LF_SignReadAction
+layer LF_MiningSign_Debug LF_SignReadAction
 wait 800
 shot ui paper_sign
 input MenuBack

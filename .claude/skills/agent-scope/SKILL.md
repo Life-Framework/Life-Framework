@@ -13,9 +13,9 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
    (`tmp\pr-body.md`), never a shared session dir.
 2. **Read.** The issue (`gh issue view <n>`) or PR, `AGENTS.md`, the
    `docs/decisions.md` entries for your area, and the area's `Feature.md`.
-3. **Red first.** Write the `EL_Test` (see **el-tdd**), break it once, and record
+3. **Red first.** Write the `LF_Test` (see **el-tdd**), break it once, and record
    the observed failure line in `// red-proof:`. Loop with
-   `tools\cli test --no-build --only <EL_Test_Class>` (~10 s); run
+   `tools\cli test --no-build --only <LF_Test_Class>` (~10 s); run
    `tools\cli validate` as often as you like (it skips the Workbench compile; a
    compile error fails `test`). Run `--tier all` once, at the end.
 4. **Main.** Merge `origin/main` only when GitHub says `CONFLICTING` or you need

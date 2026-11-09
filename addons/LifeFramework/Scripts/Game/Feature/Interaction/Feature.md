@@ -16,7 +16,7 @@ from a few metres away. Introductions survive a restart.
 ## Interaction pattern (in-world)
 
 Rung 1-2. The list is the vanilla action menu on the other character's body
-(`Character_Roleplay.et`, context `EL_ID` at chest height). Cash and items are
+(`Character_Roleplay.et`, context `LF_ID` at chest height). Cash and items are
 real inventory items that change hands; the giver's arm moves (base-game
 gesture) and the receiver hears the hand-over. The only UI is the amount
 sheet, because typing an amount is a correct UI. The name is a small line
@@ -36,10 +36,10 @@ under the crosshair, never a tag over heads.
   look check (`NAME_RANGE` 4 m, 15 degree cone) that shows one name.
 - `LF_GiveCashSheet` — the amount sheet (`GiveCashAmount`, `GiveCashButton`).
 - `LF_IntroduceAction`, `LF_GiveCashAction`, `LF_GiveItemAction`,
-  `LF_PlayerRoleAction` — the entries. `EL_ShowIDAction`,
-  `EL_ConfiscateAction`, `LF_JailArrestAction` use the same reach rule.
+  `LF_PlayerRoleAction` — the entries. `LF_ShowIDAction`,
+  `LF_ConfiscateAction`, `LF_JailArrestAction` use the same reach rule.
 - Bridge: `SCR_PlayerController` RPCs in `LF_PlayerInteractionController.c`;
-  names re-sync on every spawn (`EL_GameModeRoleplay.OnPlayerSpawned`).
+  names re-sync on every spawn (`LF_GameModeRoleplay.OnPlayerSpawned`).
 
 ## Animation and sound
 

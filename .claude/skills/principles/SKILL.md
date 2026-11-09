@@ -19,7 +19,7 @@ boundaries. Say plainly what stayed unverified.
 Reproduce from the real log or runtime path, trace the first wrong state to
 its mechanism, and fix that. A guard that turns a crash into a silent no-op
 hides the bug; add one only where invalid input is genuinely expected (a
-config, an RPC payload, a save), and then log an `EL_Debug.Error`. When the
+config, an RPC payload, a save), and then log an `LF_Debug.Error`. When the
 evidence refutes a hypothesis, revert what the hypothesis motivated.
 
 ## Subtract before you add
@@ -33,7 +33,7 @@ abstraction. A diff that removes more than it adds is usually the better one.
 ## Sequence verifiable units
 
 Order the work so every step leaves something checkable: data shape (prefab,
-config), then logic with its `EL_Test`, then UI, then runtime proof. Check each
+config), then logic with its `LF_Test`, then UI, then runtime proof. Check each
 step before building the next. In git, the failing test lands before the
 fix, so the history proves the fix.
 

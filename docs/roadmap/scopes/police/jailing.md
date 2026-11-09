@@ -23,11 +23,11 @@ An on-duty officer arrests a wanted player. That player serves a timed sentence 
 
 ## Assets
 
-`EL_PoliceUtils.GetJailPosition()` currently returns the literal `"127 1 137"` (the DebugWorld police desk). Replace that with a placed cell.
+`LF_PoliceUtils.GetJailPosition()` currently returns the literal `"127 1 137"` (the DebugWorld police desk). Replace that with a placed cell.
 
-Port `LNGC_JailCellComponent`, `LNGC_JailComponent` (timer, zone confine, release), and `LNGC_SendToJailAction`, including `Prefabs/LNGC_JailCell.et`. Door is `Door_PrisonCell_E_A_Left_INT_ST_B.et` plus `EL_LockComponent`. Building can be `Villa_E_2I01_Police.et` or a barracks beside it.
+Port `LNGC_JailCellComponent`, `LNGC_JailComponent` (timer, zone confine, release), and `LNGC_SendToJailAction`, including `Prefabs/LNGC_JailCell.et`. Door is `Door_PrisonCell_E_A_Left_INT_ST_B.et` plus `LF_LockComponent`. Building can be `Villa_E_2I01_Police.et` or a barracks beside it.
 
-The escort slice ports `LNGC_ArrestAction`, `LNGC_ArrestableComponent`, `LNGC_EscortAction`, the escort tick in `LNGC_PoliceComponent`, `LNGC_PutInVehicleAction`, and `LNGC_TakeOutOfVehicleAction`. Seat the nearest free non-driver seat. Wanted stays on `EL_PlayerAccount`. Do not port `LNGC_WantedComponent` or virtual-item seizure. See [sources](../../sources.md).
+The escort slice ports `LNGC_ArrestAction`, `LNGC_ArrestableComponent`, `LNGC_EscortAction`, the escort tick in `LNGC_PoliceComponent`, `LNGC_PutInVehicleAction`, and `LNGC_TakeOutOfVehicleAction`. Seat the nearest free non-driver seat. Wanted stays on `LF_PlayerAccount`. Do not port `LNGC_WantedComponent` or virtual-item seizure. See [sources](../../sources.md).
 
 ## First slice
 
@@ -35,7 +35,7 @@ Replace the placeholder jail position. Arrest of a wanted player starts a config
 
 ## Depends on
 
-- `EL_PoliceUtils` sentence math and the arrest RPC
+- `LF_PoliceUtils` sentence math and the arrest RPC
 - `Account` wanted
 - Persistence for the remaining sentence
 

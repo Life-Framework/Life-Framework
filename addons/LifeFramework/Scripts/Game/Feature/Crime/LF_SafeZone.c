@@ -47,13 +47,13 @@ class LF_SafeZone
 	{
 		if (name.IsEmpty())
 		{
-			EL_Debug.Error(FEATURE, "zone refused: empty name");
+			LF_Debug.Error(FEATURE, "zone refused: empty name");
 			return false;
 		}
 
 		if (radius <= 0)
 		{
-			EL_Debug.Error(FEATURE, string.Format("zone %1 refused: radius %2", name, radius));
+			LF_Debug.Error(FEATURE, string.Format("zone %1 refused: radius %2", name, radius));
 			return false;
 		}
 
@@ -67,7 +67,7 @@ class LF_SafeZone
 
 		area.m_vCenter = center;
 		area.m_fRadius = radius;
-		EL_Debug.Info(FEATURE, string.Format("zone %1 at %2 radius %3 m", name, center, radius));
+		LF_Debug.Info(FEATURE, string.Format("zone %1 at %2 radius %3 m", name, center, radius));
 		return true;
 	}
 
@@ -160,7 +160,7 @@ class LF_SafeZone
 	protected static void NoteRefusal(int attackerId, int victimId, float damage, bool victimInside, IEntity attacker)
 	{
 		s_iRefused++;
-		EL_Debug.Info(FEATURE, string.Format("refused %1 damage from player %2 to player %3 (victim inside=%4)", damage, attackerId, victimId, victimInside));
+		LF_Debug.Info(FEATURE, string.Format("refused %1 damage from player %2 to player %3 (victim inside=%4)", damage, attackerId, victimId, victimInside));
 
 		if (!s_mLastNotice)
 			s_mLastNotice = new map<int, float>();
@@ -175,7 +175,7 @@ class LF_SafeZone
 
 		s_mLastNotice.Set(attackerId, now);
 		if (attacker)
-			EL_Utils.NotifyEntity(attacker, "#LF-SafeZone_ShotRefused", "#LF-SafeZone_Title", 4.0);
+			LF_Utils.NotifyEntity(attacker, "#LF-SafeZone_ShotRefused", "#LF-SafeZone_Title", 4.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

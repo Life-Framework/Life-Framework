@@ -3,7 +3,7 @@
 // organization). Same rules as LF_UIScreen, packaged for a menu that owns its own layout.
 //
 // Input contexts must be activated every frame or only raw mouse clicks work. MenuUp/MenuDown
-// live in MenuWithEditorContext, not MenuContext, so both are activated (see EL_DebugMenu).
+// live in MenuWithEditorContext, not MenuContext, so both are activated (see LF_DebugMenu).
 // One physical press can reach a handler twice (a button's own invoker and this poll), so every
 // handler passes Ready(key), a time debounce. A Close that runs twice takes the menu underneath
 // with it.

@@ -88,13 +88,13 @@ class LF_StorageSnapshotRecord : Managed
 //! a record nothing matches is spawned and inserted. Applying twice leaves the same tree
 //! (idempotent), and a prefab's default contents (a jacket's default pocket item, a weapon's
 //! default magazine) never come back on top of what the player actually had. A record whose
-//! prefab does not load logs EL_Debug.Error and is skipped with its children.
+//! prefab does not load logs LF_Debug.Error and is skipped with its children.
 //!
 //! DEATH. "Death drops what you carry": the body keeps the items, the account does not. The
 //! carried snapshot is dropped at death and a dead character is never captured, so the restart
 //! cannot hand the items back next to the lootable body.
 //!
-//! PERSISTENCE. ExportAll / ApplyAll are the "carried" payload of EL_PersistenceComponentSerializer
+//! PERSISTENCE. ExportAll / ApplyAll are the "carried" payload of LF_PersistenceComponentSerializer
 //! (save version 6+). CaptureAllPlayers runs at the start of that payload write (autosave, manual
 //! and shutdown save points); the disconnect path captures the leaving player first.
 //------------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ class LF_StorageSnapshot
 	{
 		if (record.m_sOwnerKey.IsEmpty() || record.m_sSlot.IsEmpty())
 		{
-			EL_Debug.Error(FEATURE, "snapshot refused: empty owner key or slot");
+			LF_Debug.Error(FEATURE, "snapshot refused: empty owner key or slot");
 			return;
 		}
 
@@ -169,7 +169,7 @@ class LF_StorageSnapshot
 			return;
 
 		if (Clear(characterId, SLOT_CARRIED))
-			EL_Debug.Info(FEATURE, string.Format("carried snapshot dropped at death for character %1", characterId));
+			LF_Debug.Info(FEATURE, string.Format("carried snapshot dropped at death for character %1", characterId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ class LF_StorageSnapshot
 		{
 			if (!record || record.m_sOwnerKey.IsEmpty() || record.m_sSlot.IsEmpty())
 			{
-				EL_Debug.Error(FEATURE, "load skipped a snapshot without owner key or slot");
+				LF_Debug.Error(FEATURE, "load skipped a snapshot without owner key or slot");
 				continue;
 			}
 
@@ -272,7 +272,7 @@ class LF_StorageSnapshot
 			return 0;
 
 		PlayerManager playerManager = GetGame().GetPlayerManager();
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!playerManager || !accounts)
 			return 0;
 
@@ -293,7 +293,7 @@ class LF_StorageSnapshot
 	static bool CapturePlayer(int playerId)
 	{
 		PlayerManager playerManager = GetGame().GetPlayerManager();
-		EL_PlayerAccountManager accounts = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!playerManager || !accounts)
 			return false;
 
@@ -301,11 +301,11 @@ class LF_StorageSnapshot
 		if (!controlled || !SCR_ChimeraCharacter.Cast(controlled))
 			return false;
 
-		string uid = EL_Utils.GetPlayerUID(playerId);
+		string uid = LF_Utils.GetPlayerUID(playerId);
 		if (uid.IsEmpty())
 			return false;
 
-		EL_PlayerAccount account = accounts.GetAccount(uid);
+		LF_PlayerAccount account = accounts.GetAccount(uid);
 		if (!account || !account.GetActiveCharacter())
 			return false;
 
@@ -318,7 +318,7 @@ class LF_StorageSnapshot
 	{
 		if (!root)
 		{
-			EL_Debug.Error(FEATURE, string.Format("capture refused for %1/%2: no entity", ownerKey, slot));
+			LF_Debug.Error(FEATURE, string.Format("capture refused for %1/%2: no entity", ownerKey, slot));
 			return null;
 		}
 
@@ -357,15 +357,15 @@ class LF_StorageSnapshot
 					continue;
 
 				visited.Insert(item);
-				string prefab = EL_Utils.GetPrefabName(item);
+				string prefab = LF_Utils.GetPrefabName(item);
 				if (prefab.IsEmpty())
 				{
-					EL_Debug.Warn(FEATURE, string.Format("capture skipped an item without a prefab in %1", EL_Utils.GetPrefabName(owner)));
+					LF_Debug.Warn(FEATURE, string.Format("capture skipped an item without a prefab in %1", LF_Utils.GetPrefabName(owner)));
 					continue;
 				}
 
 				int quantity = 1;
-				EL_QuantityComponent quantityComponent = EL_QuantityComponent.Cast(item.FindComponent(EL_QuantityComponent));
+				LF_QuantityComponent quantityComponent = LF_QuantityComponent.Cast(item.FindComponent(LF_QuantityComponent));
 				if (quantityComponent)
 					quantity = quantityComponent.GetQuantity();
 
@@ -387,21 +387,21 @@ class LF_StorageSnapshot
 	{
 		if (!root || !record || !record.m_aItems)
 		{
-			EL_Debug.Error(FEATURE, "apply refused: no entity or no snapshot");
+			LF_Debug.Error(FEATURE, "apply refused: no entity or no snapshot");
 			return 0;
 		}
 
-		InventoryStorageManagerComponent manager = EL_InventoryUtils.GetResponsibleStorageManager(root);
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(root);
 		if (!manager)
 		{
-			EL_Debug.Error(FEATURE, string.Format("apply refused for %1/%2: %3 has no inventory storage manager", record.m_sOwnerKey, record.m_sSlot, EL_Utils.GetPrefabName(root)));
+			LF_Debug.Error(FEATURE, string.Format("apply refused for %1/%2: %3 has no inventory storage manager", record.m_sOwnerKey, record.m_sSlot, LF_Utils.GetPrefabName(root)));
 			return 0;
 		}
 
 		array<IEntity> resolved = {};
 		resolved.Resize(record.m_aItems.Count());
 		int spawned = ApplyChildren(manager, root, -1, record.m_aItems, resolved);
-		EL_Debug.Info(FEATURE, string.Format("applied %1/%2: %3 record(s), %4 spawned", record.m_sOwnerKey, record.m_sSlot, record.m_aItems.Count(), spawned));
+		LF_Debug.Info(FEATURE, string.Format("applied %1/%2: %3 record(s), %4 spawned", record.m_sOwnerKey, record.m_sSlot, record.m_aItems.Count(), spawned));
 		return spawned;
 	}
 
@@ -501,7 +501,7 @@ class LF_StorageSnapshot
 			if (exactSlot && occupantSlot[index] != item.m_iSlot)
 				continue;
 
-			if (EL_Utils.GetPrefabName(occupants[index]) == item.m_sPrefab)
+			if (LF_Utils.GetPrefabName(occupants[index]) == item.m_sPrefab)
 				return index;
 		}
 
@@ -511,7 +511,7 @@ class LF_StorageSnapshot
 	//------------------------------------------------------------------------------------------------
 	protected static void SetQuantity(IEntity entity, LF_StorageItemRecord item)
 	{
-		EL_QuantityComponent quantity = EL_QuantityComponent.Cast(entity.FindComponent(EL_QuantityComponent));
+		LF_QuantityComponent quantity = LF_QuantityComponent.Cast(entity.FindComponent(LF_QuantityComponent));
 		if (!quantity || item.m_iQuantity < 1 || quantity.GetQuantity() == item.m_iQuantity)
 			return;
 
@@ -519,7 +519,7 @@ class LF_StorageSnapshot
 		int max = quantity.GetMaxQuantity();
 		if (max > 0 && amount > max)
 		{
-			EL_Debug.Warn(FEATURE, string.Format("restored %1 quantity %2 clamped to max %3", item.m_sPrefab, amount, max));
+			LF_Debug.Warn(FEATURE, string.Format("restored %1 quantity %2 clamped to max %3", item.m_sPrefab, amount, max));
 			amount = max;
 		}
 
@@ -595,7 +595,7 @@ class LF_StorageSnapshot
 			LF_StorageSnapshotRecord record = Get(state.m_sOwnerKey, state.m_sSlot);
 			if (!record || !record.m_aItems || record.m_aItems.Count() != state.m_aAmmo.Count())
 			{
-				EL_Debug.Warn(FEATURE, string.Format("item state for %1/%2 skipped: no matching snapshot", state.m_sOwnerKey, state.m_sSlot));
+				LF_Debug.Warn(FEATURE, string.Format("item state for %1/%2 skipped: no matching snapshot", state.m_sOwnerKey, state.m_sSlot));
 				continue;
 			}
 
@@ -617,7 +617,7 @@ class LF_StorageSnapshot
 		Resource resource = Resource.Load(item.m_sPrefab);
 		if (item.m_sPrefab.IsEmpty() || !resource || !resource.IsValid())
 		{
-			EL_Debug.Error(FEATURE, string.Format("restore skipped missing prefab '%1' (and anything inside it)", item.m_sPrefab));
+			LF_Debug.Error(FEATURE, string.Format("restore skipped missing prefab '%1' (and anything inside it)", item.m_sPrefab));
 			return null;
 		}
 
@@ -626,7 +626,7 @@ class LF_StorageSnapshot
 		IEntity entity = GetGame().SpawnEntityPrefabEx(item.m_sPrefab, false, null, spawnParams);
 		if (!entity)
 		{
-			EL_Debug.Error(FEATURE, string.Format("restore skipped '%1': spawn returned nothing", item.m_sPrefab));
+			LF_Debug.Error(FEATURE, string.Format("restore skipped '%1': spawn returned nothing", item.m_sPrefab));
 			return null;
 		}
 
@@ -634,9 +634,9 @@ class LF_StorageSnapshot
 		SetAmmo(entity, item);
 
 		// A restored stack keeps its own slot instead of merging into a neighbour.
-		bool isStack = entity.FindComponent(EL_QuantityComponent) != null;
+		bool isStack = entity.FindComponent(LF_QuantityComponent) != null;
 		if (isStack)
-			EL_QuantityComponent.SetTransferIntent(entity, true);
+			LF_QuantityComponent.SetTransferIntent(entity, true);
 
 		bool inserted;
 		if (item.m_iStorage >= 0 && item.m_iStorage < storages.Count())
@@ -653,9 +653,9 @@ class LF_StorageSnapshot
 		if (!inserted)
 		{
 			if (isStack)
-				EL_QuantityComponent.RemoveTransferIntent(entity);
+				LF_QuantityComponent.RemoveTransferIntent(entity);
 
-			EL_Debug.Warn(FEATURE, string.Format("restore could not insert '%1' into %2 - deleting", item.m_sPrefab, EL_Utils.GetPrefabName(owner)));
+			LF_Debug.Warn(FEATURE, string.Format("restore could not insert '%1' into %2 - deleting", item.m_sPrefab, LF_Utils.GetPrefabName(owner)));
 			SCR_EntityHelper.DeleteEntityAndChildren(entity);
 			return null;
 		}

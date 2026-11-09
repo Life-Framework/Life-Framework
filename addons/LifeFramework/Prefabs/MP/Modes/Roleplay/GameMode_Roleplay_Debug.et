@@ -1,36 +1,36 @@
-EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay.et" {
+LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Roleplay.et" {
  ID "7F729501AA82DA9A"
  components {
   SCR_RespawnSystemComponent "{66BD3C8588F5687E}" {
-   m_SpawnLogic EL_SpawnLogic "{66BD3ED1B2F2AD15}" {
+   m_SpawnLogic LF_SpawnLogic "{66BD3ED1B2F2AD15}" {
     m_bGrantTestCars 1
     m_aFactionCharacterItems {
-     EL_FactionLoadout "{B7C2A6677AF28A10}" {
+     LF_FactionLoadout "{B7C2A6677AF28A10}" {
       m_eFaction CIVILIAN
       m_aItems {
-       EL_DefaultLoadoutItem "{B062151FA784F958}" {
+       LF_DefaultLoadoutItem "{B062151FA784F958}" {
         m_rPrefab "{9F546CCA2582D16F}Prefabs/Characters/Uniforms/Jacket_M88.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
         m_aStoredItems {
-         EL_DefaultLoadoutItem "{BB85F56884554B78}" {
+         LF_DefaultLoadoutItem "{BB85F56884554B78}" {
           m_rPrefab "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et"
           m_aComponentDefaults {
-           EL_DefaultLoadoutItemQuantityComponent "{45FCBE14F6933AA3}" {
+           LF_DefaultLoadoutItemQuantityComponent "{45FCBE14F6933AA3}" {
             m_iQuantity 500
            }
           }
          }
         }
        }
-       EL_DefaultLoadoutItem "{842CED42F5B1445D}" {
+       LF_DefaultLoadoutItem "{842CED42F5B1445D}" {
         m_rPrefab "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
-       EL_DefaultLoadoutItem "{60A95B55CAD80CB8}" {
+       LF_DefaultLoadoutItem "{60A95B55CAD80CB8}" {
         m_rPrefab "{DCF980831E880F6A}Prefabs/Characters/Uniforms/Pants_M88.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
-       EL_DefaultLoadoutItem "{F9E7040252246630}" {
+       LF_DefaultLoadoutItem "{F9E7040252246630}" {
         m_rPrefab "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
@@ -41,26 +41,26 @@ EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
        "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
       }
      }
-     EL_FactionLoadout "{496433624FE9BF32}" {
+     LF_FactionLoadout "{496433624FE9BF32}" {
       m_eFaction POLICE
       m_aItems {
-       EL_DefaultLoadoutItem "{9DCC455F94985BCB}" {
+       LF_DefaultLoadoutItem "{9DCC455F94985BCB}" {
         m_rPrefab "{DD565E2C7E00A5BB}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_blue.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
-       EL_DefaultLoadoutItem "{473C6D347D322CB5}" {
+       LF_DefaultLoadoutItem "{473C6D347D322CB5}" {
         m_rPrefab "{6A3F994EFFE22995}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_DarkBlue.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
-       EL_DefaultLoadoutItem "{6BBCF470BA9E0F2D}" {
+       LF_DefaultLoadoutItem "{6BBCF470BA9E0F2D}" {
         m_rPrefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
-       EL_DefaultLoadoutItem "{B1A8EFD1319B34F4}" {
+       LF_DefaultLoadoutItem "{B1A8EFD1319B34F4}" {
         m_rPrefab "{6065A0A410E65A45}Prefabs/Characters/Vests/Vest_SovietHarness/Variants/Vest_SovietHarness_officer_Black.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
-       EL_DefaultLoadoutItem "{9805FF033764712B}" {
+       LF_DefaultLoadoutItem "{9805FF033764712B}" {
         m_rPrefab "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
@@ -75,7 +75,7 @@ EL_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
     }
    }
   }
-  EL_DebugWorldCollisionRepairComponent "{A5E5E5A1000000F1}" {
+  LF_DebugWorldCollisionRepairComponent "{A5E5E5A1000000F1}" {
   }
  }
  m_bDevToolsEnabled 1

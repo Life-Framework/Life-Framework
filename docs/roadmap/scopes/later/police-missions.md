@@ -20,7 +20,7 @@ An on-duty officer takes a call from the station board: a placed scene with a su
 
 ## Assets
 
-Station is `Villa_E_2I01_Police.et`. Call list and reasons: `LNGC_DispatchCallsDialog`, `LNGC_IssueFineAction`, `LNGC_FineReasonsCatalog`. Fine payment stays on `EL_PoliceUtils` and MoneyStack, not LNGC virtual cash. A civilian opens the call at the station board. Do not require `LNGC_Phone*`. See [sources](../../sources.md).
+Station is `Villa_E_2I01_Police.et`. Call list and reasons: `LNGC_DispatchCallsDialog`, `LNGC_IssueFineAction`, `LNGC_FineReasonsCatalog`. Fine payment stays on `LF_PoliceUtils` and MoneyStack, not LNGC virtual cash. A civilian opens the call at the station board. Do not require `LNGC_Phone*`. See [sources](../../sources.md).
 
 ## First slice
 

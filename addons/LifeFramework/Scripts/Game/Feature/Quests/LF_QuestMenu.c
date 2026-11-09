@@ -32,7 +32,7 @@ class LF_QuestMenu : ChimeraMenuBase
 		if (closeClick)
 			closeClick.Insert(OnClosePressed);
 		else
-			EL_Debug.Error("Quests", "close button missing or not a button; Esc still closes");
+			LF_Debug.Error("Quests", "close button missing or not a button; Esc still closes");
 
 		RebuildFocus();
 
@@ -216,7 +216,7 @@ class LF_QuestMenu : ChimeraMenuBase
 			Widget rowWidget = GetGame().GetWorkspace().CreateWidgets("{CE14CB47B66299DC}UI/Layouts/QuestMenuRow.layout", m_wQuestList);
 			if (!rowWidget)
 			{
-				EL_Debug.Error("Quests", string.Format("quest row layout failed to create for %1", def.m_sQuestId));
+				LF_Debug.Error("Quests", string.Format("quest row layout failed to create for %1", def.m_sQuestId));
 				continue;
 			}
 

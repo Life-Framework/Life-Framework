@@ -119,7 +119,7 @@ class LF_SignComponent : ScriptComponent
 		LF_SignDef sign = LF_SignCatalog.Find(m_sSignId);
 		if (!LF_SignCatalog.IsUsable(sign))
 		{
-			EL_Debug.Error("Signs", string.Format("sign id '%1' has no titled entry in LF_Signs.conf; Read hidden at %2", m_sSignId, GetOwner().GetOrigin()));
+			LF_Debug.Error("Signs", string.Format("sign id '%1' has no titled entry in LF_Signs.conf; Read hidden at %2", m_sSignId, GetOwner().GetOrigin()));
 			return null;
 		}
 
@@ -190,7 +190,7 @@ class LF_SignComponent : ScriptComponent
 			IEntity plate = owner.GetChildren();
 			if (!plate)
 			{
-				EL_Debug.Error("Signs", "sign " + m_sSignId + " paints its child but has none");
+				LF_Debug.Error("Signs", "sign " + m_sSignId + " paints its child but has none");
 				return;
 			}
 
@@ -207,7 +207,7 @@ class LF_SignComponent : ScriptComponent
 		Resource resource = Resource.Load(FACE_PREFAB);
 		if (!resource || !resource.IsValid())
 		{
-			EL_Debug.Error("Signs", "sign face prefab does not load: " + FACE_PREFAB);
+			LF_Debug.Error("Signs", "sign face prefab does not load: " + FACE_PREFAB);
 			return;
 		}
 
@@ -221,7 +221,7 @@ class LF_SignComponent : ScriptComponent
 		m_Face = GetGame().SpawnEntityPrefabLocal(resource, owner.GetWorld(), params);
 		if (!m_Face)
 		{
-			EL_Debug.Error("Signs", "sign face failed to spawn for " + m_sSignId);
+			LF_Debug.Error("Signs", "sign face failed to spawn for " + m_sSignId);
 			return;
 		}
 
@@ -375,7 +375,7 @@ class LF_SignComponent : ScriptComponent
 		Widget paint = m_wFaceRoot.FindAnyWidget("Paint");
 		if (!rim || !paint)
 		{
-			EL_Debug.Error("Signs", "painted face layout is missing Rim or Paint: " + m_sSignId);
+			LF_Debug.Error("Signs", "painted face layout is missing Rim or Paint: " + m_sSignId);
 			return;
 		}
 
@@ -453,7 +453,7 @@ class LF_SignComponent : ScriptComponent
 		m_wFaceRoot = workspace.CreateWidgets(layout);
 		if (!m_wFaceRoot)
 		{
-			EL_Debug.Error("Signs", "sign face layout failed to load: " + layout);
+			LF_Debug.Error("Signs", "sign face layout failed to load: " + layout);
 			ClearFace();
 			return;
 		}
@@ -462,7 +462,7 @@ class LF_SignComponent : ScriptComponent
 		TextWidget title = TextWidget.Cast(m_wFaceRoot.FindAnyWidget("Title"));
 		if (!m_wFaceTexture || !title)
 		{
-			EL_Debug.Error("Signs", "sign face layout is missing RTTexture0 or Title");
+			LF_Debug.Error("Signs", "sign face layout is missing RTTexture0 or Title");
 			ClearFace();
 			return;
 		}
@@ -485,7 +485,7 @@ class LF_SignComponent : ScriptComponent
 		}
 		m_wFaceTexture.SetRenderTarget(target);
 		m_FaceTarget = target;
-		EL_Debug.Info("Signs", "face printed: " + m_sSignId);
+		LF_Debug.Info("Signs", "face printed: " + m_sSignId);
 	}
 
 	//------------------------------------------------------------------------------------------------

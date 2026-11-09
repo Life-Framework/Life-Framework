@@ -1,11 +1,11 @@
 // LF_FilmCameraPath.c - keyframed camera pass for the filming harness.
 //
-// Dev-only, like EL_AgentHarness: a rendering session flies a camera along
+// Dev-only, like LF_AgentHarness: a rendering session flies a camera along
 // timed keys while tools/film records the window. The path math is pure
 // (LF_FilmCameraPath.Sample) so the fast suite covers it; LF_FilmCameraRunner
 // is the rendering half and does nothing useful on a headless server.
 //
-// Engine calls used here are the ones EL_ScreenshotCapture already compiles
+// Engine calls used here are the ones LF_ScreenshotCapture already compiles
 // against (CameraManager, CameraBase.SetTransform, Math3D.DirectionAndUpMatrix)
 // plus CameraBase.SetVerticalFOV, SCR_ManualCamera.SetInputEnabled and
 // SCR_HUDManagerComponent.SetVisible (api_search, 2026-11-07).
@@ -31,7 +31,7 @@ class LF_FilmCameraPath : Managed
 	{
 		if (time < 0 || (!m_aKeys.IsEmpty() && time <= m_aKeys[m_aKeys.Count() - 1].Time))
 		{
-			EL_Debug.Error(FEATURE, string.Format("key rejected: time %1 is not after the previous key", time));
+			LF_Debug.Error(FEATURE, string.Format("key rejected: time %1 is not after the previous key", time));
 			return false;
 		}
 
@@ -141,25 +141,25 @@ class LF_FilmCameraRunner
 	{
 		if (s_Path)
 		{
-			EL_Debug.Error(FEATURE, "play rejected: a camera pass is already running");
+			LF_Debug.Error(FEATURE, "play rejected: a camera pass is already running");
 			return false;
 		}
 		if (!path || path.Count() == 0)
 		{
-			EL_Debug.Error(FEATURE, "play rejected: empty path");
+			LF_Debug.Error(FEATURE, "play rejected: empty path");
 			return false;
 		}
 
 		ArmaReforgerScripted game = GetGame();
 		if (!game || !game.GetWorld())
 		{
-			EL_Debug.Error(FEATURE, "play rejected: no world");
+			LF_Debug.Error(FEATURE, "play rejected: no world");
 			return false;
 		}
 		CameraManager cameraManager = game.GetCameraManager();
 		if (!cameraManager)
 		{
-			EL_Debug.Error(FEATURE, "play rejected: no camera manager (headless?)");
+			LF_Debug.Error(FEATURE, "play rejected: no camera manager (headless?)");
 			return false;
 		}
 
@@ -168,13 +168,13 @@ class LF_FilmCameraRunner
 		float fov;
 		path.Sample(0, position, lookAt, fov);
 
-		IEntity spawned = EL_Utils.SpawnEntityPrefab(CAMERA_PREFAB, position, "0 0 0", false);
+		IEntity spawned = LF_Utils.SpawnEntityPrefab(CAMERA_PREFAB, position, "0 0 0", false);
 		CameraBase camera = CameraBase.Cast(spawned);
 		if (!camera)
 		{
 			if (spawned)
 				SCR_EntityHelper.DeleteEntityAndChildren(spawned);
-			EL_Debug.Error(FEATURE, "play rejected: camera prefab did not spawn a CameraBase");
+			LF_Debug.Error(FEATURE, "play rejected: camera prefab did not spawn a CameraBase");
 			return false;
 		}
 
@@ -200,7 +200,7 @@ class LF_FilmCameraRunner
 		s_fStartMs = game.GetWorld().GetWorldTime();
 		Apply(camera, position, lookAt, fov);
 		game.GetCallqueue().CallLater(Tick, 0, true);
-		EL_Debug.Log(FEATURE, string.Format("camera pass started: %1 keys, %2 s", path.Count(), path.GetDuration()));
+		LF_Debug.Log(FEATURE, string.Format("camera pass started: %1 keys, %2 s", path.Count(), path.GetDuration()));
 		return true;
 	}
 
@@ -283,6 +283,6 @@ class LF_FilmCameraRunner
 		s_Path = null;
 		s_CameraId = EntityID.INVALID;
 		s_PreviousCameraId = EntityID.INVALID;
-		EL_Debug.Log(FEATURE, string.Format("camera pass %1", result));
+		LF_Debug.Log(FEATURE, string.Format("camera pass %1", result));
 	}
 };

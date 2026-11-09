@@ -1,4 +1,4 @@
-EL_BaseCrop : "{64DFA805B1BF7F7D}Prefabs/Vegetation/Crops/BaseCrop.et" {
+LF_BaseCrop : "{64DFA805B1BF7F7D}Prefabs/Vegetation/Crops/BaseCrop.et" {
  ID "59A12C31CAEC6145"
  components {
   ActionsManagerComponent "{59A0BBAE906EB838}" {
@@ -10,7 +10,7 @@ EL_BaseCrop : "{64DFA805B1BF7F7D}Prefabs/Vegetation/Crops/BaseCrop.et" {
     }
    }
    additionalActions {
-    EL_GatherAction "{59A12C3059847C59}" {
+    LF_GatherAction "{59A12C3059847C59}" {
      ParentContextList {
       "default"
      }

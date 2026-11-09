@@ -17,11 +17,11 @@
 //   mcp enable <name>                 Set enabled=true in opencode.json
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
-//   test [--no-build] [--tier T]      Boot DebugWorld and run the ELTEST suite
+//   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
-//   suite-stamp <tier>                Newest saved ELTEST summary for a tier
+//   suite-stamp <tier>                Newest saved LFTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
 //   scope <name> <dir>                Write the test stub, features row, keys, and street row
 //   scope --selftest                  Check those four outputs in a temp directory
@@ -796,7 +796,7 @@ function serverArgs(root, ports) {
     "-profile", profile,
     "-maxFPS", "30",
     "-logLevel", "normal",
-    "-scrDefine", "EL_AUTOTEST",
+    "-scrDefine", "LF_AUTOTEST",
     "-disableCrashReporter",
     "-noBackend",
     "-bindPort", String(ports.gamePort),
@@ -1423,8 +1423,8 @@ function cmdPlaytest(args) {
   return 1;
 }
 
-// --only names: a test class (EL_Test_X), a GetName() string, or a test file
-// name (EL_Test_Money or EL_Test_Money.c), which expands to every test class
+// --only names: a test class (LF_Test_X), a GetName() string, or a test file
+// name (LF_Test_Money or LF_Test_Money.c), which expands to every test class
 // declared in that file. Names the suite cannot match fail the run there.
 function resolveOnlyNames(root, spec) {
   const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
@@ -1432,7 +1432,7 @@ function resolveOnlyNames(root, spec) {
   for (const raw of String(spec).split(",").map((x) => x.trim()).filter(Boolean)) {
     const file = join(testsDir, raw.endsWith(".c") ? raw : `${raw}.c`);
     if (/^(EL|LF)_Test_\w+(\.c)?$/.test(raw) && existsSync(file)) {
-      const classes = [...readFileSync(file, "utf8").matchAll(/class\s+((?:EL_Test_|LF_Test_)\w+)\s*:\s*EL_Test\b/g)].map((m) => m[1]);
+      const classes = [...readFileSync(file, "utf8").matchAll(/class\s+(LF_Test_\w+)\s*:\s*LF_Test\b/g)].map((m) => m[1]);
       if (classes.length) {
         names.push(...classes);
         continue;
@@ -1861,7 +1861,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   if (opts.only !== undefined) {
     only = resolveOnlyNames(root, opts.only);
     if (only.length === 0) {
-      console.log("usage: tools\\cli test --no-build --only <EL_Test_Class|test-name|EL_Test_File>[,...]");
+      console.log("usage: tools\\cli test --no-build --only <LF_Test_Class|test-name|LF_Test_File>[,...]");
       return 2;
     }
     console.log(`test: --only ${only.join(",")}`);
@@ -1932,7 +1932,7 @@ function poolMode(root, opts) {
 function runLocalTest(root, tier, only) {
   // Delegate to the proven PowerShell harness (tools/test/test-e2e.ps1):
   // boots the dedicated server via -server + a neutral addonsDir, polls the
-  // profile console.log every 2s for the [ELTEST] SUMMARY, self-terminates.
+  // profile console.log every 2s for the [LFTEST] SUMMARY, self-terminates.
   // The harness is loaded from the CLI's own checkout but launched with cwd in
   // the target worktree, so it builds its profile/junction/logs there.
   const harness = join(ROOT, "tools", "test", "test-e2e.ps1");
@@ -1958,7 +1958,7 @@ function runLocalTest(root, tier, only) {
 async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   // Fast dev loop: skip the headless Workbench build (the dedicated server
   // compiles scripts at boot from the unpacked addons), run the in-game suite,
-  // then dump the per-feature [ELDebug:*] lines from the same log.
+  // then dump the per-feature [LFDebug:*] lines from the same log.
   guardHeavy(root, "dev", opts.force);
   console.log("=== dev: validate ===");
   const v = await cmdRunArea("validate", root);
@@ -2028,9 +2028,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout)
   test [--no-build] [--tier fast|all|persistence] [--only <name>[,<name>...]] [--any|--local|--remote [name]|--machine <name>]
-                                build + boot server + parse ELTEST results (worktree only).
+                                build + boot server + parse LFTEST results (worktree only).
                                 --only runs just those tests (class, GetName(), or test file
-                                name like EL_Test_Money); SUMMARY tier=only, any tier allowed.
+                                name like LF_Test_Money); SUMMARY tier=only, any tier allowed.
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md)
@@ -2039,7 +2039,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 prune removes remote run folders of gone worktrees
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
-                                dump [ELDebug:*] feature log lines (worktree only)
+                                dump [LFDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   prs status|heal [--dry-run] [<n>...]
@@ -2207,7 +2207,7 @@ function wtHelp() {
   tools\\cli wt new <slug> [--wait]    create Life-Framework-ws-<slug> at ws/<slug>, allocate ports
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
-                                       run the ELTEST suite in that worktree (from anywhere)
+                                       run the LFTEST suite in that worktree (from anywhere)
   tools\\cli wt e2e <slug>
                                        two-boot save-state E2E: persistence save boot, then
                                        reload same profile with -loadSessionSave (latest)
@@ -2488,8 +2488,8 @@ function runE2eHere(root) {
     console.log(`e2e: profile ${profile}`);
     return pass1;
   }
-  console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, -loadSessionSave latest, EL_E2E_LOAD_BOOT)`);
-  const pass2 = runE2ePass(e.path, "persistence", { keepProfile: true, loadLatestSave: true, extraDefine: "EL_E2E_LOAD_BOOT" });
+  console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, -loadSessionSave latest, LF_E2E_LOAD_BOOT)`);
+  const pass2 = runE2ePass(e.path, "persistence", { keepProfile: true, loadLatestSave: true, extraDefine: "LF_E2E_LOAD_BOOT" });
   console.log(`e2e: profile ${profile}`);
   console.log(`e2e: pass1 exit=${pass1} pass2 exit=${pass2} ${pass1 === 0 && pass2 === 0 ? "OK" : "FAILED"}`);
   return pass1 === 0 && pass2 === 0 ? 0 : (pass1 === 0 ? pass2 : pass1);

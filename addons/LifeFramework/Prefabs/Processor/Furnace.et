@@ -13,20 +13,20 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
     }
    }
    additionalActions {
-    EL_ProcessAction "{598F21A877BE6DEE}" {
+    LF_ProcessAction "{598F21A877BE6DEE}" {
      UIInfo UIInfo "{59947AF4A11A18DC}" {
       Name "Smelt Iron Nuggets"
      }
      m_sMachineId "furnace-iron"
      Duration 10
      m_aProcessingInputs {
-      EL_ProcessingInput "{59B2AD116757D53C}" {
+      LF_ProcessingInput "{59B2AD116757D53C}" {
        m_InputPrefab "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et"
        m_iInputAmount 2
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{59B2AD115CAF9A69}" {
+      LF_ProcessingOutput "{59B2AD115CAF9A69}" {
        m_OutputPrefab "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
        m_iOutputAmount 1
       }
@@ -35,7 +35,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      m_vDropOffset -1.8 0 0
      m_vRotation 0 0 0
     }
-    EL_ProcessAction "{5A5EE24316053904}" {
+    LF_ProcessAction "{5A5EE24316053904}" {
      ParentContextList {
       "default"
      }
@@ -45,13 +45,13 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      m_sMachineId "furnace-gold"
      Duration 15
      m_aProcessingInputs {
-      EL_ProcessingInput "{5A5EE2432A165321}" {
+      LF_ProcessingInput "{5A5EE2432A165321}" {
        m_InputPrefab "{8F81BD0BF343CF49}Prefabs/Resources/Mining/GoldNugget.et"
        m_iInputAmount 2
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{5A5EE2432BB9E050}" {
+      LF_ProcessingOutput "{5A5EE2432BB9E050}" {
        m_OutputPrefab "{ACC9A10F0F20F5C4}Prefabs/Resources/Mining/GoldBar.et"
        m_iOutputAmount 1
       }
@@ -60,7 +60,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      m_vDropOffset -1.8 0 0
      m_vRotation 0 0 0
     }
-    EL_ProcessAction "{5A5EE24316053906}" {
+    LF_ProcessAction "{5A5EE24316053906}" {
      ParentContextList {
       "default"
      }
@@ -70,13 +70,13 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      m_sMachineId "furnace-copper"
      Duration 8
      m_aProcessingInputs {
-      EL_ProcessingInput "{5A5EE2432A165322}" {
+      LF_ProcessingInput "{5A5EE2432A165322}" {
        m_InputPrefab "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et"
        m_iInputAmount 2
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{5A5EE2432BB9E051}" {
+      LF_ProcessingOutput "{5A5EE2432BB9E051}" {
        m_OutputPrefab "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
        m_iOutputAmount 1
       }

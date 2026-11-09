@@ -99,7 +99,7 @@ const tools = [
     inputSchema: {
       type: "object",
       properties: {
-        className: { type: "string", description: "Enforce class, for example EL_ShopAction." },
+        className: { type: "string", description: "Enforce class, for example LF_ShopAction." },
         entityName: { type: "string" },
       },
       required: ["className"],
@@ -108,7 +108,7 @@ const tools = [
   {
     name: "player_input",
     description:
-      "Pulse one menu action for a single press: MenuBack, MenuUp, MenuDown, MenuLeft, MenuRight, MenuSelect, or EL_OpenDebugMenu. Movement actions are refused.",
+      "Pulse one menu action for a single press: MenuBack, MenuUp, MenuDown, MenuLeft, MenuRight, MenuSelect, or LF_OpenDebugMenu. Movement actions are refused.",
     inputSchema: {
       type: "object",
       properties: { action: { type: "string" } },

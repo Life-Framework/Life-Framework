@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! Carried cash seen through three calls, so the hand-over rule runs the same on a real
-//! character (LF_EntityCashWallet over EL_MoneyUtils) and in a LOGIC test.
+//! character (LF_EntityCashWallet over LF_MoneyUtils) and in a LOGIC test.
 //------------------------------------------------------------------------------------------------
 class LF_CashWallet : Managed
 {
@@ -41,7 +41,7 @@ class LF_EntityCashWallet : LF_CashWallet
 		if (!m_Owner)
 			return 0;
 
-		int cash = EL_MoneyUtils.GetCash(m_Owner);
+		int cash = LF_MoneyUtils.GetCash(m_Owner);
 		if (cash < 0)
 			return 0;
 
@@ -54,7 +54,7 @@ class LF_EntityCashWallet : LF_CashWallet
 		if (!m_Owner)
 			return 0;
 
-		return EL_MoneyUtils.RemoveCash(m_Owner, amount);
+		return LF_MoneyUtils.RemoveCash(m_Owner, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ class LF_EntityCashWallet : LF_CashWallet
 		if (!m_Owner)
 			return 0;
 
-		return EL_MoneyUtils.AddCash(m_Owner, amount);
+		return LF_MoneyUtils.AddCash(m_Owner, amount);
 	}
 }
 
@@ -112,7 +112,7 @@ class LF_CashHandover
 			int refund = taken - put;
 			int back = from.Put(refund);
 			if (back != refund)
-				EL_Debug.Error("Interaction", string.Format("cash refund short: %1 of %2 went back to the giver", back, refund));
+				LF_Debug.Error("Interaction", string.Format("cash refund short: %1 of %2 went back to the giver", back, refund));
 
 			if (put > 0)
 			{

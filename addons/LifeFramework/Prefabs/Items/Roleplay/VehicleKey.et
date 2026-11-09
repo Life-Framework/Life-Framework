@@ -1,14 +1,14 @@
 GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
  ID "508AB2013EEE1E00"
  components {
-  EL_VehicleKeyComponent "{DF4CAEED0C904715}" {
+  LF_VehicleKeyComponent "{DF4CAEED0C904715}" {
   }
   SoundComponent "{5A4ADB24952425BA}" {
    Filenames {
     "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
    }
   }
-  EL_QuantityComponent "{5AD2B81F97B9381B}" {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
    m_iMaxQuantity 1
   }
   InventoryItemComponent "{5222EB4D0C73006B}" {
@@ -41,7 +41,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
   }
   SCR_GadgetComponent "{061EA4E7A33E499A}" {
-   m_eAnimVariable EL_ITEM
+   m_eAnimVariable LF_ITEM
   }
  }
 }

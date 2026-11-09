@@ -20,7 +20,7 @@ class LF_HideoutStashStorageComponent : SCR_UniversalInventoryStorageComponent
 		if (!Replication.IsServer() || !item)
 			return true;
 
-		InventoryStorageManagerComponent carrierManager = EL_InventoryUtils.GetResponsibleStorageManager(item);
+		InventoryStorageManagerComponent carrierManager = LF_InventoryUtils.GetResponsibleStorageManager(item);
 		if (!carrierManager)
 			return true;
 
@@ -35,7 +35,7 @@ class LF_HideoutStashStorageComponent : SCR_UniversalInventoryStorageComponent
 		if (stash.AllowsUser(carrier, true))
 			return true;
 
-		EL_Debug.Warn("Hideout", string.Format("stash %1 refused %2 from a non-member", stash.GetHideoutId(), EL_Utils.GetPrefabName(item)));
+		LF_Debug.Warn("Hideout", string.Format("stash %1 refused %2 from a non-member", stash.GetHideoutId(), LF_Utils.GetPrefabName(item)));
 		return false;
 	}
 }

@@ -5,19 +5,19 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
  components {
   ActionsManagerComponent "{598F21A8710B89C1}" {
    additionalActions {
-    EL_ProcessAction "{598F21A877BE6DEE}" {
+    LF_ProcessAction "{598F21A877BE6DEE}" {
      UIInfo UIInfo "{3211755A1DC611E3}" {
       Name "Make 1 beer with 1 empty beer bottle"
      }
      Duration 1
      m_aProcessingInputs {
-      EL_ProcessingInput "{992030BBC9C89F23}" {
+      LF_ProcessingInput "{992030BBC9C89F23}" {
        m_InputPrefab "{2B0213949BE91F38}Prefabs/Items/Resources/EmptyBeerBottle.et"
        m_iInputAmount 1
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{875A7855899B2B75}" {
+      LF_ProcessingOutput "{875A7855899B2B75}" {
        m_OutputPrefab "{C3B9A61B460BE287}Prefabs/Items/Drinks/BeerBottle.et"
        m_iOutputAmount 1
       }

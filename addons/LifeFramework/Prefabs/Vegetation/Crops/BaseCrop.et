@@ -1,4 +1,4 @@
-EL_BaseCrop {
+LF_BaseCrop {
  ID "59A0BBAE928C1E0C"
  components {
   MeshObject "{59A0BBAE906EB9AC}" {
@@ -20,7 +20,7 @@ EL_BaseCrop {
     }
    }
    additionalActions {
-    EL_DeleteAction "{59A0BBAE906EB83F}" {
+    LF_DeleteAction "{59A0BBAE906EB83F}" {
      ParentContextList {
       "default"
      }

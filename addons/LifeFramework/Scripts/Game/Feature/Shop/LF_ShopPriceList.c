@@ -3,7 +3,7 @@
 //
 // Pick a line (Order), set the quantity on the slip (- / +, or MenuLeft/MenuRight along the
 // row), then Pay with carried cash or Sell that many back. The buy and sell go through the
-// existing EL_CharacterShopComponent RPCs; the reply (reason, money, carried cash) is printed on
+// existing LF_CharacterShopComponent RPCs; the reply (reason, money, carried cash) is printed on
 // the slip. Typing in "Look for" narrows the list. It closes on Leave, MenuBack, death, losing
 // the character, or walking CLOSE_DISTANCE from the counter.
 class LF_ShopPriceList
@@ -26,8 +26,8 @@ class LF_ShopPriceList
 	protected static ref LF_ShopPriceList s_Current;
 
 	protected ref LF_UIScreen m_Screen;
-	protected ref array<ref EL_ShopCatalogItem> m_aShown = {};
-	protected EL_ShopComponent m_Shop;
+	protected ref array<ref LF_ShopCatalogItem> m_aShown = {};
+	protected LF_ShopComponent m_Shop;
 	protected RplId m_ShopId;
 	protected string m_sFilter;
 	protected ResourceName m_Selected;
@@ -56,19 +56,19 @@ class LF_ShopPriceList
 
 	//------------------------------------------------------------------------------------------------
 	//! Opens the price list of shop for the local player.
-	static LF_ShopPriceList Open(EL_ShopComponent shop, EL_ShopAction action)
+	static LF_ShopPriceList Open(LF_ShopComponent shop, LF_ShopAction action)
 	{
 		Hide();
 		if (!shop || !shop.GetOwner())
 		{
-			EL_Debug.Error("Shop", "price list refused: no shop");
+			LF_Debug.Error("Shop", "price list refused: no shop");
 			return null;
 		}
 
 		RplComponent rpl = RplComponent.Cast(shop.GetOwner().FindComponent(RplComponent));
 		if (!rpl)
 		{
-			EL_Debug.Error("Shop", "price list refused: the shop has no RplComponent, so the till cannot be reached");
+			LF_Debug.Error("Shop", "price list refused: the shop has no RplComponent, so the till cannot be reached");
 			return null;
 		}
 
@@ -89,7 +89,7 @@ class LF_ShopPriceList
 		if (action)
 			LF_UISound.Play(action.GetOpenSound());
 
-		EL_Debug.Info("Shop", "price list open: " + shop.GetShopName());
+		LF_Debug.Info("Shop", "price list open: " + shop.GetShopName());
 		return list;
 	}
 
@@ -151,7 +151,7 @@ class LF_ShopPriceList
 	{
 		array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", WidgetManager.Translate(m_Shop.GetShopName())));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Cash", CashText(EL_MoneyUtils.GetCash(EL_Utils.GetLocalCharacter()))));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Cash", CashText(LF_MoneyUtils.GetCash(LF_Utils.GetLocalCharacter()))));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, "Search", "#LF-Shop_LookFor"));
 		parts.Insert(LF_UIPart.CreateList("Prices"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Order", "#LF-Shop_SlipEmpty"));
@@ -163,7 +163,7 @@ class LF_ShopPriceList
 		m_Screen = LF_UIScreen.Open(parts, LF_UISkin.PriceList());
 		if (!m_Screen)
 		{
-			EL_Debug.Error("Shop", "price list failed to open");
+			LF_Debug.Error("Shop", "price list failed to open");
 			return false;
 		}
 
@@ -192,7 +192,7 @@ class LF_ShopPriceList
 		m_aShown.Clear();
 
 		int total = 0;
-		foreach (EL_ShopCatalogItem item : m_Shop.GetShopItems())
+		foreach (LF_ShopCatalogItem item : m_Shop.GetShopItems())
 		{
 			if (!item || item.m_iBuyPrice <= 0)
 				continue;
@@ -206,11 +206,11 @@ class LF_ShopPriceList
 				continue;
 
 			m_aShown.Insert(item);
-			m_Screen.AddListRow("Prices", RowName(m_aShown.Count() - 1), shownName, EL_MoneyFormat.FormatMoney(item.m_iBuyPrice), "#LF-Shop_Order");
+			m_Screen.AddListRow("Prices", RowName(m_aShown.Count() - 1), shownName, LF_MoneyFormat.FormatMoney(item.m_iBuyPrice), "#LF-Shop_Order");
 		}
 
 		if (total > m_aShown.Count())
-			EL_Debug.Info("Shop", string.Format("price list shows %1 of %2 lines; typing narrows it", m_aShown.Count(), total));
+			LF_Debug.Info("Shop", string.Format("price list shows %1 of %2 lines; typing narrows it", m_aShown.Count(), total));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -263,7 +263,7 @@ class LF_ShopPriceList
 			return;
 		}
 
-		EL_Debug.Warn("Shop", "price list ignored button " + name);
+		LF_Debug.Warn("Shop", "price list ignored button " + name);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -271,11 +271,11 @@ class LF_ShopPriceList
 	{
 		if (index < 0 || index >= m_aShown.Count())
 		{
-			EL_Debug.Warn("Shop", "order refused: no line " + index.ToString());
+			LF_Debug.Warn("Shop", "order refused: no line " + index.ToString());
 			return;
 		}
 
-		EL_ShopCatalogItem item = m_aShown.Get(index);
+		LF_ShopCatalogItem item = m_aShown.Get(index);
 		m_Selected = item.m_ItemPrefab;
 		m_sSelectedName = WidgetManager.Translate(item.m_sDisplayName);
 		m_iSelectedPrice = item.m_iBuyPrice;
@@ -298,9 +298,9 @@ class LF_ShopPriceList
 			return;
 		}
 
-		int total = EL_ShopRules.StackTradeTotal(m_iSelectedPrice, m_iQuantity);
+		int total = LF_ShopRules.StackTradeTotal(m_iSelectedPrice, m_iQuantity);
 		m_Screen.SetLine("Order", WidgetManager.Translate("#LF-Shop_SlipLine", m_iQuantity, m_sSelectedName));
-		m_Screen.SetButtonText(PAY, WidgetManager.Translate("#LF-Shop_PayTotal", EL_MoneyFormat.FormatMoney(total)));
+		m_Screen.SetButtonText(PAY, WidgetManager.Translate("#LF-Shop_PayTotal", LF_MoneyFormat.FormatMoney(total)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -308,7 +308,7 @@ class LF_ShopPriceList
 	{
 		if (m_bWaiting)
 		{
-			EL_Debug.Info("Shop", "till busy: request ignored");
+			LF_Debug.Info("Shop", "till busy: request ignored");
 			return;
 		}
 
@@ -319,10 +319,10 @@ class LF_ShopPriceList
 			return;
 		}
 
-		EL_CharacterShopComponent bridge = EL_Component<EL_CharacterShopComponent>.Find(EL_Utils.GetLocalCharacter());
+		LF_CharacterShopComponent bridge = LF_Component<LF_CharacterShopComponent>.Find(LF_Utils.GetLocalCharacter());
 		if (!bridge)
 		{
-			EL_Debug.Error("Shop", "till unreachable: no EL_CharacterShopComponent on the controlled character");
+			LF_Debug.Error("Shop", "till unreachable: no LF_CharacterShopComponent on the controlled character");
 			SetReceipt("#LF-Shop_RefuseNoShop");
 			LF_UISound.Play(m_sRefuseSound);
 			return;
@@ -346,7 +346,7 @@ class LF_ShopPriceList
 			return;
 
 		m_bWaiting = false;
-		EL_Debug.Warn("Shop", "no reply from the till within " + REPLY_TIMEOUT_MS.ToString() + " ms");
+		LF_Debug.Warn("Shop", "no reply from the till within " + REPLY_TIMEOUT_MS.ToString() + " ms");
 		SetReceipt("#LF-Shop_NoReply");
 		LF_UISound.Play(m_sRefuseSound);
 	}
@@ -357,7 +357,7 @@ class LF_ShopPriceList
 	{
 		if (!s_Current)
 		{
-			EL_Debug.Info("Shop", "till reply arrived after the price list closed");
+			LF_Debug.Info("Shop", "till reply arrived after the price list closed");
 			return;
 		}
 
@@ -378,14 +378,14 @@ class LF_ShopPriceList
 		{
 			SetReceipt(LF_ShopRefusal.Key(reason));
 			LF_UISound.Play(m_sRefuseSound);
-			EL_Debug.Info("Shop", "slip shows refusal " + typename.EnumToString(LF_EShopRefusal, reason));
+			LF_Debug.Info("Shop", "slip shows refusal " + typename.EnumToString(LF_EShopRefusal, reason));
 			return;
 		}
 
 		if (buy)
-			SetReceipt(WidgetManager.Translate("#LF-Shop_Paid", EL_MoneyFormat.FormatMoney(money)));
+			SetReceipt(WidgetManager.Translate("#LF-Shop_Paid", LF_MoneyFormat.FormatMoney(money)));
 		else
-			SetReceipt(WidgetManager.Translate("#LF-Shop_SoldFor", EL_MoneyFormat.FormatMoney(money)));
+			SetReceipt(WidgetManager.Translate("#LF-Shop_SoldFor", LF_MoneyFormat.FormatMoney(money)));
 
 		LF_UISound.Play(m_sTillSound);
 	}
@@ -396,7 +396,7 @@ class LF_ShopPriceList
 		if (cash < 0)
 			return WidgetManager.Translate("#LF-Shop_CashLine", WidgetManager.Translate("#LF-ATM_Unknown"));
 
-		return WidgetManager.Translate("#LF-Shop_CashLine", EL_MoneyFormat.FormatMoney(cash));
+		return WidgetManager.Translate("#LF-Shop_CashLine", LF_MoneyFormat.FormatMoney(cash));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -435,6 +435,6 @@ class LF_ShopPriceList
 		if (s_Current == this)
 			s_Current = null;
 
-		EL_Debug.Info("Shop", "price list closed");
+		LF_Debug.Info("Shop", "price list closed");
 	}
 }

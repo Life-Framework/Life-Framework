@@ -146,7 +146,7 @@ records what exists and what players say.
 | Gap | Genre version | Our in-world version |
 | --- | --- | --- |
 | EMS | Medic faction with a revive menu | A downed state before death. Reforger already simulates bleeding, tourniquets, morphine, and saline. A medic job carries a real kit, stabilises the patient, and drives the ambulance to the hospital bed from M1-26. Not stabilised in time: you wake in hospital with the bill |
-| Investigation | MDT, DNA, fingerprints | No computers in 1989. A payphone call gives a vague description ("man in a green jacket, tan Škoda, plate starts B-") on the station board. Casings and a dropped item are physical evidence bagged into the evidence locker. Plates come from `EL_LicensePlateManager` |
+| Investigation | MDT, DNA, fingerprints | No computers in 1989. A payphone call gives a vague description ("man in a green jacket, tan Škoda, plate starts B-") on the station board. Casings and a dropped item are physical evidence bagged into the evidence locker. Plates come from `LF_LicensePlateManager` |
 | Comms | Phone UI with apps | Payphones (call a service, anonymous tip), pagers for jobs and police, Reforger radios on frequencies. Interception (a scanner) is a crime tool |
 | Heist ladder | Fleeca → Pacific with tool items | Till → corner shop → cash van → bank → the armory. Each tier needs a real tool or intel item from the tier below or from contraband: drill, blasting charge, keycard, guard rota on paper. M1's alarm rules stay |
 | Licences | City hall menu | Card items issued at a town-hall desk. The gun shop sells serialised weapons to licence holders. Serials feed investigation |

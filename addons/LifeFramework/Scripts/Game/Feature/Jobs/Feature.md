@@ -12,7 +12,7 @@ dropdown.
 
 ## Interaction pattern
 
-Rung 4 today: `EL_PlayerJobComponent` holds per-player job state, paycheck
+Rung 4 today: `LF_PlayerJobComponent` holds per-player job state, paycheck
 clock, per-job XP, license gates; `RpcAsk_SetJob` re-validates licenses
 server-side.
 
@@ -23,12 +23,12 @@ that activity is what pays (gathering/processing already feed this funnel).
 ## V1 (shippable)
 
 1. **Security holes — DONE (verified 2026-08-30).** `RpcAsk_ClaimFruitCatcherReward`
-   is server-clamped to `EL_FRUIT_CATCHER_MAX_SCORE` (pin test
+   is server-clamped to `LF_FRUIT_CATCHER_MAX_SCORE` (pin test
    `security/fruitcatcher-reward-clamp`); `RpcAsk_DebugGrantLicense` is removed.
 2. **Paychecks pay cash** (verified 2026-08-30): `ProcessPaycheck` now uses
-   `EL_MoneyUtils.GiveCash` — the old `EL_BankAccountComponent` deposit branch
+   `LF_MoneyUtils.GiveCash` — the old `LF_BankAccountComponent` deposit branch
    is gone, and that entity bank is deleted. The only cash↔account boundary is
-   the ATM (`Feature/ATM`). Same for `EL_JobManager.GiveReward`.
+   the ATM (`Feature/ATM`). Same for `LF_JobManager.GiveReward`.
 3. Make `AddExperience` actually add — it is a no-op today, so `OnLevelUp` can
    never fire — pending.
 4. Fix the dead whitelist branch in `SetJob` (only POLICE is restricted and it
@@ -47,12 +47,12 @@ that activity is what pays (gathering/processing already feed this funnel).
 
 ## Current state
 
-- `EL_PlayerJobComponent` — job state, paycheck clock (cash), license gates.
+- `LF_PlayerJobComponent` — job state, paycheck clock (cash), license gates.
   ✅ mint closed, backdoor removed, paycheck pays cash; ⚠️ dead whitelist
   branch + no-op XP + Spanish strings + per-job XP not persisted.
-- `EL_JobManager` — singleton reward funnel; `GetGatherReward`/
+- `LF_JobManager` — singleton reward funnel; `GetGatherReward`/
   `GetProcessReward` return 0 today (dead-but-safe); `GiveReward` pays cash.
-- `EL_JobConfig` — job definitions.
+- `LF_JobConfig` — job definitions.
 
 ## Dependencies
 

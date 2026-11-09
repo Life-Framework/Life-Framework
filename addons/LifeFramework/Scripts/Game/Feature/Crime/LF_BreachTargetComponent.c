@@ -41,13 +41,13 @@ class LF_BreachTargetComponent : ScriptComponent
 		string targetId = GetTargetId();
 		if (targetId.IsEmpty())
 		{
-			EL_Debug.Error("Breach", "target component has no id and the entity is unnamed");
+			LF_Debug.Error("Breach", "target component has no id and the entity is unnamed");
 			return;
 		}
 
-		if (!EL_Component<EL_LockComponent>.Find(owner))
+		if (!LF_Component<LF_LockComponent>.Find(owner))
 		{
-			EL_Debug.Error("Breach", string.Format("target %1 has no EL_LockComponent", targetId));
+			LF_Debug.Error("Breach", string.Format("target %1 has no LF_LockComponent", targetId));
 			return;
 		}
 
@@ -110,9 +110,9 @@ class LF_BreachTargetComponent : ScriptComponent
 	bool CanRepairForOffer(IEntity user)
 	{
 		if (Replication.IsServer())
-			return LF_Breach.CanRepair(GetTargetId(), EL_Utils.GetPlayerUid(user));
+			return LF_Breach.CanRepair(GetTargetId(), LF_Utils.GetPlayerUid(user));
 
-		if (EL_AccountStateBits.IsPolice(EL_AccountReplication.GetState(user)))
+		if (LF_AccountStateBits.IsPolice(LF_AccountReplication.GetState(user)))
 			return true;
 
 		return !m_sOwnerOrganization.IsEmpty();
@@ -128,7 +128,7 @@ class LF_BreachTargetComponent : ScriptComponent
 
 		if (!GetGame() || !GetGame().GetCallqueue())
 		{
-			EL_Debug.Error("Breach", "fuse timer skipped: no callqueue");
+			LF_Debug.Error("Breach", "fuse timer skipped: no callqueue");
 			return false;
 		}
 
@@ -138,7 +138,7 @@ class LF_BreachTargetComponent : ScriptComponent
 
 		GetGame().GetCallqueue().CallLater(OnFuse, delayMs, false);
 		m_bFusePending = true;
-		EL_Debug.Log("Breach", string.Format("fuse scheduled %1 ms=%2", GetTargetId(), delayMs));
+		LF_Debug.Log("Breach", string.Format("fuse scheduled %1 ms=%2", GetTargetId(), delayMs));
 		return true;
 	}
 

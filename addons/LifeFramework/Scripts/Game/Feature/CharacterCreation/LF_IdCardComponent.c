@@ -6,7 +6,7 @@
 //!
 //! PERSISTENCE. The source of truth is the account's character record (name, age, id), which
 //! is persisted. The card itself is session state: the town clerk hands the first one over
-//! (arrival chain, M1-18), then EL_SpawnLogic grants a fresh one at every spawn
+//! (arrival chain, M1-18), then LF_SpawnLogic grants a fresh one at every spawn
 //! (LF_QuestManager.HasEarnedIdCard) from that record, so the card survives a restart.
 //! If carried inventory comes back blank after a restart, LF_IdCard.Grant issues that blank card
 //! instead of adding a second one.
@@ -41,13 +41,13 @@ class LF_IdCardComponent : ScriptComponent
 
 		if (holderId.IsEmpty())
 		{
-			EL_Debug.Error("IdCard", "card not issued: no holder id");
+			LF_Debug.Error("IdCard", "card not issued: no holder id");
 			return false;
 		}
 
 		if (IsIssued())
 		{
-			EL_Debug.Warn("IdCard", "card not issued: already printed for another holder");
+			LF_Debug.Warn("IdCard", "card not issued: already printed for another holder");
 			return false;
 		}
 
@@ -164,11 +164,11 @@ class LF_IdCard
 			return;
 
 		array<IEntity> items = {};
-		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(character);
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(character);
 		if (inventory)
 			inventory.GetItems(items);
 
-		CharacterControllerComponent controller = EL_Component<CharacterControllerComponent>.Find(character);
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(character);
 		if (controller)
 		{
 			IEntity inHand = controller.GetAttachedGadgetAtLeftHandSlot();
@@ -225,13 +225,13 @@ class LF_IdCard
 	{
 		if (!Replication.IsServer())
 		{
-			EL_Debug.Error("IdCard", "grant refused: not the server");
+			LF_Debug.Error("IdCard", "grant refused: not the server");
 			return false;
 		}
 
 		if (!character)
 		{
-			EL_Debug.Error("IdCard", "grant refused: no character");
+			LF_Debug.Error("IdCard", "grant refused: no character");
 			return false;
 		}
 
@@ -243,13 +243,13 @@ class LF_IdCard
 		LF_EIdCardGrant decision = LF_IdCardRules.Decide(holderId, holders);
 		if (decision == LF_EIdCardGrant.REFUSED_NO_HOLDER)
 		{
-			EL_Debug.Error("IdCard", "grant refused: no holder id");
+			LF_Debug.Error("IdCard", "grant refused: no holder id");
 			return false;
 		}
 
 		if (decision == LF_EIdCardGrant.REFUSED_HELD)
 		{
-			EL_Debug.Warn("IdCard", "grant refused: character " + holderId + " already carries their card");
+			LF_Debug.Warn("IdCard", "grant refused: character " + holderId + " already carries their card");
 			return false;
 		}
 
@@ -259,25 +259,25 @@ class LF_IdCard
 			if (!blank.Issue(holderId, firstName, lastName, age))
 				return false;
 
-			EL_Debug.Info("IdCard", "blank carried card printed for character " + holderId);
+			LF_Debug.Info("IdCard", "blank carried card printed for character " + holderId);
 			return true;
 		}
 
-		InventoryStorageManagerComponent storage = EL_Component<InventoryStorageManagerComponent>.Find(character);
+		InventoryStorageManagerComponent storage = LF_Component<InventoryStorageManagerComponent>.Find(character);
 		if (!storage)
 		{
-			EL_Debug.Error("IdCard", "card not granted: character has no inventory");
+			LF_Debug.Error("IdCard", "card not granted: character has no inventory");
 			return false;
 		}
 
-		IEntity item = EL_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
+		IEntity item = LF_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
 		if (!item)
 			return false;
 
 		LF_IdCardComponent card = LF_IdCardComponent.Cast(item.FindComponent(LF_IdCardComponent));
 		if (!card)
 		{
-			EL_Debug.Error("IdCard", "card not granted: " + PREFAB + " has no LF_IdCardComponent");
+			LF_Debug.Error("IdCard", "card not granted: " + PREFAB + " has no LF_IdCardComponent");
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return false;
 		}
@@ -285,12 +285,12 @@ class LF_IdCard
 		card.Issue(holderId, firstName, lastName, age);
 		if (!storage.TryInsertItem(item))
 		{
-			EL_Debug.Error("IdCard", "card not granted: no room in the inventory of character " + holderId);
+			LF_Debug.Error("IdCard", "card not granted: no room in the inventory of character " + holderId);
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return false;
 		}
 
-		EL_Debug.Info("IdCard", "card granted to character " + holderId);
+		LF_Debug.Info("IdCard", "card granted to character " + holderId);
 		return true;
 	}
 }

@@ -212,7 +212,7 @@ record.
 
 **Depends on M1.** Description snapshots and the identified flag (decision
 2026-11-08, wanted board #96, dispatch #105), the paper ticket (#104), jail
-(#106), plates (`EL_LicensePlateManager`).
+(#106), plates (`LF_LicensePlateManager`).
 
 **Sub-issues** (epic #148, in order; the first is the playable core):
 

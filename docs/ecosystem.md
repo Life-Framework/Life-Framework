@@ -61,7 +61,7 @@ animations in Workbench.
 
 | Project | License (file read) | Last push | What it has for us | How | Effort | Helps |
 |---|---|---|---|---|---|---|
-| [SouLGenetic/LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) | MIT (2026 LNGCGenetic) | 2026-09-09 | Life-RP scripts: cuff, uncuff, escort, search plus results dialog, put in and take out of vehicle, revive, issue fine, dispatch calls list, ATM and transfer dialogs, garage, vehicle keys and trunk, player menu, nearby players list. Already ported: jail, cuff, escort, put in and take out of vehicle (`Feature/Police/LF_Jail*`), garage and vehicle spawn (`Feature/Vehicles/EL_VehicleGarage*`). | Copy (keep the header, as `LF_JailEscort.c` does). Do-not-port list in `roadmap/sources.md`. | Low per action | #98, #96, #105, #106, #121, #101 |
+| [SouLGenetic/LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) | MIT (2026 LNGCGenetic) | 2026-09-09 | Life-RP scripts: cuff, uncuff, escort, search plus results dialog, put in and take out of vehicle, revive, issue fine, dispatch calls list, ATM and transfer dialogs, garage, vehicle keys and trunk, player menu, nearby players list. Already ported: jail, cuff, escort, put in and take out of vehicle (`Feature/Police/LF_Jail*`), garage and vehicle spawn (`Feature/Vehicles/LF_VehicleGarage*`). | Copy (keep the header, as `LF_JailEscort.c` does). Do-not-port list in `roadmap/sources.md`. | Low per action | #98, #96, #105, #106, #121, #101 |
 | [EveronLife/EveronLife](https://github.com/EveronLife/EveronLife) | MIT (2022 EveronLife) | 2026-07-28 | Our upstream. Forks surveyed in `everonlife-forks.md`. | Copy | Low | M2 |
 | [acemod/ACE-Anvil](https://github.com/acemod/ACE-Anvil) | GPL-2.0 | 2026-11-06 | **Source `.anm` animations**: captives (surrender in/loop/out, tied in/loop/out, zip-cuff action and hold poses) and carrying (carried and dragged in/loop/out), with the `.asi`/`.agr` wiring. Also medical, radio, finger poses. | Workshop dependency (flagship), inspiration for the anim-graph wiring, **ask** the ACE team to license the captives and carrying animation files to us under MIT or CC-BY | Medium | #98, #106, #121 |
 | [Arkensor/EnfusionPersistenceFramework](https://github.com/Arkensor/EnfusionPersistenceFramework) | MIT (2023 Arkensor) | 2026-04-18 (v0.6.15, 2025-11-01) | Deprecated by its author since game 1.6, replaced by the base-game persistence system. We already moved off it (`docs/persistence.md`). Read its hitzone and inventory serializers for ideas only. | Inspiration | n/a | #89, #95 |
@@ -99,7 +99,7 @@ animations in Workbench.
 | [acemod/docker-reforger](https://github.com/acemod/docker-reforger) | MIT | 2026-08-30 | Containerised dedicated server, mod download through `config.json`. | Copy | hosting M4 |
 | [ZSU-GG-Reforger/ReforgerJS](https://github.com/ZSU-GG-Reforger/ReforgerJS) | BSL-1.0 | 2025-11 | Node RCON/log framework for server admin bots. | Copy | M4 ops |
 | [WoozyMasta/bercon-cli](https://github.com/WoozyMasta/bercon-cli) | MIT | 2026-10-30 | BattlEye RCON CLI. | Use | #108, M4 |
-| [LucasSKrewer/dz-testbench](https://github.com/LucasSKrewer/dz-testbench) | MIT | 2026-09-21 | DayZ Enforce Script test harness (boot-time server assertions). Same engine family; compare with our `EL_Test`. | Inspiration | tests |
+| [LucasSKrewer/dz-testbench](https://github.com/LucasSKrewer/dz-testbench) | MIT | 2026-09-21 | DayZ Enforce Script test harness (boot-time server assertions). Same engine family; compare with our `LF_Test`. | Inspiration | tests |
 | [MitoAtGit/reforger-modding-knowledge](https://github.com/MitoAtGit/reforger-modding-knowledge) | MIT | 2026-08-31 | Field-tested modding knowledge base. | Copy into skills where it helps | agents |
 | [willy92wins/DayZ-Modding-Knowledge-Pack](https://github.com/willy92wins/DayZ-Modding-Knowledge-Pack), [StarDZ-Team/Dayz-Modding-Skills](https://github.com/StarDZ-Team/Dayz-Modding-Skills) | MIT | 2026 | Enforce Script agent knowledge (DayZ). | Inspiration | agents |
 | [simonvic/tree-sitter-enforce](https://github.com/simonvic/tree-sitter-enforce) | MIT | 2026-09-17 | Enforce Script grammar; a real parser for structural lint. | Copy or depend | validators |
@@ -121,7 +121,7 @@ A few Workshop dependencies are acceptable. Criteria, all required:
    animations and art.
 5. The framework core works without it. Only the flagship content pack (or an
    optional `LifeFramework_<Dep>` bridge addon) depends on it; the core
-   detects the missing dependency and falls back with an `EL_Debug.Warn`.
+   detects the missing dependency and falls back with an `LF_Debug.Warn`.
 
 | Candidate | ID | License | Facts (2026-11-08) | What it covers | Recommendation |
 |---|---|---|---|---|---|

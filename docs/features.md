@@ -20,9 +20,9 @@
 
 ## Core
 
-### `EL_GameModeRoleplay` — `Scripts/Game/Core/EL_GameModeRoleplay.c`
-- ✅ Lazy-creates `EL_CharacterCreationManager`, `EL_ATMManager`,
-  `EL_JobManager` on first player connect and drives character creation.
+### `LF_GameModeRoleplay` — `Scripts/Game/Core/LF_GameModeRoleplay.c`
+- ✅ Lazy-creates `LF_CharacterCreationManager`, `LF_ATMManager`,
+  `LF_JobManager` on first player connect and drives character creation.
 - ✅ **World-end static reset** (2026-11-08): the game-mode
   destructor calls `LF_StaticReset.ResetAll`, which drops `LF_Breach`, `LF_Jail`,
   `LF_JailEscort`, `LF_Contraband`, `LF_PoliceRanks`, the jail cell/arrestable
@@ -38,8 +38,8 @@
 - ⚠️ Managers are only created on first connect; a server-side call before any
   player connects gets null.
 
-### `EL_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/EL_SpawnLogic.c`
-- ✅ Account-aware respawn: loads `EL_PlayerAccount`, spawns the active
+### `LF_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c`
+- ✅ Account-aware respawn: loads `LF_PlayerAccount`, spawns the active
   character's prefab at a spawn point for the account's role (CIVILIAN, or
   POLICE for an officer who reconnects on duty; falls back to any point), and
   applies the role's kit (`GiveRoleKit`, recursive, purpose-filtered storage
@@ -49,14 +49,14 @@
   area. Verified 2026-08-30.
 - ✅ **No-spawn-point fail-safe** (verified 2026-08-30): `GetCreationPosition`
   returns `bool` and `CreateCharacter` aborts the spawn with an
-  `EL_Debug.Error` instead of dropping the player at world origin.
+  `LF_Debug.Error` instead of dropping the player at world origin.
 - ✅ **Registration retry cap** (2026-11-08): a UID or account that
   does not resolve retries about once a second up to `MAX_REGISTER_RETRIES` (60),
-  then logs `EL_Debug.Error` and stops. A success clears the counter.
+  then logs `LF_Debug.Error` and stops. A success clears the counter.
 - ⚠️ Item is silently dropped if no matching storage; loadout recursion has no
   depth guard.
 
-### `EL_CharacterCreationManager` — `Feature/CharacterCreation/EL_CharacterCreationManager.c`
+### `LF_CharacterCreationManager` — `Feature/CharacterCreation/LF_CharacterCreationManager.c`
 - ✅ Flow (M1-11, 2026-11-08): no account → create → registration form R-89
   (`LF_RegistrationForm`) → civilian spawn with an ID card. There is no faction
   screen and no spawn-location picker; police clock in at the duty desk.
@@ -65,9 +65,9 @@
 - ✅ **Server-owned on a dedicated server** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the flow runs on the server
   only. The form opens on the joining client through an owner RPC on its
   `SCR_PlayerController` (`LF_ShowRegistrationForm`,
-  `EL_CharacterCreationController.c`); the answer comes back as
-  `RpcAsk_EL_CreateCharacter` and lands in `ServerCreateCharacter`. The player
-  is the controller's id, never a client value. `EL_CharacterCreationRules`
+  `LF_CharacterCreationController.c`); the answer comes back as
+  `RpcAsk_LF_CreateCharacter` and lands in `ServerCreateCharacter`. The player
+  is the controller's id, never a client value. `LF_CharacterCreationRules`
   re-checks it: one character per account, names 1..32 ASCII letters with single inner spaces, hyphens,
   or apostrophes (`LF_RegistrationRules`), age 18..80. Names are not unique. A refusal toasts the reason
   key (`#EL-CC_Error_*`) and re-opens the menu. A listen host's joiners now get
@@ -81,7 +81,7 @@
 
 ### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
 - ✅ One list on another player's body (`Character_Roleplay.et`, context
-  `EL_ID`): Introduce yourself, Show ID, Give cash, Give what you hold; on-duty
+  `LF_ID`): Introduce yourself, Show ID, Give cash, Give what you hold; on-duty
   police also Search and Arrest. `LF_PlayerRoleAction` slots `fine` and
   `org_invite` stay hidden until `LF_PlayerInteraction.RegisterRole(slot,
   handler)` is called on every machine. Reach: 2 m between origins, both
@@ -101,7 +101,7 @@
 - ⏳ Gesture visibility, the name label, and the restart path on a real
   dedicated server are manual (PR #98 steps).
 
-### `EL_ShowIDAction` — `Feature/CharacterCreation/EL_ShowIDAction.c`
+### `LF_ShowIDAction` — `Feature/CharacterCreation/LF_ShowIDAction.c`
 - ✅ (2026-11-08) Shows the ID card the user carries (their own first, else
   the first printed one) to the player they face: the server reads the item
   and opens `LF_IdCardView` on the viewer's machine. No card: not performable,
@@ -111,15 +111,15 @@
   `SOUND_PICK_UP` (M1-12).
 - ⏳ Proof on a dedicated server with two clients is manual (PR #93 steps).
 
-### `EL_Utils` / `EL_FormatUtils` / `EL_Component` / `EL_ComponentData` — `Core/`
+### `LF_Utils` / `LF_FormatUtils` / `LF_Component` / `LF_ComponentData` — `Core/`
 - ✅ `MaxInt`/`MinInt`, `AbbreviateNumber` (999→raw, 1000→`1.0K`,
   1e6→`M`, 1e9→`B`), typed component finders.
-- ⚠️ `EL_ComponentData.Get` strips the last 5 chars of the class name
+- ⚠️ `LF_ComponentData.Get` strips the last 5 chars of the class name
   (`XxxClass`→`Xxx`); breaks for any data class not ending in `Class`.
 
-### `EL_InventoryUtils` (Core) / `EL_BuildingManagerComponent` / `EL_ChatManagerComponent`
-- ✅ (2026-11-08) `EL_InventoryUtils.AddItem` spawns through
-  `EL_Utils.SpawnEntityPrefab` (unresolved prefab logs and returns false);
+### `LF_InventoryUtils` (Core) / `LF_BuildingManagerComponent` / `LF_ChatManagerComponent`
+- ✅ (2026-11-08) `LF_InventoryUtils.AddItem` spawns through
+  `LF_Utils.SpawnEntityPrefab` (unresolved prefab logs and returns false);
   `IsStorageHierachyRoot`, `GetStorageOwner`, and `DropItem` tolerate an
   entity without `InventoryItemComponent` / a character without an inventory
   manager.
@@ -127,7 +127,7 @@
   client and is deleted in `OnDelete` and the destructor, so a life no longer
   leaves an orphan preview on every client. A null camera manager retries next
   frame; a preview that fails to spawn logs once and stops the frame loop.
-- ✅ `EL_ChatManagerComponent` registers only `EntityEvent.INIT`; it has no
+- ✅ `LF_ChatManagerComponent` registers only `EntityEvent.INIT`; it has no
   frame handler.
 - ✅ Vehicle garage and spawn-point registries remove themselves in `OnDelete`.
 
@@ -141,7 +141,7 @@
 - ✅ (2026-11-08) `IDCard.et` carries holder character id, first name, last
   name, age (RplProps, server-issued once). Max stack 1, so cards never merge.
 - ✅ (M1-18, 2026-11-08) The town clerk hands the card over at arrival step 1
-  (a quest with `m_bRewardIdCard`). From then on `EL_SpawnLogic` prints one
+  (a quest with `m_bRewardIdCard`). From then on `LF_SpawnLogic` prints one
   from the account's character record on every spawn of that player
   (`LF_QuestManager.HasEarnedIdCard`, from the persisted turn-ins), so the card
   survives death and restart. `m_bGrantIdAtSpawn` (now default off) gives every
@@ -149,7 +149,7 @@
   card is refused a second; a blank carried card is printed instead of adding
   one. The DebugWorld civilian starter kit no longer carries a blank card.
 
-### `EL_NpcBaseEntity` station NPCs — `Prefabs/Characters/Core/Npc_Base.et`
+### `LF_NpcBaseEntity` station NPCs — `Prefabs/Characters/Core/Npc_Base.et`
 - ✅ **Dressed on every machine** (2026-11-08, #150): `BaseLoadoutManagerComponent`
   spawns the slot clothing (jacket, pants, boots) on the server, and that
   clothing is replicated. `Npc_Base.et` carries an `RplComponent`
@@ -181,7 +181,7 @@
 
 ## Character & Survival
 
-### `EL_SurvivalStats` — `Feature/Survival/EL_SurvivalStats.c`
+### `LF_SurvivalStats` — `Feature/Survival/LF_SurvivalStats.c`
 - ✅ Hunger and thirst clamped `[0,100]`. `Eat`/`Drink` are additive through
   clamped setters. `Create(id)` starts both at 100.
 - ✅ (2026-11-08, M1-28) `UpdateStats(dt, config)` drains needs at the
@@ -207,16 +207,16 @@
 - ✅ (2026-11-08) Framework knobs: hunger and thirst drain, the low-needs
   threshold, the real-health cap, drain and give-back (fractions of max), the
   stamina drain multiplier, the tick interval and the max tick delta. A
-  missing `.conf` logs `[ELDebug:Survival]` once and falls back to the same
+  missing `.conf` logs `[LFDebug:Survival]` once and falls back to the same
   built-in defaults.
 
-### `EL_CharacterSurvivalComponent` — `Feature/Survival/EL_CharacterSurvivalComponent.c`
+### `LF_CharacterSurvivalComponent` — `Feature/Survival/LF_CharacterSurvivalComponent.c`
 - ✅ (2026-11-08) Server-authoritative: stats tick on the server only, on a
   1 s call-queue timer. The delta is clamped to 5 s so a hitch does not drop a
   chunk. The owner gets whole-point hunger and thirst and the low-needs flag as
   owner-only RplProps; `BumpMe` fires only when one of them changes (about
   once per 100 s at flagship rates), and right after eating or drinking. The
-  low-needs flip logs `[ELDebug:Survival] <id> needs low=...`. Tests:
+  low-needs flip logs `[LFDebug:Survival] <id> needs low=...`. Tests:
   `survival/sync`.
 - ✅ The old per-frame `EOnFrame` driver is gone. It had no event mask and
   treated world-time milliseconds as seconds.
@@ -229,16 +229,16 @@
   penalty.
 - ⚠️ Not yet felt in game: set survival to 10 in the DebugMenu and sprint.
 
-### `EL_BetaHud` survival gauges — `HUD/EL_BetaHud.c`
+### `LF_BetaHud` survival gauges — `HUD/LF_BetaHud.c`
 - ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
   The HUD stays second to the body cue. The health gauge already reads the
   damage manager, so the needs cap now shows there too.
 
-### `EL_ConsumableEffectSurvival` — `Feature/Survival/EL_ConsumableEffectSurvival.c`
+### `LF_ConsumableEffectSurvival` — `Feature/Survival/LF_ConsumableEffectSurvival.c`
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
   values `> 0`.
 
-### `EL_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
+### `LF_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
 - ✅ Save/apply round-trip re-clamps through setters (corrupt save sanitized).
 - ⚠️ `Equals` uses exact float `==` (no epsilon).
 
@@ -246,10 +246,10 @@
 - ✅ **Death is defined** (verified 2026-08-30): the dead body stays in the
   world with everything it carried — it is never deleted by the spawn flow and
   is only removed by a server restart or world cleanup.
-- ✅ **Respawn via the death screen**: `EL_SpawnLogic.OnPlayerKilled_S` no
+- ✅ **Respawn via the death screen**: `LF_SpawnLogic.OnPlayerKilled_S` no
   longer auto-respawns; it calls `NotifyReadyForSpawn_S`, the client opens
-  `EL_DeathScreen` (workspace widget), and its Respawn button runs
-  `SCR_RespawnComponent.RpcAsk_EL_Respawn` → `EL_SpawnLogic.RespawnPlayer_S`
+  `LF_DeathScreen` (workspace widget), and its Respawn button runs
+  `SCR_RespawnComponent.RpcAsk_LF_Respawn` → `LF_SpawnLogic.RespawnPlayer_S`
   (account-aware, re-applies the faction loadout).
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
@@ -266,8 +266,8 @@
   then reads the bill: the note "You don't remember how you got here." and the
   New Life Rule window (a printed server rule, nothing enforces it). A bill
   lying in the world has Read. Server-decided; the client never sends an
-  amount or a bed. Every charge and debt logs `[ELDebug:Respawn]`.
-- ✅ Debt: `EL_BankAccount.Charge` may go below zero when debt is allowed; a
+  amount or a bed. Every charge and debt logs `[LFDebug:Respawn]`.
+- ✅ Debt: `LF_BankAccount.Charge` may go below zero when debt is allowed; a
   negative balance is kept through save and load, deposits pay it off first,
   withdrawals are refused while in debt.
 - ✅ Config `Configs/Spawning/LF_Respawn.conf` (`LF_RespawnConfig`): wake in
@@ -286,7 +286,7 @@
   `persist/carried-roundtrip`, `persist/carried-death-no-dupe`, and
   `e2e/pass2-verify-load` across a real two-boot restart): the whole storage
   tree (prefab, stack quantity, storage index, slot id) is the `carried` payload
-  of `EL_PersistenceComponentSerializer`, appended at version 6. Keyed by
+  of `LF_PersistenceComponentSerializer`, appended at version 6. Keyed by
   character persistence id plus a slot name, so one owner can hold several named
   snapshots (`carried` now; police duty / civilian stash later, M1-11).
 - ✅ Captured at every save point (autosave, manual, shutdown) for each living
@@ -294,7 +294,7 @@
   replaces the starter kit; without one the starter kit is granted.
 - ✅ Apply reconciles instead of adding: a matching occupant is kept, an occupant
   no record claims is deleted, a missing record is spawned. A second apply
-  spawns nothing. A prefab that no longer loads logs `EL_Debug.Error` and is
+  spawns nothing. A prefab that no longer loads logs `LF_Debug.Error` and is
   skipped with its contents.
 - ✅ Death drops what you carry: `OnPlayerKilled_S` drops the snapshot and a dead
   body is never captured, so the body keeps the items and a restart grants the
@@ -326,7 +326,7 @@
   and turned-in quest ids. A courier at level 2 still opens fuel delivery and a
   senior officer stays senior.
 - ✅ Level, licences, and turn-ins live on the character, so their owners write
-  through to the store and `EL_SpawnLogic` applies the record to every new body.
+  through to the store and `LF_SpawnLogic` applies the record to every new body.
   They now survive death as well; only carried items drop.
 - ✅ Tolerant load: an unknown licence name is skipped with a warning, an unknown
   quest id is kept with a warning, a rank above the ladder clamps to senior. A
@@ -336,17 +336,17 @@
   `persist/job-signup-roundtrip`). The `jobsignups` payload, appended at save
   version 11, holds one `LF_JobSignUpRecord` (player uid, job by enum name) per
   signed-up player. It loads after `progression`, so the career level that gates
-  the job is back first. `EL_SpawnLogic` puts the job on every new body after the
+  the job is back first. `LF_SpawnLogic` puts the job on every new body after the
   hand-over, so the sign-up also survives death. An unknown name, a job that is
   not delivery work, or one above the player's level stays unemployed with a
-  `[ELDebug:Jobs]` warning.
+  `[LFDebug:Jobs]` warning.
 - ⚠️ An active run and the open duty clock are session state; after a restart the
-  courier is still signed up and starts a new run. `EL_LicenseManagerComponent` is not on
+  courier is still signed up and starts a new run. `LF_LicenseManagerComponent` is not on
   `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 
 ## Account & Persistence
 
-### `EL_PlayerAccount` — `Feature/Account/EL_PlayerAccount.c`
+### `LF_PlayerAccount` — `Feature/Account/LF_PlayerAccount.c`
 - ✅ Persistent per-player state: faction, on-duty flag, wanted level
   (clamped `[0,5]`), character roster. `AddCharacter`/`RemoveCharacter`,
   `GetActiveCharacter`, `SetActiveCharacter`, `IncreaseWantedLevel`.
@@ -355,46 +355,47 @@
   to -1 with no guard. Fields are effectively public (workaround for BIS
   ticket T174113).
 
-### `EL_PlayerCharacter` — `Feature/Account/EL_PlayerAccount.c`
+### `LF_PlayerCharacter` — `Feature/Account/LF_PlayerAccount.c`
 - ✅ Immutable record (id, prefab, name, age), `GetFullName`, `Create`
   generates a persistence id.
 
-### `EL_PlayerAccountManager` — `Feature/Account/EL_PlayerAccountManager.c`
+### `LF_PlayerAccountManager` — `Feature/Account/LF_PlayerAccountManager.c`
 - ✅ Async load + cache + `SaveAndReleaseAccount`. Verified 2026-08-30:
   `SaveAndReleaseAccount` now keeps the account resident, so consecutive
   wanted bumps and police-menu reads do not lose the account mid-session
   (the old evict-on-write churn is gone).
 
-### `EL_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
+### `LF_PlayerAccountRecord` — `Feature/Account/Persistence/` (verified 2026-11-07)
 - ✅ Explicit persisted form of an account and its characters (faction,
-  duty, wanted, roster, active index). `EL_PlayerAccountManager.ExportAll` /
-  `ApplyAll` convert it; `EL_PersistenceComponentSerializer` writes it after
+  duty, wanted, roster, active index). `LF_PlayerAccountManager.ExportAll` /
+  `ApplyAll` convert it; `LF_PersistenceComponentSerializer` writes it after
   its `version` field. `account/save-roundtrip` covers the
   export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
-### `EL_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
+### `LF_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
-  (one AUTO slot per playthrough via `EL_SaveSelection`), manual saves,
+  (one AUTO slot per playthrough via `LF_SaveSelection`), manual saves,
   save-cache scan, load/re-apply paths, wipe. Every path passes
   `PassesSaveGates()` (manager present, saving allowed, persistence system
-  active) and logs `EL_Debug` under `Persistence`.
+  active) and logs `LF_Debug` under `Persistence`.
+- ✅ A continued save that never reaches the store read (written before the 2026-11-09 EL_ to LF_ rename, pre-release save reset) logs one `LF_Debug.Warn` "save predates the LF_ rename; starting fresh" at `ACTIVE` and runs fresh, no partial load (verified 2026-11-09 with an old save on the test server; docs/persistence.md "Save reset").
 - ✅ Shutdown save is engine-owned: the engine requests the SHUTDOWN save point
   on graceful exit; the manager observes the result via `OnAfterSave` and logs
-  an `EL_Debug.Error` if a session ends with no shutdown save. The old manual
+  an `LF_Debug.Error` if a session ends with no shutdown save. The old manual
   `RequestSavePoint(SHUTDOWN)` from `OnGameEnd` always lost the race against
   the persistence teardown on the Workbench (fixed 2026-08-30).
 - ✅ Persistence system resolution is stable across reloads: the systems config
   is now `Configs/Systems/LifeFrameworkSystems.conf` (unique GUID, referenced
   explicitly from both missions), replacing the GUID-colliding
   `ChimeraSystemsConfig.conf` override. Resolution retries at game start and
-  logs an `EL_Debug.Error` when the entry is truly missing.
+  logs an `LF_Debug.Error` when the entry is truly missing.
 - ✅ **Continuing a saved world needs `-loadSessionSave`** (verified 2026-11-07 on
   the dedicated test server: fresh, `-loadSessionSave`, and kept-saves-without-flag
   boots each logged their line): the engine loads the latest save point at launch only with
   that flag (vanilla behavior). Script does not auto-load: `LoadLatestSave()` is a
   game-state transition that boots the world twice and drops connected players.
   At game start on a dedicated server that was not launched from a save, the
-  manager scans the mission's saves and logs `EL_Debug.Error` ("started a NEW
+  manager scans the mission's saves and logs `LF_Debug.Error` ("started a NEW
   session while N save point(s) exist") when any exist; with none it logs a
   fresh-session info line. See `docs/persistence.md`.
 - ✅ **Playtest host** (`toolscli host start|stop|status|backup`, `tools/host/host.mjs`;
@@ -409,7 +410,7 @@
   Joining: the host runs `-noBackend`, so every player has the NULL platform
   identity. Until 2026-11-08 that made `GetPlayerUID` empty and the faction pick
   failed with `#EL-CC_Error_NoAccount` (nobody could join).
-  `EL_Utils.ChooseIdentityFallback` now keys a player by Steam name on a
+  `LF_Utils.ChooseIdentityFallback` now keys a player by Steam name on a
   `-noBackend` dedicated server: stable across restarts, one character per name
   (`spawn/identity-fallback`; join, restart, rejoin seen live).
 - ✅ **One-command playtest** (`tools\cli playtest [stop|status|shortcut]`,
@@ -420,18 +421,18 @@
   for the host's `join allowed` line, and prints friend join lines. A running host
   is reused and joined with its own addon. `stop` closes the game, then `host stop`.
 
-### `EL_AccountReplication` — `Feature/Account/EL_AccountReplication.c`
-- ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `EL_PlayerAccountManager` is
+### `LF_AccountReplication` — `Feature/Account/LF_AccountReplication.c`
+- ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `LF_PlayerAccountManager` is
   server-only, so client-side offers read a replicated copy. Faction, duty,
-  wanted, and police rank pack into one int (`EL_AccountStateBits`) carried by
+  wanted, and police rank pack into one int (`LF_AccountStateBits`) carried by
   an `[RplProp]` on the player's `SCR_ChimeraCharacter`; the on-duty police
-  count is an `[RplProp]` on `EL_GameModeRoleplay`. The server writes both
+  count is an `[RplProp]` on `LF_GameModeRoleplay`. The server writes both
   from the account setters (`SetFaction`/`SetOnDuty`/`SetWantedLevel`/
   `SetPoliceRank`), on `OnPlayerSpawned`, and on a 10 s self-healing pass;
   `BumpMe` only on change. Late joiners get the values with the snapshot.
   `GetState(entity)` answers from the account on the server and from the
-  replica on a client. Consumers: `EL_RobAction`, `EL_DutyAction`,
-  `EL_ConfiscateAction`, `EL_OpenPoliceMenuAction`, `LF_ArmoryDrawAction`,
+  replica on a client. Consumers: `LF_RobAction`, `LF_DutyAction`,
+  `LF_ConfiscateAction`, `LF_OpenPoliceMenuAction`, `LF_ArmoryDrawAction`,
   `LF_RankPromoteAction`, `LF_BreachRepairAction`, and (since 2026-11-08) the
   jail actions: arrest, escort, escort-arrest, put in and take out of a
   vehicle. Before that their offers read the server-only account, so on a
@@ -439,27 +440,27 @@
   server path still re-checks the real account; the jail cell and escort holds
   are checked on the server only. `tools/validation/validate-offer-checks.mjs`
   fails a `CanBeShownScript` / `CanBePerformedScript` that reads
-  `EL_PoliceUtils.GetAccountForEntity` or `EL_PlayerAccountManager`.
+  `LF_PoliceUtils.GetAccountForEntity` or `LF_PlayerAccountManager`.
 - ✅ **Armory actions hidden from non-police** (2026-11-08, #157): Draw and
   Promote at `Roadmap_Police_Armory` are shown only to on-duty police
   (`LF_ArmoryDrawAction.ShownTo`, replicated state); a civilian no longer sees
   them greyed. The server still refuses in `PerformAction`. Test:
   `playtest/offers`.
-- ⚠️ `EL_RobWeaponAction`, `EL_RobVehicleAction`, and `LF_Bank` still count
+- ⚠️ `LF_RobWeaponAction`, `LF_RobVehicleAction`, and `LF_Bank` still count
   police and read accounts directly in their offers; move them to
-  `EL_AccountReplication` next.
+  `LF_AccountReplication` next.
 
 ## Money & Economy
 
-### `EL_MoneyUtils` — `Feature/Money/EL_MoneyUtils.c`
+### `LF_MoneyUtils` — `Feature/Money/LF_MoneyUtils.c`
 - ✅ Cash is the `MoneyStack` inventory item. `GetCash` (‑1 on fault),
   `AddCash`/`RemoveCash` (actual amount, 0 on fault).
 - ⚠️ Inconsistent sentinels (`-1` vs `0`); doc comments wrong on
   Remove/Take.
 
-### `EL_BankAccount` + `EL_ATMManager` — `Feature/ATM/`
+### `LF_BankAccount` + `LF_ATMManager` — `Feature/ATM/`
 - ✅ **The canonical bank** (verified 2026-08-30): every payout in the game pays
-  cash; `EL_ATMManager` + `EL_BankAccount` (per-player, keyed by UID, persisted)
+  cash; `LF_ATMManager` + `LF_BankAccount` (per-player, keyed by UID, persisted)
   is the only bank, and the ATM is the only cash↔account boundary.
   `Deposit` only if `>0`, `Withdraw` only if sufficient; balance never negative
   through these paths. Manager is a session map registry + async loader.
@@ -467,15 +468,15 @@
   `CreateAccount` is idempotent and rejects empty IDs (verified 2026-08-30).
 - ✅ **No bank wipe on the first connect after a restart** (2026-11-07, test
   `restart/bank-survives-connect`, verified 2026-11-07): the game mode used to
-  `new EL_ATMManager()` on the first connect, and the constructor stole the
-  singleton the save load had filled. `EL_ATMManager`, `EL_JobManager`, and
-  `EL_CharacterCreationManager` now share one pattern: `static ref s_Instance`,
+  `new LF_ATMManager()` on the first connect, and the constructor stole the
+  singleton the save load had filled. `LF_ATMManager`, `LF_JobManager`, and
+  `LF_CharacterCreationManager` now share one pattern: `static ref s_Instance`,
   created only by `GetInstance()`, the constructor never registers itself, and
   the destructor only clears the singleton when it is that instance. The game
-  mode keeps no manager fields; `EL_GameModeRoleplay.ResolveConnectManagers()`
+  mode keeps no manager fields; `LF_GameModeRoleplay.ResolveConnectManagers()`
   only resolves them.
 
-### ATM terminal — `Feature/ATM/LF_ATMTerminal.c` (was `EL_ATMMenu`)
+### ATM terminal — `Feature/ATM/LF_ATMTerminal.c` (was `LF_ATMMenu`)
 - ✅ (2026-11-08, M1-13) **Terminal screen** on `LF_UIScreen` with the
   `LF_UISkin.Terminal()` skin: green phosphor (vanilla `robotomono` face) in a
   bezel, balance and carried cash from the server, an `AMOUNT >` entry line, a
@@ -484,7 +485,7 @@
   walk a row), keyboard digits and numpad (`LF_Keypad0..9`), Backspace or pad X
   (`LF_KeypadBack`), Delete or pad Y (`LF_KeypadClear`). The entry cannot pass
   `MAX_TRANSACTION_AMOUNT`. Closes on EXIT, MenuBack, death, or 3.5 m from the
-  machine. `EL_ATMAction` runs PerformAction only on the acting machine
+  machine. `LF_ATMAction` runs PerformAction only on the acting machine
   (`HasLocalEffectOnlyScript`) and opens only when the user is this machine's
   character (`LF_CounterAccess.IsLocalActor`).
 - ✅ (2026-11-08) **Refusals say why, on the screen**: the server replies
@@ -492,42 +493,42 @@
   ATM, no account) with the new balance and carried cash; no toast (the old
   away-from-ATM toast plus the menu toast was the duplicate). No reply in 5 s
   prints `NO REPLY FROM THE BANK`. Sounds: key click, accept and refuse are UI
-  events set on the `EL_ATMAction` attributes; an accepted deposit or
+  events set on the `LF_ATMAction` attributes; an accepted deposit or
   withdrawal plays `SOUND_PICK_UP` on the character for everyone nearby.
   Tests: `atm/keypad`, `atm/refusal-reasons`, `counter/refusal-text`,
   `counter/local-only`, `counter/screen-layout`.
 - ✅ **Cash moves** (verified 2026-08-30): the menu forwards through
-  `EL_CharacterATMComponent.RequestDeposit/RequestWithdraw`, and the server
+  `LF_CharacterATMComponent.RequestDeposit/RequestWithdraw`, and the server
   RPC handlers `RpcAsk_Deposit`/`RpcAsk_Withdraw` remove cash on deposit
   (partial removals rolled back) and pay cash out on withdraw (all-or-nothing
-  with balance restore), guarded by `EL_ATMManager.IsValidAmount`. No money
+  with balance restore), guarded by `LF_ATMManager.IsValidAmount`. No money
   from thin air.
 - ✅ The money-moving bodies are the static seams
-  `EL_CharacterATMComponent.ServeDeposit/ServeWithdraw` (extracted 2026-11-07,
+  `LF_CharacterATMComponent.ServeDeposit/ServeWithdraw` (extracted 2026-11-07,
   no behavior change; the RPC handlers keep the range check and reply);
   `atm/request-cash-boundary` (WORLD) drives them with a real character
   (red-proof observed 2026-11-08). The withdraw rollback case pays into an
   entity with no inventory: a bare `Character_Roleplay` still holds MoneyStack.
 - ✅ **At the ATM only** (2026-11-07): the server refuses a
-  deposit or withdraw unless an entity carrying `EL_ATMAction` stands within
-  `EL_CharacterATMComponent.ATM_RANGE` (5 m) of the character
-  (`EL_ActionSite`, server-side search; the client names no site). A refusal
+  deposit or withdraw unless an entity carrying `LF_ATMAction` stands within
+  `LF_CharacterATMComponent.ATM_RANGE` (5 m) of the character
+  (`LF_ActionSite`, server-side search; the client names no site). A refusal
   logs `deposit refused: not at an ATM` / `withdraw refused: ...` and the
   terminal prints `REFUSED: STAND AT THE MACHINE` (2026-11-08; was a toast). On a listen host the requests and the replies call their
   handlers directly, like the shop bridge. Test: `security/service-range`.
 
-### `EL_BankAccountComponent` — `Feature/Banking/` (deleted 2026-08-30)
+### `LF_BankAccountComponent` — `Feature/Banking/` (deleted 2026-08-30)
 - ❌ The second, unintegrated entity bank is **gone** (file deleted, no
   references remain). The $20k grant, the persistence race, and the duplicate
   money path died with it.
 
-### `EL_ShopComponent` — `Feature/Shop/EL_ShopComponent.c`
+### `LF_ShopComponent` — `Feature/Shop/LF_ShopComponent.c`
 - ✅ Catalog-driven buy: `BuyItem(item, qty, buyer)` guards null/qty, server-
-  only, price × quantity, `EL_MoneyUtils.RemoveAmount`, refund on
+  only, price × quantity, `LF_MoneyUtils.RemoveAmount`, refund on
   inventory-full. A sell or buy of a stack pays or gives one unit per
-  quantity through `EL_ShopRules.StackTradeTotal` (verified 2026-10-11).
+  quantity through `LF_ShopRules.StackTradeTotal` (verified 2026-10-11).
   The menu sells at most 99 of a held stack per click, the server cap
-  `EL_CharacterShopComponent.MAX_TRANSACTION_QUANTITY`; a request outside
+  `LF_CharacterShopComponent.MAX_TRANSACTION_QUANTITY`; a request outside
   1..99 is refused and logged. (2026-11-07)
 - ✅ **Money correctness** (verified 2026-08-30): the partial-funds exploit is
   closed — `BuyItem` compares the actual removed amount against the total and
@@ -543,30 +544,30 @@
   `ShopPrices.conf`. The UI kit status row gives its action button more width (label 1.5,
   status 1, button 1.5), so "Order" is no longer cut to "Orde".
 
-### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `EL_ShopMenu`)
+### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `LF_ShopMenu`)
 - ✅ (2026-11-08, M1-13) Typed price list on `LF_UIScreen` with the
   `LF_UISkin.PriceList()` skin (paper, mono face, ink buttons): carried cash, a
   "Look for" field that narrows the list as you type, up to 40 lines of item
   and buy price with an Order button, an order slip (quantity with One less /
   One more, 1..99), Pay <total> cash, Sell these, Leave. Buy and sell are the
-  existing `EL_CharacterShopComponent` RPCs; every request now gets a reply
+  existing `LF_CharacterShopComponent` RPCs; every request now gets a reply
   with `LF_EShopRefusal` (not sold here, unpriced, cash short, pockets full,
   nothing to sell, quantity, too far, no shop), the money moved and the carried
   cash, printed on the slip. The shop no longer raises toasts. An accepted
-  trade plays `SOUND_PICK_UP` on the character; UI sounds are `EL_ShopAction`
-  attributes. `EL_ShopAction` opens only on the acting machine for its own
+  trade plays `SOUND_PICK_UP` on the character; UI sounds are `LF_ShopAction`
+  attributes. `LF_ShopAction` opens only on the acting machine for its own
   character. Closes on Leave, MenuBack, death, or 3.5 m from the counter.
   Tests: `shop/refusal-reasons`, `counter/local-only`, `counter/screen-layout`.
 
-### `EL_TraderManagerComponent` + `EL_InventoryStorageManagerComponent` — `Components/InventorySystem/`
+### `LF_TraderManagerComponent` + `LF_InventoryStorageManagerComponent` — `Components/InventorySystem/`
 - ✅ Sell-to-trader pays **cash** (verified 2026-10-11): inserting into a
   trader-owned storage pays one cash unit per stack quantity
-  (`EL_ShopRules.StackTradeTotal`) via `EL_MoneyUtils.AddCash`
+  (`LF_ShopRules.StackTradeTotal`) via `LF_MoneyUtils.AddCash`
   (pay-before-delete, clawed back if the item cannot be removed); black-market
   rejects non-civilian factions. The old "payout to ATM bank" and the
   `Print("testtesttest")` debug line are gone.
 - ✅ The value lookup and the black-market decision are the static seams
-  `EL_TraderManagerComponent.GetUnitValue` / `CanAccessBlackMarket`
+  `LF_TraderManagerComponent.GetUnitValue` / `CanAccessBlackMarket`
   (extracted 2026-11-07; the lookup now skips a null row instead of crashing),
   pinned by `trader/sell-rules` (LOGIC; red-proof observed 2026-11-08).
 - ⚠️ Unguarded `pStorageFrom.GetOwner()` (null crash); null `m_aTradableItems`
@@ -575,7 +576,7 @@
 
 ## Gathering / Processing / Resources
 
-### `EL_GatherAction` — `Feature/Gathering/EL_GatherAction.c`
+### `LF_GatherAction` — `Feature/Gathering/LF_GatherAction.c`
 - ✅ Interact action granting `m_GatherAmount` of `m_GatherItemPrefab` into
   the user inventory; tool requirement (right hand / left gadget / anywhere
   in inventory); per-resource gather counter + cooldown restock.
@@ -586,35 +587,35 @@
   adds nothing is an error log (verified 2026-10-10). A sandbag the inventory
   rejects, or a nugget with no usable slot, used to look like a successful use.
 - ✅ A node id copies tool, yield, and cooldown from `ResourceChains.conf`.
-- ✅ **Crop growth runs on the server only** (2026-11-08, #157): `EL_BaseCrop`
+- ✅ **Crop growth runs on the server only** (2026-11-08, #157): `LF_BaseCrop`
   starts its growth clock only on the server (`Replication.IsServer()` and
   `RplSession.Mode()` is not `Client`), not on
   `RplComponent.IsOwner()`, which is still true on a client while the world
-  loads. Every stage read goes through `EL_BaseCrop.StageAt`, which returns
+  loads. Every stage read goes through `LF_BaseCrop.StageAt`, which returns
   null for an index outside the list. Before this each game client logged a
-  `NULL pointer to instance` VME in `EL_BaseCrop.EOnFrame` for every crop.
+  `NULL pointer to instance` VME in `LF_BaseCrop.EOnFrame` for every crop.
   Each crop logs `crop <name> init: grows here <bool> (rpl mode <mode>)` once.
-  A missing row or a prefab that does not resolve logs `EL_Debug.Error` and
+  A missing row or a prefab that does not resolve logs `LF_Debug.Error` and
   grants nothing (verified 2026-10-11). The action stays on the node.
 
-### `EL_ProcessAction` — `Feature/Processing/EL_ProcessAction.c`
+### `LF_ProcessAction` — `Feature/Processing/LF_ProcessAction.c`
 - ✅ Recipe: consume all `m_aProcessingInputs`, produce all
   `m_aProcessingOutputs` (into inventory or force-dropped).
 - ✅ **Free-output exploit closed** (verified 2026-08-30): malformed recipes,
   empty input/output lists, missing inputs, and non-positive amounts are
   rejected before inventory mutation. Regression coverage is in
-  `EL_Test_ActionGuards`.
+  `LF_Test_ActionGuards`.
 - ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
-  empty recipe or a prefab that does not resolve logs `EL_Debug.Error` and
+  empty recipe or a prefab that does not resolve logs `LF_Debug.Error` and
   returns before inventory changes (verified 2026-10-11).
 - ✅ Cocaine, jam, and beer are one-input, one-output recipe prefabs under
   `Prefabs/Processing/Chains/`, each parented to `ItemProcessor_Base`
   (verified 2026-10-11). Cocaine consumes coca leaves and produces a cocaine
   pouch. Jam consumes rowan berries and produces berry jam. Beer consumes an
-  empty beer bottle and produces a beer bottle. `EL_Test_RecipeChains` checks
+  empty beer bottle and produces a beer bottle. `LF_Test_RecipeChains` checks
   that each input prefab and output prefab is set and distinct.
 
-### `EL_ResourceChainCatalog` — `Feature/Resources/EL_ResourceChainCatalog.c`
+### `LF_ResourceChainCatalog` — `Feature/Resources/LF_ResourceChainCatalog.c`
 - ✅ `Configs/Resources/ResourceChains.conf` names each gather node's tool,
   yield, and cooldown, and each machine's inputs and outputs (verified
   2026-10-11). Yields are item prefabs. Gather and process do not mint cash.
@@ -631,25 +632,25 @@
   `GoldOre_Debug` and `CopperOre_Debug` use the debug rows with the prefab
   yields. Every ore rock still needs the pickaxe (the hit zone's tool list).
 
-### `EL_DestructibleResourceComponent` + `EL_DestructibleResourceHitZone` — `Feature/Resources/`
+### `LF_DestructibleResourceComponent` + `LF_DestructibleResourceHitZone` — `Feature/Resources/`
 - ✅ Damage gated to configured tools; tool → per-hit damage; FX on hit. The
   tool match compares prefab GUIDs, so path casing no longer matters. A melee
-  hit from a tool the resource does not list logs `[ELDebug:Resources]` and
+  hit from a tool the resource does not list logs `[LFDebug:Resources]` and
   deals 0 (2026-11-08).
 
 ### `LF_OreNodeComponent` + `LF_OreYield` — `Feature/Mining/` (2026-11-08)
 - ✅ You mine ore by swinging the pickaxe at the rock; there is no gather
-  prompt. The hit goes through `EL_DestructibleResourceHitZone` (pickaxe 20
+  prompt. The hit goes through `LF_DestructibleResourceHitZone` (pickaxe 20
   damage, the axe 0). Every 60 damage (three swings) a piece breaks off and the
   node row's yield drops as real nugget items beside the rock, toward the
   miner. After the row's `m_iMaxGathers` pieces the rock crumbles (hidden, no
   collision) and grows back after the row's `m_fCooldownMs`. Server-
   authoritative; clients get the hit dust, a shake and the vanilla rock-break
   sound by broadcast, and the spent state by RplProp (JIP-safe). The spent
-  state is not saved. Ported from thebonbon `EL_ToolHitZone` and
-  `EL_RandomPrefabSpawnable` with permission. Tests: LOGIC `mining/ore-yield`,
+  state is not saved. Ported from thebonbon `LF_ToolHitZone` and
+  `LF_RandomPrefabSpawnable` with permission. Tests: LOGIC `mining/ore-yield`,
   WORLD `mining/pickaxe-hits`.
-- ✅ Nuggets and bars render textured: `EL_QuantityComponent.UpdateStackModel`
+- ✅ Nuggets and bars render textured: `LF_QuantityComponent.UpdateStackModel`
   no longer re-sets the base mesh, which dropped the prefab's material
   overrides and rendered the items white. Cash, pickaxe, axe, ore and bar
   inventory previews use the Front preset with a narrow FOV.
@@ -664,22 +665,22 @@
 ### `LF_MiningSpawn` + `LF_MiningForge` — `Feature/Mining/`
 - ✅ Weighted ore spawn. A roll in `[0, total)` maps onto the first bin, including
   a roll of 0. The spawn count is the shortfall to the configured amount, and
-  an over-full area spawns nothing. An empty list logs `EL_Debug.Error`.
+  an over-full area spawns nothing. An empty list logs `LF_Debug.Error`.
 - ✅ Timed forge. One iron nugget
   (`{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et`) becomes one iron
   bar (`{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et`) after 5 seconds
   (5000 ms). The nugget stays until the delay elapses. A missing nugget, a
-  second start, or a nugget removed before the end logs `EL_Debug.Error` and
+  second start, or a nugget removed before the end logs `LF_Debug.Error` and
   yields no bar. A zero delay finishes inside the start.
 
 ## Jobs / Level / Licenses / Whitelist
 
-### `EL_PlayerJobComponent` — `Feature/Jobs/EL_PlayerJobComponent.c`
+### `LF_PlayerJobComponent` — `Feature/Jobs/LF_PlayerJobComponent.c`
 - ✅ Per-player job state, per-job level/XP maps, license gates (POLICE→POLICE_ACCESS,
   MEDIC→MEDIC_ACCESS), client→server `RpcAsk_SetJob` re-validates licenses.
 - ✅ **Fruit-catcher mint closed** (verified 2026-08-30): the server clamps any
-  claimed score through `EL_GetFruitCatcherRewardCount` to
-  `EL_FRUIT_CATCHER_MAX_SCORE` (100); pin test `security/fruitcatcher-reward-clamp`.
+  claimed score through `LF_GetFruitCatcherRewardCount` to
+  `LF_FRUIT_CATCHER_MAX_SCORE` (100); pin test `security/fruitcatcher-reward-clamp`.
 - ✅ **Fruit-catcher claim loop closed** (verified 2026-11-07): a claim
   pays only a server-opened round. The minigame calls `AskStartFruitCatcherRound`
   when a round starts; the server records the round id and start time
@@ -700,7 +701,7 @@
   no longer exists anywhere in `Scripts/Game`.
 - ✅ **No passive paycheck** (verified 2026-11-08, M1-07): the timer paycheck
   (700-1000 cash every 300 s to every job, unemployed included) is deleted; the
-  component has no frame event. `EL_JobConfig` has no salary fields. Money comes
+  component has no frame event. `LF_JobConfig` has no salary fields. Money comes
   from completed runs, trader sales, police duty pay (`LF_DutyPay`), and the
   unemployment benefit (`LF_UnemploymentBenefit`). Pin test `jobs/no-passive-paycheck`.
 - ✅ **Civilian run XP** (verified 2026-10-11): `AddExperience` forwards to
@@ -721,7 +722,7 @@
 - ✅ **Job tool grant** (2026-11-08): miner gets
   `{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et` (the old `Prefabs/Tools/Axe/Pico.et`
   never existed), lumberjack gets `{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et`
-  (the old GUID was wrong). Spawn goes through `EL_Utils.SpawnEntityPrefab`; a
+  (the old GUID was wrong). Spawn goes through `LF_Utils.SpawnEntityPrefab`; a
   tool that does not fit is logged and left at the player's feet.
 - ⚠️ Whitelist branch in `SetJob` is dead (only POLICE is restricted and it is
   special-cased). Hard-coded Spanish strings (not localized). Per-job level/XP
@@ -737,7 +738,7 @@
   the drop consumes it. The taxi fare uses the rank vehicle
   `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
   not need a second client. A missing cargo prefab or a full inventory logs
-  `EL_Debug.Error` and that run does not pay. DebugWorld places
+  `LF_Debug.Error` and that run does not pay. DebugWorld places
   `Roadmap_Job_Depot` (post counter
   `{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et`),
   `Roadmap_Job_Drop`, `Roadmap_Job_TaxiPad`, and `Roadmap_Job_FuelCan` on
@@ -747,7 +748,7 @@
 
 - ✅ **Sign-up offers on a dedicated client** (2026-11-08, #157): the greyed reason reads
   `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
-  A client reads the level replicated on `EL_PlayerJobComponent` (the career map is
+  A client reads the level replicated on `LF_PlayerJobComponent` (the career map is
   server-only), so fuel and taxi open on the client once the server levels the career.
 - ✅ **The toasts say what to do next** (2026-11-08, M1 RC QA): signing up shows the job as the
   title and the next step as the body (`LF_CivilianJob.SignedUpKey`: "Pick up a parcel at this
@@ -756,21 +757,21 @@
 - ✅ **Pick up, Complete, and Abandon work on a dedicated client** (2026-11-08, LOGIC
   `jobs/client-offers`): the offers read the server-only sign-up and run maps, so on a hosted
   server "Pick up parcel" stayed greyed ("Sign up at the workplace first") after a good sign-up.
-  A client now reads the job replicated on `EL_PlayerJobComponent` (set at sign-up and when a
+  A client now reads the job replicated on `LF_PlayerJobComponent` (set at sign-up and when a
   restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
   inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
 
-### `EL_JobManager` — `Feature/Jobs/EL_JobManager.c`
+### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
   `SetScopeReward` for that prefab (verified 2026-10-11). Gather and process
   mint nothing on their own. The player sells the product to a trader. A
-  scope payout, when one exists, is cash via `EL_MoneyUtils.GiveCash`. The
+  scope payout, when one exists, is cash via `LF_MoneyUtils.GiveCash`. The
   ATM stays the only cash-to-account boundary.
 - ✅ `#EL-Job_Earned` is `Earned $%1 for work!` and `GiveReward` passes the
   paid amount through `WidgetManager.Translate` (verified 2026-10-11).
 
-### `EL_PlayerLevelComponent` — `Feature/Level/EL_PlayerLevelComponent.c`
+### `LF_PlayerLevelComponent` — `Feature/Level/LF_PlayerLevelComponent.c`
 - ✅ Level/XP/skill-point state; `GetExperienceForNextLevel = level * 100`;
   passive bonuses (`gatheringSpeed 1+(level-1)*0.1`, `gatheringAmount` same,
   `saleBonus 1+(level-1)*0.05`); `CheckLevelUp` drains XP cascades, +1 SP and
@@ -780,7 +781,7 @@
   possible). Saves on every XP gain (DB-write hazard). `GetBonusesText`
   returns a Spanish literal.
 
-### `EL_LicenseManagerComponent` — `Feature/License/EL_LicenseManagerComponent.c`
+### `LF_LicenseManagerComponent` — `Feature/License/LF_LicenseManagerComponent.c`
 - ✅ License catalog (26 entries), `CanUnlockLicense` (owned/config/whitelist/
   level), `CanAffordLicense` (SP cost), `PurchaseLicense` (spends SP +
   unlock), `HasLicense`, persistence restore.
@@ -792,38 +793,38 @@
   is used for initial grants.
 - ✅ **Replicates as a bitmask** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the old `[RplProp] ref array` broke the
   simple-types rule. The server list stays local; `m_iUnlockedBits` (an int
-  `RplProp`, `EL_LicenseBits`) is written on every change. On a client
+  `RplProp`, `LF_LicenseBits`) is written on every change. On a client
   `HasLicense` and `GetUnlockedLicenses` decode the mask. Bit order is
-  `EL_LicenseBits.Order()`: append new types, never reorder.
+  `LF_LicenseBits.Order()`: append new types, never reorder.
 
-### `EL_WhitelistManager` — `Feature/Whitelist/EL_WhitelistManager.c`
+### `LF_WhitelistManager` — `Feature/Whitelist/LF_WhitelistManager.c`
 - ✅ **The playtest host is police from the first join** (2026-11-08, LOGIC
   `whitelist/first-player-police`): with `LF_MissionHeader.m_bLF_FirstPlayerPolice` (on in
   `LF_PlaytestTown.conf`, off by default), the first player to join while the police roster is
   empty is added to it (`$profile:LifeFramework/whitelist.txt`), so the maintainer can clock in
   on his own playtest without writing the file. That file is the one roster: the duty desk and
   the join gate read it. The unused `Whitelists/Police.txt` and `Whitelists/Medic.txt` lists on
-  `EL_WhitelistRespawnHandlerComponent` (nothing read their flags) are gone from
+  `LF_WhitelistRespawnHandlerComponent` (nothing read their flags) are gone from
   `GameMode_Roleplay.et`; the component keeps the CONNECT join gate.
 - ✅ Pure static in-memory whitelists; `IsFactionRestricted` (POLICE,
   MILITARY, MAFIA), `IsJobRestricted` (POLICE only), add/remove/get.
-- ✅ **Compiles** (verified 2026-08-30): `enum EL_EFactionType` is now defined
+- ✅ **Compiles** (verified 2026-08-30): `enum LF_EFactionType` is now defined
   in this file (CIVILIAN/POLICE/MILITARY/MAFIA).
 - ✅ **Restart save and police gate** (verified 2026-10-11): the manager
   writes `$profile:LifeFramework/whitelist.txt` itself, version first, and
   `Load` replaces the cache. A second load does not duplicate entries. A
-  missing file logs `EL_Debug.Error` and leaves the police faction closed.
+  missing file logs `LF_Debug.Error` and leaves the police faction closed.
   Civilian stays open. `MayJoinFaction` refuses a uid that is not on the
   police list and logs that refusal. The server calls it in
   `LF_DutyLocker.RefuseClockIn` when a player clocks in at the duty desk (M1-11;
   the faction screen is gone). A client has no whitelist; the desk offer reads
-  the roster bit of `EL_AccountReplication`. A uid
+  the roster bit of `LF_AccountReplication`. A uid
   that was not in the file is still refused after load. This file is not
-  `EL_PersistenceComponentSerializer`.
+  `LF_PersistenceComponentSerializer`.
 - ✅ **An unreadable file is never overwritten** (2026-11-07, test
   `restart/whitelist-unreadable-file-kept`, verified 2026-11-07): a file that exists
   but cannot be opened, has no or a wrong version, or fails to parse sets
-  `IsLoadFailed()`. `Save()` then refuses with `EL_Debug.Error` and returns false,
+  `IsLoadFailed()`. `Save()` then refuses with `LF_Debug.Error` and returns false,
   so the next admin add cannot rewrite the file with only the new entry. A
   missing file is a first run and saving stays allowed. A later good `Load`
   clears the flag.
@@ -836,7 +837,7 @@
   modded client cannot whitelist itself for POLICE. Pin test
   `security/admin-chat-role`.
 
-### `EL_BuildingManagerComponent` — `Components/BuildingSystem/EL_BuildingManagerComponent.c`
+### `LF_BuildingManagerComponent` — `Components/BuildingSystem/LF_BuildingManagerComponent.c`
 - ✅ **Placement gated and paid** (verified 2026-11-07): the server
   (`PlaceHeldBuilding`, behind `RpcAsk_SpawnEntityPrefab`) requires the held
   performer for that prefab, a position within `MAX_PLACEMENT_DISTANCE` (5 m)
@@ -848,7 +849,7 @@
 ### `LF_UnemploymentBenefit` — `Feature/Jobs/LF_UnemploymentBenefit.c`
 - ✅ "Collect benefit" (`LF_CollectBenefitAction`) at `Roadmap_Job_Depot`
   (verified 2026-11-08: LOGIC test `jobs/unemployment-benefit`; in-world collection
-  is manual). The server reads the bank balance (`EL_ATMManager`) and pays
+  is manual). The server reads the bank balance (`LF_ATMManager`) and pays
   `m_iBenefitAmount` cash when the balance is strictly below
   `m_iBenefitBalanceThreshold`, the player is not on duty as police and has no
   active delivery run, and `m_fBenefitCooldownSeconds` passed since that
@@ -862,7 +863,7 @@
 ## Crime & Police
 
 ### `LF_Breach` — `Feature/Crime/LF_Breach.c`
-- ✅ Configured charge opens an `EL_LockComponent` after the fuse and leaves it
+- ✅ Configured charge opens an `LF_LockComponent` after the fuse and leaves it
   open until repair (verified 2026-10-11). `Arm(targetId, playerUid)` is the
   call later robberies use. Fuse 0 opens in that call. Wanted and the police
   notify fire once, at arm time, not when the offer refreshes. A second charge
@@ -887,7 +888,7 @@
   server and the mirror on a client. A client offers repair to police and, on an
   organization door, to anyone; the server decides membership.
 - ✅ **Charge lifetime** (2026-11-08): a charge whose fuse cannot
-  fire is dropped with `EL_Debug.Error` (`CancelCharge`) instead of leaving the
+  fire is dropped with `LF_Debug.Error` (`CancelCharge`) instead of leaving the
   target armed forever: no world, a placed door without
   `LF_BreachTargetComponent`, a timer that could not be scheduled, or the door
   deleted before the fuse fired (`LF_BreachTargetComponent.OnDelete` also
@@ -899,8 +900,8 @@
 ### `LF_Bank` — `Feature/Crime/LF_Bank.c`
 - ✅ A vault calls `LF_Breach.Arm`, then spills a config number of bags of
   MoneyStack cash (verified 2026-10-11). The haul never deposits or withdraws
-  `EL_BankAccount`. Civilian-only, cooldown, and minimum police on duty use
-  the same comparisons as `EL_RobAction`. A second breach inside the cooldown
+  `LF_BankAccount`. Civilian-only, cooldown, and minimum police on duty use
+  the same comparisons as `LF_RobAction`. A second breach inside the cooldown
   spawns nothing. Over-capacity requests are cut to the configured bag count.
   Carry leaves the cash on the bag; dropping it leaves that cash in the world.
   `Export` / `Apply` restore the ground bags and do not write a bank balance;
@@ -917,7 +918,7 @@
 ### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
 - ✅ Hospital till pays `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`
   through the civilian, cooldown, and minimum-police gates and does not deposit
-  to the bank (verified 2026-10-11). The placed action is `EL_RobAction` on the
+  to the bank (verified 2026-10-11). The placed action is `LF_RobAction` on the
   till's single `ActionsManagerComponent`. Wanted rises by 1. One police alert per
   successful rob; an offer refresh does not alert. DebugWorld places
   `Roadmap_Hospital_Till` at `257 0 256.4` (hospital porch) on `Street_Hospital.layer`.
@@ -931,14 +932,14 @@
 
 ### `LF_Murder` / `LF_SafeZone` — `Feature/Crime/` (M1-27, #125)
 - ✅ **Murder makes you wanted** (test `crime/murder`). Every character death
-  reaches `EL_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
+  reaches `LF_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
   player who kills another player or an NPC gets wanted +`m_iMurderWanted`
   (`LF_Police.conf`, default 3), one `LF_WantedReports` report with the
   `#LF-Offence_Murder` offence and their description (no name), a radio
   dispatch to every on-duty officer (`LF_Dispatch.Report`, no site alarm), and a toast. Not murder: a death with no player behind
   it, a self-kill, a destroyed vehicle, and (config
   `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
-  wanted suspect. Each decision logs `[ELDebug:Murder]`. No automatic ban.
+  wanted suspect. Each decision logs `[LFDebug:Murder]`. No automatic ban.
 - ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_SafeZoneComponent` on
   `LF_SafeZone_Square` (`Gamemode.layer`, fountain 115 0 250, radius 30 m as
   the component attribute) registers a flat circle. The modded
@@ -946,7 +947,7 @@
   when a player hurts a different player and either stands inside: no health,
   bleeding, or ragdoll. NPC, world, and self damage pass. Weapons still raise
   and fire. No police exemption: arrest is an interact action. Each refusal
-  logs `[ELDebug:SafeZone] refused ...`; the shooter gets a toast at most every
+  logs `[LFDebug:SafeZone] refused ...`; the shooter gets a toast at most every
   8 s. Two `safe_zone` notice boards (`Sign_SafeZone_Spawn`,
   `Sign_SafeZone_East`) say so in the world.
 - ✅ Both civilian spawn points stand on the square (the second moved from
@@ -954,24 +955,24 @@
   civilian spawn point is inside a zone. The hospital wake (M1-26) is not a
   spawn and stays outside.
 
-### `EL_RobAction` / `EL_RobWeaponAction` / `EL_RobVehicleAction` — `Feature/Crime/`
+### `LF_RobAction` / `LF_RobWeaponAction` / `LF_RobVehicleAction` — `Feature/Crime/`
 - ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
   gates; raises wanted level (+1/+2/+3); notifies police. DebugWorld's three
   points set the minimum to 0 so one civilian can run them (verified 2026-10-10).
   The action classes still default to 2 / 1 / 3.
 - ✅ **Cash payout + reliable wanted bump** (verified 2026-08-30): the haul is
-  `EL_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
+  `LF_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
   asserts the bank balance stays 0), and the account cache churn is fixed so
   every robbery escalates wanted.
 - ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
   `Street_Fuel.layer` at `259 1.04 241.2` (on a counter at the fuel station) is
   `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits
   `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`,
-  with `EL_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
+  with `LF_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
   the server rolls it, and min equal to max pays that fixed amount. The debug
   till pays 150 MoneyStack cash. The bank balance stays 0. Wanted rises by
   `m_iWantedIncrease` (default 1) and still clamps at 5. A second attempt
-  inside the cooldown is refused and logged with `EL_Debug.Error`. The police
+  inside the cooldown is refused and logged with `LF_Debug.Error`. The police
   alert fires once, inside `CommitRobbery`, not while counting on-duty police
   and not when the offer refreshes. The fuel station building
   `{9269BD1B6BF3A441}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/FuelStation_E_01_V1.et`
@@ -979,28 +980,28 @@
   `#EL-Fuel_Till_Rob`, `#EL-Rob_Cooldown`, `#EL-Rob_CiviliansOnly`,
   `#EL-Rob_NeedPolice`.
 - ✅ **Tests call the real actions** (2026-11-07; red-proofs observed
-  2026-11-08). `crime/rob-reward` (WORLD) runs `EL_RobAction.CommitRobbery` with a
+  2026-11-08). `crime/rob-reward` (WORLD) runs `LF_RobAction.CommitRobbery` with a
   real character: MoneyStack cash, bank 0, wanted +1, cooldown, civilian gate.
   The weapon and vehicle grant/spawn, wanted, and alert moved into
-  `EL_RobWeaponAction.CommitWeaponRobbery` and
-  `EL_RobVehicleAction.CommitVehicleRobbery` (wanted `WANTED_INCREASE` 2 / 3;
+  `LF_RobWeaponAction.CommitWeaponRobbery` and
+  `LF_RobVehicleAction.CommitVehicleRobbery` (wanted `WANTED_INCREASE` 2 / 3;
   `PerformAction` keeps the server-only guard), and their civilian check into
-  `EL_RobAction.IsFactionAllowedToRob`; `crime/rob-weapon-vehicle` (WORLD)
+  `LF_RobAction.IsFactionAllowedToRob`; `crime/rob-weapon-vehicle` (WORLD)
   drives them. The earlier `crime/rob-reward` and `crime/rob-wanted-clamp`
   never called an action and are gone; the clamp is pinned by `roadmap/fuel`.
 - ✅ **No account, no robbery** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `CommitRobbery` refuses and logs
   `robbery refused: no account` instead of paying without the civilian gate and
   wanted bump. `PerformAction` runs on the server only; offers read
-  `EL_AccountReplication`, so the till is offered on a dedicated client and the
+  `LF_AccountReplication`, so the till is offered on a dedicated client and the
   min-police gate uses the replicated count. The success toast goes to the robber
-  only (`EL_Utils.NotifyEntity`), the alert to on-duty police only.
+  only (`LF_Utils.NotifyEntity`), the alert to on-duty police only.
 - ✅ **Weapon/vehicle cooldown in seconds** (2026-11-08, test `robustness/lifetime`): both
   compare through `LF_RobCooldown.IsActive`, which converts the seconds attribute
   to world-time milliseconds (before, 300 s was 0.3 s). A never-robbed action
   has no cooldown. `PerformAction` grants/spawns, raises wanted, and alerts on
-  the server only. `EL_RobVehicleAction` no longer notifies from its on-duty
+  the server only. `LF_RobVehicleAction` no longer notifies from its on-duty
   count (that ran every offer refresh) and refuses an empty vehicle prefab with
-  `EL_Debug.Error`; the spawn goes through `EL_Utils.SpawnEntityPrefab`.
+  `LF_Debug.Error`; the spawn goes through `LF_Utils.SpawnEntityPrefab`.
 - ⚠️ Near-duplicated guard logic across all three.
   Police alerts go through `LF_Dispatch.Report` (M1-20).
 
@@ -1018,7 +1019,7 @@
   `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
   inherits
   `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
-  and adds `EL_LockComponent`, so the prison mesh and the shared breach actions
+  and adds `LF_LockComponent`, so the prison mesh and the shared breach actions
   stay together. That vanilla door is the prefab the world test loads.
   The officer action `LF_JailArrestAction` is on the suspect. `LF_JailEscort`
   is the vehicle path: an on-duty officer loads a wanted player into the nearest
@@ -1032,13 +1033,13 @@
 - ✅ **Sentences survive a restart** (2026-11-07, tests
   `restart/jail-serializer-roundtrip` and `e2e/pass2-verify-load` across a real
   restart, verified 2026-11-07): `LF_Jail.ExportAll` / `ApplyAll` are the `jail` payload of
-  `EL_PersistenceComponentSerializer`, appended at version 5. Only serving
+  `LF_PersistenceComponentSerializer`, appended at version 5. Only serving
   sentences with time left are saved; `ApplyAll` replaces the live set, so a
   second apply converges. A version 1-4 save stops before the payload and leaves
   live sentences alone.
 - ✅ **One jail tick** (2026-11-08, test `robustness/single-jail-tick`): the first placed
   `LF_JailCellComponent` owns the jail config and the repeating `LF_Jail.Tick`;
-  a second cell logs `EL_Debug.Error` and neither reconfigures nor ticks (two
+  a second cell logs `LF_Debug.Error` and neither reconfigures nor ticks (two
   cells used to run sentences at double speed). `OnDelete` removes the tick.
   `LF_JailArrestableComponent` hosts `LF_JailEscort.Tick` on one live instance
   and hands it to the next registered one when that host is deleted.
@@ -1054,7 +1055,7 @@
   sentence counts down only for connected players (`LF_Jail.Tick` reads
   `PlayerManager.GetPlayers`; `TickOnline` is the testable seam). An offline prisoner keeps
   the time they had at logoff and logs `sentence paused` / `sentence resumed`. A prisoner who
-  spawns with time left (rejoin, restart) goes back to the cell with their slip (`EL_SpawnLogic`).
+  spawns with time left (rejoin, restart) goes back to the cell with their slip (`LF_SpawnLogic`).
 - ✅ **Sentence slip** (M1-21, test `jail/slip`): sentencing hands the prisoner
   `Prefabs/Items/Roleplay/SentenceSlip.et` (vanilla personal-papers mesh). `LF_JailSlipComponent`
   prints name, offence (wanted level), and online minutes left; the minutes replicate only when
@@ -1067,24 +1068,24 @@
   The DebugWorld cell now sentences 60 s per wanted level, max 300 s (it was zero-length).
 
 
-### `EL_PoliceMenu` — `Feature/Police/EL_PoliceMenu.c`
+### `LF_PoliceMenu` — `Feature/Police/LF_PoliceMenu.c`
 - ✅ `ArrestPlayer` is the client-side entry point. The wanted list
   left the menu in M1-11: wanted people are on the station wanted board. The
-  remote fine (`RpcAsk_EL_PoliceFine`, `FinePlayer`, the Fine button) is gone
+  remote fine (`RpcAsk_LF_PoliceFine`, `FinePlayer`, the Fine button) is gone
   (M1-19): a fine is a paper ticket written face to face (`LF_FineTicket*`).
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
-  through `SCR_ChimeraCharacter.EL_AskPoliceArrest`, and the server
-  handler `RpcAsk_EL_PoliceArrest` validates on-duty officer and wanted
+  through `SCR_ChimeraCharacter.LF_AskPoliceArrest`, and the server
+  handler `RpcAsk_LF_PoliceArrest` validates on-duty officer and wanted
   target before acting. Arrest also requires the configured
-  arrest rank (patrol on the flagship, #165). `EL_PoliceUtils` (pure) holds the
+  arrest rank (patrol on the flagship, #165). `LF_PoliceUtils` (pure) holds the
   sentence-length math and the reach check for tests; `MAX_FINE` is the
   senior ticket cap.
-  `EL_AskPoliceSelfPromote` always refuses.
+  `LF_AskPoliceSelfPromote` always refuses.
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
 - ✅ **Hands-on only** (2026-11-07): arrest refuses a
-  target that is not connected or stands beyond `EL_PoliceUtils.POLICE_REACH`
+  target that is not connected or stands beyond `LF_PoliceUtils.POLICE_REACH`
   (5 m, the in-world arrest range) and shows `#EL-Police_TooFar`. Neither the
   framework nor vanilla has a restraint state, so reach is the requirement.
   Test: `security/police-abuse`.
@@ -1113,30 +1114,30 @@
   `m_fTicketLateMultiplier` (x2) and the paper updates; after a further
   `m_iTicketSecondDeadline` (1800 s) the holder gets `m_iTicketLateWanted` (+1)
   wanted and a named "Unpaid fine" poster on the wanted board. Still payable
-  after; paying does not lift the warrant. Logs: `[ELDebug:Ticket]`.
+  after; paying does not lift the warrant. Logs: `[LFDebug:Ticket]`.
 - ✅ **Persisted** (save version 12, payload `tickets`). A restart's blank
   copy is reprinted on spawn; a respawn hands an unpaid ticket back. Up to 3
   paid receipts per holder are kept for reprinting. Tests:
   `police/fine-ticket-rules`, `police/fine-ticket`,
   `police/fine-ticket-serializer`.
 
-### `EL_DutyAction` — `Feature/Police/EL_DutyAction.c`
+### `LF_DutyAction` — `Feature/Police/LF_DutyAction.c`
 - ✅ **The police kit carries the station car key** (2026-11-08, WORLD `police/car-key`):
   the starter police kit adds `Prefabs/Items/Roleplay/LF_PoliceCarKey.et`, a vehicle key bound
   to the shared identifier `POLICE`; `Roadmap_Escort_Car`'s lock is bound to the same, so every
   officer's key opens every station car. The key is part of the duty inventory (clock-out stores
   it with the uniform). The car is a world entity, not an owned record: no garage, no impound,
-  back at the station after a restart. `EL_VehicleKeyComponent` now asks for its INIT event, so
+  back at the station after a restart. `LF_VehicleKeyComponent` now asks for its INIT event, so
   an editor-bound key actually takes its identifier (before, it stayed unbound).
 - ✅ **Clock in / Clock out at the duty desk** (M1-11, 2026-11-08; WORLD
   `police/duty-swap`, `police/death-on-duty`, `police/station`; restart via
   `wt e2e`). `Roadmap_Police_Desk` is `Prefabs/Police/LF_PoliceDutyDesk.et`
   (desk + vanilla `ClockPunch_01`). The offer reads the roster bit of
-  `EL_AccountReplication`; the server re-checks `EL_WhitelistManager` and
+  `LF_AccountReplication`; the server re-checks `LF_WhitelistManager` and
   `LF_DutyLocker` swaps the whole carried inventory, clothes included:
   clock-in stores the civilian tree as `civilian_stash` and restores
   `police_duty` (or the starter police kit, the POLICE entry of
-  `EL_SpawnLogic.m_aFactionCharacterItems`); clock-out does the reverse and pays
+  `LF_SpawnLogic.m_aFactionCharacterItems`); clock-out does the reverse and pays
   duty pay. The faction is the duty role: POLICE only while clocked in.
   Feedback: the vanilla pick-up gesture on the acting client, the range control
   panel button click (`SOUND_RANGECP_STARTBUTTON`) broadcast from the desk, then
@@ -1159,7 +1160,7 @@
   menu and re-toggle at once.
 - ✅ **Dedicated client** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the toggle
   runs on the server only; the offer and the name (`#LF-Duty_ClockIn` /
-  `#LF-Duty_ClockOut`) read `EL_AccountReplication`.
+  `#LF-Duty_ClockOut`) read `LF_AccountReplication`.
 
 ### `LF_WantedReports` / `LF_WantedBoard` — `Feature/Police/`
 - ✅ **Crime reports** (M1-11, LOGIC `police/wanted-board`): each crime that
@@ -1169,7 +1170,7 @@
   the nearest sign title within `m_fPlaceRadius` (else a 100 m grid square).
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
   catches it in the act and the report is identified at once. Showing your own
-  ID card to an on-duty officer (`EL_ShowIDAction`) identifies every open
+  ID card to an on-duty officer (`LF_ShowIDAction`) identifies every open
   report. Reports come down when wanted returns to 0, and persist as the
   `wanted` payload (save version 10).
 - ✅ **Wanted board** `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`,
@@ -1187,7 +1188,7 @@
   vault, hospital cabinet, murder with no site alarm). It records the crime report, sounds the site alarm,
   radios on-duty officers, and appends a line to the dispatch log. A refused
   crime reports nothing; no crime refuses for lack of police (the per-crime
-  minimum stays a framework attribute, 0 on the flagship). `EL_Utils.AlertPolice`
+  minimum stays a framework attribute, 0 on the flagship). `LF_Utils.AlertPolice`
   is gone.
 - ✅ **Site alarm** (WORLD `dispatch/site-alarm`): a replicated
   `Prefabs/Police/LF_SiteAlarm.et` spawns at the site, so only players the
@@ -1288,7 +1289,7 @@
   organization membership, so the reason arrives after the press, not on the
   offer.
 
-### `EL_ConfiscateAction` — `Feature/Police/EL_ConfiscateAction.c`
+### `LF_ConfiscateAction` — `Feature/Police/LF_ConfiscateAction.c`
 - ✅ (2026-11-08, M1-12) Search in the player interaction menu: shown to on-duty
   police within the 2 m reach; deletes the weapons of the wanted player in
   front of them (the action owner), not the nearest wanted player. Weapons are
@@ -1300,16 +1301,16 @@
 
 ## Ownership
 
-### `EL_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11; ledger and invites 2026-11-08)
+### `LF_OrganizationManager` — `Feature/Organizations/` (verified 2026-10-11; ledger and invites 2026-11-08)
 - ✅ A character founds one organization. The id comes from `PersistenceIdUtils`,
   never an entity id. The founder invites and kicks. A member can leave. The
   founder cannot leave or be kicked. A second membership is refused.
 - ✅ The shared fund is a balance keyed by organization id, the same shape as
-  `EL_BankAccount`. Deposit credits it. Withdraw requires the withdraw rank and
+  `LF_BankAccount`. Deposit credits it. Withdraw requires the withdraw rank and
   takes the whole amount or nothing. Buying an upgrade (extra storage,
   processing slot, parked vehicle) debits the configured price in one step or
   leaves the fund and the flag untouched. The price and the new flag are logged.
-- ✅ Cash moves only as MoneyStack through `EL_OrganizationPlayer`. A short
+- ✅ Cash moves only as MoneyStack through `LF_OrganizationPlayer`. A short
   removal is returned to the character. A short payout puts the fund back. The
   personal ATM balance is not read or written. The desk is
   `Roadmap_Org_Desk` on `Street_Org.layer` at `288.9 0 255.7` (org registry porch), using
@@ -1319,19 +1320,19 @@
   No organization: name field and "Sign and pay $250"; the fee
   (`LF_OrgRules.FOUNDING_FEE`) leaves carried MoneyStack and comes back if the
   registration is refused. Names: 3 to 32 letters, digits, spaces, `- ' & .`,
-  unique ignoring case and outer spaces (`EL_OrganizationManager.IsNameTaken`).
+  unique ignoring case and outer spaces (`LF_OrganizationManager.IsNameTaken`).
   A member's page: name, rank, fund with deposit (and withdraw for the rank
   that may), the processing upgrade, the alley yard lease
   (`LF_OrgHideoutLease`, free, founder takes it), the member list (offline
   members by their record name), and Leave (not for the founder). Found,
   deposit, withdraw, buy, lease, and leave are refused unless an
-  `EL_OrganizationDeskAction` stands within `EL_OrganizationPlayer.DESK_RANGE`
+  `LF_OrganizationDeskAction` stands within `LF_OrganizationPlayer.DESK_RANGE`
   (5 m) (`#EL-Org_TooFar`; test `security/service-range`). The page closes at
   4 m from the desk, on death, and on MenuBack. Sounds: page turn on open,
   pencil on Sign, map close on close. LOGIC `org/registry`, `org/invite-role`.
 - ✅ (2026-11-08, M1-17) Invite and remove are face to face, in the `org_invite`
   slot of the player interaction menu (`LF_OrgInviteRole`, registered in
-  `EL_GameModeRoleplay.OnGameStart`). A leader facing someone with no
+  `LF_GameModeRoleplay.OnGameStart`). A leader facing someone with no
   organization sees "Invite to <org>" (offer, `Gesture_Point`); the invitee
   facing that leader sees "Join <org>" and joins with one press (raised hand,
   hand-over sound); a leader facing a member sees "Remove from <org>"; nobody
@@ -1352,7 +1353,7 @@
 - ✅ One building owned by one organization. Members unlock
   `Roadmap_Hideout_Door` at `213 0 120`. A non-member is refused and the
   refusal is logged. The door is `EL_Door_Base` with the inherited
-  `EL_LockComponent`. The organization id is written onto that lock. The door
+  `LF_LockComponent`. The organization id is written onto that lock. The door
   does not call `LF_Breach` and does not add a second `ActionsManagerComponent`.
 - ✅ (2026-11-08, M1-17) An organization takes the yard (`LF_Hideout.HIDEOUT_ID`,
   gate `302.4 0 288` since M1-25) with "Take the lease" on the registry ledger; taking it locks the gate.
@@ -1360,7 +1361,7 @@
   character with the owner on the lock and shows `#EL-Hideout_NotMember` to a
   non-member; the server still decides from the registry.
 - ✅ `Roadmap_Hideout_Machine` at `216 0 120` uses the existing
-  `EL_ProcessAction` on `ItemProcessor_Base`. It runs only when the player's
+  `LF_ProcessAction` on `ItemProcessor_Base`. It runs only when the player's
   organization owns the hideout and has the processing upgrade. Otherwise it
   refuses and logs. The recipe turns one cabbage into one RowanBerries stack,
   the configured contraband prefab. A chain machine with no hideout component
@@ -1391,14 +1392,14 @@
 
 ## Notifications
 
-### `EL_NotificationManagerComponent` — `Feature/Notifications/`
+### `LF_NotificationManagerComponent` — `Feature/Notifications/`
 - ✅ Server→client notification broadcast with toast renderer; `SendToPlayer`/
   `SendToJob`/`SendToAll` + static `NotifyPlayer`/`NotifyJob`/`NotifyAll`.
   Before 2026-11-07 the toast layout
   `{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout` did not
   exist, so every toast (fines, arrests, rank denials, lot, lock, jail) failed silently. It
   now exists: a paper slip in the UI kit palette with a stamp-ink type strip (`Background`,
-  `ColorStrip`, `Icon`, `Title`, `Message`, `EL_NotificationToastUI` on the root).
+  `ColorStrip`, `Icon`, `Title`, `Message`, `LF_NotificationToastUI` on the root).
   Slips that overlap in time stack downwards. Timing reads the real clock
   (`System.GetTickCount`), not an assumed 16 ms frame. `notifications/toast-layout` (WORLD)
   instantiates the layout on the dedicated server and checks every named widget;
@@ -1409,7 +1410,7 @@
   `OffsetTop 140`), the fills were `PanelWidget`s (near-transparent) nested inside
   an `ImageWidget` (which draws no children), and the text column's negative
   stretch offsets ran the message past the slip. Now: 420x120 slip, sibling image
-  fills, wrapped message, fade driven from `Tick` (`EL_NotificationToastUI.OpacityAt`).
+  fills, wrapped message, fade driven from `Tick` (`LF_NotificationToastUI.OpacityAt`).
   Seen at 1280x720 on a dedicated client (contraband refusal). New
   `tools/validation/validate-layout-slots.mjs` fails a point-anchored slot whose
   `Offset*` and `Size*` disagree (it also fixed `EL_SurvivalHUD.layout`).
@@ -1419,22 +1420,22 @@
   toast. `SendToJob` duty semantics now read the account's `IsOnDuty()`, not a
   `job != UNEMPLOYED` tautology.
 - ✅ **Private targeted delivery** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `SendToPlayer` sends an Owner RPC on
-  the target's `SCR_PlayerController` (`EL_DeliverNotification`), so only that
+  the target's `SCR_PlayerController` (`LF_DeliverNotification`), so only that
   client receives it; the listen host's own controller calls the handler
   directly. Broadcast is left for `SendToAll` only. `SendToPolice` /
   `NotifyPolice` reach connected on-duty police by account faction.
-  `EL_Utils.NotifyEntity` (shop, robbery, duty,
-  confiscate toasts) route through it; `EL_Utils.Notify` still shows a hint on
+  `LF_Utils.NotifyEntity` (shop, robbery, duty,
+  confiscate toasts) route through it; `LF_Utils.Notify` still shows a hint on
   the calling machine only. Since 2026-11-08 the courier job (sign-up, paid,
   abandoned), gather/process rewards, weapon and vehicle robbery, and the
   contraband payout toast through `NotifyEntity`; on a dedicated server they
-  had reached nobody. enforce-lint L8 fails an `EL_Utils.Notify` after an
+  had reached nobody. enforce-lint L8 fails an `LF_Utils.Notify` after an
   `if (!Replication.IsServer()) return;` guard.
 - ⚠️ Hard-coded Spanish prefixes, emoji in logs, `m_Color` never transmitted.
 
 ## Inventory / Quantity
 
-### `EL_QuantityComponent` — `Feature/Quantity/EL_QuantityComponent.c`
+### `LF_QuantityComponent` — `Feature/Quantity/LF_QuantityComponent.c`
 - ✅ Virtual stack system: `AddQuantity`/`RemoveQuantity` clamp to
   `[0, max]` (0 = unlimited), `SetQuantity(0)` deletes the entity,
   `CanCombine`/`Combine` (conservation: source decrease == dest increase ==
@@ -1451,13 +1452,13 @@
 - ✅ **Transfer intent lifetime** (2026-11-08, test `robustness/lifetime`): `OnDelete` removes
   the entity's intent (no dead keys); an intent older than `INTENT_TTL_MS` (5 s)
   belonged to a failed move and is ignored by the next add.
-  `EL_DefaultLoadoutItemQuantityComponent` logs `EL_Debug.Error` instead of
-  crashing on a prefab without `EL_QuantityComponent`.
+  `LF_DefaultLoadoutItemQuantityComponent` logs `LF_Debug.Error` instead of
+  crashing on a prefab without `LF_QuantityComponent`.
 - ⚠️ `Split` with `splitSize` 0 spawns an item then deletes it via
   `SetQuantity(0)`; `ExtractQuantityComponents` inserts null components with
   no check; `HandleOnItemAdded` may refresh UI on a just-deleted entity.
 
-### `EL_InventoryUtils` (Quantity) — `Feature/Quantity/EL_InventoryUtils.c`
+### `LF_InventoryUtils` (Quantity) — `Feature/Quantity/LF_InventoryUtils.c`
 - ✅ Quantity-aware `GetAmount`/`AddAmount`/`RemoveAmount` returning *actual*
   amounts; AddAmount fills stacks then spawns; RemoveAmount drains smallest
   stacks first (ascending sort).
@@ -1467,23 +1468,23 @@
   null target.
 
 ### `ScriptedInventoryStorageManagerComponent` (Quantity) — `Feature/Quantity/ScriptedInventoryStorageManagerComponent.c`
-- ✅ RPC endpoints for split/transfer/intent (`RPC_EL_RequestQuantitySplit`,
-  `RPC_EL_QuantityTransfer`, `RPC_EL_SetTransferIntent`), all server-side,
+- ✅ RPC endpoints for split/transfer/intent (`RPC_LF_RequestQuantitySplit`,
+  `RPC_LF_QuantityTransfer`, `RPC_LF_SetTransferIntent`), all server-side,
   range-gated.
-- ✅ **Ownership gate added** (verified 2026-08-30): `EL_CanManipulateOwned`
+- ✅ **Ownership gate added** (verified 2026-08-30): `LF_CanManipulateOwned`
   rejects another living player's carried items (only your own storage or
   unowned containers/ground loot); the old range-only anti-cheat is closed.
 - ✅ **Locked owners refused** (verified 2026-11-07):
-  `EL_CanManipulateOwned` also refuses a storage whose owner has a locked
-  `EL_VehicleLockComponent` or `EL_LockComponent` (`EL_IsStorageOwnerLocked`).
+  `LF_CanManipulateOwned` also refuses a storage whose owner has a locked
+  `LF_VehicleLockComponent` or `LF_LockComponent` (`LF_IsStorageOwnerLocked`).
   Pin test `security/locked-storage-refused`.
 
 ### Hand-Carry — `Feature/Character/Inventory/HandCarry/`
-- ✅ `EL_HandInventoryStorageComponent` state machine
+- ✅ `LF_HandInventoryStorageComponent` state machine
   (`NONE→READY→AWAIT_HOLSTER→ACTIVE→AWAIT_SWAP→NONE`), hands-only storage,
   modded vanilla SCR inventory/gadget wiring.
 - ✅ Missing `CharacterControllerComponent`, weapon manager, or inventory
-  manager logs `EL_Debug.Error("HandCarry", ...)` and skips that step instead of
+  manager logs `LF_Debug.Error("HandCarry", ...)` and skips that step instead of
   a null dereference (2026-11-07).
 - ⚠️ Weapon-holster flow is client-only (server never sees the transition);
   `OnGadgetModeSet` lacks the `HasLocalControl` guard its siblings have;
@@ -1492,25 +1493,25 @@
 
 ## Vehicles & License Plates
 
-### `EL_VehicleLockComponent` / `EL_VehicleKeyComponent` — `Feature/VehicleLock/`
+### `LF_VehicleLockComponent` / `LF_VehicleKeyComponent` — `Feature/VehicleLock/`
 - ✅ Server-assigned vehicle and debug-key identifiers explicitly bump their replicated state during initialization, so clients receive the identifier after picking up a key.
-- ✅ The lock identifier, key id, owner, and lock flag are stored by `EL_VehicleOwnership`. A restart writes that identifier back with `SetVehicleIdentifier`, so the key still matches. Purchased vehicles replace the vanilla `SCR_BaseLockComponent` slot `{54D6FBC0EA806FE5}`, so get-in reads this lock. (verified 2026-10-11)
+- ✅ The lock identifier, key id, owner, and lock flag are stored by `LF_VehicleOwnership`. A restart writes that identifier back with `SetVehicleIdentifier`, so the key still matches. Purchased vehicles replace the vanilla `SCR_BaseLockComponent` slot `{54D6FBC0EA806FE5}`, so get-in reads this lock. (verified 2026-10-11)
 
-### `EL_LicensePlateManager` + generators — `Feature/LicensePlate/`
-- ✅ `EL_LicensePlateGeneratorGeneric.GenerateLicensePlate()` is `"AA BB NNNN"`.
+### `LF_LicensePlateManager` + generators — `Feature/LicensePlate/`
+- ✅ `LF_LicensePlateGeneratorGeneric.GenerateLicensePlate()` is `"AA BB NNNN"`.
 - ✅ The alphabet includes `Z` (`LetterAt(25)`) and the number range includes `9999`. `Math.RandomInt` is exclusive at the top, so the generator rolls 26 letters and a number end of 10000. (verified 2026-10-11)
-- ✅ `EL_LicensePlateRegistry` keeps live plates. A second issue of a live plate is refused, so two vehicles do not share one by construction. (verified 2026-10-11)
-- ✅ The registry is session memory, so `EL_VehicleOwnership.ApplyAll` re-reserves every saved plate on load; a purchase after a restart cannot be issued a plate already on a saved vehicle (2026-11-07, test `restart/vehicle-plates-reserved`, verified 2026-11-07).
+- ✅ `LF_LicensePlateRegistry` keeps live plates. A second issue of a live plate is refused, so two vehicles do not share one by construction. (verified 2026-10-11)
+- ✅ The registry is session memory, so `LF_VehicleOwnership.ApplyAll` re-reserves every saved plate on load; a purchase after a restart cannot be issued a plate already on a saved vehicle (2026-11-07, test `restart/vehicle-plates-reserved`, verified 2026-11-07).
 
 ### Vehicle lot and garage — `Feature/Vehicles/`
-- ✅ **Playtest: two cars from the start** (2026-11-08, WORLD `vehicles/test-cars`): with `EL_SpawnLogic.m_bGrantTestCars` (on in `GameMode_Roleplay_Debug.et`, so DebugWorld and the playtest; off in the flagship mode) a newly registered character owns the lot's first two cars as records with their keys in hand: the S105 stored in the garage and the UAZ at the impound lot (`EL_VehicleOwnership.GrantTestCars`). Nothing spawns; retrieve and collect work at once. Granted only to an owner with no vehicle yet.
-- ✅ `Roadmap_Vehicle_Lot` sells vanilla S105, UAZ469, S1203, UAZ452, and M923. Each spawn is a thin child of that vanilla prefab with `EL_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. (verified 2026-10-11)
+- ✅ **Playtest: two cars from the start** (2026-11-08, WORLD `vehicles/test-cars`): with `LF_SpawnLogic.m_bGrantTestCars` (on in `GameMode_Roleplay_Debug.et`, so DebugWorld and the playtest; off in the flagship mode) a newly registered character owns the lot's first two cars as records with their keys in hand: the S105 stored in the garage and the UAZ at the impound lot (`LF_VehicleOwnership.GrantTestCars`). Nothing spawns; retrieve and collect work at once. Granted only to an owner with no vehicle yet.
+- ✅ `Roadmap_Vehicle_Lot` sells vanilla S105, UAZ469, S1203, UAZ452, and M923. Each spawn is a thin child of that vanilla prefab with `LF_VehicleLockComponent` and `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. (verified 2026-10-11)
 - ✅ A price at or below the lot cash ceiling (500) debits MoneyStack. A higher price debits the ATM balance and does not convert cash. A short payment is refused and charges nothing. Above the ceiling the refusal reads `#LF-Vehicle_BankShort` (pay from the bank; deposit at an ATM), so a buyer holding enough cash knows why (`vehicles/bank-refusal`).
 - ✅ Purchase spawns the locked child, sets the buyer as owner, locks it, issues a unique plate, and gives one key. Extra keys are an owner action at the configured cash price.
-- ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `EL_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns on the garage's own pad (`EL_VehicleGarageComponent.m_sPadId` names an `EL_VehicleSpawnPointComponent`), not at the last world coordinates.
-- ✅ **Garage it to keep it** (M1-16, #101, decision 2026-11-07; tests `vehicles/impound`, `restart/vehicle-street-impounded`, `garage/ledger-card`): a vehicle survives a restart only when it is stored in a garage. After a load, `EL_VehicleOwnership.ImpoundStreetVehicles` leaves every owned vehicle that was not stored unspawned: it is at the impound lot (`IsImpounded` = owned, not stored, no live entity; derived, so no save field and no version bump). No key is spawned at load. `Roadmap_Impound_Desk` (`246 0 269`, at the gate of the net-fenced yard behind the garage, x 236..256, z 271..283) releases the owner's latest impounded vehicle for `LF_GarageConfig.m_iImpoundFee` (`Configs/Vehicles/LF_Garage.conf`, 250) in carried cash onto a yard pad, once; short cash, a stranger, a full yard, or a second collect is refused and charges nothing. A collect or retrieve hands the owner a key bound to the car when they hold no live one (a restart unbinds carried keys). A purchase is followed by a toast that teaches the rule (`#LF-Garage_BuyHint`); the garage sign and a new `Sign_Impound` board at the desk explain store, retrieve, the ledger, and the fee.
+- ✅ The vehicle record is keyed by the lock identifier. `Export`/`Apply` restore the owner and the key id. `LF_PersistenceComponentSerializer` version 4 writes those records after the hideout records; a version 3 save has hideouts and no vehicle payload. Store keeps the prefab and the lock flag; retrieve spawns on the garage's own pad (`LF_VehicleGarageComponent.m_sPadId` names an `LF_VehicleSpawnPointComponent`), not at the last world coordinates.
+- ✅ **Garage it to keep it** (M1-16, #101, decision 2026-11-07; tests `vehicles/impound`, `restart/vehicle-street-impounded`, `garage/ledger-card`): a vehicle survives a restart only when it is stored in a garage. After a load, `LF_VehicleOwnership.ImpoundStreetVehicles` leaves every owned vehicle that was not stored unspawned: it is at the impound lot (`IsImpounded` = owned, not stored, no live entity; derived, so no save field and no version bump). No key is spawned at load. `Roadmap_Impound_Desk` (`246 0 269`, at the gate of the net-fenced yard behind the garage, x 236..256, z 271..283) releases the owner's latest impounded vehicle for `LF_GarageConfig.m_iImpoundFee` (`Configs/Vehicles/LF_Garage.conf`, 250) in carried cash onto a yard pad, once; short cash, a stranger, a full yard, or a second collect is refused and charges nothing. A collect or retrieve hands the owner a key bound to the car when they hold no live one (a restart unbinds carried keys). A purchase is followed by a toast that teaches the rule (`#LF-Garage_BuyHint`); the garage sign and a new `Sign_Impound` board at the desk explain store, retrieve, the ledger, and the fee.
 - ✅ `Garage_E_01` (`{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et`) is the garage shell. DebugWorld places the use point `Roadmap_Garage` at `238 0 256.6` on `Street_Vehicles.layer`, with store, retrieve, and read the ledger. A retrieved car is parked along the kerb in front of the doors (`254.6`, then 7 m west). Store takes the owner's car parked within 15 m of that garage; the lot is no longer a garage. The shell is its child 5.9 m north, turned so its doors face the street; the player stands in front of the doors. The lot counter is `Roadmap_Vehicle_Lot`: bought cars land on a pad 5 m west and 5 m south of it, then 8 m steps north across the concrete lot. The showroom body is `Roadmap_Vehicle_S105`. (verified 2026-10-11; moved with M1-25)
-- ✅ `LF_Garage` holds the park rules and the ledger. Park refuses a seated player or a missing garage, and a vehicle that is not within the same garage's radius as the player (`EL_VehicleGarageComponent.SharesGarage`, `#LF-Garage_VehicleTooFar`, test `security/garage-store-range`), then stops the engine and teleports occupants out before store. Reading the garage or the impound desk sends the reader's rows from the server (`SCR_PlayerController.LF_ShowGarageLedger`) and opens `LF_GarageLedger`, a read-only paper card: model, plate, and where each vehicle is (in the garage, at the impound lot), plus the release fee when one is impounded. The old catalog screen (buy, paint, preview, stats), unreachable from the world and a duplicate of the lot's buy path, is deleted with `UI/Layouts/Garage/LF_GarageVehicleRow.layout`. (2026-11-08)
+- ✅ `LF_Garage` holds the park rules and the ledger. Park refuses a seated player or a missing garage, and a vehicle that is not within the same garage's radius as the player (`LF_VehicleGarageComponent.SharesGarage`, `#LF-Garage_VehicleTooFar`, test `security/garage-store-range`), then stops the engine and teleports occupants out before store. Reading the garage or the impound desk sends the reader's rows from the server (`SCR_PlayerController.LF_ShowGarageLedger`) and opens `LF_GarageLedger`, a read-only paper card: model, plate, and where each vehicle is (in the garage, at the impound lot), plus the release fee when one is impounded. The old catalog screen (buy, paint, preview, stats), unreachable from the world and a duplicate of the lot's buy path, is deleted with `UI/Layouts/Garage/LF_GarageVehicleRow.layout`. (2026-11-08)
 
 ## UI / Layouts / Localization
 
@@ -1524,7 +1525,7 @@
 - ✅ (2026-11-09) List rows span the sheet. A row sized to its text and sat centred in the scroll, so on the 900-wide price list the car lot cut "needs $2,500" to "needs $2," and "$1,000" to "$1,00". `AddListRow` sets each row to the sheet width less `LIST_ROW_INSET` (list and row padding, scrollbar). Seen on a laptop session client at 1920x1080: the lot and the general store.
 
 ### Signs — `Scripts/Game/Feature/Signs/`
-- ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules, next). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules, Next; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `EL_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
+- ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules, next). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules, Next; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `LF_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
 - ✅ Prefabs `Prefabs/Props/Signs/LF_Sign_Board` (cork board), `LF_Sign_Pub` (shop sign), `LF_Sign_Notice` (A4 notice), `LF_Sign_Chalkboard` (standing chalkboard; the vanilla `CardboardSign_01` lives in the Rally addon and does not resolve for this mod) inherit the vanilla props (no new meshes) and add the component, an `LF_Sign` action context on the face, and the Read action. A placed instance sets the id. The title is also printed on the prop on rendering clients: `LF_SignComponent` draws `UI/Layouts/Signs/LF_SignFace.layout` into an `RTTextureWidget` bound (`SetRenderTarget`) to a mesh whose material `Assets/Signs/Data/LF_SignFace.emat` samples `$rendertarget`. `LF_Sign_Board` spawns a local `LF_SignFace` sheet (vanilla A4 poster mesh) on its face; `LF_Sign_Notice` retargets its own poster material. A dedicated server skips the face. `LF_Sign_Pub` and `LF_Sign_Chalkboard` ship with the face off until their sheet placement is checked in a rendering client.
 - ✅ The printed title fits the shown part of the render target at any window size. The target is the layout size times the screen DPI scale, but the widgets inside lay out one reference unit per pixel, so a 720p Workbench viewport printed "MINI / ARE". `LF_SignComponent.FaceTitleRect` places the title box and font by `DPIScale(1)`. Board and notice photographed reading MINING AREA, not mirrored, in a Workbench play session (2026-11-08). LOGIC `signs/face-fit`.
 - ✅ **Game client face size** (M1-09, 2026-11-08). On a 640x360 dedicated-server client the DPI-scaled title printed tiny in the sheet's top-left third. Without the DPI scaling, the full 432-unit box at font 96 cut WELCOME to WELCO at 640x360 and at 1920x1080 alike: only about 328 of the 512 units across reach the paper. The DPI compensation is now Workbench only (`#ifdef WORKBENCH`); a game client uses `LF_SignComponent.ClientTitleRect` (box x 20..310, font 96 or smaller so the longest word fits). All 18 board titles photographed whole and unmirrored at 1920x1080 on a dedicated-server client. LOGIC `signs/face-client`.
@@ -1542,8 +1543,8 @@
   so a stranger can follow the loop from sign to sign; LOGIC `signs/next`), with the DebugWorld numbers (prices,
   pay, cooldowns). WORLD `signs/coverage`: every placed sign resolves a titled
   catalog row, every catalog row is placed, and each title and What resolves.
-- ✅ `EL_MiningSign` reads `mining` (`Read: Mining area`) and `EL_WhitelistSign` reads `police_whitelist` beside its whitelist action. `EL_TextLabelComponent` (floating debug text) is deleted.
-- ✅ **Signs belong to the building** (M1 polish, 2026-11-08). Nothing official stands on the grass any more. Building signs are vanilla sign bodies with the title painted on their own face: `LF_Sign_Plate` (enamel wall plate, `SignWall_01_115x67`: police by the porch, post office beside the post box, ATM, garage, jail, hospital beside a red cross cloth, organization office), `LF_Sign_PlateSmall` (`SignWall_01_90x45`, spare), `LF_Sign_Fascia` (shop fascia, `SignCommercial_01`, over the bank door and the general store front), `LF_Sign_Posts` (large board on two posts, `SignLarge_01`: town map, market, vehicle lot) and `LF_Sign_PolePlate` (plate on a pole: safe zones, impound, fuel, farm). Each carries `LF_SignComponent` with `m_bFaceOnOwner` (or `m_bFaceOnChild` for the pole plate) and `UI/Layouts/Signs/LF_SignPaintFace.layout`: Rim and Paint images sized to `m_vFaceArea` (the part of the target the mesh UVs show, measured with a quadrant test card on a 1080p client) and coloured per placement (`m_vRimColor`, `m_vPaintColor`, `m_vTextColor`). `PaintedTitleFit` picks the largest font at which the title, broken at spaces, fits the title box. A-frame pavement boards (`LF_Sign_Pub`) stand at the general store and the market; the contraband barn and the back room carry a plain chalkboard; the pub wears the vanilla HOSTINEC sign. The duty desk and the armory locker stand under the police porch (the empty weapon-rack frame on the lawn is gone). The cork `LF_Sign_Board` keeps notices (wanted board under the police porch, convoy): its A4 sheet is turned on its side (`m_vFaceAngles 0 0 90`, scale 4.7) and the title turns 90 degrees with it; a turned text is clipped to its unturned rectangle, so the widget is a square around the box. Panel widgets do not draw inside a render target; the faces use image widgets. Harness `stand` puts the reader 1.4 m in front of a sign face (`EL_AgentHarness.SIGN_STAND_FRONT`), since beside a wall plate is inside the wall. LOGIC `signs/board-face`.
+- ✅ `EL_MiningSign` reads `mining` (`Read: Mining area`) and `EL_WhitelistSign` reads `police_whitelist` beside its whitelist action. `LF_TextLabelComponent` (floating debug text) is deleted.
+- ✅ **Signs belong to the building** (M1 polish, 2026-11-08). Nothing official stands on the grass any more. Building signs are vanilla sign bodies with the title painted on their own face: `LF_Sign_Plate` (enamel wall plate, `SignWall_01_115x67`: police by the porch, post office beside the post box, ATM, garage, jail, hospital beside a red cross cloth, organization office), `LF_Sign_PlateSmall` (`SignWall_01_90x45`, spare), `LF_Sign_Fascia` (shop fascia, `SignCommercial_01`, over the bank door and the general store front), `LF_Sign_Posts` (large board on two posts, `SignLarge_01`: town map, market, vehicle lot) and `LF_Sign_PolePlate` (plate on a pole: safe zones, impound, fuel, farm). Each carries `LF_SignComponent` with `m_bFaceOnOwner` (or `m_bFaceOnChild` for the pole plate) and `UI/Layouts/Signs/LF_SignPaintFace.layout`: Rim and Paint images sized to `m_vFaceArea` (the part of the target the mesh UVs show, measured with a quadrant test card on a 1080p client) and coloured per placement (`m_vRimColor`, `m_vPaintColor`, `m_vTextColor`). `PaintedTitleFit` picks the largest font at which the title, broken at spaces, fits the title box. A-frame pavement boards (`LF_Sign_Pub`) stand at the general store and the market; the contraband barn and the back room carry a plain chalkboard; the pub wears the vanilla HOSTINEC sign. The duty desk and the armory locker stand under the police porch (the empty weapon-rack frame on the lawn is gone). The cork `LF_Sign_Board` keeps notices (wanted board under the police porch, convoy): its A4 sheet is turned on its side (`m_vFaceAngles 0 0 90`, scale 4.7) and the title turns 90 degrees with it; a turned text is clipped to its unturned rectangle, so the widget is a square around the box. Panel widgets do not draw inside a render target; the faces use image widgets. Harness `stand` puts the reader 1.4 m in front of a sign face (`LF_AgentHarness.SIGN_STAND_FRONT`), since beside a wall plate is inside the wall. LOGIC `signs/board-face`.
 - ✅ **Props match what they give** (M1 polish, 2026-11-08). The pub-terrace survival points were a hand pump that gave plums ("Tomar Ciruela") and a wooden box that gave apples ("Tomar Manzana"); they are now a plum tree (`SurvivalPoint_Water`) and an apple tree (`SurvivalPoint_Food`) whose gather prompt is the localized `Gather <fruit>`. `LogPile_Debug` had no mesh; it is a vanilla wood pile (`WoodPile_02_A`). The ATM prompt reads "ATM" (`#EL-ATM_Title`), not "ATM Machine".
 - ⚠️ MenuBack closes the card through the UI kit. The printed face, the card render, the prompt, and the walk-away close are not yet seen in a rendering client (manual steps in the M1-01 PR).
 
@@ -1556,7 +1557,7 @@
 - ✅ `QuestGiver_Start` and `DebugWorld` provide a world-facing onboarding
   example with localized menu layouts and registered logic/world tests.
 - ✅ **Turn-in loop closed** (verified 2026-11-07): turn-in removes each
-  `COLLECT_REPORT` objective's target amount through `EL_InventoryUtils` before
+  `COLLECT_REPORT` objective's target amount through `LF_InventoryUtils` before
   the reward, all or nothing (a short removal puts the items back and refuses).
   Client open/accept/turn-in (`RequestOpenGiver`/`RequestAccept`/`RequestTurnIn`)
   require the registered giver that offers the quest within
@@ -1585,36 +1586,36 @@
 - ✅ `SIGNAL` event type with a string key (`LF_QuestManager.ReportSignal`).
   Hooks in `LF_QuestHooks.c` (modded classes; the job, ATM, and sign files are
   untouched): `LF_JobDropoffAction` reports `job.run_complete:<job>` for a paid
-  run, `EL_CharacterATMComponent.ReplyResult` reports `atm.deposit` for a
+  run, `LF_CharacterATMComponent.ReplyResult` reports `atm.deposit` for a
   successful deposit, and `LF_SignReadAction` asks the server (`RpcAsk_SignRead`)
   to report `sign.read:<id>`, counted only with that sign within 6 m.
   `QuestGiver_Start` (test quests, "Test quest board") moved to the test annex
   (`Quest_TestGiver`, 104 0 70). Tests: `quests/signal-event` (LOGIC),
   `quests/arrival-chain` (WORLD).
 
-### Layouts (loaded by `EL_Test_Data`)
-- ✅ `EL_SplitQuantityDialog`, `EL_CharacterCreationMenu`, `EL_ATMMenu`,
+### Layouts (loaded by `LF_Test_Data`)
+- ✅ `LF_SplitQuantityDialog`, `LF_CharacterCreationMenu`, `LF_ATMMenu`,
   `EL_SurvivalHUD`, `ShopMenu`, `PoliceMenu`,
   `DeathScreen` load (WORLD tier). The `SurvivalHUD` menu preset and its
-  `EL_SurvivalHUD` class were never opened and are removed (2026-11-07); `EL_BetaHud`
+  `EL_SurvivalHUD` class were never opened and are removed (2026-11-07); `LF_BetaHud`
   draws the gauges. The layout stays only as this load fixture. The unused
-  falling-fruit widget (`EL_FallingFruit`, which loaded a layout that never existed) is
-  removed; `EHarvestJobType` moved to `Feature/Jobs/EL_HarvestJobType.c`.
-- ✅ `EL_DebugMenu` is a development menu opened with F10 (or its rebind),
+  falling-fruit widget (`LF_FallingFruit`, which loaded a layout that never existed) is
+  removed; `EHarvestJobType` moved to `Feature/Jobs/LF_HarvestJobType.c`.
+- ✅ `LF_DebugMenu` is a development menu opened with F10 (or its rebind),
   with server-routed controls for cash, wanted state, faction, jobs, survival,
   XP, and skill points. Actions affect only the requesting player's state
-  (verified 2026-08-30). `EL_DevGate` (`Core/EL_DevGate.c`) checks every
-  action on the server. It logs `[ELDebug:DebugMenu] debug action refused: ...`
+  (verified 2026-08-30). `LF_DevGate` (`Core/LF_DevGate.c`) checks every
+  action on the server. It logs `[LFDebug:DebugMenu] debug action refused: ...`
   and refuses unless the game mode sets `m_bDevToolsEnabled` or the sender
   holds `EPlayerRole.ADMINISTRATOR`. Only `GameMode_Roleplay_Debug.et`
   (DebugWorld) sets the flag. The production `GameMode_Roleplay.et` leaves it
   off. The open key runs the same check on the client and logs
-  `open refused` instead of opening. `EL_DevGate.IsAllowed` has the LOGIC test
+  `open refused` instead of opening. `LF_DevGate.IsAllowed` has the LOGIC test
   `debug-menu/gate` (2026-11-07).
 - ✅ The playtest mission `Missions/LF_PlaytestTown.conf` (`LF_MissionHeader`,
   `Core/LF_MissionHeader.c`) runs DebugWorld with `m_bLF_DevToolsOff 1`: the
   header overrides the DebugWorld game mode opt-in, so only administrators
-  pass `EL_DevGate` there. A bare world (Workbench play, `toolscli test`) has
+  pass `LF_DevGate` there. A bare world (Workbench play, `toolscli test`) has
   no LF header and keeps the opt-in. LOGIC test `host/playtest-mission`
   (2026-11-08).
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
@@ -1639,7 +1640,7 @@
 - ℹ️ **Direct collision fixtures need `Flags 0x403 0`.** This includes the
   `Traceable` flag. Without it, a `MeshObject` + `RigidBody` can render while
   character movement and projectile traces pass through it. Prefab fixtures
-  such as `EL_TestRunner` inherit the flag; hand-authored `GenericEntity`
+  such as `LF_TestRunner` inherit the flag; hand-authored `GenericEntity`
   fixtures must set it explicitly.
 - ✅ DebugWorld is a one-street 1989 Everon village (M1-25, 2026-11-08;
   `docs/roadmap/m1-25-village.md` has the map). The main street runs east-west
@@ -1676,7 +1677,7 @@
   and UAZ-469 with the vanilla `m_bIsLocked` set, so no key opens them.
 - ✅ The WORLD-tier `e2e/narrative-loop` exercises the live Apple gather →
   trader cash payout → shop purchase → ATM deposit path. The robbery step calls
-  `EL_RobAction.CommitRobbery` (2026-11-07; it used to hand-write the payout);
+  `LF_RobAction.CommitRobbery` (2026-11-07; it used to hand-write the payout);
   its proceeds are asserted as cash and are not added to the bank.
 - ✅ `debugworld/entity-collision` checks live physics bodies, geometry, and
   sphere sweeps through both apple trade crates and all three trader tables.
@@ -1690,31 +1691,31 @@
 
 ## Agent box
 
-### `EL_AgentHarness` — `Feature/AgentHarness/`
+### `LF_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
   `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
   calls `ActionScroll`. `click` invokes the same button invoker or `OnClick` a
   mouse click does. `use` still checks `CanBeShownScript` and
   `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
   (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
-  `EL_OpenDebugMenu`); movement actions are refused.
+  `LF_OpenDebugMenu`); movement actions are refused.
 - ✅ `stand` is the placement exception: the server moves the local character
   beside a named entity. The poll does not start on a dedicated server
   (`RplMode.Dedicated`). The server checks the `stand`, `pose`, and `use` RPCs
-  with `EL_DevGate`, the same gate as the debug menu. It refuses and logs
-  (`[ELDebug:AgentHarness] <request> refused: ...`) unless the game mode sets
+  with `LF_DevGate`, the same gate as the debug menu. It refuses and logs
+  (`[LFDebug:AgentHarness] <request> refused: ...`) unless the game mode sets
   `m_bDevToolsEnabled` or the sender is an administrator. On a production or
   listen-hosted server a client cannot teleport or reach past action range
   (2026-11-07). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
-- ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
+- ✅ Screenshots go through `LF_ScreenshotCapture`. UI shots leave the camera
   alone. A world shot teleports the character to the camera offset (default
   `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
   player view. That view faces -Z, so a picture stands on the +Z side of
   its target. The pose is applied again 700 ms later so gravity does not drop
   the body before the picture. `SetCamera` does not move that view. (verified 2026-10-11) On a
   dedicated server the server also sends the pose to the owning client
-  (`RpcDo_EL_HarnessPose`), which would otherwise overwrite it; session
+  (`RpcDo_LF_HarnessPose`), which would otherwise overwrite it; session
   clients take world shots this way (verified 2026-11-08, M1-25). A filtered row's wide shot
   stands just north of that row when the street is further north. If the new PNG matches the
   previous PNG, `report roadmap` records `camera_stuck` once and stops.
@@ -1742,7 +1743,7 @@
   `wait-text` polls it; `ui-shot` is `shot ui`. `stand` turns the character to
   face the entity. `session.mjs up --mission playtest` runs `LF_PlaytestTown`
   with `-scrDefine LF_HARNESS` on server and clients: harness RPCs pass
-  `EL_DevGate.CheckHarnessRequest` in that build only, the debug menu stays
+  `LF_DevGate.CheckHarnessRequest` in that build only, the debug menu stays
   closed, a client without the define is refused by the script checksum, and
   `host start` never passes it. `session.mjs restart` (playtest) stops with the
   host stop file (SHUTDOWN save), loads, and rejoins the same profiles.
@@ -1755,24 +1756,24 @@
   journey selftests in `validate`.
   Every step ends with a picture from each client it touched. Clients default to 1280x720 (`session.mjs up --res 1920x1080` for evidence) on the hidden desktop. `journey.mjs --film` records each step inside the game client (`LF_FilmRecorder`), one mp4 per step plus the joined run, linked from the report; it works on the hidden desktop.
 
-### `EL_AgentHarness` — `Feature/AgentHarness/`
+### `LF_AgentHarness` — `Feature/AgentHarness/`
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
   `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
   calls `ActionScroll`. `click` invokes the same button invoker or `OnClick` a
   mouse click does. `use` still checks `CanBeShownScript` and
   `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
   (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
-  `EL_OpenDebugMenu`); movement actions are refused.
+  `LF_OpenDebugMenu`); movement actions are refused.
 - ✅ `stand` is the placement exception: the server moves the local character
   beside a named entity. The poll does not start on a dedicated server
   (`RplMode.Dedicated`). The server checks the `stand`, `pose`, and `use` RPCs
-  with `EL_DevGate`, the same gate as the debug menu. It refuses and logs
-  (`[ELDebug:AgentHarness] <request> refused: ...`) unless the game mode sets
+  with `LF_DevGate`, the same gate as the debug menu. It refuses and logs
+  (`[LFDebug:AgentHarness] <request> refused: ...`) unless the game mode sets
   `m_bDevToolsEnabled` or the sender is an administrator. On a production or
   listen-hosted server a client cannot teleport or reach past action range
   (2026-11-07). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
-- ✅ Screenshots go through `EL_ScreenshotCapture`. UI shots leave the camera
+- ✅ Screenshots go through `LF_ScreenshotCapture`. UI shots leave the camera
   alone. A world shot teleports the character to the camera offset (default
   `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
   player view. That view faces -Z, so a picture stands on the +Z side of
@@ -1806,7 +1807,7 @@
 - ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera
   keys (position, look-at, FOV); `Sample(t)` eases between keys with
   smoothstep and clamps at both ends. Out-of-order keys are rejected and
-  logged (`[ELDebug:Film]`). Covered by `film/camera-path` (LOGIC).
+  logged (`[LFDebug:Film]`). Covered by `film/camera-path` (LOGIC).
 - ⚠️ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
   hides the HUD, moves the camera each frame, then restores the previous
   camera and HUD. It compiles but has not run in a rendering session and no
@@ -1821,7 +1822,7 @@
 - ✅ `LF_FilmRecorder` records inside the game client: a per-frame callqueue
   tick calls `System.MakeScreenshot` at a fixed rate (default 15 fps) into
   `$logs:el-film/<name>/`, with HUD and menus, and writes `index.txt` with
-  each shot's real time and frame-time stats (`[ELDebug:Film]`). Harness verb
+  each shot's real time and frame-time stats (`[LFDebug:Film]`). Harness verb
   `film start <name> <fps> [max s]` / `film stop`; a dedicated server refuses
   (`error no_renderer`). `tools/film/engine.mjs` encodes the BMPs at true speed
   (concat with per-frame durations, NVENC) and deletes them. Wired as
@@ -1836,9 +1837,9 @@
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
 1. **Money — one canonical path, all payouts cash.** The entity bank
-   `EL_BankAccountComponent` is **deleted**; `EL_ATMManager`/`EL_BankAccount`
+   `LF_BankAccountComponent` is **deleted**; `LF_ATMManager`/`LF_BankAccount`
    is the only bank and the ATM is the only cash↔account boundary. Duty pay, benefits,
-   trader sells, shop sells, robberies and job rewards all pay `EL_MoneyUtils`
+   trader sells, shop sells, robberies and job rewards all pay `LF_MoneyUtils`
    cash. Shop buy/sell correctness closed (partial refunds), ATM deposit/
    withdraw moves real cash with rollback. Remaining: no shop stock / per-item
    max quantity.
@@ -1852,8 +1853,8 @@
    payload order. Remaining: jail, breach, and bank-vault state has
    `Export` / `Apply` but is not in the save serializer, so it is lost on
    restart.
-4. **Compile risk — resolved.** `EL_EFactionType` is defined in
-   `EL_WhitelistManager.c`.
+4. **Compile risk — resolved.** `LF_EFactionType` is defined in
+   `LF_WhitelistManager.c`.
 5. **Client/server breaks — mostly closed.** Police arrest/fine bridge and
    notification targeting are fixed; the death screen (client) → respawn RPC
    (server) bridge is new and needs a manual multiplay pass. Remaining:

@@ -1,11 +1,11 @@
 Vehicle {
  ID "BBCBA43A9778AE21"
  components {
-  EL_LicensePlateManagerComponent "{5984C85FA25812F2}" {
+  LF_LicensePlateManagerComponent "{5984C85FA25812F2}" {
   }
-  EL_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
   }
-  EL_VehicleStorageAccessControl "{07A148FD30434928}" {
+  LF_VehicleStorageAccessControl "{07A148FD30434928}" {
   }
  }
 }

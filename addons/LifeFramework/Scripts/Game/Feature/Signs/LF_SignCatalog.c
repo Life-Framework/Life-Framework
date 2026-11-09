@@ -62,13 +62,13 @@ class LF_SignCatalog
 		Resource container = BaseContainerTools.LoadContainer(path);
 		if (!container || !container.IsValid() || !container.GetResource())
 		{
-			EL_Debug.Error("Signs", "sign config does not resolve: " + path);
+			LF_Debug.Error("Signs", "sign config does not resolve: " + path);
 			return null;
 		}
 
 		LF_SignConfig config = LF_SignConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!config)
-			EL_Debug.Error("Signs", "sign config has an unexpected root class: " + path);
+			LF_Debug.Error("Signs", "sign config has an unexpected root class: " + path);
 
 		return config;
 	}

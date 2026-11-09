@@ -20,7 +20,7 @@ import { safeRemoveTree } from "../link-safety.mjs";
 const failures = [];
 const fail = (m) => failures.push(m);
 const TESTS = "addons/LifeFramework/Scripts/Game/Tests";
-const REGISTRY = `${TESTS}/EL_TestRegistrations.generated.c`;
+const REGISTRY = `${TESTS}/LF_TestRegistrations.generated.c`;
 const SCRIPT = "addons/LifeFramework/Scripts/Game/Core/LF_Foo.c";
 
 function git(dir, args) {
@@ -41,7 +41,7 @@ function regenRegistry(dir) {
   write(dir, REGISTRY, `// GENERATED\n${names.map((n) => `register ${n.replace(/\.c$/, "")}`).join("\n")}\n`);
 }
 function addTest(dir, name) {
-  write(dir, `${TESTS}/${name}.c`, `// tier: LOGIC\nclass ${name} : EL_Test {}\n`);
+  write(dir, `${TESTS}/${name}.c`, `// tier: LOGIC\nclass ${name} : LF_Test {}\n`);
   regenRegistry(dir);
 }
 function commit(dir, msg) {
@@ -63,7 +63,7 @@ for (const [p, k] of [
   ["docs/debug-log-triage.md", "markdown"],
   ["tools/validation/enforce-lint-baseline.json", "lint-baseline"],
   [SCRIPT, null],
-  [`${TESTS}/EL_Test_A.c`, null],
+  [`${TESTS}/LF_Test_A.c`, null],
   ["docs/worktrees.md", null],
 ]) {
   if (conflictKind(p) !== k) fail(`conflictKind(${p}) = ${conflictKind(p)}, expected ${k}`);
@@ -79,7 +79,7 @@ try {
     must(seed, ["config", k, v]);
   }
   must(seed, ["checkout", "-q", "-b", "main"]);
-  addTest(seed, "EL_Test_A");
+  addTest(seed, "LF_Test_A");
   write(seed, SCRIPT, "void Foo()\n{\n\tint x = 1;\n}\n");
   commit(seed, "base");
   must(seed, ["push", "-q", "origin", "main"]);
@@ -90,14 +90,14 @@ try {
     commit(seed, name);
     must(seed, ["push", "-q", "origin", name]);
   };
-  branch("ws/registry-only", () => addTest(seed, "EL_Test_B"));
+  branch("ws/registry-only", () => addTest(seed, "LF_Test_B"));
   branch("ws/real-conflict", () => write(seed, SCRIPT, "void Foo()\n{\n\tint x = 2;\n}\n"));
   branch("ws/mixed", () => {
-    addTest(seed, "EL_Test_D");
+    addTest(seed, "LF_Test_D");
     write(seed, SCRIPT, "void Foo()\n{\n\tint x = 4;\n}\n");
   });
   must(seed, ["checkout", "-q", "main"]);
-  addTest(seed, "EL_Test_C");
+  addTest(seed, "LF_Test_C");
   write(seed, SCRIPT, "void Foo()\n{\n\tint x = 3;\n}\n");
   commit(seed, "main moves");
   must(seed, ["push", "-q", "origin", "main"]);
@@ -119,7 +119,7 @@ try {
   if (r1.status !== "healed") fail(`registry-only: expected healed, got ${r1.status} (${r1.reason ?? ""} ${(r1.conflicted ?? []).join(", ")})`);
   else {
     const reg = readFileSync(join(a, REGISTRY), "utf8");
-    for (const t of ["EL_Test_A", "EL_Test_B", "EL_Test_C"]) if (!reg.includes(`register ${t}\n`)) fail(`healed registry misses ${t}:\n${reg}`);
+    for (const t of ["LF_Test_A", "LF_Test_B", "LF_Test_C"]) if (!reg.includes(`register ${t}\n`)) fail(`healed registry misses ${t}:\n${reg}`);
     if (/<{7}|>{7}/.test(reg)) fail("healed registry still has conflict markers");
     if (git(a, ["merge-base", "--is-ancestor", "origin/main", "HEAD"]).status !== 0) fail("healed branch does not contain origin/main");
     if (git(a, ["status", "--porcelain"]).stdout.trim()) fail("healed worktree is dirty");

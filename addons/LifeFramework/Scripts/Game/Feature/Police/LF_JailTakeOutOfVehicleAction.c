@@ -31,7 +31,7 @@ class LF_JailTakeOutOfVehicleAction : ScriptedUserAction
 		if (!GetOwner() || !user)
 			return false;
 
-		return EL_AccountStateBits.IsOnDutyPolice(EL_AccountReplication.GetState(user));
+		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ class LF_JailTakeOutOfVehicleAction : ScriptedUserAction
 		}
 
 		// Escort holds live on the server; a client leaves this check to the server.
-		string officerUid = EL_Utils.GetPlayerUid(user);
+		string officerUid = LF_Utils.GetPlayerUid(user);
 		if (Replication.IsServer() && LF_JailEscort.GetSeatedPrisoner(officerUid).IsEmpty())
 		{
 			SetCannotPerformReason("#EL-Escort_NoPrisoner");
@@ -63,11 +63,11 @@ class LF_JailTakeOutOfVehicleAction : ScriptedUserAction
 		if (!pOwnerEntity || !pUserEntity)
 			return;
 
-		string officerUid = EL_Utils.GetPlayerUid(pUserEntity);
+		string officerUid = LF_Utils.GetPlayerUid(pUserEntity);
 		string prisonerUid = LF_JailEscort.GetSeatedPrisoner(officerUid);
 		if (officerUid.IsEmpty() || prisonerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jail", "escort take-out refused: officer or prisoner id is empty");
+			LF_Debug.Error("Jail", "escort take-out refused: officer or prisoner id is empty");
 			return;
 		}
 

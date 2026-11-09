@@ -20,7 +20,7 @@ A player buys a house at a real-estate office, receives a key, and stores items 
 
 ## Assets
 
-`EL_Door_Base`, `EL_LockComponent`, `HouseKeyItem.et`, `EL_HouseManagerComponent`, `EL_HouseSaveData`. LNGC has a home-ownership license and no door scripts. The license flag is not ownership. See [sources](../../sources.md).
+`EL_Door_Base`, `LF_LockComponent`, `HouseKeyItem.et`, `LF_HouseManagerComponent`, `LF_HouseSaveData`. LNGC has a home-ownership license and no door scripts. The license flag is not ownership. See [sources](../../sources.md).
 
 ## First slice
 

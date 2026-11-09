@@ -9,7 +9,7 @@ You work on the Life Framework Arma Reforger mod. `AGENTS.md` is the contract. T
 
 - Match verification to scope. Run `tools\cli validate` for code/resource changes and runtime tests when behavior changes; compilation alone is not runtime proof.
 - The main checkout is the world-editor copy. Heavy commands (`build/test/dev/serve/ci`) refuse to run there. Work in your own worktree (`tools\cli wt new <feature>`; see `docs/worktrees.md`). Never delete a worktree or `server/profile` with `rm -rf`, `Remove-Item -Recurse`, or `git worktree remove --force`; use `tools\cli wt prune` or `node tools/safe-rm.mjs`.
-- Research the Enfusion API and base game before writing code against it. Never guess an API. New classes are `LF_`; existing `EL_` classes keep their names.
+- Research the Enfusion API and base game before writing code against it. Never guess an API. All classes are `LF_`; never add an `EL_` name.
 - Respect the hard EnforceScript lessons in `AGENTS.md`.
 - The pre-commit hook enforces repo hygiene. Run `tools\cli validate` before you finish.
 - Do not add narrating comments. The assertion or log string is the doc.

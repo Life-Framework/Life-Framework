@@ -12,7 +12,7 @@ GenericEntity : "{CD87FB2AC3A85D65}Prefabs/Structures/BuildingParts/Heating/Boil
     }
    }
    additionalActions {
-    EL_ProcessAction "{61CF472B94D11EE0}" {
+    LF_ProcessAction "{61CF472B94D11EE0}" {
      ParentContextList {
       "default"
      }
@@ -22,20 +22,20 @@ GenericEntity : "{CD87FB2AC3A85D65}Prefabs/Structures/BuildingParts/Heating/Boil
      Duration 1
      CanAggregate 1
      m_aProcessingInputs {
-      EL_ProcessingInput "{61CF472B94D11E1A}" {
+      LF_ProcessingInput "{61CF472B94D11E1A}" {
        m_InputPrefab "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et"
       }
-      EL_ProcessingInput "{61CF472B94D11E10}" {
+      LF_ProcessingInput "{61CF472B94D11E10}" {
        m_InputPrefab "{6985A7CDF8ABF19F}Prefabs/Crafting/Charcoal.et"
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{61CF472B94D11E17}" {
+      LF_ProcessingOutput "{61CF472B94D11E17}" {
        m_OutputPrefab "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
       }
      }
     }
-    EL_ProcessAction "{61CF472B94D11E0B}" {
+    LF_ProcessAction "{61CF472B94D11E0B}" {
      ParentContextList {
       "default"
      }
@@ -45,20 +45,20 @@ GenericEntity : "{CD87FB2AC3A85D65}Prefabs/Structures/BuildingParts/Heating/Boil
      Duration 1
      CanAggregate 1
      m_aProcessingInputs {
-      EL_ProcessingInput "{61CF472B94D11E0E}" {
+      LF_ProcessingInput "{61CF472B94D11E0E}" {
        m_InputPrefab "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et"
       }
-      EL_ProcessingInput "{61CF472B94D11E00}" {
+      LF_ProcessingInput "{61CF472B94D11E00}" {
        m_InputPrefab "{6985A7CDF8ABF19F}Prefabs/Crafting/Charcoal.et"
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{61CF472B94D11E02}" {
+      LF_ProcessingOutput "{61CF472B94D11E02}" {
        m_OutputPrefab "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
       }
      }
     }
-    EL_ProcessAction "{61CF472B94D11E04}" {
+    LF_ProcessAction "{61CF472B94D11E04}" {
      ParentContextList {
       "default"
      }
@@ -68,15 +68,15 @@ GenericEntity : "{CD87FB2AC3A85D65}Prefabs/Structures/BuildingParts/Heating/Boil
      Duration 1
      CanAggregate 1
      m_aProcessingInputs {
-      EL_ProcessingInput "{61CF472B94D11E39}" {
+      LF_ProcessingInput "{61CF472B94D11E39}" {
        m_InputPrefab "{8F81BD0BF343CF49}Prefabs/Resources/Mining/GoldNugget.et"
       }
-      EL_ProcessingInput "{61CF472B94D11E3B}" {
+      LF_ProcessingInput "{61CF472B94D11E3B}" {
        m_InputPrefab "{6985A7CDF8ABF19F}Prefabs/Crafting/Charcoal.et"
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{61CF472B94D11E3D}" {
+      LF_ProcessingOutput "{61CF472B94D11E3D}" {
        m_OutputPrefab "{ACC9A10F0F20F5C4}Prefabs/Resources/Mining/GoldBar.et"
       }
      }

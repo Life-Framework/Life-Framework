@@ -34,7 +34,7 @@ class LF_JailEscortAction : ScriptedUserAction
 		if (GetOwner() == user)
 			return false;
 
-		return EL_AccountStateBits.IsOnDutyPolice(EL_AccountReplication.GetState(user));
+		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -48,13 +48,13 @@ class LF_JailEscortAction : ScriptedUserAction
 
 		// Offer checks run on the client too, where accounts do not exist: read the replicated
 		// state (the account cache on the server). PerformAction re-checks on the server.
-		if (EL_AccountStateBits.GetWantedLevel(EL_AccountReplication.GetState(GetOwner())) <= 0)
+		if (LF_AccountStateBits.GetWantedLevel(LF_AccountReplication.GetState(GetOwner())) <= 0)
 		{
 			SetCannotPerformReason("#EL-Jail_NotWanted");
 			return false;
 		}
 
-		if (!LF_PoliceRanks.CanEscortRank(EL_AccountStateBits.GetPoliceRank(EL_AccountReplication.GetState(user))))
+		if (!LF_PoliceRanks.CanEscortRank(LF_AccountStateBits.GetPoliceRank(LF_AccountReplication.GetState(user))))
 		{
 			SetCannotPerformReason("#LF-Rank_EscortDenied");
 			return false;
@@ -72,11 +72,11 @@ class LF_JailEscortAction : ScriptedUserAction
 		if (!pOwnerEntity || !pUserEntity)
 			return;
 
-		string officerUid = EL_Utils.GetPlayerUid(pUserEntity);
-		string prisonerUid = EL_Utils.GetPlayerUid(pOwnerEntity);
+		string officerUid = LF_Utils.GetPlayerUid(pUserEntity);
+		string prisonerUid = LF_Utils.GetPlayerUid(pOwnerEntity);
 		if (officerUid.IsEmpty() || prisonerUid.IsEmpty())
 		{
-			EL_Debug.Error("Jail", "escort action refused: officer or suspect has no account id");
+			LF_Debug.Error("Jail", "escort action refused: officer or suspect has no account id");
 			return;
 		}
 

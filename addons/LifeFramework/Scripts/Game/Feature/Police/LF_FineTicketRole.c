@@ -18,7 +18,7 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 	static const int SOUND_DELAY_MS = 400;
 
 	//------------------------------------------------------------------------------------------------
-	//! Every machine, once per world (EL_GameModeRoleplay.OnGameStart). Idempotent.
+	//! Every machine, once per world (LF_GameModeRoleplay.OnGameStart). Idempotent.
 	static void Register()
 	{
 		if (LF_FineTicketRole.Cast(LF_PlayerInteraction.GetRole(SLOT)))
@@ -49,23 +49,23 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 	//! Server: opens the ticket pad on the officer's machine with their rank cap.
 	static bool OpenPad(IEntity officer, IEntity target)
 	{
-		EL_PlayerAccount account = EL_PoliceUtils.GetAccountForEntity(officer);
-		if (!EL_PoliceUtils.IsOnDutyOfficer(account))
+		LF_PlayerAccount account = LF_PoliceUtils.GetAccountForEntity(officer);
+		if (!LF_PoliceUtils.IsOnDutyOfficer(account))
 		{
-			EL_Debug.Warn(LF_FineTickets.FEATURE, "ticket pad refused: not an on-duty officer");
+			LF_Debug.Warn(LF_FineTickets.FEATURE, "ticket pad refused: not an on-duty officer");
 			return false;
 		}
 
 		SCR_PlayerController controller = LF_PlayerInteraction.ControllerOf(officer);
 		if (!controller)
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket pad refused: the officer has no player controller");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket pad refused: the officer has no player controller");
 			return false;
 		}
 
 		int cap = LF_PoliceRanks.FineCap(account.GetPoliceRank());
-		controller.LF_OpenTicketPad(EL_NetworkUtils.GetRplId(target), cap);
-		EL_Debug.Info(LF_FineTickets.FEATURE, string.Format("ticket pad opened for player %1, cap %2", LF_PlayerInteraction.PlayerIdOf(officer), cap));
+		controller.LF_OpenTicketPad(LF_NetworkUtils.GetRplId(target), cap);
+		LF_Debug.Info(LF_FineTickets.FEATURE, string.Format("ticket pad opened for player %1, cap %2", LF_PlayerInteraction.PlayerIdOf(officer), cap));
 		return true;
 	}
 
@@ -93,20 +93,20 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 		LF_EInteractionRefusal reach = LF_PlayerInteraction.CheckPair(officer, target);
 		if (reach != LF_EInteractionRefusal.NONE)
 		{
-			EL_Debug.Info(LF_FineTickets.FEATURE, "ticket refused: " + typename.EnumToString(LF_EInteractionRefusal, reach));
-			EL_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Ticket_Title", LF_PlayerInteraction.RefusalKey(reach), 4.0, EL_ENotificationType.WARNING);
+			LF_Debug.Info(LF_FineTickets.FEATURE, "ticket refused: " + typename.EnumToString(LF_EInteractionRefusal, reach));
+			LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Ticket_Title", LF_PlayerInteraction.RefusalKey(reach), 4.0, LF_ENotificationType.WARNING);
 			return null;
 		}
 
-		EL_PlayerAccount account = EL_PoliceUtils.GetAccountForEntity(officer);
-		string officerUid = EL_Utils.GetPlayerUID(officer);
-		string holderUid = EL_Utils.GetPlayerUID(target);
+		LF_PlayerAccount account = LF_PoliceUtils.GetAccountForEntity(officer);
+		string officerUid = LF_Utils.GetPlayerUID(officer);
+		string holderUid = LF_Utils.GetPlayerUID(target);
 		LF_TicketOffence offence;
 		LF_ETicketRefusal refusal = LF_FineTickets.CheckWrite(account, officerUid, holderUid, offenceIndex, offence);
 		if (refusal != LF_ETicketRefusal.NONE)
 		{
-			EL_Debug.Warn(LF_FineTickets.FEATURE, string.Format("ticket refused for player %1 -> %2 offence %3: %4", officerId, holderUid, offenceIndex, typename.EnumToString(LF_ETicketRefusal, refusal)));
-			EL_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Ticket_Title", RefusalKey(refusal), 4.0, EL_ENotificationType.WARNING, LF_FineTickets.MAX_OPEN_PER_HOLDER.ToString());
+			LF_Debug.Warn(LF_FineTickets.FEATURE, string.Format("ticket refused for player %1 -> %2 offence %3: %4", officerId, holderUid, offenceIndex, typename.EnumToString(LF_ETicketRefusal, refusal)));
+			LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Ticket_Title", RefusalKey(refusal), 4.0, LF_ENotificationType.WARNING, LF_FineTickets.MAX_OPEN_PER_HOLDER.ToString());
 			return null;
 		}
 
@@ -120,15 +120,15 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 		LF_PlayerInteraction.PlayGesture(officer, LF_PlayerInteraction.GESTURE_POINT);
 		if (ticket)
 		{
-			RplId itemId = EL_NetworkUtils.GetRplId(ticket.GetOwner());
+			RplId itemId = LF_NetworkUtils.GetRplId(ticket.GetOwner());
 			PlayPaperLater(target, itemId);
 			SCR_PlayerController holderController = LF_PlayerInteraction.ControllerOf(target);
 			if (holderController)
 				holderController.LF_TicketCue(itemId);
 		}
 
-		EL_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Ticket_Title", "#LF-Ticket_Written", 4.0, EL_ENotificationType.SUCCESS, EL_MoneyFormat.FormatMoney(record.m_iAmount));
-		EL_NotificationManagerComponent.NotifyPlayer(LF_PlayerInteraction.PlayerIdOf(target), "#LF-Ticket_Title", "#LF-Ticket_Received", 6.0, EL_ENotificationType.WARNING);
+		LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Ticket_Title", "#LF-Ticket_Written", 4.0, LF_ENotificationType.SUCCESS, LF_MoneyFormat.FormatMoney(record.m_iAmount));
+		LF_NotificationManagerComponent.NotifyPlayer(LF_PlayerInteraction.PlayerIdOf(target), "#LF-Ticket_Title", "#LF-Ticket_Received", 6.0, LF_ENotificationType.WARNING);
 		return record;
 	}
 
@@ -143,10 +143,10 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 	//! Server: the payer pays their oldest unpaid ticket in carried cash at the desk.
 	static LF_ETicketPay PayAtDesk(IEntity payer)
 	{
-		string uid = EL_Utils.GetPlayerUID(payer);
+		string uid = LF_Utils.GetPlayerUID(payer);
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "desk payment refused: the payer has no player id");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "desk payment refused: the payer has no player id");
 			return LF_ETicketPay.NO_TICKET;
 		}
 
@@ -165,15 +165,15 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 		LF_ETicketPay result = LF_FineTickets.Pay(uid, new LF_EntityCashWallet(payer), LF_HospitalBill.InGameDate(), record);
 		if (result == LF_ETicketPay.NO_TICKET)
 		{
-			EL_Debug.Info(LF_FineTickets.FEATURE, "desk payment refused: " + uid + " has no unpaid ticket");
-			EL_NotificationManagerComponent.NotifyPlayer(payerId, "#LF-Ticket_Title", "#LF-Ticket_NoneOpen", 4.0, EL_ENotificationType.INFO);
+			LF_Debug.Info(LF_FineTickets.FEATURE, "desk payment refused: " + uid + " has no unpaid ticket");
+			LF_NotificationManagerComponent.NotifyPlayer(payerId, "#LF-Ticket_Title", "#LF-Ticket_NoneOpen", 4.0, LF_ENotificationType.INFO);
 			return result;
 		}
 
 		if (result != LF_ETicketPay.PAID)
 		{
-			EL_Debug.Info(LF_FineTickets.FEATURE, string.Format("desk payment refused for #%1: %2", record.m_iNumber, typename.EnumToString(LF_ETicketPay, result)));
-			EL_NotificationManagerComponent.NotifyPlayer(payerId, "#LF-Ticket_Title", "#LF-Ticket_NotEnoughCash", 5.0, EL_ENotificationType.WARNING, EL_MoneyFormat.FormatMoney(record.m_iAmount));
+			LF_Debug.Info(LF_FineTickets.FEATURE, string.Format("desk payment refused for #%1: %2", record.m_iNumber, typename.EnumToString(LF_ETicketPay, result)));
+			LF_NotificationManagerComponent.NotifyPlayer(payerId, "#LF-Ticket_Title", "#LF-Ticket_NotEnoughCash", 5.0, LF_ENotificationType.WARNING, LF_MoneyFormat.FormatMoney(record.m_iAmount));
 			return result;
 		}
 
@@ -189,14 +189,14 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 
 		if (receipt)
 		{
-			RplId itemId = EL_NetworkUtils.GetRplId(receipt.GetOwner());
+			RplId itemId = LF_NetworkUtils.GetRplId(receipt.GetOwner());
 			PlayPaperLater(payer, itemId);
 			SCR_PlayerController controller = LF_PlayerInteraction.ControllerOf(payer);
 			if (controller)
 				controller.LF_TicketCue(itemId);
 		}
 
-		EL_NotificationManagerComponent.NotifyPlayer(payerId, "#LF-Ticket_Title", "#LF-Ticket_PaidToast", 5.0, EL_ENotificationType.SUCCESS, EL_MoneyFormat.FormatMoney(record.m_iAmount));
+		LF_NotificationManagerComponent.NotifyPlayer(payerId, "#LF-Ticket_Title", "#LF-Ticket_PaidToast", 5.0, LF_ENotificationType.SUCCESS, LF_MoneyFormat.FormatMoney(record.m_iAmount));
 		return result;
 	}
 }
@@ -238,7 +238,7 @@ class LF_TicketPaperSound : Managed
 
 		SCR_InventoryStorageManagerComponent inventory;
 		if (holder)
-			inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(holder);
+			inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(holder);
 
 		if (inventory)
 			inventory.RpcAsk_PlaySound(m_Item, m_sEvent);
@@ -267,21 +267,21 @@ class LF_FineTicketPayAction : ScriptedUserAction
 		if (!ticket)
 			return false;
 
-		if (EL_MoneyUtils.GetCash(user) >= ticket.GetAmount())
+		if (LF_MoneyUtils.GetCash(user) >= ticket.GetAmount())
 			return true;
 
-		SetCannotPerformReason(WidgetManager.Translate("#LF-Ticket_NeedCash", EL_MoneyFormat.FormatMoney(ticket.GetAmount())));
+		SetCannotPerformReason(WidgetManager.Translate("#LF-Ticket_NeedCash", LF_MoneyFormat.FormatMoney(ticket.GetAmount())));
 		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		LF_FineTicketComponent ticket = LF_FineTicketItem.FirstUnpaid(EL_Utils.GetLocalCharacter());
+		LF_FineTicketComponent ticket = LF_FineTicketItem.FirstUnpaid(LF_Utils.GetLocalCharacter());
 		if (!ticket)
 			return false;
 
-		outName = WidgetManager.Translate("#LF-Ticket_Pay", ticket.GetNumber().ToString(4), EL_MoneyFormat.FormatMoney(ticket.GetAmount()));
+		outName = WidgetManager.Translate("#LF-Ticket_Pay", ticket.GetNumber().ToString(4), LF_MoneyFormat.FormatMoney(ticket.GetAmount()));
 		return true;
 	}
 
@@ -321,7 +321,7 @@ class LF_FineTicketPad
 		foreach (int i, LF_TicketOffence offence : offences)
 		{
 			string name = WidgetManager.Translate(offence.m_sName);
-			string amount = EL_MoneyFormat.FormatMoney(offence.m_iAmount);
+			string amount = LF_MoneyFormat.FormatMoney(offence.m_iAmount);
 			if (offence.m_iAmount > cap)
 				parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, RowName(i) + "Locked", WidgetManager.Translate("#LF-Ticket_PadAboveRank", name, amount)));
 			else
@@ -368,7 +368,7 @@ class LF_FineTicketPad
 		Hide();
 		if (!controller)
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket pad refused: no player controller");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket pad refused: no player controller");
 			return null;
 		}
 
@@ -378,21 +378,21 @@ class LF_FineTicketPad
 		pad.m_Screen = LF_UIScreen.Open(BuildParts(cap));
 		if (!pad.m_Screen)
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket pad failed to open");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket pad failed to open");
 			return null;
 		}
 
 		pad.m_Screen.GetOnButton().Insert(pad.OnButton);
 		pad.m_Screen.CloseOnDeath();
 		pad.m_Screen.CloseWhenUncontrolled();
-		IEntity suspect = EL_NetworkUtils.FindEntityByRplId(target);
+		IEntity suspect = LF_NetworkUtils.FindEntityByRplId(target);
 		if (suspect)
 			pad.m_Screen.CloseBeyond(CLOSE_DISTANCE, suspect.GetID());
 		else
-			EL_Debug.Warn(LF_FineTickets.FEATURE, "ticket pad open without the person in this client's world; no distance close");
+			LF_Debug.Warn(LF_FineTickets.FEATURE, "ticket pad open without the person in this client's world; no distance close");
 
 		s_Pad = pad;
-		EL_Debug.Info(LF_FineTickets.FEATURE, string.Format("ticket pad open, cap %1", cap));
+		LF_Debug.Info(LF_FineTickets.FEATURE, string.Format("ticket pad open, cap %1", cap));
 		return pad.m_Screen;
 	}
 
@@ -429,11 +429,11 @@ class LF_FineTicketPad
 		Hide();
 		if (!controller)
 		{
-			EL_Debug.Error(LF_FineTickets.FEATURE, "ticket not sent: no player controller");
+			LF_Debug.Error(LF_FineTickets.FEATURE, "ticket not sent: no player controller");
 			return;
 		}
 
-		EL_Debug.Info(LF_FineTickets.FEATURE, "ticket pad signed: offence " + index);
+		LF_Debug.Info(LF_FineTickets.FEATURE, "ticket pad signed: offence " + index);
 		controller.LF_AskWriteTicket(target, index);
 	}
 }
@@ -479,7 +479,7 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_WriteTicket(RplId target, int offenceIndex)
 	{
-		IEntity suspect = EL_NetworkUtils.FindEntityByRplId(target);
+		IEntity suspect = LF_NetworkUtils.FindEntityByRplId(target);
 		LF_FineTicketRole.Write(GetControlledEntity(), suspect, offenceIndex);
 	}
 
@@ -512,7 +512,7 @@ modded class SCR_PlayerController
 	//! Owner: opens the card once the ticket's printed fields have arrived.
 	protected void LF_ShowTicketCard(RplId item, int triesLeft)
 	{
-		IEntity entity = EL_NetworkUtils.FindEntityByRplId(item);
+		IEntity entity = LF_NetworkUtils.FindEntityByRplId(item);
 		LF_FineTicketComponent ticket;
 		if (entity)
 			ticket = LF_FineTicketComponent.Cast(entity.FindComponent(LF_FineTicketComponent));
@@ -525,7 +525,7 @@ modded class SCR_PlayerController
 
 		if (triesLeft <= 0 || !GetGame() || !GetGame().GetCallqueue())
 		{
-			EL_Debug.Warn(LF_FineTickets.FEATURE, "ticket card not opened: the printed ticket did not reach this machine");
+			LF_Debug.Warn(LF_FineTickets.FEATURE, "ticket card not opened: the printed ticket did not reach this machine");
 			return;
 		}
 

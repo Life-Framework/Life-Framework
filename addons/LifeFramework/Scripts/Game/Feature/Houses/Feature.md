@@ -12,9 +12,9 @@ happens at the door.
 
 ## Interaction pattern
 
-Rung 1 today on the entry side: `EL_DoorUserAction` (open), `EL_KeyComponent`
-(key inventory item), `EL_LockComponent` (lock state), `EL_HouseManagerComponent`
-(ownership), `EL_HouseSaveData` (persistence). The door + key loop is the
+Rung 1 today on the entry side: `LF_DoorUserAction` (open), `LF_KeyComponent`
+(key inventory item), `LF_LockComponent` (lock state), `LF_HouseManagerComponent`
+(ownership), `LF_HouseSaveData` (persistence). The door + key loop is the
 physical core.
 
 Target: the full ownership loop in the world — sign at the real-estate office,
@@ -36,8 +36,8 @@ receive keys, walk to the property, unlock your door. Police/bailiffs raiding
 
 ## Current state
 
-- `EL_DoorUserAction`, `EL_KeyComponent`, `EL_LockComponent`,
-  `EL_HouseManagerComponent`, `EL_HouseSaveData` (`Feature/Houses/`).
+- `LF_DoorUserAction`, `LF_KeyComponent`, `LF_LockComponent`,
+  `LF_HouseManagerComponent`, `LF_HouseSaveData` (`Feature/Houses/`).
 - `Prefabs/Structures/` (buildings and building parts) back the physical shell.
 
 ## Dependencies

@@ -1,0 +1,134 @@
+// red-proof: change an expected value below (e.g. CIVILIAN cash 500 -> 501, or
+// remove one faction's backpack from GameMode_Roleplay_Debug.et), then
+// run `tools\cli test --tier all`; the config assertions go red.
+// Observed red: expected 501 cash for CIVILIAN (config gives 500), then reverted.
+
+// tier: WORLD
+class LF_Test_FactionLoadoutConfig : LF_Test
+{
+	protected static const ResourceName MONEY_PREFAB = "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et";
+	protected static const ResourceName APPLE_PREFAB = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
+	protected static const ResourceName M9_PREFAB = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
+	protected static const ResourceName BACKPACK_PREFAB = "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et";
+
+	//------------------------------------------------------------------------------------------------
+	override string GetName()
+	{
+		return "spawn/faction-loadouts";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Run(LF_TestContext ctx)
+	{
+		// The live spawn logic is the one configured on the DebugWorld game mode
+		// (GameMode_Roleplay_Debug.et). If the prefab failed to deserialize, the
+		// spawn logic either is missing or carries no faction loadouts.
+		SCR_RespawnSystemComponent respawnSystem = SCR_RespawnSystemComponent.GetInstance();
+		ctx.True(respawnSystem != null, "respawn system is present");
+		if (ctx.FailureCount() > 0)
+			return;
+
+		LF_SpawnLogic spawnLogic = LF_SpawnLogic.Cast(respawnSystem.GetSpawnLogic());
+		ctx.True(spawnLogic != null, "respawn system carries LF_SpawnLogic");
+		if (ctx.FailureCount() > 0)
+			return;
+
+		LF_FactionLoadout civilian = spawnLogic.GetFactionLoadout(LF_Faction.CIVILIAN);
+		LF_FactionLoadout police = spawnLogic.GetFactionLoadout(LF_Faction.POLICE);
+		ctx.True(civilian != null, "CIVILIAN spawn has a configured loadout");
+		ctx.True(police != null, "the starter police kit (first clock-in at the duty desk) is configured");
+		if (ctx.FailureCount() > 0)
+			return;
+
+		CheckLoadoutPrefabs(ctx, civilian, "civilian");
+		CheckLoadoutPrefabs(ctx, police, "police");
+
+		ctx.True(HasLoadoutItem(civilian, BACKPACK_PREFAB), "CIVILIAN spawns with a backpack");
+		ctx.True(LoadoutStoresMoney(civilian, 500), "CIVILIAN starts with 500 cash");
+		ctx.False(LoadoutStoresMoney(police, 200), "the starter police kit carries no cash (it is re-issued after a death on duty)");
+		ctx.True(HasDirectItem(civilian, APPLE_PREFAB), "CIVILIAN spawns apples for survival testing");
+		ctx.True(HasDirectItem(police, M9_PREFAB), "the starter police kit carries an M9 sidearm");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Asserts every prefab the loadout references (loadout slots + direct items +
+	//! nested stored items) resolves.
+	protected void CheckLoadoutPrefabs(LF_TestContext ctx, LF_FactionLoadout loadout, string label)
+	{
+		foreach (LF_DefaultLoadoutItem item : loadout.m_aItems)
+			CheckItemPrefabs(ctx, item, label, 0);
+
+		foreach (ResourceName prefab : loadout.m_aDirectItems)
+			ctx.True(Resource.Load(prefab).IsValid(), label + " direct item resolves: " + prefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CheckItemPrefabs(LF_TestContext ctx, LF_DefaultLoadoutItem item, string label, int depth)
+	{
+		if (!item || depth > 4)
+			return;
+
+		ctx.True(Resource.Load(item.m_rPrefab).IsValid(), label + " loadout item resolves: " + item.m_rPrefab);
+
+		if (item.m_aStoredItems)
+		{
+			foreach (LF_DefaultLoadoutItem stored : item.m_aStoredItems)
+				CheckItemPrefabs(ctx, stored, label, depth + 1);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when the loadout's clothing carries a MoneyStack whose quantity
+	//! component default matches the expected starting cash.
+	protected bool LoadoutStoresMoney(LF_FactionLoadout loadout, int expectedQuantity)
+	{
+		foreach (LF_DefaultLoadoutItem item : loadout.m_aItems)
+		{
+			if (!item.m_aStoredItems)
+				continue;
+
+			foreach (LF_DefaultLoadoutItem stored : item.m_aStoredItems)
+			{
+				if (stored.m_rPrefab != MONEY_PREFAB)
+					continue;
+
+				if (!stored.m_aComponentDefaults)
+					continue;
+
+				foreach (LF_DefaultLoadoutItemComponent componentDefault : stored.m_aComponentDefaults)
+				{
+					LF_DefaultLoadoutItemQuantityComponent quantity = LF_DefaultLoadoutItemQuantityComponent.Cast(componentDefault);
+					if (quantity && quantity.m_iQuantity == expectedQuantity)
+						return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool HasDirectItem(LF_FactionLoadout loadout, ResourceName prefab)
+	{
+		foreach (ResourceName direct : loadout.m_aDirectItems)
+		{
+			if (direct == prefab)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool HasLoadoutItem(LF_FactionLoadout loadout, ResourceName prefab)
+	{
+		foreach (LF_DefaultLoadoutItem item : loadout.m_aItems)
+		{
+			if (item && item.m_rPrefab == prefab)
+				return true;
+
+		}
+
+		return false;
+	}
+}

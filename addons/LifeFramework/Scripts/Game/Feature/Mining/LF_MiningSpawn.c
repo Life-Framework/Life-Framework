@@ -1,5 +1,5 @@
 // Ported from thebonbon/EveronLife (MIT), enhancement/Main_World:
-// EL_MiningArea.c weighted ore spawn.
+// LF_MiningArea.c weighted ore spawn.
 // Copyright (c) 2022 EveronLife
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -56,14 +56,14 @@ class LF_MiningSpawn
 	{
 		if (!weights || weights.Count() == 0)
 		{
-			EL_Debug.Error("Mining", "ore spawn skipped: no weights configured");
+			LF_Debug.Error("Mining", "ore spawn skipped: no weights configured");
 			return -1;
 		}
 
 		int totalWeight = TotalWeight(weights);
 		if (totalWeight <= 0)
 		{
-			EL_Debug.Error("Mining", "ore spawn skipped: weights sum to zero");
+			LF_Debug.Error("Mining", "ore spawn skipped: weights sum to zero");
 			return -1;
 		}
 

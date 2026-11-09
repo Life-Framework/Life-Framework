@@ -1,9 +1,9 @@
 GenericEntity {
  ID "59F07093BF56FFC2"
  components {
-  EL_DestructibleResourceComponent "{5A4E91862DCCD788}" {
+  LF_DestructibleResourceComponent "{5A4E91862DCCD788}" {
    "Additional hit zones" {
-    EL_DestructibleResourceHitZone OreRock {
+    LF_DestructibleResourceHitZone OreRock {
      ColliderNames {
       "UCX_stone02_lod0_001"
      }
@@ -13,7 +13,7 @@ GenericEntity {
    }
    m_rHitEffect "{1FAA1339FE4492AF}Prefabs/Particles/OreHit.et"
    m_aTools {
-    EL_ResourceDestructionTool "{2C1A16367D4B44CD}" {
+    LF_ResourceDestructionTool "{2C1A16367D4B44CD}" {
      m_rTool "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et"
      m_fHitDamage 20
     }

@@ -105,27 +105,27 @@ class LF_UIScreen
 
 		if (!parts || parts.Count() == 0)
 		{
-			EL_Debug.Error("UIKit", "refused to open: no parts");
+			LF_Debug.Error("UIKit", "refused to open: no parts");
 			return false;
 		}
 
 		if (!GetGame())
 		{
-			EL_Debug.Error("UIKit", "failed to open: no game");
+			LF_Debug.Error("UIKit", "failed to open: no game");
 			return false;
 		}
 
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
 		{
-			EL_Debug.Error("UIKit", "failed to create the frame: no workspace");
+			LF_Debug.Error("UIKit", "failed to create the frame: no workspace");
 			return false;
 		}
 
 		m_wRoot = workspace.CreateWidgets(LF_UITheme.FRAME_LAYOUT);
 		if (!m_wRoot)
 		{
-			EL_Debug.Error("UIKit", "failed to create the frame layout");
+			LF_Debug.Error("UIKit", "failed to create the frame layout");
 			return false;
 		}
 
@@ -134,7 +134,7 @@ class LF_UIScreen
 		Widget content = m_wRoot.FindAnyWidget("Content");
 		if (!content)
 		{
-			EL_Debug.Error("UIKit", "frame loaded but Content is missing");
+			LF_Debug.Error("UIKit", "frame loaded but Content is missing");
 			m_wRoot.RemoveFromHierarchy();
 			m_wRoot = null;
 			return false;
@@ -144,7 +144,7 @@ class LF_UIScreen
 		{
 			if (!part)
 			{
-				EL_Debug.Error("UIKit", "skipped a null part");
+				LF_Debug.Error("UIKit", "skipped a null part");
 				continue;
 			}
 
@@ -158,12 +158,12 @@ class LF_UIScreen
 		}
 		else
 		{
-			EL_Debug.Error("UIKit", "screen is open but the input driver failed: no callqueue");
+			LF_Debug.Error("UIKit", "screen is open but the input driver failed: no callqueue");
 		}
 
 		FocusInitial(workspace);
 
-		EL_Debug.Info("UIKit", "screen open");
+		LF_Debug.Info("UIKit", "screen open");
 		return true;
 	}
 
@@ -174,13 +174,13 @@ class LF_UIScreen
 		LF_UIPart part = FindPart(name);
 		if (!part)
 		{
-			EL_Debug.Error("UIKit", "no part named " + name);
+			LF_Debug.Error("UIKit", "no part named " + name);
 			return false;
 		}
 
 		if (part.GetKind() != LF_EUIPartKind.LINE && part.GetKind() != LF_EUIPartKind.TITLE)
 		{
-			EL_Debug.Error("UIKit", name + " is not a line");
+			LF_Debug.Error("UIKit", name + " is not a line");
 			return false;
 		}
 
@@ -189,7 +189,7 @@ class LF_UIScreen
 		TextWidget line = TextWidget.Cast(widget);
 		if (!line)
 		{
-			EL_Debug.Error("UIKit", name + " has no text");
+			LF_Debug.Error("UIKit", name + " has no text");
 			return false;
 		}
 
@@ -204,7 +204,7 @@ class LF_UIScreen
 		LF_UIPart part = FindPart(name);
 		if (!part || part.GetKind() != LF_EUIPartKind.STATUS)
 		{
-			EL_Debug.Error("UIKit", name + " is not a status row");
+			LF_Debug.Error("UIKit", name + " is not a status row");
 			return false;
 		}
 
@@ -250,7 +250,7 @@ class LF_UIScreen
 		LF_UIPart part = FindPart(name);
 		if (!part || part.GetKind() != LF_EUIPartKind.QUANTITY)
 		{
-			EL_Debug.Error("UIKit", name + " is not a quantity");
+			LF_Debug.Error("UIKit", name + " is not a quantity");
 			return false;
 		}
 
@@ -272,16 +272,16 @@ class LF_UIScreen
 			if (sliderRoot)
 			{
 				sliderRoot.SetEnabled(split);
-				EL_ThinSliderWidget slider = EL_ThinSliderWidget.Cast(sliderRoot.FindHandler(EL_ThinSliderWidget));
+				LF_ThinSliderWidget slider = LF_ThinSliderWidget.Cast(sliderRoot.FindHandler(LF_ThinSliderWidget));
 				if (split && slider)
 					slider.Configure(1, total - 1, 1, take);
 				else if (!slider)
-					EL_Debug.Error("UIKit", name + " slider is missing");
+					LF_Debug.Error("UIKit", name + " slider is missing");
 			}
 		}
 
 		if (!split)
-			EL_Debug.Info("UIKit", name + " has nothing to split");
+			LF_Debug.Info("UIKit", name + " has nothing to split");
 
 		m_bApplyingQuantity = false;
 		if (!row)
@@ -300,7 +300,7 @@ class LF_UIScreen
 		LF_UIPart part = FindPart(name);
 		if (!part)
 		{
-			EL_Debug.Error("UIKit", "no quantity named " + name);
+			LF_Debug.Error("UIKit", "no quantity named " + name);
 			return;
 		}
 
@@ -327,13 +327,13 @@ class LF_UIScreen
 	{
 		if (meters <= 0)
 		{
-			EL_Debug.Error("UIKit", "close distance refused: range must be greater than 0");
+			LF_Debug.Error("UIKit", "close distance refused: range must be greater than 0");
 			return;
 		}
 
 		if (anchor == EntityID.INVALID)
 		{
-			EL_Debug.Error("UIKit", "closed: anchor gone");
+			LF_Debug.Error("UIKit", "closed: anchor gone");
 			Close();
 			return;
 		}
@@ -361,7 +361,7 @@ class LF_UIScreen
 	{
 		if (actionName.IsEmpty() || name.IsEmpty())
 		{
-			EL_Debug.Error("UIKit", "hotkey refused: action and name are required");
+			LF_Debug.Error("UIKit", "hotkey refused: action and name are required");
 			return;
 		}
 
@@ -376,7 +376,7 @@ class LF_UIScreen
 		SizeLayoutWidget list = SizeLayoutWidget.Cast(WidgetNamed(listName));
 		if (!list || height <= 0)
 		{
-			EL_Debug.Error("UIKit", "list height refused for " + listName);
+			LF_Debug.Error("UIKit", "list height refused for " + listName);
 			return false;
 		}
 
@@ -391,7 +391,7 @@ class LF_UIScreen
 		Widget button = WidgetNamed(name);
 		if (!button)
 		{
-			EL_Debug.Error("UIKit", "no button named " + name);
+			LF_Debug.Error("UIKit", "no button named " + name);
 			return false;
 		}
 
@@ -411,7 +411,7 @@ class LF_UIScreen
 		array<string> texts = part.GetKeyTexts();
 		if (names.IsEmpty())
 		{
-			EL_Debug.Error("UIKit", "keys " + part.GetName() + " has no keys");
+			LF_Debug.Error("UIKit", "keys " + part.GetName() + " has no keys");
 			return;
 		}
 
@@ -421,14 +421,14 @@ class LF_UIScreen
 			string seen;
 			if (FindPart(keyName) || m_mKeyRow.Find(keyName, seen))
 			{
-				EL_Debug.Error("UIKit", "skipped duplicate key " + keyName);
+				LF_Debug.Error("UIKit", "skipped duplicate key " + keyName);
 				continue;
 			}
 
 			Widget key = workspace.CreateWidgets(LF_UITheme.BUTTON_LAYOUT, widget);
 			if (!key)
 			{
-				EL_Debug.Error("UIKit", "failed to create key " + keyName);
+				LF_Debug.Error("UIKit", "failed to create key " + keyName);
 				continue;
 			}
 
@@ -587,7 +587,7 @@ class LF_UIScreen
 		TextWidget face = TextWidget.Cast(row.FindAnyWidget(widgetName));
 		if (!face)
 		{
-			EL_Debug.Error("UIKit", "quantity is missing " + widgetName);
+			LF_Debug.Error("UIKit", "quantity is missing " + widgetName);
 			return;
 		}
 
@@ -620,7 +620,7 @@ class LF_UIScreen
 		Widget widget = m_wRoot.FindAnyWidget(name);
 		if (!widget)
 		{
-			EL_Debug.Error("UIKit", "frame is missing " + name);
+			LF_Debug.Error("UIKit", "frame is missing " + name);
 			return;
 		}
 
@@ -633,14 +633,14 @@ class LF_UIScreen
 	{
 		if (FindPart(part.GetName()))
 		{
-			EL_Debug.Error("UIKit", "skipped duplicate part " + part.GetName());
+			LF_Debug.Error("UIKit", "skipped duplicate part " + part.GetName());
 			return;
 		}
 
 		string layout = LF_UIPart.LayoutFor(part.GetKind());
 		if (layout.IsEmpty())
 		{
-			EL_Debug.Error("UIKit", "skipped " + part.GetName() + ": no layout for that part");
+			LF_Debug.Error("UIKit", "skipped " + part.GetName() + ": no layout for that part");
 			return;
 		}
 
@@ -650,7 +650,7 @@ class LF_UIScreen
 		Widget widget = workspace.CreateWidgets(layout, content);
 		if (!widget)
 		{
-			EL_Debug.Error("UIKit", "failed to create part " + part.GetName());
+			LF_Debug.Error("UIKit", "failed to create part " + part.GetName());
 			return;
 		}
 
@@ -666,7 +666,7 @@ class LF_UIScreen
 		{
 			m_mListOrder.Set(part.GetName(), m_iCurrentOrder);
 			if (!widget.FindAnyWidget("ListContent"))
-				EL_Debug.Error("UIKit", "list " + part.GetName() + " is missing ListContent");
+				LF_Debug.Error("UIKit", "list " + part.GetName() + " is missing ListContent");
 
 			return;
 		}
@@ -723,7 +723,7 @@ class LF_UIScreen
 			return;
 		}
 
-		EL_Debug.Error("UIKit", "skipped " + part.GetName() + ": unknown part");
+		LF_Debug.Error("UIKit", "skipped " + part.GetName() + ": unknown part");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -736,7 +736,7 @@ class LF_UIScreen
 		Widget button = widget.FindAnyWidget("ActionButton");
 		if (!button)
 		{
-			EL_Debug.Error("UIKit", "status row " + part.GetName() + " is missing its action");
+			LF_Debug.Error("UIKit", "status row " + part.GetName() + " is missing its action");
 			return;
 		}
 
@@ -760,7 +760,7 @@ class LF_UIScreen
 		if (relay)
 			relay.Bind(this, part.GetName());
 		else
-			EL_Debug.Error("UIKit", "quantity " + part.GetName() + " is missing its relay");
+			LF_Debug.Error("UIKit", "quantity " + part.GetName() + " is missing its relay");
 
 		Widget sliderRoot = widget.FindAnyWidget("QuantitySlider");
 		if (sliderRoot)
@@ -776,7 +776,7 @@ class LF_UIScreen
 		TextWidget caption = TextWidget.Cast(workspace.CreateWidgets(LF_UITheme.LINE_LAYOUT, content));
 		if (!caption)
 		{
-			EL_Debug.Error("UIKit", "failed to create the caption for " + part.GetName());
+			LF_Debug.Error("UIKit", "failed to create the caption for " + part.GetName());
 			return;
 		}
 
@@ -793,7 +793,7 @@ class LF_UIScreen
 		EditBoxWidget box = EditBoxWidget.Cast(widget.FindAnyWidget("EditBox"));
 		if (!box)
 		{
-			EL_Debug.Error("UIKit", "field " + part.GetName() + " is missing the edit box");
+			LF_Debug.Error("UIKit", "field " + part.GetName() + " is missing the edit box");
 			return;
 		}
 
@@ -815,7 +815,7 @@ class LF_UIScreen
 		SCR_ButtonTextComponent button = SCR_ButtonTextComponent.Cast(widget.FindHandler(SCR_ButtonTextComponent));
 		if (!button)
 		{
-			EL_Debug.Error("UIKit", "button " + notifyName + " is missing SCR_ButtonTextComponent");
+			LF_Debug.Error("UIKit", "button " + notifyName + " is missing SCR_ButtonTextComponent");
 			return;
 		}
 
@@ -833,7 +833,7 @@ class LF_UIScreen
 		LF_UIButtonRelay relay = LF_UIButtonRelay.Cast(widget.FindHandler(LF_UIButtonRelay));
 		if (!relay)
 		{
-			EL_Debug.Error("UIKit", "button " + notifyName + " is missing its click relay");
+			LF_Debug.Error("UIKit", "button " + notifyName + " is missing its click relay");
 			return;
 		}
 
@@ -849,7 +849,7 @@ class LF_UIScreen
 	{
 		if (!text)
 		{
-			EL_Debug.Error("UIKit", "text widget missing for a titled part");
+			LF_Debug.Error("UIKit", "text widget missing for a titled part");
 			return;
 		}
 
@@ -871,7 +871,7 @@ class LF_UIScreen
 		Widget widget = root.FindAnyWidget(name);
 		if (!widget)
 		{
-			EL_Debug.Error("UIKit", "part is missing " + name);
+			LF_Debug.Error("UIKit", "part is missing " + name);
 			return;
 		}
 
@@ -1002,13 +1002,13 @@ class LF_UIScreen
 		LF_UIPart list = FindPart(listName);
 		if (!list || list.GetKind() != LF_EUIPartKind.LIST)
 		{
-			EL_Debug.Error("UIKit", listName + " is not a list");
+			LF_Debug.Error("UIKit", listName + " is not a list");
 			return false;
 		}
 
 		if (FindPart(rowName))
 		{
-			EL_Debug.Error("UIKit", "skipped duplicate list row " + rowName);
+			LF_Debug.Error("UIKit", "skipped duplicate list row " + rowName);
 			return false;
 		}
 
@@ -1023,14 +1023,14 @@ class LF_UIScreen
 
 		if (!content || !workspace)
 		{
-			EL_Debug.Error("UIKit", "list " + listName + " cannot take rows");
+			LF_Debug.Error("UIKit", "list " + listName + " cannot take rows");
 			return false;
 		}
 
 		Widget row = workspace.CreateWidgets(LF_UITheme.STATUS_LAYOUT, content);
 		if (!row)
 		{
-			EL_Debug.Error("UIKit", "failed to create list row " + rowName);
+			LF_Debug.Error("UIKit", "failed to create list row " + rowName);
 			return false;
 		}
 
@@ -1066,7 +1066,7 @@ class LF_UIScreen
 		LF_UIPart list = FindPart(listName);
 		if (!list || list.GetKind() != LF_EUIPartKind.LIST)
 		{
-			EL_Debug.Error("UIKit", listName + " is not a list");
+			LF_Debug.Error("UIKit", listName + " is not a list");
 			return;
 		}
 
@@ -1122,7 +1122,7 @@ class LF_UIScreen
 
 		bool dead = false;
 		bool hasCharacter = false;
-		SCR_ChimeraCharacter character = EL_Utils.GetLocalCharacter();
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
 		if (character)
 		{
 			hasCharacter = true;
@@ -1153,7 +1153,7 @@ class LF_UIScreen
 		if (reason == LF_UIClosePolicy.STAY)
 			return false;
 
-		EL_Debug.Info("UIKit", "closed: " + LF_UIClosePolicy.Name(reason));
+		LF_Debug.Info("UIKit", "closed: " + LF_UIClosePolicy.Name(reason));
 		Close();
 		return true;
 	}
@@ -1199,7 +1199,7 @@ class LF_UIScreen
 	{
 		if (inputManager.GetActionTriggered("MenuBack"))
 		{
-			EL_Debug.Info("UIKit", "closed: back");
+			LF_Debug.Info("UIKit", "closed: back");
 			Close();
 			return;
 		}
@@ -1351,10 +1351,10 @@ class LF_UIScreen
 	//! A button that is not Close. Logged so the click is not a silent no-op.
 	void Notify(string name)
 	{
-		EL_Debug.Info("UIKit", "button " + name);
+		LF_Debug.Info("UIKit", "button " + name);
 		if (!m_OnButton)
 		{
-			EL_Debug.Warn("UIKit", "button " + name + " has no listener");
+			LF_Debug.Warn("UIKit", "button " + name + " has no listener");
 			return;
 		}
 
@@ -1364,7 +1364,7 @@ class LF_UIScreen
 	//------------------------------------------------------------------------------------------------
 	//! Close can run inside the repeating ActivateInputContext call (MenuBack, MenuSelect on the
 	//! Close button, death or distance). Removing a call from inside its own callback is not safe
-	//! (see EL_CharacterCreationManager.OnPlayerConnected), so the removal is deferred one tick and
+	//! (see LF_CharacterCreationManager.OnPlayerConnected), so the removal is deferred one tick and
 	//! ActivateInputContext refuses to run once m_bInputArmed is false.
 	void Close()
 	{
@@ -1381,7 +1381,7 @@ class LF_UIScreen
 
 		m_wRoot.RemoveFromHierarchy();
 		m_wRoot = null;
-		EL_Debug.Info("UIKit", "screen closed");
+		LF_Debug.Info("UIKit", "screen closed");
 
 		if (m_OnClosed)
 			m_OnClosed.Invoke();

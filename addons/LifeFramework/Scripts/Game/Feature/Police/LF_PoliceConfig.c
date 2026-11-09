@@ -109,13 +109,13 @@ class LF_PoliceConfig
 		Resource container = BaseContainerTools.LoadContainer(CONFIG_PATH);
 		if (!container || !container.GetResource())
 		{
-			EL_Debug.Error("Ranks", string.Format("police config does not resolve, using defaults: %1", CONFIG_PATH));
+			LF_Debug.Error("Ranks", string.Format("police config does not resolve, using defaults: %1", CONFIG_PATH));
 			return null;
 		}
 
 		s_Config = LF_PoliceConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
-			EL_Debug.Error("Ranks", string.Format("police config has an unexpected root class, using defaults: %1", CONFIG_PATH));
+			LF_Debug.Error("Ranks", string.Format("police config has an unexpected root class, using defaults: %1", CONFIG_PATH));
 
 		return s_Config;
 	}

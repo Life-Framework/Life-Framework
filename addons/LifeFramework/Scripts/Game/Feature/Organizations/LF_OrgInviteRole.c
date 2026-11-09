@@ -13,7 +13,7 @@ class LF_OrgInviteRole : LF_PlayerRoleHandler
 	static const string SLOT = "org_invite";
 
 	//------------------------------------------------------------------------------------------------
-	//! Every machine, once per world (EL_GameModeRoleplay.OnGameStart). Idempotent.
+	//! Every machine, once per world (LF_GameModeRoleplay.OnGameStart). Idempotent.
 	static void Register()
 	{
 		if (LF_OrgInviteRole.Cast(LF_PlayerInteraction.GetRole(SLOT)))
@@ -73,7 +73,7 @@ class LF_OrgInviteRole : LF_PlayerRoleHandler
 		int targetId = LF_PlayerInteraction.PlayerIdOf(target);
 		if (userCharacter.IsEmpty() || targetCharacter.IsEmpty())
 		{
-			EL_Debug.Warn("Organizations", string.Format("org_invite refused: player %1 or %2 has no character", userId, targetId));
+			LF_Debug.Warn("Organizations", string.Format("org_invite refused: player %1 or %2 has no character", userId, targetId));
 			return;
 		}
 
@@ -85,7 +85,7 @@ class LF_OrgInviteRole : LF_PlayerRoleHandler
 		else if (mode == LF_EOrgRoleMode.REMOVE)
 			PerformRemove(user, userCharacter, targetCharacter, userId, targetId);
 		else
-			EL_Debug.Info("Organizations", string.Format("org_invite refused: nothing to offer player %1 on player %2", userId, targetId));
+			LF_Debug.Info("Organizations", string.Format("org_invite refused: nothing to offer player %1 on player %2", userId, targetId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -94,20 +94,20 @@ class LF_OrgInviteRole : LF_PlayerRoleHandler
 		LF_EOrgOfferResult result = LF_OrgInvites.Offer(userCharacter, userId, targetCharacter, LF_OrgInvites.Now());
 		if (result != LF_EOrgOfferResult.OFFERED)
 		{
-			EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_OfferRefused", 4.0, EL_ENotificationType.WARNING);
+			LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_OfferRefused", 4.0, LF_ENotificationType.WARNING);
 			return;
 		}
 
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(userCharacter);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(userCharacter);
 		string orgName;
 		if (org)
 			orgName = org.GetName();
 
 		LF_PlayerInteraction.PlayGesture(user, LF_PlayerInteraction.GESTURE_POINT);
 		LF_OrgReplication.Publish(target);
-		EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_OfferMade", 4.0, EL_ENotificationType.INFO);
-		EL_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Org_Title", "#LF-Org_OfferReceived", 8.0, EL_ENotificationType.INFO, orgName);
-		EL_Debug.Info("Organizations", string.Format("player %1 offered player %2 a place in %3", userId, targetId, orgName));
+		LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_OfferMade", 4.0, LF_ENotificationType.INFO);
+		LF_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Org_Title", "#LF-Org_OfferReceived", 8.0, LF_ENotificationType.INFO, orgName);
+		LF_Debug.Info("Organizations", string.Format("player %1 offered player %2 a place in %3", userId, targetId, orgName));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -117,11 +117,11 @@ class LF_OrgInviteRole : LF_PlayerRoleHandler
 		LF_OrgReplication.Publish(user);
 		if (result != LF_EOrgOfferResult.JOINED)
 		{
-			EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_JoinRefused", 4.0, EL_ENotificationType.WARNING);
+			LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_JoinRefused", 4.0, LF_ENotificationType.WARNING);
 			return;
 		}
 
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(userCharacter);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(userCharacter);
 		string orgName;
 		if (org)
 			orgName = org.GetName();
@@ -130,25 +130,25 @@ class LF_OrgInviteRole : LF_PlayerRoleHandler
 		LF_PlayerInteraction.PlayGesture(user, LF_PlayerInteraction.GESTURE_HALT);
 		LF_PlayerInteraction.PlayHandoverSound(user, LF_PlayerInteraction.SOUND_HANDOVER);
 		LF_OrgReplication.Publish(target);
-		EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_Joined", 5.0, EL_ENotificationType.SUCCESS, orgName);
-		EL_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Org_Title", "#LF-Org_NewMember", 5.0, EL_ENotificationType.SUCCESS, orgName);
-		EL_Debug.Info("Organizations", string.Format("player %1 joined %2 from player %3", userId, orgName, targetId));
+		LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_Joined", 5.0, LF_ENotificationType.SUCCESS, orgName);
+		LF_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Org_Title", "#LF-Org_NewMember", 5.0, LF_ENotificationType.SUCCESS, orgName);
+		LF_Debug.Info("Organizations", string.Format("player %1 joined %2 from player %3", userId, orgName, targetId));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void PerformRemove(IEntity user, string userCharacter, string targetCharacter, int userId, int targetId)
 	{
-		EL_Organization org = EL_OrganizationManager.GetByCharacter(userCharacter);
-		if (!org || !EL_OrganizationManager.Kick(org.GetId(), userCharacter, targetCharacter))
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(userCharacter);
+		if (!org || !LF_OrganizationManager.Kick(org.GetId(), userCharacter, targetCharacter))
 		{
-			EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_RemoveRefused", 4.0, EL_ENotificationType.WARNING);
+			LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_RemoveRefused", 4.0, LF_ENotificationType.WARNING);
 			return;
 		}
 
 		LF_PlayerInteraction.PlayGesture(user, LF_PlayerInteraction.GESTURE_POINT);
 		LF_OrgReplication.PublishCharacterId(targetCharacter);
-		EL_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_Removed", 4.0, EL_ENotificationType.INFO);
-		EL_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Org_Title", "#LF-Org_YouWereRemoved", 6.0, EL_ENotificationType.WARNING, org.GetName());
-		EL_Debug.Info("Organizations", string.Format("player %1 removed player %2 from %3", userId, targetId, org.GetName()));
+		LF_NotificationManagerComponent.NotifyPlayer(userId, "#LF-Org_Title", "#LF-Org_Removed", 4.0, LF_ENotificationType.INFO);
+		LF_NotificationManagerComponent.NotifyPlayer(targetId, "#LF-Org_Title", "#LF-Org_YouWereRemoved", 6.0, LF_ENotificationType.WARNING, org.GetName());
+		LF_Debug.Info("Organizations", string.Format("player %1 removed player %2 from %3", userId, targetId, org.GetName()));
 	}
 }

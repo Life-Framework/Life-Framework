@@ -23,7 +23,7 @@ GenericEntity CrimeScene {
        }
       }
       additionalActions {
-       EL_RobAction "{5A4B0B84C86D8848}" {
+       LF_RobAction "{5A4B0B84C86D8848}" {
         ParentContextList {
          "default"
         }
@@ -65,7 +65,7 @@ GenericEntity CrimeScene {
        }
       }
       additionalActions {
-       EL_RobWeaponAction "{5A4B0B84C86D9848}" {
+       LF_RobWeaponAction "{5A4B0B84C86D9848}" {
         ParentContextList {
          "default"
         }
@@ -111,7 +111,7 @@ GenericEntity CrimeScene {
       }
      }
      additionalActions {
-      EL_RobVehicleAction "{5A4B0B84C86DA848}" {
+      LF_RobVehicleAction "{5A4B0B84C86DA848}" {
        ParentContextList {
         "default"
        }
@@ -132,7 +132,7 @@ GenericEntity CrimeScene {
    Flags 0x403 0
     coords 0 0 0.7
   }
-  EL_NpcBaseEntity WantedPoliceNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+  LF_NpcBaseEntity WantedPoliceNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
     CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
      Identity Identity "{5A4B0B84AF44A913}" {
@@ -155,7 +155,7 @@ GenericEntity CrimeScene {
   }
  }
 }
-EL_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
  coords 33.335 0 50.918
   m_vSize 5 1 2.5
 }

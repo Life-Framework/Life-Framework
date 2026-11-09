@@ -1,6 +1,6 @@
 GenericEntity Roadmap_Hideout_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
  components {
-  EL_LockComponent "{5AC29970429B33BB}" {
+  LF_LockComponent "{5AC29970429B33BB}" {
    m_bDebugLocked 1
   }
   LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
@@ -28,7 +28,7 @@ GenericEntity Roadmap_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/Ite
     }
    }
    additionalActions {
-    EL_ProcessAction "{598F21A877BE6DEE}" {
+    LF_ProcessAction "{598F21A877BE6DEE}" {
      ParentContextList {
       "default"
      }
@@ -36,13 +36,13 @@ GenericEntity Roadmap_Hideout_Machine : "{8594DC1E8A135607}Prefabs/Processor/Ite
       Name "#EL-Hideout_Process"
      }
      m_aProcessingInputs {
-      EL_ProcessingInput "{53E2575C89C0AF7C}" {
+      LF_ProcessingInput "{53E2575C89C0AF7C}" {
        m_InputPrefab "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et"
        m_iInputAmount 1
       }
      }
      m_aProcessingOutputs {
-      EL_ProcessingOutput "{D5F5BDAE187E0DD3}" {
+      LF_ProcessingOutput "{D5F5BDAE187E0DD3}" {
        m_OutputPrefab "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et"
        m_iOutputAmount 1
       }

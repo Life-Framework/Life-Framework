@@ -35,7 +35,7 @@ and staff cover for that: roughly 6 to 8 police and 2 to 3 moderators online.
   has been tested (`wt e2e`-style proof against a copy of the live save).
 - Crash auto-restart and a restart schedule. Players get an in-world warning
   before a planned restart.
-- Log watching: `[ELDebug:*]` errors and `VME:` lines from the live server are
+- Log watching: `[LFDebug:*]` errors and `VME:` lines from the live server are
   summarised after each session and triaged into issues
   (`docs/debug-log-triage.md`).
 - Hotfix path: a config-only fix goes out through `config.json` without a new

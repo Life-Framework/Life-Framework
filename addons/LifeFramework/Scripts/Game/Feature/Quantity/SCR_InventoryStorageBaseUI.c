@@ -4,7 +4,7 @@ modded class SCR_InventoryStorageBaseUI
 	override protected int FindItem(notnull InventoryItemComponent pInvItem)
 	{
 		// If the item has a quantity component then each entity must be shown unique
-		if (pInvItem.GetOwner().FindComponent(EL_QuantityComponent)) return -1;
+		if (pInvItem.GetOwner().FindComponent(LF_QuantityComponent)) return -1;
 
 		return super.FindItem(pInvItem);
 	}
@@ -17,7 +17,7 @@ modded class SCR_InventoryStorageBaseUI
 
 		foreach (IEntity item : pItemsInStorage)
 		{
-			string key = EL_Utils.GetPrefabName(item);
+			string key = LF_Utils.GetPrefabName(item);
 			int idx = prefabAggregationKeys.Find(key);
 			
 			if (idx != -1)

@@ -45,7 +45,7 @@ class LF_UnemploymentBenefit
 		outReason = Refusal(uid, bankBalance, working, now, threshold, amount, cooldownSeconds);
 		if (!outReason.IsEmpty())
 		{
-			EL_Debug.Info("Benefit", string.Format("benefit refused for %1: %2 (balance %3)", uid, outReason, bankBalance));
+			LF_Debug.Info("Benefit", string.Format("benefit refused for %1: %2 (balance %3)", uid, outReason, bankBalance));
 			return 0;
 		}
 
@@ -53,7 +53,7 @@ class LF_UnemploymentBenefit
 			s_mLastCollectedAt = new map<string, float>();
 
 		s_mLastCollectedAt.Set(uid, now);
-		EL_Debug.Info("Benefit", string.Format("benefit granted to %1: %2 (balance %3)", uid, amount, bankBalance));
+		LF_Debug.Info("Benefit", string.Format("benefit granted to %1: %2 (balance %3)", uid, amount, bankBalance));
 		return amount;
 	}
 
@@ -114,15 +114,15 @@ class LF_UnemploymentBenefit
 		if (LF_CivilianJob.HasActiveRun(uid))
 			return true;
 
-		EL_PlayerAccountManager manager = EL_PlayerAccountManager.GetInstance();
+		LF_PlayerAccountManager manager = LF_PlayerAccountManager.GetInstance();
 		if (!manager)
 			return false;
 
-		EL_PlayerAccount account = manager.GetAccount(uid);
+		LF_PlayerAccount account = manager.GetAccount(uid);
 		if (!account)
 			return false;
 
-		return account.GetFaction() == EL_Faction.POLICE && account.IsOnDuty();
+		return account.GetFaction() == LF_Faction.POLICE && account.IsOnDuty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -136,25 +136,25 @@ class LF_UnemploymentBenefit
 
 		if (!user)
 		{
-			EL_Debug.Error("Benefit", "benefit refused: no player entity");
+			LF_Debug.Error("Benefit", "benefit refused: no player entity");
 			return 0;
 		}
 
-		string uid = EL_Utils.GetPlayerUID(user);
+		string uid = LF_Utils.GetPlayerUID(user);
 		if (uid.IsEmpty())
 		{
-			EL_Debug.Error("Benefit", "benefit refused: player has no account id");
+			LF_Debug.Error("Benefit", "benefit refused: player has no account id");
 			return 0;
 		}
 
 		LF_JobsConfig config = LF_JobsConfig.Get();
 		if (!config)
 		{
-			EL_Utils.NotifyEntity(user, REFUSED_DISABLED, "#EL-Benefit_Title", 4.0);
+			LF_Utils.NotifyEntity(user, REFUSED_DISABLED, "#EL-Benefit_Title", 4.0);
 			return 0;
 		}
 
-		EL_BankAccount bank = EL_ATMManager.GetOrCreate(uid);
+		LF_BankAccount bank = LF_ATMManager.GetOrCreate(uid);
 		int balance = 0;
 		if (bank)
 			balance = bank.GetBalance();
@@ -163,27 +163,27 @@ class LF_UnemploymentBenefit
 		int owed = Claim(uid, balance, IsWorking(uid), LF_JobGuards.Now(), config.m_iBenefitBalanceThreshold, config.m_iBenefitAmount, config.m_fBenefitCooldownSeconds, reason);
 		if (owed <= 0)
 		{
-			EL_Utils.NotifyEntity(user, reason, "#EL-Benefit_Title", 4.0);
+			LF_Utils.NotifyEntity(user, reason, "#EL-Benefit_Title", 4.0);
 			return 0;
 		}
 
-		int given = EL_MoneyUtils.GiveCash(user, owed);
+		int given = LF_MoneyUtils.GiveCash(user, owed);
 		if (given <= 0)
 		{
 			ForgetCollection(uid);
-			EL_Debug.Warn("Benefit", string.Format("benefit not handed over: inventory full (player %1)", uid));
-			EL_Utils.NotifyEntity(user, "#EL-Inventory_Full", "#EL-Benefit_Title", 4.0);
+			LF_Debug.Warn("Benefit", string.Format("benefit not handed over: inventory full (player %1)", uid));
+			LF_Utils.NotifyEntity(user, "#EL-Inventory_Full", "#EL-Benefit_Title", 4.0);
 			return 0;
 		}
 
 		if (given != owed)
-			EL_Debug.Warn("Benefit", string.Format("benefit short: paid %1 of %2 (player %3)", given, owed, uid));
+			LF_Debug.Warn("Benefit", string.Format("benefit short: paid %1 of %2 (player %3)", given, owed, uid));
 
-		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(user);
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
 		if (inventory)
-			inventory.RpcAsk_PlaySound(EL_NetworkUtils.GetRplId(user), "SOUND_PICK_UP");
+			inventory.RpcAsk_PlaySound(LF_NetworkUtils.GetRplId(user), "SOUND_PICK_UP");
 
-		EL_Utils.NotifyEntity(user, "#EL-Benefit_Paid", "#EL-Benefit_Title", 4.0, given.ToString());
+		LF_Utils.NotifyEntity(user, "#EL-Benefit_Paid", "#EL-Benefit_Title", 4.0, given.ToString());
 		return given;
 	}
 }

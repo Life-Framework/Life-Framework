@@ -2,7 +2,7 @@
 // audits kept finding by hand, encoded as mechanical rules.
 //
 //   L1 unguarded-spawn   GetGame().SpawnEntityPrefab(Resource.Load(...)) outside
-//                        Core/EL_Utils.c. Use EL_Utils.SpawnEntityPrefab, which
+//                        Core/LF_Utils.c. Use LF_Utils.SpawnEntityPrefab, which
 //                        logs and returns null on a bad prefab.
 //   L2 null-deref        a lookup that can return null dereferenced in the same
 //                        expression: Find*(...).X, Cast(...Find*(...)).X,
@@ -16,18 +16,18 @@
 //                        One-shot CallLater is not counted.
 //   L4 static-registry   a static ref array/map/set holding an entity or component
 //                        type in a class whose OnDelete/destructor never touches it.
-//   L5 bare-print        Print("[EL_..." / "[LF_..." in a file that already logs
-//                        through EL_Debug (one greppable path per feature).
+//   L5 bare-print        Print("[LF_..." / "[LF_..." in a file that already logs
+//                        through LF_Debug (one greppable path per feature).
 //   L6 resource-ref      a "{GUID}path" literal whose path or GUID belongs to this
 //                        addon but does not match the addon's .meta, or whose
-//                        EL_/LF_-named file does not exist. Vanilla paths are skipped
+//                        LF_/LF_-named file does not exist. Vanilla paths are skipped
 //                        so the check needs no game install.
 //   L7 null-coalescing   `??` in code (the ternary half lives in
 //                        check-no-ternaries).
-//   L8 server-toast      EL_Utils.Notify after an `if (!Replication.IsServer())
+//   L8 server-toast      LF_Utils.Notify after an `if (!Replication.IsServer())
 //                        return;` guard in the same method. Notify shows a hint on
 //                        the machine that runs it, which on a dedicated server is
-//                        nobody; use EL_Utils.NotifyEntity(user, ...).
+//                        nobody; use LF_Utils.NotifyEntity(user, ...).
 //
 // Pure Node, no game data: runs in CI. The CLI wrapper is
 // tools/validation/validate-enforce-lint.mjs; the selftest is
@@ -195,10 +195,10 @@ export function lint({ addonDir, scriptsDir, includeData = true }) {
     const at = (off) => lineOf(starts, off);
 
     // L1
-    if (!/(^|\/)Core\/EL_Utils\.c$/.test(src.rel)) {
+    if (!/(^|\/)Core\/LF_Utils\.c$/.test(src.rel)) {
       const re = /\bGetGame\(\)\s*\.\s*SpawnEntityPrefab(?:Ex|Local)?\s*\(\s*Resource\.Load\s*\(/g;
       let m;
-      while ((m = re.exec(code))) add("L1", src, at(m.index), "spawn without the prefab-resolve guard; use EL_Utils.SpawnEntityPrefab");
+      while ((m = re.exec(code))) add("L1", src, at(m.index), "spawn without the prefab-resolve guard; use LF_Utils.SpawnEntityPrefab");
     }
 
     // L2a: Find*(...).X and Cast(...Find*(...)).X
@@ -285,13 +285,13 @@ export function lint({ addonDir, scriptsDir, includeData = true }) {
     }
 
     // L5
-    if (/\bEL_Debug\s*\./.test(code)) {
+    if (/\bLF_Debug\s*\./.test(code)) {
       const re = /\bPrint(?:Format)?\s*\(\s*"\[(?:EL|LF)_/g;
       let m;
       // Strings are masked in `code`; match against withStrings at the same offsets.
       while ((m = re.exec(src.withStrings))) {
         if (code.slice(m.index, m.index + 5) !== "Print") continue; // inside a comment
-        add("L5", src, at(m.index), "bare Print in a file that logs through EL_Debug");
+        add("L5", src, at(m.index), "bare Print in a file that logs through LF_Debug");
       }
     }
 
@@ -312,14 +312,14 @@ export function lint({ addonDir, scriptsDir, includeData = true }) {
       const head = /\n\t[A-Za-z][^\n;{}]*\([^\n;{}]*\)[ \t]*\n\t\{/g;
       let h;
       while ((h = head.exec(code))) heads.push(h.index);
-      const re = /\bEL_Utils\s*\.\s*Notify\s*\(/g;
+      const re = /\bLF_Utils\s*\.\s*Notify\s*\(/g;
       let m;
       while ((m = re.exec(code))) {
         let start = 0;
         for (const x of heads) if (x < m.index) start = x;
         const body = code.slice(start, m.index);
         if (/if\s*\(\s*!\s*Replication\s*\.\s*IsServer\s*\(\s*\)\s*\)\s*return\s*;/.test(body))
-          add("L8", src, at(m.index), "Notify after a server-only guard reaches nobody on a dedicated server; use EL_Utils.NotifyEntity");
+          add("L8", src, at(m.index), "Notify after a server-only guard reaches nobody on a dedicated server; use LF_Utils.NotifyEntity");
       }
     }
   }

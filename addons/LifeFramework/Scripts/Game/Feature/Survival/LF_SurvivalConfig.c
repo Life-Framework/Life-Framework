@@ -52,7 +52,7 @@ class LF_SurvivalConfig
 
 		if (!s_Config)
 		{
-			EL_Debug.Error("Survival", string.Format("survival config does not resolve, using defaults: %1", CONFIG_PATH));
+			LF_Debug.Error("Survival", string.Format("survival config does not resolve, using defaults: %1", CONFIG_PATH));
 			s_Config = new LF_SurvivalConfig();
 		}
 

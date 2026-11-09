@@ -8,9 +8,9 @@ class LF_SignReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
 	{
-		m_SignComponent = EL_Component<LF_SignComponent>.Find(pOwnerEntity);
+		m_SignComponent = LF_Component<LF_SignComponent>.Find(pOwnerEntity);
 		if (!m_SignComponent)
-			EL_Debug.Error("Signs", "Read action on an entity with no LF_SignComponent; Read hidden");
+			LF_Debug.Error("Signs", "Read action on an entity with no LF_SignComponent; Read hidden");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -48,13 +48,13 @@ class LF_SignReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!pOwnerEntity || pUserEntity != EL_Utils.GetLocalCharacter())
+		if (!pOwnerEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
 
 		LF_SignDef sign = GetSign();
 		if (!sign)
 		{
-			EL_Debug.Error("Signs", "Read performed on a sign with no entry; card not opened");
+			LF_Debug.Error("Signs", "Read performed on a sign with no entry; card not opened");
 			return;
 		}
 

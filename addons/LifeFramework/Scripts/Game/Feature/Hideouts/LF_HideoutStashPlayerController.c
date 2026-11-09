@@ -10,10 +10,10 @@ modded class SCR_PlayerController
 	//! Client: asks the server to open the stash. The listen host handles it directly.
 	void LF_RequestOpenStash(IEntity stash)
 	{
-		RplComponent rpl = EL_Component<RplComponent>.Find(stash);
+		RplComponent rpl = LF_Component<RplComponent>.Find(stash);
 		if (!rpl)
 		{
-			EL_Debug.Error("Hideout", "stash open dropped: the stash has no RplComponent");
+			LF_Debug.Error("Hideout", "stash open dropped: the stash has no RplComponent");
 			return;
 		}
 
@@ -38,31 +38,31 @@ modded class SCR_PlayerController
 		IEntity user = GetControlledEntity();
 		if (!stash || !user)
 		{
-			EL_Debug.Warn("Hideout", string.Format("stash open refused for player %1: no stash or no character", GetPlayerId()));
+			LF_Debug.Warn("Hideout", string.Format("stash open refused for player %1: no stash or no character", GetPlayerId()));
 			return;
 		}
 
-		LF_HideoutStashStorageManagerComponent manager = EL_Component<LF_HideoutStashStorageManagerComponent>.Find(stash);
+		LF_HideoutStashStorageManagerComponent manager = LF_Component<LF_HideoutStashStorageManagerComponent>.Find(stash);
 		if (!manager)
 		{
-			EL_Debug.Error("Hideout", string.Format("stash open refused: %1 has no LF_HideoutStashStorageManagerComponent", EL_Utils.GetPrefabName(stash)));
+			LF_Debug.Error("Hideout", string.Format("stash open refused: %1 has no LF_HideoutStashStorageManagerComponent", LF_Utils.GetPrefabName(stash)));
 			return;
 		}
 
 		if (vector.Distance(user.GetOrigin(), stash.GetOrigin()) > LF_STASH_REACH)
 		{
-			EL_Debug.Warn("Hideout", string.Format("stash open refused for player %1: out of reach", GetPlayerId()));
+			LF_Debug.Warn("Hideout", string.Format("stash open refused for player %1: out of reach", GetPlayerId()));
 			return;
 		}
 
 		if (!manager.AllowsUser(user, true))
 		{
-			EL_Debug.Info("Hideout", string.Format("stash %1 refused player %2: not a member", manager.GetHideoutId(), GetPlayerId()));
+			LF_Debug.Info("Hideout", string.Format("stash %1 refused player %2: not a member", manager.GetHideoutId(), GetPlayerId()));
 			string reason = "#LF-HideoutStash_NotMember";
 			if (LF_Hideout.GetOwner(manager.GetHideoutId()).IsEmpty())
 				reason = "#LF-HideoutStash_NoOwner";
 
-			EL_NotificationManagerComponent.NotifyPlayer(GetPlayerId(), "#LF-HideoutStash_Title", reason, 6.0, EL_ENotificationType.WARNING);
+			LF_NotificationManagerComponent.NotifyPlayer(GetPlayerId(), "#LF-HideoutStash_Title", reason, 6.0, LF_ENotificationType.WARNING);
 			if (GetGame().GetPlayerController() == this)
 				RpcDo_LF_StashRefused();
 			else
@@ -70,7 +70,7 @@ modded class SCR_PlayerController
 			return;
 		}
 
-		EL_Debug.Info("Hideout", string.Format("stash %1 opened by player %2", manager.GetHideoutId(), GetPlayerId()));
+		LF_Debug.Info("Hideout", string.Format("stash %1 opened by player %2", manager.GetHideoutId(), GetPlayerId()));
 		if (GetGame().GetPlayerController() == this)
 			RpcDo_LF_OpenStash(stashId);
 		else
@@ -85,14 +85,14 @@ modded class SCR_PlayerController
 		IEntity user = GetControlledEntity();
 		if (!stashRpl || !stashRpl.GetEntity() || !user)
 		{
-			EL_Debug.Warn("Hideout", "stash open dropped on the client: the stash or the character is gone");
+			LF_Debug.Warn("Hideout", "stash open dropped on the client: the stash or the character is gone");
 			return;
 		}
 
-		SCR_InventoryStorageManagerComponent inventory = EL_Component<SCR_InventoryStorageManagerComponent>.Find(user);
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
 		if (!inventory)
 		{
-			EL_Debug.Error("Hideout", "stash open dropped on the client: the character has no inventory manager");
+			LF_Debug.Error("Hideout", "stash open dropped on the client: the character has no inventory manager");
 			return;
 		}
 

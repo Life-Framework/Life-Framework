@@ -26,7 +26,7 @@ class LF_MissionHeader : SCR_MissionHeader
 
 	//------------------------------------------------------------------------------------------------
 	//! Pure: whether dev tools are open, given the game mode's opt-in and the mission header.
-	//! \param gameModeOptIn The world's game mode opts every player in (EL_GameModeRoleplay).
+	//! \param gameModeOptIn The world's game mode opts every player in (LF_GameModeRoleplay).
 	//! \param header The mission header; null when the server was started on a bare world.
 	static bool ResolveDevToolsEnabled(bool gameModeOptIn, MissionHeader header)
 	{
@@ -63,12 +63,12 @@ class LF_HostStop
 		if (FileIO.FileExists(STOP_FILE))
 		{
 			FileIO.DeleteFile(STOP_FILE);
-			EL_Debug.Warn("Host", "removed a stale stop file from an earlier run");
+			LF_Debug.Warn("Host", "removed a stale stop file from an earlier run");
 		}
 
 		s_bRunning = true;
 		GetGame().GetCallqueue().CallLater(Poll, POLL_MS, true);
-		EL_Debug.Info("Host", string.Format("watching %1 for tools\\cli host stop", STOP_FILE));
+		LF_Debug.Info("Host", string.Format("watching %1 for tools\\cli host stop", STOP_FILE));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ class LF_HostStop
 		FileIO.DeleteFile(STOP_FILE);
 		GetGame().GetCallqueue().Remove(Poll);
 		s_bRunning = false;
-		EL_Debug.Info("Host", "stop requested, closing the game (engine shutdown save follows)");
+		LF_Debug.Info("Host", "stop requested, closing the game (engine shutdown save follows)");
 		GetGame().RequestClose();
 	}
 }

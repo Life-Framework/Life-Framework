@@ -203,7 +203,7 @@ class LF_FilmRecorder
 			return Refuse("no_world", name);
 		if (RplSession.Mode() == RplMode.Dedicated)
 			return Refuse("no_renderer", name);
-		if (!EL_AgentCommand.IsClassToken(name))
+		if (!LF_AgentCommand.IsClassToken(name))
 			return Refuse("bad_name", name);
 		if (fps < 0 || fps > MAX_FPS)
 			return Refuse("bad_fps", name);
@@ -221,7 +221,7 @@ class LF_FilmRecorder
 		s_Pacer.Begin(fps, System.GetTickCount());
 		s_bOn = true;
 		GetGame().GetCallqueue().CallLater(Tick, 0, true);
-		EL_Debug.Info(FEATURE, string.Format("recording %1 at %2 fps (max %3 s)", s_sDir, fps, maxSeconds));
+		LF_Debug.Info(FEATURE, string.Format("recording %1 at %2 fps (max %3 s)", s_sDir, fps, maxSeconds));
 		return "ok " + s_sDir;
 	}
 
@@ -245,7 +245,7 @@ class LF_FilmRecorder
 			return s_sLast;
 		}
 
-		EL_Debug.Info(FEATURE, string.Format("stopped %1 %2", s_sDir, summary));
+		LF_Debug.Info(FEATURE, string.Format("stopped %1 %2", s_sDir, summary));
 		s_sLast = string.Format("ok %1 %2", s_sDir, summary);
 		return s_sLast;
 	}
@@ -279,7 +279,7 @@ class LF_FilmRecorder
 
 		if (s_Pacer.ElapsedMs(now) >= s_iMaxMs)
 		{
-			EL_Debug.Warn(FEATURE, string.Format("max length reached; stopping %1", s_sDir));
+			LF_Debug.Warn(FEATURE, string.Format("max length reached; stopping %1", s_sDir));
 			Stop();
 		}
 	}
@@ -291,7 +291,7 @@ class LF_FilmRecorder
 		FileHandle handle = FileIO.OpenFile(s_sDir + "/index.txt", FileMode.WRITE);
 		if (!handle)
 		{
-			EL_Debug.Error(FEATURE, string.Format("cannot write %1/index.txt", s_sDir));
+			LF_Debug.Error(FEATURE, string.Format("cannot write %1/index.txt", s_sDir));
 			return false;
 		}
 
@@ -309,7 +309,7 @@ class LF_FilmRecorder
 	//------------------------------------------------------------------------------------------------
 	protected static string Refuse(string reason, string name)
 	{
-		EL_Debug.Error(FEATURE, string.Format("recording %1 refused: %2", name, reason));
+		LF_Debug.Error(FEATURE, string.Format("recording %1 refused: %2", name, reason));
 		return "error:" + reason;
 	}
 }
