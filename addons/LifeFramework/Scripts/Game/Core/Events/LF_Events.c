@@ -34,10 +34,20 @@ class LF_OnCrimeCommitted : LF_Event
 	}
 }
 
-//! A player went down but is not dead. Defined; no feature has a downed state yet, so nothing publishes it.
+//! A player went down but is not dead (LF_Downed). m_sDownerUid is empty when no player did it.
+//! The murder and the hospital wake come later, with the real death (LF_OnPlayerKilled).
 class LF_OnPlayerDowned : LF_Event
 {
 	string m_sPlayerUid;
+	string m_sDownerUid;
+
+	static LF_OnPlayerDowned Create(string playerUid, string downerUid)
+	{
+		LF_OnPlayerDowned e = new LF_OnPlayerDowned();
+		e.m_sPlayerUid = playerUid;
+		e.m_sDownerUid = downerUid;
+		return e;
+	}
 }
 
 //! A player character died. m_sKillerUid is empty when no player killed them.
