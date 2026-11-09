@@ -88,6 +88,9 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		LF_Jail.ApplyAll(sentences);
 		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is serving before the save");
 
+		// An incident rides the "incidents" payload (save version 13); the reload boot queries it.
+		LF_IncidentLog.Append(LF_IncidentConfig.KIND_DEATH, System.GetUnixTime(), ACCOUNT_UID, "e2e-killer", Vector(4321, 0, 1234), 0, "e2e-rifle", true);
+
 		// A carried inventory rides the "carried" payload (save version 6). The character stays
 		// alive in the world through the shutdown save, so the reload boot also sees whether the
 		// engine brings its items back on its own (a dupe next to the restored snapshot).
@@ -184,6 +187,9 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 		ctx.True(LF_Jail.IsServing(ACCOUNT_UID), "e2e prisoner is still serving after the save load");
 		ctx.EqualFloat(3600, LF_Jail.GetRemaining(ACCOUNT_UID), 0.01, "e2e sentence resumes with the same remaining time (an offline prisoner serves no time)");
+
+		array<ref LF_IncidentRecord> incidents = LF_IncidentLog.Query(Vector(4321, 0, 1234), 5, 0, -1, LF_IncidentConfig.KIND_DEATH);
+		ctx.True(incidents.Count() >= 1, "e2e incident from boot 1 is queryable by position after the save load");
 
 		LF_StorageSnapshotRecord carried = LF_StorageSnapshot.Get(CARRIED_CHARACTER_ID, LF_StorageSnapshot.SLOT_CARRIED);
 		ctx.NotNull(carried, "e2e carried snapshot present after the save load");

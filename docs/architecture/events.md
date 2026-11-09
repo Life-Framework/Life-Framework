@@ -58,7 +58,8 @@ The bus keeps its own strong reference.
 |---|---|---|
 | `LF_OnCrimeCommitted` | `m_sPlayerUid`, `m_sOffence` (offence key) | `LF_WantedReports.Report`: every robbery, theft, break-in, murder, and an unpaid ticket, just before the report is filed |
 | `LF_OnMoneyMoved` | `m_sPlayerUid`, `m_iAmount`, `m_sSource` | ATM deposit and withdraw (`atm-deposit`, `atm-withdraw`). Other money paths are not wired yet |
-| `LF_OnPlayerKilled` | `m_sVictimUid`, `m_sKillerUid` (empty if no player killer) | `LF_Murder.OnCharacterKilled`, player victims only, before the murder decision |
+| `LF_OnPlayerKilled` | `m_sVictimUid`, `m_sKillerUid` (empty if no player killer), `m_vPosition`, `m_sWeapon` (killer's held weapon prefab), `m_bMurder` (LF_Murder rule) | `LF_Murder.OnCharacterKilled`, player victims only, before the wanted decision |
+| `LF_OnPlayerDamaged` | `m_sVictimUid`, `m_sAttackerUid`, `m_fDamage` (total in the window), `m_vPosition`, `m_sWeapon` | `LF_IncidentDamage.OnHit` from `SCR_CharacterDamageManagerComponent.HijackDamageHandling`: player-on-player only, at most one per victim/attacker pair per `m_fDamageSampleSeconds` (default 5), never per hit |
 | `LF_OnArrested` | `m_sPlayerUid`, `m_iSentenceSeconds`, `m_iWantedLevel` | `LF_Jail` when a sentence starts |
 | `LF_OnJobCompleted` | `m_sPlayerUid`, `m_iJob`, `m_iPay` | `LF_JobWorker` run completion (`LF_CivilianJob.CompleteRun`) |
 | `LF_OnVehicleBought` | `m_sBuyerUid`, `m_sCatalogPrefab`, `m_iPrice` | `LF_VehicleOwnership` purchase |

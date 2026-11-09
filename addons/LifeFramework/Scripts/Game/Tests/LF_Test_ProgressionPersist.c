@@ -131,7 +131,7 @@ class LF_Test_ProgressionRoundtrip : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(12, version, "the save is written at version 12 (progression is payload 7)");
+		ctx.Equal(13, version, "the save is written at version 13 (progression is payload 7)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "progression");
 
 		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER), "courier level 2 after the load");
