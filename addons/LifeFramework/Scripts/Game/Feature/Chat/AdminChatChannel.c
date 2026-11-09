@@ -32,6 +32,10 @@ class AdminChatChannel : BaseChatChannel
 				return false;
 
 			whitelistComponent.EnableWhitelistOnPlayer(uuid, type);
+			SCR_PlayerController wlAdmin = SCR_PlayerController.Cast(sender.GetOwner());
+			if (wlAdmin)
+				LF_AdminAction.ReportWhitelistAdd(LF_AdminAction.UidOfPlayer(wlAdmin.GetPlayerId()), type, uuid);
+
 			LF_Debug.Log("Chat", string.Format("admin !wadd type=%1 uuid=%2", SCR_Enum.GetEnumName(LF_WhitelistType, type), uuid));
 		}
 
@@ -48,6 +52,7 @@ class AdminChatChannel : BaseChatChannel
 				adminUid = LF_Utils.GetPlayerUID(adminPC.GetPlayerId());
 
 			LF_IncidentFlags.Handle(number, adminUid);
+			LF_AdminAction.ReportHandled(adminUid, number);
 		}
 
 		return true;

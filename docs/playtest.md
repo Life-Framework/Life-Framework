@@ -84,8 +84,11 @@ log that back them stay on the server and invisible.
 - **Safe square.** On the spawn square you cannot hurt another player and they
   cannot hurt you. Weapons still fire; NPC, world, and self damage pass.
 - **Hold up.** Two players face each other within 2 m; the one with a weapon in hand sees *Hold up* in the action menu. It raises their hand, beeps at both, and tells the other player. It changes nothing else: it only lands in the incident log (Game Master incident view, kind Hold-up). Demo: `node agent-box/session.mjs holdup-proof` (two clients).
+- **Admin actions.** As Game Master, teleport and heal a player, or type `!wadd POLICE <uid>`: each appears as an "Admin action" row with your name in the Game Master incident view. Non-admins never get that view.
 - **Aim intent.** Hold a raised weapon on another player for 3 s: one "Weapon aimed" row in the Game Master incident view, then at most one more per 3 s of continuous aim. Needs two clients on a dedicated server to prove the aim direction replicates.
 - **Lawless quarry.** The quarry south of the dirt lane (about 100 m north of the square) is the one marked lawless area. Two red *Lawless Area* signs stand at the lane and at the east edge; read one for the rules. For now the zone only labels incidents (`lawless` in the incident log) and keeps wanted on; there is no fence or gate yet. Demo: `node agent-box/session.mjs quarry-proof`.
+
+- **Evidence.** After a crime, shots near it leave casings and dropped items get a paper marker. Clock in, pick "Bag as evidence" on one, then use "Log evidence bags" at the locker beside the armory in the police station. If the piece was a serial'd fence tool, the buyer's wanted card now shows their name. "Read case file" lists what is on file.
 
 ### Known rough edges
 

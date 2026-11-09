@@ -17,6 +17,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AccountActiveIndex(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountCachePolicy(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ActionGuards(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_AdminAction(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AgentHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AimIntent(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AreaSpawner(), LF_TestTier.WORLD);
@@ -68,6 +69,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_E2EInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_EvidenceLockerPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_FruitCatcherRounds(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSwitchGuards(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BuildingPlacementRange(), LF_TestTier.LOGIC);
