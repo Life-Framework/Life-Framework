@@ -49,6 +49,12 @@ systems are placed only in DebugWorld so far):
 - **Inventory** — quantity/stacking, split dialog, UI patches
 - **Notifications** — in-game toasts
 - **NPCs** — base entity for traders, police, shops
+- **Payphones & dispatch** — call a service from a booth for a coin; on-duty
+  police get the radio call and the wanted board line
+- **Downed state** — a lethal hit leaves a player unconscious and searchable
+  instead of dead (no revive yet)
+- **The fence** — crime tools sold to proven criminals, each with a serial to
+  read
 
 The core is era-agnostic: asset packs can shift the setting without rewriting
 gameplay systems.
