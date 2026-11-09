@@ -71,37 +71,55 @@ class LF_Dispatch
 		if (officers < 0)
 			officers = LF_AccountReplication.CountPoliceOnDuty();
 
-		LF_DispatchRecord record = Record(offence, report.m_sClothing, report.m_sVehicle, report.m_sPlace, officers);
-		record.m_sTime = ClockText();
-
 		if (site == vector.Zero)
-			LF_Debug.Info(FEATURE, string.Format("dispatch #%1: no alarm site, no alarm sounded", record.m_iSequence));
+			LF_Debug.Info(FEATURE, "no alarm site, no alarm sounded");
 		else
-			StartAlarm(site, record.m_bLoud);
+			StartAlarm(site, IsLoud(officers));
 
-		if (officers > 0)
-			record.m_iRadioed = RadioOfficers(record);
+		// The report is a police service call on the bus (#250): the dispatch subscriber logs and
+		// radios it, the service board pins it. Both must be listening.
+		LF_ServiceCallDispatch.Install();
+		LF_ServiceBoard.Install();
+		LF_ServiceRoute route = LF_ServiceCalls.Check("police");
+		string channels = route.m_sChannels;
+		if (channels.IsEmpty())
+			channels = "radio,board";
 
-		LF_Debug.Info(FEATURE, string.Format("dispatch #%1 %2 at '%3': officers=%4 alarm=%5 radioed=%6 clothing='%7' vehicle='%8'", record.m_iSequence, offence, record.m_sPlace, officers, AlarmLevel(record.m_bLoud), record.m_iRadioed, record.m_sClothing, record.m_sVehicle));
-		return record;
+		LF_OnServiceCall call = LF_OnServiceCall.Create(playerUid, "police", report.m_sPlace, offence, channels, site, route.m_aReceivers);
+		call.m_sClothing = report.m_sClothing;
+		call.m_sVehicle = report.m_sVehicle;
+		call.m_iOnDuty = officers;
+
+		int before = s_iSequence;
+		LF_EventBus.Publish(call);
+		if (s_iSequence == before)
+		{
+			LF_Debug.Error(FEATURE, string.Format("dispatch not logged: no police call subscriber heard %1", offence));
+			return null;
+		}
+
+		return Last();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a witness phoned it in (payphone, #247). Logs the call and radios every on-duty
-	//! officer with the place; no crime report, no suspect description, no alarm.
-	//! param summary What happened: a localization key or text.
-	//! eturn The dispatch record, or null off the server.
-	static LF_DispatchRecord RelayCall(string summary, string place, vector site, int officersOnDuty)
+	//! Server: a police service call arrived on the bus (a crime report or a witness phoning it in).
+	//! Logs it with the clock and radios every on-duty officer.
+	//! \return The dispatch record, or null off the server.
+	static LF_DispatchRecord Receive(notnull LF_OnServiceCall call)
 	{
 		if (!Replication.IsServer())
 			return null;
 
-		LF_DispatchRecord record = Record(summary, string.Empty, string.Empty, place, officersOnDuty);
+		int officers = call.m_aReceiverIds.Count();
+		if (call.m_iOnDuty >= 0)
+			officers = call.m_iOnDuty;
+
+		LF_DispatchRecord record = Record(call.m_sSummary, call.m_sClothing, call.m_sVehicle, call.m_sPlace, officers);
 		record.m_sTime = ClockText();
-		if (officersOnDuty > 0)
+		if (officers > 0)
 			record.m_iRadioed = RadioOfficers(record);
 
-		LF_Debug.Info(FEATURE, string.Format("dispatch #%1 phoned in %2 at '%3': officers=%4 radioed=%5", record.m_iSequence, summary, record.m_sPlace, officersOnDuty, record.m_iRadioed));
+		LF_Debug.Info(FEATURE, string.Format("dispatch #%1 %2 at '%3': officers=%4 alarm=%5 radioed=%6 clothing='%7' vehicle='%8'", record.m_iSequence, call.m_sSummary, record.m_sPlace, officers, AlarmLevel(record.m_bLoud), record.m_iRadioed, record.m_sClothing, record.m_sVehicle));
 		return record;
 	}
 

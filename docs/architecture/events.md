@@ -63,8 +63,8 @@ The bus keeps its own strong reference.
 | `LF_OnArrested` | `m_sPlayerUid`, `m_iSentenceSeconds`, `m_iWantedLevel` | `LF_Jail` when a sentence starts |
 | `LF_OnJobCompleted` | `m_sPlayerUid`, `m_iJob`, `m_iPay` | `LF_JobWorker` run completion (`LF_CivilianJob.CompleteRun`) |
 | `LF_OnVehicleBought` | `m_sBuyerUid`, `m_sCatalogPrefab`, `m_iPrice` | `LF_VehicleOwnership` purchase |
+| `LF_OnServiceCall` | `m_sCallerUid`, `m_sService`, `m_sPlace`, `m_sSummary`, `m_sChannels`, `m_vPosition`, `m_aReceiverIds` | `LF_ServiceCalls.Place`, once per call with at least one receiver on duty; `LF_Dispatch.Report`, once per crime report (police, even with nobody on duty; adds `m_sClothing`, `m_sVehicle`, `m_iOnDuty`). `LF_ServiceCallDispatch` (radio and dispatch log) and `LF_ServiceBoard` (dispatch boards) subscribe |
 | `LF_OnPlayerDowned` | `m_sPlayerUid`, `m_sDownerUid` (empty if no player did it) | `LF_Downed.Down`: lethal damage to a player left them alive and unconscious. The death, and `LF_OnPlayerKilled`, come later |
-| `LF_OnServiceCall` | `m_sCallerUid`, `m_sService`, `m_sPlace`, `m_sSummary`, `m_sChannels`, `m_vPosition`, `m_aReceiverIds` | `LF_ServiceCalls.Place`, once per call with at least one receiver on duty. Dispatch (#250) subscribes |
 
 Adding an event: a class in `LF_Events.c`, a row here, a publish where the feature
 already logs the change, and one line in `docs/features.md`.
