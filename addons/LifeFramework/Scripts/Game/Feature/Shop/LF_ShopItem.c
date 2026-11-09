@@ -13,6 +13,17 @@ class LF_ShopItem
 	[Attribute("1", UIWidgets.Auto, desc: "Maximum quantity that can be bought at once")]
 	protected int m_iMaxQuantity;
 
+	//! Fence shops only (LF_ShopComponent.m_bFence): completed crimes on the buyer's record before
+	//! this item is sold to them. 0 is open to everyone.
+	[Attribute("0", UIWidgets.Auto, desc: "Fence shops: completed crimes on the buyer's record before this item is sold. 0 is no threshold")]
+	protected int m_iMinCrimes;
+
+	//------------------------------------------------------------------------------------------------
+	int GetMinCrimes()
+	{
+		return m_iMinCrimes;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	ResourceName GetItemPrefab()
 	{

@@ -1,0 +1,24 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "F98AAEF7A2B5A130"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{55FBA3F232D506BF}" {
+     Name "#LF-Item_Keycard_Name"
+     Description "#LF-Item_Keycard_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.1
+     ItemVolume 40
+     RestingUP Forward
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
+  }
+ }
+}

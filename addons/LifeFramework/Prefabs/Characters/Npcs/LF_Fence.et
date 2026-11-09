@@ -1,0 +1,58 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "1A200C2AA44B74FD"
+ components {
+  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+   Identity Identity "{5A4B0B84AF44A913}" {
+    Name "Vince"
+    Surname "the Fence"
+   }
+  }
+  LF_ShopComponent "{D1ECAFBCFB13B81E}" {
+   m_sShopName "#LF-Shop_Name_Fence"
+   m_sShopDescription "#LF-Shop_Desc_Fence"
+   m_bFence 1
+   m_aShopItems {
+    LF_ShopItem "{E8D0D4FDD915DFF2}" {
+     m_ItemPrefab "{4FF102B4CE9B0ED3}Prefabs/Items/Fence/LF_Drill.et"
+     m_sDisplayName "#LF-Item_Drill_Name"
+     m_iMaxQuantity 1
+     m_iMinCrimes 3
+    }
+    LF_ShopItem "{0742A82BD3C8A34E}" {
+     m_ItemPrefab "{E78C99E5029D52A5}Prefabs/Items/Fence/LF_Charge.et"
+     m_sDisplayName "#LF-Item_Charge_Name"
+     m_iMaxQuantity 1
+     m_iMinCrimes 5
+    }
+    LF_ShopItem "{78D9526032CDC440}" {
+     m_ItemPrefab "{F341AA386FA695E4}Prefabs/Items/Fence/LF_Keycard.et"
+     m_sDisplayName "#LF-Item_Keycard_Name"
+     m_iMaxQuantity 1
+     m_iMinCrimes 8
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{E2E3661919825CB7}" {
+     ContextName "Fence"
+     Position PointInfo "{4060778EB2014791}" {
+      PivotID "Spine5"
+     }
+     Radius 1
+    }
+   }
+   additionalActions + {
+    LF_ShopAction "{E6EB5B39FA04F7BB}" {
+     ParentContextList {
+      "Fence"
+     }
+     UIInfo UIInfo "{DD61E2C13B62590C}" {
+      Name "#LF-Shop_Open_Fence"
+      Description "#LF-Shop_OpenDesc_Fence"
+     }
+    }
+   }
+  }
+ }
+}

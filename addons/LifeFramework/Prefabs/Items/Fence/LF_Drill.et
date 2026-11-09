@@ -1,0 +1,24 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "55D67DBC3B62AAD9"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{A8603D4A4EF634C5}" {
+     Name "#LF-Item_Drill_Name"
+     Description "#LF-Item_Drill_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 6
+     ItemVolume 4000
+     RestingUP Forward
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{D83CA877ADEF48C9}Assets/Props/Industrial/BenchDrill_01/BenchDrill_01.xob"
+  }
+ }
+}
