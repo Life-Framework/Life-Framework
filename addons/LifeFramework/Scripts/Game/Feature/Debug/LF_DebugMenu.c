@@ -302,9 +302,9 @@ class LF_DebugActionUtils
 		}
 
 		if (remove)
-			LF_MoneyUtils.RemoveCash(character, amount);
+			LF_MoneyUtils.RemoveCash(character, amount, "debug");
 		else
-			LF_MoneyUtils.AddCash(character, amount);
+			LF_MoneyUtils.AddCash(character, amount, "debug");
 
 		string verb;
 		if (remove)

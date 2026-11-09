@@ -43,7 +43,7 @@
   called in subscription order, each isolated (a false return logs
   `[LFDebug:Events]` Error and the rest run), list copied so unsubscribing
   mid-publish is safe, server only. Published today: `OnCrimeCommitted`,
-  `OnMoneyMoved` (ATM), `OnPlayerKilled`, `OnArrested`, `OnJobCompleted`,
+  `OnMoneyMoved` (every cash and bank change), `OnPlayerKilled`, `OnArrested`, `OnJobCompleted`,
   `OnVehicleBought`; `OnPlayerDowned` is defined, unpublished. Test `core/event-bus`.
   See `docs/architecture/events.md`.
 
@@ -466,6 +466,22 @@
   `AddCash`/`RemoveCash` (actual amount, 0 on fault).
 - ⚠️ Inconsistent sentinels (`-1` vs `0`); doc comments wrong on
   Remove/Take.
+
+### `LF_Ledger` — `Feature/Money/LF_Ledger.c` (#330, 2026-11-09)
+- ✅ Append-only log of every cash and bank change: id, unix time, character uid, account
+  (`cash`/`bank`), signed change, reason key, counterparty uid, balance after. Features never
+  call it: `LF_MoneyUtils.AddCash`/`RemoveCash` (cash, player targets only) and
+  `LF_BankAccount.Deposit`/`Withdraw`/`Charge` (bank) publish `LF_OnMoneyMoved`, and the ledger
+  subscribes (`LF_Ledger.EnsureSubscribed`, game-mode start). The reason is an optional last
+  argument at the call site (`shop-buy`, `atm-deposit`, `give-cash`, `ticket-fine`, ...);
+  none given records `cash` / `bank`. A hand-over is two lines that sum to zero and name each
+  other. Persisted as the `ledger` payload (save version 13), trimmed by `Configs/Money/LF_Ledger.conf`
+  (`m_iMaxEntries`, `m_iMaxAgeDays`). `Last(uid, account, n)` lists newest first (what the
+  incident log reads); `RebuildBalance`/`VerifyBank` rebuild the bank from the log and compare.
+  Cash lines are a trail, not a chain: picking up or dropping a note outside `LF_MoneyUtils` is
+  not logged. Cash moved into a bag or an AI is not a player ledger line. `validate` rule
+  `validate-ledger-writes` fails direct `SetBalance`/`PREFAB_CASH` writes. Tests `money/ledger-records`,
+  `money/ledger-persist`, `e2e/pass2-verify-load`.
 
 ### `LF_BankAccount` + `LF_ATMManager` — `Feature/ATM/`
 - ✅ **The canonical bank** (verified 2026-08-30): every payout in the game pays

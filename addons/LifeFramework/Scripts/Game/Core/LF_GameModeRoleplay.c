@@ -36,6 +36,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_HostStop.StartIfRequested();
 		// Interaction menu role slots, on every machine (offer on the client, decide on the server).
 		LF_OrgInviteRole.Register();
+		// The money ledger listens for every cash and bank change (server only).
+		LF_Ledger.EnsureSubscribed();
 	}
 
 	//------------------------------------------------------------------------------------------------

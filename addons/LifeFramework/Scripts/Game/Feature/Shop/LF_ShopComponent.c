@@ -197,11 +197,11 @@ class LF_ShopComponent : ScriptComponent
 		int units = LF_ShopRules.StackTradeOutputCount(quantity);
 		int totalPrice = LF_ShopRules.StackTradeTotal(unitPrice, units);
 
-		int removed = LF_MoneyUtils.RemoveAmount(buyer, totalPrice);
+		int removed = LF_MoneyUtils.RemoveAmount(buyer, totalPrice, "shop-buy");
 		if (removed != totalPrice)
 		{
 			if (removed > 0)
-				LF_MoneyUtils.AddAmount(buyer, removed);
+				LF_MoneyUtils.AddAmount(buyer, removed, "shop-buy-rollback");
 			LF_Debug.Info("Shop", string.Format("buy failed (insufficient funds) item=%1 qty=%2 price=%3 removed=%4", prefab, quantity, totalPrice, removed));
 			return LF_EShopRefusal.NOT_ENOUGH_CASH;
 		}
@@ -216,7 +216,7 @@ class LF_ShopComponent : ScriptComponent
 
 		int notDelivered = units - added;
 		if (notDelivered > 0)
-			LF_MoneyUtils.AddAmount(buyer, LF_ShopRules.StackTradeTotal(unitPrice, notDelivered));
+			LF_MoneyUtils.AddAmount(buyer, LF_ShopRules.StackTradeTotal(unitPrice, notDelivered), "shop-buy-rollback");
 		LF_Debug.Warn("Shop", string.Format("buy failed (inventory full) item=%1 qty=%2 delivered=%3 - refunded %4", prefab, quantity, added, notDelivered));
 		return LF_EShopRefusal.POCKETS_FULL;
 	}
@@ -260,11 +260,11 @@ class LF_ShopComponent : ScriptComponent
 		int units = LF_ShopRules.StackTradeOutputCount(quantity);
 		int totalPrice = LF_ShopRules.StackTradeTotal(unitPrice, units);
 
-		int paid = LF_MoneyUtils.AddCash(seller, totalPrice);
+		int paid = LF_MoneyUtils.AddCash(seller, totalPrice, "shop-sell");
 		if (paid != totalPrice)
 		{
 			if (paid > 0)
-				LF_MoneyUtils.RemoveCash(seller, paid);
+				LF_MoneyUtils.RemoveCash(seller, paid, "shop-sell-rollback");
 			LF_Debug.Warn("Shop", string.Format("sell failed (cannot pay out) item=%1 qty=%2 price=%3 paid=%4", prefab, quantity, totalPrice, paid));
 			return LF_EShopRefusal.POCKETS_FULL;
 		}
@@ -272,14 +272,14 @@ class LF_ShopComponent : ScriptComponent
 		int removed = LF_InventoryUtils.RemoveAmount(seller, prefab, units);
 		if (removed <= 0)
 		{
-			LF_MoneyUtils.RemoveCash(seller, paid);
+			LF_MoneyUtils.RemoveCash(seller, paid, "shop-sell-rollback");
 			LF_Debug.Info("Shop", string.Format("sell failed (nothing to sell) item=%1 qty=%2", prefab, units));
 			return LF_EShopRefusal.NOTHING_TO_SELL;
 		}
 
 		int overpaid = LF_ShopRules.StackTradeTotal(unitPrice, units - removed);
 		if (overpaid > 0)
-			LF_MoneyUtils.RemoveCash(seller, overpaid);
+			LF_MoneyUtils.RemoveCash(seller, overpaid, "shop-sell-rollback");
 
 		earned = LF_ShopRules.StackTradeTotal(unitPrice, removed);
 		LF_Debug.Info("Shop", string.Format("sold item=%1 qty=%2 price=%3", prefab, removed, earned));

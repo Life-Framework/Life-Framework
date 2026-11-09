@@ -920,7 +920,7 @@ class LF_VehicleOwnership
 	{
 		if (bankDebit > 0)
 		{
-			if (!account || !account.Withdraw(bankDebit))
+			if (!account || !account.Withdraw(bankDebit, "vehicle-purchase"))
 			{
 				LF_Debug.Log("Vehicle", "purchase rejected: bank withdraw failed");
 				return false;
@@ -936,11 +936,11 @@ class LF_VehicleOwnership
 				return false;
 			}
 
-			int removed = LF_MoneyUtils.RemoveCash(buyer, cashDebit);
+			int removed = LF_MoneyUtils.RemoveCash(buyer, cashDebit, "vehicle-purchase");
 			if (removed != cashDebit)
 			{
 				if (removed > 0)
-					LF_MoneyUtils.AddCash(buyer, removed);
+					LF_MoneyUtils.AddCash(buyer, removed, "vehicle-purchase-rollback");
 
 				Refund(null, account, 0, bankDebit);
 				LF_Debug.Log("Vehicle", "purchase rejected: cash could not be taken");
@@ -955,10 +955,10 @@ class LF_VehicleOwnership
 	protected static void Refund(IEntity buyer, LF_BankAccount account, int cashDebit, int bankDebit)
 	{
 		if (bankDebit > 0 && account)
-			account.Deposit(bankDebit);
+			account.Deposit(bankDebit, "vehicle-purchase-rollback");
 
 		if (cashDebit > 0 && buyer)
-			LF_MoneyUtils.AddCash(buyer, cashDebit);
+			LF_MoneyUtils.AddCash(buyer, cashDebit, "vehicle-purchase-rollback");
 	}
 
 	//------------------------------------------------------------------------------------------------

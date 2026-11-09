@@ -69,7 +69,7 @@ class LF_DutyPay
 			return 0;
 		}
 
-		int given = LF_MoneyUtils.GiveCash(officer, owed);
+		int given = LF_MoneyUtils.GiveCash(officer, owed, "duty-pay");
 		if (given != owed)
 			LF_Debug.Warn("DutyPay", string.Format("shift pay short: paid %1 of %2 (player %3)", given, owed, officer));
 		else

@@ -57,7 +57,7 @@ The bus keeps its own strong reference.
 | Event | Fields | Published by (where it already logs the change) |
 |---|---|---|
 | `LF_OnCrimeCommitted` | `m_sPlayerUid`, `m_sOffence` (offence key) | `LF_WantedReports.Report`: every robbery, theft, break-in, murder, and an unpaid ticket, just before the report is filed |
-| `LF_OnMoneyMoved` | `m_sPlayerUid`, `m_iAmount`, `m_sSource` | ATM deposit and withdraw (`atm-deposit`, `atm-withdraw`). Other money paths are not wired yet |
+| `LF_OnMoneyMoved` | `m_sPlayerUid`, `m_iAmount` (positive), `m_sSource` (reason key), `m_sAccount` (`cash`/`bank`), `m_bCredit`, `m_iBalanceAfter`, `m_sCounterpartyUid` | Every cash and bank change, one event per account side: `LF_MoneyUtils.AddCash`/`RemoveCash` (player targets) and `LF_BankAccount.Deposit`/`Withdraw`/`Charge`. An ATM deposit is a cash debit and a bank credit. `LF_Ledger` subscribes (`docs/features.md`) |
 | `LF_OnPlayerKilled` | `m_sVictimUid`, `m_sKillerUid` (empty if no player killer) | `LF_Murder.OnCharacterKilled`, player victims only, before the murder decision |
 | `LF_OnArrested` | `m_sPlayerUid`, `m_iSentenceSeconds`, `m_iWantedLevel` | `LF_Jail` when a sentence starts |
 | `LF_OnJobCompleted` | `m_sPlayerUid`, `m_iJob`, `m_iPay` | `LF_JobWorker` run completion (`LF_CivilianJob.CompleteRun`) |

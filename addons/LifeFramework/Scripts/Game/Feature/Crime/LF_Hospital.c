@@ -395,12 +395,12 @@ class LF_Hospital
 	{
 		if (player)
 		{
-			int paid = LF_MoneyUtils.AddCash(player, till.m_iPayout);
+			int paid = LF_MoneyUtils.AddCash(player, till.m_iPayout, "hospital-till");
 			if (paid != till.m_iPayout)
 			{
 				LF_Debug.Error("Hospital", string.Format("till payout short: paid %1 of %2 at %3", paid, till.m_iPayout, till.m_sTargetId));
 				if (paid > 0)
-					LF_MoneyUtils.RemoveCash(player, paid);
+					LF_MoneyUtils.RemoveCash(player, paid, "hospital-till-rollback");
 				return 0;
 			}
 
