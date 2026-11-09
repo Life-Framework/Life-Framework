@@ -269,3 +269,22 @@ class LF_OnFenceSale : LF_Event
 		return e;
 	}
 }
+
+//! A player held another up: weapon in hand, hands-up call, in range (LF_HoldUp). Intent only; no
+//! rule changes because of it. The incident log records it (kind "holdup").
+class LF_OnHoldUp : LF_Event
+{
+	string m_sActorUid;
+	string m_sTargetUid;
+	//! Where the actor stood.
+	vector m_vPosition;
+
+	static LF_OnHoldUp Create(string actorUid, string targetUid, vector position)
+	{
+		LF_OnHoldUp e = new LF_OnHoldUp();
+		e.m_sActorUid = actorUid;
+		e.m_sTargetUid = targetUid;
+		e.m_vPosition = position;
+		return e;
+	}
+}

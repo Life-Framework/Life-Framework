@@ -5582,6 +5582,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "REPORTED #%1 %2, %3 min ago: %4 / %5 (type !handled %1 when done)"
      Comment "Game Master incident row for a reported incident: number, kind, minutes ago, subject, other party."
     }
+    CustomStringTableItem "{365AAC156EFDBFE8}" {
+     Id "LF-HoldUp_Action"
+     Target_en_us "Hold up"
+     Comment "Interaction menu entry: raise a hand and call hands up on the person in front of you (needs a weapon in hand)."
+    }
+    CustomStringTableItem "{39C9CE4F50A7A87A}" {
+     Id "LF-HoldUp_Title"
+     Target_en_us "Hold up"
+     Comment "Toast title for a hold-up."
+    }
+    CustomStringTableItem "{4218A5DF1E9BB329}" {
+     Id "LF-HoldUp_HeldUp"
+     Target_en_us "Someone is holding you up. Talk to them."
+     Comment "Toast to the player who was held up."
+    }
+    CustomStringTableItem "{7CD1C4B0BC457BD5}" {
+     Id "LF-HoldUp_Cooldown"
+     Target_en_us "Not again so soon."
+     Comment "Toast when a hold-up is refused by the cooldown."
+    }
+    CustomStringTableItem "{87043105414D2D3D}" {
+     Id "LF-HoldUp_NoWeapon"
+     Target_en_us "Take a weapon in hand first."
+     Comment "Toast when a hold-up is refused because no weapon is in hand."
+    }
+    CustomStringTableItem "{6DB0CF1985285685}" {
+     Id "LF-HoldUp_TooFar"
+     Target_en_us "Too far away to hold them up."
+     Comment "Toast when a hold-up is refused by range."
+    }
+    CustomStringTableItem "{F8678369812B752F}" {
+     Id "LF-IncidentGm_Kind_holdup"
+     Target_en_us "Hold-up"
+     Comment "Incident kind: one player held another up."
+    }
   }
  }
 }
