@@ -168,6 +168,23 @@ class LF_OnPlayerDamaged : LF_Event
 	}
 }
 
+//! A zone was added, changed, or removed (LF_Zones). m_sRule is "safe", "lawless" or "normal".
+class LF_OnZoneChanged : LF_Event
+{
+	string m_sZone;
+	string m_sRule;
+	bool m_bRemoved;
+
+	static LF_OnZoneChanged Create(string zone, string rule, bool removed)
+	{
+		LF_OnZoneChanged e = new LF_OnZoneChanged();
+		e.m_sZone = zone;
+		e.m_sRule = rule;
+		e.m_bRemoved = removed;
+		return e;
+	}
+}
+
 //------------------------------------------------------------------------------------------------
 //! A player called a service (police, medic, taxi, ...) and at least one receiver is on duty for it.
 //! Dispatch (#250) and any delivery channel subscribe; the caller does not know who listens.
@@ -228,6 +245,24 @@ class LF_OnServiceCallTaken : LF_Event
 		e.m_sPlace = place;
 		e.m_sSummary = summary;
 		e.m_iTakers = takers;
+
+
+//! A fence sold a tool (#271). Published by LF_ShopComponent.Buy after the cash was taken and the
+//! tool delivered, so the serial book (#272) can stamp the tool and name its buyer.
+class LF_OnFenceSale : LF_Event
+{
+	string m_sBuyerUid;
+	string m_sPrefab;
+	int m_iQuantity;
+	int m_iPrice;
+
+	static LF_OnFenceSale Create(string buyerUid, string prefab, int quantity, int price)
+	{
+		LF_OnFenceSale e = new LF_OnFenceSale();
+		e.m_sBuyerUid = buyerUid;
+		e.m_sPrefab = prefab;
+		e.m_iQuantity = quantity;
+		e.m_iPrice = price;
 		return e;
 	}
 }

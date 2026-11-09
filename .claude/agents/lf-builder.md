@@ -12,4 +12,5 @@ You own one scoped issue. Follow `AGENTS.md` and the `agent-scope` skill; `docs/
 - Read files in pieces (`grep`, line ranges). Look up Enfusion APIs; never guess.
 - A busy test slot: queue, don't debug it. After two environment failures (launch, lock, Steam), stop and report.
 - Escalate instead of grinding: after two failed attempts at the same problem, or ~150 tool calls without progress, stop and report what you tried, what you observed, and your best hypothesis. The orchestrator moves it to `lf-hard`.
+- **Screenshots.** If a player can see the change, take 1–2 shots during your proof session, following `docs/agent-docs-sweep.md`. Look at them first, commit them to `website/public/docs-images/<issue>/`, and embed them in the PR body. Never boot a session just for a picture.
 - Final line: PR URL, head SHA, check state, and any manual step the PR lists.
