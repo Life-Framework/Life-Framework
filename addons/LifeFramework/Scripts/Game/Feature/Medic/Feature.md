@@ -28,6 +28,12 @@ body, later a revive action); the downed player's own state is world-visible
    `Finish` today.
 4. `m_bDownedCanBeSearched` gates opening the body's inventory (searched or robbed).
 
+## V1.1 - #256, bleed-out and give-up
+
+`LF_BleedOut` (server clock, shared tick, throttled RplProp copy), `LF_GiveUpController`
+(hold `LF_GiveUp`, server validates), disconnect while downed is death. Expiry and give-up
+call `Finish` with the downer as instigator. Screen/sound effects are vanilla unconsciousness.
+
 ## Next
 
 - #256 bleed-out timer (server-owned), give-up, screen and sound effects on the

@@ -78,7 +78,10 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 	override void OnPlayerDisconnected(int playerId, KickCauseCode cause, int timeout)
 	{
 		if (Replication.IsServer())
+		{
+			LF_BleedOut.OnPlayerDisconnected(playerId);
 			ReleaseDisconnectedPlayer(playerId);
+		}
 
 		super.OnPlayerDisconnected(playerId, cause, timeout);
 	}

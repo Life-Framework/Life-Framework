@@ -122,6 +122,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "die")
 			return true;
+		if (cmd.Verb == "giveup")
+			return true;
 		if (cmd.Verb == "peers")
 			return true;
 		if (cmd.Verb == "shoot")
@@ -858,6 +860,11 @@ class LF_AgentHarness
 			DoDie(cmd);
 			return;
 		}
+		if (cmd.Verb == "giveup")
+		{
+			DoGiveUp(cmd);
+			return;
+		}
 		if (cmd.Verb == "peers")
 		{
 			DoPeers(cmd);
@@ -1092,6 +1099,22 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Press the give-up key for the local player: the same request the key sends (#256). The server
+	//! decides; read the outcome with `state`.
+	protected static void DoGiveUp(LF_AgentCommand cmd)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+		{
+			WriteResult(cmd.Id, "error", "no_controller");
+			return;
+		}
+
+		controller.LF_AskGiveUp();
+		WriteResult(cmd.Id, "ok", "giveup_sent");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: one line of key=value tokens for the harness `state` verb:
 	//! faction, duty, wanted, rank, cash carried, bank balance, job, organization.
 	static string StateLine(IEntity character)
@@ -1172,8 +1195,19 @@ class LF_AgentHarness
 		int downed = 0;
 		if (LF_Downed.IsDowned(character))
 			downed = 1;
-		line += string.Format(" downed=%1 life=%2", downed, LifeStateToken(character));
+		line += string.Format(" downed=%1 life=%2 bleed=%3", downed, LifeStateToken(character), BleedToken(character));
 		return line + string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds of bleed-out this client reads for the character, -1 when it is not downed (#256).
+	protected static int BleedToken(IEntity entity)
+	{
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(entity);
+		if (!character)
+			return -1;
+
+		return character.LF_GetBleedSecondsLeft();
 	}
 
 	//------------------------------------------------------------------------------------------------

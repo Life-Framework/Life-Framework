@@ -209,6 +209,7 @@ the game profile). Hooks:
   `player=N downed=D life=ALIVE|INCAPACITATED|DEAD`: the replicated downed flag and the vanilla
   life state as THIS client sees them, so a late joiner's view of a downed player is readable.
   `state` also reports the own `downed=` and `life=`.
+- `giveup` presses the give-up key for the local player (#256); the server refuses it before `m_fGiveUpDelaySeconds`. `state` reports `bleed=` (seconds left as this client reads them, -1 when not downed).
 - `die` asks the server to kill the local character for real, downed or not (dev gate; `LF_Downed.Finish`), so a session
   can prove the death screen and the hospital respawn. `state` also reports
   `pos=x,y,z`, `bills=` (hospital bills carried), and `tickets=` / `owed=`

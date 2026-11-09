@@ -264,6 +264,7 @@
 - ⚠️ `Equals` uses exact float `==` (no epsilon).
 
 ### Downed state — `Feature/Medic/` (M2 #255, 2026-11-09)
+- ✅ **Bleed-out timer and give-up (#256).** `LF_BleedOut`: a downed player has `m_fBleedOutSeconds` (180) left on a server-owned clock; one shared 1 s tick counts every downed character down and at zero calls `LF_Downed.Finish` (the real death), attributing it to whoever downed them while they are online. The client reads the time left through an RplProp whole-second copy moved only when it drifts 5 s (no per-frame `BumpMe`). Give-up: hold `LF_GiveUp` (X / pad Y) after `m_fGiveUpDelaySeconds` (30); the request is an RPC on the player controller and `LF_BleedOut.GiveUp` refuses unless the character is downed and the delay has passed. Disconnecting while downed is death (`m_bDisconnectWhileDownedKills`). Tests `medic/bleed-out`, `medic/bleed-out-rules`; `session.mjs downed-proof` covers give-up and a full bleed-out. ⚠️ The dimming screen and heartbeat are vanilla unconsciousness only; no custom effect yet.
 - ✅ **Lethal damage downs a player instead of killing them** (config `LF_Medic.conf`
   `m_bDownedEnabled`, flagship on; tests `medic/downed`, `medic/downed-rules`).
   `SCR_CharacterHealthHitZone` (every route to death ends at it: a bullet through the limb
