@@ -62,13 +62,13 @@ class LF_PlayerAccountManager : Managed
 			account.m_iActiveCharacterIdx = record.m_iActiveCharacterIdx;
 			// The faction is the duty role (POLICE only while clocked in). A save from the faction
 			// screen era can hold POLICE off duty, or a civilian on duty: both load as civilian.
-			bool onDutyPolice = record.m_bOnDuty && record.m_eFaction == LF_Faction.POLICE;
-			if (onDutyPolice)
-				account.m_eFaction = LF_Faction.POLICE;
+			bool onDutyRole = record.m_bOnDuty && (record.m_eFaction == LF_Faction.POLICE || record.m_eFaction == LF_Faction.MEDIC);
+			if (onDutyRole)
+				account.m_eFaction = record.m_eFaction;
 			else
 				account.m_eFaction = LF_Faction.CIVILIAN;
 
-			account.m_bOnDuty = onDutyPolice;
+			account.m_bOnDuty = onDutyRole;
 			account.SetWantedLevel(record.m_iWantedLevel);
 
 			// Rank and duty totals are not in this record; the progression payload (save version

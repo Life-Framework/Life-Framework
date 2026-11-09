@@ -5617,11 +5617,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hold-up"
      Comment "Incident kind: one player held another up."
     }
-    CustomStringTableItem "{3C5A9E71D04B82F6}" {
-     Id "LF-IncidentGm_Kind_aim"
-     Target_en_us "Weapon aimed"
-     Comment "Incident kind: one player kept a raised weapon on another."
-    }
     CustomStringTableItem "{71DE75EB8FB361E9}" {
      Id "LF-Sign_LawlessZone_Title"
      Target_en_us "Lawless Area"
@@ -5646,6 +5641,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_LawlessZone_Next"
      Target_en_us "The town square, south and west of here, is a safe zone."
      Comment "Lawless area sign card, Next section."
+    }
+    CustomStringTableItem "{3C5A9E71D04B82F6}" {
+     Id "LF-IncidentGm_Kind_aim"
+     Target_en_us "Weapon aimed"
+     Comment "Incident kind: one player kept a raised weapon on another."
+    }
+    CustomStringTableItem "{10850C37306E78EB}" {
+     Id "LF-Duty_WrongDesk"
+     Target_en_us "You are on duty for another service. Clock out at your own desk first."
+     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
     }
   }
  }
