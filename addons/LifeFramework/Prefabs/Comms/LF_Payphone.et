@@ -1,0 +1,63 @@
+SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastructure/Landlines/PhoneBooth_E/PhoneBooth_E_01.et" {
+ ID "6D3F0A91C27E45B8"
+ components {
+  SCR_SoundDataComponent "{3A9E5C71B2D84F06}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{C4D7219EA05B3F68}" {
+     m_sSoundProject "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
+     m_sSoundEventName "SOUND_PICK_UP"
+    }
+    SCR_AudioSourceConfiguration "{7B20E49D1F6A8C35}" {
+     m_sSoundProject "{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp"
+     m_sSoundEventName "SOUND_RADIO_SIGNAL_2"
+    }
+   }
+  }
+  ActionsManagerComponent "{E15B8A3C6D702F94}" {
+   ActionContexts {
+    UserActionContext "{58C0D2A7B9E13F46}" {
+     ContextName "LF_Payphone"
+     Position PointInfo "{92A6E3F18B4D7C05}" {
+      Offset 0 1.1 0
+     }
+     Radius 1.2
+    }
+   }
+   additionalActions {
+      LF_PayphoneAction "{0F4B7E2A91C6D358}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{B28D5A06E3F71C94}" {
+        Name "#LF-Payphone_ReportCrime"
+        Description "#LF-Payphone_Title"
+       }
+       m_sService "police"
+       m_sSummary "#LF-Payphone_Summary_Crime"
+      }
+      LF_PayphoneAction "{5E91A3C7D20B46F8}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{14C8F7A0B5E93D62}" {
+        Name "#LF-Payphone_ReportEmergency"
+        Description "#LF-Payphone_Title"
+       }
+       m_sService "police"
+       m_sSummary "#LF-Payphone_Summary_Emergency"
+      }
+      LF_PayphoneAction "{A83D60F1E94B27C5}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{D7062B9E4A1F8C53}" {
+        Name "#LF-Payphone_ReportSuspicious"
+        Description "#LF-Payphone_Title"
+       }
+       m_sService "police"
+       m_sSummary "#LF-Payphone_Summary_Suspicious"
+      }
+   }
+  }
+ }
+}
