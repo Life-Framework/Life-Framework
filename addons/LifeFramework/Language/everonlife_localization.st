@@ -5647,6 +5647,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hold-up"
      Comment "Incident kind: one player held another up."
     }
+    CustomStringTableItem "{9B2D4E60A17C35F8}" {
+     Id "LF-IncidentGm_Kind_admin"
+     Target_en_us "Admin action"
+     Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
+    }
   }
  }
 }

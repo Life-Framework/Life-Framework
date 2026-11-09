@@ -11,6 +11,7 @@ class LF_IncidentConfig
 	static const string KIND_CASH = "cash";
 	static const string KIND_DOWNED = "downed";
 	static const string KIND_HOLDUP = "holdup";
+	static const string KIND_ADMIN = "admin";
 	static const string KINDS_ALL = "all";
 
 	static const int DEFAULT_MAX_RECORDS = 2000;
@@ -22,7 +23,7 @@ class LF_IncidentConfig
 	protected static ref LF_IncidentConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
-	[Attribute("all", UIWidgets.Auto, "Event kinds recorded: 'all' or a comma list of death, damage, cash, downed, holdup")]
+	[Attribute("all", UIWidgets.Auto, "Event kinds recorded: 'all' or a comma list of death, damage, cash, downed, holdup, admin")]
 	string m_sKinds;
 
 	[Attribute("2000", UIWidgets.Auto, "Most records kept; the oldest go first")]
