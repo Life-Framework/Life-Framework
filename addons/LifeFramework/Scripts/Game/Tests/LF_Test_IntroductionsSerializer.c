@@ -40,7 +40,7 @@ class LF_Test_IntroductionsSerializer : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(15, version, "the save is written at version 15 (introductions is payload 8)");
+		ctx.Equal(16, version, "the save is written at version 16 (introductions is payload 8)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "introductions");
 		ctx.True(LF_Introductions.Knows(KNOWER_UID, KNOWN_UID), "the pair is known again after the load");
 		ctx.False(LF_Introductions.Knows(KNOWN_UID, KNOWER_UID), "the load does not invent the reverse pair");

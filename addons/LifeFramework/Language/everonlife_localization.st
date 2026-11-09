@@ -5362,6 +5362,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Suspicious person reported"
      Comment "Summary the police radio line shows for a suspicious person phoned in."
     }
+    CustomStringTableItem "{3BD89A2DB71401CE}" {
+     Id "LF-Serial_Title"
+     Target_en_us "Serial number"
+     Comment "Toast title when a fence tool serial is read (#272)."
+    }
+    CustomStringTableItem "{15EDE2A4CCF09558}" {
+     Id "LF-Serial_Read"
+     Target_en_us "Serial: %1"
+     Comment "Toast text when a fence tool serial is read (#272)."
+    }
+    CustomStringTableItem "{0FE08C6138289656}" {
+     Id "LF-Serial_Read_Action"
+     Target_en_us "Read serial"
+     Comment "Action name to read a fence tool serial (#272)."
+    }
   }
  }
 }

@@ -1,6 +1,6 @@
 // red-proof: Observed 2026-11-09 with the same `+= 2` flip: `crime/record-persist` failed `- the subscriber counted one robbery (expected 1, got 2)`. Restored; green. (Restart path stays with wt e2e.)
 // tier: PERSISTENCE
-//! The crime record rides the real save path (the "crimerecord" payload, version 15): a crime
+//! The crime record rides the real save path (the "crimerecord" payload, now save version 16): a crime
 //! published on the bus is counted by the subscriber, comes back after the store is wiped, and
 //! loading twice leaves the same counts.
 class LF_Test_CrimeRecordPersist : LF_Test
@@ -45,7 +45,7 @@ class LF_Test_CrimeRecordPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(15, version, "the save is written at version 15 (crimerecord is payload 15)");
+		ctx.Equal(16, version, "the save is written at version 16 (crimerecord is payload 15)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "crimerecord");
 		ctx.Equal(1, LF_CrimeRecord.Count(UID, LF_WantedReports.OFFENCE_ROBBERY), "the robbery count is back");
 		ctx.Equal(1, LF_CrimeRecord.Total(UID), "no extra rows after the load");

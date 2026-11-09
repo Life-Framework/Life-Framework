@@ -1,6 +1,8 @@
 GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
  ID "F98AAEF7A2B5A130"
  components {
+  LF_SerialComponent "{187DA7E08C9FAAFE}" {
+  }
   LF_QuantityComponent "{5AD2B81F97B9381B}" {
    m_iMaxQuantity 1
   }
@@ -19,6 +21,18 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   }
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
+  }
+  ActionsManagerComponent "{EDAF6C83366F66FB}" {
+   additionalActions {
+    LF_ReadSerialAction "{62C418971E4F9A11}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{31727ACA8D35EE93}" {
+      Name "#LF-Serial_Read_Action"
+     }
+    }
+   }
   }
  }
 }

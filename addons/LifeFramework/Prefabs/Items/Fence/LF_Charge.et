@@ -1,8 +1,22 @@
 GenericEntity : "{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et" {
  ID "C107FEEE71467DFE"
  components {
+  LF_SerialComponent "{DD27C9FE4F6C5B86}" {
+  }
   LF_QuantityComponent "{8D8290D977AC17D6}" {
    m_iMaxQuantity 1
+  }
+  ActionsManagerComponent "{FAE0195B7214D19E}" {
+   additionalActions {
+    LF_ReadSerialAction "{6031BEBBAC77231A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{4369A8FD96B33F47}" {
+      Name "#LF-Serial_Read_Action"
+     }
+    }
+   }
   }
  }
 }
