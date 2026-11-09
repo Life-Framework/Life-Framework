@@ -1914,3 +1914,7 @@
 ## Service calls (#248)
 
 - ✅ `LF_ServiceCalls` routes a call to any service in `Configs/Comms/LF_ServiceCalls.conf` (police, medic, taxi; receiver is on-duty police or a current job). An unknown service is rejected with an error, nobody on duty logs "no answer", otherwise `LF_OnServiceCall` is published on the event bus. No caller yet; the payphone is #247.
+
+## Payphone (#247)
+
+- ✅ `LF_Payphone` (prefab `Prefabs/Comms/LF_Payphone.et`, the base-game phone booth): one action per preset (report a crime, an emergency, someone suspicious) calls the police. The coin comes from carried cash (`m_iPayphoneCost` in `LF_ServiceCalls.conf`), per-player and per-phone cooldowns apply, and nothing is charged when nobody is on duty. The call is `LF_OnServiceCall` on the bus; `LF_ServiceCallDispatch` turns a police call into a radio line to on-duty officers with the phone's place (`LF_Dispatch.RelayCall`), and the dispatch log shows it. Coin and dial-tone sounds play from the booth. Not done: free text, handset animation (the booth has no handset mesh). Placed in DebugWorld at the village booth.

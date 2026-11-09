@@ -35,6 +35,7 @@ class LF_Dispatch
 	static const string FEATURE = "Dispatch";
 	static const string FIELD_SEPARATOR = "|";
 	static const string RADIO_KEY = "#LF-Dispatch_Radio";
+	static const string RADIO_CALL_KEY = "#LF-Dispatch_RadioCall";
 
 	protected static ref array<ref LF_DispatchRecord> s_aLog;
 	protected static int s_iSequence;
@@ -82,6 +83,25 @@ class LF_Dispatch
 			record.m_iRadioed = RadioOfficers(record);
 
 		LF_Debug.Info(FEATURE, string.Format("dispatch #%1 %2 at '%3': officers=%4 alarm=%5 radioed=%6 clothing='%7' vehicle='%8'", record.m_iSequence, offence, record.m_sPlace, officers, AlarmLevel(record.m_bLoud), record.m_iRadioed, record.m_sClothing, record.m_sVehicle));
+		return record;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a witness phoned it in (payphone, #247). Logs the call and radios every on-duty
+	//! officer with the place; no crime report, no suspect description, no alarm.
+	//! param summary What happened: a localization key or text.
+	//! eturn The dispatch record, or null off the server.
+	static LF_DispatchRecord RelayCall(string summary, string place, vector site, int officersOnDuty)
+	{
+		if (!Replication.IsServer())
+			return null;
+
+		LF_DispatchRecord record = Record(summary, string.Empty, string.Empty, place, officersOnDuty);
+		record.m_sTime = ClockText();
+		if (officersOnDuty > 0)
+			record.m_iRadioed = RadioOfficers(record);
+
+		LF_Debug.Info(FEATURE, string.Format("dispatch #%1 phoned in %2 at '%3': officers=%4 radioed=%5", record.m_iSequence, summary, record.m_sPlace, officersOnDuty, record.m_iRadioed));
 		return record;
 	}
 
@@ -204,6 +224,10 @@ class LF_Dispatch
 	//! Suspect wearing ...; on foot." The description is the snapshot; there is no name field.
 	static string RadioLine(string offence, string clothing, string vehicle, string place)
 	{
+		// No clothing and no vehicle: a witness phoned it in, there is no suspect to describe.
+		if (clothing.IsEmpty() && vehicle.IsEmpty())
+			return WidgetManager.Translate(RADIO_CALL_KEY, LF_WantedBoard.ResolveKey(offence), PlaceText(place));
+
 		string description = LF_WantedBoard.PosterDescription(clothing, vehicle, string.Empty);
 		return WidgetManager.Translate(RADIO_KEY, LF_WantedBoard.ResolveKey(offence), PlaceText(place), description);
 	}
