@@ -96,6 +96,9 @@ class LF_WantedReports
 		bool caught = suspect && IsOfficerNear(suspect, LF_PoliceConfig.CatchInActRadius());
 		LF_WantedReportRecord record = Add(playerUid, offence, clothing, vehicle, place, caught);
 		LF_Debug.Info(FEATURE, string.Format("crime report #%1 %2 by %3: clothing='%4' vehicle='%5' place='%6' identified=%7", record.m_iSequence, offence, playerUid, clothing, vehicle, place, caught));
+		if (suspect)
+			LF_Evidence.OpenScene(record.m_iSequence, playerUid, offence, place, suspect.GetOrigin(), System.GetTickCount());
+
 		return record;
 	}
 

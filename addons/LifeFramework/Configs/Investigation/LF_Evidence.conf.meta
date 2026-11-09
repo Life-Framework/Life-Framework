@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5B2E7C94A1D8F063}Configs/Investigation/LF_Evidence.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
