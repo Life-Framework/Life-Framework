@@ -5307,6 +5307,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Suspicious person reported"
      Comment "Summary the police radio line shows for a suspicious person phoned in."
     }
+    CustomStringTableItem "{3C71B0A2D4E5F610}" {
+     Id "LF-Medic_Keybind_GiveUp"
+     Target_en_us "Give up (hold, while downed)"
+     Comment "Keybind: give up and die while downed."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F611}" {
+     Id "LF-Medic_GiveUpTooEarly"
+     Target_en_us "You can give up in %1 seconds from going down."
+     Comment "Toast: give up asked too early."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F612}" {
+     Id "LF-Medic_Downed"
+     Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
+     Comment "Toast: shown to a player who goes down."
+    }
     CustomStringTableItem "{177011F784696AD3}" {
      Id "LF-Item_Drill_Name"
      Target_en_us "Drill"
@@ -5427,91 +5442,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Need help? Use a payphone to call the service."
      Comment "Dispatch board sign card: what to do next."
     }
-    CustomStringTableItem "{98E8442712C32CFF}" {
-     Id "LF-IncidentGm_Title"
-     Target_en_us "Incidents near the camera"
-     Comment "Game Master incident panel title."
-    }
-    CustomStringTableItem "{0532BB8A674B16E7}" {
-     Id "LF-IncidentGm_None"
-     Target_en_us "No incidents here in the last hour."
-     Comment "Game Master incident panel: nothing near the camera."
-    }
-    CustomStringTableItem "{575E08BEF8CB275E}" {
-     Id "LF-IncidentGm_Waiting"
-     Target_en_us "Asking the server..."
-     Comment "Game Master incident panel: before the first answer."
-    }
-    CustomStringTableItem "{D4CB8C3C4F736D4A}" {
-     Id "LF-IncidentGm_Row"
-     Target_en_us "%1, %2 min ago: %3 / %4"
-     Comment "Game Master incident row: kind, minutes ago, subject, other party."
-    }
-    CustomStringTableItem "{3425A63D351F8477}" {
-     Id "LF-IncidentGm_Kind_death"
-     Target_en_us "Death"
-     Comment "Incident kind: death."
-    }
-    CustomStringTableItem "{B96B4DA1873C79D6}" {
-     Id "LF-IncidentGm_Kind_murder"
-     Target_en_us "Murder"
-     Comment "Incident kind: death counted as murder."
-    }
-    CustomStringTableItem "{EC2EA6F457CE29F4}" {
-     Id "LF-IncidentGm_Kind_damage"
-     Target_en_us "Damage"
-     Comment "Incident kind: damage."
-    }
-    CustomStringTableItem "{608D778B3672F032}" {
-     Id "LF-IncidentGm_Kind_cash"
-     Target_en_us "Cash"
-     Comment "Incident kind: cash move."
-    }
-    CustomStringTableItem "{2CBEE27A4CEA58CE}" {
-     Id "LF-IncidentGm_Kind_downed"
-     Target_en_us "Downed"
-     Comment "Incident kind: player downed."
-    }
-    CustomStringTableItem "{71DE75EB8FB361E9}" {
-     Id "LF-Sign_LawlessZone_Title"
-     Target_en_us "Lawless Area"
-     Comment "Title of the quarry lawless-area sign. Printed on the board and shown as Read: Lawless Area."
-    }
-    CustomStringTableItem "{F8D445EFFEC347EC}" {
-     Id "LF-Sign_LawlessZone_What"
-     Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
-     Comment "Lawless area sign card, What section."
-    }
-    CustomStringTableItem "{9651118BDCD77FA5}" {
-     Id "LF-Sign_LawlessZone_How"
-     Target_en_us "Stay out if you came for a quiet day. Carry only what you can afford to lose. Bring friends."
-     Comment "Lawless area sign card, How section."
-    }
-    CustomStringTableItem "{B81DC8476856440E}" {
-     Id "LF-Sign_LawlessZone_Rules"
-     Target_en_us "Outside the quarry fence line the town keeps its rules: killing anyone is murder and the police are told. Inside, the police still answer a call at their own risk. Marked by order of the Everon Constabulary."
-     Comment "Lawless area sign card, Rules section."
-    }
-    CustomStringTableItem "{3524F59375508DB4}" {
-     Id "LF-Sign_LawlessZone_Next"
-     Target_en_us "The town square, south and west of here, is a safe zone."
-     Comment "Lawless area sign card, Next section."
-    }
-    CustomStringTableItem "{3C71B0A2D4E5F610}" {
-     Id "LF-Medic_Keybind_GiveUp"
-     Target_en_us "Give up (hold, while downed)"
-     Comment "Keybind: give up and die while downed."
-    }
-    CustomStringTableItem "{3C71B0A2D4E5F611}" {
-     Id "LF-Medic_GiveUpTooEarly"
-     Target_en_us "You can give up in %1 seconds from going down."
-     Comment "Toast: give up asked too early."
-    }
-    CustomStringTableItem "{3C71B0A2D4E5F612}" {
-     Id "LF-Medic_Downed"
-     Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
-     Comment "Toast: shown to a player who goes down."
-    }
     CustomStringTableItem "{B608F834846FAF73}" {
      Id "LF-Dispatch_Take"
      Target_en_us "Take the call"
@@ -5577,6 +5507,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Beeps when a call comes in for your service while you are on duty. Look at it to read the last calls."
      Comment "Inventory description of the pager."
     }
+    CustomStringTableItem "{98E8442712C32CFF}" {
+     Id "LF-IncidentGm_Title"
+     Target_en_us "Incidents near the camera"
+     Comment "Game Master incident panel title."
+    }
+    CustomStringTableItem "{0532BB8A674B16E7}" {
+     Id "LF-IncidentGm_None"
+     Target_en_us "No incidents here in the last hour."
+     Comment "Game Master incident panel: nothing near the camera."
+    }
+    CustomStringTableItem "{575E08BEF8CB275E}" {
+     Id "LF-IncidentGm_Waiting"
+     Target_en_us "Asking the server..."
+     Comment "Game Master incident panel: before the first answer."
+    }
+    CustomStringTableItem "{D4CB8C3C4F736D4A}" {
+     Id "LF-IncidentGm_Row"
+     Target_en_us "%1, %2 min ago: %3 / %4"
+     Comment "Game Master incident row: kind, minutes ago, subject, other party."
+    }
+    CustomStringTableItem "{3425A63D351F8477}" {
+     Id "LF-IncidentGm_Kind_death"
+     Target_en_us "Death"
+     Comment "Incident kind: death."
+    }
+    CustomStringTableItem "{B96B4DA1873C79D6}" {
+     Id "LF-IncidentGm_Kind_murder"
+     Target_en_us "Murder"
+     Comment "Incident kind: death counted as murder."
+    }
+    CustomStringTableItem "{EC2EA6F457CE29F4}" {
+     Id "LF-IncidentGm_Kind_damage"
+     Target_en_us "Damage"
+     Comment "Incident kind: damage."
+    }
+    CustomStringTableItem "{608D778B3672F032}" {
+     Id "LF-IncidentGm_Kind_cash"
+     Target_en_us "Cash"
+     Comment "Incident kind: cash move."
+    }
+    CustomStringTableItem "{2CBEE27A4CEA58CE}" {
+     Id "LF-IncidentGm_Kind_downed"
+     Target_en_us "Downed"
+     Comment "Incident kind: player downed."
+    }
     CustomStringTableItem "{73C1578BB2FBEF30}" {
      Id "LF-IncidentReport_Title"
      Target_en_us "Report"
@@ -5606,6 +5581,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-IncidentGm_RowFlagged"
      Target_en_us "REPORTED #%1 %2, %3 min ago: %4 / %5 (type !handled %1 when done)"
      Comment "Game Master incident row for a reported incident: number, kind, minutes ago, subject, other party."
+    }
+    CustomStringTableItem "{365AAC156EFDBFE8}" {
+     Id "LF-HoldUp_Action"
+     Target_en_us "Hold up"
+     Comment "Interaction menu entry: raise a hand and call hands up on the person in front of you (needs a weapon in hand)."
+    }
+    CustomStringTableItem "{39C9CE4F50A7A87A}" {
+     Id "LF-HoldUp_Title"
+     Target_en_us "Hold up"
+     Comment "Toast title for a hold-up."
+    }
+    CustomStringTableItem "{4218A5DF1E9BB329}" {
+     Id "LF-HoldUp_HeldUp"
+     Target_en_us "Someone is holding you up. Talk to them."
+     Comment "Toast to the player who was held up."
+    }
+    CustomStringTableItem "{7CD1C4B0BC457BD5}" {
+     Id "LF-HoldUp_Cooldown"
+     Target_en_us "Not again so soon."
+     Comment "Toast when a hold-up is refused by the cooldown."
+    }
+    CustomStringTableItem "{87043105414D2D3D}" {
+     Id "LF-HoldUp_NoWeapon"
+     Target_en_us "Take a weapon in hand first."
+     Comment "Toast when a hold-up is refused because no weapon is in hand."
+    }
+    CustomStringTableItem "{6DB0CF1985285685}" {
+     Id "LF-HoldUp_TooFar"
+     Target_en_us "Too far away to hold them up."
+     Comment "Toast when a hold-up is refused by range."
+    }
+    CustomStringTableItem "{F8678369812B752F}" {
+     Id "LF-IncidentGm_Kind_holdup"
+     Target_en_us "Hold-up"
+     Comment "Incident kind: one player held another up."
+    }
+    CustomStringTableItem "{71DE75EB8FB361E9}" {
+     Id "LF-Sign_LawlessZone_Title"
+     Target_en_us "Lawless Area"
+     Comment "Title of the quarry lawless-area sign. Printed on the board and shown as Read: Lawless Area."
+    }
+    CustomStringTableItem "{F8D445EFFEC347EC}" {
+     Id "LF-Sign_LawlessZone_What"
+     Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
+     Comment "Lawless area sign card, What section."
+    }
+    CustomStringTableItem "{9651118BDCD77FA5}" {
+     Id "LF-Sign_LawlessZone_How"
+     Target_en_us "Stay out if you came for a quiet day. Carry only what you can afford to lose. Bring friends."
+     Comment "Lawless area sign card, How section."
+    }
+    CustomStringTableItem "{B81DC8476856440E}" {
+     Id "LF-Sign_LawlessZone_Rules"
+     Target_en_us "Outside the quarry fence line the town keeps its rules: killing anyone is murder and the police are told. Inside, the police still answer a call at their own risk. Marked by order of the Everon Constabulary."
+     Comment "Lawless area sign card, Rules section."
+    }
+    CustomStringTableItem "{3524F59375508DB4}" {
+     Id "LF-Sign_LawlessZone_Next"
+     Target_en_us "The town square, south and west of here, is a safe zone."
+     Comment "Lawless area sign card, Next section."
     }
   }
  }

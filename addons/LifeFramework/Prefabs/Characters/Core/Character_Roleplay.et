@@ -107,6 +107,15 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
      }
      m_sSlot "org_invite"
     }
+    LF_PlayerRoleAction "{0230FFB1A8EC4D43}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{B8FB10E1DEAAB043}" {
+      Name "#LF-Interact_RoleSlot"
+     }
+     m_sSlot "holdup"
+    }
    }
   }
  }
