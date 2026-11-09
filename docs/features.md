@@ -995,7 +995,7 @@
   `198 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
   to the contraband scope.
 
-### `LF_Murder` / `LF_SafeZone` — `Feature/Crime/` (M1-27, #125)
+### `LF_Murder` / `LF_Zones` — `Feature/Crime/`, `Feature/Moderation/` (M1-27, #125; zones #242)
 - ✅ **Murder makes you wanted** (test `crime/murder`). Every character death
   reaches `LF_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
   player who kills another player or an NPC gets wanted +`m_iMurderWanted`
@@ -1005,7 +1005,7 @@
   it, a self-kill, a destroyed vehicle, and (config
   `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
   wanted suspect. Each decision logs `[LFDebug:Murder]`. No automatic ban.
-- ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_SafeZoneComponent` on
+- ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_ZoneComponent` (rule SAFE) on
   `LF_SafeZone_Square` (`Gamemode.layer`, fountain 115 0 250, radius 30 m as
   the component attribute) registers a flat circle. The modded
   `SCR_CharacterDamageManagerComponent.HijackDamageHandling` swallows a hit
@@ -1015,6 +1015,19 @@
   logs `[LFDebug:SafeZone] refused ...`; the shooter gets a toast at most every
   8 s. Two `safe_zone` notice boards (`Sign_SafeZone_Spawn`,
   `Sign_SafeZone_East`) say so in the world.
+- ✅ **Zone service** (#242, tests `zones/rules`, `safezone/blocks`). The safe zone
+  code is now `LF_Zones` (`Feature/Moderation/LF_Zones.c`): a zone is an entity with
+  `LF_ZoneComponent`, a shape (circle, box turned by entity yaw, polyline corridor
+  with a half-width) and a rule set: SAFE (the damage block above), LAWLESS, NORMAL.
+  `LF_Zones.RuleAt(pos)` answers for every caller; overlaps resolve safe, then
+  lawless, then normal; shapes are flat (XZ). What each rule set does lives in
+  `Configs/Moderation/LF_Zones.conf`: `m_bSafeBlocksPlayerDamage` (on) and
+  `m_bLawlessSuppressesWanted` (off: lawless alone does not switch off wanted; on,
+  `LF_Murder` skips a murder in a lawless zone and logs the reason). A zone added,
+  changed or removed logs `[LFDebug:Zones]` and publishes `LF_OnZoneChanged`. The
+  incident log stamps `m_sZone` (safe/lawless/normal) on each record and in its log
+  line; the stamp is not saved and a loaded record is stamped again from its position.
+  #243 (quarry lawless) is one entity: an `LF_ZoneComponent` with rule LAWLESS.
 - ✅ Both civilian spawn points stand on the square (the second moved from
   170 0 199, by the quarry, to 121 0 253); `safezone/blocks` asserts every
   civilian spawn point is inside a zone. The hospital wake (M1-26) is not a

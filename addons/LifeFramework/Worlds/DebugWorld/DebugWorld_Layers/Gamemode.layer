@@ -22,7 +22,8 @@ SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
 }
 GenericEntity LF_SafeZone_Square {
  components {
-  LF_SafeZoneComponent "{EBAFCFFFF653DC56}" {
+  LF_ZoneComponent "{EBAFCFFFF653DC56}" {
+   m_eRule 1
    m_fRadius 30
   }
  }

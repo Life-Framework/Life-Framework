@@ -289,9 +289,9 @@ modded class SCR_ChimeraCharacter
 		SCR_DamageContext context = new SCR_DamageContext(EDamageType.KINETIC, 1000, hitPosDirNorm, target, head, Instigator.CreateInstigator(this), null, -1, -1);
 		context.damageSource = this;
 
-		int refusedBefore = LF_SafeZone.GetRefusedCount();
+		int refusedBefore = LF_Zones.GetRefusedCount();
 		damage.HandleDamage(context);
-		int refused = LF_SafeZone.GetRefusedCount() - refusedBefore;
+		int refused = LF_Zones.GetRefusedCount() - refusedBefore;
 		int alive = 1;
 		if (damage.GetState() == EDamageState.DESTROYED)
 			alive = 0;
