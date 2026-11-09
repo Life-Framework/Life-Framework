@@ -6,7 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Play DebugWorld from the release branch. Read docs/playtest.md in your checkout first.
+        Play the M1 town on the Workshop-hosted server. Read the playtest guide first:
+        https://github.com/Life-Framework/Life-Framework/blob/main/docs/playtest.md
         One issue per problem or idea. This text is pasted to an agent as the next build prompt.
   - type: dropdown
     id: role
