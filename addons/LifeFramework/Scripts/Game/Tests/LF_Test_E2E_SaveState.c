@@ -149,6 +149,18 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 		LF_WantedReports.Add(ACCOUNT_UID, LF_WantedReports.OFFENCE_ROBBERY, "#AR-Jacket_M88", "", "Fuel station", true);
 
+		// A logged evidence bag (#269) must be on file after the restart.
+		LF_EvidenceLockerRow lockerRow = new LF_EvidenceLockerRow();
+		lockerRow.m_iNumber = 1;
+		lockerRow.m_iReport = 77;
+		lockerRow.m_sOffence = LF_WantedReports.OFFENCE_ROBBERY;
+		lockerRow.m_sPlace = "Fuel station";
+		lockerRow.m_sKind = LF_Evidence.KIND_CASING;
+		lockerRow.m_sOfficerUid = OFFICER_UID;
+		array<ref LF_EvidenceLockerRow> lockerRows = {};
+		lockerRows.Insert(lockerRow);
+		LF_EvidenceLocker.ApplyAll(lockerRows);
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -252,6 +264,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		VerifyMedicInventory(ctx);
 		ctx.Equal(1, LF_WantedReports.CountFor(ACCOUNT_UID), "e2e wanted report present after the save load");
 		ctx.True(LF_WantedReports.IsIdentified(ACCOUNT_UID), "e2e wanted report stays identified after the save load");
+		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
 		IEntity body = LF_TestCharacterFixture.Spawn(ctx);
 		if (body)
 		{

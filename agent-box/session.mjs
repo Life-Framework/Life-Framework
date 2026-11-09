@@ -1221,6 +1221,46 @@ async function runMedicProof() {
   return fails.length ? 1 : 0;
 }
 
+// M2 #252 on a running `up --clients 2` session: client 2 clocks in at the hospital desk and its
+// own client reads a radio on the medic frequency (the replicated tuning); client 1, a civilian,
+// carries no radio. A shot of client 2 after clock-in.
+export const MEDIC_RADIO_KHZ = 42000;
+
+export function judgeRadio(onDuty, civilian) {
+  const fails = [];
+  if (!/radios=[1-9]/.test(onDuty)) fails.push(`the clocked-in medic reads no radio: ${onDuty}`);
+  if (!new RegExp(`f=(.*,)?${MEDIC_RADIO_KHZ}(,|$)`).test(onDuty)) fails.push(`the medic radio is not on ${MEDIC_RADIO_KHZ} kHz as the client reads it: ${onDuty}`);
+  if (!/radios=0/.test(civilian)) fails.push(`the civilian reads a radio: ${civilian}`);
+  return fails;
+}
+
+async function runRadioProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  on(2, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+  wait(2500);
+  on(2, { verb: "look" });
+  const clockIn = on(2, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
+  wait(3500);
+  const onDuty = on(2, { verb: "radio" }, 10000).detail;
+  const civilian = on(1, { verb: "radio" }, 10000).detail;
+  on(2, { verb: "capture", mode: "ui", name: "m2_252_radio_client2" }, 25000);
+  const fails = judgeRadio(onDuty, civilian);
+  if (clockIn.status !== "ok") fails.unshift(`clock in returned ${clockIn.status} ${clockIn.detail}`);
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "radio proof: FAIL" : "radio proof: PASS (the medic's radio reads the service frequency on the client, the civilian has none)");
+  return fails.length ? 1 : 0;
+}
+
 // The ticket deadlines the server will run with (Configs/Police/LF_Police.conf).
 export function ticketDeadlines(confText) {
   const first = Number(/m_iTicketFirstDeadline\s+(\d+)/.exec(confText)?.[1] ?? 1800);
@@ -1657,6 +1697,7 @@ async function main(argv) {
   if (cmd === "downed-proof") return runDownedProof();
   if (cmd === "carry-proof") return runCarryProof();
   if (cmd === "medic-proof") return runMedicProof();
+  if (cmd === "radio-proof") return runRadioProof();
   if (cmd === "roster") {
     const ids = rest.map(Number).filter((n) => Number.isInteger(n) && n > 0);
     if (!ids.length) throw new Error("roster <player id> [<player id> ...]");
@@ -1677,7 +1718,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|radio-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 

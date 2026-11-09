@@ -23,3 +23,18 @@ the spawned entity comes out with no components at all.
 
 Not done: evidence is not saved (a restart clears scenes and what lies about); a bag in an inventory
 loses its stamp over a restart until the locker (#269) logs it.
+
+## Evidence locker (#269)
+
+- `Prefabs/Investigation/LF_EvidenceLocker.et` stands at the police station (`Roadmap_Police_EvidenceLocker`
+  in `Street_Police.layer`, beside the armory). An on-duty officer picks "Log evidence bags": every
+  stamped evidence bag they carry is opened, each piece goes through `LF_FenceSerials.IdentifyItem`
+  (a serial that names its buyer identifies that account's open wanted reports), a row records it
+  against the crime report (`LF_EvidenceLocker.CountFor(report)`), and the bag is consumed. The locker
+  takes nothing else. "Read case file" lists the newest rows (police only).
+- The case file is saved as the `evidencelocker` payload (save version 18). Rows are plain values: report,
+  offence, place, kind, minutes, prefab, serial, identified. The piece itself is not kept.
+- Forced entry is `LF_Breach` (the locker is a breach target `LF_EvidenceLocker`): arming a charge
+  already files the break-in report. Once forced open, anyone but on-duty police can "Burn the case
+  file", which destroys the logged rows.
+- Not done: the wanted board does not yet print "evidence on file" beside a report; reading is by the locker.

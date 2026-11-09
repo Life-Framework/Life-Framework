@@ -38,6 +38,9 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
    second player robs the fuel till: the officer gets the radio dispatch, reads
    the wanted board, arrests the robber, and the robber goes to the cell. Clock
    out at the same desk to swap back.
+   The duty kit includes a radio tuned to the police frequency (41000 kHz; the
+   medic kit is on 42000). Two officers hear each other on it; a civilian
+   does not.
 7. **Organization and hideout.** Found an organization at the registry desk,
    deposit cash, and buy the processing upgrade. Take the alley yard lease, open
    the hideout door, and store something in the stash. Run contraband from the
@@ -88,6 +91,8 @@ log that back them stay on the server and invisible.
 - **Admin actions.** As Game Master, teleport and heal a player, or type `!wadd POLICE <uid>`: each appears as an "Admin action" row with your name in the Game Master incident view. Non-admins never get that view.
 - **Aim intent.** Hold a raised weapon on another player for 3 s: one "Weapon aimed" row in the Game Master incident view, then at most one more per 3 s of continuous aim. Needs two clients on a dedicated server to prove the aim direction replicates.
 - **Lawless quarry.** The quarry south of the dirt lane (about 100 m north of the square) is the one marked lawless area. Two red *Lawless Area* signs stand at the lane and at the east edge; read one for the rules. For now the zone only labels incidents (`lawless` in the incident log) and keeps wanted on; there is no fence or gate yet. Demo: `node agent-box/session.mjs quarry-proof`.
+
+- **Evidence.** After a crime, shots near it leave casings and dropped items get a paper marker. Clock in, pick "Bag as evidence" on one, then use "Log evidence bags" at the locker beside the armory in the police station. If the piece was a serial'd fence tool, the buyer's wanted card now shows their name. "Read case file" lists what is on file.
 
 ### Known rough edges
 

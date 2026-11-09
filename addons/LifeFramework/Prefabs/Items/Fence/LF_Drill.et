@@ -22,7 +22,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{D83CA877ADEF48C9}Assets/Props/Industrial/BenchDrill_01/BenchDrill_01.xob"
   }
-  ActionsManagerComponent "{DBE331E5D437CD20}" {
+  ActionsManagerComponent "{508AB5952B584B2E}" {
    additionalActions {
     LF_ReadSerialAction "{46458E87FF999E52}" {
      ParentContextList {

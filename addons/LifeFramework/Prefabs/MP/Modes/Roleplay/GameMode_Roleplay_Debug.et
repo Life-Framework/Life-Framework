@@ -71,6 +71,7 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
        "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et"
        "{976BD4B5B482A8D9}Prefabs/Items/Roleplay/LF_PoliceCarKey.et"
        "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et"
+       "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.et"
       }
      }
      LF_FactionLoadout "{60769DBAD1279690}" {
@@ -88,6 +89,10 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
         m_rPrefab "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
+       LF_DefaultLoadoutItem "{3C7E19A4D5B20F68}" {
+        m_rPrefab "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
       }
       m_aDirectItems {
        "{46FD263F0F368A92}Prefabs/Items/Equipment/Kits/MedicalKit_01/MedicalKit_01_base.et"
@@ -97,6 +102,7 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
        "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
        "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
        "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et"
+       "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.et"
       }
      }
     }

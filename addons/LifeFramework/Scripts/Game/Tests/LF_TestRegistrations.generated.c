@@ -70,6 +70,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_E2EInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_EvidenceLockerPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_FruitCatcherRounds(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSwitchGuards(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BuildingPlacementRange(), LF_TestTier.LOGIC);
@@ -226,6 +227,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceCalls(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ServiceRadio(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceTake(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC);
