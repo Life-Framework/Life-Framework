@@ -5427,6 +5427,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Need help? Use a payphone to call the service."
      Comment "Dispatch board sign card: what to do next."
     }
+    CustomStringTableItem "{98E8442712C32CFF}" {
+     Id "LF-IncidentGm_Title"
+     Target_en_us "Incidents near the camera"
+     Comment "Game Master incident panel title."
+    }
+    CustomStringTableItem "{0532BB8A674B16E7}" {
+     Id "LF-IncidentGm_None"
+     Target_en_us "No incidents here in the last hour."
+     Comment "Game Master incident panel: nothing near the camera."
+    }
+    CustomStringTableItem "{575E08BEF8CB275E}" {
+     Id "LF-IncidentGm_Waiting"
+     Target_en_us "Asking the server..."
+     Comment "Game Master incident panel: before the first answer."
+    }
+    CustomStringTableItem "{D4CB8C3C4F736D4A}" {
+     Id "LF-IncidentGm_Row"
+     Target_en_us "%1, %2 min ago: %3 / %4"
+     Comment "Game Master incident row: kind, minutes ago, subject, other party."
+    }
+    CustomStringTableItem "{3425A63D351F8477}" {
+     Id "LF-IncidentGm_Kind_death"
+     Target_en_us "Death"
+     Comment "Incident kind: death."
+    }
+    CustomStringTableItem "{B96B4DA1873C79D6}" {
+     Id "LF-IncidentGm_Kind_murder"
+     Target_en_us "Murder"
+     Comment "Incident kind: death counted as murder."
+    }
+    CustomStringTableItem "{EC2EA6F457CE29F4}" {
+     Id "LF-IncidentGm_Kind_damage"
+     Target_en_us "Damage"
+     Comment "Incident kind: damage."
+    }
+    CustomStringTableItem "{608D778B3672F032}" {
+     Id "LF-IncidentGm_Kind_cash"
+     Target_en_us "Cash"
+     Comment "Incident kind: cash move."
+    }
+    CustomStringTableItem "{2CBEE27A4CEA58CE}" {
+     Id "LF-IncidentGm_Kind_downed"
+     Target_en_us "Downed"
+     Comment "Incident kind: player downed."
+    }
   }
  }
 }

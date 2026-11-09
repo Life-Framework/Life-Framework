@@ -59,6 +59,14 @@
 - ⚠️ Cash given, robbed, or picked up appear only as `OnMoneyMoved` publish points
   land (#330); today the ATM is wired. No query UI yet: admin tooling reads it.
 
+### Game Master incident view — `Feature/Moderation/LF_IncidentGm.c`, `UI/GM/LF_IncidentGmPanel.c` (#240, 2026-11-09)
+- ✅ In vanilla Game Master EDIT mode (modded `SCR_EditModeEditorUIComponent`), a panel plus a marker
+  per incident cell (25 m) near the camera, last hour, 400 m. The marker nearest the screen centre is
+  selected and its rows are listed (kind, minutes ago, who / whom, amount). The client sends only its
+  camera position by RPC; the server checks the ADMINISTRATOR role on every request (radius, window and
+  40-row cap are fixed server side). A non-admin gets nothing and `[LFDebug:IncidentGM]` logs the
+  refusal. Nothing persists. Test `incident/gm-query`. Manual: see the PR.
+
 ### `LF_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `LF_PlayerAccount`, spawns the active
   character's prefab at a spawn point for the account's role (CIVILIAN, or

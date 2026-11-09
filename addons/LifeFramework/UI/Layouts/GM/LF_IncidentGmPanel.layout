@@ -1,0 +1,57 @@
+FrameWidgetClass "{ED59E466362DCB6B}" {
+ Name "LF_IncidentGmPanel"
+ Slot FrameWidgetSlot "{CB5E7C85E57D9AE4}" {
+  Anchor 0 0 0 0
+  PositionX 22
+  OffsetLeft 22
+  PositionY 110
+  OffsetTop 110
+  SizeX 380
+  OffsetRight -402
+  SizeY 260
+  OffsetBottom -370
+ }
+ components {
+  LF_IncidentGmPanelUI "{8E394B7185107153}" {
+  }
+ }
+ {
+  ImageWidgetClass "{0816A3B7A511335F}" {
+   Name "Background"
+   Slot FrameWidgetSlot "{0203760D39D97B58}" {
+    Anchor 0 0 1 1
+   }
+   Color 0.007 0.012 0.014 0.85
+  }
+  TextWidgetClass "{FAFD1216CB1E9B24}" {
+   Name "Title"
+   Slot FrameWidgetSlot "{D481EF05D7A7634F}" {
+    Anchor 0 0 1 0
+    PositionX 12
+    OffsetLeft 12
+    PositionY 8
+    OffsetTop 8
+    SizeY 24
+    OffsetRight 12
+    OffsetBottom -32
+   }
+   Text ""
+   "Font Size" 16
+   "Min Font Size" 12
+  }
+  TextWidgetClass "{DAD3B1D3455D7793}" {
+   Name "Body"
+   Slot FrameWidgetSlot "{109A2FD617B2AD80}" {
+    Anchor 0 0 1 1
+    OffsetLeft 12
+    OffsetTop 40
+    OffsetRight 12
+    OffsetBottom 8
+   }
+   Text ""
+   "Font Size" 13
+   "Min Font Size" 10
+   Wrap 1
+  }
+ }
+}
