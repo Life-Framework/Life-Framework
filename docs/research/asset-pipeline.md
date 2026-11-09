@@ -3,6 +3,10 @@
 How an agent should take a new static inventory item (first target: a bowling
 ball) from nothing to a held, dropped, inventoried object in game, and what
 blocks it. Researched 2026-11-08 on this PC. Nothing here is built yet.
+The work is tracked in the Development epic
+[#339](https://github.com/Life-Framework/Life-Framework/issues/339). Paid
+prompt-to-3D services are compared in
+[Paid prompt-to-3D services](#paid-prompt-to-3d-services) (2026-11-09).
 
 Sources are numbered `[n]` and listed at the end. Facts tagged **(local)**
 were read on this machine, in the installed Arma Reforger Tools, the
@@ -148,6 +152,8 @@ CC0 but stylised low-poly [13], a poor fit for this game's art.
 All of them return dense triangle meshes with auto-generated atlases that
 need retopology, UV cleanup, real-world scaling, and a collider before
 Enfusion. For a bowling ball that is more work than writing the sphere.
+For props that are hard to script, a paid service can be worth it; see
+[Paid prompt-to-3D services](#paid-prompt-to-3d-services).
 
 ## Texturing
 
@@ -307,6 +313,151 @@ screenshots omit UI, so the inventory preview must be shot from a game client.
   blobs. A sourced CC0 or CC-BY asset keeps its original download URL and
   licence in `tools/assets/<name>/SOURCE.md` and in the credits.
 
+## Paid prompt-to-3D services
+
+Researched 2026-11-09 for props that are too detailed to script (payphone,
+medkit, vending machine). No account was created and nothing was paid.
+Prices and terms change often, so recheck them on the day you sign up.
+Quality notes are reviews and vendor claims, not our own tests; the trial
+below is how we get our own. This section is research, not legal advice.
+
+### Who is still in business
+
+| Service | State on 2026-11-09 | Source |
+|---|---|---|
+| CSM (csm.ai) | Google acquired the company around 2026-01-24 and the team moved to DeepMind [29]. Whether the Cube service still runs is unconfirmed; do not build on it | [29] |
+| Luma Genie | Luma sunset Flythroughs on 2026-01-01 [30]. No source confirms Genie itself shut down, and no Genie API was found; status unclear, so skip it | [30] |
+| Kaedim | Human-in-the-loop artists, quote-only pricing, no self-serve API | [22] |
+| Sloyd | Parametric templates; redistribution allowed on Pro only | [22] |
+| Stability AI 3D (Stable Fast 3D, SPAR3D) | Cheap API; the Community Licence carries a USD 1M revenue cap and a "Powered by Stability AI" attribution rule that needs a legal read before shipping | [22] |
+| 3D AI Studio | Reseller of Meshy, Tripo, Rodin, and Hunyuan behind one API, about USD 0.34 a model; terms allow redistribution but it trains on outputs | [22] |
+| Meshy, Tripo, Rodin, Hunyuan (Tencent Cloud) | Active; compared below | |
+
+### The four serious candidates
+
+| | Meshy | Tripo | Rodin (Hyper3D) | Hunyuan 3D on Tencent Cloud |
+|---|---|---|---|---|
+| Hard-surface quality | Best-rated API in reviews; good silhouettes, soft edges on small detail (vendor and review claims) | Strong geometry, runner-up to Meshy in reviews | Highest-detail outputs in reviews; quad presets aimed at production | Hunyuan 3.x quality is competitive in public comparisons (unverified for props) |
+| Topology | `topology: quad` or `triangle` with remesh; `target_polycount` 100 to 300k [16] | `face_limit` (default 10k), `smart_low_poly` 500 to 20k, quad up to 10k [17] | Quad presets 4k, 8k, 18k, 50k faces [18] | `FaceCount` option; Smart Topology post-process (50 credits) [23] |
+| UVs and PBR | Auto UV atlas; `enable_pbr` adds metallic, roughness, normal [16] | `pbr` flag; texture task 10 to 30 credits [24] | PBR maps (base colour, roughness, metallic, normal) per vendor | `EnablePBR` (+10 credits); UV Unfold post-process (10) [23] |
+| Image and multi-view input | Image-to-3D and multi-image | Image and multi-view (20 to 30 credits) [24] | Image and multi-image | `MultiViewImages` option (+10) [23] |
+| API and unattended use | Bearer key, async tasks; best documented. Free plan has no API [16] | Bearer key, webhook callbacks, per-task concurrency quotas [24] | API on the Business plan only (USD 120/month, 120 RPM) [18] | Tencent Cloud API key (signed requests), Frankfurt endpoint `hunyuan.eu-frankfurt.tencentcloudapi.com` [25] |
+| Price per generation | About 35 to 45 credits with refine and remesh; Pro about USD 20 for 1,000 credits, so about USD 0.70 to 0.90 [16] | USD 0.01 a credit; generation 10 to 30, texture 10 to 30, retopology 10 to 40, so about USD 0.40 to 1.00 [24] | Creator USD 30 (about 60 models, no API); Business USD 120 (about 416 models) [18] | USD 0.02 a credit postpaid, 0.015 prepaid; Normal 25 + PBR 10 = about USD 0.50 to 0.70; Smart Topology adds USD 0.75 to 1.00 [23] |
+| Output ownership (paid) | "Private and customer owned" on Pro and above [16] | Paid users hold all rights (ToS 5.2.2) [17] | Plan-dependent; ToS section 5: "we will not limit your use of such Output, subject to any restrictions" [26] | Tencent assigns all its rights in Output to the customer (TOS 6.3(c)) [27] |
+| Attribution or labels | None on paid plans | None on paid plans | None stated | **Published Output must be labelled AI-generated** (6.4(f)); Tencent may add watermarks (6.3(d)) [27] |
+| Revenue cap | None found | None found | None found | None in the cloud TOS (the 1M MAU clause is in the open-weights licence only) |
+| EU/UK | Available | Available | Available; Delaware law | **Available.** The cloud TOS excludes only sanctioned territories (11.1(b)); the EU/UK exclusion is in the open-weights licence, not the paid API [14][27] |
+| Data retention and training | API assets kept at most 3 days on most tiers [31]; reported to train on data unless you opt out (unverified) [22] | Paid inputs and outputs not used for training [17] | May use prompts and outputs to "improve our services" (section 5) [26] | Generated content kept up to 7 days [28]; Tencent keeps a perpetual right to use Content to improve the Services (6.3(c)) [27] |
+| Free tier for a trial | 100 credits, web only, outputs CC BY and public [16] | Free credits, outputs owned by Tripo [17] | 10 private assets, credits USD 1.50 each [18] | **200 credits once, through the API** (about 5 to 8 models) [23] |
+
+**What this means for redistribution.** On the paid tiers of Meshy, Tripo,
+and Tencent, the provider gives us whatever rights exist in the output, so
+the files can sit in the MIT repo and in the APL Workshop build. Two caveats
+apply to all of them. Pure AI output may not be copyrightable, so our MIT or
+APL licence may not bind others who copy those meshes; that does not stop us
+shipping them. And every provider forbids using outputs to build a competing
+AI model, which does not affect a game mod. Free-tier outputs are out: Meshy
+free is CC BY and public, Tripo free belongs to Tripo. Record the provider,
+plan, task id, prompt, and date for every shipped model in
+`tools/assets/<name>/SOURCE.md`, and mark it AI-generated in the credits.
+Tencent requires that label; it is good practice for the others.
+
+### How a paid service slots into the pipeline
+
+It replaces stages 2 to 4 and keeps everything after them.
+
+1. **Spec** (stage 1) adds a reference image when we have one and a
+   triangle budget.
+2. **Generate.** `tools/assets/providers/<service>.mjs` submits the job with
+   the API key from the environment, polls or takes the webhook, and
+   downloads GLB plus PBR maps into `tmp/asset-<name>/raw/` before the
+   provider deletes them (Meshy 3 days, Tencent 7). The raw download never
+   enters git.
+3. **Clean in headless Blender.** Import GLB, scale to the spec's real
+   dimensions, set the origin, delete loose parts and interior faces,
+   recalculate normals. If the provider's quad remesh hits the budget, keep
+   it; otherwise decimate or remesh in Blender. Re-unwrap when the provider's
+   atlas is fragmented.
+4. **Bake high to low.** Cycles "Selected to Active" from the raw mesh onto
+   the cleaned one: base colour, roughness, metallic (via Emit), normal, AO.
+   Pack to `_BCR`/`_NMO` as in [Texturing](#texturing). Rebaking also fixes
+   AI textures with baked-in lighting only partly; the trial measures it.
+5. **Stages 6 to 17 unchanged.** Colliders, renders, EBT QA, import, prefab,
+   agent-box film.
+
+### Cost for about 50 props
+
+Assume three attempts per prop before one passes, so about 150 generations
+with PBR and remesh.
+
+| Service | Cash for 150 generations | Notes |
+|---|---|---|
+| 3D AI Studio | about USD 50 | Cheapest; trains on outputs |
+| Tripo | about USD 60 to 150 | Pay as you go |
+| Tencent Hunyuan | about USD 75 to 105, or 190 to 260 with Smart Topology | Prepaid packs cheaper |
+| Meshy | about USD 105 to 135 | Pro covers about 25 generations a month, so a higher tier or credit packs for a burst |
+| Rodin | USD 120 for one Business month | Only plan with an API |
+
+The cash is small next to the cleanup. At 30 to 60 agent-minutes per prop
+for steps 3 to 5 and a short maintainer look at each film, 50 props cost
+roughly 25 to 50 agent-hours. That number decides whether the service pays
+off, which is why the trial times it.
+
+### Trial plan
+
+**First: Meshy** (one month of Pro, about USD 20, paid by the maintainer
+when ready). It has the most complete API for unattended use: quad remesh,
+polycount target, PBR flag, image input, and customer-owned output on
+paid plans. Check its training opt-out on day one.
+
+One Tencent clause needs a read before Hunyuan goes past the trial. TOS
+5.4(e) prohibits "automated systems to extract data or Output from the
+Services". The documented API is presumably exempt, but confirm with
+Tencent support before an agent drives it in bulk [27].
+
+**Free comparisons, run before paying.** Tencent Hunyuan's 200 API credits
+(the only free tier that exercises the real API, from the Frankfurt
+endpoint) and Tripo's free credits. Free outputs are for judging only and
+are deleted after the trial.
+
+**Props and budgets.**
+
+| Prop | Real size | LOD0 triangles | What it tests |
+|---|---|---|---|
+| Bowling ball | 0.216 m diameter, 7 kg | 2,000 | Baseline against the procedural ball; finger holes; glossy material |
+| Payphone | about 0.25 x 0.20 x 0.55 m housing (wall unit) | 8,000 | Hard surfaces, keypad, cord, printed signage |
+| Medkit | about 0.30 x 0.20 x 0.10 m case | 3,000 | Clean box with rounded edges, a cross decal, latches |
+
+For each prop: one text prompt and one image prompt, three attempts each,
+the same prompts on every service.
+
+**Pass (all must hold):**
+
+- Silhouette reads as the object in an agent-box world shot at 2 m, judged
+  by the maintainer from the film.
+- After cleanup: dimensions within 5% of the spec, LOD0 within the
+  triangle budget, no non-manifold edges, no loose interior parts,
+  zero inverted normals.
+- The rebaked `_BCR` has no baked-in light or shadow (no strong
+  one-directional brightness gradient on a flat-coloured part) and no
+  visible seams at 1 m.
+- Text is legible or absent. Garbled signage on the payphone fails unless
+  it can be replaced with a decal.
+- Cleanup and bake take at most 60 agent-minutes per prop, measured.
+- Import passes stage 13 with no placeholder material and a working
+  collider.
+- The paid plan's terms on the day still say customer-owned output with no
+  attribution beyond our own credits line.
+
+**Fail fast:** a service that fails the bowling ball against the
+procedural baseline or garbles the medkit's box is dropped. If no service
+passes the payphone, paid generation stays a blockout tool and detailed
+props come from CC0 sources or a commissioned artist.
+
+**Output of the trial:** a table per service and prop with the metrics
+above, the cleanup minutes, the cash spent, and the filmed clips, appended
+to this doc and linked from epic #339.
+
 ## Risks and unknowns
 
 1. **First FBX registration needs a click** (spike). Next spike: call
@@ -393,3 +544,13 @@ Startup Parameters, FBX Import, Prop Creation.
 19. Blender manual, Cycles baking: https://docs.blender.org/manual/en/latest/render/cycles/baking.html
 20. StableMaterials: https://huggingface.co/gvecchio/StableMaterials
 21. EveronLife Axe meta (community example of `UTM_` + `ItemFireView`): https://github.com/EveronLife/EveronLife/blob/main/src/Assets/Tools/Axe/Axe.xob.meta
+22. Vendor survey of 2026-11-09 by a research helper whose page URLs were not kept. Treat these rows as unverified until rechecked: Sloyd https://www.sloyd.ai/pricing, Kaedim https://www.kaedim3d.com, Stability AI https://platform.stability.ai/pricing and https://stability.ai/community-license-agreement, 3D AI Studio https://www.3daistudio.com, Meshy https://www.meshy.ai/terms-of-use
+23. Tencent Cloud, HY 3D Global billing: https://www.tencentcloud.com/document/product/1284/75281
+24. Tripo API pricing and auth: https://developers.tripo3d.ai/
+25. Tencent Cloud Hunyuan API endpoints (Frankfurt): https://www.tencentcloud.com/document/api/1284/75533
+26. Hyper3D terms of service: https://hyper3d.ai/legal/terms
+27. Tencent Cloud HY 3D Global API Terms of Service (updated 2026-03-10): https://intl.cloud.tencent.com/document/product/301/78149
+28. Tencent Cloud HY 3D data processing terms (7-day retention): https://www-sg.tencentcloud.com/document/product/1284/75301
+29. Gunderson Dettmer, Common Sense Machines acquired by Google: https://www.gunder.com/en/news-insights/client-news/gunderson-dettmer-represents-common-sense-machines-in-acquisition-by-google
+30. Radiance Fields, Luma AI sunsets Flythroughs: https://radiancefields.com/tags/luma-ai
+31. Meshy API asset retention: https://docs.meshy.ai/api/asset-retention
