@@ -176,6 +176,7 @@ class LF_CharacterATMComponent : ScriptComponent
 		{
 			account.Deposit(amount);
 			LF_Debug.Info("ATM", string.Format("deposit +%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
+			LF_EventBus.Publish(LF_OnMoneyMoved.Create(playerUid, amount, "atm-deposit"));
 			return LF_EATMRefusal.NONE;
 		}
 
@@ -223,6 +224,7 @@ class LF_CharacterATMComponent : ScriptComponent
 		if (paid == amount)
 		{
 			LF_Debug.Info("ATM", string.Format("withdraw -%1 -> balance %2 (uid %3)", amount, account.GetBalance(), playerUid));
+			LF_EventBus.Publish(LF_OnMoneyMoved.Create(playerUid, amount, "atm-withdraw"));
 			return LF_EATMRefusal.NONE;
 		}
 

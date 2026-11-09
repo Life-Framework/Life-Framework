@@ -727,6 +727,7 @@ class LF_VehicleOwnership
 		cashCharged = cashDebit;
 		reasonKey = "#EL-Vehicle_Bought";
 		LF_Debug.Log("Vehicle", string.Format("purchased %1 owner=%2 id=%3 plate=%4 cash=%5 bank=%6", catalogPrefab, buyerUid, id, plate, cashDebit, bankDebit));
+		LF_EventBus.Publish(LF_OnVehicleBought.Create(buyerUid, catalogPrefab, cashDebit + bankDebit));
 		return true;
 	}
 

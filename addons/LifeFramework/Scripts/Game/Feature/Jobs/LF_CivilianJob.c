@@ -546,6 +546,7 @@ class LF_CivilianJob
 
 		AddExperience(playerUid, XpPerRun());
 		LF_Debug.Log("Jobs", string.Format("run paid %1 to %2", amount, playerUid));
+		LF_EventBus.Publish(LF_OnJobCompleted.Create(playerUid, finished, amount));
 		return amount;
 	}
 

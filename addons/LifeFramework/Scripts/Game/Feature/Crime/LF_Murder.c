@@ -85,6 +85,14 @@ class LF_Murder
 				victimWanted = victimAccount.GetWantedLevel();
 		}
 
+		if (victimPlayerId > 0)
+		{
+			string killerPlayerUid;
+			if (killerPlayerId > 0 && !killerIsVictim)
+				killerPlayerUid = killerUid;
+			LF_EventBus.Publish(LF_OnPlayerKilled.Create(victimLabel, killerPlayerUid));
+		}
+
 		string skip = SkipReason(killerPlayerId, victimPlayerId, isCharacter, killerIsVictim, killerOnDuty, victimWanted, OfficerExempt());
 		if (!skip.IsEmpty())
 		{
