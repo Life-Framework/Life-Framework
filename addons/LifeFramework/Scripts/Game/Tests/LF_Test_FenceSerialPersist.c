@@ -1,6 +1,6 @@
 // red-proof: Observed 2026-11-09 with `--only LF_Test_FenceSerialPersist`: commenting out `LF_FenceSerials.ApplyAll(serialRows)` in the load failed `- the serial is back` and `- no extra rows after the load (expected 1, got 0)`. Restored; green. Restart path stays with wt e2e.
 // tier: PERSISTENCE
-//! The serial book rides the real save path (the "fenceserials" payload, save version 16): a
+//! The serial book rides the real save path (the "fenceserials" payload, save version 16; fenceserials is payload 16, incidentflags 17): a
 //! booked serial still names its buyer after the store is wiped, and loading twice adds no rows.
 class LF_Test_FenceSerialPersist : LF_Test
 {
@@ -40,7 +40,7 @@ class LF_Test_FenceSerialPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(16, version, "the save is written at version 16 (fenceserials is payload 16)");
+		ctx.Equal(17, version, "the save is written at version 17 (fenceserials is payload 16)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "fenceserials");
 		LF_FenceSerialRow row = LF_FenceSerials.Find(serial);
 		ctx.NotNull(row, "the serial is back");

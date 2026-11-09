@@ -58,6 +58,7 @@ Each of these must survive a server restart:
    account uid and offence key, never replicated (`LF_CrimeRecord`).
    its reason, counterparty and balance after, trimmed by `Configs/Money/LF_Ledger.conf`.
 13. The fence serial book (save version 16, payload `fenceserials`): serial text, buyer account uid and tool prefab, never replicated (`LF_FenceSerials`). The serial itself is saved with the item (`LF_SerialComponentSerializer`).
+14. Incident flags (save version 17, payload `incidentflags`): incident number, reporter account uid and report time for each incident a player reported and no admin has marked handled; never replicated (`LF_IncidentFlags`). The cooldown clock is not saved.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character

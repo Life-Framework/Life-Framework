@@ -102,9 +102,11 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IdCardGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_IdCardRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IdentityFallback(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IncidentFlagsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentGmQuery(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentLog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentLogPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_IncidentReport(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionGiveCash(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionIntroductions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionOffers(), LF_TestTier.LOGIC);

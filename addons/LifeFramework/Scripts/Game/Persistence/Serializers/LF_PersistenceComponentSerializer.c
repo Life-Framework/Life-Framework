@@ -28,7 +28,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials. The written version is that list's length (16). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags. The written version is that list's length (17). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -44,6 +44,7 @@
 //! A version 13 save includes the incident log and has no money ledger.
 //! A version 14 save includes the money ledger and has no crime record.
 //! A version 15 save includes the crime record and has no fence serial book.
+//! A version 16 save includes the fence serial book and has no incident flags.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -95,6 +96,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("ledger");
 		order.Insert("crimerecord");
 		order.Insert("fenceserials");
+		order.Insert("incidentflags");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -121,7 +123,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 16);
+		context.WriteValue("version", 17);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -353,6 +355,12 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_FenceSerialRow> serialRows = LF_FenceSerials.ExportAll();
 			context.Write(serialRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 fence serial row(s)", serialRows.Count()));
+		}
+		else if (payload == "incidentflags")
+		{
+			array<ref LF_IncidentFlagRow> flagRows = LF_IncidentFlags.ExportAll();
+			context.Write(flagRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 incident flag(s)", flagRows.Count()));
 		}
 		else
 		{
@@ -601,6 +609,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Warn("Persistence", "fence serial book failed to read, leaving the live book untouched");
+			}
+		}
+		else if (payload == "incidentflags")
+		{
+			// A version 1-16 save never reaches this payload, so the live flags are left alone.
+			array<ref LF_IncidentFlagRow> flagRows = new array<ref LF_IncidentFlagRow>();
+			if (context.Read(flagRows))
+			{
+				LF_IncidentFlags.ApplyAll(flagRows);
+				LF_Debug.Log("Persistence", string.Format("applied %1 incident flag(s)", flagRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "incident flags failed to read, leaving the live flags untouched");
 			}
 		}
 		else
