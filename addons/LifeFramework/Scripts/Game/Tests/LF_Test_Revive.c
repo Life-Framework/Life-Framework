@@ -104,6 +104,7 @@ class LF_Test_Revive : LF_Test
 		ctx.EqualFloat(0, patientCharacter.LF_GetBleedLeft(), 0.01, "the bleed-out clock is cancelled");
 		ctx.EqualFloat(-1, patientCharacter.LF_GetBleedSecondsLeft(), 0.01, "the replicated clock reads not downed");
 		ctx.False(damage.LF_WantsUnconscious(), "the patient is no longer held unconscious");
+		ctx.True(damage.GetResilienceHitZone().GetHealthScaled() >= config.m_fReviveRecoveryScaled - 0.01, "resilience is lifted so the patient wakes at once");
 		ctx.EqualFloat(health, damage.GetDefaultHitZone().GetHealthScaled(), 0.01, "the patient keeps the sliver of health, above zero");
 		ctx.True(damage.GetDefaultHitZone().GetHealthScaled() > 0, "the patient is alive with health above zero");
 		ctx.EqualStr("npc<npc;", recorder.m_sLog, "LF_OnPlayerRevived was published once");

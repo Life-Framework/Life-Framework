@@ -950,12 +950,24 @@ async function runDownedProof() {
   on(1, { verb: "stand", entityName: patientName });
   wait(2500);
   on(1, { verb: "look" });
-  on(1, { verb: "capture", mode: "ui", name: "m2_259_revive_offer_client1" }, 25000);
+  const [px, py, pz] = String(parseState(state(2)).pos ?? "0,0,0").split(",").map(Number);
+  const seeBody = (name) => { if (Number.isFinite(px)) on(1, { verb: "capture", mode: "world", name, x: px, y: py + 0.3, z: pz, ox: 2.5, oy: 1.2, oz: 0 }, 25000); };
+  seeBody("m2_259_before_revive_world");
+  // The world capture moves the view: stand beside the patient again before the action.
+  on(1, { verb: "stand", entityName: patientName });
+  wait(2500);
+  on(1, { verb: "look" });
   const revive = on(1, { verb: "use", className: "LF_ReviveAction", entityName: patientName }, 10000);
-  wait(3500);
-  const revived = parseState(state(2));
+  // The vanilla wake takes a few seconds after the downed state ends.
+  let revived = parseState(state(2));
+  for (let i = 0; i < 8 && revived.life !== "ALIVE"; i++) {
+    wait(2000);
+    revived = parseState(state(2));
+  }
   on(2, { verb: "capture", mode: "ui", name: "m2_259_revived_client2" }, 25000);
-  on(1, { verb: "capture", mode: "ui", name: "m2_259_revived_client1" }, 25000);
+  seeBody("m2_259_after_revive_world");
+  on(1, { verb: "stand", entityName: patientName });
+  wait(1500);
   if (revive.status !== "ok") fails.push(`revive returned ${revive.status} ${revive.detail}`);
   if (revived.downed !== "0" || revived.life !== "ALIVE" || revived.bleed !== "-1") fails.push(`after the revive: downed=${revived.downed} life=${revived.life} bleed=${revived.bleed}`);
   if (revived.cash !== cashBefore) fails.push(`the revived player's cash changed: ${cashBefore} -> ${revived.cash}`);
