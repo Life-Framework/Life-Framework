@@ -332,6 +332,27 @@ class LF_OnHoldUp : LF_Event
 	}
 }
 
+//! An administrator did something: a Game Master editor action, #kick, #ban, !wadd, !handled
+//! (LF_AdminAction). The incident log records it (kind "admin") so moderators are accountable.
+class LF_OnAdminAction : LF_Event
+{
+	string m_sAdminUid;
+	//! The player acted on; empty when the action has none.
+	string m_sTargetUid;
+	string m_sAction;
+	vector m_vPosition;
+
+	static LF_OnAdminAction Create(string adminUid, string targetUid, string action, vector position)
+	{
+		LF_OnAdminAction e = new LF_OnAdminAction();
+		e.m_sAdminUid = adminUid;
+		e.m_sTargetUid = targetUid;
+		e.m_sAction = action;
+		e.m_vPosition = position;
+		return e;
+	}
+}
+
 //! A player kept a raised weapon on another player for the aim window (LF_AimIntent). Intent
 //! only; no rule changes because of it. The incident log records it (kind "aim").
 class LF_OnAimedAt : LF_Event

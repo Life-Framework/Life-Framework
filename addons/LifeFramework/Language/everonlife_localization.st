@@ -5647,36 +5647,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hold-up"
      Comment "Incident kind: one player held another up."
     }
-    CustomStringTableItem "{B18A9253EC649E50}" {
-     Id "LF-Revive_Action"
-     Target_en_us "Revive"
-     Comment "Player action on a downed player, offered to an on-duty medic."
-    }
-    CustomStringTableItem "{D4A0B004F3AE2A4B}" {
-     Id "LF-Revive_Done"
-     Target_en_us "You brought them back."
-     Comment "Toast to the medic after a revive."
-    }
-    CustomStringTableItem "{53CD088BE893DA58}" {
-     Id "LF-Revive_Revived"
-     Target_en_us "A medic brought you back. You are weak: take it easy."
-     Comment "Toast to the revived player."
-    }
-    CustomStringTableItem "{4AC63DA91F04B8C1}" {
-     Id "LF-Revive_NotMedic"
-     Target_en_us "Only a medic on duty can revive."
-     Comment "Revive refusal: the user is not clocked in as a medic."
-    }
-    CustomStringTableItem "{9DE20E9DD947A51A}" {
-     Id "LF-Revive_TooFar"
-     Target_en_us "Too far away to revive them."
-     Comment "Revive refusal: out of range."
-    }
-    CustomStringTableItem "{943F121585F92A15}" {
-     Id "LF-Revive_NotDowned"
-     Target_en_us "They are not down."
-     Comment "Revive refusal: the target is not downed."
-    }
     CustomStringTableItem "{E7C31C63E21652CF}" {
      Id "LF-Evidence_Title"
      Target_en_us "Evidence"
@@ -5741,6 +5711,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-IncidentGm_Kind_aim"
      Target_en_us "Weapon aimed"
      Comment "Incident kind: one player kept a raised weapon on another."
+    }
+    CustomStringTableItem "{B18A9253EC649E50}" {
+     Id "LF-Revive_Action"
+     Target_en_us "Revive"
+     Comment "Player action on a downed player, offered to an on-duty medic."
+    }
+    CustomStringTableItem "{D4A0B004F3AE2A4B}" {
+     Id "LF-Revive_Done"
+     Target_en_us "You brought them back."
+     Comment "Toast to the medic after a revive."
+    }
+    CustomStringTableItem "{53CD088BE893DA58}" {
+     Id "LF-Revive_Revived"
+     Target_en_us "A medic brought you back. You are weak: take it easy."
+     Comment "Toast to the revived player."
+    }
+    CustomStringTableItem "{4AC63DA91F04B8C1}" {
+     Id "LF-Revive_NotMedic"
+     Target_en_us "Only a medic on duty can revive."
+     Comment "Revive refusal: the user is not clocked in as a medic."
+    }
+    CustomStringTableItem "{9DE20E9DD947A51A}" {
+     Id "LF-Revive_TooFar"
+     Target_en_us "Too far away to revive them."
+     Comment "Revive refusal: out of range."
+    }
+    CustomStringTableItem "{943F121585F92A15}" {
+     Id "LF-Revive_NotDowned"
+     Target_en_us "They are not down."
+     Comment "Revive refusal: the target is not downed."
+    }
+    CustomStringTableItem "{9B2D4E60A17C35F8}" {
+     Id "LF-IncidentGm_Kind_admin"
+     Target_en_us "Admin action"
+     Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
     }
   }
  }

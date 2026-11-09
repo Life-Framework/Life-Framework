@@ -70,6 +70,7 @@ The bus keeps its own strong reference.
 | `LF_OnServiceCallTaken` | `m_sCallerUid`, `m_sService`, `m_sTakerUid`, `m_sPlace`, `m_sSummary`, `m_iTakers` | `LF_ServiceTake.ServerTake`, after the server checked the taker is on duty for the service and the call had room (`m_iMaxTakers`). `LF_ServiceCallTakenNotifier` tells the caller; the board marks the call taken |
 | `LF_OnFenceSale` | `m_sBuyerUid`, `m_sPrefab`, `m_iQuantity`, `m_iPrice` | `LF_ShopComponent.Buy` on a fence shop, after the cash was taken and the tool delivered |
 | `LF_OnHoldUp` | `m_sActorUid`, `m_sTargetUid`, `m_vPosition` (the actor's) | `LF_HoldUpRole.Perform` via `LF_HoldUp.Attempt`, after the server checked weapon in hand, range and cooldown. `LF_IncidentLog` subscribes (kind `holdup`) |
+| `LF_OnAdminAction` | `m_sAdminUid`, `m_sTargetUid` (may be empty), `m_sAction`, `m_vPosition` | `LF_AdminAction.Report` (server): every server-side Game Master editor action (`SCR_BaseActionsEditorComponent.ActionPerform`), vanilla `#kick`/`#ban`, `!wadd`, `!handled`. `LF_IncidentLog` subscribes (kind `admin`) |
 | `LF_OnAimedAt` | `m_sActorUid`, `m_sTargetUid`, `m_vPosition` (the actor's) | `LF_AimIntent.Tick` (server timer) when a raised weapon stayed on a player for the aim window. `LF_IncidentLog` subscribes (kind `aim`) |
 
 Adding an event: a class in `LF_Events.c`, a row here, a publish where the feature
