@@ -42,6 +42,7 @@ class LF_IncidentGmCluster
 	vector m_vPosition;
 	ref array<string> m_aRows = new array<string>();
 	Widget m_wMarker;
+	bool m_bFlagged;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -58,6 +59,8 @@ class LF_IncidentGmView
 	protected ref array<ref LF_IncidentGmCluster> m_aClusters = new array<ref LF_IncidentGmCluster>();
 	protected int m_iSeenAnswers;
 	protected string m_sLastBody;
+	//! Rows a player reported (#241), from every cluster; they head the list.
+	protected ref array<string> m_aFlaggedRows = new array<string>();
 
 	//------------------------------------------------------------------------------------------------
 	void Attach(MenuRootBase menu, Widget parent, LF_IncidentGmPanelUI panel)
@@ -113,6 +116,7 @@ class LF_IncidentGmView
 		}
 
 		m_aClusters.Clear();
+		m_aFlaggedRows.Clear();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -128,7 +132,7 @@ class LF_IncidentGmView
 		{
 			array<string> parts = {};
 			row.Split("|", parts, false);
-			if (parts.Count() < 11)
+			if (parts.Count() < 12)
 				continue;
 
 			vector position = Vector(parts[3].ToFloat(), 0, parts[4].ToFloat());
@@ -143,6 +147,17 @@ class LF_IncidentGmView
 
 			cluster.m_vPosition = position;
 			cluster.m_aRows.Insert(row);
+			if (parts[11] == "1")
+			{
+				m_aFlaggedRows.Insert(row);
+				cluster.m_bFlagged = true;
+				TextWidget mark = TextWidget.Cast(cluster.m_wMarker);
+				if (mark)
+				{
+					mark.SetText("!!");
+					mark.SetColor(Color.FromInt(0xFFFFD21F));
+				}
+			}
 		}
 	}
 
@@ -156,6 +171,14 @@ class LF_IncidentGmView
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsFlaggedRow(string row)
+	{
+		array<string> p = {};
+		row.Split("|", p, false);
+		return p.Count() > 11 && p[11] == "1";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -178,7 +201,12 @@ class LF_IncidentGmView
 			kindKey = "#LF-IncidentGm_Kind_downed";
 
 		string kindText = WidgetManager.Translate(kindKey);
-		string text = WidgetManager.Translate("#LF-IncidentGm_Row", kindText, (p[2].ToInt() / 60).ToString(), p[5], p[6]);
+		string text;
+		if (p[11] == "1")
+			text = WidgetManager.Translate("#LF-IncidentGm_RowFlagged", p[0], kindText, (p[2].ToInt() / 60).ToString(), p[5], p[6]);
+		else
+			text = WidgetManager.Translate("#LF-IncidentGm_Row", kindText, (p[2].ToInt() / 60).ToString(), p[5], p[6]);
+
 		if (kind == "damage" || kind == "cash")
 			text = text + " " + p[7];
 
@@ -233,11 +261,28 @@ class LF_IncidentGmView
 			body = "#LF-IncidentGm_Waiting";
 		else if (m_aClusters.IsEmpty())
 			body = "#LF-IncidentGm_None";
-		else if (selected)
+		else
 		{
-			// Newest first, at most eight lines so the panel stays its size.
-			for (int i = selected.m_aRows.Count() - 1; i >= 0 && i >= selected.m_aRows.Count() - 8; i--)
-				body = body + FormatRow(selected.m_aRows[i]) + "\n";
+			// Reported incidents first (at most four), then the selected marker newest first;
+			// eight lines at most so the panel stays its size.
+			int lines;
+			for (int f = m_aFlaggedRows.Count() - 1; f >= 0 && lines < 4; f--)
+			{
+				body = body + FormatRow(m_aFlaggedRows[f]) + "\n";
+				lines++;
+			}
+
+			if (selected)
+			{
+				for (int i = selected.m_aRows.Count() - 1; i >= 0 && lines < 8; i--)
+				{
+					if (!IsFlaggedRow(selected.m_aRows[i]))
+					{
+						body = body + FormatRow(selected.m_aRows[i]) + "\n";
+						lines++;
+					}
+				}
+			}
 		}
 
 		if (body != m_sLastBody)

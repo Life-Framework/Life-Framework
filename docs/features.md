@@ -67,6 +67,10 @@
   40-row cap are fixed server side). A non-admin gets nothing and `[LFDebug:IncidentGM]` logs the
   refusal. Nothing persists. Test `incident/gm-query`. Manual: see the PR.
 
+### Player report to staff — `Feature/Moderation/LF_IncidentFlags.c` (#241, 2026-11-09)
+- ✅ `/report` in chat flags the reporter's incidents (either party) from the last `m_iReportWindowMinutes` (10) in `LF_Incident.conf`; online admins get a toast; a per-player cooldown `m_iReportCooldownSeconds` (120) refuses spam, and a report with nothing to flag does not start it. Flagged incidents head the Game Master list (sent even outside the camera radius, marker "!!") and persist (`incidentflags` payload, save version 17) until an admin types `!handled <number>` in admin chat, which is logged `[LFDebug:IncidentReport]`. Tests `incident/report`, `persist/incident-flags-roundtrip`.
+- ⚠️ The payphone staff line waits for comms routing.
+
 ### `LF_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `LF_PlayerAccount`, spawns the active
   character's prefab at a spawn point for the account's role (CIVILIAN, or

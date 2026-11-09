@@ -28,7 +28,7 @@ class LF_Test_IncidentGmQuery : LF_Test
 		{
 			array<string> parts = {};
 			rows[0].Split("|", parts, false);
-			ctx.Equal(11, parts.Count(), "a row has eleven fields; a pipe in a name did not split it");
+			ctx.Equal(12, parts.Count(), "a row has twelve fields; a pipe in a name did not split it");
 			ctx.EqualStr("death", parts[1], "the row carries the kind");
 			ctx.EqualStr("100", parts[2], "the row carries the age in seconds");
 			ctx.EqualStr("110", parts[3], "the row carries x");

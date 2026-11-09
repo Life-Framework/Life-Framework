@@ -35,6 +35,21 @@ class AdminChatChannel : BaseChatChannel
 			LF_Debug.Log("Chat", string.Format("admin !wadd type=%1 uuid=%2", SCR_Enum.GetEnumName(LF_WhitelistType, type), uuid));
 		}
 
+		//!handled NUMBER (#241): an incident a player reported has been dealt with
+		if (message.StartsWith("!handled"))
+		{
+			int number;
+			if (!LF_IncidentFlags.TryParseHandled(message, number))
+				return false;
+
+			SCR_PlayerController adminPC = SCR_PlayerController.Cast(sender.GetOwner());
+			string adminUid = "";
+			if (adminPC)
+				adminUid = LF_Utils.GetPlayerUID(adminPC.GetPlayerId());
+
+			LF_IncidentFlags.Handle(number, adminUid);
+		}
+
 		return true;
 	}
 

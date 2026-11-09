@@ -5472,6 +5472,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Downed"
      Comment "Incident kind: player downed."
     }
+    CustomStringTableItem "{73C1578BB2FBEF30}" {
+     Id "LF-IncidentReport_Title"
+     Target_en_us "Report"
+     Comment "Toast title for the report to staff."
+    }
+    CustomStringTableItem "{C4AEA0F427A28843}" {
+     Id "LF-IncidentReport_Sent"
+     Target_en_us "Staff were told about your recent incidents."
+     Comment "Toast: a player report was filed."
+    }
+    CustomStringTableItem "{8C5397BA37749A31}" {
+     Id "LF-IncidentReport_Cooldown"
+     Target_en_us "You reported a moment ago. Wait before reporting again."
+     Comment "Toast: the report cooldown refused a second report."
+    }
+    CustomStringTableItem "{00E362FF96E1289A}" {
+     Id "LF-IncidentReport_Nothing"
+     Target_en_us "Nothing of yours to report from the last few minutes."
+     Comment "Toast: the player has no recent incident."
+    }
+    CustomStringTableItem "{3A18F927506DDB4E}" {
+     Id "LF-IncidentReport_Staff"
+     Target_en_us "A player reported %1 incident(s). They are first in the Game Master incident list."
+     Comment "Toast to online admins after a report; %1 is the count."
+    }
+    CustomStringTableItem "{C8483035D57F363E}" {
+     Id "LF-IncidentGm_RowFlagged"
+     Target_en_us "REPORTED #%1 %2, %3 min ago: %4 / %5 (type !handled %1 when done)"
+     Comment "Game Master incident row for a reported incident: number, kind, minutes ago, subject, other party."
+    }
   }
  }
 }

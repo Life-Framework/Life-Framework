@@ -15,6 +15,8 @@ class LF_IncidentConfig
 	static const int DEFAULT_MAX_RECORDS = 2000;
 	static const int DEFAULT_RETENTION_HOURS = 336;
 	static const float DEFAULT_DAMAGE_SAMPLE_SECONDS = 5;
+	static const int DEFAULT_REPORT_WINDOW_MINUTES = 10;
+	static const int DEFAULT_REPORT_COOLDOWN_SECONDS = 120;
 
 	protected static ref LF_IncidentConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -30,6 +32,12 @@ class LF_IncidentConfig
 
 	[Attribute("5", UIWidgets.Auto, "Hits between the same two players fold into one damage record per this many seconds")]
 	float m_fDamageSampleSeconds;
+
+	[Attribute("10", UIWidgets.Auto, "A player report flags the reporter's incidents from this many minutes back")]
+	int m_iReportWindowMinutes;
+
+	[Attribute("120", UIWidgets.Auto, "Seconds a player must wait between two reports")]
+	int m_iReportCooldownSeconds;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -111,5 +119,25 @@ class LF_IncidentConfig
 			return DEFAULT_DAMAGE_SAMPLE_SECONDS;
 
 		return config.m_fDamageSampleSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int ReportWindowSeconds()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_iReportWindowMinutes < 1)
+			return DEFAULT_REPORT_WINDOW_MINUTES * 60;
+
+		return config.m_iReportWindowMinutes * 60;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int ReportCooldownSeconds()
+	{
+		LF_IncidentConfig config = Get();
+		if (!config || config.m_iReportCooldownSeconds < 0)
+			return DEFAULT_REPORT_COOLDOWN_SECONDS;
+
+		return config.m_iReportCooldownSeconds;
 	}
 }
