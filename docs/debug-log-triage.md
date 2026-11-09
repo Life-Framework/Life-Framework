@@ -75,6 +75,7 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[LFDebug:Persistence] ...` (state transitions, autosave schedule, save scan) | INFO | Persistence lifecycle logging. |
 | `[LFDebug:Persistence] started a NEW session while N save point(s) exist` | BY DESIGN (ops) | A dedicated server booted without `-loadSessionSave` while the mission has saves, so the saved world was not loaded. Relaunch with `-loadSessionSave` (`docs/persistence.md`). Not expected on the test server, whose profile starts empty. |
 | `[LFDebug:Whitelist] save refused: the whitelist file could not be read at load` | BY DESIGN | The whitelist file exists but failed to load (wrong version, unreadable). Saving is blocked so the file is not overwritten; fix or remove the file and restart. The `restart/whitelist-unreadable-file-kept` test prints it on purpose. |
+| `[LFDebug:Persistence] save predates the LF_ rename; starting fresh` | BY DESIGN | A continued save was written before the EL_ to LF_ rename (2026-11-09), so no LF state loaded. Pre-release save reset: delete the old `.save` playthrough (docs/persistence.md "Save reset"). |
 | `[LFDebug:Persistence] save point created` | INFO | A manual/autosave completed (expected on normal saves). |
 | `[LFDebug:Persistence] system state ... -> SHUTDOWN` | INFO | Persistence session teardown. |
 | `Starting RPL server, listening on address 0.0.0.0:2001` | BY DESIGN | Every `-server` boot listens on 2001; `-bindPort` is ignored in that mode. The CLI's `server-2001` lock keeps boots one at a time. |

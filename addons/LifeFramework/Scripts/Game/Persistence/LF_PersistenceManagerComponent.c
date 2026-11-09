@@ -813,6 +813,12 @@ class LF_PersistenceManagerComponent : ScriptComponent
 		{
 			m_bHasSaveGame = true;
 			m_bSaveCacheSeeded = true;
+
+			// The store deserializes before ACTIVE. A continued save that never reached it was
+			// written before the pre-release LF_ rename: its component keys do not match, nothing of
+			// ours loads, and the world starts fresh. Say so once instead of failing silently.
+			if (!LF_PersistenceComponentSerializer.WasStoreLoaded())
+				LF_Debug.Warn("Persistence", "save predates the LF_ rename; starting fresh");
 		}
 	}
 

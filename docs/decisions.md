@@ -596,6 +596,13 @@ written into a save gets a load-time alias. Afterwards a validator rejects new
 `EL_` declarations. Why: `EL_` collides with the real EveronLife mod, mixed
 prefixes confuse contributors, and the M3 public API must start with final names.
 
+**2026-11-09 — The EL_ to LF_ rename resets saves (pre-release).** M1 is not on the Workshop,
+so no player save exists. The engine matches a component key (`LF_PersistenceComponent:<id>`)
+and a record `$type` literally and has no alias API, so a save written before the rename
+loads none of our state. A boot that continues such a save logs one warning and starts fresh
+(docs/persistence.md "Save reset"). This supersedes the load-time alias plan above; the
+compatibility rule below starts at the first published save.
+
 **2026-11-08 — Saves stay compatible within a major version.** Any 1.x save
 loads in every later 1.x. A test loads saves recorded from older versions, and
 `wt e2e` proves each persistence change. Before M4 runs 24/7, writes are atomic

@@ -8,10 +8,10 @@ description: "Use when editing Enforce Script under addons/LifeFramework/Scripts
 Read `AGENTS.md` for the language, memory, replication, RPC, persistence, and
 test constraints. This skill adds the authoring workflow:
 
-- Name new classes `LF_`. Existing `LF_` classes keep their names; the real
-  EveronLife mod (`LF_`) can load on the same server and collide, so new code
-  must not add `LF_` names. New `LF_` code calls `LF_` infrastructure
-  (`LF_Debug`, `LF_Utils`, `LF_Component`) freely. Tests stay `LF_Test_*`.
+- Every class is `LF_`, tests are `LF_Test_*`; the real EveronLife mod (`EL_`) can
+  load on the same server and collide, so never add an `EL_` name
+  (`validate-no-el-prefix.mjs` fails it). Shared infrastructure is
+  `LF_Debug`, `LF_Utils`, `LF_Component`.
 - Put shared code in `Core`, feature code in `Feature/<Area>` (with its
   `Feature.md`), UI in `UI`, and tests in `Tests`.
 - Before coding, identify the owning component or manager, the config source,

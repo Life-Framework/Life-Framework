@@ -48,6 +48,18 @@
 //------------------------------------------------------------------------------------------------
 class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 {
+	//! True once DeserializeStore ran this boot. A boot that continues a save and reaches ACTIVE
+	//! with this still false has a save written before the pre-release LF_ rename (the engine matches
+	//! the component key LF_PersistenceComponent:<id> literally), see docs/persistence.md "Save reset".
+	protected static bool s_bStoreLoaded;
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn True when a save payload was read into the stores this boot.
+	static bool WasStoreLoaded()
+	{
+		return s_bStoreLoaded;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! \return The component class this serializer is responsible for.
 	override static typename GetTargetType()
@@ -144,6 +156,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \return True when the payload was consumed.
 	static bool DeserializeStore(notnull LF_PersistenceComponent persistence, notnull LoadContext context)
 	{
+		s_bStoreLoaded = true;
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
 

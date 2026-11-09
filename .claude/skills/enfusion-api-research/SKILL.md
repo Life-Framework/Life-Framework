@@ -28,6 +28,6 @@ Call the tools from any terminal with `tools\cli call <tool> '<json>'` (or `@arg
 
 ## Grounding in this repo
 
-- Base-game classes are prefixed `SCR_` (Conflict) or engine `Enfusion` types. The mod's own classes are `LF_` (legacy) and `LF_` (new). When you search, know which side you are asking about.
+- Base-game classes are prefixed `SCR_` (Conflict) or engine `Enfusion` types. The mod's own classes are all `LF_`. When you search, know which side you are asking about.
 - The mod extends the Conflict framework (`SCR_BaseGameMode`, `SCR_InventoryStorageComponent`, `SCR_CharacterControllerComponent`). Vanilla Conflict source is the reference for what those provide.
 - Assets the mod references live under the base game's `Prefabs/`, `Worlds/`, `Materials/`. `asset_search` returns the GUID-prefixed paths for prefab references.

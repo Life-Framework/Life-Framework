@@ -378,6 +378,7 @@
   save-cache scan, load/re-apply paths, wipe. Every path passes
   `PassesSaveGates()` (manager present, saving allowed, persistence system
   active) and logs `LF_Debug` under `Persistence`.
+- ✅ A continued save that never reaches the store read (written before the 2026-11-09 EL_ to LF_ rename, pre-release save reset) logs one `LF_Debug.Warn` "save predates the LF_ rename; starting fresh" at `ACTIVE` and runs fresh, no partial load (verified 2026-11-09 with an old save on the test server; docs/persistence.md "Save reset").
 - ✅ Shutdown save is engine-owned: the engine requests the SHUTDOWN save point
   on graceful exit; the manager observes the result via `OnAfterSave` and logs
   an `LF_Debug.Error` if a session ends with no shutdown save. The old manual

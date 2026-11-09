@@ -42,10 +42,11 @@ failures instead of grinding.
 4. **Binary assets are plain blobs** marked `-text` in `.gitattributes`.
    Text is LF in the repo and in every checkout (`* text=auto eol=lf`; `.cmd`/`.bat`
    stay CRLF). Generators write LF; scripts that patch files need not handle `\r\n`.
-5. **New classes are `LF_`.** Existing `LF_` classes keep their names. The real
-   EveronLife mod (`LF_`) can load on the same server, so new `LF_` names can
-   collide. `LF_` code calls `LF_` infrastructure freely. Tests keep the
-   `LF_Test_*` naming for now.
+5. **All classes are `LF_`; tests are `LF_Test_*`.** The `EL_` to `LF_` rename
+   landed 2026-11-09 (#334). The real EveronLife mod (`EL_`) can load on the same
+   server, so an `EL_` name can collide. `validate-no-el-prefix.mjs` rejects any
+   `EL_` identifier in `addons/` (resource file names such as `EL_JailCell.et`
+   keep their paths and are the only exception).
 6. **Heavy commands run only in a worktree.** `build`, `test`, `dev`, `serve`,
    `ci` refuse to run in the main checkout, which is the human's world-editor
    copy.

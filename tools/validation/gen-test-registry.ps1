@@ -6,7 +6,7 @@
 # machine-maintained and any agent that adds a test file just regenerates it.
 #
 # Contract (mirrored by validate-tests.ps1):
-#   1. Every class matching `class (LF_Test_\w+|LF_Test_\w+) : LF_Test` in the
+#   1. Every class matching `class LF_Test_\w+ : LF_Test` in the
 #      top level of
 #      Scripts/Game/Tests/ must declare a `// tier: LOGIC|WORLD|PERSISTENCE`
 #      comment above its declaration. The tier drives which suites run it.
@@ -41,7 +41,7 @@ Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedNam
   $file = $_
   $text = Get-Content $file.FullName -Raw
 
-  $matches = [regex]::Matches($text, 'class\s+((?:LF_Test_|LF_Test_)\w+)\s*:\s*LF_Test')
+  $matches = [regex]::Matches($text, 'class\s+(LF_Test_\w+)\s*:\s*LF_Test')
   foreach ($m in $matches) {
     $cls = $m.Groups[1].Value
 

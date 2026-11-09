@@ -40,7 +40,7 @@ $files = @()
 $owner = @{}
 Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedName } | ForEach-Object {
   $text = Get-Content $_.FullName -Raw
-  $classes = @([regex]::Matches($text, 'class\s+((?:LF_Test_|LF_Test_)\w+)\s*:\s*LF_Test') | ForEach-Object { $_.Groups[1].Value })
+  $classes = @([regex]::Matches($text, 'class\s+(LF_Test_\w+)\s*:\s*LF_Test') | ForEach-Object { $_.Groups[1].Value })
   if ($classes.Count -eq 0) { return }
 
   $names = @([regex]::Matches($text, $namePattern) | ForEach-Object { $_.Groups[1].Value })

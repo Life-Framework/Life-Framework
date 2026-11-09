@@ -7,6 +7,25 @@ does not compile on Reforger 1.8, so the mod was migrated off it (2026-08-29)
 and `LifeFramework.gproj` depends on the base game (`58D0FB3206B6F859`) only.
 Do not re-add EPF.
 
+## Save reset (2026-11-09, EL_ to LF_ rename)
+
+The `EL_` to `LF_` rename (#334) changed the persisted type names: the component keys
+`EL_PersistenceComponent:<id>` and `EL_QuantityComponent:<id>` and the record `$type`
+values `EL_PlayerAccountRecord`, `EL_PlayerCharacterRecord`, `EL_BankAccountRecord` and
+`EL_VehicleRecord`. The engine matches them literally and has no alias API (a `typedef`
+alias fixes the record `$type` but not the component keys), and M1 was never published,
+so this is a deliberate pre-release save reset. The payload format and version (12) are
+unchanged.
+
+- A save written before the rename is not loaded: none of accounts, bank, jail, carried
+  inventories, progression, stash or tickets come back.
+- A boot that continues a save (`-loadSessionSave`) and reaches `ACTIVE` without the store
+  being read logs once `[LFDebug:Persistence] save predates the LF_ rename; starting fresh`
+  (`LF_PersistenceComponentSerializer.WasStoreLoaded()`) and runs as a fresh world. No error
+  and no partial load of our data.
+- Operators: delete the old `.save` playthrough once so autosaves do not build on it.
+  The next save is written with the new names.
+
 ## Observable contract
 
 Each of these must survive a server restart:

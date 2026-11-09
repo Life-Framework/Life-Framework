@@ -1432,7 +1432,7 @@ function resolveOnlyNames(root, spec) {
   for (const raw of String(spec).split(",").map((x) => x.trim()).filter(Boolean)) {
     const file = join(testsDir, raw.endsWith(".c") ? raw : `${raw}.c`);
     if (/^(EL|LF)_Test_\w+(\.c)?$/.test(raw) && existsSync(file)) {
-      const classes = [...readFileSync(file, "utf8").matchAll(/class\s+((?:LF_Test_|LF_Test_)\w+)\s*:\s*LF_Test\b/g)].map((m) => m[1]);
+      const classes = [...readFileSync(file, "utf8").matchAll(/class\s+(LF_Test_\w+)\s*:\s*LF_Test\b/g)].map((m) => m[1]);
       if (classes.length) {
         names.push(...classes);
         continue;
