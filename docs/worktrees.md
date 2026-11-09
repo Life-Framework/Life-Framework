@@ -212,7 +212,12 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
   `--local` and `--remote` stay within their kind.
 - **Health.** An unreachable machine (ssh connect timeout 4 s) is skipped for
   a minute (`<main>/tmp/wt/pool/health.json`); the holder attempt itself is the
-  probe. A machine whose server Steam build differs from this PC's is skipped
+  probe. A holder that connects but sends nothing for 40 s, or never reports
+  within 180 s, counts as down too: the run prints one line (`pool: <machine>:
+  <reason>; <machine> marked down for this run, falling back to <next>`), does
+  not retry that machine, and takes the next machine or this PC. `pool status`
+  bounds each probe at 12 s and prints `DOWN`. A waiting run prints one line
+  when it queues and one when it gets its slot, nothing in between. A machine whose server Steam build differs from this PC's is skipped
   with a `WARN`, unless it was named with `--remote <name>`.
 - **Sync.** A remote run carries the worktree as it is: HEAD plus uncommitted
   edits plus untracked, non-ignored files, as one snapshot commit built from a
@@ -248,6 +253,22 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
 - **Limits.** `build` and `validate --full` stay on this PC. A pre-pool
   branch's snapshot (no `LF_SERVER_SLOT_HELD` in its `tools/cli.mjs`) runs
   local only until it merges main.
+
+### Waiting on a session
+
+`node agent-box/session.mjs up` blocks until the server and every client are
+ready (up to about 10 min) and prints about three lines: `session: ready; N
+client(s) joined ...` and `session: full log <path>` (the launch command
+lines and progress go to that file), or one `FAIL  <reason>` (port 2001 held
+by whom, a client or the server exited, a client was refused, Steam refused).
+Exit code 0 or 1. `--wait` queues for port 2001 behind another run and prints
+one line saying who holds it.
+
+`node agent-box/session.mjs wait [--timeout 600]` does the same for a session
+that is already starting (an `up` started in the background or by someone
+else): one blocking call, exit 0 when ready, 1 with a one-line reason when the
+server or a client exited, the session was closed, nothing is starting after
+30 s, or the timeout passes. Never poll `status` in a loop.
 
 ### Sessions on a pool machine
 

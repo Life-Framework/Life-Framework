@@ -83,7 +83,7 @@ export function sshPs(host, script, opts = {}) {
 
 export function sshPsStream(host, script, onLine) {
   return new Promise((resolvePromise) => {
-    const child = spawn("ssh", sshPsArgs(host, script), { windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn("ssh", sshPsArgs(host, script, { connectTimeout: 5 }), { windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
     let buf = "";
     const feed = (chunk) => {
       const text = chunk.toString("utf8");

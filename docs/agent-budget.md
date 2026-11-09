@@ -55,7 +55,18 @@ the orchestrator restarts the job on `lf-hard` with that report as the brief.
    two environment failures (launch, lock, Steam), stop and report.
 7. **Cheap checks while iterating.** Use `test --only` and `validate` while
    working. Run `--tier all` and `validate --full` once, at `wt gate`.
-8. **Read files in pieces.** Use `grep`, `head` and line ranges rather than
+8. **Wait with one call.** Repo tooling blocks until it has a verdict, so a
+   wait costs one turn.
+   - A step that takes up to 10 minutes (`session up`, `test`, `e2e`,
+     `wt gate`) runs as one foreground call with a timeout up to 600000 ms. It
+     queues quietly and prints a short verdict. `session.mjs wait` joins a
+     session another call started.
+   - A step longer than that runs in the background and the agent ends its
+     turn. The completion notice wakes it.
+   - Never use `sleep` or `until` loops, Monitor, ScheduleWakeup, or
+     `session status` / `pool status` polls to wait on repo tooling. Each poll
+     is a model turn that reads nothing new.
+9. **Read files in pieces.** Use `grep`, `head` and line ranges rather than
    whole files or full logs. Output is capped at 15k characters for Bash and
    10k tokens for MCP tools in the `.claude-gaming` profile.
 
