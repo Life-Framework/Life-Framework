@@ -223,6 +223,17 @@ class LF_ServiceCalls
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pure: the job routing sees for a player: MEDIC while clocked in at the hospital desk, else
+	//! the job they hold.
+	static int JobFor(LF_PlayerAccount account, int heldJob)
+	{
+		if (LF_MedicDuty.IsOnDuty(account))
+			return LF_EJobType.MEDIC;
+
+		return heldJob;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Pure: does this player receive calls for the service right now?
 	static bool Receives(notnull LF_ServiceDef def, notnull LF_ServiceCandidate player)
 	{
@@ -324,6 +335,10 @@ class LF_ServiceCalls
 				if (jobs)
 					job = jobs.GetJob();
 			}
+
+			// A medic clocked in at the hospital desk is in the medic job for routing.
+			if (accounts)
+				job = JobFor(accounts.GetAccount(LF_Utils.GetPlayerUID(playerId)), job);
 
 			result.Insert(LF_ServiceCandidate.Make(playerId, police, job));
 		}

@@ -4297,6 +4297,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Only officers on the police roster can clock in. Ask an admin to join the police."
      Comment "Duty desk refusal: the player is not whitelisted for police."
     }
+    CustomStringTableItem "{10850C37306E78EB}" {
+     Id "LF-Duty_WrongDesk"
+     Target_en_us "You are on duty for another service. Clock out at your own desk first."
+     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
+    }
     CustomStringTableItem "{B20154B0D085697C}" {
      Id "LF-Duty_AlreadyOn"
      Target_en_us "You are already on duty."

@@ -34,6 +34,14 @@ body, later a revive action); the downed player's own state is world-visible
 (hold `LF_GiveUp`, server validates), disconnect while downed is death. Expiry and give-up
 call `Finish` with the downer as instigator. Screen/sound effects are vanilla unconsciousness.
 
+## V1.2 - #258, the medic job
+
+The hospital duty desk (`Prefabs/Medic/LF_MedicDutyDesk.et`, `LF_DutyAction` with `m_eRole MEDIC`) is the
+police desk's twin: same swap through `LF_DutyLocker`, own slot `medic_duty`, open to every registered
+player, duty pay at clock-out. On duty the account's faction is MEDIC and `LF_MedicDuty` /
+`LF_ServiceCalls.JobFor` make routing see the medic job (board, take, pager). The kit lives in the
+game mode's MEDIC `LF_FactionLoadout` and includes `LF_Pager`.
+
 ## Next
 
 - #256 bleed-out timer (server-owned), give-up, screen and sound effects on the

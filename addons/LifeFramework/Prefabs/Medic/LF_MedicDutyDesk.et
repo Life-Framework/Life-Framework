@@ -1,0 +1,17 @@
+GenericEntity : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ ID "00F81CC40A5C0803"
+ {
+  GenericEntity DutyClock {
+   ID "281D3BD880CE964E"
+   components {
+    ActionsManagerComponent "{775836274AF8BE66}" {
+     additionalActions {
+      LF_DutyAction "{E0CCF06A3D9A2E06}" {
+       m_eRole MEDIC
+      }
+     }
+    }
+   }
+  }
+ }
+}

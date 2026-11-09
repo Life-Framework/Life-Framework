@@ -64,9 +64,13 @@ log that back them stay on the server and invisible.
   5, a keycard after 8. Rob a till, steal a vehicle, or breach a door to build
   the count. Each tool carries a serial; use *Read serial* on it to see the
   number.
-- **Hospital dispatch board.** The board by the hospital is the medic call
-  board. Read it and it tells you it is for on-duty staff; there is no medic
-  job yet, so no call can be answered.
+- **Medic duty.** Clock in at the duty desk in the hospital (the punch clock,
+  open to everyone, no roster). You swap to the medic kit (uniform, medical
+  kit, dressings, saline, morphine, tourniquet, a pager) and your civilian
+  inventory is kept until you clock out, when duty pay is handed over in cash.
+  While you are clocked in, medic calls reach you: the hospital board opens
+  for you, you can take a call there, and the pager beeps. Off duty the board
+  tells you it is for on-duty staff.
 - **Safe square.** On the spawn square you cannot hurt another player and they
   cannot hurt you. Weapons still fire; NPC, world, and self damage pass.
 
@@ -79,8 +83,6 @@ log that back them stay on the server and invisible.
 - Sign titles can be hard to read from the road.
 - Going down has no revive, bleed-out, or give-up yet: you stay on the ground,
   so leave and rejoin to reset. The state does not survive a disconnect.
-- The hospital dispatch board is not staffed: there is no medic job yet, so it
-  only shows the on-duty card.
 - The fence and crime scene are in the test annex behind the net fence, not on
   the main street; a village placement is still to come.
 

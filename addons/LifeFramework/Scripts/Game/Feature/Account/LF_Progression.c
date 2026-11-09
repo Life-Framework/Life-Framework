@@ -190,7 +190,7 @@ class LF_Progression
 			if (!account)
 				continue;
 
-			if (account.GetFaction() == LF_Faction.POLICE && account.IsDutyClockRunning())
+			if (account.GetFaction() != LF_Faction.CIVILIAN && account.IsDutyClockRunning())
 				LF_PoliceRanks.SettleDutyAt(account, true, nowMs);
 
 			if (account.GetPoliceRank() != 0 || account.GetOnDutySeconds() != 0 || account.GetUnpaidDutySeconds() != 0)
