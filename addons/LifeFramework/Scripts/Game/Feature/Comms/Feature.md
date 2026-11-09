@@ -23,3 +23,16 @@ reader the service reaches now (on-duty police, a current medic), a closed board
 replicated continuously, so a late joiner reads the current calls. `LF_Dispatch.Report` publishes each crime
 report as a police service call (clothing, vehicle and on-duty count ride on the event), so crimes and
 payphone calls take one path to the radio, the dispatch log, and the board.
+
+## Taking a call (#251)
+
+`LF_ServiceTakeAction` on a board calls `LF_ServiceTake.ServerTake`: on duty for the service, oldest open call
+with room (`m_iMaxTakers`, police 2). It publishes `LF_OnServiceCallTaken`; the board marks the call taken and
+`LF_ServiceCallTakenNotifier` notifies the caller (owner RPC by player id, no entity id).
+
+## Pager (#249)
+
+`LF_PagerSubscriber` (installed with the board) writes a call whose channels include `pager` to the
+`LF_PagerComponent` of every receiver who carries one (`LF_Pager.Page`), then the pager beeps. The last
+`m_iPagerMessages` calls ride one replicated string; `LF_ReadPagerAction` shows them. Police get one in
+the duty kit (`GameMode_Roleplay_Debug.et`).

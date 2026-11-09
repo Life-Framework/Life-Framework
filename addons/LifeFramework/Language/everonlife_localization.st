@@ -5427,6 +5427,71 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Need help? Use a payphone to call the service."
      Comment "Dispatch board sign card: what to do next."
     }
+    CustomStringTableItem "{B608F834846FAF73}" {
+     Id "LF-Dispatch_Take"
+     Target_en_us "Take the call"
+     Comment "Action on a service dispatch board: take the oldest open call (#251)."
+    }
+    CustomStringTableItem "{62139B83F8E9AC01}" {
+     Id "LF-Dispatch_TakeDone"
+     Target_en_us "Call taken. Head to the place on the board."
+     Comment "Toast to the responder after taking a call."
+    }
+    CustomStringTableItem "{E26C8E0B2B297718}" {
+     Id "LF-Dispatch_TakeGone"
+     Target_en_us "Another unit already took that call."
+     Comment "Toast when the call has all the takers it allows."
+    }
+    CustomStringTableItem "{7D2865141D4A525F}" {
+     Id "LF-Dispatch_TakeYours"
+     Target_en_us "You already took every call waiting."
+     Comment "Toast when the responder already took the open calls."
+    }
+    CustomStringTableItem "{B8AB7F7CB0A45CFA}" {
+     Id "LF-Dispatch_TakeNone"
+     Target_en_us "No call waiting."
+     Comment "Toast when the board has no call to take."
+    }
+    CustomStringTableItem "{C14AC728DB5CB79F}" {
+     Id "LF-Dispatch_ServiceLineTaken"
+     Target_en_us "%1  %2 at %3 (taken)"
+     Comment "Service dispatch board line for a call a unit has taken. %1 = time, %2 = what, %3 = place."
+    }
+    CustomStringTableItem "{8DE2406C7DDB39E2}" {
+     Id "LF-Service_UnitTitle"
+     Target_en_us "Dispatch"
+     Comment "Title of dispatch toasts."
+    }
+    CustomStringTableItem "{1AD33D680D4FC3B9}" {
+     Id "LF-Service_UnitOnTheWay"
+     Target_en_us "A unit is on the way."
+     Comment "Shown to a caller when a responder takes their call (#251)."
+    }
+    CustomStringTableItem "{CA566A486AE9A98D}" {
+     Id "LF-Pager_Title"
+     Target_en_us "Pager"
+     Comment "Title of the pager card."
+    }
+    CustomStringTableItem "{4EF600B18D7A2C1B}" {
+     Id "LF-Pager_None"
+     Target_en_us "No calls paged."
+     Comment "Pager card with no messages."
+    }
+    CustomStringTableItem "{9DC6DB6828971952}" {
+     Id "LF-Pager_Read"
+     Target_en_us "Read the pager"
+     Comment "Action on a pager item (#249)."
+    }
+    CustomStringTableItem "{B5DC3AD9F79C05C4}" {
+     Id "LF-Item_Pager_Name"
+     Target_en_us "Pager"
+     Comment "Inventory name of the pager."
+    }
+    CustomStringTableItem "{798CD609229F3E62}" {
+     Id "LF-Item_Pager_Description"
+     Target_en_us "Beeps when a call comes in for your service while you are on duty. Look at it to read the last calls."
+     Comment "Inventory description of the pager."
+    }
     CustomStringTableItem "{98E8442712C32CFF}" {
      Id "LF-IncidentGm_Title"
      Target_en_us "Incidents near the camera"
