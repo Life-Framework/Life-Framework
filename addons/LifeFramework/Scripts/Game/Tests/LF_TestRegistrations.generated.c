@@ -85,6 +85,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FineTicket(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FineTicketRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FineTicketSerializer(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_FirstAid(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_FirstAidRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FirstPlayerPolice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
