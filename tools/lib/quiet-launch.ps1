@@ -211,7 +211,15 @@ function Invoke-LfQuietSpec([string]$Spec, [string]$Mode) {
     [Console]::Error.WriteLine("quiet-launch: $($_.Exception.Message)")
     exit 127
   }
-  if ($Mode -eq "detach") { Write-Output $p.Id; exit 0 }
+  if ($Mode -eq "detach") {
+    # A tool that dies in its first seconds (a game client that cannot start) is reported with its
+    # exit code here; the caller only ever sees a pid that is already gone.
+    if ($p.WaitForExit(3000)) {
+      [Console]::Error.WriteLine(("quiet-launch: {0} exited within 3s with code {1} (0x{2:X})" -f $s.exe, $p.ExitCode, $p.ExitCode))
+      exit 126
+    }
+    Write-Output $p.Id; exit 0
+  }
   $p.WaitForExit()
   exit $p.ExitCode
 }

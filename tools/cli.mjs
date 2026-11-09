@@ -1645,7 +1645,19 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
       p.unref();
       child = { pid: p.pid };
     } else {
-      child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
+      // quiet-launch reports a client that dies in its first 3s with its exit code. Seen
+      // once in a while on the hidden desktop with no log and no cause; one retry clears it.
+      try {
+        child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
+      } catch (e) {
+        slog(`client ${c.n} first launch failed (${e.message}); retrying once`);
+        sleepMs(5000);
+        try {
+          child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
+        } catch (e2) {
+          return fail(`client ${c.n} exited right after launch twice: ${e2.message}`);
+        }
+      }
     }
     if (!child.pid) return fail(`client ${c.n} did not start`);
     state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
