@@ -5227,6 +5227,136 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Leave"
      Comment "Car lot sheet close button."
     }
+    CustomStringTableItem "{869A6F273AAC96A0}" {
+     Id "LF-Service_Police"
+     Target_en_us "Police"
+     Comment "Service name callers see for the police service."
+    }
+    CustomStringTableItem "{7A099928BD809AE7}" {
+     Id "LF-Service_Medic"
+     Target_en_us "Medic"
+     Comment "Service name callers see for the medic service."
+    }
+    CustomStringTableItem "{46622CE72B35428C}" {
+     Id "LF-Service_Taxi"
+     Target_en_us "Taxi"
+     Comment "Service name callers see for the taxi service."
+    }
+    CustomStringTableItem "{719C7271EF84BC5B}" {
+     Id "LF-Service_NoAnswer"
+     Target_en_us "No answer. Nobody is on duty for that service right now."
+     Comment "Shown to a caller when nobody is on duty for the service they called (#248)."
+    }
+    CustomStringTableItem "{B4664D355C98920F}" {
+     Id "LF-Dispatch_RadioCall"
+     Target_en_us "All units: %1 at %2. Reported by phone."
+     Comment "Radio dispatch line for a call phoned in by a witness. %1 = what happened, %2 = place. No suspect."
+    }
+    CustomStringTableItem "{B49F143DD59203D0}" {
+     Id "LF-Payphone_Title"
+     Target_en_us "Payphone"
+     Comment "Title of the payphone toast."
+    }
+    CustomStringTableItem "{50F69750A6284C82}" {
+     Id "LF-Payphone_Connected"
+     Target_en_us "The call went through."
+     Comment "Payphone toast: the call reached the service."
+    }
+    CustomStringTableItem "{F75D3CCB7F1BFC4C}" {
+     Id "LF-Payphone_NoCoin"
+     Target_en_us "You need a coin for the payphone."
+     Comment "Payphone: the player carries no cash for the coin."
+    }
+    CustomStringTableItem "{33B2E99217263B93}" {
+     Id "LF-Payphone_Cooldown"
+     Target_en_us "The line is busy. Try again in a moment."
+     Comment "Payphone: the player or the phone is cooling down."
+    }
+    CustomStringTableItem "{EBEE9355D5E41580}" {
+     Id "LF-Payphone_Broken"
+     Target_en_us "The payphone is out of order."
+     Comment "Payphone: the call was refused for a reason the caller cannot fix."
+    }
+    CustomStringTableItem "{680515D680E0D9C0}" {
+     Id "LF-Payphone_ReportCrime"
+     Target_en_us "Report a crime"
+     Comment "Payphone action: what happened is a crime."
+    }
+    CustomStringTableItem "{EE9B52E0D3888DB4}" {
+     Id "LF-Payphone_ReportEmergency"
+     Target_en_us "Report an emergency"
+     Comment "Payphone action: what happened is an emergency."
+    }
+    CustomStringTableItem "{8E0EDAA6E007836E}" {
+     Id "LF-Payphone_ReportSuspicious"
+     Target_en_us "Report someone suspicious"
+     Comment "Payphone action: what happened is suspicious behaviour."
+    }
+    CustomStringTableItem "{D219D04552F904F3}" {
+     Id "LF-Payphone_Summary_Crime"
+     Target_en_us "Crime reported"
+     Comment "Summary the police radio line shows for a crime phoned in."
+    }
+    CustomStringTableItem "{367F9784CB23B15E}" {
+     Id "LF-Payphone_Summary_Emergency"
+     Target_en_us "Emergency reported"
+     Comment "Summary the police radio line shows for an emergency phoned in."
+    }
+    CustomStringTableItem "{C2AA364A6790F1CE}" {
+     Id "LF-Payphone_Summary_Suspicious"
+     Target_en_us "Suspicious person reported"
+     Comment "Summary the police radio line shows for a suspicious person phoned in."
+    }
+    CustomStringTableItem "{CBEE6929FA9220E9}" {
+     Id "LF-Dispatch_Read"
+     Target_en_us "Read the dispatch board"
+     Comment "Action on a service dispatch board (medic, taxi)."
+    }
+    CustomStringTableItem "{40DB3ECCE367BACE}" {
+     Id "LF-Dispatch_ServiceTitle"
+     Target_en_us "%1 - dispatch"
+     Comment "Title of a service dispatch board card. %1 = the service name."
+    }
+    CustomStringTableItem "{A110BD40681B9DE6}" {
+     Id "LF-Dispatch_ServiceLine"
+     Target_en_us "%1  %2 at %3"
+     Comment "Service dispatch board line. %1 = clock time HH:MM, %2 = what was reported, %3 = place."
+    }
+    CustomStringTableItem "{DD4BB860497316E7}" {
+     Id "LF-Dispatch_ServiceNone"
+     Target_en_us "No calls waiting."
+     Comment "Service dispatch board card when no call is open."
+    }
+    CustomStringTableItem "{3C58DD873A36D166}" {
+     Id "LF-Dispatch_ServiceClosed"
+     Target_en_us "This board is for on-duty staff of the service."
+     Comment "Service dispatch board card shown to anyone the service would not reach."
+    }
+    CustomStringTableItem "{3D7FD7F81A65DF0D}" {
+     Id "LF-Sign_DispatchBoard_Title"
+     Target_en_us "Dispatch"
+     Comment "Title printed on a service dispatch board."
+    }
+    CustomStringTableItem "{7F09778274142A4F}" {
+     Id "LF-Sign_DispatchBoard_What"
+     Target_en_us "Calls waiting for this service, newest first."
+     Comment "Dispatch board sign card: what it is."
+    }
+    CustomStringTableItem "{AADF82735259A9A5}" {
+     Id "LF-Sign_DispatchBoard_How"
+     Target_en_us "Calls come from payphones and pagers and stay until they are taken or expire."
+     Comment "Dispatch board sign card: how it works."
+    }
+    CustomStringTableItem "{D3C24B11CBD10FCC}" {
+     Id "LF-Sign_DispatchBoard_Rules"
+     Target_en_us "Only on-duty staff of the service can read the details."
+     Comment "Dispatch board sign card: rules."
+    }
+    CustomStringTableItem "{DF67BD63EAE97B58}" {
+     Id "LF-Sign_DispatchBoard_Next"
+     Target_en_us "Need help? Use a payphone to call the service."
+     Comment "Dispatch board sign card: what to do next."
+    }
   }
  }
 }

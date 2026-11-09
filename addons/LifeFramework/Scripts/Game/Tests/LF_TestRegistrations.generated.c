@@ -54,6 +54,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Dispatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchAlarm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DoorLock(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Downed(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DownedRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_E2E_Narrative(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_E2E_SaveStateWrite(), LF_TestTier.PERSISTENCE);
@@ -127,6 +129,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
@@ -199,6 +202,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PersistenceManagerWiring(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ScreenshotFailSafe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ServiceCalls(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopTotalPrice(), LF_TestTier.LOGIC);

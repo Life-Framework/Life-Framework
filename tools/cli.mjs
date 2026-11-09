@@ -1506,6 +1506,48 @@ function cmdSessionDown(dir) {
   return 0;
 }
 
+// `session join <n>`: starts client n on a running session that was brought up without it, so a
+// proof can show a LATE JOINER (a client that connects after the state it must see was already
+// set). The server log marker counts joins, so this waits for one more than before.
+function cmdSessionJoin(root, dir, flags) {
+  guardHeavy(root, "session join", flags.includes("--force"));
+  const n = Number(flags[0]);
+  if (!Number.isInteger(n) || n < 1 || n > session.MAX_CLIENTS) {
+    console.log("usage: tools\\cli session join <client 1.." + session.MAX_CLIENTS + ">");
+    return 2;
+  }
+  const s = session.readSession(dir);
+  if (!s || s.stoppedAt || !host.pidAlive(s.serverPid)) {
+    console.log("session: no running session; 'node agent-box/session.mjs up' first");
+    return 1;
+  }
+  if ((s.clients ?? []).some((c) => c.n === n && host.pidAlive(c.pid))) {
+    console.log(`session: client ${n} is already running`);
+    return 1;
+  }
+  const game = gameClientExe();
+  if (!existsSync(game)) {
+    console.log(`FAIL  not found: ${game}`);
+    return 1;
+  }
+  const c = session.sessionPaths(dir, session.MAX_CLIENTS).clients.find((x) => x.n === n);
+  const log = session.newestLog(join(s.serverProfile, "logs"));
+  const marker = /(?:registration form sent to player|spawning player) \d+/g;
+  const before = (readFileSync(log, "utf8").match(marker) ?? []).length;
+  const state = { ...s, clients: (s.clients ?? []).filter((x) => x.n !== n) };
+  sessionLog = join(dir, "up.log");
+  const fail = (msg) => {
+    console.log(`FAIL  ${msg}`);
+    return 1;
+  };
+  const failed = sessionLaunchClient(root, dir, state, c, { game, mission: s.mission, res: s.res, visible: s.visible, fail });
+  if (failed !== null) return failed;
+  const joined = sessionAwaitJoin(log, before + 1, marker, fail, state);
+  if (joined < 0) return 1;
+  console.log(`session: client ${n} joined late (${joined} join(s) in the server log)`);
+  return 0;
+}
+
 function cmdSessionStatus(dir) {
   const s = session.readSession(dir);
   if (!s) {
@@ -1626,48 +1668,56 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   slog(`server up (pid ${srv.pid}); log ${log}`);
 
   for (const c of paths.clients) {
-    mkdirSync(c.box, { recursive: true });
-    const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id, res, sound: !!state.sound });
-    slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
-    // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
-    // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
-    // Over ssh (a pool machine such as lf-testbox) there is no desktop: the client
-    // goes to the signed-in user's desktop through an interactive scheduled task.
-    let child = { pid: 0 };
-    if (interactiveNeeded()) {
-      try {
-        child = { pid: interactiveSpawnDetached(game, cArgs, { cwd: dirname(game), marker: c.profile }) };
-      } catch (e) {
-        return fail(`client ${c.n}: ${e.message}`);
-      }
-    } else if (visible) {
-      const p = spawn(game, cArgs, { cwd: dirname(game), detached: true, stdio: "ignore" });
-      p.unref();
-      child = { pid: p.pid };
-    } else {
-      // quiet-launch reports a client that dies in its first 3s with its exit code. Seen
-      // once in a while on the hidden desktop with no log and no cause; one retry clears it.
-      try {
-        child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
-      } catch (e) {
-        slog(`client ${c.n} first launch failed (${e.message}); retrying once`);
-        sleepMs(5000);
-        try {
-          child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
-        } catch (e2) {
-          return fail(`client ${c.n} exited right after launch twice: ${e2.message}`);
-        }
-      }
-    }
-    if (!child.pid) return fail(`client ${c.n} did not start`);
-    state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
-    session.writeSession(dir, state);
-    // Stagger so two clients do not load the same data at the same instant, and
-    // so player ids follow client numbers (the same accounts after a restart).
-    sleepMs(15000);
-    if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
+    const failed = sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail });
+    if (failed !== null) return failed;
   }
   return log;
+}
+
+// Launches one session client (its own profile) and records it in the session state. Returns
+// null, or the code fail() returned.
+function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail }) {
+  mkdirSync(c.box, { recursive: true });
+  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id, res, sound: !!state.sound });
+  slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
+  // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
+  // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
+  // Over ssh (a pool machine such as lf-testbox) there is no desktop: the client
+  // goes to the signed-in user's desktop through an interactive scheduled task.
+  let child = { pid: 0 };
+  if (interactiveNeeded()) {
+    try {
+      child = { pid: interactiveSpawnDetached(game, cArgs, { cwd: dirname(game), marker: c.profile }) };
+    } catch (e) {
+      return fail(`client ${c.n}: ${e.message}`);
+    }
+  } else if (visible) {
+    const p = spawn(game, cArgs, { cwd: dirname(game), detached: true, stdio: "ignore" });
+    p.unref();
+    child = { pid: p.pid };
+  } else {
+    // quiet-launch reports a client that dies in its first 3s with its exit code. Seen
+    // once in a while on the hidden desktop with no log and no cause; one retry clears it.
+    try {
+      child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
+    } catch (e) {
+      slog(`client ${c.n} first launch failed (${e.message}); retrying once`);
+      sleepMs(5000);
+      try {
+        child = { pid: quietSpawnDetached(game, cArgs, { cwd: dirname(game) }) };
+      } catch (e2) {
+        return fail(`client ${c.n} exited right after launch twice: ${e2.message}`);
+      }
+    }
+  }
+  if (!child.pid) return fail(`client ${c.n} did not start`);
+  state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
+  session.writeSession(dir, state);
+  // Stagger so two clients do not load the same data at the same instant, and
+  // so player ids follow client numbers (the same accounts after a restart).
+  sleepMs(15000);
+  if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
+  return null;
 }
 
 // One look at a starting session: { joined } while it is still coming up, or
@@ -1844,11 +1894,12 @@ function cmdSession(args) {
       return 1;
     }
   }
+  if (list[0] === "join") return cmdSessionJoin(ROOT, dir, list.slice(1));
   if (list[0] === "restart") return cmdSessionRestart(ROOT, dir, list.slice(1));
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
   if (list[0] === "wait") return cmdSessionWait(dir, list.slice(1));
-  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] | wait [--timeout s] | restart | down | status");
+  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] | wait [--timeout s] | join <n> | restart | down | status");
   return list[0] ? 1 : 0;
 }
 

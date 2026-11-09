@@ -225,8 +225,9 @@ modded class SCR_ChimeraCharacter
 
 		// Reply before the kill: the owner RPC needs a live controlled body to land on.
 		LF_HarnessReply(commandId, "ok", "died");
+		// A real death, not the downed state a lethal hit would now cause (LF_Downed.Finish).
 		damage.EnableDamageHandling(true);
-		damage.Kill(Instigator.CreateInstigator(this));
+		LF_Downed.Finish(this, Instigator.CreateInstigator(this));
 		LF_Debug.Info("AgentHarness", "character killed by the harness");
 	}
 
@@ -295,8 +296,12 @@ modded class SCR_ChimeraCharacter
 		if (damage.GetState() == EDamageState.DESTROYED)
 			alive = 0;
 
-		LF_Debug.Info("AgentHarness", string.Format("shot player %1: refused=%2 alive=%3", targetPlayerId, refused, alive));
-		LF_HarnessReply(commandId, "ok", string.Format("shot player=%1 refused=%2 alive=%3", targetPlayerId, refused, alive));
+		int downed = 0;
+		if (LF_Downed.IsDowned(target))
+			downed = 1;
+
+		LF_Debug.Info("AgentHarness", string.Format("shot player %1: refused=%2 alive=%3 downed=%4", targetPlayerId, refused, alive, downed));
+		LF_HarnessReply(commandId, "ok", string.Format("shot player=%1 refused=%2 alive=%3 downed=%4", targetPlayerId, refused, alive, downed));
 	}
 
 	//------------------------------------------------------------------------------------------------

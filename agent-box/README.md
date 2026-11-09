@@ -204,8 +204,12 @@ the game profile). Hooks:
   Movement actions are refused.
 - `shoot <playerId>` (dev gate) deals one lethal KINETIC hit from the local character to that
   player through `HandleDamage`, the path a bullet takes, so the safe zone and the murder hook
-  see it. Replies `shot player=N refused=R alive=A`.
-- `die` asks the server to kill the local character (dev gate), so a session
+  see it. Replies `shot player=N refused=R alive=A downed=D` (a lethal hit downs a player, #255).
+- `peers` (read-only, runs on the client) lists every player body this client has streamed in as
+  `player=N downed=D life=ALIVE|INCAPACITATED|DEAD`: the replicated downed flag and the vanilla
+  life state as THIS client sees them, so a late joiner's view of a downed player is readable.
+  `state` also reports the own `downed=` and `life=`.
+- `die` asks the server to kill the local character for real, downed or not (dev gate; `LF_Downed.Finish`), so a session
   can prove the death screen and the hospital respawn. `state` also reports
   `pos=x,y,z`, `bills=` (hospital bills carried), and `tickets=` / `owed=`
   (unpaid police tickets carried, the amount on the oldest).
@@ -547,7 +551,8 @@ node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one c
 node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
 node agent-box/session.mjs proof              # client 1 robs Roadmap_Fuel_Till, client 2 (police) gets the alert
 node agent-box/session.mjs police-proof       # client 2 clocks in at the desk, client 1 robs the till, both read the wanted board
-node agent-box/session.mjs murder-proof       # client 1 kills client 2 at the fuel station (wanted 3), then shoots on the square (refused)
+node agent-box/session.mjs murder-proof       # client 1 kills client 2 at the fuel station (wanted 3), then shoots on the square (refused); needs m_bDownedEnabled 0 in LF_Medic.conf for the run
+node agent-box/session.mjs downed-proof       # M2 #255: client 1 downs client 2 (alive, INCAPACITATED, no murder); client 1 and a late-joining client 3 (`session.mjs join 3`) read it downed; the downed player's death is the murder, then the hospital respawn
 node agent-box/session.mjs down               # closes every process the session started
 ```
 

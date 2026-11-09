@@ -54,10 +54,23 @@ class LF_OnCrimeCommitted : LF_Event
 	}
 }
 
-//! A player went down but is not dead. Defined; no feature has a downed state yet, so nothing publishes it.
+//! A player went down but is not dead (LF_Downed). m_sDownerUid is empty when no player did it.
+//! The murder and the hospital wake come later, with the real death (LF_OnPlayerKilled).
 class LF_OnPlayerDowned : LF_Event
 {
 	string m_sPlayerUid;
+	string m_sDownerUid;
+	//! Where the player went down.
+	vector m_vPosition;
+
+	static LF_OnPlayerDowned Create(string playerUid, string downerUid, vector position)
+	{
+		LF_OnPlayerDowned e = new LF_OnPlayerDowned();
+		e.m_sPlayerUid = playerUid;
+		e.m_sDownerUid = downerUid;
+		e.m_vPosition = position;
+		return e;
+	}
 }
 
 //! A player character died. m_sKillerUid is empty when no player killed them.
@@ -168,6 +181,44 @@ class LF_OnZoneChanged : LF_Event
 		e.m_sZone = zone;
 		e.m_sRule = rule;
 		e.m_bRemoved = removed;
+		return e;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A player called a service (police, medic, taxi, ...) and at least one receiver is on duty for it.
+//! Dispatch (#250) and any delivery channel subscribe; the caller does not know who listens.
+//! m_aReceiverIds are server-side player ids, never sent to clients.
+class LF_OnServiceCall : LF_Event
+{
+	string m_sCallerUid;
+	string m_sService;
+	//! Place key or grid text the call came from (a payphone's place).
+	string m_sPlace;
+	//! What happened, a preset key or free text.
+	string m_sSummary;
+	//! Where the call is delivered: comma list of pager, board, radio.
+	string m_sChannels;
+	//! World position of the caller's phone; zero when unknown.
+	vector m_vPosition;
+	ref array<int> m_aReceiverIds = {};
+	//! Suspect description snapshot when the call is a crime report (LF_Dispatch.Report); empty for a witness call.
+	string m_sClothing;
+	string m_sVehicle;
+	//! On-duty officers when the call was placed, when that differs from the receiver count; -1 means use the receivers.
+	int m_iOnDuty = -1;
+
+	static LF_OnServiceCall Create(string callerUid, string service, string place, string summary, string channels, vector position, array<int> receivers)
+	{
+		LF_OnServiceCall e = new LF_OnServiceCall();
+		e.m_sCallerUid = callerUid;
+		e.m_sService = service;
+		e.m_sPlace = place;
+		e.m_sSummary = summary;
+		e.m_sChannels = channels;
+		e.m_vPosition = position;
+		if (receivers)
+			e.m_aReceiverIds.Copy(receivers);
 		return e;
 	}
 }

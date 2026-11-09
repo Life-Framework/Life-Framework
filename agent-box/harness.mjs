@@ -117,6 +117,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "die") {
     return `${id} die`;
   }
+  if (spec.verb === "peers") {
+    return `${id} peers`;
+  }
   if (spec.verb === "shoot") {
     const target = Number(spec.playerId);
     if (!Number.isInteger(target) || target <= 0) throw new Error(`shoot needs a positive player id: ${spec.playerId}`);
@@ -1356,6 +1359,9 @@ function main(argv) {
     }
     if (cmd === "die") {
       return printResult(sendCommand({ verb: "die" }, 10000));
+    }
+    if (cmd === "peers") {
+      return printResult(sendCommand({ verb: "peers" }, 10000));
     }
     if (cmd === "shoot") {
       return printResult(sendCommand({ verb: "shoot", playerId: rest[0] }, 10000));

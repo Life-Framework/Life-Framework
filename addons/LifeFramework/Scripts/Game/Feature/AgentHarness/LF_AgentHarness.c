@@ -122,6 +122,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "die")
 			return true;
+		if (cmd.Verb == "peers")
+			return true;
 		if (cmd.Verb == "shoot")
 			return ParseShoot(parts, cmd);
 		if (cmd.Verb == "ui")
@@ -856,6 +858,11 @@ class LF_AgentHarness
 			DoDie(cmd);
 			return;
 		}
+		if (cmd.Verb == "peers")
+		{
+			DoPeers(cmd);
+			return;
+		}
 		if (cmd.Verb == "shoot")
 		{
 			DoShoot(cmd);
@@ -1162,6 +1169,10 @@ class LF_AgentHarness
 			owed = firstUnpaid.GetAmount();
 
 		line += string.Format(" pos=%1 bills=%2 tickets=%3 owed=%4", pos, bills, unpaidTickets, owed);
+		int downed = 0;
+		if (LF_Downed.IsDowned(character))
+			downed = 1;
+		line += string.Format(" downed=%1 life=%2", downed, LifeStateToken(character));
 		return line + string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
 	}
 
@@ -1209,6 +1220,58 @@ class LF_AgentHarness
 		if (token.IsEmpty())
 			return "none";
 		return token;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `peers`: what THIS client sees of every player body it has streamed in: the
+	//! replicated downed flag and the vanilla life state. A late joiner reads a downed player here.
+	protected static void DoPeers(LF_AgentCommand cmd)
+	{
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
+		{
+			WriteResult(cmd.Id, "error", "no_player_manager");
+			return;
+		}
+
+		array<int> ids = {};
+		playerManager.GetPlayers(ids);
+		string joined;
+		foreach (int id : ids)
+		{
+			IEntity body = playerManager.GetPlayerControlledEntity(id);
+			if (!body)
+				continue;
+
+			int downed = 0;
+			if (LF_Downed.IsDowned(body))
+				downed = 1;
+
+			if (!joined.IsEmpty())
+				joined += " | ";
+
+			joined += string.Format("player=%1 downed=%2 life=%3", id, downed, LifeStateToken(body));
+		}
+
+		if (joined.IsEmpty())
+			joined = "none";
+
+		WriteResult(cmd.Id, "ok", joined);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ALIVE, INCAPACITATED (vanilla unconscious), DEAD, or "none" for a body without a controller.
+	static string LifeStateToken(IEntity entity)
+	{
+		ChimeraCharacter character = ChimeraCharacter.Cast(entity);
+		if (!character)
+			return "none";
+
+		CharacterControllerComponent controller = character.GetCharacterController();
+		if (!controller)
+			return "none";
+
+		return typename.EnumToString(ECharacterLifeState, controller.GetLifeState());
 	}
 
 	//------------------------------------------------------------------------------------------------
