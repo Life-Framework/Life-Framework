@@ -223,7 +223,7 @@ item. Releases are repeatable, not hand-built.
   IDs are hard to change once public.
 - `validate-release-ready` checks both addons (metadata, preview image,
   dependency, no generated files, APL notice) in CI.
-- `tools\ci release <version>` gates, stamps versions in both `.gproj`
+- `tools\cli release <version>` gates, stamps versions in both `.gproj`
   files, writes notes, and tags.
 - The maintainer does the first upload (core, then pack); an agent prepares the
   checklist.
@@ -235,7 +235,7 @@ item. Releases are repeatable, not hand-built.
 
 1. #367 Fix Workshop item names and version scheme
 2. #368 validate-release-ready checks both addons for publishing
-3. #369 tools\ci release stamps versions, gates, and tags
+3. #369 tools\cli release stamps versions, gates, and tags
 4. #370 First Workshop upload of core and pack (maintainer)
 5. #371 A clean dedicated server boots from the Workshop items alone
 6. #372 Release process doc for updates and rollback
