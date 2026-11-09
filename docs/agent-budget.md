@@ -86,4 +86,4 @@ thread uses.
 
 ## Docs and screenshots
 
-The builder takes the screenshots during its proof session, and the free DeepSeek model writes up the player docs, website and closed issues once a day. See `docs/agent-docs-sweep.md`.
+The builder takes the screenshots during its proof session. The free DeepSeek model writes up the player docs, the website and the closed issue for each feature once it merges, and a weekly sweep catches anything missed. See `docs/agent-docs-sweep.md`.
