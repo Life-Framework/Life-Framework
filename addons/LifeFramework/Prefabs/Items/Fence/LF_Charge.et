@@ -1,0 +1,8 @@
+GenericEntity : "{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et" {
+ ID "C107FEEE71467DFE"
+ components {
+  LF_QuantityComponent "{8D8290D977AC17D6}" {
+   m_iMaxQuantity 1
+  }
+ }
+}
