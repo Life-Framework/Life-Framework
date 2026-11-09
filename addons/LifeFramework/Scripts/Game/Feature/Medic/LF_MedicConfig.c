@@ -28,6 +28,21 @@ class LF_MedicConfig
 	[Attribute("1", UIWidgets.CheckBox, "Disconnecting while downed counts as death. Off: the body is left to the base game disconnect handling")]
 	bool m_bDisconnectWhileDownedKills = true;
 
+	[Attribute("1", UIWidgets.CheckBox, "Anyone can add bleed-out time to a downed player with a bandage, tourniquet or saline bag (#257). Off: only a player whose job is medic")]
+	bool m_bFirstAidAnyone = true;
+
+	[Attribute("30", UIWidgets.Auto, "Bleed-out seconds one bandage adds to a downed player", params: "0 600")]
+	float m_fBandageSeconds = 30;
+
+	[Attribute("45", UIWidgets.Auto, "Bleed-out seconds one tourniquet adds to a downed player", params: "0 600")]
+	float m_fTourniquetSeconds = 45;
+
+	[Attribute("60", UIWidgets.Auto, "Bleed-out seconds one saline bag adds to a downed player. Morphine adds nothing", params: "0 600")]
+	float m_fSalineSeconds = 60;
+
+	[Attribute("300", UIWidgets.Auto, "First aid never takes a downed player above this many seconds left", params: "10 3600")]
+	float m_fFirstAidCapSeconds = 300;
+
 	protected static ref LF_MedicConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
