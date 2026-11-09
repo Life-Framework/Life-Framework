@@ -5307,6 +5307,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Suspicious person reported"
      Comment "Summary the police radio line shows for a suspicious person phoned in."
     }
+    CustomStringTableItem "{3C71B0A2D4E5F610}" {
+     Id "LF-Medic_Keybind_GiveUp"
+     Target_en_us "Give up (hold, while downed)"
+     Comment "Keybind: give up and die while downed."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F611}" {
+     Id "LF-Medic_GiveUpTooEarly"
+     Target_en_us "You can give up in %1 seconds from going down."
+     Comment "Toast: give up asked too early."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F612}" {
+     Id "LF-Medic_Downed"
+     Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
+     Comment "Toast: shown to a player who goes down."
+    }
     CustomStringTableItem "{177011F784696AD3}" {
      Id "LF-Item_Drill_Name"
      Target_en_us "Drill"

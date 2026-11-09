@@ -19,6 +19,15 @@ class LF_MedicConfig
 	[Attribute("0.1", UIWidgets.Auto, "Health (fraction of max) a player is left with when lethal damage downs them", params: "0.01 1")]
 	float m_fDownedHealthScaled = 0.1;
 
+	[Attribute("180", UIWidgets.Auto, "Seconds a downed player bleeds out before they die for real (#256)", params: "10 3600")]
+	float m_fBleedOutSeconds = 180;
+
+	[Attribute("30", UIWidgets.Auto, "Seconds a player must be downed before they can give up", params: "0 3600")]
+	float m_fGiveUpDelaySeconds = 30;
+
+	[Attribute("1", UIWidgets.CheckBox, "Disconnecting while downed counts as death. Off: the body is left to the base game disconnect handling")]
+	bool m_bDisconnectWhileDownedKills = true;
+
 	protected static ref LF_MedicConfig s_Config;
 	protected static bool s_bLoadAttempted;
 

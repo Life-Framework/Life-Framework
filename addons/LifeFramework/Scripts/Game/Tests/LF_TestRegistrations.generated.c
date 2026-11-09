@@ -28,6 +28,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BankSaveEmpty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMManagerGuards(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankApplySnapshot(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_BleedOutRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CarriedInventoryRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedInventoryDeathNoDupe(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarryMeshes(), LF_TestTier.WORLD);
