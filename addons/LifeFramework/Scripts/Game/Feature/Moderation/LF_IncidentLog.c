@@ -58,10 +58,8 @@ class LF_IncidentRecord : Managed
 //!
 //! It is a subscriber on LF_EventBus: LF_OnPlayerKilled, LF_OnPlayerDamaged, LF_OnMoneyMoved,
 //! LF_OnPlayerDowned (kind "downed", #255: the downer is the other party), LF_OnHoldUp (kind
-//! "holdup", #244: subject the actor, other the target), LF_OnAdminAction (kind "admin", #246:
-//! subject the admin, other the target, how the action). No
-//! "holdup", #244: subject the actor, other the target), LF_OnAimedAt (kind "aim", #245: same
-//! shape). No
+//! "holdup", #244: subject the actor, other the target), LF_OnAimedAt (kind "aim", #245: same shape),
+//! LF_OnAdminAction (kind "admin", #246: subject the admin, other the target, how the action). No
 //! feature calls it. Never replicated: nothing here is sent to a client.
 //! BOUNDED: config m_iMaxRecords (oldest go first) and m_iRetentionHours (older than that are
 //! dropped on every append and load).
