@@ -1,6 +1,6 @@
-# M1 playtest: Life Framework
+# Playtest: Life Framework
 
-The M1 playtest is a small 1989 Everon town, published on the Arma Reforger
+The playtest is a small 1989 Everon town, published on the Arma Reforger
 Workshop and hosted from the maintainer's PC. Play it, then tell us what broke.
 Feedback goes through GitHub issues.
 
@@ -45,6 +45,31 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 8. **Restart.** Leave and rejoin: your cash, bank, job, organization, and cars
    should be back.
 
+### M2 additions
+
+The M2 systems run in the same playtest build. The money ledger and incident
+log that back them stay on the server and invisible.
+
+- **Payphone.** The booth by the square takes one coin from the cash you carry.
+  Pick *Report a crime*, *Report an emergency*, or *Report someone suspicious*.
+  An on-duty officer hears it on the radio and sees the line on the wanted
+  board. One player can call once a minute. With nobody on duty nothing
+  connects and no coin is taken.
+- **Downed, not dead.** A lethal hit knocks a player unconscious instead of
+  killing them. You lie on the ground, cannot move or act, take no further
+  damage, and others can search you. NPCs still die as before. There is no
+  bleed-out or revive yet.
+- **The fence.** A dealer in the net-fenced test annex sells crime tools only to
+  proven criminals: a drill after 3 completed crimes, a breaching charge after
+  5, a keycard after 8. Rob a till, steal a vehicle, or breach a door to build
+  the count. Each tool carries a serial; use *Read serial* on it to see the
+  number.
+- **Hospital dispatch board.** The board by the hospital is the medic call
+  board. Read it and it tells you it is for on-duty staff; there is no medic
+  job yet, so no call can be answered.
+- **Safe square.** On the spawn square you cannot hurt another player and they
+  cannot hurt you. Weapons still fire; NPC, world, and self damage pass.
+
 ### Known rough edges
 
 - Esc does not close the wanted card or the organization ledger right after
@@ -52,6 +77,12 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 - If an arrest leaves you standing where you were instead of in the cell, say so.
 - Some NPCs may appear half-dressed.
 - Sign titles can be hard to read from the road.
+- Going down has no revive, bleed-out, or give-up yet: you stay on the ground,
+  so leave and rejoin to reset. The state does not survive a disconnect.
+- The hospital dispatch board is not staffed: there is no medic job yet, so it
+  only shows the on-duty card.
+- The fence and crime scene are in the test annex behind the net fence, not on
+  the main street; a village placement is still to come.
 
 ## Not in this build
 
@@ -59,7 +90,10 @@ Do not report these as broken. File them under "build next" if you want them.
 
 - Buying a house
 - A general crafting bench
-- Revive
+- Revive, a bleed-out timer, or giving up while downed
+- A medic job or an ambulance
+- Calling a medic or a taxi from the payphone
+- A lawless area or quarry rules
 - A police mission board
 - World events
 - New guns, cars, or aircraft

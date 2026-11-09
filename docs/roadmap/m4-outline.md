@@ -52,6 +52,19 @@ and staff cover for that: roughly 6 to 8 police and 2 to 3 moderators online.
 5. #309 Post-session log triage into issues
 6. #310 Config-only hotfix path (flagship)
 7. #311 Move to a rented box checklist (flagship)
+8. #378 Trial 0grind against our requirements and choose the host (flagship)
+9. #379 Dedicated server host guide (0grind and self-hosted)
+10. #380 `tools\cli server-doctor` reads a server log and explains it
+
+**Host and server DX.** The leading host candidate for the 24/7 box is
+[0grind](https://0grind.io/), which the Overthrow wiki recommends; the public
+page does not confirm mod install by Workshop ID, file access, startup
+parameters, or persistence, so #378 checks each on the free 7-day trial before
+the docs promise anything. We cover dedicated-server setup in our docs and aim to
+beat the Overthrow wiki on developer experience: a per-host guide, a
+self-hosted guide from the same template, copy-paste blocks, the exact log
+lines that mean success, a log-line-to-fix table, and `server-doctor`. The
+generator's server bundle (#381, M3) removes the hand-edited `server.json`.
 
 
 ## 2. Staff and community
