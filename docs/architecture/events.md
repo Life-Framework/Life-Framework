@@ -64,7 +64,7 @@ The bus keeps its own strong reference.
 | `LF_OnJobCompleted` | `m_sPlayerUid`, `m_iJob`, `m_iPay` | `LF_JobWorker` run completion (`LF_CivilianJob.CompleteRun`) |
 | `LF_OnVehicleBought` | `m_sBuyerUid`, `m_sCatalogPrefab`, `m_iPrice` | `LF_VehicleOwnership` purchase |
 | `LF_OnPlayerDowned` | `m_sPlayerUid` | Defined only. No feature has a downed state yet; whoever adds one publishes it |
-| `LF_OnServiceCall` | `m_sCallerUid`, `m_sService`, `m_sPlace`, `m_sSummary`, `m_sChannels`, `m_vPosition`, `m_aReceiverIds` | `LF_ServiceCalls.Place`, once per call with at least one receiver on duty. Dispatch (#250) subscribes |
+| `LF_OnServiceCall` | `m_sCallerUid`, `m_sService`, `m_sPlace`, `m_sSummary`, `m_sChannels`, `m_vPosition`, `m_aReceiverIds` | `LF_ServiceCalls.Place`, once per call with at least one receiver on duty; `LF_Dispatch.Report`, once per crime report (police, even with nobody on duty; adds `m_sClothing`, `m_sVehicle`, `m_iOnDuty`). `LF_ServiceCallDispatch` (radio and dispatch log) and `LF_ServiceBoard` (dispatch boards) subscribe |
 
 Adding an event: a class in `LF_Events.c`, a row here, a publish where the feature
 already logs the change, and one line in `docs/features.md`.

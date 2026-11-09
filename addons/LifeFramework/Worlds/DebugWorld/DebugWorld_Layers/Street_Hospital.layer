@@ -151,3 +151,7 @@ GenericEntity Hospital_Bed_3 {
  coords 266.7 0.19 261.45
  angleY 180
 }
+GenericEntity Roadmap_Hospital_DispatchBoard : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
+ coords 262 0 256.4
+ angleY 180
+}

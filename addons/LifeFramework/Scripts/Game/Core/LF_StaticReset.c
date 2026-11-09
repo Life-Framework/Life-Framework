@@ -37,6 +37,7 @@ class LF_StaticReset
 		LF_ServiceCallsConfig.ResetStatics();
 		LF_Payphone.ResetStatics();
 		LF_ServiceCallDispatch.ResetStatics();
+		LF_ServiceBoard.ResetStatics();
 		LF_OrgInvites.Reset();
 
 		s_iRuns = s_iRuns + 1;

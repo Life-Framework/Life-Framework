@@ -172,6 +172,11 @@ class LF_OnServiceCall : LF_Event
 	//! World position of the caller's phone; zero when unknown.
 	vector m_vPosition;
 	ref array<int> m_aReceiverIds = {};
+	//! Suspect description snapshot when the call is a crime report (LF_Dispatch.Report); empty for a witness call.
+	string m_sClothing;
+	string m_sVehicle;
+	//! On-duty officers when the call was placed, when that differs from the receiver count; -1 means use the receivers.
+	int m_iOnDuty = -1;
 
 	static LF_OnServiceCall Create(string callerUid, string service, string place, string summary, string channels, vector position, array<int> receivers)
 	{
