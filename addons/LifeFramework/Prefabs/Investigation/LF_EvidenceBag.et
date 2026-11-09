@@ -1,0 +1,44 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  LF_EvidenceBagComponent "{E8A2D4C61F7B3059}" {
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{1F6B3D8A4E9C2075}" {
+     Name "#LF-Evidence_Bag_Name"
+     Description "#LF-Evidence_Bag_Desc"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.05
+     ItemVolume 20
+     RestingUP Forward
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    SCR_PickUpItemAction "{51EC842E3A187379}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{51EC842E413D3E1D}" {
+      Name "#AR-Inventory_PickUp"
+      m_sIconName "pick-up"
+     }
+    }
+    LF_ReadEvidenceBagAction "{C7E3A1B58D2F4690}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{D5B8F2A4C1E70963}" {
+      Name "#LF-Evidence_Read_Action"
+     }
+    }
+   }
+  }
+ }
+}
