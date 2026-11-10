@@ -408,6 +408,9 @@ class LF_OnScannerHeard : LF_Event
 		e.m_sService = service;
 		e.m_sSummary = summary;
 		e.m_sPlace = place;
+		return e;
+	}
+}
 
 //! A witness described a suspect (LF_Witness): from the payphone or to an officer in person.
 //! Carries what the witness could see, never the suspect's name.
