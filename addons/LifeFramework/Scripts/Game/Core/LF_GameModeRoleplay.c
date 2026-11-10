@@ -38,6 +38,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_AimIntent.Start();
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
+		LF_ChainTrace.Install();
 		// Interaction menu role slots, on every machine (offer on the client, decide on the server).
 		LF_OrgInviteRole.Register();
 		LF_HoldUpRole.Register();

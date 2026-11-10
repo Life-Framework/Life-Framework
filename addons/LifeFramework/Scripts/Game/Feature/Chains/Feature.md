@@ -20,7 +20,7 @@ several stations. No menus and no progress bars.
   Progress belongs to the station, so more hands finish it sooner. Stations with the same site id
   share one heat number (`LF_ChainSites`). A loaded station is saved by its station key (payload
   `chainstations`, save version 20).
-- **Trace (#418) and searches (#419)** read the site heat and the chain's goods.
+- **Trace (#418).** `LF_ChainTrace` sweeps on a 5 s timer while a site is warm: smoke level per station, smell cue and `LF_OnChainSmell` per listener, a police lead per site. **Searches (#419)** read the site heat and the chain's goods.
 
 ## Rules
 

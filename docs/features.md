@@ -831,7 +831,20 @@
   (`Street_Moonshine.layer`, site `Moonshine_Site`) has three barrels at `380/384/388 0 300`
   and a still at `384 0 305`, about 150 m from the police station. Test: `chains/moonshine`
   (WORLD). No save change.
-- ⚠️ Not built: the smoke effect and the smell notice (#418), searches (#419). Manual: three
+- ✅ **Smoke and smell (#418).** `LF_ChainTrace` (server): the first accepted work wakes one 5 s
+  timer that runs only while a site is warm or a station still smokes; nothing is checked per frame.
+  Each sweep sets every station's smoke level from its site heat (`LF_ChainTrace.SmokeLevel`:
+  none, then thirds of `m_fMax`; the level is a replicated int on `LF_ChainStationComponent`, so it
+  changes only at a threshold and a late joiner sees it) and lets every player inside the
+  heat-scaled range (`LF_ChainSites.GetRange`) notice the smell: on-duty officers get
+  `#LF-Chain_Smell_Officer`, everyone else `#LF-Chain_Smell_Witness`, once per listener and site per
+  60 s. Smoke is the vanilla `Smoke_Smokestack_Medium` (levels 1 and 2, scaled 0.5 and 1) or
+  `_Big` (level 3), a local particle on every non-dedicated machine. Each notice is an
+  `LF_OnChainSmell` on the bus; `LF_ChainSmellLead` turns it into a police service call
+  (`#LF-Chain_SmellLead`, one per site per 5 min) so dispatch logs and radios it and the service
+  board pins it. NPC witnesses do not smell yet. Test: `chains/trace` (LOGIC). Heat is still not
+  saved; no save change.
+- ⚠️ Not built: searches (#419). Manual: three
   players on three barrels, see the PR.
 
 ## Jobs / Level / Licenses / Whitelist

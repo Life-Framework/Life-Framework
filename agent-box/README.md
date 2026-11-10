@@ -209,6 +209,7 @@ the game profile). Hooks:
   `player=N downed=D life=ALIVE|INCAPACITATED|DEAD`: the replicated downed flag and the vanilla
   life state as THIS client sees them, so a late joiner's view of a downed player is readable.
   `state` also reports the own `downed=` and `life=`.
+- `session.mjs moonshine-proof` (3 clients, `roster 3` before up): clients 1 and 2 mash and distil the moonshine chain at `Moonshine_Site`; client 3 clocks in, waits at the hideout door (no smell), then walks to the barrels and gets the `#LF-Chain_Smell_Officer` cue; the workers' own smell raises one dispatch lead that radios the officer. Shots: the still smoking and the workers. Verb `moonshine` hands one mash of goods.
 - `session.mjs bed-proof` (2 clients): the medic loads a downed client into the hospital ambulance, the bleed-out stays paused, the medic puts them in `Hospital_Bed_2`, the patient wakes with the reduced bill.
 - `siren <EntityName> <mode>` (dev gate) sets a placed vehicle's siren mode on the server through the driver key's rule (`LF_SirenManagerComponent.ApplyRequest`); replies `siren changed=C on=O broadcasts=N`. `session.mjs siren-proof` runs it on the ambulance and the police car and checks client 2.
 - `giveup` presses the give-up key for the local player (#256); the server refuses it before `m_fGiveUpDelaySeconds`. `state` reports `bleed=` (seconds left as this client reads them, -1 when not downed).
