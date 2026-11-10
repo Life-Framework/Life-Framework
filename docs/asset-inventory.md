@@ -29,3 +29,11 @@ track).
 
 The polish pass fills in the rest, area by area. The `check` rows haven't been
 looked at yet.
+
+## Area polish checks
+
+| Item | Prefab | Status | Uses now | What it should be | Area / issue | Priority |
+|---|---|---|---|---|---|---|
+| Payphone | `LF_Payphone.et` | final | vanilla `PhoneBooth_E_01` | (already a phone booth) | Square, fuel, hospital, police: Comms #249 | none |
+| Town signs (town map, safe zone) | `LF_Sign_Posts.et`, `LF_Sign_PolePlate.et` | final | vanilla sign bodies with a rendered face | (already signs) | Spawn square | none |
+| Clerk desk and chair | `Desk_01_short.et`, `Chair_02_green.et` | final | vanilla furniture | (already a desk and chair) | Spawn square | none |

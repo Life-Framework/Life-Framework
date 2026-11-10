@@ -2,7 +2,7 @@ SCR_DestructibleBuildingEntity : "{4D6D06CAD0439114}Prefabs/Structures/Cultural/
  coords 113 0 250
 }
 SCR_DestructibleBuildingEntity Village_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
- coords 96.5 0 263
+ coords 100.5 0 258
  angleY 90
 }
 GenericEntity : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
@@ -586,4 +586,16 @@ Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_au
 }
 Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
  coords 307.5 0 244.2
+}
+GenericEntity SquareClerkDesk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ coords 136 0 243.5
+ angleY 90
+}
+GenericEntity SquareClerkChair : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 137.4 0 243.5
+ angleY 270
+}
+GenericEntity SquareLuggageCart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ coords 124.5 0 240.5
+ angleY 20
 }
