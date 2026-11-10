@@ -11,6 +11,7 @@
 //      record in runs.jsonl, and a retried request keeping its queue age;
 //   5. runtime budgets: learned 3x p95 with a 30 s floor, seeded defaults,
 //      machine multiplier, self-raise after timeouts, --budget.
+// red-proof 2026-11-10 (bundle heal): with the retry fetch removed from psCheckout it printed "bundle fetch failure does not fetch origin and retry once".
 // red-proof 2026-11-10: dropping the hostname branch in loadMachines printed "an entry whose hostname is this machine is not the local machine with its own lanes".
 // red-proof: with remoteOwnerGone returning null it printed "dead owner pid on
 // this PC: no reclaim verdict"; with the mtime key removed from localConfig it
@@ -421,6 +422,12 @@ try {
   writeFileSync(join(dir, "lf.local.json"), "{}");
   check(pool.loadMachines(dir).some((m) => m.name === "local") && pool.loadMachines(dir).find((m) => m.name === "lf-testbox")?.via === "ssh", "this PC lost its local entry");
   check(pool.sessionMachineCandidates(dir, 1).map((m) => m.name).join() === "local,lf-testbox", "session candidates are not this PC first, then the laptop");
+  // The box-side checkout shows git's stderr, fetches origin and retries once, then exits BUNDLE_FAILED so the caller resends a full bundle.
+  const co = tb.psCheckoutOnly({ rDir: "C:/x/Life-Framework-rt-a", snap: { sha: "a".repeat(40) } }, "run-1.bundle");
+  check(/bundle failed: \$LfGitOut/.test(co) && !/Out-Null/.test(co.split("git checkout")[0]), "bundle fetch failure does not carry git's stderr");
+  check(/LfGit fetch -q origin/.test(co) && (co.match(/LfGit fetch -q \$bundle/g) || []).length === 2, "bundle fetch failure does not fetch origin and retry once");
+  check(/corrupt ref file/.test(co) && co.includes("Remove-Item -LiteralPath $rf.FullName"), "bundle fetch failure does not delete NUL-filled ref files");
+  check(new RegExp("exit " + tb.BUNDLE_FAILED + " }").test(co), "bundle fetch failure after the retry does not exit with BUNDLE_FAILED");
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }
@@ -430,4 +437,4 @@ if (failures.length) {
   for (const f of failures) console.log(`  ${f}`);
   process.exit(1);
 }
-console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine)");
+console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine, a failed bundle fetch shows git's error, retries, then asks for a full bundle)");

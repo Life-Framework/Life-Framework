@@ -22,10 +22,12 @@ track).
 |---|---|---|---|---|---|---|
 | Pager | `LF_Pager.et` | placeholder | ANPRC68 radio mesh | 1980s belt pager with a small screen | Comms #249 | medium |
 | Moonshine still | `LF_ChainStill.et` | placeholder | barrel station with the `BoilerTank_02` horizontal metal tank mesh (was the white `Boiler_01`, #497); a dark `BoilerLarge_02` furnace with a chimney pipe stands beside it | copper pot still with coil | Moonshine #420 | high: in website shots |
+| Smelter furnace | `Processor/Furnace.et` | placeholder | base-game `BoilerLarge_02` heating boiler (was the `Sawmill_E_01_SmallSaw` chipper, #593); the base game has no named furnace or foundry asset | brick or cast furnace with a fire door and chimney | Mining #593 | medium |
 | Fence drill | `LF_Drill.et` | placeholder | `BenchDrill_01` model | handheld power drill or safe-cracking drill | Fence #271 | medium |
 | Fence keycard | `LF_Keycard.et` | placeholder | stand-in mesh (#271) | plastic access card | Fence #271 | low |
 | Fence charge | `LF_Charge.et` | placeholder | stand-in mesh (#271) | improvised breaching charge | Fence #271 | low |
 | Police scanner | `LF_Scanner.et` | check | (#253) | handheld 1980s scanner | Comms #253 | medium |
+| Police car | `LF_UAZ469_Police.et`, `LF_UAZ469_LEDLightBar.et` | final | vanilla `UAZ469_covered_CIV_blue` with the mod bar mount `M151A2_LightBarMount.xob` raised 0.25 m to the UAZ roof (#595; the open M151A2 jeep left the bar floating) | (already a car) | Police station car, jail escort car | none |
 
 The polish pass fills in the rest, area by area. The `check` rows haven't been
 looked at yet.
@@ -54,8 +56,9 @@ looked at yet.
 | Hideout van | `Roadmap_Hideout_Van` | final | vanilla `UAZ452_base` (the van-bodied car) | (a parked van, scenery) | Hideout, area 13 | none |
 | Hideout workbench, crates, barrels, tyres | `Roadmap_Hideout_*` | final | vanilla `Workbench_01` (under the pergola), `Crate_01`, `BoxWooden_01`, `WoodenPalletBox_01`, `Pallet_01_Pile`, `Cart_01`, `Jerrycan_01`, `CardboardBox_03`, `BarrelMetal_01_blue`, `Tire_M151A2_pile` | (same) | Hideout, area 13 | none |
 | Fuel till counter and register | `EL_FuelTill.et` on vanilla `CounterShop_01` (Village_Dressing) | placeholder | vanilla shop counter with a cash register on top | a petrol-station kiosk counter inside the shop | Fuel till #236 | low |
+| Lock-up garage door | `Roadmap_Lockpick_Door` (`EL_Door_Base.et`) | placeholder | plain wooden house door in a brick wall line | roll-up or double-leaf garage door | Lock-up #411 | low |
 | Apple juicer | `AppleJuicer.et` (`AppleProcessor`) | placeholder | vanilla `CoffeeGrinderShop_01` on a `TableRecreation_01` press table in the orchard | a hand fruit press | Farm and trader chains, area 12 | low |
-| Tomato field: beds, greenhouse, crops | `VegetableBed_01_big/small`, `Greenhouse_01`, `TomatoCrop.et`, `SeedTomato.et` | final | vanilla farm structures and the mod crop prefab | (same) | Farm, area 12 | none |
+| Farm field: beds, greenhouse, crops | `VegetableBed_01_big/small`, `Greenhouse_01`, `CabbageCrop.et` | final | vanilla farm structures and the mod crop prefab | (same) | Farm, area 12 | none |
 | Farm yard props | `Cart_01`, `Wheelbarrow_01`, `Bucket_01`, `Crate_01_*`, `HayBale_01_square_big/small`, `WoodenFence_01_4m`, `TableRecreation_01` | final | vanilla props (no 1989-specific farm crate exists; Crate_01 stands in for a produce crate) | (same) | Farm, area 12 | none |
 | Quarry lane barrier | `WoodenFence_01_4m` rails + `ConeTraffic_01` | placeholder | two fence rails each side of a 6 m gap | red-white boom barrier on a post | Quarry polish, area 11 | low |
 | Quarry gatehouse | `Shed_03.et` | placeholder | a village garden shed | site hut or trailer | Quarry polish, area 11 | low |

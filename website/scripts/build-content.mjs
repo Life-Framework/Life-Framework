@@ -619,7 +619,7 @@ const githubOut = { ...githubRest, latestPulls: pulls.slice(0, 5) };
 
 const gallery = await buildGallery({ site, github, repoUrl: `https://github.com/${GITHUB_REPO}` });
 fs.writeFileSync(path.join(dataDir, "gallery.json"), JSON.stringify(gallery));
-console.log(`[content] gallery: ${gallery.count} pictures, ${gallery.sections.length} sections, ${gallery.areas.length} areas`);
+console.log(`[content] gallery: ${gallery.count} pictures`);
 
 fs.writeFileSync(path.join(outDir, "docs-index.json"), JSON.stringify(docsIndex));
 fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, media }));

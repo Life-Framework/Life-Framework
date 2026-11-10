@@ -25,6 +25,9 @@ class LF_UITheme
 	static const string QUANTITY_LAYOUT = "{7BD6344F5ACD8B35}UI/Layouts/UIKit/LF_UIQuantity.layout";
 	static const string LIST_LAYOUT = "{9A3E5C71B2D84F06}UI/Layouts/UIKit/LF_UIList.layout";
 	static const string KEYS_LAYOUT = "{B1C08A9DC82E6FEC}UI/Layouts/UIKit/LF_UIKeyRow.layout";
+	static const string HEADING_LAYOUT = "{2EA91E6A335D2FCE}UI/Layouts/UIKit/LF_UIHeading.layout";
+	static const string RULE_LAYOUT = "{C200C3E91BC38F87}UI/Layouts/UIKit/LF_UIRule.layout";
+	static const string RICH_LAYOUT = "{7AA3823D51F36803}UI/Layouts/UIKit/LF_UIRich.layout";
 
 	static const int FONT_TITLE = 28;
 	static const int FONT_BODY = 18;
@@ -32,6 +35,10 @@ class LF_UITheme
 	static const int FONT_FIELD = 18;
 	//! The printed name above a blank on a form.
 	static const int FONT_CAPTION = 16;
+	//! A printed notice's section label (small, upper case, in the accent colour).
+	static const int FONT_HEADING = 15;
+	//! The regular face a notice's body is set in, so the bold section labels stand out.
+	static const ResourceName FONT_REGULAR = "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt";
 
 	static const float PAD_LEFT = 28;
 	static const float PAD_TOP = 10;

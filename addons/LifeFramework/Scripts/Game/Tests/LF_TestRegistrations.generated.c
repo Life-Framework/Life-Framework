@@ -20,7 +20,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AdminAction(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AgentHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AimIntent(), LF_TestTier.LOGIC);
-		manager.Register(new LF_Test_AreaSpawner(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ATMBoundary(), LF_TestTier.WORLD);
@@ -31,6 +30,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BankSaveEmpty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMManagerGuards(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankApplySnapshot(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_BankRobKit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BedDelivery(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
@@ -50,6 +50,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChainTrace(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChopShopSteal(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChopShopWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
@@ -66,6 +67,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DebugAreaBoundary(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugActionValidation(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMenuGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DebugMoneyTopUp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugWorldCollision(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AccountStateBits(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LicenseBits(), LF_TestTier.LOGIC);
@@ -145,6 +147,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobPacing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Ledger(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LedgerPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LicensePlateFormat(), LF_TestTier.LOGIC);
@@ -198,6 +201,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuestWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RemovedTomatoSkip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartBankSurvivesConnect(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartJailSerializerRoundtrip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartVehicleNoGroundKey(), LF_TestTier.WORLD);
@@ -268,6 +272,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ShopPriceHidden(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopCatalog(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SignBoardFace(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SignCardFormat(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignCatalog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignCoverage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SignFaceClient(), LF_TestTier.LOGIC);
@@ -311,6 +316,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GarageLedger(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleImpound(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_VehicleKeyInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLockIdMatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);

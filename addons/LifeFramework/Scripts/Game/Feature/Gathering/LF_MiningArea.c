@@ -94,6 +94,9 @@ class LF_MiningArea : GenericEntity
 	//------------------------------------------------------------------------------------------------
 	void SpawnOres(int amount)
 	{
+		if (amount <= 0)
+			return;
+
 		int totalWeight = GetTotalWeight(m_PrefabsToSpawn);
 		if (totalWeight <= 0)
 		{
@@ -143,9 +146,11 @@ class LF_MiningArea : GenericEntity
 		WorldTimestamp now = GetWorld().GetTimestamp();
 		if (!m_NextRespawn.Greater(now))
 		{
-			SpawnOres(ComputeSpawnCount(m_iAmount, SCR_EntityHelper.GetChildrenCount(this)));
+			int missing = ComputeSpawnCount(m_iAmount, SCR_EntityHelper.GetChildrenCount(this));
+			SpawnOres(missing);
 			m_NextRespawn = now.PlusMilliseconds(m_fRespawnTime * MIN_TO_MS);
-			LF_Debug.Log("Mining", string.Format("respawn scheduled in %1 ms", m_fRespawnTime * MIN_TO_MS));
+			if (missing > 0)
+				LF_Debug.Log("Mining", string.Format("respawn scheduled in %1 ms", m_fRespawnTime * MIN_TO_MS));
 		}
 	}
 

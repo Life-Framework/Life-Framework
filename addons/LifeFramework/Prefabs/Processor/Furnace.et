@@ -2,14 +2,15 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
  ID "598F21A86EB5B48F"
  components {
   MeshObject "{598F21A867C4015C}" {
-   Object "{820BEDD412EF4AA4}Assets/Structures/BuildingsParts/Industrial/Sawmill/Sawmill_E_01_SmallSaw.xob"
+   Object "{855272895A58AD4D}Assets/Structures/BuildingsParts/Heating/BoilerLarge_02/BoilerLarge_02.xob"
   }
   ActionsManagerComponent "{598F21A8710B89C1}" {
    ActionContexts {
     UserActionContext "{598F21A871DA7304}" {
      Position PointInfo "{598F21A875320722}" {
-      Offset 0.2541 0.9136 0
+      Offset 0 0.7011 0.5055
      }
+     Radius 1
     }
    }
    additionalActions {
@@ -32,7 +33,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
       }
      }
      m_bForceDropOutput 1
-     m_vDropOffset -1.8 0 0
+     m_vDropOffset 0 0 1.6
      m_vRotation 0 0 0
     }
     LF_ProcessAction "{5A5EE24316053904}" {
@@ -57,7 +58,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
       }
      }
      m_bForceDropOutput 1
-     m_vDropOffset -1.8 0 0
+     m_vDropOffset 0 0 1.6
      m_vRotation 0 0 0
     }
     LF_ProcessAction "{5A5EE24316053906}" {
@@ -82,7 +83,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
       }
      }
      m_bForceDropOutput 1
-     m_vDropOffset -1.8 0 0
+     m_vDropOffset 0 0 1.6
      m_vRotation 0 0 0
     }
    }

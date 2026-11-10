@@ -21,7 +21,7 @@ Inventory and classification (every layer):
 | Class | Layers | Goes to |
 | --- | --- | --- |
 | Loop site | `Street_*` (Jobs, Bank, Breach, Vehicles, Police, Jail, Hospital, Fuel, Org, Hideout, Contraband), `ATM`, `Shops`, `Police`, `Quests` (clerk), `Gamemode` (spawn points), `TraderChain`, `WhitelistChat`, `Survival` | The street, in arrival order |
-| Production chain | `AppleChain`, `PlumChain`, `TomatoChain`, `FarmingChain`, `MiningChain`, `LoggingChain`, `CementChain`, `GravelChain`, `SandChain`, `CrimeChain` | Traders to the market; sources to the farm, quarry, builders' yard, forest edge; the fence to the hideout alley |
+| Production chain | `AppleChain`, `PlumChain`, `FarmingChain`, `MiningChain`, `LoggingChain`, `CementChain`, `GravelChain`, `SandChain`, `CrimeChain` | Traders to the market; sources to the farm, quarry, builders' yard, forest edge; the fence to the hideout alley |
 | Test fixture / legacy debug station | `Tests` (test runner), `PRFeatures` (plate, lock, siren cars and key crate), `Crimes` (rob safe, rack, tyres), `HousesKeys` (lock and key fixture), `NPCs` (show-ID citizen), `DebugWorldActions` (time and weather globe), `Jobs` (legacy job board) | The fenced test annex, keeping their boundaries |
 | World | `default` (world, terrain, light, fog, weather), `Roadmap` (street root), `Factions` (empty) | Unchanged, except the street root moves to the village centre |
 | Junk | 23 `LF_DebugAreaBoundary` boxes in village layers, the 60 m roadmap boundary | Deleted |
@@ -44,7 +44,7 @@ Arrival order, west to east (numbers match the map):
 | 1 | Town square | ChurchSmall_E_01, PubVillage_E_2L01, House_Village_E_1I04t, Fountain_01, BusShed, PhoneBooth, benches, lime trees | civilian spawn, clerk (`QuestGiver_Start`), `SurvivalStation` (pub terrace), `Roadmap_Job_TaxiPad` (bus stop) | 126 0 246; clerk 134 0 243.5 |
 | 2 | Post office and job counter | House_Town_E_2I01 | `Roadmap_Job_Depot`; parcel drop `Roadmap_Job_Drop` on a porch by the lock-up | 155.2 0 256.3; drop 312.5 0 243.6 |
 | 3 | Bank and ATM | MunicipalOffice_E_01 | `ATM_Debug`, `ATM_Debug_2` on counters; `Roadmap_Bank_Vault` and `Roadmap_Bank_Bag` on the east wall | 177/187 0 256.6; vault 194.1 0 265 |
-| 4 | General store and traders | ShopHouse_E_2I01t (food store), market stalls | `Shop_GeneralStore_Debug`; `TraderChainCounter`, `PoliceDutyNPC`, `AppleTrader`, `PlumTrader`, `TomatoTrader`, `FarmerStand` | 179 0 244.3; stalls x 188..220, z 240.6 |
+| 4 | General store and traders | ShopHouse_E_2I01t (food store), market stalls | `Shop_GeneralStore_Debug`; `TraderChainCounter`, `PoliceDutyNPC`, `AppleTrader`, `PlumTrader`, `FarmerStand` | 179 0 244.3; stalls x 188..220, z 240.6 |
 | 5 | Vehicle lot and garage | Workshop_01, asphalt lot, Garage_E_01 (doors to the street) | `Roadmap_Vehicle_Lot` (pads 206 0 257.5 + 8 m steps north), `Roadmap_Vehicle_S105`, `Roadmap_Garage` | 211 0 262.5; garage 238 0 256.6 |
 | 6 | Police station and jail | Villa_E_2I01_Police, walled jail yard behind it | `Roadmap_Police_Desk` (duty), `Roadmap_Police_Armory`, police spawns (the old `PoliceStation` and `WhitelistStation` tables moved to the annex in M1-22); `Roadmap_Jail_Cell`, `Roadmap_Jail_Door` (in the yard wall), `Roadmap_Escort_Car` | desk 232.9 0 239.6 (under the porch, by the door); cell 232.2 0 219 |
 | 7 | Hospital and fuel station | House_Town_E_2I03; FuelStation_E_01 | `Roadmap_Hospital_Till`, `Roadmap_Hospital_Cabinet`; `Roadmap_Fuel_Till`, `Roadmap_Job_FuelCan` | 257 0 256.4; till 259 0 241.2 |
