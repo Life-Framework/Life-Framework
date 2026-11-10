@@ -162,28 +162,28 @@ LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et"
 
 LF_NpcBaseEntity FenceNpc : "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et" {
  coords 186 0 311
- angleY 0
+ angleY 180
 }
 GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
- coords 191.6 0 312.2
+ coords 188.7 0 311.9
  angleY 180
 }
 GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 188.6 0 312.5
+ coords 190.5 0 312.3
  angleY 8
 }
 GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 189.6 0 312.6
+ coords 191.4 0 312.4
  angleY -12
 }
 GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 193.6 0 311.6
+ coords 191.8 0 310.4
 }
 GenericEntity : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
- coords 190.2 0 309.2
+ coords 184.4 0 308.4
  angleY 30
 }
 GenericEntity : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
- coords 179 0 306.5
+ coords 181.5 0 306.6
  angleY 75
 }
