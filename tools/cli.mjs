@@ -1662,11 +1662,14 @@ function cmdSessionUp(root, dir, flags) {
   }
   const holderOf = () => {
     try {
-      const holders = pool.sessionLanes(root).map((l) => {
-        const h = JSON.parse(readFileSync(join(wt.hubDirOf(root), "locks", `${l.lock}.lock`), "utf8"));
-        return `${h.purpose ?? "a run"} of ${h.slug ?? h.root ?? "another checkout"} (pid ${h.pid})`;
-      });
-      return holders.join(" and ");
+      const holders = [];
+      for (const l of pool.sessionLanes(root)) {
+        try {
+          const h = JSON.parse(readFileSync(join(wt.hubDirOf(root), "locks", `${l.lock}.lock`), "utf8"));
+          if (h.pid && host.pidAlive(h.pid)) holders.push(`${h.purpose ?? "a run"} of ${h.slug ?? h.root ?? "another checkout"} (pid ${h.pid})`);
+        } catch {}
+      }
+      return holders.length ? holders.join(" and ") : "another run";
     } catch {
       return "another run";
     }

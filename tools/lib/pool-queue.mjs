@@ -10,8 +10,8 @@ export const DEFAULTS = {
   // Memory a second concurrent session takes: the server, plus each game client (MB; measured
   // 2026-11-10, docs/worktrees.md "Session lanes"). The second session starts only while free RAM
   // minus this still clears minFreeMb.
-  sessionReserveServerMb: 800,
-  sessionReserveClientMb: 1200,
+  sessionReserveServerMb: 600,
+  sessionReserveClientMb: 850,
   bootBudgetS: 30,
   // A session older than sessionHoldMin while another session request queues is warned, then
   // closed sessionGraceMin later. session up --hold raises its own cap, to sessionHoldMaxMin at most.
