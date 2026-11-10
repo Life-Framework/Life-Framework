@@ -196,11 +196,11 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | Path | Class | Reason |
 | --- | --- | --- |
 | `DebugWorld/DebugWorld.ent`, `DebugTerrain/` | core | The flat test terrain |
-| Annex layers: `Annex`, `Crimes`, `DebugWorldActions`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat` | core | Every top-level entity sits inside the annex fence |
+| Annex layers: `Annex`, `Crimes`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat` | core | Every top-level entity sits inside the annex fence |
 | `Factions`, `Shops` | core | Empty layers |
 | `Quests` | split | One giver in the annex, the clerk on the square |
 | `Village_Buildings`, `Village_Dressing`, `Village_Roads` | pack | Vanilla buildings, props, and roads; no test names them |
-| `Street_*` (12) | split | Village sites that hold test-named fixtures |
+| `Street_*` (13, with `Street_SpawnHub`) | split | Village sites that hold test-named fixtures |
 | `Signs` | split | Village signs; `LF_Test_SafeZone` finds two |
 | Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
 | `ATM`, `Gamemode`, `Roadmap`, `Survival`, `default` | split | Village placement of entities tests use; the game mode entity is core |
