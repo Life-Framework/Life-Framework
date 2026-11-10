@@ -148,6 +148,7 @@ session-scoped:
   `error wrong_session` and logs `[LFDebug:AgentHarness] refused command ...`.
   Workbench and default-profile clients have no id and refuse addressed
   commands.
+- `session up --wait` queues behind another checkout's live session (one line, checks every 15 s, gives up after `LF_SESSION_WAIT_S`, default 1800 s) instead of refusing.
 - `session.mjs down` and `restart` refuse a live session another checkout
   started (`--force` overrides). `restart` keeps the id.
 

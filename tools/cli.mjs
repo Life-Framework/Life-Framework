@@ -1577,10 +1577,30 @@ function cmdSessionUp(root, dir, flags) {
     return 1;
   }
   // Each checkout has its own session dir; clients another checkout left running still hold memory and windows.
-  for (const o of session.liveSessionsElsewhere(dir, host.pidAlive)) {
-    console.log(`session: ${o.root ?? o.dir} has a live session; it runs 'node agent-box/session.mjs down' first`);
-    return 1;
+  // With --wait, queue behind another checkout's live session (one line, then block) instead of refusing:
+  // agents share one box, and a busy box is not a failure.
+  const waitLive = flags.includes("--wait");
+  const waitUntil = Date.now() + 1000 * Number(process.env.LF_SESSION_WAIT_S ?? 1800);
+  let queuedLive = false;
+  for (;;) {
+    const others = session.liveSessionsElsewhere(dir, host.pidAlive);
+    if (!others.length) break;
+    const o = others[0];
+    if (!waitLive) {
+      console.log(`session: ${o.root ?? o.dir} has a live session; it runs 'node agent-box/session.mjs down' first (or pass --wait to queue)`);
+      return 1;
+    }
+    if (Date.now() > waitUntil) {
+      console.log(`FAIL  still queued behind ${o.root ?? o.dir}'s live session after ${process.env.LF_SESSION_WAIT_S ?? 1800} s`);
+      return 1;
+    }
+    if (!queuedLive) {
+      console.log(`session: queued behind ${o.root ?? o.dir}'s live session (--wait)`);
+      queuedLive = true;
+    }
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 15000);
   }
+  if (queuedLive) console.log("session: the other session is down; starting");
   const exe = serverExe();
   const game = gameClientExe();
   for (const f of clients > 0 ? [exe, game] : [exe]) {
