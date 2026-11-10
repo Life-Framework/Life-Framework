@@ -32,6 +32,7 @@ import * as q from "../lib/pool-queue.mjs";
 import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionDirOf } from "../lib/session-lease.mjs";
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
+import { trimProcs } from "../lib/ws-trim.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
 const HEALTH_TTL_MS = 60000;
@@ -66,6 +67,8 @@ export function poolSettings(root) {
     sessionHoldMaxMin: pick("sessionHoldMaxMin", "LF_POOL_SESSION_HOLD_MAX_MIN"),
     sessionReserveServerMb: pick("sessionReserveServerMb", "LF_POOL_SESSION_RESERVE_SERVER_MB"),
     sessionReserveClientMb: pick("sessionReserveClientMb", "LF_POOL_SESSION_RESERVE_CLIENT_MB"),
+    // Per profile: pool.json / lf.local.json "sessionReserve": { "lowspec": { "serverMb", "clientMb" } }.
+    sessionReserve: { ...q.DEFAULTS.sessionReserve, ...(base.sessionReserve ?? {}), ...(over.sessionReserve ?? {}) },
   };
 }
 
@@ -368,6 +371,43 @@ function runningLocalServers(root, m) {
   return n;
 }
 
+// The pids a live session recorded (server and clients), for the working-set trim.
+export function sessionPids(s) {
+  if (!s || s.stoppedAt) return [];
+  return [s.serverPid, ...(s.clients ?? []).map((c) => c.pid)].filter((p) => Number.isInteger(p) && p > 0 && pidAlive(p));
+}
+
+let lastTrimAt = 0;
+
+// The RAM gate is about to refuse: trim the working sets of every live session's processes (recorded
+// pids only). A session waiting for its next harness command holds about 1.8 GB resident and needs
+// ~0.13 GB of it (docs/worktrees.md "Session profiles"); the pages go to the standby list, which
+// counts as free to the gate, and fault back when the session works again. At most once per 20 s.
+// Returns how many processes were trimmed.
+export function trimLiveSessions(root, m, opts = {}) {
+  if (Date.now() - lastTrimAt < 20000) return 0;
+  const pids = [];
+  for (const l of lanesFor(m, "session")) {
+    const info = readJson(localLockFile(root, l.lock), null);
+    if (!info || !pidAlive(info.pid) || info.purpose !== "session") continue;
+    const dir = sessionDirOf(info.root ?? root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
+    pids.push(...sessionPids(readJson(join(dir, "session.json"), null)));
+  }
+  if (!pids.length) return 0;
+  lastTrimAt = Date.now();
+  (opts.trim ?? trimProcs)(pids);
+  console.log(`pool: RAM is short; trimmed the working sets of ${pids.length} session process(es) (their pages stay cached, free to the gate)`);
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2500);
+  return pids.length;
+}
+
+// For a start that bypasses the gate (a late client): trims the live sessions when free RAM is under needMb.
+export function trimIfShort(root, needMb) {
+  const m = loadMachines(root).find((x) => x.via === "local");
+  if (!m || Math.round(freemem() / 1048576) >= needMb) return 0;
+  return trimLiveSessions(root, m);
+}
+
 // The other session lanes of this PC with a live holder: { lock, pendingMb } where pendingMb is the
 // memory a session still booting is expected to take that free RAM does not show yet (0 once it
 // is ready, or after ten minutes).
@@ -381,7 +421,7 @@ function otherSessionLanes(root, m, except) {
     if (Date.now() - Date.parse(info.at) < 600000) {
       const dir = sessionDirOf(info.root ?? root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
       const s = readJson(join(dir, "session.json"), null);
-      if (!s || (!s.readyAt && !s.stoppedAt)) pendingMb = q.sessionReserveMb(poolSettings(root), s?.expectClients ?? info.clients ?? 1);
+      if (!s || (!s.readyAt && !s.stoppedAt)) pendingMb = q.sessionReserveMb(poolSettings(root), s?.expectClients ?? info.clients ?? 1, s?.profile ?? info.profile ?? "full");
     }
     out.push({ lock: l.lock, pendingMb });
   }
@@ -423,9 +463,12 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
   const settings = poolSettings(root);
   // A second concurrent session also reserves its own memory, and counts sessions still booting.
   const second = meta?.purpose === "session" ? otherSessionLanes(root, m, name) : [];
-  const reserveMb = second.length ? q.sessionReserveMb(settings, meta.clients ?? 1) : 0;
+  const reserveMb = second.length ? q.sessionReserveMb(settings, meta.clients ?? 1, meta.profile ?? "full") : 0;
   const pendingMb = second.reduce((n, s) => n + s.pendingMb, 0);
-  const ram = opts.noRam ? { ok: true } : q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: settings.minFreeMb, reserveMb, pendingMb });
+  const verdict = () => q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: settings.minFreeMb, reserveMb, pendingMb });
+  let ram = opts.noRam ? { ok: true } : verdict();
+  // Before refusing for RAM, trim what idle sessions hold resident and look again (not under test seams).
+  if (!ram.ok && opts.freeMb === undefined && !opts.noTrim && trimLiveSessions(root, m) > 0) ram = verdict();
   if (!ram.ok) {
     if (opts.blocked) {
       opts.blocked.ram = ram.reason;
@@ -978,7 +1021,7 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
   // stuck: "ram" | "lane" once a try failed for that reason (others may then backfill); needMb: free RAM it needs.
   let stuck = "";
   let needMb;
-  const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name], clients: meta.clients ?? 1, ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
+  const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name], clients: meta.clients ?? 1, profile: meta.profile ?? "full", ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
   const ticket = writeTicket(root, body(), since);
   let lastReap = 0;
   let said = false;
