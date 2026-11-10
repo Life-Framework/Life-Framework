@@ -36,7 +36,8 @@
 
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
@@ -126,6 +127,22 @@ export function liveSessionsElsewhere(dir, alive, base = sessionBase()) {
     if (s && !s.stoppedAt && (alive(s.serverPid) || (s.clients ?? []).some((c) => alive(c.pid)))) out.push({ dir: other, root: s.root, serverUp: !!alive(s.serverPid) });
   }
   return out;
+}
+
+// Clients left running by a session whose server is gone (crashed or closed by hand) hold memory and windows
+// but no lane. Closes only the pids recorded in that session's own session.json (never by process name) and
+// marks it stopped. kill(pid) does the closing. Returns the reaped dirs.
+export function reapOrphanSessions(dir, alive, kill, base = sessionBase()) {
+  const reaped = [];
+  for (const o of liveSessionsElsewhere(dir, alive, base)) {
+    if (o.serverUp) continue;
+    const s = readSession(o.dir);
+    if (!s) continue;
+    for (const c of s.clients ?? []) if (alive(c.pid)) kill(c.pid);
+    writeSession(o.dir, { ...s, stoppedAt: new Date().toISOString(), reapedOrphan: true });
+    reaped.push(o.dir);
+  }
+  return reaped;
 }
 
 // -profile <dir> puts $profile: in <dir>\profile and logs in <dir>\logs.
@@ -272,6 +289,19 @@ export function parseState(detail) {
 
 export function selftestSession() {
   const failures = [];
+  {
+    const base = mkdtempSync(join(tmpdir(), "lf-orph-"));
+    const live = new Set([11, 22, 33]);
+    const w = (n, rec) => writeSession(join(base, n), rec);
+    w("me", { serverPid: 1, clients: [] });
+    w("healthy", { serverPid: 11, clients: [{ n: 1, pid: 22 }] });
+    w("orphan", { serverPid: 99, clients: [{ n: 1, pid: 33 }] });
+    const killed = [];
+    const reaped = reapOrphanSessions(join(base, "me"), (pid) => live.has(pid), (pid) => { killed.push(pid); live.delete(pid); }, base);
+    if (reaped.length !== 1 || killed.join() !== "33") failures.push(`orphan reap killed ${killed.join()} (want only 33)`);
+    if (liveSessionsElsewhere(join(base, "me"), (pid) => live.has(pid), base).filter((o) => !o.serverUp).length) failures.push("an orphan still listed after the reap");
+    rmSync(base, { recursive: true, force: true });
+  }
   const p = sessionPaths("S", 2);
   if (p.clients.length !== 2) failures.push("sessionPaths did not list 2 clients");
   if (p.clients[1].box !== join("S", "client2", "profile", "agent-box")) failures.push(`client 2 box is ${p.clients[1].box}`);

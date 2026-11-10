@@ -615,7 +615,11 @@ class LF_Bank
 		}
 
 		if (tool == TOOL_DRILL)
+		{
 			LeaveTool(vaultId, robber, toolItem);
+			// The drill shows (#513): the robber works the lock while the drill bites.
+			LF_WorkAnim.Begin(robber, VaultOrigin(vaultId), LF_EWorkAnimKind.DRILL, LF_WorkAnim.DRILL_SECONDS, true);
+		}
 
 		if (!tool.IsEmpty())
 		{

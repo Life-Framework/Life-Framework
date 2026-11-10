@@ -129,6 +129,19 @@ try {
   check(q.blocks(tk("s", "normal", 9, "session"), tk("t", "normal", 1, "test"), lanes, T0, min20) === false, "a session ticket blocks a test on separate lanes");
   check(q.blocks(tk("s", "normal", 9, "session"), tk("t", "normal", 1, "test"), { ...lanes, lanes: null }, T0, min20) === true, "a session ticket does not block a test on a shared lane");
   check(q.blocks({ ...tk("old", "normal", 9), lane: undefined }, tk("z", "normal", 1, "session"), lanes, T0, min20) === true, "a ticket from a CLI without lanes is not a server-2001 contender");
+  // Backfill: a head job stuck on RAM (3-client session) does not block a small job behind it.
+  const bigHead = { ...tk("1-big", "normal", 5, "session"), stuck: "ram", needMb: 5100, clients: 3 };
+  const small = tk("2-small", "normal", 1, "session");
+  check(q.blocks(bigHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === false, "a RAM-stuck head still blocks a small job behind it");
+  check(q.blocks({ ...bigHead, stuck: undefined }, small, lanes, T0, min20) === true, "a head that has not tried must still block (plain FIFO)");
+  check(q.blocks({ ...bigHead, stuck: "lane" }, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === true, "a lane-stuck head loses its turn to a job wanting the same lane");
+  check(q.blocks({ ...bigHead, lane: "session", stuck: "lane" }, tk("3-t", "normal", 1, "test"), { ...lanes, lanes: null }, T0, min20, { starveMs: min20, freeMb: 3400 }) === true, "shared-lane head lost its turn");
+  // Starvation: after 20 min the head holds its place once the RAM it needs is there, not before.
+  const oldHead = { ...bigHead, at: new Date(T0 - 25 * 60000).toISOString() };
+  check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === false, "a starved head reserves the lane before its RAM is there");
+  check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 5200 }) === true, "a starved head with its RAM does not reserve the lane");
+  check(q.waitReason(bigHead) === "ram 3-client" && q.waitReason({ stuck: "lane" }) === "lane" && q.waitReason({}, 2) === "behind 2", "waitReason text");
+  check(q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500, reserveMb: 3600 }).needMb === 5100, "ramVerdict does not report needMb");
   check(q.ramVerdict({ running: 0, freeMb: 100, minFreeMb: 1500 }).ok && !q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500 }).ok && q.ramVerdict({ running: 1, freeMb: 2000, minFreeMb: 1500 }).ok, "RAM gate verdicts");
 
   // Aging is the fair share: a low job that waited 40 min is "high" and, arriving first, goes ahead of new
@@ -289,6 +302,29 @@ try {
       const lockInfo = JSON.parse(readFileSync(join(rLockDir, "server-2001.lock"), "utf8"));
       check(lockInfo.pid === process.pid && lockInfo.purpose === "session", "the session slot is not held by the new request");
       rmSync(join(rLockDir, "server-2001.lock"), { force: true });
+    }
+    // Backfill, end to end: a 3-client head waiting on RAM does not hold up a small request, and once it
+    // has waited past the starvation limit (with its RAM there) it does.
+    {
+      const qd = join(rdir, "tmp", "wt", "pool", "queue");
+      mkdirSync(qd, { recursive: true });
+      const headFile = join(qd, "000000000000001-0000001-aaaaaa.json");
+      const head = (ageMin) => ({ pid: process.pid, at: new Date(Date.now() - ageMin * 60000).toISOString(), slug: "big", purpose: "session", root: rdir, pinned: true, lane: "session", priority: "normal", waitingOn: ["server-2001", "ram"], machines: ["local"], clients: 3, stuck: "ram", needMb: 1 });
+      writeFileSync(headFile, JSON.stringify(head(2)));
+      let small = null;
+      try {
+        small = pool.acquireSessionLaneSync(rdir, { waitMs: 5000, meta: { slug: "small" } });
+      } catch {}
+      check(!!small, "backfill: a small session request waited behind a RAM-stuck head");
+      rmSync(join(rLockDir, "server-2001.lock"), { force: true });
+      writeFileSync(headFile, JSON.stringify(head(25)));
+      let late = null;
+      try {
+        late = pool.acquireSessionLaneSync(rdir, { waitMs: 1500, meta: { slug: "small2" } });
+      } catch {}
+      check(!late, "starvation: a starved head's lane was taken by a small request");
+      if (late) rmSync(join(rLockDir, "server-2001.lock"), { force: true });
+      rmSync(headFile, { force: true });
     }
     // A retried request keeps the age of the one it replaces (a timed-out `up --wait` used to start over), and a
     // request that gets the slot forgets it.

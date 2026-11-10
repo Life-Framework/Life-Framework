@@ -37,6 +37,7 @@ looked at yet.
 | Payphone | `LF_Payphone.et` | final | vanilla `PhoneBooth_E_01` | (already a phone booth) | Square, fuel, hospital, police: Comms #249 | none |
 | Town signs (town map, safe zone) | `LF_Sign_Posts.et`, `LF_Sign_PolePlate.et` | final | vanilla sign bodies with a rendered face | (already signs) | Spawn square | none |
 | Clerk desk and chair | `Desk_01_short.et`, `Chair_02_green.et` | final | vanilla furniture | (already a desk and chair) | Spawn square | none |
+| Fence yard props | `Workbench_01.et`, `BoxWooden_01.et`, `Crate_01_green.et`, `BarrelMetal_01_blue.et`, `Tire_M151A2_pile.et`, `EL_S105_beige.et` | final | vanilla props and a parked Skoda | (already what they are); no tarp prefab found, so none placed. Drill, charge and keycard stay placeholders (rows above) | Fence yard #276 | none |
 | Cash van box | `LF_CashVanBox.et` | placeholder | vanilla `Chest_01` (dark steel trunk) at 1.4 scale, on the van's rear step | a locked steel cash-in-transit box | Cash van #274 | low |
 | ATM (two, on the bank front) | `ATM_Debug`, `ATM_Debug_2` (DebugWorld `ATM.layer`) | placeholder | vanilla post-office teller counter `CounterPostOffice_01_window` against the bank wall | a 1989 wall-mounted cash machine or a teller point with a glass screen (none in the base game) | Bank, ATM | low |
 | Money bag | `LF_MoneyBag.et` | placeholder | vanilla `SackUniversal_01` sack mesh at 0.55 scale | a canvas cash bag with a drawstring | Bank, cash van #273 #274 | low |
@@ -45,4 +46,13 @@ looked at yet.
 | Hospital till | `Roadmap_Hospital_Till` | final | vanilla `CounterPostOffice_01` | (a reception counter) | Hospital, area 7 | none |
 | Medicine cabinet | `Roadmap_Hospital_Cabinet` | placeholder | vanilla `CupboardOld_01_medium` wooden cupboard | white medical cabinet | Hospital, area 7 | low |
 | Stretcher | none | missing | no base-game stretcher found | stretcher by the ambulance | Hospital, area 7 | low |
+| Store counter | `Shop_GeneralStore_Debug` | placeholder | vanilla `CounterShop_01` (a yellow market cart) | a shop counter with a till | General store, area 3 | low |
+| Market stall | umbrella stands plus `TableRecreation_01` | placeholder | vanilla `MarketStand_01_Umbrella` over recreation tables | a market stall with a awning | General store and market, area 3 | low |
+| Site alarm beacon | `LF_SiteAlarm.et` | final | vanilla `HazardBeacon_01`, scaled 3x, 1.1 m up, while the alarm runs | (a red hazard lamp) | Alarm at store, bank, till, area 3 | none |
+| Hideout machine | `Roadmap_Hideout_Machine` | placeholder | vanilla `CoffeeGrinderShop_01` | contraband press | Hideout, area 13 | medium |
+| Hideout stash | `LF_HideoutStash.et` | final | vanilla chest | (a trunk) | Hideout, area 13 | none |
+| Hideout van | `Roadmap_Hideout_Van` | final | vanilla `UAZ452_base` (the van-bodied car) | (a parked van, scenery) | Hideout, area 13 | none |
+| Hideout workbench, crates, barrels, tyres | `Roadmap_Hideout_*` | final | vanilla `Workbench_01` (under the pergola), `Crate_01`, `BoxWooden_01`, `WoodenPalletBox_01`, `Pallet_01_Pile`, `Cart_01`, `Jerrycan_01`, `CardboardBox_03`, `BarrelMetal_01_blue`, `Tire_M151A2_pile` | (same) | Hideout, area 13 | none |
 | Fuel till counter and register | `EL_FuelTill.et` on vanilla `CounterShop_01` (Village_Dressing) | placeholder | vanilla shop counter with a cash register on top | a petrol-station kiosk counter inside the shop | Fuel till #236 | low |
+| Car lot price board | `Sign_LotPrice_*` (`LF_Sign_Chalkboard`) | final | vanilla `ChalkBoard_01` | (a price board) | Car lot, area 4 | none |
+| Lot display cars | `Lot_Display_*`, `Roadmap_Vehicle_S105` | final | the lot offers base vehicles | (display cars) | Car lot, area 4 | none |

@@ -1,0 +1,21 @@
+AnimSrcGraph {
+ AnimSetTemplate "{9A43A8BDDF59B93C}Anims/Workspaces/Work/LF_WorkPick.ast"
+ ControlTemplate AnimSrcGCT "{1EE5532C7E012CCC}" {
+  Variables {
+   AnimSrcGCTVarInt Gestures {
+    DefaultValue -1
+    MinValue -2
+    MaxValue 1000
+   }
+  }
+  Commands {
+   AnimSrcGCTCmd CMD_Gestures {
+   }
+  }
+ }
+ Debug AnimSrcGD "{98B257797ECC67FD}" {
+ }
+ GraphFilesResourceNames {
+  "{CCCC2E41F73ED58E}Anims/Workspaces/Work/LF_WorkPick.agf"
+ }
+}

@@ -1,4 +1,4 @@
-﻿{
+{
   "sections": [
     { "id": "epic-145", "title": "Moderation", "blurb": "Signs and rules for the one lawless area in the village." },
     { "id": "epic-147", "title": "Comms", "blurb": "Payphones and dispatch boards, the way a call reaches a unit." },
@@ -7,7 +7,13 @@
     { "id": "epic-410", "title": "Underworld", "blurb": "Stolen cars, chop shops, and the moonshine chain." },
     { "id": "town", "title": "The village", "blurb": "The playtest town around the sites." }
   ],
-  "issueSection": { "116": "town", "276": "town", "265": "epic-146", "271": "epic-148", "274": "epic-148" },
+  "issueSection": {
+    "116": "town",
+    "265": "epic-146",
+    "271": "epic-148",
+    "274": "epic-148",
+    "276": "town"
+  },
   "issueTitles": {
     "116": "Signs in the village",
     "243": "Lawless Area signs",
@@ -55,21 +61,31 @@
     "area-2-bank/wide": "The bank front: two teller windows, the ATM sign and the vault door on the east wall (right)",
     "area-2-bank/detail": "The two ATM teller windows either side of the bank door",
     "area-5-fuel-station/wide": "The fuel station from the street: canopy, kiosk, the till counter with the clerk behind it, and the FUEL STATION sign",
-    "area-5-fuel-station/wide": "The fuel station from the main street: the canopy and kiosk, the till counter with the clerk behind it, the payphone and the FUEL STATION sign",
-    "area-5-fuel-station/detail": "The fuel till on its counter, clerk behind it, facing the street: the Rob the till prompt",
+    "area-3-store/wide": "The general store with its counter out front, and the market tables and sign down the street",
+    "area-3-store/counter": "The store counter with the shelf goods on top, the fascia sign and the sandwich board beside the door",
+    "area-4-carlot/wide": "The car lot from the main street: four display cars in an even row, a price board by each, the sales desk and the lot sign, with the garage to the right",
+    "area-4-carlot/detail": "The display row head on: S105, UAZ, van and UAZ 452, each with its price board",
     "area-6-police/wide": "The police post from the main street: the full villa, the POLICE STATION sign, the duty desk in the loggia, the payphone, the two boards on the lawn and a police jeep",
     "area-6-police/angle": "The same post from the south-west: dispatch and wanted boards face the street, the loggia door is clear",
     "area-7-hospital/wide": "The village hospital with the ambulance in its bay",
     "area-7-hospital/desk": "Duty desk and dispatch board outside the hospital door",
+    "area-13-hideout/wide": "The hideout yard from the gate side: hideout sign, parked van, tyres, the workbench under the pergola, pallets and crates against the walls",
+    "area-13-hideout/detail": "The van and barrels beside the pergola, the contraband machine in the foreground",
+    "area-13-hideout/bench": "The workbench under the pergola with a crate, a jerrycan and a carton on the top",
+    "area-9-fence/wide": "Vince facing the lane in his back yard, with his bench, crates, barrel and tyre pile close around him",
+    "area-9-fence/detail": "Vince the fence in front of the barn doors, tyres and the car beside him",
+    "area-9-fence/yard": "The yard from the south: the parked Skoda, tyres, Vince, his bench and the barrel",
     "area-10-cash-van/wide": "The cash van at the bank stop",
     "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open",
-    "area-16-moonshine/wide": "The moonshine camp in the field: three mash barrels, the still, a fire pit and sacks",
-    "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack behind it"
+    "area-16-moonshine/wide": "The moonshine camp tucked under a stand of spruce: still, fire pit, pallet and a fence behind",
+    "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack, beside the mash barrels"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",
     "area-2-bank": "The bank",
+    "area-4-carlot": "Car lot and garage",
     "area-7-hospital": "Hospital",
+    "area-9-fence": "The fence",
     "area-10-cash-van": "Cash van route",
     "area-16-moonshine": "Moonshine camp"
   },
@@ -101,4 +117,3 @@
     "275/m2_275_armory_opened_client1_1.png"
   ]
 }
-

@@ -22,3 +22,11 @@
 [merge "lf-lint-baseline"]
 	name = Three-way multiset merge of the enforce-lint baseline
 	driver = node tools/merge/union-lint-baseline.mjs %O %A %B %P
+
+[merge "lf-table-rows"]
+	name = Markdown table union keyed by the Prefab or Item column
+	driver = node tools/merge/merge-table-rows.mjs %O %A %B %P
+
+[merge "lf-json-keys"]
+	name = JSON union by key, conflict only on a key both sides changed
+	driver = node tools/merge/merge-json-keys.mjs %O %A %B %P
