@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{CCCC2E41F73ED58E}Anims/Workspaces/Work/LF_WorkPick.agf"
+ Configurations {
+  AnimGraphFileResourceClass PC {
+  }
+  AnimGraphFileResourceClass XBOX_ONE : PC {
+  }
+  AnimGraphFileResourceClass XBOX_SERIES : PC {
+  }
+  AnimGraphFileResourceClass PS4 : PC {
+  }
+  AnimGraphFileResourceClass HEADLESS : PC {
+  }
+ }
+}

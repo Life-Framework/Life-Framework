@@ -7,19 +7,20 @@
     { "n": 4, "name": "car-lot", "front": 180, "x": 225, "y": 0, "z": 262, "radius": 28 },
     { "n": 5, "name": "fuel-station", "front": 0, "x": 259, "y": 0, "z": 243, "radius": 16 },
     { "n": 6, "name": "police-station", "front": 0, "x": 233, "y": 0, "z": 234, "radius": 24 },
+    { "n": 6, "name": "police-facade", "front": 0, "x": 234.5, "y": 0, "z": 239, "radius": 16, "note": "wide of the whole police villa facade from the street", "wideCands": [{ "az": 0, "dist": 15, "up": 6 }, { "az": 12, "dist": 16, "up": 6 }, { "az": -12, "dist": 16, "up": 6 }] },
     { "n": 7, "name": "hospital", "front": 180, "x": 262, "y": 0, "z": 255, "radius": 18 },
     { "n": 8, "name": "payphones", "front": 270, "x": 96.5, "y": 0, "z": 263, "radius": 10, "note": "square phone; also payphones-fuel, payphones-hospital, payphones-police" },
     { "n": 8, "name": "payphones-fuel", "front": 0, "x": 255.5, "y": 0, "z": 244, "radius": 10 },
     { "n": 8, "name": "payphones-hospital", "front": 180, "x": 255, "y": 0, "z": 259, "radius": 10 },
-    { "n": 8, "name": "payphones-police", "front": 0, "x": 239.2, "y": 0, "z": 241.5, "radius": 10 },
-    { "n": 9, "name": "fence", "front": 180, "x": 186, "y": 0, "z": 311, "radius": 14 },
+    { "n": 8, "name": "payphones-police", "front": 0, "x": 239.9, "y": 0, "z": 241.5, "radius": 10 },
+    { "n": 9, "name": "fence", "front": 180, "x": 186.5, "y": 0, "z": 309.5, "radius": 8 },
     { "n": 10, "name": "cash-van", "front": 180, "x": 210, "y": 0, "z": 248, "radius": 50 },
     { "n": 11, "name": "quarry", "front": 0, "x": 175, "y": 0, "z": 172, "radius": 25 },
     { "n": 12, "name": "farm-trader", "front": 180, "x": 150, "y": 0, "z": 300, "radius": 25 },
     { "n": 13, "name": "hideout", "front": 270, "x": 305, "y": 0, "z": 295, "radius": 20 },
     { "n": 14, "name": "lock-up", "front": 270, "x": 309, "y": 0, "z": 244, "radius": 14 },
     { "n": 15, "name": "chop-shop", "front": 270, "x": 322, "y": 0, "z": 300, "radius": 18 },
-    { "n": 16, "name": "moonshine", "front": 270, "x": 384, "y": 0, "z": 302, "radius": 16 },
+    { "n": 16, "name": "moonshine", "front": 180, "x": 384, "y": 0, "z": 304, "radius": 8 },
     { "n": 17, "name": "town-signs", "front": 270, "x": 130, "y": 0, "z": 265, "radius": 50 }
   ]
 }

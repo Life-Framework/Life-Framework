@@ -156,3 +156,6 @@ When a new message appears:
      → **BY DESIGN**.
    - Mod emitter that is a defect → fix it, mark **FIXED**, reference the fix.
 2. Add the row in the same change.
+| `[LFDebug:WorkAnim] work animation started for <uid>: PICK|DRILL for <s> s` / `stopped: pick attempt finished | pick attempt dropped: ... | work finished | STOP_DOWN | STOP_RANGE | STOP_TIMEOUT` (server) | BY DESIGN | #513: the server began and ended the drill or lockpick working animation. STOP_TIMEOUT on a pick means the attempt never ended (a bug). |
+| `[LFDebug:WorkAnim] work animation playing on <id> (loitering 1, head ...)` / `ended on <id>` (every rendering client) | BY DESIGN | #513: this machine sees the worker in the work loiter. |
+| `[LFDebug:WorkAnim] work animation not visible on <id>` or `work animation: the worker is already in a loiter` | OPEN when it appears | #513: the server started the work but this machine does not show it (check `LF_WorkPick/LF_WorkDrill.agr` loaded without `ANIMATION (E)` lines), or the worker was already in another loiter. |

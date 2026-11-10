@@ -36,7 +36,8 @@
 
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
@@ -123,9 +124,25 @@ export function liveSessionsElsewhere(dir, alive, base = sessionBase()) {
   for (const other of [base, ...names.map((n) => join(base, n))]) {
     if (resolve(other).toLowerCase() === resolve(dir).toLowerCase()) continue;
     const s = readSession(other);
-    if (s && !s.stoppedAt && (alive(s.serverPid) || (s.clients ?? []).some((c) => alive(c.pid)))) out.push({ dir: other, root: s.root });
+    if (s && !s.stoppedAt && (alive(s.serverPid) || (s.clients ?? []).some((c) => alive(c.pid)))) out.push({ dir: other, root: s.root, serverUp: !!alive(s.serverPid) });
   }
   return out;
+}
+
+// Clients left running by a session whose server is gone (crashed or closed by hand) hold memory and windows
+// but no lane. Closes only the pids recorded in that session's own session.json (never by process name) and
+// marks it stopped. kill(pid) does the closing. Returns the reaped dirs.
+export function reapOrphanSessions(dir, alive, kill, base = sessionBase()) {
+  const reaped = [];
+  for (const o of liveSessionsElsewhere(dir, alive, base)) {
+    if (o.serverUp) continue;
+    const s = readSession(o.dir);
+    if (!s) continue;
+    for (const c of s.clients ?? []) if (alive(c.pid)) kill(c.pid);
+    writeSession(o.dir, { ...s, stoppedAt: new Date().toISOString(), reapedOrphan: true });
+    reaped.push(o.dir);
+  }
+  return reaped;
 }
 
 // -profile <dir> puts $profile: in <dir>\profile and logs in <dir>\logs.
@@ -171,7 +188,15 @@ export function sessionForBox(box, root, dir = sessionDir()) {
   return a;
 }
 
-export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false }) {
+// The session lane's port: 2001 is the engine default (and the LAN-facing lane); another lane
+// listens on 127.0.0.1:<port> (-addr is the only flag that moves a -server boot) with its own A2S
+// port. Local only: clients of a lane-2 session join 127.0.0.1:<port>.
+export function laneArgs(port) {
+  if (!port || port === 2001) return [];
+  return ["-addr", `127.0.0.1:${port}`, "-a2sPort", String(17777 + (port - 2001) * 10)];
+}
+
+export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001 }) {
   const args = [
     "-server", mission === "playtest" ? PLAYTEST_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
@@ -186,6 +211,7 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
     "-noBackend",
   ];
   if (loadSave) args.push("-loadSessionSave");
+  args.push(...laneArgs(port));
   return args;
 }
 
@@ -195,10 +221,10 @@ export function windowFor(n, res = WINDOW) {
   return { x: (n - 1) * (res.width + WINDOW.gap), y: 0, width: res.width, height: res.height };
 }
 
-export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "", res = WINDOW, sound = false }) {
+export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port = 2001, mission = "debug", session = "", res = WINDOW, sound = false }) {
   const w = windowFor(n, res);
   return [
-    "-client", address,
+    "-client", port && port !== 2001 ? `${address}:${port}` : address,
     "-addonsDir", addonsDir,
     "-addons", "LifeFramework",
     "-profile", profile,
@@ -263,6 +289,19 @@ export function parseState(detail) {
 
 export function selftestSession() {
   const failures = [];
+  {
+    const base = mkdtempSync(join(tmpdir(), "lf-orph-"));
+    const live = new Set([11, 22, 33]);
+    const w = (n, rec) => writeSession(join(base, n), rec);
+    w("me", { serverPid: 1, clients: [] });
+    w("healthy", { serverPid: 11, clients: [{ n: 1, pid: 22 }] });
+    w("orphan", { serverPid: 99, clients: [{ n: 1, pid: 33 }] });
+    const killed = [];
+    const reaped = reapOrphanSessions(join(base, "me"), (pid) => live.has(pid), (pid) => { killed.push(pid); live.delete(pid); }, base);
+    if (reaped.length !== 1 || killed.join() !== "33") failures.push(`orphan reap killed ${killed.join()} (want only 33)`);
+    if (liveSessionsElsewhere(join(base, "me"), (pid) => live.has(pid), base).filter((o) => !o.serverUp).length) failures.push("an orphan still listed after the reap");
+    rmSync(base, { recursive: true, force: true });
+  }
   const p = sessionPaths("S", 2);
   if (p.clients.length !== 2) failures.push("sessionPaths did not list 2 clients");
   if (p.clients[1].box !== join("S", "client2", "profile", "agent-box")) failures.push(`client 2 box is ${p.clients[1].box}`);
@@ -312,6 +351,9 @@ export function selftestSession() {
     parseMission(["--mission", "prod"]);
     failures.push("--mission prod was accepted");
   } catch {}
+  if (laneArgs(2001).length || laneArgs(2011).join(" ") !== "-addr 127.0.0.1:2011 -a2sPort 17877") failures.push("laneArgs: lane 1 keeps the defaults, lane 2 gets -addr and its A2S port");
+  if (!serverArgs({ addonsDir: "A", profile: "SP", port: 2011 }).includes("127.0.0.1:2011") || serverArgs({ addonsDir: "A", profile: "SP" }).includes("-addr")) failures.push("serverArgs lane port");
+  if (clientArgs({ n: 1, addonsDir: "A", profile: "P", port: 2011 })[1] !== "127.0.0.1:2011" || clientArgs({ n: 1, addonsDir: "A", profile: "P" })[1] !== "127.0.0.1") failures.push("clientArgs lane port");
   if (sessionDir({ LF_SESSION_DIR: "X" }) !== "X") failures.push("LF_SESSION_DIR does not override");
   if (sessionDir({ LOCALAPPDATA: "L" }, "C:/x/wt-a") !== join("L", "LifeFramework", "session", "wt-a")) failures.push("the session dir is not per checkout");
   if (sessionDir({ LOCALAPPDATA: "L" }, "C:/x/wt-a") === sessionDir({ LOCALAPPDATA: "L" }, "C:/x/wt-b")) failures.push("two checkouts share a session dir");

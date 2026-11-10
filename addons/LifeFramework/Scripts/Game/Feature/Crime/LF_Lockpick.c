@@ -357,7 +357,11 @@ class LF_Lockpick
 		if (attempt.m_fSeconds <= 0)
 			Complete(attempt);
 		else
+		{
+			// The pick shows (#513): the picker works the lock for as long as the attempt runs.
+			LF_WorkAnim.Begin(user, door.GetOrigin(), LF_EWorkAnimKind.PICK, attempt.m_fSeconds);
 			GetGame().GetCallqueue().CallLater(Tick, TICK_SECONDS * 1000, false, attempt);
+		}
 
 		return true;
 	}
@@ -410,6 +414,7 @@ class LF_Lockpick
 	protected static void Drop(LF_LockpickAttempt attempt, IEntity user, string reason)
 	{
 		Attempts().RemoveItem(attempt);
+		LF_WorkAnim.End(GetGame().GetWorld().FindEntityByID(attempt.m_UserId), "pick attempt dropped: " + reason);
 		LF_Debug.Info(FEATURE, string.Format("attempt by %1 dropped: %2", attempt.m_sPlayerUid, reason));
 		if (user)
 			LF_Utils.NotifyEntity(user, "#LF-Lockpick_Cancelled", "#LF-Lockpick_Title", 3.0);
@@ -439,6 +444,7 @@ class LF_Lockpick
 
 		IEntity door = GetGame().GetWorld().FindEntityByID(attempt.m_DoorId);
 		IEntity user = GetGame().GetWorld().FindEntityByID(attempt.m_UserId);
+		LF_WorkAnim.End(user, "pick attempt finished");
 		if (!door || !user || !IsLockKnown(door))
 		{
 			LF_Debug.Error(FEATURE, "attempt finished but the door or user is gone");

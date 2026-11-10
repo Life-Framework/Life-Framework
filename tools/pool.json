@@ -14,7 +14,7 @@
       "slots": 1,
       "lanes": {
         "test": 2,
-        "session": 1
+        "session": 2
       },
       "caps": [
         "server",
