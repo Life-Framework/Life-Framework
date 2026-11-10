@@ -47,3 +47,6 @@ looked at yet.
 | Medicine cabinet | `Roadmap_Hospital_Cabinet` | placeholder | vanilla `CupboardOld_01_medium` wooden cupboard | white medical cabinet | Hospital, area 7 | low |
 | Stretcher | none | missing | no base-game stretcher found | stretcher by the ambulance | Hospital, area 7 | low |
 | Fuel till counter and register | `EL_FuelTill.et` on vanilla `CounterShop_01` (Village_Dressing) | placeholder | vanilla shop counter with a cash register on top | a petrol-station kiosk counter inside the shop | Fuel till #236 | low |
+| Quarry lane barrier | `WoodenFence_01_4m` rails + `ConeTraffic_01` | placeholder | two fence rails each side of a 6 m gap | red-white boom barrier on a post | Quarry polish, area 11 | low |
+| Quarry gatehouse | `Shed_03.et` | placeholder | a village garden shed | site hut or trailer | Quarry polish, area 11 | low |
+| Quarry spoil heap | `DirtPile_01_base.et` | final | base-game dirt pile | | Quarry polish, area 11 | |

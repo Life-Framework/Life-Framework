@@ -111,8 +111,8 @@ GenericEntity Pickaxe_Debug : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
  coords 182.079 0 169.373
 }
 LF_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et" {
- coords 175.169 -0.459 175.274
- m_vSize 10 1 10
+ coords 187 0 179
+ m_vSize 4 1 4
  m_iAmount 5
  m_fRespawnTime 1
  m_PrefabsToSpawn {
@@ -134,6 +134,78 @@ GenericEntity Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
  coords 169.777 0 171.497
 }
 GenericEntity LF_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
- coords 171 0 169.5
- angles 0 90 0
+ coords 172.4 0 170.2
+ angleY 0
+}
+GenericEntity Quarry_BarrierW1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 171 0 192
+}
+GenericEntity Quarry_BarrierW2 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 175 0 192
+}
+GenericEntity Quarry_BarrierE1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 185 0 192
+}
+GenericEntity Quarry_BarrierE2 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 189 0 192
+}
+GenericEntity Quarry_ConeW : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
+ coords 177.6 0 191.2
+}
+GenericEntity Quarry_ConeE : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
+ coords 182.4 0 191.2
+}
+GenericEntity Quarry_WarnSign : "{27EDF8AFC363A7D5}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_underminedarea_pole.et" {
+ coords 176.4 0 193.4
+}
+GenericEntity Quarry_Hut : "{8597237EA3C59701}Prefabs/Structures/Houses/Shed/Shed_03/Shed_03.et" {
+ coords 196 0 191
+ angleY 180
+}
+GenericEntity Quarry_Spoil1 : "{7AF35E9C21F21BFA}Prefabs/Structures/Military/Fortifications/DirtPile_01/DirtPile_01_base.et" {
+ coords 194 0 160
+ angleY 20
+}
+GenericEntity Quarry_Spoil2 : "{7AF35E9C21F21BFA}Prefabs/Structures/Military/Fortifications/DirtPile_01/DirtPile_01_base.et" {
+ coords 199 0 166
+ angleY 100
+}
+GenericEntity Quarry_Gravel1 : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01_large.et" {
+ coords 160 0 162
+}
+GenericEntity Quarry_Gravel2 : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01_medium.et" {
+ coords 164 0 157
+ angleY 40
+}
+GenericEntity Quarry_Sand : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
+ coords 158 0 171
+}
+GenericEntity Quarry_Tires : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ coords 168 0 186
+ angleY 30
+}
+GenericEntity Quarry_Barrel1 : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ coords 192 0 187
+}
+GenericEntity Quarry_Barrel2 : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ coords 193.1 0 186.6
+}
+GenericEntity Quarry_Wheelbarrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords 185 0 168
+ angleY 40
+}
+GenericEntity Quarry_Crate1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 179 0 162
+ angleY 10
+}
+GenericEntity Quarry_Crate2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 180.2 0 162.3
+ angleY 50
+}
+GenericEntity Quarry_Pallets : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+ coords 187 0 161
+}
+GenericEntity Quarry_Sacks : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 171 0 162
+ angleY 20
 }
