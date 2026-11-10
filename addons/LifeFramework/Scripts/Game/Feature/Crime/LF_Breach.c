@@ -49,6 +49,8 @@ class LF_BreachTarget : Managed
 	string m_sOwnerOrganization;
 	//! Offence the arm reports. Empty is the plain break-in.
 	string m_sOffence;
+	//! The loud alarm even with officers on duty.
+	bool m_bLoud;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -110,8 +112,9 @@ class LF_Breach
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How arming this target is reported (#274): the offence key. Empty keeps the plain break-in.
-	static void SetAlarm(string targetId, string offence)
+	//! How arming this target is reported (#274, #275): the offence key and whether the alarm is the
+	//! loud one. Empty offence keeps the plain break-in.
+	static void SetAlarm(string targetId, string offence, bool loud)
 	{
 		LF_BreachTarget target = Targets().Get(targetId);
 		if (!target)
@@ -121,11 +124,12 @@ class LF_Breach
 		}
 
 		target.m_sOffence = offence;
+		target.m_bLoud = loud;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: locks the target again with no player check. The cash van is stocked afresh at its
-	//! next stop; that is not a player repair.
+	//! next stop and the armory store is refilled; neither is a player repair.
 	static void Reset(string targetId)
 	{
 		LF_BreachTarget target = Targets().Get(targetId);
@@ -232,7 +236,7 @@ class LF_Breach
 		if (offence.IsEmpty())
 			offence = LF_WantedReports.OFFENCE_BREAK_IN;
 
-		LF_Dispatch.Report(playerUid, suspect, offence, TargetOrigin(targetId));
+		LF_Dispatch.Report(playerUid, suspect, offence, TargetOrigin(targetId), -1, target.m_bLoud);
 		LF_Debug.Log("Breach", string.Format("armed %1 by %2 fuse=%3", targetId, playerUid, target.m_fFuseSeconds));
 
 		target.m_bChargeArmed = true;
@@ -336,6 +340,14 @@ class LF_Breach
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! True when arming this target sounds the loud alarm.
+	static bool IsLoud(string targetId)
+	{
+		LF_BreachTarget target = Targets().Get(targetId);
+		return target && target.m_bLoud;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	static bool IsOpen(string targetId)
 	{

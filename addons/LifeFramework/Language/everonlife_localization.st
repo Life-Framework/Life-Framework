@@ -6137,6 +6137,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The duty desk and the beds are north of the bay."
      Comment "Sign card for the hospital ambulance bay, Next section."
     }
+    CustomStringTableItem "{9306F928F7A81EBC}" {
+     Id "LF-Heist_Armory_Open"
+     Target_en_us "Breach the armory store"
+     Comment "Action: the police armory store (#275)."
+    }
+    CustomStringTableItem "{8D97105F774AFD27}" {
+     Id "LF-Heist_Empty"
+     Target_en_us "Nothing left in there"
+     Comment "Offer: the heist target is out of stock until it refills (#275)."
+    }
+    CustomStringTableItem "{3296F0CB09E2A3D7}" {
+     Id "LF-Offence_ArmoryHeist"
+     Target_en_us "Police armory heist"
+     Comment "Offence: the armory store was breached (#275)."
+    }
   }
  }
 }
