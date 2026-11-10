@@ -1577,7 +1577,15 @@ function cmdSessionUp(root, dir, flags) {
     return 1;
   }
   // Each checkout has its own session dir; clients another checkout left running still hold memory and windows.
-  for (const o of session.liveSessionsElsewhere(dir, host.pidAlive)) {
+  // --wait queues behind another checkout's session too (its clients can outlive its server lock).
+  const queuedUntil = Date.now() + 1800000;
+  let others = session.liveSessionsElsewhere(dir, host.pidAlive);
+  if (others.length && flags.includes("--wait")) console.log(`session: ${others[0].root ?? others[0].dir} has a live session; queued (up to 30 min)`);
+  while (others.length && flags.includes("--wait") && Date.now() < queuedUntil) {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5000);
+    others = session.liveSessionsElsewhere(dir, host.pidAlive);
+  }
+  for (const o of others) {
     console.log(`session: ${o.root ?? o.dir} has a live session; it runs 'node agent-box/session.mjs down' first`);
     return 1;
   }

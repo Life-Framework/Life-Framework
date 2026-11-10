@@ -5952,11 +5952,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Statement taken. It is on the wanted board."
      Comment "Toast to the officer: the witness gave a statement."
     }
-    CustomStringTableItem "{A27300000000BA01}" {
-     Id "LF-Bank_NeedTool"
-     Target_en_us "The vault needs a drill or a charge"
-     Comment "Vault robbery refused: the robber carries none of the vault's fence tools (#273)"
-    }
     CustomStringTableItem "{4956FE4168BECF83}" {
      Id "LF-Hospital_BillNumber"
      Target_en_us "Bill No. %1, %2"
@@ -6046,6 +6041,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Payphone_Summary_Taxi"
      Target_en_us "Cab wanted"
      Comment "Summary the taxi pager and board show for a call from the payphone."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6B01}" {
+     Id "LF-Revive_NoItem"
+     Target_en_us "You need a field dressing to revive someone."
+     Comment "Revive refusal: the medic has none of the configured revive item."
+    }
+    CustomStringTableItem "{A27300000000BA01}" {
+     Id "LF-Bank_NeedTool"
+     Target_en_us "The vault needs a drill or a charge"
+     Comment "Vault robbery refused: the robber carries none of the vault's fence tools (#273)"
     }
   }
  }

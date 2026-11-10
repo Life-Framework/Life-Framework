@@ -1215,10 +1215,21 @@ class LF_AgentHarness
 			downed = 1;
 		line += " zone=" + LF_Zones.RuleName(LF_Zones.RuleAt(origin));
 		line += string.Format(" downed=%1 life=%2 bleed=%3", downed, LifeStateToken(character), BleedToken(character));
+		line += " " + VitalsToken(character);
 		return line + string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Resilience, blood and health (scaled, 2 decimals) as THIS machine reads them (#427).
+	static string VitalsToken(IEntity entity)
+	{
+		SCR_CharacterDamageManagerComponent damage = SCR_CharacterDamageManagerComponent.Cast(entity.FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!damage)
+			return "res=none blood=none hp=none";
+
+		return string.Format("res=%1 blood=%2 hp=%3", Math.Round(damage.GetResilienceHitZone().GetHealthScaled() * 100) / 100, Math.Round(damage.GetBloodHitZone().GetHealthScaled() * 100) / 100, Math.Round(damage.GetDefaultHitZone().GetHealthScaled() * 100) / 100);
+	}
+
 	//! Seconds of bleed-out this client reads for the character, -1 when it is not downed (#256).
 	protected static int BleedToken(IEntity entity)
 	{
