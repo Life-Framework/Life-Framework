@@ -169,6 +169,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "shoot")
 			return ParseShoot(parts, cmd);
+		if (cmd.Verb == "cpr")
+			return ParseCpr(parts, cmd);
 		if (cmd.Verb == "siren")
 			return ParseSiren(parts, cmd);
 		if (cmd.Verb == "ui")
@@ -462,6 +464,21 @@ class LF_AgentCommand
 		if (parts.Count() < 4 || !IsClassToken(parts[2]))
 		{
 			cmd.Error = "need_entity_and_mode";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		cmd.Arg2 = parts[3];
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `cpr <playerId> <start|stop>`: report the revive hold the way the action does (#512).
+	protected static bool ParseCpr(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 4 || parts[2].ToInt() <= 0 || (parts[3] != "start" && parts[3] != "stop"))
+		{
+			cmd.Error = "need_player_id_and_start_or_stop";
 			return false;
 		}
 
@@ -1092,6 +1109,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "shoot")
 		{
 			DoShoot(cmd);
+			return;
+		}
+		if (cmd.Verb == "cpr")
+		{
+			DoCpr(cmd);
 			return;
 		}
 		if (cmd.Verb == "siren")

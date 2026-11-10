@@ -145,6 +145,12 @@ export function buildLine(id, spec) {
     if (!Number.isInteger(target) || target <= 0) throw new Error(`shoot needs a positive player id: ${spec.playerId}`);
     return `${id} shoot ${target}`;
   }
+  if (spec.verb === "cpr") {
+    const target = Number(spec.playerId);
+    if (!Number.isInteger(target) || target <= 0) throw new Error(`cpr needs a positive player id: ${spec.playerId}`);
+    if (spec.mode !== "start" && spec.mode !== "stop") throw new Error(`cpr mode must be start or stop: ${spec.mode}`);
+    return `${id} cpr ${target} ${spec.mode}`;
+  }
   if (spec.verb === "ui") {
     if (spec.mode === "text") return `${id} ui text`;
     if (spec.mode) throw new Error(`ui mode must be text: ${spec.mode}`);
@@ -1434,6 +1440,9 @@ function main(argv) {
     }
     if (cmd === "shoot") {
       return printResult(sendCommand({ verb: "shoot", playerId: rest[0] }, 10000));
+    }
+    if (cmd === "cpr") {
+      return printResult(sendCommand({ verb: "cpr", playerId: rest[0], mode: rest[1] }, 10000));
     }
     if (cmd === "ui") {
       if (rest[0] !== "text" && rest[0] !== "--text") return printResult(sendCommand({ verb: "ui" }));
