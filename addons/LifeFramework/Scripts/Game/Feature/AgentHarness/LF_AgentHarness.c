@@ -1148,7 +1148,7 @@ class LF_AgentHarness
 
 	//------------------------------------------------------------------------------------------------
 	//! Harness `siren <EntityName> <mode>` (dev gate): the server sets the named vehicle's siren mode
-	//! through the same rule the driver's key uses (LF_SirenManagerComponent.ApplyRequest).
+	//! through the same rule the driver's key uses (LF_SirenManagerComponent.RequestBy, the caller as occupant).
 	protected static void DoSiren(LF_AgentCommand cmd)
 	{
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();

@@ -149,9 +149,9 @@ modded class LF_JobDropoffAction
 modded class LF_CharacterATMComponent
 {
 	//------------------------------------------------------------------------------------------------
-	override protected void ReplyResult(bool deposit, LF_EATMRefusal reason, int amount, int balance, int cash)
+	override protected void ReplyResult(bool deposit, LF_EATMRefusal reason, int amount, int balance, int cash, int debt)
 	{
-		super.ReplyResult(deposit, reason, amount, balance, cash);
+		super.ReplyResult(deposit, reason, amount, balance, cash, debt);
 
 		if (deposit && reason == LF_EATMRefusal.NONE && Replication.IsServer())
 			LF_QuestManager.GetInstance().ReportSignal(GetOwner(), LF_QuestSignals.ATM_DEPOSIT);

@@ -87,6 +87,10 @@ class LF_TreatmentBills
 	{
 		s_aBills = null;
 		s_iLastNumber = 0;
+		if (s_bDebtSweepRunning && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(DebtSweepTick);
+
+		s_bDebtSweepRunning = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -226,7 +230,7 @@ class LF_TreatmentBills
 		if (!outRecord)
 			return LF_EBillPay.NO_BILL;
 
-		int amount = outRecord.m_iAmount;
+		int amount = Owed(outRecord);
 		if (wallet.Carried() < amount)
 			return LF_EBillPay.NOT_ENOUGH_CASH;
 
@@ -333,6 +337,174 @@ class LF_TreatmentBills
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Debt (#464). A bill still unpaid past its deadline becomes debt. It stays in the same bills
+	//! record, marked in m_sPaidAt as "debt:<remaining>" while m_bPaid is false, so the save layout does
+	//! not change. The bank pays it off as soon as it holds money (ledger reason DEBT_REASON).
+	static const string DEBT_MARK = "debt:";
+	static const string DEBT_REASON = "hospital-debt";
+	protected static const int DEBT_SWEEP_MS = 60000;
+	protected static bool s_bDebtSweepRunning;
+
+	static bool IsDebt(notnull LF_TreatmentBillRecord record)
+	{
+		return !record.m_bPaid && record.m_sPaidAt.StartsWith(DEBT_MARK);
+	}
+
+	//! What this unpaid bill still costs: the remaining debt, or the full amount before the deadline.
+	static int Owed(notnull LF_TreatmentBillRecord record)
+	{
+		if (IsDebt(record))
+			return Math.Max(record.m_sPaidAt.Substring(DEBT_MARK.Length(), record.m_sPaidAt.Length() - DEBT_MARK.Length()).ToInt(), 0);
+
+		return record.m_iAmount;
+	}
+
+	//! In-game minutes of a DD/MM/YYYY HH:MM stamp; -1 when it does not parse.
+	static int StampMinutes(string stamp)
+	{
+		if (stamp.Length() != 16)
+			return -1;
+
+		int d = stamp.Substring(0, 2).ToInt();
+		int m = stamp.Substring(3, 2).ToInt();
+		int y = stamp.Substring(6, 4).ToInt();
+		int h = stamp.Substring(11, 2).ToInt();
+		int min = stamp.Substring(14, 2).ToInt();
+		if (d < 1 || d > 31 || m < 1 || m > 12 || y < 1)
+			return -1;
+
+		int shifted = m - 3;
+		if (m <= 2)
+		{
+			y--;
+			shifted = m + 9;
+		}
+
+		int era = y / 400;
+		int yoe = y - era * 400;
+		int doy = (153 * shifted + 2) / 5 + d - 1;
+		int doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+		int days = era * 146097 + doe;
+		return days * 1440 + h * 60 + min;
+	}
+
+	//! True when an unpaid bill that is not yet debt is at least deadlineHours old at nowStamp.
+	static bool PastDeadline(notnull LF_TreatmentBillRecord record, string nowStamp, int deadlineHours)
+	{
+		if (record.m_bPaid || IsDebt(record) || deadlineHours <= 0)
+			return false;
+
+		int issued = StampMinutes(record.m_sIssued);
+		int now = StampMinutes(nowStamp);
+		if (issued < 0 || now < 0)
+			return false;
+
+		return now - issued >= deadlineHours * 60;
+	}
+
+	//! Outstanding debt (bills already turned into debt) of one patient.
+	static int TotalDebt(string patientUid)
+	{
+		int total = 0;
+		foreach (LF_TreatmentBillRecord record : Bills())
+		{
+			if (record.m_sPatientUid == patientUid && IsDebt(record))
+				total += Owed(record);
+		}
+
+		return total;
+	}
+
+	//! Server: turns this patient's overdue bills into debt, then takes what the bank holds against the
+	//! debt, oldest first, partially if it must. Each take is a bank charge with DEBT_REASON, so the
+	//! ledger records it.
+	//! \return Cash taken from the bank.
+	static int Sweep(string patientUid, LF_BankAccount bank, string nowStamp, int deadlineHours)
+	{
+		if (patientUid.IsEmpty())
+			return 0;
+
+		int taken = 0;
+		foreach (LF_TreatmentBillRecord record : Bills())
+		{
+			if (record.m_sPatientUid != patientUid || record.m_bPaid)
+				continue;
+
+			if (PastDeadline(record, nowStamp, deadlineHours))
+			{
+				record.m_sPaidAt = DEBT_MARK + record.m_iAmount.ToString();
+				LF_Debug.Info(FEATURE, string.Format("bill #%1 unpaid past %2 h: %3 is now debt on %4", record.m_iNumber, deadlineHours, record.m_iAmount, patientUid));
+			}
+
+			if (!IsDebt(record) || !bank)
+				continue;
+
+			int owed = Owed(record);
+			int take = Math.Min(owed, bank.GetBalance());
+			if (take <= 0)
+				continue;
+
+			int charged = bank.Charge(take, false, DEBT_REASON);
+			owed -= charged;
+			taken += charged;
+			if (owed <= 0)
+			{
+				record.m_bPaid = true;
+				record.m_sPaidAt = nowStamp;
+				LF_Debug.Info(FEATURE, string.Format("bill #%1 debt cleared from the bank of %2", record.m_iNumber, patientUid));
+			}
+			else
+			{
+				record.m_sPaidAt = DEBT_MARK + owed.ToString();
+				LF_Debug.Info(FEATURE, string.Format("bill #%1 debt: took %2 from the bank of %3, %4 left", record.m_iNumber, charged, patientUid, owed));
+			}
+		}
+
+		return taken;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: Sweep with the live clock and config, for one bank account (run when it is credited).
+	static int CollectDebt(LF_BankAccount bank)
+	{
+		if (!bank || (!Replication.IsServer() && Replication.IsRunning()))
+			return 0;
+
+		LF_MedicConfig config = LF_MedicConfig.Get();
+		if (!config)
+			return 0;
+
+		return Sweep(bank.GetPersistentId(), bank, LF_HospitalBill.InGameDate(), config.m_iBillDeadlineHours);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void DebtSweepTick()
+	{
+		array<string> patients = {};
+		foreach (LF_TreatmentBillRecord record : Bills())
+		{
+			if (!record.m_bPaid && patients.Find(record.m_sPatientUid) < 0)
+				patients.Insert(record.m_sPatientUid);
+		}
+
+		foreach (string uid : patients)
+		{
+			CollectDebt(LF_ATMManager.GetOrCreate(uid));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: starts the once-a-minute check that matures overdue bills (idempotent).
+	static void StartDebtSweep()
+	{
+		if (s_bDebtSweepRunning || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		s_bDebtSweepRunning = true;
+		GetGame().GetCallqueue().CallLater(DebtSweepTick, DEBT_SWEEP_MS, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static array<ref LF_TreatmentBillRecord> ExportAll()
 	{
 		array<ref LF_TreatmentBillRecord> records = new array<ref LF_TreatmentBillRecord>();
@@ -386,6 +558,8 @@ class LF_TreatmentBills
 		if (!Replication.IsServer() || patientUid.IsEmpty() || !body)
 			return;
 
+		StartDebtSweep();
+		CollectDebt(LF_ATMManager.GetOrCreate(patientUid));
 		array<LF_TreatmentBillRecord> records = {};
 		CollectFor(patientUid, records, false);
 		if (records.IsEmpty())

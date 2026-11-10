@@ -10,6 +10,7 @@ Vehicle : "{00C9BBE426F7D459}Prefabs/Vehicles/Wheeled/M998/M997_maxi_ambulance.e
    }
   }
   LF_SirenManagerComponent "{4685286E8D464A64}" {
+   m_eService MEDIC
    m_Modes LF_SirenModes "{B1F0340624EE4436}" : "{01051CFE4BC64945}Prefabs/Vehicles/SirenLights/LightBarLED.conf" {
    }
   }
