@@ -16,7 +16,7 @@
     { "n": 9, "name": "fence", "front": 180, "x": 186.5, "y": 0, "z": 309.5, "radius": 8 },
     { "n": 10, "name": "cash-van", "front": 180, "x": 210, "y": 0, "z": 248, "radius": 50 },
     { "n": 11, "name": "quarry", "front": 0, "x": 175, "y": 0, "z": 172, "radius": 25 },
-    { "n": 12, "name": "farm-trader", "front": 180, "x": 150, "y": 0, "z": 300, "radius": 25 },
+    { "n": 12, "name": "farm", "front": 180, "x": 150, "y": 0, "z": 300, "radius": 25 },
     { "n": 13, "name": "hideout", "front": 270, "x": 305, "y": 0, "z": 295, "radius": 20 },
     { "n": 14, "name": "lock-up", "front": 270, "x": 309, "y": 0, "z": 244, "radius": 14 },
     { "n": 15, "name": "chop-shop", "front": 270, "x": 322, "y": 0, "z": 300, "radius": 18 },

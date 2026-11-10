@@ -2895,7 +2895,7 @@ class LF_AgentHarness
 
 				vector feet = Vector(p[0], floorY, p[2]);
 				float clear = ProbeTrace(feet + "0 0.35 0", feet + "0 1.75 0", self, hit);
-				if (clear < 1.4)
+				if (clear < 1.35)
 					continue;
 
 				return radius;

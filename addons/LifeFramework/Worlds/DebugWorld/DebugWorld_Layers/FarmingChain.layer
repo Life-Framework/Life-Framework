@@ -93,32 +93,124 @@ $grp GenericEntity : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" 
     m_bCanGather 1
    }
   }
-  coords 148 0 296
+  coords 144.6 0 299.2
  }
 }
 $grp SCR_DestructibleBuildingEntity : "{3299E6F34CE40185}Prefabs/Structures/Agriculture/Greenhouse/Greenhouse_01/Greenhouse_01.et" {
  Greenhouse_Debug {
-  coords 151 0 296
+  coords 158.5 0 300
   angleY 180
  }
 }
 $grp StaticModelEntity : "{4D37CF893371E83B}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_big.et" {
  VegetableBedBig_Debug {
-  coords 148.5 0 297
+  coords 146.5 0 299.5
  }
 }
 $grp StaticModelEntity : "{7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et" {
  VegetableBedSmall_Debug {
-  coords 151 0 297
+  coords 152.3 0 299.5
  }
 }
 $grp GenericEntity : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et" {
  TomatoCrop_Bed {
-  coords 148.5 0 297
+  coords 146.6 0 299.2
  }
 }
 $grp GenericEntity : "{97F71E1D9830AE26}Prefabs/Items/Seeds/SeedTomato.et" {
  SeedTomato_Debug {
-  coords 151 0 297
+  coords 150.5 0.9 294.5
  }
+}
+
+GenericEntity Farm_StandTable : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+ coords 150.5 0 294.5
+}
+GenericEntity Farm_StandCrate_1 : "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et" {
+ coords 148.4 0 294.2
+ angleY 6
+}
+GenericEntity Farm_StandCrate_2 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 148.4 0.22 294.2
+ angleY -10
+}
+GenericEntity Farm_StandCrate_3 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 152.9 0 294.4
+ angleY -8
+}
+GenericEntity Farm_StandCart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ coords 155.6 0 292.8
+ angleY 82
+}
+GenericEntity Farm_FieldWheelbarrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords 141.2 0 302.6
+ angleY 100
+}
+GenericEntity Farm_FieldBucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 155.9 0 296.4
+}
+GenericEntity Farm_HayBig : "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et" {
+ coords 164.2 0 300
+ angleY 90
+}
+GenericEntity Farm_HaySmall : "{C959D3CF939EBBB3}Prefabs/Props/Agriculture/Farm/HayBale_01_square_small.et" {
+ coords 163.4 0 303.2
+ angleY 20
+}
+GenericEntity Farm_PressTable : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+ coords 141 0 311
+ angleY 140
+}
+GenericEntity Farm_PressCrate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 143.4 0 309.6
+ angleY 30
+}
+GenericEntity Farm_PressCrate_2 : "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et" {
+ coords 144.4 0 308.6
+ angleY -15
+}
+GenericEntity Farm_PressBucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 139.4 0 312.4
+}
+GenericEntity Farm_Fence_1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 142 0 306.5
+}
+GenericEntity Farm_Fence_2 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 146 0 306.5
+}
+GenericEntity Farm_Fence_3 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 150 0 306.5
+}
+GenericEntity Farm_Fence_4 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 154 0 306.5
+}
+GenericEntity Farm_Fence_5 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 158 0 306.5
+}
+GenericEntity Farm_Fence_6 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 162 0 306.5
+}
+GenericEntity Farm_StandTomato_1 : "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et" {
+ coords 152.9 0.1 294.4
+}
+GenericEntity Farm_StandTomato_2 : "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et" {
+ coords 153 0.1 294.45
+}
+GenericEntity Farm_StandTomato_3 : "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et" {
+ coords 152.8 0.1 294.45
+}
+GenericEntity Farm_StandTomato_4 : "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et" {
+ coords 152.92 0.1 294.3
+}
+GenericEntity Farm_PressApple_1 : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
+ coords 143.4 0.1 309.6
+}
+GenericEntity Farm_PressApple_2 : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
+ coords 143.5 0.1 309.65
+}
+GenericEntity Farm_PressApple_3 : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
+ coords 143.3 0.1 309.65
+}
+GenericEntity Farm_PressApple_4 : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
+ coords 143.42 0.1 309.5
 }
