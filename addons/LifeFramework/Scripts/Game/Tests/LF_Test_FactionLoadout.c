@@ -44,6 +44,7 @@ class LF_Test_FactionLoadoutConfig : LF_Test
 		CheckLoadoutPrefabs(ctx, police, "police");
 
 		ctx.True(HasLoadoutItem(civilian, BACKPACK_PREFAB), "CIVILIAN spawns with a backpack");
+		ctx.True(HasLoadoutItem(police, BACKPACK_PREFAB), "the police kit carries a backpack (a bagged evidence item does not fit the vest)");
 		ctx.True(LoadoutStoresMoney(civilian, 500), "CIVILIAN starts with 500 cash");
 		ctx.False(LoadoutStoresMoney(police, 200), "the starter police kit carries no cash (it is re-issued after a death on duty)");
 		ctx.True(HasDirectItem(civilian, APPLE_PREFAB), "CIVILIAN spawns apples for survival testing");

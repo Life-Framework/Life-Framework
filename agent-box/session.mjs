@@ -1943,7 +1943,6 @@ async function runVillageProof() {
   on(2, { verb: "look" });
   must(on(2, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000), "clock in");
   wait(2000);
-  must(on(2, { verb: "pack" }, 10000), "backpack");
 
   // The fence in his yard: where he stands, then what a fresh record gets.
   world(1, "m2_271_fence_yard_client1", 186, 1, 311, 6, 1.8, -9);
