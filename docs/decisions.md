@@ -634,3 +634,57 @@ future versions of the pack differently; the core stays MIT for good.
 CONTRIBUTING.md asks pack contributors to agree to that relicensing, since
 without it the option would need every contributor's consent. Published
 releases stay MIT. Assets pulled in under CC-BY or similar keep their own terms.
+
+**2026-11-09 — The core's DebugWorld holds neutral fixtures only.** When the
+pack move happens (M3 workstream 1), village and period content go to
+`LF_Everon1989`. The core keeps generic test props, plain doors and boxes.
+Flagship tests run on a pack test world, so both addons are exercised on every
+build. Why: the core never holds period content (core-vs-pack red line), and
+the core's Workshop page is clean and modern. What it means for code:
+`validate-addon-boundary` stays strict; no "temporary exception" rows for the
+village in `core-pack-inventory.md`.
+
+**2026-11-09 — Packs may add their own config sections.** A pack declares a
+schema fragment namespaced under its addon id (`packs.<AddonId>.<section>`),
+merged into the one schema with per-field fallback like a core section. A pack
+section never overrides a core section. Why: new systems in a pack (the M5
+illicit chains, a modern pack's phone shop) need settings the seven core
+sections do not cover, and the generator and `config-check` must keep one
+source of truth. Issue #553.
+
+**2026-11-09 — Compatibility with other mods is "do not collide", nothing
+more.** The `LF_` prefix and the `validate-no-el-prefix` rule are the whole
+compatibility story. No bridge, importer or shared-state API for Overthrow or
+similar mods unless a real need appears. Why: the benefit is unproven and the
+work is large (maintainer, 2026-11-09).
+
+**2026-11-09 — Development pipelines are scheduled on demand, video first.**
+The Development track (assets, animation, weapons, vehicles, voice, video,
+release gates) does not run on a fixed capacity share. A pipeline starts when a
+milestone issue depends on it. The video pipeline (#390) goes first because it
+engages the community during development and feeds the M4 trailer (#317).
+Development work runs with `--priority low` so it never delays milestone issues.
+
+**2026-11-09 — The flagship opens by invitation, then to everyone.** M4 starts
+with an invite-only alpha drawn from the Discord and playtesters. The server
+opens to the public once several sessions reach the player target with no save
+loss and no blocking regression, and trial moderators are in place. Why: the
+first impression is permanent and staff are few. Issue #555.
+
+**2026-11-09 — The flagship wipes after each milestone during M4, then keeps
+progress from a declared date.** While milestone content (M5, M6) is still
+landing, a wipe follows each one, announced a session ahead and preceded by a
+backup. From a declared persistent launch date the save-compatibility rule for a
+major version applies and a wipe needs a save-format break. Why: early saves are
+test data, and a wipe is the honest way to start fresh around new systems. Issue
+#556.
+
+**2026-11-09 — First moderators are trial moderators from the playtesters.**
+Trusted playtesters get the moderator guide and the logged Game Master tools on
+probation, reviewed after a few sessions (#313). Why: the outline names staff
+burnout as the main risk, so recruit before the first public session.
+
+**2026-11-09 — PC-hosted sessions run ad hoc, announced on Discord.** No fixed
+weekly slot during the PC phase. Open: the notice period before a session; the
+24/7 trigger (sessions reaching the player target several times and donations
+covering a rented box) is unchanged.

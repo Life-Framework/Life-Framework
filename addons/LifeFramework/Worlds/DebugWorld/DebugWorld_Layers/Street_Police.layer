@@ -60,8 +60,8 @@ GenericEntity Roadmap_Police_DispatchBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF
  angleY 0
 }
 SCR_DestructibleBuildingEntity Roadmap_Police_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
- coords 239.9 0 241.5
- angleY -90
+ coords 239.9 0 242.05
+ angleY 180
 }
 GenericEntity Roadmap_Police_Car : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
  coords 243.5 0 246

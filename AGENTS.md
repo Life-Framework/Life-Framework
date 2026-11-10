@@ -92,6 +92,12 @@ failures instead of grinding.
 
 Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desktop; node spawns get `windowsHide: true`), never in front of the user; `tools\cli hidden [--close]` lists them, `LF_SHOW_WINDOWS=1` shows them (`docs/setup.md`).
 
+**Nothing waits forever.** Every external call has a bounded runtime:
+- `ssh` inherits `ConnectTimeout 8` and `ServerAliveInterval 10` from `~/.ssh/config`, so a dead link fails in about 30 s.
+- Wrap any other probe in `timeout <s>`.
+- Never hand-write a `for`/`until` + `sleep` wait loop. Use the repo command that blocks with its own budget (`test`, `session up --wait`, `session wait`, `gh pr checks --watch`), or run in the background and end your turn.
+- If you stop another agent's process, message that agent at once.
+
 ## Worktrees
 
 Long-lived non-main bases (e.g. `m3`): `wt new <slug> --base m3` records the base and `wt ship` follows it; `wt sync-base m3` PRs main into it (`docs/worktrees.md` "Base branches").

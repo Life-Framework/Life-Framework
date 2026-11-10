@@ -133,8 +133,8 @@ GenericEntity Roadmap_Hospital_Duty_Desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_M
  angleY 180
 }
 SCR_DestructibleBuildingEntity Roadmap_Hospital_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
- coords 254.2 0 258
- angleY 180
+ coords 254.2 0 257.65
+ angleY 0
 }
 GenericEntity Roadmap_Hospital_Ambulance : "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et" {
  coords 266 0 250
