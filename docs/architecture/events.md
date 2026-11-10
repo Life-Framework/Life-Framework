@@ -74,6 +74,8 @@ The bus keeps its own strong reference.
 | `LF_OnAdminAction` | `m_sAdminUid`, `m_sTargetUid` (may be empty), `m_sAction`, `m_vPosition` | `LF_AdminAction.Report` (server): every server-side Game Master editor action (`SCR_BaseActionsEditorComponent.ActionPerform`), vanilla `#kick`/`#ban`, `!wadd`, `!handled`. `LF_IncidentLog` subscribes (kind `admin`) |
 | `LF_OnAimedAt` | `m_sActorUid`, `m_sTargetUid`, `m_vPosition` (the actor's) | `LF_AimIntent.Tick` (server timer) when a raised weapon stayed on a player for the aim window. `LF_IncidentLog` subscribes (kind `aim`) |
 | `LF_OnWitnessStatement` | `m_iReport`, `m_sWitnessUid` (empty for an NPC), `m_bNpc`, `m_sChannel` (`payphone`, `officer`), `m_sClothing`, `m_sVehicle`, `m_sPlateFragment` | `LF_Witness.Give`, after the server checked the caller stood in sight of that crime and within range of the thing described |
+| `LF_OnChainStep` | `m_sWorkerUid`, `m_sSiteId`, `m_sChainId`, `m_sStepId`, `m_sStationKey`, `m_sKind` (`load`, `ready`, `collect`), `m_fHeat`, `m_vPosition` | `LF_ChainStationComponent`: a batch was loaded, the last unit of work was done, the product was taken out. One per state change, never per work tick (#417) |
+| `LF_OnChainWork` | `m_sWorkerUid`, `m_sSiteId`, `m_sChainId`, `m_sStationKey`, `m_iPercent`, `m_fHeat` (site heat after the work), `m_fRangeM` (metres it can be smelled), `m_vPosition` | `LF_ChainStationComponent.ServerWork`: one accepted piece of hands-on work, about one per working player per couple of seconds. The smell and smoke trace (#418) reads it; the site heat is also readable any time from `LF_ChainSites` |
 
 Adding an event: a class in `LF_Events.c`, a row here, a publish where the feature
 already logs the change, and one line in `docs/features.md`.

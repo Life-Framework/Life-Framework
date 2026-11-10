@@ -67,34 +67,9 @@ class LF_ProcessAction : ScriptedUserAction
 
 		InventoryStorageManagerComponent inventoryManager = LF_Component<InventoryStorageManagerComponent>.Find(pUserEntity);
 
-		// Verify every input is fully present BEFORE consuming or producing anything
-		foreach (LF_ProcessingInput processingInput : m_aProcessingInputs)
-		{
-			if (processingInput.m_iInputAmount < 1 || LF_InventoryUtils.GetAmount(inventoryManager, processingInput.m_InputPrefab) < processingInput.m_iInputAmount)
-			{
-				LF_Debug.Warn("Processing", string.Format("rejected process: missing input %1", processingInput.m_InputPrefab));
-				return;
-			}
-		}
-
-		array<int> removedAmounts = {};
-		for (int inputIndex = 0; inputIndex < m_aProcessingInputs.Count(); inputIndex++)
-		{
-			LF_ProcessingInput processingInput = m_aProcessingInputs[inputIndex];
-			int removed = LF_InventoryUtils.RemoveAmount(inventoryManager, processingInput.m_InputPrefab, processingInput.m_iInputAmount);
-			removedAmounts.Insert(removed);
-			if (removed == processingInput.m_iInputAmount)
-				continue;
-
-			for (int rollbackIndex = 0; rollbackIndex <= inputIndex; rollbackIndex++)
-			{
-				if (removedAmounts[rollbackIndex] > 0)
-					LF_InventoryUtils.AddAmount(inventoryManager, m_aProcessingInputs[rollbackIndex].m_InputPrefab, removedAmounts[rollbackIndex]);
-			}
-
-			LF_Debug.Error("Processing", string.Format("rejected process: input removal changed during validation (%1/%2)", removed, processingInput.m_iInputAmount));
+		// Every input is verified and removed together, or none is.
+		if (!TryConsumeInputs(inventoryManager, m_aProcessingInputs))
 			return;
-		}
 
 		array<IEntity> spawnedOutputs = {};
 		foreach (LF_ProcessingOutput processingOutput : m_aProcessingOutputs)
@@ -112,11 +87,7 @@ class LF_ProcessAction : ScriptedUserAction
 
 					for (int outputIndex = 0; outputIndex < spawnedOutputs.Count(); outputIndex++)
 						SCR_EntityHelper.DeleteEntityAndChildren(spawnedOutputs[outputIndex]);
-					for (int rollbackIndex = 0; rollbackIndex < removedAmounts.Count(); rollbackIndex++)
-					{
-						if (removedAmounts[rollbackIndex] > 0)
-							LF_InventoryUtils.AddAmount(inventoryManager, m_aProcessingInputs[rollbackIndex].m_InputPrefab, removedAmounts[rollbackIndex]);
-					}
+					RestoreInputs(inventoryManager, m_aProcessingInputs);
 
 					LF_Debug.Error("Processing", "rejected process: output spawn failed");
 					return;
@@ -127,11 +98,7 @@ class LF_ProcessAction : ScriptedUserAction
 				int added = LF_InventoryUtils.AddAmount(inventoryManager, processingOutput.m_OutputPrefab, processingOutput.m_iOutputAmount, true);
 				if (added != processingOutput.m_iOutputAmount)
 				{
-					for (int rollbackIndex = 0; rollbackIndex < removedAmounts.Count(); rollbackIndex++)
-					{
-						if (removedAmounts[rollbackIndex] > 0)
-							LF_InventoryUtils.AddAmount(inventoryManager, m_aProcessingInputs[rollbackIndex].m_InputPrefab, removedAmounts[rollbackIndex]);
-					}
+					RestoreInputs(inventoryManager, m_aProcessingInputs);
 
 					LF_Debug.Error("Processing", string.Format("rejected process: output delivery failed (%1/%2)", added, processingOutput.m_iOutputAmount));
 					return;
@@ -196,6 +163,51 @@ class LF_ProcessAction : ScriptedUserAction
 		m_aProcessingInputs = machine.m_aInputs;
 		m_aProcessingOutputs = machine.m_aOutputs;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes every input from the inventory, or none. A missing or short input logs and returns
+	//! false before anything is taken; a removal that comes up short puts back what it took.
+	//! Shared by the instant processors and the chain stations.
+	static bool TryConsumeInputs(InventoryStorageManagerComponent inventoryManager, array<ref LF_ProcessingInput> inputs)
+	{
+		foreach (LF_ProcessingInput processingInput : inputs)
+		{
+			if (processingInput.m_iInputAmount < 1 || LF_InventoryUtils.GetAmount(inventoryManager, processingInput.m_InputPrefab) < processingInput.m_iInputAmount)
+			{
+				LF_Debug.Warn("Processing", string.Format("rejected process: missing input %1", processingInput.m_InputPrefab));
+				return false;
+			}
+		}
+
+		array<int> removedAmounts = {};
+		for (int inputIndex = 0; inputIndex < inputs.Count(); inputIndex++)
+		{
+			LF_ProcessingInput processingInput = inputs[inputIndex];
+			int removed = LF_InventoryUtils.RemoveAmount(inventoryManager, processingInput.m_InputPrefab, processingInput.m_iInputAmount);
+			removedAmounts.Insert(removed);
+			if (removed == processingInput.m_iInputAmount)
+				continue;
+
+			for (int rollbackIndex = 0; rollbackIndex <= inputIndex; rollbackIndex++)
+			{
+				if (removedAmounts[rollbackIndex] > 0)
+					LF_InventoryUtils.AddAmount(inventoryManager, inputs[rollbackIndex].m_InputPrefab, removedAmounts[rollbackIndex]);
+			}
+
+			LF_Debug.Error("Processing", string.Format("rejected process: input removal changed during validation (%1/%2)", removed, processingInput.m_iInputAmount));
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gives back every input after TryConsumeInputs succeeded and a later step failed.
+	static void RestoreInputs(InventoryStorageManagerComponent inventoryManager, array<ref LF_ProcessingInput> inputs)
+	{
+		foreach (LF_ProcessingInput processingInput : inputs)
+			LF_InventoryUtils.AddAmount(inventoryManager, processingInput.m_InputPrefab, processingInput.m_iInputAmount);
 	}
 
 	//------------------------------------------------------------------------------------------------

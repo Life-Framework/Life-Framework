@@ -262,6 +262,14 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "apples")
+		{
+			// Raw goods for the chain stations (#417): eight apples, two loads of the example chain.
+			int apples = LF_InventoryUtils.AddAmount(this, "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", 8);
+			LF_HarnessReply(commandId, "ok", string.Format("apples added=%1", apples));
+			return;
+		}
+
 		if (tool == "drill" || tool == "keycard")
 		{
 			// Stands in for a fence sale: the drill or keycard is stamped and booked to this account.
