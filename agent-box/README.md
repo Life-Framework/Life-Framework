@@ -557,7 +557,8 @@ node agent-box/session.mjs up                 # server and ONE client (the defau
 node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms (only when the proof needs two players)
 node agent-box/session.mjs up --hold 40       # raise this session's hold cap (20 min by default, 45 at most; it only bites while another up queues)
 node agent-box/session.mjs up --clients 2 --mission playtest   # LF_PlaytestTown, harness build
-node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop
+node agent-box/session.mjs up --profile full                  # shots, filming, journey, any picture that goes in a PR (the default is lowspec: 640x360, lowest textures; docs/worktrees.md "Session profiles")
+node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop (implies --profile full)
 node agent-box/session.mjs up --clients 2 --visible            # on the user's desktop, for screen capture
 node agent-box/session.mjs restart            # playtest: shutdown save, load, same clients rejoin
 node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client

@@ -5,7 +5,7 @@
 //   - top-level objects (captions, issueTitles, ...): union of keys; a key that
 //     both sides changed to different values is a conflict on that key only.
 //   - top-level arrays (sections, skip): union of entries, object entries keyed
-//     by `id`; a deletion on either side is honoured.
+//     by `id` (else `name`); a deletion on either side is honoured.
 // Output is re-serialized (BOM stripped, never written) in the file's house layout (one member or element per
 // line, nested values inline). A conflicting key is written as a marker block
 // and the driver exits 1.
@@ -31,6 +31,7 @@ function inline(v) {
 
 function entryKey(item) {
   if (isObj(item) && has(item, "id")) return `id:${item.id}`;
+  if (isObj(item) && has(item, "name") && typeof item.name === "string") return `name:${item.name}`;
   return `v:${JSON.stringify(item)}`;
 }
 

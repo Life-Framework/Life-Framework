@@ -22,7 +22,10 @@ export function judgeWorkAnimLogs(serverText, clientTexts) {
   for (const [who, text] of all) for (const [needle, label] of bad) if (text.includes(needle)) out.push(`${who} logged: ${label}`);
   clientTexts.forEach((t, i) => {
     const playing = (t.match(/work animation playing/g) ?? []).length;
-    if (playing < 2) out.push(`client ${i + 1} logged 'work animation playing' ${playing} time(s), expected 2 (drill and pick)`);
+    // The worker's own machine may check a 6 s job after it ended when the box lags: that counts, the watcher must see all four.
+    const finished = (t.match(/work animation finished before the check/g) ?? []).length;
+    if (i > 0 && playing < 4) out.push(`client ${i + 1} logged 'work animation playing' ${playing} time(s), expected 4`);
+    if (i === 0 && playing + finished < 4) out.push(`client ${i + 1} logged 'work animation playing' ${playing} and 'finished before the check' ${finished} time(s), expected 4 together (vault drill, door pick, car pick, van box drill)`);
   });
   return out;
 }
@@ -37,7 +40,7 @@ function readLogs(dir) {
   return [readLog(join(paths.server, "logs")) || readLog(paths.server), ...paths.clients.map((c) => readLog(c.logs))];
 }
 
-// M2 #273, #411: the robber drills the bank vault, then picks the lock-up door, and the other
+// M2 #273, #411: the robber drills the bank vault, then picks the lock-up door, the locked car and drills the cash van box, and the other
 // client watches each. Client 1 is handed the tools (dev gate, standing in for the fence). Client 2
 // orbits a camera on the worker and takes UI captures, so neither body moves. The server and both
 // clients must log `work animation started / playing / stopped`.
@@ -65,19 +68,19 @@ async function runWorkAnimProof() {
   // Client 2 closes a leftover bill, then both stand at the vault.
   on(2, { verb: "click", widget: "BillClose" });
 
-  const watch = (door, shot) => {
+  const watch = (door, orbitSeconds) => {
     on(2, { verb: "stand", entityName: door });
     wait(2500);
     on(1, { verb: "stand", entityName: door });
     wait(2500);
     on(1, { verb: "look" });
     const [wx, wy, wz] = at(1);
-    on(2, { verb: "camera", args: `orbit ${wx.toFixed(2)} ${(wy + 1).toFixed(2)} ${wz.toFixed(2)} 3 24` }, 10000);
+    on(2, { verb: "camera", args: `orbit ${wx.toFixed(2)} ${(wy + 1).toFixed(2)} ${wz.toFixed(2)} 3 ${orbitSeconds}` }, 10000);
     wait(1500);
   };
 
   // The vault drill (6 s of work).
-  watch("Roadmap_Bank_Vault");
+  watch("Roadmap_Bank_Vault", 8);
   on(1, { verb: "drill" }, 10000);
   wait(1500);
   const rob = on(1, { verb: "use", className: "LF_BankRobAction", entityName: "Roadmap_Bank_Vault" }, 10000);
@@ -87,7 +90,7 @@ async function runWorkAnimProof() {
   wait(5000);
 
   // The lock-up door pick (6 to 20 s of work).
-  watch("Roadmap_Lockpick_Door");
+  watch("Roadmap_Lockpick_Door", 24);
   on(1, { verb: "lockpick" }, 10000);
   wait(1500);
   const pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Door" }, 10000);
@@ -96,6 +99,24 @@ async function runWorkAnimProof() {
   on(2, { verb: "capture", mode: "ui", name: `${prefix}_pick` }, 25000);
   // The attempt runs at most 20 s; wait for its own finish, then for the clients to log the end.
   wait(21000);
+
+  // The locked car (#513 follow-up): the same pick, on a vehicle.
+  watch("Roadmap_Lockpick_Car", 10);
+  const carPick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Car" }, 10000);
+  need(carPick.status === "ok", `the car pick returned ${carPick.status} ${carPick.detail}`);
+  wait(2200);
+  on(2, { verb: "capture", mode: "ui", name: `${prefix}_car` }, 25000);
+  wait(21000);
+
+  // The cash van box (#475): the same drill, on the box that rides the van.
+  watch("Roadmap_Cash_Van_Box", 10);
+  on(1, { verb: "drill" }, 10000);
+  wait(1500);
+  const box = on(1, { verb: "use", className: "LF_HeistRobAction", entityName: "Roadmap_Cash_Van_Box" }, 10000);
+  need(box.status === "ok", `the van box drill returned ${box.status} ${box.detail}`);
+  wait(2200);
+  on(2, { verb: "capture", mode: "ui", name: `${prefix}_vanbox` }, 25000);
+  wait(8000);
 
   const [serverText, ...clientTexts] = readLogs(dir).map((text, i) => text.slice(before[i] ?? 0));
   fails.push(...judgeWorkAnimLogs(serverText, clientTexts));

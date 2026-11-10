@@ -284,7 +284,7 @@ async function openClient(machine, hold) {
   if (s.readRemotePointer()) return { h, remote: true, started: false };
   let started = false;
   if (!alive()) {
-    const up = sessionTool(["up", "--clients", "1", "--mission", "playtest", "--machine", machine, ...(hold ? ["--hold", String(hold)] : []), "--wait"]);
+    const up = sessionTool(["up", "--clients", "1", "--mission", "playtest", "--profile", "full", "--machine", machine, ...(hold ? ["--hold", String(hold)] : []), "--wait"]);
     if (up.code !== 0) throw new Error(`session up failed: ${up.text.trim().split("\n").slice(-3).join(" | ")}`);
     started = true;
     if (s.readRemotePointer()) return { h, remote: true, started };
@@ -292,6 +292,7 @@ async function openClient(machine, hold) {
   }
   for (let i = 0; i < 20 && !alive(); i++) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1500);
   if (!alive()) throw new Error("the session client does not answer the harness (probe ground)");
+  s.requireFullProfile("shots");
   return { h, remote: false, started };
 }
 

@@ -143,6 +143,44 @@ try {
     if (must(seed, ["ls-remote", origin, `refs/heads/${name}`]) !== remoteBefore) fail(`${label}: origin branch changed`);
   }
 
+  // Legacy worktree: no merge attributes, no driver config, no driver scripts.
+  // Both sides append to the inventory table, gallery.json and areas.json;
+  // heal must still resolve them through the hub's drivers.
+  {
+    const legacy = join(temp, "legacy");
+    must(temp, ["clone", "-q", origin, legacy]);
+    for (const [k, v] of [["user.email", "pr-keeper@example.com"], ["user.name", "pr-keeper"], ["core.autocrlf", "false"], ["commit.gpgsign", "false"], ["core.hooksPath", join(temp, "no-hooks")]]) must(legacy, ["config", k, v]);
+    const INV = "docs/asset-inventory.md", GAL = "website/content/gallery.json", AREAS = "agent-box/areas.json";
+    const NL = String.fromCharCode(10);
+    const doc = (lines) => lines.join(NL) + NL;
+    const inv = (...rows) => doc(["# Inventory", "", "| Item | Prefab |", "|---|---|", "| Base | base |", ...rows.map((r) => "| " + r + " | " + r + " |")]);
+    const gal = (...ids) => doc(["{", '  "sections": [', ["base", ...ids].map((i) => '    { "id": "' + i + '", "title": "T" }').join("," + NL), "  ]", "}"]);
+    const areas = (...names) => doc(["{", '  "areas": [', ["base", ...names].map((n) => '    { "name": "' + n + '", "x": 1 }').join("," + NL), "  ]", "}"]);
+    const files = (...n) => { write(legacy, INV, inv(...n)); write(legacy, GAL, gal(...n)); write(legacy, AREAS, areas(...n)); };
+    must(legacy, ["checkout", "-q", "-b", "ws/legacy-base", "origin/main"]);
+    files();
+    commit(legacy, "legacy base");
+    must(legacy, ["push", "-q", "origin", "ws/legacy-base:refs/heads/legacy-base"]);
+    must(legacy, ["checkout", "-q", "-b", "ws/legacy-a"]);
+    files("A");
+    commit(legacy, "a appends");
+    must(legacy, ["checkout", "-q", "-b", "legacy-main", "ws/legacy-base"]);
+    files("B");
+    commit(legacy, "b appends");
+    must(legacy, ["checkout", "-q", "ws/legacy-a"]);
+    const r = healMerge(legacy, { base: "legacy-main", regenerate });
+    if (r.status !== "merged" && r.status !== "healed") fail(`legacy append: expected merged, got ${r.status} (${r.reason ?? ""} ${(r.conflicted ?? []).join(", ")})`);
+    else {
+      for (const f of [INV, GAL, AREAS]) {
+        const t = readFileSync(join(legacy, f), "utf8");
+        if (!t.includes("A") || !t.includes("B") || /<{7}|>{7}/.test(t)) fail(`legacy append: ${f} lost a side or has markers:
+${t}`);
+      }
+      JSON.parse(readFileSync(join(legacy, GAL), "utf8"));
+      JSON.parse(readFileSync(join(legacy, AREAS), "utf8"));
+    }
+  }
+
   // Liveness: a fresh change is live now and idle 15 min later.
   write(a, "tmp/note.txt", "agent scratch\n");
   if (!isLive(a).live) fail("a worktree changed just now should be live");
@@ -158,4 +196,4 @@ if (failures.length) {
   for (const f of failures) console.log(`  - ${f}`);
   process.exit(1);
 }
-console.log("pr-keeper-selftest: OK (registry-only conflict healed and pushed; real and mixed conflicts aborted, HEAD and origin untouched; liveness window)");
+console.log("pr-keeper-selftest: OK (registry-only conflict healed and pushed; legacy worktree appends to inventory, gallery and areas merged by the hub drivers; real and mixed conflicts aborted, HEAD and origin untouched; liveness window)");

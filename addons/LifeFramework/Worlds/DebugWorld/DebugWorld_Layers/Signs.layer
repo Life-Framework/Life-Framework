@@ -206,7 +206,7 @@ GenericEntity Sign_SafeZone_East : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sig
  angleY 90
 }
 GenericEntity Sign_PoliceWhitelist : "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et" {
- coords 220.5 0 246.5
+ coords 236.6 1.7 241.2
 }
 GenericEntity Sign_BackRoom : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
  components {
@@ -247,7 +247,7 @@ GenericEntity Sign_PubHanging : "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingPa
  angleY 180
 }
 GenericEntity Sign_HospitalCross : "{238A10113E311A73}Prefabs/Props/Fabric/RedCrossCloth/RedCrossClothTemper_01_big_front.et" {
- coords 266.5 2.3 258.6
+ coords 266.5 2.3 258.05
  angleY 180
 }
 GenericEntity Sign_ConvoyDrop : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
@@ -277,7 +277,7 @@ GenericEntity Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sig
    m_vTextColor 0.65 0.1 0.1
   }
  }
- coords 171.5 0 207
+ coords 172 0 200
  angleY 0
 }
 GenericEntity Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -301,7 +301,7 @@ GenericEntity Sign_HospitalBay : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.75 0.08 0.08
   }
  }
- coords 260.8 0 250
+ coords 261 0 252.6
  angleY 270
 }
 GenericEntity Sign_LotPrice_s105 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {

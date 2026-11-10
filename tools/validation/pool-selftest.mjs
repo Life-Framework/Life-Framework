@@ -33,6 +33,7 @@ import * as q from "../lib/pool-queue.mjs";
 import { takeHoldWarning } from "../lib/session-lease.mjs";
 import * as pool from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
+import { trimScript } from "../lib/ws-trim.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -113,6 +114,14 @@ try {
   check(!q.lanesFor(lanes2, "test").some((l) => l.port === 2011) && q.allLaneLocks(lanes2).length === 4, "a test lane shares a port with a session lane");
   const ses = { sessionReserveServerMb: 800, sessionReserveClientMb: 1200 };
   check(q.sessionReserveMb(ses, 1) === 2000 && q.sessionReserveMb(ses, 2) === 3200, "session reserve per client count");
+  // The working-set trim touches only live pids a session recorded.
+  check(pool.sessionPids({ serverPid: process.pid, clients: [{ pid: 2147483000 }, { pid: 0 }] }).join() === String(process.pid), "sessionPids kept a dead or empty pid");
+  check(pool.sessionPids({ serverPid: process.pid, clients: [], stoppedAt: "x" }).length === 0 && pool.sessionPids(null).length === 0, "sessionPids listed a stopped session");
+  check(trimScript([4242, 0, -1]).includes("@(4242)") && !trimScript([4242, 0]).includes("@(4242,"), "trimScript passed a bad pid to EmptyWorkingSet");
+  check(trimScript([]) === "", "trimScript of nothing is not empty");
+  const sesLow = { ...ses, sessionReserve: { lowspec: { serverMb: 500, clientMb: 600 } } };
+  check(q.sessionReserveMb(sesLow, 2, "lowspec") === 1700 && q.sessionReserveMb(sesLow, 2) === 3200 && q.sessionReserveMb(sesLow, 2, "full") === 3200 && q.sessionReserveMb(ses, 1, "lowspec") === 2000, "session reserve per profile (a profile without numbers uses the full ones)");
+  check(q.ramVerdict({ running: 1, freeMb: 3200, minFreeMb: 1500, reserveMb: q.sessionReserveMb(sesLow, 1, "lowspec") }).ok && !q.ramVerdict({ running: 1, freeMb: 3200, minFreeMb: 1500, reserveMb: q.sessionReserveMb(sesLow, 1, "full") }).ok, "a lowspec session does not fit sooner than a full one under the same free RAM");
   check(q.ramVerdict({ running: 1, freeMb: 3600, minFreeMb: 1500, reserveMb: 2000 }).ok && !q.ramVerdict({ running: 1, freeMb: 3400, minFreeMb: 1500, reserveMb: 2000, pendingMb: 2000 }).ok, "RAM gate ignores the reserve or the sessions still booting");
   check(!q.ramVerdict({ running: 1, freeMb: 3400, minFreeMb: 1500, reserveMb: 2000, pendingMb: 2000 }).ok && /for the session/.test(q.ramVerdict({ running: 1, freeMb: 3000, minFreeMb: 1500, reserveMb: 2000 }).reason), "RAM wait reason lacks the session reserve");
   const T0 = Date.parse("2026-01-01T00:00:00Z");
@@ -142,6 +151,22 @@ try {
   check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === false, "a starved head reserves the lane before its RAM is there");
   check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 5200 }) === true, "a starved head with its RAM does not reserve the lane");
   check(q.waitReason(bigHead) === "ram 3-client" && q.waitReason({ stuck: "lane" }) === "lane" && q.waitReason({}, 2) === "behind 2", "waitReason text");
+  {
+    // #563: a late join is RAM-gated like `up`: trim first, refuse (one line) when still under the floor.
+    const jroot = mkdtempSync(join(tmpdir(), "lf-join-"));
+    const run = (freeSeq, trimGain) => {
+      let free = freeSeq, trims = 0;
+      return { r: pool.gateJoin(jroot, 800, { freeMb: () => free, trim: () => { trims++; free += trimGain; return 3; } }), trims };
+    };
+    const min = pool.poolSettings(jroot).minFreeMb;
+    const fits = run(min + 900, 0);
+    const trimmedFits = run(min + 100, 1500);
+    const refused = run(165, 100);
+    check(fits.r.ok && fits.trims === 0, "a join with room trims anyway or is refused");
+    check(trimmedFits.r.ok && trimmedFits.trims === 1 && trimmedFits.r.trimmed === 3, "a short join does not trim idle sessions then pass");
+    check(!refused.r.ok && refused.trims === 1 && /would be under/.test(refused.r.reason) && !refused.r.reason.includes(String.fromCharCode(10)), "a join that cannot fit after the trim is not refused with a one-line reason");
+    rmSync(jroot, { recursive: true, force: true });
+  }
   check(q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500, reserveMb: 3600 }).needMb === 5100, "ramVerdict does not report needMb");
   check(q.ramVerdict({ running: 0, freeMb: 100, minFreeMb: 1500 }).ok && !q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500 }).ok && q.ramVerdict({ running: 1, freeMb: 2000, minFreeMb: 1500 }).ok, "RAM gate verdicts");
 
