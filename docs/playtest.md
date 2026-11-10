@@ -71,7 +71,7 @@ log that back them stay on the server and invisible.
   tools only to proven criminals: a drill after 3 completed crimes, a breaching charge after
   5, a keycard after 8. Rob a till, steal a vehicle, or breach a door to build
   the count. Each tool carries a serial; use *Read serial* on it to see the
-  number.
+  number. His yard has a workbench, crates, a barrel, a tyre pile and a parked old car; stand south of the barn doors to trade.
   A police scanner ($900, after 2 crimes) chirps and shows a toast whenever a
   police or medic call goes out. It is illegal: an officer who searches a wanted
   suspect takes it and files a charge.
