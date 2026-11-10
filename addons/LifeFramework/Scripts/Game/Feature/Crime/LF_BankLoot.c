@@ -30,7 +30,11 @@ class LF_BankLoot
 		array<IEntity> bags = {};
 		for (int i = 0; i < count; i++)
 		{
-			vector at = Spot(target, fallback, 1.4, (i - (count - 1) * 0.5) * 0.55, 0.3);
+			vector at = Spot(target, fallback, 1.4, (i - (count - 1) * 0.5) * 0.7, 0.3);
+			// Lay each bag on the ground, not at the target's height: no bag hangs in the air.
+			if (GetGame() && GetGame().GetWorld())
+				at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]) + 0.05;
+
 			IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Bank.BAG_PREFAB, at);
 			if (!bag)
 			{

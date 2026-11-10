@@ -42,7 +42,7 @@
     "271/fence-list": "The fence's list. Each tool opens after a number of completed crimes.",
     "271/fence-yard": "The old barn where the fence works, off the main street.",
     "274/van-street": "The cash van on the main street.",
-    "274/m2_274_van_opened_client1_2": "Money bags dropped when the van's box is drilled open.",
+    "274/van-bags": "Three money bags on the road behind the van after its box is drilled open.",
     "276/village-layout": "The playtest village from above.",
     "414/stolen_car_on_board": "A stolen car reported on the police wanted board.",
     "415/chop_shop_on_board": "A chop shop job on the police wanted board.",
@@ -51,10 +51,15 @@
     "420/m2_420_moonshine_workers_client1_1": "Workers at the moonshine site.",
     "area-1-spawn-square/wide": "Spawn square, wide",
     "area-1-spawn-square/detail": "Spawn square, welcome sign",
-    "area-1-spawn-square/payphone": "The payphone"
+    "area-1-spawn-square/payphone": "The payphone",
+    "area-10-cash-van/wide": "The cash van at the bank stop",
+    "area-10-cash-van/street": "The van in the main street",
+    "area-10-cash-van/side": "The van seen from across the street",
+    "area-10-cash-van/bags": "Money bags dropped on the road behind the van"
   },
   "areaTitles": {
-    "area-1-spawn-square": "Spawn square"
+    "area-1-spawn-square": "Spawn square",
+    "area-10-cash-van": "Cash van route"
   },
   "skip": [
     "116/chalkboard-back-room.png",
@@ -81,8 +86,6 @@
     "272/serial-read.png",
     "273/vault-opened.png",
     "273/vault-refused.png",
-    "274/van-bags.png",
-    "274/m2_274_van_before_client1_1.png",
     "275/m2_275_armory_opened_client1_1.png"
   ]
 }
