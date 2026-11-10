@@ -341,9 +341,10 @@ export function selftestProfile() {
   if (parseSessionProfile(["--levers", "tex,res"]).levers.join() !== "tex,res") failures.push("--levers did not replace the profile list");
   const full = resolveProfile("full");
   const sf = serverArgs({ addonsDir: "A", profile: "SP", rp: full });
-  const sl = serverArgs({ addonsDir: "A", profile: "SP", rp: low });
+  const sl = serverArgs({ addonsDir: "A", profile: "SP", rp: resolveProfile("custom", ["nds", "sfps"]) });
   if (sf.includes("-nds") || sf[sf.indexOf("-maxFPS") + 1] !== "30") failures.push("a full server is not the old server");
-  if (sl[sl.indexOf("-nds") + 1] !== "1") failures.push("a lowspec server does not pass -nds 1");
+  if (sl[sl.indexOf("-nds") + 1] !== "1" || sl[sl.indexOf("-maxFPS") + 1] !== "20") failures.push("a server lever (nds, sfps) does not reach the server args");
+  if (serverArgs({ addonsDir: "A", profile: "SP", rp: low }).includes("-nds")) failures.push("a lowspec server changes the replication range (-nds)");
   const cf = clientArgs({ n: 1, addonsDir: "A", profile: "P", rp: full });
   const cl = clientArgs({ n: 1, addonsDir: "A", profile: "P", rp: low, res: sessionRes([], low) });
   if (cf[cf.indexOf("-maxFPS") + 1] !== "30" || cf[cf.indexOf("-screenWidth") + 1] !== "640") failures.push("a full client is not the old client");

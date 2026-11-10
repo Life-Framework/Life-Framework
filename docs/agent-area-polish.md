@@ -132,7 +132,7 @@ toolscli shots crop wide 900,0,380,140
 - **Known limits.** The player camera cannot pitch, so by default the wide is a level view from 12 m up and there is no top-down. `--free-camera` flies a free camera (real pitch, real top-down) but the client crashed about 4 s after the first shot, so it is opt-in until that is fixed. The field of view used by `--annotate` is an assumption (60 degrees vertical); the labels lined up with the entities in the hospital run.
 - **Images** are quantised to a palette PNG when a full-colour one is over 500 KB (`agent-box/bmp.mjs`).
 - **Harness against a remote session.** `harness.mjs <verb> ...` relays through `session.mjs run` when the session is on a pool machine (`--local` keeps it here); `session.mjs up --help` prints help.
-- **Session.** It reuses a running session, or starts one (`session.mjs up --machine any --wait`, one client,
+- **Session.** It reuses a running session, or starts one (`session.mjs up --machine any --profile full --wait`, one client,
   playtest mission) and closes it afterwards; `--keep` leaves a session it started up. If the session is on
   a pool machine, the call runs there and copies the folder back.
 - **Reviewer:** reads `contact.jpg` and the `problems:` list, and crops only when unsure.

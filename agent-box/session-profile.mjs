@@ -78,7 +78,9 @@ export const LEVERS = {
 // What each profile turns on. `full` is the session as it always was.
 export const PROFILE_LEVERS = {
   full: [],
-  lowspec: ["res", "fps", "tex", "geom", "post", "shadow", "view", "nds"],
+  // nds, stream, sfps and st measured no RAM change on the server or client (docs/worktrees.md), so a
+  // proof keeps the replication range and threading it was written against.
+  lowspec: ["res", "fps", "tex", "geom", "post", "shadow", "view"],
 };
 
 // Flags that only make sense for a picture or a recording: without an explicit --profile they mean full.
