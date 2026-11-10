@@ -1,7 +1,7 @@
 SCR_DestructibleBuildingEntity : "{4D6D06CAD0439114}Prefabs/Structures/Cultural/Fountains/Fountain_01.et" {
  coords 113 0 250
 }
-SCR_DestructibleBuildingEntity : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+SCR_DestructibleBuildingEntity Village_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
  coords 96.5 0 263
  angleY 90
 }

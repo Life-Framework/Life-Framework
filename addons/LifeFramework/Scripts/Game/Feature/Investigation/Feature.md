@@ -38,3 +38,10 @@ loses its stamp over a restart until the locker (#269) logs it.
   already files the break-in report. Once forced open, anyone but on-duty police can "Burn the case
   file", which destroys the logged rows.
 - Not done: the wanted board does not yet print "evidence on file" beside a report; reading is by the locker.
+
+## Witnesses (#266)
+
+- `LF_WantedReports.Report` calls `LF_Witness.RecordCrime`: every player within `m_fSightRange` of the suspect is a witness, with the distance stored.
+- The payphone has three `LF_WitnessPayphoneAction` entries (clothing, vehicle, plate). The server gives only what that distance allows (`LF_Witness.PresetsFor`); the client never sends text.
+- Statements are shown by `LF_WantedBoard` under the dispatch log as `S;` entries (`LF_Witness.BoardLine`).
+- Config: `Configs/Investigation/LF_Witness.conf` (`LF_WitnessConfig`). Not saved across a restart.

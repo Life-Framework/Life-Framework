@@ -5857,6 +5857,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You need a field dressing to revive someone."
      Comment "Revive refusal: the medic has none of the configured revive item."
     }
+    CustomStringTableItem "{46C33D356FF6A97D}" {
+     Id "LF-Witness_Title"
+     Target_en_us "Witness"
+     Comment "Toast title for witness statements."
+    }
+    CustomStringTableItem "{A07851BD4B020CFC}" {
+     Id "LF-Witness_Noted"
+     Target_en_us "Noted. It goes on the police board."
+     Comment "Toast: the witness statement was taken down."
+    }
+    CustomStringTableItem "{C37C0A98B9E81B46}" {
+     Id "LF-Witness_AlreadyGiven"
+     Target_en_us "You already told them that."
+     Comment "Toast: the witness already gave this detail."
+    }
+    CustomStringTableItem "{1D0B9ADCB47A7284}" {
+     Id "LF-Witness_NotSeen"
+     Target_en_us "You didn't see that clearly enough."
+     Comment "Toast: the witness stood too far away to make out this detail (or there was nothing to see)."
+    }
+    CustomStringTableItem "{96AA484FA559A1BA}" {
+     Id "LF-Witness_NothingSeen"
+     Target_en_us "You didn't see anything."
+     Comment "Toast: the witness saw no recent crime."
+    }
+    CustomStringTableItem "{D81009B11AFDDB8F}" {
+     Id "LF-Witness_Anonymous"
+     Target_en_us "an anonymous caller"
+     Comment "Wanted board: the witness is not named."
+    }
+    CustomStringTableItem "{B5BA083D6C857087}" {
+     Id "LF-Witness_BoardLine"
+     Target_en_us "WITNESS (%1) on %2: %3"
+     Comment "Wanted board witness line. %1 = who, %2 = offence, %3 = what they saw."
+    }
+    CustomStringTableItem "{D188FF1C27982766}" {
+     Id "LF-Witness_BoardPlate"
+     Target_en_us "Plate starts %1."
+     Comment "Wanted board: the plate fragment a witness read. %1 = the characters."
+    }
+    CustomStringTableItem "{1490FFBE4947B795}" {
+     Id "LF-Payphone_DescribeClothing"
+     Target_en_us "Describe their clothing"
+     Comment "Payphone action: a witness tells what the suspect wore."
+    }
+    CustomStringTableItem "{41736C02D6DB8859}" {
+     Id "LF-Payphone_DescribeVehicle"
+     Target_en_us "Describe their vehicle"
+     Comment "Payphone action: a witness tells what the suspect drove."
+    }
+    CustomStringTableItem "{A21851D555A5F893}" {
+     Id "LF-Payphone_DescribePlate"
+     Target_en_us "Give a plate fragment"
+     Comment "Payphone action: a witness reads part of the suspect vehicle plate."
+    }
   }
  }
 }

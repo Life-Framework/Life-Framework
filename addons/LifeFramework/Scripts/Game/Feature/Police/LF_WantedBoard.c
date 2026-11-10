@@ -99,7 +99,11 @@ class LF_WantedBoard
 		// The dispatch log (M1-20) is pinned beside the posters for officers only.
 		array<string> dispatches = {};
 		if (police)
+		{
 			LF_Dispatch.BuildBoardEntries(LF_PoliceConfig.DispatchLogLines(), dispatches);
+			// Witness statements (#266, #267) ride under the dispatch log.
+			LF_Witness.AppendBoardEntries(LF_PoliceConfig.DispatchLogLines(), dispatches);
+		}
 
 		LF_Debug.Info(FEATURE, string.Format("board read by player %1: police=%2 posters=%3 dispatches=%4", playerId, police, count, dispatches.Count()));
 		controller.LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels, dispatches);
@@ -147,7 +151,12 @@ class LF_WantedBoard
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "DispatchHeading", WidgetManager.Translate("#LF-Dispatch_BoardHeading")));
 			foreach (int index, string entry : dispatches)
 			{
-				string line = LF_Dispatch.BoardLine(entry);
+				string line;
+				if (LF_Witness.IsBoardEntry(entry))
+					line = LF_Witness.BoardLine(entry);
+				else
+					line = LF_Dispatch.BoardLine(entry);
+
 				if (!line.IsEmpty())
 					parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Dispatch" + index, line));
 			}
