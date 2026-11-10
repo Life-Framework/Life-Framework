@@ -308,6 +308,30 @@ it, picks a lane and a budget, and prints one line per outcome.
 - **Self-deadlock.** If this worktree's own session holds the only slot a test
   could use (a machine without lanes), `test` stops at once with one line and the
   `session.mjs down` hint instead of waiting for itself.
+- **Session hold cap.** One session at a time fits this PC, so a session that
+  outlives its job starves the queue. A session started after the cap existed
+  (`session.json` carries `holdCap`; older sessions are never capped) is judged
+  only while another `session up` request is queued: past `sessionHoldMin` (20
+  min, `tools/pool.json`) it is warned, and `sessionGraceMin` (5) later it is
+  closed (`session down`, logged as a `hold-cap` reclaim, the waiter starts at
+  once). The waiting `up` runs the check every 10 s. The warning is one line,
+  printed once on the holder's next harness or session command: "session: N waiting;
+  finish and run node agent-box/session.mjs down within 5 min or it is closed"
+  (a harness prints it on stderr). With nobody queued there is no cap,
+  and a warning whose waiter left is void. `session up --hold <min>` raises this
+  session's cap (45 at most, the number it was asked for is logged). A test job
+  waiting on RAM does not start the cap; the idle rule below still applies.
+- **Session records.** Every session writes one line to `runs.jsonl` when it ends
+  (`"kind":"session"`: slug, priority, `waitS`, `heldS`, `boots`, `bootS`,
+  `closedBy` owner | lease | hold-cap). `pool status` prints the last 8 and the
+  average wait and hold; `pool stats` the last 5. Sessions from before this
+  change are not recorded (no `heldSince`).
+- **Queue age.** A session request that times out or is interrupted (an agent's
+  10 min tool call ended) and is retried keeps its first `at` for 15 min
+  (`<main>/tmp/wt/pool/queued.json`), so aging (low to normal at 20 min, to high
+  at 40, first in line there since it arrived first) is not restarted by every
+  retry. `session up --wait` queues up to 90 min (it was 30, which ended before
+  a low job reached high). The resource-database refresh runs before the queue.
 - **Session lease.** Every `session.mjs` verb and every harness command
   to a session client stamps `lease.json` in the session dir; `node
   agent-box/session.mjs lease [min]` holds the session for that long. A session

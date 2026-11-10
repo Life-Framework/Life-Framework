@@ -19,7 +19,7 @@
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
-//   session up [--clients N] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   shots area <name|x,z> | crop <shot> <x,y,w,h>   One-call screenshot rig for the area polish pass (agent-box/shots.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved LFTEST summary for a tier
@@ -51,7 +51,7 @@ import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-l
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
-import { resetLease } from "./lib/session-lease.mjs";
+import { readReaped, resetLease } from "./lib/session-lease.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -1524,8 +1524,21 @@ function cmdSessionDown(dir) {
   console.log(`session: server pid ${s.serverPid} ${killTree(s.serverPid) ? "closed" : "already gone"}`);
   for (let i = 0; i < 20 && host.pidAlive(s.serverPid); i++) sleepMs(500);
   wt.releaseLock(ROOT, SERVER_SLOT, s.serverPid);
-  session.writeSession(dir, { ...s, stoppedAt: new Date().toISOString() });
+  const stoppedAt = new Date().toISOString();
+  session.writeSession(dir, { ...s, stoppedAt });
+  recordSessionEnd(dir, s, stoppedAt);
   return 0;
+}
+
+// An owner's `session down` writes the session's line in runs.jsonl. A close by the pool (idle or
+// hold cap) was recorded by the closer, which left reaped.json just before running this.
+function recordSessionEnd(dir, s, stoppedAt) {
+  try {
+    if (s.stoppedAt || !s.heldSince) return;
+    const reaped = readReaped(dir);
+    if (reaped && Date.now() - Date.parse(reaped.at) < 180000) return;
+    pool.recordSession(ROOT, { slug: wt.slugOfRoot(ROOT) ?? undefined, priority: s.priority, waitS: s.waitS, heldSinceMs: Date.parse(s.heldSince), endMs: Date.parse(stoppedAt), boots: s.boots, bootS: s.bootS, clients: s.expectClients, mission: s.mission, closedBy: "owner" });
+  } catch {}
 }
 
 // `session join <n>`: starts client n on a running session that was brought up without it, so a
@@ -1585,6 +1598,28 @@ function cmdSessionStatus(dir) {
   return 0;
 }
 
+// How long `session up --wait` queues (an aged request reaches the front at 40 min, so it needs more than 30).
+const SESSION_QUEUE_MIN = 90;
+
+// --hold <min>: raises this session's hold cap for a known-long job, up to sessionHoldMaxMin.
+function sessionHoldFlag(flags, settings) {
+  const v = argValue(flags, "--hold");
+  if (v === null) return { min: settings.sessionHoldMin, note: "" };
+  const want = Number(v);
+  if (!Number.isFinite(want) || want <= 0) throw new Error(`--hold needs minutes (got '${v}')`);
+  const min = Math.min(settings.sessionHoldMaxMin, Math.max(settings.sessionHoldMin, Math.round(want)));
+  const cut = want > settings.sessionHoldMaxMin ? ` (asked ${want}; the most is ${settings.sessionHoldMaxMin})` : "";
+  return { min, note: `session: hold cap raised to ${min} min${cut}` };
+}
+
+// `session up` prints the cap and, when other session requests are queued, how many wait.
+function sessionCapNote(root, settings, holdMin) {
+  const waiting = pool.sessionQueue(root).length;
+  const cap = `hold cap ${holdMin} min (enforced only while a session request queues; then a ${settings.sessionGraceMin} min warning)`;
+  if (waiting) console.log(`session: ${waiting} other session request(s) are queued behind you; ${cap}. Do your proof and shots in one go, then 'node agent-box/session.mjs down'`);
+  else console.log(`session: nobody is queued; ${cap}`);
+}
+
 function cmdSessionUp(root, dir, flags) {
   guardHeavy(root, "session up", flags.includes("--force"));
   const clients = session.parseClients(flags);
@@ -1599,17 +1634,14 @@ function cmdSessionUp(root, dir, flags) {
     return 1;
   }
   // Each checkout has its own session dir; clients another checkout left running still hold memory and windows.
-  // --wait queues behind another checkout's session too (its clients can outlive its server lock).
-  const queuedUntil = Date.now() + 1800000;
-  let others = session.liveSessionsElsewhere(dir, host.pidAlive);
-  if (others.length && flags.includes("--wait")) console.log(`session: ${others[0].root ?? others[0].dir} has a live session; queued (up to 30 min)`);
-  while (others.length && flags.includes("--wait") && Date.now() < queuedUntil) {
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5000);
-    others = session.liveSessionsElsewhere(dir, host.pidAlive);
-  }
-  for (const o of others) {
-    console.log(`session: ${o.root ?? o.dir} has a live session; it runs 'node agent-box/session.mjs down' first`);
-    return 1;
+  // Without --wait another checkout's live session is refused at once. With --wait the request goes straight
+  // into the pool queue (priority, aging, the hold cap and the idle reaper all work from there); this used to be a
+  // blind 5 s poll loop outside the queue, so a waiting `up` had no place in line and nothing closed the holder.
+  if (!flags.includes("--wait")) {
+    for (const o of session.liveSessionsElsewhere(dir, host.pidAlive)) {
+      console.log(`session: ${o.root ?? o.dir} has a live session; it runs 'node agent-box/session.mjs down' first`);
+      return 1;
+    }
   }
   const exe = serverExe();
   const game = gameClientExe();
@@ -1627,13 +1659,33 @@ function cmdSessionUp(root, dir, flags) {
       return "another run";
     }
   };
+  // The resource database refresh (a headless Workbench, minutes when stale) runs BEFORE the
+  // queue: it used to run with the lane held, keeping everyone else out while it worked.
+  ensureResourceDatabase(root);
+  const settings = pool.poolSettings(root);
+  const hold = sessionHoldFlag(flags, settings);
+  const queuedAt = Date.now();
+  let lane = null;
   try {
-    if (flags.includes("--wait")) console.log(`session: port 2001 is held by ${holderOf()}; queued (up to 30 min)`);
-    pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? 1800000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
+    if (flags.includes("--wait")) console.log(`session: port 2001 is held by ${holderOf()}; queued (up to ${SESSION_QUEUE_MIN} min)`);
+    lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
     console.log(`FAIL  port 2001 is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
     return 1;
   }
+  // The lane is ours; clients the previous holder left behind (its server is gone) may still hold memory.
+  let leftovers = session.liveSessionsElsewhere(dir, host.pidAlive);
+  for (let i = 0; i < 24 && leftovers.length; i++) {
+    sleepMs(5000);
+    leftovers = session.liveSessionsElsewhere(dir, host.pidAlive);
+  }
+  if (leftovers.length) {
+    console.log(`FAIL  ${leftovers[0].root ?? leftovers[0].dir} still has game clients running after 2 min; it runs 'node agent-box/session.mjs down'`);
+    wt.releaseLock(root, SERVER_SLOT);
+    return 1;
+  }
+  const heldSince = new Date().toISOString();
+  const waitS = Math.round((lane?.queuedMs ?? Date.now() - queuedAt) / 100) / 10;
   resetLease(dir);
   const paths = session.sessionPaths(dir, clients);
   sessionLog = join(dir, "up.log");
@@ -1641,7 +1693,11 @@ function cmdSessionUp(root, dir, flags) {
     writeFileSync(sessionLog, "");
   } catch {}
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), root, mission, res, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients };
+  const state = { id: session.newSessionId(), root, mission, res, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
+    // The hold cap judges only a session that carries holdCap (pool.mjs reapIdleSessions).
+    holdCap: true, holdMin: hold.min, heldSince, waitS, priority: pool.resolvePriority(root, priorityFlag(flags)), boots: 1, bootS: [] };
+  if (hold.note) console.log(hold.note);
+  const bootT0 = Date.now();
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
     console.log(`      full log ${sessionLog}`);
@@ -1651,16 +1707,17 @@ function cmdSessionUp(root, dir, flags) {
     return 1;
   };
   try {
-    ensureResourceDatabase(root);
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, marker: /(?:registration form sent to player|spawning player) \d+/g });
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
     // one. There is no faction menu (M1-11).
     const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail, state);
     if (joined < 0) return 1;
-    session.writeSession(dir, { ...state, readyAt: new Date().toISOString() });
-    console.log(`session: ready; ${joined} client(s) joined${mission === "playtest" ? " (LF_PlaytestTown, LF_HARNESS)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
+    session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
+    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? " (LF_PlaytestTown, LF_HARNESS)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    sessionCapNote(root, settings, hold.min);
     console.log(`session: full log ${sessionLog}`);
     return 0;
   } catch (e) {
@@ -1674,7 +1731,7 @@ function cmdSessionUp(root, dir, flags) {
 // Boots the server (fresh, or with -loadSessionSave), then each client in
 // order with its own profile. Returns the server console.log path, or the exit
 // code fail() returned.
-function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail }) {
+function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail, marker }) {
   const junction = serverGameAddons(root);
   mkdirSync(paths.server, { recursive: true });
   const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave });
@@ -1701,6 +1758,14 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   for (const c of paths.clients) {
     const failed = sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail });
     if (failed !== null) return failed;
+    // Client n+1 starts once client n has joined, so player ids follow client numbers and two clients
+    // do not load at once. This replaced a fixed 15 s sleep: a client joins in about 7 s (measured
+    // 2026-11-10: 6.7 to 8.2 s from launch to the server's join line).
+    if (marker && c.n < paths.clients.length) {
+      const joinBy = Date.now() + 40000;
+      while (Date.now() < joinBy && host.pidAlive(state.serverPid) && (readFileSync(log, "utf8").match(marker) ?? []).length < c.n) sleepMs(500);
+      slog(`client ${c.n} joined ${Math.round((Date.now() - Date.parse(state.clients.at(-1).launchedAt)) / 100) / 10} s after its launch`);
+    }
   }
   return log;
 }
@@ -1742,11 +1807,10 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
     }
   }
   if (!child.pid) return fail(`client ${c.n} did not start`);
-  state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
+  state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs, launchedAt: new Date().toISOString() });
   session.writeSession(dir, state);
-  // Stagger so two clients do not load the same data at the same instant, and
-  // so player ids follow client numbers (the same accounts after a restart).
-  sleepMs(15000);
+  // The next client waits for this one's join line (sessionLaunch); here only a client that dies at once is caught.
+  sleepMs(3000);
   if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
   return null;
 }
@@ -1887,7 +1951,8 @@ function cmdSessionRestart(root, dir, flags) {
   const clients = (prev.clients ?? []).length;
   const paths = session.sessionPaths(dir, clients);
   sessionLog = join(dir, "up.log");
-  const state = { ...prev, restartedAt: new Date().toISOString(), readyAt: undefined, serverPid: 0, clients: [] };
+  const state = { ...prev, restartedAt: new Date().toISOString(), readyAt: undefined, serverPid: 0, clients: [], boots: (prev.boots ?? 1) + 1 };
+  const bootT0 = Date.now();
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
     session.writeSession(dir, state);
@@ -1896,13 +1961,14 @@ function cmdSessionRestart(root, dir, flags) {
     return 1;
   };
   try {
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission: prev.mission, res: prev.res, visible: prev.visible, loadSave: true, fail });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission: prev.mission, res: prev.res, visible: prev.visible, loadSave: true, fail, marker: /flow start for player \d+/g });
     if (typeof log === "number") return log;
     const joined = sessionAwaitJoin(log, clients, /flow start for player \d+/g, fail, state);
     if (joined < 0) return 1;
     const loaded = /session continued from a save point|loading the latest save point/.test(readFileSync(log, "utf8"));
-    session.writeSession(dir, { ...state, readyAt: new Date().toISOString() });
-    console.log(`session: restarted${loaded ? " from the save" : "; WARN the server log does not say it loaded a save"}; ${joined} client(s) rejoined`);
+    const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
+    session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [...(prev.bootS ?? []), bootS] });
+    console.log(`session: restarted in ${bootS} s${loaded ? " from the save" : "; WARN the server log does not say it loaded a save"}; ${joined} client(s) rejoined`);
     return 0;
   } catch (e) {
     return fail(e.message);
@@ -1911,7 +1977,7 @@ function cmdSessionRestart(root, dir, flags) {
   }
 }
 
-const SESSION_USAGE = "usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait [--timeout s] | join <n> | restart | down | status";
+const SESSION_USAGE = "usage: tools\\cli session up [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait [--timeout s] | join <n> | restart | down | status";
 
 function cmdSession(args) {
   const list = args ?? [];

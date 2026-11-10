@@ -39,7 +39,7 @@ import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, touchLease } from "../tools/lib/session-lease.mjs";
+import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -221,7 +221,8 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", missi
 
 export function parseClients(args) {
   const i = args.indexOf("--clients");
-  const n = i === -1 ? 2 : Number(args[i + 1]);
+  // One client by default: a second costs ~18 s of boot and 0.7 to 1.5 GB; ask for --clients 2 when the proof needs two players.
+  const n = i === -1 ? 1 : Number(args[i + 1]);
   // 0 is a server-only session (the only kind a remote pool machine runs).
   if (!Number.isInteger(n) || n < 0 || n > MAX_CLIENTS) throw new Error(`--clients must be 0..${MAX_CLIENTS}`);
   return n;
@@ -320,7 +321,7 @@ export function selftestSession() {
     parseClients(["--clients", "9"]);
     failures.push("--clients 9 was accepted");
   } catch {}
-  if (parseClients([]) !== 2) failures.push("default client count is not 2");
+  if (parseClients([]) !== 1) failures.push("default client count is not 1");
   const civ0 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none toast=none";
   const civ1 = "faction=CIVILIAN duty=0 wanted=1 rank=0 cash=650 bank=0 job=UNEMPLOYED org=none toast=none";
   const cop = `faction=POLICE duty=1 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none toast=${ROB_ALERT}`;
@@ -773,7 +774,7 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
@@ -805,11 +806,15 @@ async function runReset(args = []) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   // Any session command is activity for the pool's lease (tools/remote/pool.mjs reapIdleSessions).
-  if (cmd && !["down", "selftest", "lease"].includes(cmd)) touchLease(sessionDir(), cmd);
+  if (cmd && !["down", "selftest", "lease"].includes(cmd)) {
+    touchLease(sessionDir(), cmd);
+    const warn = takeHoldWarning(sessionDir());
+    if (warn) console.log(warn);
+  }
   if (cmd === "lease") {
     const min = Number(rest[0] ?? 30);
     if (!Number.isFinite(min) || min <= 0) {

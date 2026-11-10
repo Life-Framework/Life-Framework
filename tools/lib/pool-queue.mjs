@@ -3,7 +3,17 @@
 // tools/validation/pool-selftest.mjs proves them without a game.
 
 export const PRIORITIES = ["low", "normal", "high"];
-export const DEFAULTS = { sessionIdleMin: 15, promoteMin: 20, minFreeMb: 1500, bootBudgetS: 30 };
+export const DEFAULTS = {
+  sessionIdleMin: 15,
+  promoteMin: 20,
+  minFreeMb: 1500,
+  bootBudgetS: 30,
+  // A session older than sessionHoldMin while another session request queues is warned, then
+  // closed sessionGraceMin later. session up --hold raises its own cap, to sessionHoldMaxMin at most.
+  sessionHoldMin: 20,
+  sessionGraceMin: 5,
+  sessionHoldMaxMin: 45,
+};
 
 // "high" | "normal" | "low" (any case), or null when it is not one.
 export function normalizePriority(v) {
@@ -17,7 +27,8 @@ export function priorityRank(p) {
 }
 
 // A job that waited N minutes moves up one level per N (low -> normal -> high),
-// so a stream of higher work cannot starve it. Running jobs are never touched.
+// so a stream of higher work cannot starve it: after 2N a low job is "high" and,
+// having arrived before every newer job, is served first. Running jobs are never touched.
 export function effectiveRank(ticket, now, promoteMs) {
   const base = priorityRank(ticket.priority);
   const waited = now - Date.parse(ticket.at);
@@ -91,6 +102,33 @@ export function leaseVerdict({ lastActiveAt, leaseUntil, now, idleMin }) {
   const idleMs = Number.isFinite(lastActiveAt) ? Math.max(0, now - lastActiveAt) : 0;
   const leased = Number.isFinite(leaseUntil) && leaseUntil > now;
   return { idleMs, leased, expired: !leased && Number.isFinite(lastActiveAt) && idleMs > idleMin * 60000 };
+}
+
+// Hold cap: how long a session has held the lane, against its cap, while another
+// session request queues. A session that never got the cap (started before it existed)
+// is never judged. Phases: ok | warn (past the cap, not warned yet) | grace (warned,
+// the grace runs) | close (grace over). warnedAt is epoch ms or NaN.
+export function clampHoldMin(v, { holdMin, maxMin }) {
+  const n = Number(v);
+  if (!Number.isFinite(n) || n <= 0) return holdMin;
+  return Math.min(maxMin, Math.max(holdMin, Math.round(n)));
+}
+
+export function holdVerdict({ heldSinceMs, capMin, graceMin, warnedAtMs, waiting, now, capped = true }) {
+  const heldMs = Number.isFinite(heldSinceMs) ? Math.max(0, now - heldSinceMs) : 0;
+  if (!capped || !waiting || !Number.isFinite(heldSinceMs) || heldMs <= capMin * 60000) return { phase: "ok", heldMs };
+  if (!Number.isFinite(warnedAtMs)) return { phase: "warn", heldMs };
+  const left = warnedAtMs + graceMin * 60000 - now;
+  return left > 0 ? { phase: "grace", heldMs, leftMs: left } : { phase: "close", heldMs };
+}
+
+// Averages over the session records of runs.jsonl (kind "session").
+export function sessionStats(sessions) {
+  const n = sessions.length;
+  const avg = (f) => (n ? sessions.reduce((a, r) => a + (Number(r[f]) || 0), 0) / n : 0);
+  const closed = { owner: 0, lease: 0, "hold-cap": 0 };
+  for (const r of sessions) closed[r.closedBy] = (closed[r.closedBy] ?? 0) + 1;
+  return { n, avgWaitS: avg("waitS"), avgHeldS: avg("heldS"), avgBoots: avg("boots"), closed };
 }
 
 // ---------------------------------------------------------------- runtime budgets

@@ -7,12 +7,16 @@
 //   4. lanes (test lanes on 2002.., session lane on 2001), priority order and
 //      aging through the real queue, the RAM gate, the self-deadlock fail-fast,
 //      the idle-session reaper (also end to end with a short timeout);
+//   4b. the session hold cap (warn once, close after the grace, per-session --hold, no stamp = no cap), the session
+//      record in runs.jsonl, and a retried request keeping its queue age;
 //   5. runtime budgets: learned 3x p95 with a 30 s floor, seeded defaults,
 //      machine multiplier, self-raise after timeouts, --budget.
 // red-proof: with remoteOwnerGone returning null it printed "dead owner pid on
 // this PC: no reclaim verdict"; with the mtime key removed from localConfig it
 // printed "config flip: local still disabled after re-enable"; with the hang
 // branch removed from tryLocal it printed "hung local holder: slot not reclaimed".
+// red-proof (hold cap, queue age): with queuedSince returning now it printed "a retried session request did not keep its
+// first age"; with the grace phase treated as close it printed "hold cap closed a session inside the 5 min grace".
 // red-proof (lanes): with the priority comparison disabled it printed "a queued
 // low job was not overtaken by a normal one"; with promotion disabled "a low job
 // waiting past the promote limit was not promoted"; without the queue check in
@@ -25,6 +29,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import * as q from "../lib/pool-queue.mjs";
+import { takeHoldWarning } from "../lib/session-lease.mjs";
 import * as pool from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
 
@@ -116,6 +121,21 @@ try {
   check(q.blocks({ ...tk("old", "normal", 9), lane: undefined }, tk("z", "normal", 1, "session"), lanes, T0, min20) === true, "a ticket from a CLI without lanes is not a server-2001 contender");
   check(q.ramVerdict({ running: 0, freeMb: 100, minFreeMb: 1500 }).ok && !q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500 }).ok && q.ramVerdict({ running: 1, freeMb: 2000, minFreeMb: 1500 }).ok, "RAM gate verdicts");
 
+  // Aging is the fair share: a low job that waited 40 min is "high" and, arriving first, goes ahead of new
+  // normal and new high jobs; at 61 min it still does. (The film job's real starvation was the wait cap and the
+  // restart of its age on every retry: see queuedSince.)
+  check(q.queueOrder([tk("2-high", "high", 0), tk("1-low", "low", 61)], T0, min20)[0].file === "1-low", "a low job waiting 61 min did not go ahead of a new high one");
+  check(q.queueOrder([tk("2-normal", "normal", 1), tk("1-low", "low", 61)], T0, min20)[0].file === "1-low", "a low job waiting 61 min did not go ahead of a new normal one");
+  check(q.queueOrder([tk("2-high", "high", 0), tk("1-low", "low", 30)], T0, min20)[0].file === "2-high", "a low job waiting 30 min already went ahead of a new high one");
+  // Hold verdicts and the --hold clamp.
+  const hv = (o) => q.holdVerdict({ heldSinceMs: T0 - 25 * 60000, capMin: 20, graceMin: 5, warnedAtMs: NaN, waiting: true, now: T0, ...o }).phase;
+  check(hv({}) === "warn" && hv({ waiting: false }) === "ok" && hv({ capped: false }) === "ok" && hv({ capMin: 30 }) === "ok", "holdVerdict: warn / no waiter / no stamp / under cap");
+  check(hv({ warnedAtMs: T0 - 2 * 60000 }) === "grace" && hv({ warnedAtMs: T0 - 5 * 60000 }) === "close", "holdVerdict: grace and close");
+  const lim = { holdMin: 20, maxMin: 45 };
+  check(q.clampHoldMin(undefined, lim) === 20 && q.clampHoldMin(30, lim) === 30 && q.clampHoldMin(90, lim) === 45 && q.clampHoldMin(5, lim) === 20, "clampHoldMin");
+  const st = q.sessionStats([{ waitS: 60, heldS: 600, boots: 1, closedBy: "owner" }, { waitS: 180, heldS: 1800, boots: 3, closedBy: "hold-cap" }]);
+  check(st.avgWaitS === 120 && st.avgHeldS === 1200 && st.avgBoots === 2 && st.closed.owner === 1 && st.closed["hold-cap"] === 1, "sessionStats averages");
+
   const rdir = mkdtempSync(join(tmpdir(), "lf-pool-lanes-"));
   const live = spawn(process.execPath, ["-e", "setTimeout(()=>{},120000)"], { stdio: "ignore", windowsHide: true });
   const rLockDir = join(rdir, "tmp", "wt", "locks");
@@ -193,6 +213,58 @@ try {
     check(reap(waiting).length === 1 && closed.length === 1, "reaper did not close a session idle 20 min (limit 15) with a job waiting");
     check(existsSync(join(sdir, "reaped.json")), "reaper left no note for the session's agent");
 
+    // Hold cap: a driven (not idle) session past its cap with a session request waiting is warned once,
+    // then closed after the grace; no waiter, no holdCap stamp, or a raised --hold means no close.
+    {
+      const lease = () => JSON.parse(readFileSync(join(sdir, "lease.json"), "utf8"));
+      const heldIso = new Date(Date.now() - 25 * 60000).toISOString();
+      const setSession = (extra = {}) => writeFileSync(join(sdir, "session.json"), JSON.stringify({ startedAt: heldIso, readyAt: heldIso, heldSince: heldIso, holdCap: true, holdMin: 20, waitS: 12.5, priority: "normal", boots: 2, bootS: [23, 22], expectClients: 1, mission: "playtest", ...extra }));
+      const driven = () => writeFileSync(join(sdir, "lease.json"), JSON.stringify({ lastCommandAt: new Date().toISOString() }));
+      const sessWait = [{ pid: process.pid, lane: "session", waitingOn: ["server-2001"] }];
+      const settings = { sessionIdleMin: 15, promoteMin: 20, minFreeMb: 1, sessionHoldMin: 20, sessionGraceMin: 5, sessionHoldMaxMin: 45 };
+      const reapHold = (tickets, extra = {}) => pool.reapIdleSessions(rdir, [lanes], tickets, settings, { sessionDir: sdir, close: (i) => closed.push(i.pid), ...extra });
+      hold("server-2001", { purpose: "session", at: heldIso, slug: "holder" });
+      closed.length = 0;
+      rmSync(join(sdir, "reaped.json"), { force: true });
+      setSession();
+      driven();
+      check(reapHold([]).length === 0 && !existsSync(join(sdir, "reaped.json")), "hold cap closed a session nobody waits for");
+      check(reapHold([{ pid: process.pid, lane: "test", waitingOn: ["server-2001"] }]).length === 0 && !lease().holdWarnedAt, "hold cap warned for a test job (only a session request counts)");
+      check(reapHold(sessWait).length === 0 && closed.length === 0, "hold cap closed a session on the first pass (it must warn first)");
+      check(!!lease().holdWarnedAt, "hold cap did not stamp the warning");
+      const w1 = takeHoldWarning(sdir);
+      check(/^session: 1 waiting; finish and run .*session.mjs down.* within 5 min/.test(w1), `warning line is wrong: '${w1}'`);
+      check(takeHoldWarning(sdir) === "", "the hold warning showed twice");
+      // The waiter polls every ~10 s; simulate polls 50 s apart. Not closed inside the grace, closed at 5 min.
+      const t0 = Date.now();
+      let early = 0;
+      for (let k = 1; k <= 5; k++) early += reapHold(sessWait, { now: t0 + k * 50000 }).length;
+      check(early === 0 && closed.length === 0, "hold cap closed a session inside the 5 min grace");
+      const late = reapHold(sessWait, { now: t0 + 6 * 50000 });
+      check(late.length === 1 && late[0].kind === "hold-cap" && closed.length === 1, "hold cap did not close a session 6 min after the warning");
+      check(JSON.parse(readFileSync(join(sdir, "reaped.json"), "utf8")).kind === "hold-cap", "reaped.json does not say hold-cap");
+      const runsText = readFileSync(join(rdir, "tmp", "wt", "pool", "runs.jsonl"), "utf8");
+      const rec = runsText.split(String.fromCharCode(10)).filter(Boolean).map((l) => JSON.parse(l)).filter((r) => r.kind === "session").at(-1);
+      check(rec && rec.closedBy === "hold-cap" && rec.boots === 2 && rec.waitS === 12.5 && rec.heldS >= 1490 && rec.slug === "holder", `session record is wrong: ${JSON.stringify(rec)}`);
+      check(runsText.includes('"kind":"hold-cap"'), "hold-cap close not logged as a reclaim");
+      // No stamp (a session started before the cap): never warned or closed.
+      rmSync(join(sdir, "reaped.json"), { force: true });
+      setSession({ holdCap: undefined });
+      driven();
+      check(reapHold(sessWait, { now: Date.now() + 10 * 60000 }).length === 0 && !lease().holdWarnedAt, "hold cap judged a session started before the cap existed");
+      // --hold 45: not past its cap at 25 min.
+      setSession({ holdMin: 45 });
+      driven();
+      check(reapHold(sessWait).length === 0 && !lease().holdWarnedAt, "hold cap ignored the session's raised --hold");
+      // Waiters left for over a minute: the warning is void and the grace starts again.
+      setSession();
+      driven();
+      reapHold(sessWait);
+      const old = lease();
+      writeFileSync(join(sdir, "lease.json"), JSON.stringify({ ...old, lastCommandAt: new Date().toISOString(), holdSeenAt: new Date(Date.now() - 5 * 60000).toISOString(), holdWarnedAt: new Date(Date.now() - 10 * 60000).toISOString() }));
+      check(reapHold(sessWait).length === 0, "a warning whose waiters left closed the session at once");
+    }
+
     // Short timeout end to end: a queued session request closes an idle session and takes the slot.
     process.env.LF_POOL_SESSION_IDLE_MIN = "0.03";
     const idleIso = new Date().toISOString();
@@ -208,6 +280,34 @@ try {
       check(lockInfo.pid === process.pid && lockInfo.purpose === "session", "the session slot is not held by the new request");
       rmSync(join(rLockDir, "server-2001.lock"), { force: true });
     }
+    // A retried request keeps the age of the one it replaces (a timed-out `up --wait` used to start over), and a
+    // request that gets the slot forgets it.
+    delete process.env.LF_POOL_SESSION_IDLE_MIN;
+    // (the reap above taskkilled `live`; this holder is a fresh process)
+    const live2 = spawn(process.execPath, ["-e", "setTimeout(()=>{},60000)"], { stdio: "ignore", windowsHide: true });
+    writeFileSync(join(rLockDir, "server-2001.lock"), JSON.stringify({ pid: live2.pid, at: new Date().toISOString(), name: "server-2001", root: join(rdir, "nosuch"), slug: "other", purpose: "session" }));
+    const qfile = join(rdir, "tmp", "wt", "pool", "queued.json");
+    const tryUp = () => {
+      try {
+        pool.acquireSessionLaneSync(rdir, { waitMs: 1200, meta: { slug: "retry" } });
+        return "got";
+      } catch {
+        return "timeout";
+      }
+    };
+    check(tryUp() === "timeout", "a session request got a held lane");
+    const first = JSON.parse(readFileSync(qfile, "utf8")).retry.at;
+    await new Promise((r) => setTimeout(r, 1100));
+    check(tryUp() === "timeout" && JSON.parse(readFileSync(qfile, "utf8")).retry.at === first, "a retried session request did not keep its first age");
+    const stale = JSON.parse(readFileSync(qfile, "utf8"));
+    stale.retry.seenAt = new Date(Date.now() - 20 * 60000).toISOString();
+    writeFileSync(qfile, JSON.stringify(stale));
+    tryUp();
+    check(JSON.parse(readFileSync(qfile, "utf8")).retry.at !== first, "a request last seen 20 min ago kept its old age");
+    live2.kill();
+    rmSync(join(rLockDir, "server-2001.lock"), { force: true });
+    check(tryUp() === "got" && !JSON.parse(readFileSync(qfile, "utf8")).retry, "a request that got the slot kept its queue age");
+    rmSync(join(rLockDir, "server-2001.lock"), { force: true });
     check(readFileSync(join(rdir, "tmp", "wt", "pool", "runs.jsonl"), "utf8").includes('"kind":"idle-session"'), "idle-session reap not logged in runs.jsonl");
   } catch (e) {
     failures.push(`lanes section threw: ${e.message}`);
@@ -251,4 +351,4 @@ if (failures.length) {
   for (const f of failures) console.log(`  ${f}`);
   process.exit(1);
 }
-console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, runtime budgets)");
+console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets)");
