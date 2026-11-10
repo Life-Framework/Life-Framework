@@ -271,6 +271,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIKitFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIPaperSheet(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GarageLedger(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleImpound(), LF_TestTier.PERSISTENCE);
