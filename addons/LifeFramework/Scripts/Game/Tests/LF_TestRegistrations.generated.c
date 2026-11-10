@@ -90,6 +90,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobAndBuildingExploit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FactionLoadoutConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FactionSpawn(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_FenceCharge(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FenceGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FenceSerial(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FenceSerialPersist(), LF_TestTier.PERSISTENCE);
