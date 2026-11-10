@@ -41,6 +41,7 @@ class LF_ServiceBoard
 		LF_ServiceBoardSubscriber.ResetStatics();
 		LF_ServiceCallTakenNotifier.ResetStatics();
 		LF_PagerSubscriber.ResetStatics();
+		LF_ScannerSubscriber.ResetStatics();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -50,6 +51,7 @@ class LF_ServiceBoard
 		LF_ServiceBoardSubscriber.Install();
 		LF_ServiceCallTakenNotifier.Install();
 		LF_PagerSubscriber.Install();
+		LF_ScannerSubscriber.Install();
 	}
 
 	//------------------------------------------------------------------------------------------------

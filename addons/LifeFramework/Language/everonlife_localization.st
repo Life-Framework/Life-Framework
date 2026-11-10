@@ -4049,7 +4049,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BE26E458ADA922A8}" {
      Id "LF-Hospital_BillToast"
-     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
+     Target_en_us "You woke up in hospital with a treatment bill of %1. Pay it in cash at the hospital desk."
      Comment "Toast on waking in hospital after a death. %1 is the bill amount."
     }
     CustomStringTableItem "{25C8757AA18DD8A8}" {
@@ -4059,7 +4059,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DB6C9E5F09D39D13}" {
      Id "LF-Hospital_BillAmount"
-     Target_en_us "Treatment: %1, charged to your bank account"
+     Target_en_us "Treatment: %1"
      Comment "Hospital bill line. %1 is the amount charged."
     }
     CustomStringTableItem "{4F2335135A4FF34F}" {
@@ -4099,7 +4099,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B496BB68DF603A03}" {
      Id "LF-Hospital_BillItemDesc"
-     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
+     Target_en_us "A treatment bill. Pay it in cash at the hospital desk. Drop it to read it again."
      Comment "Inventory description of the paper hospital bill."
     }
     CustomStringTableItem "{5985DB962913E1DE}" {
@@ -5307,21 +5307,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Suspicious person reported"
      Comment "Summary the police radio line shows for a suspicious person phoned in."
     }
-    CustomStringTableItem "{3C71B0A2D4E5F610}" {
-     Id "LF-Medic_Keybind_GiveUp"
-     Target_en_us "Give up (hold, while downed)"
-     Comment "Keybind: give up and die while downed."
-    }
-    CustomStringTableItem "{3C71B0A2D4E5F611}" {
-     Id "LF-Medic_GiveUpTooEarly"
-     Target_en_us "You can give up in %1 seconds from going down."
-     Comment "Toast: give up asked too early."
-    }
-    CustomStringTableItem "{3C71B0A2D4E5F612}" {
-     Id "LF-Medic_Downed"
-     Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
-     Comment "Toast: shown to a player who goes down."
-    }
     CustomStringTableItem "{177011F784696AD3}" {
      Id "LF-Item_Drill_Name"
      Target_en_us "Drill"
@@ -5442,6 +5427,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Need help? Use a payphone to call the service."
      Comment "Dispatch board sign card: what to do next."
     }
+    CustomStringTableItem "{98E8442712C32CFF}" {
+     Id "LF-IncidentGm_Title"
+     Target_en_us "Incidents near the camera"
+     Comment "Game Master incident panel title."
+    }
+    CustomStringTableItem "{0532BB8A674B16E7}" {
+     Id "LF-IncidentGm_None"
+     Target_en_us "No incidents here in the last hour."
+     Comment "Game Master incident panel: nothing near the camera."
+    }
+    CustomStringTableItem "{575E08BEF8CB275E}" {
+     Id "LF-IncidentGm_Waiting"
+     Target_en_us "Asking the server..."
+     Comment "Game Master incident panel: before the first answer."
+    }
+    CustomStringTableItem "{D4CB8C3C4F736D4A}" {
+     Id "LF-IncidentGm_Row"
+     Target_en_us "%1, %2 min ago: %3 / %4"
+     Comment "Game Master incident row: kind, minutes ago, subject, other party."
+    }
+    CustomStringTableItem "{3425A63D351F8477}" {
+     Id "LF-IncidentGm_Kind_death"
+     Target_en_us "Death"
+     Comment "Incident kind: death."
+    }
+    CustomStringTableItem "{B96B4DA1873C79D6}" {
+     Id "LF-IncidentGm_Kind_murder"
+     Target_en_us "Murder"
+     Comment "Incident kind: death counted as murder."
+    }
+    CustomStringTableItem "{EC2EA6F457CE29F4}" {
+     Id "LF-IncidentGm_Kind_damage"
+     Target_en_us "Damage"
+     Comment "Incident kind: damage."
+    }
+    CustomStringTableItem "{608D778B3672F032}" {
+     Id "LF-IncidentGm_Kind_cash"
+     Target_en_us "Cash"
+     Comment "Incident kind: cash move."
+    }
+    CustomStringTableItem "{2CBEE27A4CEA58CE}" {
+     Id "LF-IncidentGm_Kind_downed"
+     Target_en_us "Downed"
+     Comment "Incident kind: player downed."
+    }
+    CustomStringTableItem "{71DE75EB8FB361E9}" {
+     Id "LF-Sign_LawlessZone_Title"
+     Target_en_us "Lawless Area"
+     Comment "Title of the quarry lawless-area sign. Printed on the board and shown as Read: Lawless Area."
+    }
+    CustomStringTableItem "{F8D445EFFEC347EC}" {
+     Id "LF-Sign_LawlessZone_What"
+     Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
+     Comment "Lawless area sign card, What section."
+    }
+    CustomStringTableItem "{9651118BDCD77FA5}" {
+     Id "LF-Sign_LawlessZone_How"
+     Target_en_us "Stay out if you came for a quiet day. Carry only what you can afford to lose. Bring friends."
+     Comment "Lawless area sign card, How section."
+    }
+    CustomStringTableItem "{B81DC8476856440E}" {
+     Id "LF-Sign_LawlessZone_Rules"
+     Target_en_us "Outside the quarry fence line the town keeps its rules: killing anyone is murder and the police are told. Inside, the police still answer a call at their own risk. Marked by order of the Everon Constabulary."
+     Comment "Lawless area sign card, Rules section."
+    }
+    CustomStringTableItem "{3524F59375508DB4}" {
+     Id "LF-Sign_LawlessZone_Next"
+     Target_en_us "The town square, south and west of here, is a safe zone."
+     Comment "Lawless area sign card, Next section."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F610}" {
+     Id "LF-Medic_Keybind_GiveUp"
+     Target_en_us "Give up (hold, while downed)"
+     Comment "Keybind: give up and die while downed."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F611}" {
+     Id "LF-Medic_GiveUpTooEarly"
+     Target_en_us "You can give up in %1 seconds from going down."
+     Comment "Toast: give up asked too early."
+    }
+    CustomStringTableItem "{3C71B0A2D4E5F612}" {
+     Id "LF-Medic_Downed"
+     Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
+     Comment "Toast: shown to a player who goes down."
+    }
     CustomStringTableItem "{B608F834846FAF73}" {
      Id "LF-Dispatch_Take"
      Target_en_us "Take the call"
@@ -5507,51 +5577,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Beeps when a call comes in for your service while you are on duty. Look at it to read the last calls."
      Comment "Inventory description of the pager."
     }
-    CustomStringTableItem "{98E8442712C32CFF}" {
-     Id "LF-IncidentGm_Title"
-     Target_en_us "Incidents near the camera"
-     Comment "Game Master incident panel title."
-    }
-    CustomStringTableItem "{0532BB8A674B16E7}" {
-     Id "LF-IncidentGm_None"
-     Target_en_us "No incidents here in the last hour."
-     Comment "Game Master incident panel: nothing near the camera."
-    }
-    CustomStringTableItem "{575E08BEF8CB275E}" {
-     Id "LF-IncidentGm_Waiting"
-     Target_en_us "Asking the server..."
-     Comment "Game Master incident panel: before the first answer."
-    }
-    CustomStringTableItem "{D4CB8C3C4F736D4A}" {
-     Id "LF-IncidentGm_Row"
-     Target_en_us "%1, %2 min ago: %3 / %4"
-     Comment "Game Master incident row: kind, minutes ago, subject, other party."
-    }
-    CustomStringTableItem "{3425A63D351F8477}" {
-     Id "LF-IncidentGm_Kind_death"
-     Target_en_us "Death"
-     Comment "Incident kind: death."
-    }
-    CustomStringTableItem "{B96B4DA1873C79D6}" {
-     Id "LF-IncidentGm_Kind_murder"
-     Target_en_us "Murder"
-     Comment "Incident kind: death counted as murder."
-    }
-    CustomStringTableItem "{EC2EA6F457CE29F4}" {
-     Id "LF-IncidentGm_Kind_damage"
-     Target_en_us "Damage"
-     Comment "Incident kind: damage."
-    }
-    CustomStringTableItem "{608D778B3672F032}" {
-     Id "LF-IncidentGm_Kind_cash"
-     Target_en_us "Cash"
-     Comment "Incident kind: cash move."
-    }
-    CustomStringTableItem "{2CBEE27A4CEA58CE}" {
-     Id "LF-IncidentGm_Kind_downed"
-     Target_en_us "Downed"
-     Comment "Incident kind: player downed."
-    }
     CustomStringTableItem "{73C1578BB2FBEF30}" {
      Id "LF-IncidentReport_Title"
      Target_en_us "Report"
@@ -5581,6 +5606,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-IncidentGm_RowFlagged"
      Target_en_us "REPORTED #%1 %2, %3 min ago: %4 / %5 (type !handled %1 when done)"
      Comment "Game Master incident row for a reported incident: number, kind, minutes ago, subject, other party."
+    }
+    CustomStringTableItem "{10850C37306E78EB}" {
+     Id "LF-Duty_WrongDesk"
+     Target_en_us "You are on duty for another service. Clock out at your own desk first."
+     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
     }
     CustomStringTableItem "{365AAC156EFDBFE8}" {
      Id "LF-HoldUp_Action"
@@ -5616,46 +5646,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-IncidentGm_Kind_holdup"
      Target_en_us "Hold-up"
      Comment "Incident kind: one player held another up."
-    }
-    CustomStringTableItem "{71DE75EB8FB361E9}" {
-     Id "LF-Sign_LawlessZone_Title"
-     Target_en_us "Lawless Area"
-     Comment "Title of the quarry lawless-area sign. Printed on the board and shown as Read: Lawless Area."
-    }
-    CustomStringTableItem "{F8D445EFFEC347EC}" {
-     Id "LF-Sign_LawlessZone_What"
-     Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
-     Comment "Lawless area sign card, What section."
-    }
-    CustomStringTableItem "{9651118BDCD77FA5}" {
-     Id "LF-Sign_LawlessZone_How"
-     Target_en_us "Stay out if you came for a quiet day. Carry only what you can afford to lose. Bring friends."
-     Comment "Lawless area sign card, How section."
-    }
-    CustomStringTableItem "{B81DC8476856440E}" {
-     Id "LF-Sign_LawlessZone_Rules"
-     Target_en_us "Outside the quarry fence line the town keeps its rules: killing anyone is murder and the police are told. Inside, the police still answer a call at their own risk. Marked by order of the Everon Constabulary."
-     Comment "Lawless area sign card, Rules section."
-    }
-    CustomStringTableItem "{3524F59375508DB4}" {
-     Id "LF-Sign_LawlessZone_Next"
-     Target_en_us "The town square, south and west of here, is a safe zone."
-     Comment "Lawless area sign card, Next section."
-    }
-    CustomStringTableItem "{3C5A9E71D04B82F6}" {
-     Id "LF-IncidentGm_Kind_aim"
-     Target_en_us "Weapon aimed"
-     Comment "Incident kind: one player kept a raised weapon on another."
-    }
-    CustomStringTableItem "{10850C37306E78EB}" {
-     Id "LF-Duty_WrongDesk"
-     Target_en_us "You are on duty for another service. Clock out at your own desk first."
-     Comment "Duty desk refusal: the player is clocked in as police or medic and used the other desk."
-    }
-    CustomStringTableItem "{9B2D4E60A17C35F8}" {
-     Id "LF-IncidentGm_Kind_admin"
-     Target_en_us "Admin action"
-     Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
     }
     CustomStringTableItem "{E7C31C63E21652CF}" {
      Id "LF-Evidence_Title"
@@ -5716,6 +5706,121 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Evidence_Marker_Desc"
      Target_en_us "Marks an item dropped at a crime scene."
      Comment "Description of the evidence marker."
+    }
+    CustomStringTableItem "{3C5A9E71D04B82F6}" {
+     Id "LF-IncidentGm_Kind_aim"
+     Target_en_us "Weapon aimed"
+     Comment "Incident kind: one player kept a raised weapon on another."
+    }
+    CustomStringTableItem "{65B97D3424738198}" {
+     Id "LF-Locker_Title"
+     Target_en_us "Evidence locker"
+     Comment "Toast title for the evidence locker."
+    }
+    CustomStringTableItem "{1C43A9F024D5E4F2}" {
+     Id "LF-Locker_Logged"
+     Target_en_us "Logged %1 evidence bag(s) against their reports."
+     Comment "Toast: bags logged in the locker; %1 is the count."
+    }
+    CustomStringTableItem "{FAD52119B88896AE}" {
+     Id "LF-Locker_NoBags"
+     Target_en_us "You carry no evidence bag to log."
+     Comment "Toast: nothing to log."
+    }
+    CustomStringTableItem "{155ED171C52FF11B}" {
+     Id "LF-Locker_Empty"
+     Target_en_us "The case file is empty."
+     Comment "Toast: nothing is logged in the locker."
+    }
+    CustomStringTableItem "{606F8E5D11807BC8}" {
+     Id "LF-Locker_Cases"
+     Target_en_us "Case file: %1"
+     Comment "Toast: newest logged bags; %1 is the list."
+    }
+    CustomStringTableItem "{2863ED99FCE23578}" {
+     Id "LF-Locker_Raided"
+     Target_en_us "The case file is burned: %1 bag(s) destroyed."
+     Comment "Toast: a raid destroyed the logged bags; %1 is the count."
+    }
+    CustomStringTableItem "{EF5331F445A7CC64}" {
+     Id "LF-Locker_Name"
+     Target_en_us "Evidence locker"
+     Comment "Name of the evidence locker."
+    }
+    CustomStringTableItem "{8B98128F11F74501}" {
+     Id "LF-Locker_Log_Action"
+     Target_en_us "Log evidence bags"
+     Comment "Action: log carried evidence bags."
+    }
+    CustomStringTableItem "{BD207ABDEF5524C1}" {
+     Id "LF-Locker_Read_Action"
+     Target_en_us "Read case file"
+     Comment "Action: read the case file."
+    }
+    CustomStringTableItem "{F08CF5A240E91728}" {
+     Id "LF-Locker_Raid_Action"
+     Target_en_us "Burn the case file"
+     Comment "Action: destroy the logged evidence of a forced locker."
+    }
+    CustomStringTableItem "{9B2D4E60A17C35F8}" {
+     Id "LF-IncidentGm_Kind_admin"
+     Target_en_us "Admin action"
+     Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
+    }
+    CustomStringTableItem "{46C33D356FF6A97D}" {
+     Id "LF-Witness_Title"
+     Target_en_us "Witness"
+     Comment "Toast title for witness statements."
+    }
+    CustomStringTableItem "{A07851BD4B020CFC}" {
+     Id "LF-Witness_Noted"
+     Target_en_us "Noted. It goes on the police board."
+     Comment "Toast: the witness statement was taken down."
+    }
+    CustomStringTableItem "{C37C0A98B9E81B46}" {
+     Id "LF-Witness_AlreadyGiven"
+     Target_en_us "You already told them that."
+     Comment "Toast: the witness already gave this detail."
+    }
+    CustomStringTableItem "{1D0B9ADCB47A7284}" {
+     Id "LF-Witness_NotSeen"
+     Target_en_us "You didn't see that clearly enough."
+     Comment "Toast: the witness stood too far away to make out this detail (or there was nothing to see)."
+    }
+    CustomStringTableItem "{96AA484FA559A1BA}" {
+     Id "LF-Witness_NothingSeen"
+     Target_en_us "You didn't see anything."
+     Comment "Toast: the witness saw no recent crime."
+    }
+    CustomStringTableItem "{D81009B11AFDDB8F}" {
+     Id "LF-Witness_Anonymous"
+     Target_en_us "an anonymous caller"
+     Comment "Wanted board: the witness is not named."
+    }
+    CustomStringTableItem "{B5BA083D6C857087}" {
+     Id "LF-Witness_BoardLine"
+     Target_en_us "WITNESS (%1) on %2: %3"
+     Comment "Wanted board witness line. %1 = who, %2 = offence, %3 = what they saw."
+    }
+    CustomStringTableItem "{D188FF1C27982766}" {
+     Id "LF-Witness_BoardPlate"
+     Target_en_us "Plate starts %1."
+     Comment "Wanted board: the plate fragment a witness read. %1 = the characters."
+    }
+    CustomStringTableItem "{1490FFBE4947B795}" {
+     Id "LF-Payphone_DescribeClothing"
+     Target_en_us "Describe their clothing"
+     Comment "Payphone action: a witness tells what the suspect wore."
+    }
+    CustomStringTableItem "{41736C02D6DB8859}" {
+     Id "LF-Payphone_DescribeVehicle"
+     Target_en_us "Describe their vehicle"
+     Comment "Payphone action: a witness tells what the suspect drove."
+    }
+    CustomStringTableItem "{A21851D555A5F893}" {
+     Id "LF-Payphone_DescribePlate"
+     Target_en_us "Give a plate fragment"
+     Comment "Payphone action: a witness reads part of the suspect vehicle plate."
     }
     CustomStringTableItem "{B18A9253EC649E50}" {
      Id "LF-Revive_Action"
@@ -5802,115 +5907,145 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They are not down."
      Comment "Carry refusal: the target is not downed."
     }
-    CustomStringTableItem "{65B97D3424738198}" {
-     Id "LF-Locker_Title"
-     Target_en_us "Evidence locker"
-     Comment "Toast title for the evidence locker."
-    }
-    CustomStringTableItem "{1C43A9F024D5E4F2}" {
-     Id "LF-Locker_Logged"
-     Target_en_us "Logged %1 evidence bag(s) against their reports."
-     Comment "Toast: bags logged in the locker; %1 is the count."
-    }
-    CustomStringTableItem "{FAD52119B88896AE}" {
-     Id "LF-Locker_NoBags"
-     Target_en_us "You carry no evidence bag to log."
-     Comment "Toast: nothing to log."
-    }
-    CustomStringTableItem "{155ED171C52FF11B}" {
-     Id "LF-Locker_Empty"
-     Target_en_us "The case file is empty."
-     Comment "Toast: nothing is logged in the locker."
-    }
-    CustomStringTableItem "{606F8E5D11807BC8}" {
-     Id "LF-Locker_Cases"
-     Target_en_us "Case file: %1"
-     Comment "Toast: newest logged bags; %1 is the list."
-    }
-    CustomStringTableItem "{2863ED99FCE23578}" {
-     Id "LF-Locker_Raided"
-     Target_en_us "The case file is burned: %1 bag(s) destroyed."
-     Comment "Toast: a raid destroyed the logged bags; %1 is the count."
-    }
-    CustomStringTableItem "{EF5331F445A7CC64}" {
-     Id "LF-Locker_Name"
-     Target_en_us "Evidence locker"
-     Comment "Name of the evidence locker."
-    }
-    CustomStringTableItem "{8B98128F11F74501}" {
-     Id "LF-Locker_Log_Action"
-     Target_en_us "Log evidence bags"
-     Comment "Action: log carried evidence bags."
-    }
-    CustomStringTableItem "{BD207ABDEF5524C1}" {
-     Id "LF-Locker_Read_Action"
-     Target_en_us "Read case file"
-     Comment "Action: read the case file."
-    }
-    CustomStringTableItem "{F08CF5A240E91728}" {
-     Id "LF-Locker_Raid_Action"
-     Target_en_us "Burn the case file"
-     Comment "Action: destroy the logged evidence of a forced locker."
-    }
     CustomStringTableItem "{7A30C5E1D49B6B01}" {
      Id "LF-Revive_NoItem"
      Target_en_us "You need a field dressing to revive someone."
      Comment "Revive refusal: the medic has none of the configured revive item."
     }
-    CustomStringTableItem "{46C33D356FF6A97D}" {
-     Id "LF-Witness_Title"
-     Target_en_us "Witness"
-     Comment "Toast title for witness statements."
+    CustomStringTableItem "{824451A6C3821C83}" {
+     Id "LF-Item_Scanner_Name"
+     Target_en_us "Police scanner"
+     Comment "Item name of the fence police scanner (#253)."
     }
-    CustomStringTableItem "{A07851BD4B020CFC}" {
-     Id "LF-Witness_Noted"
-     Target_en_us "Noted. It goes on the police board."
-     Comment "Toast: the witness statement was taken down."
+    CustomStringTableItem "{C387085823DBA47D}" {
+     Id "LF-Item_Scanner_Description"
+     Target_en_us "Listens in on police and medic calls. Receives only. Illegal: an officer who finds it takes it and files a charge."
+     Comment "Item description of the police scanner."
     }
-    CustomStringTableItem "{C37C0A98B9E81B46}" {
-     Id "LF-Witness_AlreadyGiven"
-     Target_en_us "You already told them that."
-     Comment "Toast: the witness already gave this detail."
+    CustomStringTableItem "{3696651FF2025033}" {
+     Id "LF-Offence_Scanner"
+     Target_en_us "Carrying a police scanner"
+     Comment "Offence: a scanner found on a search (#253)."
     }
-    CustomStringTableItem "{1D0B9ADCB47A7284}" {
-     Id "LF-Witness_NotSeen"
-     Target_en_us "You didn't see that clearly enough."
-     Comment "Toast: the witness stood too far away to make out this detail (or there was nothing to see)."
+    CustomStringTableItem "{4A5D20C00F349F20}" {
+     Id "LF-Scanner_Title"
+     Target_en_us "Scanner"
+     Comment "Toast title for a scanner."
     }
-    CustomStringTableItem "{96AA484FA559A1BA}" {
-     Id "LF-Witness_NothingSeen"
-     Target_en_us "You didn't see anything."
-     Comment "Toast: the witness saw no recent crime."
+    CustomStringTableItem "{59E2E4A1484842B5}" {
+     Id "LF-Scanner_Heard"
+     Target_en_us "Heard on the scanner: %1"
+     Comment "Toast when a scanner hears a service call; %1 is the call summary."
     }
-    CustomStringTableItem "{D81009B11AFDDB8F}" {
-     Id "LF-Witness_Anonymous"
-     Target_en_us "an anonymous caller"
-     Comment "Wanted board: the witness is not named."
+    CustomStringTableItem "{CDE539EBECEAEB35}" {
+     Id "LF-Witness_Ask"
+     Target_en_us "Ask what you saw"
+     Comment "Interaction menu entry for on-duty police facing a witness."
     }
-    CustomStringTableItem "{B5BA083D6C857087}" {
-     Id "LF-Witness_BoardLine"
-     Target_en_us "WITNESS (%1) on %2: %3"
-     Comment "Wanted board witness line. %1 = who, %2 = offence, %3 = what they saw."
+    CustomStringTableItem "{B52F0B4191F415B2}" {
+     Id "LF-Witness_Npc"
+     Target_en_us "a passer-by"
+     Comment "Wanted board: the witness is a town NPC."
     }
-    CustomStringTableItem "{D188FF1C27982766}" {
-     Id "LF-Witness_BoardPlate"
-     Target_en_us "Plate starts %1."
-     Comment "Wanted board: the plate fragment a witness read. %1 = the characters."
+    CustomStringTableItem "{A4A046A831C69FE0}" {
+     Id "LF-Witness_Vague"
+     Target_en_us "They can't recall anything useful."
+     Comment "Toast to the officer: the witness remembered nothing they could describe."
     }
-    CustomStringTableItem "{1490FFBE4947B795}" {
-     Id "LF-Payphone_DescribeClothing"
-     Target_en_us "Describe their clothing"
-     Comment "Payphone action: a witness tells what the suspect wore."
+    CustomStringTableItem "{A27156349262AF6B}" {
+     Id "LF-Witness_Statement"
+     Target_en_us "Statement taken. It is on the wanted board."
+     Comment "Toast to the officer: the witness gave a statement."
     }
-    CustomStringTableItem "{41736C02D6DB8859}" {
-     Id "LF-Payphone_DescribeVehicle"
-     Target_en_us "Describe their vehicle"
-     Comment "Payphone action: a witness tells what the suspect drove."
+    CustomStringTableItem "{4956FE4168BECF83}" {
+     Id "LF-Hospital_BillNumber"
+     Target_en_us "Bill No. %1, %2"
+     Comment "Treatment bill line. %1 is the bill number, %2 the in-game date."
     }
-    CustomStringTableItem "{A21851D555A5F893}" {
-     Id "LF-Payphone_DescribePlate"
-     Target_en_us "Give a plate fragment"
-     Comment "Payphone action: a witness reads part of the suspect vehicle plate."
+    CustomStringTableItem "{79857CD181EE145E}" {
+     Id "LF-Hospital_BillMedic"
+     Target_en_us "Treated by: %1"
+     Comment "Treatment bill line. %1 is the medic name."
+    }
+    CustomStringTableItem "{008F2EA884F6D7D4}" {
+     Id "LF-Hospital_BillPaidLine"
+     Target_en_us "Paid in cash on %1. Thank you."
+     Comment "Treatment bill line once paid. %1 is the in-game date."
+    }
+    CustomStringTableItem "{2DD26F1F4430D002}" {
+     Id "LF-Hospital_BillHowToPay"
+     Target_en_us "Pay it in cash at the hospital desk."
+     Comment "Treatment bill line while unpaid."
+    }
+    CustomStringTableItem "{1B8B9B22A8964F7B}" {
+     Id "LF-Bill_Title"
+     Target_en_us "Treatment bill"
+     Comment "Notification title for treatment bills."
+    }
+    CustomStringTableItem "{79B69A24A6715B00}" {
+     Id "LF-Bill_Received"
+     Target_en_us "The medic left you a treatment bill of %1. Pay it in cash at the hospital desk."
+     Comment "Toast to a revived patient. %1 is the amount."
+    }
+    CustomStringTableItem "{60B397ACEEF7B02C}" {
+     Id "LF-Bill_NoneOpen"
+     Target_en_us "You carry no unpaid treatment bill."
+     Comment "Toast at the hospital desk with no unpaid bill."
+    }
+    CustomStringTableItem "{0BD2574DC8D97B52}" {
+     Id "LF-Bill_NotEnoughCash"
+     Target_en_us "You need %1 in cash to pay the bill."
+     Comment "Toast when the payer carries too little cash. %1 is the amount."
+    }
+    CustomStringTableItem "{CEF674540C6B082E}" {
+     Id "LF-Bill_NeedCash"
+     Target_en_us "Carry %1 in cash to pay the bill"
+     Comment "Reason the desk payment is greyed out. %1 is the amount."
+    }
+    CustomStringTableItem "{AA5D9FF8F7009C02}" {
+     Id "LF-Bill_Pay"
+     Target_en_us "Pay bill No. %1 (%2)"
+     Comment "Desk payment action. %1 is the bill number, %2 the amount."
+    }
+    CustomStringTableItem "{BADA3A253C27B54A}" {
+     Id "LF-Bill_PayGeneric"
+     Target_en_us "Pay bill"
+     Comment "Fallback name of the hospital desk payment action."
+    }
+    CustomStringTableItem "{A44CFB3B29598A73}" {
+     Id "LF-Bill_PayDesc"
+     Target_en_us "Pay a treatment bill in carried cash. The desk stamps it paid."
+     Comment "Description of the hospital desk payment action."
+    }
+    CustomStringTableItem "{0DF0D2453D53E9A5}" {
+     Id "LF-Bill_PaidToast"
+     Target_en_us "Bill paid: %1."
+     Comment "Toast after paying a treatment bill. %1 is the amount."
+    }
+    CustomStringTableItem "{20DCFFDAB028772B}" {
+     Id "LF-Bill_ShareToast"
+     Target_en_us "Your share of paid treatment bills: %1."
+     Comment "Toast to a medic at clock-out. %1 is the cash paid."
+    }
+    CustomStringTableItem "{0D51EDC4BE6F1DDC}" {
+     Id "LF-Payphone_CallMedic"
+     Target_en_us "Ring for a doctor"
+     Comment "Payphone action: ask for a medic."
+    }
+    CustomStringTableItem "{80B8D0AB91C5EBF6}" {
+     Id "LF-Payphone_CallTaxi"
+     Target_en_us "Ring for a cab"
+     Comment "Payphone action: ask for a taxi."
+    }
+    CustomStringTableItem "{B680F53657359D11}" {
+     Id "LF-Payphone_Summary_Medic"
+     Target_en_us "Doctor wanted"
+     Comment "Summary the medic pager and board show for a call from the payphone."
+    }
+    CustomStringTableItem "{4AA0B3E5926D13C3}" {
+     Id "LF-Payphone_Summary_Taxi"
+     Target_en_us "Cab wanted"
+     Comment "Summary the taxi pager and board show for a call from the payphone."
     }
   }
  }

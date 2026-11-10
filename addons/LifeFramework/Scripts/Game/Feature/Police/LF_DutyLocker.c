@@ -160,6 +160,8 @@ class LF_DutyLocker
 		// Duty pay settles while the account is still police (the clock and the pay check it).
 		LF_PoliceRanks.OnDutyChanged(account, false);
 		LF_DutyPay.PayAtClockOut(account, officer);
+		if (role == LF_Faction.MEDIC)
+			LF_TreatmentBills.PayShareAtClockOut(LF_Utils.GetPlayerUID(officer), officer);
 
 		account.SetOnDuty(false);
 		account.SetFaction(LF_Faction.CIVILIAN);

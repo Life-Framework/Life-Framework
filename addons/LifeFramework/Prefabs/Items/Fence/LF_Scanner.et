@@ -1,0 +1,48 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "9C46F2AF021135E9"
+ components {
+  LF_SerialComponent "{5DDCDCB4B37CCA1B}" {
+  }
+  LF_ScannerComponent "{FB47532F652F3A9A}" {
+  }
+  SCR_SoundDataComponent "{CC359BAF4E8D3E04}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{083DE8A46729F93B}" {
+     m_sSoundProject "{FD5E9674E51B9D13}Sounds/Props/Military/Radios/Props_Radios_Signals.acp"
+     m_sSoundEventName "SOUND_RADIO_SIGNAL_2"
+    }
+   }
+  }
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{B71DE042044CD098}" {
+     Name "#LF-Item_Scanner_Name"
+     Description "#LF-Item_Scanner_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.4
+     ItemVolume 120
+     RestingUP Forward
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{1B8B5484D7F21A41}Assets/Items/Equipment/Radios/Radio_ANPRC68/Radio_ANPRC68_01.xob"
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    LF_ReadSerialAction "{62C418971E4F9A11}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{31727ACA8D35EE93}" {
+      Name "#LF-Serial_Read_Action"
+     }
+    }
+   }
+  }
+ }
+}

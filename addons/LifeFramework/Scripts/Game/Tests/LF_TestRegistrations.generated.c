@@ -103,7 +103,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HoldUp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalBillOnce(), LF_TestTier.LOGIC);
-		manager.Register(new LF_Test_HospitalBillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalBedPick(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalWard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HouseKeyMatch(), LF_TestTier.LOGIC);
@@ -146,6 +145,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_NoPassivePaycheck(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcClothesReplicate(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcInteractionHeight(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_NpcWitness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.LOGIC);
@@ -223,6 +223,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AutosaveSelectionBitmask(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionNewest(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PersistenceManagerWiring(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ScannerHears(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ScannerIllegal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ScreenshotFailSafe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
@@ -257,6 +259,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SurvivalSync(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_TreatmentBillPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_UIKitInitialFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitButtonInvoker(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_NotificationToastTiming(), LF_TestTier.LOGIC);

@@ -80,6 +80,29 @@ class LF_ConfiscateAction : ScriptedUserAction
 		}
 
 		LF_Debug.Log("Police", string.Format("confiscated %1 weapon(s) from %2", weapons.Count(), pOwnerEntity));
+
+		// A scanner is contraband (#253): the search takes it and files the offence once.
+		array<LF_ScannerComponent> scanners = {};
+		LF_Scanner.FindCarried(pOwnerEntity, scanners);
+		array<string> offences = {};
+		LF_ScannerLaw.SearchOffences(scanners.Count(), LF_ServiceCallsConfig.ScannerIllegal(), offences);
+		if (!offences.IsEmpty())
+		{
+			foreach (LF_ScannerComponent scanner : scanners)
+			{
+				IEntity scannerItem = scanner.GetOwner();
+				LF_InventoryUtils.DropItem(pOwnerEntity, scannerItem);
+				SCR_EntityHelper.DeleteEntityAndChildren(scannerItem);
+			}
+
+			string suspectUid = LF_Utils.GetPlayerUID(LF_PlayerInteraction.PlayerIdOf(pOwnerEntity));
+			foreach (string offence : offences)
+			{
+				LF_WantedReports.Report(suspectUid, pOwnerEntity, offence);
+			}
+
+			LF_Debug.Info("Police", string.Format("confiscated %1 scanner(s) from %2: offence filed", scanners.Count(), suspectUid));
+		}
 		LF_Utils.NotifyEntity(pUserEntity, "#EL-Police_Action", "#EL-Police_Title", 3.0);
 	}
 

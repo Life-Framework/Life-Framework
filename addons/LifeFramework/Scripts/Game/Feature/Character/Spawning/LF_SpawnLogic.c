@@ -466,6 +466,9 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		// Unpaid police tickets go with the player; a restart's blank copies are printed again.
 		LF_FineTickets.OnPlayerSpawned(LF_Utils.GetPlayerUID(playerId), character);
 
+		// Unpaid treatment bills go with the player too (#260).
+		LF_TreatmentBills.OnPlayerSpawned(LF_Utils.GetPlayerUID(playerId), character);
+
 		// Shots near an open crime scene leave casings (#268).
 		LF_Evidence.WatchShooter(character);
 	}
