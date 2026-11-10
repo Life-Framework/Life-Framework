@@ -89,7 +89,8 @@ log that back them stay on the server and invisible.
 - **Revive.** Clocked in as a medic, face a downed player within about two metres
   and use *Revive* (the same list as Introduce / Show ID). They get up with a
   sliver of health and keep what they carry, and the bleed-out stops. A civilian
-  does not get the entry.
+  does not get the entry. *Revive* is now a 4-second hold: the medic does CPR for
+  everyone to see, and it stops if you let go or walk away (demo: `node agent-box/session.mjs revive-anim-proof`, #512).
 - **Report to staff.** After something happens to you, type `/report` in chat.
   It flags the incidents from the last ten minutes that involved you, as either
   party, for admins to see in the Game Master incident view. You get a "Staff
