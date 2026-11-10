@@ -319,8 +319,31 @@ class LF_Downed
 //! The downed flag on the character, replicated so every client (and a late joiner) reads it.
 modded class SCR_ChimeraCharacter
 {
-	[RplProp()]
+	[RplProp(onRplName: "LF_OnDownedReplicated")]
 	protected bool m_bLF_Downed;
+
+	//------------------------------------------------------------------------------------------------
+	//! A client-owned character's unconsciousness follows its owning client, which re-reads
+	//! ShouldBeUnconscious only on a blood or resilience damage-state change. A wake after those
+	//! zones have regenerated to full (a patient downed for a while, the ambulance ride of #442)
+	//! changes no damage state, so without this the owner keeps the body INCAPACITATED and the
+	//! server's SetUnconscious(false) in LF_Downed.Clear never takes.
+	protected void LF_OnDownedReplicated()
+	{
+		if (m_bLF_Downed)
+			return;
+
+		RplComponent rpl = RplComponent.Cast(FindComponent(RplComponent));
+		if (!rpl || !rpl.IsOwner())
+			return;
+
+		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!damageManager)
+			return;
+
+		damageManager.UpdateConsciousness();
+		LF_Debug.Info(LF_Downed.FEATURE, string.Format("wake reached the owning client: wants unconscious %1", damageManager.LF_WantsUnconscious()));
+	}
 
 	//! Server only: who dealt the hit that downed this character ("" when no player did).
 	protected string m_sLF_DownerUid;
