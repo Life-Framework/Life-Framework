@@ -1,0 +1,35 @@
+# Release gates (#401): a merged PR is built, not verified. Move the issues it refs
+# to in-dev / needs-playtest and keep them open (this also reverses a legacy
+# "Closes #N" from an older CLI).
+# pull_request_target runs the base branch's code, never the PR's; the script only
+# reads the PR through the API and edits issue labels.
+name: issue-state
+
+on:
+  pull_request_target:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  state:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Move referenced issues to in-dev or needs-playtest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node tools/issue-state.mjs "$PR_NUMBER"

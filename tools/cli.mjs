@@ -43,6 +43,7 @@ import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp 
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
+import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
 import { localEnv } from "./lib/local-config.mjs";
@@ -2322,7 +2323,7 @@ function wtHelp() {
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
-  tools\\cli wt ship <slug> [--closes N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
+  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
                                        clean-tree check -> merge origin/<base> only if it conflicts ->
                                        gate -> push -> PR (or reuse the open one) -> gh auto-merge
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
@@ -2334,7 +2335,8 @@ flags:
   --base B     branch to cut from and ship to (default main; 'wt new' records it for 'wt ship')
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
-  --closes N   start the PR body with 'Closes #N'
+  --refs N     start the PR body with 'Refs #N'; --closes N is the same. Merging never closes an issue:
+               it moves to in-dev / needs-playtest and 'promote --confirm' verifies and closes it
   --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
   --skip-gate  / --skip-sync   skip a ship stage (debug only)
   --full-gate                  run the in-game gate even when addons/ is unchanged
@@ -2752,7 +2754,7 @@ async function wtShipCmd(args) {
   const prOnly = flags.includes("--pr-only");
   const skipGate = flags.includes("--skip-gate");
   const skipSync = flags.includes("--skip-sync");
-  const closes = argValue(flags, "--closes");
+  const closes = argValue(flags, "--refs") ?? argValue(flags, "--closes");
   const bodyFile = argValue(flags, "--body-file");
   let e;
   let base;
@@ -2778,7 +2780,7 @@ async function wtShipCmd(args) {
     return 1;
   }
   if (closes && !/^\d+$/.test(closes)) {
-    console.log(`FAIL  --closes takes an issue number, got '${closes}'`);
+    console.log(`FAIL  --refs/--closes takes an issue number, got '${closes}'`);
     return 1;
   }
   let customBody = null;
@@ -2843,7 +2845,7 @@ async function wtShipCmd(args) {
     "## Commits",
     ...subjects.map((s) => `- ${s}`),
   ].join("\n");
-  if (closes && !new RegExp(`\\b(closes|fixes|resolves) #${closes}\\b`, "i").test(body)) body = `Closes #${closes}\n\n${body}`;
+  body = refsBody(body, closes);
   let pr;
   try {
     if (wt.ghAvailable()) {

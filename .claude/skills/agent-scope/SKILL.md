@@ -23,14 +23,18 @@ description: "Use when you are an agent assigned a scope, issue, or PR in this r
 5. **Ship.** Commit (message ends with
    `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`), write the PR body
    to `tmp\pr-body.md`, then
-   `tools\cli wt ship <slug> --closes <n> --body-file tmp\pr-body.md`. It
+   `tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body.md`. It
    checks the tree, merges main only on conflict, runs `validate --full` +
    build + `--tier all`, pushes, opens the PR, and queues auto-merge.
    The body has: what changed, one line on how it is in-world first (or why
    it needs UI; `docs/decisions.md` "In-world first"), red and green evidence
    with the observed lines, manual steps for anything automation cannot
-   reach, and ends with
+   reach (under `## Manual testing`: it makes the issue `needs-playtest` and
+   feeds the human's promotion checklist), and ends with
    `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
+   Shipping does not close the issue: it becomes `in-dev` (merged, not verified)
+   and stays open until a human runs `promote --confirm`. Report it as
+   "merged, in-dev", not "done"; `--closes N` still works but means `Refs`.
 6. **Safety.** Never `git worktree remove --force`, `rm -rf`, or
    `Remove-Item -Recurse` on a worktree or `server/profile` (junctions into
    the Steam installs). Use `tools\cli wt prune <slug>` or
