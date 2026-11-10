@@ -1,0 +1,15 @@
+AnimSetTemplateSource {
+ Groups {
+  AnimSetTemplateSource_AnimationGroup "{64944E3A99ED1B19}" {
+   Name "Work"
+   Animations {
+    "In"
+    "Loop"
+    "Out"
+   }
+   Columns {
+    "Pick"
+   }
+  }
+ }
+}
