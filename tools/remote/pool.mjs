@@ -58,6 +58,7 @@ export function poolSettings(root) {
   return {
     sessionIdleMin: pick("sessionIdleMin", "LF_POOL_SESSION_IDLE_MIN"),
     promoteMin: pick("promoteMin", "LF_POOL_PROMOTE_MIN"),
+    starveMin: pick("starveMin", "LF_POOL_STARVE_MIN"),
     minFreeMb: pick("minFreeMb", "LF_POOL_MIN_FREE_MB"),
     bootBudgetS: pick("bootBudgetS", "LF_POOL_BOOT_BUDGET_S"),
     sessionHoldMin: pick("sessionHoldMin", "LF_POOL_SESSION_HOLD_MIN"),
@@ -421,7 +422,10 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
   const pendingMb = second.reduce((n, s) => n + s.pendingMb, 0);
   const ram = opts.noRam ? { ok: true } : q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: settings.minFreeMb, reserveMb, pendingMb });
   if (!ram.ok) {
-    if (opts.blocked) opts.blocked.ram = ram.reason;
+    if (opts.blocked) {
+      opts.blocked.ram = ram.reason;
+      opts.blocked.needMb = ram.needMb;
+    }
     return null;
   }
   try {
@@ -966,7 +970,10 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
   // would otherwise start over and never age to the front).
   const since = queuedSince(root, slug, started);
   let waitingOn = laneList.map((l) => l.lock);
-  const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name] });
+  // stuck: "ram" | "lane" once a try failed for that reason (others may then backfill); needMb: free RAM it needs.
+  let stuck = "";
+  let needMb;
+  const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name], clients: meta.clients ?? 1, ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
   const ticket = writeTicket(root, body(), since);
   let lastReap = 0;
   let said = false;
@@ -981,7 +988,8 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
         lastReap = now;
         reapIdleSessions(root, [m], tickets, settings);
       }
-      const blockers = me ? tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, now, settings.promoteMin * 60000)) : [];
+      const ctx = { starveMs: settings.starveMin * 60000, freeMb: Math.round(freemem() / 1048576) };
+      const blockers = me ? tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, now, settings.promoteMin * 60000, ctx)) : [];
       const blocked = {};
       // With several session lanes the k-th request in line may take a free lane: it waits only
       // when as many requests are ahead as there are lanes.
@@ -1012,8 +1020,11 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
         console.log(`session: queued as ${prio} for the session slot (${blockers.length} ahead, up to ${Math.round(waitMs / 60000)} min); it starts by itself`);
       }
       const want = blocked.ram ? [...laneList.map((l) => l.lock), "ram"] : laneList.map((l) => l.lock);
-      if (want.join() !== waitingOn.join()) {
+      const wantStuck = blockers.length >= laneList.length ? "" : blocked.ram ? "ram" : "lane";
+      if (want.join() !== waitingOn.join() || wantStuck !== stuck) {
         waitingOn = want;
+        stuck = wantStuck;
+        needMb = blocked.needMb;
         rewriteTicket(root, ticket, body());
       }
       Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
@@ -1139,7 +1150,9 @@ export async function acquireSlot(root, opts = {}) {
   const kind = laneKind(purpose);
   const priority = q.normalizePriority(opts.priority) ?? resolvePriority(root);
   let waitingOn = [];
-  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name) });
+  let stuck = "";
+  let needMb;
+  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
   const ticket = writeTicket(root, ticketBody());
   let lastReap = 0;
   const lastTry = new Map();
@@ -1190,6 +1203,8 @@ export async function acquireSlot(root, opts = {}) {
       let promoteMs = q.DEFAULTS.promoteMin * 60000;
       const waits = new Set();
       const blockedBy = new Set();
+      let ramBlocked = null;
+      let triedLocal = false;
       let selfStuck = null;
       if (!degraded) {
         try {
@@ -1222,7 +1237,7 @@ export async function acquireSlot(root, opts = {}) {
           if (degraded) {
             const mine = tickets.findIndex((t) => t.file === ticket);
             blockers = mine < 0 ? [] : tickets.slice(0, mine).filter((t) => (t.machines ?? []).includes(m.name));
-          } else if (me) blockers = tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, nowMs, promoteMs));
+          } else if (me) blockers = tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, nowMs, promoteMs, { starveMs: poolSettings(root).starveMin * 60000, freeMb: Math.round(freemem() / 1048576) }));
         } catch (e) {
           degrade(e);
         }
@@ -1249,7 +1264,9 @@ export async function acquireSlot(root, opts = {}) {
             if (s) return finish(s);
             waits.add(lane.lock);
           }
+          triedLocal = true;
           if (blocked.ram) {
+            ramBlocked = blocked;
             waits.add("ram");
             note("ram", `pool: waiting for RAM (${blocked.ram}); starts by itself when memory frees`);
           }
@@ -1292,8 +1309,11 @@ export async function acquireSlot(root, opts = {}) {
         }
       }
       const ahead = aheadCounts.length ? Math.min(...aheadCounts) : 0;
-      if (waits.size !== waitingOn.length || [...waits].some((w) => !waitingOn.includes(w))) {
+      const wantStuck = !triedLocal ? "" : ramBlocked ? "ram" : "lane";
+      if (waits.size !== waitingOn.length || [...waits].some((w) => !waitingOn.includes(w)) || wantStuck !== stuck) {
         waitingOn = [...waits];
+        stuck = wantStuck;
+        needMb = ramBlocked?.needMb;
         rewriteTicket(root, ticket, ticketBody());
       }
       if (!announced) {
@@ -1496,7 +1516,8 @@ export function cmdPoolStatus(root) {
     const base = q.normalizePriority(t.priority) ?? "normal";
     const eff = q.PRIORITIES[q.effectiveRank(t, now, promoteMs)];
     const prio = eff === base ? base : `${base}>${eff}`;
-    const on = (t.waitingOn ?? []).length ? `  on ${t.waitingOn.join(",")}` : "";
+    const why = q.waitReason(t, pos - 1);
+    const on = why ? `  waits: ${why}` : (t.waitingOn ?? []).length ? `  on ${t.waitingOn.join(",")}` : "";
     console.log(`  ${lane} #${pos}  ${prio.padEnd(11)} ${String(t.slug ?? "?").padEnd(20).slice(0, 24)} ${String(t.purpose ?? "").padEnd(11)} waited ${mins(now - Date.parse(t.at)).padStart(4)}${on}${t.pinned ? " (pinned)" : ""}`);
   }
   try {
