@@ -277,7 +277,7 @@ GenericEntity Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sig
    m_vTextColor 0.65 0.1 0.1
   }
  }
- coords 171.5 0 207
+ coords 172 0 200
  angleY 0
 }
 GenericEntity Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

@@ -111,8 +111,8 @@ GenericEntity Pickaxe_Debug : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
  coords 182.079 0 169.373
 }
 LF_MiningArea MiningArea_Debug : "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et" {
- coords 187 0 179
- m_vSize 4 1 4
+ coords 185 0 178
+ m_vSize 3 1 3
  m_iAmount 5
  m_fRespawnTime 1
  m_PrefabsToSpawn {
@@ -163,22 +163,22 @@ GenericEntity Quarry_Hut : "{8597237EA3C59701}Prefabs/Structures/Houses/Shed/She
  angleY 180
 }
 GenericEntity Quarry_Spoil1 : "{7AF35E9C21F21BFA}Prefabs/Structures/Military/Fortifications/DirtPile_01/DirtPile_01_base.et" {
- coords 194 0 160
+ coords 190 0 186
  angleY 20
 }
 GenericEntity Quarry_Spoil2 : "{7AF35E9C21F21BFA}Prefabs/Structures/Military/Fortifications/DirtPile_01/DirtPile_01_base.et" {
- coords 199 0 166
+ coords 163 0 181
  angleY 100
 }
 GenericEntity Quarry_Gravel1 : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01_large.et" {
- coords 160 0 162
+ coords 164 0 171
 }
 GenericEntity Quarry_Gravel2 : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01_medium.et" {
- coords 164 0 157
+ coords 166.5 0 162
  angleY 40
 }
 GenericEntity Quarry_Sand : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
- coords 158 0 171
+ coords 189 0 168
 }
 GenericEntity Quarry_Tires : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
  coords 170.5 0 185
@@ -203,9 +203,273 @@ GenericEntity Quarry_Crate2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_
  angleY 50
 }
 GenericEntity Quarry_Pallets : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
- coords 187 0 161
+ coords 187 0 164
 }
 GenericEntity Quarry_Sacks : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 171 0 162
+ coords 171 0 164
  angleY 20
+}
+GenericEntity Quarry_CliffS1 {
+ components {
+  MeshObject "{EEE65F53E9421CE5}" {
+   Object "{76E957436FCA52B6}Assets/Rocks/Granite/GraniteCliff_01.xob"
+  }
+  RigidBody "{0211670EAE679F02}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 166 0 148
+ angleY 0
+}
+GenericEntity Quarry_CliffS2 {
+ components {
+  MeshObject "{E8D28A79023C39C2}" {
+   Object "{EFF7EEDA722D6326}Assets/Rocks/Granite/GraniteCliff_02.xob"
+  }
+  RigidBody "{00661FCCD268A29A}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 175 0 146
+ angleY 0
+}
+GenericEntity Quarry_CliffS3 {
+ components {
+  MeshObject "{0D347301EF56E64D}" {
+   Object "{98FD8652868F8C56}Assets/Rocks/Granite/GraniteCliff_03.xob"
+  }
+  RigidBody "{C3CD6089065C3146}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 184 0 146
+ angleY 0
+}
+GenericEntity Quarry_CliffS4 {
+ components {
+  MeshObject "{E80A9C222670BBE4}" {
+   Object "{76E957436FCA52B6}Assets/Rocks/Granite/GraniteCliff_01.xob"
+  }
+  RigidBody "{F4C54977656CF2D1}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 193 0 149
+ angleY 0
+}
+GenericEntity Quarry_CliffE1 {
+ components {
+  MeshObject "{33187C8DF95247F2}" {
+   Object "{EFF7EEDA722D6326}Assets/Rocks/Granite/GraniteCliff_02.xob"
+  }
+  RigidBody "{866028DE71159B42}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 205 0 163
+ angleY 270
+}
+GenericEntity Quarry_CliffE2 {
+ components {
+  MeshObject "{B4EA410FB9102F29}" {
+   Object "{98FD8652868F8C56}Assets/Rocks/Granite/GraniteCliff_03.xob"
+  }
+  RigidBody "{A422EB14AB2F2D0F}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 206 0 175
+ angleY 270
+}
+GenericEntity Quarry_CliffE3 {
+ components {
+  MeshObject "{0CC022238DACEEE2}" {
+   Object "{76E957436FCA52B6}Assets/Rocks/Granite/GraniteCliff_01.xob"
+  }
+  RigidBody "{092F073FF80B9465}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 204 0 187
+ angleY 270
+}
+GenericEntity Quarry_CliffW1 {
+ components {
+  MeshObject "{AEF7AC86D66C7A64}" {
+   Object "{98FD8652868F8C56}Assets/Rocks/Granite/GraniteCliff_03.xob"
+  }
+  RigidBody "{4FB12853EF86DCFA}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 149 0 164
+ angleY 90
+}
+GenericEntity Quarry_CliffW2 {
+ components {
+  MeshObject "{EA21818B904CE608}" {
+   Object "{76E957436FCA52B6}Assets/Rocks/Granite/GraniteCliff_01.xob"
+  }
+  RigidBody "{7413E3B266F850F1}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 148 0 176
+ angleY 90
+}
+GenericEntity Quarry_CliffW3 {
+ components {
+  MeshObject "{578B5C72DC4EE60C}" {
+   Object "{EFF7EEDA722D6326}Assets/Rocks/Granite/GraniteCliff_02.xob"
+  }
+  RigidBody "{AEA63367C29A80B2}" {
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 150 0 188
+ angleY 90
+}
+GenericEntity Quarry_Stone1 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 183.3 0 186.4
+ angleY 40
+}
+GenericEntity Quarry_Stone2 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 176.0 0 189.0
+ angleY 287
+}
+GenericEntity Quarry_Stone3 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 190.6 0 174.1
+ angleY 135
+}
+GenericEntity Quarry_Stone4 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 174.9 0 175.3
+ angleY 53
+}
+GenericEntity Quarry_Stone6 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 171.5 0 185.9
+ angleY 356
+}
+GenericEntity Quarry_Stone7 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 174.3 0 158.9
+ angleY 351
+}
+GenericEntity Quarry_Stone8 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 193.2 0 159.1
+ angleY 98
+}
+GenericEntity Quarry_Stone9 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 169.7 0 180.4
+ angleY 81
+}
+GenericEntity Quarry_Stone10 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 189.9 0 158.7
+ angleY 318
+}
+GenericEntity Quarry_Stone11 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 181.5 0 183.6
+ angleY 288
+}
+GenericEntity Quarry_Stone12 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 178.5 0 176.2
+ angleY 189
+}
+GenericEntity Quarry_Stone14 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 172.7 0 177.7
+ angleY 342
+}
+GenericEntity Quarry_Stone15 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 161.4 0 164.2
+ angleY 255
+}
+GenericEntity Quarry_Stone16 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 191.7 0 162.1
+ angleY 330
+}
+GenericEntity Quarry_Stone17 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 171.2 0 174.7
+ angleY 185
+}
+GenericEntity Quarry_Stone18 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 177.7 0 184.2
+ angleY 91
+}
+GenericEntity Quarry_Stone19 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 178.0 0 173.0
+ angleY 64
+}
+GenericEntity Quarry_Stone20 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 184.0 0 159.6
+ angleY 35
+}
+GenericEntity Quarry_Stone21 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 160.3 0 167.6
+ angleY 158
+}
+GenericEntity Quarry_Stone22 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 178.4 0 158.8
+ angleY 231
+}
+GenericEntity Quarry_Stone23 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 176.0 0 180.7
+ angleY 347
+}
+GenericEntity Quarry_Stone25 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 181.4 0 163.6
+ angleY 318
+}
+GenericEntity Quarry_Stone26 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 181.2 0 180.5
+ angleY 246
+}
+GenericEntity Quarry_Stone27 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 168.1 0 175.6
+ angleY 176
+}
+GenericEntity Quarry_Stone28 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 176.2 0 161.3
+ angleY 203
+}
+GenericEntity Quarry_Stone29 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 167.8 0 167.5
+ angleY 355
+}
+GenericEntity Quarry_Stone30 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 193.2 0 177.0
+ angleY 129
+}
+GenericEntity Quarry_Stone31 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 168.2 0 184.0
+ angleY 188
+}
+GenericEntity Quarry_Stone32 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 185.4 0 173.0
+ angleY 93
+}
+GenericEntity Quarry_Stone33 : "{F5837A3933EFF7CF}Prefabs/Rocks/Granite/GraniteStone_01_V2.et" {
+ coords 172.7 0 182.3
+ angleY 104
+}
+GenericEntity Quarry_Stone34 : "{FF262A7485FF0448}Prefabs/Rocks/Granite/GraniteStone_02_V2.et" {
+ coords 160.1 0 175.0
+ angleY 66
 }
