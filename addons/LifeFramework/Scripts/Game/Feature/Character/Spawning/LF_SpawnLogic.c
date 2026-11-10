@@ -140,7 +140,11 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 		// You wake up in hospital: the next spawn of this player goes to a bed and pays the bill.
 		if (!uid.IsEmpty())
+		{
 			LF_HospitalRespawn.MarkDied(uid);
+			if (playerEntity)
+				LF_NewLifeRule.RecordDeath(uid, playerEntity.GetOrigin());
+		}
 
 		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
 		if (respawn)

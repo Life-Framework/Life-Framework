@@ -32,6 +32,13 @@ coordinates; `Assets/Vehicles/EmergencyLightsKnob/` and
 - `LF_SirenManagerComponent`, `LF_SirenModeAction`, `LF_SirenKnobComponent`,
   `LF_LightAnimationComponent`, `LF_LightEntry` (`Feature/SirenLights/`).
 
+## V1.1 - #263, service vehicles
+
+`LF_SirenManagerComponent.ApplyRequest` is the one server rule (`LF_SirenRules.Judge`): out-of-range, repeated and
+faster-than-300 ms requests are refused, so a toggle replicates once per change. Service vehicles: the police
+jeep at the station and `LF_M997_Ambulance.et` (red `LightBarLED_Red.et`) at the hospital. Not done: an on-duty
+gate on who may run the siren.
+
 ## Dependencies
 
 - `Police` (authorized users), `VehicleLock` (vehicle ownership), `Jobs`

@@ -132,6 +132,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "shoot")
 			return ParseShoot(parts, cmd);
+		if (cmd.Verb == "siren")
+			return ParseSiren(parts, cmd);
 		if (cmd.Verb == "ui")
 			return ParseUi(parts, cmd);
 		if (cmd.Verb == "click")
@@ -380,6 +382,21 @@ class LF_AgentCommand
 				return false;
 		}
 
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `siren <EntityName> <mode>`: mode is an index into the vehicle's siren modes (0 is off).
+	protected static bool ParseSiren(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 4 || !IsClassToken(parts[2]))
+		{
+			cmd.Error = "need_entity_and_mode";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		cmd.Arg2 = parts[3];
 		return true;
 	}
 
@@ -893,6 +910,11 @@ class LF_AgentHarness
 			DoShoot(cmd);
 			return;
 		}
+		if (cmd.Verb == "siren")
+		{
+			DoSiren(cmd);
+			return;
+		}
 		if (cmd.Verb == "ui")
 		{
 			DoUi(cmd);
@@ -1102,6 +1124,21 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `siren <EntityName> <mode>` (dev gate): the server sets the named vehicle's siren mode
+	//! through the same rule the driver's key uses (LF_SirenManagerComponent.ApplyRequest).
+	protected static void DoSiren(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.LF_AskHarnessSiren(cmd.Id, cmd.Arg1, cmd.Arg2.ToInt());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Kill the local character on the server (dev gate), so a session can prove the death and
 	//! hospital respawn path. The death screen opens as for any death.
 	protected static void DoDie(LF_AgentCommand cmd)
@@ -1215,10 +1252,21 @@ class LF_AgentHarness
 			downed = 1;
 		line += " zone=" + LF_Zones.RuleName(LF_Zones.RuleAt(origin));
 		line += string.Format(" downed=%1 life=%2 bleed=%3", downed, LifeStateToken(character), BleedToken(character));
+		line += " " + VitalsToken(character);
 		return line + string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Resilience, blood and health (scaled, 2 decimals) as THIS machine reads them (#427).
+	static string VitalsToken(IEntity entity)
+	{
+		SCR_CharacterDamageManagerComponent damage = SCR_CharacterDamageManagerComponent.Cast(entity.FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!damage)
+			return "res=none blood=none hp=none";
+
+		return string.Format("res=%1 blood=%2 hp=%3", Math.Round(damage.GetResilienceHitZone().GetHealthScaled() * 100) / 100, Math.Round(damage.GetBloodHitZone().GetHealthScaled() * 100) / 100, Math.Round(damage.GetDefaultHitZone().GetHealthScaled() * 100) / 100);
+	}
+
 	//! Seconds of bleed-out this client reads for the character, -1 when it is not downed (#256).
 	protected static int BleedToken(IEntity entity)
 	{

@@ -67,11 +67,32 @@ class LF_MedicConfig
 	[Attribute("60", UIWidgets.Auto, "A body that is this many metres from its carrier (a teleport, a lag spike) is dropped", params: "3 200")]
 	float m_fCarryReleaseDistance = 60;
 
+	[Attribute("0.25", UIWidgets.Auto, "Health (fraction of max) a revived player is lifted to. The downed sliver is lost again to bleeding within seconds, which downs them a second time (#427)", params: "0.05 1")]
+	float m_fReviveHealthScaled = 0.25;
+
+	[Attribute("{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et", UIWidgets.ResourceNamePicker, "Item the medic uses up per revive. Empty: free", "et")]
+	ResourceName m_sReviveItemPrefab;
+
+	[Attribute("1", UIWidgets.Auto, "How many of that item one revive uses", params: "0 10")]
+	int m_iReviveItemCount = 1;
+
 	[Attribute("100", UIWidgets.Auto, "Cash on the paper treatment bill a revive writes for the patient, paid at the hospital desk (#260)", params: "1 100000")]
 	int m_iReviveBillAmount = 100;
 
 	[Attribute("0.5", UIWidgets.Auto, "Fraction of a paid revive bill the reviving medic earns in cash at clock-out", params: "0 1")]
 	float m_fBillMedicShare = 0.5;
+
+	[Attribute("1", UIWidgets.CheckBox, "New Life Rule (#264): a real death puts a wristband on the wake, and returning near the death scene inside the window gets a reminder and an incident row. A revive gives none. Off: neither")]
+	bool m_bNewLifeEnabled = true;
+
+	[Attribute("15", UIWidgets.Auto, "Minutes the New Life Rule lasts after waking; also printed on the hospital bill", params: "1 240")]
+	int m_iNewLifeMinutes = 15;
+
+	[Attribute("75", UIWidgets.Auto, "Metres from the death scene that count as returning to it", params: "5 500")]
+	float m_fNewLifeRadius = 75;
+
+	[Attribute("5", UIWidgets.Auto, "Seconds between two server checks of a wristband wearer's distance to the scene", params: "1 60")]
+	float m_fNewLifeCheckSeconds = 5;
 
 	protected static ref LF_MedicConfig s_Config;
 	protected static bool s_bLoadAttempted;

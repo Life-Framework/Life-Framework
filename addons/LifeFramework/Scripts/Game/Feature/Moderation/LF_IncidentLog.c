@@ -80,6 +80,7 @@ class LF_IncidentLog
 	protected static ref LF_IncidentHoldUpSubscriber s_HoldUp;
 	protected static ref LF_IncidentAdminSubscriber s_Admin;
 	protected static ref LF_IncidentAimSubscriber s_Aim;
+	protected static ref LF_IncidentNlrSubscriber s_Nlr;
 
 	//------------------------------------------------------------------------------------------------
 	protected static array<ref LF_IncidentRecord> Records()
@@ -107,6 +108,8 @@ class LF_IncidentLog
 			LF_EventBus.Unsubscribe(LF_OnAdminAction, s_Admin);
 		if (s_Aim)
 			LF_EventBus.Unsubscribe(LF_OnAimedAt, s_Aim);
+		if (s_Nlr)
+			LF_EventBus.Unsubscribe(LF_OnNewLifeReturn, s_Nlr);
 
 		s_aRecords = null;
 		s_iLastNumber = 0;
@@ -118,6 +121,7 @@ class LF_IncidentLog
 		s_HoldUp = null;
 		s_Admin = null;
 		s_Aim = null;
+		s_Nlr = null;
 		LF_AimIntent.ResetStatics();
 		LF_HoldUp.ResetStatics();
 		LF_IncidentConfig.ResetStatics();
@@ -140,6 +144,7 @@ class LF_IncidentLog
 		s_HoldUp = new LF_IncidentHoldUpSubscriber();
 		s_Admin = new LF_IncidentAdminSubscriber();
 		s_Aim = new LF_IncidentAimSubscriber();
+		s_Nlr = new LF_IncidentNlrSubscriber();
 		LF_EventBus.Subscribe(LF_OnPlayerKilled, s_Killed);
 		LF_EventBus.Subscribe(LF_OnPlayerDamaged, s_Damaged);
 		LF_EventBus.Subscribe(LF_OnMoneyMoved, s_Money);
@@ -147,6 +152,7 @@ class LF_IncidentLog
 		LF_EventBus.Subscribe(LF_OnHoldUp, s_HoldUp);
 		LF_EventBus.Subscribe(LF_OnAdminAction, s_Admin);
 		LF_EventBus.Subscribe(LF_OnAimedAt, s_Aim);
+		LF_EventBus.Subscribe(LF_OnNewLifeReturn, s_Nlr);
 		s_bInstalled = true;
 		LF_Debug.Info(FEATURE, string.Format("incident log installed (%1 record(s) loaded)", Records().Count()));
 	}
@@ -445,6 +451,22 @@ class LF_IncidentAimSubscriber : LF_EventSubscriber
 			return false;
 
 		LF_IncidentLog.Append(LF_IncidentConfig.KIND_AIM, System.GetUnixTime(), aimed.m_sActorUid, aimed.m_sTargetUid, aimed.m_vPosition, 0, "", false);
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A wristband wearer returned to their death scene inside the New Life window (#264): the
+//! returner is the subject, seconds since the wake is the amount.
+class LF_IncidentNlrSubscriber : LF_EventSubscriber
+{
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnNewLifeReturn back = LF_OnNewLifeReturn.Cast(busEvent);
+		if (!back)
+			return false;
+
+		LF_IncidentLog.Append(LF_IncidentConfig.KIND_NLR, System.GetUnixTime(), back.m_sPlayerUid, "", back.m_vPosition, back.m_iSecondsSinceWake, "", false);
 		return true;
 	}
 }
