@@ -6047,6 +6047,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cab wanted"
      Comment "Summary the taxi pager and board show for a call from the payphone."
     }
+    CustomStringTableItem "{4E7FF02882373B33}" {
+     Id "LF-IncidentGm_Kind_nlr"
+     Target_en_us "New Life Rule return"
+     Comment "Incident kind: a player wearing the New Life wristband came back near where they died."
+    }
+    CustomStringTableItem "{5934A766F9EB76E9}" {
+     Id "LF-NewLife_WakeToast"
+     Target_en_us "You wear a New Life wristband. Stay away from where you died for %1 minutes."
+     Comment "Toast on waking in hospital after a real death. %1 is the minutes."
+    }
+    CustomStringTableItem "{D350D31D83DCF9E2}" {
+     Id "LF-NewLife_ReturnToast"
+     Target_en_us "New Life Rule: you are near where you died. Please keep away."
+     Comment "Quiet reminder toast when a wristband wearer returns to their death scene inside the window."
+    }
   }
  }
 }
