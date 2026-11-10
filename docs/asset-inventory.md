@@ -64,3 +64,5 @@ looked at yet.
 | Car lot price board | `Sign_LotPrice_*` (`LF_Sign_Chalkboard`) | final | vanilla `ChalkBoard_01` | (a price board) | Car lot, area 4 | none |
 | Lot display cars | `Lot_Display_*`, `Roadmap_Vehicle_S105` | final | the lot offers base vehicles | (display cars) | Car lot, area 4 | none |
 | Quarry rock walls and stones | `GraniteCliff_01..03.xob`, `Granite_Cluster_Large_01_V2`, `GraniteStone_01/02_V2` | final | base-game granite cliffs form a three-sided pit; small stones scattered on the floor | (same) | Quarry polish, area 11 | none |
+| Vehicle lock sound | `SOUND_PICK_UP` (base inventory click, played on the user at the car) | placeholder | no door-latch event found offline; swap `LF_VehicleLockComponent.LOCK_SOUND` for a real latch or chirp event | (none) | Car polish (lock) | needs a real latch/chirp event |
+| Garage counter | `CounterShop_01.xob` on `Roadmap_Garage` | final | gives the garage use point a visible, targetable body beside the doors | (same as lot desk) | Garage fix | none |

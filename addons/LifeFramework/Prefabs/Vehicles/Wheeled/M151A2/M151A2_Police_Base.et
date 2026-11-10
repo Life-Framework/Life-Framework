@@ -26,10 +26,21 @@ Vehicle : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
     LF_VehicleLockAction "{E8BD9E1428464528}" {
      ParentContextList {
       "door_l01"
+      "door_l01_int"
      }
      UIInfo UIInfo "{8DB9298A56C64720}" {
       Name "#EL-VehicleLock_Action"
      }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{E1A5707E00000100}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A5707F00000100}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
     }
     LF_VehicleSearchAction "{5EA2C40200000001}" {
      ParentContextList {

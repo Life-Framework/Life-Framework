@@ -3789,7 +3789,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C253431484CC5293}" {
      Id "LF-Sign_Garage_How"
-     Target_en_us "Park by the doors, get out, and Store vehicle. Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
+     Target_en_us "Park by the doors and get out. Store vehicle is on the counter beside the doors and on the car itself (Store in garage). Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
      Comment "Sign card for the garage where owners park vehicles, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{4666CFF92E358BA1}" {
@@ -6681,6 +6681,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_LotPrice_uaz452_Title"
      Target_en_us "UAZ 452 $3,500"
      Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
+    }
+    CustomStringTableItem "{C5BBC2192BD8EFEC}" {
+     Id "EL-VehicleLock_ActionLock"
+     Target_en_us "Lock vehicle"
+     Comment "Action label when the vehicle is unlocked (#412)."
+    }
+    CustomStringTableItem "{D6B5DE4ACCEECA33}" {
+     Id "EL-VehicleLock_ActionUnlock"
+     Target_en_us "Unlock vehicle"
+     Comment "Action label when the vehicle is locked (#412)."
+    }
+    CustomStringTableItem "{405F3EF53D4704D5}" {
+     Id "LF-Garage_StoreHere"
+     Target_en_us "Store in garage"
+     Comment "Action on the player's own car when it stands within the garage radius. Same rules as the garage counter."
+    }
+    CustomStringTableItem "{C8B8911B5F3A014D}" {
+     Id "LF-Keybind_VehicleLock"
+     Target_en_us "Lock or unlock vehicle"
+     Comment "Key binding menu label for the U key."
+    }
+    CustomStringTableItem "{C470CD4C9E58C70D}" {
+     Id "LF-VehicleLock_NoTarget"
+     Target_en_us "No vehicle of yours in reach"
+     Comment "Toast when U is pressed with no keyed vehicle near."
     }
   }
  }
