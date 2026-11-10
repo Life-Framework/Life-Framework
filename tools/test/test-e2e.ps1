@@ -27,11 +27,14 @@
 # Run via: tools\cli test
 
 param(
+  # Run budget (seconds), counted from the server's ready line; the pool passes the learned one. Boot has its own, shorter budget.
   [int]$TimeoutSeconds = 90,
+  [int]$BootTimeoutSeconds = 30,
   [int]$PollMs = 2000,
   [string]$Tier = "all",
   [int]$BindPort = 2001,
   [int]$A2sPort = 17777,
+  [string]$ListenAddr,
   [switch]$KeepProfile,
   [switch]$LoadLatestSave,
   [string]$LoadSessionSave,
@@ -42,6 +45,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+# Per-run stdout/stderr capture files (two lanes run at once); drop the old ones.
+Get-ChildItem -Path $env:TEMP -Filter "lf-e2e-*-*.txt" -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-1) } | Remove-Item -Force -ErrorAction SilentlyContinue
 . (Join-Path $PSScriptRoot "..\lib\quiet-launch.ps1")
 
 $root = git rev-parse --show-toplevel
@@ -200,6 +205,10 @@ $args = @(
   "-bindPort", $BindPort,
   "-a2sPort", $A2sPort
 )
+# A test lane's server listens on its own 127.0.0.1:<port> (-server mode ignores
+# -bindPort/-bindIP; -addr is what moves it off UDP 2001), so it runs beside the
+# session server. tools/remote/pool.mjs lanes.
+if ($ListenAddr) { $args += @("-addr", $ListenAddr) }
 
 if ($Tier -eq "fast") {
   $args += @("-scrDefine", "LF_TEST_TIER_FAST")
@@ -218,6 +227,17 @@ if (-not [string]::IsNullOrEmpty($Only)) {
   Write-Host "test-e2e: only $Only"
 }
 
+# LF_TEST_HANG=run holds the suite in the booted server (LF_TestRunnerComponent reads the file);
+# LF_TEST_HANG=boot swaps the server for a process that never gets ready. Both exist so the pool's
+# runtime budgets have a real hang to kill (tools/validation/pool-budget-selftest.mjs, docs/worktrees.md).
+$hangFile = Join-Path $profile "profile\LF_TestHang.txt"
+Remove-Item -LiteralPath $hangFile -Force -ErrorAction SilentlyContinue
+if ($env:LF_TEST_HANG -eq "run") {
+  New-Item -ItemType Directory -Force -Path (Split-Path -Parent $hangFile) | Out-Null
+  [System.IO.File]::WriteAllText($hangFile, "hang", (New-Object System.Text.UTF8Encoding $false))
+  Write-Host "test-e2e: LF_TEST_HANG=run (the suite will not start)"
+}
+
 if (-not [string]::IsNullOrEmpty($ExtraDefine)) {
   $args += @("-scrDefine", $ExtraDefine)
 }
@@ -231,14 +251,19 @@ if ($LoadLatestSave) {
   $args += @("-loadSessionSave", $LoadSessionSave)
 }
 
+if ($env:LF_TEST_HANG -eq "boot") {
+  Write-Host "test-e2e: LF_TEST_HANG=boot (a stand-in process that never gets ready replaces the server)"
+  $exe = (Get-Command powershell).Source
+  $args = @("-NoProfile", "-Command", "Start-Sleep -Seconds 600")
+}
 Write-Host "test-e2e: launching $exe (tier=$Tier)"
 Write-Host "test-e2e: args $($args -join ' ')"
 # The server runs on the private LF-Agents desktop with no console window, so a
 # test boot never opens a terminal on the user's screen
 # (tools/lib/quiet-launch.ps1, dot-sourced at the top; LF_SHOW_WINDOWS=1 shows it).
 $p = Start-LfQuietProcess -FilePath $exe -ArgumentList $args -WorkingDirectory $root -KillOnClose `
-  -RedirectStandardOutput (Join-Path $env:TEMP "lf-e2e-out.txt") `
-  -RedirectStandardError  (Join-Path $env:TEMP "lf-e2e-err.txt")
+  -RedirectStandardOutput (Join-Path $env:TEMP "lf-e2e-out-$PID.txt") `
+  -RedirectStandardError  (Join-Path $env:TEMP "lf-e2e-err-$PID.txt")
 
 function Get-LogDir {
   Get-ChildItem (Join-Path $profile "logs") -Directory -ErrorAction SilentlyContinue |
@@ -294,7 +319,26 @@ function Read-Crash([string]$dir) {
   return $out
 }
 
-while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
+# The most telling lines of a hung run, at most 5: script errors and VMEs first, then the
+# last [LFTEST] line, then the tail of the log.
+function Get-HungLines([string]$dir) {
+  $lines = @()
+  if ($dir) {
+    $c = Join-Path $dir "console.log"
+    if (Test-Path -LiteralPath $c) { $lines = @(Get-Content -LiteralPath $c -ErrorAction SilentlyContinue | Where-Object { $_ -and $_.Trim() }) }
+  }
+  $pick = New-Object System.Collections.ArrayList
+  foreach ($l in @($lines | Where-Object { $_ -match 'SCRIPT\s+\(E\)|Virtual Machine Exception|VME' } | Select-Object -Last 2)) { [void]$pick.Add($l) }
+  foreach ($l in @($lines | Where-Object { $_ -match '\[LFTEST\]|\[LF_Tests\]' } | Select-Object -Last 2)) { if (-not $pick.Contains($l)) { [void]$pick.Add($l) } }
+  # Fill with the tail of the log, feature debug lines excluded (hundreds of them).
+  foreach ($l in @($lines | Where-Object { $_ -notmatch '\[LFDebug:' } | Select-Object -Last 8)) { if ($pick.Count -lt 5 -and -not $pick.Contains($l)) { [void]$pick.Add($l) } }
+  return @($pick | Select-Object -First 5 | ForEach-Object { $t = $_.Trim(); if ($t.Length -gt 200) { $t.Substring(0, 200) } else { $t } })
+}
+
+$ready = $false
+$readySw = $null
+$timedOut = $null
+while ($true) {
   Start-Sleep -Milliseconds $PollMs
 
   $logDir = Get-LogDir
@@ -345,6 +389,15 @@ while ($sw.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
     break
   }
 
+  if (-not $ready -and ($console -match 'Starting RPL server, listening')) {
+    $ready = $true
+    $readySw = [Diagnostics.Stopwatch]::StartNew()
+  }
+  if (-not $p.HasExited) {
+    if (-not $ready -and $sw.Elapsed.TotalSeconds -gt $BootTimeoutSeconds) { $timedOut = "boot"; break }
+    if ($ready -and $readySw.Elapsed.TotalSeconds -gt $TimeoutSeconds) { $timedOut = "run"; break }
+  }
+
   if ($p.HasExited) {
     if ($console -match 'SCRIPT\s+\(E\)|Can''t compile|Unable to initialize|fatal|EXCEPTION') {
       $crashLines = @($console -split "`n" | Where-Object { $_ -match 'SCRIPT\s+\(E\)|Can''t compile|Unable to initialize|fatal|EXCEPTION' } | Select-Object -First 10)
@@ -363,10 +416,24 @@ if ($alive) {
       Start-Sleep -Milliseconds 1000
     }
   }
-  if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+  # The whole tree: a hung run must not leave a child holding the lane's port.
+  if (-not $p.HasExited) { & taskkill /T /F /PID $p.Id 2>&1 | Out-Null }
 }
 
 $elapsed = [int]$sw.Elapsed.TotalSeconds
+
+if ($timedOut) {
+  if ($timedOut -eq "boot") {
+    Write-Host "TIMEOUT after $([int]$sw.Elapsed.TotalSeconds)s (boot budget ${BootTimeoutSeconds}s, the server never reached ready); last log lines:"
+  } else {
+    Write-Host "TIMEOUT after $([int]$readySw.Elapsed.TotalSeconds)s (budget ${TimeoutSeconds}s); last log lines:"
+  }
+  $hungDir = Get-LogDir
+  $hungLines = @(Get-HungLines $hungDir.FullName)
+  if ($hungLines.Count -eq 0) { Write-Host "  (no server console.log yet)" }
+  foreach ($l in $hungLines) { Write-Host "  $l" }
+  exit 124
+}
 
 if ($harnessError) {
   Write-Host "test-e2e: HARNESS ERROR (no verdict) at $harnessError"

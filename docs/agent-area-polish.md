@@ -87,6 +87,14 @@ gallery.
 - **Golden hour, clear weather, the same time for every shot:** set the in-game time and
   weather before shooting. Use the harness or a debug define, never a script change
   that ships.
+- **How, on a session:** the harness `shot world` pins its own clock on the client only, and the server
+  wins. For golden hour, set `"Initial Day Time" 13.2` on the `TimeAndWeatherManagerEntity` in
+  `default.layer` before `session.mjs up`, and revert it before committing (the world is at
+  latitude -4, longitude 71, so the game clock reads about 4.7 h behind local time). Shots hide the HUD
+  themselves; wait 15 s after signing form R-89 so the quest toast is gone. `session.mjs up --machine any`
+  may land on the test box: drive it with `session.mjs run <script>` (a script inside the repo when
+  `up` ran) and fetch captures with `session.mjs pull`. The BMPs are over 500 KB as plain PNGs;
+  quantise to 128 colours.
 - **Two shots per area:**
   - one wide establishing shot that shows the whole area in context;
   - one detail shot of the main interaction or prop.
