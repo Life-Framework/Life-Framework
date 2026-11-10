@@ -191,7 +191,7 @@ class LF_AgentCommand
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//!   <id> scene start|stop|status [name]
+	//!   <id> scene start <name> [hour|-] [weather] | stop | reset | status   (reset = stop: despawn, restore clock and weather)
 	//!   <id> camera orbit|follow <x> <y> <z> <radius|distance> <seconds>
 	protected static bool ParseFilmDirect(array<string> parts, LF_AgentCommand cmd)
 	{
@@ -204,6 +204,13 @@ class LF_AgentCommand
 		cmd.Arg1 = parts[2];
 		if (parts.Count() > 3)
 			cmd.Arg2 = parts[3];
+		if (cmd.Verb == "scene")
+		{
+			if (parts.Count() > 4)
+				cmd.Arg3 = parts[4];
+			if (parts.Count() > 5)
+				cmd.Arg4 = parts[5];
+		}
 		if (cmd.Verb == "camera")
 		{
 			if (parts.Count() < 8)
@@ -3217,7 +3224,7 @@ class LF_AgentHarness
 			return;
 		}
 
-		character.LF_AskFilmScene(cmd.Id, cmd.Arg1, cmd.Arg2);
+		character.LF_AskFilmScene(cmd.Id, cmd.Arg1, cmd.Arg2, cmd.Arg3, cmd.Arg4);
 	}
 
 	//------------------------------------------------------------------------------------------------

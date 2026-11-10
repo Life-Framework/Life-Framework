@@ -1434,7 +1434,7 @@ function main(argv) {
       return printResult(sendCommand({ verb: "look" }));
     }
     if (cmd === "scene" || cmd === "camera") {
-      // scene start|stop|status [name]; camera orbit|follow x y z size seconds (LF_FilmDirector, LF_FilmCamera)
+      // scene start <name> [hour|-] [weather] | stop | reset | status; camera orbit|follow x y z size seconds (LF_FilmDirector, LF_FilmCamera)
       return printResult(sendCommand({ verb: cmd, args: rest.join(" ") }));
     }
     if (cmd === "state") {
