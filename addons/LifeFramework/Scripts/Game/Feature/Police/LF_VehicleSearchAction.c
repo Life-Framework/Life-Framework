@@ -40,7 +40,10 @@ class LF_VehicleSearchAction : ScriptedUserAction
 			return;
 		}
 
-		int seized = LF_ChainSearch.SearchVehicle(pOwnerEntity, Math.RandomFloat01());
+		// A repeat inside the cooldown rolls nothing and reads clean (#472).
+		int seized = 0;
+		if (LF_ChainSearch.TryBeginSearch(LF_ChainSearch.VehicleKey(pOwnerEntity), GetGame().GetWorld().GetWorldTime()))
+			seized = LF_ChainSearch.SearchVehicle(pOwnerEntity, Math.RandomFloat01());
 		if (seized > 0)
 			LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Found", "#EL-Police_Title", 3.0);
 		else
