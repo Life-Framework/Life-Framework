@@ -731,6 +731,18 @@ export function readRemotePointer() {
   }
 }
 
+const SESSION_QUEUE_MIN = 90;
+
+function pidIsAlive(pid) {
+  if (!pid) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return e.code === "EPERM";
+  }
+}
+
 async function routeMachine(cmd, rest) {
   const i = rest.indexOf("--machine");
   const want = i === -1 ? null : String(rest[i + 1] ?? "");
@@ -747,20 +759,23 @@ async function routeMachine(cmd, rest) {
     if (cmd === "down" && code === 0) rmSync(remotePointerFile(), { force: true });
     return { code };
   }
-  if (!want || want === "local") return { local: true, args };
+  if (want === "local") return { local: true, args };
   const clients = parseClients(args);
   let target = null;
-  if (want === "any") {
-    for (const m of machines) {
-      if (clients > 0 && !m.caps.includes("clients")) continue;
-      if (m.via === "ssh" && !pool.probe(ROOT, m).reachable) continue;
-      if (pool.freeSlotOn(ROOT, m)) {
-        target = m;
-        break;
-      }
-    }
+  if (!want || want === "any") {
+    // A session of this worktree already runs on this PC: `up` reports it.
+    const live = readSession(sessionDir());
+    if (live && !live.stoppedAt && [live.serverPid, ...(live.clients ?? []).map((c) => c.pid)].some((p) => pidIsAlive(p))) return { local: true, args };
+    // The default: every machine that can run this session is considered (this PC first on a tie).
+    // With --wait the request queues for whichever lane frees first; without it, one look.
+    const waitMs = args.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0;
+    const prio = args.indexOf("--priority") === -1 ? undefined : args[args.indexOf("--priority") + 1];
+    target = await pool.chooseSessionMachine(ROOT, { clients, waitMs, priority: prio, meta: { clients } });
     if (!target) {
-      console.log(`session: no machine with a free server slot${clients > 0 ? " that can run game clients" : ""}; queuing here (--wait) or retry`);
+      if (waitMs > 0) {
+        console.log(`session: no session lane freed on any machine within ${SESSION_QUEUE_MIN} min`);
+        return { code: 1 };
+      }
       return { local: true, args };
     }
   } else {
@@ -776,7 +791,7 @@ async function routeMachine(cmd, rest) {
     console.log(`session: one is recorded on ${ptr.machine}; 'node agent-box/session.mjs down' first`);
     return { code: 1 };
   }
-  console.log(`session: server-only session on ${target.name}`);
+  console.log(`session: on ${target.name}${clients > 0 ? ` (${clients} client(s) on its desktop)` : " (server only)"}`);
   const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", ...args] });
   mkdirSync(dirname(remotePointerFile()), { recursive: true });
   if (r.code === 0) writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir: r.rDir, at: new Date().toISOString(), root: ROOT }));
