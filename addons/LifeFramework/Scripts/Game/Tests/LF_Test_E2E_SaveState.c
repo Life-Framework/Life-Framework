@@ -26,6 +26,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
+	protected static const string SERIAL_BUYER_UID = "e2e-serial-buyer";
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string DUTY_UID = "e2e-duty-officer";
@@ -98,6 +99,26 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// alive in the world through the shutdown save, so the reload boot also sees whether the
 		// engine brings its items back on its own (a dupe next to the restored snapshot).
 		IEntity carrier = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		// A stamped drill rides in the backpack (#470): its serial must survive the restart on the item.
+		if (carrier)
+		{
+			ctx.Equal(1, LF_InventoryUtils.AddAmount(carrier, LF_Bank.DRILL_PREFAB, 1), "e2e carried drill added before the save");
+			InventoryStorageManagerComponent carrierManager = LF_InventoryUtils.GetResponsibleStorageManager(carrier);
+			array<IEntity> carriedDrills = LF_InventoryUtils.FindItemsByPrefab(carrierManager, LF_Bank.DRILL_PREFAB);
+			LF_SerialComponent drillStamp;
+			if (!carriedDrills.IsEmpty())
+				drillStamp = LF_SerialComponent.Cast(carriedDrills[0].FindComponent(LF_SerialComponent));
+
+			ctx.NotNull(drillStamp, "e2e carried drill has a serial component");
+			if (drillStamp)
+			{
+				string drillSerial = LF_FenceSerials.Issue(SERIAL_BUYER_UID, LF_Bank.DRILL_PREFAB);
+				ctx.True(drillStamp.SetSerial(drillSerial), "e2e carried drill is stamped before the save");
+			}
+
+			LF_WantedReports.Add(SERIAL_BUYER_UID, LF_WantedReports.OFFENCE_ROBBERY, "", "", "Bank", false);
+		}
+
 		if (carrier)
 			ctx.True(LF_StorageSnapshot.CaptureCarried(CARRIED_CHARACTER_ID, carrier), "e2e carried inventory captured before the save");
 
@@ -210,6 +231,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 	protected static const string ACCOUNT_UID = "e2e-uid";
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
+	protected static const string SERIAL_BUYER_UID = "e2e-serial-buyer";
 	protected static const string COURIER_UID = "e2e-courier";
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string DUTY_UID = "e2e-duty-officer";
@@ -276,6 +298,25 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 				ctx.Equal(237, LF_MoneyUtils.GetCash(restored), "e2e 237 cash carried across the restart");
 				ctx.Equal(3, LF_InventoryUtils.GetAmount(restored, LF_TestCarriedInventoryKit.APPLE_PREFAB), "e2e 3 apples carried across the restart");
 				ctx.Equal(1, LF_TestCarriedInventoryKit.CountInside(restored, LF_TestCarriedInventoryKit.BACKPACK_PREFAB, LF_TestCarriedInventoryKit.WATER_PREFAB), "e2e water bottle still inside the backpack after the restart");
+				array<IEntity> backDrills = LF_InventoryUtils.FindItemsByPrefab(LF_InventoryUtils.GetResponsibleStorageManager(restored), LF_Bank.DRILL_PREFAB);
+				ctx.Equal(1, backDrills.Count(), "e2e carried drill is back after the restart");
+				if (!backDrills.IsEmpty())
+				{
+					LF_SerialComponent backStamp = LF_SerialComponent.Cast(backDrills[0].FindComponent(LF_SerialComponent));
+					ctx.True(backStamp != null && !backStamp.GetSerial().IsEmpty(), "e2e carried drill keeps its serial after the restart");
+					if (backStamp)
+					{
+						LF_FenceSerialRow bookRow = LF_FenceSerials.Find(backStamp.GetSerial());
+						ctx.NotNull(bookRow, "e2e the serial book still names the carried drill's serial");
+						if (bookRow)
+							ctx.EqualStr(SERIAL_BUYER_UID, bookRow.m_sBuyerUid, "e2e the serial still leads to its buyer");
+					}
+
+					ctx.False(LF_WantedReports.IsIdentified(SERIAL_BUYER_UID), "e2e the buyer's report is not identified before the locker checks the drill");
+					ctx.Equal(1, LF_FenceSerials.IdentifyItem(backDrills[0], "e2e evidence locker"), "e2e the evidence locker names the buyer from the restored drill");
+					ctx.True(LF_WantedReports.IsIdentified(SERIAL_BUYER_UID), "e2e the buyer's report is identified by the restored drill");
+				}
+
 				ctx.Equal(0, LF_StorageSnapshot.Apply(restored, carried), "e2e second apply spawns nothing");
 				ctx.Equal(237, LF_MoneyUtils.GetCash(restored), "e2e cash unchanged by the second apply");
 				LF_TestCharacterFixture.Delete(restored);

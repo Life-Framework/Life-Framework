@@ -58,7 +58,7 @@ class LF_Test_StorePersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(21, version, "the save is written at version 21 (storestock is payload 21)");
+		ctx.Equal(22, version, "the save is written at version 22 (storestock is payload 21)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "storestock");
 		ctx.Equal(left, store.GetStock(apple), "the saved stock is back");
 		int shelf = store.GetShelfCount(apple);

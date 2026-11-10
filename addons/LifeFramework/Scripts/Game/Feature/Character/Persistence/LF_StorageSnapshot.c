@@ -15,6 +15,11 @@ class LF_StorageItemRecord : Managed
 	[NonSerialized()]
 	int m_iAmmo = -1;
 
+	//! Fence serial (#470), empty when the item has none. Travels in the separate itemserials
+	//! payload (save version 22), like the ammo.
+	[NonSerialized()]
+	string m_sSerial;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_StorageItemRecord Create(string prefab, int quantity, int parent, int storage, int slot)
 	{
@@ -36,6 +41,16 @@ class LF_StorageItemStateRecord : Managed
 	string m_sOwnerKey;
 	string m_sSlot;
 	ref array<int> m_aAmmo = {};
+}
+
+//------------------------------------------------------------------------------------------------
+//! Fence serials of one snapshot, parallel to its item list ("" = unstamped). The itemserials
+//! payload (save version 22), keyed by the snapshot's stable owner key and slot name.
+class LF_StorageItemSerialRecord : Managed
+{
+	string m_sOwnerKey;
+	string m_sSlot;
+	ref array<string> m_aSerials = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -374,6 +389,10 @@ class LF_StorageSnapshot
 				if (magazine)
 					record.m_iAmmo = magazine.GetAmmoCount();
 
+				LF_SerialComponent serialComponent = LF_SerialComponent.Cast(item.FindComponent(LF_SerialComponent));
+				if (serialComponent)
+					record.m_sSerial = serialComponent.GetSerial();
+
 				items.Insert(record);
 				CaptureChildren(item, items.Count() - 1, items, visited);
 			}
@@ -456,6 +475,7 @@ class LF_StorageSnapshot
 			resolved[index] = occupants[match];
 			SetQuantity(occupants[match], item);
 			SetAmmo(occupants[match], item);
+			SetSerial(occupants[match], item);
 		}
 
 		// What the snapshot does not list is not carried: default prefab contents included.
@@ -539,6 +559,96 @@ class LF_StorageSnapshot
 
 		int ammo = Math.ClampInt(item.m_iAmmo, 0, magazine.GetMaxAmmoCount());
 		magazine.SetAmmoCount(ammo);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a stamped item gets its serial back. An item without the component is skipped.
+	protected static void SetSerial(IEntity entity, LF_StorageItemRecord item)
+	{
+		if (item.m_sSerial.IsEmpty())
+			return;
+
+		LF_SerialComponent serial = LF_SerialComponent.Cast(entity.FindComponent(LF_SerialComponent));
+		if (!serial)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("serial %1 not restored: %2 has no serial component", item.m_sSerial, item.m_sPrefab));
+			return;
+		}
+
+		if (serial.GetSerial() != item.m_sSerial)
+			serial.RestoreSerial(item.m_sSerial);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The itemserials payload: one record per stored snapshot that holds a stamped item.
+	static array<ref LF_StorageItemSerialRecord> ExportItemSerials()
+	{
+		array<ref LF_StorageItemSerialRecord> rows = new array<ref LF_StorageItemSerialRecord>();
+		if (!s_mSnapshots)
+			return rows;
+
+		foreach (string key, LF_StorageSnapshotRecord record : s_mSnapshots)
+		{
+			if (!record || !record.m_aItems)
+				continue;
+
+			LF_StorageItemSerialRecord row = new LF_StorageItemSerialRecord();
+			row.m_sOwnerKey = record.m_sOwnerKey;
+			row.m_sSlot = record.m_sSlot;
+			bool any;
+			foreach (LF_StorageItemRecord item : record.m_aItems)
+			{
+				string serial;
+				if (item)
+					serial = item.m_sSerial;
+				else
+					serial = "";
+
+				if (!serial.IsEmpty())
+					any = true;
+
+				row.m_aSerials.Insert(serial);
+			}
+
+			if (any)
+				rows.Insert(row);
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Runs after the carried payload loaded the snapshots. A row whose snapshot is gone or whose
+	//! item count differs is skipped with a warning (those items come back unstamped).
+	//! eturn Number of snapshots that took their serials.
+	static int ApplyItemSerials(array<ref LF_StorageItemSerialRecord> rows)
+	{
+		if (!rows)
+			return 0;
+
+		int matched;
+		foreach (LF_StorageItemSerialRecord row : rows)
+		{
+			if (!row || !row.m_aSerials)
+				continue;
+
+			LF_StorageSnapshotRecord record = Get(row.m_sOwnerKey, row.m_sSlot);
+			if (!record || !record.m_aItems || record.m_aItems.Count() != row.m_aSerials.Count())
+			{
+				LF_Debug.Warn(FEATURE, string.Format("item serials for %1/%2 skipped: no matching snapshot", row.m_sOwnerKey, row.m_sSlot));
+				continue;
+			}
+
+			for (int index = 0; index < record.m_aItems.Count(); index++)
+			{
+				if (record.m_aItems[index])
+					record.m_aItems[index].m_sSerial = row.m_aSerials[index];
+			}
+
+			matched++;
+		}
+
+		return matched;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -632,6 +742,7 @@ class LF_StorageSnapshot
 
 		SetQuantity(entity, item);
 		SetAmmo(entity, item);
+		SetSerial(entity, item);
 
 		// A restored stack keeps its own slot instead of merging into a neighbour.
 		bool isStack = entity.FindComponent(LF_QuantityComponent) != null;
