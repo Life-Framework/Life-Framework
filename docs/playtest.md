@@ -1,4 +1,4 @@
-# Playtest: Life Framework
+﻿# Playtest: Life Framework
 
 The playtest is a small 1989 Everon town, published on the Arma Reforger
 Workshop and hosted from the maintainer's PC. Play it, then tell us what broke.
@@ -58,8 +58,7 @@ log that back them stay on the server and invisible.
   An on-duty officer hears it on the radio and sees the line on the wanted
   board. One player can call once a minute. With nobody on duty nothing
   connects and no coin is taken.
-- **Where the Comms gear stands.** Payphones (police, doctor and cab presets): the square (128.5, 240.5), the fuel station (255, 244), outside the hospital (254, 258) and outside the police station (237, 241). Boards: the police dispatch board beside the wanted board at the station, and the medic dispatch board in the hospital. Read a board to see open calls, take one while on duty, and the caller hears the unit is on the way.
-- **Where the investigation gear stands.** The fence (Vince) is behind the barn at (186, 311), north-west of the bank, away from the street. The bank vault door is at (194, 265) and opens only to a fence tool. The cash van starts at the bank doorstep, in the north lane at (196, 252.4) facing west, then visits the general store (162) and the fuel station (255) in the south lane (z 248.3) along the main street. Its cash box (a vanilla steel trunk) sits on the van's rear step; it opens to a drill and drops three money sacks on the ground behind the van. Two traffic cones and a pair of crates dress the bank stop. The evidence locker (234, 238), wanted board and dispatch board are at the police station. The payphone witness and the officer's "Ask what you saw" are covered under Comms and Evidence above.
+- **Where the investigation gear stands.** The fence (Vince) is behind the barn at (186, 311), north-west of the bank, away from the street. The bank vault door (a steel door on the bank's east wall) is at (194, 265) and opens only to a fence tool. The cash van starts at the bank doorstep, in the north lane at (196, 252.4) facing west, then visits the general store (162) and the fuel station (255) in the south lane (z 248.3) along the main street. Its cash box (a vanilla steel trunk) sits on the van's rear step; it opens to a drill and drops three money sacks on the ground behind the van. Two traffic cones and a pair of crates dress the bank stop. The evidence locker (234.4, 237.6, against the back wall beside the door), the armory store (231, 237.6), wanted board and dispatch board are at the police station. The payphone witness and the officer's "Ask what you saw" are covered under Comms and Evidence above.
 - **Downed, not dead.** A lethal hit knocks a player unconscious instead of
   killing them. You lie on the ground, cannot move or act, take no further
   damage, and others can search you. A downed player bleeds out after three
@@ -173,3 +172,4 @@ sentence that names a place makes it a prompt.
 - **QA reports:** [playtest/rc-2026-11-08.md](playtest/rc-2026-11-08.md) and
   [playtest/qa-2026-11-08.md](playtest/qa-2026-11-08.md).
 - **Shot picker (dev tooling, issue 515).** `tools\cli shots area hospital --pick` takes its wide from the area's `front` heading in `agent-box/areas.json` and scores each candidate by raycast; `--wide-only` skips the entity checks and close-ups. Scores are in `tmp/shots/<area>/index.json` (`wideCandidates`, `shots[].frame`).
+- **Police station look (polish pass 6).** The post is the loggia of the police villa (233, 239); the duty desk, armory cabinet, armory store and evidence locker stand along its back wall with the door kept clear, the wanted and dispatch boards face the street on the east wall, and the payphone, a bin and a flowerpot stand on the front lawn. No setup needed; walk up from the main street.

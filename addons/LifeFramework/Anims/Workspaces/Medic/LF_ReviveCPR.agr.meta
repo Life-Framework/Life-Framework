@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5409EFFEA8E73EA6}Anims/Workspaces/Medic/LF_ReviveCPR.agr"
+ Configurations {
+  AnimGraphResourceClass PC {
+  }
+  AnimGraphResourceClass XBOX_ONE : PC {
+  }
+  AnimGraphResourceClass XBOX_SERIES : PC {
+  }
+  AnimGraphResourceClass PS4 : PC {
+  }
+  AnimGraphResourceClass HEADLESS : PC {
+  }
+ }
+}

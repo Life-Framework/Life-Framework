@@ -139,6 +139,10 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[LFDebug:Store] store X: <item> taken off the shelf, unpaid N` / `price-list sale of ...` / `till refused` / `walked out with ... unpaid` | BY DESIGN | A physical store (#202) noticed a shelf item in a pocket and tagged it; a price-list sale reserved stock; the till refused (nothing to pay, or not enough cash); a shopper left the boundary owing, so the alarm, dispatch, wanted level and a named report follow. |
 | `[LFDebug:Store] store X: <item> taken off the shelf has no price, so it is free` | OPEN when it appears | A shelf line has no buy price in `ShopPrices.conf`; give it one. |
 | `[LFDebug:Store] store key X is used twice` / `has no store key` | OPEN when it appears | Two `LF_StoreComponent`s share a `m_sStoreKey`, or one has none; the stock of the second is not saved. |
+| `[LFDebug:Medic] revive animation started for <uid>` / `stopped: hold cancelled | revive done | STOP_REFUSED | STOP_TIMEOUT` (server) | BY DESIGN | #512: the server accepted the CPR and later ended it. `STOP_REFUSED` means the medic left reach or the patient stood up; `STOP_TIMEOUT` is the 7 s overrun. |
+| `[LFDebug:Medic] revive animation: CPR loiter requested / stopped on the owner of <id>` (medic client) | BY DESIGN | #512: the medic's owner started or fast-stopped the CPR loiter (`LF_ReviveAnimPlayer`). |
+| `[LFDebug:Medic] revive animation playing on <id> (loitering 1, head 0.99 m)` / `ended on <id>` (every rendering client) | BY DESIGN | #512: this machine sees the medic in the CPR loiter, kneeling (head bone under 1.3 m). |
+| `[LFDebug:Medic] revive animation not visible on <id> (loitering 0, head 1.6 m)` | OPEN when it appears | #512: the server started the CPR but this machine does not show it. Check `LF_ReviveCPR.agr/.asi` load, and whether the medic was already loitering or in a vehicle. |
 
 ## How to add a row
 

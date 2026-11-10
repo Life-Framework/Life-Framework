@@ -16,10 +16,9 @@ class LF_ReviveAnimSession : Managed
 }
 
 //------------------------------------------------------------------------------------------------
-//! The medic's CPR while a revive runs (#512). The animation is a base-game clip played on top of
-//! the character graph (PlayPostGraphAnimation), which is local to the machine that calls it, so
-//! the server decides and broadcasts: the client only reports that the revive hold began, and the
-//! server re-runs the revive rule (LF_Revive.Check) before telling every machine to animate. The
+//! The medic's CPR while a revive runs (#512). The server decides: the client only reports that the
+//! revive hold began, and the server re-runs the revive rule (LF_Revive.Check) before it tells the
+//! medic's owner to start the CPR loiter (LF_ReviveAnimPlayer), which the base game replicates. The
 //! server then watches the pair: the animation stops when the hold finishes or is cancelled, the
 //! medic leaves reach, the patient is no longer downed, or the hold overruns.
 class LF_ReviveAnim
@@ -198,60 +197,121 @@ class LF_ReviveAnim
 }
 
 //------------------------------------------------------------------------------------------------
-//! Client side of the CPR: loops the base-game in/loop clips on top of the graph, then the out clip.
+//! The CPR on the character (#512). The player character has no CharacterAnimGraphComponent, so the
+//! clips cannot play on top of the graph; they run as a custom loiter instead: our attachment graph
+//! (Anims/Workspaces/Medic/LF_ReviveCPR.agr) holds the orphaned base-game p_cro_revive_CPR_* clips and
+//! plugs into the player graph's NPC attachment, the way the rally emotes do. StartLoitering runs on
+//! the medic's owner; the base game sends it to every other machine (Rpc_StartLoitering_BCNO, and
+//! the command handler's RplSave for late joiners).
 class LF_ReviveAnimPlayer
 {
-	static const ResourceName CLIP_IN = "anims/anm/player/injury/p_cro_revive_CPR_in.anm";
-	static const ResourceName CLIP_LOOP = "anims/anm/player/injury/p_cro_revive_CPR_loop.anm";
-	static const ResourceName CLIP_OUT = "anims/anm/player/injury/p_cro_revive_CPR_out.anm";
-	static const string BONE_MASK = "Body";
-	static const float BLEND = 0.2;
+	static const ResourceName GRAPH = "{5409EFFEA8E73EA6}Anims/Workspaces/Medic/LF_ReviveCPR.agr";
+	static const ResourceName GRAPH_INSTANCE = "{EBB8FFFCA77F5DDC}Anims/Workspaces/Medic/LF_ReviveCPR.asi";
+	static const string CONTROL_VARIABLE = "Gestures";
+	//! The value of Gestures that enters the CPR state of LF_ReviveCPR.agf.
+	static const int CONTROL_VALUE = 560;
+	//! How long a machine waits before it checks what it shows.
+	static const int CHECK_MS = 1500;
+	//! Model-space head height under which the medic counts as kneeling (standing is about 1.6 m).
+	static const float KNEEL_HEAD_MAX = 1.3;
 
 	//------------------------------------------------------------------------------------------------
-	static void Start(IEntity character)
+	//! The loiter data for the CPR: our graph, driven by the Gestures variable (no command).
+	static SCR_LoiterCustomAnimData CreateAnimData()
 	{
-		CharacterAnimGraphComponent graph = CharacterAnimGraphComponent.Cast(character.FindComponent(CharacterAnimGraphComponent));
-		if (!graph)
-		{
-			LF_Debug.Error(LF_ReviveAnim.FEATURE, "revive animation: the character has no animation graph");
-			return;
-		}
-
-		if (!graph.PlayPostGraphAnimation(CLIP_IN, BONE_MASK, BLEND, BLEND))
-			LF_Debug.Error(LF_ReviveAnim.FEATURE, "revive animation: the CPR clip did not play");
-
-		LF_Debug.Info(LF_ReviveAnim.FEATURE, "revive animation playing on " + character.GetID());
-		GetGame().GetCallqueue().CallLater(Loop, 250, true, character);
+		return SCR_LoiterCustomAnimData.CreateInstance(-1, -1, string.Empty, SCR_CustomAnimData_Properties.BINDING_NAME_NPC, GRAPH, GRAPH_INSTANCE, -1, CONTROL_VALUE, CONTROL_VARIABLE);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Loop(IEntity character)
+	protected static SCR_CharacterControllerComponent FindController(IEntity character)
+	{
+		ChimeraCharacter chimera = ChimeraCharacter.Cast(character);
+		if (!chimera)
+			return null;
+
+		return SCR_CharacterControllerComponent.Cast(chimera.GetCharacterController());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner: kneel and do CPR. Holsters a weapon first; input stays locked so only the server's
+	//! stop (or the base game's fall and possession exits) ends it.
+	static void Start(IEntity character)
+	{
+		SCR_CharacterControllerComponent controller = FindController(character);
+		if (!controller)
+		{
+			LF_Debug.Error(LF_ReviveAnim.FEATURE, "revive animation: the medic has no character controller");
+			return;
+		}
+
+		if (controller.IsLoitering())
+		{
+			LF_Debug.Warn(LF_ReviveAnim.FEATURE, "revive animation: the medic is already in a loiter; CPR not started");
+			return;
+		}
+
+		vector transform[4];
+		character.GetWorldTransform(transform);
+		controller.StartLoitering(null, ELoiteringType.CUSTOM, true, false, false, transform, true, CreateAnimData());
+		LF_Debug.Info(LF_ReviveAnim.FEATURE, "revive animation: CPR loiter requested on the owner of " + character.GetID());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner: stop at once. The fast exit detaches the graph; a soft exit would wait for a
+	//! Gesture_End event that the CPR out clip does not carry, and the loiter would never finish.
+	static void Stop(IEntity character)
+	{
+		SCR_CharacterControllerComponent controller = FindController(character);
+		if (!controller)
+			return;
+
+		controller.StopLoitering(true);
+		LF_Debug.Info(LF_ReviveAnim.FEATURE, "revive animation: CPR loiter stopped on the owner of " + character.GetID());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Model-space height of the head bone, or -1 when the character has no head bone.
+	static float HeadHeight(IEntity character)
+	{
+		Animation anim = character.GetAnimation();
+		if (!anim)
+			return -1;
+
+		TNodeId head = anim.GetBoneIndex("Head");
+		vector mat[4];
+		if (!anim.GetBoneMatrix(head, mat))
+			return -1;
+
+		return mat[3][1];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every machine that renders: once the loiter had time to arrive, log what this machine shows.
+	static void Expect(IEntity character, bool start)
+	{
+		GetGame().GetCallqueue().CallLater(Check, CHECK_MS, false, character, start);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Check(IEntity character, bool start)
 	{
 		if (!character)
 			return;
 
-		CharacterAnimGraphComponent graph = CharacterAnimGraphComponent.Cast(character.FindComponent(CharacterAnimGraphComponent));
-		if (!graph)
+		SCR_CharacterControllerComponent controller = FindController(character);
+		bool loitering = controller && controller.IsLoitering();
+		float head = HeadHeight(character);
+		string seen = string.Format("loitering %1, head %2 m", loitering, head);
+		if (!start)
+		{
+			LF_Debug.Info(LF_ReviveAnim.FEATURE, "revive animation ended on " + character.GetID() + " (" + seen + ")");
 			return;
+		}
 
-		if (graph.GetPostGraphAnimationRemainingTime(CLIP_IN) > 0.3 || graph.GetPostGraphAnimationRemainingTime(CLIP_LOOP) > 0.3)
-			return;
-
-		graph.PlayPostGraphAnimation(CLIP_LOOP, BONE_MASK, BLEND, BLEND);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static void Stop(IEntity character)
-	{
-		GetGame().GetCallqueue().Remove(Loop);
-		CharacterAnimGraphComponent graph = CharacterAnimGraphComponent.Cast(character.FindComponent(CharacterAnimGraphComponent));
-		if (!graph)
-			return;
-
-		graph.StopPostGraphAnimation(CLIP_IN, BLEND);
-		graph.StopPostGraphAnimation(CLIP_LOOP, BLEND);
-		graph.PlayPostGraphAnimation(CLIP_OUT, BONE_MASK, BLEND, BLEND);
-		LF_Debug.Info(LF_ReviveAnim.FEATURE, "revive animation stopped on " + character.GetID());
+		if (loitering && head > 0 && head < KNEEL_HEAD_MAX)
+			LF_Debug.Info(LF_ReviveAnim.FEATURE, "revive animation playing on " + character.GetID() + " (" + seen + ")");
+		else
+			LF_Debug.Error(LF_ReviveAnim.FEATURE, "revive animation not visible on " + character.GetID() + " (" + seen + ")");
 	}
 }
 
@@ -259,25 +319,38 @@ class LF_ReviveAnimPlayer
 modded class SCR_ChimeraCharacter
 {
 	//------------------------------------------------------------------------------------------------
-	//! Server: start or stop the medic CPR on every machine.
+	//! Server: start or stop the medic CPR. The owner drives the loiter; every machine checks it.
 	void LF_BroadcastReviveAnim(bool start)
 	{
-		Rpc(RpcDo_LF_ReviveAnim, start);
-		RpcDo_LF_ReviveAnim(start);
+		RplComponent rpl = GetRplComponent();
+		if (!rpl || rpl.IsOwner())
+			RpcDo_LF_ReviveAnimOwner(start);
+		else
+			Rpc(RpcDo_LF_ReviveAnimOwner, start);
+
+		Rpc(RpcDo_LF_ReviveAnimCheck, start);
+		RpcDo_LF_ReviveAnimCheck(start);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_LF_ReviveAnimOwner(bool start)
+	{
+		if (start)
+			LF_ReviveAnimPlayer.Start(this);
+		else
+			LF_ReviveAnimPlayer.Stop(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	protected void RpcDo_LF_ReviveAnim(bool start)
+	protected void RpcDo_LF_ReviveAnimCheck(bool start)
 	{
 		// A dedicated server renders nothing.
 		if (RplSession.Mode() == RplMode.Dedicated)
 			return;
 
-		if (start)
-			LF_ReviveAnimPlayer.Start(this);
-		else
-			LF_ReviveAnimPlayer.Stop(this);
+		LF_ReviveAnimPlayer.Expect(this, start);
 	}
 }
 

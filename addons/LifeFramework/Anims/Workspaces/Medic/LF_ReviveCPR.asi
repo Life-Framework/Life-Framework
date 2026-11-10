@@ -1,0 +1,14 @@
+AnimSetInstanceSource {
+ Template "{8576B1698D963446}Anims/Workspaces/Medic/LF_ReviveCPR.ast"
+ Lines {
+  AnimSetInstanceSource_Line "Revive.CPR.In" {
+   Resource "{53DD1932ED812D70}anims/anm/player/injury/p_cro_revive_CPR_in.anm"
+  }
+  AnimSetInstanceSource_Line "Revive.CPR.Loop" {
+   Resource "{0CCED80870DD8150}anims/anm/player/injury/p_cro_revive_CPR_loop.anm"
+  }
+  AnimSetInstanceSource_Line "Revive.CPR.Out" {
+   Resource "{226002617FC7B0AB}anims/anm/player/injury/p_cro_revive_CPR_out.anm"
+  }
+ }
+}
