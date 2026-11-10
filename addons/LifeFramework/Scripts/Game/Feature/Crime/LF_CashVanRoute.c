@@ -71,7 +71,7 @@ class LF_CashVanRouteComponent : ScriptComponent
 	[Attribute("Roadmap_Cash_Van", UIWidgets.EditBox, desc: "World entity name of the van. The box is its own entity, not a child: a replicated child under a replicated vehicle makes the client item table disagree with the server.")]
 	protected string m_sVanEntity;
 
-	[Attribute("0 0.5 -2.55", UIWidgets.Coords, desc: "Where the box sits on the van's rear step, in the van's local space. The box lies across the step, its long side to the back.")]
+	[Attribute("0 0.45 -2.6", UIWidgets.Coords, desc: "Where the box sits on the van's rear step, in the van's local space. The box faces backwards.")]
 	protected vector m_vBoxOffset;
 
 	protected int m_iStop;
@@ -141,7 +141,7 @@ class LF_CashVanRouteComponent : ScriptComponent
 		van.SetTransform(transform);
 		// The box rides on the rear: placed from the van's new pose, facing backwards.
 		door.SetOrigin(van.CoordToParent(m_vBoxOffset));
-		door.SetAngles(van.GetAngles() + Vector(0, 90, 0));
+		door.SetAngles(van.GetAngles() + Vector(0, 180, 0));
 		Physics physics = van.GetPhysics();
 		if (physics)
 		{

@@ -1,5 +1,5 @@
 GenericEntity Roadmap_Cash_Stop_Bank {
- coords 186.5 0 252.4
+ coords 196 0 252.4
  angleY 270
 }
 GenericEntity Roadmap_Cash_Stop_Store {
@@ -11,7 +11,7 @@ GenericEntity Roadmap_Cash_Stop_Fuel {
  angleY 90
 }
 GenericEntity Roadmap_Cash_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
- coords 186.5 0 252.4
+ coords 196 0 252.4
  angleY 270
 }
 GenericEntity Roadmap_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_CashVanBox.et" {
@@ -20,21 +20,13 @@ GenericEntity Roadmap_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_Cash
    m_fJamChance 0
   }
  }
- coords 189.05 0.5 252.4
- scale 3.2
- angleY 0
+ coords 198.6 0.45 252.4
+ scale 1.4
+ angleY 90
 }
 GenericEntity Roadmap_Cash_Bank_Cone_1 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
- coords 192.4 0 250.7
+ coords 202.2 0 250.7
 }
 GenericEntity Roadmap_Cash_Bank_Cone_2 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
- coords 192.4 0 253.2
-}
-GenericEntity Roadmap_Cash_Bank_Crates_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 183.6 0 254.6
- angleY 12
-}
-GenericEntity Roadmap_Cash_Bank_Crates_2 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 184.6 0 254.7
- angleY -8
+ coords 202.2 0 253.2
 }

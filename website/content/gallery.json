@@ -53,8 +53,7 @@
     "area-1-spawn-square/detail": "Spawn square, welcome sign",
     "area-1-spawn-square/payphone": "The payphone",
     "area-10-cash-van/wide": "The cash van at the bank stop",
-    "area-10-cash-van/street": "Money sacks left behind the van after the box is drilled open",
-    "area-10-cash-van/bags": "The cash box on the van's rear step, and the sacks spilled behind it"
+    "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",
