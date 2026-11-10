@@ -6,7 +6,7 @@ GenericEntity : "{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/Dem
   LF_QuantityComponent "{8D8290D977AC17D6}" {
    m_iMaxQuantity 1
   }
-  ActionsManagerComponent "{FAE0195B7214D19E}" {
+  ActionsManagerComponent "{5AA692DC30B9C623}" {
    additionalActions {
     LF_ReadSerialAction "{6031BEBBAC77231A}" {
      ParentContextList {

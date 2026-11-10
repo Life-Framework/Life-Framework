@@ -3,6 +3,8 @@
 // `[LFTEST] - wanted on the breaker increases (expected 0, got 1)`.
 // Restored the expected value to 1.
 
+// red-proof: Jailbreak escape (#235), observed 2026-11-10: with `CheckEscape`/`NoteEscape` returning false the test failed `- walking out through the open door is an escape`. Restored; green.
+
 // tier: LOGIC
 class LF_Test_Roadmap_Jailbreak : LF_Test
 {
@@ -46,6 +48,14 @@ class LF_Test_Roadmap_Jailbreak : LF_Test
 		ctx.False(LF_Jail.Confines(prisonerUid), "an open door does not confine");
 		ctx.True(SamePlace(LF_Jail.ResolvePosition(prisonerUid, outside), outside), "an open door does not pull the prisoner back");
 		ctx.EqualFloat(80, LF_Jail.GetRemaining(prisonerUid), 0.01, "escape does not zero the remaining sentence");
+
+		LF_WantedReports.ResetStatics();
+		ctx.False(LF_Jail.NoteEscape(prisonerUid, placed, null), "standing in the cell volume is not an escape");
+		ctx.True(LF_Jail.NoteEscape(prisonerUid, outside, null), "walking out through the open door is an escape");
+		ctx.Equal(1, LF_WantedReports.CountFor(prisonerUid), "the escape is published as one crime");
+		ctx.False(LF_Jail.NoteEscape(prisonerUid, outside, null), "an escape is reported once, not every tick");
+		ctx.Equal(1, LF_WantedReports.CountFor(prisonerUid), "no second report while they stay out");
+		ctx.EqualFloat(80, LF_Jail.GetRemaining(prisonerUid), 0.01, "reporting the escape leaves the sentence alone");
 
 		ctx.True(LF_Breach.Repair(doorId, officerUid), "police repair the jail door");
 		ctx.True(LF_Jail.Confines(prisonerUid), "repair holds the prisoner again");
@@ -123,8 +133,7 @@ class LF_Test_Roadmap_JailbreakWorld : LF_Test
 		prisoner.SetWantedLevel(1);
 		LF_PlayerAccountManager.GetOrCreate(breakerUid);
 
-		if (!doorLock.IsLocked())
-			LF_Breach.Repair("Roadmap_Jail_Door", officerUid);
+		ctx.True(doorLock.IsLocked(), "the placed jail door starts locked (m_bDebugLocked)");
 
 		ctx.True(doorLock.IsLocked(), "jail door is locked before the zero-fuse arm");
 		ctx.True(LF_Jail.Arrest(officerUid, prisonerUid, null), "a sentenced prisoner is in the locked jail");

@@ -41,6 +41,15 @@ class LF_LockComponent : ScriptComponent
 	protected string m_sHouseIdentifier;
 
 	//------------------------------------------------------------------------------------------------
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+
+		// EOnInit only fires for a component that asks for it; without this m_bDebugLocked was never applied.
+		SetEventMask(owner, EntityEvent.INIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void EOnInit(IEntity owner)
 	{
 		super.EOnInit(owner);
@@ -52,7 +61,9 @@ class LF_LockComponent : ScriptComponent
 			if (!m_sDebugIdentifier.IsEmpty())
 				m_sHouseIdentifier = m_sDebugIdentifier;
 
-			m_bLocked = m_bDebugLocked;
+			// Only raises the flag, so a lock set earlier (house manager, load) is not cleared.
+			if (m_bDebugLocked)
+				m_bLocked = true;
 		}
 	}
 
