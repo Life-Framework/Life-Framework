@@ -286,6 +286,14 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "lockpick")
+		{
+			// Stands in for a fence sale: five uses of pick, no record needed.
+			int picks = LF_InventoryUtils.AddAmount(this, LF_Lockpick.PICK_PREFAB, 5);
+			LF_HarnessReply(commandId, "ok", string.Format("lockpick added=%1", picks));
+			return;
+		}
+
 		int added = LF_InventoryUtils.AddAmount(this, LF_Scanner.PREFAB, 1);
 		LF_HarnessReply(commandId, "ok", string.Format("scanner added=%1", added));
 	}

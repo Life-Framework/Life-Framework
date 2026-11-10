@@ -87,3 +87,9 @@ isn't today — see current state).
 - The van box is a `LF_HeistVaultComponent` (a `LF_BankVaultComponent` whose haul is spilled money bags, `LF_BankLoot.SpillBags`). Same gates, tool, jam and evidence path as the bank vault; the offence reads `#LF-Offence_CashVan` (`LF_Breach.SetAlarm`).
 - Route: `LF_CashVanRouteComponent` moves the van and its box between stop markers on a timer when no player is within `m_fClearMetres` and calls `LF_Bank.Restock`. Parked on a schedule, not AI-driven (base-game AI driving is unreliable for this).
 - Opening publishes `LF_OnHeistLoot`. Test `crime/cash-van`; proof `session.mjs cash-van-proof`.
+
+## Lockpicking (#411)
+
+- `LF_Lockpick` (server) runs a timed attempt on a locked `LF_LockComponent` door that carries `LF_LockpickTargetComponent`; `LF_LockpickRules` holds the pure rules (time, odds, wear, noise, gate). The pick is `LF_Lockpick.et`, a stack whose count is its uses; skill is the character level, so nothing new is saved.
+- A success always files `LF_WantedReports.Report` (offence `#LF-Offence_Lockpick`); a failure only when its noise roll is heard. Wanted is not raised and dispatch is not called: a witness has to report it.
+- Test `lockpick/door`, `e2e/lockpick-door`. Log `[LFDebug:Lockpick]`.
