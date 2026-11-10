@@ -1,168 +1,173 @@
 # Workbench polish loop: can the polish pass run in a live editor?
 
-Spike, 2026-11-10. Question: can an agent open `DebugWorld` in a Workbench, move
-and add entities, capture the viewport and save the layer, so a polish pass
-skips game sessions and their restarts?
+Spike, 2026-11-10, second pass after the stale Workbench was closed. Question:
+can an agent open `DebugWorld` in a Workbench, move and add entities, capture
+the result and save the layer, so a polish pass skips game sessions?
 
-**Verdict: not proven, and not yet viable.** No edit or capture cycle was ever
-measured, because no Workbench on either machine could be driven. What the
-spike did establish is why, and the short list of things that must change
-before the loop can be tried. The biggest gap is `wb_capture`: by its source it
-works in play mode only, so it does not capture the editor viewport.
+**Verdict: partly.** Editing is fast and works. Reading entities works.
+Capture works but only in play mode, and needs the fixes in this PR. Saving is
+the problem: the editor rewrites the whole layer, so the diff is not PR-clean.
+Use the editor to look and to find numbers; keep making the layer edits as
+text. Biggest gap: the editor save format (second: no edit-mode capture).
 
-## What was measured
+## Measured (this PC, RTX 3080, one quiet Workbench on the LF-Agents desktop)
 
-| Fact | Number | How |
+| Step | Time | Notes |
 |---|---|---|
-| Workbench cold start on this PC (project loaded, scripts compiled) | 5.2 to 7.0 s | `Workbench startup took` in `console.log`, four launches |
-| Workbench idle RAM after start | 800 to 860 MB working set | `Get-Process`, two instances of mine |
-| Workbench RAM with a maintainer's session on the laptop | 1.7 GB | `Get-Process` on `lf-testbox` |
-| Free RAM on this PC with one server + one client up (other agents) | 0.5 to 2.0 GB of 15.6 GB | `Win32_OperatingSystem`, `Memory\Available MBytes` |
-| Free RAM on the laptop | 33.5 of 47 GB with server, client and a Workbench up | same, over ssh |
-| Time lost per failed Workbench bring-up | 5.6 min (240 s quiet launch wait, then 90 s MCP wait, then its own second launch) | `time node tools/mcp-call.mjs wb_state` |
-| Session restart cycle (for comparison) | about 12 s boot plus queue, per `agent-box/README.md` | not re-measured here |
+| Cold Workbench start, NET API up | 14 s | `cli call wb_state`, quiet launch, project loaded, handlers compiled |
+| Open `DebugWorld.ent` in the editor | under 3 s | 833 entities, edit mode (`wb_open_resource`) |
+| List an area | 0.2 s | `wb_entity_list nameFilter=Moonshine`: 8 rows, named ones carry a position |
+| Inspect an entity | 0.2 s | name, class, position, rotation, component classes. No bounds |
+| Terrain height | 0.2 s | returned 0 everywhere: DebugWorld ground is flat at y 0 |
+| move / rotate / create / save, per call | 5 to 10 ms of engine time | one batch of 3 edits plus save: 16 s including the cold start |
+| `wb_play` | call returns in about 16 ms; the world is up about 3 to 8 s later | a capture sent at once answered `error:no_world`; one `wb_state` first was enough |
+| `wb_capture` (1 s settle) | 3.7 s including the state call; PNG 1292 x 714, 0.7 to 1.5 MB | pose and time of day applied after the fix below |
+| Session restart, for comparison | about 12 s boot plus the queue (about 7 min, per the lead) | |
 
-Questions 1 to 4 of the brief (list entities, move/add/snap/save with a clean
-`.layer` diff, capture at a chosen pose and time, edit-capture round trip on
-the quarry or moonshine) are **unanswered**. There are no timings or
-screenshots for them and this document does not estimate any.
+Edit, play, capture, stop therefore costs roughly 5 to 12 s of engine time and
+needs no queue slot, against about 12 s plus minutes of queue for a session.
+That holds even with the play-mode detour. I did not get one clean
+back-to-back cycle logged (see "What went wrong"), so treat the cycle figure
+as a sum of measured parts, not a stopwatch run.
 
-## Why nothing could be driven
+## 1. Read: yes
 
-1. **The handler bundle did not compile after the EL_ to LF_ rename.**
-   `EMCP_WB_Capture.c` in the Workbench MCP clone calls `EL_ScreenshotCapture`
-   and `EL_ScreenshotShot`; the class is now `LF_ScreenshotCapture`. A WorkbenchGame
-   compile error takes the whole module down, so no `EMCP_WB_*` handler
-   registers: `wb_state`, `wb_entity_*`, everything reports "Handler scripts
-   were installed but Workbench did not recompile them". Evidence: the
-   Workbench `console.log` of every launch before the fix lists 33 `SCRIPT (E)`
-   lines starting `EMCP_WB_Capture.c,80: Can't find variable 'EL_ScreenshotCapture'`;
-   after replacing the prefix in the clone, the launch log has none.
-   This PR carries the fix as a tracked patch
-   (`tools/mcp-patches/enfusion-workbench-mcp/mod/...`) and teaches
-   `tools\cli mcp install/update` to re-apply `mod/` as well as `src/`.
-   The clone in the main checkout was patched in place (it is git-ignored
-   tooling; the same sed).
-2. **A stale orphan Workbench holds NET API port 5775 on this PC.** Pid 72348
-   (started 2026-11-09 23:23, parent process gone, no window on the user's
-   desktop, main checkout project) listens on 5775 and still runs the
-   pre-fix script module, so its handlers are missing (`Failed to call not
-   existing Net API function 'EMCP_WB_Ping'` in its log). `ensureQuietWorkbench`
-   sees the open port, prints `skip: a Workbench already serves NET API port
-   5775`, and every `cli call wb_*` then talks to the dead-handler instance
-   and fails with the misleading 30 s "did not recompile" error. It is not a
-   process I started, so I left it running. Until it is closed, `cli call wb_*`
-   on this PC cannot work.
-3. **One NET API port per machine, and I could not move it.** The port is the
-   per-user registry value `HKCU\Software\Bohemia Interactive\Arma Reforger
-   Workbench\Workbench\netApiPort` (default 5775; the Workbench binary also has
-   `enableNetApiLSP` and `netApiLSPPort`, and on the laptop one Workbench
-   listens on both 5775 and 5776, so 5776 is probably the language-server
-   port). I set it to 5776 and 5780 and launched my own instance on the hidden
-   desktop; neither came up on its port within 120 to 240 s. I could not
-   separate "the setting is not honored" from "my instance never finished
-   loading", because log directories from other agents' Workbench runs
-   interleave with mine and I attributed some lines wrongly at first. The
-   registry value is restored to 5775 on this PC (and removed on the laptop,
-   where it was unset).
-4. **The laptop Workbench is a launcher, not a project.** The maintainer's
-   Workbench on `lf-testbox` (pid 6672, no `-gproj`, project `NewEnfusionProject`)
-   answers on 5775 but has no handlers (`EMCP_WB_Ping` missing). The NET API
-   is not reachable from this PC directly (a plain `wb_connect` to `PC1:5775`
-   failed; through an ssh tunnel it connected but found no handlers). To use
-   it, a project with the handler bundle must be loaded, which means touching
-   the maintainer's editor. A second Workbench started over ssh from a
-   non-interactive shell did not appear at all (no process, no log), so
-   launching there needs the box's desktop-session mechanism
-   (`tools\cli testbox start`), which I did not get to.
-5. **The MCP's launch fallback is not quiet.** When the quiet launch does not
-   open the port in 240 s, the MCP then runs its own `wb_launch` ("Workbench
-   not running, auto-launching"), and I saw a second Workbench process appear
-   that way. That is the path the LF-Agents desktop rule exists to avoid.
+`wb_entity_list` and `wb_entity_inspect` give name, class, position, rotation
+and components. Not available: bounds, layer names (`wb_layers` prints
+"(unnamed)" with entity counts), and anonymous entities (the prefab props in a
+layer, like pallets and sacks, list as "(unnamed)" without a position). The
+polish rig's floating and clipping numbers come from in-game raycasts and have
+no editor equivalent yet.
 
-## What the source says about the six questions
+## 2. Edit and save: edits yes, clean diff no
 
-Read from `tools/mcp/enfusion-workbench-mcp/src/tools/` and
-`mod/Scripts/WorkbenchGame/EnfusionMCP/`, not exercised:
+Moved `Moonshine_Barrel_3`, rotated `_2`, created a sack pile, `wb_save`.
+All three landed (`coords 385 0 300.9`, `angles 0 60 0`, a new entity). But the
+saved `.layer` is the editor's canonical form, not the file's old text:
 
-1. **List and read.** `wb_entity_list` (paged, name filter, top-level only per
-   `docs/WORKBENCH-OPERATIONS.md`), `wb_entity_inspect` (components, position,
-   children), `wb_layers`. Bounds are not an obvious field; the polish rig's
-   bounds checks come from in-game raycasts, not from this API.
-2. **Edit and save.** `wb_entity_create` (needs the `{GUID}path` form or it
-   saves a zero GUID), `wb_entity_modify` (move, rotate, rename, reparent;
-   component-level property writes fail per the operations notes),
-   `wb_terrain` (height at x,z, so snapping is one call plus a modify),
-   `wb_save`. Whether the saved `.layer` diff is clean (ordering, GUID
-   churn, `DebugWorld.ent` staying 0 bytes) is the main unknown.
-3. **Capture.** `wb_capture` drives `LF_ScreenshotCapture`, whose header says
-   it runs on a rendering instance in play mode; the tool help says "Requires
-   `wb_play`". It aims a spawned camera at a position from an offset, can pin
-   `timeOfDay` and `weather`, and writes a BMP converted to PNG. There is no
-   edit-viewport capture. Output size is the window's, with no width
-   parameter. So the loop would be edit, then Play, then capture, then Stop,
-   not edit then capture. Play entry is what `docs/` notes can hang the
-   bridge ("Calling `wb_play` on a world already open in edit mode can hang
-   the bridge") and `LF_PlaytestTown` content with scripts runs a game mode.
-4. **Round trip.** Cannot be stated. The structural cost is a play-mode enter
-   and exit per capture, not a world reload.
-5. **RAM and instances.** Two Workbenches ran side by side on this PC at about
-   830 MB each, so RAM is not what stops a second one: the single NET API
-   port is, and `docs/worktrees.md` already says concurrent instances collide
-   on the shader cache. This PC has 0.5 to 2 GB free while sessions run;
-   the laptop has 33 GB free and could carry a Workbench plus its session
-   lanes (3 sessions + 3 tests are about 8 GB). One Workbench per machine
-   that switches projects (`wb_projects` can open a `.gproj`) is the only
-   shape the port allows today.
-6. **Gaps.** Editor and game lighting were not compared. The one crash-like
-   event seen: the orphan's log shows `Out of memory. Free system 353 MB` and
-   later missing handlers after a script reload, on a machine at 0.5 GB free.
+- `Street_Moonshine.layer`: +122 / -121 lines for a one-barrel move. Entities
+  are reordered, same-prefab entities are merged into `$grp` blocks, `angleY 40`
+  becomes `angles 0 40 0`, component blocks are reordered. The content is the
+  same (barrel materials and station keys survive) but a reviewer cannot read
+  the diff.
+- `default.layer` (the world entity) changed too: +12 / -6 for the BSP, terrain
+  bounds, sky material list and sun angles, none of which anyone edited.
+- A new entity lands in `default.layer`, not the area layer, unless a
+  `layerPath` is passed (layer names are not readable, so I did not find the
+  path form).
+- Saving with no changes writes nothing (zero diff).
+
+So the live editor cannot be the writer of the `.layer`. The workable shape:
+the agent edits the layer text as today and the editor is the look-and-numbers
+tool. A normalizing pass that saves each layer once through the editor would
+make later editor saves small, at the cost of one big reorder commit per layer.
+I reverted my layer changes; none are in this PR.
+
+## 3. Capture: works in play mode only; two bugs fixed
+
+- `wb_capture` drives `LF_ScreenshotCapture` and needs play mode. The API search
+  (`WorldEditorAPI`, `MakeScreenshot`, `SetCamera`) found no edit-viewport
+  screenshot call. `System.MakeScreenshot*` exists and `EMCP_WB_GetCameraPos`
+  already reads the editor camera, so a handler that sets the editor camera and
+  calls `MakeScreenshot` is a lead, untested.
+- **Bug fixed: pose ignored.** `CAMERA_PREFAB` had no GUID
+  (`RESOURCES (E): Wrong GUID for resource {0000000000000000}Prefabs/Editor/Camera/ManualCameraBase.et`),
+  so the camera never spawned and every shot was the default view. It is now
+  `{D6DE32D1C0FCC1C7}Prefabs/...`, and the log says `aimed camera at ...`.
+  The one aimed shot I took looked across an empty field with the town on the
+  horizon, not at the barrels, so whether the aim points at the target is
+  still unconfirmed.
+- Time of day applies: `timeOfDay 12` gave full daylight, 13.77 gave a night
+  sky. The rig's "local 17.9 = game 13.77" mapping does not carry over to the
+  editor play session, so golden hour needs its own value here.
+- Red horizontal lines appear in shots (debug shapes in the play world).
+  A side-by-side with a session shot, for lighting and post-processing, was not
+  done.
+- No screenshots are committed: the shots I have do not show the site
+  (above), and each is 0.7 to 1.5 MB.
+
+## 4. Real bug found and fixed by the loop
+
+Moving any chain entity in the editor threw a VME and wedged the NET API.
+`LF_ChainStationComponent.OnDelete` called `GetGame().GetWorld()`, which is null
+in the World Editor, and the editor deletes and recreates an entity on every
+move. It now uses `owner.GetWorld()` with a null guard. Evidence before:
+`Reason: NULL pointer to instance. Variable 'm_World' ... LF_ChainStationComponent.c:113
+Function OnDelete ... EMCP_WB_ModifyEntity.c:207`; after, the same move returns
+`Entity moved`. The same `GetGame().GetWorld()` pattern is still at
+`LF_ChainStationComponent.c` (another method) and likely in other `OnDelete`s:
+each one is a hang waiting for the first editor move.
+
+## 5. RAM and instances
+
+- One Workbench is about 0.8 GB idle and 1.3 to 1.9 GB with DebugWorld loaded
+  and played. Two ran side by side without trouble, but only one NET API port
+  works per machine. A second instance on another port (registry `netApiPort`
+  5776 and 5780) never answered; I could not tell whether the setting is
+  ignored. On the laptop one Workbench listens on 5775 and 5776 (5776 is
+  probably the language-server port). Treat it as one Workbench per machine
+  that opens one worktree's project at a time (`wb_projects` can open a
+  `.gproj`).
+- This PC has 0.5 to 2 GB free while sessions run, so a Workbench competes
+  with them. The laptop (47 GB, 33 GB free with a Workbench, server and client
+  up) fits one Workbench next to its 3 + 3 lanes, so its `caps` should list
+  `workbench` with a single lock. The laptop Workbench I found was a launcher
+  with no handlers and could not be driven from here, and a Workbench started
+  over ssh from a non-interactive shell did not appear, so launching there
+  needs the box's desktop-session mechanism (`tools\cli testbox start`).
+  Laptop work stayed unproven.
+
+## What went wrong (cost of the spike)
+
+- The handler bundle did not compile after the EL_ to LF_ rename
+  (`EMCP_WB_Capture.c` named `EL_ScreenshotCapture`); one error takes the whole
+  WorkbenchGame module down. Fixed by a tracked patch plus `tools\cli mcp
+  install` re-applying `mod/` (merged in #552).
+- The reported mode is wrong in play: the RP world spawns an editor-mode
+  entity, so `wb_state` says "edit" while the game runs. `wb_stop` then refuses
+  and `wb_entity_modify` says "Cannot get runtime entity". Restarting the
+  Workbench (14 s) is the reliable reset. The raw `EMCP_WB_EditorControl stop`
+  worked in 5 ms when called directly.
+- After a script VME the NET API stops answering (10 s timeouts) until the
+  Workbench restarts.
+- When the quiet launch does not open the port, the MCP launches its own
+  Workbench (not quiet).
+- My raw NET API client waited for the socket to close; the server does not
+  close it. Read the length-prefixed reply instead.
 
 ## Recommendation
 
-Do not move the polish pass to the editor yet. Order of work that would make
-the experiment cheap to finish:
+Build `tools\cli wb-polish` for look-and-measure, not for writing layers.
 
-1. Close pid 72348 (maintainer or lead; it is not an agent's to stop) and
-   make `ensureQuietWorkbench` check for the handlers (`EMCP_WB_Ping`), not
-   just an open port, so a stale instance fails loudly in one call.
-2. Merge this PR's handler patch so a launched Workbench compiles.
-3. On the laptop (47 GB, `workbench` cap), start one Workbench for a run
-   folder through the box's desktop mechanism, hold a `workbench` lock, and
-   run the measurements below.
-4. Add an edit-viewport capture: either a handler using the Workbench editor
-   camera plus `System.MakeScreenshot`, or accept the play-mode round trip.
-   Without this the "10x" claim does not hold, because the session boot the
-   loop avoids comes back as a play-mode enter per shot.
-
-Measurements still owed, in order: `wb_entity_list` on the moonshine area;
-move one prop, `wb_save`, `git diff` of the `.layer` (the clean-diff test);
-`wb_capture` timing in play mode at golden hour (`timeOfDay` 13.77 game hours
-matches the rig's local 17.9); five edit-capture cycles; Workbench and system
-RAM during them.
+1. Merge this PR (camera GUID, `OnDelete` fix). Audit other `OnDelete`s for
+   `GetGame().GetWorld()`.
+2. Fix the reported mode (ask the world, not the editor-mode entity) so
+   play, stop and edit chain without restarts.
+3. Run it on the laptop under one `workbench` lock; this PC stays for sessions.
+4. Add an area numbers verb (position, rotation, ground y) from the editor, and
+   keep layer writes as the text edits agents already make.
+5. Try the edit-mode viewport capture (editor camera plus `MakeScreenshot`);
+   if it works the loop drops the play detour.
 
 ## Sketch: `tools\cli wb-polish`
 
-Only worth building after step 4 above.
-
 ```
 tools\cli wb-polish <area> [--machine laptop|local]
-  1. take the workbench lock (one per machine, queue like sessions)
-  2. ensure one quiet Workbench with the handler bundle, project = this worktree
+  1. take the workbench lock (one per machine)
+  2. quiet Workbench with the handler bundle, project = this worktree
   3. wb_open_resource Worlds/DebugWorld/DebugWorld.ent
-  4. area entities from agent-box/areas.json radius -> wb_entity_list/inspect -> numbers
-  5. edit verbs: snap <Entity>, move <Entity> x y z, rot <Entity> yaw, add <guid> x z
-     (snap = wb_terrain height + wb_entity_modify)
-  6. shot <pose> -> wb_play, wb_capture (timeOfDay), wb_stop, one PNG
-  7. wb_save; print the layer diff stat
-  8. release the lock; leave the Workbench for the next run
+  4. numbers: wb_entity_list + inspect for the area radius in agent-box/areas.json
+  5. after a text edit of the .layer: reopen the world
+  6. shot <pose>: wb_play, wb_state, wb_capture (timeOfDay), raw stop; 1280-wide PNG
+  7. never wb_save into a PR; use the editor save only for a one-time normalize
 ```
 
 ## Unproven
 
-- Everything in questions 1 to 4 and 6: no entity was listed, moved, saved or
-  captured through the editor.
-- Whether `netApiPort` can be set per instance. Needs one clean attempt with
-  the log directory identified by pid (the log folder name carries the start
-  time) and no other Workbench running.
-- Whether the editor and game render the same light and post-processing.
+- A back-to-back edit, capture, edit, capture run with a stopwatch (the pieces
+  are measured; the chain hit the mode and NET API issues above).
+- Whether the aimed camera points at the target (one shot, a field view).
+- `layerPath` for new entities; the normalize-once idea; whether a game
+  session loads an editor-saved layer identically (the content looked identical).
+- Edit-mode viewport capture; editor against game lighting side by side.
+- A second instance on its own port; the laptop Workbench with a project.

@@ -110,9 +110,16 @@ class LF_ChainStationComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnDelete(IEntity owner)
 	{
-		IEntity smoke = GetGame().GetWorld().FindEntityByID(m_SmokeId);
-		if (smoke)
-			SCR_EntityHelper.DeleteEntityAndChildren(smoke);
+		// owner.GetWorld(), not GetGame().GetWorld(): the World Editor deletes and
+		// recreates entities (every move, undo, layer reload) in a world the game
+		// instance does not own, where GetGame().GetWorld() is null and this threw.
+		BaseWorld world = owner.GetWorld();
+		if (world && m_SmokeId != EntityID.INVALID)
+		{
+			IEntity smoke = world.FindEntityByID(m_SmokeId);
+			if (smoke)
+				SCR_EntityHelper.DeleteEntityAndChildren(smoke);
+		}
 
 		if (s_mLive && s_mLive.Get(m_sStationKey) == this)
 			s_mLive.Remove(m_sStationKey);
