@@ -43,6 +43,30 @@ class LF_MedicConfig
 	[Attribute("300", UIWidgets.Auto, "First aid never takes a downed player above this many seconds left", params: "10 3600")]
 	float m_fFirstAidCapSeconds = 300;
 
+	[Attribute("2.5", UIWidgets.Auto, "Metres within which an on-duty medic can revive a downed player", params: "0.5 10")]
+	float m_fReviveRange = 2.5;
+
+	[Attribute("0.7", UIWidgets.Auto, "Resilience and blood (fraction of max) a revived player is lifted to so they wake at once; their health stays at the downed sliver", params: "0.1 1")]
+	float m_fReviveRecoveryScaled = 0.7;
+
+	[Attribute("1", UIWidgets.CheckBox, "Anyone may drag or carry a downed player. Off: only an on-duty medic")]
+	bool m_bCarryAnyone = true;
+
+	[Attribute("2.5", UIWidgets.Auto, "Metres within which a player can start dragging or carrying a downed player", params: "0.5 10")]
+	float m_fCarryRange = 2.5;
+
+	[Attribute("1.4", UIWidgets.Auto, "Metres behind the dragger the body follows", params: "0.5 4")]
+	float m_fDragDistance = 1.4;
+
+	[Attribute("0.4", UIWidgets.Auto, "Metres behind the carrier the body follows when carried", params: "0.1 2")]
+	float m_fCarryDistance = 0.4;
+
+	[Attribute("5", UIWidgets.Auto, "Metres within which a carried player can be loaded into a free vehicle seat", params: "1 20")]
+	float m_fLoadRange = 5;
+
+	[Attribute("60", UIWidgets.Auto, "A body that is this many metres from its carrier (a teleport, a lag spike) is dropped", params: "3 200")]
+	float m_fCarryReleaseDistance = 60;
+
 	protected static ref LF_MedicConfig s_Config;
 	protected static bool s_bLoadAttempted;
 

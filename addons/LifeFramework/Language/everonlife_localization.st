@@ -5822,6 +5822,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Give a plate fragment"
      Comment "Payphone action: a witness reads part of the suspect vehicle plate."
     }
+    CustomStringTableItem "{B18A9253EC649E50}" {
+     Id "LF-Revive_Action"
+     Target_en_us "Revive"
+     Comment "Player action on a downed player, offered to an on-duty medic."
+    }
+    CustomStringTableItem "{D4A0B004F3AE2A4B}" {
+     Id "LF-Revive_Done"
+     Target_en_us "You brought them back."
+     Comment "Toast to the medic after a revive."
+    }
+    CustomStringTableItem "{53CD088BE893DA58}" {
+     Id "LF-Revive_Revived"
+     Target_en_us "A medic brought you back. You are weak: take it easy."
+     Comment "Toast to the revived player."
+    }
+    CustomStringTableItem "{4AC63DA91F04B8C1}" {
+     Id "LF-Revive_NotMedic"
+     Target_en_us "Only a medic on duty can revive."
+     Comment "Revive refusal: the user is not clocked in as a medic."
+    }
+    CustomStringTableItem "{9DE20E9DD947A51A}" {
+     Id "LF-Revive_TooFar"
+     Target_en_us "Too far away to revive them."
+     Comment "Revive refusal: out of range."
+    }
+    CustomStringTableItem "{943F121585F92A15}" {
+     Id "LF-Revive_NotDowned"
+     Target_en_us "They are not down."
+     Comment "Revive refusal: the target is not downed."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A01}" {
+     Id "LF-Carry_Drag"
+     Target_en_us "Drag"
+     Comment "Player action: drag a downed player."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A02}" {
+     Id "LF-Carry_Carry"
+     Target_en_us "Carry"
+     Comment "Player action: carry a downed player."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A03}" {
+     Id "LF-Carry_Drop"
+     Target_en_us "Put down"
+     Comment "Player action: the carrier puts the body down."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A04}" {
+     Id "LF-Carry_Load"
+     Target_en_us "Load into vehicle"
+     Comment "Player action: put the carried player in a free passenger seat."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A05}" {
+     Id "LF-Carry_NotAllowed"
+     Target_en_us "Only a medic on duty can move them."
+     Comment "Carry refusal: config limits it to medics."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A06}" {
+     Id "LF-Carry_TooFar"
+     Target_en_us "Too far away."
+     Comment "Carry refusal: out of range."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A07}" {
+     Id "LF-Carry_Held"
+     Target_en_us "Someone already has them."
+     Comment "Carry refusal: the body is already held."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A08}" {
+     Id "LF-Carry_Busy"
+     Target_en_us "Your hands are full."
+     Comment "Carry refusal: the carrier already holds a body or is in a vehicle."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A09}" {
+     Id "LF-Carry_NoSeat"
+     Target_en_us "No free seat in reach."
+     Comment "Load refusal: no vehicle with a free passenger seat nearby."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A0A}" {
+     Id "LF-Carry_NotHeld"
+     Target_en_us "You are not holding anyone."
+     Comment "Drop or load with nothing held."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6A0B}" {
+     Id "LF-Carry_NotDowned"
+     Target_en_us "They are not down."
+     Comment "Carry refusal: the target is not downed."
+    }
   }
  }
 }

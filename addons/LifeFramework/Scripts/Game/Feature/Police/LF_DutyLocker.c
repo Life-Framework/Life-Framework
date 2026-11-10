@@ -215,6 +215,7 @@ class LF_DutyLocker
 	protected static void AfterSwap(LF_PlayerAccount account, IEntity officer)
 	{
 		LF_PlayerCharacter identity = account.GetActiveCharacter();
+		LF_ServiceRadio.TuneForAccount(account, officer);
 		LF_StorageSnapshot.CaptureCarried(identity.GetId(), officer);
 
 		array<LF_IdCardComponent> cards = {};

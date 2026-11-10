@@ -350,6 +350,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 			ApplyStarterKit(playerId, character);
 		}
 
+		LF_ServiceRadio.TuneForAccount(LF_PlayerAccountManager.GetInstance().GetFromCache(playerId), character);
 		BindAccountComponents(playerId, characterPersistenceId, character);
 
 		// After the inventory so the printed bill has a pocket to land in.

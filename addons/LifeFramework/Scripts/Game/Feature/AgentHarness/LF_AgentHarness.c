@@ -124,6 +124,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "giveup")
 			return true;
+		if (cmd.Verb == "radio")
+			return true;
 		if (cmd.Verb == "peers")
 			return true;
 		if (cmd.Verb == "shoot")
@@ -865,6 +867,11 @@ class LF_AgentHarness
 			DoGiveUp(cmd);
 			return;
 		}
+		if (cmd.Verb == "radio")
+		{
+			DoRadio(cmd);
+			return;
+		}
 		if (cmd.Verb == "peers")
 		{
 			DoPeers(cmd);
@@ -1258,6 +1265,34 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `radio`: the radios THIS client's own character carries, as this client reads them:
+	//! `radios=N f=<kHz of the first transceiver>,...`. Proves the duty tuning replicated.
+	protected static void DoRadio(LF_AgentCommand cmd)
+	{
+		PlayerController controller = GetGame().GetPlayerController();
+		IEntity body;
+		if (controller)
+			body = controller.GetControlledEntity();
+
+		array<BaseRadioComponent> radios = {};
+		LF_ServiceRadio.FindCarried(body, radios);
+		string freqs;
+		foreach (BaseRadioComponent radio : radios)
+		{
+			if (!freqs.IsEmpty())
+				freqs += ",";
+
+			BaseTransceiver transceiver = radio.GetTransceiver(0);
+			if (transceiver)
+				freqs += transceiver.GetFrequency().ToString();
+			else
+				freqs += "none";
+		}
+
+		WriteResult(cmd.Id, "ok", string.Format("radios=%1 f=%2", radios.Count(), freqs));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Harness `peers`: what THIS client sees of every player body it has streamed in: the
 	//! replicated downed flag and the vanilla life state. A late joiner reads a downed player here.
 	protected static void DoPeers(LF_AgentCommand cmd)
@@ -1286,6 +1321,18 @@ class LF_AgentHarness
 				joined += " | ";
 
 			joined += string.Format("player=%1 downed=%2 life=%3", id, downed, LifeStateToken(body));
+			// #261: who has this body (replicated), whether it sits in a vehicle seat, where it is.
+			int carrier = 0;
+			SCR_ChimeraCharacter peer = SCR_ChimeraCharacter.Cast(body);
+			if (peer)
+				carrier = peer.LF_GetCarrierPlayerId();
+
+			int seated = 0;
+			if (SCR_CompartmentAccessComponent.GetVehicleIn(body))
+				seated = 1;
+
+			vector at = body.GetOrigin();
+			joined += string.Format(" carrier=%1 seat=%2 at=%3,%4,%5", carrier, seated, Math.Round(at[0] * 10) / 10, Math.Round(at[1] * 10) / 10, Math.Round(at[2] * 10) / 10);
 		}
 
 		if (joined.IsEmpty())

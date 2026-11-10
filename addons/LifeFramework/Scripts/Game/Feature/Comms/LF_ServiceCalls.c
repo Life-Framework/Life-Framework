@@ -18,6 +18,9 @@ class LF_ServiceDef
 	[Attribute("1", UIWidgets.Auto, "How many responders may take one call (#251)")]
 	int m_iMaxTakers;
 
+	[Attribute("0", UIWidgets.Auto, "Radio frequency in kHz of the service duty radio (#252); 0 = none. Must sit on the radio 200 kHz grid from 32000")]
+	int m_iFrequency;
+
 	static LF_ServiceDef Make(string key, string name, string receiver, string channels)
 	{
 		LF_ServiceDef def = new LF_ServiceDef();
@@ -112,6 +115,16 @@ class LF_ServiceCallsConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The service radio frequency in kHz (#252); 0 when the service has none.
+	static int Frequency(string service)
+	{
+		LF_ServiceDef def = LF_ServiceCalls.Find(Services(), service);
+		if (!def)
+			return 0;
+		return def.m_iFrequency;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int PlayerCooldown()
 	{
 		Load();
@@ -141,7 +154,9 @@ class LF_ServiceCallsConfig
 			s_aDefaults = {};
 			s_aDefaults.Insert(LF_ServiceDef.Make("police", "#LF-Service_Police", "duty:police", "radio,board,pager"));
 			s_aDefaults[0].m_iMaxTakers = 2;
+			s_aDefaults[0].m_iFrequency = 41000;
 			s_aDefaults.Insert(LF_ServiceDef.Make("medic", "#LF-Service_Medic", "job:4", "pager,board"));
+			s_aDefaults[1].m_iFrequency = 42000;
 			s_aDefaults.Insert(LF_ServiceDef.Make("taxi", "#LF-Service_Taxi", "job:7", "pager,board"));
 		}
 		return s_aDefaults;

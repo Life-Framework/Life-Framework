@@ -92,11 +92,17 @@ class LF_FirstAid
 		if (!user)
 			return LF_EJobType.UNEMPLOYED;
 
+		int job = LF_EJobType.UNEMPLOYED;
 		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(user);
-		if (!jobs)
-			return LF_EJobType.UNEMPLOYED;
+		if (jobs)
+			job = jobs.GetJob();
 
-		return jobs.GetJob();
+		// A medic clocked in at the hospital desk counts as the medic job.
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (accounts)
+			job = LF_ServiceCalls.JobFor(accounts.GetAccount(LF_Utils.GetPlayerUid(user)), job);
+
+		return job;
 	}
 }
 

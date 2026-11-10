@@ -38,6 +38,9 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
    second player robs the fuel till: the officer gets the radio dispatch, reads
    the wanted board, arrests the robber, and the robber goes to the cell. Clock
    out at the same desk to swap back.
+   The duty kit includes a radio tuned to the police frequency (41000 kHz; the
+   medic kit is on 42000). Two officers hear each other on it; a civilian
+   does not.
 7. **Organization and hideout.** Found an organization at the registry desk,
    deposit cash, and buy the processing upgrade. Take the alley yard lease, open
    the hideout door, and store something in the stash. Run contraband from the
@@ -61,7 +64,7 @@ log that back them stay on the server and invisible.
   minutes unless someone uses a bandage, tourniquet, or saline bag on them, and
   each one adds time (morphine adds none). Hold X (pad Y) after 30 seconds to
   give up, which is death. Disconnecting while downed is death too. NPCs still
-  die as before. There is no revive yet.
+  die as before. A medic on duty can revive a downed player.
 - **The fence.** A dealer in the net-fenced test annex sells crime tools only to
   proven criminals: a drill after 3 completed crimes, a breaching charge after
   5, a keycard after 8. Rob a till, steal a vehicle, or breach a door to build
@@ -74,6 +77,10 @@ log that back them stay on the server and invisible.
   While you are clocked in, medic calls reach you: the hospital board opens
   for you, you can take a call there, and the pager beeps. Off duty the board
   tells you it is for on-duty staff.
+- **Revive.** Clocked in as a medic, face a downed player within about two metres
+  and use *Revive* (the same list as Introduce / Show ID). They get up with a
+  sliver of health and keep what they carry, and the bleed-out stops. A civilian
+  does not get the entry.
 - **Report to staff.** After something happens to you, type `/report` in chat.
   It flags the incidents from the last ten minutes that involved you, as either
   party, for admins to see in the Game Master incident view. You get a "Staff
@@ -94,8 +101,8 @@ log that back them stay on the server and invisible.
 - If an arrest leaves you standing where you were instead of in the cell, say so.
 - Some NPCs may appear half-dressed.
 - Sign titles can be hard to read from the road.
-- Going down has no revive yet. Letting the bleed-out run out, giving up, and
-  disconnecting while downed all end in death.
+- Letting the bleed-out run out, giving up, and disconnecting while downed
+  all end in death.
 - The fence and crime scene are in the test annex behind the net fence, not on
   the main street; a village placement is still to come.
 
