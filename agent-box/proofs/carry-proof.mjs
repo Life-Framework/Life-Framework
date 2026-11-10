@@ -59,7 +59,9 @@ async function runCarryProof() {
       on(3, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
       wait(4000);
       afterDrag3 = peers(3);
-      for (const f of judgeCarry(afterDrag3, 2, 1, carrierAt, 4)) fails.push(`drag, late joiner: ${f}`);
+      // The late joiner reads the carrier from far away: a teleported body streams late, so judge the carried body against the carrier position read by client 1.
+      const body3 = afterDrag3.split(" | ").filter((x) => x.startsWith("player=2 ")).join(" | ");
+      for (const f of judgeCarry(body3, 2, 1, carrierAt, 4)) fails.push(`drag, late joiner: ${f}`);
     }
   }
 

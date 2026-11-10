@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ROB_TARGET, arrive, clientBox, judgeBleed, judgeDowned, parsePeer, parseState, sessionDir } from "../session.mjs";
+import { ROB_TARGET, ROOT, arrive, clientBox, judgeBleed, judgeDowned, parsePeer, parseState, sessionDir } from "../session.mjs";
 import { ensureClient, makeClientSees } from "./_clientSees.mjs";
 
 async function runDownedProof() {
