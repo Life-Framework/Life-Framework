@@ -19,7 +19,9 @@ class LF_SirenManagerComponent : ScriptComponent
 
 	// Used for sending only the necessary signals to the sound system
 	protected ref LF_SirenMode m_CurrentMode;
-	// For JIPs in MP
+	// Replicated: a client that streams the car in later or joins late gets the current value with
+	// the snapshot and runs OnModeReplicated. A one-shot RPC reaches only streamed-in clients (#471).
+	[RplProp(onRplName: "OnModeReplicated")]
 	protected int m_CurrentModeIndex;
 	// Server throttle state: world time of the last accepted change, and how many were broadcast.
 	protected int m_iLastChangeMs;
@@ -196,7 +198,7 @@ class LF_SirenManagerComponent : ScriptComponent
 		m_bHasChanged = true;
 		m_iBroadcasts++;
 		SetMode();
-		Rpc(RpcDoBroadcast, mode);
+		Replication.BumpMe();
 		LF_Debug.Info("Siren", string.Format("mode %1 broadcast (change #%2)", mode, m_iBroadcasts));
 		return true;
 	}
@@ -216,14 +218,17 @@ class LF_SirenManagerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// \brief Called from the server, sets the current selected mode
-	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	protected void RpcDoBroadcast(int mode)
+	//! Client: the replicated mode changed or arrived with the snapshot (#471). SetMode tolerates an
+	//! unset m_Modes and unregistered lights; the knob re-runs SetMode when it registers.
+	protected void OnModeReplicated()
 	{
-		m_CurrentModeIndex = mode;
+		LF_Debug.Info("Siren", string.Format("replicated mode index %1", m_CurrentModeIndex));
 		SetMode();
-		LF_LightAnimation anim = m_CurrentMode.GetAnimation();
-		if (anim) anim.Tick(GetSyncTime());
+		if (m_CurrentMode)
+		{
+			LF_LightAnimation anim = m_CurrentMode.GetAnimation();
+			if (anim) anim.Tick(GetSyncTime());
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
