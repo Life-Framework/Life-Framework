@@ -181,6 +181,15 @@ GenericEntity Sign_Farm : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePla
  coords 144.5 0 292.5
  angleY 180
 }
+GenericEntity Sign_FarmPlots : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "farm_plots"
+  }
+ }
+ coords 142.4 0 297
+ angleY 180
+}
 GenericEntity Sign_SafeZone_Spawn : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {

@@ -21,6 +21,9 @@ class LF_GatherAction : ScriptedUserAction
 	[Attribute(desc: "Cooldown until gathering attempts are restocked, in milliseconds", category: "Limits")]
 	protected float m_GatherTimeout;
 
+	[Attribute("#LF-Gather_Action", UIWidgets.EditBox, "Prompt, %1 is the item name. Gather %1 by default; a seed crate says Take %1", category: "General")]
+	protected string m_sActionFormat;
+
 	protected int m_iRemainingGathers;
 	protected WorldTimestamp m_NextRestock;
 
@@ -95,7 +98,10 @@ class LF_GatherAction : ScriptedUserAction
 			UIInfo uiInfo = LF_UIInfoUtils.GetInfo(m_GatherItemPrefab);
 			if (uiInfo && !uiInfo.GetName().IsEmpty())
 				itemName = uiInfo.GetName();
-			m_sDisplayName = WidgetManager.Translate("#LF-Gather_Action", WidgetManager.Translate(itemName));
+			string format = m_sActionFormat;
+			if (format.IsEmpty())
+				format = "#LF-Gather_Action";
+			m_sDisplayName = WidgetManager.Translate(format, WidgetManager.Translate(itemName));
 		}
 
 		outName = m_sDisplayName;

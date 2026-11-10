@@ -26,6 +26,8 @@ track).
 | Fence drill | `LF_Drill.et` | placeholder | `BenchDrill_01` model | handheld power drill or safe-cracking drill | Fence #271 | medium |
 | Fence keycard | `LF_Keycard.et` | placeholder | stand-in mesh (#271) | plastic access card | Fence #271 | low |
 | Fence charge | `LF_Charge.et` | placeholder | stand-in mesh (#271) | improvised breaching charge | Fence #271 | low |
+| Cabbage seed packet | `Items/Seeds/CabbageSeeds.et` | placeholder | vanilla `Papers_Personal` folded papers | small printed paper seed packet | Farm plots #614 | low |
+| Farm plot | `Vegetation/Crops/FarmPlot_Cabbage.et`, `FarmPlot_CabbageVisual.et`, `Props/Commercial/LF_SeedCrate_Cabbage.et` | final | vanilla `VegetableBed_01_small` bed, `CabbageCrop_01` heads scaled per stage, `Crate_01` | (already a bed, cabbages and a crate) | Farm plots #614 | none |
 | Police scanner | `LF_Scanner.et` | check | (#253) | handheld 1980s scanner | Comms #253 | medium |
 | Police car | `LF_UAZ469_Police.et`, `LF_UAZ469_LEDLightBar.et` | final | vanilla `UAZ469_covered_CIV_blue` with the mod bar mount `M151A2_LightBarMount.xob` raised 0.25 m to the UAZ roof (#595; the open M151A2 jeep left the bar floating) | (already a car) | Police station car, jail escort car | none |
 
