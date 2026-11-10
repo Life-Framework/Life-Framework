@@ -5939,6 +5939,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The vault needs a drill or a charge"
      Comment "Vault robbery refused: the robber carries none of the vault's fence tools (#273)"
     }
+    CustomStringTableItem "{A27300000000BA02}" {
+     Id "LF-BankKit_Take"
+     Target_en_us "Take bank robbery kit"
+     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
     CustomStringTableItem "{4956FE4168BECF83}" {
      Id "LF-Hospital_BillNumber"
      Target_en_us "Bill No. %1, %2"
