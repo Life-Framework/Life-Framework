@@ -1,0 +1,14 @@
+AnimSetInstanceSource {
+ Template "{9A43A8BDDF59B93C}Anims/Workspaces/Work/LF_WorkPick.ast"
+ Lines {
+  AnimSetInstanceSource_Line "Work.Pick.In" {
+   Resource "{0B35C06638AD1D59}anims/anm/player/actions/supplies/repair/p_erc_supplies_repair_low_in.anm"
+  }
+  AnimSetInstanceSource_Line "Work.Pick.Loop" {
+   Resource "{6B012F0582412B4B}anims/anm/player/actions/supplies/repair/p_erc_supplies_repair_low_loop.anm"
+  }
+  AnimSetInstanceSource_Line "Work.Pick.Out" {
+   Resource "{E4E7E0D435FFE4D5}anims/anm/player/actions/supplies/repair/p_erc_supplies_repair_low_out.anm"
+  }
+ }
+}

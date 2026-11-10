@@ -1,0 +1,14 @@
+AnimSetInstanceSource {
+ Template "{B31A9232F7F5DCBB}Anims/Workspaces/Work/LF_WorkDrill.ast"
+ Lines {
+  AnimSetInstanceSource_Line "Work.Drill.In" {
+   Resource "{961352FBBDBB1AD7}anims/anm/player/actions/supplies/build/p_erc_supplies_demolitionUS_low_in.anm"
+  }
+  AnimSetInstanceSource_Line "Work.Drill.Loop" {
+   Resource "{4B74C849B2079E41}anims/anm/player/actions/supplies/build/p_erc_supplies_demolitionUS_low_loop.anm"
+  }
+  AnimSetInstanceSource_Line "Work.Drill.Out" {
+   Resource "{CB17AB4A75069805}anims/anm/player/actions/supplies/build/p_erc_supplies_demolitionUS_low_out.anm"
+  }
+ }
+}
