@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "note": "The trusted-tester roster (docs/playtest/quorum.md). One entry per person: id is the name used in confirmations files, discord is the Discord user ID of the Playtester role holder, since is the admission date. Empty until the maintainer admits the first testers.",
+  "testers": []
+}
