@@ -70,6 +70,34 @@ class LF_OreYield
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Uniform scale of a rock after `breaks` of `maxBreaks` pieces: 1 whole, shrinking in
+	//! equal steps to `minScale` on the last piece before it is spent. A row with no piece
+	//! limit never shrinks.
+	static float ScaleFor(int breaks, int maxBreaks, float minScale)
+	{
+		if (maxBreaks <= 0 || breaks <= 0)
+			return 1;
+
+		if (breaks >= maxBreaks)
+			return minScale;
+
+		float t = breaks;
+		t = t / maxBreaks;
+		return 1 - (1 - minScale) * t;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where an ore piece rests: the traced ground height plus a small clearance. A trace
+	//! that found nothing (`groundY` below the world floor) keeps the fallback height.
+	static float RestHeight(float groundY, float fallbackY, float clearance)
+	{
+		if (groundY < -1000)
+			return fallbackY;
+
+		return groundY + clearance;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The rock grows back whole.
 	static void Refill(LF_OreYieldState state)
 	{
