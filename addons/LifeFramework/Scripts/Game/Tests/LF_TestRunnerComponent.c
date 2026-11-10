@@ -9,6 +9,8 @@ class LF_TestRunnerComponent : ScriptComponent
 	protected static const int CLOSE_DELAY_MS = 5000;
 	//! Written by tools/test/test-e2e.ps1 -Only (tools\cli test --only), read only under LF_TEST_ONLY.
 	protected static const string ONLY_PATH = "$profile:LF_TestOnly.txt";
+	//! Written by tools/test/test-e2e.ps1 under LF_TEST_HANG=run: the suite never starts, so the pool's runtime budget (tools/remote/pool.mjs) has a hang to kill.
+	protected static const string HANG_PATH = "$profile:LF_TestHang.txt";
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -23,6 +25,12 @@ class LF_TestRunnerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void Run()
 	{
+		if (FileIO.FileExists(HANG_PATH))
+		{
+			Print("[LF_Tests] LF_TestHang.txt present: holding the suite (runtime budget proof)", LogLevel.WARNING);
+			return;
+		}
+
 		string reportXml;
 		int failures;
 #ifdef LF_TEST_ONLY

@@ -155,8 +155,8 @@ untouched.
 
 ## Test pool (every machine)
 
-Every `-server` boot binds UDP 2001, so one machine runs one test server at a
-time. The test pool spreads in-game runs over every machine that can boot
+Every `-server` boot binds UDP 2001 unless given `-addr` (see "Lanes" below), so a
+machine without test lanes runs one test server at a time. The test pool spreads in-game runs over every machine that can boot
 one: this PC and the test box (ssh alias `lf-testbox`), more when they are
 added. Each run takes the first free slot on any machine; when every slot is
 busy it queues, first come first served, and takes the first slot that frees
@@ -261,6 +261,67 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
 - **Limits.** `build` and `validate --full` stay on this PC. A pre-pool
   branch's snapshot (no `LF_SERVER_SLOT_HELD` in its `tools/cli.mjs`) runs
   local only until it merges main.
+
+### Lanes, priority, leases, budgets (this PC)
+
+You change nothing: run `test`, `e2e`, `session up` as before. The pool queues
+it, picks a lane and a budget, and prints one line per outcome.
+
+- **Lanes.** `tools/pool.json` gives this PC `"lanes": {"test": 2, "session": 1}`.
+  The session lane is the old `server-2001` lock (UDP 2001: `session`, `host`,
+  `serve`; clients join `127.0.0.1:2001`). Each test lane is its own lock,
+  `server-test-1`, `server-test-2`, with its server on `127.0.0.1:2002`,
+  `127.0.0.1:2003`. The engine ignores `-bindPort` and `-bindIP` in `-server`
+  mode and listens on 0.0.0.0:2001; `-addr <ip>:<port>` is what moves it
+  (measured 2026-11-10: a test boot on 127.0.0.1:2002 ran beside a live session
+  server on 2001). So a 10 s test never waits behind a 30 min session. A
+  machine without `lanes` (the box) keeps one shared lane. Old CLIs keep using
+  `server-2001` for everything, so the old lock is still honoured during the
+  switch.
+- **RAM gate.** A second concurrent server starts only while free RAM is at
+  least `minFreeMb` (1500). This PC has 15.6 GB; a server is about 0.7 GB, a
+  client 0.7 to 1.5 GB, so with a two-client session up the gate, not the lane
+  count, limits tests. The run prints `pool: waiting for RAM (...)` and starts
+  by itself when memory frees.
+- **Priority.** `--priority high|normal|low` on `test`, `e2e`, `dev`, `ci`,
+  `session up`, `wt gate`, `wt ship`; `LF_PRIORITY` or `wt new <slug> --priority
+  low` sets a worktree's default (recorded in its `tmp/wt.json`). Within a lane
+  the order is priority, then arrival. A job moves up one level per
+  `promoteMin` (20) minutes waited, so low work cannot starve. Running jobs are
+  never preempted. High: blocking bugfixes and the orchestrator's checks.
+  Normal: milestone work (the default). Low: spikes, research,
+  Development-track experiments, filming retries.
+- **Self-deadlock.** If this worktree's own session holds the only slot a test
+  could use (a machine without lanes), `test` stops at once with one line and the
+  `session.mjs down` hint instead of waiting for itself.
+- **Session lease.** Every `session.mjs` verb and every harness command
+  to a session client stamps `lease.json` in the session dir; `node
+  agent-box/session.mjs lease [min]` holds the session for that long. A session
+  with no command for `sessionIdleMin` (15) minutes while a job waits for its
+  slot or for RAM is closed by the next waiting run (`pool: closed the session of
+  X: idle N min ...`), and the agent's next harness command says why. The
+  mtimes of the clients' `command.txt` and `result.txt` count too, so a session
+  driven by an older harness is not mistaken for idle. A session being driven is
+  never touched.
+- **Runtime budget.** A test run is killed when it exceeds its budget (clock
+  starts at the server's ready line; boot has its own `bootBudgetS`, 30 s):
+  3 times the p95 of that machine's last 30 passing runs of the kind, never under
+  30 s; until it has 5 passes, seeded: `--only` 30 s, `fast` 45 s, `all` 90 s,
+  `persistence` 120 s, `e2e` 120 s per pass, times the machine's
+  `budgetMultiplier` (the box has 2). Measured here: `--only` 9 s, `all` 10 s,
+  `e2e` 22 s. A kind whose recent runs timed out more than 2 % of the time gets
+  double. On a timeout the server tree is killed, the slot is released, and the
+  caller gets `TIMEOUT after Ns (budget Ns); last log lines:` with 5 console lines,
+  exit code 124; the run is logged as `timeout` in `runs.jsonl` and counted in
+  `pool status`. `--budget <s>` raises it for a known-long run. To prove it,
+  `LF_TEST_HANG=run` holds the suite in the booted server and `LF_TEST_HANG=boot`
+  swaps the server for a process that never gets ready.
+- **If the bookkeeping breaks** (a corrupt lock, an unreadable history) the run
+  prints one `WARN  pool: ...` line and falls back to the single `server-2001`
+  slot, plain first come first served, no budget. It never blocks on the queue's
+  own state.
+- **Two tests from one worktree at once** still share `server/profile/test`; run
+  them in order.
 
 ### Waiting on a session
 

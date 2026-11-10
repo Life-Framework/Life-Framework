@@ -38,6 +38,7 @@ import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, touchLease } from "../tools/lib/session-lease.mjs";
 import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -98,14 +99,14 @@ export function defineArgs(mission = "debug") {
 // overwrite another's record, profiles, and save between its runs. The server
 // port is still one per machine (the server-2001 lock); liveSessionsElsewhere
 // finds clients another checkout left running.
+// The dir logic lives in tools/lib/session-lease.mjs: the pool reads a holder's
+// session dir and lease from there without importing this file.
 export function sessionBase(env = process.env) {
-  const base = env.LOCALAPPDATA || join(env.USERPROFILE || ".", "AppData", "Local");
-  return join(base, "LifeFramework", "session");
+  return leaseBase(env);
 }
 
 export function sessionDir(env = process.env, root = ROOT) {
-  if (env.LF_SESSION_DIR) return env.LF_SESSION_DIR;
-  return join(sessionBase(env), basename(resolve(root)));
+  return sessionDirOf(root, env);
 }
 
 // Recorded, not stopped sessions in other checkouts' dirs; alive(pid) decides.
@@ -161,7 +162,12 @@ export function sessionAddress(box, root, dir, s) {
 }
 
 export function sessionForBox(box, root, dir = sessionDir()) {
-  return sessionAddress(box, root, dir, readSession(dir));
+  const a = sessionAddress(box, root, dir, readSession(dir));
+  if (a?.error === "no_live_session") {
+    const reaped = readReaped(dir);
+    if (reaped) return { error: `no_live_session (the pool closed it: ${reaped.why})` };
+  }
+  return a;
 }
 
 export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false }) {
@@ -766,13 +772,24 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | roster <id>... | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
 
 async function main(argv) {
   let [cmd, ...rest] = argv;
+  // Any session command is activity for the pool's lease (tools/remote/pool.mjs reapIdleSessions).
+  if (cmd && !["down", "selftest", "lease"].includes(cmd)) touchLease(sessionDir(), cmd);
+  if (cmd === "lease") {
+    const min = Number(rest[0] ?? 30);
+    if (!Number.isFinite(min) || min <= 0) {
+      console.log("usage: node agent-box/session.mjs lease [minutes]   keep this session's slot for that long even idle (default 30)");
+      return 1;
+    }
+    console.log(`session: lease held until ${extendLease(sessionDir(), min)}`);
+    return 0;
+  }
   if (cmd === "run") return runWhereSession(rest);
   if (cmd === "pull") return pullFromSession(rest);
   if (["up", "down", "status", "restart", "state", "wait"].includes(cmd)) {
