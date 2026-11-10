@@ -65,19 +65,19 @@ async function runWorkAnimProof() {
   // Client 2 closes a leftover bill, then both stand at the vault.
   on(2, { verb: "click", widget: "BillClose" });
 
-  const watch = (door, shot) => {
+  const watch = (door, orbitSeconds) => {
     on(2, { verb: "stand", entityName: door });
     wait(2500);
     on(1, { verb: "stand", entityName: door });
     wait(2500);
     on(1, { verb: "look" });
     const [wx, wy, wz] = at(1);
-    on(2, { verb: "camera", args: `orbit ${wx.toFixed(2)} ${(wy + 1).toFixed(2)} ${wz.toFixed(2)} 3 24` }, 10000);
+    on(2, { verb: "camera", args: `orbit ${wx.toFixed(2)} ${(wy + 1).toFixed(2)} ${wz.toFixed(2)} 3 ${orbitSeconds}` }, 10000);
     wait(1500);
   };
 
   // The vault drill (6 s of work).
-  watch("Roadmap_Bank_Vault");
+  watch("Roadmap_Bank_Vault", 8);
   on(1, { verb: "drill" }, 10000);
   wait(1500);
   const rob = on(1, { verb: "use", className: "LF_BankRobAction", entityName: "Roadmap_Bank_Vault" }, 10000);
@@ -87,7 +87,7 @@ async function runWorkAnimProof() {
   wait(5000);
 
   // The lock-up door pick (6 to 20 s of work).
-  watch("Roadmap_Lockpick_Door");
+  watch("Roadmap_Lockpick_Door", 24);
   on(1, { verb: "lockpick" }, 10000);
   wait(1500);
   const pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Door" }, 10000);
