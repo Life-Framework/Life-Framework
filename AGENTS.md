@@ -62,6 +62,9 @@ failures instead of grinding.
    `addons/LF_Everon1989/`; `validate-addon-boundary` enforces it. Until the
    M3 move loads the pack, a pack resource still lands in the core and gets a
    row in `docs/architecture/core-pack-inventory.md`.
+10. **Shared registries are per-feature files; never append to a central list.**
+    A proof verb is `agent-box/proofs/<verb>.mjs`; a bus event is in
+    `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both).
 
 ## Commands
 
