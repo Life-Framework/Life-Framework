@@ -5907,6 +5907,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They are not down."
      Comment "Carry refusal: the target is not downed."
     }
+    CustomStringTableItem "{0D51EDC4BE6F1DDC}" {
+     Id "LF-Payphone_CallMedic"
+     Target_en_us "Ring for a doctor"
+     Comment "Payphone action: ask for a medic."
+    }
+    CustomStringTableItem "{80B8D0AB91C5EBF6}" {
+     Id "LF-Payphone_CallTaxi"
+     Target_en_us "Ring for a cab"
+     Comment "Payphone action: ask for a taxi."
+    }
+    CustomStringTableItem "{B680F53657359D11}" {
+     Id "LF-Payphone_Summary_Medic"
+     Target_en_us "Doctor wanted"
+     Comment "Summary the medic pager and board show for a call from the payphone."
+    }
+    CustomStringTableItem "{4AA0B3E5926D13C3}" {
+     Id "LF-Payphone_Summary_Taxi"
+     Target_en_us "Cab wanted"
+     Comment "Summary the taxi pager and board show for a call from the payphone."
+    }
   }
  }
 }
