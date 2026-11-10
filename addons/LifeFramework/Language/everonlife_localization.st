@@ -5767,31 +5767,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Admin action"
      Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
     }
-    CustomStringTableItem "{824451A6C3821C83}" {
-     Id "LF-Item_Scanner_Name"
-     Target_en_us "Police scanner"
-     Comment "Item name of the fence police scanner (#253)."
-    }
-    CustomStringTableItem "{C387085823DBA47D}" {
-     Id "LF-Item_Scanner_Description"
-     Target_en_us "Listens in on police and medic calls. Receives only. Illegal: an officer who finds it takes it and files a charge."
-     Comment "Item description of the police scanner."
-    }
-    CustomStringTableItem "{3696651FF2025033}" {
-     Id "LF-Offence_Scanner"
-     Target_en_us "Carrying a police scanner"
-     Comment "Offence: a scanner found on a search (#253)."
-    }
-    CustomStringTableItem "{4A5D20C00F349F20}" {
-     Id "LF-Scanner_Title"
-     Target_en_us "Scanner"
-     Comment "Toast title for a scanner."
-    }
-    CustomStringTableItem "{59E2E4A1484842B5}" {
-     Id "LF-Scanner_Heard"
-     Target_en_us "Heard on the scanner: %1"
-     Comment "Toast when a scanner hears a service call; %1 is the call summary."
-    }
     CustomStringTableItem "{46C33D356FF6A97D}" {
      Id "LF-Witness_Title"
      Target_en_us "Witness"
@@ -5931,6 +5906,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Carry_NotDowned"
      Target_en_us "They are not down."
      Comment "Carry refusal: the target is not downed."
+    }
+    CustomStringTableItem "{0D51EDC4BE6F1DDC}" {
+     Id "LF-Payphone_CallMedic"
+     Target_en_us "Ring for a doctor"
+     Comment "Payphone action: ask for a medic."
+    }
+    CustomStringTableItem "{80B8D0AB91C5EBF6}" {
+     Id "LF-Payphone_CallTaxi"
+     Target_en_us "Ring for a cab"
+     Comment "Payphone action: ask for a taxi."
+    }
+    CustomStringTableItem "{B680F53657359D11}" {
+     Id "LF-Payphone_Summary_Medic"
+     Target_en_us "Doctor wanted"
+     Comment "Summary the medic pager and board show for a call from the payphone."
+    }
+    CustomStringTableItem "{4AA0B3E5926D13C3}" {
+     Id "LF-Payphone_Summary_Taxi"
+     Target_en_us "Cab wanted"
+     Comment "Summary the taxi pager and board show for a call from the payphone."
+    }
+    CustomStringTableItem "{824451A6C3821C83}" {
+     Id "LF-Item_Scanner_Name"
+     Target_en_us "Police scanner"
+     Comment "Item name of the fence police scanner (#253)."
+    }
+    CustomStringTableItem "{C387085823DBA47D}" {
+     Id "LF-Item_Scanner_Description"
+     Target_en_us "Listens in on police and medic calls. Receives only. Illegal: an officer who finds it takes it and files a charge."
+     Comment "Item description of the police scanner."
+    }
+    CustomStringTableItem "{3696651FF2025033}" {
+     Id "LF-Offence_Scanner"
+     Target_en_us "Carrying a police scanner"
+     Comment "Offence: a scanner found on a search (#253)."
+    }
+    CustomStringTableItem "{4A5D20C00F349F20}" {
+     Id "LF-Scanner_Title"
+     Target_en_us "Scanner"
+     Comment "Toast title for a scanner."
+    }
+    CustomStringTableItem "{59E2E4A1484842B5}" {
+     Id "LF-Scanner_Heard"
+     Target_en_us "Heard on the scanner: %1"
+     Comment "Toast when a scanner hears a service call; %1 is the call summary."
     }
     CustomStringTableItem "{CDE539EBECEAEB35}" {
      Id "LF-Witness_Ask"

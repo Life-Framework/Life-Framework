@@ -33,6 +33,10 @@ GenericEntity Roadmap_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL
  coords 259 1.04 241.2
  angleY 0
 }
+SCR_DestructibleBuildingEntity Roadmap_Fuel_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 255.5 0 244
+ angleY 90
+}
 
 LF_NpcBaseEntity Roadmap_Fuel_Clerk : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
  coords 262.5 1.04 243
