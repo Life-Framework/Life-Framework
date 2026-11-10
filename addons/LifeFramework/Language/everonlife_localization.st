@@ -6347,6 +6347,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The engine will not start without the key"
      Comment "Toast: engine start refused (#412)."
     }
+    CustomStringTableItem "{C04E7ECCE5EA1009}" {
+     Id "LF-Stolen_Title"
+     Target_en_us "Stolen car"
+     Comment "Toast title (#414)."
+    }
+    CustomStringTableItem "{7B3EF21861B9946F}" {
+     Id "LF-Stolen_CheckTitle"
+     Target_en_us "Plate check"
+     Comment "Toast title: officer plate check and recovery (#414)."
+    }
+    CustomStringTableItem "{07590CA5189B8EC3}" {
+     Id "LF-Stolen_ReportAction"
+     Target_en_us "Report the car stolen"
+     Comment "Action: the owner reports a stolen car (#414)."
+    }
+    CustomStringTableItem "{54D39129C638398D}" {
+     Id "LF-Stolen_CheckAction"
+     Target_en_us "Check the plate"
+     Comment "Action: an officer checks the plate (#414)."
+    }
+    CustomStringTableItem "{81EB652362FAF78A}" {
+     Id "LF-Stolen_RecoverAction"
+     Target_en_us "Recover stolen vehicle"
+     Comment "Action: an officer returns a reported car to its owner's garage (#414)."
+    }
+    CustomStringTableItem "{45C2C41BF9850640}" {
+     Id "LF-Stolen_Reported"
+     Target_en_us "Reported. The police have the plate."
+     Comment "Toast: report filed (#414)."
+    }
+    CustomStringTableItem "{B07C0014F4165300}" {
+     Id "LF-Stolen_NoVehicle"
+     Target_en_us "That is not a registered car"
+     Comment "Toast: report refused (#414)."
+    }
+    CustomStringTableItem "{4E2A1DBE21617A8A}" {
+     Id "LF-Stolen_NotStolen"
+     Target_en_us "That car was not stolen"
+     Comment "Toast: report refused (#414)."
+    }
+    CustomStringTableItem "{74B600E93F163F6F}" {
+     Id "LF-Stolen_NotOwner"
+     Target_en_us "That is not your car"
+     Comment "Toast: report refused (#414)."
+    }
+    CustomStringTableItem "{C6CD1F2F0A61F3B5}" {
+     Id "LF-Stolen_Already"
+     Target_en_us "The police already have this one"
+     Comment "Toast: report refused (#414)."
+    }
+    CustomStringTableItem "{F9299F02744818C6}" {
+     Id "LF-Stolen_PlateStolen"
+     Target_en_us "Plate %1: STOLEN. Reported by the owner. Arrest case."
+     Comment "Toast: plate check on a reported car (#414)."
+    }
+    CustomStringTableItem "{D5ACFFFEB37116C0}" {
+     Id "LF-Stolen_PlateClear"
+     Target_en_us "Plate %1: registered, no report."
+     Comment "Toast: plate check, clean (#414)."
+    }
+    CustomStringTableItem "{5C0613E010C6A887}" {
+     Id "LF-Stolen_PlateUnknown"
+     Target_en_us "Plate: not on any register."
+     Comment "Toast: plate check, unknown plate (#414)."
+    }
+    CustomStringTableItem "{B809D325187A4334}" {
+     Id "LF-Stolen_RecoverNone"
+     Target_en_us "No stolen report on this car"
+     Comment "Toast: recover refused (#414)."
+    }
+    CustomStringTableItem "{BEEF3229C82D306C}" {
+     Id "LF-Stolen_RecoverOccupied"
+     Target_en_us "Get the driver out first"
+     Comment "Toast: recover refused (#414)."
+    }
+    CustomStringTableItem "{F215C82571D6753A}" {
+     Id "LF-Stolen_Recovered"
+     Target_en_us "Plate %1 recovered: back in the owner's garage."
+     Comment "Toast: recovered (#414)."
+    }
+    CustomStringTableItem "{7D85335FFB1F2738}" {
+     Id "LF-Stolen_BoardLine"
+     Target_en_us "STOLEN CAR: %2, plate %1, reported at %3"
+     Comment "Wanted board line: a reported stolen car (#414)."
+    }
   }
  }
 }

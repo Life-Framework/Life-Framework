@@ -23,20 +23,6 @@ GenericEntity Roadmap_Lockpick_Car : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIgnitionLocked 1
   }
-  ActionsManagerComponent "{C97BE5489221AE18}" {
-   additionalActions + {
-    LF_LockpickAction "{5B8E2D41F0A6C739}" {
-     ParentContextList {
-      "door_l01"
-     }
-    }
-    LF_HotwireAction "{0C93A7E6D15B48F2}" {
-     ParentContextList {
-      "default"
-     }
-    }
-   }
-  }
   LF_LockpickTargetComponent "{D4126BA97E0F53C8}" {
    m_bStartLocked 1
   }

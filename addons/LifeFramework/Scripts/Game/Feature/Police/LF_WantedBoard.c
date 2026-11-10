@@ -100,7 +100,11 @@ class LF_WantedBoard
 		array<string> dispatches = {};
 		if (police)
 		{
-			LF_Dispatch.BuildBoardEntries(LF_PoliceConfig.DispatchLogLines(), dispatches);
+			// Reported stolen vehicles (#414) come first: the plate is the lead.
+			array<string> logEntries = {};
+			LF_Dispatch.BuildBoardEntries(LF_PoliceConfig.DispatchLogLines(), logEntries);
+			LF_StolenVehicles.BoardEntries(LF_PoliceConfig.DispatchLogLines(), dispatches);
+			dispatches.InsertAll(logEntries);
 			// Witness statements (#266, #267) ride under the dispatch log.
 			LF_Witness.AppendBoardEntries(LF_PoliceConfig.DispatchLogLines(), dispatches);
 		}
@@ -152,7 +156,9 @@ class LF_WantedBoard
 			foreach (int index, string entry : dispatches)
 			{
 				string line;
-				if (LF_Witness.IsBoardEntry(entry))
+				if (LF_StolenVehicles.IsBoardEntry(entry))
+					line = LF_StolenVehicles.BoardLine(entry);
+				else if (LF_Witness.IsBoardEntry(entry))
 					line = LF_Witness.BoardLine(entry);
 				else
 					line = LF_Dispatch.BoardLine(entry);

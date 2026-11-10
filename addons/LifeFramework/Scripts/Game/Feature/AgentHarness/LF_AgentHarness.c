@@ -1365,6 +1365,17 @@ class LF_AgentHarness
 		if (access)
 			vehicle = access.GetVehicleIn(character);
 
+		// "engine out" gets this character out of the vehicle it sits in (a teleport out of the seat).
+		if (vehicle && cmd.Arg1 == "out")
+		{
+			if (access.GetOutVehicle(EGetOutType.TELEPORT, 0, ECloseDoorAfterActions.CLOSE_DOOR, false))
+				WriteResult(cmd.Id, "ok", "left the vehicle");
+			else
+				WriteResult(cmd.Id, "error", "leave_refused");
+
+			return;
+		}
+
 		// An entity name seats this character at the wheel of that vehicle first (a teleport into the seat).
 		if (!vehicle && cmd.Arg1 != "")
 		{

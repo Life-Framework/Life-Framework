@@ -474,6 +474,16 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	static string GetNameKey(string vehicleId)
+	{
+		LF_VehicleRecord record = Records().Get(vehicleId);
+		if (!record)
+			return "";
+
+		return record.m_sNameKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string GetKeyId(string vehicleId)
 	{
 		LF_VehicleRecord record = Records().Get(vehicleId);
