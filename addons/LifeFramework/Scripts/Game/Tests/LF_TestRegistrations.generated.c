@@ -20,7 +20,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AdminAction(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AgentHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AimIntent(), LF_TestTier.LOGIC);
-		manager.Register(new LF_Test_AreaSpawner(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ATMBoundary(), LF_TestTier.WORLD);
@@ -66,6 +65,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DebugAreaBoundary(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugActionValidation(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMenuGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DebugMoneyTopUp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugWorldCollision(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AccountStateBits(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LicenseBits(), LF_TestTier.LOGIC);
@@ -198,6 +198,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuestWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RemovedTomatoSkip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartBankSurvivesConnect(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartJailSerializerRoundtrip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartVehicleNoGroundKey(), LF_TestTier.WORLD);
@@ -321,6 +322,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Witness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WoodcuttingDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnim(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WorkAnimTargets(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ZoneRules(), LF_TestTier.LOGIC);
 	}
 }

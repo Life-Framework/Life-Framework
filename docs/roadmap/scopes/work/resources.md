@@ -27,7 +27,7 @@ Stay on the nodes and machines already in this repo:
 | Chain | Where |
 | --- | --- |
 | Apple → juice | `t_malus_domestica_2s.et`, `AppleJuicer.et` (3 apples → `{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et`) |
-| Plum, tomato, cabbage | `t_prunus_domestica_2s.et`, `TomatoCrop.et`, `CabbageCrop.et` |
+| Plum, cabbage | `t_prunus_domestica_2s.et`, `CabbageCrop.et` |
 | Log → plank + kindling | `CuttableTree_Pinus_Sylvestris_2f.et`, axe `{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et`, `Sawmill.et` |
 | Ore → bar | `MiningArea.et`, pickaxe `{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et`, `Furnace.et` (iron nugget `{6853E2E2AE878611}` → iron bar `{BCD1E8CD7F975074}`, same for copper and gold) |
 | Cement, gravel, sand | piles under `Prefabs/Props/Construction/`, bags under `Prefabs/Items/Resources/` |

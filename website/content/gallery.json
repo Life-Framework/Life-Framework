@@ -90,7 +90,10 @@
     "area-13-hideout/bench": "The workbench under the pergola with a crate, a jerrycan and a carton on the top",
     "area-15-chopshop/wide": "The chop shop work area: engine crane, a jeep shell being stripped on the asphalt pad, a door and the jack beside it, bench and tyres along the wall",
     "area-15-chopshop/bench": "The tool bench against the wall with a toolbox on top, welding bottles, oil drums and a crate beside it",
-    "area-15-chopshop/approach": "From the gate: asphalt pad with the stripped shell, crane and bench, tyre stack on the left"
+    "area-15-chopshop/approach": "From the gate: asphalt pad with the stripped shell, crane and bench, tyre stack on the left",
+    "area-12-farm/wide": "The farm from the west: cabbage beds, the greenhouse, the produce stand by the FARM sign, a hay bale and the fence",
+    "area-12-farm/stand": "The produce stand: cabbages on the table, crates of cabbages, a hand cart, the greenhouse and a hay bale behind",
+    "area-12-farm/press": "The orchard: the apple juicer on its press table with crates of apples, a bucket and the apple trees"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",

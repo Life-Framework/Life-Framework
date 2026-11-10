@@ -12,6 +12,9 @@ export const DEFAULTS = {
   // minus this still clears minFreeMb.
   sessionReserveServerMb: 600,
   sessionReserveClientMb: 850,
+  // Per session profile (session up --profile): the same two numbers, measured per profile. A profile
+  // missing here uses the full numbers above. tools/pool.json "sessionReserve" overrides these.
+  sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } },
   bootBudgetS: 30,
   // A session older than sessionHoldMin while another session request queues is warned, then
   // closed sessionGraceMin later. session up --hold raises its own cap, to sessionHoldMaxMin at most.
@@ -76,9 +79,13 @@ export function sessionA2sPort(port) {
   return port === SESSION_PORT ? null : 17777 + (port - SESSION_PORT) * 10;
 }
 
-// Memory (MB) a session of n clients adds, from the reserve settings.
-export function sessionReserveMb(settings, clients) {
-  return (settings.sessionReserveServerMb ?? DEFAULTS.sessionReserveServerMb) + (settings.sessionReserveClientMb ?? DEFAULTS.sessionReserveClientMb) * Math.max(0, Number(clients) || 0);
+// Memory (MB) a session of n clients adds, from the reserve settings; profile is the session's
+// resource profile ("full" or "lowspec"), whose own measured numbers win when settings carry them.
+export function sessionReserveMb(settings, clients, profile = "full") {
+  const own = settings.sessionReserve?.[profile];
+  const server = own?.serverMb ?? settings.sessionReserveServerMb ?? DEFAULTS.sessionReserveServerMb;
+  const client = own?.clientMb ?? settings.sessionReserveClientMb ?? DEFAULTS.sessionReserveClientMb;
+  return server + client * Math.max(0, Number(clients) || 0);
 }
 
 export function laneKind(purpose) {
@@ -153,6 +160,15 @@ export function ramVerdict({ running, freeMb, minFreeMb, reserveMb = 0, pendingM
     return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB minus ${gb(reserveMb + pendingMb)} GB for the session${pendingMb > 0 ? "(s) starting" : ""} would be under ${gb(minFreeMb)} GB` };
   }
   return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB under ${gb(minFreeMb)} GB with ${running} server(s) running` };
+}
+
+// RAM gate for a late client (`session join`): the session already runs, so only the client's own
+// reserve has to fit above the floor.
+export function joinVerdict({ freeMb, minFreeMb, clientMb }) {
+  const needMb = minFreeMb + clientMb;
+  if (freeMb >= needMb) return { ok: true, needMb };
+  const gb = (x) => (x / 1024).toFixed(1);
+  return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB minus ${gb(clientMb)} GB for the client would be under ${gb(minFreeMb)} GB` };
 }
 
 // Session lease: idle time since the last harness command (or the session's

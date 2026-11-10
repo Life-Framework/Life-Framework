@@ -42,8 +42,11 @@ ambulance bay, a filing cabinet by the evidence locker. Base-game assets only, k
 
 ## Per area: builder (`lf-builder`, Sonnet)
 
-1. **Before shots.** `toolscli shots area <name>` (see Shot rules), as it is now.
-2. **Fix placement.** Read the `problems:` list the call printed first and fix those: floating,
+1. **Before shots.** Use the daily baseline, no session: `tools\cli shots area <name> --baseline` prints the path
+   of that area's `contact.jpg`, `index.json` and `problems.txt`, and how many commits old it is (see Daily baseline).
+   Run `git log <stamp>..origin/main -- <the area's layer, prefabs, scripts>`; if that is empty the baseline is
+   your before shot. If your area changed since, or there is no baseline, shoot your own once (`shots area <name> --annotate`).
+2. **Fix placement.** Read the baseline's `problems.txt` first and fix those: floating,
    sunk, tilted, clipping, unreachable. Then, for every entity in the area: ground snap and surface height,
    rotation, collision, and reachability of each interaction point. Check each one with
    `wb_read_props` or the layer coordinates, and with a close shot.
@@ -59,7 +62,7 @@ ambulance bay, a filing cabinet by the evidence locker. Base-game assets only, k
    static props, no lights or particles unless the chain needs them.
 5. **Retest the area's features.** Run its `--only` tests plus `debugworld/entity-collision`,
    and that area's `session.mjs` proof verb if it has one.
-6. **After shots:** run `shots area` again; `problems:` must be empty or each line explained. Judge the
+6. **After shots:** this is the builder's only session: run `shots area` once; `problems:` must be empty or each line explained. Judge the
    look from `contact.jpg` (add `--annotate` to see entity names), then hand the area to the reviewer.
 7. **Ship one PR per area:** before and after shots in the body, the final shots in
    `website/public/docs-images/area-<n>-<slug>/`, and a `docs/playtest.md` line if anything
@@ -83,6 +86,18 @@ item passes or fails:
 Any failure goes back to the builder with the item and shot named. Two failed reviews
 on an area: ship what passes and list what's left. The maintainer reviews the final
 gallery.
+
+## Daily baseline
+
+`tools\cli shots baseline [--areas all|a,b,c]` runs `shots area <name> --annotate` for every area in
+`agent-box/areas.json` inside one session (a one-client playtest session, brought up and down once) and stores
+each area's `contact.jpg`, `index.json`, `problems.txt` and a `stamp.json` (the main commit shot, the time) in
+`tmp/shots-baseline/<area>/` of the main checkout, which every worktree can read. `shots area <name> --baseline`
+prints that path and how many commits old it is (counted from the stamp to `origin/main`); it never starts a session.
+
+- **Cost:** about 2.5 to 6 minutes per area (the wide-frame scoring dominates), so all 21 entries do not fit the 45-minute session hold cap (measured 2026-11-10: 4 areas in 33 min on the laptop). Run it on an idle pool (the cap only bites while others queue) or in slices that share the store: `shots baseline --areas bank,hospital,...`; each slice is one session and replaces only its own areas' folders.
+- **Schedule: once a day**, from a worktree merged with `origin/main`, e.g. `tools\cli shots baseline`. Set `LF_SHOTS_BASELINE=<dir>` to store it elsewhere.
+- **A builder takes no before session.** It reads the baseline, checks nothing in its area changed since the stamp, and spends exactly one session on the after shots.
 
 ## Shot rules
 
@@ -132,7 +147,7 @@ toolscli shots crop wide 900,0,380,140
 - **Known limits.** The player camera cannot pitch, so by default the wide is a level view from 12 m up and there is no top-down. `--free-camera` flies a free camera (real pitch, real top-down) but the client crashed about 4 s after the first shot, so it is opt-in until that is fixed. The field of view used by `--annotate` is an assumption (60 degrees vertical); the labels lined up with the entities in the hospital run.
 - **Images** are quantised to a palette PNG when a full-colour one is over 500 KB (`agent-box/bmp.mjs`).
 - **Harness against a remote session.** `harness.mjs <verb> ...` relays through `session.mjs run` when the session is on a pool machine (`--local` keeps it here); `session.mjs up --help` prints help.
-- **Session.** It reuses a running session, or starts one (`session.mjs up --machine any --wait`, one client,
+- **Session.** It reuses a running session, or starts one (`session.mjs up --machine any --profile full --wait`, one client,
   playtest mission) and closes it afterwards; `--keep` leaves a session it started up. If the session is on
   a pool machine, the call runs there and copies the folder back.
 - **Reviewer:** reads `contact.jpg` and the `problems:` list, and crops only when unsure.
