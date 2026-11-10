@@ -3879,27 +3879,27 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{713DA3DCCF8014E2}" {
      Id "LF-Sign_Hospital_Title"
-     Target_en_us "Hospital"
+     Target_en_us "Everon Village Hospital"
      Comment "Title of the sign at the hospital (medicine cabinet and till). Printed on the board and shown in the prompt as Read: Hospital."
     }
     CustomStringTableItem "{319C15ECA15769F7}" {
      Id "LF-Sign_Hospital_What"
-     Target_en_us "A medicine cabinet and a till."
+     Target_en_us "The village hospital: a medic duty desk, three beds, a call board and the ambulance bay. Bills are 1989 prices, cash only."
      Comment "Sign card for the hospital (medicine cabinet and till), What section."
     }
     CustomStringTableItem "{C04CAF44C41DD0AA}" {
      Id "LF-Sign_Hospital_How"
-     Target_en_us "Breach the cabinet for dressings, morphine, saline, and tourniquets. Rob the till on the porch."
+     Target_en_us "Clock in at the duty desk to take the medic kit. A medic can Revive a downed patient or carry them to a bed. Pay a treatment bill at the desk. Breach the cabinet for dressings, morphine, saline, and tourniquets. Rob the till on the porch."
      Comment "Sign card for the hospital (medicine cabinet and till), How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{F8E9B3F57A5331A5}" {
      Id "LF-Sign_Hospital_Needs"
-     Target_en_us "A demolition charge for the cabinet."
+     Target_en_us "Cash for a bill; a field dressing to Revive; a demolition charge for the cabinet."
      Comment "Sign card for the hospital (medicine cabinet and till), Needs section."
     }
     CustomStringTableItem "{69A04E647A57E62B}" {
      Id "LF-Sign_Hospital_Rules"
-     Target_en_us "Both raise your wanted level and alert the police."
+     Target_en_us "Breaching the cabinet or robbing the till raises your wanted level and alerts the police."
      Comment "Sign card for the hospital (medicine cabinet and till), Rules section."
     }
     CustomStringTableItem "{09352ADEB51C6AED}" {
@@ -6096,6 +6096,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Revive_NoItem"
      Target_en_us "You need a field dressing to revive someone."
      Comment "Revive refusal: the medic has none of the configured revive item."
+    }
+    CustomStringTableItem "{8E172D4B5A1269CD}" {
+     Id "LF-Sign_HospitalBay_Title"
+     Target_en_us "Ambulance bay"
+     Comment "Sign card for the hospital ambulance bay, Title section: printed on the board and shown in the prompt as Read: Ambulance bay."
+    }
+    CustomStringTableItem "{ABF4C1FDECFE58F9}" {
+     Id "LF-Sign_HospitalBay_What"
+     Target_en_us "Where the village ambulance parks, ready to roll."
+     Comment "Sign card for the hospital ambulance bay, What section."
+    }
+    CustomStringTableItem "{DFFD828F05D29321}" {
+     Id "LF-Sign_HospitalBay_How"
+     Target_en_us "A medic on duty takes a call at the board, drives out, then Loads the patient into the ambulance and drives them to a bed."
+     Comment "Sign card for the hospital ambulance bay, How section."
+    }
+    CustomStringTableItem "{CB1069471D29CF71}" {
+     Id "LF-Sign_HospitalBay_Needs"
+     Target_en_us "A medic on duty to drive; a patient to carry."
+     Comment "Sign card for the hospital ambulance bay, Needs section."
+    }
+    CustomStringTableItem "{9880941D208FCBE3}" {
+     Id "LF-Sign_HospitalBay_Rules"
+     Target_en_us "Keep the bay clear. Do not park here."
+     Comment "Sign card for the hospital ambulance bay, Rules section."
+    }
+    CustomStringTableItem "{87ECDDA7AA8A5663}" {
+     Id "LF-Sign_HospitalBay_Next"
+     Target_en_us "The duty desk and the beds are north of the bay."
+     Comment "Sign card for the hospital ambulance bay, Next section."
     }
   }
  }
