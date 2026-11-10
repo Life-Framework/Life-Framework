@@ -1,4 +1,30 @@
-import { ROB_TARGET, arrive, clientBox, parseState, sessionDir } from "../session.mjs";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { ROB_TARGET, arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
+
+// A false PASS (#259): the proof used to judge only the harness replies, so a revive animation
+// that never played still passed. The logs are the truth about the animation: the server must
+// start it and never stop it refused, and every client must report it playing.
+export function judgeReviveAnimLogs(serverText, clientTexts) {
+  const out = [];
+  const bad = [
+    ["the character has no animation graph", "no animation graph"],
+    ["the CPR clip did not play", "CPR clip did not play"],
+  ];
+  if (!serverText.includes("revive animation started")) out.push("server never logged 'revive animation started'");
+  if (serverText.includes("STOP_REFUSED")) out.push("server stopped the animation with STOP_REFUSED");
+  const all = [["server", serverText], ...clientTexts.map((t, i) => [`client ${i + 1}`, t])];
+  for (const [who, text] of all) for (const [needle, label] of bad) if (text.includes(needle)) out.push(`${who} logged: ${label}`);
+  clientTexts.forEach((t, i) => {
+    if (!t.includes("revive animation playing")) out.push(`client ${i + 1} never logged 'revive animation playing'`);
+  });
+  return out;
+}
+
+function readLog(logsDir) {
+  const f = newestLog(logsDir);
+  return f && existsSync(f) ? readFileSync(f, "utf8") : "";
+}
 
 // M2 #512: the medic kneels and does CPR while a revive runs, seen by the patient's client. Client 1
 // clocks in as a medic, downs client 2, stands by the body and reports the revive hold with `cpr`
@@ -55,8 +81,11 @@ async function runReviveAnimProof() {
   on(2, { verb: "capture", mode: "world", name: `${prefix}_stopped`, x: mx, y: my + 0.6, z: mz, ox: 2.6, oy: 1.0, oz: 0.8 }, 25000);
   need(parseState(state(2)).downed === "1", "the patient left the downed state");
 
+  const paths = sessionPaths(dir, 2);
+  fails.push(...judgeReviveAnimLogs(readLog(join(paths.server, "logs")) || readLog(paths.server), paths.clients.map((c) => readLog(c.logs))));
+
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "revive-anim proof: FAIL" : "revive-anim proof: PASS (start, two views mid-CPR, stop; check the logs and shots)");
+  console.log(fails.length ? "revive-anim proof: FAIL" : "revive-anim proof: PASS (start, two views mid-CPR, stop; server and both clients logged the animation playing)");
   return fails.length ? 1 : 0;
 }
 
