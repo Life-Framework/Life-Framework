@@ -35,10 +35,10 @@ class LF_Test_StorePersist : LF_Test
 		store.FirstFill();
 		ResourceName apple = LF_Test_StoreShelf.APPLE;
 		array<ref LF_StoreStockRow> before = LF_Stores.ExportAll();
-		int stock0 = store.GetStock(apple);
-		ctx.True(stock0 >= 4, "the apple line starts with enough for the test");
-		if (stock0 < 4)
-			return;
+		int original = store.GetStock(apple);
+		int stock0 = 6;
+		store.ForceStock(apple, stock0);
+		ctx.Equal(stock0, store.GetStock(apple), "the test starts from a full apple line");
 
 		// Three apples left the store: a restart must keep it that way.
 		int left = stock0 - 3;
@@ -99,6 +99,6 @@ class LF_Test_StorePersist : LF_Test
 
 		// Put the world back.
 		LF_Stores.ApplyAll(before);
-		store.ForceStock(apple, stock0);
+		store.ForceStock(apple, original);
 	}
 }

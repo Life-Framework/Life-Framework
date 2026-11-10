@@ -32,7 +32,9 @@ class LF_Test_StoreShelf : LF_Test
 
 		store.FirstFill();
 		ctx.True(store.HasLine(APPLE), "the store stocks apples");
-		int stock0 = store.GetStock(APPLE);
+		int original = store.GetStock(APPLE);
+		int stock0 = 6;
+		store.ForceStock(APPLE, stock0);
 		int price = shop.GetBuyPrice(APPLE);
 		ctx.True(stock0 >= 4, "the apple line starts with enough for the test");
 		ctx.True(price > 0, "an apple has a price");

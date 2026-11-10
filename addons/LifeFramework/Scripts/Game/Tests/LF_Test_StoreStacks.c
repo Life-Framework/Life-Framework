@@ -25,7 +25,9 @@ class LF_Test_StoreStacks : LF_Test
 
 		store.FirstFill();
 		ResourceName apple = LF_Test_StoreShelf.APPLE;
-		int stock0 = store.GetStock(apple);
+		int original = store.GetStock(apple);
+		int stock0 = 6;
+		store.ForceStock(apple, stock0);
 		array<ref LF_StoreStockRow> saved = LF_Stores.ExportAll();
 		LF_Stores.ClearUnpaid();
 

@@ -63,6 +63,14 @@ class LF_StoreComponent : ScriptComponent
 	//! Live stores by key. Lives here so the component's own OnDelete removes it.
 	protected static ref map<string, LF_StoreComponent> s_mLive;
 
+	//! A restored world item within this many metres (flat) of a shelf point is the shelf's own copy.
+	protected static const float STRAY_RADIUS = 0.15;
+	//! Seconds after a fill or a load when the shelf looks once more for copies the engine restored late.
+	protected static const int LATE_RECONCILE_MS = 4000;
+	protected static ref array<EntityID> s_aStrays;
+	protected static ResourceName s_StrayPrefab;
+	protected static vector s_vStrayPoint;
+
 	protected ref array<ref LF_StoreLineState> m_aState = {};
 	protected float m_fLastRestockMs;
 	protected bool m_bFilled;
@@ -268,6 +276,7 @@ class LF_StoreComponent : ScriptComponent
 
 		m_bFilled = true;
 		Sync(true);
+		GetGame().GetCallqueue().CallLater(LateReconcile, LATE_RECONCILE_MS, false);
 		LF_Debug.Info(LF_Stores.FEATURE, string.Format("store %1 stocked: %2", m_sStoreKey, Describe()));
 	}
 
@@ -446,6 +455,9 @@ class LF_StoreComponent : ScriptComponent
 	//! empty slots are filled from the stock.
 	protected void Sync(bool allowSpawn)
 	{
+		if (allowSpawn)
+			AdoptStrays();
+
 		foreach (LF_StoreLineState line : m_aState)
 		{
 			int want = LF_StoreRules.ShelfCount(line.m_iStock, line.m_aSlots.Count());
@@ -481,6 +493,69 @@ class LF_StoreComponent : ScriptComponent
 				have++;
 			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A shelf item is a plain world item with a quantity component, so the engine's own persistence
+	//! saves it and brings it back after a restart, at the same spot, beside the copies this store
+	//! spawns from its saved stock. Any loose copy of a line's item sitting on a shelf point is therefore
+	//! the shelf's own: it is adopted into an empty slot, or deleted when the slot already has one.
+	protected void AdoptStrays()
+	{
+		foreach (LF_StoreLineState line : m_aState)
+		{
+			for (int i = 0; i < line.m_aShelf.Count(); i++)
+			{
+				vector point = SlotWorld(line, i);
+				if (!s_aStrays)
+					s_aStrays = new array<EntityID>();
+
+				s_aStrays.Clear();
+				s_StrayPrefab = line.m_Prefab;
+				s_vStrayPoint = point;
+				GetGame().GetWorld().QueryEntitiesBySphere(point, 0.6, CollectStray, null, EQueryEntitiesFlags.ALL);
+				foreach (EntityID id : s_aStrays)
+				{
+					IEntity stray = GetGame().GetWorld().FindEntityByID(id);
+					if (!stray)
+						continue;
+
+					if (line.m_aShelf[i] == EntityID.INVALID && LF_StoreRules.ShelfCount(line.m_iStock, line.m_aSlots.Count()) > line.Occupied())
+					{
+						line.m_aShelf[i] = id;
+						continue;
+					}
+
+					LF_Debug.Info(LF_Stores.FEATURE, string.Format("store %1: a restored copy of %2 sat on a shelf point already filled; deleted", m_sStoreKey, line.m_Prefab));
+					SCR_EntityHelper.DeleteEntityAndChildren(stray);
+				}
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectStray(IEntity entity)
+	{
+		if (!entity || LF_Utils.GetPrefabName(entity) != s_StrayPrefab)
+			return true;
+
+		if (LF_InventoryUtils.GetStorageHierachyRoot(entity) != entity || LF_Stores.HoldsApart(entity))
+			return true;
+
+		vector flat = entity.GetOrigin() - s_vStrayPoint;
+		flat[1] = 0;
+		if (flat.Length() <= STRAY_RADIUS)
+			s_aStrays.Insert(entity.GetID());
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one more look a few seconds after a fill or a load, for copies the engine restored late.
+	void LateReconcile()
+	{
+		AdoptStrays();
+		Sync(false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -561,6 +636,7 @@ class LF_StoreComponent : ScriptComponent
 			return;
 
 		Sync(true);
+		GetGame().GetCallqueue().CallLater(LateReconcile, LATE_RECONCILE_MS, false);
 		LF_Debug.Info(LF_Stores.FEATURE, string.Format("store %1 restored: %2", m_sStoreKey, Describe()));
 	}
 }
