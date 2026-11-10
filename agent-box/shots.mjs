@@ -179,9 +179,10 @@ export function problemsFor(entity, m, area) {
   const list = [];
   const mounted = /^Sign_/.test(entity.name) || entity.y > 1.5;
   if (!mounted && m.gap > LIMITS.gap) list.push(`floating ${r2(m.gap)} m`);
-  // Sunk: the bounds bottom is under the floor AND the pivot (ground-contact point) is not above it; a pivot above
-  // the floor with mesh below it is a modelled base, not a buried prop.
-  if (!mounted && m.gap < -LIMITS.gap && !(m.pgap > 0.05)) list.push(`sunk ${r2(-m.gap)} m`);
+  // Sunk: the pivot (the ground-contact point) is under the floor. Mesh or bounds that reach below a pivot that
+  // stands on the floor (vehicles, payphone bases) are modelled that way, not buried. Without a pivot reading, bounds.
+  const sunk = m.pgap === undefined ? -m.gap : -m.pgap;
+  if (!mounted && sunk > LIMITS.gap) list.push(`sunk ${r2(sunk)} m`);
   if (m.tilt > LIMITS.tilt) list.push(`tilted ${Math.round(m.tilt)} deg`);
   if (entity.actions && entity.actions.length && m.walk > LIMITS.walk) list.push(m.walk >= 99 ? "unreachable (no standing spot within 3 m of its edge)" : `reach ${r2(m.walk)} m from its edge to standing room`);
   const off = facingOff(entity, m, area);
@@ -949,7 +950,7 @@ function selftest() {
   const eyeP = [0, 10, 0];
   if (treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 4, gy: 0 }], 30) < 0.5 || treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 40, gy: 0 }], 30) !== 0) fails.push("treeOcclusion");
   // Problems: a pivot above the floor with mesh below it is not sunk; a buried prop is.
-  if (problemsFor({ name: "Jeep", y: 0 }, parseEnt("bmin=0,0,0 bmax=2,2,4 gap=-0.4 pgap=0.3 tilt=0 walk=0.5 clip=none")).join().includes("sunk")) fails.push("sunk ignores a raised pivot");
+  if (problemsFor({ name: "Jeep", y: 0 }, parseEnt("bmin=0,0,0 bmax=2,2,4 gap=-0.4 pgap=0 tilt=0 walk=0.5 clip=none")).join().includes("sunk")) fails.push("sunk ignores bounds below a grounded pivot");
   if (!problemsFor({ name: "Crate", y: 0 }, parseEnt("bmin=0,0,0 bmax=1,1,1 gap=-0.4 pgap=-0.4 tilt=0 walk=0.5 clip=none")).join().includes("sunk")) fails.push("sunk catches a buried prop");
   if (bestBy([{ id: "a", frame: { score: 1 } }, { id: "b", frame: { score: 3 } }]).id !== "b") fails.push("bestBy");
   for (const f of fails) console.log(`  ${f}`);

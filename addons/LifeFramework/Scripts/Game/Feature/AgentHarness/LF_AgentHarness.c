@@ -2853,12 +2853,14 @@ class LF_AgentHarness
 	//! Fills s_sClipNames (at most 3 names).
 	protected static void ProbeClips(vector mins, vector maxs, IEntity self)
 	{
-		vector lo = mins + "0.1 0.1 0.1";
-		vector hi = maxs - "0.1 0.1 0.1";
+		vector lo = mins + "0.15 0.15 0.15";
+		vector hi = maxs - "0.15 0.15 0.15";
 		if (hi[0] - lo[0] < 0.1 || hi[1] - lo[1] < 0.1 || hi[2] - lo[2] < 0.1)
 			return;
 
 		IEntity selfRoot = self.GetRootParent();
+		array<string> hitNames = {};
+		array<int> hitCounts = {};
 		for (int axis = 0; axis < 3; axis++)
 		{
 			int a1 = (axis + 1) % 3;
@@ -2895,13 +2897,31 @@ class LF_AgentHarness
 						if (hit == self || hit.GetRootParent() == selfRoot || ChimeraCharacter.Cast(hit))
 							continue;
 
+						// The terrain and other huge entities (roads, ground plates) pass through anything sunk: not a clip.
+						vector omin;
+						vector omax;
+						hit.GetWorldBounds(omin, omax);
+						if (omax[0] - omin[0] > 60 || omax[2] - omin[2] > 60)
+							continue;
+
 						vector p = from + (to - from) * (d / total);
 						if (p[0] < lo[0] || p[1] < lo[1] || p[2] < lo[2] || p[0] > hi[0] || p[1] > hi[1] || p[2] > hi[2])
 							continue;
 
+						// A real clip shows on more than one ray; a single graze (a rail, a gutter) does not count.
 						string label = ProbeLabel(hit);
-						if (s_sClipNames.Contains(label))
+						int at = hitNames.Find(label);
+						if (at < 0)
+						{
+							hitNames.Insert(label);
+							hitCounts.Insert(1);
 							continue;
+						}
+
+						hitCounts[at] = hitCounts[at] + 1;
+						if (hitCounts[at] != 2)
+							continue;
+
 						if (!s_sClipNames.IsEmpty())
 							s_sClipNames = s_sClipNames + ";";
 
@@ -2967,10 +2987,11 @@ class LF_AgentHarness
 				float px = cx + Math.Cos(angle) * radius;
 				float pz = cz + Math.Sin(angle) * radius;
 				float floorDist = ProbeTrace(Vector(px, floorY + 1.0, pz), Vector(px, floorY - 1.0, pz), self, hit);
-				if (floorDist >= 2.0)
-					continue;
-
-				float standY = floorY + 1.0 - floorDist;
+				// The terrain is not always on the trace's physics layer: it is the floor when the trace found none, or a higher one.
+				float surface = GetGame().GetWorld().GetSurfaceY(px, pz);
+				float standY = surface;
+				if (floorDist < 2.0)
+					standY = Math.Max(floorY + 1.0 - floorDist, surface);
 				if (Math.AbsFloat(standY - floorY) > 0.7)
 					continue;
 
