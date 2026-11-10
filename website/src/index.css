@@ -120,7 +120,8 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
-    scroll-padding-top: 5rem;
+    /* The sticky header is about 6rem tall (ribbon, nav bar, border); anchor targets land below it. */
+    scroll-padding-top: 7rem;
   }
   body {
     background: var(--paper);
