@@ -37,6 +37,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CarriedInventoryDeathNoDupe(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Carry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarryMeshes(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_CashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
@@ -100,7 +101,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HarnessDevGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessScreenText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessSessionScope(), LF_TestTier.LOGIC);
-		manager.Register(new LF_Test_HeistCashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HoldUp(), LF_TestTier.LOGIC);
