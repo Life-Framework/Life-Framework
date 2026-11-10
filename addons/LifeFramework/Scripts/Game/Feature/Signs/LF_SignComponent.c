@@ -109,6 +109,20 @@ class LF_SignComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A painted face (plate, fascia, pub sign, chalkboard) has an area; the paper board and notice do not.
+	bool HasPaintedFace()
+	{
+		return m_vFaceArea[0] > 0 && m_vFaceArea[1] > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sheet the Read card is printed on: framed and accented in this sign's colours when painted.
+	LF_UISkin CardSkin()
+	{
+		return LF_SignCatalog.CardSkin(HasPaintedFace(), m_vRimColor, m_vPaintColor, m_vTextColor);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The configured sign, or null. Resolved once; a miss logs once and the Read action hides.
 	LF_SignDef GetSign()
 	{
