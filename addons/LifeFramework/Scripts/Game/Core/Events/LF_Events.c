@@ -525,3 +525,26 @@ class LF_OnNewLifeReturn : LF_Event
 		return e;
 	}
 }
+
+//! A forced-entry heist paid out (#274 cash van). Published once by LF_Bank when the target opens.
+//! m_sKind is "bags" (cash left lying as carried bags). m_iAmount is the cash across the bags.
+//! m_sSerials is reserved for serial-stamped loot and is empty for cash.
+class LF_OnHeistLoot : LF_Event
+{
+	string m_sPlayerUid;
+	string m_sTargetId;
+	string m_sKind;
+	int m_iAmount;
+	string m_sSerials;
+
+	static LF_OnHeistLoot Create(string playerUid, string targetId, string kind, int amount, string serials)
+	{
+		LF_OnHeistLoot e = new LF_OnHeistLoot();
+		e.m_sPlayerUid = playerUid;
+		e.m_sTargetId = targetId;
+		e.m_sKind = kind;
+		e.m_iAmount = amount;
+		e.m_sSerials = serials;
+		return e;
+	}
+}

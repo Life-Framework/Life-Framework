@@ -6097,6 +6097,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You need a field dressing to revive someone."
      Comment "Revive refusal: the medic has none of the configured revive item."
     }
+    CustomStringTableItem "{287FBFE0C09D4B2C}" {
+     Id "LF-Heist_Van_Open"
+     Target_en_us "Break open the cash box"
+     Comment "Action: the cash van rear box (#274)."
+    }
+    CustomStringTableItem "{C3E5A18D0842729C}" {
+     Id "LF-Offence_CashVan"
+     Target_en_us "Cash van robbery"
+     Comment "Offence: the cash van box was forced (#274)."
+    }
     CustomStringTableItem "{8E172D4B5A1269CD}" {
      Id "LF-Sign_HospitalBay_Title"
      Target_en_us "Ambulance bay"

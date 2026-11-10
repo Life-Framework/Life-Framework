@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{8FABDE609C994BC2}Prefabs/Vehicles/LF_CashVanBox.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

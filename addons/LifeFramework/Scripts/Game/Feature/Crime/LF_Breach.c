@@ -47,6 +47,8 @@ class LF_BreachTarget : Managed
 	float m_fElapsed;
 	int m_iPoliceNotifies;
 	string m_sOwnerOrganization;
+	//! Offence the arm reports. Empty is the plain break-in.
+	string m_sOffence;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -105,6 +107,36 @@ class LF_Breach
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
 		LF_Debug.Log("Breach", string.Format("configured %1 fuse=%2", targetId, fuseSeconds));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How arming this target is reported (#274): the offence key. Empty keeps the plain break-in.
+	static void SetAlarm(string targetId, string offence)
+	{
+		LF_BreachTarget target = Targets().Get(targetId);
+		if (!target)
+		{
+			LF_Debug.Error("Breach", string.Format("alarm refused: target %1 is not configured", targetId));
+			return;
+		}
+
+		target.m_sOffence = offence;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: locks the target again with no player check. The cash van is stocked afresh at its
+	//! next stop; that is not a player repair.
+	static void Reset(string targetId)
+	{
+		LF_BreachTarget target = Targets().Get(targetId);
+		if (!target)
+			return;
+
+		target.m_bOpen = false;
+		target.m_bChargeArmed = false;
+		target.m_fElapsed = 0;
+		WriteLock(targetId, true);
+		SyncTarget(target);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -196,7 +228,11 @@ class LF_Breach
 		if (!suspect)
 			suspect = chargeCarrier;
 
-		LF_Dispatch.Report(playerUid, suspect, LF_WantedReports.OFFENCE_BREAK_IN, TargetOrigin(targetId));
+		string offence = target.m_sOffence;
+		if (offence.IsEmpty())
+			offence = LF_WantedReports.OFFENCE_BREAK_IN;
+
+		LF_Dispatch.Report(playerUid, suspect, offence, TargetOrigin(targetId));
 		LF_Debug.Log("Breach", string.Format("armed %1 by %2 fuse=%3", targetId, playerUid, target.m_fFuseSeconds));
 
 		target.m_bChargeArmed = true;
@@ -299,6 +335,7 @@ class LF_Breach
 		return true;
 	}
 
+	//------------------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------------------------------
 	static bool IsOpen(string targetId)
 	{
@@ -535,7 +572,10 @@ class LF_Breach
 		if (!entity)
 			return origin;
 
-		return entity.GetOrigin();
+		// World position: the cash van door is a child of the van and moves with it.
+		vector transform[4];
+		entity.GetWorldTransform(transform);
+		return transform[3];
 	}
 
 	//------------------------------------------------------------------------------------------------
