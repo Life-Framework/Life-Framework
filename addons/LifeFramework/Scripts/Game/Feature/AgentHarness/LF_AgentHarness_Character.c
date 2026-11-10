@@ -364,6 +364,55 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `siren`: set a vehicle's siren mode by entity name, behind the dev gate.
+	void LF_AskHarnessSiren(int commandId, string entityName, int mode)
+	{
+		if (Replication.IsServer())
+		{
+			LF_ApplyHarnessSiren(commandId, entityName, mode, true);
+			return;
+		}
+
+		Rpc(RpcAsk_LF_HarnessSiren, commandId, entityName, mode);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_HarnessSiren(int commandId, string entityName, int mode)
+	{
+		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "siren");
+		LF_ApplyHarnessSiren(commandId, entityName, mode, gateOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_ApplyHarnessSiren(int commandId, string entityName, int mode, bool gateOpen)
+	{
+		if (!gateOpen)
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		IEntity vehicle = GetGame().GetWorld().FindEntityByName(entityName);
+		LF_SirenManagerComponent siren;
+		if (vehicle)
+			siren = LF_SirenManagerComponent.Cast(vehicle.FindComponent(LF_SirenManagerComponent));
+
+		if (!siren)
+		{
+			LF_HarnessReply(commandId, "error", "no_siren");
+			return;
+		}
+
+		bool changed = siren.ApplyRequest(mode, GetGame().GetWorld().GetWorldTime());
+		int on = 0;
+		if (siren.IsOn())
+			on = 1;
+
+		LF_HarnessReply(commandId, "ok", string.Format("siren changed=%1 on=%2 broadcasts=%3", changed, on, siren.GetBroadcastCount()));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Read this character's account, money, job, and organization on the server.
 	//! Read-only, so it does not pass the dev gate: it reports what the player
 	//! could already see in their own menus.

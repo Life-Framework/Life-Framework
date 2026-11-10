@@ -164,3 +164,7 @@ SCR_DestructibleBuildingEntity Roadmap_Hospital_Payphone : "{8F2C6E1D4B7A5093}Pr
  coords 255 0 259
  angleY 180
 }
+GenericEntity Roadmap_Hospital_Ambulance : "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et" {
+ coords 266 0 250
+ angleY 90
+}
