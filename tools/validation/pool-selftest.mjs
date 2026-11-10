@@ -11,6 +11,7 @@
 //      record in runs.jsonl, and a retried request keeping its queue age;
 //   5. runtime budgets: learned 3x p95 with a 30 s floor, seeded defaults,
 //      machine multiplier, self-raise after timeouts, --budget.
+// red-proof 2026-11-10: dropping the hostname branch in loadMachines printed "an entry whose hostname is this machine is not the local machine with its own lanes".
 // red-proof: with remoteOwnerGone returning null it printed "dead owner pid on
 // this PC: no reclaim verdict"; with the mtime key removed from localConfig it
 // printed "config flip: local still disabled after re-enable"; with the hang
@@ -388,6 +389,13 @@ try {
   rmSync(join(dir, "tmp", "wt.json"));
   check(pool.resolvePriority(dir) === "normal", "default priority is not normal");
   check(pool.budgetsFor(dir, { name: "local", budgetMultiplier: 1 }, "test only").bootS === 30, "boot budget is not 30 s");
+  // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
+  writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
+  const selfView = pool.loadMachines(dir);
+  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 3 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  writeFileSync(join(dir, "lf.local.json"), "{}");
+  check(pool.loadMachines(dir).some((m) => m.name === "local") && pool.loadMachines(dir).find((m) => m.name === "lf-testbox")?.via === "ssh", "this PC lost its local entry");
+  check(pool.sessionMachineCandidates(dir, 1).map((m) => m.name).join() === "local,lf-testbox", "session candidates are not this PC first, then the laptop");
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }
@@ -397,4 +405,4 @@ if (failures.length) {
   for (const f of failures) console.log(`  ${f}`);
   process.exit(1);
 }
-console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets)");
+console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine)");
