@@ -29,7 +29,7 @@ Paths below were read from this tree or from `asset_search` / `game_browse` agai
 | Confiscate | `LF_ConfiscateAction` (weapons only today) |
 | Door lock | `LF_LockComponent`, `LF_DoorUserAction`, `LF_KeyComponent`, `LF_HouseManagerComponent`. Door prefab `{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et` (parent vanilla `Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`). Jail door `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et` inherits the prison-cell door. Key `{3735389521255DBE}Prefabs/Items/HouseKeyItem.et`. Lock state is not in the save serializer yet (`LF_LockComponent.c` says so) |
 | Vehicle lock and key | `LF_VehicleLockComponent`, `LF_VehicleKeyComponent`, `{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et`. Plates: `LF_LicensePlateManager` |
-| Police vehicle | `{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et`, parent `{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et` |
+| Police vehicle | `{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et`, parent `{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et` |
 | Hand carry | `LF_HandCarryComponent` on `Prefabs/Items/Core/HandCarryItem_Base.et` |
 | Gather / process | `LF_GatherAction`, `LF_ProcessAction`, `LF_DestructibleResourceComponent` |
 | Process machines | `Prefabs/Processor/AppleJuicer.et` (3 apples → apple juice), `Furnace.et` (nuggets → bars), `Sawmill.et` (log → plank + kindling) |

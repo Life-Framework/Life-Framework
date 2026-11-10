@@ -63,7 +63,7 @@ SCR_DestructibleBuildingEntity Roadmap_Police_Payphone : "{8F2C6E1D4B7A5093}Pref
  coords 239.9 0 242.05
  angleY 180
 }
-GenericEntity Roadmap_Police_Car : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
+GenericEntity Roadmap_Police_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
  coords 243.5 0 246
  angleY 90
 }
