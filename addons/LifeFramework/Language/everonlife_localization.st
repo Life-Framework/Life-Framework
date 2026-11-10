@@ -6571,7 +6571,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DD4DF16E9EA2A1E6}" {
      Id "LF-Chop_Load"
-     Target_en_us "Take this car apart"
+     Target_en_us "Take this stolen car apart"
      Comment "Action: start dismantling the car in the yard (#415)."
     }
     CustomStringTableItem "{DB060C732777FC93}" {
@@ -6616,12 +6616,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DE5E9D7236637A63}" {
      Id "LF-Chop_NotStolen"
-     Target_en_us "We only take hot cars"
-     Comment "Toast: the car is not stolen (#415)."
+     Target_en_us "Only stolen cars. Lockpick or hotwire a car that is not yours and bring it here."
+     Comment "Toast: the car is not stolen. Says what counts as hot: a car taken by lockpick or hotwire (#415, #601)."
     }
     CustomStringTableItem "{235163142BFE40D6}" {
      Id "LF-Chop_KeyedOwner"
-     Target_en_us "You hold its key. Not here."
+     Target_en_us "That car is yours (you hold its key). Only stolen cars, please."
      Comment "Toast: an owner with the key cannot chop (#415)."
     }
     CustomStringTableItem "{37FDABA91E5334CF}" {
