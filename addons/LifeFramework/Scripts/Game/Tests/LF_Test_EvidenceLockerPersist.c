@@ -76,7 +76,7 @@ class LF_Test_EvidenceLockerPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(22, version, "the save is written at version 22 (evidencelocker is payload 18)");
+		ctx.Equal(23, version, "the save is written at version 23 (evidencelocker is payload 18)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "evidencelocker");
 		ctx.Equal(1, LF_EvidenceLocker.Count(), "the logged bag is back");
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(report.m_iSequence), "it is still linked to its report");

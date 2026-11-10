@@ -90,6 +90,7 @@ under "Hard-coded flagship values in script".
 | `Feature/Chat` | core | System |
 | `Feature/Crime` | core | System; payouts move to config |
 | `Feature/Debug`, `Feature/DebugWorld` | core | Test fixtures |
+| `Feature/Farming` | core | Farm plots: plant, grow, harvest, save (#614) |
 | `Feature/Film`, `Feature/ScreenshotCapture` | core | Tooling |
 | `Feature/Gathering`, `Feature/Mining`, `Feature/Processing`, `Feature/Resources` | core | Systems; drop tables are config |
 | `Feature/Hideouts` | core | System |
