@@ -141,6 +141,24 @@ keyframes needs a re-animation (section 3).
   and a `SCR_ContinuousLoiterCommand` config. `CharacterAnimGraphComponent.SetAttachment(binding, agr, asi, node, managed, copyInputs)`
   does the same from script.
 
+### 3.4 Proven in game (#512, 2026-11-10)
+
+- **Post-graph does not work on the player.** `PlayPostGraphAnimation` lives on
+  `CharacterAnimGraphComponent`, which `Character_Base.et` does not carry (only
+  `SCR_CharacterAnimationComponent`). The "cheapest" route in section 3.3 is closed for characters.
+- **The attachment graph works and replicates.** `Anims/Workspaces/Medic/LF_ReviveCPR.{agr,ast,agf,asi,aw}`
+  copies the rally emote layout (`MasterControl` state machine, `Gestures` control variable,
+  in/loop/out) and points at the CPR clips. `StartLoitering(CUSTOM, ...)` on the owner showed
+  the medic kneeling on both clients of a two-client session (head bone 0.99 m against 1.6 m
+  standing). The rally graph itself is not usable: the `rally` addon is not loaded on our
+  server (`Wrong GUID/name` for every rally resource).
+- **Base clip GUIDs** come from `addons/data/resourceDatabase.rdb`: each path is followed by
+  6 bytes and then its GUID as 8 little-endian bytes. CPR: in `53DD1932ED812D70`, loop
+  `0CCED80870DD8150`, out `226002617FC7B0AB`.
+- **A clip without a `Gesture_End` event never ends a soft loiter exit**
+  (`SCR_CharacterCommandLoiter` waits for it while a graph is attached). The CPR clips carry
+  none, so stop with `StopLoitering(true)` (Gestures -2 detaches at once).
+
 ## 4. Recommendation per M2 need
 
 | Need | Choice | What | Effort | Risk |
