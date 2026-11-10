@@ -3641,8 +3641,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{363F3934916EA0EA}" {
      Id "LF-Sign_Atm_Title"
-     Target_en_us "ATM"
-     Comment "Title of the sign at the ATM on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
+     Target_en_us "Teller"
+     Comment "Title of the sign at the teller window on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
     }
     CustomStringTableItem "{CCA971294A309363}" {
      Id "LF-Sign_Atm_What"
@@ -3651,7 +3651,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
-     Target_en_us "ATM, then Deposit or Withdraw."
+     Target_en_us "Talk to the teller, then Deposit or Withdraw."
      Comment "Sign card for the ATM on the bank's front, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{0CD84D83AF49CFAA}" {
@@ -6675,6 +6675,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Starting permit for farm work. Lets you gather crops by hand."
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
+    }
+    CustomStringTableItem "{4B1E7A2C9D3F4081}" {
+     Id "LF-Bank_Teller_Talk"
+     Target_en_us "Talk to the teller"
+     Comment "Prompt on the bank teller at the counter window. Opens the deposit and withdraw screen."
+    }
+    CustomStringTableItem "{7C20D5E8A1B94F36}" {
+     Id "LF-Bank_Teller_TalkDesc"
+     Target_en_us "Deposit or withdraw cash at the counter"
+     Comment "Description of the bank teller prompt."
     }
   }
  }

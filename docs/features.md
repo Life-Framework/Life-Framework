@@ -591,6 +591,13 @@
   withdrawal plays `SOUND_PICK_UP` on the character for everyone nearby.
   Tests: `atm/keypad`, `atm/refusal-reasons`, `counter/refusal-text`,
   `counter/local-only`, `counter/screen-layout`.
+- ✅ (2026-11-10, #590) **1989 bank teller replaces the placed ATM.** `LF_BankTeller.et` is a clerk NPC
+  (Edith) whose chest context carries `LF_ATMAction` labelled "Talk to the teller", so deposit and
+  withdraw use the same terminal, server seams, range check (`LF_ActionSite` finds the teller as the
+  counter), ledger reasons (`atm-deposit`, `atm-withdraw`), quest signal and ATM code. The playtest town
+  places her behind the west bank counter (177, 259.5); the ATM entity `ATM_Debug` stays, hidden
+  (no mesh, inside the bank), for tests and flows. Test `atm/bank-teller`; demo
+  `session.mjs bank-teller-proof`.
 - ✅ **Cash moves** (verified 2026-08-30): the menu forwards through
   `LF_CharacterATMComponent.RequestDeposit/RequestWithdraw`, and the server
   RPC handlers `RpcAsk_Deposit`/`RpcAsk_Withdraw` remove cash on deposit

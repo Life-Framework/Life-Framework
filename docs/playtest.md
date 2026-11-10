@@ -26,7 +26,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
    card, the town board, and a parcel run ("Run paid: $40").
 2. **Job.** Sign up at the post office counter and deliver the parcel. Five
    parcel runs open fuel delivery, fifteen open the taxi.
-3. **Bank.** You start with $1,000 in the bank. Deposit and withdraw at the ATM: two teller-window counters flank the bank door (about 177 and 187, 259), under the ATM sign.
+3. **Bank.** You start with $1,000 in the bank. Deposit and withdraw at the bank teller: walk to the west counter window on the bank front at (177, 259), where Edith stands behind the counter under the *Teller* sign, and use *Talk to the teller*; it opens the same deposit and withdraw screen the ATM did (demo: `node agent-box/session.mjs bank-teller-proof`). The old ATM entity is kept hidden inside the bank for the tests; the east counter at (187, 259) is a plain counter.
 4. **Shop.** The general store sells food, drink, and a dressing from a price
    sheet.
 5. **Vehicle.** Read the price sheet at the car lot (desk at 211, 262; four display cars in a row at z 261, each with a chalkboard price board in front, x 216 to 230) and buy a car. Your character
