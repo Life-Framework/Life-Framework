@@ -6676,16 +6676,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
-    CustomStringTableItem "{4A1C9E27B05D3F18}" {
-     Id "LF-Item_Parcel_Deliver"
-     Target_en_us "Deliver to: %1"
-     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
-    }
-    CustomStringTableItem "{4A1C9E27B05D3F19}" {
-     Id "LF-Job_ParcelDest"
-     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
-     Comment "Where a courier parcel goes. Shown in the parcel description."
-    }
     CustomStringTableItem "{F297FFD8D4B6E791}" {
      Id "LF-LawlessHud_Tag"
      Target_en_us "LAWLESS AREA"
@@ -6710,6 +6700,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BankKit_Take"
      Target_en_us "Take bank robbery kit"
      Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
+    CustomStringTableItem "{9BE7A1D673564E1C}" {
+     Id "LF-Dispatch_TestPolice"
+     Target_en_us "Test police call"
+     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
+    }
+    CustomStringTableItem "{803BB29C950EAC01}" {
+     Id "LF-Dispatch_TestMedic"
+     Target_en_us "Test medic call"
+     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
+    }
+    CustomStringTableItem "{E9CE669FFF4D0206}" {
+     Id "LF-Dispatch_TestDesc"
+     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
+     Comment "Description of the dispatch console test-call actions."
+    }
+    CustomStringTableItem "{05CAE71B3EBFC584}" {
+     Id "LF-Dispatch_TestTitle"
+     Target_en_us "Test call"
+     Comment "Toast title for the dispatch console test call."
+    }
+    CustomStringTableItem "{51294940A40506CF}" {
+     Id "LF-Dispatch_TestSent"
+     Target_en_us "Call placed. Take it at the dispatch board."
+     Comment "Toast after a test call went out to an on-duty service."
+    }
+    CustomStringTableItem "{36AF55270A37E7B0}" {
+     Id "LF-Dispatch_TestOff"
+     Target_en_us "Test calls are off in this game mode."
+     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
     }
   }
  }
