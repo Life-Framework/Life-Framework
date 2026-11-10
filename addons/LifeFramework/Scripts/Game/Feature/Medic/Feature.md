@@ -26,6 +26,10 @@ body, later a revive action); the downed player's own state is world-visible
 3. `LF_Downed.Finish` is the real death (vanilla path: murder hook, hospital
    wake). `LF_Downed.Clear` ends the state. Only the dev `die` command calls
    `Finish` today.
+   The owning client drives a player character's unconsciousness and re-reads it only on a
+   blood or resilience damage-state change, so the flag's replication handler
+   (`LF_OnDownedReplicated`) recomputes it on the owner when the flag clears: a wake after
+   those zones regenerated to full changes no damage state (#442, the ambulance ride).
 4. `m_bDownedCanBeSearched` gates opening the body's inventory (searched or robbed).
 
 ## V1.1 - #256, bleed-out and give-up

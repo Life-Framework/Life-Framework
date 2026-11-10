@@ -291,3 +291,15 @@ GenericEntity Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
  coords 206 0 172
  angleY 90
 }
+GenericEntity Sign_HospitalBay : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "hospital_bay"
+   m_vRimColor 0.75 0.08 0.08
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.75 0.08 0.08
+  }
+ }
+ coords 260.8 0 250
+ angleY 270
+}
