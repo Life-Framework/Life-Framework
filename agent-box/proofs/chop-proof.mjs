@@ -1,4 +1,5 @@
 import { arrive, clientBox, sessionDir } from "../session.mjs";
+import { makeClientSees } from "./_clientSees.mjs";
 
 // M2 #415 on a running `up --clients 3 --mission playtest --wait` session with client 2 on the roster
 // (`roster 2` before `up`): the whole loop. Client 1 owns the starter S105; client 3 hotwires it; client 1
@@ -16,6 +17,7 @@ async function runChopProof() {
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const fails = [];
+  const sees = makeClientSees({ on, wait, dir });
   const must = (r, what) => {
     if (r.status !== "ok") fails.push(`${what} returned ${r.status} ${r.detail}`);
     return r;
@@ -83,6 +85,8 @@ async function runChopProof() {
   on(2, { verb: "look" });
   on(2, { verb: "use", className: "LF_WantedBoardReadAction", entityName: "Roadmap_Police_WantedBoard" }, 10000);
   wait(2500);
+  // #522: the officer's own screen carries the chop shop crime (the board is read on client 2, not the server).
+  sees.expectText(2, "Chop shop", fails, "board after the chop");
   on(2, { verb: "capture", mode: "ui", name: "m2_415_board_after_client2" }, 25000);
   on(2, { verb: "ui" });
   on(2, { verb: "click", widget: "Close" });

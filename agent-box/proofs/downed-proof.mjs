@@ -1,7 +1,7 @@
-import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ROB_TARGET, ROOT, arrive, clientBox, judgeBleed, judgeDowned, parseState, sessionDir } from "../session.mjs";
+import { ROB_TARGET, arrive, clientBox, judgeBleed, judgeDowned, parsePeer, parseState, sessionDir } from "../session.mjs";
+import { ensureClient, makeClientSees } from "./_clientSees.mjs";
 
 async function runDownedProof() {
   const h = await import("../harness.mjs");
@@ -20,6 +20,7 @@ async function runDownedProof() {
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const state = (n) => on(n, { verb: "state" }, 10000).detail;
   const fails = [];
+  const sees = makeClientSees({ on, wait, dir });
 
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
@@ -54,12 +55,11 @@ async function runDownedProof() {
   if (process.argv.includes("--no-late-join")) {
     console.log("late join skipped (--no-late-join)");
   } else {
-    const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "3"], { windowsHide: true, stdio: "inherit" });
-    if (joined.status !== 0) {
+    // #504: a second run in one session finds client 3 still connected: reuse it instead of joining again.
+    const lateJoin = ensureClient(on, wait, 3);
+    if (lateJoin === "failed") {
       fails.push("client 3 did not join late");
     } else {
-      arrive(on, 3, wait);
-      wait(8000);
       on(3, { verb: "stand", entityName: ROB_TARGET });
       wait(4000);
       peers3 = on(3, { verb: "peers" }, 10000).detail;
@@ -94,6 +94,9 @@ async function runDownedProof() {
   on(1, { verb: "stand", entityName: patientName });
   wait(2500);
   on(1, { verb: "look" });
+  // #522: what client 1 sees of the body: the downed pose (replicated flag plus vanilla unconscious state).
+  const pose1 = parsePeer(sees.peers(1), 2);
+  if (!pose1 || pose1.downed !== "1" || pose1.life !== "INCAPACITATED") fails.push(`client 1 does not see the downed pose before the revive: ${JSON.stringify(pose1)}`);
   const revive = on(1, { verb: "use", className: "LF_ReviveAction", entityName: patientName }, 10000);
   // The vanilla wake takes a few seconds after the downed state ends.
   let revived = parseState(state(2));
@@ -101,6 +104,9 @@ async function runDownedProof() {
     wait(2000);
     revived = parseState(state(2));
   }
+  // #522: and after the revive client 1 sees the body standing again.
+  const up1 = parsePeer(sees.peers(1), 2);
+  if (!up1 || up1.downed !== "0" || up1.life !== "ALIVE") fails.push(`client 1 does not see client 2 up after the revive: ${JSON.stringify(up1)}`);
   on(2, { verb: "capture", mode: "ui", name: "m2_259_revived_client2" }, 25000);
   seeBody("m2_259_after_revive_world");
   on(1, { verb: "stand", entityName: patientName });

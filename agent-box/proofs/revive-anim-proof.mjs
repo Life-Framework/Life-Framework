@@ -1,6 +1,5 @@
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import { ROB_TARGET, arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
+import { ROB_TARGET, arrive, clientBox, parseState, sessionDir } from "../session.mjs";
+import { readLogs as readLogsOf } from "./_clientSees.mjs";
 
 // A false PASS (#259): the proof used to judge only the harness replies, so a revive animation
 // that never played still passed. The logs are the truth about the animation: the server must
@@ -23,16 +22,7 @@ export function judgeReviveAnimLogs(serverText, clientTexts) {
   return out;
 }
 
-function readLog(logsDir) {
-  const f = newestLog(logsDir);
-  return f && existsSync(f) ? readFileSync(f, "utf8") : "";
-}
-
-// Every log of the session, newest file each; a second run in one session judges only its own lines.
-function readLogs(dir) {
-  const paths = sessionPaths(dir, 2);
-  return [readLog(join(paths.server, "logs")) || readLog(paths.server), ...paths.clients.map((c) => readLog(c.logs))];
-}
+const readLogs = (dir) => readLogsOf(dir, 2);
 
 // M2 #512: the medic kneels and does CPR while a revive runs, seen by the patient's client. Client 1
 // clocks in as a medic, downs client 2, stands by the body and reports the revive hold with `cpr`

@@ -843,6 +843,7 @@ async function main(argv) {
     if (!clientArgs({ n: 1, addonsDir: "a", profile: "p" }).includes("-noSound")) f.push("a default client is not -noSound");
     if (clientArgs({ n: 1, addonsDir: "a", profile: "p", sound: true }).includes("-noSound")) f.push("--sound still passes -noSound");
     f.push(...(await import("./proofs/_reset.mjs")).selftestReset().map((x) => `reset: ${x}`));
+    f.push(...(await import("./proofs/_clientSees.mjs")).selftestClientSees().map((x) => `clientSees: ${x}`));
     for (const x of f) console.log(`  ${x}`);
     console.log(f.length ? "session selftest: FAIL" : "session selftest: OK");
     return f.length ? 1 : 0;

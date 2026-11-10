@@ -1,4 +1,5 @@
 import { arrive, clientBox, sessionDir } from "../session.mjs";
+import { makeClientSees } from "./_clientSees.mjs";
 
 // M2 #258 on a running `up --clients 2` session: client 2 clocks in at the hospital desk and
 // is a medic on duty (the medic kit, the service routing); the hospital board, closed to the
@@ -10,12 +11,14 @@ async function runMedicProof() {
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
     const r = h.sendCommand(spec, timeout);
-    console.log(`client ${n}: ${r.line.replace(/^d+ /, "")} -> ${r.status} ${r.detail}`);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
     return r;
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const state = (n) => on(n, { verb: "state" }, 10000).detail;
   const fails = [];
+  const sees = makeClientSees({ on, wait, dir });
+  const boardText = {};
   const desk = (n) => {
     on(n, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
     wait(2500);
@@ -30,6 +33,7 @@ async function runMedicProof() {
     on(n, { verb: "look" });
     const r = on(n, { verb: "use", className: "LF_WantedBoardReadAction", entityName: "Roadmap_Hospital_DispatchBoard" }, 10000);
     wait(2500);
+    boardText[n] = sees.uiText(n);
     on(n, { verb: "capture", mode: "ui", name }, 25000);
     on(n, { verb: "ui" });
     on(n, { verb: "click", widget: "Close" });
@@ -52,6 +56,10 @@ async function runMedicProof() {
   if (!onDuty.includes("faction=MEDIC") || !onDuty.includes("duty=1")) fails.push(`client 2 after clock-in: ${onDuty}`);
   board(2, "m2_258_board_medic_client2");
 
+  // #522: the board is a client-side read: the medic's client shows the open board, the public's does not.
+  console.log(`board text: client 1 (public) ${JSON.stringify(boardText[1])}; client 2 (medic) ${JSON.stringify(boardText[2])}`);
+  if (!/Closed=/.test(boardText[1] ?? "")) fails.push(`client 1 (public) does not see the board closed: ${boardText[1]}`);
+  if (!/Title=Medic/.test(boardText[2] ?? "") || /Closed=/.test(boardText[2] ?? "")) fails.push(`client 2 (medic) does not see the board open: ${boardText[2]}`);
   const clockOut = desk(2);
   const offDuty = state(2);
   if (clockOut.status !== "ok") fails.push(`clock out returned ${clockOut.status} ${clockOut.detail}`);

@@ -1,4 +1,5 @@
-import { arrive, clientBox, sessionDir } from "../session.mjs";
+import { arrive, clientBox, parsePeer, sessionDir } from "../session.mjs";
+import { makeClientSees, peerGap } from "./_clientSees.mjs";
 
 // M2 #412 on a running `up --clients 2` session (debug mission): client 1 picks the lock-up car with a
 // lockpick, sits at the wheel, fails to start it (the ignition needs its key), hotwires it and starts the
@@ -15,6 +16,7 @@ async function runHotwireProof() {
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const fails = [];
+  const sees = makeClientSees({ on, wait, dir });
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
   on(2, { verb: "stand", entityName: "Roadmap_Lockpick_Car" });
@@ -26,6 +28,8 @@ async function runHotwireProof() {
   wait(1500);
   const pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Car" }, 10000);
   wait(23000);
+  // #522: the unlock reached the witness: client 2 no longer sees the pick offered on the car.
+  sees.expectOffer(2, "LF_LockpickAction", "", false, fails, "after the pick");
   const getIn = on(1, { verb: "engine", entityName: "Roadmap_Lockpick_Car" }, 10000);
   wait(4000);
   const noKey = on(1, { verb: "engine" }, 10000);
@@ -42,6 +46,12 @@ async function runHotwireProof() {
     started = on(1, { verb: "engine" }, 10000);
     if (started.status === "ok" && started.detail.includes("on=1")) break;
   }
+  // #522: client 2 sees client 1 in the driver seat of the running car, beside the car and not the lot's far end.
+  const seen2 = sees.peers(2);
+  const driver = parsePeer(seen2, 1);
+  if (!driver || driver.seat !== "1") fails.push(`client 2 does not see client 1 seated in the car: ${seen2}`);
+  const gap = peerGap(seen2, 1, 2);
+  if (gap === null || gap > 20) fails.push(`client 2 sees the driver ${gap} m away, expected the car beside the witness`);
   on(1, { verb: "capture", mode: "ui", name: "m2_412_car_driven_client1" }, 25000);
   on(2, { verb: "capture", mode: "ui", name: "m2_412_car_driven_client2" }, 25000);
   if (give.status !== "ok" || !give.detail.includes("added=5")) fails.push(`lockpick not given: ${give.status} ${give.detail}`);

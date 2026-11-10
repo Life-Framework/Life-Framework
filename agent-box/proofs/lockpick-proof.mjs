@@ -1,4 +1,5 @@
 import { arrive, clientBox, sessionDir } from "../session.mjs";
+import { makeClientSees } from "./_clientSees.mjs";
 
 // M2 #411 on a running `up --clients 2` session: client 1 has no pick and is told so, is handed a
 // lockpick (dev gate, standing in for the fence), works the lock-up door and walks in once it gives.
@@ -10,17 +11,20 @@ async function runLockpickProof() {
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
     const r = h.sendCommand(spec, timeout);
-    console.log(`client ${n}: ${r.line.replace(/^d+ /, "")} -> ${r.status} ${r.detail}`);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
     return r;
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const fails = [];
+  const sees = makeClientSees({ on, wait, dir });
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
   on(2, { verb: "stand", entityName: "Roadmap_Lockpick_Door" });
   on(1, { verb: "stand", entityName: "Roadmap_Lockpick_Door" });
   wait(2500);
   on(1, { verb: "look" });
+  // #522: the lock state is replicated; the witness sees the pick offered on the locked door.
+  sees.expectOffer(2, "LF_LockpickAction", "", true, fails, "before the pick");
   on(1, { verb: "capture", mode: "ui", name: "m2_411_door_before_client1" }, 25000);
   const noPick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Door" }, 10000);
   const give = on(1, { verb: "lockpick" }, 10000);
@@ -28,6 +32,8 @@ async function runLockpickProof() {
   const pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Door" }, 10000);
   wait(23000);
   on(1, { verb: "capture", mode: "ui", name: "m2_411_door_picked_client1" }, 25000);
+  // #522: once it gives, the witness no longer sees the pick offered: the unlocked state reached client 2.
+  sees.expectOffer(2, "LF_LockpickAction", "", false, fails, "after the pick");
   on(2, { verb: "capture", mode: "ui", name: "m2_411_door_picked_client2" }, 25000);
   if (noPick.status === "ok") fails.push(`the pick started without a pick: ${noPick.detail}`);
   if (give.status !== "ok" || !give.detail.includes("added=5")) fails.push(`lockpick not given: ${give.status} ${give.detail}`);

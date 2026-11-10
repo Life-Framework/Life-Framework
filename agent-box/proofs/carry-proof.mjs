@@ -1,6 +1,5 @@
-import { spawnSync } from "node:child_process";
-import { join } from "node:path";
-import { ROB_TARGET, ROOT, arrive, clientBox, judgeCarry, parsePeer, parseState, sessionDir } from "../session.mjs";
+import { ROB_TARGET, arrive, clientBox, judgeCarry, parsePeer, parseState, sessionDir } from "../session.mjs";
+import { ensureClient, peerMoved } from "./_clientSees.mjs";
 
 async function runCarryProof() {
   const h = await import("../harness.mjs");
@@ -37,11 +36,15 @@ async function runCarryProof() {
   need(drag.status === "ok", `drag returned ${drag.status} ${drag.detail}`);
   wait(1500);
   const start1 = peers(1);
+  const seenStart2 = peers(2);
   need(parsePeer(start1, 2)?.carrier === 1, `the body is not held by client 1 after the drag: ${start1}`);
   on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
   wait(4000);
   const carrierAt = at(1);
   const afterDrag = { 1: peers(1), 2: peers(2) };
+  // #522: the carried body is client 2's own; what client 2 sees must travel with the carrier.
+  const travelled = peerMoved(seenStart2, afterDrag[2], 2);
+  need(travelled !== null && travelled > 3, `client 2 does not see the carried body move: moved ${travelled} m`);
   for (const n of [1, 2]) for (const f of judgeCarry(afterDrag[n], 2, 1, carrierAt, 4)) fails.push(`drag, client ${n}: ${f}`);
   const [cx, cy, cz] = carrierAt;
   on(1, { verb: "capture", mode: "world", name: "m2_261_drag_world", x: cx, y: cy + 0.8, z: cz, ox: 3.5, oy: 1.6, oz: 0 }, 25000);
@@ -49,12 +52,10 @@ async function runCarryProof() {
   // A late joiner reads the hold and the body next to the carrier.
   let afterDrag3 = "";
   if (!process.argv.includes("--no-late-join")) {
-    const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "3"], { windowsHide: true, stdio: "inherit" });
-    if (joined.status !== 0) {
+    // #504: reuse client 3 when an earlier run in this session left it connected.
+    if (ensureClient(on, wait, 3) === "failed") {
       fails.push("client 3 did not join late");
     } else {
-      arrive(on, 3, wait);
-      wait(8000);
       on(3, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
       wait(4000);
       afterDrag3 = peers(3);
