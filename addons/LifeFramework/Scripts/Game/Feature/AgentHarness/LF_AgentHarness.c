@@ -2886,17 +2886,10 @@ class LF_AgentHarness
 				float angle = i * 45 * Math.DEG2RAD;
 				vector p = origin + Vector(Math.Cos(angle) * radius, 0, Math.Sin(angle) * radius);
 				float floorDist = ProbeTrace(p + "0 1.0 0", p - "0 1.5 0", self, hit);
-				float floorY;
 				if (floorDist >= 2.5)
-				{
-					// Bare terrain does not answer the projectile trace; a player still stands on it.
-					floorY = GetGame().GetWorld().GetSurfaceY(p[0], p[2]);
-				}
-				else
-				{
-					floorY = p[1] + 1.0 - floorDist;
-				}
+					continue;
 
+				float floorY = p[1] + 1.0 - floorDist;
 				if (Math.AbsFloat(floorY - origin[1]) > 0.7)
 					continue;
 

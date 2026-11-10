@@ -159,7 +159,7 @@ GenericEntity Quarry_WarnSign : "{27EDF8AFC363A7D5}Prefabs/Props/Signs/Industria
  coords 176.4 0 193.4
 }
 GenericEntity Quarry_Hut : "{8597237EA3C59701}Prefabs/Structures/Houses/Shed/Shed_03/Shed_03.et" {
- coords 196 0 191
+ coords 162.5 0 190.5
  angleY 180
 }
 GenericEntity Quarry_Spoil1 : "{7AF35E9C21F21BFA}Prefabs/Structures/Military/Fortifications/DirtPile_01/DirtPile_01_base.et" {
@@ -181,14 +181,14 @@ GenericEntity Quarry_Sand : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPi
  coords 158 0 171
 }
 GenericEntity Quarry_Tires : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
- coords 168 0 186
+ coords 170.5 0 185
  angleY 30
 }
 GenericEntity Quarry_Barrel1 : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
- coords 192 0 187
+ coords 165.5 0 186.5
 }
 GenericEntity Quarry_Barrel2 : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
- coords 193.1 0 186.6
+ coords 166.6 0 186.1
 }
 GenericEntity Quarry_Wheelbarrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
  coords 185 0 168

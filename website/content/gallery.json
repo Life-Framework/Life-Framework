@@ -77,7 +77,10 @@
     "area-10-cash-van/wide": "The cash van at the bank stop",
     "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open",
     "area-16-moonshine/wide": "The moonshine camp tucked under a stand of spruce: still, fire pit, pallet and a fence behind",
-    "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack, beside the mash barrels"
+    "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack, beside the mash barrels",
+    "area-11-quarry/wide": "The lawless quarry from the lane: the red Lawless Area sign faces the approach, with the barrier, gatehouse shed and spoil heap beyond",
+    "area-11-quarry/barrier": "The lane barrier of fence rails and cones with the Mine Hazard sign, barrels and the gatehouse shed, the miner stand and ore rocks behind",
+    "area-11-quarry/stand": "The miner stand from the lane: the mining sign facing the approach, the miner behind his tables, ore sacks and rocks"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",
@@ -85,6 +88,7 @@
     "area-7-hospital": "Hospital",
     "area-9-fence": "The fence",
     "area-10-cash-van": "Cash van route",
+    "area-11-quarry": "Quarry and mining",
     "area-16-moonshine": "Moonshine camp"
   },
   "skip": [
