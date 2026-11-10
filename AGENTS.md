@@ -86,6 +86,7 @@ Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desk
 
 ## Worktrees
 
+Long-lived non-main bases (e.g. `m3`): `wt new <slug> --base m3` records the base and `wt ship` follows it; `wt sync-base m3` PRs main into it (`docs/worktrees.md` "Base branches").
 Start with `tools\cli wt new <slug>` and work inside it on `ws/<slug>`; never
 commit to `main`. `docs/worktrees.md` covers ports, locks, shipping, and pruning.
 **Never run `git worktree remove --force`, `rm -rf`, or `Remove-Item -Recurse`

@@ -72,6 +72,14 @@ but the Workbench shader cache is shared by the machine. Stop the current editor
 before opening another worktree to avoid cache contention and stale resource
 views. Do not run a headless build while an interactive Workbench is open.
 
+## Base branches
+
+Worktrees cut from and ship to `main` by default. For a long-lived branch such as `m3`:
+
+- `tools\cli wt new <slug> --base m3` cuts from `origin/m3` and records the base in the hub state; `wt ship`, `wt sync`, `wt prune`, `wt list` and `prs heal` use it (PR base, merge-tree check, auto-merge, merged detection). `wt ship --base B` overrides. Worktrees with no recorded base stay on `main`.
+- `tools\cli wt sync-base m3 [--source main]` opens a PR that merges `origin/main` into `m3` from a `ws/sync-m3-<stamp>` worktree (merge drivers resolve generated files; any other conflict stops with the file list). It never force-pushes; prune the sync worktree after the merge.
+- The `validate` workflow runs on every `pull_request` (no branch filter), so PRs into `m3` get it. Making `validate` a required check on `m3` is a GitHub branch-protection setting, not done by the tooling.
+
 ## Auto-merge
 
 `wt ship <slug> [--closes N] [--body-file F]`:
