@@ -140,7 +140,8 @@ GenericEntity Sign_FuelStation : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 1 1 1
   }
  }
- coords 255 0 245.5
+ coords 264.6 0 242.7
+ angleY -50
 }
 GenericEntity Sign_Hospital : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
  components {
