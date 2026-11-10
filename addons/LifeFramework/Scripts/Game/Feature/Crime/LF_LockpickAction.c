@@ -13,33 +13,6 @@ class LF_LockpickTargetComponent : ScriptComponent
 	[Attribute("1", UIWidgets.CheckBox, desc: "Off for a lock a pick cannot work: a bank vault, the jail door.")]
 	protected bool m_bPickable;
 
-	[Attribute("0", UIWidgets.CheckBox, desc: "Lock the door when the world starts. LF_LockComponent.m_bDebugLocked is never applied (its component asks for no init event), so a placed pick door sets this instead.")]
-	protected bool m_bStartLocked;
-
-	//------------------------------------------------------------------------------------------------
-	override void OnPostInit(IEntity owner)
-	{
-		super.OnPostInit(owner);
-
-		if (m_bStartLocked && Replication.IsServer())
-			SetEventMask(owner, EntityEvent.INIT);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void EOnInit(IEntity owner)
-	{
-		super.EOnInit(owner);
-
-		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(owner);
-		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(owner);
-		if (doorLock)
-			doorLock.Lock();
-		else if (vehicleLock)
-			vehicleLock.SetLocked(true);
-		else
-			LF_Debug.Error("Lockpick", "start-locked target has no lock component");
-	}
-
 	//------------------------------------------------------------------------------------------------
 	bool IsPickable()
 	{
@@ -55,7 +28,8 @@ class LF_LockpickAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return LF_Lockpick.ShowsPick(GetOwner());
+		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(GetOwner());
+		return doorLock && doorLock.IsLocked() && LF_Component<LF_LockpickTargetComponent>.Find(GetOwner()) != null;
 	}
 
 	//------------------------------------------------------------------------------------------------

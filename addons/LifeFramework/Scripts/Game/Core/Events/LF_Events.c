@@ -644,3 +644,31 @@ class LF_OnChainWork : LF_Event
 		return e;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! A player stood inside the smell range of a running chain site (#418). Published by
+//! LF_ChainTrace at most once per listener and site per cooldown, never per frame. The lead
+//! subscriber turns it into a police service call; m_bOfficer is true for an on-duty officer.
+class LF_OnChainSmell : LF_Event
+{
+	string m_sListenerUid;
+	bool m_bOfficer;
+	string m_sSiteId;
+	string m_sChainId;
+	float m_fDistance;
+	float m_fHeat;
+	vector m_vPosition;
+
+	static LF_OnChainSmell Create(string listenerUid, bool officer, string siteId, string chainId, float distance, float heat, vector position)
+	{
+		LF_OnChainSmell e = new LF_OnChainSmell();
+		e.m_sListenerUid = listenerUid;
+		e.m_bOfficer = officer;
+		e.m_sSiteId = siteId;
+		e.m_sChainId = chainId;
+		e.m_fDistance = distance;
+		e.m_fHeat = heat;
+		e.m_vPosition = position;
+		return e;
+	}
+}

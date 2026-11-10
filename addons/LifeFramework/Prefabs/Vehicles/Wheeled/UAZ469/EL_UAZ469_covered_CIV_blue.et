@@ -15,6 +15,14 @@ Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_
       Name "#EL-VehicleLock_Action"
      }
     }
+    LF_VehicleSearchAction "{5EA2C40700000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C40700000002}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
    }
   }
  }

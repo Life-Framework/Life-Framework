@@ -823,8 +823,29 @@
   instant processors already did, extracted so the stations share it.
 - Tests: `stations/progress` (LOGIC), `stations/world` (WORLD), `persist/chain-stations-roundtrip`
   (PERSISTENCE). The suite's version checks now read 20.
-- ⚠️ Not built: the smoke effect and the smell notice (#418), searches (#419), the moonshine pack
-  chain (#420). Manual: three players on three barrels, see the PR.
+- ✅ **Moonshine (#420, tier 1, config only).** `moonshine` in `ResourceChains.conf`: `mash` at a
+  barrel (4 plums and 2 cabbages to 2 water bottles of wash, 12 work), then `distill` at a still
+  (2 bottles of wash to 1 `LF_ContrabandCrate`, 16 work). No gate; heat 3 per work, range 60 m.
+  The crate is what the existing convoy (barn to pub) pays for. `Prefabs/Chains/LF_ChainStill.et`
+  is the barrel prefab with the boiler mesh and `distill`. The hidden DebugWorld site
+  (`Street_Moonshine.layer`, site `Moonshine_Site`) has three barrels at `380/384/388 0 300`
+  and a still at `384 0 305`, about 150 m from the police station. Test: `chains/moonshine`
+  (WORLD). No save change.
+- ✅ **Smoke and smell (#418).** `LF_ChainTrace` (server): the first accepted work wakes one 5 s
+  timer that runs only while a site is warm or a station still smokes; nothing is checked per frame.
+  Each sweep sets every station's smoke level from its site heat (`LF_ChainTrace.SmokeLevel`:
+  none, then thirds of `m_fMax`; the level is a replicated int on `LF_ChainStationComponent`, so it
+  changes only at a threshold and a late joiner sees it) and lets every player inside the
+  heat-scaled range (`LF_ChainSites.GetRange`) notice the smell: on-duty officers get
+  `#LF-Chain_Smell_Officer`, everyone else `#LF-Chain_Smell_Witness`, once per listener and site per
+  60 s. Smoke is the vanilla `Smoke_Smokestack_Medium` (levels 1 and 2, scaled 0.5 and 1) or
+  `_Big` (level 3), a local particle on every non-dedicated machine. Each notice is an
+  `LF_OnChainSmell` on the bus; `LF_ChainSmellLead` turns it into a police service call
+  (`#LF-Chain_SmellLead`, one per site per 5 min) so dispatch logs and radios it and the service
+  board pins it. NPC witnesses do not smell yet. Test: `chains/trace` (LOGIC). Heat is still not
+  saved; no save change.
+- ⚠️ Not built: nothing in this section. Manual: three
+  players on three barrels, see the PR.
 
 ## Jobs / Level / Licenses / Whitelist
 
@@ -1233,7 +1254,7 @@
   5 s), places the prisoner at the cell release offset (`m_vReleaseOffset`; DebugWorld `0.15 0 10`, outside
   the door), stamps the slip, then shows the toast 1.5 s later. Release runs once per sentence.
   The DebugWorld cell now sentences 60 s per wanted level, max 300 s (it was zero-length).
-- ✅ **Jailbreak** (#235, LOGIC `roadmap/jailbreak`, WORLD `e2e/roadmap-jailbreak`, `session.mjs jailbreak-proof`). A serving prisoner who is outside the cell volume while `Roadmap_Jail_Door` is open has escaped: `LF_Jail.NoteEscape` (called each cell tick) reports it once through `LF_Dispatch.Report` as `#LF-Offence_JailBreak` (so `LF_OnCrimeCommitted` is on the bus, the board and pager carry it) and leaves the sentence and wanted level alone; going back inside re-arms it. The door reuses `LF_Breach` (arm, stay open until police repair). **Fixed:** `m_bDebugLocked` is never applied to `LF_LockComponent`, so the placed jail door was unlocked from the start and never confined anyone; `LF_BreachTargetComponent.m_bStartLocked` (set on `Roadmap_Jail_Door`) now locks it at world start. Harness verb `charge` hands the player a breach charge (dev gate). No save change.
+- ✅ **Jailbreak** (#235, LOGIC `roadmap/jailbreak`, WORLD `e2e/roadmap-jailbreak`, `session.mjs jailbreak-proof`). A serving prisoner who is outside the cell volume while `Roadmap_Jail_Door` is open has escaped: `LF_Jail.NoteEscape` (called each cell tick) reports it once through `LF_Dispatch.Report` as `#LF-Offence_JailBreak` (so `LF_OnCrimeCommitted` is on the bus, the board and pager carry it) and leaves the sentence and wanted level alone; going back inside re-arms it. The door reuses `LF_Breach` (arm, stay open until police repair). **Fixed:** `m_bDebugLocked` was never applied (the component asked for no init event), so the placed jail door started unlocked; `LF_LockComponent` now sets the INIT mask and applies it, and the per-component `m_bStartLocked` workarounds (jail, breach, lockpick) are gone. Harness verb `charge` hands the player a breach charge (dev gate). No save change.
 
 
 ### `LF_PoliceMenu` — `Feature/Police/LF_PoliceMenu.c`
@@ -2085,3 +2106,4 @@
 - Not saved: the stock and cooldown reset on a restart.
 - ✅ Pick a vehicle lock and hotwire (#412, LOGIC `lockpick/vehicle`, WORLD `e2e/lockpick-vehicle`): a car that carries `LF_LockpickTargetComponent` and `LF_LockpickAction` can be picked like a door (the same timed, noisy, pick-wearing attempt; the vehicle lock opens and its saved lock flag follows). `LF_VehicleLockComponent.m_bIgnitionLocked` (off by default, so every other vehicle starts as before) makes the engine need the vehicle key: `SCR_CarControllerComponent.OnBeforeEngineStart` (modded in `LF_Hotwire.c`) refuses a start unless the driver holds the key or is the player who hotwired it. `LF_HotwireAction` at the wheel runs a server-timed attempt (15 s at skill 0 down to 6 s; success 50 percent at skill 0 up to 90 percent; a failure may be heard). A success lets that player start the engine, marks the vehicle stolen on the server (`LF_VehicleLockComponent.IsStolen`, replicated, session only) and files a `#LF-Offence_VehicleTheft` report; re-locking the car clears the hotwire. A start with the key never marks it stolen. Placed at `Roadmap_Lockpick_Car` (`Street_Lockpick.layer`, a beige S105). Harness: `engine [entity]` seats the character and starts the engine. Not done: the stolen flag is not read by anything yet (#414 reports it), it is lost on restart, and other prefabs opt in by adding the target component, the two actions and `m_bIgnitionLocked`.
 - ✅ Stolen vehicles: report, board, plate check, recovery (#414, LOGIC `stolen/report`): a car taken without its key carries the replicated stolen flag (#412); the owner (the key holder whose uid owns the vehicle record) uses *Report the car stolen* on it and the server files an `LF_StolenReport` (vehicle id, plate, name, place) and publishes `LF_OnVehicleReportedStolen`. The report shows on the police wanted board as `STOLEN CAR: <model>, plate <plate>, reported at <place>`, above the dispatch log, for on-duty officers only. An on-duty officer uses *Check the plate* on any vehicle: `LF_StolenVehicles.CheckPlate(plate, report)` answers STOLEN (arrest case, a toast), CLEAR (registered, no report) or UNKNOWN; it reads reports only, never the flag, so an unreported theft is not known to police. That seam is the plate-check API stops and searches (#419) reuse. *Recover stolen vehicle* (officer, car empty) sends the car to its owner's garage through `LF_VehicleOwnership.Store`, closes the report and publishes `LF_OnVehicleRecovered`. Placed on the beige S105 prefab (`EL_S105_beige.et`: ignition lock, pick target, pick, hotwire, report, check, recover), so a bought S105 can be stolen from its owner; the lot display car overrides the ignition lock off. Not saved, by design: the car entity does not survive a restart either (an owned car left on the street is impounded at load), so no payload or version bump. Not done: reporting by payphone, other prefabs, an arrest on the plate itself.
+- ✅ **Officer searches for chain goods** (#419, LOGIC `chains/search`, WORLD `chains/search-world`). `LF_ConfiscateAction` now works on any player (weapons and scanner still need a wanted suspect); a new `LF_VehicleSearchAction` sits on the lockable vehicle prefabs. Goods are the last-step outputs of a chain with `m_bContraband` (moonshine: the crate, `m_iBulk 2`); the server rolls, the find chance rises with load, a find seizes the goods and files `#LF-Offence_ChainGoods` on the bus. Vehicle finds charge the occupants; the plate owner (#414) hooks in at `LF_ChainSearch.SuspectsOf`. No save change.

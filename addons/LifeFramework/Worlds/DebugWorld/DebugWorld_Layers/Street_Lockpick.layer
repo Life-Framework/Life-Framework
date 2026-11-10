@@ -2,6 +2,7 @@ GenericEntity Roadmap_Lockpick_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/Buil
  components {
   LF_LockComponent "{5AC29970429B33BB}" {
    m_sDebugIdentifier "roadmap-lockpick-door"
+   m_bDebugLocked 1
   }
   ActionsManagerComponent "{F32B667C3C823800}" {
    additionalActions {
@@ -13,7 +14,6 @@ GenericEntity Roadmap_Lockpick_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/Buil
    }
   }
   LF_LockpickTargetComponent "{A3F5106D9E2B7C84}" {
-   m_bStartLocked 1
   }
  }
  coords 306 0 241.5
@@ -22,9 +22,7 @@ GenericEntity Roadmap_Lockpick_Car : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIgnitionLocked 1
-  }
-  LF_LockpickTargetComponent "{D4126BA97E0F53C8}" {
-   m_bStartLocked 1
+   m_bDebugLocked 1
   }
  }
  coords 312 0 246

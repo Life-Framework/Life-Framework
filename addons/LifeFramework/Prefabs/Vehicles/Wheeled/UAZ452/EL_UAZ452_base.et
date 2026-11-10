@@ -15,6 +15,14 @@ Vehicle : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
       Name "#EL-VehicleLock_Action"
      }
     }
+    LF_VehicleSearchAction "{5EA2C40600000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C40600000002}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
    }
   }
  }

@@ -133,7 +133,7 @@ class LF_Test_Roadmap_JailbreakWorld : LF_Test
 		prisoner.SetWantedLevel(1);
 		LF_PlayerAccountManager.GetOrCreate(breakerUid);
 
-		ctx.True(doorLock.IsLocked(), "the placed jail door starts locked (m_bStartLocked)");
+		ctx.True(doorLock.IsLocked(), "the placed jail door starts locked (m_bDebugLocked)");
 
 		ctx.True(doorLock.IsLocked(), "jail door is locked before the zero-fuse arm");
 		ctx.True(LF_Jail.Arrest(officerUid, prisonerUid, null), "a sentenced prisoner is in the locked jail");
