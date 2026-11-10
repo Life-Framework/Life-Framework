@@ -4,8 +4,8 @@ GenericEntity Roadmap_Vehicle_S105 : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled
    m_bIgnitionLocked 0
   }
  }
- coords 212.5 0 257.8
- angleY 120
+ coords 216.5 0 261
+ angleY 180
 }
 GenericEntity Roadmap_Vehicle_Lot {
  components {
@@ -211,4 +211,16 @@ GenericEntity Roadmap_Impound_Desk {
  }
  Flags 0x403 0
  coords 246 0 269
+}
+GenericEntity Lot_Display_uaz469 : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et" {
+ coords 221 0 261
+ angleY 180
+}
+GenericEntity Lot_Display_s1203 : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et" {
+ coords 225.5 0 261
+ angleY 180
+}
+GenericEntity Lot_Display_uaz452 : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
+ coords 230 0 261
+ angleY 180
 }

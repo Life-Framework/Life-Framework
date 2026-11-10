@@ -45,3 +45,5 @@ looked at yet.
 | Hospital till | `Roadmap_Hospital_Till` | final | vanilla `CounterPostOffice_01` | (a reception counter) | Hospital, area 7 | none |
 | Medicine cabinet | `Roadmap_Hospital_Cabinet` | placeholder | vanilla `CupboardOld_01_medium` wooden cupboard | white medical cabinet | Hospital, area 7 | low |
 | Stretcher | none | missing | no base-game stretcher found | stretcher by the ambulance | Hospital, area 7 | low |
+
+- Car lot price boards (area 4): `LF_Sign_Chalkboard` on `ChalkBoard_01`, real match, final. Display cars are the lot-offer base vehicles.
