@@ -29,7 +29,7 @@ GenericEntity : "{F3919A62ADD6123A}Prefabs/Tools/Tool_Base.et" {
     CustomAttributes {
      PreviewRenderAttributes "{CB4DBB789E284154}" {
       CameraPreset Front
-      CameraDistanceToItem 3.4
+      CameraDistanceToItem 3.9
       CameraOffset 0.38 0 0
       ItemRenderRotation -90 90 0
       FOV 10

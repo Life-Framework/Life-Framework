@@ -86,9 +86,19 @@ failures instead of grinding.
 | `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
 
-**Test and session queue.** Just run `test`, `e2e`, or `session up` as before; the pool queues itself (tests have their own lane beside sessions, runs get a time budget from history) and prints one line per outcome, so read it. `TIMEOUT after Ns` means the run hung and was killed; pass `--budget <s>` only for a known-long run. A session idle 15 min while others wait is closed; any harness command keeps it, `session.mjs lease [min]` holds it. Development-track and spike work runs with `--priority low` (`wt new <slug> --priority low` records it). Details: `docs/worktrees.md` "Lanes, priority, leases, budgets".
+**Test and session queue.** Just run `test`, `e2e`, or `session up` as before; the pool queues itself (tests have their own lane beside sessions, runs get a time budget from history) and prints one line per outcome, so read it. `TIMEOUT after Ns` means the run hung and was killed; pass `--budget <s>` only for a known-long run. A session idle 15 min while others wait is closed; any harness command keeps it, `session.mjs lease [min]` holds it. A session older than 20 min while another session request queues gets a one-line warning on its next harness or session command and is closed 5 min later (`session up --hold <min>`, at most 45, for a known-long job). Development-track and spike work runs with `--priority low` (`wt new <slug> --priority low` records it). Details: `docs/worktrees.md` "Lanes, priority, leases, budgets".
+
+**Session profiles.** `session up` defaults to `--profile lowspec` (640x360, lowest textures; the pool reserves less RAM for it and trims idle sessions before it refuses one), which is right for any proof that reads logs and harness results. Shots, `shots area`, filming, `journey` and any proof whose images go in a PR use `--profile full` (`docs/worktrees.md` "Session profiles").
+
+**Sessions are shared: prepare every edit before `session up`, do the proof and the shots in one session, and `session down` straight after.** `session up` prints how many session requests are queued behind you; it boots one client unless you pass `--clients 2`.
 
 Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desktop; node spawns get `windowsHide: true`), never in front of the user; `tools\cli hidden [--close]` lists them, `LF_SHOW_WINDOWS=1` shows them (`docs/setup.md`).
+
+**Nothing waits forever.** Every external call has a bounded runtime:
+- `ssh` inherits `ConnectTimeout 8` and `ServerAliveInterval 10` from `~/.ssh/config`, so a dead link fails in about 30 s.
+- Wrap any other probe in `timeout <s>`.
+- Never hand-write a `for`/`until` + `sleep` wait loop. Use the repo command that blocks with its own budget (`test`, `session up --wait`, `session wait`, `gh pr checks --watch`), or run in the background and end your turn.
+- If you stop another agent's process, message that agent at once.
 
 ## Worktrees
 

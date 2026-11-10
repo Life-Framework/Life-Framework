@@ -59,10 +59,41 @@ export function sessionDirOfBox(box) {
   return dirname(client);
 }
 
-export function markReaped(dir, why) {
+// kind: "lease" (idle) or "hold-cap"; session down reads it to record who closed the session.
+export function markReaped(dir, why, kind = "lease") {
   try {
-    writeFileSync(join(dir, "reaped.json"), JSON.stringify({ at: new Date().toISOString(), why }));
+    writeFileSync(join(dir, "reaped.json"), JSON.stringify({ at: new Date().toISOString(), why, kind }));
   } catch {}
+}
+
+// The hold-cap warning (tools/remote/pool.mjs reapIdleSessions): a waiter found this
+// session past its cap. holdWarnedAt starts the grace; holdWarnShown says the holder
+// has been told; holdSeenAt is the waiter's last pass, so a warning whose waiters left
+// is started over when one comes back.
+export function noteHoldWarning(dir, { waiting, graceMin, now = Date.now() }) {
+  const lease = readLease(dir);
+  const warned = Date.parse(lease.holdWarnedAt);
+  const stale = Number.isFinite(warned) && now - Date.parse(lease.holdSeenAt) > 60000;
+  const fresh = !Number.isFinite(warned) || stale;
+  writeLease(dir, {
+    ...lease,
+    holdWarnedAt: fresh ? new Date(now).toISOString() : lease.holdWarnedAt,
+    holdWarnShown: fresh ? false : lease.holdWarnShown,
+    holdWaiting: waiting,
+    holdGraceMin: graceMin,
+    holdSeenAt: new Date(now).toISOString(),
+  });
+  return { warnedAtMs: fresh ? now : warned, fresh };
+}
+
+// Once per warning: the one line the holder sees on its next harness or session
+// command, or "".
+export function takeHoldWarning(dir) {
+  if (!dir || !existsSync(dir)) return "";
+  const lease = readLease(dir);
+  if (!lease.holdWarnedAt || lease.holdWarnShown) return "";
+  writeLease(dir, { ...lease, holdWarnShown: true });
+  return `session: ${lease.holdWaiting ?? 1} waiting; finish and run \`node agent-box/session.mjs down\` within ${lease.holdGraceMin ?? 5} min or it is closed`;
 }
 
 export function readReaped(dir) {

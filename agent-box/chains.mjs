@@ -24,7 +24,6 @@ export const REQUIRED_LAYERS = [
   "SandChain.layer",
   "Shops.layer",
   "Survival.layer",
-  "TomatoChain.layer",
   "TraderChain.layer",
 ];
 
@@ -36,9 +35,7 @@ export const PROBES = [
   { layer: "AppleChain.layer", name: "AppleProcessor", action: "LF_ProcessAction" },
   { layer: "PlumChain.layer", name: "PlumGatherTree", action: "LF_GatherAction" },
   { layer: "PlumChain.layer", name: "PlumTradeContainer", action: "LF_OpenTraderAction" },
-  { layer: "TomatoChain.layer", name: "TomatoGather", action: "LF_GatherAction" },
-  { layer: "TomatoChain.layer", name: "TomatoTradeContainer", action: "LF_OpenTraderAction" },
-  { layer: "FarmingChain.layer", name: "TomatoCrop_Debug", action: "LF_GatherAction" },
+  { layer: "FarmingChain.layer", name: "CabbageCrop_Debug", action: "LF_GatherAction" },
   { layer: "CementChain.layer", name: "CementPile_Debug", action: "LF_GatherAction" },
   { layer: "GravelChain.layer", name: "GravelPile_Medium_Debug", action: "LF_GatherAction" },
   { layer: "SandChain.layer", name: "SandPile_Debug", action: "LF_GatherAction" },

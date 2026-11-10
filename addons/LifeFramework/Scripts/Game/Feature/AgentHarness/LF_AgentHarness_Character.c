@@ -553,6 +553,64 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `time <hour>`: the server sets the world clock so the LOCAL hour (game clock plus the
+	//! world's longitude offset) is `hour`, and forces clear weather. A clock set on a client is
+	//! overridden by the server, so this is an authority-side request, behind the dev gate.
+	void LF_AskHarnessTime(int commandId, float hour)
+	{
+		if (Replication.IsServer())
+		{
+			LF_ApplyHarnessTime(commandId, hour);
+			return;
+		}
+
+		Rpc(RpcAsk_LF_HarnessTime, commandId, hour);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_HarnessTime(int commandId, float hour)
+	{
+		if (!LF_DevGate.CheckHarnessRequest(this, "time"))
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		LF_ApplyHarnessTime(commandId, hour);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_ApplyHarnessTime(int commandId, float hour)
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		TimeAndWeatherManagerEntity clock;
+		if (world)
+			clock = world.GetTimeAndWeatherManager();
+
+		if (!clock)
+		{
+			LF_Debug.Error("AgentHarness", "time: the world has no time and weather manager");
+			LF_HarnessReply(commandId, "error", "no_clock");
+			return;
+		}
+
+		// The sun follows the world's longitude: local solar time is the game clock plus longitude / 15 h.
+		float offset = clock.GetTimeZoneOffset() + clock.GetCurrentLongitude() / 15;
+		float game = hour - offset;
+		while (game < 0)
+			game += 24;
+		while (game >= 24)
+			game -= 24;
+
+		clock.SetTimeOfTheDay(game, true);
+		clock.ForceWeatherTo(false, "Clear", 0, 3600);
+		string text = string.Format("local=%1 game=%2 offset=%3 now=%4 day_s=%5", hour, game, offset, clock.GetTimeOfTheDay(), clock.GetDayDuration());
+		LF_Debug.Info("AgentHarness", "clock set: " + text);
+		LF_HarnessReply(commandId, "ok", text);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: hand a harness result to the client that asked. The listen host's
 	//! own character writes it directly (an RPC never runs on the sender).
 	void LF_HarnessReply(int commandId, string status, string detail)

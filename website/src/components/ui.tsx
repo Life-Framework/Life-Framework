@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Arrow, External } from "@/components/icons";
+import { Arrow, External, LinkIcon } from "@/components/icons";
 import { formatDate, githubData, issueStatus, milestoneName, splitTitle, stillSrc, stillSrcSet, type Clip, type Issue, type Still, siteData, still as stillById } from "@/lib/content";
 
 export const Stamp = ({ children, tone = "red", tilt = false }: { children: ReactNode; tone?: "red" | "green" | "ink"; tilt?: boolean }) => (
@@ -14,6 +14,39 @@ export function PageHeader({ kicker, title, children }: { kicker: string; title:
       <h1 className="display-1 max-w-4xl">{title}</h1>
       {children && <div className="lede mt-6 space-y-3">{children}</div>}
     </div>
+  );
+}
+
+// A small link icon for a heading. It copies the absolute URL of the anchor `#id` on this page;
+// the hash navigation that follows also scrolls the heading into view below the sticky header.
+export function AnchorLink({ id, label }: { id: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <>
+      <a
+        href={`#${id}`}
+        aria-label={`Copy link to ${label}`}
+        title="Copy link"
+        onClick={() => {
+          const url = `${window.location.origin}${window.location.pathname}#${id}`;
+          try {
+            navigator.clipboard.writeText(url).then(
+              () => setCopied(true),
+              () => setCopied(false),
+            );
+          } catch {
+            /* no clipboard API: the link still navigates to the anchor */
+          }
+          setTimeout(() => setCopied(false), 1500);
+        }}
+        className="inline-flex items-center align-middle ml-2 p-1 text-ink-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2"
+      >
+        <LinkIcon />
+      </a>
+      <span className="sr-only" aria-live="polite">
+        {copied ? "Link copied" : ""}
+      </span>
+    </>
   );
 }
 

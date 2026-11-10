@@ -322,13 +322,13 @@
 <text x="550.0" y="462" font-size="10.5" fill="#111"><tspan font-weight="bold">1</tspan>  Town square: spawn points, town clerk, board spot, pub (food and water), fountain, church, bus stop (taxi jobs)</text>
 <text x="550.0" y="477" font-size="10.5" fill="#111"><tspan font-weight="bold">2</tspan>  Post office: job counter (parcel, fuel, taxi; benefit). Parcel drop at the house porch by the lock-up</text>
 <text x="550.0" y="492" font-size="10.5" fill="#111"><tspan font-weight="bold">3</tspan>  Bank: two ATMs on the facade; vault door and cash bag on the east wall</text>
-<text x="550.0" y="507" font-size="10.5" fill="#111"><tspan font-weight="bold">4</tspan>  General store counter; market stalls: universal trader, apple, plum, tomato, seeds</text>
+<text x="550.0" y="507" font-size="10.5" fill="#111"><tspan font-weight="bold">4</tspan>  General store counter; market stalls: universal trader, apple, plum</text>
 <text x="550.0" y="522" font-size="10.5" fill="#111"><tspan font-weight="bold">5</tspan>  Car dealer lot (counter, showroom S105, three pads) and the garage</text>
 <text x="550.0" y="537" font-size="10.5" fill="#111"><tspan font-weight="bold">6</tspan>  Police station: duty desk, fines desk, armory rack, whitelist desk; jail yard behind; escort car</text>
 <text x="550.0" y="552" font-size="10.5" fill="#111"><tspan font-weight="bold">7</tspan>  Hospital: till and medicine cabinet. Fuel station: till and fuel-can job site</text>
 <text x="550.0" y="567" font-size="10.5" fill="#111"><tspan font-weight="bold">8</tspan>  Org registry desk; side alley north to the hideout yard (door, machine, stash, contraband drop), back-room stall, fence</text>
 <text x="550.0" y="582" font-size="10.5" fill="#111"><tspan font-weight="bold">9</tspan>  Contraband pickup at the barn out of town (dirt track east)</text>
-<text x="550.0" y="597" font-size="10.5" fill="#111"><tspan font-weight="bold">F</tspan>  Farm: orchard (apple, plum), tomato field and greenhouse, juicer at the barn</text>
+<text x="550.0" y="597" font-size="10.5" fill="#111"><tspan font-weight="bold">F</tspan>  Farm: orchard (apple, plum), cabbage beds and greenhouse, juicer at the barn</text>
 <text x="550.0" y="612" font-size="10.5" fill="#111"><tspan font-weight="bold">Q</tspan>  Quarry (mining area, furnace) and builders' yard (cement, gravel, sand)</text>
 <text x="550.0" y="627" font-size="10.5" fill="#111"><tspan font-weight="bold">L</tspan>  Forest edge: lumberjack, cuttable trees, sawmill</text>
 <text x="550.0" y="642" font-size="10.5" fill="#111"><tspan font-weight="bold">A</tspan>  Test annex (fenced): test runner, PR fixtures, legacy debug stations, test spawn ground</text>

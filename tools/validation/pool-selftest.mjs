@@ -7,12 +7,17 @@
 //   4. lanes (test lanes on 2002.., session lane on 2001), priority order and
 //      aging through the real queue, the RAM gate, the self-deadlock fail-fast,
 //      the idle-session reaper (also end to end with a short timeout);
+//   4b. the session hold cap (warn once, close after the grace, per-session --hold, no stamp = no cap), the session
+//      record in runs.jsonl, and a retried request keeping its queue age;
 //   5. runtime budgets: learned 3x p95 with a 30 s floor, seeded defaults,
 //      machine multiplier, self-raise after timeouts, --budget.
+// red-proof 2026-11-10: dropping the hostname branch in loadMachines printed "an entry whose hostname is this machine is not the local machine with its own lanes".
 // red-proof: with remoteOwnerGone returning null it printed "dead owner pid on
 // this PC: no reclaim verdict"; with the mtime key removed from localConfig it
 // printed "config flip: local still disabled after re-enable"; with the hang
 // branch removed from tryLocal it printed "hung local holder: slot not reclaimed".
+// red-proof (hold cap, queue age): with queuedSince returning now it printed "a retried session request did not keep its
+// first age"; with the grace phase treated as close it printed "hold cap closed a session inside the 5 min grace".
 // red-proof (lanes): with the priority comparison disabled it printed "a queued
 // low job was not overtaken by a normal one"; with promotion disabled "a low job
 // waiting past the promote limit was not promoted"; without the queue check in
@@ -25,8 +30,10 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { hostname, tmpdir } from "node:os";
 import { join } from "node:path";
 import * as q from "../lib/pool-queue.mjs";
+import { takeHoldWarning } from "../lib/session-lease.mjs";
 import * as pool from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
+import { trimScript } from "../lib/ws-trim.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -100,9 +107,27 @@ try {
   check(q.lanesFor(lanes, "session").map((l) => `${l.lock}:${l.port}`).join() === "server-2001:2001", "session lane is not server-2001 on 2001");
   check(q.lanesFor({ name: "x", via: "ssh", slots: 2 }, "test").map((l) => l.lock).join() === "server-2001,server-2001-s2", "a machine without lanes lost its shared slots");
   check(q.portForLock("server-test-2") === 2003 && q.portForLock("server-2001") === 2001, "portForLock");
+  // Two session lanes: the old lane keeps its name and port, lane 2 is server-2011 on 2011 (A2S 17877).
+  const lanes2 = { ...lanes, lanes: { test: 2, session: 2 } };
+  check(q.lanesFor(lanes2, "session").map((l) => `${l.lock}:${l.port}`).join() === "server-2001:2001,server-2011:2011", "two session lanes are not server-2001:2001 and server-2011:2011");
+  check(q.portForLock("server-2011") === 2011 && q.sessionA2sPort(2001) === null && q.sessionA2sPort(2011) === 17877, "session lane 2 port / A2S port");
+  check(!q.lanesFor(lanes2, "test").some((l) => l.port === 2011) && q.allLaneLocks(lanes2).length === 4, "a test lane shares a port with a session lane");
+  const ses = { sessionReserveServerMb: 800, sessionReserveClientMb: 1200 };
+  check(q.sessionReserveMb(ses, 1) === 2000 && q.sessionReserveMb(ses, 2) === 3200, "session reserve per client count");
+  // The working-set trim touches only live pids a session recorded.
+  check(pool.sessionPids({ serverPid: process.pid, clients: [{ pid: 2147483000 }, { pid: 0 }] }).join() === String(process.pid), "sessionPids kept a dead or empty pid");
+  check(pool.sessionPids({ serverPid: process.pid, clients: [], stoppedAt: "x" }).length === 0 && pool.sessionPids(null).length === 0, "sessionPids listed a stopped session");
+  check(trimScript([4242, 0, -1]).includes("@(4242)") && !trimScript([4242, 0]).includes("@(4242,"), "trimScript passed a bad pid to EmptyWorkingSet");
+  check(trimScript([]) === "", "trimScript of nothing is not empty");
+  const sesLow = { ...ses, sessionReserve: { lowspec: { serverMb: 500, clientMb: 600 } } };
+  check(q.sessionReserveMb(sesLow, 2, "lowspec") === 1700 && q.sessionReserveMb(sesLow, 2) === 3200 && q.sessionReserveMb(sesLow, 2, "full") === 3200 && q.sessionReserveMb(ses, 1, "lowspec") === 2000, "session reserve per profile (a profile without numbers uses the full ones)");
+  check(q.ramVerdict({ running: 1, freeMb: 3200, minFreeMb: 1500, reserveMb: q.sessionReserveMb(sesLow, 1, "lowspec") }).ok && !q.ramVerdict({ running: 1, freeMb: 3200, minFreeMb: 1500, reserveMb: q.sessionReserveMb(sesLow, 1, "full") }).ok, "a lowspec session does not fit sooner than a full one under the same free RAM");
+  check(q.ramVerdict({ running: 1, freeMb: 3600, minFreeMb: 1500, reserveMb: 2000 }).ok && !q.ramVerdict({ running: 1, freeMb: 3400, minFreeMb: 1500, reserveMb: 2000, pendingMb: 2000 }).ok, "RAM gate ignores the reserve or the sessions still booting");
+  check(!q.ramVerdict({ running: 1, freeMb: 3400, minFreeMb: 1500, reserveMb: 2000, pendingMb: 2000 }).ok && /for the session/.test(q.ramVerdict({ running: 1, freeMb: 3000, minFreeMb: 1500, reserveMb: 2000 }).reason), "RAM wait reason lacks the session reserve");
   const T0 = Date.parse("2026-01-01T00:00:00Z");
   const tk = (file, priority, minAgo, lane = "test") => ({ file, priority, lane, at: new Date(T0 - minAgo * 60000).toISOString(), machines: ["local"] });
   const min20 = 20 * 60000;
+  check(q.blocks(tk("s", "normal", 9, "session"), tk("t", "normal", 1, "session"), lanes2, Date.parse("2026-01-01T00:00:00Z"), 20 * 60000) === true, "an older session ticket does not count toward the lane queue");
   const lowOld = tk("1-low", "low", 5);
   const normalNew = tk("2-normal", "normal", 1);
   check(q.queueOrder([lowOld, normalNew], T0, min20).map((t) => t.file).join() === "2-normal,1-low", "a queued low job was not overtaken by a normal one");
@@ -114,7 +139,51 @@ try {
   check(q.blocks(tk("s", "normal", 9, "session"), tk("t", "normal", 1, "test"), lanes, T0, min20) === false, "a session ticket blocks a test on separate lanes");
   check(q.blocks(tk("s", "normal", 9, "session"), tk("t", "normal", 1, "test"), { ...lanes, lanes: null }, T0, min20) === true, "a session ticket does not block a test on a shared lane");
   check(q.blocks({ ...tk("old", "normal", 9), lane: undefined }, tk("z", "normal", 1, "session"), lanes, T0, min20) === true, "a ticket from a CLI without lanes is not a server-2001 contender");
+  // Backfill: a head job stuck on RAM (3-client session) does not block a small job behind it.
+  const bigHead = { ...tk("1-big", "normal", 5, "session"), stuck: "ram", needMb: 5100, clients: 3 };
+  const small = tk("2-small", "normal", 1, "session");
+  check(q.blocks(bigHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === false, "a RAM-stuck head still blocks a small job behind it");
+  check(q.blocks({ ...bigHead, stuck: undefined }, small, lanes, T0, min20) === true, "a head that has not tried must still block (plain FIFO)");
+  check(q.blocks({ ...bigHead, stuck: "lane" }, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === true, "a lane-stuck head loses its turn to a job wanting the same lane");
+  check(q.blocks({ ...bigHead, lane: "session", stuck: "lane" }, tk("3-t", "normal", 1, "test"), { ...lanes, lanes: null }, T0, min20, { starveMs: min20, freeMb: 3400 }) === true, "shared-lane head lost its turn");
+  // Starvation: after 20 min the head holds its place once the RAM it needs is there, not before.
+  const oldHead = { ...bigHead, at: new Date(T0 - 25 * 60000).toISOString() };
+  check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === false, "a starved head reserves the lane before its RAM is there");
+  check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 5200 }) === true, "a starved head with its RAM does not reserve the lane");
+  check(q.waitReason(bigHead) === "ram 3-client" && q.waitReason({ stuck: "lane" }) === "lane" && q.waitReason({}, 2) === "behind 2", "waitReason text");
+  {
+    // #563: a late join is RAM-gated like `up`: trim first, refuse (one line) when still under the floor.
+    const jroot = mkdtempSync(join(tmpdir(), "lf-join-"));
+    const run = (freeSeq, trimGain) => {
+      let free = freeSeq, trims = 0;
+      return { r: pool.gateJoin(jroot, 800, { freeMb: () => free, trim: () => { trims++; free += trimGain; return 3; } }), trims };
+    };
+    const min = pool.poolSettings(jroot).minFreeMb;
+    const fits = run(min + 900, 0);
+    const trimmedFits = run(min + 100, 1500);
+    const refused = run(165, 100);
+    check(fits.r.ok && fits.trims === 0, "a join with room trims anyway or is refused");
+    check(trimmedFits.r.ok && trimmedFits.trims === 1 && trimmedFits.r.trimmed === 3, "a short join does not trim idle sessions then pass");
+    check(!refused.r.ok && refused.trims === 1 && /would be under/.test(refused.r.reason) && !refused.r.reason.includes(String.fromCharCode(10)), "a join that cannot fit after the trim is not refused with a one-line reason");
+    rmSync(jroot, { recursive: true, force: true });
+  }
+  check(q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500, reserveMb: 3600 }).needMb === 5100, "ramVerdict does not report needMb");
   check(q.ramVerdict({ running: 0, freeMb: 100, minFreeMb: 1500 }).ok && !q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500 }).ok && q.ramVerdict({ running: 1, freeMb: 2000, minFreeMb: 1500 }).ok, "RAM gate verdicts");
+
+  // Aging is the fair share: a low job that waited 40 min is "high" and, arriving first, goes ahead of new
+  // normal and new high jobs; at 61 min it still does. (The film job's real starvation was the wait cap and the
+  // restart of its age on every retry: see queuedSince.)
+  check(q.queueOrder([tk("2-high", "high", 0), tk("1-low", "low", 61)], T0, min20)[0].file === "1-low", "a low job waiting 61 min did not go ahead of a new high one");
+  check(q.queueOrder([tk("2-normal", "normal", 1), tk("1-low", "low", 61)], T0, min20)[0].file === "1-low", "a low job waiting 61 min did not go ahead of a new normal one");
+  check(q.queueOrder([tk("2-high", "high", 0), tk("1-low", "low", 30)], T0, min20)[0].file === "2-high", "a low job waiting 30 min already went ahead of a new high one");
+  // Hold verdicts and the --hold clamp.
+  const hv = (o) => q.holdVerdict({ heldSinceMs: T0 - 25 * 60000, capMin: 20, graceMin: 5, warnedAtMs: NaN, waiting: true, now: T0, ...o }).phase;
+  check(hv({}) === "warn" && hv({ waiting: false }) === "ok" && hv({ capped: false }) === "ok" && hv({ capMin: 30 }) === "ok", "holdVerdict: warn / no waiter / no stamp / under cap");
+  check(hv({ warnedAtMs: T0 - 2 * 60000 }) === "grace" && hv({ warnedAtMs: T0 - 5 * 60000 }) === "close", "holdVerdict: grace and close");
+  const lim = { holdMin: 20, maxMin: 45 };
+  check(q.clampHoldMin(undefined, lim) === 20 && q.clampHoldMin(30, lim) === 30 && q.clampHoldMin(90, lim) === 45 && q.clampHoldMin(5, lim) === 20, "clampHoldMin");
+  const st = q.sessionStats([{ waitS: 60, heldS: 600, boots: 1, closedBy: "owner" }, { waitS: 180, heldS: 1800, boots: 3, closedBy: "hold-cap" }]);
+  check(st.avgWaitS === 120 && st.avgHeldS === 1200 && st.avgBoots === 2 && st.closed.owner === 1 && st.closed["hold-cap"] === 1, "sessionStats averages");
 
   const rdir = mkdtempSync(join(tmpdir(), "lf-pool-lanes-"));
   const live = spawn(process.execPath, ["-e", "setTimeout(()=>{},120000)"], { stdio: "ignore", windowsHide: true });
@@ -193,6 +262,58 @@ try {
     check(reap(waiting).length === 1 && closed.length === 1, "reaper did not close a session idle 20 min (limit 15) with a job waiting");
     check(existsSync(join(sdir, "reaped.json")), "reaper left no note for the session's agent");
 
+    // Hold cap: a driven (not idle) session past its cap with a session request waiting is warned once,
+    // then closed after the grace; no waiter, no holdCap stamp, or a raised --hold means no close.
+    {
+      const lease = () => JSON.parse(readFileSync(join(sdir, "lease.json"), "utf8"));
+      const heldIso = new Date(Date.now() - 25 * 60000).toISOString();
+      const setSession = (extra = {}) => writeFileSync(join(sdir, "session.json"), JSON.stringify({ startedAt: heldIso, readyAt: heldIso, heldSince: heldIso, holdCap: true, holdMin: 20, waitS: 12.5, priority: "normal", boots: 2, bootS: [23, 22], expectClients: 1, mission: "playtest", ...extra }));
+      const driven = () => writeFileSync(join(sdir, "lease.json"), JSON.stringify({ lastCommandAt: new Date().toISOString() }));
+      const sessWait = [{ pid: process.pid, lane: "session", waitingOn: ["server-2001"] }];
+      const settings = { sessionIdleMin: 15, promoteMin: 20, minFreeMb: 1, sessionHoldMin: 20, sessionGraceMin: 5, sessionHoldMaxMin: 45 };
+      const reapHold = (tickets, extra = {}) => pool.reapIdleSessions(rdir, [lanes], tickets, settings, { sessionDir: sdir, close: (i) => closed.push(i.pid), ...extra });
+      hold("server-2001", { purpose: "session", at: heldIso, slug: "holder" });
+      closed.length = 0;
+      rmSync(join(sdir, "reaped.json"), { force: true });
+      setSession();
+      driven();
+      check(reapHold([]).length === 0 && !existsSync(join(sdir, "reaped.json")), "hold cap closed a session nobody waits for");
+      check(reapHold([{ pid: process.pid, lane: "test", waitingOn: ["server-2001"] }]).length === 0 && !lease().holdWarnedAt, "hold cap warned for a test job (only a session request counts)");
+      check(reapHold(sessWait).length === 0 && closed.length === 0, "hold cap closed a session on the first pass (it must warn first)");
+      check(!!lease().holdWarnedAt, "hold cap did not stamp the warning");
+      const w1 = takeHoldWarning(sdir);
+      check(/^session: 1 waiting; finish and run .*session.mjs down.* within 5 min/.test(w1), `warning line is wrong: '${w1}'`);
+      check(takeHoldWarning(sdir) === "", "the hold warning showed twice");
+      // The waiter polls every ~10 s; simulate polls 50 s apart. Not closed inside the grace, closed at 5 min.
+      const t0 = Date.now();
+      let early = 0;
+      for (let k = 1; k <= 5; k++) early += reapHold(sessWait, { now: t0 + k * 50000 }).length;
+      check(early === 0 && closed.length === 0, "hold cap closed a session inside the 5 min grace");
+      const late = reapHold(sessWait, { now: t0 + 6 * 50000 });
+      check(late.length === 1 && late[0].kind === "hold-cap" && closed.length === 1, "hold cap did not close a session 6 min after the warning");
+      check(JSON.parse(readFileSync(join(sdir, "reaped.json"), "utf8")).kind === "hold-cap", "reaped.json does not say hold-cap");
+      const runsText = readFileSync(join(rdir, "tmp", "wt", "pool", "runs.jsonl"), "utf8");
+      const rec = runsText.split(String.fromCharCode(10)).filter(Boolean).map((l) => JSON.parse(l)).filter((r) => r.kind === "session").at(-1);
+      check(rec && rec.closedBy === "hold-cap" && rec.boots === 2 && rec.waitS === 12.5 && rec.heldS >= 1490 && rec.slug === "holder", `session record is wrong: ${JSON.stringify(rec)}`);
+      check(runsText.includes('"kind":"hold-cap"'), "hold-cap close not logged as a reclaim");
+      // No stamp (a session started before the cap): never warned or closed.
+      rmSync(join(sdir, "reaped.json"), { force: true });
+      setSession({ holdCap: undefined });
+      driven();
+      check(reapHold(sessWait, { now: Date.now() + 10 * 60000 }).length === 0 && !lease().holdWarnedAt, "hold cap judged a session started before the cap existed");
+      // --hold 45: not past its cap at 25 min.
+      setSession({ holdMin: 45 });
+      driven();
+      check(reapHold(sessWait).length === 0 && !lease().holdWarnedAt, "hold cap ignored the session's raised --hold");
+      // Waiters left for over a minute: the warning is void and the grace starts again.
+      setSession();
+      driven();
+      reapHold(sessWait);
+      const old = lease();
+      writeFileSync(join(sdir, "lease.json"), JSON.stringify({ ...old, lastCommandAt: new Date().toISOString(), holdSeenAt: new Date(Date.now() - 5 * 60000).toISOString(), holdWarnedAt: new Date(Date.now() - 10 * 60000).toISOString() }));
+      check(reapHold(sessWait).length === 0, "a warning whose waiters left closed the session at once");
+    }
+
     // Short timeout end to end: a queued session request closes an idle session and takes the slot.
     process.env.LF_POOL_SESSION_IDLE_MIN = "0.03";
     const idleIso = new Date().toISOString();
@@ -208,6 +329,57 @@ try {
       check(lockInfo.pid === process.pid && lockInfo.purpose === "session", "the session slot is not held by the new request");
       rmSync(join(rLockDir, "server-2001.lock"), { force: true });
     }
+    // Backfill, end to end: a 3-client head waiting on RAM does not hold up a small request, and once it
+    // has waited past the starvation limit (with its RAM there) it does.
+    {
+      const qd = join(rdir, "tmp", "wt", "pool", "queue");
+      mkdirSync(qd, { recursive: true });
+      const headFile = join(qd, "000000000000001-0000001-aaaaaa.json");
+      const head = (ageMin) => ({ pid: process.pid, at: new Date(Date.now() - ageMin * 60000).toISOString(), slug: "big", purpose: "session", root: rdir, pinned: true, lane: "session", priority: "normal", waitingOn: ["server-2001", "ram"], machines: ["local"], clients: 3, stuck: "ram", needMb: 1 });
+      writeFileSync(headFile, JSON.stringify(head(2)));
+      let small = null;
+      try {
+        small = pool.acquireSessionLaneSync(rdir, { waitMs: 5000, meta: { slug: "small" } });
+      } catch {}
+      check(!!small, "backfill: a small session request waited behind a RAM-stuck head");
+      rmSync(join(rLockDir, "server-2001.lock"), { force: true });
+      writeFileSync(headFile, JSON.stringify(head(25)));
+      let late = null;
+      try {
+        late = pool.acquireSessionLaneSync(rdir, { waitMs: 1500, meta: { slug: "small2" } });
+      } catch {}
+      check(!late, "starvation: a starved head's lane was taken by a small request");
+      if (late) rmSync(join(rLockDir, "server-2001.lock"), { force: true });
+      rmSync(headFile, { force: true });
+    }
+    // A retried request keeps the age of the one it replaces (a timed-out `up --wait` used to start over), and a
+    // request that gets the slot forgets it.
+    delete process.env.LF_POOL_SESSION_IDLE_MIN;
+    // (the reap above taskkilled `live`; this holder is a fresh process)
+    const live2 = spawn(process.execPath, ["-e", "setTimeout(()=>{},60000)"], { stdio: "ignore", windowsHide: true });
+    writeFileSync(join(rLockDir, "server-2001.lock"), JSON.stringify({ pid: live2.pid, at: new Date().toISOString(), name: "server-2001", root: join(rdir, "nosuch"), slug: "other", purpose: "session" }));
+    const qfile = join(rdir, "tmp", "wt", "pool", "queued.json");
+    const tryUp = () => {
+      try {
+        pool.acquireSessionLaneSync(rdir, { waitMs: 1200, meta: { slug: "retry" } });
+        return "got";
+      } catch {
+        return "timeout";
+      }
+    };
+    check(tryUp() === "timeout", "a session request got a held lane");
+    const first = JSON.parse(readFileSync(qfile, "utf8")).retry.at;
+    await new Promise((r) => setTimeout(r, 1100));
+    check(tryUp() === "timeout" && JSON.parse(readFileSync(qfile, "utf8")).retry.at === first, "a retried session request did not keep its first age");
+    const stale = JSON.parse(readFileSync(qfile, "utf8"));
+    stale.retry.seenAt = new Date(Date.now() - 20 * 60000).toISOString();
+    writeFileSync(qfile, JSON.stringify(stale));
+    tryUp();
+    check(JSON.parse(readFileSync(qfile, "utf8")).retry.at !== first, "a request last seen 20 min ago kept its old age");
+    live2.kill();
+    rmSync(join(rLockDir, "server-2001.lock"), { force: true });
+    check(tryUp() === "got" && !JSON.parse(readFileSync(qfile, "utf8")).retry, "a request that got the slot kept its queue age");
+    rmSync(join(rLockDir, "server-2001.lock"), { force: true });
     check(readFileSync(join(rdir, "tmp", "wt", "pool", "runs.jsonl"), "utf8").includes('"kind":"idle-session"'), "idle-session reap not logged in runs.jsonl");
   } catch (e) {
     failures.push(`lanes section threw: ${e.message}`);
@@ -242,6 +414,13 @@ try {
   rmSync(join(dir, "tmp", "wt.json"));
   check(pool.resolvePriority(dir) === "normal", "default priority is not normal");
   check(pool.budgetsFor(dir, { name: "local", budgetMultiplier: 1 }, "test only").bootS === 30, "boot budget is not 30 s");
+  // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
+  writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
+  const selfView = pool.loadMachines(dir);
+  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 3 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  writeFileSync(join(dir, "lf.local.json"), "{}");
+  check(pool.loadMachines(dir).some((m) => m.name === "local") && pool.loadMachines(dir).find((m) => m.name === "lf-testbox")?.via === "ssh", "this PC lost its local entry");
+  check(pool.sessionMachineCandidates(dir, 1).map((m) => m.name).join() === "local,lf-testbox", "session candidates are not this PC first, then the laptop");
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }
@@ -251,4 +430,4 @@ if (failures.length) {
   for (const f of failures) console.log(`  ${f}`);
   process.exit(1);
 }
-console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, runtime budgets)");
+console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine)");

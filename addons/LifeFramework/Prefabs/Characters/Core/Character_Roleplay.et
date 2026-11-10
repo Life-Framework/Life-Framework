@@ -80,6 +80,7 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
      UIInfo UIInfo "{F065AB922FA3605C}" {
       Name "#LF-Revive_Action"
      }
+     Duration 4
     }
     LF_DragAction "{6D1C0A1E7B3F4A01}" {
      ParentContextList {

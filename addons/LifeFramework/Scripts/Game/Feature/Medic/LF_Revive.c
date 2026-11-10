@@ -186,11 +186,36 @@ class LF_ReviveAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The hold began on the acting client: ask the server to show the CPR to everyone (#512).
+	override void OnActionStart(IEntity pUserEntity)
+	{
+		AskAnim(pUserEntity, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnActionCanceled(IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		AskAnim(pUserEntity, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void AskAnim(IEntity user, bool start)
+	{
+		if (!user || user != LF_Utils.GetLocalCharacter())
+			return;
+
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (controller)
+			controller.LF_AskReviveAnim(LF_NetworkUtils.GetRplId(GetOwner()), start);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
 			return;
 
+		LF_ReviveAnim.End(pUserEntity, "revive done");
 		LF_Revive.Perform(pUserEntity, pOwnerEntity);
 	}
 }

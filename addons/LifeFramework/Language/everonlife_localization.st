@@ -2325,12 +2325,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "manzanas"
      Comment "Fruit name, plural lowercase, used inside a sentence"
     }
-    CustomStringTableItem "{4C162FE7FB60324B}" {
-     Id "LF-Fruit_Tomatoes"
-     Target_en_us "tomatoes"
-     Target_es_es "tomates"
-     Comment "Fruit name, plural lowercase, used inside a sentence"
-    }
     CustomStringTableItem "{F4B9336DFFCD7180}" {
      Id "LF-Fruit_Plums"
      Target_en_us "plums"
@@ -2395,18 +2389,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-License_Unemployed_Desc"
      Target_en_us "No current employment."
      Target_es_es "Sin trabajo activo."
-     Comment "Licence description"
-    }
-    CustomStringTableItem "{33B679F9679C9184}" {
-     Id "LF-License_FarmerTomato_Name"
-     Target_en_us "Field hand: tomatoes"
-     Target_es_es "Recolector de tomates"
-     Comment "Licence name: starting farm permit"
-    }
-    CustomStringTableItem "{1921CA724A9210CF}" {
-     Id "LF-License_FarmerTomato_Desc"
-     Target_en_us "Starting permit for farm work. Lets you pick tomatoes."
-     Target_es_es "Permiso inicial de trabajo agrícola. Permite recolectar tomates."
      Comment "Licence description"
     }
     CustomStringTableItem "{F8F02CBA407DB562}" {
@@ -3609,8 +3591,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7EFC20EBB3D29E7E}" {
      Id "LF-Sign_TownMap_Title"
-     Target_en_us "Welcome to Everon"
-     Comment "Title of the sign at the town map board at the spawn square. Printed on the board and shown in the prompt as Read: Welcome to Everon."
+     Target_en_us "Welcome to Everon, Town Board"
+     Comment "Title of the sign at the town map board at the spawn square. Printed on the board and shown in the prompt as Read: Welcome to Everon, Town Board."
     }
     CustomStringTableItem "{122DE6C8A5EACE1E}" {
      Id "LF-Sign_TownMap_What"
@@ -3744,7 +3726,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{09F089CE1EB6773B}" {
      Id "LF-Sign_Traders_Needs"
-     Target_en_us "Something to sell: apples and plums from the farm orchard, tomatoes from the field."
+     Target_en_us "Something to sell: apples and plums from the farm orchard."
      Comment "Sign card for the market stalls that buy produce, Needs section."
     }
     CustomStringTableItem "{EDCB37501399B86B}" {
@@ -4029,12 +4011,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{03708C7686BF4E63}" {
      Id "LF-Sign_Farm_What"
-     Target_en_us "Tomato beds, a greenhouse, and an orchard."
+     Target_en_us "Vegetable beds, a greenhouse, and an orchard."
      Comment "Sign card for the farm north of the square, What section."
     }
     CustomStringTableItem "{905E4015631C43F6}" {
      Id "LF-Sign_Farm_How"
-     Target_en_us "Gather Tomato from a ripe plant in the beds, Gather Apple or Gather Plum from the orchard trees."
+     Target_en_us "Gather Apple or Gather Plum from the orchard trees."
      Comment "Sign card for the farm north of the square, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{33EBA210B27B7F63}" {
@@ -4574,12 +4556,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{22205B2B89D3D298}" {
      Id "LF-Org_LeaseOurs"
-     Target_en_us "Yours - members open the gate"
+     Target_en_us "Yours - members enter"
      Comment "Hideout lease status: this organization holds it."
     }
     CustomStringTableItem "{717EDA57B8114856}" {
      Id "LF-Org_LeaseTaken"
-     Target_en_us "Leased to another organization"
+     Target_en_us "Leased elsewhere"
      Comment "Hideout lease status: another organization holds it."
     }
     CustomStringTableItem "{CC1FC9A0CFEB04C1}" {
@@ -6589,7 +6571,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DD4DF16E9EA2A1E6}" {
      Id "LF-Chop_Load"
-     Target_en_us "Take this car apart"
+     Target_en_us "Take this stolen car apart"
      Comment "Action: start dismantling the car in the yard (#415)."
     }
     CustomStringTableItem "{DB060C732777FC93}" {
@@ -6634,12 +6616,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DE5E9D7236637A63}" {
      Id "LF-Chop_NotStolen"
-     Target_en_us "We only take hot cars"
-     Comment "Toast: the car is not stolen (#415)."
+     Target_en_us "Only stolen cars. Lockpick or hotwire a car that is not yours and bring it here."
+     Comment "Toast: the car is not stolen. Says what counts as hot: a car taken by lockpick or hotwire (#415, #601)."
     }
     CustomStringTableItem "{235163142BFE40D6}" {
      Id "LF-Chop_KeyedOwner"
-     Target_en_us "You hold its key. Not here."
+     Target_en_us "That car is yours (you hold its key). Only stolen cars, please."
      Comment "Toast: an owner with the key cannot chop (#415)."
     }
     CustomStringTableItem "{37FDABA91E5334CF}" {
@@ -6661,6 +6643,58 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Chop_Gone"
      Target_en_us "The car left the yard. The job is off"
      Comment "Toast: the car moved before collection (#415)."
+    }
+    CustomStringTableItem "{156BE656616C6972}" {
+     Id "LF-Sign_LotPrice_s105_Title"
+     Target_en_us "S105 $1,000"
+     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
+    }
+    CustomStringTableItem "{E9ED41A91EBD6C79}" {
+     Id "LF-Sign_LotPrice_uaz469_Title"
+     Target_en_us "UAZ $2,500"
+     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
+    }
+    CustomStringTableItem "{9E6DE5A330213AAE}" {
+     Id "LF-Sign_LotPrice_s1203_Title"
+     Target_en_us "Van $4,000"
+     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
+    }
+    CustomStringTableItem "{CA7D25330BEB1CA1}" {
+     Id "LF-Sign_LotPrice_uaz452_Title"
+     Target_en_us "UAZ 452 $3,500"
+     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
+    }
+    CustomStringTableItem "{33B679F9679C9184}" {
+     Id "LF-License_FarmerField_Name"
+     Target_en_us "Field hand"
+     Target_es_es "Jornalero agrícola"
+     Comment "Licence name: starting farm permit"
+    }
+    CustomStringTableItem "{1921CA724A9210CF}" {
+     Id "LF-License_FarmerField_Desc"
+     Target_en_us "Starting permit for farm work. Lets you gather crops by hand."
+     Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
+     Comment "Licence description"
+    }
+    CustomStringTableItem "{F297FFD8D4B6E791}" {
+     Id "LF-LawlessHud_Tag"
+     Target_en_us "LAWLESS AREA"
+     Comment "Persistent HUD tag while the local player stands inside a lawless zone."
+    }
+    CustomStringTableItem "{4FBA54E7032A04DE}" {
+     Id "LF-LawlessHud_Title"
+     Target_en_us "Lawless area"
+     Comment "Toast title when the player enters or leaves a lawless zone."
+    }
+    CustomStringTableItem "{59EE09E1B7435797}" {
+     Id "LF-LawlessHud_Enter"
+     Target_en_us "You entered a lawless area. Server rules are relaxed here. Watch your back."
+     Comment "Toast on entering a lawless zone (also when joining or spawning inside one)."
+    }
+    CustomStringTableItem "{9A2F1AA936E1BDA7}" {
+     Id "LF-LawlessHud_Exit"
+     Target_en_us "You left the lawless area."
+     Comment "Toast on leaving a lawless zone."
     }
   }
  }

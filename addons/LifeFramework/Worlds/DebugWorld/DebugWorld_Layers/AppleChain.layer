@@ -181,7 +181,7 @@ GenericEntity AppleTrader {
    }
    SCR_DestructibleEntity TableRecreation_01_3 : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
     Flags 0x403 0
-    coords -3.6 0 0.7
+    coords -4.1 0 0.7
    }
   LF_NpcBaseEntity AppleNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -208,5 +208,6 @@ Tree AppleGatherTree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domest
  coords 130 0 310
 }
 GenericEntity AppleProcessor : "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et" {
- coords 182 0 311.5
+ coords 141 0.9 311
+ angleY 140
 }

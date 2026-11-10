@@ -19,7 +19,9 @@
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
-//   session up [--clients N] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   shots baseline [--areas a,b] | area <name> --baseline   Every area in one session, shared; or find the freshest
+//   shots area <name|x,z> | crop <shot> <x,y,w,h>   One-call screenshot rig for the area polish pass (agent-box/shots.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved LFTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
@@ -37,6 +39,7 @@ import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
 import * as playtest from "./host/playtest.mjs";
 import * as session from "../agent-box/session.mjs";
+import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
@@ -49,7 +52,9 @@ import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-l
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
-import { resetLease } from "./lib/session-lease.mjs";
+import { readReaped, resetLease } from "./lib/session-lease.mjs";
+import * as measure from "./lib/session-measure.mjs";
+import { trimProcs } from "./lib/ws-trim.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -210,16 +215,21 @@ function patchDirOf(server) {
 function syncLocalPatches() {
   const copied = [];
   for (const name of Object.keys(SERVERS)) {
-    const patchSrc = patchDirOf(SERVERS[name]);
-    if (!existsSync(patchSrc)) continue;
-    const cloneSrc = join(MCP_DIR, SERVERS[name].dir, "src");
-    if (!existsSync(cloneSrc)) continue;
-    for (const f of walkFiles(patchSrc)) {
-      const rel = f.slice(patchSrc.length).replace(/^[\\/]+/, "");
-      const dest = join(cloneSrc, rel);
-      mkdirSync(dirname(dest), { recursive: true });
-      copyFileSync(f, dest);
-      copied.push(`${name}: +${rel}`);
+    // src/ is the tool source; mod/ is the Workbench handler bundle. A handler
+    // that names LF_ classes is patched here, or the clone's copy fails to
+    // compile in Workbench after the EL_ to LF_ rename.
+    for (const sub of ["src", "mod"]) {
+      const patchSrc = join(PATCH_DIR, SERVERS[name].dir, sub);
+      if (!existsSync(patchSrc)) continue;
+      const cloneSub = join(MCP_DIR, SERVERS[name].dir, sub);
+      if (!existsSync(cloneSub)) continue;
+      for (const f of walkFiles(patchSrc)) {
+        const rel = f.slice(patchSrc.length).replace(/^[\\/]+/, "");
+        const dest = join(cloneSub, rel);
+        mkdirSync(dirname(dest), { recursive: true });
+        copyFileSync(f, dest);
+        copied.push(`${name}: +${sub}/${rel}`);
+      }
     }
   }
   return copied;
@@ -1497,6 +1507,11 @@ function spawnOutsideSsh(exe, args, cwd) {
   return { pid: Number(m[2]) };
 }
 
+// The lane a session runs on: recorded in session.json (a session of before the lanes ran on server-2001).
+function laneLockOf(s) {
+  return s?.lane?.lock ?? SERVER_SLOT;
+}
+
 // Verbose session lines go to <session dir>/up.log; the console gets the verdict.
 let sessionLog = null;
 function slog(msg) {
@@ -1521,9 +1536,22 @@ function cmdSessionDown(dir) {
   }
   console.log(`session: server pid ${s.serverPid} ${killTree(s.serverPid) ? "closed" : "already gone"}`);
   for (let i = 0; i < 20 && host.pidAlive(s.serverPid); i++) sleepMs(500);
-  wt.releaseLock(ROOT, SERVER_SLOT, s.serverPid);
-  session.writeSession(dir, { ...s, stoppedAt: new Date().toISOString() });
+  wt.releaseLock(ROOT, laneLockOf(s), s.serverPid);
+  const stoppedAt = new Date().toISOString();
+  session.writeSession(dir, { ...s, stoppedAt });
+  recordSessionEnd(dir, s, stoppedAt);
   return 0;
+}
+
+// An owner's `session down` writes the session's line in runs.jsonl. A close by the pool (idle or
+// hold cap) was recorded by the closer, which left reaped.json just before running this.
+function recordSessionEnd(dir, s, stoppedAt) {
+  try {
+    if (s.stoppedAt || !s.heldSince) return;
+    const reaped = readReaped(dir);
+    if (reaped && Date.now() - Date.parse(reaped.at) < 180000) return;
+    pool.recordSession(ROOT, { slot: laneLockOf(s), slug: wt.slugOfRoot(ROOT) ?? undefined, priority: s.priority, waitS: s.waitS, heldSinceMs: Date.parse(s.heldSince), endMs: Date.parse(stoppedAt), boots: s.boots, bootS: s.bootS, clients: s.expectClients, mission: s.mission, closedBy: "owner" });
+  } catch {}
 }
 
 // `session join <n>`: starts client n on a running session that was brought up without it, so a
@@ -1551,6 +1579,13 @@ function cmdSessionJoin(root, dir, flags) {
     return 1;
   }
   const c = session.sessionPaths(dir, session.MAX_CLIENTS).clients.find((x) => x.n === n);
+  // RAM gate like `up` (#563): trim idle sessions first, refuse if the floor would still be breached.
+  const ps = pool.poolSettings(root);
+  const gate = pool.gateJoin(root, ps.sessionReserve?.[s.profile]?.clientMb ?? ps.sessionReserveClientMb);
+  if (!gate.ok) {
+    console.log(`session: join refused, ${gate.reason}${gate.trimmed ? " (after trimming idle sessions)" : ""}; close a session or retry later`);
+    return 1;
+  }
   const log = session.newestLog(join(s.serverProfile, "logs"));
   const marker = /(?:registration form sent to player|spawning player) \d+/g;
   const before = (readFileSync(log, "utf8").match(marker) ?? []).length;
@@ -1575,7 +1610,7 @@ function cmdSessionStatus(dir) {
     return 0;
   }
   const up = (pid) => (host.pidAlive(pid) ? "up" : "gone");
-  console.log(`session dir: ${dir}`);
+  console.log(`session dir: ${dir}  profile ${s.profile ?? "full"}`);
   console.log(`  server   pid ${s.serverPid} ${up(s.serverPid)}  log ${session.newestLog(join(s.serverProfile, "logs")) ?? "-"}`);
   for (const c of s.clients ?? []) {
     console.log(`  client ${c.n} pid ${c.pid} ${up(c.pid)}  box ${c.box}  log ${session.newestLog(c.logs) ?? "-"}`);
@@ -1583,11 +1618,34 @@ function cmdSessionStatus(dir) {
   return 0;
 }
 
+// How long `session up --wait` queues (an aged request reaches the front at 40 min, so it needs more than 30).
+const SESSION_QUEUE_MIN = 90;
+
+// --hold <min>: raises this session's hold cap for a known-long job, up to sessionHoldMaxMin.
+function sessionHoldFlag(flags, settings) {
+  const v = argValue(flags, "--hold");
+  if (v === null) return { min: settings.sessionHoldMin, note: "" };
+  const want = Number(v);
+  if (!Number.isFinite(want) || want <= 0) throw new Error(`--hold needs minutes (got '${v}')`);
+  const min = Math.min(settings.sessionHoldMaxMin, Math.max(settings.sessionHoldMin, Math.round(want)));
+  const cut = want > settings.sessionHoldMaxMin ? ` (asked ${want}; the most is ${settings.sessionHoldMaxMin})` : "";
+  return { min, note: `session: hold cap raised to ${min} min${cut}` };
+}
+
+// `session up` prints the cap and, when other session requests are queued, how many wait.
+function sessionCapNote(root, settings, holdMin) {
+  const waiting = pool.sessionQueue(root).length;
+  const cap = `hold cap ${holdMin} min (enforced only while a session request queues; then a ${settings.sessionGraceMin} min warning)`;
+  if (waiting) console.log(`session: ${waiting} other session request(s) are queued behind you; ${cap}. Do your proof and shots in one go, then 'node agent-box/session.mjs down'`);
+  else console.log(`session: nobody is queued; ${cap}`);
+}
+
 function cmdSessionUp(root, dir, flags) {
   guardHeavy(root, "session up", flags.includes("--force"));
   const clients = session.parseClients(flags);
   const mission = session.parseMission(flags);
-  const res = session.parseRes(flags);
+  const rp = session.parseSessionProfile(flags);
+  const res = session.sessionRes(flags, rp);
   const visible = flags.includes("--visible");
   // --sound keeps game audio on (the default session is -noSound); for a filmed audio pass.
   const sound = flags.includes("--sound");
@@ -1596,19 +1654,9 @@ function cmdSessionUp(root, dir, flags) {
     console.log("session: one is already running; 'node agent-box/session.mjs down' first");
     return 1;
   }
-  // Each checkout has its own session dir; clients another checkout left running still hold memory and windows.
-  // --wait queues behind another checkout's session too (its clients can outlive its server lock).
-  const queuedUntil = Date.now() + 1800000;
-  let others = session.liveSessionsElsewhere(dir, host.pidAlive);
-  if (others.length && flags.includes("--wait")) console.log(`session: ${others[0].root ?? others[0].dir} has a live session; queued (up to 30 min)`);
-  while (others.length && flags.includes("--wait") && Date.now() < queuedUntil) {
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5000);
-    others = session.liveSessionsElsewhere(dir, host.pidAlive);
-  }
-  for (const o of others) {
-    console.log(`session: ${o.root ?? o.dir} has a live session; it runs 'node agent-box/session.mjs down' first`);
-    return 1;
-  }
+  // Another checkout's live session blocks only through the lane lock (and the RAM floor) that
+  // acquireSessionLaneSync below checks: a free lane is ours. Clients left by a session whose server
+  // is gone hold no lane; they are reaped further down by their recorded pids.
   const exe = serverExe();
   const game = gameClientExe();
   for (const f of clients > 0 ? [exe, game] : [exe]) {
@@ -1619,19 +1667,40 @@ function cmdSessionUp(root, dir, flags) {
   }
   const holderOf = () => {
     try {
-      const h = JSON.parse(readFileSync(join(wt.hubDirOf(root), "locks", `${SERVER_SLOT}.lock`), "utf8"));
-      return `${h.purpose ?? "a run"} of ${h.slug ?? h.root ?? "another checkout"} (pid ${h.pid})`;
+      const holders = [];
+      for (const l of pool.sessionLanes(root)) {
+        try {
+          const h = JSON.parse(readFileSync(join(wt.hubDirOf(root), "locks", `${l.lock}.lock`), "utf8"));
+          if (h.pid && host.pidAlive(h.pid)) holders.push(`${h.purpose ?? "a run"} of ${h.slug ?? h.root ?? "another checkout"} (pid ${h.pid})`);
+        } catch {}
+      }
+      return holders.length ? holders.join(" and ") : "another run";
     } catch {
       return "another run";
     }
   };
+  // The resource database refresh (a headless Workbench, minutes when stale) runs BEFORE the
+  // queue: it used to run with the lane held, keeping everyone else out while it worked.
+  ensureResourceDatabase(root);
+  const settings = pool.poolSettings(root);
+  const hold = sessionHoldFlag(flags, settings);
+  const queuedAt = Date.now();
+  let lane = null;
   try {
-    if (flags.includes("--wait")) console.log(`session: port 2001 is held by ${holderOf()}; queued (up to 30 min)`);
-    pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? 1800000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root }, priority: priorityFlag(flags) });
+    if (flags.includes("--wait")) console.log(`session: the session lane is held by ${holderOf()}; queued (up to ${SESSION_QUEUE_MIN} min)`);
+    lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients, profile: rp.profile }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
-    console.log(`FAIL  port 2001 is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
+    console.log(`FAIL  the session lane is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
     return 1;
   }
+  const laneLock = lane?.lockName ?? lane?.name ?? SERVER_SLOT;
+  const lanePort = lane?.port ?? 2001;
+  console.log(`session: lane ${laneLock} (port ${lanePort})`);
+  // Another lane's healthy session is not a leftover. Clients of a session whose server is gone are
+  // orphans: close them by the pids in that session's own record (never by process name).
+  for (const d of session.reapOrphanSessions(dir, host.pidAlive, killTree)) console.log(`session: closed orphaned clients of ${d} (their server was gone)`);
+  const heldSince = new Date().toISOString();
+  const waitS = Math.round((lane?.queuedMs ?? Date.now() - queuedAt) / 100) / 10;
   resetLease(dir);
   const paths = session.sessionPaths(dir, clients);
   sessionLog = join(dir, "up.log");
@@ -1639,50 +1708,163 @@ function cmdSessionUp(root, dir, flags) {
     writeFileSync(sessionLog, "");
   } catch {}
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), root, mission, res, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients };
+  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
+    // The hold cap judges only a session that carries holdCap (pool.mjs reapIdleSessions).
+    holdCap: true, holdMin: hold.min, heldSince, waitS, priority: pool.resolvePriority(root, priorityFlag(flags)), boots: 1, bootS: [] };
+  if (hold.note) console.log(hold.note);
+  const bootT0 = Date.now();
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
     console.log(`      full log ${sessionLog}`);
     session.writeSession(dir, state);
     cmdSessionDown(dir);
-    wt.releaseLock(root, SERVER_SLOT);
+    wt.releaseLock(root, laneLock);
     return 1;
   };
   try {
-    ensureResourceDatabase(root);
     // A fresh session starts from no save: an old playtest save would be loaded by restart.
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave: false, fail, marker: /(?:registration form sent to player|spawning player) \d+/g });
     if (typeof log === "number") return log;
     // Joined means the server sent a new account the registration form or spawned a returning
     // one. There is no faction menu (M1-11).
     const joined = sessionAwaitJoin(log, clients, /(?:registration form sent to player|spawning player) \d+/g, fail, state);
     if (joined < 0) return 1;
-    session.writeSession(dir, { ...state, readyAt: new Date().toISOString() });
-    console.log(`session: ready; ${joined} client(s) joined${mission === "playtest" ? " (LF_PlaytestTown, LF_HARNESS)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
+    session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
+    console.log(`session: ready in ${bootS} s; ${joined} client(s) joined${mission === "playtest" ? " (LF_PlaytestTown, LF_HARNESS)" : ""}; profile ${rp.profile}${rp.profile === "lowspec" ? " (640x360 clients, lowest textures, no post-processing; shots need --profile full)" : ""}. Drive: harness.mjs --client <n> <verb>; close: session.mjs down`);
+    sessionCapNote(root, settings, hold.min);
     console.log(`session: full log ${sessionLog}`);
     return 0;
   } catch (e) {
     return fail(e.message);
   } finally {
     // Before the transfer this process owns the lock; after it the server does.
-    wt.releaseLock(root, SERVER_SLOT);
+    wt.releaseLock(root, laneLock);
   }
+}
+
+// `session measure --variants full,lowspec,tex+res --clients 1,2 [--settle s] [--proof name] [--out file]`:
+// RAM of the server and each client per profile or lever set (tools/lib/session-measure.mjs). One
+// queue wait, then every variant boots and closes in turn while this process keeps the lane.
+function cmdSessionMeasure(root, dir, flags) {
+  guardHeavy(root, "session measure", flags.includes("--force"));
+  const variants = (argValue(flags, "--variants") ?? "full,lowspec").split(",").map((v) => measure.parseVariant(v));
+  const counts = (argValue(flags, "--clients") ?? "1").split(",").map(Number);
+  if (counts.some((n) => !Number.isInteger(n) || n < 0 || n > session.MAX_CLIENTS)) throw new Error(`--clients is a list of 0..${session.MAX_CLIENTS}`);
+  const settleS = Number(argValue(flags, "--settle") ?? 30);
+  // --proof quarry-proof (every count) or --proof 1:quarry-proof,2:scanner-proof (by client count).
+  const proofFor = (n) => {
+    const list = String(argValue(flags, "--proof") ?? "").split(",").filter(Boolean);
+    const hit = list.find((p) => p.startsWith(`${n}:`)) ?? list.find((p) => !/^\d:/.test(p));
+    return hit ? hit.replace(/^\d:/, "") : "";
+  };
+  const mission = argValue(flags, "--mission") ?? "debug";
+  const prev = session.readSession(dir);
+  if (prev && !prev.stoppedAt && (host.pidAlive(prev.serverPid) || (prev.clients ?? []).some((c) => host.pidAlive(c.pid)))) {
+    console.log("session: one is already running; 'node agent-box/session.mjs down' first");
+    return 1;
+  }
+  const exe = serverExe();
+  const game = gameClientExe();
+  ensureResourceDatabase(root);
+  let lane = null;
+  try {
+    if (flags.includes("--wait")) console.log(`measure: queued for a session lane (up to ${SESSION_QUEUE_MIN} min)`);
+    lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients: Math.max(...counts), profile: "full" }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
+  } catch (e) {
+    console.log(`FAIL  no session lane (${e.message}); pass --wait`);
+    return 1;
+  }
+  const laneLock = lane?.lockName ?? lane?.name ?? SERVER_SLOT;
+  const lanePort = lane?.port ?? 2001;
+  console.log(`measure: lane ${laneLock} (port ${lanePort}); free RAM ${measure.freeMb()} MB`);
+  sessionLog = join(dir, "up.log");
+  const rows = [];
+  let state = null;
+  const closeAll = () => {
+    if (!state) return;
+    try {
+      wt.adoptLock(root, laneLock, state.serverPid);
+    } catch {}
+    for (const c of state.clients ?? []) killTree(c.pid);
+    killTree(state.serverPid);
+    for (let i = 0; i < 20 && host.pidAlive(state.serverPid); i++) sleepMs(500);
+    session.writeSession(dir, { ...state, stoppedAt: new Date().toISOString() });
+    sleepMs(4000);
+  };
+  const marker = /(?:registration form sent to player|spawning player) \d+/g;
+  try {
+    for (const v of variants) {
+      for (const n of v.only === null ? counts : [v.only]) {
+        const rp = session.resolveProfile(v.profile, v.levers);
+        const res = session.sessionRes([], rp);
+        const paths = session.sessionPaths(dir, n);
+        resetLease(dir);
+        state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, res, profile: v.profile, levers: v.levers, visible: false, sound: false, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: n, holdCap: true, holdMin: 45, heldSince: new Date().toISOString(), boots: 1, bootS: [] };
+        const freeBefore = measure.freeMb();
+        const t0 = Date.now();
+        const fail = (msg) => {
+          throw new Error(msg);
+        };
+        const log = sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible: false, loadSave: false, fail, marker });
+        if (typeof log === "number") throw new Error(`launch failed (${log})`);
+        if (n > 0 && sessionAwaitJoin(log, n, marker, fail, state) < 0) throw new Error("clients did not join");
+        const bootS = Math.round((Date.now() - t0) / 100) / 10;
+        session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
+        let proofNote = "";
+        const proof = proofFor(n);
+        if (proof && n > 0) {
+          const r = spawnSync(process.execPath, [join(root, "agent-box", "session.mjs"), proof], { windowsHide: true, encoding: "utf8", cwd: root, timeout: 300000 });
+          proofNote = `${proof} ${r.status === 0 ? "PASS" : "exit " + r.status}`;
+          console.log(`measure: ${v.name} x${n}: ${proofNote}`);
+        }
+        sleepMs(settleS * 1000);
+        const got = measure.sampleProcs([state.serverPid, ...state.clients.map((c) => c.pid)], PWSH);
+        const srv = got.find((g) => g.pid === state.serverPid);
+        const cls = state.clients.map((c) => got.find((g) => g.pid === c.pid)).filter(Boolean);
+        // What a trim leaves: the pool trims session processes when it would otherwise refuse a session for RAM.
+        const before = got.map((g) => g.wsMb);
+        trimProcs([state.serverPid, ...state.clients.map((c) => c.pid)], PWSH);
+        sleepMs(3000);
+        const after = measure.sampleProcs([state.serverPid, ...state.clients.map((c) => c.pid)], PWSH);
+        sleepMs(15000);
+        const later = measure.sampleProcs([state.serverPid, ...state.clients.map((c) => c.pid)], PWSH);
+        const row = { trimmedWs: after.map((g) => g.wsMb), idleAfterTrimWs: later.map((g) => g.wsMb), beforeTrimWs: before, variant: v.name, levers: v.levers, clients: n, bootS, serverWs: srv?.wsMb ?? 0, serverPriv: srv?.privMb ?? 0, serverPeak: srv?.peakMb ?? 0, clientWs: cls.map((c) => c.wsMb), clientPriv: cls.map((c) => c.privMb), clientPeak: cls.map((c) => c.peakMb), serverCpuS: srv?.cpuS ?? 0, clientCpuS: cls.map((c) => c.cpuS), freeBefore, freeMb: measure.freeMb(), proof: proofNote };
+        row.totalWs = row.serverWs + row.clientWs.reduce((a, b) => a + b, 0);
+        rows.push(row);
+        console.log(`measure: ${v.name} x${n}: ws before trim ${row.beforeTrimWs.join("/")}, 3 s after ${row.trimmedWs.join("/")}, 18 s after ${row.idleAfterTrimWs.join("/")} (server first)`);
+        console.log(`measure: ${v.name} x${n}: server ${row.serverWs} MB, clients ${row.clientWs.join("/") || "-"} MB (ws), total ${row.totalWs} MB, free ${row.freeMb} MB`);
+        closeAll();
+        state = null;
+      }
+    }
+  } catch (e) {
+    console.log(`FAIL  ${e.message}`);
+    closeAll();
+    return 1;
+  } finally {
+    wt.releaseLock(root, laneLock);
+    const out = argValue(flags, "--out");
+    if (out && rows.length) measure.saveJson(out, rows);
+    if (rows.length) console.log(`\n${measure.formatTable(rows)}`);
+  }
+  return 0;
 }
 
 // Boots the server (fresh, or with -loadSessionSave), then each client in
 // order with its own profile. Returns the server console.log path, or the exit
 // code fail() returned.
-function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail }) {
+function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail, marker }) {
   const junction = serverGameAddons(root);
   mkdirSync(paths.server, { recursive: true });
-  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave });
+  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state) });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
   const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
   srv.unref?.();
   if (!srv.pid) return fail("server did not start");
   state.serverPid = srv.pid;
-  wt.transferLock(root, SERVER_SLOT, srv.pid);
+  wt.transferLock(root, laneLockOf(state), srv.pid);
   session.writeSession(dir, state);
 
   let log = null;
@@ -1699,6 +1881,14 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
   for (const c of paths.clients) {
     const failed = sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail });
     if (failed !== null) return failed;
+    // Client n+1 starts once client n has joined, so player ids follow client numbers and two clients
+    // do not load at once. This replaced a fixed 15 s sleep: a client joins in about 7 s (measured
+    // 2026-11-10: 6.7 to 8.2 s from launch to the server's join line).
+    if (marker && c.n < paths.clients.length) {
+      const joinBy = Date.now() + 40000;
+      while (Date.now() < joinBy && host.pidAlive(state.serverPid) && (readFileSync(log, "utf8").match(marker) ?? []).length < c.n) sleepMs(500);
+      slog(`client ${c.n} joined ${Math.round((Date.now() - Date.parse(state.clients.at(-1).launchedAt)) / 100) / 10} s after its launch`);
+    }
   }
   return log;
 }
@@ -1707,7 +1897,10 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
 // null, or the code fail() returned.
 function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail }) {
   mkdirSync(c.box, { recursive: true });
-  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id, res, sound: !!state.sound });
+  const rp = session.profileOf(state);
+  // The profile's engine settings go into the client profile before every launch (full clears them).
+  session.applyClientSettings(c.profile, rp);
+  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp });
   slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
   // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
   // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
@@ -1740,11 +1933,10 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
     }
   }
   if (!child.pid) return fail(`client ${c.n} did not start`);
-  state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs });
+  state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs, launchedAt: new Date().toISOString() });
   session.writeSession(dir, state);
-  // Stagger so two clients do not load the same data at the same instant, and
-  // so player ids follow client numbers (the same accounts after a restart).
-  sleepMs(15000);
+  // The next client waits for this one's join line (sessionLaunch); here only a client that dies at once is caught.
+  sleepMs(3000);
   if (!host.pidAlive(child.pid)) return fail(`client ${c.n} exited right after launch (log ${session.newestLog(c.logs) ?? "none"})`);
   return null;
 }
@@ -1863,7 +2055,7 @@ function cmdSessionRestart(root, dir, flags) {
   // Hold port 2001 across the restart: a queued test would otherwise take it
   // between the old server's exit and the new boot.
   try {
-    wt.adoptLock(root, SERVER_SLOT, prev.serverPid);
+    wt.adoptLock(root, laneLockOf(prev), prev.serverPid);
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
     return 1;
@@ -1875,7 +2067,7 @@ function cmdSessionRestart(root, dir, flags) {
   const deadline = Date.now() + 180000;
   while (Date.now() < deadline && host.pidAlive(prev.serverPid)) sleepMs(1000);
   if (host.pidAlive(prev.serverPid)) {
-    wt.transferLock(root, SERVER_SLOT, prev.serverPid);
+    wt.transferLock(root, laneLockOf(prev), prev.serverPid);
     console.log("FAIL  the server did not close within 180s; close it with 'node agent-box/session.mjs down'");
     return 1;
   }
@@ -1885,33 +2077,41 @@ function cmdSessionRestart(root, dir, flags) {
   const clients = (prev.clients ?? []).length;
   const paths = session.sessionPaths(dir, clients);
   sessionLog = join(dir, "up.log");
-  const state = { ...prev, restartedAt: new Date().toISOString(), readyAt: undefined, serverPid: 0, clients: [] };
+  const state = { ...prev, restartedAt: new Date().toISOString(), readyAt: undefined, serverPid: 0, clients: [], boots: (prev.boots ?? 1) + 1 };
+  const bootT0 = Date.now();
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
     session.writeSession(dir, state);
     cmdSessionDown(dir);
-    wt.releaseLock(root, SERVER_SLOT);
+    wt.releaseLock(root, laneLockOf(prev));
     return 1;
   };
   try {
-    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission: prev.mission, res: prev.res, visible: prev.visible, loadSave: true, fail });
+    const log = sessionLaunch(root, dir, state, paths, { exe, game, mission: prev.mission, res: prev.res, visible: prev.visible, loadSave: true, fail, marker: /flow start for player \d+/g });
     if (typeof log === "number") return log;
     const joined = sessionAwaitJoin(log, clients, /flow start for player \d+/g, fail, state);
     if (joined < 0) return 1;
     const loaded = /session continued from a save point|loading the latest save point/.test(readFileSync(log, "utf8"));
-    session.writeSession(dir, { ...state, readyAt: new Date().toISOString() });
-    console.log(`session: restarted${loaded ? " from the save" : "; WARN the server log does not say it loaded a save"}; ${joined} client(s) rejoined`);
+    const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
+    session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [...(prev.bootS ?? []), bootS] });
+    console.log(`session: restarted in ${bootS} s${loaded ? " from the save" : "; WARN the server log does not say it loaded a save"}; ${joined} client(s) rejoined`);
     return 0;
   } catch (e) {
     return fail(e.message);
   } finally {
-    wt.releaseLock(root, SERVER_SLOT);
+    wt.releaseLock(root, laneLockOf(prev));
   }
 }
+
+const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait [--timeout s] | join <n> | restart | down | status";
 
 function cmdSession(args) {
   const list = args ?? [];
   const dir = session.sessionDir();
+  if (list.includes("--help") || list.includes("-h") || list[0] === "help") {
+    console.log(SESSION_USAGE);
+    return 0;
+  }
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
   // The session dir is shared by every checkout: only the one that started a
   // live session may restart or close it (--force overrides).
@@ -1924,11 +2124,12 @@ function cmdSession(args) {
     }
   }
   if (list[0] === "join") return cmdSessionJoin(ROOT, dir, list.slice(1));
+  if (list[0] === "measure") return cmdSessionMeasure(ROOT, dir, list.slice(1));
   if (list[0] === "restart") return cmdSessionRestart(ROOT, dir, list.slice(1));
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
   if (list[0] === "wait") return cmdSessionWait(dir, list.slice(1));
-  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] | wait [--timeout s] | join <n> | restart | down | status");
+  console.log(SESSION_USAGE);
   return list[0] ? 1 : 0;
 }
 
@@ -2930,6 +3131,7 @@ const cmds = {
   host: (flags) => cmdHost(flags),
   playtest: (flags) => cmdPlaytest(flags),
   session: (flags) => cmdSession(flags),
+  shots: (flags) => shots.main(flags ?? []),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
@@ -3064,7 +3266,7 @@ try {
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

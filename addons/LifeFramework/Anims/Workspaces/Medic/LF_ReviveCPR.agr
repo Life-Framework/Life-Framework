@@ -1,0 +1,21 @@
+AnimSrcGraph {
+ AnimSetTemplate "{8576B1698D963446}Anims/Workspaces/Medic/LF_ReviveCPR.ast"
+ ControlTemplate AnimSrcGCT "{1EE5532C7E012CCC}" {
+  Variables {
+   AnimSrcGCTVarInt Gestures {
+    DefaultValue -1
+    MinValue -2
+    MaxValue 1000
+   }
+  }
+  Commands {
+   AnimSrcGCTCmd CMD_Gestures {
+   }
+  }
+ }
+ Debug AnimSrcGD "{98B257797ECC67FD}" {
+ }
+ GraphFilesResourceNames {
+  "{BC5598128A8EA1F9}Anims/Workspaces/Medic/LF_ReviveCPR.agf"
+ }
+}

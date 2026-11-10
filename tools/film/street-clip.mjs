@@ -1,6 +1,6 @@
 // Records the #393 acceptance clip: scene "street" (a walker uses the store till while a driver drives a car
 // down the main street) shot with LF_FilmCamera cuts. Needs a session with the character spawned:
-//   node agent-box/session.mjs up --clients 1 --mission playtest --res 1920x1080 --wait   (tools\cli session up ... --sound for audio)
+//   node agent-box/session.mjs up --clients 1 --mission playtest --profile full --res 1920x1080 --sound --wait
 //   node agent-box/harness.mjs --client 1 flow ui-intake
 //   node tools/film/street-clip.mjs [--fps 30] [--audio]
 // --audio also captures the client's game sound (process loopback, #396) and writes <clip>.audio.mp4 with a

@@ -71,7 +71,7 @@ class LF_CashVanRouteComponent : ScriptComponent
 	[Attribute("Roadmap_Cash_Van", UIWidgets.EditBox, desc: "World entity name of the van. The box is its own entity, not a child: a replicated child under a replicated vehicle makes the client item table disagree with the server.")]
 	protected string m_sVanEntity;
 
-	[Attribute("0 0.55 -3", UIWidgets.Coords, desc: "Where the box sits on the van, in the van's local space. The box faces backwards.")]
+	[Attribute("0 0.45 -2.6", UIWidgets.Coords, desc: "Where the box sits on the van's rear step, in the van's local space. The box faces backwards.")]
 	protected vector m_vBoxOffset;
 
 	protected int m_iStop;

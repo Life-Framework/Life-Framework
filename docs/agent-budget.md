@@ -89,3 +89,12 @@ thread uses.
 ## Docs and screenshots
 
 The builder takes the screenshots during its proof session. The free DeepSeek model writes up the player docs, the website and the closed issue for each feature once it merges, and a weekly sweep catches anything missed. See `docs/agent-docs-sweep.md`.
+
+## Nothing waits forever
+
+On 2026-11-10, three agents stalled for an hour or more. Each time, a wait loop called something with no timeout, either an `ssh` probe or a log file that never appeared, so the loop never moved on.
+
+**Rules:**
+- Every external call has a bounded runtime. The `ssh` defaults are in `~/.ssh/config` (`ConnectTimeout 8`, `ServerAliveInterval 10`, `ServerAliveCountMax 3`). Wrap any other probe in `timeout <s>`.
+- No hand-written wait loops. Use a repo command that blocks with its own budget, or run in the background and end the turn.
+- The orchestrator's hourly check flags any agent with no activity for 30+ minutes.

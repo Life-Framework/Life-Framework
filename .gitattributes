@@ -36,3 +36,7 @@ tools/validation/enforce-lint-baseline.json merge=lf-lint-baseline
 # To migrate to LFS later (recommended once the repo is stable):
 #   git lfs track "*.edds" "*.tif" "*.fbx" "*.xob" "*.dds" "*.anm" "*.ttile" "*.bterr"
 #   git lfs migrate import --include="*.edds,*.tif,*.fbx,*.xob,*.dds,*.anm,*.ttile,*.bterr"
+docs/asset-inventory.md merge=lf-table-rows
+docs/playtest.md merge=lf-markdown
+website/content/gallery.json merge=lf-json-keys
+agent-box/areas.json merge=lf-json-keys

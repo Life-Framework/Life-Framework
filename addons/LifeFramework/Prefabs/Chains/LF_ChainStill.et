@@ -2,7 +2,7 @@ GenericEntity : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
  ID "4C1A9E07B35D8211"
  components {
   MeshObject "{5872F0EB7FA40561}" {
-   Object "{5C506E2B3F4CC6D1}Assets/Props/Furniture/Boiler_01/Boiler_01.xob"
+   Object "{65601AF1390EC9BD}Assets/Structures/BuildingsParts/Heating/BoilerTank_02/BoilerTank_02.xob"
   }
   LF_ChainStationComponent "{4C1A9E07B35D8303}" {
    m_sChainId "moonshine"

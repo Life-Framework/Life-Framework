@@ -1,5 +1,17 @@
 GenericEntity Moonshine_Barrel_1 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
  components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Materials {
+    MaterialAssignClass "{4C1A9E07B35D8321}" {
+     SourceMaterial "BarrelMetal_01"
+     AssignedMaterial "{31653ECB87A0B029}Assets/Props/Industrial/BarrelMetal_01/Data/BarrelMetal_01_grey.emat"
+    }
+    MaterialAssignClass "{4C1A9E07B35D8322}" {
+     SourceMaterial "Colour_pallete"
+     AssignedMaterial "{ABCB3993A1016E04}Common/Materials/ColorPalette/Color_palette_01_GREY_15_S0_R1.emat"
+    }
+   }
+  }
   LF_ChainStationComponent "{4C1A9E07B35D8303}" {
    m_sStationKey "Moonshine_Barrel_1"
    m_sSiteId "Moonshine_Site"
@@ -7,10 +19,23 @@ GenericEntity Moonshine_Barrel_1 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBar
    m_sStepId "mash"
   }
  }
- coords 380 0 300
+ coords 381.2 0 301.4
+ angleY 0
 }
 GenericEntity Moonshine_Barrel_2 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
  components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Materials {
+    MaterialAssignClass "{4C1A9E07B35D8321}" {
+     SourceMaterial "BarrelMetal_01"
+     AssignedMaterial "{31653ECB87A0B029}Assets/Props/Industrial/BarrelMetal_01/Data/BarrelMetal_01_grey.emat"
+    }
+    MaterialAssignClass "{4C1A9E07B35D8322}" {
+     SourceMaterial "Colour_pallete"
+     AssignedMaterial "{ABCB3993A1016E04}Common/Materials/ColorPalette/Color_palette_01_GREY_15_S0_R1.emat"
+    }
+   }
+  }
   LF_ChainStationComponent "{4C1A9E07B35D8303}" {
    m_sStationKey "Moonshine_Barrel_2"
    m_sSiteId "Moonshine_Site"
@@ -18,10 +43,23 @@ GenericEntity Moonshine_Barrel_2 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBar
    m_sStepId "mash"
   }
  }
- coords 384 0 300
+ coords 382.9 0 300.6
+ angleY 40
 }
 GenericEntity Moonshine_Barrel_3 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
  components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Materials {
+    MaterialAssignClass "{4C1A9E07B35D8321}" {
+     SourceMaterial "BarrelMetal_01"
+     AssignedMaterial "{31653ECB87A0B029}Assets/Props/Industrial/BarrelMetal_01/Data/BarrelMetal_01_grey.emat"
+    }
+    MaterialAssignClass "{4C1A9E07B35D8322}" {
+     SourceMaterial "Colour_pallete"
+     AssignedMaterial "{ABCB3993A1016E04}Common/Materials/ColorPalette/Color_palette_01_GREY_15_S0_R1.emat"
+    }
+   }
+  }
   LF_ChainStationComponent "{4C1A9E07B35D8303}" {
    m_sStationKey "Moonshine_Barrel_3"
    m_sSiteId "Moonshine_Site"
@@ -29,7 +67,8 @@ GenericEntity Moonshine_Barrel_3 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBar
    m_sStepId "mash"
   }
  }
- coords 388 0 300
+ coords 384.6 0 300.9
+ angleY 80
 }
 GenericEntity Moonshine_Still : "{4C1A9E07B35D8210}Prefabs/Chains/LF_ChainStill.et" {
  components {
@@ -38,5 +77,77 @@ GenericEntity Moonshine_Still : "{4C1A9E07B35D8210}Prefabs/Chains/LF_ChainStill.
    m_sSiteId "Moonshine_Site"
   }
  }
- coords 384 0 305
+ coords 384 0 304.2
+}
+GenericEntity : "{CD87FB2AC3A85D65}Prefabs/Structures/BuildingParts/Heating/BoilerLarge_02/BoilerLarge_02_base.et" {
+ coords 386.4 0 305.4
+ angleY 200
+}
+GenericEntity : "{D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et" {
+ coords 381.4 0 304.2
+ angleY 0
+}
+GenericEntity : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 387.6 0 302.6
+ angleY 20
+}
+GenericEntity : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 379.4 0 302.4
+ angleY 75
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 387.8 0 304.4
+ angleY 15
+}
+GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+ coords 382.8 0 302.6
+ angleY 0
+}
+GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+ coords 379.2 0 305.6
+ angleY 10
+}
+GenericEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 382 0 308.6
+ angleY 0
+}
+GenericEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 386 0 308.6
+ angleY 0
+}
+Tree : "{DE7FC095F656695C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_3s.et" {
+ coords 378 0 310.5
+ angleY 0
+}
+Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
+ coords 385 0 311.5
+ angleY 0
+}
+Tree : "{DE7FC095F656695C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_3s.et" {
+ coords 391 0 309
+ angleY 0
+}
+Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
+ coords 376 0 304
+ angleY 0
+}
+Tree : "{C98A6C1C2372354E}Prefabs/Vegetation/Bush/b_corylus_avellana_1.et" {
+ coords 377.6 0 307.4
+ angleY 0
+}
+Tree : "{D6EC31A48403A52A}Prefabs/Vegetation/Bush/b_sambucus_nigra_1.et" {
+ coords 389.8 0 306.8
+ angleY 0
+}
+Tree : "{AED5759B653DF6D0}Prefabs/Vegetation/Bush/b_rosa_canina_1s.et" {
+ coords 383.5 0 309.6
+ angleY 0
+}
+Tree : "{C98A6C1C2372354E}Prefabs/Vegetation/Bush/b_corylus_avellana_1.et" {
+ coords 390 0 303.2
+ angleY 0
+}
+Tree : "{D6EC31A48403A52A}Prefabs/Vegetation/Bush/b_sambucus_nigra_1.et" {
+ coords 377 0 301.8
+ angleY 0
 }

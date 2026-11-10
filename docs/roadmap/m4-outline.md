@@ -55,6 +55,7 @@ and staff cover for that: roughly 6 to 8 police and 2 to 3 moderators online.
 8. #378 Trial 0grind against our requirements and choose the host (flagship)
 9. #379 Dedicated server host guide (0grind and self-hosted)
 10. #380 `tools\cli server-doctor` reads a server log and explains it
+11. #556 Wipe policy and a backed-up wipe step (flagship)
 
 **Host and server DX.** The leading host candidate for the 24/7 box is
 [0grind](https://0grind.io/), which the Overthrow wiki recommends; the public
@@ -85,6 +86,7 @@ generator's server bundle (#381, M3) removes the hand-edited `server.json`.
 3. #314 Police applications reviewed by staff (flagship)
 4. #315 Appeals channel and ban record (flagship)
 5. #316 Session announcements and feedback triage (flagship)
+6. #555 Invite-only alpha, then open to the public (flagship)
 
 
 ## 3. Showcase and growth
@@ -110,6 +112,16 @@ generator's server bundle (#381, M3) removes the hand-edited `server.json`.
   a server setting the flagship needs live.
 - [Police missions](scopes/later/police-missions.md): these need a live police
   roster to be worth building.
+
+## Launch decisions (maintainer, 2026-11-09)
+
+- **Invite-only alpha, then open.** The opening gate is several sessions at the
+  player target, no save loss, no blocking regression, and trial moderators in
+  place (#555).
+- **Wipes follow each milestone during M4,** announced a session ahead and
+  backed up first, until a declared persistent launch date (#556).
+- **Trial moderators** come from the playtesters, on probation (#313).
+- **Sessions run ad hoc,** announced on Discord. Open: the notice period.
 
 ## Not in M4
 

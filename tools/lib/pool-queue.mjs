@@ -3,7 +3,25 @@
 // tools/validation/pool-selftest.mjs proves them without a game.
 
 export const PRIORITIES = ["low", "normal", "high"];
-export const DEFAULTS = { sessionIdleMin: 15, promoteMin: 20, minFreeMb: 1500, bootBudgetS: 30 };
+export const DEFAULTS = {
+  sessionIdleMin: 15,
+  promoteMin: 20, starveMin: 20,
+  minFreeMb: 1500,
+  // Memory a second concurrent session takes: the server, plus each game client (MB; measured
+  // 2026-11-10, docs/worktrees.md "Session lanes"). The second session starts only while free RAM
+  // minus this still clears minFreeMb.
+  sessionReserveServerMb: 600,
+  sessionReserveClientMb: 850,
+  // Per session profile (session up --profile): the same two numbers, measured per profile. A profile
+  // missing here uses the full numbers above. tools/pool.json "sessionReserve" overrides these.
+  sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } },
+  bootBudgetS: 30,
+  // A session older than sessionHoldMin while another session request queues is warned, then
+  // closed sessionGraceMin later. session up --hold raises its own cap, to sessionHoldMaxMin at most.
+  sessionHoldMin: 20,
+  sessionGraceMin: 5,
+  sessionHoldMaxMin: 45,
+};
 
 // "high" | "normal" | "low" (any case), or null when it is not one.
 export function normalizePriority(v) {
@@ -17,7 +35,8 @@ export function priorityRank(p) {
 }
 
 // A job that waited N minutes moves up one level per N (low -> normal -> high),
-// so a stream of higher work cannot starve it. Running jobs are never touched.
+// so a stream of higher work cannot starve it: after 2N a low job is "high" and,
+// having arrived before every newer job, is served first. Running jobs are never touched.
 export function effectiveRank(ticket, now, promoteMs) {
   const base = priorityRank(ticket.priority);
   const waited = now - Date.parse(ticket.at);
@@ -46,6 +65,28 @@ export function slotLockName(i) {
 }
 
 export const SESSION_PORT = 2001;
+// Session lane k listens on 2001 + 10 (k - 1), lock server-<port>; test lanes use 2002.. beside them.
+export const SESSION_LANE_STEP = 10;
+
+export function sessionLane(i) {
+  const port = SESSION_PORT + SESSION_LANE_STEP * (i - 1);
+  return { lock: i === 1 ? slotLockName(1) : `server-${port}`, index: i, port };
+}
+
+// The A2S query port of a session lane's server: the engine default for lane 1 (null, no flag),
+// 17777 + 10 x the port offset beside it.
+export function sessionA2sPort(port) {
+  return port === SESSION_PORT ? null : 17777 + (port - SESSION_PORT) * 10;
+}
+
+// Memory (MB) a session of n clients adds, from the reserve settings; profile is the session's
+// resource profile ("full" or "lowspec"), whose own measured numbers win when settings carry them.
+export function sessionReserveMb(settings, clients, profile = "full") {
+  const own = settings.sessionReserve?.[profile];
+  const server = own?.serverMb ?? settings.sessionReserveServerMb ?? DEFAULTS.sessionReserveServerMb;
+  const client = own?.clientMb ?? settings.sessionReserveClientMb ?? DEFAULTS.sessionReserveClientMb;
+  return server + client * Math.max(0, Number(clients) || 0);
+}
 
 export function laneKind(purpose) {
   return /^(session|host|serve)/.test(String(purpose ?? "")) ? "session" : "test";
@@ -54,7 +95,7 @@ export function laneKind(purpose) {
 // [{ lock, index, port }] for the lane kind.
 export function lanesFor(m, kind) {
   if (!m.lanes) return Array.from({ length: m.slots }, (_, i) => ({ lock: slotLockName(i + 1), index: i + 1, port: SESSION_PORT }));
-  if (kind === "session") return [{ lock: slotLockName(1), index: 1, port: SESSION_PORT }];
+  if (kind === "session") return Array.from({ length: m.lanes.session ?? 1 }, (_, i) => sessionLane(i + 1));
   return Array.from({ length: m.lanes.test }, (_, i) => ({ lock: `server-test-${i + 1}`, index: i + 1, port: SESSION_PORT + 1 + i }));
 }
 
@@ -65,24 +106,69 @@ export function allLaneLocks(m) {
 // The UDP port a server booted under that lock listens on.
 export function portForLock(name) {
   const mm = /^server-test-(\d+)$/.exec(String(name));
-  return mm ? SESSION_PORT + Number(mm[1]) : SESSION_PORT;
+  if (mm) return SESSION_PORT + Number(mm[1]);
+  const sm = /^server-(\d+)$/.exec(String(name));
+  return sm ? Number(sm[1]) : SESSION_PORT;
 }
 
 // Whether `other` makes `mine` wait on machine m: it is served first and its
 // lane shares a lock with mine. A ticket without a lane (an older CLI) is a
 // session-lane ticket: it contends for server-2001.
-export function blocks(other, mine, m, now, promoteMs) {
+// Backfill: an `other` that already tried and cannot start (t.stuck "ram" or "lane") does
+// not block, so the next job that can start right now goes. Anti-starvation: once such a
+// head has waited ctx.starveMs it holds its place again as soon as the RAM it needs is there
+// (ctx.freeMb >= t.needMb), or at once when it only lacks a lane.
+// ctx: { starveMs, freeMb } (both optional).
+export function blocks(other, mine, m, now, promoteMs, ctx = {}) {
   if (!(other.machines ?? []).includes(m.name)) return false;
   const a = new Set(lanesFor(m, other.lane ?? "session").map((l) => l.lock));
   if (!lanesFor(m, mine.lane ?? "test").some((l) => a.has(l.lock))) return false;
-  return servedBefore(other, mine, now, promoteMs);
+  if (!servedBefore(other, mine, now, promoteMs)) return false;
+  // A head that lacks only a lane is raced for it when that lane frees, so it keeps its turn
+  // unless mine can also use a lane the head cannot.
+  if (other.stuck === "lane" && lanesFor(m, mine.lane ?? "test").every((l) => a.has(l.lock))) return true;
+  return !canBackfill(other, now, ctx);
+}
+
+// True when a ticket that is served first is stuck (RAM or lane) and not yet owed a reservation.
+export function canBackfill(t, now, { starveMs = DEFAULTS.starveMin * 60000, freeMb } = {}) {
+  if (t.stuck !== "ram" && t.stuck !== "lane") return false;
+  const starved = starveMs > 0 && now - Date.parse(t.at) > starveMs;
+  if (!starved) return true;
+  if (t.stuck === "ram") return !(Number.isFinite(freeMb) && Number.isFinite(t.needMb) && freeMb >= t.needMb);
+  return false;
+}
+
+// Why a ticket waits, for `pool status`: "ram 3-client", "lane", "behind N", or "".
+export function waitReason(t, ahead = 0) {
+  if (t.stuck === "ram") return `ram${t.clients ? ` ${t.clients}-client` : ""}`;
+  if (t.stuck === "lane") return "lane";
+  return ahead > 0 ? `behind ${ahead}` : "";
 }
 
 // RAM gate: a server beyond the first waits while free memory is under the
 // floor, instead of letting Windows page.
-export function ramVerdict({ running, freeMb, minFreeMb }) {
-  if (running <= 0 || freeMb >= minFreeMb) return { ok: true };
-  return { ok: false, reason: `free RAM ${(freeMb / 1024).toFixed(1)} GB under ${(minFreeMb / 1024).toFixed(1)} GB with ${running} server(s) running` };
+// A second session also needs reserveMb (its own expected memory) on top of the floor, and
+// pendingMb counts sessions still booting, whose memory has not shown in freeMb yet.
+export function ramVerdict({ running, freeMb, minFreeMb, reserveMb = 0, pendingMb = 0 }) {
+  if (running <= 0) return { ok: true };
+  const after = freeMb - pendingMb - reserveMb;
+  if (after >= minFreeMb) return { ok: true };
+  const gb = (x) => (x / 1024).toFixed(1);
+  const needMb = minFreeMb + reserveMb + pendingMb;
+  if (reserveMb > 0 || pendingMb > 0) {
+    return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB minus ${gb(reserveMb + pendingMb)} GB for the session${pendingMb > 0 ? "(s) starting" : ""} would be under ${gb(minFreeMb)} GB` };
+  }
+  return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB under ${gb(minFreeMb)} GB with ${running} server(s) running` };
+}
+
+// RAM gate for a late client (`session join`): the session already runs, so only the client's own
+// reserve has to fit above the floor.
+export function joinVerdict({ freeMb, minFreeMb, clientMb }) {
+  const needMb = minFreeMb + clientMb;
+  if (freeMb >= needMb) return { ok: true, needMb };
+  const gb = (x) => (x / 1024).toFixed(1);
+  return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB minus ${gb(clientMb)} GB for the client would be under ${gb(minFreeMb)} GB` };
 }
 
 // Session lease: idle time since the last harness command (or the session's
@@ -91,6 +177,33 @@ export function leaseVerdict({ lastActiveAt, leaseUntil, now, idleMin }) {
   const idleMs = Number.isFinite(lastActiveAt) ? Math.max(0, now - lastActiveAt) : 0;
   const leased = Number.isFinite(leaseUntil) && leaseUntil > now;
   return { idleMs, leased, expired: !leased && Number.isFinite(lastActiveAt) && idleMs > idleMin * 60000 };
+}
+
+// Hold cap: how long a session has held the lane, against its cap, while another
+// session request queues. A session that never got the cap (started before it existed)
+// is never judged. Phases: ok | warn (past the cap, not warned yet) | grace (warned,
+// the grace runs) | close (grace over). warnedAt is epoch ms or NaN.
+export function clampHoldMin(v, { holdMin, maxMin }) {
+  const n = Number(v);
+  if (!Number.isFinite(n) || n <= 0) return holdMin;
+  return Math.min(maxMin, Math.max(holdMin, Math.round(n)));
+}
+
+export function holdVerdict({ heldSinceMs, capMin, graceMin, warnedAtMs, waiting, now, capped = true }) {
+  const heldMs = Number.isFinite(heldSinceMs) ? Math.max(0, now - heldSinceMs) : 0;
+  if (!capped || !waiting || !Number.isFinite(heldSinceMs) || heldMs <= capMin * 60000) return { phase: "ok", heldMs };
+  if (!Number.isFinite(warnedAtMs)) return { phase: "warn", heldMs };
+  const left = warnedAtMs + graceMin * 60000 - now;
+  return left > 0 ? { phase: "grace", heldMs, leftMs: left } : { phase: "close", heldMs };
+}
+
+// Averages over the session records of runs.jsonl (kind "session").
+export function sessionStats(sessions) {
+  const n = sessions.length;
+  const avg = (f) => (n ? sessions.reduce((a, r) => a + (Number(r[f]) || 0), 0) / n : 0);
+  const closed = { owner: 0, lease: 0, "hold-cap": 0 };
+  for (const r of sessions) closed[r.closedBy] = (closed[r.closedBy] ?? 0) + 1;
+  return { n, avgWaitS: avg("waitS"), avgHeldS: avg("heldS"), avgBoots: avg("boots"), closed };
 }
 
 // ---------------------------------------------------------------- runtime budgets

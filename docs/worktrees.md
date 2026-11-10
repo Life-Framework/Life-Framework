@@ -281,9 +281,17 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
 You change nothing: run `test`, `e2e`, `session up` as before. The pool queues
 it, picks a lane and a budget, and prints one line per outcome.
 
-- **Lanes.** `tools/pool.json` gives this PC `"lanes": {"test": 2, "session": 1}`.
-  The session lane is the old `server-2001` lock (UDP 2001: `session`, `host`,
-  `serve`; clients join `127.0.0.1:2001`). Each test lane is its own lock,
+- **Lanes.** `tools/pool.json` gives this PC `"lanes": {"test": 2, "session": 2}`.
+  Session lane 1 is the old `server-2001` lock (UDP 2001: `session`, `host`,
+  `serve`; clients join `127.0.0.1:2001`; the only one friends reach over the LAN).
+  Session lane 2 is `server-2011` on `127.0.0.1:2011` (`-addr`, A2S `-a2sPort 17877`;
+  its clients join `127.0.0.1:2011`); `session up` takes the first free lane and
+  records it in `session.json` (`lane`), and `down`, `restart` and `join` use that
+  one. Harness commands find their session by the checkout's own session dir
+  (`%LOCALAPPDATA%LifeFrameworksession<checkout>`) and its session id, so a
+  checkout never reaches the other lane's clients; a session client's command no longer
+  takes the machine-wide `agent-box-play` claim (that guards the shared default profile).
+  `session up` refuses (or queues) only when every lane is taken. Each test lane is its own lock,
   `server-test-1`, `server-test-2`, with its server on `127.0.0.1:2002`,
   `127.0.0.1:2003`. The engine ignores `-bindPort` and `-bindIP` in `-server`
   mode and listens on 0.0.0.0:2001; `-addr <ip>:<port>` is what moves it
@@ -292,6 +300,15 @@ it, picks a lane and a budget, and prints one line per outcome.
   machine without `lanes` (the box) keeps one shared lane. Old CLIs keep using
   `server-2001` for everything, so the old lock is still honoured during the
   switch.
+- **Second session RAM gate.** A session starting beside another live session also
+  needs its own reserve: free RAM minus `sessionReserveServerMb` (600) minus
+  `sessionReserveClientMb` (850) per client, minus the same for any session still booting,
+  must stay at least `minFreeMb`; otherwise it waits with one line ("free RAM 2.2 GB minus
+  1.4 GB for the session would be under 1.5 GB"). Measured 2026-11-10 on this 15.6 GB PC
+  (free RAM, from `tmp/ram-<slug>.log` samples): server plus one client 1.3 GB, the second
+  client +0.8 GB (working sets: server 0.7 GB, each client 1.0 to 1.25 GB). With ~3.8 GB free
+  and nothing running, two 1-client sessions leave about 1.2 GB: under the 1.5 GB floor, so
+  the gate admits the second only while other programs leave more room.
 - **RAM gate.** A second concurrent server starts only while free RAM is at
   least `minFreeMb` (1500). This PC has 15.6 GB; a server is about 0.7 GB, a
   client 0.7 to 1.5 GB, so with a two-client session up the gate, not the lane
@@ -308,6 +325,30 @@ it, picks a lane and a budget, and prints one line per outcome.
 - **Self-deadlock.** If this worktree's own session holds the only slot a test
   could use (a machine without lanes), `test` stops at once with one line and the
   `session.mjs down` hint instead of waiting for itself.
+- **Session hold cap.** One session at a time fits this PC, so a session that
+  outlives its job starves the queue. A session started after the cap existed
+  (`session.json` carries `holdCap`; older sessions are never capped) is judged
+  only while another `session up` request is queued: past `sessionHoldMin` (20
+  min, `tools/pool.json`) it is warned, and `sessionGraceMin` (5) later it is
+  closed (`session down`, logged as a `hold-cap` reclaim, the waiter starts at
+  once). The waiting `up` runs the check every 10 s. The warning is one line,
+  printed once on the holder's next harness or session command: "session: N waiting;
+  finish and run node agent-box/session.mjs down within 5 min or it is closed"
+  (a harness prints it on stderr). With nobody queued there is no cap,
+  and a warning whose waiter left is void. `session up --hold <min>` raises this
+  session's cap (45 at most, the number it was asked for is logged). A test job
+  waiting on RAM does not start the cap; the idle rule below still applies.
+- **Session records.** Every session writes one line to `runs.jsonl` when it ends
+  (`"kind":"session"`: slug, priority, `waitS`, `heldS`, `boots`, `bootS`,
+  `closedBy` owner | lease | hold-cap). `pool status` prints the last 8 and the
+  average wait and hold; `pool stats` the last 5. Sessions from before this
+  change are not recorded (no `heldSince`).
+- **Queue age.** A session request that times out or is interrupted (an agent's
+  10 min tool call ended) and is retried keeps its first `at` for 15 min
+  (`<main>/tmp/wt/pool/queued.json`), so aging (low to normal at 20 min, to high
+  at 40, first in line there since it arrived first) is not restarted by every
+  retry. `session up --wait` queues up to 90 min (it was 30, which ended before
+  a low job reached high). The resource-database refresh runs before the queue.
 - **Session lease.** Every `session.mjs` verb and every harness command
   to a session client stamps `lease.json` in the session dir; `node
   agent-box/session.mjs lease [min]` holds the session for that long. A session
@@ -336,6 +377,107 @@ it, picks a lane and a budget, and prints one line per outcome.
   own state.
 - **Two tests from one worktree at once** still share `server/profile/test`; run
   them in order.
+
+### The laptop's lanes (lf-testbox)
+
+`lf-testbox` (ASUS ROG Zephyrus G15: Ryzen 9 6900HS 8c/16t, RTX 3070 Ti, 47 GB RAM, ssh as `lf-testbox`, hostname `PC1`)
+has 3 session lanes (`server-2001`, `-2011`, `-2021`) and 3 test lanes (`server-test-1..3`), configured in
+`tools/pool.json`. Measured 2026-11-10: server 0.7 GB working set, one client 0.6 to 1.0 GB, a server plus one client
+takes 1.2 GB of free RAM, a test server about 0.7 GB; 33 GB free with a maintainer Workbench (1.7 GB) and Steam up. Three
+sessions plus three tests are about 8 GB, leaving room for one Workbench (the `workbench` cap) above the 1.5 GB floor.
+A session boots there in 18 s (36 s door to door with the sync); a full suite is 10 s (44 s door to door).
+The `hostname` key makes the entry the local machine when the CLI runs on the laptop, so the remote `session up` uses
+the laptop's lanes and RAM gate, not this PC's. Sleep, hibernate and the monitor timeout on AC are 0 (`powercfg`; the
+laptop went offline once from sleeping). A stale lock is cleared by any pinned run (`test --machine lf-testbox`).
+
+**Sessions pick the machine.** `session up` without `--machine` (same as `--machine any`) considers every machine that can
+run it, this PC first on a tie. With `--wait` the request holds one queue ticket that wants all of them and starts on the
+first lane that frees; without it, it takes a free lane on either. `--machine local` keeps it here. The remote session's
+clients start on the laptop's desktop (`harness.mjs` and `shots area` relay to it; `session pull` copies images back).
+Filming there is #482 (the client window sits behind the Steam store window; the audio endpoint is muted).
+
+### Session profiles (lowspec and full)
+
+`session up --profile lowspec|full` (`agent-box/session-profile.mjs`). **`lowspec` is the
+default**: most proofs read logs and the harness's structured results, never pixels. A session
+that takes pictures (`shots`, `shots area`, filming, `journey`, any proof whose images go in a PR)
+runs `--profile full`; `--res`, `--visible` and `--sound` without `--profile` also mean full. The
+profile is recorded in `session.json`, kept by `join` and `restart`, and shown by `status`. A
+`capture` on a lowspec session prints one WARN (the shot still goes out; the proofs capture to
+move the camera, so they run unchanged); `shots`, `journey` and `film` refuse a lowspec session.
+
+A profile is a list of levers, each one measured below; `--levers a,b` runs any subset.
+`lowspec` = `res fps tex geom post shadow view`:
+
+| Lever | What it sets (source) |
+|---|---|
+| `res` | 640x360 window (`-screenWidth/-screenHeight`) |
+| `fps` | `-maxFPS 15` (30 in full) |
+| `tex` | `ResourceManagerUserSettings.TextureDetail 4`: the 768 MB texture-budget tier of `MemoryBudgetTextures` (`ArmaReforger.gproj`; the game's LOW preset is 3) |
+| `geom` | `ResourceManagerUserSettings.GeometricDetail 0`: the 204 MB mesh tier |
+| `post` | `Postprocess 0`, `PPQuality` HBAO/SSDO/SSR/Rain off, `Fsaa NONE`, `Atoc NONE` (the PS4 platform config's values) |
+| `shadow` | `ShadowQuality Low`, `DistantShadowsQuality LOW`, `EnvironmentQuality LOW` |
+| `view` | `ObjectDrawDistanceScale Low`, grass `Distance 60 Lod 1`, terrain `Detail 0`, `TextureFilter 1`, `MaxAniso 1` |
+| `nds`, `stream`, `sfps`, `st` | server `-nds 1`, `-streamingBudget 200`, `-maxFPS 20`; both sides `-singleThreadedUpdate`. Measured no change; not in lowspec |
+
+Sound is already off (`-noSound`). The engine settings are written into each client profile's
+`.save/app1874880_user<steamid>/settings/ReforgerEngineSettings.conf` before every launch (the
+Steam id comes from the profile or `loginusers.vdf`); a full launch deletes the file, so a
+lowspec run never leaks into the next full one. The server has no per-profile settings: it is a
+headless process and none of its flags moved its memory.
+
+**Measured 2026-11-10** on this 15.6 GB PC (`tools\cli session measure --variants ... --proof
+1:quarry-proof`: boots each variant on a held lane, runs the proof, reads each process's working
+set and private bytes; JSON in the PR). Working set (MB, physical) / private (MB, committed), one client:
+
+| Variant | Client at the registration form | Client after `quarry-proof` |
+|---|---|---|
+| full | 988 / 2022 | 1150-1184 / 3085-3089 |
+| lowspec | 1031 / 1962 | 1074-1087 / 2488 |
+| `tex`+`geom` | 1025 / 2078 | 1163 / 2798 |
+| `view` | 1035 / 2083 | 1114 / 2656 |
+| `res` | 947 / 1976 | 1068 / 2832 |
+| `post`+`shadow` | 981 / 2014 | 1162 / 3053 |
+| `st` | n/a | 1135 / 3036 |
+
+The server is 699-709 MB working set in every variant. Two clients (at the form): full
+949+935, lowspec 914+899. **The graphics levers save little physical RAM**: about 7% of a
+client's working set after a proof (80-100 MB) and about 19% of its committed bytes (600 MB);
+at idle they save nothing measurable (the client has not streamed the world yet). The engine,
+the world, the script heap and the physics are the 1 GB, and no flag shrinks them. So the pool's
+reserve per lowspec client is 800 MB instead of 850 (`pool.json` `sessionReserve`); the server's is
+unchanged at 600.
+
+**What does free RAM is trimming.** A session waiting for the next harness command touches a
+fraction of its resident pages. `EmptyWorkingSet` (`tools/lib/ws-trim.mjs`) moves the rest to the
+standby list: still cached, counted as available by Windows and by the gate, faulted back on use.
+Measured on the same sessions (working set before, 3 s after, 18 s after; server first):
+
+| Session | Before | 3 s after | 18 s after |
+|---|---|---|---|
+| full, 1 client, after `quarry-proof` | 707 / 1184 | 26 / 96 | 26 / 106 |
+| lowspec, 1 client, after `quarry-proof` | 708 / 1087 | 25 / 85 | 26 / 94 |
+| full, 2 clients | 655 / 949 / 935 | 22 / 81 / 81 | 23 / 92 / 93 |
+| lowspec, 2 clients | 655 / 914 / 899 | 23 / 73 / 74 | 23 / 84 / 83 |
+
+So an idle session holds about 0.12 GB, not 1.8 GB. The pool does it for you: when `tryLocal`
+would refuse a session or test for RAM, it first trims every live session's recorded pids (never
+by process name; at most once per 20 s), looks again, and prints `pool: RAM is short; trimmed the
+working sets of N session process(es)`. `tools\cli session measure` also prints the trim table.
+The 1.5 GB floor still gates: a session is admitted only while free RAM minus its reserve stays at
+least `minFreeMb`, and a client that joins late (`session join`) is gated the same way (its client reserve).
+
+**Two lowspec sessions at once (2026-11-10, this PC, other agents' sessions and a Workbench
+running beside).** Session A (1 client, then client 2 joins late) ran `siren-late-proof` on lane
+2001 while session B (2 clients, then a late third) ran `downed-proof` on lane 2011, both
+`--profile lowspec`, overlapping for nine minutes: both PASS, reading only the harness results and
+logs. With both up that was 2 servers and 5 clients, about 4.7 GB of working set, and free RAM
+bottomed at 165 MB (median 1.1 GB) because the late joins are not gated and the rest of the PC held
+about 10 GB. So on this PC **two lowspec sessions fit, and a third does not while two are active**; the
+RAM left once they sit idle (trimmed, about 0.12 GB each) is what lets a queued third start. The
+late-join path (`session join`) trims first when free RAM is under the floor plus a client's
+reserve, then refuses with a one-line reason if it still would breach the floor (#563). The lane count (`lanes.session`) stays 2 here: raise it only after a run with three
+concurrent proofs holds the floor.
 
 ### Waiting on a session
 

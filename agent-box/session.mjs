@@ -8,6 +8,7 @@
 //   node agent-box/session.mjs wait [--timeout 600]   block until a starting session is ready (exit 0), or say why not
 //   node agent-box/session.mjs down               close every process the session started
 //   node agent-box/session.mjs status             pids, profiles, logs
+//   node agent-box/session.mjs reset              clock out, clear wanted, respawn: every proof verb runs this first (--no-reset skips)
 //   node agent-box/session.mjs state <client>     faction, duty, wanted, cash, bank, job, org
 //   node agent-box/session.mjs film <seconds> [--client 1] [--fps 12]   in-engine clip of one client
 //   node agent-box/session.mjs proof --film [--film-client 1]          the proof, filmed in-engine
@@ -35,11 +36,14 @@
 
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, touchLease } from "../tools/lib/session-lease.mjs";
+import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
+import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
+export { applyClientSettings, resolveProfile };
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -122,9 +126,25 @@ export function liveSessionsElsewhere(dir, alive, base = sessionBase()) {
   for (const other of [base, ...names.map((n) => join(base, n))]) {
     if (resolve(other).toLowerCase() === resolve(dir).toLowerCase()) continue;
     const s = readSession(other);
-    if (s && !s.stoppedAt && (alive(s.serverPid) || (s.clients ?? []).some((c) => alive(c.pid)))) out.push({ dir: other, root: s.root });
+    if (s && !s.stoppedAt && (alive(s.serverPid) || (s.clients ?? []).some((c) => alive(c.pid)))) out.push({ dir: other, root: s.root, serverUp: !!alive(s.serverPid) });
   }
   return out;
+}
+
+// Clients left running by a session whose server is gone (crashed or closed by hand) hold memory and windows
+// but no lane. Closes only the pids recorded in that session's own session.json (never by process name) and
+// marks it stopped. kill(pid) does the closing. Returns the reaped dirs.
+export function reapOrphanSessions(dir, alive, kill, base = sessionBase()) {
+  const reaped = [];
+  for (const o of liveSessionsElsewhere(dir, alive, base)) {
+    if (o.serverUp) continue;
+    const s = readSession(o.dir);
+    if (!s) continue;
+    for (const c of s.clients ?? []) if (alive(c.pid)) kill(c.pid);
+    writeSession(o.dir, { ...s, stoppedAt: new Date().toISOString(), reapedOrphan: true });
+    reaped.push(o.dir);
+  }
+  return reaped;
 }
 
 // -profile <dir> puts $profile: in <dir>\profile and logs in <dir>\logs.
@@ -170,14 +190,24 @@ export function sessionForBox(box, root, dir = sessionDir()) {
   return a;
 }
 
-export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false }) {
+// The session lane's port: 2001 is the engine default (and the LAN-facing lane); another lane
+// listens on 127.0.0.1:<port> (-addr is the only flag that moves a -server boot) with its own A2S
+// port. Local only: clients of a lane-2 session join 127.0.0.1:<port>.
+export function laneArgs(port) {
+  if (!port || port === 2001) return [];
+  return ["-addr", `127.0.0.1:${port}`, "-a2sPort", String(17777 + (port - 2001) * 10)];
+}
+
+// rp: the resolved session profile (session-profile.mjs); absent means full.
+export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full") }) {
   const args = [
     "-server", mission === "playtest" ? PLAYTEST_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
     "-addons", "LifeFramework",
     "-profile", profile,
-    "-maxFPS", "30",
+    "-maxFPS", String(rp.server?.maxFps ?? 30),
     "-logLevel", "normal",
+    ...(rp.server?.args ?? []),
     // -noBackend clients all carry the NULL identity and the same Steam name;
     // LF_Utils.GetPlayerUID gives each player id its own identity under this define.
     ...defineArgs(mission),
@@ -185,6 +215,7 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
     "-noBackend",
   ];
   if (loadSave) args.push("-loadSessionSave");
+  args.push(...laneArgs(port));
   return args;
 }
 
@@ -194,10 +225,10 @@ export function windowFor(n, res = WINDOW) {
   return { x: (n - 1) * (res.width + WINDOW.gap), y: 0, width: res.width, height: res.height };
 }
 
-export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", mission = "debug", session = "", res = WINDOW, sound = false }) {
+export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port = 2001, mission = "debug", session = "", res = WINDOW, sound = false, rp = resolveProfile("full") }) {
   const w = windowFor(n, res);
   return [
-    "-client", address,
+    "-client", port && port !== 2001 ? `${address}:${port}` : address,
     "-addonsDir", addonsDir,
     "-addons", "LifeFramework",
     "-profile", profile,
@@ -210,7 +241,8 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", missi
     "-noFocus",
     "-noSplash",
     ...(sound ? [] : ["-noSound"]),
-    "-maxFPS", "30",
+    "-maxFPS", String(rp.client?.maxFps ?? 30),
+    ...(rp.client?.args ?? []),
     ...defineArgs(mission),
     "-disableCrashReporter",
     "-noBackend",
@@ -218,9 +250,39 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", missi
   ];
 }
 
+// --profile full|lowspec (default lowspec; LF_SESSION_PROFILE overrides the default), --levers a,b to
+// run a subset (session-profile.mjs). Returns the resolved profile a session records.
+export function parseSessionProfile(args) {
+  const profile = parseProfile(args);
+  return resolveProfile(profile, parseLevers(args, profile));
+}
+
+// The profile the session recorded in dir runs with ("full" when there is none, or it predates profiles).
+export function recordedProfile(dir = sessionDir()) {
+  return readSession(dir)?.profile ?? "full";
+}
+
+// Throws for a tool that takes pictures when the live session is lowspec; the message says what to run.
+export function requireFullProfile(what, dir = sessionDir()) {
+  const s = readSession(dir);
+  if (s && !s.stoppedAt && s.profile === "lowspec") throw new Error(`${what} needs a full-profile session and this one is lowspec (640x360, lowest textures): 'node agent-box/session.mjs down', then 'up --profile full'`);
+}
+
+// The profile a recorded session ran with; a session of before profiles was full.
+export function profileOf(state) {
+  return resolveProfile(state?.profile ?? "full", state?.levers);
+}
+
+// An explicit --res wins; else the profile's window (lowspec 640x360); else the usual default.
+export function sessionRes(args, rp) {
+  if (args.includes("--res") || !rp?.client?.res) return parseRes(args);
+  return { ...rp.client.res };
+}
+
 export function parseClients(args) {
   const i = args.indexOf("--clients");
-  const n = i === -1 ? 2 : Number(args[i + 1]);
+  // One client by default: a second costs ~18 s of boot and 0.7 to 1.5 GB; ask for --clients 2 when the proof needs two players.
+  const n = i === -1 ? 1 : Number(args[i + 1]);
   // 0 is a server-only session (the only kind a remote pool machine runs).
   if (!Number.isInteger(n) || n < 0 || n > MAX_CLIENTS) throw new Error(`--clients must be 0..${MAX_CLIENTS}`);
   return n;
@@ -259,8 +321,70 @@ export function parseState(detail) {
   return out;
 }
 
+// The lowspec profile: the default, what asks for full, what each side's args and settings carry.
+export function selftestProfile() {
+  const failures = [];
+  const low = parseSessionProfile([]);
+  if (low.profile !== "lowspec") failures.push(`the default profile is ${low.profile}, not lowspec`);
+  for (const flag of [["--res", "1920x1080"], ["--visible"], ["--sound"], ["--profile", "full"]]) {
+    if (parseSessionProfile(flag).profile !== "full") failures.push(`${flag.join(" ")} does not mean a full profile`);
+  }
+  if (parseSessionProfile(["--res", "1280x720", "--profile", "lowspec"]).profile !== "lowspec") failures.push("an explicit --profile lowspec lost to --res");
+  try {
+    parseSessionProfile(["--profile", "tiny"]);
+    failures.push("--profile tiny was accepted");
+  } catch {}
+  try {
+    parseSessionProfile(["--levers", "nope"]);
+    failures.push("--levers nope was accepted");
+  } catch {}
+  if (parseSessionProfile(["--levers", "tex,res"]).levers.join() !== "tex,res") failures.push("--levers did not replace the profile list");
+  const full = resolveProfile("full");
+  const sf = serverArgs({ addonsDir: "A", profile: "SP", rp: full });
+  const sl = serverArgs({ addonsDir: "A", profile: "SP", rp: resolveProfile("custom", ["nds", "sfps"]) });
+  if (sf.includes("-nds") || sf[sf.indexOf("-maxFPS") + 1] !== "30") failures.push("a full server is not the old server");
+  if (sl[sl.indexOf("-nds") + 1] !== "1" || sl[sl.indexOf("-maxFPS") + 1] !== "20") failures.push("a server lever (nds, sfps) does not reach the server args");
+  if (serverArgs({ addonsDir: "A", profile: "SP", rp: low }).includes("-nds")) failures.push("a lowspec server changes the replication range (-nds)");
+  const cf = clientArgs({ n: 1, addonsDir: "A", profile: "P", rp: full });
+  const cl = clientArgs({ n: 1, addonsDir: "A", profile: "P", rp: low, res: sessionRes([], low) });
+  if (cf[cf.indexOf("-maxFPS") + 1] !== "30" || cf[cf.indexOf("-screenWidth") + 1] !== "640") failures.push("a full client is not the old client");
+  if (cl[cl.indexOf("-maxFPS") + 1] !== "15") failures.push("a lowspec client is not capped at 15 fps");
+  if (cl[cl.indexOf("-screenWidth") + 1] !== "640" || cl[cl.indexOf("-screenHeight") + 1] !== "360") failures.push("a lowspec client is not 640x360");
+  if (!cl.includes("-noSound")) failures.push("a lowspec client has sound");
+  if (cl.filter((a) => a === "-scrDefine").length !== cf.filter((a) => a === "-scrDefine").length) failures.push("lowspec changed the script defines (the server would refuse the client)");
+  if (sessionRes(["--res", "1920x1080"], low).width !== 1920) failures.push("an explicit --res lost to the profile");
+  const dir = mkdtempSync(join(tmpdir(), "lf-profile-"));
+  try {
+    const steam = join(dir, "steam");
+    mkdirSync(join(steam, "config"), { recursive: true });
+    const vdf = ["\"users\"", "{", "  \"76561198000000001\"", "  {", "    \"MostRecent\" \"1\"", "  }", "}", ""];
+    writeFileSync(join(steam, "config", "loginusers.vdf"), vdf.join(String.fromCharCode(10)));
+    const written = applyClientSettings(join(dir, "c1"), low, steam);
+    const eng = written.find((p) => p.includes("app1874880_user76561198000000001") && p.endsWith("ReforgerEngineSettings.conf"));
+    if (!eng || !/TextureDetail 4/.test(readFileSync(eng, "utf8"))) failures.push("lowspec did not write TextureDetail 4 into the Steam user's settings");
+    applyClientSettings(join(dir, "c1"), full, steam);
+    if (existsSync(eng)) failures.push("a full session left the lowspec settings in the client profile");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+  return failures;
+}
+
 export function selftestSession() {
   const failures = [];
+  {
+    const base = mkdtempSync(join(tmpdir(), "lf-orph-"));
+    const live = new Set([11, 22, 33]);
+    const w = (n, rec) => writeSession(join(base, n), rec);
+    w("me", { serverPid: 1, clients: [] });
+    w("healthy", { serverPid: 11, clients: [{ n: 1, pid: 22 }] });
+    w("orphan", { serverPid: 99, clients: [{ n: 1, pid: 33 }] });
+    const killed = [];
+    const reaped = reapOrphanSessions(join(base, "me"), (pid) => live.has(pid), (pid) => { killed.push(pid); live.delete(pid); }, base);
+    if (reaped.length !== 1 || killed.join() !== "33") failures.push(`orphan reap killed ${killed.join()} (want only 33)`);
+    if (liveSessionsElsewhere(join(base, "me"), (pid) => live.has(pid), base).filter((o) => !o.serverUp).length) failures.push("an orphan still listed after the reap");
+    rmSync(base, { recursive: true, force: true });
+  }
   const p = sessionPaths("S", 2);
   if (p.clients.length !== 2) failures.push("sessionPaths did not list 2 clients");
   if (p.clients[1].box !== join("S", "client2", "profile", "agent-box")) failures.push(`client 2 box is ${p.clients[1].box}`);
@@ -310,6 +434,9 @@ export function selftestSession() {
     parseMission(["--mission", "prod"]);
     failures.push("--mission prod was accepted");
   } catch {}
+  if (laneArgs(2001).length || laneArgs(2011).join(" ") !== "-addr 127.0.0.1:2011 -a2sPort 17877") failures.push("laneArgs: lane 1 keeps the defaults, lane 2 gets -addr and its A2S port");
+  if (!serverArgs({ addonsDir: "A", profile: "SP", port: 2011 }).includes("127.0.0.1:2011") || serverArgs({ addonsDir: "A", profile: "SP" }).includes("-addr")) failures.push("serverArgs lane port");
+  if (clientArgs({ n: 1, addonsDir: "A", profile: "P", port: 2011 })[1] !== "127.0.0.1:2011" || clientArgs({ n: 1, addonsDir: "A", profile: "P" })[1] !== "127.0.0.1") failures.push("clientArgs lane port");
   if (sessionDir({ LF_SESSION_DIR: "X" }) !== "X") failures.push("LF_SESSION_DIR does not override");
   if (sessionDir({ LOCALAPPDATA: "L" }, "C:/x/wt-a") !== join("L", "LifeFramework", "session", "wt-a")) failures.push("the session dir is not per checkout");
   if (sessionDir({ LOCALAPPDATA: "L" }, "C:/x/wt-a") === sessionDir({ LOCALAPPDATA: "L" }, "C:/x/wt-b")) failures.push("two checkouts share a session dir");
@@ -319,7 +446,7 @@ export function selftestSession() {
     parseClients(["--clients", "9"]);
     failures.push("--clients 9 was accepted");
   } catch {}
-  if (parseClients([]) !== 2) failures.push("default client count is not 2");
+  if (parseClients([]) !== 1) failures.push("default client count is not 1");
   const civ0 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none toast=none";
   const civ1 = "faction=CIVILIAN duty=0 wanted=1 rank=0 cash=650 bank=0 job=UNEMPLOYED org=none toast=none";
   const cop = `faction=POLICE duty=1 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none toast=${ROB_ALERT}`;
@@ -360,6 +487,7 @@ export function selftestSession() {
   if (judgeBleed("120", 180).length) failures.push("judgeBleed failed a good read");
   if (!judgeBleed("-1", 180).length) failures.push("judgeBleed passed a client that reads no clock");
   if (!judgeBleed("200", 180).length) failures.push("judgeBleed passed a time above the config");
+  failures.push(...selftestProfile());
   return failures;
 }
 
@@ -491,6 +619,7 @@ function writeRoster(playerIds) {
 // Runs fn while one client records itself in-engine (tools/film/engine.mjs),
 // then encodes the clip. Works on the hidden LF-Agents desktop.
 async function filmed(label, rest, fn) {
+  requireFullProfile("filming");
   const eng = await import("../tools/film/engine.mjs");
   const h = await import("./harness.mjs");
   const i = rest.indexOf("--film-client");
@@ -603,6 +732,18 @@ export function readRemotePointer() {
   }
 }
 
+const SESSION_QUEUE_MIN = 90;
+
+function pidIsAlive(pid) {
+  if (!pid) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return e.code === "EPERM";
+  }
+}
+
 async function routeMachine(cmd, rest) {
   const i = rest.indexOf("--machine");
   const want = i === -1 ? null : String(rest[i + 1] ?? "");
@@ -619,20 +760,23 @@ async function routeMachine(cmd, rest) {
     if (cmd === "down" && code === 0) rmSync(remotePointerFile(), { force: true });
     return { code };
   }
-  if (!want || want === "local") return { local: true, args };
+  if (want === "local") return { local: true, args };
   const clients = parseClients(args);
   let target = null;
-  if (want === "any") {
-    for (const m of machines) {
-      if (clients > 0 && !m.caps.includes("clients")) continue;
-      if (m.via === "ssh" && !pool.probe(ROOT, m).reachable) continue;
-      if (pool.freeSlotOn(ROOT, m)) {
-        target = m;
-        break;
-      }
-    }
+  if (!want || want === "any") {
+    // A session of this worktree already runs on this PC: `up` reports it.
+    const live = readSession(sessionDir());
+    if (live && !live.stoppedAt && [live.serverPid, ...(live.clients ?? []).map((c) => c.pid)].some((p) => pidIsAlive(p))) return { local: true, args };
+    // The default: every machine that can run this session is considered (this PC first on a tie).
+    // With --wait the request queues for whichever lane frees first; without it, one look.
+    const waitMs = args.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0;
+    const prio = args.indexOf("--priority") === -1 ? undefined : args[args.indexOf("--priority") + 1];
+    target = await pool.chooseSessionMachine(ROOT, { clients, waitMs, priority: prio, meta: { clients } });
     if (!target) {
-      console.log(`session: no machine with a free server slot${clients > 0 ? " that can run game clients" : ""}; queuing here (--wait) or retry`);
+      if (waitMs > 0) {
+        console.log(`session: no session lane freed on any machine within ${SESSION_QUEUE_MIN} min`);
+        return { code: 1 };
+      }
       return { local: true, args };
     }
   } else {
@@ -648,7 +792,7 @@ async function routeMachine(cmd, rest) {
     console.log(`session: one is recorded on ${ptr.machine}; 'node agent-box/session.mjs down' first`);
     return { code: 1 };
   }
-  console.log(`session: server-only session on ${target.name}`);
+  console.log(`session: on ${target.name}${clients > 0 ? ` (${clients} client(s) on its desktop)` : " (server only)"}`);
   const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", ...args] });
   mkdirSync(dirname(remotePointerFile()), { recursive: true });
   if (r.code === 0) writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir: r.rDir, at: new Date().toISOString(), root: ROOT }));
@@ -772,15 +916,47 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
 
+// Brings every running client back to a living civilian off duty with no wanted level (#496).
+async function runReset(args = []) {
+  const h = await import("./harness.mjs");
+  const { resetClients } = await import("./proofs/_reset.mjs");
+  const dir = sessionDir();
+  const current = readSession(dir);
+  if (!current || current.stoppedAt) {
+    console.log("reset: no session; node agent-box/session.mjs up --clients 2 --wait");
+    return 1;
+  }
+  const count = Math.max(1, (current.clients ?? []).length || 2);
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    return h.sendCommand(spec, timeout);
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  let dirty = false;
+  for (const { n, notes } of resetClients(on, wait, count)) {
+    console.log(`reset client ${n}: ${notes.length ? notes.join("; ") : "already clean"}`);
+    if (notes.some((x) => x.startsWith("still dirty") || x.includes("not reset"))) dirty = true;
+  }
+  return dirty && args.includes("--strict") ? 1 : 0;
+}
+
 async function main(argv) {
   let [cmd, ...rest] = argv;
+  if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    return 0;
+  }
   // Any session command is activity for the pool's lease (tools/remote/pool.mjs reapIdleSessions).
-  if (cmd && !["down", "selftest", "lease"].includes(cmd)) touchLease(sessionDir(), cmd);
+  if (cmd && !["down", "selftest", "lease"].includes(cmd)) {
+    touchLease(sessionDir(), cmd);
+    const warn = takeHoldWarning(sessionDir());
+    if (warn) console.log(warn);
+  }
   if (cmd === "lease") {
     const min = Number(rest[0] ?? 30);
     if (!Number.isFinite(min) || min <= 0) {
@@ -790,6 +966,7 @@ async function main(argv) {
     console.log(`session: lease held until ${extendLease(sessionDir(), min)}`);
     return 0;
   }
+  if (cmd === "reset") return runReset(rest);
   if (cmd === "run") return runWhereSession(rest);
   if (cmd === "pull") return pullFromSession(rest);
   if (["up", "down", "status", "restart", "state", "wait"].includes(cmd)) {
@@ -798,6 +975,7 @@ async function main(argv) {
     rest = routed.args;
   }
   if (cmd === "film") {
+    requireFullProfile("film");
     const r = spawnSync(process.execPath, [join(ROOT, "tools", "film", "film.mjs"), "engine", ...rest, ...(rest.includes("--client") ? [] : ["--client", "1"])], { windowsHide: true, stdio: "inherit" });
     return r.status ?? 1;
   }
@@ -807,6 +985,7 @@ async function main(argv) {
     f.push(...launch.selftest().map((x) => `interactive launch: ${x}`));
     if (!clientArgs({ n: 1, addonsDir: "a", profile: "p" }).includes("-noSound")) f.push("a default client is not -noSound");
     if (clientArgs({ n: 1, addonsDir: "a", profile: "p", sound: true }).includes("-noSound")) f.push("--sound still passes -noSound");
+    f.push(...(await import("./proofs/_reset.mjs")).selftestReset().map((x) => `reset: ${x}`));
     for (const x of f) console.log(`  ${x}`);
     console.log(f.length ? "session selftest: FAIL" : "session selftest: OK");
     return f.length ? 1 : 0;
@@ -818,6 +997,9 @@ async function main(argv) {
   const proofs = await loadProofs();
   const proof = proofs.get(cmd);
   if (proof) {
+    // Each proof starts from a clean player: the last one's duty, wanted and downed state must not leak (#496).
+    if (!rest.includes("--no-reset") && !proof.noReset) await runReset([]);
+    rest = rest.filter((a) => a !== "--no-reset");
     if (proof.film && rest.includes("--film")) return filmed(cmd, rest, () => proof.run({ args: rest }));
     return proof.run({ args: rest });
   }

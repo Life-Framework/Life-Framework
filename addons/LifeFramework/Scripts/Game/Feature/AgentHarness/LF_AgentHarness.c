@@ -26,6 +26,10 @@ class LF_AgentCommand
 	float CamY;
 	float CamZ;
 	bool HasCameraOffset;
+	//! capture world: a 24h clock hour after the offset makes a clean shot (that clock, clear sky, no HUD).
+	float Hour = -1;
+	//! ... and a trailing `free` flies a free camera (it can pitch; it crashed the client about 4 s later, so it is opt-in).
+	bool FreeCamera;
 	string Error;
 	//! The session a command is addressed to; empty when the sender named none.
 	string Session;
@@ -63,7 +67,10 @@ class LF_AgentCommand
 	//!   <id> click <WidgetName> [index]
 	//!   <id> type <PartName> <Text>
 	//!   <id> capture ui <Name>
-	//!   <id> capture world <Name> <x> <y> <z> [ox oy oz]
+	//!   <id> capture world <Name> <x> <y> <z> [ox oy oz [hour]]
+	//!   <id> clean off: end a run of clean world shots (free camera, hidden HUD)
+	//!   <id> time <hour>: the server sets the clock to that LOCAL hour and clear weather
+	//!   <id> probe ground <x> <z> | trace <x1 y1 z1 x2 y2 z2> | cam <x y z> | ent <Name> <x y z>
 	//!   <id> film start <Name> <fps> [maxSeconds]
 	//!   <id> film stop|status
 	static bool Parse(string line, out LF_AgentCommand cmd)
@@ -116,6 +123,27 @@ class LF_AgentCommand
 			return ParseKit(parts, cmd);
 		if (cmd.Verb == "stand")
 			return ParseStand(parts, cmd);
+		if (cmd.Verb == "probe")
+			return ParseProbe(parts, cmd);
+		if (cmd.Verb == "clean")
+			return true;
+		if (cmd.Verb == "time")
+		{
+			if (parts.Count() < 3)
+			{
+				cmd.Error = "need_hour";
+				return false;
+			}
+
+			cmd.PosX = parts[2].ToFloat();
+			if (cmd.PosX < 0 || cmd.PosX >= 24)
+			{
+				cmd.Error = "bad_hour";
+				return false;
+			}
+
+			return true;
+		}
 		if (cmd.Verb == "look")
 			return true;
 		if (cmd.Verb == "state")
@@ -141,6 +169,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "shoot")
 			return ParseShoot(parts, cmd);
+		if (cmd.Verb == "cpr")
+			return ParseCpr(parts, cmd);
 		if (cmd.Verb == "siren")
 			return ParseSiren(parts, cmd);
 		if (cmd.Verb == "ui")
@@ -443,6 +473,21 @@ class LF_AgentCommand
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! `cpr <playerId> <start|stop>`: report the revive hold the way the action does (#512).
+	protected static bool ParseCpr(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 4 || parts[2].ToInt() <= 0 || (parts[3] != "start" && parts[3] != "stop"))
+		{
+			cmd.Error = "need_player_id_and_start_or_stop";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		cmd.Arg2 = parts[3];
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static bool ParseShoot(array<string> parts, LF_AgentCommand cmd)
 	{
 		if (parts.Count() < 3 || parts[2].ToInt() <= 0)
@@ -587,6 +632,74 @@ class LF_AgentCommand
 			cmd.CamY = parts[8].ToFloat();
 			cmd.CamZ = parts[9].ToFloat();
 			cmd.HasCameraOffset = true;
+			if (parts.Count() > 10)
+				cmd.Hour = parts[10].ToFloat();
+			if (parts.Count() > 11 && parts[11] == "free")
+				cmd.FreeCamera = true;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! probe ground <x> <z> | trace <x1 y1 z1 x2 y2 z2> | cam <x y z> | ent <Name> <x y z>:
+	//! read-only world measurements for tools/shots (camera guard, placement checks).
+	protected static bool ParseProbe(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 3)
+		{
+			cmd.Error = "need_probe_mode";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		int first = 3;
+		int need = 0;
+		if (cmd.Arg1 == "ground")
+			need = 2;
+		else if (cmd.Arg1 == "trace" || cmd.Arg1 == "traceall")
+			need = 6;
+		else if (cmd.Arg1 == "cam")
+			need = 3;
+		else if (cmd.Arg1 == "ent")
+		{
+			need = 3;
+			first = 4;
+			if (parts.Count() < 4 || !IsClassToken(parts[3]))
+			{
+				cmd.Error = "bad_entity";
+				return false;
+			}
+
+			cmd.Arg2 = parts[3];
+		}
+		else
+		{
+			cmd.Error = "bad_probe_mode";
+			return false;
+		}
+
+		if (parts.Count() < first + need)
+		{
+			cmd.Error = "need_probe_numbers";
+			return false;
+		}
+
+		if (cmd.Arg1 == "ground")
+		{
+			cmd.PosX = parts[3].ToFloat();
+			cmd.PosZ = parts[4].ToFloat();
+			return true;
+		}
+
+		cmd.PosX = parts[first].ToFloat();
+		cmd.PosY = parts[first + 1].ToFloat();
+		cmd.PosZ = parts[first + 2].ToFloat();
+		if (cmd.Arg1 == "trace" || cmd.Arg1 == "traceall")
+		{
+			cmd.CamX = parts[first + 3].ToFloat();
+			cmd.CamY = parts[first + 4].ToFloat();
+			cmd.CamZ = parts[first + 5].ToFloat();
 		}
 
 		return true;
@@ -886,6 +999,8 @@ class LF_AgentHarness
 		if (LF_ScreenshotCapture.IsBusy())
 			return;
 
+		if (!s_bCleanSticky)
+			RestoreCleanHud();
 		WriteResult(s_iCaptureId, LF_ScreenshotCapture.GetLastResult(), LF_ScreenshotCapture.GetLastPath());
 		s_iCaptureId = 0;
 	}
@@ -906,6 +1021,26 @@ class LF_AgentHarness
 		if (cmd.Verb == "stand")
 		{
 			DoStand(cmd);
+			return;
+		}
+		if (cmd.Verb == "probe")
+		{
+			DoProbe(cmd);
+			return;
+		}
+		if (cmd.Verb == "clean")
+		{
+			EndCleanShots();
+			WriteResult(cmd.Id, "ok", "clean_off");
+			return;
+		}
+		if (cmd.Verb == "time")
+		{
+			SCR_ChimeraCharacter clockUser = LF_Utils.GetLocalCharacter();
+			if (!clockUser)
+				WriteResult(cmd.Id, "error", "no_character");
+			else
+				clockUser.LF_AskHarnessTime(cmd.Id, cmd.PosX);
 			return;
 		}
 		if (cmd.Verb == "look")
@@ -974,6 +1109,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "shoot")
 		{
 			DoShoot(cmd);
+			return;
+		}
+		if (cmd.Verb == "cpr")
+		{
+			DoCpr(cmd);
 			return;
 		}
 		if (cmd.Verb == "siren")
@@ -1177,6 +1317,23 @@ class LF_AgentHarness
 		}
 
 		character.LF_AskHarnessState(cmd.Id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `cpr <playerId> <start|stop>`: what OnActionStart / OnActionCanceled of the revive
+	//! action send, so the server-validated broadcast can be driven without a held key.
+	protected static void DoCpr(LF_AgentCommand cmd)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		IEntity patient = GetGame().GetPlayerManager().GetPlayerControlledEntity(cmd.Arg1.ToInt());
+		if (!controller || !patient)
+		{
+			WriteResult(cmd.Id, "error", "no_such_player");
+			return;
+		}
+
+		controller.LF_AskReviveAnim(LF_NetworkUtils.GetRplId(patient), cmd.Arg2 == "start");
+		WriteResult(cmd.Id, "ok", "cpr " + cmd.Arg2);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2442,6 +2599,525 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! tools/shots: hide the HUD for a clean world shot; FinishCapture puts it back.
+	protected static bool s_bCleanHudHidden;
+	protected static bool s_bCleanHudWasVisible;
+
+	protected static void HideCleanHud()
+	{
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		SCR_HintManagerComponent.HideHint();
+		if (!hud || s_bCleanHudHidden)
+		{
+			GetGame().GetCallqueue().CallLater(HideCleanHint, 900, false);
+			return;
+		}
+
+		s_bCleanHudWasVisible = hud.IsVisible();
+		hud.SetVisible(false);
+		s_bCleanHudHidden = true;
+		GetGame().GetCallqueue().CallLater(HideCleanHint, 900, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A hint (the arrival note) can reappear during the settle; the shot must not carry it.
+	protected static void HideCleanHint()
+	{
+		if (s_bCleanHudHidden)
+			SCR_HintManagerComponent.HideHint();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static EntityID s_CleanCameraId = EntityID.INVALID;
+	protected static EntityID s_CleanPrevCameraId = EntityID.INVALID;
+	protected static EntityID s_CleanDeadCameraId = EntityID.INVALID;
+	protected static const ResourceName CLEAN_CAMERA_PREFAB = "Prefabs/Editor/Camera/ManualCameraBase.et";
+	protected static const float CLEAN_VERTICAL_FOV = 60;
+
+	//! A clean shot flies a free camera (the character camera ignores pitch set from script). The player's
+	//! own body stays near the shot for entity streaming, but out of the frame (see CleanBodyPosition).
+	protected static bool s_bCleanSticky;
+
+	protected static void AimCleanCamera(CameraBase camera, vector eye, vector target)
+	{
+		vector dir = target - eye;
+		if (dir.LengthSq() < 0.0001)
+			dir = "0 0 1";
+
+		vector mat[4];
+		Math3D.DirectionAndUpMatrix(dir.Normalized(), vector.Up, mat);
+		mat[3] = eye;
+		camera.SetTransform(mat);
+		camera.SetVerticalFOV(CLEAN_VERTICAL_FOV);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `clean off`: give the player view and the HUD back after a run of clean shots.
+	protected static void EndCleanShots()
+	{
+		s_bCleanSticky = false;
+		RestoreCleanHud();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void StartCleanCamera(vector eye, vector target)
+	{
+		CameraManager manager = GetGame().GetCameraManager();
+		if (!manager)
+			return;
+
+		// One free camera serves every shot of a run; switching the view back after each shot crashed the client.
+		s_bCleanSticky = true;
+		BaseWorld liveWorld = GetGame().GetWorld();
+		if (liveWorld && s_CleanCameraId != EntityID.INVALID)
+		{
+			CameraBase existing = CameraBase.Cast(liveWorld.FindEntityByID(s_CleanCameraId));
+			if (existing)
+			{
+				AimCleanCamera(existing, eye, target);
+				return;
+			}
+		}
+
+		IEntity spawned = LF_Utils.SpawnEntityPrefab(CLEAN_CAMERA_PREFAB, eye, "0 0 0", false);
+		CameraBase camera = CameraBase.Cast(spawned);
+		if (!camera)
+		{
+			if (spawned)
+				SCR_EntityHelper.DeleteEntityAndChildren(spawned);
+			LF_Debug.Error(FEATURE, "clean shot: camera prefab did not spawn a CameraBase");
+			return;
+		}
+
+		SCR_ManualCamera manual = SCR_ManualCamera.Cast(camera);
+		if (manual)
+			manual.SetInputEnabled(false);
+
+		AimCleanCamera(camera, eye, target);
+		CameraBase previous = manager.CurrentCamera();
+		if (previous)
+			s_CleanPrevCameraId = previous.GetID();
+		s_CleanCameraId = camera.GetID();
+		manager.SetCamera(camera);
+		LF_Debug.Log(FEATURE, string.Format("clean shot camera at %1 looking at %2, previous camera %3", eye, target, previous != null));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the body waits during a clean shot: on the ground 4 m behind the camera (out of frame), or
+	//! 120 m to the side for a camera looking straight down.
+	protected static vector CleanBodyPosition(vector eye, vector target)
+	{
+		vector flat = target - eye;
+		flat[1] = 0;
+		float length = flat.Length();
+		vector spot = eye + "120 0 0";
+		if (length >= 2)
+			spot = eye - (flat * (4 / length));
+
+		// On the ground: a body posed in the air fell during the shot and the client crashed soon after.
+		spot[1] = GetGame().GetWorld().GetSurfaceY(spot[0], spot[2]) + 0.1;
+		return spot;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void StopCleanCamera()
+	{
+		if (s_CleanCameraId == EntityID.INVALID)
+			return;
+
+		BaseWorld world = GetGame().GetWorld();
+		CameraManager manager = GetGame().GetCameraManager();
+		bool restored = false;
+		if (world && manager && s_CleanPrevCameraId != EntityID.INVALID)
+		{
+			CameraBase previous = CameraBase.Cast(world.FindEntityByID(s_CleanPrevCameraId));
+			if (previous)
+			{
+				manager.SetCamera(previous);
+				restored = true;
+			}
+		}
+
+		// The free camera is deleted a moment later, never in the frame the view switches back.
+		if (restored)
+		{
+			s_CleanDeadCameraId = s_CleanCameraId;
+			GetGame().GetCallqueue().CallLater(DeleteCleanCamera, 1000, false);
+		}
+		else
+			LF_Debug.Warn(FEATURE, "clean shot: no previous camera to return to; the free camera is left in place");
+
+		s_CleanCameraId = EntityID.INVALID;
+		s_CleanPrevCameraId = EntityID.INVALID;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void DeleteCleanCamera()
+	{
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return;
+
+		IEntity camera = world.FindEntityByID(s_CleanDeadCameraId);
+		if (camera)
+			SCR_EntityHelper.DeleteEntityAndChildren(camera);
+
+		s_CleanDeadCameraId = EntityID.INVALID;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RestoreCleanHud()
+	{
+		StopCleanCamera();
+		if (!s_bCleanHudHidden)
+			return;
+
+		s_bCleanHudHidden = false;
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		if (hud && s_bCleanHudWasVisible)
+			hud.SetVisible(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Distance along from->to to the first hit (the full length when clear).
+	protected static bool s_bProbeAllLayers;
+
+	protected static float ProbeTrace(vector from, vector to, IEntity exclude, out IEntity hitEntity)
+	{
+		TraceParam trace = new TraceParam();
+		if (s_bProbeAllLayers)
+			trace.TargetLayers = 0xFFFFFFFF;
+		trace.Start = from;
+		trace.End = to;
+		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		trace.Exclude = exclude;
+		trace.LayerMask = EPhysicsLayerPresets.Projectile;
+		float fraction = GetGame().GetWorld().TraceMove(trace, null);
+		hitEntity = trace.TraceEnt;
+		return fraction * vector.Distance(from, to);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string s_sProbeName;
+	protected static vector s_vProbePos;
+	protected static IEntity s_ProbeBest;
+	protected static float s_fProbeBestScore;
+
+	protected static bool CollectProbeEntity(IEntity entity)
+	{
+		if (!entity)
+			return true;
+
+		float score = vector.Distance(entity.GetOrigin(), s_vProbePos);
+		if (entity.GetName() == s_sProbeName)
+			score = score - 1000;
+		else if (score > 1.0)
+			return true;
+
+		if (!s_ProbeBest || score < s_fProbeBestScore)
+		{
+			s_ProbeBest = entity;
+			s_fProbeBestScore = score;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string s_sClipNames;
+	protected static int s_iClipCount;
+
+	//! Name of an entity for the probe report: its world name, else its prefab file name.
+	//! True when `other` is `self` or one of its descendants (a parent or sibling is something else).
+	protected static bool IsOwnPart(IEntity self, IEntity other)
+	{
+		IEntity walk = other;
+		while (walk)
+		{
+			if (walk == self)
+				return true;
+
+			walk = walk.GetParent();
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string ProbeLabel(IEntity other)
+	{
+		string label = other.GetName();
+		if (label.IsEmpty())
+		{
+			EntityPrefabData prefab = other.GetPrefabData();
+			if (prefab)
+				label = FilePath.StripPath(prefab.GetPrefabName());
+		}
+
+		label.Replace(".et", "");
+		label.Replace(" ", "");
+		if (label.IsEmpty())
+			label = "unnamed";
+
+		return label;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Clips: a surface of another entity passes through the probed entity's own volume. A building's
+	//! overall bounds say nothing about where its walls are, so this casts rays across the probed bounds
+	//! (shrunk 0.1 m) on all three axes from both sides and keeps hits that land inside the shrunk box.
+	//! Fills s_sClipNames (at most 3 names).
+	protected static void ProbeClips(vector mins, vector maxs, IEntity self)
+	{
+		vector lo = mins + "0.15 0.15 0.15";
+		vector hi = maxs - "0.15 0.15 0.15";
+		if (hi[0] - lo[0] < 0.1 || hi[1] - lo[1] < 0.1 || hi[2] - lo[2] < 0.1)
+			return;
+
+		array<string> hitNames = {};
+		array<int> hitCounts = {};
+		for (int axis = 0; axis < 3; axis++)
+		{
+			int a1 = (axis + 1) % 3;
+			int a2 = (axis + 2) % 3;
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					for (int side = 0; side < 2; side++)
+					{
+						if (s_iClipCount >= 3)
+							return;
+
+						vector from = lo;
+						from[a1] = lo[a1] + (hi[a1] - lo[a1]) * (i + 0.5) / 3;
+						from[a2] = lo[a2] + (hi[a2] - lo[a2]) * (j + 0.5) / 3;
+						vector to = from;
+						if (side == 0)
+						{
+							from[axis] = mins[axis] - 0.4;
+							to[axis] = maxs[axis] + 0.4;
+						}
+						else
+						{
+							from[axis] = maxs[axis] + 0.4;
+							to[axis] = mins[axis] - 0.4;
+						}
+
+						IEntity hit;
+						float total = vector.Distance(from, to);
+						float d = ProbeTrace(from, to, self, hit);
+						if (!hit || d >= total - 0.01)
+							continue;
+						if (IsOwnPart(self, hit) || ChimeraCharacter.Cast(hit))
+							continue;
+
+						// The terrain and other huge entities (roads, ground plates) pass through anything sunk: not a clip.
+						vector omin;
+						vector omax;
+						hit.GetWorldBounds(omin, omax);
+						if (omax[0] - omin[0] > 60 || omax[2] - omin[2] > 60)
+							continue;
+
+						vector p = from + (to - from) * (d / total);
+						if (p[0] < lo[0] || p[1] < lo[1] || p[2] < lo[2] || p[0] > hi[0] || p[1] > hi[1] || p[2] > hi[2])
+							continue;
+
+						// A real clip shows on more than one ray; a single graze (a rail, a gutter) does not count.
+						string label = ProbeLabel(hit);
+						if (label.Contains("Terrain"))
+							continue;
+
+						int at = hitNames.Find(label);
+						if (at < 0)
+						{
+							hitNames.Insert(label);
+							hitCounts.Insert(1);
+							continue;
+						}
+
+						hitCounts[at] = hitCounts[at] + 1;
+						if (hitCounts[at] != 2)
+							continue;
+
+						if (!s_sClipNames.IsEmpty())
+							s_sClipNames = s_sClipNames + ";";
+
+						s_sClipNames = s_sClipNames + label;
+						s_iClipCount++;
+					}
+				}
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The floor under an entity: the terrain, or the highest surface within 0.5 m above the bounds
+	//! bottom and 5 m below it that is not part of the entity itself.
+	protected static float ProbeSupport(BaseWorld world, IEntity self, vector mins, vector maxs)
+	{
+		float cx = (mins[0] + maxs[0]) * 0.5;
+		float cz = (mins[2] + maxs[2]) * 0.5;
+		float support = world.GetSurfaceY(cx, cz);
+		float startY = mins[1] + 0.5;
+		for (int n = 0; n < 3; n++)
+		{
+			IEntity hit;
+			float down = ProbeTrace(Vector(cx, startY, cz), Vector(cx, startY - 5, cz), self, hit);
+			if (down >= 5)
+				break;
+
+			float hitY = startY - down;
+			if (hit && IsOwnPart(self, hit))
+			{
+				startY = hitY - 0.02;
+				continue;
+			}
+
+			if (hitY > support)
+				support = hitY;
+
+			break;
+		}
+
+		return support;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Distance from the entity's horizontal bounds edge (capped at 2 m out from its centre) to the
+	//! nearest spot a character could stand, on any side: a floor within 0.7 m of the entity's own floor
+	//! with 1.4 m of clear air above it. Walls behind the object do not matter (every side counts).
+	//! 99 when none within 3 m.
+	protected static float ProbeWalkDistance(vector mins, vector maxs, float floorY, IEntity self)
+	{
+		float cx = (mins[0] + maxs[0]) * 0.5;
+		float cz = (mins[2] + maxs[2]) * 0.5;
+		float rim = Math.Min(Math.Max(maxs[0] - mins[0], maxs[2] - mins[2]) * 0.5, 4.0);
+		array<float> offsets = {0.5, 1.0, 1.5, 2.0, 3.0};
+		IEntity hit;
+		foreach (float offset : offsets)
+		{
+			float radius = rim + offset;
+			for (int i = 0; i < 16; i++)
+			{
+				float angle = i * 22.5 * Math.DEG2RAD;
+				float px = cx + Math.Cos(angle) * radius;
+				float pz = cz + Math.Sin(angle) * radius;
+				float floorDist = ProbeTrace(Vector(px, floorY + 1.0, pz), Vector(px, floorY - 1.0, pz), self, hit);
+				// The terrain is not always on the trace's physics layer: it is the floor when the trace found none, or a higher one.
+				float surface = GetGame().GetWorld().GetSurfaceY(px, pz);
+				float standY = surface;
+				if (floorDist < 2.0)
+					standY = Math.Max(floorY + 1.0 - floorDist, surface);
+				if (Math.AbsFloat(standY - floorY) > 0.7)
+					continue;
+
+				vector feet = Vector(px, standY, pz);
+				float clear = ProbeTrace(feet + "0 0.35 0", feet + "0 1.75 0", self, hit);
+				// 1.4 m of air, with float slack: a clear 1.4 m trace reports 1.3999999.
+				if (clear < 1.35)
+					continue;
+
+				return offset;
+			}
+		}
+
+		return 99;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string FloatText(float value)
+	{
+		return string.Format("%1", value);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void DoProbe(LF_AgentCommand cmd)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+		{
+			WriteResult(cmd.Id, "error", "no_world");
+			return;
+		}
+
+		IEntity self = LF_Utils.GetLocalCharacter();
+		IEntity hit;
+		if (cmd.Arg1 == "ground")
+		{
+			WriteResult(cmd.Id, "ok", "y=" + FloatText(world.GetSurfaceY(cmd.PosX, cmd.PosZ)));
+			return;
+		}
+
+		if (cmd.Arg1 == "trace" || cmd.Arg1 == "traceall")
+		{
+			vector from = Vector(cmd.PosX, cmd.PosY, cmd.PosZ);
+			vector to = Vector(cmd.CamX, cmd.CamY, cmd.CamZ);
+			// traceall hits every physics layer (thin pylons and rails that bullets pass), for the shot scorer
+			s_bProbeAllLayers = cmd.Arg1 == "traceall";
+			float dist = ProbeTrace(from, to, self, hit);
+			s_bProbeAllLayers = false;
+			string hitName = "none";
+			if (hit && !hit.GetName().IsEmpty())
+				hitName = hit.GetName();
+			else if (hit)
+				hitName = "unnamed";
+
+			WriteResult(cmd.Id, "ok", "d=" + FloatText(dist) + " total=" + FloatText(vector.Distance(from, to)) + " ent=" + hitName);
+			return;
+		}
+
+		if (cmd.Arg1 == "cam")
+		{
+			vector pos = Vector(cmd.PosX, cmd.PosY, cmd.PosZ);
+			float nearest = 99;
+			for (int i = 0; i < 8; i++)
+			{
+				float angle = i * 45 * Math.DEG2RAD;
+				float d = ProbeTrace(pos, pos + Vector(Math.Cos(angle), 0, Math.Sin(angle)), self, hit);
+				if (d < nearest)
+					nearest = d;
+			}
+
+			float up = ProbeTrace(pos, pos + "0 40 0", self, hit);
+			WriteResult(cmd.Id, "ok", "wall=" + FloatText(nearest) + " ceil=" + FloatText(up));
+			return;
+		}
+
+		// ent: the world entity the layer placed at x y z, named Arg2.
+		s_sProbeName = cmd.Arg2;
+		s_vProbePos = Vector(cmd.PosX, cmd.PosY, cmd.PosZ);
+		s_ProbeBest = null;
+		s_fProbeBestScore = 0;
+		world.QueryEntitiesBySphere(s_vProbePos, 1.5, CollectProbeEntity, null, EQueryEntitiesFlags.ALL);
+		IEntity entity = s_ProbeBest;
+		s_ProbeBest = null;
+		if (!entity)
+		{
+			WriteResult(cmd.Id, "ok", "missing=1");
+			return;
+		}
+
+		vector mins;
+		vector maxs;
+		entity.GetWorldBounds(mins, maxs);
+		float support = ProbeSupport(world, entity, mins, maxs);
+		vector mat[4];
+		entity.GetWorldTransform(mat);
+		float upY = Math.Clamp(mat[1][1], -1, 1);
+		float tilt = Math.Acos(upY) * Math.RAD2DEG;
+		float walk = ProbeWalkDistance(mins, maxs, support, entity);
+		s_sClipNames = "";
+		s_iClipCount = 0;
+		ProbeClips(mins, maxs, entity);
+		if (s_sClipNames.IsEmpty())
+			s_sClipNames = "none";
+		string text = string.Format("bmin=%1,%2,%3 bmax=%4,%5,%6 gap=%7 tilt=%8 walk=%9", FloatText(mins[0]), FloatText(mins[1]), FloatText(mins[2]), FloatText(maxs[0]), FloatText(maxs[1]), FloatText(maxs[2]), FloatText(mins[1] - support), FloatText(tilt), FloatText(walk));
+		text = text + " pgap=" + FloatText(entity.GetOrigin()[1] - support) + " clip=" + s_sClipNames;
+		WriteResult(cmd.Id, "ok", text);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void DoCapture(LF_AgentCommand cmd)
 	{
 		LF_ScreenshotShot shot = new LF_ScreenshotShot();
@@ -2465,6 +3141,10 @@ class LF_AgentHarness
 			vector stand;
 			vector angles;
 			LF_AgentCommand.CameraStand(shot.TargetPosition, offset, stand, angles);
+			vector cleanEye = stand + "0 1.6 0";
+			if (cmd.Hour >= 0 && cmd.FreeCamera)
+				stand = CleanBodyPosition(stand + "0 1.6 0", shot.TargetPosition);
+
 			s_vShotStand = stand;
 			s_vShotAngles = angles;
 			s_bShotPose = true;
@@ -2494,10 +3174,23 @@ class LF_AgentHarness
 				GetGame().GetCallqueue().CallLater(RestoreShotHud, 5000, false);
 			}
 			shot.WeatherStateName = "Clear";
+			if (cmd.Hour >= 0)
+			{
+				// A clean shot leaves the clock and sky to the server (the `time` verb sets them there);
+				// a client-side clock is overridden by the server.
+				shot.TimeOfDay24h = -1;
+				shot.WeatherStateName = "";
+				s_bCleanSticky = true;
+				HideCleanHud();
+				if (cmd.FreeCamera)
+					StartCleanCamera(cleanEye, shot.TargetPosition);
+			}
 		}
 
 		if (!LF_ScreenshotCapture.StartCapture(shot))
 		{
+			if (!s_bCleanSticky)
+				RestoreCleanHud();
 			WriteResult(cmd.Id, "error", LF_ScreenshotCapture.GetLastResult());
 			return;
 		}

@@ -55,8 +55,12 @@ game mode's MEDIC `LF_FactionLoadout` and includes `LF_Pager`.
 
 `LF_ReviveAction` on the player character (context LF_ID) is offered to an on-duty medic facing a downed player
 within `m_fReviveRange`; `LF_Revive.Perform` re-checks on the server and calls `LF_Downed.Clear` (flag,
-bleed-out clock, unconsciousness), then publishes `LF_OnPlayerRevived`. Medic only; item cost and a treatment
-animation are not in yet.
+bleed-out clock, unconsciousness), then publishes `LF_OnPlayerRevived`. Medic only. A field dressing is the cost (#427).
+
+CPR (#512): while the 4 s hold runs, `LF_ReviveAnim` (server) tells the medic's owner to start a custom loiter on
+`Anims/Workspaces/Medic/LF_ReviveCPR.agr` (`LF_ReviveAnimPlayer`), which plays the orphaned base-game
+`p_cro_revive_CPR_*` clips through the player graph's `NPC` attachment; the base game replicates it. Stops are
+always fast (`StopLoitering(true)`): the CPR out clip carries no `Gesture_End`, so a soft exit hangs.
 
 ## V1.3 - #261, drag and carry
 

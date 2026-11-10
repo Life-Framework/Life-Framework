@@ -202,7 +202,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Village_Buildings`, `Village_Dressing`, `Village_Roads` | pack | Vanilla buildings, props, and roads; no test names them |
 | `Street_*` (12) | split | Village sites that hold test-named fixtures |
 | `Signs` | split | Village signs; `LF_Test_SafeZone` finds two |
-| Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TomatoChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
+| Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
 | `ATM`, `Gamemode`, `Roadmap`, `Survival`, `default` | split | Village placement of entities tests use; the game mode entity is core |
 | `MainWorld/` | pack | The Everon town, St Philippe apple farm |
 

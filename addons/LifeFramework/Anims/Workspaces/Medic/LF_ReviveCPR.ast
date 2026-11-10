@@ -1,0 +1,15 @@
+AnimSetTemplateSource {
+ Groups {
+  AnimSetTemplateSource_AnimationGroup "{54F335AD55270CA1}" {
+   Name "Revive"
+   Animations {
+    "In"
+    "Loop"
+    "Out"
+   }
+   Columns {
+    "CPR"
+   }
+  }
+ }
+}

@@ -64,6 +64,10 @@ node agent-box/harness.mjs shot ui debug_menu
 node agent-box/harness.mjs shot world ATM_Debug
 ```
 
+`toolscli shots area <name | x,z>` is the one-call area rig for the polish pass: golden-hour clean
+shots from a fixed angle set, a `contact.jpg` sized for agents, `index.json`, and numeric placement
+checks (floating, sunk, clipping, tilt, reach). `shots crop` zooms; see `docs/agent-area-polish.md`.
+
 `launch` starts Workbench on this checkout's project with DebugWorld open
 (`wb_launch`; a no-op when a Workbench already answers on the bridge port). It
 is the one place the harness launches Workbench.
@@ -492,8 +496,7 @@ its own. Probes live in `agent-box/chains.mjs`.
 | ATM | `ATM_Debug` | `LF_ATMAction` |
 | Apple | `AppleGatherTree`, `AppleTradeContainer`, `AppleProcessor` | gather, open trader, process |
 | Plum | `PlumGatherTree`, `PlumTradeContainer` | gather (prefab only), open trader |
-| Tomato | `TomatoGather`, `TomatoTradeContainer` | gather, open trader |
-| Farming | `TomatoCrop_Debug` | gather |
+| Farming | `CabbageCrop_Debug` | gather |
 | Cement | `CementPlant_Debug`, `CementPile_Debug` | process, gather |
 | Gravel | medium and large piles | gather |
 | Sand | `SandPile_Debug` | gather |
@@ -526,7 +529,7 @@ empty rock shells 6-8 m away.
 
 | Probe | Why it performs |
 | --- | --- |
-| `TomatoGather`, `TomatoCrop_Debug` | First three crop stage times are 0 and ripe is 30 min, so both are gatherable within a few frames. The crop prefab still inherits `LF_DeleteAction`, which deletes the plant and grants nothing. |
+| `CabbageCrop_Debug` | First three crop stage times are 0 and ripe is 30 min, so both are gatherable within a few frames. The crop prefab still inherits `LF_DeleteAction`, which deletes the plant and grants nothing. |
 | `SurvivalPoint_Water` | 3.2 m off `SurvivalStation`, inside the look sphere. |
 | `CementPlant_Debug` | `Sandbag.et` is a child of the gravel bag with an explicit 1x1 volume slot. The old 2x1 bag was rejected by the inventory, so the plant never saw its third input. |
 | `Furnace`, `CrimeFurnace_Debug` | Iron, gold, and copper nuggets use `SLOT_1x1`. `IronOre_Debug` grants 4 nuggets, enough for both furnaces. `use LF_ProcessAction` hits the first action, the iron smelt. |
@@ -560,9 +563,12 @@ for screen capture; in-engine filming (Filming) needs neither.
 
 ```powershell
 node agent-box/session.mjs roster 2             # put player id 2 on the police roster (before up)
-node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms
+node agent-box/session.mjs up                 # server and ONE client (the default; ready in ~12 s, two clients ~20 s)
+node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms (only when the proof needs two players)
+node agent-box/session.mjs up --hold 40       # raise this session's hold cap (20 min by default, 45 at most; it only bites while another up queues)
 node agent-box/session.mjs up --clients 2 --mission playtest   # LF_PlaytestTown, harness build
-node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop
+node agent-box/session.mjs up --profile full                  # shots, filming, journey, any picture that goes in a PR (the default is lowspec: 640x360, lowest textures; docs/worktrees.md "Session profiles")
+node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop (implies --profile full)
 node agent-box/session.mjs up --clients 2 --visible            # on the user's desktop, for screen capture
 node agent-box/session.mjs restart            # playtest: shutdown save, load, same clients rejoin
 node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one client
@@ -576,8 +582,10 @@ node agent-box/session.mjs down               # closes every process the session
 
 - `flow arrival-chain` drives the M1-18 arrival chain on a fresh client, from form R-89 to
   the clerk's welcome.
-- `up` runs from a worktree and holds the machine-wide `server-2001` lock while
-  the server lives (`--wait` queues behind a test or host run). `down` frees it.
+- `up` runs from a worktree and holds a session lane lock while the server lives
+  (`server-2001` on UDP 2001, or `server-2011` on 127.0.0.1:2011 when lane 1 is taken and
+  free RAM allows a second session, `docs/worktrees.md` "Lanes"); `--wait` queues behind a
+  test, host or other session. `down` frees it.
 - The server runs the bare DebugWorld, not `LF_PlaytestTown.conf`, so the world's
   game mode keeps dev tools open and the harness passes `LF_DevGate`. On the
   playtest mission a non-admin's `stand` and `use` come back as
