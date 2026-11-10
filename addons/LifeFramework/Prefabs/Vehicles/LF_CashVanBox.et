@@ -2,7 +2,7 @@ GenericEntity {
  ID "A908E60A6B28E16B"
  components {
   MeshObject "{DD1430401517CCCD}" {
-   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+   Object "{4CD9B977F230E7DF}Assets/Props/Furniture/Safe_01/Safe_01.xob"
   }
   LF_LockComponent "{9AC0E5A619840D55}" {
    m_bDebugLocked 1

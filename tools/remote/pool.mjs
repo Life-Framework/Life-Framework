@@ -24,10 +24,12 @@
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
-import { hostname } from "node:os";
-import { dirname, join } from "node:path";
+import { freemem, hostname, totalmem } from "node:os";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
+import * as q from "../lib/pool-queue.mjs";
+import { lastActiveMs, markReaped, readLease, sessionDirOf } from "../lib/session-lease.mjs";
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
 
@@ -36,8 +38,53 @@ const HEALTH_TTL_MS = 60000;
 const REMOTE_RETRY_MS = 4000;
 export const SLOT_ENV = "LF_SERVER_SLOT_HELD";
 
-export function slotLockName(i) {
-  return i === 1 ? "server-2001" : `server-2001-s${i}`;
+export const slotLockName = q.slotLockName;
+export const { lanesFor, laneKind, portForLock, normalizePriority } = q;
+
+// Settings: pool.json top level, overridden by the "pool" key of lf.local.json,
+// then by env (tests use LF_POOL_*): sessionIdleMin (a session idle this long
+// while others queue is closed), promoteMin (a queued job moves up one
+// priority level per this many minutes), minFreeMb (RAM floor for a second
+// concurrent server).
+export function poolSettings(root) {
+  const base = readJson(POOL_JSON, {});
+  const over = localConfig(root).pool ?? {};
+  const pick = (k, env) => {
+    const e = process.env[env];
+    const v = e !== undefined && e !== "" ? Number(e) : Number(over[k] ?? base[k]);
+    return Number.isFinite(v) && v > 0 ? v : q.DEFAULTS[k];
+  };
+  return {
+    sessionIdleMin: pick("sessionIdleMin", "LF_POOL_SESSION_IDLE_MIN"),
+    promoteMin: pick("promoteMin", "LF_POOL_PROMOTE_MIN"),
+    minFreeMb: pick("minFreeMb", "LF_POOL_MIN_FREE_MB"),
+    bootBudgetS: pick("bootBudgetS", "LF_POOL_BOOT_BUDGET_S"),
+  };
+}
+
+// Run and boot budgets (seconds) for a purpose on a machine: learned from
+// runs.jsonl, seeded by defaults, times the machine's multiplier; --budget wins.
+export function budgetsFor(root, m, purpose, override) {
+  const settings = poolSettings(root);
+  const b = q.budgetSeconds(readRuns(root), purpose, m.name, { multiplier: m.budgetMultiplier ?? 1, override: Number(override) });
+  return { ...b, bootS: Math.ceil(settings.bootBudgetS * (m.budgetMultiplier ?? 1)) };
+}
+
+// The priority of a run: --priority, then LF_PRIORITY, then the worktree's
+// recorded one (wt new --priority), then normal.
+export function resolvePriority(root, flag) {
+  const fromMarker = (() => {
+    try {
+      return wt.readMarker(root)?.priority;
+    } catch {
+      return null;
+    }
+  })();
+  for (const v of [flag, process.env.LF_PRIORITY, fromMarker]) {
+    const p = q.normalizePriority(v);
+    if (p) return p;
+  }
+  return "normal";
 }
 
 // Every ssh to a pool machine is bounded: ConnectTimeout 4 s plus these overall limits.
@@ -131,7 +178,8 @@ function noteReclaim(root, m, info, kind, reason) {
       writeFileSync(noticeFile(root, owner, info.name), JSON.stringify(rec));
     } catch {}
   }
-  console.log(`pool: reclaimed ${m.name} ${info.name} from ${info.slug ?? "?"} ${info.purpose ?? ""}: ${reason}`);
+  if (kind === "idle-session") console.log(`pool: closed the session of ${info.slug ?? "another worktree"}: ${reason}; 'node agent-box/session.mjs up' starts a new one`);
+  else console.log(`pool: reclaimed ${m.name} ${info.name} from ${info.slug ?? "?"} ${info.purpose ?? ""}: ${reason}`);
 }
 
 // The owner's side: print (once) why the pool took this process's slot.
@@ -162,6 +210,12 @@ function normalize(m) {
     host: via === "ssh" ? String(m.host || m.name) : null,
     root: via === "ssh" ? String(m.root || "C:/LF/Life-Framework").replace(/\\/g, "/").replace(/\/$/, "") : null,
     slots: Math.max(1, Number(m.slots) || 1),
+    // lanes: { test: N, session: 1 } gives tests their own servers on ports
+    // 2002.. beside the session server on 2001. Without it the machine keeps
+    // one shared lane (slots).
+    // Scales the seeded run budgets for a slower machine (the laptop).
+    budgetMultiplier: Number(m.budgetMultiplier) > 0 ? Number(m.budgetMultiplier) : 1,
+    lanes: m.lanes && typeof m.lanes === "object" ? { test: Math.max(1, Number(m.lanes.test) || 1), session: 1 } : null,
     caps: Array.isArray(m.caps) ? m.caps.map(String) : ["server"],
     disabled: !!m.disabled,
   };
@@ -292,9 +346,30 @@ function localServerAlive(ownerRoot) {
   return mm ? Number(mm[1]) > 0 : true;
 }
 
-// opts.serverAlive / opts.runs are test seams.
-export function tryLocal(root, m, i, meta, opts = {}) {
-  const name = slotLockName(i);
+// Servers running on this PC under a pool lane lock (live owner pid).
+function runningLocalServers(root, m) {
+  let n = 0;
+  for (const name of q.allLaneLocks(m)) {
+    const info = readJson(localLockFile(root, name), null);
+    if (info && pidAlive(info.pid)) n++;
+  }
+  return n;
+}
+
+// The slot this process holds on this PC (set by tryLocal, cleared on release):
+// cli.mjs reads the lane's port from it when it boots the server.
+let heldHere = null;
+export function heldLocalSlot() {
+  return heldHere;
+}
+
+// opts.serverAlive / opts.runs / opts.freeMb are test seams; opts.blocked
+// receives "ram" when the RAM gate (not a lock) held the slot back.
+// `lane` is { lock, index, port } or a 1-based slot number (legacy shared lane).
+export function tryLocal(root, m, lane, meta, opts = {}) {
+  if (typeof lane === "number") lane = { lock: slotLockName(lane), index: lane, port: q.SESSION_PORT };
+  const i = lane.index;
+  const name = lane.lock;
   const file = localLockFile(root, name);
   if (existsSync(file)) {
     const info = readJson(file, null);
@@ -302,7 +377,8 @@ export function tryLocal(root, m, i, meta, opts = {}) {
     if (pidAlive(info.pid)) {
       // Hang guard: the cheap age check first, the process scan only past it.
       const limitMs = hangLimitMs(opts.runs ?? readRuns(root), info.purpose);
-      if (!info.purpose || !(Date.now() - Date.parse(info.at) > limitMs)) return null;
+      // Sessions are long by design: the lease reaper (reapIdleSessions) judges them, not the hang guard.
+      if (!info.purpose || info.purpose === "session" || !(Date.now() - Date.parse(info.at) > limitMs)) return null;
       const serverAlive = (opts.serverAlive ?? localServerAlive)(info.root);
       const reason = hangReason(info, { limitMs, serverAlive });
       if (!reason) return null;
@@ -312,21 +388,30 @@ export function tryLocal(root, m, i, meta, opts = {}) {
       } catch {}
     } else stopLocalOrphans(info.root);
   }
+  const ram = opts.noRam ? { ok: true } : q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: poolSettings(root).minFreeMb });
+  if (!ram.ok) {
+    if (opts.blocked) opts.blocked.ram = ram.reason;
+    return null;
+  }
   try {
     wt.acquireLock(root, name, { waitMs: 0, meta });
   } catch {
     return null;
   }
-  return {
+  const slot = {
     machine: m,
     index: i,
     lockName: name,
+    port: lane.port,
     local: true,
     release: () => {
+      if (heldHere === slot) heldHere = null;
       takeNotice(root, name);
       wt.releaseLock(root, name);
     },
   };
+  if (!opts.noHeld) heldHere = slot;
+  return slot;
 }
 
 // Inside a remote run the holder already owns the box's slot: the env names
@@ -339,7 +424,7 @@ export function heldSlotFromEnv(root) {
   if (!info || info.token !== token || !pidAlive(info.pid)) {
     throw new Error(`${SLOT_ENV}=${name}: the pool holder no longer owns that lock (released or reclaimed)`);
   }
-  return { machine: { name: "local", via: "local" }, index: 1, lockName: name, local: true, inherited: true, release: () => {} };
+  return { machine: { name: "local", via: "local" }, index: 1, lockName: name, port: q.portForLock(name), local: true, inherited: true, release: () => {} };
 }
 
 // ---------------------------------------------------------------- remote slots
@@ -635,8 +720,9 @@ export function holderConfig(root, m, snap, { slots = m.slots, purpose = "test",
   const slug = slugFor(root);
   const base = originMain(root) ?? snap.head;
   const last = readSyncState(root)[m.name]?.sha;
-  const slotList = [];
-  for (let i = 1; i <= slots; i++) slotList.push({ lock: slotLockName(i), dir: remoteRunDir(m, slug, i, suffix) });
+  const slotList = lanesFor(m, laneKind(purpose))
+    .slice(0, slots)
+    .map((l) => ({ lock: l.lock, dir: remoteRunDir(m, slug, l.index, suffix) }));
   return {
     main: m.root,
     token: randomBytes(8).toString("hex"),
@@ -657,6 +743,153 @@ export function holderConfig(root, m, snap, { slots = m.slots, purpose = "test",
 function snapshotSupportsPool(root, sha) {
   const r = spawnSync("git", ["-C", root, "show", `${sha}:tools/cli.mjs`], { windowsHide: true, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
   return r.status === 0 && r.stdout.includes(SLOT_ENV);
+}
+
+// ---------------------------------------------------------------- lanes, leases, deadlock
+
+const sameRoot = (a, b) => !!a && !!b && resolve(String(a)).toLowerCase() === resolve(String(b)).toLowerCase();
+
+// Fail-fast message when every slot this run could take on this PC is held by
+// the caller's own worktree (a session it forgot to close): waiting would
+// never end. A reachable remote, or any free lane, means no deadlock.
+export function selfDeadlock(root, machines, kind, usable = () => true) {
+  if (machines.some((m) => m.via !== "local" && usable(m))) return null;
+  const locals = machines.filter((m) => m.via === "local");
+  if (!locals.length) return null;
+  const own = [];
+  for (const m of locals) {
+    for (const l of lanesFor(m, kind)) {
+      const info = readJson(localLockFile(root, l.lock), null);
+      // Only a long-lived holder (session, host, serve) deadlocks the caller; its own test run ends by itself.
+      if (!info || !pidAlive(info.pid) || !sameRoot(info.root, root) || (info.purpose && laneKind(info.purpose) !== "session")) return null;
+      own.push({ ...info, lock: l.lock });
+    }
+  }
+  if (!own.length) return null;
+  const first = own[0];
+  const slots = own.map((o) => o.lock).join(", ");
+  return `pool: this worktree's own ${first.purpose ?? "run"} (pid ${first.pid}) holds ${slots}, the only slot a ${kind} run can use here; close it (node agent-box/session.mjs down) or give tools/pool.json "lanes" so tests get their own slot`;
+}
+
+// What a queued ticket waits on. A ticket from a CLI before the lanes (no lane field)
+// waits on server-2001: it is a real waiter during the rollout.
+function waitsOn(t) {
+  return t.waitingOn ?? (t.lane ? [] : [slotLockName(1)]);
+}
+
+function closeSession(info) {
+  const script = info.root ? join(info.root, "agent-box", "session.mjs") : "";
+  const env = { ...process.env };
+  delete env.LF_SESSION_DIR;
+  if (script && existsSync(script)) {
+    const r = spawnSync(process.execPath, [script, "down"], { cwd: info.root, env, windowsHide: true, encoding: "utf8", timeout: 120000 });
+    if (r.status === 0) return true;
+  }
+  spawnSync("taskkill", ["/T", "/F", "/PID", String(info.pid)], { windowsHide: true });
+  return false;
+}
+
+// Closes a session that has been idle past the limit while others queue.
+// Idle = no harness or session command since the last one (or the session's
+// start); an explicit lease (session.mjs lease) or any command resets it, so
+// a session being driven is never touched. opts: now, close(info, dir),
+// sessionDir (test seams). Returns the sessions closed.
+export function reapIdleSessions(root, locals, tickets, settings = poolSettings(root), opts = {}) {
+  const now = opts.now ?? Date.now();
+  const out = [];
+  for (const m of locals) {
+    const name = slotLockName(1);
+    const info = readJson(localLockFile(root, name), null);
+    if (!info || info.purpose !== "session" || !pidAlive(info.pid)) continue;
+    const queued = tickets.filter((t) => t.pid !== info.pid && waitsOn(t).some((w) => w === name || w === "ram"));
+    if (!queued.length) continue;
+    const dir = opts.sessionDir ?? sessionDirOf(info.root ?? root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
+    const lease = readLease(dir);
+    const v = q.leaseVerdict({ lastActiveAt: lastActiveMs(dir, info.at), leaseUntil: Date.parse(lease.leaseUntil), now, idleMin: settings.sessionIdleMin });
+    if (!v.expired) continue;
+    const reason = `idle ${(v.idleMs / 60000).toFixed(1)} min (limit ${settings.sessionIdleMin}) while ${queued.length} job(s) wait`;
+    markReaped(dir, `${reason}. Any harness command keeps a session; 'node agent-box/session.mjs lease [min]' holds it`);
+    (opts.close ?? closeSession)(info, dir);
+    noteReclaim(root, m, { ...info, name }, "idle-session", reason);
+    out.push({ info, reason });
+  }
+  return out;
+}
+
+// The session lane (server-2001) for `session up`: joins the same queue as
+// test runs (lane "session", FIFO within priority), blocks the calling
+// thread, and returns with the lock held by this process (the caller hands it
+// to its server with wt.transferLock). Throws when it cannot get it.
+export function acquireSessionLaneSync(root, opts = {}) {
+  try {
+    return acquireSessionLane(root, opts);
+  } catch (e) {
+    if (e.poolHeld) throw e;
+    console.log(`WARN  pool: session queue bookkeeping failed (${String(e?.message ?? e).split("\n")[0]}); taking server-2001 directly as before`);
+    return wt.acquireLock(root, slotLockName(1), { waitMs: opts.waitMs ?? 0, meta: opts.meta ?? {} });
+  }
+}
+
+function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids = [] } = {}) {
+  const m = loadMachines(root).find((x) => x.via === "local") ?? normalize({ name: "local", via: "local" });
+  const lane = lanesFor(m, "session")[0];
+  const slug = meta.slug ?? slugFor(root);
+  const prio = q.normalizePriority(priority) ?? resolvePriority(root);
+  const started = Date.now();
+  let waitingOn = [lane.lock];
+  const body = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name] });
+  const ticket = writeTicket(root, body());
+  let lastReap = 0;
+  let said = false;
+  try {
+    for (;;) {
+      const tickets = liveTickets(root);
+      const me = tickets.find((t) => t.file === ticket);
+      const settings = poolSettings(root);
+      const now = Date.now();
+      if (now - lastReap > 10000) {
+        lastReap = now;
+        reapIdleSessions(root, [m], tickets, settings);
+      }
+      const blockers = me ? tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, now, settings.promoteMin * 60000)) : [];
+      const blocked = {};
+      if (!blockers.length) {
+        const slot = tryLocal(root, m, lane, { ...meta, slug, purpose: "session", root }, { blocked, noHeld: true });
+        if (slot) return slot;
+      }
+      // A queued `up` whose caller timed out must not take the slot later.
+      if (callerPids.some((p) => p && !wt.pidAlive(p))) {
+        const gone = new Error("the caller is gone; not queuing any longer");
+        gone.poolHeld = true;
+        throw gone;
+      }
+      if (waitMs <= 0 || now - started > waitMs) {
+        const held = new Error(blocked.ram ? `not enough free RAM (${blocked.ram}); close apps or retry with --wait` : blockers.length ? `${blockers.length} job(s) are queued ahead for port 2001` : "port 2001 is held");
+        held.poolHeld = true;
+        throw held;
+      }
+      if (!said) {
+        said = true;
+        console.log(`session: queued as ${prio} for the session slot (${blockers.length} ahead, up to ${Math.round(waitMs / 60000)} min); it starts by itself`);
+      }
+      const want = blocked.ram ? [lane.lock, "ram"] : [lane.lock];
+      if (want.join() !== waitingOn.join()) {
+        waitingOn = want;
+        rewriteTicket(root, ticket, body());
+      }
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
+    }
+  } finally {
+    dropTicket(root, ticket);
+  }
+}
+
+// The UDP port the lane this process holds listens on: the slot taken here, or
+// the one a remote pool holder named in LF_SERVER_SLOT_HELD. null when none.
+export function currentLanePort() {
+  if (heldHere) return heldHere.port;
+  const v = process.env[SLOT_ENV];
+  return v ? q.portForLock(v.split(":")[0]) : null;
 }
 
 // ---------------------------------------------------------------- acquire
@@ -758,9 +991,34 @@ export async function acquireSlot(root, opts = {}) {
 
   const slug = slugFor(root);
   const pinned = !!opts.machine || mode !== "any";
-  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, machines: machines.map((m) => m.name) });
+  const kind = laneKind(purpose);
+  const priority = q.normalizePriority(opts.priority) ?? resolvePriority(root);
+  let waitingOn = [];
+  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name) });
   const ticket = writeTicket(root, ticketBody());
+  let lastReap = 0;
   const lastTry = new Map();
+  let degraded = false;
+  const degrade = (e) => {
+    if (degraded) return;
+    degraded = true;
+    console.log(`WARN  pool: queue bookkeeping failed (${String(e?.message ?? e).split("\n")[0]}); using the single server-2001 slot as before`);
+  };
+  // The lanes this run may try on m: its own kind's, or the old shared slot after a fallback.
+  const laneList = (m) => (degraded ? [{ lock: slotLockName(1), index: 1, port: q.SESSION_PORT }] : lanesFor(m, kind));
+  const budgetCache = new Map();
+  const budgetsOf = (m) => {
+    if (!budgetCache.has(m.name)) {
+      let b = null;
+      try {
+        b = budgetsFor(root, m, purpose, opts.budget);
+      } catch (e) {
+        console.log(`WARN  pool: run budget unavailable (${String(e?.message ?? e).split("\n")[0]}); no timeout for this run`);
+      }
+      budgetCache.set(m.name, b);
+    }
+    return budgetCache.get(m.name);
+  };
   const waitMs = opts.waitMs ?? 3600000;
   let announced = false;
   try {
@@ -779,15 +1037,76 @@ export async function acquireSlot(root, opts = {}) {
           rewriteTicket(root, ticket, ticketBody());
         }
       }
-      const tickets = liveTickets(root);
-      const mine = tickets.findIndex((t) => t.file === ticket);
-      const older = mine < 0 ? [] : tickets.slice(0, mine);
+      // Queue bookkeeping (lanes, priority, leases, RAM gate) must never block or crash a run:
+      // if it throws or meets bad state, one warning and the old single server-2001 slot, plain FIFO.
+      let tickets = [];
+      let me = null;
+      let nowMs = Date.now();
+      let promoteMs = q.DEFAULTS.promoteMin * 60000;
+      const waits = new Set();
+      const blockedBy = new Set();
+      let selfStuck = null;
+      if (!degraded) {
+        try {
+          tickets = liveTickets(root);
+          me = tickets.find((t) => t.file === ticket) ?? null;
+          const settings = poolSettings(root);
+          promoteMs = settings.promoteMin * 60000;
+          if (nowMs - lastReap > 10000) {
+            lastReap = nowMs;
+            reapIdleSessions(root, machines.filter((x) => x.via === "local"), tickets, settings);
+          }
+          selfStuck = selfDeadlock(root, machines, kind, usable);
+        } catch (e) {
+          degrade(e);
+        }
+      }
+      if (selfStuck) throw new Error(selfStuck);
+      if (degraded) {
+        try {
+          tickets = liveTickets(root);
+          me = tickets.find((t) => t.file === ticket) ?? null;
+        } catch {}
+      }
+      const aheadCounts = [];
       for (const m of machines) {
-        if (older.some((t) => (t.machines ?? []).includes(m.name))) continue;
+        // A machine that is down for this run neither blocks nor counts as waited on.
+        if (m.via !== "local" && !usable(m)) continue;
+        let blockers = [];
+        try {
+          if (degraded) {
+            const mine = tickets.findIndex((t) => t.file === ticket);
+            blockers = mine < 0 ? [] : tickets.slice(0, mine).filter((t) => (t.machines ?? []).includes(m.name));
+          } else if (me) blockers = tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, nowMs, promoteMs));
+        } catch (e) {
+          degrade(e);
+        }
+        aheadCounts.push(blockers.length);
+        if (blockers.length) {
+          // The idle-session reaper reads waitingOn: only this PC's locks count for it.
+          for (const l of laneList(m)) waits.add(m.via === "local" ? l.lock : `${m.name}:${l.lock}`);
+          continue;
+        }
         if (m.via === "local") {
-          for (let i = 1; i <= m.slots; i++) {
-            const s = tryLocal(root, m, i, { slug, purpose, root });
+          const blocked = {};
+          for (const lane of laneList(m)) {
+            let s = null;
+            try {
+              const bud = budgetsOf(m);
+              s = tryLocal(root, m, lane, { slug, purpose, root, priority, ...(bud ? { budgetS: bud.runS } : {}) }, { blocked, noRam: degraded });
+              if (s && bud) {
+                s.budgetS = bud.runS;
+                s.bootS = bud.bootS;
+              }
+            } catch (e) {
+              degrade(e);
+            }
             if (s) return finish(s);
+            waits.add(lane.lock);
+          }
+          if (blocked.ram) {
+            waits.add("ram");
+            note("ram", `pool: waiting for RAM (${blocked.ram}); starts by itself when memory frees`);
           }
           continue;
         }
@@ -827,10 +1146,14 @@ export async function acquireSlot(root, opts = {}) {
           if (!next.length) throw new Error(`pool: no reachable machine for this run (${m.name} is down)`);
         }
       }
-      const ahead = older.length;
+      const ahead = aheadCounts.length ? Math.min(...aheadCounts) : 0;
+      if (waits.size !== waitingOn.length || [...waits].some((w) => !waitingOn.includes(w))) {
+        waitingOn = [...waits];
+        rewriteTicket(root, ticket, ticketBody());
+      }
       if (!announced) {
         announced = true;
-        console.log(`pool: every slot is busy (${machines.map((m) => m.name).join(", ")}); queued with ${ahead} ahead`);
+        console.log(`pool: ${kind} slots busy; queued as ${priority} (${ahead} ahead), it starts by itself when one frees`);
       }
       if (Date.now() - started > waitMs) throw new Error(`pool: no slot within ${Math.round(waitMs / 60000)} min`);
       await sleep(1000);
@@ -845,9 +1168,16 @@ export async function acquireSlot(root, opts = {}) {
     s.waitedMs = attemptAt - started;
     s.setupMs = Date.now() - attemptAt;
     s.startedAt = attemptAt;
+    if (!s.budgetS) {
+      const b = budgetsOf(s.machine);
+      if (b) {
+        s.budgetS = b.runS;
+        s.bootS = b.bootS;
+      }
+    }
     const where = s.local ? `this PC (${hostname()})` : `${s.machine.name} ${s.rDir}`;
     const setup = s.local ? "" : `, holder + prep ${(s.setupMs / 1000).toFixed(1)} s`;
-    console.log(`pool: ${purpose} runs on ${where}, slot ${s.lockName}; waited ${(s.waitedMs / 1000).toFixed(1)} s${setup}`);
+    console.log(`pool: ${purpose} runs on ${where}, slot ${s.lockName}; waited ${(s.waitedMs / 1000).toFixed(1)} s${setup}${s.budgetS ? `; budget ${s.budgetS} s` : ""}`);
     return s;
   }
 }
@@ -869,13 +1199,14 @@ export function recordRun(root, slot, { purpose, code, extra = {} }) {
     waitS: Math.round((slot.waitedMs ?? 0) / 100) / 10,
     durS: Math.round(durMs / 100) / 10,
     code,
-    result: code === 0 ? "pass" : code === 1 ? "fail" : "error",
+    result: code === 0 ? "pass" : code === 1 ? "fail" : code === q.TIMEOUT_CODE ? "timeout" : "error",
     ...extra,
   };
   try {
     appendFileSync(runsFile(root), JSON.stringify(rec) + "\n");
   } catch {}
-  console.log(`pool: ${purpose} on ${slot.machine.name}: exit ${code}, waited ${rec.waitS} s, ran ${rec.durS} s`);
+  if (code === q.TIMEOUT_CODE) console.log(`pool: ${purpose} on ${slot.machine.name} timed out and was killed; its slot is free. Rerun it, or pass --budget <s> if this run is known to be long`);
+  else console.log(`pool: ${purpose} on ${slot.machine.name}: exit ${code}, waited ${rec.waitS} s, ran ${rec.durS} s`);
   return rec;
 }
 
@@ -908,8 +1239,7 @@ function holderText(info) {
 }
 
 function remoteLocks(m) {
-  const names = [];
-  for (let i = 1; i <= m.slots; i++) names.push(slotLockName(i));
+  const names = q.allLaneLocks(m);
   const ps = [
     `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\locks'`,
     `foreach ($n in @(${names.map(tb.psQuote).join(",")})) { $f = Join-Path $ld ($n + '.lock'); if (Test-Path -LiteralPath $f) { $raw = [IO.File]::ReadAllText($f).Trim(); $alive = $false; try { $i = $raw | ConvertFrom-Json; $alive = [bool](Get-Process -Id $i.pid -ErrorAction SilentlyContinue) } catch {}; Write-Host \"lf-pool: lock $n $alive $raw\" } else { Write-Host \"lf-pool: lock $n free\" } }`,
@@ -924,40 +1254,107 @@ function remoteLocks(m) {
   return r.status === 0 ? out : null;
 }
 
+function mins(ms) {
+  const m = ms / 60000;
+  return m < 1 ? `${Math.max(0, Math.round(ms / 1000))}s` : m < 10 ? `${m.toFixed(1)}m` : `${Math.round(m)}m`;
+}
+
+function ramText(root) {
+  const free = freemem() / 1073741824;
+  return `RAM ${free.toFixed(1)}/${(totalmem() / 1073741824).toFixed(1)} GB free (floor ${(poolSettings(root).minFreeMb / 1024).toFixed(1)})`;
+}
+
+// One line per lane: holder, purpose, age, idle (sessions: time since the last
+// harness command), and the lease note.
+function laneRow(root, kind, lane, info, tickets, settings, now) {
+  const head = `    ${kind.padEnd(8)} ${lane.lock.padEnd(15)}`;
+  if (info === undefined) return `${head} unknown`;
+  if (!info) return `${head} free`;
+  if (info.stale) return `${head} stale (pid ${info.pid} gone; the next acquirer reclaims it)`;
+  const who = info.slug ?? (info.root ? info.root.split(/[\\/]/).pop() : "?");
+  const purpose = info.purpose ?? "-";
+  const age = info.at ? mins(now - Date.parse(info.at)) : "?";
+  let idle = "-";
+  let note = info.origin ? `from ${info.origin}` : "";
+  if (info.budgetS) note = `run ${Math.round((now - Date.parse(info.at)) / 1000)}s of ${info.budgetS}s budget`;
+  if (info.purpose === "session" && info.root) {
+    const dir = sessionDirOf(info.root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
+    const last = lastActiveMs(dir, info.at);
+    const lease = readLease(dir);
+    const v = q.leaseVerdict({ lastActiveAt: last, leaseUntil: Date.parse(lease.leaseUntil), now, idleMin: settings.sessionIdleMin });
+    idle = mins(v.idleMs);
+    const waiting = tickets.filter((t) => waitsOn(t).some((w) => w === lane.lock || w === "ram")).length;
+    note = v.leased
+      ? `leased ${mins(Date.parse(lease.leaseUntil) - now)} more`
+      : v.expired
+        ? waiting ? "idle past the limit: closes at the next poll" : `idle past ${settings.sessionIdleMin}m; closes when a job queues`
+        : `closes after ${mins(settings.sessionIdleMin * 60000 - v.idleMs)} more idle if a job waits`;
+  }
+  return `${head} ${who.padEnd(16).slice(0, 22)} ${purpose.padEnd(10)} age ${age.padStart(4)}  idle ${idle.padStart(4)}  ${note}`.trimEnd();
+}
+
 export function cmdPoolStatus(root) {
+  const settings = poolSettings(root);
   const machines = loadMachines(root);
   const hereBuild = tb.serverBuildId(tb.localServerDir(root));
-  console.log("pool machines:");
+  const now = Date.now();
+  const tickets = liveTickets(root);
   for (const m of machines) {
     const h = probe(root, m, { fresh: true });
     const where = m.via === "local" ? `this PC (${hostname()})` : `ssh ${m.host}`;
-    const build = h.build ? `build ${h.build}${hereBuild && h.build !== hereBuild ? " (DIFFERS)" : ""}` : "build ?";
-    console.log(`  ${m.name.padEnd(12)} ${where.padEnd(24)} ${h.reachable ? `up (${h.ms} ms)` : "DOWN"}  ${build}  caps ${m.caps.join(",")}`);
+    const build = h.build ? `build ${h.build}${hereBuild && h.build !== hereBuild ? " (DIFFERS)" : ""}` : "";
+    const lanes = m.lanes ? `${m.lanes.test} test + 1 session lane(s)` : `${m.slots} shared slot(s)`;
+    console.log(`${m.name}  ${where}  ${h.reachable ? "up" : "DOWN"}  ${build}  ${m.via === "local" ? `${ramText(root)}  ` : ""}${lanes}`.replace(/ {2,}$/, ""));
     if (!h.reachable) continue;
     const locks = m.via === "local" ? null : remoteLocks(m);
-    for (let i = 1; i <= m.slots; i++) {
-      const name = slotLockName(i);
+    const rows = m.lanes
+      ? [...lanesFor(m, "session").map((l) => ["session", l]), ...lanesFor(m, "test").map((l) => ["test", l])]
+      : lanesFor(m, "test").map((l) => ["shared", l]);
+    for (const [kind, lane] of rows) {
       let info;
       if (m.via === "local") {
-        info = readJson(localLockFile(root, name), null);
+        info = readJson(localLockFile(root, lane.lock), null);
         if (info && !pidAlive(info.pid)) info = { ...info, stale: true };
       } else {
-        info = locks ? locks[name] : undefined;
+        info = locks ? locks[lane.lock] : undefined;
         if (info && !info.alive) info = { ...info, stale: true };
-        else if (info && remoteOwnerGone(info)) info = { ...info, ownerGone: true };
       }
-      let text = info === undefined ? "unknown" : info?.stale ? `stale (pid ${info.pid} gone; next acquirer reclaims it)` : holderText(info);
-      if (info?.ownerGone) text += `; STALE: owner pid ${info.originPid} gone here, the next queued run reclaims it`;
-      console.log(`      slot ${i} ${name.padEnd(16)} ${text}`);
+      let row = laneRow(root, kind, lane, info, tickets, settings, now);
+      if (m.via !== "local" && info?.origin && remoteOwnerGone(info)) row += `; STALE: owner pid ${info.originPid} gone here`;
+      console.log(row);
     }
   }
-  const q = liveTickets(root);
-  console.log(`queue: ${q.length} waiting`);
-  for (const t of q) console.log(`  ${t.slug ?? "?"} ${t.purpose ?? ""} pid ${t.pid}, ${ago(t.at)}, wants ${(t.machines ?? []).join("|")}${t.pinned ? " (pinned)" : ""}`);
-  const runs = readRuns(root).filter((r) => r.purpose !== "reclaim").slice(-20);
+  const promoteMs = settings.promoteMin * 60000;
+  const ordered = q.queueOrder(tickets, now, promoteMs);
+  console.log(`queue: ${ordered.length} waiting (high > normal > low, then arrival; a job moves up a level per ${settings.promoteMin}m waited)`);
+  const perLane = new Map();
+  for (const t of ordered) {
+    const lane = t.lane ?? "session";
+    const pos = (perLane.get(lane) ?? 0) + 1;
+    perLane.set(lane, pos);
+    const base = q.normalizePriority(t.priority) ?? "normal";
+    const eff = q.PRIORITIES[q.effectiveRank(t, now, promoteMs)];
+    const prio = eff === base ? base : `${base}>${eff}`;
+    const on = (t.waitingOn ?? []).length ? `  on ${t.waitingOn.join(",")}` : "";
+    console.log(`  ${lane} #${pos}  ${prio.padEnd(11)} ${String(t.slug ?? "?").padEnd(20).slice(0, 24)} ${String(t.purpose ?? "").padEnd(11)} waited ${mins(now - Date.parse(t.at)).padStart(4)}${on}${t.pinned ? " (pinned)" : ""}`);
+  }
+  try {
+    const all = readRuns(root).filter((r) => r.purpose !== "reclaim");
+    const local = machines.find((x) => x.via === "local");
+    if (local) {
+      const parts = Object.keys(q.DEFAULT_BUDGET_S).map((k) => {
+        const b = q.budgetSeconds(all, k, local.name, { multiplier: local.budgetMultiplier });
+        return `${k.replace("test ", "")} ${b.runS}s${b.source.includes("history") ? "" : "*"}${b.source.includes("raised") ? "^" : ""}`;
+      });
+      const recent = all.slice(-100);
+      const to = recent.filter((r) => r.result === "timeout").length;
+      console.log(`budgets (per run, boot excluded; * seeded, ^ raised after timeouts): ${parts.join(", ")}; boot ${poolSettings(root).bootBudgetS}s; timeouts ${to}/${recent.length} recent runs`);
+    }
+  } catch {}
+  const runs = readRuns(root).filter((r) => r.purpose !== "reclaim").slice(-8);
   console.log(`last ${runs.length} run(s):`);
   for (const r of runs) {
-    console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(22)} ${String(r.purpose).padEnd(14)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
+    console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(10)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
   }
   return 0;
 }

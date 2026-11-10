@@ -19,6 +19,7 @@ import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads, loadPlaced, loadWorld } from "./layers.mjs";
 import { claimPlay, decideClaim, rendererFor } from "./play-claim.mjs";
 import { sessionForBox } from "./session.mjs";
+import { sessionDirOfBox, touchLease } from "../tools/lib/session-lease.mjs";
 import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, runTownReport, selectRoadmapSites, siteLook, siteShotOffset, STREET_Z } from "./report.mjs";
 import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadStrings, manifestErrors, parseSignConfig, resolveSite, signCard, signIssues } from "./town.mjs";
 
@@ -123,7 +124,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "engine") {
@@ -133,8 +134,8 @@ export function buildLine(id, spec) {
   if (spec.verb === "lockpick") {
     return `${id} lockpick`;
   }
-  if (spec.verb === "radio") {
-    return `${id} radio`;
+  if (spec.verb === "radio" || spec.verb === "pager" || spec.verb === "report") {
+    return `${id} ${spec.verb}`;
   }
   if (spec.verb === "peers") {
     return `${id} peers`;
@@ -237,6 +238,7 @@ export function buildLine(id, spec) {
     if (!Number.isInteger(seconds) || seconds <= 0) throw new Error(`film seconds must be a positive integer: ${spec.seconds}`);
     return `${line} ${seconds}`;
   }
+  if (spec.verb === "scene" || spec.verb === "camera") return `${id} ${spec.verb} ${spec.args}`;
   throw new Error(`unknown verb: ${spec.verb}`);
 }
 
@@ -253,6 +255,11 @@ let playClaim = null;
 export function sendCommand(spec, timeoutMs = 8000) {
   const id = nextId();
   const address = addressFor(boxOverride);
+  // A command to a session client keeps the session's pool lease alive.
+  for (const b of profileBoxes()) {
+    const d = sessionDirOfBox(b);
+    if (d) touchLease(d, spec.verb);
+  }
   if (address.error) return { id, status: "error", detail: address.error, line: "", raw: `${id} error ${address.error}` };
   const line = buildLine(id, { ...spec, session: address.id });
   playClaim = playClaim ?? claimPlay(ROOT);
@@ -1397,6 +1404,10 @@ function main(argv) {
     if (cmd === "look") {
       return printResult(sendCommand({ verb: "look" }));
     }
+    if (cmd === "scene" || cmd === "camera") {
+      // scene start|stop|status [name]; camera orbit|follow x y z size seconds (LF_FilmDirector, LF_FilmCamera)
+      return printResult(sendCommand({ verb: cmd, args: rest.join(" ") }));
+    }
     if (cmd === "state") {
       return printResult(sendCommand({ verb: "state" }, 10000));
     }
@@ -1406,7 +1417,7 @@ function main(argv) {
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {
@@ -1415,8 +1426,8 @@ function main(argv) {
     if (cmd === "lockpick") {
       return printResult(sendCommand({ verb: "lockpick" }, 10000));
     }
-    if (cmd === "radio") {
-      return printResult(sendCommand({ verb: "radio" }, 10000));
+    if (cmd === "radio" || cmd === "pager" || cmd === "report") {
+      return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "peers") {
       return printResult(sendCommand({ verb: "peers" }, 10000));

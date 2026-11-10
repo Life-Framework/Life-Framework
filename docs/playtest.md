@@ -58,8 +58,8 @@ log that back them stay on the server and invisible.
   An on-duty officer hears it on the radio and sees the line on the wanted
   board. One player can call once a minute. With nobody on duty nothing
   connects and no coin is taken.
-- **Where the Comms gear stands.** Payphones (police, doctor and cab presets): the square (96, 263), the fuel station (255, 244), outside the hospital (255, 259) and outside the police station (237, 241). Boards: the police dispatch board beside the wanted board at the station, and the medic dispatch board in the hospital. Read a board to see open calls, take one while on duty, and the caller hears the unit is on the way.
-- **Where the investigation gear stands.** The fence (Vince) is behind the barn at (186, 311), north-west of the bank, away from the street. The bank vault door is at (194, 265) and opens only to a fence tool. The cash van parks at the bank (192, 247) and visits the general store (162, 247) and the fuel station (258, 247) along the main street; its box opens to a drill and drops three money bags. The evidence locker (234, 238), wanted board and dispatch board are at the police station. The payphone witness and the officer's "Ask what you saw" are covered under Comms and Evidence above.
+- **Where the Comms gear stands.** Payphones (police, doctor and cab presets): the square (128.5, 240.5), the fuel station (255, 244), outside the hospital (255, 259) and outside the police station (237, 241). Boards: the police dispatch board beside the wanted board at the station, and the medic dispatch board in the hospital. Read a board to see open calls, take one while on duty, and the caller hears the unit is on the way.
+- **Where the investigation gear stands.** The fence (Vince) is behind the barn at (186, 311), north-west of the bank, away from the street. The bank vault door is at (194, 265) and opens only to a fence tool. The cash van parks in the south lane at z 248.3: bank (192), general store (162) and fuel station (255, moved west of the ambulance bay cones), visited along the main street. Its cash box (a scaled vanilla safe) stands on the road behind it; it opens to a drill and drops three money bags on the ground. Two traffic cones and a pair of crates dress the bank stop. The evidence locker (234, 238), wanted board and dispatch board are at the police station. The payphone witness and the officer's "Ask what you saw" are covered under Comms and Evidence above.
 - **Downed, not dead.** A lethal hit knocks a player unconscious instead of
   killing them. You lie on the ground, cannot move or act, take no further
   damage, and others can search you. A downed player bleeds out after three
@@ -94,6 +94,7 @@ log that back them stay on the server and invisible.
   It flags the incidents from the last ten minutes that involved you, as either
   party, for admins to see in the Game Master incident view. You get a "Staff
   were told" toast; a second report within two minutes is refused.
+- **Spawn square dressing (area 1 polish).** The payphone stands on the square beside the handcart, front to the west, toward the spawn.5, 240.5). The clerk has a desk and chair beside him, and a handcart stands by the benches on the north side.
 - **Safe square.** On the spawn square you cannot hurt another player and they
   cannot hurt you. Weapons still fire; NPC, world, and self damage pass.
 - **Hold up.** Two players face each other within 2 m; the one with a weapon in hand sees *Hold up* in the action menu. It raises their hand, beeps at both, and tells the other player. It changes nothing else: it only lands in the incident log (Game Master incident view, kind Hold-up). Demo: `node agent-box/session.mjs holdup-proof` (two clients).
@@ -119,8 +120,6 @@ Do not report these as broken. File them under "build next" if you want them.
 
 - Buying a house
 - A general crafting bench
-- Revive while downed
-- An ambulance
 - Quarry fence, gate, or lawless-only rules (the zone and its signs are in)
 - A police mission board
 - World events

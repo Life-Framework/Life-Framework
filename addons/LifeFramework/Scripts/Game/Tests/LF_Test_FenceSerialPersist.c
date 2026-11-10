@@ -40,7 +40,7 @@ class LF_Test_FenceSerialPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(20, version, "the save is written at version 20 (fenceserials is payload 16)");
+		ctx.Equal(22, version, "the save is written at version 22 (fenceserials is payload 16)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "fenceserials");
 		LF_FenceSerialRow row = LF_FenceSerials.Find(serial);
 		ctx.NotNull(row, "the serial is back");

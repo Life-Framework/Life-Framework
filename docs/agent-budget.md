@@ -50,7 +50,9 @@ the orchestrator restarts the job on `lf-hard` with that report as the brief.
 4. **Subagents don't start helpers** unless their brief says so. Research runs
    in one agent.
 5. **Short briefs.** Give the issue number, the files and the acceptance test.
-   Don't paste in docs the agent can read itself.
+   Don't paste in docs the agent can read itself. Development-track and spike
+   briefs add: run the pool with `--priority low` (or create the worktree with
+   `wt new <slug> --priority low`).
 6. **Shared machines:** queue for a busy slot instead of debugging it. After
    two environment failures (launch, lock, Steam), stop and report.
 7. **Cheap checks while iterating.** Use `test --only` and `validate` while

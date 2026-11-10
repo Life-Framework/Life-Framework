@@ -213,6 +213,7 @@ the game profile). Hooks:
   `player=N downed=D life=ALIVE|INCAPACITATED|DEAD`: the replicated downed flag and the vanilla
   life state as THIS client sees them, so a late joiner's view of a downed player is readable.
   `state` also reports the own `downed=` and `life=`.
+- Proof verbs are one module each, `agent-box/proofs/<verb>.mjs`, default-exporting `{ name, usage, run(ctx), film? }` (`ctx.args` is the rest of the command line). `session.mjs` discovers the folder and prints them under `--help`, so a new proof adds a file and touches no shared list (`validate-registries`).
 - `session.mjs moonshine-proof` (3 clients, `roster 3` before up): clients 1 and 2 mash and distil the moonshine chain at `Moonshine_Site`; client 3 clocks in, waits at the hideout door (no smell), then walks to the barrels and gets the `#LF-Chain_Smell_Officer` cue; the workers' own smell raises one dispatch lead that radios the officer. Shots: the still smoking and the workers. Verb `moonshine` hands one mash of goods.
 - `session.mjs bed-proof` (2 clients): the medic loads a downed client into the hospital ambulance, the bleed-out stays paused, the medic puts them in `Hospital_Bed_2`, the patient wakes with the reduced bill.
 - `siren <EntityName> <mode>` (dev gate) sets a placed vehicle's siren mode on the server through the driver key's rule (`LF_SirenManagerComponent.ApplyRequest`); replies `siren changed=C on=O broadcasts=N`. `session.mjs siren-proof` runs it on the ambulance and the police car and checks client 2.
@@ -331,7 +332,9 @@ of the flow steps. Check a few frames before publishing
 (`ffmpeg -ss 8 -i <clip>.mp4 -frames:v 1 -update 1 f.png`). `publish` uploads both to the rolling `film-evidence`
 prerelease and comments on the PR with the GIF inline. `flow film-smoke` is a
 capture-only smoke flow that needs no game. Showcase camera passes use
-`LF_FilmCameraRunner` (`Scripts/Game/Feature/Film/`), not yet wired to a verb.
+`LF_FilmCameraRunner` (`Scripts/Game/Feature/Film/`): harness verbs `camera orbit|follow x y z size seconds`
+and `scene start street|stop|status` (scripted actors, `LF_FilmActor`). `node tools/film/street-clip.mjs`
+records the walker-and-car clip (`docs/film-pipeline.md`, "Driving").
 
 ## Screenshots
 
@@ -608,6 +611,10 @@ node agent-box/session.mjs down               # closes every process the session
   pose alone is overwritten by a remote client), so `--client <n> shot world`
   photographs from the hidden `LF-Agents` desktop. M1-25 took its village
   evidence this way (2026-11-08).
+
+## M2 QA driver
+
+`node agent-box/qa-m2.mjs comms|report|square|normalize` runs on a live session (`roster 2` before `up`): `comms` is payphone to dispatch board to take to the caller's toast, then a medic call to the pager card; `report` is `/report` with a flagged incident and the cooldown refusal; `square` is the spawn-square payphone (#489); `normalize` clocks any on-duty client out. Results of the 2026-11-10 run: `docs/playtest/m2-qa-2026-11-10.md`.
 
 ## Journey (multi-client)
 

@@ -29,3 +29,6 @@ src/generated/
 
 # Downloaded by scripts/build-content.mjs from the film-evidence release
 public/media/clips/
+
+# Converted from public/docs-images by scripts/gallery.mjs
+public/gallery/

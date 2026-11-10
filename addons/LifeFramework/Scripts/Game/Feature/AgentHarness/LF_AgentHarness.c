@@ -152,9 +152,9 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "giveup")
 			return true;
-		if (cmd.Verb == "radio")
+		if (cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report")
 			return true;
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf")
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
@@ -181,9 +181,42 @@ class LF_AgentCommand
 			return ParseCapture(parts, cmd);
 		if (cmd.Verb == "film")
 			return ParseFilm(parts, cmd);
+		if (cmd.Verb == "scene" || cmd.Verb == "camera")
+			return ParseFilmDirect(parts, cmd);
 
 		cmd.Error = "unknown_verb";
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//!   <id> scene start|stop|status [name]
+	//!   <id> camera orbit|follow <x> <y> <z> <radius|distance> <seconds>
+	protected static bool ParseFilmDirect(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 3)
+		{
+			cmd.Error = "need_mode";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		if (parts.Count() > 3)
+			cmd.Arg2 = parts[3];
+		if (cmd.Verb == "camera")
+		{
+			if (parts.Count() < 8)
+			{
+				cmd.Error = "need_camera_args";
+				return false;
+			}
+			cmd.PosX = parts[3].ToFloat();
+			cmd.PosY = parts[4].ToFloat();
+			cmd.PosZ = parts[5].ToFloat();
+			cmd.CamX = parts[6].ToFloat();
+			cmd.CamY = parts[7].ToFloat();
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1018,7 +1051,17 @@ class LF_AgentHarness
 			DoRadio(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park")
+		if (cmd.Verb == "pager")
+		{
+			DoPager(cmd);
+			return;
+		}
+		if (cmd.Verb == "report")
+		{
+			DoReport(cmd);
+			return;
+		}
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
@@ -1094,6 +1137,12 @@ class LF_AgentHarness
 		if (cmd.Verb == "film")
 		{
 			DoFilm(cmd);
+			return;
+		}
+
+		if (cmd.Verb == "scene" || cmd.Verb == "camera")
+		{
+			DoFilmDirect(cmd);
 			return;
 		}
 
@@ -1576,6 +1625,44 @@ class LF_AgentHarness
 			requested = engine.StartEngine();
 
 		WriteResult(cmd.Id, "ok", string.Format("engine on=%1 requested=%2", engine.IsEngineOn(), requested));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Looks at the carried pager the way LF_ReadPagerAction does: opens its card of messages.
+	protected static void DoPager(LF_AgentCommand cmd)
+	{
+		PlayerController controller = GetGame().GetPlayerController();
+		IEntity body;
+		if (controller)
+			body = controller.GetControlledEntity();
+
+		array<LF_PagerComponent> pagers = {};
+		LF_Pager.FindCarried(body, pagers);
+		if (pagers.IsEmpty())
+		{
+			WriteResult(cmd.Id, "error", "no_pager");
+			return;
+		}
+
+		array<string> messages = {};
+		pagers[0].GetMessages(messages);
+		LF_WantedBoard.OpenParts(LF_Pager.BuildParts(messages));
+		WriteResult(cmd.Id, "ok", string.Format("pager messages=%1", messages.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The /report chat command: asks the server to flag this player's recent incidents.
+	protected static void DoReport(LF_AgentCommand cmd)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+		{
+			WriteResult(cmd.Id, "error", "no_controller");
+			return;
+		}
+
+		controller.LF_AskReport();
+		WriteResult(cmd.Id, "ok", "report asked");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2206,6 +2293,16 @@ class LF_AgentHarness
 			return;
 		}
 
+		// "LF_PayphoneAction__3" is the fourth action of that class on the host: a payphone carries one
+		// per service preset, and the plain name finds the first.
+		int actionIndex = 0;
+		int indexAt = className.IndexOf("__");
+		if (indexAt > 0)
+		{
+			actionIndex = className.Substring(indexAt + 2, className.Length() - indexAt - 2).ToInt();
+			className = className.Substring(0, indexAt);
+		}
+
 		IEntity target = FindTarget(user, className, entityName);
 		if (!target)
 		{
@@ -2213,7 +2310,11 @@ class LF_AgentHarness
 			return;
 		}
 
-		ScriptedUserAction action = FindShownOnEntity(target, className, user);
+		ScriptedUserAction action;
+		if (actionIndex > 0)
+			action = FindNthOnEntity(target, className, user, actionIndex);
+		else
+			action = FindShownOnEntity(target, className, user);
 		if (!action)
 		{
 			UseReply(user, commandId, "error", "action_not_found");
@@ -2430,6 +2531,14 @@ class LF_AgentHarness
 
 		menuManager.OpenMenu(ChimeraMenuPreset.DebugMenu);
 		WriteResult(cmd.Id, "ok", "opened");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RestoreShotHud()
+	{
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		if (hud)
+			hud.SetVisible(true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2905,6 +3014,13 @@ class LF_AgentHarness
 			}
 			shot.SettleTime = 1.2;
 			shot.TimeOfDay24h = 12;
+			// Evidence shots show the world, not the HUD; it comes back after the capture.
+			SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+			if (hud && hud.IsVisible())
+			{
+				hud.SetVisible(false);
+				GetGame().GetCallqueue().CallLater(RestoreShotHud, 5000, false);
+			}
 			shot.WeatherStateName = "Clear";
 			if (cmd.Hour >= 0)
 			{
@@ -2929,6 +3045,27 @@ class LF_AgentHarness
 
 		s_iCaptureId = cmd.Id;
 		WriteResult(cmd.Id, "pending", cmd.Arg2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `scene` runs a scripted actor scene on the server (LF_FilmDirector); `camera` plays a camera pass on
+	//! this client (LF_FilmCamera).
+	protected static void DoFilmDirect(LF_AgentCommand cmd)
+	{
+		if (cmd.Verb == "camera")
+		{
+			WriteResult(cmd.Id, "ok", LF_FilmCamera.Start(cmd.Arg1, Vector(cmd.PosX, cmd.PosY, cmd.PosZ), cmd.CamX, cmd.CamY));
+			return;
+		}
+
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.LF_AskFilmScene(cmd.Id, cmd.Arg1, cmd.Arg2);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3052,6 +3189,32 @@ class LF_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	//! Several entries of one class on an entity (the interaction menu's role slots): the first one
 	//! the user is offered, else the first of that class.
+	//! The index-th (0 based, in the host's action order) shown action of the class.
+	protected static ScriptedUserAction FindNthOnEntity(IEntity entity, string className, IEntity user, int index)
+	{
+		BaseActionsManagerComponent mgr = BaseActionsManagerComponent.Cast(entity.FindComponent(BaseActionsManagerComponent));
+		if (!mgr)
+			return null;
+
+		array<BaseUserAction> actions = {};
+		mgr.GetActionsList(actions);
+		int seen = 0;
+		foreach (BaseUserAction action : actions)
+		{
+			ScriptedUserAction scripted = ScriptedUserAction.Cast(action);
+			if (!scripted || action.Type().ToString() != className || !scripted.CanBeShownScript(user))
+				continue;
+
+			if (seen == index)
+				return scripted;
+
+			seen++;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static ScriptedUserAction FindShownOnEntity(IEntity entity, string className, IEntity user)
 	{
 		BaseActionsManagerComponent mgr = BaseActionsManagerComponent.Cast(entity.FindComponent(BaseActionsManagerComponent));

@@ -44,11 +44,14 @@ import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
+import { cmdPromote } from "./promote.mjs";
+import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
+import { resetLease } from "./lib/session-lease.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -778,6 +781,23 @@ function serverGameAddons(root) {
   return target;
 }
 
+// -addr <ip>:<port> is the only way a -server boot leaves UDP 2001 (-bindPort and
+// -bindIP are ignored; observed 2026-11-10 on 1.9.0.37). A test lane's server
+// listens on 127.0.0.1:2001+k so it runs beside the session server on 2001.
+// Run and boot budget of the run in progress (the pool learned them from its history):
+// test-e2e.ps1 kills a run past them and exits 124 with a TIMEOUT line.
+let activeBudget = null;
+
+function budgetArgs() {
+  if (!activeBudget?.runS) return [];
+  return ["-TimeoutSeconds", String(activeBudget.runS), ...(activeBudget.bootS ? ["-BootTimeoutSeconds", String(activeBudget.bootS)] : [])];
+}
+
+function laneListenAddr() {
+  const port = pool.currentLanePort();
+  return port && port !== 2001 ? `127.0.0.1:${port}` : null;
+}
+
 function serverArgs(root, ports) {
   // Addon discovery: -server loads the DebugWorld directly (no -config, which
   // conflicts with -addons). -addonsDir points at the repo addons plus a
@@ -1028,7 +1048,7 @@ function withServerSlot(root, waitMs, fn) {
     }
     return fn();
   }
-  if (testbox.serverSlotOwner(root)?.pid === process.pid) return fn();
+  if (pool.heldLocalSlot() || testbox.serverSlotOwner(root)?.pid === process.pid) return fn();
   try {
     wt.acquireLock(root, SERVER_SLOT, { waitMs });
   } catch (e) {
@@ -1609,12 +1629,12 @@ function cmdSessionUp(root, dir, flags) {
   };
   try {
     if (flags.includes("--wait")) console.log(`session: port 2001 is held by ${holderOf()}; queued (up to 30 min)`);
-    const callerPids = [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0);
-    wt.acquireLock(root, SERVER_SLOT, { waitMs: flags.includes("--wait") ? 1800000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root }, callerPids });
-  } catch {
-    console.log(`FAIL  port 2001 is held by ${holderOf()}; retry when it ends, or pass --wait`);
+    pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? 1800000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
+  } catch (e) {
+    console.log(`FAIL  port 2001 is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
     return 1;
   }
+  resetLease(dir);
   const paths = session.sessionPaths(dir, clients);
   sessionLog = join(dir, "up.log");
   try {
@@ -1947,7 +1967,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   const purpose = only.length ? "test only" : `test ${tier}`;
   let slot;
   try {
-    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose });
+    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget });
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
     return 3;
@@ -1956,7 +1976,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   let extra = {};
   try {
     if (!slot.local) {
-      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : [])];
+      const args = ["test", "--no-build", "--local", "--tier", tier, ...(only.length ? ["--only", only.join(",")] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
       const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState });
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
@@ -1964,6 +1984,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
       return code;
     }
     const before = Date.now();
+    activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
     code = runLocalTest(root, tier, only);
     const stamp = newestStamp(root, before);
     if (stamp) extra = { passed: stamp.passed, total: stamp.total };
@@ -2016,6 +2037,8 @@ function runLocalTest(root, tier, only) {
       "-Tier", tier,
       "-BindPort", String(ports.gamePort),
       "-A2sPort", String(ports.a2sPort),
+      ...(laneListenAddr() ? ["-ListenAddr", laneListenAddr()] : []),
+      ...budgetArgs(),
       ...(only.length ? ["-Only", only.join(",")] : []),
     ], { cwd: root, env: toolEnv() });
     process.stdout.write(res.stdout + res.stderr);
@@ -2103,13 +2126,18 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md)
   e2e [--local|--remote [name]]   two-boot save, restart, and reload proof in this worktree
-  pool status|stats|prune       test pool: machines, slots and holders, queue, last runs;
+  --budget <s>                  run-time budget for a known-long test/e2e run (default: learned from the pool's history)
+  --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
+                                (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
+  pool status|stats|prune       test pool: machines, lanes and holders, queue, last runs;
                                 prune removes remote run folders of gone worktrees
   testbox provision|status|prune|screenshot|record|start|vdd  set up / inspect / clean / film the second test machine
   dev [--tier fast|all|persistence]  fast dev loop: validate + test --no-build +
                                 dump [LFDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
+  promote [--to sha] [--confirm]  stable branch: list PRs merged since stable and write the checklist;
+                                --confirm fast-forwards stable, verifies and closes their issues (cli promote --help)
   prs status|heal [--dry-run] [<n>...]
                                 open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
                                 (generated conflicts only), gates, pushes, re-queues auto-merge,
@@ -2150,8 +2178,22 @@ function argValue(flags, name) {
 
 // --local pins a test run to this machine; --remote [host] sends it to the
 // test box (host defaults to LF_TESTBOX). See tools/remote/testbox.mjs.
+function priorityFlag(list) {
+  const v = argValue(list, "--priority");
+  if (v === null) return undefined;
+  const p = pool.normalizePriority(v);
+  if (!p) throw new Error(`--priority must be high, normal or low (got '${v}')`);
+  return p;
+}
+
 function remoteFlags(list) {
-  const out = { local: list.includes("--local"), any: list.includes("--any") };
+  const out = { local: list.includes("--local"), any: list.includes("--any"), priority: priorityFlag(list) };
+  const b = argValue(list, "--budget");
+  if (b !== null) {
+    const n = Number(b);
+    if (!(n > 0)) throw new Error(`--budget must be a number of seconds (got '${b}')`);
+    out.budget = n;
+  }
   if (list.includes("--remote")) {
     const v = argValue(list, "--remote");
     out.remote = v && !v.startsWith("--") ? v : "";
@@ -2272,7 +2314,8 @@ function wtSlug(args) {
 function wtHelp() {
   console.log(`worktree commands (parallel agent isolation)
 
-  tools\\cli wt new <slug> [--wait] [--base B]    create Life-Framework-ws-<slug> at ws/<slug>, allocate ports
+  tools\\cli wt new <slug> [--wait] [--base B] [--priority low]  create Life-Framework-ws-<slug> at ws/<slug>, allocate ports;
+                                       --priority records the pool priority for that worktree (spikes: low)
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
@@ -2288,7 +2331,7 @@ function wtHelp() {
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
-  tools\\cli wt ship <slug> [--closes N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
+  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
                                        clean-tree check -> merge origin/<base> only if it conflicts ->
                                        gate -> push -> PR (or reuse the open one) -> gh auto-merge
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
@@ -2300,7 +2343,8 @@ flags:
   --base B     branch to cut from and ship to (default main; 'wt new' records it for 'wt ship')
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
-  --closes N   start the PR body with 'Closes #N'
+  --refs N     start the PR body with 'Refs #N'; --closes N is the same. Merging never closes an issue:
+               it moves to in-dev / needs-playtest and 'promote --confirm' verifies and closes it
   --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
   --skip-gate  / --skip-sync   skip a ship stage (debug only)
   --full-gate                  run the in-game gate even when addons/ is unchanged
@@ -2314,8 +2358,8 @@ function wtNewCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   try {
-    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 60000 : 0, base: argValue(args, "--base") ?? "main" });
-    console.log(`created worktree ${r.slug}`);
+    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 60000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args) });
+    console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""}`);
     console.log(`  base:   origin/${r.base}`);
     console.log(`  path:   ${r.path}`);
     console.log(`  branch: ${r.branch}`);
@@ -2493,6 +2537,8 @@ function runE2ePass(root, tier, opts = {}) {
     "-BindPort", String(ports.gamePort),
     "-A2sPort", String(ports.a2sPort),
   ];
+  if (laneListenAddr()) psArgs.push("-ListenAddr", laneListenAddr());
+  psArgs.push(...budgetArgs());
   if (opts.keepProfile) psArgs.push("-KeepProfile");
   if (opts.loadLatestSave) psArgs.push("-LoadLatestSave");
   else if (opts.loadSessionSave !== undefined) psArgs.push("-LoadSessionSave", opts.loadSessionSave);
@@ -2539,7 +2585,7 @@ async function runE2e(root, opts = {}) {
   ensureResourceDatabase(root);
   let slot;
   try {
-    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose: "e2e" });
+    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose: "e2e", priority: opts.priority, budget: opts.budget });
   } catch (err) {
     console.log(`FAIL  ${err.message}`);
     return 3;
@@ -2547,9 +2593,10 @@ async function runE2e(root, opts = {}) {
   let code = 3;
   try {
     if (!slot.local) {
-      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local"], writeSyncState: pool.writeSyncState });
+      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
     } else {
+      activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
       code = runE2eHere(root);
     }
     return code;
@@ -2644,6 +2691,8 @@ async function wtGateCmd(args) {
   if (!slug) return 1;
   const flags = args.slice(1);
   try {
+    const pr = priorityFlag(flags);
+    if (pr) process.env.LF_PRIORITY = pr;
     const e = wt.requireWorktree(ROOT, slug);
     wt.git(e.path, ["fetch", "origin", "--prune"]);
     return runWorktreeCli(e.path, gateArgs(e.path, flags));
@@ -2713,11 +2762,13 @@ async function wtShipCmd(args) {
   const prOnly = flags.includes("--pr-only");
   const skipGate = flags.includes("--skip-gate");
   const skipSync = flags.includes("--skip-sync");
-  const closes = argValue(flags, "--closes");
+  const closes = argValue(flags, "--refs") ?? argValue(flags, "--closes");
   const bodyFile = argValue(flags, "--body-file");
   let e;
   let base;
   try {
+    const pr = priorityFlag(flags);
+    if (pr) process.env.LF_PRIORITY = pr;
     e = wt.requireWorktree(ROOT, slug);
     base = argValue(flags, "--base") ?? wt.baseOf(e);
     wt.checkBaseName(base);
@@ -2737,7 +2788,7 @@ async function wtShipCmd(args) {
     return 1;
   }
   if (closes && !/^\d+$/.test(closes)) {
-    console.log(`FAIL  --closes takes an issue number, got '${closes}'`);
+    console.log(`FAIL  --refs/--closes takes an issue number, got '${closes}'`);
     return 1;
   }
   let customBody = null;
@@ -2802,7 +2853,7 @@ async function wtShipCmd(args) {
     "## Commits",
     ...subjects.map((s) => `- ${s}`),
   ].join("\n");
-  if (closes && !new RegExp(`\\b(closes|fixes|resolves) #${closes}\\b`, "i").test(body)) body = `Closes #${closes}\n\n${body}`;
+  body = refsBody(body, closes);
   let pr;
   try {
     if (wt.ghAvailable()) {
@@ -3019,6 +3070,8 @@ try {
     code = cmdWt(rest);
   } else if (cmd === "prs") {
     code = cmdPrs(ROOT, rest);
+  } else if (cmd === "promote") {
+    code = cmdPromote(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
   } else {

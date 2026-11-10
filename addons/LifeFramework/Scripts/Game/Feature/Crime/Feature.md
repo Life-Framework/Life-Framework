@@ -102,7 +102,7 @@ isn't today — see current state).
 ## Vehicle pick and hotwire (#412)
 
 - `LF_Lockpick` works a locked `LF_VehicleLockComponent` the same way as a door. `LF_Hotwire` (server) runs the timed ignition attempt; `LF_HotwireRules` holds the pure rules. The start gate is `SCR_CarControllerComponent.OnBeforeEngineStart`, active only where `m_bIgnitionLocked` is on.
-- Hotwire success: `SetHotwiredBy(playerId)` plus `SetStolen(true)` on the lock, and an `#LF-Offence_VehicleTheft` report. Nothing is saved.
+- Hotwire success: `SetHotwiredBy(playerId)` plus `SetStolen(true)` on the lock, raises the thief wanted by 1 (`LF_Hotwire.ApplyTheft`, #495), and an `#LF-Offence_VehicleTheft` report if heard. Nothing is saved.
 - Test `lockpick/vehicle`, `e2e/lockpick-vehicle`; proof `session.mjs hotwire-proof`. Log `[LFDebug:Hotwire]`.
 
 ## Chop shop (#415)

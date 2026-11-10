@@ -81,7 +81,17 @@ The bus keeps its own strong reference.
 | `LF_OnChainWork` | `m_sWorkerUid`, `m_sSiteId`, `m_sChainId`, `m_sStationKey`, `m_iPercent`, `m_fHeat` (site heat after the work), `m_fRangeM` (metres it can be smelled), `m_vPosition` | `LF_ChainStationComponent.ServerWork`: one accepted piece of hands-on work, about one per working player per couple of seconds. The smell and smoke trace (#418) reads it; the site heat is also readable any time from `LF_ChainSites` |
 | `LF_OnChainSmell` | `m_sListenerUid`, `m_bOfficer`, `m_sSiteId`, `m_sChainId`, `m_fDistance`, `m_fHeat`, `m_vPosition` (the site) | `LF_ChainTrace`: a player stood inside the heat-scaled smell range of a running site; at most once per listener and site per 60 s, never per frame. `LF_ChainSmellLead` turns it into a police service call, one per site per 5 min (#418) |
 
-Adding an event: a class in `LF_Events.c`, a row here, a publish where the feature
+Where events live: each feature's event classes are in its own file next to the
+feature (`Feature/Medic/LF_MedicEvents.c`, `Feature/Crime/LF_CrimeEvents.c`,
+`Feature/Chains/LF_ChainsEvents.c`, ...). The bus itself (`LF_Event`,
+`LF_EventBus`, `LF_EventSubscriber`) is `Core/Events/LF_EventBus.c`; there is no
+central event list. Enforce Script compiles every file, so no include is needed
+and class names do not change when an event moves. A new feature adds its own
+`Feature/<Area>/LF_<Area>Events.c`; an existing feature appends to its file.
+`validate-registries` fails an `LF_On*` class under `Core/Events/` or outside a
+`Feature/**/LF_*Events.c`.
+
+Adding an event: a class in the feature's `LF_<Area>Events.c`, a row here, a publish where the feature
 already logs the change, and one line in `docs/features.md`.
 
 ## Trace

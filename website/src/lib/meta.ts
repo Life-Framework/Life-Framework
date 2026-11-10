@@ -17,7 +17,17 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
   },
   "/roadmap": {
     title: "Roadmap",
-    description: "Milestones M1 to M5, each with its goal, its status, and its issues and epics, read from GitHub when the site is built.",
+    description: "Milestones M1 to M6, each with its goal, its status, and its issues and epics, read from GitHub when the site is built.",
+    og: "roadmap",
+  },
+  "/features": {
+    title: "Features",
+    description: "What the M2 systems do in the playtest town today: moderation, comms, medic, investigation and the underworld.",
+    og: "roadmap",
+  },
+  "/gallery": {
+    title: "Gallery",
+    description: "Captures from the playtest village, grouped by system, with a slot for the before and after shots of each polished area.",
     og: "roadmap",
   },
   "/devlog": {

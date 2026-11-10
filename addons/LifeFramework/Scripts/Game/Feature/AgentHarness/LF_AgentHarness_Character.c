@@ -349,6 +349,14 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "shelf")
+		{
+			// A shopper taking the first shelf item in reach of the physical store (#202), through the
+			// same inventory insert a pickup uses. The server tags it unpaid on its next look.
+			LF_HarnessReply(commandId, "ok", LF_Stores.HarnessTakeFromShelf(this));
+			return;
+		}
+
 		if (tool == "crate")
 		{
 			// Chain goods (#419): one contraband crate, what the moonshine still makes.

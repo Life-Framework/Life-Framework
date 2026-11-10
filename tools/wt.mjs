@@ -168,9 +168,11 @@ export function markerPath(root) {
   return join(root, "tmp", "wt.json");
 }
 
-export function writeMarker(wtRoot, slug) {
+// priority (pool queue order: high|normal|low) is kept across rewrites.
+export function writeMarker(wtRoot, slug, priority) {
   mkdirSync(join(wtRoot, "tmp"), { recursive: true });
-  writeFileSync(markerPath(wtRoot), JSON.stringify({ slug }) + "\n", "utf8");
+  const keep = priority ?? readMarker(wtRoot)?.priority;
+  writeFileSync(markerPath(wtRoot), JSON.stringify(keep ? { slug, priority: keep } : { slug }) + "\n", "utf8");
 }
 
 export function readMarker(root) {
@@ -249,7 +251,7 @@ export function requireWorktree(root, slug) {
 
 // ---------------------------------------------------------------- locks
 
-function pidAlive(pid) {
+export function pidAlive(pid) {
   try {
     process.kill(pid, 0);
     return true;
@@ -351,7 +353,7 @@ export function checkBaseName(base) {
   if (!/^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(base) || base.includes("..")) throw new Error(`invalid base branch '${base}'`);
 }
 
-export function wtNew(root, slug, { waitMs = 0, base = "main" } = {}) {
+export function wtNew(root, slug, { waitMs = 0, base = "main", priority } = {}) {
   checkBaseName(base);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
     throw new Error(`invalid slug '${slug}': lowercase letters, digits and single hyphens only`);
@@ -381,13 +383,14 @@ export function wtNew(root, slug, { waitMs = 0, base = "main" } = {}) {
       branch,
       ports,
       base,
+      ...(priority ? { priority } : {}),
       created: new Date().toISOString(),
       status: "active",
     };
     writeState(root, state);
-    writeMarker(dir, slug);
+    writeMarker(dir, slug, priority);
     copyResourceDatabase(dir, main);
-    return { slug, path: dir, branch, ports, base };
+    return { slug, path: dir, branch, ports, base, priority };
   } finally {
     releaseLock(root, "wt");
   }

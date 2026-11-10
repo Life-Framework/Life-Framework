@@ -62,6 +62,9 @@ failures instead of grinding.
    `addons/LF_Everon1989/`; `validate-addon-boundary` enforces it. Until the
    M3 move loads the pack, a pack resource still lands in the core and gets a
    row in `docs/architecture/core-pack-inventory.md`.
+10. **Shared registries are per-feature files; never append to a central list.**
+    A proof verb is `agent-box/proofs/<verb>.mjs`; a bus event is in
+    `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both).
 
 ## Commands
 
@@ -79,8 +82,11 @@ failures instead of grinding.
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
 | `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
-| `tools\cli wt gate <slug>` / `wt ship <slug> [--closes N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge |
+| `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
+| `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
+
+**Test and session queue.** Just run `test`, `e2e`, or `session up` as before; the pool queues itself (tests have their own lane beside sessions, runs get a time budget from history) and prints one line per outcome, so read it. `TIMEOUT after Ns` means the run hung and was killed; pass `--budget <s>` only for a known-long run. A session idle 15 min while others wait is closed; any harness command keeps it, `session.mjs lease [min]` holds it. Development-track and spike work runs with `--priority low` (`wt new <slug> --priority low` records it). Details: `docs/worktrees.md` "Lanes, priority, leases, budgets".
 
 Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desktop; node spawns get `windowsHide: true`), never in front of the user; `tools\cli hidden [--close]` lists them, `LF_SHOW_WINDOWS=1` shows them (`docs/setup.md`).
 
@@ -194,6 +200,19 @@ Never guess an Enfusion API. Look it up from any terminal:
 (use `@args.json` from PowerShell). `wb_read_props` gives resolved inherited
 prefab values; `asset_search` gives `{GUID}path`. Reading sibling features and
 existing code to learn the shape is encouraged. See `enfusion-api-research`.
+
+## What "done" means (issue states)
+
+Merging to `main` is not done. A human decides after play-testing `main`.
+Issue labels: `agent:working` (you are building it), `in-dev` (merged, not
+verified), `needs-playtest` (merged and the PR lists manual steps), `verified`
+(a human signed it off; only this closes the issue), `regression` (failed
+verification). The `issue-state` workflow moves the issues a merged PR refs
+(`Refs #N`, also `Closes/Fixes #N`, which it reverses back to open); `tools\cli
+promote --confirm` sets `verified` and closes. In your report and PR say
+"merged, in-dev", never "done" or "fixed". Put manual steps under a
+`## Manual testing` heading: that is what makes the issue `needs-playtest` and
+what the human's promotion checklist shows. `docs/worktrees.md` "Release gates".
 
 ## Verification ladder
 

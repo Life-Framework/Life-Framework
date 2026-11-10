@@ -28,8 +28,8 @@ class LF_LockpickAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(GetOwner());
-		return doorLock && doorLock.IsLocked() && LF_Component<LF_LockpickTargetComponent>.Find(GetOwner()) != null;
+		// A door or a vehicle: the #412 vehicle case was lost once in a merge with the door-only check.
+		return LF_Lockpick.ShowsPick(GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------
