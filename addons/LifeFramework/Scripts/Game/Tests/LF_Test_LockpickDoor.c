@@ -54,7 +54,7 @@ class LF_Test_LockpickDoor : LF_Test
 	}
 }
 
-// red-proof: world wiring is asserted against the placed door; reverting m_bStartLocked failed `- without a pick the locked door says it needs one (expected 3, got 2)` on 2026-11-10 (first run, before the fix).
+// red-proof: world wiring is asserted against the placed door; dropping m_bDebugLocked from the placed door failed `- without a pick the locked door says it needs one (expected 3, got 2)` on 2026-11-10 (first run, before the fix).
 // tier: WORLD
 //! The playtest lock-up door is wired (#411): locked, pickable, the pick action on it, the jail-style
 //! breach door refuses a pick. Spawns nothing. The held attempt itself is the two-client session proof.

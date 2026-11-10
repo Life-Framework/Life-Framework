@@ -29,7 +29,6 @@ GenericEntity Roadmap_Jail_Door : "{787617D5B683FE41}Prefabs/Structures/Building
   LF_BreachTargetComponent "{D2FC9663261624B6}" {
    m_sTargetId "Roadmap_Jail_Door"
    m_fFuseSeconds 0
-   m_bStartLocked 1
   }
  }
  Flags 0x403 0

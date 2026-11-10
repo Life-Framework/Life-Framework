@@ -197,6 +197,18 @@ class LF_ChainCatalog
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Fills outChains with every enabled chain.
+	static void GetEnabled(notnull array<LF_ChainDef> outChains)
+	{
+		EnsureLoaded();
+		outChains.Clear();
+		foreach (string id, LF_ChainDef chain : s_mEnabled)
+		{
+			outChains.Insert(chain);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int EnabledCount()
 	{
 		EnsureLoaded();

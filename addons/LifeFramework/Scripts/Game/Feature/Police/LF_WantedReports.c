@@ -54,6 +54,7 @@ class LF_WantedReports
 	static const string OFFENCE_LOCKPICK = "#LF-Offence_Lockpick";
 	static const string OFFENCE_CHOP = "#LF-Offence_ChopShop";
 	static const string OFFENCE_JAILBREAK = "#LF-Offence_JailBreak";
+	static const string OFFENCE_CHAIN_GOODS = "#LF-Offence_ChainGoods";
 	static const string PLACE_GRID_KEY = "#LF-Wanted_PlaceGrid";
 
 	protected static ref map<string, ref array<ref LF_WantedReportRecord>> s_mReports;

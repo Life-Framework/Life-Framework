@@ -37,6 +37,9 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	[Attribute("0", desc: "The engine needs a matching key (or a hotwire, #412) to start. Off keeps the vanilla free start.")]
 	protected bool m_bIgnitionLocked;
 
+	[Attribute("0", desc: "Lock the vehicle when the world starts (a placed car, like LF_LockComponent.m_bDebugLocked on a door).")]
+	protected bool m_bDebugLocked;
+
 	[RplProp()]
 	protected bool m_bELIsLocked;
 
@@ -81,6 +84,9 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 			Replication.BumpMe();
 			LF_Debug.Log("VehicleLock", string.Format("identifier assigned: %1", m_sVehicleIdentifier));
 		}
+
+		if (Replication.IsServer() && m_bDebugLocked)
+			SetLocked(true);
 	}
 
 	//------------------------------------------------------------------------------------------------

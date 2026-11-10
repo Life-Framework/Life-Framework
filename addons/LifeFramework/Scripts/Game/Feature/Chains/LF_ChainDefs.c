@@ -83,6 +83,12 @@ class LF_ChainDef
 	[Attribute("", UIWidgets.EditBox, "Localization key for the chain name")]
 	string m_sNameKey;
 
+	[Attribute("0", UIWidgets.CheckBox, "The finished goods (outputs of the last step) are contraband: an officer search can find and seize them (#419)")]
+	bool m_bContraband;
+
+	[Attribute("1", UIWidgets.Auto, "How bulky one unit of the finished goods is. A bigger load is harder to hide from a search; harder tiers ship bulkier goods")]
+	int m_iBulk;
+
 	[Attribute("", UIWidgets.Object, "Steps in order")]
 	ref array<ref LF_ChainStepDef> m_aSteps;
 

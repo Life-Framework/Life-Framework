@@ -1,9 +1,9 @@
 //------------------------------------------------------------------------------------------------
-//! Search: an on-duty officer confiscates the weapons of the wanted player in front of them (the
-//! action's owner), as one entry in the player interaction menu (LF_PlayerInteraction). Offer
-//! checks read LF_AccountReplication (account cache on the server, replicated character state on
-//! a client); the confiscation itself runs on the server and re-checks the officer against the
-//! real account, the reach, and the suspect's wanted level.
+//! Search: an on-duty officer searches the player in front of them (the action's owner): chain
+//! goods on anyone (LF_ChainSearch, #419) and the weapons of a wanted player, as one entry in the
+//! player interaction menu (LF_PlayerInteraction). Offer checks read LF_AccountReplication
+//! (account cache on the server, replicated character state on a client); the search itself runs
+//! on the server and re-checks the officer against the real account and the reach.
 class LF_ConfiscateAction : ScriptedUserAction
 {
 	//------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ class LF_ConfiscateAction : ScriptedUserAction
 			return false;
 		}
 
-		if (!IsWanted(GetOwner()))
+		if (LF_PlayerInteraction.PlayerIdOf(GetOwner()) <= 0)
 		{
 			SetCannotPerformReason("#EL-Confiscate_NoTarget");
 			return false;
@@ -49,10 +49,17 @@ class LF_ConfiscateAction : ScriptedUserAction
 			return;
 		}
 
+		// Any player can be searched at a stop for chain goods (#419); the weapon and scanner
+		// confiscation below stays for a wanted suspect.
+		int goodsSeized = LF_ChainSearch.SearchPerson(pOwnerEntity, Math.RandomFloat01());
 		LF_PlayerAccount suspect = LF_PoliceUtils.GetAccountForEntity(pOwnerEntity);
 		if (!suspect || suspect.GetWantedLevel() <= 0)
 		{
-			LF_Debug.Warn("Police", "confiscate refused: the person searched is not wanted");
+			if (goodsSeized > 0)
+				LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Found", "#EL-Police_Title", 3.0);
+			else
+				LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Clean", "#EL-Police_Title", 3.0);
+
 			return;
 		}
 
@@ -104,15 +111,7 @@ class LF_ConfiscateAction : ScriptedUserAction
 			LF_Debug.Info("Police", string.Format("confiscated %1 scanner(s) from %2: offence filed", scanners.Count(), suspectUid));
 		}
 		LF_Utils.NotifyEntity(pUserEntity, "#EL-Police_Action", "#EL-Police_Title", 3.0);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Replicated wanted level above 0 on a player character.
-	protected bool IsWanted(IEntity target)
-	{
-		if (LF_PlayerInteraction.PlayerIdOf(target) <= 0)
-			return false;
-
-		return LF_AccountStateBits.GetWantedLevel(LF_AccountReplication.GetState(target)) > 0;
+		if (goodsSeized > 0)
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Found", "#EL-Police_Title", 3.0);
 	}
 };
