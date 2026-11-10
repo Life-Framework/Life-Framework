@@ -2,7 +2,11 @@
 
 The playtest is a small 1989 Everon town, published on the Arma Reforger
 Workshop and hosted from the maintainer's PC. Play it, then tell us what broke.
-Feedback goes through GitHub issues.
+Feedback goes to #playtest-feedback on [Discord](https://discord.gg/MjMexJteqz) or to a GitHub issue.
+
+The website page [life-framework.org/playtest](https://life-framework.org/playtest) has the current install
+steps. Until a public Workshop item exists, the addon is installed from a clone of this repository at the
+host's commit, and the Workshop steps below do not apply yet.
 
 ## Subscribe and join
 
@@ -32,7 +36,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 5. **Vehicle.** Read the price sheet at the car lot (desk at 211, 262; four display cars in a row at z 261, each with a chalkboard price board in front, x 216 to 230) and buy a car. Your character
    also starts with an S105 in the garage and a UAZ at the impound lot (playtest
    only): read the garage ledger, retrieve one, and collect the other at the
-   impound desk for the fee.
+   impound desk for the fee. The key goes straight into your inventory; drag it and your ID card between pockets to check nothing hangs (#620).
 6. **Police.** On a fresh save the first player to join is on the police roster.
    Clock in at the station desk; the kit includes the key to the station car. A
    second player robs the fuel till: the officer gets the radio dispatch, reads
@@ -44,7 +48,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 7. **Organization and hideout.** Found an organization at the registry desk,
    deposit cash, and buy the processing upgrade. Take the alley yard lease, open
    the hideout door, and store something in the stash. Run contraband from the
-   barn to the pub.
+   barn to the drop (in the debug game mode a second crate cage 27 m south of the barn pallet at `466 0 304`; the flagship keeps the pub).
    Where: the walled yard at the end of the cobbled alley (about 302, 288, door on the alley); inside are the machine, the stash, a workbench, crates, barrels and a parked van. The registry desk is at 289, 256. Demo: `session.mjs org` (proof `agent-box/proofs/org.mjs`) (2 clients: found the org, take the lease, open the gate).
 8. **Restart.** Leave and rejoin: your cash, bank, job, organization, and cars
    should be back.
@@ -179,7 +183,10 @@ sentence that names a place makes it a prompt.
 - **Fuel station (area 5).** The till (rob it with the `Rob the till` action, reward 150) is on the counter at (263.2, 240.4) beside the kiosk wall; the clerk stands behind it facing the street. The fuel payphone is at (256.5, 237) and the FUEL STATION sign at the kiosk corner (264.6, 242.7). The pumps are the map station's own (x 268 and 279, z 235). Try it with `session.mjs` witness-proof or the `crime/rob-reward` test.
 - **Police car light bar (#595).** The police car at the station (about 243.5, 246) is a covered UAZ469; its blue light bar sits on the roof. Walk round it and check the bar touches the roof. Sirens: as an on-duty officer drive it and use the siren key (mouse button 2).
 - **Police station look (polish pass 6).** The post is the loggia of the police villa (233, 239); the duty desk, armory cabinet, armory store and evidence locker stand along its back wall with the door kept clear, the wanted and dispatch boards stand on the lawn facing the main street, and the payphone, a bin and a flowerpot stand on the front lawn. No setup needed; walk up from the main street.
+- **Sign cards (printed notices).** Look at any sign and press the interact key (*Read: <title>*). The card now has a large title with a rule under it, then labelled sections (WHAT IT IS, HOW, YOU NEED, RULES, NEXT) with bulleted lists, action names in colour, and the frame colour of a painted sign. Try the *Town Board* at the spawn square, the *Post office*, and the long police station sign; Esc or *Put it back* closes the card. Demo: `node agent-box/session.mjs up --machine lf-testbox --clients 1 --mission playtest --wait`, then `node agent-box/harness.mjs stand Sign_TownMap`, `node agent-box/harness.mjs use LF_SignReadAction Sign_TownMap`, `node agent-box/harness.mjs ui-shot card`.
 - **Farm (polish pass 12).** The farm field is north-west of the square at about (150, 298), reached by the dirt track from the south past the farm sign (144.5, 292.5). Cabbage beds and plants on the west side (`CabbageCrop_Debug`, gather), a greenhouse and hay bales on the east, a produce stand with crates, a cart and cabbages on its table by the sign, and a fence along the north edge. The apple orchard is to the west (the gather tree at 130, 310); its juicer (`AppleProcessor`) now stands on a press table at (141, 311) with crates. Try it: `node agent-box/harness.mjs flow chain-apple` (gather, trade, press), or walk up and use *Gather Cabbage*. The apple and plum traders stay on the market table row (area 3).
 - Debug money top-up: in the playtest town you never run out; bank refills under 100k to 1M and cash under 5k to 20k on spawn and every 60 s (ledger reason debug-topup; flag m_bDebugMoneyTopUp).
+- **Bank robbery kit (#605).** A chest on the east side of the bank, at 198.6, 259.5 (between the cash van stop and the vault door). Use *Take bank robbery kit* to get a drill, keycard and charge in one go (a second press adds nothing; with a full inventory the item lands at your feet), then rob the vault at 194, 265 or the cash van. Only works in the playtest game mode (`m_bDebugMoneyTopUp`). Demo: `node agent-box/session.mjs bank-kit-proof` on a one-client session.
 - **Smelter furnace.** The DebugWorld mining yard furnace is now a base-game boiler (was a wood chipper) at 169.8, 171.5, beside the mining sign. Bring two iron nuggets and use *Smelt Iron Nuggets* at its front; the bar drops 1.6 m in front. Also at 298.4, 276.5 (crime chain) and in St Philippe.
 - **Civilians and witnesses (#610, #615).** Two civilians stand by the fuel station (about 258, 243 and 266, 244): shoot one dead and you are wanted for murder; the clerk and quest givers cannot be hurt. Clock in as police and use *Ask what you saw* on a civilian or the clerk: they give their name and either a statement or a noncommittal line. Demo: `node agent-box/session.mjs npc-witness-proof` (debug mission).
+- **Game Master (#617).** On the debug mission every player can open Game Master; in the town it is administrators only. Try: `node agent-box/session.mjs up --mission debug` then `node agent-box/harness.mjs gm`. See `docs/game-master-spike.md`.

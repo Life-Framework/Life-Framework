@@ -10,6 +10,7 @@
         try { t = localStorage.getItem("theme"); } catch (e) {}
         if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", t);
+        try { if (localStorage.getItem("lf-banner-playtest-m2") === "off") document.documentElement.setAttribute("data-banner", "off"); } catch (e) {}
       })();
     </script>
     <!--app-head-->
