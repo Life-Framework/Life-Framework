@@ -1147,7 +1147,7 @@ async function runBedProof() {
   console.log(`woke  ${JSON.stringify(woke)}`);
   console.log(`paid  ${JSON.stringify(paid)}`);
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "bed proof: FAIL" : `bed proof: PASS (loaded in the ambulance with the bleed-out paused at ${bleedA}, put in a bed, bill ${billAmount} not ${wakeAmount})`);
+  console.log(fails.length ? "bed proof: FAIL" : `bed proof: PASS (${carryOnly ? "carried" : `loaded in the ambulance with the bleed-out paused at ${bleedA}`}, put in a bed, woke on their client, bill ${billAmount} not ${wakeAmount})`);
   return fails.length ? 1 : 0;
 }
 
