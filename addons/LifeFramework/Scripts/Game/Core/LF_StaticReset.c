@@ -40,6 +40,8 @@ class LF_StaticReset
 		LF_FenceSerials.ResetStatics();
 		LF_EvidenceLocker.ResetStatics();
 		LF_Evidence.ResetStatics();
+		LF_Witness.ResetStatics();
+		LF_WitnessConfig.ResetStatics();
 		LF_EvidenceConfig.ResetStatics();
 		LF_IncidentLog.ResetStatics();
 		LF_ServiceCallsConfig.ResetStatics();
