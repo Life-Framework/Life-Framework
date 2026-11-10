@@ -48,7 +48,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 7. **Organization and hideout.** Found an organization at the registry desk,
    deposit cash, and buy the processing upgrade. Take the alley yard lease, open
    the hideout door, and store something in the stash. Run contraband from the
-   barn to the pub.
+   barn to the drop (in the debug game mode a second crate cage 27 m south of the barn pallet at `466 0 304`; the flagship keeps the pub).
    Where: the walled yard at the end of the cobbled alley (about 302, 288, door on the alley); inside are the machine, the stash, a workbench, crates, barrels and a parked van. The registry desk is at 289, 256. Demo: `session.mjs org` (proof `agent-box/proofs/org.mjs`) (2 clients: found the org, take the lease, open the gate).
 8. **Restart.** Leave and rejoin: your cash, bank, job, organization, and cars
    should be back.

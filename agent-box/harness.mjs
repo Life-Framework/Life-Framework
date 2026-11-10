@@ -1176,7 +1176,8 @@ function selftest() {
   if (wideStreet.oz <= 0) throw new Error("the release street wide shot stays on +Z");
   // The live village: every street site has a neighbour within 30 m, and the
   // contraband pickup is the one site out of town.
-  const placedStreet = roadmapSites(ROOT);
+  // Roadmap_Convoy_Drop_Near is the debug-mode alternative drop (#616), a test aid beside the pickup, not a village site.
+  const placedStreet = roadmapSites(ROOT).filter((site) => site.name !== "Roadmap_Convoy_Drop_Near");
   const placedRows = judgeStreet(placedStreet.map((site) => ({ ...site, look: `X@${site.name}`, mesh: "ok", menu: null })));
   const strays = placedRows.filter((row) => !row.ok).map((row) => `${row.name} ${row.distanceM} m`);
   if (strays.length) throw new Error(`street sites more than 30 m from the rest: ${strays.join(", ")}`);

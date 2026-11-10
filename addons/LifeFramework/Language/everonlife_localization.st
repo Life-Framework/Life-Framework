@@ -3966,7 +3966,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDE5BBC474B685BE}" {
      Id "LF-Sign_ConvoyPickup_How"
-     Target_en_us "Start convoy at the crates to take one, load it into a vehicle, drive to the back of the pub on the square, and Deliver contraband at the empty crate cage there."
+     Target_en_us "Start convoy at the crates to take one, load it into a vehicle, drive to the convoy drop (the empty crate cage), and Deliver contraband there."
      Comment "Sign card for the convoy pickup at the barn out of town, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{1AD1E7DE6B2D2E35}" {
@@ -4891,7 +4891,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8269943001D9EADB}" {
      Id "LF-Contraband_Loaded"
-     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
+     Target_en_us "You have a crate. Drive it to the convoy drop, the empty crate cage, and stay in the vehicle until you get there."
      Comment "Toast when the convoy start hands the player a contraband crate at the barn"
     }
     CustomStringTableItem "{DEDBE2A372F43FF6}" {
