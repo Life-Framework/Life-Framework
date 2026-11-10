@@ -1,5 +1,8 @@
 GenericEntity Roadmap_Bank_Vault : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
  components {
+  MeshObject "{309366462BDAFB24}" {
+   Object "{ED2F500AB16EFD41}Assets/Structures/BuildingsParts/Doors/Door_Metal/Door_Metal_01_LEFT_EXT_COV_B.xob"
+  }
   LF_LockComponent "{5AC29970429B33BB}" {
    m_bDebugLocked 1
   }
