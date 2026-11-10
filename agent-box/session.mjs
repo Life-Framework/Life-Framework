@@ -1303,6 +1303,57 @@ async function runScannerProof() {
   return fails.length ? 1 : 0;
 }
 
+// M2 #273 on a running `up --clients 2` session with client 2 on the roster (`session.mjs roster 2`
+// before up): client 2 clocks in; client 1 is handed a stamped drill (dev gate, standing in for the
+// fence), opens the bank vault with it, and the drill is left at the door. Client 2 bags it and logs
+// the bag at the evidence locker, which identifies the buyer. Confirm `[LFDebug:Serials] ... bought by`
+// in the server log.
+async function runVaultProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const fails = [];
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  on(2, { verb: "stand", entityName: "Roadmap_Police_Desk" });
+  wait(2500);
+  on(2, { verb: "look" });
+  const clockIn = on(2, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000);
+  wait(3000);
+  on(1, { verb: "stand", entityName: "Roadmap_Bank_Vault" });
+  wait(2500);
+  const noTool = on(1, { verb: "use", className: "LF_BankRobAction", entityName: "Roadmap_Bank_Vault" }, 10000);
+  const give = on(1, { verb: "drill" }, 10000);
+  wait(1500);
+  const rob = on(1, { verb: "use", className: "LF_BankRobAction", entityName: "Roadmap_Bank_Vault" }, 10000);
+  wait(3000);
+  on(1, { verb: "capture", mode: "ui", name: "m2_273_vault_client1" }, 25000);
+  on(2, { verb: "stand", entityName: "Roadmap_Bank_Vault" });
+  wait(2500);
+  const bag = on(2, { verb: "use", className: "LF_BagEvidenceAction" }, 10000);
+  wait(1500);
+  on(2, { verb: "stand", entityName: "Roadmap_Police_EvidenceLocker" });
+  wait(2500);
+  const log = on(2, { verb: "use", className: "LF_LogEvidenceAction", entityName: "Roadmap_Police_EvidenceLocker" }, 10000);
+  wait(1500);
+  on(2, { verb: "capture", mode: "ui", name: "m2_273_locker_client2" }, 25000);
+  if (clockIn.status !== "ok") fails.push(`clock in returned ${clockIn.status} ${clockIn.detail}`);
+  if (noTool.status === "ok") fails.push(`the vault opened without a tool: ${noTool.detail}`);
+  if (give.status !== "ok" || !give.detail.includes("added=1")) fails.push(`drill not given: ${give.status} ${give.detail}`);
+  if (rob.status !== "ok") fails.push(`rob returned ${rob.status} ${rob.detail}`);
+  if (bag.status !== "ok") fails.push(`bagging returned ${bag.status} ${bag.detail}`);
+  if (log.status !== "ok") fails.push(`logging returned ${log.status} ${log.detail}`);
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "vault proof: FAIL" : "vault proof: PASS (refused without a tool, opened with the drill, drill bagged, buyer identified at the locker; confirm the server log)");
+  return fails.length ? 1 : 0;
+}
+
 // The ticket deadlines the server will run with (Configs/Police/LF_Police.conf).
 export function ticketDeadlines(confText) {
   const first = Number(/m_iTicketFirstDeadline\s+(\d+)/.exec(confText)?.[1] ?? 1800);
@@ -1805,6 +1856,7 @@ async function main(argv) {
   if (cmd === "medic-proof") return runMedicProof();
   if (cmd === "radio-proof") return runRadioProof();
   if (cmd === "scanner-proof") return runScannerProof();
+  if (cmd === "vault-proof") return runVaultProof();
   if (cmd === "roster") {
     const ids = rest.map(Number).filter((n) => Number.isInteger(n) && n > 0);
     if (!ids.length) throw new Error("roster <player id> [<player id> ...]");
@@ -1825,7 +1877,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|radio-proof|scanner-proof|dispatch-proof|witness-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|radio-proof|scanner-proof|vault-proof|dispatch-proof|witness-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 

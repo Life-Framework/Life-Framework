@@ -31,6 +31,12 @@ class LF_BankVaultComponent : ScriptComponent
 	[Attribute("0", UIWidgets.Auto, desc: "Breach fuse seconds. Zero opens inside Rob.")]
 	protected float m_fFuseSeconds;
 
+	[Attribute("drill,charge", UIWidgets.EditBox, desc: "Fence tools that open this vault, any one of: drill, charge. Empty needs none.")]
+	protected string m_sRequiredTools;
+
+	[Attribute("0.15", UIWidgets.Auto, desc: "Chance 0..1 that the drill jams and stays in the wall.")]
+	protected float m_fJamChance;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -53,6 +59,7 @@ class LF_BankVaultComponent : ScriptComponent
 		}
 
 		LF_Bank.Configure(vaultId, m_iBagCount, m_iCashPerBag, m_fCooldownSeconds, m_iMinPoliceOnDuty, m_fFuseSeconds, m_sBagEntity);
+		LF_Bank.ConfigureTools(vaultId, m_sRequiredTools, m_fJamChance);
 	}
 
 	//------------------------------------------------------------------------------------------------

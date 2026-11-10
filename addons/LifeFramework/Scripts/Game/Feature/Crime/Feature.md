@@ -74,3 +74,10 @@ isn't today — see current state).
   inherits `Door_HouseWooden_E_A_LEFT_EXT_COV_B.et` and overrides the inherited
   `ActionsManagerComponent "{F32B667C3C823800}"`. Add door actions to that
   override. A second ActionsManagerComponent drops the lock actions.
+
+## Vault fence tools (#273)
+
+- LF_BankVaultComponent.m_sRequiredTools (drill,charge, any one) gates LF_Bank.Rob for a player robber. None held: ob refused logged, offer reads #LF-Bank_NeedTool.
+- Drill: kept, jams at m_fJamChance, and is left at the vault as scene evidence either way (its serial names the buyer at the locker). Charge: consumed by LF_Breach.Arm, which also accepts the fence LF_Charge. Drill time is the vault fuse.
+- Every attempt publishes LF_OnVaultBreach (opened, jammed, refused). Test crime/vault-tool; proof session.mjs vault-proof.
+

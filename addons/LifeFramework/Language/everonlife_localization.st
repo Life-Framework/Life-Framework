@@ -5952,6 +5952,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Statement taken. It is on the wanted board."
      Comment "Toast to the officer: the witness gave a statement."
     }
+    CustomStringTableItem "{A27300000000BA01}" {
+     Id "LF-Bank_NeedTool"
+     Target_en_us "The vault needs a drill or a charge"
+     Comment "Vault robbery refused: the robber carries none of the vault's fence tools (#273)"
+    }
   }
  }
 }
