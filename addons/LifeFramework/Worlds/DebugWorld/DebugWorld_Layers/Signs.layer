@@ -213,8 +213,8 @@ GenericEntity Sign_BackRoom : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Cha
    m_sSignId "black_market"
   }
  }
- coords 305 0 282
- angleY -90
+ coords 306.8 0 281.4
+ angleY 180
 }
 GenericEntity Sign_Hideout : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
  components {
@@ -222,8 +222,8 @@ GenericEntity Sign_Hideout : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chal
    m_sSignId "hideout"
   }
  }
- coords 296.5 0 299
- angleY 90
+ coords 301.6 0 297.6
+ angleY 180
 }
 GenericEntity Sign_StoreChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
  components {

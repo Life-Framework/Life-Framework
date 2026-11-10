@@ -7,6 +7,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mergeStringTables, parseStringTable } from "../merge/union-string-table.mjs";
 import { mergeLines } from "../merge/merge-markdown.mjs";
+import { mergeJsonKeys } from "../merge/merge-json-keys.mjs";
 import { regenPlan } from "../merge/regen-generated.mjs";
 import { mergeLintBaselines } from "../merge/union-lint-baseline.mjs";
 
@@ -143,6 +144,9 @@ for (const [path, driver] of [
   ["docs/features.md", "lf-markdown"],
   ["docs/debug-log-triage.md", "lf-markdown"],
   ["tools/validation/enforce-lint-baseline.json", "lf-lint-baseline"],
+  ["docs/asset-inventory.md", "lf-table-rows"],
+  ["docs/playtest.md", "lf-markdown"],
+  ["website/content/gallery.json", "lf-json-keys"],
 ]) {
   if (!attributes.includes(`${path} merge=${driver}`)) fail(`.gitattributes missing ${path} merge=${driver}`);
   if (!driverConfig.includes(`[merge "${driver}"]`)) fail(`drivers.gitconfig missing ${driver}`);
@@ -274,6 +278,95 @@ try {
     if (merged !== lintJson([lintA, lintE, lintD])) fail(`lint-baseline merge wrote ${JSON.stringify(merged)}`);
   }
 
+  // Keyed table and JSON drivers: each proves a clean double-append and a
+  // same-key clash in a scratch repo with the real git merge.
+  function proveDriver({ name, script, file, base, sides, clash }) {
+    const repo = join(temp, name);
+    initRepo(repo);
+    configureDriver(repo, name, script);
+    writeFileSync(join(repo, ".gitattributes"), `${file} merge=${name}
+`);
+    writeFileSync(join(repo, file), base);
+    commitAll(repo, "base");
+    git(repo, ["checkout", "-q", "-b", "theirs"]);
+    writeFileSync(join(repo, file), sides.theirs);
+    commitAll(repo, "theirs");
+    git(repo, ["checkout", "-q", "master"]);
+    writeFileSync(join(repo, file), sides.ours);
+    commitAll(repo, "ours");
+    const clean = git(repo, ["merge", "theirs", "--no-edit"]);
+    if (clean.status !== 0) fail(`${name}: double append should merge clean:
+${clean.stdout}
+${clean.stderr}`);
+    else {
+      const text = readFileSync(join(repo, file), "utf8");
+      for (const needle of sides.expect) if (!text.includes(needle)) fail(`${name}: merged file lost ${needle}`);
+    }
+    git(repo, ["checkout", "-q", "-b", "left", "master~1"]);
+    writeFileSync(join(repo, file), clash.left);
+    commitAll(repo, "left");
+    git(repo, ["checkout", "-q", "-b", "right", "master~1"]);
+    writeFileSync(join(repo, file), clash.right);
+    commitAll(repo, "right");
+    const stopped = git(repo, ["merge", "left", "--no-edit"]);
+    const text = readFileSync(join(repo, file), "utf8");
+    if (stopped.status === 0) fail(`${name}: same row/key changed on both sides should conflict`);
+    else if (!text.includes("<<<<<<<") || !text.includes(clash.markLeft) || !text.includes(clash.markRight)) {
+      fail(`${name}: conflict should hold both sides between markers, got ${JSON.stringify(text)}`);
+    } else if (clash.keep && !text.includes(clash.keep)) fail(`${name}: unrelated entry ${clash.keep} was lost`);
+    git(repo, ["merge", "--abort"]);
+  }
+
+  const inv = (...rows) => md("# Inventory", "", "| Item | Prefab | Status |", "|---|---|---|", ...rows, "");
+  const invBase = inv("| Pager | `LF_Pager.et` | placeholder |");
+  proveDriver({
+    name: "lf-table-rows",
+    script: "merge-table-rows.mjs",
+    file: "asset-inventory.md",
+    base: invBase,
+    sides: {
+      ours: inv("| Pager | `LF_Pager.et` | placeholder |", "| Still | `LF_Still.et` | placeholder |"),
+      theirs: inv("| Pager | `LF_Pager.et` | placeholder |", "| Drill | `LF_Drill.et` | placeholder |"),
+      expect: ["LF_Still.et", "LF_Drill.et", "LF_Pager.et"],
+    },
+    clash: {
+      // Both sides add a row for the same prefab with different text, and one
+      // side also adds an unrelated row that must survive.
+      left: inv("| Pager | `LF_Pager.et` | placeholder |", "| Van | `LF_Van.et` | placeholder |", "| Tray | `LF_Tray.et` | final |"),
+      right: inv("| Pager | `LF_Pager.et` | placeholder |", "| Van | `LF_Van.et` | final |"),
+      markLeft: "| Van | `LF_Van.et` | placeholder |",
+      markRight: "| Van | `LF_Van.et` | final |",
+      keep: "LF_Tray.et",
+    },
+  });
+  const gal = (captions, skip = []) => JSON.stringify({ sections: [{ id: "town", title: "Town" }], captions, skip }, null, 2) + "\n";
+  proveDriver({
+    name: "lf-json-keys",
+    script: "merge-json-keys.mjs",
+    file: "gallery.json",
+    base: gal({ "1/a": "A" }),
+    sides: {
+      ours: gal({ "1/a": "A", "2/b": "B" }, ["x.png"]),
+      theirs: gal({ "1/a": "A", "3/c": "C" }, ["y.png"]),
+      expect: ['"2/b": "B"', '"3/c": "C"', "x.png", "y.png"],
+    },
+    clash: {
+      left: gal({ "1/a": "A left", "9/z": "Z" }),
+      right: gal({ "1/a": "A right" }),
+      markLeft: '"1/a": "A left"',
+      markRight: '"1/a": "A right"',
+      keep: '"9/z": "Z"',
+    },
+  });
+  const galleryText = readFileSync(join(ROOT, "website", "content", "gallery.json"), "utf8");
+  const galleryRound = mergeJsonKeys(galleryText, galleryText, galleryText);
+  if (!galleryRound.ok || galleryRound.text !== galleryText) fail("gallery.json is not in the json-keys house layout");
+  const playtestText = readFileSync(join(ROOT, "docs", "playtest.md"), "utf8");
+  const playtestAppend = mergeLines(playtestText, playtestText + "- ours line\n", playtestText + "- theirs line\n");
+  if (!playtestAppend.ok || !playtestAppend.text.includes("ours line") || !playtestAppend.text.includes("theirs line")) {
+    fail("playtest.md both-append should keep both lines under lf-markdown");
+  }
+
   const regenRepo = join(temp, "regen");
   initRepo(regenRepo);
   configureDriver(regenRepo, "lf-regen-localization", "regen-generated.mjs");
@@ -311,4 +404,4 @@ if (failures.length) {
   for (const failure of failures) console.log(`  - ${failure}`);
   process.exit(1);
 }
-console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, generated files call regen, lint baseline keeps both sides' fixes)");
+console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, generated files call regen, lint baseline keeps both sides' fixes, keyed table rows and gallery JSON keys union with per-key conflicts)");

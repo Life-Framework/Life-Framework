@@ -39,6 +39,6 @@ SCR_DestructibleBuildingEntity Roadmap_Fuel_Payphone : "{8F2C6E1D4B7A5093}Prefab
 }
 
 LF_NpcBaseEntity Roadmap_Fuel_Clerk : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
- coords 262.5 1.04 243
- angleY 200
+ coords 259 0 240.1
+ angleY 0
 }
