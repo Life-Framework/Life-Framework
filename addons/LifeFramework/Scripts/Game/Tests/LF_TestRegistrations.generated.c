@@ -98,7 +98,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobAndBuildingExploit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FactionLoadoutConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FactionSpawn(), LF_TestTier.WORLD);
-		manager.Register(new LF_Test_FarmPlotLoop(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FarmPlotRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FarmPlotsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_FenceCharge(), LF_TestTier.WORLD);
@@ -183,6 +182,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PlotLoop(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);

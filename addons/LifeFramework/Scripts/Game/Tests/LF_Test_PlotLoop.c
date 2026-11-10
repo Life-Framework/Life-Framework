@@ -1,14 +1,18 @@
-// red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_FarmPlotLoop`: the inclusive stage
+// red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_FarmPlotLoop` (the file's name then): the inclusive stage
 // boundary failed `- half way it is half grown (expected 1, got 0)`, and a harvest that did not empty
 // the plot failed `- the plot is empty again` and `- the second packet plants it again (expected 0, got 2)`. Restored; green.
 
+// The file is LF_Test_PlotLoop, not LF_Test_FarmPlotLoop, on purpose: registered before
+// police/fine-ticket, any test that hands an LF_Receipt or a seed packet to a fixture character makes
+// that test's ticket insert fail ("no room in the pockets"), with no farm code involved. Until that
+// is fixed (#699), this test runs after it.
 // tier: WORLD
 //! The farm loop on a placed DebugWorld plot (#614), through the same server calls the plot action
 //! makes: no seed packet refuses, a packet plants and is used up, a planted plot refuses a second
 //! packet and an early harvest, growth walks sprouts -> half grown -> ripe, the harvest gives three
 //! cabbages and empties the plot, and a farmer across the field is refused. The plot's crop slots
 //! lie on the bed. The test puts the plot back the way it found it.
-class LF_Test_FarmPlotLoop : LF_Test
+class LF_Test_PlotLoop : LF_Test
 {
 	protected static const string PLOT_KEY = "farm_plot_1";
 	protected static const ResourceName SEEDS = "{F77BE55D8D3AEBA3}Prefabs/Items/Seeds/CabbageSeeds.et";
