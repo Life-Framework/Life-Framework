@@ -770,7 +770,7 @@ async function capture(h, area, o) {
   const lookAt = (h1) => [area.x, area.y + h1, area.z];
   // Wide: rank every front-side candidate by what a player needs to see (heroes in frame, unhidden, big enough,
   // nothing tall in front), ray-score the best six, shoot the best two (wide = best score).
-  const noClose = o.args.flags["wide-only"] || o.args.flags["no-close"] || existsSync(join(ROOT, "tmp", "noclose"));
+  const noClose = o.args.flags["wide-only"] || o.args.flags["no-close"];
   console.log(`closeups: ${closeSet.map((p) => `${p.name}(${p.importance})`).join(" ")}`);
   const wides = [];
   const trees = placedMod
