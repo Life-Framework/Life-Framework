@@ -45,3 +45,6 @@ looked at yet.
 | Hospital till | `Roadmap_Hospital_Till` | final | vanilla `CounterPostOffice_01` | (a reception counter) | Hospital, area 7 | none |
 | Medicine cabinet | `Roadmap_Hospital_Cabinet` | placeholder | vanilla `CupboardOld_01_medium` wooden cupboard | white medical cabinet | Hospital, area 7 | low |
 | Stretcher | none | missing | no base-game stretcher found | stretcher by the ambulance | Hospital, area 7 | low |
+| Store counter | `Shop_GeneralStore_Debug` | placeholder | vanilla `CounterShop_01` (a yellow market cart) | a shop counter with a till | General store, area 3 | low |
+| Market stall | umbrella stands plus `TableRecreation_01` | placeholder | vanilla `MarketStand_01_Umbrella` over recreation tables | a market stall with a awning | General store and market, area 3 | low |
+| Site alarm beacon | `LF_SiteAlarm.et` | final | vanilla `HazardBeacon_01`, scaled 3x, 1.1 m up, while the alarm runs | (a red hazard lamp) | Alarm at store, bank, till, area 3 | none |
