@@ -171,8 +171,8 @@ class LF_BedDelivery
 		bedComponent.GetWakeTransform(transform);
 		bool seated = IsLoaded(patient) || LF_Carry.IsSeatedIn(patient);
 		LF_Jail.MoveBody(patient, transform[3]);
-		// A seated body is dismounted by its owning client a moment later; vanilla keeps a character
-		// in a seat unconscious, so the wake waits for the dismount.
+		// A seated body is dismounted by its owning client a moment later; the wake waits for it so
+		// the patient never comes to in the seat.
 		if (seated && GetGame().GetCallqueue())
 		{
 			GetGame().GetCallqueue().CallLater(Complete, DISMOUNT_WAIT_MS, false, medic, patient, bedComponent.GetOwner(), transform[3], bedComponent.GetStandPosition());

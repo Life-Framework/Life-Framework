@@ -1074,11 +1074,14 @@ async function runBedProof() {
   on(1, { verb: "shoot", playerId: 2 }, 10000);
   wait(2500);
   need(state(2).downed === "1", "client 2 was not downed");
-  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
-  wait(2500);
-  on(1, { verb: "look" });
-  on(1, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
-  wait(2500);
+  // The duty action toggles: a repeat run in the same session is already clocked in.
+  if (!String(state(1).faction).includes("MEDIC")) {
+    on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+    wait(2500);
+    on(1, { verb: "look" });
+    on(1, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
+    wait(2500);
+  }
   need(String(state(1).faction).includes("MEDIC"), "client 1 did not clock in as a medic");
 
   // Carry the patient to the ambulance parked at the hospital and load them.
@@ -1124,7 +1127,8 @@ async function runBedProof() {
     woke = state(2);
   }
   need(woke.downed === "0" && woke.life === "ALIVE", `the patient did not wake: downed=${woke.downed} life=${woke.life}`);
-  need(woke.bills === "1", `the patient carries bills=${woke.bills}, expected 1`);
+  const billsExpected = Number(start2.bills) + 1;
+  need(Number(woke.bills) === billsExpected, `the patient carries bills=${woke.bills}, expected ${billsExpected}`);
   need(woke.bank === start2.bank, `the bill touched the bank: ${start2.bank} -> ${woke.bank}`);
   need(parsePeer(peers(1), 2)?.carrier === 0, "the patient is still held");
   on(2, { verb: "capture", mode: "ui", name: "m2_262_woke_client2" }, 25000);
