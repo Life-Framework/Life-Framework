@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ROB_TARGET, ROOT, arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 
-// M2 #260 on a running `up --clients 2 --mission playtest` session: client 1 downs client 2, clocks in
+// M2 #260 on a running `up --clients 2 --mission debug` session (debug mission: `shoot` is refused on playtest): client 1 downs client 2, clocks in
 // as a medic at the hospital desk and revives them. Client 2 holds a paper treatment bill (the bank
 // and carried cash untouched), pays it in cash at the hospital desk, and the medic's share arrives
 // at clock-out. Then client 2 dies for real and wakes in hospital: a second paper bill, bank untouched,

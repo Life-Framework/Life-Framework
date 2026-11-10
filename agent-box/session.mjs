@@ -8,6 +8,7 @@
 //   node agent-box/session.mjs wait [--timeout 600]   block until a starting session is ready (exit 0), or say why not
 //   node agent-box/session.mjs down               close every process the session started
 //   node agent-box/session.mjs status             pids, profiles, logs
+//   node agent-box/session.mjs reset              clock out, clear wanted, respawn: every proof verb runs this first (--no-reset skips)
 //   node agent-box/session.mjs state <client>     faction, duty, wanted, cash, bank, job, org
 //   node agent-box/session.mjs film <seconds> [--client 1] [--fps 12]   in-engine clip of one client
 //   node agent-box/session.mjs proof --film [--film-client 1]          the proof, filmed in-engine
@@ -772,9 +773,33 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
+}
+
+// Brings every running client back to a living civilian off duty with no wanted level (#496).
+async function runReset(args = []) {
+  const h = await import("./harness.mjs");
+  const { resetClients } = await import("./proofs/_reset.mjs");
+  const dir = sessionDir();
+  const current = readSession(dir);
+  if (!current || current.stoppedAt) {
+    console.log("reset: no session; node agent-box/session.mjs up --clients 2 --wait");
+    return 1;
+  }
+  const count = Math.max(1, (current.clients ?? []).length || 2);
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    return h.sendCommand(spec, timeout);
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  let dirty = false;
+  for (const { n, notes } of resetClients(on, wait, count)) {
+    console.log(`reset client ${n}: ${notes.length ? notes.join("; ") : "already clean"}`);
+    if (notes.some((x) => x.startsWith("still dirty") || x.includes("not reset"))) dirty = true;
+  }
+  return dirty && args.includes("--strict") ? 1 : 0;
 }
 
 async function main(argv) {
@@ -790,6 +815,7 @@ async function main(argv) {
     console.log(`session: lease held until ${extendLease(sessionDir(), min)}`);
     return 0;
   }
+  if (cmd === "reset") return runReset(rest);
   if (cmd === "run") return runWhereSession(rest);
   if (cmd === "pull") return pullFromSession(rest);
   if (["up", "down", "status", "restart", "state", "wait"].includes(cmd)) {
@@ -807,6 +833,7 @@ async function main(argv) {
     f.push(...launch.selftest().map((x) => `interactive launch: ${x}`));
     if (!clientArgs({ n: 1, addonsDir: "a", profile: "p" }).includes("-noSound")) f.push("a default client is not -noSound");
     if (clientArgs({ n: 1, addonsDir: "a", profile: "p", sound: true }).includes("-noSound")) f.push("--sound still passes -noSound");
+    f.push(...(await import("./proofs/_reset.mjs")).selftestReset().map((x) => `reset: ${x}`));
     for (const x of f) console.log(`  ${x}`);
     console.log(f.length ? "session selftest: FAIL" : "session selftest: OK");
     return f.length ? 1 : 0;
@@ -818,6 +845,9 @@ async function main(argv) {
   const proofs = await loadProofs();
   const proof = proofs.get(cmd);
   if (proof) {
+    // Each proof starts from a clean player: the last one's duty, wanted and downed state must not leak (#496).
+    if (!rest.includes("--no-reset") && !proof.noReset) await runReset([]);
+    rest = rest.filter((a) => a !== "--no-reset");
     if (proof.film && rest.includes("--film")) return filmed(cmd, rest, () => proof.run({ args: rest }));
     return proof.run({ args: rest });
   }
