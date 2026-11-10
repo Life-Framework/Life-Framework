@@ -23,6 +23,14 @@ Vehicle : "{00C9BBE426F7D459}Prefabs/Vehicles/Wheeled/M998/M997_maxi_ambulance.e
       Name "#EL-VehicleLock_Action"
      }
     }
+    LF_VehicleSearchAction "{5EA2C40400000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C40400000002}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
    }
   }
  }

@@ -6297,6 +6297,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Samogon"
      Comment "Name of the moonshine chain in ResourceChains.conf (#420)."
     }
+    CustomStringTableItem "{5EA2C4A000000001}" {
+     Id "LF-Offence_ChainGoods"
+     Target_en_us "Carrying contraband goods"
+     Comment "Offence: chain goods found on an officer search (#419)."
+    }
+    CustomStringTableItem "{5EA2C4A000000002}" {
+     Id "LF-Search_Found"
+     Target_en_us "Contraband found and seized"
+     Comment "Officer search found chain goods (#419)."
+    }
+    CustomStringTableItem "{5EA2C4A000000003}" {
+     Id "LF-Search_Clean"
+     Target_en_us "Search found nothing"
+     Comment "Officer search found no chain goods (#419)."
+    }
+    CustomStringTableItem "{5EA2C4A000000004}" {
+     Id "LF-Search_Vehicle_Action"
+     Target_en_us "Search vehicle"
+     Comment "Vehicle action: officer searches the storage for chain goods (#419)."
+    }
   }
  }
 }
