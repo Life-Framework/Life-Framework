@@ -198,6 +198,23 @@ class LF_StoreComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return True when the entity is a display copy standing at a shelf slot of this store.
+	bool IsShelfItem(IEntity item)
+	{
+		if (!item)
+			return false;
+
+		EntityID id = item.GetID();
+		foreach (LF_StoreLineState line : m_aState)
+		{
+			if (line.m_aShelf.Find(id) != -1)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return Display copies standing on the shelf now, -1 when the store has no line for the prefab.
 	int GetShelfCount(ResourceName prefab)
 	{

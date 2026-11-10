@@ -253,6 +253,33 @@ class LF_Stores
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return True when an item must not be merged into another stack: it stands on a store shelf or
+	//! carries an unpaid tag. Server only; the quantity merge asks this on every item added.
+	static bool HoldsApart(IEntity item)
+	{
+		if (!item)
+			return false;
+
+		EntityID id = item.GetID();
+		if (s_aUnpaid)
+		{
+			foreach (LF_StoreUnpaidItem record : s_aUnpaid)
+			{
+				if (record.m_ItemId == id)
+					return true;
+			}
+		}
+
+		foreach (string key, LF_StoreComponent store : Stores())
+		{
+			if (store.IsShelfItem(item))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Test seam: forgets every unpaid record.
 	static void ClearUnpaid()
 	{
@@ -505,8 +532,12 @@ class LF_Stores
 					if (!storage.TryInsertItem(item))
 						return string.Format("shelf insert_failed store=%1 item=%2", key, prefab);
 
+					EntityID itemId = item.GetID();
+					bool handleAlive = item != null;
+					bool found = GetGame().GetWorld().FindEntityByID(itemId) != null;
+					int held = LF_InventoryUtils.GetAmount(character, prefab);
 					store.DetectTaken();
-					return string.Format("shelf took store=%1 item=%2 stock=%3 unpaid=%4 owed=%5", key, prefab, store.GetStock(prefab), UnpaidCount(), OwedBy(key, character));
+					return string.Format("shelf took store=%1 item=%2 stock=%3 unpaid=%4 owed=%5 handle=%6 found=%7 held=%8", key, prefab, store.GetStock(prefab), UnpaidCount(), OwedBy(key, character), handleAlive, found, held);
 				}
 			}
 
