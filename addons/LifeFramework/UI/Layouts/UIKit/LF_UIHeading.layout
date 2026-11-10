@@ -1,0 +1,13 @@
+TextWidgetClass "{69C2980ECB450339}" {
+ Name "Heading"
+ Slot LayoutSlot "{18CE6E4C756F6C29}" {
+  Padding 28 16 28 2
+ }
+ Color 0.110 0.102 0.086 1
+ Text ""
+ "Font Size" 15
+ "Min Font Size" 15
+ FontProperties FontProperties "{F70D44222638BD73}" {
+  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+ }
+}

@@ -788,14 +788,19 @@ async function routeMachine(cmd, rest) {
     console.log(`session: ${target.name} cannot start game clients over ssh (no desktop session); use --clients 0 for a server-only session there and join it from this PC`);
     return { code: 2 };
   }
-  if (ptr) {
+  // A record on the same machine is not a refusal: the box's own `up` says whether that session still lives, and a stale one is replaced.
+  if (ptr && ptr.machine !== target.name) {
     console.log(`session: one is recorded on ${ptr.machine}; 'node agent-box/session.mjs down' first`);
     return { code: 1 };
   }
   console.log(`session: on ${target.name}${clients > 0 ? ` (${clients} client(s) on its desktop)` : " (server only)"}`);
-  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", ...args] });
-  mkdirSync(dirname(remotePointerFile()), { recursive: true });
-  if (r.code === 0) writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir: r.rDir, at: new Date().toISOString(), root: ROOT }));
+  // The pointer is written before the remote up runs: an up that is killed or times out mid-way can leave a live server on the box, and without a pointer `down` would say "none recorded" while the box's up refuses.
+  const writePtr = (dir) => {
+    mkdirSync(dirname(remotePointerFile()), { recursive: true });
+    writeFileSync(remotePointerFile(), JSON.stringify({ machine: target.name, host: target.host, dir, at: new Date().toISOString(), root: ROOT }));
+  };
+  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", ...args], onSlot: (rDir) => writePtr(rDir) });
+  if (r.code === 0) writePtr(r.rDir);
   return { code: r.code };
 }
 

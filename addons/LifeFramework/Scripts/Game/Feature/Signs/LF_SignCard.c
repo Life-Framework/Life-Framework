@@ -9,7 +9,7 @@ class LF_SignCard
 	protected static ref LF_UIScreen s_Screen;
 
 	//------------------------------------------------------------------------------------------------
-	static LF_UIScreen Open(LF_SignDef sign, EntityID anchor)
+	static LF_UIScreen Open(LF_SignDef sign, EntityID anchor, LF_UISkin skin = null)
 	{
 		Hide();
 		if (!sign)
@@ -18,7 +18,12 @@ class LF_SignCard
 			return null;
 		}
 
-		s_Screen = LF_UIScreen.Open(LF_SignCatalog.BuildParts(sign));
+		if (!skin)
+			skin = LF_SignCatalog.CardSkin(false, vector.Zero, vector.Zero, vector.Zero);
+
+		array<ref LF_UIPart> parts = LF_SignCatalog.BuildParts(sign, skin);
+		skin.m_fTypeScale = LF_SignCatalog.FitScale(parts, skin.m_fWidth);
+		s_Screen = LF_UIScreen.Open(parts, skin);
 		if (!s_Screen)
 		{
 			LF_Debug.Error("Signs", "card failed to open for " + sign.m_sId);
