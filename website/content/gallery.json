@@ -52,11 +52,15 @@
     "area-1-spawn-square/wide": "Spawn square, wide",
     "area-1-spawn-square/detail": "Spawn square, welcome sign",
     "area-1-spawn-square/payphone": "The payphone",
+    "area-7-hospital/wide": "The village hospital with the ambulance in its bay",
+    "area-7-hospital/desk": "Duty desk and dispatch board outside the hospital door",
+    "area-7-hospital/cabinet": "Medicine cabinet, hospital sign and supply boxes",
     "area-10-cash-van/wide": "The cash van at the bank stop",
     "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",
+    "area-7-hospital": "Hospital",
     "area-10-cash-van": "Cash van route"
   },
   "skip": [
