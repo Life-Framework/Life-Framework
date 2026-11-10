@@ -8,7 +8,7 @@ const Roadmap = () => {
     <>
       <PageHeader kicker="Roadmap" title="The Tree of Life">
         <p>
-          The plan is five milestones on GitHub, done in order. Each one ends with a public build and a filmed showcase, and the next
+          The plan is six milestones on GitHub, done in order. Each one ends with a public build and a filmed showcase, and the next
           one's features wait until it is done. Below them, the Tree of Life sorts the same issues by topic. Find an open branch and
           claim it.
         </p>
@@ -21,7 +21,7 @@ const Roadmap = () => {
         </div>
       </div>
 
-      <Section id="milestones" kicker="M1 to M5" title="The milestones">
+      <Section id="milestones" kicker="M1 to M6" title="The milestones">
         <div className="grid gap-8">
           <div className="grid gap-x-10 gap-y-4 muted md:grid-cols-2 lg:grid-cols-3 lg:items-start">
             <p>

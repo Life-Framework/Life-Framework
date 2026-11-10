@@ -120,8 +120,6 @@ Do not report these as broken. File them under "build next" if you want them.
 
 - Buying a house
 - A general crafting bench
-- Revive while downed
-- An ambulance
 - Quarry fence, gate, or lawless-only rules (the zone and its signs are in)
 - A police mission board
 - World events

@@ -9,6 +9,8 @@ import Servers from "@/pages/Servers";
 import Contribute from "@/pages/Contribute";
 import Decisions from "@/pages/Decisions";
 import Support from "@/pages/Support";
+import Features from "@/pages/Features";
+import Gallery from "@/pages/Gallery";
 import { DocView, DocsIndex } from "@/pages/Docs";
 import NotFound from "@/pages/NotFound";
 
@@ -39,6 +41,9 @@ const App = () => (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/roadmap" element={<Roadmap />} />
+      <Route path="/features" element={<Features />} />
+      <Route path="/gallery" element={<Gallery />} />
+      <Route path="/playtest" element={<Navigate to="/docs/playtest" replace />} />
       <Route path="/devlog" element={<Devlog />} />
       <Route path="/servers" element={<Servers />} />
       <Route path="/contribute" element={<Contribute />} />
