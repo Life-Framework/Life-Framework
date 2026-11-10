@@ -161,5 +161,6 @@ LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et"
 }
 
 LF_NpcBaseEntity FenceNpc : "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et" {
- coords 36 0 52
+ coords 186 0 311
+ angleY 0
 }
