@@ -791,6 +791,41 @@
 - ✅ The core ships one neutral example, `cider` (tier 1, one `barrel` step, apples to juice).
 - Test: `chains/config` (LOGIC).
 
+### Hands-on stations — `Feature/Chains/` (#417, M2 Underworld)
+- ✅ **A station is a component, not a timer.** `LF_ChainStationComponent` is one shape for a barrel,
+  a still, a press or a cooker; the step it runs comes from config (`m_sChainId`, `m_sStepId`).
+  A worker `Load`s a batch (the step's inputs leave their inventory, all or none), `Work`s it
+  with a held action that adds one unit of work, and `Collect`s the product. No menu and no
+  progress bar: the offer changes with the station state, and the work prompt says in words how
+  far along it is (`#LF-Chain_Work_Fresh`, `_Mid`, `_Late`).
+- ✅ **Progress belongs to the station.** Every accepted unit adds to the same number, whoever does
+  it, so two workers on one barrel finish it in half the time, and three workers on three barrels
+  clear three batches in the time one worker clears one. The server rate-limits each worker per
+  station (`m_iMinTickMs`, 1200 ms against a 2 s hold), checks reach (`m_fReach`, 3.5 m), the
+  hideout access when the barrel carries `LF_HideoutMachineComponent`, and the licence, level and
+  equipment gates. Refusals toast `#LF-Chain_*` keys and log `[LFDebug:Chains]`.
+- ✅ **Site heat** (`LF_ChainSites`): stations with the same `m_sSiteId` share a number that rises
+  with accepted work (`m_fPerWork`), fades with time (`m_fDecayPerSecond`, computed when read) and
+  caps at `m_fMax`. `GetHeat`, `GetRange` and `GetWarmSites` are what the smell and smoke trace
+  (#418) reads. Heat is not saved; a restart starts every site cold.
+- ✅ **Bus events** `LF_OnChainStep` (load, ready, collect) and `LF_OnChainWork` (each accepted
+  unit, with the site heat and smell range). See `docs/architecture/events.md`.
+- ✅ **A half-finished batch survives a restart.** Payload `chainstations`, save version 20,
+  matched by the station's `m_sStationKey` (unique and stable, not the entity id). A saved batch
+  that arrives before its station waits and is applied when the station registers; a batch for a
+  chain or step the station no longer runs is dropped and logged. Loading twice converges.
+- ✅ The core ships `Prefabs/Chains/LF_ChainBarrel.et` (the vanilla open metal barrel with the
+  station component, the sound data and the three actions) and three of them on DebugWorld at
+  `300 0 322`, `304 0 322` and `308 0 322` (`Street_Chains.layer`, site `Chains_Site`, chain
+  `cider`: 4 apples to 1 apple juice, 8 units of work). Work plays the vanilla pick-up gesture and
+  `SOUND_PICK_UP`; better animation and sound follow the animation pipeline (#340).
+- ✅ `LF_ProcessAction.TryConsumeInputs` / `RestoreInputs` are the all-or-nothing input removal the
+  instant processors already did, extracted so the stations share it.
+- Tests: `stations/progress` (LOGIC), `stations/world` (WORLD), `persist/chain-stations-roundtrip`
+  (PERSISTENCE). The suite's version checks now read 20.
+- ⚠️ Not built: the smoke effect and the smell notice (#418), searches (#419), the moonshine pack
+  chain (#420). Manual: three players on three barrels, see the PR.
+
 ## Jobs / Level / Licenses / Whitelist
 
 ### `LF_PlayerJobComponent` — `Feature/Jobs/LF_PlayerJobComponent.c`

@@ -40,6 +40,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CarryMeshes(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainsConfig(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChainStations(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ChainStationsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
@@ -258,6 +260,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SirenMode(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenToggle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Survival(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SurvivalSaveData(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SurvivalLight(), LF_TestTier.LOGIC);
