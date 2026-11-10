@@ -1,0 +1,61 @@
+GenericEntity : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ ID "658F20D918EFBC39"
+ components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Object "{FED4B13A63691408}Assets/Props/Industrial/Repair/EngineCrane_01/EngineCrane_01.xob"
+  }
+  SCR_SoundDataComponent "{45CD0610C83C1BDA}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{88791CA3F083F72F}" {
+     m_sSoundProject "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
+     m_sSoundEventName "SOUND_PICK_UP"
+    }
+   }
+  }
+  LF_ChopShopComponent "{4531DCE1B778380A}" {
+  }
+  ActionsManagerComponent "{C1CDEB93AAE08FE7}" {
+   ActionContexts {
+    UserActionContext "{3D08FBDDD74FA6CF}" {
+     ContextName "LF_ChopBench"
+     Position PointInfo "{C1BFAFF58A955FD7}" {
+      Offset 0 1 0
+     }
+     Radius 2.5
+    }
+   }
+   additionalActions {
+    LF_ChopAction "{EDFE4A7EEEF69971}" {
+     ParentContextList {
+      "LF_ChopBench"
+     }
+     UIInfo UIInfo "{08BD72253E94ED5A}" {
+      Name "#LF-Chop_Load"
+     }
+     Duration 1
+     m_eMode LOAD
+    }
+    LF_ChopAction "{28C9BEE3D87C6EB5}" {
+     ParentContextList {
+      "LF_ChopBench"
+     }
+     UIInfo UIInfo "{F38B501BF66E6D00}" {
+      Name "#LF-Chop_Work_Fresh"
+     }
+     Duration 2
+     m_eMode WORK
+    }
+    LF_ChopAction "{D5D8BB5D17DF4216}" {
+     ParentContextList {
+      "LF_ChopBench"
+     }
+     UIInfo UIInfo "{5C89BD5DD96D764D}" {
+      Name "#LF-Chop_Collect"
+     }
+     Duration 1
+     m_eMode COLLECT
+    }
+   }
+  }
+ }
+}

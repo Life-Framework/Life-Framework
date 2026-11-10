@@ -1,0 +1,32 @@
+GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" {
+ ID "742496FC75E31A07"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_CarParts_Name"
+     Description "#LF-Item_CarParts_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 4
+     SizeSetupStrategy Volume
+     ItemVolume 2500
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{59BCA073459D6271}" {
+     HandAdditiveRotation 0 0 0
+     HandAdditiveTranslation 0 0.005 -0.065
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{59BCA073459D626C}" {
+      CameraOrbitAngles 90 0 90
+      CameraDistanceToItem 0.8
+      CameraOffset 0 0 0
+     }
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{0D162C635E684C1D}Assets/Vehicles/Wheeled/M923A1/VehParts/M923A1_exhaust_short.xob"
+  }
+ }
+}

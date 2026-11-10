@@ -1,0 +1,8 @@
+GenericEntity Roadmap_ChopShop : "{9C2E4A7B1D5F8036}Prefabs/Crime/LF_ChopBench.et" {
+ components {
+  LF_ChopShopComponent "{2B2DF07E2B55506C}" {
+   m_sShopId "roadmap-chop"
+  }
+ }
+ coords 322 0 300
+}
