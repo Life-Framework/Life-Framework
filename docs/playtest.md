@@ -4,9 +4,38 @@ The playtest is a small 1989 Everon town, published on the Arma Reforger
 Workshop and hosted from the maintainer's PC. Play it, then tell us what broke.
 Feedback goes to #playtest-feedback on [Discord](https://discord.gg/MjMexJteqz) or to a GitHub issue.
 
-The website page [life-framework.org/playtest](https://life-framework.org/playtest) has the current install
-steps. Until a public Workshop item exists, the addon is installed from a clone of this repository at the
-host's commit, and the Workshop steps below do not apply yet.
+Until a public Workshop item exists, the playtest is a download, and the Workshop steps below do not apply yet.
+
+## Download and play
+
+1. Press **Download the playtest** on [life-framework.org](https://life-framework.org/playtest). It is
+   `LifeFramework-Playtest.zip` from the newest GitHub release:
+   <https://github.com/Life-Framework/Life-Framework/releases/latest/download/LifeFramework-Playtest.zip>.
+2. Unzip it anywhere.
+3. Double-click **Play Life Framework**. It finds Arma Reforger through Steam and asks:
+   - **Play on my own**: the playtest town (`Missions/LF_PlaytestTown.conf`) hosted by your own game on
+     `127.0.0.1:2302`.
+   - **Join the community server**: reads <https://life-framework.org/playtest-server.json> and joins the
+     address in it. With `"address": null` it says nobody is hosting and points to Discord. When the file
+     names a `release` other than the download's `version.txt`, it asks the player to download again.
+
+The launcher logs to `%LOCALAPPDATA%\LifeFramework\launcher.log`.
+
+### Releasing and hosting (maintainer)
+
+- **Cut a release:** in a worktree at `origin/main`, `tools\cli playtest release` (next `playtest-m2-<n>`, or
+  `--tag`). The game refuses every resource `resourceDatabase.rdb` does not register (`Wrong GUID/name`, and
+  the world does not load; seen 2026-11-10), and only Workbench writes that file, so this step runs where the
+  tools are: it refreshes the rdb, creates the tag's release as a pre-release with the rdb attached, and starts
+  `.github/workflows/playtest-release.yml`. The workflow checks the rdb against the tag's `.meta` files, packs
+  the zip with `tools/release/pack-playtest.mjs` (the tracked files under `addons/LifeFramework`, nothing
+  generated, plus the rdb and the launcher from `tools/release/launcher/`), makes the release **latest**, and
+  rebuilds the website so the button shows the new version and size. Any other release must stay a
+  pre-release, or the stable link moves to it.
+- **Point the launcher at a host:** `tools\cli playtest server <address[:port]>` when the host is up,
+  `tools\cli playtest server off` when it stops. It opens an auto-merge PR that rewrites
+  `website/public/playtest-server.json`; the site serves it a few minutes after the merge. The host must run the
+  release's commit: a different build has a different script checksum and the game refuses the join.
 
 ## Subscribe and join
 
