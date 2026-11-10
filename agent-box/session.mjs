@@ -1359,7 +1359,7 @@ async function runNlrProof() {
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const state = (n) => parseState(on(n, { verb: "state" }, 10000).detail);
   const serverLog = () => {
-    const f = newestLog(join(sessionPaths(dir).server, "profile", "logs"));
+    const f = newestLog(join(sessionPaths(dir).server, "logs"));
     return f ? readFileSync(f, "utf8") : "";
   };
   const count = (re) => (serverLog().match(re) || []).length;
@@ -1386,6 +1386,7 @@ async function runNlrProof() {
   on(2, { verb: "capture", mode: "ui", name: "m2_264_wristband_toast_client2" }, 25000);
   if (count(/NewLife\].*wristband on/g) !== before + 1) fails.push("the wake after a real death did not log one wristband");
   const incidentsBefore = count(/Incident\].*nlr:/g);
+  const remindersBefore = count(/NewLife].*returned to their death scene/g);
 
   // Out of the scene's radius, then back inside the window.
   on(2, { verb: "stand", entityName: "Roadmap_Convoy_Drop" });
@@ -1393,13 +1394,13 @@ async function runNlrProof() {
   on(2, { verb: "stand", entityName: ROB_TARGET });
   wait(9000);
   on(2, { verb: "capture", mode: "ui", name: "m2_264_return_toast_client2" }, 25000);
-  if (count(/NewLife\].*returned to their death scene/g) !== 1) fails.push("the return did not log exactly one reminder");
+  if (count(/NewLife\].*returned to their death scene/g) !== remindersBefore + 1) fails.push("the return did not log exactly one reminder");
   if (count(/Incident\].*nlr:/g) !== incidentsBefore + 1) fails.push("the return did not write exactly one incident row");
   on(2, { verb: "stand", entityName: "Roadmap_Convoy_Drop" });
   wait(7000);
   on(2, { verb: "stand", entityName: ROB_TARGET });
   wait(9000);
-  if (count(/NewLife\].*returned to their death scene/g) !== 1) fails.push("a second return reminded again");
+  if (count(/NewLife\].*returned to their death scene/g) !== remindersBefore + 1) fails.push("a second return reminded again");
 
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "nlr proof: FAIL" : "nlr proof: PASS (wristband on the real-death wake, one reminder and one incident row on return, no repeat)");
