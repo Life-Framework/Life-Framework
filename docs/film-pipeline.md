@@ -232,3 +232,13 @@ Other findings: a `camera follow` needs the target streamed to the client first
 house), so it picks the vehicle nearest the point and the clip waits 2 s; an
 orbit around the store at 5 m up passes through the building, so `orbit` is a
 140 degree arc on the +z side; `Format` takes 9 arguments at most.
+
+## Post-production (#397)
+
+`tools\cli film-make <storyboard.json>` (`tools/film/post.mjs`, storyboards in `video/`) turns clips into one mp4:
+a title card with the logo, crossfades (video `xfade`, audio `acrossfade`), captions burned in from cue files (ASS, white
+sans-serif on a semi-transparent box in the lower third) plus an `.srt`, voice-over from text cues via Piper, and a music
+bed under `sidechaincompress` keyed on game sound and voice, with fades. The mix is measured in a first pass and set to
+about -14 LUFS with a peak limiter. No frames are written: everything is one filter graph over the encoded clips (a 42 s
+cut renders in about 25 s on this PC). Proven on `video/tooling-test.json` (internal, not for posting). A trailer
+must pass `docs/marketing/trailer/quality-gate.md`. Open: 4K and vertical presets, and the TTS voice's lineage (`docs/credits.md`).

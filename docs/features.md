@@ -2029,6 +2029,9 @@
   neighbour rule.
   Play-mode run not yet recorded.
 
+### `film-make` post-production — `tools/film/post.mjs` (dev tooling, #397)
+- ✅ `tools\cli film-make video/<name>.json` joins clips into one mp4: logo title and end cards, crossfades, burned-in captions from cue files plus an `.srt`, offline Piper voice-over, and a licensed music bed ducked under game sound and voice (about -14 LUFS). Covered by `node tools/film/film.mjs selftest`; proven on `video/tooling-test.json` (not for posting).
+
 ### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
 - ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera
   keys (position, look-at, FOV); `Sample(t)` eases between keys with
