@@ -95,6 +95,7 @@ class LF_Revive
 		s_iRevivedCount++;
 		LF_Debug.Info(FEATURE, string.Format("player %1 revived by medic %2", patientUid, medicUid));
 		LF_EventBus.Publish(LF_OnPlayerRevived.Create(patientUid, medicUid, patient.GetOrigin()));
+		LF_TreatmentBills.IssueForRevive(medic, patient);
 		LF_Utils.NotifyEntity(medic, "#LF-Revive_Done", "", 4.0);
 		LF_Utils.NotifyEntity(patient, "#LF-Revive_Revived", "", 6.0);
 		return LF_EReviveRefusal.NONE;

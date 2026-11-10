@@ -1,12 +1,14 @@
-// LF_HospitalBill.c — the paper hospital bill a player wakes up with (M1-26). The server prints
-// the amount, the bank balance after it, and the in-game date on the item; the holder reads it
-// on waking and again with Read when it lies in the world. The bill is a receipt: the bank was
-// charged on the server before it was printed.
+// LF_HospitalBill.c — the paper treatment bill (M1-26, #260). The server prints the bill number,
+// the amount, the date and the issuing medic from the LF_TreatmentBillRecord onto the item. It is
+// NOT a receipt: the bill is paid in carried cash at the hospital desk (LF_TreatmentBillPayAction)
+// and the paper is then stamped paid. The record in LF_TreatmentBills is the truth; the item is
+// its printed copy.
 //
 // PERSISTENCE. The printed fields are session state. A bill carried over a restart comes back
-// blank (the carried snapshot keeps the prefab), and a blank bill hides its Read action.
+// blank (the carried snapshot keeps the prefab); LF_TreatmentBills.OnPlayerSpawned prints it
+// again from the record, and a blank bill hides its Read action.
 
-[ComponentEditorProps(category: "LifeFramework/Respawn", description: "Printed hospital bill")]
+[ComponentEditorProps(category: "LifeFramework/Respawn", description: "Printed treatment bill")]
 class LF_HospitalBillComponentClass : ScriptComponentClass
 {
 }
@@ -15,39 +17,49 @@ class LF_HospitalBillComponentClass : ScriptComponentClass
 class LF_HospitalBillComponent : ScriptComponent
 {
 	[RplProp()]
-	protected bool m_bIssued;
+	protected int m_iNumber;
 
 	[RplProp()]
 	protected int m_iAmount;
 
 	[RplProp()]
-	protected int m_iBalanceAfter;
+	protected string m_sDate;
 
 	[RplProp()]
-	protected string m_sDate;
+	protected string m_sMedicName;
+
+	[RplProp()]
+	protected bool m_bPaid;
+
+	[RplProp()]
+	protected string m_sPaidAt;
 
 	[RplProp()]
 	protected int m_iNewLifeMinutes;
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: prints a blank bill once.
-	//! \return False when not the server or already printed.
-	bool Issue(int amount, int balanceAfter, string date, int newLifeMinutes)
+	//! Server: prints the record on this paper. Replicates only when something printed changes.
+	//! \param newLifeMinutes The New Life Rule minutes to print, or -1 to leave them as printed.
+	//! \return False off the server or with no record.
+	bool Print(LF_TreatmentBillRecord record, int newLifeMinutes = -1)
 	{
-		if (!Replication.IsServer())
+		if (!Replication.IsServer() || !record)
 			return false;
 
-		if (m_bIssued)
-		{
-			LF_Debug.Warn("Respawn", "bill not printed: already printed");
-			return false;
-		}
+		int minutes = m_iNewLifeMinutes;
+		if (newLifeMinutes >= 0)
+			minutes = newLifeMinutes;
 
-		m_bIssued = true;
-		m_iAmount = amount;
-		m_iBalanceAfter = balanceAfter;
-		m_sDate = date;
-		m_iNewLifeMinutes = newLifeMinutes;
+		if (m_iNumber == record.m_iNumber && m_iAmount == record.m_iAmount && m_bPaid == record.m_bPaid && m_iNewLifeMinutes == minutes)
+			return true;
+
+		m_iNumber = record.m_iNumber;
+		m_iAmount = record.m_iAmount;
+		m_sDate = record.m_sIssued;
+		m_sMedicName = record.m_sMedicName;
+		m_bPaid = record.m_bPaid;
+		m_sPaidAt = record.m_sPaidAt;
+		m_iNewLifeMinutes = minutes;
 		Replication.BumpMe();
 		return true;
 	}
@@ -55,7 +67,13 @@ class LF_HospitalBillComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	bool IsIssued()
 	{
-		return m_bIssued;
+		return m_iNumber > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetNumber()
+	{
+		return m_iNumber;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -65,15 +83,27 @@ class LF_HospitalBillComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	int GetBalanceAfter()
-	{
-		return m_iBalanceAfter;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	string GetDate()
 	{
 		return m_sDate;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetMedicName()
+	{
+		return m_sMedicName;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsPaid()
+	{
+		return m_bPaid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetPaidAt()
+	{
+		return m_sPaidAt;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -84,49 +114,128 @@ class LF_HospitalBillComponent : ScriptComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! Server helpers: print a bill into a character's pockets; the in-game date stamp.
+//! Item helpers: the bills a character carries, hand one over; the in-game date stamp.
 class LF_HospitalBill
 {
 	static const ResourceName PREFAB = "{75055A5BFE4372D5}Prefabs/Items/Roleplay/HospitalBill.et";
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: spawns a printed bill and puts it in the character's inventory. With no room the
-	//! bill stays on the floor at the character's feet.
-	//! \return The bill entity, or null when it could not be made.
-	static IEntity Grant(IEntity character, int amount, int balanceAfter, string date, int newLifeMinutes)
+	//! Every bill in the character's inventory or hands, each counted once.
+	static void FindCarried(IEntity character, notnull array<LF_HospitalBillComponent> outBills)
 	{
-		if (!Replication.IsServer() || !character)
+		outBills.Clear();
+		if (!character)
+			return;
+
+		array<IEntity> items = {};
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(character);
+		if (inventory)
+			inventory.GetItems(items);
+
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(character);
+		if (controller)
 		{
-			LF_Debug.Error("Respawn", "bill not granted: not the server or no character");
+			IEntity inHand = controller.GetAttachedGadgetAtLeftHandSlot();
+			if (inHand && items.Find(inHand) < 0)
+				items.Insert(inHand);
+		}
+
+		foreach (IEntity item : items)
+		{
+			if (!item)
+				continue;
+
+			LF_HospitalBillComponent bill = LF_HospitalBillComponent.Cast(item.FindComponent(LF_HospitalBillComponent));
+			if (bill && outBills.Find(bill) < 0)
+				outBills.Insert(bill);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static LF_HospitalBillComponent FindNumber(IEntity character, int number)
+	{
+		array<LF_HospitalBillComponent> bills = {};
+		FindCarried(character, bills);
+		foreach (LF_HospitalBillComponent bill : bills)
+		{
+			if (bill.GetNumber() == number)
+				return bill;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static LF_HospitalBillComponent FindBlank(IEntity character)
+	{
+		array<LF_HospitalBillComponent> bills = {};
+		FindCarried(character, bills);
+		foreach (LF_HospitalBillComponent bill : bills)
+		{
+			if (!bill.IsIssued())
+				return bill;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The unpaid bill with the lowest number the character carries, or null. Client and server.
+	static LF_HospitalBillComponent FirstUnpaid(IEntity character)
+	{
+		array<LF_HospitalBillComponent> bills = {};
+		FindCarried(character, bills);
+		LF_HospitalBillComponent first;
+		foreach (LF_HospitalBillComponent bill : bills)
+		{
+			if (!bill.IsIssued() || bill.IsPaid())
+				continue;
+
+			if (!first || bill.GetNumber() < first.GetNumber())
+				first = bill;
+		}
+
+		return first;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: spawns a bill printed from the record and puts it in the character's inventory. With
+	//! no room the bill lies at the character's feet.
+	//! \return The printed bill, or null when it could not be made.
+	static LF_HospitalBillComponent Grant(IEntity character, LF_TreatmentBillRecord record, int newLifeMinutes = -1)
+	{
+		if (!Replication.IsServer() || !character || !record)
+		{
+			LF_Debug.Error(LF_TreatmentBills.FEATURE, "bill not granted: not the server, or no character or record");
 			return null;
 		}
 
 		IEntity item = LF_Utils.SpawnEntityPrefab(PREFAB, character.GetOrigin());
 		if (!item)
 		{
-			LF_Debug.Error("Respawn", "bill not granted: prefab did not spawn: " + PREFAB);
+			LF_Debug.Error(LF_TreatmentBills.FEATURE, "bill not granted: prefab did not spawn: " + PREFAB);
 			return null;
 		}
 
 		LF_HospitalBillComponent bill = LF_HospitalBillComponent.Cast(item.FindComponent(LF_HospitalBillComponent));
 		if (!bill)
 		{
-			LF_Debug.Error("Respawn", "bill not granted: " + PREFAB + " has no LF_HospitalBillComponent");
+			LF_Debug.Error(LF_TreatmentBills.FEATURE, "bill not granted: " + PREFAB + " has no LF_HospitalBillComponent");
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 			return null;
 		}
 
-		bill.Issue(amount, balanceAfter, date, newLifeMinutes);
+		bill.Print(record, newLifeMinutes);
 
 		InventoryStorageManagerComponent storage = LF_Component<InventoryStorageManagerComponent>.Find(character);
 		if (!storage || !storage.TryInsertItem(item))
 		{
-			LF_Debug.Warn("Respawn", "no room for the hospital bill; it stays at the bed");
-			return item;
+			LF_Debug.Warn(LF_TreatmentBills.FEATURE, string.Format("bill #%1: no room in the pockets of %2; it lies at their feet", record.m_iNumber, record.m_sPatientUid));
+			return bill;
 		}
 
-		LF_Debug.Info("Respawn", string.Format("hospital bill printed: %1 on %2, balance %3", amount, date, balanceAfter));
-		return item;
+		LF_Debug.Info(LF_TreatmentBills.FEATURE, string.Format("treatment bill #%1 printed: %2 on %3", record.m_iNumber, record.m_iAmount, record.m_sIssued));
+		return bill;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -165,19 +274,25 @@ class LF_HospitalBillCard
 	protected static ref LF_UIScreen s_Screen;
 
 	//------------------------------------------------------------------------------------------------
-	static array<ref LF_UIPart> BuildParts(int amount, int balanceAfter, string date, int newLifeMinutes)
+	static array<ref LF_UIPart> BuildParts(int number, int amount, string date, string medicName, bool paid, string paidAt, int newLifeMinutes)
 	{
 		ref array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "BillTitle", "#LF-Hospital_BillTitle"));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.ROW, "BillDate", date));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.ROW, "BillDate", WidgetManager.Translate("#LF-Hospital_BillNumber", number.ToString(4), date)));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillAmount", WidgetManager.Translate("#LF-Hospital_BillAmount", LF_MoneyFormat.FormatMoney(amount))));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillBalance", WidgetManager.Translate("#LF-Hospital_BillBalance", LF_MoneyFormat.FormatMoney(balanceAfter))));
-		if (balanceAfter < 0)
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillDebt", "#LF-Hospital_BillDebt"));
+		if (!medicName.IsEmpty())
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillMedic", WidgetManager.Translate("#LF-Hospital_BillMedic", medicName)));
 
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillNote", "#LF-Hospital_BillNote"));
+		if (paid)
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillPaid", WidgetManager.Translate("#LF-Hospital_BillPaidLine", paidAt)));
+		else
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillHowToPay", "#LF-Hospital_BillHowToPay"));
+
 		if (newLifeMinutes > 0)
+		{
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillNote", "#LF-Hospital_BillNote"));
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "BillNewLife", WidgetManager.Translate("#LF-Hospital_BillNewLife", newLifeMinutes)));
+		}
 
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "BillClose", "#LF-Hospital_BillClose"));
 		return parts;
@@ -185,13 +300,13 @@ class LF_HospitalBillCard
 
 	//------------------------------------------------------------------------------------------------
 	//! \param anchor The bill entity when read from the world; null on waking (no distance close).
-	static LF_UIScreen Open(int amount, int balanceAfter, string date, int newLifeMinutes, IEntity anchor)
+	static LF_UIScreen Open(int number, int amount, string date, string medicName, bool paid, string paidAt, int newLifeMinutes, IEntity anchor)
 	{
 		Hide();
-		s_Screen = LF_UIScreen.Open(BuildParts(amount, balanceAfter, date, newLifeMinutes));
+		s_Screen = LF_UIScreen.Open(BuildParts(number, amount, date, medicName, paid, paidAt, newLifeMinutes));
 		if (!s_Screen)
 		{
-			LF_Debug.Error("Respawn", "hospital bill card failed to open");
+			LF_Debug.Error(LF_TreatmentBills.FEATURE, "treatment bill card failed to open");
 			return null;
 		}
 
@@ -200,7 +315,7 @@ class LF_HospitalBillCard
 		if (anchor)
 			s_Screen.CloseBeyond(CLOSE_DISTANCE, anchor.GetID());
 
-		LF_Debug.Info("Respawn", string.Format("hospital bill read: %1, balance %2", amount, balanceAfter));
+		LF_Debug.Info(LF_TreatmentBills.FEATURE, string.Format("treatment bill #%1 read: %2, paid %3", number, amount, paid));
 		return s_Screen;
 	}
 
@@ -233,7 +348,7 @@ class LF_HospitalBillReadAction : ScriptedUserAction
 	{
 		m_Bill = LF_HospitalBillComponent.Cast(pOwnerEntity.FindComponent(LF_HospitalBillComponent));
 		if (!m_Bill)
-			LF_Debug.Error("Respawn", "Read bill action on an entity with no LF_HospitalBillComponent; Read hidden");
+			LF_Debug.Error(LF_TreatmentBills.FEATURE, "Read bill action on an entity with no LF_HospitalBillComponent; Read hidden");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -256,10 +371,10 @@ class LF_HospitalBillReadAction : ScriptedUserAction
 
 		if (!m_Bill || !m_Bill.IsIssued())
 		{
-			LF_Debug.Warn("Respawn", "Read performed on a blank bill; card not opened");
+			LF_Debug.Warn(LF_TreatmentBills.FEATURE, "Read performed on a blank bill; card not opened");
 			return;
 		}
 
-		LF_HospitalBillCard.Open(m_Bill.GetAmount(), m_Bill.GetBalanceAfter(), m_Bill.GetDate(), m_Bill.GetNewLifeMinutes(), pOwnerEntity);
+		LF_HospitalBillCard.Open(m_Bill.GetNumber(), m_Bill.GetAmount(), m_Bill.GetDate(), m_Bill.GetMedicName(), m_Bill.IsPaid(), m_Bill.GetPaidAt(), m_Bill.GetNewLifeMinutes(), pOwnerEntity);
 	}
 }

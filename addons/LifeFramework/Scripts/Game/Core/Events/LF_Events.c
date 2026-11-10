@@ -439,3 +439,27 @@ class LF_OnWitnessStatement : LF_Event
 		return e;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! A robber tried a vault with a fence tool (#273). Published by LF_Bank.Rob. m_sOutcome is
+//! "opened", "jammed", or "refused" (no tool in hand). m_sSerial is the tool's fence serial, empty
+//! for a refusal; the evidence locker reads the same serial off the bagged drill.
+class LF_OnVaultBreach : LF_Event
+{
+	string m_sPlayerUid;
+	string m_sVaultId;
+	string m_sTool;
+	string m_sSerial;
+	string m_sOutcome;
+
+	static LF_OnVaultBreach Create(string playerUid, string vaultId, string tool, string serial, string outcome)
+	{
+		LF_OnVaultBreach e = new LF_OnVaultBreach();
+		e.m_sPlayerUid = playerUid;
+		e.m_sVaultId = vaultId;
+		e.m_sTool = tool;
+		e.m_sSerial = serial;
+		e.m_sOutcome = outcome;
+		return e;
+	}
+}

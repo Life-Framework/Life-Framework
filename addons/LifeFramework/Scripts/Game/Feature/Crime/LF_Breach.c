@@ -53,6 +53,8 @@ class LF_BreachTarget : Managed
 class LF_Breach
 {
 	static const ResourceName CHARGE_PREFAB = "{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et";
+	//! The fence charge (#271), serial-stamped; it forces a door the same as the vanilla block.
+	static const ResourceName FENCE_CHARGE_PREFAB = "{E78C99E5029D52A5}Prefabs/Items/Fence/LF_Charge.et";
 
 	protected static ref map<string, ref LF_BreachTarget> s_mTargets;
 	protected static ref map<string, string> s_mOrganizationMembers;
@@ -150,7 +152,7 @@ class LF_Breach
 	//! \param chargeCarrier The player entity placing the charge. Every player-facing action
 	//! passes it: one DemoBlock charge is taken from that inventory before anything happens,
 	//! and Arm refuses when there is none. Null is the server-scripted arm (tests, events).
-	static bool Arm(string targetId, string playerUid, IEntity chargeCarrier = null)
+	static bool Arm(string targetId, string playerUid, IEntity chargeCarrier = null, IEntity suspect = null)
 	{
 		if (targetId.IsEmpty() || playerUid.IsEmpty())
 		{
@@ -191,7 +193,10 @@ class LF_Breach
 
 		target.m_iPoliceNotifies = target.m_iPoliceNotifies + 1;
 		// The alarm sounds at the door or vault and on-duty officers are radioed (LF_Dispatch).
-		LF_Dispatch.Report(playerUid, chargeCarrier, LF_WantedReports.OFFENCE_BREAK_IN, TargetOrigin(targetId));
+		if (!suspect)
+			suspect = chargeCarrier;
+
+		LF_Dispatch.Report(playerUid, suspect, LF_WantedReports.OFFENCE_BREAK_IN, TargetOrigin(targetId));
 		LF_Debug.Log("Breach", string.Format("armed %1 by %2 fuse=%3", targetId, playerUid, target.m_fFuseSeconds));
 
 		target.m_bChargeArmed = true;
@@ -398,7 +403,7 @@ class LF_Breach
 		if (!user)
 			return false;
 
-		if (LF_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
+		if (LF_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1 || LF_InventoryUtils.GetAmount(user, FENCE_CHARGE_PREFAB) >= 1)
 			return true;
 
 		return FindEquippedCharge(user) != null;
@@ -417,7 +422,7 @@ class LF_Breach
 		weaponStorage.GetAll(weapons);
 		foreach (IEntity weapon : weapons)
 		{
-			if (weapon && LF_Utils.GetPrefabName(weapon) == CHARGE_PREFAB)
+			if (weapon && (LF_Utils.GetPrefabName(weapon) == CHARGE_PREFAB || LF_Utils.GetPrefabName(weapon) == FENCE_CHARGE_PREFAB))
 				return weapon;
 		}
 
@@ -435,7 +440,10 @@ class LF_Breach
 		}
 
 		int removed = 0;
-		if (LF_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
+		if (LF_InventoryUtils.GetAmount(user, FENCE_CHARGE_PREFAB) >= 1)
+			removed = LF_InventoryUtils.RemoveAmount(user, FENCE_CHARGE_PREFAB, 1);
+
+		if (removed != 1 && LF_InventoryUtils.GetAmount(user, CHARGE_PREFAB) >= 1)
 			removed = LF_InventoryUtils.RemoveAmount(user, CHARGE_PREFAB, 1);
 
 		if (removed != 1)

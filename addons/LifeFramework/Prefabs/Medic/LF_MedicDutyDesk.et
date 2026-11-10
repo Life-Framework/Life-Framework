@@ -9,6 +9,15 @@ GenericEntity : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
       LF_DutyAction "{E0CCF06A3D9A2E06}" {
        m_eRole MEDIC
       }
+      LF_TreatmentBillPayAction "{5C2E8A71D4B93F06}" {
+       ParentContextList {
+        "LF_DutyClock"
+       }
+       UIInfo UIInfo "{B7D14E92A3C65F80}" {
+        Name "#LF-Bill_PayGeneric"
+        Description "#LF-Bill_PayDesc"
+       }
+      }
      }
     }
    }

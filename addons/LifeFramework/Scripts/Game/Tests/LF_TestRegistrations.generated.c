@@ -103,7 +103,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HoldUp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalBillOnce(), LF_TestTier.LOGIC);
-		manager.Register(new LF_Test_HospitalBillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalBedPick(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalWard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HouseKeyMatch(), LF_TestTier.LOGIC);
@@ -261,6 +260,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SurvivalSync(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_TreatmentBillPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_UIKitInitialFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitButtonInvoker(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_NotificationToastTiming(), LF_TestTier.LOGIC);
@@ -271,6 +272,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIKitFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIPaperSheet(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GarageLedger(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleImpound(), LF_TestTier.PERSISTENCE);

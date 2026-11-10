@@ -234,31 +234,55 @@ modded class SCR_ChimeraCharacter
 	//------------------------------------------------------------------------------------------------
 	//! Harness `scanner`: the server puts a police scanner in this character's inventory, behind the
 	//! dev gate (the fence path needs a crime record and cash; the proof is about hearing).
-	void LF_AskHarnessScanner(int commandId)
+	void LF_AskHarnessScanner(int commandId, string tool = "scanner")
 	{
 		if (Replication.IsServer())
 		{
-			LF_ApplyHarnessScanner(commandId, true);
+			LF_ApplyHarnessScanner(commandId, true, tool);
 			return;
 		}
 
-		Rpc(RpcAsk_LF_HarnessScanner, commandId);
+		Rpc(RpcAsk_LF_HarnessScanner, commandId, tool);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_HarnessScanner(int commandId)
+	protected void RpcAsk_LF_HarnessScanner(int commandId, string tool)
 	{
 		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "scanner");
-		LF_ApplyHarnessScanner(commandId, gateOpen);
+		LF_ApplyHarnessScanner(commandId, gateOpen, tool);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void LF_ApplyHarnessScanner(int commandId, bool gateOpen)
+	protected void LF_ApplyHarnessScanner(int commandId, bool gateOpen, string tool)
 	{
 		if (!gateOpen)
 		{
 			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		if (tool == "drill")
+		{
+			// Stands in for a fence sale: the drill is stamped and booked to this account.
+			int drills = LF_InventoryUtils.AddAmount(this, LF_Bank.DRILL_PREFAB, 1);
+			InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(this);
+			string serial = "";
+			if (drills > 0 && storage)
+			{
+				array<IEntity> found = LF_InventoryUtils.FindItemsByPrefab(storage, LF_Bank.DRILL_PREFAB);
+				LF_SerialComponent stamp;
+				if (!found.IsEmpty())
+					stamp = LF_SerialComponent.Cast(found[0].FindComponent(LF_SerialComponent));
+
+				if (stamp)
+				{
+					serial = LF_FenceSerials.Issue(LF_Utils.GetPlayerUid(this), LF_Bank.DRILL_PREFAB);
+					stamp.SetSerial(serial);
+				}
+			}
+
+			LF_HarnessReply(commandId, "ok", string.Format("drill added=%1 serial=%2", drills, serial));
 			return;
 		}
 
