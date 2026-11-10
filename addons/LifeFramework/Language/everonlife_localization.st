@@ -6696,6 +6696,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
+    CustomStringTableItem "{63E93D8FD582854D}" {
+     Id "LF-Witness_Unsure1"
+     Target_en_us "%1: Hey, I am not sure."
+     Comment "Toast: an NPC witness who saw nothing answers, noncommittal. %1 = the NPC name."
+    }
+    CustomStringTableItem "{C388BAAC69AA6FFA}" {
+     Id "LF-Witness_Unsure2"
+     Target_en_us "%1: I do not think I saw anything."
+     Comment "Toast: noncommittal NPC answer, variant 2. %1 = the NPC name."
+    }
+    CustomStringTableItem "{FD870C5E92EE6005}" {
+     Id "LF-Witness_Unsure3"
+     Target_en_us "%1: Sorry, I could not say either way."
+     Comment "Toast: noncommittal NPC answer, variant 3. %1 = the NPC name."
+    }
+    CustomStringTableItem "{52C8142385D923FE}" {
+     Id "LF-Witness_Unsure4"
+     Target_en_us "%1: I was not really looking, officer."
+     Comment "Toast: noncommittal NPC answer, variant 4. %1 = the NPC name."
+    }
+    CustomStringTableItem "{9FF5E70D1F95C286}" {
+     Id "LF-Witness_GaveStatement"
+     Target_en_us "%1 gave a statement. It is on the wanted board."
+     Comment "Toast to the officer: a named witness gave a statement. %1 = the witness name."
+    }
+    CustomStringTableItem "{A5C8F0F7C66DA883}" {
+     Id "LF-Witness_ForgotSome"
+     Target_en_us "%1 cannot recall anything useful."
+     Comment "Toast to the officer: a named witness saw the crime but remembered nothing describable. %1 = the witness name."
+    }
   }
  }
 }

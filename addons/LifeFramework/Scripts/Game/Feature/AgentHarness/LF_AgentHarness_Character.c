@@ -481,6 +481,68 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `shootnpc`: this character deals one lethal hit to a placed town NPC, behind the dev gate.
+	void LF_AskHarnessShootNpc(int commandId, string entityName)
+	{
+		if (Replication.IsServer())
+		{
+			LF_ApplyHarnessShootNpc(commandId, entityName, true);
+			return;
+		}
+
+		Rpc(RpcAsk_LF_HarnessShootNpc, commandId, entityName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_HarnessShootNpc(int commandId, string entityName)
+	{
+		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "shootnpc");
+		LF_ApplyHarnessShootNpc(commandId, entityName, gateOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_ApplyHarnessShootNpc(int commandId, string entityName, bool gateOpen)
+	{
+		if (!gateOpen)
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		IEntity target = GetGame().GetWorld().FindEntityByName(entityName);
+		if (!target)
+		{
+			LF_HarnessReply(commandId, "error", "no_target");
+			return;
+		}
+
+		SCR_DamageManagerComponent damage = SCR_DamageManagerComponent.Cast(target.FindComponent(SCR_DamageManagerComponent));
+		if (!damage || !damage.GetDefaultHitZone())
+		{
+			LF_Debug.Info("AgentHarness", string.Format("shot npc %1: protected (no hit zone)", entityName));
+			LF_HarnessReply(commandId, "ok", "shotnpc protected=1 killed=0");
+			return;
+		}
+
+		HitZone zone = damage.GetDefaultHitZone();
+		vector hitPosDirNorm[3];
+		hitPosDirNorm[0] = target.GetOrigin() + Vector(0, 1.2, 0);
+		hitPosDirNorm[1] = vector.Direction(GetOrigin(), target.GetOrigin()).Normalized();
+		hitPosDirNorm[2] = vector.Up;
+		SCR_DamageContext context = new SCR_DamageContext(EDamageType.KINETIC, 1000, hitPosDirNorm, target, zone, Instigator.CreateInstigator(this), null, -1, -1);
+		context.damageSource = this;
+		damage.HandleDamage(context);
+
+		int killed = 0;
+		if (LF_NpcDamage.IsDying(target))
+			killed = 1;
+
+		LF_Debug.Info("AgentHarness", string.Format("shot npc %1: killed=%2", entityName, killed));
+		LF_HarnessReply(commandId, "ok", string.Format("shotnpc protected=0 killed=%1", killed));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Harness `siren`: set a vehicle's siren mode by entity name, behind the dev gate.
 	void LF_AskHarnessSiren(int commandId, string entityName, int mode)
 	{
