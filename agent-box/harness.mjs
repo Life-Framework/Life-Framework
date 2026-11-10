@@ -19,7 +19,7 @@ import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads, loadPlaced, loadWorld } from "./layers.mjs";
 import { claimPlay, decideClaim, rendererFor } from "./play-claim.mjs";
 import { sessionForBox } from "./session.mjs";
-import { sessionDirOfBox, touchLease } from "../tools/lib/session-lease.mjs";
+import { sessionDirOfBox, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, runTownReport, selectRoadmapSites, siteLook, siteShotOffset, STREET_Z } from "./report.mjs";
 import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadStrings, manifestErrors, parseSignConfig, resolveSite, signCard, signIssues } from "./town.mjs";
 
@@ -265,7 +265,12 @@ export function sendCommand(spec, timeoutMs = 8000) {
   // A command to a session client keeps the session's pool lease alive.
   for (const b of profileBoxes()) {
     const d = sessionDirOfBox(b);
-    if (d) touchLease(d, spec.verb);
+    if (d) {
+      touchLease(d, spec.verb);
+      // The pool's hold cap: one line, once, when other sessions are queued behind this one.
+      const warn = takeHoldWarning(d);
+      if (warn) console.error(warn);
+    }
   }
   if (address.error) return { id, status: "error", detail: address.error, line: "", raw: `${id} error ${address.error}` };
   const line = buildLine(id, { ...spec, session: address.id });

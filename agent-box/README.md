@@ -553,7 +553,9 @@ for screen capture; in-engine filming (Filming) needs neither.
 
 ```powershell
 node agent-box/session.mjs roster 2             # put player id 2 on the police roster (before up)
-node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms
+node agent-box/session.mjs up                 # server and ONE client (the default; ready in ~12 s, two clients ~20 s)
+node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms (only when the proof needs two players)
+node agent-box/session.mjs up --hold 40       # raise this session's hold cap (20 min by default, 45 at most; it only bites while another up queues)
 node agent-box/session.mjs up --clients 2 --mission playtest   # LF_PlaytestTown, harness build
 node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop
 node agent-box/session.mjs up --clients 2 --visible            # on the user's desktop, for screen capture

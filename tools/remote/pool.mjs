@@ -29,7 +29,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
-import { lastActiveMs, markReaped, readLease, sessionDirOf } from "../lib/session-lease.mjs";
+import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionDirOf } from "../lib/session-lease.mjs";
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
 
@@ -45,7 +45,8 @@ export const { lanesFor, laneKind, portForLock, normalizePriority } = q;
 // then by env (tests use LF_POOL_*): sessionIdleMin (a session idle this long
 // while others queue is closed), promoteMin (a queued job moves up one
 // priority level per this many minutes), minFreeMb (RAM floor for a second
-// concurrent server).
+// concurrent server), sessionHoldMin / sessionGraceMin / sessionHoldMaxMin (the
+// hold cap, below).
 export function poolSettings(root) {
   const base = readJson(POOL_JSON, {});
   const over = localConfig(root).pool ?? {};
@@ -59,6 +60,9 @@ export function poolSettings(root) {
     promoteMin: pick("promoteMin", "LF_POOL_PROMOTE_MIN"),
     minFreeMb: pick("minFreeMb", "LF_POOL_MIN_FREE_MB"),
     bootBudgetS: pick("bootBudgetS", "LF_POOL_BOOT_BUDGET_S"),
+    sessionHoldMin: pick("sessionHoldMin", "LF_POOL_SESSION_HOLD_MIN"),
+    sessionGraceMin: pick("sessionGraceMin", "LF_POOL_SESSION_GRACE_MIN"),
+    sessionHoldMaxMin: pick("sessionHoldMaxMin", "LF_POOL_SESSION_HOLD_MAX_MIN"),
   };
 }
 
@@ -178,7 +182,7 @@ function noteReclaim(root, m, info, kind, reason) {
       writeFileSync(noticeFile(root, owner, info.name), JSON.stringify(rec));
     } catch {}
   }
-  if (kind === "idle-session") console.log(`pool: closed the session of ${info.slug ?? "another worktree"}: ${reason}; 'node agent-box/session.mjs up' starts a new one`);
+  if (kind === "idle-session" || kind === "hold-cap") console.log(`pool: closed the session of ${info.slug ?? "another worktree"}: ${reason}; 'node agent-box/session.mjs up' starts a new one`);
   else console.log(`pool: reclaimed ${m.name} ${info.name} from ${info.slug ?? "?"} ${info.purpose ?? ""}: ${reason}`);
 }
 
@@ -309,8 +313,8 @@ export function liveTickets(root) {
   return out;
 }
 
-function writeTicket(root, t) {
-  const f = `${String(Date.now()).padStart(15, "0")}-${String(process.pid).padStart(7, "0")}-${randomBytes(3).toString("hex")}.json`;
+function writeTicket(root, t, atMs = Date.now()) {
+  const f = `${String(atMs).padStart(15, "0")}-${String(process.pid).padStart(7, "0")}-${randomBytes(3).toString("hex")}.json`;
   writeFileSync(join(queueDir(root), f), JSON.stringify(t));
   return f;
 }
@@ -789,10 +793,17 @@ function closeSession(info) {
   return false;
 }
 
-// Closes a session that has been idle past the limit while others queue.
-// Idle = no harness or session command since the last one (or the session's
-// start); an explicit lease (session.mjs lease) or any command resets it, so
-// a session being driven is never touched. opts: now, close(info, dir),
+// Two reasons close a session while a session request queues (both only act
+// while someone waits):
+//   idle: no harness or session command for sessionIdleMin. An explicit lease
+//     (session.mjs lease) or any command resets it, so a driven session is safe.
+//   hold cap: older than its cap (sessionHoldMin, 20; session up --hold raises
+//     its own, to sessionHoldMaxMin) and another session request queues. The
+//     holder is warned once (its next harness or session command prints one
+//     line, session-lease.mjs takeHoldWarning), and closed sessionGraceMin (5)
+//     later. Only a session that up stamped with holdCap is judged, so sessions
+//     started before the cap existed run on as they did.
+// The idle limit is judged by the lease only; opts: now, close(info, dir),
 // sessionDir (test seams). Returns the sessions closed.
 export function reapIdleSessions(root, locals, tickets, settings = poolSettings(root), opts = {}) {
   const now = opts.now ?? Date.now();
@@ -806,14 +817,103 @@ export function reapIdleSessions(root, locals, tickets, settings = poolSettings(
     const dir = opts.sessionDir ?? sessionDirOf(info.root ?? root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
     const lease = readLease(dir);
     const v = q.leaseVerdict({ lastActiveAt: lastActiveMs(dir, info.at), leaseUntil: Date.parse(lease.leaseUntil), now, idleMin: settings.sessionIdleMin });
-    if (!v.expired) continue;
-    const reason = `idle ${(v.idleMs / 60000).toFixed(1)} min (limit ${settings.sessionIdleMin}) while ${queued.length} job(s) wait`;
-    markReaped(dir, `${reason}. Any harness command keeps a session; 'node agent-box/session.mjs lease [min]' holds it`);
+    const sess = readJson(join(dir, "session.json"), null);
+    let reason = "";
+    let kind = "";
+    if (v.expired) {
+      reason = `idle ${(v.idleMs / 60000).toFixed(1)} min (limit ${settings.sessionIdleMin}) while ${queued.length} job(s) wait`;
+      kind = "idle-session";
+    } else {
+      const waiters = queued.filter((t) => (t.lane ?? "session") === "session" && waitsOn(t).includes(name));
+      const heldSinceMs = Date.parse(sess?.heldSince);
+      const capMin = q.clampHoldMin(sess?.holdMin, { holdMin: settings.sessionHoldMin, maxMin: settings.sessionHoldMaxMin });
+      // A warning whose waiters stopped polling for a minute is void.
+      const live = Number.isFinite(Date.parse(lease.holdSeenAt)) && now - Date.parse(lease.holdSeenAt) <= 60000;
+      const hv = q.holdVerdict({ heldSinceMs, capMin, graceMin: settings.sessionGraceMin, warnedAtMs: live ? Date.parse(lease.holdWarnedAt) : NaN, waiting: waiters.length > 0, now, capped: !!sess?.holdCap });
+      if (hv.phase === "warn" || hv.phase === "grace") {
+        const w = noteHoldWarning(dir, { waiting: waiters.length, graceMin: settings.sessionGraceMin, now });
+        if (w.fresh) console.log(`pool: the session of ${info.slug ?? "another worktree"} is past its ${capMin} min cap with ${waiters.length} waiting; warned, it closes in ${settings.sessionGraceMin} min`);
+      }
+      if (hv.phase !== "close") continue;
+      reason = `held ${Math.round(hv.heldMs / 60000)} min (cap ${capMin}) with ${waiters.length} session request(s) waiting, warned ${settings.sessionGraceMin} min ago`;
+      kind = "hold-cap";
+    }
+    markReaped(dir, `${reason}. Any harness command keeps an idle session; 'node agent-box/session.mjs lease [min]' holds it; session up --hold <min> raises the hold cap (max ${settings.sessionHoldMaxMin})`, kind === "hold-cap" ? "hold-cap" : "lease");
     (opts.close ?? closeSession)(info, dir);
-    noteReclaim(root, m, { ...info, name }, "idle-session", reason);
-    out.push({ info, reason });
+    noteReclaim(root, m, { ...info, name }, kind, reason);
+    recordSession(root, { slug: info.slug, priority: sess?.priority, waitS: sess?.waitS, heldSinceMs: Date.parse(sess?.heldSince ?? info.at), endMs: now, boots: sess?.boots, bootS: sess?.bootS, clients: sess?.expectClients, mission: sess?.mission, closedBy: kind === "hold-cap" ? "hold-cap" : "lease", machine: m.name });
+    out.push({ info, reason, kind });
   }
   return out;
+}
+
+// One line in runs.jsonl per session (kind "session"), written when it ends:
+// who, how long it waited and held the lane, how many boots, and who closed it
+// (owner: session down; lease: idle reaper; hold-cap: the cap). pool status
+// and pool stats read them.
+export function recordSession(root, r) {
+  const rec = {
+    at: new Date(r.endMs ?? Date.now()).toISOString(),
+    kind: "session",
+    slug: r.slug ?? slugFor(root),
+    purpose: "session",
+    machine: r.machine ?? "local",
+    slot: slotLockName(1),
+    priority: r.priority ?? "normal",
+    waitS: Math.round(Number(r.waitS ?? 0) * 10) / 10,
+    heldS: Number.isFinite(r.heldSinceMs) ? Math.round(((r.endMs ?? Date.now()) - r.heldSinceMs) / 100) / 10 : 0,
+    boots: r.boots ?? 1,
+    bootS: r.bootS ?? [],
+    clients: r.clients ?? null,
+    mission: r.mission ?? null,
+    closedBy: r.closedBy ?? "owner",
+    result: "closed",
+  };
+  try {
+    appendFileSync(runsFile(root), JSON.stringify(rec) + "\n");
+  } catch {}
+  return rec;
+}
+
+// Session requests queued for the session lane (the holder's own ticket excluded).
+export function sessionQueue(root) {
+  try {
+    return liveTickets(root).filter((t) => (t.lane ?? "session") === "session" && waitsOn(t).includes(slotLockName(1)) && t.pid !== process.pid);
+  } catch {
+    return [];
+  }
+}
+
+// Queue age memory for the session lane: slug -> { at, seenAt }. A new request from a slug
+// whose last one was still queued within QUEUED_KEEP_MS inherits that request's `at`.
+const QUEUED_KEEP_MS = 15 * 60000;
+function queuedFile(root) {
+  return join(poolDir(root), "queued.json");
+}
+
+function queuedSince(root, slug, now) {
+  const e = readJson(queuedFile(root), {})[slug];
+  const at = Date.parse(e?.at);
+  return Number.isFinite(at) && now - Date.parse(e.seenAt) <= QUEUED_KEEP_MS ? at : now;
+}
+
+function noteQueued(root, slug, since) {
+  const all = readJson(queuedFile(root), {});
+  const now = Date.now();
+  all[slug] = { at: new Date(since).toISOString(), seenAt: new Date(now).toISOString() };
+  for (const k of Object.keys(all)) if (now - Date.parse(all[k].seenAt) > QUEUED_KEEP_MS) delete all[k];
+  try {
+    writeFileSync(queuedFile(root), JSON.stringify(all));
+  } catch {}
+}
+
+function forgetQueued(root, slug) {
+  const all = readJson(queuedFile(root), {});
+  if (!all[slug]) return;
+  delete all[slug];
+  try {
+    writeFileSync(queuedFile(root), JSON.stringify(all));
+  } catch {}
 }
 
 // The session lane (server-2001) for `session up`: joins the same queue as
@@ -836,13 +936,17 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
   const slug = meta.slug ?? slugFor(root);
   const prio = q.normalizePriority(priority) ?? resolvePriority(root);
   const started = Date.now();
+  // A retry keeps the age of the request it replaces (a timed-out or interrupted `up --wait`
+  // would otherwise start over and never age to the front).
+  const since = queuedSince(root, slug, started);
   let waitingOn = [lane.lock];
-  const body = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name] });
-  const ticket = writeTicket(root, body());
+  const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name] });
+  const ticket = writeTicket(root, body(), since);
   let lastReap = 0;
   let said = false;
   try {
     for (;;) {
+      noteQueued(root, slug, since);
       const tickets = liveTickets(root);
       const me = tickets.find((t) => t.file === ticket);
       const settings = poolSettings(root);
@@ -855,7 +959,12 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
       const blocked = {};
       if (!blockers.length) {
         const slot = tryLocal(root, m, lane, { ...meta, slug, purpose: "session", root }, { blocked, noHeld: true });
-        if (slot) return slot;
+        if (slot) {
+          slot.waitedMs = Date.now() - started;
+          slot.queuedMs = Date.now() - since;
+          forgetQueued(root, slug);
+          return slot;
+        }
       }
       // A queued `up` whose caller timed out must not take the slot later.
       if (callerPids.some((p) => p && !wt.pidAlive(p))) {
@@ -1264,6 +1373,21 @@ function ramText(root) {
   return `RAM ${free.toFixed(1)}/${(totalmem() / 1073741824).toFixed(1)} GB free (floor ${(poolSettings(root).minFreeMb / 1024).toFixed(1)})`;
 }
 
+// The hold cap of the session holding the lane, for pool status.
+function holdNote(dir, info, lease, tickets, lane, settings, now) {
+  const sess = readJson(join(dir, "session.json"), null);
+  if (!sess?.holdCap) return "no hold cap (started before it)";
+  const heldSinceMs = Date.parse(sess.heldSince ?? info.at);
+  const capMin = q.clampHoldMin(sess.holdMin, { holdMin: settings.sessionHoldMin, maxMin: settings.sessionHoldMaxMin });
+  const waiters = tickets.filter((t) => (t.lane ?? "session") === "session" && waitsOn(t).includes(lane.lock)).length;
+  const live = Number.isFinite(Date.parse(lease.holdSeenAt)) && now - Date.parse(lease.holdSeenAt) <= 60000;
+  const hv = q.holdVerdict({ heldSinceMs, capMin, graceMin: settings.sessionGraceMin, warnedAtMs: live ? Date.parse(lease.holdWarnedAt) : NaN, waiting: waiters > 0, now });
+  if (hv.phase === "grace") return `hold cap ${capMin}m passed, warned: closes in ${mins(hv.leftMs)}`;
+  if (hv.phase === "warn" || hv.phase === "close") return `hold cap ${capMin}m passed, ${waiters} waiting: warning at the next poll`;
+  const left = capMin * 60000 - hv.heldMs;
+  return left > 0 ? `hold cap ${capMin}m (${mins(left)} left; only enforced while a session request waits)` : `hold cap ${capMin}m passed; nobody waits`;
+}
+
 // One line per lane: holder, purpose, age, idle (sessions: time since the last
 // harness command), and the lease note.
 function laneRow(root, kind, lane, info, tickets, settings, now) {
@@ -1289,6 +1413,7 @@ function laneRow(root, kind, lane, info, tickets, settings, now) {
       : v.expired
         ? waiting ? "idle past the limit: closes at the next poll" : `idle past ${settings.sessionIdleMin}m; closes when a job queues`
         : `closes after ${mins(settings.sessionIdleMin * 60000 - v.idleMs)} more idle if a job waits`;
+    note += `; ${holdNote(dir, info, lease, tickets, lane, settings, now)}`;
   }
   return `${head} ${who.padEnd(16).slice(0, 22)} ${purpose.padEnd(10)} age ${age.padStart(4)}  idle ${idle.padStart(4)}  ${note}`.trimEnd();
 }
@@ -1339,7 +1464,7 @@ export function cmdPoolStatus(root) {
     console.log(`  ${lane} #${pos}  ${prio.padEnd(11)} ${String(t.slug ?? "?").padEnd(20).slice(0, 24)} ${String(t.purpose ?? "").padEnd(11)} waited ${mins(now - Date.parse(t.at)).padStart(4)}${on}${t.pinned ? " (pinned)" : ""}`);
   }
   try {
-    const all = readRuns(root).filter((r) => r.purpose !== "reclaim");
+    const all = readRuns(root).filter(isTestRun);
     const local = machines.find((x) => x.via === "local");
     if (local) {
       const parts = Object.keys(q.DEFAULT_BUDGET_S).map((k) => {
@@ -1351,18 +1476,38 @@ export function cmdPoolStatus(root) {
       console.log(`budgets (per run, boot excluded; * seeded, ^ raised after timeouts): ${parts.join(", ")}; boot ${poolSettings(root).bootBudgetS}s; timeouts ${to}/${recent.length} recent runs`);
     }
   } catch {}
-  const runs = readRuns(root).filter((r) => r.purpose !== "reclaim").slice(-8);
+  const runs = readRuns(root).filter(isTestRun).slice(-8);
   console.log(`last ${runs.length} run(s):`);
   for (const r of runs) {
     console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(10)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
   }
+  printSessions(readRuns(root).filter(isSession), 8);
   return 0;
+}
+
+const isSession = (r) => r.kind === "session";
+const isTestRun = (r) => r.purpose !== "reclaim" && !isSession(r);
+
+// The session lane's history: the last few sessions and the averages that show whether
+// the lane flows (how long a request waited, how long a holder kept it).
+function printSessions(sessions, last) {
+  if (!sessions.length) {
+    console.log("sessions: none recorded yet (each one is written to runs.jsonl when it ends)");
+    return;
+  }
+  const st = q.sessionStats(sessions);
+  const c = st.closed;
+  console.log(`sessions: ${st.n} recorded; avg wait ${mins(st.avgWaitS * 1000)}, avg hold ${mins(st.avgHeldS * 1000)}, ${st.avgBoots.toFixed(1)} boot(s) each; closed by owner ${c.owner}, lease ${c.lease}, hold-cap ${c["hold-cap"]}`);
+  for (const r of sessions.slice(-last)) {
+    const boot = (r.bootS ?? []).length ? `  boot ${r.bootS.map((x) => `${Math.round(x)}s`).join("+")}` : "";
+    console.log(`  ${localTime(r.at)}  ${String(r.slug).padEnd(20).slice(0, 24)} ${String(r.priority ?? "normal").padEnd(7)} wait ${mins(r.waitS * 1000).padStart(5)}  held ${mins(r.heldS * 1000).padStart(5)}  boots ${r.boots}${boot}  closed by ${r.closedBy}`);
+  }
 }
 
 export function cmdPoolStats(root) {
   const all = readRuns(root);
   const reclaims = all.filter((r) => r.purpose === "reclaim");
-  const runs = all.filter((r) => r.purpose !== "reclaim");
+  const runs = all.filter(isTestRun);
   const by = new Map();
   for (const r of runs) {
     const k = r.machine;
@@ -1377,6 +1522,7 @@ export function cmdPoolStats(root) {
     const rcText = rc.length ? `  reclaimed ${rc.length} (dead owner ${rc.filter((r) => r.kind === "dead-owner").length}, hang ${rc.filter((r) => r.kind === "hang").length})` : "";
     console.log(`  ${k.padEnd(12)} runs ${String(rs.length).padStart(4)}  pass ${pass}  avg wait ${avg("waitS")} s  avg run ${avg("durS")} s${rcText}`);
   }
+  printSessions(all.filter(isSession), 5);
   if (reclaims.length) {
     console.log(`reclaimed slots (last ${Math.min(5, reclaims.length)} of ${reclaims.length}):`);
     for (const r of reclaims.slice(-5)) console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${r.slot}  ${r.slug} ${r.victimPurpose ?? ""}: ${r.kind}, ${r.reason}`);
