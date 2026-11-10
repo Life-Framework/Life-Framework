@@ -97,8 +97,8 @@ class LF_Test_Roadmap_BreachWorld : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		Resource charge = Resource.Load(LF_Breach.CHARGE_PREFAB);
-		ctx.True(charge.IsValid(), "DemoBlock_M112.et loads");
+		Resource charge = Resource.Load(LF_Breach.FENCE_CHARGE_PREFAB);
+		ctx.True(charge.IsValid(), "LF_Charge.et loads");
 
 		IEntity door = GetGame().GetWorld().FindEntityByName("Roadmap_Breach_Door");
 		ctx.True(door != null, "Roadmap_Breach_Door is placed");

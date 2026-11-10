@@ -6137,76 +6137,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The duty desk and the beds are north of the bay."
      Comment "Sign card for the hospital ambulance bay, Next section."
     }
-    CustomStringTableItem "{B6AE5AF587643C0C}" {
-     Id "LF-Lockpick_Title"
-     Target_en_us "Lockpick"
-     Comment "Toast title for lockpicking (#411)."
-    }
-    CustomStringTableItem "{B9EA3C536FECFC95}" {
-     Id "LF-Lockpick_Action"
-     Target_en_us "Pick the lock"
-     Comment "Action: work a locked door with a lockpick (#411)."
-    }
-    CustomStringTableItem "{340833241E6EC66D}" {
-     Id "LF-Lockpick_NeedPick"
-     Target_en_us "You need a lockpick"
-     Comment "Refusal: no lockpick carried (#411)."
-    }
-    CustomStringTableItem "{FD07CC0DE719CAA6}" {
-     Id "LF-Lockpick_NotPickable"
-     Target_en_us "This lock cannot be picked"
-     Comment "Refusal: the target is not pickable (#411)."
-    }
-    CustomStringTableItem "{725DAC6044490CDB}" {
-     Id "LF-Lockpick_NotLocked"
-     Target_en_us "It is not locked"
-     Comment "Refusal: the door is already unlocked (#411)."
-    }
-    CustomStringTableItem "{50027139FC87315E}" {
-     Id "LF-Lockpick_Busy"
-     Target_en_us "Someone is already working this lock"
-     Comment "Refusal: an attempt is running (#411)."
-    }
-    CustomStringTableItem "{06E6A4A3A962339D}" {
-     Id "LF-Lockpick_Started"
-     Target_en_us "You start working the lock. Stay close."
-     Comment "Toast: a pick attempt began (#411)."
-    }
-    CustomStringTableItem "{2D0C66EA62BED08B}" {
-     Id "LF-Lockpick_Opened"
-     Target_en_us "The lock gives"
-     Comment "Toast: the lock opened (#411)."
-    }
-    CustomStringTableItem "{0887037FED6A5F0F}" {
-     Id "LF-Lockpick_Failed"
-     Target_en_us "The pick slips. Try again."
-     Comment "Toast: the attempt failed (#411)."
-    }
-    CustomStringTableItem "{06E530ED6D12AC2F}" {
-     Id "LF-Lockpick_Snapped"
-     Target_en_us "The pick snaps"
-     Comment "Toast: the pick snapped (#411)."
-    }
-    CustomStringTableItem "{7D8C5DBC163257A8}" {
-     Id "LF-Lockpick_Cancelled"
-     Target_en_us "You stepped away from the lock"
-     Comment "Toast: the attempt was dropped (#411)."
-    }
-    CustomStringTableItem "{E62CDBBA4E99A489}" {
-     Id "LF-Offence_Lockpick"
-     Target_en_us "Lock picking"
-     Comment "Offence on a wanted poster: a lock was picked (#411)."
-    }
-    CustomStringTableItem "{2B581C5AF2C6DBC6}" {
-     Id "LF-Item_Lockpick_Name"
-     Target_en_us "Lockpick"
-     Comment "Item name (#411)."
-    }
-    CustomStringTableItem "{80906A73087767D7}" {
-     Id "LF-Item_Lockpick_Description"
-     Target_en_us "A set of picks. Each opened lock or snapped pick wears one use."
-     Comment "Item description (#411)."
-    }
     CustomStringTableItem "{9306F928F7A81EBC}" {
      Id "LF-Heist_Armory_Open"
      Target_en_us "Breach the armory store"
@@ -6286,6 +6216,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Chain_Failed"
      Target_en_us "That did not work"
      Comment "Chain station refused: the product could not be delivered (#417)."
+    }
+    CustomStringTableItem "{B6AE5AF587643C0C}" {
+     Id "LF-Lockpick_Title"
+     Target_en_us "Lockpick"
+     Comment "Toast title for lockpicking (#411)."
+    }
+    CustomStringTableItem "{B9EA3C536FECFC95}" {
+     Id "LF-Lockpick_Action"
+     Target_en_us "Pick the lock"
+     Comment "Action: work a locked door with a lockpick (#411)."
+    }
+    CustomStringTableItem "{340833241E6EC66D}" {
+     Id "LF-Lockpick_NeedPick"
+     Target_en_us "You need a lockpick"
+     Comment "Refusal: no lockpick carried (#411)."
+    }
+    CustomStringTableItem "{FD07CC0DE719CAA6}" {
+     Id "LF-Lockpick_NotPickable"
+     Target_en_us "This lock cannot be picked"
+     Comment "Refusal: the target is not pickable (#411)."
+    }
+    CustomStringTableItem "{725DAC6044490CDB}" {
+     Id "LF-Lockpick_NotLocked"
+     Target_en_us "It is not locked"
+     Comment "Refusal: the door is already unlocked (#411)."
+    }
+    CustomStringTableItem "{50027139FC87315E}" {
+     Id "LF-Lockpick_Busy"
+     Target_en_us "Someone is already working this lock"
+     Comment "Refusal: an attempt is running (#411)."
+    }
+    CustomStringTableItem "{06E6A4A3A962339D}" {
+     Id "LF-Lockpick_Started"
+     Target_en_us "You start working the lock. Stay close."
+     Comment "Toast: a pick attempt began (#411)."
+    }
+    CustomStringTableItem "{2D0C66EA62BED08B}" {
+     Id "LF-Lockpick_Opened"
+     Target_en_us "The lock gives"
+     Comment "Toast: the lock opened (#411)."
+    }
+    CustomStringTableItem "{0887037FED6A5F0F}" {
+     Id "LF-Lockpick_Failed"
+     Target_en_us "The pick slips. Try again."
+     Comment "Toast: the attempt failed (#411)."
+    }
+    CustomStringTableItem "{06E530ED6D12AC2F}" {
+     Id "LF-Lockpick_Snapped"
+     Target_en_us "The pick snaps"
+     Comment "Toast: the pick snapped (#411)."
+    }
+    CustomStringTableItem "{7D8C5DBC163257A8}" {
+     Id "LF-Lockpick_Cancelled"
+     Target_en_us "You stepped away from the lock"
+     Comment "Toast: the attempt was dropped (#411)."
+    }
+    CustomStringTableItem "{E62CDBBA4E99A489}" {
+     Id "LF-Offence_Lockpick"
+     Target_en_us "Lock picking"
+     Comment "Offence on a wanted poster: a lock was picked (#411)."
+    }
+    CustomStringTableItem "{2B581C5AF2C6DBC6}" {
+     Id "LF-Item_Lockpick_Name"
+     Target_en_us "Lockpick"
+     Comment "Item name (#411)."
+    }
+    CustomStringTableItem "{80906A73087767D7}" {
+     Id "LF-Item_Lockpick_Description"
+     Target_en_us "A set of picks. Each opened lock or snapped pick wears one use."
+     Comment "Item description (#411)."
     }
     CustomStringTableItem "{5212AF1650F40FE3}" {
      Id "LF-Hotwire_Title"
@@ -6431,6 +6431,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Stolen_BoardLine"
      Target_en_us "STOLEN CAR: %2, plate %1, reported at %3"
      Comment "Wanted board line: a reported stolen car (#414)."
+    }
+    CustomStringTableItem "{C4A100000000B101}" {
+     Id "LF-Offence_JailBreak"
+     Target_en_us "Jailbreak"
+     Comment "Offence: a prisoner walked out through a breached jail door (#235)."
     }
   }
  }
