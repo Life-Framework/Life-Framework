@@ -20,6 +20,7 @@
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   shots baseline [--areas a,b] | area <name> --baseline   Every area in one session, shared; or find the freshest
 //   shots area <name|x,z> | crop <shot> <x,y,w,h>   One-call screenshot rig for the area polish pass (agent-box/shots.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved LFTEST summary for a tier
