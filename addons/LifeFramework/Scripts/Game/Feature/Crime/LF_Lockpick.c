@@ -304,6 +304,20 @@ class LF_Lockpick
 	//! \return True when an attempt started.
 	static bool Begin(IEntity door, IEntity user)
 	{
+		if (!user)
+		{
+			LF_Debug.Error(FEATURE, "begin refused: door or user is null");
+			return false;
+		}
+
+		return BeginAs(door, user, LF_Utils.GetPlayerUid(user));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: Begin with the picker's uid given (the seam a WORLD test drives; a spawned test
+	//! character has no player behind it).
+	static bool BeginAs(IEntity door, IEntity user, string playerUid)
+	{
 		if (!Replication.IsServer())
 			return false;
 
@@ -313,7 +327,6 @@ class LF_Lockpick
 			return false;
 		}
 
-		string playerUid = LF_Utils.GetPlayerUid(user);
 		if (playerUid.IsEmpty())
 		{
 			LF_Debug.Error(FEATURE, "begin refused: player has no account id");
@@ -377,6 +390,12 @@ class LF_Lockpick
 			return;
 		}
 
+		if (!HasPick(user))
+		{
+			Drop(attempt, user, "the pick left the picker's inventory");
+			return;
+		}
+
 		attempt.m_fElapsed = attempt.m_fElapsed + TICK_SECONDS;
 		if (attempt.m_fElapsed >= attempt.m_fSeconds)
 		{
@@ -397,6 +416,22 @@ class LF_Lockpick
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Test seam: finish the running attempt on this door now, as the timer would when it runs out.
+	//! \return False when nobody is picking the door.
+	static bool CompleteNow(IEntity door)
+	{
+		if (!door)
+			return false;
+
+		LF_LockpickAttempt attempt = FindAttempt(door.GetID());
+		if (!attempt)
+			return false;
+
+		Complete(attempt);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Rolls the attempt, wears the pick, opens the lock, and files the report when it was heard.
 	protected static void Complete(LF_LockpickAttempt attempt)
 	{
@@ -414,6 +449,14 @@ class LF_Lockpick
 		if (!IsLocked(door))
 		{
 			LF_Debug.Info(FEATURE, string.Format("attempt by %1 ends: %2 is already open", attempt.m_sPlayerUid, door.GetName()));
+			return;
+		}
+
+		// The pick is checked only at Begin otherwise: a picker who drops or hands it over mid-attempt
+		// would open the lock and never wear it.
+		if (!HasPick(user))
+		{
+			Drop(attempt, user, "the pick left the picker's inventory");
 			return;
 		}
 
