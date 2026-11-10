@@ -26,7 +26,8 @@ first registration of a new `.fbx`, because Workbench opens a modal dialog;
 every later reimport runs headless. Verify with a Blender render, a Workbench
 import report, and an agent-box world shot. Use CC0 libraries (Poly Haven,
 ambientCG) for texture sets and for props too complex to model in code. Do
-not use AI text-to-3D for shipped art yet: the one free local model that fits
+not use AI text-to-3D for shipped art yet (superseded 2026-11-10: the maintainer
+chose Meshy for M5, subject to the licence gate #664; see #339): the one free local model that fits
 in 10 GB of VRAM (Hunyuan3D) is not licensed in the EU, and the paid APIs
 produce triangle soup that needs retopology anyway.
 

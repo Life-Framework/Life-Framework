@@ -58,6 +58,6 @@ class LF_SignReadAction : ScriptedUserAction
 			return;
 		}
 
-		LF_SignCard.Open(sign, pOwnerEntity.GetID());
+		LF_SignCard.Open(sign, pOwnerEntity.GetID(), m_SignComponent.CardSkin());
 	}
 }

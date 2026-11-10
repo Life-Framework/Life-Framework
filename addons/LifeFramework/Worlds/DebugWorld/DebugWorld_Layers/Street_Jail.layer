@@ -63,7 +63,7 @@ GenericEntity Roadmap_Jail_Cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.
   }
  }
 }
-GenericEntity Roadmap_Escort_Car : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
+GenericEntity Roadmap_Escort_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_sDebugIdentifier "POLICE"

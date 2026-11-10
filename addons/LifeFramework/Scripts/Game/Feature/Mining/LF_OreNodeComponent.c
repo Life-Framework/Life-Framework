@@ -60,8 +60,15 @@ class LF_OreNodeComponent : ScriptComponent
 	[Attribute("0.02", UIWidgets.Auto, "How far the rock shakes on a hit, in metres", category: "Feedback")]
 	protected float m_fShake;
 
+	[Attribute("0.45", UIWidgets.Slider, "Scale of the rock after its next-to-last piece breaks; it shrinks in equal steps from 1 (whole) to this", "0.1 1 0.05", category: "Ore")]
+	protected float m_fMinScale;
+
 	[RplProp(onRplName: "OnDepletedChanged")]
 	protected bool m_bDepleted;
+
+	//! The rock's current uniform scale. Replicated so a late joiner sees a half-mined rock.
+	[RplProp(onRplName: "OnScaleChanged")]
+	protected float m_fRockScale = 1;
 
 	protected ref LF_OreYieldState m_State = new LF_OreYieldState();
 	protected int m_iDropped;
@@ -78,6 +85,12 @@ class LF_OreNodeComponent : ScriptComponent
 	bool IsDepleted()
 	{
 		return m_bDepleted;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float GetRockScale()
+	{
+		return m_fRockScale;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -155,6 +168,12 @@ class LF_OreNodeComponent : ScriptComponent
 			LF_Debug.Error(FEATURE, string.Format("%1 rock broke %2 pieces but only %3 of %4 dropped", m_sNodeId, breaks, dropped, items));
 
 		bool spent = m_State.m_bDepleted;
+		if (breaks > 0 && !spent)
+		{
+			m_fRockScale = LF_OreYield.ScaleFor(m_State.m_iBreaks, row.m_iMaxGathers, m_fMinScale);
+			ApplyScale();
+			Replication.BumpMe();
+		}
 		Rpc(RpcDo_HitFx, hitPos, hitDir, breaks > 0, spent);
 		if (!System.IsConsoleApp())
 			PlayHitFx(hitPos, hitDir, breaks > 0, spent);
@@ -186,6 +205,8 @@ class LF_OreNodeComponent : ScriptComponent
 			return;
 
 		m_bDepleted = false;
+		m_fRockScale = 1;
+		ApplyScale();
 		ApplyDepleted();
 		Replication.BumpMe();
 		LF_Debug.Info(FEATURE, string.Format("%1 rock grew back", m_sNodeId));
@@ -230,9 +251,8 @@ class LF_OreNodeComponent : ScriptComponent
 
 		vector side = away * vector.Up;
 		vector pos = hitPos + away * Math.RandomFloatInclusive(0.35, 0.6) + side * Math.RandomFloatInclusive(-0.3, 0.3);
-		BaseWorld world = GetGame().GetWorld();
-		float ground = world.GetSurfaceY(pos[0], pos[2]);
-		pos[1] = Math.Max(hitPos[1], ground + 0.15);
+		float ground = FindGroundY(pos, GetOwner());
+		pos[1] = LF_OreYield.RestHeight(ground, hitPos[1], 0.05);
 
 		IEntity piece = LF_Utils.SpawnEntityPrefab(prefab, pos, Vector(Math.RandomFloat(0, 360), 0, 0));
 		if (!piece)
@@ -241,16 +261,33 @@ class LF_OreNodeComponent : ScriptComponent
 		Physics physics = piece.GetPhysics();
 		if (physics && physics.IsDynamic())
 		{
-			vector velocity = away * Math.RandomFloatInclusive(1.0, 2.0) + vector.Up * Math.RandomFloatInclusive(1.0, 2.0) + side * Math.RandomFloatInclusive(-0.5, 0.5);
+			vector velocity = away * Math.RandomFloatInclusive(0.3, 0.8) + vector.Up * Math.RandomFloatInclusive(0.3, 0.8) + side * Math.RandomFloatInclusive(-0.3, 0.3);
 			physics.SetVelocity(velocity);
 			physics.SetAngularVelocity(Vector(Math.RandomFloat(-6, 6), Math.RandomFloat(-6, 6), Math.RandomFloat(-6, 6)));
-			return true;
 		}
 
-		vector settled = piece.GetOrigin();
-		settled[1] = ground + 0.05;
-		piece.SetOrigin(settled);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Height of the ground under `point`: a trace straight down from 1 m above it hits the
+	//! terrain or any solid, ignoring `ignore` (the rock). Falls back to the terrain height.
+	//! The point is the spawn point; an item put there with a clearance rests on the ground.
+	static float FindGroundY(vector point, IEntity ignore)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		float terrain = world.GetSurfaceY(point[0], point[2]);
+		TraceParam trace = new TraceParam();
+		trace.Start = Vector(point[0], Math.Max(point[1], terrain) + 1, point[2]);
+		trace.End = Vector(point[0], terrain - 1, point[2]);
+		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		trace.LayerMask = -1;
+		trace.Exclude = ignore;
+		float fraction = world.TraceMove(trace, null);
+		if (fraction >= 1)
+			return terrain;
+
+		return trace.Start[1] + (trace.End[1] - trace.Start[1]) * fraction;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -323,6 +360,27 @@ class LF_OreNodeComponent : ScriptComponent
 	protected void OnDepletedChanged()
 	{
 		ApplyDepleted();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the rock's scale arrived (also on join).
+	protected void OnScaleChanged()
+	{
+		ApplyScale();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets the rock's size and re-fits its collision so the shrunk rock is hit where it looks.
+	protected void ApplyScale()
+	{
+		IEntity owner = GetOwner();
+		if (!owner)
+			return;
+
+		owner.SetScale(m_fRockScale);
+		Physics physics = owner.GetPhysics();
+		if (physics)
+			physics.UpdateGeometries();
 	}
 
 	//------------------------------------------------------------------------------------------------

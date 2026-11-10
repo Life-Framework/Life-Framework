@@ -1,0 +1,11 @@
+RichTextWidgetClass "{3B7E5A19D2C84F60}" : "{E256BCCAE8821432}UI/layouts/WidgetLibrary/RichTextWidgets/RichText_Body.layout" {
+ Name "Rich"
+ Slot LayoutSlot "{C9148D2E7A5B6F03}" {
+  Padding 28 2 28 4
+ }
+ Color 0.110 0.102 0.086 1
+ Text ""
+ "Font Size" 18
+ "Min Font Size" 18
+ "Line Spacing" 2
+}
