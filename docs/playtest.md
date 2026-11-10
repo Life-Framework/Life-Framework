@@ -1,4 +1,4 @@
-﻿# Playtest: Life Framework
+# Playtest: Life Framework
 
 The playtest is a small 1989 Everon town, published on the Arma Reforger
 Workshop and hosted from the maintainer's PC. Play it, then tell us what broke.
