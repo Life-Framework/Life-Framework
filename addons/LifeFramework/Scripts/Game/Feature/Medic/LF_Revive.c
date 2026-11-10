@@ -6,7 +6,8 @@ enum LF_EReviveRefusal
 	SELF,
 	NOT_DOWNED,
 	NOT_MEDIC,
-	TOO_FAR
+	TOO_FAR,
+	NO_ITEM
 }
 
 //------------------------------------------------------------------------------------------------
@@ -58,6 +59,9 @@ class LF_Revive
 		if (refusal == LF_EReviveRefusal.TOO_FAR)
 			return "#LF-Revive_TooFar";
 
+		if (refusal == LF_EReviveRefusal.NO_ITEM)
+			return "#LF-Revive_NoItem";
+
 		return "#LF-Revive_NotDowned";
 	}
 
@@ -101,6 +105,32 @@ class LF_Revive
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the revive with its cost (#427). The medic must carry `m_iReviveItemCount` of
+	//! `m_sReviveItemPrefab` (a field dressing); it is used up only when the revive happens. An empty
+	//! prefab in config means the revive is free.
+	static LF_EReviveRefusal ApplyWithCost(IEntity medic, IEntity patient, bool medicOnDuty)
+	{
+		LF_MedicConfig config = LF_MedicConfig.Get();
+		bool costs = medic && !config.m_sReviveItemPrefab.IsEmpty() && config.m_iReviveItemCount > 0;
+		LF_EReviveRefusal early = Check(medic, patient, medicOnDuty);
+		if (costs && early == LF_EReviveRefusal.NONE && LF_InventoryUtils.GetAmount(medic, config.m_sReviveItemPrefab) < config.m_iReviveItemCount)
+		{
+			LF_Debug.Info(FEATURE, string.Format("revive of %1 by %2 refused: no %3", Uid(patient), Uid(medic), config.m_sReviveItemPrefab));
+			LF_Utils.NotifyEntity(medic, RefusalKey(LF_EReviveRefusal.NO_ITEM), "", 4.0);
+			return LF_EReviveRefusal.NO_ITEM;
+		}
+
+		LF_EReviveRefusal refusal = Apply(medic, patient, medicOnDuty);
+		if (refusal == LF_EReviveRefusal.NONE && costs)
+		{
+			int removed = LF_InventoryUtils.RemoveAmount(medic, config.m_sReviveItemPrefab, config.m_iReviveItemCount);
+			LF_Debug.Info(FEATURE, string.Format("revive of %1 used %2 of %3", Uid(patient), removed, config.m_sReviveItemPrefab));
+		}
+
+		return refusal;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the action's entry. Reads the medic's duty from the account cache.
 	static LF_EReviveRefusal Perform(IEntity medic, IEntity patient)
 	{
@@ -109,7 +139,7 @@ class LF_Revive
 		if (accounts && medic)
 			onDuty = LF_MedicDuty.IsOnDuty(accounts.GetAccount(LF_Utils.GetPlayerUid(medic)));
 
-		return Apply(medic, patient, onDuty);
+		return ApplyWithCost(medic, patient, onDuty);
 	}
 
 	//------------------------------------------------------------------------------------------------

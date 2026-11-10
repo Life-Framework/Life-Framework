@@ -5852,6 +5852,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Burn the case file"
      Comment "Action: destroy the logged evidence of a forced locker."
     }
+    CustomStringTableItem "{7A30C5E1D49B6B01}" {
+     Id "LF-Revive_NoItem"
+     Target_en_us "You need a field dressing to revive someone."
+     Comment "Revive refusal: the medic has none of the configured revive item."
+    }
   }
  }
 }

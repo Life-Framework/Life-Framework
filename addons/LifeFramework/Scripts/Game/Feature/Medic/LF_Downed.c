@@ -167,6 +167,10 @@ class LF_Downed
 			// configured level so the wake is now; health stays at the sliver.
 			RaiseHitZone(damageManager.GetResilienceHitZone(), LF_MedicConfig.Get().m_fReviveRecoveryScaled);
 			RaiseHitZone(damageManager.GetBloodHitZone(), LF_MedicConfig.Get().m_fReviveRecoveryScaled);
+			// The wound that downed them still bleeds; a bleed on the bare sliver of health re-downs them
+			// seconds after the wake (#427). Treatment stops it and lifts health to a floor.
+			damageManager.RemoveAllBleedings();
+			RaiseHitZone(damageManager.GetDefaultHitZone(), LF_MedicConfig.Get().m_fReviveHealthScaled);
 			damageManager.UpdateConsciousness();
 			LF_Debug.Info(FEATURE, string.Format("wake of %1: resilience %2, blood %3, health %4, still unconscious %5", PlayerUid(character), damageManager.GetResilienceHitZone().GetHealthScaled(), damageManager.GetBloodHitZone().GetHealthScaled(), damageManager.GetDefaultHitZone().GetHealthScaled(), damageManager.LF_WantsUnconscious()));
 		}

@@ -876,7 +876,7 @@ async function runReviveProof() {
   const dir = sessionDir();
   const flag = (name, dflt) => { const i = process.argv.indexOf(name); return i > 0 ? Number(process.argv[i + 1]) : dflt; };
   const runs = flag("--runs", 10);
-  const limit = flag("--limit", 15);
+  const limit = flag("--limit", 12);
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
     const r = h.sendCommand(spec, timeout);
@@ -912,16 +912,21 @@ async function runReviveProof() {
     const revive = on(1, { verb: "use", className: "LF_ReviveAction", entityName: patient }, 10000);
     let woke = null;
     const samples = [];
-    while ((Date.now() - t0) / 1000 < limit + 5) {
+    let relapse = null;
+    // Sample until `limit` seconds after the revive, past the wake: a patient who wakes and is
+    // downed again seconds later (the #427 relapse) must still fail the run.
+    while ((Date.now() - t0) / 1000 < limit) {
       const own = parseState(state(2));
       const t = ((Date.now() - t0) / 1000).toFixed(1);
-      samples.push(`${t}s own: life=${own.life} res=${own.res} blood=${own.blood} hp=${own.hp}`);
-      if (own.life === "ALIVE" && woke === null) { woke = Number(t); break; }
+      samples.push(`${t}s own: life=${own.life} downed=${own.downed} res=${own.res} blood=${own.blood} hp=${own.hp}`);
+      if (own.life === "ALIVE" && own.downed === "0" && woke === null) woke = Number(t);
+      else if (woke !== null && (own.life !== "ALIVE" || own.downed === "1")) relapse = `${t}s life=${own.life} downed=${own.downed}`;
       wait(1000);
     }
     console.log(`RUN ${run}: revive=${revive.status} woke=${woke === null ? "NEVER" : woke + "s"} | ${samples.join(" | ")}`);
-    results.push({ run, ok: woke !== null && woke <= limit, woke });
-    if (woke === null || woke > limit) fails.push(`run ${run}: woke ${woke === null ? "never" : woke + " s"} (limit ${limit} s)`);
+    results.push({ run, ok: woke !== null && !relapse, woke, relapse });
+    if (woke === null) fails.push(`run ${run}: never woke within ${limit} s`);
+    if (relapse) fails.push(`run ${run}: woke at ${woke} s, then relapsed at ${relapse}`);
     wait(1500);
   }
   console.log(`revive runs: ${JSON.stringify(results)}`);

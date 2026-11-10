@@ -67,6 +67,15 @@ class LF_MedicConfig
 	[Attribute("60", UIWidgets.Auto, "A body that is this many metres from its carrier (a teleport, a lag spike) is dropped", params: "3 200")]
 	float m_fCarryReleaseDistance = 60;
 
+	[Attribute("0.25", UIWidgets.Auto, "Health (fraction of max) a revived player is lifted to. The downed sliver is lost again to bleeding within seconds, which downs them a second time (#427)", params: "0.05 1")]
+	float m_fReviveHealthScaled = 0.25;
+
+	[Attribute("{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et", UIWidgets.ResourceNamePicker, "Item the medic uses up per revive. Empty: free", "et")]
+	ResourceName m_sReviveItemPrefab;
+
+	[Attribute("1", UIWidgets.Auto, "How many of that item one revive uses", params: "0 10")]
+	int m_iReviveItemCount = 1;
+
 	protected static ref LF_MedicConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
