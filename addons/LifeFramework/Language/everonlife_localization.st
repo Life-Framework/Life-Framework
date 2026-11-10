@@ -3122,11 +3122,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "CASH IN HAND .. %1"
      Comment "ATM terminal line for the cash the player carries. %1 is the formatted amount."
     }
-    CustomStringTableItem "{2C6232410D2F89DE}" {
-     Id "LF-ATM_LineDebt"
-     Target_en_us "UNPAID DEBT ... %1"
-     Comment "ATM terminal line for hospital bills past their deadline, taken from the bank as it fills. %1 is the formatted debt. Hidden when nothing is owed."
-    }
     CustomStringTableItem "{7F695CCFB7B1DEFD}" {
      Id "LF-ATM_LineEntry"
      Target_en_us "AMOUNT > %1_"
@@ -6447,6 +6442,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Samogon"
      Comment "Name of the moonshine chain in ResourceChains.conf (#420)."
     }
+    CustomStringTableItem "{C4A100000000A0C1}" {
+     Id "LF-Chain_Smell_Title"
+     Target_en_us "Smell"
+     Comment "Toast title for the chain smell cue (#418)."
+    }
+    CustomStringTableItem "{C4A100000000A0C2}" {
+     Id "LF-Chain_Smell_Officer"
+     Target_en_us "Something sour and sweet is cooking nearby. Somebody is running a still."
+     Comment "Toast to an on-duty officer inside the smell range of a running chain site (#418)."
+    }
+    CustomStringTableItem "{C4A100000000A0C3}" {
+     Id "LF-Chain_Smell_Witness"
+     Target_en_us "You catch a sharp, sour smell in the air. Something is being brewed nearby."
+     Comment "Toast to a player inside the smell range of a running chain site (#418)."
+    }
+    CustomStringTableItem "{C4A100000000A0C4}" {
+     Id "LF-Chain_SmellLead"
+     Target_en_us "Smell of brewing"
+     Comment "Dispatch summary of the police lead a noticed chain smell raises (#418)."
+    }
     CustomStringTableItem "{5EA2C4A000000001}" {
      Id "LF-Offence_ChainGoods"
      Target_en_us "Carrying contraband goods"
@@ -6466,6 +6481,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Search_Vehicle_Action"
      Target_en_us "Search vehicle"
      Comment "Vehicle action: officer searches the storage for chain goods (#419)."
+    }
+    CustomStringTableItem "{C7C8981D12E7794E}" {
+     Id "LF-Offence_Shoplifting"
+     Target_en_us "Shoplifting"
+     Comment "Offence on a wanted poster: left a store with unpaid goods (#202)."
+    }
+    CustomStringTableItem "{F68211C7B6D815DE}" {
+     Id "LF-Store_Title"
+     Target_en_us "Store"
+     Comment "Toast title for the till and the shoplifting alarm (#202)."
+    }
+    CustomStringTableItem "{A674178BB9E4A612}" {
+     Id "LF-Store_Pay"
+     Target_en_us "Pay for goods"
+     Comment "Counter action: pay for the goods you carry from the shelves (#202)."
+    }
+    CustomStringTableItem "{2FE09D890B43FD73}" {
+     Id "LF-Store_Paid"
+     Target_en_us "Paid $%1. Thank you, here is your receipt."
+     Comment "Toast: the till took the cash and printed a receipt (#202). %1 is the total."
+    }
+    CustomStringTableItem "{2D6C14FA64678072}" {
+     Id "LF-Store_NothingToPay"
+     Target_en_us "You are not carrying anything from the shelves."
+     Comment "Toast: the till has nothing to charge (#202)."
+    }
+    CustomStringTableItem "{6A109C7952B78879}" {
+     Id "LF-Store_NotEnough"
+     Target_en_us "You owe $%1 and do not have that much cash."
+     Comment "Toast: not enough cash at the till (#202). %1 is the total owed."
+    }
+    CustomStringTableItem "{E76A90141796C076}" {
+     Id "LF-Store_NoStore"
+     Target_en_us "This counter is not a till."
+     Comment "Toast: the till action ran on something that is not a store (#202)."
+    }
+    CustomStringTableItem "{010DA8BE735E4DFA}" {
+     Id "LF-Store_PayFailed"
+     Target_en_us "The till could not take the cash. Nothing was charged."
+     Comment "Toast: the cash removal failed and was rolled back (#202)."
+    }
+    CustomStringTableItem "{DBC751DB441FD67F}" {
+     Id "LF-Store_Thief"
+     Target_en_us "You walked out without paying. The alarm is going off and the shopkeeper knows your face."
+     Comment "Toast: you left a store with unpaid goods (#202)."
+    }
+    CustomStringTableItem "{39DB2A87B5A357EA}" {
+     Id "LF-Store_ReceiptItem"
+     Target_en_us "Receipt"
+     Comment "Item name: till receipt (#202)."
+    }
+    CustomStringTableItem "{E5A5E7530BC7A76E}" {
+     Id "LF-Store_ReceiptItemDesc"
+     Target_en_us "Proof that the goods were paid for at the till."
+     Comment "Item description: till receipt (#202)."
+    }
+    CustomStringTableItem "{CD891C3C3B261FAD}" {
+     Id "LF-Store_ReceiptRead"
+     Target_en_us "Read receipt"
+     Comment "Item action: read a receipt (#202)."
+    }
+    CustomStringTableItem "{2D524086F58B8EF6}" {
+     Id "LF-Store_ReceiptTitle"
+     Target_en_us "Receipt"
+     Comment "Toast title of a read receipt (#202)."
+    }
+    CustomStringTableItem "{38DBA55BD5173210}" {
+     Id "LF-Store_ReceiptText"
+     Target_en_us "Receipt %1"
+     Comment "Toast: what the receipt says (#202). %1 is number, items, total."
+    }
+    CustomStringTableItem "{76DB00E0F82A1123}" {
+     Id "LF-Store_ReceiptBlank"
+     Target_en_us "The ink has faded. The receipt is blank."
+     Comment "Toast: a receipt carried over a restart reads blank (#202)."
+    }
+    CustomStringTableItem "{7998F3E07D68E505}" {
+     Id "LF-Shop_RefuseOutOfStock"
+     Target_en_us "Out of stock"
+     Comment "Order slip: the store has fewer than you asked for (#202)."
+    }
+    CustomStringTableItem "{2C6232410D2F89DE}" {
+     Id "LF-ATM_LineDebt"
+     Target_en_us "UNPAID DEBT ... %1"
+     Comment "ATM terminal line for hospital bills past their deadline, taken from the bank as it fills. %1 is the formatted debt. Hidden when nothing is owed."
     }
     CustomStringTableItem "{BD444F2178AE712F}" {
      Id "LF-Offence_ChopShop"
@@ -6561,26 +6661,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Chop_Gone"
      Target_en_us "The car left the yard. The job is off"
      Comment "Toast: the car moved before collection (#415)."
-    }
-    CustomStringTableItem "{C4A100000000A0C1}" {
-     Id "LF-Chain_Smell_Title"
-     Target_en_us "Smell"
-     Comment "Toast title for the chain smell cue (#418)."
-    }
-    CustomStringTableItem "{C4A100000000A0C2}" {
-     Id "LF-Chain_Smell_Officer"
-     Target_en_us "Something sour and sweet is cooking nearby. Somebody is running a still."
-     Comment "Toast to an on-duty officer inside the smell range of a running chain site (#418)."
-    }
-    CustomStringTableItem "{C4A100000000A0C3}" {
-     Id "LF-Chain_Smell_Witness"
-     Target_en_us "You catch a sharp, sour smell in the air. Something is being brewed nearby."
-     Comment "Toast to a player inside the smell range of a running chain site (#418)."
-    }
-    CustomStringTableItem "{C4A100000000A0C4}" {
-     Id "LF-Chain_SmellLead"
-     Target_en_us "Smell of brewing"
-     Comment "Dispatch summary of the police lead a noticed chain smell raises (#418)."
     }
   }
  }

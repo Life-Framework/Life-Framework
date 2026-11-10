@@ -28,7 +28,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations. The written version is that list's length (20). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock. The written version is that list's length (21). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -48,6 +48,7 @@
 //! A version 17 save includes the incident flags and has no evidence locker.
 //! A version 18 save includes the evidence locker and has no treatment bills.
 //! A version 19 save includes the treatment bills and has no chain stations (half-finished batches).
+//! A version 20 save includes the chain stations and has no store stock (#202).
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -103,6 +104,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("evidencelocker");
 		order.Insert("bills");
 		order.Insert("chainstations");
+		order.Insert("storestock");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -129,7 +131,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 20);
+		context.WriteValue("version", 21);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -385,6 +387,12 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_ChainStationRow> stationRows = LF_ChainStations.ExportAll();
 			context.Write(stationRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 chain station batch(es)", stationRows.Count()));
+		}
+		else if (payload == "storestock")
+		{
+			array<ref LF_StoreStockRow> stockRows = LF_Stores.ExportAll();
+			context.Write(stockRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 store stock row(s)", stockRows.Count()));
 		}
 		else
 		{
@@ -689,6 +697,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Warn("Persistence", "chain stations failed to read, leaving the live stations untouched");
+			}
+		}
+		else if (payload == "storestock")
+		{
+			// A version 1-20 save never reaches this payload, so the live stock is left alone.
+			array<ref LF_StoreStockRow> stockRows = new array<ref LF_StoreStockRow>();
+			if (context.Read(stockRows))
+			{
+				LF_Stores.ApplyAll(stockRows);
+				LF_Debug.Log("Persistence", string.Format("applied %1 store stock row(s)", stockRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "store stock failed to read, leaving the live stock untouched");
 			}
 		}
 		else
