@@ -67,6 +67,9 @@ An owner can replace `LF_Everon1989` with their own pack and keep the core.
 - The core alone boots: a CI-style check loads the core without the pack and the
   suite passes on DebugWorld.
 
+**DebugWorld** (decided 2026-11-09): the core keeps neutral fixtures only; the
+village and period content move to the pack, which also ships its own test world.
+
 **Risks.** Saved worlds and persistence data that store a prefab path: a move
 keeps the GUID but changes the path, so prove it with `wt e2e` on a save made
 before the move. `DebugWorld` uses village content today; decide which parts
@@ -120,6 +123,11 @@ the real tables.
 7. #283 Vehicles, zones, and persistence sections read through the config service
 8. #284 Move hard-coded tuning constants onto config classes
 9. #285 Clients receive config values through a versioned stream
+10. #553 Packs add namespaced config sections merged into the schema
+
+**Pack sections** (decided 2026-11-09): a pack adds its own sections under
+`packs.<AddonId>.<section>`, merged into the one schema (#553). Compatibility
+with other mods is only "do not collide"; no bridge or importer.
 
 **Risks.** Merging arrays of records (a shop's item list) needs stable keys per
 record, not array positions. Prefab references in JSON must be `{GUID}path` and
@@ -257,6 +265,4 @@ install guide.
 
 ## Open questions
 
-- Which DebugWorld content stays in the core as neutral test fixtures.
-- Whether a pack can add its own config sections (a modern pack's phone shop)
-  or only fill the seven.
+- None open on addons or config sections: decided 2026-11-09 (see decisions).

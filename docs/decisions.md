@@ -634,3 +634,33 @@ future versions of the pack differently; the core stays MIT for good.
 CONTRIBUTING.md asks pack contributors to agree to that relicensing, since
 without it the option would need every contributor's consent. Published
 releases stay MIT. Assets pulled in under CC-BY or similar keep their own terms.
+
+**2026-11-09 — The core's DebugWorld holds neutral fixtures only.** When the
+pack move happens (M3 workstream 1), village and period content go to
+`LF_Everon1989`. The core keeps generic test props, plain doors and boxes.
+Flagship tests run on a pack test world, so both addons are exercised on every
+build. Why: the core never holds period content (core-vs-pack red line), and
+the core's Workshop page is clean and modern. What it means for code:
+`validate-addon-boundary` stays strict; no "temporary exception" rows for the
+village in `core-pack-inventory.md`.
+
+**2026-11-09 — Packs may add their own config sections.** A pack declares a
+schema fragment namespaced under its addon id (`packs.<AddonId>.<section>`),
+merged into the one schema with per-field fallback like a core section. A pack
+section never overrides a core section. Why: new systems in a pack (the M5
+illicit chains, a modern pack's phone shop) need settings the seven core
+sections do not cover, and the generator and `config-check` must keep one
+source of truth. Issue #553.
+
+**2026-11-09 — Compatibility with other mods is "do not collide", nothing
+more.** The `LF_` prefix and the `validate-no-el-prefix` rule are the whole
+compatibility story. No bridge, importer or shared-state API for Overthrow or
+similar mods unless a real need appears. Why: the benefit is unproven and the
+work is large (maintainer, 2026-11-09).
+
+**2026-11-09 — Development pipelines are scheduled on demand, video first.**
+The Development track (assets, animation, weapons, vehicles, voice, video,
+release gates) does not run on a fixed capacity share. A pipeline starts when a
+milestone issue depends on it. The video pipeline (#390) goes first because it
+engages the community during development and feeds the M4 trailer (#317).
+Development work runs with `--priority low` so it never delays milestone issues.
