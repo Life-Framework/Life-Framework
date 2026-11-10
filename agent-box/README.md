@@ -328,7 +328,9 @@ of the flow steps. Check a few frames before publishing
 (`ffmpeg -ss 8 -i <clip>.mp4 -frames:v 1 -update 1 f.png`). `publish` uploads both to the rolling `film-evidence`
 prerelease and comments on the PR with the GIF inline. `flow film-smoke` is a
 capture-only smoke flow that needs no game. Showcase camera passes use
-`LF_FilmCameraRunner` (`Scripts/Game/Feature/Film/`), not yet wired to a verb.
+`LF_FilmCameraRunner` (`Scripts/Game/Feature/Film/`): harness verbs `camera orbit|follow x y z size seconds`
+and `scene start street|stop|status` (scripted actors, `LF_FilmActor`). `node tools/film/street-clip.mjs`
+records the walker-and-car clip (`docs/film-pipeline.md`, "Driving").
 
 ## Screenshots
 

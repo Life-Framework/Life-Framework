@@ -153,9 +153,42 @@ class LF_AgentCommand
 			return ParseCapture(parts, cmd);
 		if (cmd.Verb == "film")
 			return ParseFilm(parts, cmd);
+		if (cmd.Verb == "scene" || cmd.Verb == "camera")
+			return ParseFilmDirect(parts, cmd);
 
 		cmd.Error = "unknown_verb";
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//!   <id> scene start|stop|status [name]
+	//!   <id> camera orbit|follow <x> <y> <z> <radius|distance> <seconds>
+	protected static bool ParseFilmDirect(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 3)
+		{
+			cmd.Error = "need_mode";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		if (parts.Count() > 3)
+			cmd.Arg2 = parts[3];
+		if (cmd.Verb == "camera")
+		{
+			if (parts.Count() < 8)
+			{
+				cmd.Error = "need_camera_args";
+				return false;
+			}
+			cmd.PosX = parts[3].ToFloat();
+			cmd.PosY = parts[4].ToFloat();
+			cmd.PosZ = parts[5].ToFloat();
+			cmd.CamX = parts[6].ToFloat();
+			cmd.CamY = parts[7].ToFloat();
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -986,6 +1019,12 @@ class LF_AgentHarness
 		if (cmd.Verb == "film")
 		{
 			DoFilm(cmd);
+			return;
+		}
+
+		if (cmd.Verb == "scene" || cmd.Verb == "camera")
+		{
+			DoFilmDirect(cmd);
 			return;
 		}
 
@@ -2465,6 +2504,27 @@ class LF_AgentHarness
 
 		s_iCaptureId = cmd.Id;
 		WriteResult(cmd.Id, "pending", cmd.Arg2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `scene` runs a scripted actor scene on the server (LF_FilmDirector); `camera` plays a camera pass on
+	//! this client (LF_FilmCamera).
+	protected static void DoFilmDirect(LF_AgentCommand cmd)
+	{
+		if (cmd.Verb == "camera")
+		{
+			WriteResult(cmd.Id, "ok", LF_FilmCamera.Start(cmd.Arg1, Vector(cmd.PosX, cmd.PosY, cmd.PosZ), cmd.CamX, cmd.CamY));
+			return;
+		}
+
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.LF_AskFilmScene(cmd.Id, cmd.Arg1, cmd.Arg2);
 	}
 
 	//------------------------------------------------------------------------------------------------

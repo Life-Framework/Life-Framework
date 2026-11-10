@@ -395,6 +395,13 @@ class LF_Utils : Managed
 		if (!player)
 			return "";
 
+#ifdef LF_HARNESS
+		// Film actors (LF_FilmDirector) have no player; the harness build gives them a stand-in uid.
+		string standIn = LF_FilmIdentity.Get(player);
+		if (!standIn.IsEmpty())
+			return standIn;
+#endif
+
 		PlayerManager playerManager = GetGame().GetPlayerManager();
 		if (!playerManager)
 			return "";

@@ -220,6 +220,7 @@ export function buildLine(id, spec) {
     if (!Number.isInteger(seconds) || seconds <= 0) throw new Error(`film seconds must be a positive integer: ${spec.seconds}`);
     return `${line} ${seconds}`;
   }
+  if (spec.verb === "scene" || spec.verb === "camera") return `${id} ${spec.verb} ${spec.args}`;
   throw new Error(`unknown verb: ${spec.verb}`);
 }
 
@@ -1378,6 +1379,10 @@ function main(argv) {
     }
     if (cmd === "look") {
       return printResult(sendCommand({ verb: "look" }));
+    }
+    if (cmd === "scene" || cmd === "camera") {
+      // scene start|stop|status [name]; camera orbit|follow x y z size seconds (LF_FilmDirector, LF_FilmCamera)
+      return printResult(sendCommand({ verb: cmd, args: rest.join(" ") }));
     }
     if (cmd === "state") {
       return printResult(sendCommand({ verb: "state" }, 10000));
