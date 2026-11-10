@@ -4,7 +4,7 @@
 
 ## Related
 
-<!-- Fixes #123 · Discord thread · feature request -->
+<!-- Refs #123 · Discord thread · feature request. Use "Refs", not "Closes": merging does not close an issue, a human verifies it first (issue goes in-dev, or needs-playtest when Manual testing has steps) -->
 
 ## Verification
 
@@ -16,7 +16,7 @@
 
 ## Manual testing
 
-<!-- Delete this section if N/A (UI, multiplayer, JIP, save/restart). -->
+<!-- Delete this section if N/A (UI, multiplayer, JIP, save/restart). Real steps here make the issue needs-playtest and appear in the promotion checklist. -->
 
 **Steps**
 

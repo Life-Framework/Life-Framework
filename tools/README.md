@@ -29,7 +29,7 @@ tools\cli wt new <feature>              # create worktree + branch + port alloca
 tools\cli wt list                       # worktrees, ports, dirty/merged state
 tools\cli wt test|build|dev|gate <slug> # run a heavy command in a specific worktree
 tools\cli wt logs <slug> <pattern>      # grep a worktree's newest console.log (from anywhere)
-tools\cli wt ship <slug> [--closes N]   # gate -> push -> PR -> auto-merge (merges main only on conflict)
+tools\cli wt ship <slug> [--refs N]     # gate -> push -> PR -> auto-merge (merges main only on conflict)
 tools\cli wt prune <slug>               # remove a merged worktree + branch
 tools\cli prs status|heal [--dry-run]   # open ws/* PRs; heal idle DIRTY/BEHIND and stuck-green ones (docs/worktrees.md)
 tools\cli promote [--to sha] [--confirm] # human: list PRs since stable + checklist; --confirm moves stable (docs/worktrees.md)

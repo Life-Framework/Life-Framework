@@ -56,8 +56,8 @@ commit machine-specific paths or generated files.
 
 ## 4. Raise a pull request
 
-Use `tools\cli wt ship <short-name> --closes <issue-number>` when the worktree
-is ready. It runs the project's checks and opens a pull request. In the PR,
+Use `tools\cli wt ship <short-name> --refs <issue-number>` when the worktree
+is ready. Merging does not close the issue; a maintainer verifies it first. It runs the project's checks and opens a pull request. In the PR,
 describe the change, list the test and in-game proof, and name anything that
 still needs a manual check.
 

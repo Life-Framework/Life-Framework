@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
-import { DISCORD_URL, REPO_URL, formatDate, githubData, issueLayer, issueStatus, issueTopic, splitTitle, type Issue, type Milestone } from "@/lib/content";
+import { DISCORD_URL, REPO_URL, formatDate, githubData, issueLayer, issueStatus, isBuilt, isVerified, issueTopic, splitTitle, type Issue, type Milestone } from "@/lib/content";
 
 // Milestone and epic markers are shown as badges, so drop them from the display title.
 function titleOf(issue: Issue) {
@@ -14,7 +14,7 @@ function titleOf(issue: Issue) {
  * Each pillar is a vertical spine; each system on it grows a chain of issues to one side.
  */
 
-type Filter = "all" | "open" | "in-progress" | "done";
+type Filter = "all" | "open" | "in-progress" | "built" | "done";
 type Item = { issue: Issue; milestone: Milestone };
 type System = { name: string; items: Item[] };
 type Pillar = { name: string; items: Item[]; systems: System[] };
@@ -55,6 +55,7 @@ const PILLAR_ORDER = [
 const FILTERS: { id: Filter; label: string }[] = [
   { id: "open", label: "Needs a hand" },
   { id: "in-progress", label: "In progress" },
+  { id: "built", label: "Built, not verified" },
   { id: "done", label: "Done" },
   { id: "all", label: "Everything" },
 ];
@@ -87,6 +88,7 @@ const ICONS: Record<string, string> = {
   system: "M12 8a4 4 0 100 8 4 4 0 000-8zm0-5v2m0 14v2M3 12h2m14 0h2",
   done: "M5 12.5l4.5 4.5L19 7.5",
   "in-progress": "M12 7v5l3 2M12 3a9 9 0 100 18 9 9 0 000-18z",
+  built: "M5 12.5l4.5 4.5L19 7.5M3 20h18",
   open: "M12 6v12M6 12h12",
 };
 
@@ -99,10 +101,12 @@ function Icon({ name, fallback = "system" }: { name: string; fallback?: string }
 }
 
 function stateOf(issue: Issue): Exclude<Filter, "all"> {
-  if (issue.state === "closed") return "done";
+  // Only a human sign-off closes an issue (`verified`). Merged work waits as in-dev / needs-playtest.
+  if (issue.state === "closed" || isVerified(issue.labels)) return "done";
   // An epic whose sub-issues are all closed is finished work, whether or not anyone has closed the epic yet.
   const subs = issue.subIssues ?? [];
   if (subs.length > 0 && subs.every((x) => x.state === "closed")) return "done";
+  if (isBuilt(issue.labels)) return "built";
   return issue.assignees.length ? "in-progress" : "open";
 }
 
@@ -349,10 +353,10 @@ function Menu({
                   <li key={s.number}>
                     <a className="tree-menu__row" href={s.url} target="_blank" rel="noreferrer">
                       <span className="tree-menu__row-dot" aria-hidden="true">
-                        <Icon name={s.state === "closed" ? "done" : s.assignees.length ? "in-progress" : "open"} />
+                        <Icon name={s.state === "closed" ? "done" : isBuilt(s.labels) ? "built" : s.assignees.length ? "in-progress" : "open"} />
                       </span>
                       <span className="tree-menu__row-title">{titleOf({ ...issue, title: s.title }).title}</span>
-                      <span className="tree-menu__row-ms">{s.state === "closed" ? "done" : "open"} ↗</span>
+                      <span className="tree-menu__row-ms">{s.state === "closed" ? "done" : isBuilt(s.labels) ? "built" : "open"} ↗</span>
                     </a>
                   </li>
                 );
@@ -396,6 +400,11 @@ function Menu({
             </li>
             <li>Ask questions in the issue's thread in the Discord #roadmap forum.</li>
           </ol>
+        )}
+        {state === "built" && (
+          <p className="tree-menu__copy">
+            Merged to <code>main</code> and waiting for a human playtest. It counts as done once it is verified.
+          </p>
         )}
         {state === "in-progress" && (
           <p className="tree-menu__copy">
@@ -484,6 +493,7 @@ export function RoadmapTree() {
     all: allItems.length,
     open: allItems.filter((i) => stateOf(i.issue) === "open").length,
     "in-progress": allItems.filter((i) => stateOf(i.issue) === "in-progress").length,
+    built: allItems.filter((i) => stateOf(i.issue) === "built").length,
     done: allItems.filter((i) => stateOf(i.issue) === "done").length,
   };
   const openItems = allItems
