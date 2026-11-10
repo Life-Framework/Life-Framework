@@ -3122,6 +3122,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "CASH IN HAND .. %1"
      Comment "ATM terminal line for the cash the player carries. %1 is the formatted amount."
     }
+    CustomStringTableItem "{2C6232410D2F89DE}" {
+     Id "LF-ATM_LineDebt"
+     Target_en_us "UNPAID DEBT ... %1"
+     Comment "ATM terminal line for hospital bills past their deadline, taken from the bank as it fills. %1 is the formatted debt. Hidden when nothing is owed."
+    }
     CustomStringTableItem "{7F695CCFB7B1DEFD}" {
      Id "LF-ATM_LineEntry"
      Target_en_us "AMOUNT > %1_"

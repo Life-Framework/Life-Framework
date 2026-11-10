@@ -196,7 +196,7 @@ export function pushBranch(wtPath, branch) {
 
 // ---------------------------------------------------------------- GitHub
 
-const PR_FIELDS = "number,title,url,headRefName,headRefOid,mergeStateStatus,mergeable,autoMergeRequest,statusCheckRollup,createdAt,isDraft";
+const PR_FIELDS = "number,baseRefName,title,url,headRefName,headRefOid,mergeStateStatus,mergeable,autoMergeRequest,statusCheckRollup,createdAt,isDraft";
 
 function gh(root, args) {
   const bin = wt.ghBin();
@@ -292,8 +292,8 @@ export function prsStatus(root) {
   return 0;
 }
 
-function gateIn(wtPath, log) {
-  const tier = touchesScripts(wtPath) ? "all" : "fast";
+function gateIn(wtPath, log, base = "origin/main") {
+  const tier = touchesScripts(wtPath, base) ? "all" : "fast";
   const cli = join(wtPath, "tools", "cli.mjs");
   const step = (args) => {
     log(`    gate: tools\\cli ${args.join(" ")}`);
@@ -336,13 +336,14 @@ function alignWithPr(wtPath, pr) {
 function healOne(root, pr, { dryRun, log }) {
   const d = describeWorktree(root, pr.headRefName, Date.now());
   if (d.live) return { kind: "live", msg: `worktree ${d.label}: an agent is working; not touched` };
-  const conflicts = predictConflicts(root, pr.headRefOid);
+  const baseRef = "origin/" + (pr.baseRefName || "main");
+  const conflicts = predictConflicts(root, pr.headRefOid, baseRef);
   const human = conflicts.filter((p) => conflictKind(p) === null);
   if (dryRun) {
     if (human.length) return { kind: "attention", msg: `would report: needs a human/agent, conflicts in ${human.join(", ")}` };
     const where = d.w ? d.w.path : "a temp worktree";
     const extra = conflicts.length ? ` and resolve ${conflicts.join(", ")}` : "";
-    return { kind: "would", msg: `would merge origin/main in ${where}${extra}, gate, push, re-queue auto-merge` };
+    return { kind: "would", msg: `would merge ${baseRef} in ${where}${extra}, gate, push, re-queue auto-merge` };
   }
   if (human.length) return { kind: "attention", msg: `needs a human/agent: conflicts in ${human.join(", ")}`, paths: human };
   if (d.w && wt.currentBranch(d.w.path) !== pr.headRefName) {
@@ -360,14 +361,14 @@ function healOne(root, pr, { dryRun, log }) {
       temp = true;
       log(`    no worktree for ${pr.headRefName}; using temp ${dir}`);
     }
-    const m = healMerge(dir);
+    const m = healMerge(dir, { base: baseRef });
     if (m.status === "needs-human") return { kind: "attention", msg: `needs a human/agent: ${m.reason}${m.conflicted.length ? ` (${m.conflicted.join(", ")})` : ""}; merge aborted, PR untouched`, paths: m.conflicted };
-    if (m.status === "up-to-date") log("    already contains origin/main");
-    else log(`    merged origin/main${m.resolved?.length ? `, resolved ${m.resolved.join(", ")}` : ""}`);
-    const g = gateIn(dir, log);
+    if (m.status === "up-to-date") log(`    already contains ${baseRef}`);
+    else log(`    merged ${baseRef}${m.resolved?.length ? `, resolved ${m.resolved.join(", ")}` : ""}`);
+    const g = gateIn(dir, log, baseRef);
     if (!g.ok) {
       if (!temp && m.status !== "up-to-date") wt.git(dir, ["reset", "--keep", m.pre]); // drop only our merge commit
-      return { kind: "attention", msg: `gate failed (${g.what}) after merging main; not pushed, worktree reset to ${m.pre.slice(0, 7)}` };
+      return { kind: "attention", msg: `gate failed (${g.what}) after merging ${baseRef}; not pushed, worktree reset to ${m.pre.slice(0, 7)}` };
     }
     if (m.status !== "up-to-date") {
       const push = pushBranch(dir, pr.headRefName);

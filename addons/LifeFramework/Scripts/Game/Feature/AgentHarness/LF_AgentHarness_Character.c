@@ -513,7 +513,8 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		bool changed = siren.ApplyRequest(mode, GetGame().GetWorld().GetWorldTime());
+		// This character stands in for the driver, so the on-duty rule of the driver's key applies (#464).
+		bool changed = siren.RequestBy(this, mode, GetGame().GetWorld().GetWorldTime());
 		int on = 0;
 		if (siren.IsOn())
 			on = 1;

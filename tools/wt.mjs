@@ -332,7 +332,24 @@ export function releaseLock(root, name, owner = process.pid) {
 
 // ---------------------------------------------------------------- worktree lifecycle
 
-export function wtNew(root, slug, { waitMs = 0 } = {}) {
+// The branch a worktree was cut from and ships to. Worktrees without recorded
+// metadata (created before --base existed) stay on main.
+export function baseOf(entry) {
+  return entry?.base || "main";
+}
+
+// Base of the worktree checked out at `root` (main when unregistered).
+export function baseOfRoot(root) {
+  const slug = slugOfRoot(root);
+  return slug ? baseOf(readState(root).worktrees?.[slug]) : "main";
+}
+
+export function checkBaseName(base) {
+  if (!/^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(base) || base.includes("..")) throw new Error(`invalid base branch '${base}'`);
+}
+
+export function wtNew(root, slug, { waitMs = 0, base = "main" } = {}) {
+  checkBaseName(base);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
     throw new Error(`invalid slug '${slug}': lowercase letters, digits and single hyphens only`);
   }
@@ -349,7 +366,10 @@ export function wtNew(root, slug, { waitMs = 0 } = {}) {
     const dir = join(dirname(main), `Life-Framework-ws-${slug}`);
     if (existsSync(dir)) throw new Error(`directory already exists: ${dir}`);
     git(root, ["fetch", "origin", "--prune"]);
-    const add = git(root, ["worktree", "add", dir, "-b", branch, "origin/main"]);
+    if (!gitOk(root, ["show-ref", "--verify", `refs/remotes/origin/${base}`])) {
+      throw new Error(`base branch origin/${base} does not exist; push it first`);
+    }
+    const add = git(root, ["worktree", "add", dir, "-b", branch, `origin/${base}`]);
     if (add.status !== 0) throw new Error(`git worktree add failed: ${add.stderr || add.stdout}`);
     const ports = allocatePorts(state);
     state.worktrees[slug] = {
@@ -357,13 +377,14 @@ export function wtNew(root, slug, { waitMs = 0 } = {}) {
       path: dir,
       branch,
       ports,
+      base,
       created: new Date().toISOString(),
       status: "active",
     };
     writeState(root, state);
     writeMarker(dir, slug);
     copyResourceDatabase(dir, main);
-    return { slug, path: dir, branch, ports };
+    return { slug, path: dir, branch, ports, base };
   } finally {
     releaseLock(root, "wt");
   }
@@ -379,13 +400,14 @@ export function wtSync(root, slug) {
   }
   const dirty = git(e.path, ["status", "--porcelain"]).stdout.trim();
   if (dirty) throw new Error(`worktree ${slug} has uncommitted changes; commit or stash first`);
-  const merge = git(e.path, ["merge", "origin/main", "--no-edit", "--no-ff"]);
+  const base = baseOf(e);
+  const merge = git(e.path, ["merge", `origin/${base}`, "--no-edit", "--no-ff"]);
   if (merge.status !== 0) {
     const unmerged = git(e.path, ["diff", "--name-only", "--diff-filter=U"]).stdout.trim();
     const detail = unmerged ? `conflicts in:\n${unmerged}\nresolve them, commit, and re-run` : (merge.stderr || merge.stdout).trim();
-    throw new Error(`merge origin/main into ${e.branch} failed: ${detail}`);
+    throw new Error(`merge origin/${base} into ${e.branch} failed: ${detail}`);
   }
-  return { slug, branch: e.branch, path: e.path };
+  return { slug, branch: e.branch, path: e.path, base };
 }
 
 // True when merging `theirs` into the worktree branch would conflict. Uses
@@ -416,8 +438,9 @@ export function wtPrune(root, slug, { force = false } = {}) {
 
     if (!force) {
       git(root, ["fetch", "origin", "--prune"]);
-      if (!gitOk(root, ["merge-base", "--is-ancestor", e.branch, "origin/main"])) {
-        throw new Error(`branch ${e.branch} is not merged into origin/main; use --force to discard unmerged work`);
+      const base = baseOf(e);
+      if (!gitOk(root, ["merge-base", "--is-ancestor", e.branch, `origin/${base}`])) {
+        throw new Error(`branch ${e.branch} is not merged into origin/${base}; use --force to discard unmerged work`);
       }
       const dirty = git(e.path, ["status", "--porcelain"]).stdout.trim();
       if (dirty) throw new Error(`worktree ${slug} has uncommitted changes; use --force to discard`);
@@ -457,9 +480,9 @@ export function commitSubjects(root, range) {
   return res.status === 0 ? res.stdout.split(/\r?\n/).filter(Boolean) : [];
 }
 
-export function createPrGh(root, { head, title, body }) {
+export function createPrGh(root, { head, title, body, base = "main" }) {
   const gh = ghBin();
-  const res = run(gh, ["pr", "create", "--base", "main", "--head", head, "--title", title, "--body", body], { cwd: root });
+  const res = run(gh, ["pr", "create", "--base", base, "--head", head, "--title", title, "--body", body], { cwd: root });
   if (res.status !== 0) throw new Error(`gh pr create failed: ${res.stderr || res.stdout}`);
   const out = res.stdout.trim();
   const url = (out.match(/https?:\/\/\S+/i) || [])[0] || out.split(/\r?\n/).pop();
@@ -485,7 +508,16 @@ export function findOpenPrGh(root, branch) {
 export function autoMergePrGh(root, number) {
   const gh = ghBin();
   const res = run(gh, ["pr", "merge", String(number), "--auto", "--merge"], { cwd: root });
-  const out = (res.stdout + res.stderr).trim();
+  let out = (res.stdout + res.stderr).trim();
+  // A base with no required checks (an unprotected branch) is "clean" at once, so auto-merge is refused: merge now.
+  if (res.status !== 0 && /clean status/i.test(out)) {
+    const watch = run(gh, ["pr", "checks", String(number), "--watch", "--fail-fast"], { cwd: root });
+    if (watch.status !== 0) throw new Error(`PR checks did not pass; not merging: ${(watch.stdout + watch.stderr).trim().slice(-400)}`);
+    const now = run(gh, ["pr", "merge", String(number), "--merge"], { cwd: root });
+    out = (now.stdout + now.stderr).trim();
+    if (now.status !== 0) throw new Error(`gh pr merge failed: ${out}`);
+    return out || "merged after checks passed (base has no required checks)";
+  }
   if (res.status !== 0 && !/already/i.test(out)) throw new Error(`gh pr merge --auto failed: ${out}`);
   return out;
 }
@@ -505,12 +537,12 @@ async function githubFetch(owner, repo, path, { method = "GET", body, token } = 
   return { status: res.status, json: text ? JSON.parse(text) : null };
 }
 
-export async function createPrRest(root, { head, title, body, token }) {
+export async function createPrRest(root, { head, title, body, token, base = "main" }) {
   const or = originOwnerRepo(root);
   if (!or) throw new Error("origin is not a github.com remote; cannot use REST fallback (install gh)");
   const res = await githubFetch(or.owner, or.repo, "/pulls", {
     method: "POST",
-    body: { title, head, base: "main", body },
+    body: { title, head, base, body },
     token,
   });
   if (res.status >= 300) throw new Error(`REST create PR failed (${res.status}): ${JSON.stringify(res.json)}`);

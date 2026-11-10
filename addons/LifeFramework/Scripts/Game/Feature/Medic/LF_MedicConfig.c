@@ -79,6 +79,9 @@ class LF_MedicConfig
 	[Attribute("100", UIWidgets.Auto, "Cash on the paper treatment bill a revive writes for the patient, paid at the hospital desk (#260)", params: "1 100000")]
 	int m_iReviveBillAmount = 100;
 
+	[Attribute("48", UIWidgets.Auto, "In-game hours after which an unpaid treatment bill becomes debt, taken from the bank as soon as it holds money (#464). 0: never", params: "0 720")]
+	int m_iBillDeadlineHours = 48;
+
 	[Attribute("0.5", UIWidgets.Auto, "Fraction of a paid revive bill the reviving medic earns in cash at clock-out", params: "0 1")]
 	float m_fBillMedicShare = 0.5;
 

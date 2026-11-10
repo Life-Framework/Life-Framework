@@ -111,7 +111,7 @@ class LF_CharacterATMComponent : ScriptComponent
 		if (!account)
 		{
 			LF_Debug.Error("ATM", request + " rejected: player UID is unavailable");
-			ReplyResult(deposit, LF_EATMRefusal.NO_ACCOUNT, amount, 0, LF_MoneyUtils.GetCash(character));
+			ReplyResult(deposit, LF_EATMRefusal.NO_ACCOUNT, amount, 0, LF_MoneyUtils.GetCash(character), 0);
 			return;
 		}
 
@@ -133,7 +133,7 @@ class LF_CharacterATMComponent : ScriptComponent
 		if (reason == LF_EATMRefusal.NONE)
 			PlayCashSound(character);
 
-		ReplyResult(deposit, reason, amount, account.GetBalance(), LF_MoneyUtils.GetCash(character));
+		ReplyResult(deposit, reason, amount, account.GetBalance(), LF_MoneyUtils.GetCash(character), LF_TreatmentBills.TotalDebt(playerUid));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -250,21 +250,22 @@ class LF_CharacterATMComponent : ScriptComponent
 
 		int balance = account.GetBalance();
 		int cash = LF_MoneyUtils.GetCash(character);
+		int debt = LF_TreatmentBills.TotalDebt(LF_Utils.GetPlayerUID(character));
 		if (IsLocalPlayer())
-			RpcDo_Balance(balance, cash);
+			RpcDo_Balance(balance, cash, debt);
 		else
-			Rpc(RpcDo_Balance, balance, cash);
+			Rpc(RpcDo_Balance, balance, cash, debt);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Delivers an outcome to the owning client. A listen-server host has no wire hop for an
 	//! Owner-targeted RPC to itself, so the handler runs directly there (same as the shop bridge).
-	protected void ReplyResult(bool deposit, LF_EATMRefusal reason, int amount, int balance, int cash)
+	protected void ReplyResult(bool deposit, LF_EATMRefusal reason, int amount, int balance, int cash, int debt)
 	{
 		if (IsLocalPlayer())
-			RpcDo_Result(deposit, reason, amount, balance, cash);
+			RpcDo_Result(deposit, reason, amount, balance, cash, debt);
 		else
-			Rpc(RpcDo_Result, deposit, reason, amount, balance, cash);
+			Rpc(RpcDo_Result, deposit, reason, amount, balance, cash, debt);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -283,15 +284,15 @@ class LF_CharacterATMComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_Result(bool deposit, int reason, int amount, int balance, int cash)
+	protected void RpcDo_Result(bool deposit, int reason, int amount, int balance, int cash, int debt)
 	{
-		LF_ATMTerminal.OnResult(deposit, LF_ATMRefusal.FromWire(reason), amount, balance, cash);
+		LF_ATMTerminal.OnResult(deposit, LF_ATMRefusal.FromWire(reason), amount, balance, cash, debt);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_Balance(int balance, int cash)
+	protected void RpcDo_Balance(int balance, int cash, int debt)
 	{
-		LF_ATMTerminal.OnBalance(balance, cash);
+		LF_ATMTerminal.OnBalance(balance, cash, debt);
 	}
 };
