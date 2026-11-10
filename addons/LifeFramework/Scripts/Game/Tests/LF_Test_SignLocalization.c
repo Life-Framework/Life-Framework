@@ -19,7 +19,7 @@ class LF_Test_SignLocalization : LF_Test
 		ctx.False(LF_SignCatalog.IsKey(""), "an empty value is not a key");
 
 		ctx.EqualStr("Bring cash, #1 rule: no guns.", LF_SignCatalog.Resolve("Bring cash, #1 rule: no guns."), "a literal is shown as written");
-		ctx.EqualStr("What", LF_SignCatalog.Resolve("#LF-Sign_What"), "a key resolves through the string table");
+		ctx.EqualStr("What it is", LF_SignCatalog.Resolve("#LF-Sign_What"), "a key resolves through the string table");
 		ctx.EqualStr("Mining area", LF_SignCatalog.Resolve("#LF-Sign_Mining_Title"), "a sign title key resolves");
 
 		LF_SignDef literal = LF_Test_SignCatalog.MakeSign("bank", "Bank", "", "", "", "");
@@ -36,13 +36,12 @@ class LF_Test_SignLocalization : LF_Test
 		ctx.True(LF_SignComponent.WantsFace(true, false, true), "a rendering client draws the board face");
 
 		array<ref LF_UIPart> parts = LF_SignCatalog.BuildParts(keyed);
-		ctx.Equal(3, parts.Count(), "a keyed sign builds title, What, and Close");
-		if (parts.Count() != 3)
+		ctx.Equal(5, parts.Count(), "a keyed sign builds title, rule, What (label and body), and Close");
+		if (parts.Count() != 5)
 			return;
 
 		ctx.EqualStr("Mining area", parts.Get(0).GetText(), "the card title is translated");
-		string what = parts.Get(1).GetText();
-		ctx.True(what.StartsWith("What: "), "the section heading is translated");
-		ctx.False(what.Contains("#LF-"), "no raw key reaches the card");
+		ctx.EqualStr("WHAT IT IS", parts.Get(2).GetText(), "the section heading is translated");
+		ctx.False(parts.Get(3).GetText().Contains("#LF-"), "no raw key reaches the card");
 	}
 }

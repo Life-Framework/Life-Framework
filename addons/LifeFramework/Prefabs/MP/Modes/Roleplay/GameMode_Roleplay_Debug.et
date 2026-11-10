@@ -126,4 +126,5 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
   }
  }
  m_bDevToolsEnabled 1
+ m_bConvoyNearDrop 1
 }
