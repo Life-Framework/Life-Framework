@@ -324,6 +324,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleKeyInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLockIdMatch(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleLockPolish(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistChatResources(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLogic(), LF_TestTier.LOGIC);
