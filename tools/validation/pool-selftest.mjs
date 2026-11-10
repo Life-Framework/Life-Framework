@@ -112,6 +112,9 @@ try {
   check(!q.lanesFor(lanes2, "test").some((l) => l.port === 2011) && q.allLaneLocks(lanes2).length === 4, "a test lane shares a port with a session lane");
   const ses = { sessionReserveServerMb: 800, sessionReserveClientMb: 1200 };
   check(q.sessionReserveMb(ses, 1) === 2000 && q.sessionReserveMb(ses, 2) === 3200, "session reserve per client count");
+  const sesLow = { ...ses, sessionReserve: { lowspec: { serverMb: 500, clientMb: 600 } } };
+  check(q.sessionReserveMb(sesLow, 2, "lowspec") === 1700 && q.sessionReserveMb(sesLow, 2) === 3200 && q.sessionReserveMb(sesLow, 2, "full") === 3200 && q.sessionReserveMb(ses, 1, "lowspec") === 2000, "session reserve per profile (a profile without numbers uses the full ones)");
+  check(q.ramVerdict({ running: 1, freeMb: 3200, minFreeMb: 1500, reserveMb: q.sessionReserveMb(sesLow, 1, "lowspec") }).ok && !q.ramVerdict({ running: 1, freeMb: 3200, minFreeMb: 1500, reserveMb: q.sessionReserveMb(sesLow, 1, "full") }).ok, "a lowspec session does not fit sooner than a full one under the same free RAM");
   check(q.ramVerdict({ running: 1, freeMb: 3600, minFreeMb: 1500, reserveMb: 2000 }).ok && !q.ramVerdict({ running: 1, freeMb: 3400, minFreeMb: 1500, reserveMb: 2000, pendingMb: 2000 }).ok, "RAM gate ignores the reserve or the sessions still booting");
   check(!q.ramVerdict({ running: 1, freeMb: 3400, minFreeMb: 1500, reserveMb: 2000, pendingMb: 2000 }).ok && /for the session/.test(q.ramVerdict({ running: 1, freeMb: 3000, minFreeMb: 1500, reserveMb: 2000 }).reason), "RAM wait reason lacks the session reserve");
   const T0 = Date.parse("2026-01-01T00:00:00Z");

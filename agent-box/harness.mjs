@@ -18,7 +18,7 @@ import { bmpFileToPng, classifyMesh, classifyMeshFile, decodeBmp, decodePng, enc
 import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads, loadPlaced, loadWorld } from "./layers.mjs";
 import { claimPlay, decideClaim, rendererFor } from "./play-claim.mjs";
-import { sessionForBox } from "./session.mjs";
+import { readSession, sessionForBox } from "./session.mjs";
 import { sessionDirOfBox, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, runTownReport, selectRoadmapSites, siteLook, siteShotOffset, STREET_Z } from "./report.mjs";
 import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadStrings, manifestErrors, parseSignConfig, resolveSite, signCard, signIssues } from "./town.mjs";
@@ -259,6 +259,17 @@ function nextId() {
 
 let playClaim = null;
 
+// A picture from a lowspec session is 640x360 with the lowest textures: fine for a proof that reads
+// logs, useless as evidence. Said once per process; the shot still goes out.
+let lowspecWarned = false;
+function warnLowspecCapture(dir) {
+  if (lowspecWarned) return;
+  const s = readSession(dir);
+  if (s?.profile !== "lowspec") return;
+  lowspecWarned = true;
+  console.error("WARN  this session is lowspec (640x360, lowest textures, no post-processing): a capture is not evidence. 'session down', then 'session up --profile full' for shots");
+}
+
 export function sendCommand(spec, timeoutMs = 8000) {
   const id = nextId();
   const address = addressFor(boxOverride);
@@ -267,6 +278,7 @@ export function sendCommand(spec, timeoutMs = 8000) {
     const d = sessionDirOfBox(b);
     if (d) {
       touchLease(d, spec.verb);
+      if (spec.verb === "capture") warnLowspecCapture(d);
       // The pool's hold cap: one line, once, when other sessions are queued behind this one.
       const warn = takeHoldWarning(d);
       if (warn) console.error(warn);

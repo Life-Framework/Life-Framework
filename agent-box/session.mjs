@@ -42,6 +42,8 @@ import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { PLAYTEST_MISSION } from "../tools/host/host.mjs";
+import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
+export { applyClientSettings, resolveProfile };
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -196,14 +198,16 @@ export function laneArgs(port) {
   return ["-addr", `127.0.0.1:${port}`, "-a2sPort", String(17777 + (port - 2001) * 10)];
 }
 
-export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001 }) {
+// rp: the resolved session profile (session-profile.mjs); absent means full.
+export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = false, port = 2001, rp = resolveProfile("full") }) {
   const args = [
     "-server", mission === "playtest" ? PLAYTEST_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
     "-addons", "LifeFramework",
     "-profile", profile,
-    "-maxFPS", "30",
+    "-maxFPS", String(rp.server?.maxFps ?? 30),
     "-logLevel", "normal",
+    ...(rp.server?.args ?? []),
     // -noBackend clients all carry the NULL identity and the same Steam name;
     // LF_Utils.GetPlayerUID gives each player id its own identity under this define.
     ...defineArgs(mission),
@@ -221,7 +225,7 @@ export function windowFor(n, res = WINDOW) {
   return { x: (n - 1) * (res.width + WINDOW.gap), y: 0, width: res.width, height: res.height };
 }
 
-export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port = 2001, mission = "debug", session = "", res = WINDOW, sound = false }) {
+export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port = 2001, mission = "debug", session = "", res = WINDOW, sound = false, rp = resolveProfile("full") }) {
   const w = windowFor(n, res);
   return [
     "-client", port && port !== 2001 ? `${address}:${port}` : address,
@@ -237,12 +241,42 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port 
     "-noFocus",
     "-noSplash",
     ...(sound ? [] : ["-noSound"]),
-    "-maxFPS", "30",
+    "-maxFPS", String(rp.client?.maxFps ?? 30),
+    ...(rp.client?.args ?? []),
     ...defineArgs(mission),
     "-disableCrashReporter",
     "-noBackend",
     ...(session ? ["-lfSession", session] : []),
   ];
+}
+
+// --profile full|lowspec (default lowspec; LF_SESSION_PROFILE overrides the default), --levers a,b to
+// run a subset (session-profile.mjs). Returns the resolved profile a session records.
+export function parseSessionProfile(args) {
+  const profile = parseProfile(args);
+  return resolveProfile(profile, parseLevers(args, profile));
+}
+
+// The profile the session recorded in dir runs with ("full" when there is none, or it predates profiles).
+export function recordedProfile(dir = sessionDir()) {
+  return readSession(dir)?.profile ?? "full";
+}
+
+// Throws for a tool that takes pictures when the live session is lowspec; the message says what to run.
+export function requireFullProfile(what, dir = sessionDir()) {
+  const s = readSession(dir);
+  if (s && !s.stoppedAt && s.profile === "lowspec") throw new Error(`${what} needs a full-profile session and this one is lowspec (640x360, lowest textures): 'node agent-box/session.mjs down', then 'up --profile full'`);
+}
+
+// The profile a recorded session ran with; a session of before profiles was full.
+export function profileOf(state) {
+  return resolveProfile(state?.profile ?? "full", state?.levers);
+}
+
+// An explicit --res wins; else the profile's window (lowspec 640x360); else the usual default.
+export function sessionRes(args, rp) {
+  if (args.includes("--res") || !rp?.client?.res) return parseRes(args);
+  return { ...rp.client.res };
 }
 
 export function parseClients(args) {
@@ -285,6 +319,54 @@ export function parseState(detail) {
     if (eq > 0) out[part.slice(0, eq)] = part.slice(eq + 1);
   }
   return out;
+}
+
+// The lowspec profile: the default, what asks for full, what each side's args and settings carry.
+export function selftestProfile() {
+  const failures = [];
+  const low = parseSessionProfile([]);
+  if (low.profile !== "lowspec") failures.push(`the default profile is ${low.profile}, not lowspec`);
+  for (const flag of [["--res", "1920x1080"], ["--visible"], ["--sound"], ["--profile", "full"]]) {
+    if (parseSessionProfile(flag).profile !== "full") failures.push(`${flag.join(" ")} does not mean a full profile`);
+  }
+  if (parseSessionProfile(["--res", "1280x720", "--profile", "lowspec"]).profile !== "lowspec") failures.push("an explicit --profile lowspec lost to --res");
+  try {
+    parseSessionProfile(["--profile", "tiny"]);
+    failures.push("--profile tiny was accepted");
+  } catch {}
+  try {
+    parseSessionProfile(["--levers", "nope"]);
+    failures.push("--levers nope was accepted");
+  } catch {}
+  if (parseSessionProfile(["--levers", "tex,res"]).levers.join() !== "tex,res") failures.push("--levers did not replace the profile list");
+  const full = resolveProfile("full");
+  const sf = serverArgs({ addonsDir: "A", profile: "SP", rp: full });
+  const sl = serverArgs({ addonsDir: "A", profile: "SP", rp: low });
+  if (sf.includes("-nds") || sf[sf.indexOf("-maxFPS") + 1] !== "30") failures.push("a full server is not the old server");
+  if (sl[sl.indexOf("-nds") + 1] !== "1") failures.push("a lowspec server does not pass -nds 1");
+  const cf = clientArgs({ n: 1, addonsDir: "A", profile: "P", rp: full });
+  const cl = clientArgs({ n: 1, addonsDir: "A", profile: "P", rp: low, res: sessionRes([], low) });
+  if (cf[cf.indexOf("-maxFPS") + 1] !== "30" || cf[cf.indexOf("-screenWidth") + 1] !== "640") failures.push("a full client is not the old client");
+  if (cl[cl.indexOf("-maxFPS") + 1] !== "15") failures.push("a lowspec client is not capped at 15 fps");
+  if (cl[cl.indexOf("-screenWidth") + 1] !== "640" || cl[cl.indexOf("-screenHeight") + 1] !== "360") failures.push("a lowspec client is not 640x360");
+  if (!cl.includes("-noSound")) failures.push("a lowspec client has sound");
+  if (cl.filter((a) => a === "-scrDefine").length !== cf.filter((a) => a === "-scrDefine").length) failures.push("lowspec changed the script defines (the server would refuse the client)");
+  if (sessionRes(["--res", "1920x1080"], low).width !== 1920) failures.push("an explicit --res lost to the profile");
+  const dir = mkdtempSync(join(tmpdir(), "lf-profile-"));
+  try {
+    const steam = join(dir, "steam");
+    mkdirSync(join(steam, "config"), { recursive: true });
+    const vdf = ["\"users\"", "{", "  \"76561198000000001\"", "  {", "    \"MostRecent\" \"1\"", "  }", "}", ""];
+    writeFileSync(join(steam, "config", "loginusers.vdf"), vdf.join(String.fromCharCode(10)));
+    const written = applyClientSettings(join(dir, "c1"), low, steam);
+    const eng = written.find((p) => p.includes("app1874880_user76561198000000001") && p.endsWith("ReforgerEngineSettings.conf"));
+    if (!eng || !/TextureDetail 4/.test(readFileSync(eng, "utf8"))) failures.push("lowspec did not write TextureDetail 4 into the Steam user's settings");
+    applyClientSettings(join(dir, "c1"), full, steam);
+    if (existsSync(eng)) failures.push("a full session left the lowspec settings in the client profile");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+  return failures;
 }
 
 export function selftestSession() {
@@ -404,6 +486,7 @@ export function selftestSession() {
   if (judgeBleed("120", 180).length) failures.push("judgeBleed failed a good read");
   if (!judgeBleed("-1", 180).length) failures.push("judgeBleed passed a client that reads no clock");
   if (!judgeBleed("200", 180).length) failures.push("judgeBleed passed a time above the config");
+  failures.push(...selftestProfile());
   return failures;
 }
 
@@ -535,6 +618,7 @@ function writeRoster(playerIds) {
 // Runs fn while one client records itself in-engine (tools/film/engine.mjs),
 // then encodes the clip. Works on the hidden LF-Agents desktop.
 async function filmed(label, rest, fn) {
+  requireFullProfile("filming");
   const eng = await import("../tools/film/engine.mjs");
   const h = await import("./harness.mjs");
   const i = rest.indexOf("--film-client");
@@ -848,7 +932,7 @@ async function runReset(args = []) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   // Any session command is activity for the pool's lease (tools/remote/pool.mjs reapIdleSessions).
@@ -875,6 +959,7 @@ async function main(argv) {
     rest = routed.args;
   }
   if (cmd === "film") {
+    requireFullProfile("film");
     const r = spawnSync(process.execPath, [join(ROOT, "tools", "film", "film.mjs"), "engine", ...rest, ...(rest.includes("--client") ? [] : ["--client", "1"])], { windowsHide: true, stdio: "inherit" });
     return r.status ?? 1;
   }

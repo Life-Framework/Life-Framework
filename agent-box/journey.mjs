@@ -902,6 +902,10 @@ async function main(argv) {
     console.log("journey: no session; start one with node agent-box/session.mjs up --clients 2");
     return 1;
   }
+  if (current.profile === "lowspec") {
+    console.log("journey: this session is lowspec (640x360, lowest textures) and every step ends with a picture; 'node agent-box/session.mjs down', then 'up --clients 2 --profile full'");
+    return 2;
+  }
   const mission = current.mission || "debug";
   const joined = (current.clients ?? []).length || 2;
   const steps = selectSteps(argv.filter((a) => !a.startsWith("--")), mission, joined);

@@ -66,6 +66,8 @@ export function poolSettings(root) {
     sessionHoldMaxMin: pick("sessionHoldMaxMin", "LF_POOL_SESSION_HOLD_MAX_MIN"),
     sessionReserveServerMb: pick("sessionReserveServerMb", "LF_POOL_SESSION_RESERVE_SERVER_MB"),
     sessionReserveClientMb: pick("sessionReserveClientMb", "LF_POOL_SESSION_RESERVE_CLIENT_MB"),
+    // Per profile: pool.json / lf.local.json "sessionReserve": { "lowspec": { "serverMb", "clientMb" } }.
+    sessionReserve: { ...q.DEFAULTS.sessionReserve, ...(base.sessionReserve ?? {}), ...(over.sessionReserve ?? {}) },
   };
 }
 
@@ -376,7 +378,7 @@ function otherSessionLanes(root, m, except) {
     if (Date.now() - Date.parse(info.at) < 600000) {
       const dir = sessionDirOf(info.root ?? root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
       const s = readJson(join(dir, "session.json"), null);
-      if (!s || (!s.readyAt && !s.stoppedAt)) pendingMb = q.sessionReserveMb(poolSettings(root), s?.expectClients ?? info.clients ?? 1);
+      if (!s || (!s.readyAt && !s.stoppedAt)) pendingMb = q.sessionReserveMb(poolSettings(root), s?.expectClients ?? info.clients ?? 1, s?.profile ?? info.profile ?? "full");
     }
     out.push({ lock: l.lock, pendingMb });
   }
@@ -418,7 +420,7 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
   const settings = poolSettings(root);
   // A second concurrent session also reserves its own memory, and counts sessions still booting.
   const second = meta?.purpose === "session" ? otherSessionLanes(root, m, name) : [];
-  const reserveMb = second.length ? q.sessionReserveMb(settings, meta.clients ?? 1) : 0;
+  const reserveMb = second.length ? q.sessionReserveMb(settings, meta.clients ?? 1, meta.profile ?? "full") : 0;
   const pendingMb = second.reduce((n, s) => n + s.pendingMb, 0);
   const ram = opts.noRam ? { ok: true } : q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: settings.minFreeMb, reserveMb, pendingMb });
   if (!ram.ok) {
@@ -973,7 +975,7 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
   // stuck: "ram" | "lane" once a try failed for that reason (others may then backfill); needMb: free RAM it needs.
   let stuck = "";
   let needMb;
-  const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name], clients: meta.clients ?? 1, ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
+  const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name], clients: meta.clients ?? 1, profile: meta.profile ?? "full", ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
   const ticket = writeTicket(root, body(), since);
   let lastReap = 0;
   let said = false;
