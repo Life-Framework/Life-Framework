@@ -866,6 +866,70 @@ export function judgeDowned(shot, victim, shooter, peers1, peers2) {
   return fails;
 }
 
+// M2 #427: N revives of a downed client in one session. Client 1 clocks in as a medic once; each
+// run downs client 2 with a lethal hit, revives them, and times how long client 2 reads life=ALIVE.
+// Every sample logs the life state and resilience/blood/health client 2 reads about itself and
+// client 1 reads about client 2 (the server's own lines are `wake of ... +Ns` in the server log).
+// `revive-proof [--runs N] [--limit s]`: fails when a run is not ALIVE within the limit.
+async function runReviveProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const flag = (name, dflt) => { const i = process.argv.indexOf(name); return i > 0 ? Number(process.argv[i + 1]) : dflt; };
+  const runs = flag("--runs", 10);
+  const limit = flag("--limit", 15);
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => on(n, { verb: "state" }, 10000).detail;
+  const fails = [];
+  const results = [];
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+  wait(2500);
+  on(1, { verb: "look" });
+  on(1, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
+  wait(2500);
+  if (!parseState(state(1)).faction?.includes("MEDIC")) fails.push("client 1 did not clock in as a medic");
+  for (let run = 1; run <= runs; run++) {
+    on(2, { verb: "stand", entityName: ROB_TARGET });
+    wait(2500);
+    on(1, { verb: "stand", entityName: ROB_TARGET });
+    wait(2500);
+    on(1, { verb: "shoot", playerId: 2 }, 10000);
+    wait(2500);
+    const patient = `Player${parseState(state(2)).player}`;
+    const down = parseState(state(2));
+    if (down.downed !== "1") { fails.push(`run ${run}: client 2 was not downed`); results.push({ run, ok: false }); continue; }
+    on(1, { verb: "stand", entityName: patient });
+    wait(2500);
+    on(1, { verb: "look" });
+    const t0 = Date.now();
+    const revive = on(1, { verb: "use", className: "LF_ReviveAction", entityName: patient }, 10000);
+    let woke = null;
+    const samples = [];
+    while ((Date.now() - t0) / 1000 < limit + 5) {
+      const own = parseState(state(2));
+      const t = ((Date.now() - t0) / 1000).toFixed(1);
+      samples.push(`${t}s own: life=${own.life} res=${own.res} blood=${own.blood} hp=${own.hp}`);
+      if (own.life === "ALIVE" && woke === null) { woke = Number(t); break; }
+      wait(1000);
+    }
+    console.log(`RUN ${run}: revive=${revive.status} woke=${woke === null ? "NEVER" : woke + "s"} | ${samples.join(" | ")}`);
+    results.push({ run, ok: woke !== null && woke <= limit, woke });
+    if (woke === null || woke > limit) fails.push(`run ${run}: woke ${woke === null ? "never" : woke + " s"} (limit ${limit} s)`);
+    wait(1500);
+  }
+  console.log(`revive runs: ${JSON.stringify(results)}`);
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "revive proof: FAIL" : `revive proof: PASS (${runs} revives, all awake within ${limit} s)`);
+  return fails.length ? 1 : 0;
+}
+
 // M2 #261: client 1 downs client 2, drags the body to the hospital desk, drops it, carries it to
 // the escort car and loads it into a seat. Clients 1 and 2 and a late joiner (client 3, joined
 // after the drag began) read the body at the carrier's side, then in the seat. Needs 2 clients.
@@ -1696,6 +1760,7 @@ async function main(argv) {
   if (cmd === "quarry-proof") return runQuarryProof();
   if (cmd === "downed-proof") return runDownedProof();
   if (cmd === "carry-proof") return runCarryProof();
+  if (cmd === "revive-proof") return runReviveProof();
   if (cmd === "medic-proof") return runMedicProof();
   if (cmd === "radio-proof") return runRadioProof();
   if (cmd === "roster") {
@@ -1718,7 +1783,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|radio-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|revive-proof|medic-proof|radio-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 

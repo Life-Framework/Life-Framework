@@ -171,8 +171,30 @@ class LF_Downed
 			LF_Debug.Info(FEATURE, string.Format("wake of %1: resilience %2, blood %3, health %4, still unconscious %5", PlayerUid(character), damageManager.GetResilienceHitZone().GetHealthScaled(), damageManager.GetBloodHitZone().GetHealthScaled(), damageManager.GetDefaultHitZone().GetHealthScaled(), damageManager.LF_WantsUnconscious()));
 		}
 
+		if (GetGame().GetCallqueue())
+		{
+			GetGame().GetCallqueue().CallLater(LogWake, 1000, false, character, 1);
+			GetGame().GetCallqueue().CallLater(LogWake, 4000, false, character, 4);
+			GetGame().GetCallqueue().CallLater(LogWake, 9000, false, character, 9);
+		}
+
 		LF_Debug.Info(FEATURE, string.Format("player %1 is no longer downed", PlayerUid(character)));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #427 diagnostics: where the wake stands `seconds` after the revive, on the server.
+	static void LogWake(SCR_ChimeraCharacter character, int seconds)
+	{
+		if (!character)
+			return;
+
+		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(character.FindComponent(SCR_CharacterDamageManagerComponent));
+		CharacterControllerComponent controller = character.GetCharacterController();
+		if (!damageManager || !controller)
+			return;
+
+		LF_Debug.Info(FEATURE, string.Format("wake of %1 +%2s: life %3, resilience %4, blood %5, health %6, wants unconscious %7", PlayerUid(character), seconds, typename.EnumToString(ECharacterLifeState, controller.GetLifeState()), damageManager.GetResilienceHitZone().GetHealthScaled(), damageManager.GetBloodHitZone().GetHealthScaled(), damageManager.GetDefaultHitZone().GetHealthScaled(), damageManager.LF_WantsUnconscious()));
 	}
 
 	//------------------------------------------------------------------------------------------------
