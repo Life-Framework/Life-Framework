@@ -2025,6 +2025,29 @@
   fps, frame after a shot 33.3-33.5 ms vs 33.2-34.5 ms otherwise, one 243 ms
   stall in 64 s (shop menu, not a shot frame).
 
+### `LF_FilmActor` / `LF_FilmDirector` — `Feature/Film/` (scripted actors, #393)
+- ✅ Dev-only, harness verbs `scene start street|stop|status` (server, through the
+  character RPC and `LF_DevGate`) and `camera orbit|follow x y z size seconds`
+  (client). An actor is a spawned `Character_Roleplay` on a timed step list:
+  `walk`, `run`, `enter`, `drive`, `exit`, `use <action class>`, `wait`. Waypoints
+  are authored (no navmesh). No progress for 6 s logs `[LFDebug:FilmActor] ... stuck`
+  and stops that actor. Pure maths (steer, pedals, stuck detection) is covered by
+  `film/actor-math` (LOGIC).
+- ✅ Walk, run and `use` proven 2026-11-10 (the store till action ran for an actor,
+  `canPerform=1 uid='film-walker'`). Actors read a stand-in player uid from
+  `LF_FilmIdentity` in a `LF_HARNESS` build only (`LF_Utils.GetPlayerUID`).
+- ⚠️ Driving: an actor gets into a base-game car (`MoveInVehicle` + `StartEngine`
+  worked). Throttle, steering and brake set on `VehicleWheeledSimulation` did NOT move
+  it (speed stayed 0 for 9 s, also with clutch 0, gear set and `ForceEnableSimulation`).
+  What works: setting the physics body's velocity and angular velocity each tick
+  (`Physics.SetVelocity`) along authored waypoints at a steady 30 km/h, wheels
+  turning, driver visible; a final taper and zero velocity stop it. No real
+  throttle, braking or gear model, and a steering model that only turns the body.
+  Clip 2026-11-10 (`agent-box/reports/film/`, PR for #393): walker uses the store till
+  while a car drives down the main street.
+- ⚠️ Actors in DebugWorld are underwear characters (no loadout). `camera follow`
+  tracks the vehicle nearest the given point, client side.
+
 ## Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)
 
 1. **Money — one canonical path, all payouts cash.** The entity bank

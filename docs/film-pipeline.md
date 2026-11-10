@@ -107,7 +107,7 @@ and ran our action's `PerformAction(till, puppet)` on the server. Limits:
   `#EL-Job_NotSignedUp`). Actions that act on the entity itself (the till)
   work. #393 should give an actor a stand-in identity for the demo path
   instead of changing every action.
-- Driving is not tested. Candidates: `SCR_BoardingWaypoint` with AI where a
+- Driving (tested for #393, 2026-11-10; see "Driving" below). Earlier candidates: `SCR_BoardingWaypoint` with AI where a
   navmesh exists, or a script-driven vehicle controller. #393 should spike a
   driver first, since the acceptance clip needs a drive.
 
@@ -205,3 +205,29 @@ largest unproven item.
    are untested, and the laptop is blocked on #482.
 3. Frame rate: the game's own frame rate bounds capture (53.7 fps at 1080p
    here with a server on the same box), so true 60 fps is not guaranteed.
+
+## Driving (#393 spike, 2026-11-10)
+
+`LF_FilmActor` (`Feature/Film/LF_FilmActor.c`), scene `street`, base-game
+`S105_beige` on the DebugWorld main street (z 250).
+
+| Try | Result |
+|---|---|
+| `SCR_CompartmentAccessComponent.MoveInVehicle(car, PILOT)` on a scripted character, then `VehicleControllerComponent.StartEngine()` | Works on the server: `seated in car, engine on=1` about 3 s after the call. |
+| Input path: `VehicleWheeledSimulation.SetThrottle/SetSteering/SetBreak`, `CarControllerComponent.SetPersistentHandBrake(false)` | Does not move the car: `speed=0.02` with `thr=1` for 3 s. |
+| Plus `SetClutch(0)`, `SetGear(2)` (`HasAutomaticGearbox()` is false for the S105) | Still `speed=0` for 3 s. |
+| Plus `ForceEnableSimulation()` | Still `speed=0` for 3 s. Likely the controller rewrites the inputs every frame from the occupant's input (a bot has none), or the manual gearbox needs a shift the script cannot make; not isolated. |
+| Velocity path: `Physics.SetVelocity(forward * v)` and `SetAngularVelocity` each 100 ms, steering from heading error to the next waypoint | Works. The car drove 5 authored waypoints over about 120 m at 29.9 km/h (`GetSpeedKmh`) within 0.1 m of the line, wheels turning, driver seated and visible in frame. A taper over the last 20 m and a zero velocity at the last waypoint stop it. |
+| Kinematic (`SetWorldTransform` each tick) | Coded as the last phase, never reached. |
+
+So `drive` today is a physics-body drive: it looks right in a film (car on the
+road, wheels turning, driver in the seat) but has no engine, brake or gear
+behaviour, and `SetVelocity` fights the suspension on bumps. Unsolved: getting
+the real inputs to take (try the AI path in a world with a navmesh, or a
+`SCR_CarControllerComponent` override).
+
+Other findings: a `camera follow` needs the target streamed to the client first
+(a follow 0.4 s after the spawn found another vehicle and put the camera in a
+house), so it picks the vehicle nearest the point and the clip waits 2 s; an
+orbit around the store at 5 m up passes through the building, so `orbit` is a
+140 degree arc on the +z side; `Format` takes 9 arguments at most.
