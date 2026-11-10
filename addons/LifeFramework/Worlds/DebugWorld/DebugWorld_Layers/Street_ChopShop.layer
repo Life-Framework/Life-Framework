@@ -5,6 +5,13 @@ GenericEntity Roadmap_ChopShop : "{9C2E4A7B1D5F8036}Prefabs/Crime/LF_ChopBench.e
   }
  }
  coords 322 0 300
+ angleY 180
+}
+StaticModelEntity ChopShop_Pave_0 : "{A027B45306A1E311}Prefabs/Structures/Infrastructure/Pavements/AsphaltPavement_01/AsphaltPavement_01_Wide_8m.et" {
+ coords 322 -0.1 300.2
+}
+StaticModelEntity ChopShop_Pave_1 : "{A027B45306A1E311}Prefabs/Structures/Infrastructure/Pavements/AsphaltPavement_01/AsphaltPavement_01_Wide_8m.et" {
+ coords 328.5 -0.1 300.2
 }
 SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
  coords 334 0 288
@@ -56,39 +63,53 @@ SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/Brick
  coords 332 0 288
 }
 GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
- coords 324 0 309.2
- angleY 180
+ coords 316.95 0 301.2
+ angleY 90
 }
 GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
- coords 324 0 309.2
- angleY 180
+ coords 316.95 0 301.2
+ angleY 90
 }
 GenericEntity : "{174E332EF84362B2}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_base.et" {
- coords 325.2 0.9 309.2
- angleY 170
+ coords 317.0 0.98 300.4
+ angleY 90
+}
+GenericEntity ChopShop_Welder {
+ components {
+  MeshObject "{6C0A5D00A1B24F01}" {
+   Object "{79EE1F126728BF6C}Assets/Props/Industrial/Repair/GasWelder_01/GasWelder_01.xob"
+  }
+  RigidBody "{6C0A5D00A1B24F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 318.0 0 302.6
+ angleY 20
 }
 GenericEntity : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
- coords 317.2 0 308.6
+ coords 317.2 0 304.6
 }
 GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 318.2 0 308.9
+ coords 317.2 0 305.5
 }
 GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 317.4 0 307.5
-}
-GenericEntity : "{EB084C400AABD1D3}Prefabs/Props/Wrecks/M151A2_wreck/M151A2_wreck.et" {
- coords 331.2 0 303.5
+ coords 318.1 0 305.0
 }
 GenericEntity : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
- coords 331.6 0 292.4
+ coords 317.3 0 297.2
  angleY 20
 }
 GenericEntity : "{A81F99C793D11875}Prefabs/Props/VehicleParts/Tires/Tire_M151A2.et" {
- coords 330.2 0 293.6
+ coords 318.5 0 297.6
 }
 GenericEntity : "{A81F99C793D11875}Prefabs/Props/VehicleParts/Tires/Tire_M151A2.et" {
- coords 330.0 0 295.0
+ coords 318.4 0 298.8
  angleY 40
+}
+GenericEntity : "{EB084C400AABD1D3}Prefabs/Props/Wrecks/M151A2_wreck/M151A2_wreck.et" {
+ coords 326.6 0 300.2
 }
 GenericEntity ChopShop_Door_1 {
  components {
@@ -101,8 +122,8 @@ GenericEntity ChopShop_Door_1 {
    Static 1
   }
  }
- coords 327.8 0 308.9
- angleY 90
+ coords 328.6 0 299.0
+ angleY 80
 }
 GenericEntity ChopShop_Door_2 {
  components {
@@ -115,8 +136,8 @@ GenericEntity ChopShop_Door_2 {
    Static 1
   }
  }
- coords 328.4 0 308.9
- angleY 90
+ coords 328.8 0 301.5
+ angleY 100
 }
 GenericEntity ChopShop_Jack {
  components {
@@ -129,7 +150,7 @@ GenericEntity ChopShop_Jack {
    Static 1
   }
  }
- coords 320.4 0 297.6
+ coords 324.6 0 299.0
  angleY 30
 }
 GenericEntity ChopShop_Scrap {
@@ -143,9 +164,9 @@ GenericEntity ChopShop_Scrap {
    Static 1
   }
  }
- coords 320.6 0 305.6
+ coords 326.6 0 304.2
 }
 GenericEntity : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 323 0 305.2
+ coords 319.8 0 303.4
  angleY 10
 }
