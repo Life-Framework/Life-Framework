@@ -14,4 +14,11 @@ GenericEntity {
   RplComponent "{A2D9C9BB0D0839D7}" {
   }
  }
+ {
+  GenericEntity beacon : "{A3C0CF9F97FBCDDC}Prefabs/Structures/BuildingParts/Eletrical/HazardBeacon_01/HazardBeacon_01.et" {
+   ID "6F1B3C7A52D09E41"
+   coords 0 1.1 0
+   scale 3
+  }
+ }
 }
