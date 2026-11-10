@@ -6047,6 +6047,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cab wanted"
      Comment "Summary the taxi pager and board show for a call from the payphone."
     }
+    CustomStringTableItem "{30B35DD36DE9AD2B}" {
+     Id "LF-Bed_Action"
+     Target_en_us "Put patient in bed"
+     Comment "Bed action name."
+    }
+    CustomStringTableItem "{3A3A0C3CAF925A84}" {
+     Id "LF-Bed_Desc"
+     Target_en_us "Lay the downed patient you carry, or the one in the ambulance, in this bed"
+     Comment "Bed action description."
+    }
+    CustomStringTableItem "{E72E14B2B5780800}" {
+     Id "LF-Bed_Done"
+     Target_en_us "The patient is in bed and awake."
+     Comment "Toast to the medic after a delivery."
+    }
+    CustomStringTableItem "{F9207C344391D50C}" {
+     Id "LF-Bed_NoPatient"
+     Target_en_us "No downed patient to put in bed: carry one here or load them in the ambulance outside."
+     Comment "Refusal: nobody to deliver."
+    }
+    CustomStringTableItem "{3055EF1F232FA28A}" {
+     Id "LF-Bed_NotMedic"
+     Target_en_us "Only an on-duty medic can admit a patient."
+     Comment "Refusal: not a medic on duty."
+    }
+    CustomStringTableItem "{A22291637AB2A76D}" {
+     Id "LF-Bed_TooFar"
+     Target_en_us "Stand at the bed to put a patient in it."
+     Comment "Refusal: medic too far from the bed."
+    }
   }
  }
 }

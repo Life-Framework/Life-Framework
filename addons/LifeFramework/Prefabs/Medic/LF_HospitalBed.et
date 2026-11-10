@@ -1,0 +1,36 @@
+GenericEntity {
+ ID "6B1D3A52C94E0F77"
+ components {
+  MeshObject "{2F1F563585AC7182}" {
+   Object "{182E4B9CDAC405D7}Assets/Props/Services/Healthcare/BedMedical_01/BedMedical_01.xob"
+  }
+  RigidBody "{99EBF9BA10D2DE74}" {
+   ModelGeometry 1
+   Static 1
+  }
+  LF_HospitalBedComponent "{B0B0E6A525816A48}" {
+  }
+  ActionsManagerComponent "{E775B15405FD81EC}" {
+   ActionContexts {
+    UserActionContext "{AA4AA1C613964286}" {
+     ContextName "LF_HospitalBed"
+     Position PointInfo "{45CBBB2E858C30B6}" {
+      Offset 0 0.6 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_BedDeliveryAction "{9E73126815DB1A1B}" {
+     ParentContextList {
+      "LF_HospitalBed"
+     }
+     UIInfo UIInfo "{BAD00178C7A19E52}" {
+      Name "#LF-Bed_Action"
+      Description "#LF-Bed_Desc"
+     }
+    }
+   }
+  }
+ }
+}

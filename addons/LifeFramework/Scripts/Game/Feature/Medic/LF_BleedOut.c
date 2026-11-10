@@ -134,6 +134,10 @@ class LF_BleedOut
 				continue;
 			}
 
+			// A patient lying on a stretcher (a seat of an ambulance) does not bleed out (#262).
+			if (LF_BedDelivery.IsLoaded(character))
+				continue;
+
 			if (character.LF_BleedStep(dt))
 				expired.Insert(character);
 		}

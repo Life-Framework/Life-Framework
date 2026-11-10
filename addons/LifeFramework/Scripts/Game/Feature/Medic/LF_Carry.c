@@ -48,6 +48,7 @@ class LF_Carry
 	static const string KIND_CARRY = "carry";
 	static const string KIND_DROP = "drop";
 	static const string KIND_LOAD = "load";
+	static const string KIND_DELIVER = "deliver";
 
 	protected static const int TICK_MS = 250;
 	protected static const int LOAD_VERIFY_MS = 1500;
@@ -363,6 +364,32 @@ class LF_Carry
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the body `carrier` is holding right now, or null.
+	static IEntity HeldPatient(IEntity carrier)
+	{
+		if (!s_mHolds || !carrier)
+			return null;
+
+		LF_CarryHold hold = s_mHolds.Get(KeyOf(carrier));
+		if (!hold)
+			return null;
+
+		return GetGame().GetWorld().FindEntityByID(hold.m_PatientId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: end the hold `carrier` has because the body is being put in a hospital bed (#262).
+	static void EndForDelivery(IEntity carrier)
+	{
+		if (!s_mHolds || !carrier)
+			return;
+
+		LF_CarryHold hold = s_mHolds.Get(KeyOf(carrier));
+		if (hold)
+			End(hold, KIND_DELIVER, "put in a hospital bed");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: put the carried body in the nearest free passenger seat in reach.
 	static LF_ECarryRefusal Load(IEntity carrier)
 	{
@@ -414,7 +441,7 @@ class LF_Carry
 
 		if (IsSeated(patient))
 		{
-			LF_Debug.Info(FEATURE, string.Format("%1 sits in the vehicle (check %2)", Uid(patient), attempt));
+			LF_Debug.Info(FEATURE, string.Format("%1 sits in the vehicle (check %2), bleed-out paused: %3", Uid(patient), attempt, LF_BedDelivery.IsLoaded(patient)));
 			return;
 		}
 
