@@ -12,7 +12,9 @@ enum LF_EUIPartKind
 	QUANTITY,
 	LIST,
 	//! A row of buttons side by side (a keypad row, a till's keys). MenuLeft/MenuRight move along it.
-	KEYS
+	KEYS,
+	//! A picture: text = imageset resource, status = image name in it (tools/cli ui-image makes both).
+	IMAGE
 }
 
 class LF_UIPart
@@ -38,6 +40,14 @@ class LF_UIPart
 		part.m_eKind = kind;
 		part.m_sName = name;
 		part.m_sText = text;
+		return part;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static LF_UIPart CreateImage(string name, ResourceName imageset, string imageName)
+	{
+		LF_UIPart part = Create(LF_EUIPartKind.IMAGE, name, imageset);
+		part.m_sStatus = imageName;
 		return part;
 	}
 
@@ -217,6 +227,9 @@ class LF_UIPart
 
 		if (kind == LF_EUIPartKind.KEYS)
 			return LF_UITheme.KEYS_LAYOUT;
+
+		if (kind == LF_EUIPartKind.IMAGE)
+			return LF_UITheme.IMAGE_LAYOUT;
 
 		return string.Empty;
 	}

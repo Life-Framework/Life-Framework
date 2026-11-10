@@ -15,6 +15,12 @@ class LF_SignDef
 	[Attribute("", UIWidgets.EditBox, "Title. Shown in the prompt as Read: <title>")]
 	string m_sTitle;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional diagram under the title: an imageset made by tools/cli ui-image", params: "imageset")]
+	ResourceName m_sImage;
+
+	[Attribute("full", UIWidgets.EditBox, "Image name inside the imageset")]
+	string m_sImageName = "full";
+
 	[Attribute("", UIWidgets.EditBox, "What this place is")]
 	string m_sWhat;
 
@@ -148,6 +154,9 @@ class LF_SignCatalog
 			return parts;
 
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", Resolve(sign.m_sTitle)));
+		if (!sign.m_sImage.IsEmpty())
+			parts.Insert(LF_UIPart.CreateImage("Image", sign.m_sImage, sign.m_sImageName));
+
 		AddSection(parts, "What", KEY_WHAT, sign.m_sWhat);
 		AddSection(parts, "How", KEY_HOW, sign.m_sHow);
 		AddSection(parts, "Needs", KEY_NEEDS, sign.m_sNeeds);

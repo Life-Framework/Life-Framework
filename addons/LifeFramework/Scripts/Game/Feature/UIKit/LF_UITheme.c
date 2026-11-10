@@ -25,6 +25,7 @@ class LF_UITheme
 	static const string QUANTITY_LAYOUT = "{7BD6344F5ACD8B35}UI/Layouts/UIKit/LF_UIQuantity.layout";
 	static const string LIST_LAYOUT = "{9A3E5C71B2D84F06}UI/Layouts/UIKit/LF_UIList.layout";
 	static const string KEYS_LAYOUT = "{B1C08A9DC82E6FEC}UI/Layouts/UIKit/LF_UIKeyRow.layout";
+	static const string IMAGE_LAYOUT = "{E958415CA199CA4F}UI/Layouts/UIKit/LF_UIImage.layout";
 
 	static const int FONT_TITLE = 28;
 	static const int FONT_BODY = 18;

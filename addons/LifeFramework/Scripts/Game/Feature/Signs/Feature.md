@@ -82,8 +82,14 @@ is disabled so a shot does not take a sign away until restart.
 ## Tests
 
 LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`,
-`signs/face-fit`, `signs/face-client`, `signs/board-face`. WORLD `signs/prefabs`,
+`signs/face-fit`, `signs/face-client`, `signs/board-face`, `signs/image`. WORLD `signs/prefabs`,
 `signs/coverage` (every placed sign resolves; every catalog row is placed).
+
+## Picture
+
+A row may set `m_sImage` (imageset) and `m_sImageName`; the card then shows the
+picture under the title. Made with `tools\cli ui-image`; see
+`docs/research/ui-illustration-pipeline.md`.
 
 ## Placement
 
