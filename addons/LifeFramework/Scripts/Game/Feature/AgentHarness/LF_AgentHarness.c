@@ -2315,6 +2315,14 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected static void RestoreShotHud()
+	{
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		if (hud)
+			hud.SetVisible(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Player view for a world shot. Called once when the shot is asked, and
 	//! again just before the screenshot so the body is still on the offset.
 	protected static void ReapplyWorldPose()
@@ -2377,6 +2385,13 @@ class LF_AgentHarness
 			}
 			shot.SettleTime = 1.2;
 			shot.TimeOfDay24h = 12;
+			// Evidence shots show the world, not the HUD; it comes back after the capture.
+			SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+			if (hud && hud.IsVisible())
+			{
+				hud.SetVisible(false);
+				GetGame().GetCallqueue().CallLater(RestoreShotHud, 5000, false);
+			}
 			shot.WeatherStateName = "Clear";
 		}
 
