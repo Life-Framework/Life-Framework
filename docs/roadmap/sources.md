@@ -33,7 +33,7 @@ Paths below were read from this tree or from `asset_search` / `game_browse` agai
 | Hand carry | `LF_HandCarryComponent` on `Prefabs/Items/Core/HandCarryItem_Base.et` |
 | Gather / process | `LF_GatherAction`, `LF_ProcessAction`, `LF_DestructibleResourceComponent` |
 | Process machines | `Prefabs/Processor/AppleJuicer.et` (3 apples → apple juice), `Furnace.et` (nuggets → bars), `Sawmill.et` (log → plank + kindling) |
-| Gather nodes | Apple and plum trees, tomato and cabbage crops, pine cuttable tree, mining area, cement / gravel / sand piles. Shop prices already list the item prefabs in `Configs/Shop/ShopPrices.conf` |
+| Gather nodes | Apple and plum trees, cabbage crops, pine cuttable tree, mining area, cement / gravel / sand piles. Shop prices already list the item prefabs in `Configs/Shop/ShopPrices.conf` |
 | Jobs | `LF_PlayerJobComponent.InitializeJobConfigs`: unemployed, farmer, miner, lumberjack, medic, police. Paycheck is cash. `AddExperience` is still a no-op |
 | Sell illegal goods | `Prefabs/Trader/BlackMarketTrader.et` (civilian only). Mesh is vanilla `Assets/Props/Crates/Crate_01.xob`. Listed goods today: M9 and `{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et` |
 | Quests | `LF_QuestTracker`, `LF_QuestGiverComponent`, `LF_QuestAction` |

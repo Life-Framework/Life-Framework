@@ -2325,12 +2325,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "manzanas"
      Comment "Fruit name, plural lowercase, used inside a sentence"
     }
-    CustomStringTableItem "{4C162FE7FB60324B}" {
-     Id "LF-Fruit_Tomatoes"
-     Target_en_us "tomatoes"
-     Target_es_es "tomates"
-     Comment "Fruit name, plural lowercase, used inside a sentence"
-    }
     CustomStringTableItem "{F4B9336DFFCD7180}" {
      Id "LF-Fruit_Plums"
      Target_en_us "plums"
@@ -2395,18 +2389,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-License_Unemployed_Desc"
      Target_en_us "No current employment."
      Target_es_es "Sin trabajo activo."
-     Comment "Licence description"
-    }
-    CustomStringTableItem "{33B679F9679C9184}" {
-     Id "LF-License_FarmerTomato_Name"
-     Target_en_us "Field hand: tomatoes"
-     Target_es_es "Recolector de tomates"
-     Comment "Licence name: starting farm permit"
-    }
-    CustomStringTableItem "{1921CA724A9210CF}" {
-     Id "LF-License_FarmerTomato_Desc"
-     Target_en_us "Starting permit for farm work. Lets you pick tomatoes."
-     Target_es_es "Permiso inicial de trabajo agrícola. Permite recolectar tomates."
      Comment "Licence description"
     }
     CustomStringTableItem "{F8F02CBA407DB562}" {
@@ -3744,7 +3726,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{09F089CE1EB6773B}" {
      Id "LF-Sign_Traders_Needs"
-     Target_en_us "Something to sell: apples and plums from the farm orchard, tomatoes from the field."
+     Target_en_us "Something to sell: apples and plums from the farm orchard."
      Comment "Sign card for the market stalls that buy produce, Needs section."
     }
     CustomStringTableItem "{EDCB37501399B86B}" {
@@ -4029,12 +4011,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{03708C7686BF4E63}" {
      Id "LF-Sign_Farm_What"
-     Target_en_us "Tomato beds, a greenhouse, and an orchard."
+     Target_en_us "Vegetable beds, a greenhouse, and an orchard."
      Comment "Sign card for the farm north of the square, What section."
     }
     CustomStringTableItem "{905E4015631C43F6}" {
      Id "LF-Sign_Farm_How"
-     Target_en_us "Gather Tomato from a ripe plant in the beds, Gather Apple or Gather Plum from the orchard trees."
+     Target_en_us "Gather Apple or Gather Plum from the orchard trees."
      Comment "Sign card for the farm north of the square, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{33EBA210B27B7F63}" {
@@ -6706,6 +6688,18 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-VehicleLock_NoTarget"
      Target_en_us "No vehicle of yours in reach"
      Comment "Toast when U is pressed with no keyed vehicle near."
+    }
+    CustomStringTableItem "{33B679F9679C9184}" {
+     Id "LF-License_FarmerField_Name"
+     Target_en_us "Field hand"
+     Target_es_es "Jornalero agrícola"
+     Comment "Licence name: starting farm permit"
+    }
+    CustomStringTableItem "{1921CA724A9210CF}" {
+     Id "LF-License_FarmerField_Desc"
+     Target_en_us "Starting permit for farm work. Lets you gather crops by hand."
+     Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
+     Comment "Licence description"
     }
   }
  }
