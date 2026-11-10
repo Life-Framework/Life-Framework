@@ -57,6 +57,36 @@ SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastru
        m_sService "police"
        m_sSummary "#LF-Payphone_Summary_Suspicious"
       }
+      LF_WitnessPayphoneAction "{AAA067F069F06A90}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{20C58FA3CB4A99AC}" {
+        Name "#LF-Payphone_DescribeClothing"
+        Description "#LF-Payphone_Title"
+       }
+       m_sField "clothing"
+      }
+      LF_WitnessPayphoneAction "{AF1C0B237DEC4E1C}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{D3960C485367149A}" {
+        Name "#LF-Payphone_DescribeVehicle"
+        Description "#LF-Payphone_Title"
+       }
+       m_sField "vehicle"
+      }
+      LF_WitnessPayphoneAction "{50AA29ACECA2CE1B}" {
+       ParentContextList {
+        "LF_Payphone"
+       }
+       UIInfo UIInfo "{01F4A7D82504925B}" {
+        Name "#LF-Payphone_DescribePlate"
+        Description "#LF-Payphone_Title"
+       }
+       m_sField "plate"
+      }
    }
   }
  }
