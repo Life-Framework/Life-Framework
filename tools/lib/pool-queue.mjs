@@ -5,7 +5,7 @@
 export const PRIORITIES = ["low", "normal", "high"];
 export const DEFAULTS = {
   sessionIdleMin: 15,
-  promoteMin: 20,
+  promoteMin: 20, starveMin: 20,
   minFreeMb: 1500,
   // Memory a second concurrent session takes: the server, plus each game client (MB; measured
   // 2026-11-10, docs/worktrees.md "Session lanes"). The second session starts only while free RAM
@@ -107,11 +107,36 @@ export function portForLock(name) {
 // Whether `other` makes `mine` wait on machine m: it is served first and its
 // lane shares a lock with mine. A ticket without a lane (an older CLI) is a
 // session-lane ticket: it contends for server-2001.
-export function blocks(other, mine, m, now, promoteMs) {
+// Backfill: an `other` that already tried and cannot start (t.stuck "ram" or "lane") does
+// not block, so the next job that can start right now goes. Anti-starvation: once such a
+// head has waited ctx.starveMs it holds its place again as soon as the RAM it needs is there
+// (ctx.freeMb >= t.needMb), or at once when it only lacks a lane.
+// ctx: { starveMs, freeMb } (both optional).
+export function blocks(other, mine, m, now, promoteMs, ctx = {}) {
   if (!(other.machines ?? []).includes(m.name)) return false;
   const a = new Set(lanesFor(m, other.lane ?? "session").map((l) => l.lock));
   if (!lanesFor(m, mine.lane ?? "test").some((l) => a.has(l.lock))) return false;
-  return servedBefore(other, mine, now, promoteMs);
+  if (!servedBefore(other, mine, now, promoteMs)) return false;
+  // A head that lacks only a lane is raced for it when that lane frees, so it keeps its turn
+  // unless mine can also use a lane the head cannot.
+  if (other.stuck === "lane" && lanesFor(m, mine.lane ?? "test").every((l) => a.has(l.lock))) return true;
+  return !canBackfill(other, now, ctx);
+}
+
+// True when a ticket that is served first is stuck (RAM or lane) and not yet owed a reservation.
+export function canBackfill(t, now, { starveMs = DEFAULTS.starveMin * 60000, freeMb } = {}) {
+  if (t.stuck !== "ram" && t.stuck !== "lane") return false;
+  const starved = starveMs > 0 && now - Date.parse(t.at) > starveMs;
+  if (!starved) return true;
+  if (t.stuck === "ram") return !(Number.isFinite(freeMb) && Number.isFinite(t.needMb) && freeMb >= t.needMb);
+  return false;
+}
+
+// Why a ticket waits, for `pool status`: "ram 3-client", "lane", "behind N", or "".
+export function waitReason(t, ahead = 0) {
+  if (t.stuck === "ram") return `ram${t.clients ? ` ${t.clients}-client` : ""}`;
+  if (t.stuck === "lane") return "lane";
+  return ahead > 0 ? `behind ${ahead}` : "";
 }
 
 // RAM gate: a server beyond the first waits while free memory is under the
@@ -123,10 +148,11 @@ export function ramVerdict({ running, freeMb, minFreeMb, reserveMb = 0, pendingM
   const after = freeMb - pendingMb - reserveMb;
   if (after >= minFreeMb) return { ok: true };
   const gb = (x) => (x / 1024).toFixed(1);
+  const needMb = minFreeMb + reserveMb + pendingMb;
   if (reserveMb > 0 || pendingMb > 0) {
-    return { ok: false, reason: `free RAM ${gb(freeMb)} GB minus ${gb(reserveMb + pendingMb)} GB for the session${pendingMb > 0 ? "(s) starting" : ""} would be under ${gb(minFreeMb)} GB` };
+    return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB minus ${gb(reserveMb + pendingMb)} GB for the session${pendingMb > 0 ? "(s) starting" : ""} would be under ${gb(minFreeMb)} GB` };
   }
-  return { ok: false, reason: `free RAM ${gb(freeMb)} GB under ${gb(minFreeMb)} GB with ${running} server(s) running` };
+  return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB under ${gb(minFreeMb)} GB with ${running} server(s) running` };
 }
 
 // Session lease: idle time since the last harness command (or the session's
