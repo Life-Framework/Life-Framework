@@ -212,16 +212,21 @@ function patchDirOf(server) {
 function syncLocalPatches() {
   const copied = [];
   for (const name of Object.keys(SERVERS)) {
-    const patchSrc = patchDirOf(SERVERS[name]);
-    if (!existsSync(patchSrc)) continue;
-    const cloneSrc = join(MCP_DIR, SERVERS[name].dir, "src");
-    if (!existsSync(cloneSrc)) continue;
-    for (const f of walkFiles(patchSrc)) {
-      const rel = f.slice(patchSrc.length).replace(/^[\\/]+/, "");
-      const dest = join(cloneSrc, rel);
-      mkdirSync(dirname(dest), { recursive: true });
-      copyFileSync(f, dest);
-      copied.push(`${name}: +${rel}`);
+    // src/ is the tool source; mod/ is the Workbench handler bundle. A handler
+    // that names LF_ classes is patched here, or the clone's copy fails to
+    // compile in Workbench after the EL_ to LF_ rename.
+    for (const sub of ["src", "mod"]) {
+      const patchSrc = join(PATCH_DIR, SERVERS[name].dir, sub);
+      if (!existsSync(patchSrc)) continue;
+      const cloneSub = join(MCP_DIR, SERVERS[name].dir, sub);
+      if (!existsSync(cloneSub)) continue;
+      for (const f of walkFiles(patchSrc)) {
+        const rel = f.slice(patchSrc.length).replace(/^[\\/]+/, "");
+        const dest = join(cloneSub, rel);
+        mkdirSync(dirname(dest), { recursive: true });
+        copyFileSync(f, dest);
+        copied.push(`${name}: +${sub}/${rel}`);
+      }
     }
   }
   return copied;
