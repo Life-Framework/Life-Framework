@@ -27,7 +27,7 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
   },
   "/gallery": {
     title: "Gallery",
-    description: "Captures from the playtest village, grouped by system, with a slot for the before and after shots of each polished area.",
+    description: "A few pictures taken in the game in the playtest village.",
     og: "roadmap",
   },
   "/devlog": {
