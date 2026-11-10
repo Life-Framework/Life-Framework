@@ -32,7 +32,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 5. **Vehicle.** Read the price sheet at the car lot (desk at 211, 262; four display cars in a row at z 261, each with a chalkboard price board in front, x 216 to 230) and buy a car. Your character
    also starts with an S105 in the garage and a UAZ at the impound lot (playtest
    only): read the garage ledger, retrieve one, and collect the other at the
-   impound desk for the fee.
+   impound desk for the fee. The key goes straight into your inventory; drag it and your ID card between pockets to check nothing hangs (#620).
 6. **Police.** On a fresh save the first player to join is on the police roster.
    Clock in at the station desk; the kit includes the key to the station car. A
    second player robs the fuel till: the officer gets the radio dispatch, reads
