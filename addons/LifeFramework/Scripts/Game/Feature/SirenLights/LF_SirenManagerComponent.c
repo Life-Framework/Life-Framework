@@ -14,6 +14,9 @@ class LF_SirenManagerComponent : ScriptComponent
 	[Attribute()]
 	protected ref LF_SirenModes m_Modes;
 
+	[Attribute("0", UIWidgets.ComboBox, enums: ParamEnumArray.FromEnum(LF_Faction), desc: "Service this vehicle belongs to: only an on-duty member of it may run the siren (police vehicle: police, ambulance: medic). Civilian: nobody (#464)")]
+	protected LF_Faction m_eService;
+
 	// Used for sending only the necessary signals to the sound system
 	protected ref LF_SirenMode m_CurrentMode;
 	// For JIPs in MP
@@ -115,7 +118,58 @@ class LF_SirenManagerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Authority_Method(int mode)
 	{
-		ApplyRequest(mode, GetGame().GetWorld().GetWorldTime());
+		RequestBy(PilotOf(GetOwner()), mode, GetGame().GetWorld().GetWorldTime());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static IEntity PilotOf(IEntity vehicle)
+	{
+		if (!vehicle)
+			return null;
+
+		BaseVehicleControllerComponent controller = BaseVehicleControllerComponent.Cast(vehicle.FindComponent(BaseVehicleControllerComponent));
+		if (!controller)
+			return null;
+
+		PilotCompartmentSlot pilot = controller.GetPilotCompartmentSlot();
+		if (!pilot)
+			return null;
+
+		return pilot.GetOccupant();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one toggle request from the vehicle's occupant. Only an on-duty member of the vehicle's
+	//! service may run the siren: a thief in a stolen police car drives it but gets no siren (#464).
+	//! A refusal is logged. An allowed request goes through ApplyRequest.
+	bool RequestBy(IEntity occupant, int mode, int nowMs)
+	{
+		bool hasAccount;
+		LF_Faction faction;
+		bool onDuty;
+		string uid = LF_Utils.GetPlayerUID(occupant);
+		if (!uid.IsEmpty())
+		{
+			LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+			LF_PlayerAccount account;
+			if (accounts)
+				account = accounts.GetAccount(uid);
+
+			if (account)
+			{
+				hasAccount = true;
+				faction = account.GetFaction();
+				onDuty = account.IsOnDuty();
+			}
+		}
+
+		if (!LF_SirenRules.DutyAllows(m_eService, hasAccount, faction, onDuty))
+		{
+			LF_Debug.Warn("Siren", string.Format("toggle to mode %1 refused: occupant '%2' is not on duty for service %3", mode, uid, typename.EnumToString(LF_Faction, m_eService)));
+			return false;
+		}
+
+		return ApplyRequest(mode, nowMs);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -538,6 +592,14 @@ class LF_SirenRules
 {
 	//! Shortest time between two accepted changes on one vehicle.
 	static const int MIN_TOGGLE_MS = 300;
+
+	//------------------------------------------------------------------------------------------------
+	//! Duty gate: the occupant must have an account, be on duty, and belong to the vehicle's service.
+	//! A civilian service (no service set) admits nobody.
+	static bool DutyAllows(LF_Faction service, bool hasAccount, LF_Faction faction, bool onDuty)
+	{
+		return hasAccount && onDuty && service != LF_Faction.CIVILIAN && faction == service;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static LF_ESirenRequest Judge(int mode, int modeCount, int current, int nowMs, int lastChangeMs, bool hasChanged)

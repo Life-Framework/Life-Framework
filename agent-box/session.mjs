@@ -1409,52 +1409,59 @@ async function runSirenProof() {
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
     const r = h.sendCommand(spec, timeout);
-    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    console.log(`client ${n}: ${r.line.replace(/^[0-9]+ /, "")} -> ${r.status} ${r.detail}`);
     return r;
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const fails = [];
-  const vehicles = [
-    { name: "Roadmap_Hospital_Ambulance", at: [266, 1.2, 250], label: "ambulance" },
-    { name: "Roadmap_Police_Car", at: [240, 1.0, 246], label: "police" },
-  ];
-  const view = (n, v, tag) => on(n, { verb: "capture", mode: "world", name: `m2_263_${v.label}_${tag}_client${n}`, x: v.at[0], y: v.at[1], z: v.at[2], ox: 5, oy: 2.5, oz: -6 }, 25000);
+  const siren = (n, name, mode) => on(n, { verb: "siren", entityName: name, mode }, 10000);
+  const AMB = "Roadmap_Hospital_Ambulance";
+  const POLICE = "Roadmap_Police_Car";
+  const desk = (n) => {
+    on(n, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+    wait(2500);
+    on(n, { verb: "look" });
+    const r = on(n, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
+    wait(2500);
+    return r;
+  };
 
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
-  for (const v of vehicles) {
-    on(1, { verb: "stand", entityName: v.name });
-    wait(2500);
-    view(1, v, "off");
-    const onR = on(1, { verb: "siren", entityName: v.name, mode: 1 }, 10000);
-    if (!onR.detail.includes("changed=1 on=1 broadcasts=1")) fails.push(`${v.label} siren on: ${onR.status} ${onR.detail}`);
-    wait(2500);
-    view(1, v, "on_a");
-    wait(400);
-    view(2, v, "on_b");
-    const again = on(1, { verb: "siren", entityName: v.name, mode: 1 }, 10000);
-    if (!again.detail.includes("changed=0")) fails.push(`${v.label} the same mode asked twice changed again: ${again.detail}`);
-    const offR = on(1, { verb: "siren", entityName: v.name, mode: 0 }, 10000);
-    if (!offR.detail.includes("changed=1 on=0 broadcasts=2")) fails.push(`${v.label} siren off: ${offR.status} ${offR.detail}`);
-    wait(1500);
-  }
 
-  // Replication: client 2 saw both vehicles change (its own log carries the mode line once per change).
+  // #464: the siren is on-duty only. Client 1 stays a civilian; client 2 clocks in as a medic.
+  const offDuty = siren(1, AMB, 1);
+  if (!offDuty.detail.includes("changed=0 on=0 broadcasts=0")) fails.push(`off-duty client 1 was not refused: ${offDuty.status} ${offDuty.detail}`);
+  const clockIn = desk(2);
+  const state = on(2, { verb: "state" }, 10000).detail;
+  if (clockIn.status !== "ok" || !state.includes("faction=MEDIC") || !state.includes("duty=1")) fails.push(`client 2 did not clock in as a medic: ${clockIn.status} ${state}`);
+  const onR = siren(2, AMB, 1);
+  if (!onR.detail.includes("changed=1 on=1 broadcasts=1")) fails.push(`on-duty medic ambulance siren: ${onR.status} ${onR.detail}`);
+  wait(2500);
+  const wrong = siren(2, POLICE, 1);
+  if (!wrong.detail.includes("changed=0 on=0 broadcasts=0")) fails.push(`on-duty medic on the police car was not refused: ${wrong.detail}`);
+  const again = siren(2, AMB, 1);
+  if (!again.detail.includes("changed=0")) fails.push(`the same mode asked twice changed again: ${again.detail}`);
+  const offR = siren(2, AMB, 0);
+  if (!offR.detail.includes("changed=1 on=0 broadcasts=2")) fails.push(`ambulance siren off: ${offR.status} ${offR.detail}`);
+  wait(1500);
+  desk(2);
+
+  // Replication: client 1 (the other machine) saw the ambulance change on and off.
   const logs = [];
-  const clientDir = join(dir, "client2", "logs");
+  const clientDir = join(dir, "client1", "logs");
   if (existsSync(clientDir)) {
     for (const d of readdirSync(clientDir).sort()) {
       const p = join(clientDir, d, "console.log");
       if (existsSync(p)) logs.push(readFileSync(p, "utf8"));
     }
   }
-  const text = logs.join("\n");
-  const modeLines = (text.match(/Siren\]? mode -> /g) ?? []).length;
-  console.log(`client 2 siren mode lines: ${modeLines}`);
-  if (modeLines < 4) fails.push(`client 2 logged ${modeLines} siren mode changes, expected at least 4 (on and off for two vehicles)`);
+  const modeLines = (logs.join(String.fromCharCode(10)).match(/Siren]? mode -> /g) ?? []).length;
+  console.log(`client 1 siren mode lines: ${modeLines}`);
+  if (modeLines < 2) fails.push(`client 1 logged ${modeLines} siren mode changes, expected at least 2 (on and off)`);
 
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "siren proof: FAIL" : "siren proof: PASS (ambulance and police car: siren on and off replicated to client 2, a repeated request changes nothing)");
+  console.log(fails.length ? "siren proof: FAIL" : "siren proof: PASS (off-duty civilian refused; on-duty medic runs the ambulance siren, is refused on the police car; replicated to the other client)");
   return fails.length ? 1 : 0;
 }
 

@@ -78,6 +78,8 @@ class LF_BankAccount : Managed
 		{
 			m_iBalance += amount;
 			PublishMoved(amount, true, reason, counterpartyUid);
+			// An unpaid hospital bill past its deadline is debt: the bank pays it as soon as it has money (#464).
+			LF_TreatmentBills.CollectDebt(this);
 		}
 	}
 
