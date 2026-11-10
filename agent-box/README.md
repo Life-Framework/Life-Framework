@@ -64,6 +64,10 @@ node agent-box/harness.mjs shot ui debug_menu
 node agent-box/harness.mjs shot world ATM_Debug
 ```
 
+`toolscli shots area <name | x,z>` is the one-call area rig for the polish pass: golden-hour clean
+shots from a fixed angle set, a `contact.jpg` sized for agents, `index.json`, and numeric placement
+checks (floating, sunk, clipping, tilt, reach). `shots crop` zooms; see `docs/agent-area-polish.md`.
+
 `launch` starts Workbench on this checkout's project with DebugWorld open
 (`wb_launch`; a no-op when a Workbench already answers on the bridge port). It
 is the one place the harness launches Workbench.

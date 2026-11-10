@@ -2949,6 +2949,10 @@ async function runQuarryProof() {
 
 async function main(argv) {
   let [cmd, ...rest] = argv;
+  if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
+    console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    return 0;
+  }
   if (cmd === "run") return runWhereSession(rest);
   if (cmd === "pull") return pullFromSession(rest);
   if (["up", "down", "status", "restart", "state", "wait"].includes(cmd)) {

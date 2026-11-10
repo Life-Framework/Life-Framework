@@ -42,8 +42,9 @@ ambulance bay, a filing cabinet by the evidence locker. Base-game assets only, k
 
 ## Per area: builder (`lf-builder`, Sonnet)
 
-1. **Before shots.** Take the wide and detail shots described below, as they are now.
-2. **Fix placement.** For every entity in the area: ground snap and surface height,
+1. **Before shots.** `toolscli shots area <name>` (see Shot rules), as it is now.
+2. **Fix placement.** Read the `problems:` list the call printed first and fix those: floating,
+   sunk, tilted, clipping, unreachable. Then, for every entity in the area: ground snap and surface height,
    rotation, collision, and reachability of each interaction point. Check each one with
    `wb_read_props` or the layer coordinates, and with a close shot.
 3. **Check every prefab is the right one.**
@@ -58,7 +59,8 @@ ambulance bay, a filing cabinet by the evidence locker. Base-game assets only, k
    static props, no lights or particles unless the chain needs them.
 5. **Retest the area's features.** Run its `--only` tests plus `debugworld/entity-collision`,
    and that area's `session.mjs` proof verb if it has one.
-6. **After shots,** then hand the area to the reviewer.
+6. **After shots:** run `shots area` again; `problems:` must be empty or each line explained. Judge the
+   look from `contact.jpg` (add `--annotate` to see entity names), then hand the area to the reviewer.
 7. **Ship one PR per area:** before and after shots in the body, the final shots in
    `website/public/docs-images/area-<n>-<slug>/`, and a `docs/playtest.md` line if anything
    moved.
@@ -84,11 +86,48 @@ gallery.
 
 ## Shot rules
 
-- **Golden hour, clear weather, the same time for every shot:** set the in-game time and
-  weather before shooting. Use the harness or a debug define, never a script change
-  that ships.
-- **Two shots per area:**
-  - one wide establishing shot that shows the whole area in context;
-  - one detail shot of the main interaction or prop.
-- **No HUD, debug text or markers,** unless the UI is the subject.
-- **1280 wide, under 500 KB, png.** Look at each shot before keeping it.
+Use `toolscli shots area <name | x,z>`. Do not hand-place cameras for these shots. One
+blocking call, about ten lines of output, no manual steps.
+
+```
+toolscli shots area hospital [--radius 18] [--annotate] [--pick] [--detail <Entity>] [--machine any]
+toolscli shots crop wide 900,0,380,140
+```
+
+- **The areas** are in `agent-box/areas.json` (the 17 above; payphones has one entry per phone).
+  A raw `x,z` also works; the ground height is looked up in-game.
+- **Same scene every time.** Golden hour (local 17.9, the game clock reads 4.73 h less at this longitude), clear weather, no HUD, no hint box. The clock is set on the server by the harness `time <hour>` verb (an authority-side RPC, like pose); a client-side clock is overridden. The call prints the reply (`local=17.9 game=13.77 ...`). Nothing ships.
+- **Fixed angles from the centre:** an elevated wide (1.5x the radius back, 12 m up), four eye-level
+  shots at 1.7 m from N, E, S, W at the radius edge looking in, a top-down (only with `--free-camera`, see below), and a 2 to 3 m eye-level
+  close-up of each interactable in the radius (most central first, at most 8).
+- **Camera guard.** Each camera is probed in-game: not inside a wall, no ceiling pressing on it, and a clear
+  view line to the target. A blocked camera is backed off or turned to the next candidate; the label gets
+  a `~` when that happened. A shot that is nearly one flat colour is flagged `suspect`.
+- **Output** (default `tmp/shots/<area>/`):
+  - `contact.jpg`: the sheet agents read. At most 1568 px on the long edge, 3x3 or 4x3, label under each
+    tile, JPEG q85, about 3k tokens. `!` after a label means that entity has a problem.
+  - the 1280-wide PNGs (`wide.png`, `top.png`, `N.png`..., `close-<Entity>.png`): for the website and for
+    close inspection. Open one only when the sheet is not enough.
+  - `index.json`: each shot's camera pose and entity, and every entity's measurements.
+- **`--annotate`** writes each entity's name at its projected screen position on the contact sheet, so a
+  problem can be tied to an entity without guessing. The projection assumes a fixed field of view.
+- **Numbers before pictures.** For each entity in the radius the call measures, and prints under
+  `problems:`: the gap between its bottom and the surface below (floating or sunk, over 0.15 m); its
+  bounding box cutting 0.15 m or more into another entity's (clipping); tilt over 5 degrees; and, for
+  interactables, the distance from its interaction point to the nearest standing spot (over 1.5 m, or none
+  within 3 m, means unreachable). Wall-mounted things (signs, anything above 1.5 m) skip the gap check.
+  A clip against a map building is reported by that building's prefab name.
+- **`shots crop <shot> <x,y,w,h>`** writes a native-resolution crop, at most 800 px, next to the shot. Use
+  it to check one spot (a crate's foot on the ground) instead of loading the whole shot. `<shot>` is a
+  path, or a name such as `wide` from the newest area folder.
+- **`--pick`** copies the elevated wide and the most central interactable close-up to
+  `website/public/docs-images/area-<n>-<slug>/` as `wide.png` and `detail.png`; `--detail <Entity>` picks
+  another close-up. The builder may override either.
+- **Known limits.** The player camera cannot pitch, so by default the wide is a level view from 12 m up and there is no top-down. `--free-camera` flies a free camera (real pitch, real top-down) but the client crashed about 4 s after the first shot, so it is opt-in until that is fixed. The field of view used by `--annotate` is an assumption (60 degrees vertical); the labels lined up with the entities in the hospital run.
+- **Images** are quantised to a palette PNG when a full-colour one is over 500 KB (`agent-box/bmp.mjs`).
+- **Harness against a remote session.** `harness.mjs <verb> ...` relays through `session.mjs run` when the session is on a pool machine (`--local` keeps it here); `session.mjs up --help` prints help.
+- **Session.** It reuses a running session, or starts one (`session.mjs up --machine any --wait`, one client,
+  playtest mission) and closes it afterwards; `--keep` leaves a session it started up. If the session is on
+  a pool machine, the call runs there and copies the folder back.
+- **Reviewer:** reads `contact.jpg` and the `problems:` list, and crops only when unsure.
+- **1280 wide png.** Look at the contact sheet before keeping the shots.
