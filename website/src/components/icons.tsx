@@ -27,6 +27,12 @@ export const Arrow = ({ className = "w-4 h-4" }: P) => (
   </svg>
 );
 
+export const LinkIcon = ({ className = "w-4 h-4" }: P) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true" focusable="false">
+    <path d="M6.5 9.5a2.5 2.5 0 0 0 3.5 0l2.5-2.5a2.5 2.5 0 0 0-3.5-3.5L7.5 5M9.5 6.5a2.5 2.5 0 0 0-3.5 0L3.5 9a2.5 2.5 0 0 0 3.5 3.5l1-1" />
+  </svg>
+);
+
 export const External = ({ className = "w-3.5 h-3.5 inline-block align-[-0.1em]" }: P) => (
   <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true" focusable="false">
     <path d="M6 3H3v10h10v-3M9 3h4v4M13 3 7 9" />
