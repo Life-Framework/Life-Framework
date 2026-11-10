@@ -58,7 +58,7 @@ class LF_Dispatch
 	//! cabinet); a zero vector sounds no alarm (a murder in the street, the logic-tier seam).
 	//! \param officersOnDuty On-duty police when the crime started; negative counts them now.
 	//! \return The dispatch record, or null when the crime report was refused (no player uid).
-	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1)
+	static LF_DispatchRecord Report(string playerUid, IEntity suspect, string offence, vector site, int officersOnDuty = -1, bool forceLoud = false)
 	{
 		LF_WantedReportRecord report = LF_WantedReports.Report(playerUid, suspect, offence);
 		if (!report)
@@ -74,7 +74,7 @@ class LF_Dispatch
 		if (site == vector.Zero)
 			LF_Debug.Info(FEATURE, "no alarm site, no alarm sounded");
 		else
-			StartAlarm(site, IsLoud(officers));
+			StartAlarm(site, forceLoud || IsLoud(officers));
 
 		// The report is a police service call on the bus (#250): the dispatch subscriber logs and
 		// radios it, the service board pins it. Both must be listening.

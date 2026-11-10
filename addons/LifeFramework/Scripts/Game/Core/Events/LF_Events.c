@@ -526,9 +526,10 @@ class LF_OnNewLifeReturn : LF_Event
 	}
 }
 
-//! A forced-entry heist paid out (#274 cash van). Published once by LF_Bank when the target opens.
-//! m_sKind is "bags" (cash left lying as carried bags). m_iAmount is the cash across the bags.
-//! m_sSerials is reserved for serial-stamped loot and is empty for cash.
+//! A forced-entry heist paid out (#274 cash van, #275 police armory). Published once by LF_Bank
+//! when the target opens. m_sKind is "bags" (cash left lying as carried bags) or "weapons".
+//! m_iAmount is the cash across the bags, or the number of weapons. m_sSerials lists the book
+//! serials stamped on stolen weapons, comma separated; empty for cash.
 class LF_OnHeistLoot : LF_Event
 {
 	string m_sPlayerUid;

@@ -27,7 +27,7 @@ class LF_Test_CashVan : LF_Test
 		LF_Bank.Configure(vanId, 3, 400, 0, 0, 0, "");
 		LF_Bank.ConfigureTools(vanId, "drill,charge", 0);
 		ResourceName chargePrefab = LF_Breach.CHARGE_PREFAB;
-		LF_Bank.ConfigureHeist(vanId, LF_BankLoot.KIND_BAGS, LF_WantedReports.OFFENCE_CASH_VAN);
+		LF_Bank.ConfigureHeist(vanId, LF_BankLoot.KIND_BAGS, "", LF_WantedReports.OFFENCE_CASH_VAN, false, -1, 0);
 
 		LF_HeistListener listener = new LF_HeistListener();
 		LF_EventBus.Subscribe(LF_OnHeistLoot, listener);

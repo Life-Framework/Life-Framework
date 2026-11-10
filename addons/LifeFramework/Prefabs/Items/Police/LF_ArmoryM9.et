@@ -1,0 +1,7 @@
+GenericEntity : "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et" {
+ ID "EA65C88390EC5E34"
+ components {
+  LF_SerialComponent "{92887D990E9DE844}" {
+  }
+ }
+}
