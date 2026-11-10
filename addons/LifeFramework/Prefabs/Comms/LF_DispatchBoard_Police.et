@@ -1,0 +1,21 @@
+GenericEntity : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
+ ID "1E6CFEFB96065440"
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "dispatch_board"
+  }
+  ActionsManagerComponent "{6E065C9694DC3BE5}" {
+   additionalActions {
+    LF_WantedBoardReadAction "{F60E16CD45D0A0FE}" {
+     m_sService "police"
+    }
+    LF_ServiceTakeAction "{56418916FB1B542F}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     m_sService "police"
+    }
+   }
+  }
+ }
+}

@@ -1993,7 +1993,7 @@
 
 ## Payphone (#247)
 
-- ✅ `LF_Payphone` (prefab `Prefabs/Comms/LF_Payphone.et`, the base-game phone booth): one action per preset (report a crime, an emergency, someone suspicious) calls the police. The coin comes from carried cash (`m_iPayphoneCost` in `LF_ServiceCalls.conf`), per-player and per-phone cooldowns apply, and nothing is charged when nobody is on duty. The call is `LF_OnServiceCall` on the bus; `LF_ServiceCallDispatch` turns a police call into a radio line to on-duty officers with the phone's place (`LF_Dispatch.Receive`), and the dispatch log shows it. Coin and dial-tone sounds play from the booth. Not done: free text, handset animation (the booth has no handset mesh). Placed in DebugWorld at the village booth.
+- ✅ `LF_Payphone` (prefab `Prefabs/Comms/LF_Payphone.et`, the base-game phone booth): one action per preset: report a crime, an emergency or someone suspicious (police), ring for a doctor (medic), ring for a cab (taxi; mechanic waits for a mechanic job). The coin comes from carried cash (`m_iPayphoneCost` in `LF_ServiceCalls.conf`), per-player and per-phone cooldowns apply, and nothing is charged when nobody is on duty. The call is `LF_OnServiceCall` on the bus; `LF_ServiceCallDispatch` turns a police call into a radio line to on-duty officers with the phone's place (`LF_Dispatch.Receive`), and the dispatch log shows it. Coin and dial-tone sounds play from the booth. Not done: free text, handset animation (the booth has no handset mesh). Placed in DebugWorld at the square, the fuel station, the hospital and the police station (#254), with a police dispatch board (`Prefabs/Comms/LF_DispatchBoard_Police.et`) beside the wanted board.
 
 ## Dispatch board (#250)
 
