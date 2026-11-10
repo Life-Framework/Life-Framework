@@ -32,6 +32,7 @@ const CROP_MAX = 800;
 const MAX_KB = 500;
 const MAX_CLOSEUPS = 8;
 const MAX_ENTITIES = 70;
+const MAX_INTERACTABLES = 40;
 const TILE_LIMIT = 12;
 // Problem thresholds (metres, degrees).
 export const LIMITS = { gap: 0.15, tilt: 5, walk: 1.5 };
@@ -126,7 +127,7 @@ export function interactablesIn(entities) {
     if (out.some((o) => Math.hypot(o.x - e.x, o.z - e.z) < 1.2 && Math.abs(o.y - e.y) < 1.2)) continue;
     out.push(e);
   }
-  return out.slice(0, MAX_CLOSEUPS);
+  return out.slice(0, MAX_INTERACTABLES);
 }
 
 export function parseKv(text) {
@@ -148,6 +149,7 @@ export function parseEnt(detail) {
     bmin: triple(kv.bmin),
     bmax: triple(kv.bmax),
     gap: Number(kv.gap),
+    pgap: kv.pgap === undefined ? undefined : Number(kv.pgap),
     tilt: Number(kv.tilt),
     walk: Number(kv.walk),
     clip: kv.clip && kv.clip !== "none" ? kv.clip.split(";") : [],
@@ -155,14 +157,39 @@ export function parseEnt(detail) {
 }
 
 // The numeric checks. wallMounted entities (signs, anything above 1.5 m) skip the ground gap.
-export function problemsFor(entity, m) {
+// Heading (degrees) the entity faces, from its layer yaw, against the direction from it to the area's approach point
+// (a point radius out from the centre along `front`). Over 100 degrees off is "faces away". Vehicles (big bounds) and
+// entities without a yaw are exempt, as are pickups (radial contexts have no front).
+export const FACING_LIMIT = 100;
+export function facingOff(entity, m, area) {
+  if (!area || entity.yaw === undefined || area.front === undefined) return null;
+  if (m.bmin && m.bmax && (m.bmax[0] - m.bmin[0]) * (m.bmax[1] - m.bmin[1]) * (m.bmax[2] - m.bmin[2]) > 30) return null;
+  const acts = entity.actions || [];
+  const npc = /Npc|Clerk|Vince/.test(entity.name || "");
+  if (!npc && !acts.length) return null;
+  if (acts.length && acts.every((a) => /PickUp/.test(a))) return null;
+  const fd = dirOf(area.front);
+  const to = [area.x + fd[0] * area.radius - entity.x, 0, area.z + fd[2] * area.radius - entity.z];
+  if (len(to) < 1.5 || entity.dist > area.radius * 0.65) return null; // a neighbour's entity has its own approach
+  const fw = dirOf(entity.yaw);
+  const cos = (fw[0] * to[0] + fw[2] * to[2]) / len(to);
+  return Math.round((Math.acos(Math.max(-1, Math.min(1, cos))) * 180) / Math.PI);
+}
+
+export function problemsFor(entity, m, area) {
   if (m.missing) return ["not in the world"];
   const list = [];
   const mounted = /^Sign_/.test(entity.name) || entity.y > 1.5;
   if (!mounted && m.gap > LIMITS.gap) list.push(`floating ${r2(m.gap)} m`);
-  if (!mounted && m.gap < -LIMITS.gap) list.push(`sunk ${r2(-m.gap)} m`);
-  if (m.tilt > LIMITS.tilt) list.push(`tilted ${Math.round(m.tilt)} deg`);
-  if (entity.actions && entity.actions.length && m.walk > LIMITS.walk) list.push(m.walk >= 99 ? "unreachable (no standing spot within 3 m)" : `reach ${r2(m.walk)} m to standing room`);
+  // Sunk: the pivot (the ground-contact point) is under the floor. Mesh or bounds that reach below a pivot that
+  // stands on the floor (vehicles, payphone bases) are modelled that way, not buried. Without a pivot reading, bounds.
+  const sunk = m.pgap === undefined ? -m.gap : -m.pgap;
+  if (!mounted && sunk > LIMITS.gap) list.push(`sunk ${r2(sunk)} m`);
+  if (m.tilt > LIMITS.tilt && !/Bag|Sack/.test(entity.name || "")) // sacks are laid down on purpose
+    list.push(`tilted ${Math.round(m.tilt)} deg`);
+  if (entity.actions && entity.actions.length && m.walk > (/^Sign_/.test(entity.name) ? 3 : LIMITS.walk)) list.push(m.walk >= 99 ? "unreachable (no standing spot within 3 m of its edge)" : `reach ${r2(m.walk)} m from its edge to standing room`);
+  const off = facingOff(entity, m, area);
+  if (off !== null && off > FACING_LIMIT) list.push(`faces away ${off} deg from the approach`);
   if (m.clip.length) list.push(`clips ${m.clip.join(", ")}`);
   return list;
 }
@@ -173,14 +200,14 @@ export function candidates(kind, area, extra = {}) {
   const R = area.radius;
   const out = [];
   if (kind === "wide") {
-    // From the front side (the heading players approach from); the scorer in scoreWide chooses among these.
+    // From the front side (the heading players approach from), eye level and a little above, about the aim point
+    // (the focus entities, else the area centre); scoreWideHero chooses among these.
     const front = area.front ?? 180;
-    if (area.wideCands) for (const c of area.wideCands) out.push({ az: c.az, dist: c.dist, up: c.up, mode: "wide" }); else {
-    // --score N (baseline): 12 candidates instead of 100; each costs three in-game probes.
-    const offs = extra.fast ? [0, -35, 35] : [0, -35, 35, -70, 70];
-    const ks = extra.fast ? [0.8, 1.35] : [0.55, 0.8, 1, 1.35, 1.8];
-    const ups = extra.fast ? [7, 10] : [4, 7, 10, 13];
-    for (const off of offs) for (const k of ks) for (const up of ups) out.push({ az: front + off, dist: R * k, up, mode: "wide" });
+    if (area.wideCands) for (const wc of area.wideCands) out.push({ az: wc.az, dist: wc.dist, up: wc.up, mode: "wide" });
+    else {
+      const aim = extra.aim ?? { x: area.x, z: area.z, frame: R };
+      c = [aim.x, area.y, aim.z];
+      for (const off of [0, -20, 20, -40, 40, -65, 65]) for (const k of [0.45, 0.7, 1, 1.4, 1.9]) for (const up of [0, 3, 6.5]) out.push({ az: front + off, dist: aim.frame * k, up, mode: "wide" });
     }
   } else if (kind === "top") {
     for (const up of [Math.max(30, R * 2.2), Math.max(30, R * 2.2) + 10]) out.push({ az: 0, dist: 0.05, up, mode: "free" });
@@ -520,30 +547,6 @@ function placeCamera(probe, kind, area, extra, targetOf) {
   return best;
 }
 
-const NEAR_THIRD = 1 / 3;
-const BIG_OCCLUDER_M = 2.5; // an object taller than this above the ground, in the near third, is a pole, roof, tree or canopy
-
-// Pure: turn ray samples ({ hit, d, h, inArea }) from the camera into a frame score.
-// Rewards the share of rays that land on the area's own objects; penalises objects from outside the
-// area, and tall occluders, in the nearest third of the depth.
-export function scoreRays(rays, depth, treeNear = 0, crowd = 0) {
-  const n = rays.length || 1;
-  let cover = 0;
-  let foreign = 0;
-  let big = 0;
-  for (const r of rays) {
-    if (!r.hit || r.h < 0.3) continue; // sky, far horizon or bare ground
-    const near = r.d < depth * NEAR_THIRD;
-    if (near && !r.inArea) foreign++;
-    if (near && r.h > BIG_OCCLUDER_M) big++;
-    if (r.inArea) cover++;
-  }
-  const coverage = cover / n;
-  const foreignNear = foreign / n;
-  const bigNear = big / n;
-  return { score: r2(4 * coverage - 12 * foreignNear - 8 * bigNear - 8 * treeNear - 8 * crowd), treeNear: r2(treeNear), crowd: r2(crowd), coverage: r2(coverage), foreignNear: r2(foreignNear), bigNear: r2(bigNear), rays: rays.length };
-}
-
 // Tree canopies have no collision, so a ray sails through them. The layers place the trees, so
 // treat each as a sphere (9 m radius, centred 10 m up; a camera within 5 m of the trunk below 22 m is in the crown) and count the ones that sit in the near
 // 80% of the depth and in the frame (weighted by the share of the frame they cover), or that the camera is inside.
@@ -569,39 +572,210 @@ export function treeOcclusion(eye, target, trees, depth, fovV = FOV_V) {
   return Math.min(1, share * 1.5);
 }
 
-// Raycast a grid of rays through the frame from the camera and score them.
-function scoreWide(probe, area, placed, trees, level = true) {
-  const { eye } = placed;
-  const target = placed.target;
-  const depth = len(sub(target, eye));
-  // The character camera cannot pitch: the shot is level at the heading, whatever the target height.
-  const { yaw } = poseOf(eye, target);
-  const pitch = level ? 0 : poseOf(eye, target).pitch;
-  const rad = Math.PI / 180;
-  const f = [Math.cos(pitch * rad) * Math.sin(yaw * rad), Math.sin(pitch * rad), Math.cos(pitch * rad) * Math.cos(yaw * rad)];
-  const r = [Math.cos(yaw * rad), 0, -Math.sin(yaw * rad)];
-  const u = [-Math.sin(pitch * rad) * Math.sin(yaw * rad), Math.cos(pitch * rad), -Math.sin(pitch * rad) * Math.cos(yaw * rad)];
-  const ty = Math.tan((FOV_V * rad) / 2);
-  const tx = ty * (16 / 9);
-  const rays = [];
-  for (let i = 0; i < 6; i++) {
-    for (let j = 0; j < 3; j++) {
-      const a = ((i - 2.5) / 2.5) * 0.92 * tx;
-      const b = ((j - 1) / 1) * 0.92 * ty;
-      const dir = norm(add(add(f, mul(r, a)), mul(u, b)));
-      const reach = depth * 2;
-      const tr = probe.trace(eye, add(eye, mul(dir, reach)), true);
-      const hit = tr.d < tr.total - 0.05;
-      if (!hit) {
-        rays.push({ hit: false });
-        continue;
+// ------------------------------------------------------------ hero-based wide scoring (#515)
+// The old grid scored "rays that land inside the radius", which rewards any wall or canopy and cannot tell a
+// facade from a fuel canopy standing in front of it. The new score asks what a player wants from a wide:
+// the area's main interactables are in frame, big enough to read, and not hidden; nothing tall that is not
+// one of them fills the foreground.
+const FOV_V_TAN = Math.tan((FOV_V * Math.PI) / 360);
+const FOV_H_TAN = FOV_V_TAN * (16 / 9);
+const HERO_MAX = 12;
+const HERO_SIZE_FULL = 0.1; // a hero this wide (share of the frame) counts fully
+const FG_DEPTH = 0.75; // a non-hero hit nearer than this share of the target depth is foreground
+
+const volOf = (e) => (e.bmin && e.bmax ? Math.max(0, e.bmax[0] - e.bmin[0]) * Math.max(0, e.bmax[1] - e.bmin[1]) * Math.max(0, e.bmax[2] - e.bmin[2]) : 0);
+
+// How much an interactable is "the area's main thing": its actions and its size. Signs and bystander NPCs count for little.
+export function importance(e) {
+  const acts = e.actions ? e.actions.length : 0;
+  let w = Math.min(acts, 4) + 0.7 * Math.cbrt(volOf(e));
+  if (/^Sign_/.test(e.name || "")) w *= 0.2;
+  else if (/Npc|Clerk|Tomato|Plum|Apple|Farmer/.test(e.name || "")) w *= 0.35;
+  return r2(w);
+}
+
+// The entities a wide must show: the area's interactables (with measured bounds), plus any named in areas.json `focus`.
+export function heroesOf(checked, area) {
+  const focus = area.focus ?? [];
+  const out = [];
+  for (const e of checked) {
+    if (!e.bmin || !e.name) continue;
+    const isFocus = focus.includes(e.name);
+    if (!isFocus && !(e.actions && e.actions.length)) continue;
+    const w = importance(e) * (isFocus ? 4 : 1);
+    if (w < 0.3) continue;
+    // A node with no mesh of its own measures as a point: give it a person-sized box so it can be framed and hit.
+    const min = [...e.bmin];
+    const max = [...e.bmax];
+    for (let i = 0; i < 3; i++) {
+      const need = i === 1 ? 1.5 : 1.2;
+      if (max[i] - min[i] < need) {
+        if (i === 1) max[i] = min[i] + need;
+        else {
+          const c = (min[i] + max[i]) / 2;
+          min[i] = c - need / 2;
+          max[i] = c + need / 2;
+        }
       }
+    }
+    out.push({ name: e.name, min, max, w, focus: isFocus });
+  }
+  // Only the area's own: a neighbour inside the radius (the fuel station seen from the hospital) is not what this wide is for.
+  const focusHeroes = out.filter((h) => h.focus);
+  const aim = aimOf(area, focusHeroes);
+  const reach = focusHeroes.length ? Math.max(12, aim.frame * 1.6) : area.radius * 0.65;
+  const own = out.filter((h) => h.focus || Math.hypot((h.min[0] + h.max[0]) / 2 - aim.x, (h.min[2] + h.max[2]) / 2 - aim.z) <= reach);
+  own.sort((a, b) => b.w - a.w);
+  return own.slice(0, HERO_MAX);
+}
+
+// Where a wide looks and how far it should stand: the centre of the focus entities (else the area centre).
+export function aimOf(area, heroes) {
+  const f = heroes.filter((h) => h.focus);
+  if (!f.length) return { x: area.x, z: area.z, frame: area.radius };
+  const cx = (h) => (h.min[0] + h.max[0]) / 2;
+  const cz = (h) => (h.min[2] + h.max[2]) / 2;
+  const x = f.reduce((s, h) => s + cx(h), 0) / f.length;
+  const z = f.reduce((s, h) => s + cz(h), 0) / f.length;
+  const ext = Math.max(...f.map((h) => Math.hypot(cx(h) - x, cz(h) - z) + Math.hypot(h.max[0] - h.min[0], h.max[2] - h.min[2]) / 2));
+  return { x, z, frame: Math.max(7, ext * 1.6) };
+}
+
+// Level camera at `eye` facing yaw (degrees). Box corners -> normalised screen rectangle and nearest depth.
+export function boxScreen(eye, yawDeg, min, max) {
+  const sy = Math.sin((yawDeg * Math.PI) / 180);
+  const cy = Math.cos((yawDeg * Math.PI) / 180);
+  let x0 = 9;
+  let x1 = -9;
+  let y0 = 9;
+  let y1 = -9;
+  let zmin = 1e9;
+  for (let i = 0; i < 8; i++) {
+    const p = [i & 1 ? max[0] : min[0], i & 2 ? max[1] : min[1], i & 4 ? max[2] : min[2]];
+    const v = sub(p, eye);
+    const z = v[0] * sy + v[2] * cy;
+    if (z < 0.3) return null;
+    const x = (v[0] * cy - v[2] * sy) / z / FOV_H_TAN;
+    const y = v[1] / z / FOV_V_TAN;
+    x0 = Math.min(x0, x);
+    x1 = Math.max(x1, x);
+    y0 = Math.min(y0, y);
+    y1 = Math.max(y1, y);
+    zmin = Math.min(zmin, z);
+  }
+  const w = Math.max(1e-6, x1 - x0);
+  const h = Math.max(1e-6, y1 - y0);
+  const ox = Math.max(0, Math.min(1, x1) - Math.max(-1, x0));
+  const oy = Math.max(0, Math.min(1, y1) - Math.max(-1, y0));
+  return { x0, x1, y0, y1, z: zmin, inFrac: (ox * oy) / (w * h), width: w / 2 };
+}
+
+const sizeFactor = (s) => Math.max(0.1, Math.min(1, s.width / HERO_SIZE_FULL));
+
+// Pure stage: the share of hero weight that is in frame and big enough to read (no rays). Ranks candidates cheaply.
+export function heroFrame(eye, yawDeg, heroes) {
+  let total = 0;
+  let got = 0;
+  for (const hero of heroes) {
+    total += hero.w;
+    const s = boxScreen(eye, yawDeg, hero.min, hero.max);
+    if (s) got += hero.w * s.inFrac * sizeFactor(s);
+  }
+  return total ? got / total : 0;
+}
+
+// Distance along a ray (origin o, unit dir d) at which it enters the box, or null.
+export function rayBoxEntry(o, d, min, max) {
+  let t0 = 0;
+  let t1 = 1e9;
+  for (let i = 0; i < 3; i++) {
+    if (Math.abs(d[i]) < 1e-9) {
+      if (o[i] < min[i] || o[i] > max[i]) return null;
+      continue;
+    }
+    let a = (min[i] - o[i]) / d[i];
+    let b = (max[i] - o[i]) / d[i];
+    if (a > b) [a, b] = [b, a];
+    t0 = Math.max(t0, a);
+    t1 = Math.min(t1, b);
+    if (t0 > t1) return null;
+  }
+  return t0;
+}
+
+const inBox = (p, hero, pad) => p[0] >= hero.min[0] - pad && p[0] <= hero.max[0] + pad && p[1] >= hero.min[1] - pad && p[1] <= hero.max[1] + pad && p[2] >= hero.min[2] - pad && p[2] <= hero.max[2] + pad;
+
+// Pure: combine the measurements into one score; the breakdown says why.
+export function scoreHero(m) {
+  const score = 5 * m.heroVis + 1.5 * m.backdrop - 7 * m.foreground - 5 * m.bigNear - 8 * m.treeNear - 8 * m.crowd - 8 * (m.dominance || 0) + m.bonus;
+  const out = { score: r2(score) };
+  for (const [k, v] of Object.entries(m)) out[k] = typeof v === "number" ? r2(v) : v;
+  return out;
+}
+
+// Trace the frame: hero visibility (3 sample points each), a 10x5 grid of foreground rays, and short crowding probes.
+function scoreWideHero(probe, area, placed, heroes, trees, aim) {
+  const { eye, target } = placed;
+  const { yaw } = poseOf(eye, target);
+  const depth = Math.max(4, Math.hypot(aim.x - eye[0], aim.z - eye[2]));
+  const rad = Math.PI / 180;
+  const f = [Math.sin(yaw * rad), 0, Math.cos(yaw * rad)];
+  const r = [Math.cos(yaw * rad), 0, -Math.sin(yaw * rad)];
+  const u = [0, 1, 0];
+  const blockers = new Map();
+  const bump = (k, w) => blockers.set(k, (blockers.get(k) ?? 0) + w);
+  // 1. hero visibility
+  let total = 0;
+  let got = 0;
+  let dom = 0;
+  for (const hero of heroes) {
+    total += hero.w;
+    const s = boxScreen(eye, yaw, hero.min, hero.max);
+    if (!s) continue;
+    // A hero that fills the frame (the van you are standing next to) is as bad as one you cannot see.
+    const share = (Math.max(0, Math.min(1, s.x1) - Math.max(-1, s.x0)) * Math.max(0, Math.min(1, s.y1) - Math.max(-1, s.y0))) / 4;
+    if (share > 0.15) dom += (share - 0.15) * hero.w;
+    if (s.inFrac < 0.3) continue;
+    const c = [(hero.min[0] + hero.max[0]) / 2, (hero.min[1] + hero.max[1]) / 2, (hero.min[2] + hero.max[2]) / 2];
+    const hw = (hero.max[0] - hero.min[0]) / 2;
+    const side = norm([-(c[2] - eye[2]), 0, c[0] - eye[0]]);
+    const pts = [c, add(c, mul(side, Math.min(hw, 0.6)))];
+    let seen = 0;
+    for (const p of pts) {
+      const dir = norm(sub(p, eye));
+      const entry = rayBoxEntry(eye, dir, hero.min, hero.max);
+      const tr = probe.trace(eye, p, true);
+      if (tr.d >= tr.total - 0.05 || (entry !== null && tr.d >= entry - 0.4)) seen++;
+      else bump(tr.ent, hero.w);
+    }
+    got += hero.w * (seen / pts.length) * s.inFrac * sizeFactor(s);
+  }
+  // 2. foreground: what is hit in the near part of the view that is not a hero
+  let cover = 0;
+  let fg = 0;
+  let big = 0;
+  const nx = 8;
+  const ny = 4;
+  for (let i = 0; i < nx; i++) {
+    for (let j = 0; j < ny; j++) {
+      const a = ((i - (nx - 1) / 2) / ((nx - 1) / 2)) * 0.92 * FOV_H_TAN;
+      const b = ((j - (ny - 1) / 2) / ((ny - 1) / 2)) * 0.92 * FOV_V_TAN;
+      const dir = norm(add(add(f, mul(r, a)), mul(u, b)));
+      const tr = probe.trace(eye, add(eye, mul(dir, depth * 2)), true);
+      if (!(tr.d < tr.total - 0.05)) continue;
       const p = add(eye, mul(dir, tr.d));
-      rays.push({ hit: true, d: tr.d, h: p[1] - probe.ground(p[0], p[2]), inArea: Math.hypot(p[0] - area.x, p[2] - area.z) <= area.radius * 1.05 });
+      const h = p[1] - probe.ground(p[0], p[2]);
+      if (h < 0.3) continue;
+      if (Math.hypot(p[0] - aim.x, p[2] - aim.z) <= aim.frame * 1.25 && tr.d >= depth * 0.4) cover++;
+      if (heroes.some((x) => inBox(p, x, 0.8))) continue;
+      if (tr.d < depth * FG_DEPTH && h > 0.8) {
+        fg++;
+        bump(tr.ent, 0.2);
+        if (h > 2.5) big++;
+      }
     }
   }
-  // Thin poles and lattices (pylons) slip between the grid rays: short probes ahead of the lens
-  // catch a camera that is standing in or right behind one.
+  // 3. thin poles right in front of the lens
   let crowded = 0;
   for (const yo of [-0.6, 0, 0.6]) {
     for (const po of [-0.4, 0, 0.4]) {
@@ -610,7 +784,22 @@ function scoreWide(probe, area, placed, trees, level = true) {
       if (tr.d < tr.total - 0.05) crowded++;
     }
   }
-  return scoreRays(rays, depth, treeOcclusion(eye, level ? [target[0], eye[1], target[2]] : target, trees, depth), crowded / 9);
+  const n = nx * ny;
+  const off = Math.abs((((placed.cand.az - (area.front ?? 180)) % 360) + 540) % 360 - 180);
+  const bonus = (placed.cand.up <= 3 ? 0.6 : 0) + (off >= 20 && off <= 60 ? 0.4 : 0);
+  const m = scoreHero({
+    heroVis: total ? got / total : 0,
+    dominance: total ? dom / total : 0,
+    backdrop: cover / n,
+    foreground: fg / n,
+    bigNear: big / n,
+    treeNear: treeOcclusion(eye, [target[0], eye[1], target[2]], trees, depth),
+    crowd: crowded / 9,
+    bonus,
+  });
+  const top = [...blockers.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => k);
+  if (top.length) m.blockedBy = top.join(",");
+  return m;
 }
 
 async function capture(h, area, o) {
@@ -628,15 +817,24 @@ async function capture(h, area, o) {
 
   // Numeric placement checks first: cheap, and the annotation uses the entity list.
   const checked = [];
-  for (const e of o.args.flags["wide-only"] ? [] : ents) {
+  const focusNames = area.focus ?? [];
+  for (const e of o.args.flags["wide-only"] ? ents.filter((x) => pads.includes(x) || focusNames.includes(x.name)) : ents) {
     let m;
     try {
       m = probe.ent(e);
     } catch (err) {
       m = { missing: true };
     }
-    checked.push({ name: e.name, layer: e.layer, x: e.x, y: e.y, z: e.z, actions: e.actions, dist: r2(e.dist), ...m, problems: problemsFor(e, m) });
+    checked.push({ name: e.name, layer: e.layer, x: e.x, y: e.y, z: e.z, yaw: e.yaw, actions: e.actions, dist: r2(e.dist), ...m, problems: problemsFor(e, m, area) });
   }
+  const heroes = heroesOf(checked, area);
+  const aim = aimOf(area, heroes);
+  // Close-ups: the interactables that matter most (actions and size), not the ones nearest the centre.
+  for (const p of pads) {
+    const own = checked.find((x) => x.name === p.name);
+    p.importance = own ? importance(own) : 0;
+  }
+  const closeSet = pads.slice().sort((x, y) => y.importance - x.importance).slice(0, MAX_CLOSEUPS);
 
   // The clock is the server's: set it (and clear weather) there once, before the free camera exists
   // (setting it again while that camera is active crashed the client). The reply says what it set.
@@ -679,44 +877,49 @@ async function capture(h, area, o) {
   let widePool = [];
   try {
   const lookAt = (h1) => [area.x, area.y + h1, area.z];
-
-  // Wide: score every front-side candidate by raycast, shoot the best two (wide = best score).
+  // Wide: rank every front-side candidate by what a player needs to see (heroes in frame, unhidden, big enough,
+  // nothing tall in front), ray-score the best six, shoot the best two (wide = best score).
+  const noClose = o.args.flags["wide-only"] || o.args.flags["no-close"];
+  console.log(`closeups: ${closeSet.map((p) => `${p.name}(${p.importance})`).join(" ")}`);
   const wides = [];
   const trees = placedMod
     .loadWorld(ROOT)
-    .filter((e) => TREE.test(e.prefab || e.anonPrefab || "") && Math.hypot(e.x - area.x, e.z - area.z) < area.radius * 4)
+    .filter((e) => TREE.test(e.prefab || e.anonPrefab || "") && Math.hypot(e.x - aim.x, e.z - aim.z) < Math.max(area.radius, aim.frame) * 4)
     .map((e) => ({ x: e.x, z: e.z, gy: probe.ground(e.x, e.z) }));
-  placeCamera(probe, "wide", area, { collect: wides, fast: !!o.args.flags.score }, () => lookAt(1));
-  // Stage 1 is pure maths (tree canopies); only the 14 least-occluded candidates get the ray grid.
-  for (const w of wides) w.treeNear = treeOcclusion(w.eye, [w.target[0], w.eye[1], w.target[2]], trees, len(sub(w.target, w.eye)));
-  wides.sort((a, b) => a.treeNear - b.treeNear || Math.abs(a.cand.az - (area.front ?? 180)) - Math.abs(b.cand.az - (area.front ?? 180)));
-  tm("candidates placed");
-  const unscored = wides.splice(o.args.flags.score ? Number(o.args.flags.score) : 8);
+  placeCamera(probe, "wide", area, { collect: wides, aim }, () => [aim.x, area.y + 1, aim.z]);
   for (const w of wides) {
-    w.frame = scoreWide(probe, area, w, trees, !o.args.flags["free-camera"]);
-    w.frame.score = r2(w.frame.score + (w.score >= 2 ? 0 : -1));
+    const yaw = poseOf(w.eye, w.target).yaw;
+    w.treeNear = treeOcclusion(w.eye, [w.target[0], w.eye[1], w.target[2]], trees, len(sub(w.target, w.eye)));
+    w.pre = heroFrame(w.eye, yaw, heroes) * 5 - 8 * w.treeNear + (w.cand.up <= 3 ? 0.6 : 0) + (w.score >= 2 ? 0 : -0.5);
   }
-  tm("scored");
-  wides.sort((a, b) => b.frame.score - a.frame.score);
-  widePool = wides.concat(unscored.map((w) => ({ ...w, frame: { score: null, treeNear: w.treeNear, skipped: true } }))).map((w) => ({ az: r2(w.cand.az), dist: r2(w.cand.dist), up: w.cand.up, ...w.frame, viewBlocked: w.score < 2 || undefined }));
+  wides.sort((x, y) => y.pre - x.pre);
+  const unscored = wides.splice(6);
+  const tw = Date.now();
+  for (const w of wides) {
+    w.frame = scoreWideHero(probe, area, w, heroes, trees, aim);
+    w.frame.score = r2(w.frame.score + (w.score >= 2 ? 0 : -0.5));
+  }
+  wides.sort((x, y) => y.frame.score - x.frame.score);
+  widePool = wides.map((w) => ({ az: r2(w.cand.az), dist: r2(w.cand.dist), up: w.cand.up, pre: r2(w.pre), ...w.frame, viewBlocked: w.score < 2 || undefined })).concat(unscored.slice(0, 20).map((w) => ({ az: r2(w.cand.az), dist: r2(w.cand.dist), up: w.cand.up, pre: r2(w.pre), skipped: true })));
+  const bw = wides[0];
+  if (bw) console.log(`wide: ${wides.length} scored of ${wides.length + unscored.length} in ${Math.round((Date.now() - tw) / 1000)}s; best az ${r2(bw.cand.az)} dist ${r2(bw.cand.dist)} up ${bw.cand.up}: ${JSON.stringify(bw.frame)}; heroes ${heroes.length}`);
   wides.slice(0, 2).forEach((w, i) => {
     const sh = take(i === 0 ? "wide" : "wide-2", "wide", "wide", null, w);
     sh.frame = w.frame;
   });
-  if (!wides.length) take("wide", "wide", "wide", null, placeCamera(probe, "wide", area, {}, () => lookAt(1)));
+  if (!wides.length) take("wide", "wide", "wide", null, placeCamera(probe, "wide", area, { aim }, () => [aim.x, area.y + 1, aim.z]));
   // The character camera cannot pitch, so a top-down needs the (crashing) free camera: opt in with --free-camera.
   if (o.args.flags["free-camera"]) take("top", "top", "top", null, placeCamera(probe, "top", area, {}, () => lookAt(0)));
-  if (!o.args.flags["wide-only"]) for (const [dirName, az] of [["N", 0], ["E", 90], ["S", 180], ["W", 270]]) {
+  if (!noClose) for (const [dirName, az] of [["N", 0], ["E", 90], ["S", 180], ["W", 270]]) {
     // Standing at the radius edge on that side, looking in: the camera sits on the side named.
     take(dirName, "eye", dirName, null, placeCamera(probe, "eye", area, { az }, (cand, stand) => [centre[0], stand[1] + EYE, centre[2]]));
   }
-  const padList = o.args.flags["wide-only"] ? [] : o.args.flags.score ? pads.slice(0, Math.max(0, TILE_LIMIT - shots.length)) : pads; // baseline: only what the contact sheet shows
-  for (const p of padList) {
+  for (const p of noClose ? [] : o.args.flags.score ? closeSet.slice(0, Math.max(0, TILE_LIMIT - shots.length)) : closeSet) { // --score (baseline): only what the contact sheet shows
     const floorY = p.y < 1.5 ? p.y : undefined;
     const h1 = p.y > 1.5 ? 0 : 1;
     const placed = placeCamera(probe, "close", area, { x: p.x, z: p.z, yaw: p.yaw, floorY, name: p.name }, () => [p.x, p.y + h1, p.z]);
     const cs = take(`close-${p.name}`, "close", p.name, p.name, placed);
-    cs.frame = { score: placed.score, dist: r2(Math.hypot(p.x - area.x, p.z - area.z)) };
+    cs.frame = { score: r2(p.importance * (placed.score >= 2 ? 1 : 0.4)), importance: p.importance, view: placed.score, dist: r2(Math.hypot(p.x - area.x, p.z - area.z)) };
   }
 
   } finally {
@@ -836,6 +1039,11 @@ function selftest() {
   for (const w of ["floating", "tilted", "unreachable", "clips Wall_1, Crate"]) if (!list.includes(w)) fails.push(`problems missed ${w}: ${list}`);
   if (!problemsFor({ name: "C", y: 0, actions: [] }, parseEnt("bmin=0,0,0 bmax=1,1,1 gap=-0.3 tilt=0 walk=99 clip=none")).join().includes("sunk")) fails.push("sunk");
   if (problemsFor({ name: "Sign_X", y: 3.3, actions: [] }, parseEnt("bmin=0,3,0 bmax=1,4,1 gap=2.9 tilt=0 walk=99 clip=none")).length) fails.push("a wall sign is flagged floating");
+  const fa = { x: 0, z: 0, radius: 10, front: 180 };
+  const faceM = parseEnt("bmin=0,0,0 bmax=1,1,1 gap=0 tilt=0 walk=0.5 clip=none");
+  if (!problemsFor({ name: "Phone", x: 0, z: 0, y: 0, yaw: 0, actions: ["X"] }, faceM, fa).join().includes("faces away")) fails.push("faces-away misses a back to the approach");
+  if (problemsFor({ name: "Phone", x: 0, z: 0, y: 0, yaw: 180, actions: ["X"] }, faceM, fa).join().includes("faces away")) fails.push("faces-away flags a correct facing");
+  if (problemsFor({ name: "Pick", x: 0, z: 0, y: 0, yaw: 0, actions: ["SCR_PickUpItemAction"] }, faceM, fa).join().includes("faces away")) fails.push("faces-away flags a pickup");
   if (!problemsFor({ name: "D", y: 0 }, { missing: true })[0].includes("not in the world")) fails.push("missing entity");
   // Interactables dedupe by position.
   const pads = interactablesIn([
@@ -849,13 +1057,22 @@ function selftest() {
   if (eye.list[0].dist !== 30 || eye.list[0].up !== 0) fails.push("eye candidates");
   if (contactLayout(12).cols !== 4 || contactLayout(9).cols !== 3) fails.push("contactLayout");
   const wideC = candidates("wide", { x: 0, y: 0, z: 0, radius: 10, front: 270 }).list;
-  if (wideC[0].az !== 270 || wideC.some((c) => Math.abs(c.az - 270) > 70)) fails.push("wide candidates start at the front heading");
-  const inArea = { hit: true, d: 20, h: 3, inArea: true };
-  const good = scoreRays([inArea, inArea, { hit: false }, inArea], 30);
-  const pole = scoreRays([{ hit: true, d: 4, h: 6, inArea: false }, inArea, inArea, { hit: false }], 30);
+  if (wideC.some((c) => Math.abs(c.az - 270) > 65) || !wideC.some((c) => c.up === 0)) fails.push("wide candidates start at the front heading, eye level");
+  // Hero scoring: a hero in front of the camera is seen; behind it is not; a near, big blocker costs.
+  const hero = { name: "H", min: [-1, 0, 7], max: [1, 2, 9], w: 3 };
+  if (!(heroFrame([0, 1.6, 0], 0, [hero]) > 0.8) || heroFrame([0, 1.6, 0], 180, [hero]) !== 0) fails.push("heroFrame in front/behind");
+  if (!(heroFrame([0, 1.6, 0], 0, [hero]) > heroFrame([0, 1.6, -60], 0, [hero]))) fails.push("heroFrame prefers closer");
+  const good = scoreHero({ heroVis: 0.9, backdrop: 0.3, foreground: 0, bigNear: 0, treeNear: 0, crowd: 0, bonus: 0 });
+  const wall = scoreHero({ heroVis: 0.9, backdrop: 0.3, foreground: 0.33, bigNear: 0.33, treeNear: 0, crowd: 0, bonus: 0 });
+  if (!(good.score > wall.score + 3)) fails.push(`scoreHero wall ${good.score} ${wall.score}`);
+  if (rayBoxEntry([0, 0, 0], [0, 0, 1], [-1, -1, 5], [1, 1, 7]) !== 5 || rayBoxEntry([5, 0, 0], [0, 0, 1], [-1, -1, 5], [1, 1, 7]) !== null) fails.push("rayBoxEntry");
+  const imp = (name, n, v) => importance({ name, actions: new Array(n).fill("a"), bmin: [0, 0, 0], bmax: [v, 1, 1] });
+  if (!(imp("Roadmap_Vehicle", 3, 5) > imp("TomatoNpc", 1, 1) * 3) || !(imp("Roadmap_Vehicle", 3, 5) > imp("Sign_Atm", 1, 1) * 3)) fails.push("importance ranks a vehicle over an NPC or a sign");
   const eyeP = [0, 10, 0];
   if (treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 4, gy: 0 }], 30) < 0.5 || treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 40, gy: 0 }], 30) !== 0) fails.push("treeOcclusion");
-  if (!(good.score > pole.score) || pole.foreignNear !== 0.25 || pole.bigNear !== 0.25) fails.push(`scoreRays good ${good.score} pole ${pole.score}`);
+  // Problems: a pivot above the floor with mesh below it is not sunk; a buried prop is.
+  if (problemsFor({ name: "Jeep", y: 0 }, parseEnt("bmin=0,0,0 bmax=2,2,4 gap=-0.4 pgap=0 tilt=0 walk=0.5 clip=none")).join().includes("sunk")) fails.push("sunk ignores bounds below a grounded pivot");
+  if (!problemsFor({ name: "Crate", y: 0 }, parseEnt("bmin=0,0,0 bmax=1,1,1 gap=-0.4 pgap=-0.4 tilt=0 walk=0.5 clip=none")).join().includes("sunk")) fails.push("sunk catches a buried prop");
   if (bestBy([{ id: "a", frame: { score: 1 } }, { id: "b", frame: { score: 3 } }]).id !== "b") fails.push("bestBy");
   for (const f of fails) console.log(`  ${f}`);
   console.log(fails.length ? "shots selftest: FAIL" : "shots selftest: OK");
