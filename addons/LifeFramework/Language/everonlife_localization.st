@@ -3609,8 +3609,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7EFC20EBB3D29E7E}" {
      Id "LF-Sign_TownMap_Title"
-     Target_en_us "Welcome to Everon"
-     Comment "Title of the sign at the town map board at the spawn square. Printed on the board and shown in the prompt as Read: Welcome to Everon."
+     Target_en_us "Welcome to Everon, Town Board"
+     Comment "Title of the sign at the town map board at the spawn square. Printed on the board and shown in the prompt as Read: Welcome to Everon, Town Board."
     }
     CustomStringTableItem "{122DE6C8A5EACE1E}" {
      Id "LF-Sign_TownMap_What"
