@@ -1882,6 +1882,8 @@
 ## Agent box
 
 ### `LF_AgentHarness` — `Feature/AgentHarness/`
+- ✅ (2026-11-10, M2 QA) Harness verbs `pager` (opens the carried pager's card, as `LF_ReadPagerAction` does) and `report` (the `/report` chat command's ask). `use LF_PayphoneAction__3` picks the fourth action of that class on the host (a payphone carries one per service preset; the plain name finds the first). `agent-box/qa-m2.mjs` drives the comms loop (payphone, board, take, caller hears back, pager), `/report`, the square payphone, and `normalize` (clock officers and medics out between proofs).
+- ✅ (2026-11-10, M2 QA) `LF_LockpickAction.CanBeShownScript` reads `LF_Lockpick.ShowsPick` again, so a locked car lists the pick action (a merge had put the door-only check back). Test: `e2e/lockpick-vehicle`.
 - ✅ (2026-11-10, #348) The `state` line also prints `jail=` (seconds left on a sentence), `garage=` (cars stored), `parked=` (plate of the car in the world) and `stash=` (items in `Roadmap_Hideout_Stash`, -1 with none placed). The verbs `stash` (moves an apple from the character into the stash: the member check in `CanStoreItem` decides) and `park` (sets the owner's car down beside `Roadmap_Garage`) stand in for an inventory drag and for driving; with `apples` they pass the harness gate of a `LF_HARNESS` build, so the playtest journey needs no debug menu. `agent-box/journey.mjs` runs the police and org-C steps and a wider restart check on 3 clients.
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
   `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
