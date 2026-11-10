@@ -6242,6 +6242,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cider"
      Comment "Name of the neutral example chain in ResourceChains.conf (#416)."
     }
+    CustomStringTableItem "{5212AF1650F40FE3}" {
+     Id "LF-Hotwire_Title"
+     Target_en_us "Hotwire"
+     Comment "Toast title for hotwiring (#412)."
+    }
+    CustomStringTableItem "{106F4441F054E715}" {
+     Id "LF-Hotwire_Action"
+     Target_en_us "Hotwire the ignition"
+     Comment "Action: hotwire a car that needs its key (#412)."
+    }
+    CustomStringTableItem "{B7A758401B1C4871}" {
+     Id "LF-Hotwire_NotNeeded"
+     Target_en_us "This ignition needs no hotwire"
+     Comment "Refusal: the car starts freely (#412)."
+    }
+    CustomStringTableItem "{1C73AA55637B8F93}" {
+     Id "LF-Hotwire_HasKey"
+     Target_en_us "You have the key"
+     Comment "Refusal: the driver holds the key (#412)."
+    }
+    CustomStringTableItem "{E9206E012E9770BE}" {
+     Id "LF-Hotwire_Already"
+     Target_en_us "The ignition is already wired for you"
+     Comment "Refusal: already hotwired (#412)."
+    }
+    CustomStringTableItem "{96CECE0C807F3280}" {
+     Id "LF-Hotwire_NotSeated"
+     Target_en_us "Sit in the driver seat first"
+     Comment "Refusal: not at the wheel (#412)."
+    }
+    CustomStringTableItem "{45ACBB5024E89EBF}" {
+     Id "LF-Hotwire_Busy"
+     Target_en_us "Someone is already working the ignition"
+     Comment "Refusal: an attempt is running (#412)."
+    }
+    CustomStringTableItem "{B06175474D8ABDD4}" {
+     Id "LF-Hotwire_Started"
+     Target_en_us "You get under the dash. Stay in the seat."
+     Comment "Toast: a hotwire began (#412)."
+    }
+    CustomStringTableItem "{AADCCA37644F7C29}" {
+     Id "LF-Hotwire_Done"
+     Target_en_us "The ignition is live. Start the engine."
+     Comment "Toast: the hotwire worked (#412)."
+    }
+    CustomStringTableItem "{65ED248DDAEB762A}" {
+     Id "LF-Hotwire_Failed"
+     Target_en_us "The wires spark and nothing catches. Try again."
+     Comment "Toast: the hotwire failed (#412)."
+    }
+    CustomStringTableItem "{D1975826211C1732}" {
+     Id "LF-Hotwire_Cancelled"
+     Target_en_us "You left the wheel"
+     Comment "Toast: the attempt was dropped (#412)."
+    }
+    CustomStringTableItem "{AF65629491E7BFF1}" {
+     Id "LF-Hotwire_NoKey"
+     Target_en_us "The engine will not start without the key"
+     Comment "Toast: engine start refused (#412)."
+    }
   }
  }
 }

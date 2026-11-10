@@ -244,13 +244,57 @@ class LF_Lockpick
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A target is a house door (LF_LockComponent) or a vehicle (LF_VehicleLockComponent, #412).
+	protected static bool IsLockKnown(IEntity target)
+	{
+		return LF_Component<LF_LockComponent>.Find(target) != null || LF_Component<LF_VehicleLockComponent>.Find(target) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsLocked(IEntity target)
+	{
+		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(target);
+		if (doorLock)
+			return doorLock.IsLocked();
+
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(target);
+		return vehicleLock && vehicleLock.IsVehicleLocked();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn True when the pick action should be listed on this target: a pick target that is locked.
+	static bool ShowsPick(IEntity target)
+	{
+		return target && LF_Component<LF_LockpickTargetComponent>.Find(target) != null && IsLockKnown(target) && IsLocked(target);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: opens the lock of a door or vehicle. A vehicle's saved lock flag follows.
+	protected static void Unlock(IEntity target)
+	{
+		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(target);
+		if (doorLock)
+		{
+			doorLock.Unlock();
+			return;
+		}
+
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(target);
+		if (!vehicleLock)
+			return;
+
+		vehicleLock.SetLocked(false);
+		LF_VehicleOwnership.NoteLockState(vehicleLock.GetVehicleIdentifier(), false);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Offer check, used by the door action on client and server. Reads only.
 	static LF_ELockpickCheck CheckDoor(IEntity door, IEntity user)
 	{
 		LF_LockpickTargetComponent target = LF_Component<LF_LockpickTargetComponent>.Find(door);
-		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(door);
-		bool pickable = target && doorLock && target.IsPickable();
-		bool locked = doorLock && doorLock.IsLocked();
+		bool known = IsLockKnown(door);
+		bool pickable = target && known && target.IsPickable();
+		bool locked = known && IsLocked(door);
 		return LF_LockpickRules.Check(pickable, locked, HasPick(user), IsBusy(door));
 	}
 
@@ -360,18 +404,14 @@ class LF_Lockpick
 
 		IEntity door = GetGame().GetWorld().FindEntityByID(attempt.m_DoorId);
 		IEntity user = GetGame().GetWorld().FindEntityByID(attempt.m_UserId);
-		LF_LockComponent doorLock;
-		if (door)
-			doorLock = LF_Component<LF_LockComponent>.Find(door);
-
-		if (!door || !user || !doorLock)
+		if (!door || !user || !IsLockKnown(door))
 		{
 			LF_Debug.Error(FEATURE, "attempt finished but the door or user is gone");
 			return;
 		}
 
 		// The door may have been opened (a key, a charge) while the pick worked.
-		if (!doorLock.IsLocked())
+		if (!IsLocked(door))
 		{
 			LF_Debug.Info(FEATURE, string.Format("attempt by %1 ends: %2 is already open", attempt.m_sPlayerUid, door.GetName()));
 			return;
@@ -383,7 +423,7 @@ class LF_Lockpick
 
 		LF_ELockpickResult result = LF_LockpickRules.Resolve(attempt.m_iSkill, roll, Math.RandomFloat01());
 		if (result == LF_ELockpickResult.OPENED)
-			doorLock.Unlock();
+			Unlock(door);
 
 		int wear = 0;
 		if (LF_LockpickRules.Wear(1, result) < 1)

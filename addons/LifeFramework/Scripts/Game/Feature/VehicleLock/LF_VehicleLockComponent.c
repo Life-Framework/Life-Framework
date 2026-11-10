@@ -34,8 +34,19 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	[Attribute("", desc: "Editor binding: vehicle identifier this lock accepts. Leave empty to auto-generate at spawn.")]
 	protected string m_sDebugIdentifier;
 
+	[Attribute("0", desc: "The engine needs a matching key (or a hotwire, #412) to start. Off keeps the vanilla free start.")]
+	protected bool m_bIgnitionLocked;
+
 	[RplProp()]
 	protected bool m_bELIsLocked;
+
+	//! Player id who hotwired this vehicle; -1 none. Server-written, read by the engine start gate.
+	[RplProp()]
+	protected int m_iHotwiredPlayerId = -1;
+
+	//! Set on the server when the engine is started without the vehicle's key. Session state, not saved.
+	[RplProp()]
+	protected bool m_bStolen;
 
 	[RplProp()]
 	protected string m_sVehicleIdentifier;
@@ -100,12 +111,55 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 			return;
 
 		m_bELIsLocked = locked;
+		if (locked && Replication.IsServer())
+			m_iHotwiredPlayerId = -1;
+
 		Replication.BumpMe();
 
 		string stateName = "unlocked";
 		if (locked)
 			stateName = "locked";
 		LF_Debug.Log("VehicleLock", string.Format("lock state -> %1", stateName));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsIgnitionLocked()
+	{
+		return m_bIgnitionLocked;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetHotwiredPlayerId()
+	{
+		return m_iHotwiredPlayerId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsStolen()
+	{
+		return m_bStolen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the engine may start for this player without a key.
+	void SetHotwiredBy(int playerId)
+	{
+		if (!Replication.IsServer() || m_iHotwiredPlayerId == playerId)
+			return;
+
+		m_iHotwiredPlayerId = playerId;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: marks the vehicle stolen. Session state; a restart forgets it.
+	void SetStolen(bool stolen)
+	{
+		if (!Replication.IsServer() || m_bStolen == stolen)
+			return;
+
+		m_bStolen = stolen;
+		Replication.BumpMe();
 	}
 
 	//------------------------------------------------------------------------------------------------
