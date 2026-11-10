@@ -6152,6 +6152,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Police armory heist"
      Comment "Offence: the armory store was breached (#275)."
     }
+    CustomStringTableItem "{C4A100000000A001}" {
+     Id "LF-Chain_NeedLicense"
+     Target_en_us "You are not licensed for this work"
+     Comment "Chain step refused: the worker lacks the licence the step names (#416)."
+    }
+    CustomStringTableItem "{C4A100000000A002}" {
+     Id "LF-Chain_NeedLevel"
+     Target_en_us "You are not experienced enough for this work"
+     Comment "Chain step refused: the worker is below the level the step names (#416)."
+    }
+    CustomStringTableItem "{C4A100000000A003}" {
+     Id "LF-Chain_NeedEquipment"
+     Target_en_us "You need the right equipment for this work"
+     Comment "Chain step refused: the worker does not carry the equipment the step names (#416)."
+    }
+    CustomStringTableItem "{C4A100000000A004}" {
+     Id "LF-Chain_Cider_Name"
+     Target_en_us "Cider"
+     Comment "Name of the neutral example chain in ResourceChains.conf (#416)."
+    }
   }
  }
 }
