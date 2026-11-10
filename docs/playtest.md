@@ -170,3 +170,4 @@ sentence that names a place makes it a prompt.
   [playtest/workshop-publish.md](playtest/workshop-publish.md).
 - **QA reports:** [playtest/rc-2026-11-08.md](playtest/rc-2026-11-08.md) and
   [playtest/qa-2026-11-08.md](playtest/qa-2026-11-08.md).
+- **Shot picker (dev tooling, issue 515).** `tools\cli shots area hospital --pick` takes its wide from the area's `front` heading in `agent-box/areas.json` and scores each candidate by raycast; `--wide-only` skips the entity checks and close-ups. Scores are in `tmp/shots/<area>/index.json` (`wideCandidates`, `shots[].frame`).

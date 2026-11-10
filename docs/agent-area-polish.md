@@ -97,7 +97,7 @@ toolscli shots crop wide 900,0,380,140
 - **The areas** are in `agent-box/areas.json` (the 17 above; payphones has one entry per phone).
   A raw `x,z` also works; the ground height is looked up in-game.
 - **Same scene every time.** Golden hour (local 17.9, the game clock reads 4.73 h less at this longitude), clear weather, no HUD, no hint box. The clock is set on the server by the harness `time <hour>` verb (an authority-side RPC, like pose); a client-side clock is overridden. The call prints the reply (`local=17.9 game=13.77 ...`). Nothing ships.
-- **Fixed angles from the centre:** an elevated wide (1.5x the radius back, 12 m up), four eye-level
+- **Fixed angles from the centre:** a wide taken from the area's `front` heading in `agent-box/areas.json` (the side players approach from and the main facade faces; 12 candidates at 1.0 to 1.7x the radius, 6 or 12 m up, within 40 degrees of the front; the two best-scoring are shot as `wide` and `wide-2`), four eye-level
   shots at 1.7 m from N, E, S, W at the radius edge looking in, a top-down (only with `--free-camera`, see below), and a 2 to 3 m eye-level
   close-up of each interactable in the radius (most central first, at most 8).
 - **Camera guard.** Each camera is probed in-game: not inside a wall, no ceiling pressing on it, and a clear
@@ -120,7 +120,8 @@ toolscli shots crop wide 900,0,380,140
 - **`shots crop <shot> <x,y,w,h>`** writes a native-resolution crop, at most 800 px, next to the shot. Use
   it to check one spot (a crate's foot on the ground) instead of loading the whole shot. `<shot>` is a
   path, or a name such as `wide` from the newest area folder.
-- **`--pick`** copies the elevated wide and the most central interactable close-up to
+- **Scores.** Each wide candidate casts a 7x4 grid of rays from the camera. The frame score rewards rays that land on the area's own objects (`coverage`) and penalises objects outside the radius or taller than 2.5 m in the nearest third of the depth (`foreignNear`, `bigNear`) and tree canopies there (`treeNear`; canopies have no collision, so they come from the layers). Scores are in `index.json` (`shots[].frame`, and every candidate under `wideCandidates`). Set `front` for a new area before relying on the wide.
+- **`--pick`** copies the best-scoring wide and the best-scoring close-up (ties: most central) to
   `website/public/docs-images/area-<n>-<slug>/` as `wide.png` and `detail.png`; `--detail <Entity>` picks
   another close-up. The builder may override either.
 - **Known limits.** The player camera cannot pitch, so by default the wide is a level view from 12 m up and there is no top-down. `--free-camera` flies a free camera (real pitch, real top-down) but the client crashed about 4 s after the first shot, so it is opt-in until that is fixed. The field of view used by `--annotate` is an assumption (60 degrees vertical); the labels lined up with the entities in the hospital run.

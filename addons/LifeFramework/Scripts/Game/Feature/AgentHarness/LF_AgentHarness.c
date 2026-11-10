@@ -640,7 +640,7 @@ class LF_AgentCommand
 		int need = 0;
 		if (cmd.Arg1 == "ground")
 			need = 2;
-		else if (cmd.Arg1 == "trace")
+		else if (cmd.Arg1 == "trace" || cmd.Arg1 == "traceall")
 			need = 6;
 		else if (cmd.Arg1 == "cam")
 			need = 3;
@@ -678,7 +678,7 @@ class LF_AgentCommand
 		cmd.PosX = parts[first].ToFloat();
 		cmd.PosY = parts[first + 1].ToFloat();
 		cmd.PosZ = parts[first + 2].ToFloat();
-		if (cmd.Arg1 == "trace")
+		if (cmd.Arg1 == "trace" || cmd.Arg1 == "traceall")
 		{
 			cmd.CamX = parts[first + 3].ToFloat();
 			cmd.CamY = parts[first + 4].ToFloat();
@@ -2741,9 +2741,13 @@ class LF_AgentHarness
 
 	//------------------------------------------------------------------------------------------------
 	//! Distance along from->to to the first hit (the full length when clear).
+	protected static bool s_bProbeAllLayers;
+
 	protected static float ProbeTrace(vector from, vector to, IEntity exclude, out IEntity hitEntity)
 	{
 		TraceParam trace = new TraceParam();
+		if (s_bProbeAllLayers)
+			trace.TargetLayers = 0xFFFFFFFF;
 		trace.Start = from;
 		trace.End = to;
 		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
@@ -2886,11 +2890,14 @@ class LF_AgentHarness
 			return;
 		}
 
-		if (cmd.Arg1 == "trace")
+		if (cmd.Arg1 == "trace" || cmd.Arg1 == "traceall")
 		{
 			vector from = Vector(cmd.PosX, cmd.PosY, cmd.PosZ);
 			vector to = Vector(cmd.CamX, cmd.CamY, cmd.CamZ);
+			// traceall hits every physics layer (thin pylons and rails that bullets pass), for the shot scorer
+			s_bProbeAllLayers = cmd.Arg1 == "traceall";
 			float dist = ProbeTrace(from, to, self, hit);
+			s_bProbeAllLayers = false;
 			string hitName = "none";
 			if (hit && !hit.GetName().IsEmpty())
 				hitName = hit.GetName();

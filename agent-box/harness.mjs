@@ -222,6 +222,7 @@ export function buildLine(id, spec) {
     const nums = (list) => list.map((n) => { const v = Number(n); if (Number.isNaN(v)) throw new Error(`probe needs numbers: ${list}`); return trimNum(v); }).join(" ");
     if (spec.mode === "ground") return `${id} probe ground ${nums([spec.x, spec.z])}`;
     if (spec.mode === "cam") return `${id} probe cam ${nums([spec.x, spec.y, spec.z])}`;
+    if (spec.mode === "traceall") return `${id} probe traceall ${nums([spec.x, spec.y, spec.z, spec.x2, spec.y2, spec.z2])}`;
     if (spec.mode === "trace") return `${id} probe trace ${nums([spec.x, spec.y, spec.z, spec.x2, spec.y2, spec.z2])}`;
     if (spec.mode === "ent") return `${id} probe ent ${token(spec.name, "probe entity")} ${nums([spec.x, spec.y, spec.z])}`;
     throw new Error("probe mode must be ground, trace, cam, or ent");
