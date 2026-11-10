@@ -51,7 +51,10 @@ class LF_ConfiscateAction : ScriptedUserAction
 
 		// Any player can be searched at a stop for chain goods (#419); the weapon and scanner
 		// confiscation below stays for a wanted suspect.
-		int goodsSeized = LF_ChainSearch.SearchPerson(pOwnerEntity, Math.RandomFloat01());
+		// A repeat inside the cooldown rolls nothing and reads clean (#472).
+		int goodsSeized = 0;
+		if (LF_ChainSearch.TryBeginSearch(LF_ChainSearch.PersonKey(pOwnerEntity), GetGame().GetWorld().GetWorldTime()))
+			goodsSeized = LF_ChainSearch.SearchPerson(pOwnerEntity, Math.RandomFloat01());
 		LF_PlayerAccount suspect = LF_PoliceUtils.GetAccountForEntity(pOwnerEntity);
 		if (!suspect || suspect.GetWantedLevel() <= 0)
 		{
