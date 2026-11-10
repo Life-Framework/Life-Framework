@@ -6696,6 +6696,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
+    CustomStringTableItem "{A27300000000BA02}" {
+     Id "LF-BankKit_Take"
+     Target_en_us "Take bank robbery kit"
+     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
   }
  }
 }
