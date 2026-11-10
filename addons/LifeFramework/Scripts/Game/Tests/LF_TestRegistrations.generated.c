@@ -21,6 +21,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AgentHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AimIntent(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AreaSpawner(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ATMBoundary(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BankAccountMath(), LF_TestTier.LOGIC);
@@ -38,6 +39,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Carry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarryMeshes(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CashVan(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ChainsConfig(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);

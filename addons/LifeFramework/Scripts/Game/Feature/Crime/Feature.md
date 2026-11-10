@@ -88,6 +88,11 @@ isn't today — see current state).
 - Route: `LF_CashVanRouteComponent` moves the van and its box between stop markers on a timer when no player is within `m_fClearMetres` and calls `LF_Bank.Restock`. Parked on a schedule, not AI-driven (base-game AI driving is unreliable for this).
 - Opening publishes `LF_OnHeistLoot`. Test `crime/cash-van`; proof `session.mjs cash-van-proof`.
 
+## Police armory heist (#275)
+
+- The armory store is a `LF_HeistVaultComponent` with weapons loot (`LF_BankLoot.IssueWeapons`), a keycard-or-charge tool list, a loud alarm, a stock and a refill. Weapons are `LF_Armory*` prefabs carrying `LF_SerialComponent`; each serial is booked to the thief in the fence book.
+- Test `crime/armory`; proof `session.mjs armory-proof`.
+
 ## Lockpicking (#411)
 
 - `LF_Lockpick` (server) runs a timed attempt on a locked `LF_LockComponent` door that carries `LF_LockpickTargetComponent`; `LF_LockpickRules` holds the pure rules (time, odds, wear, noise, gate). The pick is `LF_Lockpick.et`, a stack whose count is its uses; skill is the character level, so nothing new is saved.

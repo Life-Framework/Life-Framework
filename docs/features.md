@@ -767,6 +767,30 @@
   second start, or a nugget removed before the end logs `LF_Debug.Error` and
   yields no bar. A zero delay finishes inside the start.
 
+## Illicit chains
+
+### `LF_ChainCatalog` — `Feature/Chains/` (#416, M2 Underworld)
+- ✅ A chain is config: `m_aChains` in `Configs/Resources/ResourceChains.conf` (the M1
+  catalog, extended). A chain has a tier (1 to 5), steps in order, equipment, and heat settings.
+  A step names the station type it needs, its inputs and outputs (the `LF_ProcessAction`
+  recipe rows), the hands-on work units one batch takes (`m_iWork`), a licence
+  (`LF_ELicenseType`, `UNEMPLOYED` = no gate), a minimum player level, and an equipment id.
+  A pack adds a chain by overriding the `.conf`; there is no script.
+- ✅ **A bad chain disables only itself.** `LF_ChainCatalog.Build` validates each row (no id,
+  tier out of range, no steps, no station, no work, a malformed recipe, unlisted equipment,
+  duplicate ids, negative heat, a prefab that does not load); a failure logs
+  `[LFDebug:Chains] chain <id> disabled: <reason>` and the other chains load. Lookup is
+  `FindChain` / `FindStep`; a disabled chain returns null.
+- ✅ **Gates.** `LF_ChainGate.Evaluate` (pure) and `ForPlayer` (server) refuse a worker without
+  the licence, below the level, or not carrying the equipment, in that order, with the keys
+  `#LF-Chain_NeedLicense`, `#LF-Chain_NeedLevel`, `#LF-Chain_NeedEquipment`. Equipment is an item
+  the worker carries (priced for a shop), so owning it persists with the inventory.
+- ✅ **Heat settings** per chain: `m_fPerWork`, `m_fDecayPerSecond`, `m_fMax`, `m_fRangeM`.
+  `LF_ChainHeat` does the arithmetic (`AfterWork`, `AfterDecay`, `RangeAt`); the per-site number
+  and the trace that reads it come with the stations (#417) and the smell (#418).
+- ✅ The core ships one neutral example, `cider` (tier 1, one `barrel` step, apples to juice).
+- Test: `chains/config` (LOGIC).
+
 ## Jobs / Level / Licenses / Whitelist
 
 ### `LF_PlayerJobComponent` — `Feature/Jobs/LF_PlayerJobComponent.c`
@@ -2017,3 +2041,8 @@
 - The van is **parked on a schedule, not driven**: base-game AI driving is not reliable enough to carry a robbery. `LF_CashVanRouteComponent` moves the van to the next stop marker (`Roadmap_Cash_Stop_Bank`, `_Store`, `_Fuel` on the main street, `Street_CashVan.layer`) every `m_fDwellSeconds` (300) unless a player is within `m_fClearMetres` (40), then stocks the box afresh (bags the last robbery left lying are removed, the lock closes). The move is a transform set of the van and the box, so the van never drives off a player. A van a player drives away leaves the box behind.
 - Every opening publishes `LF_OnHeistLoot` (kind, cash, target id) on the bus. Not saved: the bags and the route position reset on a restart.
 - ✅ Lockpicking a door (#411, LOGIC `lockpick/door`, WORLD `e2e/lockpick-door`): `Prefabs/Items/Fence/LF_Lockpick.et`, a stack whose count is its uses (fence, no record needed, $250, serial-stamped). A locked `LF_LockComponent` door that carries `LF_LockpickTargetComponent` (`m_bPickable`; off for a vault or the jail door, which refuse with a logged reason) offers `LF_LockpickAction`. `LF_Lockpick.Begin` re-checks on the server, then runs a timed attempt (20 s at skill 0 down to 6 s at skill 10; skill is the character level minus 1, so no new save data), dropped if the picker walks off, goes down or the door is opened meanwhile. A success unlocks the door and wears one use; a failure may snap the pick (one use) or just slip; a plain failure wears nothing. A success always files an `LF_WantedReports.Report` (`#LF-Offence_Lockpick`: event bus, crime record, evidence scene, witnesses); a failure only when its noise roll is heard. It never raises wanted or radios the police on its own. Placed at `Roadmap_Lockpick_Door` (lock-up, `Street_Lockpick.layer`). Harness: `lockpick` verb gives five uses. Manual: the held-action animation and a witness reaction.
+
+### Police armory heist (#275) — `Prefabs/Police/LF_ArmoryStore.et`, `LF_Bank.c`
+- ✅ `Roadmap_Police_ArmoryStore` (`Street_Police.layer`, beside the duty armory) is a heist target: a locked cabinet that needs the fence **keycard** (kept, not consumed) or a charge, config on its `LF_HeistVaultComponent` (`m_aLoot` weapons, `m_iStock` hauls, `m_fRefillSeconds`, `m_fCooldownSeconds`). Breaching it files `#LF-Offence_ArmoryHeist` through the normal crime report with the **loud** alarm even with officers on duty (`LF_Dispatch.Report` `forceLoud`), so every on-duty officer is radioed. Without the keycard the action is refused and nothing is filed. Test `crime/armory`.
+- Loot lies in front of the store as `LF_ArmoryM9` / `LF_ArmoryM16` (vanilla weapons plus `LF_SerialComponent`). Each is stamped with a fence-book serial booked to the thief, so a weapon found at a scene and logged at the evidence locker identifies them like a fence tool. `LF_OnHeistLoot` carries the serials. It pays again only after a police repair, the loot cooldown and stock; an empty store refuses (`#LF-Heist_Empty`) until the refill adds a kit back.
+- Not saved: the stock and cooldown reset on a restart.

@@ -6207,6 +6207,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A set of picks. Each opened lock or snapped pick wears one use."
      Comment "Item description (#411)."
     }
+    CustomStringTableItem "{9306F928F7A81EBC}" {
+     Id "LF-Heist_Armory_Open"
+     Target_en_us "Breach the armory store"
+     Comment "Action: the police armory store (#275)."
+    }
+    CustomStringTableItem "{8D97105F774AFD27}" {
+     Id "LF-Heist_Empty"
+     Target_en_us "Nothing left in there"
+     Comment "Offer: the heist target is out of stock until it refills (#275)."
+    }
+    CustomStringTableItem "{3296F0CB09E2A3D7}" {
+     Id "LF-Offence_ArmoryHeist"
+     Target_en_us "Police armory heist"
+     Comment "Offence: the armory store was breached (#275)."
+    }
+    CustomStringTableItem "{C4A100000000A001}" {
+     Id "LF-Chain_NeedLicense"
+     Target_en_us "You are not licensed for this work"
+     Comment "Chain step refused: the worker lacks the licence the step names (#416)."
+    }
+    CustomStringTableItem "{C4A100000000A002}" {
+     Id "LF-Chain_NeedLevel"
+     Target_en_us "You are not experienced enough for this work"
+     Comment "Chain step refused: the worker is below the level the step names (#416)."
+    }
+    CustomStringTableItem "{C4A100000000A003}" {
+     Id "LF-Chain_NeedEquipment"
+     Target_en_us "You need the right equipment for this work"
+     Comment "Chain step refused: the worker does not carry the equipment the step names (#416)."
+    }
+    CustomStringTableItem "{C4A100000000A004}" {
+     Id "LF-Chain_Cider_Name"
+     Target_en_us "Cider"
+     Comment "Name of the neutral example chain in ResourceChains.conf (#416)."
+    }
   }
  }
 }

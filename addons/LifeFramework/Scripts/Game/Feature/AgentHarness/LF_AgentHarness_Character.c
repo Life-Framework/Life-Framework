@@ -262,27 +262,31 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		if (tool == "drill")
+		if (tool == "drill" || tool == "keycard")
 		{
-			// Stands in for a fence sale: the drill is stamped and booked to this account.
-			int drills = LF_InventoryUtils.AddAmount(this, LF_Bank.DRILL_PREFAB, 1);
+			// Stands in for a fence sale: the drill or keycard is stamped and booked to this account.
+			ResourceName toolPrefab = LF_Bank.DRILL_PREFAB;
+			if (tool == "keycard")
+				toolPrefab = LF_Bank.KEYCARD_PREFAB;
+
+			int drills = LF_InventoryUtils.AddAmount(this, toolPrefab, 1);
 			InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(this);
 			string serial = "";
 			if (drills > 0 && storage)
 			{
-				array<IEntity> found = LF_InventoryUtils.FindItemsByPrefab(storage, LF_Bank.DRILL_PREFAB);
+				array<IEntity> found = LF_InventoryUtils.FindItemsByPrefab(storage, toolPrefab);
 				LF_SerialComponent stamp;
 				if (!found.IsEmpty())
 					stamp = LF_SerialComponent.Cast(found[0].FindComponent(LF_SerialComponent));
 
 				if (stamp)
 				{
-					serial = LF_FenceSerials.Issue(LF_Utils.GetPlayerUid(this), LF_Bank.DRILL_PREFAB);
+					serial = LF_FenceSerials.Issue(LF_Utils.GetPlayerUid(this), toolPrefab);
 					stamp.SetSerial(serial);
 				}
 			}
 
-			LF_HarnessReply(commandId, "ok", string.Format("drill added=%1 serial=%2", drills, serial));
+			LF_HarnessReply(commandId, "ok", string.Format("%1 added=%2 serial=%3", tool, drills, serial));
 			return;
 		}
 
