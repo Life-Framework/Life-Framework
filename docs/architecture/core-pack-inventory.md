@@ -137,6 +137,7 @@ under "Hard-coded flagship values in script".
 | `Police/` | core | Duty desk, jail cell, alarms, wanted board |
 | `Processing/`, `Processor/` | core | Example chains and processors |
 | `Props/Commercial/`, `Props/Construction/`, `Props/Hideouts/` | core | Interactables |
+| `Props/Debug/` | core | Playtest-only stands (bank robbery kit, #605), gated by the debug flag |
 | `Props/Signs/LF_Sign*.et` (10) | core | Generic boards and faces |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
