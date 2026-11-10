@@ -162,6 +162,15 @@ export function ramVerdict({ running, freeMb, minFreeMb, reserveMb = 0, pendingM
   return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB under ${gb(minFreeMb)} GB with ${running} server(s) running` };
 }
 
+// RAM gate for a late client (`session join`): the session already runs, so only the client's own
+// reserve has to fit above the floor.
+export function joinVerdict({ freeMb, minFreeMb, clientMb }) {
+  const needMb = minFreeMb + clientMb;
+  if (freeMb >= needMb) return { ok: true, needMb };
+  const gb = (x) => (x / 1024).toFixed(1);
+  return { ok: false, needMb, reason: `free RAM ${gb(freeMb)} GB minus ${gb(clientMb)} GB for the client would be under ${gb(minFreeMb)} GB` };
+}
+
 // Session lease: idle time since the last harness command (or the session's
 // start), and whether an explicit lease still covers it.
 export function leaseVerdict({ lastActiveAt, leaseUntil, now, idleMin }) {

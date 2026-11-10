@@ -465,7 +465,7 @@ would refuse a session or test for RAM, it first trims every live session's reco
 by process name; at most once per 20 s), looks again, and prints `pool: RAM is short; trimmed the
 working sets of N session process(es)`. `tools\cli session measure` also prints the trim table.
 The 1.5 GB floor still gates: a session is admitted only while free RAM minus its reserve stays at
-least `minFreeMb`, and a client that joins late (`session join`) is not gated.
+least `minFreeMb`, and a client that joins late (`session join`) is gated the same way (its client reserve).
 
 **Two lowspec sessions at once (2026-11-10, this PC, other agents' sessions and a Workbench
 running beside).** Session A (1 client, then client 2 joins late) ran `siren-late-proof` on lane
@@ -475,8 +475,8 @@ logs. With both up that was 2 servers and 5 clients, about 4.7 GB of working set
 bottomed at 165 MB (median 1.1 GB) because the late joins are not gated and the rest of the PC held
 about 10 GB. So on this PC **two lowspec sessions fit, and a third does not while two are active**; the
 RAM left once they sit idle (trimmed, about 0.12 GB each) is what lets a queued third start. The
-late-join path (`session join`) now trims first when free RAM is under the floor plus a client's
-reserve. The lane count (`lanes.session`) stays 2 here: raise it only after a run with three
+late-join path (`session join`) trims first when free RAM is under the floor plus a client's
+reserve, then refuses with a one-line reason if it still would breach the floor (#563). The lane count (`lanes.session`) stays 2 here: raise it only after a run with three
 concurrent proofs holds the floor.
 
 ### Waiting on a session

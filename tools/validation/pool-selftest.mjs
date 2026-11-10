@@ -151,6 +151,22 @@ try {
   check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === false, "a starved head reserves the lane before its RAM is there");
   check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 5200 }) === true, "a starved head with its RAM does not reserve the lane");
   check(q.waitReason(bigHead) === "ram 3-client" && q.waitReason({ stuck: "lane" }) === "lane" && q.waitReason({}, 2) === "behind 2", "waitReason text");
+  {
+    // #563: a late join is RAM-gated like `up`: trim first, refuse (one line) when still under the floor.
+    const jroot = mkdtempSync(join(tmpdir(), "lf-join-"));
+    const run = (freeSeq, trimGain) => {
+      let free = freeSeq, trims = 0;
+      return { r: pool.gateJoin(jroot, 800, { freeMb: () => free, trim: () => { trims++; free += trimGain; return 3; } }), trims };
+    };
+    const min = pool.poolSettings(jroot).minFreeMb;
+    const fits = run(min + 900, 0);
+    const trimmedFits = run(min + 100, 1500);
+    const refused = run(165, 100);
+    check(fits.r.ok && fits.trims === 0, "a join with room trims anyway or is refused");
+    check(trimmedFits.r.ok && trimmedFits.trims === 1 && trimmedFits.r.trimmed === 3, "a short join does not trim idle sessions then pass");
+    check(!refused.r.ok && refused.trims === 1 && /would be under/.test(refused.r.reason) && !refused.r.reason.includes(String.fromCharCode(10)), "a join that cannot fit after the trim is not refused with a one-line reason");
+    rmSync(jroot, { recursive: true, force: true });
+  }
   check(q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500, reserveMb: 3600 }).needMb === 5100, "ramVerdict does not report needMb");
   check(q.ramVerdict({ running: 0, freeMb: 100, minFreeMb: 1500 }).ok && !q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500 }).ok && q.ramVerdict({ running: 1, freeMb: 2000, minFreeMb: 1500 }).ok, "RAM gate verdicts");
 

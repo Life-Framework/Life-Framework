@@ -408,6 +408,19 @@ export function trimIfShort(root, needMb) {
   return trimLiveSessions(root, m);
 }
 
+// `session join` RAM gate (#563), like `up`: when the client would breach the floor, trim idle
+// sessions first, then re-check once (the trim already pauses 2.5 s). Still short: refuse with a
+// one-line reason. opts.freeMb / opts.trim are test seams. Returns { ok, reason?, trimmed }.
+export function gateJoin(root, clientMb, opts = {}) {
+  const minFreeMb = poolSettings(root).minFreeMb;
+  const free = () => (opts.freeMb ? opts.freeMb() : Math.round(freemem() / 1048576));
+  let v = q.joinVerdict({ freeMb: free(), minFreeMb, clientMb });
+  if (v.ok) return { ...v, trimmed: 0 };
+  const trimmed = (opts.trim ?? ((need) => trimIfShort(root, need)))(v.needMb) || 0;
+  v = q.joinVerdict({ freeMb: free(), minFreeMb, clientMb });
+  return { ...v, trimmed };
+}
+
 // The other session lanes of this PC with a live holder: { lock, pendingMb } where pendingMb is the
 // memory a session still booting is expected to take that free RAM does not show yet (0 once it
 // is ready, or after ten minutes).
