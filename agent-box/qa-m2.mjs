@@ -6,6 +6,7 @@
 //
 //   node agent-box/qa-m2.mjs comms     payphone -> board -> take -> caller hears back; pager card
 //   node agent-box/qa-m2.mjs report    /report with a recent incident and with none
+//   node agent-box/qa-m2.mjs square     the spawn square payphone (#489): the five call actions are offered where a player stands, and a call connects
 //   node agent-box/qa-m2.mjs normalize  clock any officer or medic out so the next proof starts clean
 //   node agent-box/qa-m2.mjs selftest
 
@@ -176,6 +177,26 @@ async function runReport() {
   return ctx.fails.length ? 1 : 0;
 }
 
+// #489 moved Village_Payphone to the square and turned it to face west: look from where a player
+// stands must offer all five presets, and the first one dials through.
+async function runSquare() {
+  const ctx = await connect();
+  const { on, state, shot, wait, expect, arrive } = ctx;
+  arrive();
+  on(1, { verb: "stand", entityName: "Village_Payphone" });
+  wait(2500);
+  const look = on(1, { verb: "look" }).detail || "";
+  shot(1, "qa_m2_square_payphone_client1");
+  const offered = (look.match(/LF_PayphoneAction@Village_Payphone/g) || []).length;
+  expect(offered === 5, `five payphone actions are offered at the square phone (looked: ${offered}) in ${look.slice(0, 200)}`);
+  const call = on(1, { verb: "use", className: "LF_PayphoneAction", entityName: "Village_Payphone" }, 10000);
+  wait(2500);
+  const st = state(1);
+  expect(call.status === "ok" && st.toast === "#LF-Payphone_Connected", `the call connects from the square phone (${call.status} ${call.detail}, toast ${st.toast})`);
+  console.log(ctx.fails.length ? "square: FAIL" : "square: PASS");
+  return ctx.fails.length ? 1 : 0;
+}
+
 // The proofs clock in by toggling the duty desk, so one that ends on duty turns the next one off.
 async function runNormalize() {
   const ctx = await connect();
@@ -203,6 +224,7 @@ async function main(argv) {
     return f.length ? 1 : 0;
   }
   if (cmd === "normalize") return runNormalize();
+  if (cmd === "square") return runSquare();
   if (cmd === "comms") return runComms();
   if (cmd === "report") return runReport();
   console.log("usage: node agent-box/qa-m2.mjs comms|report|selftest");
