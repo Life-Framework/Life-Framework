@@ -445,6 +445,8 @@ class LF_Bank
 		vector origin = robber.GetOrigin();
 
 		tool.SetOrigin(origin + "0 0.1 0");
+		// Upright: a tool dropped at an odd angle lands on its side.
+		tool.SetAngles(Vector(0, robber.GetAngles()[1], 0));
 		LF_Evidence.OnDropped(tool, System.GetTickCount());
 	}
 
