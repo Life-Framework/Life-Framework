@@ -67,6 +67,12 @@ class LF_MedicConfig
 	[Attribute("60", UIWidgets.Auto, "A body that is this many metres from its carrier (a teleport, a lag spike) is dropped", params: "3 200")]
 	float m_fCarryReleaseDistance = 60;
 
+	[Attribute("100", UIWidgets.Auto, "Cash on the paper treatment bill a revive writes for the patient, paid at the hospital desk (#260)", params: "1 100000")]
+	int m_iReviveBillAmount = 100;
+
+	[Attribute("0.5", UIWidgets.Auto, "Fraction of a paid revive bill the reviving medic earns in cash at clock-out", params: "0 1")]
+	float m_fBillMedicShare = 0.5;
+
 	protected static ref LF_MedicConfig s_Config;
 	protected static bool s_bLoadAttempted;
 

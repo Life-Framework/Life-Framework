@@ -4049,7 +4049,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BE26E458ADA922A8}" {
      Id "LF-Hospital_BillToast"
-     Target_en_us "You woke up in hospital. The bill of %1 was taken from your bank."
+     Target_en_us "You woke up in hospital with a treatment bill of %1. Pay it in cash at the hospital desk."
      Comment "Toast on waking in hospital after a death. %1 is the bill amount."
     }
     CustomStringTableItem "{25C8757AA18DD8A8}" {
@@ -4059,7 +4059,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DB6C9E5F09D39D13}" {
      Id "LF-Hospital_BillAmount"
-     Target_en_us "Treatment: %1, charged to your bank account"
+     Target_en_us "Treatment: %1"
      Comment "Hospital bill line. %1 is the amount charged."
     }
     CustomStringTableItem "{4F2335135A4FF34F}" {
@@ -4099,7 +4099,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B496BB68DF603A03}" {
      Id "LF-Hospital_BillItemDesc"
-     Target_en_us "The bill from your stay in hospital. Drop it to read it again."
+     Target_en_us "A treatment bill. Pay it in cash at the hospital desk. Drop it to read it again."
      Comment "Inventory description of the paper hospital bill."
     }
     CustomStringTableItem "{5985DB962913E1DE}" {
@@ -5956,6 +5956,96 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Bank_NeedTool"
      Target_en_us "The vault needs a drill or a charge"
      Comment "Vault robbery refused: the robber carries none of the vault's fence tools (#273)"
+    }
+    CustomStringTableItem "{4956FE4168BECF83}" {
+     Id "LF-Hospital_BillNumber"
+     Target_en_us "Bill No. %1, %2"
+     Comment "Treatment bill line. %1 is the bill number, %2 the in-game date."
+    }
+    CustomStringTableItem "{79857CD181EE145E}" {
+     Id "LF-Hospital_BillMedic"
+     Target_en_us "Treated by: %1"
+     Comment "Treatment bill line. %1 is the medic name."
+    }
+    CustomStringTableItem "{008F2EA884F6D7D4}" {
+     Id "LF-Hospital_BillPaidLine"
+     Target_en_us "Paid in cash on %1. Thank you."
+     Comment "Treatment bill line once paid. %1 is the in-game date."
+    }
+    CustomStringTableItem "{2DD26F1F4430D002}" {
+     Id "LF-Hospital_BillHowToPay"
+     Target_en_us "Pay it in cash at the hospital desk."
+     Comment "Treatment bill line while unpaid."
+    }
+    CustomStringTableItem "{1B8B9B22A8964F7B}" {
+     Id "LF-Bill_Title"
+     Target_en_us "Treatment bill"
+     Comment "Notification title for treatment bills."
+    }
+    CustomStringTableItem "{79B69A24A6715B00}" {
+     Id "LF-Bill_Received"
+     Target_en_us "The medic left you a treatment bill of %1. Pay it in cash at the hospital desk."
+     Comment "Toast to a revived patient. %1 is the amount."
+    }
+    CustomStringTableItem "{60B397ACEEF7B02C}" {
+     Id "LF-Bill_NoneOpen"
+     Target_en_us "You carry no unpaid treatment bill."
+     Comment "Toast at the hospital desk with no unpaid bill."
+    }
+    CustomStringTableItem "{0BD2574DC8D97B52}" {
+     Id "LF-Bill_NotEnoughCash"
+     Target_en_us "You need %1 in cash to pay the bill."
+     Comment "Toast when the payer carries too little cash. %1 is the amount."
+    }
+    CustomStringTableItem "{CEF674540C6B082E}" {
+     Id "LF-Bill_NeedCash"
+     Target_en_us "Carry %1 in cash to pay the bill"
+     Comment "Reason the desk payment is greyed out. %1 is the amount."
+    }
+    CustomStringTableItem "{AA5D9FF8F7009C02}" {
+     Id "LF-Bill_Pay"
+     Target_en_us "Pay bill No. %1 (%2)"
+     Comment "Desk payment action. %1 is the bill number, %2 the amount."
+    }
+    CustomStringTableItem "{BADA3A253C27B54A}" {
+     Id "LF-Bill_PayGeneric"
+     Target_en_us "Pay bill"
+     Comment "Fallback name of the hospital desk payment action."
+    }
+    CustomStringTableItem "{A44CFB3B29598A73}" {
+     Id "LF-Bill_PayDesc"
+     Target_en_us "Pay a treatment bill in carried cash. The desk stamps it paid."
+     Comment "Description of the hospital desk payment action."
+    }
+    CustomStringTableItem "{0DF0D2453D53E9A5}" {
+     Id "LF-Bill_PaidToast"
+     Target_en_us "Bill paid: %1."
+     Comment "Toast after paying a treatment bill. %1 is the amount."
+    }
+    CustomStringTableItem "{20DCFFDAB028772B}" {
+     Id "LF-Bill_ShareToast"
+     Target_en_us "Your share of paid treatment bills: %1."
+     Comment "Toast to a medic at clock-out. %1 is the cash paid."
+    }
+    CustomStringTableItem "{0D51EDC4BE6F1DDC}" {
+     Id "LF-Payphone_CallMedic"
+     Target_en_us "Ring for a doctor"
+     Comment "Payphone action: ask for a medic."
+    }
+    CustomStringTableItem "{80B8D0AB91C5EBF6}" {
+     Id "LF-Payphone_CallTaxi"
+     Target_en_us "Ring for a cab"
+     Comment "Payphone action: ask for a taxi."
+    }
+    CustomStringTableItem "{B680F53657359D11}" {
+     Id "LF-Payphone_Summary_Medic"
+     Target_en_us "Doctor wanted"
+     Comment "Summary the medic pager and board show for a call from the payphone."
+    }
+    CustomStringTableItem "{4AA0B3E5926D13C3}" {
+     Id "LF-Payphone_Summary_Taxi"
+     Target_en_us "Cab wanted"
+     Comment "Summary the taxi pager and board show for a call from the payphone."
     }
   }
  }

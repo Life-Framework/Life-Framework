@@ -9,11 +9,8 @@ class LF_RespawnConfig
 	[Attribute("1", UIWidgets.CheckBox, "After a death, respawn in a hospital bed (LF_HospitalBedComponent). Off, or no bed in the world: the spawn plaza")]
 	bool m_bWakeInHospital;
 
-	[Attribute("150", UIWidgets.Auto, "Hospital bill taken from the bank on every respawn after a death. 0 disables the bill")]
+	[Attribute("150", UIWidgets.Auto, "Treatment bill written on paper at every respawn after a death, paid in cash at the hospital desk (#260). 0 disables the bill")]
 	int m_iBillAmount;
-
-	[Attribute("1", UIWidgets.CheckBox, "A player who cannot cover the bill goes into debt (negative balance). Off: the bill takes only what the account holds")]
-	bool m_bDebtAllowed;
 
 	[Attribute("15", UIWidgets.Auto, "New Life Rule window in minutes, printed on the bill. A server rule; nothing enforces it")]
 	int m_iNewLifeMinutes;

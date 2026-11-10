@@ -58,6 +58,7 @@ log that back them stay on the server and invisible.
   An on-duty officer hears it on the radio and sees the line on the wanted
   board. One player can call once a minute. With nobody on duty nothing
   connects and no coin is taken.
+- **Where the Comms gear stands.** Payphones (police, doctor and cab presets): the square (96, 263), the fuel station (255, 244), outside the hospital (255, 259) and outside the police station (237, 241). Boards: the police dispatch board beside the wanted board at the station, and the medic dispatch board in the hospital. Read a board to see open calls, take one while on duty, and the caller hears the unit is on the way.
 - **Downed, not dead.** A lethal hit knocks a player unconscious instead of
   killing them. You lie on the ground, cannot move or act, take no further
   damage, and others can search you. A downed player bleeds out after three
@@ -117,7 +118,6 @@ Do not report these as broken. File them under "build next" if you want them.
 - A general crafting bench
 - Revive while downed
 - An ambulance
-- Calling a medic or a taxi from the payphone
 - Quarry fence, gate, or lawless-only rules (the zone and its signs are in)
 - A police mission board
 - World events

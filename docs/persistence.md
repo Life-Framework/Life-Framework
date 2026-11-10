@@ -127,6 +127,7 @@ Identity:
   | 10 | wanted reports (`LF_WantedReports.ExportAll` / `ApplyAll`) |
   | 11 | delivery-job sign-ups (`LF_CivilianJob.ExportSignUps` / `ApplySignUps`; `ApplySignUpToCharacter` on each spawn) |
   | 12 | police tickets: amount, online clock, stage, paid flag (`LF_FineTickets.ExportAll` / `ApplyAll`; the carried paper is reprinted on spawn) |
+  | 19 | treatment bills: amount, paid flag, medic share and whether it was paid (`LF_TreatmentBills.ExportAll` / `ApplyAll`; the carried paper is reprinted on spawn) |
 - Managers expose `ExportAll()` / `ApplyAll(records)` / `GetOrCreate(id)`.
   Record classes are plain Managed: `LF_PlayerAccountRecord`,
   `LF_BankAccountRecord`, `LF_SurvivalStatsRecord` (each under the feature's
