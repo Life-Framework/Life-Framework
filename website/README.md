@@ -46,7 +46,7 @@ hydrates the static HTML. Moving between pages after that is client-side.
 | Roadmap (`/roadmap`) | Every `M<n>` milestone from GitHub with its issues and each epic's sub-issues (`/issues/{n}/sub_issues`), the one-line goals and Core/Flagship rule in `src/lib/content.ts` (`MILESTONE_PLAN`, `issueLayer`), the playable loop in `docs/direction.md`, and the village pictures from `content/media.json` |
 | Features (`/features`) | Copy in `src/pages/Features.tsx`, written from `docs/features.md`, `docs/playtest.md` and merged pull request bodies. Player-facing facts only, no dates or promises; the epic links point at GitHub |
 | Playtest (`/playtest`) | Copy in `src/pages/Playtest.tsx`, written from `docs/playtest.md`, `docs/features.md`, `docs/setup.md` and what `toolscli playtest` prints for friends (`tools/host/playtest.mjs`). The dismissible banner in `src/components/Layout.tsx` links to it; a dismissal is kept in `localStorage` under `lf-banner-playtest-m2`, and `index.html` applies it before first paint. Change the page when the install route changes (for example when a Workshop item exists) |
-| Gallery (`/gallery`) | The pictures under `public/docs-images/` and the captions, sections and skips in `content/gallery.json` (see "Gallery" below) |
+| Gallery (`/gallery`) | The `featured` list in `content/gallery.json`: a short curated set of pictures from `public/docs-images/`, each with a plain caption (see "Gallery" below) |
 | Devlog (`/devlog`) | Merged pull requests into `main` from GitHub (title and the first prose line of the body) and every entry in `docs/decisions.md`, grouped by day |
 | Server owners (`/servers`) | The "Features" list in `README.md`, the M3 milestone from GitHub, and copy in `src/pages/Servers.tsx` (the core/pack split and config model from `docs/roadmap/m3-outline.md`, the M4 hosting plan) |
 | Contribute (`/contribute`) | Open `good first issue` issues, else unassigned issues in the current milestone, and the contributor list, from GitHub |
@@ -88,12 +88,14 @@ work in progress.
 
 ## Gallery
 
-`scripts/gallery.mjs` reads `public/docs-images/` on every build: `<issue number>/<name>.png` for an issue's captures and
-`area-<n>-<slug>/<name>-before.png` with `<name>-after.png` for a polished area. Each kept picture is converted to webp
-(640 and 1280 wide) into `public/gallery/` (git-ignored). A new capture shows up with no site change: its caption is the file
-name and its heading is the GitHub issue title, grouped under the epic that issue belongs to. To tidy one, edit
-`content/gallery.json`: `captions` (keyed `<folder>/<name>`), `issueTitles`, `issueSection`, `areaTitles`, and `skip` for
-pictures with debug overlays, a cluttered HUD or a broken view. Files loose in `docs-images/` are ignored.
+The gallery is a short curated set (about 18 pictures), not everything in `public/docs-images/`. `content/gallery.json`
+`featured` lists each picture by its path under `docs-images/` without the extension (`area-3-store/counter`) with a plain
+caption; the page shows them in that order in one 16:9 grid. `scripts/gallery.mjs` converts each to webp (640 and 1280 wide)
+into `public/gallery/` (git-ignored) on every build and fails if a listed file is missing, has no caption, or is a `-before`
+shot. Before shots and before/after pairs are never shown. Add a picture by adding an entry; drop one by removing its entry.
+Pick well-framed, clean captures: no debug overlay, HUD clutter, clipped or floating props.
+
+`usedByPages` lists pictures that other pages embed (the Features page). They are converted too but not shown in the gallery.
 
 An epic that lists its sub-issues only as a `## Sub-issues` checklist in its body, with no GitHub links, still shows its
 branch on the roadmap (`build-content.mjs`, `checklistRefs`).
