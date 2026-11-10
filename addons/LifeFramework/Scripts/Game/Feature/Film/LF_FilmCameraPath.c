@@ -122,7 +122,7 @@ class LF_FilmCameraPath : Managed
 class LF_FilmCameraRunner
 {
 	protected static const string FEATURE = "Film";
-	protected static const ResourceName CAMERA_PREFAB = "Prefabs/Editor/Camera/ManualCameraBase.et";
+	protected static const ResourceName CAMERA_PREFAB = "{D6DE32D1C0FCC1C7}Prefabs/Editor/Camera/ManualCameraBase.et";
 
 	protected static ref LF_FilmCameraPath s_Path;
 	protected static float s_fStartMs;

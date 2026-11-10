@@ -173,7 +173,7 @@ class LF_FilmRecorder
 {
 	protected static const string FEATURE = "Film";
 	static const string ROOT = "$logs:el-film";
-	static const int MAX_FPS = 30;
+	static const int MAX_FPS = 60;
 	//! Default and ceiling for one recording. A 1280x720 BMP is about 3.7 MB, so
 	//! 12 fps for 300 s is about 13 GB on disk until tools/film encodes it.
 	static const int DEFAULT_MAX_SECONDS = 300;

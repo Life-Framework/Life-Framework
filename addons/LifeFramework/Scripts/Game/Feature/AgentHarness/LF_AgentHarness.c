@@ -153,6 +153,24 @@ class LF_AgentCommand
 			return ParseCapture(parts, cmd);
 		if (cmd.Verb == "film")
 			return ParseFilm(parts, cmd);
+		if (cmd.Verb == "spike")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			if (parts.Count() > 5)
+			{
+				cmd.PosX = parts[3].ToFloat();
+				cmd.PosY = parts[4].ToFloat();
+				cmd.PosZ = parts[5].ToFloat();
+			}
+			if (parts.Count() > 7)
+			{
+				cmd.CamX = parts[6].ToFloat();
+				cmd.CamY = parts[7].ToFloat();
+			}
+
+			return true;
+		}
 
 		cmd.Error = "unknown_verb";
 		return false;
@@ -976,6 +994,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "film")
 		{
 			DoFilm(cmd);
+			return;
+		}
+		if (cmd.Verb == "spike")
+		{
+			DoSpike(cmd);
 			return;
 		}
 
@@ -2408,6 +2431,25 @@ class LF_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	//! In-engine recording (LF_FilmRecorder). It runs beside every other verb,
 	//! so a journey keeps playing while the client films itself.
+	protected static void DoSpike(LF_AgentCommand cmd)
+	{
+		if (cmd.Arg1 == "cam")
+		{
+			WriteResult(cmd.Id, "ok", LF_FilmSpike.StartCamera(Vector(cmd.PosX, cmd.PosY, cmd.PosZ), cmd.CamX, cmd.CamY));
+			return;
+		}
+
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.LF_AskSpikeAi(cmd.Id, cmd.Arg1);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void DoFilm(LF_AgentCommand cmd)
 	{
 		string result;

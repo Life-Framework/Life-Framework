@@ -213,13 +213,14 @@ export function buildLine(id, spec) {
     if (spec.mode === "stop" || spec.mode === "status") return `${id} film ${spec.mode}`;
     if (spec.mode !== "start") throw new Error("film mode must be start, stop, or status");
     const fps = Number(spec.fps);
-    if (!Number.isInteger(fps) || fps < 0 || fps > 30) throw new Error(`film fps must be 0-30: ${spec.fps}`);
+    if (!Number.isInteger(fps) || fps < 0 || fps > 60) throw new Error(`film fps must be 0-60: ${spec.fps}`);
     const line = `${id} film start ${token(spec.name, "film name")} ${fps}`;
     if (spec.seconds === undefined) return line;
     const seconds = Number(spec.seconds);
     if (!Number.isInteger(seconds) || seconds <= 0) throw new Error(`film seconds must be a positive integer: ${spec.seconds}`);
     return `${line} ${seconds}`;
   }
+  if (spec.verb === "spike") return `${id} spike ${spec.args}`;
   throw new Error(`unknown verb: ${spec.verb}`);
 }
 
