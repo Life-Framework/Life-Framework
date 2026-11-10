@@ -1187,3 +1187,8 @@ button.tree-node:hover .tree-node__dot {
   letter-spacing: 0.05em;
   color: var(--ink-2);
 }
+
+/* The playtest banner stays hidden once dismissed; index.html sets data-banner before paint. */
+:root[data-banner="off"] .playtest-banner {
+  display: none;
+}

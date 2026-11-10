@@ -1,10 +1,10 @@
-Vehicle : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
- ID "66E29CE82D9E4231"
+Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et" {
+ ID "3C171AD0A92BA02A"
  components {
   LF_LicensePlateManagerComponent "{19BDE70FC62A5348}" {
    m_Plates {
     LF_LicensePlatePointInfo "{9270BF3A168CD45E}" {
-     Offset 0 0.8 -1.78
+     Offset 0 0.75 -1.92
      Angles 0 180 0
     }
    }
@@ -44,12 +44,12 @@ Vehicle : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
  }
  {
   GenericEntity : "{EFE1B93215E74E28}Prefabs/Vehicles/SirenLights/EmergencyLightsKnob.et" {
-   ID "F825ED68224A4E07"
+   ID "EEFFC92FD98A9956"
    coords -0.187 1.074 0.466
   }
-  GenericEntity : "{6EB48E0CF22F4FB6}Prefabs/Vehicles/Wheeled/M151A2/M151A2_LEDLightBar.et" {
-   ID "ADE9B8558B9A4FAF"
-   coords 0 0 0
+  GenericEntity : "{54E3267F42BD54ED}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_LEDLightBar.et" {
+   ID "5495211B1C65F9B6"
+   coords 0 0.25 0
   }
  }
 }
