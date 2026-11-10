@@ -5932,6 +5932,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They are not down."
      Comment "Carry refusal: the target is not downed."
     }
+    CustomStringTableItem "{CDE539EBECEAEB35}" {
+     Id "LF-Witness_Ask"
+     Target_en_us "Ask what you saw"
+     Comment "Interaction menu entry for on-duty police facing a witness."
+    }
+    CustomStringTableItem "{B52F0B4191F415B2}" {
+     Id "LF-Witness_Npc"
+     Target_en_us "a passer-by"
+     Comment "Wanted board: the witness is a town NPC."
+    }
+    CustomStringTableItem "{A4A046A831C69FE0}" {
+     Id "LF-Witness_Vague"
+     Target_en_us "They can't recall anything useful."
+     Comment "Toast to the officer: the witness remembered nothing they could describe."
+    }
+    CustomStringTableItem "{A27156349262AF6B}" {
+     Id "LF-Witness_Statement"
+     Target_en_us "Statement taken. It is on the wanted board."
+     Comment "Toast to the officer: the witness gave a statement."
+    }
   }
  }
 }

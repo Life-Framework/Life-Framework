@@ -57,3 +57,89 @@ class LF_WitnessPayphoneAction : ScriptedUserAction
 		return "#LF-Witness_NothingSeen";
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! "Ask what you saw" on a town NPC, for on-duty police. The server checks the officer is on duty
+//! and near, finds the NPC's own witness record and rolls its accuracy; an NPC that stood out of
+//! range of every recent crime says it saw nothing.
+class LF_WitnessAskAction : ScriptedUserAction
+{
+	protected static const float REACH = 3.0;
+
+	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		if (!user || !GetOwner() || vector.Distance(user.GetOrigin(), GetOwner().GetOrigin()) > REACH)
+			return false;
+
+		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		if (!Replication.IsServer() || !pOwnerEntity || !pUserEntity)
+			return;
+
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		PlayerManager players = GetGame().GetPlayerManager();
+		if (!accounts || !players)
+			return;
+
+		int playerId = players.GetPlayerIdFromControlledEntity(pUserEntity);
+		if (!LF_PoliceUtils.IsOnDutyOfficer(accounts.GetFromCache(playerId)) || vector.Distance(pUserEntity.GetOrigin(), pOwnerEntity.GetOrigin()) > REACH + 1)
+		{
+			LF_Debug.Warn(LF_Witness.FEATURE, string.Format("question refused for player %1: not an on-duty officer in reach", playerId));
+			return;
+		}
+
+		array<float> rolls = {Math.RandomFloat01(), Math.RandomFloat01(), Math.RandomFloat01()};
+		string key = LF_Witness.NpcKey(pOwnerEntity);
+		LF_WitnessScene scene = LF_Witness.SceneFor(key, System.GetTickCount());
+		int said = LF_Witness.Ask(scene, key, rolls, "officer");
+		LF_Utils.NotifyEntity(pUserEntity, LF_Witness.AskKey(scene != null, said), "#LF-Witness_Title", 5.0);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! "Ask what you saw" in the player interaction menu (role slot "witness") for on-duty police,
+//! facing a player who stood in sight of a recent crime. The witness says everything it could see.
+class LF_WitnessRole : LF_PlayerRoleHandler
+{
+	static const string SLOT = "witness";
+
+	//------------------------------------------------------------------------------------------------
+	//! Every machine, once per world (LF_GameModeRoleplay.OnGameStart). Idempotent.
+	static void Register()
+	{
+		if (LF_WitnessRole.Cast(LF_PlayerInteraction.GetRole(SLOT)))
+			return;
+
+		LF_PlayerInteraction.RegisterRole(SLOT, new LF_WitnessRole());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetActionName()
+	{
+		return "#LF-Witness_Ask";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool CanOffer(IEntity user, IEntity target)
+	{
+		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Perform(IEntity user, IEntity target)
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!accounts || !LF_PoliceUtils.IsOnDutyOfficer(accounts.GetFromCache(LF_Utils.GetPlayerUID(user))))
+			return;
+
+		string key = LF_Utils.GetPlayerUID(target);
+		LF_WitnessScene scene = LF_Witness.SceneFor(key, System.GetTickCount());
+		int said = LF_Witness.Ask(scene, key, null, "officer");
+		LF_Utils.NotifyEntity(user, LF_Witness.AskKey(scene != null, said), "#LF-Witness_Title", 5.0);
+	}
+}

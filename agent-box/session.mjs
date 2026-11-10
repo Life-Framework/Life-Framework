@@ -1632,6 +1632,13 @@ async function runWitnessProof() {
   on(2, { verb: "look" });
   must(on(2, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000), "clock in");
   wait(2500);
+  // #267: the officer asks the shopkeeper, who stood near the till (a town NPC), what it saw.
+  on(2, { verb: "stand", entityName: "Roadmap_Fuel_Clerk" });
+  wait(2500);
+  on(2, { verb: "look" });
+  must(on(2, { verb: "use", className: "LF_WitnessAskAction", entityName: "Roadmap_Fuel_Clerk" }, 10000), "ask the shopkeeper");
+  wait(1000);
+  on(2, { verb: "capture", mode: "ui", name: "m2_267_ask_shopkeeper_client2" }, 25000);
   on(2, { verb: "stand", entityName: "Roadmap_Police_WantedBoard" });
   wait(2500);
   on(2, { verb: "look" });

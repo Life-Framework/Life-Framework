@@ -114,6 +114,25 @@ LF_NpcBaseEntity {
   BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
   }
   ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts {
+    UserActionContext "{2E17DED6F511AAC6}" {
+     ContextName "Witness"
+     Position PointInfo "{1585E9E07C8730D8}" {
+      PivotID "Spine5"
+     }
+     Radius 1
+    }
+   }
+   additionalActions {
+    LF_WitnessAskAction "{4687DB648CD2AAA5}" {
+     ParentContextList {
+      "Witness"
+     }
+     UIInfo UIInfo "{B7D646EF29ADDDD8}" {
+      Name "#LF-Witness_Ask"
+     }
+    }
+   }
   }
   BaseItemAnimationComponent "{5A4B0B84C51B59C3}" {
    AnimGraph "{3E2216C930B15594}Anims/Workspaces/Npc/Npc_Main.agr"

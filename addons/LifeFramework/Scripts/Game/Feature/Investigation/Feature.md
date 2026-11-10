@@ -45,3 +45,8 @@ loses its stamp over a restart until the locker (#269) logs it.
 - The payphone has three `LF_WitnessPayphoneAction` entries (clothing, vehicle, plate). The server gives only what that distance allows (`LF_Witness.PresetsFor`); the client never sends text.
 - Statements are shown by `LF_WantedBoard` under the dispatch log as `S;` entries (`LF_Witness.BoardLine`).
 - Config: `Configs/Investigation/LF_Witness.conf` (`LF_WitnessConfig`). Not saved across a restart.
+
+## Questioning witnesses (#267)
+
+- `LF_WitnessAskAction` is on `Npc_Base.et` (context `Witness`), shown to on-duty police within 3 m. The server rolls the NPC accuracy (`LF_WitnessConfig.NpcAccuracy`) per thing it could see; an NPC with no recent scene says it saw nothing.
+- The `witness` role slot (`LF_WitnessRole`, entry on `Character_Roleplay.et`) asks a player; it says everything its distance allows.
