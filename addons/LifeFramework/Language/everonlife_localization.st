@@ -6676,6 +6676,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
+    }
   }
  }
 }

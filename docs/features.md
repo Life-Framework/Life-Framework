@@ -937,6 +937,7 @@
   restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
   inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
+- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots).
 
 ### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
