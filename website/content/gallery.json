@@ -59,13 +59,16 @@
     "area-7-hospital/wide": "The village hospital with the ambulance in its bay",
     "area-7-hospital/desk": "Duty desk and dispatch board outside the hospital door",
     "area-10-cash-van/wide": "The cash van at the bank stop",
-    "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open"
+    "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open",
+    "area-16-moonshine/wide": "The moonshine camp in the field: three mash barrels, the still, a fire pit and sacks",
+    "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack behind it"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",
     "area-2-bank": "The bank",
     "area-7-hospital": "Hospital",
-    "area-10-cash-van": "Cash van route"
+    "area-10-cash-van": "Cash van route",
+    "area-16-moonshine": "Moonshine camp"
   },
   "skip": [
     "116/chalkboard-back-room.png",
