@@ -866,6 +866,113 @@ export function judgeDowned(shot, victim, shooter, peers1, peers2) {
   return fails;
 }
 
+// M2 #261: client 1 downs client 2, drags the body to the hospital desk, drops it, carries it to
+// the escort car and loads it into a seat. Clients 1 and 2 and a late joiner (client 3, joined
+// after the drag began) read the body at the carrier's side, then in the seat. Needs 2 clients.
+export function parsePeer(peers, id) {
+  const m = new RegExp(`player=${id} downed=(\\d) life=(\\w+) carrier=(-?\\d+) seat=(\\d) at=(-?[\\d.]+),(-?[\\d.]+),(-?[\\d.]+)`).exec(String(peers ?? ""));
+  if (!m) return null;
+  return { downed: m[1], life: m[2], carrier: Number(m[3]), seat: m[4], at: [Number(m[5]), Number(m[6]), Number(m[7])] };
+}
+
+export function judgeCarry(peerLine, id, carrierId, carrierAt, maxGap) {
+  const p = parsePeer(peerLine, id);
+  const c = parsePeer(peerLine, carrierId);
+  if (c) carrierAt = c.at;
+  if (!p) return [`no peer line for player ${id}: ${peerLine}`];
+  const fails = [];
+  if (p.carrier !== carrierId) fails.push(`player ${id} carrier=${p.carrier}, expected ${carrierId}`);
+  const gap = Math.hypot(p.at[0] - carrierAt[0], p.at[2] - carrierAt[2]);
+  if (!(gap <= maxGap)) fails.push(`player ${id} is ${gap.toFixed(1)} m from the carrier, expected within ${maxGap}`);
+  return fails;
+}
+
+async function runCarryProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => on(n, { verb: "state" }, 10000).detail;
+  const peers = (n) => on(n, { verb: "peers" }, 10000).detail;
+  const at = (n) => String(parseState(state(n)).pos ?? "0,0,0").split(",").map(Number);
+  const fails = [];
+  const need = (cond, text) => { if (!cond) fails.push(text); };
+
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  on(2, { verb: "stand", entityName: ROB_TARGET });
+  wait(2500);
+  on(1, { verb: "stand", entityName: ROB_TARGET });
+  wait(2500);
+  on(1, { verb: "shoot", playerId: 2 }, 10000);
+  wait(2500);
+  const patient = `Player${parseState(state(2)).player}`;
+  need(parseState(state(2)).downed === "1", "client 2 was not downed");
+
+  // Drag it to the hospital desk.
+  on(1, { verb: "stand", entityName: patient });
+  wait(2500);
+  on(1, { verb: "look" });
+  const drag = on(1, { verb: "use", className: "LF_DragAction", entityName: patient }, 10000);
+  need(drag.status === "ok", `drag returned ${drag.status} ${drag.detail}`);
+  wait(1500);
+  const start1 = peers(1);
+  need(parsePeer(start1, 2)?.carrier === 1, `the body is not held by client 1 after the drag: ${start1}`);
+  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+  wait(4000);
+  const carrierAt = at(1);
+  const afterDrag = { 1: peers(1), 2: peers(2) };
+  for (const n of [1, 2]) for (const f of judgeCarry(afterDrag[n], 2, 1, carrierAt, 4)) fails.push(`drag, client ${n}: ${f}`);
+  const [cx, cy, cz] = carrierAt;
+  on(1, { verb: "capture", mode: "world", name: "m2_261_drag_world", x: cx, y: cy + 0.8, z: cz, ox: 3.5, oy: 1.6, oz: 0 }, 25000);
+
+  // A late joiner reads the hold and the body next to the carrier.
+  let afterDrag3 = "";
+  if (!process.argv.includes("--no-late-join")) {
+    const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", "3"], { windowsHide: true, stdio: "inherit" });
+    if (joined.status !== 0) {
+      fails.push("client 3 did not join late");
+    } else {
+      arrive(on, 3, wait);
+      wait(8000);
+      on(3, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+      wait(4000);
+      afterDrag3 = peers(3);
+      for (const f of judgeCarry(afterDrag3, 2, 1, carrierAt, 4)) fails.push(`drag, late joiner: ${f}`);
+    }
+  }
+
+  // Drop, then carry to the escort car and load.
+  const drop = on(1, { verb: "use", className: "LF_DropAction", entityName: patient }, 10000);
+  need(drop.status === "ok", `drop returned ${drop.status} ${drop.detail}`);
+  wait(1500);
+  need(parsePeer(peers(2), 2)?.carrier === 0, "the body is still held after the drop");
+  on(1, { verb: "use", className: "LF_CarryAction", entityName: patient }, 10000);
+  wait(1500);
+  need(parsePeer(peers(2), 2)?.carrier === 1, "the carry did not take hold");
+  on(1, { verb: "stand", entityName: "Roadmap_Escort_Car" });
+  wait(4000);
+  const load = on(1, { verb: "use", className: "LF_LoadPatientAction", entityName: patient }, 10000);
+  need(load.status === "ok", `load returned ${load.status} ${load.detail}`);
+  wait(9000);
+  const seated = { 1: peers(1), 2: peers(2) };
+  if (afterDrag3) seated[3] = peers(3);
+  for (const n of Object.keys(seated)) {
+    const p = parsePeer(seated[n], 2);
+    need(p && p.seat === "1" && p.carrier === 0, `seat, client ${n}: ${seated[n]}`);
+  }
+  on(1, { verb: "capture", mode: "world", name: "m2_261_loaded_world", x: cx, y: cy + 0.8, z: cz, ox: 3.5, oy: 1.6, oz: 0 }, 25000);
+  console.log(`afterDrag ${JSON.stringify(afterDrag)} late ${afterDrag3} seated ${JSON.stringify(seated)}`);
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "carry proof: FAIL" : "carry proof: PASS (drag, drop, carry, load; seen by both clients and a late joiner)");
+  return fails.length ? 1 : 0;
+}
+
 async function runDownedProof() {
   const h = await import("./harness.mjs");
   const dir = sessionDir();
@@ -931,6 +1038,60 @@ async function runDownedProof() {
     }
   }
 
+  // #259: a medic revives. Client 1 clocks in at the hospital desk, walks to the downed client 2
+  // and revives them: client 2 is standing with health above zero, keeps what they carried, and the
+  // bleed-out clock is gone. A civilian is not offered the entry (client 1 before clocking in is
+  // refused by the server). Then client 1 clocks out and downs client 2 again for the rest of the proof.
+  const patientName = `Player${parseState(state(2)).player}`;
+  const cashBefore = parseState(state(2)).cash;
+  const civilianTry = on(1, { verb: "use", className: "LF_ReviveAction", entityName: patientName }, 10000);
+  wait(1500);
+  const afterCivilian = parseState(state(2));
+  if (afterCivilian.downed !== "1") fails.push(`a civilian's revive changed the patient: downed=${afterCivilian.downed} (${civilianTry.status} ${civilianTry.detail})`);
+  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+  wait(2500);
+  on(1, { verb: "look" });
+  const medicIn = on(1, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
+  wait(2500);
+  if (!parseState(state(1)).faction?.includes("MEDIC")) fails.push(`client 1 did not clock in as a medic: ${medicIn.status} ${medicIn.detail}`);
+  on(1, { verb: "stand", entityName: patientName });
+  wait(2500);
+  on(1, { verb: "look" });
+  const [px, py, pz] = String(parseState(state(2)).pos ?? "0,0,0").split(",").map(Number);
+  const seeBody = (name) => { if (Number.isFinite(px)) on(1, { verb: "capture", mode: "world", name, x: px, y: py + 0.3, z: pz, ox: 2.5, oy: 1.2, oz: 0 }, 25000); };
+  seeBody("m2_259_before_revive_world");
+  // The world capture moves the view: stand beside the patient again before the action.
+  on(1, { verb: "stand", entityName: patientName });
+  wait(2500);
+  on(1, { verb: "look" });
+  const revive = on(1, { verb: "use", className: "LF_ReviveAction", entityName: patientName }, 10000);
+  // The vanilla wake takes a few seconds after the downed state ends.
+  let revived = parseState(state(2));
+  for (let i = 0; i < 8 && revived.life !== "ALIVE"; i++) {
+    wait(2000);
+    revived = parseState(state(2));
+  }
+  on(2, { verb: "capture", mode: "ui", name: "m2_259_revived_client2" }, 25000);
+  seeBody("m2_259_after_revive_world");
+  on(1, { verb: "stand", entityName: patientName });
+  wait(1500);
+  if (revive.status !== "ok") fails.push(`revive returned ${revive.status} ${revive.detail}`);
+  if (revived.downed !== "0" || revived.life !== "ALIVE" || revived.bleed !== "-1") fails.push(`after the revive: downed=${revived.downed} life=${revived.life} bleed=${revived.bleed}`);
+  if (revived.cash !== cashBefore) fails.push(`the revived player's cash changed: ${cashBefore} -> ${revived.cash}`);
+  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+  wait(2500);
+  on(1, { verb: "look" });
+  on(1, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
+  wait(2500);
+  on(2, { verb: "stand", entityName: ROB_TARGET });
+  wait(2500);
+  on(1, { verb: "stand", entityName: ROB_TARGET });
+  wait(2500);
+  on(1, { verb: "shoot", playerId: 2 }, 10000);
+  wait(2500);
+  if (parseState(state(2)).downed !== "1") fails.push("client 2 was not downed again after the revive");
+  console.log(`revive   client 2: ${JSON.stringify(revived)} (civilian try: ${civilianTry.detail})`);
+
   // The real death of a downed player (what the bleed-out will call): the death screen, the
   // respawn, and a fresh body that is not downed.
   // #256: the client reads the time left (a replicated, throttled copy); giving up is refused
@@ -990,7 +1151,7 @@ async function runDownedProof() {
   console.log(`peers    client 3 (late joiner): ${peers3 || "skipped"}`);
   console.log(`respawn  client 2: ${JSON.stringify(respawned)}`);
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "downed proof: FAIL" : "downed proof: PASS (downed, not dead, no murder; seen downed by both clients and a late joiner; real death is the murder and respawns)");
+  console.log(fails.length ? "downed proof: FAIL" : "downed proof: PASS (downed, not dead, no murder; seen downed by both clients and a late joiner; a medic revives; real death is the murder and respawns)");
   return fails.length ? 1 : 0;
 }
 
@@ -1534,6 +1695,7 @@ async function main(argv) {
   if (cmd === "murder-proof") return runMurderProof();
   if (cmd === "quarry-proof") return runQuarryProof();
   if (cmd === "downed-proof") return runDownedProof();
+  if (cmd === "carry-proof") return runCarryProof();
   if (cmd === "medic-proof") return runMedicProof();
   if (cmd === "radio-proof") return runRadioProof();
   if (cmd === "roster") {
@@ -1556,7 +1718,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|medic-proof|radio-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|radio-proof|dispatch-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 

@@ -34,6 +34,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BleedOutRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CarriedInventoryRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedInventoryDeathNoDupe(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Carry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarryMeshes(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
@@ -178,6 +179,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RestartVehicleNoGroundKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartVehiclePlatesReserved(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWhitelistUnreadableFileKept(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_Bank(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Roadmap_BankWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_BankPersistence(), LF_TestTier.PERSISTENCE);

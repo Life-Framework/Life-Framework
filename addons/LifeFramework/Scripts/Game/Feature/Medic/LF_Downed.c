@@ -161,10 +161,26 @@ class LF_Downed
 		LF_BleedOut.End(character);
 		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(character.FindComponent(SCR_CharacterDamageManagerComponent));
 		if (damageManager)
+		{
+			// Vanilla keeps a knocked-out character unconscious until resilience (and blood) climb
+			// back over the weakened state, which takes minutes. A revive lifts them to the
+			// configured level so the wake is now; health stays at the sliver.
+			RaiseHitZone(damageManager.GetResilienceHitZone(), LF_MedicConfig.Get().m_fReviveRecoveryScaled);
+			RaiseHitZone(damageManager.GetBloodHitZone(), LF_MedicConfig.Get().m_fReviveRecoveryScaled);
 			damageManager.UpdateConsciousness();
+			LF_Debug.Info(FEATURE, string.Format("wake of %1: resilience %2, blood %3, health %4, still unconscious %5", PlayerUid(character), damageManager.GetResilienceHitZone().GetHealthScaled(), damageManager.GetBloodHitZone().GetHealthScaled(), damageManager.GetDefaultHitZone().GetHealthScaled(), damageManager.LF_WantsUnconscious()));
+		}
 
 		LF_Debug.Info(FEATURE, string.Format("player %1 is no longer downed", PlayerUid(character)));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Raise a hit zone's health to at least `scaled`; never lowers it.
+	protected static void RaiseHitZone(HitZone zone, float scaled)
+	{
+		if (zone && zone.GetHealthScaled() < scaled)
+			zone.SetHealthScaled(scaled);
 	}
 
 	//------------------------------------------------------------------------------------------------
