@@ -1,8 +1,6 @@
-// red-proof: observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_HospitalRespawn`:
+// red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_HospitalRespawn`:
 // respawn/bill-once: not removing the uid in LF_HospitalRespawn.TakePendingWake failed it with
-// `- a reconnect after waking sends no second bill (expected -1, got 150)`.
-// respawn/bill-debt: clamping LF_BankAccount.SetBalance at 0 again failed it with
-// `- a saved debt loads as debt (expected -100, got 0)`.
+// `- a reconnect after waking writes no second bill`.
 // respawn/bed-pick: making IsOccupied always false failed it with
 // `- an occupied bed is skipped (expected 1, got 0)`.
 // respawn/ward: before the Hospital_Bed_* entities were placed it failed with
@@ -21,71 +19,52 @@ class LF_Test_HospitalBillOnce : LF_Test
 	{
 		LF_ATMManager.Reset();
 		LF_HospitalRespawn.Reset();
+		LF_TreatmentBills.ResetStatics();
 		string uid = "test-hospital-once";
 		LF_ATMManager.GetOrCreate(uid).Deposit(500);
 
-		ctx.Equal(-1, LF_HospitalRespawn.BillOnWake(uid, 150, true), "a spawn with no death sends no bill");
-		ctx.Equal(500, LF_ATMManager.GetOrCreate(uid).GetBalance(), "first spawn leaves the bank alone");
+		ctx.True(LF_HospitalRespawn.BillOnWake(uid, 150, "d") == null, "a spawn with no death writes no bill");
+		ctx.Equal(0, LF_TreatmentBills.CountOpen(uid), "no death, no open bill");
 
 		LF_HospitalRespawn.MarkDied(uid);
 		LF_HospitalRespawn.MarkDied(uid);
 		ctx.True(LF_HospitalRespawn.HasPendingWake(uid), "a death leaves a pending hospital wake");
-		ctx.Equal(150, LF_HospitalRespawn.BillOnWake(uid, 150, true), "the wake after a death charges the bill");
-		ctx.Equal(350, LF_ATMManager.GetOrCreate(uid).GetBalance(), "two death reports before one wake charge once");
+		LF_TreatmentBillRecord bill = LF_HospitalRespawn.BillOnWake(uid, 150, "10/11/1989 08:00");
+		ctx.NotNull(bill, "the wake after a death writes the bill");
+		if (bill)
+		{
+			ctx.Equal(150, bill.m_iAmount, "the bill carries the configured amount");
+			ctx.EqualStr("", bill.m_sMedicUid, "a wake bill has no medic");
+			ctx.Equal(0, bill.m_iShare, "a wake bill pays no medic share");
+		}
+
+		ctx.Equal(500, LF_ATMManager.GetOrCreate(uid).GetBalance(), "the bank is never touched by the bill");
+		ctx.Equal(1, LF_TreatmentBills.CountOpen(uid), "two death reports before one wake write one bill");
 
 		// Reconnect after waking, or a second respawn request: the wake was consumed.
 		ctx.False(LF_HospitalRespawn.HasPendingWake(uid), "waking consumes the pending wake");
-		ctx.Equal(-1, LF_HospitalRespawn.BillOnWake(uid, 150, true), "a reconnect after waking sends no second bill");
-		ctx.Equal(350, LF_ATMManager.GetOrCreate(uid).GetBalance(), "the bank is charged once per death");
+		ctx.True(LF_HospitalRespawn.BillOnWake(uid, 150, "d") == null, "a reconnect after waking writes no second bill");
+		ctx.Equal(1, LF_TreatmentBills.CountOpen(uid), "one bill per death");
 
 		LF_HospitalRespawn.MarkDied(uid);
-		ctx.Equal(150, LF_HospitalRespawn.BillOnWake(uid, 150, true), "the next death bills again");
-		ctx.Equal(200, LF_ATMManager.GetOrCreate(uid).GetBalance(), "second death, second bill");
+		ctx.NotNull(LF_HospitalRespawn.BillOnWake(uid, 150, "d"), "the next death bills again");
+		ctx.Equal(2, LF_TreatmentBills.CountOpen(uid), "second death, second bill");
 
-		ctx.Equal(-1, LF_HospitalRespawn.BillOnWake("", 150, true), "an empty uid is refused");
-		LF_HospitalRespawn.Reset();
-		LF_ATMManager.Reset();
-	}
-}
+		ctx.True(LF_HospitalRespawn.BillOnWake("", 150, "d") == null, "an empty uid is refused");
 
-//------------------------------------------------------------------------------------------------
-// tier: LOGIC
-class LF_Test_HospitalBillDebt : LF_Test
-{
-	override string GetName()
-	{
-		return "respawn/bill-debt";
-	}
+		LF_HospitalRespawn.MarkDied("test-hospital-off");
+		ctx.True(LF_HospitalRespawn.BillOnWake("test-hospital-off", 0, "d") == null, "a zero bill writes nothing");
+		ctx.False(LF_HospitalRespawn.HasPendingWake("test-hospital-off"), "the wake is still consumed");
 
-	override void Run(LF_TestContext ctx)
-	{
-		LF_BankAccount broke = LF_BankAccount.Create("test-hospital-broke");
-		broke.Deposit(50);
-		ctx.Equal(150, LF_HospitalRespawn.ChargeBill(broke, 150, true), "debt allowed: the whole bill is charged");
-		ctx.Equal(-100, broke.GetBalance(), "a broke player goes negative by the rest of the bill");
-		ctx.True(broke.IsInDebt(), "a negative balance is debt");
-		ctx.False(broke.Withdraw(10), "no withdrawal while in debt");
-		ctx.Equal(-100, broke.GetBalance(), "a refused withdrawal leaves the debt");
-
-		broke.Deposit(300);
-		ctx.Equal(200, broke.GetBalance(), "a later deposit pays off the debt first");
-		ctx.False(broke.IsInDebt(), "the debt is cleared");
-
-		LF_BankAccount capped = LF_BankAccount.Create("test-hospital-capped");
-		capped.Deposit(50);
-		ctx.Equal(50, LF_HospitalRespawn.ChargeBill(capped, 150, false), "debt off: only what the account holds is charged");
-		ctx.Equal(0, capped.GetBalance(), "debt off: the balance stops at zero");
-
-		ctx.Equal(0, LF_HospitalRespawn.ChargeBill(capped, 0, true), "a zero bill charges nothing");
-		ctx.Equal(0, LF_HospitalRespawn.ChargeBill(capped, -5, true), "a negative bill charges nothing");
-		ctx.Equal(0, LF_HospitalRespawn.ChargeBill(null, 150, true), "no account, no charge");
-
-		// A debt survives the save: the record keeps the sign.
+		// A saved debt on the bank still loads as debt.
 		LF_ATMManager.Reset();
 		array<ref LF_BankAccountRecord> records = new array<ref LF_BankAccountRecord>();
 		records.Insert(LF_BankAccountRecord.Create("test-hospital-saved", -100));
 		LF_ATMManager.ApplyAll(records);
 		ctx.Equal(-100, LF_ATMManager.GetOrCreate("test-hospital-saved").GetBalance(), "a saved debt loads as debt");
+
+		LF_HospitalRespawn.Reset();
+		LF_TreatmentBills.ResetStatics();
 		LF_ATMManager.Reset();
 	}
 }
@@ -145,7 +124,6 @@ class LF_Test_HospitalWard : LF_Test
 		{
 			ctx.True(config.m_bWakeInHospital, "the flagship wakes players in hospital");
 			ctx.True(config.m_iBillAmount > 0, "the flagship bill is set");
-			ctx.True(config.m_bDebtAllowed, "the flagship allows debt");
 		}
 
 		array<vector> beds = {};
@@ -162,11 +140,15 @@ class LF_Test_HospitalWard : LF_Test
 		if (paper)
 		{
 			ctx.False(paper.IsIssued(), "a fresh bill is blank");
-			ctx.True(paper.Issue(150, -100, "12/05/1989 08:30", 15), "the server prints the bill");
+			LF_TreatmentBillRecord record = new LF_TreatmentBillRecord();
+			record.m_iNumber = 7;
+			record.m_iAmount = 150;
+			record.m_sIssued = "12/05/1989 08:30";
+			ctx.True(paper.Print(record, 15), "the server prints the bill");
+			ctx.True(paper.IsIssued(), "a printed bill is no longer blank");
 			ctx.Equal(150, paper.GetAmount(), "the bill shows the amount");
-			ctx.Equal(-100, paper.GetBalanceAfter(), "the bill shows the balance after");
+			ctx.False(paper.IsPaid(), "a fresh bill is unpaid");
 			ctx.EqualStr("12/05/1989 08:30", paper.GetDate(), "the bill shows the date");
-			ctx.False(paper.Issue(10, 0, "x", 15), "a printed bill is not reprinted");
 		}
 
 		SCR_EntityHelper.DeleteEntityAndChildren(bill);

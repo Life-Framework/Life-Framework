@@ -60,6 +60,13 @@ animation are not in yet.
 on a player character: Drag, Carry, Put down, Load into vehicle. Config `m_bCarryAnyone` and the
 distances in `LF_Medic.conf`. Publishes `LF_OnPlayerCarried`. No animation (ACE's are GPL).
 
+## V1.4 - #260, treatment bill
+
+`LF_TreatmentBills` (mirrors `LF_FineTickets`): a revive and a hospital wake each write a paper bill
+(`HospitalBill.et`, `LF_HospitalBillComponent`) for a config amount; the patient pays the oldest in carried
+cash at the hospital desk (`LF_TreatmentBillPayAction`), the revive medic gets `m_fBillMedicShare` of it
+once at clock-out. Saved as the `bills` payload (version 19). Unpaid has no consequence in the flagship.
+
 ## Next
 
 - #256 bleed-out timer (server-owned), give-up, screen and sound effects on the
