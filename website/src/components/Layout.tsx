@@ -4,6 +4,7 @@ import { DiscordIcon, GitHubIcon, Mark } from "@/components/icons";
 import { DISCORD_URL, REPO_URL, githubData, milestoneProgress, CURRENT_MILESTONE, CURRENT_MILESTONE_NAME, formatDate, supportOpen } from "@/lib/content";
 
 const NAV = [
+  { to: "/playtest", label: "Playtest" },
   { to: "/roadmap", label: "Roadmap" },
   { to: "/features", label: "Features" },
   { to: "/gallery", label: "Gallery" },
@@ -45,6 +46,43 @@ function ThemeToggle() {
       {theme === "dark" ? "Day" : theme === "light" ? "Night" : "Theme"}
       <span className="sr-only"> {theme ? "theme" : ""}</span>
     </button>
+  );
+}
+
+// Announces the community playtest above the header on every page except the playtest page itself.
+// A dismissal is remembered in localStorage; index.html reads it before first paint and sets
+// data-banner="off" on <html>, so the server markup and the hydrated markup always match.
+const BANNER_KEY = "lf-banner-playtest-m2";
+
+function PlaytestBanner() {
+  const { pathname } = useLocation();
+  if (pathname.replace(/\/+$/, "") === "/playtest") return null;
+  return (
+    <div className="playtest-banner bg-sign text-on-sign border-b-2 border-on-sign" role="region" aria-label="Playtest announcement">
+      <div className="wrap flex items-start sm:items-center justify-between gap-3 py-2">
+        <p className="text-[0.9375rem] leading-snug">
+          <strong className="font-semibold">A community playtest is open.</strong> You can play the M2 Living Town build and tell us what
+          broke.{" "}
+          <Link to="/playtest" className="underline underline-offset-2 font-semibold whitespace-nowrap">
+            How to join
+          </Link>
+        </p>
+        <button
+          type="button"
+          className="shrink-0 font-mono text-[0.75rem] uppercase tracking-[0.06em] border-2 border-on-sign px-2.5 min-h-[2.25rem] hover:bg-on-sign hover:text-sign"
+          onClick={() => {
+            document.documentElement.setAttribute("data-banner", "off");
+            try {
+              localStorage.setItem(BANNER_KEY, "off");
+            } catch {
+              /* private mode: the banner is hidden for this page view only */
+            }
+          }}
+        >
+          Dismiss<span className="sr-only"> the playtest announcement</span>
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -152,6 +190,7 @@ function Footer() {
     {
       title: "Take part",
       links: [
+        { label: "Join the playtest", href: "/playtest" },
         { label: "Server owners", href: "/servers" },
         { label: "Contribute", href: "/contribute" },
         { label: "Docs", href: "/docs" },
@@ -219,6 +258,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <a href="#main" className="skip">
         Skip to content
       </a>
+      <PlaytestBanner />
       <Header />
       <main id="main" tabIndex={-1} className="outline-none">
         {children}
