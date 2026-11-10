@@ -7,6 +7,7 @@
 //   GitHub milestones, issues and their sub-issues,     -> src/generated/github.json
 //   merged PRs, contributors
 //                                                         src/generated/data/devlog.json
+//   public/docs-images/**, content/gallery.json         -> src/generated/data/gallery.json, public/gallery/*.webp (git-ignored)
 //   content/support.json, content/costs.json            ->src/generated/support.json (scripts/support.mjs)
 //   content/media.json (film-evidence release assets)   -> public/media/clips/ (downloaded, git-ignored)
 //
@@ -25,6 +26,7 @@ import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import { buildSupport } from "./support.mjs";
+import { buildGallery } from "./gallery.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const site = path.resolve(here, "..");
@@ -484,6 +486,35 @@ async function subIssues(i) {
   }
 }
 
+// The #numbers of an epic body's "## Sub-issues" checklist, in order. Used only when GitHub lists no
+// linked sub-issues, so an epic filed with a checklist still shows its branch on the roadmap.
+function checklistRefs(body) {
+  const sections = issueSections(body);
+  const key = Object.keys(sections).find((k) => /^sub[- ]?issues\b/.test(k));
+  if (!key) return [];
+  const refs = sections[key].split(/\r?\n/).filter((l) => /^\s*[-*]\s+\[[ xX]\]/.test(l)).map((l) => Number((/#(\d+)/.exec(l) || [])[1]));
+  return [...new Set(refs.filter(Boolean))];
+}
+
+// Fill epics that have only a body checklist from the issues already read (milestones and tracks).
+function resolveBodyRefs(groups) {
+  const byNumber = new Map();
+  for (const g of groups) for (const i of g.issues) byNumber.set(i.number, { i, milestone: g.id });
+  for (const g of groups) {
+    for (const e of g.issues) {
+      const refs = e.bodyRefs || [];
+      delete e.bodyRefs;
+      if (e.subIssues.length > 0 || refs.length === 0) continue;
+      e.subIssues = refs
+        .filter((n) => n !== e.number && byNumber.has(n))
+        .map((n) => {
+          const { i, milestone } = byNumber.get(n);
+          return { number: n, title: i.title, state: i.state, url: i.url, assignees: i.assignees, labels: i.labels, layer: i.layer, milestone };
+        });
+    }
+  }
+}
+
 async function fetchGithub() {
   // LF_SITE_OFFLINE=1 builds from the snapshot, to test the fallback.
   if (process.env.LF_SITE_OFFLINE) throw new Error("LF_SITE_OFFLINE is set");
@@ -491,7 +522,12 @@ async function fetchGithub() {
   const readMilestone = async (m, id) => {
     const raw = (await gh(`/repos/${GITHUB_REPO}/issues?milestone=${m.number}&state=all&per_page=100`)).filter((i) => !i.pull_request);
     const issues = [];
-    for (const i of raw) issues.push({ ...issueOut(i), subIssues: await subIssues(i) });
+    for (const i of raw) {
+      const out = { ...issueOut(i), subIssues: await subIssues(i) };
+      // GitHub has no linked children, but the body lists them: "## Sub-issues" with "- [ ] #411 ...".
+      if (out.subIssues.length === 0) out.bodyRefs = checklistRefs(i.body);
+      issues.push(out);
+    }
     return { id, number: m.number, title: m.title, description: m.description || "", url: m.html_url, state: m.state, issues };
   };
   const milestonesOut = [];
@@ -500,6 +536,7 @@ async function fetchGithub() {
   // A track runs beside the milestone path and is never the current milestone. "Development" is one.
   const tracks = [];
   for (const m of all.filter((x) => /^development$/i.test(x.title.trim()))) tracks.push(await readMilestone(m, "Dev"));
+  resolveBodyRefs([...milestonesOut, ...tracks]);
   const goodFirst = (await gh(`/repos/${GITHUB_REPO}/issues?labels=${encodeURIComponent("good first issue")}&state=open&per_page=100`))
     .filter((i) => !i.pull_request)
     .map(issueOut);
@@ -578,6 +615,12 @@ for (const c of media.clips) {
 
 const { pulls, ...githubRest } = github;
 const githubOut = { ...githubRest, latestPulls: pulls.slice(0, 5) };
+// ---------------------------------------------------------------- gallery
+
+const gallery = await buildGallery({ site, github, repoUrl: `https://github.com/${GITHUB_REPO}` });
+fs.writeFileSync(path.join(dataDir, "gallery.json"), JSON.stringify(gallery));
+console.log(`[content] gallery: ${gallery.count} pictures, ${gallery.sections.length} sections, ${gallery.areas.length} areas`);
+
 fs.writeFileSync(path.join(outDir, "docs-index.json"), JSON.stringify(docsIndex));
 fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, media }));
 fs.writeFileSync(path.join(outDir, "github.json"), JSON.stringify(githubOut));

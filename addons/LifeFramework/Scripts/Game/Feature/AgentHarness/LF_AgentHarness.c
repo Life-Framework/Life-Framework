@@ -126,7 +126,7 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report")
 			return true;
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf")
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
@@ -910,7 +910,7 @@ class LF_AgentHarness
 			DoReport(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
@@ -2377,6 +2377,14 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected static void RestoreShotHud()
+	{
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		if (hud)
+			hud.SetVisible(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Player view for a world shot. Called once when the shot is asked, and
 	//! again just before the screenshot so the body is still on the offset.
 	protected static void ReapplyWorldPose()
@@ -2439,6 +2447,13 @@ class LF_AgentHarness
 			}
 			shot.SettleTime = 1.2;
 			shot.TimeOfDay24h = 12;
+			// Evidence shots show the world, not the HUD; it comes back after the capture.
+			SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+			if (hud && hud.IsVisible())
+			{
+				hud.SetVisible(false);
+				GetGame().GetCallqueue().CallLater(RestoreShotHud, 5000, false);
+			}
 			shot.WeatherStateName = "Clear";
 		}
 

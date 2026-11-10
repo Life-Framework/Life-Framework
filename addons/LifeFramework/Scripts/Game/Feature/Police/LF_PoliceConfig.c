@@ -31,6 +31,7 @@ class LF_PoliceConfig
 	static const int DEFAULT_TICKET_LATE_WANTED = 1;
 	static const int DEFAULT_MURDER_WANTED = 3;
 	static const bool DEFAULT_OFFICER_KILL_OF_WANTED_EXEMPT = true;
+	static const int DEFAULT_SEARCH_COOLDOWN_SECONDS = 120;
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)")]
 	int m_iArrestMinRank;
@@ -95,6 +96,9 @@ class LF_PoliceConfig
 	[Attribute("1", UIWidgets.Auto, "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder")]
 	bool m_bOfficerKillOfWantedExempt;
 
+	[Attribute("120", UIWidgets.Auto, "Seconds before the same player or vehicle can be searched for chain goods again. A repeat inside it is not rolled again (#472). 0 disables")]
+	int m_iSearchCooldownSeconds;
+
 	protected static ref LF_PoliceConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -118,6 +122,16 @@ class LF_PoliceConfig
 			LF_Debug.Error("Ranks", string.Format("police config has an unexpected root class, using defaults: %1", CONFIG_PATH));
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int SearchCooldownSeconds()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_SEARCH_COOLDOWN_SECONDS;
+
+		return Math.Max(config.m_iSearchCooldownSeconds, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------

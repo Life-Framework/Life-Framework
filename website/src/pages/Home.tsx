@@ -206,8 +206,9 @@ const Home = () => {
             <p className="muted">
               {left > 0 && left <= 5 ? "The playtest town is in its final playtest. " : "We are building the playtest town now. "}
               It is a signposted village where a stranger can play the whole loop on a dedicated server without asking anyone. M1
-              ends with a playtest build on the Workshop and sessions hosted from the maintainer's PC. Then M2 adds moderation,
-              medics, comms, and investigation; M3 releases the framework for other servers; M4 opens our 1989 Everon server.
+              ends with a playtest build on the Workshop and sessions hosted from the maintainer's PC. M2 adds moderation,
+              comms, medics, investigation and the underworld, and most of it is built and in that build. M3 releases the framework
+              for other servers; M4 opens our 1989 Everon server.
             </p>
             <div>
               <p className="flex items-baseline justify-between gap-4 mb-2">
@@ -219,6 +220,8 @@ const Home = () => {
               {m1 && <ScopeMeter issues={m1.issues} label={`${CURRENT_MILESTONE} ${m1Name}`} />}
               <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
                 <GoLink to="/roadmap">The roadmap</GoLink>
+                <GoLink to="/features">What is built</GoLink>
+                <GoLink to="/gallery">The gallery</GoLink>
                 <GoLink to="/devlog">The devlog</GoLink>
               </p>
             </div>
@@ -240,7 +243,7 @@ const Home = () => {
             </p>
             <p className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
               <GoLink to={DISCORD_URL}>#feedback on Discord</GoLink>
-              <GoLink to={blob("docs/playtest.md")}>Playtest guide</GoLink>
+              <GoLink to="/docs/playtest">Playtest guide</GoLink>
             </p>
           </li>
           <li className="sheet p-6 flex flex-col">

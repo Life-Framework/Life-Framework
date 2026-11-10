@@ -350,6 +350,13 @@ class LF_Dispatch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: stops every alarm this server is sounding (a test cleaning up after a crime).
+	static void StopAllAlarms()
+	{
+		StopAlarmsNear(vector.Zero, 100000);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void StopAlarmsNear(vector site, float radius)
 	{
 		if (!s_mAlarms || !GetGame() || !GetGame().GetWorld())

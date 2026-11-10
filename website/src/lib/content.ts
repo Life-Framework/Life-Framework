@@ -174,8 +174,9 @@ export const MILESTONE_PLAN: Record<string, { goal: string; plan: { label: strin
     status: "Final playtest",
   },
   M2: {
-    goal: "Moderation, medics and revive, comms, and investigation, proven in the playtest village, then placed in one Everon town.",
+    goal: "Moderation, medics and revive, comms, investigation and the underworld, proven in the playtest village, then placed in one Everon town.",
     plan: { label: "M2 outline", to: "/docs/roadmap-m2-outline" },
+    status: "In development",
   },
   M3: {
     goal: "The mod splits into the LifeFramework core and the LF_Everon1989 pack, and an owner configures it from one config.json. No new gameplay.",
@@ -197,6 +198,7 @@ export const CURRENT_MILESTONE_NAME = currentMilestone ? milestoneName(currentMi
 export function milestoneStatus(m: Milestone): { label: string; tone: "green" | "red" | "ink" } {
   if (m.state === "closed") return { label: "Done", tone: "green" };
   if (m.id === CURRENT_MILESTONE) return { label: MILESTONE_PLAN[m.id]?.status ?? "Current", tone: "red" };
+  if (MILESTONE_PLAN[m.id]?.status) return { label: MILESTONE_PLAN[m.id].status!, tone: "ink" };
   return { label: "Planned", tone: "ink" };
 }
 

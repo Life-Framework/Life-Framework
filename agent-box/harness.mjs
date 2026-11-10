@@ -19,6 +19,7 @@ import { checkChains, formatPlan, runChainProbes } from "./chains.mjs";
 import { findPad, loadPads, loadPlaced, loadWorld } from "./layers.mjs";
 import { claimPlay, decideClaim, rendererFor } from "./play-claim.mjs";
 import { sessionForBox } from "./session.mjs";
+import { sessionDirOfBox, touchLease } from "../tools/lib/session-lease.mjs";
 import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, runTownReport, selectRoadmapSites, siteLook, siteShotOffset, STREET_Z } from "./report.mjs";
 import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadStrings, manifestErrors, parseSignConfig, resolveSite, signCard, signIssues } from "./town.mjs";
 
@@ -123,7 +124,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "engine") {
@@ -235,6 +236,11 @@ let playClaim = null;
 export function sendCommand(spec, timeoutMs = 8000) {
   const id = nextId();
   const address = addressFor(boxOverride);
+  // A command to a session client keeps the session's pool lease alive.
+  for (const b of profileBoxes()) {
+    const d = sessionDirOfBox(b);
+    if (d) touchLease(d, spec.verb);
+  }
   if (address.error) return { id, status: "error", detail: address.error, line: "", raw: `${id} error ${address.error}` };
   const line = buildLine(id, { ...spec, session: address.id });
   playClaim = playClaim ?? claimPlay(ROOT);
@@ -1382,7 +1388,7 @@ function main(argv) {
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {

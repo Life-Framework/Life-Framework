@@ -139,22 +139,22 @@ GenericEntity Roadmap_Hospital_Ambulance : "{D8C109C681E7AAF1}Prefabs/Vehicles/W
  coords 266 0 250
  angleY 90
 }
-GenericEntity Hospital_BayCone : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
+GenericEntity Hospital_BayCone_1 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
  coords 262.2 0 247.6
 }
-GenericEntity Hospital_BayCone : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
+GenericEntity Hospital_BayCone_2 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
  coords 262.2 0 252.4
 }
-GenericEntity Hospital_BayCone : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
+GenericEntity Hospital_BayCone_3 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
  coords 270.2 0 247.6
 }
-GenericEntity Hospital_BayCone : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
+GenericEntity Hospital_BayCone_4 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
  coords 270.2 0 252.4
 }
-SCR_DestructibleEntity Hospital_Flowerpot : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+SCR_DestructibleEntity Hospital_Flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
  coords 258.2 0 257.3
 }
-SCR_DestructibleEntity Hospital_Flowerpot : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+SCR_DestructibleEntity Hospital_Flowerpot_2 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
  coords 262.8 0 257.3
 }
 SCR_DestructibleEntity Hospital_WaitBench : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
