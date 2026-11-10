@@ -606,6 +606,10 @@ node agent-box/session.mjs down               # closes every process the session
   photographs from the hidden `LF-Agents` desktop. M1-25 took its village
   evidence this way (2026-11-08).
 
+## M2 QA driver
+
+`node agent-box/qa-m2.mjs comms|report|square|normalize` runs on a live session (`roster 2` before `up`): `comms` is payphone to dispatch board to take to the caller's toast, then a medic call to the pager card; `report` is `/report` with a flagged incident and the cooldown refusal; `square` is the spawn-square payphone (#489); `normalize` clocks any on-duty client out. Results of the 2026-11-10 run: `docs/playtest/m2-qa-2026-11-10.md`.
+
 ## Journey (multi-client)
 
 `node agent-box/journey.mjs` (or `harness.mjs journey`, `harness.mjs report
