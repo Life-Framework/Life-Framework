@@ -3,7 +3,7 @@
 // (docs/agent-area-polish.md). One blocking call per area; prints about ten lines.
 //
 //   shots area <name | x,z> [--radius 30] [--out tmp/shots/<area>] [--machine any]
-//              [--hour 17.9] [--annotate] [--pick] [--detail <Entity>] [--keep] [--fov 60]
+//              [--hour 17.9] [--annotate] [--pick] [--detail <Entity>] [--keep] [--fov 60] [--wide-only]
 //   shots crop <shot> <x,y,w,h>        native-resolution crop under 800 px
 //   shots selftest
 //
@@ -38,6 +38,7 @@ const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
 const len = (a) => Math.hypot(a[0], a[1], a[2]);
+const norm = (a) => mul(a, 1 / (len(a) || 1));
 const r2 = (n) => Math.round(n * 100) / 100;
 const dirOf = (deg) => [Math.sin((deg * Math.PI) / 180), 0, Math.cos((deg * Math.PI) / 180)];
 
@@ -170,7 +171,9 @@ export function candidates(kind, area, extra = {}) {
   const R = area.radius;
   const out = [];
   if (kind === "wide") {
-    for (const az of [180, 90, 270, 0]) for (const k of [1.5, 1.9, 1.2]) out.push({ az, dist: R * k, up: 12, mode: "wide" });
+    // From the front side (the heading players approach from); the scorer in scoreWide chooses among these.
+    const front = area.front ?? 180;
+    for (const off of [0, -35, 35, -70, 70]) for (const k of [0.55, 0.8, 1, 1.35, 1.8]) for (const up of [4, 7, 10, 13]) out.push({ az: front + off, dist: R * k, up, mode: "wide" });
   } else if (kind === "top") {
     for (const up of [Math.max(30, R * 2.2), Math.max(30, R * 2.2) + 10]) out.push({ az: 0, dist: 0.05, up, mode: "free" });
   } else if (kind === "eye") {
@@ -344,8 +347,8 @@ function makeProbe(h) {
       if (!groundCache.has(key)) groundCache.set(key, Number(parseKv(q({ mode: "ground", x, z })).y));
       return groundCache.get(key);
     },
-    trace(a, b) {
-      const kv = parseKv(q({ mode: "trace", x: a[0], y: a[1], z: a[2], x2: b[0], y2: b[1], z2: b[2] }));
+    trace(a, b, all = false) {
+      const kv = parseKv(q({ mode: all ? "traceall" : "trace", x: a[0], y: a[1], z: a[2], x2: b[0], y2: b[1], z2: b[2] }));
       return { d: Number(kv.d), total: Number(kv.total), ent: kv.ent };
     },
     cam(p) {
@@ -368,6 +371,8 @@ function placeCamera(probe, kind, area, extra, targetOf) {
     const dir = dirOf(cand.az);
     const sx = c[0] + dir[0] * cand.dist;
     const sz = c[2] + dir[2] * cand.dist;
+    // Map objects with no collision (pylons) are invisible to the rays: areas.json lists them as avoid [x, z, r].
+    if (cand.mode === "wide" && (area.avoid ?? []).some(([ax, az, ar]) => Math.hypot(sx - ax, sz - az) < ar)) continue;
     const gs = probe.ground(sx, sz);
     let sy = gs + cand.up;
     if (cand.up > 0) sy = gs + cand.up - EYE;
@@ -394,11 +399,108 @@ function placeCamera(probe, kind, area, extra, targetOf) {
       reason = clear ? "" : `view blocked by ${tr.ent} at ${r2(tr.d)} of ${r2(tr.total)} m`;
     } else score = 2;
     const pick = { stand, target, eye, cand, score, reason, backedOff: i > 0 };
+    if (extra.collect) {
+      if (score >= 0) extra.collect.push(pick);
+      continue;
+    }
     if (!best || pick.score > best.score) best = pick;
     if (score >= 2) break;
     if (extra.close && score >= 1) break;
   }
   return best;
+}
+
+const NEAR_THIRD = 1 / 3;
+const BIG_OCCLUDER_M = 2.5; // an object taller than this above the ground, in the near third, is a pole, roof, tree or canopy
+
+// Pure: turn ray samples ({ hit, d, h, inArea }) from the camera into a frame score.
+// Rewards the share of rays that land on the area's own objects; penalises objects from outside the
+// area, and tall occluders, in the nearest third of the depth.
+export function scoreRays(rays, depth, treeNear = 0, crowd = 0) {
+  const n = rays.length || 1;
+  let cover = 0;
+  let foreign = 0;
+  let big = 0;
+  for (const r of rays) {
+    if (!r.hit || r.h < 0.3) continue; // sky, far horizon or bare ground
+    const near = r.d < depth * NEAR_THIRD;
+    if (near && !r.inArea) foreign++;
+    if (near && r.h > BIG_OCCLUDER_M) big++;
+    if (r.inArea) cover++;
+  }
+  const coverage = cover / n;
+  const foreignNear = foreign / n;
+  const bigNear = big / n;
+  return { score: r2(4 * coverage - 12 * foreignNear - 8 * bigNear - 8 * treeNear - 8 * crowd), treeNear: r2(treeNear), crowd: r2(crowd), coverage: r2(coverage), foreignNear: r2(foreignNear), bigNear: r2(bigNear), rays: rays.length };
+}
+
+// Tree canopies have no collision, so a ray sails through them. The layers place the trees, so
+// treat each as a sphere (9 m radius, centred 10 m up; a camera within 5 m of the trunk below 22 m is in the crown) and count the ones that sit in the near
+// 80% of the depth and in the frame (weighted by the share of the frame they cover), or that the camera is inside.
+const TREE = /Vegetation\/Tree\//i;
+const CANOPY_R = 7;
+const CANOPY_UP = 10;
+export function treeOcclusion(eye, target, trees, depth, fovV = FOV_V) {
+  const f = norm(sub(target, eye));
+  const vf = (fovV * Math.PI) / 180;
+  const hf = 2 * Math.atan(Math.tan(vf / 2) * (16 / 9));
+  let share = 0;
+  for (const t of trees) {
+    const v = sub([t.x, t.gy + CANOPY_UP, t.z], eye);
+    const d = len(v);
+    if (Math.hypot(v[0], v[2]) < 5 && eye[1] - t.gy < 22) return 1;
+    if (d < CANOPY_R) return 1;
+    if (d > depth * 0.8 + CANOPY_R) continue; // the far half of the view is background, not foreground
+    const a = Math.asin(CANOPY_R / d);
+    const ang = Math.acos(Math.max(-1, Math.min(1, (v[0] * f[0] + v[1] * f[1] + v[2] * f[2]) / d)));
+    if (ang > hf / 2 + a) continue;
+    share += (Math.PI * a * a) / (hf * vf); // the canopy's share of the frame
+  }
+  return Math.min(1, share * 1.5);
+}
+
+// Raycast a grid of rays through the frame from the camera and score them.
+function scoreWide(probe, area, placed, trees, level = true) {
+  const { eye } = placed;
+  const target = placed.target;
+  const depth = len(sub(target, eye));
+  // The character camera cannot pitch: the shot is level at the heading, whatever the target height.
+  const { yaw } = poseOf(eye, target);
+  const pitch = level ? 0 : poseOf(eye, target).pitch;
+  const rad = Math.PI / 180;
+  const f = [Math.cos(pitch * rad) * Math.sin(yaw * rad), Math.sin(pitch * rad), Math.cos(pitch * rad) * Math.cos(yaw * rad)];
+  const r = [Math.cos(yaw * rad), 0, -Math.sin(yaw * rad)];
+  const u = [-Math.sin(pitch * rad) * Math.sin(yaw * rad), Math.cos(pitch * rad), -Math.sin(pitch * rad) * Math.cos(yaw * rad)];
+  const ty = Math.tan((FOV_V * rad) / 2);
+  const tx = ty * (16 / 9);
+  const rays = [];
+  for (let i = 0; i < 6; i++) {
+    for (let j = 0; j < 3; j++) {
+      const a = ((i - 2.5) / 2.5) * 0.92 * tx;
+      const b = ((j - 1) / 1) * 0.92 * ty;
+      const dir = norm(add(add(f, mul(r, a)), mul(u, b)));
+      const reach = depth * 2;
+      const tr = probe.trace(eye, add(eye, mul(dir, reach)), true);
+      const hit = tr.d < tr.total - 0.05;
+      if (!hit) {
+        rays.push({ hit: false });
+        continue;
+      }
+      const p = add(eye, mul(dir, tr.d));
+      rays.push({ hit: true, d: tr.d, h: p[1] - probe.ground(p[0], p[2]), inArea: Math.hypot(p[0] - area.x, p[2] - area.z) <= area.radius * 1.05 });
+    }
+  }
+  // Thin poles and lattices (pylons) slip between the grid rays: short probes ahead of the lens
+  // catch a camera that is standing in or right behind one.
+  let crowded = 0;
+  for (const yo of [-0.6, 0, 0.6]) {
+    for (const po of [-0.4, 0, 0.4]) {
+      const dir = norm(add(add(f, mul(r, yo)), mul(u, po)));
+      const tr = probe.trace(eye, add(eye, mul(dir, 5)), true);
+      if (tr.d < tr.total - 0.05) crowded++;
+    }
+  }
+  return scoreRays(rays, depth, treeOcclusion(eye, level ? [target[0], eye[1], target[2]] : target, trees, depth), crowded / 9);
 }
 
 async function capture(h, area, o) {
@@ -416,7 +518,7 @@ async function capture(h, area, o) {
 
   // Numeric placement checks first: cheap, and the annotation uses the entity list.
   const checked = [];
-  for (const e of ents) {
+  for (const e of o.args.flags["wide-only"] ? [] : ents) {
     let m;
     try {
       m = probe.ent(e);
@@ -459,21 +561,44 @@ async function capture(h, area, o) {
     return shot;
   };
   const centre = [area.x, area.y, area.z];
+  let widePool = [];
   try {
   const lookAt = (h1) => [area.x, area.y + h1, area.z];
 
-  take("wide", "wide", "wide", null, placeCamera(probe, "wide", area, {}, () => lookAt(1)));
+  // Wide: score every front-side candidate by raycast, shoot the best two (wide = best score).
+  const wides = [];
+  const trees = placedMod
+    .loadWorld(ROOT)
+    .filter((e) => TREE.test(e.prefab || e.anonPrefab || "") && Math.hypot(e.x - area.x, e.z - area.z) < area.radius * 4)
+    .map((e) => ({ x: e.x, z: e.z, gy: probe.ground(e.x, e.z) }));
+  placeCamera(probe, "wide", area, { collect: wides }, () => lookAt(1));
+  // Stage 1 is pure maths (tree canopies); only the 14 least-occluded candidates get the ray grid.
+  for (const w of wides) w.treeNear = treeOcclusion(w.eye, [w.target[0], w.eye[1], w.target[2]], trees, len(sub(w.target, w.eye)));
+  wides.sort((a, b) => a.treeNear - b.treeNear || Math.abs(a.cand.az - (area.front ?? 180)) - Math.abs(b.cand.az - (area.front ?? 180)));
+  const unscored = wides.splice(8);
+  for (const w of wides) {
+    w.frame = scoreWide(probe, area, w, trees, !o.args.flags["free-camera"]);
+    w.frame.score = r2(w.frame.score + (w.score >= 2 ? 0 : -1));
+  }
+  wides.sort((a, b) => b.frame.score - a.frame.score);
+  widePool = wides.concat(unscored.map((w) => ({ ...w, frame: { score: null, treeNear: w.treeNear, skipped: true } }))).map((w) => ({ az: r2(w.cand.az), dist: r2(w.cand.dist), up: w.cand.up, ...w.frame, viewBlocked: w.score < 2 || undefined }));
+  wides.slice(0, 2).forEach((w, i) => {
+    const sh = take(i === 0 ? "wide" : "wide-2", "wide", "wide", null, w);
+    sh.frame = w.frame;
+  });
+  if (!wides.length) take("wide", "wide", "wide", null, placeCamera(probe, "wide", area, {}, () => lookAt(1)));
   // The character camera cannot pitch, so a top-down needs the (crashing) free camera: opt in with --free-camera.
   if (o.args.flags["free-camera"]) take("top", "top", "top", null, placeCamera(probe, "top", area, {}, () => lookAt(0)));
-  for (const [dirName, az] of [["N", 0], ["E", 90], ["S", 180], ["W", 270]]) {
+  if (!o.args.flags["wide-only"]) for (const [dirName, az] of [["N", 0], ["E", 90], ["S", 180], ["W", 270]]) {
     // Standing at the radius edge on that side, looking in: the camera sits on the side named.
     take(dirName, "eye", dirName, null, placeCamera(probe, "eye", area, { az }, (cand, stand) => [centre[0], stand[1] + EYE, centre[2]]));
   }
-  for (const p of pads) {
+  for (const p of o.args.flags["wide-only"] ? [] : pads) {
     const floorY = p.y < 1.5 ? p.y : undefined;
     const h1 = p.y > 1.5 ? 0 : 1;
     const placed = placeCamera(probe, "close", area, { x: p.x, z: p.z, yaw: p.yaw, floorY, name: p.name }, () => [p.x, p.y + h1, p.z]);
-    take(`close-${p.name}`, "close", p.name, p.name, placed);
+    const cs = take(`close-${p.name}`, "close", p.name, p.name, placed);
+    cs.frame = { score: placed.score, dist: r2(Math.hypot(p.x - area.x, p.z - area.z)) };
   }
 
   } finally {
@@ -506,11 +631,12 @@ async function capture(h, area, o) {
 
   const problems = checked.filter((e) => e.problems.length);
   const index = {
-    area: { name: area.name, n: area.n, centre, radius: area.radius },
+    area: { name: area.name, n: area.n, centre, radius: area.radius, front: area.front ?? 180 },
     hour: o.hour,
     clock,
     fovAssumed: o.fov,
     shots,
+    wideCandidates: widePool,
     entities: checked,
     problems: problems.map((e) => ({ name: e.name, issues: e.problems })),
   };
@@ -534,18 +660,25 @@ async function capture(h, area, o) {
   return shots.some((s) => s.status.startsWith("error")) ? 1 : 0;
 }
 
-// The website pair: the elevated wide, and the interactable closest to the centre (or --detail).
+// The website pair: the best-scoring wide, and the best-scoring close-up (or --detail <Entity>).
+// Ties on the close-up go to the interactable nearest the centre (the list is already in that order).
+export function bestBy(list) {
+  let best = null;
+  for (const s of list) if (!best || (s.frame?.score ?? -9) > (best.frame?.score ?? -9)) best = s;
+  return best;
+}
+
 function pick(area, outDir, shots, pads, detail, checked) {
   const closes = shots.filter((s) => s.kind === "close" && s.status === "ok");
-  let want = closes[0];
+  let want = bestBy(closes);
   if (typeof detail === "string") want = closes.find((s) => s.entity === detail);
-  const wide = shots.find((s) => s.id === "wide" && s.status === "ok");
+  const wide = bestBy(shots.filter((s) => s.kind === "wide" && s.status === "ok"));
   if (!wide || !want) return `pick: nothing copied (${!wide ? "no wide shot" : `no close-up for ${detail ?? "any interactable"}`})`;
   const dir = join(ROOT, "website", "public", "docs-images", `area-${area.n || 0}-${area.slug}`);
   mkdirSync(dir, { recursive: true });
   copyFileSync(join(outDir, wide.file), join(dir, "wide.png"));
   copyFileSync(join(outDir, want.file), join(dir, "detail.png"));
-  return `pick: wide + ${want.entity} -> ${relative(ROOT, dir)} (override with --detail <Entity>)`;
+  return `pick: ${wide.id} (score ${wide.frame?.score}) + ${want.entity} (score ${want.frame?.score}) -> ${relative(ROOT, dir)} (override with --detail <Entity>)`;
 }
 
 // --------------------------------------------------------------------- selftest
@@ -597,6 +730,15 @@ function selftest() {
   const eye = candidates("eye", { x: 0, y: 0, z: 0, radius: 30 }, { az: 90 });
   if (eye.list[0].dist !== 30 || eye.list[0].up !== 0) fails.push("eye candidates");
   if (contactLayout(12).cols !== 4 || contactLayout(9).cols !== 3) fails.push("contactLayout");
+  const wideC = candidates("wide", { x: 0, y: 0, z: 0, radius: 10, front: 270 }).list;
+  if (wideC[0].az !== 270 || wideC.some((c) => Math.abs(c.az - 270) > 70)) fails.push("wide candidates start at the front heading");
+  const inArea = { hit: true, d: 20, h: 3, inArea: true };
+  const good = scoreRays([inArea, inArea, { hit: false }, inArea], 30);
+  const pole = scoreRays([{ hit: true, d: 4, h: 6, inArea: false }, inArea, inArea, { hit: false }], 30);
+  const eyeP = [0, 10, 0];
+  if (treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 4, gy: 0 }], 30) < 0.5 || treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 40, gy: 0 }], 30) !== 0) fails.push("treeOcclusion");
+  if (!(good.score > pole.score) || pole.foreignNear !== 0.25 || pole.bigNear !== 0.25) fails.push(`scoreRays good ${good.score} pole ${pole.score}`);
+  if (bestBy([{ id: "a", frame: { score: 1 } }, { id: "b", frame: { score: 3 } }]).id !== "b") fails.push("bestBy");
   for (const f of fails) console.log(`  ${f}`);
   console.log(fails.length ? "shots selftest: FAIL" : "shots selftest: OK");
   return fails.length ? 1 : 0;
