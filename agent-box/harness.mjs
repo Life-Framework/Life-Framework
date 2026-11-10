@@ -238,8 +238,8 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "film") {
     // In-engine recording (LF_FilmRecorder, tools/film/engine.mjs).
-    if (spec.mode === "stop" || spec.mode === "status") return `${id} film ${spec.mode}`;
-    if (spec.mode !== "start") throw new Error("film mode must be start, stop, or status");
+    if (spec.mode === "stop" || spec.mode === "status" || spec.mode === "slate") return `${id} film ${spec.mode}`;
+    if (spec.mode !== "start") throw new Error("film mode must be start, stop, slate, or status");
     const fps = Number(spec.fps);
     if (!Number.isInteger(fps) || fps < 0 || fps > 30) throw new Error(`film fps must be 0-30: ${spec.fps}`);
     const line = `${id} film start ${token(spec.name, "film name")} ${fps}`;
@@ -1438,7 +1438,7 @@ function main(argv) {
       return printResult(sendCommand({ verb: "look" }));
     }
     if (cmd === "scene" || cmd === "camera") {
-      // scene start|stop|status [name]; camera orbit|follow x y z size seconds (LF_FilmDirector, LF_FilmCamera)
+      // scene start <name> [hour|-] [weather] | stop | reset | status; camera orbit|follow x y z size seconds (LF_FilmDirector, LF_FilmCamera)
       return printResult(sendCommand({ verb: cmd, args: rest.join(" ") }));
     }
     if (cmd === "state") {
