@@ -199,9 +199,12 @@ export function candidates(kind, area, extra = {}) {
     // From the front side (the heading players approach from), eye level and a little above, about the aim point
     // (the focus entities, else the area centre); scoreWideHero chooses among these.
     const front = area.front ?? 180;
-    const aim = extra.aim ?? { x: area.x, z: area.z, frame: R };
-    c = [aim.x, area.y, aim.z];
-    for (const off of [0, -20, 20, -40, 40, -65, 65]) for (const k of [0.45, 0.7, 1, 1.4, 1.9]) for (const up of [0, 3, 6.5]) out.push({ az: front + off, dist: aim.frame * k, up, mode: "wide" });
+    if (area.wideCands) for (const wc of area.wideCands) out.push({ az: wc.az, dist: wc.dist, up: wc.up, mode: "wide" });
+    else {
+      const aim = extra.aim ?? { x: area.x, z: area.z, frame: R };
+      c = [aim.x, area.y, aim.z];
+      for (const off of [0, -20, 20, -40, 40, -65, 65]) for (const k of [0.45, 0.7, 1, 1.4, 1.9]) for (const up of [0, 3, 6.5]) out.push({ az: front + off, dist: aim.frame * k, up, mode: "wide" });
+    }
   } else if (kind === "top") {
     for (const up of [Math.max(30, R * 2.2), Math.max(30, R * 2.2) + 10]) out.push({ az: 0, dist: 0.05, up, mode: "free" });
   } else if (kind === "eye") {

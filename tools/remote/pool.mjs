@@ -63,6 +63,8 @@ export function poolSettings(root) {
     sessionHoldMin: pick("sessionHoldMin", "LF_POOL_SESSION_HOLD_MIN"),
     sessionGraceMin: pick("sessionGraceMin", "LF_POOL_SESSION_GRACE_MIN"),
     sessionHoldMaxMin: pick("sessionHoldMaxMin", "LF_POOL_SESSION_HOLD_MAX_MIN"),
+    sessionReserveServerMb: pick("sessionReserveServerMb", "LF_POOL_SESSION_RESERVE_SERVER_MB"),
+    sessionReserveClientMb: pick("sessionReserveClientMb", "LF_POOL_SESSION_RESERVE_CLIENT_MB"),
   };
 }
 
@@ -219,7 +221,7 @@ function normalize(m) {
     // one shared lane (slots).
     // Scales the seeded run budgets for a slower machine (the laptop).
     budgetMultiplier: Number(m.budgetMultiplier) > 0 ? Number(m.budgetMultiplier) : 1,
-    lanes: m.lanes && typeof m.lanes === "object" ? { test: Math.max(1, Number(m.lanes.test) || 1), session: 1 } : null,
+    lanes: m.lanes && typeof m.lanes === "object" ? { test: Math.max(1, Number(m.lanes.test) || 1), session: Math.max(1, Math.min(4, Number(m.lanes.session) || 1)) } : null,
     caps: Array.isArray(m.caps) ? m.caps.map(String) : ["server"],
     disabled: !!m.disabled,
   };
@@ -360,6 +362,26 @@ function runningLocalServers(root, m) {
   return n;
 }
 
+// The other session lanes of this PC with a live holder: { lock, pendingMb } where pendingMb is the
+// memory a session still booting is expected to take that free RAM does not show yet (0 once it
+// is ready, or after ten minutes).
+function otherSessionLanes(root, m, except) {
+  const out = [];
+  for (const l of lanesFor(m, "session")) {
+    if (l.lock === except) continue;
+    const info = readJson(localLockFile(root, l.lock), null);
+    if (!info || !pidAlive(info.pid) || info.purpose !== "session") continue;
+    let pendingMb = 0;
+    if (Date.now() - Date.parse(info.at) < 600000) {
+      const dir = sessionDirOf(info.root ?? root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
+      const s = readJson(join(dir, "session.json"), null);
+      if (!s || (!s.readyAt && !s.stoppedAt)) pendingMb = q.sessionReserveMb(poolSettings(root), s?.expectClients ?? info.clients ?? 1);
+    }
+    out.push({ lock: l.lock, pendingMb });
+  }
+  return out;
+}
+
 // The slot this process holds on this PC (set by tryLocal, cleared on release):
 // cli.mjs reads the lane's port from it when it boots the server.
 let heldHere = null;
@@ -392,7 +414,12 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
       } catch {}
     } else stopLocalOrphans(info.root);
   }
-  const ram = opts.noRam ? { ok: true } : q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: poolSettings(root).minFreeMb });
+  const settings = poolSettings(root);
+  // A second concurrent session also reserves its own memory, and counts sessions still booting.
+  const second = meta?.purpose === "session" ? otherSessionLanes(root, m, name) : [];
+  const reserveMb = second.length ? q.sessionReserveMb(settings, meta.clients ?? 1) : 0;
+  const pendingMb = second.reduce((n, s) => n + s.pendingMb, 0);
+  const ram = opts.noRam ? { ok: true } : q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: settings.minFreeMb, reserveMb, pendingMb });
   if (!ram.ok) {
     if (opts.blocked) opts.blocked.ram = ram.reason;
     return null;
@@ -808,8 +835,7 @@ function closeSession(info) {
 export function reapIdleSessions(root, locals, tickets, settings = poolSettings(root), opts = {}) {
   const now = opts.now ?? Date.now();
   const out = [];
-  for (const m of locals) {
-    const name = slotLockName(1);
+  for (const [m, name] of locals.flatMap((x) => lanesFor(x, "session").map((l) => [x, l.lock]))) {
     const info = readJson(localLockFile(root, name), null);
     if (!info || info.purpose !== "session" || !pidAlive(info.pid)) continue;
     const queued = tickets.filter((t) => t.pid !== info.pid && waitsOn(t).some((w) => w === name || w === "ram"));
@@ -858,7 +884,7 @@ export function recordSession(root, r) {
     slug: r.slug ?? slugFor(root),
     purpose: "session",
     machine: r.machine ?? "local",
-    slot: slotLockName(1),
+    slot: r.slot ?? slotLockName(1),
     priority: r.priority ?? "normal",
     waitS: Math.round(Number(r.waitS ?? 0) * 10) / 10,
     heldS: Number.isFinite(r.heldSinceMs) ? Math.round(((r.endMs ?? Date.now()) - r.heldSinceMs) / 100) / 10 : 0,
@@ -932,14 +958,14 @@ export function acquireSessionLaneSync(root, opts = {}) {
 
 function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids = [] } = {}) {
   const m = loadMachines(root).find((x) => x.via === "local") ?? normalize({ name: "local", via: "local" });
-  const lane = lanesFor(m, "session")[0];
+  const laneList = lanesFor(m, "session");
   const slug = meta.slug ?? slugFor(root);
   const prio = q.normalizePriority(priority) ?? resolvePriority(root);
   const started = Date.now();
   // A retry keeps the age of the request it replaces (a timed-out or interrupted `up --wait`
   // would otherwise start over and never age to the front).
   const since = queuedSince(root, slug, started);
-  let waitingOn = [lane.lock];
+  let waitingOn = laneList.map((l) => l.lock);
   const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name] });
   const ticket = writeTicket(root, body(), since);
   let lastReap = 0;
@@ -957,13 +983,17 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
       }
       const blockers = me ? tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, now, settings.promoteMin * 60000)) : [];
       const blocked = {};
-      if (!blockers.length) {
-        const slot = tryLocal(root, m, lane, { ...meta, slug, purpose: "session", root }, { blocked, noHeld: true });
-        if (slot) {
-          slot.waitedMs = Date.now() - started;
-          slot.queuedMs = Date.now() - since;
-          forgetQueued(root, slug);
-          return slot;
+      // With several session lanes the k-th request in line may take a free lane: it waits only
+      // when as many requests are ahead as there are lanes.
+      if (blockers.length < laneList.length) {
+        for (const lane of laneList) {
+          const slot = tryLocal(root, m, lane, { ...meta, slug, purpose: "session", root }, { blocked, noHeld: true });
+          if (slot) {
+            slot.waitedMs = Date.now() - started;
+            slot.queuedMs = Date.now() - since;
+            forgetQueued(root, slug);
+            return slot;
+          }
         }
       }
       // A queued `up` whose caller timed out must not take the slot later.
@@ -973,7 +1003,7 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
         throw gone;
       }
       if (waitMs <= 0 || now - started > waitMs) {
-        const held = new Error(blocked.ram ? `not enough free RAM (${blocked.ram}); close apps or retry with --wait` : blockers.length ? `${blockers.length} job(s) are queued ahead for port 2001` : "port 2001 is held");
+        const held = new Error(blocked.ram ? `not enough free RAM (${blocked.ram}); close apps or retry with --wait` : blockers.length >= laneList.length ? `${blockers.length} job(s) are queued ahead for the session lane(s)` : `session lane${laneList.length > 1 ? "s" : ""} held (port ${laneList.map((l) => l.port).join(", ")})`);
         held.poolHeld = true;
         throw held;
       }
@@ -981,7 +1011,7 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
         said = true;
         console.log(`session: queued as ${prio} for the session slot (${blockers.length} ahead, up to ${Math.round(waitMs / 60000)} min); it starts by itself`);
       }
-      const want = blocked.ram ? [lane.lock, "ram"] : [lane.lock];
+      const want = blocked.ram ? [...laneList.map((l) => l.lock), "ram"] : laneList.map((l) => l.lock);
       if (want.join() !== waitingOn.join()) {
         waitingOn = want;
         rewriteTicket(root, ticket, body());
@@ -991,6 +1021,12 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
   } finally {
     dropTicket(root, ticket);
   }
+}
+
+// The local machine's session lanes, [{ lock, index, port }] (one without "lanes" in pool.json).
+export function sessionLanes(root) {
+  const m = loadMachines(root).find((x) => x.via === "local") ?? normalize({ name: "local", via: "local" });
+  return lanesFor(m, "session");
 }
 
 // The UDP port the lane this process holds listens on: the slot taken here, or
@@ -1428,7 +1464,7 @@ export function cmdPoolStatus(root) {
     const h = probe(root, m, { fresh: true });
     const where = m.via === "local" ? `this PC (${hostname()})` : `ssh ${m.host}`;
     const build = h.build ? `build ${h.build}${hereBuild && h.build !== hereBuild ? " (DIFFERS)" : ""}` : "";
-    const lanes = m.lanes ? `${m.lanes.test} test + 1 session lane(s)` : `${m.slots} shared slot(s)`;
+    const lanes = m.lanes ? `${m.lanes.test} test + ${m.lanes.session} session lane(s)` : `${m.slots} shared slot(s)`;
     console.log(`${m.name}  ${where}  ${h.reachable ? "up" : "DOWN"}  ${build}  ${m.via === "local" ? `${ramText(root)}  ` : ""}${lanes}`.replace(/ {2,}$/, ""));
     if (!h.reachable) continue;
     const locks = m.via === "local" ? null : remoteLocks(m);

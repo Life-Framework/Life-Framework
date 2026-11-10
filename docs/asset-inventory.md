@@ -21,7 +21,7 @@ track).
 | Item | Prefab | Status | Uses now | What it should be | Area / issue | Priority |
 |---|---|---|---|---|---|---|
 | Pager | `LF_Pager.et` | placeholder | ANPRC68 radio mesh | 1980s belt pager with a small screen | Comms #249 | medium |
-| Moonshine still | `LF_ChainStill.et` | placeholder | barrel with the boiler mesh (renders plain white) | copper pot still with coil | Moonshine #420 | high: in website shots |
+| Moonshine still | `LF_ChainStill.et` | placeholder | barrel station with the `BoilerTank_02` horizontal metal tank mesh (was the white `Boiler_01`, #497); a dark `BoilerLarge_02` furnace with a chimney pipe stands beside it | copper pot still with coil | Moonshine #420 | high: in website shots |
 | Fence drill | `LF_Drill.et` | placeholder | `BenchDrill_01` model | handheld power drill or safe-cracking drill | Fence #271 | medium |
 | Fence keycard | `LF_Keycard.et` | placeholder | stand-in mesh (#271) | plastic access card | Fence #271 | low |
 | Fence charge | `LF_Charge.et` | placeholder | stand-in mesh (#271) | improvised breaching charge | Fence #271 | low |
@@ -37,6 +37,7 @@ looked at yet.
 | Payphone | `LF_Payphone.et` | final | vanilla `PhoneBooth_E_01` | (already a phone booth) | Square, fuel, hospital, police: Comms #249 | none |
 | Town signs (town map, safe zone) | `LF_Sign_Posts.et`, `LF_Sign_PolePlate.et` | final | vanilla sign bodies with a rendered face | (already signs) | Spawn square | none |
 | Clerk desk and chair | `Desk_01_short.et`, `Chair_02_green.et` | final | vanilla furniture | (already a desk and chair) | Spawn square | none |
+| Fence yard props | `Workbench_01.et`, `BoxWooden_01.et`, `Crate_01_green.et`, `BarrelMetal_01_blue.et`, `Tire_M151A2_pile.et`, `EL_S105_beige.et` | final | vanilla props and a parked Skoda | (already what they are); no tarp prefab found, so none placed. Drill, charge and keycard stay placeholders (rows above) | Fence yard #276 | none |
 | Cash van box | `LF_CashVanBox.et` | placeholder | vanilla `Chest_01` (dark steel trunk) at 1.4 scale, on the van's rear step | a locked steel cash-in-transit box | Cash van #274 | low |
 | ATM (two, on the bank front) | `ATM_Debug`, `ATM_Debug_2` (DebugWorld `ATM.layer`) | placeholder | vanilla post-office teller counter `CounterPostOffice_01_window` against the bank wall | a 1989 wall-mounted cash machine or a teller point with a glass screen (none in the base game) | Bank, ATM | low |
 | Money bag | `LF_MoneyBag.et` | placeholder | vanilla `SackUniversal_01` sack mesh at 0.55 scale | a canvas cash bag with a drawstring | Bank, cash van #273 #274 | low |
@@ -45,3 +46,8 @@ looked at yet.
 | Hospital till | `Roadmap_Hospital_Till` | final | vanilla `CounterPostOffice_01` | (a reception counter) | Hospital, area 7 | none |
 | Medicine cabinet | `Roadmap_Hospital_Cabinet` | placeholder | vanilla `CupboardOld_01_medium` wooden cupboard | white medical cabinet | Hospital, area 7 | low |
 | Stretcher | none | missing | no base-game stretcher found | stretcher by the ambulance | Hospital, area 7 | low |
+| Hideout machine | `Roadmap_Hideout_Machine` | placeholder | vanilla `CoffeeGrinderShop_01` | contraband press | Hideout, area 13 | medium |
+| Hideout stash | `LF_HideoutStash.et` | final | vanilla chest | (a trunk) | Hideout, area 13 | none |
+| Hideout van | `Roadmap_Hideout_Van` | final | vanilla `UAZ452_base` (the van-bodied car) | (a parked van, scenery) | Hideout, area 13 | none |
+| Hideout workbench, crates, barrels, tyres | `Roadmap_Hideout_*` | final | vanilla `Workbench_01`, `Crate_01`, `BoxWooden_01`, `BarrelMetal_01_blue`, `Tire_M151A2_pile` | (same) | Hideout, area 13 | none |
+| Fuel till counter and register | `EL_FuelTill.et` on vanilla `CounterShop_01` (Village_Dressing) | placeholder | vanilla shop counter with a cash register on top | a petrol-station kiosk counter inside the shop | Fuel till #236 | low |

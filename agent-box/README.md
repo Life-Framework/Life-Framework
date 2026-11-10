@@ -571,8 +571,10 @@ node agent-box/session.mjs down               # closes every process the session
 
 - `flow arrival-chain` drives the M1-18 arrival chain on a fresh client, from form R-89 to
   the clerk's welcome.
-- `up` runs from a worktree and holds the machine-wide `server-2001` lock while
-  the server lives (`--wait` queues behind a test or host run). `down` frees it.
+- `up` runs from a worktree and holds a session lane lock while the server lives
+  (`server-2001` on UDP 2001, or `server-2011` on 127.0.0.1:2011 when lane 1 is taken and
+  free RAM allows a second session, `docs/worktrees.md` "Lanes"); `--wait` queues behind a
+  test, host or other session. `down` frees it.
 - The server runs the bare DebugWorld, not `LF_PlaytestTown.conf`, so the world's
   game mode keeps dev tools open and the harness passes `LF_DevGate`. On the
   playtest mission a non-admin's `stand` and `use` come back as
