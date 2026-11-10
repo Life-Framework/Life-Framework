@@ -2828,6 +2828,22 @@ class LF_AgentHarness
 	protected static int s_iClipCount;
 
 	//! Name of an entity for the probe report: its world name, else its prefab file name.
+	//! True when `other` is `self` or one of its descendants (a parent or sibling is something else).
+	protected static bool IsOwnPart(IEntity self, IEntity other)
+	{
+		IEntity walk = other;
+		while (walk)
+		{
+			if (walk == self)
+				return true;
+
+			walk = walk.GetParent();
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static string ProbeLabel(IEntity other)
 	{
 		string label = other.GetName();
@@ -2858,7 +2874,6 @@ class LF_AgentHarness
 		if (hi[0] - lo[0] < 0.1 || hi[1] - lo[1] < 0.1 || hi[2] - lo[2] < 0.1)
 			return;
 
-		IEntity selfRoot = self.GetRootParent();
 		array<string> hitNames = {};
 		array<int> hitCounts = {};
 		for (int axis = 0; axis < 3; axis++)
@@ -2894,7 +2909,7 @@ class LF_AgentHarness
 						float d = ProbeTrace(from, to, self, hit);
 						if (!hit || d >= total - 0.01)
 							continue;
-						if (hit == self || hit.GetRootParent() == selfRoot || ChimeraCharacter.Cast(hit))
+						if (IsOwnPart(self, hit) || ChimeraCharacter.Cast(hit))
 							continue;
 
 						// The terrain and other huge entities (roads, ground plates) pass through anything sunk: not a clip.
@@ -2944,7 +2959,6 @@ class LF_AgentHarness
 		float cx = (mins[0] + maxs[0]) * 0.5;
 		float cz = (mins[2] + maxs[2]) * 0.5;
 		float support = world.GetSurfaceY(cx, cz);
-		IEntity selfRoot = self.GetRootParent();
 		float startY = mins[1] + 0.5;
 		for (int n = 0; n < 3; n++)
 		{
@@ -2954,7 +2968,7 @@ class LF_AgentHarness
 				break;
 
 			float hitY = startY - down;
-			if (hit && hit.GetRootParent() == selfRoot)
+			if (hit && IsOwnPart(self, hit))
 			{
 				startY = hitY - 0.02;
 				continue;

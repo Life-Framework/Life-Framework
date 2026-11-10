@@ -183,7 +183,8 @@ export function problemsFor(entity, m, area) {
   // stands on the floor (vehicles, payphone bases) are modelled that way, not buried. Without a pivot reading, bounds.
   const sunk = m.pgap === undefined ? -m.gap : -m.pgap;
   if (!mounted && sunk > LIMITS.gap) list.push(`sunk ${r2(sunk)} m`);
-  if (m.tilt > LIMITS.tilt) list.push(`tilted ${Math.round(m.tilt)} deg`);
+  if (m.tilt > LIMITS.tilt && !/Bag|Sack/.test(entity.name || "")) // sacks are laid down on purpose
+    list.push(`tilted ${Math.round(m.tilt)} deg`);
   if (entity.actions && entity.actions.length && m.walk > (/^Sign_/.test(entity.name) ? 3 : LIMITS.walk)) list.push(m.walk >= 99 ? "unreachable (no standing spot within 3 m of its edge)" : `reach ${r2(m.walk)} m from its edge to standing room`);
   const off = facingOff(entity, m, area);
   if (off !== null && off > FACING_LIMIT) list.push(`faces away ${off} deg from the approach`);
@@ -475,7 +476,7 @@ export function treeOcclusion(eye, target, trees, depth, fovV = FOV_V) {
 const FOV_V_TAN = Math.tan((FOV_V * Math.PI) / 360);
 const FOV_H_TAN = FOV_V_TAN * (16 / 9);
 const HERO_MAX = 12;
-const HERO_SIZE_FULL = 0.06; // a hero this wide (share of the frame) counts fully
+const HERO_SIZE_FULL = 0.1; // a hero this wide (share of the frame) counts fully
 const FG_DEPTH = 0.75; // a non-hero hit nearer than this share of the target depth is foreground
 
 const volOf = (e) => (e.bmin && e.bmax ? Math.max(0, e.bmax[0] - e.bmin[0]) * Math.max(0, e.bmax[1] - e.bmin[1]) * Math.max(0, e.bmax[2] - e.bmin[2]) : 0);
@@ -565,7 +566,7 @@ export function boxScreen(eye, yawDeg, min, max) {
   return { x0, x1, y0, y1, z: zmin, inFrac: (ox * oy) / (w * h), width: w / 2 };
 }
 
-const sizeFactor = (s) => Math.max(0.25, Math.min(1, s.width / HERO_SIZE_FULL));
+const sizeFactor = (s) => Math.max(0.1, Math.min(1, s.width / HERO_SIZE_FULL));
 
 // Pure stage: the share of hero weight that is in frame and big enough to read (no rays). Ranks candidates cheaply.
 export function heroFrame(eye, yawDeg, heroes) {
@@ -602,7 +603,7 @@ const inBox = (p, hero, pad) => p[0] >= hero.min[0] - pad && p[0] <= hero.max[0]
 
 // Pure: combine the measurements into one score; the breakdown says why.
 export function scoreHero(m) {
-  const score = 5 * m.heroVis + 1.5 * m.backdrop - 7 * m.foreground - 5 * m.bigNear - 8 * m.treeNear - 8 * m.crowd + m.bonus;
+  const score = 5 * m.heroVis + 1.5 * m.backdrop - 7 * m.foreground - 5 * m.bigNear - 8 * m.treeNear - 8 * m.crowd - 8 * (m.dominance || 0) + m.bonus;
   const out = { score: r2(score) };
   for (const [k, v] of Object.entries(m)) out[k] = typeof v === "number" ? r2(v) : v;
   return out;
@@ -622,10 +623,15 @@ function scoreWideHero(probe, area, placed, heroes, trees, aim) {
   // 1. hero visibility
   let total = 0;
   let got = 0;
+  let dom = 0;
   for (const hero of heroes) {
     total += hero.w;
     const s = boxScreen(eye, yaw, hero.min, hero.max);
-    if (!s || s.inFrac < 0.3) continue;
+    if (!s) continue;
+    // A hero that fills the frame (the van you are standing next to) is as bad as one you cannot see.
+    const share = (Math.max(0, Math.min(1, s.x1) - Math.max(-1, s.x0)) * Math.max(0, Math.min(1, s.y1) - Math.max(-1, s.y0))) / 4;
+    if (share > 0.15) dom += (share - 0.15) * hero.w;
+    if (s.inFrac < 0.3) continue;
     const c = [(hero.min[0] + hero.max[0]) / 2, (hero.min[1] + hero.max[1]) / 2, (hero.min[2] + hero.max[2]) / 2];
     const hw = (hero.max[0] - hero.min[0]) / 2;
     const side = norm([-(c[2] - eye[2]), 0, c[0] - eye[0]]);
@@ -679,6 +685,7 @@ function scoreWideHero(probe, area, placed, heroes, trees, aim) {
   const bonus = (placed.cand.up <= 3 ? 0.6 : 0) + (off >= 20 && off <= 60 ? 0.4 : 0);
   const m = scoreHero({
     heroVis: total ? got / total : 0,
+    dominance: total ? dom / total : 0,
     backdrop: cover / n,
     foreground: fg / n,
     bigNear: big / n,
@@ -943,7 +950,7 @@ function selftest() {
   const wideC = candidates("wide", { x: 0, y: 0, z: 0, radius: 10, front: 270 }).list;
   if (wideC.some((c) => Math.abs(c.az - 270) > 65) || !wideC.some((c) => c.up === 0)) fails.push("wide candidates start at the front heading, eye level");
   // Hero scoring: a hero in front of the camera is seen; behind it is not; a near, big blocker costs.
-  const hero = { name: "H", min: [-1, 0, 19], max: [1, 2, 21], w: 3 };
+  const hero = { name: "H", min: [-1, 0, 7], max: [1, 2, 9], w: 3 };
   if (!(heroFrame([0, 1.6, 0], 0, [hero]) > 0.8) || heroFrame([0, 1.6, 0], 180, [hero]) !== 0) fails.push("heroFrame in front/behind");
   if (!(heroFrame([0, 1.6, 0], 0, [hero]) > heroFrame([0, 1.6, -60], 0, [hero]))) fails.push("heroFrame prefers closer");
   const good = scoreHero({ heroVis: 0.9, backdrop: 0.3, foreground: 0, bigNear: 0, treeNear: 0, crowd: 0, bonus: 0 });
