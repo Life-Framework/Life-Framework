@@ -9,7 +9,7 @@
 //! (police jeep, ambulance) carry the siren and the lights come on and off with the mode.
 class LF_Test_SirenToggle : LF_Test
 {
-	protected static const ResourceName POLICE = "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et";
+	protected static const ResourceName POLICE = "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et";
 	protected static const ResourceName AMBULANCE = "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et";
 
 	override string GetName()

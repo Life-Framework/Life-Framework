@@ -1,14 +1,14 @@
 name: Playtest
-description: What you tried in DebugWorld, and what to build next
+description: Something you found while playing the community playtest
 title: "[Playtest]: "
 labels: ["playtest"]
 body:
   - type: markdown
     attributes:
       value: |
-        Play the M1 town on the Workshop-hosted server. Read the playtest guide first:
-        https://github.com/Life-Framework/Life-Framework/blob/main/docs/playtest.md
-        One issue per problem or idea. This text is pasted to an agent as the next build prompt.
+        Thanks for playing. Read the playtest page first: https://life-framework.org/playtest
+        One issue per problem or idea. You can also post the same fields in #playtest-feedback on Discord.
+        A report is read by a person; it is not a promise that something will be built or fixed.
   - type: dropdown
     id: role
     attributes:
@@ -16,15 +16,8 @@ body:
       options:
         - Civilian
         - Police
-        - Both, in separate passes
-    validations:
-      required: true
-  - type: input
-    id: where
-    attributes:
-      label: Where
-      description: DebugWorld entity name, such as Roadmap_Org_Desk.
-      placeholder: Roadmap_Org_Desk
+        - Medic
+        - More than one, in separate passes
     validations:
       required: true
   - type: textarea
@@ -46,14 +39,44 @@ body:
     id: happened
     attributes:
       label: What happened
-      description: Blank menu, missing action, white mesh, wrong payout, or a site you could not reach.
+      description: Blank menu, missing action, white mesh, wrong payout, a crash, or a place you could not reach.
     validations:
       required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Place name, nearest sign, or map position (x, z) if you can see it.
+      placeholder: Registry desk at the organization office, about 289, 256
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot or clip
+      description: Drag an image or short video into this box. A screenshot of the menu or a white mesh helps most.
+    validations:
+      required: false
+  - type: input
+    id: build
+    attributes:
+      label: Build
+      description: The commit hash the host gave you (a code such as 8c824c08). Without it we cannot tell which version you played.
+      placeholder: 8c824c08
+    validations:
+      required: true
+  - type: input
+    id: steam
+    attributes:
+      label: Steam name
+      description: Optional. Helps us find your session in the server log.
+    validations:
+      required: false
   - type: textarea
     id: next
     attributes:
       label: Build next
-      description: The change an agent should make. Name the entity. Leave empty if you only want the problem recorded.
-      placeholder: At Roadmap_Org_Desk the menu never appears. Open it as a visible screen with the organization name, fund, and the processing purchase.
+      description: The change you want, naming the place. Leave empty if you only want the problem recorded.
+      placeholder: At the registry desk the menu never appears. Open it as a visible screen with the organization name, fund and the processing purchase.
     validations:
       required: false

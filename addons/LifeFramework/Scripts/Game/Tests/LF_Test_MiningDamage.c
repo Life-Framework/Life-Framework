@@ -14,6 +14,7 @@ class LF_Test_MiningDamage : LF_Test
 	protected static const vector SPOT = "40 0 40";
 
 	protected ref array<IEntity> m_aFound = {};
+	protected float ground;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -125,6 +126,10 @@ class LF_Test_MiningDamage : LF_Test
 		ctx.Equal(1, ore.GetDroppedCount(), "the third pickaxe hit drops one nugget");
 		ctx.Equal(nuggetsBefore + 1, NuggetsNear(rock.GetOrigin()), "that nugget lies in the world beside the rock");
 		ctx.Equal(swapsBefore, LF_QuantityComponent.s_iModelSwaps, "a dropped nugget keeps its prefab mesh and material (no quantity mesh swap)");
+		ctx.EqualFloat(0.89, ore.GetRockScale(), 0.001, "one piece off shrinks the rock one step");
+		ctx.EqualFloat(0.89, rock.GetScale(), 0.001, "the rock entity is drawn at that scale");
+		ground = GetGame().GetWorld().GetSurfaceY(SPOT[0], SPOT[2]);
+		ctx.True(m_aFound.Count() > 0 && Math.AbsFloat(m_aFound[0].GetOrigin()[1] - ground) < 0.3, "the nugget rests on the ground, not at the hit height");
 		ctx.True(zone.GetHealthScaled() > 0.99, "the rock's hit zone heals back: it is never destroyed by health");
 
 		for (int hit = 0; hit < 12; hit++)
@@ -139,6 +144,7 @@ class LF_Test_MiningDamage : LF_Test
 
 		ore.Regrow();
 		ctx.False(ore.IsDepleted(), "the rock grows back");
+		ctx.EqualFloat(1, rock.GetScale(), 0.001, "a grown rock is full size again");
 		ctx.True((rock.GetFlags() & EntityFlags.VISIBLE) != 0, "a grown rock is visible again");
 		ctx.Equal(0, ore.GetBreaks(), "a grown rock starts at zero pieces");
 		for (int again = 0; again < 3; again++)
