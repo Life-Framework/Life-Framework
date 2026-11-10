@@ -463,3 +463,5 @@ to prune and about any registry inconsistency.
 - `.githooks/pre-commit` → `validate-repo.ps1` — blocks `main` commits from
   linked worktrees.
 - `AGENTS.md` (Worktrees section) — the agent-facing rules, including the junction-safe removal rule.
+
+<!-- base-branch probe -->
