@@ -80,6 +80,19 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 - `tools\cli wt sync-base m3 [--source main]` opens a PR that merges `origin/main` into `m3` from a `ws/sync-m3-<stamp>` worktree (merge drivers resolve generated files; any other conflict stops with the file list). It never force-pushes; prune the sync worktree after the merge.
 - The `validate` workflow runs on every `pull_request` (no branch filter), so PRs into `m3` get it. Making `validate` a required check on `m3` is a GitHub branch-protection setting, not done by the tooling.
 
+## Release gates (`stable`, `promote`)
+
+`main` is the integration branch; agents branch from it and merge to it all day, as before. `stable` is the branch a human moves, and the only one the Workshop release, the flagship's 24/7 server and `toolscli release` use. Playtests run on `main`.
+
+- `toolscli promote [--to <sha>]` fetches, lists the PRs merged to `main` since `stable` (first-parent merge commits) and writes `tmp/promote/checklist-<sha>.md`: one item per PR with its issues and the manual steps from its body. It changes nothing.
+- `toolscli promote --to <sha> --confirm` fast-forwards `origin/stable` to the commit you verified (default: `origin/main`), tags it `stable-<yyyymmdd>-<sha8>`, then marks the issues those PRs ref `verified` and closes them. An issue that a later, unverified PR on `main` also refs stays open. It refuses a target that is not a descendant of `stable` and never forces.
+- `toolscli promote --fail N[,N]` marks issues `regression` and reopens them without moving `stable`. With `--confirm`, a failed issue whose PR is inside the range blocks the promotion: fix it on `main`, revert it, or pass an earlier `--to`.
+- `toolscli promote --revert <PR>` opens a PR that reverts that merge on `main` (from a `ws/revert-pr<N>` worktree; auto-merge queued). `stable` is never edited directly.
+- `toolscli promote --init [--to <sha>]` creates `origin/stable` once. It was created from `main` because no M1 sign-off commit is recorded; the first real promotion is #404.
+- Risky changes ship behind a config flag that defaults off, so one unverified feature does not block the rest.
+
+**Manual, maintainer (GitHub settings, not done by tooling):** protect `stable` (Settings, Branches): restrict pushes to the maintainer account, block force pushes and deletion, no pull-request requirement. `promote` pushes a fast-forward as the signed-in `gh`/git user.
+
 ## Auto-merge
 
 `wt ship <slug> [--closes N] [--body-file F]`:

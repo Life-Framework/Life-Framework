@@ -42,6 +42,7 @@ import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
+import { cmdPromote } from "./promote.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
 import { localEnv } from "./lib/local-config.mjs";
@@ -2126,6 +2127,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 dump [LFDebug:*] feature log lines (worktree only)
   ci                            validate --full + build + test (full gate, worktree only)
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
+  promote [--to sha] [--confirm]  stable branch: list PRs merged since stable and write the checklist;
+                                --confirm fast-forwards stable, verifies and closes their issues (cli promote --help)
   prs status|heal [--dry-run] [<n>...]
                                 open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
                                 (generated conflicts only), gates, pushes, re-queues auto-merge,
@@ -3056,6 +3059,8 @@ try {
     code = cmdWt(rest);
   } else if (cmd === "prs") {
     code = cmdPrs(ROOT, rest);
+  } else if (cmd === "promote") {
+    code = cmdPromote(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
   } else {
