@@ -501,6 +501,10 @@ class LF_OnNewLifeReturn : LF_Event
 		e.m_vPosition = position;
 		e.m_vScene = scene;
 		e.m_iSecondsSinceWake = secondsSinceWake;
+		return e;
+	}
+}
+
 //! A forced-entry heist paid out (#274 cash van). Published once by LF_Bank when the target opens.
 //! m_sKind is "bags" (cash left lying as carried bags). m_iAmount is the cash across the bags.
 //! m_sSerials is reserved for serial-stamped loot and is empty for cash.
