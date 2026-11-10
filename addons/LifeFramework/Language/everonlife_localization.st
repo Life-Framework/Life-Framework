@@ -6287,6 +6287,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A set of picks. Each opened lock or snapped pick wears one use."
      Comment "Item description (#411)."
     }
+    CustomStringTableItem "{C4A100000000A0B1}" {
+     Id "LF-Chain_Moonshine_Name"
+     Target_en_us "Samogon"
+     Comment "Name of the moonshine chain in ResourceChains.conf (#420)."
+    }
   }
  }
 }
