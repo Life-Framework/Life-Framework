@@ -6287,15 +6287,35 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A set of picks. Each opened lock or snapped pick wears one use."
      Comment "Item description (#411)."
     }
+    CustomStringTableItem "{C4A100000000A0B1}" {
+     Id "LF-Chain_Moonshine_Name"
+     Target_en_us "Samogon"
+     Comment "Name of the moonshine chain in ResourceChains.conf (#420)."
+    }
     CustomStringTableItem "{C4A100000000B101}" {
      Id "LF-Offence_JailBreak"
      Target_en_us "Jailbreak"
      Comment "Offence: a prisoner walked out through a breached jail door (#235)."
     }
-    CustomStringTableItem "{C4A100000000A0B1}" {
-     Id "LF-Chain_Moonshine_Name"
-     Target_en_us "Samogon"
-     Comment "Name of the moonshine chain in ResourceChains.conf (#420)."
+    CustomStringTableItem "{C4A100000000A0C1}" {
+     Id "LF-Chain_Smell_Title"
+     Target_en_us "Smell"
+     Comment "Toast title for the chain smell cue (#418)."
+    }
+    CustomStringTableItem "{C4A100000000A0C2}" {
+     Id "LF-Chain_Smell_Officer"
+     Target_en_us "Something sour and sweet is cooking nearby. Somebody is running a still."
+     Comment "Toast to an on-duty officer inside the smell range of a running chain site (#418)."
+    }
+    CustomStringTableItem "{C4A100000000A0C3}" {
+     Id "LF-Chain_Smell_Witness"
+     Target_en_us "You catch a sharp, sour smell in the air. Something is being brewed nearby."
+     Comment "Toast to a player inside the smell range of a running chain site (#418)."
+    }
+    CustomStringTableItem "{C4A100000000A0C4}" {
+     Id "LF-Chain_SmellLead"
+     Target_en_us "Smell of brewing"
+     Comment "Dispatch summary of the police lead a noticed chain smell raises (#418)."
     }
     CustomStringTableItem "{5EA2C4A000000001}" {
      Id "LF-Offence_ChainGoods"

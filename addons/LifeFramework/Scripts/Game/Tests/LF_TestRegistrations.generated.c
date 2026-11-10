@@ -45,6 +45,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChainSearchWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainStations(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainStationsPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_ChainTrace(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
