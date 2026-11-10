@@ -1,0 +1,21 @@
+FrameWidgetClass "{7A3C1D5E9B2F4A01}" {
+ Name "PreviewSheetRoot"
+ Slot FrameWidgetSlot "{7A3C1D5E9B2F4A02}" {
+  Anchor 0 0 1 1
+ }
+ {
+  ImageWidgetClass "{7A3C1D5E9B2F4A03}" {
+   Name "Backdrop"
+   Slot FrameWidgetSlot "{7A3C1D5E9B2F4A04}" {
+    Anchor 0 0 1 1
+   }
+   Color 0.12 0.13 0.13 1
+  }
+  FrameWidgetClass "{7A3C1D5E9B2F4A05}" {
+   Name "Cells"
+   Slot FrameWidgetSlot "{7A3C1D5E9B2F4A06}" {
+    Anchor 0 0 1 1
+   }
+  }
+ }
+}

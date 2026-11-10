@@ -1916,6 +1916,7 @@
   listen-hosted server a client cannot teleport or reach past action range
   (2026-11-07). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
+- ✅ `previews show <prefab,...>|hide` draws up to 24 prefabs through `ItemPreviewWidget` (`LF_ItemPreviewSheet`), the widget the inventory slots use, hiding the HUD and notification toasts; `toolscli shots previews` pages every mod item onto contact sheets (#612).
 - ✅ Screenshots go through `LF_ScreenshotCapture`. UI shots leave the camera
   alone. A world shot teleports the character to the camera offset (default
   `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
