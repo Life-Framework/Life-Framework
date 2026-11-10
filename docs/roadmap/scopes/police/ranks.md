@@ -29,7 +29,7 @@ LNGC has no rank ladder. The kit is config pointing at gear that already exists:
 - Long gun `Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et`
 - Uniforms recolored from vanilla clothes in LNGC: `Hat_PeakedCap_police.et`, `Shirt_Turtleneck_01_police.et`, `Pants_Suit_01_police.et`
 - Station `Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et`
-- Cars `{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et` and LNGC `Prefabs/Vehicles/Wheeled/S105/S105_police.et`
+- Cars `{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et` and LNGC `Prefabs/Vehicles/Wheeled/S105/S105_police.et`
 
 There is no shotgun in the base game. A missing prefab logs and that kit line is skipped. See [sources](../../sources.md).
 

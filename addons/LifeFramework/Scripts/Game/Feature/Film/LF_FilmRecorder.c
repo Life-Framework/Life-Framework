@@ -180,6 +180,8 @@ class LF_FilmRecorder
 
 	protected static ref LF_FilmPacer s_Pacer;
 	protected static ref array<int> s_aShotMs;
+	//! Recording-relative time of each slate beep (audio alignment marker, #396).
+	protected static ref array<int> s_aSlateMs = {};
 	protected static string s_sDir;
 	protected static int s_iFps;
 	protected static int s_iMaxMs;
@@ -217,6 +219,7 @@ class LF_FilmRecorder
 		s_iMaxMs = maxSeconds * 1000;
 		s_iFailed = 0;
 		s_aShotMs = {};
+		s_aSlateMs = {};
 		s_Pacer = new LF_FilmPacer();
 		s_Pacer.Begin(fps, System.GetTickCount());
 		s_bOn = true;
@@ -248,6 +251,23 @@ class LF_FilmRecorder
 		LF_Debug.Info(FEATURE, string.Format("stopped %1 %2", s_sDir, summary));
 		s_sLast = string.Format("ok %1 %2", s_sDir, summary);
 		return s_sLast;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Alignment marker for the separate audio track (#396): plays a UI beep now and, while recording,
+	//! logs its time in index.txt ("# slate=<ms>"), so tools/film/audio.mjs lines the beep up in the
+	//! captured audio with that frame time. Returns "ok slate ms=<n>" (n is -1 when not recording).
+	static string Slate()
+	{
+		int ms = -1;
+		if (s_bOn && s_Pacer)
+		{
+			ms = s_Pacer.ElapsedMs(System.GetTickCount());
+			s_aSlateMs.Insert(ms);
+		}
+		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.ERROR);
+		LF_Debug.Info(FEATURE, string.Format("slate beep at %1 ms", ms));
+		return string.Format("ok slate ms=%1", ms);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -301,6 +321,8 @@ class LF_FilmRecorder
 			if (s_aShotMs[i] >= 0)
 				handle.WriteLine(string.Format("f%1 %2", i + 1, s_aShotMs[i]));
 		}
+		for (int j = 0; j < s_aSlateMs.Count(); j++)
+			handle.WriteLine(string.Format("# slate=%1", s_aSlateMs[j]));
 		handle.WriteLine("# " + summary);
 		handle.Close();
 		return true;

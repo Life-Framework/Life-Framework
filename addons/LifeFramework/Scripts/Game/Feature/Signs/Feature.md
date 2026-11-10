@@ -8,7 +8,7 @@
 A sign is a 1989 board, pub sign, notice, or chalkboard that belongs in the
 scene. The title is printed on the prop (a paper sheet pinned to the cork
 board, or the A4 notice itself), and looking at it shows `Read: <title>` in
-the interaction prompt. Read opens a short paper card: What, How, Needs, Rules, Next.
+the interaction prompt. Read opens a printed notice: a large title and rule, then What it is, How, You need, Rules, Next, each a small label over a body.
 
 ## Shape
 
@@ -20,6 +20,7 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules, 
 - `LF_SignReadAction` is local-effect only (`HasLocalEffectOnlyScript`). It
   names itself `Read: <title>` and opens `LF_SignCard` on the reading client.
   No RPC: the content is static config.
+- **Card format.** `LF_SignCatalog.BuildParts` makes TITLE, RULE, then HEADING + RICH per filled section, CLOSE. A section string is plain prose, or a list: `|` or a newline between items, or lines starting `- `, give hyphen bullets. `*word*` draws the word in the accent colour (RichTextWidget `<color rgba='r,g,b,a'>`; `<br/>` between items; bold is not available on the bitmap faces). Typed `<` and `>` are dropped. The skin is `LF_UISkin.Notice`: a painted sign (`HasPaintedFace`: `m_vFaceArea` set) frames the card in `m_vPaintColor` and takes the darkest of paint, lettering and rim as the accent; the board and notice keep the steel frame and an oxblood accent. `FitScale` shrinks type (down to 0.7) so a long card fits the 920 high sheet.
 - `LF_SignCard` builds the card on `LF_UIScreen` (UI kit). Close, MenuBack,
   death, losing the character, or walking 4 m from the sign closes it.
 - **Printed title.** On a rendering client `LF_SignComponent` creates

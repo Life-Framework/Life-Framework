@@ -539,11 +539,13 @@ class LF_FilmDirector
 	protected static ref array<ref LF_FilmActor> s_aActors = {};
 	protected static ref map<string, EntityID> s_mVehicles = new map<string, EntityID>();
 	protected static ref array<EntityID> s_aSpawned = {};
+	protected static ref LF_FilmSceneEnv s_Saved;     // the world before the scene, restored by Clear
+	protected static string s_sScene;
 	protected static float s_fStartMs;
 	protected static bool s_bRunning;
 
 	//------------------------------------------------------------------------------------------------
-	static string Start(string scene)
+	static string Start(string scene, string hour = "", string weather = "")
 	{
 		if (!Replication.IsServer())
 			return "error:not_server";
@@ -552,13 +554,21 @@ class LF_FilmDirector
 		if (scene != "street")
 			return "error:unknown_scene";
 
+		LF_FilmSceneEnv env = LF_FilmSceneEnv.ForScene(scene);
+		if (!env.Override(hour, weather))
+			return "error:bad_hour";
+
 		Clear();
+		s_Saved = LF_FilmEnvironment.Capture();
+		if (s_Saved)
+			LF_FilmEnvironment.Apply(env, "scene " + scene + " set");
 		if (!BuildStreet())
 		{
 			Clear();
 			return "error:build_failed";
 		}
 
+		s_sScene = scene;
 		s_bRunning = true;
 		s_fStartMs = GetGame().GetWorld().GetWorldTime();
 		GetGame().GetCallqueue().CallLater(Tick, TICK_MS, true);
@@ -568,17 +578,20 @@ class LF_FilmDirector
 	//------------------------------------------------------------------------------------------------
 	static string Status()
 	{
-		string text = string.Format("running=%1", s_bRunning);
+		string text = string.Format("running=%1 scene=%2 restore=%3", s_bRunning, s_sScene, s_Saved != null);
 		foreach (LF_FilmActor actor : s_aActors)
 			text += string.Format(" %1:%2", actor.Name, actor.Finished);
 		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Reset between takes: despawn every actor and vehicle the scene made and give the clock and weather back.
 	static string Stop()
 	{
+		bool restore = s_Saved != null;
+		int removed = s_aActors.Count() + s_aSpawned.Count();
 		Clear();
-		return "scene cleared";
+		return string.Format("scene cleared, %1 removed, clock and weather restored=%2", removed, restore);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -599,6 +612,12 @@ class LF_FilmDirector
 			if (spawned)
 				SCR_EntityHelper.DeleteEntityAndChildren(spawned);
 		}
+		if (s_Saved)
+		{
+			LF_FilmEnvironment.Apply(s_Saved, "scene reset");
+			s_Saved = null;
+		}
+		s_sScene = "";
 		s_aActors.Clear();
 		s_aSpawned.Clear();
 		s_mVehicles.Clear();
@@ -699,34 +718,34 @@ class LF_FilmDirector
 modded class SCR_ChimeraCharacter
 {
 	//------------------------------------------------------------------------------------------------
-	void LF_AskFilmScene(int commandId, string mode, string scene)
+	void LF_AskFilmScene(int commandId, string mode, string scene, string hour, string weather)
 	{
 		if (Replication.IsServer())
 		{
-			LF_AgentHarness.Reply(commandId, "ok", LF_FilmSceneRequest(mode, scene));
+			LF_AgentHarness.Reply(commandId, "ok", LF_FilmSceneRequest(mode, scene, hour, weather));
 			return;
 		}
 
-		Rpc(RpcAsk_LF_FilmScene, commandId, mode, scene);
+		Rpc(RpcAsk_LF_FilmScene, commandId, mode, scene, hour, weather);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static string LF_FilmSceneRequest(string mode, string scene)
+	protected static string LF_FilmSceneRequest(string mode, string scene, string hour, string weather)
 	{
 		if (mode == "start")
-			return LF_FilmDirector.Start(scene);
-		if (mode == "stop")
+			return LF_FilmDirector.Start(scene, hour, weather);
+		if (mode == "stop" || mode == "reset")
 			return LF_FilmDirector.Stop();
 		return LF_FilmDirector.Status();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_FilmScene(int commandId, string mode, string scene)
+	protected void RpcAsk_LF_FilmScene(int commandId, string mode, string scene, string hour, string weather)
 	{
 		string result = "error:dev_gate";
 		if (LF_DevGate.CheckHarnessRequest(this, "scene"))
-			result = LF_FilmSceneRequest(mode, scene);
+			result = LF_FilmSceneRequest(mode, scene, hour, weather);
 
 		Rpc(RpcDo_LF_FilmScene, commandId, result);
 	}

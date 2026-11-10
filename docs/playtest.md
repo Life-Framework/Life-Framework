@@ -2,7 +2,40 @@
 
 The playtest is a small 1989 Everon town, published on the Arma Reforger
 Workshop and hosted from the maintainer's PC. Play it, then tell us what broke.
-Feedback goes through GitHub issues.
+Feedback goes to #playtest-feedback on [Discord](https://discord.gg/MjMexJteqz) or to a GitHub issue.
+
+Until a public Workshop item exists, the playtest is a download, and the Workshop steps below do not apply yet.
+
+## Download and play
+
+1. Press **Download the playtest** on [life-framework.org](https://life-framework.org/playtest). It is
+   `LifeFramework-Playtest.zip` from the newest GitHub release:
+   <https://github.com/Life-Framework/Life-Framework/releases/latest/download/LifeFramework-Playtest.zip>.
+2. Unzip it anywhere.
+3. Double-click **Play Life Framework**. It finds Arma Reforger through Steam and asks:
+   - **Play on my own**: the playtest town (`Missions/LF_PlaytestTown.conf`) hosted by your own game on
+     `127.0.0.1:2302`.
+   - **Join the community server**: reads <https://life-framework.org/playtest-server.json> and joins the
+     address in it. With `"address": null` it says nobody is hosting and points to Discord. When the file
+     names a `release` other than the download's `version.txt`, it asks the player to download again.
+
+The launcher logs to `%LOCALAPPDATA%\LifeFramework\launcher.log`.
+
+### Releasing and hosting (maintainer)
+
+- **Cut a release:** in a worktree at `origin/main`, `tools\cli playtest release` (next `playtest-m2-<n>`, or
+  `--tag`). The game refuses every resource `resourceDatabase.rdb` does not register (`Wrong GUID/name`, and
+  the world does not load; seen 2026-11-10), and only Workbench writes that file, so this step runs where the
+  tools are: it refreshes the rdb, creates the tag's release as a pre-release with the rdb attached, and starts
+  `.github/workflows/playtest-release.yml`. The workflow checks the rdb against the tag's `.meta` files, packs
+  the zip with `tools/release/pack-playtest.mjs` (the tracked files under `addons/LifeFramework`, nothing
+  generated, plus the rdb and the launcher from `tools/release/launcher/`), makes the release **latest**, and
+  rebuilds the website so the button shows the new version and size. Any other release must stay a
+  pre-release, or the stable link moves to it.
+- **Point the launcher at a host:** `tools\cli playtest server <address[:port]>` when the host is up,
+  `tools\cli playtest server off` when it stops. It opens an auto-merge PR that rewrites
+  `website/public/playtest-server.json`; the site serves it a few minutes after the merge. The host must run the
+  release's commit: a different build has a different script checksum and the game refuses the join.
 
 ## Subscribe and join
 
@@ -32,7 +65,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 5. **Vehicle.** Read the price sheet at the car lot (desk at 211, 262; four display cars in a row at z 261, each with a chalkboard price board in front, x 216 to 230) and buy a car. Your character
    also starts with an S105 in the garage and a UAZ at the impound lot (playtest
    only): read the garage ledger, retrieve one, and collect the other at the
-   impound desk for the fee.
+   impound desk for the fee. The key goes straight into your inventory; drag it and your ID card between pockets to check nothing hangs (#620).
 6. **Police.** On a fresh save the first player to join is on the police roster.
    Clock in at the station desk; the kit includes the key to the station car. A
    second player robs the fuel till: the officer gets the radio dispatch, reads
@@ -44,8 +77,9 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 7. **Organization and hideout.** Found an organization at the registry desk,
    deposit cash, and buy the processing upgrade. Take the alley yard lease, open
    the hideout door, and store something in the stash. Run contraband from the
-   barn to the pub.
+   barn to the drop (in the debug game mode a second crate cage 27 m south of the barn pallet at `466 0 304`; the flagship keeps the pub).
    Where: the walled yard at the end of the cobbled alley (about 302, 288, door on the alley); inside are the machine, the stash, a workbench, crates, barrels and a parked van. The registry desk is at 289, 256. Demo: `session.mjs org` (proof `agent-box/proofs/org.mjs`) (2 clients: found the org, take the lease, open the gate).
+   Courier parcel: take a run at the post counter, then open the inventory; the parcel's description says where to deliver it (the porch past the brick-walled lock-up). Demo: `session.mjs parcel-proof`.
 8. **Restart.** Leave and rejoin: your cash, bank, job, organization, and cars
    should be back.
 
@@ -54,6 +88,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 The M2 systems run in the same playtest build. The money ledger and incident
 log that back them stay on the server and invisible.
 
+- **Mining.** The miner stand at (176, 167) has ore rocks and a display crate. Swing a pickaxe at a rock: it shakes, shrinks a step per piece, and drops nuggets that rest on the ground; the last piece makes it vanish and it grows back after its cooldown. Open the inventory to check the nugget and pickaxe previews against the gold bar. No proof verb yet.
 - **Payphone.** The booth by the square takes one coin from the cash you carry. Four booths stand in town (square beside the handcart, fuel station at the kiosk, hospital and police station against their front walls). A booth's open side is local -Z, so each one is turned with its back to the wall or the lawn and its door to the street. Area 8 and 17 polish: the hospital and police booths were facing their walls (now back to the wall, door to the street); the Red Cross banner was buried in the hospital wall (only its ropes showed) and now hangs in front of it, the *Ambulance bay* sign no longer stands in the ambulance's lane, and the police whitelist plaque is on the station wall under the *Police Station* sign (236.6, 241.2) instead of lying on the grass.
   Pick *Report a crime*, *Report an emergency*, or *Report someone suspicious*.
   An on-duty officer hears it on the radio and sees the line on the wanted
@@ -77,9 +112,9 @@ log that back them stay on the server and invisible.
   police or medic call goes out. It is illegal: an officer who searches a wanted
   suspect takes it and files a charge.
 - **Lockpick.** The fence sells a lockpick (no record needed, $250, a stack: each opened lock or snapped pick wears one use). The lock-up door just east of the yard gate (about 306, 241) is locked: stand at it and use *Pick the lock*. Stay close for 6 to 20 seconds (your level shortens it). You bend over the lock the whole time and other players see it (#513; the bank vault drill and the cash van box drill do the same for 6 s, and picking the locked car beside the door bends you the same way; demo: `node agent-box/session.mjs work-anim-proof`, which drives all four). It opens, or the pick slips, or snaps. An opened lock files a crime report that nearby witnesses can describe; the police are not called by it. The yard gate, the bank vault and the jail door cannot be picked.
-- **Steal a car.** A beige car parked east of the lock-up (about 312, 246) is locked and will not start without its key. With a lockpick, use *Pick the lock* at its door, get in, and use *Hotwire the ignition* at the wheel. It takes 6 to 15 seconds and can fail; a failure may be heard. Once it works, start the engine as usual and drive off. The car is marked stolen on the server. If you own an S105 (the starter garage car) a thief can take it the same way: with its key in your pocket, use *Report the car stolen* at it and the plate goes on the police wanted board as a stolen car. The chop shop yard is a walled back lot north-east of the lock-up, behind the chain barrels (about 322, 300), with a blue engine crane (walls on three sides, open at the south gate; a stripped jeep shell, doors, tyres, drums and a tool bench stand around it): park a stolen car beside it, get out, and use *Take this car apart*, hold *Strip it down* until it is bare (more hands are faster), then *Take the cash and parts*. It pays 30 percent of the car value (an S105 pays $300) and two spare parts a trader will buy; the car is gone for good, the crime is reported, and the yard takes nothing for five minutes. It will not take a car that is not stolen, or one you hold the key to. An on-duty officer can use *Check the plate* at any car (a reported one reads STOLEN) and *Recover stolen vehicle* at a reported, empty one, which returns it to the owner's garage. A witness can describe the thief.
+- **Steal a car.** A beige car parked east of the lock-up (about 312, 246) is locked and will not start without its key. With a lockpick, use *Pick the lock* at its door, get in, and use *Hotwire the ignition* at the wheel. It takes 6 to 15 seconds and can fail; a failure may be heard. Once it works, start the engine as usual and drive off. The car is marked stolen on the server. If you own an S105 (the starter garage car) a thief can take it the same way: with its key in your pocket, use *Report the car stolen* at it and the plate goes on the police wanted board as a stolen car. The chop shop yard is a walled back lot north-east of the lock-up, behind the chain barrels (about 322, 300), with a blue engine crane (walls on three sides, open at the south gate; a stripped jeep shell, doors, tyres, drums and a tool bench stand around it): park a stolen car beside it, get out, and use *Take this car apart*, hold *Strip it down* until it is bare (more hands are faster), then *Take the cash and parts*. It pays 30 percent of the car value (an S105 pays $300) and two spare parts a trader will buy; the car is gone for good, the crime is reported, and the yard takes nothing for five minutes. It will not take a car that is not stolen, or one you hold the key to; the toast says so ("Only stolen cars. Lockpick or hotwire a car that is not yours and bring it here.") and the car is left untouched. Hot means the engine was started without its key on a locked-ignition car (the hotwire above); a base-game road car with no ignition lock, or one you simply got into and drove, is not hot (#601). An on-duty officer can use *Check the plate* at any car (a reported one reads STOLEN) and *Recover stolen vehicle* at a reported, empty one, which returns it to the owner's garage. A witness can describe the thief.
 - **Medic duty.** Clock in at the duty desk in the hospital (the punch clock,
-  open to everyone, no roster). You swap to the medic kit (uniform, medical
+  open to everyone, no roster). The *Clock in* / *Clock out* row sits on the clock itself, first in the list (it flips by your state), above *Pay bill*. You swap to the medic kit (uniform, medical
   kit, dressings, saline, morphine, tourniquet, a pager) and your civilian
   inventory is kept until you clock out, when duty pay is handed over in cash.
   While you are clocked in, medic calls reach you: the hospital board opens
@@ -101,6 +136,7 @@ log that back them stay on the server and invisible.
 - **Hold up.** Two players face each other within 2 m; the one with a weapon in hand sees *Hold up* in the action menu. It raises their hand, beeps at both, and tells the other player. It changes nothing else: it only lands in the incident log (Game Master incident view, kind Hold-up). Demo: `node agent-box/session.mjs holdup-proof` (two clients).
 - **Admin actions.** As Game Master, teleport and heal a player, or type `!wadd POLICE <uid>`: each appears as an "Admin action" row with your name in the Game Master incident view. Non-admins never get that view.
 - **Aim intent.** Hold a raised weapon on another player for 3 s: one "Weapon aimed" row in the Game Master incident view, then at most one more per 3 s of continuous aim. Needs two clients on a dedicated server to prove the aim direction replicates.
+- **Lawless HUD tag (#591).** Walk into the quarry (zone centre 178 0 172, radius 32): a red LAWLESS AREA tag shows top centre and a toast says you entered; walk out and both go (exit toast). Spawn or join inside and it shows at once.
 - **Lawless quarry.** The quarry south of the dirt lane (about 100 m north of the square) is the one marked lawless area. Two red *Lawless Area* signs stand at the lane and at the east edge; read one for the rules. For now the zone only labels incidents (`lawless` in the incident log) and keeps wanted on; there is no real gate yet, only a lane barrier of fence rails and cones with the Mine Hazard sign, a gatehouse shed, three granite cliff walls round the pit, stones, spoil heaps, gravel and sand piles, tyres and barrels (area 11 polish). The lane sign now stands at the lane (172, 200). Demo: `node agent-box/session.mjs quarry-proof`.
 - **Moonshine camp.** A hidden camp under a stand of spruce east of the chop shop (about 380 to 388, 300 to 305, in the field's treeline): three mash barrels in a row, the still (a base-game metal boiler tank) behind them with a dark furnace beside it, with a fire pit, sack piles, a crate and bottles around it. Walk up to the barrels from the south and use *Load* / *Work* / *Collect* on each, then the still.
 
@@ -173,8 +209,16 @@ sentence that names a place makes it a prompt.
 - **QA reports:** [playtest/rc-2026-11-08.md](playtest/rc-2026-11-08.md) and
   [playtest/qa-2026-11-08.md](playtest/qa-2026-11-08.md).
 - **Shot picker (dev tooling, issue 515).** `tools\cli shots area hospital --pick` takes its wide from the area's `front` heading in `agent-box/areas.json` and ranks each candidate by how well the area's interactables show (`focus` in the same file aims it at named entities) and ray-scores the best six; the `problems:` list measures clips, sunk and reach against the mesh and the pivot; `--wide-only` skips the entity checks and close-ups. Scores are in `tmp/shots/<area>/index.json` (`wideCandidates`, `shots[].frame`).
-- **Fuel station (area 5).** The till (rob it with the `Rob the till` action, reward 150) is on the counter at (263.2, 240.4) beside the kiosk wall; the clerk stands behind it facing the street. The fuel payphone is at (256.5, 237) and the FUEL STATION sign at the kiosk corner (264.6, 242.7). The pumps are the map station's own (x 268 and 279, z 235). Try it with `session.mjs` witness-proof or the `crime/rob-reward` test.
-- **Police station look (polish pass 6).** The post is the loggia of the police villa (233, 239); the duty desk, armory cabinet, armory store and evidence locker stand along its back wall with the door kept clear, the wanted and dispatch boards face the street on the east wall, and the payphone, a bin and a flowerpot stand on the front lawn. No setup needed; walk up from the main street.
-- **General store and market (polish pass 3).** The store counter stands in front of the shop at (179, 244.3): walk up, take an apple off it (or run `node agent-box/harness.mjs shelf`) and pay at the till action, or walk out past the boundary (east of x 186 or south of z 251) to shoplift: wanted level, a report naming you and the alarm. While the alarm runs a red hazard beacon shows at the counter, readable in daylight. The market runs along the north road side (x 189 to 216, z 236 to 246): four umbrella stands, the trader table and the apple stall, with the market sign and chalkboard on the verge in front. Demo: `node agent-box/session.mjs store-proof` (two clients: one pays, one walks out).
+- **Shot baseline (dev tooling).** `tools\cli shots baseline` shoots every area in one session into the main checkout's `tmp/shots-baseline/<area>/`; `tools\cli shots area bank --baseline` prints the freshest one and its age. Polish builders use it as their before shots (`docs/agent-area-polish.md`).
+- **Fuel station (area 5).** The till (rob it with the `Rob the till` action, reward 150) is the shop's own register on the counter inside the station building at about (284.3, 240.2); the clerk stands behind that counter facing the customer side. The action sits on the register itself (0.3 m above it). The old stand-alone counter by the kiosk wall is gone. The fuel payphone is at (256.5, 237) and the FUEL STATION sign at the kiosk corner (264.6, 242.7). The pumps are the map station's own (x 268 and 279, z 235). Try it with `session.mjs` witness-proof or the `crime/rob-reward` test.
+- **Police car light bar (#595).** The police car at the station (about 243.5, 246) is a covered UAZ469; its blue light bar sits on the roof. Walk round it and check the bar touches the roof. Sirens: as an on-duty officer drive it and use the siren key (mouse button 2).
 - **Police station look (polish pass 6).** The post is the loggia of the police villa (233, 239); the duty desk, armory cabinet, armory store and evidence locker stand along its back wall with the door kept clear, the wanted and dispatch boards stand on the lawn facing the main street, and the payphone, a bin and a flowerpot stand on the front lawn. No setup needed; walk up from the main street.
-- **Farm (polish pass 12).** The tomato field is north-west of the square at about (150, 298), reached by the dirt track from the south past the farm sign (144.5, 292.5). Tomato beds and plants on the west side (`TomatoCrop_Debug`, gather), a greenhouse and hay bales on the east, a produce stand with crates, a cart and the seed packet on its table by the sign, and a fence along the north edge. The apple orchard is to the west (the gather tree at 130, 310); its juicer (`AppleProcessor`) now stands on a press table at (141, 311) with crates. Try it: `node agent-box/harness.mjs flow chain-apple` (gather, trade, press), or walk up and use *Gather Tomatoes*. The tomato, apple and plum traders stay on the market table row (area 3).
+- **Sign cards (printed notices).** Look at any sign and press the interact key (*Read: <title>*). The card now has a large title with a rule under it, then labelled sections (WHAT IT IS, HOW, YOU NEED, RULES, NEXT) with bulleted lists, action names in colour, and the frame colour of a painted sign. Try the *Town Board* at the spawn square, the *Post office*, and the long police station sign; Esc or *Put it back* closes the card. Demo: `node agent-box/session.mjs up --machine lf-testbox --clients 1 --mission playtest --wait`, then `node agent-box/harness.mjs stand Sign_TownMap`, `node agent-box/harness.mjs use LF_SignReadAction Sign_TownMap`, `node agent-box/harness.mjs ui-shot card`.
+- **Farm (polish pass 12).** The farm field is north-west of the square at about (150, 298), reached by the dirt track from the south past the farm sign (144.5, 292.5). Cabbage beds and plants on the west side (`CabbageCrop_Debug`, gather), a greenhouse and hay bales on the east, a produce stand with crates, a cart and cabbages on its table by the sign, and a fence along the north edge. The apple orchard is to the west (the gather tree at 130, 310); its juicer (`AppleProcessor`) now stands on a press table at (141, 311) with crates. Try it: `node agent-box/harness.mjs flow chain-apple` (gather, trade, press), or walk up and use *Gather Cabbage*. The apple and plum traders stay on the market table row (area 3).
+- Debug money top-up: in the playtest town you never run out; bank refills under 100k to 1M and cash under 5k to 20k on spawn and every 60 s (ledger reason debug-topup; flag m_bDebugMoneyTopUp).
+- **Bank robbery kit (#605).** A chest on the east side of the bank, at 198.6, 259.5 (between the cash van stop and the vault door). Use *Take bank robbery kit* to get a drill, keycard and charge in one go (a second press adds nothing; with a full inventory the item lands at your feet), then rob the vault at 194, 265 or the cash van. Only works in the playtest game mode (`m_bDebugMoneyTopUp`). Demo: `node agent-box/session.mjs bank-kit-proof` on a one-client session.
+- **Smelter furnace.** The DebugWorld mining yard furnace is now a base-game boiler (was a wood chipper) at 169.8, 171.5, beside the mining sign. Bring two iron nuggets and use *Smelt Iron Nuggets* at its front; the bar drops 1.6 m in front. Also at 298.4, 276.5 (crime chain) and in St Philippe.
+- **Dispatch area and solo test call (debug game mode only).** Between the police station and the fuel station, behind the main street (about 249 to 257, 229 to 233) stands the dispatch area: a police board, a medic board and the dispatch console (a desk with a radio). Clock in as police or medic (a service with nobody on duty answers "No answer"), walk to the console and pick *Test police call* (reported from the fuel till) or *Test medic call* (from the fuel payphone). The call goes out the way a payphone call does: the radio line for police, the pager for a medic, and the board. Then read the board and use *Take the call*. It works only in the debug game mode (GameMode_Roleplay_Debug, `m_bDebugTestDispatch`); anywhere else the server answers "Test calls are off in this game mode".
+- **Test till (debug).** A counter with a till at (244.5, 230.5), west of the dispatch area, is for trying the till robbery alone: *Rob the till* pays 150 every 5 seconds, needs no police on duty, and only a civilian can use it (clock out first). The robbery raises wanted and radios any on-duty officer, so a second player (or the test call) covers the officer side.
+- **Key models (#613).** House keys are a brass key; vehicle keys (including the police car key) are a black remote fob with a steel blade. In a running session `node agent-box/session.mjs keys-proof` creates a character, puts one of each in your pockets and one of each on the ground ahead of you, and shoots the ground view and the open inventory. By hand: buy a house or a car and open the inventory (I) to check the icons.
+- **Game Master (#617).** On the debug mission every player can open Game Master; in the town it is administrators only. Try: `node agent-box/session.mjs up --mission debug` then `node agent-box/harness.mjs gm`. See `docs/game-master-spike.md`.

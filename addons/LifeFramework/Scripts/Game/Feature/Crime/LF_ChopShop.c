@@ -4,7 +4,11 @@
 //! stations (#417): LOAD starts the job, WORK is a held action that adds one unit (so more hands
 //! finish sooner), COLLECT pays out. The server decides the payout, the refusal and the removal.
 //!
-//! Only a hot car is taken: its stolen flag (#412) must be on. A keyed owner cannot chop their own
+//! Only a hot car is taken: its stolen flag (#412) must be on. That flag is set when an engine is
+//! started without its key on a car whose ignition is locked (a hotwire), so "hot" means a car
+//! that was stolen, not one that was merely found: a base-game road car with no ignition lock
+//! never becomes hot (#601). A refused car is left exactly as it was: nothing is stripped, locked
+//! or stopped before the checks pass. A keyed owner cannot chop their own
 //! car. The payout is the vehicle value (capped) times a percent, paid in carried cash through
 //! the ledger. Collecting deletes the car with an effect, scraps its ownership record (no impound
 //! lot would hand it back), closes any stolen report (#414), files a crime report (evidence at the
@@ -399,7 +403,12 @@ class LF_ChopShopComponent : ScriptComponent
 		bool cooling = LF_ChopShopRules.OnCooldown(nowSeconds, m_fLastPayout, LF_ChopShopConfig.CooldownSeconds());
 		LF_EChopCheck check = LF_ChopShopRules.CheckLoad(vehicle != null, occupied, stolen, isOwned, hasKey, cooling, busy);
 		if (check != LF_EChopCheck.NONE)
+		{
+			if (vehicle)
+				LF_Debug.Info(FEATURE, string.Format("%1 refused %2: stolen=%3 owned=%4 key=%5 (%6)", m_sShopId, vehicleId, stolen, isOwned, hasKey, typename.EnumToString(LF_EChopCheck, check)));
+
 			return check;
+		}
 
 		m_Vehicle = vehicle.GetID();
 		m_sVehicleId = vehicleId;

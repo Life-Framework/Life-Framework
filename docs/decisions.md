@@ -702,3 +702,20 @@ feature is `verified` when its automated proofs pass and enough trusted testers
 confirm it in a session; an agent then runs `promote`. The quorum size and the
 tester list are set in #575, with the maintainer's approval. Why: a single
 human signing off every feature is the bottleneck.
+
+**2026-11-10 — M5 is two tracks, and 3D development lives in M5.** Every
+roadmap item from M5 on is a Framework issue (the system, in the core, epic
+#632) plus a Flagship issue (the content, in `LF_Everon1989`, epic #633). All 3D
+asset work moves from Development to M5 (epic #339): Meshy generates, Blender
+(MCP or CLI) refines, Reforger imports, and agents verify visually and
+otherwise, wrapped as one nearly autonomous harness. Gated on Meshy's licence
+terms and Bohemia's policy (#664). The 15 fitting ideas from the Genetic Life
+review also land in M5. Why: the maintainer wants systems and content built
+and planned separately, and wants custom art without hand modelling.
+
+**2026-11-10 — Adopt Altis Life's structural patterns before M3.** Crime codes,
+one base price with multipliers, a no-profit-loop check, per-field persistence
+switches, a world cleanup service, disconnect rules, playtime tracking, and a
+server-side request audit go into M3 (epic #684). Altis Life is CC BY-NC-ND, so
+we take ideas only. Why: these shape saved data and the owner schema, which get
+expensive to change once owners build on M3 and the flagship stops wiping.

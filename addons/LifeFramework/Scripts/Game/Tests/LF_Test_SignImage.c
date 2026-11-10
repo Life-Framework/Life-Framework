@@ -14,17 +14,18 @@ class LF_Test_SignImage : LF_Test
 	{
 		LF_SignDef plain = LF_Test_SignCatalog.MakeSign("bank", "Bank", "Money is kept here.", "", "", "");
 		array<ref LF_UIPart> plainParts = LF_SignCatalog.BuildParts(plain);
-		ctx.Equal(3, plainParts.Count(), "a sign with no image has title, What, Close");
+		foreach (LF_UIPart none : plainParts)
+			ctx.True(none.GetKind() != LF_EUIPartKind.IMAGE, "a sign with no image has no picture part");
 
 		LF_SignDef pictured = LF_Test_SignCatalog.MakeSign("hospital", "Hospital", "Medics heal you.", "", "", "");
 		pictured.m_sImage = "{443758FF56C25F58}Assets/UI/Illustrations/medic_flow.imageset";
 		array<ref LF_UIPart> parts = LF_SignCatalog.BuildParts(pictured);
-		ctx.Equal(4, parts.Count(), "an image adds one part");
-		if (parts.Count() != 4)
+		ctx.Equal(plainParts.Count() + 1, parts.Count(), "an image adds one part");
+		if (parts.Count() < 3)
 			return;
 
-		LF_UIPart picture = parts.Get(1);
-		ctx.Equal(LF_EUIPartKind.IMAGE, picture.GetKind(), "the picture sits right under the title");
+		LF_UIPart picture = parts.Get(2);
+		ctx.Equal(LF_EUIPartKind.IMAGE, picture.GetKind(), "the picture sits under the title and its rule");
 		ctx.EqualStr(pictured.m_sImage, picture.GetText(), "the part carries the imageset");
 		ctx.EqualStr("full", picture.GetStatus(), "the image name defaults to full");
 		ctx.True(LF_UIPart.LayoutFor(LF_EUIPartKind.IMAGE) != "", "the picture part has a layout");

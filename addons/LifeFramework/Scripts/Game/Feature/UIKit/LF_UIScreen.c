@@ -610,6 +610,9 @@ class LF_UIScreen
 		Widget sheet = m_wRoot.FindAnyWidget("Sheet");
 		if (sheet && GetSkin().m_fWidth > 0)
 			FrameSlot.SetSizeX(sheet, GetSkin().m_fWidth);
+
+		if (sheet && GetSkin().m_fHeight > 0)
+			FrameSlot.SetSizeY(sheet, GetSkin().m_fHeight);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -689,7 +692,47 @@ class LF_UIScreen
 
 		if (part.GetKind() == LF_EUIPartKind.TITLE)
 		{
-			ApplyInk(TextWidget.Cast(widget), LF_UITheme.FONT_TITLE, part.GetText());
+			TextWidget title = TextWidget.Cast(widget);
+			ApplyInk(title, Math.Round(LF_UITheme.FONT_TITLE * GetSkin().m_fTitleScale), part.GetText());
+			if (title && GetSkin().m_fTitleScale > 1)
+				title.SetTextWrapping(true);
+
+			return;
+		}
+
+		if (part.GetKind() == LF_EUIPartKind.HEADING)
+		{
+			TextWidget heading = TextWidget.Cast(widget);
+			ApplyInk(heading, LF_UITheme.FONT_HEADING, part.GetText());
+			if (heading)
+				heading.SetColor(Accent());
+
+			AlignableSlot.SetPadding(widget, LF_UITheme.PAD_LEFT, 16, LF_UITheme.PAD_RIGHT, 2);
+			return;
+		}
+
+		if (part.GetKind() == LF_EUIPartKind.RULE)
+		{
+			PaintNamed(widget, "RulePlate", Accent());
+			AlignableSlot.SetPadding(widget, LF_UITheme.PAD_LEFT, 2, LF_UITheme.PAD_RIGHT, 8);
+			return;
+		}
+
+		if (part.GetKind() == LF_EUIPartKind.RICH)
+		{
+			RichTextWidget rich = RichTextWidget.Cast(widget);
+			if (!rich)
+			{
+				LF_Debug.Error("UIKit", "rich part " + part.GetName() + " did not create a RichTextWidget");
+				return;
+			}
+
+			ApplyInk(rich, LF_UITheme.FONT_BODY, part.GetText());
+			if (!GetSkin().m_BodyFont.IsEmpty())
+				rich.SetFont(GetSkin().m_BodyFont);
+
+			rich.SetTextWrapping(true);
+			AlignableSlot.SetPadding(widget, LF_UITheme.PAD_LEFT, 2, LF_UITheme.PAD_RIGHT, 4);
 			return;
 		}
 
@@ -855,7 +898,17 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void ApplyInk(TextWidget text, int fontSize, string value)
+	//! The skin's accent, or its ink when the skin has none.
+	protected Color Accent()
+	{
+		if (GetSkin().m_Accent)
+			return GetSkin().m_Accent;
+
+		return GetSkin().m_Ink;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplyInk(TextWidget text, float fontSize, string value)
 	{
 		if (!text)
 		{

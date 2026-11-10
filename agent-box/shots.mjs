@@ -5,6 +5,8 @@
 //   shots area <name | x,z> [--radius 30] [--out tmp/shots/<area>] [--machine any]
 //              [--hour 17.9] [--annotate] [--pick] [--detail <Entity>] [--keep] [--fov 60] [--wide-only]
 //   shots crop <shot> <x,y,w,h>        native-resolution crop under 800 px
+//   shots baseline [--areas all|a,b,c]   every area in one session -> tmp/shots-baseline/<area>/ in the main checkout
+//   shots area <name> --baseline         path and age of that area's freshest baseline (no session)
 //   shots selftest
 //
 // It reuses (or starts) one playtest-mission session with one client, poses that
@@ -47,7 +49,7 @@ const dirOf = (deg) => [Math.sin((deg * Math.PI) / 180), 0, Math.cos((deg * Math
 
 export function parseArgs(argv) {
   const out = { _: [], flags: {} };
-  const valued = new Set(["radius", "out", "machine", "hour", "detail", "fov"]);
+  const valued = new Set(["radius", "out", "machine", "hour", "detail", "fov", "areas", "score"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a.startsWith("--")) {
@@ -271,7 +273,7 @@ function sessionTool(args) {
   return { code: r.status ?? 1, text: `${r.stdout ?? ""}${r.stderr ?? ""}` };
 }
 
-async function openClient(machine) {
+async function openClient(machine, hold) {
   const h = await import("./harness.mjs");
   const s = await import("./session.mjs");
   h.setBoxes([s.clientBox(s.sessionDir(), 1)]);
@@ -282,7 +284,7 @@ async function openClient(machine) {
   if (s.readRemotePointer()) return { h, remote: true, started: false };
   let started = false;
   if (!alive()) {
-    const up = sessionTool(["up", "--clients", "1", "--mission", "playtest", "--profile", "full", "--machine", machine, "--wait"]);
+    const up = sessionTool(["up", "--clients", "1", "--mission", "playtest", "--profile", "full", "--machine", machine, ...(hold ? ["--hold", String(hold)] : []), "--wait"]);
     if (up.code !== 0) throw new Error(`session up failed: ${up.text.trim().split("\n").slice(-3).join(" | ")}`);
     started = true;
     if (s.readRemotePointer()) return { h, remote: true, started };
@@ -306,6 +308,107 @@ function arrive(h) {
   }
 }
 
+// ------------------------------------------------------------------- baseline
+// `shots baseline` shoots every area in one session into a store all worktrees read; `shots area <n> --baseline` finds it.
+
+function git(args, cwd = ROOT) {
+  const r = spawnSync("git", args, { encoding: "utf8", windowsHide: true, cwd });
+  return r.status === 0 ? r.stdout.trim() : "";
+}
+
+// The main checkout's tmp/ (every worktree shares one git common dir); LF_SHOTS_BASELINE overrides it.
+export function baselineRoot() {
+  if (process.env.LF_SHOTS_BASELINE) return resolve(process.env.LF_SHOTS_BASELINE);
+  const common = git(["rev-parse", "--path-format=absolute", "--git-common-dir"]);
+  const hub = common ? dirname(common) : ROOT;
+  return join(hub, "tmp", "shots-baseline");
+}
+
+function baselineLookup(slug) {
+  const dir = join(baselineRoot(), slug);
+  const stampFile = join(dir, "stamp.json");
+  if (!existsSync(stampFile)) {
+    console.log(`baseline: none for ${slug} under ${baselineRoot()}. Shoot your own before shots (the daily \`tools\\cli shots baseline\` run has not covered it).`);
+    return 1;
+  }
+  const st = JSON.parse(readFileSync(stampFile, "utf8"));
+  const ref = git(["rev-parse", "--verify", "-q", "origin/main"]) ? "origin/main" : "HEAD";
+  const age = git(["rev-list", "--count", `${st.base}..${ref}`]);
+  console.log(`baseline: ${dir}`);
+  console.log(`  contact ${join(dir, "contact.jpg")}`);
+  console.log(`  index   ${join(dir, "index.json")}`);
+  console.log(`  stamp   main ${String(st.base).slice(0, 8)} shot ${st.shotAt}, ${age || "?"} commits behind ${ref}`);
+  console.log(`  stale?  git log --oneline ${String(st.base).slice(0, 8)}..${ref} -- <your area's files>   (empty = the baseline is still your before shot)`);
+  const prob = join(dir, "problems.txt");
+  if (existsSync(prob)) console.log(readFileSync(prob, "utf8").trimEnd().split("\n").map((l) => `  ${l}`).join("\n"));
+  return 0;
+}
+
+async function baselineCommand(argv) {
+  const args = parseArgs(argv);
+  const f = args.flags;
+  const areas = loadAreas();
+  const all = [...new Set(areas.map((a) => a.name))];
+  const want = !f.areas || f.areas === true || f.areas === "all" ? all : String(f.areas).split(",").map((x) => x.trim()).filter(Boolean);
+  const unknown = want.filter((n) => !all.includes(n));
+  if (unknown.length) {
+    console.log(`shots baseline: unknown area ${unknown.join(", ")}. Known: ${all.join(", ")}`);
+    return 1;
+  }
+  const hour = f.hour ? Number(f.hour) : GOLDEN_HOUR;
+  const fov = f.fov ? Number(f.fov) : FOV_V;
+  const store = baselineRoot();
+  const stage = join(ROOT, "tmp", "shots-baseline-stage");
+  const head = git(["rev-parse", "HEAD"]);
+  const base = git(["merge-base", "HEAD", "origin/main"]) || head;
+  const tWait = Date.now();
+  const { h, remote, started } = await openClient(f.machine ?? "any", 45); // a 21-area run needs the longest hold session.mjs allows
+  const t0 = Date.now(); // after the queue wait and boot
+  const rows = [];
+  try {
+    for (const name of want) {
+      const a0 = Date.now();
+      const area = resolveArea(name, areas, undefined);
+      const out = join(stage, area.slug);
+      rmSync(out, { recursive: true, force: true });
+      const sub = { _: [name], flags: { annotate: true, hour: String(hour), fov: String(fov), score: String(f.score ?? 2) } };
+      let code = 1;
+      try {
+        code = remote ? await runRemote(sub, out) : await capture(h, area, { hour, fov, outDir: out, args: sub });
+      } catch (e) {
+        console.log(`shots baseline: ${name} failed: ${e.message}`);
+        if (/no_live_session/.test(e.message)) {
+          rows.push(`${name}: FAILED (session closed; stopping, ${want.length - rows.length - 1} areas not shot)`);
+          break;
+        }
+      }
+      const idx = join(out, "index.json");
+      if (!existsSync(idx) || !existsSync(join(out, "contact.jpg"))) {
+        rows.push(`${name}: FAILED (code ${code})`);
+        continue;
+      }
+      const index = JSON.parse(readFileSync(idx, "utf8"));
+      const probs = index.problems ?? [];
+      const lines = [probs.length ? `problems: ${probs.length} of ${index.entities.length} entities` : `problems: none in ${index.entities.length} entities`];
+      for (const e of probs) lines.push(`  ${e.name}: ${e.issues.join("; ")}`);
+      writeFileSync(join(out, "problems.txt"), lines.join("\n") + "\n");
+      writeFileSync(join(out, "stamp.json"), JSON.stringify({ area: name, base, head, shotAt: new Date().toISOString(), hour, seconds: Math.round((Date.now() - a0) / 1000) }, null, 2));
+      const dest = join(store, area.slug);
+      rmSync(dest, { recursive: true, force: true });
+      mkdirSync(dest, { recursive: true });
+      for (const file of ["contact.jpg", "index.json", "problems.txt", "stamp.json"]) copyFileSync(join(out, file), join(dest, file));
+      rows.push(`${name}: ${index.entities.length} entities, ${probs.length} with problems, ${Math.round((Date.now() - a0) / 1000)}s`);
+    }
+  } finally {
+    if (started && !f.keep) sessionTool(["down"]);
+    rmSync(stage, { recursive: true, force: true });
+  }
+  const mins = ((Date.now() - t0) / 60000).toFixed(1);
+  console.log(rows.join("\n"));
+  console.log(`shots baseline: ${rows.filter((r) => !r.includes("FAILED")).length}/${want.length} areas in one session, ${mins} min shooting (${((t0 - tWait) / 60000).toFixed(1)} min to get the session), main ${base.slice(0, 8)}, stored in ${store}`);
+  return rows.some((r) => r.includes("FAILED")) ? 1 : 0;
+}
+
 // ------------------------------------------------------------------------ area
 
 function areaCommand(argv) {
@@ -326,6 +429,7 @@ async function runArea(args) {
   const fov = f.fov ? Number(f.fov) : FOV_V;
   const outDir = resolve(f.out ?? join(ROOT, "tmp", "shots", area.slug));
   const machine = f.machine ?? "any";
+  if (f.baseline) return baselineLookup(area.slug);
 
   if (!f.inner) {
     const { h, remote, started } = await openClient(machine);
@@ -487,7 +591,7 @@ export function importance(e) {
   const acts = e.actions ? e.actions.length : 0;
   let w = Math.min(acts, 4) + 0.7 * Math.cbrt(volOf(e));
   if (/^Sign_/.test(e.name || "")) w *= 0.2;
-  else if (/Npc|Clerk|Tomato|Plum|Apple|Farmer/.test(e.name || "")) w *= 0.35;
+  else if (/Npc|Clerk|Plum|Apple|Farmer/.test(e.name || "")) w *= 0.35;
   return r2(w);
 }
 
@@ -740,7 +844,11 @@ async function capture(h, area, o) {
   const clock = t.detail;
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2500);
   const shots = [];
+  const T0 = Date.now();
+  const tm = (l) => { if (process.env.LF_SHOTS_TIMING) console.error(`[t+${((Date.now() - T0) / 1000).toFixed(1)}s] ${l}`); };
+  tm("start");
   const take = (id, kind, label, entity, placed) => {
+    tm("take " + id);
     const { stand, target, eye } = placed;
     const off = sub(stand, target);
     const name = `shots_${area.slug.replace(/[^A-Za-z0-9]/g, "_")}_${id.replace(/[^A-Za-z0-9]/g, "_")}`;
@@ -762,6 +870,7 @@ async function capture(h, area, o) {
       shot.spread = Number(sd);
       if (shot.spread < 9) shot.note = `${shot.note ? shot.note + "; " : ""}flat image (sky, ground or wall only?)`;
     }
+    tm("took " + id);
     shots.push(shot);
     return shot;
   };
@@ -806,7 +915,7 @@ async function capture(h, area, o) {
     // Standing at the radius edge on that side, looking in: the camera sits on the side named.
     take(dirName, "eye", dirName, null, placeCamera(probe, "eye", area, { az }, (cand, stand) => [centre[0], stand[1] + EYE, centre[2]]));
   }
-  for (const p of noClose ? [] : closeSet) {
+  for (const p of noClose ? [] : o.args.flags.score ? closeSet.slice(0, Math.max(0, TILE_LIMIT - shots.length)) : closeSet) { // --score (baseline): only what the contact sheet shows
     const floorY = p.y < 1.5 ? p.y : undefined;
     const h1 = p.y > 1.5 ? 0 : 1;
     const placed = placeCamera(probe, "close", area, { x: p.x, z: p.z, yaw: p.yaw, floorY, name: p.name }, () => [p.x, p.y + h1, p.z]);
@@ -959,7 +1068,7 @@ function selftest() {
   if (!(good.score > wall.score + 3)) fails.push(`scoreHero wall ${good.score} ${wall.score}`);
   if (rayBoxEntry([0, 0, 0], [0, 0, 1], [-1, -1, 5], [1, 1, 7]) !== 5 || rayBoxEntry([5, 0, 0], [0, 0, 1], [-1, -1, 5], [1, 1, 7]) !== null) fails.push("rayBoxEntry");
   const imp = (name, n, v) => importance({ name, actions: new Array(n).fill("a"), bmin: [0, 0, 0], bmax: [v, 1, 1] });
-  if (!(imp("Roadmap_Vehicle", 3, 5) > imp("TomatoNpc", 1, 1) * 3) || !(imp("Roadmap_Vehicle", 3, 5) > imp("Sign_Atm", 1, 1) * 3)) fails.push("importance ranks a vehicle over an NPC or a sign");
+  if (!(imp("Roadmap_Vehicle", 3, 5) > imp("TraderChainNpc", 1, 1) * 3) || !(imp("Roadmap_Vehicle", 3, 5) > imp("Sign_Atm", 1, 1) * 3)) fails.push("importance ranks a vehicle over an NPC or a sign");
   const eyeP = [0, 10, 0];
   if (treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 4, gy: 0 }], 30) < 0.5 || treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 40, gy: 0 }], 30) !== 0) fails.push("treeOcclusion");
   // Problems: a pivot above the floor with mesh below it is not sunk; a buried prop is.
@@ -975,8 +1084,9 @@ export async function main(argv) {
   const [cmd, ...rest] = argv;
   if (cmd === "area") return areaCommand(rest);
   if (cmd === "crop") return cropCommand(rest);
+  if (cmd === "baseline") return baselineCommand(rest);
   if (cmd === "selftest") return selftest();
-  console.log("usage: tools\\cli shots area <name | x,z> [--radius N] [--out dir] [--machine any] [--hour H] [--annotate] [--pick] [--detail <Entity>] [--keep]\n       tools\\cli shots crop <shot> <x,y,w,h>\n       tools\\cli shots selftest");
+  console.log("usage: tools\\cli shots area <name | x,z> [--radius N] [--out dir] [--machine any] [--hour H] [--annotate] [--pick] [--detail <Entity>] [--keep]\n       tools\\cli shots crop <shot> <x,y,w,h>\n       tools\\cli shots baseline [--areas all|a,b,c]\n       tools\\cli shots selftest");
   return cmd ? 1 : 0;
 }
 
