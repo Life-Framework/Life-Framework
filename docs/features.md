@@ -725,6 +725,7 @@
   node requires the pickaxe in hand. DebugWorld keeps Apple, Plum,
   Logging, Mining, Cement, Gravel, and Sand. `IronOre_Debug` uses
   `iron-debug` (4 nuggets per piece) so one piece still feeds both furnaces.
+  The furnace (`Prefabs/Processor/Furnace.et`) wears the base-game `BoilerLarge_02` mesh instead of the sawmill chipper (#593); its recipes are unchanged.
   `GoldOre_Debug` and `CopperOre_Debug` use the debug rows with the prefab
   yields. Every ore rock still needs the pickaxe (the hit zone's tool list).
 
