@@ -688,3 +688,17 @@ burnout as the main risk, so recruit before the first public session.
 weekly slot during the PC phase. Open: the notice period before a session; the
 24/7 trigger (sessions reaching the player target several times and donations
 covering a rented box) is unchanged.
+
+**2026-11-10 — M2.5 Showcase and Outreach runs right after M2.** A milestone for
+the hero demo video, the landing page, our Discord onboarding, an outreach kit
+and a trusted-tester roster. The video pipeline (#390) moves into it. The
+maintainer posts in other communities as a human where they have permission;
+agents prepare the content, run our own Discord (AI-labelled bot) and
+coordinate playtesters, and never post in other servers or use a user account.
+Why: our Discord is small and the release gates need testers. Epic #566.
+
+**2026-11-10 — Feature verification moves from one person to a quorum.** A
+feature is `verified` when its automated proofs pass and enough trusted testers
+confirm it in a session; an agent then runs `promote`. The quorum size and the
+tester list are set in #575, with the maintainer's approval. Why: a single
+human signing off every feature is the bottleneck.
