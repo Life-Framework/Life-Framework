@@ -6,6 +6,7 @@
 //
 //   node agent-box/qa-m2.mjs comms     payphone -> board -> take -> caller hears back; pager card
 //   node agent-box/qa-m2.mjs report    /report with a recent incident and with none
+//   node agent-box/qa-m2.mjs normalize  clock any officer or medic out so the next proof starts clean
 //   node agent-box/qa-m2.mjs selftest
 
 import { readFileSync } from "node:fs";
@@ -175,6 +176,24 @@ async function runReport() {
   return ctx.fails.length ? 1 : 0;
 }
 
+// The proofs clock in by toggling the duty desk, so one that ends on duty turns the next one off.
+async function runNormalize() {
+  const ctx = await connect();
+  for (const n of [1, 2, 3]) {
+    let st;
+    try {
+      st = ctx.state(n);
+    } catch {
+      continue;
+    }
+    if (st.duty !== "1") continue;
+    const desk = st.faction === "MEDIC" ? "Roadmap_Hospital_Duty_Desk" : "Roadmap_Police_Desk";
+    ctx.duty(n, desk);
+    console.log(`client ${n} clocked out of ${st.faction}: ${ctx.state(n).duty === "0" ? "ok" : "still on duty"}`);
+  }
+  return 0;
+}
+
 async function main(argv) {
   const cmd = argv[0];
   if (cmd === "selftest") {
@@ -183,6 +202,7 @@ async function main(argv) {
     console.log(f.length ? "qa-m2 selftest: FAIL" : "qa-m2 selftest: OK");
     return f.length ? 1 : 0;
   }
+  if (cmd === "normalize") return runNormalize();
   if (cmd === "comms") return runComms();
   if (cmd === "report") return runReport();
   console.log("usage: node agent-box/qa-m2.mjs comms|report|selftest");
