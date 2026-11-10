@@ -17,6 +17,23 @@ async function runCarryProof() {
   const at = (n) => String(parseState(state(n)).pos ?? "0,0,0").split(",").map(Number);
   const fails = [];
   const need = (cond, text) => { if (!cond) fails.push(text); };
+  // The proof moves the carrier with `stand`, a 17 m teleport no walking player makes; the hold
+  // then moves the body 17 m in one tick. A client applies a teleported character (the carrier
+  // or the body) up to several seconds late (QA: client 1 still read the body at the shot spot
+  // 4 s on, another run client 2 read the carrier there). Read each client until the body sits
+  // by the carrier, and print how long that took; a hold that never follows still fails.
+  const settled = (n, carrierAt, budgetMs = 10000) => {
+    const t0 = Date.now();
+    let line = peers(n);
+    let f = judgeCarry(line, 2, 1, carrierAt, 4);
+    while (f.length && Date.now() - t0 < budgetMs) {
+      wait(1000);
+      line = peers(n);
+      f = judgeCarry(line, 2, 1, carrierAt, 4);
+    }
+    console.log(`client ${n}: body ${f.length ? "not " : ""}beside the carrier after ${((Date.now() - t0) / 1000).toFixed(1)} s more`);
+    return { line, fails: f };
+  };
 
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
@@ -41,8 +58,12 @@ async function runCarryProof() {
   on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
   wait(4000);
   const carrierAt = at(1);
-  const afterDrag = { 1: peers(1), 2: peers(2) };
-  for (const n of [1, 2]) for (const f of judgeCarry(afterDrag[n], 2, 1, carrierAt, 4)) fails.push(`drag, client ${n}: ${f}`);
+  const afterDrag = {};
+  for (const n of [1, 2]) {
+    const r = settled(n, carrierAt);
+    afterDrag[n] = r.line;
+    for (const f of r.fails) fails.push(`drag, client ${n}: ${f}`);
+  }
   const [cx, cy, cz] = carrierAt;
   on(1, { verb: "capture", mode: "world", name: "m2_261_drag_world", x: cx, y: cy + 0.8, z: cz, ox: 3.5, oy: 1.6, oz: 0 }, 25000);
 
@@ -57,8 +78,11 @@ async function runCarryProof() {
       wait(8000);
       on(3, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
       wait(4000);
-      afterDrag3 = peers(3);
-      for (const f of judgeCarry(afterDrag3, 2, 1, carrierAt, 4)) fails.push(`drag, late joiner: ${f}`);
+      // Client 3 stands on the carrier's spot and shoves it a metre or two: judgeCarry takes the
+      // carrier from client 3's own line.
+      const r3 = settled(3, carrierAt);
+      afterDrag3 = r3.line;
+      for (const f of r3.fails) fails.push(`drag, late joiner: ${f}`);
     }
   }
 
