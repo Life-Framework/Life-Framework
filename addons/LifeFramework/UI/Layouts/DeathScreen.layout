@@ -32,22 +32,15 @@ FrameWidgetClass "{39BE412466747946}" {
       OffsetBottom -1
      }
      {
-      FrameWidgetClass "{602A239EC00CBB9B}" {
-       Name "TitleFrame"
+      TextWidgetClass "{2401E01B5897FC37}" {
+       Name "Title"
        Slot LayoutSlot "{4BE6182B9CC8754B}" {
+        HorizontalAlign 1
         Padding 0 15 0 15
        }
-       {
-        TextWidgetClass "{2401E01B5897FC37}" {
-         Name "Title"
-         Slot FrameWidgetSlot "{821BD42A18EC5084}" {
-          Anchor 0.5 0.5 0.5 0.5
-         }
-         Color 1 1 1 1
-         Text "#EL-Death_Title"
-         "Font Size" 30
-        }
-       }
+       Color 1 1 1 1
+       Text "#EL-Death_Title"
+       "Font Size" 30
       }
       ButtonWidgetClass "{F189D6C24E9F33CD}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
        Name "RespawnButton"

@@ -162,6 +162,7 @@ class LF_UIScreen
 		}
 
 		FocusInitial(workspace);
+		SetActionPromptShown(false);
 
 		LF_Debug.Info("UIKit", "screen open");
 		return true;
@@ -1381,10 +1382,25 @@ class LF_UIScreen
 
 		m_wRoot.RemoveFromHierarchy();
 		m_wRoot = null;
+		SetActionPromptShown(true);
 		LF_Debug.Info("UIKit", "screen closed");
 
 		if (m_OnClosed)
 			m_OnClosed.Invoke();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The world interaction prompt (for example "Introduce yourself") would draw over an open
+	//! sheet, so it is off while one is open and back on at close (#494).
+	protected static void SetActionPromptShown(bool shown)
+	{
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		if (!hud)
+			return;
+
+		SCR_BaseInteractionDisplay display = SCR_BaseInteractionDisplay.Cast(hud.FindInfoDisplay(SCR_ActionMenuInteractionDisplay));
+		if (display)
+			display.SetEnabled(shown);
 	}
 
 	//------------------------------------------------------------------------------------------------
