@@ -173,6 +173,7 @@ export function candidates(kind, area, extra = {}) {
   if (kind === "wide") {
     // From the front side (the heading players approach from); the scorer in scoreWide chooses among these.
     const front = area.front ?? 180;
+    if (area.wideCands) for (const c of area.wideCands) out.push({ az: c.az, dist: c.dist, up: c.up, mode: "wide" }); else
     for (const off of [0, -35, 35, -70, 70]) for (const k of [0.55, 0.8, 1, 1.35, 1.8]) for (const up of [4, 7, 10, 13]) out.push({ az: front + off, dist: R * k, up, mode: "wide" });
   } else if (kind === "top") {
     for (const up of [Math.max(30, R * 2.2), Math.max(30, R * 2.2) + 10]) out.push({ az: 0, dist: 0.05, up, mode: "free" });
