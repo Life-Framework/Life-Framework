@@ -46,12 +46,20 @@ ambulance bay, a filing cabinet by the evidence locker. Base-game assets only, k
 2. **Fix placement.** For every entity in the area: ground snap and surface height,
    rotation, collision, and reachability of each interaction point. Check each one with
    `wb_read_props` or the layer coordinates, and with a close shot.
-3. **Add props.** A handful per chain area, from `asset_search`. Keep counts modest:
+3. **Check every prefab is the right one.**
+   - **Right asset:** each entity in the area must use a base-game or mod asset that
+     actually is the thing. A payphone is a phone booth, not a radio. A bed is a
+     medical bed. A still is a still-like object.
+   - **Wrong asset:** when there's a better base-game match (`asset_search`), swap
+     to it.
+   - **No real match:** keep the closest stand-in and record it as a placeholder in
+     `docs/asset-inventory.md` (next section).
+4. **Add props.** A handful per chain area, from `asset_search`. Keep counts modest:
    static props, no lights or particles unless the chain needs them.
-4. **Retest the area's features.** Run its `--only` tests plus `debugworld/entity-collision`,
+5. **Retest the area's features.** Run its `--only` tests plus `debugworld/entity-collision`,
    and that area's `session.mjs` proof verb if it has one.
-5. **After shots,** then hand the area to the reviewer.
-6. **Ship one PR per area:** before and after shots in the body, the final shots in
+6. **After shots,** then hand the area to the reviewer.
+7. **Ship one PR per area:** before and after shots in the body, the final shots in
    `website/public/docs-images/area-<n>-<slug>/`, and a `docs/playtest.md` line if anything
    moved.
 
@@ -64,6 +72,8 @@ item passes or fails:
 - Nothing clips through walls, other props or vehicles.
 - Interactables are reachable and face the approach. Signs are readable and centred.
 - The area reads at a glance as what it is: the wide shot tells you "this is the hospital".
+- Every object is what it claims to be. A stand-in counts only if it appears in
+  `docs/asset-inventory.md` as a placeholder.
 - The props fit 1989 Everon and stay inside the chain's area. Nothing modern, no clutter
   spilling into the street.
 - The shot rules below are met.
