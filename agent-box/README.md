@@ -485,8 +485,7 @@ its own. Probes live in `agent-box/chains.mjs`.
 | ATM | `ATM_Debug` | `LF_ATMAction` |
 | Apple | `AppleGatherTree`, `AppleTradeContainer`, `AppleProcessor` | gather, open trader, process |
 | Plum | `PlumGatherTree`, `PlumTradeContainer` | gather (prefab only), open trader |
-| Tomato | `TomatoGather`, `TomatoTradeContainer` | gather, open trader |
-| Farming | `TomatoCrop_Debug` | gather |
+| Farming | `CabbageCrop_Debug` | gather |
 | Cement | `CementPlant_Debug`, `CementPile_Debug` | process, gather |
 | Gravel | medium and large piles | gather |
 | Sand | `SandPile_Debug` | gather |
@@ -519,7 +518,7 @@ empty rock shells 6-8 m away.
 
 | Probe | Why it performs |
 | --- | --- |
-| `TomatoGather`, `TomatoCrop_Debug` | First three crop stage times are 0 and ripe is 30 min, so both are gatherable within a few frames. The crop prefab still inherits `LF_DeleteAction`, which deletes the plant and grants nothing. |
+| `CabbageCrop_Debug` | First three crop stage times are 0 and ripe is 30 min, so both are gatherable within a few frames. The crop prefab still inherits `LF_DeleteAction`, which deletes the plant and grants nothing. |
 | `SurvivalPoint_Water` | 3.2 m off `SurvivalStation`, inside the look sphere. |
 | `CementPlant_Debug` | `Sandbag.et` is a child of the gravel bag with an explicit 1x1 volume slot. The old 2x1 bag was rejected by the inventory, so the plant never saw its third input. |
 | `Furnace`, `CrimeFurnace_Debug` | Iron, gold, and copper nuggets use `SLOT_1x1`. `IronOre_Debug` grants 4 nuggets, enough for both furnaces. `use LF_ProcessAction` hits the first action, the iron smelt. |
