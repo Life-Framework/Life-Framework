@@ -1,10 +1,11 @@
-// red-proof: Observed 2026-11-10 with `tools/cli test --no-build --only LF_Test_CashVan`: spilling one bag too many in LF_BankLoot.SpillBags failed `crime/cash-van` with `- three bags lie behind the van (expected 3, got 4)`, `- the event carries the cash (expected 1200, got 1600)`. Restored; green.
+// red-proof: Observed 2026-11-10 with `tools/cli test --no-build --only LF_Test_HeistCashVan`: spilling one bag too many in LF_BankLoot.SpillBags failed `crime/cash-van` with `- three bags lie behind the van (expected 3, got 4)`, `- the event carries the cash (expected 1200, got 1600)`. Restored; green.
 // tier: WORLD
+// Runs after debugworld/entity-collision on purpose (file name order): the robber and its pack stay in the world.
 //! The cash van box (#274): opening it with a fence tool pays the bags once and reports once. The
 //! cash leaves as carried money bags, never a bank balance; a second try on the open box pays
 //! nothing and reports nothing; the next stop stocks it afresh. The route helpers pick the next
 //! stop and hold while a player is near.
-class LF_Test_CashVan : LF_Test
+class LF_Test_HeistCashVan : LF_Test
 {
 	override string GetName()
 	{
@@ -56,6 +57,11 @@ class LF_Test_CashVan : LF_Test
 		ctx.Equal(3, LF_Bank.GetLooseBagCount(vanId), "still three bags");
 		ctx.Equal(1, LF_Breach.GetPoliceNotifyCount(vanId), "still one report");
 		ctx.Equal(1, listener.m_iCount, "still one heist event");
+
+		// The second drill is not left in the robber for the world scan (debugworld/entity-collision).
+		array<IEntity> spare = LF_InventoryUtils.FindItemsByPrefab(inventory, LF_Bank.DRILL_PREFAB);
+		foreach (IEntity drill : spare)
+			SCR_EntityHelper.DeleteEntityAndChildren(drill);
 
 		LF_Bank.Restock(vanId);
 		ctx.Equal(0, LF_Bank.GetLooseBagCount(vanId), "the next stop clears what was left lying");
