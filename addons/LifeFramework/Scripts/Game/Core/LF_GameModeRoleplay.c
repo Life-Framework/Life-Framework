@@ -48,6 +48,7 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_HostStop.StartIfRequested();
 		LF_IncidentLog.Install();
 		LF_AimIntent.Start();
+		LF_DevGameMaster.Install(AreDevToolsEnabled());
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
 		LF_ChainTrace.Install();

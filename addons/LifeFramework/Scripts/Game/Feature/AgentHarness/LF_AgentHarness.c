@@ -152,6 +152,12 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "giveup")
 			return true;
+		if (cmd.Verb == "gm")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+			return true;
+		}
 		if (cmd.Verb == "radio" || cmd.Verb == "pager" || cmd.Verb == "report")
 			return true;
 		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf")
@@ -1063,6 +1069,11 @@ class LF_AgentHarness
 			DoGiveUp(cmd);
 			return;
 		}
+		if (cmd.Verb == "gm")
+		{
+			DoGm(cmd);
+			return;
+		}
 		if (cmd.Verb == "radio")
 		{
 			DoRadio(cmd);
@@ -1396,6 +1407,36 @@ class LF_AgentHarness
 
 		controller.LF_AskGiveUp();
 		WriteResult(cmd.Id, "ok", "giveup_sent");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: open (or close) the Game Master editor for the local player (#617). Reports the
+	//! editor modes this client holds, so a refusal says why (no EDIT mode = not an administrator).
+	protected static void DoGm(LF_AgentCommand cmd)
+	{
+		SCR_EditorManagerEntity editor = SCR_EditorManagerEntity.GetInstance();
+		if (!editor)
+		{
+			WriteResult(cmd.Id, "error", "no_editor_manager");
+			return;
+		}
+
+		string modes = string.Format("modes=%1 canopen=%2", editor.GetEditorModes(), editor.CanOpen());
+		if (cmd.Arg1 == "close")
+		{
+			SCR_EditorManagerEntity.CloseInstance();
+			WriteResult(cmd.Id, "ok", "closed " + modes);
+			return;
+		}
+
+		if (!SCR_EditorManagerEntity.CanOpenInstance())
+		{
+			WriteResult(cmd.Id, "error", "cannot_open " + modes);
+			return;
+		}
+
+		SCR_EditorManagerEntity.OpenInstance();
+		WriteResult(cmd.Id, "ok", "opened " + modes);
 	}
 
 	//------------------------------------------------------------------------------------------------

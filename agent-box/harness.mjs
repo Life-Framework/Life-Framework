@@ -121,6 +121,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "giveup") {
     return `${id} giveup`;
   }
+  if (spec.verb === "gm") {
+    return spec.arg === "close" ? `${id} gm close` : `${id} gm`;
+  }
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
@@ -1446,6 +1449,9 @@ function main(argv) {
     }
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
+    }
+    if (cmd === "gm") {
+      return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));
     }
     if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf") {
       return printResult(sendCommand({ verb: cmd }, 10000));
