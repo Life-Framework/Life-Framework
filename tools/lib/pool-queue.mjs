@@ -7,6 +7,11 @@ export const DEFAULTS = {
   sessionIdleMin: 15,
   promoteMin: 20,
   minFreeMb: 1500,
+  // Memory a second concurrent session takes: the server, plus each game client (MB; measured
+  // 2026-11-10, docs/worktrees.md "Session lanes"). The second session starts only while free RAM
+  // minus this still clears minFreeMb.
+  sessionReserveServerMb: 800,
+  sessionReserveClientMb: 1200,
   bootBudgetS: 30,
   // A session older than sessionHoldMin while another session request queues is warned, then
   // closed sessionGraceMin later. session up --hold raises its own cap, to sessionHoldMaxMin at most.
@@ -57,6 +62,24 @@ export function slotLockName(i) {
 }
 
 export const SESSION_PORT = 2001;
+// Session lane k listens on 2001 + 10 (k - 1), lock server-<port>; test lanes use 2002.. beside them.
+export const SESSION_LANE_STEP = 10;
+
+export function sessionLane(i) {
+  const port = SESSION_PORT + SESSION_LANE_STEP * (i - 1);
+  return { lock: i === 1 ? slotLockName(1) : `server-${port}`, index: i, port };
+}
+
+// The A2S query port of a session lane's server: the engine default for lane 1 (null, no flag),
+// 17777 + 10 x the port offset beside it.
+export function sessionA2sPort(port) {
+  return port === SESSION_PORT ? null : 17777 + (port - SESSION_PORT) * 10;
+}
+
+// Memory (MB) a session of n clients adds, from the reserve settings.
+export function sessionReserveMb(settings, clients) {
+  return (settings.sessionReserveServerMb ?? DEFAULTS.sessionReserveServerMb) + (settings.sessionReserveClientMb ?? DEFAULTS.sessionReserveClientMb) * Math.max(0, Number(clients) || 0);
+}
 
 export function laneKind(purpose) {
   return /^(session|host|serve)/.test(String(purpose ?? "")) ? "session" : "test";
@@ -65,7 +88,7 @@ export function laneKind(purpose) {
 // [{ lock, index, port }] for the lane kind.
 export function lanesFor(m, kind) {
   if (!m.lanes) return Array.from({ length: m.slots }, (_, i) => ({ lock: slotLockName(i + 1), index: i + 1, port: SESSION_PORT }));
-  if (kind === "session") return [{ lock: slotLockName(1), index: 1, port: SESSION_PORT }];
+  if (kind === "session") return Array.from({ length: m.lanes.session ?? 1 }, (_, i) => sessionLane(i + 1));
   return Array.from({ length: m.lanes.test }, (_, i) => ({ lock: `server-test-${i + 1}`, index: i + 1, port: SESSION_PORT + 1 + i }));
 }
 
@@ -76,7 +99,9 @@ export function allLaneLocks(m) {
 // The UDP port a server booted under that lock listens on.
 export function portForLock(name) {
   const mm = /^server-test-(\d+)$/.exec(String(name));
-  return mm ? SESSION_PORT + Number(mm[1]) : SESSION_PORT;
+  if (mm) return SESSION_PORT + Number(mm[1]);
+  const sm = /^server-(\d+)$/.exec(String(name));
+  return sm ? Number(sm[1]) : SESSION_PORT;
 }
 
 // Whether `other` makes `mine` wait on machine m: it is served first and its
@@ -91,9 +116,17 @@ export function blocks(other, mine, m, now, promoteMs) {
 
 // RAM gate: a server beyond the first waits while free memory is under the
 // floor, instead of letting Windows page.
-export function ramVerdict({ running, freeMb, minFreeMb }) {
-  if (running <= 0 || freeMb >= minFreeMb) return { ok: true };
-  return { ok: false, reason: `free RAM ${(freeMb / 1024).toFixed(1)} GB under ${(minFreeMb / 1024).toFixed(1)} GB with ${running} server(s) running` };
+// A second session also needs reserveMb (its own expected memory) on top of the floor, and
+// pendingMb counts sessions still booting, whose memory has not shown in freeMb yet.
+export function ramVerdict({ running, freeMb, minFreeMb, reserveMb = 0, pendingMb = 0 }) {
+  if (running <= 0) return { ok: true };
+  const after = freeMb - pendingMb - reserveMb;
+  if (after >= minFreeMb) return { ok: true };
+  const gb = (x) => (x / 1024).toFixed(1);
+  if (reserveMb > 0 || pendingMb > 0) {
+    return { ok: false, reason: `free RAM ${gb(freeMb)} GB minus ${gb(reserveMb + pendingMb)} GB for the session${pendingMb > 0 ? "(s) starting" : ""} would be under ${gb(minFreeMb)} GB` };
+  }
+  return { ok: false, reason: `free RAM ${gb(freeMb)} GB under ${gb(minFreeMb)} GB with ${running} server(s) running` };
 }
 
 // Session lease: idle time since the last harness command (or the session's
