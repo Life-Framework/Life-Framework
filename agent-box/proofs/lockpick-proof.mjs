@@ -24,6 +24,7 @@ async function runLockpickProof() {
   wait(2500);
   on(1, { verb: "look" });
   // #522: the lock state is replicated; the witness sees the pick offered on the locked door.
+  const offered1 = sees.offerCount(1, "LF_LockpickAction");
   const offered2 = sees.offerCount(2, "LF_LockpickAction");
   on(1, { verb: "capture", mode: "ui", name: "m2_411_door_before_client1" }, 25000);
   const noPick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Door" }, 10000);
@@ -32,7 +33,7 @@ async function runLockpickProof() {
   // A pick can snap (the roll is the design): retry, with a fresh pick, until client 1 sees the lock gone.
   let pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Door" }, 10000);
   wait(23000);
-  for (let attempt = 2; attempt <= 6 && sees.offerSeen(1, "LF_LockpickAction"); attempt++) {
+  for (let attempt = 2; attempt <= 6 && sees.offerCount(1, "LF_LockpickAction") >= offered1; attempt++) {
     on(1, { verb: "lockpick" }, 10000);
     wait(1000);
     pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Door" }, 10000);
