@@ -1499,6 +1499,11 @@ function spawnOutsideSsh(exe, args, cwd) {
   return { pid: Number(m[2]) };
 }
 
+// The lane a session runs on: recorded in session.json (a session of before the lanes ran on server-2001).
+function laneLockOf(s) {
+  return s?.lane?.lock ?? SERVER_SLOT;
+}
+
 // Verbose session lines go to <session dir>/up.log; the console gets the verdict.
 let sessionLog = null;
 function slog(msg) {
@@ -1523,7 +1528,7 @@ function cmdSessionDown(dir) {
   }
   console.log(`session: server pid ${s.serverPid} ${killTree(s.serverPid) ? "closed" : "already gone"}`);
   for (let i = 0; i < 20 && host.pidAlive(s.serverPid); i++) sleepMs(500);
-  wt.releaseLock(ROOT, SERVER_SLOT, s.serverPid);
+  wt.releaseLock(ROOT, laneLockOf(s), s.serverPid);
   const stoppedAt = new Date().toISOString();
   session.writeSession(dir, { ...s, stoppedAt });
   recordSessionEnd(dir, s, stoppedAt);
@@ -1537,7 +1542,7 @@ function recordSessionEnd(dir, s, stoppedAt) {
     if (s.stoppedAt || !s.heldSince) return;
     const reaped = readReaped(dir);
     if (reaped && Date.now() - Date.parse(reaped.at) < 180000) return;
-    pool.recordSession(ROOT, { slug: wt.slugOfRoot(ROOT) ?? undefined, priority: s.priority, waitS: s.waitS, heldSinceMs: Date.parse(s.heldSince), endMs: Date.parse(stoppedAt), boots: s.boots, bootS: s.bootS, clients: s.expectClients, mission: s.mission, closedBy: "owner" });
+    pool.recordSession(ROOT, { slot: laneLockOf(s), slug: wt.slugOfRoot(ROOT) ?? undefined, priority: s.priority, waitS: s.waitS, heldSinceMs: Date.parse(s.heldSince), endMs: Date.parse(stoppedAt), boots: s.boots, bootS: s.bootS, clients: s.expectClients, mission: s.mission, closedBy: "owner" });
   } catch {}
 }
 
@@ -1638,8 +1643,12 @@ function cmdSessionUp(root, dir, flags) {
   // into the pool queue (priority, aging, the hold cap and the idle reaper all work from there); this used to be a
   // blind 5 s poll loop outside the queue, so a waiting `up` had no place in line and nothing closed the holder.
   if (!flags.includes("--wait")) {
-    for (const o of session.liveSessionsElsewhere(dir, host.pidAlive)) {
-      console.log(`session: ${o.root ?? o.dir} has a live session; it runs 'node agent-box/session.mjs down' first`);
+    // One live session per session lane: another checkout's session only blocks once every lane is taken.
+    const laneCount = pool.sessionLanes(root).length;
+    const live = session.liveSessionsElsewhere(dir, host.pidAlive);
+    if (live.length >= laneCount) {
+      const o = live[0];
+      console.log(`session: ${o.root ?? o.dir} has a live session${laneCount > 1 ? ` (all ${laneCount} session lanes are taken)` : ""}; it runs 'node agent-box/session.mjs down' first`);
       return 1;
     }
   }
@@ -1653,8 +1662,14 @@ function cmdSessionUp(root, dir, flags) {
   }
   const holderOf = () => {
     try {
-      const h = JSON.parse(readFileSync(join(wt.hubDirOf(root), "locks", `${SERVER_SLOT}.lock`), "utf8"));
-      return `${h.purpose ?? "a run"} of ${h.slug ?? h.root ?? "another checkout"} (pid ${h.pid})`;
+      const holders = [];
+      for (const l of pool.sessionLanes(root)) {
+        try {
+          const h = JSON.parse(readFileSync(join(wt.hubDirOf(root), "locks", `${l.lock}.lock`), "utf8"));
+          if (h.pid && host.pidAlive(h.pid)) holders.push(`${h.purpose ?? "a run"} of ${h.slug ?? h.root ?? "another checkout"} (pid ${h.pid})`);
+        } catch {}
+      }
+      return holders.length ? holders.join(" and ") : "another run";
     } catch {
       return "another run";
     }
@@ -1667,21 +1682,26 @@ function cmdSessionUp(root, dir, flags) {
   const queuedAt = Date.now();
   let lane = null;
   try {
-    if (flags.includes("--wait")) console.log(`session: port 2001 is held by ${holderOf()}; queued (up to ${SESSION_QUEUE_MIN} min)`);
-    lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
+    if (flags.includes("--wait")) console.log(`session: the session lane is held by ${holderOf()}; queued (up to ${SESSION_QUEUE_MIN} min)`);
+    lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
-    console.log(`FAIL  port 2001 is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
+    console.log(`FAIL  the session lane is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
     return 1;
   }
+  const laneLock = lane?.lockName ?? lane?.name ?? SERVER_SLOT;
+  const lanePort = lane?.port ?? 2001;
+  console.log(`session: lane ${laneLock} (port ${lanePort})`);
   // The lane is ours; clients the previous holder left behind (its server is gone) may still hold memory.
-  let leftovers = session.liveSessionsElsewhere(dir, host.pidAlive);
+  // Another lane's healthy session is not a leftover: only clients whose server is gone are.
+  const leftoversNow = () => session.liveSessionsElsewhere(dir, host.pidAlive).filter((o) => !o.serverUp);
+  let leftovers = leftoversNow();
   for (let i = 0; i < 24 && leftovers.length; i++) {
     sleepMs(5000);
-    leftovers = session.liveSessionsElsewhere(dir, host.pidAlive);
+    leftovers = leftoversNow();
   }
   if (leftovers.length) {
     console.log(`FAIL  ${leftovers[0].root ?? leftovers[0].dir} still has game clients running after 2 min; it runs 'node agent-box/session.mjs down'`);
-    wt.releaseLock(root, SERVER_SLOT);
+    wt.releaseLock(root, laneLock);
     return 1;
   }
   const heldSince = new Date().toISOString();
@@ -1693,7 +1713,7 @@ function cmdSessionUp(root, dir, flags) {
     writeFileSync(sessionLog, "");
   } catch {}
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), root, mission, res, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
+  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, res, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
     // The hold cap judges only a session that carries holdCap (pool.mjs reapIdleSessions).
     holdCap: true, holdMin: hold.min, heldSince, waitS, priority: pool.resolvePriority(root, priorityFlag(flags)), boots: 1, bootS: [] };
   if (hold.note) console.log(hold.note);
@@ -1703,7 +1723,7 @@ function cmdSessionUp(root, dir, flags) {
     console.log(`      full log ${sessionLog}`);
     session.writeSession(dir, state);
     cmdSessionDown(dir);
-    wt.releaseLock(root, SERVER_SLOT);
+    wt.releaseLock(root, laneLock);
     return 1;
   };
   try {
@@ -1724,7 +1744,7 @@ function cmdSessionUp(root, dir, flags) {
     return fail(e.message);
   } finally {
     // Before the transfer this process owns the lock; after it the server does.
-    wt.releaseLock(root, SERVER_SLOT);
+    wt.releaseLock(root, laneLock);
   }
 }
 
@@ -1734,14 +1754,14 @@ function cmdSessionUp(root, dir, flags) {
 function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visible, loadSave, fail, marker }) {
   const junction = serverGameAddons(root);
   mkdirSync(paths.server, { recursive: true });
-  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave });
+  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001 });
   slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
   const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
   srv.unref?.();
   if (!srv.pid) return fail("server did not start");
   state.serverPid = srv.pid;
-  wt.transferLock(root, SERVER_SLOT, srv.pid);
+  wt.transferLock(root, laneLockOf(state), srv.pid);
   session.writeSession(dir, state);
 
   let log = null;
@@ -1774,7 +1794,7 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
 // null, or the code fail() returned.
 function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail }) {
   mkdirSync(c.box, { recursive: true });
-  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, session: state.id, res, sound: !!state.sound });
+  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound });
   slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
   // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
   // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
@@ -1929,7 +1949,7 @@ function cmdSessionRestart(root, dir, flags) {
   // Hold port 2001 across the restart: a queued test would otherwise take it
   // between the old server's exit and the new boot.
   try {
-    wt.adoptLock(root, SERVER_SLOT, prev.serverPid);
+    wt.adoptLock(root, laneLockOf(prev), prev.serverPid);
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
     return 1;
@@ -1941,7 +1961,7 @@ function cmdSessionRestart(root, dir, flags) {
   const deadline = Date.now() + 180000;
   while (Date.now() < deadline && host.pidAlive(prev.serverPid)) sleepMs(1000);
   if (host.pidAlive(prev.serverPid)) {
-    wt.transferLock(root, SERVER_SLOT, prev.serverPid);
+    wt.transferLock(root, laneLockOf(prev), prev.serverPid);
     console.log("FAIL  the server did not close within 180s; close it with 'node agent-box/session.mjs down'");
     return 1;
   }
@@ -1957,7 +1977,7 @@ function cmdSessionRestart(root, dir, flags) {
     console.log(`FAIL  ${msg}`);
     session.writeSession(dir, state);
     cmdSessionDown(dir);
-    wt.releaseLock(root, SERVER_SLOT);
+    wt.releaseLock(root, laneLockOf(prev));
     return 1;
   };
   try {
@@ -1973,7 +1993,7 @@ function cmdSessionRestart(root, dir, flags) {
   } catch (e) {
     return fail(e.message);
   } finally {
-    wt.releaseLock(root, SERVER_SLOT);
+    wt.releaseLock(root, laneLockOf(prev));
   }
 }
 

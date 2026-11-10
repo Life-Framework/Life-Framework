@@ -40,3 +40,27 @@ GenericEntity Moonshine_Still : "{4C1A9E07B35D8210}Prefabs/Chains/LF_ChainStill.
  }
  coords 384 0 305
 }
+GenericEntity : "{D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et" {
+ coords 380 0 305.5
+ angleY 0
+}
+GenericEntity : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 389.5 0 304
+ angleY 20
+}
+GenericEntity : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 391 0 301.5
+ angleY 75
+}
+GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 389 0 307.5 
+ angleY 15
+}
+GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+ coords 381.5 0 301.8
+ angleY 0
+}
+GenericEntity : "{CD87FB2AC3A85D65}Prefabs/Structures/BuildingParts/Heating/BoilerLarge_02/BoilerLarge_02_base.et" {
+ coords 385.5 0 308
+ angleY 0
+}

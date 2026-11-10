@@ -105,9 +105,19 @@ try {
   check(q.lanesFor(lanes, "session").map((l) => `${l.lock}:${l.port}`).join() === "server-2001:2001", "session lane is not server-2001 on 2001");
   check(q.lanesFor({ name: "x", via: "ssh", slots: 2 }, "test").map((l) => l.lock).join() === "server-2001,server-2001-s2", "a machine without lanes lost its shared slots");
   check(q.portForLock("server-test-2") === 2003 && q.portForLock("server-2001") === 2001, "portForLock");
+  // Two session lanes: the old lane keeps its name and port, lane 2 is server-2011 on 2011 (A2S 17877).
+  const lanes2 = { ...lanes, lanes: { test: 2, session: 2 } };
+  check(q.lanesFor(lanes2, "session").map((l) => `${l.lock}:${l.port}`).join() === "server-2001:2001,server-2011:2011", "two session lanes are not server-2001:2001 and server-2011:2011");
+  check(q.portForLock("server-2011") === 2011 && q.sessionA2sPort(2001) === null && q.sessionA2sPort(2011) === 17877, "session lane 2 port / A2S port");
+  check(!q.lanesFor(lanes2, "test").some((l) => l.port === 2011) && q.allLaneLocks(lanes2).length === 4, "a test lane shares a port with a session lane");
+  const ses = { sessionReserveServerMb: 800, sessionReserveClientMb: 1200 };
+  check(q.sessionReserveMb(ses, 1) === 2000 && q.sessionReserveMb(ses, 2) === 3200, "session reserve per client count");
+  check(q.ramVerdict({ running: 1, freeMb: 3600, minFreeMb: 1500, reserveMb: 2000 }).ok && !q.ramVerdict({ running: 1, freeMb: 3400, minFreeMb: 1500, reserveMb: 2000, pendingMb: 2000 }).ok, "RAM gate ignores the reserve or the sessions still booting");
+  check(!q.ramVerdict({ running: 1, freeMb: 3400, minFreeMb: 1500, reserveMb: 2000, pendingMb: 2000 }).ok && /for the session/.test(q.ramVerdict({ running: 1, freeMb: 3000, minFreeMb: 1500, reserveMb: 2000 }).reason), "RAM wait reason lacks the session reserve");
   const T0 = Date.parse("2026-01-01T00:00:00Z");
   const tk = (file, priority, minAgo, lane = "test") => ({ file, priority, lane, at: new Date(T0 - minAgo * 60000).toISOString(), machines: ["local"] });
   const min20 = 20 * 60000;
+  check(q.blocks(tk("s", "normal", 9, "session"), tk("t", "normal", 1, "session"), lanes2, Date.parse("2026-01-01T00:00:00Z"), 20 * 60000) === true, "an older session ticket does not count toward the lane queue");
   const lowOld = tk("1-low", "low", 5);
   const normalNew = tk("2-normal", "normal", 1);
   check(q.queueOrder([lowOld, normalNew], T0, min20).map((t) => t.file).join() === "2-normal,1-low", "a queued low job was not overtaken by a normal one");

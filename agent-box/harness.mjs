@@ -274,8 +274,13 @@ export function sendCommand(spec, timeoutMs = 8000) {
   }
   if (address.error) return { id, status: "error", detail: address.error, line: "", raw: `${id} error ${address.error}` };
   const line = buildLine(id, { ...spec, session: address.id });
-  playClaim = playClaim ?? claimPlay(ROOT);
-  if (!playClaim.ok) return { id, status: "error", detail: playClaim.reason, line, raw: `${id} error ${playClaim.reason}` };
+  // The machine-wide play claim guards the shared default profile's command file. A session
+  // client has its own box and a session id, so concurrent sessions in two checkouts (one per
+  // session lane) do not share a channel and need no claim.
+  const boxes = profileBoxes();
+  const sessionOnly = boxes.length > 0 && boxes.every((b) => sessionDirOfBox(b));
+  if (!sessionOnly) playClaim = playClaim ?? claimPlay(ROOT);
+  if (!sessionOnly && !playClaim.ok) return { id, status: "error", detail: playClaim.reason, line, raw: `${id} error ${playClaim.reason}` };
   for (const dir of profileBoxes()) {
     mkdirSync(dir, { recursive: true });
     rmSync(join(dir, "result.txt"), { force: true });
