@@ -2263,7 +2263,7 @@ function wtSlug(args) {
 function wtHelp() {
   console.log(`worktree commands (parallel agent isolation)
 
-  tools\\cli wt new <slug> [--wait]    create Life-Framework-ws-<slug> at ws/<slug>, allocate ports
+  tools\\cli wt new <slug> [--wait] [--base B]    create Life-Framework-ws-<slug> at ws/<slug>, allocate ports
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
@@ -2275,9 +2275,12 @@ function wtHelp() {
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
                                        grep that worktree's newest console.log (from anywhere)
   tools\\cli wt gate <slug> [--wait]   validate --full + build + test (tier=all) in that worktree
-  tools\\cli wt sync <slug>            merge origin/main into the worktree branch
-  tools\\cli wt ship <slug> [--closes N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate]
-                                       clean-tree check -> merge origin/main only if it conflicts ->
+  tools\\cli wt sync <slug>            merge the worktree's base (origin/main by default) into the branch
+  tools\\cli wt sync-base <base> [--source main]
+                                       PR that merges origin/<source> into origin/<base> (merge commit on a
+                                       sync/ branch, never a force push); auto-merges when green
+  tools\\cli wt ship <slug> [--closes N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B]
+                                       clean-tree check -> merge origin/<base> only if it conflicts ->
                                        gate -> push -> PR (or reuse the open one) -> gh auto-merge
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch
   tools\\cli wt open <slug>            open a terminal in the worktree
@@ -2285,6 +2288,7 @@ function wtHelp() {
   tools\\cli wt main                   print the main checkout path
 
 flags:
+  --base B     branch to cut from and ship to (default main; 'wt new' records it for 'wt ship')
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
   --closes N   start the PR body with 'Closes #N'
@@ -2301,8 +2305,9 @@ function wtNewCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   try {
-    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 60000 : 0 });
+    const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 60000 : 0, base: argValue(args, "--base") ?? "main" });
     console.log(`created worktree ${r.slug}`);
+    console.log(`  base:   origin/${r.base}`);
     console.log(`  path:   ${r.path}`);
     console.log(`  branch: ${r.branch}`);
     console.log(`  ports:  game ${r.ports.gamePort}   a2s ${r.ports.a2sPort}`);
@@ -2328,7 +2333,7 @@ async function wtListCmd() {
   console.log("worktrees  (main checkout is reserved for the world editor)");
   const slugW = Math.max(4, ...rows.map((e) => e.slug.length)) + 2;
   const branchW = Math.max(6, ...rows.map((e) => e.branch.length)) + 2;
-  const line = (e, text) => `  ${e.slug.padEnd(slugW)}${e.branch.padEnd(branchW)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}${text}`;
+  const line = (e, text) => `  ${e.slug.padEnd(slugW)}${(e.branch + (wt.baseOf(e) !== "main" ? ` (->${wt.baseOf(e)})` : "")).padEnd(branchW + 10)}${`${e.ports.gamePort}/${e.ports.a2sPort}`.padEnd(14)}${text}`;
   console.log(`  ${"slug".padEnd(slugW)}${"branch".padEnd(branchW)}${"ports".padEnd(14)}state`);
   // One git call for every branch's ahead/behind, one for every checkout's
   // current branch, and the per-worktree status calls in parallel: a serial
@@ -2354,7 +2359,15 @@ async function wtListCmd() {
       console.log(line(e, "MISSING"));
       continue;
     }
-    const c = counts.get(e.branch) ?? { ahead: 0, behind: 0 };
+    let c = counts.get(e.branch) ?? { ahead: 0, behind: 0 };
+    if (wt.baseOf(e) !== "main") {
+      const lr = wt.git(ROOT, ["rev-list", "--left-right", "--count", `${e.branch}...origin/${wt.baseOf(e)}`]);
+      const [a, b] = lr.stdout.trim().split(/\s+/).map((n) => parseInt(n, 10));
+      if (lr.status === 0) {
+        c = { ahead: a || 0, behind: b || 0 };
+        counts.set(e.branch, c);
+      }
+    }
     const ahead = c.ahead;
     const behind = c.behind;
     // The branch is an ancestor of origin/main exactly when it has no commits
@@ -2376,7 +2389,7 @@ function wtSyncCmd(args) {
   if (!slug) return 1;
   try {
     const r = wt.wtSync(ROOT, slug);
-    console.log(`synced ${r.slug}: merged origin/main into ${r.branch}`);
+    console.log(`synced ${r.slug}: merged origin/${r.base} into ${r.branch}`);
     return 0;
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
@@ -2602,7 +2615,7 @@ async function wtLogsCmd(args) {
 // website, tools) gets the cheap gate: `validate` without the Workbench
 // compile, build, or in-game suite, so it never queues for a pool slot.
 function gameChanged(wtRoot) {
-  const r = wt.git(wtRoot, ["diff", "--name-only", "origin/main...HEAD"]);
+  const r = wt.git(wtRoot, ["diff", "--name-only", `origin/${wt.baseOfRoot(wtRoot)}...HEAD`]);
   if (r.status !== 0) return true;
   const files = r.stdout.split(/\r?\n/).filter(Boolean);
   return files.some((f) => f.startsWith("addons/"));
@@ -2631,6 +2644,59 @@ async function wtGateCmd(args) {
   }
 }
 
+// Bring one long-lived branch into another through a PR: a worktree on a sync-*
+// branch cut from origin/<base>, origin/<source> merged in (generated files
+// resolved by the merge drivers), pushed, PR'd into <base>, auto-merge queued.
+// Conflicts outside generated files stop with the file list; nothing is forced.
+async function wtSyncBaseCmd(args) {
+  const base = args[0];
+  if (!base || base.startsWith("-")) {
+    console.log("usage: tools\\cli wt sync-base <base> [--source main]");
+    return 1;
+  }
+  const source = argValue(args, "--source") ?? "main";
+  try {
+    wt.checkBaseName(base);
+    wt.checkBaseName(source);
+    if (base === source) throw new Error("base and source are the same branch");
+    wt.git(ROOT, ["fetch", "origin", "--prune"]);
+    const behind = wt.git(ROOT, ["rev-list", "--count", `origin/${base}..origin/${source}`]);
+    if (behind.status !== 0) throw new Error("cannot compare origin/" + base + " and origin/" + source + ": " + (behind.stderr || behind.stdout).trim());
+    if (parseInt(behind.stdout.trim(), 10) === 0) {
+      console.log("origin/" + base + " already contains origin/" + source + "; nothing to sync");
+      return 0;
+    }
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "");
+    const slug = "sync-" + base.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-" + stamp;
+    const r = wt.wtNew(ROOT, slug, { base });
+    const { healMerge } = await import("./prs.mjs");
+    const m = healMerge(r.path, { base: "origin/" + source });
+    if (m.status === "needs-human") {
+      console.log("FAIL  origin/" + source + " does not merge into origin/" + base + " automatically: " + m.reason + (m.conflicted.length ? " (" + m.conflicted.join(", ") + ")" : ""));
+      console.log("      resolve by hand: cd " + r.path + "; git merge origin/" + source + "; fix, commit; tools\\cli wt ship " + slug);
+      return 1;
+    }
+    console.log("merged origin/" + source + " into " + r.branch + " (" + m.status + (m.resolved && m.resolved.length ? ": " + m.resolved.join(", ") : "") + ")");
+    const push = wt.git(r.path, ["push", "-u", "origin", r.branch]);
+    if (push.status !== 0) throw new Error("push: " + (push.stderr || push.stdout));
+    const head = wt.git(r.path, ["rev-parse", "HEAD"]).stdout.trim();
+    const pr = wt.createPrGh(r.path, {
+      head: r.branch,
+      base,
+      title: "Sync " + source + " into " + base,
+      body: "Merge origin/" + source + " into " + base + " (tools\\cli wt sync-base " + base + "). Merge commit, no force push.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+    });
+    console.log("PR: " + pr.url);
+    wt.autoMergePrGh(r.path, pr.number);
+    console.log("sync-base: auto-merge queued. Prune after merge: 'cli wt prune " + slug + "'");
+    console.log("PR " + pr.url + ", head " + head);
+    return 0;
+  } catch (err) {
+    console.log("FAIL  " + err.message);
+    return 1;
+  }
+}
+
 async function wtShipCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
@@ -2641,8 +2707,11 @@ async function wtShipCmd(args) {
   const closes = argValue(flags, "--closes");
   const bodyFile = argValue(flags, "--body-file");
   let e;
+  let base;
   try {
     e = wt.requireWorktree(ROOT, slug);
+    base = argValue(flags, "--base") ?? wt.baseOf(e);
+    wt.checkBaseName(base);
   } catch (err) {
     console.log(`FAIL  ${err.message}`);
     return 1;
@@ -2672,9 +2741,9 @@ async function wtShipCmd(args) {
     customBody = readFileSync(p, "utf8").replace(/\r\n/g, "\n").trim();
   }
   wt.git(wtRoot, ["fetch", "origin", "--prune"]);
-  const nCommits = parseInt(wt.git(wtRoot, ["rev-list", "--count", "origin/main..HEAD"]).stdout.trim() || "0", 10);
+  const nCommits = parseInt(wt.git(wtRoot, ["rev-list", "--count", `origin/${base}..HEAD`]).stdout.trim() || "0", 10);
   if (nCommits === 0) {
-    console.log(`FAIL  nothing to ship: ${e.branch} has no commits beyond origin/main`);
+    console.log(`FAIL  nothing to ship: ${e.branch} has no commits beyond origin/${base}`);
     return 1;
   }
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
@@ -2682,13 +2751,13 @@ async function wtShipCmd(args) {
   if (!skipSync) {
     let conflicting;
     try {
-      conflicting = wt.mergeWouldConflict(wtRoot, "origin/main");
+      conflicting = wt.mergeWouldConflict(wtRoot, `origin/${base}`);
     } catch (err) {
       console.log(`FAIL  ${err.message}`);
       return 1;
     }
     if (conflicting) {
-      console.log("=== ship: origin/main conflicts; merging it ===");
+      console.log(`=== ship: origin/${base} conflicts; merging it ===`);
       try {
         wt.wtSync(ROOT, slug);
       } catch (err) {
@@ -2696,7 +2765,7 @@ async function wtShipCmd(args) {
         return 1;
       }
     } else {
-      console.log("=== ship: origin/main merges clean; no sync ===");
+      console.log(`=== ship: origin/${base} merges clean; no sync ===`);
     }
   }
   if (!skipGate) {
@@ -2714,7 +2783,7 @@ async function wtShipCmd(args) {
     return 1;
   }
   const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
-  const subjects = wt.commitSubjects(wtRoot, "origin/main..HEAD");
+  const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
   const title = subjects[0] ?? e.branch;
   let body = customBody ?? [
     `Automated ship from worktree \`${slug}\`.`,
@@ -2730,14 +2799,14 @@ async function wtShipCmd(args) {
     if (wt.ghAvailable()) {
       pr = wt.findOpenPrGh(wtRoot, e.branch);
       if (pr) console.log(`ship: PR already open, pushed ${head.slice(0, 7)} to it`);
-      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body });
+      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body, base });
     } else {
       const token = process.env.GITHUB_TOKEN;
       if (!token) {
         console.log("FAIL  no PR path: install the GitHub CLI ('winget install GitHub.cli') or set GITHUB_TOKEN");
         return 1;
       }
-      pr = await wt.createPrRest(wtRoot, { head: e.branch, title, body, token });
+      pr = await wt.createPrRest(wtRoot, { head: e.branch, title, body, token, base });
     }
   } catch (err) {
     console.log(`FAIL  PR creation: ${err.message}`);
@@ -2757,7 +2826,7 @@ async function wtShipCmd(args) {
     } else {
       // The REST API has no auto-merge; this merges now.
       const m = await wt.mergePrRest(wtRoot, pr.number, e.branch, process.env.GITHUB_TOKEN);
-      console.log(m.already ? "ship: PR already merged or no-op" : "ship: merged into main");
+      console.log(m.already ? "ship: PR already merged or no-op" : `ship: merged into ${base}`);
     }
   } catch (err) {
     console.log(`FAIL  merge: ${err.message} (PR is at ${pr.url})`);
@@ -2781,6 +2850,7 @@ function cmdWt(rest) {
     ci: () => wtGateCmd(subArgs),
     logs: () => wtLogsCmd(subArgs),
     sync: () => wtSyncCmd(subArgs),
+    "sync-base": () => wtSyncBaseCmd(subArgs),
     ship: () => wtShipCmd(subArgs),
     prune: () => wtPruneCmd(subArgs),
     open: () => wtOpenCmd(subArgs),

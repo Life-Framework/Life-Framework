@@ -63,11 +63,12 @@ foreach ($p in $state.worktrees.PSObject.Properties) {
     $warnings += "worktree '$slug' is missing its tmp/wt.json marker (run 'cli wt list' to repair)"
   }
 
-  git -C $root merge-base --is-ancestor $w.branch origin/main 2>$null
+  $baseBranch = if ($w.base) { $w.base } else { 'main' }
+  git -C $root merge-base --is-ancestor $w.branch "origin/$baseBranch" 2>$null
   if ($LASTEXITCODE -eq 0) {
     $dirty = @(git -C $w.path status --porcelain).Count -gt 0
     if (-not $dirty) {
-      $warnings += "worktree '$slug' is merged into origin/main and clean - prune it (cli wt prune $slug)"
+      $warnings += "worktree '$slug' is merged into origin/$baseBranch and clean - prune it (cli wt prune $slug)"
     }
   }
 }
