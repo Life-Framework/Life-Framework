@@ -6696,6 +6696,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
+    CustomStringTableItem "{A27300000000BA02}" {
+     Id "LF-BankKit_Take"
+     Target_en_us "Take bank robbery kit"
+     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
     CustomStringTableItem "{9BE7A1D673564E1C}" {
      Id "LF-Dispatch_TestPolice"
      Target_en_us "Test police call"
@@ -6726,10 +6731,15 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Test calls are off in this game mode."
      Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
     }
-    CustomStringTableItem "{A27300000000BA02}" {
-     Id "LF-BankKit_Take"
-     Target_en_us "Take bank robbery kit"
-     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
     }
   }
  }
