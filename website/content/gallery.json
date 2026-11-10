@@ -7,7 +7,13 @@
     { "id": "epic-410", "title": "Underworld", "blurb": "Stolen cars, chop shops, and the moonshine chain." },
     { "id": "town", "title": "The village", "blurb": "The playtest town around the sites." }
   ],
-  "issueSection": { "116": "town", "276": "town", "265": "epic-146", "271": "epic-148", "274": "epic-148" },
+  "issueSection": {
+    "116": "town",
+    "265": "epic-146",
+    "271": "epic-148",
+    "274": "epic-148",
+    "276": "town"
+  },
   "issueTitles": {
     "116": "Signs in the village",
     "243": "Lawless Area signs",
@@ -56,8 +62,6 @@
     "area-2-bank/detail": "The two ATM teller windows either side of the bank door",
     "area-3-store/wide": "The general store with its counter out front, and the market tables and sign down the street",
     "area-3-store/counter": "The store counter with the shelf goods on top, the fascia sign and the sandwich board beside the door",
-    "area-5-fuel-station/wide": "The fuel station from the main street: the canopy and kiosk, the till counter with the clerk behind it, the payphone and the FUEL STATION sign",
-    "area-5-fuel-station/detail": "The fuel till on its counter, clerk behind it, facing the street: the Rob the till prompt",
     "area-5-fuel-station/wide": "The fuel station from the main street: the canopy and kiosk, the till counter with the clerk behind it, the payphone and the FUEL STATION sign",
     "area-5-fuel-station/detail": "The fuel till on its counter, clerk behind it, facing the street: the Rob the till prompt",
     "area-6-police/wide": "The police post from the main street: the full villa, the POLICE STATION sign, the duty desk in the loggia, the payphone, the two boards on the lawn and a police jeep",
@@ -111,4 +115,3 @@
     "275/m2_275_armory_opened_client1_1.png"
   ]
 }
-
