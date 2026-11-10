@@ -5,9 +5,9 @@ GenericEntity Roadmap_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL
     UserActionContext "{85653734FAE04F9E}" {
      ContextName "default"
      Position PointInfo "{2514C1ACD78CF71D}" {
-      Offset 0 0.8 0
+      Offset -0.0559 0.5 0.2349
      }
-     Radius 3
+     Radius 1.5
     }
    }
    additionalActions {

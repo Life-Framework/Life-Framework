@@ -12,13 +12,17 @@
 // ActionsManagerComponent drops the lock. Meshes are not renamed or swapped.
 //
 //   node tools/actions/place-action-contexts.mjs
+//   node tools/actions/place-action-contexts.mjs --anchor front|center|top|custom ... <entity|prefab>
+//   node tools/actions/place-action-contexts.mjs --check
+//
+// The anchor modes live in action-anchor.mjs (docs/action-anchors.md).
 
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
 // tools/mcp/ is git-ignored and only installed in the main checkout. A worktree
 // borrows the main checkout's build of the pak reader.
@@ -49,11 +53,11 @@ function pak() {
   return vfs;
 }
 
-function addonOf(root) {
+export function addonOf(root) {
   return join(root, "addons", "LifeFramework");
 }
 
-function bracesBalanced(text) {
+export function bracesBalanced(text) {
   let depth = 0;
   for (const ch of text) {
     if (ch === "{") depth++;
@@ -65,18 +69,18 @@ function bracesBalanced(text) {
   return depth === 0;
 }
 
-function newlineOf(text) {
+export function newlineOf(text) {
   return text.includes("\r\n") ? "\r\n" : "\n";
 }
 
-function num(value) {
+export function num(value) {
   let text = (Math.round(value * 10000) / 10000).toFixed(4);
   text = text.replace(/0+$/, "").replace(/\.$/, "");
   if (text === "-0") return "0";
   return text;
 }
 
-function walk(dir, out = []) {
+export function walk(dir, out = []) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) walk(path, out);
@@ -85,9 +89,9 @@ function walk(dir, out = []) {
   return out;
 }
 
-const textCache = new Map();
+export const textCache = new Map();
 
-function readResource(root, rel) {
+export function readResource(root, rel) {
   const key = rel.replace(/\\/g, "/");
   if (textCache.has(key)) return textCache.get(key);
   const local = join(addonOf(root), ...key.split("/"));
@@ -103,12 +107,12 @@ function headerLine(text) {
   return end < 0 ? text : text.slice(0, end).replace(/\r$/, "");
 }
 
-function parentOf(text) {
+export function parentOf(text) {
   const match = headerLine(text).match(/:\s*"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/);
   return match ? match[1] : null;
 }
 
-function braceBlock(text, openIndex) {
+export function braceBlock(text, openIndex) {
   let depth = 0;
   for (let i = openIndex; i < text.length; i++) {
     const ch = text[i];
@@ -121,7 +125,7 @@ function braceBlock(text, openIndex) {
   return null;
 }
 
-function matchBlock(text, pattern) {
+export function matchBlock(text, pattern) {
   const match = pattern.exec(text);
   if (!match) return null;
   const open = match[0].includes("{")
@@ -133,24 +137,41 @@ function matchBlock(text, pattern) {
   return { ...block, index: match.index, header: match[0], body: text.slice(block.start, block.end) };
 }
 
-function lineIndent(text, index) {
+export function lineIndent(text, index) {
   const lineStart = text.lastIndexOf("\n", Math.max(0, index - 1)) + 1;
   const lineEnd = text.indexOf("\n", lineStart);
   const line = text.slice(lineStart, lineEnd < 0 ? text.length : lineEnd);
   return (line.match(/^[ \t]*/) || [""])[0];
 }
 
-function directComponents(entityText) {
-  return matchBlock(entityText, /(?:^|\n)[ \t]*components\s*\{/);
+// The entity's own `components {` block: the one at brace depth 1 of the entity
+// text. A parent entity with no components of its own must not pick up the
+// first child's.
+export function directComponents(entityText) {
+  const re = /(?:^|\n)[ \t]*components\s*\{/g;
+  let match;
+  while ((match = re.exec(entityText))) {
+    let depth = 0;
+    for (let i = 0; i < match.index; i++) {
+      if (entityText[i] === "{") depth++;
+      else if (entityText[i] === "}") depth--;
+    }
+    if (depth !== 1) continue;
+    const open = entityText.indexOf("{", match.index + match[0].lastIndexOf("components"));
+    const block = braceBlock(entityText, open);
+    if (!block) return null;
+    return { ...block, index: match.index, header: match[0], body: entityText.slice(block.start, block.end) };
+  }
+  return null;
 }
 
-function parseMesh(components) {
+export function parseMesh(components) {
   if (!components) return null;
   const match = components.match(/Object\s*"\{[0-9A-Fa-f]{16}\}([^"]+\.xob)"/);
   return match ? match[1] : null;
 }
 
-function parseContext(components) {
+export function parseContext(components) {
   if (!components) return null;
   const user = matchBlock(components, /UserActionContext\s*"\{([0-9A-Fa-f]{16})\}"\s*\{/);
   if (!user) return null;
@@ -173,7 +194,7 @@ function parseContext(components) {
   };
 }
 
-function resolveChain(root, text, seen = new Set()) {
+export function resolveChain(root, text, seen = new Set()) {
   const parent = parentOf(text);
   let inherited = { offset: [0, 0, 0], radius: null, height: 0, mesh: null, found: false };
   if (parent && !seen.has(parent)) {
@@ -197,7 +218,7 @@ function resolveChain(root, text, seen = new Set()) {
   };
 }
 
-function ancestorIds(root, text, seen = new Set()) {
+export function ancestorIds(root, text, seen = new Set()) {
   const parent = parentOf(text);
   if (!parent || seen.has(parent)) {
     return { manager: FALLBACK_MANAGER, context: FALLBACK_CONTEXT, point: FALLBACK_POINT };
@@ -229,13 +250,13 @@ export function isDoorDefault(volume) {
     && Math.abs(volume.height ?? 0) < 0.0001;
 }
 
-function isHandheld(rel, entityText) {
+export function isHandheld(rel, entityText) {
   const path = rel.replace(/\\/g, "/");
   if (/\/(?:Items|Tools|Currencies)\//.test(path)) return true;
   return entityText.includes("SCR_PickUpItemAction");
 }
 
-function boundsOf(root, rel) {
+export function boundsOf(root, rel) {
   const key = rel.replace(/\\/g, "/");
   const local = join(addonOf(root), ...key.split("/"));
   let buf = null;
@@ -284,13 +305,13 @@ export function volumeFromBounds(min, max) {
   };
 }
 
-function isEntityHeader(line) {
+export function isEntityHeader(line) {
   if (/\.et"\s*\{/.test(line)) return true;
   if (/\{[0-9A-Fa-f]{16}\}/.test(line)) return false;
   return /^[ \t]*(GenericEntity|GameEntity|Tree|SCR_[A-Za-z0-9_]+|LF_[A-Za-z0-9_]+|LF_[A-Za-z0-9_]+)\b.*\{\s*$/.test(line);
 }
 
-function entitySpans(text, isLayer) {
+export function entitySpans(text, isLayer) {
   if (!isLayer) return [{ start: 0, end: text.length, text }];
   const spans = [];
   let offset = 0;
@@ -369,7 +390,7 @@ function isDoorResource(rel) {
   return /(?:^|\/)(?:EL_Door_Base|Door_Base)\.et$/.test(rel) || /\/Doors\//.test(rel);
 }
 
-function applyEntity(entityText, spec, nl) {
+export function applyEntity(entityText, spec, nl) {
   const components = directComponents(entityText);
   if (!components) return entityText;
   const compIndent = lineIndent(entityText, components.start);
@@ -470,7 +491,10 @@ function isMain() {
   return self === invoked;
 }
 
-if (isMain()) {
+if (isMain() && process.argv.length > 2) {
+  // Not awaited: action-anchor.mjs imports this module, so awaiting would deadlock.
+  import("./action-anchor.mjs").then((m) => { process.exitCode = m.runAnchorCli(process.argv.slice(2)); });
+} else if (isMain()) {
   const { updated, errors } = placeActionContexts(ROOT);
   for (const item of updated) {
     console.log(`placed ${item.rel} offset ${item.offset} radius ${item.radius} height ${item.height}`);
