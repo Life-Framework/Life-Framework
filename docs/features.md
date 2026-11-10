@@ -823,8 +823,29 @@
   instant processors already did, extracted so the stations share it.
 - Tests: `stations/progress` (LOGIC), `stations/world` (WORLD), `persist/chain-stations-roundtrip`
   (PERSISTENCE). The suite's version checks now read 20.
-- ⚠️ Not built: the smoke effect and the smell notice (#418), searches (#419), the moonshine pack
-  chain (#420). Manual: three players on three barrels, see the PR.
+- ✅ **Moonshine (#420, tier 1, config only).** `moonshine` in `ResourceChains.conf`: `mash` at a
+  barrel (4 plums and 2 cabbages to 2 water bottles of wash, 12 work), then `distill` at a still
+  (2 bottles of wash to 1 `LF_ContrabandCrate`, 16 work). No gate; heat 3 per work, range 60 m.
+  The crate is what the existing convoy (barn to pub) pays for. `Prefabs/Chains/LF_ChainStill.et`
+  is the barrel prefab with the boiler mesh and `distill`. The hidden DebugWorld site
+  (`Street_Moonshine.layer`, site `Moonshine_Site`) has three barrels at `380/384/388 0 300`
+  and a still at `384 0 305`, about 150 m from the police station. Test: `chains/moonshine`
+  (WORLD). No save change.
+- ✅ **Smoke and smell (#418).** `LF_ChainTrace` (server): the first accepted work wakes one 5 s
+  timer that runs only while a site is warm or a station still smokes; nothing is checked per frame.
+  Each sweep sets every station's smoke level from its site heat (`LF_ChainTrace.SmokeLevel`:
+  none, then thirds of `m_fMax`; the level is a replicated int on `LF_ChainStationComponent`, so it
+  changes only at a threshold and a late joiner sees it) and lets every player inside the
+  heat-scaled range (`LF_ChainSites.GetRange`) notice the smell: on-duty officers get
+  `#LF-Chain_Smell_Officer`, everyone else `#LF-Chain_Smell_Witness`, once per listener and site per
+  60 s. Smoke is the vanilla `Smoke_Smokestack_Medium` (levels 1 and 2, scaled 0.5 and 1) or
+  `_Big` (level 3), a local particle on every non-dedicated machine. Each notice is an
+  `LF_OnChainSmell` on the bus; `LF_ChainSmellLead` turns it into a police service call
+  (`#LF-Chain_SmellLead`, one per site per 5 min) so dispatch logs and radios it and the service
+  board pins it. NPC witnesses do not smell yet. Test: `chains/trace` (LOGIC). Heat is still not
+  saved; no save change.
+- ⚠️ Not built: nothing in this section. Manual: three
+  players on three barrels, see the PR.
 
 ## Jobs / Level / Licenses / Whitelist
 
@@ -2084,3 +2105,4 @@
 - ✅ `Roadmap_Police_ArmoryStore` (`Street_Police.layer`, beside the duty armory) is a heist target: a locked cabinet that needs the fence **keycard** (kept, not consumed) or a charge, config on its `LF_HeistVaultComponent` (`m_aLoot` weapons, `m_iStock` hauls, `m_fRefillSeconds`, `m_fCooldownSeconds`). Breaching it files `#LF-Offence_ArmoryHeist` through the normal crime report with the **loud** alarm even with officers on duty (`LF_Dispatch.Report` `forceLoud`), so every on-duty officer is radioed. Without the keycard the action is refused and nothing is filed. Test `crime/armory`.
 - Loot lies in front of the store as `LF_ArmoryM9` / `LF_ArmoryM16` (vanilla weapons plus `LF_SerialComponent`). Each is stamped with a fence-book serial booked to the thief, so a weapon found at a scene and logged at the evidence locker identifies them like a fence tool. `LF_OnHeistLoot` carries the serials. It pays again only after a police repair, the loot cooldown and stock; an empty store refuses (`#LF-Heist_Empty`) until the refill adds a kit back.
 - Not saved: the stock and cooldown reset on a restart.
+- ✅ **Officer searches for chain goods** (#419, LOGIC `chains/search`, WORLD `chains/search-world`). `LF_ConfiscateAction` now works on any player (weapons and scanner still need a wanted suspect); a new `LF_VehicleSearchAction` sits on the lockable vehicle prefabs. Goods are the last-step outputs of a chain with `m_bContraband` (moonshine: the crate, `m_iBulk 2`); the server rolls, the find chance rises with load, a find seizes the goods and files `#LF-Offence_ChainGoods` on the bus. Vehicle finds charge the occupants; the plate owner (#414) hooks in at `LF_ChainSearch.SuspectsOf`. No save change.

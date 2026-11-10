@@ -30,6 +30,14 @@ Vehicle : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
       Name "#EL-VehicleLock_Action"
      }
     }
+    LF_VehicleSearchAction "{5EA2C40200000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C40200000002}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
    }
   }
  }

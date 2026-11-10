@@ -340,6 +340,23 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "moonshine")
+		{
+			// Raw goods for one mash of the moonshine chain (#420): four plums and two cabbages.
+			int plums = LF_InventoryUtils.AddAmount(this, "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et", 4);
+			int cabbages = LF_InventoryUtils.AddAmount(this, "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et", 2);
+			LF_HarnessReply(commandId, "ok", string.Format("moonshine plums=%1 cabbages=%2", plums, cabbages));
+			return;
+		}
+
+		if (tool == "crate")
+		{
+			// Chain goods (#419): one contraband crate, what the moonshine still makes.
+			int crates = LF_InventoryUtils.AddAmount(this, LF_Contraband.ITEM, 1);
+			LF_HarnessReply(commandId, "ok", string.Format("crate added=%1", crates));
+			return;
+		}
+
 		if (tool == "drill" || tool == "keycard" || tool == "charge")
 		{
 			// Stands in for a fence sale: the drill or keycard is stamped and booked to this account.
@@ -347,7 +364,7 @@ modded class SCR_ChimeraCharacter
 			if (tool == "keycard")
 				toolPrefab = LF_Bank.KEYCARD_PREFAB;
 			if (tool == "charge")
-				toolPrefab = LF_Breach.CHARGE_PREFAB;
+				toolPrefab = LF_Breach.FENCE_CHARGE_PREFAB;
 
 			int drills = LF_InventoryUtils.AddAmount(this, toolPrefab, 1);
 			InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(this);
