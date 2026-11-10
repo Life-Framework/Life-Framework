@@ -70,6 +70,9 @@ log that back them stay on the server and invisible.
   5, a keycard after 8. Rob a till, steal a vehicle, or breach a door to build
   the count. Each tool carries a serial; use *Read serial* on it to see the
   number.
+  A police scanner ($900, after 2 crimes) chirps and shows a toast whenever a
+  police or medic call goes out. It is illegal: an officer who searches a wanted
+  suspect takes it and files a charge.
 - **Medic duty.** Clock in at the duty desk in the hospital (the punch clock,
   open to everyone, no roster). You swap to the medic kit (uniform, medical
   kit, dressings, saline, morphine, tourniquet, a pager) and your civilian

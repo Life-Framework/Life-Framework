@@ -65,6 +65,9 @@ class LF_ServiceCallsConfig
 	[Attribute("5", UIWidgets.Auto, "Messages a pager keeps, newest first (#249)")]
 	int m_iPagerMessages;
 
+	[Attribute("1", UIWidgets.CheckBox, "Owning a police scanner is a crime when an officer finds it on a search (#253)")]
+	bool m_bScannerIllegal;
+
 	protected static ref LF_ServiceCallsConfig s_Config;
 	protected static ref array<ref LF_ServiceDef> s_aDefaults;
 	protected static bool s_bLoadAttempted;
@@ -112,6 +115,16 @@ class LF_ServiceCallsConfig
 		if (!def)
 			return 1;
 		return Math.Max(def.m_iMaxTakers, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a scanner on a searched person is an offence (#253). Illegal when the config is missing.
+	static bool ScannerIllegal()
+	{
+		Load();
+		if (!s_Config)
+			return true;
+		return s_Config.m_bScannerIllegal;
 	}
 
 	//------------------------------------------------------------------------------------------------
