@@ -1,0 +1,42 @@
+GenericEntity Moonshine_Barrel_1 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Moonshine_Barrel_1"
+   m_sSiteId "Moonshine_Site"
+   m_sChainId "moonshine"
+   m_sStepId "mash"
+  }
+ }
+ coords 380 0 300
+}
+GenericEntity Moonshine_Barrel_2 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Moonshine_Barrel_2"
+   m_sSiteId "Moonshine_Site"
+   m_sChainId "moonshine"
+   m_sStepId "mash"
+  }
+ }
+ coords 384 0 300
+}
+GenericEntity Moonshine_Barrel_3 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Moonshine_Barrel_3"
+   m_sSiteId "Moonshine_Site"
+   m_sChainId "moonshine"
+   m_sStepId "mash"
+  }
+ }
+ coords 388 0 300
+}
+GenericEntity Moonshine_Still : "{4C1A9E07B35D8210}Prefabs/Chains/LF_ChainStill.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Moonshine_Still"
+   m_sSiteId "Moonshine_Site"
+  }
+ }
+ coords 384 0 305
+}

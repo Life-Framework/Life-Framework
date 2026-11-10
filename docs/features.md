@@ -823,8 +823,16 @@
   instant processors already did, extracted so the stations share it.
 - Tests: `stations/progress` (LOGIC), `stations/world` (WORLD), `persist/chain-stations-roundtrip`
   (PERSISTENCE). The suite's version checks now read 20.
-- ⚠️ Not built: the smoke effect and the smell notice (#418), searches (#419), the moonshine pack
-  chain (#420). Manual: three players on three barrels, see the PR.
+- ✅ **Moonshine (#420, tier 1, config only).** `moonshine` in `ResourceChains.conf`: `mash` at a
+  barrel (4 plums and 2 cabbages to 2 water bottles of wash, 12 work), then `distill` at a still
+  (2 bottles of wash to 1 `LF_ContrabandCrate`, 16 work). No gate; heat 3 per work, range 60 m.
+  The crate is what the existing convoy (barn to pub) pays for. `Prefabs/Chains/LF_ChainStill.et`
+  is the barrel prefab with the boiler mesh and `distill`. The hidden DebugWorld site
+  (`Street_Moonshine.layer`, site `Moonshine_Site`) has three barrels at `380/384/388 0 300`
+  and a still at `384 0 305`, about 150 m from the police station. Test: `chains/moonshine`
+  (WORLD). No save change.
+- ⚠️ Not built: the smoke effect and the smell notice (#418), searches (#419). Manual: three
+  players on three barrels, see the PR.
 
 ## Jobs / Level / Licenses / Whitelist
 
