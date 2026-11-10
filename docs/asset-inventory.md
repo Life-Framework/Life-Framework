@@ -52,8 +52,11 @@ looked at yet.
 | Hideout machine | `Roadmap_Hideout_Machine` | placeholder | vanilla `CoffeeGrinderShop_01` | contraband press | Hideout, area 13 | medium |
 | Hideout stash | `LF_HideoutStash.et` | final | vanilla chest | (a trunk) | Hideout, area 13 | none |
 | Hideout van | `Roadmap_Hideout_Van` | final | vanilla `UAZ452_base` (the van-bodied car) | (a parked van, scenery) | Hideout, area 13 | none |
-| Hideout workbench, crates, barrels, tyres | `Roadmap_Hideout_*` | final | vanilla `Workbench_01`, `Crate_01`, `BoxWooden_01`, `BarrelMetal_01_blue`, `Tire_M151A2_pile` | (same) | Hideout, area 13 | none |
+| Hideout workbench, crates, barrels, tyres | `Roadmap_Hideout_*` | final | vanilla `Workbench_01` (under the pergola), `Crate_01`, `BoxWooden_01`, `WoodenPalletBox_01`, `Pallet_01_Pile`, `Cart_01`, `Jerrycan_01`, `CardboardBox_03`, `BarrelMetal_01_blue`, `Tire_M151A2_pile` | (same) | Hideout, area 13 | none |
 | Fuel till counter and register | `EL_FuelTill.et` on vanilla `CounterShop_01` (Village_Dressing) | placeholder | vanilla shop counter with a cash register on top | a petrol-station kiosk counter inside the shop | Fuel till #236 | low |
 | Quarry lane barrier | `WoodenFence_01_4m` rails + `ConeTraffic_01` | placeholder | two fence rails each side of a 6 m gap | red-white boom barrier on a post | Quarry polish, area 11 | low |
 | Quarry gatehouse | `Shed_03.et` | placeholder | a village garden shed | site hut or trailer | Quarry polish, area 11 | low |
 | Quarry spoil heap | `DirtPile_01_base.et` | final | base-game dirt pile | | Quarry polish, area 11 | |
+| Chop shop yard props | `Street_ChopShop.layer`: `BrickWallOld_01_4m_A`, `M151A2_wreck`, `Workbench_01` + `Workbench_Vice_01`, `ToolBox_01_base`, `Tire_M151A2` (+ pile), `BarrelMetal_01_*`, `Crate_01_brown`, M998 door and car jack meshes | placeholder (shell, parts) | the stripped car shell is a vanilla M151A2 jeep wreck; the engine block is a vanilla `VehicleGarbage_01_pile_medium` scrap pile; spare parts are M998 doors and M151A2 tyres | a stripped 1980s saloon shell and an engine block | Chop shop #415, area 15 | low |
+| Car lot price board | `Sign_LotPrice_*` (`LF_Sign_Chalkboard`) | final | vanilla `ChalkBoard_01` | (a price board) | Car lot, area 4 | none |
+| Lot display cars | `Lot_Display_*`, `Roadmap_Vehicle_S105` | final | the lot offers base vehicles | (display cars) | Car lot, area 4 | none |

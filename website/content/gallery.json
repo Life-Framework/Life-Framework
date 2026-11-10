@@ -62,15 +62,13 @@
     "area-2-bank/detail": "The two ATM teller windows either side of the bank door",
     "area-3-store/wide": "The general store with its counter out front, and the market tables and sign down the street",
     "area-3-store/counter": "The store counter with the shelf goods on top, the fascia sign and the sandwich board beside the door",
-    "area-5-fuel-station/wide": "The fuel station from the main street: the canopy and kiosk, the till counter with the clerk behind it, the payphone and the FUEL STATION sign",
-    "area-5-fuel-station/detail": "The fuel till on its counter, clerk behind it, facing the street: the Rob the till prompt",
+    "area-5-fuel-station/wide": "The fuel station from the street: canopy, kiosk, the till counter with the clerk behind it, and the FUEL STATION sign",
     "area-6-police/wide": "The police post from the main street: the full villa, the POLICE STATION sign, the duty desk in the loggia, the payphone, the two boards on the lawn and a police jeep",
     "area-6-police/angle": "The same post from the south-west: dispatch and wanted boards face the street, the loggia door is clear",
     "area-7-hospital/wide": "The village hospital with the ambulance in its bay",
     "area-7-hospital/desk": "Duty desk and dispatch board outside the hospital door",
-    "area-13-hideout/wide": "The back-alley hideout yard: a gated brick yard with the hideout sign, a parked van, a pergola and crates",
-    "area-13-hideout/detail": "Inside the yard: the contraband machine beside a workbench, with the van behind",
-    "area-13-hideout/sign": "The hideout sign facing the gate, tyres and the van beyond",
+    "area-13-hideout/wide": "The hideout yard from the gate side: hideout sign, parked van, tyres, the workbench under the pergola, pallets and crates against the walls",
+    "area-13-hideout/detail": "The van and barrels beside the pergola, the contraband machine in the foreground",
     "area-9-fence/wide": "Vince facing the lane in his back yard, with his bench, crates, barrel and tyre pile close around him",
     "area-9-fence/detail": "Vince the fence in front of the barn doors, tyres and the car beside him",
     "area-9-fence/yard": "The yard from the south: the parked Skoda, tyres, Vince, his bench and the barrel",
@@ -80,7 +78,13 @@
     "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack, beside the mash barrels",
     "area-11-quarry/wide": "The lawless quarry from the lane: the red Lawless Area sign faces the approach, with the barrier, gatehouse shed and spoil heap beyond",
     "area-11-quarry/barrier": "The lane barrier of fence rails and cones with the Mine Hazard sign, barrels and the gatehouse shed, the miner stand and ore rocks behind",
-    "area-11-quarry/stand": "The miner stand from the lane: the mining sign facing the approach, the miner behind his tables, ore sacks and rocks"
+    "area-11-quarry/stand": "The miner stand from the lane: the mining sign facing the approach, the miner behind his tables, ore sacks and rocks",
+    "area-4-carlot/wide": "The car lot from the main street: four display cars in an even row, a price board by each, the sales desk and the lot sign, with the garage to the right",
+    "area-4-carlot/detail": "The display row head on: S105, UAZ, van and UAZ 452, each with its price board",
+    "area-13-hideout/bench": "The workbench under the pergola with a crate, a jerrycan and a carton on the top",
+    "area-15-chopshop/wide": "The walled chop shop yard from the south gate: engine crane, bench, jeep shell and tyres",
+    "area-15-chopshop/bench": "The tool bench with its vice against the north wall, a spare door and oil drums beside it",
+    "area-15-chopshop/shell": "The stripped jeep shell along the east wall, with the bench and a crate across the yard"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",
@@ -89,7 +93,9 @@
     "area-9-fence": "The fence",
     "area-10-cash-van": "Cash van route",
     "area-11-quarry": "Quarry and mining",
-    "area-16-moonshine": "Moonshine camp"
+    "area-16-moonshine": "Moonshine camp",
+    "area-4-carlot": "Car lot and garage",
+    "area-15-chopshop": "Chop shop yard"
   },
   "skip": [
     "116/chalkboard-back-room.png",

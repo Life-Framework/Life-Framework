@@ -6,3 +6,146 @@ GenericEntity Roadmap_ChopShop : "{9C2E4A7B1D5F8036}Prefabs/Crime/LF_ChopBench.e
  }
  coords 322 0 300
 }
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 334 0 288
+ angleY -90
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 334 0 292
+ angleY -90
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 334 0 296
+ angleY -90
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 334 0 300
+ angleY -90
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 334 0 304
+ angleY -90
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 334 0 308
+ angleY -90
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 320 0 310
+ angleY -180
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 324 0 310
+ angleY -180
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 328 0 310
+ angleY -180
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 332 0 310
+ angleY -180
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 320 0 288
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 324 0 288
+}
+SCR_DestructibleEntity : "{CC36B46D4FFB82EE}Prefabs/Structures/Walls/Brick/BrickWallOld_01/BrickWallOld_01_4m_A.et" {
+ coords 332 0 288
+}
+GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ coords 324 0 309.2
+ angleY 180
+}
+GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
+ coords 324 0 309.2
+ angleY 180
+}
+GenericEntity : "{174E332EF84362B2}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_base.et" {
+ coords 325.2 0.9 309.2
+ angleY 170
+}
+GenericEntity : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ coords 317.2 0 308.6
+}
+GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 318.2 0 308.9
+}
+GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 317.4 0 307.5
+}
+GenericEntity : "{EB084C400AABD1D3}Prefabs/Props/Wrecks/M151A2_wreck/M151A2_wreck.et" {
+ coords 331.2 0 303.5
+}
+GenericEntity : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ coords 331.6 0 292.4
+ angleY 20
+}
+GenericEntity : "{A81F99C793D11875}Prefabs/Props/VehicleParts/Tires/Tire_M151A2.et" {
+ coords 330.2 0 293.6
+}
+GenericEntity : "{A81F99C793D11875}Prefabs/Props/VehicleParts/Tires/Tire_M151A2.et" {
+ coords 330.0 0 295.0
+ angleY 40
+}
+GenericEntity ChopShop_Door_1 {
+ components {
+  MeshObject "{6C0A5D00A1B20F01}" {
+   Object "{F753CFA0BE5000FF}Assets/Props/VehicleParts/Door_M998/Door_M998_L1.xob"
+  }
+  RigidBody "{6C0A5D00A1B20F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 327.8 0 308.9
+ angleY 90
+}
+GenericEntity ChopShop_Door_2 {
+ components {
+  MeshObject "{6C0A5D00A1B21F01}" {
+   Object "{382314ED6EF301BF}Assets/Props/VehicleParts/Door_M998/Door_M998_R1.xob"
+  }
+  RigidBody "{6C0A5D00A1B21F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 328.4 0 308.9
+ angleY 90
+}
+GenericEntity ChopShop_Jack {
+ components {
+  MeshObject "{6C0A5D00A1B22F01}" {
+   Object "{A195F0214C0A0528}Assets/Props/Industrial/Repair/HydraulicCarJack_01/HydraulicCarJack_01.xob"
+  }
+  RigidBody "{6C0A5D00A1B22F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 320.4 0 297.6
+ angleY 30
+}
+GenericEntity ChopShop_Scrap {
+ components {
+  MeshObject "{6C0A5D00A1B23F01}" {
+   Object "{516F33579E693014}Assets/Props/Industrial/Repair/VehicleGarbage_01/VehicleGarbage_01_pile_medium.xob"
+  }
+  RigidBody "{6C0A5D00A1B23F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 320.6 0 305.6
+}
+GenericEntity : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 323 0 305.2
+ angleY 10
+}
