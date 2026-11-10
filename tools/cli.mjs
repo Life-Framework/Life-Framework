@@ -38,6 +38,8 @@ import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
 import * as playtest from "./host/playtest.mjs";
+import { cmdPlaytestServer } from "./release/playtest-server.mjs";
+import { cmdPlaytestRelease } from "./release/release-playtest.mjs";
 import * as session from "../agent-box/session.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
@@ -1449,7 +1451,9 @@ function cmdPlaytest(args) {
   if (sub === "stop") return cmdPlaytestStop(hostDir, playerDir);
   if (sub === "status") return cmdPlaytestStatus(hostDir, playerDir);
   if (sub === "shortcut") return cmdPlaytestShortcut(mainRoot);
-  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut");
+  if (sub === "server") return cmdPlaytestServer(list.slice(1));
+  if (sub === "release") return cmdPlaytestRelease(ROOT, list.slice(1), { ensureRdb: ensureResourceDatabase, isMain: wt.isMainCheckout(ROOT) });
+  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut|server <address>|off|release [--tag T]");
   return 1;
 }
 
@@ -2307,7 +2311,11 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   serve                         boot the headless test server (blocks, worktree only)
   playtest [stop|status|shortcut]  the maintainer's one command: host from the pinned origin/main
                                 checkout (..\\Life-Framework-playtest), then open the game joined to it;
-                                stop closes the game and saves; shortcut adds a desktop icon
+                                stop closes the game and saves; shortcut adds a desktop icon;
+                                server <address>|off points the download's launcher at a host (PR to
+                                website/public/playtest-server.json, tools/release/playtest-server.mjs)
+                                release [--tag playtest-m2-N]: refresh the rdb, attach it to a pre-release,
+                                start the playtest-release workflow (worktree at origin/main)
   host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout)

@@ -506,6 +506,15 @@
   persistent profile `%LOCALAPPDATA%\LifeFramework\player` (`LF_PLAYER_DIR`), waits
   for the host's `join allowed` line, and prints friend join lines. A running host
   is reused and joined with its own addon. `stop` closes the game, then `host stop`.
+- ✅ **Playtest download** (2026-11-10, `tools/release/`, `.github/workflows/playtest-release.yml`):
+  `LifeFramework-Playtest.zip` on the latest GitHub release holds the addon (tracked files only, plus a
+  fresh `resourceDatabase.rdb`: `tools\cli playtest release` refreshes it and the workflow packs) and
+  `Play Life Framework.cmd`, a PowerShell launcher that finds Arma Reforger through the Steam registry and
+  `libraryfolders.vdf`, then offers *Play on my own* (`-server LF_PlaytestTown.conf -addr 127.0.0.1:2302`)
+  or *Join the community server* (`-client` the address in `website/public/playtest-server.json`, set with
+  `tools\cli playtest server <address>|off`). The homepage and /playtest link the stable
+  `releases/latest/download/` URL. Selftest `tools/validation/release-selftest.mjs`. ⚠️ Windows only; the
+  zip is not signed, so SmartScreen may warn on first run.
 
 ### `LF_AccountReplication` — `Feature/Account/LF_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `LF_PlayerAccountManager` is
@@ -956,6 +965,7 @@
   restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
   inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
+- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots).
 
 ### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -2055,14 +2065,32 @@
   fps, frame after a shot 33.3-33.5 ms vs 33.2-34.5 ms otherwise, one 243 ms
   stall in 64 s (shop menu, not a shot frame).
 
+- ✅ Game audio (#396): the engine cannot record sound, so `tools/film/lf-procaudio.cs`
+  (Windows process loopback, `AUDCLNT_PROCESS_LOOPBACK`) captures only the game client's
+  process into a 48 kHz float WAV (other host sounds never enter it; the WAV is the separate
+  audio track). Harness verb `film slate` plays a UI beep and logs `# slate=<ms>` in
+  `index.txt`; `tools/film/audio.mjs` finds the beep in the WAV, lines audio up with the
+  frames and muxes an mp4 (`street-clip.mjs --audio`, session started with `--sound`). A start
+  and an end slate give the offset and the drift (the mux uses their mean; one unrecorded warm-up beep plays first because the first play is heard about 0.5 s late). The recorder refuses a silent capture
+  (`mean_volume` under -60 dB, or no slate heard) and warns when the default output is muted
+  (#482). Covered by `node tools/film/film.mjs selftest` (pure parts). Proven on this PC 2026-11-10: three takes read start-to-end beep drift of -96, +119 and +52 ms; the laptop run waits on #482 and a free lane.
+
 ### `LF_FilmActor` / `LF_FilmDirector` — `Feature/Film/` (scripted actors, #393)
-- ✅ Dev-only, harness verbs `scene start street|stop|status` (server, through the
+- ✅ Dev-only, harness verbs `scene start <name> [hour|-] [weather]`, `scene stop|reset|status` (server, through the
   character RPC and `LF_DevGate`) and `camera orbit|follow x y z size seconds`
   (client). An actor is a spawned `Character_Roleplay` on a timed step list:
   `walk`, `run`, `enter`, `drive`, `exit`, `use <action class>`, `wait`. Waypoints
   are authored (no navmesh). No progress for 6 s logs `[LFDebug:FilmActor] ... stuck`
-  and stops that actor. Pure maths (steer, pedals, stuck detection) is covered by
+  and stops that actor. A `camera follow` low-passes the followed entity's position (time constant 0.25 s, `LF_FilmCameraPath.SmoothAlpha`), because a car driven in 100 ms velocity steps made the camera shake. Pure maths (steer, pedals, stuck detection, follow smoothing) is covered by
   `film/actor-math` (LOGIC).
+- ✅ Scene setup and reset (#394, `LF_FilmScene.c`): a scene is a clock hour, a weather state, the day frozen,
+  its actors and vehicles and its camera cues. `scene start street` snapshots the world's local clock hour, weather state, weather looping and day advance, sets the scene's defaults (street: 16:00, Clear, frozen), then
+  spawns; `scene start street 21.5 Overcast` overrides one take (`-` keeps a value; an hour outside 0..24 returns
+  `error:bad_hour`). `scene stop` (alias `reset`) despawns every actor and vehicle the scene made and writes the snapshot
+  back, so every take starts from the same light. Logs `[LFDebug:FilmScene]`. A world with no time and weather manager
+  logs an error and runs the scene without a clock. Camera cues stay in the take script (`tools/film/street-clip.mjs`).
+  Covered by `film/scene-env` (LOGIC: defaults, override, bad hours, clock conversion); the world write is proved
+  in game (PR). Not done: scenes other than `street`.
 - ✅ Walk, run and `use` proven 2026-11-10 (the store till action ran for an actor,
   `canPerform=1 uid='film-walker'`). Actors read a stand-in player uid from
   `LF_FilmIdentity` in a `LF_HARNESS` build only (`LF_Utils.GetPlayerUID`).
@@ -2169,3 +2197,4 @@
 - ✅ Working animation for the drill and the lockpick (#513, WORLD `work/anim`): a player drilling the bank vault (#273) or picking a lock (#411, #412) bends to the work on every client. `LF_WorkAnim` (server, `Feature/Crime/LF_WorkAnim.c`) keeps one session per worker: the lockpick attempt starts it with its own timer (`LF_Lockpick.BeginAs`) and ends it on finish, drop or cancel; the drill starts a self-ending 6 s one (`LF_WorkAnim.DRILL_SECONDS`) when `LF_Bank.Rob` opens the vault with it. The server also stops it when the worker goes down, leaves 5 m or overruns. The worker's owner starts a custom loiter (#512 route) on `Anims/Workspaces/Work/LF_WorkPick.agr` (base-game `p_erc_supplies_repair_low_*`, `Gestures` 561) or `LF_WorkDrill.agr` (`p_erc_supplies_demolitionUS_low_*`, 562); the base game replicates it to every client and late joiners. Stops use the fast exit. Every rendering client logs `work animation playing`. Demo: `node agent-box/session.mjs work-anim-proof`. Logs `[LFDebug:WorkAnim] ...`. The locked-car pick and the cash van box drill use the same two paths (`LF_Lockpick.BeginAs` for any pick target, `LF_Bank.Rob` for the `LF_HeistRobAction` box), pinned by WORLD `work/anim-targets`; the proof drives all four and the watching client logs `work animation playing` four times. The worker's own check can fire after a 6 s drill already ended on a lagging machine; it then logs `work animation finished before the check`, not an error.
 - ✅ Keys are created at their holder (#620, WORLD `vehicles/key-inventory`): `LF_VehicleOwnership.KeySpawnOrigin` puts a purchased, collected or retrieved key at the holder's feet before the inventory insert, never at the lot or impound pad. A key made at a far pad was unresolved on the holder's client, and the key and ID card moves hung on the loading throbber. A key that does not fit logs a warning.
 - Debug money top-up (LF_DebugMoneyTopUp, `LF_SpawnLogic.m_bDebugMoneyTopUp`, on only in GameMode_Roleplay_Debug): on spawn and every 60 s, bank under 100k fills to 1M and carried cash under 5k fills to 20k, ledger reason `debug-topup`; opening bank is 1M.
+- ✅ **Playtest town: duty rows, dispatch area, test till (refs #146, #147, #202).** (a) The hospital duty desk `LF_MedicDutyDesk.et` restates its `LF_DutyClock` context and every action on the clock itself (the derived prefab used to replace the base list, so Clock in lost its context and floated off the device); `Sort Priority` puts the state-aware Clock in / Clock out row first, then the bill, then the fine ticket; the police desk got the same order. (b) New dispatch area (`Street_Dispatch.layer`, about 249 to 257, 229 to 233): `Roadmap_Dispatch_PoliceBoard` and `Roadmap_Dispatch_MedicBoard` (read and take a call) and `Roadmap_Dispatch_Console` (`LF_DispatchConsole.et`). The console carries `LF_DebugDispatchAction` rows *Test police call* (from the fuel till) and *Test medic call* (from the fuel payphone), which go through `LF_ServiceCalls.Place` with no coin; they work only where `LF_SpawnLogic.m_bDebugTestDispatch` is on (GameMode_Roleplay_Debug; the server refuses otherwise) and need a receiver on duty (`LF_DebugDispatch.Fire`). Tests `comms/debug-dispatch`, `debugworld/dispatch-area`. (c) The fuel till's *Rob the till* action sits 0.3 m above the till (was 0.8 m, floating), and `Roadmap_Fuel_Till` and `Roadmap_Fuel_Clerk` now stand at the fuel station building's own interior `CashierShop_01` (about 284.3, 240.2; the stand-alone counter at 263.2, 240.4 is removed); `Street_TillTest.layer` adds `Roadmap_Test_Till` on a counter at (244.5, 230.5) with a 5 s cooldown and no police minimum for a solo tester. Placed boards and the console are core-side debug-town props (`core-pack-inventory`: core).

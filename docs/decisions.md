@@ -712,3 +712,10 @@ otherwise, wrapped as one nearly autonomous harness. Gated on Meshy's licence
 terms and Bohemia's policy (#664). The 15 fitting ideas from the Genetic Life
 review also land in M5. Why: the maintainer wants systems and content built
 and planned separately, and wants custom art without hand modelling.
+
+**2026-11-10 — Adopt Altis Life's structural patterns before M3.** Crime codes,
+one base price with multipliers, a no-profit-loop check, per-field persistence
+switches, a world cleanup service, disconnect rules, playtime tracking, and a
+server-side request audit go into M3 (epic #684). Altis Life is CC BY-NC-ND, so
+we take ideas only. Why: these shape saved data and the owner schema, which get
+expensive to change once owners build on M3 and the flagship stops wiping.

@@ -65,6 +65,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CropStages(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DebugAreaBoundary(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DebugDispatch(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DebugActionValidation(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMenuGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMoneyTopUp(), LF_TestTier.LOGIC);
@@ -76,6 +77,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AccountReplicationWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Dispatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchAlarm(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DispatchArea(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DoorLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Downed(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DownedRules(), LF_TestTier.LOGIC);
@@ -107,6 +109,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FilmActorMath(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FilmCameraPath(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FilmRecorder(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_FilmScene(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FineTicket(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FineTicketRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FineTicketSerializer(), LF_TestTier.WORLD);
@@ -179,6 +182,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Pager(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ParcelDescription(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.LOGIC);

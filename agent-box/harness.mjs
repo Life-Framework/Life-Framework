@@ -127,7 +127,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park" || spec.verb === "shelf" || spec.verb === "keys") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "engine") {
@@ -238,8 +238,8 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "film") {
     // In-engine recording (LF_FilmRecorder, tools/film/engine.mjs).
-    if (spec.mode === "stop" || spec.mode === "status") return `${id} film ${spec.mode}`;
-    if (spec.mode !== "start") throw new Error("film mode must be start, stop, or status");
+    if (spec.mode === "stop" || spec.mode === "status" || spec.mode === "slate") return `${id} film ${spec.mode}`;
+    if (spec.mode !== "start") throw new Error("film mode must be start, stop, slate, or status");
     const fps = Number(spec.fps);
     if (!Number.isInteger(fps) || fps < 0 || fps > 30) throw new Error(`film fps must be 0-30: ${spec.fps}`);
     const line = `${id} film start ${token(spec.name, "film name")} ${fps}`;
@@ -1438,7 +1438,7 @@ function main(argv) {
       return printResult(sendCommand({ verb: "look" }));
     }
     if (cmd === "scene" || cmd === "camera") {
-      // scene start|stop|status [name]; camera orbit|follow x y z size seconds (LF_FilmDirector, LF_FilmCamera)
+      // scene start <name> [hour|-] [weather] | stop | reset | status; camera orbit|follow x y z size seconds (LF_FilmDirector, LF_FilmCamera)
       return printResult(sendCommand({ verb: cmd, args: rest.join(" ") }));
     }
     if (cmd === "state") {
@@ -1453,7 +1453,7 @@ function main(argv) {
     if (cmd === "gm") {
       return printResult(sendCommand({ verb: "gm", arg: rest[0] }, 15000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park" || cmd === "shelf" || cmd === "keys") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {
