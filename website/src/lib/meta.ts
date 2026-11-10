@@ -30,6 +30,11 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
     description: "A few pictures taken in the game in the playtest village.",
     og: "roadmap",
   },
+  "/playtest": {
+    title: "Join the playtest",
+    description: "The M2 Living Town community playtest: what it is, how to install and join, what to test, and where to send feedback.",
+    og: "home",
+  },
   "/devlog": {
     title: "Devlog",
     description: "Every merged pull request and recorded decision, newest first, with one line on each.",
