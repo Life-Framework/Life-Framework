@@ -39,6 +39,34 @@ SCR_DestructibleBuildingEntity Roadmap_Fuel_Payphone : "{8F2C6E1D4B7A5093}Prefab
 }
 
 LF_NpcBaseEntity Roadmap_Fuel_Clerk : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
- coords 262.5 1.04 243
- angleY 200
+ coords 259 0 240.1
+ angleY 180
+}
+GenericEntity Fuel_Jerrycan_1 {
+ components {
+  MeshObject "{5F0E1A7C00000101}" {
+   Object "{FEC338E88366A268}Assets/Items/Fuel/Jerrycan_01/Jerrycan_01.xob"
+  }
+  RigidBody "{5F0E1A7C00000102}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 257.6 0 240.9
+ angleY 20
+}
+GenericEntity Fuel_Jerrycan_2 {
+ components {
+  MeshObject "{5F0E1A7C00000201}" {
+   Object "{FEC338E88366A268}Assets/Items/Fuel/Jerrycan_01/Jerrycan_01.xob"
+  }
+  RigidBody "{5F0E1A7C00000202}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 257.95 0 240.7
+ angleY -35
 }
