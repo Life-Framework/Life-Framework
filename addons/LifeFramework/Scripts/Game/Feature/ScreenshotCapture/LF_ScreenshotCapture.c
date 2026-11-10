@@ -29,7 +29,7 @@ class LF_ScreenshotShot
 class LF_ScreenshotCapture : Managed
 {
 	protected static const string FEATURE = "Screenshot";
-	protected static const ResourceName CAMERA_PREFAB = "Prefabs/Editor/Camera/ManualCameraBase.et";
+	protected static const ResourceName CAMERA_PREFAB = "{D6DE32D1C0FCC1C7}Prefabs/Editor/Camera/ManualCameraBase.et";
 
 	protected static ref LF_ScreenshotShot s_ActiveShot;
 	protected static bool s_bBusy;

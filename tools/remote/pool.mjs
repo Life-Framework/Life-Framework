@@ -221,6 +221,7 @@ function normalize(m) {
     // 2002.. beside the session server on 2001. Without it the machine keeps
     // one shared lane (slots).
     // Scales the seeded run budgets for a slower machine (the laptop).
+    hostname: m.hostname ? String(m.hostname) : null,
     budgetMultiplier: Number(m.budgetMultiplier) > 0 ? Number(m.budgetMultiplier) : 1,
     lanes: m.lanes && typeof m.lanes === "object" ? { test: Math.max(1, Number(m.lanes.test) || 1), session: Math.max(1, Math.min(4, Number(m.lanes.session) || 1)) } : null,
     caps: Array.isArray(m.caps) ? m.caps.map(String) : ["server"],
@@ -250,6 +251,10 @@ export function loadMachines(root) {
   // On a machine that is itself a pool member (the box), its own ssh entry is
   // this machine: drop it so a run there never ssh-es to itself.
   const self = hostname().toLowerCase();
+  // An entry whose "hostname" is this machine's is this machine: it becomes the local machine (its own
+  // lanes and RAM gate; this PC's "local" entry would give the box this PC's lane config).
+  const mine = out.find((m) => m.via === "ssh" && m.hostname && m.hostname.toLowerCase() === self);
+  if (mine) return [{ ...mine, via: "local", host: null, root: null }, ...out.filter((m) => m.via === "ssh" && m !== mine && m.host.toLowerCase() !== self)];
   return out.filter((m) => !(m.via === "ssh" && m.host.toLowerCase() === self));
 }
 
@@ -1028,6 +1033,100 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
         rewriteTicket(root, ticket, body());
       }
       Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
+    }
+  } finally {
+    dropTicket(root, ticket);
+  }
+}
+
+// Which machine a `session up` without --machine uses: every machine that can run the
+// session (this PC first, so a tie goes here), the first with a free session lane and no
+// older ticket ahead of this one on it. Joins the shared queue with all of those machines
+// as wants, so a waiter lands wherever a lane frees first. Resolves the machine, or null
+// when none frees within waitMs (the caller then fails or queues as a local-only run).
+// Does not hold the lane: the machine's own `session up` takes it (a lost race there
+// is a normal "lane held" for the caller).
+export function sessionMachineCandidates(root, clients) {
+  return loadMachines(root).filter((m) => m.caps.includes("server") && (clients <= 0 || m.caps.includes("clients")));
+}
+
+// Free session lane on a remote machine: { free, locks } from one ssh read; free is false when unreachable.
+export function remoteSessionFree(m, locks = remoteLocks(m)) {
+  if (!locks) return false;
+  return lanesFor(m, "session").some((l) => !locks[l.lock] || !locks[l.lock].alive);
+}
+
+export async function chooseSessionMachine(root, { clients = 1, waitMs = 0, priority, meta = {}, log = console.log } = {}) {
+  const all = sessionMachineCandidates(root, clients);
+  const hereBuild = tb.serverBuildId(tb.localServerDir(root));
+  const ok = (m) => {
+    if (m.via === "local") return true;
+    const h = probe(root, m);
+    if (!h.reachable) return false;
+    return !(h.build && hereBuild && h.build !== hereBuild);
+  };
+  const slug = meta.slug ?? slugFor(root);
+  const prio = q.normalizePriority(priority) ?? resolvePriority(root);
+  const started = Date.now();
+  const since = queuedSince(root, slug, started);
+  let machines = all.filter(ok);
+  // Only this PC can take it: its own queue (cmdSessionUp) does the waiting.
+  if (machines.length < 2) return machines[0] ?? null;
+  let waitingOn = [];
+  const ticketBody = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: false, lane: "session", priority: prio, waitingOn, machines: machines.map((m) => m.name), clients });
+  const ticket = writeTicket(root, ticketBody(), since);
+  let lastReap = 0;
+  let said = false;
+  const remoteSeen = new Map();
+  try {
+    for (;;) {
+      noteQueued(root, slug, since);
+      const now = Date.now();
+      const tickets = liveTickets(root);
+      const me = tickets.find((t) => t.file === ticket);
+      const settings = poolSettings(root);
+      if (now - lastReap > 10000) {
+        lastReap = now;
+        reapIdleSessions(root, machines.filter((x) => x.via === "local"), tickets, settings);
+        machines = all.filter(ok);
+      }
+      const ctx = { starveMs: settings.starveMin * 60000, freeMb: Math.round(freemem() / 1048576) };
+      const want = [];
+      for (const m of machines) {
+        const lanes = lanesFor(m, "session");
+        const blockers = me ? tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, now, settings.promoteMin * 60000, ctx)) : [];
+        for (const l of lanes) want.push(m.via === "local" ? l.lock : `${m.name}:${l.lock}`);
+        if (blockers.length >= lanes.length) continue;
+        if (m.via === "local") {
+          for (const lane of lanes) {
+            const slot = tryLocal(root, m, lane, { ...meta, slug, purpose: "session", root }, { blocked: {}, noHeld: true });
+            if (slot) {
+              slot.release();
+              return m;
+            }
+          }
+        } else {
+          let seen = remoteSeen.get(m.name);
+          if (!seen || now - seen.at > 6000) {
+            seen = { at: now, free: remoteSessionFree(m) };
+            remoteSeen.set(m.name, seen);
+          }
+          if (seen.free) {
+            forgetQueued(root, slug);
+            return m;
+          }
+        }
+      }
+      if (waitMs <= 0 || Date.now() - started > waitMs) return null;
+      if (!said) {
+        said = true;
+        log(`session: queued as ${prio} for a session lane on ${machines.map((m) => m.name).join(" or ")} (up to ${Math.round(waitMs / 60000)} min); it starts by itself on the first that frees`);
+      }
+      if (want.join() !== waitingOn.join()) {
+        waitingOn = want;
+        rewriteTicket(root, ticket, ticketBody());
+      }
+      await sleep(1000);
     }
   } finally {
     dropTicket(root, ticket);

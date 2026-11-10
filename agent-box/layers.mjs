@@ -140,7 +140,7 @@ function walkLayer(text, layerFile, root) {
       stack[stack.length - 1].coords = [Number(coords[1]), Number(coords[2]), Number(coords[3])];
     }
 
-    const angleY = line.match(/^angleYs+(-?d+(?:.d+)?)$/);
+    const angleY = line.match(/^angleY\s+(-?\d+(?:\.\d+)?)$/);
     if (angleY && stack.length) stack[stack.length - 1].yaw = Number(angleY[1]);
 
     const signId = line.match(/^m_sSignId\s+"([^"]*)"$/);

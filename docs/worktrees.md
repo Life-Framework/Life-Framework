@@ -378,6 +378,24 @@ it, picks a lane and a budget, and prints one line per outcome.
 - **Two tests from one worktree at once** still share `server/profile/test`; run
   them in order.
 
+### The laptop's lanes (lf-testbox)
+
+`lf-testbox` (ASUS ROG Zephyrus G15: Ryzen 9 6900HS 8c/16t, RTX 3070 Ti, 47 GB RAM, ssh as `lf-testbox`, hostname `PC1`)
+has 3 session lanes (`server-2001`, `-2011`, `-2021`) and 3 test lanes (`server-test-1..3`), configured in
+`tools/pool.json`. Measured 2026-11-10: server 0.7 GB working set, one client 0.6 to 1.0 GB, a server plus one client
+takes 1.2 GB of free RAM, a test server about 0.7 GB; 33 GB free with a maintainer Workbench (1.7 GB) and Steam up. Three
+sessions plus three tests are about 8 GB, leaving room for one Workbench (the `workbench` cap) above the 1.5 GB floor.
+A session boots there in 18 s (36 s door to door with the sync); a full suite is 10 s (44 s door to door).
+The `hostname` key makes the entry the local machine when the CLI runs on the laptop, so the remote `session up` uses
+the laptop's lanes and RAM gate, not this PC's. Sleep, hibernate and the monitor timeout on AC are 0 (`powercfg`; the
+laptop went offline once from sleeping). A stale lock is cleared by any pinned run (`test --machine lf-testbox`).
+
+**Sessions pick the machine.** `session up` without `--machine` (same as `--machine any`) considers every machine that can
+run it, this PC first on a tie. With `--wait` the request holds one queue ticket that wants all of them and starts on the
+first lane that frees; without it, it takes a free lane on either. `--machine local` keeps it here. The remote session's
+clients start on the laptop's desktop (`harness.mjs` and `shots area` relay to it; `session pull` copies images back).
+Filming there is #482 (the client window sits behind the Steam store window; the audio endpoint is muted).
+
 ### Waiting on a session
 
 `node agent-box/session.mjs up` blocks until the server and every client are
