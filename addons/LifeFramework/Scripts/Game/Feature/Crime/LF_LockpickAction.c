@@ -31,10 +31,13 @@ class LF_LockpickTargetComponent : ScriptComponent
 		super.EOnInit(owner);
 
 		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(owner);
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(owner);
 		if (doorLock)
 			doorLock.Lock();
+		else if (vehicleLock)
+			vehicleLock.SetLocked(true);
 		else
-			LF_Debug.Error("Lockpick", "start-locked door has no LF_LockComponent");
+			LF_Debug.Error("Lockpick", "start-locked target has no lock component");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -52,8 +55,7 @@ class LF_LockpickAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(GetOwner());
-		return doorLock && doorLock.IsLocked() && LF_Component<LF_LockpickTargetComponent>.Find(GetOwner()) != null;
+		return LF_Lockpick.ShowsPick(GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------

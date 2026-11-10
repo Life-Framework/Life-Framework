@@ -130,6 +130,13 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
+		if (cmd.Verb == "engine")
+		{
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+
+			return true;
+		}
 		if (cmd.Verb == "peers")
 			return true;
 		if (cmd.Verb == "shoot")
@@ -902,6 +909,11 @@ class LF_AgentHarness
 				scannerCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb);
 			return;
 		}
+		if (cmd.Verb == "engine")
+		{
+			DoEngine(cmd);
+			return;
+		}
 		if (cmd.Verb == "lockpick")
 		{
 			SCR_ChimeraCharacter pickCharacter = LF_Utils.GetLocalCharacter();
@@ -1337,6 +1349,71 @@ class LF_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	//! Harness `radio`: the radios THIS client's own character carries, as this client reads them:
 	//! `radios=N f=<kHz of the first transceiver>,...`. Proves the duty tuning replicated.
+	//! Harness `engine`: this client asks the engine of the vehicle its character sits in to start, then
+	//! reports whether it runs. A second call after a few seconds reads the result of the first.
+	protected static void DoEngine(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		CompartmentAccessComponent access = character.GetCompartmentAccessComponent();
+		IEntity vehicle;
+		if (access)
+			vehicle = access.GetVehicleIn(character);
+
+		// An entity name seats this character at the wheel of that vehicle first (a teleport into the seat).
+		if (!vehicle && cmd.Arg1 != "")
+		{
+			// Names do not exist on a client: take the nearest vehicle within 6 m.
+			IEntity named;
+			array<IEntity> nearby = LF_Utils.GetNearbyVehicles(character.GetOrigin(), 6);
+			if (!nearby.IsEmpty())
+				named = nearby[0];
+			SCR_CompartmentAccessComponent seatAccess = SCR_CompartmentAccessComponent.Cast(access);
+			if (!named)
+			{
+				WriteResult(cmd.Id, "error", "seat_no_entity");
+				return;
+			}
+
+			if (!seatAccess)
+			{
+				WriteResult(cmd.Id, "error", "seat_no_access");
+				return;
+			}
+
+			if (!seatAccess.MoveInVehicle(named, ECompartmentType.PILOT))
+			{
+				WriteResult(cmd.Id, "error", "seat_refused");
+				return;
+			}
+
+			WriteResult(cmd.Id, "ok", "seat requested");
+			return;
+		}
+
+		VehicleControllerComponent engine;
+		if (vehicle)
+			engine = LF_Component<VehicleControllerComponent>.Find(vehicle);
+
+		if (!engine)
+		{
+			WriteResult(cmd.Id, "error", "not_in_vehicle");
+			return;
+		}
+
+		bool requested = false;
+		if (!engine.IsEngineOn())
+			requested = engine.StartEngine();
+
+		WriteResult(cmd.Id, "ok", string.Format("engine on=%1 requested=%2", engine.IsEngineOn(), requested));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void DoRadio(LF_AgentCommand cmd)
 	{
 		PlayerController controller = GetGame().GetPlayerController();

@@ -50,6 +50,7 @@ export const TOWN = {
     { id: "bank", entity: "Roadmap_Bank_Vault", actions: ["LF_BankRobAction"], sign: "bank", step: 12 },
     { id: "cash_van", entity: "Roadmap_Cash_Van_Box", actions: ["LF_HeistRobAction"], sign: null, step: 12, outskirts: true },
     { id: "lockpick_door", entity: "Roadmap_Lockpick_Door", actions: ["LF_LockpickAction"], sign: null, step: 12, outskirts: true, when: "a player carrying a lockpick" },
+    { id: "lockpick_car", entity: "Roadmap_Lockpick_Car", actions: ["LF_LockpickAction", "LF_HotwireAction"], sign: null, step: 12, outskirts: true, when: "a player carrying a lockpick; the hotwire at the wheel" },
     { id: "hospital", entity: "Roadmap_Hospital_Cabinet", actions: ["LF_HospitalCabinetAction"], sign: "hospital", step: 13 },
     { id: "convoy_pickup", entity: "Roadmap_Convoy_Start", actions: ["LF_ConvoyStartAction"], sign: "convoy_pickup", step: 14, outskirts: true },
     { id: "convoy_drop", entity: "Roadmap_Convoy_Drop", actions: ["LF_ConvoyDeliverAction"], sign: "convoy_drop", step: 14 },
