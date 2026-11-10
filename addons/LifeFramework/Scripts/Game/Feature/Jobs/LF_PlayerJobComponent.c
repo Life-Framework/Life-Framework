@@ -751,9 +751,6 @@ class LF_PlayerJobComponent : ScriptComponent
 			case EHarvestJobType.APPLES:
 				fruitName = "#LF-Fruit_Apples";
 				break;
-			case EHarvestJobType.TOMATOES:
-				fruitName = "#LF-Fruit_Tomatoes";
-				break;
 			case EHarvestJobType.PLUMS:
 				fruitName = "#LF-Fruit_Plums";
 				break;
