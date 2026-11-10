@@ -4574,12 +4574,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{22205B2B89D3D298}" {
      Id "LF-Org_LeaseOurs"
-     Target_en_us "Yours - members open the gate"
+     Target_en_us "Yours - members enter"
      Comment "Hideout lease status: this organization holds it."
     }
     CustomStringTableItem "{717EDA57B8114856}" {
      Id "LF-Org_LeaseTaken"
-     Target_en_us "Leased to another organization"
+     Target_en_us "Leased elsewhere"
      Comment "Hideout lease status: another organization holds it."
     }
     CustomStringTableItem "{CC1FC9A0CFEB04C1}" {
