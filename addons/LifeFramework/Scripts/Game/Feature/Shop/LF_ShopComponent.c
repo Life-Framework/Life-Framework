@@ -20,12 +20,66 @@ class LF_ShopComponent : ScriptComponent
 	[Attribute("0", UIWidgets.CheckBox, desc: "Fence: refuse buyers whose crime record is below the item's threshold; publish LF_OnFenceSale")]
 	protected bool m_bFence;
 
+	//! A back room (#600): its stock is contraband. An on-duty officer may search it and seize the
+	//! stock as evidence (LF_BackRoomSearchAction); the room then stays shut for a while.
+	[Attribute("0", UIWidgets.CheckBox, desc: "Back room: an on-duty officer can search it and seize its stock as evidence")]
+	protected bool m_bBackRoom;
+
+	//! Server only, world time in ms. Not saved: a raid closes the room for the rest of the session at most.
+	protected int m_iClosedUntilMs;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
 		super.OnPostInit(owner);
 		if (!m_aShopItems)
 			m_aShopItems = new array<ref LF_ShopItem>();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsBackRoom()
+	{
+		return m_bBackRoom;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: whether a raid has shut this room and the shutter is still down.
+	bool IsClosed(int nowMs)
+	{
+		return LF_BackRoomRules.IsClosed(m_iClosedUntilMs, nowMs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: an officer's search. Logs each curated stock line in the evidence locker (existing
+	//! locker payload, kind "backroom") and shuts the room.
+	//! Returns NONE, or why it was refused.
+	LF_EBackRoomRefusal Raid(IEntity officer, bool onDuty, int nowMs, out int seized)
+	{
+		seized = 0;
+		if (!Replication.IsServer() || !officer)
+			return LF_EBackRoomRefusal.NOT_ALLOWED;
+
+		float distance = vector.Distance(officer.GetOrigin(), GetOwner().GetOrigin());
+		LF_EBackRoomRefusal refusal = LF_BackRoomRules.Check(onDuty, m_bBackRoom, distance, m_iClosedUntilMs, nowMs);
+		if (refusal != LF_EBackRoomRefusal.NONE)
+		{
+			LF_Debug.Warn("Shop", string.Format("back room search refused: %1", typename.EnumToString(LF_EBackRoomRefusal, refusal)));
+			return refusal;
+		}
+
+		string officerUid = LF_Utils.GetPlayerUID(officer);
+		foreach (LF_ShopItem curated : m_aShopItems)
+		{
+			if (!curated)
+				continue;
+
+			LF_EvidenceLocker.LogSeizure(curated.GetItemPrefab(), m_sShopName, officerUid);
+			seized++;
+		}
+
+		m_iClosedUntilMs = LF_BackRoomRules.ClosedUntil(nowMs);
+		LF_Debug.Info("Shop", string.Format("back room '%1' searched by %2: %3 stock line(s) seized, shut until %4", m_sShopName, officerUid, seized, m_iClosedUntilMs));
+		return LF_EBackRoomRefusal.NONE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -206,6 +260,12 @@ class LF_ShopComponent : ScriptComponent
 		if (quantity <= 0)
 			return LF_EShopRefusal.BAD_QUANTITY;
 
+		if (IsClosed(GetGame().GetWorld().GetWorldTime()))
+		{
+			LF_Debug.Info("Shop", string.Format("buy rejected (raided, shut) item=%1", prefab));
+			return LF_EShopRefusal.CLOSED;
+		}
+
 		if (!IsItemSoldHere(prefab))
 		{
 			LF_Debug.Info("Shop", string.Format("buy rejected (not sold here) item=%1 qty=%2", prefab, quantity));
@@ -294,6 +354,12 @@ class LF_ShopComponent : ScriptComponent
 
 		if (quantity <= 0)
 			return LF_EShopRefusal.BAD_QUANTITY;
+
+		if (IsClosed(GetGame().GetWorld().GetWorldTime()))
+		{
+			LF_Debug.Info("Shop", string.Format("sell rejected (raided, shut) item=%1", prefab));
+			return LF_EShopRefusal.CLOSED;
+		}
 
 		if (!IsItemSoldHere(prefab))
 		{

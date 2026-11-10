@@ -6696,6 +6696,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
+    CustomStringTableItem "{7B1E5A0C00000001}" {
+     Id "LF-Shop_RefuseClosed"
+     Target_en_us "The back room is shut. Police have been through it."
+     Comment "Shop refusal: a raided back room is shut for a while (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000002}" {
+     Id "LF-BackRoom_Search"
+     Target_en_us "Search back room"
+     Comment "Officer action on a back room: search it and seize its stock as evidence (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000003}" {
+     Id "LF-BackRoom_SearchDesc"
+     Target_en_us "Seize the stock as evidence"
+     Comment "Description of the back room search action (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000004}" {
+     Id "LF-BackRoom_Seized"
+     Target_en_us "Stock seized as evidence"
+     Comment "Toast: the back room search seized its stock (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000005}" {
+     Id "LF-BackRoom_AlreadyShut"
+     Target_en_us "Already searched. The room is shut."
+     Comment "Toast: the back room was raided recently (#600)."
+    }
   }
  }
 }
