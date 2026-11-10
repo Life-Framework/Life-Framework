@@ -77,7 +77,9 @@
     "area-10-cash-van/wide": "The cash van at the bank stop",
     "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open",
     "area-16-moonshine/wide": "The moonshine camp tucked under a stand of spruce: still, fire pit, pallet and a fence behind",
-    "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack, beside the mash barrels"
+    "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack, beside the mash barrels",
+    "area-14-lockup/wide": "The lock-up row from the main street: a brick wall with the locked wooden door, a parked beige car, a barrel and pallets",
+    "area-14-lockup/detail": "The lock-up door set in its wall, facing the street, where Pick the lock is used"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",
@@ -85,6 +87,7 @@
     "area-7-hospital": "Hospital",
     "area-9-fence": "The fence",
     "area-10-cash-van": "Cash van route",
+    "area-14-lockup": "The lock-up",
     "area-16-moonshine": "Moonshine camp"
   },
   "skip": [

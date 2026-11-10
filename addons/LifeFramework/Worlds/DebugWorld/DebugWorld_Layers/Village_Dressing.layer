@@ -111,7 +111,7 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampS
  coords 252 0 244.6
 }
 GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 305 0 244.6
+ coords 316.5 0 244.6
 }
 GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
  coords 335 0 244.6
@@ -579,7 +579,7 @@ Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_au
  coords 352 0 256.6
 }
 Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 307.5 0 244.2
+ coords 300 0 247.5
 }
 GenericEntity SquareClerkDesk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
  coords 136 0 243.5
@@ -592,4 +592,23 @@ GenericEntity SquareClerkChair : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chai
 GenericEntity SquareLuggageCart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
  coords 124.5 0 240.5
  angleY 20
+}
+SCR_DestructibleEntity : "{419130031F0009C9}Prefabs/Structures/Walls/Brick/BrickWall_01/BrickWall_01_4m.et" {
+ coords 302 0 241.5
+}
+SCR_DestructibleEntity : "{419130031F0009C9}Prefabs/Structures/Walls/Brick/BrickWall_01/BrickWall_01_4m.et" {
+ coords 307.3 0 241.5
+}
+SCR_DestructibleEntity : "{419130031F0009C9}Prefabs/Structures/Walls/Brick/BrickWall_01/BrickWall_01_4m.et" {
+ coords 311.3 0 241.5
+}
+GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 309.4 0 242.8
+}
+GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+ coords 311.8 0 242.9
+ angleY 10
+}
+GenericEntity : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 313.6 0 242.6
 }

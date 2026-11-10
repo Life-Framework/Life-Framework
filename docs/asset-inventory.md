@@ -54,3 +54,4 @@ looked at yet.
 | Hideout van | `Roadmap_Hideout_Van` | final | vanilla `UAZ452_base` (the van-bodied car) | (a parked van, scenery) | Hideout, area 13 | none |
 | Hideout workbench, crates, barrels, tyres | `Roadmap_Hideout_*` | final | vanilla `Workbench_01`, `Crate_01`, `BoxWooden_01`, `BarrelMetal_01_blue`, `Tire_M151A2_pile` | (same) | Hideout, area 13 | none |
 | Fuel till counter and register | `EL_FuelTill.et` on vanilla `CounterShop_01` (Village_Dressing) | placeholder | vanilla shop counter with a cash register on top | a petrol-station kiosk counter inside the shop | Fuel till #236 | low |
+| Lock-up garage door | `Roadmap_Lockpick_Door` (`EL_Door_Base.et`) | placeholder | plain wooden house door in a brick wall line | roll-up or double-leaf garage door | Lock-up #411 | low |
