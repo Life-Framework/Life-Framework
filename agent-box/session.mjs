@@ -866,6 +866,75 @@ export function judgeDowned(shot, victim, shooter, peers1, peers2) {
   return fails;
 }
 
+// M2 #427: N revives of a downed client in one session. Client 1 clocks in as a medic once; each
+// run downs client 2 with a lethal hit, revives them, and times how long client 2 reads life=ALIVE.
+// Every sample logs the life state and resilience/blood/health client 2 reads about itself and
+// client 1 reads about client 2 (the server's own lines are `wake of ... +Ns` in the server log).
+// `revive-proof [--runs N] [--limit s]`: fails when a run is not ALIVE within the limit.
+async function runReviveProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const flag = (name, dflt) => { const i = process.argv.indexOf(name); return i > 0 ? Number(process.argv[i + 1]) : dflt; };
+  const runs = flag("--runs", 10);
+  const limit = flag("--limit", 12);
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const state = (n) => on(n, { verb: "state" }, 10000).detail;
+  const fails = [];
+  const results = [];
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Duty_Desk" });
+  wait(2500);
+  on(1, { verb: "look" });
+  on(1, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Hospital_Duty_Desk" }, 10000);
+  wait(2500);
+  if (!parseState(state(1)).faction?.includes("MEDIC")) fails.push("client 1 did not clock in as a medic");
+  for (let run = 1; run <= runs; run++) {
+    on(2, { verb: "stand", entityName: ROB_TARGET });
+    wait(2500);
+    on(1, { verb: "stand", entityName: ROB_TARGET });
+    wait(2500);
+    on(1, { verb: "shoot", playerId: 2 }, 10000);
+    wait(2500);
+    const patient = `Player${parseState(state(2)).player}`;
+    const down = parseState(state(2));
+    if (down.downed !== "1") { fails.push(`run ${run}: client 2 was not downed`); results.push({ run, ok: false }); continue; }
+    on(1, { verb: "stand", entityName: patient });
+    wait(2500);
+    on(1, { verb: "look" });
+    const t0 = Date.now();
+    const revive = on(1, { verb: "use", className: "LF_ReviveAction", entityName: patient }, 10000);
+    let woke = null;
+    const samples = [];
+    let relapse = null;
+    // Sample until `limit` seconds after the revive, past the wake: a patient who wakes and is
+    // downed again seconds later (the #427 relapse) must still fail the run.
+    while ((Date.now() - t0) / 1000 < limit) {
+      const own = parseState(state(2));
+      const t = ((Date.now() - t0) / 1000).toFixed(1);
+      samples.push(`${t}s own: life=${own.life} downed=${own.downed} res=${own.res} blood=${own.blood} hp=${own.hp}`);
+      if (own.life === "ALIVE" && own.downed === "0" && woke === null) woke = Number(t);
+      else if (woke !== null && (own.life !== "ALIVE" || own.downed === "1")) relapse = `${t}s life=${own.life} downed=${own.downed}`;
+      wait(1000);
+    }
+    console.log(`RUN ${run}: revive=${revive.status} woke=${woke === null ? "NEVER" : woke + "s"} | ${samples.join(" | ")}`);
+    results.push({ run, ok: woke !== null && !relapse, woke, relapse });
+    if (woke === null) fails.push(`run ${run}: never woke within ${limit} s`);
+    if (relapse) fails.push(`run ${run}: woke at ${woke} s, then relapsed at ${relapse}`);
+    wait(1500);
+  }
+  console.log(`revive runs: ${JSON.stringify(results)}`);
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "revive proof: FAIL" : `revive proof: PASS (${runs} revives, all awake within ${limit} s)`);
+  return fails.length ? 1 : 0;
+}
+
 // M2 #261: client 1 downs client 2, drags the body to the hospital desk, drops it, carries it to
 // the escort car and loads it into a seat. Clients 1 and 2 and a late joiner (client 3, joined
 // after the drag began) read the body at the carrier's side, then in the seat. Needs 2 clients.
@@ -1218,6 +1287,65 @@ async function runMedicProof() {
   console.log(`clock out client 2: ${offDuty}`);
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "medic proof: FAIL" : "medic proof: PASS (clock in at the hospital desk, the medic board opens, clock out)");
+  return fails.length ? 1 : 0;
+}
+
+// M2 #263 on a running `up --clients 2` session (debug mission: the dev gate is open): client 1 turns
+// the hospital ambulance's siren on through the same rule the driver's key uses, client 2 (a second
+// machine) must see and hear the change arrive by replication; then off. Screenshots: lights off,
+// lights on from both clients. Replication is read from client 2's own log line.
+async function runSirenProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const fails = [];
+  const vehicles = [
+    { name: "Roadmap_Hospital_Ambulance", at: [266, 1.2, 250], label: "ambulance" },
+    { name: "Roadmap_Police_Car", at: [240, 1.0, 246], label: "police" },
+  ];
+  const view = (n, v, tag) => on(n, { verb: "capture", mode: "world", name: `m2_263_${v.label}_${tag}_client${n}`, x: v.at[0], y: v.at[1], z: v.at[2], ox: 5, oy: 2.5, oz: -6 }, 25000);
+
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  for (const v of vehicles) {
+    on(1, { verb: "stand", entityName: v.name });
+    wait(2500);
+    view(1, v, "off");
+    const onR = on(1, { verb: "siren", entityName: v.name, mode: 1 }, 10000);
+    if (!onR.detail.includes("changed=1 on=1 broadcasts=1")) fails.push(`${v.label} siren on: ${onR.status} ${onR.detail}`);
+    wait(2500);
+    view(1, v, "on_a");
+    wait(400);
+    view(2, v, "on_b");
+    const again = on(1, { verb: "siren", entityName: v.name, mode: 1 }, 10000);
+    if (!again.detail.includes("changed=0")) fails.push(`${v.label} the same mode asked twice changed again: ${again.detail}`);
+    const offR = on(1, { verb: "siren", entityName: v.name, mode: 0 }, 10000);
+    if (!offR.detail.includes("changed=1 on=0 broadcasts=2")) fails.push(`${v.label} siren off: ${offR.status} ${offR.detail}`);
+    wait(1500);
+  }
+
+  // Replication: client 2 saw both vehicles change (its own log carries the mode line once per change).
+  const logs = [];
+  const clientDir = join(dir, "client2", "logs");
+  if (existsSync(clientDir)) {
+    for (const d of readdirSync(clientDir).sort()) {
+      const p = join(clientDir, d, "console.log");
+      if (existsSync(p)) logs.push(readFileSync(p, "utf8"));
+    }
+  }
+  const text = logs.join("\n");
+  const modeLines = (text.match(/Siren\]? mode -> /g) ?? []).length;
+  console.log(`client 2 siren mode lines: ${modeLines}`);
+  if (modeLines < 4) fails.push(`client 2 logged ${modeLines} siren mode changes, expected at least 4 (on and off for two vehicles)`);
+
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "siren proof: FAIL" : "siren proof: PASS (ambulance and police car: siren on and off replicated to client 2, a repeated request changes nothing)");
   return fails.length ? 1 : 0;
 }
 
@@ -2039,7 +2167,9 @@ async function main(argv) {
   if (cmd === "quarry-proof") return runQuarryProof();
   if (cmd === "downed-proof") return runDownedProof();
   if (cmd === "carry-proof") return runCarryProof();
+  if (cmd === "revive-proof") return runReviveProof();
   if (cmd === "medic-proof") return runMedicProof();
+  if (cmd === "siren-proof") return runSirenProof();
   if (cmd === "bill-proof") return runBillProof();
   if (cmd === "nlr-proof") return runNlrProof();
   if (cmd === "radio-proof") return runRadioProof();
@@ -2065,7 +2195,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|bill-proof|nlr-proof|radio-proof|scanner-proof|vault-proof|dispatch-proof|witness-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|bill-proof|nlr-proof|siren-proof|radio-proof|scanner-proof|vault-proof|dispatch-proof|witness-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 

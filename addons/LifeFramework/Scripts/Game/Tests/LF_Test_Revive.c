@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_Revive`: LF_Revive.Decide ignoring the range failed it with `- a medic out of range is refused (expected 5, got 0)`. Restored; green.
+// red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_Revive`: the revive not using up the dressing failed it with `- the dressing is used up (expected 0, got 1)`; earlier, LF_Revive.Decide ignoring the range failed `- a medic out of range is refused (expected 5, got 0)`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
 //! Records the LF_OnPlayerRevived events a test publishes.
@@ -105,13 +105,24 @@ class LF_Test_Revive : LF_Test
 		ctx.EqualFloat(-1, patientCharacter.LF_GetBleedSecondsLeft(), 0.01, "the replicated clock reads not downed");
 		ctx.False(damage.LF_WantsUnconscious(), "the patient is no longer held unconscious");
 		ctx.True(damage.GetResilienceHitZone().GetHealthScaled() >= config.m_fReviveRecoveryScaled - 0.01, "resilience is lifted so the patient wakes at once");
-		ctx.EqualFloat(health, damage.GetDefaultHitZone().GetHealthScaled(), 0.01, "the patient keeps the sliver of health, above zero");
+		ctx.True(damage.GetDefaultHitZone().GetHealthScaled() >= config.m_fReviveHealthScaled - 0.01, "the revive lifts health to the floor, so bleeding cannot down them again");
+		ctx.False(damage.IsBleeding(), "the wound that downed them no longer bleeds");
 		ctx.True(damage.GetDefaultHitZone().GetHealthScaled() > 0, "the patient is alive with health above zero");
 		ctx.EqualStr("npc<npc;", recorder.m_sLog, "LF_OnPlayerRevived was published once");
 		ctx.Equal(1, LF_Revive.GetRevivedCount(), "one revive was counted");
 
+		// The cost: no dressing, no revive; with one, it is used up (#427).
+		ctx.Equal(LF_EReviveRefusal.NOT_DOWNED, LF_Revive.ApplyWithCost(medic, patient, true), "a patient who is not down is refused before any cost");
+		damage.Kill(Instigator.CreateInstigator(null));
+		ctx.True(patientCharacter.LF_IsDowned(), "downed again for the cost check");
+		ctx.Equal(LF_EReviveRefusal.NO_ITEM, LF_Revive.ApplyWithCost(medic, patient, true), "a medic with no dressing is refused");
+		ctx.True(patientCharacter.LF_IsDowned(), "the patient is still downed after a refused cost");
+		ctx.Equal(1, LF_InventoryUtils.AddAmount(medic, config.m_sReviveItemPrefab, 1), "the medic is given a dressing");
+		ctx.Equal(LF_EReviveRefusal.NONE, LF_Revive.ApplyWithCost(medic, patient, true), "a medic with a dressing revives");
+		ctx.Equal(0, LF_InventoryUtils.GetAmount(medic, config.m_sReviveItemPrefab), "the dressing is used up");
+
 		// A second revive finds nobody down.
 		ctx.Equal(LF_EReviveRefusal.NOT_DOWNED, LF_Revive.Apply(medic, patient, true), "the revived patient cannot be revived again");
-		ctx.Equal(1, LF_Revive.GetRevivedCount(), "the refused revive is not counted");
+		ctx.Equal(2, LF_Revive.GetRevivedCount(), "the refused revive is not counted");
 	}
 }

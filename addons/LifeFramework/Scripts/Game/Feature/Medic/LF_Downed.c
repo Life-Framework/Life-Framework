@@ -167,12 +167,38 @@ class LF_Downed
 			// configured level so the wake is now; health stays at the sliver.
 			RaiseHitZone(damageManager.GetResilienceHitZone(), LF_MedicConfig.Get().m_fReviveRecoveryScaled);
 			RaiseHitZone(damageManager.GetBloodHitZone(), LF_MedicConfig.Get().m_fReviveRecoveryScaled);
+			// The wound that downed them still bleeds; a bleed on the bare sliver of health re-downs them
+			// seconds after the wake (#427). Treatment stops it and lifts health to a floor.
+			damageManager.RemoveAllBleedings();
+			RaiseHitZone(damageManager.GetDefaultHitZone(), LF_MedicConfig.Get().m_fReviveHealthScaled);
 			damageManager.UpdateConsciousness();
 			LF_Debug.Info(FEATURE, string.Format("wake of %1: resilience %2, blood %3, health %4, still unconscious %5", PlayerUid(character), damageManager.GetResilienceHitZone().GetHealthScaled(), damageManager.GetBloodHitZone().GetHealthScaled(), damageManager.GetDefaultHitZone().GetHealthScaled(), damageManager.LF_WantsUnconscious()));
 		}
 
+		if (GetGame().GetCallqueue())
+		{
+			GetGame().GetCallqueue().CallLater(LogWake, 1000, false, character, 1);
+			GetGame().GetCallqueue().CallLater(LogWake, 4000, false, character, 4);
+			GetGame().GetCallqueue().CallLater(LogWake, 9000, false, character, 9);
+		}
+
 		LF_Debug.Info(FEATURE, string.Format("player %1 is no longer downed", PlayerUid(character)));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #427 diagnostics: where the wake stands `seconds` after the revive, on the server.
+	static void LogWake(SCR_ChimeraCharacter character, int seconds)
+	{
+		if (!character)
+			return;
+
+		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(character.FindComponent(SCR_CharacterDamageManagerComponent));
+		CharacterControllerComponent controller = character.GetCharacterController();
+		if (!damageManager || !controller)
+			return;
+
+		LF_Debug.Info(FEATURE, string.Format("wake of %1 +%2s: life %3, resilience %4, blood %5, health %6, wants unconscious %7", PlayerUid(character), seconds, typename.EnumToString(ECharacterLifeState, controller.GetLifeState()), damageManager.GetResilienceHitZone().GetHealthScaled(), damageManager.GetBloodHitZone().GetHealthScaled(), damageManager.GetDefaultHitZone().GetHealthScaled(), damageManager.LF_WantsUnconscious()));
 	}
 
 	//------------------------------------------------------------------------------------------------

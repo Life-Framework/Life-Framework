@@ -6062,6 +6062,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "New Life Rule: you are near where you died. Please keep away."
      Comment "Quiet reminder toast when a wristband wearer returns to their death scene inside the window."
     }
+    CustomStringTableItem "{7A30C5E1D49B6B01}" {
+     Id "LF-Revive_NoItem"
+     Target_en_us "You need a field dressing to revive someone."
+     Comment "Revive refusal: the medic has none of the configured revive item."
+    }
   }
  }
 }
