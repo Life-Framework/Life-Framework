@@ -121,7 +121,7 @@ GenericEntity Roadmap_Convoy_Drop_Near {
    }
   }
  }
- coords 466 0 300
+ coords 466 0 304
  Flags 0x403 0
 }
 GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {

@@ -1480,7 +1480,7 @@
   (mesh, hand-carry, flagged) and both outcomes of getting out.
 - ✅ **Debug drop is close to the barn** (#616). `LF_GameModeRoleplay.m_bConvoyNearDrop`
   (on in `GameMode_Roleplay_Debug.et`, off on the flagship prefab) picks the drop:
-  on, the run uses `Roadmap_Convoy_Drop_Near` (`466 0 300`, 31 m from the barn pallet, a
+  on, the run uses `Roadmap_Convoy_Drop_Near` (`466 0 304`, 27 m from the barn pallet, a
   second crate cage in `Street_Contraband.layer`); off, the pub's `Roadmap_Convoy_Drop`.
   `LF_Contraband.DropIdFor(bool)` / `ActiveDropId()` choose it; the inactive cage hides its
   Deliver prompt (`LF_ConvoyDeliverAction`) and refuses. Pickup sign and loaded toast now say
