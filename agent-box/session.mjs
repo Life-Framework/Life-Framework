@@ -1019,21 +1019,26 @@ async function runBedProof() {
   on(1, { verb: "use", className: "LF_CarryAction", entityName: patientName }, 10000);
   wait(1500);
   need(parsePeer(peers(2), 2)?.carrier === 1, "the carry did not take hold");
-  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Ambulance" });
-  wait(4000);
-  const load = on(1, { verb: "use", className: "LF_LoadPatientAction", entityName: patientName }, 10000);
-  need(load.status === "ok", `load returned ${load.status} ${load.detail}`);
-  wait(9000);
-  const seated = parsePeer(peers(2), 2);
-  need(seated && seated.seat === "1", `the patient is not seated in the ambulance: ${peers(2)}`);
-  const amb = parsePeer(peers(1), 2)?.at ?? [266, 0, 250];
-  on(1, { verb: "capture", mode: "world", name: "m2_262_loaded_ambulance", x: amb[0], y: amb[1] + 1.2, z: amb[2], ox: 4, oy: 1.8, oz: 0 }, 25000);
+  const carryOnly = process.argv.includes("--carry-only");
+  let bleedA = 0;
+  if (!carryOnly) {
+    on(1, { verb: "stand", entityName: "Roadmap_Hospital_Ambulance" });
+    wait(4000);
+    const load = on(1, { verb: "use", className: "LF_LoadPatientAction", entityName: patientName }, 10000);
+    need(load.status === "ok", `load returned ${load.status} ${load.detail}`);
+    wait(9000);
+    const seated = parsePeer(peers(2), 2);
+    need(seated && seated.seat === "1", `the patient is not seated in the ambulance: ${peers(2)}`);
+    const amb = parsePeer(peers(1), 2)?.at ?? [266, 0, 250];
+    on(1, { verb: "capture", mode: "world", name: "m2_262_loaded_ambulance", x: amb[0], y: amb[1] + 1.2, z: amb[2], ox: 4, oy: 1.8, oz: 0 }, 25000);
 
-  // Stretcher: the bleed-out clock does not run while loaded.
-  const bleedA = Number(state(2).bleed);
-  wait(16000);
-  const bleedB = Number(state(2).bleed);
-  need(bleedA > 0 && bleedB === bleedA, `the bleed-out ran while loaded: ${bleedA} -> ${bleedB}`);
+    // Stretcher: the bleed-out clock does not run while loaded.
+    bleedA = Number(state(2).bleed);
+    wait(16000);
+    const bleedB = Number(state(2).bleed);
+    need(bleedA > 0 && bleedB === bleedA, `the bleed-out ran while loaded: ${bleedA} -> ${bleedB}`);
+
+  }
 
   // Bed: the medic puts the patient in a bed.
   on(1, { verb: "stand", entityName: "Hospital_Bed_2" });
@@ -1044,7 +1049,11 @@ async function runBedProof() {
   wait(1000);
   on(1, { verb: "capture", mode: "world", name: "m2_262_patient_in_bed", x: 268.6, y: 1.2, z: 261.45, ox: 2.4, oy: 1.4, oz: -1.2 }, 25000);
   wait(3000);
-  const woke = state(2);
+  let woke = state(2);
+  for (let i = 0; i < 10 && woke.life !== "ALIVE"; i++) {
+    wait(2000);
+    woke = state(2);
+  }
   need(woke.downed === "0" && woke.life === "ALIVE", `the patient did not wake: downed=${woke.downed} life=${woke.life}`);
   need(woke.bills === "1", `the patient carries bills=${woke.bills}, expected 1`);
   need(woke.bank === start2.bank, `the bill touched the bank: ${start2.bank} -> ${woke.bank}`);

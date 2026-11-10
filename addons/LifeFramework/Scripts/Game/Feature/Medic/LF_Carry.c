@@ -207,6 +207,12 @@ class LF_Carry
 	}
 
 	//------------------------------------------------------------------------------------------------
+	static bool IsSeatedIn(IEntity entity)
+	{
+		return IsSeated(entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static bool IsSeated(IEntity entity)
 	{
 		CompartmentAccessComponent access = CompartmentAccessComponent.Cast(entity.FindComponent(CompartmentAccessComponent));

@@ -21,6 +21,7 @@ class LF_BedDelivery
 {
 	static const string FEATURE = "Medic";
 	static const int STEP_OFF_MS = 3000;
+	static const int DISMOUNT_WAIT_MS = 2500;
 
 	protected static int s_iDeliveredCount;
 
@@ -168,23 +169,47 @@ class LF_BedDelivery
 		LF_Carry.EndForDelivery(medic);
 		vector transform[4];
 		bedComponent.GetWakeTransform(transform);
+		bool seated = IsLoaded(patient) || LF_Carry.IsSeatedIn(patient);
 		LF_Jail.MoveBody(patient, transform[3]);
+		// A seated body is dismounted by its owning client a moment later; vanilla keeps a character
+		// in a seat unconscious, so the wake waits for the dismount.
+		if (seated && GetGame().GetCallqueue())
+		{
+			GetGame().GetCallqueue().CallLater(Complete, DISMOUNT_WAIT_MS, false, medic, patient, bedComponent.GetOwner(), transform[3], bedComponent.GetStandPosition());
+			return LF_EDeliveryRefusal.NONE;
+		}
+
+		return Complete(medic, patient, bedComponent.GetOwner(), transform[3], bedComponent.GetStandPosition());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The wake itself: the revive path, the reduced bill, the events, the step off the mattress.
+	protected static LF_EDeliveryRefusal Complete(IEntity medic, IEntity patient, IEntity bed, vector position, vector standPosition)
+	{
+		if (!medic || !patient)
+			return LF_EDeliveryRefusal.NO_PATIENT;
+
+		string medicUid = Uid(medic);
+		string patientUid = Uid(patient);
 		if (!LF_Downed.Clear(patient))
+		{
+			LF_Debug.Info(FEATURE, string.Format("bed delivery of %1 ends: no longer downed", patientUid));
 			return LF_EDeliveryRefusal.NOT_DOWNED;
+		}
 
 		s_iDeliveredCount++;
 		LF_Debug.Info(FEATURE, string.Format("player %1 put in a hospital bed by medic %2", patientUid, medicUid));
-		LF_EventBus.Publish(LF_OnPlayerRevived.Create(patientUid, medicUid, transform[3]));
+		LF_EventBus.Publish(LF_OnPlayerRevived.Create(patientUid, medicUid, position));
 		int billNumber;
 		LF_TreatmentBillRecord bill = LF_TreatmentBills.IssueForRevive(medic, patient);
 		if (bill)
 			billNumber = bill.m_iNumber;
 
-		LF_EventBus.Publish(LF_OnPatientDelivered.Create(patientUid, medicUid, billNumber, transform[3]));
+		LF_EventBus.Publish(LF_OnPatientDelivered.Create(patientUid, medicUid, billNumber, position));
 		LF_Utils.NotifyEntity(medic, "#LF-Bed_Done", "", 4.0);
 		LF_Utils.NotifyEntity(patient, "#LF-Revive_Revived", "", 6.0);
 		if (GetGame().GetCallqueue())
-			GetGame().GetCallqueue().CallLater(StepOff, STEP_OFF_MS, false, patient, bedComponent.GetStandPosition());
+			GetGame().GetCallqueue().CallLater(StepOff, STEP_OFF_MS, false, patient, standPosition);
 
 		return LF_EDeliveryRefusal.NONE;
 	}
