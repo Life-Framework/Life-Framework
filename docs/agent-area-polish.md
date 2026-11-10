@@ -95,6 +95,7 @@ each area's `contact.jpg`, `index.json`, `problems.txt` and a `stamp.json` (the 
 `tmp/shots-baseline/<area>/` of the main checkout, which every worktree can read. `shots area <name> --baseline`
 prints that path and how many commits old it is (counted from the stamp to `origin/main`); it never starts a session.
 
+- **Cost:** about 2.5 to 6 minutes per area (the wide-frame scoring dominates), so all 21 entries do not fit the 45-minute session hold cap (measured 2026-11-10: 4 areas in 33 min on the laptop). Run it on an idle pool (the cap only bites while others queue) or in slices that share the store: `shots baseline --areas bank,hospital,...`; each slice is one session and replaces only its own areas' folders.
 - **Schedule: once a day**, from a worktree merged with `origin/main`, e.g. `tools\cli shots baseline`. Set `LF_SHOTS_BASELINE=<dir>` to store it elsewhere.
 - **A builder takes no before session.** It reads the baseline, checks nothing in its area changed since the stamp, and spends exactly one session on the after shots.
 
