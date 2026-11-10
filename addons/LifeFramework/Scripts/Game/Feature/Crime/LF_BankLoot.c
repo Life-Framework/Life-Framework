@@ -23,14 +23,14 @@ class LF_BankLoot
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawns count money bags in a row behind the target, each carrying cashPerBag of MoneyStack.
+	//! Spawns count money bags in a row behind the target (its local +X; the cash van box lies across the step with its long side along local Z), each carrying cashPerBag of MoneyStack.
 	//! \return The bags spawned. A bag that would not fill is deleted, not left empty.
 	static array<IEntity> SpillBags(IEntity target, vector fallback, int count, int cashPerBag)
 	{
 		array<IEntity> bags = {};
 		for (int i = 0; i < count; i++)
 		{
-			vector at = Spot(target, fallback, 1.4, (i - (count - 1) * 0.5) * 0.7, 0.3);
+			vector at = Spot(target, fallback, (i - (count - 1) * 0.5) * 0.7, 1.4, 0.3);
 			// Lay each bag on the ground, not at the target's height: no bag hangs in the air.
 			if (GetGame() && GetGame().GetWorld())
 				at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]) + 0.05;
