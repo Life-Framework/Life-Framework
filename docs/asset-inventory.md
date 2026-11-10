@@ -54,6 +54,9 @@ looked at yet.
 | Hideout van | `Roadmap_Hideout_Van` | final | vanilla `UAZ452_base` (the van-bodied car) | (a parked van, scenery) | Hideout, area 13 | none |
 | Hideout workbench, crates, barrels, tyres | `Roadmap_Hideout_*` | final | vanilla `Workbench_01` (under the pergola), `Crate_01`, `BoxWooden_01`, `WoodenPalletBox_01`, `Pallet_01_Pile`, `Cart_01`, `Jerrycan_01`, `CardboardBox_03`, `BarrelMetal_01_blue`, `Tire_M151A2_pile` | (same) | Hideout, area 13 | none |
 | Fuel till counter and register | `EL_FuelTill.et` on vanilla `CounterShop_01` (Village_Dressing) | placeholder | vanilla shop counter with a cash register on top | a petrol-station kiosk counter inside the shop | Fuel till #236 | low |
+| Apple juicer | `AppleJuicer.et` (`AppleProcessor`) | placeholder | vanilla `CoffeeGrinderShop_01` on a `TableRecreation_01` press table in the orchard | a hand fruit press | Farm and trader chains, area 12 | low |
+| Tomato field: beds, greenhouse, crops | `VegetableBed_01_big/small`, `Greenhouse_01`, `TomatoCrop.et`, `SeedTomato.et` | final | vanilla farm structures and the mod crop prefab | (same) | Farm, area 12 | none |
+| Farm yard props | `Cart_01`, `Wheelbarrow_01`, `Bucket_01`, `Crate_01_*`, `HayBale_01_square_big/small`, `WoodenFence_01_4m`, `TableRecreation_01` | final | vanilla props (no 1989-specific farm crate exists; Crate_01 stands in for a produce crate) | (same) | Farm, area 12 | none |
 | Quarry lane barrier | `WoodenFence_01_4m` rails + `ConeTraffic_01` | placeholder | two fence rails each side of a 6 m gap | red-white boom barrier on a post | Quarry polish, area 11 | low |
 | Quarry gatehouse | `Shed_03.et` | placeholder | a village garden shed | site hut or trailer | Quarry polish, area 11 | low |
 | Quarry spoil heap | `DirtPile_01_base.et` | final | base-game dirt pile | | Quarry polish, area 11 | |

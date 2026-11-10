@@ -163,5 +163,5 @@ GenericEntity TomatoGather : "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoC
    m_bCanGather 1
   }
  }
- coords 154.5 0 296.5
+ coords 154.5 0 297.5
 }
