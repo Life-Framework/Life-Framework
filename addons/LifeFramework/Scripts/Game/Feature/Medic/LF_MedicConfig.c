@@ -82,6 +82,15 @@ class LF_MedicConfig
 	[Attribute("0.5", UIWidgets.Auto, "Fraction of a paid revive bill the reviving medic earns in cash at clock-out", params: "0 1")]
 	float m_fBillMedicShare = 0.5;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Vehicle prefabs (or prefabs inheriting them) whose passenger seats are a stretcher: a downed patient seated there does not bleed out (#262)", "et")]
+	ref array<ResourceName> m_aStretcherVehicles = {"{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et"};
+
+	[Attribute("3", UIWidgets.Auto, "Metres within which a medic can put a patient in a hospital bed", params: "0.5 10")]
+	float m_fBedRange = 3;
+
+	[Attribute("14", UIWidgets.Auto, "Metres from a hospital bed within which a stretcher vehicle's patient can be put in the bed", params: "2 60")]
+	float m_fBedVehicleRange = 14;
+
 	[Attribute("1", UIWidgets.CheckBox, "New Life Rule (#264): a real death puts a wristband on the wake, and returning near the death scene inside the window gets a reminder and an incident row. A revive gives none. Off: neither")]
 	bool m_bNewLifeEnabled = true;
 

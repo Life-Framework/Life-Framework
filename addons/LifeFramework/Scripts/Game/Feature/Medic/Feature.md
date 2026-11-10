@@ -81,3 +81,14 @@ once at clock-out. Saved as the `bills` payload (version 19). Unpaid has no cons
 - The downed state is not persisted: the body is gone when the player leaves.
 - Hit zone, not damage manager: `HijackDamageHandling` does not see the damage a
   limb passes on to the Health zone, `SCR_CharacterHealthHitZone.ComputeEffectiveDamage` does.
+
+## V1.5 - #262, the ambulance run ends in a bed
+
+`LF_BedDelivery` + `LF_BedDeliveryAction` ("Put patient in bed") on `Prefabs/Medic/LF_HospitalBed.et` (the vanilla
+`BedMedical_01` mesh, `LF_HospitalBedComponent`, context `LF_HospitalBed`). On-duty medic only; the server takes the body
+the medic carries, else a downed occupant of a stretcher vehicle parked within `m_fBedVehicleRange` of the bed, moves it
+onto the mattress, calls `LF_Downed.Clear`, writes the reduced revive bill (`LF_TreatmentBills.IssueForRevive`,
+`m_iReviveBillAmount`; a death's wake bill is the larger `LF_Respawn.conf` amount) and publishes `LF_OnPlayerRevived`
+then `LF_OnPatientDelivered`. A downed patient seated in a vehicle listed in `m_aStretcherVehicles` (flagship: the
+ambulance) does not bleed out (`LF_BedDelivery.IsLoaded`, read by `LF_BleedOut.Advance`). Loading is `LF_Carry.Load`.
+No stretcher-load sound yet.
