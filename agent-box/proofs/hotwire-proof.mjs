@@ -1,5 +1,5 @@
 import { arrive, clientBox, parsePeer, sessionDir } from "../session.mjs";
-import { makeClientSees, peerGap } from "./_clientSees.mjs";
+import { judgeOfferDrop, makeClientSees, peerGap } from "./_clientSees.mjs";
 
 // M2 #412 on a running `up --clients 2` session (debug mission): client 1 picks the lock-up car with a
 // lockpick, sits at the wheel, fails to start it (the ignition needs its key), hotwires it and starts the
@@ -24,12 +24,20 @@ async function runHotwireProof() {
   wait(2500);
   const look = on(1, { verb: "look" });
   on(1, { verb: "capture", mode: "ui", name: "m2_412_car_before_client1" }, 25000);
+  const offered2 = sees.offerCount(2, "LF_LockpickAction");
   const give = on(1, { verb: "lockpick" }, 10000);
   wait(1500);
-  const pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Car" }, 10000);
+  // A pick can snap (the roll is the design): retry, with a fresh pick, until client 1 sees the lock gone.
+  let pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Car" }, 10000);
   wait(23000);
+  for (let attempt = 2; attempt <= 6 && sees.offerSeen(1, "LF_LockpickAction"); attempt++) {
+    on(1, { verb: "lockpick" }, 10000);
+    wait(1000);
+    pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Car" }, 10000);
+    wait(23000);
+  }
   // #522: the unlock reached the witness: client 2 no longer sees the pick offered on the car.
-  sees.expectOffer(2, "LF_LockpickAction", "", false, fails, "after the pick");
+  fails.push(...judgeOfferDrop(offered2, sees.offerCount(2, "LF_LockpickAction"), "client 2"));
   const getIn = on(1, { verb: "engine", entityName: "Roadmap_Lockpick_Car" }, 10000);
   wait(4000);
   const noKey = on(1, { verb: "engine" }, 10000);

@@ -6,7 +6,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ROOT, arrive, newestLog, parsePeer, sessionPaths } from "../session.mjs";
+import { ROOT, arrive, newestLog, parsePeer, readSession, sessionDir, sessionPaths } from "../session.mjs";
 
 // Newest console log of the server and of clients 1..n, as full text.
 function readLog(logsDir) {
@@ -56,7 +56,17 @@ export function selftestClientSees() {
   if (!offers("LF_LockpickAction@Door,SCR_X", "LF_LockpickAction", "Door")) f.push("offers hit");
   if (offers("LF_LockpickAction@Door", "LF_LockpickAction", "Other")) f.push("offers wrong entity");
   if (offers("none", "LF_LockpickAction")) f.push("offers on none");
+  if (judgeOfferDrop(1, 0, "c").length) f.push("drop 1 to 0 failed");
+  if (!judgeOfferDrop(1, 1, "c").length) f.push("no-change view passed");
+  if (!judgeOfferDrop(0, 0, "c").length) f.push("no lock before passed");
   return f;
+}
+
+// A pick that worked drops the witness's offered picks by one; anything else is a view that did not change.
+export function judgeOfferDrop(before, after, who) {
+  if (before < 1) return [`${who} saw no lock to pick before the attempt (a lock left open by an earlier run: restart the session)`];
+  if (after >= before) return [`${who} still sees ${after} of ${before} picks offered: the unlock did not reach it`];
+  return [];
 }
 
 // Builds the helper for one proof run. `on(n, spec, timeoutMs)` and `wait(ms)` are the proof's own.
@@ -80,6 +90,9 @@ export function makeClientSees({ on, wait, dir }) {
     look,
     lookAround,
     uiText,
+    offerSeen: (n, className) => offers(look(n, className), className),
+    // How many `className` actions client n is offered within 4 m (a neighbouring lock stays constant, so a drop is the pick).
+    offerCount: (n, className) => parseActions(look(n, className)).filter((a) => a.startsWith(className)).length,
     // Client n must see `className` offered (or not offered) within 4 m of its body.
     expectOffer(n, className, entityName, want, fails, label) {
       const got = offers(look(n, className), className, entityName);
@@ -103,9 +116,19 @@ export function makeClientSees({ on, wait, dir }) {
 
 // #504: client n is already running (an earlier run in this session): reuse it. Otherwise join it
 // late. Returns "reused", "joined" or "failed".
-export function ensureClient(on, wait, n) {
-  const live = on(n, { verb: "state" }, 8000);
-  if (live.status === "ok") return "reused";
+export function ensureClient(on, wait, n, dir = sessionDir()) {
+  const rec = (readSession(dir)?.clients ?? []).find((c) => c.n === n || c.client === n);
+  let alive = false;
+  try {
+    alive = !!rec?.pid && process.kill(rec.pid, 0);
+  } catch {
+    alive = false;
+  }
+  if (alive) {
+    // Up already (an earlier run, or `up --clients 3`): make sure it has a body, then reuse it.
+    arrive(on, n, wait);
+    return "reused";
+  }
   const joined = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "join", String(n)], { windowsHide: true, stdio: "inherit" });
   if (joined.status !== 0) return "failed";
   arrive(on, n, wait);
