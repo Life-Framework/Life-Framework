@@ -54,6 +54,8 @@
     "area-1-spawn-square/payphone": "The payphone",
     "area-2-bank/wide": "The bank front: two teller windows, the ATM sign and the vault door on the east wall (right)",
     "area-2-bank/detail": "The two ATM teller windows either side of the bank door",
+    "area-3-store/wide": "The general store with its counter out front, and the market tables and sign down the street",
+    "area-3-store/counter": "The store counter with the shelf goods on top, the fascia sign and the sandwich board beside the door",
     "area-6-police/wide": "The police post from the main street: the full villa, the POLICE STATION sign, the duty desk in the loggia, the payphone, the two boards on the lawn and a police jeep",
     "area-6-police/angle": "The same post from the south-west: dispatch and wanted boards face the street, the loggia door is clear",
     "area-7-hospital/wide": "The village hospital with the ambulance in its bay",
