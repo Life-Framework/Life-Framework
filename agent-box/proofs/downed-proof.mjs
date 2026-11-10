@@ -127,8 +127,8 @@ async function runDownedProof() {
   // #256: the client reads the time left (a replicated, throttled copy); giving up is refused
   // before the delay and accepted after it, and then it is the real death.
   const bleedConf = medicConf;
-  const bleedSeconds = Number(/m_fBleedOutSecondss+(d+)/.exec(bleedConf)?.[1] ?? 180);
-  const giveUpDelay = Number(/m_fGiveUpDelaySecondss+(d+)/.exec(bleedConf)?.[1] ?? 30);
+  const bleedSeconds = Number(/m_fBleedOutSeconds\s+(\d+)/.exec(bleedConf)?.[1] ?? 180);
+  const giveUpDelay = Number(/m_fGiveUpDelaySeconds\s+(\d+)/.exec(bleedConf)?.[1] ?? 30);
   const bleedRead = parseState(state(2)).bleed;
   for (const f of judgeBleed(bleedRead, bleedSeconds)) fails.push(f);
   const early = on(2, { verb: "giveup" }, 10000);
@@ -142,8 +142,13 @@ async function runDownedProof() {
   on(2, { verb: "capture", mode: "ui", name: "m2_255_death_screen_client2" }, 25000);
   // Vanilla keeps the instigator of the knockout as the killer when the downed player dies, so the
   // murder is the downer's, on the real death only.
+  // Wanted is capped at 5 (LF_PlayerAccount.SetWantedLevel): a shooter who starts at 3 reads 5
+  // here, which looks like a double count but is a dirty start. Name the start when it is not 0.
+  const murderWanted = Number(/m_iMurderWanted\s+(\d+)/.exec(readFileSync(join(ROOT, "addons", "LifeFramework", "Configs", "Police", "LF_Police.conf"), "utf8"))?.[1] ?? 3);
+  const startWanted = Number(parseState(start1).wanted ?? 0);
+  if (startWanted !== 0) fails.push(`shooter started the proof at wanted=${startWanted}: the session reset left a crime behind`);
   const wantedAfterDeath = parseState(state(1)).wanted;
-  if (wantedAfterDeath !== "3") fails.push(`shooter wanted=${wantedAfterDeath} after the downed player died, expected 3 (murder attributed to the downer)`);
+  if (wantedAfterDeath !== String(murderWanted)) fails.push(`shooter wanted=${wantedAfterDeath} after the downed player died, expected ${murderWanted} (one murder, attributed to the downer; started at ${startWanted})`);
   on(2, { verb: "click", widget: "RespawnButton" });
   wait(12000);
   const respawned = parseState(state(2));
