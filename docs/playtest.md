@@ -54,6 +54,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 The M2 systems run in the same playtest build. The money ledger and incident
 log that back them stay on the server and invisible.
 
+- **Mining.** The miner stand at (176, 167) has ore rocks and a display crate. Swing a pickaxe at a rock: it shakes, shrinks a step per piece, and drops nuggets that rest on the ground; the last piece makes it vanish and it grows back after its cooldown. Open the inventory to check the nugget and pickaxe previews against the gold bar. No proof verb yet.
 - **Payphone.** The booth by the square takes one coin from the cash you carry. Four booths stand in town (square beside the handcart, fuel station at the kiosk, hospital and police station against their front walls). A booth's open side is local -Z, so each one is turned with its back to the wall or the lawn and its door to the street. Area 8 and 17 polish: the hospital and police booths were facing their walls (now back to the wall, door to the street); the Red Cross banner was buried in the hospital wall (only its ropes showed) and now hangs in front of it, the *Ambulance bay* sign no longer stands in the ambulance's lane, and the police whitelist plaque is on the station wall under the *Police Station* sign (236.6, 241.2) instead of lying on the grass.
   Pick *Report a crime*, *Report an emergency*, or *Report someone suspicious*.
   An on-duty officer hears it on the radio and sees the line on the wanted

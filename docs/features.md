@@ -746,6 +746,11 @@
   state is not saved. Ported from thebonbon `LF_ToolHitZone` and
   `LF_RandomPrefabSpawnable` with permission. Tests: LOGIC `mining/ore-yield`,
   WORLD `mining/pickaxe-hits`.
+  2026-11-10 (#592): a rock shrinks one equal step per piece (`m_fMinScale`, default 0.45, replicated float
+  `m_fRockScale` so a late joiner sees a half-mined rock), vanishes when spent and grows back after the cooldown.
+  Dropped nuggets are placed by a trace straight down (`FindGroundY`) and rest on the ground. Nugget and pickaxe
+  inventory preview cameras were refit (nuggets match the bars; pickaxe distance scaled from the axe by mesh length).
+  `LF_MiningArea` no longer logs `spawned 0/0 ores` every minute when the area is full.
 - ✅ Nuggets and bars render textured: `LF_QuantityComponent.UpdateStackModel`
   no longer re-sets the base mesh, which dropped the prefab's material
   overrides and rendered the items white. Cash, pickaxe, axe, ore and bar

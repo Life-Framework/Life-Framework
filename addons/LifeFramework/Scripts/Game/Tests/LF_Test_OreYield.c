@@ -1,3 +1,4 @@
+// red-proof: 2026-11-10, LF_OreYield.RestHeight returned the fallback (hit) height; `--only LF_Test_OreYield,LF_Test_MiningDamage` failed "a piece rests just above the traced ground" and "the nugget rests on the ground, not at the hit height". Restored, green.
 // red-proof: 2026-11-08, LF_OreYield.ItemsFor returned breaks (ignored the yield); `tools\cli test --no-build --only LF_Test_OreYield` failed "one piece of a four-yield row drops four items (expected 4, got 1)". Restored, green.
 
 // tier: LOGIC
@@ -51,6 +52,14 @@ class LF_Test_OreYield : LF_Test
 		ctx.Equal(4, LF_OreYield.ItemsFor(1, 4), "one piece of a four-yield row drops four items");
 		ctx.Equal(0, LF_OreYield.ItemsFor(0, 4), "no piece drops nothing");
 		ctx.Equal(0, LF_OreYield.ItemsFor(2, 0), "a zero-yield row drops nothing");
+
+		ctx.EqualFloat(1, LF_OreYield.ScaleFor(0, 5, 0.45), 0.001, "an unmined rock is full size");
+		ctx.EqualFloat(0.89, LF_OreYield.ScaleFor(1, 5, 0.45), 0.001, "one of five pieces shrinks the rock one step");
+		ctx.EqualFloat(0.67, LF_OreYield.ScaleFor(3, 5, 0.45), 0.001, "three of five pieces shrink it three steps");
+		ctx.EqualFloat(0.45, LF_OreYield.ScaleFor(5, 5, 0.45), 0.001, "the last piece takes it to the minimum scale");
+		ctx.EqualFloat(1, LF_OreYield.ScaleFor(4, 0, 0.45), 0.001, "a row with no piece limit never shrinks");
+		ctx.EqualFloat(10.05, LF_OreYield.RestHeight(10, 12, 0.05), 0.001, "a piece rests just above the traced ground");
+		ctx.EqualFloat(12, LF_OreYield.RestHeight(-5000, 12, 0.05), 0.001, "no ground found keeps the fallback height");
 
 		ctx.EqualFloat(240000, LF_OreYield.RespawnDelayMs(240000, 30), 0.1, "the row's cooldown sets the grow-back time");
 		ctx.EqualFloat(30000, LF_OreYield.RespawnDelayMs(0, 30), 0.1, "a row with no cooldown uses the rock's seconds");
