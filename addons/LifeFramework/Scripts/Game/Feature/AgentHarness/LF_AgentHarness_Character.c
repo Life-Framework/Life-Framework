@@ -270,12 +270,14 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		if (tool == "drill" || tool == "keycard")
+		if (tool == "drill" || tool == "keycard" || tool == "charge")
 		{
 			// Stands in for a fence sale: the drill or keycard is stamped and booked to this account.
 			ResourceName toolPrefab = LF_Bank.DRILL_PREFAB;
 			if (tool == "keycard")
 				toolPrefab = LF_Bank.KEYCARD_PREFAB;
+			if (tool == "charge")
+				toolPrefab = LF_Breach.CHARGE_PREFAB;
 
 			int drills = LF_InventoryUtils.AddAmount(this, toolPrefab, 1);
 			InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(this);

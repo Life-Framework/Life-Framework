@@ -6242,6 +6242,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cider"
      Comment "Name of the neutral example chain in ResourceChains.conf (#416)."
     }
+    CustomStringTableItem "{C4A100000000B101}" {
+     Id "LF-Offence_JailBreak"
+     Target_en_us "Jailbreak"
+     Comment "Offence: a prisoner walked out through a breached jail door (#235)."
+    }
   }
  }
 }

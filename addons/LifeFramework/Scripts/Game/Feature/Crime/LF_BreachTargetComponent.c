@@ -19,6 +19,9 @@ class LF_BreachTargetComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, desc: "Owning organization id. Empty means only police can repair.")]
 	protected string m_sOwnerOrganization;
 
+	[Attribute("0", UIWidgets.CheckBox, desc: "Lock the door when the world starts. LF_LockComponent.m_bDebugLocked is never applied (its component asks for no init event), so a placed door that must start locked sets this instead.")]
+	protected bool m_bStartLocked;
+
 	protected bool m_bFusePending;
 
 	//! Replicated copy of the LF_Breach target flags (the table is server-only). Written by
@@ -52,6 +55,19 @@ class LF_BreachTargetComponent : ScriptComponent
 		}
 
 		LF_Breach.Configure(targetId, m_fFuseSeconds, m_sOwnerOrganization);
+
+		if (m_bStartLocked)
+			SetEventMask(owner, EntityEvent.INIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void EOnInit(IEntity owner)
+	{
+		super.EOnInit(owner);
+
+		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(owner);
+		if (doorLock)
+			doorLock.Lock();
 	}
 
 	//------------------------------------------------------------------------------------------------

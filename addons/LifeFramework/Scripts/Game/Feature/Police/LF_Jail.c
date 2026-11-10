@@ -79,6 +79,9 @@ class LF_JailSentence : Managed
 	EntityID m_BodyId = EntityID.INVALID;
 	bool m_bPaused;
 	int m_iReleases;
+	//! Session-only: set when the prisoner walked out through an open door, so the escape is
+	//! reported once. Cleared when they are back inside the volume.
+	bool m_bEscaped;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -493,6 +496,7 @@ class LF_Jail
 				continue;
 
 			PullBack(playerUid);
+			CheckEscape(playerUid);
 			RefreshSlip(playerUid);
 		}
 	}
@@ -971,6 +975,44 @@ class LF_Jail
 			return;
 
 		MoveBody(entity, resolved);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a serving prisoner standing outside the cell volume while the door is open has
+	//! escaped. The escape is reported once as a crime (dispatch and the bus) and the sentence
+	//! is left alone, so a recapture continues it. Back inside the volume re-arms the check.
+	protected static void CheckEscape(string playerUid)
+	{
+		LF_PlayerAccount account;
+		IEntity entity = LF_PoliceUtils.FindPlayerEntityByUid(playerUid, account);
+		if (!entity)
+			return;
+
+		NoteEscape(playerUid, entity.GetOrigin(), entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The escape rule with the position given. Public so a LOGIC test drives it.
+	//! eturn True when this call reported a new escape.
+	static bool NoteEscape(string playerUid, vector current, IEntity body)
+	{
+		LF_JailSentence sentence = Sentences().Get(playerUid);
+		if (!sentence || !IsServing(playerUid) || !s_bCellPlaced)
+			return false;
+
+		if (vector.Distance(current, s_vCellOrigin) <= s_fZoneRadius)
+		{
+			sentence.m_bEscaped = false;
+			return false;
+		}
+
+		if (DoorIsLocked() || sentence.m_bEscaped)
+			return false;
+
+		sentence.m_bEscaped = true;
+		LF_Debug.Warn("Jail", string.Format("%1 escaped the cell through the open door remaining=%2", playerUid, sentence.m_fRemaining));
+		LF_Dispatch.Report(playerUid, body, LF_WantedReports.OFFENCE_JAILBREAK, vector.Zero);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
