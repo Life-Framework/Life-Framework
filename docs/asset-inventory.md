@@ -54,3 +54,5 @@ looked at yet.
 | Hideout van | `Roadmap_Hideout_Van` | final | vanilla `UAZ452_base` (the van-bodied car) | (a parked van, scenery) | Hideout, area 13 | none |
 | Hideout workbench, crates, barrels, tyres | `Roadmap_Hideout_*` | final | vanilla `Workbench_01` (under the pergola), `Crate_01`, `BoxWooden_01`, `WoodenPalletBox_01`, `Pallet_01_Pile`, `Cart_01`, `Jerrycan_01`, `CardboardBox_03`, `BarrelMetal_01_blue`, `Tire_M151A2_pile` | (same) | Hideout, area 13 | none |
 | Fuel till counter and register | `EL_FuelTill.et` on vanilla `CounterShop_01` (Village_Dressing) | placeholder | vanilla shop counter with a cash register on top | a petrol-station kiosk counter inside the shop | Fuel till #236 | low |
+| Car lot price board | `Sign_LotPrice_*` (`LF_Sign_Chalkboard`) | final | vanilla `ChalkBoard_01` | (a price board) | Car lot, area 4 | none |
+| Lot display cars | `Lot_Display_*`, `Roadmap_Vehicle_S105` | final | the lot offers base vehicles | (display cars) | Car lot, area 4 | none |

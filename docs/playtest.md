@@ -29,7 +29,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
 3. **Bank.** You start with $1,000 in the bank. Deposit and withdraw at the ATM: two teller-window counters flank the bank door (about 177 and 187, 259), under the ATM sign.
 4. **Shop.** The general store sells food, drink, and a dressing from a price
    sheet.
-5. **Vehicle.** Read the price sheet at the car lot and buy a car. Your character
+5. **Vehicle.** Read the price sheet at the car lot (desk at 211, 262; four display cars in a row at z 261, each with a chalkboard price board in front, x 216 to 230) and buy a car. Your character
    also starts with an S105 in the garage and a UAZ at the impound lot (playtest
    only): read the garage ledger, retrieve one, and collect the other at the
    impound desk for the fee.
