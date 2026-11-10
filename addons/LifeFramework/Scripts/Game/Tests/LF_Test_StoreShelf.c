@@ -89,7 +89,16 @@ class LF_Test_StoreShelf : LF_Test
 		ctx.Equal(price, paid, "the till charged one apple");
 		ctx.Equal(cashBefore - price, LF_MoneyUtils.GetCash(buyer), "the cash left the pocket");
 		ctx.Equal(0, LF_Stores.UnpaidCount(), "the tag is cleared");
-		ctx.Equal(1, LF_InventoryUtils.GetAmount(buyer, LF_Stores.RECEIPT_PREFAB), "the buyer holds a receipt");
+		// The receipt is in the pocket, or at the buyer's feet when the pocket has no room.
+		IEntity receiptItem = LF_Stores.LastReceipt();
+		ctx.NotNull(receiptItem, "the till printed a receipt");
+		LF_ReceiptComponent receipt = LF_Component<LF_ReceiptComponent>.Find(receiptItem);
+		ctx.NotNull(receipt, "the receipt carries its component");
+		if (receipt)
+		{
+			ctx.Equal(price, receipt.GetTotal(), "the receipt shows the total paid");
+			ctx.Equal(1, receipt.GetItems(), "the receipt counts one item");
+		}
 		ctx.Equal(2, LF_InventoryUtils.GetAmount(buyer, APPLE), "the apples stay with the buyer");
 		ctx.Equal(LF_EStorePay.NOTHING, LF_Stores.Pay(store, buyer, paid), "a second visit to the till has nothing to charge");
 
@@ -113,6 +122,9 @@ class LF_Test_StoreShelf : LF_Test
 		}
 
 		// Put the world back.
+		if (receiptItem && LF_InventoryUtils.GetStorageHierachyRoot(receiptItem) == receiptItem)
+			SCR_EntityHelper.DeleteEntityAndChildren(receiptItem);
+
 		LF_TestCharacterFixture.Delete(buyer);
 		LF_Stores.ClearUnpaid();
 		LF_Stores.ApplyAll(saved);

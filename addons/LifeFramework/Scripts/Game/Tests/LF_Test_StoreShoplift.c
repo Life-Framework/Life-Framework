@@ -125,6 +125,7 @@ class LF_Test_StoreShoplift : LF_Test
 		LF_WantedReports.ResetStatics();
 		LF_TestCharacterFixture.Delete(thief);
 		LF_TestCharacterFixture.Delete(honest);
+		LF_Stores.DeleteLooseReceipt();
 		LF_Stores.ClearUnpaid();
 		LF_Stores.ApplyAll(saved);
 		store.ForceStock(apple, stock0);

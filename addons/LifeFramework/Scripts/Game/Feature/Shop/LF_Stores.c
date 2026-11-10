@@ -38,6 +38,7 @@ class LF_Stores
 	protected static ref map<string, ref array<ref LF_StoreStockRow>> s_mPending;
 	protected static bool s_bTicking;
 	protected static int s_iReceipts;
+	protected static EntityID s_LastReceipt = EntityID.INVALID;
 
 	//------------------------------------------------------------------------------------------------
 	static map<string, LF_StoreComponent> Stores()
@@ -74,6 +75,17 @@ class LF_Stores
 		s_mPending = null;
 		s_bTicking = false;
 		s_iReceipts = 0;
+		s_LastReceipt = EntityID.INVALID;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn The receipt the till printed last (held or lying where the user stood), or null.
+	static IEntity LastReceipt()
+	{
+		if (s_LastReceipt == EntityID.INVALID)
+			return null;
+
+		return GetGame().GetWorld().FindEntityByID(s_LastReceipt);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -277,6 +289,18 @@ class LF_Stores
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: deletes the last receipt when it lies loose in the world (its holder was deleted with it
+	//! already otherwise).
+	static void DeleteLooseReceipt()
+	{
+		IEntity receipt = LastReceipt();
+		if (receipt && LF_InventoryUtils.GetStorageHierachyRoot(receipt) == receipt)
+			SCR_EntityHelper.DeleteEntityAndChildren(receipt);
+
+		s_LastReceipt = EntityID.INVALID;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -495,6 +519,7 @@ class LF_Stores
 			return;
 		}
 
+		s_LastReceipt = paper.GetID();
 		LF_ReceiptComponent receipt = LF_Component<LF_ReceiptComponent>.Find(paper);
 		if (receipt)
 		{
@@ -503,7 +528,7 @@ class LF_Stores
 		}
 
 		if (!storage.TryInsertItem(paper))
-			LF_Debug.Warn(FEATURE, string.Format("store %1: receipt did not fit; dropped at the till", store.GetStoreKey()));
+			LF_Debug.Warn(FEATURE, string.Format("store %1: receipt did not fit; it lies at the user's feet", store.GetStoreKey()));
 	}
 
 	//------------------------------------------------------------------------------------------------

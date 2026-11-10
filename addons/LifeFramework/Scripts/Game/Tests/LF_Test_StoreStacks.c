@@ -55,6 +55,7 @@ class LF_Test_StoreStacks : LF_Test
 		}
 
 		LF_TestCharacterFixture.Delete(shopper);
+		LF_Stores.DeleteLooseReceipt();
 		LF_Stores.ClearUnpaid();
 		LF_Stores.ApplyAll(saved);
 		store.ForceStock(apple, stock0);
