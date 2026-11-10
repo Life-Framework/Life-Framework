@@ -603,7 +603,7 @@ class LF_AgentCommand
 		}
 
 		cmd.Arg1 = parts[2];
-		if (cmd.Arg1 == "stop" || cmd.Arg1 == "status")
+		if (cmd.Arg1 == "stop" || cmd.Arg1 == "status" || cmd.Arg1 == "slate")
 			return true;
 		if (cmd.Arg1 != "start")
 		{
@@ -2537,6 +2537,8 @@ class LF_AgentHarness
 			result = LF_FilmRecorder.Start(cmd.Arg2, cmd.Arg3.ToInt(), cmd.Arg4.ToInt());
 		else if (cmd.Arg1 == "stop")
 			result = LF_FilmRecorder.Stop();
+		else if (cmd.Arg1 == "slate")
+			result = LF_FilmRecorder.Slate();
 		else
 			result = "ok " + LF_FilmRecorder.Status();
 

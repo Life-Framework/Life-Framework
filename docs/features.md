@@ -2027,6 +2027,16 @@
   fps, frame after a shot 33.3-33.5 ms vs 33.2-34.5 ms otherwise, one 243 ms
   stall in 64 s (shop menu, not a shot frame).
 
+- ✅ Game audio (#396): the engine cannot record sound, so `tools/film/lf-procaudio.cs`
+  (Windows process loopback, `AUDCLNT_PROCESS_LOOPBACK`) captures only the game client's
+  process into a 48 kHz float WAV (other host sounds never enter it; the WAV is the separate
+  audio track). Harness verb `film slate` plays a UI beep and logs `# slate=<ms>` in
+  `index.txt`; `tools/film/audio.mjs` finds the beep in the WAV, lines audio up with the
+  frames and muxes an mp4 (`street-clip.mjs --audio`, session started with `--sound`). A start
+  and an end slate give the offset and the drift. The recorder refuses a silent capture
+  (`mean_volume` under -60 dB, or no slate heard) and warns when the default output is muted
+  (#482). Covered by `node tools/film/film.mjs selftest` (pure parts); proof in the PR.
+
 ### `LF_FilmActor` / `LF_FilmDirector` — `Feature/Film/` (scripted actors, #393)
 - ✅ Dev-only, harness verbs `scene start street|stop|status` (server, through the
   character RPC and `LF_DevGate`) and `camera orbit|follow x y z size seconds`
