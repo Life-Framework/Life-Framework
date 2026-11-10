@@ -11,6 +11,7 @@
 //      record in runs.jsonl, and a retried request keeping its queue age;
 //   5. runtime budgets: learned 3x p95 with a 30 s floor, seeded defaults,
 //      machine multiplier, self-raise after timeouts, --budget.
+// red-proof 2026-11-10: dropping the hostname branch in loadMachines printed "an entry whose hostname is this machine is not the local machine with its own lanes".
 // red-proof: with remoteOwnerGone returning null it printed "dead owner pid on
 // this PC: no reclaim verdict"; with the mtime key removed from localConfig it
 // printed "config flip: local still disabled after re-enable"; with the hang
@@ -129,6 +130,19 @@ try {
   check(q.blocks(tk("s", "normal", 9, "session"), tk("t", "normal", 1, "test"), lanes, T0, min20) === false, "a session ticket blocks a test on separate lanes");
   check(q.blocks(tk("s", "normal", 9, "session"), tk("t", "normal", 1, "test"), { ...lanes, lanes: null }, T0, min20) === true, "a session ticket does not block a test on a shared lane");
   check(q.blocks({ ...tk("old", "normal", 9), lane: undefined }, tk("z", "normal", 1, "session"), lanes, T0, min20) === true, "a ticket from a CLI without lanes is not a server-2001 contender");
+  // Backfill: a head job stuck on RAM (3-client session) does not block a small job behind it.
+  const bigHead = { ...tk("1-big", "normal", 5, "session"), stuck: "ram", needMb: 5100, clients: 3 };
+  const small = tk("2-small", "normal", 1, "session");
+  check(q.blocks(bigHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === false, "a RAM-stuck head still blocks a small job behind it");
+  check(q.blocks({ ...bigHead, stuck: undefined }, small, lanes, T0, min20) === true, "a head that has not tried must still block (plain FIFO)");
+  check(q.blocks({ ...bigHead, stuck: "lane" }, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === true, "a lane-stuck head loses its turn to a job wanting the same lane");
+  check(q.blocks({ ...bigHead, lane: "session", stuck: "lane" }, tk("3-t", "normal", 1, "test"), { ...lanes, lanes: null }, T0, min20, { starveMs: min20, freeMb: 3400 }) === true, "shared-lane head lost its turn");
+  // Starvation: after 20 min the head holds its place once the RAM it needs is there, not before.
+  const oldHead = { ...bigHead, at: new Date(T0 - 25 * 60000).toISOString() };
+  check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 3400 }) === false, "a starved head reserves the lane before its RAM is there");
+  check(q.blocks(oldHead, small, lanes, T0, min20, { starveMs: min20, freeMb: 5200 }) === true, "a starved head with its RAM does not reserve the lane");
+  check(q.waitReason(bigHead) === "ram 3-client" && q.waitReason({ stuck: "lane" }) === "lane" && q.waitReason({}, 2) === "behind 2", "waitReason text");
+  check(q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500, reserveMb: 3600 }).needMb === 5100, "ramVerdict does not report needMb");
   check(q.ramVerdict({ running: 0, freeMb: 100, minFreeMb: 1500 }).ok && !q.ramVerdict({ running: 1, freeMb: 1000, minFreeMb: 1500 }).ok && q.ramVerdict({ running: 1, freeMb: 2000, minFreeMb: 1500 }).ok, "RAM gate verdicts");
 
   // Aging is the fair share: a low job that waited 40 min is "high" and, arriving first, goes ahead of new
@@ -290,6 +304,29 @@ try {
       check(lockInfo.pid === process.pid && lockInfo.purpose === "session", "the session slot is not held by the new request");
       rmSync(join(rLockDir, "server-2001.lock"), { force: true });
     }
+    // Backfill, end to end: a 3-client head waiting on RAM does not hold up a small request, and once it
+    // has waited past the starvation limit (with its RAM there) it does.
+    {
+      const qd = join(rdir, "tmp", "wt", "pool", "queue");
+      mkdirSync(qd, { recursive: true });
+      const headFile = join(qd, "000000000000001-0000001-aaaaaa.json");
+      const head = (ageMin) => ({ pid: process.pid, at: new Date(Date.now() - ageMin * 60000).toISOString(), slug: "big", purpose: "session", root: rdir, pinned: true, lane: "session", priority: "normal", waitingOn: ["server-2001", "ram"], machines: ["local"], clients: 3, stuck: "ram", needMb: 1 });
+      writeFileSync(headFile, JSON.stringify(head(2)));
+      let small = null;
+      try {
+        small = pool.acquireSessionLaneSync(rdir, { waitMs: 5000, meta: { slug: "small" } });
+      } catch {}
+      check(!!small, "backfill: a small session request waited behind a RAM-stuck head");
+      rmSync(join(rLockDir, "server-2001.lock"), { force: true });
+      writeFileSync(headFile, JSON.stringify(head(25)));
+      let late = null;
+      try {
+        late = pool.acquireSessionLaneSync(rdir, { waitMs: 1500, meta: { slug: "small2" } });
+      } catch {}
+      check(!late, "starvation: a starved head's lane was taken by a small request");
+      if (late) rmSync(join(rLockDir, "server-2001.lock"), { force: true });
+      rmSync(headFile, { force: true });
+    }
     // A retried request keeps the age of the one it replaces (a timed-out `up --wait` used to start over), and a
     // request that gets the slot forgets it.
     delete process.env.LF_POOL_SESSION_IDLE_MIN;
@@ -352,6 +389,13 @@ try {
   rmSync(join(dir, "tmp", "wt.json"));
   check(pool.resolvePriority(dir) === "normal", "default priority is not normal");
   check(pool.budgetsFor(dir, { name: "local", budgetMultiplier: 1 }, "test only").bootS === 30, "boot budget is not 30 s");
+  // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
+  writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
+  const selfView = pool.loadMachines(dir);
+  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 3 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  writeFileSync(join(dir, "lf.local.json"), "{}");
+  check(pool.loadMachines(dir).some((m) => m.name === "local") && pool.loadMachines(dir).find((m) => m.name === "lf-testbox")?.via === "ssh", "this PC lost its local entry");
+  check(pool.sessionMachineCandidates(dir, 1).map((m) => m.name).join() === "local,lf-testbox", "session candidates are not this PC first, then the laptop");
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }
@@ -361,4 +405,4 @@ if (failures.length) {
   for (const f of failures) console.log(`  ${f}`);
   process.exit(1);
 }
-console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets)");
+console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine)");
