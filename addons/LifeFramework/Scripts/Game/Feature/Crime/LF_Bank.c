@@ -70,6 +70,12 @@ class LF_BankVaultState : Managed
 	string m_sTools;
 	float m_fJamChance;
 	bool m_bSpawnPending;
+	//! Heist (#274): what the open target leaves lying. Empty keeps the bank pattern.
+	string m_sLootKind;
+	string m_sOffence;
+	string m_sLooterUid;
+	vector m_vLooterAt;
+	ref array<EntityID> m_aLooseBags = {};
 	bool m_bCooldownRunning;
 	float m_fAdvancedSeconds;
 	float m_fSampledAt;
@@ -194,6 +200,85 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Makes the vault a heist target (#274). kind is "bags": the cash van spills physical money bags
+	//! behind it. offence is the localization key dispatch reports.
+	static void ConfigureHeist(string vaultId, string kind, string offence)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+		{
+			LF_Debug.Error("Bank", string.Format("heist refused: vault %1 is not configured", vaultId));
+			return;
+		}
+
+		vault.m_sLootKind = kind;
+		vault.m_sOffence = offence;
+		LF_Breach.SetAlarm(vaultId, offence);
+		LF_Debug.Log("Bank", string.Format("heist %1 kind=%2", vaultId, kind));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: stocks the target afresh and locks it (the van reached its next stop). Loose bags the
+	//! last robbery left lying are removed; carried ones are in a pocket and stay.
+	static void Restock(string vaultId)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+			return;
+
+		for (int i = 0; i < vault.m_aLooseBags.Count(); i++)
+		{
+			IEntity bag = GetGame().GetWorld().FindEntityByID(vault.m_aLooseBags[i]);
+			if (bag && !bag.GetParent())
+				SCR_EntityHelper.DeleteEntityAndChildren(bag);
+		}
+
+		vault.m_aLooseBags.Clear();
+		vault.m_aBags.Clear();
+		vault.m_bCooldownRunning = false;
+		vault.m_bSpawnPending = false;
+		LF_Breach.Reset(vaultId);
+		LF_Debug.Info("Bank", string.Format("restocked %1", vaultId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Money bags this vault left lying on the ground that nobody has picked up.
+	static int GetLooseBagCount(string vaultId)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+			return 0;
+
+		int count = 0;
+		for (int i = 0; i < vault.m_aLooseBags.Count(); i++)
+		{
+			IEntity bag = GetGame().GetWorld().FindEntityByID(vault.m_aLooseBags[i]);
+			if (bag && !bag.GetParent())
+				count++;
+		}
+
+		return count;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The loose bag at index, for tests; null when it is gone.
+	static IEntity GetLooseBag(string vaultId, int index)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault || index < 0 || index >= vault.m_aLooseBags.Count())
+			return null;
+
+		return GetGame().GetWorld().FindEntityByID(vault.m_aLooseBags[index]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Money bag fill shared with the heist spill.
+	static bool FillBag(IEntity bag, int cash)
+	{
+		return WriteWorldBagCash(bag, cash);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A roll in [0,1) jams the drill when it falls under the chance.
 	static bool Jams(float chance, float roll)
 	{
@@ -272,7 +357,9 @@ class LF_Bank
 		if (!entity)
 			return vector.Zero;
 
-		return entity.GetOrigin();
+		vector transform[4];
+		entity.GetWorldTransform(transform);
+		return transform[3];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -412,6 +499,10 @@ class LF_Bank
 		if (!GatesPass(vault, playerUid))
 			return false;
 
+		vault.m_sLooterUid = playerUid;
+		if (robber)
+			vault.m_vLooterAt = robber.GetOrigin();
+
 		// A player-driven rob needs one of the vault's fence tools. A script-driven rob (no robber
 		// entity: tests, events) skips the check, as Arm skips the charge.
 		string tool = "";
@@ -439,7 +530,11 @@ class LF_Bank
 			if (Jams(vault.m_fJamChance, roll))
 			{
 				// The bit snaps: the noise is reported and the drill stays in the wall.
-				LF_Dispatch.Report(playerUid, robber, LF_WantedReports.OFFENCE_BREAK_IN, VaultOrigin(vaultId));
+				string jamOffence = vault.m_sOffence;
+				if (jamOffence.IsEmpty())
+					jamOffence = LF_WantedReports.OFFENCE_BREAK_IN;
+
+				LF_Dispatch.Report(playerUid, robber, jamOffence, VaultOrigin(vaultId));
 				LeaveTool(vaultId, robber, toolItem);
 				LF_Debug.Info("Bank", string.Format("drill jammed on %1 (serial %2)", vaultId, serial));
 				LF_EventBus.Publish(LF_OnVaultBreach.Create(playerUid, vaultId, tool, serial, "jammed"));
@@ -684,10 +779,35 @@ class LF_Bank
 		if (!vault.m_sBagEntity.IsEmpty())
 			FillNamedBag(vault.m_sBagEntity, vault.m_iCashPerBag);
 
+		PayHeist(vault, count);
+
 		vault.m_bCooldownRunning = true;
 		vault.m_fAdvancedSeconds = 0;
 		vault.m_fSampledAt = NowSeconds();
 		LF_Debug.Log("Bank", string.Format("spawned %1 bags of %2 at %3", count, vault.m_iCashPerBag, vault.m_sVaultId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The heist haul (#274): physical money bags at the target and one LF_OnHeistLoot on the bus.
+	protected static void PayHeist(LF_BankVaultState vault, int bagCount)
+	{
+		if (vault.m_sLootKind.IsEmpty())
+			return;
+
+		IEntity target = GetGame().GetWorld().FindEntityByName(vault.m_sVaultId);
+		int amount = 0;
+		if (vault.m_sLootKind == LF_BankLoot.KIND_BAGS)
+		{
+			array<IEntity> bags = LF_BankLoot.SpillBags(target, vault.m_vLooterAt, bagCount, vault.m_iCashPerBag);
+			foreach (IEntity bag : bags)
+			{
+				vault.m_aLooseBags.Insert(bag.GetID());
+				amount = amount + vault.m_iCashPerBag;
+			}
+		}
+
+		LF_Debug.Info("Bank", string.Format("heist %1 paid %2 %3 to %4", vault.m_sVaultId, amount, vault.m_sLootKind, vault.m_sLooterUid));
+		LF_EventBus.Publish(LF_OnHeistLoot.Create(vault.m_sLooterUid, vault.m_sVaultId, vault.m_sLootKind, amount, ""));
 	}
 
 	//------------------------------------------------------------------------------------------------

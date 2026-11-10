@@ -60,6 +60,20 @@ class LF_BankVaultComponent : ScriptComponent
 
 		LF_Bank.Configure(vaultId, m_iBagCount, m_iCashPerBag, m_fCooldownSeconds, m_iMinPoliceOnDuty, m_fFuseSeconds, m_sBagEntity);
 		LF_Bank.ConfigureTools(vaultId, m_sRequiredTools, m_fJamChance);
+		ConfigureHeist(vaultId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Subclass hook: the heist targets add their loot to the registered vault.
+	protected void ConfigureHeist(string vaultId)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Localization key of the action name. The bank reads "Rob the bank".
+	string GetActionName()
+	{
+		return "#EL-Bank_Rob";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,49 @@
+GenericEntity {
+ ID "A908E60A6B28E16B"
+ components {
+  MeshObject "{DD1430401517CCCD}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  LF_LockComponent "{9AC0E5A619840D55}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{6D223FE24EA13ED1}" {
+   ActionContexts {
+    UserActionContext "{4583EEE8E8892ABA}" {
+     ContextName "default"
+     Position PointInfo "{64F6E2D9902BAD68}" {
+      Offset 0 0.4 0
+     }
+     Radius 2.5
+    }
+   }
+   additionalActions {
+    LF_HeistRobAction "{1549E8D9130E913E}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{F3DBFC0FDECDE88D}" {
+   Enabled 1
+  }
+  LF_HeistVaultComponent "{6C2C6ED0D7BD0D97}" {
+   m_sLootKind "bags"
+   m_sOffence "#LF-Offence_CashVan"
+   m_sActionName "#LF-Heist_Van_Open"
+   m_sRequiredTools "drill,charge"
+   m_fJamChance 0.15
+   m_iBagCount 3
+   m_iCashPerBag 400
+   m_fCooldownSeconds 120
+   m_iMinPoliceOnDuty 0
+   m_fFuseSeconds 0
+  }
+  LF_CashVanRouteComponent "{AD90CF30B9D9615D}" {
+   m_sStops "Roadmap_Cash_Stop_Bank,Roadmap_Cash_Stop_Store,Roadmap_Cash_Stop_Fuel"
+   m_fDwellSeconds 300
+   m_fClearMetres 40
+  }
+ }
+}

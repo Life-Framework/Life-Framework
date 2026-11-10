@@ -6047,6 +6047,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cab wanted"
      Comment "Summary the taxi pager and board show for a call from the payphone."
     }
+    CustomStringTableItem "{287FBFE0C09D4B2C}" {
+     Id "LF-Heist_Van_Open"
+     Target_en_us "Break open the cash box"
+     Comment "Action: the cash van rear box (#274)."
+    }
+    CustomStringTableItem "{C3E5A18D0842729C}" {
+     Id "LF-Offence_CashVan"
+     Target_en_us "Cash van robbery"
+     Comment "Offence: the cash van box was forced (#274)."
+    }
   }
  }
 }
