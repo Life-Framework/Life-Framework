@@ -126,7 +126,9 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "radio")
 			return true;
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "apples")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "pack" || cmd.Verb == "apples")
+			return true;
+		if (cmd.Verb == "lockpick")
 			return true;
 		if (cmd.Verb == "peers")
 			return true;
@@ -891,13 +893,22 @@ class LF_AgentHarness
 			DoRadio(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "apples")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "pack" || cmd.Verb == "apples")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
 				WriteResult(cmd.Id, "error", "no_character");
 			else
 				scannerCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb);
+			return;
+		}
+		if (cmd.Verb == "lockpick")
+		{
+			SCR_ChimeraCharacter pickCharacter = LF_Utils.GetLocalCharacter();
+			if (!pickCharacter)
+				WriteResult(cmd.Id, "error", "no_character");
+			else
+				pickCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb);
 			return;
 		}
 		if (cmd.Verb == "peers")

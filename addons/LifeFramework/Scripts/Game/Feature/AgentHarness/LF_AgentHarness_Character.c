@@ -269,6 +269,13 @@ modded class SCR_ChimeraCharacter
 			LF_HarnessReply(commandId, "ok", string.Format("apples added=%1", apples));
 			return;
 		}
+		if (tool == "pack")
+		{
+			// Room for bulky evidence: an officer's vest cannot hold a bagged drill, a backpack can.
+			int packs = LF_InventoryUtils.AddAmount(this, "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et", 1);
+			LF_HarnessReply(commandId, "ok", string.Format("pack added=%1", packs));
+			return;
+		}
 
 		if (tool == "drill" || tool == "keycard")
 		{
@@ -295,6 +302,14 @@ modded class SCR_ChimeraCharacter
 			}
 
 			LF_HarnessReply(commandId, "ok", string.Format("%1 added=%2 serial=%3", tool, drills, serial));
+			return;
+		}
+
+		if (tool == "lockpick")
+		{
+			// Stands in for a fence sale: five uses of pick, no record needed.
+			int picks = LF_InventoryUtils.AddAmount(this, LF_Lockpick.PICK_PREFAB, 5);
+			LF_HarnessReply(commandId, "ok", string.Format("lockpick added=%1", picks));
 			return;
 		}
 

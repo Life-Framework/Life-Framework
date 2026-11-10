@@ -123,8 +123,11 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "apples") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "pack" || spec.verb === "apples") {
     return `${id} ${spec.verb}`;
+  }
+  if (spec.verb === "lockpick") {
+    return `${id} lockpick`;
   }
   if (spec.verb === "radio") {
     return `${id} radio`;
@@ -1375,8 +1378,11 @@ function main(argv) {
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "apples") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "pack" || cmd === "apples") {
       return printResult(sendCommand({ verb: cmd }, 10000));
+    }
+    if (cmd === "lockpick") {
+      return printResult(sendCommand({ verb: "lockpick" }, 10000));
     }
     if (cmd === "radio") {
       return printResult(sendCommand({ verb: "radio" }, 10000));

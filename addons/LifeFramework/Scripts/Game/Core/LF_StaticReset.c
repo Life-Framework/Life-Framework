@@ -15,6 +15,7 @@ class LF_StaticReset
 	static void ResetAll()
 	{
 		LF_Breach.ResetStatics();
+		LF_Lockpick.ResetStatics();
 		LF_Jail.ResetStatics();
 		LF_JailEscort.ResetStatics();
 		LF_JailCellComponent.ResetStatics();
