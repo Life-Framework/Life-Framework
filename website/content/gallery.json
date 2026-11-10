@@ -60,8 +60,8 @@
     "area-7-hospital/desk": "Duty desk and dispatch board outside the hospital door",
     "area-10-cash-van/wide": "The cash van at the bank stop",
     "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open",
-    "area-16-moonshine/wide": "The moonshine camp in the field: three mash barrels, the still, a fire pit and sacks",
-    "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack behind it"
+    "area-16-moonshine/wide": "The moonshine camp tucked under a stand of spruce: still, fire pit, pallet and a fence behind",
+    "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack, beside the mash barrels"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",

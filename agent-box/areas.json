@@ -20,7 +20,7 @@
     { "n": 13, "name": "hideout", "front": 270, "x": 305, "y": 0, "z": 295, "radius": 20 },
     { "n": 14, "name": "lock-up", "front": 270, "x": 309, "y": 0, "z": 244, "radius": 14 },
     { "n": 15, "name": "chop-shop", "front": 270, "x": 322, "y": 0, "z": 300, "radius": 18 },
-    { "n": 16, "name": "moonshine", "front": 270, "x": 384, "y": 0, "z": 302, "radius": 16 },
+    { "n": 16, "name": "moonshine", "front": 180, "x": 384, "y": 0, "z": 304, "radius": 8 },
     { "n": 17, "name": "town-signs", "front": 270, "x": 130, "y": 0, "z": 265, "radius": 50 }
   ]
 }
