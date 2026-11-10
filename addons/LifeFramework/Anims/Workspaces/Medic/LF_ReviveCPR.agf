@@ -1,0 +1,96 @@
+AnimSrcGraphFile {
+ Sheets {
+  AnimSrcGraphSheet LF_ReviveCPR {
+   Nodes {
+    AnimSrcNodeStateMachine MasterControl {
+     EditorPos 0 -1
+     states {
+      AnimSrcNodeState CPR {
+       EditorPos 0 1
+       Child "CPRG"
+       StartCondition "Gestures == 560"
+       IsExit 1
+      }
+     }
+    }
+    AnimSrcNodeGroupSelect CPRG {
+     EditorPos 0 3
+     Child "CPRSequenceSTM"
+     Group "Revive"
+     Column "CPR"
+    }
+    AnimSrcNodeStateMachine CPRSequenceSTM {
+     EditorPos 0 5
+     states {
+      AnimSrcNodeState In {
+       EditorPos -3 7
+       Child "CPRInSrc"
+       StartCondition "true"
+       TimeStorage "Real Time"
+      }
+      AnimSrcNodeState Loop {
+       EditorPos 0 8
+       Child "CPRLoopSwitch"
+       StartCondition "false"
+       TimeStorage "Real Time"
+      }
+      AnimSrcNodeState Out {
+       EditorPos 3 7
+       Child "CPROutSrc"
+       TimeStorage "Real Time"
+       IsExit 1
+      }
+     }
+     transitions {
+      AnimSrcNodeTransition "{323A03D268D1C0F8}" {
+       FromState "In"
+       ToState "Loop"
+       Duration "0.2"
+       Condition "RemainingTimeLess(0.1)"
+       PostEval 1
+      }
+      AnimSrcNodeTransition "{A25F7ADB868F35A8}" {
+       FromState "Loop"
+       ToState "Out"
+       Duration "0.5"
+       Condition "Gestures == -1"
+       Reentering "Blendout Only"
+      }
+      AnimSrcNodeTransition "{AB3D7C7ACD26FFCC}" {
+       FromState "In"
+       ToState "Out"
+       Duration "0.5"
+       StartTime "1-GetLowerTime()"
+       Condition "Gestures == -1"
+       PostEval 1
+       Reentering "Blendout Only"
+      }
+     }
+    }
+    AnimSrcNodeSource CPRInSrc {
+     EditorPos -3 10
+     Source "Revive.In"
+    }
+    AnimSrcNodeSwitch CPRLoopSwitch {
+     EditorPos 0 10
+     BlendTime 0.2
+     FirstProbabilities "1"
+     SwitchItems {
+      AnimSrcNodeSwitchItem "{26D4F67925598C2B}" {
+       Child "CPRLoopSrc"
+       NextProbabilities "100"
+      }
+     }
+    }
+    AnimSrcNodeSource CPRLoopSrc {
+     EditorPos 0 12
+     Source "Revive.Loop"
+    }
+    AnimSrcNodeSource CPROutSrc {
+     EditorPos 3 10
+     Source "Revive.Out"
+    }
+   }
+  }
+ }
+}
