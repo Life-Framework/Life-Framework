@@ -78,6 +78,18 @@ class LF_ChainStationComponent : ScriptComponent
 	[RplProp()]
 	protected int m_iPercent = -1;
 
+	//! Smoke level 0 to 3 from the site heat (LF_ChainTrace). Server writes it only when the level
+	//! changes; every machine shows the smoke from it, so a late joiner sees it too.
+	[RplProp(onRplName: "OnSmokeChanged")]
+	protected int m_iSmoke;
+
+	protected static const ResourceName SMOKE_MEDIUM = "{059E612718472C0A}Particles/Enviroment/Smoke_Smokestack_Medium.ptc";
+	protected static const ResourceName SMOKE_BIG = "{6EE3295AC363E562}Particles/Enviroment/Smoke_Smokestack_Big.ptc";
+	protected static const vector SMOKE_OFFSET = "0 1 0";
+
+	protected EntityID m_SmokeId = EntityID.INVALID;
+	protected int m_iSmokeShown;
+
 	//! Live stations by key. Lives here so the component's own OnDelete removes it.
 	protected static ref map<string, LF_ChainStationComponent> s_mLive;
 
@@ -98,6 +110,10 @@ class LF_ChainStationComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnDelete(IEntity owner)
 	{
+		IEntity smoke = GetGame().GetWorld().FindEntityByID(m_SmokeId);
+		if (smoke)
+			SCR_EntityHelper.DeleteEntityAndChildren(smoke);
+
 		if (s_mLive && s_mLive.Get(m_sStationKey) == this)
 			s_mLive.Remove(m_sStationKey);
 
@@ -205,6 +221,69 @@ class LF_ChainStationComponent : ScriptComponent
 
 		m_iPercent = percent;
 		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the smoke level this station shows (LF_ChainTrace). Replicates only on a change.
+	void SetSmoke(int level)
+	{
+		if (level == m_iSmoke)
+			return;
+
+		m_iSmoke = level;
+		Replication.BumpMe();
+		ApplySmoke();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetSmoke()
+	{
+		return m_iSmoke;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnSmokeChanged()
+	{
+		ApplySmoke();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shows the smoke for m_iSmoke on this machine: a local particle on the station, replaced when
+	//! the level changes. A dedicated server has no renderer and shows nothing.
+	protected void ApplySmoke()
+	{
+		if (RplSession.Mode() == RplMode.Dedicated || m_iSmokeShown == m_iSmoke)
+			return;
+
+		m_iSmokeShown = m_iSmoke;
+		IEntity old = GetGame().GetWorld().FindEntityByID(m_SmokeId);
+		if (old)
+			SCR_EntityHelper.DeleteEntityAndChildren(old);
+
+		m_SmokeId = EntityID.INVALID;
+		if (m_iSmoke < 1)
+			return;
+
+		ResourceName path = SMOKE_MEDIUM;
+		if (m_iSmoke >= LF_ChainTrace.MAX_SMOKE)
+			path = SMOKE_BIG;
+
+		ParticleEffectEntitySpawnParams params = new ParticleEffectEntitySpawnParams();
+		Math3D.MatrixIdentity4(params.Transform);
+		params.Transform[3] = GetOwner().GetOrigin() + SMOKE_OFFSET;
+		params.PlayOnHeadlessClient = false;
+		ParticleEffectEntity smoke = ParticleEffectEntity.SpawnParticleEffect(path, params);
+		if (!smoke)
+		{
+			LF_Debug.Error(LF_ChainSites.FEATURE, string.Format("station %1: the smoke effect did not spawn", m_sStationKey));
+			return;
+		}
+
+		float scale = 0.5;
+		if (m_iSmoke >= 2)
+			scale = 1.0;
+		smoke.SetScale(scale);
+		m_SmokeId = smoke.GetID();
 	}
 
 	//------------------------------------------------------------------------------------------------

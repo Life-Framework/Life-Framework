@@ -270,6 +270,15 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "moonshine")
+		{
+			// Raw goods for one mash of the moonshine chain (#420): four plums and two cabbages.
+			int plums = LF_InventoryUtils.AddAmount(this, "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et", 4);
+			int cabbages = LF_InventoryUtils.AddAmount(this, "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et", 2);
+			LF_HarnessReply(commandId, "ok", string.Format("moonshine plums=%1 cabbages=%2", plums, cabbages));
+			return;
+		}
+
 		if (tool == "crate")
 		{
 			// Chain goods (#419): one contraband crate, what the moonshine still makes.

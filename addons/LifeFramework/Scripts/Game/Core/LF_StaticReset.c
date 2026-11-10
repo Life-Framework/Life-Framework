@@ -54,6 +54,7 @@ class LF_StaticReset
 		LF_ServiceCallDispatch.ResetStatics();
 		LF_ServiceBoard.ResetStatics();
 		LF_ChainSites.ResetStatics();
+		LF_ChainTrace.ResetStatics();
 		LF_ChainStations.ResetStatics();
 		LF_OrgInvites.Reset();
 
