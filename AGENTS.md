@@ -82,7 +82,7 @@ failures instead of grinding.
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
 | `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
-| `tools\cli wt gate <slug>` / `wt ship <slug> [--closes N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge |
+| `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | validate --full + build + full suite / gate, push, PR, auto-merge. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
 | `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
 
@@ -200,6 +200,19 @@ Never guess an Enfusion API. Look it up from any terminal:
 (use `@args.json` from PowerShell). `wb_read_props` gives resolved inherited
 prefab values; `asset_search` gives `{GUID}path`. Reading sibling features and
 existing code to learn the shape is encouraged. See `enfusion-api-research`.
+
+## What "done" means (issue states)
+
+Merging to `main` is not done. A human decides after play-testing `main`.
+Issue labels: `agent:working` (you are building it), `in-dev` (merged, not
+verified), `needs-playtest` (merged and the PR lists manual steps), `verified`
+(a human signed it off; only this closes the issue), `regression` (failed
+verification). The `issue-state` workflow moves the issues a merged PR refs
+(`Refs #N`, also `Closes/Fixes #N`, which it reverses back to open); `tools\cli
+promote --confirm` sets `verified` and closes. In your report and PR say
+"merged, in-dev", never "done" or "fixed". Put manual steps under a
+`## Manual testing` heading: that is what makes the issue `needs-playtest` and
+what the human's promotion checklist shows. `docs/worktrees.md` "Release gates".
 
 ## Verification ladder
 

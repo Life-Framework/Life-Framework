@@ -3,6 +3,8 @@ import {
   MILESTONE_LAYER,
   MILESTONE_PLAN,
   devTrack,
+  isBuilt,
+  isVerified,
   issueLayer,
   milestoneName,
   milestoneStatus,
@@ -42,12 +44,12 @@ export function LayerTag({ layer }: { layer: Layer }) {
   );
 }
 
-type Item = { number: number; title: string; state: "open" | "closed"; url: string; assignees: string[]; layer: Layer; milestone: string | null };
+type Item = { number: number; title: string; state: "open" | "closed"; url: string; assignees: string[]; labels?: string[]; layer: Layer; milestone: string | null };
 
 // A small state marker: done, someone on it, or open.
 function Marker({ item }: { item: Item }) {
   const [mark, label, cls] =
-    item.state === "closed" ? ["✓", "Done", "text-green"] : item.assignees.length ? ["◐", "In progress", "text-ink"] : ["○", "Open", "text-ink-2"];
+    item.state === "closed" || isVerified(item.labels) ? ["✓", "Done", "text-green"] : isBuilt(item.labels) ? ["◑", "Built, not verified", "text-ink"] : item.assignees.length ? ["◐", "In progress", "text-ink"] : ["○", "Open", "text-ink-2"];
   return (
     <span className={`font-mono text-[0.75rem] w-3 shrink-0 text-center ${cls}`} title={label}>
       <span aria-hidden="true">{mark}</span>

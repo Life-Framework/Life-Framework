@@ -45,7 +45,7 @@ class LF_Test_LockpickVehicle : LF_Test
 	}
 }
 
-// red-proof: wiring asserted on the placed car; green with 5 of 5 (`--only` the four lockpick tests and debugworld/entity-collision) on 2026-11-10; the door twin failed the same way before its fix (see LF_Test_LockpickDoor).
+// red-proof: 2026-11-10 (QA) asserting `CanBeShownScript` on the placed car failed `- the lockpick action shows on the locked car` against the door-only check; green after LF_LockpickAction.CanBeShownScript went back to LF_Lockpick.ShowsPick. Earlier: wiring asserted on the placed car; green with 5 of 5 (`--only` the four lockpick tests and debugworld/entity-collision) on 2026-11-10; the door twin failed the same way before its fix (see LF_Test_LockpickDoor).
 // tier: WORLD
 //! The playtest lock-up car is wired (#412): locked, ignition locked, pickable, both actions on it,
 //! no stolen flag yet; the free-ignition car beside the lot starts for anyone. Spawns nothing. The
@@ -90,8 +90,13 @@ class LF_Test_LockpickVehicleWorld : LF_Test
 		bool hotwireWired = false;
 		foreach (BaseUserAction action : actionList)
 		{
-			if (LF_LockpickAction.Cast(action))
+			LF_LockpickAction pickAction = LF_LockpickAction.Cast(action);
+			if (pickAction)
+			{
 				pickWired = true;
+				// The prompt a player sees: the action must offer itself on the locked car (a door-only check hid it).
+				ctx.True(pickAction.CanBeShownScript(car), "the lockpick action shows on the locked car");
+			}
 
 			if (LF_HotwireAction.Cast(action))
 				hotwireWired = true;

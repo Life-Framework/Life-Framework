@@ -89,13 +89,14 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 - `toolscli promote --fail N[,N]` marks issues `regression` and reopens them without moving `stable`. With `--confirm`, a failed issue whose PR is inside the range blocks the promotion: fix it on `main`, revert it, or pass an earlier `--to`.
 - `toolscli promote --revert <PR>` opens a PR that reverts that merge on `main` (from a `ws/revert-pr<N>` worktree; auto-merge queued). `stable` is never edited directly.
 - `toolscli promote --init [--to <sha>]` creates `origin/stable` once. It was created from `main` because no M1 sign-off commit is recorded; the first real promotion is #404.
+- **Issue states.** `agent:working` (being built) to `in-dev` (merged to `main`) to `needs-playtest` (merged, and the PR has a `## Manual testing` section with real steps) to `verified`. Only `verified` closes an issue; `regression` marks a failed one. The `issue-state` workflow (`tools/issue-state.mjs`) runs when a PR merges into `main`: every issue it refs (`Refs/Closes/Fixes/Resolves #N`) gets `in-dev` or `needs-playtest` and stays open; an issue an older CLI's `Closes #N` closed is reopened, a `verified` one is left alone, and a merged `Reverts #P` PR sets `regression` on P's issues. `promote --confirm` sets `verified` and closes. The website reads `verified` (or closed) as done and `in-dev`/`needs-playtest` as "built, not verified".
 - Risky changes ship behind a config flag that defaults off, so one unverified feature does not block the rest.
 
 **Manual, maintainer (GitHub settings, not done by tooling):** protect `stable` (Settings, Branches): restrict pushes to the maintainer account, block force pushes and deletion, no pull-request requirement. `promote` pushes a fast-forward as the signed-in `gh`/git user.
 
 ## Auto-merge
 
-`wt ship <slug> [--closes N] [--body-file F]`:
+`wt ship <slug> [--refs N] [--body-file F]`:
 
 1. Refuses a dirty tree or a branch with no commits beyond `origin/main`.
 2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
@@ -106,7 +107,7 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
    (docs, website, tools) runs plain `validate` instead and never waits for a
    pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule).
 4. Pushes `ws/<slug>`, opens the PR (or reuses the open one on a re-run).
-   `--closes N` starts the body with `Closes #N`; `--body-file F` supplies the
+   `--refs N` (or `--closes N`, same thing) starts the body with `Refs #N`, and any `Closes/Fixes/Resolves #N` in the body is rewritten to `Refs #N` (merging never closes an issue); `--body-file F` supplies the
    body (keep it in `<worktree>/tmp/`).
 5. Queues `gh pr merge --auto --merge`: GitHub merges once the required
    `validate` check and reviews pass, and deletes the branch.

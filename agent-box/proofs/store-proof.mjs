@@ -1,4 +1,6 @@
-import {  } from "../session.mjs";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths, sessionUid } from "../session.mjs";
 
 // M2 #202 on a running `up --clients 2 --wait` session (debug mission): both shoppers stand inside the
 // general store. Shopper A takes a shelf item, pays at the till (the toast and the receipt) and walks
