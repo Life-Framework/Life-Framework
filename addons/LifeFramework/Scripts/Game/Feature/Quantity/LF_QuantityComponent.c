@@ -464,6 +464,11 @@ class LF_QuantityComponent : ScriptComponent
 				}
 			}
 
+			// A store's goods (on its shelf, or taken and not yet paid) keep their own identity: the unpaid
+			// tag belongs to the item, and merging it into a stack would delete the tagged item (#202).
+			if (LF_Stores.HoldsApart(item))
+				keepSeperate = true;
+
 			if (!keepSeperate)
 			{
 				BaseInventoryStorageComponent storageRestriction;

@@ -47,7 +47,7 @@ class LF_Test_FineTicketSerializer : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(20, version, "the save is written at version 20 (tickets is payload 12)");
+		ctx.Equal(21, version, "the save is written at version 21 (tickets is payload 12)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "tickets");
 		LF_FineTicketRecord loaded = LF_FineTickets.Find(number);
 		ctx.NotNull(loaded, "the ticket is back after the load");

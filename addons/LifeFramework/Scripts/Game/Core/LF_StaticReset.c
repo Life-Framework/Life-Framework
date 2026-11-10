@@ -56,6 +56,7 @@ class LF_StaticReset
 		LF_ChainSites.ResetStatics();
 		LF_ChainTrace.ResetStatics();
 		LF_ChainStations.ResetStatics();
+		LF_Stores.ResetStatics();
 		LF_OrgInvites.Reset();
 
 		s_iRuns = s_iRuns + 1;

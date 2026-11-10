@@ -231,6 +231,13 @@ class LF_ShopComponent : ScriptComponent
 		int units = LF_ShopRules.StackTradeOutputCount(quantity);
 		int totalPrice = LF_ShopRules.StackTradeTotal(unitPrice, units);
 
+		// A physical store (#202) holds a limited stock. A shelf copy taken by hand is counted before
+		// the check, and the units are set aside only once the cash is in, so a refused sale never
+		// takes a copy off the shelf and a pickup and a sale never both count one unit.
+		LF_StoreComponent store = LF_Component<LF_StoreComponent>.Find(GetOwner());
+		if (store && !store.CanSupply(prefab, units))
+			return LF_EShopRefusal.OUT_OF_STOCK;
+
 		int removed = LF_MoneyUtils.RemoveAmount(buyer, totalPrice, "shop-buy");
 		if (removed != totalPrice)
 		{
@@ -238,6 +245,12 @@ class LF_ShopComponent : ScriptComponent
 				LF_MoneyUtils.AddAmount(buyer, removed, "shop-buy-rollback");
 			LF_Debug.Info("Shop", string.Format("buy failed (insufficient funds) item=%1 qty=%2 price=%3 removed=%4", prefab, quantity, totalPrice, removed));
 			return LF_EShopRefusal.NOT_ENOUGH_CASH;
+		}
+
+		if (store && !store.Reserve(prefab, units))
+		{
+			LF_MoneyUtils.AddAmount(buyer, removed, "shop-buy-rollback");
+			return LF_EShopRefusal.OUT_OF_STOCK;
 		}
 
 		int added = LF_InventoryUtils.AddAmount(buyer, prefab, units);
@@ -251,6 +264,8 @@ class LF_ShopComponent : ScriptComponent
 		}
 
 		int notDelivered = units - added;
+		if (store && notDelivered > 0)
+			store.Unreserve(prefab, notDelivered);
 		if (notDelivered > 0)
 			LF_MoneyUtils.AddAmount(buyer, LF_ShopRules.StackTradeTotal(unitPrice, notDelivered), "shop-buy-rollback");
 		LF_Debug.Warn("Shop", string.Format("buy failed (inventory full) item=%1 qty=%2 delivered=%3 - refunded %4", prefab, quantity, added, notDelivered));

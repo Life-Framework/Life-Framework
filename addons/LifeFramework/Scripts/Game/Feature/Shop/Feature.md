@@ -86,6 +86,10 @@ type; no per-map scripting. See `docs/design.md` §4.
 - `LF_ShopPriceList` / `LF_ShopAction` — typed price list with an order slip
   on the UI kit, within 3 m, only for the player who used the counter; the
   till's refusal reason (`LF_EShopRefusal`) prints on the slip.
+- `LF_StoreComponent` / `LF_Stores` / `LF_StoreRules` / `LF_StoreTillAction` (#202) — the physical
+  store: shelf stock, unpaid tags, the till and receipt, the shoplifting sweep, restock and
+  save (`storestock`, save version 21). Flagship: the DebugWorld general store. Follow-ups:
+  the market and the car lot on the same pattern.
 - `LF_ShopPriceResolver` / `LF_ShopPricesConfig` / `LF_ShopRules` / `LF_ShopItem`
   — price resolution and rules scaffolding.
 - `Configs/Shop/ShopPrices.conf` — the price table.

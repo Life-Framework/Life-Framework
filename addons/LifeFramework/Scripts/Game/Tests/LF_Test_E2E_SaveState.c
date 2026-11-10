@@ -175,6 +175,16 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			chainBarrel.Import(chainRow);
 		}
 
+		// The general store (#202) sells two apples and a restock is not due: the saved stock is 2 of 6.
+		LF_StoreComponent saveStore = LF_Stores.Find("general_store");
+		ctx.NotNull(saveStore, "e2e general store is placed before the save");
+		if (saveStore)
+		{
+			saveStore.FirstFill();
+			saveStore.ForceStock("{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", 2);
+			ctx.Equal(2, saveStore.GetStock("{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"), "e2e store apple stock reads 2 before the save");
+		}
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -187,6 +197,17 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 // tier: PERSISTENCE
 class LF_Test_E2E_SaveStateVerify : LF_Test
 {
+	protected static int s_iLooseApples;
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CountLooseApple(IEntity entity)
+	{
+		if (entity && LF_Utils.GetPrefabName(entity) == "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" && LF_InventoryUtils.GetStorageHierachyRoot(entity) == entity)
+			s_iLooseApples++;
+
+		return true;
+	}
+
 	protected static const string ACCOUNT_UID = "e2e-uid";
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
 	protected static const string COURIER_UID = "e2e-courier";
@@ -286,6 +307,22 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			ctx.Equal(3, chainBarrel.GetProgress().GetWork(), "e2e half-finished chain batch keeps its work after the restart");
 			ctx.Equal(37, chainBarrel.GetPercent(), "e2e half-finished chain batch reads 37 percent after the restart");
 		}
+		// The store stock rides "storestock" (#202): two apples left, so two stand on the shelf, not a fresh four.
+		LF_StoreComponent loadedStore = LF_Stores.Find("general_store");
+		ctx.NotNull(loadedStore, "e2e general store is placed after the restart");
+		if (loadedStore)
+		{
+			loadedStore.FirstFill();
+			ResourceName e2eApple = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
+			ctx.Equal(2, loadedStore.GetStock(e2eApple), "e2e store apple stock stays 2 after the restart");
+			ctx.Equal(2, loadedStore.GetShelfCount(e2eApple), "e2e the shelf shows the two apples left, not a doubled or fresh shelf");
+			// No ground copy: loose apples around the counter are exactly the shelf's two (the engine did not
+			// bring back an apple the save no longer owns, and nothing was spawned twice).
+			s_iLooseApples = 0;
+			GetGame().GetWorld().QueryEntitiesBySphere(loadedStore.GetOwner().GetOrigin(), 4, CountLooseApple, null, EQueryEntitiesFlags.ALL);
+			ctx.Equal(2, s_iLooseApples, "e2e exactly two loose apples stand around the store after the restart");
+		}
+
 		IEntity body = LF_TestCharacterFixture.Spawn(ctx);
 		if (body)
 		{

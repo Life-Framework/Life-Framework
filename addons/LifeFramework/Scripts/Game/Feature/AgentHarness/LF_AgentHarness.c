@@ -126,7 +126,7 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "radio")
 			return true;
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf")
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
@@ -900,7 +900,7 @@ class LF_AgentHarness
 			DoRadio(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park" || cmd.Verb == "shelf")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
