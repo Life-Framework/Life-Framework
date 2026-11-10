@@ -32,6 +32,7 @@ import * as q from "../lib/pool-queue.mjs";
 import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionDirOf } from "../lib/session-lease.mjs";
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
+import { trimProcs } from "../lib/ws-trim.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
 const HEALTH_TTL_MS = 60000;
@@ -370,6 +371,36 @@ function runningLocalServers(root, m) {
   return n;
 }
 
+// The pids a live session recorded (server and clients), for the working-set trim.
+export function sessionPids(s) {
+  if (!s || s.stoppedAt) return [];
+  return [s.serverPid, ...(s.clients ?? []).map((c) => c.pid)].filter((p) => Number.isInteger(p) && p > 0 && pidAlive(p));
+}
+
+let lastTrimAt = 0;
+
+// The RAM gate is about to refuse: trim the working sets of every live session's processes (recorded
+// pids only). A session waiting for its next harness command holds about 1.8 GB resident and needs
+// ~0.13 GB of it (docs/worktrees.md "Session profiles"); the pages go to the standby list, which
+// counts as free to the gate, and fault back when the session works again. At most once per 20 s.
+// Returns how many processes were trimmed.
+export function trimLiveSessions(root, m, opts = {}) {
+  if (Date.now() - lastTrimAt < 20000) return 0;
+  const pids = [];
+  for (const l of lanesFor(m, "session")) {
+    const info = readJson(localLockFile(root, l.lock), null);
+    if (!info || !pidAlive(info.pid) || info.purpose !== "session") continue;
+    const dir = sessionDirOf(info.root ?? root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
+    pids.push(...sessionPids(readJson(join(dir, "session.json"), null)));
+  }
+  if (!pids.length) return 0;
+  lastTrimAt = Date.now();
+  (opts.trim ?? trimProcs)(pids);
+  console.log(`pool: RAM is short; trimmed the working sets of ${pids.length} session process(es) (their pages stay cached, free to the gate)`);
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2500);
+  return pids.length;
+}
+
 // The other session lanes of this PC with a live holder: { lock, pendingMb } where pendingMb is the
 // memory a session still booting is expected to take that free RAM does not show yet (0 once it
 // is ready, or after ten minutes).
@@ -427,7 +458,10 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
   const second = meta?.purpose === "session" ? otherSessionLanes(root, m, name) : [];
   const reserveMb = second.length ? q.sessionReserveMb(settings, meta.clients ?? 1, meta.profile ?? "full") : 0;
   const pendingMb = second.reduce((n, s) => n + s.pendingMb, 0);
-  const ram = opts.noRam ? { ok: true } : q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: settings.minFreeMb, reserveMb, pendingMb });
+  const verdict = () => q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: settings.minFreeMb, reserveMb, pendingMb });
+  let ram = opts.noRam ? { ok: true } : verdict();
+  // Before refusing for RAM, trim what idle sessions hold resident and look again (not under test seams).
+  if (!ram.ok && opts.freeMb === undefined && !opts.noTrim && trimLiveSessions(root, m) > 0) ram = verdict();
   if (!ram.ok) {
     if (opts.blocked) {
       opts.blocked.ram = ram.reason;

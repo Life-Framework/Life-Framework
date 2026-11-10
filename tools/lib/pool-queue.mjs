@@ -14,7 +14,7 @@ export const DEFAULTS = {
   sessionReserveClientMb: 850,
   // Per session profile (session up --profile): the same two numbers, measured per profile. A profile
   // missing here uses the full numbers above. tools/pool.json "sessionReserve" overrides these.
-  sessionReserve: { lowspec: { serverMb: 600, clientMb: 850 } },
+  sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } },
   bootBudgetS: 30,
   // A session older than sessionHoldMin while another session request queues is warned, then
   // closed sessionGraceMin later. session up --hold raises its own cap, to sessionHoldMaxMin at most.

@@ -53,6 +53,7 @@ import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
 import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
+import { trimProcs } from "./lib/ws-trim.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -1738,7 +1739,12 @@ function cmdSessionMeasure(root, dir, flags) {
   const counts = (argValue(flags, "--clients") ?? "1").split(",").map(Number);
   if (counts.some((n) => !Number.isInteger(n) || n < 0 || n > session.MAX_CLIENTS)) throw new Error(`--clients is a list of 0..${session.MAX_CLIENTS}`);
   const settleS = Number(argValue(flags, "--settle") ?? 30);
-  const proof = argValue(flags, "--proof");
+  // --proof quarry-proof (every count) or --proof 1:quarry-proof,2:scanner-proof (by client count).
+  const proofFor = (n) => {
+    const list = String(argValue(flags, "--proof") ?? "").split(",").filter(Boolean);
+    const hit = list.find((p) => p.startsWith(`${n}:`)) ?? list.find((p) => !/^\d:/.test(p));
+    return hit ? hit.replace(/^\d:/, "") : "";
+  };
   const mission = argValue(flags, "--mission") ?? "debug";
   const prev = session.readSession(dir);
   if (prev && !prev.stoppedAt && (host.pidAlive(prev.serverPid) || (prev.clients ?? []).some((c) => host.pidAlive(c.pid)))) {
@@ -1793,6 +1799,7 @@ function cmdSessionMeasure(root, dir, flags) {
         const bootS = Math.round((Date.now() - t0) / 100) / 10;
         session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [bootS] });
         let proofNote = "";
+        const proof = proofFor(n);
         if (proof && n > 0) {
           const r = spawnSync(process.execPath, [join(root, "agent-box", "session.mjs"), proof], { windowsHide: true, encoding: "utf8", cwd: root, timeout: 300000 });
           proofNote = `${proof} ${r.status === 0 ? "PASS" : "exit " + r.status}`;
@@ -1802,9 +1809,17 @@ function cmdSessionMeasure(root, dir, flags) {
         const got = measure.sampleProcs([state.serverPid, ...state.clients.map((c) => c.pid)], PWSH);
         const srv = got.find((g) => g.pid === state.serverPid);
         const cls = state.clients.map((c) => got.find((g) => g.pid === c.pid)).filter(Boolean);
-        const row = { variant: v.name, levers: v.levers, clients: n, bootS, serverWs: srv?.wsMb ?? 0, serverPriv: srv?.privMb ?? 0, serverPeak: srv?.peakMb ?? 0, clientWs: cls.map((c) => c.wsMb), clientPriv: cls.map((c) => c.privMb), clientPeak: cls.map((c) => c.peakMb), serverCpuS: srv?.cpuS ?? 0, clientCpuS: cls.map((c) => c.cpuS), freeBefore, freeMb: measure.freeMb(), proof: proofNote };
+        // What a trim leaves: the pool trims session processes when it would otherwise refuse a session for RAM.
+        const before = got.map((g) => g.wsMb);
+        trimProcs([state.serverPid, ...state.clients.map((c) => c.pid)], PWSH);
+        sleepMs(3000);
+        const after = measure.sampleProcs([state.serverPid, ...state.clients.map((c) => c.pid)], PWSH);
+        sleepMs(15000);
+        const later = measure.sampleProcs([state.serverPid, ...state.clients.map((c) => c.pid)], PWSH);
+        const row = { trimmedWs: after.map((g) => g.wsMb), idleAfterTrimWs: later.map((g) => g.wsMb), beforeTrimWs: before, variant: v.name, levers: v.levers, clients: n, bootS, serverWs: srv?.wsMb ?? 0, serverPriv: srv?.privMb ?? 0, serverPeak: srv?.peakMb ?? 0, clientWs: cls.map((c) => c.wsMb), clientPriv: cls.map((c) => c.privMb), clientPeak: cls.map((c) => c.peakMb), serverCpuS: srv?.cpuS ?? 0, clientCpuS: cls.map((c) => c.cpuS), freeBefore, freeMb: measure.freeMb(), proof: proofNote };
         row.totalWs = row.serverWs + row.clientWs.reduce((a, b) => a + b, 0);
         rows.push(row);
+        console.log(`measure: ${v.name} x${n}: ws before trim ${row.beforeTrimWs.join("/")}, 3 s after ${row.trimmedWs.join("/")}, 18 s after ${row.idleAfterTrimWs.join("/")} (server first)`);
         console.log(`measure: ${v.name} x${n}: server ${row.serverWs} MB, clients ${row.clientWs.join("/") || "-"} MB (ws), total ${row.totalWs} MB, free ${row.freeMb} MB`);
         closeAll();
         state = null;

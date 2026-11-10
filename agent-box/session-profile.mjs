@@ -69,6 +69,8 @@ export const LEVERS = {
   // Server: fewer replicated cells per client (-nds, default 2) and a smaller streaming budget.
   nds: { server: { args: ["-nds", "1"] } },
   stream: { server: { args: ["-streamingBudget", "200"] } },
+  // One update thread instead of the job system's 22 (-singleThreadedUpdate, BI wiki "Startup Parameters"): each job thread has its own allocator and stack.
+  st: { client: { args: ["-singleThreadedUpdate"] }, server: { args: ["-singleThreadedUpdate"] } },
   // Server frame cap (CPU only).
   sfps: { server: { maxFps: 20 } },
 };
