@@ -126,7 +126,7 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "radio")
 			return true;
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park")
 			return true;
 		if (cmd.Verb == "lockpick")
 			return true;
@@ -900,7 +900,7 @@ class LF_AgentHarness
 			DoRadio(cmd);
 			return;
 		}
-		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine")
+		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard" || cmd.Verb == "charge" || cmd.Verb == "apples" || cmd.Verb == "crate" || cmd.Verb == "moonshine" || cmd.Verb == "stash" || cmd.Verb == "park")
 		{
 			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
 			if (!scannerCharacter)
@@ -1276,7 +1276,43 @@ class LF_AgentHarness
 		line += " zone=" + LF_Zones.RuleName(LF_Zones.RuleAt(origin));
 		line += string.Format(" downed=%1 life=%2 bleed=%3", downed, LifeStateToken(character), BleedToken(character));
 		line += " " + VitalsToken(character);
-		return line + string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
+		line += string.Format(" idcard=%1 quests=%2", IdCardToken(character, account), QuestToken(character));
+		return line + " " + KeepsToken(uid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the restart judge reads besides money (#348): seconds left on a sentence, the stash's item
+	//! count (-1 with no stash placed), cars stored in the garage, and the plate of the car in the world.
+	protected static string KeepsToken(string uid)
+	{
+		int jail = 0;
+		int stored = 0;
+		string parked = "none";
+		if (!uid.IsEmpty())
+		{
+			if (LF_Jail.IsServing(uid))
+				jail = Math.Round(LF_Jail.GetRemaining(uid));
+
+			stored = LF_VehicleOwnership.StoredFor(uid).Count();
+			string worldId = LF_VehicleOwnership.LatestInWorld(uid);
+			if (!worldId.IsEmpty())
+				parked = Token(LF_VehicleOwnership.GetPlate(worldId));
+		}
+
+		int stash = -1;
+		IEntity stashEntity = GetGame().GetWorld().FindEntityByName("Roadmap_Hideout_Stash");
+		if (stashEntity)
+		{
+			BaseInventoryStorageComponent storage = LF_Component<LF_HideoutStashStorageComponent>.Find(stashEntity);
+			if (storage)
+			{
+				array<IEntity> stashed = {};
+				storage.GetAll(stashed, false);
+				stash = stashed.Count();
+			}
+		}
+
+		return string.Format("jail=%1 garage=%2 parked=%3 stash=%4", jail, stored, parked, stash);
 	}
 
 	//------------------------------------------------------------------------------------------------

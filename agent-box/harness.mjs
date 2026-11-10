@@ -123,7 +123,7 @@ export function buildLine(id, spec) {
   if (spec.verb === "siren") {
     return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
   }
-  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "crate" || spec.verb === "moonshine") {
+  if (spec.verb === "scanner" || spec.verb === "drill" || spec.verb === "keycard" || spec.verb === "charge" || spec.verb === "apples" || spec.verb === "crate" || spec.verb === "moonshine" || spec.verb === "stash" || spec.verb === "park") {
     return `${id} ${spec.verb}`;
   }
   if (spec.verb === "engine") {
@@ -1382,7 +1382,7 @@ function main(argv) {
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
     }
-    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "crate" || cmd === "moonshine") {
+    if (cmd === "scanner" || cmd === "drill" || cmd === "keycard" || cmd === "charge" || cmd === "apples" || cmd === "crate" || cmd === "moonshine" || cmd === "stash" || cmd === "park") {
       return printResult(sendCommand({ verb: cmd }, 10000));
     }
     if (cmd === "engine") {

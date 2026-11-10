@@ -645,14 +645,25 @@ node agent-box/session.mjs down
 | `vehicle` | 1 | `LF_VehicleBuyAction` at `Roadmap_Vehicle_Lot` (S105, 1000 from the bank) | bank -1000; "blocked" when the bank holds less |
 | `give` | 1, 2 | stand at `Player<id>`, `LF_GiveCashAction`, type 50, hand over | -50 / +50 |
 | `police` | 2 | debug menu `FactionPoliceButton` (fixture; bare DebugWorld only) | POLICE on duty |
+| `clockin` | 2 | `LF_DutyAction` at `Roadmap_Police_Desk` (playtest only; `session.mjs roster 2` before `up`) | POLICE on duty |
 | `rob` | 1, 2 | `LF_RobAction` at `Roadmap_Fuel_Till` | wanted and cash rise; an on-duty officer's last toast is the robbery alert |
+| `board` | 1, 2 | officer and civilian read `Roadmap_Police_WantedBoard` | officer sees "WANTED - police notices" with the robbery, civilian the public board |
+| `dispatch` | 2 | read `Roadmap_Police_DispatchBoard`; the radio call came with the robbery | `dispatch` >= 1, `lastdispatch` is the robbery and place, no name |
+| `ticket` | 1, 2 | officer `LF_PlayerRoleAction` on the holder, offence row 0; holder reads the card, pays at the desk | holder cash -owed, no unpaid ticket |
 | `org` | 1 | org desk: type the name in the ledger's field, Sign | `org` is the new name |
-| `garage` | 1 | stand at `Roadmap_Garage`, `look` | store or retrieve offered |
-| `restart` | 1, 2 | `session.mjs restart` (playtest mission only) | cash, bank, org, job unchanged |
+| `orgc` | 3 | same at the desk for civilian C (3-client sessions only) | client 3 `org` is CellarCrew |
+| `hideout` | C | ledger row `OrgHideoutRow_Action`, Take the lease | the ledger reads "Yours" |
+| `stash` | C | `apples`, then `stash` (harness stand-in for the inventory drag; the member check still decides) | `stash=` +1 |
+| `contraband` | C | `LF_ConvoyStartAction` at the barn, `LF_ConvoyDeliverAction` at the pub | cash +200 |
+| `garage` | 1 | `park` (harness stand-in for driving), then `LF_VehicleStoreAction` at `Roadmap_Garage` | store offered, `garage=` +1 |
+| `arrest` | 1, 2 | officer `LF_JailArrestAction` on client 1 | `jail=` seconds > 0 |
+| `jail` | 1 | wait | in the cell, sentence counts down |
+| `restart` | all | `session.mjs restart` (playtest mission only) | cash, bank, org, job, rank, stash, garage, parked unchanged; a sentence is served or loaded (server log `apply-save`) |
 
-This is the harness M1-23 (#108) proves the journey with, not that proof:
-police clock-in at the desk, dispatch, tickets, jail, hideout, stash, and
-contraband are M1-23's to add as their scopes land. Debug-menu fixtures make
+"C" is client 3 when the session has three clients (`up --clients 3`) and client 1 otherwise; the state line also prints `jail`, `garage` (cars stored), `parked` (plate of the car in the world) and `stash` (items in the hideout stash). `stash` and `park` are harness verbs behind the harness gate (`LF_HARNESS` build), like `apples`.
+
+This is the harness M1-23 (#108) proves the journey with, not that proof. Police clock-in, board, dispatch, ticket, arrest and jail, and civilian C (hideout, stash, contraband) are steps since #348; the first full playtest run (2026-11-10, 3 clients) passed 21 of 21 (docs/playtest/journey-2026-11-10.md).
+Debug-menu fixtures make
 the bare DebugWorld run reach the car in one pass; the playtest run has no
 fixtures, so a step that needs more money than a courier run pays reports
 "blocked". First runs (2026-11-08): bare DebugWorld 10 of 12 (org: the desk was
