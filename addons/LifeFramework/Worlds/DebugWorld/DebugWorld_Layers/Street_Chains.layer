@@ -1,0 +1,27 @@
+GenericEntity Chains_Barrel_1 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Chains_Barrel_1"
+   m_sSiteId "Chains_Site"
+  }
+ }
+ coords 300 0 322
+}
+GenericEntity Chains_Barrel_2 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Chains_Barrel_2"
+   m_sSiteId "Chains_Site"
+  }
+ }
+ coords 304 0 322
+}
+GenericEntity Chains_Barrel_3 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Chains_Barrel_3"
+   m_sSiteId "Chains_Site"
+  }
+ }
+ coords 308 0 322
+}

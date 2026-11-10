@@ -161,6 +161,20 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		lockerRows.Insert(lockerRow);
 		LF_EvidenceLocker.ApplyAll(lockerRows);
 
+		// A half-finished chain batch (#417) must come back: barrel 3 of the Chains_Site, 3 of 8 units in.
+		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find("Chains_Barrel_3");
+		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed before the save");
+		if (chainBarrel)
+		{
+			LF_ChainStationRow chainRow = new LF_ChainStationRow();
+			chainRow.m_sStationKey = "Chains_Barrel_3";
+			chainRow.m_sChainId = "cider";
+			chainRow.m_sStepId = "press";
+			chainRow.m_iWork = 3;
+			chainRow.m_iNeeded = 8;
+			chainBarrel.Import(chainRow);
+		}
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -265,6 +279,13 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(1, LF_WantedReports.CountFor(ACCOUNT_UID), "e2e wanted report present after the save load");
 		ctx.True(LF_WantedReports.IsIdentified(ACCOUNT_UID), "e2e wanted report stays identified after the save load");
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
+		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find("Chains_Barrel_3");
+		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");
+		if (chainBarrel)
+		{
+			ctx.Equal(3, chainBarrel.GetProgress().GetWork(), "e2e half-finished chain batch keeps its work after the restart");
+			ctx.Equal(37, chainBarrel.GetPercent(), "e2e half-finished chain batch reads 37 percent after the restart");
+		}
 		IEntity body = LF_TestCharacterFixture.Spawn(ctx);
 		if (body)
 		{

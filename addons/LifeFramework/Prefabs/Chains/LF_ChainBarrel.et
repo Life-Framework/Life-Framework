@@ -1,0 +1,60 @@
+GenericEntity : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ ID "4C1A9E07B35D82F6"
+ components {
+  SCR_SoundDataComponent "{4C1A9E07B35D8301}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{4C1A9E07B35D8302}" {
+     m_sSoundProject "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
+     m_sSoundEventName "SOUND_PICK_UP"
+    }
+   }
+  }
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sChainId "cider"
+   m_sStepId "press"
+  }
+  ActionsManagerComponent "{4C1A9E07B35D8304}" {
+   ActionContexts {
+    UserActionContext "{4C1A9E07B35D8305}" {
+     ContextName "LF_ChainStation"
+     Position PointInfo "{4C1A9E07B35D8306}" {
+      Offset 0 0.9 0
+     }
+     Radius 1
+    }
+   }
+   additionalActions {
+    LF_ChainStationAction "{4C1A9E07B35D8307}" {
+     ParentContextList {
+      "LF_ChainStation"
+     }
+     UIInfo UIInfo "{4C1A9E07B35D8308}" {
+      Name "#LF-Chain_Load"
+     }
+     Duration 1
+     m_eMode LOAD
+    }
+    LF_ChainStationAction "{4C1A9E07B35D8309}" {
+     ParentContextList {
+      "LF_ChainStation"
+     }
+     UIInfo UIInfo "{4C1A9E07B35D830A}" {
+      Name "#LF-Chain_Work_Fresh"
+     }
+     Duration 2
+     m_eMode WORK
+    }
+    LF_ChainStationAction "{4C1A9E07B35D830B}" {
+     ParentContextList {
+      "LF_ChainStation"
+     }
+     UIInfo UIInfo "{4C1A9E07B35D830C}" {
+      Name "#LF-Chain_Collect"
+     }
+     Duration 1
+     m_eMode COLLECT
+    }
+   }
+  }
+ }
+}

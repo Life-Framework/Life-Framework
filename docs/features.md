@@ -791,6 +791,41 @@
 - ✅ The core ships one neutral example, `cider` (tier 1, one `barrel` step, apples to juice).
 - Test: `chains/config` (LOGIC).
 
+### Hands-on stations — `Feature/Chains/` (#417, M2 Underworld)
+- ✅ **A station is a component, not a timer.** `LF_ChainStationComponent` is one shape for a barrel,
+  a still, a press or a cooker; the step it runs comes from config (`m_sChainId`, `m_sStepId`).
+  A worker `Load`s a batch (the step's inputs leave their inventory, all or none), `Work`s it
+  with a held action that adds one unit of work, and `Collect`s the product. No menu and no
+  progress bar: the offer changes with the station state, and the work prompt says in words how
+  far along it is (`#LF-Chain_Work_Fresh`, `_Mid`, `_Late`).
+- ✅ **Progress belongs to the station.** Every accepted unit adds to the same number, whoever does
+  it, so two workers on one barrel finish it in half the time, and three workers on three barrels
+  clear three batches in the time one worker clears one. The server rate-limits each worker per
+  station (`m_iMinTickMs`, 1200 ms against a 2 s hold), checks reach (`m_fReach`, 3.5 m), the
+  hideout access when the barrel carries `LF_HideoutMachineComponent`, and the licence, level and
+  equipment gates. Refusals toast `#LF-Chain_*` keys and log `[LFDebug:Chains]`.
+- ✅ **Site heat** (`LF_ChainSites`): stations with the same `m_sSiteId` share a number that rises
+  with accepted work (`m_fPerWork`), fades with time (`m_fDecayPerSecond`, computed when read) and
+  caps at `m_fMax`. `GetHeat`, `GetRange` and `GetWarmSites` are what the smell and smoke trace
+  (#418) reads. Heat is not saved; a restart starts every site cold.
+- ✅ **Bus events** `LF_OnChainStep` (load, ready, collect) and `LF_OnChainWork` (each accepted
+  unit, with the site heat and smell range). See `docs/architecture/events.md`.
+- ✅ **A half-finished batch survives a restart.** Payload `chainstations`, save version 20,
+  matched by the station's `m_sStationKey` (unique and stable, not the entity id). A saved batch
+  that arrives before its station waits and is applied when the station registers; a batch for a
+  chain or step the station no longer runs is dropped and logged. Loading twice converges.
+- ✅ The core ships `Prefabs/Chains/LF_ChainBarrel.et` (the vanilla open metal barrel with the
+  station component, the sound data and the three actions) and three of them on DebugWorld at
+  `300 0 322`, `304 0 322` and `308 0 322` (`Street_Chains.layer`, site `Chains_Site`, chain
+  `cider`: 4 apples to 1 apple juice, 8 units of work). Work plays the vanilla pick-up gesture and
+  `SOUND_PICK_UP`; better animation and sound follow the animation pipeline (#340).
+- ✅ `LF_ProcessAction.TryConsumeInputs` / `RestoreInputs` are the all-or-nothing input removal the
+  instant processors already did, extracted so the stations share it.
+- Tests: `stations/progress` (LOGIC), `stations/world` (WORLD), `persist/chain-stations-roundtrip`
+  (PERSISTENCE). The suite's version checks now read 20.
+- ⚠️ Not built: the smoke effect and the smell notice (#418), searches (#419), the moonshine pack
+  chain (#420). Manual: three players on three barrels, see the PR.
+
 ## Jobs / Level / Licenses / Whitelist
 
 ### `LF_PlayerJobComponent` — `Feature/Jobs/LF_PlayerJobComponent.c`
@@ -2042,7 +2077,7 @@
 - The van is **parked on a schedule, not driven**: base-game AI driving is not reliable enough to carry a robbery. `LF_CashVanRouteComponent` moves the van to the next stop marker (`Roadmap_Cash_Stop_Bank`, `_Store`, `_Fuel` on the main street, `Street_CashVan.layer`) every `m_fDwellSeconds` (300) unless a player is within `m_fClearMetres` (40), then stocks the box afresh (bags the last robbery left lying are removed, the lock closes). The move is a transform set of the van and the box, so the van never drives off a player. A van a player drives away leaves the box behind.
 - Every opening publishes `LF_OnHeistLoot` (kind, cash, target id) on the bus. Not saved: the bags and the route position reset on a restart.
 - ✅ Lockpicking a door (#411, LOGIC `lockpick/door`, WORLD `e2e/lockpick-door`): `Prefabs/Items/Fence/LF_Lockpick.et`, a stack whose count is its uses (fence, no record needed, $250, serial-stamped). A locked `LF_LockComponent` door that carries `LF_LockpickTargetComponent` (`m_bPickable`; off for a vault or the jail door, which refuse with a logged reason) offers `LF_LockpickAction`. `LF_Lockpick.Begin` re-checks on the server, then runs a timed attempt (20 s at skill 0 down to 6 s at skill 10; skill is the character level minus 1, so no new save data), dropped if the picker walks off, goes down or the door is opened meanwhile. A success unlocks the door and wears one use; a failure may snap the pick (one use) or just slip; a plain failure wears nothing. A success always files an `LF_WantedReports.Report` (`#LF-Offence_Lockpick`: event bus, crime record, evidence scene, witnesses); a failure only when its noise roll is heard. It never raises wanted or radios the police on its own. Placed at `Roadmap_Lockpick_Door` (lock-up, `Street_Lockpick.layer`). Harness: `lockpick` verb gives five uses. Manual: the held-action animation and a witness reaction.
-- ✅ **Fence in the village** (#276). `FenceNpc` (Vince, `Crimes.layer`) moved from the test annex to the barn lot at 186 0 311, north-west of the bank; `session.mjs village-proof` drives the fence, vault, cash van, serial and evidence-locker chain with two clients (harness `pack` verb gives the officer a backpack for the bagged drill). No save change.
+- ✅ **Fence in the village** (#276). `FenceNpc` (Vince, `Crimes.layer`) moved from the test annex to the barn lot at 186 0 311, north-west of the bank; `session.mjs village-proof` drives the fence, vault, cash van, serial and evidence-locker chain with two clients (the debug police kit now carries a `Backpack_ALICE_Medium` so the officer can hold the bagged drill; the harness `pack` verb is gone). No save change.
 
 ### Police armory heist (#275) — `Prefabs/Police/LF_ArmoryStore.et`, `LF_Bank.c`
 - ✅ `Roadmap_Police_ArmoryStore` (`Street_Police.layer`, beside the duty armory) is a heist target: a locked cabinet that needs the fence **keycard** (kept, not consumed) or a charge, config on its `LF_HeistVaultComponent` (`m_aLoot` weapons, `m_iStock` hauls, `m_fRefillSeconds`, `m_fCooldownSeconds`). Breaching it files `#LF-Offence_ArmoryHeist` through the normal crime report with the **loud** alarm even with officers on duty (`LF_Dispatch.Report` `forceLoud`), so every on-duty officer is radioed. Without the keycard the action is refused and nothing is filed. Test `crime/armory`.

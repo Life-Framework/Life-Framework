@@ -15,8 +15,11 @@ several stations. No menus and no progress bars.
   the station type each needs, inputs and outputs, a licence and level gate, an equipment id,
   and heat settings. A pack adds a chain by overriding the config. A malformed chain disables
   itself (`LF_ChainCatalog`) and nothing else.
-- **Stations (#417).** Physical station components and a site that holds several of them and one
-  heat number.
+- **Stations (#417).** `LF_ChainStationComponent` on a prop (`LF_ChainBarrel.et` is the barrel),
+  with `LF_ChainStationAction` in three modes: load, work (a held action, one unit of work), collect.
+  Progress belongs to the station, so more hands finish it sooner. Stations with the same site id
+  share one heat number (`LF_ChainSites`). A loaded station is saved by its station key (payload
+  `chainstations`, save version 20).
 - **Trace (#418) and searches (#419)** read the site heat and the chain's goods.
 
 ## Rules

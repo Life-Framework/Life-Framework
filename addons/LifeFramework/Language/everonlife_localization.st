@@ -6247,6 +6247,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Jailbreak"
      Comment "Offence: a prisoner walked out through a breached jail door (#235)."
     }
+    CustomStringTableItem "{C4A100000000A011}" {
+     Id "LF-Chain_Title"
+     Target_en_us "Production"
+     Comment "Toast title for chain station refusals (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A012}" {
+     Id "LF-Chain_Load"
+     Target_en_us "Load the batch"
+     Comment "Chain station action: put a batch in (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A013}" {
+     Id "LF-Chain_Collect"
+     Target_en_us "Take the product"
+     Comment "Chain station action: take a finished batch out (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A014}" {
+     Id "LF-Chain_Work_Fresh"
+     Target_en_us "Work it"
+     Comment "Chain station hold action while the batch has barely started (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A015}" {
+     Id "LF-Chain_Work_Mid"
+     Target_en_us "Keep working it"
+     Comment "Chain station hold action while the batch is part way (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A016}" {
+     Id "LF-Chain_Work_Late"
+     Target_en_us "Finish it off"
+     Comment "Chain station hold action while the batch is nearly done (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A017}" {
+     Id "LF-Chain_MissingInputs"
+     Target_en_us "You do not have what this needs"
+     Comment "Chain station refused: the worker lacks the inputs (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A018}" {
+     Id "LF-Chain_TooFar"
+     Target_en_us "Stand closer"
+     Comment "Chain station refused: the worker is out of reach (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A019}" {
+     Id "LF-Chain_Failed"
+     Target_en_us "That did not work"
+     Comment "Chain station refused: the product could not be delivered (#417)."
+    }
   }
  }
 }
