@@ -70,9 +70,16 @@ class LF_BankVaultState : Managed
 	string m_sTools;
 	float m_fJamChance;
 	bool m_bSpawnPending;
-	//! Heist (#274): what the open target leaves lying. Empty keeps the bank pattern.
+	//! Heist (#274, #275): what the open target leaves lying. Empty keeps the bank pattern.
 	string m_sLootKind;
 	string m_sOffence;
+	string m_sLoot;
+	//! Kits left in stock (armory, #275). Negative means unlimited.
+	int m_iStock = -1;
+	int m_iStockMax;
+	float m_fRefillSeconds;
+	float m_fRefillAdvanced;
+	float m_fRefillSampledAt;
 	string m_sLooterUid;
 	vector m_vLooterAt;
 	ref array<EntityID> m_aLooseBags = {};
@@ -92,6 +99,8 @@ class LF_Bank
 	static const ResourceName DRILL_PREFAB = "{4FF102B4CE9B0ED3}Prefabs/Items/Fence/LF_Drill.et";
 	static const string TOOL_DRILL = "drill";
 	static const string TOOL_CHARGE = "charge";
+	static const ResourceName KEYCARD_PREFAB = "{F341AA386FA695E4}Prefabs/Items/Fence/LF_Keycard.et";
+	static const string TOOL_KEYCARD = "keycard";
 
 	protected static ref map<string, ref LF_BankVaultState> s_mVaults;
 
@@ -200,9 +209,11 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Makes the vault a heist target (#274). kind is "bags": the cash van spills physical money bags
-	//! behind it. offence is the localization key dispatch reports.
-	static void ConfigureHeist(string vaultId, string kind, string offence)
+	//! Makes the vault a heist target (#274 cash van, #275 police armory). kind is "bags" (money bags
+	//! spill behind it) or "weapons" (the comma list of prefabs, serial-stamped, lies in front).
+	//! offence is the dispatch key, loud forces the loud alarm. stock is how many hauls the target
+	//! holds (negative: unlimited); one is restored each refillSeconds.
+	static void ConfigureHeist(string vaultId, string kind, string loot, string offence, bool loud, int stock, float refillSeconds)
 	{
 		LF_BankVaultState vault = Vaults().Get(vaultId);
 		if (!vault)
@@ -212,9 +223,15 @@ class LF_Bank
 		}
 
 		vault.m_sLootKind = kind;
+		vault.m_sLoot = loot;
 		vault.m_sOffence = offence;
-		LF_Breach.SetAlarm(vaultId, offence);
-		LF_Debug.Log("Bank", string.Format("heist %1 kind=%2", vaultId, kind));
+		vault.m_iStock = stock;
+		vault.m_iStockMax = stock;
+		vault.m_fRefillSeconds = refillSeconds;
+		vault.m_fRefillAdvanced = 0;
+		vault.m_fRefillSampledAt = NowSeconds();
+		LF_Breach.SetAlarm(vaultId, offence, loud);
+		LF_Debug.Log("Bank", string.Format("heist %1 kind=%2 stock=%3 refill=%4 loud=%5", vaultId, kind, stock, refillSeconds, loud));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -239,6 +256,18 @@ class LF_Bank
 		vault.m_bSpawnPending = false;
 		LF_Breach.Reset(vaultId);
 		LF_Debug.Info("Bank", string.Format("restocked %1", vaultId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hauls left in stock; negative when the target is not limited.
+	static int GetStock(string vaultId)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+			return -1;
+
+		RefillStock(vault, 0);
+		return vault.m_iStock;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -269,6 +298,28 @@ class LF_Bank
 			return null;
 
 		return GetGame().GetWorld().FindEntityByID(vault.m_aLooseBags[index]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Restores kits to stock, one per refill interval. extraSeconds is test time.
+	protected static void RefillStock(LF_BankVaultState vault, float extraSeconds)
+	{
+		if (vault.m_iStock < 0 || vault.m_fRefillSeconds <= 0)
+			return;
+
+		float now = NowSeconds();
+		float elapsed = vault.m_fRefillAdvanced + extraSeconds;
+		if (now >= vault.m_fRefillSampledAt)
+			elapsed = elapsed + (now - vault.m_fRefillSampledAt);
+
+		int steps = (int)(elapsed / vault.m_fRefillSeconds);
+		vault.m_fRefillSampledAt = now;
+		vault.m_fRefillAdvanced = elapsed - steps * vault.m_fRefillSeconds;
+		if (steps <= 0 || vault.m_iStock >= vault.m_iStockMax)
+			return;
+
+		vault.m_iStock = Math.Min(vault.m_iStockMax, vault.m_iStock + steps);
+		LF_Debug.Info("Bank", string.Format("%1 refilled to %2 of %3", vault.m_sVaultId, vault.m_iStock, vault.m_iStockMax));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -307,6 +358,16 @@ class LF_Bank
 			{
 				toolItem = drills[0];
 				return TOOL_DRILL;
+			}
+		}
+
+		if (tools.Find(TOOL_KEYCARD) != -1)
+		{
+			array<IEntity> cards = LF_InventoryUtils.FindItemsByPrefab(inventory, KEYCARD_PREFAB);
+			if (!cards.IsEmpty())
+			{
+				toolItem = cards[0];
+				return TOOL_KEYCARD;
 			}
 		}
 
@@ -520,6 +581,9 @@ class LF_Bank
 
 		string serial = SerialOf(toolItem);
 		IEntity charger = robber;
+		if (tool == TOOL_KEYCARD)
+			charger = null;
+
 		if (tool == TOOL_DRILL)
 		{
 			charger = null;
@@ -534,7 +598,7 @@ class LF_Bank
 				if (jamOffence.IsEmpty())
 					jamOffence = LF_WantedReports.OFFENCE_BREAK_IN;
 
-				LF_Dispatch.Report(playerUid, robber, jamOffence, VaultOrigin(vaultId));
+				LF_Dispatch.Report(playerUid, robber, jamOffence, VaultOrigin(vaultId), -1, LF_Breach.IsLoud(vaultId));
 				LeaveTool(vaultId, robber, toolItem);
 				LF_Debug.Info("Bank", string.Format("drill jammed on %1 (serial %2)", vaultId, serial));
 				LF_EventBus.Publish(LF_OnVaultBreach.Create(playerUid, vaultId, tool, serial, "jammed"));
@@ -582,6 +646,8 @@ class LF_Bank
 
 		if (vault.m_bCooldownRunning)
 			vault.m_fAdvancedSeconds = vault.m_fAdvancedSeconds + elapsedSeconds;
+
+		RefillStock(vault, elapsedSeconds);
 
 		bool open = LF_Breach.Advance(vaultId, elapsedSeconds);
 		if (vault.m_bSpawnPending && open)
@@ -689,6 +755,10 @@ class LF_Bank
 		if (vault.m_bCooldownRunning && CooldownBlocks(vault.m_fCooldownSeconds, ElapsedSeconds(vault)))
 			return "#EL-Bank_Cooldown";
 
+		RefillStock(vault, 0);
+		if (vault.m_iStock == 0)
+			return "#LF-Heist_Empty";
+
 		if (!LF_Breach.CanArm(vaultId))
 			return "#EL-Breach_AlreadyOpen";
 
@@ -754,6 +824,13 @@ class LF_Bank
 			return false;
 		}
 
+		RefillStock(vault, 0);
+		if (vault.m_iStock == 0)
+		{
+			LF_Debug.Log("Bank", string.Format("rob refused: %1 is out of stock", vault.m_sVaultId));
+			return false;
+		}
+
 		return true;
 	}
 
@@ -788,7 +865,8 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The heist haul (#274): physical money bags at the target and one LF_OnHeistLoot on the bus.
+	//! The heist haul (#274, #275): physical bags or serial-stamped weapons at the target, one stock
+	//! kit used, one LF_OnHeistLoot on the bus.
 	protected static void PayHeist(LF_BankVaultState vault, int bagCount)
 	{
 		if (vault.m_sLootKind.IsEmpty())
@@ -796,6 +874,7 @@ class LF_Bank
 
 		IEntity target = GetGame().GetWorld().FindEntityByName(vault.m_sVaultId);
 		int amount = 0;
+		string serials = "";
 		if (vault.m_sLootKind == LF_BankLoot.KIND_BAGS)
 		{
 			array<IEntity> bags = LF_BankLoot.SpillBags(target, vault.m_vLooterAt, bagCount, vault.m_iCashPerBag);
@@ -805,9 +884,20 @@ class LF_Bank
 				amount = amount + vault.m_iCashPerBag;
 			}
 		}
+		else if (vault.m_sLootKind == LF_BankLoot.KIND_WEAPONS)
+		{
+			array<IEntity> weapons = LF_BankLoot.IssueWeapons(target, vault.m_vLooterAt, vault.m_sLoot, vault.m_sLooterUid, serials);
+			foreach (IEntity weapon : weapons)
+				vault.m_aLooseBags.Insert(weapon.GetID());
 
-		LF_Debug.Info("Bank", string.Format("heist %1 paid %2 %3 to %4", vault.m_sVaultId, amount, vault.m_sLootKind, vault.m_sLooterUid));
-		LF_EventBus.Publish(LF_OnHeistLoot.Create(vault.m_sLooterUid, vault.m_sVaultId, vault.m_sLootKind, amount, ""));
+			amount = weapons.Count();
+		}
+
+		if (vault.m_iStock > 0)
+			vault.m_iStock = vault.m_iStock - 1;
+
+		LF_Debug.Info("Bank", string.Format("heist %1 paid %2 %3 to %4 serials=[%5] stock=%6", vault.m_sVaultId, amount, vault.m_sLootKind, vault.m_sLooterUid, serials, vault.m_iStock));
+		LF_EventBus.Publish(LF_OnHeistLoot.Create(vault.m_sLooterUid, vault.m_sVaultId, vault.m_sLootKind, amount, serials));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,7 @@
+GenericEntity : "{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et" {
+ ID "D8E77B5F5CE602B7"
+ components {
+  LF_SerialComponent "{5BE9D756C52FE027}" {
+  }
+ }
+}
