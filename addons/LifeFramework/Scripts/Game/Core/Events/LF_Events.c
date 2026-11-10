@@ -484,3 +484,44 @@ class LF_OnVaultBreach : LF_Event
 		return e;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! A player woke in hospital after a real death and got the New Life Rule wristband (#264).
+//! Published by LF_NewLifeRule. A revive never publishes it. m_vScene is where they died.
+class LF_OnNewLifeWristband : LF_Event
+{
+	string m_sPlayerUid;
+	int m_iMinutes;
+	vector m_vScene;
+
+	static LF_OnNewLifeWristband Create(string playerUid, int minutes, vector scene)
+	{
+		LF_OnNewLifeWristband e = new LF_OnNewLifeWristband();
+		e.m_sPlayerUid = playerUid;
+		e.m_iMinutes = minutes;
+		e.m_vScene = scene;
+		return e;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A wristband wearer came back near their death scene inside the window (#264). Published once
+//! per wristband by LF_NewLifeRule; the incident log records it (kind "nlr"). Nothing blocks them.
+class LF_OnNewLifeReturn : LF_Event
+{
+	string m_sPlayerUid;
+	//! Where the player is now.
+	vector m_vPosition;
+	vector m_vScene;
+	int m_iSecondsSinceWake;
+
+	static LF_OnNewLifeReturn Create(string playerUid, vector position, vector scene, int secondsSinceWake)
+	{
+		LF_OnNewLifeReturn e = new LF_OnNewLifeReturn();
+		e.m_sPlayerUid = playerUid;
+		e.m_vPosition = position;
+		e.m_vScene = scene;
+		e.m_iSecondsSinceWake = secondsSinceWake;
+		return e;
+	}
+}

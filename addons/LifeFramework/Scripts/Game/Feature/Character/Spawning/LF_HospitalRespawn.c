@@ -67,6 +67,7 @@ class LF_HospitalRespawn
 		s_mPendingWake = null;
 		s_mWokeInBed = null;
 		s_iBedCursor = 0;
+		LF_NewLifeRule.Reset();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -212,12 +213,11 @@ class LF_HospitalRespawn
 
 		LF_RespawnConfig config = LF_RespawnConfig.Get();
 		int amount = 0;
-		int minutes = 0;
+		int minutes = LF_MedicConfig.Get().m_iNewLifeMinutes;
 		int loiterType = 0;
 		if (config)
 		{
 			amount = config.m_iBillAmount;
-			minutes = config.m_iNewLifeMinutes;
 			loiterType = config.m_iWakeLoiterType;
 		}
 
@@ -231,6 +231,9 @@ class LF_HospitalRespawn
 			number = bill.m_iNumber;
 			LF_HospitalBill.Grant(character, bill, minutes);
 		}
+
+		// A real death (a pending wake) is the only way here, so this is the New Life wristband.
+		LF_NewLifeRule.Issue(uid, character);
 
 		if (!inBed)
 			loiterType = 0;
