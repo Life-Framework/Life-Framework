@@ -67,6 +67,8 @@ class LF_BankVaultState : Managed
 	int m_iCashPerBag;
 	float m_fCooldownSeconds;
 	int m_iMinPolice;
+	string m_sTools;
+	float m_fJamChance;
 	bool m_bSpawnPending;
 	bool m_bCooldownRunning;
 	float m_fAdvancedSeconds;
@@ -81,6 +83,9 @@ class LF_Bank
 	static const ResourceName DOOR_PREFAB = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";
 	static const ResourceName SHELL_PREFAB = "{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et";
 	static const ResourceName CRATE_MESH = "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob";
+	static const ResourceName DRILL_PREFAB = "{4FF102B4CE9B0ED3}Prefabs/Items/Fence/LF_Drill.et";
+	static const string TOOL_DRILL = "drill";
+	static const string TOOL_CHARGE = "charge";
 
 	protected static ref map<string, ref LF_BankVaultState> s_mVaults;
 
@@ -169,6 +174,130 @@ class LF_Bank
 		vault.m_sBagEntity = bagEntity;
 		LF_Breach.Configure(vaultId, fuseSeconds, "");
 		LF_Debug.Log("Bank", string.Format("configured %1 bags=%2 cash=%3 cooldown=%4 police=%5", vaultId, bagCount, cashPerBag, cooldownSeconds, minPolice));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets the fence tools this vault needs (#273): a comma list of "drill" and "charge", any one
+	//! opens it. Empty means no tool is required. jamChance is the drill's chance (0..1) to jam.
+	static void ConfigureTools(string vaultId, string tools, float jamChance)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+		{
+			LF_Debug.Error("Bank", string.Format("tools refused: vault %1 is not configured", vaultId));
+			return;
+		}
+
+		vault.m_sTools = tools;
+		vault.m_fJamChance = jamChance;
+		LF_Debug.Log("Bank", string.Format("tools %1 tools=[%2] jam=%3", vaultId, tools, jamChance));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A roll in [0,1) jams the drill when it falls under the chance.
+	static bool Jams(float chance, float roll)
+	{
+		return roll < chance;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tool the robber would use on this vault: "drill", "charge", or "" for none. A drill wins
+	//! over a charge so the charge is kept. toolItem is the drill or fence charge found, if any.
+	static string PickTool(LF_BankVaultState vault, IEntity robber, out IEntity toolItem)
+	{
+		toolItem = null;
+		if (!vault || !robber)
+			return "";
+
+		array<string> tools = {};
+		vault.m_sTools.Split(",", tools, true);
+		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
+		if (!inventory)
+			return "";
+
+		if (tools.Find(TOOL_DRILL) != -1)
+		{
+			array<IEntity> drills = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
+			if (!drills.IsEmpty())
+			{
+				toolItem = drills[0];
+				return TOOL_DRILL;
+			}
+		}
+
+		if (tools.Find(TOOL_CHARGE) != -1 && LF_Breach.HasCharge(robber))
+		{
+			array<IEntity> charges = LF_InventoryUtils.FindItemsByPrefab(inventory, LF_Breach.FENCE_CHARGE_PREFAB);
+			if (!charges.IsEmpty())
+				toolItem = charges[0];
+
+			return TOOL_CHARGE;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Offer check: true when the robber holds a tool this vault accepts (or none is required).
+	static bool HasTool(string vaultId, IEntity robber)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault || vault.m_sTools.IsEmpty())
+			return true;
+
+		IEntity item;
+		return !PickTool(vault, robber, item).IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string SerialOf(IEntity item)
+	{
+		if (!item)
+			return "";
+
+		LF_SerialComponent serial = LF_SerialComponent.Cast(item.FindComponent(LF_SerialComponent));
+		if (!serial)
+			return "";
+
+		return serial.GetSerial();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static vector VaultOrigin(string vaultId)
+	{
+		if (!GetGame() || !GetGame().GetWorld())
+			return vector.Zero;
+
+		IEntity entity = GetGame().GetWorld().FindEntityByName(vaultId);
+		if (!entity)
+			return vector.Zero;
+
+		return entity.GetOrigin();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The drill stays at the vault. It leaves the robber's inventory, lies by the door, and the
+	//! scene evidence hook marks it for the officer to bag; its serial still names the buyer.
+	protected static void LeaveTool(string vaultId, IEntity robber, IEntity tool)
+	{
+		if (!tool || !robber)
+			return;
+
+		InventoryItemComponent itemComponent = InventoryItemComponent.Cast(tool.FindComponent(InventoryItemComponent));
+		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
+		if (itemComponent && itemComponent.GetParentSlot() && inventory)
+		{
+			if (!inventory.TryRemoveItemFromStorage(tool, itemComponent.GetParentSlot().GetStorage()))
+			{
+				LF_Debug.Error("Bank", string.Format("tool not left at %1: it would not leave the inventory", vaultId));
+				return;
+			}
+		}
+
+		vector origin = robber.GetOrigin();
+
+		tool.SetOrigin(origin + "0 0.1 0");
+		LF_Evidence.OnDropped(tool, System.GetTickCount());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -265,7 +394,7 @@ class LF_Bank
 	//! Arms the vault for playerUid when the robbery gates pass, then spawns the
 	//! configured bags once the lock is open. Returns false when a gate refuses,
 	//! the breach does not arm, or the vault is not configured.
-	static bool Rob(string vaultId, string playerUid, IEntity robber = null)
+	static bool Rob(string vaultId, string playerUid, IEntity robber = null, float jamRoll = -1)
 	{
 		if (vaultId.IsEmpty() || playerUid.IsEmpty())
 		{
@@ -283,11 +412,56 @@ class LF_Bank
 		if (!GatesPass(vault, playerUid))
 			return false;
 
-		if (!LF_Breach.Arm(vaultId, playerUid, robber))
+		// A player-driven rob needs one of the vault's fence tools. A script-driven rob (no robber
+		// entity: tests, events) skips the check, as Arm skips the charge.
+		string tool = "";
+		IEntity toolItem = null;
+		if (robber && !vault.m_sTools.IsEmpty())
+		{
+			tool = PickTool(vault, robber, toolItem);
+			if (tool.IsEmpty())
+			{
+				LF_Debug.Warn("Bank", string.Format("rob refused: %1 carries none of the tools [%2] for %3", playerUid, vault.m_sTools, vaultId));
+				LF_EventBus.Publish(LF_OnVaultBreach.Create(playerUid, vaultId, "", "", "refused"));
+				return false;
+			}
+		}
+
+		string serial = SerialOf(toolItem);
+		IEntity charger = robber;
+		if (tool == TOOL_DRILL)
+		{
+			charger = null;
+			float roll = jamRoll;
+			if (roll < 0)
+				roll = Math.RandomFloat01();
+
+			if (Jams(vault.m_fJamChance, roll))
+			{
+				// The bit snaps: the noise is reported and the drill stays in the wall.
+				LF_Dispatch.Report(playerUid, robber, LF_WantedReports.OFFENCE_BREAK_IN, VaultOrigin(vaultId));
+				LeaveTool(vaultId, robber, toolItem);
+				LF_Debug.Info("Bank", string.Format("drill jammed on %1 (serial %2)", vaultId, serial));
+				LF_EventBus.Publish(LF_OnVaultBreach.Create(playerUid, vaultId, tool, serial, "jammed"));
+				return false;
+			}
+		}
+
+		if (!LF_Breach.Arm(vaultId, playerUid, charger, robber))
 		{
 			LF_Debug.Log("Bank", string.Format("rob refused: breach did not arm %1", vaultId));
 			return false;
 		}
+
+		if (tool == TOOL_DRILL)
+			LeaveTool(vaultId, robber, toolItem);
+
+		if (!tool.IsEmpty())
+		{
+			LF_Debug.Info("Bank", string.Format("%1 breached %2 with a %3 (serial %4)", playerUid, vaultId, tool, serial));
+			LF_EventBus.Publish(LF_OnVaultBreach.Create(playerUid, vaultId, tool, serial, "opened"));
+		}
+
 
 		if (LF_Breach.IsLocked(vaultId))
 		{
@@ -397,7 +571,7 @@ class LF_Bank
 	//------------------------------------------------------------------------------------------------
 	//! Offer check. Does not arm, does not spawn, and does not raise wanted.
 	//! Empty when the player may rob. Otherwise a localization key.
-	static string GateReason(string vaultId, string playerUid)
+	static string GateReason(string vaultId, string playerUid, IEntity robber = null)
 	{
 		if (vaultId.IsEmpty() || playerUid.IsEmpty())
 			return "#EL-Bank_NotReady";
@@ -422,6 +596,9 @@ class LF_Bank
 
 		if (!LF_Breach.CanArm(vaultId))
 			return "#EL-Breach_AlreadyOpen";
+
+		if (robber && !HasTool(vaultId, robber))
+			return "#LF-Bank_NeedTool";
 
 		return "";
 	}

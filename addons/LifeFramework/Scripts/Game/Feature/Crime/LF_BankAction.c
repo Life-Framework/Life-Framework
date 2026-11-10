@@ -20,7 +20,7 @@ class LF_BankRobAction : ScriptedUserAction
 			return false;
 		}
 
-		string reason = LF_Bank.GateReason(vault.GetVaultId(), LF_Utils.GetPlayerUid(user));
+		string reason = LF_Bank.GateReason(vault.GetVaultId(), LF_Utils.GetPlayerUid(user), user);
 		if (!reason.IsEmpty())
 		{
 			SetCannotPerformReason(reason);

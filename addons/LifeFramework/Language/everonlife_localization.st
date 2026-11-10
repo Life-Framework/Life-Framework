@@ -5767,6 +5767,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Admin action"
      Comment "Incident kind: an administrator or Game Master did something (teleport, heal, kick, whitelist...)."
     }
+    CustomStringTableItem "{824451A6C3821C83}" {
+     Id "LF-Item_Scanner_Name"
+     Target_en_us "Police scanner"
+     Comment "Item name of the fence police scanner (#253)."
+    }
+    CustomStringTableItem "{C387085823DBA47D}" {
+     Id "LF-Item_Scanner_Description"
+     Target_en_us "Listens in on police and medic calls. Receives only. Illegal: an officer who finds it takes it and files a charge."
+     Comment "Item description of the police scanner."
+    }
+    CustomStringTableItem "{3696651FF2025033}" {
+     Id "LF-Offence_Scanner"
+     Target_en_us "Carrying a police scanner"
+     Comment "Offence: a scanner found on a search (#253)."
+    }
+    CustomStringTableItem "{4A5D20C00F349F20}" {
+     Id "LF-Scanner_Title"
+     Target_en_us "Scanner"
+     Comment "Toast title for a scanner."
+    }
+    CustomStringTableItem "{59E2E4A1484842B5}" {
+     Id "LF-Scanner_Heard"
+     Target_en_us "Heard on the scanner: %1"
+     Comment "Toast when a scanner hears a service call; %1 is the call summary."
+    }
     CustomStringTableItem "{46C33D356FF6A97D}" {
      Id "LF-Witness_Title"
      Target_en_us "Witness"
@@ -5907,36 +5932,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They are not down."
      Comment "Carry refusal: the target is not downed."
     }
-    CustomStringTableItem "{7A30C5E1D49B6B01}" {
-     Id "LF-Revive_NoItem"
-     Target_en_us "You need a field dressing to revive someone."
-     Comment "Revive refusal: the medic has none of the configured revive item."
-    }
-    CustomStringTableItem "{824451A6C3821C83}" {
-     Id "LF-Item_Scanner_Name"
-     Target_en_us "Police scanner"
-     Comment "Item name of the fence police scanner (#253)."
-    }
-    CustomStringTableItem "{C387085823DBA47D}" {
-     Id "LF-Item_Scanner_Description"
-     Target_en_us "Listens in on police and medic calls. Receives only. Illegal: an officer who finds it takes it and files a charge."
-     Comment "Item description of the police scanner."
-    }
-    CustomStringTableItem "{3696651FF2025033}" {
-     Id "LF-Offence_Scanner"
-     Target_en_us "Carrying a police scanner"
-     Comment "Offence: a scanner found on a search (#253)."
-    }
-    CustomStringTableItem "{4A5D20C00F349F20}" {
-     Id "LF-Scanner_Title"
-     Target_en_us "Scanner"
-     Comment "Toast title for a scanner."
-    }
-    CustomStringTableItem "{59E2E4A1484842B5}" {
-     Id "LF-Scanner_Heard"
-     Target_en_us "Heard on the scanner: %1"
-     Comment "Toast when a scanner hears a service call; %1 is the call summary."
-    }
     CustomStringTableItem "{CDE539EBECEAEB35}" {
      Id "LF-Witness_Ask"
      Target_en_us "Ask what you saw"
@@ -6046,6 +6041,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Payphone_Summary_Taxi"
      Target_en_us "Cab wanted"
      Comment "Summary the taxi pager and board show for a call from the payphone."
+    }
+    CustomStringTableItem "{7A30C5E1D49B6B01}" {
+     Id "LF-Revive_NoItem"
+     Target_en_us "You need a field dressing to revive someone."
+     Comment "Revive refusal: the medic has none of the configured revive item."
+    }
+    CustomStringTableItem "{A27300000000BA01}" {
+     Id "LF-Bank_NeedTool"
+     Target_en_us "The vault needs a drill or a charge"
+     Comment "Vault robbery refused: the robber carries none of the vault's fence tools (#273)"
     }
   }
  }

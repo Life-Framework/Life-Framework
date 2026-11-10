@@ -24,6 +24,7 @@ GenericEntity Roadmap_Bank_Vault : "{99D61E9EDBDF3CC8}Prefabs/Structures/Buildin
   LF_BankVaultComponent "{7C31A9E04B18D6A4}" {
    m_sVaultId "Roadmap_Bank_Vault"
    m_sBagEntity "Roadmap_Bank_Bag"
+   m_fJamChance 0
    m_iBagCount 1
    m_iCashPerBag 500
    m_fCooldownSeconds 60
