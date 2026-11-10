@@ -36,8 +36,8 @@ coordinates; `Assets/Vehicles/EmergencyLightsKnob/` and
 
 `LF_SirenManagerComponent.ApplyRequest` is the one server rule (`LF_SirenRules.Judge`): out-of-range, repeated and
 faster-than-300 ms requests are refused, so a toggle replicates once per change. Service vehicles: the police
-jeep at the station and `LF_M997_Ambulance.et` (red `LightBarLED_Red.et`) at the hospital. Not done: an on-duty
-gate on who may run the siren.
+jeep at the station and `LF_M997_Ambulance.et` (red `LightBarLED_Red.et`) at the hospital. On duty only (#464): `RequestBy` also requires the pilot to be on duty
+for the vehicle's `m_eService` (police or medic); anyone else is refused and logged.
 
 ## Dependencies
 

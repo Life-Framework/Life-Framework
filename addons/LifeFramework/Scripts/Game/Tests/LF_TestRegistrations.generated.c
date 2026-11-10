@@ -32,6 +32,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ATMManagerGuards(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankApplySnapshot(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BedDelivery(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_BillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BleedOutRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CarriedInventoryRoundtrip(), LF_TestTier.PERSISTENCE);
@@ -47,6 +48,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChainStationsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ChainTrace(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChopShopWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterLocalOnly(), LF_TestTier.WORLD);
@@ -266,6 +269,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SignNext(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignPrefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Siren(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SirenDuty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenMode(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenToggle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);

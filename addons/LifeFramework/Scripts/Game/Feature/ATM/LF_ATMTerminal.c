@@ -104,6 +104,7 @@ class LF_ATMTerminal
 		string unknown = WidgetManager.Translate("#LF-ATM_Unknown");
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Balance", WidgetManager.Translate("#LF-ATM_LineBalance", unknown)));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Cash", WidgetManager.Translate("#LF-ATM_LineCash", unknown)));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Debt", ""));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Entry", EntryText(0)));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Status", "#LF-ATM_Prompt"));
 		parts.Insert(Keys("Keys1", "Key1Button,Key2Button,Key3Button", "1,2,3"));
@@ -249,7 +250,7 @@ class LF_ATMTerminal
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: the server's answer to a deposit or withdraw.
-	static void OnResult(bool deposit, LF_EATMRefusal reason, int amount, int balance, int cash)
+	static void OnResult(bool deposit, LF_EATMRefusal reason, int amount, int balance, int cash, int debt)
 	{
 		if (!s_Current)
 		{
@@ -257,25 +258,25 @@ class LF_ATMTerminal
 			return;
 		}
 
-		s_Current.ApplyResult(deposit, reason, amount, balance, cash);
+		s_Current.ApplyResult(deposit, reason, amount, balance, cash, debt);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: the balance and carried cash when the terminal opens.
-	static void OnBalance(int balance, int cash)
+	static void OnBalance(int balance, int cash, int debt)
 	{
 		if (s_Current)
-			s_Current.ApplyFigures(balance, cash);
+			s_Current.ApplyFigures(balance, cash, debt);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void ApplyResult(bool deposit, LF_EATMRefusal reason, int amount, int balance, int cash)
+	protected void ApplyResult(bool deposit, LF_EATMRefusal reason, int amount, int balance, int cash, int debt)
 	{
 		m_bWaiting = false;
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(ReplyTimedOut);
 
-		ApplyFigures(balance, cash);
+		ApplyFigures(balance, cash, debt);
 		if (reason != LF_EATMRefusal.NONE)
 		{
 			Refuse(reason);
@@ -300,7 +301,7 @@ class LF_ATMTerminal
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void ApplyFigures(int balance, int cash)
+	protected void ApplyFigures(int balance, int cash, int debt)
 	{
 		m_iBalance = balance;
 		m_iCash = cash;
@@ -313,6 +314,12 @@ class LF_ATMTerminal
 			cashText = LF_MoneyFormat.FormatMoney(cash);
 
 		m_Screen.SetLine("Cash", WidgetManager.Translate("#LF-ATM_LineCash", cashText));
+		// Unpaid hospital bills past their deadline (#464); blank while nothing is owed.
+		string debtText;
+		if (debt > 0)
+			debtText = WidgetManager.Translate("#LF-ATM_LineDebt", LF_MoneyFormat.FormatMoney(debt));
+
+		m_Screen.SetLine("Debt", debtText);
 	}
 
 	//------------------------------------------------------------------------------------------------

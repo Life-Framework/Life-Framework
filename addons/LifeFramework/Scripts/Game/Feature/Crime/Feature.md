@@ -105,6 +105,12 @@ isn't today — see current state).
 - Hotwire success: `SetHotwiredBy(playerId)` plus `SetStolen(true)` on the lock, and an `#LF-Offence_VehicleTheft` report. Nothing is saved.
 - Test `lockpick/vehicle`, `e2e/lockpick-vehicle`; proof `session.mjs hotwire-proof`. Log `[LFDebug:Hotwire]`.
 
+## Chop shop (#415)
+
+- `LF_ChopShopComponent` (a bench) with `LF_ChopAction` in three modes (load, work, collect), `LF_StationProgress` for the work. `LF_ChopShopRules` is the pure rule set (payout, check, cooldown); `LF_ChopShopConfig` reads `Configs/Crime/LF_ChopShop.conf`.
+- Collect: cash through `LF_MoneyUtils.AddCash` (`chopshop`), `LF_CarParts` items, `LF_StolenVehicles.Clear`, `LF_VehicleOwnership.Scrap`, the effect (`LF_BroadcastChopEffect`, a local particle on every rendering machine), then `LF_WantedReports.Report(... OFFENCE_CHOP)` for the evidence and `LF_OnVehicleChopped`.
+- Session state; test `chopshop/payout`, `e2e/chopshop-yard`; proof `session.mjs chop-proof`. Log `[LFDebug:ChopShop]`.
+
 ## Stolen vehicles (#414)
 
 - `LF_StolenVehicles` (server, session state, nothing saved: the car entity does not survive a restart, an owned car left out is impounded at load). `Report(vehicle, owner)` files an `LF_StolenReport` when the reporter owns the vehicle record and the lock carries the stolen flag; `CheckPlate(plate, out report)` is the plate-check seam (STOLEN only from a filed report; CLEAR for a registered plate; UNKNOWN otherwise) that stops and searches (#419) call; `Recover(vehicle, officer)` stores the car in the owner's garage (`LF_VehicleOwnership.Store`); `Clear(vehicleId, how)` closes a report when the car leaves another way (the chop shop).
