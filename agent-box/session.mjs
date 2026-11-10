@@ -1221,6 +1221,65 @@ async function runMedicProof() {
   return fails.length ? 1 : 0;
 }
 
+// M2 #263 on a running `up --clients 2` session (debug mission: the dev gate is open): client 1 turns
+// the hospital ambulance's siren on through the same rule the driver's key uses, client 2 (a second
+// machine) must see and hear the change arrive by replication; then off. Screenshots: lights off,
+// lights on from both clients. Replication is read from client 2's own log line.
+async function runSirenProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const fails = [];
+  const vehicles = [
+    { name: "Roadmap_Hospital_Ambulance", at: [266, 1.2, 250], label: "ambulance" },
+    { name: "Roadmap_Police_Car", at: [240, 1.0, 246], label: "police" },
+  ];
+  const view = (n, v, tag) => on(n, { verb: "capture", mode: "world", name: `m2_263_${v.label}_${tag}_client${n}`, x: v.at[0], y: v.at[1], z: v.at[2], ox: 5, oy: 2.5, oz: -6 }, 25000);
+
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  for (const v of vehicles) {
+    on(1, { verb: "stand", entityName: v.name });
+    wait(2500);
+    view(1, v, "off");
+    const onR = on(1, { verb: "siren", entityName: v.name, mode: 1 }, 10000);
+    if (!onR.detail.includes("changed=1 on=1 broadcasts=1")) fails.push(`${v.label} siren on: ${onR.status} ${onR.detail}`);
+    wait(2500);
+    view(1, v, "on_a");
+    wait(400);
+    view(2, v, "on_b");
+    const again = on(1, { verb: "siren", entityName: v.name, mode: 1 }, 10000);
+    if (!again.detail.includes("changed=0")) fails.push(`${v.label} the same mode asked twice changed again: ${again.detail}`);
+    const offR = on(1, { verb: "siren", entityName: v.name, mode: 0 }, 10000);
+    if (!offR.detail.includes("changed=1 on=0 broadcasts=2")) fails.push(`${v.label} siren off: ${offR.status} ${offR.detail}`);
+    wait(1500);
+  }
+
+  // Replication: client 2 saw both vehicles change (its own log carries the mode line once per change).
+  const logs = [];
+  const clientDir = join(dir, "client2", "logs");
+  if (existsSync(clientDir)) {
+    for (const d of readdirSync(clientDir).sort()) {
+      const p = join(clientDir, d, "console.log");
+      if (existsSync(p)) logs.push(readFileSync(p, "utf8"));
+    }
+  }
+  const text = logs.join("\n");
+  const modeLines = (text.match(/Siren\]? mode -> /g) ?? []).length;
+  console.log(`client 2 siren mode lines: ${modeLines}`);
+  if (modeLines < 4) fails.push(`client 2 logged ${modeLines} siren mode changes, expected at least 4 (on and off for two vehicles)`);
+
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "siren proof: FAIL" : "siren proof: PASS (ambulance and police car: siren on and off replicated to client 2, a repeated request changes nothing)");
+  return fails.length ? 1 : 0;
+}
+
 // M2 #252 on a running `up --clients 2` session: client 2 clocks in at the hospital desk and its
 // own client reads a radio on the medic frequency (the replicated tuning); client 1, a civilian,
 // carries no radio. A shot of client 2 after clock-in.
@@ -1803,6 +1862,7 @@ async function main(argv) {
   if (cmd === "downed-proof") return runDownedProof();
   if (cmd === "carry-proof") return runCarryProof();
   if (cmd === "medic-proof") return runMedicProof();
+  if (cmd === "siren-proof") return runSirenProof();
   if (cmd === "radio-proof") return runRadioProof();
   if (cmd === "scanner-proof") return runScannerProof();
   if (cmd === "roster") {
@@ -1825,7 +1885,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|radio-proof|scanner-proof|dispatch-proof|witness-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|medic-proof|siren-proof|radio-proof|scanner-proof|dispatch-proof|witness-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 

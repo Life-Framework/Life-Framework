@@ -120,6 +120,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "giveup") {
     return `${id} giveup`;
   }
+  if (spec.verb === "siren") {
+    return `${id} siren ${token(spec.entityName, "entity")} ${Number(spec.mode)}`;
+  }
   if (spec.verb === "scanner") {
     return `${id} scanner`;
   }

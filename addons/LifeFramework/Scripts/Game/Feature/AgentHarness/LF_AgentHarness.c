@@ -132,6 +132,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "shoot")
 			return ParseShoot(parts, cmd);
+		if (cmd.Verb == "siren")
+			return ParseSiren(parts, cmd);
 		if (cmd.Verb == "ui")
 			return ParseUi(parts, cmd);
 		if (cmd.Verb == "click")
@@ -380,6 +382,21 @@ class LF_AgentCommand
 				return false;
 		}
 
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `siren <EntityName> <mode>`: mode is an index into the vehicle's siren modes (0 is off).
+	protected static bool ParseSiren(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 4 || !IsClassToken(parts[2]))
+		{
+			cmd.Error = "need_entity_and_mode";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
+		cmd.Arg2 = parts[3];
 		return true;
 	}
 
@@ -893,6 +910,11 @@ class LF_AgentHarness
 			DoShoot(cmd);
 			return;
 		}
+		if (cmd.Verb == "siren")
+		{
+			DoSiren(cmd);
+			return;
+		}
 		if (cmd.Verb == "ui")
 		{
 			DoUi(cmd);
@@ -1099,6 +1121,21 @@ class LF_AgentHarness
 		}
 
 		character.LF_AskHarnessShoot(cmd.Id, cmd.Arg1.ToInt());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `siren <EntityName> <mode>` (dev gate): the server sets the named vehicle's siren mode
+	//! through the same rule the driver's key uses (LF_SirenManagerComponent.ApplyRequest).
+	protected static void DoSiren(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.LF_AskHarnessSiren(cmd.Id, cmd.Arg1, cmd.Arg2.ToInt());
 	}
 
 	//------------------------------------------------------------------------------------------------

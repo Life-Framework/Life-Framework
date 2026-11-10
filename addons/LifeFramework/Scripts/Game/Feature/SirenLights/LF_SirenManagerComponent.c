@@ -18,6 +18,10 @@ class LF_SirenManagerComponent : ScriptComponent
 	protected ref LF_SirenMode m_CurrentMode;
 	// For JIPs in MP
 	protected int m_CurrentModeIndex;
+	// Server throttle state: world time of the last accepted change, and how many were broadcast.
+	protected int m_iLastChangeMs;
+	protected bool m_bHasChanged;
+	protected int m_iBroadcasts;
 
 	protected LF_SirenKnobComponent m_Knob;
 	protected SignalsManagerComponent m_KnobSigComp;
@@ -111,12 +115,50 @@ class LF_SirenManagerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Authority_Method(int mode)
 	{
-		if (!m_Modes) return;
-		if (mode < 0 || mode >= m_Modes.GetModes().Count()) return;
+		ApplyRequest(mode, GetGame().GetWorld().GetWorldTime());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one toggle request. A mode that is out of range, equal to the current one, or asked for
+	//! within MIN_TOGGLE_MS of the last accepted change is refused and nothing is broadcast, so a held
+	//! or spammed key replicates once per change (#263).
+	//! \param nowMs World time of the request.
+	//! \return True when the mode changed and was broadcast.
+	bool ApplyRequest(int mode, int nowMs)
+	{
+		int count = 0;
+		if (m_Modes)
+			count = m_Modes.GetModes().Count();
+
+		LF_ESirenRequest verdict = LF_SirenRules.Judge(mode, count, m_CurrentModeIndex, nowMs, m_iLastChangeMs, m_bHasChanged);
+		if (verdict != LF_ESirenRequest.ACCEPT)
+		{
+			LF_Debug.Info("Siren", string.Format("toggle to mode %1 refused: %2", mode, typename.EnumToString(LF_ESirenRequest, verdict)));
+			return false;
+		}
 
 		m_CurrentModeIndex = mode;
+		m_iLastChangeMs = nowMs;
+		m_bHasChanged = true;
+		m_iBroadcasts++;
 		SetMode();
 		Rpc(RpcDoBroadcast, mode);
+		LF_Debug.Info("Siren", string.Format("mode %1 broadcast (change #%2)", mode, m_iBroadcasts));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mode changes this vehicle has broadcast since it spawned (server).
+	int GetBroadcastCount()
+	{
+		return m_iBroadcasts;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while a mode other than "default" (siren and lights off) is running.
+	bool IsOn()
+	{
+		return m_CurrentMode && m_CurrentMode.GetName() != "default";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -229,7 +271,7 @@ class LF_SirenManagerComponent : ScriptComponent
 		string modeName = "<none>";
 		if (mode)
 			modeName = mode.GetName();
-		LF_Debug.Log("Siren", string.Format("mode -> %1 (index %2)", modeName, m_CurrentModeIndex));
+		LF_Debug.Info("Siren", string.Format("mode -> %1 (index %2)", modeName, m_CurrentModeIndex));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -479,5 +521,36 @@ class LF_SirenModes
 		}
 		if (i < m_Modes.Count()) return i;
 		return -1;
+	}
+}
+//------------------------------------------------------------------------------------------------
+enum LF_ESirenRequest
+{
+	ACCEPT,
+	INVALID,
+	SAME,
+	TOO_FAST
+}
+
+//------------------------------------------------------------------------------------------------
+//! Pure rule for a siren toggle request, shared by the server handler and LOGIC tests.
+class LF_SirenRules
+{
+	//! Shortest time between two accepted changes on one vehicle.
+	static const int MIN_TOGGLE_MS = 300;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_ESirenRequest Judge(int mode, int modeCount, int current, int nowMs, int lastChangeMs, bool hasChanged)
+	{
+		if (mode < 0 || mode >= modeCount)
+			return LF_ESirenRequest.INVALID;
+
+		if (mode == current)
+			return LF_ESirenRequest.SAME;
+
+		if (hasChanged && nowMs - lastChangeMs < MIN_TOGGLE_MS)
+			return LF_ESirenRequest.TOO_FAST;
+
+		return LF_ESirenRequest.ACCEPT;
 	}
 }
