@@ -49,9 +49,9 @@ class LF_CashVanRoute
 }
 
 //------------------------------------------------------------------------------------------------
-//! Sits on the van's cash box (the heist target, a child of the van). Moves the van, which carries
-//! the box with it, to the next stop on the timer and restocks it there.
-[ComponentEditorProps(category: "LifeFramework/Feature/Crime", description: "Moves the parent cash van between stops on a schedule.")]
+//! Sits on the van's cash box (the heist target). Moves the van and the box with it to the next stop
+//! on the timer and restocks it there.
+[ComponentEditorProps(category: "LifeFramework/Feature/Crime", description: "Moves the cash van and its box between stops on a schedule.")]
 class LF_CashVanRouteComponentClass : ScriptComponentClass
 {
 }
@@ -67,6 +67,12 @@ class LF_CashVanRouteComponent : ScriptComponent
 
 	[Attribute("40", UIWidgets.Auto, desc: "The van does not move while a player is this close, in metres.")]
 	protected float m_fClearMetres;
+
+	[Attribute("Roadmap_Cash_Van", UIWidgets.EditBox, desc: "World entity name of the van. The box is its own entity, not a child: a replicated child under a replicated vehicle makes the client item table disagree with the server.")]
+	protected string m_sVanEntity;
+
+	[Attribute("0 0.55 -3", UIWidgets.Coords, desc: "Where the box sits on the van, in the van's local space. The box faces backwards.")]
+	protected vector m_vBoxOffset;
 
 	protected int m_iStop;
 
@@ -103,10 +109,10 @@ class LF_CashVanRouteComponent : ScriptComponent
 		if (!door)
 			return;
 
-		IEntity van = door.GetParent();
+		IEntity van = GetGame().GetWorld().FindEntityByName(m_sVanEntity);
 		if (!van)
 		{
-			LF_Debug.Error("Bank", "cash van route: the cash box is not on a van");
+			LF_Debug.Error("Bank", string.Format("cash van route: van %1 is not in the world", m_sVanEntity));
 			return;
 		}
 
@@ -133,6 +139,9 @@ class LF_CashVanRouteComponent : ScriptComponent
 		vector transform[4];
 		stop.GetWorldTransform(transform);
 		van.SetTransform(transform);
+		// The box rides on the rear: placed from the van's new pose, facing backwards.
+		door.SetOrigin(van.CoordToParent(m_vBoxOffset));
+		door.SetAngles(van.GetAngles() + Vector(0, 180, 0));
 		Physics physics = van.GetPhysics();
 		if (physics)
 		{

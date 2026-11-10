@@ -13,15 +13,13 @@ GenericEntity Roadmap_Cash_Stop_Fuel {
 GenericEntity Roadmap_Cash_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
  coords 192 0 247.5
  angleY 90
- {
-  GenericEntity Roadmap_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_CashVanBox.et" {
-   components {
-    LF_HeistVaultComponent "{6C2C6ED0D7BD0D97}" {
-     m_fJamChance 0
-    }
-   }
-   coords 0 0.55 -3
-   angleY 180
+}
+GenericEntity Roadmap_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_CashVanBox.et" {
+ components {
+  LF_HeistVaultComponent "{6C2C6ED0D7BD0D97}" {
+   m_fJamChance 0
   }
  }
+ coords 189 0.55 247.5
+ angleY 270
 }
