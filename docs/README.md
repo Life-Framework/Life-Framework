@@ -52,6 +52,9 @@ Feature design notes live beside their code under
 - [EveronLife forks](everonlife-forks.md) — upstream context and prior ports.
 - [Discord server](community/discord.md) — channels, roles, and moderation.
 - [Support and donations](community/support.md) — project costs and support settings.
+- [Discord onboarding](community/onboarding.md) and [the AI bot playbook](community/bot-playbook.md) — what a new member sees, and how the bot talks to people.
+- [Outreach kit](community/outreach/README.md) — one file per community, the [FAQ](community/outreach/faq.md), and the [tracker](community/outreach/tracker.md).
+- [Quorum sign-off](playtest/quorum.md) and the [playtest session playbook](playtest/session-playbook.md) — who confirms a feature, and how a session runs.
 
 The gameplay plan is maintained in `docs/roadmap/`; GitHub milestones and
 issues carry current scope status.
