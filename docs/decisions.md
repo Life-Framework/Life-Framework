@@ -664,3 +664,27 @@ release gates) does not run on a fixed capacity share. A pipeline starts when a
 milestone issue depends on it. The video pipeline (#390) goes first because it
 engages the community during development and feeds the M4 trailer (#317).
 Development work runs with `--priority low` so it never delays milestone issues.
+
+**2026-11-09 — The flagship opens by invitation, then to everyone.** M4 starts
+with an invite-only alpha drawn from the Discord and playtesters. The server
+opens to the public once several sessions reach the player target with no save
+loss and no blocking regression, and trial moderators are in place. Why: the
+first impression is permanent and staff are few. Issue #555.
+
+**2026-11-09 — The flagship wipes after each milestone during M4, then keeps
+progress from a declared date.** While milestone content (M5, M6) is still
+landing, a wipe follows each one, announced a session ahead and preceded by a
+backup. From a declared persistent launch date the save-compatibility rule for a
+major version applies and a wipe needs a save-format break. Why: early saves are
+test data, and a wipe is the honest way to start fresh around new systems. Issue
+#556.
+
+**2026-11-09 — First moderators are trial moderators from the playtesters.**
+Trusted playtesters get the moderator guide and the logged Game Master tools on
+probation, reviewed after a few sessions (#313). Why: the outline names staff
+burnout as the main risk, so recruit before the first public session.
+
+**2026-11-09 — PC-hosted sessions run ad hoc, announced on Discord.** No fixed
+weekly slot during the PC phase. Open: the notice period before a session; the
+24/7 trigger (sessions reaching the player target several times and donations
+covering a rented box) is unchanged.
