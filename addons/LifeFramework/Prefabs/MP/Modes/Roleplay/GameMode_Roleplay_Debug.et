@@ -64,6 +64,10 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
         m_rPrefab "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et"
         m_ePurpose PURPOSE_LOADOUT_PROXY
        }
+       LF_DefaultLoadoutItem "{5E1B7A02C4D93F86}" {
+        m_rPrefab "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et"
+        m_ePurpose PURPOSE_LOADOUT_PROXY
+       }
       }
       m_aDirectItems {
        "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
