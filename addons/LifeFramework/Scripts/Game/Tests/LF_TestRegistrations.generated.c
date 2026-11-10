@@ -281,6 +281,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SignCoverage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SignFaceClient(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignFaceFit(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SignImage(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignLocalization(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignMissingId(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignNext(), LF_TestTier.LOGIC);

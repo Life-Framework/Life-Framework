@@ -28,6 +28,7 @@ class LF_UITheme
 	static const string HEADING_LAYOUT = "{2EA91E6A335D2FCE}UI/Layouts/UIKit/LF_UIHeading.layout";
 	static const string RULE_LAYOUT = "{C200C3E91BC38F87}UI/Layouts/UIKit/LF_UIRule.layout";
 	static const string RICH_LAYOUT = "{7AA3823D51F36803}UI/Layouts/UIKit/LF_UIRich.layout";
+	static const string IMAGE_LAYOUT = "{E958415CA199CA4F}UI/Layouts/UIKit/LF_UIImage.layout";
 
 	static const int FONT_TITLE = 28;
 	static const int FONT_BODY = 18;
