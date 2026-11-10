@@ -20,7 +20,8 @@ several stations. No menus and no progress bars.
   Progress belongs to the station, so more hands finish it sooner. Stations with the same site id
   share one heat number (`LF_ChainSites`). A loaded station is saved by its station key (payload
   `chainstations`, save version 20).
-- **Trace (#418) and searches (#419)** read the site heat and the chain's goods.
+- **Trace (#418)** reads the site heat.
+- **Searches (#419).** A chain flagged `m_bContraband` makes its last step's outputs chain goods; `m_iBulk` is how bulky one unit is. An on-duty officer's search (`LF_ConfiscateAction` on a player, `LF_VehicleSearchAction` on a vehicle) rolls on the server: the chance grows with load (units x bulk), so bulky goods of harder tiers are harder to hide. A find seizes the goods and files `#LF-Offence_ChainGoods` through `LF_WantedReports.Report` (bus: `LF_OnCrimeCommitted`). A vehicle charges its occupants; #414 adds the plate's registered owner at `LF_ChainSearch.SuspectsOf`.
 
 ## Rules
 

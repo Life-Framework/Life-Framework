@@ -15,6 +15,14 @@ Vehicle : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
       Name "#EL-VehicleLock_Action"
      }
     }
+    LF_VehicleSearchAction "{5EA2C40100000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C40100000002}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
    }
   }
  }
