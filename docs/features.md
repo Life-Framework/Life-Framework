@@ -1860,6 +1860,7 @@
 ## Agent box
 
 ### `LF_AgentHarness` — `Feature/AgentHarness/`
+- ✅ (2026-11-10, #348) The `state` line also prints `jail=` (seconds left on a sentence), `garage=` (cars stored), `parked=` (plate of the car in the world) and `stash=` (items in `Roadmap_Hideout_Stash`, -1 with none placed). The verbs `stash` (moves an apple from the character into the stash: the member check in `CanStoreItem` decides) and `park` (sets the owner's car down beside `Roadmap_Garage`) stand in for an inventory drag and for driving; with `apples` they pass the harness gate of a `LF_HARNESS` build, so the playtest journey needs no debug menu. `agent-box/journey.mjs` runs the police and org-C steps and a wider restart check on 3 clients.
 - ✅ Dev-only. A rendering play session polls `$profile:agent-box/command.txt`.
   `press F` calls `SCR_InteractionHandlerComponent.ActionPerform`. Wheel scroll
   calls `ActionScroll`. `click` invokes the same button invoker or `OnClick` a

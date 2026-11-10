@@ -249,7 +249,18 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_HarnessScanner(int commandId, string tool)
 	{
-		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "scanner");
+		bool gateOpen;
+		if (tool == "stash" || tool == "park" || tool == "apples")
+		{
+			// The playtest journey (#348) has no debug menu: the harness build's own gate lets the
+			// stand-ins for dragging an item, driving a car and picking apples through.
+			gateOpen = LF_DevGate.CheckHarnessRequest(this, tool);
+		}
+		else
+		{
+			gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "scanner");
+		}
+
 		LF_ApplyHarnessScanner(commandId, gateOpen, tool);
 	}
 
@@ -267,6 +278,65 @@ modded class SCR_ChimeraCharacter
 			// Raw goods for the chain stations (#417): eight apples, two loads of the example chain.
 			int apples = LF_InventoryUtils.AddAmount(this, "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", 8);
 			LF_HarnessReply(commandId, "ok", string.Format("apples added=%1", apples));
+			return;
+		}
+
+		if (tool == "stash")
+		{
+			// Stands in for dragging an apple into the stash on the inventory screen (#348): the same
+			// move the screen asks of the server, so the member check in CanStoreItem decides.
+			IEntity stash = GetGame().GetWorld().FindEntityByName("Roadmap_Hideout_Stash");
+			BaseInventoryStorageComponent target;
+			if (stash)
+				target = LF_Component<LF_HideoutStashStorageComponent>.Find(stash);
+
+			InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(this);
+			if (!target || !manager)
+			{
+				LF_HarnessReply(commandId, "error", "no_stash");
+				return;
+			}
+
+			array<IEntity> apples = LF_InventoryUtils.FindItemsByPrefab(manager, "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et");
+			if (apples.IsEmpty())
+			{
+				LF_HarnessReply(commandId, "error", "no_apple");
+				return;
+			}
+
+			if (manager.TryMoveItemToStorage(apples[0], target))
+				LF_HarnessReply(commandId, "ok", "stash moved=1");
+			else
+				LF_HarnessReply(commandId, "ok", "stash moved=0");
+
+			return;
+		}
+
+		if (tool == "park")
+		{
+			// Stands in for driving the bought car to the garage (#348): the owner's car in the world
+			// is set down beside the Roadmap_Garage counter, where Store takes it.
+			string vehicleId = LF_VehicleOwnership.LatestInWorld(LF_Utils.GetPlayerUid(this));
+			IEntity vehicle = LF_VehicleOwnership.GetVehicle(vehicleId);
+			IEntity garage = GetGame().GetWorld().FindEntityByName("Roadmap_Garage");
+			if (!vehicle || !garage)
+			{
+				LF_HarnessReply(commandId, "error", "no_vehicle");
+				return;
+			}
+
+			vector spot = garage.GetOrigin() + "8 0 0";
+			spot[1] = GetGame().GetWorld().GetSurfaceY(spot[0], spot[2]) + 0.5;
+			vehicle.SetOrigin(spot);
+			vehicle.Update();
+			Physics physics = vehicle.GetPhysics();
+			if (physics)
+			{
+				physics.SetVelocity(vector.Zero);
+				physics.SetAngularVelocity(vector.Zero);
+			}
+
+			LF_HarnessReply(commandId, "ok", "park " + LF_VehicleOwnership.GetPlate(vehicleId));
 			return;
 		}
 
