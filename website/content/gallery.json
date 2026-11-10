@@ -78,6 +78,9 @@
     "area-9-fence/yard": "The yard from the south: the parked Skoda, tyres, Vince, his bench and the barrel",
     "area-10-cash-van/wide": "The cash van at the bank stop",
     "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open",
+    "area-15-chopshop/wide": "The walled chop shop yard from the south gate: engine crane, bench, jeep shell and tyres",
+    "area-15-chopshop/bench": "The tool bench with its vice against the north wall, a spare door and oil drums beside it",
+    "area-15-chopshop/shell": "The stripped jeep shell along the east wall, with the bench and a crate across the yard",
     "area-16-moonshine/wide": "The moonshine camp tucked under a stand of spruce: still, fire pit, pallet and a fence behind",
     "area-16-moonshine/still": "The still, a boiler tank with its furnace and stack, beside the mash barrels"
   },
@@ -88,6 +91,7 @@
     "area-7-hospital": "Hospital",
     "area-9-fence": "The fence",
     "area-10-cash-van": "Cash van route",
+    "area-15-chopshop": "Chop shop yard",
     "area-16-moonshine": "Moonshine camp"
   },
   "skip": [
