@@ -2,7 +2,11 @@
 
 The playtest is a small 1989 Everon town, published on the Arma Reforger
 Workshop and hosted from the maintainer's PC. Play it, then tell us what broke.
-Feedback goes through GitHub issues.
+Feedback goes to #playtest-feedback on [Discord](https://discord.gg/MjMexJteqz) or to a GitHub issue.
+
+The website page [life-framework.org/playtest](https://life-framework.org/playtest) has the current install
+steps. Until a public Workshop item exists, the addon is installed from a clone of this repository at the
+host's commit, and the Workshop steps below do not apply yet.
 
 ## Subscribe and join
 
