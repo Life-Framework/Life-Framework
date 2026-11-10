@@ -259,6 +259,11 @@ class LF_WorkAnimPlayer
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Owner side: workers whose loiter this machine already stopped, so a late start check does not call
+	//! a finished short job (a lagging machine) "not visible".
+	protected static ref array<EntityID> s_aStopped = {};
+
+	//------------------------------------------------------------------------------------------------
 	//! The loiter data for one kind of work: that kind's graph, driven by the Gestures variable (no command).
 	static SCR_LoiterCustomAnimData CreateAnimData(int kind)
 	{
@@ -292,6 +297,7 @@ class LF_WorkAnimPlayer
 			return;
 		}
 
+		s_aStopped.RemoveItem(character.GetID());
 		vector transform[4];
 		character.GetWorldTransform(transform);
 		controller.StartLoitering(null, ELoiteringType.CUSTOM, true, false, false, transform, true, CreateAnimData(kind));
@@ -308,6 +314,9 @@ class LF_WorkAnimPlayer
 			return;
 
 		controller.StopLoitering(true);
+		if (s_aStopped.Find(character.GetID()) == -1)
+			s_aStopped.Insert(character.GetID());
+
 		LF_Debug.Info(LF_WorkAnim.FEATURE, "work animation: loiter stopped on the owner of " + character.GetID());
 	}
 
@@ -331,6 +340,12 @@ class LF_WorkAnimPlayer
 		if (!start)
 		{
 			LF_Debug.Info(LF_WorkAnim.FEATURE, "work animation ended on " + character.GetID() + " (" + seen + ")");
+			return;
+		}
+
+		if (!loitering && s_aStopped.Find(character.GetID()) != -1)
+		{
+			LF_Debug.Info(LF_WorkAnim.FEATURE, "work animation finished before the check on " + character.GetID() + " (" + seen + ")");
 			return;
 		}
 
