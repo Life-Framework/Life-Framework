@@ -146,6 +146,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LocalIdentity(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickDoor(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickDoorWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_LockpickVehicle(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_LockpickVehicleWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LoggingChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MedicDutyDesk(), LF_TestTier.WORLD);
@@ -268,6 +270,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SirenToggle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Survival(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SurvivalSaveData(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SurvivalLight(), LF_TestTier.LOGIC);

@@ -98,3 +98,15 @@ isn't today — see current state).
 - `LF_Lockpick` (server) runs a timed attempt on a locked `LF_LockComponent` door that carries `LF_LockpickTargetComponent`; `LF_LockpickRules` holds the pure rules (time, odds, wear, noise, gate). The pick is `LF_Lockpick.et`, a stack whose count is its uses; skill is the character level, so nothing new is saved.
 - A success always files `LF_WantedReports.Report` (offence `#LF-Offence_Lockpick`); a failure only when its noise roll is heard. Wanted is not raised and dispatch is not called: a witness has to report it.
 - Test `lockpick/door`, `e2e/lockpick-door`. Log `[LFDebug:Lockpick]`.
+
+## Vehicle pick and hotwire (#412)
+
+- `LF_Lockpick` works a locked `LF_VehicleLockComponent` the same way as a door. `LF_Hotwire` (server) runs the timed ignition attempt; `LF_HotwireRules` holds the pure rules. The start gate is `SCR_CarControllerComponent.OnBeforeEngineStart`, active only where `m_bIgnitionLocked` is on.
+- Hotwire success: `SetHotwiredBy(playerId)` plus `SetStolen(true)` on the lock, and an `#LF-Offence_VehicleTheft` report. Nothing is saved.
+- Test `lockpick/vehicle`, `e2e/lockpick-vehicle`; proof `session.mjs hotwire-proof`. Log `[LFDebug:Hotwire]`.
+
+## Stolen vehicles (#414)
+
+- `LF_StolenVehicles` (server, session state, nothing saved: the car entity does not survive a restart, an owned car left out is impounded at load). `Report(vehicle, owner)` files an `LF_StolenReport` when the reporter owns the vehicle record and the lock carries the stolen flag; `CheckPlate(plate, out report)` is the plate-check seam (STOLEN only from a filed report; CLEAR for a registered plate; UNKNOWN otherwise) that stops and searches (#419) call; `Recover(vehicle, officer)` stores the car in the owner's garage (`LF_VehicleOwnership.Store`); `Clear(vehicleId, how)` closes a report when the car leaves another way (the chop shop).
+- Actions on the S105 prefab: `LF_ReportStolenAction` (key holder), `LF_CheckPlateAction` and `LF_RecoverVehicleAction` (on-duty officer). Board: `V;plate;nameKey;place` entries ahead of the dispatch log (`LF_WantedBoard`).
+- Bus: `LF_OnVehicleReportedStolen`, `LF_OnVehicleRecovered`. Test `stolen/report`. Log `[LFDebug:StolenVehicle]`.

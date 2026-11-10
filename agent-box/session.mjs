@@ -2246,6 +2246,149 @@ async function runSearchProof() {
   return fails.length ? 1 : 0;
 }
 
+// M2 #412 on a running `up --clients 2` session (debug mission): client 1 picks the lock-up car with a
+// lockpick, sits at the wheel, fails to start it (the ignition needs its key), hotwires it and starts the
+// engine. Client 2 stands by as a witness. The pick takes up to 20 s and the hotwire up to 15 s at level 1.
+// Confirm `[LFDebug:Lockpick] ... OPENED`, `[LFDebug:Hotwire] ... success=1` and `marked stolen` in the server log.
+async function runHotwireProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const fails = [];
+  for (const n of [1, 2]) arrive(on, n, wait);
+  wait(8000);
+  on(2, { verb: "stand", entityName: "Roadmap_Lockpick_Car" });
+  on(1, { verb: "stand", entityName: "Roadmap_Lockpick_Car" });
+  wait(2500);
+  const look = on(1, { verb: "look" });
+  on(1, { verb: "capture", mode: "ui", name: "m2_412_car_before_client1" }, 25000);
+  const give = on(1, { verb: "lockpick" }, 10000);
+  wait(1500);
+  const pick = on(1, { verb: "use", className: "LF_LockpickAction", entityName: "Roadmap_Lockpick_Car" }, 10000);
+  wait(23000);
+  const getIn = on(1, { verb: "engine", entityName: "Roadmap_Lockpick_Car" }, 10000);
+  wait(4000);
+  const noKey = on(1, { verb: "engine" }, 10000);
+  wait(3000);
+  const noKeyState = on(1, { verb: "engine" }, 10000);
+  // A hotwire can fail (that is the design): retry up to five times, then ask for the engine.
+  let wire;
+  let started;
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    wire = on(1, { verb: "use", className: "LF_HotwireAction", entityName: "Roadmap_Lockpick_Car" }, 10000);
+    wait(17000);
+    on(1, { verb: "engine" }, 10000);
+    wait(4000);
+    started = on(1, { verb: "engine" }, 10000);
+    if (started.status === "ok" && started.detail.includes("on=1")) break;
+  }
+  on(1, { verb: "capture", mode: "ui", name: "m2_412_car_driven_client1" }, 25000);
+  on(2, { verb: "capture", mode: "ui", name: "m2_412_car_driven_client2" }, 25000);
+  if (give.status !== "ok" || !give.detail.includes("added=5")) fails.push(`lockpick not given: ${give.status} ${give.detail}`);
+  if (pick.status !== "ok") fails.push(`pick returned ${pick.status} ${pick.detail}`);
+  if (getIn.status !== "ok") fails.push(`seat returned ${getIn.status} ${getIn.detail} (look: ${look.detail})`);
+  if (noKeyState.status === "ok" && noKeyState.detail.includes("on=1")) fails.push(`the engine started without a key or a hotwire: ${noKeyState.detail}`);
+  if (wire.status !== "ok") fails.push(`hotwire returned ${wire.status} ${wire.detail}`);
+  if (started.status !== "ok" || !started.detail.includes("on=1")) fails.push(`the engine did not run after the hotwire: ${started.status} ${started.detail} (a failed roll needs a rerun)`);
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "hotwire proof: FAIL" : "hotwire proof: PASS (picked, no start without the key, hotwired, engine running; confirm the server log for the stolen mark)");
+  return fails.length ? 1 : 0;
+}
+
+// M2 #414 on a running `up --clients 3 --mission playtest --wait` session with client 2 on the roster
+// (`roster 2` before `up`): client 1 owns the starter S105 and retrieves it from the garage; client 3
+// hotwires it (the starter car comes out unlocked; the pick is #411/#412's proof) (the car is stolen); client 1 reports it; the officer (client 2) reads
+// the stolen car on the wanted board, checks the plate, and recovers the car to the owner's garage.
+async function runStolenProof() {
+  const h = await import("./harness.mjs");
+  const dir = sessionDir();
+  const on = (n, spec, timeout) => {
+    h.setBoxes([clientBox(dir, n)]);
+    const r = h.sendCommand(spec, timeout);
+    console.log(`client ${n}: ${r.line.replace(/^d+ /, "")} -> ${r.status} ${r.detail}`);
+    return r;
+  };
+  const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  const fails = [];
+  const must = (r, what) => {
+    if (r.status !== "ok") fails.push(`${what} returned ${r.status} ${r.detail}`);
+    return r;
+  };
+  for (const n of [1, 2, 3]) arrive(on, n, wait);
+  wait(8000);
+
+  // The officer clocks in.
+  on(2, { verb: "stand", entityName: "Roadmap_Police_Desk" });
+  wait(2500);
+  must(on(2, { verb: "use", className: "LF_DutyAction", entityName: "Roadmap_Police_Desk" }, 10000), "clock in");
+  wait(2500);
+
+  // The owner takes the starter S105 out of the garage; the thief joins them at the car.
+  on(1, { verb: "stand", entityName: "Roadmap_Garage" });
+  wait(2500);
+  must(on(1, { verb: "use", className: "LF_VehicleRetrieveAction", entityName: "Roadmap_Garage" }, 10000), "retrieve the car");
+  wait(4000);
+  on(3, { verb: "stand", entityName: "Roadmap_Garage" });
+  wait(2500);
+  on(3, { verb: "look" });
+  on(3, { verb: "capture", mode: "ui", name: "m2_414_car_before_client3" }, 25000);
+  must(on(3, { verb: "engine", entityName: "car" }, 10000), "seat the thief");
+  wait(4000);
+  let started;
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    must(on(3, { verb: "use", className: "LF_HotwireAction" }, 10000), "hotwire");
+    wait(17000);
+    on(3, { verb: "engine" }, 10000);
+    wait(4000);
+    started = on(3, { verb: "engine" }, 10000);
+    if (started.status === "ok" && started.detail.includes("on=1")) break;
+  }
+  if (!started || !started.detail.includes("on=1")) fails.push(`the stolen car did not run: ${started && started.detail}`);
+  on(3, { verb: "capture", mode: "ui", name: "m2_414_car_stolen_client3" }, 25000);
+
+  // The owner reports it.
+  on(1, { verb: "look" });
+  must(on(1, { verb: "use", className: "LF_ReportStolenAction" }, 10000), "report the car stolen");
+  wait(1500);
+  on(1, { verb: "capture", mode: "ui", name: "m2_414_report_client1" }, 25000);
+
+  // The officer reads the board.
+  on(2, { verb: "stand", entityName: "Roadmap_Police_WantedBoard" });
+  wait(2500);
+  on(2, { verb: "look" });
+  on(2, { verb: "use", className: "LF_WantedBoardReadAction", entityName: "Roadmap_Police_WantedBoard" }, 10000);
+  wait(2500);
+  if (!h.waitForText("STOLEN CAR", 10000).found) fails.push("no STOLEN CAR line on the officer's board");
+  on(2, { verb: "capture", mode: "ui", name: "m2_414_board_client2" }, 25000);
+  on(2, { verb: "ui" });
+  on(2, { verb: "click", widget: "Close" });
+
+  // The officer checks the plate at the car.
+  on(2, { verb: "stand", entityName: "Roadmap_Garage" });
+  wait(2500);
+  on(2, { verb: "look" });
+  must(on(2, { verb: "use", className: "LF_CheckPlateAction" }, 10000), "check the plate");
+  wait(1000);
+  on(2, { verb: "capture", mode: "ui", name: "m2_414_plate_check_client2" }, 25000);
+
+  // The thief gets out; the officer recovers the car.
+  on(3, { verb: "engine", entityName: "out" }, 10000);
+  wait(3000);
+  must(on(2, { verb: "use", className: "LF_RecoverVehicleAction" }, 10000), "recover the car");
+  wait(2500);
+  on(2, { verb: "capture", mode: "ui", name: "m2_414_recovered_client2" }, 25000);
+
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "stolen proof: FAIL" : "stolen proof: PASS (confirm the server log: reported stolen, plate check STOLEN, recovered)");
+  return fails.length ? 1 : 0;
+}
+
 // The ticket deadlines the server will run with (Configs/Police/LF_Police.conf).
 export function ticketDeadlines(confText) {
   const first = Number(/m_iTicketFirstDeadline\s+(\d+)/.exec(confText)?.[1] ?? 1800);
@@ -2759,6 +2902,8 @@ async function main(argv) {
   if (cmd === "moonshine-proof") return runMoonshineProof();
   if (cmd === "lockpick-proof") return runLockpickProof();
   if (cmd === "search-proof") return runSearchProof();
+  if (cmd === "hotwire-proof") return runHotwireProof();
+  if (cmd === "stolen-proof") return runStolenProof();
   if (cmd === "village-proof") return runVillageProof();
   if (cmd === "jailbreak-proof") return runJailbreakProof();
   if (cmd === "armory-proof") return runArmoryProof();
@@ -2782,7 +2927,7 @@ async function main(argv) {
     console.log(`client ${n}: ${r.detail}`);
     return 0;
   }
-  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|bed-proof|medic-proof|bill-proof|nlr-proof|siren-proof|radio-proof|scanner-proof|vault-proof|cash-van-proof|chain-proof|moonshine-proof|village-proof|jailbreak-proof|search-proof|armory-proof|dispatch-proof|witness-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
+  console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] | wait [--timeout s] | join <n> | restart | down | status | state <client> | film <seconds> [--client N] | proof|police-proof|murder-proof|quarry-proof|downed-proof|carry-proof|bed-proof|medic-proof|bill-proof|nlr-proof|siren-proof|radio-proof|scanner-proof|vault-proof|cash-van-proof|chain-proof|moonshine-proof|village-proof|jailbreak-proof|search-proof|hotwire-proof|stolen-proof|armory-proof|dispatch-proof|witness-proof|interaction [--film] | org [--shot] | run <script> [args] | pull [dest] | selftest");
   return cmd ? 1 : 0;
 }
 

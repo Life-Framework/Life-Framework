@@ -16,6 +16,8 @@ class LF_StaticReset
 	{
 		LF_Breach.ResetStatics();
 		LF_Lockpick.ResetStatics();
+		LF_Hotwire.ResetStatics();
+		LF_StolenVehicles.ResetStatics();
 		LF_Jail.ResetStatics();
 		LF_JailEscort.ResetStatics();
 		LF_JailCellComponent.ResetStatics();

@@ -229,6 +229,42 @@ class LF_OnVehicleBought : LF_Event
 	}
 }
 
+//! An owner reported their stolen vehicle (LF_StolenVehicles.Report); the plate is on the wanted board.
+class LF_OnVehicleReportedStolen : LF_Event
+{
+	string m_sOwnerUid;
+	string m_sVehicleId;
+	string m_sPlate;
+
+	static LF_OnVehicleReportedStolen Create(string ownerUid, string vehicleId, string plate)
+	{
+		LF_OnVehicleReportedStolen e = new LF_OnVehicleReportedStolen();
+		e.m_sOwnerUid = ownerUid;
+		e.m_sVehicleId = vehicleId;
+		e.m_sPlate = plate;
+		return e;
+	}
+}
+
+//! An officer recovered a reported vehicle; it is back in the owner's garage.
+class LF_OnVehicleRecovered : LF_Event
+{
+	string m_sOfficerUid;
+	string m_sOwnerUid;
+	string m_sVehicleId;
+	string m_sPlate;
+
+	static LF_OnVehicleRecovered Create(string officerUid, string ownerUid, string vehicleId, string plate)
+	{
+		LF_OnVehicleRecovered e = new LF_OnVehicleRecovered();
+		e.m_sOfficerUid = officerUid;
+		e.m_sOwnerUid = ownerUid;
+		e.m_sVehicleId = vehicleId;
+		e.m_sPlate = plate;
+		return e;
+	}
+}
+
 //------------------------------------------------------------------------------------------------
 //! One sampled stretch of player-on-player damage. LF_IncidentDamage folds every hit between a
 //! victim and an attacker into at most one event per sample window; m_fDamage is the total in it.

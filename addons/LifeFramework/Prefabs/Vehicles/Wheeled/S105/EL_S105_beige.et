@@ -2,6 +2,9 @@ Vehicle : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
  ID "E1A105BE1A000002"
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIgnitionLocked 1
+  }
+  LF_LockpickTargetComponent "{D4126BA97E0F53C8}" {
   }
   LF_VehicleStorageAccessControl "{E1A105BE1A000004}" {
   }
@@ -13,6 +16,31 @@ Vehicle : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
      }
      UIInfo UIInfo "{E1A105BE1A000007}" {
       Name "#EL-VehicleLock_Action"
+     }
+    }
+    LF_LockpickAction "{A8B88E948F3738E2}" {
+     ParentContextList {
+      "door_l01"
+     }
+    }
+    LF_HotwireAction "{C58E505E99423938}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_ReportStolenAction "{83BE5DFEFC4D3E1C}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_CheckPlateAction "{1B53996E46E8F7E3}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RecoverVehicleAction "{4EFE17C7F8D25954}" {
+     ParentContextList {
+      "default"
      }
     }
     LF_VehicleSearchAction "{5EA2C40100000001}" {

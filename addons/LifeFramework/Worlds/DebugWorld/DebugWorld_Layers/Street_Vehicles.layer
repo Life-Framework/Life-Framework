@@ -1,4 +1,9 @@
 GenericEntity Roadmap_Vehicle_S105 : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIgnitionLocked 0
+  }
+ }
  coords 212.5 0 257.8
  angleY 120
 }

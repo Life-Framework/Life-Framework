@@ -18,3 +18,13 @@ GenericEntity Roadmap_Lockpick_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/Buil
  }
  coords 306 0 241.5
 }
+GenericEntity Roadmap_Lockpick_Car : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIgnitionLocked 1
+   m_bDebugLocked 1
+  }
+ }
+ coords 312 0 246
+ angleY 90
+}

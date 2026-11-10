@@ -6137,86 +6137,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The duty desk and the beds are north of the bay."
      Comment "Sign card for the hospital ambulance bay, Next section."
     }
-    CustomStringTableItem "{9306F928F7A81EBC}" {
-     Id "LF-Heist_Armory_Open"
-     Target_en_us "Breach the armory store"
-     Comment "Action: the police armory store (#275)."
-    }
-    CustomStringTableItem "{8D97105F774AFD27}" {
-     Id "LF-Heist_Empty"
-     Target_en_us "Nothing left in there"
-     Comment "Offer: the heist target is out of stock until it refills (#275)."
-    }
-    CustomStringTableItem "{3296F0CB09E2A3D7}" {
-     Id "LF-Offence_ArmoryHeist"
-     Target_en_us "Police armory heist"
-     Comment "Offence: the armory store was breached (#275)."
-    }
-    CustomStringTableItem "{C4A100000000A001}" {
-     Id "LF-Chain_NeedLicense"
-     Target_en_us "You are not licensed for this work"
-     Comment "Chain step refused: the worker lacks the licence the step names (#416)."
-    }
-    CustomStringTableItem "{C4A100000000A002}" {
-     Id "LF-Chain_NeedLevel"
-     Target_en_us "You are not experienced enough for this work"
-     Comment "Chain step refused: the worker is below the level the step names (#416)."
-    }
-    CustomStringTableItem "{C4A100000000A003}" {
-     Id "LF-Chain_NeedEquipment"
-     Target_en_us "You need the right equipment for this work"
-     Comment "Chain step refused: the worker does not carry the equipment the step names (#416)."
-    }
-    CustomStringTableItem "{C4A100000000A004}" {
-     Id "LF-Chain_Cider_Name"
-     Target_en_us "Cider"
-     Comment "Name of the neutral example chain in ResourceChains.conf (#416)."
-    }
-    CustomStringTableItem "{C4A100000000A011}" {
-     Id "LF-Chain_Title"
-     Target_en_us "Production"
-     Comment "Toast title for chain station refusals (#417)."
-    }
-    CustomStringTableItem "{C4A100000000A012}" {
-     Id "LF-Chain_Load"
-     Target_en_us "Load the batch"
-     Comment "Chain station action: put a batch in (#417)."
-    }
-    CustomStringTableItem "{C4A100000000A013}" {
-     Id "LF-Chain_Collect"
-     Target_en_us "Take the product"
-     Comment "Chain station action: take a finished batch out (#417)."
-    }
-    CustomStringTableItem "{C4A100000000A014}" {
-     Id "LF-Chain_Work_Fresh"
-     Target_en_us "Work it"
-     Comment "Chain station hold action while the batch has barely started (#417)."
-    }
-    CustomStringTableItem "{C4A100000000A015}" {
-     Id "LF-Chain_Work_Mid"
-     Target_en_us "Keep working it"
-     Comment "Chain station hold action while the batch is part way (#417)."
-    }
-    CustomStringTableItem "{C4A100000000A016}" {
-     Id "LF-Chain_Work_Late"
-     Target_en_us "Finish it off"
-     Comment "Chain station hold action while the batch is nearly done (#417)."
-    }
-    CustomStringTableItem "{C4A100000000A017}" {
-     Id "LF-Chain_MissingInputs"
-     Target_en_us "You do not have what this needs"
-     Comment "Chain station refused: the worker lacks the inputs (#417)."
-    }
-    CustomStringTableItem "{C4A100000000A018}" {
-     Id "LF-Chain_TooFar"
-     Target_en_us "Stand closer"
-     Comment "Chain station refused: the worker is out of reach (#417)."
-    }
-    CustomStringTableItem "{C4A100000000A019}" {
-     Id "LF-Chain_Failed"
-     Target_en_us "That did not work"
-     Comment "Chain station refused: the product could not be delivered (#417)."
-    }
     CustomStringTableItem "{B6AE5AF587643C0C}" {
      Id "LF-Lockpick_Title"
      Target_en_us "Lockpick"
@@ -6287,15 +6207,240 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A set of picks. Each opened lock or snapped pick wears one use."
      Comment "Item description (#411)."
     }
-    CustomStringTableItem "{C4A100000000A0B1}" {
-     Id "LF-Chain_Moonshine_Name"
-     Target_en_us "Samogon"
-     Comment "Name of the moonshine chain in ResourceChains.conf (#420)."
+    CustomStringTableItem "{9306F928F7A81EBC}" {
+     Id "LF-Heist_Armory_Open"
+     Target_en_us "Breach the armory store"
+     Comment "Action: the police armory store (#275)."
+    }
+    CustomStringTableItem "{8D97105F774AFD27}" {
+     Id "LF-Heist_Empty"
+     Target_en_us "Nothing left in there"
+     Comment "Offer: the heist target is out of stock until it refills (#275)."
+    }
+    CustomStringTableItem "{3296F0CB09E2A3D7}" {
+     Id "LF-Offence_ArmoryHeist"
+     Target_en_us "Police armory heist"
+     Comment "Offence: the armory store was breached (#275)."
+    }
+    CustomStringTableItem "{C4A100000000A001}" {
+     Id "LF-Chain_NeedLicense"
+     Target_en_us "You are not licensed for this work"
+     Comment "Chain step refused: the worker lacks the licence the step names (#416)."
+    }
+    CustomStringTableItem "{C4A100000000A002}" {
+     Id "LF-Chain_NeedLevel"
+     Target_en_us "You are not experienced enough for this work"
+     Comment "Chain step refused: the worker is below the level the step names (#416)."
+    }
+    CustomStringTableItem "{C4A100000000A003}" {
+     Id "LF-Chain_NeedEquipment"
+     Target_en_us "You need the right equipment for this work"
+     Comment "Chain step refused: the worker does not carry the equipment the step names (#416)."
+    }
+    CustomStringTableItem "{C4A100000000A004}" {
+     Id "LF-Chain_Cider_Name"
+     Target_en_us "Cider"
+     Comment "Name of the neutral example chain in ResourceChains.conf (#416)."
     }
     CustomStringTableItem "{C4A100000000B101}" {
      Id "LF-Offence_JailBreak"
      Target_en_us "Jailbreak"
      Comment "Offence: a prisoner walked out through a breached jail door (#235)."
+    }
+    CustomStringTableItem "{C4A100000000A011}" {
+     Id "LF-Chain_Title"
+     Target_en_us "Production"
+     Comment "Toast title for chain station refusals (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A012}" {
+     Id "LF-Chain_Load"
+     Target_en_us "Load the batch"
+     Comment "Chain station action: put a batch in (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A013}" {
+     Id "LF-Chain_Collect"
+     Target_en_us "Take the product"
+     Comment "Chain station action: take a finished batch out (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A014}" {
+     Id "LF-Chain_Work_Fresh"
+     Target_en_us "Work it"
+     Comment "Chain station hold action while the batch has barely started (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A015}" {
+     Id "LF-Chain_Work_Mid"
+     Target_en_us "Keep working it"
+     Comment "Chain station hold action while the batch is part way (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A016}" {
+     Id "LF-Chain_Work_Late"
+     Target_en_us "Finish it off"
+     Comment "Chain station hold action while the batch is nearly done (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A017}" {
+     Id "LF-Chain_MissingInputs"
+     Target_en_us "You do not have what this needs"
+     Comment "Chain station refused: the worker lacks the inputs (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A018}" {
+     Id "LF-Chain_TooFar"
+     Target_en_us "Stand closer"
+     Comment "Chain station refused: the worker is out of reach (#417)."
+    }
+    CustomStringTableItem "{C4A100000000A019}" {
+     Id "LF-Chain_Failed"
+     Target_en_us "That did not work"
+     Comment "Chain station refused: the product could not be delivered (#417)."
+    }
+    CustomStringTableItem "{5212AF1650F40FE3}" {
+     Id "LF-Hotwire_Title"
+     Target_en_us "Hotwire"
+     Comment "Toast title for hotwiring (#412)."
+    }
+    CustomStringTableItem "{106F4441F054E715}" {
+     Id "LF-Hotwire_Action"
+     Target_en_us "Hotwire the ignition"
+     Comment "Action: hotwire a car that needs its key (#412)."
+    }
+    CustomStringTableItem "{B7A758401B1C4871}" {
+     Id "LF-Hotwire_NotNeeded"
+     Target_en_us "This ignition needs no hotwire"
+     Comment "Refusal: the car starts freely (#412)."
+    }
+    CustomStringTableItem "{1C73AA55637B8F93}" {
+     Id "LF-Hotwire_HasKey"
+     Target_en_us "You have the key"
+     Comment "Refusal: the driver holds the key (#412)."
+    }
+    CustomStringTableItem "{E9206E012E9770BE}" {
+     Id "LF-Hotwire_Already"
+     Target_en_us "The ignition is already wired for you"
+     Comment "Refusal: already hotwired (#412)."
+    }
+    CustomStringTableItem "{96CECE0C807F3280}" {
+     Id "LF-Hotwire_NotSeated"
+     Target_en_us "Sit in the driver seat first"
+     Comment "Refusal: not at the wheel (#412)."
+    }
+    CustomStringTableItem "{45ACBB5024E89EBF}" {
+     Id "LF-Hotwire_Busy"
+     Target_en_us "Someone is already working the ignition"
+     Comment "Refusal: an attempt is running (#412)."
+    }
+    CustomStringTableItem "{B06175474D8ABDD4}" {
+     Id "LF-Hotwire_Started"
+     Target_en_us "You get under the dash. Stay in the seat."
+     Comment "Toast: a hotwire began (#412)."
+    }
+    CustomStringTableItem "{AADCCA37644F7C29}" {
+     Id "LF-Hotwire_Done"
+     Target_en_us "The ignition is live. Start the engine."
+     Comment "Toast: the hotwire worked (#412)."
+    }
+    CustomStringTableItem "{65ED248DDAEB762A}" {
+     Id "LF-Hotwire_Failed"
+     Target_en_us "The wires spark and nothing catches. Try again."
+     Comment "Toast: the hotwire failed (#412)."
+    }
+    CustomStringTableItem "{D1975826211C1732}" {
+     Id "LF-Hotwire_Cancelled"
+     Target_en_us "You left the wheel"
+     Comment "Toast: the attempt was dropped (#412)."
+    }
+    CustomStringTableItem "{AF65629491E7BFF1}" {
+     Id "LF-Hotwire_NoKey"
+     Target_en_us "The engine will not start without the key"
+     Comment "Toast: engine start refused (#412)."
+    }
+    CustomStringTableItem "{C04E7ECCE5EA1009}" {
+     Id "LF-Stolen_Title"
+     Target_en_us "Stolen car"
+     Comment "Toast title (#414)."
+    }
+    CustomStringTableItem "{7B3EF21861B9946F}" {
+     Id "LF-Stolen_CheckTitle"
+     Target_en_us "Plate check"
+     Comment "Toast title: officer plate check and recovery (#414)."
+    }
+    CustomStringTableItem "{07590CA5189B8EC3}" {
+     Id "LF-Stolen_ReportAction"
+     Target_en_us "Report the car stolen"
+     Comment "Action: the owner reports a stolen car (#414)."
+    }
+    CustomStringTableItem "{54D39129C638398D}" {
+     Id "LF-Stolen_CheckAction"
+     Target_en_us "Check the plate"
+     Comment "Action: an officer checks the plate (#414)."
+    }
+    CustomStringTableItem "{81EB652362FAF78A}" {
+     Id "LF-Stolen_RecoverAction"
+     Target_en_us "Recover stolen vehicle"
+     Comment "Action: an officer returns a reported car to its owner's garage (#414)."
+    }
+    CustomStringTableItem "{45C2C41BF9850640}" {
+     Id "LF-Stolen_Reported"
+     Target_en_us "Reported. The police have the plate."
+     Comment "Toast: report filed (#414)."
+    }
+    CustomStringTableItem "{B07C0014F4165300}" {
+     Id "LF-Stolen_NoVehicle"
+     Target_en_us "That is not a registered car"
+     Comment "Toast: report refused (#414)."
+    }
+    CustomStringTableItem "{4E2A1DBE21617A8A}" {
+     Id "LF-Stolen_NotStolen"
+     Target_en_us "That car was not stolen"
+     Comment "Toast: report refused (#414)."
+    }
+    CustomStringTableItem "{74B600E93F163F6F}" {
+     Id "LF-Stolen_NotOwner"
+     Target_en_us "That is not your car"
+     Comment "Toast: report refused (#414)."
+    }
+    CustomStringTableItem "{C6CD1F2F0A61F3B5}" {
+     Id "LF-Stolen_Already"
+     Target_en_us "The police already have this one"
+     Comment "Toast: report refused (#414)."
+    }
+    CustomStringTableItem "{F9299F02744818C6}" {
+     Id "LF-Stolen_PlateStolen"
+     Target_en_us "Plate %1: STOLEN. Reported by the owner. Arrest case."
+     Comment "Toast: plate check on a reported car (#414)."
+    }
+    CustomStringTableItem "{D5ACFFFEB37116C0}" {
+     Id "LF-Stolen_PlateClear"
+     Target_en_us "Plate %1: registered, no report."
+     Comment "Toast: plate check, clean (#414)."
+    }
+    CustomStringTableItem "{5C0613E010C6A887}" {
+     Id "LF-Stolen_PlateUnknown"
+     Target_en_us "Plate: not on any register."
+     Comment "Toast: plate check, unknown plate (#414)."
+    }
+    CustomStringTableItem "{B809D325187A4334}" {
+     Id "LF-Stolen_RecoverNone"
+     Target_en_us "No stolen report on this car"
+     Comment "Toast: recover refused (#414)."
+    }
+    CustomStringTableItem "{BEEF3229C82D306C}" {
+     Id "LF-Stolen_RecoverOccupied"
+     Target_en_us "Get the driver out first"
+     Comment "Toast: recover refused (#414)."
+    }
+    CustomStringTableItem "{F215C82571D6753A}" {
+     Id "LF-Stolen_Recovered"
+     Target_en_us "Plate %1 recovered: back in the owner's garage."
+     Comment "Toast: recovered (#414)."
+    }
+    CustomStringTableItem "{7D85335FFB1F2738}" {
+     Id "LF-Stolen_BoardLine"
+     Target_en_us "STOLEN CAR: %2, plate %1, reported at %3"
+     Comment "Wanted board line: a reported stolen car (#414)."
+    }
+    CustomStringTableItem "{C4A100000000A0B1}" {
+     Id "LF-Chain_Moonshine_Name"
+     Target_en_us "Samogon"
+     Comment "Name of the moonshine chain in ResourceChains.conf (#420)."
     }
     CustomStringTableItem "{C4A100000000A0C1}" {
      Id "LF-Chain_Smell_Title"
