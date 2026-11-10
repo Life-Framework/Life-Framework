@@ -48,6 +48,7 @@ Feature design notes live beside their code under
 - [Ecosystem map](ecosystem.md) — upstream code, Workshop dependencies, asset sources, and licences.
 - [Life/RP benchmark](research/life-rp-benchmark.md) — genre patterns and design opportunities.
 - [Asset pipeline](research/asset-pipeline.md) — agent-driven static 3D items, from Blender script to filmed in-game proof.
+- [Altis Life framework config](research/altis-life-framework.md) — what its config layer tunes; ideas only, CC BY-NC-ND.
 - [Overthrow survey](overthrow-survey.md) — systems and licence notes.
 - [EveronLife forks](everonlife-forks.md) — upstream context and prior ports.
 - [Discord server](community/discord.md) — channels, roles, and moderation.

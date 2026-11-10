@@ -255,6 +255,23 @@ item. Releases are repeatable, not hand-built.
 7. #375 Separate branding and narrative for core and Everon 1989
 
 
+## 9. Patterns to adopt before release
+
+From a read of the Arma 3 Altis Life framework
+([note](../research/altis-life-framework.md), ideas only). Each one shapes
+persisted data, the owner schema, or every server request, so it is cheaper
+before M3 publishes the schema than after the persistent launch (#556).
+Epic #684:
+
+1. #685 Crime catalog: typed crime codes behind wanted, fines and jail
+2. #686 No-profit-loop check across every price in config
+3. #688 Vehicle prices: one base price and per-action multipliers
+4. #689 Persistence switches per field for owners
+5. #690 World cleanup service (abandoned vehicles, dropped items, bodies)
+6. #691 Disconnect rules for cuffed, downed, wanted or jailed players
+7. #692 Playtime per account and per job (`priority:next`: it cannot be backfilled)
+8. #693 Every client request checked on the server: an audit and a lint
+
 ## Order
 
 1 (two addons) and 2 (config layer) go first and in that order, because the
