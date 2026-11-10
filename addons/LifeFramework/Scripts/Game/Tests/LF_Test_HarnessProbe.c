@@ -1,4 +1,4 @@
-// red-proof: PENDING
+// red-proof: set the expected capture hour to 18.6 and ran `toolsi test --no-build --only LF_Test_HarnessProbe` (2026-11-10). Observed: [LFTEST]   - capture hour (expected 18.6, got 18.5). Restored it and the test passed.
 // tier: LOGIC
 //! tools\cli shots area: `probe` measures the world (ground, trace, cam, ent) and a world capture
 //! takes an optional clock hour that means a clean shot. Both ride the harness line parser.
@@ -30,7 +30,7 @@ class LF_Test_HarnessProbe : LF_Test
 		ctx.False(LF_AgentCommand.Parse("26 probe dig 1 2 3", cmd), "an unknown probe mode is rejected");
 
 		ctx.True(LF_AgentCommand.Parse("27 capture world shot_a 10 0 20 -5 12 8 18.5", cmd), "a capture with an hour parses");
-		ctx.EqualFloat(18.6, cmd.Hour, 0.001, "capture hour");
+		ctx.EqualFloat(18.5, cmd.Hour, 0.001, "capture hour");
 		ctx.True(LF_AgentCommand.Parse("29 time 18.5", cmd), "time parses");
 		ctx.EqualFloat(18.5, cmd.PosX, 0.001, "time hour");
 		ctx.False(LF_AgentCommand.Parse("30 time 25", cmd), "an hour past 24 is rejected");
