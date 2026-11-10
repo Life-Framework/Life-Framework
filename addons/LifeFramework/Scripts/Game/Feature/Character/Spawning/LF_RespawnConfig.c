@@ -12,9 +12,6 @@ class LF_RespawnConfig
 	[Attribute("150", UIWidgets.Auto, "Treatment bill written on paper at every respawn after a death, paid in cash at the hospital desk (#260). 0 disables the bill")]
 	int m_iBillAmount;
 
-	[Attribute("15", UIWidgets.Auto, "New Life Rule window in minutes, printed on the bill. A server rule; nothing enforces it")]
-	int m_iNewLifeMinutes;
-
 	[Attribute("7", UIWidgets.Auto, "Loiter animation the waking body plays: the base game tutorial's bed wake (7 full, 8 fast). 0 skips the animation")]
 	int m_iWakeLoiterType;
 

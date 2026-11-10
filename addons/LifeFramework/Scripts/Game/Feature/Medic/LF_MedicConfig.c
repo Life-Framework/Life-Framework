@@ -82,6 +82,18 @@ class LF_MedicConfig
 	[Attribute("0.5", UIWidgets.Auto, "Fraction of a paid revive bill the reviving medic earns in cash at clock-out", params: "0 1")]
 	float m_fBillMedicShare = 0.5;
 
+	[Attribute("1", UIWidgets.CheckBox, "New Life Rule (#264): a real death puts a wristband on the wake, and returning near the death scene inside the window gets a reminder and an incident row. A revive gives none. Off: neither")]
+	bool m_bNewLifeEnabled = true;
+
+	[Attribute("15", UIWidgets.Auto, "Minutes the New Life Rule lasts after waking; also printed on the hospital bill", params: "1 240")]
+	int m_iNewLifeMinutes = 15;
+
+	[Attribute("75", UIWidgets.Auto, "Metres from the death scene that count as returning to it", params: "5 500")]
+	float m_fNewLifeRadius = 75;
+
+	[Attribute("5", UIWidgets.Auto, "Seconds between two server checks of a wristband wearer's distance to the scene", params: "1 60")]
+	float m_fNewLifeCheckSeconds = 5;
+
 	protected static ref LF_MedicConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
