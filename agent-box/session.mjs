@@ -1823,7 +1823,7 @@ async function runCashVanProof() {
 // before up): client 2 clocks in; client 1 stands at the armory store and is refused without a
 // keycard, is handed a stamped keycard (dev gate, standing in for the fence), and breaches it. Three
 // serial-stamped weapons lie in front of the store and the loud dispatch reaches the officer.
-// Confirm `[LFDebug:Bank] heist Roadmap_Police_ArmoryStore paid 3 weapons` and `alarm=loud` in the server log.
+// Confirm `[LFDebug:Bank] heist Roadmap_Police_ArmoryStore paid 3 weapons` and `loud alarm sounding` in the server log.
 async function runArmoryProof() {
   const h = await import("./harness.mjs");
   const dir = sessionDir();
