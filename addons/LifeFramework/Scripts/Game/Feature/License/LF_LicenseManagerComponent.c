@@ -6,7 +6,7 @@ enum LF_ELicenseType
 	UNEMPLOYED = 0,
 	
 	// TRABAJO: RECOLECTOR (FARMER) - Frutos y Agua
-	FARMER_TOMATO = 1,      // Inicial - Recolección de tomates (gratis)
+	FARMER_FIELD = 1,       // Inicial - peón de campo (gratis); era FARMER_FIELD, el valor 1 se conserva por los guardados
 	FARMER_APPLE = 2,       // Manzanas de huertos
 	FARMER_PLUM = 3,        // Ciruelas de árboles
 	FARMER_WATER = 4,       // Agua purificada
@@ -94,7 +94,7 @@ class LF_LicenseBits
 		{
 			array<LF_ELicenseType> order = {
 				LF_ELicenseType.UNEMPLOYED,
-				LF_ELicenseType.FARMER_TOMATO, LF_ELicenseType.FARMER_APPLE, LF_ELicenseType.FARMER_PLUM, LF_ELicenseType.FARMER_WATER, LF_ELicenseType.FARMER_SPEED,
+				LF_ELicenseType.FARMER_FIELD, LF_ELicenseType.FARMER_APPLE, LF_ELicenseType.FARMER_PLUM, LF_ELicenseType.FARMER_WATER, LF_ELicenseType.FARMER_SPEED,
 				LF_ELicenseType.MINER_COAL, LF_ELicenseType.MINER_COPPER, LF_ELicenseType.MINER_IRON, LF_ELicenseType.MINER_GOLD, LF_ELicenseType.MINER_SPEED,
 				LF_ELicenseType.LUMBERJACK_BASIC, LF_ELicenseType.LUMBERJACK_PROCESS, LF_ELicenseType.LUMBERJACK_SPEED,
 				LF_ELicenseType.MEDIC_ACCESS, LF_ELicenseType.MEDIC_BASIC, LF_ELicenseType.MEDIC_ADVANCED, LF_ELicenseType.MEDIC_REVIVE,
@@ -222,14 +222,14 @@ class LF_LicenseManagerComponent : ScriptComponent
 		m_mLicenseConfigs.Set(LF_ELicenseType.UNEMPLOYED, unemployed);
 		
 		// ============= TRABAJO: RECOLECTOR (FARMER) =============
-		LF_LicenseConfig farmerTomato = new LF_LicenseConfig();
-		farmerTomato.m_eLicenseType = LF_ELicenseType.FARMER_TOMATO;
-		farmerTomato.m_sLicenseName = "#LF-License_FarmerTomato_Name";
-		farmerTomato.m_sDescription = "#LF-License_FarmerTomato_Desc";
-		farmerTomato.m_iSkillPointCost = 0;
-		farmerTomato.m_iMinLevelRequired = 1;
-		farmerTomato.m_bIsInitialLicense = true;
-		m_mLicenseConfigs.Set(LF_ELicenseType.FARMER_TOMATO, farmerTomato);
+		LF_LicenseConfig farmerField = new LF_LicenseConfig();
+		farmerField.m_eLicenseType = LF_ELicenseType.FARMER_FIELD;
+		farmerField.m_sLicenseName = "#LF-License_FarmerField_Name";
+		farmerField.m_sDescription = "#LF-License_FarmerField_Desc";
+		farmerField.m_iSkillPointCost = 0;
+		farmerField.m_iMinLevelRequired = 1;
+		farmerField.m_bIsInitialLicense = true;
+		m_mLicenseConfigs.Set(LF_ELicenseType.FARMER_FIELD, farmerField);
 		
 		LF_LicenseConfig farmerApple = new LF_LicenseConfig();
 		farmerApple.m_eLicenseType = LF_ELicenseType.FARMER_APPLE;
@@ -455,7 +455,7 @@ class LF_LicenseManagerComponent : ScriptComponent
 	{
 		// Dar licencias iniciales gratuitas
 		UnlockLicense(LF_ELicenseType.UNEMPLOYED, true);
-		UnlockLicense(LF_ELicenseType.FARMER_TOMATO, true);
+		UnlockLicense(LF_ELicenseType.FARMER_FIELD, true);
 		
 		LF_Debug.Log("License", "Initial licenses granted");
 	}

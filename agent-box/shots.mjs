@@ -487,7 +487,7 @@ export function importance(e) {
   const acts = e.actions ? e.actions.length : 0;
   let w = Math.min(acts, 4) + 0.7 * Math.cbrt(volOf(e));
   if (/^Sign_/.test(e.name || "")) w *= 0.2;
-  else if (/Npc|Clerk|Tomato|Plum|Apple|Farmer/.test(e.name || "")) w *= 0.35;
+  else if (/Npc|Clerk|Plum|Apple|Farmer/.test(e.name || "")) w *= 0.35;
   return r2(w);
 }
 
@@ -959,7 +959,7 @@ function selftest() {
   if (!(good.score > wall.score + 3)) fails.push(`scoreHero wall ${good.score} ${wall.score}`);
   if (rayBoxEntry([0, 0, 0], [0, 0, 1], [-1, -1, 5], [1, 1, 7]) !== 5 || rayBoxEntry([5, 0, 0], [0, 0, 1], [-1, -1, 5], [1, 1, 7]) !== null) fails.push("rayBoxEntry");
   const imp = (name, n, v) => importance({ name, actions: new Array(n).fill("a"), bmin: [0, 0, 0], bmax: [v, 1, 1] });
-  if (!(imp("Roadmap_Vehicle", 3, 5) > imp("TomatoNpc", 1, 1) * 3) || !(imp("Roadmap_Vehicle", 3, 5) > imp("Sign_Atm", 1, 1) * 3)) fails.push("importance ranks a vehicle over an NPC or a sign");
+  if (!(imp("Roadmap_Vehicle", 3, 5) > imp("TraderChainNpc", 1, 1) * 3) || !(imp("Roadmap_Vehicle", 3, 5) > imp("Sign_Atm", 1, 1) * 3)) fails.push("importance ranks a vehicle over an NPC or a sign");
   const eyeP = [0, 10, 0];
   if (treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 4, gy: 0 }], 30) < 0.5 || treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 40, gy: 0 }], 30) !== 0) fails.push("treeOcclusion");
   // Problems: a pivot above the floor with mesh below it is not sunk; a buried prop is.
