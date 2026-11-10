@@ -2391,18 +2391,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Sin trabajo activo."
      Comment "Licence description"
     }
-    CustomStringTableItem "{33B679F9679C9184}" {
-     Id "LF-License_FarmerField_Name"
-     Target_en_us "Field hand"
-     Target_es_es "Jornalero agrícola"
-     Comment "Licence name: starting farm permit"
-    }
-    CustomStringTableItem "{1921CA724A9210CF}" {
-     Id "LF-License_FarmerField_Desc"
-     Target_en_us "Starting permit for farm work. Lets you gather crops by hand."
-     Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
-     Comment "Licence description"
-    }
     CustomStringTableItem "{F8F02CBA407DB562}" {
      Id "LF-License_FarmerApple_Name"
      Target_en_us "Orchard hand"
@@ -3603,8 +3591,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7EFC20EBB3D29E7E}" {
      Id "LF-Sign_TownMap_Title"
-     Target_en_us "Welcome to Everon"
-     Comment "Title of the sign at the town map board at the spawn square. Printed on the board and shown in the prompt as Read: Welcome to Everon."
+     Target_en_us "Welcome to Everon, Town Board"
+     Comment "Title of the sign at the town map board at the spawn square. Printed on the board and shown in the prompt as Read: Welcome to Everon, Town Board."
     }
     CustomStringTableItem "{122DE6C8A5EACE1E}" {
      Id "LF-Sign_TownMap_What"
@@ -6675,6 +6663,18 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_LotPrice_uaz452_Title"
      Target_en_us "UAZ 452 $3,500"
      Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
+    }
+    CustomStringTableItem "{33B679F9679C9184}" {
+     Id "LF-License_FarmerField_Name"
+     Target_en_us "Field hand"
+     Target_es_es "Jornalero agrícola"
+     Comment "Licence name: starting farm permit"
+    }
+    CustomStringTableItem "{1921CA724A9210CF}" {
+     Id "LF-License_FarmerField_Desc"
+     Target_en_us "Starting permit for farm work. Lets you gather crops by hand."
+     Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
+     Comment "Licence description"
     }
   }
  }
