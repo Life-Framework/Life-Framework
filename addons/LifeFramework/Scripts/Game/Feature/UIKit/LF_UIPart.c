@@ -12,7 +12,13 @@ enum LF_EUIPartKind
 	QUANTITY,
 	LIST,
 	//! A row of buttons side by side (a keypad row, a till's keys). MenuLeft/MenuRight move along it.
-	KEYS
+	KEYS,
+	//! A small upper-case section label in the skin's accent colour (a printed notice).
+	HEADING,
+	//! A thin rule across the sheet in the skin's accent colour.
+	RULE,
+	//! Body text that reads RichTextWidget markup (<color>, <br/>). The text is markup, not plain.
+	RICH
 }
 
 class LF_UIPart
@@ -217,6 +223,15 @@ class LF_UIPart
 
 		if (kind == LF_EUIPartKind.KEYS)
 			return LF_UITheme.KEYS_LAYOUT;
+
+		if (kind == LF_EUIPartKind.HEADING)
+			return LF_UITheme.HEADING_LAYOUT;
+
+		if (kind == LF_EUIPartKind.RULE)
+			return LF_UITheme.RULE_LAYOUT;
+
+		if (kind == LF_EUIPartKind.RICH)
+			return LF_UITheme.RICH_LAYOUT;
 
 		return string.Empty;
 	}
