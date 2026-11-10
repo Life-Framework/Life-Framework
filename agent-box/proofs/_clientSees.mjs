@@ -62,17 +62,15 @@ export function selftestClientSees() {
 // Builds the helper for one proof run. `on(n, spec, timeoutMs)` and `wait(ms)` are the proof's own.
 export function makeClientSees({ on, wait, dir }) {
   const peers = (n) => on(n, { verb: "peers" }, 10000).detail;
-  const look = (n) => {
-    on(n, { verb: "look" });
-    return on(n, { verb: "look" }).detail;
-  };
+  // `filter` keeps only action classes containing it (the harness `look` caps at 12 actions, and a vehicle fills them).
+  const look = (n, filter = "") => on(n, { verb: "look", filter }).detail;
   // `look` lists at most 12 actions: around a big target, stand on each side and join the lists.
-  const lookAround = (n, entityName) => {
+  const lookAround = (n, entityName, filter = "") => {
     const all = [];
     for (const side of ["e", "w", "n", "s"]) {
       on(n, { verb: "stand", entityName, side });
       wait(1200);
-      all.push(...parseActions(look(n)).map((a) => `${side}:${a}`));
+      all.push(...parseActions(look(n, filter)).map((a) => `${side}:${a}`));
     }
     return all;
   };
@@ -84,7 +82,7 @@ export function makeClientSees({ on, wait, dir }) {
     uiText,
     // Client n must see `className` offered (or not offered) within 4 m of its body.
     expectOffer(n, className, entityName, want, fails, label) {
-      const got = offers(look(n), className, entityName);
+      const got = offers(look(n, className), className, entityName);
       if (got !== want) fails.push(`${label}: client ${n} ${want ? "does not see" : "still sees"} ${className}${entityName ? `@${entityName}` : ""}`);
       return got;
     },

@@ -145,7 +145,13 @@ class LF_AgentCommand
 			return true;
 		}
 		if (cmd.Verb == "look")
+		{
+			// #522: an optional class filter ("look LF_LockpickAction") keeps a vehicle's many actions from filling the 12-entry list.
+			if (parts.Count() > 2)
+				cmd.Arg1 = parts[2];
+
 			return true;
+		}
 		if (cmd.Verb == "state")
 			return true;
 		if (cmd.Verb == "die")
@@ -872,6 +878,7 @@ class LF_AgentHarness
 	protected static vector s_vOrigin;
 	protected static string s_sLookJoined;
 	protected static int s_iLookCount;
+	protected static string s_sLookFilter;
 	protected static string s_sUiJoined;
 	protected static int s_iUiCount;
 	protected static string s_sClickName;
@@ -1814,6 +1821,7 @@ class LF_AgentHarness
 
 		s_sLookJoined = "";
 		s_iLookCount = 0;
+		s_sLookFilter = cmd.Arg1;
 		s_vOrigin = user.GetOrigin();
 		world.QueryEntitiesBySphere(s_vOrigin, 4, CollectLookEntity, null, EQueryEntitiesFlags.ALL);
 
@@ -1846,6 +1854,9 @@ class LF_AgentHarness
 				continue;
 
 			string hit = scripted.Type().ToString();
+			if (!s_sLookFilter.IsEmpty() && !hit.Contains(s_sLookFilter))
+				continue;
+
 			string name = entity.GetName();
 			if (!name.IsEmpty())
 				hit = hit + "@" + name;

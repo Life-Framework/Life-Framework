@@ -29,7 +29,7 @@ async function runCashVanProof() {
   on(2, { verb: "stand", entityName: "Roadmap_Cash_Van_Box" });
   wait(2500);
   // #522: what client 2 sees at the van before the heist (the box offers its action, no bags yet).
-  const before2 = sees.lookAround(2, "Roadmap_Cash_Van_Box");
+  const before2 = sees.lookAround(2, "Roadmap_Cash_Van_Box", "PickUp");
   on(1, { verb: "capture", mode: "ui", name: "m2_274_van_before_client1" }, 25000);
   const noTool = on(1, { verb: "use", className: "LF_HeistRobAction", entityName: "Roadmap_Cash_Van_Box" }, 10000);
   const give = on(1, { verb: "drill" }, 10000);
@@ -37,7 +37,7 @@ async function runCashVanProof() {
   const rob = on(1, { verb: "use", className: "LF_HeistRobAction", entityName: "Roadmap_Cash_Van_Box" }, 10000);
   wait(3000);
   // #522: the box opened and the bags exist on client 2: its own view of the van gained actions.
-  const after2 = sees.lookAround(2, "Roadmap_Cash_Van_Box");
+  const after2 = sees.lookAround(2, "Roadmap_Cash_Van_Box", "PickUp");
   console.log(`client 2 sees at the van: before ${JSON.stringify(before2)} after ${JSON.stringify(after2)}`);
   if (after2.length <= before2.length) fails.push(`client 2 sees no new bags at the van: before ${before2.length} actions, after ${after2.length}`);
   on(1, { verb: "capture", mode: "ui", name: "m2_274_van_opened_client1" }, 25000);

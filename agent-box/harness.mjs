@@ -110,7 +110,7 @@ export function buildLine(id, spec) {
     return `${id} stand ${token(spec.entityName, "entity")}`;
   }
   if (spec.verb === "look") {
-    return `${id} look`;
+    return spec.filter ? `${id} look ${token(spec.filter, "filter")}` : `${id} look`;
   }
   if (spec.verb === "state") {
     return `${id} state`;
