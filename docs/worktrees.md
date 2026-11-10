@@ -467,6 +467,18 @@ working sets of N session process(es)`. `tools\cli session measure` also prints 
 The 1.5 GB floor still gates: a session is admitted only while free RAM minus its reserve stays at
 least `minFreeMb`, and a client that joins late (`session join`) is not gated.
 
+**Two lowspec sessions at once (2026-11-10, this PC, other agents' sessions and a Workbench
+running beside).** Session A (1 client, then client 2 joins late) ran `siren-late-proof` on lane
+2001 while session B (2 clients, then a late third) ran `downed-proof` on lane 2011, both
+`--profile lowspec`, overlapping for nine minutes: both PASS, reading only the harness results and
+logs. With both up that was 2 servers and 5 clients, about 4.7 GB of working set, and free RAM
+bottomed at 165 MB (median 1.1 GB) because the late joins are not gated and the rest of the PC held
+about 10 GB. So on this PC **two lowspec sessions fit, and a third does not while two are active**; the
+RAM left once they sit idle (trimmed, about 0.12 GB each) is what lets a queued third start. The
+late-join path (`session join`) now trims first when free RAM is under the floor plus a client's
+reserve. The lane count (`lanes.session`) stays 2 here: raise it only after a run with three
+concurrent proofs holds the floor.
+
 ### Waiting on a session
 
 `node agent-box/session.mjs up` blocks until the server and every client are

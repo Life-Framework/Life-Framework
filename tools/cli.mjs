@@ -1573,6 +1573,9 @@ function cmdSessionJoin(root, dir, flags) {
     return 1;
   }
   const c = session.sessionPaths(dir, session.MAX_CLIENTS).clients.find((x) => x.n === n);
+  // A late client is not gated: free some RAM first when the floor is near.
+  const ps = pool.poolSettings(root);
+  pool.trimIfShort(root, ps.minFreeMb + (ps.sessionReserve?.[s.profile]?.clientMb ?? ps.sessionReserveClientMb));
   const log = session.newestLog(join(s.serverProfile, "logs"));
   const marker = /(?:registration form sent to player|spawning player) \d+/g;
   const before = (readFileSync(log, "utf8").match(marker) ?? []).length;

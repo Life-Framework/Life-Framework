@@ -401,6 +401,13 @@ export function trimLiveSessions(root, m, opts = {}) {
   return pids.length;
 }
 
+// For a start that bypasses the gate (a late client): trims the live sessions when free RAM is under needMb.
+export function trimIfShort(root, needMb) {
+  const m = loadMachines(root).find((x) => x.via === "local");
+  if (!m || Math.round(freemem() / 1048576) >= needMb) return 0;
+  return trimLiveSessions(root, m);
+}
+
 // The other session lanes of this PC with a live holder: { lock, pendingMb } where pendingMb is the
 // memory a session still booting is expected to take that free RAM does not show yet (0 once it
 // is ready, or after ten minutes).
