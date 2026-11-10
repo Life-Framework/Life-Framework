@@ -36,3 +36,7 @@ Written by the area 1 builder so areas 2 to 17 go faster. About 150 tool calls i
 - **`session.mjs up --help` starts a session.** I booted a two-client session by asking for help.
 - **`NoticeBoardCork_01` placed on the ground renders as a bare plank.** It is a wall-mount prop; not a bug, but worth a note in the prop table.
 - **A queued `session.mjs up` kept running after its tool call timed out** and later took the slot back from me, so a stale background `up` can start a session you thought was gone.
+
+## 5. Camera work the reviewer failed (follow-up)
+
+The reviewer failed area 1 on framing alone: a trunk filling the wide shot, a payphone that read as a notice column, a detail shot of the sign instead of the clerk. All three are camera choices, and most of the 40% shot-setup time above was spent on them. `tools\cli shots area <n>` should do this automatically: take a list of subject entities (the main interaction, the prop that names the area), try a ring of candidate cameras around each at eye level and at about 8 m up, reject any whose line to the subject crosses a tree, wall or roof (raycast), pick the one that keeps every subject in frame, and take before and after from the same cameras. It should also set the golden-hour clock, hide the HUD, wait out the quest toast and quantise to under 500 KB. The follow-up PR for these three shots was blocked for over an hour by the single game slot (another agent's session held it, the test box was down), which a one-shot `shots area` run would shorten.
