@@ -282,7 +282,7 @@ const Features = () => (
         ))}
       </ul>
       <div className="flex flex-wrap gap-x-8 gap-y-3">
-        <GoLink to="/docs/playtest">Play and report a bug</GoLink>
+        <GoLink to="/playtest">Join the playtest</GoLink>
         <GoLink to="/gallery">Gallery</GoLink>
         <GoLink to="/roadmap">Roadmap</GoLink>
         <GoLink to="/docs/features">Full feature notes</GoLink>

@@ -243,7 +243,7 @@ const Home = () => {
             </p>
             <p className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
               <GoLink to={DISCORD_URL}>#feedback on Discord</GoLink>
-              <GoLink to="/docs/playtest">Playtest guide</GoLink>
+              <GoLink to="/playtest">Join the playtest</GoLink>
             </p>
           </li>
           <li className="sheet p-6 flex flex-col">

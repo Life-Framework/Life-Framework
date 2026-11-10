@@ -271,6 +271,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ShopPriceHidden(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopCatalog(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SignBoardFace(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SignCardFormat(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignCatalog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignCoverage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SignFaceClient(), LF_TestTier.LOGIC);
@@ -315,6 +316,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GarageLedger(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleImpound(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_VehicleKeyInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLockIdMatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
