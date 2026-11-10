@@ -254,3 +254,133 @@ export function samePixels(left, right) {
   if (!left || !right || left.length !== right.length) return false;
   return left.equals(right);
 }
+
+// ---- palette PNG under a size cap (tools\cli shots: website images stay under 500 KB) ----
+
+// Median cut over a 5-bit-per-channel histogram: fast on a 1280x720 frame and good enough for a render.
+export function quantize(width, height, rgb, colors) {
+  const BITS = 5;
+  const N = 1 << (3 * BITS);
+  const count = new Uint32Array(N);
+  const sum = new Float64Array(N * 3);
+  const binOf = new Uint16Array(width * height);
+  for (let i = 0, p = 0; i < width * height; i++, p += 3) {
+    const r = rgb[p];
+    const g = rgb[p + 1];
+    const b = rgb[p + 2];
+    const bin = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+    binOf[i] = bin;
+    count[bin]++;
+    sum[bin * 3] += r;
+    sum[bin * 3 + 1] += g;
+    sum[bin * 3 + 2] += b;
+  }
+  const used = [];
+  for (let b = 0; b < N; b++) if (count[b]) used.push(b);
+  const mean = (b, c) => sum[b * 3 + c] / count[b];
+  const chan = (b, c) => (c === 0 ? (b >> 10) & 31 : c === 1 ? (b >> 5) & 31 : b & 31);
+  let boxes = [used];
+  while (boxes.length < colors) {
+    // Split the box with the most pixels (and more than one colour) along its widest channel.
+    let pick = -1;
+    let best = 0;
+    for (let i = 0; i < boxes.length; i++) {
+      if (boxes[i].length < 2) continue;
+      let pop = 0;
+      for (const b of boxes[i]) pop += count[b];
+      if (pop > best) {
+        best = pop;
+        pick = i;
+      }
+    }
+    if (pick < 0) break;
+    const box = boxes[pick];
+    let axis = 0;
+    let widest = -1;
+    for (let c = 0; c < 3; c++) {
+      let lo = 31;
+      let hi = 0;
+      for (const b of box) {
+        const v = chan(b, c);
+        if (v < lo) lo = v;
+        if (v > hi) hi = v;
+      }
+      if (hi - lo > widest) {
+        widest = hi - lo;
+        axis = c;
+      }
+    }
+    box.sort((a, b) => chan(a, axis) - chan(b, axis));
+    let total = 0;
+    for (const b of box) total += count[b];
+    let acc = 0;
+    let cut = 1;
+    for (let i = 0; i < box.length - 1; i++) {
+      acc += count[box[i]];
+      cut = i + 1;
+      if (acc >= total / 2) break;
+    }
+    boxes.splice(pick, 1, box.slice(0, cut), box.slice(cut));
+  }
+  const palette = Buffer.alloc(boxes.length * 3);
+  boxes.forEach((box, i) => {
+    let pop = 0;
+    const acc = [0, 0, 0];
+    for (const b of box) {
+      pop += count[b];
+      for (let c = 0; c < 3; c++) acc[c] += mean(b, c) * count[b];
+    }
+    for (let c = 0; c < 3; c++) palette[i * 3 + c] = Math.round(acc[c] / pop);
+  });
+  const toIndex = new Int16Array(N).fill(-1);
+  for (const b of used) {
+    const r = mean(b, 0);
+    const g = mean(b, 1);
+    const bl = mean(b, 2);
+    let bestIdx = 0;
+    let bestD = Infinity;
+    for (let i = 0; i < boxes.length; i++) {
+      const dr = r - palette[i * 3];
+      const dg = g - palette[i * 3 + 1];
+      const db = bl - palette[i * 3 + 2];
+      const d = dr * dr * 0.3 + dg * dg * 0.59 + db * db * 0.11;
+      if (d < bestD) {
+        bestD = d;
+        bestIdx = i;
+      }
+    }
+    toIndex[b] = bestIdx;
+  }
+  const indices = new Uint8Array(width * height);
+  for (let i = 0; i < indices.length; i++) indices[i] = toIndex[binOf[i]];
+  return { palette, indices };
+}
+
+export function encodePngIndexed(width, height, palette, indices) {
+  const raw = Buffer.alloc((width + 1) * height);
+  for (let y = 0; y < height; y++) {
+    const dest = y * (width + 1);
+    raw[dest] = 0;
+    Buffer.from(indices.buffer, indices.byteOffset + y * width, width).copy(raw, dest + 1);
+  }
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(width, 0);
+  ihdr.writeUInt32BE(height, 4);
+  ihdr[8] = 8;
+  ihdr[9] = 3;
+  const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  return Buffer.concat([signature, chunk("IHDR", ihdr), chunk("PLTE", palette), chunk("IDAT", deflateSync(raw, { level: 9 })), chunk("IEND", Buffer.alloc(0))]);
+}
+
+// Full-colour PNG when it fits, else the most colours (256 down to 32) that still fit under maxKb.
+export function pngUnder(width, height, rgb, maxKb) {
+  const full = encodePng(width, height, rgb);
+  if (full.length <= maxKb * 1024) return { png: full, colors: 0 };
+  let last = null;
+  for (const colors of [256, 192, 128, 96, 64, 48, 32]) {
+    const q = quantize(width, height, rgb, colors);
+    last = { png: encodePngIndexed(width, height, q.palette, q.indices), colors: q.palette.length / 3 };
+    if (last.png.length <= maxKb * 1024) return last;
+  }
+  return last;
+}

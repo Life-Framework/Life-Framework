@@ -804,6 +804,10 @@ async function runReset(args = []) {
 
 async function main(argv) {
   let [cmd, ...rest] = argv;
+  if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
+    console.log("usage: node agent-box/session.mjs up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    return 0;
+  }
   // Any session command is activity for the pool's lease (tools/remote/pool.mjs reapIdleSessions).
   if (cmd && !["down", "selftest", "lease"].includes(cmd)) touchLease(sessionDir(), cmd);
   if (cmd === "lease") {

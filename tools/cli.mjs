@@ -20,6 +20,7 @@
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
+//   shots area <name|x,z> | crop <shot> <x,y,w,h>   One-call screenshot rig for the area polish pass (agent-box/shots.mjs)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved LFTEST summary for a tier
 //   suite-valid <sha>                 Whether changes since <sha> still ride that summary
@@ -37,6 +38,7 @@ import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
 import * as playtest from "./host/playtest.mjs";
 import * as session from "../agent-box/session.mjs";
+import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
@@ -1627,7 +1629,7 @@ function cmdSessionUp(root, dir, flags) {
   };
   try {
     if (flags.includes("--wait")) console.log(`session: port 2001 is held by ${holderOf()}; queued (up to 30 min)`);
-    pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? 1800000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root }, priority: priorityFlag(flags) });
+    pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? 1800000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
     console.log(`FAIL  port 2001 is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
     return 1;
@@ -1909,9 +1911,15 @@ function cmdSessionRestart(root, dir, flags) {
   }
 }
 
+const SESSION_USAGE = "usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] | wait [--timeout s] | join <n> | restart | down | status";
+
 function cmdSession(args) {
   const list = args ?? [];
   const dir = session.sessionDir();
+  if (list.includes("--help") || list.includes("-h") || list[0] === "help") {
+    console.log(SESSION_USAGE);
+    return 0;
+  }
   if (list[0] === "up") return cmdSessionUp(ROOT, dir, list.slice(1));
   // The session dir is shared by every checkout: only the one that started a
   // live session may restart or close it (--force overrides).
@@ -1928,7 +1936,7 @@ function cmdSession(args) {
   if (list[0] === "down") return cmdSessionDown(dir);
   if (list[0] === "status") return cmdSessionStatus(dir);
   if (list[0] === "wait") return cmdSessionWait(dir, list.slice(1));
-  console.log("usage: tools\\cli session up [--clients N] [--mission debug|playtest] [--res WxH] [--visible] [--sound] [--wait] | wait [--timeout s] | join <n> | restart | down | status");
+  console.log(SESSION_USAGE);
   return list[0] ? 1 : 0;
 }
 
@@ -2930,6 +2938,7 @@ const cmds = {
   host: (flags) => cmdHost(flags),
   playtest: (flags) => cmdPlaytest(flags),
   session: (flags) => cmdSession(flags),
+  shots: (flags) => shots.main(flags ?? []),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
     const list = flags ?? [];
@@ -3064,7 +3073,7 @@ try {
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

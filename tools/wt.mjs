@@ -251,7 +251,7 @@ export function requireWorktree(root, slug) {
 
 // ---------------------------------------------------------------- locks
 
-function pidAlive(pid) {
+export function pidAlive(pid) {
   try {
     process.kill(pid, 0);
     return true;
@@ -264,7 +264,9 @@ function pidAlive(pid) {
 // waitMs>0 polls until it frees or the budget is spent. A lock whose owner
 // process is gone is stolen. Age alone only expires malformed locks; a live
 // build may legitimately run for the full 15-minute Workbench timeout.
-export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500, meta = {} } = {}) {
+// callerPids: while queued, give up when one of these processes is gone, so a queued run whose caller
+// timed out never takes the slot later.
+export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500, meta = {}, callerPids = [] } = {}) {
   const hub = ensureHub(root);
   const lockFile = join(hub, "locks", `${name}.lock`);
   const started = Date.now();
@@ -296,6 +298,7 @@ export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs 
       if (waitMs <= 0 || Date.now() - started > waitMs) {
         throw new Error(`lock '${name}' is held (${lockFile}); retry with --wait to queue`);
       }
+      if (callerPids.some((p) => p && !pidAlive(p))) throw new Error(`lock '${name}': the caller is gone; not queuing any longer`);
       sleep(pollMs);
     }
   }

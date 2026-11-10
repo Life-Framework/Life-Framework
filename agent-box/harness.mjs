@@ -206,7 +206,25 @@ export function buildLine(id, spec) {
     if (spec.ox === undefined && spec.oy === undefined && spec.oz === undefined) return line;
     const offset = [spec.ox, spec.oy, spec.oz].map((n) => Number(n));
     if (offset.some((n) => Number.isNaN(n))) throw new Error("camera offset needs ox oy oz");
-    return `${line} ${offset.map(trimNum).join(" ")}`;
+    const off = `${line} ${offset.map(trimNum).join(" ")}`;
+    if (spec.hour === undefined) return off;
+    const hour = Number(spec.hour);
+    if (!(hour >= 0 && hour < 24)) throw new Error(`capture hour must be 0-24: ${spec.hour}`);
+    return spec.free ? `${off} ${trimNum(hour)} free` : `${off} ${trimNum(hour)}`;
+  }
+  if (spec.verb === "clean") return `${id} clean off`;
+  if (spec.verb === "time") {
+    const hour = Number(spec.hour);
+    if (!(hour >= 0 && hour < 24)) throw new Error(`time hour must be 0-24: ${spec.hour}`);
+    return `${id} time ${trimNum(hour)}`;
+  }
+  if (spec.verb === "probe") {
+    const nums = (list) => list.map((n) => { const v = Number(n); if (Number.isNaN(v)) throw new Error(`probe needs numbers: ${list}`); return trimNum(v); }).join(" ");
+    if (spec.mode === "ground") return `${id} probe ground ${nums([spec.x, spec.z])}`;
+    if (spec.mode === "cam") return `${id} probe cam ${nums([spec.x, spec.y, spec.z])}`;
+    if (spec.mode === "trace") return `${id} probe trace ${nums([spec.x, spec.y, spec.z, spec.x2, spec.y2, spec.z2])}`;
+    if (spec.mode === "ent") return `${id} probe ent ${token(spec.name, "probe entity")} ${nums([spec.x, spec.y, spec.z])}`;
+    throw new Error("probe mode must be ground, trace, cam, or ent");
   }
   if (spec.verb === "film") {
     // In-engine recording (LF_FilmRecorder, tools/film/engine.mjs).
@@ -808,6 +826,12 @@ function selftest() {
   if (input !== "5 input MenuSelect") throw new Error(input);
   const world = buildLine(8, { verb: "capture", mode: "world", name: "atm_pad", x: 128, y: 1, z: 133 });
   if (world !== "8 capture world atm_pad 128 1 133") throw new Error(world);
+  const clean = buildLine(8, { verb: "capture", mode: "world", name: "s", x: 1, y: 2, z: 3, ox: 4, oy: 5, oz: 6, hour: 18.5 });
+  if (clean !== "8 capture world s 1 2 3 4 5 6 18.5") throw new Error(clean);
+  if (buildLine(3, { verb: "time", hour: 18.5 }) !== "3 time 18.5") throw new Error("time line");
+  const probeEnt = buildLine(8, { verb: "probe", mode: "ent", name: "Hospital_Bed_1", x: 1, y: 0.2, z: 3 });
+  if (probeEnt !== "8 probe ent Hospital_Bed_1 1 0.2 3") throw new Error(probeEnt);
+  if (buildLine(8, { verb: "probe", mode: "ground", x: 5, z: 6 }) !== "8 probe ground 5 6") throw new Error("probe ground line");
   const interact = buildLine(9, { verb: "interact", step: "confirm" });
   if (interact !== "9 interact confirm") throw new Error(interact);
   const stand = buildLine(10, { verb: "stand", entityName: "ATM_Debug" });
@@ -1542,9 +1566,25 @@ function main(argv) {
   }
 }
 
+// A session that `up --machine any` put on a pool machine has no command files on this PC:
+// run the same command there (session.mjs run) against client 1, or the one named by --client.
+// --local keeps it on this PC. selftest/status/setup never relay.
+async function relayIfRemote(argv) {
+  if (argv.includes("--local")) return { argv: argv.filter((a) => a !== "--local"), code: null };
+  const first = argv.find((a) => !a.startsWith("--"));
+  if (!first || ["selftest", "status", "setup", "town", "pillar", "report"].includes(first)) return { argv, code: null };
+  const { readRemotePointer } = await import("./session.mjs");
+  const ptr = readRemotePointer();
+  if (!ptr) return { argv, code: null };
+  const args = argv.includes("--client") ? argv : [...argv, "--client", "1"];
+  const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), "run", "agent-box/harness.mjs", ...args, "--local"], { stdio: "inherit", windowsHide: true, cwd: ROOT });
+  if (first === "shot" || first === "flow") console.log(`(the images are on ${ptr.machine}: node agent-box/session.mjs pull)`);
+  return { argv, code: r.status ?? 1 };
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  applyClientFlag(process.argv.slice(2)).then(
-    (argv) => process.exit(main(argv)),
+  relayIfRemote(process.argv.slice(2)).then(async (relay) => (relay.code !== null ? relay.code : main(await applyClientFlag(relay.argv)))).then(
+    (code) => process.exit(code),
     (err) => {
       console.error(err.message);
       process.exit(1);

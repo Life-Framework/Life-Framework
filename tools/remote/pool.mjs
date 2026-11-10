@@ -830,7 +830,7 @@ export function acquireSessionLaneSync(root, opts = {}) {
   }
 }
 
-function acquireSessionLane(root, { waitMs = 0, meta = {}, priority } = {}) {
+function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids = [] } = {}) {
   const m = loadMachines(root).find((x) => x.via === "local") ?? normalize({ name: "local", via: "local" });
   const lane = lanesFor(m, "session")[0];
   const slug = meta.slug ?? slugFor(root);
@@ -856,6 +856,12 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority } = {}) {
       if (!blockers.length) {
         const slot = tryLocal(root, m, lane, { ...meta, slug, purpose: "session", root }, { blocked, noHeld: true });
         if (slot) return slot;
+      }
+      // A queued `up` whose caller timed out must not take the slot later.
+      if (callerPids.some((p) => p && !wt.pidAlive(p))) {
+        const gone = new Error("the caller is gone; not queuing any longer");
+        gone.poolHeld = true;
+        throw gone;
       }
       if (waitMs <= 0 || now - started > waitMs) {
         const held = new Error(blocked.ram ? `not enough free RAM (${blocked.ram}); close apps or retry with --wait` : blockers.length ? `${blockers.length} job(s) are queued ahead for port 2001` : "port 2001 is held");
