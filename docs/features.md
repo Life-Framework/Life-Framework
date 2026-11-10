@@ -2048,18 +2048,26 @@
   audio track). Harness verb `film slate` plays a UI beep and logs `# slate=<ms>` in
   `index.txt`; `tools/film/audio.mjs` finds the beep in the WAV, lines audio up with the
   frames and muxes an mp4 (`street-clip.mjs --audio`, session started with `--sound`). A start
-  and an end slate give the offset and the drift. The recorder refuses a silent capture
+  and an end slate give the offset and the drift (the mux uses their mean; one unrecorded warm-up beep plays first because the first play is heard about 0.5 s late). The recorder refuses a silent capture
   (`mean_volume` under -60 dB, or no slate heard) and warns when the default output is muted
-  (#482). Covered by `node tools/film/film.mjs selftest` (pure parts); proof in the PR.
+  (#482). Covered by `node tools/film/film.mjs selftest` (pure parts). Proven on this PC 2026-11-10: three takes read start-to-end beep drift of -96, +119 and +52 ms; the laptop run waits on #482 and a free lane.
 
 ### `LF_FilmActor` / `LF_FilmDirector` — `Feature/Film/` (scripted actors, #393)
-- ✅ Dev-only, harness verbs `scene start street|stop|status` (server, through the
+- ✅ Dev-only, harness verbs `scene start <name> [hour|-] [weather]`, `scene stop|reset|status` (server, through the
   character RPC and `LF_DevGate`) and `camera orbit|follow x y z size seconds`
   (client). An actor is a spawned `Character_Roleplay` on a timed step list:
   `walk`, `run`, `enter`, `drive`, `exit`, `use <action class>`, `wait`. Waypoints
   are authored (no navmesh). No progress for 6 s logs `[LFDebug:FilmActor] ... stuck`
-  and stops that actor. Pure maths (steer, pedals, stuck detection) is covered by
+  and stops that actor. A `camera follow` low-passes the followed entity's position (time constant 0.25 s, `LF_FilmCameraPath.SmoothAlpha`), because a car driven in 100 ms velocity steps made the camera shake. Pure maths (steer, pedals, stuck detection, follow smoothing) is covered by
   `film/actor-math` (LOGIC).
+- ✅ Scene setup and reset (#394, `LF_FilmScene.c`): a scene is a clock hour, a weather state, the day frozen,
+  its actors and vehicles and its camera cues. `scene start street` snapshots the world's local clock hour, weather state, weather looping and day advance, sets the scene's defaults (street: 16:00, Clear, frozen), then
+  spawns; `scene start street 21.5 Overcast` overrides one take (`-` keeps a value; an hour outside 0..24 returns
+  `error:bad_hour`). `scene stop` (alias `reset`) despawns every actor and vehicle the scene made and writes the snapshot
+  back, so every take starts from the same light. Logs `[LFDebug:FilmScene]`. A world with no time and weather manager
+  logs an error and runs the scene without a clock. Camera cues stay in the take script (`tools/film/street-clip.mjs`).
+  Covered by `film/scene-env` (LOGIC: defaults, override, bad hours, clock conversion); the world write is proved
+  in game (PR). Not done: scenes other than `street`.
 - ✅ Walk, run and `use` proven 2026-11-10 (the store till action ran for an actor,
   `canPerform=1 uid='film-walker'`). Actors read a stand-in player uid from
   `LF_FilmIdentity` in a `LF_HARNESS` build only (`LF_Utils.GetPlayerUID`).

@@ -169,7 +169,8 @@ export function muxClip({ clip, indexText, wav, out, firstFrameMs = 0, startGapS
     if (!allowSilent) return { ok: false, error: "the slate beep is not in the captured audio (wrong process, no sound, or the beep is muted)", mean: vol.mean, offsets };
     warnings.push("slate beep not heard");
   }
-  const offsetSec = heard.length ? heard[0].offset : 0;
+  // Two slates: use the mean so the error at either end is half the drift.
+  const offsetSec = heard.length ? heard.reduce((s, o) => s + o.offset, 0) / heard.length : 0;
   const driftMs = heard.length > 1 ? (heard[heard.length - 1].offset - heard[0].offset) * 1000 : 0;
   const videoSec = Number(clip?.summary?.seconds) || 0;
   const probeLen = spawnSync(ff.path, ["-hide_banner", "-i", clip.out], { windowsHide: true, encoding: "utf8" }).stderr || "";
@@ -198,6 +199,11 @@ export async function shootWithAudio({ send, resolveAlias, name, fps = 30, secon
   const guard = endpointGuard();
   for (const w of guard.warnings) log(`audio: WARNING ${w}`);
   const wav = join(OUT_DIR, `${name}.wav`);
+  // The first play of a UI sound is loaded on demand and lands about 0.5 s late (measured 2026-11-10: 0.62 s
+  // first, 0.13 s second). Play one beep before the capture starts so both slates have the same latency.
+  const warm = send({ verb: "film", mode: "slate" }, 8000);
+  log(`audio: warm-up beep -> ${warm.status} ${warm.detail}`);
+  await new Promise((r) => setTimeout(r, 1500));
   const cap = await startCapture({ pid, wav });
   const start = eng.engineStart(send, name, { fps, seconds });
   if (!start.ok) {
