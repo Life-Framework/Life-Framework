@@ -191,7 +191,7 @@ GenericEntity Quarry_Barrel2 : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/Barre
  coords 166.6 0 186.1
 }
 GenericEntity Quarry_Wheelbarrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
- coords 185 0 168
+ coords 183.5 0 165.5
  angleY 40
 }
 GenericEntity Quarry_Crate1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
