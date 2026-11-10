@@ -100,6 +100,9 @@ function Icon({ name, fallback = "system" }: { name: string; fallback?: string }
 
 function stateOf(issue: Issue): Exclude<Filter, "all"> {
   if (issue.state === "closed") return "done";
+  // An epic whose sub-issues are all closed is finished work, whether or not anyone has closed the epic yet.
+  const subs = issue.subIssues ?? [];
+  if (subs.length > 0 && subs.every((x) => x.state === "closed")) return "done";
   return issue.assignees.length ? "in-progress" : "open";
 }
 
