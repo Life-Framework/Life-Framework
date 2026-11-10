@@ -6437,6 +6437,101 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Jailbreak"
      Comment "Offence: a prisoner walked out through a breached jail door (#235)."
     }
+    CustomStringTableItem "{BD444F2178AE712F}" {
+     Id "LF-Offence_ChopShop"
+     Target_en_us "Chop shop dismantling"
+     Comment "Offence on a wanted poster: a stolen car was chopped (#415)."
+    }
+    CustomStringTableItem "{306F9E34BC7297E7}" {
+     Id "LF-Item_CarParts_Name"
+     Target_en_us "Car parts"
+     Comment "Item name: spare parts from a chopped car (#415)."
+    }
+    CustomStringTableItem "{39E8DFFDB0869E08}" {
+     Id "LF-Item_CarParts_Description"
+     Target_en_us "Spare parts stripped off a stolen car. A trader pays a little for them."
+     Comment "Item description (#415)."
+    }
+    CustomStringTableItem "{226E1925807E4ACE}" {
+     Id "LF-Chop_Title"
+     Target_en_us "Chop shop"
+     Comment "Toast title (#415)."
+    }
+    CustomStringTableItem "{DD4DF16E9EA2A1E6}" {
+     Id "LF-Chop_Load"
+     Target_en_us "Take this car apart"
+     Comment "Action: start dismantling the car in the yard (#415)."
+    }
+    CustomStringTableItem "{DB060C732777FC93}" {
+     Id "LF-Chop_Work_Fresh"
+     Target_en_us "Strip it down: just started"
+     Comment "Action: held work on the car, early (#415)."
+    }
+    CustomStringTableItem "{96935ECA7C141DFD}" {
+     Id "LF-Chop_Work_Mid"
+     Target_en_us "Strip it down: half gone"
+     Comment "Action: held work on the car, middle (#415)."
+    }
+    CustomStringTableItem "{7334F91AA4AF7DC2}" {
+     Id "LF-Chop_Work_Late"
+     Target_en_us "Strip it down: almost bare"
+     Comment "Action: held work on the car, late (#415)."
+    }
+    CustomStringTableItem "{7357AAFD705254CD}" {
+     Id "LF-Chop_Collect"
+     Target_en_us "Take the cash and parts"
+     Comment "Action: collect the payout (#415)."
+    }
+    CustomStringTableItem "{7857599BE396D45B}" {
+     Id "LF-Chop_Paid"
+     Target_en_us "Paid in cash. The car is gone."
+     Comment "Toast: payout taken (#415)."
+    }
+    CustomStringTableItem "{C8732E51C07DE9D9}" {
+     Id "LF-Chop_NoYard"
+     Target_en_us "No yard here"
+     Comment "Toast: refused (#415)."
+    }
+    CustomStringTableItem "{764914C9C71A4DE3}" {
+     Id "LF-Chop_NoVehicle"
+     Target_en_us "Park the car in the yard first"
+     Comment "Toast: no car in the drop area (#415)."
+    }
+    CustomStringTableItem "{FDE13A88BF60F4A6}" {
+     Id "LF-Chop_Occupied"
+     Target_en_us "Get out of the car first"
+     Comment "Toast: someone is inside (#415)."
+    }
+    CustomStringTableItem "{DE5E9D7236637A63}" {
+     Id "LF-Chop_NotStolen"
+     Target_en_us "We only take hot cars"
+     Comment "Toast: the car is not stolen (#415)."
+    }
+    CustomStringTableItem "{235163142BFE40D6}" {
+     Id "LF-Chop_KeyedOwner"
+     Target_en_us "You hold its key. Not here."
+     Comment "Toast: an owner with the key cannot chop (#415)."
+    }
+    CustomStringTableItem "{37FDABA91E5334CF}" {
+     Id "LF-Chop_Cooldown"
+     Target_en_us "Too much heat. Come back later"
+     Comment "Toast: the yard is cooling down (#415)."
+    }
+    CustomStringTableItem "{87229FC4BD0FB108}" {
+     Id "LF-Chop_Busy"
+     Target_en_us "The bench is busy"
+     Comment "Toast: a car is already on the bench (#415)."
+    }
+    CustomStringTableItem "{B7117664D8658E3D}" {
+     Id "LF-Chop_TooFar"
+     Target_en_us "Step up to the bench"
+     Comment "Toast: out of reach (#415)."
+    }
+    CustomStringTableItem "{0AA160CA1407D632}" {
+     Id "LF-Chop_Gone"
+     Target_en_us "The car left the yard. The job is off"
+     Comment "Toast: the car moved before collection (#415)."
+    }
   }
  }
 }

@@ -818,6 +818,25 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The vehicle is gone for good (a chop shop took it apart): drop its record, so no restart
+	//! impounds it and no garage lists it, and free its plate. The key item in a pocket stays a
+	//! key to nothing. The caller deletes the entity.
+	//! \return True when a record was removed.
+	static bool Scrap(string vehicleId)
+	{
+		LF_VehicleRecord record = Records().Get(vehicleId);
+		if (!record)
+			return false;
+
+		LF_LicensePlateRegistry.Release(record.m_sPlate);
+		Records().Remove(vehicleId);
+		Order().RemoveItem(vehicleId);
+		Sessions().Remove(vehicleId);
+		LF_Debug.Info("Vehicle", string.Format("scrapped %1 owner=%2 plate=%3", vehicleId, record.m_sOwnerUid, record.m_sPlate));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Record half of retrieve. Does not spawn. The world retrieve calls this after the spawn.
 	static bool RestoreRecord(string vehicleId, string ownerUid)
 	{

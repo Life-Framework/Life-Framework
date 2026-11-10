@@ -246,6 +246,32 @@ class LF_OnVehicleReportedStolen : LF_Event
 	}
 }
 
+//! A chop shop paid out for a vehicle and it is gone (LF_ChopShopComponent.ServerCollect). m_sOwnerUid is
+//! empty for a car nobody owned.
+class LF_OnVehicleChopped : LF_Event
+{
+	string m_sChopperUid;
+	string m_sShopId;
+	string m_sVehicleId;
+	string m_sPlate;
+	string m_sOwnerUid;
+	int m_iPayout;
+	int m_iParts;
+
+	static LF_OnVehicleChopped Create(string chopperUid, string shopId, string vehicleId, string plate, string ownerUid, int payout, int parts)
+	{
+		LF_OnVehicleChopped e = new LF_OnVehicleChopped();
+		e.m_sChopperUid = chopperUid;
+		e.m_sShopId = shopId;
+		e.m_sVehicleId = vehicleId;
+		e.m_sPlate = plate;
+		e.m_sOwnerUid = ownerUid;
+		e.m_iPayout = payout;
+		e.m_iParts = parts;
+		return e;
+	}
+}
+
 //! An officer recovered a reported vehicle; it is back in the owner's garage.
 class LF_OnVehicleRecovered : LF_Event
 {

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3F7A1C5E9B2D4608}Configs/Crime/LF_ChopShop.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
