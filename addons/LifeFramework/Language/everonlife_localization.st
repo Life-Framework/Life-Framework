@@ -6047,16 +6047,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cab wanted"
      Comment "Summary the taxi pager and board show for a call from the payphone."
     }
-    CustomStringTableItem "{287FBFE0C09D4B2C}" {
-     Id "LF-Heist_Van_Open"
-     Target_en_us "Break open the cash box"
-     Comment "Action: the cash van rear box (#274)."
-    }
-    CustomStringTableItem "{C3E5A18D0842729C}" {
-     Id "LF-Offence_CashVan"
-     Target_en_us "Cash van robbery"
-     Comment "Offence: the cash van box was forced (#274)."
-    }
     CustomStringTableItem "{4E7FF02882373B33}" {
      Id "LF-IncidentGm_Kind_nlr"
      Target_en_us "New Life Rule return"
@@ -6076,6 +6066,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Revive_NoItem"
      Target_en_us "You need a field dressing to revive someone."
      Comment "Revive refusal: the medic has none of the configured revive item."
+    }
+    CustomStringTableItem "{287FBFE0C09D4B2C}" {
+     Id "LF-Heist_Van_Open"
+     Target_en_us "Break open the cash box"
+     Comment "Action: the cash van rear box (#274)."
+    }
+    CustomStringTableItem "{C3E5A18D0842729C}" {
+     Id "LF-Offence_CashVan"
+     Target_en_us "Cash van robbery"
+     Comment "Offence: the cash van box was forced (#274)."
+    }
+    CustomStringTableItem "{30B35DD36DE9AD2B}" {
+     Id "LF-Bed_Action"
+     Target_en_us "Put patient in bed"
+     Comment "Bed action name."
+    }
+    CustomStringTableItem "{3A3A0C3CAF925A84}" {
+     Id "LF-Bed_Desc"
+     Target_en_us "Lay the downed patient you carry, or the one in the ambulance, in this bed"
+     Comment "Bed action description."
+    }
+    CustomStringTableItem "{E72E14B2B5780800}" {
+     Id "LF-Bed_Done"
+     Target_en_us "The patient is in bed and awake."
+     Comment "Toast to the medic after a delivery."
+    }
+    CustomStringTableItem "{F9207C344391D50C}" {
+     Id "LF-Bed_NoPatient"
+     Target_en_us "No downed patient to put in bed: carry one here or load them in the ambulance outside."
+     Comment "Refusal: nobody to deliver."
+    }
+    CustomStringTableItem "{3055EF1F232FA28A}" {
+     Id "LF-Bed_NotMedic"
+     Target_en_us "Only an on-duty medic can admit a patient."
+     Comment "Refusal: not a medic on duty."
+    }
+    CustomStringTableItem "{A22291637AB2A76D}" {
+     Id "LF-Bed_TooFar"
+     Target_en_us "Stand at the bed to put a patient in it."
+     Comment "Refusal: medic too far from the bed."
     }
   }
  }

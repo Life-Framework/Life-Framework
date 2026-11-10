@@ -40,8 +40,8 @@ the interaction prompt. Read opens a short paper card: What, How, Needs, Rules, 
   (full height shows), so the title box is x 20..310, and the font is 96 or
   smaller so the longest word fits (0.62 em per capital; a word does not
   wrap). The DPI-scaled box printed in the sheet's top-left third; the full
-  box at 96 cut WELCOME to WELCO. Pub signs and chalkboards keep `m_bShowFace 0` until a rendering
-  pass places their sheet; the mining and whitelist plates keep their painted
+  box at 96 cut WELCOME to WELCO. Pub signs and chalkboards print a painted sheet (#116; values on the prefabs);
+  the mining and whitelist plates keep their painted
   vanilla text.
 - An unknown or empty id, or a sign with no title, logs
   `LF_Debug.Error("Signs", ...)` once and the Read action hides.

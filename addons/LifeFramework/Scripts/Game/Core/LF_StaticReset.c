@@ -34,6 +34,7 @@ class LF_StaticReset
 		LF_Downed.ResetStatics();
 		LF_BleedOut.ResetStatics();
 		LF_Carry.ResetStatics();
+		LF_BedDelivery.ResetStatics();
 		LF_FineTickets.ResetStatics();
 		LF_Ledger.ResetStatics();
 		LF_CrimeRecord.ResetStatics();

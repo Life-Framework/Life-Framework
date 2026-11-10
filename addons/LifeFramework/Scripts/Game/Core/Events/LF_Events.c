@@ -112,6 +112,27 @@ class LF_OnPlayerRevived : LF_Event
 	}
 }
 
+//! A medic put a downed patient in a hospital bed (LF_BedDelivery, #262). The patient is already
+//! revived (LF_OnPlayerRevived is published first) and the reduced revive bill is written.
+class LF_OnPatientDelivered : LF_Event
+{
+	string m_sPlayerUid;
+	string m_sMedicUid;
+	//! Bill number written for the patient, 0 when none (an NPC).
+	int m_iBillNumber;
+	vector m_vPosition;
+
+	static LF_OnPatientDelivered Create(string playerUid, string medicUid, int billNumber, vector position)
+	{
+		LF_OnPatientDelivered e = new LF_OnPatientDelivered();
+		e.m_sPlayerUid = playerUid;
+		e.m_sMedicUid = medicUid;
+		e.m_iBillNumber = billNumber;
+		e.m_vPosition = position;
+		return e;
+	}
+}
+
 //! First aid bought a downed player more time (LF_FirstAid, #257). m_sHelperUid is empty when
 //! the helper is not a player.
 class LF_OnFirstAid : LF_Event

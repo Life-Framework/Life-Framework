@@ -209,8 +209,8 @@ this over the plan default (prompt only, render-target text as a later spike).
 Why: a player reads the street from a distance and knows what a place is before
 walking up to it. What it means for code: `LF_SignComponent` draws the title
 into a paper sheet through an `RTTextureWidget` on `LF_Sign_Board` and
-`LF_Sign_Notice` (#119). `LF_Sign_Pub` and `LF_Sign_Chalkboard` ship with the
-face off until #116 places their sheets. The Read card stays the depth. A
+`LF_Sign_Notice` (#119). `LF_Sign_Pub` and `LF_Sign_Chalkboard` print it too
+(#116). The Read card stays the depth. A
 dedicated server draws nothing.
 
 **2026-11-08 — No faction screen; police clock in at the duty desk.** Everyone
