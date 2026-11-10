@@ -1320,6 +1320,23 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `cpr <playerId> <start|stop>`: what OnActionStart / OnActionCanceled of the revive
+	//! action send, so the server-validated broadcast can be driven without a held key.
+	protected static void DoCpr(LF_AgentCommand cmd)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		IEntity patient = GetGame().GetPlayerManager().GetPlayerControlledEntity(cmd.Arg1.ToInt());
+		if (!controller || !patient)
+		{
+			WriteResult(cmd.Id, "error", "no_such_player");
+			return;
+		}
+
+		controller.LF_AskReviveAnim(LF_NetworkUtils.GetRplId(patient), cmd.Arg2 == "start");
+		WriteResult(cmd.Id, "ok", "cpr " + cmd.Arg2);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Harness `shoot <playerId>` (dev gate): the server deals one lethal kinetic hit from the local
 	//! character to that player's body through the vanilla damage path (HandleDamage), so the safe
 	//! zone hook and the murder hook see it as they would see a bullet.
