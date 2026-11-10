@@ -44,7 +44,7 @@ class LF_Test_LedgerPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(18, version, "the save is written at version 18 (ledger is payload 14)");
+		ctx.Equal(19, version, "the save is written at version 19 (ledger is payload 14)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "ledger");
 		ctx.Equal(2, LF_Ledger.Count(), "both lines are back after the load");
 		ctx.True(LF_Ledger.VerifyBank(UID, 500), "the restored log still explains the stored balance");
