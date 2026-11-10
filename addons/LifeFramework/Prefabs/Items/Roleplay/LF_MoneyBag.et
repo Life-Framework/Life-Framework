@@ -40,7 +40,7 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{8C8D2EF181A72B14}Assets/Props/Civilian/Suitcase_01/Suitcase_01.xob"
+   Object "{5A8FB8F81E2ECC9D}Assets/Props/Civilian/SackUniversal_01/SackUniversal_01.xob"
   }
   RigidBody "{5A4ACBB1A0084DA1}" {
    Active Inactive
@@ -50,4 +50,5 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
    ResponseIndex "SmallDestructible"
   }
  }
+ scale 0.55
 }

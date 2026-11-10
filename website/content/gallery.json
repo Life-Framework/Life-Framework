@@ -42,7 +42,7 @@
     "271/fence-list": "The fence's list. Each tool opens after a number of completed crimes.",
     "271/fence-yard": "The old barn where the fence works, off the main street.",
     "274/van-street": "The cash van on the main street.",
-    "274/van-bags": "Three money bags on the road behind the van after its box is drilled open.",
+    "274/van-bags": "Three money sacks behind the van after its box is drilled open.",
     "276/village-layout": "The playtest village from above.",
     "414/stolen_car_on_board": "A stolen car reported on the police wanted board.",
     "415/chop_shop_on_board": "A chop shop job on the police wanted board.",
@@ -56,9 +56,7 @@
     "area-7-hospital/desk": "Duty desk and dispatch board outside the hospital door",
     "area-7-hospital/cabinet": "Medicine cabinet, hospital sign and supply boxes",
     "area-10-cash-van/wide": "The cash van at the bank stop",
-    "area-10-cash-van/street": "The van in the main street",
-    "area-10-cash-van/side": "The van seen from across the street",
-    "area-10-cash-van/bags": "Money bags dropped on the road behind the van"
+    "area-10-cash-van/bags": "The sacks spilled behind the van after the steel box is drilled open"
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",
