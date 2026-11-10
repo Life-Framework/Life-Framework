@@ -21,7 +21,7 @@ if (useDist) {
 const pages = {
   "/": "We are building the modern Life Framework",
   "/roadmap": "The Tree of Life",
-  "/playtest": "Run a playtest",
+  "/playtest": "Download the playtest and play",
   "/devlog": "What changed, day by day",
   "/servers": "Host it, tune it, build on it",
   "/contribute": "Join the Discord",

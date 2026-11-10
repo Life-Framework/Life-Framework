@@ -1,0 +1,87 @@
+# The playtest download: pack LifeFramework-Playtest.zip (tools/release/pack-playtest.mjs)
+# from a clean checkout of a playtest-* tag and publish it as the latest GitHub release.
+# The website and the launcher link
+# https://github.com/Life-Framework/Life-Framework/releases/latest/download/LifeFramework-Playtest.zip,
+# so the newest release is what players get. Other releases (film-evidence) stay pre-releases.
+#
+# The game needs addons/LifeFramework/resourceDatabase.rdb, which only Workbench writes and
+# this runner cannot. So a release starts on a PC with the tools: `tools\cli playtest release`
+# (tools/release/release-playtest.mjs) refreshes the rdb, creates the tag's release as a
+# pre-release with the rdb attached, and starts this workflow. Here the rdb is checked against
+# the tag's .meta files (every resource registered), the zip is packed and attached, and the
+# release becomes the latest. A tag pushed by hand runs it too; it fails until the release has
+# a fresh rdb.
+name: playtest-release
+
+on:
+  push:
+    tags: ["playtest-*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The playtest-* tag whose release carries resourceDatabase.rdb (tools\\cli playtest release)"
+        required: true
+
+concurrency:
+  group: playtest-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+    steps:
+      - name: check the tag
+        run: |
+          if ! echo "$TAG" | grep -Eq '^playtest-[A-Za-z0-9.-]+$'; then echo "::error::bad tag '$TAG'"; exit 1; fi
+          name=$(echo "$TAG" | sed -E 's/^playtest-m([0-9]+)-([0-9]+)$/Playtest M\1, build \2/')
+          [ "$name" = "$TAG" ] && name="Playtest $TAG"
+          echo "NAME=$name" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: selftest
+        run: node tools/validation/release-selftest.mjs
+      - name: fetch the resource database
+        run: |
+          mkdir -p dist
+          if ! gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern resourceDatabase.rdb --dir dist; then
+            echo "::error::release $TAG has no resourceDatabase.rdb; cut releases with tools\\cli playtest release (it refreshes and attaches it)"
+            exit 1
+          fi
+      - name: pack (refuses an rdb that misses any resource)
+        run: node tools/release/pack-playtest.mjs --rdb dist/resourceDatabase.rdb --version "$TAG" --out dist/LifeFramework-Playtest.zip
+      - name: publish
+        run: |
+          cat > dist/notes.md <<EOF
+          **Download:** [LifeFramework-Playtest.zip](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/LifeFramework-Playtest.zip)
+
+          1. You need Arma Reforger from Steam on a Windows PC.
+          2. Unzip the download anywhere.
+          3. Double-click **Play Life Framework**, then pick **Play on my own** or **Join the community server**.
+
+          Step by step, with pictures: https://life-framework.org/playtest
+          Feedback and session times: https://discord.gg/MjMexJteqz
+
+          Built from $(git rev-parse HEAD) by the playtest-release workflow.
+          EOF
+          gh release upload "$TAG" dist/LifeFramework-Playtest.zip --repo "$GITHUB_REPOSITORY" --clobber
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --title "$NAME" --notes-file dist/notes.md --prerelease=false --latest
+          echo "published https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
+      - name: check the stable download link
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -L -r 0-0 "https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/LifeFramework-Playtest.zip")
+          echo "latest/download answers $code"
+          case "$code" in 200|206) ;; *) echo "::error::the stable download link answers $code"; exit 1 ;; esac
+      - name: rebuild the website (shows the new version and size)
+        run: gh workflow run website.yml --repo "$GITHUB_REPOSITORY" --ref main || echo "::warning::could not start the website workflow; the page refreshes the version in the browser anyway"

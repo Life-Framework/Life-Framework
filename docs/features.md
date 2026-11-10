@@ -506,6 +506,15 @@
   persistent profile `%LOCALAPPDATA%\LifeFramework\player` (`LF_PLAYER_DIR`), waits
   for the host's `join allowed` line, and prints friend join lines. A running host
   is reused and joined with its own addon. `stop` closes the game, then `host stop`.
+- ✅ **Playtest download** (2026-11-10, `tools/release/`, `.github/workflows/playtest-release.yml`):
+  `LifeFramework-Playtest.zip` on the latest GitHub release holds the addon (tracked files only, plus a
+  fresh `resourceDatabase.rdb`: `tools\cli playtest release` refreshes it and the workflow packs) and
+  `Play Life Framework.cmd`, a PowerShell launcher that finds Arma Reforger through the Steam registry and
+  `libraryfolders.vdf`, then offers *Play on my own* (`-server LF_PlaytestTown.conf -addr 127.0.0.1:2302`)
+  or *Join the community server* (`-client` the address in `website/public/playtest-server.json`, set with
+  `tools\cli playtest server <address>|off`). The homepage and /playtest link the stable
+  `releases/latest/download/` URL. Selftest `tools/validation/release-selftest.mjs`. ⚠️ Windows only; the
+  zip is not signed, so SmartScreen may warn on first run.
 
 ### `LF_AccountReplication` — `Feature/Account/LF_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `LF_PlayerAccountManager` is

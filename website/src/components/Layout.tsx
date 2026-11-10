@@ -61,10 +61,10 @@ function PlaytestBanner() {
     <div className="playtest-banner bg-sign text-on-sign border-b-2 border-on-sign" role="region" aria-label="Playtest announcement">
       <div className="wrap flex items-start sm:items-center justify-between gap-3 py-2">
         <p className="text-[0.9375rem] leading-snug">
-          <strong className="font-semibold">A community playtest is open.</strong> You can play the M2 Living Town build and tell us what
-          broke.{" "}
+          <strong className="font-semibold">A community playtest is open.</strong> Download the M2 Living Town build, play it, and tell
+          us what broke.{" "}
           <Link to="/playtest" className="underline underline-offset-2 font-semibold whitespace-nowrap">
-            How to join
+            Download and play
           </Link>
         </p>
         <button
