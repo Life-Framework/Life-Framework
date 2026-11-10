@@ -26,7 +26,7 @@ Signs and prompts in the world lead the way. In this order, it is the M1 journey
    card, the town board, and a parcel run ("Run paid: $40").
 2. **Job.** Sign up at the post office counter and deliver the parcel. Five
    parcel runs open fuel delivery, fifteen open the taxi.
-3. **Bank.** You start with $1,000 in the bank. Deposit and withdraw at the ATM.
+3. **Bank.** You start with $1,000 in the bank. Deposit and withdraw at the ATM: two teller-window counters flank the bank door (about 177 and 187, 259), under the ATM sign.
 4. **Shop.** The general store sells food, drink, and a dressing from a price
    sheet.
 5. **Vehicle.** Read the price sheet at the car lot and buy a car. Your character
