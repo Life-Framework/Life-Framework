@@ -508,7 +508,16 @@ export function findOpenPrGh(root, branch) {
 export function autoMergePrGh(root, number) {
   const gh = ghBin();
   const res = run(gh, ["pr", "merge", String(number), "--auto", "--merge"], { cwd: root });
-  const out = (res.stdout + res.stderr).trim();
+  let out = (res.stdout + res.stderr).trim();
+  // A base with no required checks (an unprotected branch) is "clean" at once, so auto-merge is refused: merge now.
+  if (res.status !== 0 && /clean status/i.test(out)) {
+    const watch = run(gh, ["pr", "checks", String(number), "--watch", "--fail-fast"], { cwd: root });
+    if (watch.status !== 0) throw new Error(`PR checks did not pass; not merging: ${(watch.stdout + watch.stderr).trim().slice(-400)}`);
+    const now = run(gh, ["pr", "merge", String(number), "--merge"], { cwd: root });
+    out = (now.stdout + now.stderr).trim();
+    if (now.status !== 0) throw new Error(`gh pr merge failed: ${out}`);
+    return out || "merged after checks passed (base has no required checks)";
+  }
   if (res.status !== 0 && !/already/i.test(out)) throw new Error(`gh pr merge --auto failed: ${out}`);
   return out;
 }
