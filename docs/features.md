@@ -276,6 +276,14 @@
   The HUD stays second to the body cue. The health gauge already reads the
   damage manager, so the needs cap now shows there too.
 
+### `LF_LawlessHud` lawless area cue (#591) - `HUD/LF_LawlessHud.c`
+- Client side, no RPC: the zone entities exist in every client's world, so the HUD asks
+  `LF_Zones.RuleAt` for the controlled character every 0.25 s. A red "LAWLESS AREA" tag
+  (`UI/Layouts/HUD/LF_LawlessTag.layout`) stays up while inside, and a toast fires on enter and on
+  exit. A late joiner or respawn already inside reads as an enter on the first tick. The rule is
+  `LF_LawlessState.Transition`, proven by LOGIC test `lawless-hud/state-rule`. Strings: `LF-LawlessHud_*`.
+- Not yet seen in game: tag position and the toasts need a rendering client (see the PR's manual steps).
+
 ### `LF_ConsumableEffectSurvival` — `Feature/Survival/LF_ConsumableEffectSurvival.c`
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
   values `> 0`.

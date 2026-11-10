@@ -1,0 +1,28 @@
+FrameWidgetClass "{728A29EBF1E03C8A}" {
+ Name "LawlessTagRoot"
+ Slot FrameWidgetSlot "{6AD4DD383F79E17A}" {
+  Anchor 0 0 1 1
+ }
+ {
+  TextWidgetClass "{BD17376354E73C65}" {
+   Name "Tag"
+   Slot FrameWidgetSlot "{AB28046D29410DAC}" {
+    Anchor 0.5 0 0.5 0
+    PositionY 24
+    OffsetTop 24
+    SizeToContent 1
+   }
+   Visible 0
+   Pivot 0.5 0
+   Color 0.86 0.16 0.14 0.95
+   Text "#LF-LawlessHud_Tag"
+   "Font Size" 18
+   "Min Font Size" 18
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{B7C1D2E3F4A59601}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+ }
+}

@@ -6676,6 +6676,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
+    CustomStringTableItem "{F297FFD8D4B6E791}" {
+     Id "LF-LawlessHud_Tag"
+     Target_en_us "LAWLESS AREA"
+     Comment "Persistent HUD tag while the local player stands inside a lawless zone."
+    }
+    CustomStringTableItem "{4FBA54E7032A04DE}" {
+     Id "LF-LawlessHud_Title"
+     Target_en_us "Lawless area"
+     Comment "Toast title when the player enters or leaves a lawless zone."
+    }
+    CustomStringTableItem "{59EE09E1B7435797}" {
+     Id "LF-LawlessHud_Enter"
+     Target_en_us "You entered a lawless area. Server rules are relaxed here. Watch your back."
+     Comment "Toast on entering a lawless zone (also when joining or spawning inside one)."
+    }
+    CustomStringTableItem "{9A2F1AA936E1BDA7}" {
+     Id "LF-LawlessHud_Exit"
+     Target_en_us "You left the lawless area."
+     Comment "Toast on leaving a lawless zone."
+    }
   }
  }
 }
