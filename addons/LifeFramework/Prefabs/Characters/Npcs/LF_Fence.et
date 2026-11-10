@@ -12,6 +12,12 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
    m_sShopDescription "#LF-Shop_Desc_Fence"
    m_bFence 1
    m_aShopItems {
+    LF_ShopItem "{C4A17E92B05D3F86}" {
+     m_ItemPrefab "{6B1D3F5A92C47E08}Prefabs/Items/Fence/LF_Lockpick.et"
+     m_sDisplayName "#LF-Item_Lockpick_Name"
+     m_iMaxQuantity 5
+     m_iMinCrimes 0
+    }
     LF_ShopItem "{E8D0D4FDD915DFF2}" {
      m_ItemPrefab "{4FF102B4CE9B0ED3}Prefabs/Items/Fence/LF_Drill.et"
      m_sDisplayName "#LF-Item_Drill_Name"

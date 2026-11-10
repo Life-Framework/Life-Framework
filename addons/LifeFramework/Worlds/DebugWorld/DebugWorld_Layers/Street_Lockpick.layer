@@ -1,0 +1,20 @@
+GenericEntity Roadmap_Lockpick_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_sDebugIdentifier "roadmap-lockpick-door"
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   additionalActions {
+    LF_LockpickAction "{2D7E41B9C60A38F5}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_LockpickTargetComponent "{A3F5106D9E2B7C84}" {
+   m_bStartLocked 1
+  }
+ }
+ coords 306 0 241.5
+}
