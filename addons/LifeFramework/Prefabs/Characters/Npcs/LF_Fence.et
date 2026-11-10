@@ -30,6 +30,12 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
      m_iMaxQuantity 1
      m_iMinCrimes 8
     }
+    LF_ShopItem "{5A9D9AF099B66F4B}" {
+     m_ItemPrefab "{D763DE7A23C5D1FB}Prefabs/Items/Fence/LF_Scanner.et"
+     m_sDisplayName "#LF-Item_Scanner_Name"
+     m_iMaxQuantity 1
+     m_iMinCrimes 2
+    }
    }
   }
   ActionsManagerComponent "{5A4B13A9811FB113}" {

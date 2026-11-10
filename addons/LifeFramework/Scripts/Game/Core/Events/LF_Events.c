@@ -352,3 +352,23 @@ class LF_OnAimedAt : LF_Event
 		return e;
 	}
 }
+
+//! A police scanner picked up a service call (#253). Published by LF_Scanner for each scanner
+//! carrier who is not a receiver of the call, so a criminal listening in leaves a trace on the bus.
+class LF_OnScannerHeard : LF_Event
+{
+	string m_sListenerUid;
+	string m_sService;
+	string m_sSummary;
+	string m_sPlace;
+
+	static LF_OnScannerHeard Create(string listenerUid, string service, string summary, string place)
+	{
+		LF_OnScannerHeard e = new LF_OnScannerHeard();
+		e.m_sListenerUid = listenerUid;
+		e.m_sService = service;
+		e.m_sSummary = summary;
+		e.m_sPlace = place;
+		return e;
+	}
+}

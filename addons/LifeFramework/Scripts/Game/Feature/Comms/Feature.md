@@ -36,3 +36,18 @@ with room (`m_iMaxTakers`, police 2). It publishes `LF_OnServiceCallTaken`; the 
 `LF_PagerComponent` of every receiver who carries one (`LF_Pager.Page`), then the pager beeps. The last
 `m_iPagerMessages` calls ride one replicated string; `LF_ReadPagerAction` shows them. Police get one in
 the duty kit (`GameMode_Roleplay_Debug.et`).
+
+## Service radios (#252)
+
+Duty kits carry a vanilla ANPRC68; `LF_ServiceRadio` tunes its first transceiver to the service's
+`m_iFrequency` (kHz) on clock-in and on a reconnect while on duty.
+
+## Police scanner (#253)
+
+`Prefabs/Items/Fence/LF_Scanner.et` (`LF_ScannerComponent`, `LF_SerialComponent`) is sold by the fence
+(`m_iMinCrimes` 2) and stamped with a serial like the other tools. `LF_ScannerSubscriber` (installed with the
+board) offers every `LF_OnServiceCall` to the scanner carriers who are not its receivers; a service with a
+radio frequency is heard (police, medic). The scanner chirps, the carrier gets a toast, and
+`LF_OnScannerHeard` goes out on the bus. It never transmits. Legality is `m_bScannerIllegal` in
+`LF_ServiceCalls.conf`: `LF_ConfiscateAction` (the officer's search of a wanted suspect) takes every scanner and
+files `#LF-Offence_Scanner` once through `LF_WantedReports.Report` (no save change; the crime record counts it).

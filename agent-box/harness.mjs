@@ -120,6 +120,9 @@ export function buildLine(id, spec) {
   if (spec.verb === "giveup") {
     return `${id} giveup`;
   }
+  if (spec.verb === "scanner") {
+    return `${id} scanner`;
+  }
   if (spec.verb === "radio") {
     return `${id} radio`;
   }
@@ -1368,6 +1371,9 @@ function main(argv) {
     }
     if (cmd === "giveup") {
       return printResult(sendCommand({ verb: "giveup" }, 10000));
+    }
+    if (cmd === "scanner") {
+      return printResult(sendCommand({ verb: "scanner" }, 10000));
     }
     if (cmd === "radio") {
       return printResult(sendCommand({ verb: "radio" }, 10000));

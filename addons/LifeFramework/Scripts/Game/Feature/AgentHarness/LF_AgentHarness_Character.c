@@ -232,6 +232,41 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness `scanner`: the server puts a police scanner in this character's inventory, behind the
+	//! dev gate (the fence path needs a crime record and cash; the proof is about hearing).
+	void LF_AskHarnessScanner(int commandId)
+	{
+		if (Replication.IsServer())
+		{
+			LF_ApplyHarnessScanner(commandId, true);
+			return;
+		}
+
+		Rpc(RpcAsk_LF_HarnessScanner, commandId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_HarnessScanner(int commandId)
+	{
+		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "scanner");
+		LF_ApplyHarnessScanner(commandId, gateOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_ApplyHarnessScanner(int commandId, bool gateOpen)
+	{
+		if (!gateOpen)
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		int added = LF_InventoryUtils.AddAmount(this, LF_Scanner.PREFAB, 1);
+		LF_HarnessReply(commandId, "ok", string.Format("scanner added=%1", added));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Harness `shoot`: this character deals one lethal hit to a player, behind the dev gate.
 	void LF_AskHarnessShoot(int commandId, int targetPlayerId)
 	{
