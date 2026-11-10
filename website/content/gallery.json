@@ -52,6 +52,8 @@
     "area-1-spawn-square/wide": "Spawn square, wide",
     "area-1-spawn-square/detail": "Spawn square, welcome sign",
     "area-1-spawn-square/payphone": "The payphone",
+    "area-2-bank/wide": "The bank front: two teller windows, the ATM sign and the vault door on the east wall (right)",
+    "area-2-bank/detail": "The two ATM teller windows either side of the bank door",
     "area-7-hospital/wide": "The village hospital with the ambulance in its bay",
     "area-7-hospital/desk": "Duty desk and dispatch board outside the hospital door",
     "area-10-cash-van/wide": "The cash van at the bank stop",
@@ -59,6 +61,7 @@
   },
   "areaTitles": {
     "area-1-spawn-square": "Spawn square",
+    "area-2-bank": "The bank",
     "area-7-hospital": "Hospital",
     "area-10-cash-van": "Cash van route"
   },

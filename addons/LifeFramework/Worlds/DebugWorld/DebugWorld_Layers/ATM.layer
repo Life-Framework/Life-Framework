@@ -1,7 +1,7 @@
 GenericEntity ATM_Debug {
  components {
   MeshObject "{5A4B0B84C86D5843}" {
-   Object "{CD7B21DA4D8AE5FB}Assets/Props/Commercial/CashierShop_01/CashierShop_01.xob"
+   Object "{DC34EB7CEFB68115}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01_window.xob"
   }
   RigidBody "{5A4B0B84C86D5844}" {
    Mass 10
@@ -35,13 +35,13 @@ GenericEntity ATM_Debug {
   }
  }
   Flags 0x403 0
- coords 177 1.04 256.6
+ coords 177 0 259.2
  angleY 180
 }
 GenericEntity ATM_Debug_2 {
  components {
   MeshObject "{5A4B0B84C86D6A43}" {
-   Object "{CD7B21DA4D8AE5FB}Assets/Props/Commercial/CashierShop_01/CashierShop_01.xob"
+   Object "{DC34EB7CEFB68115}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01_window.xob"
   }
   RigidBody "{5A4B0B84C86D6A44}" {
    Mass 10
@@ -75,6 +75,6 @@ GenericEntity ATM_Debug_2 {
   }
  }
   Flags 0x403 0
- coords 187 1.04 256.6
+ coords 187 0 259.2
  angleY 180
 }
