@@ -281,9 +281,17 @@ tools\cli pool prune [--dry-run] [--unmarked]              # remote run folders 
 You change nothing: run `test`, `e2e`, `session up` as before. The pool queues
 it, picks a lane and a budget, and prints one line per outcome.
 
-- **Lanes.** `tools/pool.json` gives this PC `"lanes": {"test": 2, "session": 1}`.
-  The session lane is the old `server-2001` lock (UDP 2001: `session`, `host`,
-  `serve`; clients join `127.0.0.1:2001`). Each test lane is its own lock,
+- **Lanes.** `tools/pool.json` gives this PC `"lanes": {"test": 2, "session": 2}`.
+  Session lane 1 is the old `server-2001` lock (UDP 2001: `session`, `host`,
+  `serve`; clients join `127.0.0.1:2001`; the only one friends reach over the LAN).
+  Session lane 2 is `server-2011` on `127.0.0.1:2011` (`-addr`, A2S `-a2sPort 17877`;
+  its clients join `127.0.0.1:2011`); `session up` takes the first free lane and
+  records it in `session.json` (`lane`), and `down`, `restart` and `join` use that
+  one. Harness commands find their session by the checkout's own session dir
+  (`%LOCALAPPDATA%LifeFrameworksession<checkout>`) and its session id, so a
+  checkout never reaches the other lane's clients; a session client's command no longer
+  takes the machine-wide `agent-box-play` claim (that guards the shared default profile).
+  `session up` refuses (or queues) only when every lane is taken. Each test lane is its own lock,
   `server-test-1`, `server-test-2`, with its server on `127.0.0.1:2002`,
   `127.0.0.1:2003`. The engine ignores `-bindPort` and `-bindIP` in `-server`
   mode and listens on 0.0.0.0:2001; `-addr <ip>:<port>` is what moves it
@@ -292,6 +300,15 @@ it, picks a lane and a budget, and prints one line per outcome.
   machine without `lanes` (the box) keeps one shared lane. Old CLIs keep using
   `server-2001` for everything, so the old lock is still honoured during the
   switch.
+- **Second session RAM gate.** A session starting beside another live session also
+  needs its own reserve: free RAM minus `sessionReserveServerMb` (600) minus
+  `sessionReserveClientMb` (850) per client, minus the same for any session still booting,
+  must stay at least `minFreeMb`; otherwise it waits with one line ("free RAM 2.2 GB minus
+  1.4 GB for the session would be under 1.5 GB"). Measured 2026-11-10 on this 15.6 GB PC
+  (free RAM, from `tmp/ram-<slug>.log` samples): server plus one client 1.3 GB, the second
+  client +0.8 GB (working sets: server 0.7 GB, each client 1.0 to 1.25 GB). With ~3.8 GB free
+  and nothing running, two 1-client sessions leave about 1.2 GB: under the 1.5 GB floor, so
+  the gate admits the second only while other programs leave more room.
 - **RAM gate.** A second concurrent server starts only while free RAM is at
   least `minFreeMb` (1500). This PC has 15.6 GB; a server is about 0.7 GB, a
   client 0.7 to 1.5 GB, so with a two-client session up the gate, not the lane
