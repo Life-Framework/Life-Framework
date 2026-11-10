@@ -149,6 +149,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LocalIdentity(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickDoor(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickDoorWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_LockpickKeepsPick(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LockpickVehicle(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickVehicleWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LoggingChain(), LF_TestTier.WORLD);
@@ -245,6 +246,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ScannerHears(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ScannerIllegal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ScreenshotFailSafe(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SearchCooldown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceCalls(), LF_TestTier.LOGIC);

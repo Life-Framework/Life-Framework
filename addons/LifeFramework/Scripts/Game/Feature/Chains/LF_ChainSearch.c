@@ -12,6 +12,9 @@ class LF_ChainSearch
 	//! Furthest an officer may stand from a searched vehicle (its origin is mid-body).
 	static const float VEHICLE_REACH = 8.0;
 
+	//! World time of the last search per target key. Server only; one int per searched target.
+	protected static ref map<string, int> s_mLastSearch = new map<string, int>();
+
 	//------------------------------------------------------------------------------------------------
 	//! Chance a search finds a load. Zero for no goods, one at a load of four.
 	static float FindChance(int load)
@@ -20,6 +23,51 @@ class LF_ChainSearch
 			return 0;
 
 		return Math.Clamp(BASE_CHANCE + CHANCE_PER_LOAD * load, 0, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a target searched at lastMs (negative: never) may be searched again at nowMs. Pure.
+	static bool MaySearch(int lastMs, int nowMs, int cooldownMs)
+	{
+		if (lastMs < 0 || cooldownMs <= 0)
+			return true;
+
+		return nowMs - lastMs >= cooldownMs;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: claims a search of the target (key "p:<uid>" or "v:<rplId>") at the world time. False when
+	//! it was searched inside the configured cooldown; the caller then rolls nothing and reports clean (#472).
+	static bool TryBeginSearch(string key, int nowMs)
+	{
+		int cooldownMs = LF_PoliceConfig.SearchCooldownSeconds() * 1000;
+		int lastMs = -1;
+		if (s_mLastSearch.Find(key, lastMs) && !MaySearch(lastMs, nowMs, cooldownMs))
+		{
+			LF_Debug.Info(FEATURE, string.Format("search of %1 refused: searched %2 ms ago, cooldown %3 ms", key, nowMs - lastMs, cooldownMs));
+			return false;
+		}
+
+		s_mLastSearch.Set(key, nowMs);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetSearchCooldowns()
+	{
+		s_mLastSearch.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string PersonKey(IEntity target)
+	{
+		return "p:" + LF_Utils.GetPlayerUID(LF_PlayerInteraction.PlayerIdOf(target));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string VehicleKey(IEntity vehicle)
+	{
+		return string.Format("v:%1", LF_NetworkUtils.GetRplId(vehicle));
 	}
 
 	//------------------------------------------------------------------------------------------------
