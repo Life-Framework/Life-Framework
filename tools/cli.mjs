@@ -1638,20 +1638,9 @@ function cmdSessionUp(root, dir, flags) {
     console.log("session: one is already running; 'node agent-box/session.mjs down' first");
     return 1;
   }
-  // Each checkout has its own session dir; clients another checkout left running still hold memory and windows.
-  // Without --wait another checkout's live session is refused at once. With --wait the request goes straight
-  // into the pool queue (priority, aging, the hold cap and the idle reaper all work from there); this used to be a
-  // blind 5 s poll loop outside the queue, so a waiting `up` had no place in line and nothing closed the holder.
-  if (!flags.includes("--wait")) {
-    // One live session per session lane: another checkout's session only blocks once every lane is taken.
-    const laneCount = pool.sessionLanes(root).length;
-    const live = session.liveSessionsElsewhere(dir, host.pidAlive);
-    if (live.length >= laneCount) {
-      const o = live[0];
-      console.log(`session: ${o.root ?? o.dir} has a live session${laneCount > 1 ? ` (all ${laneCount} session lanes are taken)` : ""}; it runs 'node agent-box/session.mjs down' first`);
-      return 1;
-    }
-  }
+  // Another checkout's live session blocks only through the lane lock (and the RAM floor) that
+  // acquireSessionLaneSync below checks: a free lane is ours. Clients left by a session whose server
+  // is gone hold no lane; they are reaped further down by their recorded pids.
   const exe = serverExe();
   const game = gameClientExe();
   for (const f of clients > 0 ? [exe, game] : [exe]) {
@@ -1691,19 +1680,9 @@ function cmdSessionUp(root, dir, flags) {
   const laneLock = lane?.lockName ?? lane?.name ?? SERVER_SLOT;
   const lanePort = lane?.port ?? 2001;
   console.log(`session: lane ${laneLock} (port ${lanePort})`);
-  // The lane is ours; clients the previous holder left behind (its server is gone) may still hold memory.
-  // Another lane's healthy session is not a leftover: only clients whose server is gone are.
-  const leftoversNow = () => session.liveSessionsElsewhere(dir, host.pidAlive).filter((o) => !o.serverUp);
-  let leftovers = leftoversNow();
-  for (let i = 0; i < 24 && leftovers.length; i++) {
-    sleepMs(5000);
-    leftovers = leftoversNow();
-  }
-  if (leftovers.length) {
-    console.log(`FAIL  ${leftovers[0].root ?? leftovers[0].dir} still has game clients running after 2 min; it runs 'node agent-box/session.mjs down'`);
-    wt.releaseLock(root, laneLock);
-    return 1;
-  }
+  // Another lane's healthy session is not a leftover. Clients of a session whose server is gone are
+  // orphans: close them by the pids in that session's own record (never by process name).
+  for (const d of session.reapOrphanSessions(dir, host.pidAlive, killTree)) console.log(`session: closed orphaned clients of ${d} (their server was gone)`);
   const heldSince = new Date().toISOString();
   const waitS = Math.round((lane?.queuedMs ?? Date.now() - queuedAt) / 100) / 10;
   resetLease(dir);
