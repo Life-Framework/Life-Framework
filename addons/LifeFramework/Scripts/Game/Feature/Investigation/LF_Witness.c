@@ -6,6 +6,7 @@
 //! distance. Nothing a client sends decides a description; a client only names which thing it
 //! wants to say (clothing, vehicle, plate).
 //!   payphone      : LF_WitnessPayphoneAction, one entry per thing seen
+//!   officer asks  : LF_WitnessAskAction (a town NPC), the "witness" role slot (a player)
 //! Statements are session-local, like the dispatch log, and show under the dispatch log on the
 //! wanted board (police view).
 //------------------------------------------------------------------------------------------------
@@ -79,6 +80,7 @@ class LF_Witness
 {
 	static const string FEATURE = "Witness";
 	static const string NPC_PREFIX = "npc:";
+	static const string LABEL_NPC = "#LF-Witness_Npc";
 	static const string LABEL_ANONYMOUS = "#LF-Witness_Anonymous";
 	static const string ENTRY_PREFIX = "S;";
 	static const string ENTRY_SEPARATOR = ";";
@@ -86,6 +88,8 @@ class LF_Witness
 	protected static ref array<ref LF_WitnessScene> s_aScenes;
 	protected static ref array<ref LF_WitnessStatement> s_aStatements;
 	protected static int s_iSequence;
+	protected static vector s_vScanOrigin;
+	protected static LF_WitnessScene s_ScanScene;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -93,6 +97,7 @@ class LF_Witness
 		s_aScenes = null;
 		s_aStatements = null;
 		s_iSequence = 0;
+		s_ScanScene = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -172,6 +177,7 @@ class LF_Witness
 
 		LF_WitnessScene scene = OpenScene(report, suspectUid, offence, clothing, vehicle, PlateOf(suspect), place, System.GetTickCount());
 		CollectPlayers(scene, suspect);
+		CollectNpcs(scene, suspect);
 		LF_Debug.Info(FEATURE, string.Format("report #%1: %2 witness(es) in sight (plate '%3')", report, scene.m_aWitnesses.Count(), scene.m_sPlate));
 		return scene;
 	}
@@ -251,6 +257,29 @@ class LF_Witness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected static void CollectNpcs(notnull LF_WitnessScene scene, IEntity suspect)
+	{
+		if (!GetGame().GetWorld())
+			return;
+
+		s_vScanOrigin = suspect.GetOrigin();
+		s_ScanScene = scene;
+		GetGame().GetWorld().QueryEntitiesBySphere(s_vScanOrigin, LF_WitnessConfig.NpcSightRange(), CollectNpc, null, EQueryEntitiesFlags.ALL);
+		s_ScanScene = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectNpc(IEntity entity)
+	{
+		LF_NpcBaseEntity npc = LF_NpcBaseEntity.Cast(entity);
+		if (!npc || !s_ScanScene || !LF_PlayerInteraction.IsAlive(npc))
+			return true;
+
+		AddWitness(s_ScanScene, NpcKey(npc), true, vector.Distance(npc.GetOrigin(), s_vScanOrigin));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The newest open scene this witness stood in sight of, or null.
 	static LF_WitnessScene SceneFor(string witnessKey, int nowTick)
 	{
@@ -310,6 +339,9 @@ class LF_Witness
 	//------------------------------------------------------------------------------------------------
 	protected static string LabelFor(notnull LF_WitnessEntry entry)
 	{
+		if (entry.m_bNpc)
+			return LABEL_NPC;
+
 		if (LF_WitnessConfig.Anonymous())
 			return LABEL_ANONYMOUS;
 
@@ -399,6 +431,53 @@ class LF_Witness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: an officer asks. A player says everything it could see; an NPC remembers each thing
+	//! only with the configured accuracy (rolls are 0..1, one per field, so a test can fix them).
+	//! \return Number of things the witness said.
+	static int Ask(LF_WitnessScene scene, string witnessKey, array<float> rolls, string channel)
+	{
+		if (!scene)
+			return 0;
+
+		LF_WitnessEntry entry = FindEntry(scene, witnessKey);
+		if (!entry)
+			return 0;
+
+		LF_WitnessStatement statement = FindStatement(scene, entry);
+		bool fresh = statement == null;
+		if (fresh)
+			statement = NewStatement(scene, entry);
+
+		int said;
+		for (int i = 0; i < 3; i++)
+		{
+			if (entry.m_bNpc)
+			{
+				float roll = 0;
+				if (rolls && i < rolls.Count())
+					roll = rolls[i];
+
+				if (roll >= LF_WitnessConfig.NpcAccuracy())
+					continue;
+			}
+
+			if (Fill(scene, entry, statement, i) == LF_EWitnessResult.OK)
+				said++;
+		}
+
+		if (said > 0)
+		{
+			if (fresh)
+				Keep(statement);
+
+			Announce(scene, entry, statement, channel);
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("report #%1: %2 questioned, said %3 thing(s)", scene.m_iReport, witnessKey, said));
+		return said;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void Announce(notnull LF_WitnessScene scene, notnull LF_WitnessEntry entry, notnull LF_WitnessStatement statement, string channel)
 	{
 		LF_Debug.Info(FEATURE, string.Format("report #%1: statement by %2 via %3: clothing='%4' vehicle='%5' plate='%6'", scene.m_iReport, entry.m_sKey, channel, statement.m_sClothing, statement.m_sVehicle, statement.m_sPlateFragment));
@@ -407,6 +486,19 @@ class LF_Witness
 			witnessUid = entry.m_sKey;
 
 		LF_EventBus.Publish(LF_OnWitnessStatement.Create(scene.m_iReport, witnessUid, entry.m_bNpc, channel, statement.m_sClothing, statement.m_sVehicle, statement.m_sPlateFragment));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Toast key for an officer's question: no scene means the witness saw nothing.
+	static string AskKey(bool sawScene, int said)
+	{
+		if (!sawScene)
+			return "#LF-Witness_NothingSeen";
+
+		if (said <= 0)
+			return "#LF-Witness_Vague";
+
+		return "#LF-Witness_Statement";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -126,6 +126,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "radio")
 			return true;
+		if (cmd.Verb == "scanner")
+			return true;
 		if (cmd.Verb == "peers")
 			return true;
 		if (cmd.Verb == "shoot")
@@ -870,6 +872,15 @@ class LF_AgentHarness
 		if (cmd.Verb == "radio")
 		{
 			DoRadio(cmd);
+			return;
+		}
+		if (cmd.Verb == "scanner")
+		{
+			SCR_ChimeraCharacter scannerCharacter = LF_Utils.GetLocalCharacter();
+			if (!scannerCharacter)
+				WriteResult(cmd.Id, "error", "no_character");
+			else
+				scannerCharacter.LF_AskHarnessScanner(cmd.Id);
 			return;
 		}
 		if (cmd.Verb == "peers")

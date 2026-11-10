@@ -5927,6 +5927,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cab wanted"
      Comment "Summary the taxi pager and board show for a call from the payphone."
     }
+    CustomStringTableItem "{824451A6C3821C83}" {
+     Id "LF-Item_Scanner_Name"
+     Target_en_us "Police scanner"
+     Comment "Item name of the fence police scanner (#253)."
+    }
+    CustomStringTableItem "{C387085823DBA47D}" {
+     Id "LF-Item_Scanner_Description"
+     Target_en_us "Listens in on police and medic calls. Receives only. Illegal: an officer who finds it takes it and files a charge."
+     Comment "Item description of the police scanner."
+    }
+    CustomStringTableItem "{3696651FF2025033}" {
+     Id "LF-Offence_Scanner"
+     Target_en_us "Carrying a police scanner"
+     Comment "Offence: a scanner found on a search (#253)."
+    }
+    CustomStringTableItem "{4A5D20C00F349F20}" {
+     Id "LF-Scanner_Title"
+     Target_en_us "Scanner"
+     Comment "Toast title for a scanner."
+    }
+    CustomStringTableItem "{59E2E4A1484842B5}" {
+     Id "LF-Scanner_Heard"
+     Target_en_us "Heard on the scanner: %1"
+     Comment "Toast when a scanner hears a service call; %1 is the call summary."
+    }
+    CustomStringTableItem "{CDE539EBECEAEB35}" {
+     Id "LF-Witness_Ask"
+     Target_en_us "Ask what you saw"
+     Comment "Interaction menu entry for on-duty police facing a witness."
+    }
+    CustomStringTableItem "{B52F0B4191F415B2}" {
+     Id "LF-Witness_Npc"
+     Target_en_us "a passer-by"
+     Comment "Wanted board: the witness is a town NPC."
+    }
+    CustomStringTableItem "{A4A046A831C69FE0}" {
+     Id "LF-Witness_Vague"
+     Target_en_us "They can't recall anything useful."
+     Comment "Toast to the officer: the witness remembered nothing they could describe."
+    }
+    CustomStringTableItem "{A27156349262AF6B}" {
+     Id "LF-Witness_Statement"
+     Target_en_us "Statement taken. It is on the wanted board."
+     Comment "Toast to the officer: the witness gave a statement."
+    }
   }
  }
 }
