@@ -82,3 +82,39 @@ is a table a server owner edits, and the scripts read it.
 3. Per-side starting money and paycheck belong in pack config, not core.
 4. Make persistence opt-in per field in the same way; we already version the
    payloads.
+
+## Server code: patterns and mistakes
+
+Read from `life_server/Functions/` and `Altis_Life.Altis/core/session/` on
+2026-11-10. File names and behaviour only.
+
+**Worth adopting** (filed as M3 epic #684):
+
+- **Crimes are codes.** Wanted entries point at a crime table, so the charge
+  list, the bounty and the display all come from one place (#685).
+- **Prices derive from one base.** Vehicle buy, sell, chop, impound and storage
+  are multipliers, and the config itself warns about buy-sell loops (#686,
+  #688).
+- **Owners choose what persists.** Separate switches for position, gear, fuel,
+  damage and trunk (#689).
+- **A cleanup loop.** An hourly server sweep removes empty, unwatched or wrecked
+  vehicles; disconnects remove the body and nearby dropped containers (#690,
+  #691).
+- **Playtime is tracked** per player and side (#692).
+- **Partial saves.** A save request names one field (cash, bank, licences, gear,
+  position, jail) instead of the whole record. Our engine persistence differs,
+  but the idea of saving only what changed holds.
+
+**Mistakes to avoid:**
+
+- **The client reports its own cash.** The partial save sends the client's cash
+  and bank values to the server, which writes them. A remote-exec allow list
+  (`CfgRemoteExec`) limits which functions can be called, not what values are
+  sent. Our rule is the reverse: the server owns money (#693 enforces it).
+- **Keys live in one global variable per player** on the server, keyed by a
+  formatted string. It works, but nothing persists or validates it. Our keys are
+  items (M2 #613).
+- **Anti-cheat by scanning the client** (SpyGlass, BattlEye filters). It is an
+  arms race; server authority removes most of the need.
+- **A headless client for database work** offloads queries from the server. It
+  adds a second authority; Reforger's persistence makes it unnecessary for us.
