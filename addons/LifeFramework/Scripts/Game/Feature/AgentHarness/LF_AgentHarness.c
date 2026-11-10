@@ -128,6 +128,8 @@ class LF_AgentCommand
 			return true;
 		if (cmd.Verb == "scanner" || cmd.Verb == "drill" || cmd.Verb == "keycard")
 			return true;
+		if (cmd.Verb == "lockpick")
+			return true;
 		if (cmd.Verb == "peers")
 			return true;
 		if (cmd.Verb == "shoot")
@@ -898,6 +900,15 @@ class LF_AgentHarness
 				WriteResult(cmd.Id, "error", "no_character");
 			else
 				scannerCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb);
+			return;
+		}
+		if (cmd.Verb == "lockpick")
+		{
+			SCR_ChimeraCharacter pickCharacter = LF_Utils.GetLocalCharacter();
+			if (!pickCharacter)
+				WriteResult(cmd.Id, "error", "no_character");
+			else
+				pickCharacter.LF_AskHarnessScanner(cmd.Id, cmd.Verb);
 			return;
 		}
 		if (cmd.Verb == "peers")

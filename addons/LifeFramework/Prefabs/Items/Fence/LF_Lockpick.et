@@ -1,0 +1,38 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "3C70B1E4A95D2F18"
+ components {
+  LF_SerialComponent "{4E2A91C6B03D7F55}" {
+  }
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 10
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{7A15C3D9E2B8460F}" {
+     Name "#LF-Item_Lockpick_Name"
+     Description "#LF-Item_Lockpick_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.05
+     ItemVolume 40
+     RestingUP Forward
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    LF_ReadSerialAction "{1F83A6D07C94E252}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9D40B7E1A5C32F86}" {
+      Name "#LF-Serial_Read_Action"
+     }
+    }
+   }
+  }
+ }
+}

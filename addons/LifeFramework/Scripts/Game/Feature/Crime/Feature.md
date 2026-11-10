@@ -92,3 +92,9 @@ isn't today — see current state).
 
 - The armory store is a `LF_HeistVaultComponent` with weapons loot (`LF_BankLoot.IssueWeapons`), a keycard-or-charge tool list, a loud alarm, a stock and a refill. Weapons are `LF_Armory*` prefabs carrying `LF_SerialComponent`; each serial is booked to the thief in the fence book.
 - Test `crime/armory`; proof `session.mjs armory-proof`.
+
+## Lockpicking (#411)
+
+- `LF_Lockpick` (server) runs a timed attempt on a locked `LF_LockComponent` door that carries `LF_LockpickTargetComponent`; `LF_LockpickRules` holds the pure rules (time, odds, wear, noise, gate). The pick is `LF_Lockpick.et`, a stack whose count is its uses; skill is the character level, so nothing new is saved.
+- A success always files `LF_WantedReports.Report` (offence `#LF-Offence_Lockpick`); a failure only when its noise roll is heard. Wanted is not raised and dispatch is not called: a witness has to report it.
+- Test `lockpick/door`, `e2e/lockpick-door`. Log `[LFDebug:Lockpick]`.

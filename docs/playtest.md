@@ -76,6 +76,7 @@ log that back them stay on the server and invisible.
   A police scanner ($900, after 2 crimes) chirps and shows a toast whenever a
   police or medic call goes out. It is illegal: an officer who searches a wanted
   suspect takes it and files a charge.
+- **Lockpick.** The fence sells a lockpick (no record needed, $250, a stack: each opened lock or snapped pick wears one use). The lock-up door just east of the yard gate (about 306, 241) is locked: stand at it and use *Pick the lock*. Stay close for 6 to 20 seconds (your level shortens it). It opens, or the pick slips, or snaps. An opened lock files a crime report that nearby witnesses can describe; the police are not called by it. The yard gate, the bank vault and the jail door cannot be picked.
 - **Medic duty.** Clock in at the duty desk in the hospital (the punch clock,
   open to everyone, no roster). You swap to the medic kit (uniform, medical
   kit, dressings, saline, morphine, tourniquet, a pager) and your civilian
