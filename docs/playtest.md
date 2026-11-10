@@ -59,6 +59,7 @@ log that back them stay on the server and invisible.
   board. One player can call once a minute. With nobody on duty nothing
   connects and no coin is taken.
 - **Where the Comms gear stands.** Payphones (police, doctor and cab presets): the square (96, 263), the fuel station (255, 244), outside the hospital (255, 259) and outside the police station (237, 241). Boards: the police dispatch board beside the wanted board at the station, and the medic dispatch board in the hospital. Read a board to see open calls, take one while on duty, and the caller hears the unit is on the way.
+- **Where the investigation gear stands.** The fence (Vince) is behind the barn at (186, 311), north-west of the bank, away from the street. The bank vault door is at (194, 265) and opens only to a fence tool. The cash van parks at the bank (192, 247) and visits the general store (162, 247) and the fuel station (258, 247) along the main street; its box opens to a drill and drops three money bags. The evidence locker (234, 238), wanted board and dispatch board are at the police station. The payphone witness and the officer's "Ask what you saw" are covered under Comms and Evidence above.
 - **Downed, not dead.** A lethal hit knocks a player unconscious instead of
   killing them. You lie on the ground, cannot move or act, take no further
   damage, and others can search you. A downed player bleeds out after three
@@ -66,8 +67,9 @@ log that back them stay on the server and invisible.
   each one adds time (morphine adds none). Hold X (pad Y) after 30 seconds to
   give up, which is death. Disconnecting while downed is death too. NPCs still
   die as before. A medic on duty can revive a downed player.
-- **The fence.** A dealer in the net-fenced test annex sells crime tools only to
-  proven criminals: a drill after 3 completed crimes, a breaching charge after
+- **The fence.** Vince, a dealer behind the old barn at the north-west edge of
+  the village (about 186, 311, a walk up the lane behind the bank), sells crime
+  tools only to proven criminals: a drill after 3 completed crimes, a breaching charge after
   5, a keycard after 8. Rob a till, steal a vehicle, or breach a door to build
   the count. Each tool carries a serial; use *Read serial* on it to see the
   number.
@@ -108,8 +110,6 @@ log that back them stay on the server and invisible.
 - Sign titles can be hard to read from the road.
 - Letting the bleed-out run out, giving up, and disconnecting while downed
   all end in death.
-- The fence and crime scene are in the test annex behind the net fence, not on
-  the main street; a village placement is still to come.
 
 ## Not in this build
 
