@@ -42,7 +42,8 @@ export function parseIndex(text) {
     const [name, ms] = line.split(/\s+/);
     if (/^f\d+$/.test(name) && Number.isFinite(Number(ms))) frames.push({ name, ms: Number(ms) });
   }
-  return { fps: head ? Number(head.slice(6)) : 0, frames, summary: parseSummary(tail ? tail.slice(2) : ""), summaryText: tail ? tail.slice(2) : "" };
+  const slates = lines.filter((l) => l.startsWith("# slate=")).map((l) => Number(l.slice(8)));
+  return { fps: head ? Number(head.slice(6)) : 0, frames, slates, summary: parseSummary(tail ? tail.slice(2) : ""), summaryText: tail ? tail.slice(2) : "" };
 }
 
 // concat demuxer script: every frame shows until the next frame's time. The

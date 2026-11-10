@@ -52,10 +52,39 @@ class LF_ConvoyDeliverAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Only the cage the game mode names as the drop takes crates; the other one stays inert.
+	protected bool IsActiveDrop(IEntity owner)
+	{
+		LF_ConvoyMarkerComponent marker = LF_Component<LF_ConvoyMarkerComponent>.Find(owner);
+		if (!marker)
+			return true;
+
+		return marker.GetMarkerId() == LF_Contraband.ActiveDropId();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		return IsActiveDrop(GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool CanBePerformedScript(IEntity user)
+	{
+		return IsActiveDrop(GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (!Replication.IsServer())
 			return;
+
+		if (!IsActiveDrop(pOwnerEntity))
+		{
+			LF_Debug.Warn("Contraband", "delivery refused: this is not the active drop");
+			return;
+		}
 
 		string characterId = LF_Hideout.CharacterIdOf(pUserEntity);
 		if (characterId.IsEmpty())

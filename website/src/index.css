@@ -433,6 +433,47 @@
     box-shadow: 1px 1px 0 var(--ink-2);
   }
 
+  /* The playtest calls to action (PlaytestButtons): big plates a stranger cannot miss. Sign yellow
+     and green with a dark border; the hard shadow is --ink, so it shows on light and dark paper. */
+  .btn-big {
+    min-height: 4rem;
+    padding: 0.75rem 1.35rem;
+    gap: 0.75rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.2rem, 3.4vw, 1.45rem);
+    letter-spacing: 0.04em;
+    line-height: 1.05;
+    border-width: 3px;
+    border-color: #1b1d19;
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  .btn-big:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0 var(--ink);
+  }
+  .btn-big:active {
+    transform: translate(3px, 3px);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .btn-big:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 4px;
+  }
+  .btn-download {
+    background: #f2c230;
+    color: #1b1d19;
+  }
+  .btn-download:hover {
+    background: #ffd04a;
+  }
+  .btn-discord {
+    background: #2d4a33;
+    color: #fbf8f2;
+  }
+  .btn-discord:hover {
+    background: #36593d;
+  }
   .skip {
     position: absolute;
     left: 0.5rem;
@@ -1186,4 +1227,9 @@ button.tree-node:hover .tree-node__dot {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--ink-2);
+}
+
+/* The playtest banner stays hidden once dismissed; index.html sets data-banner before paint. */
+:root[data-banner="off"] .playtest-banner {
+  display: none;
 }

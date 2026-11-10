@@ -760,7 +760,7 @@ export async function main(argv) {
   try {
     if (cmd === "selftest") {
       const code = selftest();
-      const fails = (await import("./engine.mjs")).selftestEngine();
+      const fails = [...(await import("./engine.mjs")).selftestEngine(), ...(await import("./audio.mjs")).selftestAudio(), ...(await import("./post.mjs")).selftestPost()];
       for (const f of fails) console.error(`  ${f}`);
       console.log(fails.length ? "engine selftest: FAIL" : "engine selftest ok");
       return code || (fails.length ? 1 : 0);

@@ -16,13 +16,13 @@ class LF_Test_SignNext : LF_Test
 		sign.m_sNext = "Bank your pay at the ATM next door.";
 
 		array<ref LF_UIPart> parts = LF_SignCatalog.BuildParts(sign);
-		ctx.Equal(6, parts.Count(), "title, What, How, Rules, Next, and Close");
-		if (parts.Count() != 6)
+		ctx.Equal(11, parts.Count(), "title, rule, What, How, Rules, Next (label and body each), and Close");
+		if (parts.Count() != 11)
 			return;
 
-		ctx.EqualStr("Next", parts.Get(4).GetName(), "Next comes after Rules");
-		ctx.True(parts.Get(4).GetText().EndsWith(": Bank your pay at the ATM next door."), "Next shows its text");
-		ctx.Equal(LF_EUIPartKind.CLOSE, parts.Get(5).GetKind(), "the card still ends with Close");
+		ctx.EqualStr("Next", parts.Get(8).GetName(), "Next comes after Rules");
+		ctx.EqualStr("Bank your pay at the ATM next door.", parts.Get(9).GetText(), "Next shows its text");
+		ctx.Equal(LF_EUIPartKind.CLOSE, parts.Get(10).GetKind(), "the card still ends with Close");
 
 		// Every placed site tells a stranger where to go after it.
 		LF_SignConfig config = LF_SignCatalog.Load(LF_SignCatalog.CONFIG_PATH);
