@@ -26,6 +26,7 @@ track).
 | Fence keycard | `LF_Keycard.et` | placeholder | stand-in mesh (#271) | plastic access card | Fence #271 | low |
 | Fence charge | `LF_Charge.et` | placeholder | stand-in mesh (#271) | improvised breaching charge | Fence #271 | low |
 | Police scanner | `LF_Scanner.et` | check | (#253) | handheld 1980s scanner | Comms #253 | medium |
+| Police car | `LF_UAZ469_Police.et`, `LF_UAZ469_LEDLightBar.et` | final | vanilla `UAZ469_covered_CIV_blue` with the mod bar mount `M151A2_LightBarMount.xob` raised 0.25 m to the UAZ roof (#595; the open M151A2 jeep left the bar floating) | (already a car) | Police station car, jail escort car | none |
 
 The polish pass fills in the rest, area by area. The `check` rows haven't been
 looked at yet.
