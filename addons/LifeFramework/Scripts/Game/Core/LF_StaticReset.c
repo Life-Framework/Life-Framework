@@ -33,12 +33,15 @@ class LF_StaticReset
 		LF_EventBus.ResetStatics();
 		LF_Downed.ResetStatics();
 		LF_BleedOut.ResetStatics();
+		LF_Carry.ResetStatics();
 		LF_FineTickets.ResetStatics();
 		LF_Ledger.ResetStatics();
 		LF_CrimeRecord.ResetStatics();
 		LF_FenceSerials.ResetStatics();
 		LF_EvidenceLocker.ResetStatics();
 		LF_Evidence.ResetStatics();
+		LF_Witness.ResetStatics();
+		LF_WitnessConfig.ResetStatics();
 		LF_EvidenceConfig.ResetStatics();
 		LF_IncidentLog.ResetStatics();
 		LF_ServiceCallsConfig.ResetStatics();

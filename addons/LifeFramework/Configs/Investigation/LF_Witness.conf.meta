@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7C3A91E5D2B84F60}Configs/Investigation/LF_Witness.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

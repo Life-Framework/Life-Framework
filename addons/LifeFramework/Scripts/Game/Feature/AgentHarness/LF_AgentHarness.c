@@ -1332,6 +1332,18 @@ class LF_AgentHarness
 				joined += " | ";
 
 			joined += string.Format("player=%1 downed=%2 life=%3", id, downed, LifeStateToken(body));
+			// #261: who has this body (replicated), whether it sits in a vehicle seat, where it is.
+			int carrier = 0;
+			SCR_ChimeraCharacter peer = SCR_ChimeraCharacter.Cast(body);
+			if (peer)
+				carrier = peer.LF_GetCarrierPlayerId();
+
+			int seated = 0;
+			if (SCR_CompartmentAccessComponent.GetVehicleIn(body))
+				seated = 1;
+
+			vector at = body.GetOrigin();
+			joined += string.Format(" carrier=%1 seat=%2 at=%3,%4,%5", carrier, seated, Math.Round(at[0] * 10) / 10, Math.Round(at[1] * 10) / 10, Math.Round(at[2] * 10) / 10);
 		}
 
 		if (joined.IsEmpty())

@@ -694,7 +694,7 @@ class LF_Jail
 	//! that reaches the owning client. A body with no player (a test stand-in) is set directly.
 	//! A seated body is dismounted first: TeleportPlayer moves the vehicle when the player sits
 	//! in one ("When in a vehicle, teleport the vehicle instead", Scripts/Game/Global/Functions.c).
-	protected static void MoveBody(IEntity body, vector position)
+	static void MoveBody(IEntity body, vector position)
 	{
 		if (!body)
 			return;

@@ -65,12 +65,15 @@ The bus keeps its own strong reference.
 | `LF_OnVehicleBought` | `m_sBuyerUid`, `m_sCatalogPrefab`, `m_iPrice` | `LF_VehicleOwnership` purchase |
 | `LF_OnServiceCall` | `m_sCallerUid`, `m_sService`, `m_sPlace`, `m_sSummary`, `m_sChannels`, `m_vPosition`, `m_aReceiverIds` | `LF_ServiceCalls.Place`, once per call with at least one receiver on duty; `LF_Dispatch.Report`, once per crime report (police, even with nobody on duty; adds `m_sClothing`, `m_sVehicle`, `m_iOnDuty`). `LF_ServiceCallDispatch` (radio and dispatch log), `LF_ServiceBoard` (dispatch boards) and `LF_PagerSubscriber` (pagers) subscribe |
 | `LF_OnPlayerDowned` | `m_sPlayerUid`, `m_sDownerUid` (empty if no player did it) | `LF_Downed.Down`: lethal damage to a player left them alive and unconscious. The death, and `LF_OnPlayerKilled`, come later |
+| `LF_OnPlayerRevived` | `m_sPlayerUid`, `m_sMedicUid`, `m_vPosition` | `LF_Revive.Apply`: an on-duty medic brought a downed player back (#259) |
+| `LF_OnPlayerCarried` | `m_sPlayerUid`, `m_sCarrierUid`, `m_sKind` (drag, carry, drop, load), `m_vPosition` | `LF_Carry`: a downed player was dragged, carried, put down or loaded into a vehicle (#261) |
 | `LF_OnFirstAid` | `m_sPlayerUid`, `m_sHelperUid`, `m_sKind` (bandage, tourniquet, saline), `m_fSeconds` | `LF_FirstAid.Apply`: a vanilla medical item added bleed-out time to a downed player (#257) |
 | `LF_OnServiceCallTaken` | `m_sCallerUid`, `m_sService`, `m_sTakerUid`, `m_sPlace`, `m_sSummary`, `m_iTakers` | `LF_ServiceTake.ServerTake`, after the server checked the taker is on duty for the service and the call had room (`m_iMaxTakers`). `LF_ServiceCallTakenNotifier` tells the caller; the board marks the call taken |
 | `LF_OnFenceSale` | `m_sBuyerUid`, `m_sPrefab`, `m_iQuantity`, `m_iPrice` | `LF_ShopComponent.Buy` on a fence shop, after the cash was taken and the tool delivered |
 | `LF_OnHoldUp` | `m_sActorUid`, `m_sTargetUid`, `m_vPosition` (the actor's) | `LF_HoldUpRole.Perform` via `LF_HoldUp.Attempt`, after the server checked weapon in hand, range and cooldown. `LF_IncidentLog` subscribes (kind `holdup`) |
 | `LF_OnAdminAction` | `m_sAdminUid`, `m_sTargetUid` (may be empty), `m_sAction`, `m_vPosition` | `LF_AdminAction.Report` (server): every server-side Game Master editor action (`SCR_BaseActionsEditorComponent.ActionPerform`), vanilla `#kick`/`#ban`, `!wadd`, `!handled`. `LF_IncidentLog` subscribes (kind `admin`) |
 | `LF_OnAimedAt` | `m_sActorUid`, `m_sTargetUid`, `m_vPosition` (the actor's) | `LF_AimIntent.Tick` (server timer) when a raised weapon stayed on a player for the aim window. `LF_IncidentLog` subscribes (kind `aim`) |
+| `LF_OnWitnessStatement` | `m_iReport`, `m_sWitnessUid` (empty for an NPC), `m_bNpc`, `m_sChannel` (`payphone`, `officer`), `m_sClothing`, `m_sVehicle`, `m_sPlateFragment` | `LF_Witness.Give`, after the server checked the caller stood in sight of that crime and within range of the thing described |
 
 Adding an event: a class in `LF_Events.c`, a row here, a publish where the feature
 already logs the change, and one line in `docs/features.md`.
