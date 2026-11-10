@@ -2910,6 +2910,9 @@ class LF_AgentHarness
 
 						// A real clip shows on more than one ray; a single graze (a rail, a gutter) does not count.
 						string label = ProbeLabel(hit);
+						if (label.Contains("Terrain"))
+							continue;
+
 						int at = hitNames.Find(label);
 						if (at < 0)
 						{
@@ -2975,7 +2978,7 @@ class LF_AgentHarness
 	{
 		float cx = (mins[0] + maxs[0]) * 0.5;
 		float cz = (mins[2] + maxs[2]) * 0.5;
-		float rim = Math.Min(Math.Max(maxs[0] - mins[0], maxs[2] - mins[2]) * 0.5, 2.0);
+		float rim = Math.Min(Math.Max(maxs[0] - mins[0], maxs[2] - mins[2]) * 0.5, 4.0);
 		array<float> offsets = {0.5, 1.0, 1.5, 2.0, 3.0};
 		IEntity hit;
 		foreach (float offset : offsets)
@@ -2997,7 +3000,8 @@ class LF_AgentHarness
 
 				vector feet = Vector(px, standY, pz);
 				float clear = ProbeTrace(feet + "0 0.35 0", feet + "0 1.75 0", self, hit);
-				if (clear < 1.4)
+				// 1.4 m of air, with float slack: a clear 1.4 m trace reports 1.3999999.
+				if (clear < 1.35)
 					continue;
 
 				return offset;

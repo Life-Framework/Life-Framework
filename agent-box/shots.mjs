@@ -168,7 +168,7 @@ export function facingOff(entity, m, area) {
   if (acts.length && acts.every((a) => /PickUp/.test(a))) return null;
   const fd = dirOf(area.front);
   const to = [area.x + fd[0] * area.radius - entity.x, 0, area.z + fd[2] * area.radius - entity.z];
-  if (len(to) < 1.5) return null;
+  if (len(to) < 1.5 || entity.dist > area.radius * 0.65) return null; // a neighbour's entity has its own approach
   const fw = dirOf(entity.yaw);
   const cos = (fw[0] * to[0] + fw[2] * to[2]) / len(to);
   return Math.round((Math.acos(Math.max(-1, Math.min(1, cos))) * 180) / Math.PI);
@@ -184,7 +184,7 @@ export function problemsFor(entity, m, area) {
   const sunk = m.pgap === undefined ? -m.gap : -m.pgap;
   if (!mounted && sunk > LIMITS.gap) list.push(`sunk ${r2(sunk)} m`);
   if (m.tilt > LIMITS.tilt) list.push(`tilted ${Math.round(m.tilt)} deg`);
-  if (entity.actions && entity.actions.length && m.walk > LIMITS.walk) list.push(m.walk >= 99 ? "unreachable (no standing spot within 3 m of its edge)" : `reach ${r2(m.walk)} m from its edge to standing room`);
+  if (entity.actions && entity.actions.length && m.walk > (/^Sign_/.test(entity.name) ? 3 : LIMITS.walk)) list.push(m.walk >= 99 ? "unreachable (no standing spot within 3 m of its edge)" : `reach ${r2(m.walk)} m from its edge to standing room`);
   const off = facingOff(entity, m, area);
   if (off !== null && off > FACING_LIMIT) list.push(`faces away ${off} deg from the approach`);
   if (m.clip.length) list.push(`clips ${m.clip.join(", ")}`);
@@ -515,8 +515,13 @@ export function heroesOf(checked, area) {
     }
     out.push({ name: e.name, min, max, w, focus: isFocus });
   }
-  out.sort((a, b) => b.w - a.w);
-  return out.slice(0, HERO_MAX);
+  // Only the area's own: a neighbour inside the radius (the fuel station seen from the hospital) is not what this wide is for.
+  const focusHeroes = out.filter((h) => h.focus);
+  const aim = aimOf(area, focusHeroes);
+  const reach = focusHeroes.length ? Math.max(12, aim.frame * 1.6) : area.radius * 0.65;
+  const own = out.filter((h) => h.focus || Math.hypot((h.min[0] + h.max[0]) / 2 - aim.x, (h.min[2] + h.max[2]) / 2 - aim.z) <= reach);
+  own.sort((a, b) => b.w - a.w);
+  return own.slice(0, HERO_MAX);
 }
 
 // Where a wide looks and how far it should stand: the centre of the focus entities (else the area centre).
