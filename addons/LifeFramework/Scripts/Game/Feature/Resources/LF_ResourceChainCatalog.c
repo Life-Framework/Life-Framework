@@ -62,6 +62,9 @@ class LF_ResourceChainConfig
 
 	[Attribute("", UIWidgets.Object, "Process machines")]
 	ref array<ref LF_ResourceMachineDef> m_aMachines;
+
+	[Attribute("", UIWidgets.Object, "Tiered illicit chains (LF_ChainCatalog)")]
+	ref array<ref LF_ChainDef> m_aChains;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -90,6 +93,13 @@ class LF_ResourceChainCatalog
 		s_Config = LF_ResourceChainConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error("Resources", string.Format("chain config has an unexpected root class: %1", CONFIG_PATH));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static LF_ResourceChainConfig GetConfig()
+	{
+		EnsureLoaded();
+		return s_Config;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -767,6 +767,30 @@
   second start, or a nugget removed before the end logs `LF_Debug.Error` and
   yields no bar. A zero delay finishes inside the start.
 
+## Illicit chains
+
+### `LF_ChainCatalog` — `Feature/Chains/` (#416, M2 Underworld)
+- ✅ A chain is config: `m_aChains` in `Configs/Resources/ResourceChains.conf` (the M1
+  catalog, extended). A chain has a tier (1 to 5), steps in order, equipment, and heat settings.
+  A step names the station type it needs, its inputs and outputs (the `LF_ProcessAction`
+  recipe rows), the hands-on work units one batch takes (`m_iWork`), a licence
+  (`LF_ELicenseType`, `UNEMPLOYED` = no gate), a minimum player level, and an equipment id.
+  A pack adds a chain by overriding the `.conf`; there is no script.
+- ✅ **A bad chain disables only itself.** `LF_ChainCatalog.Build` validates each row (no id,
+  tier out of range, no steps, no station, no work, a malformed recipe, unlisted equipment,
+  duplicate ids, negative heat, a prefab that does not load); a failure logs
+  `[LFDebug:Chains] chain <id> disabled: <reason>` and the other chains load. Lookup is
+  `FindChain` / `FindStep`; a disabled chain returns null.
+- ✅ **Gates.** `LF_ChainGate.Evaluate` (pure) and `ForPlayer` (server) refuse a worker without
+  the licence, below the level, or not carrying the equipment, in that order, with the keys
+  `#LF-Chain_NeedLicense`, `#LF-Chain_NeedLevel`, `#LF-Chain_NeedEquipment`. Equipment is an item
+  the worker carries (priced for a shop), so owning it persists with the inventory.
+- ✅ **Heat settings** per chain: `m_fPerWork`, `m_fDecayPerSecond`, `m_fMax`, `m_fRangeM`.
+  `LF_ChainHeat` does the arithmetic (`AfterWork`, `AfterDecay`, `RangeAt`); the per-site number
+  and the trace that reads it come with the stations (#417) and the smell (#418).
+- ✅ The core ships one neutral example, `cider` (tier 1, one `barrel` step, apples to juice).
+- Test: `chains/config` (LOGIC).
+
 ## Jobs / Level / Licenses / Whitelist
 
 ### `LF_PlayerJobComponent` — `Feature/Jobs/LF_PlayerJobComponent.c`

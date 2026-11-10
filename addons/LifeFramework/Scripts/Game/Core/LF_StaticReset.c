@@ -31,6 +31,7 @@ class LF_StaticReset
 		LF_KnownNames.ResetStatics();
 		LF_Dispatch.ResetStatics();
 		LF_EventBus.ResetStatics();
+		LF_ChainCatalog.ResetStatics();
 		LF_Downed.ResetStatics();
 		LF_BleedOut.ResetStatics();
 		LF_Carry.ResetStatics();
