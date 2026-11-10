@@ -69,22 +69,22 @@ SplineShapeEntity Village_MainStreet {
  }
 }
 SplineShapeEntity Village_EastTrack {
- coords 398 0 250
+ coords 400 0 250
  Points {
   ShapePoint "{4B0E05A372D70823}" {
    Position 0 0 0
   }
   ShapePoint "{C36360C3EEDF014F}" {
-   Position 42 0 0
+   Position 40 0 0
   }
   ShapePoint "{1EDC2798D0888611}" {
-   Position 64 0 12
+   Position 62 0 12
   }
   ShapePoint "{0A6A3E3C07EE4502}" {
-   Position 70 0 50
+   Position 68 0 50
   }
   ShapePoint "{F5F579DDABFD558D}" {
-   Position 70 0 76
+   Position 68 0 76
   }
  }
  {
@@ -99,16 +99,16 @@ SplineShapeEntity Village_EastTrack {
         Position 0 0 0
        }
        ShapePoint "{26AD975F80F285B6}" {
-        Position 42 0 0
+        Position 40 0 0
        }
        ShapePoint "{9E9A01A02A557AC4}" {
-        Position 64 0 12
+        Position 62 0 12
        }
        ShapePoint "{A05A7876A7D1A33A}" {
-        Position 70 0 50
+        Position 68 0 50
        }
        ShapePoint "{86FA674F24DF22D3}" {
-        Position 70 0 76
+        Position 68 0 76
        }
      }
      IsClosedSpline 0
@@ -119,16 +119,16 @@ SplineShapeEntity Village_EastTrack {
  }
 }
 SplineShapeEntity Village_FarmLane {
- coords 144 0 253
+ coords 144 0 253.5
  Points {
   ShapePoint "{DBEC0B9AFC274180}" {
    Position 0 0 0
   }
   ShapePoint "{9CB9BD2BC0D3AA6E}" {
-   Position 0 0 47
+   Position 0 0 46.5
   }
   ShapePoint "{A8393E9A90F0B825}" {
-   Position 31 0 49
+   Position 31 0 48.5
   }
  }
  {
@@ -143,10 +143,10 @@ SplineShapeEntity Village_FarmLane {
         Position 0 0 0
        }
        ShapePoint "{260BCD40AA2DF1AC}" {
-        Position 0 0 47
+        Position 0 0 46.5
        }
        ShapePoint "{01C308F9C7AC7D46}" {
-        Position 31 0 49
+        Position 31 0 48.5
        }
      }
      IsClosedSpline 0
@@ -157,19 +157,19 @@ SplineShapeEntity Village_FarmLane {
  }
 }
 SplineShapeEntity Village_QuarryLane {
- coords 168.5 0 247
+ coords 168.5 0 246.5
  Points {
   ShapePoint "{9F6A2CEC8E82EC86}" {
    Position 0 0 0
   }
   ShapePoint "{C86CBAB4B7A0B0D7}" {
-   Position 0 0 -45
+   Position 0 0 -44.5
   }
   ShapePoint "{AED3CD8EF0D825EA}" {
-   Position 11.5 0 -50.5
+   Position 11.5 0 -50
   }
   ShapePoint "{AD9E1073BF320C9D}" {
-   Position 57.5 0 -50.5
+   Position 57.5 0 -50
   }
  }
  {
@@ -184,13 +184,13 @@ SplineShapeEntity Village_QuarryLane {
         Position 0 0 0
        }
        ShapePoint "{F212DA47102C8D68}" {
-        Position 0 0 -45
+        Position 0 0 -44.5
        }
        ShapePoint "{75C3D7A656624400}" {
-        Position 11.5 0 -50.5
+        Position 11.5 0 -50
        }
        ShapePoint "{5786FB0D53242682}" {
-        Position 57.5 0 -50.5
+        Position 57.5 0 -50
        }
      }
      IsClosedSpline 0
@@ -245,13 +245,13 @@ SplineShapeEntity Village_AnnexTrack {
  }
 }
 SplineShapeEntity Village_HideoutAlley {
- coords 303 0 253
+ coords 303 0 253.5
  Points {
   ShapePoint "{09DE7C99DDF72237}" {
    Position 0 0 0
   }
   ShapePoint "{10E15077BB48B174}" {
-   Position 0 0 34
+   Position 0 0 33.5
   }
  }
  {
@@ -266,7 +266,7 @@ SplineShapeEntity Village_HideoutAlley {
         Position 0 0 0
        }
        ShapePoint "{6B76C7D2BB702E79}" {
-        Position 0 0 34
+        Position 0 0 33.5
        }
      }
      IsClosedSpline 0
@@ -277,13 +277,13 @@ SplineShapeEntity Village_HideoutAlley {
  }
 }
 SplineShapeEntity Village_ForestTrack {
- coords 384 0 247
+ coords 384 0 246.5
  Points {
   ShapePoint "{ADF5BC628C222A2C}" {
    Position 0 0 0
   }
   ShapePoint "{B595F43D04188694}" {
-   Position 8 0 -19
+   Position 8 0 -18.5
   }
  }
  {
@@ -298,7 +298,7 @@ SplineShapeEntity Village_ForestTrack {
         Position 0 0 0
        }
        ShapePoint "{9109A7E5CBE551B4}" {
-        Position 8 0 -19
+        Position 8 0 -18.5
        }
      }
      IsClosedSpline 0
