@@ -5,7 +5,16 @@ GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoa
    Enabled 1
   }
   LF_SignComponent "{82B1E805004F28DE}" {
-   m_bShowFace 0
+   m_bShowFace 1
+   m_vFaceOffset 0 1.47 0.3
+   m_vFaceAngles 0 0 90
+   m_fFaceScale 6.2
+   m_fTitleRotation 90
+   m_vFaceArea 512 724 0
+   m_fRimWidth 0
+   m_vPaintColor 0.12 0.16 0.14
+   m_vTextColor 0.95 0.95 0.9
+   m_sFaceLayout "{FE97102988E1EC48}UI/Layouts/Signs/LF_SignBoardFace.layout"
   }
   ActionsManagerComponent "{3C818B6A6011C9DE}" {
    ActionContexts {
