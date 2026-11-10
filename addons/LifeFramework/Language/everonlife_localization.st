@@ -6287,15 +6287,15 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A set of picks. Each opened lock or snapped pick wears one use."
      Comment "Item description (#411)."
     }
-    CustomStringTableItem "{C4A100000000B101}" {
-     Id "LF-Offence_JailBreak"
-     Target_en_us "Jailbreak"
-     Comment "Offence: a prisoner walked out through a breached jail door (#235)."
-    }
     CustomStringTableItem "{C4A100000000A0B1}" {
      Id "LF-Chain_Moonshine_Name"
      Target_en_us "Samogon"
      Comment "Name of the moonshine chain in ResourceChains.conf (#420)."
+    }
+    CustomStringTableItem "{C4A100000000B101}" {
+     Id "LF-Offence_JailBreak"
+     Target_en_us "Jailbreak"
+     Comment "Offence: a prisoner walked out through a breached jail door (#235)."
     }
     CustomStringTableItem "{C4A100000000A0C1}" {
      Id "LF-Chain_Smell_Title"
@@ -6316,6 +6316,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Chain_SmellLead"
      Target_en_us "Smell of brewing"
      Comment "Dispatch summary of the police lead a noticed chain smell raises (#418)."
+    }
+    CustomStringTableItem "{5EA2C4A000000001}" {
+     Id "LF-Offence_ChainGoods"
+     Target_en_us "Carrying contraband goods"
+     Comment "Offence: chain goods found on an officer search (#419)."
+    }
+    CustomStringTableItem "{5EA2C4A000000002}" {
+     Id "LF-Search_Found"
+     Target_en_us "Contraband found and seized"
+     Comment "Officer search found chain goods (#419)."
+    }
+    CustomStringTableItem "{5EA2C4A000000003}" {
+     Id "LF-Search_Clean"
+     Target_en_us "Search found nothing"
+     Comment "Officer search found no chain goods (#419)."
+    }
+    CustomStringTableItem "{5EA2C4A000000004}" {
+     Id "LF-Search_Vehicle_Action"
+     Target_en_us "Search vehicle"
+     Comment "Vehicle action: officer searches the storage for chain goods (#419)."
     }
   }
  }

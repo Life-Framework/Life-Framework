@@ -279,6 +279,14 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "crate")
+		{
+			// Chain goods (#419): one contraband crate, what the moonshine still makes.
+			int crates = LF_InventoryUtils.AddAmount(this, LF_Contraband.ITEM, 1);
+			LF_HarnessReply(commandId, "ok", string.Format("crate added=%1", crates));
+			return;
+		}
+
 		if (tool == "drill" || tool == "keycard" || tool == "charge")
 		{
 			// Stands in for a fence sale: the drill or keycard is stamped and booked to this account.
@@ -286,7 +294,7 @@ modded class SCR_ChimeraCharacter
 			if (tool == "keycard")
 				toolPrefab = LF_Bank.KEYCARD_PREFAB;
 			if (tool == "charge")
-				toolPrefab = LF_Breach.CHARGE_PREFAB;
+				toolPrefab = LF_Breach.FENCE_CHARGE_PREFAB;
 
 			int drills = LF_InventoryUtils.AddAmount(this, toolPrefab, 1);
 			InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(this);

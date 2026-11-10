@@ -41,6 +41,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CashVan(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainMoonshine(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainsConfig(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChainSearch(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChainSearchWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainStations(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainStationsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ChainTrace(), LF_TestTier.LOGIC);

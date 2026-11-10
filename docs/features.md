@@ -844,7 +844,7 @@
   (`#LF-Chain_SmellLead`, one per site per 5 min) so dispatch logs and radios it and the service
   board pins it. NPC witnesses do not smell yet. Test: `chains/trace` (LOGIC). Heat is still not
   saved; no save change.
-- ⚠️ Not built: searches (#419). Manual: three
+- ⚠️ Not built: nothing in this section. Manual: three
   players on three barrels, see the PR.
 
 ## Jobs / Level / Licenses / Whitelist
@@ -2104,3 +2104,4 @@
 - ✅ `Roadmap_Police_ArmoryStore` (`Street_Police.layer`, beside the duty armory) is a heist target: a locked cabinet that needs the fence **keycard** (kept, not consumed) or a charge, config on its `LF_HeistVaultComponent` (`m_aLoot` weapons, `m_iStock` hauls, `m_fRefillSeconds`, `m_fCooldownSeconds`). Breaching it files `#LF-Offence_ArmoryHeist` through the normal crime report with the **loud** alarm even with officers on duty (`LF_Dispatch.Report` `forceLoud`), so every on-duty officer is radioed. Without the keycard the action is refused and nothing is filed. Test `crime/armory`.
 - Loot lies in front of the store as `LF_ArmoryM9` / `LF_ArmoryM16` (vanilla weapons plus `LF_SerialComponent`). Each is stamped with a fence-book serial booked to the thief, so a weapon found at a scene and logged at the evidence locker identifies them like a fence tool. `LF_OnHeistLoot` carries the serials. It pays again only after a police repair, the loot cooldown and stock; an empty store refuses (`#LF-Heist_Empty`) until the refill adds a kit back.
 - Not saved: the stock and cooldown reset on a restart.
+- ✅ **Officer searches for chain goods** (#419, LOGIC `chains/search`, WORLD `chains/search-world`). `LF_ConfiscateAction` now works on any player (weapons and scanner still need a wanted suspect); a new `LF_VehicleSearchAction` sits on the lockable vehicle prefabs. Goods are the last-step outputs of a chain with `m_bContraband` (moonshine: the crate, `m_iBulk 2`); the server rolls, the find chance rises with load, a find seizes the goods and files `#LF-Offence_ChainGoods` on the bus. Vehicle finds charge the occupants; the plate owner (#414) hooks in at `LF_ChainSearch.SuspectsOf`. No save change.
