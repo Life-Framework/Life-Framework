@@ -30,6 +30,23 @@ class LF_DutyPay
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Rate for this account. An officer's rank row may set its own rate; a negative rate defers to RateFor.
+	static float RateForAccount(LF_PlayerAccount account)
+	{
+		if (!account)
+			return 0;
+
+		if (account.GetFaction() == LF_Faction.POLICE)
+		{
+			float rankRate = LF_PoliceRanks.PayPerSecond(account.GetPoliceRank());
+			if (rankRate >= 0)
+				return rankRate;
+		}
+
+		return RateFor(account.GetFaction());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Pure: cash owed for seconds at rate, rounded down. Non-positive input owes nothing.
 	static int Owed(int seconds, float rate)
 	{
@@ -73,7 +90,7 @@ class LF_DutyPay
 		if (!Replication.IsServer() && Replication.IsRunning())
 			return 0;
 
-		int owed = TakeShiftPay(account, RateFor(account.GetFaction()));
+		int owed = TakeShiftPay(account, RateForAccount(account));
 		if (owed <= 0)
 			return 0;
 

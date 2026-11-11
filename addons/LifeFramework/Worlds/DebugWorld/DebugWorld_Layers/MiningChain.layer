@@ -183,7 +183,7 @@ GenericEntity Quarry_Crate2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_
  coords 196 0 157.7
  angleY 50
 }
-GenericEntity Quarry_Sacks : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+GenericEntity Quarry_Sacks : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
  coords 171 0 164
  angleY 20
 }

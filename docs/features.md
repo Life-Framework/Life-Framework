@@ -511,6 +511,18 @@
   its `version` field. `account/save-roundtrip` covers the
   export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
+### `LF_Playtime` — `Feature/Account/LF_Playtime.c` (#692)
+- ✅ Playtime per account and per job or service, counted on the server and never
+  replicated. Each connected player has a clock; every 15 s, on disconnect and
+  before each save the seconds since its last credit go to the account's job now
+  (`JobFor`: on-duty `POLICE`/`MEDIC`, else the signed-up delivery job such as
+  `PARCEL`, else `CIVILIAN`), read through `LF_PlayerAccount` and
+  `LF_CivilianJob.GetSignedUpJob` only. One credit is capped at 300 s (a wall-clock
+  jump is not playtime). Keyed by the account uid, so gates read the person across
+  characters. Read with `Total(uid)`, `JobSeconds(uid, job)`, `CollectJobs`.
+  Persisted as the `playtime` payload (save version 26, `LF_PlaytimeRecord`).
+  `account/playtime` and the `e2e/pass*` pair cover it.
+
 ### `LF_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
   (one AUTO slot per playthrough via `LF_SaveSelection`), manual saves,
@@ -1209,6 +1221,13 @@
   it, a self-kill, a destroyed vehicle, and (config
   `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
   wanted suspect. Each decision logs `[LFDebug:Murder]`. No automatic ban.
+- ✅ **Zone rule sets as data** (#755; tests `zones/rules`, `zones/ruleset-backcompat`). `LF_Zones.conf`
+  holds a per-rule table `m_aRuleSets` of `LF_ZoneRuleSet` (rule, blocksPlayerDamage, suppressesWanted,
+  allowsRobbery, allowsVehicleTheft, allowsWeaponDraw, fineMultiplier, copsEnter). Shipped: SAFE blocks
+  player damage, LAWLESS and NORMAL change nothing. A rule with no entry falls back to the old
+  `m_bSafeBlocksPlayerDamage` / `m_bLawlessSuppressesWanted` flags. Callers ask
+  `LF_Zones.RuleSetAt(pos)`; today only blocksPlayerDamage and suppressesWanted have consumers (hit
+  refusal, `LF_Murder`). The `EVENT` rule waits on D5 (#757); ids stay NORMAL 0, SAFE 1, LAWLESS 2.
 - ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_ZoneComponent` (rule SAFE) on
   `LF_SafeZone_Square` (`Gamemode.layer`, fountain 115 0 250, radius 30 m as
   the component attribute) registers a flat circle. The modded
@@ -2312,3 +2331,5 @@
 - ✅ **Police application (#128).** Duty desk action `LF_PoliceApplyAction` opens a paper form (`LF_PoliceApplicationForm`: name, why, availability) that `RpcAsk_LF_PoliceApplication` sends to the server. `LF_PoliceApplications` validates through `LF_PoliceApplicationRules` (one open application per player, not for an officer, field length), appends `STATUS|uid|name|why|availability|unix` to `$profile:LifeFramework/police_applications.txt` (not part of the save, no persistence bump), logs `[LFDebug:Police]` and toasts a receipt. Approval writes the police roster through `LF_WhitelistManager.AddFactionWhitelist`: an administrator picks `LF_PoliceReviewAction` (oldest open first; server re-checks the role), or a mission with `m_bLF_InstantPoliceApproval` (the playtest town) approves on submit. Test `police/application`; `session.mjs police-application-proof`. Not done from the issue: reject with cooldown, a letter at the desk, chief-rank approval.
 - ✅ **Fuel till reachable (#729).** The till moved from inside the closed kiosk to `Roadmap_Fuel_Counter` (a `CounterShop_01` at the south service window, 283.6 237.2); the clerk stays behind the window mesh. The rob action faces -Z (anchors.json), so a robber standing south of the counter gets "Rob the till" with the till and clerk in view. `harness.mjs stand Roadmap_Fuel_Till s`; `crime/rob-reward` unchanged.
 - ✅ **Props on counters (validate-prop-on-surface).** The general store register, the police and hospital duty-desk punch clock, the dispatch console radio and a market crate are placed wholly on their surface; `tools/validation/validate-prop-on-surface.mjs` fails a prop whose footprint hangs over 0.1 m past an edge (docs/agent-area-polish.md).
+
+- ✅ **Police rank ladder is config (#754a, M3).** `m_aRanks` in `Configs/Police/LF_Police.conf` is the ladder: per rank `m_sId`, `m_sTitleKey`, `m_iFineCap`, `m_fPayPerSecond` (negative defers to `m_fPoliceDutyPayPerSecond`), `m_iDutySecondsForNext` and `m_aKit`. A rank is its index and a saved index never changes meaning, so `PATROL` 0 and `SENIOR` 1 stay first and a pack appends. `LF_PoliceRanks.FineCap/TitleKey/DutySecondsForNext/CollectKit` and `LF_DutyPay.RateForAccount` read the row; an unknown index clamps to the nearest rung, and a saved rank above the ladder loads as the top rank. A missing config falls back to the built-in two ranks. Test `police/rank-table`. Qualifications are #754b.

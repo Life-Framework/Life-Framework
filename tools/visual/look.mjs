@@ -630,11 +630,33 @@ export function selftest() {
   ok(!/\?[^:\n"]*:/.test(plugin.replace(/"[^"\n]*"/g, '""')), "the plugin uses a ternary");
   for (const d of ["world ", "mode ", "hour ", "settle ", "first ", "park ", "shot ", "close "]) ok(plugin.includes(`StartsWith("${d}")`), `the plugin does not read the '${d.trim()}' directive`);
 
+  // The wide camera's lens fan (#814): a thin pole just off the centre line must be hit by some fan ray.
+  // The constants come from the plugin, so loosening the fan there fails here.
+  const fanConst = (n) => Number((plugin.match(new RegExp(`static const float ${n} = ([0-9.]+)`)) || [])[1]);
+  const [fanStep, fanHalf, fanReach] = ["FAN_STEP_DEG", "FAN_HALF_DEG", "FAN_REACH"].map(fanConst);
+  ok(fanStep > 0 && fanHalf > 0 && fanReach > 0, "the plugin lost its lens-fan constants");
+  ok(plugin.includes("ClearFan(at, target)") && /fan < free/.test(plugin) && plugin.includes("wide = name.Contains"), "TakeShot does not fold the lens fan into `clear`");
+  // The bank wide: camera (188, 242) looking +z, lamp pole at (187, 244.6), 0.2 m across (about 0.1 m radius).
+  const fanHits = (camXZ, poleXZ, radius, tgtXZ) => {
+    const heading = Math.atan2(tgtXZ[0] - camXZ[0], tgtXZ[1] - camXZ[1]);
+    const dx = poleXZ[0] - camXZ[0], dz = poleXZ[1] - camXZ[1];
+    const d = Math.hypot(dx, dz);
+    for (let deg = -fanHalf; deg <= fanHalf + 0.01; deg += fanStep) {
+      const a = heading + (deg * Math.PI) / 180;
+      const along = dx * Math.sin(a) + dz * Math.cos(a);
+      const off = Math.abs(dx * Math.cos(a) - dz * Math.sin(a));
+      if (along > 0 && along <= fanReach + radius && off <= radius) return true;
+    }
+    return d < 0;
+  };
+  ok(fanHits([188, 242], [187, 244.6], 0.1, [188, 260]), "the lens fan misses a lamp pole 2.8 m in front of the bank wide camera");
+  ok(fanHits([188, 242], [186.5, 244.5], 0.1, [188, 260]) && !fanHits([188, 242], [188, 250], 0.1, [188, 252]), "fan geometry: a pole inside the reach is hit, one beyond it is not");
+
   if (failures.length) {
     for (const f of failures) console.log(`look selftest FAIL: ${f}`);
     return 1;
   }
-  console.log("look selftest: OK (plan, status, PNG stats, flags, plugin directives)");
+  console.log("look selftest: OK (plan, status, PNG stats, flags, plugin directives, lens fan)");
   return 0;
 }
 

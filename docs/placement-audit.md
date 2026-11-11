@@ -18,7 +18,7 @@ tools\cli audit selftest                        the Node checks on fixtures (als
 ```
 
 Each line is `rank. score  name [layer, area] @x,y,z: problem; problem`. The score adds a weight per
-problem (floating 10, door 7, sunk 7, walk-up 4, overhang 6, clips 6, scale 6, unreachable 6, overlap 5, road 5,
+problem (floating 10, door 7, sunk 7, walk-up 4, overhang 6, clips 6, scale 6, size 6, unreachable 6, overlap 5, road 5,
 tilt 2), grows with how bad it is, and counts 1.5x for an interactable and 1.3x inside a named area.
 `report.json` beside the text has the same rows and the thresholds used.
 
@@ -49,6 +49,7 @@ tilt 2), grows with how bad it is, and counts 1.5x for an interactable and 1.3x 
 | in the road | the box centre on a carriageway of `Village_Roads.layer` (roads under 15 m wide, not the market, square or fuel apron) | half width - 0.3 m |
 | scale | entity scale outside 0.5 to 2 (odd: outside 0.75 to 1.6, signs excepted) | |
 | tilted | up axis off vertical | 5 deg |
+| size | the largest side of the measured box (world space, scale applied) outside the range `tools/place/expected-sizes.json` gives for that kind of prop | per entry; see "Expected sizes" |
 | unreachable | interactables: no standing spot within 1.5 m of the edge (3 m for signs) | |
 
 Exempt by kind (`RX` in `place-audit.mjs`): hung things (a sign, board or poster with a wall or another
@@ -58,6 +59,29 @@ collision; buildings clip roads and neighbours by design and are reported from t
 fence and rock runs overlap at their joints; something much smaller sitting inside a shelf, stand,
 crate or table group is its contents; a layer parent and its child do not overlap each other; road
 furniture, vehicles and markings may stand in a road.
+
+## Expected sizes
+
+`scale` only catches a number on the entity; "absurdly sized" also means a 1.4 m money bag or a sack pile
+taller than a barrel, whatever the scale says. `tools/place/expected-sizes.json` holds a sane range for the
+largest side, in metres, per kind of prop:
+
+```json
+{ "id": "money-bag", "match": "MoneyBag", "min": 0.3, "max": 0.8, "why": "A cloth cash bag is a duffel: 0.4-0.7 m" }
+```
+
+- `match` is a case-insensitive regex on the prefab file name (a bare mesh entity: its mesh file name). The
+  first matching entry wins, so list a specific kind (`keg`) before a general one (`barrel`). Anchor the regex:
+  `Bag` also matches "Cabbage" and "Garbage", `Table` matches "CuttableTree".
+- An entity no entry matches is not checked. The summary line says how many were: `sizes: 570 covered by expected-sizes.json`.
+- A flag reads `size 1.4 m outside 0.3-0.8 m for money-bag (why)`. Either the entity is wrong (fix the
+  layer or its scale) or the range is: widen it only with a reason in `why` a reviewer can check.
+- Seed or check a range with `toolscli place bounds <prefab>`, which prints the mesh size at the prefab's scale.
+- The mesh box can include parts you do not see (a booth's roof, a pot's flowers), so check a surprising
+  flag in a shot before widening.
+- Fixtures: `audit selftest` flags a 1.4 m money bag, passes a 0.55 m one and ignores a prefab outside the table.
+- When the check landed it found the four payphones (3.37 m), twelve geranium pots (1.37 m) and four
+  cabbage items (0.91 m). They are in the allowlist as "KNOWN ABSURD SIZE" until their layers are fixed; delete the entry with the fix.
 
 ## Allowlist
 
