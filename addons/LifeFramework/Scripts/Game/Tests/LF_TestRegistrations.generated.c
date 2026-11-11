@@ -147,6 +147,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_InteractionIntroductions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionOffers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IntroductionsSerializer(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ItemVolume(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailOnlineTime(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JailSlip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailVehicleArrest(), LF_TestTier.LOGIC);

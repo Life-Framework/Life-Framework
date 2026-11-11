@@ -6696,6 +6696,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
+    CustomStringTableItem "{A1B2C3D4E5F60711}" {
+     Id "LF-Sign_QuarryInfo_Title"
+     Target_en_us "Quarry Works"
+     Comment "Title of the quarry info board. Printed on the board and shown as Read: Quarry Works."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60722}" {
+     Id "LF-Sign_QuarryInfo_What"
+     Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
+     Comment "Quarry info board, What section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60733}" {
+     Id "LF-Sign_QuarryInfo_How"
+     Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
+     Comment "Quarry info board, How section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60744}" {
+     Id "LF-Sign_QuarryInfo_Rules"
+     Target_en_us "This is the lawless quarry: the server rules about starting a fight do not apply inside the fence. Mind the rocks while the pit is worked."
+     Comment "Quarry info board, Rules section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60755}" {
+     Id "LF-Sign_QuarryInfo_Next"
+     Target_en_us "Carry what you make to the traders in town."
+     Comment "Quarry info board, Next section."
+    }
     CustomStringTableItem "{7B1E5A0C00000001}" {
      Id "LF-Shop_RefuseClosed"
      Target_en_us "The back room is shut. Police have been through it."
@@ -7046,30 +7071,160 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Test annex"
      Comment "Travel list row: annex."
     }
-    CustomStringTableItem "{A1B2C3D4E5F60711}" {
-     Id "LF-Sign_QuarryInfo_Title"
-     Target_en_us "Quarry Works"
-     Comment "Title of the quarry info board. Printed on the board and shown as Read: Quarry Works."
+    CustomStringTableItem "{2605E472E34A7E80}" {
+     Id "LF-Crime_RobSafe_Name"
+     Target_en_us "Rob the safe"
+     Comment "Annex safe robbery action name"
     }
-    CustomStringTableItem "{A1B2C3D4E5F60722}" {
-     Id "LF-Sign_QuarryInfo_What"
-     Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
-     Comment "Quarry info board, What section."
+    CustomStringTableItem "{D508B7722F72EE9F}" {
+     Id "LF-Crime_RobSafe_Desc"
+     Target_en_us "Take $200 from the safe"
+     Comment "Annex safe robbery action description"
     }
-    CustomStringTableItem "{A1B2C3D4E5F60733}" {
-     Id "LF-Sign_QuarryInfo_How"
-     Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
-     Comment "Quarry info board, How section."
+    CustomStringTableItem "{7D681F35B1A3C6FE}" {
+     Id "LF-Crime_RobRack_Name"
+     Target_en_us "Rob the weapon rack"
+     Comment "Annex weapon rack robbery action name"
     }
-    CustomStringTableItem "{A1B2C3D4E5F60744}" {
-     Id "LF-Sign_QuarryInfo_Rules"
-     Target_en_us "This is the lawless quarry: the server rules about starting a fight do not apply inside the fence. Mind the rocks while the pit is worked."
-     Comment "Quarry info board, Rules section."
+    CustomStringTableItem "{A83DB0C583355AC6}" {
+     Id "LF-Crime_RobRack_Desc"
+     Target_en_us "Take a rifle from the rack"
+     Comment "Annex weapon rack robbery action description"
     }
-    CustomStringTableItem "{A1B2C3D4E5F60755}" {
-     Id "LF-Sign_QuarryInfo_Next"
-     Target_en_us "Carry what you make to the traders in town."
-     Comment "Quarry info board, Next section."
+    CustomStringTableItem "{D79CB0009B448B8F}" {
+     Id "LF-Crime_RobCar_Name"
+     Target_en_us "Steal the vehicle"
+     Comment "Annex vehicle theft action name"
+    }
+    CustomStringTableItem "{7E4AE1269E743655}" {
+     Id "LF-Crime_RobCar_Desc"
+     Target_en_us "Steal an armoured car"
+     Comment "Annex vehicle theft action description"
+    }
+    CustomStringTableItem "{E064585F9B6FED1B}" {
+     Id "LF-Job_GatherApples_Name"
+     Target_en_us "Gather apples"
+     Comment "Legacy job board apple gather action name"
+    }
+    CustomStringTableItem "{6E2A6680A9D480CA}" {
+     Id "LF-Job_GatherApples_Desc"
+     Target_en_us "Gather 5 apples"
+     Comment "Legacy job board apple gather action description"
+    }
+    CustomStringTableItem "{37BCD3FBB988F01C}" {
+     Id "LF-Sign_CrimeSafe_Title"
+     Target_en_us "1. Safe"
+     Comment "Annex crime site sign crime_safe, Title section."
+    }
+    CustomStringTableItem "{C38F34C3479585A8}" {
+     Id "LF-Sign_CrimeSafe_What"
+     Target_en_us "A cash safe on the crime site."
+     Comment "Annex crime site sign crime_safe, What section."
+    }
+    CustomStringTableItem "{676E376C59405F39}" {
+     Id "LF-Sign_CrimeSafe_How"
+     Target_en_us "Stand at the safe and Rob the safe. It pays $200 and rests for 60 seconds."
+     Comment "Annex crime site sign crime_safe, How section."
+    }
+    CustomStringTableItem "{DCD0F25A91C8A67F}" {
+     Id "LF-Sign_CrimeSafe_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_safe, Needs section."
+    }
+    CustomStringTableItem "{BB971CCDFD89CF15}" {
+     Id "LF-Sign_CrimeSafe_Rules"
+     Target_en_us "A robbery files a crime report and raises your wanted level."
+     Comment "Annex crime site sign crime_safe, Rules section."
+    }
+    CustomStringTableItem "{7D97F127AD9FE2FF}" {
+     Id "LF-Sign_CrimeSafe_Next"
+     Target_en_us "Take the weapon rack next, two steps along."
+     Comment "Annex crime site sign crime_safe, Next section."
+    }
+    CustomStringTableItem "{2840F7674FF77FFE}" {
+     Id "LF-Sign_CrimeRack_Title"
+     Target_en_us "2. Weapon rack"
+     Comment "Annex crime site sign crime_rack, Title section."
+    }
+    CustomStringTableItem "{3FF9B4EB23063378}" {
+     Id "LF-Sign_CrimeRack_What"
+     Target_en_us "An armory rack holding one rifle."
+     Comment "Annex crime site sign crime_rack, What section."
+    }
+    CustomStringTableItem "{1D436C91E427DE6E}" {
+     Id "LF-Sign_CrimeRack_How"
+     Target_en_us "Stand at the rack and Rob the weapon rack to take an AK-74. It rests for 2 minutes."
+     Comment "Annex crime site sign crime_rack, How section."
+    }
+    CustomStringTableItem "{2B50333EBEF9D3EA}" {
+     Id "LF-Sign_CrimeRack_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_rack, Needs section."
+    }
+    CustomStringTableItem "{FA1D9347B8CE6395}" {
+     Id "LF-Sign_CrimeRack_Rules"
+     Target_en_us "Armed theft is reported and raises your wanted level."
+     Comment "Annex crime site sign crime_rack, Rules section."
+    }
+    CustomStringTableItem "{8E1591EC5D9282B2}" {
+     Id "LF-Sign_CrimeRack_Next"
+     Target_en_us "Steal the vehicle at the tyre pile next."
+     Comment "Annex crime site sign crime_rack, Next section."
+    }
+    CustomStringTableItem "{CEFAF6202AEF0597}" {
+     Id "LF-Sign_CrimeCar_Title"
+     Target_en_us "3. Getaway"
+     Comment "Annex crime site sign crime_car, Title section."
+    }
+    CustomStringTableItem "{D08CA63D553D021D}" {
+     Id "LF-Sign_CrimeCar_What"
+     Target_en_us "A pile of tyres that stands in for a car theft."
+     Comment "Annex crime site sign crime_car, What section."
+    }
+    CustomStringTableItem "{04CA2A9741FCE1E2}" {
+     Id "LF-Sign_CrimeCar_How"
+     Target_en_us "Stand at the pile and use Steal the vehicle to get an armoured car. It rests for 10 minutes."
+     Comment "Annex crime site sign crime_car, How section."
+    }
+    CustomStringTableItem "{7708887CAD318B12}" {
+     Id "LF-Sign_CrimeCar_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_car, Needs section."
+    }
+    CustomStringTableItem "{A7B60EDD94E30F9D}" {
+     Id "LF-Sign_CrimeCar_Rules"
+     Target_en_us "Theft of a vehicle is reported and raises your wanted level."
+     Comment "Annex crime site sign crime_car, Rules section."
+    }
+    CustomStringTableItem "{5300C9F183BC88B6}" {
+     Id "LF-Sign_CrimeCar_Next"
+     Target_en_us "Finish at the police desk: a wanted suspect and a table of evidence."
+     Comment "Annex crime site sign crime_car, Next section."
+    }
+    CustomStringTableItem "{42F8C061DF3563D6}" {
+     Id "LF-Sign_CrimePolice_Title"
+     Target_en_us "4. Police desk"
+     Comment "Annex crime site sign crime_police, Title section."
+    }
+    CustomStringTableItem "{3DC7AE65EB4CA435}" {
+     Id "LF-Sign_CrimePolice_What"
+     Target_en_us "A practice desk with an ID card and a confiscated key. Real duty is at the police station."
+     Comment "Annex crime site sign crime_police, What section."
+    }
+    CustomStringTableItem "{62D77C89BF0EB242}" {
+     Id "LF-Sign_CrimePolice_How"
+     Target_en_us "Look the table over. For real duty, evidence and the wanted board, walk to the police station on the main street."
+     Comment "Annex crime site sign crime_police, How section."
+    }
+    CustomStringTableItem "{E0A442EE0FE38171}" {
+     Id "LF-Sign_CrimePolice_Needs"
+     Target_en_us "Nothing here."
+     Comment "Annex crime site sign crime_police, Needs section."
+    }
+    CustomStringTableItem "{734524B72ED94D31}" {
+     Id "LF-Sign_CrimePolice_Next"
+     Target_en_us "Clock on at the police station to arrest the suspect you made."
+     Comment "Annex crime site sign crime_police, Next section."
     }
   }
  }

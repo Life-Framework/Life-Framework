@@ -15,7 +15,7 @@ $grp GenericEntity : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ46
  }
 }
 GenericEntity PRFeatureCrate {
- coords 43 0 33
+ coords 43 0 27.5
  {
   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {
