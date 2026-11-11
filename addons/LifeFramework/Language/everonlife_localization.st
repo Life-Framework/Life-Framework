@@ -6696,6 +6696,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
+    CustomStringTableItem "{EF124E70F7C349D7}" {
+     Id "LF-DebugJailMe_Action"
+     Target_en_us "Send me to jail (playtest)"
+     Comment "Debug-only board action outside the jail: jails you for 60 s."
+    }
+    CustomStringTableItem "{F7B900AAB3964016}" {
+     Id "LF-Sign_DebugJail_Title"
+     Target_en_us "Playtest: jail board"
+     Comment "Title of the debug board by the jail entrance."
+    }
+    CustomStringTableItem "{66031F4E19D748E0}" {
+     Id "LF-Sign_DebugJail_What"
+     Target_en_us "Playtest only. Use the action on this board to be jailed for 60 seconds through the real jail path, so you can try the cell, the visit window and the release alone."
+     Comment "Body of the debug jail board."
+    }
   }
  }
 }

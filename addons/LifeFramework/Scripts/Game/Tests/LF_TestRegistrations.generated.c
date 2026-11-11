@@ -64,6 +64,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CropStages(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DebugAreaBoundary(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DebugJailMe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugActionValidation(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMenuGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DebugMoneyTopUp(), LF_TestTier.LOGIC);
