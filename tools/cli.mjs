@@ -899,7 +899,8 @@ function cmdBuild(root = ROOT, opts = {}) {
     "-run",
     "-exitAfterInit",
     "-profile", profile,
-    ...addonDirs.flatMap((d) => ["-addonsDir", d]),
+    // SPIKE-A: repeated -addonsDir flags keep only the last; one comma list keeps all.
+    "-addonsDir", addonDirs.join(","),
   ];
   console.log(`building addon (headless Workbench) -> ${out}`);
   console.log(`  cwd (game dir): ${gameDir}`);
@@ -1020,8 +1021,7 @@ function cmdPack(root = ROOT, opts = {}) {
       "-packAddonDir", out,
       "-noSplash",
       "-profile", profile,
-      "-addonsDir", join(root, "addons"),
-      "-addonsDir", workbenchGameAddons(root, "pack"),
+      "-addonsDir", [join(root, "addons"), workbenchGameAddons(root, "pack")].join(","),
     ];
     console.log(`packing addon (headless Workbench) -> ${out}`);
     const started = Date.now();
@@ -1091,8 +1091,7 @@ function ensureResourceDatabase(root) {
       "-run",
       "-exitAfterInit",
       "-profile", profile,
-      "-addonsDir", join(root, "addons"),
-      "-addonsDir", workbenchGameAddons(root, "rdb"),
+      "-addonsDir", [join(root, "addons"), workbenchGameAddons(root, "rdb")].join(","),
     ];
     const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
     const after = rdbFreshness(addon);
@@ -1148,8 +1147,7 @@ async function cmdUiImage(flags) {
       "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
       "-plugin=LF_ImageImportPlugin", "-lfImage=" + png,
       "-profile", profile,
-      "-addonsDir", join(root, "addons"),
-      "-addonsDir", workbenchGameAddons(root, "rdb"),
+      "-addonsDir", [join(root, "addons"), workbenchGameAddons(root, "rdb")].join(","),
     ], { cwd: gameDir, timeoutMs: Number(process.env.LF_UI_IMAGE_TIMEOUT_S || 150) * 1000, stdout: logFile, stderr: logFile });
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     const meta = edds + ".meta";
