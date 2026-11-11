@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{8138B48A1835D76D}Worlds/Everon1989Town/Everon1989Town.ent"
+ Configurations {
+  ENTResourceClass PC {
+  }
+  ENTResourceClass XBOX_ONE : PC {
+  }
+  ENTResourceClass XBOX_SERIES : PC {
+  }
+  ENTResourceClass PS4 : PC {
+  }
+  ENTResourceClass HEADLESS : PC {
+  }
+ }
+}
