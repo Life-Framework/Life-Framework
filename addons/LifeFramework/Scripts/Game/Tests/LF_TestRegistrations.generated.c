@@ -205,6 +205,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacementProbe(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PlaytimePersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PlotLoop(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC);

@@ -496,6 +496,18 @@
   its `version` field. `account/save-roundtrip` covers the
   export → reset → apply path. EPF is gone; there is no `ApplyTo`.
 
+### `LF_Playtime` — `Feature/Account/LF_Playtime.c` (#692)
+- ✅ Playtime per account and per job or service, counted on the server and never
+  replicated. Each connected player has a clock; every 15 s, on disconnect and
+  before each save the seconds since its last credit go to the account's job now
+  (`JobFor`: on-duty `POLICE`/`MEDIC`, else the signed-up delivery job such as
+  `PARCEL`, else `CIVILIAN`), read through `LF_PlayerAccount` and
+  `LF_CivilianJob.GetSignedUpJob` only. One credit is capped at 300 s (a wall-clock
+  jump is not playtime). Keyed by the account uid, so gates read the person across
+  characters. Read with `Total(uid)`, `JobSeconds(uid, job)`, `CollectJobs`.
+  Persisted as the `playtime` payload (save version 26, `LF_PlaytimeRecord`).
+  `account/playtime` and the `e2e/pass*` pair cover it.
+
 ### `LF_PersistenceManagerComponent` — `Persistence/` (verified 2026-08-30)
 - ✅ Server-side save orchestration on the game-mode entity: autosave timer
   (one AUTO slot per playthrough via `LF_SaveSelection`), manual saves,
