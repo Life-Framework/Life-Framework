@@ -11,6 +11,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
     }
     ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
      Weight 0.05
+     SizeSetupStrategy Volume
      ItemVolume 20
      RestingUP Forward
     }

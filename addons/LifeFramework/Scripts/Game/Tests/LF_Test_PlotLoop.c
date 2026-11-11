@@ -2,10 +2,6 @@
 // boundary failed `- half way it is half grown (expected 1, got 0)`, and a harvest that did not empty
 // the plot failed `- the plot is empty again` and `- the second packet plants it again (expected 0, got 2)`. Restored; green.
 
-// The file is LF_Test_PlotLoop, not LF_Test_FarmPlotLoop, on purpose: registered before
-// police/fine-ticket, any test that hands an LF_Receipt or a seed packet to a fixture character makes
-// that test's ticket insert fail ("no room in the pockets"), with no farm code involved. Until that
-// is fixed (#699), this test runs after it.
 // tier: WORLD
 //! The farm loop on a placed DebugWorld plot (#614), through the same server calls the plot action
 //! makes: no seed packet refuses, a packet plants and is used up, a planted plot refuses a second
@@ -17,7 +13,6 @@ class LF_Test_PlotLoop : LF_Test
 	protected static const string PLOT_KEY = "farm_plot_1";
 	protected static const ResourceName SEEDS = "{F77BE55D8D3AEBA3}Prefabs/Items/Seeds/CabbageSeeds.et";
 	protected static const ResourceName CABBAGE = "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et";
-	protected static const ResourceName BACKPACK = "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et";
 
 	override string GetName()
 	{
@@ -47,11 +42,6 @@ class LF_Test_PlotLoop : LF_Test
 			return;
 		}
 
-		// A farmer with a worn backpack: the bare fixture jacket can refuse a paper item when other
-		// tests ran first (#699).
-		IEntity backpack = LF_Utils.SpawnEntityPrefab(BACKPACK, farmer.GetOrigin());
-		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(farmer);
-		ctx.True(backpack && manager && manager.TryInsertItem(backpack, EStoragePurpose.PURPOSE_LOADOUT_PROXY), "the farmer wears a backpack");
 		farmer.SetOrigin(plot.GetOwner().GetOrigin() + "1.5 0 0");
 
 		ctx.True(plot.IsEmpty(), "the plot starts empty");
