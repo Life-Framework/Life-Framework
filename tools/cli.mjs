@@ -2387,7 +2387,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md)
-  e2e [--local|--remote [name]]   two-boot save, restart, and reload proof in this worktree
+  e2e [--local|--remote [name]] [--legacy-save]
+                                two-boot save, restart, and reload proof in this worktree;
+                                --legacy-save writes the save before #331 (version 23) in boot 1
   --budget <s>                  run-time budget for a known-long test/e2e run (default: learned from the pool's history)
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
@@ -2584,9 +2586,10 @@ function wtHelp() {
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
-  tools\\cli wt e2e <slug>
+  tools\\cli wt e2e <slug> [--legacy-save]
                                        two-boot save-state E2E: persistence save boot, then
-                                       reload same profile with -loadSessionSave (latest)
+                                       reload same profile with -loadSessionSave (latest);
+                                       --legacy-save: boot 1 writes the pre-#331 format (version 23)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
@@ -2841,7 +2844,7 @@ async function wtE2eCmd(args) {
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
-  return runE2e(e.path, remoteFlags(args.slice(1)));
+  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save") });
 }
 
 // The two-boot save/restart proof in one pool slot: both boots run on the same
@@ -2858,11 +2861,11 @@ async function runE2e(root, opts = {}) {
   let code = 3;
   try {
     if (!slot.local) {
-      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
+      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
     } else {
       activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-      code = runE2eHere(root);
+      code = runE2eHere(root, opts.legacySave);
     }
     return code;
   } finally {
@@ -2871,18 +2874,21 @@ async function runE2e(root, opts = {}) {
   }
 }
 
-function runE2eHere(root) {
+// legacySave (--legacy-save): both boots get LF_E2E_LEGACY_SAVE, so the save boot writes the
+// save format before #331 (version 23) and the reload boot proves it loads into character slot 1.
+function runE2eHere(root, legacySave = false) {
   const profile = join(root, "server", "profile", "test");
   const e = { path: root };
-  console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, graceful close so the shutdown save lands) in ${e.path}`);
-  const pass1 = runE2ePass(e.path, "persistence", { gracefulClose: true });
+  const legacy = legacySave ? "LF_E2E_LEGACY_SAVE" : "";
+  console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, graceful close so the shutdown save lands${legacy ? ", legacy save format" : ""}) in ${e.path}`);
+  const pass1 = runE2ePass(e.path, "persistence", { gracefulClose: true, extraDefine: legacy || undefined });
   if (pass1 !== 0) {
     console.log(`e2e: FAILED in pass 1 (no save produced); not running pass 2`);
     console.log(`e2e: profile ${profile}`);
     return pass1;
   }
   console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, -loadSessionSave latest, LF_E2E_LOAD_BOOT)`);
-  const pass2 = runE2ePass(e.path, "persistence", { keepProfile: true, loadLatestSave: true, extraDefine: "LF_E2E_LOAD_BOOT" });
+  const pass2 = runE2ePass(e.path, "persistence", { keepProfile: true, loadLatestSave: true, extraDefine: legacy ? `LF_E2E_LOAD_BOOT,${legacy}` : "LF_E2E_LOAD_BOOT" });
   console.log(`e2e: profile ${profile}`);
   console.log(`e2e: pass1 exit=${pass1} pass2 exit=${pass2} ${pass1 === 0 && pass2 === 0 ? "OK" : "FAILED"}`);
   return pass1 === 0 && pass2 === 0 ? 0 : (pass1 === 0 ? pass2 : pass1);
@@ -3219,7 +3225,7 @@ const cmds = {
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
-    return runE2e(ROOT, remoteFlags(flags ?? []));
+    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save") });
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),

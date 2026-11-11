@@ -17,6 +17,9 @@
 //! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name.
 //! Progression (career, police rank and duty seconds, benefit cooldown, level, licences, quest
 //! turn-ins) lives in LF_Progression and its owners, keyed by the player uid.
+//! "Player uid" in this list means the character record key (#331, LF_Utils.GetPlayerUID): slot 1 of
+//! an account keeps the account uid, later slots their own id. The keys and every character's
+//! wanted level are the "characters" payload, in LF_PlayerAccountManager.
 //! Introductions (who knows whose name) live in LF_Introductions, keyed by player uid pairs.
 //! Per-item state of a snapshot (magazine ammo) lives beside its snapshot in LF_StorageSnapshot.
 //! Wanted reports (the description recorded at each crime and its identified flag) live in
@@ -28,7 +31,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots. The written version is that list's length (23). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters. The written version is that list's length (24). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -51,6 +54,8 @@
 //! A version 20 save includes the chain stations and has no store stock (#202).
 //! A version 21 save includes the store stock and has no item serials (#470).
 //! A version 22 save includes the item serials and has no farm plots (#614).
+//! A version 23 save includes the farm plots and has no character slots (#331): each account's one
+//! character loads as slot 1, keyed by the account uid its records already use.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -109,6 +114,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("storestock");
 		order.Insert("itemserials");
 		order.Insert("farmplots");
+		order.Insert("characters");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -123,7 +129,14 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (!persistence)
 			return ESerializeResult.ERROR;
 
+#ifdef LF_E2E_LEGACY_SAVE
+		// tools\cli wt e2e <slug> --legacy-save: the save boot writes the last format before #331,
+		// so the reload boot proves an old save loads into character slot 1.
+		LF_Debug.Info("Persistence", "LF_E2E_LEGACY_SAVE: writing the save at version 23");
+		return SerializeStoreAsVersion(persistence, context, 23);
+#else
 		return SerializeStore(persistence, context);
+#endif
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,8 +148,42 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 23);
+		context.WriteValue("version", 24);
+		WritePrefix(context);
 
+		foreach (string payload : order)
+		{
+			WritePersistencePayload(persistence, context, payload);
+		}
+
+		return ESerializeResult.OK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Writes the store in the shape an older build wrote: that version, the prefix, and only the
+	//! payloads that version has. Tests and the legacy-save e2e use it to make a real old save; the
+	//! game always saves through SerializeStore.
+	//! \param[in] version Save version to write, 1 to the current one.
+	static ESerializeResult SerializeStoreAsVersion(notnull LF_PersistenceComponent persistence, notnull SaveContext context, int version)
+	{
+		array<string> order = new array<string>();
+		RegisterPersistencePayloads(order);
+		int written = Math.ClampInt(version, 1, order.Count());
+		context.WriteValue("version", written);
+		WritePrefix(context);
+
+		for (int index = 0; index < written; index++)
+		{
+			WritePersistencePayload(persistence, context, order.Get(index));
+		}
+
+		return ESerializeResult.OK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The account and bank records every save version starts with.
+	protected static void WritePrefix(notnull SaveContext context)
+	{
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
 		array<ref LF_PlayerAccountRecord> accountRecords = LF_PlayerAccountManager.ExportAll();
@@ -149,13 +196,6 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (!bankRecords)
 			bankRecords = new array<ref LF_BankAccountRecord>();
 		context.Write(bankRecords);
-
-		foreach (string payload : order)
-		{
-			WritePersistencePayload(persistence, context, payload);
-		}
-
-		return ESerializeResult.OK;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -223,6 +263,11 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 
 			ReadPersistencePayload(persistence, context, order.Get(index));
 		}
+
+		// A save from before #331 has no character slots. ApplyAll already keyed each account's one
+		// character by the account uid (slot 1), which is what that save's records use.
+		if (version <= order.Find("characters"))
+			LF_Debug.Info("Persistence", string.Format("save version %1 has no character slots: %2 account(s) load their character into slot 1, keyed by the account uid", version, LF_PlayerAccountManager.CountAccountsWithCharacters()));
 
 		return true;
 	}
@@ -410,6 +455,12 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_FarmPlotRow> plotRows = LF_FarmPlots.ExportAll();
 			context.Write(plotRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 planted farm plot(s)", plotRows.Count()));
+		}
+		else if (payload == "characters")
+		{
+			array<ref LF_CharacterSlotRecord> slotRows = LF_PlayerAccountManager.ExportCharacterSlots();
+			context.Write(slotRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 character slot(s)", slotRows.Count()));
 		}
 		else
 		{
@@ -756,6 +807,21 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Warn("Persistence", "farm plots failed to read, leaving the live plots untouched");
+			}
+		}
+		else if (payload == "characters")
+		{
+			// A version 1-23 save never reaches this payload: the account prefix already gave each
+			// account's one character the account uid as its key (slot 1).
+			array<ref LF_CharacterSlotRecord> slotRows = new array<ref LF_CharacterSlotRecord>();
+			if (context.Read(slotRows))
+			{
+				int applied = LF_PlayerAccountManager.ApplyCharacterSlots(slotRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 character slot(s)", applied, slotRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Error("Persistence", "character slots failed to read: characters keep the slot 1 default keys");
 			}
 		}
 		else

@@ -110,7 +110,7 @@
   `LF_CharacterCreationController.c`); the answer comes back as
   `RpcAsk_LF_CreateCharacter` and lands in `ServerCreateCharacter`. The player
   is the controller's id, never a client value. `LF_CharacterCreationRules`
-  re-checks it: one character per account, names 1..32 ASCII letters with single inner spaces, hyphens,
+  re-checks it: at most `LF_CharacterConfig.MaxPerAccount()` characters per account (1 shipped), names 1..32 ASCII letters with single inner spaces, hyphens,
   or apostrophes (`LF_RegistrationRules`), age 18..80. Names are not unique. A refusal toasts the reason
   key (`#EL-CC_Error_*`) and re-opens the menu. A listen host's joiners now get
   their own menus instead of the host.
@@ -120,6 +120,22 @@
   character opens the registration form over `LF_ShowRegistrationForm`
   (owner RPC). A server refusal sends the form back with the reason written on
   it. The form never picks a faction.
+- ✅ **Characters per account (#331, save version 24).** `Configs/Account/LF_Characters.conf`
+  (`LF_CharacterConfig.m_iMaxPerAccount`, 1 shipped) sets how many characters an
+  account holds. With more than 1, a returning player without a living body and
+  not on duty gets the registry sheet `LF_CharacterSelectSheet` (owner RPC
+  `LF_ShowCharacterSelect`): one line per character and "register a new
+  resident" while a slot is free; `RpcAsk_LF_SelectCharacter` is re-checked by
+  `LF_CharacterCreationRules.RefusePick`. Every character-scoped record is keyed
+  by the character's record key (`LF_Utils.GetPlayerUID`; slot 1 = the account
+  uid, later slots their own id; the key is replicated on the body for clients);
+  whitelists and staff actions use `LF_Utils.GetAccountUID`. Wanted level, police
+  rank and duty totals belong to the character (`LF_CharacterStanding`). An old
+  save loads its one character as slot 1 with nothing rewritten
+  (`docs/persistence.md`). Tests `account/characters-per-account`,
+  `persist/character-slots`, `e2e/pass*` (`e2e --legacy-save`). ⚠️ The "start a
+  new life" form and retiring a character are not built yet; the incident log
+  keeps character keys.
 
 ### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
 - ✅ One list on another player's body (`Character_Roleplay.et`, context

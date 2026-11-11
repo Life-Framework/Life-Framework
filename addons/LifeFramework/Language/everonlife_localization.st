@@ -7111,6 +7111,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Clock on at the police station to arrest the suspect you made."
      Comment "Annex crime site sign crime_police, Next section."
     }
+    CustomStringTableItem "{0D72D045F1F4E803}" {
+     Id "LF-CharSel_Title"
+     Target_en_us "Civil Registry of Everon, Residents on File"
+     Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
+    }
+    CustomStringTableItem "{8B8EEE733934A3E5}" {
+     Id "LF-CharSel_Intro"
+     Target_en_us "Choose the resident you arrive as today."
+     Comment "Character pick instruction line. One button per character follows, each showing that character's name."
+    }
+    CustomStringTableItem "{502C5430AE70C609}" {
+     Id "LF-CharSel_New"
+     Target_en_us "Register a new resident"
+     Comment "Character pick button that opens registration form R-89 for another character on the same account."
+    }
+    CustomStringTableItem "{87EB7613EC87FB35}" {
+     Id "LF-CharSel_Refused"
+     Target_en_us "You cannot change who you are right now."
+     Comment "Notification when the server refuses a character pick: the slot does not exist, the player is alive in another body, or still on duty."
+    }
+    CustomStringTableItem "{D05A58380EB506C0}" {
+     Id "LF-Char_Error_Full"
+     Target_en_us "Every character slot on this account is taken."
+     Comment "Character creation refused because the account already holds the configured maximum number of characters."
+    }
   }
  }
 }

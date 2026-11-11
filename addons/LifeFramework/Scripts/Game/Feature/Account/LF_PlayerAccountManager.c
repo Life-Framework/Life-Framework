@@ -22,7 +22,9 @@ class LF_PlayerAccountManager : Managed
 			record.m_iActiveCharacterIdx = account.m_iActiveCharacterIdx;
 			record.m_eFaction = account.m_eFaction;
 			record.m_bOnDuty = account.m_bOnDuty;
-			record.m_iWantedLevel = account.m_iWantedLevel;
+			// The prefix keeps its pre-#331 shape: the active character's wanted level. The
+			// "characters" payload (save version 24) carries every character's.
+			record.m_iWantedLevel = account.GetWantedLevel();
 
 			record.m_aCharacters = new array<ref LF_PlayerCharacterRecord>();
 			foreach (LF_PlayerCharacter character : account.m_aCharacters)
@@ -48,6 +50,10 @@ class LF_PlayerAccountManager : Managed
 	//------------------------------------------------------------------------------------------------
 	//! Persistence seam: apply records back into the cache (idempotent). Existing ids are
 	//! overwritten so a re-apply to a live session converges on the saved state.
+	//! Record keys get the default here, the same rule AddCharacter uses: slot 1 keeps the account
+	//! uid, every later slot its own id. Before #331 registration refused a second character, so an
+	//! old save's one character is slot 1 and every uid-keyed record it has stays its own. A save at
+	//! version 24 or later then confirms the keys from the "characters" payload (ApplyCharacterSlots).
 	//! \param records Records read from the save.
 	static void ApplyAll(notnull array<ref LF_PlayerAccountRecord> records)
 	{
@@ -59,7 +65,6 @@ class LF_PlayerAccountManager : Managed
 				continue;
 
 			LF_PlayerAccount account = LF_PlayerAccount.Create(record.m_sPersistentId);
-			account.m_iActiveCharacterIdx = record.m_iActiveCharacterIdx;
 			// The faction is the duty role (POLICE only while clocked in). A save from the faction
 			// screen era can hold POLICE off duty, or a civilian on duty: both load as civilian.
 			bool onDutyRole = record.m_bOnDuty && (record.m_eFaction == LF_Faction.POLICE || record.m_eFaction == LF_Faction.MEDIC);
@@ -69,19 +74,13 @@ class LF_PlayerAccountManager : Managed
 				account.m_eFaction = LF_Faction.CIVILIAN;
 
 			account.m_bOnDuty = onDutyRole;
-			account.SetWantedLevel(record.m_iWantedLevel);
 
 			// Rank and duty totals are not in this record; the progression payload (save version
 			// 7) restores them afterwards. Until then the live values carry over, so re-applying a
 			// version 6 save to a running session does not demote anyone.
 			LF_PlayerAccount live = instance.m_mAccounts.Get(record.m_sPersistentId);
-			if (live)
-			{
-				account.SetPoliceRank(live.GetPoliceRank());
-				account.SetOnDutySeconds(live.GetOnDutySeconds());
-				account.SetUnpaidDutySeconds(live.GetUnpaidDutySeconds());
-			}
 
+			int activeIdx = record.m_iActiveCharacterIdx;
 			if (record.m_aCharacters)
 			{
 				foreach (LF_PlayerCharacterRecord characterRecord : record.m_aCharacters)
@@ -96,22 +95,159 @@ class LF_PlayerAccountManager : Managed
 						characterRecord.m_iAge
 					);
 					character.SetId(characterRecord.m_sId);
-					account.AddCharacter(character, false);
+					if (account.m_aCharacters.IsEmpty())
+						character.SetRecordKey(record.m_sPersistentId);
+					else
+						character.SetRecordKey(characterRecord.m_sId);
+
+					if (live)
+					{
+						LF_PlayerCharacter liveCharacter = live.GetCharacterById(characterRecord.m_sId);
+						if (liveCharacter)
+						{
+							LF_CharacterStanding loadedStanding = character.GetStanding();
+							LF_CharacterStanding liveCharacterStanding = liveCharacter.GetStanding();
+							loadedStanding.TakeValuesOf(liveCharacterStanding);
+						}
+					}
+
+					account.m_aCharacters.Insert(character);
 				}
 			}
+
+			if (account.m_aCharacters.IsEmpty())
+				account.m_iActiveCharacterIdx = 0;
+			else
+				account.m_iActiveCharacterIdx = Math.ClampInt(activeIdx, 0, account.m_aCharacters.Count() - 1);
+
+			// Kept as locals and a plain bool: written as one chained call under
+			// `if (live && account.m_aCharacters.IsEmpty())` the copy did not happen (observed in
+			// LF_Test_ProgressionOldSave: live rank 1, loaded rank 0).
+			bool noRoster = account.m_aCharacters.IsEmpty();
+			if (live && noRoster)
+			{
+				LF_CharacterStanding accountStanding = account.GetStanding();
+				LF_CharacterStanding liveStanding = live.GetStanding();
+				accountStanding.TakeValuesOf(liveStanding);
+			}
+
+			// After the roster: the prefix's wanted level is the active character's.
+			account.SetWantedLevel(record.m_iWantedLevel);
 
 			instance.AddToCache(account);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Persistence seam ("characters" payload, save version 24): every character's record key and
+	//! wanted level, by account uid and character id.
+	static array<ref LF_CharacterSlotRecord> ExportCharacterSlots()
+	{
+		array<ref LF_CharacterSlotRecord> records = new array<ref LF_CharacterSlotRecord>();
+		LF_PlayerAccountManager instance = GetInstance();
+		foreach (string playerUid, LF_PlayerAccount account : instance.m_mAccounts)
+		{
+			if (!account)
+				continue;
+
+			foreach (LF_PlayerCharacter character : account.m_aCharacters)
+			{
+				if (!character)
+					continue;
+
+				records.Insert(LF_CharacterSlotRecord.Create(account.GetPersistentId(), character.GetId(), character.GetRecordKey(), character.GetStanding().m_iWantedLevel));
+			}
+		}
+
+		return records;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: puts the saved record keys and wanted levels back on the characters the
+	//! account prefix loaded. Plain assignment, so a second apply changes nothing. A row whose
+	//! account or character is gone is skipped and logged.
+	//! \return Rows applied.
+	static int ApplyCharacterSlots(notnull array<ref LF_CharacterSlotRecord> records)
+	{
+		LF_PlayerAccountManager instance = GetInstance();
+		int applied = 0;
+		int rekeyed = 0;
+		foreach (LF_CharacterSlotRecord record : records)
+		{
+			if (!record || record.m_sRecordKey.IsEmpty())
+				continue;
+
+			LF_PlayerAccount account = instance.m_mAccounts.Get(record.m_sAccountUid);
+			LF_PlayerCharacter character;
+			if (account)
+				character = account.GetCharacterById(record.m_sCharacterId);
+
+			if (!character)
+			{
+				LF_Debug.Warn("Account", string.Format("saved character %1 of account %2 is not loaded, its key %3 skipped", record.m_sCharacterId, record.m_sAccountUid, record.m_sRecordKey));
+				continue;
+			}
+
+			if (character.GetRecordKey() != record.m_sRecordKey)
+				rekeyed++;
+
+			character.SetRecordKey(record.m_sRecordKey);
+			character.GetStanding().m_iWantedLevel = Math.ClampInt(record.m_iWantedLevel, 0, 5);
+			LF_AccountReplication.Publish(account);
+			applied++;
+		}
+
+		// Progression loaded earlier in the save, under the default keys. A saved key that differs
+		// (a roster that lost its first character) moves that rank to the right character.
+		if (rekeyed > 0)
+		{
+			LF_Debug.Info("Account", string.Format("%1 character(s) keep a saved key other than the default; progression re-applied", rekeyed));
+			LF_Progression.ReapplyStandings();
+		}
+
+		return applied;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A save older than version 24 has no "characters" payload: every account keeps the record
+	//! keys ApplyAll gave it (its one character is slot 1, keyed by the account uid).
+	//! \return Accounts with a character, for the migration log line.
+	static int CountAccountsWithCharacters()
+	{
+		LF_PlayerAccountManager instance = GetInstance();
+		int count = 0;
+		foreach (string playerUid, LF_PlayerAccount account : instance.m_mAccounts)
+		{
+			if (account && account.HasCharacters())
+				count++;
+		}
+
+		return count;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The record key of the account's active character (what LF_Utils.GetPlayerUID returns on the
+	//! server), or the uid itself when no account is loaded for it.
+	static string ResolveCharacterKey(string accountUid)
+	{
+		if (accountUid.IsEmpty() || !s_pInstance)
+			return accountUid;
+
+		LF_PlayerAccount account = s_pInstance.m_mAccounts.Get(accountUid);
+		if (!account)
+			return accountUid;
+
+		return account.GetActiveCharacterKey();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Returns the cached account for a player, creating and caching a new one when absent.
-	//! \param playerUid The players Bohemia UID
+	//! \param playerUid The player's account uid, or the record key of one of its characters.
 	//! \return The account for the player (never null).
 	static LF_PlayerAccount GetOrCreate(string playerUid)
 	{
 		LF_PlayerAccountManager instance = GetInstance();
-		LF_PlayerAccount account = instance.m_mAccounts.Get(playerUid);
+		LF_PlayerAccount account = instance.GetFromCache(playerUid);
 		if (!account)
 		{
 			account = LF_PlayerAccount.Create(playerUid);
@@ -144,6 +280,13 @@ class LF_PlayerAccountManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Drops one account from the cache (test cleanup; an admin wipe). The next save leaves it out.
+	void RemoveFromCache(string playerUid)
+	{
+		m_mAccounts.Remove(playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Backwards-compatible alias used by other systems
 	void AddAccount(notnull LF_PlayerAccount account)
 	{
@@ -151,21 +294,37 @@ class LF_PlayerAccountManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The account by its uid, or by the record key of one of its characters (callers key their
+	//! records by LF_Utils.GetPlayerUID, which is the active character's key since #331). Slot 1's
+	//! key is the uid, so only a later slot pays for the scan.
 	LF_PlayerAccount GetFromCache(string playerUid)
 	{
-		return m_mAccounts.Get(playerUid);
+		if (playerUid.IsEmpty())
+			return null;
+
+		LF_PlayerAccount account = m_mAccounts.Get(playerUid);
+		if (account)
+			return account;
+
+		foreach (string accountUid, LF_PlayerAccount candidate : m_mAccounts)
+		{
+			if (candidate && candidate.GetCharacterByKey(playerUid))
+				return candidate;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	LF_PlayerAccount GetFromCache(int playerId)
 	{
-		return GetFromCache(LF_Utils.GetPlayerUID(playerId));
+		return GetFromCache(LF_Utils.GetAccountUID(playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	LF_PlayerAccount GetFromCache(IEntity player)
 	{
-		return GetFromCache(LF_Utils.GetPlayerUID(player));
+		return GetFromCache(LF_Utils.GetAccountUID(player));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -202,14 +361,34 @@ class LF_PlayerAccountManager : Managed
 			if (!account)
 				continue;
 
-			foreach (LF_PlayerCharacter character : account.m_aCharacters)
-			{
-				if (character && character.GetId() == characterId)
-					return character;
-			}
+			LF_PlayerCharacter character = account.GetCharacterById(characterId);
+			if (character)
+				return character;
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Any resident account's character holding this record key (a wanted poster, a ticket).
+	LF_PlayerCharacter FindCharacterByKey(string recordKey)
+	{
+		LF_PlayerAccount account = GetFromCache(recordKey);
+		if (!account)
+			return null;
+
+		return account.GetCharacterByKey(recordKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The standing (wanted, rank, duty totals) saved under this record key, or null.
+	LF_CharacterStanding FindStanding(string recordKey)
+	{
+		LF_PlayerAccount account = GetFromCache(recordKey);
+		if (!account)
+			return null;
+
+		return account.GetStandingFor(recordKey);
 	}
 
 	//------------------------------------------------------------------------------------------------

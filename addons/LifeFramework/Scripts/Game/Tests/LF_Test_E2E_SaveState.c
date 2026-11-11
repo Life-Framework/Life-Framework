@@ -25,6 +25,7 @@
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
+	protected static const string SLOTS_UID = "e2e-slots-uid";
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
 	protected static const string SERIAL_BUYER_UID = "e2e-serial-buyer";
 	protected static const string COURIER_UID = "e2e-courier";
@@ -230,6 +231,26 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			ctx.Equal(1, growingPlot.GetStage(), "e2e plot 3 is half grown before the save");
 		}
 
+		// Characters per account (#331): slot 1 keyed by the account uid, with its bank under that
+		// uid, wanted 1 and senior rank. A normal save adds slot 2 (its own key, bank 480, wanted 4)
+		// and plays it ("characters" payload, save version 24). The legacy save (--legacy-save) is
+		// written at version 23 and has one character, as every save before #331 did.
+		LF_PlayerAccount slotsAccount = LF_PlayerAccount.Create(SLOTS_UID);
+		playerAccounts.AddToCache(slotsAccount);
+		slotsAccount.AddCharacter(LF_PlayerCharacter.Create("{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et", "Ada", "First", 36), true);
+		slotsAccount.SetWantedLevel(1);
+		slotsAccount.SetPoliceRank(LF_PoliceRanks.SENIOR);
+		atmManager.CreateAccount(SLOTS_UID);
+		atmManager.Deposit(SLOTS_UID, 120);
+#ifndef LF_E2E_LEGACY_SAVE
+		LF_PlayerCharacter slot2 = LF_PlayerCharacter.Create("{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et", "Bob", "Second", 40);
+		slotsAccount.AddCharacter(slot2, true);
+		slotsAccount.SetWantedLevel(4);
+		atmManager.CreateAccount(slot2.GetRecordKey());
+		atmManager.Deposit(slot2.GetRecordKey(), 480);
+		ctx.False(slot2.GetRecordKey() == SLOTS_UID, "e2e slot 2 has its own key before the save");
+#endif
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -254,6 +275,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	}
 
 	protected static const string ACCOUNT_UID = "e2e-uid";
+	protected static const string SLOTS_UID = "e2e-slots-uid";
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
 	protected static const string SERIAL_BUYER_UID = "e2e-serial-buyer";
 	protected static const string COURIER_UID = "e2e-courier";
@@ -269,6 +291,53 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	override string GetName()
 	{
 		return "e2e/pass2-verify-load";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #331 after the restart. Slot 1 always comes back keyed by the account uid with its bank,
+	//! wanted level and rank. A version 24 save also brings slot 2 back, still the one played, with
+	//! its own key, bank and wanted level; a version 23 save (--legacy-save) has only slot 1.
+	protected void VerifyCharacterSlots(LF_TestContext ctx)
+	{
+		LF_PlayerAccount account = LF_PlayerAccountManager.GetInstance().GetFromCache(SLOTS_UID);
+		ctx.NotNull(account, "e2e character-slots account present after the save load");
+		if (!account)
+			return;
+
+		LF_PlayerCharacter slot1 = account.GetCharacterAt(0);
+		ctx.True(slot1 != null, "e2e slot 1 present after the save load");
+		if (!slot1)
+			return;
+
+		ctx.EqualStr("Ada First", slot1.GetFullName(), "e2e slot 1 is the first character");
+		ctx.EqualStr(SLOTS_UID, slot1.GetRecordKey(), "e2e slot 1 is keyed by the account uid after the restart");
+		ctx.Equal(1, slot1.GetStanding().m_iWantedLevel, "e2e slot 1 keeps wanted 1 across the restart");
+		ctx.Equal(LF_PoliceRanks.SENIOR, slot1.GetStanding().m_iPoliceRank, "e2e slot 1 stays senior across the restart");
+		LF_BankAccount slot1Bank = LF_ATMManager.GetInstance().GetAccount(SLOTS_UID);
+		ctx.NotNull(slot1Bank, "e2e slot 1 bank present after the save load");
+		if (slot1Bank)
+			ctx.Equal(120, slot1Bank.GetBalance(), "e2e slot 1 bank holds 120 after the restart");
+
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.Equal(1, account.GetCharacterCount(), "e2e the version 23 save loads one character");
+		ctx.EqualStr(SLOTS_UID, account.GetActiveCharacterKey(), "e2e the old character is the one played, under the account uid");
+#else
+		ctx.Equal(2, account.GetCharacterCount(), "e2e both characters back after the restart");
+		LF_PlayerCharacter slot2 = account.GetCharacterAt(1);
+		ctx.True(slot2 != null, "e2e slot 2 present after the save load");
+		if (!slot2)
+			return;
+
+		ctx.EqualStr("Bob Second", slot2.GetFullName(), "e2e slot 2 is the second character");
+		ctx.EqualStr(slot2.GetId(), slot2.GetRecordKey(), "e2e slot 2 keeps its own key after the restart");
+		ctx.EqualStr(slot2.GetRecordKey(), account.GetActiveCharacterKey(), "e2e slot 2 is still the one played");
+		ctx.Equal(4, slot2.GetStanding().m_iWantedLevel, "e2e slot 2 keeps wanted 4 across the restart");
+		ctx.Equal(LF_PoliceRanks.PATROL, slot2.GetStanding().m_iPoliceRank, "e2e slot 2 has no rank of slot 1's");
+		LF_BankAccount slot2Bank = LF_ATMManager.GetInstance().GetAccount(slot2.GetRecordKey());
+		ctx.NotNull(slot2Bank, "e2e slot 2 bank present after the save load");
+		if (slot2Bank)
+			ctx.Equal(480, slot2Bank.GetBalance(), "e2e slot 2 bank holds 480 after the restart");
+#endif
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -446,6 +515,8 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			LF_VehicleOwnership.Store(STREET_ID, GARAGE_OWNER_UID);
 			LF_TestCharacterFixture.Delete(payer);
 		}
+
+		VerifyCharacterSlots(ctx);
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");

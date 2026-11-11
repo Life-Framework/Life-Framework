@@ -50,6 +50,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChainStations(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainStationsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ChainTrace(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CharacterSlotsPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_CharactersPerAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopSteal(), LF_TestTier.WORLD);

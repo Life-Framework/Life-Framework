@@ -39,17 +39,23 @@ class LF_WantedBoard
 			if (maxPosters > 0 && outOffences.Count() >= maxPosters)
 				break;
 
-			LF_PlayerAccount account;
+			// The poster names the character the report is keyed by (#331), not whoever the account
+			// plays now.
+			LF_PlayerCharacter suspect;
+			LF_CharacterStanding standing;
 			if (accounts)
-				account = accounts.GetFromCache(report.m_sPlayerUid);
+			{
+				suspect = accounts.FindCharacterByKey(report.m_sPlayerUid);
+				standing = accounts.FindStanding(report.m_sPlayerUid);
+			}
 
 			string name;
-			if (report.m_bIdentified && account && account.GetActiveCharacter())
-				name = account.GetActiveCharacter().GetFullName();
+			if (report.m_bIdentified && suspect)
+				name = suspect.GetFullName();
 
 			int level = 1;
-			if (account)
-				level = account.GetWantedLevel();
+			if (standing)
+				level = standing.m_iWantedLevel;
 
 			string place;
 			if (police)
