@@ -1,5 +1,5 @@
 GenericEntity GravelBuilderStand {
- coords 212 0 186
+ coords 173 0 181
  {
   GenericEntity GravelDisplayCrate {
    components {
@@ -16,7 +16,7 @@ coords -2.6 0.9 0.7
     Flags 1027
    }
   GenericEntity GravelDisplayItems {
-    coords 0 0.9 0.7
+    coords 0 1.14 0.7
    {
     $grp GenericEntity : "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et" {
      GravelBag_01 {
@@ -56,14 +56,14 @@ coords -2.6 0.9 0.7
  }
 }
 GenericEntity GravelPile_Medium_Debug : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01_medium.et" {
- coords 212 0 191
- angleY -179.853
+ coords 173 0 186
+ angleY 0
 }
 GenericEntity GravelPile_Large_Debug : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01_large.et" {
- coords 213.5 0 191.5
- angleY -179.853
+ coords 174.5 0 186.5
+ angleY 0
 }
 GenericEntity GravelBag_5A0E821DC5FD2CDB : "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et" {
- coords 211 0 191.5
+ coords 172 0 186.5
  angleY -0.058
 }

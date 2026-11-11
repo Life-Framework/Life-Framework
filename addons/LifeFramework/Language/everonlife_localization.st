@@ -6696,41 +6696,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
-    CustomStringTableItem "{A27300000000BA02}" {
-     Id "LF-BankKit_Take"
-     Target_en_us "Take bank robbery kit"
-     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
-    }
-    CustomStringTableItem "{63E93D8FD582854D}" {
-     Id "LF-Witness_Unsure1"
-     Target_en_us "%1: Hey, I am not sure."
-     Comment "Toast: an NPC witness who saw nothing answers, noncommittal. %1 = the NPC name."
-    }
-    CustomStringTableItem "{C388BAAC69AA6FFA}" {
-     Id "LF-Witness_Unsure2"
-     Target_en_us "%1: I do not think I saw anything."
-     Comment "Toast: noncommittal NPC answer, variant 2. %1 = the NPC name."
-    }
-    CustomStringTableItem "{FD870C5E92EE6005}" {
-     Id "LF-Witness_Unsure3"
-     Target_en_us "%1: Sorry, I could not say either way."
-     Comment "Toast: noncommittal NPC answer, variant 3. %1 = the NPC name."
-    }
-    CustomStringTableItem "{52C8142385D923FE}" {
-     Id "LF-Witness_Unsure4"
-     Target_en_us "%1: I was not really looking, officer."
-     Comment "Toast: noncommittal NPC answer, variant 4. %1 = the NPC name."
-    }
-    CustomStringTableItem "{9FF5E70D1F95C286}" {
-     Id "LF-Witness_GaveStatement"
-     Target_en_us "%1 gave a statement. It is on the wanted board."
-     Comment "Toast to the officer: a named witness gave a statement. %1 = the witness name."
-    }
-    CustomStringTableItem "{A5C8F0F7C66DA883}" {
-     Id "LF-Witness_ForgotSome"
-     Target_en_us "%1 cannot recall anything useful."
-     Comment "Toast to the officer: a named witness saw the crime but remembered nothing describable. %1 = the witness name."
-    }
     CustomStringTableItem "{7B1E5A0C00000001}" {
      Id "LF-Shop_RefuseClosed"
      Target_en_us "The back room is shut. Police have been through it."
@@ -6755,6 +6720,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BackRoom_AlreadyShut"
      Target_en_us "Already searched. The room is shut."
      Comment "Toast: the back room was raided recently (#600)."
+    }
+    CustomStringTableItem "{A27300000000BA02}" {
+     Id "LF-BankKit_Take"
+     Target_en_us "Take bank robbery kit"
+     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
     }
     CustomStringTableItem "{9BE7A1D673564E1C}" {
      Id "LF-Dispatch_TestPolice"
@@ -6930,6 +6900,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_FarmPlots_Next"
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{63E93D8FD582854D}" {
+     Id "LF-Witness_Unsure1"
+     Target_en_us "%1: Hey, I am not sure."
+     Comment "Toast: an NPC witness who saw nothing answers, noncommittal. %1 = the NPC name."
+    }
+    CustomStringTableItem "{C388BAAC69AA6FFA}" {
+     Id "LF-Witness_Unsure2"
+     Target_en_us "%1: I do not think I saw anything."
+     Comment "Toast: noncommittal NPC answer, variant 2. %1 = the NPC name."
+    }
+    CustomStringTableItem "{FD870C5E92EE6005}" {
+     Id "LF-Witness_Unsure3"
+     Target_en_us "%1: Sorry, I could not say either way."
+     Comment "Toast: noncommittal NPC answer, variant 3. %1 = the NPC name."
+    }
+    CustomStringTableItem "{52C8142385D923FE}" {
+     Id "LF-Witness_Unsure4"
+     Target_en_us "%1: I was not really looking, officer."
+     Comment "Toast: noncommittal NPC answer, variant 4. %1 = the NPC name."
+    }
+    CustomStringTableItem "{9FF5E70D1F95C286}" {
+     Id "LF-Witness_GaveStatement"
+     Target_en_us "%1 gave a statement. It is on the wanted board."
+     Comment "Toast to the officer: a named witness gave a statement. %1 = the witness name."
+    }
+    CustomStringTableItem "{A5C8F0F7C66DA883}" {
+     Id "LF-Witness_ForgotSome"
+     Target_en_us "%1 cannot recall anything useful."
+     Comment "Toast to the officer: a named witness saw the crime but remembered nothing describable. %1 = the witness name."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60711}" {
+     Id "LF-Sign_QuarryInfo_Title"
+     Target_en_us "Quarry Works"
+     Comment "Title of the quarry info board. Printed on the board and shown as Read: Quarry Works."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60722}" {
+     Id "LF-Sign_QuarryInfo_What"
+     Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
+     Comment "Quarry info board, What section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60733}" {
+     Id "LF-Sign_QuarryInfo_How"
+     Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
+     Comment "Quarry info board, How section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60744}" {
+     Id "LF-Sign_QuarryInfo_Rules"
+     Target_en_us "This is the lawless quarry: the server rules about starting a fight do not apply inside the fence. Mind the rocks while the pit is worked."
+     Comment "Quarry info board, Rules section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60755}" {
+     Id "LF-Sign_QuarryInfo_Next"
+     Target_en_us "Carry what you make to the traders in town."
+     Comment "Quarry info board, Next section."
     }
   }
  }
