@@ -181,6 +181,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_NpcClothesReplicate(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcInteractionHeight(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_NpcWearsClothes(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcWitness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
@@ -298,6 +299,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SirenDuty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenMode(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenToggle(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SpawnHub(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
