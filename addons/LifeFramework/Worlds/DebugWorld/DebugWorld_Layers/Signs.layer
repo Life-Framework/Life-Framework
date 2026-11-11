@@ -91,9 +91,9 @@ GenericEntity Sign_Garage : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 238 3.06 259.4
- angleY 180
- scale 0.7
+ coords 240.41 2.0 260.6
+ angleY 90
+ scale 1.2
 }
 GenericEntity Sign_Impound : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
@@ -265,7 +265,7 @@ GenericEntity Sign_ConvoyDrop : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_B
    m_sSignId "convoy_drop"
   }
  }
- coords 126.92 0.9 282.5
+ coords 127.03 0.9 282.5
  angleY 90
 }
 GenericEntity Sign_ConvoyPickup : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
