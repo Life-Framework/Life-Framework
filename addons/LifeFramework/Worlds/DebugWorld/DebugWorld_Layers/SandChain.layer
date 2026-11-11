@@ -1,5 +1,5 @@
 GenericEntity SandBuilderStand {
- coords 224 0 186
+ coords 189 0 183
  {
   $grp GenericEntity {
    SandDisplayCrate {
@@ -17,7 +17,7 @@ GenericEntity SandBuilderStand {
     coords -2.6 0.9 0.7
    }
    SandDisplayItems {
-     coords 0 0.9 0.7
+     coords 0 1.14 0.7
     {
      $grp GenericEntity : "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et" {
       Sandbag_01 {
@@ -55,9 +55,9 @@ GenericEntity SandBuilderStand {
  }
 }
 GenericEntity Sandbag_5A0E821DC5FD2BE3 : "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et" {
- coords 225 0 188
+ coords 190 0 185
 }
 GenericEntity SandPile_Debug : "{DEB57429CD49782D}Prefabs/Props/Construction/SandPile_01.et" {
- coords 218.495 0 182.797
+ coords 193.5 0 184.5
  angles 0 -179.853 0
 }
