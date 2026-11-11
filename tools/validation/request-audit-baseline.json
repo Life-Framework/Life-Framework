@@ -1,0 +1,506 @@
+{
+ "handlers": 56,
+ "checked": 54,
+ "unchecked": 2,
+ "entries": [
+  {
+   "file": "Components/BuildingSystem/LF_BuildingManagerComponent.c",
+   "handler": "RpcAsk_SpawnEntityPrefab",
+   "verdict": "checked",
+   "checks": [
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessDie",
+   "verdict": "checked",
+   "checks": [
+    "devgate"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessMelee",
+   "verdict": "checked",
+   "checks": [
+    "devgate"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessPose",
+   "verdict": "checked",
+   "checks": [
+    "devgate"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessScanner",
+   "verdict": "checked",
+   "checks": [
+    "devgate",
+    "money",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessShoot",
+   "verdict": "checked",
+   "checks": [
+    "devgate"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessShootNpc",
+   "verdict": "checked",
+   "checks": [
+    "devgate"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessSiren",
+   "verdict": "checked",
+   "checks": [
+    "devgate",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessStand",
+   "verdict": "checked",
+   "checks": [
+    "devgate"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessState",
+   "verdict": "unchecked",
+   "checks": [
+    "money",
+    "range",
+    "role"
+   ],
+   "note": "replies with the player state line to any client with no LF_DevGate check (read-only, low risk)"
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessTime",
+   "verdict": "checked",
+   "checks": [
+    "devgate",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessUse",
+   "verdict": "checked",
+   "checks": [
+    "devgate",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/ATM/LF_CharacterATMComponent.c",
+   "handler": "RpcAsk_Deposit",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "ownership",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/ATM/LF_CharacterATMComponent.c",
+   "handler": "RpcAsk_GetBalance",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "noinput",
+    "ownership"
+   ]
+  },
+  {
+   "file": "Feature/ATM/LF_CharacterATMComponent.c",
+   "handler": "RpcAsk_Withdraw",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "ownership",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Character/Spawning/LF_RespawnComponent.c",
+   "handler": "RpcAsk_LF_Respawn",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
+   ]
+  },
+  {
+   "file": "Feature/CharacterCreation/LF_CharacterCreationController.c",
+   "handler": "RpcAsk_LF_CreateCharacter",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/CharacterCreation/LF_CharacterCreationController.c",
+   "handler": "RpcAsk_LF_SelectCharacter",
+   "verdict": "checked",
+   "checks": [
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Comms/LF_ServiceBoard.c",
+   "handler": "RpcAsk_LF_ServiceBoard",
+   "verdict": "checked",
+   "checks": [
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Debug/LF_DebugMenu.c",
+   "handler": "RpcAsk_LF_DebugAction",
+   "verdict": "checked",
+   "checks": [
+    "devgate",
+    "money",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Debug/LF_SpawnHub.c",
+   "handler": "RpcAsk_LF_SpawnHubTravel",
+   "verdict": "unchecked",
+   "checks": [
+    "ownership"
+   ],
+   "note": "only the mission's hub-enabled flag gates it; no dev gate, range or rate limit, so any client teleports to any hub point"
+  },
+  {
+   "file": "Feature/Film/LF_FilmActor.c",
+   "handler": "RpcAsk_LF_FilmScene",
+   "verdict": "checked",
+   "checks": [
+    "devgate",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Hideouts/LF_HideoutStashPlayerController.c",
+   "handler": "RpcAsk_LF_OpenStash",
+   "verdict": "checked",
+   "checks": [
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Interaction/LF_PlayerInteractionController.c",
+   "handler": "RpcAsk_LF_GiveCash",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Interaction/LF_PlayerInteractionController.c",
+   "handler": "RpcAsk_LF_GiveItem",
+   "verdict": "checked",
+   "checks": [
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Jobs/LF_PlayerJobComponent.c",
+   "handler": "RpcAsk_ClaimFruitCatcherReward",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Jobs/LF_PlayerJobComponent.c",
+   "handler": "RpcAsk_SetJob",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Jobs/LF_PlayerJobComponent.c",
+   "handler": "RpcAsk_StartFruitCatcherRound",
+   "verdict": "checked",
+   "checks": [
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Medic/LF_GiveUpController.c",
+   "handler": "RpcAsk_LF_GiveUp",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
+   ]
+  },
+  {
+   "file": "Feature/Medic/LF_ReviveAnim.c",
+   "handler": "RpcAsk_LF_ReviveAnim",
+   "verdict": "checked",
+   "checks": [
+    "ownership",
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Moderation/LF_IncidentGm.c",
+   "handler": "RpcAsk_LF_Incidents",
+   "verdict": "checked",
+   "checks": [
+    "role"
+   ],
+   "note": "admin-gated rows; the client-sent centre only picks the query area; no rate limit"
+  },
+  {
+   "file": "Feature/Moderation/LF_IncidentGm.c",
+   "handler": "RpcAsk_LF_Report",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "noinput",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Organizations/LF_OrganizationCharacter.c",
+   "handler": "RpcAsk_LF_OrganizationBuy",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Organizations/LF_OrganizationCharacter.c",
+   "handler": "RpcAsk_LF_OrganizationCreate",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Organizations/LF_OrganizationCharacter.c",
+   "handler": "RpcAsk_LF_OrganizationDeposit",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Organizations/LF_OrganizationCharacter.c",
+   "handler": "RpcAsk_LF_OrganizationLease",
+   "verdict": "checked",
+   "checks": [
+    "noinput",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Organizations/LF_OrganizationCharacter.c",
+   "handler": "RpcAsk_LF_OrganizationLeave",
+   "verdict": "checked",
+   "checks": [
+    "noinput",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Organizations/LF_OrganizationCharacter.c",
+   "handler": "RpcAsk_LF_OrganizationView",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
+   ]
+  },
+  {
+   "file": "Feature/Organizations/LF_OrganizationCharacter.c",
+   "handler": "RpcAsk_LF_OrganizationWithdraw",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Police/LF_FineTicketRole.c",
+   "handler": "RpcAsk_LF_WriteTicket",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Police/LF_PoliceApplicationForm.c",
+   "handler": "RpcAsk_LF_PoliceApplication",
+   "verdict": "checked",
+   "checks": [
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Police/LF_PoliceApplicationForm.c",
+   "handler": "RpcAsk_LF_PoliceReview",
+   "verdict": "checked",
+   "checks": [
+    "noinput",
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Police/LF_PoliceMenu.c",
+   "handler": "RpcAsk_LF_PoliceArrest",
+   "verdict": "checked",
+   "checks": [
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Police/LF_PoliceMenu.c",
+   "handler": "RpcAsk_LF_PoliceSelfPromote",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
+   ]
+  },
+  {
+   "file": "Feature/Police/LF_WantedBoard.c",
+   "handler": "RpcAsk_LF_WantedBoard",
+   "verdict": "checked",
+   "checks": [
+    "noinput",
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Quests/LF_QuestTrackerComponent.c",
+   "handler": "RpcAsk_Accept",
+   "verdict": "checked",
+   "checks": [
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Quests/LF_QuestTrackerComponent.c",
+   "handler": "RpcAsk_Converse",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Quests/LF_QuestTrackerComponent.c",
+   "handler": "RpcAsk_OpenGiver",
+   "verdict": "checked",
+   "checks": [
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Quests/LF_QuestTrackerComponent.c",
+   "handler": "RpcAsk_RequestLog",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
+   ]
+  },
+  {
+   "file": "Feature/Quests/LF_QuestTrackerComponent.c",
+   "handler": "RpcAsk_SignRead",
+   "verdict": "checked",
+   "checks": [
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Quests/LF_QuestTrackerComponent.c",
+   "handler": "RpcAsk_TurnIn",
+   "verdict": "checked",
+   "checks": [
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Shop/LF_CharacterShopComponent.c",
+   "handler": "RpcAsk_Buy",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "ownership",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Shop/LF_CharacterShopComponent.c",
+   "handler": "RpcAsk_Sell",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "ownership",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/SirenLights/LF_SirenManagerComponent.c",
+   "handler": "RpcAsk_Authority_Method",
+   "verdict": "checked",
+   "checks": [
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/VehicleLock/LF_VehicleLockKeyController.c",
+   "handler": "RpcAsk_LF_VehicleLockToggle",
+   "verdict": "checked",
+   "checks": [
+    "noinput",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Vehicles/LF_VehicleLotSheet.c",
+   "handler": "RpcAsk_LF_BuyVehicle",
+   "verdict": "checked",
+   "checks": [
+    "money",
+    "range"
+   ]
+  }
+ ]
+}
