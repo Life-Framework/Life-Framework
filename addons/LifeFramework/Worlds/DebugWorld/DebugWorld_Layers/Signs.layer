@@ -355,7 +355,7 @@ GenericEntity Sign_LotPrice_uaz452 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_S
 }
 GenericEntity Sign_Quarry_Info : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
  components {
-  LF_SignComponent "{44FC6FF960E3CDE6}" {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
    m_sSignId "quarry_info"
   }
  }
