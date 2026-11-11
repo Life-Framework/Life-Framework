@@ -199,6 +199,17 @@
   `Hierarchy`, as vanilla `Character_Base.et` does: the server streams each
   placed NPC with its worn clothes as children. Before this fix, a dedicated client saw
   the NPCs in underwear. Test: `npc/clothes-replicate` (WORLD).
+- ✅ **Worn, not at their feet, on every client** (2026-11-11, #328): the loadout
+  manager put the clothing into slots that no inventory storage owned, so only
+  the parent link reached a client and whether it wore an item depended on
+  stream order (a different few NPCs per session stood in underwear with the
+  jacket or trousers on the ground). `Npc_Base.et` now carries
+  `LF_NpcLoadoutStorageComponent` (an `SCR_EquipedLoadoutStorageComponent`) and a
+  plain `InventoryStorageManagerComponent` (`SCR_InventoryStorageManagerComponent`
+  assumes a character), the vanilla path that replicates which slot holds which
+  item. The storage hides the NPC from a player's inventory Vicinity, so nobody
+  can open it and take the clothes or pick up the NPC. Test:
+  `npc/wears-clothes` (WORLD).
 - ⚠️ A client builds a placed NPC from its prefab, not from the layer. A
   layer may override only `CharacterIdentityComponent` on an NPC. An added
   component kicks every client (`RplCreationError: Number of items mismatch`),

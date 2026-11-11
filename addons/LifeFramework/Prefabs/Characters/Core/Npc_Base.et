@@ -113,6 +113,10 @@ LF_NpcBaseEntity {
   }
   BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
   }
+  LF_NpcLoadoutStorageComponent "{85254DBF43DC115D}" {
+  }
+  InventoryStorageManagerComponent "{8FD3FD566831DF7C}" {
+  }
   ActionsManagerComponent "{5A4B13A9811FB113}" {
    ActionContexts {
     UserActionContext "{2E17DED6F511AAC6}" {
