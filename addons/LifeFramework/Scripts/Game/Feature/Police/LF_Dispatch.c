@@ -260,6 +260,28 @@ class LF_Dispatch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where an alarm stands: on the first surface under the site point (the till counter, the cash van box, the
+	//! ground at a door), traced from a little above it. A site point above open ground used to leave the alarm and
+	//! its beacon hanging in the air. Falls back to the terrain height when the trace finds nothing.
+	static vector RestingSpot(vector site)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return site;
+
+		TraceParam trace = new TraceParam();
+		trace.Start = site + "0 0.6 0";
+		trace.End = site - "0 4 0";
+		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		trace.LayerMask = EPhysicsLayerPresets.Projectile;
+		float fraction = world.TraceMove(trace, null);
+		if (fraction < 1)
+			return trace.Start + (trace.End - trace.Start) * fraction;
+
+		return Vector(site[0], world.GetSurfaceY(site[0], site[2]), site[2]);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: spawn the alarm prefab for this level at the site and schedule its removal. An
 	//! older alarm still sounding at the same site is replaced.
 	//! \return The alarm entity, or null when the prefab does not spawn (logged).
@@ -276,7 +298,7 @@ class LF_Dispatch
 		}
 
 		StopAlarmsNear(site, 3);
-		IEntity alarm = LF_Utils.SpawnEntityPrefab(prefab, site);
+		IEntity alarm = LF_Utils.SpawnEntityPrefab(prefab, RestingSpot(site));
 		if (!alarm)
 		{
 			LF_Debug.Error(FEATURE, string.Format("%1 alarm did not spawn: %2", AlarmLevel(loud), prefab));
