@@ -8,10 +8,14 @@ class LF_BankLoot
 {
 	static const string KIND_BAGS = "bags";
 	static const string KIND_WEAPONS = "weapons";
+	//! Spilled bags: the first stands this far right of the target's centre, the next ones a step on, BAG_ROW a row.
+	static const float BAG_FIRST_RIGHT = 0.64;
+	static const float BAG_STEP = 0.36;
+	static const int BAG_ROW = 3;
 
 	//------------------------------------------------------------------------------------------------
-	//! A point in front of the target: forward along its local +Z, right along +X, up in the world.
-	//! Without a target the offset is taken from the fallback point.
+	//! A point in front of the target: forward along its local +Z, right along +X, up in the world, in metres
+	//! whatever the target's scale. Without a target the offset is taken from the fallback point.
 	static vector Spot(IEntity target, vector fallback, float forward, float right, float up)
 	{
 		if (!target)
@@ -19,23 +23,64 @@ class LF_BankLoot
 
 		vector transform[4];
 		target.GetWorldTransform(transform);
-		return transform[3] + transform[2] * forward + transform[0] * right + Vector(0, up, 0);
+		vector ahead = transform[2].Normalized();
+		vector side = transform[0].Normalized();
+		return transform[3] + ahead * forward + side * right + Vector(0, up, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawns count money bags in a row behind the target, each carrying cashPerBag of MoneyStack.
+	//! Where bag i of a spill lies, beside the target in its local frame (x right, z forward), in metres: a row
+	//! of three along one side of the target, then a second row a step further out in front. side is +1 for the
+	//! target's right, -1 for its left.
+	static vector BagOffset(int index, float side = 1)
+	{
+		int column = index % BAG_ROW;
+		int row = index / BAG_ROW;
+		return Vector(side * (BAG_FIRST_RIGHT + column * BAG_STEP), 0, row * BAG_STEP);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The side of the target the bags go to: away from the robber. A robber in front (or with no target) gets
+	//! them on the target's right; the drill they leave rests on their own right, the target's left.
+	static float BagSide(IEntity target, vector robberAt)
+	{
+		if (!target)
+			return 1;
+
+		vector transform[4];
+		target.GetWorldTransform(transform);
+		float across = vector.Dot(robberAt - transform[3], transform[0].Normalized());
+		if (across > 0.3)
+			return -1;
+
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawns count money bags in a tidy row beside the target, on the side away from the robber (fallback is
+	//! where they stood), each resting on the surface under it and carrying cashPerBag of MoneyStack. They used to
+	//! stand in a row 1.4 m out where the robber works, on the road behind the cash van.
 	//! \return The bags spawned. A bag that would not fill is deleted, not left empty.
 	static array<IEntity> SpillBags(IEntity target, vector fallback, int count, int cashPerBag)
 	{
 		array<IEntity> bags = {};
+		float yaw = 0;
+		if (target)
+			yaw = target.GetYawPitchRoll()[0];
+
+		float side = BagSide(target, fallback);
 		for (int i = 0; i < count; i++)
 		{
-			vector at = Spot(target, fallback, 1.4, (i - (count - 1) * 0.5) * 0.7, 0.3);
-			// Lay each bag on the ground, not at the target's height: no bag hangs in the air.
+			vector offset = BagOffset(i, side);
+			vector at = Spot(target, fallback, offset[2], offset[0], 0);
+			// On the first surface under the spot (the verge, a floor), not hanging at the target's height.
 			if (GetGame() && GetGame().GetWorld())
-				at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]) + 0.05;
+				at = LF_Dispatch.RestingSpot(at + "0 0.3 0");
 
-			IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Bank.BAG_PREFAB, at);
+			// A small turn each, so the row reads as set down by hand rather than stamped out.
+			int odd = i % 2;
+			float turn = yaw + 12 * odd - 6;
+			IEntity bag = LF_Utils.SpawnEntityPrefab(LF_Bank.BAG_PREFAB, at, Vector(turn, 0, 0));
 			if (!bag)
 			{
 				LF_Debug.Error("Bank", "spill refused: the money bag did not spawn");

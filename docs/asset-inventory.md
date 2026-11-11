@@ -23,7 +23,7 @@ track).
 | Pager | `LF_Pager.et` | placeholder | ANPRC68 radio mesh | 1980s belt pager with a small screen | Comms #249 | medium |
 | Moonshine still | `LF_ChainStill.et` | placeholder | barrel station with the `BoilerTank_02` horizontal metal tank mesh (was the white `Boiler_01`, #497); a dark `BoilerLarge_02` furnace with a chimney pipe stands beside it | copper pot still with coil | Moonshine #420 | high: in website shots |
 | Smelter furnace | `Processor/Furnace.et` | placeholder | base-game `BoilerLarge_02` heating boiler (was the `Sawmill_E_01_SmallSaw` chipper, #593); the base game has no named furnace or foundry asset | brick or cast furnace with a fire door and chimney | Mining #593 | medium |
-| Fence drill | `LF_Drill.et` | placeholder | `BenchDrill_01` model | handheld power drill or safe-cracking drill | Fence #271 | medium |
+| Fence drill | `LF_Drill.et` | placeholder | `BenchDrill_01` model at 0.4 (0.47 m, reads as a magnetic safe drill), upright when left | handheld power drill or safe-cracking drill | Fence #271 | medium |
 | House key | `HouseKeyItem.et` | final | `Assets/Items/Keys/HouseKey.xob`: brass key with a round bow and toothed blade, made in Blender (`tools/assets/keys/build.py`; no base-game key mesh exists, #613). Materials tint shared base-game plastic maps | (already what it is) | Housing #613 | none |
 | Vehicle key | `Roleplay/VehicleKey.et`, `LF_PoliceCarKey.et` | final | `Assets/Items/Keys/VehicleKey.xob`: black remote fob with two red buttons and a steel blade (#613), so a car key reads differently from the brass house key | (already what it is) | Vehicles #613 | none |
 | Fence keycard | `LF_Keycard.et` | placeholder | stand-in mesh (#271) | plastic access card | Fence #271 | low |
@@ -44,9 +44,9 @@ looked at yet.
 | Town signs (town map, safe zone) | `LF_Sign_Posts.et`, `LF_Sign_PolePlate.et` | final | vanilla sign bodies with a rendered face | (already signs) | Spawn square | none |
 | Clerk desk and chair | `Desk_01_short.et`, `Chair_02_green.et` | final | vanilla furniture | (already a desk and chair) | Spawn square | none |
 | Fence yard props | `Workbench_01.et`, `BoxWooden_01.et`, `Crate_01_green.et`, `BarrelMetal_01_blue.et`, `Tire_M151A2_pile.et`, `EL_S105_beige.et` | final | vanilla props and a parked Skoda | (already what they are); no tarp prefab found, so none placed. Drill, charge and keycard stay placeholders (rows above) | Fence yard #276 | none |
-| Cash van box | `LF_CashVanBox.et` | placeholder | vanilla `Chest_01` (dark steel trunk) at 1.4 scale, on the van's rear step | a locked steel cash-in-transit box | Cash van #274 | low |
+| Cash van box | `LF_CashVanBox.et` | placeholder | vanilla `Chest_01` (dark steel trunk, 0.8 m) on the ground at the van's kerb-side door | a locked steel cash-in-transit box | Cash van #274 | low |
 | Bank teller window (#590, replaces the ATM) | `LF_BankTeller.et`, `Bank_Teller`, `Bank_Counter_West/East` (DebugWorld `ATM.layer`) | placeholder | vanilla `Npc_Default_01` clerk standing behind the vanilla post-office counter `CounterPostOffice_01_window`; the old ATM entity stays hidden (no mesh) inside the bank | a 1989 bank teller cage with brass grille | Bank, ATM | low |
-| Money bag | `LF_MoneyBag.et` | placeholder | vanilla `SackUniversal_01` sack mesh at 0.55 scale | a canvas cash bag with a drawstring | Bank, cash van #273 #274 | low |
+| Money bag | `LF_MoneyBag.et` | placeholder | vanilla `SackUniversal_01` sack mesh at 0.4 scale (0.54 m) | a canvas cash bag with a drawstring | Bank, cash van #273 #274 | low |
 | Hospital bed | `LF_HospitalBed.et` | final | vanilla `BedMedical_01` | (already a medical bed) | Hospital, area 7 | none |
 | Ambulance | `LF_M997_Ambulance.et` | final | vanilla `M997_maxi_ambulance` | (already an ambulance) | Hospital, area 7 | none |
 | Hospital till | `Roadmap_Hospital_Till` | final | vanilla `CounterPostOffice_01` | (a reception counter) | Hospital, area 7 | none |
@@ -54,7 +54,8 @@ looked at yet.
 | Stretcher | none | missing | no base-game stretcher found | stretcher by the ambulance | Hospital, area 7 | low |
 | Store counter | `Shop_GeneralStore_Debug` | placeholder | vanilla `CounterShop_01` (a yellow market cart) | a shop counter with a till | General store, area 3 | low |
 | Market stall | umbrella stands plus `TableRecreation_01` | placeholder | vanilla `MarketStand_01_Umbrella` over recreation tables | a market stall with a awning | General store and market, area 3 | low |
-| Site alarm beacon | `LF_SiteAlarm.et` | final | vanilla `HazardBeacon_01`, scaled 3x, 1.1 m up, while the alarm runs | (a red hazard lamp) | Alarm at store, bank, till, area 3 | none |
+| Site alarm beacon | `LF_SiteAlarm.et` | final | vanilla `HazardBeacon_01` at 0.4 (0.21 m), no collision, while the alarm runs; on an alarm mount (bank bell box, cash van roof) or the surface under the site | (a small rotating beacon) | Alarm at store, bank, till, area 3 | none |
+| Bank alarm bell box | `Roadmap_Bank_AlarmBox` (layer, `Street_Bank.layer`) | final | vanilla `ElectricityBox_small_01` on the bank's east wall above the vault door, carries `LF_AlarmMountComponent` | (a wall alarm box) | Bank vault, area 2 | none |
 | Hideout machine | `Roadmap_Hideout_Machine` | placeholder | vanilla `CoffeeGrinderShop_01` | contraband press | Hideout, area 13 | medium |
 | Hideout stash | `LF_HideoutStash.et` | final | vanilla chest | (a trunk) | Hideout, area 13 | none |
 | Hideout van | `Roadmap_Hideout_Van` | final | vanilla `UAZ452_base` (the van-bodied car) | (a parked van, scenery) | Hideout, area 13 | none |

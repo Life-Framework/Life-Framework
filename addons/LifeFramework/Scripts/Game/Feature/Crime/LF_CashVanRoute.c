@@ -71,8 +71,11 @@ class LF_CashVanRouteComponent : ScriptComponent
 	[Attribute("Roadmap_Cash_Van", UIWidgets.EditBox, desc: "World entity name of the van. The box is its own entity, not a child: a replicated child under a replicated vehicle makes the client item table disagree with the server.")]
 	protected string m_sVanEntity;
 
-	[Attribute("0 0.45 -2.6", UIWidgets.Coords, desc: "Where the box sits on the van's rear step, in the van's local space. The box faces backwards.")]
+	[Attribute("1.35 0 -1.4", UIWidgets.Coords, desc: "Where the box stands, in the van's local space: on the ground at the kerb-side door. It used to hang off the rear step over the road.")]
 	protected vector m_vBoxOffset;
+
+	[Attribute("90", UIWidgets.Auto, desc: "The box's heading relative to the van, in degrees. 90 faces it out from the kerb side.")]
+	protected float m_fBoxYaw;
 
 	protected int m_iStop;
 
@@ -139,9 +142,9 @@ class LF_CashVanRouteComponent : ScriptComponent
 		vector transform[4];
 		stop.GetWorldTransform(transform);
 		van.SetTransform(transform);
-		// The box rides on the rear: placed from the van's new pose, facing backwards.
-		door.SetOrigin(van.CoordToParent(m_vBoxOffset));
-		door.SetAngles(van.GetAngles() + Vector(0, 180, 0));
+		// The box goes with the van: set down at its kerb-side door from the van's new pose, on the surface there.
+		door.SetOrigin(LF_Dispatch.RestingSpot(van.CoordToParent(m_vBoxOffset) + "0 0.5 0", door));
+		door.SetAngles(van.GetAngles() + Vector(0, m_fBoxYaw, 0));
 		Physics physics = van.GetPhysics();
 		if (physics)
 		{
