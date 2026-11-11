@@ -3479,6 +3479,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You were handed a sentence slip. Check your inventory."
      Comment "Toast when a prisoner receives the sentence slip."
     }
+    CustomStringTableItem "{950892F5D530ACC9}" {
+     Id "LF-JailWork_Scrub"
+     Target_en_us "Scrub the floor"
+     Comment "Action in the cell: scrub the floor to shorten the sentence."
+    }
+    CustomStringTableItem "{B2F316158144F2CB}" {
+     Id "LF-JailWork_Laundry"
+     Target_en_us "Sort the laundry"
+     Comment "Action in the cell: sort laundry to shorten the sentence."
+    }
+    CustomStringTableItem "{F9D02BE97AECAA25}" {
+     Id "LF-JailWork_Done"
+     Target_en_us "Job done. Time left: %1"
+     Comment "Toast after a jail job. %1 is the remaining sentence as m:ss."
+    }
+    CustomStringTableItem "{7AB47127A2E6C90C}" {
+     Id "LF-JailWork_NotPrisoner"
+     Target_en_us "Only a prisoner serving a sentence can work here."
+     Comment "Jail job refused: the player is not serving."
+    }
+    CustomStringTableItem "{9D3D515C89CBD67C}" {
+     Id "LF-JailWork_Busy"
+     Target_en_us "You are already working."
+     Comment "Jail job refused: a job is already running."
+    }
+    CustomStringTableItem "{C1C1BA78E72558F0}" {
+     Id "LF-JailWork_Cooldown"
+     Target_en_us "You need a rest. This job is free again in %1."
+     Comment "Jail job refused: cooldown. %1 is m:ss."
+    }
+    CustomStringTableItem "{04A2CD75730658F5}" {
+     Id "LF-JailWork_BadConfig"
+     Target_en_us "This job is not set up."
+     Comment "Jail job refused: no seconds configured."
+    }
     CustomStringTableItem "{2606D4AE3E7A4FE0}" {
      Id "LF-Vehicle_BankShort"
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."

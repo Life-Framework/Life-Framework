@@ -84,3 +84,89 @@ GenericEntity Roadmap_Escort_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/U
  coords 247.5 0 238
  angleY 0
 }
+GenericEntity Roadmap_Jail_ScrubBucket {
+ components {
+  MeshObject "{B1A4C0D2E3F50601}" {
+   Object "{8D4E2E836BBABBDD}Assets/Props/Civilian/Bucket_01/Bucket_01.xob"
+  }
+  RigidBody "{B1A4C0D2E3F50602}" {
+   Mass 3
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{B1A4C0D2E3F50603}" {
+   ActionContexts {
+    UserActionContext "{B1A4C0D2E3F50604}" {
+     ContextName "default"
+     Position PointInfo "{B1A4C0D2E3F50605}" {
+      Offset 0 0.3 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_JailWorkAction "{B1A4C0D2E3F50606}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B1A4C0D2E3F50607}" {
+      Name "#LF-JailWork_Scrub"
+     }
+     m_sJobId "scrub"
+     m_fSecondsOff 30
+     m_fCooldownSeconds 45
+     m_fWorkSeconds 6
+     m_eKind 561
+    }
+   }
+  }
+  RplComponent "{B1A4C0D2E3F50608}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 231 0 221
+}
+GenericEntity Roadmap_Jail_LaundryBasket {
+ components {
+  MeshObject "{B1A4C0D2E3F50611}" {
+   Object "{B8506F2043AD3154}Assets/Props/Civilian/BasketWicker_01/BasketWicker_01.xob"
+  }
+  RigidBody "{B1A4C0D2E3F50612}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{B1A4C0D2E3F50613}" {
+   ActionContexts {
+    UserActionContext "{B1A4C0D2E3F50614}" {
+     ContextName "default"
+     Position PointInfo "{B1A4C0D2E3F50615}" {
+      Offset 0 0.4 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_JailWorkAction "{B1A4C0D2E3F50616}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B1A4C0D2E3F50617}" {
+      Name "#LF-JailWork_Laundry"
+     }
+     m_sJobId "laundry"
+     m_fSecondsOff 20
+     m_fCooldownSeconds 30
+     m_fWorkSeconds 5
+     m_eKind 562
+    }
+   }
+  }
+  RplComponent "{B1A4C0D2E3F50618}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 233 0 221
+}

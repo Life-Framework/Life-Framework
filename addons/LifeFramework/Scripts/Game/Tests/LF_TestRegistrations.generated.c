@@ -151,6 +151,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JailOnlineTime(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JailSlip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailVehicleArrest(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JailWork(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobClientOffers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobPacing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
