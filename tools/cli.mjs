@@ -3408,7 +3408,7 @@ function cmdSuiteValid(flags) {
 }
 
 const [a, b] = rest;
-const HEAVY = ["build", "serve", "dev", "test", "ci", "e2e", "audit"];
+const HEAVY = ["build", "serve", "dev", "test", "ci", "e2e"];
 
 let code;
 try {

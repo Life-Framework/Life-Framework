@@ -69,6 +69,10 @@ Add an entry only with a reason a reviewer can check in a shot.
 - A child of a rotated parent is placed where `layers.mjs` sums the coordinates, which ignores the
   parent's rotation; no layer nests that way today. An entity the test cannot find is listed under
   "not found".
+- It measures where the layer puts each entity. A dynamic rigid body (a pickup with `RigidBody Active Active`,
+  such as `WoodLog_01_Small`) is simulated on clients and can tip off a table that the audit passed: on
+  2026-11-11 the logging stand's logs, laid along a 1.2 m table, fell upright in the after shot. Lay such
+  items on the ground, or check them in a shot.
 - It measures; it does not judge looks. The visual pass (`tools\cli shots area <name> --eye-only`,
   `docs/agent-area-polish.md`) still catches the wrong asset, junk strewn about and odd scale that is
   inside the thresholds.

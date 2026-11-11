@@ -21,16 +21,16 @@ GenericEntity LumberjackStand {
     {
      $grp GenericEntity : "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et" {
       WoodLog_01 {
-       coords 1.875 0 -0.45
+       coords 1.875 -0.9 1.4
        angleY 90
       }
       WoodLog_02 {
-       coords 1.875 0 -0.25
+       coords 1.875 -0.9 1.62
        angleY 90
       }
      }
      GenericEntity WoodPlank_01 : "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et" {
-      coords 0 0.18 -0.3
+      coords 0 0 -0.2
       angleY 90
      }
      GenericEntity WoodKindling_01 : "{6697C9B8CEB5234C}Prefabs/Resources/WoodCutting/WoodKindling.et" {
