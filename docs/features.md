@@ -1588,6 +1588,7 @@
   personal ATM balance is not read or written. The desk is
   `Roadmap_Org_Desk` on `Street_Org.layer` at `288.9 0 255.7` (org registry porch), using
   `{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et`.
+  The desk mesh origin is its back-right corner (bounds x -1.70..0, y 0..0.907, z 0..0.747), so the top is at y 0.907 and the props sit at x 287.6..288.6 (`Roadmap_Org_Desk_Phone/Files/Notebooks/Clock`, `_Chair`).
 - ✅ (2026-11-08, M1-17) The desk opens the registry ledger `LF_OrgLedger`, a
   1989 ledger page on the UI kit (the old `OrganizationMenu.layout` is gone).
   No organization: name field and "Sign and pay $250"; the fee
