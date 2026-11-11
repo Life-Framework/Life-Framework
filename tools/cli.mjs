@@ -2467,7 +2467,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
                                 (generated conflicts only), gates, pushes, re-queues auto-merge,
                                 and merges green PRs stuck open (see: cli prs help)
-  film-make <storyboard.json> [--out f.mp4] [--keep] [--no-vo] | --setup | --selftest
+  film-make <storyboard.json> [--out f.mp4] [--keep] [--no-vo] [--shot ids] [--group name] [--preview] [--client n] [--no-shoot] | --setup | --selftest
                                 post-production: cards, crossfades, captions + .srt, offline voice-over,
                                 ducked music bed (docs/film-pipeline.md "Post-production")
   regen-tests                   regenerate the test registry from the test files
@@ -3407,7 +3407,7 @@ try {
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

@@ -317,10 +317,15 @@ export async function filmMake(argv) {
     const i = argv.indexOf(name);
     return i === -1 ? null : argv[i + 1];
   };
-  if (!boardPath) throw new Error("usage: tools\\cli film-make <storyboard.json> [--out file.mp4] [--keep] [--no-vo]");
+  if (!boardPath) throw new Error("usage: tools\\cli film-make <storyboard.json> [--out file.mp4] [--keep] [--no-vo] [--shot ids] [--group name] [--preview] [--client n] [--no-shoot] [--shoot-only]");
   const bp = abs(boardPath);
   const baseDir = dirname(bp);
-  const board = JSON.parse(readFileSync(bp, "utf8"));
+  let board = JSON.parse(readFileSync(bp, "utf8"));
+  if (board.format) {
+    // lf-storyboard/1 (tools/film/storyboard.mjs): shoot the shots through the camera rig, then post-produce the takes.
+    board = await (await import("./storyboard.mjs")).prepare(bp, argv);
+    if (!board) return 0;
+  }
   validateBoard(board);
   const ff = resolveFfmpeg();
   if (!ff) throw new Error("ffmpeg not found. Run: node tools/film/film.mjs fetch");
@@ -383,7 +388,9 @@ export async function filmMake(argv) {
   const gp = { segs, starts, total, t, size, fps, music, vo, hasAudio, cardFont: fontFile, cardTexts, assName: "captions.ass", fontsDir: "." };
   writeFileSync(join(work, "graph1.txt"), buildGraph({ ...gp, audioOnly: true }));
   const pass1 = run(ff.path, ["-y", "-hide_banner", ...inputs, "-filter_complex_script", "graph1.txt", "-map", "[aout]", "-t", total.toFixed(3), "-f", "null", "-"], { cwd: work });
-  const measured = parseLoudnorm(pass1.stderr);
+  let measured = parseLoudnorm(pass1.stderr);
+  // A silent cut (no game sound, no music, no voice: the camera test clips) measures -inf; there is nothing to level.
+  if (!measured && /"input_i"\s*:\s*"-inf"/.test(pass1.stderr || "")) measured = { input_i: "-14.00", input_tp: "-2.00", input_lra: "0.00", input_thresh: "-24.00", target_offset: "0.00" };
   if (!measured) throw new Error(`loudness pass failed: ${(pass1.stderr || "").trim().slice(-400)}`);
   console.log(`loudness: ${measured.input_i} LUFS in, true peak ${measured.input_tp} dBTP, normalised to -14`);
   writeFileSync(join(work, "graph.txt"), buildGraph({ ...gp, measured }));
@@ -447,7 +454,7 @@ export function selftestPost() {
 export async function main(argv) {
   try {
     if (argv.includes("--selftest")) {
-      const f = selftestPost();
+      const f = [...selftestPost(), ...(await import("./storyboard.mjs")).selftestStoryboard()];
       f.forEach((x) => console.error(`  ${x}`));
       console.log(f.length ? "post selftest: FAIL" : "post selftest ok");
       return f.length ? 1 : 0;

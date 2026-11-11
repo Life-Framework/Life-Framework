@@ -2062,6 +2062,12 @@
   neighbour rule.
   Play-mode run not yet recorded.
 
+### Directed camera rig and storyboards — `Feature/Film/LF_FilmCameraPath.c`, `tools/film/storyboard.mjs` (dev tooling, #392, #395)
+- ✅ Harness verb `camera orbit x y z radius seconds [azimuth arc height]` (an arc round a point, centred on any azimuth: 0 = +z, 90 = +x, 180 = -z, 270 = -x; the old +z sweep is the default), `camera follow x y z distance seconds`, `camera static px py pz lx ly lz seconds [fov]`, `camera drone p l q m seconds [fov]` (eased move between two poses), `camera hud off|on` (HUD and hint pop-ups hidden for a first-person shot; `LF_FilmClean` keeps hints down every 400 ms), `camera stop`. Covered by `film/camera-path` (LOGIC). Proven 2026-11-11 on a 1920x1080 session: five 4 s shots of one scene (first person, follow, orbit, drone, static), no HUD (`video/camera-test.json`, internal).
+- ✅ Scene presets (#394): light-only scenes for the trailer locations (`scene start trailer-square`, `trailer-bank`, `trailer-quarry` ... : fixed clock, clear weather, day frozen, no actors; `LF_FilmSceneEnv.EnvOnlyHour`) beside `street`. Covered by `film/scene-env`.
+- ✅ Storyboard format `lf-storyboard/1` (`video/storyboard.schema.json`, checks in `tools/film/storyboard.mjs`): output size, fps and aspect (16:9 and 9:16), scenes, shots with camera, duration, captions and voice. `toolscli film-make video/<name>.json` validates (a bad file fails naming the field, e.g. `shots[2].camera.radius`), shoots each shot on the session through the engine recorder, deletes the frames after encoding, and hands the takes to post-production. Flags `--shot ids`, `--group name`, `--preview` (half size, 10 fps), `--client n`, `--no-shoot`, `--shoot-only`. The trailer storyboard is `video/trailer-571.json`; its `spawn-square` group (drone, orbit, static) shoots today, the rest are marked `pending` and skipped. `validate-storyboards` checks every `video/*.json`.
+- ⚠️ A first-person shot films the client as it stands: the actor setup for each trailer beat (`shot.setup`) is not written yet, and a title card between shots is not supported by post-production.
+
 ### `film-make` post-production — `tools/film/post.mjs` (dev tooling, #397)
 - ✅ `tools\cli film-make video/<name>.json` joins clips into one mp4: logo title and end cards, crossfades, burned-in captions from cue files plus an `.srt`, offline Piper voice-over, and a licensed music bed ducked under game sound and voice (about -14 LUFS). Covered by `node tools/film/film.mjs selftest`; proven on `video/tooling-test.json` (not for posting).
 
@@ -2070,10 +2076,10 @@
   keys (position, look-at, FOV); `Sample(t)` eases between keys with
   smoothstep and clamps at both ends. Out-of-order keys are rejected and
   logged (`[LFDebug:Film]`). Covered by `film/camera-path` (LOGIC).
-- ⚠️ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
+- ✅ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
   hides the HUD, moves the camera each frame, then restores the previous
-  camera and HUD. It compiles but has not run in a rendering session and no
-  agent-box verb calls it yet.
+  camera and HUD. Harness verb `camera` plays it (directed camera rig, #392,
+  next section).
 - ✅ `tools/film/film.mjs` records a window or region to mp4 (ddagrab +
   NVENC; gdigrab when ddagrab delivers no frame in 5 s), makes a GIF preview,
   films an agent-box flow, and publishes a clip to the `film-evidence`

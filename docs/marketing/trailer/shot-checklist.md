@@ -1,6 +1,6 @@
 # Trailer shot checklist (#571)
 
-The shots in [storyboard.json](storyboard.json), grouped by location in the
+The shots in [trailer-571.json](../../../video/trailer-571.json), grouped by location in the
 order to shoot them in one session. Times and lines are in
 [script.md](script.md).
 
