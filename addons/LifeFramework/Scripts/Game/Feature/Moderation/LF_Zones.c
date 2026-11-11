@@ -33,6 +33,39 @@ enum LF_ZoneShape
 }
 
 //------------------------------------------------------------------------------------------------
+//! One rule's behaviour (#755). A zone carries a rule id; this table says what the rule means.
+//! The defaults of the new fields are "nothing changes": a rule set that only sets the two old
+//! flags behaves as before. Only blocksPlayerDamage and suppressesWanted have consumers today;
+//! the rest are read by the crime features as they adopt them (RuleSetAt is the one answer).
+[BaseContainerProps()]
+class LF_ZoneRuleSet
+{
+	[Attribute("0", UIWidgets.ComboBox, "Rule this entry configures. Values are stable ids", "", ParamEnumArray.FromEnum(LF_ZoneRule))]
+	LF_ZoneRule m_eRule;
+
+	[Attribute("0", UIWidgets.CheckBox, "Player-on-player damage is refused when either side stands inside")]
+	bool m_bBlocksPlayerDamage;
+
+	[Attribute("0", UIWidgets.CheckBox, "A murder inside raises no wanted level")]
+	bool m_bSuppressesWanted;
+
+	[Attribute("1", UIWidgets.CheckBox, "Robbery is allowed inside")]
+	bool m_bAllowsRobbery = true;
+
+	[Attribute("1", UIWidgets.CheckBox, "Vehicle theft is allowed inside")]
+	bool m_bAllowsVehicleTheft = true;
+
+	[Attribute("1", UIWidgets.CheckBox, "Drawing a weapon is allowed inside")]
+	bool m_bAllowsWeaponDraw = true;
+
+	[Attribute("1", UIWidgets.EditBox, "Multiplier on fines for crimes committed inside")]
+	float m_fFineMultiplier = 1;
+
+	[Attribute("1", UIWidgets.CheckBox, "Police may enter and act inside")]
+	bool m_bCopsEnter = true;
+}
+
+//------------------------------------------------------------------------------------------------
 [BaseContainerProps(configRoot: true)]
 class LF_ZoneConfig
 {
@@ -41,10 +74,16 @@ class LF_ZoneConfig
 	protected static ref LF_ZoneConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
-	[Attribute("1", UIWidgets.CheckBox, "SAFE zones refuse player-on-player damage")]
-	bool m_bSafeBlocksPlayerDamage;
+	//! Per-rule table. A rule with no entry falls back to the two legacy flags below.
+	[Attribute("", UIWidgets.Object, "One entry per rule: what that rule does")]
+	ref array<ref LF_ZoneRuleSet> m_aRuleSets;
 
-	[Attribute("0", UIWidgets.CheckBox, "A murder inside a LAWLESS zone raises no wanted level. Off: lawless does not switch off wanted")]
+	//! Legacy flag (before #755). Used only for SAFE when m_aRuleSets has no SAFE entry.
+	[Attribute("1", UIWidgets.CheckBox, "Legacy: SAFE zones refuse player-on-player damage. Ignored once the rule table has a SAFE entry")]
+	bool m_bSafeBlocksPlayerDamage = true;
+
+	//! Legacy flag (before #755). Used only for LAWLESS when m_aRuleSets has no LAWLESS entry.
+	[Attribute("0", UIWidgets.CheckBox, "Legacy: a murder inside a LAWLESS zone raises no wanted level. Ignored once the rule table has a LAWLESS entry")]
 	bool m_bLawlessSuppressesWanted;
 
 	//------------------------------------------------------------------------------------------------
@@ -77,23 +116,39 @@ class LF_ZoneConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool SafeBlocksPlayerDamage()
+	//! Pure: the rule set for a rule from one config object (null means the file is bad). A table
+	//! entry wins; without one, the legacy flags build the answer. The result is a fresh object.
+	static LF_ZoneRuleSet Resolve(LF_ZoneConfig config, LF_ZoneRule rule)
 	{
-		LF_ZoneConfig config = Get();
-		if (!config)
-			return true;
+		if (config && config.m_aRuleSets)
+		{
+			foreach (LF_ZoneRuleSet entry : config.m_aRuleSets)
+			{
+				if (entry && entry.m_eRule == rule)
+					return entry;
+			}
+		}
 
-		return config.m_bSafeBlocksPlayerDamage;
+		LF_ZoneRuleSet legacy = new LF_ZoneRuleSet();
+		legacy.m_eRule = rule;
+		if (rule == LF_ZoneRule.SAFE)
+		{
+			legacy.m_bBlocksPlayerDamage = true;
+			if (config)
+				legacy.m_bBlocksPlayerDamage = config.m_bSafeBlocksPlayerDamage;
+		}
+		else if (rule == LF_ZoneRule.LAWLESS && config)
+		{
+			legacy.m_bSuppressesWanted = config.m_bLawlessSuppressesWanted;
+		}
+
+		return legacy;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool LawlessSuppressesWanted()
+	static LF_ZoneRuleSet RuleSetFor(LF_ZoneRule rule)
 	{
-		LF_ZoneConfig config = Get();
-		if (!config)
-			return false;
-
-		return config.m_bLawlessSuppressesWanted;
+		return Resolve(Get(), rule);
 	}
 }
 
@@ -308,7 +363,27 @@ class LF_Zones
 	//! True when a crime at this position raises no wanted level: LAWLESS and config says so.
 	static bool WantedSuppressedAt(vector position)
 	{
-		return RuleAt(position) == LF_ZoneRule.LAWLESS && LF_ZoneConfig.LawlessSuppressesWanted();
+		return RuleSetAt(position).m_bSuppressesWanted;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rule set in force at a position (the table entry for RuleAt). Never null.
+	static LF_ZoneRuleSet RuleSetAt(vector position)
+	{
+		return LF_ZoneConfig.RuleSetFor(RuleAt(position));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsLawless(vector position)
+	{
+		return RuleAt(position) == LF_ZoneRule.LAWLESS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when player-on-player damage is refused for someone standing here.
+	static bool BlocksPlayerDamageAt(vector position)
+	{
+		return RuleSetAt(position).m_bBlocksPlayerDamage;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -330,7 +405,7 @@ class LF_Zones
 	//! Called from the character damage manager. True means the hit is swallowed.
 	static bool RefuseHit(IEntity victim, notnull BaseDamageContext damageContext)
 	{
-		if (!victim || Zones().IsEmpty() || !LF_ZoneConfig.SafeBlocksPlayerDamage())
+		if (!victim || Zones().IsEmpty())
 			return false;
 
 		Instigator instigator = damageContext.instigator;
@@ -346,11 +421,11 @@ class LF_Zones
 			return false;
 
 		int victimId = playerManager.GetPlayerIdFromControlledEntity(victim);
-		bool victimInside = IsSafe(victim.GetOrigin());
+		bool victimInside = BlocksPlayerDamageAt(victim.GetOrigin());
 		bool attackerInside;
 		IEntity attacker = instigator.GetInstigatorEntity();
 		if (attacker)
-			attackerInside = IsSafe(attacker.GetOrigin());
+			attackerInside = BlocksPlayerDamageAt(attacker.GetOrigin());
 
 		if (!ShouldRefuse(attackerId, victimId, victimInside, attackerInside))
 			return false;

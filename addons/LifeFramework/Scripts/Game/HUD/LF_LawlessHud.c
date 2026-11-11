@@ -59,7 +59,7 @@ class LF_LawlessHud : SCR_InfoDisplay
 			return;
 
 		m_fCheck = 0;
-		bool inside = LF_Zones.RuleAt(owner.GetOrigin()) == LF_ZoneRule.LAWLESS;
+		bool inside = LF_Zones.IsLawless(owner.GetOrigin());
 		int change = LF_LawlessState.Transition(m_bInside, inside);
 		m_bInside = inside;
 		if (change == LF_LawlessState.NONE)

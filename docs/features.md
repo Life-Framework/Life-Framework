@@ -1206,6 +1206,13 @@
   it, a self-kill, a destroyed vehicle, and (config
   `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
   wanted suspect. Each decision logs `[LFDebug:Murder]`. No automatic ban.
+- ✅ **Zone rule sets as data** (#755; tests `zones/rules`, `zones/ruleset-backcompat`). `LF_Zones.conf`
+  holds a per-rule table `m_aRuleSets` of `LF_ZoneRuleSet` (rule, blocksPlayerDamage, suppressesWanted,
+  allowsRobbery, allowsVehicleTheft, allowsWeaponDraw, fineMultiplier, copsEnter). Shipped: SAFE blocks
+  player damage, LAWLESS and NORMAL change nothing. A rule with no entry falls back to the old
+  `m_bSafeBlocksPlayerDamage` / `m_bLawlessSuppressesWanted` flags. Callers ask
+  `LF_Zones.RuleSetAt(pos)`; today only blocksPlayerDamage and suppressesWanted have consumers (hit
+  refusal, `LF_Murder`). The `EVENT` rule waits on D5 (#757); ids stay NORMAL 0, SAFE 1, LAWLESS 2.
 - ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_ZoneComponent` (rule SAFE) on
   `LF_SafeZone_Square` (`Gamemode.layer`, fountain 115 0 250, radius 30 m as
   the component attribute) registers a flat circle. The modded

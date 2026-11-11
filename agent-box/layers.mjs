@@ -156,6 +156,17 @@ function walkLayer(text, layerFile, root) {
       }
     }
 
+    // A bare entity (no prefab) is its MeshObject: keep the first mesh path for the size check.
+    const mesh = line.match(/^Objects+"{[0-9A-Fa-f]{16}}([^"]+.xob)"$/);
+    if (mesh) {
+      for (let i = stack.length - 1; i >= 0; i--) {
+        if (stack[i].entity) {
+          stack[i].mesh ??= mesh[1];
+          break;
+        }
+      }
+    }
+
     if (closes) {
       const frame = stack.pop();
       if (frame?.entity && frame.name && root) {
@@ -194,6 +205,7 @@ function walkLayer(text, layerFile, root) {
             prefab,
           };
           if (signId) record.signId = signId;
+          if (frame.mesh) record.mesh = frame.mesh;
           if (frame.yaw !== undefined) record.yaw = frame.yaw;
           if (frame.scale !== undefined) record.scale = frame.scale;
           // The enclosing placed entity (name, else prefab file), for checks that pair entities.
