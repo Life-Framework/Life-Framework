@@ -773,7 +773,13 @@ async function routeMachine(cmd, rest) {
     // With --wait the request queues for whichever lane frees first; without it, one look.
     const waitMs = args.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0;
     const prio = args.indexOf("--priority") === -1 ? undefined : args[args.indexOf("--priority") + 1];
-    target = await pool.chooseSessionMachine(ROOT, { clients, waitMs, priority: prio, meta: { clients } });
+    try {
+      target = await pool.chooseSessionMachine(ROOT, { clients, waitMs, priority: prio, meta: { clients } });
+    } catch (e) {
+      if (!e.refusal) throw e;
+      console.log(`session: ${e.message}`);
+      return { code: 1 };
+    }
     if (!target) {
       if (waitMs > 0) {
         console.log(`session: no session lane freed on any machine within ${SESSION_QUEUE_MIN} min`);

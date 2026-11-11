@@ -1822,7 +1822,8 @@ function cmdSessionUp(root, dir, flags) {
     if (flags.includes("--wait")) console.log(`session: the session lane is held by ${holderOf()}; queued (up to ${SESSION_QUEUE_MIN} min)`);
     lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients, profile: rp.profile }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
-    console.log(`FAIL  the session lane is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
+    if (e.refusal) console.log(`FAIL  ${e.message}`);
+    else console.log(`FAIL  the session lane is held by ${holderOf()} (${e.message}); retry when it ends, or pass --wait`);
     return 1;
   }
   const laneLock = lane?.lockName ?? lane?.name ?? SERVER_SLOT;
@@ -1904,7 +1905,7 @@ function cmdSessionMeasure(root, dir, flags) {
     if (flags.includes("--wait")) console.log(`measure: queued for a session lane (up to ${SESSION_QUEUE_MIN} min)`);
     lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients: Math.max(...counts), profile: "full" }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
-    console.log(`FAIL  no session lane (${e.message}); pass --wait`);
+    console.log(e.refusal ? `FAIL  ${e.message}` : `FAIL  no session lane (${e.message}); pass --wait`);
     return 1;
   }
   const laneLock = lane?.lockName ?? lane?.name ?? SERVER_SLOT;
