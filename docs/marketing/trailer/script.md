@@ -38,9 +38,11 @@ is swapped for its fallback.
   (the code this grew from), code from Overthrow (with its owner's permission)
   and LNGCLifeRP_Public, base-game assets by Bohemia Interactive. #480 (the
   credits page) is still open, so nobody else is named.
-- **"v1".** No repo doc defines v1. This script reads it as M3 Framework
-  Release, the first build a server owner can host. The maintainer confirms
-  this at sign-off.
+- **"v1".** Approved 2026-11-11: v1 means the M3 Framework Release, the first
+  build a server owner can host. The end-card line "Built in the open with AI
+  agents", the voice-over lines and the Piper voice (libritts_r, CC BY 4.0) are
+  also approved. Keep "Voice: Piper TTS, en_US-libritts_r (CC BY 4.0)" in the
+  video description.
 
 ## Voice-over for TTS (Kokoro or Piper, #397)
 
