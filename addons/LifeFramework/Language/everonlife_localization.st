@@ -4011,17 +4011,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{03708C7686BF4E63}" {
      Id "LF-Sign_Farm_What"
-     Target_en_us "Vegetable beds, a greenhouse, and an orchard."
+     Target_en_us "Dirt plots to grow cabbages, a greenhouse, and an orchard."
      Comment "Sign card for the farm north of the square, What section."
     }
     CustomStringTableItem "{905E4015631C43F6}" {
      Id "LF-Sign_Farm_How"
-     Target_en_us "Gather Apple or Gather Plum from the orchard trees."
+     Target_en_us "Gather Apple or Gather Plum from the orchard trees. Plant Cabbage seeds in the dirt plots; the board beside them explains."
      Comment "Sign card for the farm north of the square, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{33EBA210B27B7F63}" {
      Id "LF-Sign_Farm_Rules"
-     Target_en_us "A picked plant needs time to ripen again."
+     Target_en_us "A picked tree and a planted plot need time to ripen."
      Comment "Sign card for the farm north of the square, Rules section."
     }
     CustomStringTableItem "{682DF358EBADD27A}" {
@@ -6676,6 +6676,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
+    CustomStringTableItem "{C5BBC2192BD8EFEC}" {
+     Id "EL-VehicleLock_ActionLock"
+     Target_en_us "Lock vehicle"
+     Comment "Action label when the vehicle is unlocked (#412)."
+    }
+    CustomStringTableItem "{D6B5DE4ACCEECA33}" {
+     Id "EL-VehicleLock_ActionUnlock"
+     Target_en_us "Unlock vehicle"
+     Comment "Action label when the vehicle is locked (#412)."
+    }
+    CustomStringTableItem "{405F3EF53D4704D5}" {
+     Id "LF-Garage_StoreHere"
+     Target_en_us "Store in garage"
+     Comment "Action on the player's own car when it stands within the garage radius. Same rules as the garage counter."
+    }
+    CustomStringTableItem "{C8B8911B5F3A014D}" {
+     Id "LF-Keybind_VehicleLock"
+     Target_en_us "Lock or unlock vehicle"
+     Comment "Key binding menu label for the U key."
+    }
+    CustomStringTableItem "{C470CD4C9E58C70D}" {
+     Id "LF-VehicleLock_NoTarget"
+     Target_en_us "No vehicle of yours in reach"
+     Comment "Toast when U is pressed with no keyed vehicle near."
+    }
     CustomStringTableItem "{F297FFD8D4B6E791}" {
      Id "LF-LawlessHud_Tag"
      Target_en_us "LAWLESS AREA"
@@ -6695,6 +6720,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LawlessHud_Exit"
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
+    }
+    CustomStringTableItem "{A27300000000BA02}" {
+     Id "LF-BankKit_Take"
+     Target_en_us "Take bank robbery kit"
+     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
+    CustomStringTableItem "{9BE7A1D673564E1C}" {
+     Id "LF-Dispatch_TestPolice"
+     Target_en_us "Test police call"
+     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
+    }
+    CustomStringTableItem "{803BB29C950EAC01}" {
+     Id "LF-Dispatch_TestMedic"
+     Target_en_us "Test medic call"
+     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
+    }
+    CustomStringTableItem "{E9CE669FFF4D0206}" {
+     Id "LF-Dispatch_TestDesc"
+     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
+     Comment "Description of the dispatch console test-call actions."
+    }
+    CustomStringTableItem "{05CAE71B3EBFC584}" {
+     Id "LF-Dispatch_TestTitle"
+     Target_en_us "Test call"
+     Comment "Toast title for the dispatch console test call."
+    }
+    CustomStringTableItem "{51294940A40506CF}" {
+     Id "LF-Dispatch_TestSent"
+     Target_en_us "Call placed. Take it at the dispatch board."
+     Comment "Toast after a test call went out to an on-duty service."
+    }
+    CustomStringTableItem "{36AF55270A37E7B0}" {
+     Id "LF-Dispatch_TestOff"
+     Target_en_us "Test calls are off in this game mode."
+     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
     }
     CustomStringTableItem "{01B9D43100AC37E2}" {
      Id "LF-SpawnHub_Title"
@@ -6841,75 +6911,105 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Test annex"
      Comment "Travel list row: annex."
     }
-    CustomStringTableItem "{C5BBC2192BD8EFEC}" {
-     Id "EL-VehicleLock_ActionLock"
-     Target_en_us "Lock vehicle"
-     Comment "Action label when the vehicle is unlocked (#412)."
+    CustomStringTableItem "{9EB58969BEDD9423}" {
+     Id "LF-Farm_Title"
+     Target_en_us "Farm"
+     Comment "Toast title for a farm plot refusal."
     }
-    CustomStringTableItem "{D6B5DE4ACCEECA33}" {
-     Id "EL-VehicleLock_ActionUnlock"
-     Target_en_us "Unlock vehicle"
-     Comment "Action label when the vehicle is locked (#412)."
+    CustomStringTableItem "{E6E02AC329CA9010}" {
+     Id "LF-Farm_CabbageSeeds"
+     Target_en_us "Cabbage seeds"
+     Comment "Item name of the cabbage seed packet."
     }
-    CustomStringTableItem "{405F3EF53D4704D5}" {
-     Id "LF-Garage_StoreHere"
-     Target_en_us "Store in garage"
-     Comment "Action on the player's own car when it stands within the garage radius. Same rules as the garage counter."
+    CustomStringTableItem "{4BBDEB5764438BAB}" {
+     Id "LF-Farm_CabbageSeedsDesc"
+     Target_en_us "A paper packet of cabbage seeds. Plant it in an empty dirt plot at the farm."
+     Comment "Item description of the cabbage seed packet."
     }
-    CustomStringTableItem "{C8B8911B5F3A014D}" {
-     Id "LF-Keybind_VehicleLock"
-     Target_en_us "Lock or unlock vehicle"
-     Comment "Key binding menu label for the U key."
+    CustomStringTableItem "{FFEB328217318791}" {
+     Id "LF-Farm_TakeSeeds"
+     Target_en_us "Take %1"
+     Comment "Prompt on the seed crate at the farm. %1 is the item name, e.g. Take Cabbage seeds."
     }
-    CustomStringTableItem "{C470CD4C9E58C70D}" {
-     Id "LF-VehicleLock_NoTarget"
-     Target_en_us "No vehicle of yours in reach"
-     Comment "Toast when U is pressed with no keyed vehicle near."
+    CustomStringTableItem "{35C14DE34CACED8B}" {
+     Id "LF-Farm_Plant"
+     Target_en_us "Plant %1"
+     Comment "Prompt on an empty farm plot. %1 is the seed packet name, e.g. Plant Cabbage seeds."
     }
-    CustomStringTableItem "{A27300000000BA02}" {
-     Id "LF-BankKit_Take"
-     Target_en_us "Take bank robbery kit"
-     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    CustomStringTableItem "{EBE3EB8BC96D9CCE}" {
+     Id "LF-Farm_Harvest"
+     Target_en_us "Harvest %1"
+     Comment "Prompt on a ripe farm plot. %1 is the crop item name, e.g. Harvest Cabbage."
     }
-    CustomStringTableItem "{9BE7A1D673564E1C}" {
-     Id "LF-Dispatch_TestPolice"
-     Target_en_us "Test police call"
-     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
+    CustomStringTableItem "{EF0CF71534FF8BB4}" {
+     Id "LF-Farm_Growing"
+     Target_en_us "Growing: %1"
+     Comment "Prompt on a farm plot that is not ripe yet. %1 is the stage name (sprouts, half grown)."
     }
-    CustomStringTableItem "{803BB29C950EAC01}" {
-     Id "LF-Dispatch_TestMedic"
-     Target_en_us "Test medic call"
-     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
+    CustomStringTableItem "{E66891B20DA6676E}" {
+     Id "LF-Farm_Stage_Sprout"
+     Target_en_us "sprouts"
+     Comment "Growth stage name shown in the plot prompt: just planted."
     }
-    CustomStringTableItem "{E9CE669FFF4D0206}" {
-     Id "LF-Dispatch_TestDesc"
-     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
-     Comment "Description of the dispatch console test-call actions."
+    CustomStringTableItem "{8ABD1690FC2C6972}" {
+     Id "LF-Farm_Stage_Growing"
+     Target_en_us "half grown"
+     Comment "Growth stage name shown in the plot prompt: halfway."
     }
-    CustomStringTableItem "{05CAE71B3EBFC584}" {
-     Id "LF-Dispatch_TestTitle"
-     Target_en_us "Test call"
-     Comment "Toast title for the dispatch console test call."
+    CustomStringTableItem "{760335DE2D0C4EC2}" {
+     Id "LF-Farm_Stage_Ripe"
+     Target_en_us "ripe"
+     Comment "Growth stage name: ready to harvest."
     }
-    CustomStringTableItem "{51294940A40506CF}" {
-     Id "LF-Dispatch_TestSent"
-     Target_en_us "Call placed. Take it at the dispatch board."
-     Comment "Toast after a test call went out to an on-duty service."
+    CustomStringTableItem "{AAC69C040DF1C8E4}" {
+     Id "LF-Farm_NeedSeeds"
+     Target_en_us "Needs a seed packet"
+     Comment "Why an empty plot cannot be planted: the player carries no seed packet."
     }
-    CustomStringTableItem "{36AF55270A37E7B0}" {
-     Id "LF-Dispatch_TestOff"
-     Target_en_us "Test calls are off in this game mode."
-     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
+    CustomStringTableItem "{7BCEF6A37309AB1F}" {
+     Id "LF-Farm_NotRipe"
+     Target_en_us "Not ripe yet"
+     Comment "Why a growing plot cannot be harvested."
     }
-    CustomStringTableItem "{4A1C9E27B05D3F18}" {
-     Id "LF-Item_Parcel_Deliver"
-     Target_en_us "Deliver to: %1"
-     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    CustomStringTableItem "{540BF19A61EAB5E6}" {
+     Id "LF-Farm_NotEmpty"
+     Target_en_us "Something already grows here"
+     Comment "Refusal toast: the plot is already planted."
     }
-    CustomStringTableItem "{4A1C9E27B05D3F19}" {
-     Id "LF-Job_ParcelDest"
-     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
-     Comment "Where a courier parcel goes. Shown in the parcel description."
+    CustomStringTableItem "{80208C45C60900DC}" {
+     Id "LF-Farm_TooFar"
+     Target_en_us "Stand next to the plot"
+     Comment "Refusal toast: the player is too far from the plot."
+    }
+    CustomStringTableItem "{67049824C323938A}" {
+     Id "LF-Farm_PocketsFull"
+     Target_en_us "No room for the harvest"
+     Comment "Refusal toast: the harvest could not be given to the player."
+    }
+    CustomStringTableItem "{F8BA23B4D29A0F32}" {
+     Id "LF-Sign_FarmPlots_Title"
+     Target_en_us "Vegetable plots"
+     Comment "Title of the info board beside the farm plots."
+    }
+    CustomStringTableItem "{8FCE26C6B1BA464C}" {
+     Id "LF-Sign_FarmPlots_What"
+     Target_en_us "Grow your own cabbages in the dirt plots."
+     Comment "Info board at the farm plots, What section."
+    }
+    CustomStringTableItem "{122025DCEE6F8713}" {
+     Id "LF-Sign_FarmPlots_How"
+     Target_en_us "Take Cabbage seeds from the crate. Plant Cabbage seeds in an empty plot. When the cabbages are ripe, Harvest Cabbage."
+     Comment "Info board at the farm plots, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{7727C787985BD3E9}" {
+     Id "LF-Sign_FarmPlots_Rules"
+     Target_en_us "Sprouts, then half grown, then ripe: about two minutes. A ripe plot waits for you. One packet gives three cabbages. The crate refills every two minutes."
+     Comment "Info board at the farm plots, Rules section."
+    }
+    CustomStringTableItem "{3018FA71B28E00A7}" {
+     Id "LF-Sign_FarmPlots_Next"
+     Target_en_us "Sell cabbages at the general store on the main street."
+     Comment "Info board at the farm plots, Next section: where the player goes after this place."
     }
   }
  }
