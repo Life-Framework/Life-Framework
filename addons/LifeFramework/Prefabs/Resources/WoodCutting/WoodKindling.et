@@ -8,9 +8,10 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
     }
     CustomAttributes {
      PreviewRenderAttributes "{5A5EE74F6DA6882D}" {
-      CameraPreset Top
-      CameraDistanceToItem 0.6
-      ItemRenderRotation 0 0 90
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 4.2
+      FOV 10
      }
     }
    }
