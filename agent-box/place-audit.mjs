@@ -441,18 +441,24 @@ async function placement(argv) {
   const areas = readJson(AREAS_FILE, { areas: [] }).areas;
   const allow = readJson(ALLOW_FILE, { allow: [] }).allow ?? [];
   const roads = parseRoads(readFileSync(join(LAYERS_DIR, "Village_Roads.layer"), "utf8"));
-  const records = auditRecords({ layers: flags.layer ? String(flags.layer).split(",") : null, area: flags.area, areas, annex: !!flags.annex });
+  let records = auditRecords({ layers: flags.layer ? String(flags.layer).split(",") : null, area: flags.area, areas, annex: !!flags.annex });
   const outDir = resolve(flags.out ?? join(ROOT, "tmp", "place-audit"));
   mkdirSync(outDir, { recursive: true });
   const t0 = Date.now();
   let outText;
+  let testFailed = false;
   if (flags.from) {
     outText = readFileSync(resolve(flags.from), "utf8");
+    // The rows are indexed by the list that run measured, which a later layer edit can shift.
+    const saved = join(dirname(resolve(flags.from)), "records.json");
+    if (existsSync(saved)) records = JSON.parse(readFileSync(saved, "utf8"));
+    else console.log("audit placement: no records.json beside " + flags.from + "; matching rows to the current layers");
   } else {
     const inFile = join(outDir, "in.txt");
     const outFile = join(PROFILE_DIR, "out.txt");
     rmSync(outFile, { force: true });
     writeFileSync(inFile, inputText(records));
+    writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
     // --local: the list goes in and the result comes out through this checkout's test profile.
     const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--local"], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
     const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
@@ -464,6 +470,8 @@ async function placement(argv) {
     }
     outText = readFileSync(outFile, "utf8");
     writeFileSync(join(outDir, "out.txt"), outText);
+    testFailed = r.status !== 0;
+    if (testFailed) console.log("audit placement: LF_Test_PlacementAuditTown failed (lines above); ranking what it measured");
   }
   const res = analyse(records, outText, { allow, areas, roads });
   const top = Number(flags.top ?? 40);
@@ -481,7 +489,7 @@ async function placement(argv) {
   console.log(lines.slice(0, 2 + top).join("\n"));
   if (res.ranked.length > top) console.log(`  ... ${res.ranked.length - top} more`);
   console.log(`report: ${join(outDir, "report.txt")} (json beside it)`);
-  return flags.strict && res.ranked.length ? 1 : 0;
+  return testFailed || (flags.strict && res.ranked.length) ? 1 : 0;
 }
 
 function selftest() {

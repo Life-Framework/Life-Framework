@@ -10,13 +10,13 @@ tools\cli audit placement                       ranked list, top 40; full report
 tools\cli audit placement --area hospital       one area of agent-box/areas.json
 tools\cli audit placement --layer Street_Hospital.layer,Signs.layer
 tools\cli audit placement --annex               also the debug annex (the old test stations south-west of town)
-tools\cli audit placement --from tmp/place-audit/out.txt   re-rank the last measurements, no server
+tools\cli audit placement --from tmp/place-audit/out.txt   re-rank the last measurements (records.json beside it), no server
 tools\cli audit placement --strict              exit 1 when anything is flagged (a pre-filming gate)
 tools\cli audit selftest                        the Node checks on fixtures (also in tools\cli validate)
 ```
 
 Each line is `rank. score  name [layer, area] @x,y,z: problem; problem`. The score adds a weight per
-problem (floating 10, door 7, sunk 7, overhang 6, clips 6, scale 6, unreachable 6, overlap 5, road 5,
+problem (floating 10, door 7, sunk 7, walk-up 4, overhang 6, clips 6, scale 6, unreachable 6, overlap 5, road 5,
 tilt 2), grows with how bad it is, and counts 1.5x for an interactable and 1.3x inside a named area.
 `report.json` beside the text has the same rows and the thresholds used.
 
@@ -43,6 +43,7 @@ tilt 2), grows with how bad it is, and counts 1.5x for an interactable and 1.3x 
 | clips | another entity's surface inside the shrunk bounds on two or more of 54 rays across them | 0.15 m in |
 | overlaps | oriented boxes (local bounds through the transform, scale applied) interpenetrating | 0.08 m |
 | blocks a door | an oriented box inside a door leaf's clearance (the leaf pushed out 1 m both ways, 2.2 m high) | 0.1 m |
+| in a door's walk-up | the same box pushed out 3 m, for ground-floor doors, outside the door's own building (furniture inside it is not on the street path) | 0.1 m |
 | in the road | the box centre on a carriageway of `Village_Roads.layer` (roads under 15 m wide, not the market, square or fuel apron) | half width - 0.3 m |
 | scale | entity scale outside 0.5 to 2 (odd: outside 0.75 to 1.6, signs excepted) | |
 | tilted | up axis off vertical | 5 deg |

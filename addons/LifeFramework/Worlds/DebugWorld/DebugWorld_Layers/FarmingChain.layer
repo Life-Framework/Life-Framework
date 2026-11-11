@@ -92,15 +92,15 @@ GenericEntity Farm_StandTable : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/
  coords 150.5 0 294.5
 }
 GenericEntity Farm_StandCrate_1 : "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et" {
- coords 148.4 0 294.2
+ coords 149.4 0 294.3
  angleY 6
 }
 GenericEntity Farm_StandCrate_2 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 147.4 0 294.4
+ coords 149.4 0.23 294.3
  angleY -10
 }
 GenericEntity Farm_StandCrate_3 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 152.9 0 294.4
+ coords 151.8 0 294.5
  angleY -8
 }
 GenericEntity Farm_StandCart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
