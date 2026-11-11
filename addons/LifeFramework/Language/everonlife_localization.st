@@ -6696,56 +6696,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
-    CustomStringTableItem "{A1B2C3D4E5F60711}" {
-     Id "LF-Sign_QuarryInfo_Title"
-     Target_en_us "Quarry Works"
-     Comment "Title of the quarry info board. Printed on the board and shown as Read: Quarry Works."
-    }
-    CustomStringTableItem "{A1B2C3D4E5F60722}" {
-     Id "LF-Sign_QuarryInfo_What"
-     Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
-     Comment "Quarry info board, What section."
-    }
-    CustomStringTableItem "{A1B2C3D4E5F60733}" {
-     Id "LF-Sign_QuarryInfo_How"
-     Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
-     Comment "Quarry info board, How section."
-    }
-    CustomStringTableItem "{A1B2C3D4E5F60744}" {
-     Id "LF-Sign_QuarryInfo_Rules"
-     Target_en_us "This is the lawless quarry: the server rules about starting a fight do not apply inside the fence. Mind the rocks while the pit is worked."
-     Comment "Quarry info board, Rules section."
-    }
-    CustomStringTableItem "{A1B2C3D4E5F60755}" {
-     Id "LF-Sign_QuarryInfo_Next"
-     Target_en_us "Carry what you make to the traders in town."
-     Comment "Quarry info board, Next section."
-    }
-    CustomStringTableItem "{7B1E5A0C00000001}" {
-     Id "LF-Shop_RefuseClosed"
-     Target_en_us "The back room is shut. Police have been through it."
-     Comment "Shop refusal: a raided back room is shut for a while (#600)."
-    }
-    CustomStringTableItem "{7B1E5A0C00000002}" {
-     Id "LF-BackRoom_Search"
-     Target_en_us "Search back room"
-     Comment "Officer action on a back room: search it and seize its stock as evidence (#600)."
-    }
-    CustomStringTableItem "{7B1E5A0C00000003}" {
-     Id "LF-BackRoom_SearchDesc"
-     Target_en_us "Seize the stock as evidence"
-     Comment "Description of the back room search action (#600)."
-    }
-    CustomStringTableItem "{7B1E5A0C00000004}" {
-     Id "LF-BackRoom_Seized"
-     Target_en_us "Stock seized as evidence"
-     Comment "Toast: the back room search seized its stock (#600)."
-    }
-    CustomStringTableItem "{7B1E5A0C00000005}" {
-     Id "LF-BackRoom_AlreadyShut"
-     Target_en_us "Already searched. The room is shut."
-     Comment "Toast: the back room was raided recently (#600)."
-    }
     CustomStringTableItem "{A27300000000BA02}" {
      Id "LF-BankKit_Take"
      Target_en_us "Take bank robbery kit"
@@ -6926,36 +6876,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
     }
-    CustomStringTableItem "{63E93D8FD582854D}" {
-     Id "LF-Witness_Unsure1"
-     Target_en_us "%1: Hey, I am not sure."
-     Comment "Toast: an NPC witness who saw nothing answers, noncommittal. %1 = the NPC name."
-    }
-    CustomStringTableItem "{C388BAAC69AA6FFA}" {
-     Id "LF-Witness_Unsure2"
-     Target_en_us "%1: I do not think I saw anything."
-     Comment "Toast: noncommittal NPC answer, variant 2. %1 = the NPC name."
-    }
-    CustomStringTableItem "{FD870C5E92EE6005}" {
-     Id "LF-Witness_Unsure3"
-     Target_en_us "%1: Sorry, I could not say either way."
-     Comment "Toast: noncommittal NPC answer, variant 3. %1 = the NPC name."
-    }
-    CustomStringTableItem "{52C8142385D923FE}" {
-     Id "LF-Witness_Unsure4"
-     Target_en_us "%1: I was not really looking, officer."
-     Comment "Toast: noncommittal NPC answer, variant 4. %1 = the NPC name."
-    }
-    CustomStringTableItem "{9FF5E70D1F95C286}" {
-     Id "LF-Witness_GaveStatement"
-     Target_en_us "%1 gave a statement. It is on the wanted board."
-     Comment "Toast to the officer: a named witness gave a statement. %1 = the witness name."
-    }
-    CustomStringTableItem "{A5C8F0F7C66DA883}" {
-     Id "LF-Witness_ForgotSome"
-     Target_en_us "%1 cannot recall anything useful."
-     Comment "Toast to the officer: a named witness saw the crime but remembered nothing describable. %1 = the witness name."
-    }
     CustomStringTableItem "{2605E472E34A7E80}" {
      Id "LF-Crime_RobSafe_Name"
      Target_en_us "Rob the safe"
@@ -7110,6 +7030,231 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_CrimePolice_Next"
      Target_en_us "Clock on at the police station to arrest the suspect you made."
      Comment "Annex crime site sign crime_police, Next section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60711}" {
+     Id "LF-Sign_QuarryInfo_Title"
+     Target_en_us "Quarry Works"
+     Comment "Title of the quarry info board. Printed on the board and shown as Read: Quarry Works."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60722}" {
+     Id "LF-Sign_QuarryInfo_What"
+     Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
+     Comment "Quarry info board, What section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60733}" {
+     Id "LF-Sign_QuarryInfo_How"
+     Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
+     Comment "Quarry info board, How section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60744}" {
+     Id "LF-Sign_QuarryInfo_Rules"
+     Target_en_us "This is the lawless quarry: the server rules about starting a fight do not apply inside the fence. Mind the rocks while the pit is worked."
+     Comment "Quarry info board, Rules section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60755}" {
+     Id "LF-Sign_QuarryInfo_Next"
+     Target_en_us "Carry what you make to the traders in town."
+     Comment "Quarry info board, Next section."
+    }
+    CustomStringTableItem "{7B1E5A0C00000001}" {
+     Id "LF-Shop_RefuseClosed"
+     Target_en_us "The back room is shut. Police have been through it."
+     Comment "Shop refusal: a raided back room is shut for a while (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000002}" {
+     Id "LF-BackRoom_Search"
+     Target_en_us "Search back room"
+     Comment "Officer action on a back room: search it and seize its stock as evidence (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000003}" {
+     Id "LF-BackRoom_SearchDesc"
+     Target_en_us "Seize the stock as evidence"
+     Comment "Description of the back room search action (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000004}" {
+     Id "LF-BackRoom_Seized"
+     Target_en_us "Stock seized as evidence"
+     Comment "Toast: the back room search seized its stock (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000005}" {
+     Id "LF-BackRoom_AlreadyShut"
+     Target_en_us "Already searched. The room is shut."
+     Comment "Toast: the back room was raided recently (#600)."
+    }
+    CustomStringTableItem "{01B9D43100AC37E2}" {
+     Id "LF-SpawnHub_Title"
+     Target_en_us "Playtest travel"
+     Comment "Travel list title (spawn table globe)."
+    }
+    CustomStringTableItem "{D2F012D65C8132A6}" {
+     Id "LF-SpawnHub_Hint"
+     Target_en_us "Pick an area to be taken there. Playtest only."
+     Comment "Travel list hint line."
+    }
+    CustomStringTableItem "{64C91C9876BC49F4}" {
+     Id "LF-SpawnHub_Go"
+     Target_en_us "Go"
+     Comment "Travel list row button."
+    }
+    CustomStringTableItem "{134044FE4B970260}" {
+     Id "LF-SpawnHub_Close"
+     Target_en_us "Close"
+     Comment "Travel list close button."
+    }
+    CustomStringTableItem "{BEEAD653C82FCDCE}" {
+     Id "LF-SpawnHub_Open"
+     Target_en_us "Travel to a playtest area"
+     Comment "Globe action name."
+    }
+    CustomStringTableItem "{450BE9C116C859BD}" {
+     Id "LF-SpawnHub_Pt_spawn"
+     Target_en_us "Spawn square"
+     Comment "Travel list row: spawn."
+    }
+    CustomStringTableItem "{B6586A394D67B4AF}" {
+     Id "LF-SpawnHub_Pt_police"
+     Target_en_us "Police station"
+     Comment "Travel list row: police."
+    }
+    CustomStringTableItem "{B4232BB7C4308A82}" {
+     Id "LF-SpawnHub_Pt_jail"
+     Target_en_us "Jail"
+     Comment "Travel list row: jail."
+    }
+    CustomStringTableItem "{8AA2600D1543035B}" {
+     Id "LF-SpawnHub_Pt_bank"
+     Target_en_us "Bank"
+     Comment "Travel list row: bank."
+    }
+    CustomStringTableItem "{B20B273E74BFB5FC}" {
+     Id "LF-SpawnHub_Pt_cash_van"
+     Target_en_us "Cash van stop"
+     Comment "Travel list row: cash_van."
+    }
+    CustomStringTableItem "{CB3B602C123EDB3A}" {
+     Id "LF-SpawnHub_Pt_general_store"
+     Target_en_us "General store"
+     Comment "Travel list row: general_store."
+    }
+    CustomStringTableItem "{70A38A6809640B2F}" {
+     Id "LF-SpawnHub_Pt_market"
+     Target_en_us "Market traders"
+     Comment "Travel list row: market."
+    }
+    CustomStringTableItem "{F7342C42AF67BCAA}" {
+     Id "LF-SpawnHub_Pt_post_office"
+     Target_en_us "Post office and jobs"
+     Comment "Travel list row: post_office."
+    }
+    CustomStringTableItem "{4AF36AD0E0DCF596}" {
+     Id "LF-SpawnHub_Pt_car_lot"
+     Target_en_us "Car lot"
+     Comment "Travel list row: car_lot."
+    }
+    CustomStringTableItem "{69B85ADAEFBDBB9C}" {
+     Id "LF-SpawnHub_Pt_garage"
+     Target_en_us "Garage"
+     Comment "Travel list row: garage."
+    }
+    CustomStringTableItem "{B0C61257E5FB48B5}" {
+     Id "LF-SpawnHub_Pt_impound"
+     Target_en_us "Impound lot"
+     Comment "Travel list row: impound."
+    }
+    CustomStringTableItem "{4933783F01581685}" {
+     Id "LF-SpawnHub_Pt_chop_shop"
+     Target_en_us "Chop shop"
+     Comment "Travel list row: chop_shop."
+    }
+    CustomStringTableItem "{FB4A0D3B97262A9C}" {
+     Id "LF-SpawnHub_Pt_fuel_station"
+     Target_en_us "Fuel station"
+     Comment "Travel list row: fuel_station."
+    }
+    CustomStringTableItem "{DFCE41C7B190AA27}" {
+     Id "LF-SpawnHub_Pt_hospital"
+     Target_en_us "Hospital"
+     Comment "Travel list row: hospital."
+    }
+    CustomStringTableItem "{6D24484296F44B77}" {
+     Id "LF-SpawnHub_Pt_org_registry"
+     Target_en_us "Organization registry"
+     Comment "Travel list row: org_registry."
+    }
+    CustomStringTableItem "{180961ECD408F286}" {
+     Id "LF-SpawnHub_Pt_hideout"
+     Target_en_us "Hideout yard"
+     Comment "Travel list row: hideout."
+    }
+    CustomStringTableItem "{88BCEC3B8F0B96E6}" {
+     Id "LF-SpawnHub_Pt_fence"
+     Target_en_us "Fence (Vince)"
+     Comment "Travel list row: fence."
+    }
+    CustomStringTableItem "{3502F9E9ED2D4D43}" {
+     Id "LF-SpawnHub_Pt_lockup"
+     Target_en_us "Lockpick lock-up"
+     Comment "Travel list row: lockup."
+    }
+    CustomStringTableItem "{ACA4B36A252C8E65}" {
+     Id "LF-SpawnHub_Pt_moonshine"
+     Target_en_us "Moonshine camp"
+     Comment "Travel list row: moonshine."
+    }
+    CustomStringTableItem "{63BC79F23121554D}" {
+     Id "LF-SpawnHub_Pt_farm"
+     Target_en_us "Farm"
+     Comment "Travel list row: farm."
+    }
+    CustomStringTableItem "{77D8780E1D048421}" {
+     Id "LF-SpawnHub_Pt_orchard"
+     Target_en_us "Apple orchard"
+     Comment "Travel list row: orchard."
+    }
+    CustomStringTableItem "{9ECE67180191DEF9}" {
+     Id "LF-SpawnHub_Pt_mining"
+     Target_en_us "Mining yard"
+     Comment "Travel list row: mining."
+    }
+    CustomStringTableItem "{BA0368C4FE08E132}" {
+     Id "LF-SpawnHub_Pt_quarry"
+     Target_en_us "Quarry (lawless)"
+     Comment "Travel list row: quarry."
+    }
+    CustomStringTableItem "{D25E9BC45F9B3F3E}" {
+     Id "LF-SpawnHub_Pt_annex"
+     Target_en_us "Test annex"
+     Comment "Travel list row: annex."
+    }
+    CustomStringTableItem "{63E93D8FD582854D}" {
+     Id "LF-Witness_Unsure1"
+     Target_en_us "%1: Hey, I am not sure."
+     Comment "Toast: an NPC witness who saw nothing answers, noncommittal. %1 = the NPC name."
+    }
+    CustomStringTableItem "{C388BAAC69AA6FFA}" {
+     Id "LF-Witness_Unsure2"
+     Target_en_us "%1: I do not think I saw anything."
+     Comment "Toast: noncommittal NPC answer, variant 2. %1 = the NPC name."
+    }
+    CustomStringTableItem "{FD870C5E92EE6005}" {
+     Id "LF-Witness_Unsure3"
+     Target_en_us "%1: Sorry, I could not say either way."
+     Comment "Toast: noncommittal NPC answer, variant 3. %1 = the NPC name."
+    }
+    CustomStringTableItem "{52C8142385D923FE}" {
+     Id "LF-Witness_Unsure4"
+     Target_en_us "%1: I was not really looking, officer."
+     Comment "Toast: noncommittal NPC answer, variant 4. %1 = the NPC name."
+    }
+    CustomStringTableItem "{9FF5E70D1F95C286}" {
+     Id "LF-Witness_GaveStatement"
+     Target_en_us "%1 gave a statement. It is on the wanted board."
+     Comment "Toast to the officer: a named witness gave a statement. %1 = the witness name."
+    }
+    CustomStringTableItem "{A5C8F0F7C66DA883}" {
+     Id "LF-Witness_ForgotSome"
+     Target_en_us "%1 cannot recall anything useful."
+     Comment "Toast to the officer: a named witness saw the crime but remembered nothing describable. %1 = the witness name."
     }
   }
  }
