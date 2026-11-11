@@ -145,6 +145,7 @@ addRepoDoc("docs/overthrow-survey.md", { slug: "overthrow-survey", group: "Resea
 addRepoDoc("docs/everonlife-forks.md", { slug: "everonlife-forks", group: "Research & community", order: 3 });
 addRepoDoc("docs/community/discord.md", { slug: "discord", group: "Research & community", order: 4 });
 addRepoDoc("docs/community/support.md", { slug: "support", group: "Research & community", order: 5 });
+addRepoDoc("docs/credits.md", { slug: "credits", group: "Research & community", order: 6 });
 
 const roadmapFiles = walk(path.join(repo, "docs", "roadmap"))
   .map((p) => toPosix(path.relative(repo, p)))
@@ -162,7 +163,7 @@ roadmapFiles.forEach((rel, i) => {
 });
 
 // Pages with their own route instead of /docs/<slug>.
-const ownRoute = { decisions: "/decisions" };
+const ownRoute = { decisions: "/decisions", credits: "/credits" };
 const docHref = (d) => ownRoute[d.slug] || `/docs/${d.slug}`;
 
 const bySlug = new Map();

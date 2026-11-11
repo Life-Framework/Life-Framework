@@ -17,5 +17,6 @@ Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
   RplComponent "{59A0A7C361516B65}" {
   }
  }
+ scale 0.5
  coords 106.179 0.001 133.048
 }

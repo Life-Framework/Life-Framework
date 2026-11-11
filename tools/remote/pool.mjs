@@ -29,7 +29,8 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
-import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionDirOf } from "../lib/session-lease.mjs";
+import * as gc from "../lib/session-gc.mjs";
+import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionBase, sessionDirOf } from "../lib/session-lease.mjs";
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
@@ -65,6 +66,8 @@ export function poolSettings(root) {
     sessionHoldMin: pick("sessionHoldMin", "LF_POOL_SESSION_HOLD_MIN"),
     sessionGraceMin: pick("sessionGraceMin", "LF_POOL_SESSION_GRACE_MIN"),
     sessionHoldMaxMin: pick("sessionHoldMaxMin", "LF_POOL_SESSION_HOLD_MAX_MIN"),
+    sessionKeepHours: pick("sessionKeepHours", "LF_POOL_SESSION_KEEP_H"),
+    minFreeDiskGb: pick("minFreeDiskGb", "LF_POOL_MIN_FREE_DISK_GB"),
     sessionReserveServerMb: pick("sessionReserveServerMb", "LF_POOL_SESSION_RESERVE_SERVER_MB"),
     sessionReserveClientMb: pick("sessionReserveClientMb", "LF_POOL_SESSION_RESERVE_CLIENT_MB"),
     // Per profile: pool.json / lf.local.json "sessionReserve": { "lowspec": { "serverMb", "clientMb" } }.
@@ -324,13 +327,13 @@ export function liveTickets(root) {
   return out;
 }
 
-function writeTicket(root, t, atMs = Date.now()) {
+export function writeTicket(root, t, atMs = Date.now()) {
   const f = `${String(atMs).padStart(15, "0")}-${String(process.pid).padStart(7, "0")}-${randomBytes(3).toString("hex")}.json`;
   writeFileSync(join(queueDir(root), f), JSON.stringify(t));
   return f;
 }
 
-function dropTicket(root, f) {
+export function dropTicket(root, f) {
   try {
     unlinkSync(join(queueDir(root), f));
   } catch {}
@@ -966,6 +969,27 @@ export function recordSession(root, r) {
   return rec;
 }
 
+// Disk hygiene (#675): remove session folders older than sessionKeepHours (never one in use, this
+// checkout's own, or named for film; link-safe delete), then refuse with a clear message when free
+// disk on the session volume is under minFreeDiskGb. Throws a poolHeld error; otherwise never throws.
+export function hygieneGate(root, { log = console.log, base = sessionBase(), freeGb } = {}) {
+  const settings = poolSettings(root);
+  try {
+    const r = gc.runSessionGc(base, { keepHours: settings.sessionKeepHours, alive: wt.pidAlive, skip: [sessionDirOf(root)] });
+    if (r.removed.length) log(`pool: removed ${r.removed.length} session folder(s) older than ${settings.sessionKeepHours} h (${r.removed.slice(0, 5).join(", ")}${r.removed.length > 5 ? ", ..." : ""})`);
+    for (const f of r.failed) log(`WARN  pool: could not remove session folder ${f.name}: ${f.error}`);
+  } catch (e) {
+    log(`WARN  pool: session folder cleanup failed (${String(e?.message ?? e).split("\n")[0]})`);
+  }
+  const msg = gc.diskVerdict(freeGb ?? gc.freeDiskGb(base), settings.minFreeDiskGb);
+  if (msg) {
+    const e = new Error(msg);
+    e.poolHeld = true;
+    e.refusal = true;
+    throw e;
+  }
+}
+
 // Session requests queued for the session lane (the holder's own ticket excluded).
 export function sessionQueue(root) {
   try {
@@ -1012,12 +1036,35 @@ function forgetQueued(root, slug) {
 // thread, and returns with the lock held by this process (the caller hands it
 // to its server with wt.transferLock). Throws when it cannot get it.
 export function acquireSessionLaneSync(root, opts = {}) {
+  hygieneGate(root);
   try {
     return acquireSessionLane(root, opts);
   } catch (e) {
     if (e.poolHeld) throw e;
     console.log(`WARN  pool: session queue bookkeeping failed (${String(e?.message ?? e).split("\n")[0]}); taking server-2001 directly as before`);
     return wt.acquireLock(root, slotLockName(1), { waitMs: opts.waitMs ?? 0, meta: opts.meta ?? {} });
+  }
+}
+
+// A newer request from the same worktree replaced this one: its queue entry is gone.
+function supersededError(slug) {
+  const e = new Error(`a newer session request from ${slug} replaced this one; not queuing twice`);
+  e.poolHeld = true;
+  e.refusal = true;
+  return e;
+}
+
+// Drops this worktree's older queued session tickets (a retry whose first request still lives);
+// the older process finds its ticket gone and exits. Returns how many were collapsed.
+export function collapseRetries(root, ticket, slug) {
+  try {
+    const tickets = liveTickets(root);
+    const { drop } = q.supersededTickets(tickets, tickets.find((t) => t.file === ticket));
+    for (const f of drop) dropTicket(root, f);
+    if (drop.length) console.log(`session: collapsed ${drop.length} earlier queued request(s) from ${slug} into this one`);
+    return drop.length;
+  } catch {
+    return 0;
   }
 }
 
@@ -1036,6 +1083,7 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
   let needMb;
   const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name], clients: meta.clients ?? 1, profile: meta.profile ?? "full", ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
   const ticket = writeTicket(root, body(), since);
+  collapseRetries(root, ticket, slug);
   let lastReap = 0;
   let said = false;
   try {
@@ -1043,6 +1091,7 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
       noteQueued(root, slug, since);
       const tickets = liveTickets(root);
       const me = tickets.find((t) => t.file === ticket);
+      if (!me) throw supersededError(slug);
       const settings = poolSettings(root);
       const now = Date.now();
       if (now - lastReap > 10000) {
@@ -1131,6 +1180,7 @@ export async function chooseSessionMachine(root, { clients = 1, waitMs = 0, prio
   let waitingOn = [];
   const ticketBody = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: false, lane: "session", priority: prio, waitingOn, machines: machines.map((m) => m.name), clients });
   const ticket = writeTicket(root, ticketBody(), since);
+  collapseRetries(root, ticket, slug);
   let lastReap = 0;
   let said = false;
   const remoteSeen = new Map();
@@ -1140,6 +1190,7 @@ export async function chooseSessionMachine(root, { clients = 1, waitMs = 0, prio
       const now = Date.now();
       const tickets = liveTickets(root);
       const me = tickets.find((t) => t.file === ticket);
+      if (!me) throw supersededError(slug);
       const settings = poolSettings(root);
       if (now - lastReap > 10000) {
         lastReap = now;
@@ -1243,6 +1294,7 @@ export async function acquireSlot(root, opts = {}) {
   }
   let machines = resolveMachines(root, opts);
   if (machines.length === 0) throw new Error(`pool: no machine for --${mode}`);
+  if (machines.some((m) => m.via === "local")) hygieneGate(root);
 
   // Remote runs ship a snapshot; take it once, when a remote first comes into
   // play (what the worktree is when the run was asked for, or when a remote
@@ -1660,10 +1712,13 @@ export function cmdPoolStatus(root) {
       console.log(row);
     }
   }
+  const diskGb = gc.freeDiskGb(sessionBase());
+  console.log(`disk: ${diskGb === null ? "unknown" : `${diskGb.toFixed(1)} GB free`} on the session volume (floor ${settings.minFreeDiskGb} GB; session folders older than ${settings.sessionKeepHours} h are removed on the next session or test start)`);
   const promoteMs = settings.promoteMin * 60000;
   const ordered = q.queueOrder(tickets, now, promoteMs);
   console.log(`queue: ${ordered.length} waiting (high > normal > low, then arrival; a job moves up a level per ${settings.promoteMin}m waited)`);
   const perLane = new Map();
+  const dupFiles = q.duplicateSessionTickets(tickets);
   for (const t of ordered) {
     const lane = t.lane ?? "session";
     const pos = (perLane.get(lane) ?? 0) + 1;
@@ -1673,7 +1728,7 @@ export function cmdPoolStatus(root) {
     const prio = eff === base ? base : `${base}>${eff}`;
     const why = q.waitReason(t, pos - 1);
     const on = why ? `  waits: ${why}` : (t.waitingOn ?? []).length ? `  on ${t.waitingOn.join(",")}` : "";
-    console.log(`  ${lane} #${pos}  ${prio.padEnd(11)} ${String(t.slug ?? "?").padEnd(20).slice(0, 24)} ${String(t.purpose ?? "").padEnd(11)} waited ${mins(now - Date.parse(t.at)).padStart(4)}${on}${t.pinned ? " (pinned)" : ""}`);
+    console.log(`  ${lane} #${pos}  ${prio.padEnd(11)} ${String(t.slug ?? "?").padEnd(20).slice(0, 24)} ${String(t.purpose ?? "").padEnd(11)} waited ${mins(now - Date.parse(t.at)).padStart(4)}${on}${t.pinned ? " (pinned)" : ""}${dupFiles.has(t.file) ? "  DUPLICATE (same worktree already queued)" : ""}`);
   }
   try {
     const all = readRuns(root).filter(isTestRun);

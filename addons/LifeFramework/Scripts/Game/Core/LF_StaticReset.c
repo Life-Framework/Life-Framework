@@ -62,6 +62,7 @@ class LF_StaticReset
 		LF_ChainStations.ResetStatics();
 		LF_Stores.ResetStatics();
 		LF_OrgInvites.Reset();
+		LF_RateLimit.ResetStatics();
 
 		s_iRuns = s_iRuns + 1;
 		LF_Debug.Log("StaticReset", string.Format("feature statics reset (run %1)", s_iRuns));

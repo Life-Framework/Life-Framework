@@ -96,6 +96,13 @@ class LF_CharacterShopComponent : ScriptComponent
 
 		ResourceName prefabName = prefab;
 		int money = 0;
+		// #693b: the slip prints the refusal, so the limiter does not toast as well.
+		if (!LF_RateLimit.AllowCharacter(player, LF_ERequestKind.PURCHASE, "shop trade", false))
+		{
+			RespondResult(buy, LF_EShopRefusal.TOO_FAST, prefabName, quantity, 0, LF_MoneyUtils.GetCash(player));
+			return;
+		}
+
 		LF_EShopRefusal reason = CheckRequest(player, shopId, prefabName, quantity);
 		if (reason == LF_EShopRefusal.NONE)
 		{

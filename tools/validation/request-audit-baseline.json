@@ -1,13 +1,14 @@
 {
- "handlers": 56,
- "checked": 54,
- "unchecked": 2,
+ "handlers": 59,
+ "checked": 59,
+ "unchecked": 0,
  "entries": [
   {
    "file": "Components/BuildingSystem/LF_BuildingManagerComponent.c",
    "handler": "RpcAsk_SpawnEntityPrefab",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "range"
    ]
   },
@@ -81,13 +82,14 @@
   {
    "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
    "handler": "RpcAsk_LF_HarnessState",
-   "verdict": "unchecked",
+   "verdict": "checked",
    "checks": [
+    "devgate",
     "money",
     "range",
     "role"
    ],
-   "note": "replies with the player state line to any client with no LF_DevGate check (read-only, low risk)"
+   "note": "#693b: behind LF_DevGate.CheckHarnessRequest like the other harness verbs"
   },
   {
    "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
@@ -167,6 +169,7 @@
    "handler": "RpcAsk_LF_ServiceBoard",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "range",
     "role"
    ]
@@ -184,11 +187,13 @@
   {
    "file": "Feature/Debug/LF_SpawnHub.c",
    "handler": "RpcAsk_LF_SpawnHubTravel",
-   "verdict": "unchecked",
+   "verdict": "checked",
    "checks": [
-    "ownership"
+    "cooldown",
+    "ownership",
+    "range"
    ],
-   "note": "only the mission's hub-enabled flag gates it; no dev gate, range or rate limit, so any client teleports to any hub point"
+   "note": "#693b: travel rate limit plus a server reach check to a travel globe (LF_ActionSite), admins and LF_HARNESS builds exempt"
   },
   {
    "file": "Feature/Film/LF_FilmActor.c",
@@ -213,6 +218,7 @@
    "handler": "RpcAsk_LF_GiveCash",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "money",
     "range"
    ]
@@ -222,6 +228,7 @@
    "handler": "RpcAsk_LF_GiveItem",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "range"
    ]
   },
@@ -294,6 +301,7 @@
    "handler": "RpcAsk_LF_OrganizationBuy",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "money",
     "range"
    ]
@@ -303,6 +311,7 @@
    "handler": "RpcAsk_LF_OrganizationCreate",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "money",
     "range"
    ]
@@ -385,6 +394,7 @@
    "handler": "RpcAsk_LF_PoliceArrest",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "range",
     "role"
    ]
@@ -406,6 +416,37 @@
     "range",
     "role"
    ]
+  },
+  {
+   "file": "Feature/Quantity/ScriptedInventoryStorageManagerComponent.c",
+   "handler": "RPC_LF_QuantityTransfer",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "money",
+    "range"
+   ],
+   "note": "#693b: quantity RPC brought into scope; range, ownership and amount bounds were already there"
+  },
+  {
+   "file": "Feature/Quantity/ScriptedInventoryStorageManagerComponent.c",
+   "handler": "RPC_LF_RequestQuantitySplit",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "money",
+    "range"
+   ],
+   "note": "#693b: quantity RPC brought into scope; range, ownership and amount bounds were already there"
+  },
+  {
+   "file": "Feature/Quantity/ScriptedInventoryStorageManagerComponent.c",
+   "handler": "RPC_LF_SetTransferIntent",
+   "verdict": "checked",
+   "checks": [
+    "range"
+   ],
+   "note": "#693b: quantity RPC brought into scope; range, ownership and amount bounds were already there"
   },
   {
    "file": "Feature/Quests/LF_QuestTrackerComponent.c",
@@ -461,6 +502,7 @@
    "handler": "RpcAsk_Buy",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "money",
     "ownership",
     "range"
@@ -471,6 +513,7 @@
    "handler": "RpcAsk_Sell",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "money",
     "ownership",
     "range"
@@ -498,6 +541,7 @@
    "handler": "RpcAsk_LF_BuyVehicle",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "money",
     "range"
    ]

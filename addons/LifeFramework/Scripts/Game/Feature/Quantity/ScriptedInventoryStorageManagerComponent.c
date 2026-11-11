@@ -116,6 +116,9 @@ modded class ScriptedInventoryStorageManagerComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RPC_LF_RequestQuantitySplit(RplId quantitySourceRplId, int splitSize)
 	{
+		if (!LF_RateLimit.AllowCharacter(GetOwner(), LF_ERequestKind.INVENTORY, "quantity split"))
+			return;
+
 		LF_QuantityComponent quantitySource = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
 		if (!quantitySource || !LF_CanManipulate(quantitySource.GetOwner()))
 		{
@@ -149,6 +152,9 @@ modded class ScriptedInventoryStorageManagerComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RPC_LF_QuantityTransfer(RplId quantitySourceRplId, RplId quantityDestinationRplId, int amount)
 	{
+		if (!LF_RateLimit.AllowCharacter(GetOwner(), LF_ERequestKind.INVENTORY, "quantity transfer"))
+			return;
+
 		LF_QuantityComponent quantitySource = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
 		if (!quantitySource || !LF_CanManipulate(quantitySource.GetOwner()))
 		{
@@ -195,7 +201,12 @@ modded class ScriptedInventoryStorageManagerComponent
 	protected void RPC_LF_SetTransferIntent(RplId sourceRplId, bool keepSeperate)
 	{
 		IEntity sourceEntity = LF_NetworkUtils.FindEntityByRplId(sourceRplId);
-		if (!sourceEntity || !LF_CanManipulate(sourceEntity)) return;
+		if (!sourceEntity || !LF_CanManipulate(sourceEntity))
+		{
+			LF_Debug.Warn("Quantity", "Transfer intent refused: source not found or out of range");
+			return;
+		}
+
 		if (!LF_CanManipulateOwned(sourceEntity))
 		{
 			LF_Debug.Warn("Quantity", "Transfer intent refused: source not owned");

@@ -304,6 +304,18 @@ it, picks a lane and a budget, and prints one line per outcome.
   machine without `lanes` (the box) keeps one shared lane. Old CLIs keep using
   `server-2001` for everything, so the old lock is still honoured during the
   switch.
+- **Disk hygiene (#675).** Every `session up` and local `test`/`e2e` start first removes
+  session folders under `%LOCALAPPDATA%\LifeFramework\session` untouched for `sessionKeepHours`
+  (24) hours, except one in use (live pids in `session.json`), this checkout's own, and any
+  named for film (`film` in the folder name). Deletion is `safeRemoveTree`, the function behind
+  `tools/safe-rm.mjs`, so junctions are unlinked, never followed. It then refuses with one line
+  when free disk on that volume is under `minFreeDiskGb` (5). Both are settings: `tools/pool.json`,
+  the `pool` key of `lf.local.json`, or `LF_POOL_SESSION_KEEP_H` / `LF_POOL_MIN_FREE_DISK_GB`.
+  `pool status` prints the free disk.
+- **One request per worktree (#542).** A new `session up` from a worktree whose earlier request is
+  still queued drops the earlier queue entry (the older process exits with "a newer session request
+  replaced this one") and keeps the first request's age. `pool status` marks any leftover
+  duplicate.
 - **Second session RAM gate.** A session starting beside another live session also
   needs its own reserve: free RAM minus `sessionReserveServerMb` (600) minus
   `sessionReserveClientMb` (850) per client, minus the same for any session still booting,

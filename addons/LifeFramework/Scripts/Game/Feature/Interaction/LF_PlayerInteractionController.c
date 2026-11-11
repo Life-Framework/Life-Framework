@@ -44,6 +44,9 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_GiveCash(RplId target, int amount)
 	{
+		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.SPAWN, "give cash"))
+			return;
+
 		IEntity receiver = LF_NetworkUtils.FindEntityByRplId(target);
 		LF_PlayerInteraction.GiveCash(GetControlledEntity(), receiver, amount, LF_PlayerInteraction.GESTURE_POINT);
 	}
@@ -87,6 +90,9 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_GiveItem(RplId target, RplId item)
 	{
+		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.SPAWN, "give item"))
+			return;
+
 		IEntity receiver = LF_NetworkUtils.FindEntityByRplId(target);
 		IEntity given = LF_NetworkUtils.FindEntityByRplId(item);
 		LF_PlayerInteraction.GiveItem(GetControlledEntity(), receiver, given, LF_PlayerInteraction.GESTURE_POINT);

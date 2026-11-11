@@ -14,7 +14,8 @@ enum LF_EShopRefusal
 	NO_SHOP,
 	NOT_TRUSTED,
 	OUT_OF_STOCK,
-	CLOSED
+	CLOSED,
+	TOO_FAST
 }
 
 class LF_ShopRefusal
@@ -56,14 +57,18 @@ class LF_ShopRefusal
 		if (reason == LF_EShopRefusal.OUT_OF_STOCK)
 			return "#LF-Shop_RefuseOutOfStock";
 
+		if (reason == LF_EShopRefusal.TOO_FAST)
+			return "#LF-Shop_RefuseTooFast";
+
 		return string.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A reason that arrives over the wire as an int; anything unknown reads as no shop.
+	//! The upper bound is the last enum value: it was OUT_OF_STOCK, which read CLOSED as no shop.
 	static LF_EShopRefusal FromWire(int reason)
 	{
-		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.OUT_OF_STOCK)
+		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.TOO_FAST)
 			return LF_EShopRefusal.NO_SHOP;
 
 		return reason;
