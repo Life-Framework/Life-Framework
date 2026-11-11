@@ -289,6 +289,13 @@
   `config/json-probe`, `config/merge-fields`, `config/merge-keyed`,
   `config/merge-reject`, `config/merge-no-owner`, `config/owner-file`,
   `config/pack-overlay`.
+- ✅ (2026-11-12, #279 #302) Per-field reject: a price outside its attribute's
+  `params: "min max"` (0 to 1000000) is refused with the value, limit and kept
+  value logged, and the rest still applies; an unknown key (top level, section
+  or record) warns and is ignored; `schemaVersion` above the build's logs an
+  error (known fields still apply), below it logs an info line, a bad one reads
+  as 1. No migrations (#303). Tests `config/reject`, `config/unknown-keys`,
+  `config/schema-version`.
 - ⚠️ Owner values are server-side: a client's price list shows shipped prices
   on a dedicated server until #285 streams them. Unknown keys are not warned
   yet (#279); `schemaVersion` is read but not acted on (#302).

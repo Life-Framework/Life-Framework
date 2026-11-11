@@ -14,6 +14,17 @@
 //! The owner file is server-side. A client never reads its own profile's config.json; clients
 //! receive owner values through the stream in #285.
 //------------------------------------------------------------------------------------------------
+//! How an owner file's schemaVersion compares with the schema this build reads (#302).
+enum LF_EConfigSchemaStatus
+{
+	NONE,		//!< No owner file, or the client.
+	CURRENT,	//!< Same version, or no schemaVersion (version 1).
+	OLDER,		//!< Written for an older schema; read as-is, migrations are #303.
+	NEWER,		//!< Written for a newer schema; known fields still apply, the rest warns.
+	INVALID		//!< Not a whole number of at least 1; read as version 1.
+};
+
+//------------------------------------------------------------------------------------------------
 class LF_ConfigService
 {
 	static const string FEATURE = "Config";
@@ -27,6 +38,7 @@ class LF_ConfigService
 	protected static string s_sOwnerJson;
 	protected static string s_sOwnerSource;
 	protected static int s_iOwnerSchemaVersion;
+	protected static LF_EConfigSchemaStatus s_eSchemaStatus;
 	protected static bool s_bLoaded;
 
 	//! D4 seam: where pack `.conf` overlays come from. Null means the default source (none).
@@ -42,6 +54,7 @@ class LF_ConfigService
 			s_sOwnerJson = string.Empty;
 			s_sOwnerSource = string.Empty;
 			s_iOwnerSchemaVersion = 0;
+			s_eSchemaStatus = LF_EConfigSchemaStatus.NONE;
 			s_bLoaded = true;
 			LF_Debug.Info(FEATURE, "client: no owner layer; shipped defaults until the server streams owner values (#285)");
 			return;
@@ -59,6 +72,7 @@ class LF_ConfigService
 		s_sOwnerJson = string.Empty;
 		s_sOwnerSource = path;
 		s_iOwnerSchemaVersion = 0;
+		s_eSchemaStatus = LF_EConfigSchemaStatus.NONE;
 		s_bLoaded = true;
 
 		if (!FileIO.FileExists(path))
@@ -91,12 +105,14 @@ class LF_ConfigService
 	//! A document that does not parse logs an error and leaves no owner layer.
 	//! \param[in] json The whole owner document.
 	//! \param[in] source Where it came from, for log lines.
+	//! \param[in] buildSchema The schema this build reads; a test passes another to reach the older path.
 	//! \return True when an owner layer is active.
-	static bool LoadOwnerString(string json, string source)
+	static bool LoadOwnerString(string json, string source, int buildSchema = SCHEMA_VERSION)
 	{
 		s_sOwnerJson = string.Empty;
 		s_sOwnerSource = source;
 		s_iOwnerSchemaVersion = 0;
+		s_eSchemaStatus = LF_EConfigSchemaStatus.NONE;
 		s_bLoaded = true;
 
 		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
@@ -107,16 +123,91 @@ class LF_ConfigService
 		}
 
 		int schemaVersion = 1;
-		if (ctx.DoesKeyExist("schemaVersion") && !ctx.ReadValue("schemaVersion", schemaVersion))
+		bool invalid;
+		if (ctx.DoesKeyExist("schemaVersion"))
 		{
-			LF_Debug.Error(FEATURE, string.Format("%1: schemaVersion is not a whole number; reading it as version 1", source));
-			schemaVersion = 1;
+			if (!ctx.ReadValue("schemaVersion", schemaVersion))
+			{
+				LF_Debug.Error(FEATURE, string.Format("%1: schemaVersion is not a whole number; reading it as version 1", source));
+				schemaVersion = 1;
+				invalid = true;
+			}
+			else if (schemaVersion < 1)
+			{
+				LF_Debug.Error(FEATURE, string.Format("%1: schemaVersion %2 is below 1; reading it as version 1", source, schemaVersion));
+				schemaVersion = 1;
+				invalid = true;
+			}
 		}
 
 		s_sOwnerJson = json;
 		s_iOwnerSchemaVersion = schemaVersion;
-		LF_Debug.Info(FEATURE, string.Format("owner config loaded from %1 (schemaVersion %2, this build reads %3)", source, schemaVersion, SCHEMA_VERSION));
+		s_eSchemaStatus = ClassifySchema(schemaVersion, buildSchema);
+		if (invalid)
+			s_eSchemaStatus = LF_EConfigSchemaStatus.INVALID;
+
+		if (s_eSchemaStatus == LF_EConfigSchemaStatus.NEWER)
+			LF_Debug.Error(FEATURE, string.Format("%1 is written for schemaVersion %2 but this build reads up to %3; update the server. Fields this build knows still apply, anything else is ignored with a warning", source, schemaVersion, buildSchema));
+		else if (s_eSchemaStatus == LF_EConfigSchemaStatus.OLDER)
+			LF_Debug.Info(FEATURE, string.Format("%1 is written for schemaVersion %2, older than this build's %3; read as-is (migrations are #303)", source, schemaVersion, buildSchema));
+		else
+			LF_Debug.Info(FEATURE, string.Format("owner config loaded from %1 (schemaVersion %2, this build reads %3)", source, schemaVersion, buildSchema));
+
+		WarnUnknownSections(json, source);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Compares a file's schemaVersion with the build's.
+	static LF_EConfigSchemaStatus ClassifySchema(int fileVersion, int buildVersion)
+	{
+		if (fileVersion > buildVersion)
+			return LF_EConfigSchemaStatus.NEWER;
+		if (fileVersion < buildVersion)
+			return LF_EConfigSchemaStatus.OLDER;
+		return LF_EConfigSchemaStatus.CURRENT;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return How the loaded owner file's schemaVersion compares with this build; NONE without one.
+	static LF_EConfigSchemaStatus GetSchemaStatus()
+	{
+		EnsureLoaded();
+		return s_eSchemaStatus;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The top-level keys this build reads: schemaVersion and one key per section. A new section
+	//! adds its key here when its feature reads it (#282, #283).
+	static bool IsKnownTopLevelKey(string key)
+	{
+		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Warns once per top-level key no section reads, in file order. \return How many.
+	//! The engine cannot list the root's keys (an anonymous map fails), so the document is wrapped
+	//! under one name and the wrapper's keys are listed.
+	//! \param[in] json The whole owner document.
+	static int WarnUnknownSections(string json, string source)
+	{
+		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
+		if (!ctx.ImportFromString("{\"doc\":" + json + "}"))
+			return 0;
+
+		array<string> keys = {};
+		if (LF_ConfigReader.KindOf(ctx, "doc") != LF_EConfigJsonKind.OBJECT)
+			return 0;
+		LF_ConfigReader.ListKeys(ctx, "doc", keys);
+		int unknown;
+		foreach (string key : keys)
+		{
+			if (IsKnownTopLevelKey(key))
+				continue;
+			unknown++;
+			LF_Debug.Warn(FEATURE, string.Format("%1: unknown top-level key %2; ignored", source, key));
+		}
+		return unknown;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -160,7 +251,6 @@ class LF_ConfigService
 			return null;
 		}
 
-		ctx.StartObject(section);
 		return new LF_ConfigReader(ctx, section);
 	}
 
@@ -199,6 +289,7 @@ class LF_ConfigService
 		s_sOwnerJson = string.Empty;
 		s_sOwnerSource = string.Empty;
 		s_iOwnerSchemaVersion = 0;
+		s_eSchemaStatus = LF_EConfigSchemaStatus.NONE;
 		s_bLoaded = false;
 		s_PackSource = null;
 	}
@@ -305,14 +396,86 @@ class LF_ConfigReader
 	protected ref SCR_JsonLoadContext m_Ctx;
 	protected ref array<string> m_aPath = {};
 	protected ref array<string> m_aRecordKeys = {};
+	//! The keys of each open object, innermost last, listed before it was entered.
+	protected ref array<ref array<string>> m_aKeyStack = {};
 	protected int m_iApplied;
 	protected int m_iRejected;
+	protected int m_iUnknown;
 
 	//------------------------------------------------------------------------------------------------
+	//! Opens the named section of a document whose cursor is at the root. The caller has checked
+	//! with KindOf that it is an object.
 	void LF_ConfigReader(SCR_JsonLoadContext ctx, string section)
 	{
 		m_Ctx = ctx;
 		m_aPath.Insert(section);
+		PushKeys(section);
+		m_Ctx.StartObject(section);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lists the keys of an object in file order without entering it; an empty name lists the root.
+	//! Call it only on an object (KindOf says OBJECT): the engine crashes on some other kinds.
+	//! \return True when the engine listed them.
+	static bool ListKeys(notnull SCR_JsonLoadContext ctx, string name, notnull array<string> keys)
+	{
+		keys.Clear();
+		int count;
+		if (!ctx.StartMap(name, count))
+			return false;
+
+		for (int i = 0; i < count; i++)
+		{
+			string key;
+			if (ctx.ReadMapKey(i, key))
+				keys.Insert(key);
+		}
+		ctx.EndMap();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PushKeys(string name)
+	{
+		array<string> keys = {};
+		ListKeys(m_Ctx, name, keys);
+		m_aKeyStack.Insert(keys);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PopKeys()
+	{
+		if (m_aKeyStack.Count() > 0)
+			m_aKeyStack.Remove(m_aKeyStack.Count() - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Warns for every key of the current object that is not in `known`, in file order. The key
+	//! stays in the file and is ignored.
+	//! \return How many keys it warned about.
+	int WarnUnknownKeys(notnull array<string> known)
+	{
+		if (m_aKeyStack.Count() == 0)
+			return 0;
+
+		int warned;
+		array<string> keys = m_aKeyStack[m_aKeyStack.Count() - 1];
+		foreach (string key : keys)
+		{
+			if (known.Contains(key))
+				continue;
+			warned++;
+			m_iUnknown++;
+			LF_Debug.Warn(LF_ConfigService.FEATURE, string.Format("%1.%2 is not a known key; ignored", GetPath(), key));
+		}
+		return warned;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Unknown keys this reader warned about.
+	int GetUnknownCount()
+	{
+		return m_iUnknown;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -381,8 +544,11 @@ class LF_ConfigReader
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Reads an int when present. \return True when the value was taken.
-	bool ReadInt(string key, inout int value)
+	//! Reads an int when present. A value outside min..max is refused: it logs the value and the
+	//! limit it broke, and the lower layer's value stays. The limits are the ones the config's
+	//! `[Attribute(..., params: "min max")]` declares.
+	//! \return True when the value was taken.
+	bool ReadInt(string key, inout int value, int min = int.MIN, int max = int.MAX)
 	{
 		if (!m_Ctx.DoesKeyExist(key))
 			return false;
@@ -390,6 +556,11 @@ class LF_ConfigReader
 		int read;
 		if (!m_Ctx.ReadValue(key, read))
 			return Reject(key, "a whole number", value.ToString());
+
+		if (read < min)
+			return RejectValue(key, read.ToString(), string.Format("below the minimum %1", min), value.ToString());
+		if (read > max)
+			return RejectValue(key, read.ToString(), string.Format("above the maximum %1", max), value.ToString());
 
 		value = read;
 		m_iApplied++;
@@ -465,19 +636,8 @@ class LF_ConfigReader
 			return -1;
 		}
 
-		m_aRecordKeys.Clear();
-		int count;
-		if (m_Ctx.StartMap(key, count))
-		{
-			for (int i = 0; i < count; i++)
-			{
-				string recordKey;
-				if (m_Ctx.ReadMapKey(i, recordKey))
-					m_aRecordKeys.Insert(recordKey);
-			}
-			m_Ctx.EndMap();
-		}
-
+		ListKeys(m_Ctx, key, m_aRecordKeys);
+		PushKeys(key);
 		m_Ctx.StartObject(key);
 		m_aPath.Insert(key);
 		return m_aRecordKeys.Count();
@@ -495,6 +655,7 @@ class LF_ConfigReader
 	//------------------------------------------------------------------------------------------------
 	void EndRecords()
 	{
+		PopKeys();
 		m_Ctx.EndObject();
 		m_aPath.Remove(m_aPath.Count() - 1);
 	}
@@ -510,6 +671,7 @@ class LF_ConfigReader
 			return false;
 		}
 
+		PushKeys(recordKey);
 		m_Ctx.StartObject(recordKey);
 		m_aPath.Insert(recordKey);
 		return true;
@@ -518,6 +680,7 @@ class LF_ConfigReader
 	//------------------------------------------------------------------------------------------------
 	void EndRecord()
 	{
+		PopKeys();
 		m_Ctx.EndObject();
 		m_aPath.Remove(m_aPath.Count() - 1);
 	}
@@ -528,6 +691,14 @@ class LF_ConfigReader
 	{
 		m_iRejected++;
 		LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("%1: %2; record skipped", GetPath(), reason));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool RejectValue(string key, string value, string reason, string kept)
+	{
+		m_iRejected++;
+		LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("%1.%2 = %3 is %4; keeping %5", GetPath(), key, value, reason, kept));
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
