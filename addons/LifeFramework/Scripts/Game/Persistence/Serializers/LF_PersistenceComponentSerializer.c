@@ -264,6 +264,11 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			ReadPersistencePayload(persistence, context, order.Get(index));
 		}
 
+		// After every payload: a wanted report is kept only while the character it names is wanted,
+		// and the "characters" payload restores those levels after "wanted" loads (#331).
+		if (version > order.Find("wanted"))
+			LF_WantedReports.PruneCleared();
+
 		// A save from before #331 has no character slots. ApplyAll already keyed each account's one
 		// character by the account uid (slot 1), which is what that save's records use.
 		if (version <= order.Find("characters"))

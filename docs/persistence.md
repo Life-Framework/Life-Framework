@@ -154,7 +154,10 @@ Identity:
     uid, later slots their id) before the earlier payloads load; the
     `characters` payload, last in the list, confirms the saved keys. A saved key
     that differs from the default (a roster that lost its first character)
-    re-applies progression (`LF_Progression.ReapplyStandings`).
+    re-applies progression (`LF_Progression.ReapplyStandings`). Wanted posters
+    load whole and are pruned after the last payload
+    (`LF_WantedReports.PruneCleared`): a poster stays while the character it
+    names is wanted, whichever character the account plays.
   - **Proof.** `persist/character-slots` (two characters, version 24 and 23
     loads, a moved key) and the `e2e/pass*` pair: `tools\cli e2e` round-trips a
     two-character account, and `tools\cli e2e --legacy-save` writes the restart

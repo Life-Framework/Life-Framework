@@ -2,6 +2,10 @@
 // LF_PlayerAccount.AddCharacter giving every character the account uid (`if (first || true)`) failed
 // `- slot 2 is keyed by its own character id (expected '01a1c84b-...', got 'cpa-account-uid')` and
 // `- slot 2's wanted level is kept while slot 1 plays (expected 4, got 2)`. Restored; green.
+// Review of #720, observed 2026-11-11 with the pick check ignoring `offered` and
+// LF_PoliceApplications.ApplicantUid returning GetPlayerUID: `- a pick the server did not offer is
+// refused (expected '#LF-CharSel_Refused', got '')`, `- the application is filed under the account uid
+// (expected '00bbbddd-...', got '01a1c860-...')`, `- slot 2 is on the roster after approval`. Fixed; green.
 
 // tier: LOGIC
 //! #331: with characters.maxPerAccount = 2 an account holds two characters. Slot 1 is keyed by the
@@ -70,10 +74,21 @@ class LF_Test_CharactersPerAccount : LF_Test
 		// The pick: offered with a free choice, never to a living body or an officer on duty.
 		ctx.True(LF_CharacterCreationRules.OffersCharacterPick(account, false), "a returning player with two characters picks one");
 		ctx.False(LF_CharacterCreationRules.OffersCharacterPick(account, true), "no pick while a living body is controlled");
-		ctx.EqualStr("", LF_CharacterCreationRules.RefusePick(account, 1, false), "slot 2 can be picked");
-		ctx.EqualStr("#LF-CharSel_Refused", LF_CharacterCreationRules.RefusePick(account, 2, false), "a slot past the roster is refused");
-		ctx.EqualStr("#LF-CharSel_Refused", LF_CharacterCreationRules.RefusePick(account, 0, true), "a pick from inside a living body is refused");
-		ctx.EqualStr("#LF-Char_Error_Full", LF_CharacterCreationRules.RefusePick(account, LF_CharacterSelectSheet.SLOT_NEW, false), "registering a third from the pick is refused");
+		ctx.EqualStr("", LF_CharacterCreationRules.RefusePick(account, 1, false, true), "slot 2 can be picked");
+		ctx.EqualStr("#LF-CharSel_Refused", LF_CharacterCreationRules.RefusePick(account, 2, false, true), "a slot past the roster is refused");
+		ctx.EqualStr("#LF-CharSel_Refused", LF_CharacterCreationRules.RefusePick(account, -7, false, true), "a negative slot from the client is refused");
+		ctx.EqualStr("#LF-CharSel_Refused", LF_CharacterCreationRules.RefusePick(account, 0, true, true), "a pick from inside a living body is refused");
+		ctx.EqualStr("#LF-Char_Error_Full", LF_CharacterCreationRules.RefusePick(account, LF_CharacterSelectSheet.SLOT_NEW, false, true), "registering a third from the pick is refused");
+		// A pick the server never sent (a dead player mid-session) must not switch character.
+		ctx.EqualStr("#LF-CharSel_Refused", LF_CharacterCreationRules.RefusePick(account, 0, false, false), "a pick the server did not offer is refused");
+		ctx.EqualStr("#LF-CharSel_Refused", LF_CharacterCreationRules.RefuseFurtherCharacter(account, false, false), "a further character without the pick's new-resident line is refused");
+		ctx.EqualStr("", LF_CharacterCreationRules.RefuseFurtherCharacter(account, false, true), "a further character chosen on the pick registers");
+		ctx.EqualStr("#LF-CharSel_Refused", LF_CharacterCreationRules.RefuseFurtherCharacter(account, true, true), "never from inside a living body");
+		ctx.EqualStr("", LF_CharacterCreationRules.RefuseFurtherCharacter(LF_PlayerAccount.Create("cpa-empty-uid"), false, false), "the first character needs no pick");
+
+		// The police roster is a whitelist, so per account: an application filed while slot 2 plays
+		// is filed under the account uid, and its approval shows on the roster bit of any character.
+		PoliceApplicationIsPerAccount(ctx);
 
 		// The sheet's parts and the part names it sends back.
 		ctx.Equal(5, LF_CharacterSelectSheet.BuildParts("Ada Lovelace\nBob Builder", true).Count(), "title, intro, two characters and the new line");
@@ -92,5 +107,44 @@ class LF_Test_CharactersPerAccount : LF_Test
 		LF_CharacterConfig.SetMaxPerAccountOverride(0);
 		ctx.Equal(1, LF_CharacterConfig.MaxPerAccount(), "the shipped config allows one character per account");
 		accounts.RemoveFromCache(UID);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player id with no connected player: on the -noBackend test server its account uid is the
+	//! name-derived identity (LF_Utils.BuildLocalIdentity), and GetPlayerUID resolves it through the
+	//! account cache like any player's.
+	protected void PoliceApplicationIsPerAccount(LF_TestContext ctx)
+	{
+		const int playerId = 9331;
+		string accountUid = LF_Utils.GetAccountUID(playerId);
+		ctx.False(accountUid.IsEmpty(), "the test player id has an account uid");
+		if (accountUid.IsEmpty())
+			return;
+
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		LF_PlayerAccount account = LF_PlayerAccount.Create(accountUid);
+		accounts.AddToCache(account);
+		account.AddCharacter(LF_PlayerCharacter.Create(PREFAB, "Pam", "First", 30), true);
+		LF_PlayerCharacter second = LF_PlayerCharacter.Create(PREFAB, "Pat", "Second", 30);
+		account.AddCharacter(second, true);
+		ctx.EqualStr(second.GetRecordKey(), LF_Utils.GetPlayerUID(playerId), "slot 2 plays");
+
+		LF_PoliceApplications.SetSavePath("$profile:LifeFramework/test_cpa_police_applications.txt");
+		LF_WhitelistManager.SetSavePath("$profile:LifeFramework/test_cpa_police_whitelist.txt");
+		LF_WhitelistManager.Reset();
+		FileIO.DeleteFile("$profile:LifeFramework/test_cpa_police_applications.txt");
+
+		string applicant = LF_PoliceApplications.ApplicantUid(playerId);
+		ctx.EqualStr(accountUid, applicant, "the application is filed under the account uid");
+		ctx.EqualStr("", LF_PoliceApplications.Submit(applicant, "Pat Second", "To help", "Evenings", false), "the application is filed");
+		ctx.True(LF_PoliceApplications.Approve(applicant, true), "an admin approves it");
+		ctx.True(LF_AccountStateBits.IsOnRoster(LF_AccountStateBits.FromAccount(account)), "slot 2 is on the roster after approval");
+
+		LF_PoliceApplications.SetSavePath("");
+		LF_WhitelistManager.SetSavePath("");
+		LF_WhitelistManager.Reset();
+		FileIO.DeleteFile("$profile:LifeFramework/test_cpa_police_applications.txt");
+		FileIO.DeleteFile("$profile:LifeFramework/test_cpa_police_whitelist.txt");
+		accounts.RemoveFromCache(accountUid);
 	}
 }

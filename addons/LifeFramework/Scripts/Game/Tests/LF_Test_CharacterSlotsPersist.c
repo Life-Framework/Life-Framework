@@ -3,6 +3,9 @@
 // (`&& false`) failed `- slot 1 is keyed by the account uid (expected 'cps-legacy-uid', got
 // '01a1c84b-...')`, `- the old police rank is slot 1's (expected 1, got 0)` and
 // `- slot 1's bank holds 100 (load 1) (expected 100, got 350)`. Restored; green.
+// Review of #720, observed 2026-11-11 with LF_WantedReports.ApplyAll pruning by the account's active
+// wanted level during the "wanted" payload: `- slot 2's poster survives the restart while slot 1 plays
+// (expected 1, got 0)`. Fixed (LF_WantedReports.PruneCleared after the last payload); green.
 
 // tier: PERSISTENCE
 //! #331 through the real save path ("characters" payload, save version 24). A two-character account
@@ -15,6 +18,7 @@ class LF_Test_CharacterSlotsPersist : LF_Test
 	protected static const string UID = "cps-two-uid";
 	protected static const string LEGACY_UID = "cps-legacy-uid";
 	protected static const string MOVED_UID = "cps-moved-uid";
+	protected static const string REPORTS_UID = "cps-reports-uid";
 	protected static const ResourceName PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
 
 	//------------------------------------------------------------------------------------------------
@@ -43,11 +47,13 @@ class LF_Test_CharacterSlotsPersist : LF_Test
 		TwoCharacters(ctx, persistence);
 		LegacySave(ctx, persistence);
 		LostFirstCharacter(ctx, persistence);
+		InactiveCharacterReports(ctx, persistence);
 
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		accounts.RemoveFromCache(UID);
 		accounts.RemoveFromCache(LEGACY_UID);
 		accounts.RemoveFromCache(MOVED_UID);
+		accounts.RemoveFromCache(REPORTS_UID);
 		LF_CharacterConfig.SetMaxPerAccountOverride(0);
 		LF_StorageSnapshot.ApplyAll(liveSnapshots);
 	}
@@ -221,5 +227,42 @@ class LF_Test_CharacterSlotsPersist : LF_Test
 		ctx.EqualStr(keptKey, slot1.GetRecordKey(), "it keeps its saved key, not the account uid");
 		ctx.Equal(LF_PoliceRanks.SENIOR, slot1.GetStanding().m_iPoliceRank, "its rank follows the saved key");
 		LF_Progression.Forget(keptKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Wanted posters are kept on load only for a character still wanted, and that is the character
+	//! the report names, not the one the account plays: slot 2 wanted while slot 1 plays keeps its
+	//! posters through a restart. Slot 1's stray poster (wanted 0) is still taken down.
+	protected void InactiveCharacterReports(LF_TestContext ctx, LF_PersistenceComponent persistence)
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		LF_PlayerAccount account = LF_PlayerAccount.Create(REPORTS_UID);
+		accounts.AddToCache(account);
+		LF_PlayerCharacter first = LF_PlayerCharacter.Create(PREFAB, "Ann", "Clean", 30);
+		account.AddCharacter(first, true);
+		LF_PlayerCharacter second = LF_PlayerCharacter.Create(PREFAB, "Rob", "Wanted", 30);
+		account.AddCharacter(second, true);
+		account.SetWantedLevel(3);
+		string secondKey = second.GetRecordKey();
+		LF_WantedReports.Add(secondKey, LF_WantedReports.OFFENCE_BREAK_IN, "", "", "", true);
+		account.SetActiveCharacter(first);
+		LF_WantedReports.Add(REPORTS_UID, LF_WantedReports.OFFENCE_BREAK_IN, "", "", "", false);
+		ctx.Equal(0, account.GetWantedLevel(), "slot 1 plays with a clean record");
+
+		JsonSaveContext saveContext = new JsonSaveContext(false);
+		LF_PersistenceComponentSerializer.SerializeStore(persistence, saveContext);
+		string saved = saveContext.SaveToString();
+		accounts.AddToCache(LF_PlayerAccount.Create(REPORTS_UID));
+
+		JsonLoadContext loadContext = new JsonLoadContext(false);
+		loadContext.LoadFromString(saved);
+		ctx.True(LF_PersistenceComponentSerializer.DeserializeStore(persistence, loadContext), "the save loads");
+		LF_CharacterStanding secondStanding = accounts.FindStanding(secondKey);
+		ctx.True(secondStanding != null && secondStanding.m_iWantedLevel == 3, "slot 2 is still wanted 3");
+		ctx.Equal(1, LF_WantedReports.CountFor(secondKey), "slot 2's poster survives the restart while slot 1 plays");
+		ctx.Equal(0, LF_WantedReports.CountFor(REPORTS_UID), "slot 1 is not wanted, so its stray poster is taken down");
+
+		LF_WantedReports.ClearFor(secondKey);
+		LF_WantedReports.ClearFor(REPORTS_UID);
 	}
 }

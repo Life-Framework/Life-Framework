@@ -134,7 +134,10 @@
   not on duty gets the registry sheet `LF_CharacterSelectSheet` (owner RPC
   `LF_ShowCharacterSelect`): one line per character and "register a new
   resident" while a slot is free; `RpcAsk_LF_SelectCharacter` is re-checked by
-  `LF_CharacterCreationRules.RefusePick`. Every character-scoped record is keyed
+  `LF_CharacterCreationRules.RefusePick` and only accepted while the server has a
+  pick open for that player (a further character likewise needs the pick's "new
+  resident" line, `RefuseFurtherCharacter`). Police applications and the roster
+  are per account (`LF_PoliceApplications.ApplicantUid`). Every character-scoped record is keyed
   by the character's record key (`LF_Utils.GetPlayerUID`; slot 1 = the account
   uid, later slots their own id; the key is replicated on the body for clients);
   whitelists and staff actions use `LF_Utils.GetAccountUID`. Wanted level, police
