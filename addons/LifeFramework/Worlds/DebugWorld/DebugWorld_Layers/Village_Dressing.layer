@@ -81,7 +81,7 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampS
  coords 168 0 255.4
 }
 GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 196 0 255.4
+ coords 204.5 0 255.4
 }
 GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
  coords 245.5 0 255.4

@@ -50,5 +50,5 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
    ResponseIndex "SmallDestructible"
   }
  }
- scale 0.55
+ scale 0.4
 }

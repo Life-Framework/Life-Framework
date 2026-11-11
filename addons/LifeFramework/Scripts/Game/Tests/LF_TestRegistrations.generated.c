@@ -20,6 +20,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AdminAction(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AgentHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AimIntent(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_AlarmMount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AlarmRests(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
@@ -89,6 +90,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Downed(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DownedRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftBeside(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DrillLeftSize(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_E2E_Narrative(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_E2E_SaveStateWrite(), LF_TestTier.PERSISTENCE);
@@ -131,6 +133,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HarnessProbe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessScreenText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HarnessSessionScope(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_HaulTidy(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HoldUp(), LF_TestTier.LOGIC);
@@ -311,6 +314,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SirenMode(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenToggle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpawnHub(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SpawnScale(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
