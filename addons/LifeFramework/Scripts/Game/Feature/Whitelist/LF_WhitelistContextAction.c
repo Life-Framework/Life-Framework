@@ -23,7 +23,7 @@ class LF_EnableWhitelistContextAction : SCR_BaseContextAction
 	{
 		LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));
 		if (whitelistComponent)
-			whitelistComponent.EnableWhitelistOnPlayer(LF_Utils.GetPlayerUID(hoveredEntity.GetOwner()), m_eType);
+			whitelistComponent.EnableWhitelistOnPlayer(LF_Utils.GetAccountUID(hoveredEntity.GetOwner()), m_eType);
 	}
 }
 
@@ -51,6 +51,6 @@ class LF_DisableWhitelistContextAction : SCR_BaseContextAction
 	{
 		LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));
 		if (whitelistComponent)
-			whitelistComponent.DisableWhitelistOnPlayer(LF_Utils.GetPlayerUID(hoveredEntity.GetOwner()), m_eType);
+			whitelistComponent.DisableWhitelistOnPlayer(LF_Utils.GetAccountUID(hoveredEntity.GetOwner()), m_eType);
 	}
 }

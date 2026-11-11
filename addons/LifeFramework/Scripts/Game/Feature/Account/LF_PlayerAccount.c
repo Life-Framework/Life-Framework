@@ -12,13 +12,12 @@ class LF_PlayerAccount : Managed
 	/*protected*/ int m_iActiveCharacterIdx;
 	/*protected*/ LF_Faction m_eFaction = LF_Faction.CIVILIAN;
 	/*protected*/ bool m_bOnDuty = false;
-	/*protected*/ int m_iPoliceRank = 0;
-	/*protected*/ int m_iOnDutySeconds = 0;
 	/*protected*/ bool m_bDutyClockRunning = false;
 	/*protected*/ int m_iDutyStartedAtMs = 0;
-	/*protected*/ int m_iUnpaidDutySeconds = 0;
 	protected bool m_bArmoryDrawnThisShift = false;
-	/*protected*/ int m_iWantedLevel = 0;
+	//! Wanted level, police rank and duty totals belong to a character (#331). This copy holds them
+	//! only while the account has no character; the first character adopts it (AddCharacter).
+	protected ref LF_CharacterStanding m_AccountStanding = new LF_CharacterStanding();
 
 	//------------------------------------------------------------------------------------------------
 	string GetPersistentId()
@@ -30,6 +29,46 @@ class LF_PlayerAccount : Managed
 	void SetPersistentId(string id)
 	{
 		m_sPersistentId = id;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The standing (wanted, rank, duty totals) of the active character, or the account's own copy
+	//! while it has no character yet. Never null.
+	LF_CharacterStanding GetStanding()
+	{
+		LF_PlayerCharacter active = GetActiveCharacter();
+		if (active)
+			return active.GetStanding();
+
+		return m_AccountStanding;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The standing saved under this record key: the character holding the key, or the account's own
+	//! copy for its uid while it has no character. Null when the key is not this account's.
+	LF_CharacterStanding GetStandingFor(string recordKey)
+	{
+		LF_PlayerCharacter character = GetCharacterByKey(recordKey);
+		if (character)
+			return character.GetStanding();
+
+		if (m_aCharacters.IsEmpty() && recordKey == m_sPersistentId)
+			return m_AccountStanding;
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The key every character-scoped record of the active character is saved under (bank,
+	//! progression, wanted reports, tickets, ...): its record key, or the account uid while the
+	//! account has no character. Slot 1 of an account keeps the uid (see LF_PlayerCharacter).
+	string GetActiveCharacterKey()
+	{
+		LF_PlayerCharacter active = GetActiveCharacter();
+		if (active)
+			return active.GetRecordKey();
+
+		return m_sPersistentId;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -61,24 +100,24 @@ class LF_PlayerAccount : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Police rank index. 0 is the starting rank. This is live session state; the account
-	//! save record does not carry it yet, so a restart returns the officer to the starting rank.
+	//! Police rank index of the active character. 0 is the starting rank. Saved by the progression
+	//! payload under the character's record key.
 	int GetPoliceRank()
 	{
-		return m_iPoliceRank;
+		return GetStanding().m_iPoliceRank;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void SetPoliceRank(int rank)
 	{
-		m_iPoliceRank = rank;
+		GetStanding().m_iPoliceRank = rank;
 		LF_AccountReplication.Publish(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	int GetOnDutySeconds()
 	{
-		return m_iOnDutySeconds;
+		return GetStanding().m_iOnDutySeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -87,14 +126,15 @@ class LF_PlayerAccount : Managed
 		if (seconds <= 0)
 			return;
 
-		m_iOnDutySeconds = m_iOnDutySeconds + seconds;
+		LF_CharacterStanding standing = GetStanding();
+		standing.m_iOnDutySeconds = standing.m_iOnDutySeconds + seconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Persistence seam (LF_Progression): the saved total. Negative is read as 0.
 	void SetOnDutySeconds(int seconds)
 	{
-		m_iOnDutySeconds = Math.Max(0, seconds);
+		GetStanding().m_iOnDutySeconds = Math.Max(0, seconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -128,7 +168,7 @@ class LF_PlayerAccount : Managed
 	//! (save version 7) together with the carried cash, so a rollback rolls both back.
 	int GetUnpaidDutySeconds()
 	{
-		return m_iUnpaidDutySeconds;
+		return GetStanding().m_iUnpaidDutySeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -137,22 +177,24 @@ class LF_PlayerAccount : Managed
 		if (seconds <= 0)
 			return;
 
-		m_iUnpaidDutySeconds = m_iUnpaidDutySeconds + seconds;
+		LF_CharacterStanding standing = GetStanding();
+		standing.m_iUnpaidDutySeconds = standing.m_iUnpaidDutySeconds + seconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Persistence seam (LF_Progression): the saved unpaid seconds. Negative is read as 0.
 	void SetUnpaidDutySeconds(int seconds)
 	{
-		m_iUnpaidDutySeconds = Math.Max(0, seconds);
+		GetStanding().m_iUnpaidDutySeconds = Math.Max(0, seconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Returns the unpaid duty seconds and zeroes them, so a second take returns 0.
 	int TakeUnpaidDutySeconds()
 	{
-		int seconds = m_iUnpaidDutySeconds;
-		m_iUnpaidDutySeconds = 0;
+		LF_CharacterStanding standing = GetStanding();
+		int seconds = standing.m_iUnpaidDutySeconds;
+		standing.m_iUnpaidDutySeconds = 0;
 		return seconds;
 	}
 
@@ -173,11 +215,12 @@ class LF_PlayerAccount : Managed
 	//------------------------------------------------------------------------------------------------
 	void SetWantedLevel(int level)
 	{
-		m_iWantedLevel = Math.Clamp(level, 0, 5); // Max 5
+		LF_CharacterStanding standing = GetStanding();
+		standing.m_iWantedLevel = Math.Clamp(level, 0, 5); // Max 5
 
 		// Wanted cleared (jail, fine, admin): the posters for this person come down.
-		if (m_iWantedLevel == 0)
-			LF_WantedReports.ClearFor(m_sPersistentId);
+		if (standing.m_iWantedLevel == 0)
+			LF_WantedReports.ClearFor(GetActiveCharacterKey());
 
 		LF_AccountReplication.Publish(this);
 	}
@@ -185,18 +228,36 @@ class LF_PlayerAccount : Managed
 	//------------------------------------------------------------------------------------------------
 	int GetWantedLevel()
 	{
-		return m_iWantedLevel;
+		return GetStanding().m_iWantedLevel;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void IncreaseWantedLevel(int amount = 1)
 	{
-		SetWantedLevel(m_iWantedLevel + amount);
+		SetWantedLevel(GetWantedLevel() + amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A character without a record key gets one here: the first character of an account is keyed by
+	//! the account uid (a save from before #331 needs no rewrite), every later one by its own id.
+	//! The first character also adopts the standing the account held while it had none.
 	void AddCharacter(notnull LF_PlayerCharacter character, bool setAsActive = false)
 	{
+		bool first = m_aCharacters.IsEmpty();
+		if (character.GetRecordKey().IsEmpty())
+		{
+			if (first)
+				character.SetRecordKey(m_sPersistentId);
+			else
+				character.SetRecordKey(character.GetId());
+		}
+
+		if (first)
+		{
+			LF_CharacterStanding adopted = character.GetStanding();
+			adopted.TakeValuesOf(m_AccountStanding);
+		}
+
 		int idx = m_aCharacters.Insert(character);
 		if (setAsActive)
 			m_iActiveCharacterIdx = idx;
@@ -251,6 +312,52 @@ class LF_PlayerAccount : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	int GetCharacterCount()
+	{
+		return m_aCharacters.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The character in this roster slot (0-based), or null.
+	LF_PlayerCharacter GetCharacterAt(int slot)
+	{
+		if (slot < 0 || slot >= m_aCharacters.Count())
+			return null;
+
+		return m_aCharacters.Get(slot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	LF_PlayerCharacter GetCharacterById(string characterId)
+	{
+		if (characterId.IsEmpty())
+			return null;
+
+		foreach (LF_PlayerCharacter character : m_aCharacters)
+		{
+			if (character && character.GetId() == characterId)
+				return character;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	LF_PlayerCharacter GetCharacterByKey(string recordKey)
+	{
+		if (recordKey.IsEmpty())
+			return null;
+
+		foreach (LF_PlayerCharacter character : m_aCharacters)
+		{
+			if (character && character.GetRecordKey() == recordKey)
+				return character;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	LF_PlayerCharacter GetActiveCharacter()
 	{
 		if (!m_aCharacters.IsEmpty())
@@ -276,9 +383,39 @@ class LF_PlayerAccount : Managed
 	}
 };
 
+//------------------------------------------------------------------------------------------------
+//! What a character answers for, apart from its account: wanted level, police rank, and duty
+//! totals (#331). Saved through the account prefix (wanted, active character only), the
+//! "characters" payload (wanted, every character, save version 24) and the "progression" payload
+//! (rank and duty totals, keyed by the character's record key).
+class LF_CharacterStanding : Managed
+{
+	int m_iWantedLevel;
+	int m_iPoliceRank;
+	int m_iOnDutySeconds;
+	int m_iUnpaidDutySeconds;
+
+	//------------------------------------------------------------------------------------------------
+	void TakeValuesOf(notnull LF_CharacterStanding other)
+	{
+		m_iWantedLevel = other.m_iWantedLevel;
+		m_iPoliceRank = other.m_iPoliceRank;
+		m_iOnDutySeconds = other.m_iOnDutySeconds;
+		m_iUnpaidDutySeconds = other.m_iUnpaidDutySeconds;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One character of an account. m_sId is its persistence id (survival, carried inventory, duty
+//! locker). m_sRecordKey is what every other character-scoped store keys it by (LF_Utils.GetPlayerUID
+//! returns it): slot 1 of an account keeps the account uid, so a save from before #331 loads into
+//! slot 1 with nothing rewritten; every later character is keyed by its own id. The key never
+//! changes once given.
 class LF_PlayerCharacter
 {
 	protected string m_sId;
+	protected string m_sRecordKey;
+	protected ref LF_CharacterStanding m_Standing = new LF_CharacterStanding();
 	protected ResourceName m_rPrefab;
 	protected string m_sFirstName;
 	protected string m_sLastName;
@@ -294,6 +431,25 @@ class LF_PlayerCharacter
 	void SetId(string id)
 	{
 		m_sId = id;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetRecordKey()
+	{
+		return m_sRecordKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam and LF_PlayerAccount.AddCharacter only.
+	void SetRecordKey(string recordKey)
+	{
+		m_sRecordKey = recordKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	LF_CharacterStanding GetStanding()
+	{
+		return m_Standing;
 	}
 
 	//------------------------------------------------------------------------------------------------

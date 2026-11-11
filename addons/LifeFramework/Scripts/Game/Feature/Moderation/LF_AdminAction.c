@@ -47,7 +47,7 @@ class LF_AdminAction
 		if (playerId <= 0)
 			return "";
 
-		return LF_Utils.GetPlayerUID(playerId);
+		return LF_Utils.GetAccountUID(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ modded class SCR_BaseActionsEditorComponent
 
 		string targetUid;
 		if (target)
-			targetUid = LF_Utils.GetPlayerUID(target);
+			targetUid = LF_Utils.GetAccountUID(target);
 
 		LF_AdminAction.Report(LF_AdminAction.UidOfPlayer(editorManager.GetPlayerID()), targetUid, name, cursorWorldPosition);
 	}

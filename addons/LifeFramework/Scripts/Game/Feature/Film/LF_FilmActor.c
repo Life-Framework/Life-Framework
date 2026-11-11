@@ -551,7 +551,8 @@ class LF_FilmDirector
 			return "error:not_server";
 		if (s_bRunning)
 			return "error:scene_running";
-		if (scene != "street")
+		bool envOnly = LF_FilmSceneEnv.IsEnvOnly(scene);
+		if (scene != "street" && !envOnly)
 			return "error:unknown_scene";
 
 		LF_FilmSceneEnv env = LF_FilmSceneEnv.ForScene(scene);
@@ -562,6 +563,13 @@ class LF_FilmDirector
 		s_Saved = LF_FilmEnvironment.Capture();
 		if (s_Saved)
 			LF_FilmEnvironment.Apply(env, "scene " + scene + " set");
+		if (envOnly)
+		{
+			// Light only: no actors, nothing to tick. Stop restores the clock like any scene.
+			s_sScene = scene;
+			s_bRunning = true;
+			return string.Format("scene %1 started, light only", scene);
+		}
 		if (!BuildStreet())
 		{
 			Clear();

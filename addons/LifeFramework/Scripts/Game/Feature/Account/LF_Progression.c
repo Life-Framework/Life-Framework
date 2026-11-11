@@ -193,8 +193,27 @@ class LF_Progression
 			if (account.GetFaction() != LF_Faction.CIVILIAN && account.IsDutyClockRunning())
 				LF_PoliceRanks.SettleDutyAt(account, true, nowMs);
 
-			if (account.GetPoliceRank() != 0 || account.GetOnDutySeconds() != 0 || account.GetUnpaidDutySeconds() != 0)
-				AddUid(accountRecord.m_sPersistentId, uids, seen);
+			// Rank and duty totals are per character (#331), saved under each character's key.
+			array<string> keys = {};
+			if (account.HasCharacters())
+			{
+				foreach (LF_PlayerCharacter character : account.GetCharacters())
+				{
+					if (character)
+						keys.Insert(character.GetRecordKey());
+				}
+			}
+			else
+			{
+				keys.Insert(account.GetPersistentId());
+			}
+
+			foreach (string key : keys)
+			{
+				LF_CharacterStanding standing = account.GetStandingFor(key);
+				if (standing && (standing.m_iPoliceRank != 0 || standing.m_iOnDutySeconds != 0 || standing.m_iUnpaidDutySeconds != 0))
+					AddUid(key, uids, seen);
+			}
 		}
 
 		array<ref LF_ProgressionRecord> records = new array<ref LF_ProgressionRecord>();
@@ -214,14 +233,14 @@ class LF_Progression
 				record.m_iCareerPaidTotal = LF_CivilianJob.GetPaidTotal(uid);
 			}
 
-			LF_PlayerAccount account;
+			LF_CharacterStanding standing;
 			if (accounts)
-				account = accounts.GetFromCache(uid);
-			if (account)
+				standing = accounts.FindStanding(uid);
+			if (standing)
 			{
-				record.m_iPoliceRank = account.GetPoliceRank();
-				record.m_iOnDutySeconds = account.GetOnDutySeconds();
-				record.m_iUnpaidDutySeconds = account.GetUnpaidDutySeconds();
+				record.m_iPoliceRank = standing.m_iPoliceRank;
+				record.m_iOnDutySeconds = standing.m_iOnDutySeconds;
+				record.m_iUnpaidDutySeconds = standing.m_iUnpaidDutySeconds;
 			}
 
 			record.m_fBenefitElapsedSeconds = LF_UnemploymentBenefit.GetElapsedSinceCollection(uid, now);
@@ -255,14 +274,16 @@ class LF_Progression
 			LF_CivilianJob.RestoreCareer(uid, record.m_iCareerLevel, record.m_fCareerExperience, record.m_iCareerPaidTotal);
 			LF_UnemploymentBenefit.RestoreElapsedSinceCollection(uid, record.m_fBenefitElapsedSeconds, now);
 
-			LF_PlayerAccount account;
+			// The standing of the character saved under this key (#331), not the account's active one.
+			LF_CharacterStanding standing;
 			if (accounts)
-				account = accounts.GetFromCache(uid);
-			if (account)
+				standing = accounts.FindStanding(uid);
+			if (standing)
 			{
-				account.SetPoliceRank(UsableRank(uid, record.m_iPoliceRank));
-				account.SetOnDutySeconds(record.m_iOnDutySeconds);
-				account.SetUnpaidDutySeconds(record.m_iUnpaidDutySeconds);
+				standing.m_iPoliceRank = UsableRank(uid, record.m_iPoliceRank);
+				standing.m_iOnDutySeconds = Math.Max(0, record.m_iOnDutySeconds);
+				standing.m_iUnpaidDutySeconds = Math.Max(0, record.m_iUnpaidDutySeconds);
+				LF_AccountReplication.Publish(accounts.GetFromCache(uid));
 			}
 			else if (record.m_iPoliceRank != 0 || record.m_iOnDutySeconds != 0)
 			{
@@ -274,6 +295,28 @@ class LF_Progression
 
 		int bodies = ApplyToLivePlayers();
 		LF_Debug.Info("Progression", string.Format("applied %1 progression record(s), %2 live body(ies)", applied, bodies));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts every stored rank and duty total back on the character its key names. The "characters"
+	//! payload (save version 24) calls it when a saved record key differs from the default key the
+	//! account prefix gave while this payload loaded.
+	static void ReapplyStandings()
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!s_mRecords || !accounts)
+			return;
+
+		foreach (string uid, LF_ProgressionRecord record : s_mRecords)
+		{
+			LF_CharacterStanding standing = accounts.FindStanding(uid);
+			if (!record || !standing)
+				continue;
+
+			standing.m_iPoliceRank = UsableRank(uid, record.m_iPoliceRank);
+			standing.m_iOnDutySeconds = Math.Max(0, record.m_iOnDutySeconds);
+			standing.m_iUnpaidDutySeconds = Math.Max(0, record.m_iUnpaidDutySeconds);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

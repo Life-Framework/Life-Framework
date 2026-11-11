@@ -14,6 +14,9 @@ class LF_MissionHeader : SCR_MissionHeader
 	[Attribute("0", desc: "The first player to join while the police roster is empty is added to it (the host on a playtest). Off for real servers.")]
 	bool m_bLF_FirstPlayerPolice;
 
+	[Attribute("0", desc: "A police application is approved the moment it is filed, so a solo tester can try the form (the desk). Off for real servers: an administrator approves.")]
+	bool m_bLF_InstantPoliceApproval;
+
 	//------------------------------------------------------------------------------------------------
 	//! \return the running mission's header when it is an LF_MissionHeader, else null.
 	static LF_MissionHeader GetCurrent()
