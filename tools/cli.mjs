@@ -18,6 +18,7 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
+//   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   shots baseline [--areas a,b] | area <name> --baseline   Every area in one session, shared; or find the freshest
@@ -28,6 +29,7 @@
 //   scope <name> <dir>                Write the test stub, features row, keys, and street row
 //   scope --selftest                  Check those four outputs in a temp directory
 //   prs status|heal                   Open ws/* PRs; heal conflicting or stuck ones (tools/prs.mjs)
+//   discord relay start|stop|status   Background Discord welcome relay (tools/discord-mcp/); discord selftest
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
@@ -38,6 +40,8 @@ import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import * as host from "./host/host.mjs";
 import * as playtest from "./host/playtest.mjs";
+import { cmdPlaytestServer } from "./release/playtest-server.mjs";
+import { cmdPlaytestRelease } from "./release/release-playtest.mjs";
 import * as session from "../agent-box/session.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
@@ -46,6 +50,7 @@ import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp 
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
+import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
@@ -978,6 +983,67 @@ function cmdBuild(root = ROOT, opts = {}) {
 
 }
 
+// Pack the addon the way Workbench > Publish Project bundles it (compressed, encrypted .pak files,
+// .meta and source files left out), without uploading anything: -wbModule=ResourceManager
+// -packAddon -packAddonDir (BIKI Arma_Reforger:Startup_Parameters#packAddon). The output folder
+// loads like a Workshop download: -addonsDir <out-parent> -addons <GUID> (docs/playtest/workshop-host.md).
+function cmdPack(root = ROOT, opts = {}) {
+  guardHeavy(root, "pack", opts.force);
+  const exe = workbenchExe();
+  if (!existsSync(exe)) {
+    console.log(`FAIL  workbench not found: ${exe}`);
+    return 1;
+  }
+  const out = resolve(opts.out || join(root, "tmp", "workshop-pack", "LifeFramework"));
+  const addon = join(root, "addons", "LifeFramework");
+  if (out.toLowerCase().startsWith(addon.toLowerCase())) {
+    console.log(`FAIL  pack output ${out} is inside the addon folder; Workbench would pack its own output`);
+    return 1;
+  }
+  // A previous pack leaves its .pak files; packing over them is what Workbench does, so no delete.
+  mkdirSync(out, { recursive: true });
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const profile = join(root, "server", "profile", "pack");
+  mkdirSync(profile, { recursive: true });
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: opts.wait ? 900000 : 0 });
+    locked = true;
+    const args = [
+      "-gproj", join(addon, "LifeFramework.gproj"),
+      "-wbModule=ResourceManager",
+      "-packAddon",
+      "-packAddonDir", out,
+      "-noSplash",
+      "-profile", profile,
+      "-addonsDir", join(root, "addons"),
+      "-addonsDir", workbenchGameAddons(root, "pack"),
+    ];
+    console.log(`packing addon (headless Workbench) -> ${out}`);
+    const started = Date.now();
+    const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 900000 });
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    const log = latestWorkbenchLog(profile);
+    const lines = log ? readFileSync(log, "utf8").split(/\r?\n/) : [];
+    for (const l of lines.filter((x) => /Packaging|\(E\).*(pack|bundle|cannot copy|metafile)/i.test(x)).slice(-12)) console.log(`  ${l}`);
+    const paks = existsSync(out) ? readdirSync(out).filter((f) => /\.pak$/i.test(f)) : [];
+    const manifest = ["addon.gproj", "LifeFramework.gproj"].find((f) => existsSync(join(out, f)));
+    const mb = paks.reduce((s, f) => s + statSync(join(out, f)).size, 0) / 1048576;
+    if (!paks.length || !manifest) {
+      console.log(`pack FAILED after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${paks.length} .pak file(s), project file ${manifest ? "present" : "missing"} in ${out}`);
+      if (log) console.log(`  log: ${log}`);
+      return 1;
+    }
+    console.log(`pack OK in ${secs}s: ${paks.length} .pak file(s), ${mb.toFixed(1)} MB, ${manifest} in ${out}`);
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  pack: ${e.message}`);
+    return 1;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
 // Before every server boot from a worktree: copy main's resourceDatabase.rdb
 // when it is the better copy, then make sure it registers every .meta in the
 // addon. A resource that landed on main after anyone last opened Workbench is
@@ -1034,6 +1100,66 @@ function ensureResourceDatabase(root) {
   } catch (e) {
     console.log(`WARN  resource database refresh failed: ${e.message}`);
     return 1;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
+
+// tools/cli ui-image <svg|png> <name>: see tools/ui-image/ui-image.mjs and
+// docs/research/ui-illustration-pipeline.md.
+async function cmdUiImage(flags) {
+  const root = ROOT;
+  const pos = (flags ?? []).filter((f, i, a) => !f.startsWith("--") && a[i - 1] !== "--size");
+  const [src, name] = pos;
+  const sizeIdx = (flags ?? []).indexOf("--size");
+  const size = sizeIdx >= 0 ? Number(flags[sizeIdx + 1]) : 0;
+  if (!src || !name || !/^[A-Za-z0-9_]+$/.test(name)) {
+    console.log("usage: tools\cli ui-image <file.svg|file.png> <name> [--size N] [--no-imageset]");
+    return 2;
+  }
+  if (wt.isMainCheckout(root)) { console.log("FAIL  ui-image runs only in a worktree"); return 1; }
+  const ui = await import("./ui-image/ui-image.mjs");
+  const png = await ui.writeSource(root, resolve(src), name, size);
+  const dir = join(root, "addons", "LifeFramework", ui.ILLUSTRATION_DIR);
+  const edds = join(dir, name + ".edds");
+  const exe = workbenchExe();
+  if (!existsSync(exe)) { console.log("FAIL  Workbench not found: " + exe); return 1; }
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: 900000 });
+    locked = true;
+    const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+    const profile = join(root, "server", "profile", "rdb");
+    mkdirSync(profile, { recursive: true });
+    const logFile = join(root, "tmp", "ui-image-" + name + ".log");
+    mkdirSync(join(root, "tmp"), { recursive: true });
+    const started = Date.now();
+    if (!existsSync(edds + ".meta")) ui.writeTextureMeta(edds + ".meta", name);
+    ui.installPlugin(root);
+    quietSpawnSync(exe, [
+      "-gproj", join(root, "addons", "LifeFramework", "LifeFramework.gproj"),
+      "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
+      "-plugin=LF_ImageImportPlugin", "-lfImage=" + png,
+      "-profile", profile,
+      "-addonsDir", join(root, "addons"),
+      "-addonsDir", workbenchGameAddons(root, "rdb"),
+    ], { cwd: gameDir, timeoutMs: Number(process.env.LF_UI_IMAGE_TIMEOUT_S || 150) * 1000, stdout: logFile, stderr: logFile });
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    const meta = edds + ".meta";
+    if (!existsSync(edds) || !existsSync(meta)) {
+      console.log("FAIL  import produced no .edds/.meta after " + secs + "s; the Workbench was killed if it hung (see " + logFile + ")");
+      return 1;
+    }
+    const guid = ui.readMetaGuid(meta);
+    const rel = ui.ILLUSTRATION_DIR + "/" + name;
+    console.log("imported in " + secs + "s: {" + guid + "}" + rel + ".edds");
+    if (!(flags ?? []).includes("--no-imageset")) {
+      const { w, h } = await ui.imageSize(root, png);
+      const ig = ui.writeImageset(root, name, guid, w, h);
+      console.log("imageset: {" + ig + "}" + rel + ".imageset  (image name: full)");
+    }
+    return 0;
   } finally {
     if (locked) wt.releaseLock(root, "build");
   }
@@ -1449,7 +1575,9 @@ function cmdPlaytest(args) {
   if (sub === "stop") return cmdPlaytestStop(hostDir, playerDir);
   if (sub === "status") return cmdPlaytestStatus(hostDir, playerDir);
   if (sub === "shortcut") return cmdPlaytestShortcut(mainRoot);
-  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut");
+  if (sub === "server") return cmdPlaytestServer(list.slice(1));
+  if (sub === "release") return cmdPlaytestRelease(ROOT, list.slice(1), { ensureRdb: ensureResourceDatabase, isMain: wt.isMainCheckout(ROOT) });
+  console.log("usage: tools\\cli playtest [start]|stop|status|shortcut|server <address>|off|release [--tag T]");
   return 1;
 }
 
@@ -2304,10 +2432,16 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   mcp enable <name>             enable a server in opencode.json
   mcp disable <name>            disable a server in opencode.json
   build                         headless Workbench build of the addon (worktree only)
+  pack [--out dir] [--wait]     pack the addon as Workbench > Publish bundles it, no upload
+                                (default tmp/workshop-pack/LifeFramework; docs/playtest/workshop-host.md)
   serve                         boot the headless test server (blocks, worktree only)
   playtest [stop|status|shortcut]  the maintainer's one command: host from the pinned origin/main
                                 checkout (..\\Life-Framework-playtest), then open the game joined to it;
-                                stop closes the game and saves; shortcut adds a desktop icon
+                                stop closes the game and saves; shortcut adds a desktop icon;
+                                server <address>|off points the download's launcher at a host (PR to
+                                website/public/playtest-server.json, tools/release/playtest-server.mjs)
+                                release [--tag playtest-m2-N]: refresh the rdb, attach it to a pre-release,
+                                start the playtest-release workflow (worktree at origin/main)
   host start|stop|status|backup  playtest dedicated server on Missions/LF_PlaytestTown.conf;
                                 start continues the latest save, stop saves and backs up
                                 (docs/playtest.md; start refuses in the main checkout)
@@ -2335,6 +2469,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
                                 (generated conflicts only), gates, pushes, re-queues auto-merge,
                                 and merges green PRs stuck open (see: cli prs help)
+  film-make <storyboard.json> [--out f.mp4] [--keep] [--no-vo] | --setup | --selftest
+                                post-production: cards, crossfades, captions + .srt, offline voice-over,
+                                ducked music bed (docs/film-pipeline.md "Post-production")
   regen-tests                   regenerate the test registry from the test files
   regen-localization            regenerate the runtime string tables from the .st source
   rdb                           register new .meta resources in this worktree's resourceDatabase.rdb
@@ -2348,6 +2485,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   scope <name> <dir>            write a test stub, a features-row snippet, localization keys
                                 to append, and one street-manifest row into <dir>
   scope --selftest              run that write in a temp directory and check the four outputs
+  discord relay start|stop|status  Discord welcome relay as a background process (pid + log in tmp/);
+                                discord selftest checks its event filter (docs/community/onboarding.md)
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   hidden [--close]              list (or close) tool processes on the private LF-Agents desktop
                                 (Workbench/server runs started there never show a window)
@@ -3128,6 +3267,10 @@ const cmds = {
   enable: (n) => cmdSetEnabled(n, true),
   disable: (n) => cmdSetEnabled(n, false),
   build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
+  pack: (flags) => {
+    const list = flags ?? [];
+    return cmdPack(ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), out: argValue(list, "--out") });
+  },
   host: (flags) => cmdHost(flags),
   playtest: (flags) => cmdPlaytest(flags),
   session: (flags) => cmdSession(flags),
@@ -3151,6 +3294,7 @@ const cmds = {
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),
+  "film-make": async (flags) => (await import("./film/post.mjs")).main(flags ?? []),
   "regen-tests": () => {
     const gen = join(ROOT, "tools", "validation", "gen-test-registry.ps1");
     if (!existsSync(gen)) {
@@ -3178,6 +3322,7 @@ const cmds = {
   call: () => cmdMcpCall(rest),
   hidden: (flags) => cmdHidden(flags ?? []),
   rdb: () => ensureResourceDatabase(ROOT),
+  "ui-image": () => cmdUiImage(rest),
   help: () => cmdHelp(),
 };
 
@@ -3265,6 +3410,8 @@ try {
     code = cmdPrs(ROOT, rest);
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
+  } else if (cmd === "discord") {
+    code = runDiscordCli(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
   } else {

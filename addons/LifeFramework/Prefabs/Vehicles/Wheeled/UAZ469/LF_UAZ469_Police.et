@@ -1,0 +1,66 @@
+Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et" {
+ ID "3C171AD0A92BA02A"
+ components {
+  LF_LicensePlateManagerComponent "{19BDE70FC62A5348}" {
+   m_Plates {
+    LF_LicensePlatePointInfo "{9270BF3A168CD45E}" {
+     Offset 0 0.75 -1.92
+     Angles 0 180 0
+    }
+   }
+  }
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  }
+  SCR_VehicleSoundComponent "{55C2E66AD4EF2CA6}" {
+   Filenames + {
+    "{4D8A2B25FC6C44FA}Sounds/Siren/Vehicles_Siren.acp"
+   }
+  }
+  LF_SirenManagerComponent "{4685286E8D464A64}" {
+   m_eService POLICE
+   m_Modes LF_SirenModes "{B1F0340624EE4436}" : "{01051CFE4BC64945}Prefabs/Vehicles/SirenLights/LightBarLED.conf" {
+   }
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_VehicleLockAction "{E8BD9E1428464528}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{8DB9298A56C64720}" {
+      Name "#EL-VehicleLock_Action"
+     }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{E1A5707E00000100}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A5707F00000100}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
+    }
+    LF_VehicleSearchAction "{5EA2C40200000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C40200000002}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
+   }
+  }
+ }
+ {
+  GenericEntity : "{EFE1B93215E74E28}Prefabs/Vehicles/SirenLights/EmergencyLightsKnob.et" {
+   ID "EEFFC92FD98A9956"
+   coords -0.187 1.074 0.466
+  }
+  GenericEntity : "{54E3267F42BD54ED}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_LEDLightBar.et" {
+   ID "5495211B1C65F9B6"
+   coords 0 0.25 0
+  }
+ }
+}

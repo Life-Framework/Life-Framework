@@ -90,6 +90,7 @@ under "Hard-coded flagship values in script".
 | `Feature/Chat` | core | System |
 | `Feature/Crime` | core | System; payouts move to config |
 | `Feature/Debug`, `Feature/DebugWorld` | core | Test fixtures |
+| `Feature/Farming` | core | Farm plots: plant, grow, harvest, save (#614) |
 | `Feature/Film`, `Feature/ScreenshotCapture` | core | Tooling |
 | `Feature/Gathering`, `Feature/Mining`, `Feature/Processing`, `Feature/Resources` | core | Systems; drop tables are config |
 | `Feature/Hideouts` | core | System |
@@ -136,6 +137,7 @@ under "Hard-coded flagship values in script".
 | `Police/` | core | Duty desk, jail cell, alarms, wanted board |
 | `Processing/`, `Processor/` | core | Example chains and processors |
 | `Props/Commercial/`, `Props/Construction/`, `Props/Hideouts/` | core | Interactables |
+| `Props/Debug/` | core | Playtest-only stands (bank robbery kit, #605), gated by the debug flag |
 | `Props/Signs/LF_Sign*.et` (10) | core | Generic boards and faces |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
@@ -188,6 +190,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | --- | --- | --- |
 | `EL_DebugTest.conf` | core | The suite's header |
 | `LF_PlaytestTown.conf` | pack | The flagship playtest header |
+| `LF_PlaytestTown_Preview.{edds,jpg}` | pack | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
 | `EveronLifeGameMode.conf` | pack | The MainWorld header |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
 
@@ -196,11 +199,11 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | Path | Class | Reason |
 | --- | --- | --- |
 | `DebugWorld/DebugWorld.ent`, `DebugTerrain/` | core | The flat test terrain |
-| Annex layers: `Annex`, `Crimes`, `DebugWorldActions`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat` | core | Every top-level entity sits inside the annex fence |
+| Annex layers: `Annex`, `Crimes`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat` | core | Every top-level entity sits inside the annex fence |
 | `Factions`, `Shops` | core | Empty layers |
 | `Quests` | split | One giver in the annex, the clerk on the square |
 | `Village_Buildings`, `Village_Dressing`, `Village_Roads` | pack | Vanilla buildings, props, and roads; no test names them |
-| `Street_*` (12) | split | Village sites that hold test-named fixtures |
+| `Street_*` (13, with `Street_SpawnHub`) | split | Village sites that hold test-named fixtures |
 | `Signs` | split | Village signs; `LF_Test_SafeZone` finds two |
 | Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
 | `ATM`, `Gamemode`, `Roadmap`, `Survival`, `default` | split | Village placement of entities tests use; the game mode entity is core |
@@ -219,6 +222,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Signs/` | core | Sign face material |
 | `Tools/` | core | Axe, pickaxe |
 | `UI/` | core | Stats bars, chat icons |
+| `UI/Illustrations/medic_flow.*` | pack | The hospital's CALL, TREAT, BED diagram; the `tools\cli ui-image` route that made it is core (#579) |
 | `Vehicles/Attachments/`, `Vehicles/EmergencyLightsKnob/`, `Vehicles/LicensePlate/` | core | Siren and plate parts |
 | `Vehicles/Wheeled/M151A2/` | split | Light-bar mount for the flagship police car |
 | `World/` | core | Terrain surface |

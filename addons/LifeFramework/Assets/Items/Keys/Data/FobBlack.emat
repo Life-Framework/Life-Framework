@@ -1,0 +1,6 @@
+MatPBRBasic {
+ Color 0.025 0.025 0.03 1
+ BCRMap "{5F54C1714DAA5E23}Assets/_SharedData/Plastic/ST_Plastic_Fine01_1m_BCR.edds"
+ NMOMap "{678C7AE394DD0CBD}Assets/_SharedData/Plastic/ST_Plastic_Fine01_1m_NMO.edds"
+ MetalnessScale 0
+}

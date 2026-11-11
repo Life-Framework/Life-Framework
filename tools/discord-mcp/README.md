@@ -35,6 +35,14 @@ Discord server through the **Life Framework** bot. Node.js 22+; no `npm install`
 Optional: `EVENT_WEBHOOK_URL` POSTs each event as JSON; `EVENT_LOG_FILE`
 appends each event as a JSON line.
 
+## Welcome relay and reply helpers
+
+`welcome-relay.mjs` forwards member joins, #welcome messages and DMs to a
+webhook; `say.mjs` and `dm.mjs` post the bot's replies. The webhook URL is read
+from `%USERPROFILE%\.life-framework\welcome-hook-url` (never the repo). Run it
+with `tools\cli discord relay start|stop|status`. Full description:
+`docs/community/onboarding.md`, "Welcome relay".
+
 ## Rules for agents
 
 Kicking, banning, and deleting channels or roles need the maintainer's OK.

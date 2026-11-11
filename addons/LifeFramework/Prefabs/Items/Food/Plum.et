@@ -3,6 +3,14 @@ GenericEntity : "{61C577C0E2A178A6}Prefabs/Items/Food/Food_Base.et" {
  components {
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{7BA0728EFEE63492}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 0.5
+      FOV 10
+     }
+    }
     ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
      Name "Plum"
      Description "This is an Plum from an Plum Tree"

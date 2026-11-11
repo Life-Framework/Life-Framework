@@ -13,16 +13,37 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{7B2B079E1C8DFFC4}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 3.3
+      FOV 10
+     }
+    }
     ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
      Name "#LF-Hospital_BillItem"
      Description "#LF-Hospital_BillItemDesc"
     }
     ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
      Weight 0.05
+     SizeSetupStrategy Volume
+     SizeSetupStrategy Volume
      ItemVolume 113
      RestingUP Forward
      RestingAdditiveRotationLS 0 0 0
      RestingAdditiveOffsetLS 0 0 0
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{6BD27321C1406B52}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{9BC36903877C246B}" {
+       AnimGraph "{883777E45A6C4DA1}Assets/Items/Medicine/Workspaces/Gauze_01.agr"
+       AnimInstance "{79BD98038DD60F88}Assets/Items/Medicine/Workspaces/Gauze_01_player.asi"
+       BindingName "Gadget"
+      }
+     }
+     HandAdditiveRotation -65 -60 -60
+     HandAdditiveTranslation -0.07 0.03 -0.01
     }
    }
   }
@@ -49,6 +70,9 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
      }
     }
    }
+  }
+  SCR_GadgetComponent "{9A7553FE5FE4D3D0}" {
+   m_eAnimVariable LF_ITEM
   }
  }
 }

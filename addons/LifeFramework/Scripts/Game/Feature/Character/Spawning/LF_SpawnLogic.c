@@ -45,12 +45,34 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	[Attribute("20000", desc: "Carried cash the top-up fills to.", category: "Debug money top-up")]
 	protected int m_iTopUpCashTarget;
 
+	//! Playtest only: the spawn table's travel globe (LF_SpawnHub, #607) teleports players to any playtest
+	//! area. The server refuses the request unless this is on. Off in the flagship game mode.
+	[Attribute("0", desc: "Playtest: the spawn hub travel globe may teleport players to the playtest areas. Off in the flagship mode.", category: "Playtest hub")]
+	protected bool m_bPlaytestHub;
+
 	protected bool m_bTopUpTimer;
+
+	//! Playtest only: the dispatch console's test calls (LF_DebugDispatchAction) place a police or
+	//! medic call without a second player at a payphone. Off in the flagship game mode.
+	[Attribute("0", desc: "Playtest: the dispatch console can place a test police or medic call for a solo tester. Off in the flagship mode.", category: "Debug test dispatch")]
+	protected bool m_bDebugTestDispatch;
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDebugTestDispatch()
+	{
+		return m_bDebugTestDispatch;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	bool IsDebugMoneyTopUp()
 	{
 		return m_bDebugMoneyTopUp;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsPlaytestHub()
+	{
+		return m_bPlaytestHub;
 	}
 
 	//------------------------------------------------------------------------------------------------
