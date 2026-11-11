@@ -85,7 +85,7 @@ GenericEntity FarmPlot_3 : "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_
 }
 GenericEntity Farm_SeedCrate : "{696B13AE8A088B79}Prefabs/Props/Commercial/LF_SeedCrate_Cabbage.et" {
  coords 143.8 0 297.2
- angleY 15
+ angleY 165
 }
 
 GenericEntity Farm_StandTable : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
@@ -96,7 +96,7 @@ GenericEntity Farm_StandCrate_1 : "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_
  angleY 6
 }
 GenericEntity Farm_StandCrate_2 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 148.4 0.22 294.2
+ coords 147.4 0 294.4
  angleY -10
 }
 GenericEntity Farm_StandCrate_3 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {

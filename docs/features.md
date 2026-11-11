@@ -819,6 +819,7 @@
   Dropped nuggets are placed by a trace straight down (`FindGroundY`) and rest on the ground. Nugget and pickaxe
   inventory preview cameras were refit (nuggets match the bars; pickaxe distance scaled from the axe by mesh length).
   `LF_MiningArea` no longer logs `spawned 0/0 ores` every minute when the area is full.
+  Proof (#596, #598): `agent-box/session.mjs mining-proof [--regrow]` mines `IronOre_Debug` to nothing with real pickaxe swings, then smelts four nuggets (the harness `nuggets` verb) at the furnace.
 - ✅ Nuggets and bars render textured: `LF_QuantityComponent.UpdateStackModel`
   no longer re-sets the base mesh, which dropped the prefab's material
   overrides and rendered the items white. Cash, pickaxe, axe, ore and bar

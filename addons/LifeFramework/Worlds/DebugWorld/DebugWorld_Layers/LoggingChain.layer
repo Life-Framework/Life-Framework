@@ -63,11 +63,11 @@ $grp GenericEntity : "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylv
   angles 0 18.018 0
  }
  CuttableTree_2 {
-  coords 193 0 160.5
+  coords 191 0 158.5
   angles 0 40 0
  }
  CuttableTree_3 {
-  coords 185 0 163
+  coords 152 0 163
   angles 0 -30 0
  }
 }
@@ -223,11 +223,8 @@ GenericEntity Axe_5ACCA165954CE408 : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et
    }
   }
  }
- coords 180 0.3 162
- angles -55.875 -85.813 -180
-}
-GenericEntity WoodLog_01_Small_5ACEABD58E8C1214 : "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et" {
- coords 176 0 164
+ coords 180 0.05 162
+ angles 90 -85.813 0
 }
 GenericEntity WoodPlank_5ACEABD590364FAA : "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et" {
  coords 175.5 0 163
