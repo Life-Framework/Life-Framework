@@ -150,6 +150,7 @@ under "Hard-coded flagship values in script".
 | `Vehicles/LicensePlate/`, `Vehicles/SirenLights/` | core | System parts |
 | `Vehicles/Wheeled/{S105,S1203,UAZ452,UAZ469,M923A1}/LF_*.et` | split | Locked variants: the catalogue and liveries; core keeps one example car |
 | `Vehicles/Wheeled/M151A2/` | split | The police car; core needs a police-car slot, the model is a catalogue pick |
+| `Configs/Vehicles/LF_VehiclePrices.conf` | split | The multiplier shape is core; the five vehicle rows are the flagship catalogue's prices (#688) |
 
 ## Configs
 
