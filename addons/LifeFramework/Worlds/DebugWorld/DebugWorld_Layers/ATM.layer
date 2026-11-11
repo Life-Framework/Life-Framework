@@ -61,6 +61,6 @@ GenericEntity Bank_Counter_East {
  angleY 180
 }
 LF_NpcBaseEntity Bank_Teller : "{8F3DB2237B844542}Prefabs/Characters/Npcs/LF_BankTeller.et" {
- coords 177 0 259.5
+ coords 176.3 0.16 259.5
  angleY 180
 }
