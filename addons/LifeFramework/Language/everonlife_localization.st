@@ -6645,24 +6645,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Comment "Toast: the car moved before collection (#415)."
     }
     CustomStringTableItem "{156BE656616C6972}" {
-     Id "LF-Sign_LotPrice_s105_Title"
-     Target_en_us "S105 $1,000"
-     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
-    }
-    CustomStringTableItem "{E9ED41A91EBD6C79}" {
-     Id "LF-Sign_LotPrice_uaz469_Title"
-     Target_en_us "UAZ $2,500"
-     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
-    }
-    CustomStringTableItem "{9E6DE5A330213AAE}" {
-     Id "LF-Sign_LotPrice_s1203_Title"
-     Target_en_us "Van $4,000"
-     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
-    }
-    CustomStringTableItem "{CA7D25330BEB1CA1}" {
-     Id "LF-Sign_LotPrice_uaz452_Title"
-     Target_en_us "UAZ 452 $3,500"
-     Comment "Price board in front of a display car at the vehicle lot (area 4). Matches the lot price list."
+     Id "LF-Sign_LotPrice_Title"
+     Target_en_us "%1 %2"
+     Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
     }
     CustomStringTableItem "{33B679F9679C9184}" {
      Id "LF-License_FarmerField_Name"

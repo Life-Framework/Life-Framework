@@ -285,6 +285,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SignMissingId(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignNext(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignPrefabs(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SignPrice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Siren(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SirenDuty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SirenMode(), LF_TestTier.LOGIC);

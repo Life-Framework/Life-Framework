@@ -142,6 +142,42 @@ class LF_SignCatalog
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A price board's title (#540): the template (one key with two placeholders, "%1 %2") filled with
+	//! the car's name and the price from the lot's own price list.
+	//! \param[in] template Title field of the sign: a key or literal text with %1 (name) and %2 (price).
+	//! \param[in] nameKey The offer's name, a key or literal text.
+	static string PricedTitle(string template, string nameKey, int price)
+	{
+		string name = Resolve(nameKey);
+		string money = LF_MoneyFormat.FormatMoney(price);
+		if (IsKey(template))
+			return WidgetManager.Translate(template, name, money);
+
+		string text = template;
+		text.Replace("%1", name);
+		text.Replace("%2", money);
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A copy of a sign with another title: the board's own def stays what the config says.
+	static LF_SignDef WithTitle(LF_SignDef sign, string title)
+	{
+		if (!sign)
+			return null;
+
+		LF_SignDef copy = new LF_SignDef();
+		copy.m_sId = sign.m_sId;
+		copy.m_sTitle = title;
+		copy.m_sWhat = sign.m_sWhat;
+		copy.m_sHow = sign.m_sHow;
+		copy.m_sNeeds = sign.m_sNeeds;
+		copy.m_sRules = sign.m_sRules;
+		copy.m_sNext = sign.m_sNext;
+		return copy;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The prompt text: Read: <title>.
 	static string ReadName(LF_SignDef sign)
 	{

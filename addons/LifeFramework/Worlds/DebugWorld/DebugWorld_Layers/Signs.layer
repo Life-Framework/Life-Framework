@@ -308,6 +308,8 @@ GenericEntity Sign_LotPrice_s105 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sig
  components {
   LF_SignComponent "{82B1E805004F28DE}" {
    m_sSignId "lot_price_s105"
+   m_sPriceLotShopId "roadmap-lot"
+   m_PriceVehicle "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
   }
  }
  coords 214.8 0 259.2
@@ -318,6 +320,8 @@ GenericEntity Sign_LotPrice_uaz469 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_S
  components {
   LF_SignComponent "{82B1E805004F28DE}" {
    m_sSignId "lot_price_uaz469"
+   m_sPriceLotShopId "roadmap-lot"
+   m_PriceVehicle "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
   }
  }
  coords 219.3 0 259.2
@@ -328,6 +332,8 @@ GenericEntity Sign_LotPrice_s1203 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Si
  components {
   LF_SignComponent "{82B1E805004F28DE}" {
    m_sSignId "lot_price_s1203"
+   m_sPriceLotShopId "roadmap-lot"
+   m_PriceVehicle "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
   }
  }
  coords 223.8 0 259.2
@@ -338,6 +344,8 @@ GenericEntity Sign_LotPrice_uaz452 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_S
  components {
   LF_SignComponent "{82B1E805004F28DE}" {
    m_sSignId "lot_price_uaz452"
+   m_sPriceLotShopId "roadmap-lot"
+   m_PriceVehicle "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
   }
  }
  coords 228.3 0 259.2
