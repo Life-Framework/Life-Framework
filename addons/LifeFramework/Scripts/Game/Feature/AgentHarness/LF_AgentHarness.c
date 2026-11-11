@@ -179,6 +179,8 @@ class LF_AgentCommand
 			return ParseCpr(parts, cmd);
 		if (cmd.Verb == "siren")
 			return ParseSiren(parts, cmd);
+		if (cmd.Verb == "shootnpc")
+			return ParseShootNpc(parts, cmd);
 		if (cmd.Verb == "ui")
 			return ParseUi(parts, cmd);
 		if (cmd.Verb == "click")
@@ -496,6 +498,20 @@ class LF_AgentCommand
 
 		cmd.Arg1 = parts[2];
 		cmd.Arg2 = parts[3];
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `shootnpc <EntityName>`: one lethal hit on a placed town NPC (#610).
+	protected static bool ParseShootNpc(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 3 || !IsClassToken(parts[2]))
+		{
+			cmd.Error = "need_entity";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
 		return true;
 	}
 
@@ -1143,6 +1159,11 @@ class LF_AgentHarness
 			DoShoot(cmd);
 			return;
 		}
+		if (cmd.Verb == "shootnpc")
+		{
+			DoShootNpc(cmd);
+			return;
+		}
 		if (cmd.Verb == "cpr")
 		{
 			DoCpr(cmd);
@@ -1387,6 +1408,21 @@ class LF_AgentHarness
 		}
 
 		character.LF_AskHarnessShoot(cmd.Id, cmd.Arg1.ToInt());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `shootnpc <EntityName>` (dev gate): the server deals one lethal kinetic hit from the
+	//! local character to the named town NPC through its damage manager.
+	protected static void DoShootNpc(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.LF_AskHarnessShootNpc(cmd.Id, cmd.Arg1);
 	}
 
 	//------------------------------------------------------------------------------------------------

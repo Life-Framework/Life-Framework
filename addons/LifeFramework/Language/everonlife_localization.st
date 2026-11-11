@@ -6696,21 +6696,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
     }
-    CustomStringTableItem "{EF124E70F7C349D7}" {
-     Id "LF-DebugJailMe_Action"
-     Target_en_us "Send me to jail (playtest)"
-     Comment "Debug-only board action outside the jail: jails you for 60 s."
-    }
-    CustomStringTableItem "{F7B900AAB3964016}" {
-     Id "LF-Sign_DebugJail_Title"
-     Target_en_us "Playtest: jail board"
-     Comment "Title of the debug board by the jail entrance."
-    }
-    CustomStringTableItem "{66031F4E19D748E0}" {
-     Id "LF-Sign_DebugJail_What"
-     Target_en_us "Playtest only. Use the action on this board to be jailed for 60 seconds through the real jail path, so you can try the cell, the visit window and the release alone."
-     Comment "Body of the debug jail board."
-    }
     CustomStringTableItem "{A1B2C3D4E5F60711}" {
      Id "LF-Sign_QuarryInfo_Title"
      Target_en_us "Quarry Works"
@@ -6941,10 +6926,210 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
     }
+    CustomStringTableItem "{EF124E70F7C349D7}" {
+     Id "LF-DebugJailMe_Action"
+     Target_en_us "Send me to jail (playtest)"
+     Comment "Debug-only board action outside the jail: jails you for 60 s."
+    }
+    CustomStringTableItem "{F7B900AAB3964016}" {
+     Id "LF-Sign_DebugJail_Title"
+     Target_en_us "Playtest: jail board"
+     Comment "Title of the debug board by the jail entrance."
+    }
+    CustomStringTableItem "{66031F4E19D748E0}" {
+     Id "LF-Sign_DebugJail_What"
+     Target_en_us "Playtest only. Use the action on this board to be jailed for 60 seconds through the real jail path, so you can try the cell, the visit window and the release alone."
+     Comment "Body of the debug jail board."
+    }
     CustomStringTableItem "{1C23DAF5E8974D14}" {
      Id "LF-Sign_DebugJail_Next"
      Target_en_us "Wait out the 60 seconds, or try a breakout. The cell, the visit window and the release are the real ones."
      Comment "Next-step line of the debug jail board."
+    }
+    CustomStringTableItem "{63E93D8FD582854D}" {
+     Id "LF-Witness_Unsure1"
+     Target_en_us "%1: Hey, I am not sure."
+     Comment "Toast: an NPC witness who saw nothing answers, noncommittal. %1 = the NPC name."
+    }
+    CustomStringTableItem "{C388BAAC69AA6FFA}" {
+     Id "LF-Witness_Unsure2"
+     Target_en_us "%1: I do not think I saw anything."
+     Comment "Toast: noncommittal NPC answer, variant 2. %1 = the NPC name."
+    }
+    CustomStringTableItem "{FD870C5E92EE6005}" {
+     Id "LF-Witness_Unsure3"
+     Target_en_us "%1: Sorry, I could not say either way."
+     Comment "Toast: noncommittal NPC answer, variant 3. %1 = the NPC name."
+    }
+    CustomStringTableItem "{52C8142385D923FE}" {
+     Id "LF-Witness_Unsure4"
+     Target_en_us "%1: I was not really looking, officer."
+     Comment "Toast: noncommittal NPC answer, variant 4. %1 = the NPC name."
+    }
+    CustomStringTableItem "{9FF5E70D1F95C286}" {
+     Id "LF-Witness_GaveStatement"
+     Target_en_us "%1 gave a statement. It is on the wanted board."
+     Comment "Toast to the officer: a named witness gave a statement. %1 = the witness name."
+    }
+    CustomStringTableItem "{A5C8F0F7C66DA883}" {
+     Id "LF-Witness_ForgotSome"
+     Target_en_us "%1 cannot recall anything useful."
+     Comment "Toast to the officer: a named witness saw the crime but remembered nothing describable. %1 = the witness name."
+    }
+    CustomStringTableItem "{2605E472E34A7E80}" {
+     Id "LF-Crime_RobSafe_Name"
+     Target_en_us "Rob the safe"
+     Comment "Annex safe robbery action name"
+    }
+    CustomStringTableItem "{D508B7722F72EE9F}" {
+     Id "LF-Crime_RobSafe_Desc"
+     Target_en_us "Take $200 from the safe"
+     Comment "Annex safe robbery action description"
+    }
+    CustomStringTableItem "{7D681F35B1A3C6FE}" {
+     Id "LF-Crime_RobRack_Name"
+     Target_en_us "Rob the weapon rack"
+     Comment "Annex weapon rack robbery action name"
+    }
+    CustomStringTableItem "{A83DB0C583355AC6}" {
+     Id "LF-Crime_RobRack_Desc"
+     Target_en_us "Take a rifle from the rack"
+     Comment "Annex weapon rack robbery action description"
+    }
+    CustomStringTableItem "{D79CB0009B448B8F}" {
+     Id "LF-Crime_RobCar_Name"
+     Target_en_us "Steal the vehicle"
+     Comment "Annex vehicle theft action name"
+    }
+    CustomStringTableItem "{7E4AE1269E743655}" {
+     Id "LF-Crime_RobCar_Desc"
+     Target_en_us "Steal an armoured car"
+     Comment "Annex vehicle theft action description"
+    }
+    CustomStringTableItem "{E064585F9B6FED1B}" {
+     Id "LF-Job_GatherApples_Name"
+     Target_en_us "Gather apples"
+     Comment "Legacy job board apple gather action name"
+    }
+    CustomStringTableItem "{6E2A6680A9D480CA}" {
+     Id "LF-Job_GatherApples_Desc"
+     Target_en_us "Gather 5 apples"
+     Comment "Legacy job board apple gather action description"
+    }
+    CustomStringTableItem "{37BCD3FBB988F01C}" {
+     Id "LF-Sign_CrimeSafe_Title"
+     Target_en_us "1. Safe"
+     Comment "Annex crime site sign crime_safe, Title section."
+    }
+    CustomStringTableItem "{C38F34C3479585A8}" {
+     Id "LF-Sign_CrimeSafe_What"
+     Target_en_us "A cash safe on the crime site."
+     Comment "Annex crime site sign crime_safe, What section."
+    }
+    CustomStringTableItem "{676E376C59405F39}" {
+     Id "LF-Sign_CrimeSafe_How"
+     Target_en_us "Stand at the safe and Rob the safe. It pays $200 and rests for 60 seconds."
+     Comment "Annex crime site sign crime_safe, How section."
+    }
+    CustomStringTableItem "{DCD0F25A91C8A67F}" {
+     Id "LF-Sign_CrimeSafe_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_safe, Needs section."
+    }
+    CustomStringTableItem "{BB971CCDFD89CF15}" {
+     Id "LF-Sign_CrimeSafe_Rules"
+     Target_en_us "A robbery files a crime report and raises your wanted level."
+     Comment "Annex crime site sign crime_safe, Rules section."
+    }
+    CustomStringTableItem "{7D97F127AD9FE2FF}" {
+     Id "LF-Sign_CrimeSafe_Next"
+     Target_en_us "Take the weapon rack next, two steps along."
+     Comment "Annex crime site sign crime_safe, Next section."
+    }
+    CustomStringTableItem "{2840F7674FF77FFE}" {
+     Id "LF-Sign_CrimeRack_Title"
+     Target_en_us "2. Weapon rack"
+     Comment "Annex crime site sign crime_rack, Title section."
+    }
+    CustomStringTableItem "{3FF9B4EB23063378}" {
+     Id "LF-Sign_CrimeRack_What"
+     Target_en_us "An armory rack holding one rifle."
+     Comment "Annex crime site sign crime_rack, What section."
+    }
+    CustomStringTableItem "{1D436C91E427DE6E}" {
+     Id "LF-Sign_CrimeRack_How"
+     Target_en_us "Stand at the rack and Rob the weapon rack to take an AK-74. It rests for 2 minutes."
+     Comment "Annex crime site sign crime_rack, How section."
+    }
+    CustomStringTableItem "{2B50333EBEF9D3EA}" {
+     Id "LF-Sign_CrimeRack_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_rack, Needs section."
+    }
+    CustomStringTableItem "{FA1D9347B8CE6395}" {
+     Id "LF-Sign_CrimeRack_Rules"
+     Target_en_us "Armed theft is reported and raises your wanted level."
+     Comment "Annex crime site sign crime_rack, Rules section."
+    }
+    CustomStringTableItem "{8E1591EC5D9282B2}" {
+     Id "LF-Sign_CrimeRack_Next"
+     Target_en_us "Steal the vehicle at the tyre pile next."
+     Comment "Annex crime site sign crime_rack, Next section."
+    }
+    CustomStringTableItem "{CEFAF6202AEF0597}" {
+     Id "LF-Sign_CrimeCar_Title"
+     Target_en_us "3. Getaway"
+     Comment "Annex crime site sign crime_car, Title section."
+    }
+    CustomStringTableItem "{D08CA63D553D021D}" {
+     Id "LF-Sign_CrimeCar_What"
+     Target_en_us "A pile of tyres that stands in for a car theft."
+     Comment "Annex crime site sign crime_car, What section."
+    }
+    CustomStringTableItem "{04CA2A9741FCE1E2}" {
+     Id "LF-Sign_CrimeCar_How"
+     Target_en_us "Stand at the pile and use Steal the vehicle to get an armoured car. It rests for 10 minutes."
+     Comment "Annex crime site sign crime_car, How section."
+    }
+    CustomStringTableItem "{7708887CAD318B12}" {
+     Id "LF-Sign_CrimeCar_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_car, Needs section."
+    }
+    CustomStringTableItem "{A7B60EDD94E30F9D}" {
+     Id "LF-Sign_CrimeCar_Rules"
+     Target_en_us "Theft of a vehicle is reported and raises your wanted level."
+     Comment "Annex crime site sign crime_car, Rules section."
+    }
+    CustomStringTableItem "{5300C9F183BC88B6}" {
+     Id "LF-Sign_CrimeCar_Next"
+     Target_en_us "Finish at the police desk: a wanted suspect and a table of evidence."
+     Comment "Annex crime site sign crime_car, Next section."
+    }
+    CustomStringTableItem "{42F8C061DF3563D6}" {
+     Id "LF-Sign_CrimePolice_Title"
+     Target_en_us "4. Police desk"
+     Comment "Annex crime site sign crime_police, Title section."
+    }
+    CustomStringTableItem "{3DC7AE65EB4CA435}" {
+     Id "LF-Sign_CrimePolice_What"
+     Target_en_us "A practice desk with an ID card and a confiscated key. Real duty is at the police station."
+     Comment "Annex crime site sign crime_police, What section."
+    }
+    CustomStringTableItem "{62D77C89BF0EB242}" {
+     Id "LF-Sign_CrimePolice_How"
+     Target_en_us "Look the table over. For real duty, evidence and the wanted board, walk to the police station on the main street."
+     Comment "Annex crime site sign crime_police, How section."
+    }
+    CustomStringTableItem "{E0A442EE0FE38171}" {
+     Id "LF-Sign_CrimePolice_Needs"
+     Target_en_us "Nothing here."
+     Comment "Annex crime site sign crime_police, Needs section."
+    }
+    CustomStringTableItem "{734524B72ED94D31}" {
+     Id "LF-Sign_CrimePolice_Next"
+     Target_en_us "Clock on at the police station to arrest the suspect you made."
+     Comment "Annex crime site sign crime_police, Next section."
     }
   }
  }

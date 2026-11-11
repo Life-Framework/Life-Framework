@@ -1,0 +1,13 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "60FF272321102EAC"
+ components {
+  SCR_DamageManagerComponent "{8C929B0FD75281A9}" {
+   "Additional hit zones" {
+    LF_NpcHitZone Body {
+     HZDefault 1
+     MaxHealth 100
+    }
+   }
+  }
+ }
+}

@@ -42,3 +42,12 @@ LF_NpcBaseEntity Roadmap_Fuel_Clerk : "{850859F356F5058E}Prefabs/Characters/Npcs
  coords 284.3 0.245 241.2
  angleY 180
 }
+
+LF_NpcBaseEntity Roadmap_Civilian_1 : "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et" {
+ coords 258.5 0 243.5
+ angleY 90
+}
+LF_NpcBaseEntity Roadmap_Civilian_2 : "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et" {
+ coords 266 0 244.5
+ angleY 200
+}

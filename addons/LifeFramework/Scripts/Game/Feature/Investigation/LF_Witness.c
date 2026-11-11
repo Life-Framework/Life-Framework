@@ -272,7 +272,7 @@ class LF_Witness
 	protected static bool CollectNpc(IEntity entity)
 	{
 		LF_NpcBaseEntity npc = LF_NpcBaseEntity.Cast(entity);
-		if (!npc || !s_ScanScene || !LF_PlayerInteraction.IsAlive(npc))
+		if (!npc || !s_ScanScene || LF_NpcDamage.IsDying(npc))
 			return true;
 
 		AddWitness(s_ScanScene, NpcKey(npc), true, vector.Distance(npc.GetOrigin(), s_vScanOrigin));
@@ -489,16 +489,10 @@ class LF_Witness
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Toast key for an officer's question: no scene means the witness saw nothing.
-	static string AskKey(bool sawScene, int said)
+	//! Toast key for an officer's question; see LF_WitnessDialogue.AnswerKey.
+	static string AskKey(bool sawScene, int said, int roll = 0)
 	{
-		if (!sawScene)
-			return "#LF-Witness_NothingSeen";
-
-		if (said <= 0)
-			return "#LF-Witness_Vague";
-
-		return "#LF-Witness_Statement";
+		return LF_WitnessDialogue.AnswerKey(sawScene, said, roll);
 	}
 
 	//------------------------------------------------------------------------------------------------
