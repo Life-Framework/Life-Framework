@@ -59,12 +59,11 @@ class LF_Test_PerfBudget : LF_Test
 		int players = budget.m_iPlayers;
 		ctx.True(players >= 128, "the budget is set for at least 128 players");
 
-		// Keep what the session holds; every store below is put back at the end.
-		array<ref LF_PlayerAccountRecord> accountsBefore = LF_PlayerAccountManager.ExportAll();
-		array<ref LF_BankAccountRecord> banksBefore = LF_ATMManager.ExportAll();
-		array<ref LF_LedgerEntry> ledgerBefore = LF_Ledger.ExportAll();
-		array<ref LF_CrimeRecordRow> crimeBefore = LF_CrimeRecord.ExportAll();
-		array<ref LF_IncidentRecord> incidentsBefore = LF_IncidentLog.ExportAll();
+		// Keep what the session holds, through the real save path: account records alone lose the character
+		// slots and standings (#331), which the e2e save boot seeds before this runs and saves at shutdown.
+		JsonSaveContext beforeContext = new JsonSaveContext(false);
+		LF_PersistenceComponentSerializer.SerializeStore(persistence, beforeContext);
+		string before = beforeContext.SaveToString();
 
 		LF_Perf.SetEnabled(true);
 		LF_Perf.Reset();
@@ -206,11 +205,9 @@ class LF_Test_PerfBudget : LF_Test
 
 		// Put the session back.
 		LF_PlayerAccountManager.Reset();
-		LF_PlayerAccountManager.ApplyAll(accountsBefore);
-		LF_ATMManager.ApplyAll(banksBefore);
-		LF_Ledger.ApplyAll(ledgerBefore);
-		LF_CrimeRecord.ApplyAll(crimeBefore);
-		LF_IncidentLog.ApplyAll(incidentsBefore);
+		LF_ATMManager.Reset();
+		JsonLoadContext beforeLoad = new JsonLoadContext(false);
+		ctx.True(beforeLoad.LoadFromString(before) && LF_PersistenceComponentSerializer.DeserializeStore(persistence, beforeLoad), "the session is put back");
 		LF_Perf.Reset();
 		LF_Perf.SetEnabled(false);
 	}
