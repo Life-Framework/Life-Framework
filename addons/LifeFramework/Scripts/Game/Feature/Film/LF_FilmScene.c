@@ -21,9 +21,41 @@ class LF_FilmSceneEnv : Managed
 			env.Hour = 16;
 			env.Weather = "Clear";
 			env.AutoAdvance = 0;
+			return env;
+		}
+
+		float hour = EnvOnlyHour(scene);
+		if (hour >= 0)
+		{
+			env.Hour = hour;
+			env.Weather = "Clear";
+			env.AutoAdvance = 0;
 		}
 
 		return env;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Per-location presets of the trailer storyboard (video/trailer-571.json): a clock and clear weather, no
+	//! actors. The hour is local sun time; 17.9 is the golden hour every gallery shot uses. -1: not a preset.
+	static float EnvOnlyHour(string scene)
+	{
+		if (scene == "trailer-bank" || scene == "trailer-square" || scene == "trailer-fuel" || scene == "trailer-police" || scene == "trailer-store" || scene == "trailer-farm" || scene == "trailer-hospital" || scene == "trailer-convoy")
+			return 17.9;
+		if (scene == "trailer-square-dusk")
+			return 19.2;
+		if (scene == "trailer-quarry")
+			return 16.5;
+		if (scene == "trailer-chop")
+			return 18.3;
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True for a preset that only sets the light and spawns nothing; the director starts no actors for it.
+	static bool IsEnvOnly(string scene)
+	{
+		return EnvOnlyHour(scene) >= 0;
 	}
 
 	//------------------------------------------------------------------------------------------------

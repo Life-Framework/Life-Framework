@@ -6,7 +6,7 @@ M2 systems, asks people to join the playtest, then shows the road to v1.
 
 Companion files:
 
-- [storyboard.json](storyboard.json): every shot for the film pipeline
+- [trailer-571.json](../../../video/trailer-571.json): every shot for the film pipeline
   (location, scene, actors, camera, duration, what blocks it).
 - [shot-checklist.md](shot-checklist.md): the shots grouped by location for one
   filming session, with a look check per shot.
@@ -280,7 +280,7 @@ The storyboard lists every shot's path. In short:
   today), which S21's van driver needs. Every other shot uses real player
   clients so it does not need puppets.
 - **Needs scenes (#394):** one scene per location (`trailer-*` in
-  `storyboard.json`) so each take starts at golden hour in clear weather.
+  `video/trailer-571.json`) so each take starts at golden hour in clear weather.
   Only `street` exists today.
 - **Needs a flow:** mining (S11) has no proof verb yet; the convoy (S21) has
   no proof.

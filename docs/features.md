@@ -37,6 +37,14 @@
   police inventory carried; the civilian inventory waits at the desk (M1-11).
 - ⚠️ Managers are only created on first connect; a server-side call before any
   player connects gets null.
+- ✅ **DebugWorld weather is pinned Clear (#602).** `GameMode_Roleplay_Debug.et`
+  carries the base-game `SCR_TimeAndWeatherHandlerComponent` with one predefined
+  start (Clear, 09:36 game time) and no random changes, so the server calls
+  `ForceWeatherTo(true, "Clear")` and the stock state machine never drifts into
+  Cloudy. Cloudy's volumetric clouds render as vertical streaks here, and swapping
+  in Eden's world, sky, light, fog, post-process, probe and weather prefabs (or
+  removing the terrain) did not change that. The harness `time <hour> [WeatherState]`
+  keeps the looping flag. Test `world/debugworld-weather-pinned-clear`.
 
 ### `LF_EventBus` — `Core/Events/` (#329, 2026-11-09)
 - ✅ Server event bus: typed events, `Subscribe`/`Unsubscribe`/`Publish`, subscribers
@@ -199,6 +207,17 @@
   `Hierarchy`, as vanilla `Character_Base.et` does: the server streams each
   placed NPC with its worn clothes as children. Before this fix, a dedicated client saw
   the NPCs in underwear. Test: `npc/clothes-replicate` (WORLD).
+- ✅ **Worn, not at their feet, on every client** (2026-11-11, #328): the loadout
+  manager put the clothing into slots that no inventory storage owned, so only
+  the parent link reached a client and whether it wore an item depended on
+  stream order (a different few NPCs per session stood in underwear with the
+  jacket or trousers on the ground). `Npc_Base.et` now carries
+  `LF_NpcLoadoutStorageComponent` (an `SCR_EquipedLoadoutStorageComponent`) and a
+  plain `InventoryStorageManagerComponent` (`SCR_InventoryStorageManagerComponent`
+  assumes a character), the vanilla path that replicates which slot holds which
+  item. The storage hides the NPC from a player's inventory Vicinity, so nobody
+  can open it and take the clothes or pick up the NPC. Test:
+  `npc/wears-clothes` (WORLD).
 - ⚠️ A client builds a placed NPC from its prefab, not from the layer. A
   layer may override only `CharacterIdentityComponent` on an NPC. An added
   component kicks every client (`RplCreationError: Number of items mismatch`),
@@ -972,7 +991,7 @@
   restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
   inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
-- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots).
+- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots). Carry pose (#619): the parcel uses the vanilla jerrycan carry (`Assets/Items/Fuel/workspaces/Jerrycan.agr` / `Jerrycan_player.asi`, both arms low in front, box at the waist) instead of `player_carry`, which put the arms across the chest with the box floating beside the character.
 
 ### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -1855,6 +1874,14 @@
   pass `LF_DevGate` there. A bare world (Workbench play, `toolscli test`) has
   no LF header and keeps the opt-in. LOGIC test `host/playtest-mission`
   (2026-11-08).
+- ✅ **Workshop scenario (2026-11-10).** `LF_PlaytestTown.conf` is the Workshop item's scenario
+  "Life Framework: Playtest Town": plain-text name and description (the Workshop backend copies
+  them as text), the town picture `Missions/LF_PlaytestTown_Preview.edds` as icon, preview and
+  loading screen, 16 players, details from `#LF-Mission_PlaytestTown_Details`. `EL_DebugTest.conf`
+  and `EveronLifeGameMode.conf` set `m_bShowInScenarioMenu 0`. `tools\cli pack` packs the addon
+  as Workbench Publish bundles it. Proven from the packed addon in a clean profile: Scenarios
+  lists it, Play loads the town, form R-89 signs, top-up and test cars apply. Asserted in
+  `host/playtest-mission`. Publish steps: `docs/playtest/workshop-publish.md`.
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
@@ -2044,6 +2071,12 @@
   neighbour rule.
   Play-mode run not yet recorded.
 
+### Directed camera rig and storyboards — `Feature/Film/LF_FilmCameraPath.c`, `tools/film/storyboard.mjs` (dev tooling, #392, #395)
+- ✅ Harness verb `camera orbit x y z radius seconds [azimuth arc height]` (an arc round a point, centred on any azimuth: 0 = +z, 90 = +x, 180 = -z, 270 = -x; the old +z sweep is the default), `camera follow x y z distance seconds`, `camera static px py pz lx ly lz seconds [fov]`, `camera drone p l q m seconds [fov]` (eased move between two poses), `camera hud off|on` (HUD and hint pop-ups hidden for a first-person shot; `LF_FilmClean` keeps hints down every 400 ms), `camera stop`. Covered by `film/camera-path` (LOGIC). Proven 2026-11-11 on a 1920x1080 session: five 4 s shots of one scene (first person, follow, orbit, drone, static), no HUD (`video/camera-test.json`, internal).
+- ✅ Scene presets (#394): light-only scenes for the trailer locations (`scene start trailer-square`, `trailer-bank`, `trailer-quarry` ... : fixed clock, clear weather, day frozen, no actors; `LF_FilmSceneEnv.EnvOnlyHour`) beside `street`. Covered by `film/scene-env`.
+- ✅ Storyboard format `lf-storyboard/1` (`video/storyboard.schema.json`, checks in `tools/film/storyboard.mjs`): output size, fps and aspect (16:9 and 9:16), scenes, shots with camera, duration, captions and voice. `toolscli film-make video/<name>.json` validates (a bad file fails naming the field, e.g. `shots[2].camera.radius`), shoots each shot on the session through the engine recorder, deletes the frames after encoding, and hands the takes to post-production. Flags `--shot ids`, `--group name`, `--preview` (half size, 10 fps), `--client n`, `--no-shoot`, `--shoot-only`. The trailer storyboard is `video/trailer-571.json`; its `spawn-square` group (drone, orbit, static) shoots today, the rest are marked `pending` and skipped. `validate-storyboards` checks every `video/*.json`.
+- ⚠️ A first-person shot films the client as it stands: the actor setup for each trailer beat (`shot.setup`) is not written yet, and a title card between shots is not supported by post-production.
+
 ### `film-make` post-production — `tools/film/post.mjs` (dev tooling, #397)
 - ✅ `tools\cli film-make video/<name>.json` joins clips into one mp4: logo title and end cards, crossfades, burned-in captions from cue files plus an `.srt`, offline Piper voice-over, and a licensed music bed ducked under game sound and voice (about -14 LUFS). Covered by `node tools/film/film.mjs selftest`; proven on `video/tooling-test.json` (not for posting).
 
@@ -2052,10 +2085,10 @@
   keys (position, look-at, FOV); `Sample(t)` eases between keys with
   smoothstep and clamps at both ends. Out-of-order keys are rejected and
   logged (`[LFDebug:Film]`). Covered by `film/camera-path` (LOGIC).
-- ⚠️ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
+- ✅ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
   hides the HUD, moves the camera each frame, then restores the previous
-  camera and HUD. It compiles but has not run in a rendering session and no
-  agent-box verb calls it yet.
+  camera and HUD. Harness verb `camera` plays it (directed camera rig, #392,
+  next section).
 - ✅ `tools/film/film.mjs` records a window or region to mp4 (ddagrab +
   NVENC; gdigrab when ddagrab delivers no frame in 5 s), makes a GIF preview,
   films an agent-box flow, and publishes a clip to the `film-evidence`
@@ -2211,6 +2244,7 @@
 - ✅ (car polish) Vehicle lock action: "Get in" lists first, then a state-aware Lock/Unlock row (`Sort Priority` 5 on the lock action, `LF_VehicleLockComponent.ACTION_SORT_PRIORITY`), then "Store in garage" (`LF_VehicleStoreHereAction`, owner on foot, car and player within one garage radius, same server path as the counter). Occupants with the key can lock from the interior door context. U (`LF_VehicleLockToggle`, gamepad right-stick click hold) toggles the seated or nearest keyed vehicle; the server checks key and 6 m reach and plays a placeholder click (`SOUND_PICK_UP`). The garage counter mesh `Roadmap_Garage` now stands at the doors with a 3.5 m context so Store/Retrieve/ledger show from the doorway. The S105 lot price board data (`lot_price_s105`, 214.8 0 259.2) matches the other three; not reproduced statically.
 - ✅ Keys are created at their holder (#620, WORLD `vehicles/key-inventory`): `LF_VehicleOwnership.KeySpawnOrigin` puts a purchased, collected or retrieved key at the holder's feet before the inventory insert, never at the lot or impound pad. A key made at a far pad was unresolved on the holder's client, and the key and ID card moves hung on the loading throbber. A key that does not fit logs a warning.
 - Debug money top-up (LF_DebugMoneyTopUp, `LF_SpawnLogic.m_bDebugMoneyTopUp`, on only in GameMode_Roleplay_Debug): on spawn and every 60 s, bank under 100k fills to 1M and carried cash under 5k fills to 20k, ledger reason `debug-topup`; opening bank is 1M.
+- Spawn hub (#607, LOGIC/WORLD `spawnhub/travel`, `Feature/Debug/LF_SpawnHub.c`): the globe on the spawn-square table opens an LF_UIScreen list of every area in `Configs/Debug/LF_SpawnHub.conf` (one `LF_SpawnHubPoint` row per area, name `LF-SpawnHub_Pt_<id>`); a pick sends `RpcAsk_LF_SpawnHubTravel(id)` on the owned character and the server moves the body with `LF_Jail.MoveBody` (dismounts a seated player). Gate: `LF_SpawnLogic.m_bPlaytestHub` (on only in GameMode_Roleplay_Debug); a disabled mode, unknown id or missing body is refused with an `LF_Debug.Warn`. The time and weather actions of the old annex globe now live on the same globe (`Street_SpawnHub.layer`). Proof: `spawn-hub-proof`.
 - ✅ NPC damage and witness dialogue (#610, #615; WORLD `npc/damage`, LOGIC `investigation/witness-dialogue`): town NPCs are scripted entities with no character damage manager, so bullets did nothing. Only a prefab that carries an `LF_NpcHitZone` takes damage: ambient civilians (`Npc_Civilian_01.et`, `Roadmap_Civilian_1`/`_2` in `Street_Fuel.layer`) die to lethal damage (`LF_NpcDamage`, removed after 1.5 s), and the kill is murder through `LF_Murder` for a player killer. Protected on purpose, no hit zone: shop clerks and every `Npc_Default_01.et` child (quest givers, the fence, the police sergeant), because players need them. Root cause of the empty answers: `LF_Witness.CollectNpc` skipped every NPC as not alive (`IsAlive` is false for a non-character), so no town NPC had ever been recorded as a witness; fixed. Asking a witness (`LF_WitnessAskAction`, `LF_WitnessRole`) now names the NPC (`LF_WitnessDialogue.NameOf`, stable from its position) and one that saw nothing answers with one of four noncommittal lines (`#LF-Witness_Unsure1..4`: no confirm, no deny) instead of "You didn't see anything". Any NPC can be asked, clerks included. Harness: `shootnpc <EntityName>` (dev gate). Demo: `node agent-box/session.mjs npc-witness-proof`. Manual: a real bullet on a civilian.
 - ✅ **Fenced crime site regroup (#608, #609, 2026-11-10).** The safe, weapon rack, tyre pile (steal a vehicle), evidence table with the wanted suspect, and the practice police desk now stand in one row at z 50 in the test annex (x 30, 34, 38, 42, 48), with four chalk info boards at the first, second, third and fifth (`crime_safe`, `crime_rack`, `crime_car`, `crime_police` in `LF_Signs.conf`: what it is, how, what you need, what next). The evidence table no longer clips the safe, the police desk table is spaced off its panel, and the PR-feature table moved out from under the lock-test police car. The robbery and apple-gather actions in the layers were hard-coded Spanish (`Robar Dinero`); they are now `#LF-Crime_Rob*` and `#LF-Job_GatherApples_*` keys. `validate-en-text.mjs` fails a Spanish-looking `Target_en_us` or literal layer/prefab `Name`/`Description`. No save change.
 - ✅ **Quarry regroup (#618, area 11 follow-up).** The cement, gravel and sand chains and the logging chain (stand, sawmill, log pile, three cuttable pines) moved into the quarry pit; the cement plant no longer overlaps the east cliff and the cement NPC no longer stands in rock. Overlapping stones, spoil heaps, tyres, pallets and gravel dressing were cleared from the work spots. New `quarry_info` sign (`Sign_Quarry_Info`, `LF-Sign_QuarryInfo_*`) at the gate. Layer-only change (`CementChain`, `GravelChain`, `SandChain`, `LoggingChain`, `MiningChain`, `Signs`); mining (#596) and smelter (#598) code untouched.
@@ -2218,3 +2252,4 @@
 - ✅ **Playtest town: duty rows, dispatch area, test till (refs #146, #147, #202).** (a) The hospital duty desk `LF_MedicDutyDesk.et` restates its `LF_DutyClock` context and every action on the clock itself (the derived prefab used to replace the base list, so Clock in lost its context and floated off the device); `Sort Priority` puts the state-aware Clock in / Clock out row first, then the bill, then the fine ticket; the police desk got the same order. (b) New dispatch area (`Street_Dispatch.layer`, about 249 to 257, 229 to 233): `Roadmap_Dispatch_PoliceBoard` and `Roadmap_Dispatch_MedicBoard` (read and take a call) and `Roadmap_Dispatch_Console` (`LF_DispatchConsole.et`). The console carries `LF_DebugDispatchAction` rows *Test police call* (from the fuel till) and *Test medic call* (from the fuel payphone), which go through `LF_ServiceCalls.Place` with no coin; they work only where `LF_SpawnLogic.m_bDebugTestDispatch` is on (GameMode_Roleplay_Debug; the server refuses otherwise) and need a receiver on duty (`LF_DebugDispatch.Fire`). Tests `comms/debug-dispatch`, `debugworld/dispatch-area`. (c) The fuel till's *Rob the till* action sits 0.3 m above the till (was 0.8 m, floating), and `Roadmap_Fuel_Till` and `Roadmap_Fuel_Clerk` now stand at the fuel station building's own interior `CashierShop_01` (about 284.3, 240.2; the stand-alone counter at 263.2, 240.4 is removed); `Street_TillTest.layer` adds `Roadmap_Test_Till` on a counter at (244.5, 230.5) with a 5 s cooldown and no police minimum for a solo tester. Placed boards and the console are core-side debug-town props (`core-pack-inventory`: core).
 - ✅ **Paper items stay storable in any test order (#699).** The receipt, fine ticket and hospital bill prefabs carry an `SCR_GadgetComponent`, hand-pose attributes copied from `SentenceSlip.et`, and `SizeSetupStrategy Volume`. Without the gadget component the engine let only the first of those prefabs spawned in a process be inserted into an inventory; later ones were refused (`TryInsertItem` false, tickets "lie at their feet") even on fresh characters, so test results depended on registration order. Test `inventory/paper-items`.
 - ✅ **Every small mod item is storable on any spawn (#708).** The same engine quirk hit the pager, seed packet, keycard, lockpick, evidence bag and marker, vehicle and house keys, ID card and sentence slip: without `SizeSetupStrategy Volume` a later spawn read a mesh volume (440, 1073) instead of its `ItemVolume`, and the pager, seed packet and scanner also needed an `SCR_GadgetComponent` to fit (evidence, keycard and lockpick got one too, so room no longer depends on order). All carry them now; `inventory/paper-items` spawns each twice and checks volume and room, and `validate-item-volume` flags a new item prefab without them unless it is allow-listed with a reason. The farm loop test no longer needs a backpack or a registration-order workaround.
+- ✅ **Police application (#128).** Duty desk action `LF_PoliceApplyAction` opens a paper form (`LF_PoliceApplicationForm`: name, why, availability) that `RpcAsk_LF_PoliceApplication` sends to the server. `LF_PoliceApplications` validates through `LF_PoliceApplicationRules` (one open application per player, not for an officer, field length), appends `STATUS|uid|name|why|availability|unix` to `$profile:LifeFramework/police_applications.txt` (not part of the save, no persistence bump), logs `[LFDebug:Police]` and toasts a receipt. Approval writes the police roster through `LF_WhitelistManager.AddFactionWhitelist`: an administrator picks `LF_PoliceReviewAction` (oldest open first; server re-checks the role), or a mission with `m_bLF_InstantPoliceApproval` (the playtest town) approves on submit. Test `police/application`; `session.mjs police-application-proof`. Not done from the issue: reject with cooldown, a letter at the desk, chief-rank approval.

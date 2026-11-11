@@ -1,7 +1,7 @@
 # Trailer cut-downs (#571)
 
 Two short cuts for social posts, made from the main trailer's takes. No extra
-filming. Shot ids refer to [storyboard.json](storyboard.json); voice and
+filming. Shot ids refer to [trailer-571.json](../../../video/trailer-571.json); voice and
 caption rules are in [script.md](script.md). Both cuts also export at 9:16
 from the centre third.
 
