@@ -58,7 +58,7 @@ class LF_Test_PlacementAuditTown : LF_Test
 		while (input.ReadLine(line) >= 0)
 		{
 			line.TrimInPlace();
-			if (!line.IsEmpty() && !line.StartsWith("town "))
+			if (!line.IsEmpty() && !line.StartsWith("town ") && !line.StartsWith("ray "))
 				count++;
 		}
 

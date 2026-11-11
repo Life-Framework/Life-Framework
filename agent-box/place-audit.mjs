@@ -32,7 +32,7 @@ export const LIMITS = { gap: 0.15, tilt: 5, overlap: 0.08, door: 0.1, doorClear:
 const SKIP_LAYERS = new Set(["default.layer", "Gamemode.layer", "Factions.layer", "Village_Roads.layer", "Roadmap.layer"]);
 
 // Kinds, from the name and prefab path.
-const RX = {
+export const RX = {
   vegetation: /Vegetation\/|\/Tree|\bTree\b|Bush|Grass|Shrub/i,
   vehicle: /Prefabs\/Vehicles\/|_Car\b|_Van\b|Van$|Truck|UAZ|S105|S1203|Ural|LF_Vehicle/i,
   building: /Structures\/(Houses|Industrial|Commercial|Cultural|Military|Agriculture|Services|Civilian|Infrastructure\/(?!Lamps))|Building|House|Barn|Garage_|Shed|Office|Church|Station_|Hangar|Wall|Fence|Gate|Ramp/i,
@@ -46,7 +46,7 @@ const RX = {
   chain: /Cliff|Rock|Stone|Boulder|Wall|Fence|Hedge/i,
 };
 const kindText = (e) => `${e.name || ""} ${e.prefab || ""} ${e.found || ""}`;
-const isKind = (e, k) => RX[k].test(kindText(e));
+export const isKind = (e, k) => RX[k].test(kindText(e));
 
 // --------------------------------------------------------------------- pure geometry
 
@@ -405,8 +405,8 @@ export function auditRecords({ layers, area, areas, annex } = {}) {
 
 const tokenOf = (s) => (s && /^[A-Za-z0-9_]+$/.test(s) ? s : "-");
 
-export function inputText(records) {
-  const lines = [`town ${TOWN.x} ${TOWN.z} ${TOWN.r}`];
+export function inputText(records, extra = []) {
+  const lines = [`town ${TOWN.x} ${TOWN.z} ${TOWN.r}`, ...extra];
   records.forEach((e, i) => {
     const base = e.prefab ? e.prefab.split("/").pop().replace(/\.et$/, "") : "";
     lines.push(`${i} ${tokenOf(e.name)} ${tokenOf(base)} ${e.x} ${e.y} ${e.z} ${e.actions?.length ? 1 : 0}`);
@@ -414,7 +414,31 @@ export function inputText(records) {
   return lines.join("\n") + "\n";
 }
 
-function readJson(file, fallback) {
+// One boot of the dedicated test server: LF_Test_PlacementAuditTown measures `records` and traces the
+// `extra` input lines (the placement tool's probe rays). Returns the raw out.txt (null when the server
+// wrote none) and whether the test failed. --local: the list goes in and the result comes out through
+// this checkout's test profile.
+export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log } = {}) {
+  mkdirSync(outDir, { recursive: true });
+  const inFile = join(outDir, "in.txt");
+  const outFile = join(PROFILE_DIR, "out.txt");
+  rmSync(outFile, { force: true });
+  writeFileSync(inFile, inputText(records, extra));
+  writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
+  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--local"], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
+  const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
+  const keep = text.split(/\r?\n/).filter((l) => /SUMMARY|^pool:|FAILED|TIMEOUT|error/i.test(l));
+  for (const l of keep.slice(-4)) log(`  ${l.trim()}`);
+  if (!existsSync(outFile)) {
+    log(`audit placement: the test server wrote no ${outFile} (exit ${r.status}); see the lines above`);
+    return { outText: null, failed: true };
+  }
+  const outText = readFileSync(outFile, "utf8");
+  writeFileSync(join(outDir, "out.txt"), outText);
+  return { outText, failed: r.status !== 0 };
+}
+
+export function readJson(file, fallback) {
   try {
     return JSON.parse(readFileSync(file, "utf8"));
   } catch {
@@ -455,23 +479,10 @@ async function placement(argv) {
     if (existsSync(saved)) records = JSON.parse(readFileSync(saved, "utf8"));
     else console.log("audit placement: no records.json beside " + flags.from + "; matching rows to the current layers");
   } else {
-    const inFile = join(outDir, "in.txt");
-    const outFile = join(PROFILE_DIR, "out.txt");
-    rmSync(outFile, { force: true });
-    writeFileSync(inFile, inputText(records));
-    writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
-    // --local: the list goes in and the result comes out through this checkout's test profile.
-    const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--local"], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
-    const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
-    const keep = text.split(/\r?\n/).filter((l) => /SUMMARY|^pool:|FAILED|TIMEOUT|error/i.test(l));
-    for (const l of keep.slice(-4)) console.log(`  ${l.trim()}`);
-    if (!existsSync(outFile)) {
-      console.log(`audit placement: the test server wrote no ${outFile} (exit ${r.status}); see the lines above`);
-      return 1;
-    }
-    outText = readFileSync(outFile, "utf8");
-    writeFileSync(join(outDir, "out.txt"), outText);
-    testFailed = r.status !== 0;
+    const run = measureTown(records, { outDir });
+    if (run.outText == null) return 1;
+    outText = run.outText;
+    testFailed = run.failed;
     if (testFailed) console.log("audit placement: LF_Test_PlacementAuditTown failed (lines above); ranking what it measured");
   }
   const res = analyse(records, outText, { allow, areas, roads });

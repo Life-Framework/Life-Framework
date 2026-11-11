@@ -53,7 +53,7 @@ GenericEntity Roadmap_Police_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_
  angleY 0
 }
 GenericEntity Roadmap_Police_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
- coords 235.65 0 238.15
+ coords 235.65 0 237.976
 }
 GenericEntity Roadmap_Police_DispatchBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
  coords 237.4 0 242.9
