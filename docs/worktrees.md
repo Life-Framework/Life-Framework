@@ -136,7 +136,7 @@ tools\cli prs heal [<n>...]              # do it (maintainer/lead)
 ```
 
 `prs status` lists number, state, auto-merge on/off, checks, age, and the
-worktree: `LIVE` when any file in it changed in the last 15 minutes
+worktree: `LIVE` when an edit, commit or session log landed in the last 15 minutes (directory and git-metadata touches from prune or fetch do not count)
 (modified or untracked files, the worktree's git index/HEAD/reflog, `tmp/`,
 server logs), `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
 API, which makes GitHub compute it.

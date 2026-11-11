@@ -13,8 +13,8 @@
 //     touches scripts), pushes (never forced), and re-queues auto-merge.
 //   green, auto-merge on, mergeable, open > 10 min -> gh pr merge --merge.
 //
-// A worktree with any file change in the last 15 minutes belongs to a live
-// agent and is never touched.
+// A worktree with an agent edit, commit or session log in the last 15 minutes
+// (not a directory or git-metadata touch, #698) belongs to a live agent and is never touched.
 
 import { spawnSync } from "node:child_process";
 import { existsSync, lstatSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -69,9 +69,18 @@ function childrenOf(dir) {
   }
 }
 
-// Newest change in a worktree: modified/untracked files, the worktree's git
-// index/HEAD/reflog (add, commit, checkout), tmp/ scratch, and server logs.
-// Shallow on purpose: no recursive walk, no junction is ever followed.
+// Newest change by an agent in a worktree: modified/untracked files, the
+// timestamp of the last HEAD reflog entry (a real commit, checkout or merge),
+// files inside tmp/ and server/profile/*/logs. Directory mtimes and the git
+// index/HEAD file mtimes are NOT counted: `git status` itself refreshes the
+// index, and prune, fetch and sweeps touch directories, so they fooled LIVE
+// (#698). Shallow on purpose: no recursive walk, no junction is followed.
+export function lastReflogTime(wtPath) {
+  const res = wt.git(wtPath, ["reflog", "-1", "--format=%ct", "HEAD"]);
+  const n = res.status === 0 ? Number(res.stdout.trim()) : 0;
+  return Number.isFinite(n) ? n * 1000 : 0;
+}
+
 export function lastActivity(wtPath) {
   const paths = [];
   const st = wt.git(wtPath, ["status", "--porcelain", "-uall"]);
@@ -81,17 +90,11 @@ export function lastActivity(wtPath) {
     if (file.includes(" -> ")) file = file.split(" -> ")[1];
     paths.push(join(wtPath, file.replace(/^"|"$/g, "")));
   }
-  for (const rel of ["index", "HEAD", "logs/HEAD", "MERGE_HEAD"]) {
-    const res = wt.git(wtPath, ["rev-parse", "--git-path", rel]);
-    if (res.status === 0) paths.push(resolve(wtPath, res.stdout.trim()));
-  }
-  const tmp = join(wtPath, "tmp");
-  paths.push(tmp, ...childrenOf(tmp));
+  paths.push(...childrenOf(join(wtPath, "tmp")));
   for (const scope of childrenOf(join(wtPath, "server", "profile"))) {
-    const logs = join(scope, "logs");
-    paths.push(logs, ...childrenOf(logs));
+    paths.push(...childrenOf(join(scope, "logs")));
   }
-  return newestMtime(paths);
+  return Math.max(newestMtime(paths), lastReflogTime(wtPath));
 }
 
 export function isLive(wtPath, now = Date.now()) {
@@ -324,7 +327,7 @@ export function prsStatus(root) {
     ];
   });
   table(rows, ["PR", "STATE", "AUTO", "CHECKS", "AGE", "WORKTREE", "TITLE"]);
-  console.log("prs: LIVE = a file changed in the worktree within 15 min; heal never touches it. Heal: tools\\cli prs heal [--dry-run] [<n>...]");
+  console.log("prs: LIVE = an edit, commit or log write in the worktree within 15 min; heal never touches it. Heal: tools\\cli prs heal [--dry-run] [<n>...]");
   return 0;
 }
 

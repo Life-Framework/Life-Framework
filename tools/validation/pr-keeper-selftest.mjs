@@ -10,7 +10,7 @@
 // red-proof (2026-11-08): without `git merge --abort` in healMerge's abort path
 //   it printed "real-conflict: merge left in progress"; with the registry
 //   unclassified it printed "registry-only: expected healed, got needs-human".
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -185,6 +185,38 @@ ${t}`);
   write(a, "tmp/note.txt", "agent scratch\n");
   if (!isLive(a).live) fail("a worktree changed just now should be live");
   if (isLive(a, Date.now() + LIVE_MS + 60000).live) fail("a worktree idle for 16 min should not be live");
+
+  // #698: a bulk touch (prune, fetch, sweeps) must not read as LIVE. A stale
+  // worktree has an old last commit; every directory and git metadata file is
+  // then touched to "now". Red-proof: the old rule (index/HEAD/dir mtimes) read this as live.
+  const stale = join(temp, "stale");
+  mkdirSync(stale);
+  must(stale, ["init", "-q", "-b", "ws/stale"]);
+  write(stale, "tmp/keep.txt", "x\n");
+  write(stale, "docs/a.md", "a\n");
+  must(stale, ["add", "-A", "-f"]);
+  const old = new Date(Date.now() - 3 * 3600 * 1000).toISOString();
+  spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "old"], {
+    cwd: stale, windowsHide: true, env: { ...process.env, GIT_COMMITTER_DATE: old, GIT_AUTHOR_DATE: old },
+  });
+  const past = new Date(Date.now() - 3 * 3600 * 1000);
+  for (const f of ["tmp/keep.txt", "docs/a.md"]) utimesSync(join(stale, f), past, past);
+  const nowD = new Date();
+  for (const f of [".", "tmp", "docs", ".git", ".git/index", ".git/HEAD", ".git/logs", ".git/logs/HEAD"]) {
+    try { utimesSync(join(stale, f), nowD, nowD); } catch {}
+  }
+  if (isLive(stale).live) fail("bulk touch of directories and git metadata on a stale worktree must not read as LIVE");
+  write(stale, "docs/new.md", "agent edit\n");
+  if (!isLive(stale).live) fail("an untracked file written in a stale worktree should read as LIVE");
+  rmSync(join(stale, "docs/new.md"));
+  if (isLive(stale).live) fail("worktree should be idle again once the edit is gone");
+  write(stale, "docs/a.md", "edited\n");
+  if (!isLive(stale).live) fail("a modified tracked file should read as LIVE");
+  must(stale, ["checkout", "-q", "--", "docs/a.md"]);
+  utimesSync(join(stale, "docs/a.md"), past, past);
+  if (isLive(stale).live) fail("a reverted worktree with an old commit should be idle");
+  git(stale, ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "fresh"]);
+  if (!isLive(stale).live) fail("a fresh commit should read as LIVE");
 } catch (e) {
   fail(`scenario threw: ${e.message}`);
 } finally {
