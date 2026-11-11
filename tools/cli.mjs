@@ -872,8 +872,8 @@ function cmdBuild(root = ROOT, opts = {}) {
     console.log(`FAIL  ${e.message} (a headless Workbench build is running in another worktree)`);
     return Promise.resolve(1);
   }
-  const gproj = join(root, "addons", "LifeFramework", "LifeFramework.gproj");
-  const out = join(root, "server", "build");
+  const gproj = process.env.LF_SPIKE_GPROJ || join(root, "addons", "LifeFramework", "LifeFramework.gproj");
+  const out = process.env.LF_SPIKE_BUILD_OUT || join(root, "server", "build");
   const profile = join(root, "server", "profile", "build");
   mkdirSync(out, { recursive: true });
   const env = envOf();
@@ -999,7 +999,7 @@ function cmdPack(root = ROOT, opts = {}) {
     return 1;
   }
   const out = resolve(opts.out || join(root, "tmp", "workshop-pack", "LifeFramework"));
-  const addon = join(root, "addons", "LifeFramework");
+  const addon = process.env.LF_SPIKE_GPROJ ? dirname(process.env.LF_SPIKE_GPROJ) : join(root, "addons", "LifeFramework");
   if (out.toLowerCase().startsWith(addon.toLowerCase())) {
     console.log(`FAIL  pack output ${out} is inside the addon folder; Workbench would pack its own output`);
     return 1;
@@ -1014,7 +1014,7 @@ function cmdPack(root = ROOT, opts = {}) {
     wt.acquireLock(root, "build", { waitMs: opts.wait ? 900000 : 0 });
     locked = true;
     const args = [
-      "-gproj", join(addon, "LifeFramework.gproj"),
+      "-gproj", process.env.LF_SPIKE_GPROJ || join(addon, "LifeFramework.gproj"),
       "-wbModule=ResourceManager",
       "-packAddon",
       "-packAddonDir", out,
@@ -1031,7 +1031,7 @@ function cmdPack(root = ROOT, opts = {}) {
     const lines = log ? readFileSync(log, "utf8").split(/\r?\n/) : [];
     for (const l of lines.filter((x) => /Packaging|\(E\).*(pack|bundle|cannot copy|metafile)/i.test(x)).slice(-12)) console.log(`  ${l}`);
     const paks = existsSync(out) ? readdirSync(out).filter((f) => /\.pak$/i.test(f)) : [];
-    const manifest = ["addon.gproj", "LifeFramework.gproj"].find((f) => existsSync(join(out, f)));
+    const manifest = ["addon.gproj", "LifeFramework.gproj", "LF_Everon1989.gproj"].find((f) => existsSync(join(out, f)));
     const mb = paks.reduce((s, f) => s + statSync(join(out, f)).size, 0) / 1048576;
     if (!paks.length || !manifest) {
       console.log(`pack FAILED after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${paks.length} .pak file(s), project file ${manifest ? "present" : "missing"} in ${out}`);
@@ -1058,10 +1058,12 @@ function cmdPack(root = ROOT, opts = {}) {
 // LF_RDB_REFRESH=0 turns the refresh off (warn only).
 const RDB_REFRESH_TYPICAL_S = 15;
 function ensureResourceDatabase(root) {
-  wt.copyResourceDatabase(root);
-  const addon = join(root, "addons", "LifeFramework");
+  // SPIKE-A (throwaway): LF_SPIKE_RDB_FORCE=1 rewrites the rdb of LF_SPIKE_GPROJ (or the core) unconditionally.
+  const force = process.env.LF_SPIKE_RDB_FORCE === "1";
+  if (!force) wt.copyResourceDatabase(root);
+  const addon = process.env.LF_SPIKE_GPROJ && force ? dirname(process.env.LF_SPIKE_GPROJ) : join(root, "addons", "LifeFramework");
   const before = rdbFreshness(addon);
-  if (before.missing.length === 0) return 0;
+  if (before.missing.length === 0 && !force) return 0;
   const what = `${before.missing.length} unregistered resource(s): ${describeMissing(before.missing)}`;
   if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0") {
     console.log(`WARN  resource database stale: ${what}`);
@@ -1083,7 +1085,7 @@ function ensureResourceDatabase(root) {
     const profile = join(root, "server", "profile", "rdb");
     mkdirSync(profile, { recursive: true });
     const args = [
-      "-gproj", join(addon, "LifeFramework.gproj"),
+      "-gproj", force && process.env.LF_SPIKE_GPROJ ? process.env.LF_SPIKE_GPROJ : join(addon, "LifeFramework.gproj"),
       "-wbModule=ResourceManager",
       "-noSplash",
       "-run",
@@ -2960,7 +2962,18 @@ function runE2eHere(root, legacySave = false) {
   const e = { path: root };
   const legacy = legacySave ? "LF_E2E_LEGACY_SAVE" : "";
   console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, graceful close so the shutdown save lands${legacy ? ", legacy save format" : ""}) in ${e.path}`);
+  // SPIKE-A (throwaway): LF_SPIKE_PASS=1 runs only the save boot, LF_SPIKE_PASS=2 only the reload boot.
+  const only = process.env.LF_SPIKE_PASS;
+  if (only === "2") {
+    const p2 = runE2ePass(e.path, "persistence", { keepProfile: true, loadLatestSave: true, extraDefine: "LF_E2E_LOAD_BOOT" });
+    console.log(`e2e: spike pass2-only exit=${p2} profile ${profile}`);
+    return p2;
+  }
   const pass1 = runE2ePass(e.path, "persistence", { gracefulClose: true, extraDefine: legacy || undefined });
+  if (only === "1") {
+    console.log(`e2e: spike pass1-only exit=${pass1} profile ${profile}`);
+    return pass1;
+  }
   if (pass1 !== 0) {
     console.log(`e2e: FAILED in pass 1 (no save produced); not running pass 2`);
     console.log(`e2e: profile ${profile}`);

@@ -199,11 +199,18 @@ GameProject {
 }
 
 $addonsDir = (Join-Path $root "addons") + "," + $gameAddons
+# SPIKE-A (throwaway): pick the addon folder, the addon list and the world.
+if ($env:LF_SPIKE_ADDONSDIR) { $addonsDir = $env:LF_SPIKE_ADDONSDIR + "," + $gameAddons }
+$spikeAddons = "LifeFramework"
+if ($env:LF_SPIKE_ADDONS) { $spikeAddons = $env:LF_SPIKE_ADDONS }
+$spikeWorld = "Worlds/DebugWorld/DebugWorld.ent"
+if ($env:LF_SPIKE_WORLD) { $spikeWorld = $env:LF_SPIKE_WORLD }
+Write-Host "test-e2e: SPIKE addonsDir=$addonsDir addons=$spikeAddons world=$spikeWorld"
 $args = @(
-  "-server", "Worlds/DebugWorld/DebugWorld.ent",
+  "-server", $spikeWorld,
   "-worldSystemsConfig", "{2104C177A245B6D1}Configs/Systems/LifeFrameworkSystems.conf",
   "-addonsDir", $addonsDir,
-  "-addons", "LifeFramework",
+  "-addons", $spikeAddons,
   "-profile", $profile,
   "-maxFPS", "30",
   "-logLevel", "normal",
