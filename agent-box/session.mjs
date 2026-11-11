@@ -203,7 +203,7 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
   const args = [
     "-server", mission === "playtest" ? PLAYTEST_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
-    "-addons", "LifeFramework",
+    "-addons", process.env.LF_SPIKE_ADDONS || "LifeFramework",
     "-profile", profile,
     "-maxFPS", String(rp.server?.maxFps ?? 30),
     "-logLevel", "normal",
@@ -232,7 +232,7 @@ export function clientArgs({ n, addonsDir, profile, address = "127.0.0.1", port 
   return [
     "-client", port && port !== 2001 ? `${address}:${port}` : address,
     "-addonsDir", addonsDir,
-    "-addons", "LifeFramework",
+    "-addons", process.env.LF_SPIKE_ADDONS || "LifeFramework",
     "-profile", profile,
     "-window",
     "-screenWidth", String(w.width),
