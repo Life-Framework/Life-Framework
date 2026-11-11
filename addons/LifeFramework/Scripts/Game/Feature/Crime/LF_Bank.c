@@ -97,6 +97,8 @@ class LF_Bank
 	static const ResourceName SHELL_PREFAB = "{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et";
 	static const ResourceName CRATE_MESH = "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob";
 	static const ResourceName DRILL_PREFAB = "{4FF102B4CE9B0ED3}Prefabs/Items/Fence/LF_Drill.et";
+	//! How far to the robber's right a left drill rests (metres): the bench drill's base is about 0.8 m long.
+	static const float TOOL_REST_SIDE = 1.0;
 	static const string TOOL_DRILL = "drill";
 	static const string TOOL_CHARGE = "charge";
 	static const ResourceName KEYCARD_PREFAB = "{F341AA386FA695E4}Prefabs/Items/Fence/LF_Keycard.et";
@@ -424,6 +426,17 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where a left tool rests: TOOL_REST_SIDE m to the robber's right, level with their feet. It used to be the
+	//! robber's own origin, so the bench drill spawned under them and they stood inside it while they worked.
+	static vector ToolRestSpot(vector robberOrigin, vector robberRight)
+	{
+		vector side = Vector(robberRight[0], 0, robberRight[2]);
+		if (side.LengthSq() < 0.0001)
+			side = "1 0 0";
+		return robberOrigin + side.Normalized() * TOOL_REST_SIDE;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The drill stays at the vault. It leaves the robber's inventory, lies by the door, and the
 	//! scene evidence hook marks it for the officer to bag; its serial still names the buyer.
 	protected static void LeaveTool(string vaultId, IEntity robber, IEntity tool)
@@ -442,7 +455,9 @@ class LF_Bank
 			}
 		}
 
-		vector origin = robber.GetOrigin();
+		vector robberTransform[4];
+		robber.GetWorldTransform(robberTransform);
+		vector origin = ToolRestSpot(robber.GetOrigin(), robberTransform[0]);
 
 		tool.SetOrigin(origin + "0 0.1 0");
 		// Upright: a tool dropped at an odd angle lands on its side.
