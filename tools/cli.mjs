@@ -29,6 +29,7 @@
 //   scope <name> <dir>                Write the test stub, features row, keys, and street row
 //   scope --selftest                  Check those four outputs in a temp directory
 //   prs status|heal                   Open ws/* PRs; heal conflicting or stuck ones (tools/prs.mjs)
+//   discord relay start|stop|status   Background Discord welcome relay (tools/discord-mcp/); discord selftest
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
@@ -49,6 +50,7 @@ import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp 
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
+import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
@@ -2483,6 +2485,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   scope <name> <dir>            write a test stub, a features-row snippet, localization keys
                                 to append, and one street-manifest row into <dir>
   scope --selftest              run that write in a temp directory and check the four outputs
+  discord relay start|stop|status  Discord welcome relay as a background process (pid + log in tmp/);
+                                discord selftest checks its event filter (docs/community/onboarding.md)
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   hidden [--close]              list (or close) tool processes on the private LF-Agents desktop
                                 (Workbench/server runs started there never show a window)
@@ -3406,6 +3410,8 @@ try {
     code = cmdPrs(ROOT, rest);
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
+  } else if (cmd === "discord") {
+    code = runDiscordCli(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
     code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
   } else {
