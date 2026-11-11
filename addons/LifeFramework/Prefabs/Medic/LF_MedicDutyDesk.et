@@ -5,8 +5,25 @@ GenericEntity : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
    ID "281D3BD880CE964E"
    components {
     ActionsManagerComponent "{775836274AF8BE66}" {
+     ActionContexts {
+      UserActionContext "{22A17EEEA2399F2D}" {
+       ContextName "LF_DutyClock"
+       Position PointInfo "{B046DE7E017B07C6}" {
+        Offset 0 0.25 0
+       }
+       Radius 1.5
+      }
+     }
      additionalActions {
       LF_DutyAction "{E0CCF06A3D9A2E06}" {
+       ParentContextList {
+        "LF_DutyClock"
+       }
+       UIInfo UIInfo "{857016BF95624B25}" {
+        Name "#LF-Duty_ClockIn"
+        Description "#LF-Duty_ClockDesc"
+       }
+       "Sort Priority" 1
        m_eRole MEDIC
       }
       LF_TreatmentBillPayAction "{5C2E8A71D4B93F06}" {
@@ -17,6 +34,17 @@ GenericEntity : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
         Name "#LF-Bill_PayGeneric"
         Description "#LF-Bill_PayDesc"
        }
+       "Sort Priority" 2
+      }
+      LF_FineTicketPayAction "{6F2B91D4C8A3E517}" {
+       ParentContextList {
+        "LF_DutyClock"
+       }
+       UIInfo UIInfo "{A41E7C3B9D5F2860}" {
+        Name "#LF-Ticket_PayGeneric"
+        Description "#LF-Ticket_PayDesc"
+       }
+       "Sort Priority" 3
       }
      }
     }

@@ -2,6 +2,7 @@
 // Logic lives in lib/release-gates.mjs; docs/worktrees.md "Release gates".
 import * as wt from "./wt.mjs";
 import * as rg from "./lib/release-gates.mjs";
+import { evaluateQuorum, loadQuorum, readConfirmations } from "./lib/quorum.mjs";
 
 function val(args, name) {
   const i = args.indexOf(name);
@@ -69,7 +70,7 @@ export async function cmdPromote(root, args, opts = {}) {
     }
 
     // --confirm: refuse a failed item whose PR is inside the range, then move stable, then the issues.
-    const { issues } = await rg.buildChecklist(gh, plan);
+    const { issues, manualIssues } = await rg.buildChecklist(gh, plan);
     const inRange = new Set(issues);
     const blocked = fail.filter((n) => inRange.has(n));
     if (blocked.length) {
@@ -80,6 +81,22 @@ export async function cmdPromote(root, args, opts = {}) {
     if (plan.commits.length === 0) {
       console.log("nothing to promote: stable already contains the target");
       return 0;
+    }
+    // The quorum rule (#575): when on, the issues of PRs that list manual steps need enough roster testers.
+    const q = loadQuorum(root);
+    if (q.enabled) {
+      const conf = readConfirmations(val(args, "--confirmations"));
+      if (conf.sha && !plan.target.startsWith(String(conf.sha)) && !String(conf.sha).startsWith(plan.target.slice(0, 8))) {
+        throw new Error(`confirmations were collected on ${conf.sha}, not ${plan.target.slice(0, 8)}`);
+      }
+      const verdict = evaluateQuorum({ issues: manualIssues, results: conf.results, roster: q.roster, size: q.size });
+      for (const f of verdict.failed) console.log(`FAIL  #${f.issue}: ${f.fail} tester(s) failed it. Run promote --fail ${f.issue}, fix, retest.`);
+      for (const s of verdict.short) console.log(`FAIL  #${s.issue}: ${s.pass} of ${s.need} confirmations from roster testers.`);
+      if (!verdict.ok) {
+        console.log("quorum not met. stable not moved.");
+        return 1;
+      }
+      log(`quorum met: ${verdict.met.length} issue(s) confirmed by ${q.size} or more roster testers`);
     }
     const tag = rg.moveStable(root, plan);
     console.log(`stable is now ${plan.target.slice(0, 8)} (tag ${tag})`);

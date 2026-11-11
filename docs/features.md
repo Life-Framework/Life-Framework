@@ -506,6 +506,15 @@
   persistent profile `%LOCALAPPDATA%\LifeFramework\player` (`LF_PLAYER_DIR`), waits
   for the host's `join allowed` line, and prints friend join lines. A running host
   is reused and joined with its own addon. `stop` closes the game, then `host stop`.
+- ✅ **Playtest download** (2026-11-10, `tools/release/`, `.github/workflows/playtest-release.yml`):
+  `LifeFramework-Playtest.zip` on the latest GitHub release holds the addon (tracked files only, plus a
+  fresh `resourceDatabase.rdb`: `tools\cli playtest release` refreshes it and the workflow packs) and
+  `Play Life Framework.cmd`, a PowerShell launcher that finds Arma Reforger through the Steam registry and
+  `libraryfolders.vdf`, then offers *Play on my own* (`-server LF_PlaytestTown.conf -addr 127.0.0.1:2302`)
+  or *Join the community server* (`-client` the address in `website/public/playtest-server.json`, set with
+  `tools\cli playtest server <address>|off`). The homepage and /playtest link the stable
+  `releases/latest/download/` URL. Selftest `tools/validation/release-selftest.mjs`. ⚠️ Windows only; the
+  zip is not signed, so SmartScreen may warn on first run.
 
 ### `LF_AccountReplication` — `Feature/Account/LF_AccountReplication.c`
 - ✅ **Client copy of the account** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `LF_PlayerAccountManager` is
@@ -599,6 +608,13 @@
   withdrawal plays `SOUND_PICK_UP` on the character for everyone nearby.
   Tests: `atm/keypad`, `atm/refusal-reasons`, `counter/refusal-text`,
   `counter/local-only`, `counter/screen-layout`.
+- ✅ (2026-11-10, #590) **1989 bank teller replaces the placed ATM.** `LF_BankTeller.et` is a clerk NPC
+  (Edith) whose chest context carries `LF_ATMAction` labelled "Talk to the teller", so deposit and
+  withdraw use the same terminal, server seams, range check (`LF_ActionSite` finds the teller as the
+  counter), ledger reasons (`atm-deposit`, `atm-withdraw`), quest signal and ATM code. The playtest town
+  places her behind the west bank counter (177, 259.5); the ATM entity `ATM_Debug` stays, hidden
+  (no mesh, inside the bank), for tests and flows. Test `atm/bank-teller`; demo
+  `session.mjs bank-teller-proof`.
 - ✅ **Cash moves** (verified 2026-08-30): the menu forwards through
   `LF_CharacterATMComponent.RequestDeposit/RequestWithdraw`, and the server
   RPC handlers `RpcAsk_Deposit`/`RpcAsk_Withdraw` remove cash on deposit
@@ -700,6 +716,11 @@
   Each crop logs `crop <name> init: grows here <bool> (rpl mode <mode>)` once.
   A missing row or a prefab that does not resolve logs `LF_Debug.Error` and
   grants nothing (verified 2026-10-11). The action stays on the node.
+
+### `LF_FarmPlotComponent` + `LF_FarmPlotAction` + `LF_FarmPlots` — `Feature/Farming/`
+- ✅ **Seed to harvest in dirt plots (#614).** `Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et` is a vanilla small vegetable bed with `LF_FarmPlotComponent`: an empty plot offers *Plant Cabbage seeds* (`LF_FarmPlotAction` PLANT, needs a `Prefabs/Items/Seeds/CabbageSeeds.et` packet, one is used), the crop grows on the server through the reused `LF_CropStage` list (sprouts, half grown, ripe; one minute a stage in the prefab, so DebugWorld ripens in two minutes; the last stage holds, a ripe plot waits), the prompt reads *Growing: <stage>* until it is ripe, then *Harvest Cabbage* (HARVEST) gives `m_iHarvestAmount` (3) cabbages, the rest drops at the farmer's feet when the pockets are full, and the plot is empty again. The harvest reports `LF_JobManager.OnGatherCompleted` like a gather. Every machine but a dedicated server draws the crop as local, physics-free `FarmPlot_CabbageVisual.et` copies on `m_sSlots` (six on a bed), scaled per stage from the replicated stage index (`RplProp`, bumped only on a stage change). The server checks reach (3 m), the packet and the stage; refusals toast `#LF-Farm_*` and log `[LFDebug:Farming] plot <key> refused`. The growth clock is one 1 s `LF_FarmPlots.Tick` over the live plots (world-time delta), stopped with the last plot. Seeds come from `Prefabs/Props/Commercial/LF_SeedCrate_Cabbage.et` (`LF_GatherAction` *Take Cabbage seeds*, 4 then a 2 min refill; the gather action gained `m_sActionFormat` for the prompt). DebugWorld: `FarmPlot_1..3` at (145/148.5/152, 299.5), `Farm_SeedCrate`, and the `farm_plots` chalkboard `Sign_FarmPlots` replace the freestanding cabbages (`CabbageCrop_Debug`, `CabbageCrop_Bed`), which stopped being gatherable for good 1.4 min after boot. Tests `farm/plot-rules` (LOGIC), `farm/plot-loop` (WORLD), `persist/farm-plots-roundtrip`; proof `session.mjs farm-proof`.
+- ✅ **Growth survives a restart** (save version 23, payload `farmplots`, `LF_FarmPlotRow`: plot key, crop id, whole seconds grown). Only planted plots are saved; a row whose plot is not in the world waits and is saved again; a row for a plot that now grows another crop is dropped with a warning. Growth counts only while a server runs. `wt e2e` pass 2 reads `plot farm_plot_3 restored: cabbage grown 81 s, stage 1`.
+- ⚠️ Follow-ups: one crop (cabbage); seeds are free from the crate (no seed shop line yet); the seed packet wears the personal-papers mesh (placeholder in `docs/asset-inventory.md`); a client that joins late relies on the stage `RplProp` callback to draw the crop (manual check).
 
 ### `LF_ProcessAction` — `Feature/Processing/LF_ProcessAction.c`
 - ✅ Recipe: consume all `m_aProcessingInputs`, produce all
@@ -951,6 +972,7 @@
   restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
   inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
+- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots).
 
 ### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -1737,6 +1759,7 @@
 - ✅ (2026-11-09) List rows span the sheet. A row sized to its text and sat centred in the scroll, so on the 900-wide price list the car lot cut "needs $2,500" to "needs $2," and "$1,000" to "$1,00". `AddListRow` sets each row to the sheet width less `LIST_ROW_INSET` (list and row padding, scrollbar). Seen on a laptop session client at 1920x1080: the lot and the general store.
 
 ### Signs — `Scripts/Game/Feature/Signs/`
+- ✅ **Picture on a sign card** (#579 spike, LOGIC `signs/image`). `LF_SignDef.m_sImage` (an imageset) and `m_sImageName` (default `full`) add an `LF_EUIPartKind.IMAGE` part under the title; `LF_UIScreen` loads it into an `ImageWidget` (`UI/Layouts/UIKit/LF_UIImage.layout`) with `LoadImageFromSet`, and logs `[LFDebug:UIKit]` when the imageset does not load. The hospital card shows `Assets/UI/Illustrations/medic_flow.imageset`. `tools\cli ui-image <svg|png> <name>` makes the texture and imageset headless; route and limits in `docs/research/ui-illustration-pipeline.md`.
 - ✅ Diegetic signs (M1-01). `LF_SignComponent.m_sSignId` names a row in `Configs/Signs/LF_Signs.conf` (id, title, what, how, needs, rules, next). A value starting with `#` is a localization key; any other value is shown as written. `LF_SignReadAction` is local-effect only and names itself `Read: <title>` (`#LF-Sign_Read`). Perform opens `LF_SignCard` on the reading client: a UI kit sheet with the title, one line per filled section (What, How, Needs, Rules, Next; empty ones omitted), and Close. Close, MenuBack, death, losing the character, or walking 4 m from the sign closes it. No RPC. An unknown or empty id, or a row with no title, logs `LF_Debug.Error("Signs", ...)` once and the action hides. LOGIC `signs/catalog`, `signs/missing-id`, `signs/localization`; WORLD `signs/prefabs`.
 - ✅ Prefabs `Prefabs/Props/Signs/LF_Sign_Board` (cork board), `LF_Sign_Pub` (shop sign), `LF_Sign_Notice` (A4 notice), `LF_Sign_Chalkboard` (standing chalkboard; the vanilla `CardboardSign_01` lives in the Rally addon and does not resolve for this mod) inherit the vanilla props (no new meshes) and add the component, an `LF_Sign` action context on the face, and the Read action. A placed instance sets the id. The title is also printed on the prop on rendering clients: `LF_SignComponent` draws `UI/Layouts/Signs/LF_SignFace.layout` into an `RTTextureWidget` bound (`SetRenderTarget`) to a mesh whose material `Assets/Signs/Data/LF_SignFace.emat` samples `$rendertarget`. `LF_Sign_Board` spawns a local `LF_SignFace` sheet (vanilla A4 poster mesh) on its face; `LF_Sign_Notice` retargets its own poster material. A dedicated server skips the face. `LF_Sign_Pub` and `LF_Sign_Chalkboard` print it too (#116): a painted sheet (`LF_SignBoardFace.layout`, slate paint, chalk-white lettering) tuned on the prefab. The chalkboard sheet is turned 90 degrees (`m_vFaceAngles 0 0 90`, scale 6.2, offset 0 1.47 0.3); the A-frame sheet leans with its face (`0 -15 0`, scale 2.6, offset 0 0.62 0.26), sits a little high and does not fill the lower board. Shots in `website/public/docs-images/116/`.
 - ✅ The printed title fits the shown part of the render target at any window size. The target is the layout size times the screen DPI scale, but the widgets inside lay out one reference unit per pixel, so a 720p Workbench viewport printed "MINI / ARE". `LF_SignComponent.FaceTitleRect` places the title box and font by `DPIScale(1)`. Board and notice photographed reading MINING AREA, not mirrored, in a Workbench play session (2026-11-08). LOGIC `signs/face-fit`.
@@ -1924,6 +1947,7 @@
   listen-hosted server a client cannot teleport or reach past action range
   (2026-11-07). On a client it retries until a local controller exists,
   including while faction and spawn menus are up.
+- ✅ `previews show <prefab,...>|hide` draws up to 24 prefabs through `ItemPreviewWidget` (`LF_ItemPreviewSheet`), the widget the inventory slots use, hiding the HUD and notification toasts; `toolscli shots previews` pages every mod item onto contact sheets (#612).
 - ✅ Screenshots go through `LF_ScreenshotCapture`. UI shots leave the camera
   alone. A world shot teleports the character to the camera offset (default
   `10 3 10`, or `ox oy oz` for the row), faces the target, and screenshots the
@@ -2019,6 +2043,9 @@
   neighbour rule.
   Play-mode run not yet recorded.
 
+### `film-make` post-production — `tools/film/post.mjs` (dev tooling, #397)
+- ✅ `tools\cli film-make video/<name>.json` joins clips into one mp4: logo title and end cards, crossfades, burned-in captions from cue files plus an `.srt`, offline Piper voice-over, and a licensed music bed ducked under game sound and voice (about -14 LUFS). Covered by `node tools/film/film.mjs selftest`; proven on `video/tooling-test.json` (not for posting).
+
 ### `LF_FilmCameraPath` — `Feature/Film/` (filming harness)
 - ✅ Dev-only, like the agent harness. `LF_FilmCameraPath` holds timed camera
   keys (position, look-at, FOV); `Sample(t)` eases between keys with
@@ -2050,14 +2077,32 @@
   fps, frame after a shot 33.3-33.5 ms vs 33.2-34.5 ms otherwise, one 243 ms
   stall in 64 s (shop menu, not a shot frame).
 
+- ✅ Game audio (#396): the engine cannot record sound, so `tools/film/lf-procaudio.cs`
+  (Windows process loopback, `AUDCLNT_PROCESS_LOOPBACK`) captures only the game client's
+  process into a 48 kHz float WAV (other host sounds never enter it; the WAV is the separate
+  audio track). Harness verb `film slate` plays a UI beep and logs `# slate=<ms>` in
+  `index.txt`; `tools/film/audio.mjs` finds the beep in the WAV, lines audio up with the
+  frames and muxes an mp4 (`street-clip.mjs --audio`, session started with `--sound`). A start
+  and an end slate give the offset and the drift (the mux uses their mean; one unrecorded warm-up beep plays first because the first play is heard about 0.5 s late). The recorder refuses a silent capture
+  (`mean_volume` under -60 dB, or no slate heard) and warns when the default output is muted
+  (#482). Covered by `node tools/film/film.mjs selftest` (pure parts). Proven on this PC 2026-11-10: three takes read start-to-end beep drift of -96, +119 and +52 ms; the laptop run waits on #482 and a free lane.
+
 ### `LF_FilmActor` / `LF_FilmDirector` — `Feature/Film/` (scripted actors, #393)
-- ✅ Dev-only, harness verbs `scene start street|stop|status` (server, through the
+- ✅ Dev-only, harness verbs `scene start <name> [hour|-] [weather]`, `scene stop|reset|status` (server, through the
   character RPC and `LF_DevGate`) and `camera orbit|follow x y z size seconds`
   (client). An actor is a spawned `Character_Roleplay` on a timed step list:
   `walk`, `run`, `enter`, `drive`, `exit`, `use <action class>`, `wait`. Waypoints
   are authored (no navmesh). No progress for 6 s logs `[LFDebug:FilmActor] ... stuck`
-  and stops that actor. Pure maths (steer, pedals, stuck detection) is covered by
+  and stops that actor. A `camera follow` low-passes the followed entity's position (time constant 0.25 s, `LF_FilmCameraPath.SmoothAlpha`), because a car driven in 100 ms velocity steps made the camera shake. Pure maths (steer, pedals, stuck detection, follow smoothing) is covered by
   `film/actor-math` (LOGIC).
+- ✅ Scene setup and reset (#394, `LF_FilmScene.c`): a scene is a clock hour, a weather state, the day frozen,
+  its actors and vehicles and its camera cues. `scene start street` snapshots the world's local clock hour, weather state, weather looping and day advance, sets the scene's defaults (street: 16:00, Clear, frozen), then
+  spawns; `scene start street 21.5 Overcast` overrides one take (`-` keeps a value; an hour outside 0..24 returns
+  `error:bad_hour`). `scene stop` (alias `reset`) despawns every actor and vehicle the scene made and writes the snapshot
+  back, so every take starts from the same light. Logs `[LFDebug:FilmScene]`. A world with no time and weather manager
+  logs an error and runs the scene without a clock. Camera cues stay in the take script (`tools/film/street-clip.mjs`).
+  Covered by `film/scene-env` (LOGIC: defaults, override, bad hours, clock conversion); the world write is proved
+  in game (PR). Not done: scenes other than `street`.
 - ✅ Walk, run and `use` proven 2026-11-10 (the store till action ran for an actor,
   `canPerform=1 uid='film-walker'`). Actors read a stand-in player uid from
   `LF_FilmIdentity` in a `LF_HARNESS` build only (`LF_Utils.GetPlayerUID`).
@@ -2163,5 +2208,7 @@
 - ✅ **General store and market polish (area 3, 2026-11-10).** The market tables no longer overlap (`TableRecreation_01_3` moved 1.5 m west), two tables stand under the east umbrella stands, and the site alarm prefab (`LF_SiteAlarm`, and so the loud one) carries a 3x vanilla `HazardBeacon_01` at 1.1 m so the alarm is readable in daylight where the point light was not. Navmesh "unreachable" flags on the market signs and NPCs are AI-navigation only; a player walks to all of them.
 - ✅ Working animation for the drill and the lockpick (#513, WORLD `work/anim`): a player drilling the bank vault (#273) or picking a lock (#411, #412) bends to the work on every client. `LF_WorkAnim` (server, `Feature/Crime/LF_WorkAnim.c`) keeps one session per worker: the lockpick attempt starts it with its own timer (`LF_Lockpick.BeginAs`) and ends it on finish, drop or cancel; the drill starts a self-ending 6 s one (`LF_WorkAnim.DRILL_SECONDS`) when `LF_Bank.Rob` opens the vault with it. The server also stops it when the worker goes down, leaves 5 m or overruns. The worker's owner starts a custom loiter (#512 route) on `Anims/Workspaces/Work/LF_WorkPick.agr` (base-game `p_erc_supplies_repair_low_*`, `Gestures` 561) or `LF_WorkDrill.agr` (`p_erc_supplies_demolitionUS_low_*`, 562); the base game replicates it to every client and late joiners. Stops use the fast exit. Every rendering client logs `work animation playing`. Demo: `node agent-box/session.mjs work-anim-proof`. Logs `[LFDebug:WorkAnim] ...`. The locked-car pick and the cash van box drill use the same two paths (`LF_Lockpick.BeginAs` for any pick target, `LF_Bank.Rob` for the `LF_HeistRobAction` box), pinned by WORLD `work/anim-targets`; the proof drives all four and the watching client logs `work animation playing` four times. The worker's own check can fire after a 6 s drill already ended on a lagging machine; it then logs `work animation finished before the check`, not an error.
 - ✅ **Action-context anchors (dev tool).** `tools/actions/place-action-contexts.mjs --anchor center|front|top|custom <entity|prefab>` places a `UserActionContext` point and radius from the `.xob` mesh bounds instead of by eye; `--batch` replays `tools/actions/anchors.json`; `--check` (run by `validate-action-reach`) flags points over 0.5 m off the mesh or a radius that misses a player 0.5 m away, and fails over 3 m. First users: the fuel station till, the police duty desk clock. See `docs/action-anchors.md`.
+- ✅ (car polish) Vehicle lock action: "Get in" lists first, then a state-aware Lock/Unlock row (`Sort Priority` 5 on the lock action, `LF_VehicleLockComponent.ACTION_SORT_PRIORITY`), then "Store in garage" (`LF_VehicleStoreHereAction`, owner on foot, car and player within one garage radius, same server path as the counter). Occupants with the key can lock from the interior door context. U (`LF_VehicleLockToggle`, gamepad right-stick click hold) toggles the seated or nearest keyed vehicle; the server checks key and 6 m reach and plays a placeholder click (`SOUND_PICK_UP`). The garage counter mesh `Roadmap_Garage` now stands at the doors with a 3.5 m context so Store/Retrieve/ledger show from the doorway. The S105 lot price board data (`lot_price_s105`, 214.8 0 259.2) matches the other three; not reproduced statically.
 - ✅ Keys are created at their holder (#620, WORLD `vehicles/key-inventory`): `LF_VehicleOwnership.KeySpawnOrigin` puts a purchased, collected or retrieved key at the holder's feet before the inventory insert, never at the lot or impound pad. A key made at a far pad was unresolved on the holder's client, and the key and ID card moves hung on the loading throbber. A key that does not fit logs a warning.
 - Debug money top-up (LF_DebugMoneyTopUp, `LF_SpawnLogic.m_bDebugMoneyTopUp`, on only in GameMode_Roleplay_Debug): on spawn and every 60 s, bank under 100k fills to 1M and carried cash under 5k fills to 20k, ledger reason `debug-topup`; opening bank is 1M.
+- ✅ **Playtest town: duty rows, dispatch area, test till (refs #146, #147, #202).** (a) The hospital duty desk `LF_MedicDutyDesk.et` restates its `LF_DutyClock` context and every action on the clock itself (the derived prefab used to replace the base list, so Clock in lost its context and floated off the device); `Sort Priority` puts the state-aware Clock in / Clock out row first, then the bill, then the fine ticket; the police desk got the same order. (b) New dispatch area (`Street_Dispatch.layer`, about 249 to 257, 229 to 233): `Roadmap_Dispatch_PoliceBoard` and `Roadmap_Dispatch_MedicBoard` (read and take a call) and `Roadmap_Dispatch_Console` (`LF_DispatchConsole.et`). The console carries `LF_DebugDispatchAction` rows *Test police call* (from the fuel till) and *Test medic call* (from the fuel payphone), which go through `LF_ServiceCalls.Place` with no coin; they work only where `LF_SpawnLogic.m_bDebugTestDispatch` is on (GameMode_Roleplay_Debug; the server refuses otherwise) and need a receiver on duty (`LF_DebugDispatch.Fire`). Tests `comms/debug-dispatch`, `debugworld/dispatch-area`. (c) The fuel till's *Rob the till* action sits 0.3 m above the till (was 0.8 m, floating), and `Roadmap_Fuel_Till` and `Roadmap_Fuel_Clerk` now stand at the fuel station building's own interior `CashierShop_01` (about 284.3, 240.2; the stand-alone counter at 263.2, 240.4 is removed); `Street_TillTest.layer` adds `Roadmap_Test_Till` on a counter at (244.5, 230.5) with a 5 s cooldown and no police minimum for a solo tester. Placed boards and the console are core-side debug-town props (`core-pack-inventory`: core).

@@ -28,7 +28,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials. The written version is that list's length (22). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots. The written version is that list's length (23). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -50,6 +50,7 @@
 //! A version 19 save includes the treatment bills and has no chain stations (half-finished batches).
 //! A version 20 save includes the chain stations and has no store stock (#202).
 //! A version 21 save includes the store stock and has no item serials (#470).
+//! A version 22 save includes the item serials and has no farm plots (#614).
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -107,6 +108,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("chainstations");
 		order.Insert("storestock");
 		order.Insert("itemserials");
+		order.Insert("farmplots");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -133,7 +135,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 22);
+		context.WriteValue("version", 23);
 
 		// Accounts live in the player account manager singleton. A null result (no manager / no
 		// data) is written as an empty array so the positional read order stays intact.
@@ -402,6 +404,12 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_StorageItemSerialRecord> serialRecords = LF_StorageSnapshot.ExportItemSerials();
 			context.Write(serialRecords);
 			LF_Debug.Log("Persistence", string.Format("saved item serials of %1 snapshot(s)", serialRecords.Count()));
+		}
+		else if (payload == "farmplots")
+		{
+			array<ref LF_FarmPlotRow> plotRows = LF_FarmPlots.ExportAll();
+			context.Write(plotRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 planted farm plot(s)", plotRows.Count()));
 		}
 		else
 		{
@@ -734,6 +742,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Warn("Persistence", "item serials failed to read, restored items stay unstamped");
+			}
+		}
+		else if (payload == "farmplots")
+		{
+			// A version 1-22 save never reaches this payload, so the live plots are left alone.
+			array<ref LF_FarmPlotRow> plotRows = new array<ref LF_FarmPlotRow>();
+			if (context.Read(plotRows))
+			{
+				LF_FarmPlots.ApplyAll(plotRows);
+				LF_Debug.Log("Persistence", string.Format("applied %1 planted farm plot(s)", plotRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "farm plots failed to read, leaving the live plots untouched");
 			}
 		}
 		else

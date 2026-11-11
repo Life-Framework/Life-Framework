@@ -13,10 +13,21 @@ Vehicle : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
     LF_VehicleLockAction "{E1A105BE1A000006}" {
      ParentContextList {
       "door_l01"
+      "door_l01_int"
      }
      UIInfo UIInfo "{E1A105BE1A000007}" {
       Name "#EL-VehicleLock_Action"
      }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{E1A5707E00000103}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A5707F00000103}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
     }
     LF_LockpickAction "{A8B88E948F3738E2}" {
      ParentContextList {

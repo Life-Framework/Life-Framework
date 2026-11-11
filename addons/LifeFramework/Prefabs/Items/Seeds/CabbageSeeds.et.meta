@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F77BE55D8D3AEBA3}Prefabs/Items/Seeds/CabbageSeeds.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

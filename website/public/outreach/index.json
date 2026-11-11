@@ -1,0 +1,215 @@
+{
+  "credit": "Captured in Arma Reforger on the Life Framework test build. Buildings, terrain, vehicles and props are Bohemia Interactive's base-game assets; the signs, boards and systems are Life Framework's. Not affiliated with or endorsed by Bohemia Interactive.",
+  "stills": [
+    {
+      "slug": "spawn-square",
+      "source": "docs-images/area-1-spawn-square/wide-after.png",
+      "caption": "The spawn square: cobbles, the welcome sign and the payphone, with the village street beyond.",
+      "alt": "The spawn square: cobbles, the welcome sign and the payphone, with the village street beyond.",
+      "wide": "16x9/spawn-square.jpg",
+      "tall": "9x16/spawn-square.jpg",
+      "bytesWide": 178998,
+      "bytesTall": 116093
+    },
+    {
+      "slug": "store",
+      "source": "docs-images/area-3-store/counter.png",
+      "caption": "The general store with its sign, shop window and counter out front.",
+      "alt": "The general store with its sign, shop window and counter out front.",
+      "wide": "16x9/store.jpg",
+      "tall": "9x16/store.jpg",
+      "bytesWide": 116871,
+      "bytesTall": 62449
+    },
+    {
+      "slug": "fuel-station",
+      "source": "docs-images/area-5-fuel-station/wide.png",
+      "caption": "The fuel station on the main street: canopy, kiosk and till.",
+      "alt": "The fuel station on the main street: canopy, kiosk and till.",
+      "wide": "16x9/fuel-station.jpg",
+      "tall": "9x16/fuel-station.jpg",
+      "bytesWide": 113560,
+      "bytesTall": 78884
+    },
+    {
+      "slug": "hospital",
+      "source": "docs-images/area-7-hospital/wide.png",
+      "caption": "The village hospital with the ambulance parked in its bay.",
+      "alt": "The village hospital with the ambulance parked in its bay.",
+      "wide": "16x9/hospital.jpg",
+      "tall": "9x16/hospital.jpg",
+      "bytesWide": 107921,
+      "bytesTall": 74337
+    },
+    {
+      "slug": "police-post",
+      "source": "docs-images/area-6-police/wide.png",
+      "caption": "The police post: duty desk, dispatch and wanted boards, and a jeep out front.",
+      "alt": "The police post: duty desk, dispatch and wanted boards, and a jeep out front.",
+      "wide": "16x9/police-post.jpg",
+      "tall": "9x16/police-post.jpg",
+      "bytesWide": 104121,
+      "bytesTall": 68382
+    },
+    {
+      "slug": "car-lot",
+      "source": "docs-images/area-4-carlot/detail.png",
+      "caption": "The car lot: four cars for sale, each with its price board.",
+      "alt": "The car lot: four cars for sale, each with its price board.",
+      "wide": "16x9/car-lot.jpg",
+      "tall": "9x16/car-lot.jpg",
+      "bytesWide": 116619,
+      "bytesTall": 61548
+    },
+    {
+      "slug": "bank",
+      "source": "docs-images/area-2-bank/detail.png",
+      "caption": "The bank front with its two teller windows, one on each side of the door.",
+      "alt": "The bank front with its two teller windows, one on each side of the door.",
+      "wide": "16x9/bank.jpg",
+      "tall": "9x16/bank.jpg",
+      "bytesWide": 99721,
+      "bytesTall": 57910
+    },
+    {
+      "slug": "payphone",
+      "source": "docs-images/area-8-payphones/fuel.png",
+      "caption": "A payphone box beside the fuel station canopy.",
+      "alt": "A payphone box beside the fuel station canopy.",
+      "wide": "16x9/payphone.jpg",
+      "tall": "9x16/payphone.jpg",
+      "bytesWide": 118229,
+      "bytesTall": 66839
+    },
+    {
+      "slug": "cash-van-sacks",
+      "source": "docs-images/area-10-cash-van/bags.png",
+      "caption": "Money sacks beside the cash van after its steel box is drilled open.",
+      "alt": "Money sacks beside the cash van after its steel box is drilled open.",
+      "wide": "16x9/cash-van-sacks.jpg",
+      "tall": "9x16/cash-van-sacks.jpg",
+      "bytesWide": 108367,
+      "bytesTall": 68896
+    },
+    {
+      "slug": "fence-yard",
+      "source": "docs-images/area-9-fence/wide.png",
+      "caption": "The fence's yard: Vince in front of the barn, with his bench, tyres and a barrel.",
+      "alt": "The fence's yard: Vince in front of the barn, with his bench, tyres and a barrel.",
+      "wide": "16x9/fence-yard.jpg",
+      "tall": "9x16/fence-yard.jpg",
+      "bytesWide": 98769,
+      "bytesTall": 61605
+    },
+    {
+      "slug": "lockup-row",
+      "source": "docs-images/area-14-lockup/wide.png",
+      "caption": "The lock-up row on the main street, a wooden door set in a yellow wall.",
+      "alt": "The lock-up row on the main street, a wooden door set in a yellow wall.",
+      "wide": "16x9/lockup-row.jpg",
+      "tall": "9x16/lockup-row.jpg",
+      "bytesWide": 126497,
+      "bytesTall": 84138
+    },
+    {
+      "slug": "chop-shop",
+      "source": "docs-images/area-15-chopshop/wide.png",
+      "caption": "The chop shop yard: an engine on the pad at sunset, bench and tyres along the wall.",
+      "alt": "The chop shop yard: an engine on the pad at sunset, bench and tyres along the wall.",
+      "wide": "16x9/chop-shop.jpg",
+      "tall": "9x16/chop-shop.jpg",
+      "bytesWide": 85668,
+      "bytesTall": 50575
+    },
+    {
+      "slug": "quarry-barrier",
+      "source": "docs-images/area-11-quarry/barrier.png",
+      "caption": "The lawless quarry: the lane barrier, a warning sign and granite walls behind.",
+      "alt": "The lawless quarry: the lane barrier, a warning sign and granite walls behind.",
+      "wide": "16x9/quarry-barrier.jpg",
+      "tall": "9x16/quarry-barrier.jpg",
+      "bytesWide": 148530,
+      "bytesTall": 83113
+    },
+    {
+      "slug": "moonshine-still",
+      "source": "docs-images/area-16-moonshine/still.png",
+      "caption": "The moonshine still, a boiler tank with its furnace and stack, under spruce.",
+      "alt": "The moonshine still, a boiler tank with its furnace and stack, under spruce.",
+      "wide": "16x9/moonshine-still.jpg",
+      "tall": "9x16/moonshine-still.jpg",
+      "bytesWide": 177106,
+      "bytesTall": 99008
+    }
+  ],
+  "gifs": [
+    {
+      "slug": "town-tour",
+      "title": "A walk through town",
+      "caption": "Five captures from the test town, one after another: the spawn square, the store, the fuel station, the bank and the car lot. A slideshow of stills, not footage.",
+      "alt": "Five captures from the test town, one after another: the spawn square, the store, the fuel station, the bank and the car lot. A slideshow of stills, not footage.",
+      "file": "gif/town-tour.gif",
+      "frames": 5,
+      "bytes": 732817
+    },
+    {
+      "slug": "emergency-services",
+      "title": "Police and hospital",
+      "caption": "The police post, the hospital, its front and ambulance bay, and a payphone. A slideshow of stills, not footage.",
+      "alt": "The police post, the hospital, its front and ambulance bay, and a payphone. A slideshow of stills, not footage.",
+      "file": "gif/emergency-services.gif",
+      "frames": 5,
+      "bytes": 682998
+    },
+    {
+      "slug": "underworld",
+      "title": "The underworld",
+      "caption": "The lock-up row, the fence's yard, the chop shop, money sacks from the cash van and the moonshine still. A slideshow of stills, not footage.",
+      "alt": "The lock-up row, the fence's yard, the chop shop, money sacks from the cash van and the moonshine still. A slideshow of stills, not footage.",
+      "file": "gif/underworld.gif",
+      "frames": 5,
+      "bytes": 744322
+    },
+    {
+      "slug": "outskirts",
+      "title": "The edge of town",
+      "caption": "The hideout bench, the farm, the quarry barrier and the moonshine still. A slideshow of stills, not footage.",
+      "alt": "The hideout bench, the farm, the quarry barrier and the moonshine still. A slideshow of stills, not footage.",
+      "file": "gif/outskirts.gif",
+      "frames": 4,
+      "bytes": 692944
+    }
+  ],
+  "clipsToCapture": [
+    {
+      "slug": "payphone-dispatch",
+      "length": "10 to 15 s",
+      "shows": "A player dials Report a crime at a payphone; an officer on duty hears it on the radio and the dispatch board lists it."
+    },
+    {
+      "slug": "downed-revive",
+      "length": "10 to 15 s",
+      "shows": "A player is shot and goes down, a medic clocks in at the hospital desk and revives them."
+    },
+    {
+      "slug": "cash-van-drill",
+      "length": "10 s",
+      "shows": "A player drills the cash van's box at the bank doorstep and money sacks appear."
+    },
+    {
+      "slug": "hotwire-chop",
+      "length": "15 s",
+      "shows": "Pick a lock-up door, hotwire the car, drive it into the chop shop yard and watch the payout."
+    },
+    {
+      "slug": "arrest-cell",
+      "length": "10 s",
+      "shows": "An officer arrests a robber at the fuel till and the robber ends up in the cell."
+    },
+    {
+      "slug": "arrival-clerk",
+      "length": "10 s",
+      "shows": "A new player fills in form R-89 and the clerk hands over an ID card on the square."
+    }
+  ]
+}
