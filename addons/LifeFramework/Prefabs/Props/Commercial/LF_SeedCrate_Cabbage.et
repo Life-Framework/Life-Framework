@@ -1,0 +1,42 @@
+GenericEntity {
+ ID "83899EA0BFE60A52"
+ components {
+  MeshObject "{A821C3EFD2C77736}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{7A1D3C5E9B2F4061}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{7A1D3C5E9B2F4062}" {
+   ActionContexts {
+    UserActionContext "{7A1D3C5E9B2F4063}" {
+     ContextName "LF_SeedCrate"
+     Position PointInfo "{7A1D3C5E9B2F4064}" {
+      Offset 0 0.3 0
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions {
+    LF_GatherAction "{7A1D3C5E9B2F4065}" {
+     ParentContextList {
+      "LF_SeedCrate"
+     }
+     UIInfo UIInfo "{7A1D3C5E9B2F4066}" {
+      Name "#LF-Farm_TakeSeeds"
+     }
+     Duration 1
+     m_GatherItemPrefab "{F77BE55D8D3AEBA3}Prefabs/Items/Seeds/CabbageSeeds.et"
+     m_GatherAmount 1
+     m_GatherAmountMax 4
+     m_GatherTimeout 120000
+     m_sActionFormat "#LF-Farm_TakeSeeds"
+    }
+   }
+  }
+  RplComponent "{7A1D3C5E9B2F4067}" {
+  }
+ }
+}

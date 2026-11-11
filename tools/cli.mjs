@@ -18,6 +18,7 @@
 //   mcp disable <name>                Set enabled=false in opencode.json
 //   validate [--full]                 Run the checks in tools/validation/ (--full adds the Workbench compile)
 //   test [--no-build] [--tier T]      Boot DebugWorld and run the LFTEST suite
+//   ui-image <svg|png> <name> [--size N]  Import an illustration as .edds + imageset, headless (tools/ui-image)
 //   rdb                               Refresh a stale worktree resourceDatabase.rdb (tools/lib/rdb-fresh.mjs)
 //   session up [--clients N (default 1)] [--hold min] [--mission debug|playtest]|wait [--timeout s]|restart|down|status  Dedicated server + N game clients (agent-box/session.mjs)
 //   shots baseline [--areas a,b] | area <name> --baseline   Every area in one session, shared; or find the freshest
@@ -1036,6 +1037,66 @@ function ensureResourceDatabase(root) {
   } catch (e) {
     console.log(`WARN  resource database refresh failed: ${e.message}`);
     return 1;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
+
+// tools/cli ui-image <svg|png> <name>: see tools/ui-image/ui-image.mjs and
+// docs/research/ui-illustration-pipeline.md.
+async function cmdUiImage(flags) {
+  const root = ROOT;
+  const pos = (flags ?? []).filter((f, i, a) => !f.startsWith("--") && a[i - 1] !== "--size");
+  const [src, name] = pos;
+  const sizeIdx = (flags ?? []).indexOf("--size");
+  const size = sizeIdx >= 0 ? Number(flags[sizeIdx + 1]) : 0;
+  if (!src || !name || !/^[A-Za-z0-9_]+$/.test(name)) {
+    console.log("usage: tools\cli ui-image <file.svg|file.png> <name> [--size N] [--no-imageset]");
+    return 2;
+  }
+  if (wt.isMainCheckout(root)) { console.log("FAIL  ui-image runs only in a worktree"); return 1; }
+  const ui = await import("./ui-image/ui-image.mjs");
+  const png = await ui.writeSource(root, resolve(src), name, size);
+  const dir = join(root, "addons", "LifeFramework", ui.ILLUSTRATION_DIR);
+  const edds = join(dir, name + ".edds");
+  const exe = workbenchExe();
+  if (!existsSync(exe)) { console.log("FAIL  Workbench not found: " + exe); return 1; }
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: 900000 });
+    locked = true;
+    const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+    const profile = join(root, "server", "profile", "rdb");
+    mkdirSync(profile, { recursive: true });
+    const logFile = join(root, "tmp", "ui-image-" + name + ".log");
+    mkdirSync(join(root, "tmp"), { recursive: true });
+    const started = Date.now();
+    if (!existsSync(edds + ".meta")) ui.writeTextureMeta(edds + ".meta", name);
+    ui.installPlugin(root);
+    quietSpawnSync(exe, [
+      "-gproj", join(root, "addons", "LifeFramework", "LifeFramework.gproj"),
+      "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
+      "-plugin=LF_ImageImportPlugin", "-lfImage=" + png,
+      "-profile", profile,
+      "-addonsDir", join(root, "addons"),
+      "-addonsDir", workbenchGameAddons(root, "rdb"),
+    ], { cwd: gameDir, timeoutMs: Number(process.env.LF_UI_IMAGE_TIMEOUT_S || 150) * 1000, stdout: logFile, stderr: logFile });
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    const meta = edds + ".meta";
+    if (!existsSync(edds) || !existsSync(meta)) {
+      console.log("FAIL  import produced no .edds/.meta after " + secs + "s; the Workbench was killed if it hung (see " + logFile + ")");
+      return 1;
+    }
+    const guid = ui.readMetaGuid(meta);
+    const rel = ui.ILLUSTRATION_DIR + "/" + name;
+    console.log("imported in " + secs + "s: {" + guid + "}" + rel + ".edds");
+    if (!(flags ?? []).includes("--no-imageset")) {
+      const { w, h } = await ui.imageSize(root, png);
+      const ig = ui.writeImageset(root, name, guid, w, h);
+      console.log("imageset: {" + ig + "}" + rel + ".imageset  (image name: full)");
+    }
+    return 0;
   } finally {
     if (locked) wt.releaseLock(root, "build");
   }
@@ -3190,6 +3251,7 @@ const cmds = {
   call: () => cmdMcpCall(rest),
   hidden: (flags) => cmdHidden(flags ?? []),
   rdb: () => ensureResourceDatabase(ROOT),
+  "ui-image": () => cmdUiImage(rest),
   help: () => cmdHelp(),
 };
 

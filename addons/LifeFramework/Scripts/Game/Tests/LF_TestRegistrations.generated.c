@@ -101,6 +101,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobAndBuildingExploit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FactionLoadoutConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FactionSpawn(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_FarmPlotRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_FarmPlotsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_FenceCharge(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FenceGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FenceSerial(), LF_TestTier.LOGIC);
@@ -185,6 +187,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PlotLoop(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
@@ -282,6 +285,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SignCoverage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SignFaceClient(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignFaceFit(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SignImage(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignLocalization(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignMissingId(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SignNext(), LF_TestTier.LOGIC);
@@ -324,6 +328,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleKeyInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLockIdMatch(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleLockPolish(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistChatResources(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLogic(), LF_TestTier.LOGIC);
