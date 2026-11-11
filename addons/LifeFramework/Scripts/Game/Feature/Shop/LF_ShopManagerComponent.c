@@ -179,6 +179,8 @@ class LF_ShopManagerComponent : GameComponent
 			return false;
 		}
 
+		// Pack overlays, then the owner's config.json "shops" section (LF_ConfigService).
+		m_Config.ApplyLayers(m_sConfigPath);
 		return true;
 	}
 

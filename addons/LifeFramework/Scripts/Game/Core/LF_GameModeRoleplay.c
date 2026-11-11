@@ -45,6 +45,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 	protected override void OnGameStart()
 	{
 		super.OnGameStart();
+		// Owner config.json over the shipped .conf defaults (server); features read through it.
+		LF_ConfigService.Boot();
 		LF_HostStop.StartIfRequested();
 		LF_IncidentLog.Install();
 		LF_AimIntent.Start();

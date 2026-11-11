@@ -259,6 +259,25 @@
   is `docs/architecture/core-vs-pack.md`; the tree is classified in
   `docs/architecture/core-pack-inventory.md`.
 
+### Config service — `Scripts/Game/Core/Config/LF_ConfigService.c` (#278)
+- ✅ (2026-11-12) The server reads the owner's
+  `$profile:LifeFramework/config.json` at game start and merges it over the
+  shipped `.conf` defaults field by field: owner, then pack, then core. Records
+  merge by a stable key (an object keyed by the key, not a list); a new key is
+  appended. Shops are the first section (`shops`: default prices,
+  `priceRules`, `extraItemPrefabs`). A missing file boots on defaults and
+  writes `config.example.json` beside it, never over a file. A bad file,
+  section, record or field logs `[LFDebug:Config]` and keeps the lower value;
+  nothing crashes the server. Pack overlays come through `LF_ConfigPackSource`,
+  the seam D4 decides; the default supplies none. Detail and the
+  `SCR_JsonLoadContext` probe results: `Core/Config/Feature.md`. Tests
+  `config/json-probe`, `config/merge-fields`, `config/merge-keyed`,
+  `config/merge-reject`, `config/merge-no-owner`, `config/owner-file`,
+  `config/pack-overlay`.
+- ⚠️ Owner values are server-side: a client's price list shows shipped prices
+  on a dedicated server until #285 streams them. Unknown keys are not warned
+  yet (#279); `schemaVersion` is read but not acted on (#302).
+
 ## Character & Survival
 
 ### `LF_SurvivalStats` — `Feature/Survival/LF_SurvivalStats.c`
@@ -715,6 +734,11 @@
   attributes. `LF_ShopAction` opens only on the acting machine for its own
   character. Closes on Leave, MenuBack, death, or 3.5 m from the counter.
   Tests: `shop/refusal-reasons`, `counter/local-only`, `counter/screen-layout`.
+- ✅ (2026-11-12, #278) `ShopPrices.conf` is the core layer of
+  the config service: `LF_ShopManagerComponent.LoadConfig` applies pack
+  overlays and the owner's `shops` section before it builds the catalog
+  (`LF_ShopPricesConfig.ApplyLayers`). The server charges and pays the owner's
+  prices.
 
 ### `LF_TraderManagerComponent` + `LF_InventoryStorageManagerComponent` — `Components/InventorySystem/`
 - ✅ Sell-to-trader pays **cash** (verified 2026-10-11): inserting into a

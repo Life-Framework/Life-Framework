@@ -28,6 +28,189 @@ class LF_ShopPricesConfig
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, desc: "Extra item prefabs priced outside the entity catalog", "et")]
 	ref array<ResourceName> m_aExtraItemPrefabs;
 
+	//! The owner config.json section this class reads (LF_ConfigService).
+	static const string SECTION = "shops";
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges the config layers over this instance, which holds the core `.conf`: first each pack
+	//! overlay, then the owner's "shops" section. Each layer changes only the fields it sets; rules
+	//! merge by LF_ShopPriceResolver.RuleKey, and a rule with a new key is appended (so it wins the walk).
+	//! \param[in] coreConf The core resource this instance was created from.
+	void ApplyLayers(ResourceName coreConf)
+	{
+		array<ResourceName> overlays = {};
+		LF_ConfigService.GetPackOverlays(coreConf, overlays);
+		foreach (ResourceName overlay : overlays)
+		{
+			Resource resource = BaseContainerTools.LoadContainer(overlay);
+			if (!resource || !resource.IsValid() || !resource.GetResource())
+			{
+				LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("shops: pack overlay does not resolve, skipped: %1", overlay));
+				continue;
+			}
+
+			BaseContainer container = resource.GetResource().ToBaseContainer();
+			typename overlayType;
+			if (container)
+				overlayType = container.GetClassName().ToType();
+			if (!overlayType || !overlayType.IsInherited(LF_ShopPricesConfig))
+			{
+				LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("shops: pack overlay is not an LF_ShopPricesConfig, skipped: %1", overlay));
+				continue;
+			}
+
+			int changed = ApplyContainer(container);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("shops: pack overlay %1 set %2 fields", overlay, changed));
+		}
+
+		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
+		if (!reader)
+			return;
+
+		ApplyOwner(reader);
+		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("shops: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack `.conf` of this class: only the fields the file sets directly.
+	//! \param[in] container The overlay's root container.
+	//! \return The number of fields it set.
+	int ApplyContainer(notnull BaseContainer container)
+	{
+		int changed;
+		if (container.IsVariableSetDirectly("m_iDefaultBuyPrice") && container.Get("m_iDefaultBuyPrice", m_iDefaultBuyPrice))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iDefaultSellPrice") && container.Get("m_iDefaultSellPrice", m_iDefaultSellPrice))
+			changed++;
+
+		if (!m_aPriceRules)
+			m_aPriceRules = new array<ref LF_ShopPriceRule>();
+
+		BaseContainerList rules = container.GetObjectArray("m_aPriceRules");
+		if (rules)
+		{
+			for (int i = 0; i < rules.Count(); i++)
+			{
+				BaseContainer ruleContainer = rules.Get(i);
+				if (!ruleContainer)
+					continue;
+
+				string find;
+				int itemType;
+				int itemMode;
+				ruleContainer.Get("m_sFind", find);
+				ruleContainer.Get("m_eItemType", itemType);
+				ruleContainer.Get("m_eItemMode", itemMode);
+
+				LF_ShopPriceRule rule = LF_ShopPriceResolver.FindRule(m_aPriceRules, LF_ShopPriceResolver.RuleKey(find, itemType, itemMode));
+				if (!rule)
+				{
+					rule = LF_ShopPriceRule.Cast(BaseContainerTools.CreateInstanceFromContainer(ruleContainer));
+					if (!rule)
+						continue;
+					m_aPriceRules.Insert(rule);
+					changed++;
+					continue;
+				}
+
+				if (ruleContainer.IsVariableSetDirectly("m_iBuyPrice") && ruleContainer.Get("m_iBuyPrice", rule.m_iBuyPrice))
+					changed++;
+				if (ruleContainer.IsVariableSetDirectly("m_iSellPrice") && ruleContainer.Get("m_iSellPrice", rule.m_iSellPrice))
+					changed++;
+				if (ruleContainer.IsVariableSetDirectly("m_bHidden") && ruleContainer.Get("m_bHidden", rule.m_bHidden))
+					changed++;
+			}
+		}
+
+		if (container.IsVariableSetDirectly("m_aExtraItemPrefabs"))
+		{
+			array<ResourceName> extra = {};
+			if (container.Get("m_aExtraItemPrefabs", extra))
+				changed += AddExtraItems(extra);
+		}
+
+		return changed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the owner's "shops" section. Keys: defaultBuyPrice, defaultSellPrice, priceRules
+	//! and extraItemPrefabs (added to the shipped list). priceRules is an object keyed by
+	//! LF_ShopPriceResolver.RuleKey (the find substring, or "type:<flags>,mode:<mode>"); each record
+	//! may set buyPrice, sellPrice and hidden. A key no shipped rule has adds a rule.
+	//! \param[in] reader A reader on the section.
+	void ApplyOwner(notnull LF_ConfigReader reader)
+	{
+		reader.ReadInt("defaultBuyPrice", m_iDefaultBuyPrice);
+		reader.ReadInt("defaultSellPrice", m_iDefaultSellPrice);
+
+		if (!m_aPriceRules)
+			m_aPriceRules = new array<ref LF_ShopPriceRule>();
+
+		int count = reader.BeginRecords("priceRules");
+		for (int i = 0; i < count; i++)
+		{
+			string key = reader.GetRecordKey(i);
+			if (!reader.BeginRecord(key))
+				continue;
+
+			string find;
+			int itemType;
+			int itemMode;
+			if (!LF_ShopPriceResolver.ParseRuleKey(key, find, itemType, itemMode))
+			{
+				reader.RejectRecord("the key is neither a prefab-path substring nor type:<flags>,mode:<mode>");
+				reader.EndRecord();
+				continue;
+			}
+
+			// "type:64" and "type:64,mode:2" address the same rule.
+			LF_ShopPriceRule rule = LF_ShopPriceResolver.FindRule(m_aPriceRules, LF_ShopPriceResolver.RuleKey(find, itemType, itemMode));
+			if (!rule)
+			{
+				rule = LF_ShopPriceRule.Create(find, itemType, itemMode);
+				m_aPriceRules.Insert(rule);
+			}
+
+			reader.ReadInt("buyPrice", rule.m_iBuyPrice);
+			reader.ReadInt("sellPrice", rule.m_iSellPrice);
+			reader.ReadBool("hidden", rule.m_bHidden);
+			reader.EndRecord();
+		}
+
+		if (count >= 0)
+			reader.EndRecords();
+
+		array<string> extra = {};
+		if (reader.ReadStrings("extraItemPrefabs", extra))
+		{
+			array<ResourceName> prefabs = {};
+			foreach (string prefab : extra)
+			{
+				prefabs.Insert(prefab);
+			}
+			AddExtraItems(prefabs);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Adds prefabs to the extra list, skipping ones already there.
+	//! \return How many were added.
+	protected int AddExtraItems(array<ResourceName> prefabs)
+	{
+		if (!m_aExtraItemPrefabs)
+			m_aExtraItemPrefabs = new array<ResourceName>();
+
+		int added;
+		foreach (ResourceName prefab : prefabs)
+		{
+			if (prefab.IsEmpty() || m_aExtraItemPrefabs.Contains(prefab))
+				continue;
+			m_aExtraItemPrefabs.Insert(prefab);
+			added++;
+		}
+		return added;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Resolves the configured (default or ruled) buy price for one item.
 	//! \param[in] prefabName Prefab path of the item.
@@ -90,4 +273,19 @@ class LF_ShopPriceRule
 	//! rule walk, so later rules do not re-enable it.
 	[Attribute("false", UIWidgets.CheckBox, desc: "Never offer this item in any shop")]
 	bool m_bHidden;
+
+	//------------------------------------------------------------------------------------------------
+	//! A rule built in script, with the same defaults a `.conf` rule gets from its attributes
+	//! (buy 100, sell 50, shown). The owner layer adds rules this way.
+	static LF_ShopPriceRule Create(string find, int itemType, int itemMode)
+	{
+		LF_ShopPriceRule rule = new LF_ShopPriceRule();
+		rule.m_sFind = find;
+		rule.m_eItemType = itemType;
+		rule.m_eItemMode = itemMode;
+		rule.m_iBuyPrice = 100;
+		rule.m_iSellPrice = 50;
+		rule.m_bHidden = false;
+		return rule;
+	}
 };

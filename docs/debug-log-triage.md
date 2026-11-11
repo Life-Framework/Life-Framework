@@ -152,6 +152,11 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[LFDebug:Medic] revive animation: CPR loiter requested / stopped on the owner of <id>` (medic client) | BY DESIGN | #512: the medic's owner started or fast-stopped the CPR loiter (`LF_ReviveAnimPlayer`). |
 | `[LFDebug:Medic] revive animation playing on <id> (loitering 1, head 0.99 m)` / `ended on <id>` (every rendering client) | BY DESIGN | #512: this machine sees the medic in the CPR loiter, kneeling (head bone under 1.3 m). |
 | `[LFDebug:Medic] revive animation not visible on <id> (loitering 0, head 1.6 m)` | OPEN when it appears | #512: the server started the CPR but this machine does not show it. Check `LF_ReviveCPR.agr/.asi` load, and whether the medic was already loitering or in a vehicle. |
+| `[LFDebug:Config] no owner config at $profile:LifeFramework/config.json; every section uses the shipped defaults` then `wrote the example owner config to ...config.example.json` | BY DESIGN | #278: no owner file, so the server runs on the shipped `.conf` values. The example is written once and never over a file. Copy it to `config.json` to change values. |
+| `[LFDebug:Config] <path>.<key> is not <kind>; keeping <value>` / `<path>.<key> is not a record (an object); record skipped` / `<path>: the key is neither ...; record skipped` | BY DESIGN | #278: the owner's `config.json` has a bad field or record. That one value keeps the shipped default and the rest applies. Fix the named key. In a test run these come from `config/merge-reject`, `config/merge-no-owner` and `config/owner-file` on purpose. |
+| `[LFDebug:Config] <file> is not valid JSON; every section uses the shipped defaults` / `section <name> is not an object` | BY DESIGN | #278: the owner file does not parse, or a section has the wrong shape. The server boots on shipped values. Expected in a test run (`config/merge-no-owner`, `config/owner-file`). |
+| `[LFDebug:Config] shops: owner config read N fields, rejected M` / `shops: pack overlay <conf> set N fields` | INFO | #278: the shop catalog applied the owner and pack layers. |
+| `[LFDebug:Config] client: no owner layer; shipped defaults until the server streams owner values (#285)` | BY DESIGN | #278: a client does not read a `config.json`; owner prices reach clients with #285. |
 
 ## How to add a row
 
