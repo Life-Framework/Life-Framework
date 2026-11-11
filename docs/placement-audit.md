@@ -4,6 +4,8 @@
 prints a ranked list of what is badly placed. It needs no game client and no session: it runs one
 test on the dedicated test server (about 10 s on the pool), which loads the same DebugWorld the
 playtest mission does. Run it from a worktree, before filming and after moving anything in a layer.
+To place or move a prop, use `tools\cli place` (`docs/placement-tool.md`): it computes the transform
+from real bounds and probe rays and runs this audit on what it wrote.
 
 ```
 tools\cli audit placement                       ranked list, top 40; full report in tmp/place-audit/report.txt

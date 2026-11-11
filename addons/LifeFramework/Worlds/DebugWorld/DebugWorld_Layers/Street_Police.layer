@@ -68,11 +68,11 @@ GenericEntity Roadmap_Police_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/U
  angleY 90
 }
 GenericEntity Roadmap_Police_ArmoryStore : "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et" {
- coords 231.0 0 238.15
+ coords 231 0 238.184
 }
 SCR_DestructibleEntity Police_Flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
  coords 230.1 0 241.9
 }
 GenericEntity Police_TrashBin_1 : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
- coords 241.4 0 241.3
+ coords 241.411 0 241.28
 }

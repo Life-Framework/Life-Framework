@@ -71,6 +71,27 @@ Fuel, Org, Hideout, Contraband, Jobs, Vehicles). Do not
 `validate-debugworld-layout` (overlapping area boxes, raised ground props,
 footprint intersections) run in `tools\cli validate`.
 
+### Placing a prop
+
+Never type `coords`, `angleY` or `scale` for a prop: you cannot see the mesh. Use
+`tools\cli place` from a worktree (`docs/placement-tool.md`). It reads the real mesh
+bounds, traces the surface top, wall face or ground on the test server (about
+11 s, no session), refuses what does not fit or blocks a road or door, writes the
+layer entry itself, audits it, and rolls back a flagged write.
+
+- On a counter, desk, table or shelf: `tools\cli place on <Surface> <prefab> --layer L.layer [--at north|u,v] [--near x,z]`
+- Against a wall, standing or hung: `tools\cli place against <Building> <prefab> --layer L.layer --near x,z [--hang 1.4]`
+- On the ground, off roads and door walk-ups: `tools\cli place ground <x,z> <prefab> --layer L.layer [--facing north]`
+- Several on one top or in a row: `tools\cli place arrange on <Surface> <prefab>... --layer L.layer`, `place arrange row <x1,z1> <x2,z2> <prefab>...`
+- Fix an entity a layer already has: the same commands with `--move <Entity>` in place of the prefab.
+- A prefab's own children: `--in Prefabs/X.et` with the surface `root`.
+- Look first: `tools\cli place bounds <prefab|entity>` (size, base, scale, rigid body); `--dry` prints the plan.
+
+The tool cannot judge facing (it takes the front as `+z`; pass `--front`), looks,
+or a simulated body that tips on a client: confirm those in one
+`tools\cli shots area <x,z> --eye-only` after all edits. `wt gate` runs
+`audit placement --strict` on every layer change.
+
 ## Configs (.conf)
 
 - Mission, faction, catalog, editor-placeable: use `config_create`, then
