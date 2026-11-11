@@ -245,7 +245,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! \param playerId The player to respawn.
 	void RespawnPlayer_S(int playerId)
 	{
-		string playerUid = LF_Utils.GetPlayerUID(playerId);
+		string playerUid = LF_Utils.GetAccountUID(playerId);
 		if (playerUid.IsEmpty())
 			return;
 
@@ -262,7 +262,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! account's active character.
 	override protected void DoSpawn_S(int playerId)
 	{
-		string playerUid = LF_Utils.GetPlayerUID(playerId);
+		// The account, not a character key (#331): GetOrCreate must never open an account under a key.
+		string playerUid = LF_Utils.GetAccountUID(playerId);
 		if (playerUid.IsEmpty())
 		{
 			LF_Debug.Warn("Spawn", "persistent UID not available yet for playerId " + playerId + ", retrying");

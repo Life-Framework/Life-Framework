@@ -417,6 +417,22 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Jail work (#127): takes seconds off a serving prisoner's remaining time and refreshes their
+	//! slip. At zero the sentence ends like any other (Advance). The caller owns the rules.
+	//! \return Remaining seconds after the credit. Zero when not serving or the sentence is over.
+	static float Credit(string playerUid, float seconds)
+	{
+		if (!IsServing(playerUid))
+			return 0;
+
+		float left = Advance(playerUid, seconds);
+		if (left > 0)
+			RefreshSlip(playerUid);
+
+		return left;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static float GetRemaining(string playerUid)
 	{
 		LF_JailSentence sentence = Sentences().Get(playerUid);

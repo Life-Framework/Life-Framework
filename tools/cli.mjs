@@ -29,6 +29,7 @@
 //   scope <name> <dir>                Write the test stub, features row, keys, and street row
 //   scope --selftest                  Check those four outputs in a temp directory
 //   prs status|heal                   Open ws/* PRs; heal conflicting or stuck ones (tools/prs.mjs)
+//   discord relay start|stop|status   Background Discord welcome relay (tools/discord-mcp/); discord selftest
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
@@ -49,6 +50,7 @@ import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp 
 import { runScopeCli } from "./scope/scaffold.mjs";
 import { cmdPrs } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
+import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
@@ -979,6 +981,67 @@ function cmdBuild(root = ROOT, opts = {}) {
     });
   });
 
+}
+
+// Pack the addon the way Workbench > Publish Project bundles it (compressed, encrypted .pak files,
+// .meta and source files left out), without uploading anything: -wbModule=ResourceManager
+// -packAddon -packAddonDir (BIKI Arma_Reforger:Startup_Parameters#packAddon). The output folder
+// loads like a Workshop download: -addonsDir <out-parent> -addons <GUID> (docs/playtest/workshop-host.md).
+function cmdPack(root = ROOT, opts = {}) {
+  guardHeavy(root, "pack", opts.force);
+  const exe = workbenchExe();
+  if (!existsSync(exe)) {
+    console.log(`FAIL  workbench not found: ${exe}`);
+    return 1;
+  }
+  const out = resolve(opts.out || join(root, "tmp", "workshop-pack", "LifeFramework"));
+  const addon = join(root, "addons", "LifeFramework");
+  if (out.toLowerCase().startsWith(addon.toLowerCase())) {
+    console.log(`FAIL  pack output ${out} is inside the addon folder; Workbench would pack its own output`);
+    return 1;
+  }
+  // A previous pack leaves its .pak files; packing over them is what Workbench does, so no delete.
+  mkdirSync(out, { recursive: true });
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const profile = join(root, "server", "profile", "pack");
+  mkdirSync(profile, { recursive: true });
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: opts.wait ? 900000 : 0 });
+    locked = true;
+    const args = [
+      "-gproj", join(addon, "LifeFramework.gproj"),
+      "-wbModule=ResourceManager",
+      "-packAddon",
+      "-packAddonDir", out,
+      "-noSplash",
+      "-profile", profile,
+      "-addonsDir", join(root, "addons"),
+      "-addonsDir", workbenchGameAddons(root, "pack"),
+    ];
+    console.log(`packing addon (headless Workbench) -> ${out}`);
+    const started = Date.now();
+    const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 900000 });
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    const log = latestWorkbenchLog(profile);
+    const lines = log ? readFileSync(log, "utf8").split(/\r?\n/) : [];
+    for (const l of lines.filter((x) => /Packaging|\(E\).*(pack|bundle|cannot copy|metafile)/i.test(x)).slice(-12)) console.log(`  ${l}`);
+    const paks = existsSync(out) ? readdirSync(out).filter((f) => /\.pak$/i.test(f)) : [];
+    const manifest = ["addon.gproj", "LifeFramework.gproj"].find((f) => existsSync(join(out, f)));
+    const mb = paks.reduce((s, f) => s + statSync(join(out, f)).size, 0) / 1048576;
+    if (!paks.length || !manifest) {
+      console.log(`pack FAILED after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${paks.length} .pak file(s), project file ${manifest ? "present" : "missing"} in ${out}`);
+      if (log) console.log(`  log: ${log}`);
+      return 1;
+    }
+    console.log(`pack OK in ${secs}s: ${paks.length} .pak file(s), ${mb.toFixed(1)} MB, ${manifest} in ${out}`);
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  pack: ${e.message}`);
+    return 1;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
 }
 
 // Before every server boot from a worktree: copy main's resourceDatabase.rdb
@@ -2369,6 +2432,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   mcp enable <name>             enable a server in opencode.json
   mcp disable <name>            disable a server in opencode.json
   build                         headless Workbench build of the addon (worktree only)
+  pack [--out dir] [--wait]     pack the addon as Workbench > Publish bundles it, no upload
+                                (default tmp/workshop-pack/LifeFramework; docs/playtest/workshop-host.md)
   serve                         boot the headless test server (blocks, worktree only)
   playtest [stop|status|shortcut]  the maintainer's one command: host from the pinned origin/main
                                 checkout (..\\Life-Framework-playtest), then open the game joined to it;
@@ -2387,7 +2452,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md)
-  e2e [--local|--remote [name]]   two-boot save, restart, and reload proof in this worktree
+  e2e [--local|--remote [name]] [--legacy-save]
+                                two-boot save, restart, and reload proof in this worktree;
+                                --legacy-save writes the save before #331 (version 23) in boot 1
   --budget <s>                  run-time budget for a known-long test/e2e run (default: learned from the pool's history)
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
@@ -2404,7 +2471,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 open ws/* PRs; heal merges main into idle DIRTY/BEHIND PRs
                                 (generated conflicts only), gates, pushes, re-queues auto-merge,
                                 and merges green PRs stuck open (see: cli prs help)
-  film-make <storyboard.json> [--out f.mp4] [--keep] [--no-vo] | --setup | --selftest
+  film-make <storyboard.json> [--out f.mp4] [--keep] [--no-vo] [--shot ids] [--group name] [--preview] [--client n] [--no-shoot] | --setup | --selftest
                                 post-production: cards, crossfades, captions + .srt, offline voice-over,
                                 ducked music bed (docs/film-pipeline.md "Post-production")
   regen-tests                   regenerate the test registry from the test files
@@ -2420,6 +2487,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   scope <name> <dir>            write a test stub, a features-row snippet, localization keys
                                 to append, and one street-manifest row into <dir>
   scope --selftest              run that write in a temp directory and check the four outputs
+  discord relay start|stop|status  Discord welcome relay as a background process (pid + log in tmp/);
+                                discord selftest checks its event filter (docs/community/onboarding.md)
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   hidden [--close]              list (or close) tool processes on the private LF-Agents desktop
                                 (Workbench/server runs started there never show a window)
@@ -2584,9 +2653,10 @@ function wtHelp() {
   tools\\cli wt list                   worktrees, ports, dirty/merged state
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
-  tools\\cli wt e2e <slug>
+  tools\\cli wt e2e <slug> [--legacy-save]
                                        two-boot save-state E2E: persistence save boot, then
-                                       reload same profile with -loadSessionSave (latest)
+                                       reload same profile with -loadSessionSave (latest);
+                                       --legacy-save: boot 1 writes the pre-#331 format (version 23)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
   tools\\cli wt logs <slug> <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope X]
@@ -2841,7 +2911,7 @@ async function wtE2eCmd(args) {
     console.log(`FAIL  ${err.message}`);
     return 1;
   }
-  return runE2e(e.path, remoteFlags(args.slice(1)));
+  return runE2e(e.path, { ...remoteFlags(args.slice(1)), legacySave: args.includes("--legacy-save") });
 }
 
 // The two-boot save/restart proof in one pool slot: both boots run on the same
@@ -2858,11 +2928,11 @@ async function runE2e(root, opts = {}) {
   let code = 3;
   try {
     if (!slot.local) {
-      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
+      const r = await testbox.runRemote(root, slot, { args: ["e2e", "--local", ...(opts.legacySave ? ["--legacy-save"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])], writeSyncState: pool.writeSyncState });
       code = r.code;
     } else {
       activeBudget = { runS: slot.budgetS ?? opts.budget, bootS: slot.bootS };
-      code = runE2eHere(root);
+      code = runE2eHere(root, opts.legacySave);
     }
     return code;
   } finally {
@@ -2871,18 +2941,21 @@ async function runE2e(root, opts = {}) {
   }
 }
 
-function runE2eHere(root) {
+// legacySave (--legacy-save): both boots get LF_E2E_LEGACY_SAVE, so the save boot writes the
+// save format before #331 (version 23) and the reload boot proves it loads into character slot 1.
+function runE2eHere(root, legacySave = false) {
   const profile = join(root, "server", "profile", "test");
   const e = { path: root };
-  console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, graceful close so the shutdown save lands) in ${e.path}`);
-  const pass1 = runE2ePass(e.path, "persistence", { gracefulClose: true });
+  const legacy = legacySave ? "LF_E2E_LEGACY_SAVE" : "";
+  console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, graceful close so the shutdown save lands${legacy ? ", legacy save format" : ""}) in ${e.path}`);
+  const pass1 = runE2ePass(e.path, "persistence", { gracefulClose: true, extraDefine: legacy || undefined });
   if (pass1 !== 0) {
     console.log(`e2e: FAILED in pass 1 (no save produced); not running pass 2`);
     console.log(`e2e: profile ${profile}`);
     return pass1;
   }
   console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, -loadSessionSave latest, LF_E2E_LOAD_BOOT)`);
-  const pass2 = runE2ePass(e.path, "persistence", { keepProfile: true, loadLatestSave: true, extraDefine: "LF_E2E_LOAD_BOOT" });
+  const pass2 = runE2ePass(e.path, "persistence", { keepProfile: true, loadLatestSave: true, extraDefine: legacy ? `LF_E2E_LOAD_BOOT,${legacy}` : "LF_E2E_LOAD_BOOT" });
   console.log(`e2e: profile ${profile}`);
   console.log(`e2e: pass1 exit=${pass1} pass2 exit=${pass2} ${pass1 === 0 && pass2 === 0 ? "OK" : "FAILED"}`);
   return pass1 === 0 && pass2 === 0 ? 0 : (pass1 === 0 ? pass2 : pass1);
@@ -3200,6 +3273,10 @@ const cmds = {
   enable: (n) => cmdSetEnabled(n, true),
   disable: (n) => cmdSetEnabled(n, false),
   build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
+  pack: (flags) => {
+    const list = flags ?? [];
+    return cmdPack(ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), out: argValue(list, "--out") });
+  },
   host: (flags) => cmdHost(flags),
   playtest: (flags) => cmdPlaytest(flags),
   session: (flags) => cmdSession(flags),
@@ -3219,7 +3296,7 @@ const cmds = {
   ci: (flags) => cmdCi(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait"), ...remoteFlags(flags ?? []) }),
   e2e: (flags) => {
     guardHeavy(ROOT, "e2e", (flags ?? []).includes("--force"));
-    return runE2e(ROOT, remoteFlags(flags ?? []));
+    return runE2e(ROOT, { ...remoteFlags(flags ?? []), legacySave: (flags ?? []).includes("--legacy-save") });
   },
   pool: (flags) => pool.cmdPool(ROOT, flags ?? []),
   validate: (flags) => cmdRunArea("validate", ROOT, { full: (flags ?? []).includes("--full") }),
@@ -3339,8 +3416,10 @@ try {
     code = cmdPrs(ROOT, rest);
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
+  } else if (cmd === "discord") {
+    code = runDiscordCli(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "suite-stamp" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

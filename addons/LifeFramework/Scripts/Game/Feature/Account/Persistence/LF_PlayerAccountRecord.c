@@ -58,3 +58,27 @@ class LF_PlayerCharacterRecord
 		return record;
 	}
 }
+//------------------------------------------------------------------------------------------------
+//! One character's row in the "characters" payload (save version 24, #331): the record key its
+//! character-scoped stores use and its wanted level. Matched to the account prefix by account uid
+//! and character id. A save before version 24 has no rows; LF_PlayerAccountManager.ApplyAll then
+//! keys the account's one character (slot 1) by the account uid, which is what its records use.
+//------------------------------------------------------------------------------------------------
+class LF_CharacterSlotRecord
+{
+	string m_sAccountUid;
+	string m_sCharacterId;
+	string m_sRecordKey;
+	int m_iWantedLevel;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_CharacterSlotRecord Create(string accountUid, string characterId, string recordKey, int wantedLevel)
+	{
+		LF_CharacterSlotRecord record();
+		record.m_sAccountUid = accountUid;
+		record.m_sCharacterId = characterId;
+		record.m_sRecordKey = recordKey;
+		record.m_iWantedLevel = wantedLevel;
+		return record;
+	}
+}

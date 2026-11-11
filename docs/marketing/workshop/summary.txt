@@ -1,0 +1,1 @@
+The playtest build of Life Framework, an open-source roleplay framework for Arma Reforger. One small 1989 Everon village: take a job, bank your pay, buy a car, rob a till or the bank, clock in as police, found an organization and run contraband. Pick "Life Framework: Playtest Town" in Scenarios. Unfinished; report what breaks on Discord or GitHub.

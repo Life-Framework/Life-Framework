@@ -170,6 +170,7 @@ under "Hard-coded flagship values in script".
 | `Resources/ResourceChains.conf` | split | Chain shape is core; yields and prices are pack |
 | `Signs/LF_Signs.conf` | split | Sign defs tests use; the titles are the village's |
 | `Vehicles/LF_Garage.conf` | split | Flagship impound fee |
+| `Account/LF_Characters.conf` | split | Characters per account (#331): the core supports any number and defaults to 1; the flagship's one-life rule is the pack's value |
 
 ## Language
 
@@ -190,6 +191,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | --- | --- | --- |
 | `EL_DebugTest.conf` | core | The suite's header |
 | `LF_PlaytestTown.conf` | pack | The flagship playtest header |
+| `LF_PlaytestTown_Preview.{edds,jpg}` | pack | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
 | `EveronLifeGameMode.conf` | pack | The MainWorld header |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
 

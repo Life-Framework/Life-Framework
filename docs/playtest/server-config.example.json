@@ -1,0 +1,42 @@
+{
+	"bindAddress": "",
+	"bindPort": 2001,
+	"publicAddress": "",
+	"publicPort": 2001,
+	"a2s": {
+		"address": "",
+		"port": 17777
+	},
+	"game": {
+		"name": "Life Framework Playtest Town",
+		"password": "",
+		"passwordAdmin": "CHANGE-ME",
+		"admins": [],
+		"scenarioId": "{1054CC8646357708}Missions/LF_PlaytestTown.conf",
+		"maxPlayers": 16,
+		"visible": true,
+		"crossPlatform": false,
+		"supportedPlatforms": [
+			"PLATFORM_PC"
+		],
+		"gameProperties": {
+			"serverMaxViewDistance": 2500,
+			"serverMinGrassDistance": 50,
+			"networkViewDistance": 1500,
+			"disableThirdPerson": false,
+			"fastValidation": true,
+			"battlEye": true,
+			"VONDisableUI": false,
+			"VONDisableDirectSpeechUI": false
+		},
+		"mods": [
+			{
+				"modId": "79636E668EA37AC9",
+				"name": "Life Framework"
+			}
+		]
+	},
+	"operating": {
+		"lobbyPlayerSynchronise": true
+	}
+}
