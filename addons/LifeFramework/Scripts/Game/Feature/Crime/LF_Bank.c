@@ -459,10 +459,44 @@ class LF_Bank
 		robber.GetWorldTransform(robberTransform);
 		vector origin = ToolRestSpot(robber.GetOrigin(), robberTransform[0]);
 
-		tool.SetOrigin(origin + "0 0.1 0");
-		// Upright: a tool dropped at an odd angle lands on its side.
-		tool.SetAngles(Vector(0, robber.GetAngles()[1], 0));
-		LF_Evidence.OnDropped(tool, System.GetTickCount());
+		// On the surface there (the verge, the plinth by the vault), not 10 cm up to drop and tip over; upright.
+		vector rest = LF_Dispatch.RestingSpot(origin + "0 0.3 0", tool);
+		IEntity left = SetDown(tool, rest, robber.GetAngles()[1]);
+		LF_Evidence.OnDropped(left, System.GetTickCount());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts a tool that just left an inventory down at a spot, upright, at its prefab's size. An item out of an
+	//! inventory is back at scale 1 (the inventory keeps no root scale), so the 0.4 drill stood there as a 1.2 m
+	//! bench drill: a scaled tool is set down as a fresh copy carrying the same serial instead.
+	//! \return The tool lying at the spot (the copy, or the same entity for an unscaled prefab).
+	static IEntity SetDown(notnull IEntity tool, vector at, float yaw)
+	{
+		ResourceName prefab = LF_Utils.GetPrefabName(tool);
+		float scale = LF_Utils.PrefabScale(Resource.Load(prefab));
+		if (Math.AbsFloat(scale - 1) < 0.001)
+		{
+			tool.SetOrigin(at);
+			tool.SetAngles(Vector(0, yaw, 0));
+			return tool;
+		}
+
+		IEntity copy = LF_Utils.SpawnEntityPrefab(prefab, at, Vector(yaw, 0, 0));
+		if (!copy)
+		{
+			LF_Debug.Error("Bank", string.Format("tool copy did not spawn (%1); the tool lies at scale 1", prefab));
+			tool.SetOrigin(at);
+			tool.SetAngles(Vector(0, yaw, 0));
+			return tool;
+		}
+
+		LF_SerialComponent from = LF_SerialComponent.Cast(tool.FindComponent(LF_SerialComponent));
+		LF_SerialComponent to = LF_SerialComponent.Cast(copy.FindComponent(LF_SerialComponent));
+		if (from && to && !from.GetSerial().IsEmpty() && !to.SetSerial(from.GetSerial()))
+			LF_Debug.Error("Bank", string.Format("left tool lost its serial %1", from.GetSerial()));
+
+		SCR_EntityHelper.DeleteEntityAndChildren(tool);
+		return copy;
 	}
 
 	//------------------------------------------------------------------------------------------------

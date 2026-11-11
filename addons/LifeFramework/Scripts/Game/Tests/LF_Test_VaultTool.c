@@ -51,7 +51,7 @@ class LF_Test_VaultTool : LF_Test
 		ctx.False(LF_Bank.Jams(0.5, 0.8), "a high roll runs");
 		ctx.False(LF_Bank.Rob(vaultId, uid, robber, 0.2), "a jammed drill opens nothing");
 		ctx.False(LF_Breach.IsOpen(vaultId), "jam: the vault stays shut");
-		ctx.True(drill.GetParent() == null, "jam: the drill left the robber");
+		ctx.True(LF_InventoryUtils.FindItemsByPrefab(inventory, LF_Bank.DRILL_PREFAB).IsEmpty(), "jam: the drill left the robber");
 
 		ctx.True(LF_InventoryUtils.AddItem(inventory, LF_Bank.DRILL_PREFAB), "a second drill");
 		ctx.True(LF_Bank.Rob(vaultId, uid, robber, 0.9), "with a drill the breach starts");

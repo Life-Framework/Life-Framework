@@ -11,6 +11,11 @@ GenericEntity Roadmap_Cash_Stop_Fuel {
  angleY 90
 }
 GenericEntity Roadmap_Cash_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
+ components {
+  LF_AlarmMountComponent "{E7C1AAFA98829903}" {
+   m_vOffset 0 1.885 -0.6
+  }
+ }
  coords 196 0 252.4
  angleY 270
 }
@@ -20,13 +25,5 @@ GenericEntity Roadmap_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_Cash
    m_fJamChance 0
   }
  }
- coords 198.6 0.45 252.4
- scale 1.4
- angleY 90
-}
-GenericEntity Roadmap_Cash_Bank_Cone_1 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
- coords 202.2 0 250.7
-}
-GenericEntity Roadmap_Cash_Bank_Cone_2 : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
- coords 202.2 0 253.2
+ coords 197.4 0 253.75
 }
