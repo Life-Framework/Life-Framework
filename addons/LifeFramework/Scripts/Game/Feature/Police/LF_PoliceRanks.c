@@ -76,37 +76,68 @@ class LF_PoliceRanks
 	//------------------------------------------------------------------------------------------------
 	static string TitleKey(int rank)
 	{
-		if (rank == SENIOR)
-			return "EL-Rank_Senior";
+		LF_PoliceRank row = Row(rank);
+		if (row && !row.m_sTitleKey.IsEmpty())
+			return row.m_sTitleKey;
 
 		return "EL-Rank_Patrol";
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Rungs on the configured ladder (the built-in two when the config gives none).
+	static int RankCount()
+	{
+		array<ref LF_PoliceRank> ranks = {};
+		LF_PoliceConfig.Ranks(ranks);
+		return ranks.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TopRank()
+	{
+		return RankCount() - 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsRankUsable(int rank)
 	{
-		if (rank == PATROL)
-			return true;
-
-		return rank == SENIOR;
+		return rank >= 0 && rank < RankCount();
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Fine cap of the rank. An index past either end of the ladder clamps to the nearest rung.
 	static int FineCap(int rank)
 	{
-		if (rank >= SENIOR)
-			return LF_PoliceUtils.MAX_FINE;
+		LF_PoliceRank row = Row(rank);
+		if (!row)
+			return 0;
 
-		return LF_PoliceConfig.PatrolFineCap();
+		return row.m_iFineCap;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pay per on-duty second for the rank; negative means the rank defers to the jobs config rate.
+	static float PayPerSecond(int rank)
+	{
+		LF_PoliceRank row = Row(rank);
+		if (!row)
+			return -1;
+
+		return row.m_fPayPerSecond;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On-duty seconds that promote this rank to the next. 0 for the top rank.
 	static int DutySecondsForNext(int rank)
 	{
-		if (rank == PATROL)
-			return DUTY_SECONDS;
+		if (rank >= TopRank())
+			return 0;
 
-		return 0;
+		LF_PoliceRank row = Row(rank);
+		if (!row)
+			return 0;
+
+		return Math.Max(row.m_iDutySecondsForNext, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -528,10 +559,27 @@ class LF_PoliceRanks
 	protected static void RankPrefabs(int rank, notnull array<ResourceName> prefabs)
 	{
 		prefabs.Clear();
-		if (rank == PATROL)
-			prefabs.Insert(SIDEARM);
-		else if (rank == SENIOR)
-			prefabs.Insert(LONG_GUN);
+		LF_PoliceRank row = Row(rank);
+		if (!row || !row.m_aKit)
+			return;
+
+		foreach (ResourceName prefab : row.m_aKit)
+		{
+			prefabs.Insert(prefab);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ladder row for a rank, clamped to the ladder so a rank saved under a longer ladder
+	//! reads as the top rung.
+	protected static LF_PoliceRank Row(int rank)
+	{
+		array<ref LF_PoliceRank> ranks = {};
+		LF_PoliceConfig.Ranks(ranks);
+		if (ranks.IsEmpty())
+			return null;
+
+		return ranks.Get(Math.ClampInt(rank, 0, ranks.Count() - 1));
 	}
 
 	//------------------------------------------------------------------------------------------------
