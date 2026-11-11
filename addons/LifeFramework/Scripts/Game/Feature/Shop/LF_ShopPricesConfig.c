@@ -11,11 +11,11 @@
 class LF_ShopPricesConfig
 {
 	//! Buy price applied to any item no rule matched. The player pays this to the shop.
-	[Attribute("50", UIWidgets.Auto, desc: "Default buy price when no rule matches")]
+	[Attribute("50", UIWidgets.Auto, desc: "Default buy price when no rule matches", params: "0 1000000")]
 	int m_iDefaultBuyPrice;
 
 	//! Sell price applied to any item no rule matched. The shop pays this to the player.
-	[Attribute("25", UIWidgets.Auto, desc: "Default sell price when no rule matches")]
+	[Attribute("25", UIWidgets.Auto, desc: "Default sell price when no rule matches", params: "0 1000000")]
 	int m_iDefaultSellPrice;
 
 	//! Ordered price rules. Later matches override earlier ones.
@@ -30,6 +30,11 @@ class LF_ShopPricesConfig
 
 	//! The owner config.json section this class reads (LF_ConfigService).
 	static const string SECTION = "shops";
+
+	//! The limits of every price, the same numbers as the `params: "0 1000000"` on the price attributes.
+	//! The owner reader refuses a price outside them (#279).
+	static const int PRICE_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int PRICE_MAX = 1000000;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	//------------------------------------------------------------------------------------------------
 	//! Merges the config layers over this instance, which holds the core `.conf`: first each pack
@@ -140,8 +145,10 @@ class LF_ShopPricesConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		reader.ReadInt("defaultBuyPrice", m_iDefaultBuyPrice);
-		reader.ReadInt("defaultSellPrice", m_iDefaultSellPrice);
+		array<string> ownerKeys = {"defaultBuyPrice", "defaultSellPrice", "priceRules", "extraItemPrefabs"};
+		reader.WarnUnknownKeys(ownerKeys);
+		reader.ReadInt("defaultBuyPrice", m_iDefaultBuyPrice, PRICE_MIN, PRICE_MAX);
+		reader.ReadInt("defaultSellPrice", m_iDefaultSellPrice, PRICE_MIN, PRICE_MAX);
 
 		if (!m_aPriceRules)
 			m_aPriceRules = new array<ref LF_ShopPriceRule>();
@@ -171,8 +178,10 @@ class LF_ShopPricesConfig
 				m_aPriceRules.Insert(rule);
 			}
 
-			reader.ReadInt("buyPrice", rule.m_iBuyPrice);
-			reader.ReadInt("sellPrice", rule.m_iSellPrice);
+			array<string> ruleKeys = {"buyPrice", "sellPrice", "hidden"};
+			reader.WarnUnknownKeys(ruleKeys);
+			reader.ReadInt("buyPrice", rule.m_iBuyPrice, PRICE_MIN, PRICE_MAX);
+			reader.ReadInt("sellPrice", rule.m_iSellPrice, PRICE_MIN, PRICE_MAX);
 			reader.ReadBool("hidden", rule.m_bHidden);
 			reader.EndRecord();
 		}
@@ -262,11 +271,11 @@ class LF_ShopPriceRule
 	string m_sFind;
 
 	//! Price the player pays to buy this item.
-	[Attribute("100", UIWidgets.Auto, desc: "Buy price: what the player pays")]
+	[Attribute("100", UIWidgets.Auto, desc: "Buy price: what the player pays", params: "0 1000000")]
 	int m_iBuyPrice;
 
 	//! Price the shop pays the player for this item.
-	[Attribute("50", UIWidgets.Auto, desc: "Sell price: what the shop pays the player")]
+	[Attribute("50", UIWidgets.Auto, desc: "Sell price: what the shop pays the player", params: "0 1000000")]
 	int m_iSellPrice;
 
 	//! When a matching rule is hidden, the item is never sold anywhere. A hidden match ends the
