@@ -91,9 +91,9 @@ GenericEntity Sign_Garage : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 238 2.0 259.45
+ coords 238 3.06 259.4
  angleY 180
- scale 1.2
+ scale 0.7
 }
 GenericEntity Sign_Impound : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
@@ -256,7 +256,7 @@ GenericEntity Sign_PubHanging : "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingPa
  angleY 180
 }
 GenericEntity Sign_HospitalCross : "{238A10113E311A73}Prefabs/Props/Fabric/RedCrossCloth/RedCrossClothTemper_01_big_front.et" {
- coords 266.5 2.3 258.05
+ coords 266.5 2.3 259.88
  angleY 180
 }
 GenericEntity Sign_ConvoyDrop : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
@@ -265,7 +265,7 @@ GenericEntity Sign_ConvoyDrop : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_B
    m_sSignId "convoy_drop"
   }
  }
- coords 128.1 0.5 282.5
+ coords 127.52 0.9 282.5
  angleY 90
 }
 GenericEntity Sign_ConvoyPickup : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
@@ -274,7 +274,7 @@ GenericEntity Sign_ConvoyPickup : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign
    m_sSignId "convoy_pickup"
   }
  }
- coords 463 1 335.3
+ coords 463 1 335.64
  angleY 180
 }
 GenericEntity Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

@@ -216,8 +216,9 @@ export function singleProblems(e, m) {
   const out = [];
   if (m.missing || m.point) return out;
   const veg = isKind(e, "vegetation");
-  // A thin thing more than 0.5 m up against a wall is hung there (a board, a poster), not floating.
-  const mounted = isKind(e, "mounted") || (m.backed && m.gap > 0.5 && Math.min(m.box.h[0], m.box.h[2]) < 0.15);
+  // Hung on something: a sign, board or poster with a wall (or another entity) at its back, or any thin thing
+  // more than 0.5 m up against one. A pole sign or a board on legs has nothing behind it and must stand.
+  const mounted = m.backed && (isKind(e, "mounted") || (m.gap > 0.5 && Math.min(m.box.h[0], m.box.h[2]) < 0.15));
   const building = isKind(e, "building") || volume(m) > 40;
   const vehicle = isKind(e, "vehicle");
   if (!mounted && m.gap > LIMITS.gap) out.push({ kind: "floating", amount: m.gap, text: `floating ${r2(m.gap)} m above ${m.on}` });
