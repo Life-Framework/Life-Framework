@@ -54,8 +54,8 @@ for pack overlays and an `LF_ConfigReader` on its owner section.
 - A new rule that leaves out `buyPrice` or `sellPrice` gets 100 and 50, the
   same defaults as a rule written in a `.conf`.
 - `extraItemPrefabs` adds to the shipped list; it never removes.
-- `schemaVersion` is read and logged; a file without it is version 1. Too-new
-  and too-old handling is #302.
+- `schemaVersion` is read (a file without it is version 1) and compared with the
+  build's `LF_ConfigService.SCHEMA_VERSION`; see "Schema version" below.
 
 A missing `config.json` boots on the shipped defaults and writes
 `config.example.json` beside it, only when no file is at that path. The
@@ -72,10 +72,37 @@ Never a VME, never a crash, never more than the one value:
 | Section is not an object | `LF_Debug.Error`, that section on shipped defaults |
 | Field of the wrong type (`"buyPrice": "x"`, `12.0` for an int) | `LF_Debug.Error` naming `section.record.field`, the lower layer's value stays, the rest applies |
 | Record that is not an object, or whose key does not parse | `LF_Debug.Error`, record skipped |
+| Number outside the range its attribute declares (`"buyPrice": -3`, `5000000`) | `LF_Debug.Error` naming `section.record.field`, the value, the limit it broke and the kept value; the lower layer's value stays, the rest applies |
+| Unknown key in the file, a section or a record (`defaultBuyPrise`) | `LF_Debug.Warn` naming the path, in file order; the key is ignored, the rest applies |
+| Unknown top-level key (`"shop"`) | `LF_Debug.Warn`; ignored |
 | `null` | Reads as an empty string; anywhere else it is the wrong type |
 
-Unknown keys are ignored today. #279 adds the warning: `StartMap` +
-`ReadMapKey` lists the keys of any named object, records included.
+**Ranges.** `LF_ConfigReader.ReadInt(key, value, min, max)`. A feature declares the
+limits twice: as `params: "min max"` on the attribute (the Workbench editor
+enforces it) and as constants the apply step passes (shops:
+`LF_ShopPricesConfig.PRICE_MIN`/`PRICE_MAX`, 0 to 1000000). The engine exposes no
+attribute reader at run time, so the two are kept equal by hand. Float fields and the
+`{GUID}path` prefab-exists check are not done yet.
+
+**Unknown keys.** The reader lists a section's or record's keys with `StartMap` +
+`ReadMapKey` before entering it (only after `KindOf` says OBJECT) and the feature calls
+`WarnUnknownKeys(known)`. The root's keys cannot be listed (an anonymous map fails), so
+`LF_ConfigService.WarnUnknownSections` wraps the document as `{"doc": ...}` and lists
+that. A new section adds its key to `IsKnownTopLevelKey`.
+
+## Schema version
+
+`LF_ConfigService.ClassifySchema` and `GetSchemaStatus` (#302). No migrations (#303).
+
+| `schemaVersion` | Status | Log |
+|---|---|---|
+| missing or equal to the build's | `CURRENT` | Info |
+| below the build's | `OLDER` | Info: read as-is, migrations are #303 |
+| above the build's | `NEWER` | `LF_Debug.Error`: update the server; the fields this build knows still apply, the rest warns as unknown |
+| not a whole number, or below 1 | `INVALID` | `LF_Debug.Error`; read as version 1 |
+
+Today the build reads version 1, so `OLDER` is reached in tests only
+(`LoadOwnerString(json, source, buildSchema)`).
 
 ## Why the engine parses and the reader is hand-written (the #278 probe)
 
@@ -152,4 +179,6 @@ streams the owner values. On a listen host the host sees owner prices.
   `ParseRuleKey`, `FindRule`), `LF_ShopManagerComponent.LoadConfig` calls
   `ApplyLayers`.
 - Tests: `LF_Test_ConfigJsonProbe`, `LF_Test_ConfigMerge` (fields, keyed,
-  reject, no-owner), `LF_Test_ConfigOwnerFile`, `LF_Test_ConfigPackOverlay`.
+  reject, no-owner), `LF_Test_ConfigOwnerFile`, `LF_Test_ConfigPackOverlay`,
+  `LF_Test_ConfigReject` (range), `LF_Test_ConfigUnknownKeys`,
+  `LF_Test_ConfigSchemaVersion`.

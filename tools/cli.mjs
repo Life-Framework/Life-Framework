@@ -48,7 +48,8 @@ import { cmdPlaytestRelease } from "./release/release-playtest.mjs";
 import * as session from "../agent-box/session.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
-import { rdbFreshness, describeMissing } from "./lib/rdb-fresh.mjs";
+import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
+import { addonsDirArgs, addonDir, gprojOf, rdbAddons, resolveAddon, defaultPackOut, CORE } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
@@ -61,6 +62,7 @@ import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-l
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
+import * as e2eShutdown from "./test/e2e-shutdown.mjs";
 import { readReaped, resetLease } from "./lib/session-lease.mjs";
 import * as measure from "./lib/session-measure.mjs";
 import { trimProcs } from "./lib/ws-trim.mjs";
@@ -872,8 +874,14 @@ function cmdBuild(root = ROOT, opts = {}) {
     console.log(`FAIL  ${e.message} (a headless Workbench build is running in another worktree)`);
     return Promise.resolve(1);
   }
-  const gproj = join(root, "addons", "LifeFramework", "LifeFramework.gproj");
-  const out = join(root, "server", "build");
+  const addonInfo = opts.addon ? resolveAddon(opts.addon) : resolveAddon(CORE);
+  if (!addonInfo) {
+    console.log(`FAIL  unknown addon "${opts.addon}"; known: LifeFramework, LF_Everon1989`);
+    wt.releaseLock(root, "build");
+    return Promise.resolve(1);
+  }
+  const gproj = gprojOf(root, addonInfo.name);
+  const out = join(root, "server", addonInfo.name === CORE ? "build" : `build-${addonInfo.name}`);
   const profile = join(root, "server", "profile", "build");
   mkdirSync(out, { recursive: true });
   const env = envOf();
@@ -899,7 +907,7 @@ function cmdBuild(root = ROOT, opts = {}) {
     "-run",
     "-exitAfterInit",
     "-profile", profile,
-    ...addonDirs.flatMap((d) => ["-addonsDir", d]),
+    ...addonsDirArgs(addonDirs),
   ];
   console.log(`building addon (headless Workbench) -> ${out}`);
   console.log(`  cwd (game dir): ${gameDir}`);
@@ -998,8 +1006,13 @@ function cmdPack(root = ROOT, opts = {}) {
     console.log(`FAIL  workbench not found: ${exe}`);
     return 1;
   }
-  const out = resolve(opts.out || join(root, "tmp", "workshop-pack", "LifeFramework"));
-  const addon = join(root, "addons", "LifeFramework");
+  const addonInfo = resolveAddon(opts.addon || CORE);
+  if (!addonInfo) {
+    console.log(`FAIL  unknown addon "${opts.addon}"; known: LifeFramework, LF_Everon1989 (name or GUID)`);
+    return 1;
+  }
+  const out = resolve(opts.out || defaultPackOut(root, addonInfo.name));
+  const addon = addonDir(root, addonInfo.name);
   if (out.toLowerCase().startsWith(addon.toLowerCase())) {
     console.log(`FAIL  pack output ${out} is inside the addon folder; Workbench would pack its own output`);
     return 1;
@@ -1014,16 +1027,15 @@ function cmdPack(root = ROOT, opts = {}) {
     wt.acquireLock(root, "build", { waitMs: opts.wait ? 900000 : 0 });
     locked = true;
     const args = [
-      "-gproj", join(addon, "LifeFramework.gproj"),
+      "-gproj", gprojOf(root, addonInfo.name),
       "-wbModule=ResourceManager",
       "-packAddon",
       "-packAddonDir", out,
       "-noSplash",
       "-profile", profile,
-      "-addonsDir", join(root, "addons"),
-      "-addonsDir", workbenchGameAddons(root, "pack"),
+      ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "pack")]),
     ];
-    console.log(`packing addon (headless Workbench) -> ${out}`);
+    console.log(`packing ${addonInfo.name} (headless Workbench) -> ${out}`);
     const started = Date.now();
     const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 900000 });
     const secs = ((Date.now() - started) / 1000).toFixed(0);
@@ -1031,8 +1043,14 @@ function cmdPack(root = ROOT, opts = {}) {
     const lines = log ? readFileSync(log, "utf8").split(/\r?\n/) : [];
     for (const l of lines.filter((x) => /Packaging|\(E\).*(pack|bundle|cannot copy|metafile)/i.test(x)).slice(-12)) console.log(`  ${l}`);
     const paks = existsSync(out) ? readdirSync(out).filter((f) => /\.pak$/i.test(f)) : [];
-    const manifest = ["addon.gproj", "LifeFramework.gproj"].find((f) => existsSync(join(out, f)));
+    const manifest = ["addon.gproj", `${addonInfo.name}.gproj`].find((f) => existsSync(join(out, f)));
     const mb = paks.reduce((s, f) => s + statSync(join(out, f)).size, 0) / 1048576;
+    // A skeleton addon with no resources packs to a project file and an rdb but no .pak.
+    const empty = !paks.length && !!manifest && addonResources(addon).length === 0 && lines.some((x) => /Packaging project successful/.test(x));
+    if (empty) {
+      console.log(`pack OK in ${secs}s: ${addonInfo.name} declares no resources, so no .pak file; ${manifest} in ${out}`);
+      return 0;
+    }
     if (!paks.length || !manifest) {
       console.log(`pack FAILED after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${paks.length} .pak file(s), project file ${manifest ? "present" : "missing"} in ${out}`);
       if (log) console.log(`  log: ${log}`);
@@ -1059,21 +1077,29 @@ function cmdPack(root = ROOT, opts = {}) {
 const RDB_REFRESH_TYPICAL_S = 15;
 function ensureResourceDatabase(root) {
   wt.copyResourceDatabase(root);
-  const addon = join(root, "addons", "LifeFramework");
+  // The core always; another addon once it declares a resource (tools/lib/addons.mjs rdbAddons).
+  let worst = 0;
+  for (const name of rdbAddons(root)) worst = Math.max(worst, ensureAddonResourceDatabase(root, name));
+  return worst;
+}
+
+function ensureAddonResourceDatabase(root, name) {
+  const addon = addonDir(root, name);
+  const tag = name === CORE ? "" : ` [${name}]`;
   const before = rdbFreshness(addon);
   if (before.missing.length === 0) return 0;
   const what = `${before.missing.length} unregistered resource(s): ${describeMissing(before.missing)}`;
   if (wt.isMainCheckout(root) || process.env.LF_RDB_REFRESH === "0") {
-    console.log(`WARN  resource database stale: ${what}`);
+    console.log(`WARN  resource database stale${tag}: ${what}`);
     console.log("      open Workbench on this checkout once (it rewrites resourceDatabase.rdb), or run from a worktree");
     return 1;
   }
   const exe = workbenchExe();
   if (!existsSync(exe)) {
-    console.log(`WARN  resource database stale: ${what}; Workbench not found (${exe}), cannot refresh`);
+    console.log(`WARN  resource database stale${tag}: ${what}; Workbench not found (${exe}), cannot refresh`);
     return 1;
   }
-  console.log(`resource database stale: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
+  console.log(`resource database stale${tag}: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
   let locked = false;
   try {
     wt.acquireLock(root, "build", { waitMs: 900000 });
@@ -1083,23 +1109,22 @@ function ensureResourceDatabase(root) {
     const profile = join(root, "server", "profile", "rdb");
     mkdirSync(profile, { recursive: true });
     const args = [
-      "-gproj", join(addon, "LifeFramework.gproj"),
+      "-gproj", gprojOf(root, name),
       "-wbModule=ResourceManager",
       "-noSplash",
       "-run",
       "-exitAfterInit",
       "-profile", profile,
-      "-addonsDir", join(root, "addons"),
-      "-addonsDir", workbenchGameAddons(root, "rdb"),
+      ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
     ];
     const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 600000 });
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
-      console.log(`resource database refreshed in ${secs}s (${after.total} resources registered)`);
+      console.log(`resource database${tag} refreshed in ${secs}s (${after.total} resources registered)`);
       return 0;
     }
-    console.log(`WARN  resource database still stale after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${after.missing.length} unregistered: ${describeMissing(after.missing)}`);
+    console.log(`WARN  resource database still stale${tag} after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${after.missing.length} unregistered: ${describeMissing(after.missing)}`);
     return 1;
   } catch (e) {
     console.log(`WARN  resource database refresh failed: ${e.message}`);
@@ -1146,8 +1171,7 @@ async function cmdUiImage(flags) {
       "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
       "-plugin=LF_ImageImportPlugin", "-lfImage=" + png,
       "-profile", profile,
-      "-addonsDir", join(root, "addons"),
-      "-addonsDir", workbenchGameAddons(root, "rdb"),
+      ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
     ], { cwd: gameDir, timeoutMs: Number(process.env.LF_UI_IMAGE_TIMEOUT_S || 150) * 1000, stdout: logFile, stderr: logFile });
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     const meta = edds + ".meta";
@@ -2439,9 +2463,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   mcp verify [name]             boot server briefly to confirm it starts
   mcp enable <name>             enable a server in opencode.json
   mcp disable <name>            disable a server in opencode.json
-  build                         headless Workbench build of the addon (worktree only)
-  pack [--out dir] [--wait]     pack the addon as Workbench > Publish bundles it, no upload
-                                (default tmp/workshop-pack/LifeFramework; docs/playtest/workshop-host.md)
+  build [addon]                 headless Workbench build of LifeFramework (default) or LF_Everon1989 (worktree only)
+  pack [addon] [--out dir] [--wait]  pack LifeFramework (default) or LF_Everon1989 (name or GUID), no upload
+                                (default tmp/workshop-pack/<addon>; docs/playtest/workshop-host.md)
   serve                         boot the headless test server (blocks, worktree only)
   playtest [stop|status|shortcut]  the maintainer's one command: host from the pinned origin/main
                                 checkout (..\\Life-Framework-playtest), then open the game joined to it;
@@ -2516,6 +2540,15 @@ servers: ${Object.keys(SERVERS).join(", ")}
 // ------------------------------------------------------------------- main
 
 const [cmd, ...rest] = process.argv.slice(2);
+
+// First argument that is neither a flag nor the value of one of `valueFlags`.
+function firstPositional(flags, valueFlags = []) {
+  for (let i = 0; i < flags.length; i++) {
+    if (valueFlags.includes(flags[i])) { i++; continue; }
+    if (!flags[i].startsWith("--")) return flags[i];
+  }
+  return null;
+}
 
 function argValue(flags, name) {
   const i = flags.indexOf(name);
@@ -2667,8 +2700,9 @@ function wtHelp() {
   tools\\cli wt test <slug> [--tier fast|all|persistence] [--only <names>] [--no-build] [--wait]
                                        run the LFTEST suite in that worktree (from anywhere)
   tools\\cli wt e2e <slug> [--legacy-save]
-                                       two-boot save-state E2E: persistence save boot, then
-                                       reload same profile with -loadSessionSave (latest);
+                                       two-boot save-state E2E: persistence save boot ended by the
+                                       host stop file (SHUTDOWN save), then reload same profile
+                                       with -loadSessionSave (latest = the shutdown save);
                                        --legacy-save: boot 1 writes the pre-#331 format (version 23)
   tools\\cli wt build <slug> [--wait]  headless Workbench build in that worktree (serialized)
   tools\\cli wt dev <slug> [--tier X]  fast loop (validate + test --no-build) in that worktree
@@ -2870,7 +2904,7 @@ async function wtTestCmd(args) {
 
 // One boot of the test-e2e.ps1 harness in the target worktree. Mirrors the
 // harness invocation inside cmdTest (same ports, same cwd/env) but exposes the
-// profile-keep and -loadSessionSave flags the two-boot save-state E2E needs.
+// profile-keep, -loadSessionSave, mission and host-stop flags the two-boot save-state E2E needs.
 function runE2ePass(root, tier, opts = {}) {
   const harness = join(root, "tools", "test", "test-e2e.ps1");
   if (!existsSync(harness)) {
@@ -2890,7 +2924,9 @@ function runE2ePass(root, tier, opts = {}) {
   if (opts.keepProfile) psArgs.push("-KeepProfile");
   if (opts.loadLatestSave) psArgs.push("-LoadLatestSave");
   else if (opts.loadSessionSave !== undefined) psArgs.push("-LoadSessionSave", opts.loadSessionSave);
-  if (opts.gracefulClose) psArgs.push("-GracefulClose");
+  if (opts.mission) psArgs.push("-Mission", opts.mission);
+  if (opts.hostStop) psArgs.push("-HostStop");
+  if (opts.hostStopAfter) psArgs.push("-HostStopAfter", opts.hostStopAfter);
   if (opts.extraDefine) psArgs.push("-ExtraDefine", opts.extraDefine);
   return withServerSlot(root, 0, () => {
     const res = sh(PWSH, psArgs, { cwd: root, env: toolEnv() });
@@ -2956,19 +2992,38 @@ async function runE2e(root, opts = {}) {
 
 // legacySave (--legacy-save): both boots get LF_E2E_LEGACY_SAVE, so the save boot writes the
 // save format before #331 (version 23) and the reload boot proves it loads into character slot 1.
+// Both boots run the suite's mission header: on a bare world the engine writes no SHUTDOWN save
+// (#830). Pass 1 ends through the host stop file, the path `host stop` takes, and must log the
+// SHUTDOWN save before the feature statics reset; pass 2 loads that save (tools/test/e2e-shutdown.mjs).
 function runE2eHere(root, legacySave = false) {
   const profile = join(root, "server", "profile", "test");
   const e = { path: root };
   const legacy = legacySave ? "LF_E2E_LEGACY_SAVE" : "";
-  console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, graceful close so the shutdown save lands${legacy ? ", legacy save format" : ""}) in ${e.path}`);
-  const pass1 = runE2ePass(e.path, "persistence", { gracefulClose: true, extraDefine: legacy || undefined });
+  const mission = e2eShutdown.E2E_MISSION;
+  console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, ${mission}, ends by the host stop file so the engine writes the SHUTDOWN save${legacy ? ", legacy save format" : ""}) in ${e.path}`);
+  const pass1Defines = [e2eShutdown.HOST_STOP_DEFINE, legacy].filter(Boolean).join(",");
+  let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines });
+  if (pass1 === 0) {
+    const log = e2eShutdown.newestTestConsole(e.path);
+    const check = e2eShutdown.checkShutdownSave(log ? readFileSync(log, "utf8") : "");
+    for (const line of check.lines) console.log(`e2e: pass 1 ${line}`);
+    if (!check.ok) {
+      console.log(`e2e: FAILED in pass 1 (shutdown save): ${check.reason}`);
+      console.log(`e2e: log ${log ?? "(none)"}`);
+      pass1 = 1;
+    } else {
+      console.log("e2e: pass 1 shutdown save written after the host stop, statics reset after it");
+    }
+  }
   if (pass1 !== 0) {
-    console.log(`e2e: FAILED in pass 1 (no save produced); not running pass 2`);
+    console.log(`e2e: FAILED in pass 1 (no shutdown save produced); not running pass 2`);
     console.log(`e2e: profile ${profile}`);
     return pass1;
   }
-  console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, -loadSessionSave latest, LF_E2E_LOAD_BOOT)`);
-  const pass2 = runE2ePass(e.path, "persistence", { keepProfile: true, loadLatestSave: true, extraDefine: legacy ? `LF_E2E_LOAD_BOOT,${legacy}` : "LF_E2E_LOAD_BOOT" });
+  console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, LF_E2E_LOAD_BOOT)`);
+  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: legacy ? `LF_E2E_LOAD_BOOT,${legacy}` : "LF_E2E_LOAD_BOOT" });
+  const log2 = e2eShutdown.newestTestConsole(e.path);
+  for (const line of e2eShutdown.loadLines(log2 ? readFileSync(log2, "utf8") : "")) console.log(`e2e: pass 2 ${line}`);
   console.log(`e2e: profile ${profile}`);
   console.log(`e2e: pass1 exit=${pass1} pass2 exit=${pass2} ${pass1 === 0 && pass2 === 0 ? "OK" : "FAILED"}`);
   return pass1 === 0 && pass2 === 0 ? 0 : (pass1 === 0 ? pass2 : pass1);
@@ -3294,10 +3349,13 @@ const cmds = {
   verify: (n) => cmdVerify(n),
   enable: (n) => cmdSetEnabled(n, true),
   disable: (n) => cmdSetEnabled(n, false),
-  build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
+  build: (flags) => {
+    const list = flags ?? [];
+    return cmdBuild(ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), addon: firstPositional(list, ["--out"]) });
+  },
   pack: (flags) => {
     const list = flags ?? [];
-    return cmdPack(ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), out: argValue(list, "--out") });
+    return cmdPack(ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), out: argValue(list, "--out"), addon: firstPositional(list, ["--out"]) });
   },
   host: (flags) => cmdHost(flags),
   playtest: (flags) => cmdPlaytest(flags),
@@ -3429,7 +3487,7 @@ function cmdSuiteValid(flags) {
 }
 
 const [a, b] = rest;
-const HEAVY = ["build", "serve", "dev", "test", "ci", "e2e"];
+const HEAVY = ["build", "pack", "serve", "dev", "test", "ci", "e2e"];
 
 let code;
 try {

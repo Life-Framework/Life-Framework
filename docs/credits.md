@@ -1,7 +1,44 @@
 # Credits
 
-Third-party material used in Life Framework media. The website credits page and README section are tracked in #480;
-this file is where video and audio credits are recorded until then. Every track and voice gets a row before it is used.
+Who and what Life Framework is built on. The website `/credits` page and the Credits section of `README.md` are built
+from this file and `THIRD_PARTY.md`. Every track and voice gets a row before it is used. Credits are facts from the repo only; a
+person's role is added when the maintainer confirms it.
+
+## Projects we build on and borrow from
+
+| Project | Author | Licence | What we took | Where it is recorded |
+|---|---|---|---|---|
+| [Everon Life RPG Framework](https://github.com/EveronLife/EveronLife) | Arkensor and its contributors | MIT | Life Framework is a fork and continuation of it. The upstream `EL_` class prefix became `LF_` on 2026-11-09; the credit stays. | `README.md`, `docs/ecosystem.md` |
+| [Overthrow](https://github.com/ArmaOverthrow/Overthrow.Arma4) | Overthrow owner | Arma Public License Share Alike upstream; used with the owner's permission and relicensed MIT for Life Framework only | Money, resource and shop data code; the persistence lessons in `AGENTS.md`. Each derived file names its source in a header. | `THIRD_PARTY.md`, `docs/overthrow-survey.md` |
+| [LNGCLifeRP_Public](https://github.com/SouLGenetic/LNGCLifeRP_Public) | LNGCGenetic | MIT | Police, jail, garage and vehicle code. Each ported file keeps its notice. | `THIRD_PARTY.md`, `docs/ecosystem.md` |
+| Bohemia Interactive | Bohemia Interactive | Arma Public License (the Workshop build); game assets belong to Bohemia Interactive | Base-game assets, and the Arma Reforger engine. Life Framework is not affiliated with Bohemia Interactive. | `README.md`, `assets-source/LICENSES.md` |
+
+Code ported from MIT forks of Everon Life, each with a `// Ported from` line in the file:
+
+- [thebonbon/EveronLife](https://github.com/thebonbon/EveronLife): roleplay chat, mining, jump pad and spike strip code. The mining code was ported with the author's permission given to the maintainer.
+- [rekterakathom/EveronLife](https://github.com/rekterakathom/EveronLife): parts of the inventory storage manager and the shop rules.
+- [Jacob-Mango/EveronLife](https://github.com/Jacob-Mango/EveronLife): parts of the quantity component.
+
+The per-file list is `THIRD_PARTY.md`. The forks are surveyed in `docs/everonlife-forks.md`.
+
+## Contributors
+
+Everyone who has committed to the repository is on the [GitHub contributors list](https://github.com/Life-Framework/Life-Framework/graphs/contributors),
+counted from the commit history. The website page shows the same list with commit counts. Most agent-written commits carry the
+name of the person who ran the agent.
+
+## Licences
+
+- The source in this repository is MIT (`LICENSE`). Contributions are licensed under MIT (`CONTRIBUTING.md`).
+- The build published on the Arma Reforger Workshop is licensed under the Arma Public License (APL), because the Workshop Terms of Use require an APL-family licence for uploaded content.
+- Third-party code keeps its own licence and notice (`THIRD_PARTY.md`). Third-party assets are listed in `assets-source/LICENSES.md`; none are used yet.
+
+## Tools
+
+- Arma Reforger Tools and the Workbench IDE by Bohemia Interactive build and test the mod.
+- [Piper](https://github.com/rhasspy/piper) makes the trailer voice-over (see Voice-over below).
+- The website is Vite, React, TypeScript and Tailwind, hosted on Cloudflare Pages, built from this repository and GitHub (`website/README.md`).
+- Life Framework is built with AI coding agents under the maintainer's direction, on a Claude subscription (`docs/community/support.md`).
 
 ## Music
 

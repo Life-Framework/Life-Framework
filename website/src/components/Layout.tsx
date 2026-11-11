@@ -184,6 +184,7 @@ function Footer() {
         { label: "Gallery", href: "/gallery" },
         { label: "Devlog", href: "/devlog" },
         { label: "Decisions", href: "/decisions" },
+        { label: "Credits", href: "/credits" },
         { label: "Direction", href: "/docs/direction" },
       ],
     },

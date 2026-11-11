@@ -65,6 +65,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfigMergeNoOwner(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigOwnerFile(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ConfigPackOverlay(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ConfigReject(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigSchemaVersion(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConfigUnknownKeys(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterLocalOnly(), LF_TestTier.WORLD);
@@ -102,6 +105,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_E2E_Narrative(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_E2E_SaveStateWrite(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_SaveStateVerify(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_E2E_ShutdownSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2EInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
@@ -363,6 +367,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleLockIdMatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLockPolish(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistChatResources(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLogic(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistCommandParse(), LF_TestTier.LOGIC);

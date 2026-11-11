@@ -30,7 +30,7 @@ tools\cli place verify <entity>...          the placement audit on those entitie
 - An unnamed entity is addressed by its prefab file name and a point: `LampStreet_E_01_6m@196,255.4`.
 - `--dry` prints the plan and writes nothing. `--no-verify` skips the audit boot (run `place verify`
   before you ship). `--keep` leaves a flagged placement in the file. `--force` writes despite an
-  offline finding. `--scale s` sets a scale; outside 0.5 to 2 is refused.
+  offline finding. `--scale s` sets a scale (a new entity gets a scale line; a `--move` rewrites or adds its scale line); outside 0.5 to 2 is refused.
 
 Run it from a worktree. A probe or an audit is one boot of the test server, about 11 s, queued on the
 test lane like `tools\cli test`; no session, no client.
@@ -178,7 +178,7 @@ edits first, one session.
   `tools/actions/prop-on-surface.mjs`, the pair checks and the audit run from
   `agent-box/place-audit.mjs` (`measureTown`).
 - `LF_PlacementAudit.RayLine` traces one probe ray with `BaseWorld.TraceMove` on every physics layer,
-  skips characters and the prop being moved, and reports distance, the entity hit, its root, the hit
+  skips characters and the prop being moved (an unnamed one is passed as `@<prefab>:x,y,z` and found by FindExcluded), and reports distance, the entity hit, its root, the hit
   point and `GetSurfaceY` under it. `RunBatch` answers `ray ...` lines in the audit's input file, so
   the probes and the measurements share one boot of `LF_Test_PlacementAuditTown`.
 - Tests: `tools/validation/place-tool-selftest.mjs` (in `tools\cli validate`; one red-proof per

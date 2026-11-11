@@ -289,6 +289,13 @@
   `config/json-probe`, `config/merge-fields`, `config/merge-keyed`,
   `config/merge-reject`, `config/merge-no-owner`, `config/owner-file`,
   `config/pack-overlay`.
+- ✅ (2026-11-12, #279 #302) Per-field reject: a price outside its attribute's
+  `params: "min max"` (0 to 1000000) is refused with the value, limit and kept
+  value logged, and the rest still applies; an unknown key (top level, section
+  or record) warns and is ignored; `schemaVersion` above the build's logs an
+  error (known fields still apply), below it logs an info line, a bad one reads
+  as 1. No migrations (#303). Tests `config/reject`, `config/unknown-keys`,
+  `config/schema-version`.
 - ⚠️ Owner values are server-side: a client's price list shows shipped prices
   on a dedicated server until #285 streams them. Unknown keys are not warned
   yet (#279); `schemaVersion` is read but not acted on (#302).
@@ -553,7 +560,11 @@
   on graceful exit; the manager observes the result via `OnAfterSave` and logs
   an `LF_Debug.Error` if a session ends with no shutdown save. The old manual
   `RequestSavePoint(SHUTDOWN)` from `OnGameEnd` always lost the race against
-  the persistence teardown on the Workbench (fixed 2026-08-30).
+  the persistence teardown on the Workbench (fixed 2026-08-30). The engine
+  writes it only under a mission header; a bare `DebugWorld.ent` boot writes
+  none. `wt e2e` pass 1 ends through the host stop file on
+  `EL_DebugTest.conf`, asserts the SHUTDOWN save landed before the statics
+  reset, and pass 2 loads it (test `e2e/shutdown-save-loaded`, #830).
 - ✅ Persistence system resolution is stable across reloads: the systems config
   is now `Configs/Systems/LifeFrameworkSystems.conf` (unique GUID, referenced
   explicitly from both missions), replacing the GUID-colliding
@@ -2358,3 +2369,7 @@
 
 - ✅ **Police rank ladder is config (#754a, M3).** `m_aRanks` in `Configs/Police/LF_Police.conf` is the ladder: per rank `m_sId`, `m_sTitleKey`, `m_iFineCap`, `m_fPayPerSecond` (negative defers to `m_fPoliceDutyPayPerSecond`), `m_iDutySecondsForNext` and `m_aKit`. A rank is its index and a saved index never changes meaning, so `PATROL` 0 and `SENIOR` 1 stay first and a pack appends. `LF_PoliceRanks.FineCap/TitleKey/DutySecondsForNext/CollectKit` and `LF_DutyPay.RateForAccount` read the row; an unknown index clamps to the nearest rung, and a saved rank above the ladder loads as the top rank. A missing config falls back to the built-in two ranks. Test `police/rank-table`. Qualifications are #754b.
 - ✅ (2026-11-12, #323 batch 0a) Annex twins for the crime and police fixtures. `Annex.layer` now holds `Annex_*` copies of the bank vault, bag, bell box and rob kit, the cash van and its box, the breach and lockpick doors and car, the chop bench, the S105 and the police escort car, the police desk, armory, wanted board and evidence locker, the hideout door, machine and stash, and the jail door and a bare jail cell marker, all placed with `tools\cli place` in the fixture yard at x 70..100, z 35..60 and each with its own breach, vault, hideout and shop id (`Annex_Hideout`, `annex-chop`). `LF_TestAnnex` (Tests) names them. 21 test files stopped quoting `Roadmap_*` names, so the village can move to the pack without them; `validate-annex-fixtures` baseline 45 files / 73 pairs to 24 / 40. Tests only, no gameplay or save change. The convoy drop ids and the placed jail cell lookup in `LF_Jail.SyncPlacedCell` still name the town (production lookups by name, a later batch).
+
+- ✅ **Vehicle prices: one base price, per-action multipliers (#688, M3).** `Configs/Vehicles/LF_VehiclePrices.conf` (`LF_VehiclePricesConfig`, `Feature/Vehicles/LF_VehiclePrices.c`) lists each vehicle once (`m_Prefab` the lot's vanilla car, `m_SpawnPrefab` its locked child, found by GUID) with `m_iBasePrice`; buy, sell-back, chop, impound and garage are percent multipliers (`m_iBuyPercent` 100, `m_iSellBackPercent` 50, `m_iChopPercent` 30 with `m_iChopValueCap` 3000, `m_iImpoundPercent` 10, `m_iGaragePercent` 0) and an optional per-vehicle `m_i<Action>Override` (-1 derives it; 0 is free) wins. `LF_VehiclePricesConfig.PriceFor` returns -1 for an unlisted vehicle. Shipped numbers equal today's: lot 1000/2500/4000/3500/8000, chop 30 percent capped at 3000, impound 250 (an override per car). ⚠️ Not yet consumed: the lot offers, `LF_ChopShopConfig` and `LF_GarageConfig` still read their own values (test `vehicles/price-model` pins them equal); the consumers and the `vehicles` config.json section move over in #283. Sell-back has no desk yet.
+
+- ✅ **Two-addon tooling (M3, #322).** Every repo launcher passes the addon folders as one comma-separated `-addonsDir` (`tools/lib/addons.mjs addonsDirArgs`; Workbench keeps only the last repeated flag, so the pack could not find the core), and `validate-addonsdir` rejects a repeat. `tools\cli build [addon]` and `tools\cli pack [addon] [--out dir]` take `LifeFramework` (default) or `LF_Everon1989` by name or GUID; `pack` now honours `--out` and defaults to `tmp/workshop-pack/<addon>`, so a second pack no longer replaces the first. The rdb refresh, `validate-rdb-fresh`, `copyResourceDatabase` and the playtest release rdb check cover a list of addons: the core always, another addon once it declares a resource, so an empty pack changes nothing. Offline selftest in `validate-rdb-fresh` and `validate-addonsdir`; build and pack of both addons proven headless.
