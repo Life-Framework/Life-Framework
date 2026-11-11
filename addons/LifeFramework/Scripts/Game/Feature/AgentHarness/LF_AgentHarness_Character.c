@@ -250,7 +250,7 @@ modded class SCR_ChimeraCharacter
 	protected void RpcAsk_LF_HarnessScanner(int commandId, string tool)
 	{
 		bool gateOpen;
-		if (tool == "stash" || tool == "park" || tool == "apples")
+		if (tool == "stash" || tool == "park" || tool == "apples" || tool == "nuggets")
 		{
 			// The playtest journey (#348) has no debug menu: the harness build's own gate lets the
 			// stand-ins for dragging an item, driving a car and picking apples through.
@@ -278,6 +278,14 @@ modded class SCR_ChimeraCharacter
 			// Raw goods for the chain stations (#417): eight apples, two loads of the example chain.
 			int apples = LF_InventoryUtils.AddAmount(this, "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", 8);
 			LF_HarnessReply(commandId, "ok", string.Format("apples added=%1", apples));
+			return;
+		}
+
+		if (tool == "nuggets")
+		{
+			// Four iron nuggets in the pack: the smelter proof (#598) picks no nuggets off the ground.
+			int nuggets = LF_InventoryUtils.AddAmount(this, "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et", 4);
+			LF_HarnessReply(commandId, "ok", string.Format("nuggets added=%1", nuggets));
 			return;
 		}
 
