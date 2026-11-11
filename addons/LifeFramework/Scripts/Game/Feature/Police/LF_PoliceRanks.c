@@ -595,7 +595,7 @@ class LF_PoliceRanks
 	{
 		foreach (ResourceName prefab : prefabs)
 		{
-			if (prefab == candidate)
+			if (LF_Utils.SamePrefab(prefab, candidate))
 				return true;
 		}
 

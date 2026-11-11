@@ -185,6 +185,19 @@
   1e6→`M`, 1e9→`B`), typed component finders.
 - ⚠️ `LF_ComponentData.Get` strips the last 5 chars of the class name
   (`XxxClass`→`Xxx`); breaks for any data class not ending in `Class`.
+- ✅ (2026-11-12, #323 batch 0) `LF_Utils.SamePrefab(a, b)` and `PrefabGuid(name)`: two resource
+  names are one prefab when their GUIDs match, whatever path text they carry; only a name without
+  a GUID falls back to its path (case-insensitive); empty never matches. A resource moved into the
+  pack keeps its GUID but `GetPrefabName()` reports the new path, so every prefab comparison
+  against a saved or configured name goes through it: chop shop values, `LF_InventoryUtils`
+  (`FindItemsByPrefab` uses `LF_SamePrefabPredicate`, the carried-item counts), stored inventories,
+  store lines and unpaid-tag reattachment, shop catalog and curated lists, trader lists, restricted
+  storages, gather and ore tools, breach charges, quest counts, chain goods, vehicle offers,
+  building placement, police kit lists, contraband, the item-count invokers. Saves are unchanged;
+  a pre-move save matches on load. `ShopPrices.conf` rules for one prefab use `m_Prefab` (GUID);
+  `m_sFind` stays for folders and name families and must be updated when those resources move,
+  as must the shop's `LooksLikeItemPath` folder filter. Tests `prefab/same-prefab`,
+  `prefab/moved-path`.
 
 ### `LF_InventoryUtils` (Core) / `LF_BuildingManagerComponent` / `LF_ChatManagerComponent`
 - ✅ (2026-11-08) `LF_InventoryUtils.AddItem` spawns through
@@ -2256,7 +2269,7 @@
 ## Hidden crime record (#270)
 
 - ✅ `LF_CrimeRecord` (`Feature/Crime/LF_CrimeRecord.c`) subscribes to `LF_OnCrimeCommitted` (`EnsureSubscribed`, game-mode start) and counts completed crimes per account uid and offence key, so one robbery counts once. An unpaid ticket is not counted. Server only, never replicated, no UI. Read with `LF_CrimeRecord.Count(uid, offence)` / `Total(uid)` (the fence #271 and serials #272 use these). Persisted as the `crimerecord` payload (save version 15). Tests `crime/record`, `crime/record-persist`. Crime paths wired to the event today: robbery, vehicle and weapon theft, break-in, hospital, murder; gas station and contraband run count once their success path reports through `LF_Dispatch.Report`.
-- ✅ Fence (#271): an NPC (`Prefabs/Characters/Npcs/LF_Fence.et`, DebugWorld `FenceNpc`) with an `LF_ShopComponent` set to `m_bFence`. Each `LF_ShopItem.m_iMinCrimes` is the completed crimes the buyer needs on the hidden record (`LF_CrimeRecord.Total`): drill 3, charge 5, keycard 8. `LF_ShopComponent.Buy` asks `LF_FenceRules.Check` before any cash moves; a refusal logs `[LFDebug:Fence] refused ...` and prints `#LF-Shop_RefuseNotTrusted` on the order slip. Prices are the `ShopPrices.conf` rules for `Prefabs/Items/Fence/`. Each sale publishes `LF_OnFenceSale`. Test `crime/fence-gate`.
+- ✅ Fence (#271): an NPC (`Prefabs/Characters/Npcs/LF_Fence.et`, DebugWorld `FenceNpc`) with an `LF_ShopComponent` set to `m_bFence`. Each `LF_ShopItem.m_iMinCrimes` is the completed crimes the buyer needs on the hidden record (`LF_CrimeRecord.Total`): drill 3, charge 5, keycard 8. `LF_ShopComponent.Buy` asks `LF_FenceRules.Check` before any cash moves; a refusal logs `[LFDebug:Fence] refused ...` and prints `#LF-Shop_RefuseNotTrusted` on the order slip. Prices are the per-prefab `ShopPrices.conf` rules (`m_Prefab`, matched by GUID). Each sale publishes `LF_OnFenceSale`. Test `crime/fence-gate`.
 - ✅ Fence serials (#272): each tool the fence sells carries an `LF_SerialComponent` (`Prefabs/Items/Fence/`; saved with the item by `LF_SerialComponentSerializer`, readable through the Read serial action). `LF_FenceSerials` subscribes to `LF_OnFenceSale`, stamps the delivered tools and books each serial to the buyer's account (server only). `LF_FenceSerials.Identify(serial)` / `IdentifyItem(item)` mark the buyer's wanted reports identified; the evidence locker (#269) calls it when it checks a bagged tool (not wired until #269 lands). Persisted as the `fenceserials` payload (save version 16). Carried tools keep their serial across a restart (#470): `LF_StorageSnapshot` captures it per snapshot item and saves it as the `itemserials` payload (save version 22), restored onto the re-spawned item on apply; a stale row is skipped and the item comes back unstamped. Tests `investigation/serial`, `investigation/serial-persist`, `persist/carried-serial`.
 
 ## Payphone (#247)

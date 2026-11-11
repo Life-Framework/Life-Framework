@@ -185,6 +185,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MiningPrefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MoneyCash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MoneyRework(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_MovedPrefab(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Murder(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_NewLifeRule(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_NoPassivePaycheck(), LF_TestTier.WORLD);
@@ -278,6 +279,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Robustness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobustnessWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SafeZone(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionBitmask(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionNewest(), LF_TestTier.LOGIC);

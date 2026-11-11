@@ -220,6 +220,17 @@ moves and the config is not edited in the same change):
 between two live entities (`LF_QuantityComponent.c:290`, the inventory UI
 key) are safe.
 
+**Batch 0 (2026-11-12, #323):** done. `LF_Utils.SamePrefab` / `PrefabGuid` replace
+both helpers above, and every site in the two lists compares by GUID, plus
+`LF_PoliceRanks.ContainsPrefab`, `LF_Contraband.IsContraband` and the store's
+stray-copy check. Single-prefab `ShopPrices.conf` rules moved to `m_Prefab` (GUID).
+Still path-keyed on purpose, so a batch that moves such a resource must edit
+them: the folder and name-family `m_sFind` rules (`Prefabs/Items/Food/`,
+`Prefabs/Tools/`, `Handgun_M9`, ...) and `LooksLikeItemPath`; a pack item outside
+those folders reaches the shop through `m_aExtraItemPrefabs` and a `m_Prefab` rule.
+WORLD test `prefab/moved-path` replays the section 3 failures with a shared
+GUID at a new path.
+
 **The boundary check already sees the references.** On the spike branch
 `validate-addon-boundary` fails with 26 lines, among them the core layers
 (`Street_Vehicles.layer:1`, `Street_Lockpick.layer:21`, `Crimes.layer:187`,

@@ -141,7 +141,7 @@ class LF_OreNodeComponent : ScriptComponent
 			return 0;
 		}
 
-		if (!row.m_ToolPrefab.IsEmpty() && !LF_OreNodeComponent.SameResource(row.m_ToolPrefab, LF_Utils.GetPrefabName(tool)))
+		if (!row.m_ToolPrefab.IsEmpty() && !LF_Utils.SamePrefab(row.m_ToolPrefab, LF_Utils.GetPrefabName(tool)))
 		{
 			LF_Debug.Info(FEATURE, string.Format("hit on %1 rock refused: %2 is not %3", m_sNodeId, LF_Utils.GetPrefabName(tool), row.m_ToolPrefab));
 			return 0;
@@ -210,32 +210,6 @@ class LF_OreNodeComponent : ScriptComponent
 		ApplyDepleted();
 		Replication.BumpMe();
 		LF_Debug.Info(FEATURE, string.Format("%1 rock grew back", m_sNodeId));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Same prefab, compared by GUID so a path's casing cannot split them.
-	static bool SameResource(ResourceName a, ResourceName b)
-	{
-		if (a.IsEmpty() || b.IsEmpty())
-			return false;
-
-		return GuidOf(a) == GuidOf(b);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! "{GUID}path" -> "GUID" in upper case; a bare path comes back upper-cased whole.
-	static string GuidOf(ResourceName resource)
-	{
-		string text = resource;
-		if (text.StartsWith("{"))
-		{
-			int close = text.IndexOf("}");
-			if (close > 1)
-				text = text.Substring(1, close - 1);
-		}
-
-		text.ToUpper();
-		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------

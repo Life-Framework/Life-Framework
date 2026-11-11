@@ -24,6 +24,27 @@ modded class ScriptedInventoryStorageManagerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The name a listener subscribed with for this item's prefab, or empty when nobody listens. A
+	//! moved resource reports a new path with the same GUID, so the subscription is found by GUID.
+	protected ResourceName LF_SubscribedPrefab(ResourceName prefab)
+	{
+		if (!m_mELItemCountInvokers || prefab.IsEmpty())
+			return ResourceName.Empty;
+
+		if (m_mELItemCountInvokers.Contains(prefab))
+			return prefab;
+
+		for (int i = 0; i < m_mELItemCountInvokers.Count(); i++)
+		{
+			ResourceName subscribed = m_mELItemCountInvokers.GetKey(i);
+			if (LF_Utils.SamePrefab(subscribed, prefab))
+				return subscribed;
+		}
+
+		return ResourceName.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void LF_RecountItemsDebounced(ResourceName prefab)
 	{
 		if (!m_aELPendingItemRecountTypes) m_aELPendingItemRecountTypes = new set<ResourceName>();
@@ -57,8 +78,8 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		super.OnItemAdded(storageOwner, item);
 
-		ResourceName prefab = LF_Utils.GetPrefabName(item);
-		if (m_mELItemCountInvokers && m_mELItemCountInvokers.Contains(prefab))
+		ResourceName prefab = LF_SubscribedPrefab(LF_Utils.GetPrefabName(item));
+		if (!prefab.IsEmpty())
 		{
 			LF_RecountItemsDebounced(prefab);
 
@@ -72,8 +93,8 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		super.OnItemRemoved(storageOwner, item);
 
-		ResourceName prefab = LF_Utils.GetPrefabName(item);
-		if (m_mELItemCountInvokers && m_mELItemCountInvokers.Contains(prefab))
+		ResourceName prefab = LF_SubscribedPrefab(LF_Utils.GetPrefabName(item));
+		if (!prefab.IsEmpty())
 		{
 			LF_RecountItemsDebounced(prefab);
 
@@ -85,7 +106,9 @@ modded class ScriptedInventoryStorageManagerComponent
 	//------------------------------------------------------------------------------------------------
 	protected event void LF_HandleOnQuantityChanged(LF_QuantityComponent quantityComponent)
 	{
-		LF_RecountItemsDebounced(LF_Utils.GetPrefabName(quantityComponent.GetOwner()));
+		ResourceName prefab = LF_SubscribedPrefab(LF_Utils.GetPrefabName(quantityComponent.GetOwner()));
+		if (!prefab.IsEmpty())
+			LF_RecountItemsDebounced(prefab);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -71,7 +71,7 @@ class LF_ShopManagerComponent : GameComponent
 
 		foreach (LF_ShopCatalogItem item : m_aCatalog)
 		{
-			if (item.m_ItemPrefab == prefab)
+			if (LF_Utils.SamePrefab(item.m_ItemPrefab, prefab))
 				return item;
 		}
 

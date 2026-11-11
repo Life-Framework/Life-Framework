@@ -51,7 +51,7 @@ class LF_BuildingManagerComponent : ScriptComponent
 			return null;
 
 		LF_BuildingPerformerComponent performer = GetHeldBuildingPerformer(character);
-		if (!performer || performer.m_BuildingPrefab != resource)
+		if (!performer || !LF_Utils.SamePrefab(performer.m_BuildingPrefab, resource))
 		{
 			LF_Debug.Warn("Farming", string.Format("placement refused: resource=%1 (performer mismatch or none)", resource));
 			return null;

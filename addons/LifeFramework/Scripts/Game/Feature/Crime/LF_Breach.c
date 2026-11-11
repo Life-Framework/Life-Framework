@@ -471,7 +471,7 @@ class LF_Breach
 		weaponStorage.GetAll(weapons);
 		foreach (IEntity weapon : weapons)
 		{
-			if (weapon && (LF_Utils.GetPrefabName(weapon) == CHARGE_PREFAB || LF_Utils.GetPrefabName(weapon) == FENCE_CHARGE_PREFAB))
+			if (weapon && (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(weapon), CHARGE_PREFAB) || LF_Utils.SamePrefab(LF_Utils.GetPrefabName(weapon), FENCE_CHARGE_PREFAB)))
 				return weapon;
 		}
 
