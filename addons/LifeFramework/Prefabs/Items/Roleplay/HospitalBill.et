@@ -13,6 +13,14 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{7B2B079E1C8DFFC4}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 3.3
+      FOV 10
+     }
+    }
     ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
      Name "#LF-Hospital_BillItem"
      Description "#LF-Hospital_BillItemDesc"

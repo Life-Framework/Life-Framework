@@ -205,6 +205,15 @@ export function buildLine(id, spec) {
     }
     throw new Error(`kit step must be show, hide, line, status, or quantity: ${step}`);
   }
+  if (spec.verb === "previews") {
+    if (spec.mode === "hide") return `${id} previews hide`;
+    const list = (spec.prefabs ?? []).map((p) => {
+      if (!/^[A-Za-z0-9_{}/.-]+$/.test(p)) throw new Error(`prefab must be a {GUID}path without spaces: ${p}`);
+      return p;
+    });
+    if (!list.length) throw new Error("previews show needs prefabs");
+    return `${id} previews show ${list.join(",")}`;
+  }
   if (spec.verb === "capture") {
     const name = token(spec.name, "capture name");
     if (spec.mode === "ui") return `${id} capture ui ${name}`;
