@@ -215,6 +215,8 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
     "-noBackend",
   ];
   if (loadSave) args.push("-loadSessionSave");
+  // LF_PERF=1: the server prints its LF_Perf counters every minute (docs/architecture/performance.md).
+  if (process.env.LF_PERF === "1") args.push("-lfPerf");
   args.push(...laneArgs(port));
   return args;
 }

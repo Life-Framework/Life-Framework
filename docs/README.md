@@ -30,6 +30,7 @@ Reference:
 
 ## Engineering reference
 
+- [Performance budget](architecture/performance.md) - the 128-player cost budget, the `perf/budget-128` gate, `tools\cli perf`, measured numbers.
 - [Core vs pack](architecture/core-vs-pack.md) — what goes in the core addon and what goes in the flagship pack; [inventory](architecture/core-pack-inventory.md).
 - [Features](features.md) — implemented behavior and fragile paths.
 - [Persistence](persistence.md) — saved data, serializers, and restart rules.
