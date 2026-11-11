@@ -991,7 +991,7 @@
   restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
   inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
-- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots).
+- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots). Carry pose (#619): the parcel uses the vanilla jerrycan carry (`Assets/Items/Fuel/workspaces/Jerrycan.agr` / `Jerrycan_player.asi`, both arms low in front, box at the waist) instead of `player_carry`, which put the arms across the chest with the box floating beside the character.
 
 ### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
