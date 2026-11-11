@@ -1466,7 +1466,10 @@
   600 m), a brighter, faster flash, `m_fLoudAlarmSeconds` (60). A newer alarm
   at the same site replaces the old one. Durations, prefabs, and the radio
   sound are in `Configs/Police/LF_Police.conf`; the sound, hear range, and
-  light are attributes on the prefabs. The flash is LV 12 over 10 m (loud: LV 13 over
+  light are attributes on the prefabs. The alarm stands on the first surface under the site
+  (`LF_Dispatch.RestingSpot`: the till counter, the cash van box, the ground at a door) with its beacon at
+  its base; the beacon used to hang 1.1 m above the site point, in mid-air over the van (WORLD
+  `dispatch/alarm-rests`, 2026-11-11, #571 trailer review). The flash is LV 12 over 10 m (loud: LV 13 over
   15 m); it was LV 15 and LV 18 over 25 m, which flashed the whole frame white at golden
   hour within 10 m of the site (seen on the #571 trailer takes, 2026-11-11).
 - ✅ **Radio dispatch**: each on-duty officer's own client (Owner RPC on the
