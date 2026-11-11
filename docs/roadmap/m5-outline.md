@@ -54,6 +54,71 @@ ongoing quest lines and no quest-state tooling.
    Workshop policy check before anything is built. Details:
    [illicit chains](scopes/crime/drug-chains.md).
 
+## Two tracks (maintainer, 2026-11-10)
+
+M5 is built in two tracks, and every roadmap item from M5 on is broken down the
+same way:
+
+- **Framework** (epic #632): the underlying systems in the core, era-neutral and
+  configurable.
+- **Flagship** (epic #633): the specific 1989 Everon content in
+  `LF_Everon1989`, built on the Framework track.
+
+The first-release items above sit on one side or the other: the arrival,
+music, voiced NPCs, food, the factory wage and the chain content are Flagship;
+the systems they need (stations, dialogue, route jobs) are Framework.
+
+## 3D development (maintainer, 2026-11-10)
+
+All 3D asset work is in M5 (epic #339, moved from Development). The harness
+chains three tools into one nearly autonomous pipeline:
+
+1. **Meshy** ([meshy.ai/mcp](https://www.meshy.ai/mcp)) generates a model from a
+   brief.
+2. **Blender** (MCP or CLI, headless) cleans, scales, retopologises, UVs, bakes
+   and exports it.
+3. **Reforger** import registers the files and builds the prefab.
+
+Agents verify and re-verify both visually (turntable, then in-game shots held,
+on the ground and in the inventory) and otherwise (budgets, scale, GUIDs, log).
+One command (`toolscli asset new`) runs it all, with a cost cap, a retry
+limit and an asset ledger. The licence gate comes first: Meshy's terms and
+Bohemia's policy must allow Workshop redistribution, or we stop and ask.
+
+| Framework | Flagship |
+| --- | --- |
+| #339 epic; licence gate #664, Meshy stage #665, Blender stage #666, Reforger stage #667, verification loop #668, one-command harness and ledger #669 | #670 first items (shovel, pickaxe, keys, previews), #671 arrival and factory props |
+
+Base-game assets are still the first choice. From M5, a new mesh is allowed
+only through this harness, with a ledger row.
+
+## Ideas from the Genetic Life review (2026-11-10)
+
+A list of another Reforger life mod's features was sorted into what fits. The
+fits all land in M5, each as a Framework and a Flagship issue:
+
+| Idea | Framework | Flagship |
+| --- | --- | --- |
+| Breathalyser and drug-test kit | #634 | #635 |
+| Timed drunk effect | #636 | #637 |
+| Bank transfer by account number | #638 | #639 |
+| Rejoin where you logged out | #640 | #641 |
+| In-game handbook | #642 | #643 |
+| Money laundering station | #644 | #645 |
+| Spike strips, cones, barriers | #646 | #647 |
+| Repair kit and unflip | #648 | #649 |
+| Pickaxe and shovel gate gathering | #650 | #651 |
+| Medic ranks | #652 | #653 |
+| Staff terminal | #654 | #655 |
+| Prison work | #656 | #657 |
+| Bus and garbage routes | #658 | #659 |
+| Era clothing and fedora | none | #660 |
+| Multi-stage heist (idea only) | #662 | #663 |
+
+Several depend on M2 work (#419, #420, #416, #417, #246, #258). Not a fit:
+custom weapons and vehicles, a custom map, a minimap, dirty-cash balances,
+hard drugs, tasers, speed cameras, air and boat dealers.
+
 ## Moved out of M5
 
 - **Property, renting, the dacha, and farming** go to a new milestone, **M6
@@ -64,14 +129,15 @@ ongoing quest lines and no quest-state tooling.
 
 ## Rules
 
-- Flagship content only: everything lives in `LF_Everon1989`, and the core never
-  references it (`validate-addon-boundary`).
-- No new core system without a framework reason; arrival, food and factory use
-  jobs, shops, dialogue and config that already exist or ship in M2/M3.
+- Flagship content lives in `LF_Everon1989`, and the core never references it
+  (`validate-addon-boundary`). Framework items are core systems with a reason
+  beyond one era.
+- A new core system needs a Framework issue and a Flagship issue that uses it.
 - Period copy and art follow the pack's branding brief (#375).
 
 ## Open questions
 
+- Whether Meshy's plan terms allow Workshop redistribution (#664).
 - How long the arrival arc is, and whether it replays for a new character.
 - Which key NPCs get voices beyond the clerk.
 - Which AI music tool, and whether its licence permits redistribution.

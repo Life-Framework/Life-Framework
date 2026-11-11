@@ -1809,7 +1809,7 @@ machines: tools/pool.json, overridden by "pool" in lf.local.json`);
 // Syncs this worktree to <box>/Life-Framework-rt-<slug><suffix> without taking
 // a slot, then runs `node <script> <args>` there (sessions: the remote
 // `session up` takes the box's server-2001 itself and hands it to its server).
-export async function syncAndRun(root, m, { script, args, suffix = "-session", purpose = "session" }) {
+export async function syncAndRun(root, m, { script, args, suffix = "-session", purpose = "session", onSlot }) {
   const snap = tb.snapshotCommit(root);
   const cfg = holderConfig(root, m, snap, { slots: 0, purpose, suffix });
   const r = await startHolder(root, m, cfg);
@@ -1818,6 +1818,7 @@ export async function syncAndRun(root, m, { script, args, suffix = "-session", p
     return { code: 3 };
   }
   r.slot.snap = snap;
+  onSlot?.(r.slot.rDir);
   const out = await tb.runRemote(root, r.slot, { args, script, writeSyncState: (rt, name, rec) => writeSyncState(rt, `${name}${suffix}`, rec), fetchLog: false });
   return { ...out, rDir: r.slot.rDir };
 }
