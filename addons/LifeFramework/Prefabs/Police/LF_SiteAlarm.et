@@ -7,9 +7,9 @@ GenericEntity {
    m_sSoundEvent "SOUND_SIREN_LP"
    m_fHearRange 150
    m_bFlash 1
-   m_fLightRadius 10
-   m_fLightLV 12
-   m_vLightOffset 0 1 0
+   m_fLightRadius 3
+   m_fLightLV 9
+   m_vLightOffset 0 0.3 0
    m_iFlashMs 600
   }
   RplComponent "{A2D9C9BB0D0839D7}" {
@@ -18,8 +18,13 @@ GenericEntity {
  {
   GenericEntity beacon : "{A3C0CF9F97FBCDDC}Prefabs/Structures/BuildingParts/Eletrical/HazardBeacon_01/HazardBeacon_01.et" {
    ID "6F1B3C7A52D09E41"
+   components {
+    RigidBody "{5111E74C06F5C1E1}" {
+     Enabled 0
+    }
+   }
    coords 0 0 0
-   scale 3
+   scale 0.4
   }
  }
 }

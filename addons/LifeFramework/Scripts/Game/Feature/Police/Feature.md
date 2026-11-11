@@ -52,7 +52,10 @@ is the entry point.
   (ID check to an on-duty officer, or caught in the act).
 - Alarm and dispatch (M1-20): every crime calls `LF_Dispatch.Report`. The site
   alarm is a replicated `LF_SiteAlarm` prefab (vanilla siren loop and a
-  flashing light; `LF_SiteAlarm_Loud` when nobody is on duty). On-duty officers
+  flashing light; `LF_SiteAlarm_Loud` when nobody is on duty). It stands on the
+  nearest `LF_AlarmMountComponent` that reaches the site (a bell box on a wall,
+  a van roof; give a robbable place one), else on the surface under the site.
+  On-duty officers
   hear a vanilla radio chirp, then read a dispatch line with the place and the
   description, never a name. The wanted board lists recent dispatches for police.
 - `LF_PoliceMenu` — arrest entry point; the wanted list moved to the board.
