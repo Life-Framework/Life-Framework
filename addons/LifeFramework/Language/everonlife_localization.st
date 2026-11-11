@@ -6676,6 +6676,106 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
+    CustomStringTableItem "{F297FFD8D4B6E791}" {
+     Id "LF-LawlessHud_Tag"
+     Target_en_us "LAWLESS AREA"
+     Comment "Persistent HUD tag while the local player stands inside a lawless zone."
+    }
+    CustomStringTableItem "{4FBA54E7032A04DE}" {
+     Id "LF-LawlessHud_Title"
+     Target_en_us "Lawless area"
+     Comment "Toast title when the player enters or leaves a lawless zone."
+    }
+    CustomStringTableItem "{59EE09E1B7435797}" {
+     Id "LF-LawlessHud_Enter"
+     Target_en_us "You entered a lawless area. Server rules are relaxed here. Watch your back."
+     Comment "Toast on entering a lawless zone (also when joining or spawning inside one)."
+    }
+    CustomStringTableItem "{9A2F1AA936E1BDA7}" {
+     Id "LF-LawlessHud_Exit"
+     Target_en_us "You left the lawless area."
+     Comment "Toast on leaving a lawless zone."
+    }
+    CustomStringTableItem "{7B1E5A0C00000001}" {
+     Id "LF-Shop_RefuseClosed"
+     Target_en_us "The back room is shut. Police have been through it."
+     Comment "Shop refusal: a raided back room is shut for a while (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000002}" {
+     Id "LF-BackRoom_Search"
+     Target_en_us "Search back room"
+     Comment "Officer action on a back room: search it and seize its stock as evidence (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000003}" {
+     Id "LF-BackRoom_SearchDesc"
+     Target_en_us "Seize the stock as evidence"
+     Comment "Description of the back room search action (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000004}" {
+     Id "LF-BackRoom_Seized"
+     Target_en_us "Stock seized as evidence"
+     Comment "Toast: the back room search seized its stock (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000005}" {
+     Id "LF-BackRoom_AlreadyShut"
+     Target_en_us "Already searched. The room is shut."
+     Comment "Toast: the back room was raided recently (#600)."
+    }
+    CustomStringTableItem "{A27300000000BA02}" {
+     Id "LF-BankKit_Take"
+     Target_en_us "Take bank robbery kit"
+     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
+    CustomStringTableItem "{9BE7A1D673564E1C}" {
+     Id "LF-Dispatch_TestPolice"
+     Target_en_us "Test police call"
+     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
+    }
+    CustomStringTableItem "{803BB29C950EAC01}" {
+     Id "LF-Dispatch_TestMedic"
+     Target_en_us "Test medic call"
+     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
+    }
+    CustomStringTableItem "{E9CE669FFF4D0206}" {
+     Id "LF-Dispatch_TestDesc"
+     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
+     Comment "Description of the dispatch console test-call actions."
+    }
+    CustomStringTableItem "{05CAE71B3EBFC584}" {
+     Id "LF-Dispatch_TestTitle"
+     Target_en_us "Test call"
+     Comment "Toast title for the dispatch console test call."
+    }
+    CustomStringTableItem "{51294940A40506CF}" {
+     Id "LF-Dispatch_TestSent"
+     Target_en_us "Call placed. Take it at the dispatch board."
+     Comment "Toast after a test call went out to an on-duty service."
+    }
+    CustomStringTableItem "{36AF55270A37E7B0}" {
+     Id "LF-Dispatch_TestOff"
+     Target_en_us "Test calls are off in this game mode."
+     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
+    }
+    CustomStringTableItem "{4B1E7A2C9D3F4081}" {
+     Id "LF-Bank_Teller_Talk"
+     Target_en_us "Talk to the teller"
+     Comment "Prompt on the bank teller at the counter window. Opens the deposit and withdraw screen."
+    }
+    CustomStringTableItem "{7C20D5E8A1B94F36}" {
+     Id "LF-Bank_Teller_TalkDesc"
+     Target_en_us "Deposit or withdraw cash at the counter"
+     Comment "Description of the bank teller prompt."
+    }
     CustomStringTableItem "{C5BBC2192BD8EFEC}" {
      Id "EL-VehicleLock_ActionLock"
      Target_en_us "Lock vehicle"
@@ -6700,31 +6800,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-VehicleLock_NoTarget"
      Target_en_us "No vehicle of yours in reach"
      Comment "Toast when U is pressed with no keyed vehicle near."
-    }
-    CustomStringTableItem "{F297FFD8D4B6E791}" {
-     Id "LF-LawlessHud_Tag"
-     Target_en_us "LAWLESS AREA"
-     Comment "Persistent HUD tag while the local player stands inside a lawless zone."
-    }
-    CustomStringTableItem "{4FBA54E7032A04DE}" {
-     Id "LF-LawlessHud_Title"
-     Target_en_us "Lawless area"
-     Comment "Toast title when the player enters or leaves a lawless zone."
-    }
-    CustomStringTableItem "{59EE09E1B7435797}" {
-     Id "LF-LawlessHud_Enter"
-     Target_en_us "You entered a lawless area. Server rules are relaxed here. Watch your back."
-     Comment "Toast on entering a lawless zone (also when joining or spawning inside one)."
-    }
-    CustomStringTableItem "{9A2F1AA936E1BDA7}" {
-     Id "LF-LawlessHud_Exit"
-     Target_en_us "You left the lawless area."
-     Comment "Toast on leaving a lawless zone."
-    }
-    CustomStringTableItem "{A27300000000BA02}" {
-     Id "LF-BankKit_Take"
-     Target_en_us "Take bank robbery kit"
-     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
     }
     CustomStringTableItem "{9EB58969BEDD9423}" {
      Id "LF-Farm_Title"
@@ -6825,46 +6900,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_FarmPlots_Next"
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
-    }
-    CustomStringTableItem "{9BE7A1D673564E1C}" {
-     Id "LF-Dispatch_TestPolice"
-     Target_en_us "Test police call"
-     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
-    }
-    CustomStringTableItem "{803BB29C950EAC01}" {
-     Id "LF-Dispatch_TestMedic"
-     Target_en_us "Test medic call"
-     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
-    }
-    CustomStringTableItem "{E9CE669FFF4D0206}" {
-     Id "LF-Dispatch_TestDesc"
-     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
-     Comment "Description of the dispatch console test-call actions."
-    }
-    CustomStringTableItem "{05CAE71B3EBFC584}" {
-     Id "LF-Dispatch_TestTitle"
-     Target_en_us "Test call"
-     Comment "Toast title for the dispatch console test call."
-    }
-    CustomStringTableItem "{51294940A40506CF}" {
-     Id "LF-Dispatch_TestSent"
-     Target_en_us "Call placed. Take it at the dispatch board."
-     Comment "Toast after a test call went out to an on-duty service."
-    }
-    CustomStringTableItem "{36AF55270A37E7B0}" {
-     Id "LF-Dispatch_TestOff"
-     Target_en_us "Test calls are off in this game mode."
-     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
-    }
-    CustomStringTableItem "{4A1C9E27B05D3F18}" {
-     Id "LF-Item_Parcel_Deliver"
-     Target_en_us "Deliver to: %1"
-     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
-    }
-    CustomStringTableItem "{4A1C9E27B05D3F19}" {
-     Id "LF-Job_ParcelDest"
-     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
-     Comment "Where a courier parcel goes. Shown in the parcel description."
     }
     CustomStringTableItem "{01B9D43100AC37E2}" {
      Id "LF-SpawnHub_Title"
@@ -7011,40 +7046,30 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Test annex"
      Comment "Travel list row: annex."
     }
-    CustomStringTableItem "{7B1E5A0C00000001}" {
-     Id "LF-Shop_RefuseClosed"
-     Target_en_us "The back room is shut. Police have been through it."
-     Comment "Shop refusal: a raided back room is shut for a while (#600)."
+    CustomStringTableItem "{A1B2C3D4E5F60711}" {
+     Id "LF-Sign_QuarryInfo_Title"
+     Target_en_us "Quarry Works"
+     Comment "Title of the quarry info board. Printed on the board and shown as Read: Quarry Works."
     }
-    CustomStringTableItem "{7B1E5A0C00000002}" {
-     Id "LF-BackRoom_Search"
-     Target_en_us "Search back room"
-     Comment "Officer action on a back room: search it and seize its stock as evidence (#600)."
+    CustomStringTableItem "{A1B2C3D4E5F60722}" {
+     Id "LF-Sign_QuarryInfo_What"
+     Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
+     Comment "Quarry info board, What section."
     }
-    CustomStringTableItem "{7B1E5A0C00000003}" {
-     Id "LF-BackRoom_SearchDesc"
-     Target_en_us "Seize the stock as evidence"
-     Comment "Description of the back room search action (#600)."
+    CustomStringTableItem "{A1B2C3D4E5F60733}" {
+     Id "LF-Sign_QuarryInfo_How"
+     Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
+     Comment "Quarry info board, How section."
     }
-    CustomStringTableItem "{7B1E5A0C00000004}" {
-     Id "LF-BackRoom_Seized"
-     Target_en_us "Stock seized as evidence"
-     Comment "Toast: the back room search seized its stock (#600)."
+    CustomStringTableItem "{A1B2C3D4E5F60744}" {
+     Id "LF-Sign_QuarryInfo_Rules"
+     Target_en_us "This is the lawless quarry: the server rules about starting a fight do not apply inside the fence. Mind the rocks while the pit is worked."
+     Comment "Quarry info board, Rules section."
     }
-    CustomStringTableItem "{7B1E5A0C00000005}" {
-     Id "LF-BackRoom_AlreadyShut"
-     Target_en_us "Already searched. The room is shut."
-     Comment "Toast: the back room was raided recently (#600)."
-    }
-    CustomStringTableItem "{4B1E7A2C9D3F4081}" {
-     Id "LF-Bank_Teller_Talk"
-     Target_en_us "Talk to the teller"
-     Comment "Prompt on the bank teller at the counter window. Opens the deposit and withdraw screen."
-    }
-    CustomStringTableItem "{7C20D5E8A1B94F36}" {
-     Id "LF-Bank_Teller_TalkDesc"
-     Target_en_us "Deposit or withdraw cash at the counter"
-     Comment "Description of the bank teller prompt."
+    CustomStringTableItem "{A1B2C3D4E5F60755}" {
+     Id "LF-Sign_QuarryInfo_Next"
+     Target_en_us "Carry what you make to the traders in town."
+     Comment "Quarry info board, Next section."
     }
   }
  }
