@@ -14,7 +14,7 @@
     "variants": { "type": "array", "items": { "allOf": [{ "$ref": "#/definitions/output" }, { "required": ["name"] }] }, "description": "Other renders of the same shots, such as the 9:16 short." },
     "scenes": { "type": "array", "items": { "$ref": "#/definitions/scene" }, "description": "Scene presets a shot's `scene` names; hour and weather override the preset for this film. Light-only presets exist for the trailer locations (LF_FilmSceneEnv); `street` also spawns a walker and a car." },
     "music": { "type": "object", "description": "post.mjs music bed: file, gainDb, fadeIn, fadeOut." },
-    "voice": { "type": "object", "description": "post.mjs voice: speaker." },
+    "voice": { "type": "object", "description": "post.mjs voice: lengthScale (and speaker, for a multi-speaker model only)." },
     "shots": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/shot" } }
   },
   "definitions": {

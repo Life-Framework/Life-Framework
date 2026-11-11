@@ -14,5 +14,5 @@
   ],
   "endCard": { "seconds": 5, "lines": ["life-framework.org/playtest", "Discord: discord.gg/MjMexJteqz"] },
   "music": { "file": "video/music/carefree.mp3", "gainDb": -15, "fadeIn": 2, "fadeOut": 3 },
-  "voice": { "speaker": 20 }
+  "voice": {}
 }

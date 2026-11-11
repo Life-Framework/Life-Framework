@@ -29,13 +29,14 @@ licensed for one platform only. Tracks are downloaded to `video/music/` (git-ign
 | Tool or voice | Author | Source | Licence |
 |---|---|---|---|
 | Piper (offline TTS binary, release 2023.11.14-2) | Michael Hansen / Rhasspy | https://github.com/rhasspy/piper | MIT |
-| Voice `en_US-libritts_r-medium` | Trained on LibriTTS-R (Koizumi et al.) | https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/libritts_r/medium | CC BY 4.0 (dataset http://www.openslr.org/141/) |
+| Voice `en_US-ljspeech-high` | Trained from scratch on LJ Speech (Keith Ito) | https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ljspeech/high | Public domain (dataset https://keithito.com/LJ-Speech-Dataset/) |
 
-The voice is fine-tuned from Piper's `en_US-lessac-medium`, whose dataset carries its own terms. Before a voice-over
-ships in a posted video, read the lessac model card
-(https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/lessac/medium) and keep the line
-"Voice: Piper TTS, en_US-libritts_r (CC BY 4.0)" in the description. Voices fine-tuned from the Ryan or HiFi-TTS
-speakers are non-commercial (CC BY-NC-SA) and are not used.
+Description line: "Voice: Piper en_US-ljspeech (LJ Speech, public domain)".
+
+Not used: `en_US-libritts_r` (it is fine-tuned from `en_US-lessac`, whose Blizzard 2013 data is licensed for research
+only, Research Licence Agreement clause 3.2, so it cannot go in a public promo; dropped 2026-11-11), lessac itself, and
+voices fine-tuned from the Ryan or HiFi-TTS speakers (non-commercial, CC BY-NC-SA). Before adopting any other voice,
+read its model card down to the dataset it was first trained on.
 The newer Piper 1.x is GPL-3.0; this repo uses only the MIT 2023 binary, which cannot load the 2025 voices (for example `joe`).
 
 ## Fonts and logo

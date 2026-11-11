@@ -40,9 +40,10 @@ is swapped for its fallback.
   credits page) is still open, so nobody else is named.
 - **"v1".** Approved 2026-11-11: v1 means the M3 Framework Release, the first
   build a server owner can host. The end-card line "Built in the open with AI
-  agents", the voice-over lines and the Piper voice (libritts_r, CC BY 4.0) are
-  also approved. Keep "Voice: Piper TTS, en_US-libritts_r (CC BY 4.0)" in the
-  video description.
+  agents", and the voice-over lines are
+  also approved. The voice is Piper en_US-ljspeech (public domain); libritts_r
+  was dropped on 2026-11-11 for its research-only lessac lineage. Keep "Voice:
+  Piper en_US-ljspeech (LJ Speech, public domain)" in the video description.
 
 ## Voice-over for TTS (Kokoro or Piper, #397)
 
@@ -308,3 +309,22 @@ Shot on this PC in two `--profile full` sessions (1920x1080, 30 fps, HUD hidden)
 - **Music** is "Hitman" by Kevin MacLeod (CC BY 4.0, `docs/credits.md`), from 15 s into the track.
 - **Fixes found on camera:** an orbit stopped at every key (#734), the drill spawned under the robber
   (#735), the site alarm light washed the frame white (#736).
+
+## The v2 cut (2026-11-11)
+
+A recut after an independent review, 1:25.2. `video/trailer-v1/cut.mjs` builds it (output names say v2).
+
+- **Voice:** every line re-voiced with Piper en_US-ljspeech (public domain); the lines are retimed to it.
+  "Arrive. Sign the register. Get your papers." is now "Arrive. Sign the register." (the form is on screen
+  2.2 s; no ID card is shown). "Stolen cars go to the chop shop. Hot ones only." is now "Stolen cars go to the
+  chop shop.". The police line is "On duty, police read the wanted board." over an officer at the board.
+- **Cold open:** new take O1: the robber is in frame at the van box from the first frame, the sacks spill, and the
+  alarm beacon sits on the box (#738). Its lines are burned in as captions.
+- **Shots that now show what the line says:** the teller (T1: player at the window, the teller behind it, the
+  TELLER sign), the vault (V1: the BANK fascia and the vault door, robber drilling; caption "Heists: the bank
+  vault"), the pickaxe (cut to the swing), the smelter (M2, zoomed: the bar lands by the boiler), the globe (G2:
+  the travel list lifted and enlarged, pick Bank, land at the bank).
+- **Tightened:** the form (2.2 s, lifted and enlarged), the chop shop (closer, 2.9 s). The convoy beat is dropped.
+- **Captions:** `<name>.srt` is the one caption track (what is burned in, plus the end card text), with no
+  overlapping cues; `<name>.vo.srt` is the voice-over transcript.
+- **End card:** credit lines 32 px; the card is fully visible for 5.4 s before the 1 s fade.

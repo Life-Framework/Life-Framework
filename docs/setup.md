@@ -189,7 +189,7 @@ front; on a second monitor it lifts it without activating it.
 `tools\cli film-make video/<name>.json` joins footage into a trailer with cards, crossfades, captions, voice-over and a
 music bed (`video/README.md`, `docs/film-pipeline.md`). It needs the portable ffmpeg (`node tools/film/film.mjs fetch`) and,
 for voice-over, Piper (MIT, offline) in a tools-local folder: `tools\cli film-make --setup` downloads the Windows Piper
-release and the `en_US-libritts_r-medium` voice into `tools/film/.tts/` (git-ignored). Nothing is installed globally and no
+release and the `en_US-ljspeech-high` voice (public domain) into `tools/film/.tts/` (git-ignored). Nothing is installed globally and no
 Python is needed. Licences of the voice and music: `docs/credits.md`.
 
 ## 5. AI tooling (optional)
