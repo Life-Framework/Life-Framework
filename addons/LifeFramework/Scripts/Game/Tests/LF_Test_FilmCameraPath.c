@@ -1,3 +1,7 @@
+// red-proof: 2026-11-11 (#571 trailer, orbit pulse), new speed-through-a-key assertion against the old per-segment ease,
+//   cli test --no-build --only LF_Test_FilmCameraPath:
+//   [LFTEST]   - the orbit keeps its speed through a key (0.0147397 m at the key, 0.151949 m mid-segment per 0.05 s)
+// Fixed (one ease for the pass, Catmull-Rom through the keys); green.
 // red-proof: 2026-11-11 (#392 orbit azimuth), azimuth-180 centre z 190 -> 210, cli test --no-build --only LF_Test_FilmCameraPath:
 //   [LFTEST]   - azimuth 180: ... at the radius on the -z side (expected 210, got 190)
 // Restored; green.
@@ -71,6 +75,25 @@ class LF_Test_FilmCameraPath : LF_Test
 		orbit = LF_FilmCameraPath.BuildOrbit(centre, 10, 12);
 		orbit.Sample(6, position, lookAt, fov);
 		ctx.EqualFloat(210, position[2], 0.01, "default orbit keeps the old +z side");
+
+		// A many-key pass (orbit, follow) must not stop at every key: the camera moves as fast just after an
+		// interior key as in the middle of a segment, and eases in and out only at the ends of the whole pass.
+		orbit = LF_FilmCameraPath.BuildOrbit(centre, 10, 12, 0, 140, 4);
+		vector p1;
+		vector p2;
+		orbit.Sample(5, p1, lookAt, fov);
+		orbit.Sample(5.05, p2, lookAt, fov);
+		float atKey = vector.Distance(p1, p2);
+		orbit.Sample(5.5, p1, lookAt, fov);
+		orbit.Sample(5.55, p2, lookAt, fov);
+		float midSegment = vector.Distance(p1, p2);
+		ctx.True(midSegment > 0.01, "the orbit moves in the middle of a segment");
+		ctx.True(atKey > midSegment * 0.8, string.Format("the orbit keeps its speed through a key (%1 m at the key, %2 m mid-segment per 0.05 s)", atKey, midSegment));
+		orbit.Sample(0, p1, lookAt, fov);
+		orbit.Sample(0.05, p2, lookAt, fov);
+		ctx.True(vector.Distance(p1, p2) < midSegment * 0.5, "the orbit eases in at the start of the pass");
+		orbit.Sample(3, p1, lookAt, fov);
+		ctx.EqualFloat(10, vector.Distance(Vector(p1[0], 0, p1[2]), centre), 0.15, "between keys the orbit stays on the radius");
 
 		LF_FilmCameraPath fixedShot = LF_FilmCameraPath.BuildStatic("1 2 3", "4 5 6", 5, 45);
 		fixedShot.Sample(2.5, position, lookAt, fov);
