@@ -62,7 +62,7 @@
   inventory 8 per 1 s; named `// lf-fixed:` constants until the #278 config service lands).
   The first refusal in a window logs `[LFDebug:RateLimit]` Warn and toasts the player
   (`LF-RateLimit_Slow`); later refusals in that window are counted and logged once when it
-  rolls over. Applied in: shop buy and sell (the slip prints `LF-Shop_RefuseTooFast`, no
+  rolls over. A request with no player (server-local) is not counted. Applied in: shop buy and sell (the slip prints `LF-Shop_RefuseTooFast`, no
   toast), vehicle lot, organization upgrade and founding, spawn hub travel, service board,
   building placement, give cash and give item, arrest, quantity split and transfer. Not
   applied where a state gate already makes spam a no-op (character create and select,

@@ -190,6 +190,12 @@ class LF_RateLimit
 	//! \return true when the request may proceed.
 	static bool Allow(int playerId, LF_ERequestKind kind, string request, bool notify = true)
 	{
+		// A client can only RPC on what it owns (its controller or controlled character), so a
+		// request with no player is server-local. Counting it would pool every such caller into
+		// one bucket and refuse them for each other.
+		if (playerId <= 0)
+			return true;
+
 		if (!s_Limiter)
 			s_Limiter = new LF_RateLimiter();
 
@@ -205,7 +211,7 @@ class LF_RateLimit
 		if (verdict == LF_ERateVerdict.REJECT)
 		{
 			LF_Debug.Warn(FEATURE, string.Format("%1 refused: player %2 is over the %3 limit (%4 per %5 ms)", request, playerId, kindName, Burst(kind), WindowMs(kind)));
-			if (notify && playerId > 0)
+			if (notify)
 				LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-RateLimit_Title", "#LF-RateLimit_Slow", 3.0, LF_ENotificationType.WARNING);
 		}
 

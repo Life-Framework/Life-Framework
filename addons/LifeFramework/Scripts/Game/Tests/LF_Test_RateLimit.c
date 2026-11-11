@@ -51,6 +51,16 @@ class LF_Test_RateLimit : LF_Test
 		wrap.Prune(100000, LF_RateLimiter.PRUNE_IDLE_MS);
 		ctx.Equal(0, wrap.Count(), "a prune drops buckets idle past the idle span");
 
+		// A request with no player is server-local: never counted, so callers never share a bucket.
+		bool allLocalAdmitted = true;
+		for (int i = 0; i < 20; i++)
+		{
+			if (!LF_RateLimit.Allow(0, LF_ERequestKind.TRAVEL, "test"))
+				allLocalAdmitted = false;
+		}
+
+		ctx.True(allLocalAdmitted, "server-local requests (player 0) are not limited");
+
 		// Every kind has a positive window and burst, and the idle span outlasts every window.
 		array<LF_ERequestKind> kinds = {LF_ERequestKind.PURCHASE, LF_ERequestKind.TRAVEL, LF_ERequestKind.COMMS, LF_ERequestKind.SPAWN, LF_ERequestKind.INVENTORY};
 		foreach (LF_ERequestKind kind : kinds)
