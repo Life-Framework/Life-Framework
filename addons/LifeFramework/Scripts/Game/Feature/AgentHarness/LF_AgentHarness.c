@@ -238,16 +238,30 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "camera")
 		{
-			if (parts.Count() < 8)
+			// static, drone, hud and stop carry every number in Arg3; orbit and follow keep x y z size seconds
+			// and an orbit may add azimuth arc height after them.
+			int extraFrom = 3;
+			if (cmd.Arg1 == "orbit" || cmd.Arg1 == "follow")
 			{
-				cmd.Error = "need_camera_args";
-				return false;
+				if (parts.Count() < 8)
+				{
+					cmd.Error = "need_camera_args";
+					return false;
+				}
+				cmd.PosX = parts[3].ToFloat();
+				cmd.PosY = parts[4].ToFloat();
+				cmd.PosZ = parts[5].ToFloat();
+				cmd.CamX = parts[6].ToFloat();
+				cmd.CamY = parts[7].ToFloat();
+				extraFrom = 8;
 			}
-			cmd.PosX = parts[3].ToFloat();
-			cmd.PosY = parts[4].ToFloat();
-			cmd.PosZ = parts[5].ToFloat();
-			cmd.CamX = parts[6].ToFloat();
-			cmd.CamY = parts[7].ToFloat();
+			cmd.Arg3 = "";
+			for (int pi = extraFrom; pi < parts.Count(); pi++)
+			{
+				if (!cmd.Arg3.IsEmpty())
+					cmd.Arg3 += " ";
+				cmd.Arg3 += parts[pi];
+			}
 		}
 
 		return true;
@@ -3334,7 +3348,12 @@ class LF_AgentHarness
 	{
 		if (cmd.Verb == "camera")
 		{
-			WriteResult(cmd.Id, "ok", LF_FilmCamera.Start(cmd.Arg1, Vector(cmd.PosX, cmd.PosY, cmd.PosZ), cmd.CamX, cmd.CamY));
+			string camResult;
+			if (cmd.Arg1 == "orbit" || cmd.Arg1 == "follow")
+				camResult = LF_FilmCamera.Start(cmd.Arg1, Vector(cmd.PosX, cmd.PosY, cmd.PosZ), cmd.CamX, cmd.CamY, cmd.Arg3);
+			else
+				camResult = LF_FilmCamera.Command(cmd.Arg1, cmd.Arg3);
+			WriteResult(cmd.Id, "ok", camResult);
 			return;
 		}
 
