@@ -267,6 +267,9 @@ export function syncToSlot(root, slot, { writeSyncState } = {}) {
   return { ok: true, sentBundle: !!bundle, bundleBytes, sentRdb: !!sendRdb, ms, bundleName: bundle ? basename(bundle) : null };
 }
 
+// Exit code of psCheckout when the bundle cannot be applied, even after a fetch of origin.
+export const BUNDLE_FAILED = 4;
+
 // The PowerShell that checks a synced snapshot out in the run folder.
 function psCheckout(slot, bundleName, slug) {
   return [
@@ -274,7 +277,20 @@ function psCheckout(slot, bundleName, slug) {
     "Set-Location -LiteralPath $dir",
     "$in = Join-Path $dir 'tmp\\remote-in'",
     bundleName ? `$bundle = Join-Path $in ${psQuote(bundleName)}` : "$bundle = $null",
-    "if ($bundle -and (Test-Path -LiteralPath $bundle)) { git fetch -q $bundle $ref 2>&1 | Out-Null; if ($LASTEXITCODE) { Write-Host 'lf-remote: git fetch of the bundle failed'; exit 3 }; Remove-Item -LiteralPath $bundle -Force }",
+    "function LfGit { $o = (& git @args 2>&1 | ForEach-Object { \"$_\" }) -join ' | '; $global:LfGitOut = $o }",
+    "if ($bundle -and (Test-Path -LiteralPath $bundle)) {",
+    "  LfGit fetch -q $bundle $ref",
+    "  if ($LASTEXITCODE) {",
+    "    Write-Host \"lf-remote: git fetch of the bundle failed: $LfGitOut\"",
+    "    # A crash (blue screen) can leave loose ref files full of NULs; git then refuses every bundle (\"bad object <ref>\"). Delete them; the fetch below restores them.",
+    "    $cd = (git rev-parse --git-common-dir); foreach ($rf in @(Get-ChildItem -LiteralPath (Join-Path $cd 'refs') -Recurse -File -ErrorAction SilentlyContinue)) { $t = ([IO.File]::ReadAllText($rf.FullName) -replace \"`0\", '').Trim(); if ($t -notmatch '^([0-9a-f]{40}|ref: .+)$') { Write-Host \"lf-remote: dropping corrupt ref file $($rf.FullName) ($($rf.Length) bytes)\"; Remove-Item -LiteralPath $rf.FullName -Force } }",
+    "    Write-Host 'lf-remote: fetching origin on the box, retrying the bundle'",
+    "    LfGit fetch -q origin",
+    "    LfGit fetch -q $bundle $ref",
+    "    if ($LASTEXITCODE) { Write-Host \"lf-remote: bundle-fetch-failed: $LfGitOut\"; exit " + BUNDLE_FAILED + " }",
+    "  }",
+    "  Remove-Item -LiteralPath $bundle -Force",
+    "}",
     "git checkout -q --detach -f $sha 2>&1 | Out-Null; if ($LASTEXITCODE) { Write-Host \"lf-remote: checkout $sha failed\"; exit 3 }",
     "$rdbIn = Join-Path $in 'resourceDatabase.rdb'",
     "if (Test-Path -LiteralPath $rdbIn) { Move-Item -LiteralPath $rdbIn -Destination (Join-Path $dir 'addons\\LifeFramework\\resourceDatabase.rdb') -Force }",
@@ -289,27 +305,36 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
   const slug = basename(slot.rDir).replace(/^Life-Framework-rt-/, "");
   const snap = slot.snap;
   console.log(`remote: ${m.name} ${slot.rDir} @ ${snap.sha.slice(0, 10)}${snap.dirty ? ` (HEAD ${snap.head.slice(0, 10)} + ${snap.changed} uncommitted path(s))` : ""}`);
-  const sync = syncToSlot(root, slot, { writeSyncState });
-  if (!sync.ok) return { code: 3 };
-
-  const env = slot.lockName ? `$env:LF_SERVER_SLOT_HELD = ${psQuote(`${slot.lockName}:${slot.token}`)}` : "";
-  const ps = [
-    psCheckout(slot, sync.bundleName, slug),
-    env,
-    `& node ${psQuote(script)} ${args.map(psQuote).join(" ")}`,
-    "$code = $LASTEXITCODE",
-    "$ld = Get-ChildItem -LiteralPath (Join-Path $dir 'server\\profile\\test\\logs') -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1",
-    "if ($ld -and (Test-Path -LiteralPath (Join-Path $ld.FullName 'console.log'))) { Write-Host \"lf-remote: console.log $($ld.FullName)\\console.log\" }",
-    "exit $code",
-  ].join("\n");
-
+  let sync;
   let summaryLine = "";
   let remoteLog = "";
-  const code = await sshPsStream(m.host, ps, (line) => {
-    if (/\[LFTEST\] SUMMARY tier=/.test(line)) summaryLine = line;
-    const mm = /^lf-remote: console\.log (.+)$/.exec(line.trim());
-    if (mm) remoteLog = mm[1].trim();
-  });
+  let code = 0;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    sync = syncToSlot(root, slot, { writeSyncState });
+    if (!sync.ok) return { code: 3 };
+    const env = slot.lockName ? `$env:LF_SERVER_SLOT_HELD = ${psQuote(`${slot.lockName}:${slot.token}`)}` : "";
+    const ps = [
+      psCheckout(slot, sync.bundleName, slug),
+      env,
+      `& node ${psQuote(script)} ${args.map(psQuote).join(" ")}`,
+      "$code = $LASTEXITCODE",
+      "$ld = Get-ChildItem -LiteralPath (Join-Path $dir 'server\\profile\\test\\logs') -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1",
+      "if ($ld -and (Test-Path -LiteralPath (Join-Path $ld.FullName 'console.log'))) { Write-Host \"lf-remote: console.log $($ld.FullName)\\console.log\" }",
+      "exit $code",
+    ].join("\n");
+    code = await sshPsStream(m.host, ps, (line) => {
+      if (/\[LFTEST\] SUMMARY tier=/.test(line)) summaryLine = line;
+      const mm = /^lf-remote: console\.log (.+)$/.exec(line.trim());
+      if (mm) remoteLog = mm[1].trim();
+    });
+    if (code !== BUNDLE_FAILED || !sync.sentBundle || attempt) break;
+    // The box could not apply the delta bundle even after fetching origin: its
+    // history does not match what the sync state claimed. Forget that state and
+    // send a self-contained bundle (no prerequisites).
+    console.log(`remote: ${m.name} could not apply the delta bundle; clearing its sync state and sending a full bundle`);
+    writeSyncState?.(root, m.name, { sha: null, rdb: null });
+    slot.prep.has = new Set();
+  }
   if (slot.lost) console.log(`WARN  the slot on ${m.name} was lost during the run; its verdict is not trusted`);
 
   let localLog = "";

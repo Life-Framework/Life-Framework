@@ -140,7 +140,7 @@ GenericEntity Sign_FuelStation : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 1 1 1
   }
  }
- coords 264.6 0 242.7
+ coords 280.5 0 243.5
  angleY -50
 }
 GenericEntity Sign_Hospital : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
@@ -179,6 +179,15 @@ GenericEntity Sign_Farm : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePla
   }
  }
  coords 144.5 0 292.5
+ angleY 180
+}
+GenericEntity Sign_FarmPlots : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "farm_plots"
+  }
+ }
+ coords 142.4 0 297
  angleY 180
 }
 GenericEntity Sign_SafeZone_Spawn : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -343,4 +352,13 @@ GenericEntity Sign_LotPrice_uaz452 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_S
  coords 228.3 0 259.2
  angleY 180
  scale 0.65
+}
+GenericEntity Sign_Quarry_Info : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "quarry_info"
+  }
+ }
+ coords 184 0 189.8
+ angleY 0
 }

@@ -24,8 +24,12 @@ track).
 | Moonshine still | `LF_ChainStill.et` | placeholder | barrel station with the `BoilerTank_02` horizontal metal tank mesh (was the white `Boiler_01`, #497); a dark `BoilerLarge_02` furnace with a chimney pipe stands beside it | copper pot still with coil | Moonshine #420 | high: in website shots |
 | Smelter furnace | `Processor/Furnace.et` | placeholder | base-game `BoilerLarge_02` heating boiler (was the `Sawmill_E_01_SmallSaw` chipper, #593); the base game has no named furnace or foundry asset | brick or cast furnace with a fire door and chimney | Mining #593 | medium |
 | Fence drill | `LF_Drill.et` | placeholder | `BenchDrill_01` model | handheld power drill or safe-cracking drill | Fence #271 | medium |
+| House key | `HouseKeyItem.et` | final | `Assets/Items/Keys/HouseKey.xob`: brass key with a round bow and toothed blade, made in Blender (`tools/assets/keys/build.py`; no base-game key mesh exists, #613). Materials tint shared base-game plastic maps | (already what it is) | Housing #613 | none |
+| Vehicle key | `Roleplay/VehicleKey.et`, `LF_PoliceCarKey.et` | final | `Assets/Items/Keys/VehicleKey.xob`: black remote fob with two red buttons and a steel blade (#613), so a car key reads differently from the brass house key | (already what it is) | Vehicles #613 | none |
 | Fence keycard | `LF_Keycard.et` | placeholder | stand-in mesh (#271) | plastic access card | Fence #271 | low |
 | Fence charge | `LF_Charge.et` | placeholder | stand-in mesh (#271) | improvised breaching charge | Fence #271 | low |
+| Cabbage seed packet | `Items/Seeds/CabbageSeeds.et` | placeholder | vanilla `Papers_Personal` folded papers | small printed paper seed packet | Farm plots #614 | low |
+| Farm plot | `Vegetation/Crops/FarmPlot_Cabbage.et`, `FarmPlot_CabbageVisual.et`, `Props/Commercial/LF_SeedCrate_Cabbage.et` | final | vanilla `VegetableBed_01_small` bed, `CabbageCrop_01` heads scaled per stage, `Crate_01` | (already a bed, cabbages and a crate) | Farm plots #614 | none |
 | Police scanner | `LF_Scanner.et` | check | (#253) | handheld 1980s scanner | Comms #253 | medium |
 | Police car | `LF_UAZ469_Police.et`, `LF_UAZ469_LEDLightBar.et` | final | vanilla `UAZ469_covered_CIV_blue` with the mod bar mount `M151A2_LightBarMount.xob` raised 0.25 m to the UAZ roof (#595; the open M151A2 jeep left the bar floating) | (already a car) | Police station car, jail escort car | none |
 
@@ -41,7 +45,7 @@ looked at yet.
 | Clerk desk and chair | `Desk_01_short.et`, `Chair_02_green.et` | final | vanilla furniture | (already a desk and chair) | Spawn square | none |
 | Fence yard props | `Workbench_01.et`, `BoxWooden_01.et`, `Crate_01_green.et`, `BarrelMetal_01_blue.et`, `Tire_M151A2_pile.et`, `EL_S105_beige.et` | final | vanilla props and a parked Skoda | (already what they are); no tarp prefab found, so none placed. Drill, charge and keycard stay placeholders (rows above) | Fence yard #276 | none |
 | Cash van box | `LF_CashVanBox.et` | placeholder | vanilla `Chest_01` (dark steel trunk) at 1.4 scale, on the van's rear step | a locked steel cash-in-transit box | Cash van #274 | low |
-| ATM (two, on the bank front) | `ATM_Debug`, `ATM_Debug_2` (DebugWorld `ATM.layer`) | placeholder | vanilla post-office teller counter `CounterPostOffice_01_window` against the bank wall | a 1989 wall-mounted cash machine or a teller point with a glass screen (none in the base game) | Bank, ATM | low |
+| Bank teller window (#590, replaces the ATM) | `LF_BankTeller.et`, `Bank_Teller`, `Bank_Counter_West/East` (DebugWorld `ATM.layer`) | placeholder | vanilla `Npc_Default_01` clerk standing behind the vanilla post-office counter `CounterPostOffice_01_window`; the old ATM entity stays hidden (no mesh) inside the bank | a 1989 bank teller cage with brass grille | Bank, ATM | low |
 | Money bag | `LF_MoneyBag.et` | placeholder | vanilla `SackUniversal_01` sack mesh at 0.55 scale | a canvas cash bag with a drawstring | Bank, cash van #273 #274 | low |
 | Hospital bed | `LF_HospitalBed.et` | final | vanilla `BedMedical_01` | (already a medical bed) | Hospital, area 7 | none |
 | Ambulance | `LF_M997_Ambulance.et` | final | vanilla `M997_maxi_ambulance` | (already an ambulance) | Hospital, area 7 | none |
@@ -67,3 +71,10 @@ looked at yet.
 | Car lot price board | `Sign_LotPrice_*` (`LF_Sign_Chalkboard`) | final | vanilla `ChalkBoard_01` | (a price board) | Car lot, area 4 | none |
 | Lot display cars | `Lot_Display_*`, `Roadmap_Vehicle_S105` | final | the lot offers base vehicles | (display cars) | Car lot, area 4 | none |
 | Quarry rock walls and stones | `GraniteCliff_01..03.xob`, `Granite_Cluster_Large_01_V2`, `GraniteStone_01/02_V2` | final | base-game granite cliffs form a three-sided pit; small stones scattered on the floor | (same) | Quarry polish, area 11 | none |
+| Quarry info board | `Sign_Quarry_Info` (`LF_Sign_Board`, sign id `quarry_info`) | final | the shared sign board with a rendered face | (same) | Quarry regroup, #618 | none |
+| Quarry materials yard | `ConcretePlant_E_01` (cement plant, moved off the east cliff), the cement, gravel and sand builder stands, sawmill and cuttable pines | final | base-game plant, piles and pines regrouped inside the pit | (same) | Quarry regroup, #618 | none |
+| Cabbage item | `Items/Food/Cabbage.et` | missing | inherits the `CabbageCrop_01` vegetation `Tree` prefab, which has no mesh object, so its inventory preview is empty (#612) | a loose cabbage head `.xob` with a normal item prefab | Farm #612 | medium |
+
+Inventory previews (#612): `tools\cli shots previews` draws every mod item's inventory preview on two contact sheets. The preview camera ignores a prefab's `scale`, so scale a big source mesh down with `CameraDistanceToItem`, not `scale`. Several items share the ID-card placeholder mesh (evidence bag and marker, keycard, lockpick, house key, vehicle key).
+| Vehicle lock sound | `SOUND_PICK_UP` (base inventory click, played on the user at the car) | placeholder | no door-latch event found offline; swap `LF_VehicleLockComponent.LOCK_SOUND` for a real latch or chirp event | (none) | Car polish (lock) | needs a real latch/chirp event |
+| Garage counter | `CounterShop_01.xob` on `Roadmap_Garage` | final | gives the garage use point a visible, targetable body beside the doors | (same as lot desk) | Garage fix | none |

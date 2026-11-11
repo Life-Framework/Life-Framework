@@ -1,0 +1,10 @@
+{
+  "note": "One entry per community we post in. The landing page answers /join/<source> (website/src/pages/Join.tsx); the source is the last part of the path, so Cloudflare Web Analytics shows it under Path. `invite` is a Discord invite created for that source, so the invite's use count shows who joined from it; null falls back to the plain invite. Add a source here before its first post and record it in docs/community/outreach/tracker.md.",
+  "sources": [
+    { "id": "arma-reforger-discord", "label": "Official Arma Reforger Discord", "invite": null },
+    { "id": "everon-life", "label": "Everon Life community", "invite": null },
+    { "id": "overthrow", "label": "Overthrow community", "invite": null },
+    { "id": "reddit-armareforger", "label": "r/ArmaReforger", "invite": null },
+    { "id": "github", "label": "GitHub README and issues", "invite": null }
+  ]
+}

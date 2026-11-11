@@ -238,11 +238,13 @@ export async function buildChecklist(gh, plan) {
   lines.push("```");
   lines.push("");
   const issues = new Set();
+  const manualIssues = new Set();
   for (const n of plan.prs) {
     const pr = await gh.getPr(n);
     const refs = pr ? parseRefs(pr.body) : [];
     refs.forEach((r) => issues.add(r));
     const manual = pr ? manualSteps(pr.body) : "";
+    if (manual) refs.forEach((r) => manualIssues.add(r));
     lines.push(`## [ ] PR #${n}: ${pr ? pr.title : "(not found)"}`);
     lines.push(refs.length ? `Issues: ${refs.map((r) => "#" + r).join(", ")}` : "Issues: none referenced");
     lines.push("");
@@ -254,7 +256,7 @@ export async function buildChecklist(gh, plan) {
     for (const c of plan.direct) lines.push(`- ${c.sha.slice(0, 8)} ${c.subject}`);
     lines.push("");
   }
-  return { text: lines.join("\n"), issues: [...issues] };
+  return { text: lines.join("\n"), issues: [...issues], manualIssues: [...manualIssues] };
 }
 
 export function writeChecklist(root, plan, text) {

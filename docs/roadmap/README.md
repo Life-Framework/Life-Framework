@@ -20,7 +20,7 @@ The November 2025 community checklist is in git history
 | M2.5 | Showcase and Outreach | Outline: hero video, landing page, Discord onboarding, outreach kit, playtester roster (epic #566; starts when M2 closes) | [m2-5-outline.md](m2-5-outline.md) |
 | M3 | Framework Release | Outline: two addons, config layer, web generator, owner docs, example server, config harness, Workshop release (epics #223-#229, #366, sub-issues under #224-#229) | [m3-outline.md](m3-outline.md) |
 | M4 | Flagship Live | Outline: hosting and ops, staff and community, showcase (epics #230-#232, each broken into sub-issues) | [m4-outline.md](m4-outline.md) |
-| M5 | Flagship Story | Outline: a light arrival arc, music, voiced key NPCs, food, the state factory, bus stops (idea epic #214) | [m5-outline.md](m5-outline.md) |
+| M5 | Flagship Story | Outline, two tracks (Framework systems #632, Flagship content #633): arrival arc, music, voiced NPCs, food, state factory, bus stops, the Meshy-to-Blender-to-Reforger 3D harness (#339), and the ideas from the Genetic Life review (idea epic #214) | [m5-outline.md](m5-outline.md) |
 | M6 | Homes and Land | Ideas only: property, renting, the dacha, farming (split from M5, 2026-11-09) | epic #214 items 6 and 7 |
 
 Each outline is planned in full only after the milestone before it closes.
@@ -32,6 +32,8 @@ Each outline is planned in full only after the milestone before it closes.
   the `LF_Everon1989` pack from M3.
 - **1989 Everon.** Flagship jobs, places, and copy fit the period. A taxi rank, a
   fuel delivery, a parcel run. No phone apps.
+- **Two tracks from M5.** Every M5 item is split into a Framework issue (the
+  system, in the core) and a Flagship issue (the content, in `LF_Everon1989`).
 - **Base-game assets.** Doors, vehicles, weapons, medical supplies, fuel cans,
   and buildings come from Arma Reforger. A scope configures those prefabs. It
   does not add a weapon pack, a vehicle pack, or aircraft.

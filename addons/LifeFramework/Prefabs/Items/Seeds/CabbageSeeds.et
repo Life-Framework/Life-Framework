@@ -1,0 +1,28 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "6FF16F53CFA2BA20"
+ components {
+  SoundComponent "{5A4ADB24952425BA}" {
+   Filenames {
+    "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
+   }
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Farm_CabbageSeeds"
+     Description "#LF-Farm_CabbageSeedsDesc"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.02
+     ItemVolume 60
+     RestingUP Forward
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{1BF8C5BE3DEEC82C}Assets/Items/Identity/Belongings_Personal/Papers_Personal.xob"
+  }
+ }
+}

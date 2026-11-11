@@ -15,7 +15,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
     ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
      Weight 0.1
      ItemVolume 113
-     RestingUP Forward
+     RestingUP Up
      RestingAdditiveRotationLS 0 0 0
      RestingAdditiveOffsetLS 0 0 -0.008
     }
@@ -33,7 +33,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
-   Object "{46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob"
+   Object "{1A9AD5792903B6F0}Assets/Items/Keys/HouseKey.xob"
   }
   SCR_GadgetComponent "{061EA4E7A33E499A}" {
    m_eAnimVariable LF_ITEM
