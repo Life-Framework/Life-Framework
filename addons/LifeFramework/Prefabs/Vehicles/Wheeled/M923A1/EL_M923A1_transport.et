@@ -10,10 +10,21 @@ Vehicle : "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et
     LF_VehicleLockAction "{E1A923BE1A000006}" {
      ParentContextList {
       "door_l01"
+      "door_l01_int"
      }
      UIInfo UIInfo "{E1A923BE1A000007}" {
       Name "#EL-VehicleLock_Action"
      }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{E1A5707E00000101}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A5707F00000101}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
     }
     LF_VehicleSearchAction "{5EA2C40300000001}" {
      ParentContextList {

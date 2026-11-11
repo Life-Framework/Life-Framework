@@ -230,7 +230,7 @@ export function contactLayout(count) {
 
 // ------------------------------------------------------------------ image tool
 
-function image(spec) {
+export function image(spec) {
   const file = join(process.env.TEMP || process.env.TMP || ROOT, `shots-image-${process.pid}-${Math.random().toString(36).slice(2, 8)}.json`);
   writeFileSync(file, JSON.stringify(spec));
   const r = spawnSync("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", IMAGE_PS1, file], { encoding: "utf8", windowsHide: true });
@@ -268,12 +268,12 @@ function cropCommand(rest) {
 
 // -------------------------------------------------------------------- session
 
-function sessionTool(args) {
+export function sessionTool(args) {
   const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...args], { encoding: "utf8", windowsHide: true, cwd: ROOT, env: { ...process.env, LF_CALLER_PID: String(process.pid) } });
   return { code: r.status ?? 1, text: `${r.stdout ?? ""}${r.stderr ?? ""}` };
 }
 
-async function openClient(machine, hold) {
+export async function openClient(machine, hold) {
   const h = await import("./harness.mjs");
   const s = await import("./session.mjs");
   h.setBoxes([s.clientBox(s.sessionDir(), 1)]);
@@ -297,7 +297,7 @@ async function openClient(machine, hold) {
 }
 
 // A fresh playtest client starts on the registration form (R-89); sign it so the player spawns and the world loads around it.
-function arrive(h) {
+export function arrive(h) {
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   for (let i = 0; i < 8; i++) {
     const ui = h.sendCommand({ verb: "ui" });
@@ -1084,6 +1084,7 @@ export async function main(argv) {
   const [cmd, ...rest] = argv;
   if (cmd === "area") return areaCommand(rest);
   if (cmd === "crop") return cropCommand(rest);
+  if (cmd === "previews") return (await import("./previews.mjs")).main(rest);
   if (cmd === "baseline") return baselineCommand(rest);
   if (cmd === "selftest") return selftest();
   console.log("usage: tools\\cli shots area <name | x,z> [--radius N] [--out dir] [--machine any] [--hour H] [--annotate] [--pick] [--detail <Entity>] [--keep]\n       tools\\cli shots crop <shot> <x,y,w,h>\n       tools\\cli shots baseline [--areas all|a,b,c]\n       tools\\cli shots selftest");

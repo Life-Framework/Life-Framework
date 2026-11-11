@@ -35,27 +35,23 @@ class LF_VehicleLockAction : ScriptedUserAction
 			return;
 
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(pOwnerEntity);
-		if (!vehicleLock || !vehicleLock.UserHasValidKey(pUserEntity))
+		if (!vehicleLock)
 			return;
 
-		vehicleLock.ToggleLocked();
-		LF_VehicleOwnership.NoteLockState(vehicleLock.GetVehicleIdentifier(), vehicleLock.IsVehicleLocked());
-
-		PlayerManager playerManager = GetGame().GetPlayerManager();
-		int playerId = playerManager.GetPlayerIdFromControlledEntity(pUserEntity);
-		if (playerId <= 0)
-			return;
-
-		if (vehicleLock.IsVehicleLocked())
-			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-VehicleLock_Title", "#EL-VehicleLocked");
-		else
-			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-VehicleLock_Title", "#EL-VehicleUnlocked");
+		vehicleLock.TryToggleBy(pUserEntity, "menu");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		outName = "#EL-VehicleLock_Action";
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(GetOwner());
+		if (!vehicleLock)
+		{
+			outName = "#EL-VehicleLock_Action";
+			return true;
+		}
+
+		outName = LF_VehicleLockComponent.ActionLabelKey(vehicleLock.IsVehicleLocked());
 		return true;
 	}
 }

@@ -1,0 +1,12 @@
+GenericEntity Roadmap_Dispatch_Console : "{503B0EA32328591E}Prefabs/Comms/LF_DispatchConsole.et" {
+ coords 253 0 229.5
+ angleY 0
+}
+GenericEntity Roadmap_Dispatch_PoliceBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
+ coords 249.4 0 232.5
+ angleY 0
+}
+GenericEntity Roadmap_Dispatch_MedicBoard : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
+ coords 256.6 0 232.5
+ angleY 0
+}

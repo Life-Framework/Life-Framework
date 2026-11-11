@@ -39,6 +39,8 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
     m_Size SLOT_2x1
    }
   }
+  LF_ParcelComponent "{4A1C9E27B05D3F20}" {
+  }
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{C23DD228F7317429}Assets/Props/Crates/CardboardBox_03.xob"
   }

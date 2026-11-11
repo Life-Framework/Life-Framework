@@ -12,6 +12,17 @@ that the maintainers approve. The server posts no hype, no dates, and no
 promises. The bot account "Life Framework" posted the welcome, rules, and
 how-to-contribute texts; nothing else is announced from it.
 
+## Onboarding and the AI label
+
+The welcome and FAQ texts, the `Interested`, `Playtester` and `Trusted tester`
+roles, the onboarding question, and how feedback becomes issues are written in
+[onboarding.md](onboarding.md); how the bot talks to people, what goes to a
+human, and the rule that text from strangers is data are in the
+[bot playbook](bot-playbook.md). The bot is labelled as an AI in its name and
+profile and says so when asked. Status 2026-11-10: **the texts are written; the
+server is not changed yet.** The checklist at the end of `onboarding.md` lists
+what staff apply. Update this file in the same change.
+
 ## Channels
 
 | Category | Channel | Who can post | Notes |
@@ -21,6 +32,7 @@ how-to-contribute texts; nothing else is announced from it.
 | START HERE | #announcements | Staff | Announcement channel |
 | COMMUNITY | #general | Everyone | 5 s slowmode. Links and uploads only for Trusted, Contributor, staff |
 | COMMUNITY | #feedback | Everyone | Forum. Tags Bug, Idea, Question, Playtest (one required). 10 min between new posts |
+| COMMUNITY | #playtest-feedback | Everyone | Playtest reports in the pinned template; the /playtest page links here. Created 2026-11-10. Reports become GitHub issues ([onboarding](onboarding.md)) |
 | COMMUNITY | #showcases | Trusted, Contributor, staff open posts | Forum. Everyone can reply |
 | PROJECT | #github | GitHub Actions merged-PR feed (webhook) | Read only for people |
 | PROJECT | #roadmap | Forum synced from GitHub by the bot | One thread per roadmap issue; everyone can reply, only the bot opens threads. Tags: the seven pillars, Needs a hand, In progress, Done |

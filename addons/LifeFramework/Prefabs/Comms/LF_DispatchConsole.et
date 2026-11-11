@@ -1,0 +1,54 @@
+GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ ID "83317603BB57AC8E"
+ {
+  GenericEntity Radio {
+   ID "20E01FCD02C02308"
+   components {
+    MeshObject "{91D35EB6206030B1}" {
+     Object "{77C9FCF3FB1246E9}Assets/Items/Equipment/Radios/Radio_R107M/Radio_R107M_01_item.xob"
+    }
+    ActionsManagerComponent "{F0BE841E7B09C8AF}" {
+     ActionContexts {
+      UserActionContext "{3F94A47F4C97907B}" {
+       ContextName "LF_DispatchConsole"
+       Position PointInfo "{4613FDAECA129D0B}" {
+        Offset 0 0.15 0
+       }
+       Radius 1.5
+      }
+     }
+     additionalActions {
+      LF_DebugDispatchAction "{8AD8ABDEEABA81AB}" {
+       ParentContextList {
+        "LF_DispatchConsole"
+       }
+       UIInfo UIInfo "{A672122A06B22B1D}" {
+        Name "#LF-Dispatch_TestPolice"
+        Description "#LF-Dispatch_TestDesc"
+       }
+       "Sort Priority" 1
+       m_sService "police"
+       m_sSummary "#LF-Payphone_Summary_Crime"
+       m_sPlaceEntity "Roadmap_Fuel_Till"
+      }
+      LF_DebugDispatchAction "{4ED76FB37A93DC06}" {
+       ParentContextList {
+        "LF_DispatchConsole"
+       }
+       UIInfo UIInfo "{47DA812606084931}" {
+        Name "#LF-Dispatch_TestMedic"
+        Description "#LF-Dispatch_TestDesc"
+       }
+       "Sort Priority" 2
+       m_sService "medic"
+       m_sSummary "#LF-Payphone_Summary_Medic"
+       m_sPlaceEntity "Roadmap_Fuel_Payphone"
+      }
+     }
+    }
+   }
+   coords 0 0.63 0
+   angleY 90
+  }
+ }
+}

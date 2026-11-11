@@ -47,3 +47,7 @@ GenericEntity Roadmap_Bank_Bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_Mo
   }
  }
 }
+GenericEntity Roadmap_Bank_RobKit : "{6EAEEC207EBAB7C5}Prefabs/Props/Debug/LF_BankRobKitStand.et" {
+ coords 198.6 0 259.5
+ angleY 270
+}

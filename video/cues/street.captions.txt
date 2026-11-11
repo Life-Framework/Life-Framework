@@ -1,0 +1,3 @@
+# from to text (seconds from the start of the take)
+0.5 4.0 A small town, built for roleplay
+4.5 8.5 Walk, drive, work and trade
