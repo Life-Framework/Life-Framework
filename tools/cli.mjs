@@ -981,6 +981,67 @@ function cmdBuild(root = ROOT, opts = {}) {
 
 }
 
+// Pack the addon the way Workbench > Publish Project bundles it (compressed, encrypted .pak files,
+// .meta and source files left out), without uploading anything: -wbModule=ResourceManager
+// -packAddon -packAddonDir (BIKI Arma_Reforger:Startup_Parameters#packAddon). The output folder
+// loads like a Workshop download: -addonsDir <out-parent> -addons <GUID> (docs/playtest/workshop-host.md).
+function cmdPack(root = ROOT, opts = {}) {
+  guardHeavy(root, "pack", opts.force);
+  const exe = workbenchExe();
+  if (!existsSync(exe)) {
+    console.log(`FAIL  workbench not found: ${exe}`);
+    return 1;
+  }
+  const out = resolve(opts.out || join(root, "tmp", "workshop-pack", "LifeFramework"));
+  const addon = join(root, "addons", "LifeFramework");
+  if (out.toLowerCase().startsWith(addon.toLowerCase())) {
+    console.log(`FAIL  pack output ${out} is inside the addon folder; Workbench would pack its own output`);
+    return 1;
+  }
+  // A previous pack leaves its .pak files; packing over them is what Workbench does, so no delete.
+  mkdirSync(out, { recursive: true });
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const profile = join(root, "server", "profile", "pack");
+  mkdirSync(profile, { recursive: true });
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: opts.wait ? 900000 : 0 });
+    locked = true;
+    const args = [
+      "-gproj", join(addon, "LifeFramework.gproj"),
+      "-wbModule=ResourceManager",
+      "-packAddon",
+      "-packAddonDir", out,
+      "-noSplash",
+      "-profile", profile,
+      "-addonsDir", join(root, "addons"),
+      "-addonsDir", workbenchGameAddons(root, "pack"),
+    ];
+    console.log(`packing addon (headless Workbench) -> ${out}`);
+    const started = Date.now();
+    const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 900000 });
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    const log = latestWorkbenchLog(profile);
+    const lines = log ? readFileSync(log, "utf8").split(/\r?\n/) : [];
+    for (const l of lines.filter((x) => /Packaging|\(E\).*(pack|bundle|cannot copy|metafile)/i.test(x)).slice(-12)) console.log(`  ${l}`);
+    const paks = existsSync(out) ? readdirSync(out).filter((f) => /\.pak$/i.test(f)) : [];
+    const manifest = ["addon.gproj", "LifeFramework.gproj"].find((f) => existsSync(join(out, f)));
+    const mb = paks.reduce((s, f) => s + statSync(join(out, f)).size, 0) / 1048576;
+    if (!paks.length || !manifest) {
+      console.log(`pack FAILED after ${secs}s (Workbench exit ${res.status ?? res.error?.code ?? "?"}): ${paks.length} .pak file(s), project file ${manifest ? "present" : "missing"} in ${out}`);
+      if (log) console.log(`  log: ${log}`);
+      return 1;
+    }
+    console.log(`pack OK in ${secs}s: ${paks.length} .pak file(s), ${mb.toFixed(1)} MB, ${manifest} in ${out}`);
+    return 0;
+  } catch (e) {
+    console.log(`FAIL  pack: ${e.message}`);
+    return 1;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
 // Before every server boot from a worktree: copy main's resourceDatabase.rdb
 // when it is the better copy, then make sure it registers every .meta in the
 // addon. A resource that landed on main after anyone last opened Workbench is
@@ -2369,6 +2430,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   mcp enable <name>             enable a server in opencode.json
   mcp disable <name>            disable a server in opencode.json
   build                         headless Workbench build of the addon (worktree only)
+  pack [--out dir] [--wait]     pack the addon as Workbench > Publish bundles it, no upload
+                                (default tmp/workshop-pack/LifeFramework; docs/playtest/workshop-host.md)
   serve                         boot the headless test server (blocks, worktree only)
   playtest [stop|status|shortcut]  the maintainer's one command: host from the pinned origin/main
                                 checkout (..\\Life-Framework-playtest), then open the game joined to it;
@@ -3200,6 +3263,10 @@ const cmds = {
   enable: (n) => cmdSetEnabled(n, true),
   disable: (n) => cmdSetEnabled(n, false),
   build: (flags) => cmdBuild(ROOT, { force: (flags ?? []).includes("--force"), wait: (flags ?? []).includes("--wait") }),
+  pack: (flags) => {
+    const list = flags ?? [];
+    return cmdPack(ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), out: argValue(list, "--out") });
+  },
   host: (flags) => cmdHost(flags),
   playtest: (flags) => cmdPlaytest(flags),
   session: (flags) => cmdSession(flags),

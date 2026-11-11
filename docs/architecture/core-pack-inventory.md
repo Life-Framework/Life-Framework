@@ -190,6 +190,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | --- | --- | --- |
 | `EL_DebugTest.conf` | core | The suite's header |
 | `LF_PlaytestTown.conf` | pack | The flagship playtest header |
+| `LF_PlaytestTown_Preview.{edds,jpg}` | pack | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
 | `EveronLifeGameMode.conf` | pack | The MainWorld header |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
 
