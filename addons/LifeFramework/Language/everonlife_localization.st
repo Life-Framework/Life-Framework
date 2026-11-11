@@ -6941,6 +6941,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
     }
+    CustomStringTableItem "{1C23DAF5E8974D14}" {
+     Id "LF-Sign_DebugJail_Next"
+     Target_en_us "Wait out the 60 seconds, or try a breakout. The cell, the visit window and the release are the real ones."
+     Comment "Next-step line of the debug jail board."
+    }
   }
  }
 }
