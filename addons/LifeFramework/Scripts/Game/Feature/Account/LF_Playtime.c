@@ -137,10 +137,20 @@ class LF_Playtime
 		playerManager.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
 		{
-			if (Clocks().Contains(playerId))
+			string accountUid = LF_Utils.GetAccountUID(playerId);
+			LF_PlaytimeClock running = Clocks().Get(playerId);
+			if (running && !accountUid.IsEmpty() && running.m_sAccountUid != accountUid)
+			{
+				// The id now belongs to another account: the old one is paid to now and stops.
+				LF_Debug.Warn(FEATURE, string.Format("player %1 is now %2, not %3: restarting its clock", playerId, accountUid, running.m_sAccountUid));
+				StopClock(playerId, now);
+				running = null;
+			}
+
+			if (running)
 				Settle(playerId, now);
 			else
-				StartClock(playerId, LF_Utils.GetAccountUID(playerId), now);
+				StartClock(playerId, accountUid, now);
 		}
 
 		array<int> gone = {};
@@ -358,7 +368,8 @@ class LF_Playtime
 	//! Replaces the counts with the saved ones (idempotent: a second load gives the same counts).
 	//! Rows with no account, job or time are skipped; duplicate keys are summed. Running clocks are
 	//! left alone: at a boot load none run yet, and on a live re-apply they keep counting from their
-	//! last credit.
+	//! last credit. A live re-apply is a rollback like every other payload: time credited since that
+	//! save is dropped, the same as the bank or the ledger.
 	//! \return Rows applied.
 	static int ApplyAll(array<ref LF_PlaytimeRecord> records)
 	{
