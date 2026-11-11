@@ -9,6 +9,7 @@
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { describeMissing, rdbFreshness } from "../lib/rdb-fresh.mjs";
+import { addonDir, rdbAddons } from "../lib/addons.mjs";
 import { REPO } from "./playtest-server.mjs";
 
 const TAG_RE = /^playtest-m(\d+)-(\d+)$/;
@@ -69,6 +70,15 @@ export function cmdPlaytestRelease(root, args, { ensureRdb, isMain }) {
     return 1;
   }
   console.log(`  rdb: ${fresh.total} resources registered`);
+  // Any other addon that declares resources must have a fresh rdb too (the zip and the attached rdb are the core's).
+  for (const name of rdbAddons(root).slice(1)) {
+    const other = rdbFreshness(addonDir(root, name));
+    if (!other.exists || other.missing.length) {
+      console.log(`FAIL  ${name} resourceDatabase.rdb is not fresh (${other.exists ? describeMissing(other.missing) : "missing"})`);
+      return 1;
+    }
+    console.log(`  rdb [${name}]: ${other.total} resources registered`);
+  }
 
   const notes = "Packing the download; this release becomes the latest when the playtest-release workflow finishes.";
   const create = run("gh", ["release", "create", tag, fresh.rdbPath, "--repo", REPO, "--target", head, "--title", releaseName(tag), "--notes", notes, "--prerelease"], root);
