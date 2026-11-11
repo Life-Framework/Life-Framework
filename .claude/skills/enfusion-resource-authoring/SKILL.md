@@ -46,6 +46,18 @@ is the door hinge. A mesh taller than about 1.5 m gets a Height so the volume
 is a capsule along the mesh. Handheld pickups stay as they are.
 `validate-action-contexts` fails on an interactable left at the default.
 
+Checklist for a counter, till, desk, or bench (a point that floated above the
+till or sat behind a desk is the usual miss):
+
+- Put the point on the mesh bounds, never by eye:
+  `node tools/actions/place-action-contexts.mjs --anchor front|center|top [--height 1.0] [--front -z] <entity|prefab>`
+  (`--anchor custom --offset x y z` for an entity with no mesh). A standing
+  customer faces the front; `front` clamps the height to the mesh top.
+- For a prefab you will repeat, add it to `tools/actions/anchors.json` and run `--batch`.
+- `--check` (also `validate-action-reach`) warns when a point is over 0.5 m off
+  its mesh or the radius misses a player 0.5 m away; over 3 m off fails.
+- Details: `docs/action-anchors.md`.
+
 ## DebugWorld layers
 
 `Worlds/DebugWorld/DebugWorld.ent` is 0 bytes on purpose; content lives in

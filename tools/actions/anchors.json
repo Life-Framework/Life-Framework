@@ -1,0 +1,6 @@
+{
+  "_doc": "Per-target anchors for place-action-contexts.mjs --batch. Key: Prefabs/X.et, Prefabs/X.et#Child, a layer entity name, or File.layer#Name. Fields: anchor (center|front|top|custom), height (front only, metres), front (+z|-z), offset (custom), radius, context. See docs/action-anchors.md.",
+  "Roadmap_Fuel_Till": { "anchor": "front", "height": 1.0, "front": "+z" },
+  "Prefabs/Police/LF_PoliceDutyDesk.et#DutyClock": { "anchor": "center" },
+  "Roadmap_Garage": { "anchor": "custom", "offset": [0, 1.2, 0], "radius": 2.5 }
+}
