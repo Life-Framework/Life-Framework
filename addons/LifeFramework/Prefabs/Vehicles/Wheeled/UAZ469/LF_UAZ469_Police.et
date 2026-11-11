@@ -4,7 +4,7 @@ Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_
   LF_LicensePlateManagerComponent "{19BDE70FC62A5348}" {
    m_Plates {
     LF_LicensePlatePointInfo "{9270BF3A168CD45E}" {
-     Offset 0 0.75 -1.92
+     Offset -0.2 0.75 -1.92
      Angles 0 180 0
     }
    }
