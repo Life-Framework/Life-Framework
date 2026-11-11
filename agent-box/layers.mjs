@@ -143,6 +143,9 @@ function walkLayer(text, layerFile, root) {
     const angleY = line.match(/^angleY\s+(-?\d+(?:\.\d+)?)$/);
     if (angleY && stack.length) stack[stack.length - 1].yaw = Number(angleY[1]);
 
+    const scale = line.match(/^scale\s+(-?\d+(?:\.\d+)?)$/);
+    if (scale && stack.length) stack[stack.length - 1].scale = Number(scale[1]);
+
     const signId = line.match(/^m_sSignId\s+"([^"]*)"$/);
     if (signId) {
       for (let i = stack.length - 1; i >= 0; i--) {
@@ -192,6 +195,10 @@ function walkLayer(text, layerFile, root) {
           };
           if (signId) record.signId = signId;
           if (frame.yaw !== undefined) record.yaw = frame.yaw;
+          if (frame.scale !== undefined) record.scale = frame.scale;
+          // The enclosing placed entity (name, else prefab file), for checks that pair entities.
+          const owner = [...stack].reverse().find((s) => s.entity);
+          if (owner) record.parent = owner.name || String(owner.prefab || owner.anonPrefab || "").split("/").pop().replace(/\.et$/, "");
           if (frame.name) {
             placed.push(record);
             if (frame.actions.length) pads.push(record);

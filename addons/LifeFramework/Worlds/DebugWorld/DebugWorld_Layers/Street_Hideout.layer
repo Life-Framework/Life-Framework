@@ -101,11 +101,11 @@ GenericEntity Roadmap_Hideout_Tires : "{5CA44F8D9F7491ED}Prefabs/Props/VehiclePa
  coords 296.6 0 307.6
 }
 GenericEntity Roadmap_Hideout_BenchBox : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 306 0.9 308.9
+ coords 306 1.02 308.9
  angleY 10
 }
 GenericEntity Roadmap_Hideout_BenchJerrycan : "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et" {
- coords 306.9 0.9 308.9
+ coords 306.9 1.02 308.9
 }
 GenericEntity Roadmap_Hideout_BenchCarton {
  components {
@@ -117,7 +117,7 @@ GenericEntity Roadmap_Hideout_BenchCarton {
    Static 1
   }
  }
- coords 307.5 0.9 308.9
+ coords 307.5 1.015 308.9
  angleY 20
 }
 GenericEntity Roadmap_Hideout_Barrel_3 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {

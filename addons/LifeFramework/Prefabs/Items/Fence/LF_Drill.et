@@ -24,7 +24,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
      Weight 6
      SizeSetupStrategy Volume
      ItemVolume 4000
-     RestingUP Forward
+     RestingUP Up
     }
    }
   }
@@ -44,4 +44,5 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    }
   }
  }
+ scale 0.4
 }

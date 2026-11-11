@@ -3,7 +3,7 @@
 // (docs/agent-area-polish.md). One blocking call per area; prints about ten lines.
 //
 //   shots area <name | x,z> [--radius 30] [--out tmp/shots/<area>] [--machine any]
-//              [--hour 17.9] [--annotate] [--pick] [--detail <Entity>] [--keep] [--fov 60] [--wide-only]
+//              [--hour 17.9] [--annotate] [--pick] [--detail <Entity>] [--keep] [--fov 60] [--wide-only | --eye-only]
 //   shots crop <shot> <x,y,w,h>        native-resolution crop under 800 px
 //   shots baseline [--areas all|a,b,c]   every area in one session -> tmp/shots-baseline/<area>/ in the main checkout
 //   shots area <name> --baseline         path and age of that area's freshest baseline (no session)
@@ -883,11 +883,13 @@ async function capture(h, area, o) {
   const noClose = o.args.flags["wide-only"] || o.args.flags["no-close"];
   console.log(`closeups: ${closeSet.map((p) => `${p.name}(${p.importance})`).join(" ")}`);
   const wides = [];
-  const trees = placedMod
+  // --eye-only: the four eye-level shots and the close-ups, no wide (its scoring is most of an area's minutes).
+  const eyeOnly = o.args.flags["eye-only"] === true;
+  const trees = eyeOnly ? [] : placedMod
     .loadWorld(ROOT)
     .filter((e) => TREE.test(e.prefab || e.anonPrefab || "") && Math.hypot(e.x - aim.x, e.z - aim.z) < Math.max(area.radius, aim.frame) * 4)
     .map((e) => ({ x: e.x, z: e.z, gy: probe.ground(e.x, e.z) }));
-  placeCamera(probe, "wide", area, { collect: wides, aim }, () => [aim.x, area.y + 1, aim.z]);
+  if (!eyeOnly) placeCamera(probe, "wide", area, { collect: wides, aim }, () => [aim.x, area.y + 1, aim.z]);
   for (const w of wides) {
     const yaw = poseOf(w.eye, w.target).yaw;
     w.treeNear = treeOcclusion(w.eye, [w.target[0], w.eye[1], w.target[2]], trees, len(sub(w.target, w.eye)));
@@ -908,7 +910,7 @@ async function capture(h, area, o) {
     const sh = take(i === 0 ? "wide" : "wide-2", "wide", "wide", null, w);
     sh.frame = w.frame;
   });
-  if (!wides.length) take("wide", "wide", "wide", null, placeCamera(probe, "wide", area, { aim }, () => [aim.x, area.y + 1, aim.z]));
+  if (!wides.length && !eyeOnly) take("wide", "wide", "wide", null, placeCamera(probe, "wide", area, { aim }, () => [aim.x, area.y + 1, aim.z]));
   // The character camera cannot pitch, so a top-down needs the (crashing) free camera: opt in with --free-camera.
   if (o.args.flags["free-camera"]) take("top", "top", "top", null, placeCamera(probe, "top", area, {}, () => lookAt(0)));
   if (!noClose) for (const [dirName, az] of [["N", 0], ["E", 90], ["S", 180], ["W", 270]]) {

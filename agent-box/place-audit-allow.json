@@ -1,0 +1,20 @@
+{
+  "_note": "Placements that are meant to look this way. tools\\cli audit placement skips a problem whose kind matches and whose name or prefab matches the regex (docs/placement-audit.md). Give the reason a reviewer can check in a shot.",
+  "allow": [
+    {
+      "match": "^Axe_",
+      "kind": "tilted",
+      "why": "The quarry axe lies flat on the ground by the logs (LoggingChain.layer angles 90)."
+    },
+    {
+      "match": "^Roadmap_Bank_Bag",
+      "kind": "scaled",
+      "why": "The small money bag on the bank floor is meant to be small (#740)."
+    },
+    {
+      "match": "Bank_Teller",
+      "kind": "floating",
+      "why": "The teller stands on the bank wall plinth (y 0.16) behind the counter; the terrain probe misses the plinth. Seen in the Bank_Teller close-up, #679."
+    }
+  ]
+}

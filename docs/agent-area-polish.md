@@ -109,6 +109,8 @@ toolscli shots area hospital [--radius 18] [--annotate] [--pick] [--detail <Enti
 toolscli shots crop wide 900,0,380,140
 ```
 
+- **`--eye-only`** skips the wide (its scoring is most of an area's minutes) and keeps the four eye-level shots and the close-ups: about 75 s an area, so every area fits one session. Pair it with `tools\cli audit placement` (`docs/placement-audit.md`), which measures the whole town in 10 s without a session.
+
 - **The areas** are in `agent-box/areas.json` (the 17 above; payphones has one entry per phone).
   A raw `x,z` also works; the ground height is looked up in-game.
 - **Same scene every time.** Golden hour (local 17.9, the game clock reads 4.73 h less at this longitude), clear weather, no HUD, no hint box. The clock is set on the server by the harness `time <hour>` verb (an authority-side RPC, like pose); a client-side clock is overridden. The call prints the reply (`local=17.9 game=13.77 ...`). Nothing ships.
@@ -152,3 +154,7 @@ toolscli shots crop wide 900,0,380,140
   a pool machine, the call runs there and copies the folder back.
 - **Reviewer:** reads `contact.jpg` and the `problems:` list, and crops only when unsure.
 - **1280 wide png.** Look at the contact sheet before keeping the shots.
+
+## Props on counters, desks and tables
+
+`validate-prop-on-surface` (`tools/validation/`, logic in `tools/actions/prop-on-surface.mjs`) reads every DebugWorld layer and every prefab that places children, takes each mesh's `.xob` header bounds, and fails when a prop resting on a counter, desk, table, workbench or market stand (bottom within 0.5 m of the top, centre within 0.3 m of the footprint) hangs more than 0.1 m past an edge. It tests the plan view only, so a workbench's raised back does not matter. It cannot see a prop whose centre is more than 0.3 m off the surface, vertical placement against a surface with a raised back (a bench top is lower than its bounds), parenting through scripts, or the side a prop faces; look at those in the close-ups. It needs the base-game pak for bounds and prints SKIPPED without it. `prop-on-surface-selftest.mjs` proves the math on fixed bounds.

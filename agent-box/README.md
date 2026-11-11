@@ -67,6 +67,9 @@ node agent-box/harness.mjs shot world ATM_Debug
 `toolscli shots area <name | x,z>` is the one-call area rig for the polish pass: golden-hour clean
 shots from a fixed angle set, a `contact.jpg` sized for agents, `index.json`, and numeric placement
 checks (floating, sunk, clipping, tilt, reach). `shots crop` zooms; see `docs/agent-area-polish.md`.
+`tools\cli audit placement` (`agent-box/place-audit.mjs`) runs those checks, plus overhangs, overlaps, doors,
+roads and scale, on every layer entity of the town at once, on the test server with no session: a ranked
+list in about 10 s (`docs/placement-audit.md`).
 
 `launch` starts Workbench on this checkout's project with DebugWorld open
 (`wb_launch`; a no-op when a Workbench already answers on the bridge port). It

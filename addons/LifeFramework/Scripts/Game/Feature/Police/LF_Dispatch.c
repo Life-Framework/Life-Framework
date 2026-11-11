@@ -263,7 +263,8 @@ class LF_Dispatch
 	//! Where an alarm stands: on the first surface under the site point (the till counter, the cash van box, the
 	//! ground at a door), traced from a little above it. A site point above open ground used to leave the alarm and
 	//! its beacon hanging in the air. Falls back to the terrain height when the trace finds nothing.
-	static vector RestingSpot(vector site)
+	//! \param exclude An entity the trace passes through (the thing being set down).
+	static vector RestingSpot(vector site, IEntity exclude = null)
 	{
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
@@ -274,11 +275,30 @@ class LF_Dispatch
 		trace.End = site - "0 4 0";
 		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
 		trace.LayerMask = EPhysicsLayerPresets.Projectile;
+		trace.Exclude = exclude;
 		float fraction = world.TraceMove(trace, null);
 		if (fraction < 1)
 			return trace.Start + (trace.End - trace.Start) * fraction;
 
 		return Vector(site[0], world.GetSurfaceY(site[0], site[2]), site[2]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the alarm for a site stands: on the nearest LF_AlarmMountComponent that reaches the site (the bell box
+	//! above the vault door, the cash van roof), else on the first surface under the site (the till counter).
+	//! \param[out] position The alarm's foot. \param[out] yaw Its heading, the mount's.
+	static void AlarmSpot(vector site, out vector position, out float yaw)
+	{
+		yaw = 0;
+		LF_AlarmMountComponent mount = LF_AlarmMountComponent.FindFor(site);
+		if (mount)
+		{
+			position = mount.GetAlarmPosition();
+			yaw = mount.GetAlarmYaw();
+			return;
+		}
+
+		position = RestingSpot(site);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -297,8 +317,12 @@ class LF_Dispatch
 			return null;
 		}
 
+		vector spot;
+		float yaw;
+		AlarmSpot(site, spot, yaw);
 		StopAlarmsNear(site, 3);
-		IEntity alarm = LF_Utils.SpawnEntityPrefab(prefab, RestingSpot(site));
+		StopAlarmsNear(spot, 1);
+		IEntity alarm = LF_Utils.SpawnEntityPrefab(prefab, spot, Vector(yaw, 0, 0));
 		if (!alarm)
 		{
 			LF_Debug.Error(FEATURE, string.Format("%1 alarm did not spawn: %2", AlarmLevel(loud), prefab));
@@ -312,7 +336,7 @@ class LF_Dispatch
 		s_mAlarms.Set(s_iAlarmNumber, alarm.GetID());
 		float seconds = LF_PoliceConfig.AlarmSeconds(loud);
 		GetGame().GetCallqueue().CallLater(ExpireAlarm, Math.Max(seconds, 1) * 1000, false, s_iAlarmNumber);
-		LF_Debug.Info(FEATURE, string.Format("%1 alarm sounding at %2 for %3 s", AlarmLevel(loud), site, seconds));
+		LF_Debug.Info(FEATURE, string.Format("%1 alarm sounding at %2 for %3 s (site %4)", AlarmLevel(loud), spot, seconds, site));
 		return alarm;
 	}
 

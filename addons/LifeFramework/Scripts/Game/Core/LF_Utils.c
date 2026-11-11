@@ -549,10 +549,31 @@ class LF_Utils : Managed
 			return null;
 		}
 
+		// A spawn transform replaces the prefab's own, scale included: a 0.55 money bag came out as a 1.4 m sack.
+		// The scale goes into the matrix (EntitySpawnParams.Scale alone left it at 1).
+		float scale = PrefabScale(resource);
+		for (int axis = 0; axis < 3; axis++)
+			spawnParams.Transform[axis] = spawnParams.Transform[axis] * scale;
+
 		if (!global)
 			return GetGame().SpawnEntityPrefabLocal(resource, GetGame().GetWorld(), spawnParams);
 
 		return GetGame().SpawnEntityPrefab(resource, GetGame().GetWorld(), spawnParams);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The root scale a prefab declares (its own `scale` or an inherited one), 1 when it sets none.
+	static float PrefabScale(Resource resource)
+	{
+		if (!resource || !resource.IsValid())
+			return 1;
+
+		BaseContainer source = resource.GetResource().ToBaseContainer();
+		float scale = 1;
+		if (!source || !source.Get("scale", scale) || scale <= 0)
+			return 1;
+
+		return scale;
 	}
 
 	//------------------------------------------------------------------------------------------------
