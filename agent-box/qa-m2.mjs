@@ -158,7 +158,7 @@ async function runReport() {
   arrive();
   // The first report flags what the log holds under the player's name (any cash move or hit counts)
   // and thanks them; a second one inside the cooldown is told to wait.
-  on(1, { verb: "stand", entityName: "Roadmap_Fuel_Till" });
+  on(1, { verb: "stand", entityName: "Roadmap_Fuel_Till", side: "s" });
   wait(2500);
   on(1, { verb: "use", className: "LF_RobAction", entityName: "Roadmap_Fuel_Till" }, 10000);
   wait(3000);

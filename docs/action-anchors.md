@@ -29,7 +29,7 @@ point. Override with `--radius`. The edit rewrites the entity's own
 ## Use
 
 ```
-node tools/actions/place-action-contexts.mjs --anchor front --height 1.0 Roadmap_Fuel_Till
+node tools/actions/place-action-contexts.mjs --anchor front --front -z Roadmap_Fuel_Till
 node tools/actions/place-action-contexts.mjs --anchor center "Prefabs/Police/LF_PoliceDutyDesk.et#DutyClock"
 node tools/actions/place-action-contexts.mjs --anchor custom --offset 0 1.2 0 --radius 2.5 Roadmap_Garage
 node tools/actions/place-action-contexts.mjs --batch [--dry]

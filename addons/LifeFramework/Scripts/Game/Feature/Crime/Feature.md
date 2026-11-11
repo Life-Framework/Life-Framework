@@ -62,7 +62,7 @@ isn't today — see current state).
 - Breach: `LF_BreachArmAction` (`LF_BreachAction.c`), `LF_Bank`, and
   `LF_Hospital` all call `LF_Breach.Arm(targetId, playerUid)`. Wanted and the
   police notify live inside `Arm`, so a refreshed action offer cannot fire them.
-- Cash till: `Roadmap_Fuel_Till` in `Street_Fuel.layer` (on the building's own register, about 284.3, 240.2) is
+- Cash till: `Roadmap_Fuel_Till` in `Street_Fuel.layer` (on `Roadmap_Fuel_Counter` at the kiosk service window, about 283.6, 237.2; the kiosk interior is closed, #729) is
   `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et` (parent
   `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`) and carries
   `LF_RobAction` as an additional action.
