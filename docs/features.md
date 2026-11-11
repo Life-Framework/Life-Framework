@@ -289,6 +289,14 @@
   `config/json-probe`, `config/merge-fields`, `config/merge-keyed`,
   `config/merge-reject`, `config/merge-no-owner`, `config/owner-file`,
   `config/pack-overlay`.
+- ✅ (2026-11-12) `config.schema.json` and `config.example.json` in
+  `docs/config/` are generated from the config classes' `[Attribute]`
+  declarations (name, type, default, min and max, description; keys follow the
+  Hungarian-prefix rule). `node tools/config/schema.mjs --write` regenerates
+  them; `validate-config-schema` fails on a stale copy, validates the example
+  and the example the service writes at runtime against the schema, and
+  `config-schema-selftest` proves it red on a stale schema and a bad example.
+  Tools only, no game code (#280).
 - ⚠️ Owner values are server-side: a client's price list shows shipped prices
   on a dedicated server until #285 streams them. Unknown keys are not warned
   yet (#279); `schemaVersion` is read but not acted on (#302).

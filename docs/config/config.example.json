@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "shops": {
+    "defaultBuyPrice": 50,
+    "defaultSellPrice": 25,
+    "priceRules": {
+      "Prefabs/Items/Food/": {
+        "buyPrice": 10,
+        "sellPrice": 5
+      },
+      "Prefabs/Weapons/": {
+        "hidden": true
+      }
+    },
+    "extraItemPrefabs": []
+  }
+}
