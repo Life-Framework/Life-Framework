@@ -56,8 +56,8 @@ GenericEntity JobCenter {
          "default"
         }
         UIInfo UIInfo "{5A4B0B84C86DF849}" {
-         Name "Recolectar Manzanas"
-         Description "Recolectar 5 manzanas"
+         Name "#LF-Job_GatherApples_Name"
+         Description "#LF-Job_GatherApples_Desc"
         }
         m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
         m_GatherAmount 5

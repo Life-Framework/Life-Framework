@@ -179,6 +179,8 @@ class LF_AgentCommand
 			return ParseCpr(parts, cmd);
 		if (cmd.Verb == "siren")
 			return ParseSiren(parts, cmd);
+		if (cmd.Verb == "shootnpc")
+			return ParseShootNpc(parts, cmd);
 		if (cmd.Verb == "ui")
 			return ParseUi(parts, cmd);
 		if (cmd.Verb == "click")
@@ -187,6 +189,20 @@ class LF_AgentCommand
 			return ParseType(parts, cmd);
 		if (cmd.Verb == "capture")
 			return ParseCapture(parts, cmd);
+		if (cmd.Verb == "previews")
+		{
+			// previews show <prefab,prefab,...> | hide
+			if (parts.Count() < 3 || (parts[2] == "show" && parts.Count() < 4))
+			{
+				cmd.Error = "need_previews_arg";
+				return false;
+			}
+
+			cmd.Arg1 = parts[2];
+			if (parts.Count() > 3)
+				cmd.Arg2 = parts[3];
+			return true;
+		}
 		if (cmd.Verb == "film")
 			return ParseFilm(parts, cmd);
 		if (cmd.Verb == "scene" || cmd.Verb == "camera")
@@ -482,6 +498,20 @@ class LF_AgentCommand
 
 		cmd.Arg1 = parts[2];
 		cmd.Arg2 = parts[3];
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `shootnpc <EntityName>`: one lethal hit on a placed town NPC (#610).
+	protected static bool ParseShootNpc(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 3 || !IsClassToken(parts[2]))
+		{
+			cmd.Error = "need_entity";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
 		return true;
 	}
 
@@ -1129,6 +1159,11 @@ class LF_AgentHarness
 			DoShoot(cmd);
 			return;
 		}
+		if (cmd.Verb == "shootnpc")
+		{
+			DoShootNpc(cmd);
+			return;
+		}
 		if (cmd.Verb == "cpr")
 		{
 			DoCpr(cmd);
@@ -1167,6 +1202,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "kit")
 		{
 			DoKit(cmd);
+			return;
+		}
+		if (cmd.Verb == "previews")
+		{
+			DoPreviews(cmd);
 			return;
 		}
 		if (cmd.Verb == "capture")
@@ -1368,6 +1408,21 @@ class LF_AgentHarness
 		}
 
 		character.LF_AskHarnessShoot(cmd.Id, cmd.Arg1.ToInt());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `shootnpc <EntityName>` (dev gate): the server deals one lethal kinetic hit from the
+	//! local character to the named town NPC through its damage manager.
+	protected static void DoShootNpc(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.LF_AskHarnessShootNpc(cmd.Id, cmd.Arg1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3163,6 +3218,28 @@ class LF_AgentHarness
 		string text = string.Format("bmin=%1,%2,%3 bmax=%4,%5,%6 gap=%7 tilt=%8 walk=%9", FloatText(mins[0]), FloatText(mins[1]), FloatText(mins[2]), FloatText(maxs[0]), FloatText(maxs[1]), FloatText(maxs[2]), FloatText(mins[1] - support), FloatText(tilt), FloatText(walk));
 		text = text + " pgap=" + FloatText(entity.GetOrigin()[1] - support) + " clip=" + s_sClipNames;
 		WriteResult(cmd.Id, "ok", text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void DoPreviews(LF_AgentCommand cmd)
+	{
+		if (cmd.Arg1 == "hide")
+		{
+			LF_ItemPreviewSheet.Hide();
+			WriteResult(cmd.Id, "ok", "closed");
+			return;
+		}
+
+		array<string> prefabs = {};
+		cmd.Arg2.Split(",", prefabs, true);
+		int shown = LF_ItemPreviewSheet.Show(prefabs);
+		if (shown < 0)
+		{
+			WriteResult(cmd.Id, "error", "previews_failed");
+			return;
+		}
+
+		WriteResult(cmd.Id, "ok", "cells_" + shown);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 GenericEntity LumberjackStand {
- coords 392 0 222
+ coords 177 0 158.5
  {
   $grp GenericEntity {
    LoggingDisplayCrate {
@@ -59,15 +59,15 @@ GenericEntity LumberjackStand {
 }
 $grp GenericEntity : "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylvestris/CuttableTree_Pinus_Sylvestris_2f.et" {
  CuttableTree_1 {
-  coords 391.2 0 227
+  coords 186.5 0 159
   angles 0 18.018 0
  }
  CuttableTree_2 {
-  coords 392.5 0 227.6
+  coords 193 0 160.5
   angles 0 40 0
  }
  CuttableTree_3 {
-  coords 393.3 0 226.6
+  coords 185 0 163
   angles 0 -30 0
  }
 }
@@ -108,10 +108,10 @@ GenericEntity LogPile_Debug {
    Enabled 1
   }
  }
- coords 393.2 0 223.2
+ coords 178.2 0 159.7
 }
 GenericEntity Sawmill_Debug : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
- coords 394.2 0 222.4
+ coords 181.4 0 159.6
 }
 GenericEntity Axe_5ACCA165954CE408 : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et" {
  components {
@@ -223,12 +223,12 @@ GenericEntity Axe_5ACCA165954CE408 : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et
    }
   }
  }
- coords 393.5 0.4 226.5
+ coords 180 0.3 162
  angles -55.875 -85.813 -180
 }
 GenericEntity WoodLog_01_Small_5ACEABD58E8C1214 : "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et" {
- coords 392 0 228.5
+ coords 176 0 164
 }
 GenericEntity WoodPlank_5ACEABD590364FAA : "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et" {
- coords 391.5 0 227.5
+ coords 175.5 0 163
 }

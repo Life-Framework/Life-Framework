@@ -3641,8 +3641,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{363F3934916EA0EA}" {
      Id "LF-Sign_Atm_Title"
-     Target_en_us "ATM"
-     Comment "Title of the sign at the ATM on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
+     Target_en_us "Teller"
+     Comment "Title of the sign at the teller window on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
     }
     CustomStringTableItem "{CCA971294A309363}" {
      Id "LF-Sign_Atm_What"
@@ -3651,7 +3651,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
-     Target_en_us "ATM, then Deposit or Withdraw."
+     Target_en_us "Talk to the teller, then Deposit or Withdraw."
      Comment "Sign card for the ATM on the bank's front, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{0CD84D83AF49CFAA}" {
@@ -6656,76 +6656,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
-    CustomStringTableItem "{F297FFD8D4B6E791}" {
-     Id "LF-LawlessHud_Tag"
-     Target_en_us "LAWLESS AREA"
-     Comment "Persistent HUD tag while the local player stands inside a lawless zone."
-    }
-    CustomStringTableItem "{4FBA54E7032A04DE}" {
-     Id "LF-LawlessHud_Title"
-     Target_en_us "Lawless area"
-     Comment "Toast title when the player enters or leaves a lawless zone."
-    }
-    CustomStringTableItem "{59EE09E1B7435797}" {
-     Id "LF-LawlessHud_Enter"
-     Target_en_us "You entered a lawless area. Server rules are relaxed here. Watch your back."
-     Comment "Toast on entering a lawless zone (also when joining or spawning inside one)."
-    }
-    CustomStringTableItem "{9A2F1AA936E1BDA7}" {
-     Id "LF-LawlessHud_Exit"
-     Target_en_us "You left the lawless area."
-     Comment "Toast on leaving a lawless zone."
-    }
-    CustomStringTableItem "{A27300000000BA02}" {
-     Id "LF-BankKit_Take"
-     Target_en_us "Take bank robbery kit"
-     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
-    }
-    CustomStringTableItem "{9BE7A1D673564E1C}" {
-     Id "LF-Dispatch_TestPolice"
-     Target_en_us "Test police call"
-     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
-    }
-    CustomStringTableItem "{803BB29C950EAC01}" {
-     Id "LF-Dispatch_TestMedic"
-     Target_en_us "Test medic call"
-     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
-    }
-    CustomStringTableItem "{E9CE669FFF4D0206}" {
-     Id "LF-Dispatch_TestDesc"
-     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
-     Comment "Description of the dispatch console test-call actions."
-    }
-    CustomStringTableItem "{05CAE71B3EBFC584}" {
-     Id "LF-Dispatch_TestTitle"
-     Target_en_us "Test call"
-     Comment "Toast title for the dispatch console test call."
-    }
-    CustomStringTableItem "{51294940A40506CF}" {
-     Id "LF-Dispatch_TestSent"
-     Target_en_us "Call placed. Take it at the dispatch board."
-     Comment "Toast after a test call went out to an on-duty service."
-    }
-    CustomStringTableItem "{36AF55270A37E7B0}" {
-     Id "LF-Dispatch_TestOff"
-     Target_en_us "Test calls are off in this game mode."
-     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
-    }
-    CustomStringTableItem "{4A1C9E27B05D3F18}" {
-     Id "LF-Item_Parcel_Deliver"
-     Target_en_us "Deliver to: %1"
-     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
-    }
-    CustomStringTableItem "{4A1C9E27B05D3F19}" {
-     Id "LF-Job_ParcelDest"
-     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
-     Comment "Where a courier parcel goes. Shown in the parcel description."
-    }
-    CustomStringTableItem "{156BE656616C6972}" {
-     Id "LF-Sign_LotPrice_Title"
-     Target_en_us "%1 %2"
-     Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
-    }
     CustomStringTableItem "{C5BBC2192BD8EFEC}" {
      Id "EL-VehicleLock_ActionLock"
      Target_en_us "Lock vehicle"
@@ -6750,6 +6680,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-VehicleLock_NoTarget"
      Target_en_us "No vehicle of yours in reach"
      Comment "Toast when U is pressed with no keyed vehicle near."
+    }
+    CustomStringTableItem "{F297FFD8D4B6E791}" {
+     Id "LF-LawlessHud_Tag"
+     Target_en_us "LAWLESS AREA"
+     Comment "Persistent HUD tag while the local player stands inside a lawless zone."
+    }
+    CustomStringTableItem "{4FBA54E7032A04DE}" {
+     Id "LF-LawlessHud_Title"
+     Target_en_us "Lawless area"
+     Comment "Toast title when the player enters or leaves a lawless zone."
+    }
+    CustomStringTableItem "{59EE09E1B7435797}" {
+     Id "LF-LawlessHud_Enter"
+     Target_en_us "You entered a lawless area. Server rules are relaxed here. Watch your back."
+     Comment "Toast on entering a lawless zone (also when joining or spawning inside one)."
+    }
+    CustomStringTableItem "{9A2F1AA936E1BDA7}" {
+     Id "LF-LawlessHud_Exit"
+     Target_en_us "You left the lawless area."
+     Comment "Toast on leaving a lawless zone."
+    }
+    CustomStringTableItem "{A27300000000BA02}" {
+     Id "LF-BankKit_Take"
+     Target_en_us "Take bank robbery kit"
+     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
     }
     CustomStringTableItem "{9EB58969BEDD9423}" {
      Id "LF-Farm_Title"
@@ -6850,6 +6805,441 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_FarmPlots_Next"
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{9BE7A1D673564E1C}" {
+     Id "LF-Dispatch_TestPolice"
+     Target_en_us "Test police call"
+     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
+    }
+    CustomStringTableItem "{803BB29C950EAC01}" {
+     Id "LF-Dispatch_TestMedic"
+     Target_en_us "Test medic call"
+     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
+    }
+    CustomStringTableItem "{E9CE669FFF4D0206}" {
+     Id "LF-Dispatch_TestDesc"
+     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
+     Comment "Description of the dispatch console test-call actions."
+    }
+    CustomStringTableItem "{05CAE71B3EBFC584}" {
+     Id "LF-Dispatch_TestTitle"
+     Target_en_us "Test call"
+     Comment "Toast title for the dispatch console test call."
+    }
+    CustomStringTableItem "{51294940A40506CF}" {
+     Id "LF-Dispatch_TestSent"
+     Target_en_us "Call placed. Take it at the dispatch board."
+     Comment "Toast after a test call went out to an on-duty service."
+    }
+    CustomStringTableItem "{36AF55270A37E7B0}" {
+     Id "LF-Dispatch_TestOff"
+     Target_en_us "Test calls are off in this game mode."
+     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
+    }
+    CustomStringTableItem "{156BE656616C6972}" {
+     Id "LF-Sign_LotPrice_Title"
+     Target_en_us "%1 %2"
+     Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
+    }
+    CustomStringTableItem "{4B1E7A2C9D3F4081}" {
+     Id "LF-Bank_Teller_Talk"
+     Target_en_us "Talk to the teller"
+     Comment "Prompt on the bank teller at the counter window. Opens the deposit and withdraw screen."
+    }
+    CustomStringTableItem "{7C20D5E8A1B94F36}" {
+     Id "LF-Bank_Teller_TalkDesc"
+     Target_en_us "Deposit or withdraw cash at the counter"
+     Comment "Description of the bank teller prompt."
+    }
+    CustomStringTableItem "{2605E472E34A7E80}" {
+     Id "LF-Crime_RobSafe_Name"
+     Target_en_us "Rob the safe"
+     Comment "Annex safe robbery action name"
+    }
+    CustomStringTableItem "{D508B7722F72EE9F}" {
+     Id "LF-Crime_RobSafe_Desc"
+     Target_en_us "Take $200 from the safe"
+     Comment "Annex safe robbery action description"
+    }
+    CustomStringTableItem "{7D681F35B1A3C6FE}" {
+     Id "LF-Crime_RobRack_Name"
+     Target_en_us "Rob the weapon rack"
+     Comment "Annex weapon rack robbery action name"
+    }
+    CustomStringTableItem "{A83DB0C583355AC6}" {
+     Id "LF-Crime_RobRack_Desc"
+     Target_en_us "Take a rifle from the rack"
+     Comment "Annex weapon rack robbery action description"
+    }
+    CustomStringTableItem "{D79CB0009B448B8F}" {
+     Id "LF-Crime_RobCar_Name"
+     Target_en_us "Steal the vehicle"
+     Comment "Annex vehicle theft action name"
+    }
+    CustomStringTableItem "{7E4AE1269E743655}" {
+     Id "LF-Crime_RobCar_Desc"
+     Target_en_us "Steal an armoured car"
+     Comment "Annex vehicle theft action description"
+    }
+    CustomStringTableItem "{E064585F9B6FED1B}" {
+     Id "LF-Job_GatherApples_Name"
+     Target_en_us "Gather apples"
+     Comment "Legacy job board apple gather action name"
+    }
+    CustomStringTableItem "{6E2A6680A9D480CA}" {
+     Id "LF-Job_GatherApples_Desc"
+     Target_en_us "Gather 5 apples"
+     Comment "Legacy job board apple gather action description"
+    }
+    CustomStringTableItem "{37BCD3FBB988F01C}" {
+     Id "LF-Sign_CrimeSafe_Title"
+     Target_en_us "1. Safe"
+     Comment "Annex crime site sign crime_safe, Title section."
+    }
+    CustomStringTableItem "{C38F34C3479585A8}" {
+     Id "LF-Sign_CrimeSafe_What"
+     Target_en_us "A cash safe on the crime site."
+     Comment "Annex crime site sign crime_safe, What section."
+    }
+    CustomStringTableItem "{676E376C59405F39}" {
+     Id "LF-Sign_CrimeSafe_How"
+     Target_en_us "Stand at the safe and Rob the safe. It pays $200 and rests for 60 seconds."
+     Comment "Annex crime site sign crime_safe, How section."
+    }
+    CustomStringTableItem "{DCD0F25A91C8A67F}" {
+     Id "LF-Sign_CrimeSafe_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_safe, Needs section."
+    }
+    CustomStringTableItem "{BB971CCDFD89CF15}" {
+     Id "LF-Sign_CrimeSafe_Rules"
+     Target_en_us "A robbery files a crime report and raises your wanted level."
+     Comment "Annex crime site sign crime_safe, Rules section."
+    }
+    CustomStringTableItem "{7D97F127AD9FE2FF}" {
+     Id "LF-Sign_CrimeSafe_Next"
+     Target_en_us "Take the weapon rack next, two steps along."
+     Comment "Annex crime site sign crime_safe, Next section."
+    }
+    CustomStringTableItem "{2840F7674FF77FFE}" {
+     Id "LF-Sign_CrimeRack_Title"
+     Target_en_us "2. Weapon rack"
+     Comment "Annex crime site sign crime_rack, Title section."
+    }
+    CustomStringTableItem "{3FF9B4EB23063378}" {
+     Id "LF-Sign_CrimeRack_What"
+     Target_en_us "An armory rack holding one rifle."
+     Comment "Annex crime site sign crime_rack, What section."
+    }
+    CustomStringTableItem "{1D436C91E427DE6E}" {
+     Id "LF-Sign_CrimeRack_How"
+     Target_en_us "Stand at the rack and Rob the weapon rack to take an AK-74. It rests for 2 minutes."
+     Comment "Annex crime site sign crime_rack, How section."
+    }
+    CustomStringTableItem "{2B50333EBEF9D3EA}" {
+     Id "LF-Sign_CrimeRack_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_rack, Needs section."
+    }
+    CustomStringTableItem "{FA1D9347B8CE6395}" {
+     Id "LF-Sign_CrimeRack_Rules"
+     Target_en_us "Armed theft is reported and raises your wanted level."
+     Comment "Annex crime site sign crime_rack, Rules section."
+    }
+    CustomStringTableItem "{8E1591EC5D9282B2}" {
+     Id "LF-Sign_CrimeRack_Next"
+     Target_en_us "Steal the vehicle at the tyre pile next."
+     Comment "Annex crime site sign crime_rack, Next section."
+    }
+    CustomStringTableItem "{CEFAF6202AEF0597}" {
+     Id "LF-Sign_CrimeCar_Title"
+     Target_en_us "3. Getaway"
+     Comment "Annex crime site sign crime_car, Title section."
+    }
+    CustomStringTableItem "{D08CA63D553D021D}" {
+     Id "LF-Sign_CrimeCar_What"
+     Target_en_us "A pile of tyres that stands in for a car theft."
+     Comment "Annex crime site sign crime_car, What section."
+    }
+    CustomStringTableItem "{04CA2A9741FCE1E2}" {
+     Id "LF-Sign_CrimeCar_How"
+     Target_en_us "Stand at the pile and use Steal the vehicle to get an armoured car. It rests for 10 minutes."
+     Comment "Annex crime site sign crime_car, How section."
+    }
+    CustomStringTableItem "{7708887CAD318B12}" {
+     Id "LF-Sign_CrimeCar_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_car, Needs section."
+    }
+    CustomStringTableItem "{A7B60EDD94E30F9D}" {
+     Id "LF-Sign_CrimeCar_Rules"
+     Target_en_us "Theft of a vehicle is reported and raises your wanted level."
+     Comment "Annex crime site sign crime_car, Rules section."
+    }
+    CustomStringTableItem "{5300C9F183BC88B6}" {
+     Id "LF-Sign_CrimeCar_Next"
+     Target_en_us "Finish at the police desk: a wanted suspect and a table of evidence."
+     Comment "Annex crime site sign crime_car, Next section."
+    }
+    CustomStringTableItem "{42F8C061DF3563D6}" {
+     Id "LF-Sign_CrimePolice_Title"
+     Target_en_us "4. Police desk"
+     Comment "Annex crime site sign crime_police, Title section."
+    }
+    CustomStringTableItem "{3DC7AE65EB4CA435}" {
+     Id "LF-Sign_CrimePolice_What"
+     Target_en_us "A practice desk with an ID card and a confiscated key. Real duty is at the police station."
+     Comment "Annex crime site sign crime_police, What section."
+    }
+    CustomStringTableItem "{62D77C89BF0EB242}" {
+     Id "LF-Sign_CrimePolice_How"
+     Target_en_us "Look the table over. For real duty, evidence and the wanted board, walk to the police station on the main street."
+     Comment "Annex crime site sign crime_police, How section."
+    }
+    CustomStringTableItem "{E0A442EE0FE38171}" {
+     Id "LF-Sign_CrimePolice_Needs"
+     Target_en_us "Nothing here."
+     Comment "Annex crime site sign crime_police, Needs section."
+    }
+    CustomStringTableItem "{734524B72ED94D31}" {
+     Id "LF-Sign_CrimePolice_Next"
+     Target_en_us "Clock on at the police station to arrest the suspect you made."
+     Comment "Annex crime site sign crime_police, Next section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60711}" {
+     Id "LF-Sign_QuarryInfo_Title"
+     Target_en_us "Quarry Works"
+     Comment "Title of the quarry info board. Printed on the board and shown as Read: Quarry Works."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60722}" {
+     Id "LF-Sign_QuarryInfo_What"
+     Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
+     Comment "Quarry info board, What section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60733}" {
+     Id "LF-Sign_QuarryInfo_How"
+     Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
+     Comment "Quarry info board, How section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60744}" {
+     Id "LF-Sign_QuarryInfo_Rules"
+     Target_en_us "This is the lawless quarry: the server rules about starting a fight do not apply inside the fence. Mind the rocks while the pit is worked."
+     Comment "Quarry info board, Rules section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60755}" {
+     Id "LF-Sign_QuarryInfo_Next"
+     Target_en_us "Carry what you make to the traders in town."
+     Comment "Quarry info board, Next section."
+    }
+    CustomStringTableItem "{7B1E5A0C00000001}" {
+     Id "LF-Shop_RefuseClosed"
+     Target_en_us "The back room is shut. Police have been through it."
+     Comment "Shop refusal: a raided back room is shut for a while (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000002}" {
+     Id "LF-BackRoom_Search"
+     Target_en_us "Search back room"
+     Comment "Officer action on a back room: search it and seize its stock as evidence (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000003}" {
+     Id "LF-BackRoom_SearchDesc"
+     Target_en_us "Seize the stock as evidence"
+     Comment "Description of the back room search action (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000004}" {
+     Id "LF-BackRoom_Seized"
+     Target_en_us "Stock seized as evidence"
+     Comment "Toast: the back room search seized its stock (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000005}" {
+     Id "LF-BackRoom_AlreadyShut"
+     Target_en_us "Already searched. The room is shut."
+     Comment "Toast: the back room was raided recently (#600)."
+    }
+    CustomStringTableItem "{01B9D43100AC37E2}" {
+     Id "LF-SpawnHub_Title"
+     Target_en_us "Playtest travel"
+     Comment "Travel list title (spawn table globe)."
+    }
+    CustomStringTableItem "{D2F012D65C8132A6}" {
+     Id "LF-SpawnHub_Hint"
+     Target_en_us "Pick an area to be taken there. Playtest only."
+     Comment "Travel list hint line."
+    }
+    CustomStringTableItem "{64C91C9876BC49F4}" {
+     Id "LF-SpawnHub_Go"
+     Target_en_us "Go"
+     Comment "Travel list row button."
+    }
+    CustomStringTableItem "{134044FE4B970260}" {
+     Id "LF-SpawnHub_Close"
+     Target_en_us "Close"
+     Comment "Travel list close button."
+    }
+    CustomStringTableItem "{BEEAD653C82FCDCE}" {
+     Id "LF-SpawnHub_Open"
+     Target_en_us "Travel to a playtest area"
+     Comment "Globe action name."
+    }
+    CustomStringTableItem "{450BE9C116C859BD}" {
+     Id "LF-SpawnHub_Pt_spawn"
+     Target_en_us "Spawn square"
+     Comment "Travel list row: spawn."
+    }
+    CustomStringTableItem "{B6586A394D67B4AF}" {
+     Id "LF-SpawnHub_Pt_police"
+     Target_en_us "Police station"
+     Comment "Travel list row: police."
+    }
+    CustomStringTableItem "{B4232BB7C4308A82}" {
+     Id "LF-SpawnHub_Pt_jail"
+     Target_en_us "Jail"
+     Comment "Travel list row: jail."
+    }
+    CustomStringTableItem "{8AA2600D1543035B}" {
+     Id "LF-SpawnHub_Pt_bank"
+     Target_en_us "Bank"
+     Comment "Travel list row: bank."
+    }
+    CustomStringTableItem "{B20B273E74BFB5FC}" {
+     Id "LF-SpawnHub_Pt_cash_van"
+     Target_en_us "Cash van stop"
+     Comment "Travel list row: cash_van."
+    }
+    CustomStringTableItem "{CB3B602C123EDB3A}" {
+     Id "LF-SpawnHub_Pt_general_store"
+     Target_en_us "General store"
+     Comment "Travel list row: general_store."
+    }
+    CustomStringTableItem "{70A38A6809640B2F}" {
+     Id "LF-SpawnHub_Pt_market"
+     Target_en_us "Market traders"
+     Comment "Travel list row: market."
+    }
+    CustomStringTableItem "{F7342C42AF67BCAA}" {
+     Id "LF-SpawnHub_Pt_post_office"
+     Target_en_us "Post office and jobs"
+     Comment "Travel list row: post_office."
+    }
+    CustomStringTableItem "{4AF36AD0E0DCF596}" {
+     Id "LF-SpawnHub_Pt_car_lot"
+     Target_en_us "Car lot"
+     Comment "Travel list row: car_lot."
+    }
+    CustomStringTableItem "{69B85ADAEFBDBB9C}" {
+     Id "LF-SpawnHub_Pt_garage"
+     Target_en_us "Garage"
+     Comment "Travel list row: garage."
+    }
+    CustomStringTableItem "{B0C61257E5FB48B5}" {
+     Id "LF-SpawnHub_Pt_impound"
+     Target_en_us "Impound lot"
+     Comment "Travel list row: impound."
+    }
+    CustomStringTableItem "{4933783F01581685}" {
+     Id "LF-SpawnHub_Pt_chop_shop"
+     Target_en_us "Chop shop"
+     Comment "Travel list row: chop_shop."
+    }
+    CustomStringTableItem "{FB4A0D3B97262A9C}" {
+     Id "LF-SpawnHub_Pt_fuel_station"
+     Target_en_us "Fuel station"
+     Comment "Travel list row: fuel_station."
+    }
+    CustomStringTableItem "{DFCE41C7B190AA27}" {
+     Id "LF-SpawnHub_Pt_hospital"
+     Target_en_us "Hospital"
+     Comment "Travel list row: hospital."
+    }
+    CustomStringTableItem "{6D24484296F44B77}" {
+     Id "LF-SpawnHub_Pt_org_registry"
+     Target_en_us "Organization registry"
+     Comment "Travel list row: org_registry."
+    }
+    CustomStringTableItem "{180961ECD408F286}" {
+     Id "LF-SpawnHub_Pt_hideout"
+     Target_en_us "Hideout yard"
+     Comment "Travel list row: hideout."
+    }
+    CustomStringTableItem "{88BCEC3B8F0B96E6}" {
+     Id "LF-SpawnHub_Pt_fence"
+     Target_en_us "Fence (Vince)"
+     Comment "Travel list row: fence."
+    }
+    CustomStringTableItem "{3502F9E9ED2D4D43}" {
+     Id "LF-SpawnHub_Pt_lockup"
+     Target_en_us "Lockpick lock-up"
+     Comment "Travel list row: lockup."
+    }
+    CustomStringTableItem "{ACA4B36A252C8E65}" {
+     Id "LF-SpawnHub_Pt_moonshine"
+     Target_en_us "Moonshine camp"
+     Comment "Travel list row: moonshine."
+    }
+    CustomStringTableItem "{63BC79F23121554D}" {
+     Id "LF-SpawnHub_Pt_farm"
+     Target_en_us "Farm"
+     Comment "Travel list row: farm."
+    }
+    CustomStringTableItem "{77D8780E1D048421}" {
+     Id "LF-SpawnHub_Pt_orchard"
+     Target_en_us "Apple orchard"
+     Comment "Travel list row: orchard."
+    }
+    CustomStringTableItem "{9ECE67180191DEF9}" {
+     Id "LF-SpawnHub_Pt_mining"
+     Target_en_us "Mining yard"
+     Comment "Travel list row: mining."
+    }
+    CustomStringTableItem "{BA0368C4FE08E132}" {
+     Id "LF-SpawnHub_Pt_quarry"
+     Target_en_us "Quarry (lawless)"
+     Comment "Travel list row: quarry."
+    }
+    CustomStringTableItem "{D25E9BC45F9B3F3E}" {
+     Id "LF-SpawnHub_Pt_annex"
+     Target_en_us "Test annex"
+     Comment "Travel list row: annex."
+    }
+    CustomStringTableItem "{63E93D8FD582854D}" {
+     Id "LF-Witness_Unsure1"
+     Target_en_us "%1: Hey, I am not sure."
+     Comment "Toast: an NPC witness who saw nothing answers, noncommittal. %1 = the NPC name."
+    }
+    CustomStringTableItem "{C388BAAC69AA6FFA}" {
+     Id "LF-Witness_Unsure2"
+     Target_en_us "%1: I do not think I saw anything."
+     Comment "Toast: noncommittal NPC answer, variant 2. %1 = the NPC name."
+    }
+    CustomStringTableItem "{FD870C5E92EE6005}" {
+     Id "LF-Witness_Unsure3"
+     Target_en_us "%1: Sorry, I could not say either way."
+     Comment "Toast: noncommittal NPC answer, variant 3. %1 = the NPC name."
+    }
+    CustomStringTableItem "{52C8142385D923FE}" {
+     Id "LF-Witness_Unsure4"
+     Target_en_us "%1: I was not really looking, officer."
+     Comment "Toast: noncommittal NPC answer, variant 4. %1 = the NPC name."
+    }
+    CustomStringTableItem "{9FF5E70D1F95C286}" {
+     Id "LF-Witness_GaveStatement"
+     Target_en_us "%1 gave a statement. It is on the wanted board."
+     Comment "Toast to the officer: a named witness gave a statement. %1 = the witness name."
+    }
+    CustomStringTableItem "{A5C8F0F7C66DA883}" {
+     Id "LF-Witness_ForgotSome"
+     Target_en_us "%1 cannot recall anything useful."
+     Comment "Toast to the officer: a named witness saw the crime but remembered nothing describable. %1 = the witness name."
     }
   }
  }

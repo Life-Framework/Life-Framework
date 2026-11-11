@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{7A3C1D5E9B2F4A00}UI/Layouts/Debug/LF_ItemPreviewSheet.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass PS5 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

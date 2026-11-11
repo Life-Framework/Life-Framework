@@ -1,0 +1,33 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "3D8E2AB0906F4BA6"
+ components {
+  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+   Identity Identity "{5A4B0B84AF44A913}" {
+    Name "Edith"
+    Surname "the Teller"
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{0686DEE30CB84B17}" {
+     ContextName "Teller"
+     Position PointInfo "{07CD24B1F6654F77}" {
+      PivotID "Spine5"
+     }
+     Radius 1
+    }
+   }
+   additionalActions + {
+    LF_ATMAction "{D7CBF78E4FA44323}" {
+     ParentContextList {
+      "Teller"
+     }
+     UIInfo UIInfo "{25E8A31BF6584CC2}" {
+      Name "#LF-Bank_Teller_Talk"
+      Description "#LF-Bank_Teller_TalkDesc"
+     }
+    }
+   }
+  }
+ }
+}

@@ -37,6 +37,7 @@ class LF_StaticReset
 		LF_EventBus.ResetStatics();
 		LF_ChainCatalog.ResetStatics();
 		LF_Downed.ResetStatics();
+		LF_NpcDamage.ResetStatics();
 		LF_BleedOut.ResetStatics();
 		LF_Carry.ResetStatics();
 		LF_BedDelivery.ResetStatics();

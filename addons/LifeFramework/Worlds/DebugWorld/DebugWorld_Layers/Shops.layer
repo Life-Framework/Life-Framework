@@ -119,6 +119,7 @@ $grp GenericEntity {
    LF_ShopComponent "{5A4B0B84C86E3843}" {
     m_sShopName "#LF-Shop_Name_BackRoom"
     m_sShopDescription "#LF-Shop_Desc_BackRoom"
+    m_bBackRoom 1
     m_aShopItems {
      LF_ShopItem "{6398C091849BE007}" {
       m_ItemPrefab "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
@@ -146,6 +147,15 @@ $grp GenericEntity {
       UIInfo UIInfo "{5A4B0B84C86E3849}" {
        Name "#LF-Shop_Open_BackRoom"
        Description "#LF-Shop_OpenDesc_BackRoom"
+      }
+     }
+     LF_BackRoomSearchAction "{5A4B0B84C86E384B}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{5A4B0B84C86E384C}" {
+       Name "#LF-BackRoom_Search"
+       Description "#LF-BackRoom_SearchDesc"
       }
      }
     }
