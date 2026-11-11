@@ -50,3 +50,5 @@ loses its stamp over a restart until the locker (#269) logs it.
 
 - `LF_WitnessAskAction` is on `Npc_Base.et` (context `Witness`), shown to on-duty police within 3 m. The server rolls the NPC accuracy (`LF_WitnessConfig.NpcAccuracy`) per thing it could see; an NPC with no recent scene says it saw nothing.
 - The `witness` role slot (`LF_WitnessRole`, entry on `Character_Roleplay.et`) asks a player; it says everything its distance allows.
+
+- NPC witnesses (#610, #615): `LF_Witness.CollectNpc` skips only an NPC that is dying (`LF_NpcDamage.IsDying`); it used to skip all of them. Answers come from `LF_WitnessDialogue` (names, four noncommittal lines). Ambient civilians can be shot (`Core/Npcs/LF_NpcDamage.c`); NPCs without an `LF_NpcHitZone` cannot.
