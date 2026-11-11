@@ -88,8 +88,10 @@ type; no per-map scripting. See `docs/design.md` §4.
   till's refusal reason (`LF_EShopRefusal`) prints on the slip.
 - `LF_StoreComponent` / `LF_Stores` / `LF_StoreRules` / `LF_StoreTillAction` (#202) — the physical
   store: shelf stock, unpaid tags, the till and receipt, the shoplifting sweep, restock and
-  save (`storestock`, save version 21). Flagship: the DebugWorld general store. Follow-ups:
-  the market and the car lot on the same pattern.
+  save (`storestock`, save version 21). Unpaid tags survive a restart and a logout (`storeunpaid`,
+  save version 25, #479): keyed by the carrier's character key and the prefab, put back on the goods
+  at spawn, not swept until the carrier is back in the store. Flagship: the DebugWorld general store.
+  Follow-ups: the market and the car lot on the same pattern (design note on #479), receipt text.
 - `LF_ShopPriceResolver` / `LF_ShopPricesConfig` / `LF_ShopRules` / `LF_ShopItem`
   — price resolution and rules scaffolding.
 - `Configs/Shop/ShopPrices.conf` — the price table.

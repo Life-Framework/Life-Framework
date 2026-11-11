@@ -31,7 +31,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters. The written version is that list's length (24). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid. The written version is that list's length (25). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -56,6 +56,8 @@
 //! A version 22 save includes the item serials and has no farm plots (#614).
 //! A version 23 save includes the farm plots and has no character slots (#331): each account's one
 //! character loads as slot 1, keyed by the account uid its records already use.
+//! A version 24 save includes the character slots and has no unpaid store tags (#479): goods taken off a
+//! shelf before that restart come back untagged.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -115,6 +117,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("itemserials");
 		order.Insert("farmplots");
 		order.Insert("characters");
+		order.Insert("storeunpaid");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -148,7 +151,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 24);
+		context.WriteValue("version", 25);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -466,6 +469,12 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_CharacterSlotRecord> slotRows = LF_PlayerAccountManager.ExportCharacterSlots();
 			context.Write(slotRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 character slot(s)", slotRows.Count()));
+		}
+		else if (payload == "storeunpaid")
+		{
+			array<ref LF_StoreUnpaidRow> unpaidRows = LF_Stores.ExportUnpaid();
+			context.Write(unpaidRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 unpaid store tag(s)", unpaidRows.Count()));
 		}
 		else
 		{
@@ -827,6 +836,21 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Error("Persistence", "character slots failed to read: characters keep the slot 1 default keys");
+			}
+		}
+		else if (payload == "storeunpaid")
+		{
+			// A version 1-24 save never reaches this payload: the waiting tags are left alone and
+			// goods carried over that restart are untagged.
+			array<ref LF_StoreUnpaidRow> unpaidRows = new array<ref LF_StoreUnpaidRow>();
+			if (context.Read(unpaidRows))
+			{
+				int boundNow = LF_Stores.ApplyUnpaid(unpaidRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 unpaid store tag(s), %2 back on characters in the world now", unpaidRows.Count(), boundNow));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "unpaid store tags failed to read, leaving the waiting tags untouched");
 			}
 		}
 		else

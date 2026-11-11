@@ -10,7 +10,13 @@ class LF_StoreUnpaidItem : Managed
 	int m_iPrice;
 	//! The character body that holds it now, or the last one for a consumed item. INVALID on the floor.
 	EntityID m_CarrierId = EntityID.INVALID;
+	//! The carrier's character record key (LF_Utils.GetPlayerUID), what the save keys the tag by. Empty
+	//! on the floor or on a body no player controls; such a tag is not saved.
+	string m_sCarrierKey;
 	bool m_bConsumed;
+	//! Put back after a restart or a reconnect, on a body that spawned away from the store: the exit
+	//! sweep leaves it alone until its carrier has stood in the store again (the till still charges it).
+	bool m_bRestored;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -25,6 +31,13 @@ class LF_StoreUnpaidItem : Managed
 //! SHOPLIFTING. A character who carries unpaid goods of a store while standing outside its boundary
 //! is a thief: wanted level, a crime report with the alarm at the store, and the report is identified
 //! (being seen walking out of a shop counts as identified). The goods become theirs.
+//!
+//! RESTART AND RECONNECT (#479). A tag on goods a living player carries is saved (the "storeunpaid"
+//! payload) and parked on disconnect, keyed by the character record key, the store and the prefab.
+//! When that character's body spawns and its carried inventory is back, ReattachUnpaid puts each tag
+//! on an untagged item of that prefab it carries; a used-up item comes back as the same debt. A tag
+//! whose item or store is gone is dropped with a warning. A restored tag is not swept until its
+//! carrier has been inside the store again: the restart or the spawn point moved them, they did not walk out.
 class LF_Stores
 {
 	static const string FEATURE = "Store";
@@ -35,6 +48,8 @@ class LF_Stores
 	static const int FILL_DELAY_MS = 2000;
 
 	protected static ref array<ref LF_StoreUnpaidItem> s_aUnpaid;
+	//! Saved or parked tags whose character has not spawned yet (#479). Saved again until then.
+	protected static ref array<ref LF_StoreUnpaidRow> s_aParked;
 	protected static ref map<string, ref array<ref LF_StoreStockRow>> s_mPending;
 	protected static bool s_bTicking;
 	protected static int s_iReceipts;
@@ -72,6 +87,7 @@ class LF_Stores
 
 		LF_StoreComponent.ResetLive();
 		s_aUnpaid = null;
+		s_aParked = null;
 		s_mPending = null;
 		s_bTicking = false;
 		s_iReceipts = 0;
@@ -228,10 +244,17 @@ class LF_Stores
 		}
 
 		IEntity root = LF_InventoryUtils.GetStorageHierachyRoot(item);
+		EntityID carrier = EntityID.INVALID;
 		if (root != item && SCR_ChimeraCharacter.Cast(root))
-			record.m_CarrierId = root.GetID();
-		else
-			record.m_CarrierId = EntityID.INVALID;
+			carrier = root.GetID();
+
+		if (carrier != record.m_CarrierId)
+		{
+			record.m_CarrierId = carrier;
+			record.m_sCarrierKey = "";
+			if (carrier != EntityID.INVALID)
+				record.m_sCarrierKey = LF_Utils.GetPlayerUID(root);
+		}
 
 		return true;
 	}
@@ -394,7 +417,19 @@ class LF_Stores
 			if (!carrier || !store)
 				return record;
 
-			if (!store.Contains(carrier.GetOrigin()))
+			bool inside = store.Contains(carrier.GetOrigin());
+			if (record.m_bRestored)
+			{
+				if (inside)
+				{
+					record.m_bRestored = false;
+					LF_Debug.Info(FEATURE, string.Format("store %1: %2 is back in the store with restored unpaid %3; walking out now is shoplifting", record.m_sStoreKey, CarrierText(record), record.m_Prefab));
+				}
+
+				continue;
+			}
+
+			if (!inside)
 				return record;
 		}
 
@@ -633,6 +668,254 @@ class LF_Stores
 			store.AfterImport();
 			s_mPending.Remove(key);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Unpaid tags across a restart ("storeunpaid", save version 25, #479)
+	//------------------------------------------------------------------------------------------------
+
+	//------------------------------------------------------------------------------------------------
+	protected static array<ref LF_StoreUnpaidRow> Parked()
+	{
+		if (!s_aParked)
+			s_aParked = new array<ref LF_StoreUnpaidRow>();
+
+		return s_aParked;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_StoreUnpaidRow RowOf(LF_StoreUnpaidItem record, string carrierKey)
+	{
+		LF_StoreUnpaidRow row = new LF_StoreUnpaidRow();
+		row.m_sStoreKey = record.m_sStoreKey;
+		row.m_sPrefab = record.m_Prefab;
+		row.m_iPrice = record.m_iPrice;
+		row.m_sCarrierKey = carrierKey;
+		row.m_bConsumed = record.m_bConsumed;
+		return row;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return How many saved or parked tags wait for their character to spawn.
+	static int ParkedCount()
+	{
+		return Parked().Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: copies of the tags that wait for their character.
+	static array<ref LF_StoreUnpaidRow> CopyParked()
+	{
+		array<ref LF_StoreUnpaidRow> rows = new array<ref LF_StoreUnpaidRow>();
+		foreach (LF_StoreUnpaidRow row : Parked())
+			rows.Insert(row.Copy());
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: replaces the waiting tags and binds none of them (a test puts back what it found).
+	static void SetParked(array<ref LF_StoreUnpaidRow> rows)
+	{
+		s_aParked = new array<ref LF_StoreUnpaidRow>();
+		if (!rows)
+			return;
+
+		foreach (LF_StoreUnpaidRow row : rows)
+		{
+			if (row)
+				s_aParked.Insert(row.Copy());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: a row for every tag a living player carries (or used up), plus the tags that
+	//! still wait for their character. A tag on the floor, on a dead body, or on a body no player
+	//! controls is not saved: death drops what you carry, and nothing could claim the others.
+	static array<ref LF_StoreUnpaidRow> ExportUnpaid()
+	{
+		array<ref LF_StoreUnpaidRow> rows = new array<ref LF_StoreUnpaidRow>();
+		foreach (LF_StoreUnpaidItem record : Unpaid())
+		{
+			if (record.m_sCarrierKey.IsEmpty() || record.m_iPrice <= 0)
+				continue;
+
+			IEntity carrier = GetGame().GetWorld().FindEntityByID(record.m_CarrierId);
+			if (!carrier || !LF_StorageSnapshot.IsAlive(carrier))
+				continue;
+
+			rows.Insert(RowOf(record, record.m_sCarrierKey));
+		}
+
+		foreach (LF_StoreUnpaidRow parked : Parked())
+			rows.Insert(parked.Copy());
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: the saved tags replace the waiting ones. A character in the world now (a load
+	//! re-applied to a live session) takes its tags at once, replacing the ones it carries; the rest wait
+	//! for their character to spawn. Idempotent: a second load binds the same tags to the same items.
+	//! \return Tags put back on characters in the world now.
+	static int ApplyUnpaid(array<ref LF_StoreUnpaidRow> rows)
+	{
+		s_aParked = new array<ref LF_StoreUnpaidRow>();
+		if (!rows)
+			return 0;
+
+		foreach (LF_StoreUnpaidRow row : rows)
+		{
+			if (!row || row.m_sStoreKey.IsEmpty() || row.m_sPrefab.IsEmpty() || row.m_sCarrierKey.IsEmpty() || row.m_iPrice <= 0)
+			{
+				LF_Debug.Warn(FEATURE, "load skipped an unpaid tag with no store, item, carrier or price");
+				continue;
+			}
+
+			s_aParked.Insert(row.Copy());
+		}
+
+		if (!Replication.IsServer() || !GetGame().GetPlayerManager())
+			return 0;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		array<int> playerIds = {};
+		playerManager.GetPlayers(playerIds);
+		int bound;
+		foreach (int playerId : playerIds)
+		{
+			IEntity controlled = playerManager.GetPlayerControlledEntity(playerId);
+			if (SCR_ChimeraCharacter.Cast(controlled) && LF_StorageSnapshot.IsAlive(controlled))
+				bound += ReattachUnpaid(LF_Utils.GetPlayerUID(playerId), controlled);
+		}
+
+		return bound;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a character's body is in the world with its carried inventory back (spawn, or a load on
+	//! a live session). Its waiting tags go back on untagged items of their prefab it carries, replacing
+	//! any tag it carries now; a used-up item comes back as the same debt. A tag whose store is not in
+	//! the world, or whose item the character no longer carries, is dropped with a warning.
+	//! \return Tags put back.
+	static int ReattachUnpaid(string carrierKey, IEntity character)
+	{
+		if (carrierKey.IsEmpty() || !character || !s_aParked || s_aParked.IsEmpty())
+			return 0;
+
+		array<ref LF_StoreUnpaidRow> mine = {};
+		for (int i = s_aParked.Count() - 1; i >= 0; i--)
+		{
+			if (s_aParked[i].m_sCarrierKey != carrierKey)
+				continue;
+
+			mine.InsertAt(s_aParked[i], 0);
+			s_aParked.Remove(i);
+		}
+
+		if (mine.IsEmpty())
+			return 0;
+
+		EntityID characterId = character.GetID();
+		array<ref LF_StoreUnpaidItem> all = Unpaid();
+		for (int j = all.Count() - 1; j >= 0; j--)
+		{
+			if (all[j].m_CarrierId == characterId)
+				all.Remove(j);
+		}
+
+		InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(character);
+		int bound;
+		int dropped;
+		foreach (LF_StoreUnpaidRow row : mine)
+		{
+			if (!Find(row.m_sStoreKey))
+			{
+				LF_Debug.Warn(FEATURE, string.Format("store %1 is not in the world: unpaid %2 of %3 is dropped", row.m_sStoreKey, row.m_sPrefab, carrierKey));
+				dropped++;
+				continue;
+			}
+
+			IEntity item;
+			if (!row.m_bConsumed)
+			{
+				item = FindUntagged(storage, row.m_sPrefab);
+				if (!item)
+				{
+					LF_Debug.Warn(FEATURE, string.Format("store %1: %2 no longer carries unpaid %3; the tag is dropped", row.m_sStoreKey, carrierKey, row.m_sPrefab));
+					dropped++;
+					continue;
+				}
+			}
+
+			LF_StoreUnpaidItem record = new LF_StoreUnpaidItem();
+			if (item)
+				record.m_ItemId = item.GetID();
+			else
+				record.m_ItemId = EntityID.INVALID;
+
+			record.m_sStoreKey = row.m_sStoreKey;
+			record.m_Prefab = row.m_sPrefab;
+			record.m_iPrice = row.m_iPrice;
+			record.m_CarrierId = characterId;
+			record.m_sCarrierKey = carrierKey;
+			record.m_bConsumed = row.m_bConsumed;
+			record.m_bRestored = true;
+			all.Insert(record);
+			bound++;
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("%1 unpaid tag(s) back on %2, %3 dropped", bound, carrierKey, dropped));
+		return bound;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static IEntity FindUntagged(InventoryStorageManagerComponent storage, ResourceName prefab)
+	{
+		if (!storage)
+			return null;
+
+		array<IEntity> items = LF_InventoryUtils.FindItemsByPrefab(storage, prefab);
+		foreach (IEntity item : items)
+		{
+			if (!HoldsApart(item))
+				return item;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a living player leaves. The tags on what they carry wait under their character key for
+	//! the next spawn, so logging out does not make the goods free. A dead body keeps nothing.
+	//! \return Tags parked.
+	static int ParkCarrier(string carrierKey, IEntity character)
+	{
+		if (carrierKey.IsEmpty() || !character || !s_aUnpaid || !LF_StorageSnapshot.IsAlive(character))
+			return 0;
+
+		// A pickup the tick has not seen yet goes with them.
+		foreach (string key, LF_StoreComponent store : Stores())
+			store.DetectTaken();
+
+		RefreshAll();
+		EntityID characterId = character.GetID();
+		int parked;
+		for (int i = s_aUnpaid.Count() - 1; i >= 0; i--)
+		{
+			LF_StoreUnpaidItem record = s_aUnpaid[i];
+			if (record.m_CarrierId != characterId)
+				continue;
+
+			Parked().Insert(RowOf(record, carrierKey));
+			s_aUnpaid.Remove(i);
+			parked++;
+		}
+
+		if (parked > 0)
+			LF_Debug.Info(FEATURE, string.Format("%1 left carrying %2 unpaid item(s); the tags wait for their next spawn", carrierKey, parked));
+
+		return parked;
 	}
 }
 

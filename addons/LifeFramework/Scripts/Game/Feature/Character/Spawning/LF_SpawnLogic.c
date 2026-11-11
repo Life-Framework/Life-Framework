@@ -432,6 +432,9 @@ class LF_SpawnLogic : SCR_SpawnLogic
 			ApplyStarterKit(playerId, character);
 		}
 
+		// After the inventory: a tag saved over a restart or a logout goes back on the goods (#479).
+		LF_Stores.ReattachUnpaid(LF_Utils.GetPlayerUID(playerId), character);
+
 		LF_ServiceRadio.TuneForAccount(LF_PlayerAccountManager.GetInstance().GetFromCache(playerId), character);
 		BindAccountComponents(playerId, characterPersistenceId, character);
 

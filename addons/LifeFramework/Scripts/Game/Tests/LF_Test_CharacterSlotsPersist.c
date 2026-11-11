@@ -107,7 +107,7 @@ class LF_Test_CharacterSlotsPersist : LF_Test
 		{
 			JsonLoadContext loadContext = new JsonLoadContext(false);
 			ctx.True(loadContext.LoadFromString(saved), "the save parses");
-			ctx.True(LF_PersistenceComponentSerializer.DeserializeStore(persistence, loadContext), "the version 24 save loads");
+			ctx.True(LF_PersistenceComponentSerializer.DeserializeStore(persistence, loadContext), "the current save loads");
 
 			LF_PlayerAccount loaded = accounts.GetFromCache(UID);
 			ctx.NotNull(loaded, "the two-character account is back");

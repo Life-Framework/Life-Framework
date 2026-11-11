@@ -59,8 +59,9 @@ Each of these must survive a server restart:
    its reason, counterparty and balance after, trimmed by `Configs/Money/LF_Ledger.conf`.
 13. The fence serial book (save version 16, payload `fenceserials`): serial text, buyer account uid and tool prefab, never replicated (`LF_FenceSerials`). The serial itself is saved with the item (`LF_SerialComponentSerializer`).
 14. Incident flags (save version 17, payload `incidentflags`): incident number, reporter account uid and report time for each incident a player reported and no admin has marked handled; never replicated (`LF_IncidentFlags`). The cooldown clock is not saved.
-15. Store stock (save version 21, payload `storestock`): units in stock per physical-store line, keyed by the store's stable key and the item prefab, never an entity id (`LF_Stores`). The shelf is rebuilt from it on load; a row for a store that is not in the world waits and is saved again. Unpaid-goods tags are session state.
+15. Store stock (save version 21, payload `storestock`): units in stock per physical-store line, keyed by the store's stable key and the item prefab, never an entity id (`LF_Stores`). The shelf is rebuilt from it on load; a row for a store that is not in the world waits and is saved again. Unpaid-goods tags ride their own payload (item 17).
 16. Carried item serials (save version 22, payload `itemserials`): the fence serial of each stamped item in a stored inventory snapshot (carried, stash, vehicle), parallel to the snapshot item list and keyed by its owner key and slot, never an entity id (`LF_StorageSnapshot`). Applied after `carried`; a row whose snapshot is gone or resized is skipped with a warning and those items come back unstamped (#470).
+17. Unpaid store tags (save version 25, payload `storeunpaid`, #479): store key, item prefab, price, the carrier's character record key and whether the item was used up, never an entity id (`LF_Stores`). Only tags a living player carries are saved; a disconnect parks them the same way. They wait until that character's body spawns with its carried inventory back, then go on an untagged item of that prefab (`ReattachUnpaid`); a tag whose item or store is gone is dropped with a warning. A re-applied load replaces the tags of characters in the world now. A restored tag is not swept as shoplifting until its carrier has stood inside the store again.
 
 On connect the player spawns at a spawn point with the active character's
 prefab. A saved carried inventory is applied to it; without one the character
@@ -132,6 +133,7 @@ Identity:
   | 19 | treatment bills: amount, paid flag, medic share and whether it was paid (`LF_TreatmentBills.ExportAll` / `ApplyAll`; the carried paper is reprinted on spawn) |
   | 20 | chain stations: a half-finished batch per station, by station key, chain, step, work done and work needed (`LF_ChainStations.ExportAll` / `ApplyAll`); only loaded stations are saved, site heat is not |
   | 24 | character slots (#331): each character's record key and wanted level, by account uid and character id (`LF_PlayerAccountManager.ExportCharacterSlots` / `ApplyCharacterSlots`) |
+  | 25 | unpaid store tags (#479): by character record key, store key and prefab (`LF_Stores.ExportUnpaid` / `ApplyUnpaid`; `ReattachUnpaid` on each spawn, `ParkCarrier` on disconnect) |
 
 - **Characters per account (#331, save version 24).** An account holds up to
   `LF_CharacterConfig.MaxPerAccount()` characters (`Configs/Account/LF_Characters.conf`,

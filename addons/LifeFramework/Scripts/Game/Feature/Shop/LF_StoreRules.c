@@ -41,6 +41,32 @@ class LF_StoreStockRow : Managed
 }
 
 //------------------------------------------------------------------------------------------------
+//! One saved unpaid tag (the "storeunpaid" payload, save version 25, #479). Keyed by the carrier's
+//! character record key (LF_Utils.GetPlayerUID), the store key and the item prefab, never by an entity
+//! id: after a restart the tag goes back on an item of that prefab the character carries again.
+class LF_StoreUnpaidRow : Managed
+{
+	string m_sStoreKey;
+	string m_sPrefab;
+	int m_iPrice;
+	string m_sCarrierKey;
+	//! Used up (eaten) before the save: a debt with no item.
+	bool m_bConsumed;
+
+	//------------------------------------------------------------------------------------------------
+	LF_StoreUnpaidRow Copy()
+	{
+		LF_StoreUnpaidRow copy = new LF_StoreUnpaidRow();
+		copy.m_sStoreKey = m_sStoreKey;
+		copy.m_sPrefab = m_sPrefab;
+		copy.m_iPrice = m_iPrice;
+		copy.m_sCarrierKey = m_sCarrierKey;
+		copy.m_bConsumed = m_bConsumed;
+		return copy;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! What the till said (LF_Stores.Pay).
 enum LF_EStorePay
 {
