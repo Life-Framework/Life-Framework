@@ -125,6 +125,18 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
   }
   LF_DebugWorldCollisionRepairComponent "{A5E5E5A1000000F1}" {
   }
+  SCR_TimeAndWeatherHandlerComponent "{3ED2694D1CD226FD}" {
+   m_iStartingHours 9
+   m_iStartingMinutes 36
+   m_bUsePredefineStartingTimeAndWeather 1
+   m_aStartingWeatherAndTime {
+    SCR_TimeAndWeatherState "{2AFE6B9B8357EFE0}" {
+     m_sWeatherPresetName "Clear"
+     m_iStartingHour 9
+     m_iStartingMinutes 36
+    }
+   }
+  }
  }
  m_bDevToolsEnabled 1
  m_bConvoyNearDrop 1

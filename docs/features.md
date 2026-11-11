@@ -37,6 +37,14 @@
   police inventory carried; the civilian inventory waits at the desk (M1-11).
 - ⚠️ Managers are only created on first connect; a server-side call before any
   player connects gets null.
+- ✅ **DebugWorld weather is pinned Clear (#602).** `GameMode_Roleplay_Debug.et`
+  carries the base-game `SCR_TimeAndWeatherHandlerComponent` with one predefined
+  start (Clear, 09:36 game time) and no random changes, so the server calls
+  `ForceWeatherTo(true, "Clear")` and the stock state machine never drifts into
+  Cloudy. Cloudy's volumetric clouds render as vertical streaks here, and swapping
+  in Eden's world, sky, light, fog, post-process, probe and weather prefabs (or
+  removing the terrain) did not change that. The harness `time <hour> [WeatherState]`
+  keeps the looping flag. Test `world/debugworld-weather-pinned-clear`.
 
 ### `LF_EventBus` — `Core/Events/` (#329, 2026-11-09)
 - ✅ Server event bus: typed events, `Subscribe`/`Unsubscribe`/`Publish`, subscribers
@@ -110,7 +118,7 @@
   `LF_CharacterCreationController.c`); the answer comes back as
   `RpcAsk_LF_CreateCharacter` and lands in `ServerCreateCharacter`. The player
   is the controller's id, never a client value. `LF_CharacterCreationRules`
-  re-checks it: one character per account, names 1..32 ASCII letters with single inner spaces, hyphens,
+  re-checks it: at most `LF_CharacterConfig.MaxPerAccount()` characters per account (1 shipped), names 1..32 ASCII letters with single inner spaces, hyphens,
   or apostrophes (`LF_RegistrationRules`), age 18..80. Names are not unique. A refusal toasts the reason
   key (`#EL-CC_Error_*`) and re-opens the menu. A listen host's joiners now get
   their own menus instead of the host.
@@ -120,6 +128,25 @@
   character opens the registration form over `LF_ShowRegistrationForm`
   (owner RPC). A server refusal sends the form back with the reason written on
   it. The form never picks a faction.
+- ✅ **Characters per account (#331, save version 24).** `Configs/Account/LF_Characters.conf`
+  (`LF_CharacterConfig.m_iMaxPerAccount`, 1 shipped) sets how many characters an
+  account holds. With more than 1, a returning player without a living body and
+  not on duty gets the registry sheet `LF_CharacterSelectSheet` (owner RPC
+  `LF_ShowCharacterSelect`): one line per character and "register a new
+  resident" while a slot is free; `RpcAsk_LF_SelectCharacter` is re-checked by
+  `LF_CharacterCreationRules.RefusePick` and only accepted while the server has a
+  pick open for that player (a further character likewise needs the pick's "new
+  resident" line, `RefuseFurtherCharacter`). Police applications and the roster
+  are per account (`LF_PoliceApplications.ApplicantUid`). Every character-scoped record is keyed
+  by the character's record key (`LF_Utils.GetPlayerUID`; slot 1 = the account
+  uid, later slots their own id; the key is replicated on the body for clients);
+  whitelists and staff actions use `LF_Utils.GetAccountUID`. Wanted level, police
+  rank and duty totals belong to the character (`LF_CharacterStanding`). An old
+  save loads its one character as slot 1 with nothing rewritten
+  (`docs/persistence.md`). Tests `account/characters-per-account`,
+  `persist/character-slots`, `e2e/pass*` (`e2e --legacy-save`). ⚠️ The "start a
+  new life" form and retiring a character are not built yet; the incident log
+  keeps character keys.
 
 ### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
 - ✅ One list on another player's body (`Character_Roleplay.et`, context
@@ -983,7 +1010,7 @@
   restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
   inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
-- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots).
+- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots). Carry pose (#619): the parcel uses the vanilla jerrycan carry (`Assets/Items/Fuel/workspaces/Jerrycan.agr` / `Jerrycan_player.asi`, both arms low in front, box at the waist) instead of `player_carry`, which put the arms across the chest with the box floating beside the character.
 
 ### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -1280,6 +1307,7 @@
   cells used to run sentences at double speed). `OnDelete` removes the tick.
   `LF_JailArrestableComponent` hosts `LF_JailEscort.Tick` on one live instance
   and hands it to the next registered one when that host is deleted.
+- ✅ **Jail work shortens the sentence (#127, merged, in-dev).** Two job spots in the DebugWorld cell: *Scrub the floor* (`Roadmap_Jail_ScrubBucket`, 30 s off, 6 s of work, 45 s cooldown) and *Sort the laundry* (`Roadmap_Jail_LaundryBasket`, 20 s off, 5 s, 30 s). `LF_JailWorkAction` carries the job id, seconds off, cooldown and work time as config; the client sends nothing. `LF_JailWork.Begin` (server) refuses anyone who is not serving, is already working or is inside that job's cooldown (cooldown toast shows the time left), then bends the prisoner into the existing work pose (`LF_WorkAnim`: PICK for the scrub, DRILL for the laundry). When the work time is up and the prisoner is alive and within reach, `LF_JailWork.Complete` calls `LF_Jail.Credit` once, which takes the seconds off the remaining time (a task past the remaining time ends the sentence like any release), refreshes the sentence slip, and toasts "Job done. Time left: m:ss". Nothing new is saved: the reduction lands on the sentence's remaining seconds that the `jail` payload already carries; the cooldown is session-only. Test `jail/work` (LOGIC); demo `node agent-box/session.mjs jail-work-proof` (needs `session.mjs roster 2` before `up --clients 2`). Localized `LF-JailWork_*`. The work poses are reused, so the scrub and laundry both show the existing bend; a mop or laundry clip is not made.
 - ⚠️ Moving a connected prisoner to the cell, or pulling them back into it,
   goes through `SCR_Global.TeleportPlayer` (the vanilla server-side player
   teleport) instead of a server-only `SetOrigin` that the owning client can
@@ -1865,6 +1893,14 @@
   pass `LF_DevGate` there. A bare world (Workbench play, `toolscli test`) has
   no LF header and keeps the opt-in. LOGIC test `host/playtest-mission`
   (2026-11-08).
+- ✅ **Workshop scenario (2026-11-10).** `LF_PlaytestTown.conf` is the Workshop item's scenario
+  "Life Framework: Playtest Town": plain-text name and description (the Workshop backend copies
+  them as text), the town picture `Missions/LF_PlaytestTown_Preview.edds` as icon, preview and
+  loading screen, 16 players, details from `#LF-Mission_PlaytestTown_Details`. `EL_DebugTest.conf`
+  and `EveronLifeGameMode.conf` set `m_bShowInScenarioMenu 0`. `tools\cli pack` packs the addon
+  as Workbench Publish bundles it. Proven from the packed addon in a clean profile: Scenarios
+  lists it, Play loads the town, form R-89 signs, top-up and test cars apply. Asserted in
+  `host/playtest-mission`. Publish steps: `docs/playtest/workshop-publish.md`.
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
@@ -2054,6 +2090,12 @@
   neighbour rule.
   Play-mode run not yet recorded.
 
+### Directed camera rig and storyboards — `Feature/Film/LF_FilmCameraPath.c`, `tools/film/storyboard.mjs` (dev tooling, #392, #395)
+- ✅ Harness verb `camera orbit x y z radius seconds [azimuth arc height]` (an arc round a point, centred on any azimuth: 0 = +z, 90 = +x, 180 = -z, 270 = -x; the old +z sweep is the default), `camera follow x y z distance seconds`, `camera static px py pz lx ly lz seconds [fov]`, `camera drone p l q m seconds [fov]` (eased move between two poses), `camera hud off|on` (HUD and hint pop-ups hidden for a first-person shot; `LF_FilmClean` keeps hints down every 400 ms), `camera stop`. Covered by `film/camera-path` (LOGIC). Proven 2026-11-11 on a 1920x1080 session: five 4 s shots of one scene (first person, follow, orbit, drone, static), no HUD (`video/camera-test.json`, internal).
+- ✅ Scene presets (#394): light-only scenes for the trailer locations (`scene start trailer-square`, `trailer-bank`, `trailer-quarry` ... : fixed clock, clear weather, day frozen, no actors; `LF_FilmSceneEnv.EnvOnlyHour`) beside `street`. Covered by `film/scene-env`.
+- ✅ Storyboard format `lf-storyboard/1` (`video/storyboard.schema.json`, checks in `tools/film/storyboard.mjs`): output size, fps and aspect (16:9 and 9:16), scenes, shots with camera, duration, captions and voice. `toolscli film-make video/<name>.json` validates (a bad file fails naming the field, e.g. `shots[2].camera.radius`), shoots each shot on the session through the engine recorder, deletes the frames after encoding, and hands the takes to post-production. Flags `--shot ids`, `--group name`, `--preview` (half size, 10 fps), `--client n`, `--no-shoot`, `--shoot-only`. The trailer storyboard is `video/trailer-571.json`; its `spawn-square` group (drone, orbit, static) shoots today, the rest are marked `pending` and skipped. `validate-storyboards` checks every `video/*.json`.
+- ⚠️ A first-person shot films the client as it stands: the actor setup for each trailer beat (`shot.setup`) is not written yet, and a title card between shots is not supported by post-production.
+
 ### `film-make` post-production — `tools/film/post.mjs` (dev tooling, #397)
 - ✅ `tools\cli film-make video/<name>.json` joins clips into one mp4: logo title and end cards, crossfades, burned-in captions from cue files plus an `.srt`, offline Piper voice-over, and a licensed music bed ducked under game sound and voice (about -14 LUFS). Covered by `node tools/film/film.mjs selftest`; proven on `video/tooling-test.json` (not for posting).
 
@@ -2062,10 +2104,10 @@
   keys (position, look-at, FOV); `Sample(t)` eases between keys with
   smoothstep and clamps at both ends. Out-of-order keys are rejected and
   logged (`[LFDebug:Film]`). Covered by `film/camera-path` (LOGIC).
-- ⚠️ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
+- ✅ `LF_FilmCameraRunner.Play(path)` spawns a manual camera with input off,
   hides the HUD, moves the camera each frame, then restores the previous
-  camera and HUD. It compiles but has not run in a rendering session and no
-  agent-box verb calls it yet.
+  camera and HUD. Harness verb `camera` plays it (directed camera rig, #392,
+  next section).
 - ✅ `tools/film/film.mjs` records a window or region to mp4 (ddagrab +
   NVENC; gdigrab when ddagrab delivers no frame in 5 s), makes a GIF preview,
   films an agent-box flow, and publishes a clip to the `film-evidence`
@@ -2230,3 +2272,5 @@
 - ✅ **Car lot price boards read the lot's price list (#540).** The `lot_price_*` chalkboards carry `LF_SignComponent.m_sPriceLotShopId` and `m_PriceVehicle`; the title in `LF_Signs.conf` is one template key (`#LF-Sign_LotPrice_Title`, "%1 %2") filled at read time with the offer's name key and `LF_MoneyFormat.FormatMoney(price)` from the `LF_VehicleLotComponent` offer (`LF_VehicleLotComponent.FindLot`, a per-machine registry). A changed `m_iPrice` changes the board and its Read card; a missing lot or offer logs `LF_Debug.Error` and hides the sign. Test `signs/price-board`.
 - ✅ **Paper items stay storable in any test order (#699).** The receipt, fine ticket and hospital bill prefabs carry an `SCR_GadgetComponent`, hand-pose attributes copied from `SentenceSlip.et`, and `SizeSetupStrategy Volume`. Without the gadget component the engine let only the first of those prefabs spawned in a process be inserted into an inventory; later ones were refused (`TryInsertItem` false, tickets "lie at their feet") even on fresh characters, so test results depended on registration order. Test `inventory/paper-items`.
 - ✅ **Every small mod item is storable on any spawn (#708).** The same engine quirk hit the pager, seed packet, keycard, lockpick, evidence bag and marker, vehicle and house keys, ID card and sentence slip: without `SizeSetupStrategy Volume` a later spawn read a mesh volume (440, 1073) instead of its `ItemVolume`, and the pager, seed packet and scanner also needed an `SCR_GadgetComponent` to fit (evidence, keycard and lockpick got one too, so room no longer depends on order). All carry them now; `inventory/paper-items` spawns each twice and checks volume and room, and `validate-item-volume` flags a new item prefab without them unless it is allow-listed with a reason. The farm loop test no longer needs a backpack or a registration-order workaround.
+- ✅ **128-player cost budget and benchmark gate (#335).** `LF_Perf` (`Core/LF_Perf.c`) holds server counters, timers and gauges behind `-lfPerf` (or `LF_Perf.SetEnabled`), printed as `[LFDebug:Perf] count/time/gauge` every minute and read by tests; sites today: account refresh and publish, account-state bumps, ledger record, bleed-out advance, save point. `Configs/Perf/LF_PerfBudget.conf` (`LF_PerfBudget`) holds the limits. PERSISTENCE test `perf/budget-128` builds 128 synthetic characters (accounts, banks, crime, a money log at its 20000-row cap) through the managers, bus and serializer and fails when a cost passes a limit; `tools\cli perf` prints the table and writes `tmp/perf/report.md`. Validate: `validate-perf-budget.mjs`, `perf-report-selftest.mjs`. Numbers and what a synthetic run cannot show: `docs/architecture/performance.md`. ⚠️ No network or live-player measure yet; that needs a multi-client run (steps in the doc).
+- ✅ **Police application (#128).** Duty desk action `LF_PoliceApplyAction` opens a paper form (`LF_PoliceApplicationForm`: name, why, availability) that `RpcAsk_LF_PoliceApplication` sends to the server. `LF_PoliceApplications` validates through `LF_PoliceApplicationRules` (one open application per player, not for an officer, field length), appends `STATUS|uid|name|why|availability|unix` to `$profile:LifeFramework/police_applications.txt` (not part of the save, no persistence bump), logs `[LFDebug:Police]` and toasts a receipt. Approval writes the police roster through `LF_WhitelistManager.AddFactionWhitelist`: an administrator picks `LF_PoliceReviewAction` (oldest open first; server re-checks the role), or a mission with `m_bLF_InstantPoliceApproval` (the playtest town) approves on submit. Test `police/application`; `session.mjs police-application-proof`. Not done from the issue: reject with cooldown, a letter at the desk, chief-rank approval.

@@ -30,6 +30,7 @@ Reference:
 
 ## Engineering reference
 
+- [Performance budget](architecture/performance.md) - the 128-player cost budget, the `perf/budget-128` gate, `tools\cli perf`, measured numbers.
 - [Core vs pack](architecture/core-vs-pack.md) — what goes in the core addon and what goes in the flagship pack; [inventory](architecture/core-pack-inventory.md).
 - [Features](features.md) — implemented behavior and fragile paths.
 - [Persistence](persistence.md) — saved data, serializers, and restart rules.
@@ -55,7 +56,7 @@ Feature design notes live beside their code under
 - [Support and donations](community/support.md) — project costs and support settings.
 - [Discord onboarding](community/onboarding.md) and [the AI bot playbook](community/bot-playbook.md) — what a new member sees, and how the bot talks to people.
 - [Outreach kit](community/outreach/README.md) — one file per community, the [FAQ](community/outreach/faq.md), and the [tracker](community/outreach/tracker.md).
-- [Trailer](marketing/trailer/script.md) (#571): the script, the [storyboard](marketing/trailer/storyboard.json), the [shot checklist](marketing/trailer/shot-checklist.md) and the [15 s and 6 s cuts](marketing/trailer/cutdowns.md).
+- [Trailer](marketing/trailer/script.md) (#571): the script, the [storyboard](../video/trailer-571.json), the [shot checklist](marketing/trailer/shot-checklist.md) and the [15 s and 6 s cuts](marketing/trailer/cutdowns.md).
 - [Quorum sign-off](playtest/quorum.md) and the [playtest session playbook](playtest/session-playbook.md) — who confirms a feature, and how a session runs.
 
 The gameplay plan is maintained in `docs/roadmap/`; GitHub milestones and

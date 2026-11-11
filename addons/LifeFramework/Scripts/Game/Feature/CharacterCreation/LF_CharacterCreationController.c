@@ -38,6 +38,58 @@ modded class SCR_PlayerController
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: open the character pick (#331) on this player's machine.
+	//! \param names The account's character names in slot order, one per line.
+	//! \param canRegister True while the account has a free slot (offers "register a new resident").
+	void LF_ShowCharacterSelect(string names, bool canRegister)
+	{
+		if (LF_IsLocalController())
+			RpcDo_LF_ShowCharacterSelect(names, canRegister);
+		else
+			Rpc(RpcDo_LF_ShowCharacterSelect, names, canRegister);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: play the character in this slot (0-based), or LF_CharacterSelectSheet.SLOT_NEW to
+	//! register a new one.
+	void LF_AskSelectCharacter(int slot)
+	{
+		if (Replication.IsServer())
+			RpcAsk_LF_SelectCharacter(slot);
+		else
+			Rpc(RpcAsk_LF_SelectCharacter, slot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_LF_ShowCharacterSelect(string names, bool canRegister)
+	{
+		if (!GetGame().GetWorkspace())
+		{
+			LF_Debug.Error("CharacterCreation", "character pick not opened: no workspace on this machine");
+			return;
+		}
+
+		LF_DestroySpawnSplash();
+		if (!LF_CharacterSelectSheet.Open(this, names, canRegister))
+			LF_Debug.Error("CharacterCreation", "failed to open the character pick");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_SelectCharacter(int slot)
+	{
+		LF_CharacterCreationManager manager = LF_CharacterCreationManager.GetInstance();
+		if (!manager)
+		{
+			LF_Debug.Error("CharacterCreation", "character pick dropped: no creation manager on the server");
+			return;
+		}
+
+		manager.ServerSelectCharacter(GetPlayerId(), slot);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: send the name/age form.
 	void LF_AskCreateCharacter(string firstName, string lastName, int age)
 	{

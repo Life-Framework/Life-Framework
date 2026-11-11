@@ -239,7 +239,10 @@ if ($env:LF_TEST_HANG -eq "run") {
 }
 
 if (-not [string]::IsNullOrEmpty($ExtraDefine)) {
-  $args += @("-scrDefine", $ExtraDefine)
+  # Comma-separated: one -scrDefine per name (wt e2e --legacy-save passes two in the reload boot).
+  foreach ($define in ($ExtraDefine -split ",")) {
+    if (-not [string]::IsNullOrWhiteSpace($define)) { $args += @("-scrDefine", $define.Trim()) }
+  }
 }
 
 # PS 5.1 binds an unpassed [string] param to "" not $null, so "provided" must be

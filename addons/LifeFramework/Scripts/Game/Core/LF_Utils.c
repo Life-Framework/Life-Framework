@@ -294,10 +294,51 @@ class LF_Utils : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Gets the platform-stable identity id of a player (the player's Steam/Bohemia UID).
+	//! The key the player's character-scoped records are saved under (bank, progression, wanted
+	//! reports, tickets, vehicles, ...): the record key of the account's active character (#331).
+	//! Slot 1 of an account is keyed by the account uid, so with one character per account this is
+	//! the uid, as it always was. Account-level checks (whitelists, bans, staff tools) use
+	//! GetAccountUID. A client reads the key the server replicated onto the player's character.
+	//! \param playerId Index of the player inside player manager
+	//! \return the record key, or "" while the identity has not resolved
+	static string GetPlayerUID(int playerId)
+	{
+		string accountUid = GetAccountUID(playerId);
+		if (accountUid.IsEmpty())
+			return accountUid;
+
+		if (!Replication.IsServer())
+		{
+			string replicated = ReplicatedCharacterKey(playerId);
+			if (!replicated.IsEmpty())
+				return replicated;
+
+			return accountUid;
+		}
+
+		return LF_PlayerAccountManager.ResolveCharacterKey(accountUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string ReplicatedCharacterKey(int playerId)
+	{
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
+			return "";
+
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(playerManager.GetPlayerControlledEntity(playerId));
+		if (!character)
+			return "";
+
+		return character.LF_GetCharacterKey();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gets the platform-stable identity id of a player (the player's Steam/Bohemia UID): the
+	//! account key. Whitelists, bans and staff tools use it; character records use GetPlayerUID.
 	//! \param playerId Index of the player inside player manager
 	//! \return the uid as string
-	static string GetPlayerUID(int playerId)
+	static string GetAccountUID(int playerId)
 	{
 		if (playerId <= 0)
 			return "";
@@ -387,9 +428,34 @@ class LF_Utils : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Gets the platform-stable identity id of a player.
+	//! The account uid of the player controlling this entity (see GetAccountUID(int)).
+	static string GetAccountUID(IEntity player)
+	{
+		if (!player)
+			return "";
+
+#ifdef LF_HARNESS
+		string filmStandIn = LF_FilmIdentity.Get(player);
+		if (!filmStandIn.IsEmpty())
+			return filmStandIn;
+#endif
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
+			return "";
+
+		int playerId = playerManager.GetPlayerIdFromControlledEntity(player);
+		if (playerId <= 0)
+			return "";
+
+		return GetAccountUID(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The record key of the active character of the player controlling this entity (see
+	//! GetPlayerUID(int)).
 	//! \param player Instance of the player
-	//! \return the uid as string
+	//! \return the key as string
 	static string GetPlayerUID(IEntity player)
 	{
 		if (!player)

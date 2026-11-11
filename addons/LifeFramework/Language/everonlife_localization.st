@@ -6656,31 +6656,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
-    CustomStringTableItem "{C5BBC2192BD8EFEC}" {
-     Id "EL-VehicleLock_ActionLock"
-     Target_en_us "Lock vehicle"
-     Comment "Action label when the vehicle is unlocked (#412)."
-    }
-    CustomStringTableItem "{D6B5DE4ACCEECA33}" {
-     Id "EL-VehicleLock_ActionUnlock"
-     Target_en_us "Unlock vehicle"
-     Comment "Action label when the vehicle is locked (#412)."
-    }
-    CustomStringTableItem "{405F3EF53D4704D5}" {
-     Id "LF-Garage_StoreHere"
-     Target_en_us "Store in garage"
-     Comment "Action on the player's own car when it stands within the garage radius. Same rules as the garage counter."
-    }
-    CustomStringTableItem "{C8B8911B5F3A014D}" {
-     Id "LF-Keybind_VehicleLock"
-     Target_en_us "Lock or unlock vehicle"
-     Comment "Key binding menu label for the U key."
-    }
-    CustomStringTableItem "{C470CD4C9E58C70D}" {
-     Id "LF-VehicleLock_NoTarget"
-     Target_en_us "No vehicle of yours in reach"
-     Comment "Toast when U is pressed with no keyed vehicle near."
-    }
     CustomStringTableItem "{F297FFD8D4B6E791}" {
      Id "LF-LawlessHud_Tag"
      Target_en_us "LAWLESS AREA"
@@ -6705,6 +6680,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BankKit_Take"
      Target_en_us "Take bank robbery kit"
      Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
+    CustomStringTableItem "{9BE7A1D673564E1C}" {
+     Id "LF-Dispatch_TestPolice"
+     Target_en_us "Test police call"
+     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
+    }
+    CustomStringTableItem "{803BB29C950EAC01}" {
+     Id "LF-Dispatch_TestMedic"
+     Target_en_us "Test medic call"
+     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
+    }
+    CustomStringTableItem "{E9CE669FFF4D0206}" {
+     Id "LF-Dispatch_TestDesc"
+     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
+     Comment "Description of the dispatch console test-call actions."
+    }
+    CustomStringTableItem "{05CAE71B3EBFC584}" {
+     Id "LF-Dispatch_TestTitle"
+     Target_en_us "Test call"
+     Comment "Toast title for the dispatch console test call."
+    }
+    CustomStringTableItem "{51294940A40506CF}" {
+     Id "LF-Dispatch_TestSent"
+     Target_en_us "Call placed. Take it at the dispatch board."
+     Comment "Toast after a test call went out to an on-duty service."
+    }
+    CustomStringTableItem "{36AF55270A37E7B0}" {
+     Id "LF-Dispatch_TestOff"
+     Target_en_us "Test calls are off in this game mode."
+     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
+    }
+    CustomStringTableItem "{4B1E7A2C9D3F4081}" {
+     Id "LF-Bank_Teller_Talk"
+     Target_en_us "Talk to the teller"
+     Comment "Prompt on the bank teller at the counter window. Opens the deposit and withdraw screen."
+    }
+    CustomStringTableItem "{7C20D5E8A1B94F36}" {
+     Id "LF-Bank_Teller_TalkDesc"
+     Target_en_us "Deposit or withdraw cash at the counter"
+     Comment "Description of the bank teller prompt."
+    }
+    CustomStringTableItem "{C5BBC2192BD8EFEC}" {
+     Id "EL-VehicleLock_ActionLock"
+     Target_en_us "Lock vehicle"
+     Comment "Action label when the vehicle is unlocked (#412)."
+    }
+    CustomStringTableItem "{D6B5DE4ACCEECA33}" {
+     Id "EL-VehicleLock_ActionUnlock"
+     Target_en_us "Unlock vehicle"
+     Comment "Action label when the vehicle is locked (#412)."
+    }
+    CustomStringTableItem "{405F3EF53D4704D5}" {
+     Id "LF-Garage_StoreHere"
+     Target_en_us "Store in garage"
+     Comment "Action on the player's own car when it stands within the garage radius. Same rules as the garage counter."
+    }
+    CustomStringTableItem "{C8B8911B5F3A014D}" {
+     Id "LF-Keybind_VehicleLock"
+     Target_en_us "Lock or unlock vehicle"
+     Comment "Key binding menu label for the U key."
+    }
+    CustomStringTableItem "{C470CD4C9E58C70D}" {
+     Id "LF-VehicleLock_NoTarget"
+     Target_en_us "No vehicle of yours in reach"
+     Comment "Toast when U is pressed with no keyed vehicle near."
     }
     CustomStringTableItem "{9EB58969BEDD9423}" {
      Id "LF-Farm_Title"
@@ -6805,61 +6855,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_FarmPlots_Next"
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
-    }
-    CustomStringTableItem "{9BE7A1D673564E1C}" {
-     Id "LF-Dispatch_TestPolice"
-     Target_en_us "Test police call"
-     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
-    }
-    CustomStringTableItem "{803BB29C950EAC01}" {
-     Id "LF-Dispatch_TestMedic"
-     Target_en_us "Test medic call"
-     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
-    }
-    CustomStringTableItem "{E9CE669FFF4D0206}" {
-     Id "LF-Dispatch_TestDesc"
-     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
-     Comment "Description of the dispatch console test-call actions."
-    }
-    CustomStringTableItem "{05CAE71B3EBFC584}" {
-     Id "LF-Dispatch_TestTitle"
-     Target_en_us "Test call"
-     Comment "Toast title for the dispatch console test call."
-    }
-    CustomStringTableItem "{51294940A40506CF}" {
-     Id "LF-Dispatch_TestSent"
-     Target_en_us "Call placed. Take it at the dispatch board."
-     Comment "Toast after a test call went out to an on-duty service."
-    }
-    CustomStringTableItem "{36AF55270A37E7B0}" {
-     Id "LF-Dispatch_TestOff"
-     Target_en_us "Test calls are off in this game mode."
-     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
-    }
-    CustomStringTableItem "{4A1C9E27B05D3F18}" {
-     Id "LF-Item_Parcel_Deliver"
-     Target_en_us "Deliver to: %1"
-     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
-    }
-    CustomStringTableItem "{4A1C9E27B05D3F19}" {
-     Id "LF-Job_ParcelDest"
-     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
-     Comment "Where a courier parcel goes. Shown in the parcel description."
-    }
-    CustomStringTableItem "{156BE656616C6972}" {
-     Id "LF-Sign_LotPrice_Title"
-     Target_en_us "%1 %2"
-     Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
-    }
-    CustomStringTableItem "{4B1E7A2C9D3F4081}" {
-     Id "LF-Bank_Teller_Talk"
-     Target_en_us "Talk to the teller"
-     Comment "Prompt on the bank teller at the counter window. Opens the deposit and withdraw screen."
-    }
-    CustomStringTableItem "{7C20D5E8A1B94F36}" {
-     Id "LF-Bank_Teller_TalkDesc"
-     Target_en_us "Deposit or withdraw cash at the counter"
-     Comment "Description of the bank teller prompt."
     }
     CustomStringTableItem "{2605E472E34A7E80}" {
      Id "LF-Crime_RobSafe_Name"
@@ -7240,6 +7235,186 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Witness_ForgotSome"
      Target_en_us "%1 cannot recall anything useful."
      Comment "Toast to the officer: a named witness saw the crime but remembered nothing describable. %1 = the witness name."
+    }
+    CustomStringTableItem "{156BE656616C6972}" {
+     Id "LF-Sign_LotPrice_Title"
+     Target_en_us "%1 %2"
+     Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
+    }
+    CustomStringTableItem "{AD999D02320AA8DB}" {
+     Id "LF-PoliceApp_Action"
+     Target_en_us "Apply to the police"
+     Comment "Duty desk action."
+    }
+    CustomStringTableItem "{C1C8869AB5FF5BB9}" {
+     Id "LF-PoliceApp_ActionDesc"
+     Target_en_us "Fill in an application to join the police."
+     Comment "Duty desk action description."
+    }
+    CustomStringTableItem "{9F943D13BD5ABD5D}" {
+     Id "LF-PoliceApp_Review"
+     Target_en_us "Review applications (admin)"
+     Comment "Admin action at the duty desk: approves the oldest open application."
+    }
+    CustomStringTableItem "{3EC049CF5AD21E3C}" {
+     Id "LF-PoliceApp_ReviewDesc"
+     Target_en_us "Approve the application that has waited longest."
+     Comment "Admin review action description."
+    }
+    CustomStringTableItem "{B5EC482E2E329B9F}" {
+     Id "LF-PoliceApp_Title"
+     Target_en_us "Application to the Everon Police"
+     Comment "Police application form title."
+    }
+    CustomStringTableItem "{8AE64C101F1D0F7D}" {
+     Id "LF-PoliceApp_Intro"
+     Target_en_us "Fill in all three blanks. One application per person; an administrator decides."
+     Comment "Police application form instruction line."
+    }
+    CustomStringTableItem "{C80D8FA8411D1B2A}" {
+     Id "LF-PoliceApp_Name"
+     Target_en_us "Your name"
+     Comment "Police application blank: name."
+    }
+    CustomStringTableItem "{71121DE17F6CC779}" {
+     Id "LF-PoliceApp_Why"
+     Target_en_us "Why you want to serve"
+     Comment "Police application blank: reason."
+    }
+    CustomStringTableItem "{E16B433C3AC6E980}" {
+     Id "LF-PoliceApp_Availability"
+     Target_en_us "When you can be on duty"
+     Comment "Police application blank: availability."
+    }
+    CustomStringTableItem "{E8C273DCD90D9613}" {
+     Id "LF-PoliceApp_Submit"
+     Target_en_us "Hand it in"
+     Comment "Police application submit button."
+    }
+    CustomStringTableItem "{866A6764BE9188EB}" {
+     Id "LF-PoliceApp_Close"
+     Target_en_us "Put it away"
+     Comment "Police application close button."
+    }
+    CustomStringTableItem "{62BF90390E136693}" {
+     Id "LF-PoliceApp_Status"
+     Target_en_us "Police application"
+     Comment "Toast title for police application messages."
+    }
+    CustomStringTableItem "{F39424782E4C72BE}" {
+     Id "LF-PoliceApp_Receipt"
+     Target_en_us "Application received. An administrator will review it."
+     Comment "Receipt toast after filing."
+    }
+    CustomStringTableItem "{3B86E7A5E27354FE}" {
+     Id "LF-PoliceApp_Approved"
+     Target_en_us "Application approved. Clock in at the duty desk."
+     Comment "Toast when the application is approved on submit (playtest)."
+    }
+    CustomStringTableItem "{D85287BA39923646}" {
+     Id "LF-PoliceApp_ApprovedOther"
+     Target_en_us "Approved the application of %1."
+     Comment "Admin toast after approving; %1 is the applicant name."
+    }
+    CustomStringTableItem "{D17A6AB7C4AE46BE}" {
+     Id "LF-PoliceApp_NoneOpen"
+     Target_en_us "No open applications."
+     Comment "Admin review toast when none wait."
+    }
+    CustomStringTableItem "{B28597051ECFD842}" {
+     Id "LF-PoliceApp_NotAdmin"
+     Target_en_us "Only an administrator can approve applications."
+     Comment "Refusal toast for a non-admin review."
+    }
+    CustomStringTableItem "{176552BBA801A382}" {
+     Id "LF-PoliceApp_Error_Fields"
+     Target_en_us "Fill in all three blanks."
+     Comment "Form error: a blank is empty."
+    }
+    CustomStringTableItem "{128D4C6358A00BA9}" {
+     Id "LF-PoliceApp_Error_Length"
+     Target_en_us "One of the answers is too long."
+     Comment "Form error: too long."
+    }
+    CustomStringTableItem "{7F7AA537F0C237BB}" {
+     Id "LF-PoliceApp_Error_OnRoster"
+     Target_en_us "You are already on the police roster."
+     Comment "Refusal: applicant is already police."
+    }
+    CustomStringTableItem "{57C1C2B309431CF5}" {
+     Id "LF-PoliceApp_Error_AlreadyOpen"
+     Target_en_us "You already have an application waiting."
+     Comment "Refusal: one open application per player."
+    }
+    CustomStringTableItem "{EF03D310EECF0660}" {
+     Id "LF-PoliceApp_Error_NoAccount"
+     Target_en_us "Register at the civil registry first."
+     Comment "Refusal: no player identity."
+    }
+    CustomStringTableItem "{93B24FC92EC107AF}" {
+     Id "LF-Mission_PlaytestTown_Details"
+     Target_en_us "This is a playtest build. Your cash and bank top up when they run low, and every new character owns two test cars, one in the garage and one at the impound. Your first spawn opens form R-89; fill it in to start. The first player on a server with no police is added to the police roster, so you can clock in at the station desk. Progress is saved and carries over a restart. Report problems on the Life Framework Discord or GitHub."
+     Comment "Detailed scenario rules shown with the scenario."
+    }
+    CustomStringTableItem "{0D72D045F1F4E803}" {
+     Id "LF-CharSel_Title"
+     Target_en_us "Civil Registry of Everon, Residents on File"
+     Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
+    }
+    CustomStringTableItem "{8B8EEE733934A3E5}" {
+     Id "LF-CharSel_Intro"
+     Target_en_us "Choose the resident you arrive as today."
+     Comment "Character pick instruction line. One button per character follows, each showing that character's name."
+    }
+    CustomStringTableItem "{502C5430AE70C609}" {
+     Id "LF-CharSel_New"
+     Target_en_us "Register a new resident"
+     Comment "Character pick button that opens registration form R-89 for another character on the same account."
+    }
+    CustomStringTableItem "{87EB7613EC87FB35}" {
+     Id "LF-CharSel_Refused"
+     Target_en_us "You cannot change who you are right now."
+     Comment "Notification when the server refuses a character pick: the slot does not exist, the player is alive in another body, or still on duty."
+    }
+    CustomStringTableItem "{D05A58380EB506C0}" {
+     Id "LF-Char_Error_Full"
+     Target_en_us "Every character slot on this account is taken."
+     Comment "Character creation refused because the account already holds the configured maximum number of characters."
+    }
+    CustomStringTableItem "{950892F5D530ACC9}" {
+     Id "LF-JailWork_Scrub"
+     Target_en_us "Scrub the floor"
+     Comment "Action in the cell: scrub the floor to shorten the sentence."
+    }
+    CustomStringTableItem "{B2F316158144F2CB}" {
+     Id "LF-JailWork_Laundry"
+     Target_en_us "Sort the laundry"
+     Comment "Action in the cell: sort laundry to shorten the sentence."
+    }
+    CustomStringTableItem "{F9D02BE97AECAA25}" {
+     Id "LF-JailWork_Done"
+     Target_en_us "Job done. Time left: %1"
+     Comment "Toast after a jail job. %1 is the remaining sentence as m:ss."
+    }
+    CustomStringTableItem "{7AB47127A2E6C90C}" {
+     Id "LF-JailWork_NotPrisoner"
+     Target_en_us "Only a prisoner serving a sentence can work here."
+     Comment "Jail job refused: the player is not serving."
+    }
+    CustomStringTableItem "{9D3D515C89CBD67C}" {
+     Id "LF-JailWork_Busy"
+     Target_en_us "You are already working."
+     Comment "Jail job refused: a job is already running."
+    }
+    CustomStringTableItem "{C1C1BA78E72558F0}" {
+     Id "LF-JailWork_Cooldown"
+     Target_en_us "You need a rest. This job is free again in %1."
+     Comment "Jail job refused: cooldown. %1 is m:ss."
+    }
+    CustomStringTableItem "{04A2CD75730658F5}" {
+     Id "LF-JailWork_BadConfig"
+     Target_en_us "This job is not set up."
+     Comment "Jail job refused: no seconds configured."
     }
   }
  }

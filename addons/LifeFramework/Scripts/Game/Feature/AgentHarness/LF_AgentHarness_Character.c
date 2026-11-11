@@ -631,23 +631,23 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Harness `time <hour>`: the server sets the world clock so the LOCAL hour (game clock plus the
-	//! world's longitude offset) is `hour`, and forces clear weather. A clock set on a client is
+	//! Harness `time <hour> [WeatherState]`: the server sets the world clock so the LOCAL hour (game clock plus the
+	//! world's longitude offset) is `hour`, and forces the weather (default Clear). A clock set on a client is
 	//! overridden by the server, so this is an authority-side request, behind the dev gate.
-	void LF_AskHarnessTime(int commandId, float hour)
+	void LF_AskHarnessTime(int commandId, float hour, string weather)
 	{
 		if (Replication.IsServer())
 		{
-			LF_ApplyHarnessTime(commandId, hour);
+			LF_ApplyHarnessTime(commandId, hour, weather);
 			return;
 		}
 
-		Rpc(RpcAsk_LF_HarnessTime, commandId, hour);
+		Rpc(RpcAsk_LF_HarnessTime, commandId, hour, weather);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_HarnessTime(int commandId, float hour)
+	protected void RpcAsk_LF_HarnessTime(int commandId, float hour, string weather)
 	{
 		if (!LF_DevGate.CheckHarnessRequest(this, "time"))
 		{
@@ -655,11 +655,11 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		LF_ApplyHarnessTime(commandId, hour);
+		LF_ApplyHarnessTime(commandId, hour, weather);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void LF_ApplyHarnessTime(int commandId, float hour)
+	protected void LF_ApplyHarnessTime(int commandId, float hour, string weather)
 	{
 		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
 		TimeAndWeatherManagerEntity clock;
@@ -682,7 +682,10 @@ modded class SCR_ChimeraCharacter
 			game -= 24;
 
 		clock.SetTimeOfTheDay(game, true);
-		clock.ForceWeatherTo(false, "Clear", 0, 3600);
+		if (weather.IsEmpty())
+			weather = "Clear";
+		// Keep the world's looping flag: DebugWorld pins Clear (#602), and a harness shot must not unpin it.
+		clock.ForceWeatherTo(clock.IsWeatherLooping(), weather, 0, 3600);
 		string text = string.Format("local=%1 game=%2 offset=%3 now=%4 day_s=%5", hour, game, offset, clock.GetTimeOfTheDay(), clock.GetDayDuration());
 		LF_Debug.Info("AgentHarness", "clock set: " + text);
 		LF_HarnessReply(commandId, "ok", text);

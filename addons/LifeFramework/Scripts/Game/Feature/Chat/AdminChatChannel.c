@@ -49,7 +49,7 @@ class AdminChatChannel : BaseChatChannel
 			SCR_PlayerController adminPC = SCR_PlayerController.Cast(sender.GetOwner());
 			string adminUid = "";
 			if (adminPC)
-				adminUid = LF_Utils.GetPlayerUID(adminPC.GetPlayerId());
+				adminUid = LF_Utils.GetAccountUID(adminPC.GetPlayerId());
 
 			LF_IncidentFlags.Handle(number, adminUid);
 			LF_AdminAction.ReportHandled(adminUid, number);

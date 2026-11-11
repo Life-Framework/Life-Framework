@@ -30,15 +30,15 @@ class LF_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 			return;
 		}
 
-		if (WhitelistExists(LF_WhitelistType.CONNECT) && !VerifyPlayer(LF_Utils.GetPlayerUID(playerId), LF_WhitelistType.CONNECT))
+		if (WhitelistExists(LF_WhitelistType.CONNECT) && !VerifyPlayer(LF_Utils.GetAccountUID(playerId), LF_WhitelistType.CONNECT))
 		{
-			LF_Debug.Log("Whitelist", string.Format("join blocked: uuid=%1 not on CONNECT whitelist", LF_Utils.GetPlayerUID(playerId)));
+			LF_Debug.Log("Whitelist", string.Format("join blocked: uuid=%1 not on CONNECT whitelist", LF_Utils.GetAccountUID(playerId)));
 			GetGame().GetPlayerManager().KickPlayer(playerId, PlayerManagerKickReason.KICK, 10);
 			return;
 		}
 
-		LF_Debug.Log("Whitelist", string.Format("join allowed: uuid=%1", LF_Utils.GetPlayerUID(playerId)));
-		LF_WhitelistManager.AddFirstPlayerToPolice(LF_Utils.GetPlayerUID(playerId));
+		LF_Debug.Log("Whitelist", string.Format("join allowed: uuid=%1", LF_Utils.GetAccountUID(playerId)));
+		LF_WhitelistManager.AddFirstPlayerToPolice(LF_Utils.GetAccountUID(playerId));
 		super.OnPlayerAuditSuccess(playerId);
 	}
 
@@ -74,7 +74,7 @@ class LF_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 	void LoadAllWhitelists(LF_PlayerWhitelistComponent playerWhitelistComponent)
 	{
 		LF_WhitelistType whitelistFlags;
-		string uuid = LF_Utils.GetPlayerUID(playerWhitelistComponent.GetOwner());
+		string uuid = LF_Utils.GetAccountUID(playerWhitelistComponent.GetOwner());
 		foreach (LF_Whitelist whitelist : m_aWhitelists)
 		{
 			if (whitelist && whitelist.VerifyPlayer(uuid))
@@ -174,7 +174,7 @@ class LF_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 		playerManager.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
 		{
-			if (LF_Utils.GetPlayerUID(playerId) == uuid)
+			if (LF_Utils.GetAccountUID(playerId) == uuid)
 				return playerManager.GetPlayerControlledEntity(playerId);
 		}
 		return null;
