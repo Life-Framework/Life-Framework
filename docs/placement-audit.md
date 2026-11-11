@@ -30,7 +30,7 @@ tilt 2), grows with how bad it is, and counts 1.5x for an interactable and 1.3x 
    profile; the test finds each entity (`LF_PlacementAudit.FindPlaced`: by name, else the nearest of the
    same prefab within 1 m) and writes one measurement line each, plus every door leaf, to
    `$profile:place-audit/out.txt`. Without `LF_PLACE_AUDIT_IN` (a normal suite run) the test only checks
-   the walk on the ATM.
+   the walk on the police evidence locker, which the audit found half inside the station wall.
 3. The Node side adds the checks that pair entities, applies exemptions and the allowlist, and ranks.
 
 ## Checks
@@ -49,8 +49,9 @@ tilt 2), grows with how bad it is, and counts 1.5x for an interactable and 1.3x 
 | tilted | up axis off vertical | 5 deg |
 | unreachable | interactables: no standing spot within 1.5 m of the edge (3 m for signs) | |
 
-Exempt by kind (`RX` in `place-audit.mjs`): hung things (signs, boards, posters, or a thin thing more
-than 0.5 m up against a wall) do not float; sacks, logs, planks, tyres lie tilted; vegetation has no
+Exempt by kind (`RX` in `place-audit.mjs`): hung things (a sign, board or poster with a wall or another
+entity within 0.3 m behind it, or any thin thing more than 0.5 m up against one) do not float, while a
+sign on a pole or a board with nothing behind it must stand on something; sacks, logs, planks, tyres lie tilted; vegetation has no
 collision; buildings clip roads and neighbours by design and are reported from the prop side; wall,
 fence and rock runs overlap at their joints; something much smaller sitting inside a shelf, stand,
 crate or table group is its contents; a layer parent and its child do not overlap each other; road
