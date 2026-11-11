@@ -31,7 +31,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid. The written version is that list's length (25). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime. The written version is that list's length (26). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -58,6 +58,8 @@
 //! character loads as slot 1, keyed by the account uid its records already use.
 //! A version 24 save includes the character slots and has no unpaid store tags (#479): goods taken off a
 //! shelf before that restart come back untagged.
+//! A version 25 save includes the unpaid store tags and has no playtime (#692): every account's
+//! playtime starts at zero.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -118,6 +120,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("farmplots");
 		order.Insert("characters");
 		order.Insert("storeunpaid");
+		order.Insert("playtime");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -151,7 +154,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 25);
+		context.WriteValue("version", 26);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -475,6 +478,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_StoreUnpaidRow> unpaidRows = LF_Stores.ExportUnpaid();
 			context.Write(unpaidRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 unpaid store tag(s)", unpaidRows.Count()));
+		}
+		else if (payload == "playtime")
+		{
+			// ExportAll credits the online clocks first, so the save holds the time up to now.
+			array<ref LF_PlaytimeRecord> playtimeRows = LF_Playtime.ExportAll();
+			context.Write(playtimeRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 playtime row(s)", playtimeRows.Count()));
 		}
 		else
 		{
@@ -851,6 +861,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				LF_Debug.Warn("Persistence", "unpaid store tags failed to read, leaving the waiting tags untouched");
+			}
+		}
+		else if (payload == "playtime")
+		{
+			// A version 1-25 save never reaches this payload: the live counts are left alone.
+			array<ref LF_PlaytimeRecord> playtimeRows = new array<ref LF_PlaytimeRecord>();
+			if (context.Read(playtimeRows))
+			{
+				int playtimeApplied = LF_Playtime.ApplyAll(playtimeRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 playtime row(s)", playtimeApplied, playtimeRows.Count()));
+			}
+			else
+			{
+				LF_Debug.Warn("Persistence", "playtime failed to read, leaving the live counts untouched");
 			}
 		}
 		else

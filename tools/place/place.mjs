@@ -837,7 +837,7 @@ function openWorld(flags) {
 function itemsOf(ctx, prefabArgs, flags) {
   const items = [];
   if (flags.move) {
-    for (const name of String(flags.move).split(",")) {
+    for (const name of String(flags.move).split(/,(?=[^\d.-])/)) {
       const ent = findEntity(ctx.ents, name);
       if (!ent.bounds) throw new PlaceError(`${name} has no mesh bounds (${ent.prefab || "no prefab"}): nothing to rest on a surface`);
       if (ent.tilted) throw new PlaceError(`${name} is tilted (angleX/angleZ): the tool places upright props only`);

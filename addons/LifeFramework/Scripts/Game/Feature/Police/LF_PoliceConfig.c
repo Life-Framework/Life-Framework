@@ -13,7 +13,6 @@ class LF_PoliceConfig
 
 	static const int DEFAULT_ARREST_MIN_RANK = 0;
 	static const int DEFAULT_ESCORT_MIN_RANK = 0;
-	static const int DEFAULT_PATROL_FINE_CAP = 1000;
 	static const float DEFAULT_CATCH_IN_ACT_RADIUS = 10;
 	static const float DEFAULT_PLACE_RADIUS = 80;
 	static const float DEFAULT_BOARD_READ_DISTANCE = 4;
@@ -39,8 +38,8 @@ class LF_PoliceConfig
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may escort a suspect (0 patrol, 1 senior)")]
 	int m_iEscortMinRank;
 
-	[Attribute("1000", UIWidgets.Auto, "Largest fine a patrol officer may issue. Senior officers use the global maximum")]
-	int m_iPatrolFineCap;
+	[Attribute("", UIWidgets.Object, "The rank ladder, lowest first. A rank is its index here and a saved index never changes meaning: append, never reorder. Index 0 is patrol and 1 is senior")]
+	ref array<ref LF_PoliceRank> m_aRanks;
 
 	[Attribute("10", UIWidgets.Auto, "An on-duty officer this close (metres) when a crime is committed catches the suspect in the act: the report is identified at once")]
 	float m_fCatchInActRadius;
@@ -157,11 +156,36 @@ class LF_PoliceConfig
 	//------------------------------------------------------------------------------------------------
 	static int PatrolFineCap()
 	{
-		LF_PoliceConfig config = Get();
-		if (!config)
-			return DEFAULT_PATROL_FINE_CAP;
+		return LF_PoliceRanks.FineCap(LF_PoliceRanks.PATROL);
+	}
 
-		return config.m_iPatrolFineCap;
+	//------------------------------------------------------------------------------------------------
+	//! The ladder, lowest rank first. Rows with an empty id are dropped. A missing config or an
+	//! empty list is the built-in two-rank ladder (patrol, senior): the numbers from before the
+	//! ladder was config.
+	static void Ranks(notnull array<ref LF_PoliceRank> outRanks)
+	{
+		outRanks.Clear();
+		LF_PoliceConfig config = Get();
+		if (config && config.m_aRanks)
+		{
+			foreach (LF_PoliceRank rank : config.m_aRanks)
+			{
+				if (!rank || rank.m_sId.IsEmpty())
+				{
+					LF_Debug.Warn("Ranks", "ladder row with no id skipped");
+					continue;
+				}
+
+				outRanks.Insert(rank);
+			}
+
+			if (!outRanks.IsEmpty())
+				return;
+		}
+
+		outRanks.Insert(LF_PoliceRank.Create("patrol", "EL-Rank_Patrol", LF_PoliceRanks.PATROL_FINE_CAP, -1, LF_PoliceRanks.DUTY_SECONDS, LF_PoliceRanks.SIDEARM));
+		outRanks.Insert(LF_PoliceRank.Create("senior", "EL-Rank_Senior", LF_PoliceUtils.MAX_FINE, -1, 0, LF_PoliceRanks.LONG_GUN));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -355,5 +379,43 @@ class LF_TicketOffence
 		offence.m_sName = name;
 		offence.m_iAmount = amount;
 		return offence;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One rung of the police ladder. The rank saved on an account is this row's index.
+[BaseContainerProps()]
+class LF_PoliceRank
+{
+	[Attribute("", UIWidgets.EditBox, "Stable name of the rank, for logs and packs")]
+	string m_sId;
+
+	[Attribute("", UIWidgets.EditBox, "Localization key of the title, without the leading #")]
+	string m_sTitleKey;
+
+	[Attribute("1000", UIWidgets.Auto, "Largest fine an officer of this rank may write")]
+	int m_iFineCap;
+
+	[Attribute("-1", UIWidgets.Auto, "Cash per on-duty second at clock-out. Negative uses the jobs config police rate")]
+	float m_fPayPerSecond;
+
+	[Attribute("0", UIWidgets.Auto, "On-duty seconds that promote an officer to the next rank. 0 means no time promotion")]
+	int m_iDutySecondsForNext;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Kit prefabs drawn at the armory. Only prefabs in the station catalog are issued")]
+	ref array<ResourceName> m_aKit;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_PoliceRank Create(string id, string titleKey, int fineCap, float payPerSecond, int dutySecondsForNext, ResourceName kitPrefab)
+	{
+		LF_PoliceRank rank = new LF_PoliceRank();
+		rank.m_sId = id;
+		rank.m_sTitleKey = titleKey;
+		rank.m_iFineCap = fineCap;
+		rank.m_fPayPerSecond = payPerSecond;
+		rank.m_iDutySecondsForNext = dutySecondsForNext;
+		rank.m_aKit = {};
+		rank.m_aKit.Insert(kitPrefab);
+		return rank;
 	}
 }

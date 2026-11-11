@@ -1,0 +1,362 @@
+{
+ "_note": "Sane size of the largest side in metres, world space with scale applied (docs/placement-audit.md, \"Expected sizes\"). First matching entry wins, so list specific before general. match is a case-insensitive regex on the prefab file name (a bare mesh entity: its mesh file name); an entity no entry matches is not checked. Seeded from `tools\\cli place bounds` and real-world sense.",
+ "sizes": [
+  {
+   "id": "money-bag",
+   "match": "MoneyBag",
+   "min": 0.3,
+   "max": 0.8,
+   "why": "A cloth cash bag is a duffel: 0.4-0.7 m (LF_MoneyBag at scale 0.4 measures 0.54 m)"
+  },
+  {
+   "id": "cash-stack",
+   "match": "MoneyStack|CashStack|Banknote",
+   "min": 0.04,
+   "max": 0.4,
+   "why": "A banded stack of notes is about 0.17 m long"
+  },
+  {
+   "id": "sack-pile",
+   "match": "Sackw*Pile",
+   "min": 0.5,
+   "max": 1.2,
+   "why": "A heap of sacks stays under a 1.1 m drum; real stacks are 1 m high at most"
+  },
+  {
+   "id": "bag",
+   "match": "CementBag|GravelBag|Sandbag|SackUniversal_01$",
+   "min": 0.3,
+   "max": 0.95,
+   "why": "A 25 kg cement or sand bag is 0.5 x 0.8 m"
+  },
+  {
+   "id": "keg",
+   "match": "BeerKeg",
+   "min": 0.4,
+   "max": 0.8,
+   "why": "A 50 l keg is 0.4 x 0.6 m"
+  },
+  {
+   "id": "barrel",
+   "match": "Barrel",
+   "min": 0.8,
+   "max": 1.3,
+   "why": "A 200 l drum is 0.6 m wide, 0.9 m tall"
+  },
+  {
+   "id": "pallet",
+   "match": "Pallet(?!Box)",
+   "min": 0.8,
+   "max": 2,
+   "why": "A pallet is 1.2 x 0.8 m; a low pile of them stays under 2 m"
+  },
+  {
+   "id": "crate",
+   "match": "Crate|BoxWooden|WoodenPalletBox|TradeContainer",
+   "min": 0.3,
+   "max": 1.4,
+   "why": "A wooden crate is 0.4-1.2 m; a pallet box 1.2 m"
+  },
+  {
+   "id": "drill",
+   "match": "Drill",
+   "min": 0.2,
+   "max": 0.6,
+   "why": "A hand drill is 0.25 m, a power drill 0.4 m"
+  },
+  {
+   "id": "till",
+   "match": "(^|[_ ])(Fuel)?Till|CashRegister",
+   "min": 0.25,
+   "max": 0.7,
+   "why": "A cash register is 0.4 m; the fuel till 0.6 m"
+  },
+  {
+   "id": "vice",
+   "match": "Vice_",
+   "min": 0.2,
+   "max": 0.7,
+   "why": "A bench vice is 0.3 m"
+  },
+  {
+   "id": "workbench",
+   "match": "Workbench",
+   "min": 1,
+   "max": 3,
+   "why": "A workbench is 1.2-2.5 m long"
+  },
+  {
+   "id": "bench",
+   "match": "Bench(?!Carton)",
+   "min": 1,
+   "max": 2.5,
+   "why": "A street bench is 1.5-2 m long"
+  },
+  {
+   "id": "table",
+   "match": "(^|_)Table",
+   "min": 0.8,
+   "max": 2.6,
+   "why": "A table is 0.9-2.4 m"
+  },
+  {
+   "id": "desk",
+   "match": "Desk",
+   "min": 0.9,
+   "max": 2.4,
+   "why": "A desk is 1.2-2 m"
+  },
+  {
+   "id": "counter",
+   "match": "Counter",
+   "min": 1,
+   "max": 3,
+   "why": "A shop counter is 1.5-3 m"
+  },
+  {
+   "id": "chair",
+   "match": "Chair",
+   "min": 0.6,
+   "max": 1.3,
+   "why": "A chair is 0.9 m tall"
+  },
+  {
+   "id": "door",
+   "match": "EL_Door|JailDoor|DoorFrame|HouseDoor",
+   "min": 1.8,
+   "max": 2.6,
+   "why": "A door leaf is 2.0-2.4 m tall"
+  },
+  {
+   "id": "street-lamp",
+   "match": "LampStreet",
+   "min": 3.5,
+   "max": 8,
+   "why": "A street lamp post is 4-7 m"
+  },
+  {
+   "id": "lamp",
+   "match": "LampKerosene|Lantern",
+   "min": 0.25,
+   "max": 0.7,
+   "why": "A kerosene lamp is 0.3-0.5 m"
+  },
+  {
+   "id": "hydrant",
+   "match": "Hydrant",
+   "min": 0.6,
+   "max": 1.5,
+   "why": "A fire hydrant is 0.8-1.2 m"
+  },
+  {
+   "id": "bin",
+   "match": "TrashBin|GarbageContainer",
+   "min": 0.6,
+   "max": 2,
+   "why": "A wheelie bin is 1.1 m; a skip bin up to 1.8 m"
+  },
+  {
+   "id": "bucket",
+   "match": "Bucket",
+   "min": 0.25,
+   "max": 0.6,
+   "why": "A bucket is 0.3-0.4 m"
+  },
+  {
+   "id": "basket",
+   "match": "Basket",
+   "min": 0.4,
+   "max": 1,
+   "why": "A laundry basket is 0.5-0.7 m"
+  },
+  {
+   "id": "wheelbarrow",
+   "match": "Wheelbarrow",
+   "min": 1.2,
+   "max": 2.4,
+   "why": "A wheelbarrow is 1.5-2 m with handles"
+  },
+  {
+   "id": "cart",
+   "match": "Cart_",
+   "min": 1,
+   "max": 2.4,
+   "why": "A hand cart is 1.2-2 m"
+  },
+  {
+   "id": "tyre",
+   "match": "Tire|Tyre",
+   "min": 0.6,
+   "max": 1.2,
+   "why": "A car or jeep tyre is 0.7-0.9 m across"
+  },
+  {
+   "id": "vehicle",
+   "match": "UAZ|S105|S1203|Ambulance|M997|M151|_Van\b",
+   "min": 3.2,
+   "max": 7.5,
+   "why": "Cars and light trucks are 3.5-6.5 m long"
+  },
+  {
+   "id": "npc",
+   "match": "Npc_|BankTeller|QuestGiver",
+   "min": 1.2,
+   "max": 2.2,
+   "why": "A person is 1.7-1.9 m tall; a T-posed box 1.5-2 m"
+  },
+  {
+   "id": "payphone",
+   "match": "Payphone",
+   "min": 1.8,
+   "max": 3,
+   "why": "A phone booth is 2.2-2.5 m tall"
+  },
+  {
+   "id": "sign",
+   "match": "Sign|MessageBoard|PosterColumn",
+   "min": 0.3,
+   "max": 4.5,
+   "why": "A shop board is 0.5-2 m; a fascia up to 4 m; a pole sign 3 m"
+  },
+  {
+   "id": "tree",
+   "match": "^t_|Tree_",
+   "min": 4,
+   "max": 35,
+   "why": "Trees are 5-30 m"
+  },
+  {
+   "id": "bush",
+   "match": "^b_",
+   "min": 0.8,
+   "max": 6,
+   "why": "Shrubs are 1-5 m"
+  },
+  {
+   "id": "ore",
+   "match": "(Copper|Iron|Gold)Ore",
+   "min": 0.3,
+   "max": 1.6,
+   "why": "An ore outcrop chunk is 0.4-1.5 m"
+  },
+  {
+   "id": "ingot",
+   "match": "GoldBar|IronBar|CopperBar",
+   "min": 0.1,
+   "max": 0.5,
+   "why": "An ingot is 0.2-0.3 m"
+  },
+  {
+   "id": "nugget",
+   "match": "Nugget",
+   "min": 0.05,
+   "max": 0.3,
+   "why": "A nugget is a fist: 0.05-0.2 m"
+  },
+  {
+   "id": "brick",
+   "match": "Brick(?!Wall)",
+   "min": 0.15,
+   "max": 0.4,
+   "why": "A brick is 0.22-0.25 m"
+  },
+  {
+   "id": "apple",
+   "match": "Apple(?!Juicer)",
+   "min": 0.04,
+   "max": 0.15,
+   "why": "An apple is 0.08 m"
+  },
+  {
+   "id": "plum",
+   "match": "Plum",
+   "min": 0.03,
+   "max": 0.12,
+   "why": "A plum is 0.05 m"
+  },
+  {
+   "id": "cabbage-crop",
+   "match": "^CabbageCrop",
+   "min": 0.3,
+   "max": 1.1,
+   "why": "A cabbage plant growing in a field is 0.5-0.9 m across"
+  },
+  {
+   "id": "cabbage",
+   "match": "^Cabbage",
+   "min": 0.15,
+   "max": 0.6,
+   "why": "A cabbage head is 0.2-0.3 m, the whole plant 0.5 m"
+  },
+  {
+   "id": "flowerpot-street",
+   "match": "FlowerpotStreet",
+   "min": 0.4,
+   "max": 1.6,
+   "why": "A street planter is 0.6-1.4 m"
+  },
+  {
+   "id": "flowerpot",
+   "match": "FlowerpotPelargonia",
+   "min": 0.2,
+   "max": 0.9,
+   "why": "A window or doorstep geranium pot is 0.3-0.6 m"
+  },
+  {
+   "id": "pile",
+   "match": "CementPile|GravelPile|SandPile",
+   "min": 1,
+   "max": 8,
+   "why": "A stock pile is 2-8 m across"
+  },
+  {
+   "id": "hay",
+   "match": "HayBale",
+   "min": 0.8,
+   "max": 3.5,
+   "why": "A small square bale is 1 m, a big one 1.2-3 m"
+  },
+  {
+   "id": "fence",
+   "match": "WoodenFence|NetFence|BrickWall",
+   "min": 3,
+   "max": 6,
+   "why": "A fence or wall module is 2-5 m long"
+  },
+  {
+   "id": "rock",
+   "match": "GraniteStone|Boulder",
+   "min": 0.8,
+   "max": 5,
+   "why": "A boulder is 1-4 m"
+  },
+  {
+   "id": "cliff",
+   "match": "Cliff",
+   "min": 8,
+   "max": 40,
+   "why": "A quarry cliff piece is 20-30 m"
+  },
+  {
+   "id": "doghouse",
+   "match": "DogHouse",
+   "min": 0.7,
+   "max": 1.6,
+   "why": "A dog kennel is 1 m"
+  },
+  {
+   "id": "shelter",
+   "match": "BusShed|Greenhouse",
+   "min": 3,
+   "max": 8,
+   "why": "A bus shelter is 3-4 m, a small greenhouse 3-6 m"
+  },
+  {
+   "id": "building",
+   "match": "^(House_|Barn_|Church|Office_E|Villa_|ShopHouse|Municipal|FuelStation|Garage_E|Workshop_01_Main|ConcretePlant|PubVillage|Shed_)",
+   "min": 5,
+   "max": 35,
+   "why": "A house or barn is 8-30 m on its longest side"
+  }
+ ]
+}

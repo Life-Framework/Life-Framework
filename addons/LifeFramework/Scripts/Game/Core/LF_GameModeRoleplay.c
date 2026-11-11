@@ -64,6 +64,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_CrimeRecord.EnsureSubscribed();
 		// The serial book stamps every tool the fence sells (server only).
 		LF_FenceSerials.EnsureSubscribed();
+		// Playtime per account and job, credited to online players (server only, #692).
+		LF_Playtime.Start();
 	}
 
 	//------------------------------------------------------------------------------------------------

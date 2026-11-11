@@ -212,12 +212,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacementProbe(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlaytestMission(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlaytestOffers(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PlaytimePersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PlotLoop(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplication(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceRankTable(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceDutySwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceDeathOnDuty(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceWantedBoard(), LF_TestTier.LOGIC);
@@ -370,6 +372,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WorkAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnimTargets(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ZoneRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ZoneRuleSetBackcompat(), LF_TestTier.LOGIC);
 	}
 }
 

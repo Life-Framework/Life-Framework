@@ -103,8 +103,10 @@ says `TIMEOUT`. It refuses the main checkout.
   pass `--hour`. Pictures for a PR or for media still come from `shots area` on a session.
 - **Dynamic bodies after they settle.** Shots start about 3 s into play, so a log that tips off a
   table a minute later is not caught.
-- The wide camera is chosen by a ray to the area centre; a thin pole right in front of the lens can
-  pass that test. The obliques and the top view cover it.
+- The wide camera is chosen by a ray to the area centre plus a fan of level rays across the lens (42
+  degrees each side, 3 degree steps, 3.5 m reach), so a lamp post or sign right in front of the lens fails
+  the clearness test and the next candidate is tried (#814). Something wider than the fan or farther
+  than its reach still passes. The obliques and the top view cover the rest.
 
 ## Measured (2026-11-11, this PC: 15.6 GB, with a trailer agent's sessions and encodes beside it)
 
