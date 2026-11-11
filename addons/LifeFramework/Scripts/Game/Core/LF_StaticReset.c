@@ -20,6 +20,7 @@ class LF_StaticReset
 		LF_Hotwire.ResetStatics();
 		LF_StolenVehicles.ResetStatics();
 		LF_Jail.ResetStatics();
+		LF_JailWork.ResetStatics();
 		LF_JailEscort.ResetStatics();
 		LF_JailCellComponent.ResetStatics();
 		LF_JailArrestableComponent.ResetStatics();

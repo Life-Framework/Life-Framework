@@ -76,3 +76,7 @@ is the entry point.
   stands outside the door, the slip is stamped, then the toast.
 - A seated prisoner is dismounted to the cell; the vehicle never moves.
 - Later: in-jail work that shortens the sentence (#127).
+
+## Jail work (#127)
+
+`LF_JailWork.c`: job spots in the cell (`LF_JailWorkAction`) take seconds off a serving prisoner's sentence through `LF_Jail.Credit`; the server owns the rules (serving, not busy, per-job cooldown). Pure rules in `LF_JailWorkRules`; test `jail/work`. No persistence change.

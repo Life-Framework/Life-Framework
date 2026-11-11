@@ -7111,31 +7111,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Clock on at the police station to arrest the suspect you made."
      Comment "Annex crime site sign crime_police, Next section."
     }
-    CustomStringTableItem "{0D72D045F1F4E803}" {
-     Id "LF-CharSel_Title"
-     Target_en_us "Civil Registry of Everon, Residents on File"
-     Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
-    }
-    CustomStringTableItem "{8B8EEE733934A3E5}" {
-     Id "LF-CharSel_Intro"
-     Target_en_us "Choose the resident you arrive as today."
-     Comment "Character pick instruction line. One button per character follows, each showing that character's name."
-    }
-    CustomStringTableItem "{502C5430AE70C609}" {
-     Id "LF-CharSel_New"
-     Target_en_us "Register a new resident"
-     Comment "Character pick button that opens registration form R-89 for another character on the same account."
-    }
-    CustomStringTableItem "{87EB7613EC87FB35}" {
-     Id "LF-CharSel_Refused"
-     Target_en_us "You cannot change who you are right now."
-     Comment "Notification when the server refuses a character pick: the slot does not exist, the player is alive in another body, or still on duty."
-    }
-    CustomStringTableItem "{D05A58380EB506C0}" {
-     Id "LF-Char_Error_Full"
-     Target_en_us "Every character slot on this account is taken."
-     Comment "Character creation refused because the account already holds the configured maximum number of characters."
-    }
     CustomStringTableItem "{AD999D02320AA8DB}" {
      Id "LF-PoliceApp_Action"
      Target_en_us "Apply to the police"
@@ -7395,6 +7370,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-SpawnHub_Pt_annex"
      Target_en_us "Test annex"
      Comment "Travel list row: annex."
+    }
+    CustomStringTableItem "{0D72D045F1F4E803}" {
+     Id "LF-CharSel_Title"
+     Target_en_us "Civil Registry of Everon, Residents on File"
+     Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
+    }
+    CustomStringTableItem "{8B8EEE733934A3E5}" {
+     Id "LF-CharSel_Intro"
+     Target_en_us "Choose the resident you arrive as today."
+     Comment "Character pick instruction line. One button per character follows, each showing that character's name."
+    }
+    CustomStringTableItem "{502C5430AE70C609}" {
+     Id "LF-CharSel_New"
+     Target_en_us "Register a new resident"
+     Comment "Character pick button that opens registration form R-89 for another character on the same account."
+    }
+    CustomStringTableItem "{87EB7613EC87FB35}" {
+     Id "LF-CharSel_Refused"
+     Target_en_us "You cannot change who you are right now."
+     Comment "Notification when the server refuses a character pick: the slot does not exist, the player is alive in another body, or still on duty."
+    }
+    CustomStringTableItem "{D05A58380EB506C0}" {
+     Id "LF-Char_Error_Full"
+     Target_en_us "Every character slot on this account is taken."
+     Comment "Character creation refused because the account already holds the configured maximum number of characters."
+    }
+    CustomStringTableItem "{950892F5D530ACC9}" {
+     Id "LF-JailWork_Scrub"
+     Target_en_us "Scrub the floor"
+     Comment "Action in the cell: scrub the floor to shorten the sentence."
+    }
+    CustomStringTableItem "{B2F316158144F2CB}" {
+     Id "LF-JailWork_Laundry"
+     Target_en_us "Sort the laundry"
+     Comment "Action in the cell: sort laundry to shorten the sentence."
+    }
+    CustomStringTableItem "{F9D02BE97AECAA25}" {
+     Id "LF-JailWork_Done"
+     Target_en_us "Job done. Time left: %1"
+     Comment "Toast after a jail job. %1 is the remaining sentence as m:ss."
+    }
+    CustomStringTableItem "{7AB47127A2E6C90C}" {
+     Id "LF-JailWork_NotPrisoner"
+     Target_en_us "Only a prisoner serving a sentence can work here."
+     Comment "Jail job refused: the player is not serving."
+    }
+    CustomStringTableItem "{9D3D515C89CBD67C}" {
+     Id "LF-JailWork_Busy"
+     Target_en_us "You are already working."
+     Comment "Jail job refused: a job is already running."
+    }
+    CustomStringTableItem "{C1C1BA78E72558F0}" {
+     Id "LF-JailWork_Cooldown"
+     Target_en_us "You need a rest. This job is free again in %1."
+     Comment "Jail job refused: cooldown. %1 is m:ss."
+    }
+    CustomStringTableItem "{04A2CD75730658F5}" {
+     Id "LF-JailWork_BadConfig"
+     Target_en_us "This job is not set up."
+     Comment "Jail job refused: no seconds configured."
     }
   }
  }
