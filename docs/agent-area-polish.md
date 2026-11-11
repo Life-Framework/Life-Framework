@@ -154,3 +154,7 @@ toolscli shots crop wide 900,0,380,140
   a pool machine, the call runs there and copies the folder back.
 - **Reviewer:** reads `contact.jpg` and the `problems:` list, and crops only when unsure.
 - **1280 wide png.** Look at the contact sheet before keeping the shots.
+
+## Props on counters, desks and tables
+
+`validate-prop-on-surface` (`tools/validation/`, logic in `tools/actions/prop-on-surface.mjs`) reads every DebugWorld layer and every prefab that places children, takes each mesh's `.xob` header bounds, and fails when a prop resting on a counter, desk, table, workbench or market stand (bottom within 0.5 m of the top, centre within 0.3 m of the footprint) hangs more than 0.1 m past an edge. It tests the plan view only, so a workbench's raised back does not matter. It cannot see a prop whose centre is more than 0.3 m off the surface, vertical placement against a surface with a raised back (a bench top is lower than its bounds), parenting through scripts, or the side a prop faces; look at those in the close-ups. It needs the base-game pak for bounds and prints SKIPPED without it. `prop-on-surface-selftest.mjs` proves the math on fixed bounds.

@@ -199,6 +199,6 @@ GenericEntity Shop_GeneralStore_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commerci
   }
  }
  Flags 0x403 0
- coords 179.85 1.04 244.3
+ coords 179.05 1.04 244.33
  angleY 0
 }

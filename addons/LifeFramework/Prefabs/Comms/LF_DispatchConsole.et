@@ -47,7 +47,7 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
      }
     }
    }
-   coords 0 0.63 0
+   coords -0.85 0.914 0.375
    angleY 90
   }
  }
