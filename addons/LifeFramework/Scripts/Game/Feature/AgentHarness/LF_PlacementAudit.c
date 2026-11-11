@@ -656,6 +656,28 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The entity a probe ray passes through (`ray ... <exclude>`): the one named `token`, or for an
+	//! unnamed entity `@<prefab base>:x,y,z`, the one of that prefab at that spot. Without this the
+	//! tool's ground probe stood on the collision of the very prop it was moving. Null when not found.
+	static IEntity FindExcluded(string token)
+	{
+		if (!token.StartsWith("@"))
+			return GetGame().GetWorld().FindEntityByName(token);
+
+		array<string> halves = {};
+		token.Substring(1, token.Length() - 1).Split(":", halves, true);
+		if (halves.Count() != 2)
+			return null;
+
+		array<string> xyz = {};
+		halves[1].Split(",", xyz, true);
+		if (xyz.Count() != 3)
+			return null;
+
+		return FindPlaced("", halves[0], Vector(xyz[0].ToFloat(), xyz[1].ToFloat(), xyz[2].ToFloat()));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static ref array<EntityID> s_aDoorIds;
 
 	protected static bool CollectDoor(IEntity entity)
@@ -783,7 +805,7 @@ class LF_PlacementAudit
 			{
 				IEntity rayExclude;
 				if (parts.Count() == 9)
-					rayExclude = GetGame().GetWorld().FindEntityByName(parts[8]);
+					rayExclude = FindExcluded(parts[8]);
 
 				if (parts.Count() >= 8)
 					rows.Insert(RayLine(parts[1], Vector(parts[2].ToFloat(), parts[3].ToFloat(), parts[4].ToFloat()), Vector(parts[5].ToFloat(), parts[6].ToFloat(), parts[7].ToFloat()), rayExclude));
