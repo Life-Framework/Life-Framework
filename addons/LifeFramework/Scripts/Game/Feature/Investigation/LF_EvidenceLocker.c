@@ -49,6 +49,8 @@ class LF_EvidenceLocker
 {
 	static const string FEATURE = "EvidenceLocker";
 	static const int MAX_ROWS = 500;
+	//! Kind of a row logged by a back room raid; the only kind kept without a crime report.
+	static const string KIND_BACKROOM = "backroom";
 
 	protected static ref array<ref LF_EvidenceLockerRow> s_aRows;
 	protected static int s_iNumber;
@@ -160,6 +162,34 @@ class LF_EvidenceLocker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: logs one stock line seized in a back room raid (#600). It has no crime report; the
+	//! row carries kind KIND_BACKROOM and the room's name as its place.
+	static LF_EvidenceLockerRow LogSeizure(string prefab, string place, string officerUid)
+	{
+		if (!Replication.IsServer())
+			return null;
+
+		LF_EvidenceLockerRow row = new LF_EvidenceLockerRow();
+		s_iNumber++;
+		row.m_iNumber = s_iNumber;
+		row.m_sKind = KIND_BACKROOM;
+		row.m_sOffence = "contraband";
+		row.m_sPlace = place;
+		row.m_sPrefab = prefab;
+		row.m_sOfficerUid = officerUid;
+
+		array<ref LF_EvidenceLockerRow> rows = Rows();
+		rows.Insert(row);
+		while (rows.Count() > MAX_ROWS)
+		{
+			rows.RemoveOrdered(0);
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("back room seizure #%1 logged: %2 from '%3'", row.m_iNumber, prefab, place));
+		return row;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: logs every stamped evidence bag the officer carries.
 	//! \return Bags logged.
 	static int LogCarried(IEntity officer)
@@ -238,7 +268,7 @@ class LF_EvidenceLocker
 
 		foreach (LF_EvidenceLockerRow record : records)
 		{
-			if (!record || record.m_iReport <= 0)
+			if (!record || (record.m_iReport <= 0 && record.m_sKind != KIND_BACKROOM))
 			{
 				LF_Debug.Warn(FEATURE, "load skipped a locker row with no report");
 				continue;

@@ -45,7 +45,7 @@ looked at yet.
 | Clerk desk and chair | `Desk_01_short.et`, `Chair_02_green.et` | final | vanilla furniture | (already a desk and chair) | Spawn square | none |
 | Fence yard props | `Workbench_01.et`, `BoxWooden_01.et`, `Crate_01_green.et`, `BarrelMetal_01_blue.et`, `Tire_M151A2_pile.et`, `EL_S105_beige.et` | final | vanilla props and a parked Skoda | (already what they are); no tarp prefab found, so none placed. Drill, charge and keycard stay placeholders (rows above) | Fence yard #276 | none |
 | Cash van box | `LF_CashVanBox.et` | placeholder | vanilla `Chest_01` (dark steel trunk) at 1.4 scale, on the van's rear step | a locked steel cash-in-transit box | Cash van #274 | low |
-| ATM (two, on the bank front) | `ATM_Debug`, `ATM_Debug_2` (DebugWorld `ATM.layer`) | placeholder | vanilla post-office teller counter `CounterPostOffice_01_window` against the bank wall | a 1989 wall-mounted cash machine or a teller point with a glass screen (none in the base game) | Bank, ATM | low |
+| Bank teller window (#590, replaces the ATM) | `LF_BankTeller.et`, `Bank_Teller`, `Bank_Counter_West/East` (DebugWorld `ATM.layer`) | placeholder | vanilla `Npc_Default_01` clerk standing behind the vanilla post-office counter `CounterPostOffice_01_window`; the old ATM entity stays hidden (no mesh) inside the bank | a 1989 bank teller cage with brass grille | Bank, ATM | low |
 | Money bag | `LF_MoneyBag.et` | placeholder | vanilla `SackUniversal_01` sack mesh at 0.55 scale | a canvas cash bag with a drawstring | Bank, cash van #273 #274 | low |
 | Hospital bed | `LF_HospitalBed.et` | final | vanilla `BedMedical_01` | (already a medical bed) | Hospital, area 7 | none |
 | Ambulance | `LF_M997_Ambulance.et` | final | vanilla `M997_maxi_ambulance` | (already an ambulance) | Hospital, area 7 | none |
@@ -71,5 +71,8 @@ looked at yet.
 | Car lot price board | `Sign_LotPrice_*` (`LF_Sign_Chalkboard`) | final | vanilla `ChalkBoard_01` | (a price board) | Car lot, area 4 | none |
 | Lot display cars | `Lot_Display_*`, `Roadmap_Vehicle_S105` | final | the lot offers base vehicles | (display cars) | Car lot, area 4 | none |
 | Quarry rock walls and stones | `GraniteCliff_01..03.xob`, `Granite_Cluster_Large_01_V2`, `GraniteStone_01/02_V2` | final | base-game granite cliffs form a three-sided pit; small stones scattered on the floor | (same) | Quarry polish, area 11 | none |
+| Cabbage item | `Items/Food/Cabbage.et` | missing | inherits the `CabbageCrop_01` vegetation `Tree` prefab, which has no mesh object, so its inventory preview is empty (#612) | a loose cabbage head `.xob` with a normal item prefab | Farm #612 | medium |
+
+Inventory previews (#612): `tools\cli shots previews` draws every mod item's inventory preview on two contact sheets. The preview camera ignores a prefab's `scale`, so scale a big source mesh down with `CameraDistanceToItem`, not `scale`. Several items share the ID-card placeholder mesh (evidence bag and marker, keycard, lockpick, house key, vehicle key).
 | Vehicle lock sound | `SOUND_PICK_UP` (base inventory click, played on the user at the car) | placeholder | no door-latch event found offline; swap `LF_VehicleLockComponent.LOCK_SOUND` for a real latch or chirp event | (none) | Car polish (lock) | needs a real latch/chirp event |
 | Garage counter | `CounterShop_01.xob` on `Roadmap_Garage` | final | gives the garage use point a visible, targetable body beside the doors | (same as lot desk) | Garage fix | none |

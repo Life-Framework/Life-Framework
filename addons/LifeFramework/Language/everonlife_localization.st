@@ -3641,8 +3641,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{363F3934916EA0EA}" {
      Id "LF-Sign_Atm_Title"
-     Target_en_us "ATM"
-     Comment "Title of the sign at the ATM on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
+     Target_en_us "Teller"
+     Comment "Title of the sign at the teller window on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
     }
     CustomStringTableItem "{CCA971294A309363}" {
      Id "LF-Sign_Atm_What"
@@ -3651,7 +3651,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
-     Target_en_us "ATM, then Deposit or Withdraw."
+     Target_en_us "Talk to the teller, then Deposit or Withdraw."
      Comment "Sign card for the ATM on the bank's front, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{0CD84D83AF49CFAA}" {
@@ -6726,6 +6726,106 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take bank robbery kit"
      Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
     }
+    CustomStringTableItem "{9EB58969BEDD9423}" {
+     Id "LF-Farm_Title"
+     Target_en_us "Farm"
+     Comment "Toast title for a farm plot refusal."
+    }
+    CustomStringTableItem "{E6E02AC329CA9010}" {
+     Id "LF-Farm_CabbageSeeds"
+     Target_en_us "Cabbage seeds"
+     Comment "Item name of the cabbage seed packet."
+    }
+    CustomStringTableItem "{4BBDEB5764438BAB}" {
+     Id "LF-Farm_CabbageSeedsDesc"
+     Target_en_us "A paper packet of cabbage seeds. Plant it in an empty dirt plot at the farm."
+     Comment "Item description of the cabbage seed packet."
+    }
+    CustomStringTableItem "{FFEB328217318791}" {
+     Id "LF-Farm_TakeSeeds"
+     Target_en_us "Take %1"
+     Comment "Prompt on the seed crate at the farm. %1 is the item name, e.g. Take Cabbage seeds."
+    }
+    CustomStringTableItem "{35C14DE34CACED8B}" {
+     Id "LF-Farm_Plant"
+     Target_en_us "Plant %1"
+     Comment "Prompt on an empty farm plot. %1 is the seed packet name, e.g. Plant Cabbage seeds."
+    }
+    CustomStringTableItem "{EBE3EB8BC96D9CCE}" {
+     Id "LF-Farm_Harvest"
+     Target_en_us "Harvest %1"
+     Comment "Prompt on a ripe farm plot. %1 is the crop item name, e.g. Harvest Cabbage."
+    }
+    CustomStringTableItem "{EF0CF71534FF8BB4}" {
+     Id "LF-Farm_Growing"
+     Target_en_us "Growing: %1"
+     Comment "Prompt on a farm plot that is not ripe yet. %1 is the stage name (sprouts, half grown)."
+    }
+    CustomStringTableItem "{E66891B20DA6676E}" {
+     Id "LF-Farm_Stage_Sprout"
+     Target_en_us "sprouts"
+     Comment "Growth stage name shown in the plot prompt: just planted."
+    }
+    CustomStringTableItem "{8ABD1690FC2C6972}" {
+     Id "LF-Farm_Stage_Growing"
+     Target_en_us "half grown"
+     Comment "Growth stage name shown in the plot prompt: halfway."
+    }
+    CustomStringTableItem "{760335DE2D0C4EC2}" {
+     Id "LF-Farm_Stage_Ripe"
+     Target_en_us "ripe"
+     Comment "Growth stage name: ready to harvest."
+    }
+    CustomStringTableItem "{AAC69C040DF1C8E4}" {
+     Id "LF-Farm_NeedSeeds"
+     Target_en_us "Needs a seed packet"
+     Comment "Why an empty plot cannot be planted: the player carries no seed packet."
+    }
+    CustomStringTableItem "{7BCEF6A37309AB1F}" {
+     Id "LF-Farm_NotRipe"
+     Target_en_us "Not ripe yet"
+     Comment "Why a growing plot cannot be harvested."
+    }
+    CustomStringTableItem "{540BF19A61EAB5E6}" {
+     Id "LF-Farm_NotEmpty"
+     Target_en_us "Something already grows here"
+     Comment "Refusal toast: the plot is already planted."
+    }
+    CustomStringTableItem "{80208C45C60900DC}" {
+     Id "LF-Farm_TooFar"
+     Target_en_us "Stand next to the plot"
+     Comment "Refusal toast: the player is too far from the plot."
+    }
+    CustomStringTableItem "{67049824C323938A}" {
+     Id "LF-Farm_PocketsFull"
+     Target_en_us "No room for the harvest"
+     Comment "Refusal toast: the harvest could not be given to the player."
+    }
+    CustomStringTableItem "{F8BA23B4D29A0F32}" {
+     Id "LF-Sign_FarmPlots_Title"
+     Target_en_us "Vegetable plots"
+     Comment "Title of the info board beside the farm plots."
+    }
+    CustomStringTableItem "{8FCE26C6B1BA464C}" {
+     Id "LF-Sign_FarmPlots_What"
+     Target_en_us "Grow your own cabbages in the dirt plots."
+     Comment "Info board at the farm plots, What section."
+    }
+    CustomStringTableItem "{122025DCEE6F8713}" {
+     Id "LF-Sign_FarmPlots_How"
+     Target_en_us "Take Cabbage seeds from the crate. Plant Cabbage seeds in an empty plot. When the cabbages are ripe, Harvest Cabbage."
+     Comment "Info board at the farm plots, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{7727C787985BD3E9}" {
+     Id "LF-Sign_FarmPlots_Rules"
+     Target_en_us "Sprouts, then half grown, then ripe: about two minutes. A ripe plot waits for you. One packet gives three cabbages. The crate refills every two minutes."
+     Comment "Info board at the farm plots, Rules section."
+    }
+    CustomStringTableItem "{3018FA71B28E00A7}" {
+     Id "LF-Sign_FarmPlots_Next"
+     Target_en_us "Sell cabbages at the general store on the main street."
+     Comment "Info board at the farm plots, Next section: where the player goes after this place."
+    }
     CustomStringTableItem "{9BE7A1D673564E1C}" {
      Id "LF-Dispatch_TestPolice"
      Target_en_us "Test police call"
@@ -6911,105 +7011,40 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Test annex"
      Comment "Travel list row: annex."
     }
-    CustomStringTableItem "{9EB58969BEDD9423}" {
-     Id "LF-Farm_Title"
-     Target_en_us "Farm"
-     Comment "Toast title for a farm plot refusal."
+    CustomStringTableItem "{7B1E5A0C00000001}" {
+     Id "LF-Shop_RefuseClosed"
+     Target_en_us "The back room is shut. Police have been through it."
+     Comment "Shop refusal: a raided back room is shut for a while (#600)."
     }
-    CustomStringTableItem "{E6E02AC329CA9010}" {
-     Id "LF-Farm_CabbageSeeds"
-     Target_en_us "Cabbage seeds"
-     Comment "Item name of the cabbage seed packet."
+    CustomStringTableItem "{7B1E5A0C00000002}" {
+     Id "LF-BackRoom_Search"
+     Target_en_us "Search back room"
+     Comment "Officer action on a back room: search it and seize its stock as evidence (#600)."
     }
-    CustomStringTableItem "{4BBDEB5764438BAB}" {
-     Id "LF-Farm_CabbageSeedsDesc"
-     Target_en_us "A paper packet of cabbage seeds. Plant it in an empty dirt plot at the farm."
-     Comment "Item description of the cabbage seed packet."
+    CustomStringTableItem "{7B1E5A0C00000003}" {
+     Id "LF-BackRoom_SearchDesc"
+     Target_en_us "Seize the stock as evidence"
+     Comment "Description of the back room search action (#600)."
     }
-    CustomStringTableItem "{FFEB328217318791}" {
-     Id "LF-Farm_TakeSeeds"
-     Target_en_us "Take %1"
-     Comment "Prompt on the seed crate at the farm. %1 is the item name, e.g. Take Cabbage seeds."
+    CustomStringTableItem "{7B1E5A0C00000004}" {
+     Id "LF-BackRoom_Seized"
+     Target_en_us "Stock seized as evidence"
+     Comment "Toast: the back room search seized its stock (#600)."
     }
-    CustomStringTableItem "{35C14DE34CACED8B}" {
-     Id "LF-Farm_Plant"
-     Target_en_us "Plant %1"
-     Comment "Prompt on an empty farm plot. %1 is the seed packet name, e.g. Plant Cabbage seeds."
+    CustomStringTableItem "{7B1E5A0C00000005}" {
+     Id "LF-BackRoom_AlreadyShut"
+     Target_en_us "Already searched. The room is shut."
+     Comment "Toast: the back room was raided recently (#600)."
     }
-    CustomStringTableItem "{EBE3EB8BC96D9CCE}" {
-     Id "LF-Farm_Harvest"
-     Target_en_us "Harvest %1"
-     Comment "Prompt on a ripe farm plot. %1 is the crop item name, e.g. Harvest Cabbage."
+    CustomStringTableItem "{4B1E7A2C9D3F4081}" {
+     Id "LF-Bank_Teller_Talk"
+     Target_en_us "Talk to the teller"
+     Comment "Prompt on the bank teller at the counter window. Opens the deposit and withdraw screen."
     }
-    CustomStringTableItem "{EF0CF71534FF8BB4}" {
-     Id "LF-Farm_Growing"
-     Target_en_us "Growing: %1"
-     Comment "Prompt on a farm plot that is not ripe yet. %1 is the stage name (sprouts, half grown)."
-    }
-    CustomStringTableItem "{E66891B20DA6676E}" {
-     Id "LF-Farm_Stage_Sprout"
-     Target_en_us "sprouts"
-     Comment "Growth stage name shown in the plot prompt: just planted."
-    }
-    CustomStringTableItem "{8ABD1690FC2C6972}" {
-     Id "LF-Farm_Stage_Growing"
-     Target_en_us "half grown"
-     Comment "Growth stage name shown in the plot prompt: halfway."
-    }
-    CustomStringTableItem "{760335DE2D0C4EC2}" {
-     Id "LF-Farm_Stage_Ripe"
-     Target_en_us "ripe"
-     Comment "Growth stage name: ready to harvest."
-    }
-    CustomStringTableItem "{AAC69C040DF1C8E4}" {
-     Id "LF-Farm_NeedSeeds"
-     Target_en_us "Needs a seed packet"
-     Comment "Why an empty plot cannot be planted: the player carries no seed packet."
-    }
-    CustomStringTableItem "{7BCEF6A37309AB1F}" {
-     Id "LF-Farm_NotRipe"
-     Target_en_us "Not ripe yet"
-     Comment "Why a growing plot cannot be harvested."
-    }
-    CustomStringTableItem "{540BF19A61EAB5E6}" {
-     Id "LF-Farm_NotEmpty"
-     Target_en_us "Something already grows here"
-     Comment "Refusal toast: the plot is already planted."
-    }
-    CustomStringTableItem "{80208C45C60900DC}" {
-     Id "LF-Farm_TooFar"
-     Target_en_us "Stand next to the plot"
-     Comment "Refusal toast: the player is too far from the plot."
-    }
-    CustomStringTableItem "{67049824C323938A}" {
-     Id "LF-Farm_PocketsFull"
-     Target_en_us "No room for the harvest"
-     Comment "Refusal toast: the harvest could not be given to the player."
-    }
-    CustomStringTableItem "{F8BA23B4D29A0F32}" {
-     Id "LF-Sign_FarmPlots_Title"
-     Target_en_us "Vegetable plots"
-     Comment "Title of the info board beside the farm plots."
-    }
-    CustomStringTableItem "{8FCE26C6B1BA464C}" {
-     Id "LF-Sign_FarmPlots_What"
-     Target_en_us "Grow your own cabbages in the dirt plots."
-     Comment "Info board at the farm plots, What section."
-    }
-    CustomStringTableItem "{122025DCEE6F8713}" {
-     Id "LF-Sign_FarmPlots_How"
-     Target_en_us "Take Cabbage seeds from the crate. Plant Cabbage seeds in an empty plot. When the cabbages are ripe, Harvest Cabbage."
-     Comment "Info board at the farm plots, How section. Capitalized phrases are the exact action names the player sees."
-    }
-    CustomStringTableItem "{7727C787985BD3E9}" {
-     Id "LF-Sign_FarmPlots_Rules"
-     Target_en_us "Sprouts, then half grown, then ripe: about two minutes. A ripe plot waits for you. One packet gives three cabbages. The crate refills every two minutes."
-     Comment "Info board at the farm plots, Rules section."
-    }
-    CustomStringTableItem "{3018FA71B28E00A7}" {
-     Id "LF-Sign_FarmPlots_Next"
-     Target_en_us "Sell cabbages at the general store on the main street."
-     Comment "Info board at the farm plots, Next section: where the player goes after this place."
+    CustomStringTableItem "{7C20D5E8A1B94F36}" {
+     Id "LF-Bank_Teller_TalkDesc"
+     Target_en_us "Deposit or withdraw cash at the counter"
+     Comment "Description of the bank teller prompt."
     }
   }
  }

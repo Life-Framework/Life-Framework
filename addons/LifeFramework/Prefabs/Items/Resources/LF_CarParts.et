@@ -18,9 +18,10 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
     }
     CustomAttributes {
      PreviewRenderAttributes "{59BCA073459D626C}" {
-      CameraOrbitAngles 90 0 90
-      CameraDistanceToItem 0.8
-      CameraOffset 0 0 0
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 10
+      FOV 10
      }
     }
    }
