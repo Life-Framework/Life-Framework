@@ -1,3 +1,4 @@
+// red-proof (ladder line, 2026-11-12): the TopRank assertion fails when LF_Police.conf lists a third rank (expected 1, got 2).
 // red-proof: observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_PoliceRankPermissions`
 // and LF_Police.conf set to m_iArrestMinRank 1 (the old senior-only rule):
 // [LFTEST] FAIL police/rank-permissions
@@ -25,6 +26,7 @@ class LF_Test_PoliceRankPermissions : LF_Test
 		ctx.Equal(LF_PoliceRanks.PATROL, LF_PoliceConfig.ArrestMinRank(), "the flagship lets every officer arrest");
 		ctx.Equal(LF_PoliceRanks.PATROL, LF_PoliceConfig.EscortMinRank(), "the flagship lets every officer escort");
 		ctx.Equal(1000, LF_PoliceConfig.PatrolFineCap(), "the patrol fine cap comes from the config");
+		ctx.Equal(LF_PoliceRanks.SENIOR, LF_PoliceRanks.TopRank(), "senior is still the top of the shipped ladder");
 
 		// The framework range: a server may still keep arrest for senior officers.
 		ctx.False(LF_PoliceRanks.RankMeets(LF_PoliceRanks.PATROL, LF_PoliceRanks.SENIOR), "a senior-only rule refuses a patrol officer");
