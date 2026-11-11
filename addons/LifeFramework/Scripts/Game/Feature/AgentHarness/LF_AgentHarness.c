@@ -925,6 +925,8 @@ class LF_AgentHarness
 	protected static vector s_vShotAngles;
 	protected static bool s_bShotPose;
 	protected static string s_sHeldAction;
+	protected static float s_fHeldValue;
+	protected static int s_iHeldUntil;
 	protected static string s_sWantedClass;
 	protected static string s_sWantedName;
 	protected static IEntity s_pFoundEntity;
@@ -956,6 +958,7 @@ class LF_AgentHarness
 		if (s_bLoop)
 		{
 			s_bLoop = false;
+			GetGame().GetCallqueue().Remove(HoldInput);
 			s_iEnsureTries = 0;
 			s_iCaptureId = 0;
 			s_bShotPose = false;
@@ -987,6 +990,8 @@ class LF_AgentHarness
 		s_bLoop = true;
 		s_pLoopMode = mode;
 		GetGame().GetCallqueue().CallLater(Poll, 400, true);
+		// Registered before any screen's own per-frame poll, so it runs first each frame (#199).
+		GetGame().GetCallqueue().CallLater(HoldInput, 0, true);
 		LF_Debug.Log(FEATURE, "poll started");
 	}
 
@@ -2545,21 +2550,33 @@ class LF_AgentHarness
 		}
 
 		s_sHeldAction = cmd.Arg1;
+		s_fHeldValue = value;
+		s_iHeldUntil = System.GetTickCount() + 300;
 		input.SetActionValue(cmd.Arg1, value);
-		GetGame().GetCallqueue().CallLater(ClearInput, 80, false);
 		LF_Debug.Log(FEATURE, string.Format("input %1", cmd.Arg1));
 		WriteResult(cmd.Id, "ok", cmd.Arg1);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void ClearInput()
+	protected static void HoldInput()
 	{
 		if (s_sHeldAction == "")
 			return;
 
 		InputManager input = GetGame().GetInputManager();
-		if (input)
-			input.SetActionValue(s_sHeldAction, 0);
+		if (!input)
+			return;
+
+		// The engine resets an injected value at the start of each frame, so a single
+		// SetActionValue never reaches a screen that polls later in the frame. Re-assert it
+		// ahead of every poll until the hold ends, as a real key held a few frames would be.
+		if (System.GetTickCount() < s_iHeldUntil)
+		{
+			input.SetActionValue(s_sHeldAction, s_fHeldValue);
+			return;
+		}
+
+		input.SetActionValue(s_sHeldAction, 0);
 		s_sHeldAction = "";
 	}
 
