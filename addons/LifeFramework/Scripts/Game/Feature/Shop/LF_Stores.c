@@ -637,14 +637,30 @@ class LF_Stores
 }
 
 //------------------------------------------------------------------------------------------------
-//! The till of a physical store (#202): "Pay for goods" on the counter. The server does all of it
-//! (LF_Stores.Pay); a client only asks, so the action performs on every machine and acts on the
-//! server alone.
+//! The till of a physical store (#202, #582): "Pay for goods" on the cash register itself. The
+//! register is its own entity on the counter and names its store by key; an action put straight on a
+//! store entity still works. The server does all of it (LF_Stores.Pay) and checks the payer stands at
+//! the register; a client only asks, so the action performs on every machine and acts on the server alone.
 class LF_StoreTillAction : ScriptedUserAction
 {
+	[Attribute("", UIWidgets.EditBox, "Key of the store this register belongs to (LF_StoreComponent.m_sStoreKey). Empty: the store component on this same entity")]
+	protected string m_sStoreKey;
+
+	//------------------------------------------------------------------------------------------------
+	protected LF_StoreComponent ResolveStore(IEntity owner)
+	{
+		if (!m_sStoreKey.IsEmpty())
+			return LF_Stores.Find(m_sStoreKey);
+
+		return LF_Component<LF_StoreComponent>.Find(owner);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
+		if (!m_sStoreKey.IsEmpty())
+			return true;
+
 		return LF_Component<LF_StoreComponent>.Find(GetOwner()) != null;
 	}
 
@@ -654,7 +670,17 @@ class LF_StoreTillAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		LF_StoreComponent store = LF_Component<LF_StoreComponent>.Find(pOwnerEntity);
+		LF_StoreComponent store = ResolveStore(pOwnerEntity);
+		if (store && pOwnerEntity && pUserEntity)
+		{
+			float distance = vector.Distance(pOwnerEntity.GetOrigin(), pUserEntity.GetOrigin());
+			if (!LF_StoreRules.TillInReach(distance))
+			{
+				LF_Debug.Warn(LF_Stores.FEATURE, string.Format("store %1: till refused %2, %3 m from the register", store.GetStoreKey(), LF_Stores.ThiefKey(pUserEntity), distance));
+				return;
+			}
+		}
+
 		int paid;
 		LF_EStorePay result = LF_Stores.Pay(store, pUserEntity, paid);
 		string key = LF_StoreRules.PayKey(result);

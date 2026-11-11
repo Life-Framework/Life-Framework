@@ -36,7 +36,12 @@ async function runStoreProof() {
   const takeA = on(1, { verb: "shelf" }, 10000);
   const takeB = on(2, { verb: "shelf" }, 10000);
   wait(1500);
-  const pay = on(1, { verb: "use", className: "LF_StoreTillAction", entityName: "Shop_GeneralStore_Debug" }, 10000);
+  // #582: pay at the cash register itself (its own entity on the counter), not at the counter.
+  on(1, { verb: "stand", entityName: "Shop_GeneralStore_Till", side: "s" });
+  wait(1500);
+  on(1, { verb: "look" });
+  on(1, { verb: "capture", mode: "ui", name: "m2_582_register_client1" }, 25000);
+  const pay = on(1, { verb: "use", className: "LF_StoreTillAction", entityName: "Shop_GeneralStore_Till" }, 10000);
   wait(1500);
   on(1, { verb: "capture", mode: "ui", name: "m2_202_till_client1" }, 25000);
   const paidLines = count(new RegExp(`${uidA}[^\\n]* paid \\d+ for 1 item`, "g"));

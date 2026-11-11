@@ -94,6 +94,12 @@ class LF_SignComponent : ScriptComponent
 	[Attribute("0", UIWidgets.CheckBox, "The face is the first child entity's mesh (a plate on a pole), not the owner's")]
 	protected bool m_bFaceOnChild;
 
+	[Attribute("", UIWidgets.EditBox, "Price board (#540): shop id of the vehicle lot whose price list this sign reads. Empty: a plain sign. The title is then a template with %1 (car name) and %2 (price)")]
+	protected string m_sPriceLotShopId;
+
+	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Price board: the lot offer's vehicle prefab (LF_VehicleOffer.m_sPrefab) whose price is shown", "et")]
+	protected ResourceName m_PriceVehicle;
+
 	protected ref LF_SignDef m_Sign;
 	protected bool m_bResolved;
 
@@ -137,8 +143,38 @@ class LF_SignComponent : ScriptComponent
 			return null;
 		}
 
+		if (!m_sPriceLotShopId.IsEmpty())
+		{
+			sign = PricedSign(sign);
+			if (!sign)
+				return null;
+		}
+
 		m_Sign = sign;
 		return m_Sign;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A price board's sign: the config sign with its title filled from the lot's price list, so a
+	//! changed price in the lot's config changes the board (#540). Null, with an error, when the lot
+	//! or the offer is missing; the board then shows nothing rather than a stale price.
+	protected LF_SignDef PricedSign(LF_SignDef sign)
+	{
+		LF_VehicleLotComponent lot = LF_VehicleLotComponent.FindLot(m_sPriceLotShopId);
+		if (!lot)
+		{
+			LF_Debug.Error("Signs", string.Format("price board '%1' finds no vehicle lot '%2'", m_sSignId, m_sPriceLotShopId));
+			return null;
+		}
+
+		LF_VehicleOffer offer = lot.GetOffer(m_PriceVehicle);
+		if (!offer)
+		{
+			LF_Debug.Error("Signs", string.Format("price board '%1': lot '%2' has no offer for %3", m_sSignId, m_sPriceLotShopId, m_PriceVehicle));
+			return null;
+		}
+
+		return LF_SignCatalog.WithTitle(sign, LF_SignCatalog.PricedTitle(sign.m_sTitle, offer.GetNameKey(), offer.GetPrice()));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -46,8 +46,16 @@ class LF_Test_StoreRules : LF_Test
 		ctx.False(LF_StoreRules.RestockDue(999999, 0, 0), "a zero interval never restocks");
 
 		// The till total ignores a free or broken price.
+		int paidNone;
 		array<int> prices = {10, 25, 0, -5, 5};
 		ctx.Equal(40, LF_StoreRules.Total(prices), "the total counts only real prices");
+
+		// The server pays only a customer standing at the register (#582).
+		ctx.True(LF_StoreRules.TillInReach(1.2), "a customer at the register pays");
+		ctx.True(LF_StoreRules.TillInReach(LF_StoreRules.TILL_REACH), "the edge of the reach still pays");
+		ctx.False(LF_StoreRules.TillInReach(LF_StoreRules.TILL_REACH + 0.5), "a payer across the shop is refused");
+		ctx.False(LF_StoreRules.TillInReach(-1), "a nonsense distance is refused");
+		ctx.Equal(LF_EStorePay.NO_STORE, LF_Stores.Pay(null, null, paidNone), "a register with no store takes nothing");
 
 		ctx.True(LF_StoreRules.PayKey(LF_EStorePay.PAID) != "", "a payment has a toast");
 		ctx.True(LF_StoreRules.PayKey(LF_EStorePay.NOT_ENOUGH_CASH) != "", "a short purse has a toast");

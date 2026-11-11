@@ -18,6 +18,17 @@ class LF_VehicleOffer
 	protected string m_sNameKey;
 
 	//------------------------------------------------------------------------------------------------
+	//! Test and setup seam: an offer built in script has no attributes to fill.
+	static LF_VehicleOffer Make(ResourceName prefab, int price, string nameKey)
+	{
+		LF_VehicleOffer offer = new LF_VehicleOffer();
+		offer.m_sPrefab = prefab;
+		offer.m_iPrice = price;
+		offer.m_sNameKey = nameKey;
+		return offer;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	ResourceName GetPrefab()
 	{
 		return m_sPrefab;
@@ -66,10 +77,72 @@ class LF_VehicleLotComponent : ScriptComponent
 	[Attribute("", UIWidgets.Object, desc: "Vehicles for sale")]
 	protected ref array<ref LF_VehicleOffer> m_aOffers;
 
+	//! Every lot in the world, on every machine, so a price board can read its lot's price list (#540).
+	protected static ref array<LF_VehicleLotComponent> s_aLots;
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn The lot with this shop id, or null.
+	static LF_VehicleLotComponent FindLot(string shopId)
+	{
+		if (!s_aLots)
+			return null;
+
+		foreach (LF_VehicleLotComponent lot : s_aLots)
+		{
+			if (lot && lot.m_sShopId == shopId)
+				return lot;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn The offer for a vehicle prefab among these offers, or null. Pure; tests drive it.
+	static LF_VehicleOffer OfferIn(array<ref LF_VehicleOffer> offers, ResourceName prefab)
+	{
+		if (!offers)
+			return null;
+
+		string wanted = prefab;
+		foreach (LF_VehicleOffer offer : offers)
+		{
+			if (!offer)
+				continue;
+
+			string offerPrefab = offer.GetPrefab();
+			if (offerPrefab == wanted)
+				return offer;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn The offer for a vehicle prefab on this lot, or null.
+	LF_VehicleOffer GetOffer(ResourceName prefab)
+	{
+		return OfferIn(m_aOffers, prefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		if (s_aLots)
+			s_aLots.RemoveItem(this);
+
+		super.OnDelete(owner);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
 		super.OnPostInit(owner);
+
+		if (!s_aLots)
+			s_aLots = {};
+
+		if (s_aLots.Find(this) == -1)
+			s_aLots.Insert(this);
 
 		if (m_sShopId.IsEmpty())
 			LF_Debug.Error("Vehicle", "lot has no shop id");
@@ -174,20 +247,6 @@ class LF_VehicleLotComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected LF_VehicleOffer FindOffer(ResourceName prefab)
 	{
-		if (!m_aOffers)
-			return null;
-
-		string wanted = prefab;
-		foreach (LF_VehicleOffer offer : m_aOffers)
-		{
-			if (!offer)
-				continue;
-
-			string offerPrefab = offer.GetPrefab();
-			if (offerPrefab == wanted)
-				return offer;
-		}
-
-		return null;
+		return OfferIn(m_aOffers, prefab);
 	}
 }
