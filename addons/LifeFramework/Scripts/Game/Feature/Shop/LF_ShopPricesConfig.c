@@ -252,8 +252,11 @@ class LF_ShopPricesConfig
 };
 
 //------------------------------------------------------------------------------------------------
-//! One priced class of items. Matches by prefab-path substring when m_sFind is set, otherwise by
-//! arsenal type/mode. An empty m_sFind plus the default type 0 and DEFAULT mode prices everything.
+//! One priced class of items. Matches one prefab by GUID when m_Prefab is set; else by prefab-path
+//! substring when m_sFind is set; else by arsenal type/mode. An empty m_Prefab and m_sFind plus the
+//! default type 0 and DEFAULT mode prices everything. A rule for one prefab uses m_Prefab: the GUID
+//! survives a move into the pack, the path text does not. m_sFind is for folders and name families,
+//! and a resource move must update it.
 //------------------------------------------------------------------------------------------------
 [BaseContainerProps()]
 class LF_ShopPriceRule
@@ -265,6 +268,10 @@ class LF_ShopPriceRule
 	//! Arsenal mode this rule applies to. DEFAULT matches any mode.
 	[Attribute("2", UIWidgets.Auto, desc: "Arsenal item mode; DEFAULT matches any mode")]
 	SCR_EArsenalItemMode m_eItemMode;
+
+	//! One prefab, matched by GUID (LF_Utils.SamePrefab). Wins over m_sFind and type/mode.
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "One prefab, matched by GUID; wins over the path substring and type/mode", "et")]
+	ResourceName m_Prefab;
 
 	//! Substring to match against the prefab path. Blank matches the whole type/mode.
 	[Attribute("", UIWidgets.Auto, desc: "Substring of the prefab path; blank matches the whole type/mode")]

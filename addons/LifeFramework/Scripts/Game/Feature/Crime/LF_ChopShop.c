@@ -163,7 +163,7 @@ class LF_ChopShopConfig
 
 		foreach (LF_ChopValue entry : config.m_aValues)
 		{
-			if (entry && entry.m_Prefab == prefabName)
+			if (entry && LF_Utils.SamePrefab(entry.m_Prefab, prefabName))
 				return entry.m_iValue;
 		}
 

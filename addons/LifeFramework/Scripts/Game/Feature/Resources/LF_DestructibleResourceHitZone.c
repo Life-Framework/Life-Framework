@@ -55,7 +55,7 @@ class LF_DestructibleResourceHitZone : SCR_HitZone
 		ResourceName currentTool = LF_Utils.GetPrefabName(damageContext.damageSource);
 		foreach (LF_ResourceDestructionTool tool : settings.m_aTools)
 		{
-			if (tool && LF_OreNodeComponent.SameResource(tool.m_rTool, currentTool))
+			if (tool && LF_Utils.SamePrefab(tool.m_rTool, currentTool))
 				return tool.m_fHitDamage;
 		}
 

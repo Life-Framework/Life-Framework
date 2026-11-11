@@ -97,7 +97,7 @@ class LF_ChainSearch
 
 			foreach (LF_ProcessingOutput output : last.m_aOutputs)
 			{
-				if (output && output.m_OutputPrefab == prefab)
+				if (output && LF_Utils.SamePrefab(output.m_OutputPrefab, prefab))
 				{
 					bulk = Math.Max(chain.m_iBulk, 1);
 					return true;

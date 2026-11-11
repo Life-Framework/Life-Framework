@@ -235,7 +235,7 @@ class LF_Contraband
 		if (prefab.IsEmpty())
 			return false;
 
-		return prefab == ITEM;
+		return LF_Utils.SamePrefab(prefab, ITEM);
 	}
 
 	//------------------------------------------------------------------------------------------------

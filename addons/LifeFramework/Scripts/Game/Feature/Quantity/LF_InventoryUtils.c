@@ -206,7 +206,7 @@ modded class LF_InventoryUtils
 	//------------------------------------------------------------------------------------------------
 	static int AmountOfCarried(IEntity item, ResourceName prefab, array<IEntity> alreadyFound)
 	{
-		if (!item || LF_Utils.GetPrefabName(item) != prefab)
+		if (!item || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(item), prefab))
 			return 0;
 
 		if (alreadyFound)
@@ -269,7 +269,7 @@ modded class LF_InventoryUtils
 	//------------------------------------------------------------------------------------------------
 	static int ConsumeOneCarried(CharacterControllerComponent controller, IEntity item, ResourceName prefab, int remainingAmount)
 	{
-		if (!item || remainingAmount <= 0 || LF_Utils.GetPrefabName(item) != prefab)
+		if (!item || remainingAmount <= 0 || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(item), prefab))
 			return remainingAmount;
 
 		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(item);

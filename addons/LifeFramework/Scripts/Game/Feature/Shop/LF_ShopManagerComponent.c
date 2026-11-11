@@ -30,6 +30,7 @@ class LF_ShopManagerComponent : GameComponent
 
 	protected ref LF_ShopPricesConfig m_Config;
 	protected ref array<ref LF_ShopCatalogItem> m_aCatalog;
+	protected ref map<string, ref LF_ShopCatalogItem> m_mCatalogByGuid;
 	protected bool m_bBuilt;
 
 	protected static LF_ShopManagerComponent s_Instance;
@@ -60,22 +61,18 @@ class LF_ShopManagerComponent : GameComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Finds one item in the priced catalog.
-	//! \param[in] prefab Prefab path of the item.
+	//! Finds one item in the priced catalog, by GUID (LF_Utils.PrefabGuid), so a name from before a
+	//! resource move finds the same row. One map lookup: the catalog holds over a thousand prefabs
+	//! and the build checks every new one against it.
+	//! \param[in] prefab Prefab of the item.
 	//! \return The catalog item, or null when the prefab is not catalogued.
 	LF_ShopCatalogItem GetItem(ResourceName prefab)
 	{
 		EnsureBuilt();
-		if (!m_aCatalog || prefab.IsEmpty())
+		if (!m_mCatalogByGuid || prefab.IsEmpty())
 			return null;
 
-		foreach (LF_ShopCatalogItem item : m_aCatalog)
-		{
-			if (item.m_ItemPrefab == prefab)
-				return item;
-		}
-
-		return null;
+		return m_mCatalogByGuid.Get(LF_Utils.PrefabGuid(prefab));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -192,7 +189,9 @@ class LF_ShopManagerComponent : GameComponent
 	//! config's extra list tops up anything living outside Prefabs/Items (tools, mined resources).
 	protected void BuildCatalog()
 	{
+		int started = System.GetTickCount();
 		m_aCatalog = new array<ref LF_ShopCatalogItem>();
+		m_mCatalogByGuid = new map<string, ref LF_ShopCatalogItem>();
 
 		SearchResourcesFilter filter();
 		filter.fileExtensions = { "et" };
@@ -219,7 +218,7 @@ class LF_ShopManagerComponent : GameComponent
 		BuildExtraItems();
 		SortByName();
 
-		LF_Debug.Log("Shop", string.Format("catalog built: %1 priced items", m_aCatalog.Count()));
+		LF_Debug.Log("Shop", string.Format("catalog built: %1 priced items in %2 ms", m_aCatalog.Count(), System.GetTickCount(started)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -289,6 +288,7 @@ class LF_ShopManagerComponent : GameComponent
 		catalogItem.m_bHidden = hidden;
 		catalogItem.m_sDisplayName = ResolveDisplayName(prefab);
 		m_aCatalog.Insert(catalogItem);
+		m_mCatalogByGuid.Set(LF_Utils.PrefabGuid(prefab), catalogItem);
 	}
 
 	//------------------------------------------------------------------------------------------------

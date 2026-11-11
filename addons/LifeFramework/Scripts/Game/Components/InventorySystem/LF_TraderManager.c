@@ -34,7 +34,7 @@ class LF_TraderManagerComponent : GameComponent
 
 		foreach (LF_TraderItem tradableItem : tradableItems)
 		{
-			if (tradableItem && tradableItem.m_ItemPrefab == itemPrefab)
+			if (tradableItem && LF_Utils.SamePrefab(tradableItem.m_ItemPrefab, itemPrefab))
 				return tradableItem.m_ValuePerItem;
 		}
 
