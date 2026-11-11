@@ -1,5 +1,5 @@
 GenericEntity PoliceStation {
- coords 100 0 40
+ coords 48 0 50
  {
   GenericEntity PoliceStation_Debug {
    components {
@@ -19,7 +19,7 @@ GenericEntity PoliceStation {
      coords 0 0 0
   }
   GenericEntity PoliceTableItems {
-    coords 0 0.9 0.7
+    coords 0 0.95 1.4
    {
     $grp GenericEntity : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
      PoliceIDCard_Debug {
@@ -35,7 +35,7 @@ GenericEntity PoliceStation {
   }
    $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
     {
-     coords 0 0 0.7
+     coords 0 0 1.4
    }
   }
   LF_NpcBaseEntity PoliceNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
@@ -47,7 +47,7 @@ GenericEntity PoliceStation {
      }
     }
    }
-   coords 0 0 -1.1
+   coords 0 0 -1.3
   }
 
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
@@ -58,7 +58,7 @@ GenericEntity PoliceStation {
      m_eInitialLightState LIT
     }
    }
-   coords 0 0.9 0.7
+   coords 0 0.95 1.4
   }
  }
 }

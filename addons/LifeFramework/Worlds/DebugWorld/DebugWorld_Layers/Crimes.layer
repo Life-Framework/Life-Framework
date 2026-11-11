@@ -28,8 +28,8 @@ GenericEntity CrimeScene {
          "default"
         }
         UIInfo UIInfo "{5A4B0B84C86D8849}" {
-         Name "Robar Dinero"
-         Description "Robar 200$"
+         Name "#LF-Crime_RobSafe_Name"
+         Description "#LF-Crime_RobSafe_Desc"
         }
         m_iMoneyAmount 200
         m_fCooldown 60
@@ -70,8 +70,8 @@ GenericEntity CrimeScene {
          "default"
         }
         UIInfo UIInfo "{5A4B0B84C86D9849}" {
-         Name "Robar Armas"
-         Description "Robo de armería"
+         Name "#LF-Crime_RobRack_Name"
+         Description "#LF-Crime_RobRack_Desc"
         }
         m_WeaponPrefab "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et"
         m_fCooldown 120
@@ -84,10 +84,10 @@ GenericEntity CrimeScene {
      }
     }
      Flags 0x403 0
-     coords 3.5 0 0
+     coords 4 0 0
     }
     CrimesTableItems {
-     coords 0 0.9 0.7
+     coords 12 0.95 0
     {
      GenericEntity StolenMoney_Debug : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
       coords 0 0 0
@@ -116,8 +116,8 @@ GenericEntity CrimeScene {
         "default"
        }
        UIInfo UIInfo "{5A4B0B84C86DA849}" {
-        Name "Robar Vehículo"
-        Description "Robo de vehículo"
+        Name "#LF-Crime_RobCar_Name"
+        Description "#LF-Crime_RobCar_Desc"
        }
        m_VehiclePrefab "{254289B9C09904AB}Prefabs/Vehicles/Wheeled/BRDM2/BRDM2.et"
        m_fCooldown 600
@@ -126,11 +126,11 @@ GenericEntity CrimeScene {
      }
     }
    }
-   coords 7 0 0
+   coords 8 0 0
   }
   SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    Flags 0x403 0
-    coords 0 0 0.7
+    coords 12 0 0
   }
   LF_NpcBaseEntity WantedPoliceNpc : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
    components {
@@ -141,7 +141,7 @@ GenericEntity CrimeScene {
      }
     }
    }
-   coords 0 0 -1.1
+   coords 12 0 -1.3
   }
   GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
    components {
@@ -151,13 +151,13 @@ GenericEntity CrimeScene {
      m_eInitialLightState LIT
     }
    }
-    coords 0 0.9 0.7
+    coords 12 0.95 0
   }
  }
 }
 LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 33.335 0 50.918
-  m_vSize 5 1 2.5
+ coords 41 0 50.5
+  m_vSize 13 1 3.5
 }
 
 LF_NpcBaseEntity FenceNpc : "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et" {
