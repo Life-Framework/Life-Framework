@@ -43,6 +43,7 @@ GenericEntity CrimeScene {
     }
      Flags 0x403 0
      coords 0 0 0
+     angles 0 180 0
    }
    RobberyPoint_Weapon {
     components {
@@ -90,10 +91,10 @@ GenericEntity CrimeScene {
      coords 12 0.95 0
     {
      GenericEntity StolenMoney_Debug : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
-      coords 0 0 0
+      coords -0.5 -0.05 0
      }
      GenericEntity ConfiscatedRifle_Debug : "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et" {
-      coords 0.3 0 0.1
+      coords 0 0.1 -0.25
      }
     }
    }
@@ -151,7 +152,7 @@ GenericEntity CrimeScene {
      m_eInitialLightState LIT
     }
    }
-    coords 12 0.95 0
+    coords 12.5 0.9 0
   }
  }
 }
