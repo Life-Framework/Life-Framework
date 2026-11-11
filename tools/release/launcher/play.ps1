@@ -6,10 +6,13 @@
 #   -Mode solo|join   skip the choice window
 #   -DryRun           print what would start, start nothing (no windows)
 #   -ShotTo <png>     save a picture of the choice window and quit (website screenshot)
+#   -ClickTest solo|join  click that button in the choice window, print the pick, quit
+#                     (tools/validation/launcher-click-selftest.mjs)
 param(
   [ValidateSet("", "solo", "join")][string]$Mode = "",
   [switch]$DryRun,
-  [string]$ShotTo = ""
+  [string]$ShotTo = "",
+  [ValidateSet("", "solo", "join")][string]$ClickTest = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -165,7 +168,9 @@ function Show-Choice {
     $b.BackColor = $back
     $b.ForeColor = $fore
     $b.Cursor = [System.Windows.Forms.Cursors]::Hand
-    $b.Add_Click({ $form.Tag = $result; $form.Close() }.GetNewClosure())
+    # GetNewClosure captures only this block's locals, so $form is not visible
+    # here; the button finds its own window (playtest-m2-2 crashed on the click).
+    $b.Add_Click({ $f = $this.FindForm(); $f.Tag = $result; $f.Close() }.GetNewClosure())
     $form.Controls.Add($b)
     $h = New-Object System.Windows.Forms.Label
     $h.Text = $hint
@@ -176,7 +181,7 @@ function Show-Choice {
     return $b
   }
   $solo = & $make "Play on my own" "The playtest town, just you. Works any time." 100 ([System.Drawing.Color]::FromArgb(227, 178, 60)) ([System.Drawing.Color]::FromArgb(27, 29, 25)) "solo"
-  $null = & $make "Join the community server" "Play with others when someone is hosting." 200 ([System.Drawing.Color]::FromArgb(45, 74, 51)) ([System.Drawing.Color]::FromArgb(251, 248, 242)) "join"
+  $join = & $make "Join the community server" "Play with others when someone is hosting." 200 ([System.Drawing.Color]::FromArgb(45, 74, 51)) ([System.Drawing.Color]::FromArgb(251, 248, 242)) "join"
   $form.AcceptButton = $solo
   $form.Topmost = $true
   if ($ShotTo) {
@@ -190,6 +195,17 @@ function Show-Choice {
       $bmp.Save($ShotTo, [System.Drawing.Imaging.ImageFormat]::Png)
       $form.Close()
     })
+  }
+  if ($ClickTest) {
+    $pick = $solo
+    if ($ClickTest -eq "join") { $pick = $join }
+    # Invisible, and a failing click prints instead of raising the WinForms error dialog.
+    $form.Opacity = 0
+    $form.ShowInTaskbar = $false
+    $form.Add_Shown({
+      try { $pick.PerformClick() } catch { Write-Output ("click failed: " + $_.Exception.Message) }
+      if ($this.Visible) { $this.Close() }
+    }.GetNewClosure())
   }
   [void]$form.ShowDialog()
   return [string]$form.Tag
@@ -215,6 +231,7 @@ $versionFile = Join-Path $Root "version.txt"
 if (Test-Path $versionFile) { $version = (Get-Content $versionFile | Select-Object -First 1).Trim() }
 Log "playtest build: $version"
 if ($ShotTo) { [void](Show-Choice); exit 0 }
+if ($ClickTest) { Write-Output ("picked=" + (Show-Choice)); exit 0 }
 
 if (-not (Test-Path (Join-Path $AddonsDir "LifeFramework\LifeFramework.gproj"))) {
   Say "Files missing" "The playtest files are not next to this launcher.`n`nUnzip the whole download first (right-click the zip, Extract All), then double-click 'Play Life Framework' in the unzipped folder." "the download page" $SiteUrl
