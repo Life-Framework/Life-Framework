@@ -20,7 +20,7 @@ class LF_Test_HaulTidy : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity box = GetGame().GetWorld().FindEntityByName("Roadmap_Cash_Van_Box");
+		IEntity box = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.CASH_VAN_BOX);
 		ctx.NotNull(box, "the cash van box is placed in the playtest town");
 		if (!box)
 			return;

@@ -59,8 +59,8 @@ class LF_Test_LockpickVehicleWorld : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity car = GetGame().GetWorld().FindEntityByName("Roadmap_Lockpick_Car");
-		ctx.True(car != null, "Roadmap_Lockpick_Car is placed");
+		IEntity car = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.LOCKPICK_CAR);
+		ctx.True(car != null, "Annex_Lockpick_Car is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -105,8 +105,8 @@ class LF_Test_LockpickVehicleWorld : LF_Test
 		ctx.True(pickWired, "the lockpick action is on the car");
 		ctx.True(hotwireWired, "the hotwire action is on the car");
 
-		IEntity lotCar = GetGame().GetWorld().FindEntityByName("Roadmap_Vehicle_S105");
-		ctx.True(lotCar != null, "Roadmap_Vehicle_S105 is placed");
+		IEntity lotCar = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.VEHICLE_S105);
+		ctx.True(lotCar != null, "Annex_Vehicle_S105 is placed");
 		if (lotCar)
 		{
 			LF_VehicleLockComponent lotLock = LF_Component<LF_VehicleLockComponent>.Find(lotCar);

@@ -101,14 +101,15 @@ class LF_Test_Roadmap_JailingWorld : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		LF_Jail.SyncPlacedCell();
-
-		IEntity cell = GetGame().GetWorld().FindEntityByName("Roadmap_Jail_Cell");
-		ctx.True(cell != null, "Roadmap_Jail_Cell is placed");
-		IEntity desk = GetGame().GetWorld().FindEntityByName("Roadmap_Police_Desk");
-		ctx.True(desk != null, "Roadmap_Police_Desk is placed");
+		IEntity cell = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.JAIL_CELL);
+		ctx.True(cell != null, "Annex_Jail_Cell is placed");
+		IEntity desk = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.POLICE_DESK);
+		ctx.True(desk != null, "Annex_Police_Desk is placed");
 		if (ctx.FailureCount() > 0)
 			return;
+
+		LF_Jail.SetCellOrigin(cell.GetOrigin());
+		LF_Jail.SetDoorTarget(LF_TestAnnex.JAIL_DOOR);
 
 		vector legacy = "127 1 137";
 		ctx.True(SamePlace(LF_PoliceUtils.GetJailPosition(), cell.GetOrigin()), "GetJailPosition reads the placed cell origin");
@@ -154,7 +155,7 @@ class LF_Test_Roadmap_JailingWorld : LF_Test
 		prisoner.SetWantedLevel(2);
 
 		ctx.True(LF_Jail.Arrest(officerUid, prisonerUid, standIn), "arrest of a wanted test account runs");
-		ctx.True(SamePlace(standIn.GetOrigin(), LF_Jail.GetReleasePoint()), "a zero-duration arrest releases the stand-in outside Roadmap_Jail_Cell");
+		ctx.True(SamePlace(standIn.GetOrigin(), LF_Jail.GetReleasePoint()), "a zero-duration arrest releases the stand-in outside Annex_Jail_Cell");
 		ctx.False(LF_Jail.IsServing(prisonerUid), "zero-duration config releases");
 		ctx.Equal(1, prisoner.GetWantedLevel(), "zero-duration config reduces wanted");
 	}

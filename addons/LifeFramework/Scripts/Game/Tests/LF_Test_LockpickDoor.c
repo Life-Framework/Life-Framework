@@ -70,8 +70,8 @@ class LF_Test_LockpickDoorWorld : LF_Test
 		Resource pick = Resource.Load(LF_Lockpick.PICK_PREFAB);
 		ctx.True(pick.IsValid(), "the lockpick prefab loads");
 
-		IEntity door = GetGame().GetWorld().FindEntityByName("Roadmap_Lockpick_Door");
-		ctx.True(door != null, "Roadmap_Lockpick_Door is placed");
+		IEntity door = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.LOCKPICK_DOOR);
+		ctx.True(door != null, "Annex_Lockpick_Door is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -103,8 +103,8 @@ class LF_Test_LockpickDoorWorld : LF_Test
 
 		ctx.True(wired, "the lockpick action is on the door");
 
-		IEntity breachDoor = GetGame().GetWorld().FindEntityByName("Roadmap_Breach_Door");
-		ctx.True(breachDoor != null, "Roadmap_Breach_Door is placed");
+		IEntity breachDoor = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BREACH_DOOR);
+		ctx.True(breachDoor != null, "Annex_Breach_Door is placed");
 		if (breachDoor)
 			ctx.Equal(LF_ELockpickCheck.NOT_PICKABLE, LF_Lockpick.CheckDoor(breachDoor, null), "a door with no pick target refuses a pick");
 	}

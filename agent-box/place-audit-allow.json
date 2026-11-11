@@ -7,9 +7,19 @@
       "why": "The quarry axe lies flat on the ground by the logs (LoggingChain.layer angles 90)."
     },
     {
-      "match": "^Roadmap_Bank_Bag",
+      "match": "^(Roadmap|Annex)_Bank_Bag",
       "kind": "scaled",
       "why": "The small money bag on the bank floor is meant to be small (#740)."
+    },
+    {
+      "match": "^Annex_Bank_Bag_Cash",
+      "kind": "sunk",
+      "why": "The cash stack is the bag prefab's child, drawn inside the 0.4-scale bag the way the town bag is (#323 batch 0)."
+    },
+    {
+      "match": "^Annex_Bank_AlarmBox",
+      "kind": "floating",
+      "why": "The annex twin of the bank bell box hangs 1.5 m up beside the twin vault door: the annex has no wall for it, and the alarm mount test only needs the box above its door (#323 batch 0)."
     },
     {
       "match": "Bank_Teller",

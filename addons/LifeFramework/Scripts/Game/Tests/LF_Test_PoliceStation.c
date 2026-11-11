@@ -5,7 +5,7 @@
 //   `- no civilian inventory is stored while it is worn`, `- the magazine keeps the rounds left at clock-out (expected 11, got 15)`
 // police/death-on-duty: OnDied did not hand the civilian stash to the carried slot -> `- the respawn has a carried inventory`
 // police/wanted-board: BuildPosters gave the place to every reader -> `- the public poster does not say where (expected '', got 'Fuel station')`
-// police/station: Roadmap_Police_Desk back on the plain vanilla desk -> `- the desk carries the Clock in / Clock out action`
+// police/station: Annex_Police_Desk back on the plain vanilla desk -> `- the desk carries the Clock in / Clock out action`
 //   (the action now sits on the desk's punch clock; the assertion reads "the desk's punch clock carries ...")
 // police/item-state: [NonSerialized()] removed from m_iAmmo -> `- the ammo field stays out of the carried record format`
 
@@ -305,8 +305,8 @@ class LF_Test_PoliceStationWorld : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity desk = GetGame().GetWorld().FindEntityByName("Roadmap_Police_Desk");
-		ctx.NotNull(desk, "Roadmap_Police_Desk is placed");
+		IEntity desk = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.POLICE_DESK);
+		ctx.NotNull(desk, "Annex_Police_Desk is placed");
 		if (desk)
 		{
 			// The action sits on the punch clock itself: the interaction trace hits the clock, so
@@ -318,8 +318,8 @@ class LF_Test_PoliceStationWorld : LF_Test
 				ctx.NotNull(clock.FindComponent(SCR_SoundDataComponent), "the punch clock carries its click sound");
 		}
 
-		IEntity board = GetGame().GetWorld().FindEntityByName("Roadmap_Police_WantedBoard");
-		ctx.NotNull(board, "Roadmap_Police_WantedBoard is placed");
+		IEntity board = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.POLICE_WANTED_BOARD);
+		ctx.NotNull(board, "Annex_Police_WantedBoard is placed");
 		if (board)
 		{
 			ctx.True(HasAction(board, LF_WantedBoardReadAction), "the board carries the read action");

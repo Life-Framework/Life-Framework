@@ -100,13 +100,13 @@ class LF_Test_Roadmap_BreachWorld : LF_Test
 		Resource charge = Resource.Load(LF_Breach.FENCE_CHARGE_PREFAB);
 		ctx.True(charge.IsValid(), "LF_Charge.et loads");
 
-		IEntity door = GetGame().GetWorld().FindEntityByName("Roadmap_Breach_Door");
-		ctx.True(door != null, "Roadmap_Breach_Door is placed");
+		IEntity door = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BREACH_DOOR);
+		ctx.True(door != null, "Annex_Breach_Door is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
-		IEntity chargeEntity = GetGame().GetWorld().FindEntityByName("Roadmap_Breach_Charge");
-		ctx.True(chargeEntity != null, "Roadmap_Breach_Charge is placed");
+		IEntity chargeEntity = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BREACH_CHARGE);
+		ctx.True(chargeEntity != null, "Annex_Breach_Charge is placed");
 
 		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(door);
 		ctx.NotNull(doorLock, "door carries LF_LockComponent");
@@ -145,18 +145,18 @@ class LF_Test_Roadmap_BreachWorld : LF_Test
 		police.SetFaction(LF_Faction.POLICE);
 
 		if (!doorLock.IsLocked())
-			LF_Breach.Repair("Roadmap_Breach_Door", policeUid);
+			LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid);
 
 		ctx.True(doorLock.IsLocked(), "door is locked before the zero-fuse arm");
 
-		int notifiesBefore = LF_Breach.GetPoliceNotifyCount("Roadmap_Breach_Door");
+		int notifiesBefore = LF_Breach.GetPoliceNotifyCount(LF_TestAnnex.BREACH_DOOR);
 		if (armAction)
 			armAction.CanBePerformedScript(door);
 
-		ctx.Equal(notifiesBefore, LF_Breach.GetPoliceNotifyCount("Roadmap_Breach_Door"), "live offer refresh does not notify");
-		ctx.True(LF_Breach.Arm("Roadmap_Breach_Door", uid), "zero-fuse arm opens the world door");
+		ctx.Equal(notifiesBefore, LF_Breach.GetPoliceNotifyCount(LF_TestAnnex.BREACH_DOOR), "live offer refresh does not notify");
+		ctx.True(LF_Breach.Arm(LF_TestAnnex.BREACH_DOOR, uid), "zero-fuse arm opens the world door");
 		ctx.False(doorLock.IsLocked(), "door IsLocked() is false after the fuse");
-		ctx.True(LF_Breach.Repair("Roadmap_Breach_Door", policeUid), "police repair runs");
+		ctx.True(LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid), "police repair runs");
 		ctx.True(doorLock.IsLocked(), "repair sets the lock");
 	}
 }
@@ -171,8 +171,8 @@ class LF_Test_Roadmap_BreachPersistence : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity door = GetGame().GetWorld().FindEntityByName("Roadmap_Breach_Door");
-		ctx.True(door != null, "Roadmap_Breach_Door is placed for the save round trip");
+		IEntity door = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.BREACH_DOOR);
+		ctx.True(door != null, "Annex_Breach_Door is placed for the save round trip");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -188,19 +188,19 @@ class LF_Test_Roadmap_BreachPersistence : LF_Test
 		police.SetFaction(LF_Faction.POLICE);
 
 		if (!doorLock.IsLocked())
-			LF_Breach.Repair("Roadmap_Breach_Door", policeUid);
+			LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid);
 
 		ctx.True(doorLock.IsLocked(), "door is locked before the save arm");
-		ctx.True(LF_Breach.Arm("Roadmap_Breach_Door", uid), "arm opens the door before the save");
+		ctx.True(LF_Breach.Arm(LF_TestAnnex.BREACH_DOOR, uid), "arm opens the door before the save");
 		ctx.False(doorLock.IsLocked(), "door is open in the live session");
 
-		LF_BreachRecord saved = LF_Breach.Export("Roadmap_Breach_Door");
+		LF_BreachRecord saved = LF_Breach.Export(LF_TestAnnex.BREACH_DOOR);
 		ctx.NotNull(saved, "export returns the open record");
 		if (ctx.FailureCount() > 0)
 			return;
 
 		ctx.True(saved.m_bOpen, "saved record is open");
-		ctx.True(LF_Breach.Repair("Roadmap_Breach_Door", policeUid), "live state is locked before apply");
+		ctx.True(LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid), "live state is locked before apply");
 		ctx.True(doorLock.IsLocked(), "live lock is shut before the saved open state is applied");
 		ctx.True(LF_Breach.Apply(saved), "apply accepts the saved record");
 		ctx.False(doorLock.IsLocked(), "open lock survives apply-save");

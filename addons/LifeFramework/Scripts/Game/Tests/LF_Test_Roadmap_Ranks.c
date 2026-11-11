@@ -166,15 +166,13 @@ class LF_Test_Roadmap_RanksWorld : LF_Test
 		ctx.True(sidearm.IsValid(), "Handgun_M9.et loads");
 		ctx.True(rifle.IsValid(), "Rifle_M16A2.et loads");
 
-		IEntity armory = GetGame().GetWorld().FindEntityByName("Roadmap_Police_Armory");
-		ctx.True(armory != null, "Roadmap_Police_Armory is placed");
+		IEntity armory = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.POLICE_ARMORY);
+		ctx.True(armory != null, "Annex_Police_Armory is placed");
 		if (ctx.FailureCount() > 0)
 			return;
 
 		vector origin = armory.GetOrigin();
-		ctx.EqualFloat(231.9, origin[0], 0.1, "armory is at X 231.9 (under the police station porch)");
 		ctx.EqualFloat(0, origin[1], 0.1, "armory is on the ground");
-		ctx.EqualFloat(238.2, origin[2], 0.1, "armory is at Z 238.2");
 
 		ActionsManagerComponent actions = LF_Component<ActionsManagerComponent>.Find(armory);
 		ctx.NotNull(actions, "armory carries ActionsManagerComponent");

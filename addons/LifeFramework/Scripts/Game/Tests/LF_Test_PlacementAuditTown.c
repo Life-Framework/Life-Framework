@@ -21,16 +21,16 @@ class LF_Test_PlacementAuditTown : LF_Test
 	{
 		if (!FileIO.FileExists(IN_PATH))
 		{
-			IEntity locker = GetGame().GetWorld().FindEntityByName("Roadmap_Police_EvidenceLocker");
-			ctx.NotNull(locker, "Roadmap_Police_EvidenceLocker is in the town");
+			IEntity locker = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.POLICE_EVIDENCE_LOCKER);
+			ctx.NotNull(locker, "Annex_Police_EvidenceLocker is in the town");
 			if (!locker)
 				return;
 
-			IEntity found = LF_PlacementAudit.FindPlaced("Roadmap_Police_EvidenceLocker", "", locker.GetOrigin());
+			IEntity found = LF_PlacementAudit.FindPlaced(LF_TestAnnex.POLICE_EVIDENCE_LOCKER, "", locker.GetOrigin());
 			ctx.True(found == locker, "the audit finds a layer entity by name and position");
 			LF_PlacementMeasure m = LF_PlacementAudit.Measure(locker, true);
 			string flags = LF_PlacementAudit.Flags(m);
-			LF_Debug.Info("PlaceAudit", "Roadmap_Police_EvidenceLocker " + LF_PlacementAudit.Format(m));
+			LF_Debug.Info("PlaceAudit", "Annex_Police_EvidenceLocker " + LF_PlacementAudit.Format(m));
 			ctx.True(!m.m_bPoint, "the locker is measured by its mesh bounds");
 			ctx.True(flags.IsEmpty(), "the locker stands on the ground, upright (flags=" + flags + ")");
 			ctx.True(m.m_sClips == "none", "the locker clips nothing (clip=" + m.m_sClips + ")");

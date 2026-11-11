@@ -2,15 +2,6 @@
  "LF_Test_AgentHarness.c": [
   "ATM_Debug"
  ],
- "LF_Test_AlarmMount.c": [
-  "Roadmap_Bank_AlarmBox",
-  "Roadmap_Bank_Vault",
-  "Roadmap_Cash_Van",
-  "Roadmap_Cash_Van_Box"
- ],
- "LF_Test_BankRobKit.c": [
-  "Roadmap_Bank_RobKit"
- ],
  "LF_Test_BedDelivery.c": [
   "Hospital_Bed_1",
   "Roadmap_Escort_Car",
@@ -31,20 +22,11 @@
   "Chains_Barrel_2",
   "Chains_Barrel_3"
  ],
- "LF_Test_ChopShopSteal.c": [
-  "Roadmap_ChopShop"
- ],
- "LF_Test_ChopShopWorld.c": [
-  "Roadmap_ChopShop"
- ],
  "LF_Test_CounterScreens.c": [
   "ATM_Debug"
  ],
  "LF_Test_DebugWorldCollision.c": [
   "AppleTrader"
- ],
- "LF_Test_DedicatedClientState.c": [
-  "Roadmap_Breach_Door"
  ],
  "LF_Test_DispatchArea.c": [
   "Roadmap_Dispatch_Console",
@@ -65,66 +47,15 @@
  "LF_Test_HarnessProbe.c": [
   "Hospital_Bed_1"
  ],
- "LF_Test_HaulTidy.c": [
-  "Roadmap_Cash_Van_Box"
- ],
- "LF_Test_HideoutStash.c": [
-  "Roadmap_Hideout_Stash"
- ],
- "LF_Test_LockpickDoor.c": [
-  "Roadmap_Breach_Door",
-  "Roadmap_Lockpick_Door"
- ],
- "LF_Test_LockpickKeepsPick.c": [
-  "Roadmap_Lockpick_Door"
- ],
- "LF_Test_LockpickVehicle.c": [
-  "Roadmap_Lockpick_Car",
-  "Roadmap_Vehicle_S105"
- ],
  "LF_Test_MedicDuty.c": [
   "Roadmap_Hospital_Duty_Desk"
- ],
- "LF_Test_PlacementAuditTown.c": [
-  "Roadmap_Police_EvidenceLocker"
- ],
- "LF_Test_PoliceCarKey.c": [
-  "Roadmap_Escort_Car"
- ],
- "LF_Test_PoliceStation.c": [
-  "Roadmap_Police_Desk",
-  "Roadmap_Police_WantedBoard"
  ],
  "LF_Test_QuarryZone.c": [
   "Sign_Lawless_Entry",
   "Sign_Lawless_Pit"
  ],
- "LF_Test_Roadmap_Bank.c": [
-  "Roadmap_Bank_Bag",
-  "Roadmap_Bank_Vault"
- ],
- "LF_Test_Roadmap_Breach.c": [
-  "Roadmap_Breach_Charge",
-  "Roadmap_Breach_Door"
- ],
- "LF_Test_Roadmap_Contraband.c": [
-  "Roadmap_Convoy_Drop",
-  "Roadmap_Convoy_Drop_Near"
- ],
  "LF_Test_Roadmap_Fuel.c": [
   "Roadmap_Fuel_Till"
- ],
- "LF_Test_Roadmap_Hideout.c": [
-  "Roadmap_Hideout_Door",
-  "Roadmap_Hideout_Machine",
-  "Roadmap_Hideout_Stash"
- ],
- "LF_Test_Roadmap_Jailbreak.c": [
-  "Roadmap_Jail_Door"
- ],
- "LF_Test_Roadmap_Jailing.c": [
-  "Roadmap_Jail_Cell",
-  "Roadmap_Police_Desk"
  ],
  "LF_Test_Roadmap_Jobs.c": [
   "Roadmap_Job_Drop",
@@ -133,9 +64,6 @@
  ],
  "LF_Test_Roadmap_Organizations.c": [
   "Roadmap_Org_Desk"
- ],
- "LF_Test_Roadmap_Ranks.c": [
-  "Roadmap_Police_Armory"
  ],
  "LF_Test_Roadmap_Resources.c": [
   "Furnace"
@@ -158,8 +86,5 @@
  "LF_Test_VehicleImpound.c": [
   "Roadmap_Garage",
   "Roadmap_Impound_Desk"
- ],
- "LF_Test_WorkAnimTargets.c": [
-  "Roadmap_Lockpick_Car"
  ]
 }

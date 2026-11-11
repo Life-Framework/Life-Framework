@@ -21,10 +21,10 @@ class LF_Test_AlarmMount : LF_Test
 	{
 		LF_Dispatch.ResetStatics();
 		BaseWorld world = GetGame().GetWorld();
-		IEntity vault = world.FindEntityByName("Roadmap_Bank_Vault");
-		IEntity bellBox = world.FindEntityByName("Roadmap_Bank_AlarmBox");
-		IEntity vanBox = world.FindEntityByName("Roadmap_Cash_Van_Box");
-		IEntity van = world.FindEntityByName("Roadmap_Cash_Van");
+		IEntity vault = world.FindEntityByName(LF_TestAnnex.BANK_VAULT);
+		IEntity bellBox = world.FindEntityByName(LF_TestAnnex.BANK_ALARM_BOX);
+		IEntity vanBox = world.FindEntityByName(LF_TestAnnex.CASH_VAN_BOX);
+		IEntity van = world.FindEntityByName(LF_TestAnnex.CASH_VAN);
 		ctx.True(vault && bellBox && vanBox && van, "the vault, its bell box, the cash van and its box are placed");
 		if (!vault || !bellBox || !vanBox || !van)
 			return;
@@ -35,7 +35,7 @@ class LF_Test_AlarmMount : LF_Test
 		{
 			vector top = bellBox.CoordToParent("0 0.167 0.065");
 			ctx.True(vector.Distance(alarm.GetOrigin(), top) < 0.05, string.Format("the vault alarm stands on the bell box (%1 m off)", vector.Distance(alarm.GetOrigin(), top)));
-			ctx.True(alarm.GetOrigin()[1] > 2.5, "the vault alarm is up on the wall, above the door");
+			ctx.True(alarm.GetOrigin()[1] > bellBox.GetOrigin()[1], "the vault alarm is up on the bell box, above where the box is mounted");
 			CheckBeacon(ctx, alarm, "vault");
 		}
 
