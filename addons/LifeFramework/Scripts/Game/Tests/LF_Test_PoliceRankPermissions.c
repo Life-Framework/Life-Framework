@@ -1,4 +1,5 @@
-// red-proof (ladder line, 2026-11-12): the TopRank assertion fails when LF_Police.conf lists a third rank (expected 1, got 2).
+// red-proof (ladder line): observed 2026-11-12 with `tools\cli test --no-build --only LF_Test_PoliceRankPermissions` and a third rank appended to LF_Police.conf:
+// [LFTEST]   - senior is still the top of the shipped ladder (expected 1, got 2). Conf restored; green.
 // red-proof: observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_PoliceRankPermissions`
 // and LF_Police.conf set to m_iArrestMinRank 1 (the old senior-only rule):
 // [LFTEST] FAIL police/rank-permissions
