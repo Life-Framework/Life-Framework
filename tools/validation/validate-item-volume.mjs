@@ -45,13 +45,7 @@ const ALLOW_VOLUME = {
   "Resources/WoodCutting/WoodPlank.et": HAND_CARRY,
 };
 const ALLOW_GADGET = {
-  "Investigation/LF_EvidenceBag.et": NO_GADGET_OK,
-  "Investigation/LF_EvidenceCasing.et": NO_GADGET_OK,
-  "Investigation/LF_EvidenceMarker.et": NO_GADGET_OK,
   "Items/Fence/LF_Drill.et": NO_GADGET_OK,
-  "Items/Fence/LF_Keycard.et": NO_GADGET_OK,
-  "Items/Fence/LF_Lockpick.et": NO_GADGET_OK,
-  "Items/Fence/LF_Scanner.et": NO_GADGET_OK,
   "Items/Drinks/WaterBottle.et": NO_GADGET_OK,
   "Items/Resources/CementBag.et": "bulk bag, covered by inventory/paper-items",
   "Items/Resources/GravelBag.et": "bulk bag, covered by inventory/paper-items",
