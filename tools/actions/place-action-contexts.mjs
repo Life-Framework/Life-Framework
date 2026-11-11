@@ -35,7 +35,15 @@ function mcpVfsPath() {
   if (main && existsSync(main)) return main;
   throw new Error(`enfusion-mcp is not built (${local}); run tools/cli mcp install in the main checkout`);
 }
-const { PakVirtualFS } = await import(pathToFileURL(mcpVfsPath()).href);
+// Deferred failure: the pure math (and its selftest) imports this file on a machine
+// with no MCP build, such as CI; only reading a game pak needs it.
+let PakVirtualFS;
+let pakError = null;
+try {
+  ({ PakVirtualFS } = await import(pathToFileURL(mcpVfsPath()).href));
+} catch (e) {
+  pakError = e;
+}
 const DOOR_RADIUS = 0.65;
 const TALL_METERS = 1.5;
 const FALLBACK_CONTEXT = "50888D37F529F720";
@@ -49,6 +57,7 @@ function gamePath() {
 }
 
 function pak() {
+  if (pakError) throw pakError;
   if (!vfs) vfs = PakVirtualFS.get(gamePath());
   return vfs;
 }
