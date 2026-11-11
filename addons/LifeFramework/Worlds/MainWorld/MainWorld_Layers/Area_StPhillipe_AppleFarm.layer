@@ -111,7 +111,7 @@ $grp GenericEntity {
      angleY 82.104
     }
    }
-   GenericEntity : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+   GenericEntity : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
     coords -2.402 0.109 -0.369
     angleY 96.122
     angleZ -3.882
