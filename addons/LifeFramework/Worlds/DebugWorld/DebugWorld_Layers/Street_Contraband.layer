@@ -82,6 +82,48 @@ GenericEntity Roadmap_Convoy_Drop {
  coords 131.5 0 284
  Flags 0x403 0
 }
+GenericEntity Roadmap_Convoy_Drop_Near {
+ components {
+  MeshObject "{08016A8536F7C89C}" {
+   Object "{0CE0D7F17F50BAB7}Assets/Props/Industrial/Pallets/WoodenPalletBox_01.xob"
+  }
+  RigidBody "{0376CF2DBE7CEDD6}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  RplComponent "{90ACB6AF25F3845C}" {
+   Enabled 1
+  }
+  LF_ConvoyMarkerComponent "{AA559AAD1A321A69}" {
+   m_sMarkerId "Roadmap_Convoy_Drop_Near"
+   m_bDrop 1
+  }
+  ActionsManagerComponent "{3BD8DBAA5C1B9F2D}" {
+   ActionContexts {
+    UserActionContext "{D258323E386AB972}" {
+     ContextName "default"
+     Position PointInfo "{BA707F77C0B9CD34}" {
+      Offset 0 0.6 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ConvoyDeliverAction "{6FE3AE685310D8C2}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{44938E88F9B47F76}" {
+      Name "#EL-Contraband_Deliver"
+     }
+    }
+   }
+  }
+ }
+ coords 466 0 304
+ Flags 0x403 0
+}
 GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
  coords 465.75 1.01 330.8
 }

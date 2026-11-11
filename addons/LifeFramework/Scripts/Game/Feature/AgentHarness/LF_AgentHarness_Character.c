@@ -349,6 +349,22 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "keys")
+		{
+			// Gives a house key and a vehicle key, and sets one of each on the ground ahead, to look
+			// at the key models (#613).
+			int houseKeys = LF_InventoryUtils.AddAmount(this, "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et", 1);
+			int carKeys = LF_InventoryUtils.AddAmount(this, "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et", 1);
+			vector xform[4];
+			GetWorldTransform(xform);
+			vector ahead = GetOrigin() + xform[2] * 0.8;
+			ahead[1] = GetGame().GetWorld().GetSurfaceY(ahead[0], ahead[2]) + 0.05;
+			LF_Utils.SpawnEntityPrefab("{3735389521255DBE}Prefabs/Items/HouseKeyItem.et", ahead - xform[0] * 0.1);
+			LF_Utils.SpawnEntityPrefab("{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et", ahead + xform[0] * 0.1);
+			LF_HarnessReply(commandId, "ok", string.Format("keys house=%1 vehicle=%2", houseKeys, carKeys));
+			return;
+		}
+
 		if (tool == "shelf")
 		{
 			// A shopper taking the first shelf item in reach of the physical store (#202), through the

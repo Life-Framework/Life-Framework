@@ -136,6 +136,7 @@ under "Hard-coded flagship values in script".
 | `Police/` | core | Duty desk, jail cell, alarms, wanted board |
 | `Processing/`, `Processor/` | core | Example chains and processors |
 | `Props/Commercial/`, `Props/Construction/`, `Props/Hideouts/` | core | Interactables |
+| `Props/Debug/` | core | Playtest-only stands (bank robbery kit, #605), gated by the debug flag |
 | `Props/Signs/LF_Sign*.et` (10) | core | Generic boards and faces |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack | Soviet undermined-area warning sign |
@@ -219,6 +220,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Signs/` | core | Sign face material |
 | `Tools/` | core | Axe, pickaxe |
 | `UI/` | core | Stats bars, chat icons |
+| `UI/Illustrations/medic_flow.*` | pack | The hospital's CALL, TREAT, BED diagram; the `tools\cli ui-image` route that made it is core (#579) |
 | `Vehicles/Attachments/`, `Vehicles/EmergencyLightsKnob/`, `Vehicles/LicensePlate/` | core | Siren and plate parts |
 | `Vehicles/Wheeled/M151A2/` | split | Light-bar mount for the flagship police car |
 | `World/` | core | Terrain surface |

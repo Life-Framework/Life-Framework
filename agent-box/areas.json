@@ -8,6 +8,7 @@
     { "n": 5, "name": "fuel-station", "front": 0, "x": 266, "y": 0, "z": 240, "radius": 13, "note": "kiosk, canopy and pumps; the ambulance bay is in front, so the wide comes in from the south-west", "wideCands": [{ "az": -60, "dist": 9, "up": 2.5 }, { "az": -55, "dist": 10, "up": 3 }, { "az": -65, "dist": 9, "up": 2.2 }] },
     { "n": 6, "name": "police-station", "front": 0, "x": 233, "y": 0, "z": 234, "radius": 24 },
     { "n": 6, "name": "police-facade", "front": 0, "x": 234.5, "y": 0, "z": 239, "radius": 16, "note": "wide of the whole police villa facade from the street", "wideCands": [{ "az": 0, "dist": 15, "up": 6 }, { "az": 12, "dist": 16, "up": 6 }, { "az": -12, "dist": 16, "up": 6 }] },
+    { "n": 6, "name": "dispatch-area", "front": 0, "x": 250, "y": 0, "z": 231, "radius": 9, "note": "police and medic dispatch boards, the test-call console and the dedicated test till" },
     { "n": 7, "name": "hospital", "front": 180, "avoid": [[254, 245, 5]], "x": 262, "y": 0, "z": 255, "radius": 18 },
     { "n": 8, "name": "payphones-fuel", "front": 0, "x": 256.5, "y": 0, "z": 237, "radius": 10 },
     { "n": 8, "name": "payphones-hospital", "front": 180, "x": 255, "y": 0, "z": 259, "radius": 10 },

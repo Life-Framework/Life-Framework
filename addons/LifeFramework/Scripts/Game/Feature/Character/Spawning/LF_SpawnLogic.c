@@ -52,6 +52,17 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 	protected bool m_bTopUpTimer;
 
+	//! Playtest only: the dispatch console's test calls (LF_DebugDispatchAction) place a police or
+	//! medic call without a second player at a payphone. Off in the flagship game mode.
+	[Attribute("0", desc: "Playtest: the dispatch console can place a test police or medic call for a solo tester. Off in the flagship mode.", category: "Debug test dispatch")]
+	protected bool m_bDebugTestDispatch;
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDebugTestDispatch()
+	{
+		return m_bDebugTestDispatch;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	bool IsDebugMoneyTopUp()
 	{

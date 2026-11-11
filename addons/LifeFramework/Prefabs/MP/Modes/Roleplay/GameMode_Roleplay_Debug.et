@@ -6,6 +6,7 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
     m_bGrantTestCars 1
     m_bDebugMoneyTopUp 1
     m_bPlaytestHub 1
+    m_bDebugTestDispatch 1
     m_aFactionCharacterItems {
      LF_FactionLoadout "{B7C2A6677AF28A10}" {
       m_eFaction CIVILIAN
@@ -126,4 +127,5 @@ LF_GameModeRoleplay : "{03913608C59017A3}Prefabs/MP/Modes/Roleplay/GameMode_Role
   }
  }
  m_bDevToolsEnabled 1
+ m_bConvoyNearDrop 1
 }

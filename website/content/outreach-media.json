@@ -1,0 +1,54 @@
+{
+  "note": "The screenshot and GIF set for outreach posts (#570). Edit this file, then run `node scripts/outreach-media.mjs` (needs sharp 0.34 or newer for the GIFs: `npm i --no-save sharp@0.34.5`). It writes public/outreach/ and its index. Pictures come from public/docs-images, named by their path under it, and take their caption from content/gallery.json when the picture is listed there.",
+  "credit": "Captured in Arma Reforger on the Life Framework test build. Buildings, terrain, vehicles and props are Bohemia Interactive's base-game assets; the signs, boards and systems are Life Framework's. Not affiliated with or endorsed by Bohemia Interactive.",
+  "stills": [
+    { "slug": "spawn-square", "src": "area-1-spawn-square/wide-after", "focusX": 0.55 },
+    { "slug": "store", "src": "area-3-store/counter" },
+    { "slug": "fuel-station", "src": "area-5-fuel-station/wide" },
+    { "slug": "hospital", "src": "area-7-hospital/wide" },
+    { "slug": "police-post", "src": "area-6-police/wide" },
+    { "slug": "car-lot", "src": "area-4-carlot/detail" },
+    { "slug": "bank", "src": "area-2-bank/detail" },
+    { "slug": "payphone", "src": "area-8-payphones/fuel" },
+    { "slug": "cash-van-sacks", "src": "area-10-cash-van/bags" },
+    { "slug": "fence-yard", "src": "area-9-fence/wide" },
+    { "slug": "lockup-row", "src": "area-14-lockup/wide", "focusX": 0.8 },
+    { "slug": "chop-shop", "src": "area-15-chopshop/wide", "focusX": 0.72 },
+    { "slug": "quarry-barrier", "src": "area-11-quarry/barrier" },
+    { "slug": "moonshine-still", "src": "area-16-moonshine/still" }
+  ],
+  "slideshows": [
+    {
+      "slug": "town-tour",
+      "title": "A walk through town",
+      "caption": "Five captures from the test town, one after another: the spawn square, the store, the fuel station, the bank and the car lot. A slideshow of stills, not footage.",
+      "frames": ["area-1-spawn-square/wide-after", "area-3-store/counter", "area-5-fuel-station/wide", "area-2-bank/detail", "area-4-carlot/detail"]
+    },
+    {
+      "slug": "emergency-services",
+      "title": "Police and hospital",
+      "caption": "The police post, the hospital, its front and ambulance bay, and a payphone. A slideshow of stills, not footage.",
+      "frames": ["area-6-police/wide", "area-7-hospital/wide", "area-17-signs/hospital-front", "area-17-signs/ambulance-bay", "area-8-payphones/hospital"]
+    },
+    {
+      "slug": "underworld",
+      "title": "The underworld",
+      "caption": "The lock-up row, the fence's yard, the chop shop, money sacks from the cash van and the moonshine still. A slideshow of stills, not footage.",
+      "frames": ["area-14-lockup/wide", "area-9-fence/wide", "area-15-chopshop/wide", "area-10-cash-van/bags", "area-16-moonshine/still"]
+    },
+    {
+      "slug": "outskirts",
+      "title": "The edge of town",
+      "caption": "The hideout bench, the farm, the quarry barrier and the moonshine still. A slideshow of stills, not footage.",
+      "frames": ["area-13-hideout/bench", "area-12-farm/wide", "area-11-quarry/barrier", "area-16-moonshine/still"]
+    }
+  ],
+  "clipsToCapture": [
+    { "slug": "payphone-dispatch", "length": "10 to 15 s", "shows": "A player dials Report a crime at a payphone; an officer on duty hears it on the radio and the dispatch board lists it." },
+    { "slug": "downed-revive", "length": "10 to 15 s", "shows": "A player is shot and goes down, a medic clocks in at the hospital desk and revives them." },
+    { "slug": "cash-van-drill", "length": "10 s", "shows": "A player drills the cash van's box at the bank doorstep and money sacks appear." },
+    { "slug": "hotwire-chop", "length": "15 s", "shows": "Pick a lock-up door, hotwire the car, drive it into the chop shop yard and watch the payout." },
+    { "slug": "arrest-cell", "length": "10 s", "shows": "An officer arrests a robber at the fuel till and the robber ends up in the cell." },
+    { "slug": "arrival-clerk", "length": "10 s", "shows": "A new player fills in form R-89 and the clerk hands over an ID card on the square." }
+  ]
+}

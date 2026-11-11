@@ -3771,7 +3771,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C253431484CC5293}" {
      Id "LF-Sign_Garage_How"
-     Target_en_us "Park by the doors, get out, and Store vehicle. Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
+     Target_en_us "Park by the doors and get out. Store vehicle is on the counter beside the doors and on the car itself (Store in garage). Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
      Comment "Sign card for the garage where owners park vehicles, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{4666CFF92E358BA1}" {
@@ -3966,7 +3966,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDE5BBC474B685BE}" {
      Id "LF-Sign_ConvoyPickup_How"
-     Target_en_us "Start convoy at the crates to take one, load it into a vehicle, drive to the back of the pub on the square, and Deliver contraband at the empty crate cage there."
+     Target_en_us "Start convoy at the crates to take one, load it into a vehicle, drive to the convoy drop (the empty crate cage), and Deliver contraband there."
      Comment "Sign card for the convoy pickup at the barn out of town, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{1AD1E7DE6B2D2E35}" {
@@ -4891,7 +4891,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8269943001D9EADB}" {
      Id "LF-Contraband_Loaded"
-     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
+     Target_en_us "You have a crate. Drive it to the convoy drop, the empty crate cage, and stay in the vehicle until you get there."
      Comment "Toast when the convoy start hands the player a contraband crate at the barn"
     }
     CustomStringTableItem "{DEDBE2A372F43FF6}" {
@@ -6840,6 +6840,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-SpawnHub_Pt_annex"
      Target_en_us "Test annex"
      Comment "Travel list row: annex."
+    }
+    CustomStringTableItem "{C5BBC2192BD8EFEC}" {
+     Id "EL-VehicleLock_ActionLock"
+     Target_en_us "Lock vehicle"
+     Comment "Action label when the vehicle is unlocked (#412)."
+    }
+    CustomStringTableItem "{D6B5DE4ACCEECA33}" {
+     Id "EL-VehicleLock_ActionUnlock"
+     Target_en_us "Unlock vehicle"
+     Comment "Action label when the vehicle is locked (#412)."
+    }
+    CustomStringTableItem "{405F3EF53D4704D5}" {
+     Id "LF-Garage_StoreHere"
+     Target_en_us "Store in garage"
+     Comment "Action on the player's own car when it stands within the garage radius. Same rules as the garage counter."
+    }
+    CustomStringTableItem "{C8B8911B5F3A014D}" {
+     Id "LF-Keybind_VehicleLock"
+     Target_en_us "Lock or unlock vehicle"
+     Comment "Key binding menu label for the U key."
+    }
+    CustomStringTableItem "{C470CD4C9E58C70D}" {
+     Id "LF-VehicleLock_NoTarget"
+     Target_en_us "No vehicle of yours in reach"
+     Comment "Toast when U is pressed with no keyed vehicle near."
+    }
+    CustomStringTableItem "{A27300000000BA02}" {
+     Id "LF-BankKit_Take"
+     Target_en_us "Take bank robbery kit"
+     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
+    CustomStringTableItem "{9BE7A1D673564E1C}" {
+     Id "LF-Dispatch_TestPolice"
+     Target_en_us "Test police call"
+     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
+    }
+    CustomStringTableItem "{803BB29C950EAC01}" {
+     Id "LF-Dispatch_TestMedic"
+     Target_en_us "Test medic call"
+     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
+    }
+    CustomStringTableItem "{E9CE669FFF4D0206}" {
+     Id "LF-Dispatch_TestDesc"
+     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
+     Comment "Description of the dispatch console test-call actions."
+    }
+    CustomStringTableItem "{05CAE71B3EBFC584}" {
+     Id "LF-Dispatch_TestTitle"
+     Target_en_us "Test call"
+     Comment "Toast title for the dispatch console test call."
+    }
+    CustomStringTableItem "{51294940A40506CF}" {
+     Id "LF-Dispatch_TestSent"
+     Target_en_us "Call placed. Take it at the dispatch board."
+     Comment "Toast after a test call went out to an on-duty service."
+    }
+    CustomStringTableItem "{36AF55270A37E7B0}" {
+     Id "LF-Dispatch_TestOff"
+     Target_en_us "Test calls are off in this game mode."
+     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
     }
   }
  }

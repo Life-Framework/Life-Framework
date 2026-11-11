@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { PlaytestButtons } from "@/components/PlaytestButtons";
 import { GoLink, PageHeader, Section, Stamp } from "@/components/ui";
 import { DISCORD_URL, REPO_URL, blob } from "@/lib/content";
 
@@ -17,7 +18,7 @@ What I expected:
 What happened:
 Where (place name, sign or coordinates):
 Screenshot or clip:
-Build (commit hash, or the one the host gave):
+Build (the first line of version.txt in the playtest folder):
 Role and Steam name (civilian, police or medic):`;
 
 const CLONE_CMD = `git clone https://github.com/Life-Framework/Life-Framework.git
@@ -177,21 +178,80 @@ const Code = ({ children }: { children: string }) => (
   <pre className="font-mono text-[0.8125rem] leading-relaxed bg-inset border border-rule p-4 overflow-x-auto whitespace-pre">{children}</pre>
 );
 
+const STEPS = [
+  {
+    n: "1",
+    title: "Download",
+    body: "Press the yellow Download the playtest button. Your browser saves one zip file, usually in Downloads.",
+    img: "/playtest-steps/step-download.webp",
+    alt: "The yellow Download the playtest button on this website",
+  },
+  {
+    n: "2",
+    title: "Unzip it anywhere",
+    body: "Right-click the zip and choose Extract All, then Extract. You get a folder with Play Life Framework in it. Keep the files in that folder together.",
+    img: "/playtest-steps/step-unzip.webp",
+    alt: "The unzipped folder in Windows Explorer, with Play Life Framework, README, addons and launcher",
+  },
+  {
+    n: "3",
+    title: "Double-click Play Life Framework",
+    body: "Pick Play on my own for the town to yourself, or Join the community server to play with others. The game opens and loads the town in a minute or two.",
+    img: "/playtest-steps/step-play.webp",
+    alt: "The Life Framework window with two buttons: Play on my own, and Join the community server",
+  },
+];
+
 const Playtest = () => (
   <>
-    <PageHeader kicker="Playtest" title="Run a playtest, tell us what broke">
+    <PageHeader kicker="Playtest" title="Download the playtest and play">
       <p>
-        A community playtest of the M2 Living Town build is open. It is a small 1989 Everon town, hosted by a person from their own PC,
-        so it is not always online and it can be full. You do not need to be a developer to play it.
-      </p>
-      <p className="text-[1rem] muted">
-        <a href="#what" className="link">What it is</a> · <a href="#install" className="link">Install</a> ·{" "}
-        <a href="#run" className="link">Join or host</a> · <a href="#test" className="link">What to test</a> ·{" "}
-        <a href="#feedback" className="link">Feedback</a>
+        A small 1989 Everon town with jobs, a bank, police, medics and crime. All you need is Arma Reforger from Steam on a Windows PC.
       </p>
     </PageHeader>
+    <div className="wrap pb-12 -mt-2">
+      <PlaytestButtons />
+      <p className="mt-6 text-[1rem] muted">
+        <a href="#install" className="link">How to install</a> · <a href="#run" className="link">Play with others</a> ·{" "}
+        <a href="#what" className="link">What it is</a> · <a href="#test" className="link">What to test</a> ·{" "}
+        <a href="#feedback" className="link">Feedback</a>
+      </p>
+    </div>
 
-    <Section id="what" kicker="What it is" title="M2 Living Town, in one small town" aside={<Stamp tone="ink">Not released</Stamp>}>
+    <Section id="install" kicker="Install" title="Three steps, no setup">
+      <ol className="grid gap-8 md:grid-cols-3">
+        {STEPS.map((st) => (
+          <li key={st.n} className="sheet p-5 flex flex-col">
+            <div className="flex items-center gap-3">
+              <span className="btn-download inline-flex items-center justify-center w-11 h-11 shrink-0 border-[3px] border-[#1b1d19] font-display font-bold text-2xl">
+                {st.n}
+              </span>
+              <h3 className="display-3">{st.title}</h3>
+            </div>
+            <div className="mt-4 h-44 flex items-center justify-center bg-inset border border-rule overflow-hidden">
+              <img src={st.img} alt={st.alt} loading="lazy" decoding="async" className="max-h-full w-full object-contain" />
+            </div>
+            <p className="mt-4">{st.body}</p>
+          </li>
+        ))}
+      </ol>
+      <div className="mt-8 max-w-3xl space-y-3">
+        <p>
+          <strong>If Windows warns you.</strong> A blue box saying "Windows protected your PC" means Windows has not seen this file
+          before. Click <strong>More info</strong>, then <strong>Run anyway</strong>. If it asks whether to open or run the file, say yes.
+        </p>
+        <p>
+          <strong>If the game is not found.</strong> Install Arma Reforger from Steam and start it once, then double-click Play Life
+          Framework again.
+        </p>
+        <p className="muted">
+          <strong>Use your own Steam name.</strong> The server keeps your character by your Steam name, so your cash, bank, job and cars
+          are there when you come back. Two players with the same name share one character.
+        </p>
+      </div>
+    </Section>
+
+    <Section id="what" kicker="What it is" title="M2 Living Town, in one small town" aside={<Stamp tone="ink">Test build</Stamp>}>
       <div className="grid gap-10 lg:grid-cols-2 max-w-6xl">
         <div className="space-y-4">
           <p>
@@ -220,105 +280,68 @@ const Playtest = () => (
       </div>
     </Section>
 
-    <Section id="install" kicker="Install" title="Get the game and the addon">
-      <ol className="space-y-8 max-w-4xl">
-        <li>
-          <h3 className="heading">1. Arma Reforger on Steam</h3>
-          <p className="mt-2">
-            Install Arma Reforger from Steam. The playtest needs the game and nothing else from the Workshop.
-          </p>
-        </li>
-        <li>
-          <h3 className="heading">2. The Life Framework addon, at the host's commit</h3>
-          <p className="mt-2">
-            There is no public Workshop item for the playtest yet, so the addon comes from the GitHub repository. The host gives you a{" "}
-            <strong>commit</strong>, a code such as <span className="font-mono">8c824c08</span>. Use exactly that one: a different build
-            has different scripts, and the game will not match the host's.
-          </p>
-          <p className="mt-3 font-semibold">Without Git (easiest)</p>
-          <ol className="mt-1 list-decimal pl-6 space-y-1">
-            <li>
-              Open <span className="font-mono text-[0.9375rem] break-all">{REPO_URL}/archive/&lt;commit&gt;.zip</span> in your browser, with
-              the host's commit in place of <span className="font-mono">&lt;commit&gt;</span>. It downloads a zip file.
-            </li>
-            <li>
-              Extract it to a short path such as <span className="font-mono">C:\LF</span>. You end up with a folder like{" "}
-              <span className="font-mono">C:\LF\Life-Framework-8c824c08</span> that contains an <span className="font-mono">addons</span> folder.
-            </li>
-          </ol>
-          <p className="mt-4 font-semibold">With Git</p>
-          <p className="mt-1 mb-2 muted">In a terminal, in the folder you want it in (here <span className="font-mono">C:\LF</span>):</p>
-          <Code>{CLONE_CMD}</Code>
-        </li>
-        <li>
-          <h3 className="heading">3. Start the game with the addon loaded</h3>
-          <p className="mt-2">
-            The game loads the addon from your folder through its command line. Open PowerShell and run the line below, with these
-            changed to match your PC:
-          </p>
-          <ul className="mt-2 mb-3 list-disc pl-6 space-y-1">
-            <li>
-              the path to <span className="font-mono">ArmaReforgerSteam.exe</span> (in Steam: right-click Arma Reforger, Manage, Browse
-              local files);
-            </li>
-            <li>
-              <span className="font-mono">&lt;host address&gt;</span>, which the host gives you;
-            </li>
-            <li>
-              the path after <span className="font-mono">-addonsDir</span>: the <span className="font-mono">addons</span> folder you just
-              got.
-            </li>
-          </ul>
-          <Code>{LAUNCH_CMD}</Code>
-          <p className="mt-3">
-            The game starts and joins the host. Do not add other launch options: the host runs without them, and extra script options
-            change the checksum the game compares.
-          </p>
-        </li>
-        <li>
-          <h3 className="heading">4. Use your own Steam name</h3>
-          <p className="mt-2">
-            The server keys your character to your Steam name, so you keep your cash, bank, job, cars and organization when you come
-            back. Two players with the same Steam name share one character, so every tester needs a name of their own.
-          </p>
-        </li>
-      </ol>
-    </Section>
-
-    <Section id="run" kicker="Run a playtest" title="Join a host, or host your own">
+    <Section id="run" kicker="Play with others" title="Join the community server">
       <div className="grid gap-10 lg:grid-cols-2 max-w-6xl">
-        <div className="sheet p-6 md:p-8">
-          <p className="kicker">Join</p>
-          <h3 className="display-3 mt-1">Join a host</h3>
-          <p className="mt-3">
-            Session times are announced on{" "}
-            <a href={DISCORD_URL} className="link">Discord</a>. A host gives you two things: an address to join and the commit the build
-            was made from. Install that commit as above and run the launch line with the host's address in it. The host's own tool prints
-            the exact line for you to copy.
+        <div className="space-y-4">
+          <p>
+            Play sessions are announced on <a href={DISCORD_URL} className="link">Discord</a>. When one is on, double-click Play Life
+            Framework and pick <strong>Join the community server</strong>. The launcher looks up where the server is and joins it.
           </p>
-          <p className="mt-3 muted">
-            Over the internet, the host has to forward a UDP port to their PC. On a home network, use the host's LAN address.
+          <p className="muted">
+            The server is hosted from a person's own PC, so it is not always on and it can be full. If nobody is hosting, the launcher
+            says so, and Play on my own works any time.
           </p>
         </div>
-        <div className="sheet p-6 md:p-8">
-          <p className="kicker">Host</p>
-          <h3 className="display-3 mt-1">Host your own</h3>
-          <p className="mt-3">
-            This is for someone who is comfortable in a terminal. Set up the project's tools from the{" "}
-            <a href={blob("docs/setup.md")} className="link">setup guide</a>, then, in your clone:
-          </p>
-          <Code>{`tools\\cli playtest
-tools\\cli playtest stop`}</Code>
-          <p className="mt-3">
-            The first runs the town as a dedicated server on your PC, joins it, and prints the commit and the client line your friends
-            use. The second stops it. Saves are kept, so characters continue between sessions.
+        <div className="space-y-4">
+          <p>
+            <strong>A new build came out?</strong> The launcher tells you when the server runs a newer playtest than yours. Download the
+            zip again from this page and play from the new folder.
           </p>
         </div>
       </div>
-      <p className="mt-8 max-w-prose muted">
-        A host's PC is one machine: if it is full or off, nothing is wrong with your install. More on the setup in the{" "}
-        <Link to="/docs/playtest" className="link">playtest guide</Link>.
-      </p>
+
+      <details className="mt-12 sheet p-5 md:p-6 max-w-4xl">
+        <summary className="heading cursor-pointer">For developers: run from the source, or host a server</summary>
+        <div className="mt-5 space-y-8">
+          <div>
+            <h3 className="heading">Run from a git checkout</h3>
+            <p className="mt-2">
+              The download is the <span className="font-mono">addons/LifeFramework</span> folder of a tagged commit, its resource
+              database, and the launcher. To play a commit no release covers, clone the repository at the host's commit:
+            </p>
+            <div className="mt-3">
+              <Code>{CLONE_CMD}</Code>
+            </div>
+            <p className="mt-3">
+              Then start the game with the addon loaded. Change the game path, the host address and the path after{" "}
+              <span className="font-mono">-addonsDir</span> to match your PC:
+            </p>
+            <div className="mt-3">
+              <Code>{LAUNCH_CMD}</Code>
+            </div>
+            <p className="mt-3 muted">
+              Do not add other launch options: extra script defines change the checksum the game compares with the host. A fresh clone
+              has no <span className="font-mono">resourceDatabase.rdb</span>; open the project in Workbench once (or run{" "}
+              <span className="font-mono">{"tools\\cli rdb"}</span> in a worktree) or the game cannot find the addon's files.
+            </p>
+          </div>
+          <div>
+            <h3 className="heading">Host your own</h3>
+            <p className="mt-2">
+              Set up the project's tools from the <a href={blob("docs/setup.md")} className="link">setup guide</a>, then, in your clone:
+            </p>
+            <div className="mt-3">
+              <Code>{`tools\\cli playtest
+tools\\cli playtest stop`}</Code>
+            </div>
+            <p className="mt-3">
+              The first runs the town as a dedicated server on your PC, joins it, and prints the commit and the client line your friends
+              use. The second stops it. Saves are kept between sessions. Over the internet, forward UDP 2001 to your PC. How the
+              launcher's community server is pointed at a host is in the <Link to="/docs/playtest" className="link">playtest guide</Link>.
+            </p>
+          </div>
+        </div>
+      </details>
     </Section>
 
     <Section id="test" kicker="What to test" title="A short list for each area">
@@ -417,7 +440,8 @@ tools\\cli playtest stop`}</Code>
             civilian, police or medic.
           </li>
           <li>
-            <strong>Build</strong> is the commit the host gave you. Without it we cannot tell which version you played.
+            <strong>Build</strong> is the first line of <span className="font-mono">version.txt</span> in your playtest folder, such as
+            playtest-m2-1. Without it we cannot tell which version you played.
           </li>
           <li>
             A report is read by a person. It is not a promise that the thing will be built or fixed.

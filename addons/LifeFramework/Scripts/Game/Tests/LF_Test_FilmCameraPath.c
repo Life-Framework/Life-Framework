@@ -1,3 +1,6 @@
+// red-proof: 2026-11-10 (follow smoothing, #394 polish), SmoothAlpha(0.25, 0.25) == 0.5 -> 0.4, cli test --no-build --only LF_Test_FilmCameraPath:
+//   [LFTEST]   - dt equal to tau moves half way
+// Restored; green.
 // red-proof: 2026-11-08, quarter-time assertion 15.625 -> 15.0, cli test --no-build --tier fast:
 //   [LFTEST] FAIL film/camera-path
 //   [LFTEST]   - quarter time eases in (smoothstep 0.25 = 0.15625) (expected 15, got 15.625)
@@ -15,6 +18,11 @@ class LF_Test_FilmCameraPath : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
+		ctx.True(LF_FilmCameraPath.SmoothAlpha(0, 0.25) == 0, "no time passed: the follow point does not move");
+		ctx.True(LF_FilmCameraPath.SmoothAlpha(1, 0) == 1, "no smoothing: it jumps to the target");
+		ctx.True(LF_FilmCameraPath.SmoothAlpha(0.25, 0.25) == 0.5, "dt equal to tau moves half way");
+		ctx.True(LF_FilmCameraPath.SmoothAlpha(0.033, 0.25) < LF_FilmCameraPath.SmoothAlpha(0.1, 0.25), "a longer frame moves further");
+
 		LF_FilmCameraPath empty = new LF_FilmCameraPath();
 		vector position;
 		vector lookAt;
