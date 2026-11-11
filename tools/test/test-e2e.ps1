@@ -20,6 +20,13 @@
 # validation also compiles the XBOX/PS4/PS5 configs, which this server does
 # not, so `validate --full` stays in ci, wt gate, and wt ship.
 #
+# -Mission <{GUID}path> boots that mission header instead of the bare DebugWorld.ent.
+# -HostStop ends the run the way `tools\cli host stop` does: after the SUMMARY (and,
+# with -HostStopAfter <regex>, after a console line matching it) it writes the stop
+# file $profile:lf-host-stop, then waits up to -GracefulCloseSeconds for the server
+# to close itself and write its SHUTDOWN save (wt e2e pass 1, #830). LF_HostStop only
+# watches the file under an LF_MissionHeader with m_bLF_HostStopFile, so pass -Mission.
+#
 # -Only <a,b> runs just those tests (class names or GetName() strings): it
 # writes $profile:LF_TestOnly.txt and defines LF_TEST_ONLY; the suite then
 # reports tier=only, so suite-stamp never mistakes it for a full tier run.
@@ -38,7 +45,9 @@ param(
   [switch]$KeepProfile,
   [switch]$LoadLatestSave,
   [string]$LoadSessionSave,
-  [switch]$GracefulClose,
+  [string]$Mission,
+  [switch]$HostStop,
+  [string]$HostStopAfter,
   [int]$GracefulCloseSeconds = 30,
   [string]$ExtraDefine,
   [string]$Only
@@ -199,8 +208,10 @@ GameProject {
 }
 
 $addonsDir = (Join-Path $root "addons") + "," + $gameAddons
+$serverTarget = "Worlds/DebugWorld/DebugWorld.ent"
+if ($Mission) { $serverTarget = $Mission }
 $args = @(
-  "-server", "Worlds/DebugWorld/DebugWorld.ent",
+  "-server", $serverTarget,
   "-worldSystemsConfig", "{2104C177A245B6D1}Configs/Systems/LifeFrameworkSystems.conf",
   "-addonsDir", $addonsDir,
   "-addons", "LifeFramework",
@@ -418,10 +429,24 @@ while ($true) {
 }
 
 $alive = -not $p.HasExited
+if ($alive -and $HostStop -and $lastSummary) {
+  $hsSw = [Diagnostics.Stopwatch]::StartNew()
+  if ($HostStopAfter) {
+    while (-not $p.HasExited -and $hsSw.Elapsed.TotalSeconds -lt $GracefulCloseSeconds -and -not ((Read-Console $lastSummary.LogDir) -match $HostStopAfter)) {
+      Start-Sleep -Milliseconds 500
+    }
+  }
+  if (-not $p.HasExited) {
+    # The file tools\cli host stop writes; LF_HostStop polls it every 2 s.
+    $stopFile = Join-Path $profile "profile\lf-host-stop"
+    [System.IO.File]::WriteAllText($stopFile, "wt e2e", (New-Object System.Text.UTF8Encoding $false))
+    Write-Host "test-e2e: host stop requested after $([int]$hsSw.Elapsed.TotalSeconds) s ($stopFile)"
+  }
+}
 if ($alive) {
-  if ($GracefulClose) {
-    # Let the server close on its own so the blocking shutdown save (OnGameEnd)
-    # completes before process exit; fall back to a force kill on timeout.
+  if ($HostStop) {
+    # Let the server close on its own so the engine's SHUTDOWN save completes
+    # before process exit; fall back to a force kill on timeout.
     $gcSw = [Diagnostics.Stopwatch]::StartNew()
     while (-not $p.HasExited -and $gcSw.Elapsed.TotalSeconds -lt $GracefulCloseSeconds) {
       Start-Sleep -Milliseconds 1000

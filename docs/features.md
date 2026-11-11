@@ -553,7 +553,11 @@
   on graceful exit; the manager observes the result via `OnAfterSave` and logs
   an `LF_Debug.Error` if a session ends with no shutdown save. The old manual
   `RequestSavePoint(SHUTDOWN)` from `OnGameEnd` always lost the race against
-  the persistence teardown on the Workbench (fixed 2026-08-30).
+  the persistence teardown on the Workbench (fixed 2026-08-30). The engine
+  writes it only under a mission header; a bare `DebugWorld.ent` boot writes
+  none. `wt e2e` pass 1 ends through the host stop file on
+  `EL_DebugTest.conf`, asserts the SHUTDOWN save landed before the statics
+  reset, and pass 2 loads it (test `e2e/shutdown-save-loaded`, #830).
 - ✅ Persistence system resolution is stable across reloads: the systems config
   is now `Configs/Systems/LifeFrameworkSystems.conf` (unique GUID, referenced
   explicitly from both missions), replacing the GUID-colliding
