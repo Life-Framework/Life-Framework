@@ -112,4 +112,5 @@ SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastru
    }
   }
  }
+ scale 0.8
 }
