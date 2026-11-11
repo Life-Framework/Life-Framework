@@ -5,4 +5,4 @@ Footage: Life Framework DebugWorld playtest town (Arma Reforger).
 Music: "Carefree" by Kevin MacLeod (incompetech.com)
 Licensed under Creative Commons: By Attribution 4.0 License
 http://creativecommons.org/licenses/by/4.0/
-Voice: Piper TTS (MIT), en_US-libritts_r voice (CC BY 4.0)
+Voice: Piper en_US-ljspeech (LJ Speech, public domain)

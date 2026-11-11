@@ -9,7 +9,7 @@
 //   { "title", "size":[1920,1080], "fps":30, "transition":0.6,
 //     "titleCard":{ "lines":[...], "seconds":4 }, "endCard":{ "lines":[...], "seconds":5 },
 //     "clips":[{ "src", "start":0, "seconds":8, "audio":true, "captions":"cues.txt" | [[from,to,"text"]], "vo":"cues.txt" | [[at,"text"]] }],
-//     "music":{ "file", "gainDb":-14, "duckDb":12, "fadeIn":2, "fadeOut":3 }, "voice":{ "speaker":20 } }
+//     "music":{ "file", "gainDb":-14, "duckDb":12, "fadeIn":2, "fadeOut":3 }, "voice":{ "lengthScale":1.0 } }
 // Cue files are plain text, one cue a line: captions "from to text", voice-over "at text" (seconds from the start of the
 // take; "#" starts a comment). Caption and voice lines in one file may share lines: a cue with a trailing "|vo" is also spoken.
 
@@ -280,10 +280,17 @@ function piperPath() {
   return existsSync(p) ? p : null;
 }
 
-export function synthVo(text, wav, { speaker = 20, model = "en_US-libritts_r-medium.onnx" } = {}) {
+// The voice: en_US-ljspeech (high), trained from scratch on the public-domain LJ Speech data. libritts_r was dropped:
+// it is fine-tuned from lessac, whose Blizzard 2013 data is licensed for research only. A single-speaker model takes
+// no speaker id; pass `speaker` only for a multi-speaker model.
+export const VOICE_MODEL = "en_US-ljspeech-high.onnx";
+
+export function synthVo(text, wav, { speaker, model = VOICE_MODEL, lengthScale = 1.0 } = {}) {
   const piper = piperPath();
   if (!piper) throw new Error("Piper not installed. Run: tools\\cli film-make --setup");
-  const r = run(piper, ["-m", join(TTS_DIR, model), "-s", String(speaker), "--length_scale", "1.08", "-f", wav], { input: text + "\n", cwd: join(TTS_DIR, "piper") });
+  const args = ["-m", join(TTS_DIR, model), "--length_scale", String(lengthScale), "-f", wav];
+  if (speaker !== undefined) args.push("-s", String(speaker));
+  const r = run(piper, args, { input: text + "\n", cwd: join(TTS_DIR, "piper") });
   if (r.status !== 0 || !existsSync(wav)) throw new Error(`piper failed: ${(r.stderr || "").trim().slice(-300)}`);
 }
 
@@ -302,9 +309,9 @@ export function setup() {
     if (r.status !== 0) throw new Error(`unzip failed: ${r.stderr}`);
     rmSync(zip, { force: true });
   }
-  const base = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/libritts_r/medium";
-  for (const f of ["en_US-libritts_r-medium.onnx", "en_US-libritts_r-medium.onnx.json"]) if (!existsSync(join(TTS_DIR, f))) dl(`${base}/${f}`, join(TTS_DIR, f));
-  console.log(`Piper and the en_US-libritts_r voice are in ${TTS_DIR}`);
+  const base = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ljspeech/high";
+  for (const f of [VOICE_MODEL, `${VOICE_MODEL}.json`]) if (!existsSync(join(TTS_DIR, f))) dl(`${base}/${f}`, join(TTS_DIR, f));
+  console.log(`Piper and the en_US-ljspeech (high) voice are in ${TTS_DIR}`);
   return 0;
 }
 
