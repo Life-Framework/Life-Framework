@@ -77,7 +77,7 @@ GenericEntity Moonshine_Still : "{4C1A9E07B35D8210}Prefabs/Chains/LF_ChainStill.
    m_sSiteId "Moonshine_Site"
   }
  }
- coords 384 0 304.2
+ coords 383.995 0.025 304.154
 }
 GenericEntity : "{CD87FB2AC3A85D65}Prefabs/Structures/BuildingParts/Heating/BoilerLarge_02/BoilerLarge_02_base.et" {
  coords 386.4 0 305.4
@@ -87,13 +87,13 @@ GenericEntity : "{D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et" {
  coords 381.4 0 304.2
  angleY 0
 }
-GenericEntity : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 387.6 0 302.6
- angleY 20
+GenericEntity Moonshine_SacksE : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 387.548 0.018 302.577
+ angleY 0
 }
-GenericEntity : "{662766254306EE2D}PrefabLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 379.4 0 302.4
- angleY 75
+GenericEntity Moonshine_SacksW : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 379.348 0.018 302.377
+ angleY 0
 }
 GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
  coords 387.8 0 304.4
