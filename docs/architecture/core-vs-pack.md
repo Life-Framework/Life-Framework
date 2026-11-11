@@ -87,6 +87,8 @@ Split them along these seams:
   core table. A key that names a place or tells a story moves to the pack
   table, and the core gets a neutral default under its own key.
 - **A world layer.** Fixtures a test looks up by name stay in the core annex.
+  `validate-annex-fixtures` stops a new test naming a village entity (baseline in
+  `tools/validation/annex-fixtures-baseline.json`).
   The street around them moves to the pack.
 
 A resource that moves keeps its `.meta`, so its GUID stays the same and every
