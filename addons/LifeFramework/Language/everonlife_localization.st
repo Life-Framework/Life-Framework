@@ -7111,6 +7111,116 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Clock on at the police station to arrest the suspect you made."
      Comment "Annex crime site sign crime_police, Next section."
     }
+    CustomStringTableItem "{AD999D02320AA8DB}" {
+     Id "LF-PoliceApp_Action"
+     Target_en_us "Apply to the police"
+     Comment "Duty desk action."
+    }
+    CustomStringTableItem "{C1C8869AB5FF5BB9}" {
+     Id "LF-PoliceApp_ActionDesc"
+     Target_en_us "Fill in an application to join the police."
+     Comment "Duty desk action description."
+    }
+    CustomStringTableItem "{9F943D13BD5ABD5D}" {
+     Id "LF-PoliceApp_Review"
+     Target_en_us "Review applications (admin)"
+     Comment "Admin action at the duty desk: approves the oldest open application."
+    }
+    CustomStringTableItem "{3EC049CF5AD21E3C}" {
+     Id "LF-PoliceApp_ReviewDesc"
+     Target_en_us "Approve the application that has waited longest."
+     Comment "Admin review action description."
+    }
+    CustomStringTableItem "{B5EC482E2E329B9F}" {
+     Id "LF-PoliceApp_Title"
+     Target_en_us "Application to the Everon Police"
+     Comment "Police application form title."
+    }
+    CustomStringTableItem "{8AE64C101F1D0F7D}" {
+     Id "LF-PoliceApp_Intro"
+     Target_en_us "Fill in all three blanks. One application per person; an administrator decides."
+     Comment "Police application form instruction line."
+    }
+    CustomStringTableItem "{C80D8FA8411D1B2A}" {
+     Id "LF-PoliceApp_Name"
+     Target_en_us "Your name"
+     Comment "Police application blank: name."
+    }
+    CustomStringTableItem "{71121DE17F6CC779}" {
+     Id "LF-PoliceApp_Why"
+     Target_en_us "Why you want to serve"
+     Comment "Police application blank: reason."
+    }
+    CustomStringTableItem "{E16B433C3AC6E980}" {
+     Id "LF-PoliceApp_Availability"
+     Target_en_us "When you can be on duty"
+     Comment "Police application blank: availability."
+    }
+    CustomStringTableItem "{E8C273DCD90D9613}" {
+     Id "LF-PoliceApp_Submit"
+     Target_en_us "Hand it in"
+     Comment "Police application submit button."
+    }
+    CustomStringTableItem "{866A6764BE9188EB}" {
+     Id "LF-PoliceApp_Close"
+     Target_en_us "Put it away"
+     Comment "Police application close button."
+    }
+    CustomStringTableItem "{62BF90390E136693}" {
+     Id "LF-PoliceApp_Status"
+     Target_en_us "Police application"
+     Comment "Toast title for police application messages."
+    }
+    CustomStringTableItem "{F39424782E4C72BE}" {
+     Id "LF-PoliceApp_Receipt"
+     Target_en_us "Application received. An administrator will review it."
+     Comment "Receipt toast after filing."
+    }
+    CustomStringTableItem "{3B86E7A5E27354FE}" {
+     Id "LF-PoliceApp_Approved"
+     Target_en_us "Application approved. Clock in at the duty desk."
+     Comment "Toast when the application is approved on submit (playtest)."
+    }
+    CustomStringTableItem "{D85287BA39923646}" {
+     Id "LF-PoliceApp_ApprovedOther"
+     Target_en_us "Approved the application of %1."
+     Comment "Admin toast after approving; %1 is the applicant name."
+    }
+    CustomStringTableItem "{D17A6AB7C4AE46BE}" {
+     Id "LF-PoliceApp_NoneOpen"
+     Target_en_us "No open applications."
+     Comment "Admin review toast when none wait."
+    }
+    CustomStringTableItem "{B28597051ECFD842}" {
+     Id "LF-PoliceApp_NotAdmin"
+     Target_en_us "Only an administrator can approve applications."
+     Comment "Refusal toast for a non-admin review."
+    }
+    CustomStringTableItem "{176552BBA801A382}" {
+     Id "LF-PoliceApp_Error_Fields"
+     Target_en_us "Fill in all three blanks."
+     Comment "Form error: a blank is empty."
+    }
+    CustomStringTableItem "{128D4C6358A00BA9}" {
+     Id "LF-PoliceApp_Error_Length"
+     Target_en_us "One of the answers is too long."
+     Comment "Form error: too long."
+    }
+    CustomStringTableItem "{7F7AA537F0C237BB}" {
+     Id "LF-PoliceApp_Error_OnRoster"
+     Target_en_us "You are already on the police roster."
+     Comment "Refusal: applicant is already police."
+    }
+    CustomStringTableItem "{57C1C2B309431CF5}" {
+     Id "LF-PoliceApp_Error_AlreadyOpen"
+     Target_en_us "You already have an application waiting."
+     Comment "Refusal: one open application per player."
+    }
+    CustomStringTableItem "{EF03D310EECF0660}" {
+     Id "LF-PoliceApp_Error_NoAccount"
+     Target_en_us "Register at the civil registry first."
+     Comment "Refusal: no player identity."
+    }
     CustomStringTableItem "{93B24FC92EC107AF}" {
      Id "LF-Mission_PlaytestTown_Details"
      Target_en_us "This is a playtest build. Your cash and bank top up when they run low, and every new character owns two test cars, one in the garage and one at the impound. Your first spawn opens form R-89; fill it in to start. The first player on a server with no police is added to the police roster, so you can clock in at the station desk. Progress is saved and carries over a restart. Report problems on the Life Framework Discord or GitHub."
