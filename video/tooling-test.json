@@ -1,0 +1,18 @@
+{
+  "name": "film-post-tooling-test",
+  "size": [1920, 1080],
+  "fps": 30,
+  "transition": 0.6,
+  "titleCard": { "seconds": 4, "lines": ["Life Framework", "Tooling test cut. Not for posting."] },
+  "clips": [
+    { "src": "agent-box/reports/film/street-a.mp4", "start": 1, "seconds": 9, "captions": "video/cues/street.captions.txt", "vo": "video/cues/street.vo.txt" },
+    { "src": "agent-box/reports/film/rc-journey.mp4", "start": 70, "seconds": 6, "captions": [[0.4, 5.4, "Bank at the ATM"]], "vo": [[0.5, "Keep your money in the bank, or carry it."]] },
+    { "src": "agent-box/reports/film/rc-journey.mp4", "start": 82, "seconds": 5, "captions": [[0.4, 4.4, "Buy from the general store"]] },
+    { "src": "agent-box/reports/film/rc-journey.mp4", "start": 100, "seconds": 5, "captions": [[0.4, 4.4, "Hand over cash"]] },
+    { "src": "agent-box/reports/film/street-b.mp4", "start": 12, "seconds": 7, "captions": [[0.4, 6.4, "Drive through town"]] },
+    { "src": "agent-box/reports/film/police-proof.mp4", "start": 25, "seconds": 5, "captions": [[0.4, 4.4, "Wanted notices at the police desk"]] }
+  ],
+  "endCard": { "seconds": 5, "lines": ["life-framework.org/playtest", "Discord: discord.gg/MjMexJteqz"] },
+  "music": { "file": "video/music/carefree.mp3", "gainDb": -15, "fadeIn": 2, "fadeOut": 3 },
+  "voice": { "speaker": 20 }
+}

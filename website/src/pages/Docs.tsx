@@ -26,7 +26,7 @@ export const DocsIndex = () => (
         <div className="flex flex-wrap gap-x-6 gap-y-2">
           <GoLink to="/contribute">How to contribute</GoLink>
           <GoLink to="/docs/setup">Set up your tools</GoLink>
-          <GoLink to="/docs/playtest">Open the playtest</GoLink>
+          <GoLink to="/playtest">Join the playtest</GoLink>
         </div>
       </div>
     </div>

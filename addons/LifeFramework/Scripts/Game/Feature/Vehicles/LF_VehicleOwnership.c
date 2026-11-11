@@ -702,7 +702,7 @@ class LF_VehicleOwnership
 			reasonKey = "#EL-Vehicle_NoSpawn";
 			return false;
 		}
-		IEntity key = SpawnKey(id, origin);
+		IEntity key = SpawnKey(id, KeySpawnOrigin(buyer, origin));
 		if (!key)
 		{
 			SCR_EntityHelper.DeleteEntityAndChildren(vehicle);
@@ -763,7 +763,7 @@ class LF_VehicleOwnership
 			return false;
 
 		LF_VehicleRecord record = Records().Get(vehicleId);
-		IEntity key = SpawnKey(record.m_sKeyId, origin);
+		IEntity key = SpawnKey(record.m_sKeyId, KeySpawnOrigin(buyer, origin));
 		if (!key)
 		{
 			Refund(buyer, account, cashDebit, bankDebit);
@@ -1055,7 +1055,20 @@ class LF_VehicleOwnership
 		if (!inventory)
 			return;
 
-		inventory.TryInsertItem(key);
+		if (!inventory.TryInsertItem(key))
+			LF_Debug.Warn("Vehicle", "key did not fit the holder's inventory; it stays at the holder's feet");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a key is created: at its holder, so the item exists where the holder's client streams
+	//! it before the inventory insert. A key created at a far pad and inserted from there left the
+	//! client unable to resolve it and hung the inventory's loading throbber.
+	static vector KeySpawnOrigin(IEntity holder, vector fallback)
+	{
+		if (holder)
+			return holder.GetOrigin();
+
+		return fallback;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1115,7 +1128,7 @@ class LF_VehicleOwnership
 		IEntity key = FindLive(session.m_Key);
 		if (!key)
 		{
-			key = SpawnKey(record.m_sKeyId, origin);
+			key = SpawnKey(record.m_sKeyId, KeySpawnOrigin(keyHolder, origin));
 			if (!key)
 			{
 				SCR_EntityHelper.DeleteEntityAndChildren(vehicle);

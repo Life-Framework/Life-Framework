@@ -74,7 +74,11 @@ export type GithubData = {
   goodFirst: Issue[];
   latestPulls: Pull[];
   contributors: { login: string; url: string; contributions: number }[];
+  // The latest playtest download at build time (scripts/build-content.mjs); null before the first one.
+  playtestRelease?: PlaytestRelease | null;
 };
+
+export type PlaytestRelease = { tag: string; name: string; publishedAt: string; size: number };
 
 export type Still = {
   id: string;

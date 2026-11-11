@@ -180,6 +180,110 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 		return super.GetCannotPerformReason(user);
 	}
 
+	//! Placeholder lock/unlock sound: the base-game inventory click played on the user at the
+	//! car (docs/asset-inventory.md). Swap this one name for a real door-latch event.
+	static const string LOCK_SOUND = "SOUND_PICK_UP";
+	//! How far from the vehicle a key press may be (the menu action is gated by its own context).
+	static const float KEY_REACH = 6.0;
+	//! Sort Priority of the lock action in the prefabs. The vanilla get-in action is 1 and a lower
+	//! number is listed first, so the lock row sits below "Get in".
+	static const int ACTION_SORT_PRIORITY = 5;
+
+	//------------------------------------------------------------------------------------------------
+	//! \param locked Current lock state.
+	//! eturn The action label for what the action would do next.
+	static string ActionLabelKey(bool locked)
+	{
+		if (locked)
+			return "#EL-VehicleLock_ActionUnlock";
+
+		return "#EL-VehicleLock_ActionLock";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Permission for a lock request from an occupant or someone on foot: a matching key and reach.
+	static bool MayToggle(bool hasKey, float distance)
+	{
+		if (!hasKey)
+			return false;
+
+		return distance <= KEY_REACH;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the one path for the menu action and the U key. Validates key and reach, flips the
+	//! lock, records it, plays the sound and tells the user.
+	//! \param user The character asking.
+	//! \param source "menu" or "key", for the log.
+	//! eturn True when the lock changed.
+	bool TryToggleBy(IEntity user, string source)
+	{
+		if (!Replication.IsServer() || !user || !GetOwner())
+			return false;
+
+		float distance = vector.Distance(user.GetOrigin(), GetOwner().GetOrigin());
+		if (!MayToggle(UserHasValidKey(user), distance))
+		{
+			LF_Debug.Warn("VehicleLock", string.Format("toggle refused (%1): no key or out of reach (%2 m)", source, distance));
+			return false;
+		}
+
+		ToggleLocked();
+		LF_VehicleOwnership.NoteLockState(GetVehicleIdentifier(), IsVehicleLocked());
+		LF_Debug.Log("VehicleLock", string.Format("toggled by %1 -> locked=%2", source, IsVehicleLocked()));
+
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
+		if (inventory)
+			inventory.RpcAsk_PlaySound(LF_NetworkUtils.GetRplId(user), LOCK_SOUND);
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		int playerId = 0;
+		if (playerManager)
+			playerId = playerManager.GetPlayerIdFromControlledEntity(user);
+		if (playerId > 0)
+		{
+			if (IsVehicleLocked())
+				LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-VehicleLock_Title", "#EL-VehicleLocked");
+			else
+				LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-VehicleLock_Title", "#EL-VehicleUnlocked");
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the vehicle the U key means. Seated: the vehicle the user sits in. On foot: the
+	//! nearest vehicle within reach whose key the user holds.
+	static LF_VehicleLockComponent FindForKeyPress(IEntity user)
+	{
+		ChimeraCharacter character = ChimeraCharacter.Cast(user);
+		if (!character)
+			return null;
+
+		CompartmentAccessComponent access = character.GetCompartmentAccessComponent();
+		if (access && character.IsInVehicle())
+			return LF_Component<LF_VehicleLockComponent>.Find(access.GetVehicleIn(character));
+
+		LF_VehicleLockComponent best;
+		float bestDistance = KEY_REACH;
+		array<IEntity> vehicles = LF_Utils.GetNearbyVehicles(user.GetOrigin(), KEY_REACH);
+		foreach (IEntity vehicle : vehicles)
+		{
+			LF_VehicleLockComponent candidate = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
+			if (!candidate || !candidate.UserHasValidKey(user))
+				continue;
+
+			float distance = vector.Distance(user.GetOrigin(), vehicle.GetOrigin());
+			if (distance <= bestDistance)
+			{
+				bestDistance = distance;
+				best = candidate;
+			}
+		}
+
+		return best;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	void ToggleLocked()
 	{

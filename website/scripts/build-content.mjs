@@ -613,13 +613,28 @@ for (const c of media.clips) {
 
 // ---------------------------------------------------------------- write
 
+// The playtest download (tools/release/pack-playtest.mjs, .github/workflows/playtest-release.yml): the
+// "latest" release carries LifeFramework-Playtest.zip. The page also refreshes this in the browser
+// (src/lib/release.ts), so a release published after this build still shows its own version and size.
+async function fetchPlaytestRelease() {
+  try {
+    const rel = await gh(`/repos/${GITHUB_REPO}/releases/latest`);
+    const asset = (rel.assets || []).find((a) => a.name === "LifeFramework-Playtest.zip");
+    if (!asset) return null;
+    return { tag: rel.tag_name, name: rel.name || rel.tag_name, publishedAt: rel.published_at, size: asset.size };
+  } catch (err) {
+    console.warn(`[content] no playtest release (${err.message}); the download button shows no version`);
+    return null;
+  }
+}
+
 const { pulls, ...githubRest } = github;
-const githubOut = { ...githubRest, latestPulls: pulls.slice(0, 5) };
+const githubOut = { ...githubRest, latestPulls: pulls.slice(0, 5), playtestRelease: await fetchPlaytestRelease() };
 // ---------------------------------------------------------------- gallery
 
 const gallery = await buildGallery({ site, github, repoUrl: `https://github.com/${GITHUB_REPO}` });
 fs.writeFileSync(path.join(dataDir, "gallery.json"), JSON.stringify(gallery));
-console.log(`[content] gallery: ${gallery.count} pictures, ${gallery.sections.length} sections, ${gallery.areas.length} areas`);
+console.log(`[content] gallery: ${gallery.count} pictures`);
 
 fs.writeFileSync(path.join(outDir, "docs-index.json"), JSON.stringify(docsIndex));
 fs.writeFileSync(path.join(outDir, "site.json"), JSON.stringify({ ...siteJson, media }));

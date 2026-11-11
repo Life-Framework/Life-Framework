@@ -1,0 +1,18 @@
+SizeLayoutWidgetClass "{827305579F26213F}" {
+ Name "Rule"
+ Slot LayoutSlot "{BC629030210E5623}" {
+  Padding 28 4 28 6
+ }
+ AllowHeightOverride 1
+ HeightOverride 2
+ {
+  ImageWidgetClass "{5D3A91C7E04B28F1}" {
+   Name "RulePlate"
+   Slot AlignableSlot "{A6F0B2D914C73E85}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.478 0.4 0.251 1
+  }
+ }
+}

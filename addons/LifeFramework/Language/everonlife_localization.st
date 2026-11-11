@@ -2891,7 +2891,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{84F64B2018E1B414}" {
      Id "LF-Sign_What"
-     Target_en_us "What"
+     Target_en_us "What it is"
      Comment "Sign card section heading: what this place is."
     }
     CustomStringTableItem "{6A32B827033280BE}" {
@@ -2901,7 +2901,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{998F8A9D60C65734}" {
      Id "LF-Sign_Needs"
-     Target_en_us "Needs"
+     Target_en_us "You need"
      Comment "Sign card section heading: items, faction, or people needed."
     }
     CustomStringTableItem "{B4AC01A970C24DB6}" {
@@ -3596,22 +3596,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{122DE6C8A5EACE1E}" {
      Id "LF-Sign_TownMap_What"
-     Target_en_us "Find work at the post office, deliver, take your pay to the ATM, then spend it in town. One street runs east from this square, and every place in town stands on it."
+     Target_en_us "Find work at the *post office*|Deliver, then bank your pay at the *ATM*|Spend it in town. One street runs east from this square, and every place in town stands on it"
      Comment "Sign card for the town map board at the spawn square, What section."
     }
     CustomStringTableItem "{E2E6939EC03F1D07}" {
      Id "LF-Sign_TownMap_How"
-     Target_en_us "Walking east, on your left: post office, bank and ATM, vehicle lot, garage, hospital, organization office, then an alley north to the back room and a walled yard. On your right: general store, market stalls, police station with the jail behind it, fuel station. The farm is north of this square, the quarry south of the street, the barn at the end of the dirt track east."
+     Target_en_us "Walking east, on your left: post office, bank and ATM, vehicle lot, garage, hospital, organization office, then an alley north to the back room and a walled yard|On your right: general store, market stalls, police station with the jail behind it, fuel station|The farm is north of this square|The quarry is south of the street|The barn is at the end of the dirt track east"
      Comment "Sign card for the town map board at the spawn square, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{D2080755156ACB5D}" {
      Id "LF-Sign_TownMap_Needs"
-     Target_en_us "Start with the town clerk on this square: Talk to the clerk, and he hands you your ID card. Your first wage is at the post office counter: Take courier work."
+     Target_en_us "*Talk to the clerk* on this square: he hands you your ID card|*Take courier work* at the post office counter for your first wage"
      Comment "Sign card for the town map board at the spawn square, Needs section."
     }
     CustomStringTableItem "{9894F8E301871E9A}" {
      Id "LF-Sign_TownMap_Rules"
-     Target_en_us "Cash you carry stays on your body if you die. Money in the bank is safe. A crime makes you wanted."
+     Target_en_us "Cash you carry stays on your body if you die|Money in the bank is safe|A crime makes you wanted"
      Comment "Sign card for the town map board at the spawn square, Rules section."
     }
     CustomStringTableItem "{23CA0097B30B955A}" {
@@ -3626,17 +3626,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C312A6892E225185}" {
      Id "LF-Sign_PostOffice_How"
-     Target_en_us "At the counter: Take courier work, then Pick up parcel. Carry it to the drop on the porch past the lock-up, east end of the street on the right, and Complete the run. Out of work? Collect benefit."
+     Target_en_us "At the counter: *Take courier work*, then *Pick up parcel*|Carry it to the drop on the porch past the lock-up, east end of the street on the right, and *Complete the run*|Out of work? *Collect benefit*"
      Comment "Sign card for the post office (delivery jobs), How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{6DB7091FD56820C9}" {
      Id "LF-Sign_PostOffice_Needs"
-     Target_en_us "Courier work is open to all. Fuel delivery needs work level 2, taxi work level 3. Every paid run counts toward your level."
+     Target_en_us "Courier work is open to all|Fuel delivery needs work level 2, taxi work level 3|Every paid run counts toward your level"
      Comment "Sign card for the post office (delivery jobs), Needs section."
     }
     CustomStringTableItem "{C6D2A8327ECCBEBB}" {
      Id "LF-Sign_PostOffice_Rules"
-     Target_en_us "A courier run pays $40, fuel $60, a taxi fare $80, in cash. Abandon the run and you get nothing. The benefit is $100 when your bank balance is under $500, once every 20 minutes."
+     Target_en_us "A courier run pays $40, fuel $60, a taxi fare $80, in cash|Abandon the run and you get nothing|The benefit is $100 when your bank balance is under $500, once every 20 minutes"
      Comment "Sign card for the post office (delivery jobs), Rules section."
     }
     CustomStringTableItem "{363F3934916EA0EA}" {
@@ -3676,17 +3676,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DAF800340D8F2049}" {
      Id "LF-Sign_Bank_How"
-     Target_en_us "Breach the vault, then carry off the bag that comes out."
+     Target_en_us "*Breach* the vault|Carry off the bag that comes out"
      Comment "Sign card for the bank vault door (a robbery site), How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{4707A9003ACDE131}" {
      Id "LF-Sign_Bank_Needs"
-     Target_en_us "A demolition charge. Civilians only."
+     Target_en_us "A demolition charge|Civilians only"
      Comment "Sign card for the bank vault door (a robbery site), Needs section."
     }
     CustomStringTableItem "{B06E96D5F9CA75EC}" {
      Id "LF-Sign_Bank_Rules"
-     Target_en_us "Raises your wanted level and alerts the police. After a break-in the vault stays empty for a while."
+     Target_en_us "Raises your wanted level and alerts the police|After a break-in the vault stays empty for a while"
      Comment "Sign card for the bank vault door (a robbery site), Rules section."
     }
     CustomStringTableItem "{10B8F417BFC331B0}" {
@@ -3701,7 +3701,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9A2459E811183285}" {
      Id "LF-Sign_GeneralStore_How"
-     Target_en_us "Browse the store at the counter, then Buy or Sell."
+     Target_en_us "Browse the store at the counter|Then *Buy* or *Sell*"
      Comment "Sign card for the general store counter, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{E011AD948E4F1AAC}" {
@@ -3746,12 +3746,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{54D0C3DA3D5B0349}" {
      Id "LF-Sign_VehicleLot_How"
-     Target_en_us "Buy vehicle at the counter. It waits for you on the lot. Cut an extra key for $25."
+     Target_en_us "*Buy vehicle* at the counter|It waits for you on the lot|Cut an extra key for $25"
      Comment "Sign card for the vehicle lot counter, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{6E5F48464D10A0E0}" {
      Id "LF-Sign_VehicleLot_Needs"
-     Target_en_us "S105 $1000, UAZ $2500, UAZ 452 $3500, van $4000, cargo truck $8000. Anything over $500 is paid from your bank account."
+     Target_en_us "S105 $1000|UAZ $2500|UAZ 452 $3500|Van $4000|Cargo truck $8000|Anything over $500 is paid from your bank account"
      Comment "Sign card for the vehicle lot counter, Needs section."
     }
     CustomStringTableItem "{019C5F1257180BB3}" {
@@ -3771,7 +3771,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C253431484CC5293}" {
      Id "LF-Sign_Garage_How"
-     Target_en_us "Park by the doors, get out, and Store vehicle. Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
+     Target_en_us "Park by the doors and get out. Store vehicle is on the counter beside the doors and on the car itself (Store in garage). Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
      Comment "Sign card for the garage where owners park vehicles, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{4666CFF92E358BA1}" {
@@ -3796,17 +3796,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1A20ADB3E49DD4E0}" {
      Id "LF-Sign_PoliceStation_How"
-     Target_en_us "Punch the clock on the duty desk: Clock in puts your own clothes and pockets in the locker and hands you the police uniform; Clock out gives them back. Read the wanted board beside the desk. At the armory: Draw kit."
+     Target_en_us "Punch the clock on the duty desk: *Clock in* puts your own clothes and pockets in the locker and hands you the police uniform; *Clock out* gives them back|Read the wanted board beside the desk|At the armory: *Draw kit*"
      Comment "Sign card for the police station duty desk, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{E8967D4A9BC98A92}" {
      Id "LF-Sign_PoliceStation_Needs"
-     Target_en_us "A place on the police roster. Ask an admin to join the police."
+     Target_en_us "A place on the police roster|Ask an admin to join the police"
      Comment "Sign card for the police station duty desk, Needs section."
     }
     CustomStringTableItem "{216CC8B9B69FEA9E}" {
      Id "LF-Sign_PoliceStation_Rules"
-     Target_en_us "Duty pays $30 a minute, in cash when you go off duty. One kit per shift. After an hour on duty a patrol officer becomes a senior officer. Got a police ticket? Pay it in cash at the punch clock: Pay ticket."
+     Target_en_us "Duty pays $30 a minute, in cash when you go off duty|One kit per shift|After an hour on duty a patrol officer becomes a senior officer|Got a police ticket? Pay it in cash at the punch clock: *Pay ticket*"
      Comment "Sign card for the police station duty desk, Rules section."
     }
     CustomStringTableItem "{38FC55C049D7A2DA}" {
@@ -3866,17 +3866,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{319C15ECA15769F7}" {
      Id "LF-Sign_Hospital_What"
-     Target_en_us "The village hospital: a medic duty desk, three beds, a call board and the ambulance bay. Bills are 1989 prices, cash only."
+     Target_en_us "The village hospital: a medic duty desk, three beds, a call board and the ambulance bay|Bills are 1989 prices, cash only"
      Comment "Sign card for the hospital (medicine cabinet and till), What section."
     }
     CustomStringTableItem "{C04CAF44C41DD0AA}" {
      Id "LF-Sign_Hospital_How"
-     Target_en_us "Clock in at the duty desk to take the medic kit. A medic can Revive a downed patient or carry them to a bed. Pay a treatment bill at the desk. Breach the cabinet for dressings, morphine, saline, and tourniquets. Rob the till on the porch."
+     Target_en_us "*Clock in* at the duty desk to take the medic kit|A medic can *Revive* a downed patient or carry them to a bed|Pay a treatment bill at the desk|*Breach* the cabinet for dressings, morphine, saline, and tourniquets|*Rob the till* on the porch"
      Comment "Sign card for the hospital (medicine cabinet and till), How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{F8E9B3F57A5331A5}" {
      Id "LF-Sign_Hospital_Needs"
-     Target_en_us "Cash for a bill; a field dressing to Revive; a demolition charge for the cabinet."
+     Target_en_us "Cash for a bill|A field dressing to Revive|A demolition charge for the cabinet"
      Comment "Sign card for the hospital (medicine cabinet and till), Needs section."
     }
     CustomStringTableItem "{69A04E647A57E62B}" {
@@ -3941,12 +3941,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
-     Target_en_us "Members open the gate. Inside, Process contraband at the machine, and keep the crew's goods in the chest: Open hideout stash."
+     Target_en_us "Members open the gate|Inside, *Process contraband* at the machine|Keep the crew's goods in the chest: *Open hideout stash*"
      Comment "Sign card for the organization hideout yard, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{CCE875EFC2A291AB}" {
      Id "LF-Sign_Hideout_Needs"
-     Target_en_us "Membership of the owning organization, its processing slot from the organization office, and cabbages."
+     Target_en_us "Membership of the owning organization|Its processing slot from the organization office|Cabbages"
      Comment "Sign card for the organization hideout yard, Needs section."
     }
     CustomStringTableItem "{D93B25598500E634}" {
@@ -3966,7 +3966,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDE5BBC474B685BE}" {
      Id "LF-Sign_ConvoyPickup_How"
-     Target_en_us "Start convoy at the crates to take one, load it into a vehicle, drive to the back of the pub on the square, and Deliver contraband at the empty crate cage there."
+     Target_en_us "Start convoy at the crates to take one, load it into a vehicle, drive to the convoy drop (the empty crate cage), and Deliver contraband there."
      Comment "Sign card for the convoy pickup at the barn out of town, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{1AD1E7DE6B2D2E35}" {
@@ -4011,17 +4011,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{03708C7686BF4E63}" {
      Id "LF-Sign_Farm_What"
-     Target_en_us "Vegetable beds, a greenhouse, and an orchard."
+     Target_en_us "Dirt plots to grow cabbages, a greenhouse, and an orchard."
      Comment "Sign card for the farm north of the square, What section."
     }
     CustomStringTableItem "{905E4015631C43F6}" {
      Id "LF-Sign_Farm_How"
-     Target_en_us "Gather Apple or Gather Plum from the orchard trees."
+     Target_en_us "Gather Apple or Gather Plum from the orchard trees. Plant Cabbage seeds in the dirt plots; the board beside them explains."
      Comment "Sign card for the farm north of the square, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{33EBA210B27B7F63}" {
      Id "LF-Sign_Farm_Rules"
-     Target_en_us "A picked plant needs time to ripen again."
+     Target_en_us "A picked tree and a planted plot need time to ripen."
      Comment "Sign card for the farm north of the square, Rules section."
     }
     CustomStringTableItem "{682DF358EBADD27A}" {
@@ -4156,17 +4156,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D2AC7C0652FB4B17}" {
      Id "LF-Sign_PoliceWhitelist_Next"
-     Target_en_us "Not on the list? The rest of the town is open to you. Work starts at the post office."
+     Target_en_us "Not on the list? The rest of the town is open to you|Work starts at the post office"
      Comment "Sign card for the police whitelist post, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{E4DF25A9FAFF4CFA}" {
      Id "LF-Sign_TownMap_Next"
-     Target_en_us "The town hall clerk stands a few steps east of this board. After the clerk, the post office is the first building on your left as you walk east."
+     Target_en_us "The town hall clerk stands a few steps east of this board|After the clerk, the post office is the first building on your left as you walk east"
      Comment "Sign card for the town map board at the spawn square, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{1E58663948A81073}" {
      Id "LF-Sign_PostOffice_Next"
-     Target_en_us "With a parcel in hand, walk east, away from the church, to the porch past the brick-walled lock-up on the right. Then bank your pay at the ATM, next door to the east."
+     Target_en_us "With a parcel in hand, walk east, away from the church, to the porch past the brick-walled lock-up on the right|Then bank your pay at the ATM, next door to the east"
      Comment "Sign card for the post office, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{75E472C5F7014CCC}" {
@@ -4176,12 +4176,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{54F7C5BEECED4902}" {
      Id "LF-Sign_Bank_Next"
-     Target_en_us "Get the bag clear before the police arrive. The police station is across the street, a little further east."
+     Target_en_us "Get the bag clear before the police arrive|The police station is across the street, a little further east"
      Comment "Sign card for the bank vault, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{9998DA1944C26EE3}" {
      Id "LF-Sign_GeneralStore_Next"
-     Target_en_us "Sell what you gather at the market stalls next door, to the east. Cars are sold at the vehicle lot across the street."
+     Target_en_us "Sell what you gather at the market stalls next door, to the east|Cars are sold at the vehicle lot across the street"
      Comment "Sign card for the general store, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{0D9D9BF03C41923B}" {
@@ -4191,7 +4191,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3F61541B4C366743}" {
      Id "LF-Sign_VehicleLot_Next"
-     Target_en_us "Park it at the garage, further east on this side. The fuel station is across the street, past the police station."
+     Target_en_us "Park it at the garage, further east on this side|The fuel station is across the street, past the police station"
      Comment "Sign card for the vehicle lot, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{E3A7A4FF84B6A717}" {
@@ -4231,7 +4231,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{754927C4ED5BDA5F}" {
      Id "LF-Sign_Hideout_Next"
-     Target_en_us "Contraband comes from the barn at the end of the dirt track east of the village. Start the convoy there."
+     Target_en_us "Contraband comes from the barn at the end of the dirt track east of the village|Start the convoy there"
      Comment "Sign card for the hideout yard, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{2538FBA6D41AC399}" {
@@ -4891,7 +4891,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8269943001D9EADB}" {
      Id "LF-Contraband_Loaded"
-     Target_en_us "You have a crate. Drive it to the back of the pub on the square and stay in the vehicle until you get there."
+     Target_en_us "You have a crate. Drive it to the convoy drop, the empty crate cage, and stay in the vehicle until you get there."
      Comment "Toast when the convoy start hands the player a contraband crate at the barn"
     }
     CustomStringTableItem "{DEDBE2A372F43FF6}" {
@@ -6676,6 +6676,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
+    CustomStringTableItem "{C5BBC2192BD8EFEC}" {
+     Id "EL-VehicleLock_ActionLock"
+     Target_en_us "Lock vehicle"
+     Comment "Action label when the vehicle is unlocked (#412)."
+    }
+    CustomStringTableItem "{D6B5DE4ACCEECA33}" {
+     Id "EL-VehicleLock_ActionUnlock"
+     Target_en_us "Unlock vehicle"
+     Comment "Action label when the vehicle is locked (#412)."
+    }
+    CustomStringTableItem "{405F3EF53D4704D5}" {
+     Id "LF-Garage_StoreHere"
+     Target_en_us "Store in garage"
+     Comment "Action on the player's own car when it stands within the garage radius. Same rules as the garage counter."
+    }
+    CustomStringTableItem "{C8B8911B5F3A014D}" {
+     Id "LF-Keybind_VehicleLock"
+     Target_en_us "Lock or unlock vehicle"
+     Comment "Key binding menu label for the U key."
+    }
+    CustomStringTableItem "{C470CD4C9E58C70D}" {
+     Id "LF-VehicleLock_NoTarget"
+     Target_en_us "No vehicle of yours in reach"
+     Comment "Toast when U is pressed with no keyed vehicle near."
+    }
     CustomStringTableItem "{F297FFD8D4B6E791}" {
      Id "LF-LawlessHud_Tag"
      Target_en_us "LAWLESS AREA"
@@ -6695,6 +6720,151 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LawlessHud_Exit"
      Target_en_us "You left the lawless area."
      Comment "Toast on leaving a lawless zone."
+    }
+    CustomStringTableItem "{A27300000000BA02}" {
+     Id "LF-BankKit_Take"
+     Target_en_us "Take bank robbery kit"
+     Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
+    CustomStringTableItem "{9EB58969BEDD9423}" {
+     Id "LF-Farm_Title"
+     Target_en_us "Farm"
+     Comment "Toast title for a farm plot refusal."
+    }
+    CustomStringTableItem "{E6E02AC329CA9010}" {
+     Id "LF-Farm_CabbageSeeds"
+     Target_en_us "Cabbage seeds"
+     Comment "Item name of the cabbage seed packet."
+    }
+    CustomStringTableItem "{4BBDEB5764438BAB}" {
+     Id "LF-Farm_CabbageSeedsDesc"
+     Target_en_us "A paper packet of cabbage seeds. Plant it in an empty dirt plot at the farm."
+     Comment "Item description of the cabbage seed packet."
+    }
+    CustomStringTableItem "{FFEB328217318791}" {
+     Id "LF-Farm_TakeSeeds"
+     Target_en_us "Take %1"
+     Comment "Prompt on the seed crate at the farm. %1 is the item name, e.g. Take Cabbage seeds."
+    }
+    CustomStringTableItem "{35C14DE34CACED8B}" {
+     Id "LF-Farm_Plant"
+     Target_en_us "Plant %1"
+     Comment "Prompt on an empty farm plot. %1 is the seed packet name, e.g. Plant Cabbage seeds."
+    }
+    CustomStringTableItem "{EBE3EB8BC96D9CCE}" {
+     Id "LF-Farm_Harvest"
+     Target_en_us "Harvest %1"
+     Comment "Prompt on a ripe farm plot. %1 is the crop item name, e.g. Harvest Cabbage."
+    }
+    CustomStringTableItem "{EF0CF71534FF8BB4}" {
+     Id "LF-Farm_Growing"
+     Target_en_us "Growing: %1"
+     Comment "Prompt on a farm plot that is not ripe yet. %1 is the stage name (sprouts, half grown)."
+    }
+    CustomStringTableItem "{E66891B20DA6676E}" {
+     Id "LF-Farm_Stage_Sprout"
+     Target_en_us "sprouts"
+     Comment "Growth stage name shown in the plot prompt: just planted."
+    }
+    CustomStringTableItem "{8ABD1690FC2C6972}" {
+     Id "LF-Farm_Stage_Growing"
+     Target_en_us "half grown"
+     Comment "Growth stage name shown in the plot prompt: halfway."
+    }
+    CustomStringTableItem "{760335DE2D0C4EC2}" {
+     Id "LF-Farm_Stage_Ripe"
+     Target_en_us "ripe"
+     Comment "Growth stage name: ready to harvest."
+    }
+    CustomStringTableItem "{AAC69C040DF1C8E4}" {
+     Id "LF-Farm_NeedSeeds"
+     Target_en_us "Needs a seed packet"
+     Comment "Why an empty plot cannot be planted: the player carries no seed packet."
+    }
+    CustomStringTableItem "{7BCEF6A37309AB1F}" {
+     Id "LF-Farm_NotRipe"
+     Target_en_us "Not ripe yet"
+     Comment "Why a growing plot cannot be harvested."
+    }
+    CustomStringTableItem "{540BF19A61EAB5E6}" {
+     Id "LF-Farm_NotEmpty"
+     Target_en_us "Something already grows here"
+     Comment "Refusal toast: the plot is already planted."
+    }
+    CustomStringTableItem "{80208C45C60900DC}" {
+     Id "LF-Farm_TooFar"
+     Target_en_us "Stand next to the plot"
+     Comment "Refusal toast: the player is too far from the plot."
+    }
+    CustomStringTableItem "{67049824C323938A}" {
+     Id "LF-Farm_PocketsFull"
+     Target_en_us "No room for the harvest"
+     Comment "Refusal toast: the harvest could not be given to the player."
+    }
+    CustomStringTableItem "{F8BA23B4D29A0F32}" {
+     Id "LF-Sign_FarmPlots_Title"
+     Target_en_us "Vegetable plots"
+     Comment "Title of the info board beside the farm plots."
+    }
+    CustomStringTableItem "{8FCE26C6B1BA464C}" {
+     Id "LF-Sign_FarmPlots_What"
+     Target_en_us "Grow your own cabbages in the dirt plots."
+     Comment "Info board at the farm plots, What section."
+    }
+    CustomStringTableItem "{122025DCEE6F8713}" {
+     Id "LF-Sign_FarmPlots_How"
+     Target_en_us "Take Cabbage seeds from the crate. Plant Cabbage seeds in an empty plot. When the cabbages are ripe, Harvest Cabbage."
+     Comment "Info board at the farm plots, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{7727C787985BD3E9}" {
+     Id "LF-Sign_FarmPlots_Rules"
+     Target_en_us "Sprouts, then half grown, then ripe: about two minutes. A ripe plot waits for you. One packet gives three cabbages. The crate refills every two minutes."
+     Comment "Info board at the farm plots, Rules section."
+    }
+    CustomStringTableItem "{3018FA71B28E00A7}" {
+     Id "LF-Sign_FarmPlots_Next"
+     Target_en_us "Sell cabbages at the general store on the main street."
+     Comment "Info board at the farm plots, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{9BE7A1D673564E1C}" {
+     Id "LF-Dispatch_TestPolice"
+     Target_en_us "Test police call"
+     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
+    }
+    CustomStringTableItem "{803BB29C950EAC01}" {
+     Id "LF-Dispatch_TestMedic"
+     Target_en_us "Test medic call"
+     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
+    }
+    CustomStringTableItem "{E9CE669FFF4D0206}" {
+     Id "LF-Dispatch_TestDesc"
+     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
+     Comment "Description of the dispatch console test-call actions."
+    }
+    CustomStringTableItem "{05CAE71B3EBFC584}" {
+     Id "LF-Dispatch_TestTitle"
+     Target_en_us "Test call"
+     Comment "Toast title for the dispatch console test call."
+    }
+    CustomStringTableItem "{51294940A40506CF}" {
+     Id "LF-Dispatch_TestSent"
+     Target_en_us "Call placed. Take it at the dispatch board."
+     Comment "Toast after a test call went out to an on-duty service."
+    }
+    CustomStringTableItem "{36AF55270A37E7B0}" {
+     Id "LF-Dispatch_TestOff"
+     Target_en_us "Test calls are off in this game mode."
+     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
     }
   }
  }
