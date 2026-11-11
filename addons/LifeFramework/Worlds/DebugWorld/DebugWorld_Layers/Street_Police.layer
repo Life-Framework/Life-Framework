@@ -53,7 +53,7 @@ GenericEntity Roadmap_Police_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_
  angleY 0
 }
 GenericEntity Roadmap_Police_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
- coords 234.38 0 237.6
+ coords 235.65 0 238.15
 }
 GenericEntity Roadmap_Police_DispatchBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
  coords 237.4 0 242.9
@@ -68,7 +68,7 @@ GenericEntity Roadmap_Police_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/U
  angleY 90
 }
 GenericEntity Roadmap_Police_ArmoryStore : "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et" {
- coords 231.0 0 237.6
+ coords 231.0 0 238.15
 }
 SCR_DestructibleEntity Police_Flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
  coords 230.1 0 241.9

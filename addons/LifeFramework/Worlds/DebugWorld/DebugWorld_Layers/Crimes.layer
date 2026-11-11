@@ -166,7 +166,7 @@ LF_NpcBaseEntity FenceNpc : "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.
  angleY 180
 }
 GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
- coords 188.7 0 311.9
+ coords 188.7 0 310.6
  angleY 180
 }
 GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {

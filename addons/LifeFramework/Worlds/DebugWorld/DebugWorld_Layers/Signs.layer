@@ -91,8 +91,8 @@ GenericEntity Sign_Garage : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 238 2.0 259.45
- angleY 180
+ coords 240.41 2.0 260.6
+ angleY 90
  scale 1.2
 }
 GenericEntity Sign_Impound : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -178,7 +178,7 @@ GenericEntity Sign_Farm : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePla
    m_vTextColor 0.95 0.88 0.65
   }
  }
- coords 144.5 0 292.5
+ coords 141.8 0 293
  angleY 180
 }
 GenericEntity Sign_FarmPlots : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
@@ -241,7 +241,7 @@ GenericEntity Sign_StoreChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_P
    m_sSignId "general_store"
   }
  }
- coords 175.4 0 243.2
+ coords 177.4 0 243.2
 }
 GenericEntity Sign_MarketChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
  components {
@@ -256,7 +256,7 @@ GenericEntity Sign_PubHanging : "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingPa
  angleY 180
 }
 GenericEntity Sign_HospitalCross : "{238A10113E311A73}Prefabs/Props/Fabric/RedCrossCloth/RedCrossClothTemper_01_big_front.et" {
- coords 266.5 2.3 258.05
+ coords 266.5 2.3 259.88
  angleY 180
 }
 GenericEntity Sign_ConvoyDrop : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
@@ -265,7 +265,7 @@ GenericEntity Sign_ConvoyDrop : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_B
    m_sSignId "convoy_drop"
   }
  }
- coords 128.1 0.5 282.5
+ coords 127.03 0.9 282.5
  angleY 90
 }
 GenericEntity Sign_ConvoyPickup : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
@@ -274,7 +274,7 @@ GenericEntity Sign_ConvoyPickup : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign
    m_sSignId "convoy_pickup"
   }
  }
- coords 463 1 335.3
+ coords 463 1 336.11
  angleY 180
 }
 GenericEntity Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -286,7 +286,7 @@ GenericEntity Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sig
    m_vTextColor 0.65 0.1 0.1
   }
  }
- coords 172 0 200
+ coords 171.2 0 205
  angleY 0
 }
 GenericEntity Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -310,7 +310,7 @@ GenericEntity Sign_HospitalBay : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.75 0.08 0.08
   }
  }
- coords 261 0 252.6
+ coords 261 0 254.2
  angleY 270
 }
 GenericEntity Sign_LotPrice_s105 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
@@ -321,7 +321,7 @@ GenericEntity Sign_LotPrice_s105 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sig
    m_PriceVehicle "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
   }
  }
- coords 214.8 0 259.2
+ coords 214.8 0 258.4
  angleY 180
  scale 0.65
 }
@@ -333,7 +333,7 @@ GenericEntity Sign_LotPrice_uaz469 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_S
    m_PriceVehicle "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
   }
  }
- coords 219.3 0 259.2
+ coords 219.3 0 258.4
  angleY 180
  scale 0.65
 }
@@ -345,7 +345,7 @@ GenericEntity Sign_LotPrice_s1203 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Si
    m_PriceVehicle "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
   }
  }
- coords 223.8 0 259.2
+ coords 223.8 0 258.4
  angleY 180
  scale 0.65
 }
@@ -357,7 +357,7 @@ GenericEntity Sign_LotPrice_uaz452 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_S
    m_PriceVehicle "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
   }
  }
- coords 228.3 0 259.2
+ coords 228.3 0 258.4
  angleY 180
  scale 0.65
 }

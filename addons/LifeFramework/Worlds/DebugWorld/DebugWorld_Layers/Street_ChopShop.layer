@@ -67,7 +67,7 @@ GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
  angleY 90
 }
 GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
- coords 316.95 0 301.2
+ coords 316.95 1.12 302
  angleY 90
 }
 GenericEntity : "{174E332EF84362B2}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_base.et" {
@@ -85,7 +85,7 @@ GenericEntity ChopShop_Welder {
    Static 1
   }
  }
- coords 318.0 0 302.6
+ coords 318.2 0 302.6
  angleY 20
 }
 GenericEntity : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {

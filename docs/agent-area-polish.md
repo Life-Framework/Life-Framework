@@ -109,6 +109,8 @@ toolscli shots area hospital [--radius 18] [--annotate] [--pick] [--detail <Enti
 toolscli shots crop wide 900,0,380,140
 ```
 
+- **`--eye-only`** skips the wide (its scoring is most of an area's minutes) and keeps the four eye-level shots and the close-ups: about 75 s an area, so every area fits one session. Pair it with `tools\cli audit placement` (`docs/placement-audit.md`), which measures the whole town in 10 s without a session.
+
 - **The areas** are in `agent-box/areas.json` (the 17 above; payphones has one entry per phone).
   A raw `x,z` also works; the ground height is looked up in-game.
 - **Same scene every time.** Golden hour (local 17.9, the game clock reads 4.73 h less at this longitude), clear weather, no HUD, no hint box. The clock is set on the server by the harness `time <hour>` verb (an authority-side RPC, like pose); a client-side clock is overridden. The call prints the reply (`local=17.9 game=13.77 ...`). Nothing ships.
