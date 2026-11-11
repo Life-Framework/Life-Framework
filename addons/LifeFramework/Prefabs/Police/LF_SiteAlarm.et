@@ -9,6 +9,7 @@ GenericEntity {
    m_bFlash 1
    m_fLightRadius 10
    m_fLightLV 12
+   m_vLightOffset 0 1 0
    m_iFlashMs 600
   }
   RplComponent "{A2D9C9BB0D0839D7}" {
@@ -17,7 +18,7 @@ GenericEntity {
  {
   GenericEntity beacon : "{A3C0CF9F97FBCDDC}Prefabs/Structures/BuildingParts/Eletrical/HazardBeacon_01/HazardBeacon_01.et" {
    ID "6F1B3C7A52D09E41"
-   coords 0 1.1 0
+   coords 0 0 0
    scale 3
   }
  }
