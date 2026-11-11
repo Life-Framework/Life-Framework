@@ -38,9 +38,9 @@ class LF_Playtime
 	static const string FEATURE = "Playtime";
 	static const string JOB_CIVILIAN = "CIVILIAN";
 	//! How often online clocks are credited. A duty change is attributed to within this window.
-	static const int TICK_SECONDS = 15;
+	static const int TICK_SECONDS = 15; // lf-fixed: bookkeeping granularity, not a gameplay value; credits are exact to the second either way
 	//! Most seconds one credit may add: a wall-clock jump (NTP, a suspended host) is not playtime.
-	static const int MAX_CREDIT_SECONDS = 300;
+	static const int MAX_CREDIT_SECONDS = 300; // lf-fixed: sanity bound against wall-clock jumps, 20x the tick; not a server tunable
 
 	//! Key: account uid + "|" + job.
 	protected static ref map<string, ref LF_PlaytimeRecord> s_mRows;
