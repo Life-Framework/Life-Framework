@@ -178,7 +178,7 @@ GenericEntity Sign_Farm : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePla
    m_vTextColor 0.95 0.88 0.65
   }
  }
- coords 144.5 0 292.5
+ coords 141.8 0 293
  angleY 180
 }
 GenericEntity Sign_FarmPlots : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
@@ -241,7 +241,7 @@ GenericEntity Sign_StoreChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_P
    m_sSignId "general_store"
   }
  }
- coords 175.4 0 243.2
+ coords 177.4 0 243.2
 }
 GenericEntity Sign_MarketChalk : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
  components {

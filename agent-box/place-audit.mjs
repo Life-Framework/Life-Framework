@@ -26,7 +26,7 @@ export const PROFILE_DIR = join(ROOT, "server", "profile", "test", "profile", "p
 export const TOWN = { x: 220, z: 260, r: 320 }; // door query circle: the whole town and its outskirts
 
 // Thresholds (metres, degrees). The physical ones match LF_PlacementAudit (GAP, TILT, SCALE_MIN/MAX).
-export const LIMITS = { gap: 0.15, tilt: 5, overlap: 0.08, door: 0.1, doorClear: 1.0, walk: 1.5, signWalk: 3, scaleMin: 0.5, scaleMax: 2, oddLow: 0.75, oddHigh: 1.6, roadMargin: 0.3, roadMaxWidth: 15 };
+export const LIMITS = { gap: 0.15, tilt: 5, overlap: 0.08, door: 0.1, doorClear: 1.0, doorWalk: 3, walk: 1.5, signWalk: 3, scaleMin: 0.5, scaleMax: 2, oddLow: 0.75, oddHigh: 1.6, roadMargin: 0.3, roadMaxWidth: 15 };
 
 // Layers that hold no props: world settings, managers, factions, the roads themselves (checked as paths).
 const SKIP_LAYERS = new Set(["default.layer", "Gamemode.layer", "Factions.layer", "Village_Roads.layer", "Roadmap.layer"]);
@@ -209,7 +209,7 @@ const label = (e) => e.name || (e.prefab ? e.prefab.split("/").pop().replace(/\.
 // ----------------------------------------------------------------------------- checks
 
 // Severity points per problem kind; the rank sums them and weights interactables and named areas.
-export const WEIGHT = { floating: 10, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "in-road": 5, scaled: 6, "odd-scale": 2, tilted: 2, unreachable: 6 };
+export const WEIGHT = { floating: 10, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "door-path": 4, "in-road": 5, scaled: 6, "odd-scale": 2, tilted: 2, unreachable: 6 };
 
 // Problems for one measured entity, before pairs (overlaps, doors, roads) are added.
 export function singleProblems(e, m) {
@@ -276,23 +276,30 @@ export function overlapProblems(list) {
 // Doors: anything (but the door's own building, and a hung sign) inside a door leaf's clearance zone.
 export function doorProblems(list, doors) {
   const out = new Map();
-  const zones = doors.map((d) => ({ d, z: doorZone(d.box) })).filter((x) => x.z);
+  // Ground-level leaves only for the walk-up (a first-floor balcony door has no path to it).
+  const zones = doors.map((d) => ({ d, swing: doorZone(d.box), walk: doorZone(d.box, LIMITS.doorWalk), ground: d.box.c[1] - d.box.h[1] < 1.2 })).filter((x) => x.swing);
+  // The building each door belongs to (its layer entity), so furniture inside it is not on the street path.
+  const buildingOf = (d) => list.find(({ e, m }) => !m.missing && (m.found === d.root || label(e) === d.root) && Math.hypot(e.x - d.rp[0], e.z - d.rp[2]) < 1.5);
+  const inside = (b, p) => b && p[0] > b.m.bmin[0] && p[0] < b.m.bmax[0] && p[2] > b.m.bmin[2] && p[2] < b.m.bmax[2];
   for (const { idx, e, m } of list) {
-    // Walls and fences frame a door; a hung sign is above it.
-    if (m.missing || m.point || isKind(e, "mounted") || isKind(e, "chain")) continue;
-    for (const { d, z } of zones) {
-      if (Math.abs(z.c[0] - m.box.c[0]) > 15 || Math.abs(z.c[2] - m.box.c[2]) > 15) continue;
+    // Walls and fences frame a door; a sign hung above it is above the zone.
+    if (m.missing || m.point || isKind(e, "chain")) continue;
+    // A whole building next door is a wall, not a prop in the way; a low thing (a kerb, a mat) is stepped over.
+    if (volume(m) > 40 || m.box.h[1] < 0.25) continue;
+    let hit = null;
+    for (const { d, swing, walk, ground } of zones) {
+      if (Math.abs(swing.c[0] - m.box.c[0]) > 15 || Math.abs(swing.c[2] - m.box.c[2]) > 15) continue;
       const own = (m.found === d.root || label(e) === d.root) && Math.hypot(e.x - d.rp[0], e.z - d.rp[2]) < 1.5;
       if (own) continue;
-      // A whole building next door is a wall, not a prop in the way.
-      if (volume(m) > 40) continue;
-      const depth = obbPenetration(z, m.box);
+      const depth = obbPenetration(swing, m.box);
       if (depth > LIMITS.door) {
-        if (!out.has(idx)) out.set(idx, []);
-        out.get(idx).push({ kind: "blocks-door", amount: 1, text: `in the swing of a door of ${d.root} (${r2(depth)} m in)` });
+        hit = { kind: "blocks-door", amount: 1, text: `in the swing of a door of ${d.root} (${r2(depth)} m in)` };
         break;
       }
+      if (!hit && ground && obbPenetration(walk, m.box) > LIMITS.door && !inside(buildingOf(d), m.box.c))
+        hit = { kind: "door-path", amount: 0.5, text: `stands in the walk-up to a door of ${d.root} (within ${LIMITS.doorWalk} m in front of it)` };
     }
+    if (hit) out.set(idx, [hit]);
   }
   return out;
 }
@@ -513,6 +520,7 @@ function selftest() {
     { name: "RoadBench", layer: "T.layer", x: 15, y: 0, z: 20, prefab: "Prefabs/Props/BenchStreet_01.et" },
     { name: "Sign_Hung", layer: "T.layer", x: 40, y: 2, z: 0, prefab: "Prefabs/Props/Sign_01.et" },
     { name: "BigCrate", layer: "T.layer", x: 50, y: 0, z: 0, prefab: "Prefabs/Props/Crates/BoxWooden_01.et" },
+    { name: "PathBoard", layer: "T.layer", x: 30, y: 0, z: 2.5, prefab: "Prefabs/Comms/LF_DispatchBoard.et" },
   ];
   const out = [
     `0 ${row({ c: [0, 1.3, 0], gap: 1, pgap: 1 })}`,
@@ -524,6 +532,7 @@ function selftest() {
     `6 ${row({ c: [15, 0.4, 20], h: [0.8, 0.4, 0.3] })}`,
     `7 ${row({ c: [40, 2.3, 0], gap: 2, pgap: 2, backed: 1 })}`,
     `8 ${row({ c: [50, 0.9, 0], h: [0.9, 0.9, 0.9], scale: 3 })}`,
+    `9 ${row({ c: [30, 0.6, 2.5], h: [0.9, 0.6, 0.02] })}`,
     "door name=Door_01 root=House_01 rp=30,0,-5 c=30,1,0 h=0.5,1,0.03 a0=1,0,0 a1=0,1,0 a2=0,0,1",
   ].join("\n");
   const res = analyse(recs, out, { roads: [{ name: "Lane", pts: [[0, 20], [30, 20]], width: 4 }] });
@@ -536,6 +545,7 @@ function selftest() {
   if (!kinds("RoadBench").includes("in-road")) fail(`road bench: ${kinds("RoadBench")}`);
   if (kinds("Sign_Hung").length) fail(`hung sign flagged: ${kinds("Sign_Hung")}`);
   if (!kinds("BigCrate").includes("scaled")) fail(`scaled crate: ${kinds("BigCrate")}`);
+  if (!kinds("PathBoard").includes("door-path")) fail(`board in front of the door: ${kinds("PathBoard")}`);
   if (res.ranked[0]?.name !== "FloatCrate") fail(`rank order: ${res.ranked.map((r) => r.name)}`);
   const suppressed = analyse(recs, out, { allow: [{ match: "^FloatCrate", kind: "floating", why: "test" }] });
   if (suppressed.ranked.some((r) => r.name === "FloatCrate")) fail("the allowlist suppresses a problem");

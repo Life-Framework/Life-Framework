@@ -103,7 +103,7 @@ GenericEntity Roadmap_Hospital_Cabinet {
   }
  }
  Flags 0x403 0
- coords 266.15 0 258.2
+ coords 265.3 0 258.2
  angleY 180
 }
 GenericEntity Hospital_Bed_1 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
@@ -124,7 +124,7 @@ GenericEntity Hospital_Bed_3 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.e
  angleY 180
 }
 GenericEntity Roadmap_Hospital_DispatchBoard : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
- coords 262 0 256.4
+ coords 264 0 256.4
  angleY 180
 }
 GenericEntity Roadmap_Hospital_Duty_Desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et" {

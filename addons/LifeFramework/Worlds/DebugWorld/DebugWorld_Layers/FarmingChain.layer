@@ -156,16 +156,7 @@ GenericEntity Farm_Fence_6 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/
  coords 162 0 306.5
 }
 GenericEntity Farm_StandCabbage_1 : "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et" {
- coords 152.9 0.1 294.4
-}
-GenericEntity Farm_StandCabbage_2 : "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et" {
- coords 153 0.1 294.45
-}
-GenericEntity Farm_StandCabbage_3 : "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et" {
- coords 152.8 0.1 294.45
-}
-GenericEntity Farm_StandCabbage_4 : "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et" {
- coords 152.92 0.1 294.3
+ coords 150.5 1.01 294.5
 }
 GenericEntity Farm_PressApple_1 : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
  coords 143.4 0.1 309.6
