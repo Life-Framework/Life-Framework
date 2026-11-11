@@ -49,9 +49,9 @@ export function parseTree(text) {
   return block("");
 }
 
-const prefabOf = (header) => (header.match(/"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/) || [])[1] || null;
+export const prefabOf = (header) => (header.match(/"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/) || [])[1] || null;
 
-function ownMesh(b) {
+export function ownMesh(b) {
   for (const k of b.kids) {
     if (k.header !== "components") continue;
     for (const c of k.kids) {
@@ -68,7 +68,7 @@ function ownMesh(b) {
 // (PrefabLibrary/DefaultLibrary/...); it is the same mesh everywhere it is used.
 const KNOWN_MESH = [[/TableRecreation_01/, "Assets/Props/Furniture/TableRecreation_01/TableRecreation_01.xob"]];
 
-function meshOf(root, b, inheritedPrefab) {
+export function meshOf(root, b, inheritedPrefab) {
   const own = ownMesh(b);
   if (own) return own;
   const prefab = prefabOf(b.header) || inheritedPrefab;

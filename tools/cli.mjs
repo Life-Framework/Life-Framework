@@ -24,6 +24,7 @@
 //   shots baseline [--areas a,b] | area <name> --baseline   Every area in one session, shared; or find the freshest
 //   shots area <name|x,z> | crop <shot> <x,y,w,h>   One-call screenshot rig for the area polish pass (agent-box/shots.mjs)
 //   audit placement [--top N] [--area a] [--layer L]  Ranked placement audit of every DebugWorld layer entity, on the test server (agent-box/place-audit.mjs)
+//   place on|against|ground|arrange|bounds|probe|verify  Place a world prop from real bounds and probe rays, then audit it (tools/place/place.mjs)
 //   look <area|x,z|all> [--edit] [--close N]   Area pictures from a hidden Workbench, no session (tools/visual/look.mjs, docs/visual-testing.md)
 //   logs <pattern> [flags]            Grep the newest server console.log
 //   suite-stamp <tier>                Newest saved LFTEST summary for a tier
@@ -3302,6 +3303,7 @@ const cmds = {
   session: (flags) => cmdSession(flags),
   shots: (flags) => shots.main(flags ?? []),
   audit: async (flags) => (await import("../agent-box/place-audit.mjs")).main(flags ?? []),
+  place: async (flags) => (await import("./place/place.mjs")).main(flags ?? []),
   look: async (flags) => (await import("./visual/look.mjs")).main(flags ?? []),
   serve: (flags) => cmdServe(ROOT, { force: (flags ?? []).includes("--force") }),
   dev: (flags) => {
@@ -3442,7 +3444,7 @@ try {
   } else if (cmd === "discord") {
     code = runDiscordCli(ROOT, rest);
   } else if (cmd && cmds[cmd]) {
-    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "look" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" ? rest : a);
+    code = cmds[cmd](HEAVY.includes(cmd) || cmd === "validate" || cmd === "logs" || cmd === "host" || cmd === "playtest" || cmd === "session" || cmd === "shots" || cmd === "audit" || cmd === "place" || cmd === "look" || cmd === "suite-stamp" || cmd === "perf" || cmd === "suite-valid" || cmd === "scope" || cmd === "testbox" || cmd === "pool" || cmd === "film-make" ? rest : a);
   } else {
     if (cmd) console.log(`unknown command: ${cmd}\n`);
     code = cmdHelp();

@@ -691,11 +691,66 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One probe ray for the placement tool (tools/place/place.mjs): the first surface between `from` and
+	//! `to` on any physics layer, characters skipped. "ray <id> d=<m> len=<m> hit=<label> root=<label>
+	//! p=<hit point, or `to` when clear> sy=<terrain height under p>". The terrain is not on every trace
+	//! layer, so a caller looking for a floor takes the higher of p's height and sy. `exclude` (and its
+	//! children) is traced through: the prop being re-placed must not answer its own probe.
+	static string RayLine(string id, vector from, vector to, IEntity exclude = null)
+	{
+		float len = vector.Distance(from, to);
+		float d = len;
+		IEntity hit;
+		if (len > 0.001)
+		{
+			vector dir = (to - from) * (1 / len);
+			vector start = from;
+			float done;
+			for (int n = 0; n < 4; n++)
+			{
+				float step = SurfaceTrace(start, to, exclude, hit);
+				if (!hit || (!ChimeraCharacter.Cast(hit) && !(exclude && IsOwnPart(exclude, hit))))
+				{
+					d = done + step;
+					break;
+				}
+
+				// A standing NPC is not a wall or a floor: go on behind it (0.6 m); a child of the excluded prop: just past the hit.
+				float skip = 0.6;
+				if (!ChimeraCharacter.Cast(hit))
+					skip = 0.05;
+
+				done = done + step + skip;
+				hit = null;
+				if (done >= len)
+					break;
+
+				start = from + dir * done;
+			}
+
+			if (d > len)
+				d = len;
+		}
+
+		vector p = to;
+		if (len > 0.001)
+			p = from + (to - from) * (d / len);
+
+		IEntity root = hit;
+		if (hit && hit.GetRootParent())
+			root = hit.GetRootParent();
+
+		float sy = GetGame().GetWorld().GetSurfaceY(p[0], p[2]);
+		return string.Format("ray %1 d=%2 len=%3 hit=%4 root=%5 p=%6 sy=%7", id, F(d), F(len), Label(hit), Label(root), V(p), F(sy));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Measure every entity listed in `inPath` and write one line each to `outPath` (agent-box/place-audit.mjs).
 	//! Input lines:
 	//!   town <x> <z> <radius>                               also list the door leaves in that circle
 	//!   <index> <name|-> <prefab base|-> <x> <y> <z> <walk 0|1>
-	//! Output lines: "<index> missing=1", "<index> <Format> found=<label>", "door ...". Returns the
+	//!   ray <id> <x> <y> <z> <x2> <y2> <z2> [exclude name]  a probe ray (RayLine), not an entity row
+	//! Output lines: "<index> missing=1", "<index> <Format> found=<label>", "door ...", "ray ...". Returns the
 	//! entity rows written, or -1 when a file cannot be opened. `missing` counts entities not found.
 	static int RunBatch(string inPath, string outPath, out int missing)
 	{
@@ -721,6 +776,18 @@ class LF_PlacementAudit
 			if (parts.Count() == 4 && parts[0] == "town")
 			{
 				DoorLines(Vector(parts[1].ToFloat(), 0, parts[2].ToFloat()), parts[3].ToFloat(), rows);
+				continue;
+			}
+
+			if (parts[0] == "ray")
+			{
+				IEntity rayExclude;
+				if (parts.Count() == 9)
+					rayExclude = GetGame().GetWorld().FindEntityByName(parts[8]);
+
+				if (parts.Count() >= 8)
+					rows.Insert(RayLine(parts[1], Vector(parts[2].ToFloat(), parts[3].ToFloat(), parts[4].ToFloat()), Vector(parts[5].ToFloat(), parts[6].ToFloat(), parts[7].ToFloat()), rayExclude));
+
 				continue;
 			}
 

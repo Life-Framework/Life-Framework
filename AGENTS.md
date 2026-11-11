@@ -197,7 +197,8 @@ Detail lives in `.claude/skills/enfusion-resource-authoring` and `enfusion-blast
 - A `MeshObject` needs a real `.xob` or the entity is invisible.
 - A textured mod item bakes its real `.emat` into the `.xob`; a prefab material override over a placeholder bake renders white.
 - Textures are verified visually only; the dedicated server has no renderer.
-- World props must pass `toolscli audit placement --strict`; `wt gate` runs it when a `.layer`, a `Prefabs` `.et` or spawn code changed. A placement meant to look odd goes in `agent-box/place-audit-allow.json` with a reason (`docs/placement-audit.md`).
+- Place world props with `tools\cli place on|against|ground|arrange` (`docs/placement-tool.md`), never with typed coordinates: it reads real bounds, probes the surface or wall, checks, writes the layer entry and audits it.
+- World props must pass `tools\cli audit placement --strict`; `wt gate` runs it when a `.layer`, a `Prefabs` `.et` or spawn code changed. A placement meant to look odd goes in `agent-box/place-audit-allow.json` with a reason (`docs/placement-audit.md`).
 - A new world interactable runs `node tools/actions/place-action-contexts.mjs`.
 - Moving or renaming a resource breaks every `{GUID}path` reference, saved worlds included.
 - Layouts: unique widget GUIDs per file, inherited-component GUIDs equal the base, a sibling `.layout.meta`.
