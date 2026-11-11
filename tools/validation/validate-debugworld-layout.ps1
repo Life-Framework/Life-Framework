@@ -32,7 +32,7 @@ function Footprint([string]$identity) {
 }
 
 $groundPattern = 'Furnace|Sawmill|AppleJuicer|ConcretePlant|FridgeSmall_01|MobileWaterTankUS_01|Safe_01|WeaponRackStand_01|Tire_M151A2|CementPile|GravelPile|SandPile|IronOre|GoldOre|CopperOre|WhitelistNpc'
-$raisedAllowed = 'DisplayItems|TableRecreation|LampKerosene|MiningArea|VegetableBed|AppleProcessor|SeedTomato|Nugget|Bar|MoneyStack|IDCard|VehicleKey|Apple_|Tomato_|Plum_'
+$raisedAllowed = 'DisplayItems|TableRecreation|LampKerosene|MiningArea|VegetableBed|AppleProcessor|Nugget|Bar|MoneyStack|IDCard|VehicleKey|Apple_|Plum_'
 
 foreach ($layer in @(Get-ChildItem -LiteralPath $layersDir -Filter '*.layer' -File)) {
   $lines = @(Get-Content -LiteralPath $layer.FullName)

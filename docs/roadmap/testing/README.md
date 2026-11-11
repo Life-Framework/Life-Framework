@@ -163,7 +163,7 @@ Persistence: a stack left in the stash is still there after apply-save.
 
 ### Resources
 
-No new row. The chains already have layers: `AppleChain`, `PlumChain`, `TomatoChain`, `LoggingChain`, `MiningChain`, `CementChain`, `GravelChain`, `SandChain`.
+No new row. The chains already have layers: `AppleChain`, `PlumChain`, `LoggingChain`, `MiningChain`, `CementChain`, `GravelChain`, `SandChain`.
 
 | Gate | Case |
 | --- | --- |

@@ -187,7 +187,7 @@ class LF_VehicleStoreAction : ScriptedUserAction
 		}
 
 		// Storing takes the car off the street, so only the owner's car parked at this garage counts.
-		string vehicleId = LF_VehicleOwnership.OwnedVehicleNear(uid, garage.GetOwner().GetOrigin(), LF_VehicleGarageComponent.INTERACT_RADIUS);
+		string vehicleId = PickVehicleId(uid, garage, pOwnerEntity, pUserEntity);
 		if (vehicleId.IsEmpty())
 		{
 			LF_Debug.Warn("Vehicle", string.Format("store refused: no vehicle of %1 is parked at this garage", uid));
@@ -215,6 +215,13 @@ class LF_VehicleStoreAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The garage counter stores the owner's car parked at the garage.
+	protected string PickVehicleId(string uid, LF_VehicleGarageComponent garage, IEntity actionOwner, IEntity user)
+	{
+		return LF_VehicleOwnership.OwnedVehicleNear(uid, garage.GetOwner().GetOrigin(), LF_VehicleGarageComponent.INTERACT_RADIUS);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
 		outName = "#EL-Vehicle_Store";
@@ -229,6 +236,76 @@ class LF_VehicleStoreAction : ScriptedUserAction
 			return 0;
 
 		return playerManager.GetPlayerIdFromControlledEntity(user);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! "Store in garage" on the car itself: the same server park path and refusals as the garage
+//! counter (owner only, on foot, car and player within one garage's radius), but it stores this car.
+class LF_VehicleStoreHereAction : LF_VehicleStoreAction
+{
+	//------------------------------------------------------------------------------------------------
+	//! eturn True when offered: the owner on foot, car and user sharing one garage.
+	static bool IsOffered(bool isOwner, bool inVehicle, bool garageFound, vector garageOrigin, vector playerOrigin, vector vehicleOrigin)
+	{
+		if (!LF_Garage.ParkAllowed(isOwner, inVehicle, garageFound))
+			return false;
+
+		return LF_VehicleGarageComponent.SharesGarage(garageOrigin, playerOrigin, vehicleOrigin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string OwnedId(IEntity vehicle, IEntity user)
+	{
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
+		if (!vehicleLock || !user)
+			return "";
+
+		string vehicleId = vehicleLock.GetVehicleIdentifier();
+		if (LF_VehicleOwnership.GetOwner(vehicleId) != LF_Utils.GetPlayerUID(user))
+			return "";
+
+		if (LF_VehicleOwnership.GetVehicle(vehicleId) != vehicle)
+			return "";
+
+		return vehicleId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		if (!user || !GetOwner() || OwnedId(GetOwner(), user).IsEmpty())
+			return false;
+
+		LF_VehicleGarageComponent garage = LF_VehicleGarageComponent.FindAt(GetOwner().GetOrigin());
+		if (!garage)
+			return false;
+
+		bool inVehicle = false;
+		ChimeraCharacter character = ChimeraCharacter.Cast(user);
+		if (character && character.IsInVehicle())
+			inVehicle = true;
+
+		return IsOffered(true, inVehicle, true, garage.GetOwner().GetOrigin(), user.GetOrigin(), GetOwner().GetOrigin());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool CanBePerformedScript(IEntity user)
+	{
+		return CanBeShownScript(user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected string PickVehicleId(string uid, LF_VehicleGarageComponent garage, IEntity actionOwner, IEntity user)
+	{
+		return OwnedId(actionOwner, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool GetActionNameScript(out string outName)
+	{
+		outName = "#LF-Garage_StoreHere";
+		return true;
 	}
 }
 

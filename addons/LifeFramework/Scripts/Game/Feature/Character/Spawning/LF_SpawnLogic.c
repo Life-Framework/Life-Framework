@@ -24,7 +24,73 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//------------------------------------------------------------------------------------------------
 	int GetStartingBank()
 	{
-		return Math.Max(0, m_iStartingBank);
+		return LF_DebugMoneyTopUp.StartingBank(m_bDebugMoneyTopUp, Math.Max(0, m_iStartingBank), m_iTopUpBankTarget);
+	}
+
+	//! Playtest only: nobody runs out of money. On spawn and every 60 s a bank under the low mark is
+	//! filled to the target and carried cash under its low mark is filled to its target (ledger reason
+	//! debug-topup). Off in the flagship game mode.
+	[Attribute("0", desc: "Playtest: top up bank and carried cash for every player (spawn and every 60 s). Off in the flagship mode.", category: "Debug money top-up")]
+	protected bool m_bDebugMoneyTopUp;
+
+	[Attribute("100000", desc: "Bank balance under which the top-up fires.", category: "Debug money top-up")]
+	protected int m_iTopUpBankLow;
+
+	[Attribute("1000000", desc: "Bank balance the top-up fills to; also a new character's opening bank.", category: "Debug money top-up")]
+	protected int m_iTopUpBankTarget;
+
+	[Attribute("5000", desc: "Carried cash under which the top-up fires.", category: "Debug money top-up")]
+	protected int m_iTopUpCashLow;
+
+	[Attribute("20000", desc: "Carried cash the top-up fills to.", category: "Debug money top-up")]
+	protected int m_iTopUpCashTarget;
+
+	protected bool m_bTopUpTimer;
+
+	//! Playtest only: the dispatch console's test calls (LF_DebugDispatchAction) place a police or
+	//! medic call without a second player at a payphone. Off in the flagship game mode.
+	[Attribute("0", desc: "Playtest: the dispatch console can place a test police or medic call for a solo tester. Off in the flagship mode.", category: "Debug test dispatch")]
+	protected bool m_bDebugTestDispatch;
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDebugTestDispatch()
+	{
+		return m_bDebugTestDispatch;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDebugMoneyTopUp()
+	{
+		return m_bDebugMoneyTopUp;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tops up one player now and arms the 60 s server timer (once).
+	protected void TopUpPlayer(int playerId, IEntity character)
+	{
+		if (!m_bDebugMoneyTopUp)
+			return;
+
+		LF_DebugMoneyTopUp.Apply(LF_Utils.GetPlayerUID(playerId), character, m_iTopUpBankLow, m_iTopUpBankTarget, m_iTopUpCashLow, m_iTopUpCashTarget);
+		if (!m_bTopUpTimer)
+		{
+			m_bTopUpTimer = true;
+			GetGame().GetCallqueue().Remove(TopUpTick);
+			GetGame().GetCallqueue().CallLater(TopUpTick, 60000, true);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void TopUpTick()
+	{
+		array<int> ids = {};
+		GetGame().GetPlayerManager().GetPlayers(ids);
+		foreach (int id : ids)
+		{
+			IEntity character = GetGame().GetPlayerManager().GetPlayerControlledEntity(id);
+			if (character)
+				LF_DebugMoneyTopUp.Apply(LF_Utils.GetPlayerUID(id), character, m_iTopUpBankLow, m_iTopUpBankTarget, m_iTopUpCashLow, m_iTopUpCashTarget);
+		}
 	}
 
 	//! Playtest only: a new character owns two cars from the start, one in the garage and one at the
@@ -475,6 +541,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 		// Shots near an open crime scene leave casings (#268).
 		LF_Evidence.WatchShooter(character);
+
+		TopUpPlayer(playerId, character);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,29 @@
+GenericEntity {
+ ID "E4C3B78B5A602C37"
+ components {
+  MeshObject "{4F648239297A57F8}" {
+   Object "{98CD0A123E772237}Assets/Props/Furniture/Chest_01/Chest_01.xob"
+  }
+  ActionsManagerComponent "{08F9A4E48811CFBE}" {
+   ActionContexts {
+    UserActionContext "{D964BA7CEC95B89A}" {
+     ContextName "default"
+     Position PointInfo "{C2BB3C194916D533}" {
+      Offset 0 0.4 0
+     }
+     Radius 2.5
+    }
+   }
+   additionalActions {
+    LF_BankRobKitAction "{5F1283265C0CB606}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{AFAA572E4D049946}" {
+   Enabled 1
+  }
+ }
+}

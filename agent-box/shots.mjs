@@ -230,7 +230,7 @@ export function contactLayout(count) {
 
 // ------------------------------------------------------------------ image tool
 
-function image(spec) {
+export function image(spec) {
   const file = join(process.env.TEMP || process.env.TMP || ROOT, `shots-image-${process.pid}-${Math.random().toString(36).slice(2, 8)}.json`);
   writeFileSync(file, JSON.stringify(spec));
   const r = spawnSync("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", IMAGE_PS1, file], { encoding: "utf8", windowsHide: true });
@@ -268,12 +268,12 @@ function cropCommand(rest) {
 
 // -------------------------------------------------------------------- session
 
-function sessionTool(args) {
+export function sessionTool(args) {
   const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), ...args], { encoding: "utf8", windowsHide: true, cwd: ROOT, env: { ...process.env, LF_CALLER_PID: String(process.pid) } });
   return { code: r.status ?? 1, text: `${r.stdout ?? ""}${r.stderr ?? ""}` };
 }
 
-async function openClient(machine, hold) {
+export async function openClient(machine, hold) {
   const h = await import("./harness.mjs");
   const s = await import("./session.mjs");
   h.setBoxes([s.clientBox(s.sessionDir(), 1)]);
@@ -297,7 +297,7 @@ async function openClient(machine, hold) {
 }
 
 // A fresh playtest client starts on the registration form (R-89); sign it so the player spawns and the world loads around it.
-function arrive(h) {
+export function arrive(h) {
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   for (let i = 0; i < 8; i++) {
     const ui = h.sendCommand({ verb: "ui" });
@@ -591,7 +591,7 @@ export function importance(e) {
   const acts = e.actions ? e.actions.length : 0;
   let w = Math.min(acts, 4) + 0.7 * Math.cbrt(volOf(e));
   if (/^Sign_/.test(e.name || "")) w *= 0.2;
-  else if (/Npc|Clerk|Tomato|Plum|Apple|Farmer/.test(e.name || "")) w *= 0.35;
+  else if (/Npc|Clerk|Plum|Apple|Farmer/.test(e.name || "")) w *= 0.35;
   return r2(w);
 }
 
@@ -1068,7 +1068,7 @@ function selftest() {
   if (!(good.score > wall.score + 3)) fails.push(`scoreHero wall ${good.score} ${wall.score}`);
   if (rayBoxEntry([0, 0, 0], [0, 0, 1], [-1, -1, 5], [1, 1, 7]) !== 5 || rayBoxEntry([5, 0, 0], [0, 0, 1], [-1, -1, 5], [1, 1, 7]) !== null) fails.push("rayBoxEntry");
   const imp = (name, n, v) => importance({ name, actions: new Array(n).fill("a"), bmin: [0, 0, 0], bmax: [v, 1, 1] });
-  if (!(imp("Roadmap_Vehicle", 3, 5) > imp("TomatoNpc", 1, 1) * 3) || !(imp("Roadmap_Vehicle", 3, 5) > imp("Sign_Atm", 1, 1) * 3)) fails.push("importance ranks a vehicle over an NPC or a sign");
+  if (!(imp("Roadmap_Vehicle", 3, 5) > imp("TraderChainNpc", 1, 1) * 3) || !(imp("Roadmap_Vehicle", 3, 5) > imp("Sign_Atm", 1, 1) * 3)) fails.push("importance ranks a vehicle over an NPC or a sign");
   const eyeP = [0, 10, 0];
   if (treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 4, gy: 0 }], 30) < 0.5 || treeOcclusion(eyeP, [0, 1, 30], [{ x: 0, z: 40, gy: 0 }], 30) !== 0) fails.push("treeOcclusion");
   // Problems: a pivot above the floor with mesh below it is not sunk; a buried prop is.
@@ -1084,6 +1084,7 @@ export async function main(argv) {
   const [cmd, ...rest] = argv;
   if (cmd === "area") return areaCommand(rest);
   if (cmd === "crop") return cropCommand(rest);
+  if (cmd === "previews") return (await import("./previews.mjs")).main(rest);
   if (cmd === "baseline") return baselineCommand(rest);
   if (cmd === "selftest") return selftest();
   console.log("usage: tools\\cli shots area <name | x,z> [--radius N] [--out dir] [--machine any] [--hour H] [--annotate] [--pick] [--detail <Entity>] [--keep]\n       tools\\cli shots crop <shot> <x,y,w,h>\n       tools\\cli shots baseline [--areas all|a,b,c]\n       tools\\cli shots selftest");

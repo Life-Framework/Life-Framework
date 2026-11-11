@@ -20,6 +20,7 @@ addons/LifeFramework/Language/*.conf -text
 *.png -text
 *.jpg -text
 *.webp -text
+*.gif -text
 *.ico -text
 *.woff2 -text
 

@@ -13,12 +13,21 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{7B4EA90490042395}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 3.3
+      FOV 10
+     }
+    }
     ItemDisplayName LF_JailSlipUIInfo "{34F2F4734A869BE5}" {
      Name "#LF-JailSlip_Name"
      Description "#LF-JailSlip_Blank"
     }
     ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
      Weight 0.05
+     SizeSetupStrategy Volume
      ItemVolume 113
      RestingUP Forward
      RestingAdditiveRotationLS 0 0 0

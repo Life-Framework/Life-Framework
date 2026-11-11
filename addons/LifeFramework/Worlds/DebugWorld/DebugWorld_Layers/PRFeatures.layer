@@ -1,4 +1,4 @@
-$grp GenericEntity : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_Police_Base.et" {
+$grp GenericEntity : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
  Vehicle_PlateTest {
   coords 37 0 33
  }
@@ -15,7 +15,7 @@ $grp GenericEntity : "{C03B70B228FC49BA}Prefabs/Vehicles/Wheeled/M151A2/M151A2_P
  }
 }
 GenericEntity PRFeatureCrate {
- coords 43 0 33
+ coords 43 0 27.5
  {
   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
    {

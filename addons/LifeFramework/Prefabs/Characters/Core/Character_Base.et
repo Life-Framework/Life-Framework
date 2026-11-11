@@ -15,6 +15,10 @@ SCR_ChimeraCharacter {
      m_LayoutPath "{9165B2D1BAEA7F6A}UI/Layouts/HUD/Beta/Beta.layout"
      m_eLayer ALWAYS_TOP
     }
+    LF_LawlessHud "{5D2A9E41C7B3F068}" {
+     m_LayoutPath "{3E9D5C7A1B2F4086}UI/Layouts/HUD/LF_LawlessTag.layout"
+     m_eLayer ALWAYS_TOP
+    }
    }
   }
  }

@@ -27,8 +27,19 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
   },
   "/gallery": {
     title: "Gallery",
-    description: "Captures from the playtest village, grouped by system, with a slot for the before and after shots of each polished area.",
+    description: "A few pictures taken in the game in the playtest village.",
     og: "roadmap",
+  },
+  "/playtest": {
+    title: "Join the playtest",
+    description: "The M2 Living Town community playtest: what it is, how to install and join, what to test, and where to send feedback.",
+    og: "home",
+  },
+  "/join": {
+    title: "Join Life Framework",
+    description:
+      "An open-source life and roleplay framework for Arma Reforger, early test build. Join the Discord, then try the playtest.",
+    og: "home",
   },
   "/devlog": {
     title: "Devlog",
@@ -63,7 +74,9 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
 };
 
 export function metaFor(pathname: string): PageMeta {
-  const path = pathname.replace(/\/+$/, "") || "/";
+  let path = pathname.replace(/\/+$/, "") || "/";
+  // /join/<source> is the /join page, tagged for one community (content/outreach-sources.json).
+  if (/^\/join\/[^/]+$/.test(path)) path = "/join";
   const page = pages[path];
   if (page) return { ...page, path };
   const m = /^\/docs\/([^/]+)$/.exec(path);

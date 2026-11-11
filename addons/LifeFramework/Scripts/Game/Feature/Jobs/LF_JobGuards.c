@@ -118,8 +118,6 @@ class LF_FruitCatcherRound : Managed
 	{
 		if (fruit == EHarvestJobType.APPLES)
 			return "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
-		if (fruit == EHarvestJobType.TOMATOES)
-			return "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et";
 		if (fruit == EHarvestJobType.PLUMS)
 			return "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
 		if (fruit == EHarvestJobType.BERRIES)

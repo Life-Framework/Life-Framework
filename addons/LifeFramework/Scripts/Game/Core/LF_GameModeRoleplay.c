@@ -10,6 +10,12 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 	[Attribute("0", desc: "Let every player use dev tools (debug menu, agent harness). Development worlds only; administrators are always allowed.")]
 	protected bool m_bDevToolsEnabled;
 
+	//! Test worlds: the convoy drop is the cage a short drive from the barn (Roadmap_Convoy_Drop_Near)
+	//! instead of the pub on the square (Roadmap_Convoy_Drop), so a run can be tried on the spot.
+	//! The flagship prefab leaves it off and keeps the real distance.
+	[Attribute("0", desc: "Convoy drop is the near cage by the barn, not the pub on the square. Test worlds only.")]
+	protected bool m_bConvoyNearDrop;
+
 	//! The DebugWorld open-key listener is registered once per local player spawn so the menu
 	//! is reachable in a dev session without a dedicated UI component on the prefab.
 	protected bool m_bDebugMenuListenerRegistered;
@@ -30,12 +36,19 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 	}
 
 	//------------------------------------------------------------------------------------------------
+	bool IsConvoyNearDrop()
+	{
+		return m_bConvoyNearDrop;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected override void OnGameStart()
 	{
 		super.OnGameStart();
 		LF_HostStop.StartIfRequested();
 		LF_IncidentLog.Install();
 		LF_AimIntent.Start();
+		LF_DevGameMaster.Install(AreDevToolsEnabled());
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
 		LF_ChainTrace.Install();

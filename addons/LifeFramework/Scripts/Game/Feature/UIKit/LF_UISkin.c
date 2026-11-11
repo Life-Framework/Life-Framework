@@ -20,11 +20,21 @@ class LF_UISkin
 	ref Color m_Row;
 	ref Color m_ButtonText;
 	ref Color m_ButtonFocus;
+	//! Section labels and highlighted words on a notice. Null: the ink.
+	ref Color m_Accent;
+	//! The accent as 0..255 bytes, for RichTextWidget <color rgba='r,g,b,a'> markup.
+	string m_sAccentRgba;
 	ResourceName m_Font = LF_UITheme.FONT;
+	//! Face of RICH body text. Empty: the sheet's font.
+	ResourceName m_BodyFont;
+	//! Multiplies the title size only (1 is LF_UITheme.FONT_TITLE).
+	float m_fTitleScale = 1;
 	bool m_bRecolorButtons;
 	string m_sName = "paper";
 	//! Sheet width in reference pixels (LF_UIFrame.layout is 560).
 	float m_fWidth = 560;
+	//! Sheet height in reference pixels (LF_UIFrame.layout is 900). 0 keeps the layout's.
+	float m_fHeight;
 	//! Multiplies every font size on the sheet (1 is LF_UITheme). A shop list is read at arm's length.
 	float m_fTypeScale = 1;
 	//! Dim and soften the world behind the sheet (the full-screen blur in LF_UIFrame.layout).
@@ -44,6 +54,29 @@ class LF_UISkin
 		skin.m_ButtonText = LF_UITheme.Ink();
 		skin.m_ButtonFocus = Color.FromSRGBA(150, 40, 30, 255);
 		skin.m_bRecolorButtons = true;
+		return skin;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A printed notice (a sign card): the paper form, wider, a big title, a regular-weight body,
+	//! and an accent for the section labels, the rule under the title and highlighted words.
+	//! \param rim The frame colour; null keeps the blued steel.
+	//! \param accent Heading colour as 0..255 bytes.
+	static LF_UISkin Notice(Color rim, int accentR, int accentG, int accentB)
+	{
+		LF_UISkin skin = Paper();
+		skin.m_sName = "notice";
+		skin.m_fWidth = 640;
+		skin.m_fHeight = 920;
+		skin.m_fTitleScale = 1.35;
+		skin.m_BodyFont = LF_UITheme.FONT_REGULAR;
+		skin.m_Accent = Color.FromSRGBA(accentR, accentG, accentB, 255);
+		skin.m_sAccentRgba = string.Format("%1,%2,%3,255", accentR, accentG, accentB);
+		skin.m_Rule = skin.m_Accent;
+		skin.m_ButtonFocus = skin.m_Accent;
+		if (rim)
+			skin.m_Metal = rim;
+
 		return skin;
 	}
 

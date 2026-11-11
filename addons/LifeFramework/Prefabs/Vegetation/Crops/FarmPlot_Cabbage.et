@@ -1,0 +1,76 @@
+GenericEntity {
+ ID "6848AF24E1EB722E"
+ components {
+  MeshObject "{B12B1E8CDDA6279E}" {
+   Object "{9ACE415BB72B81CD}Assets/Structures/Agriculture/VegetableBed_01/VegetableBed_01_small.xob"
+  }
+  RigidBody "{2AFB389FE4C4190A}" {
+   ModelGeometry 1
+   Static 1
+  }
+  LF_FarmPlotComponent "{2E13CAF530967224}" {
+   m_sCropId "cabbage"
+   m_SeedPrefab "{F77BE55D8D3AEBA3}Prefabs/Items/Seeds/CabbageSeeds.et"
+   m_HarvestPrefab "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et"
+   m_iHarvestAmount 3
+   m_CropVisualPrefab "{B8FD99C47D856E7F}Prefabs/Vegetation/Crops/FarmPlot_CabbageVisual.et"
+   m_sSlots "-0.6 0.22 -0.55 | 0.6 0.22 -0.55 | -0.6 0.22 0.1 | 0.6 0.22 0.1 | -0.6 0.22 0.75 | 0.6 0.22 0.75"
+   m_aStages {
+    LF_CropStage "{6BE8D801A528AD07}" {
+     m_fStageTime 1
+     m_sStageName "#LF-Farm_Stage_Sprout"
+     m_StageOffset 0 0.02 0
+     m_fStageScale 0.35
+     m_bCanGather 0
+    }
+    LF_CropStage "{D90E9DF174FFDDB7}" {
+     m_fStageTime 1
+     m_sStageName "#LF-Farm_Stage_Growing"
+     m_fStageScale 0.6
+     m_bCanGather 0
+    }
+    LF_CropStage "{E865348DC6DC32F4}" {
+     m_fStageTime 1
+     m_sStageName "#LF-Farm_Stage_Ripe"
+     m_fStageScale 1
+     m_bCanGather 1
+    }
+   }
+  }
+  ActionsManagerComponent "{6E8CF5AB5B509EF3}" {
+   ActionContexts {
+    UserActionContext "{F0E324A2D75E7006}" {
+     ContextName "LF_FarmPlot"
+     Position PointInfo "{BE9C4DD1C194F161}" {
+      Offset 0 0.3 0
+     }
+     Radius 1.2
+    }
+   }
+   additionalActions {
+    LF_FarmPlotAction "{130CC39E5D7BC402}" {
+     ParentContextList {
+      "LF_FarmPlot"
+     }
+     UIInfo UIInfo "{5346C866D6D25AF1}" {
+      Name "#LF-Farm_Plant"
+     }
+     Duration 2
+     m_eMode PLANT
+    }
+    LF_FarmPlotAction "{B7E18068D03ED93C}" {
+     ParentContextList {
+      "LF_FarmPlot"
+     }
+     UIInfo UIInfo "{3173DE336C1B8ED6}" {
+      Name "#LF-Farm_Harvest"
+     }
+     Duration 2
+     m_eMode HARVEST
+    }
+   }
+  }
+  RplComponent "{F73344905A269C08}" {
+  }
+ }
+}

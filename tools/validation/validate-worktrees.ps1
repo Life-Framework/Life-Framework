@@ -64,8 +64,14 @@ foreach ($p in $state.worktrees.PSObject.Properties) {
   }
 
   $baseBranch = if ($w.base) { $w.base } else { 'main' }
-  git -C $root merge-base --is-ancestor $w.branch "origin/$baseBranch" 2>$null
-  if ($LASTEXITCODE -eq 0) {
+  # A stacked worktree's base branch is deleted from origin once its PR merges;
+  # a missing ref is "nothing to compare", not a crash.
+  git -C $root rev-parse --verify --quiet "origin/$baseBranch" 2>$null | Out-Null
+  $baseExists = ($LASTEXITCODE -eq 0)
+  if ($baseExists) {
+    git -C $root merge-base --is-ancestor $w.branch "origin/$baseBranch" 2>$null
+  }
+  if ($baseExists -and $LASTEXITCODE -eq 0) {
     $dirty = @(git -C $w.path status --porcelain).Count -gt 0
     if (-not $dirty) {
       $warnings += "worktree '$slug' is merged into origin/$baseBranch and clean - prune it (cli wt prune $slug)"

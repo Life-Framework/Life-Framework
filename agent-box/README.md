@@ -284,6 +284,19 @@ step is encoded (about 20 ms per frame with NVENC); a journey step's frames are
 deleted as soon as its clip is written. A 64 s, six-step journey clip was
 7.8 MB.
 
+### Game audio
+
+In-engine films are silent: the session starts clients with `-noSound`. For a clip with sound start the session
+with `--sound` (`tools\cli session up --sound ...`), then `node tools/film/street-clip.mjs --audio`. A separate
+process loopback capture of the client's pid (`tools/film/lf-procaudio.cs`, run through `lf-procaudio.ps1`, Windows
+10 build 20348+) writes `<clip>.wav`; the harness verb `film slate` beeps at the start and end of the take and logs
+the frame time in `index.txt`, and `tools/film/audio.mjs` aligns the WAV to the frames and writes `<clip>.audio.mp4`
+(H.264 copied, AAC added; the WAV stays as the separate track for mixing). The shoot fails when the captured audio's
+`mean_volume` is under -60 dB or the slate is not heard, and warns when the default output is muted.
+It does not depend on the audio endpoint volume, and other host sounds are not recorded. One unrecorded warm-up beep plays before the capture (the first play of the sound lands about 0.5 s late), and the mux uses the mean of the start and end offsets. A 1080p take is about 5.8 MB per frame on disk before encoding: check free space first (a 30 fps 28 s take is 4 GB; the disk filled once on 2026-11-10 and killed a take).
+
+Scenes: `harness.mjs --client 1 scene start street [hour|-] [weather]` fixes the light for a take (street defaults 16:00 Clear, day frozen); `scene stop` (or `reset`) despawns the actors and gives the clock and weather back.
+
 ### Screen capture
 
 `tools/film/film.mjs` records the game window while a flow plays. It does not
@@ -485,8 +498,7 @@ its own. Probes live in `agent-box/chains.mjs`.
 | ATM | `ATM_Debug` | `LF_ATMAction` |
 | Apple | `AppleGatherTree`, `AppleTradeContainer`, `AppleProcessor` | gather, open trader, process |
 | Plum | `PlumGatherTree`, `PlumTradeContainer` | gather (prefab only), open trader |
-| Tomato | `TomatoGather`, `TomatoTradeContainer` | gather, open trader |
-| Farming | `TomatoCrop_Debug` | gather |
+| Farming | `CabbageCrop_Debug` | gather |
 | Cement | `CementPlant_Debug`, `CementPile_Debug` | process, gather |
 | Gravel | medium and large piles | gather |
 | Sand | `SandPile_Debug` | gather |
@@ -519,7 +531,7 @@ empty rock shells 6-8 m away.
 
 | Probe | Why it performs |
 | --- | --- |
-| `TomatoGather`, `TomatoCrop_Debug` | First three crop stage times are 0 and ripe is 30 min, so both are gatherable within a few frames. The crop prefab still inherits `LF_DeleteAction`, which deletes the plant and grants nothing. |
+| `CabbageCrop_Debug` | First three crop stage times are 0 and ripe is 30 min, so both are gatherable within a few frames. The crop prefab still inherits `LF_DeleteAction`, which deletes the plant and grants nothing. |
 | `SurvivalPoint_Water` | 3.2 m off `SurvivalStation`, inside the look sphere. |
 | `CementPlant_Debug` | `Sandbag.et` is a child of the gravel bag with an explicit 1x1 volume slot. The old 2x1 bag was rejected by the inventory, so the plant never saw its third input. |
 | `Furnace`, `CrimeFurnace_Debug` | Iron, gold, and copper nuggets use `SLOT_1x1`. `IronOre_Debug` grants 4 nuggets, enough for both furnaces. `use LF_ProcessAction` hits the first action, the iron smelt. |

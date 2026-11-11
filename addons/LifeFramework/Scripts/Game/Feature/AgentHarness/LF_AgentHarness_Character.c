@@ -349,6 +349,22 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (tool == "keys")
+		{
+			// Gives a house key and a vehicle key, and sets one of each on the ground ahead, to look
+			// at the key models (#613).
+			int houseKeys = LF_InventoryUtils.AddAmount(this, "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et", 1);
+			int carKeys = LF_InventoryUtils.AddAmount(this, "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et", 1);
+			vector xform[4];
+			GetWorldTransform(xform);
+			vector ahead = GetOrigin() + xform[2] * 0.8;
+			ahead[1] = GetGame().GetWorld().GetSurfaceY(ahead[0], ahead[2]) + 0.05;
+			LF_Utils.SpawnEntityPrefab("{3735389521255DBE}Prefabs/Items/HouseKeyItem.et", ahead - xform[0] * 0.1);
+			LF_Utils.SpawnEntityPrefab("{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et", ahead + xform[0] * 0.1);
+			LF_HarnessReply(commandId, "ok", string.Format("keys house=%1 vehicle=%2", houseKeys, carKeys));
+			return;
+		}
+
 		if (tool == "shelf")
 		{
 			// A shopper taking the first shelf item in reach of the physical store (#202), through the
@@ -478,6 +494,68 @@ modded class SCR_ChimeraCharacter
 
 		LF_Debug.Info("AgentHarness", string.Format("shot player %1: refused=%2 alive=%3 downed=%4", targetPlayerId, refused, alive, downed));
 		LF_HarnessReply(commandId, "ok", string.Format("shot player=%1 refused=%2 alive=%3 downed=%4", targetPlayerId, refused, alive, downed));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `shootnpc`: this character deals one lethal hit to a placed town NPC, behind the dev gate.
+	void LF_AskHarnessShootNpc(int commandId, string entityName)
+	{
+		if (Replication.IsServer())
+		{
+			LF_ApplyHarnessShootNpc(commandId, entityName, true);
+			return;
+		}
+
+		Rpc(RpcAsk_LF_HarnessShootNpc, commandId, entityName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_HarnessShootNpc(int commandId, string entityName)
+	{
+		bool gateOpen = LF_DevGate.CheckCharacterRequest(this, "AgentHarness", "shootnpc");
+		LF_ApplyHarnessShootNpc(commandId, entityName, gateOpen);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_ApplyHarnessShootNpc(int commandId, string entityName, bool gateOpen)
+	{
+		if (!gateOpen)
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		IEntity target = GetGame().GetWorld().FindEntityByName(entityName);
+		if (!target)
+		{
+			LF_HarnessReply(commandId, "error", "no_target");
+			return;
+		}
+
+		SCR_DamageManagerComponent damage = SCR_DamageManagerComponent.Cast(target.FindComponent(SCR_DamageManagerComponent));
+		if (!damage || !damage.GetDefaultHitZone())
+		{
+			LF_Debug.Info("AgentHarness", string.Format("shot npc %1: protected (no hit zone)", entityName));
+			LF_HarnessReply(commandId, "ok", "shotnpc protected=1 killed=0");
+			return;
+		}
+
+		HitZone zone = damage.GetDefaultHitZone();
+		vector hitPosDirNorm[3];
+		hitPosDirNorm[0] = target.GetOrigin() + Vector(0, 1.2, 0);
+		hitPosDirNorm[1] = vector.Direction(GetOrigin(), target.GetOrigin()).Normalized();
+		hitPosDirNorm[2] = vector.Up;
+		SCR_DamageContext context = new SCR_DamageContext(EDamageType.KINETIC, 1000, hitPosDirNorm, target, zone, Instigator.CreateInstigator(this), null, -1, -1);
+		context.damageSource = this;
+		damage.HandleDamage(context);
+
+		int killed = 0;
+		if (LF_NpcDamage.IsDying(target))
+			killed = 1;
+
+		LF_Debug.Info("AgentHarness", string.Format("shot npc %1: killed=%2", entityName, killed));
+		LF_HarnessReply(commandId, "ok", string.Format("shotnpc protected=0 killed=%1", killed));
 	}
 
 	//------------------------------------------------------------------------------------------------

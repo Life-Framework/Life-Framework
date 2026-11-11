@@ -58,7 +58,7 @@ class LF_Murder
 			return false;
 
 		bool isCharacter;
-		if (ChimeraCharacter.Cast(victim))
+		if (ChimeraCharacter.Cast(victim) || LF_NpcBaseEntity.Cast(victim))
 			isCharacter = true;
 
 		bool killerIsVictim;

@@ -24,8 +24,9 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
     CustomAttributes {
      PreviewRenderAttributes "{59A730880E261EBE}" {
       CameraPreset Front
-      CameraOrbitAngles -30 30 0
-      CameraDistanceToItem 1.15
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 1.35
+      CameraOffset -0.026 0 0
       FOV 10
      }
     }

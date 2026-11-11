@@ -69,7 +69,7 @@ export const TOWN = {
     { id: "garage", entity: "Roadmap_Garage", actions: ["LF_VehicleStoreAction", "LF_VehicleRetrieveAction", "LF_GarageLedgerAction"], sign: "garage", step: 23 },
     { id: "impound", entity: "Roadmap_Impound_Desk", actions: ["LF_ImpoundCollectAction", "LF_GarageLedgerAction"], sign: "impound", step: 23 },
     { id: "mining", entity: "Furnace", actions: ["LF_ProcessAction"], sign: "mining", step: 7, outskirts: true },
-    { id: "farm", entity: "TomatoCrop_Debug", actions: ["LF_GatherAction"], sign: "farm", step: 7, outskirts: true },
+    { id: "farm", entity: "FarmPlot_1", actions: ["LF_FarmPlotAction"], sign: "farm", step: 7, outskirts: true },
   ],
 };
 

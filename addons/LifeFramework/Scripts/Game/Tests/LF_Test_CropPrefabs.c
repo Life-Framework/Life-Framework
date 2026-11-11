@@ -1,13 +1,12 @@
 // red-proof: spawning BaseCrop (this test's first spawn) VME-crashed on the
 // unguarded m_aCropStages.Count() in the stage-change path until LF_BaseCrop
 // guarded the null stage list; that crash is the observed red. Point any other
-// assertion at the wrong stage count (e.g. expect 3 stages on TomatoCrop) and
+// assertion at the wrong stage count (e.g. expect 4 stages on CabbageCrop) and
 // it fails on the next `tools\cli test --tier all`.
 // tier: WORLD
 class LF_Test_CropPrefabs : LF_Test
 {
 	protected static const ResourceName BASE_CROP = "{64DFA805B1BF7F7D}Prefabs/Vegetation/Crops/BaseCrop.et";
-	protected static const ResourceName TOMATO_CROP = "{28EAA2BC76483922}Prefabs/Vegetation/Crops/TomatoCrop.et";
 	protected static const ResourceName CABBAGE_CROP = "{C4B2301E5D989B42}Prefabs/Vegetation/Crops/CabbageCrop.et";
 
 	//------------------------------------------------------------------------------------------------
@@ -75,16 +74,6 @@ class LF_Test_CropPrefabs : LF_Test
 			ctx.True(baseStages == null || baseStages.Count() == 0, "base crop has no stages of its own");
 			ctx.False(baseCrop.CanGather(), "base crop cannot gather");
 			ctx.Equal(-1, baseCrop.GetSpawnItemsAtStage(), "base crop spawns no items");
-		}
-
-		// TomatoCrop: 4 stages, ripe spawns 5 tomatoes through the area spawner
-		LF_BaseCrop tomatoCrop = SpawnCrop(ctx, TOMATO_CROP);
-		if (tomatoCrop)
-		{
-			AssertStageShape(ctx, tomatoCrop, 4, "Ripe", "tomato");
-			ctx.Equal(3, tomatoCrop.GetSpawnItemsAtStage(), "tomato spawns items at the ripe stage index");
-			ctx.False(tomatoCrop.GetDeleteAfterFinalStage(), "tomato stays after the final stage");
-			ctx.EqualStr("<0, 0, 0>", tomatoCrop.GetCropStages()[3].m_StageOffset.ToString(), "tomato ripe stage sits at zero offset");
 		}
 
 		// CabbageCrop: 3 stages, gather-only (no area spawner)
