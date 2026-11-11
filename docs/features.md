@@ -560,7 +560,11 @@
   on graceful exit; the manager observes the result via `OnAfterSave` and logs
   an `LF_Debug.Error` if a session ends with no shutdown save. The old manual
   `RequestSavePoint(SHUTDOWN)` from `OnGameEnd` always lost the race against
-  the persistence teardown on the Workbench (fixed 2026-08-30).
+  the persistence teardown on the Workbench (fixed 2026-08-30). The engine
+  writes it only under a mission header; a bare `DebugWorld.ent` boot writes
+  none. `wt e2e` pass 1 ends through the host stop file on
+  `EL_DebugTest.conf`, asserts the SHUTDOWN save landed before the statics
+  reset, and pass 2 loads it (test `e2e/shutdown-save-loaded`, #830).
 - ✅ Persistence system resolution is stable across reloads: the systems config
   is now `Configs/Systems/LifeFrameworkSystems.conf` (unique GUID, referenced
   explicitly from both missions), replacing the GUID-colliding
@@ -2364,3 +2368,5 @@
 - ✅ **Props on counters (validate-prop-on-surface).** The general store register, the police and hospital duty-desk punch clock, the dispatch console radio and a market crate are placed wholly on their surface; `tools/validation/validate-prop-on-surface.mjs` fails a prop whose footprint hangs over 0.1 m past an edge (docs/agent-area-polish.md).
 
 - ✅ **Police rank ladder is config (#754a, M3).** `m_aRanks` in `Configs/Police/LF_Police.conf` is the ladder: per rank `m_sId`, `m_sTitleKey`, `m_iFineCap`, `m_fPayPerSecond` (negative defers to `m_fPoliceDutyPayPerSecond`), `m_iDutySecondsForNext` and `m_aKit`. A rank is its index and a saved index never changes meaning, so `PATROL` 0 and `SENIOR` 1 stay first and a pack appends. `LF_PoliceRanks.FineCap/TitleKey/DutySecondsForNext/CollectKit` and `LF_DutyPay.RateForAccount` read the row; an unknown index clamps to the nearest rung, and a saved rank above the ladder loads as the top rank. A missing config falls back to the built-in two ranks. Test `police/rank-table`. Qualifications are #754b.
+
+- ✅ **Two-addon tooling (M3, #322).** Every repo launcher passes the addon folders as one comma-separated `-addonsDir` (`tools/lib/addons.mjs addonsDirArgs`; Workbench keeps only the last repeated flag, so the pack could not find the core), and `validate-addonsdir` rejects a repeat. `tools\cli build [addon]` and `tools\cli pack [addon] [--out dir]` take `LifeFramework` (default) or `LF_Everon1989` by name or GUID; `pack` now honours `--out` and defaults to `tmp/workshop-pack/<addon>`, so a second pack no longer replaces the first. The rdb refresh, `validate-rdb-fresh`, `copyResourceDatabase` and the playtest release rdb check cover a list of addons: the core always, another addon once it declares a resource, so an empty pack changes nothing. Offline selftest in `validate-rdb-fresh` and `validate-addonsdir`; build and pack of both addons proven headless.

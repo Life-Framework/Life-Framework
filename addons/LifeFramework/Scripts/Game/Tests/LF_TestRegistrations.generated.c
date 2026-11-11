@@ -105,6 +105,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_E2E_Narrative(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_E2E_SaveStateWrite(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_SaveStateVerify(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_E2E_ShutdownSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2EInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);

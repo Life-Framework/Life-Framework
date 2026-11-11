@@ -1,5 +1,6 @@
 // tier: WORLD
 // red-proof: 2026-11-11, LF_PlacementAudit.RayLine reporting `d = len` instead of the traced distance: `--only LF_Test_PlacementProbe` failed "a ray down stops on the table top (expected 0.500393, got 1.90127)" and "a ray from the side stops at the table's edge (expected 1, got 1.60437)". Restored, green.
+// red-proof: 2026-11-12, FindExcluded returning null for the "@prefab:x,y,z" token: --only LF_Test_PlacementProbe failed (1 failing). Restored, green.
 //! The probe ray behind `tools\cli place` (LF_PlacementAudit.RayLine, tools/place/place.mjs): the
 //! placement tool asks the test server where a surface's top and a wall's face really are instead of
 //! trusting mesh bounds. On a table spawned on open ground south of the DebugWorld town (310, 100):
@@ -49,6 +50,15 @@ class LF_Test_PlacementProbe : LF_Test
 		LF_Debug.Info("PlaceAudit", "probe " + clear);
 		ctx.True(Field(clear, "hit") == "none", "a ray through open air hits nothing (hit=" + Field(clear, "hit") + ")");
 		ctx.EqualFloat(Field(clear, "len").ToFloat(), Field(clear, "d").ToFloat(), 0.001, "and reports its full length");
+
+		// An unnamed prop being moved is excluded by "@<prefab>:x,y,z": the ray goes through it to the ground.
+		vector origin = table.GetOrigin();
+		string token = "@" + LF_PlacementAudit.PrefabBase(table) + ":" + origin[0] + "," + origin[1] + "," + origin[2];
+		ctx.True(LF_PlacementAudit.FindExcluded(token) == table, "the exclude token finds the unnamed table (" + token + ")");
+		string through = LF_PlacementAudit.RayLine("through", Vector(cx, tmax[1] + 0.5, cz), Vector(cx, tmin[1] - 0.5, cz), LF_PlacementAudit.FindExcluded(token));
+		LF_Debug.Info("PlaceAudit", "probe " + through);
+		ctx.True(Field(through, "root") != LF_PlacementAudit.Label(table), "an excluded prop does not answer its own ray (root=" + Field(through, "root") + ")");
+		ctx.True(Field(through, "d").ToFloat() > Field(down, "d").ToFloat() + 0.3, "the excluded ray ends below the table top");
 
 		SCR_EntityHelper.DeleteEntityAndChildren(table);
 	}
