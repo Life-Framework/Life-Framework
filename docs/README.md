@@ -50,6 +50,7 @@ Feature design notes live beside their code under
 - [Life/RP benchmark](research/life-rp-benchmark.md) — genre patterns and design opportunities.
 - [Asset pipeline](research/asset-pipeline.md) — agent-driven static 3D items, from Blender script to filmed in-game proof.
 - [Altis Life framework config](research/altis-life-framework.md) — what its config layer tunes; ideas only, CC BY-NC-ND.
+- [Team ELAN integration plan](research/team-elan-plan.md) — a page-by-page read of a live Reforger life mod, planned into framework and flagship work ([page notes](research/team-elan-pages.md)).
 - [Overthrow survey](overthrow-survey.md) — systems and licence notes.
 - [EveronLife forks](everonlife-forks.md) — upstream context and prior ports.
 - [Discord server](community/discord.md) — channels, roles, and moderation.
