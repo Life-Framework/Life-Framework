@@ -1466,7 +1466,9 @@
   600 m), a brighter, faster flash, `m_fLoudAlarmSeconds` (60). A newer alarm
   at the same site replaces the old one. Durations, prefabs, and the radio
   sound are in `Configs/Police/LF_Police.conf`; the sound, hear range, and
-  light are attributes on the prefabs.
+  light are attributes on the prefabs. The flash is LV 12 over 10 m (loud: LV 13 over
+  15 m); it was LV 15 and LV 18 over 25 m, which flashed the whole frame white at golden
+  hour within 10 m of the site (seen on the #571 trailer takes, 2026-11-11).
 - ✅ **Radio dispatch**: each on-duty officer's own client (Owner RPC on the
   controller) hears a vanilla radio chirp from their body
   (`Props_Radios_Signals.acp`, `SOUND_RADIO_SIGNAL_2`), then a toast
