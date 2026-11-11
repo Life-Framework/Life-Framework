@@ -14,13 +14,13 @@ text from any project below is in this repo, and none should be.
 | Takistan Life (Armitxes) | Custom: use, modify, and redistribute with credit [3] | Ideas only (Arma 2 SQF, nothing to port anyway) |
 | ESX, QBCore, Qbox, ox_inventory, NPWD, qb-phone | GPL-3.0 [G] | Ideas only. GPL code must never enter an MIT repo |
 | ox_core, ox_lib | LGPL-3.0 in `LICENSE`, but ox_core's `NOTICE.md` says GPL-3.0-or-later [G] | Ideas only |
-| Team ELAN – Arma Life (Reforger) | APL-ND [E1] | Functionality reference only. No derivatives |
+| A live Reforger life server | APL-ND [E1] | Functionality reference only. No derivatives |
 | Everon Life (Reforger) | MIT [E3] | Our upstream (`EL_` classes); see `docs/everonlife-forks.md` |
 
 **Confidence.** Facts with a source number were read on that page. Lines marked
 *(recollection)* are widely repeated genre knowledge that no primary page
 confirmed during this research; treat them as hypotheses. Reddit was not
-reachable from the research tools, and the Team ELAN wiki was read only through
+reachable from the research tools, and that server's wiki was read only through
 search-engine excerpts.
 
 ## 1. Feature matrix
@@ -29,7 +29,7 @@ Life Framework column: **built** = in the tree today (see
 [features](../features.md)); **M1** = an M1 scope; **planned** = a recorded
 decision or an after-release scope; **absent** = no plan.
 
-| Feature | Altis Life (A3) | GTA RP (ESX / QB / NoPixel) | Elan Life (Reforger) | Life Framework |
+| Feature | Altis Life (A3) | GTA RP (ESX / QB / NoPixel) | Reforger neighbour | Life Framework |
 | --- | --- | --- | --- | --- |
 | **Jobs** | Gather → process → sell chains (apples, copper, salt, oil, diamonds); delivery missions, fishing, hunting [1][8] | Job grades with pay per grade; bus, trucker, tow, garbage, vineyard, reporter, judge, lawyer [G]; hidden job "rep" on big servers *(recollection)* | Professions (miner, blacksmith, tailor, crafter, drug dealer) gated by 11 visible skills to level 20; $50k to switch, 24 h cooldown [E4] | **built**: courier, fuel delivery, taxi, gather/process, mining. **M1**: pay at the drop. **planned**: hidden experience (decision) |
 | **Economy** | Bank is safe, cash is stealable; ATMs; fixed or server-tuned prices [1][8] | Cash plus bank accounts, job/gang "society" accounts, bank cards [G] | Global dynamic market: selling a good drops its price, random market events [E5]; auction house [E9] | **built**: cash items, ATM, shops, traders, unemployment benefit. **planned**: supply/demand prices (decision) |
@@ -110,9 +110,9 @@ decision or an after-release scope; **absent** = no plan.
 - **Platform risk.** Rockstar banned the FiveM developers in 2015, bought Cfx.re in
   2023, and now restricts monetisation [R].
 
-### Elan Life (Reforger, 2022–today)
+### A Reforger life server (2022–today)
 
-Elan Life is our closest neighbour: Team ELAN, ex-Altis Life operators, about 7
+The Reforger neighbour is our closest: run by ex-Altis Life operators, about 7
 servers of up to 128 players, version 0.10.5 updated 7 Nov 2026, 26k downloads,
 78% rating [E1][E11]. The maintainer judges its taste weak; this section only
 records what exists and what players say.
@@ -159,14 +159,14 @@ records what exists and what players say.
 - **Phone UI and apps.** Decided: period comms only.
 - **Floating name tags and a Y-menu hub.** Decided: introductions, one
   interaction menu.
-- **Visible XP and skill trees** (Elan's 11 skills). Decided: hidden experience.
+- **Visible XP and skill trees** (the neighbour's 11 skills). Decided: hidden experience.
 - **Hacking minigames as screen puzzles.** A drill that takes time, makes noise,
   and can jam is in-world and gives police time to arrive.
 - **Paid whitelists, priority queues, donor gear.** Violates Bohemia's policy and
   the genre's trust lesson [25][R].
 - **Global "war zone" exemptions from the rules** (Olympus cartels): see
   question 1.
-- **A fixed government fine schedule** (Elan). Our ticket is written face to face;
+- **A fixed government fine schedule** (the neighbour). Our ticket is written face to face;
   an officer judges the amount within a config range.
 
 ### Where Reforger lets us do what no life mode has done
@@ -244,7 +244,7 @@ events on Game Master, a mechanic and tow job with impound, and courts.
    a week with a cash pot, and it is one of its longest-lived features. Is a
    scheduled event like a cross-country rally, a gang war night, or a strike at
    the factory part of the flagship, or does that break the sandbox?
-6. **How much of a court do we build?** Elan fixes fines by law; GTA RP has
+6. **How much of a court do we build?** The neighbour fixes fines by law; GTA RP has
    judges and lawyers. Ours is an officer writing a ticket. Do we add an appeal
    or a bail desk where another player decides, or leave justice to the officer
    and the config?
@@ -253,7 +253,7 @@ events on Game Master, a mechanic and tow job with impound, and courts.
    Reforger servers [B]. When M4 runs, is the flagship strictly free, or
    cosmetic-only within Bohemia's policy?
 8. **Are console players first-class on the flagship?** Reforger reaches Xbox
-   and PS5, and Elan players blame console players for RDM [E12]. Typing a name,
+   and PS5, and the neighbour's players blame console players for RDM [E12]. Typing a name,
    an amount, or a ticket is harder with a controller. Do we design every
    interaction for a gamepad first, or accept a PC-first flagship?
 
@@ -292,14 +292,14 @@ qb-houses, qb-apartments, qb-policejob, qb-bankrobbery), `Qbox-project/qbx_core`
 - [P] https://www.gtaboom.com/penta-burns-bridges-on-his-way-out-of-nopixel-6ac5 ; https://www.gtaboom.com/nopixel-management-goes-from-koil-to-buddha-amidst-controversies-6126
 - [N] https://fivemx.com/gta-news/nopixel-failed (reseller site, low confidence)
 - [R] https://gamedeveloper.com/business/rockstar-allows-roleplaying-in-i-gta-online-i-but-no-loot-boxes-or-nfts ; https://www.club386.com/rockstar-acquires-gta-v-and-rdr-roleplaying-mod-maker-cfx-re/ ; https://www.gameserverkings.com/knowledge-base/fivem/server-monetisation/
-- [E1] https://reforger.armaplatform.com/workshop/599820634D266D00-TeamELAN-ArmaLife-Main (and `/changelog`)
-- [E2] https://wiki.team-elan.com/Police ; https://wiki.team-elan.com/Police_Application (search excerpts)
-- [E3] https://wiki.team-elan.com/index.php?title=Skills (search excerpts); Everon Life: https://reforger.armaplatform.com/workshop/59636E668EA37AD7-EveronLife
-- [E4] https://wiki.team-elan.com/Professions (search excerpts)
-- [E5] https://wiki.team-elan.com/Dynamic_market (search excerpts)
-- [E6] https://wiki.team-elan.com/Laws (search excerpts)
-- [E7] https://wiki.team-elan.com/index.php?title=Reputation (search excerpts)
-- [E9] https://wiki.team-elan.com/Group_Spots ; https://wiki.team-elan.com/Gas_station_robbery ; https://wiki.team-elan.com/Category:Features (search excerpts)
+- [E1] the server mod's Workshop page and changelog
+- [E2] the server's player wiki, Police page ; the server's player wiki, Police Application page (search excerpts)
+- [E3] the server's player wiki, Skills page (search excerpts); Everon Life: https://reforger.armaplatform.com/workshop/59636E668EA37AD7-EveronLife
+- [E4] the server's player wiki, Professions page (search excerpts)
+- [E5] the server's player wiki, Dynamic market page (search excerpts)
+- [E6] the server's player wiki, Laws page (search excerpts)
+- [E7] the server's player wiki, Reputation page (search excerpts)
+- [E9] the server's player wiki, Group Spots page ; the server's player wiki, Gas station robbery page ; the server's player wiki, Category:Features page (search excerpts)
 - [E10] https://steamcommunity.com/sharedfiles/filedetails/?id=3194800812 (search excerpt)
-- [E11] https://wiki.team-elan.com/How-to-join (search excerpts)
+- [E11] the server's player wiki, How-to-join page (search excerpts)
 - [E12] https://steamcommunity.com/app/1874880/discussions/12/604144884892359517/
