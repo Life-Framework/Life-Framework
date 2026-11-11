@@ -206,6 +206,30 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			ctx.Equal(2, saveStore.GetStock("{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"), "e2e store apple stock reads 2 before the save");
 		}
 
+		// Farm plots (#614, "farmplots" payload): plot 2 is ripe, plot 3 is 80 s in (half grown), plot 1 is empty.
+		LF_FarmPlotComponent ripePlot = LF_FarmPlots.Find("farm_plot_2");
+		LF_FarmPlotComponent growingPlot = LF_FarmPlots.Find("farm_plot_3");
+		LF_FarmPlotComponent emptyPlot = LF_FarmPlots.Find("farm_plot_1");
+		ctx.NotNull(ripePlot, "e2e farm plot 2 is placed before the save");
+		ctx.NotNull(growingPlot, "e2e farm plot 3 is placed before the save");
+		ctx.NotNull(emptyPlot, "e2e farm plot 1 is placed before the save");
+		if (ripePlot && growingPlot && emptyPlot)
+		{
+			LF_FarmPlotRow ripeRow = new LF_FarmPlotRow();
+			ripeRow.m_sPlotKey = "farm_plot_2";
+			ripeRow.m_sCropId = ripePlot.GetCropId();
+			ripeRow.m_iGrownSeconds = 600;
+			ripePlot.Import(ripeRow);
+			LF_FarmPlotRow growingRow = new LF_FarmPlotRow();
+			growingRow.m_sPlotKey = "farm_plot_3";
+			growingRow.m_sCropId = growingPlot.GetCropId();
+			growingRow.m_iGrownSeconds = 80;
+			growingPlot.Import(growingRow);
+			emptyPlot.Import(null);
+			ctx.True(ripePlot.IsRipe(), "e2e plot 2 is ripe before the save");
+			ctx.Equal(1, growingPlot.GetStage(), "e2e plot 3 is half grown before the save");
+		}
+
 		// The async manual save is the belt; the blocking shutdown save on game
 		// close (OnGameEnd) is the suspenders the reload boot loads.
 		manager.SaveGame();
@@ -362,6 +386,23 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			s_iLooseApples = 0;
 			GetGame().GetWorld().QueryEntitiesBySphere(loadedStore.GetOwner().GetOrigin(), 4, CountLooseApple, null, EQueryEntitiesFlags.ALL);
 			ctx.Equal(2, s_iLooseApples, "e2e exactly two loose apples stand around the store after the restart");
+		}
+
+		// Farm plots ride "farmplots" (#614). Growth counts while a server runs, so plot 3 has grown at
+		// least its saved 80 s; it may have ripened during the save boot's shutdown.
+		LF_FarmPlotComponent loadedRipe = LF_FarmPlots.Find("farm_plot_2");
+		LF_FarmPlotComponent loadedGrowing = LF_FarmPlots.Find("farm_plot_3");
+		LF_FarmPlotComponent loadedEmpty = LF_FarmPlots.Find("farm_plot_1");
+		ctx.NotNull(loadedRipe, "e2e farm plot 2 is placed after the restart");
+		ctx.NotNull(loadedGrowing, "e2e farm plot 3 is placed after the restart");
+		ctx.NotNull(loadedEmpty, "e2e farm plot 1 is placed after the restart");
+		if (loadedRipe && loadedGrowing && loadedEmpty)
+		{
+			ctx.True(loadedRipe.IsRipe(), "e2e the ripe cabbages are still ripe after the restart");
+			ctx.False(loadedGrowing.IsEmpty(), "e2e the half-grown plot is still planted after the restart");
+			ctx.True(loadedGrowing.GetGrownSeconds() >= 80, string.Format("e2e the half-grown plot kept its growth after the restart (%1 s)", loadedGrowing.GetGrownSeconds()));
+			ctx.True(loadedGrowing.GetStage() >= 1, "e2e the half-grown plot is at least half grown after the restart");
+			ctx.True(loadedEmpty.IsEmpty(), "e2e the empty plot is still empty after the restart");
 		}
 
 		IEntity body = LF_TestCharacterFixture.Spawn(ctx);

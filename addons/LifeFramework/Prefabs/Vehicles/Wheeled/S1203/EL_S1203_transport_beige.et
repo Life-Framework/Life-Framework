@@ -10,10 +10,21 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
     LF_VehicleLockAction "{E1A1203BE1A00006}" {
      ParentContextList {
       "door_l01"
+      "door_l01_int"
      }
      UIInfo UIInfo "{E1A1203BE1A00007}" {
       Name "#EL-VehicleLock_Action"
      }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{E1A5707E00000104}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A5707F00000104}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
     }
     LF_VehicleSearchAction "{5EA2C40500000001}" {
      ParentContextList {

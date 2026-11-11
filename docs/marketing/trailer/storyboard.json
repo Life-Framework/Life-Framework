@@ -1,0 +1,398 @@
+{
+  "format": "lf-storyboard/draft-1",
+  "formatNote": "#395 (storyboard format and film-make) is not built yet. This file uses the fields #395 lists (scene setup, shots with camera, actors and duration, audio cues, titles, transitions, output) and the verbs that exist today: harness `scene start <name> [hour] [weather]`, `camera orbit|follow x y z size seconds`, actor steps walk|run|enter|drive|exit|use|wait. Fields marked `build` name what is missing. When #395 lands, convert this file to its schema and move it to video/trailer-571.json.",
+  "title": "Life Framework trailer",
+  "issue": 571,
+  "script": "docs/marketing/trailer/script.md",
+  "world": "DebugWorld, mission playtest (LF_PlaytestTown)",
+  "session": "node agent-box/session.mjs up --clients 3 --mission playtest --profile full --res 1920x1080 --sound --wait --priority low",
+  "shootAfter": "M2 polish and the #679 visual QA sweep. Every shot's `blockedBy` issues must be closed, or the shot swapped for its `fallback`.",
+  "output": [
+    { "name": "main", "size": "1920x1080", "fps": 30, "aspect": "16:9", "length": 105 },
+    { "name": "cut15", "size": "1920x1080", "fps": 30, "aspect": "16:9", "length": 15, "see": "cutdowns.md" },
+    { "name": "bumper6", "size": "1920x1080", "fps": 30, "aspect": "16:9", "length": 6, "see": "cutdowns.md" },
+    { "name": "vertical", "size": "1080x1920", "fps": 30, "aspect": "9:16", "length": 60, "note": "#571 asks for a 9:16 version. A 1080x1920 client window is untested (docs/film-pipeline.md). Every shot keeps its subject in the centre third so a 9:16 crop works from the 16:9 take." }
+  ],
+  "lookDefaults": {
+    "hour": 17.9,
+    "hourNote": "agent-box/shots.mjs GOLDEN_HOUR (local hour) used for every gallery shot",
+    "weather": "Clear",
+    "weatherNote": "Clear only: #602 (clouds look goopy in DebugWorld) is open",
+    "dayFrozen": true,
+    "hud": "off",
+    "hints": "off (SCR_HintManagerComponent.HideHint, docs/film-pipeline.md)"
+  },
+  "scenes": [
+    { "name": "trailer-bank", "hour": 17.9, "weather": "Clear", "status": "build", "build": "#394: an env-only scene (clock and weather, no actors). `scene start street` cannot stand in, because it spawns a walker and a car. Until it exists, set the clock with the harness `time` verb that shots.mjs uses." },
+    { "name": "trailer-square", "hour": 17.9, "weather": "Clear", "status": "build", "build": "#394 env-only scene" },
+    { "name": "trailer-square-dusk", "hour": 19.2, "weather": "Clear", "status": "build", "build": "#394 env-only scene; check 19.2 is dusk, not night, with a test still first" },
+    { "name": "trailer-fuel", "hour": 17.9, "weather": "Clear", "status": "build", "build": "#394 env-only scene" },
+    { "name": "trailer-police", "hour": 17.9, "weather": "Clear", "status": "build", "build": "#394 env-only scene" },
+    { "name": "trailer-store", "hour": 17.9, "weather": "Clear", "status": "build", "build": "#394 env-only scene" },
+    { "name": "trailer-farm", "hour": 17.9, "weather": "Clear", "status": "build", "build": "#394 env-only scene" },
+    { "name": "trailer-quarry", "hour": 16.5, "weather": "Clear", "status": "build", "build": "#394 env-only scene. 16.5 because the pit walls shade the floor at 17.9; confirm with a still" },
+    { "name": "trailer-hospital", "hour": 17.9, "weather": "Clear", "status": "build", "build": "#394 env-only scene" },
+    { "name": "trailer-chop", "hour": 18.3, "weather": "Clear", "status": "build", "build": "#394 env-only scene. The gallery chop shop shot is at sunset" },
+    { "name": "trailer-convoy", "hour": 17.9, "weather": "Clear", "status": "build", "build": "#394 scene with one puppet driver in the barn van (Convoy_Barn_Van, 474 0 324.5)" }
+  ],
+  "cameraModes": {
+    "orbit": "exists: `camera orbit x y z radius seconds`, a 140 degree arc on the +z side, 5 m up, looking at the point + 1.2 m. Works for fronts that face +z (areas.json front 0).",
+    "orbitAzimuth": "build (#392): orbit with a centre azimuth and height, for fronts at 90, 180 or 270.",
+    "follow": "exists: `camera follow x y z distance seconds`, swings 160 degrees round the vehicle nearest the point, 3 m up. Wait 2 s after a spawn so the vehicle has streamed in.",
+    "static": "build (#392): a fixed camera at a position, looking at a point, for N seconds.",
+    "drone": "build (#392): a keyed path between two or more positions with easing. LF_FilmCameraPath already holds the keys; it needs a harness verb.",
+    "firstPerson": "exists for a player client (its own camera). Needs the clean-frame toggle (#392: HUD and hints off on the player view) unless the shot shows a UI on purpose.",
+    "still": "exists: `tools\\cli shots area <name>` writes golden-hour clean stills (no HUD). Post adds a slow push in."
+  },
+  "actorKinds": {
+    "client": "A real player client driven by the harness (`stand`, `use`, pose) or by an agent-box proof. Clothed, has a player identity, every action works.",
+    "puppet": "LF_FilmActor on a step list. In underwear today (features.md: no loadout); a clothed outfit is a build item for #393. Driving works only as a physics-velocity drive at a steady speed."
+  },
+  "shots": [
+    {
+      "id": "S01", "beat": "B1", "start": 0.0, "duration": 3.0,
+      "picture": "Low static beside the cash van at the bank stop; a player bent over the steel box with a drill",
+      "location": { "area": "cash-van", "spawnHub": "cash_van", "point": [196, 0, 252.4], "note": "van at the bank stop, north lane, facing west; the box is on the rear step" },
+      "scene": "trailer-bank",
+      "actors": [
+        { "id": "driller", "kind": "client", "client": 1, "do": "bank-kit-proof for the drill, then stand at the van box and use the drill; work-anim-proof drives the bend (#513)" }
+      ],
+      "camera": { "mode": "static", "position": "2.5 m behind and 1.5 m left of the van rear, 0.6 m up", "lookAt": "the box on the rear step", "fov": 50 },
+      "status": "build", "build": ["static camera (#392)"],
+      "blockedBy": [513],
+      "fallback": "orbit round the van (`camera orbit 196 0 252.4 6 3`): the van faces west and the box is at the east end, so check the +z arc sees it",
+      "transitionIn": "fade from black 0.5 s"
+    },
+    {
+      "id": "S02", "beat": "B1", "start": 3.0, "duration": 2.0,
+      "picture": "Ground level behind the van; three money sacks drop onto the road",
+      "location": { "area": "cash-van", "spawnHub": "cash_van", "point": [196, 0, 252.4] },
+      "scene": "trailer-bank",
+      "actors": [ { "id": "driller", "kind": "client", "client": 1, "do": "the drill finishes; the box drops the sacks behind the van" } ],
+      "camera": { "mode": "static", "position": "0.3 m up, 3 m behind the van, looking forward under the rear step", "fov": 45 },
+      "status": "build", "build": ["static camera (#392)"],
+      "blockedBy": [513],
+      "fallback": "the gallery still area-10-cash-van/bags with a fast push in",
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S03", "beat": "B1", "start": 5.0, "duration": 2.0,
+      "picture": "First person at the fuel station payphone; coin in, call menu on Police",
+      "location": { "area": "payphones-fuel", "spawnHub": "fuel_station", "point": [256.5, 0, 237] },
+      "scene": "trailer-fuel",
+      "actors": [ { "id": "caller", "kind": "client", "client": 2, "do": "stand at the fuel payphone, use it, hover Police (dispatch-proof does the call)" } ],
+      "camera": { "mode": "firstPerson", "client": 2, "hud": "menu on, HUD off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [626],
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S04", "beat": "B1", "start": 7.0, "duration": 2.0,
+      "picture": "Orbit round the police jeep, light bar flashing, siren up",
+      "location": { "area": "police-station", "spawnHub": "police", "point": [243.5, 0, 246] },
+      "scene": "trailer-police",
+      "actors": [ { "id": "officer", "kind": "client", "client": 3, "do": "on duty (roster), seated as driver, siren key on (siren-proof)" } ],
+      "camera": { "mode": "orbit", "command": "camera orbit 243.5 0 246 7 4", "use": "the middle 2 s" },
+      "status": "ready",
+      "blockedBy": [679],
+      "blockedNote": "#679 lists the light bar seat (#599) for a look",
+      "transitionIn": "cut", "transitionOut": "cut to black on the music hit"
+    },
+    {
+      "id": "T01", "beat": "B2", "start": 9.0, "duration": 2.0,
+      "picture": "Title card: logo and LIFE FRAMEWORK on black",
+      "kind": "title", "status": "post", "owner": "#397"
+    },
+    {
+      "id": "S05", "beat": "B3", "start": 11.0, "duration": 5.0,
+      "picture": "Drone rises over the spawn square: cobbles, welcome sign, payphone, the street running east",
+      "location": { "area": "spawn-square", "spawnHub": "spawn", "point": [125, 0, 252] },
+      "scene": "trailer-square",
+      "actors": [],
+      "camera": { "mode": "drone", "keys": [ { "t": 0, "pos": [110, 3, 252], "lookAt": [130, 1, 250] }, { "t": 5, "pos": [118, 14, 250], "lookAt": [170, 0, 250] } ], "fov": 60, "ease": "smoothstep" },
+      "status": "build", "build": ["drone path verb (#392)"],
+      "blockedBy": [607],
+      "blockedNote": "the spawn hub table (#629) changes the square; shoot after it lands",
+      "fallback": "still area-1-spawn-square/wide-after with a slow push in",
+      "transitionIn": "fade from black 0.3 s"
+    },
+    {
+      "id": "S06", "beat": "B3", "start": 16.0, "duration": 3.0,
+      "picture": "First person at the clerk's desk: form R-89, then the ID card",
+      "location": { "area": "spawn-square", "point": [134, 0, 243.5], "note": "Quest_Clerk and his desk" },
+      "scene": "trailer-square",
+      "actors": [ { "id": "newcomer", "kind": "client", "client": 1, "do": "fresh character; `flow arrival-chain` (form R-89 to the clerk's welcome)" } ],
+      "camera": { "mode": "firstPerson", "client": 1, "hud": "UI on (the form is the picture)" },
+      "status": "ready", "today": "node tools/film/film.mjs flow arrival-chain --engine --client 1",
+      "blockedBy": [],
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S07", "beat": "B3", "start": 19.0, "duration": 4.0,
+      "picture": "Orbit round the general store front: sign, window, counter, market table",
+      "location": { "area": "general-store", "spawnHub": "general_store", "point": [180, 0, 244] },
+      "scene": "trailer-store",
+      "actors": [],
+      "camera": { "mode": "orbit", "command": "camera orbit 180 0 244 8 4" },
+      "status": "ready", "today": "proven in tools/film/street-clip.mjs",
+      "blockedBy": [582],
+      "blockedNote": "#582 moves payment to the cash register; shoot after it so the counter is final",
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S08", "beat": "B3", "start": 23.0, "duration": 3.0,
+      "picture": "First person reads the Town Board; the printed notice card fills the screen",
+      "location": { "area": "spawn-square", "entity": "Sign_TownMap" },
+      "scene": "trailer-square",
+      "actors": [ { "id": "newcomer", "kind": "client", "client": 1, "do": "harness `stand Sign_TownMap`, then use *Read*" } ],
+      "camera": { "mode": "firstPerson", "client": 1, "hud": "card on, HUD off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [],
+      "transitionIn": "cut", "transitionOut": "whip into the montage"
+    },
+    {
+      "id": "S09", "beat": "B4", "start": 26.0, "duration": 2.0,
+      "picture": "Farm at golden hour; first person, Gather Cabbage at the beds",
+      "location": { "area": "farm", "spawnHub": "farm", "point": [150, 0, 300] },
+      "scene": "trailer-farm",
+      "actors": [ { "id": "farmer", "kind": "client", "client": 1, "do": "stand at a CabbageCrop_Debug plant, use Gather Cabbage" } ],
+      "camera": { "mode": "firstPerson", "client": 1, "hud": "off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [614],
+      "blockedNote": "#614 reworks the seed-to-harvest loop; the beds may change",
+      "transitionIn": "whip"
+    },
+    {
+      "id": "S10", "beat": "B4", "start": 28.0, "duration": 4.0,
+      "picture": "Orchard: an apple off the tree (2 s), the juicer on its press table (2 s)",
+      "location": { "area": "farm", "spawnHub": "orchard", "point": [130, 0, 310], "second": [141, 0, 311] },
+      "scene": "trailer-farm",
+      "actors": [ { "id": "farmer", "kind": "client", "client": 1, "do": "`flow chain-apple` (gather, trade, press); film the gather and the press" } ],
+      "camera": { "mode": "firstPerson", "client": 1, "hud": "off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [],
+      "blockedNote": "keep the inventory out of frame: #612 (apple preview pixelated) is open",
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S11", "beat": "B4", "start": 32.0, "duration": 3.0,
+      "picture": "Mining yard: a pickaxe swing, the rock shakes and shrinks, nuggets fall and rest on the ground",
+      "location": { "area": "quarry", "spawnHub": "mining", "point": [176, 0, 167] },
+      "scene": "trailer-quarry",
+      "actors": [ { "id": "miner", "kind": "client", "client": 1, "do": "pickaxe in hand, swing at an ore rock until a piece breaks" } ],
+      "camera": { "mode": "firstPerson", "client": 1, "hud": "off" },
+      "status": "build", "build": ["a mining flow or harness swing (docs/playtest.md: 'No proof verb yet')", "clean first-person frame (#392)"],
+      "blockedBy": [592, 618, 679],
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S12", "beat": "B4", "start": 35.0, "duration": 2.0,
+      "picture": "The smelter boiler; Smelt Iron Nuggets, the bar drops in front",
+      "location": { "area": "quarry", "spawnHub": "mining", "point": [169.8, 0, 171.5] },
+      "scene": "trailer-quarry",
+      "actors": [ { "id": "miner", "kind": "client", "client": 1, "do": "two iron nuggets in the inventory, `use` Smelt Iron Nuggets at the boiler front" } ],
+      "camera": { "mode": "firstPerson", "client": 1, "hud": "off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [593, 618, 679],
+      "transitionIn": "cut", "transitionOut": "whip (country to town)"
+    },
+    {
+      "id": "S13", "beat": "B4", "start": 37.0, "duration": 3.0,
+      "picture": "General store: pay at the till, cash leaves the hand",
+      "location": { "area": "general-store", "spawnHub": "general_store", "point": [180, 0, 244] },
+      "scene": "trailer-store",
+      "actors": [ { "id": "shopper", "kind": "client", "client": 1, "do": "store-proof (take an item, pay at the till)" } ],
+      "camera": { "mode": "firstPerson", "client": 1, "hud": "off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [582],
+      "transitionIn": "whip"
+    },
+    {
+      "id": "S14", "beat": "B4", "start": 40.0, "duration": 3.0,
+      "picture": "Bank front: Talk to the teller; Edith behind the west counter, then the terminal",
+      "location": { "area": "bank", "spawnHub": "bank", "point": [177, 0, 258] },
+      "scene": "trailer-bank",
+      "actors": [ { "id": "shopper", "kind": "client", "client": 1, "do": "bank-teller-proof (#606)" } ],
+      "camera": { "mode": "firstPerson", "client": 1, "hud": "terminal on, HUD off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [590, 679],
+      "blockedNote": "#606 (teller) is an open PR and shipped blind; #679 checks the teller position",
+      "fallback": "VO drops the name: 'Bank it at the teller. Or risk it.'",
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S15", "beat": "B4", "start": 43.0, "duration": 3.0,
+      "picture": "Police station: clock in at the duty desk (1 s), then the wanted board card (2 s)",
+      "location": { "area": "police-station", "spawnHub": "police", "point": [233, 0, 239] },
+      "scene": "trailer-police",
+      "actors": [
+        { "id": "officer", "kind": "client", "client": 2, "do": "on the roster; police-proof (clock in, read the wanted board)" },
+        { "id": "robber", "kind": "client", "client": 1, "do": "police-proof robs the fuel till first so the board has a line" }
+      ],
+      "camera": { "mode": "firstPerson", "client": 2, "hud": "card on, HUD off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [495],
+      "blockedNote": "no stolen-car row on the board until #495 (it shows wanted level 0 of 5)",
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S16", "beat": "B4", "start": 46.0, "duration": 2.0,
+      "picture": "A payphone call (1 s), then the line on the dispatch board at the station (1 s)",
+      "location": { "area": "payphones-police", "spawnHub": "police", "point": [239.9, 0, 242.05] },
+      "scene": "trailer-police",
+      "actors": [ { "id": "caller", "kind": "client", "client": 1, "do": "dispatch-proof" }, { "id": "officer", "kind": "client", "client": 2, "do": "reads the dispatch board" } ],
+      "camera": { "mode": "firstPerson", "client": 2, "hud": "board on, HUD off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [626],
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S17", "beat": "B4", "start": 48.0, "duration": 4.0,
+      "picture": "Hospital front: a downed player, a medic kneels and does CPR, they get up",
+      "location": { "area": "hospital", "spawnHub": "hospital", "point": [262, 0, 255], "note": "front faces -z (areas.json front 180); revive-anim-proof stages at Roadmap_Hospital_Duty_Desk" },
+      "scene": "trailer-hospital",
+      "actors": [
+        { "id": "medic", "kind": "client", "client": 1, "do": "revive-anim-proof (clock in, hold Revive 4 s)" },
+        { "id": "patient", "kind": "client", "client": 2, "do": "downed by the proof" }
+      ],
+      "camera": { "mode": "orbitAzimuth", "client": 3, "centre": [262, 0, 252], "azimuth": 180, "radius": 5, "height": 1.8, "seconds": 4 },
+      "status": "build", "build": ["orbit with azimuth (#392)", "a third client to hold the camera"],
+      "blockedBy": [512, 625],
+      "fallback": "static third person from client 3 standing on the road, if the rig is late",
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S18", "beat": "B4", "start": 52.0, "duration": 2.0,
+      "picture": "The ambulance in its bay under the Ambulance bay sign; slow push in",
+      "location": { "area": "hospital", "spawnHub": "hospital" },
+      "scene": "trailer-hospital",
+      "actors": [],
+      "camera": { "mode": "still", "source": "tools\\cli shots area hospital (gallery area-17-signs/ambulance-bay)" },
+      "status": "ready",
+      "blockedBy": [],
+      "transitionIn": "cut", "transitionOut": "4-frame dip to white on the music break"
+    },
+    {
+      "id": "S19", "beat": "B4", "start": 54.0, "duration": 4.0,
+      "picture": "Bank vault door on the east wall; a player bent over it with the drill (3 s); the door swings (1 s)",
+      "location": { "area": "bank", "spawnHub": "bank", "point": [194, 0, 265], "kit": [198.6, 0, 259.5] },
+      "scene": "trailer-bank",
+      "actors": [ { "id": "driller", "kind": "client", "client": 1, "do": "bank-kit-proof, then vault-proof drilling the vault door" } ],
+      "camera": { "mode": "static", "client": 2, "position": "4 m east-south-east of the door, 1.6 m up", "lookAt": [194, 1.2, 265], "fov": 50 },
+      "status": "build", "build": ["static camera (#392)"],
+      "blockedBy": [513],
+      "fallback": "client 2 standing at that spot, its own third-person view, HUD off",
+      "transitionIn": "dip from white"
+    },
+    {
+      "id": "S20", "beat": "B4", "start": 58.0, "duration": 4.0,
+      "picture": "Chop shop yard at sunset: hold Strip it down beside the engine crane",
+      "location": { "area": "chop-shop", "spawnHub": "chop_shop", "point": [322, 0, 300], "note": "walled on three sides, open at the south gate; front 270 in areas.json" },
+      "scene": "trailer-chop",
+      "actors": [ { "id": "thief", "kind": "client", "client": 1, "do": "chop-proof (stolen S105 parked by the crane, Strip it down)" } ],
+      "camera": { "mode": "orbitAzimuth", "client": 2, "centre": [322, 0, 300], "azimuth": 180, "radius": 9, "height": 4, "seconds": 4, "note": "comes in over the open south gate" },
+      "status": "build", "build": ["orbit with azimuth (#392)"],
+      "blockedBy": [601, 415],
+      "fallback": "still area-15-chopshop/wide with a push in, plus 1 s of first person strip",
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S21", "beat": "B4", "start": 62.0, "duration": 4.0,
+      "picture": "The barn pallet; a crate goes into the van and it pulls away down the lane",
+      "location": { "area": "convoy barn", "point": [466, 0, 331], "van": [474, 0, 324.5], "drop": [466, 0, 304] },
+      "scene": "trailer-convoy",
+      "actors": [
+        { "id": "runner", "kind": "client", "client": 1, "do": "org member: Start convoy at Roadmap_Convoy_Start, carry the crate (1.5 s of first person)" },
+        { "id": "driver", "kind": "puppet", "steps": [ { "kind": "enter", "arg": "Convoy_Barn_Van" }, { "kind": "drive", "value": 25, "path": [[474, 0, 324.5], [470, 0, 314], [466, 0, 306]] } ] }
+      ],
+      "camera": { "mode": "follow", "command": "camera follow 474 0 324.5 9 3", "note": "wait 2 s after the scene spawns so the van has streamed in" },
+      "status": "build", "build": ["clothed puppet outfit (#393): the driver shows through the windscreen", "a convoy flow (no proof exists)", "trailer-convoy scene (#394)"],
+      "blockedBy": [616, 679],
+      "fallback": "drop the drive; 1.5 s first-person crate pickup, then the still of the barn pallet",
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S22", "beat": "B4", "start": 66.0, "duration": 4.0,
+      "picture": "First person at the spawn table; the globe's travel list opens; pick Farm",
+      "location": { "area": "spawn-square", "spawnHub": "spawn", "point": [119, 0, 243.5] },
+      "scene": "trailer-square",
+      "actors": [ { "id": "newcomer", "kind": "client", "client": 1, "do": "spawn-hub-proof (#629): use Travel to a playtest area, scroll, pick farm" } ],
+      "camera": { "mode": "firstPerson", "client": 1, "hud": "list on, HUD off" },
+      "status": "ready-with-clean-frame", "build": ["clean first-person frame (#392)"],
+      "blockedBy": [607, 679],
+      "blockedNote": "#629 (spawn hub) is an open PR; #679 walks all 24 landing spots",
+      "transitionIn": "cut"
+    },
+    {
+      "id": "S23", "beat": "B5", "start": 70.0, "duration": 12.0,
+      "picture": "Slow orbit over the spawn square at golden hour; three players on the square (payphone, Town Board, walking to the street)",
+      "location": { "area": "spawn-square", "spawnHub": "spawn", "point": [125, 0, 250] },
+      "scene": "trailer-square",
+      "actors": [
+        { "id": "p1", "kind": "client", "client": 1, "do": "stand at the square payphone (129.8, 240.5)" },
+        { "id": "p2", "kind": "client", "client": 2, "do": "stand at the Town Board" },
+        { "id": "p3", "kind": "client", "client": 3, "do": "holds the camera; not in frame" }
+      ],
+      "camera": { "mode": "orbitAzimuth", "client": 3, "centre": [125, 0, 250], "azimuth": 270, "radius": 16, "height": 7, "seconds": 12 },
+      "status": "build", "build": ["orbit with azimuth (#392)"],
+      "blockedBy": [607],
+      "fallback": "`camera orbit 125 0 250 16 12` (+z arc) if the north side reads well; check a still first",
+      "transitionOut": "crossfade 0.5 s"
+    },
+    {
+      "id": "R1", "beat": "B6", "start": 82.0, "duration": 5.0,
+      "picture": "Still: the general store counter, slow push in",
+      "camera": { "mode": "still", "source": "gallery area-3-store/counter (reshoot with shots area general-store after #582)" },
+      "status": "ready", "blockedBy": [582], "transitionIn": "crossfade 0.5 s"
+    },
+    {
+      "id": "R2", "beat": "B6", "start": 87.0, "duration": 4.0,
+      "picture": "Still: the spawn square wide, slow push in",
+      "camera": { "mode": "still", "source": "gallery area-1-spawn-square/wide-after (reshoot after #629)" },
+      "status": "ready", "blockedBy": [607], "transitionIn": "crossfade 0.4 s"
+    },
+    {
+      "id": "R3", "beat": "B6", "start": 91.0, "duration": 3.0,
+      "picture": "Still: the hideout bench in the evening sun, slow push in",
+      "camera": { "mode": "still", "source": "gallery area-13-hideout/bench" },
+      "status": "ready", "blockedBy": [], "transitionIn": "crossfade 0.4 s"
+    },
+    {
+      "id": "R4", "beat": "B6", "start": 94.0, "duration": 4.0,
+      "picture": "Still: the farm in the evening light, slow push in",
+      "camera": { "mode": "still", "source": "gallery area-12-farm/wide (reshoot after #614)" },
+      "status": "ready", "blockedBy": [614], "transitionIn": "crossfade 0.4 s"
+    },
+    {
+      "id": "S28", "beat": "B7", "start": 98.0, "duration": 7.0,
+      "picture": "Static: the main street from the square at dusk, under a dark overlay with the end card",
+      "location": { "area": "spawn-square", "point": [140, 0, 250] },
+      "scene": "trailer-square-dusk",
+      "actors": [],
+      "camera": { "mode": "static", "position": [132, 2.2, 250], "lookAt": [200, 1.5, 248], "fov": 55 },
+      "status": "build", "build": ["static camera (#392)"],
+      "blockedBy": [],
+      "fallback": "a still at 19.2 from shots area spawn-square --hour 19.2",
+      "transitionOut": "fade to black 1 s"
+    }
+  ],
+  "audio": {
+    "music": { "bpm": 120, "cues": [
+      { "t": 0, "energy": 1, "cue": "low pad, no beat" },
+      { "t": 7, "energy": 2, "cue": "riser under the siren" },
+      { "t": 9, "energy": 4, "cue": "hard hit on the title, 1 s silence" },
+      { "t": 11, "energy": 2, "cue": "pad, light pulse" },
+      { "t": 19, "energy": 3, "cue": "beat in" },
+      { "t": 26, "energy": 5, "cue": "full track, cut on the bar" },
+      { "t": 52, "energy": 2, "cue": "break, single stab" },
+      { "t": 54, "energy": 5, "cue": "back in on the drill" },
+      { "t": 70, "energy": 3, "cue": "drums out" },
+      { "t": 82, "energy": 3, "cue": "slow build" },
+      { "t": 98, "energy": 4, "cue": "final hit, ring out" }
+    ] },
+    "game": "process-loopback capture per take (#396): drill, sacks, coin, siren, CPR, crane. Under the music.",
+    "duckDb": 6,
+    "vo": "script.md lists every line with its TTS text. Kokoro or Piper (#397)."
+  },
+  "titles": "script.md lists every caption and card. Lower third, 42 characters a line, two lines at most."
+}

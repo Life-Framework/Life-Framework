@@ -1,0 +1,37 @@
+FrameWidgetClass "{7A3C1D5E9B2F4B01}" {
+ Name "PreviewCell"
+ Slot FrameWidgetSlot "{7A3C1D5E9B2F4B02}" {
+ }
+ {
+  ImageWidgetClass "{7A3C1D5E9B2F4B03}" {
+   Name "Slot"
+   Slot FrameWidgetSlot "{7A3C1D5E9B2F4B04}" {
+    Anchor 0.02 0.02 0.98 0.86
+   }
+   Color 0.2 0.21 0.2 1
+  }
+  ItemPreviewWidgetClass "{7A3C1D5E9B2F4B05}" {
+   Name "Preview"
+   Slot FrameWidgetSlot "{7A3C1D5E9B2F4B06}" {
+    Anchor 0.02 0.02 0.98 0.86
+   }
+   "Use Engine Scale" 0
+   Filter Bilinear
+   Format LDR
+   "Clear Color" 0 0 0 0
+   "Blend mode" Blend
+  }
+  TextWidgetClass "{7A3C1D5E9B2F4B07}" {
+   Name "Label"
+   Slot FrameWidgetSlot "{7A3C1D5E9B2F4B08}" {
+    Anchor 0 0.8 1 0.94
+   }
+   Color 0.9 0.9 0.85 1
+   Text ""
+   "Font Size" 16
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+  }
+ }
+}

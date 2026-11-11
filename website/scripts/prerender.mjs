@@ -28,9 +28,17 @@ const write = (rel, text) => {
   fs.mkdirSync(path.dirname(p), { recursive: true });
   fs.writeFileSync(p, text);
 };
+// Cloudflare Web Analytics (privacy-friendly: no cookies, no personal data). Set VITE_CF_WEB_ANALYTICS_TOKEN
+// when building and every page gets the beacon; without it nothing is added. The join page's privacy line
+// reads the same variable. Alternatively switch Web Analytics on in the Pages project and leave this unset.
+const beaconToken = process.env.VITE_CF_WEB_ANALYTICS_TOKEN || "";
+const beacon = beaconToken
+  ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token: beaconToken })}'></script>
+  `
+  : "";
 const page = (url) => {
   const { html, head } = render(url);
-  return template.replace("<!--app-head-->", head).replace("<!--app-html-->", html);
+  return template.replace("<!--app-head-->", head).replace("<!--app-html-->", html).replace("</body>", `${beacon}</body>`);
 };
 
 const routes = allRoutes();
@@ -49,7 +57,8 @@ write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml
 // Old addresses from the 2025 site and the first in-repo site.
 write(
   "_redirects",
-  ["/philosophy / 301", "/team /contribute 301", "/documentation /docs 301", "/docs/decisions /decisions 301", "/docs/ /docs 301"].join("\n") + "\n",
+  ["/philosophy / 301", "/team /contribute 301", "/documentation /docs 301", "/docs/decisions /decisions 301", "/docs/ /docs 301", "/join/* /join 200"].join("\n") + "\n",
+  // "/join/* /join 200" serves the join page at /join/<community> and keeps the address, so analytics sees the tag.
 );
 
 fs.rmSync(ssrDir, { recursive: true, force: true });

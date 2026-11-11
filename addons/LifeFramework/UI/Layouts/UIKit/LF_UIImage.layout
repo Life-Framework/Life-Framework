@@ -1,0 +1,8 @@
+ImageWidgetClass "{CED91BECADFC2507}" {
+ Name "Image"
+ Slot LayoutSlot "{9BF215BA5014A47E}" {
+  Padding 28 6 28 6
+  HorizontalAlign Center
+ }
+ Size 256 256
+}

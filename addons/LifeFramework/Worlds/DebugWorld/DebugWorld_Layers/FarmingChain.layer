@@ -53,31 +53,39 @@ coords -2.6 0.9 0.7
 
  }
 }
-$grp GenericEntity : "{C4B2301E5D989B42}Prefabs/Vegetation/Crops/CabbageCrop.et" {
- CabbageCrop_Debug {
-  coords 144.6 0 299.2
- }
-}
 $grp SCR_DestructibleBuildingEntity : "{3299E6F34CE40185}Prefabs/Structures/Agriculture/Greenhouse/Greenhouse_01/Greenhouse_01.et" {
  Greenhouse_Debug {
   coords 158.5 0 300
   angleY 180
  }
 }
-$grp StaticModelEntity : "{4D37CF893371E83B}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_big.et" {
- VegetableBedBig_Debug {
-  coords 146.5 0 299.5
+GenericEntity FarmPlot_1 : "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et" {
+ components {
+  LF_FarmPlotComponent "{2E13CAF530967224}" {
+   m_sPlotKey "farm_plot_1"
+  }
  }
+ coords 145 0 299.5
 }
-$grp StaticModelEntity : "{7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et" {
- VegetableBedSmall_Debug {
-  coords 152.3 0 299.5
+GenericEntity FarmPlot_2 : "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et" {
+ components {
+  LF_FarmPlotComponent "{2E13CAF530967224}" {
+   m_sPlotKey "farm_plot_2"
+  }
  }
+ coords 148.5 0 299.5
 }
-$grp GenericEntity : "{C4B2301E5D989B42}Prefabs/Vegetation/Crops/CabbageCrop.et" {
- CabbageCrop_Bed {
-  coords 146.6 0 299.2
+GenericEntity FarmPlot_3 : "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et" {
+ components {
+  LF_FarmPlotComponent "{2E13CAF530967224}" {
+   m_sPlotKey "farm_plot_3"
+  }
  }
+ coords 152 0 299.5
+}
+GenericEntity Farm_SeedCrate : "{696B13AE8A088B79}Prefabs/Props/Commercial/LF_SeedCrate_Cabbage.et" {
+ coords 143.8 0 297.2
+ angleY 15
 }
 
 GenericEntity Farm_StandTable : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {

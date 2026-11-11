@@ -35,7 +35,7 @@ export const PROBES = [
   { layer: "AppleChain.layer", name: "AppleProcessor", action: "LF_ProcessAction" },
   { layer: "PlumChain.layer", name: "PlumGatherTree", action: "LF_GatherAction" },
   { layer: "PlumChain.layer", name: "PlumTradeContainer", action: "LF_OpenTraderAction" },
-  { layer: "FarmingChain.layer", name: "CabbageCrop_Debug", action: "LF_GatherAction" },
+  { layer: "FarmingChain.layer", name: "FarmPlot_1", action: "LF_FarmPlotAction" },
   { layer: "CementChain.layer", name: "CementPile_Debug", action: "LF_GatherAction" },
   { layer: "GravelChain.layer", name: "GravelPile_Medium_Debug", action: "LF_GatherAction" },
   { layer: "SandChain.layer", name: "SandPile_Debug", action: "LF_GatherAction" },

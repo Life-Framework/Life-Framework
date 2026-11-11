@@ -24,11 +24,35 @@ export function selftestReset() {
   if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "0", wanted: "0", faction: "CIVILIAN" }), [])) f.push("clean state planned work");
   if (!eq(planReset({ life: "INCAPACITATED", downed: "1", duty: "0", wanted: "0", faction: "CIVILIAN" }), ["revive"])) f.push("downed body not revived");
   if (!eq(planReset({ life: "ALIVE", downed: "0", duty: "1", wanted: "3", faction: "POLICE" }), ["clockout", "wanted", "faction"])) f.push("duty, wanted and faction not all planned");
+  f.push(...selftestDowner());
   return f;
 }
 
+// An earlier proof left client 2 downed by client 1. The reset's give-up is a real death, and the
+// murder goes to the downer, client 1 (downed-proof then read wanted=5 = 3 + 3 capped, not 3).
+// Client 1 must still end clean, so its wanted is cleared after every body is settled.
+function selftestDowner() {
+  const st = { 1: { life: "ALIVE", downed: "0", wanted: "0", faction: "CIVILIAN", duty: "0" }, 2: { life: "INCAPACITATED", downed: "1", wanted: "0", faction: "CIVILIAN", duty: "0" } };
+  const line = (s) => Object.entries(s).map(([k, v]) => `${k}=${v}`).join(" ");
+  let menuFor = 0;
+  const on = (n, spec) => {
+    if (spec.verb === "state") return { status: "ok", detail: line(st[n]) };
+    if (spec.verb === "giveup") {
+      st[n].life = "ALIVE";
+      st[n].downed = "0";
+      st[1].wanted = "3";
+    }
+    if (spec.verb === "open" && spec.mode === "show") menuFor = n;
+    if (spec.verb === "click" && spec.widget === "Wanted0Button") st[menuFor].wanted = "0";
+    return { status: "ok", detail: "" };
+  };
+  resetClients(on, () => {}, 2);
+  return st[1].wanted === "0" ? [] : [`client 1 left wanted=${st[1].wanted} by the murder client 2's give-up filed`];
+}
+
 // on(n, spec, timeoutMs) -> { status, detail }; wait(ms) blocks. Returns one note per action taken.
-export function resetClient(on, wait, n) {
+// phase "body" only settles a downed or dead body; "rest" only clears duty, wanted and faction.
+export function resetClient(on, wait, n, phase = "all") {
   const notes = [];
   const read = () => {
     const r = on(n, { verb: "state" }, 10000);
@@ -45,6 +69,8 @@ export function resetClient(on, wait, n) {
   }
 
   for (const step of planReset(st)) {
+    if (phase === "body" && step !== "revive") continue;
+    if (phase === "rest" && step === "revive") continue;
     if (step === "revive") {
       for (let i = 0; i < 12; i++) {
         st = read();
@@ -82,12 +108,16 @@ export function resetClient(on, wait, n) {
   }
 
   const after = read();
-  if (after && planReset(after).length) notes.push(`still dirty: ${planReset(after).join(", ")}`);
+  if (phase !== "body" && after && planReset(after).length) notes.push(`still dirty: ${planReset(after).join(", ")}`);
   return notes;
 }
 
+// Bodies first, on every client, then the rest. Giving up a downed body is a real death and files
+// the murder on whoever downed it, often a client with a lower number that a single pass had
+// already cleaned (downed-proof read the shooter at wanted=3 before it fired a shot).
 export function resetClients(on, wait, count) {
   const out = [];
-  for (let n = 1; n <= count; n++) out.push({ n, notes: resetClient(on, wait, n) });
+  for (let n = 1; n <= count; n++) out.push({ n, notes: resetClient(on, wait, n, "body") });
+  for (const r of out) r.notes.push(...resetClient(on, wait, r.n, "rest"));
   return out;
 }
