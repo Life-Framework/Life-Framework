@@ -151,8 +151,6 @@ log that back them stay on the server and invisible.
 
 ### Known rough edges
 
-- Esc does not close the wanted card or the organization ledger right after
-  founding; use the button or walk away (#199).
 - If an arrest leaves you standing where you were instead of in the cell, say so.
 - Some NPCs may appear half-dressed.
 - Sign titles can be hard to read from the road.
