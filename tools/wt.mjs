@@ -21,6 +21,7 @@ import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, normalize, resolve } from "node:path";
 import { removeWorktree, safeRemoveTree } from "./link-safety.mjs";
+import { ADDONS } from "./lib/addons.mjs";
 
 const IS_WIN = process.platform === "win32";
 const GH_ON_PATH = IS_WIN ? "gh.cmd" : "gh";
@@ -208,8 +209,16 @@ export function defaultPorts() {
 // which also refreshes a copy that misses a .meta (tools/lib/rdb-fresh.mjs).
 // Never commit the destination.
 export function copyResourceDatabase(wtRoot, mainRoot = mainRootOf(wtRoot)) {
-  const src = join(mainRoot, "addons", "LifeFramework", "resourceDatabase.rdb");
-  const dest = join(wtRoot, "addons", "LifeFramework", "resourceDatabase.rdb");
+  let copied = false;
+  for (const { name } of ADDONS) if (copyAddonResourceDatabase(wtRoot, mainRoot, name)) copied = true;
+  return copied;
+}
+
+// One addon's rdb: main's copy is only ever copied when it exists, so an addon
+// with no rdb (the empty pack) is skipped.
+function copyAddonResourceDatabase(wtRoot, mainRoot, name) {
+  const src = join(mainRoot, "addons", name, "resourceDatabase.rdb");
+  const dest = join(wtRoot, "addons", name, "resourceDatabase.rdb");
   if (resolve(src) === resolve(dest)) return false;
   if (!existsSync(src)) return false;
   const srcSize = statSync(src).size;
