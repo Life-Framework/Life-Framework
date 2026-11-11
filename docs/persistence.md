@@ -131,6 +131,37 @@ Identity:
   | 12 | police tickets: amount, online clock, stage, paid flag (`LF_FineTickets.ExportAll` / `ApplyAll`; the carried paper is reprinted on spawn) |
   | 19 | treatment bills: amount, paid flag, medic share and whether it was paid (`LF_TreatmentBills.ExportAll` / `ApplyAll`; the carried paper is reprinted on spawn) |
   | 20 | chain stations: a half-finished batch per station, by station key, chain, step, work done and work needed (`LF_ChainStations.ExportAll` / `ApplyAll`); only loaded stations are saved, site heat is not |
+  | 24 | character slots (#331): each character's record key and wanted level, by account uid and character id (`LF_PlayerAccountManager.ExportCharacterSlots` / `ApplyCharacterSlots`) |
+
+- **Characters per account (#331, save version 24).** An account holds up to
+  `LF_CharacterConfig.MaxPerAccount()` characters (`Configs/Account/LF_Characters.conf`,
+  1 by default). Every character-scoped store (bank, progression, wanted reports,
+  tickets, jail, vehicles, job sign-ups, introductions, ...) is keyed by the
+  active character's **record key**, which `LF_Utils.GetPlayerUID` returns;
+  account-level checks (whitelists, staff actions) use `LF_Utils.GetAccountUID`.
+  Slot 1 of an account is keyed by the account uid and every later slot by its
+  own character id, so with one character per account nothing changes.
+  Wanted level, police rank and duty totals live on the character
+  (`LF_CharacterStanding`); rank and duty totals ride the progression payload
+  under the record key.
+  - **Migration.** A save before version 24 has no character slots. Registration
+    refused a second character before #331, so every old account has at most
+    one; `LF_PlayerAccountManager.ApplyAll` gives it the account uid as its key
+    (slot 1), which is the key every uid-keyed record in that save already uses.
+    Nothing is rewritten and nothing is lost. The load logs
+    `[LFDebug:Persistence] save version N has no character slots: K account(s) load their character into slot 1`.
+  - **Order.** The prefix gives every character the default key (slot 1 the
+    uid, later slots their id) before the earlier payloads load; the
+    `characters` payload, last in the list, confirms the saved keys. A saved key
+    that differs from the default (a roster that lost its first character)
+    re-applies progression (`LF_Progression.ReapplyStandings`). Wanted posters
+    load whole and are pruned after the last payload
+    (`LF_WantedReports.PruneCleared`): a poster stays while the character it
+    names is wanted, whichever character the account plays.
+  - **Proof.** `persist/character-slots` (two characters, version 24 and 23
+    loads, a moved key) and the `e2e/pass*` pair: `tools\cli e2e` round-trips a
+    two-character account, and `tools\cli e2e --legacy-save` writes the restart
+    save at version 23 and loads it into slot 1.
 - Managers expose `ExportAll()` / `ApplyAll(records)` / `GetOrCreate(id)`.
   Record classes are plain Managed: `LF_PlayerAccountRecord`,
   `LF_BankAccountRecord`, `LF_SurvivalStatsRecord` (each under the feature's

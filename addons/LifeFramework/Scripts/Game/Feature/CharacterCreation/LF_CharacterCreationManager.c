@@ -7,14 +7,21 @@
 class LF_CharacterCreationRules
 {
 	//------------------------------------------------------------------------------------------------
-	//! Name/age submission (form R-89, LF_RegistrationRules). One character per account.
+	//! Name/age submission (form R-89, LF_RegistrationRules). An account holds at most
+	//! LF_CharacterConfig.MaxPerAccount() characters (#331).
 	static string RefuseCharacter(LF_PlayerAccount account, string firstName, string lastName, int age)
 	{
 		if (!account)
 			return "#EL-CC_Error_NoAccount";
 
-		if (account.HasCharacters())
-			return "#EL-CC_Error_Exists";
+		int maxPerAccount = LF_CharacterConfig.MaxPerAccount();
+		if (account.GetCharacterCount() >= maxPerAccount)
+		{
+			if (maxPerAccount == 1)
+				return "#EL-CC_Error_Exists";
+
+			return "#LF-Char_Error_Full";
+		}
 
 		string first = firstName.Trim();
 		string last = lastName.Trim();
@@ -31,6 +38,63 @@ class LF_CharacterCreationRules
 
 		return LF_RegistrationRules.RefuseAge(age);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A returning player picks a character only when the config allows more than one per account
+	//! and nothing ties them to the active one: an officer still clocked in returns as that officer
+	//! (the duty locker holds that character's clothes), and a living body is never swapped.
+	static bool OffersCharacterPick(LF_PlayerAccount account, bool controlsLivingBody)
+	{
+		if (!account || !account.HasCharacters() || controlsLivingBody)
+			return false;
+
+		if (account.IsOnDuty())
+			return false;
+
+		return LF_CharacterConfig.MaxPerAccount() > 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server check of a pick. "" accepts; otherwise the localization key the player is told.
+	//! \param slot 0-based roster slot, or LF_CharacterSelectSheet.SLOT_NEW to register another.
+	//! \param offered True while the server has a pick open for this player (sent on arrival).
+	//! Without it a dead player could send a pick mid-session and switch character.
+	static string RefusePick(LF_PlayerAccount account, int slot, bool controlsLivingBody, bool offered)
+	{
+		if (!account)
+			return "#EL-CC_Error_NoAccount";
+
+		if (!offered || controlsLivingBody || account.IsOnDuty())
+			return "#LF-CharSel_Refused";
+
+		if (slot == LF_CharacterSelectSheet.SLOT_NEW)
+		{
+			if (account.GetCharacterCount() >= LF_CharacterConfig.MaxPerAccount())
+				return "#LF-Char_Error_Full";
+
+			return "";
+		}
+
+		if (!account.GetCharacterAt(slot))
+			return "#LF-CharSel_Refused";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server check of a form R-89 answer for an account that already has a character: it registers
+	//! only after the player chose "register a new resident" on the pick, and never from a living body.
+	//! \param registerOffered True while the server has a "new resident" form open for this player.
+	static string RefuseFurtherCharacter(LF_PlayerAccount account, bool controlsLivingBody, bool registerOffered)
+	{
+		if (!account || !account.HasCharacters())
+			return "";
+
+		if (controlsLivingBody || !registerOffered)
+			return "#LF-CharSel_Refused";
+
+		return "";
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -45,6 +109,12 @@ class LF_CharacterCreationManager : Managed
 
 	protected const int FLOW_POLL_DELAY_MS = 100;
 	protected static const ResourceName DEFAULT_CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
+
+	//! Players the server sent the character pick and has no answer from yet (#331). A pick from
+	//! anyone else is refused: only an arrival offers one.
+	protected ref set<int> m_PickOffered = new set<int>();
+	//! Players who chose "register a new resident" on the pick: their form R-89 may add a character.
+	protected ref set<int> m_RegisterOffered = new set<int>();
 
 	//------------------------------------------------------------------------------------------------
 	static LF_CharacterCreationManager GetInstance()
@@ -96,7 +166,7 @@ class LF_CharacterCreationManager : Managed
 		// Resolved here rather than at connect: the platform identity is not guaranteed to be
 		// available yet while the world is loading, and every consumer of the account must key
 		// on the same UID the spawn logic uses.
-		string playerUid = LF_Utils.GetPlayerUID(playerId);
+		string playerUid = LF_Utils.GetAccountUID(playerId);
 		LF_PlayerAccount account = accountManager.GetAccount(playerUid);
 		if (!account)
 		{
@@ -114,7 +184,99 @@ class LF_CharacterCreationManager : Managed
 			return;
 		}
 
+		// More than one character allowed (#331): the player picks who they arrive as.
+		if (LF_CharacterCreationRules.OffersCharacterPick(account, ControlsLivingBody(playerController)))
+		{
+			ShowCharacterSelect(playerController, account);
+			return;
+		}
+
 		SpawnPlayer(playerId, playerController);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A living body under the player's control (a save restored it, or they are already playing).
+	protected static bool ControlsLivingBody(PlayerController playerController)
+	{
+		if (!playerController)
+			return false;
+
+		IEntity controlled = playerController.GetControlledEntity();
+		if (!controlled)
+			return false;
+
+		CharacterControllerComponent characterController = CharacterControllerComponent.Cast(controlled.FindComponent(CharacterControllerComponent));
+		return characterController && characterController.GetLifeState() != ECharacterLifeState.DEAD;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Opens the character pick on the player's machine: one line per character in slot order, and
+	//! the "register a new resident" line while the account has a free slot.
+	protected void ShowCharacterSelect(PlayerController playerController, notnull LF_PlayerAccount account)
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(playerController);
+		if (!controller)
+		{
+			LF_Debug.Error("CharacterCreation", "character pick not sent: controller is not an SCR_PlayerController");
+			return;
+		}
+
+		string names;
+		for (int slot = 0; slot < account.GetCharacterCount(); slot++)
+		{
+			LF_PlayerCharacter character = account.GetCharacterAt(slot);
+			if (slot > 0)
+				names += LF_CharacterSelectSheet.NAME_SEPARATOR;
+
+			if (character)
+				names += character.GetFullName();
+		}
+
+		bool canRegister = account.GetCharacterCount() < LF_CharacterConfig.MaxPerAccount();
+		m_PickOffered.Insert(controller.GetPlayerId());
+		LF_Debug.Info("CharacterCreation", string.Format("character pick sent to player %1: %2 character(s), new slot %3", controller.GetPlayerId(), account.GetCharacterCount(), canRegister));
+		controller.LF_ShowCharacterSelect(names, canRegister);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server body of RpcAsk_LF_SelectCharacter. The pick is re-checked here: the server must have
+	//! offered one, the slot must exist, and nobody switches character while alive or on duty.
+	void ServerSelectCharacter(int playerId, int slot)
+	{
+		SCR_PlayerController controller = FindController(playerId);
+		if (!controller)
+			return;
+
+		bool offered = m_PickOffered.Contains(playerId);
+		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));
+		string refusal = LF_CharacterCreationRules.RefusePick(account, slot, ControlsLivingBody(controller), offered);
+		if (!refusal.IsEmpty())
+		{
+			LF_Debug.Warn("CharacterCreation", string.Format("character pick refused for player %1 (slot %2, offered %3): %4", playerId, slot, offered, refusal));
+			// An unasked pick (a second answer, or a dead player mid-session) gets nothing back.
+			if (!offered)
+				return;
+
+			m_PickOffered.RemoveItem(playerId);
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ID_Information", refusal, 5.0, LF_ENotificationType.WARNING);
+			if (account && LF_CharacterCreationRules.OffersCharacterPick(account, ControlsLivingBody(controller)))
+				ShowCharacterSelect(controller, account);
+			return;
+		}
+
+		m_PickOffered.RemoveItem(playerId);
+		if (slot == LF_CharacterSelectSheet.SLOT_NEW)
+		{
+			m_RegisterOffered.Insert(playerId);
+			LF_Debug.Info("CharacterCreation", string.Format("player %1 registers another character (%2 of %3)", playerId, account.GetCharacterCount() + 1, LF_CharacterConfig.MaxPerAccount()));
+			ShowRegistrationForm(controller, "");
+			return;
+		}
+
+		account.SetActiveCharacter(account.GetCharacterAt(slot));
+		LF_AccountReplication.Publish(account);
+		LF_Debug.Info("CharacterCreation", string.Format("player %1 plays character slot %2 (key %3)", playerId, slot + 1, account.GetActiveCharacterKey()));
+		SpawnPlayer(playerId, controller);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -143,15 +305,20 @@ class LF_CharacterCreationManager : Managed
 		if (!controller)
 			return;
 
-		string playerUid = LF_Utils.GetPlayerUID(playerId);
-		LF_PlayerAccount account = FindAccount(playerUid);
+		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));
 		string refusal = LF_CharacterCreationRules.RefuseCharacter(account, firstName, lastName, age);
+		// A further character (#331) is registered only from the pick's "new resident" line, never
+		// from inside a living body.
+		string furtherRefusal = LF_CharacterCreationRules.RefuseFurtherCharacter(account, ControlsLivingBody(controller), m_RegisterOffered.Contains(playerId));
+		if (refusal.IsEmpty())
+			refusal = furtherRefusal;
+
 		if (!refusal.IsEmpty())
 		{
 			LF_Debug.Warn("CharacterCreation", string.Format("character refused for player %1: %2", playerId, refusal));
-			// The form comes back with the reason written on it, unless the account already has a
-			// character (a double submit) or none is loaded yet.
-			if (account && !account.HasCharacters())
+			// The form comes back with the reason written on it, unless the account has no free
+			// slot (a double submit), none is loaded yet, or no further character is asked for.
+			if (account && account.GetCharacterCount() < LF_CharacterConfig.MaxPerAccount() && furtherRefusal.IsEmpty())
 				ShowRegistrationForm(controller, refusal);
 			else
 				LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ID_Information", refusal, 5.0, LF_ENotificationType.WARNING);
@@ -160,8 +327,12 @@ class LF_CharacterCreationManager : Managed
 
 		LF_PlayerCharacter character = LF_PlayerCharacter.Create(DEFAULT_CHARACTER_PREFAB, firstName.Trim(), lastName.Trim(), age);
 		account.AddCharacter(character, true);
+		m_RegisterOffered.RemoveItem(playerId);
 		LF_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
-		LF_Debug.Info("CharacterCreation", string.Format("character registered for player %1, age %2", playerId, age));
+		LF_AccountReplication.Publish(account);
+		// The new character's own records key (#331): the account uid for slot 1, its id after.
+		string playerUid = account.GetActiveCharacterKey();
+		LF_Debug.Info("CharacterCreation", string.Format("character registered for player %1, age %2, slot %3", playerId, age, account.GetCharacterCount()));
 		OpenStartingBank(playerUid);
 
 		SpawnPlayer(playerId, controller);

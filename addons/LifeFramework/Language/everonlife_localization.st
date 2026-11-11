@@ -6876,6 +6876,581 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
     }
+    CustomStringTableItem "{2605E472E34A7E80}" {
+     Id "LF-Crime_RobSafe_Name"
+     Target_en_us "Rob the safe"
+     Comment "Annex safe robbery action name"
+    }
+    CustomStringTableItem "{D508B7722F72EE9F}" {
+     Id "LF-Crime_RobSafe_Desc"
+     Target_en_us "Take $200 from the safe"
+     Comment "Annex safe robbery action description"
+    }
+    CustomStringTableItem "{7D681F35B1A3C6FE}" {
+     Id "LF-Crime_RobRack_Name"
+     Target_en_us "Rob the weapon rack"
+     Comment "Annex weapon rack robbery action name"
+    }
+    CustomStringTableItem "{A83DB0C583355AC6}" {
+     Id "LF-Crime_RobRack_Desc"
+     Target_en_us "Take a rifle from the rack"
+     Comment "Annex weapon rack robbery action description"
+    }
+    CustomStringTableItem "{D79CB0009B448B8F}" {
+     Id "LF-Crime_RobCar_Name"
+     Target_en_us "Steal the vehicle"
+     Comment "Annex vehicle theft action name"
+    }
+    CustomStringTableItem "{7E4AE1269E743655}" {
+     Id "LF-Crime_RobCar_Desc"
+     Target_en_us "Steal an armoured car"
+     Comment "Annex vehicle theft action description"
+    }
+    CustomStringTableItem "{E064585F9B6FED1B}" {
+     Id "LF-Job_GatherApples_Name"
+     Target_en_us "Gather apples"
+     Comment "Legacy job board apple gather action name"
+    }
+    CustomStringTableItem "{6E2A6680A9D480CA}" {
+     Id "LF-Job_GatherApples_Desc"
+     Target_en_us "Gather 5 apples"
+     Comment "Legacy job board apple gather action description"
+    }
+    CustomStringTableItem "{37BCD3FBB988F01C}" {
+     Id "LF-Sign_CrimeSafe_Title"
+     Target_en_us "1. Safe"
+     Comment "Annex crime site sign crime_safe, Title section."
+    }
+    CustomStringTableItem "{C38F34C3479585A8}" {
+     Id "LF-Sign_CrimeSafe_What"
+     Target_en_us "A cash safe on the crime site."
+     Comment "Annex crime site sign crime_safe, What section."
+    }
+    CustomStringTableItem "{676E376C59405F39}" {
+     Id "LF-Sign_CrimeSafe_How"
+     Target_en_us "Stand at the safe and Rob the safe. It pays $200 and rests for 60 seconds."
+     Comment "Annex crime site sign crime_safe, How section."
+    }
+    CustomStringTableItem "{DCD0F25A91C8A67F}" {
+     Id "LF-Sign_CrimeSafe_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_safe, Needs section."
+    }
+    CustomStringTableItem "{BB971CCDFD89CF15}" {
+     Id "LF-Sign_CrimeSafe_Rules"
+     Target_en_us "A robbery files a crime report and raises your wanted level."
+     Comment "Annex crime site sign crime_safe, Rules section."
+    }
+    CustomStringTableItem "{7D97F127AD9FE2FF}" {
+     Id "LF-Sign_CrimeSafe_Next"
+     Target_en_us "Take the weapon rack next, two steps along."
+     Comment "Annex crime site sign crime_safe, Next section."
+    }
+    CustomStringTableItem "{2840F7674FF77FFE}" {
+     Id "LF-Sign_CrimeRack_Title"
+     Target_en_us "2. Weapon rack"
+     Comment "Annex crime site sign crime_rack, Title section."
+    }
+    CustomStringTableItem "{3FF9B4EB23063378}" {
+     Id "LF-Sign_CrimeRack_What"
+     Target_en_us "An armory rack holding one rifle."
+     Comment "Annex crime site sign crime_rack, What section."
+    }
+    CustomStringTableItem "{1D436C91E427DE6E}" {
+     Id "LF-Sign_CrimeRack_How"
+     Target_en_us "Stand at the rack and Rob the weapon rack to take an AK-74. It rests for 2 minutes."
+     Comment "Annex crime site sign crime_rack, How section."
+    }
+    CustomStringTableItem "{2B50333EBEF9D3EA}" {
+     Id "LF-Sign_CrimeRack_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_rack, Needs section."
+    }
+    CustomStringTableItem "{FA1D9347B8CE6395}" {
+     Id "LF-Sign_CrimeRack_Rules"
+     Target_en_us "Armed theft is reported and raises your wanted level."
+     Comment "Annex crime site sign crime_rack, Rules section."
+    }
+    CustomStringTableItem "{8E1591EC5D9282B2}" {
+     Id "LF-Sign_CrimeRack_Next"
+     Target_en_us "Steal the vehicle at the tyre pile next."
+     Comment "Annex crime site sign crime_rack, Next section."
+    }
+    CustomStringTableItem "{CEFAF6202AEF0597}" {
+     Id "LF-Sign_CrimeCar_Title"
+     Target_en_us "3. Getaway"
+     Comment "Annex crime site sign crime_car, Title section."
+    }
+    CustomStringTableItem "{D08CA63D553D021D}" {
+     Id "LF-Sign_CrimeCar_What"
+     Target_en_us "A pile of tyres that stands in for a car theft."
+     Comment "Annex crime site sign crime_car, What section."
+    }
+    CustomStringTableItem "{04CA2A9741FCE1E2}" {
+     Id "LF-Sign_CrimeCar_How"
+     Target_en_us "Stand at the pile and use Steal the vehicle to get an armoured car. It rests for 10 minutes."
+     Comment "Annex crime site sign crime_car, How section."
+    }
+    CustomStringTableItem "{7708887CAD318B12}" {
+     Id "LF-Sign_CrimeCar_Needs"
+     Target_en_us "A civilian. No police need to be online here."
+     Comment "Annex crime site sign crime_car, Needs section."
+    }
+    CustomStringTableItem "{A7B60EDD94E30F9D}" {
+     Id "LF-Sign_CrimeCar_Rules"
+     Target_en_us "Theft of a vehicle is reported and raises your wanted level."
+     Comment "Annex crime site sign crime_car, Rules section."
+    }
+    CustomStringTableItem "{5300C9F183BC88B6}" {
+     Id "LF-Sign_CrimeCar_Next"
+     Target_en_us "Finish at the police desk: a wanted suspect and a table of evidence."
+     Comment "Annex crime site sign crime_car, Next section."
+    }
+    CustomStringTableItem "{42F8C061DF3563D6}" {
+     Id "LF-Sign_CrimePolice_Title"
+     Target_en_us "4. Police desk"
+     Comment "Annex crime site sign crime_police, Title section."
+    }
+    CustomStringTableItem "{3DC7AE65EB4CA435}" {
+     Id "LF-Sign_CrimePolice_What"
+     Target_en_us "A practice desk with an ID card and a confiscated key. Real duty is at the police station."
+     Comment "Annex crime site sign crime_police, What section."
+    }
+    CustomStringTableItem "{62D77C89BF0EB242}" {
+     Id "LF-Sign_CrimePolice_How"
+     Target_en_us "Look the table over. For real duty, evidence and the wanted board, walk to the police station on the main street."
+     Comment "Annex crime site sign crime_police, How section."
+    }
+    CustomStringTableItem "{E0A442EE0FE38171}" {
+     Id "LF-Sign_CrimePolice_Needs"
+     Target_en_us "Nothing here."
+     Comment "Annex crime site sign crime_police, Needs section."
+    }
+    CustomStringTableItem "{734524B72ED94D31}" {
+     Id "LF-Sign_CrimePolice_Next"
+     Target_en_us "Clock on at the police station to arrest the suspect you made."
+     Comment "Annex crime site sign crime_police, Next section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60711}" {
+     Id "LF-Sign_QuarryInfo_Title"
+     Target_en_us "Quarry Works"
+     Comment "Title of the quarry info board. Printed on the board and shown as Read: Quarry Works."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60722}" {
+     Id "LF-Sign_QuarryInfo_What"
+     Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
+     Comment "Quarry info board, What section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60733}" {
+     Id "LF-Sign_QuarryInfo_How"
+     Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
+     Comment "Quarry info board, How section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60744}" {
+     Id "LF-Sign_QuarryInfo_Rules"
+     Target_en_us "This is the lawless quarry: the server rules about starting a fight do not apply inside the fence. Mind the rocks while the pit is worked."
+     Comment "Quarry info board, Rules section."
+    }
+    CustomStringTableItem "{A1B2C3D4E5F60755}" {
+     Id "LF-Sign_QuarryInfo_Next"
+     Target_en_us "Carry what you make to the traders in town."
+     Comment "Quarry info board, Next section."
+    }
+    CustomStringTableItem "{7B1E5A0C00000001}" {
+     Id "LF-Shop_RefuseClosed"
+     Target_en_us "The back room is shut. Police have been through it."
+     Comment "Shop refusal: a raided back room is shut for a while (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000002}" {
+     Id "LF-BackRoom_Search"
+     Target_en_us "Search back room"
+     Comment "Officer action on a back room: search it and seize its stock as evidence (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000003}" {
+     Id "LF-BackRoom_SearchDesc"
+     Target_en_us "Seize the stock as evidence"
+     Comment "Description of the back room search action (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000004}" {
+     Id "LF-BackRoom_Seized"
+     Target_en_us "Stock seized as evidence"
+     Comment "Toast: the back room search seized its stock (#600)."
+    }
+    CustomStringTableItem "{7B1E5A0C00000005}" {
+     Id "LF-BackRoom_AlreadyShut"
+     Target_en_us "Already searched. The room is shut."
+     Comment "Toast: the back room was raided recently (#600)."
+    }
+    CustomStringTableItem "{01B9D43100AC37E2}" {
+     Id "LF-SpawnHub_Title"
+     Target_en_us "Playtest travel"
+     Comment "Travel list title (spawn table globe)."
+    }
+    CustomStringTableItem "{D2F012D65C8132A6}" {
+     Id "LF-SpawnHub_Hint"
+     Target_en_us "Pick an area to be taken there. Playtest only."
+     Comment "Travel list hint line."
+    }
+    CustomStringTableItem "{64C91C9876BC49F4}" {
+     Id "LF-SpawnHub_Go"
+     Target_en_us "Go"
+     Comment "Travel list row button."
+    }
+    CustomStringTableItem "{134044FE4B970260}" {
+     Id "LF-SpawnHub_Close"
+     Target_en_us "Close"
+     Comment "Travel list close button."
+    }
+    CustomStringTableItem "{BEEAD653C82FCDCE}" {
+     Id "LF-SpawnHub_Open"
+     Target_en_us "Travel to a playtest area"
+     Comment "Globe action name."
+    }
+    CustomStringTableItem "{450BE9C116C859BD}" {
+     Id "LF-SpawnHub_Pt_spawn"
+     Target_en_us "Spawn square"
+     Comment "Travel list row: spawn."
+    }
+    CustomStringTableItem "{B6586A394D67B4AF}" {
+     Id "LF-SpawnHub_Pt_police"
+     Target_en_us "Police station"
+     Comment "Travel list row: police."
+    }
+    CustomStringTableItem "{B4232BB7C4308A82}" {
+     Id "LF-SpawnHub_Pt_jail"
+     Target_en_us "Jail"
+     Comment "Travel list row: jail."
+    }
+    CustomStringTableItem "{8AA2600D1543035B}" {
+     Id "LF-SpawnHub_Pt_bank"
+     Target_en_us "Bank"
+     Comment "Travel list row: bank."
+    }
+    CustomStringTableItem "{B20B273E74BFB5FC}" {
+     Id "LF-SpawnHub_Pt_cash_van"
+     Target_en_us "Cash van stop"
+     Comment "Travel list row: cash_van."
+    }
+    CustomStringTableItem "{CB3B602C123EDB3A}" {
+     Id "LF-SpawnHub_Pt_general_store"
+     Target_en_us "General store"
+     Comment "Travel list row: general_store."
+    }
+    CustomStringTableItem "{70A38A6809640B2F}" {
+     Id "LF-SpawnHub_Pt_market"
+     Target_en_us "Market traders"
+     Comment "Travel list row: market."
+    }
+    CustomStringTableItem "{F7342C42AF67BCAA}" {
+     Id "LF-SpawnHub_Pt_post_office"
+     Target_en_us "Post office and jobs"
+     Comment "Travel list row: post_office."
+    }
+    CustomStringTableItem "{4AF36AD0E0DCF596}" {
+     Id "LF-SpawnHub_Pt_car_lot"
+     Target_en_us "Car lot"
+     Comment "Travel list row: car_lot."
+    }
+    CustomStringTableItem "{69B85ADAEFBDBB9C}" {
+     Id "LF-SpawnHub_Pt_garage"
+     Target_en_us "Garage"
+     Comment "Travel list row: garage."
+    }
+    CustomStringTableItem "{B0C61257E5FB48B5}" {
+     Id "LF-SpawnHub_Pt_impound"
+     Target_en_us "Impound lot"
+     Comment "Travel list row: impound."
+    }
+    CustomStringTableItem "{4933783F01581685}" {
+     Id "LF-SpawnHub_Pt_chop_shop"
+     Target_en_us "Chop shop"
+     Comment "Travel list row: chop_shop."
+    }
+    CustomStringTableItem "{FB4A0D3B97262A9C}" {
+     Id "LF-SpawnHub_Pt_fuel_station"
+     Target_en_us "Fuel station"
+     Comment "Travel list row: fuel_station."
+    }
+    CustomStringTableItem "{DFCE41C7B190AA27}" {
+     Id "LF-SpawnHub_Pt_hospital"
+     Target_en_us "Hospital"
+     Comment "Travel list row: hospital."
+    }
+    CustomStringTableItem "{6D24484296F44B77}" {
+     Id "LF-SpawnHub_Pt_org_registry"
+     Target_en_us "Organization registry"
+     Comment "Travel list row: org_registry."
+    }
+    CustomStringTableItem "{180961ECD408F286}" {
+     Id "LF-SpawnHub_Pt_hideout"
+     Target_en_us "Hideout yard"
+     Comment "Travel list row: hideout."
+    }
+    CustomStringTableItem "{88BCEC3B8F0B96E6}" {
+     Id "LF-SpawnHub_Pt_fence"
+     Target_en_us "Fence (Vince)"
+     Comment "Travel list row: fence."
+    }
+    CustomStringTableItem "{3502F9E9ED2D4D43}" {
+     Id "LF-SpawnHub_Pt_lockup"
+     Target_en_us "Lockpick lock-up"
+     Comment "Travel list row: lockup."
+    }
+    CustomStringTableItem "{ACA4B36A252C8E65}" {
+     Id "LF-SpawnHub_Pt_moonshine"
+     Target_en_us "Moonshine camp"
+     Comment "Travel list row: moonshine."
+    }
+    CustomStringTableItem "{63BC79F23121554D}" {
+     Id "LF-SpawnHub_Pt_farm"
+     Target_en_us "Farm"
+     Comment "Travel list row: farm."
+    }
+    CustomStringTableItem "{77D8780E1D048421}" {
+     Id "LF-SpawnHub_Pt_orchard"
+     Target_en_us "Apple orchard"
+     Comment "Travel list row: orchard."
+    }
+    CustomStringTableItem "{9ECE67180191DEF9}" {
+     Id "LF-SpawnHub_Pt_mining"
+     Target_en_us "Mining yard"
+     Comment "Travel list row: mining."
+    }
+    CustomStringTableItem "{BA0368C4FE08E132}" {
+     Id "LF-SpawnHub_Pt_quarry"
+     Target_en_us "Quarry (lawless)"
+     Comment "Travel list row: quarry."
+    }
+    CustomStringTableItem "{D25E9BC45F9B3F3E}" {
+     Id "LF-SpawnHub_Pt_annex"
+     Target_en_us "Test annex"
+     Comment "Travel list row: annex."
+    }
+    CustomStringTableItem "{63E93D8FD582854D}" {
+     Id "LF-Witness_Unsure1"
+     Target_en_us "%1: Hey, I am not sure."
+     Comment "Toast: an NPC witness who saw nothing answers, noncommittal. %1 = the NPC name."
+    }
+    CustomStringTableItem "{C388BAAC69AA6FFA}" {
+     Id "LF-Witness_Unsure2"
+     Target_en_us "%1: I do not think I saw anything."
+     Comment "Toast: noncommittal NPC answer, variant 2. %1 = the NPC name."
+    }
+    CustomStringTableItem "{FD870C5E92EE6005}" {
+     Id "LF-Witness_Unsure3"
+     Target_en_us "%1: Sorry, I could not say either way."
+     Comment "Toast: noncommittal NPC answer, variant 3. %1 = the NPC name."
+    }
+    CustomStringTableItem "{52C8142385D923FE}" {
+     Id "LF-Witness_Unsure4"
+     Target_en_us "%1: I was not really looking, officer."
+     Comment "Toast: noncommittal NPC answer, variant 4. %1 = the NPC name."
+    }
+    CustomStringTableItem "{9FF5E70D1F95C286}" {
+     Id "LF-Witness_GaveStatement"
+     Target_en_us "%1 gave a statement. It is on the wanted board."
+     Comment "Toast to the officer: a named witness gave a statement. %1 = the witness name."
+    }
+    CustomStringTableItem "{A5C8F0F7C66DA883}" {
+     Id "LF-Witness_ForgotSome"
+     Target_en_us "%1 cannot recall anything useful."
+     Comment "Toast to the officer: a named witness saw the crime but remembered nothing describable. %1 = the witness name."
+    }
+    CustomStringTableItem "{EF124E70F7C349D7}" {
+     Id "LF-DebugJailMe_Action"
+     Target_en_us "Send me to jail (playtest)"
+     Comment "Debug-only board action outside the jail: jails you for 60 s."
+    }
+    CustomStringTableItem "{F7B900AAB3964016}" {
+     Id "LF-Sign_DebugJail_Title"
+     Target_en_us "Playtest: jail board"
+     Comment "Title of the debug board by the jail entrance."
+    }
+    CustomStringTableItem "{66031F4E19D748E0}" {
+     Id "LF-Sign_DebugJail_What"
+     Target_en_us "Playtest only. Use the action on this board to be jailed for 60 seconds through the real jail path, so you can try the cell, the visit window and the release alone."
+     Comment "Body of the debug jail board."
+    }
+    CustomStringTableItem "{1C23DAF5E8974D14}" {
+     Id "LF-Sign_DebugJail_Next"
+     Target_en_us "Wait out the 60 seconds, or try a breakout. The cell, the visit window and the release are the real ones."
+     Comment "Next-step line of the debug jail board."
+    }
+    CustomStringTableItem "{AD999D02320AA8DB}" {
+     Id "LF-PoliceApp_Action"
+     Target_en_us "Apply to the police"
+     Comment "Duty desk action."
+    }
+    CustomStringTableItem "{C1C8869AB5FF5BB9}" {
+     Id "LF-PoliceApp_ActionDesc"
+     Target_en_us "Fill in an application to join the police."
+     Comment "Duty desk action description."
+    }
+    CustomStringTableItem "{9F943D13BD5ABD5D}" {
+     Id "LF-PoliceApp_Review"
+     Target_en_us "Review applications (admin)"
+     Comment "Admin action at the duty desk: approves the oldest open application."
+    }
+    CustomStringTableItem "{3EC049CF5AD21E3C}" {
+     Id "LF-PoliceApp_ReviewDesc"
+     Target_en_us "Approve the application that has waited longest."
+     Comment "Admin review action description."
+    }
+    CustomStringTableItem "{B5EC482E2E329B9F}" {
+     Id "LF-PoliceApp_Title"
+     Target_en_us "Application to the Everon Police"
+     Comment "Police application form title."
+    }
+    CustomStringTableItem "{8AE64C101F1D0F7D}" {
+     Id "LF-PoliceApp_Intro"
+     Target_en_us "Fill in all three blanks. One application per person; an administrator decides."
+     Comment "Police application form instruction line."
+    }
+    CustomStringTableItem "{C80D8FA8411D1B2A}" {
+     Id "LF-PoliceApp_Name"
+     Target_en_us "Your name"
+     Comment "Police application blank: name."
+    }
+    CustomStringTableItem "{71121DE17F6CC779}" {
+     Id "LF-PoliceApp_Why"
+     Target_en_us "Why you want to serve"
+     Comment "Police application blank: reason."
+    }
+    CustomStringTableItem "{E16B433C3AC6E980}" {
+     Id "LF-PoliceApp_Availability"
+     Target_en_us "When you can be on duty"
+     Comment "Police application blank: availability."
+    }
+    CustomStringTableItem "{E8C273DCD90D9613}" {
+     Id "LF-PoliceApp_Submit"
+     Target_en_us "Hand it in"
+     Comment "Police application submit button."
+    }
+    CustomStringTableItem "{866A6764BE9188EB}" {
+     Id "LF-PoliceApp_Close"
+     Target_en_us "Put it away"
+     Comment "Police application close button."
+    }
+    CustomStringTableItem "{62BF90390E136693}" {
+     Id "LF-PoliceApp_Status"
+     Target_en_us "Police application"
+     Comment "Toast title for police application messages."
+    }
+    CustomStringTableItem "{F39424782E4C72BE}" {
+     Id "LF-PoliceApp_Receipt"
+     Target_en_us "Application received. An administrator will review it."
+     Comment "Receipt toast after filing."
+    }
+    CustomStringTableItem "{3B86E7A5E27354FE}" {
+     Id "LF-PoliceApp_Approved"
+     Target_en_us "Application approved. Clock in at the duty desk."
+     Comment "Toast when the application is approved on submit (playtest)."
+    }
+    CustomStringTableItem "{D85287BA39923646}" {
+     Id "LF-PoliceApp_ApprovedOther"
+     Target_en_us "Approved the application of %1."
+     Comment "Admin toast after approving; %1 is the applicant name."
+    }
+    CustomStringTableItem "{D17A6AB7C4AE46BE}" {
+     Id "LF-PoliceApp_NoneOpen"
+     Target_en_us "No open applications."
+     Comment "Admin review toast when none wait."
+    }
+    CustomStringTableItem "{B28597051ECFD842}" {
+     Id "LF-PoliceApp_NotAdmin"
+     Target_en_us "Only an administrator can approve applications."
+     Comment "Refusal toast for a non-admin review."
+    }
+    CustomStringTableItem "{176552BBA801A382}" {
+     Id "LF-PoliceApp_Error_Fields"
+     Target_en_us "Fill in all three blanks."
+     Comment "Form error: a blank is empty."
+    }
+    CustomStringTableItem "{128D4C6358A00BA9}" {
+     Id "LF-PoliceApp_Error_Length"
+     Target_en_us "One of the answers is too long."
+     Comment "Form error: too long."
+    }
+    CustomStringTableItem "{7F7AA537F0C237BB}" {
+     Id "LF-PoliceApp_Error_OnRoster"
+     Target_en_us "You are already on the police roster."
+     Comment "Refusal: applicant is already police."
+    }
+    CustomStringTableItem "{57C1C2B309431CF5}" {
+     Id "LF-PoliceApp_Error_AlreadyOpen"
+     Target_en_us "You already have an application waiting."
+     Comment "Refusal: one open application per player."
+    }
+    CustomStringTableItem "{EF03D310EECF0660}" {
+     Id "LF-PoliceApp_Error_NoAccount"
+     Target_en_us "Register at the civil registry first."
+     Comment "Refusal: no player identity."
+    }
+    CustomStringTableItem "{93B24FC92EC107AF}" {
+     Id "LF-Mission_PlaytestTown_Details"
+     Target_en_us "This is a playtest build. Your cash and bank top up when they run low, and every new character owns two test cars, one in the garage and one at the impound. Your first spawn opens form R-89; fill it in to start. The first player on a server with no police is added to the police roster, so you can clock in at the station desk. Progress is saved and carries over a restart. Report problems on the Life Framework Discord or GitHub."
+     Comment "Detailed scenario rules shown with the scenario."
+    }
+    CustomStringTableItem "{0D72D045F1F4E803}" {
+     Id "LF-CharSel_Title"
+     Target_en_us "Civil Registry of Everon, Residents on File"
+     Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
+    }
+    CustomStringTableItem "{8B8EEE733934A3E5}" {
+     Id "LF-CharSel_Intro"
+     Target_en_us "Choose the resident you arrive as today."
+     Comment "Character pick instruction line. One button per character follows, each showing that character's name."
+    }
+    CustomStringTableItem "{502C5430AE70C609}" {
+     Id "LF-CharSel_New"
+     Target_en_us "Register a new resident"
+     Comment "Character pick button that opens registration form R-89 for another character on the same account."
+    }
+    CustomStringTableItem "{87EB7613EC87FB35}" {
+     Id "LF-CharSel_Refused"
+     Target_en_us "You cannot change who you are right now."
+     Comment "Notification when the server refuses a character pick: the slot does not exist, the player is alive in another body, or still on duty."
+    }
+    CustomStringTableItem "{D05A58380EB506C0}" {
+     Id "LF-Char_Error_Full"
+     Target_en_us "Every character slot on this account is taken."
+     Comment "Character creation refused because the account already holds the configured maximum number of characters."
+    }
+    CustomStringTableItem "{950892F5D530ACC9}" {
+     Id "LF-JailWork_Scrub"
+     Target_en_us "Scrub the floor"
+     Comment "Action in the cell: scrub the floor to shorten the sentence."
+    }
+    CustomStringTableItem "{B2F316158144F2CB}" {
+     Id "LF-JailWork_Laundry"
+     Target_en_us "Sort the laundry"
+     Comment "Action in the cell: sort laundry to shorten the sentence."
+    }
+    CustomStringTableItem "{F9D02BE97AECAA25}" {
+     Id "LF-JailWork_Done"
+     Target_en_us "Job done. Time left: %1"
+     Comment "Toast after a jail job. %1 is the remaining sentence as m:ss."
+    }
+    CustomStringTableItem "{7AB47127A2E6C90C}" {
+     Id "LF-JailWork_NotPrisoner"
+     Target_en_us "Only a prisoner serving a sentence can work here."
+     Comment "Jail job refused: the player is not serving."
+    }
+    CustomStringTableItem "{9D3D515C89CBD67C}" {
+     Id "LF-JailWork_Busy"
+     Target_en_us "You are already working."
+     Comment "Jail job refused: a job is already running."
+    }
+    CustomStringTableItem "{C1C1BA78E72558F0}" {
+     Id "LF-JailWork_Cooldown"
+     Target_en_us "You need a rest. This job is free again in %1."
+     Comment "Jail job refused: cooldown. %1 is m:ss."
+    }
+    CustomStringTableItem "{04A2CD75730658F5}" {
+     Id "LF-JailWork_BadConfig"
+     Target_en_us "This job is not set up."
+     Comment "Jail job refused: no seconds configured."
+    }
   }
  }
 }

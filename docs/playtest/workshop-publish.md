@@ -1,132 +1,128 @@
-# Publish the M1 build to the Workshop
+# Publish the playtest town to the Workshop
 
-Checklist for the maintainer. Nothing here publishes by itself; only the Publish
-button in Workbench uploads, and only the maintainer clicks it.
+Click-by-click for the maintainer. Only the **Publish** button uploads, and only the maintainer
+presses it, signed in with the Bohemia Account that will own the item. Every field value is in
+[`docs/marketing/workshop/`](../marketing/workshop/README.md).
 
-Workbench publishes a bundled copy of the project, so the build has to compile
-first. Keep the source tree: packaged files cannot be extracted back.
+What gets published: the `LifeFramework` addon (mod ID `79636E668EA37AC9`, no dependencies beyond
+the base game). Its scenario **Life Framework: Playtest Town**
+(`{1054CC8646357708}Missions/LF_PlaytestTown.conf`) is the DebugWorld town with the playtest
+settings on: cash and bank top-up, two test cars per new character, the first player on an empty
+police roster, saves across restarts, and the debug menu closed to everyone but admins. The
+spawn hub (#607) lands in DebugWorld, so it ships in the first publish after it merges.
 
-## Before you start
+The Workshop item sits beside the one-click zip, not in place of it. The zip (`tools\cli playtest
+release`, first cut as `playtest-m2-1`) stays the download button on the website and is described
+in [`docs/playtest.md`](../playtest.md). Both carry the same addon; publish the Workshop item from
+the same commit as the latest zip so the two do not drift.
 
-- [ ] `main` is green: `tools\cli validate --full` and
-      `tools\cli test --no-build --tier all` pass in a worktree (or run
-      `tools\cli wt gate <slug>`).
-- [ ] The release commit is tagged, for example `git tag m1.0` and
-      `git push origin m1.0`. Use the same number as the Workshop version.
-- [ ] No generated files are staged (`resourceDatabase.rdb`, `*.rdb.lock`, the
-      addon `log`, `*.gproj.user`).
-- [ ] The EnfusionMCP handler scripts are gone from the mod
-      (`addons/LifeFramework/Scripts/WorkbenchGame/EnfusionMCP/` is absent).
-- [ ] The licence is APL. Decision 2026-11-08: the Workshop build is APL and the
-      GitHub repo stays MIT; the description names APL and links the repo.
-- [ ] A Bohemia Account is linked to the Steam account that will own the item:
-      **Workbench > Link** (one time).
-- [ ] Use the stable Workbench, not Experimental Tools. They publish to separate
-      Workshops.
+## Before you start (once)
+
+- [ ] Arma Reforger Tools, the **stable** Workbench. Experimental Tools publish to a separate
+      Workshop.
+- [ ] **Workbench > Link**: sign in with the Bohemia Account. It links to the Steam account that
+      is running. Use the same pair for every later update.
+- [ ] Read the Arma Reforger Workshop Terms of Service once (linked from the BIKI page
+      [Mod Publishing Process](https://community.bistudio.com/wiki/Arma_Reforger:Mod_Publishing_Process)).
+      The build is APL (decision 2026-11-08); the repo stays MIT.
+
+## Prepare the build
+
+- [ ] Pull `main` into a worktree and run `tools\cli wt gate <slug>` (validate --full, build,
+      full suite). Publish only from a green commit.
+- [ ] `tools\cli pack` in that worktree. It packs the addon headless the way Publish bundles it and
+      prints `pack OK ... data.pak`. A `Failed to load metafile of mission config image` line
+      means a mission image lost its source; fix that before publishing.
+- [ ] `addons/LifeFramework/Scripts/WorkbenchGame/EnfusionMCP/` does not exist (run `wb_cleanup`
+      if it does). The handler scripts are developer tooling.
+- [ ] No generated file is staged or modified: `git status` in the worktree is clean.
+- [ ] Tag the commit: `git tag workshop-0.1.0 && git push origin workshop-0.1.0`.
 
 ## Publish in Workbench
 
-1. Open `addons/LifeFramework/LifeFramework.gproj` in Workbench.
-2. Build for PC (`tools\cli build` in a worktree, or the Workbench build) and fix
-   any script error before publishing.
-3. Choose **Workbench > Publish Project**.
-4. **Working Dir:** leave the default
-   (`%USERPROFILE%\Documents\My Games\ArmaReforger\publish\LifeFramework`).
-   Never point it inside the addon folder.
-5. Fill the metadata below. The preview image and every screenshot are JPG or
-   PNG and under 2 MB each.
-6. **Category:** pick the roleplay/gameplay category that fits. At least one is
-   required.
-7. **Visibility:** `Private` or `Unlisted` for the private rounds. `Public` only
-   for the release, which ships with the showcase video (decision 2026-11-08:
-   two or three private rounds first).
-8. **Version:** `1.0` for the first publish. Increment on every update, even a
-   description-only change; Workshop updates are published as new versions.
-9. **Change Notes:** one line per change since the last publish. First publish:
-   `M1 playtest: the 1989 Everon town, jobs, bank, shop, vehicles, police, organizations, and hideouts.`
-10. Click **Publish**. Workbench bundles, shows the upload size, and asks to
-    continue. Confirm and wait for the upload.
-11. Open the Workshop page, subscribe, join the hosted server, and finish the
-    arrival chain on a clean profile. That is the M1-24 acceptance proof.
-12. Copy the item ID and URL into `docs/playtest.md`, the README, and the
-    release notes.
+1. Open Workbench and load `addons/LifeFramework/LifeFramework.gproj` **from that worktree**
+   (Workbench launcher > Add Existing > the `.gproj`). The main checkout's world-editor state
+   does not belong in the upload.
+2. Wait for the Resource Browser to finish loading. In the Script Editor, **Build > Compile and
+   Reload Scripts** must finish with no errors.
+3. **Workbench > Publish Project**.
+4. Fill the dialog from [`docs/marketing/workshop/README.md`](../marketing/workshop/README.md):
+   1. **Project Name**: `Life Framework`
+   2. **Working Dir**: leave the default
+      (`%USERPROFILE%\Documents\My Games\ArmaReforger\publish\LifeFramework`). Never a folder
+      inside the addon.
+   3. **Preview Image**: `docs/marketing/workshop/preview.jpg`
+   4. **Screenshots**: add the nine files in `docs/marketing/workshop/screenshots/`, in name order.
+   5. **Contributors**: leave empty, or add a second maintainer who may publish updates.
+   6. **Category**: Game Mode. Add Scenario as well if the list offers it.
+   7. **Tags**: `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Everon 1989`
+   8. **License**: Arma Public License (APL).
+   9. **Version**: `0.1.0`. Raise it on every later publish, even a text-only change.
+   10. **Visibility**: `Unlisted` for the private rounds (decision 2026-11-08: two or three
+       rounds first). `Public` only together with the showcase video.
+   11. **Summary**: paste `summary.txt`.
+   12. **Description**: open the large editor and paste `description.bbcode`.
+   13. **Change Notes**: paste the 0.1.0 block from `changelog.md`.
+5. Click **Publish**. Workbench bundles (about a minute), then shows the upload size, about
+   55 MB. Confirm and wait for the upload to finish.
+6. Workbench reports the item published. The Workshop page address starts with
+   `https://reforger.armaplatform.com/workshop/79636E668EA37AC9`; copy the full address from the
+   browser. Open it in a browser and check
+   the preview, the screenshots, and the description.
 
-## Workshop metadata (draft)
+## Check it as a player (same day)
 
-**Project Name** (30 characters max):
+The local test (below) proved everything except the Workshop download itself, which only exists
+after publish.
 
-```
-Life Framework - 1989 Everon
-```
+1. Start Arma Reforger normally. **Workshop**, search `Life Framework` (or open the Unlisted link
+   from the page above), **Subscribe**, wait for the download.
+2. **Scenarios**: `Life Framework: Playtest Town` is listed with 16 players, the preview image,
+   and the description. Select it and press **Play**.
+3. The loading screen shows the town picture and the playtest text. In town, form R-89 opens;
+   sign it. You stand on the square with the "New in town" note, cash in hand.
+4. Back in **Scenarios**, select it and press **Host**. A friend joins from the server browser.
+5. Start a dedicated server with [`server-config.example.json`](server-config.example.json) and
+   [`workshop-host.md`](workshop-host.md); it downloads the mod and a client joins from the
+   browser.
 
-**Summary** (1024 characters max):
-
-```
-A 1989 Everon roleplay town in public playtest. Take a parcel job, bank your pay, buy a car, rob a till, and clock in as a police officer. Found an organization, lease the alley hideout, and run contraband. Built on Life Framework. Expect rough edges; report them on GitHub.
-```
-
-**Description** (5000 characters max):
-
-```
-Life Framework - 1989 Everon is the first public playtest of Life Framework, a roleplay framework for Arma Reforger. It runs a small 1989 Everon village on one street, hosted from the maintainer's PC.
-
-WHAT YOU CAN DO
-- Register on form R-89 and follow the town clerk through your first day.
-- Take a parcel job at the post office, then fuel delivery and the taxi as you level up.
-- Bank your pay at the ATM, shop for food and supplies, and buy a car at the lot.
-- Rob a till, breach a door, or hit the bank vault; the police get a radio dispatch and a wanted board.
-- Clock in as an officer, read the wanted board, arrest, fine, and jail.
-- Found an organization, lease the alley yard, use the hideout stash, and run contraband from the barn to the pub.
-- Rejoin after a restart: your cash, bank, job, organization, and stored cars are still there.
-
-HOW TO PLAY
-Subscribe to this item, then find "Life Framework Playtest Town" in the Arma Reforger server browser. The game enables the mod for you. The server is not up all the time; session times are announced on Discord. On your first join, fill in form R-89. Everyone starts as a civilian; police clock in at the station desk.
-
-PLAYTEST, NOT A RELEASE
-This is M1: the loop works, but expect rough edges, missing polish, and changes between sessions. One issue per problem on GitHub, with what you did, what you expected, and what happened. Screenshots help.
-
-LICENCE AND CREDITS
-The Workshop build is licensed under the Arma Public License (APL), as the Workshop Terms of Use require. The source on GitHub is MIT. Built on Everon Life by Arkensor (MIT) and code from Overthrow (used with permission, MIT). Base-game assets belong to Bohemia Interactive.
-
-LINKS
-Source and issues: https://github.com/Life-Framework/Life-Framework
-Playtest guide: https://github.com/Life-Framework/Life-Framework/blob/main/docs/playtest.md
-Discord: https://discord.gg/MjMexJteqz
-Website: https://life-framework.org
-```
-
-**Tags** (space-separated):
-
-```
-Roleplay RPG Life Simulation Economy Jobs Police Crime Multiplayer Everon 1989
-```
-
-**Licence:** Arma Public License (APL).
-
-## Screenshots
-
-Shoot at 1920x1080 on a clean client, with no debug overlays, no dev-menu text,
-and no white test meshes. Each image under 2 MB.
-
-1. **Preview image (Workshop tile):** the main street from the spawn square, the
-   clerk and the town board in frame, daylight.
-2. **Arrival:** registration form R-89 filled in, the clerk visible.
-3. **Job:** the post office counter with the parcel prompt.
-4. **Bank:** the ATM terminal showing the balance.
-5. **Shop:** the general store price sheet.
-6. **Vehicle:** the car lot price sheet and a bought car.
-7. **Police:** the duty desk, an officer in kit, and the wanted board.
-8. **Organization:** the registry desk ledger and the hideout gate.
-9. **Hideout:** the stash open as a member.
-10. **Contraband:** the barn pickup or the pub delivery.
-11. **Group (optional):** two or three players on the street.
+If step 2 shows the scenario name as `#LF-...` or no picture, the header's text did not reach
+the backend: fix `Missions/LF_PlaytestTown.conf`, raise the version, and publish again.
 
 ## After publishing
 
-- [ ] The Workshop URL is in `docs/playtest.md`, the README, and the release
-      notes.
-- [ ] Each private round is recorded in `docs/playtest/` with its date, players,
-      and the issues it filed.
-- [ ] The public publish and the showcase video ship together, and the video is
-      linked on the Workshop page.
+- [ ] Add the Workshop URL next to the zip download button on the website (the playtest download
+      section built from `docs/playtest.md`).
+- [ ] Post [`discord-announcement.md`](../marketing/workshop/discord-announcement.md) with the
+      URL filled in, and add [`website-news.md`](../marketing/workshop/website-news.md) to the
+      site's news.
+- [ ] Put the Workshop URL in `docs/playtest.md` (and drop its "Until a public Workshop item
+      exists" line) and in the README.
+- [ ] Record each private round in `docs/playtest/` with its date, players, and the issues it
+      filed.
+- [ ] When the showcase video (#390) is ready, add it to the description, switch visibility to
+      Public, and publish as a new version.
 - [ ] Issue #109 stays open until the public publish and the video are done.
+
+## Updating later
+
+Open the same `.gproj` from a green worktree, **Publish Project**, raise **Version**, write the
+**Change Notes**, and publish. The dialog keeps the last publish's text. Packaged files cannot be
+turned back into source; the source is this repository.
+
+## How the local test was done
+
+`tools\cli pack` produced the same `data.pak` Publish bundles. A clean client profile got it in
+`profile/addons/LifeFramework_79636E668EA37AC9/` (where the Workshop puts downloads) with a copy of
+the backend `meta` file a download carries, because the in-game Scenarios list reads its entries
+from that file. A test-only driver addon then pressed through the title screen, opened
+Scenarios, selected the town, pressed Play, and signed form R-89. A dedicated server
+(`-server <scenarioId> -addons 79636E668EA37AC9`, the packed copy in `-addonsDir`) then took a
+client from another clean profile: form R-89, spawn on the square, the cash top-up and both test
+cars. A `-config` start with the example config could not be proven before publish: the server
+fetches `game.mods` from the Workshop and does not use a local copy of an unpublished item.
+Evidence is in the PR that added this checklist.
+
+The Scenarios detail pane of that local test named "Bohemia Interactive" as the author, because
+the stand-in item had no real owner. After publish, check that it shows your account or "Life
+Framework Team".

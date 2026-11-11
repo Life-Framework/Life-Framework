@@ -135,16 +135,20 @@ class LF_AccountReplication
 		if (uid.IsEmpty() || !playerManager)
 			return;
 
+		LF_Perf.Count("Account.publish");
 		array<int> playerIds = {};
 		playerManager.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
 		{
-			if (LF_Utils.GetPlayerUID(playerId) != uid)
+			if (LF_Utils.GetAccountUID(playerId) != uid)
 				continue;
 
 			SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(playerManager.GetPlayerControlledEntity(playerId));
 			if (character)
+			{
 				character.LF_SetAccountState(LF_AccountStateBits.FromAccount(account));
+				character.LF_SetCharacterKey(account.GetActiveCharacterKey());
+			}
 		}
 
 		RefreshPoliceOnDuty();
@@ -164,11 +168,13 @@ class LF_AccountReplication
 
 		LF_PlayerAccount account;
 		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
-		string uid = LF_Utils.GetPlayerUID(playerId);
+		string uid = LF_Utils.GetAccountUID(playerId);
 		if (accountManager && !uid.IsEmpty())
 			account = accountManager.GetAccount(uid);
 
 		character.LF_SetAccountState(LF_AccountStateBits.FromAccount(account));
+		if (account)
+			character.LF_SetCharacterKey(account.GetActiveCharacterKey());
 		// Organization copy for the offer side (M1-17), on the same spawn hook and periodic pass.
 		LF_OrgReplication.Publish(character);
 	}
@@ -185,6 +191,7 @@ class LF_AccountReplication
 		if (!playerManager)
 			return;
 
+		int perfToken = LF_Perf.Begin();
 		array<int> playerIds = {};
 		playerManager.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
@@ -193,6 +200,7 @@ class LF_AccountReplication
 		}
 
 		RefreshPoliceOnDuty();
+		LF_Perf.End("Account.refreshAll", perfToken);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -223,7 +231,7 @@ class LF_AccountReplication
 		playerManager.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
 		{
-			LF_PlayerAccount account = accountManager.GetAccount(LF_Utils.GetPlayerUID(playerId));
+			LF_PlayerAccount account = accountManager.GetAccount(LF_Utils.GetAccountUID(playerId));
 			if (LF_AccountStateBits.IsOnDutyPolice(LF_AccountStateBits.FromAccount(account)))
 				count++;
 		}
@@ -281,6 +289,10 @@ modded class SCR_ChimeraCharacter
 	[RplProp()]
 	protected int m_iLF_AccountState;
 
+	//! A uid or character id: a short string, set once per body (LF_SetCharacterKey).
+	[RplProp()]
+	protected string m_sLF_CharacterKey;
+
 	//------------------------------------------------------------------------------------------------
 	void LF_SetAccountState(int state)
 	{
@@ -291,6 +303,7 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		m_iLF_AccountState = state;
+		LF_Perf.Count("Replication.accountState");
 		Replication.BumpMe();
 	}
 
@@ -298,5 +311,26 @@ modded class SCR_ChimeraCharacter
 	int LF_GetAccountState()
 	{
 		return m_iLF_AccountState;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the record key of the account character this body plays (#331), so a client's
+	//! LF_Utils.GetPlayerUID matches the key the server saves that character's records under.
+	void LF_SetCharacterKey(string characterKey)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		if (characterKey == m_sLF_CharacterKey)
+			return;
+
+		m_sLF_CharacterKey = characterKey;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string LF_GetCharacterKey()
+	{
+		return m_sLF_CharacterKey;
 	}
 }

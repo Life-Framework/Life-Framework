@@ -338,7 +338,22 @@ class LF_Jail
 			return false;
 		}
 
-		int seconds = SentenceSeconds(prisoner.GetWantedLevel());
+		return Imprison(prisonerUid, SentenceSeconds(prisoner.GetWantedLevel()), prisoner.GetWantedLevel(), standIn);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Starts a sentence of `seconds` and moves standIn (or the prisoner's connected body) to the
+	//! placed cell. Arrest checks who may do this and for how long; the playtest board
+	//! (LF_DebugJailMe) calls it directly. Returns false when no cell is placed, the uid is empty
+	//! or the prisoner is already serving.
+	static bool Imprison(string prisonerUid, int seconds, int wantedLevel, IEntity standIn)
+	{
+		if (prisonerUid.IsEmpty() || !s_bCellPlaced || IsServing(prisonerUid))
+		{
+			LF_Debug.Log("Jail", string.Format("imprison refused: uid=%1 cell=%2", prisonerUid, s_bCellPlaced));
+			return false;
+		}
+
 		LF_JailSentence sentence = new LF_JailSentence();
 		sentence.m_sPlayerUid = prisonerUid;
 		sentence.m_fRemaining = seconds;
@@ -350,8 +365,8 @@ class LF_Jail
 		if (body)
 			sentence.m_BodyId = body.GetID();
 
-		LF_Debug.Log("Jail", string.Format("sentence started %1 seconds=%2 wanted=%3", prisonerUid, seconds, prisoner.GetWantedLevel()));
-		LF_EventBus.Publish(LF_OnArrested.Create(prisonerUid, seconds, prisoner.GetWantedLevel()));
+		LF_Debug.Log("Jail", string.Format("sentence started %1 seconds=%2 wanted=%3", prisonerUid, seconds, wantedLevel));
+		LF_EventBus.Publish(LF_OnArrested.Create(prisonerUid, seconds, wantedLevel));
 		if (seconds > 0)
 			HandSlip(prisonerUid, body);
 
@@ -399,6 +414,22 @@ class LF_Jail
 		}
 
 		return sentence.m_fRemaining;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Jail work (#127): takes seconds off a serving prisoner's remaining time and refreshes their
+	//! slip. At zero the sentence ends like any other (Advance). The caller owns the rules.
+	//! \return Remaining seconds after the credit. Zero when not serving or the sentence is over.
+	static float Credit(string playerUid, float seconds)
+	{
+		if (!IsServing(playerUid))
+			return 0;
+
+		float left = Advance(playerUid, seconds);
+		if (left > 0)
+			RefreshSlip(playerUid);
+
+		return left;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -73,6 +73,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		UnregisterDebugMenuListener();
 		if (m_bLF_AccountRefreshRunning && GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(LF_RefreshAccountReplication);
+		if (m_bLF_AccountRefreshRunning && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(LF_Perf.Report);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -249,6 +251,10 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		{
 			GetGame().GetCallqueue().CallLater(LF_RefreshAccountReplication, LF_AccountReplication.REFRESH_INTERVAL_MS, true);
 			m_bLF_AccountRefreshRunning = true;
+
+			// -lfPerf: print the server cost counters once a minute (LF_Perf).
+			if (LF_Perf.IsEnabled())
+				GetGame().GetCallqueue().CallLater(LF_Perf.Report, 60000, true);
 		}
 	}
 

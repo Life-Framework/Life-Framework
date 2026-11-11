@@ -59,6 +59,42 @@ class LF_FilmCameraPath : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! An orbit round point: radius m out, height m up, looking at the point + lookHeight. The arc is centred on
+	//! azimuthDeg (0 = the +z side, 90 = +x, 180 = -z, 270 = -x) and spans arcDeg, so a front facing any way
+	//! can be circled. A negative arcDeg sweeps the other way.
+	static LF_FilmCameraPath BuildOrbit(vector point, float radius, float seconds, float azimuthDeg = 0, float arcDeg = 140, float height = 5, float lookHeight = 1.2, float fov = 60)
+	{
+		LF_FilmCameraPath path = new LF_FilmCameraPath();
+		int steps = 12;
+		for (int i = 0; i <= steps; i++)
+		{
+			float a = (azimuthDeg - arcDeg * 0.5 + i * arcDeg / steps) * Math.DEG2RAD;
+			path.Add(i * seconds / steps, point + Vector(Math.Sin(a) * radius, height, Math.Cos(a) * radius), point + Vector(0, lookHeight, 0), fov);
+		}
+		return path;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A fixed camera: position and look-at held for the whole shot (two identical keys, so the runner has a duration).
+	static LF_FilmCameraPath BuildStatic(vector position, vector lookAt, float seconds, float fov = 50)
+	{
+		LF_FilmCameraPath path = new LF_FilmCameraPath();
+		path.Add(0, position, lookAt, fov);
+		path.Add(seconds, position, lookAt, fov);
+		return path;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A drone move between two poses, eased at both ends. The look-at point travels too.
+	static LF_FilmCameraPath BuildDrone(vector from, vector lookFrom, vector to, vector lookTo, float seconds, float fov = 60)
+	{
+		LF_FilmCameraPath path = new LF_FilmCameraPath();
+		path.Add(0, from, lookFrom, fov);
+		path.Add(seconds, to, lookTo, fov);
+		return path;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Smoothstep ease so each segment starts and stops without a jolt.
 	//! One step of a first-order low-pass: the share of the way from the smoothed point to the target to move in
 	//! dt seconds with time constant tau. A followed car is driven in 100 ms velocity steps and its origin
@@ -337,32 +373,170 @@ class LF_FilmCameraRunner
 };
 
 //------------------------------------------------------------------------------------------------
-//! Harness `camera orbit|follow x y z a b`: ready-made passes for the runner.
-//!   orbit  x y z radius seconds : sweep a 140 degree arc on the +z side of a fixed point, 5 m up.
+//! Clean frame for a first-person shot (#392): HUD off and any hint pop-up kept down until Show. A hint
+//! (the arrival note, a tip) can come back at any time, so a repeating call hides it again.
+class LF_FilmClean
+{
+	protected static const string FEATURE = "Film";
+	protected static const int HINT_MS = 400;
+	protected static bool s_bHidden;
+	protected static bool s_bWasVisible;
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsHidden()
+	{
+		return s_bHidden;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void Hide()
+	{
+		if (s_bHidden)
+			return;
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		s_bWasVisible = false;
+		if (hud)
+		{
+			s_bWasVisible = hud.IsVisible();
+			hud.SetVisible(false);
+		}
+		SCR_HintManagerComponent.HideHint();
+		s_bHidden = true;
+		GetGame().GetCallqueue().CallLater(KeepHintsDown, HINT_MS, true);
+		LF_Debug.Info(FEATURE, "clean frame: HUD and hints off");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void Show()
+	{
+		if (!s_bHidden)
+			return;
+		GetGame().GetCallqueue().Remove(KeepHintsDown);
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		if (hud && s_bWasVisible)
+			hud.SetVisible(true);
+		s_bHidden = false;
+		LF_Debug.Info(FEATURE, "clean frame: HUD back");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void KeepHintsDown()
+	{
+		SCR_HintManagerComponent.HideHint();
+	}
+};
+
+//------------------------------------------------------------------------------------------------
+//! Harness `camera ...`: ready-made passes for the runner (world metres, degrees, seconds).
+//!   orbit  x y z radius seconds [azimuth arc height] : an arc round a point; azimuth 0 = +z side, 90 = +x, 180 = -z,
+//!          270 = -x (defaults 0 140 5, the original +z sweep).
 //!   follow x y z distance seconds : find the vehicle nearest x y z (client side, ids differ from the server),
 //!          then swing around it at `distance` m, 3 m up, 160 degrees over the pass.
+//!   static px py pz lx ly lz seconds [fov] : a fixed camera at p looking at l.
+//!   drone  px py pz lx ly lz qx qy qz mx my mz seconds [fov] : move from p (looking at l) to q (looking at m), eased.
+//!   hud off|on : clean frame for a first-person shot (HUD and hints).
+//!   stop : end the running pass.
 class LF_FilmCamera
 {
 	protected static const string FEATURE = "Film";
 
 	//------------------------------------------------------------------------------------------------
-	static string Start(string mode, vector point, float size, float seconds)
+	//! Split text on spaces into numbers; false when fewer than count, or any token is not a number.
+	static bool Numbers(string text, int count, out array<float> values)
+	{
+		values = {};
+		array<string> parts = {};
+		text.Split(" ", parts, true);
+		if (parts.Count() < count)
+			return false;
+		foreach (string part : parts)
+		{
+			// IsNumber has no sign; a coordinate or an azimuth can be negative.
+			string digits = part;
+			if (digits.StartsWith("-"))
+				digits = digits.Substring(1, digits.Length() - 1);
+			if (!LF_FilmSceneEnv.IsNumber(digits))
+				return false;
+			values.Insert(part.ToFloat());
+		}
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Modes that carry all their numbers in `args` (static, drone, hud, stop). orbit and follow keep their
+	//! positional form and go through Start.
+	static string Command(string mode, string args)
+	{
+		array<float> v;
+		if (mode == "stop")
+		{
+			LF_FilmCameraRunner.Stop();
+			return "stopped";
+		}
+		if (mode == "hud")
+		{
+			if (args == "off")
+				LF_FilmClean.Hide();
+			else if (args == "on")
+				LF_FilmClean.Show();
+			else
+				return "error:hud_on_or_off";
+			return "hud " + args;
+		}
+		if (mode == "static")
+		{
+			if (!Numbers(args, 7, v))
+				return "error:static_needs_7_numbers";
+			float fovS = 50;
+			if (v.Count() > 7)
+				fovS = v[7];
+			if (v[6] < 1)
+				return "error:bad_seconds";
+			if (!LF_FilmCameraRunner.Play(LF_FilmCameraPath.BuildStatic(Vector(v[0], v[1], v[2]), Vector(v[3], v[4], v[5]), v[6], fovS)))
+				return "error:play_rejected";
+			return "static started";
+		}
+		if (mode == "drone")
+		{
+			if (!Numbers(args, 13, v))
+				return "error:drone_needs_13_numbers";
+			float fovD = 60;
+			if (v.Count() > 13)
+				fovD = v[13];
+			if (v[12] < 1)
+				return "error:bad_seconds";
+			LF_FilmCameraPath drone = LF_FilmCameraPath.BuildDrone(Vector(v[0], v[1], v[2]), Vector(v[3], v[4], v[5]), Vector(v[6], v[7], v[8]), Vector(v[9], v[10], v[11]), v[12], fovD);
+			if (!LF_FilmCameraRunner.Play(drone))
+				return "error:play_rejected";
+			return "drone started";
+		}
+		return "error:bad_camera_mode";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string Start(string mode, vector point, float size, float seconds, string extra = "")
 	{
 		if (seconds < 1)
 			return "error:bad_seconds";
 
-		LF_FilmCameraPath path = new LF_FilmCameraPath();
-		int steps = 12;
 		int i;
 		if (mode == "orbit")
 		{
-			for (i = 0; i <= steps; i++)
+			float azimuth = 0;
+			float arc = 140;
+			float height = 5;
+			array<float> v;
+			if (!extra.IsEmpty())
 			{
-				// A 140 degree arc on the +z side of the point (the street side of the store, so the camera stays out of the building).
-				float a = (-70 + i * 140.0 / steps) * Math.DEG2RAD;
-				path.Add(i * seconds / steps, point + Vector(Math.Sin(a) * size, 5, Math.Cos(a) * size), point + Vector(0, 1.2, 0), 60);
+				if (!Numbers(extra, 1, v))
+					return "error:orbit_extras_not_numbers";
+				azimuth = v[0];
+				if (v.Count() > 1)
+					arc = v[1];
+				if (v.Count() > 2)
+					height = v[2];
 			}
-			if (!LF_FilmCameraRunner.Play(path))
+			if (!LF_FilmCameraRunner.Play(LF_FilmCameraPath.BuildOrbit(point, size, seconds, azimuth, arc, height)))
 				return "error:play_rejected";
 			return "orbit started";
 		}
@@ -370,6 +544,8 @@ class LF_FilmCamera
 		if (mode != "follow")
 			return "error:bad_camera_mode";
 
+		LF_FilmCameraPath path = new LF_FilmCameraPath();
+		int steps = 12;
 		array<IEntity> near = LF_Utils.GetNearbyVehicles(point, 30);
 		if (near.IsEmpty())
 			return "error:no_vehicle_near_point";

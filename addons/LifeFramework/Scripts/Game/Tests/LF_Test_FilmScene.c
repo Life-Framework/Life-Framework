@@ -33,6 +33,13 @@ class LF_Test_FilmScene : LF_Test
 		ctx.False(street.Override("-3", ""), "a negative hour is refused");
 		ctx.True(street.Hour == 0, "a refused override changes nothing");
 
+		LF_FilmSceneEnv quarry = LF_FilmSceneEnv.ForScene("trailer-quarry");
+		ctx.True(quarry.Hour == 16.5 && quarry.Weather == "Clear" && quarry.AutoAdvance == 0, "the quarry preset is clear 16.5 with the day frozen");
+		ctx.True(LF_FilmSceneEnv.ForScene("trailer-chop").Hour == 18.3, "the chop shop preset is at sunset");
+		ctx.True(LF_FilmSceneEnv.IsEnvOnly("trailer-bank") && LF_FilmSceneEnv.IsEnvOnly("trailer-square-dusk"), "trailer presets are light only");
+		ctx.False(LF_FilmSceneEnv.IsEnvOnly("street"), "street spawns actors");
+		ctx.False(LF_FilmSceneEnv.IsEnvOnly("trailer-nope"), "an unknown preset is not light only");
+
 		ctx.True(LF_FilmSceneEnv.LocalToGame(2, 5) == 21, "local to game wraps below 0");
 		ctx.True(LF_FilmSceneEnv.GameToLocal(21, 5) == 2, "game to local wraps above 24");
 		float local = 7.25;

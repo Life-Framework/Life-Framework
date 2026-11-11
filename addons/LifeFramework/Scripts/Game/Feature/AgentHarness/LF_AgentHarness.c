@@ -69,7 +69,7 @@ class LF_AgentCommand
 	//!   <id> capture ui <Name>
 	//!   <id> capture world <Name> <x> <y> <z> [ox oy oz [hour]]
 	//!   <id> clean off: end a run of clean world shots (free camera, hidden HUD)
-	//!   <id> time <hour>: the server sets the clock to that LOCAL hour and clear weather
+	//!   <id> time <hour> [WeatherState]: the server sets the clock to that LOCAL hour and the weather (default Clear)
 	//!   <id> probe ground <x> <z> | trace <x1 y1 z1 x2 y2 z2> | cam <x y z> | ent <Name> <x y z>
 	//!   <id> film start <Name> <fps> [maxSeconds]
 	//!   <id> film stop|status
@@ -142,6 +142,9 @@ class LF_AgentCommand
 				return false;
 			}
 
+			if (parts.Count() > 3)
+				cmd.Arg1 = parts[3];
+
 			return true;
 		}
 		if (cmd.Verb == "look")
@@ -179,6 +182,8 @@ class LF_AgentCommand
 			return ParseCpr(parts, cmd);
 		if (cmd.Verb == "siren")
 			return ParseSiren(parts, cmd);
+		if (cmd.Verb == "shootnpc")
+			return ParseShootNpc(parts, cmd);
 		if (cmd.Verb == "ui")
 			return ParseUi(parts, cmd);
 		if (cmd.Verb == "click")
@@ -233,16 +238,30 @@ class LF_AgentCommand
 		}
 		if (cmd.Verb == "camera")
 		{
-			if (parts.Count() < 8)
+			// static, drone, hud and stop carry every number in Arg3; orbit and follow keep x y z size seconds
+			// and an orbit may add azimuth arc height after them.
+			int extraFrom = 3;
+			if (cmd.Arg1 == "orbit" || cmd.Arg1 == "follow")
 			{
-				cmd.Error = "need_camera_args";
-				return false;
+				if (parts.Count() < 8)
+				{
+					cmd.Error = "need_camera_args";
+					return false;
+				}
+				cmd.PosX = parts[3].ToFloat();
+				cmd.PosY = parts[4].ToFloat();
+				cmd.PosZ = parts[5].ToFloat();
+				cmd.CamX = parts[6].ToFloat();
+				cmd.CamY = parts[7].ToFloat();
+				extraFrom = 8;
 			}
-			cmd.PosX = parts[3].ToFloat();
-			cmd.PosY = parts[4].ToFloat();
-			cmd.PosZ = parts[5].ToFloat();
-			cmd.CamX = parts[6].ToFloat();
-			cmd.CamY = parts[7].ToFloat();
+			cmd.Arg3 = "";
+			for (int pi = extraFrom; pi < parts.Count(); pi++)
+			{
+				if (!cmd.Arg3.IsEmpty())
+					cmd.Arg3 += " ";
+				cmd.Arg3 += parts[pi];
+			}
 		}
 
 		return true;
@@ -496,6 +515,20 @@ class LF_AgentCommand
 
 		cmd.Arg1 = parts[2];
 		cmd.Arg2 = parts[3];
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `shootnpc <EntityName>`: one lethal hit on a placed town NPC (#610).
+	protected static bool ParseShootNpc(array<string> parts, LF_AgentCommand cmd)
+	{
+		if (parts.Count() < 3 || !IsClassToken(parts[2]))
+		{
+			cmd.Error = "need_entity";
+			return false;
+		}
+
+		cmd.Arg1 = parts[2];
 		return true;
 	}
 
@@ -1067,7 +1100,7 @@ class LF_AgentHarness
 			if (!clockUser)
 				WriteResult(cmd.Id, "error", "no_character");
 			else
-				clockUser.LF_AskHarnessTime(cmd.Id, cmd.PosX);
+				clockUser.LF_AskHarnessTime(cmd.Id, cmd.PosX, cmd.Arg1);
 			return;
 		}
 		if (cmd.Verb == "look")
@@ -1141,6 +1174,11 @@ class LF_AgentHarness
 		if (cmd.Verb == "shoot")
 		{
 			DoShoot(cmd);
+			return;
+		}
+		if (cmd.Verb == "shootnpc")
+		{
+			DoShootNpc(cmd);
 			return;
 		}
 		if (cmd.Verb == "cpr")
@@ -1387,6 +1425,21 @@ class LF_AgentHarness
 		}
 
 		character.LF_AskHarnessShoot(cmd.Id, cmd.Arg1.ToInt());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness `shootnpc <EntityName>` (dev gate): the server deals one lethal kinetic hit from the
+	//! local character to the named town NPC through its damage manager.
+	protected static void DoShootNpc(LF_AgentCommand cmd)
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if (!character)
+		{
+			WriteResult(cmd.Id, "error", "no_character");
+			return;
+		}
+
+		character.LF_AskHarnessShootNpc(cmd.Id, cmd.Arg1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3295,7 +3348,12 @@ class LF_AgentHarness
 	{
 		if (cmd.Verb == "camera")
 		{
-			WriteResult(cmd.Id, "ok", LF_FilmCamera.Start(cmd.Arg1, Vector(cmd.PosX, cmd.PosY, cmd.PosZ), cmd.CamX, cmd.CamY));
+			string camResult;
+			if (cmd.Arg1 == "orbit" || cmd.Arg1 == "follow")
+				camResult = LF_FilmCamera.Start(cmd.Arg1, Vector(cmd.PosX, cmd.PosY, cmd.PosZ), cmd.CamX, cmd.CamY, cmd.Arg3);
+			else
+				camResult = LF_FilmCamera.Command(cmd.Arg1, cmd.Arg3);
+			WriteResult(cmd.Id, "ok", camResult);
 			return;
 		}
 

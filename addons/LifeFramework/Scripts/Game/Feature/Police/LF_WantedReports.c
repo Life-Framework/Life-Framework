@@ -238,6 +238,38 @@ class LF_WantedReports
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Takes down the reports of every loaded character whose wanted level is 0. The report names a
+	//! character by its record key (#331), so this reads that character's standing, not the one its
+	//! account plays. The save calls it after the last payload: the "characters" payload (save
+	//! version 24) restores the wanted level of every character but the active one, after "wanted".
+	//! A key with no loaded character keeps its reports.
+	//! \return Characters whose reports were taken down.
+	static int PruneCleared()
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!s_mReports || !accounts)
+			return 0;
+
+		array<string> cleared = {};
+		foreach (string uid, array<ref LF_WantedReportRecord> list : s_mReports)
+		{
+			LF_CharacterStanding standing = accounts.FindStanding(uid);
+			if (standing && standing.m_iWantedLevel <= 0)
+				cleared.Insert(uid);
+		}
+
+		foreach (string uid : cleared)
+		{
+			s_mReports.Remove(uid);
+		}
+
+		if (!cleared.IsEmpty())
+			LF_Debug.Info(FEATURE, string.Format("load took down the reports of %1 character(s) no longer wanted", cleared.Count()));
+
+		return cleared.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static array<ref LF_WantedReportRecord> ExportAll()
 	{
 		array<ref LF_WantedReportRecord> records = new array<ref LF_WantedReportRecord>();
@@ -252,7 +284,8 @@ class LF_WantedReports
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Replaces the store (idempotent). A report for a player who is no longer wanted is dropped.
+	//! Replaces the store (idempotent). Reports of characters no longer wanted are dropped afterwards
+	//! by PruneCleared, once the save has restored every character's wanted level.
 	static void ApplyAll(array<ref LF_WantedReportRecord> records)
 	{
 		s_mReports = new map<string, ref array<ref LF_WantedReportRecord>>();
@@ -260,20 +293,12 @@ class LF_WantedReports
 		if (!records)
 			return;
 
-		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		foreach (LF_WantedReportRecord record : records)
 		{
 			if (!record || record.m_sPlayerUid.IsEmpty())
 			{
 				LF_Debug.Warn(FEATURE, "load skipped a wanted report with no player id");
 				continue;
-			}
-
-			if (accounts)
-			{
-				LF_PlayerAccount account = accounts.GetFromCache(record.m_sPlayerUid);
-				if (account && account.GetWantedLevel() <= 0)
-					continue;
 			}
 
 			array<ref LF_WantedReportRecord> list = Reports().Get(record.m_sPlayerUid);

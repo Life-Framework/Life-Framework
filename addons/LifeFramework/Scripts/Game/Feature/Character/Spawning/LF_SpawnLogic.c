@@ -45,6 +45,11 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	[Attribute("20000", desc: "Carried cash the top-up fills to.", category: "Debug money top-up")]
 	protected int m_iTopUpCashTarget;
 
+	//! Playtest only: the spawn table's travel globe (LF_SpawnHub, #607) teleports players to any playtest
+	//! area. The server refuses the request unless this is on. Off in the flagship game mode.
+	[Attribute("0", desc: "Playtest: the spawn hub travel globe may teleport players to the playtest areas. Off in the flagship mode.", category: "Playtest hub")]
+	protected bool m_bPlaytestHub;
+
 	protected bool m_bTopUpTimer;
 
 	//! Playtest only: the dispatch console's test calls (LF_DebugDispatchAction) place a police or
@@ -62,6 +67,12 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	bool IsDebugMoneyTopUp()
 	{
 		return m_bDebugMoneyTopUp;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsPlaytestHub()
+	{
+		return m_bPlaytestHub;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -100,6 +111,16 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 	[Attribute("Roadmap_Vehicle_Lot", desc: "Entity name of the car lot whose first two offers the test cars are.", category: "New character defaults")]
 	protected string m_sTestCarLot;
+
+	//! Playtest only: the "Send me to jail" board outside the jail works (LF_DebugJailMe). Off in the flagship mode.
+	[Attribute("0", desc: "Playtest: the board outside the jail jails you for a short sentence so the jail can be tried solo.", category: "Debug jail")]
+	protected bool m_bDebugJailMe;
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDebugJailMe()
+	{
+		return m_bDebugJailMe;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	bool GrantsTestCars()
@@ -224,7 +245,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! \param playerId The player to respawn.
 	void RespawnPlayer_S(int playerId)
 	{
-		string playerUid = LF_Utils.GetPlayerUID(playerId);
+		string playerUid = LF_Utils.GetAccountUID(playerId);
 		if (playerUid.IsEmpty())
 			return;
 
@@ -241,7 +262,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! account's active character.
 	override protected void DoSpawn_S(int playerId)
 	{
-		string playerUid = LF_Utils.GetPlayerUID(playerId);
+		// The account, not a character key (#331): GetOrCreate must never open an account under a key.
+		string playerUid = LF_Utils.GetAccountUID(playerId);
 		if (playerUid.IsEmpty())
 		{
 			LF_Debug.Warn("Spawn", "persistent UID not available yet for playerId " + playerId + ", retrying");

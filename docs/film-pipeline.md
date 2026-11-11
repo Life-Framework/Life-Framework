@@ -240,5 +240,5 @@ a title card with the logo, crossfades (video `xfade`, audio `acrossfade`), capt
 sans-serif on a semi-transparent box in the lower third) plus an `.srt`, voice-over from text cues via Piper, and a music
 bed under `sidechaincompress` keyed on game sound and voice, with fades. The mix is measured in a first pass and set to
 about -14 LUFS with a peak limiter. No frames are written: everything is one filter graph over the encoded clips (a 42 s
-cut renders in about 25 s on this PC). Proven on `video/tooling-test.json` (internal, not for posting). A trailer
+cut renders in about 25 s on this PC). A storyboard with `format: lf-storyboard/1` is shot first: `film-make` plays each shot through the harness `camera` rig and a scene preset and records it with the engine recorder, then runs the same post-production (`video/README.md`, `tools/film/storyboard.mjs`). Proven on `video/tooling-test.json` (internal, not for posting). A trailer
 must pass `docs/marketing/trailer/quality-gate.md`. Open: 4K and vertical presets, and the TTS voice's lineage (`docs/credits.md`).

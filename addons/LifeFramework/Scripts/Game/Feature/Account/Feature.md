@@ -43,6 +43,13 @@ off:
   dedicated record (no EPF). `LF_PlayerAccountManager.ExportAll` / `ApplyAll`
   feed `LF_PersistenceComponentSerializer`, which writes a `version` header
   first.
+- Characters per account (#331): `LF_CharacterConfig` (`Configs/Account/LF_Characters.conf`,
+  1 shipped) caps the roster. Each `LF_PlayerCharacter` has a record key (slot 1 = the
+  account uid, later slots their id) that `LF_Utils.GetPlayerUID` returns for the
+  active character and every character-scoped store keys by; `LF_Utils.GetAccountUID`
+  is the account. `LF_CharacterStanding` (wanted, rank, duty totals) is per character;
+  the account's getters read the active one. Keys and wanted levels are the
+  `characters` payload (save version 24); an older save's one character is slot 1.
 - `LF_Progression` + `Persistence/LF_ProgressionRecord.c` — per-uid progression
   (career, police rank and duty, benefit cooldown, level, licences, quest
   turn-ins), the `progression` payload at save version 7. Hidden: no UI.

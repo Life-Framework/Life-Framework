@@ -48,6 +48,26 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
        }
        "Sort Priority" 2
       }
+      LF_PoliceApplyAction "{5D2A8E71C4B39F06}" {
+       ParentContextList {
+        "LF_DutyClock"
+       }
+       UIInfo UIInfo "{B83C1F5A7E264D90}" {
+        Name "#LF-PoliceApp_Action"
+        Description "#LF-PoliceApp_ActionDesc"
+       }
+       "Sort Priority" 3
+      }
+      LF_PoliceReviewAction "{1E94B7C3A5D80F62}" {
+       ParentContextList {
+        "LF_DutyClock"
+       }
+       UIInfo UIInfo "{C60D2A8F3B715E94}" {
+        Name "#LF-PoliceApp_Review"
+        Description "#LF-PoliceApp_ReviewDesc"
+       }
+       "Sort Priority" 4
+      }
      }
     }
    }
