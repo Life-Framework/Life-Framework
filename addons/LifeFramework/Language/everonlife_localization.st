@@ -7441,6 +7441,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You still carry goods you have not paid for. Go back to the store and pay within %1 minute(s), or it counts as shoplifting."
      Comment "Toast at spawn: unpaid store goods came back after a restart or a logout (#479). %1 = minutes left."
     }
+    CustomStringTableItem "{AB87B08750BA98B5}" {
+     Id "LF-RateLimit_Title"
+     Target_en_us "Slow down"
+     Comment "Toast title when the server refuses a request sent too fast (#693b)."
+    }
+    CustomStringTableItem "{A2D4831F96B7DC32}" {
+     Id "LF-RateLimit_Slow"
+     Target_en_us "Too many requests at once. Wait a moment and try again."
+     Comment "Toast body when the server refuses a request sent too fast (#693b)."
+    }
+    CustomStringTableItem "{2D906536332C3F77}" {
+     Id "LF-Shop_RefuseTooFast"
+     Target_en_us "One order at a time. Give the till a moment."
+     Comment "Shop refusal: too many orders in a short time (#693b rate limit)."
+    }
+    CustomStringTableItem "{C46B3F43B4495744}" {
+     Id "LF-SpawnHub_TooFar"
+     Target_en_us "Stand at the travel globe to travel."
+     Comment "Spawn hub refusal: the server found no travel globe next to the player (#693b)."
+    }
   }
  }
 }

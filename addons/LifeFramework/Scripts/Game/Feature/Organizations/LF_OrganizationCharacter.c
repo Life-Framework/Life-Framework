@@ -59,6 +59,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationCreate(string name)
 	{
+		if (!LF_RateLimit.AllowCharacter(this, LF_ERequestKind.PURCHASE, "organization founding"))
+			return;
+
 		if (LF_RefuseAwayFromOrganizationDesk("found", 0))
 		{
 			LF_PushOrganizationView("#EL-Org_TooFar");
@@ -155,6 +158,9 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationBuy(int upgrade)
 	{
+		if (!LF_RateLimit.AllowCharacter(this, LF_ERequestKind.PURCHASE, "organization upgrade"))
+			return;
+
 		LF_EOrganizationUpgrade kind = LF_EOrganizationUpgrade.PROCESSING_SLOT;
 		if (upgrade == LF_EOrganizationUpgrade.EXTRA_STORAGE)
 			kind = LF_EOrganizationUpgrade.EXTRA_STORAGE;

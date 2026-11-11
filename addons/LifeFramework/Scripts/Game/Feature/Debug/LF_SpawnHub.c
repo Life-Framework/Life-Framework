@@ -106,7 +106,8 @@ enum LF_ESpawnHubCheck
 	OK,
 	DISABLED,
 	NO_BODY,
-	UNKNOWN_POINT
+	UNKNOWN_POINT,
+	TOO_FAR
 }
 
 //------------------------------------------------------------------------------------------------
@@ -114,7 +115,8 @@ enum LF_ESpawnHubCheck
 class LF_SpawnHubRules
 {
 	//------------------------------------------------------------------------------------------------
-	static LF_ESpawnHubCheck Check(bool hubEnabled, bool hasBody, bool pointKnown)
+	//! \param mayTravel The body stands at a travel globe, or its player is exempt (LF_SpawnHub.MayTravelFrom).
+	static LF_ESpawnHubCheck Check(bool hubEnabled, bool hasBody, bool pointKnown, bool mayTravel)
 	{
 		if (!hubEnabled)
 			return LF_ESpawnHubCheck.DISABLED;
@@ -124,6 +126,9 @@ class LF_SpawnHubRules
 
 		if (!pointKnown)
 			return LF_ESpawnHubCheck.UNKNOWN_POINT;
+
+		if (!mayTravel)
+			return LF_ESpawnHubCheck.TOO_FAR;
 
 		return LF_ESpawnHubCheck.OK;
 	}
@@ -151,6 +156,10 @@ class LF_SpawnHubRules
 class LF_SpawnHub
 {
 	static const string FEATURE = "SpawnHub";
+	static const string GLOBE_ACTION = "LF_SpawnHubAction";
+	//! Server reach to the globe. The action shows within 3 m and the menu closes beyond 4 m; the
+	//! rest is slack for movement while the request is in flight.
+	static const float GLOBE_RANGE = 6.0; // lf-fixed: anti-cheat reach tied to the action's 3 m, not an owner knob
 
 	//------------------------------------------------------------------------------------------------
 	//! \return true when the running game mode is a playtest mode (LF_SpawnLogic.m_bPlaytestHub).
@@ -164,16 +173,51 @@ class LF_SpawnHub
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return true when an entity carrying the travel action stands within GLOBE_RANGE of origin.
+	static bool IsNearGlobe(vector origin)
+	{
+		return LF_ActionSite.IsNear(origin, GLOBE_RANGE, GLOBE_ACTION);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: may this body travel from where it stands? It must be at a travel globe, unless its
+	//! player is an administrator or this is an LF_HARNESS build (the agent harness, which travels
+	//! without walking to the globe). The playtest game mode's dev-tools opt-in is not an
+	//! exemption: it is on wherever the hub is, so it would switch the reach check off everywhere.
+	static bool MayTravelFrom(IEntity body)
+	{
+		if (!body)
+			return false;
+
+		if (IsNearGlobe(body.GetOrigin()))
+			return true;
+
+		if (LF_DevGate.HarnessBuild())
+			return true;
+
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager)
+			return false;
+
+		int playerId = playerManager.GetPlayerIdFromControlledEntity(body);
+		return playerId > 0 && playerManager.HasPlayerRole(playerId, EPlayerRole.ADMINISTRATOR);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Validates and performs one travel request for a body.
 	//! \param hubEnabled The gate (IsEnabled() in the RPC; a parameter so a test can drive both sides).
+	//! \param mayTravel MayTravelFrom(body) in the RPC; a parameter for the same reason.
 	//! \return The check result; the body moved only for OK.
-	static LF_ESpawnHubCheck Serve(IEntity body, string pointId, bool hubEnabled)
+	static LF_ESpawnHubCheck Serve(IEntity body, string pointId, bool hubEnabled, bool mayTravel)
 	{
 		LF_SpawnHubPoint point = LF_SpawnHubConfig.Find(pointId);
-		LF_ESpawnHubCheck result = LF_SpawnHubRules.Check(hubEnabled, body != null, point != null);
+		LF_ESpawnHubCheck result = LF_SpawnHubRules.Check(hubEnabled, body != null, point != null, mayTravel);
 		if (result != LF_ESpawnHubCheck.OK)
 		{
 			LF_Debug.Warn(FEATURE, string.Format("travel to %1 refused: %2", pointId, typename.EnumToString(LF_ESpawnHubCheck, result)));
+			if (result == LF_ESpawnHubCheck.TOO_FAR)
+				NotifyTooFar(body);
+
 			return result;
 		}
 
@@ -185,6 +229,18 @@ class LF_SpawnHub
 		LF_Jail.MoveBody(body, destination);
 		LF_Debug.Info(FEATURE, string.Format("moved a player to %1 at %2", pointId, destination));
 		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void NotifyTooFar(IEntity body)
+	{
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		if (!playerManager || !body)
+			return;
+
+		int playerId = playerManager.GetPlayerIdFromControlledEntity(body);
+		if (playerId > 0)
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-SpawnHub_Title", "#LF-SpawnHub_TooFar", 4.0, LF_ENotificationType.WARNING);
 	}
 }
 
@@ -202,7 +258,10 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_SpawnHubTravel(string pointId)
 	{
-		LF_SpawnHub.Serve(this, pointId, LF_SpawnHub.IsEnabled());
+		if (!LF_RateLimit.AllowCharacter(this, LF_ERequestKind.TRAVEL, "spawn hub travel"))
+			return;
+
+		LF_SpawnHub.Serve(this, pointId, LF_SpawnHub.IsEnabled(), LF_SpawnHub.MayTravelFrom(this));
 	}
 }
 

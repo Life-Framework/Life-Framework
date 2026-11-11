@@ -83,6 +83,9 @@ class LF_Test_CounterRefusalText : LF_Test
 		}
 
 		ctx.Equal(LF_EShopRefusal.NO_SHOP, LF_ShopRefusal.FromWire(-3), "an unknown shop reason is a refusal");
+		ctx.Equal(LF_EShopRefusal.CLOSED, LF_ShopRefusal.FromWire(LF_EShopRefusal.CLOSED), "a shut back room survives the wire");
+		ctx.Equal(LF_EShopRefusal.TOO_FAST, LF_ShopRefusal.FromWire(LF_EShopRefusal.TOO_FAST), "a rate-limited order survives the wire");
+		ctx.True(LF_ShopRefusal.Key(LF_EShopRefusal.TOO_FAST) != "", "a rate-limited order has a slip line");
 
 		ctx.Equal(1, LF_ShopRefusal.StepQuantity(1, -1), "the slip never goes below 1");
 		ctx.Equal(3, LF_ShopRefusal.StepQuantity(2, 1), "One more adds one");

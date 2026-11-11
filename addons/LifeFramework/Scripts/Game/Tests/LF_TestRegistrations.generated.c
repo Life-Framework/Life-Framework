@@ -226,6 +226,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuestSignal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestTracker(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RateLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RemovedTomatoSkip(), LF_TestTier.WORLD);

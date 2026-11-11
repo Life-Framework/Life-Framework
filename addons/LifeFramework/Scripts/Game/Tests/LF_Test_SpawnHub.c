@@ -1,10 +1,15 @@
 // red-proof: 2026-11-11 `tools/cli test --no-build --only LF_Test_SpawnHub` with the `if (!hubEnabled)` refusal in LF_SpawnHubRules.Check disabled failed `- a game mode that is not a playtest refuses (expected 1, got 0)` and `- a disabled hub does not move the body (expected 1, got 0)`. Restored; green.
+// red-proof (#693b reach): 2026-11-12 with the `if (!mayTravel)` refusal in LF_SpawnHubRules.Check disabled, `--only LF_Test_SpawnHub` failed `- a request away from the globe is refused (expected 4, got 0)` and `- the far body stayed put (expected 0, got 182)`. Restored; green.
 // tier: WORLD
 //! Spawn hub (#607): the shipped config loads with the areas the playtest notes name, every row has
 //! a unique id and a name string, a travel request is refused when the game mode is not a
-//! playtest mode, for an unknown id and for no body, and a good request puts a body at the row.
+//! playtest mode, for an unknown id, for no body and away from the travel globe, and a good request puts a body at the row.
 class LF_Test_SpawnHub : LF_Test
 {
+	//! SpawnHubStation in DebugWorld_Layers/Street_SpawnHub.layer; the globe sits on its table.
+	static const float GLOBE_STATION_X = 119;
+	static const float GLOBE_STATION_Z = 243.5;
+
 	override string GetName()
 	{
 		return "spawnhub/travel";
@@ -32,10 +37,11 @@ class LF_Test_SpawnHub : LF_Test
 		}
 
 		// Pure rules.
-		ctx.Equal(LF_ESpawnHubCheck.OK, LF_SpawnHubRules.Check(true, true, true), "a playtest request for a known point passes");
-		ctx.Equal(LF_ESpawnHubCheck.DISABLED, LF_SpawnHubRules.Check(false, true, true), "a game mode that is not a playtest refuses");
-		ctx.Equal(LF_ESpawnHubCheck.NO_BODY, LF_SpawnHubRules.Check(true, false, true), "no body refuses");
-		ctx.Equal(LF_ESpawnHubCheck.UNKNOWN_POINT, LF_SpawnHubRules.Check(true, true, false), "an unknown point refuses");
+		ctx.Equal(LF_ESpawnHubCheck.OK, LF_SpawnHubRules.Check(true, true, true, true), "a playtest request for a known point passes");
+		ctx.Equal(LF_ESpawnHubCheck.DISABLED, LF_SpawnHubRules.Check(false, true, true, true), "a game mode that is not a playtest refuses");
+		ctx.Equal(LF_ESpawnHubCheck.NO_BODY, LF_SpawnHubRules.Check(true, false, true, true), "no body refuses");
+		ctx.Equal(LF_ESpawnHubCheck.UNKNOWN_POINT, LF_SpawnHubRules.Check(true, true, false, true), "an unknown point refuses");
+		ctx.Equal(LF_ESpawnHubCheck.TOO_FAR, LF_SpawnHubRules.Check(true, true, true, false), "a body away from the globe refuses");
 		vector onGround = LF_SpawnHubRules.Destination("1 0 2", 12);
 		vector written = LF_SpawnHubRules.Destination("1 5 2", 12);
 		ctx.EqualFloat(12.2, onGround[1], 0.001, "a Y of 0 stands on the ground");
@@ -51,12 +57,20 @@ class LF_Test_SpawnHub : LF_Test
 			return;
 
 		LF_SpawnHubPoint bank = LF_SpawnHubConfig.Find("bank");
-		ctx.Equal(LF_ESpawnHubCheck.DISABLED, LF_SpawnHub.Serve(body, "bank", false), "a disabled hub does not move the body");
+		ctx.Equal(LF_ESpawnHubCheck.DISABLED, LF_SpawnHub.Serve(body, "bank", false, true), "a disabled hub does not move the body");
 		ctx.EqualFloat(0, body.GetOrigin()[0], 0.01, "the refused body stayed put");
-		ctx.Equal(LF_ESpawnHubCheck.UNKNOWN_POINT, LF_SpawnHub.Serve(body, "no_such_area", true), "an unknown id does not move the body");
+		ctx.Equal(LF_ESpawnHubCheck.UNKNOWN_POINT, LF_SpawnHub.Serve(body, "no_such_area", true, true), "an unknown id does not move the body");
 		ctx.EqualFloat(0, body.GetOrigin()[0], 0.01, "the unknown-id body stayed put");
-		ctx.Equal(LF_ESpawnHubCheck.NO_BODY, LF_SpawnHub.Serve(null, "bank", true), "no body is refused");
-		ctx.Equal(LF_ESpawnHubCheck.OK, LF_SpawnHub.Serve(body, "bank", true), "a good request is served");
+		ctx.Equal(LF_ESpawnHubCheck.NO_BODY, LF_SpawnHub.Serve(null, "bank", true, true), "no body is refused");
+		// Reach (#693b): the server finds the globe itself; a body at the world origin is nowhere near it.
+		ctx.False(LF_SpawnHub.IsNearGlobe(body.GetOrigin()), "the world origin is not at a travel globe");
+		ctx.False(LF_SpawnHub.MayTravelFrom(body), "a body away from the globe with no admin player may not travel");
+		vector station = Vector(GLOBE_STATION_X, 0, GLOBE_STATION_Z);
+		station[1] = GetGame().GetWorld().GetSurfaceY(station[0], station[2]);
+		ctx.True(LF_SpawnHub.IsNearGlobe(station), "the spawn table stands at a travel globe");
+		ctx.Equal(LF_ESpawnHubCheck.TOO_FAR, LF_SpawnHub.Serve(body, "bank", true, LF_SpawnHub.MayTravelFrom(body)), "a request away from the globe is refused");
+		ctx.EqualFloat(0, body.GetOrigin()[0], 0.01, "the far body stayed put");
+		ctx.Equal(LF_ESpawnHubCheck.OK, LF_SpawnHub.Serve(body, "bank", true, true), "a good request is served");
 		ctx.EqualFloat(bank.m_vPosition[0], body.GetOrigin()[0], 0.05, "the body stands at the bank x");
 		ctx.EqualFloat(bank.m_vPosition[2], body.GetOrigin()[2], 0.05, "the body stands at the bank z");
 		SCR_EntityHelper.DeleteEntityAndChildren(body);

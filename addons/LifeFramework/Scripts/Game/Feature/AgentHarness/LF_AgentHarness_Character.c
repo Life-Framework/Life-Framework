@@ -628,6 +628,13 @@ modded class SCR_ChimeraCharacter
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_HarnessState(int commandId)
 	{
+		// The state line holds wanted level, cash, bank balance and job: harness eyes only (#693b).
+		if (!LF_DevGate.CheckHarnessRequest(this, "state"))
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
 		LF_HarnessReply(commandId, "ok", LF_AgentHarness.StateLine(this));
 	}
 

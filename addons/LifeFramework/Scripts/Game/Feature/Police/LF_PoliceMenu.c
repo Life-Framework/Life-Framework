@@ -31,6 +31,9 @@ modded class SCR_ChimeraCharacter
 		if (!officer)
 			return;
 
+		if (!LF_RateLimit.AllowCharacter(officer, LF_ERequestKind.SPAWN, "arrest"))
+			return;
+
 		int officerPlayerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(officer);
 		LF_PlayerAccount officerAccount = LF_PoliceUtils.GetAccountForEntity(officer);
 		if (!LF_PoliceUtils.IsOnDutyOfficer(officerAccount))
