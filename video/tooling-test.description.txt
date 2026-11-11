@@ -1,0 +1,8 @@
+INTERNAL TOOLING TEST - NOT FOR POSTING. Proves the film-make post-production chain (#397): cards, crossfades,
+captions, offline voice-over, ducked music. The real trailer follows the gate in docs/marketing/trailer/quality-gate.md.
+
+Footage: Life Framework DebugWorld playtest town (Arma Reforger).
+Music: "Carefree" by Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 4.0 License
+http://creativecommons.org/licenses/by/4.0/
+Voice: Piper TTS (MIT), en_US-libritts_r voice (CC BY 4.0)

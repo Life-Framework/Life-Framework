@@ -28,6 +28,8 @@ track).
 | Vehicle key | `Roleplay/VehicleKey.et`, `LF_PoliceCarKey.et` | final | `Assets/Items/Keys/VehicleKey.xob`: black remote fob with two red buttons and a steel blade (#613), so a car key reads differently from the brass house key | (already what it is) | Vehicles #613 | none |
 | Fence keycard | `LF_Keycard.et` | placeholder | stand-in mesh (#271) | plastic access card | Fence #271 | low |
 | Fence charge | `LF_Charge.et` | placeholder | stand-in mesh (#271) | improvised breaching charge | Fence #271 | low |
+| Cabbage seed packet | `Items/Seeds/CabbageSeeds.et` | placeholder | vanilla `Papers_Personal` folded papers | small printed paper seed packet | Farm plots #614 | low |
+| Farm plot | `Vegetation/Crops/FarmPlot_Cabbage.et`, `FarmPlot_CabbageVisual.et`, `Props/Commercial/LF_SeedCrate_Cabbage.et` | final | vanilla `VegetableBed_01_small` bed, `CabbageCrop_01` heads scaled per stage, `Crate_01` | (already a bed, cabbages and a crate) | Farm plots #614 | none |
 | Police scanner | `LF_Scanner.et` | check | (#253) | handheld 1980s scanner | Comms #253 | medium |
 | Police car | `LF_UAZ469_Police.et`, `LF_UAZ469_LEDLightBar.et` | final | vanilla `UAZ469_covered_CIV_blue` with the mod bar mount `M151A2_LightBarMount.xob` raised 0.25 m to the UAZ roof (#595; the open M151A2 jeep left the bar floating) | (already a car) | Police station car, jail escort car | none |
 
@@ -69,3 +71,5 @@ looked at yet.
 | Car lot price board | `Sign_LotPrice_*` (`LF_Sign_Chalkboard`) | final | vanilla `ChalkBoard_01` | (a price board) | Car lot, area 4 | none |
 | Lot display cars | `Lot_Display_*`, `Roadmap_Vehicle_S105` | final | the lot offers base vehicles | (display cars) | Car lot, area 4 | none |
 | Quarry rock walls and stones | `GraniteCliff_01..03.xob`, `Granite_Cluster_Large_01_V2`, `GraniteStone_01/02_V2` | final | base-game granite cliffs form a three-sided pit; small stones scattered on the floor | (same) | Quarry polish, area 11 | none |
+| Vehicle lock sound | `SOUND_PICK_UP` (base inventory click, played on the user at the car) | placeholder | no door-latch event found offline; swap `LF_VehicleLockComponent.LOCK_SOUND` for a real latch or chirp event | (none) | Car polish (lock) | needs a real latch/chirp event |
+| Garage counter | `CounterShop_01.xob` on `Roadmap_Garage` | final | gives the garage use point a visible, targetable body beside the doors | (same as lot desk) | Garage fix | none |

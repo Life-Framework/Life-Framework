@@ -90,6 +90,7 @@ under "Hard-coded flagship values in script".
 | `Feature/Chat` | core | System |
 | `Feature/Crime` | core | System; payouts move to config |
 | `Feature/Debug`, `Feature/DebugWorld` | core | Test fixtures |
+| `Feature/Farming` | core | Farm plots: plant, grow, harvest, save (#614) |
 | `Feature/Film`, `Feature/ScreenshotCapture` | core | Tooling |
 | `Feature/Gathering`, `Feature/Mining`, `Feature/Processing`, `Feature/Resources` | core | Systems; drop tables are config |
 | `Feature/Hideouts` | core | System |
@@ -220,6 +221,7 @@ arrival quest's welcome text, and `EL-Keybinds_Title` ("Everon Life").
 | `Signs/` | core | Sign face material |
 | `Tools/` | core | Axe, pickaxe |
 | `UI/` | core | Stats bars, chat icons |
+| `UI/Illustrations/medic_flow.*` | pack | The hospital's CALL, TREAT, BED diagram; the `tools\cli ui-image` route that made it is core (#579) |
 | `Vehicles/Attachments/`, `Vehicles/EmergencyLightsKnob/`, `Vehicles/LicensePlate/` | core | Siren and plate parts |
 | `Vehicles/Wheeled/M151A2/` | split | Light-bar mount for the flagship police car |
 | `World/` | core | Terrain surface |

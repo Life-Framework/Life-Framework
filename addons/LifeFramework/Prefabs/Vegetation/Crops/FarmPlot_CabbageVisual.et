@@ -1,0 +1,8 @@
+GenericEntity {
+ ID "7765E768DD1069B3"
+ components {
+  MeshObject "{4B496D1B507DB2DD}" {
+   Object "{159B0B361CA57753}Assets/Vegetation/Vegetables/CabbageCrop_01.xob"
+  }
+ }
+}
