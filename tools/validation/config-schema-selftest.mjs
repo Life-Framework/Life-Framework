@@ -4,11 +4,12 @@
 // red-proof: with the range parse in attrInfo nulled the run printed "FAIL cooldown:
 // type/default/min/max" and "FAIL below minimum must fail" and exited 1. Adding an attribute to
 // LF_ShopPricesConfig without regenerating made validate-config-schema print "FAIL
-// docs/config/config.schema.json is stale against the config classes" and exit 1. Both restored.
+// docs/config/config.schema.json is stale against the config classes" and exit 1. With the constant
+// comparison disabled the run printed "FAIL range: a differing constant must fail". All restored.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { generate, readScripts, render, validateJson, jsonKey, runtimeExample, SERVICE } from "../config/schema.mjs";
+import { rangeProblems, generate, readScripts, render, validateJson, jsonKey, runtimeExample, SERVICE } from "../config/schema.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fx = join(here, "fixtures", "config-schema");
@@ -52,6 +53,14 @@ expect(bad((e) => { e.demo.cooldownSec = 12.5; return e; }), "float for an int m
 expect(bad((e) => { e.demo.nope = 1; return e; }), "unknown key must fail");
 expect(bad((e) => { e.demo.records.a = { amount: "x" }; return e; }), "bad record field must fail");
 expect(bad((e) => { e.schemaVersion = 4; return e; }), "too-new schemaVersion must fail");
+
+// Range agreement: params and the ReadInt limits must say the same numbers.
+const edit = (from, to) => files.map((f) => ({ ...f, text: f.text.replace(from, to) }));
+expect(rangeProblems(files).length === 0, `range: the fixture agrees, got ${rangeProblems(files)}`);
+expect(rangeProblems(edit("COOL_MAX = 600", "COOL_MAX = 900")).some((m) => /checks 5\.\.900/.test(m)), "range: a differing constant must fail");
+expect(rangeProblems(edit(', params: "5 600 1"', "")).some((m) => /no params range/.test(m)), "range: a checked read without params must fail");
+expect(rangeProblems(edit('m_iCooldownSec, COOL_MIN, COOL_MAX', "m_iCooldownSec")).some((m) => /no ReadInt/.test(m)), "range: params without a checked read must fail");
+expect(rangeProblems(edit("COOL_MIN = 5", "COOL_MIN = x")).some((m) => /cannot resolve/.test(m)), "range: an unresolvable constant must fail");
 
 // The runtime example is rebuilt from the real service source and fits the real schema shape.
 const rt = runtimeExample(readFileSync(SERVICE, "utf8"));

@@ -21,6 +21,14 @@ class LF_DemoConfig
 	ref array<ref LF_DemoRecord> m_aRecords;
 
 	static const string SECTION = "demo";
+	static const int COOL_MIN = 5;
+	static const int COOL_MAX = 600;
+
+	void ApplyOwner(notnull LF_ConfigReader reader)
+	{
+		reader.ReadInt("cooldownSec", m_iCooldownSec, COOL_MIN, COOL_MAX);
+		reader.ReadInt("amount", rec.m_iAmount);
+	}
 };
 
 [BaseContainerProps()]

@@ -2,9 +2,10 @@
 // and config.example.json from the config classes' [Attribute] declarations and
 // fails when either committed file differs; validates the example, and the
 // example LF_ConfigService writes at runtime, against the schema.
+// Also fails when an attribute's params range and the limits the apply step passes to ReadInt disagree.
 // Fix: node tools/config/schema.mjs --write
 import { existsSync, readFileSync } from "node:fs";
-import { build, render, validateJson, runtimeExample, SCHEMA_PATH, EXAMPLE_PATH, SERVICE } from "../config/schema.mjs";
+import { build, render, rangeProblems, readScripts, validateJson, runtimeExample, SCHEMA_PATH, EXAMPLE_PATH, SERVICE } from "../config/schema.mjs";
 
 const fails = [];
 let gen;
@@ -14,6 +15,8 @@ for (const [p, obj, name] of [[SCHEMA_PATH, gen.schema, "config.schema.json"], [
   if (!existsSync(p)) fails.push(`docs/config/${name} is missing`);
   else if (readFileSync(p, "utf8") !== render(obj)) fails.push(`docs/config/${name} is stale against the config classes`);
 }
+
+for (const m of rangeProblems(readScripts())) fails.push(`range: ${m}`);
 
 if (existsSync(EXAMPLE_PATH) && existsSync(SCHEMA_PATH)) {
   const schema = JSON.parse(readFileSync(SCHEMA_PATH, "utf8"));

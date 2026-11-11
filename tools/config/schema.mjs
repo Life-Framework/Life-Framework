@@ -299,3 +299,60 @@ if (process.argv[1] && /[\\/]schema\.mjs$/.test(process.argv[1])) {
     console.log(`${names.length} section(s): ${names.join(", ")}`);
   }
 }
+
+/**
+ * Range agreement (#279): the limits an attribute's `params: "min max"` declares and the
+ * constants the apply step passes to `reader.ReadInt/ReadFloat("key", target, MIN, MAX)` are
+ * written twice by hand. Returns messages for a mismatch, a checked read whose field has no
+ * range, and a ranged field no read checks. `files` are { path, text } as readScripts gives.
+ */
+export function rangeProblems(files) {
+  const classes = parseClasses(files);
+  const text = new Map(files.map((f) => [f.path, f.text]));
+  const msgs = [];
+  for (const root of [...classes.values()].filter((c) => c.configRoot && c.section)) {
+    const fields = new Map(); // json key -> [{ cls, min, max }]
+    const paths = new Set([root.path]);
+    const add = (cls) => {
+      for (const m of allMembers(classes, cls)) {
+        const k = jsonKey(m.member);
+        if (!fields.has(k)) fields.set(k, []);
+        fields.get(k).push({ cls: cls.name, min: m.min, max: m.max, numeric: m.type === "int" || m.type === "float" });
+      }
+      paths.add(cls.path);
+    };
+    add(root);
+    for (const m of root.members) if (m.list && classes.get(m.type)?.members.length) add(classes.get(m.type));
+    const checked = new Set();
+    for (const p of paths) {
+      const src = text.get(p);
+      const num = (expr) => {
+        const e = expr.trim();
+        if (/^-?\d+(\.\d+)?$/.test(e)) return Number(e);
+        const name = e.split(".").pop();
+        const c = new RegExp(String.raw`const\s+(?:int|float)\s+${name}\s*=\s*(-?\d+(?:\.\d+)?)\s*;`).exec(src);
+        return c ? Number(c[1]) : null;
+      };
+      for (const m of src.matchAll(/\.Read(?:Int|Float)\(\s*"(\w+)"\s*,\s*[^,()]+,\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)/g)) {
+        const [, key, lo, hi] = m;
+        checked.add(`${root.section}.${key}`);
+        const decl = fields.get(key);
+        const min = num(lo), max = num(hi);
+        if (!decl) continue;
+        for (const d of decl) {
+          if (d.min === null) msgs.push(`${root.section}.${key}: ReadInt passes ${lo}..${hi} but ${d.cls} has no params range on the attribute`);
+          else if (min === null || max === null) msgs.push(`${root.section}.${key}: cannot resolve ${lo}..${hi} to numbers (use literals or a const int in ${p.split(/[\/]/).pop()})`);
+          else if (min !== d.min || max !== d.max) msgs.push(`${root.section}.${key}: ReadInt checks ${min}..${max} but the ${d.cls} attribute params say ${d.min}..${d.max}`);
+        }
+      }
+    }
+    for (const [key, decl] of fields) {
+      for (const d of decl) {
+        if (d.min !== null && d.numeric && !checked.has(`${root.section}.${key}`)) {
+          msgs.push(`${root.section}.${key}: the ${d.cls} attribute declares ${d.min}..${d.max} but no ReadInt/ReadFloat passes a range for it`);
+        }
+      }
+    }
+  }
+  return msgs;
+}
