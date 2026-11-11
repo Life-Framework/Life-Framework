@@ -148,6 +148,9 @@ export function buildLine(id, spec) {
     if (!Number.isInteger(target) || target <= 0) throw new Error(`shoot needs a positive player id: ${spec.playerId}`);
     return `${id} shoot ${target}`;
   }
+  if (spec.verb === "shootnpc") {
+    return `${id} shootnpc ${token(spec.entityName, "entity")}`;
+  }
   if (spec.verb === "cpr") {
     const target = Number(spec.playerId);
     if (!Number.isInteger(target) || target <= 0) throw new Error(`cpr needs a positive player id: ${spec.playerId}`);
@@ -1479,6 +1482,9 @@ function main(argv) {
     }
     if (cmd === "shoot") {
       return printResult(sendCommand({ verb: "shoot", playerId: rest[0] }, 10000));
+    }
+    if (cmd === "shootnpc") {
+      return printResult(sendCommand({ verb: "shootnpc", entityName: rest[0] }, 10000));
     }
     if (cmd === "cpr") {
       return printResult(sendCommand({ verb: "cpr", playerId: rest[0], mode: rest[1] }, 10000));

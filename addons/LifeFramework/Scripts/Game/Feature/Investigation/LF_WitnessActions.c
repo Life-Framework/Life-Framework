@@ -97,7 +97,7 @@ class LF_WitnessAskAction : ScriptedUserAction
 		string key = LF_Witness.NpcKey(pOwnerEntity);
 		LF_WitnessScene scene = LF_Witness.SceneFor(key, System.GetTickCount());
 		int said = LF_Witness.Ask(scene, key, rolls, "officer");
-		LF_Utils.NotifyEntity(pUserEntity, LF_Witness.AskKey(scene != null, said), "#LF-Witness_Title", 5.0);
+		LF_Utils.NotifyEntity(pUserEntity, LF_Witness.AskKey(scene != null, said, Math.RandomInt(0, 1000)), "#LF-Witness_Title", 5.0, LF_WitnessDialogue.NameOf(pOwnerEntity));
 	}
 }
 
@@ -140,6 +140,15 @@ class LF_WitnessRole : LF_PlayerRoleHandler
 		string key = LF_Utils.GetPlayerUID(target);
 		LF_WitnessScene scene = LF_Witness.SceneFor(key, System.GetTickCount());
 		int said = LF_Witness.Ask(scene, key, null, "officer");
-		LF_Utils.NotifyEntity(user, LF_Witness.AskKey(scene != null, said), "#LF-Witness_Title", 5.0);
+		string name = "The witness";
+		PlayerManager players = GetGame().GetPlayerManager();
+		if (players)
+		{
+			int targetId = players.GetPlayerIdFromControlledEntity(target);
+			if (targetId > 0)
+				name = players.GetPlayerName(targetId);
+		}
+
+		LF_Utils.NotifyEntity(user, LF_Witness.AskKey(scene != null, said, Math.RandomInt(0, 1000)), "#LF-Witness_Title", 5.0, name);
 	}
 }

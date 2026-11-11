@@ -24,7 +24,7 @@ class LF_Test_NpcWitness : LF_Test
 
 		ctx.True(LF_Witness.SceneFor(NPC_FAR, 6000) == null, "the far NPC has no scene to talk about");
 		ctx.Equal(0, LF_Witness.Ask(LF_Witness.SceneFor(NPC_FAR, 6000), NPC_FAR, null, "officer"), "the far NPC says it saw nothing");
-		ctx.EqualStr("#LF-Witness_NothingSeen", LF_Witness.AskKey(false, 0), "the officer is told it saw nothing");
+		ctx.True(LF_Witness.AskKey(false, 0, 2) == LF_WitnessDialogue.UnsureKey(2), "the NPC that saw nothing answers noncommittally");
 
 		array<float> partial = {0.0, 0.99, 0.99};
 		ctx.Equal(1, LF_Witness.Ask(LF_Witness.SceneFor(NPC_NEAR, 6000), NPC_NEAR, partial, "officer"), "a forgetful NPC remembers only what its roll allows");
