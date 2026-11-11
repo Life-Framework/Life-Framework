@@ -106,7 +106,10 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 3. Runs the gate: `validate --full` (with the Workbench compile) + headless
    build + `test` tier=all. A branch that changes nothing under `addons/`
    (docs, website, tools) runs plain `validate` instead and never waits for a
-   pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule).
+   pool slot; `--full-gate` forces the in-game gate (`wt gate` follows the same rule). After the suite,
+   a branch that touches a `.layer`, a `Prefabs` `.et` or LF_Utils/spawn code also runs
+   `audit placement --strict` (queued like `test`); anything flagged and not in the allowlist fails the
+   gate, and it prints the entities with the allowlist fix hint (`docs/placement-audit.md`).
 4. Pushes `ws/<slug>`, opens the PR (or reuses the open one on a re-run).
    `--refs N` (or `--closes N`, same thing) starts the body with `Refs #N`, and any `Closes/Fixes/Resolves #N` in the body is rewritten to `Refs #N` (merging never closes an issue); `--body-file F` supplies the
    body (keep it in `<worktree>/tmp/`).

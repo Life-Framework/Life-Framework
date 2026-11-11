@@ -2388,6 +2388,9 @@ async function cmdCi(root = ROOT, opts = {}) {
     ["validate --full", () => cmdRunArea("validate", root, { full: true })],
     ["build", () => cmdBuild(root, { wait: opts.wait })],
     ["test", () => cmdTest(true, "all", root, opts)],
+    // After the suite: a branch that moved or added world props must pass the placement audit. It runs
+    // through the same test lane as "test" (queues, never collides with a session).
+    ["placement audit", async () => (await import("./lib/placement-gate.mjs")).runPlacementGate(changedFiles(root), async (a) => (await import("../agent-box/place-audit.mjs")).main(["placement", ...a]))],
   ];
   let failed = 0;
   for (const [name, fn] of steps) {
@@ -3011,6 +3014,15 @@ async function wtLogsCmd(args) {
 // Only addons/ reaches the game. A branch that changes nothing there (docs,
 // website, tools) gets the cheap gate: `validate` without the Workbench
 // compile, build, or in-game suite, so it never queues for a pool slot.
+function changedFiles(wtRoot) {
+  const out = new Set();
+  for (const args of [["diff", "--name-only", `origin/${wt.baseOfRoot(wtRoot)}...HEAD`], ["diff", "--name-only", "HEAD"]]) {
+    const r = wt.git(wtRoot, args);
+    if (r.status === 0) for (const f of r.stdout.split(/\r?\n/)) if (f.trim()) out.add(f.trim());
+  }
+  return [...out];
+}
+
 function gameChanged(wtRoot) {
   const r = wt.git(wtRoot, ["diff", "--name-only", `origin/${wt.baseOfRoot(wtRoot)}...HEAD`]);
   if (r.status !== 0) return true;
