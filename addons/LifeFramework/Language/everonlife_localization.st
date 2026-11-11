@@ -3641,8 +3641,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{363F3934916EA0EA}" {
      Id "LF-Sign_Atm_Title"
-     Target_en_us "ATM"
-     Comment "Title of the sign at the ATM on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
+     Target_en_us "Teller"
+     Comment "Title of the sign at the teller window on the bank's front. Printed on the board and shown in the prompt as Read: ATM."
     }
     CustomStringTableItem "{CCA971294A309363}" {
      Id "LF-Sign_Atm_What"
@@ -3651,7 +3651,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
-     Target_en_us "ATM, then Deposit or Withdraw."
+     Target_en_us "Talk to the teller, then Deposit or Withdraw."
      Comment "Sign card for the ATM on the bank's front, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{0CD84D83AF49CFAA}" {
@@ -6676,31 +6676,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
-    CustomStringTableItem "{C5BBC2192BD8EFEC}" {
-     Id "EL-VehicleLock_ActionLock"
-     Target_en_us "Lock vehicle"
-     Comment "Action label when the vehicle is unlocked (#412)."
-    }
-    CustomStringTableItem "{D6B5DE4ACCEECA33}" {
-     Id "EL-VehicleLock_ActionUnlock"
-     Target_en_us "Unlock vehicle"
-     Comment "Action label when the vehicle is locked (#412)."
-    }
-    CustomStringTableItem "{405F3EF53D4704D5}" {
-     Id "LF-Garage_StoreHere"
-     Target_en_us "Store in garage"
-     Comment "Action on the player's own car when it stands within the garage radius. Same rules as the garage counter."
-    }
-    CustomStringTableItem "{C8B8911B5F3A014D}" {
-     Id "LF-Keybind_VehicleLock"
-     Target_en_us "Lock or unlock vehicle"
-     Comment "Key binding menu label for the U key."
-    }
-    CustomStringTableItem "{C470CD4C9E58C70D}" {
-     Id "LF-VehicleLock_NoTarget"
-     Target_en_us "No vehicle of yours in reach"
-     Comment "Toast when U is pressed with no keyed vehicle near."
-    }
     CustomStringTableItem "{F297FFD8D4B6E791}" {
      Id "LF-LawlessHud_Tag"
      Target_en_us "LAWLESS AREA"
@@ -6725,6 +6700,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BankKit_Take"
      Target_en_us "Take bank robbery kit"
      Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
+    }
+    CustomStringTableItem "{9BE7A1D673564E1C}" {
+     Id "LF-Dispatch_TestPolice"
+     Target_en_us "Test police call"
+     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
+    }
+    CustomStringTableItem "{803BB29C950EAC01}" {
+     Id "LF-Dispatch_TestMedic"
+     Target_en_us "Test medic call"
+     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
+    }
+    CustomStringTableItem "{E9CE669FFF4D0206}" {
+     Id "LF-Dispatch_TestDesc"
+     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
+     Comment "Description of the dispatch console test-call actions."
+    }
+    CustomStringTableItem "{05CAE71B3EBFC584}" {
+     Id "LF-Dispatch_TestTitle"
+     Target_en_us "Test call"
+     Comment "Toast title for the dispatch console test call."
+    }
+    CustomStringTableItem "{51294940A40506CF}" {
+     Id "LF-Dispatch_TestSent"
+     Target_en_us "Call placed. Take it at the dispatch board."
+     Comment "Toast after a test call went out to an on-duty service."
+    }
+    CustomStringTableItem "{36AF55270A37E7B0}" {
+     Id "LF-Dispatch_TestOff"
+     Target_en_us "Test calls are off in this game mode."
+     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F18}" {
+     Id "LF-Item_Parcel_Deliver"
+     Target_en_us "Deliver to: %1"
+     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
+    }
+    CustomStringTableItem "{4A1C9E27B05D3F19}" {
+     Id "LF-Job_ParcelDest"
+     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Comment "Where a courier parcel goes. Shown in the parcel description."
+    }
+    CustomStringTableItem "{4B1E7A2C9D3F4081}" {
+     Id "LF-Bank_Teller_Talk"
+     Target_en_us "Talk to the teller"
+     Comment "Prompt on the bank teller at the counter window. Opens the deposit and withdraw screen."
+    }
+    CustomStringTableItem "{7C20D5E8A1B94F36}" {
+     Id "LF-Bank_Teller_TalkDesc"
+     Target_en_us "Deposit or withdraw cash at the counter"
+     Comment "Description of the bank teller prompt."
+    }
+    CustomStringTableItem "{C5BBC2192BD8EFEC}" {
+     Id "EL-VehicleLock_ActionLock"
+     Target_en_us "Lock vehicle"
+     Comment "Action label when the vehicle is unlocked (#412)."
+    }
+    CustomStringTableItem "{D6B5DE4ACCEECA33}" {
+     Id "EL-VehicleLock_ActionUnlock"
+     Target_en_us "Unlock vehicle"
+     Comment "Action label when the vehicle is locked (#412)."
+    }
+    CustomStringTableItem "{405F3EF53D4704D5}" {
+     Id "LF-Garage_StoreHere"
+     Target_en_us "Store in garage"
+     Comment "Action on the player's own car when it stands within the garage radius. Same rules as the garage counter."
+    }
+    CustomStringTableItem "{C8B8911B5F3A014D}" {
+     Id "LF-Keybind_VehicleLock"
+     Target_en_us "Lock or unlock vehicle"
+     Comment "Key binding menu label for the U key."
+    }
+    CustomStringTableItem "{C470CD4C9E58C70D}" {
+     Id "LF-VehicleLock_NoTarget"
+     Target_en_us "No vehicle of yours in reach"
+     Comment "Toast when U is pressed with no keyed vehicle near."
     }
     CustomStringTableItem "{9EB58969BEDD9423}" {
      Id "LF-Farm_Title"
@@ -6825,46 +6875,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_FarmPlots_Next"
      Target_en_us "Sell cabbages at the general store on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
-    }
-    CustomStringTableItem "{9BE7A1D673564E1C}" {
-     Id "LF-Dispatch_TestPolice"
-     Target_en_us "Test police call"
-     Comment "Dispatch console action (debug game mode only): place a test police call from the fuel station till."
-    }
-    CustomStringTableItem "{803BB29C950EAC01}" {
-     Id "LF-Dispatch_TestMedic"
-     Target_en_us "Test medic call"
-     Comment "Dispatch console action (debug game mode only): place a test medic call from the fuel station."
-    }
-    CustomStringTableItem "{E9CE669FFF4D0206}" {
-     Id "LF-Dispatch_TestDesc"
-     Target_en_us "Playtest only: place a call to an on-duty service without a second player."
-     Comment "Description of the dispatch console test-call actions."
-    }
-    CustomStringTableItem "{05CAE71B3EBFC584}" {
-     Id "LF-Dispatch_TestTitle"
-     Target_en_us "Test call"
-     Comment "Toast title for the dispatch console test call."
-    }
-    CustomStringTableItem "{51294940A40506CF}" {
-     Id "LF-Dispatch_TestSent"
-     Target_en_us "Call placed. Take it at the dispatch board."
-     Comment "Toast after a test call went out to an on-duty service."
-    }
-    CustomStringTableItem "{36AF55270A37E7B0}" {
-     Id "LF-Dispatch_TestOff"
-     Target_en_us "Test calls are off in this game mode."
-     Comment "Toast when the dispatch console test call is used where m_bDebugTestDispatch is off."
-    }
-    CustomStringTableItem "{4A1C9E27B05D3F18}" {
-     Id "LF-Item_Parcel_Deliver"
-     Target_en_us "Deliver to: %1"
-     Comment "Parcel description line. %1 is the destination name (LF-Job_ParcelDest)."
-    }
-    CustomStringTableItem "{4A1C9E27B05D3F19}" {
-     Id "LF-Job_ParcelDest"
-     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
-     Comment "Where a courier parcel goes. Shown in the parcel description."
     }
   }
  }

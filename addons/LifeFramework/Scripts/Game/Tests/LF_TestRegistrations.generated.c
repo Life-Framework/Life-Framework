@@ -31,6 +31,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ATMManagerGuards(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankApplySnapshot(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BankRobKit(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_BankTeller(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BedDelivery(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
