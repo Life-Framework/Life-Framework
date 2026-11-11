@@ -126,6 +126,14 @@ $craftingMirror = Join-Path $profile "profile\crafting-addon\Prefabs\Crafting"
 New-Item -ItemType Directory -Force -Path $craftingMirror | Out-Null
 Copy-Item -Path (Join-Path $root "addons\LifeFramework\Prefabs\Crafting\*") -Destination $craftingMirror -Recurse -Force
 
+# tools\cli audit placement (agent-box/place-audit.mjs) hands over the town's entity list in
+# LF_PLACE_AUDIT_IN; LF_Test_PlacementAuditTown reads it as $profile:place-audit/in.txt.
+if ($env:LF_PLACE_AUDIT_IN -and (Test-Path -LiteralPath $env:LF_PLACE_AUDIT_IN)) {
+  $auditDir = Join-Path $profile "profile\place-audit"
+  New-Item -ItemType Directory -Force -Path $auditDir | Out-Null
+  Copy-Item -LiteralPath $env:LF_PLACE_AUDIT_IN -Destination (Join-Path $auditDir "in.txt") -Force
+}
+
 # addonsDir = repo addon + base game data only (core + data), via a junction so
 # the server does NOT auto-load other addons that live in the server install
 # (LifeFramework.gproj depends only on the vanilla Game addon 58D0FB3206B6F859).

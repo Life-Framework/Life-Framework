@@ -4,6 +4,12 @@ The real trailer (#571) is cut last, after the M2 polish fixes and the visual QA
 passes this gate. `video/tooling-test.json` is a tooling test and is never posted. Its footage still shows the FPS
 counter and the Steam version text in the corners and the website watermark; this gate is what catches those.
 
+0. **Before filming: placement.** From a worktree merged with `origin/main`, run
+   `tools\cli audit placement --strict` (about 10 s on the test pool, no session; `docs/placement-audit.md`).
+   It must report nothing flagged, or each remaining line must be in `agent-box/place-audit-allow.json`
+   with a reason. It needs the Reforger dedicated server, so CI cannot run it; this step is the gate.
+   Then shoot every area you will film with `tools\cli shots area <name> --eye-only --annotate` and look
+   at each contact sheet for what numbers miss: junk strewn about, the wrong asset, odd scale.
 1. **Frames.** Extract one frame every 0.5 s
    (`ffmpeg -i cut.mp4 -vf fps=2 frames/f%04d.png`). A second agent, not the one who cut it, reviews every frame for:
    - floating or clipping props;

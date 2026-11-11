@@ -125,10 +125,7 @@ SplineShapeEntity Village_FarmLane {
    Position 0 0 0
   }
   ShapePoint "{9CB9BD2BC0D3AA6E}" {
-   Position 0 0 46.5
-  }
-  ShapePoint "{A8393E9A90F0B825}" {
-   Position 31 0 48.5
+   Position 0 0 40
   }
  }
  {
@@ -143,10 +140,7 @@ SplineShapeEntity Village_FarmLane {
         Position 0 0 0
        }
        ShapePoint "{260BCD40AA2DF1AC}" {
-        Position 0 0 46.5
-       }
-       ShapePoint "{01C308F9C7AC7D46}" {
-        Position 31 0 48.5
+        Position 0 0 40
        }
      }
      IsClosedSpline 0
